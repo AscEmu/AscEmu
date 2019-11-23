@@ -807,6 +807,7 @@ public:
     void removeSanctuaryFlag() override;
 
     void sendPvpCredit(uint32_t honor, uint64_t victimGuid, uint32_t victimRank);
+    void sendRaidGroupOnly(uint32_t timeInMs, uint32_t type);
 
 public:
     //MIT End

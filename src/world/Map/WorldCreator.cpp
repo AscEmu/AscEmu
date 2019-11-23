@@ -851,15 +851,11 @@ void InstanceMgr::OnGroupDestruction(Group* pGroup)
                     }
                     else if (in->m_mapMgr->HasPlayers())
                     {
-                        WorldPacket data(SMSG_RAID_GROUP_ONLY, 8);
-                        data << uint32(60000);
-                        data << uint32(1);
-
                         for (PlayerStorageMap::iterator mitr = in->m_mapMgr->m_PlayerStorage.begin(); mitr != in->m_mapMgr->m_PlayerStorage.end(); ++mitr)
                         {
                             if ((*mitr).second->IsInWorld() && !(*mitr).second->raidgrouponlysent && (*mitr).second->GetInstanceID() == (int32)in->m_instanceId)
                             {
-                                (*mitr).second->GetSession()->SendPacket(&data);
+                                (*mitr).second->sendRaidGroupOnly(60000, 1);
                                 (*mitr).second->raidgrouponlysent = true;
 
                                 sEventMgr.AddEvent((*mitr).second, &Player::EjectFromInstance, EVENT_PLAYER_EJECT_FROM_INSTANCE, 60000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -1100,7 +1096,6 @@ void InstanceMgr::PlayerLeftGroup(Group* pGroup, Player* pPlayer)
     Instance* in;
     InstanceMap::iterator itr;
     InstanceMap* instancemap;
-    WorldPacket data(SMSG_RAID_GROUP_ONLY, 8);
     uint32 i;
 
     m_mapLock.Acquire();
@@ -1119,9 +1114,7 @@ void InstanceMgr::PlayerLeftGroup(Group* pGroup, Player* pPlayer)
                     // better make sure we're actually in that instance.. :P
                     if (!pPlayer->raidgrouponlysent && pPlayer->GetInstanceID() == (int32)in->m_instanceId)
                     {
-                        data << uint32(60000);
-                        data << uint32(1);
-                        pPlayer->GetSession()->SendPacket(&data);
+                        pPlayer->sendRaidGroupOnly(60000, 1);
                         pPlayer->raidgrouponlysent = true;
 
                         sEventMgr.AddEvent(pPlayer, &Player::EjectFromInstance, EVENT_PLAYER_EJECT_FROM_INSTANCE, 60000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);

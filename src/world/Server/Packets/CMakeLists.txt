@@ -369,6 +369,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgQueryTimeResponse.h
    ${PATH_PREFIX}/SmsgQuestgiverStatus.h
    ${PATH_PREFIX}/SmsgQuestgiverStatusMultiple.h
+   ${PATH_PREFIX}/SmsgRaidGroupOnly.h
    ${PATH_PREFIX}/SmsgRatedBgInfo.h
    ${PATH_PREFIX}/SmsgRatedBgStats.h
    ${PATH_PREFIX}/SmsgReadItemFailed.h

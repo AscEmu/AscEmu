@@ -1389,17 +1389,13 @@ bool MapMgr::Do()
 
 void MapMgr::BeginInstanceExpireCountdown()
 {
-    WorldPacket data(SMSG_RAID_GROUP_ONLY, 8);
     // so players getting removed don't overwrite us
     forced_expire = true;
 
-    // send our sexy packet
-    data << uint32(60000);
-    data << uint32(1);
     for (auto& itr : m_PlayerStorage)
     {
         if (!itr.second->raidgrouponlysent)
-            itr.second->GetSession()->SendPacket(&data);
+            itr.second->sendRaidGroupOnly(60000, 1);
     }
 
     // set our expire time to 60 seconds.

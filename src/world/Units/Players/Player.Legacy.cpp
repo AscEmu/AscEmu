@@ -9482,9 +9482,7 @@ void Player::CompleteLoading()
 
     if (raidgrouponlysent)
     {
-        WorldPacket data2(SMSG_RAID_GROUP_ONLY, 8);
-        data2 << uint32(0xFFFFFFFF) << uint32(0);
-        GetSession()->SendPacket(&data2);
+        sendRaidGroupOnly(0xFFFFFFFF, 0);
         raidgrouponlysent = false;
     }
 

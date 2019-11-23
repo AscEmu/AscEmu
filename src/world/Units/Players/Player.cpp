@@ -57,6 +57,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.h"
 #include "Server/Packets/SmsgPvpCredit.h"
+#include "Server/Packets/SmsgRaidGroupOnly.h"
 
 using namespace AscEmu::Packets;
 
@@ -2399,4 +2400,9 @@ void Player::removeSanctuaryFlag()
 void Player::sendPvpCredit(uint32_t honor, uint64_t victimGuid, uint32_t victimRank)
 {
     this->SendPacket(SmsgPvpCredit(honor, victimGuid, victimRank).serialise().get());
+}
+
+void Player::sendRaidGroupOnly(uint32_t timeInMs, uint32_t type)
+{
+    this->SendPacket(SmsgRaidGroupOnly(timeInMs, type).serialise().get());
 }

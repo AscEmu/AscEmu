@@ -25,7 +25,6 @@
 #include "Server/EventableObject.h"
 #include "Server/Packets/SmsgWeather.h"
 
-class WorldPacket;
 class WeatherInfo;
 
 uint32 GetSound(uint32 Effect, float Density);
