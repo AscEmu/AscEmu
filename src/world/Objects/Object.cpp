@@ -49,8 +49,11 @@
 #include "Data/WoWGameObject.h"
 #include "Server/Packets/SmsgDestoyObject.h"
 #include "Server/Packets/SmsgPlaySound.h"
+#include "Server/Packets/SmsgGameobjectDespawnAnim.h"
 
 // MIT Start
+
+using namespace AscEmu::Packets;
 
 bool Object::write(const uint8_t& member, uint8_t val)
 {
@@ -1025,6 +1028,13 @@ void Object::removeObjectFromInRangeSameFactionSet(Object* obj)
 // Owner
 //\ brief: is this really important in this class? Move it to class Unit otherwise
 Object* Object::getPlayerOwner() { return nullptr; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Misc
+void Object::sendGameobjectDespawnAnim()
+{
+    SendMessageToSet(SmsgGameobjectDespawnAnim(this->getGuid()).serialise().get(), true);
+}
 
 // MIT End
 
@@ -3466,7 +3476,7 @@ void Object::SetZoneId(uint32 newZone)
 
 void Object::PlaySoundToSet(uint32 sound_entry)
 {
-    SendMessageToSet(AscEmu::Packets::SmsgPlaySound(sound_entry).serialise().get(), true);
+    SendMessageToSet(SmsgPlaySound(sound_entry).serialise().get(), true);
 }
 
 bool Object::IsInBg()

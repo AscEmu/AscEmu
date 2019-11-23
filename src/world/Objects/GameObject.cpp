@@ -523,9 +523,7 @@ void GameObject::onRemoveInRangeObject(Object* pObj)
 // Remove gameobject from world, using their despawn animation.
 void GameObject::RemoveFromWorld(bool free_guid)
 {
-    WorldPacket data(SMSG_GAMEOBJECT_DESPAWN_ANIM, 8);
-    data << uint64(getGuid());
-    SendMessageToSet(&data, true);
+    sendGameobjectDespawnAnim();
 
     sEventMgr.RemoveEvents(this);
     Object::RemoveFromWorld(free_guid);

@@ -453,6 +453,11 @@ public:
 
     virtual Object* getPlayerOwner();
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc
+
+    void sendGameobjectDespawnAnim();
+
     // MIT End
 
         Object();

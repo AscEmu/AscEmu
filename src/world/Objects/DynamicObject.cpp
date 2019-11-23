@@ -315,10 +315,8 @@ void DynamicObject::Remove()
             target->RemoveAura(m_spellProto->getId());
     }
 
-    WorldPacket data(SMSG_GAMEOBJECT_DESPAWN_ANIM, 8);
-
-    data << getGuid();
-    SendMessageToSet(&data, false);
+    //\todo: Despawn animation only for GOs? Zyres.
+    sendGameobjectDespawnAnim();
 
     if (IsInWorld())
         RemoveFromWorld(true);

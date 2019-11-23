@@ -305,6 +305,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgExplorationExperience.h
    ${PATH_PREFIX}/SmsgFeatureSystemStatus.h
    ${PATH_PREFIX}/SmsgFriendStatus.h
+   ${PATH_PREFIX}/SmsgGameobjectDespawnAnim.h
    ${PATH_PREFIX}/SmsgGameobjectQueryResponse.h
    ${PATH_PREFIX}/SmsgGmTicketCreate.h
    ${PATH_PREFIX}/SmsgGmTicketDeleteTicket.h
