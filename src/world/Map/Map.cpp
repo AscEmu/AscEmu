@@ -339,5 +339,5 @@ void Map::LoadSpawns(bool reload)
         }
     }
 
-    LOG_DETAIL("%u creatures / %u gobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
+    LogDetail("MapMgr : %u creatures / %u gobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
 }

@@ -67,7 +67,7 @@ void GameEventMgr::LoadFromDB()
         if (!result)
         {
             //mGameEvent.clear();
-            LOG_ERROR("event_properties can not be read or does not include any version specific events!");
+            LogError("GameEventMgr : event_properties can not be read or does not include any version specific events!");
             return;
         }
 
