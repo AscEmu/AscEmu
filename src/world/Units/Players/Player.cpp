@@ -56,6 +56,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgDestoyObject.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.h"
+#include "Server/Packets/SmsgPvpCredit.h"
 
 using namespace AscEmu::Packets;
 
@@ -2393,4 +2394,9 @@ void Player::removeSanctuaryFlag()
     summonhandler.RemoveSanctuaryFlags();
     for (auto& summon : GetSummons())
         summon->removeSanctuaryFlag();
+}
+
+void Player::sendPvpCredit(uint32_t honor, uint64_t victimGuid, uint32_t victimRank)
+{
+    this->SendPacket(SmsgPvpCredit(honor, victimGuid, victimRank).serialise().get());
 }

@@ -4113,11 +4113,7 @@ void Spell::SpellEffectAddHonor(uint8_t effectIndex)
 
     HonorHandler::AddHonorPointsToPlayer(playerTarget, val);
 
-    WorldPacket data(SMSG_PVP_CREDIT, 16);
-    data << val;
-    data << uint64(0);
-    data << uint32(5);
-    playerTarget->GetSession()->SendPacket(&data);
+    playerTarget->sendPvpCredit(val, 0, 5);
 }
 
 void Spell::SpellEffectSpawn(uint8_t /*effectIndex*/)

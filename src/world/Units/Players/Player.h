@@ -806,6 +806,8 @@ public:
     void setSanctuaryFlag() override;
     void removeSanctuaryFlag() override;
 
+    void sendPvpCredit(uint32_t honor, uint64_t victimGuid, uint32_t victimRank);
+
 public:
     //MIT End
     //AGPL Start

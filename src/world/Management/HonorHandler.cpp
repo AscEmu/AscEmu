@@ -122,12 +122,8 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                     if (pVictim)
                     {
                         // Send PVP credit
-                        WorldPacket data(SMSG_PVP_CREDIT, 12);
                         uint32 pvppoints = pts * 10;
-                        data << pvppoints;
-                        data << pVictim->getGuid();
-                        data << uint32(pVictim->getPvpRank());
-                        (*vtr)->GetSession()->SendPacket(&data);
+                        (*vtr)->sendPvpCredit(pvppoints, pVictim->getGuid(), pVictim->getPvpRank());
                     }
                 }
             }
@@ -187,12 +183,9 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
 
                 sHookInterface.OnHonorableKill(pAffectedPlayer, pVictim);
 
-                WorldPacket data(SMSG_PVP_CREDIT, 12);
                 uint32 pvppoints = contributorpts * 10; // Why *10?
-                data << pvppoints;
-                data << pVictim->getGuid();
-                data << uint32(pVictim->getPvpRank());
-                pAffectedPlayer->GetSession()->SendPacket(&data);
+
+                pAffectedPlayer->sendPvpCredit(pvppoints, pVictim->getGuid(), pVictim->getPvpRank());
 
                 const auto PvPToken = worldConfig.player.enablePvPToken;
                 if (PvPToken)

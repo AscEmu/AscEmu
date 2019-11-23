@@ -381,11 +381,7 @@ bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_
 
     GreenSystemMessage(m_session, "Building packet with Rank %u, Points %u, for Player %s.", rank, points, player_target->getName().c_str());
 
-    WorldPacket data(SMSG_PVP_CREDIT, 12);
-    data << points;
-    data << player_target->getGuid();
-    data << rank;
-    m_session->SendPacket(&data);
+    m_session->GetPlayer()->sendPvpCredit(points, player_target->getGuid(), rank);
 
     return true;
 }
