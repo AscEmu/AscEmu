@@ -4782,7 +4782,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
         Creature* pCreature = static_cast< Creature* >(m_Unit);
         bool found = false;
 
-        if (IS_PERSISTENT_INSTANCE(pInstance) && bossInfoMap != NULL)
+        if (pInstance->isPersistent() && bossInfoMap != NULL)
         {
             uint32 npcGuid = pCreature->GetCreatureProperties()->Id;
             InstanceBossInfoMap::const_iterator bossInfo = bossInfoMap->find(npcGuid);

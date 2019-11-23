@@ -57,6 +57,10 @@ class SERVER_DECL Instance
         void LoadFromDB(Field* fields);
         void SaveToDB();
         void DeleteFromDB();
+
+        //MIT
+        bool isPersistent() const;
+        bool isResetable() const;
 };
 
 typedef std::unordered_map<uint32, Instance*> InstanceMap;
@@ -70,12 +74,12 @@ class SERVER_DECL InstanceMgr
         InstanceMgr();
         ~InstanceMgr();
 
-        inline Map* GetMap(uint32 mapid)
+        Map* GetMap(uint32 mapid)
         {
             if (mapid >= MAX_NUM_MAPS)
-                return NULL;
-            else
-                return m_maps[mapid];
+                return nullptr;
+
+            return m_maps[mapid];
         }
 
         uint32 PreTeleport(uint32 mapid, Player* plr, uint32 instanceid);
@@ -95,7 +99,7 @@ class SERVER_DECL InstanceMgr
 
         // has an instance expired?
         // can a player join?
-        inline bool PlayerOwnsInstance(Instance* pInstance, Player* pPlayer)
+        bool PlayerOwnsInstance(Instance* pInstance, Player* pPlayer)
         {
             // Expired?
             if (pInstance->m_expiration && (UNIXTIME + 20) >= pInstance->m_expiration)
@@ -109,8 +113,9 @@ class SERVER_DECL InstanceMgr
             {
                 return (pPlayer->GetPersistentInstanceId(pInstance->m_mapId, pInstance->m_difficulty) == pInstance->m_instanceId);
             }
+
             // Default instance handling
-            else if ((pPlayer->GetGroup() && pInstance->m_creatorGroup == pPlayer->GetGroup()->GetID()) || pPlayer->getGuidLow() == pInstance->m_creatorGuid)
+            if ((pPlayer->GetGroup() && pInstance->m_creatorGroup == pPlayer->GetGroup()->GetID()) || pPlayer->getGuidLow() == pInstance->m_creatorGuid)
             {
                 return true;
             }
@@ -119,7 +124,7 @@ class SERVER_DECL InstanceMgr
         }
 
         // has an instance expired?
-        inline bool HasInstanceExpired(Instance* pInstance)
+        bool HasInstanceExpired(Instance* pInstance)
         {
             // expired?
             if (pInstance->m_expiration && (UNIXTIME + 20) >= pInstance->m_expiration)
@@ -151,29 +156,32 @@ class SERVER_DECL InstanceMgr
 
         bool InstanceExists(uint32 mapid, uint32 instanceId)
         {
-            return GetInstanceByIds(mapid, instanceId) != NULL;
+            return GetInstanceByIds(mapid, instanceId) != nullptr;
         }
 
         Instance* GetInstanceByIds(uint32 mapid, uint32 instanceId)
         {
             if (mapid > MAX_NUM_MAPS)
-                return NULL;
+                return nullptr;
+
             if (mapid == MAX_NUM_MAPS)
             {
-                Instance* in;
                 for (uint32 i = 0; i < MAX_NUM_MAPS; ++i)
                 {
-                    in = GetInstanceByIds(i, instanceId);
-                    if (in != NULL)
+                    Instance* in = GetInstanceByIds(i, instanceId);
+                    if (in != nullptr)
                         return in;
                 }
-                return NULL;
+
+                return nullptr;
             }
+
             InstanceMap* map = m_instances[mapid];
-            if (map == NULL)
-                return NULL;
-            InstanceMap::iterator instance = map->find(instanceId);
-            return instance == map->end() ? NULL : instance->second;
+            if (map == nullptr)
+                return nullptr;
+
+            auto instance = map->find(instanceId);
+            return instance == map->end() ? nullptr : instance->second;
         }
 
     private:
@@ -184,13 +192,13 @@ class SERVER_DECL InstanceMgr
         MapMgr* _CreateInstance(uint32 mapid, uint32 instanceid);        // only used on main maps!
         bool _DeleteInstance(Instance* in, bool ForcePlayersOut);
 
-        uint32 m_InstanceHigh;
+        uint32 m_InstanceHigh = 0;
+        Map* m_maps[MAX_NUM_MAPS] = { nullptr };
+        InstanceMap* m_instances[MAX_NUM_MAPS] = { nullptr };
+        MapMgr* m_singleMaps[MAX_NUM_MAPS] = { nullptr };
+        time_t m_nextInstanceReset[MAX_NUM_MAPS] = { 0 };
 
         Mutex m_mapLock;
-        Map* m_maps[MAX_NUM_MAPS];
-        InstanceMap* m_instances[MAX_NUM_MAPS];
-        MapMgr* m_singleMaps[MAX_NUM_MAPS];
-        time_t m_nextInstanceReset[MAX_NUM_MAPS];
 };
 
 extern SERVER_DECL InstanceMgr sInstanceMgr;

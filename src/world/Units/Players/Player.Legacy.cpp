@@ -4427,7 +4427,7 @@ void Player::SetPersistentInstanceId(Instance* pInstance)
         pInstance->m_creatorGroup = m_playerInfo && m_playerInfo->m_Group->GetID();
 
     // Skip handling for non-persistent instances.
-    if (!IS_PERSISTENT_INSTANCE(pInstance))
+    if (!pInstance->isPersistent())
         return;
 
     // Set instance for group if not done yet.

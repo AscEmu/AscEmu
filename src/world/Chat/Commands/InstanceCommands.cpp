@@ -215,7 +215,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
         return true;
     }
 
-    if (IS_PERSISTENT_INSTANCE(instance))
+    if (instance->isPersistent())
     {
         if (m_session->CanUseCommand('z'))
         {
