@@ -33,8 +33,11 @@
 #include "Data/WoWGameObject.h"
 #include "Server/Packets/SmsgStandstateUpdate.h"
 #include "Management/Battleground/Battleground.h"
+#include "Server/Packets/SmsgGameobjectCustomAnim.h"
 
 // MIT
+
+using namespace AscEmu::Packets;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
@@ -627,12 +630,9 @@ void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
 }
 
 //MIT
-void GameObject::SetCustomAnim(uint32_t anim)
+void GameObject::sendGameobjectCustomAnim(uint32_t anim)
 {
-    WorldPacket data(SMSG_GAMEOBJECT_CUSTOM_ANIM, 12);
-    data << uint64_t(getGuid());
-    data << uint32_t(anim);
-    SendMessageToSet(&data, false, false);
+    SendMessageToSet(SmsgGameobjectCustomAnim(getGuid(), anim).serialise().get(), false, false);
 }
 
 
@@ -1268,7 +1268,7 @@ void GameObject_FishingNode::EndFishing(bool abort)
 
 void GameObject_FishingNode::EventFishHooked()
 {
-    SetCustomAnim();
+    sendGameobjectCustomAnim();
     FishHooked = true;
 }
 

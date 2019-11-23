@@ -1058,7 +1058,7 @@ int LuaGameObject::CustomAnimate(lua_State* L, GameObject* ptr)
     uint32_t aindex = CHECK_ULONG(L, 1);
     if (aindex < 2 && ptr != NULL)
     {
-        ptr->SetCustomAnim(aindex);
+        ptr->sendGameobjectCustomAnim(aindex);
         RET_BOOL(true)
     }
     RET_BOOL(false)

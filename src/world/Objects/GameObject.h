@@ -525,7 +525,7 @@ public:
     //MIT
     public:
 
-        void SetCustomAnim(uint32_t anim = 0);
+        void sendGameobjectCustomAnim(uint32_t anim = 0);
         virtual void onUse(Player* /*player*/) {}
 };
 
