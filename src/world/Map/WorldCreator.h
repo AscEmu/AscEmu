@@ -41,14 +41,14 @@ class SERVER_DECL Instance
 {
     public:
 
-        uint32 m_instanceId;
-        uint32 m_mapId;
+        uint32_t m_instanceId;
+        uint32_t m_mapId;
         MapMgr* m_mapMgr;
-        uint32 m_creatorGuid;
-        uint32 m_creatorGroup;
+        uint32_t m_creatorGuid;
+        uint32_t m_creatorGroup;
         bool m_persistent;
-        uint8 m_difficulty;
-        std::set<uint32> m_killedNpcs;
+        uint8_t m_difficulty;
+        std::set<uint32_t> m_killedNpcs;
         time_t m_creation;
         time_t m_expiration;
         MySQLStructure::MapInfo const* m_mapInfo;
@@ -63,7 +63,7 @@ class SERVER_DECL Instance
         bool isResetable() const;
 };
 
-typedef std::unordered_map<uint32, Instance*> InstanceMap;
+typedef std::unordered_map<uint32_t, Instance*> InstanceMap;
 
 class SERVER_DECL InstanceMgr
 {
@@ -71,10 +71,10 @@ class SERVER_DECL InstanceMgr
 
     public:
 
-        InstanceMgr();
-        ~InstanceMgr();
+        InstanceMgr() {}
+        ~InstanceMgr() {}
 
-        Map* GetMap(uint32 mapid)
+        Map* GetMap(uint32_t mapid)
         {
             if (mapid >= MAX_NUM_MAPS)
                 return nullptr;
@@ -82,9 +82,9 @@ class SERVER_DECL InstanceMgr
             return m_maps[mapid];
         }
 
-        uint32 PreTeleport(uint32 mapid, Player* plr, uint32 instanceid);
+        uint32_t PreTeleport(uint32_t mapid, Player* plr, uint32_t instanceid);
         MapMgr* GetInstance(Object* obj);
-        uint32 GenerateInstanceID();
+        uint32_t GenerateInstanceID();
 
         void Load(TaskList* l);
 
@@ -142,31 +142,31 @@ class SERVER_DECL InstanceMgr
         // packets, w000t! we all love packets!
         void BuildRaidSavedInstancesForPlayer(Player* plr);
         void BuildSavedInstancesForPlayer(Player* plr);
-        MapMgr* CreateBattlegroundInstance(uint32 mapid);
+        MapMgr* CreateBattlegroundInstance(uint32_t mapid);
 
         // Create an instance for Level 3 gm command
-        MapMgr* CreateInstance(uint32 instanceType, uint32 mapid);
+        MapMgr* CreateInstance(uint32_t instanceType, uint32_t mapid);
 
         // A (should be) safe way for scripts to delete an active instance
         void SafeDeleteInstance(MapMgr* mgr);
 
         // this only frees the instance pointer, not the mapmgr itself
-        void DeleteBattlegroundInstance(uint32 mapid, uint32 instanceid);
-        MapMgr* GetMapMgr(uint32 mapId);
+        void DeleteBattlegroundInstance(uint32_t mapid, uint32_t instanceid);
+        MapMgr* GetMapMgr(uint32_t mapId);
 
-        bool InstanceExists(uint32 mapid, uint32 instanceId)
+        bool InstanceExists(uint32_t mapid, uint32_t instanceId)
         {
             return GetInstanceByIds(mapid, instanceId) != nullptr;
         }
 
-        Instance* GetInstanceByIds(uint32 mapid, uint32 instanceId)
+        Instance* GetInstanceByIds(uint32_t mapid, uint32_t instanceId)
         {
             if (mapid > MAX_NUM_MAPS)
                 return nullptr;
 
             if (mapid == MAX_NUM_MAPS)
             {
-                for (uint32 i = 0; i < MAX_NUM_MAPS; ++i)
+                for (uint32_t i = 0; i < MAX_NUM_MAPS; ++i)
                 {
                     Instance* in = GetInstanceByIds(i, instanceId);
                     if (in != nullptr)
@@ -187,12 +187,12 @@ class SERVER_DECL InstanceMgr
     private:
 
         void _LoadInstances();
-        void _CreateMap(uint32 mapid);
+        void _CreateMap(uint32_t mapid);
         MapMgr* _CreateInstance(Instance* in);
-        MapMgr* _CreateInstance(uint32 mapid, uint32 instanceid);        // only used on main maps!
+        MapMgr* _CreateInstance(uint32_t mapid, uint32_t instanceid);        // only used on main maps!
         bool _DeleteInstance(Instance* in, bool ForcePlayersOut);
 
-        uint32 m_InstanceHigh = 0;
+        uint32_t m_InstanceHigh = 0;
         Map* m_maps[MAX_NUM_MAPS] = { nullptr };
         InstanceMap* m_instances[MAX_NUM_MAPS] = { nullptr };
         MapMgr* m_singleMaps[MAX_NUM_MAPS] = { nullptr };
