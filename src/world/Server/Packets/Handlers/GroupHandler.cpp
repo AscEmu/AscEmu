@@ -81,7 +81,7 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
                 group->m_instanceIds[instance->m_mapId][instance->m_difficulty] = instance->m_instanceId;
                 instance->m_creatorGroup = group->GetID();
                 instance->m_creatorGuid = 0;
-                instance->SaveToDB();
+                sInstanceMgr.SaveInstanceToDB(instance);
             }
         }
     }
