@@ -4790,7 +4790,9 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
             {
                 found = true;
                 m_Unit->GetMapMgr()->pInstance->m_killedNpcs.insert(npcGuid);
-                m_Unit->GetMapMgr()->pInstance->SaveToDB();
+
+                sInstanceMgr.SaveInstanceToDB(m_Unit->GetMapMgr()->pInstance);
+
                 for (InstanceBossTrashList::iterator trash = bossInfo->second->trash.begin(); trash != bossInfo->second->trash.end(); ++trash)
                 {
                     Creature* c = m_Unit->GetMapMgr()->GetSqlIdCreature((*trash));
@@ -4800,7 +4802,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
                 if (!pInstance->m_persistent)
                 {
                     pInstance->m_persistent = true;
-                    pInstance->SaveToDB();
+                    sInstanceMgr.SaveInstanceToDB(pInstance);
                     for (PlayerStorageMap::iterator itr = m_Unit->GetMapMgr()->m_PlayerStorage.begin(); itr != m_Unit->GetMapMgr()->m_PlayerStorage.end(); ++itr)
                     {
                         (*itr).second->SetPersistentInstanceId(pInstance);
@@ -4814,7 +4816,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
             // No instance boss information ... so fallback ...
             uint32 npcGuid = pCreature->GetSQL_id();
             m_Unit->GetMapMgr()->pInstance->m_killedNpcs.insert(npcGuid);
-            m_Unit->GetMapMgr()->pInstance->SaveToDB();
+            sInstanceMgr.SaveInstanceToDB(m_Unit->GetMapMgr()->pInstance);
         }
     }
     if (m_Unit->GetMapMgr() && m_Unit->GetMapMgr()->GetMapInfo() && m_Unit->GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID)

@@ -26,6 +26,7 @@
 #include "Management/Group.h"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
+#include "Instance.h"
 
 extern const char* InstanceAbortMessages[];
 
@@ -36,32 +37,6 @@ class Object;
 class Group;
 class Player;
 class Battleground;
-
-class SERVER_DECL Instance
-{
-    public:
-
-        uint32_t m_instanceId;
-        uint32_t m_mapId;
-        MapMgr* m_mapMgr;
-        uint32_t m_creatorGuid;
-        uint32_t m_creatorGroup;
-        bool m_persistent;
-        uint8_t m_difficulty;
-        std::set<uint32_t> m_killedNpcs;
-        time_t m_creation;
-        time_t m_expiration;
-        MySQLStructure::MapInfo const* m_mapInfo;
-        bool m_isBattleground;
-
-        void LoadFromDB(Field* fields);
-        void SaveToDB();
-        void DeleteFromDB();
-
-        //MIT
-        bool isPersistent() const;
-        bool isResetable() const;
-};
 
 typedef std::unordered_map<uint32_t, Instance*> InstanceMap;
 
@@ -87,6 +62,8 @@ class SERVER_DECL InstanceMgr
         uint32_t GenerateInstanceID();
 
         void Load(TaskList* l);
+
+        void SaveInstanceToDB(Instance* instance);
 
         // deletes all instances owned by this player.
         void ResetSavedInstances(Player* plr);

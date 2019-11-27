@@ -109,6 +109,36 @@ void InstanceMgr::Load(TaskList* l)
     _LoadInstances();
 }
 
+void InstanceMgr::SaveInstanceToDB(Instance* instance)
+{
+    if (instance != nullptr)
+    {
+        if (instance->m_mapInfo->type == INSTANCE_NONRAID || instance->m_isBattleground)
+            return;
+
+        CharacterDatabase.Execute("DELETE FROM instances WHERE id = %u;", instance->m_instanceId);
+
+        std::stringstream insertStream;
+
+        insertStream << "INSERT INTO instances VALUES("
+            << instance->m_instanceId << ","
+            << instance->m_mapId << ","
+            << instance->m_creation << ","
+            << static_cast<uint32_t>(instance->m_expiration) << ",'";
+
+        for (auto itr : instance->m_killedNpcs)
+            insertStream << itr << " ";
+
+        insertStream << "',"
+            << static_cast<uint32_t>(instance->m_difficulty) << ","
+            << instance->m_creatorGroup << ","
+            << instance->m_creatorGuid << ","
+            << instance->m_persistent << ")";
+
+        CharacterDatabase.Execute(insertStream.str().c_str());
+    }
+}
+
 void InstanceMgr::Shutdown()
 {
     for (uint32_t i = 0; i < MAX_NUM_MAPS; ++i)
@@ -417,7 +447,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
 
     // if we're here, it means we need to create a new instance.
     Instance* in = new Instance;
-    in->m_creation = UNIXTIME;
+    in->m_creation = Util::getMSTime();
 
     switch (mapInfo->type)
     {
@@ -484,7 +514,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
     LOG_DEBUG("Creating instance for player %u and group %u on map %u. (%u)", in->m_creatorGuid, in->m_creatorGroup, in->m_mapId, in->m_instanceId);
 
     // save our new instance to the database.
-    in->SaveToDB();
+    SaveInstanceToDB(in);
 
     // apply it in the instance map
     instancemap->insert(InstanceMap::value_type(in->m_instanceId, in));
@@ -684,22 +714,48 @@ void InstanceMgr::_LoadInstances()
     // load saved instances
     QueryResult* result = CharacterDatabase.Query(
         "SELECT id, mapid, creation, expiration, killed_npc_guids, difficulty, creator_group, creator_guid, persistent FROM instances");
+
     LogDetail("InstanceMgr : Loading %u saved instances.", result ? result->GetRowCount() : 0);
 
     if (result)
     {
         do
         {
-            const auto mapInfo = sMySQLStore.getWorldMapInfo(result->Fetch()[1].GetUInt32());
-            if (mapInfo == nullptr || result->Fetch()[1].GetUInt32() >= MAX_NUM_MAPS)
+            const uint32_t mapId = result->Fetch()[1].GetUInt32();
+
+            const auto mapInfo = sMySQLStore.getWorldMapInfo(mapId);
+            if (mapInfo == nullptr || mapId >= MAX_NUM_MAPS)
             {
-                CharacterDatabase.Execute("DELETE FROM instances WHERE mapid = %u", result->Fetch()[1].GetUInt32());
+                CharacterDatabase.Execute("DELETE FROM instances WHERE mapid = %u", mapId);
                 continue;
             }
 
             auto instance = new Instance();
             instance->m_mapInfo = mapInfo;
-            instance->LoadFromDB(result->Fetch());
+
+            instance->m_instanceId = result->Fetch()[0].GetUInt32();
+            instance->m_mapId = mapId;
+            instance->m_creation = result->Fetch()[2].GetUInt32();
+            instance->m_expiration = result->Fetch()[3].GetUInt32();
+
+            const std::string npcString = result->Fetch()[4].GetString();
+
+            instance->m_difficulty = result->Fetch()[5].GetUInt8();
+            instance->m_creatorGroup = result->Fetch()[6].GetUInt32();
+            instance->m_creatorGuid = result->Fetch()[7].GetUInt32();
+            instance->m_persistent = result->Fetch()[8].GetBool();
+            instance->m_mapMgr = nullptr;
+            instance->m_isBattleground = false;
+
+            if (instance->m_persistent)
+                instance->m_creatorGroup = 0;
+
+            auto npcStrings = Util::SplitStringBySeperator(npcString, " ");
+            for (const auto npcString : npcStrings)
+            {
+                if (uint32_t val = atol(npcString.c_str()))
+                    instance->m_killedNpcs.insert(val);
+            }
 
             // this assumes that groups are already loaded at this point.
             if (!instance->m_persistent && instance->m_creatorGroup && sObjectMgr.GetGroupById(instance->m_creatorGroup) == nullptr)
@@ -717,34 +773,6 @@ void InstanceMgr::_LoadInstances()
         }
         while (result->NextRow());
         delete result;
-    }
-}
-
-void Instance::LoadFromDB(Field* fields)
-{
-    const std::string npcString = fields[4].GetString();
-
-    m_instanceId = fields[0].GetUInt32();
-    m_mapId = fields[1].GetUInt32();
-    m_creation = fields[2].GetUInt32();
-    m_expiration = fields[3].GetUInt32();
-    m_difficulty = fields[5].GetUInt8();
-    m_creatorGroup = fields[6].GetUInt32();
-    m_creatorGuid = fields[7].GetUInt32();
-    m_persistent = fields[8].GetBool();
-    m_mapMgr = nullptr;
-    m_isBattleground = false;
-
-    // Reset group binding if it's a persistent instance
-    if (m_persistent)
-        m_creatorGroup = 0;
-
-    // process saved npc's
-    auto npcStrings = Util::SplitStringBySeperator(npcString, " ");
-    for (const auto npcString : npcStrings)
-    {
-        if (uint32_t val = atol(npcString.c_str()))
-            m_killedNpcs.insert(val);
     }
 }
 
@@ -861,7 +889,13 @@ bool InstanceMgr::_DeleteInstance(Instance* in, bool ForcePlayersOut)
     }
 
     // cleanup corpses, database references
-    in->DeleteFromDB();
+    {
+        CharacterDatabase.Execute("DELETE FROM corpses WHERE instanceid = %u", in->m_instanceId);
+
+        CharacterDatabase.Execute("DELETE FROM instances WHERE id = %u", in->m_instanceId);
+
+        CharacterDatabase.Execute("DELETE FROM instanceids WHERE mapId = %u AND instanceId = %u AND mode = %u", in->m_mapId, in->m_instanceId, in->m_difficulty);
+    }
 
     // delete the instance pointer.
     delete in;
@@ -869,28 +903,6 @@ bool InstanceMgr::_DeleteInstance(Instance* in, bool ForcePlayersOut)
     m_mapLock.Release();
 
     return true;
-}
-
-void Instance::DeleteFromDB()
-{
-    // cleanup all the corpses on this instance
-    CharacterDatabase.Execute("DELETE FROM corpses WHERE instanceid = %u", m_instanceId);
-
-    // delete from the database
-    CharacterDatabase.Execute("DELETE FROM instances WHERE id = %u", m_instanceId);
-
-    // Delete all instance assignments
-    CharacterDatabase.Execute("DELETE FROM instanceids WHERE mapId = %u AND instanceId = %u AND mode = %u", m_mapId, m_instanceId, m_difficulty);
-}
-
-//MIT
-bool Instance::isPersistent() const
-{
-    return this->m_mapInfo->type == INSTANCE_MULTIMODE && this->m_difficulty >= MODE_HEROIC || this->m_mapInfo->type == INSTANCE_RAID;
-}
-bool Instance::isResetable() const
-{
-    return !this->m_persistent && (this->m_mapInfo->type == INSTANCE_NONRAID || this->m_mapInfo->type == INSTANCE_MULTIMODE && this->m_difficulty == MODE_NORMAL);
 }
 
 void InstanceMgr::CheckForExpiredInstances()
@@ -1009,38 +1021,6 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
     plr->GetSession()->SendPacket(&data);
 }
 
-void Instance::SaveToDB()
-{
-    // don't save non-raid instances.
-    if (m_mapInfo->type == INSTANCE_NONRAID || m_isBattleground)
-        return;
-
-    std::stringstream ss;
-
-    ss << "DELETE FROM instances WHERE id = " << m_instanceId << ";";
-
-    CharacterDatabase.Execute(ss.str().c_str());
-
-    ss.rdbuf()->str("");
-
-    ss << "INSERT INTO instances VALUES("
-        << m_instanceId << ","
-        << m_mapId << ","
-        << static_cast<uint32_t>(m_creation) << ","
-        << static_cast<uint32_t>(m_expiration) << ",'";
-
-    for (auto itr = m_killedNpcs.begin(); itr != m_killedNpcs.end(); ++itr)
-        ss << (*itr) << " ";
-
-    ss << "',"
-        << static_cast<uint32_t>(m_difficulty) << ","
-        << m_creatorGroup << ","
-        << m_creatorGuid << ","
-        << m_persistent << ")";
-
-    CharacterDatabase.Execute(ss.str().c_str());
-}
-
 void InstanceMgr::PlayerLeftGroup(Group* pGroup, Player* pPlayer)
 {
     m_mapLock.Acquire();
@@ -1090,7 +1070,7 @@ MapMgr* InstanceMgr::CreateBattlegroundInstance(uint32_t mapid)
     auto mapMgr = new MapMgr(m_maps[mapid], mapid, GenerateInstanceID());
     auto instance = new Instance();
 
-    instance->m_creation = UNIXTIME;
+    instance->m_creation = Util::getMSTime();
     instance->m_creatorGroup = 0;
     instance->m_creatorGuid = 0;
     instance->m_difficulty = 0;
@@ -1131,7 +1111,7 @@ MapMgr* InstanceMgr::CreateInstance(uint32_t /*instanceType*/, uint32_t mapid)
     auto mapMgr = new MapMgr(m_maps[mapid], mapid, GenerateInstanceID());
     auto instance = new Instance();
 
-    instance->m_creation = UNIXTIME;
+    instance->m_creation = Util::getMSTime();
     instance->m_creatorGroup = 0;
     instance->m_creatorGuid = 0;
     instance->m_difficulty = 0;

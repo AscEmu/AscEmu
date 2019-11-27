@@ -141,7 +141,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
 
         ss << "\n";
     }
-    ss << "Created: " << MSG_COLOR_CYAN << Util::GetDateTimeStringFromTimeStamp((uint32)instance->m_creation) << "|r\n";
+    ss << "Created: " << MSG_COLOR_CYAN << Util::GetDateTimeStringFromTimeStamp(instance->m_creation) << "|r\n";
     if (instance->m_expiration != 0)
         ss << "Expires: " << MSG_COLOR_CYAN << Util::GetDateTimeStringFromTimeStamp((uint32)instance->m_expiration) << "|r\n";
 

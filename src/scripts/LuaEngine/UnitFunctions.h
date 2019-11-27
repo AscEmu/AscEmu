@@ -5779,7 +5779,7 @@ public:
     {
         TEST_PLAYER();
         Instance* dungeon = sInstanceMgr.GetInstanceByIds(ptr->GetMapId(), ptr->GetInstanceID());
-        dungeon->SaveToDB();
+        sInstanceMgr.SaveInstanceToDB(dungeon);
         sInstanceMgr.BuildRaidSavedInstancesForPlayer(static_cast<Player*>(ptr));
         return 0;
     }
