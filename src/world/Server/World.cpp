@@ -950,6 +950,7 @@ void World::loadMySQLTablesByTask()
 
 #undef MAKE_TASK
 
+    // wait for tasks above
     tl.wait();
 
     sCommandTableStorage.Load();
@@ -960,7 +961,7 @@ void World::loadMySQLTablesByTask()
     LogDetail("Done. Database loaded in %u ms.", Util::GetTimeDifferenceToNow(startTime));
 
     // calling this puts all maps into our task list.
-    sInstanceMgr.Load(&tl);
+    sInstanceMgr.Load();
 
     // wait for the events to complete.
     tl.wait();

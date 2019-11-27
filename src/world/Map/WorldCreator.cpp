@@ -25,33 +25,32 @@
 #include "MapMgr.h"
 #include "WorldCreator.h"
 
+//MIT
 inline bool checkInstanceGroup(Instance* instance, Group* group)
 {
-    return (instance->m_creatorGroup == 0 || group && instance->m_creatorGroup == group->GetID());
+    return instance->m_creatorGroup == 0 || group && instance->m_creatorGroup == group->GetID();
 }
 
 SERVER_DECL InstanceMgr sInstanceMgr;
 
-void InstanceMgr::Load(TaskList* l)
-{
-    // Create all non-instance type maps.
-    QueryResult* result = CharacterDatabase.Query("SELECT MAX(id) FROM instances");
-    if (result)
-    {
-        m_InstanceHigh = result->Fetch()[0].GetUInt32() + 1;
-        delete result;
-    }
-    else
-    {
-        m_InstanceHigh = 1;
-    }
+//\brief:   1) We should create a new instance for every row in worldmap_info
+//             wodlmap_info already checks if a mapId is valid.
+//          2) If there is a record in instances, save new InstanceMap in m_instances
+//          3) Store loaded maps in m_maps[] (Maps*)
+//          4) Generate instances and store them in m_singleMaps[] (MapMgr*) if mapId is continent
+//             MapMgr creates a new thread for m_singleMaps[] and m_instances[]
 
-    // load each map we have in the database.
-    result = WorldDatabase.Query("SELECT DISTINCT Map FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0;", VERSION_STRING, VERSION_STRING);
+void InstanceMgr::Load()
+{
+    m_InstanceHigh = getNextInstanceId();
+
+    //load all maps used in creature_spawns
+    QueryResult* result = WorldDatabase.Query("SELECT DISTINCT Map FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0;", VERSION_STRING, VERSION_STRING);
     if (result)
     {
         do
         {
+            // if map ID is not in worldmap_info do nothing
             const uint32_t mapId = result->Fetch()[0].GetUInt32();
             if (sMySQLStore.getWorldMapInfo(mapId) == nullptr)
                 continue;
@@ -68,7 +67,7 @@ void InstanceMgr::Load(TaskList* l)
         delete result;
     }
 
-    // create maps for any we don't have yet.
+    // create instances from worldmap_info if not already created from creature_spawns
     const auto mapInfoStore = sMySQLStore.getWorldMapInfoStore();
     for (auto mapInfo = mapInfoStore->begin(); mapInfo != mapInfoStore->end(); ++mapInfo)
     {
@@ -78,6 +77,7 @@ void InstanceMgr::Load(TaskList* l)
             continue;
         }
 
+        // if map not already created, create one
         if (m_maps[mapInfo->second.mapid] == nullptr)
         {
             _CreateMap(mapInfo->second.mapid);
@@ -107,6 +107,78 @@ void InstanceMgr::Load(TaskList* l)
 
     // load saved instances
     _LoadInstances();
+}
+
+void InstanceMgr::_LoadInstances()
+{
+    // clear any instances that have expired.
+    LogDetail("InstanceMgr : Deleting Expired Instances...");
+    CharacterDatabase.WaitExecute("DELETE FROM instances WHERE expiration > 0 AND expiration <= %u", UNIXTIME);
+    CharacterDatabase.Execute("DELETE FROM instanceids WHERE instanceid NOT IN (SELECT id FROM instances)");
+
+    // load saved instances
+    QueryResult* result = CharacterDatabase.Query(
+        "SELECT id, mapid, creation, expiration, killed_npc_guids, difficulty, creator_group, creator_guid, persistent FROM instances");
+
+    LogDetail("InstanceMgr : Loading %u saved instances.", result ? result->GetRowCount() : 0);
+
+    if (result)
+    {
+        do
+        {
+            const uint32_t mapId = result->Fetch()[1].GetUInt32();
+
+            const auto mapInfo = sMySQLStore.getWorldMapInfo(mapId);
+            if (mapInfo == nullptr || mapId >= MAX_NUM_MAPS)
+            {
+                CharacterDatabase.Execute("DELETE FROM instances WHERE mapid = %u", mapId);
+                continue;
+            }
+
+            auto instance = new Instance();
+            instance->m_mapInfo = mapInfo;
+
+            instance->m_instanceId = result->Fetch()[0].GetUInt32();
+            instance->m_mapId = mapId;
+            instance->m_creation = result->Fetch()[2].GetUInt32();
+            instance->m_expiration = result->Fetch()[3].GetUInt32();
+
+            const std::string npcString = result->Fetch()[4].GetString();
+
+            instance->m_difficulty = result->Fetch()[5].GetUInt8();
+            instance->m_creatorGroup = result->Fetch()[6].GetUInt32();
+            instance->m_creatorGuid = result->Fetch()[7].GetUInt32();
+            instance->m_persistent = result->Fetch()[8].GetBool();
+            instance->m_mapMgr = nullptr;
+            instance->m_isBattleground = false;
+
+            if (instance->m_persistent)
+                instance->m_creatorGroup = 0;
+
+            auto npcStrings = Util::SplitStringBySeperator(npcString, " ");
+            for (const auto npcString : npcStrings)
+            {
+                if (uint32_t val = atol(npcString.c_str()))
+                    instance->m_killedNpcs.insert(val);
+            }
+
+            // this assumes that groups are already loaded at this point.
+            if (!instance->m_persistent && instance->m_creatorGroup && sObjectMgr.GetGroupById(instance->m_creatorGroup) == nullptr)
+            {
+                CharacterDatabase.Execute("DELETE FROM `instances` WHERE `id` = %u", instance->m_instanceId);
+                delete instance;
+                continue;
+            }
+
+            if (m_instances[instance->m_mapId] == nullptr)
+                m_instances[instance->m_mapId] = new InstanceMap;
+
+            m_instances[instance->m_mapId]->insert(InstanceMap::value_type(instance->m_instanceId, instance));
+
+        }
+        while (result->NextRow());
+        delete result;
+    }
 }
 
 void InstanceMgr::SaveInstanceToDB(Instance* instance)
@@ -171,6 +243,14 @@ void InstanceMgr::Shutdown()
             m_maps[i] = nullptr;
         }
     }
+}
+
+Map* InstanceMgr::GetMap(uint32_t mapid)
+{
+    if (mapid >= MAX_NUM_MAPS)
+        return nullptr;
+
+    return m_maps[mapid];
 }
 
 uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instanceid)
@@ -460,7 +540,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
             break;
     }
 
-    in->m_instanceId = GenerateInstanceID();
+    in->m_instanceId = getNextInstanceId();
     in->m_mapId = mapid;
     in->m_mapInfo = mapInfo;
     in->m_mapMgr = nullptr;        // always start off without a map manager, it is created in GetInstance()
@@ -531,6 +611,36 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
 MapMgr* InstanceMgr::GetMapMgr(uint32_t mapId)
 {
     return m_singleMaps[mapId];
+}
+
+bool InstanceMgr::InstanceExists(uint32_t mapid, uint32_t instanceId)
+{
+    return GetInstanceByIds(mapid, instanceId) != nullptr;
+}
+
+Instance* InstanceMgr::GetInstanceByIds(uint32_t mapid, uint32_t instanceId)
+{
+    if (mapid > MAX_NUM_MAPS)
+        return nullptr;
+
+    if (mapid == MAX_NUM_MAPS)
+    {
+        for (uint32_t i = 0; i < MAX_NUM_MAPS; ++i)
+        {
+            Instance* in = GetInstanceByIds(i, instanceId);
+            if (in != nullptr)
+                return in;
+        }
+
+        return nullptr;
+    }
+
+    InstanceMap* map = m_instances[mapid];
+    if (map == nullptr)
+        return nullptr;
+
+    const auto instance = map->find(instanceId);
+    return instance == map->end() ? nullptr : instance->second;
 }
 
 MapMgr* InstanceMgr::GetInstance(Object* obj)
@@ -692,87 +802,7 @@ void InstanceMgr::_CreateMap(uint32_t mapid)
     if (mapInfo->type == INSTANCE_NULL)
     {
         // we're a continent, create the instance.
-        _CreateInstance(mapid, GenerateInstanceID());
-    }
-}
-
-uint32_t InstanceMgr::GenerateInstanceID()
-{
-    m_mapLock.Acquire();
-    const auto nextInstanceId = m_InstanceHigh++;
-    m_mapLock.Release();
-    return nextInstanceId;
-}
-
-void InstanceMgr::_LoadInstances()
-{
-    // clear any instances that have expired.
-    LogDetail("InstanceMgr : Deleting Expired Instances...");
-    CharacterDatabase.WaitExecute("DELETE FROM instances WHERE expiration > 0 AND expiration <= %u", UNIXTIME);
-    CharacterDatabase.Execute("DELETE FROM instanceids WHERE instanceid NOT IN (SELECT id FROM instances)");
-
-    // load saved instances
-    QueryResult* result = CharacterDatabase.Query(
-        "SELECT id, mapid, creation, expiration, killed_npc_guids, difficulty, creator_group, creator_guid, persistent FROM instances");
-
-    LogDetail("InstanceMgr : Loading %u saved instances.", result ? result->GetRowCount() : 0);
-
-    if (result)
-    {
-        do
-        {
-            const uint32_t mapId = result->Fetch()[1].GetUInt32();
-
-            const auto mapInfo = sMySQLStore.getWorldMapInfo(mapId);
-            if (mapInfo == nullptr || mapId >= MAX_NUM_MAPS)
-            {
-                CharacterDatabase.Execute("DELETE FROM instances WHERE mapid = %u", mapId);
-                continue;
-            }
-
-            auto instance = new Instance();
-            instance->m_mapInfo = mapInfo;
-
-            instance->m_instanceId = result->Fetch()[0].GetUInt32();
-            instance->m_mapId = mapId;
-            instance->m_creation = result->Fetch()[2].GetUInt32();
-            instance->m_expiration = result->Fetch()[3].GetUInt32();
-
-            const std::string npcString = result->Fetch()[4].GetString();
-
-            instance->m_difficulty = result->Fetch()[5].GetUInt8();
-            instance->m_creatorGroup = result->Fetch()[6].GetUInt32();
-            instance->m_creatorGuid = result->Fetch()[7].GetUInt32();
-            instance->m_persistent = result->Fetch()[8].GetBool();
-            instance->m_mapMgr = nullptr;
-            instance->m_isBattleground = false;
-
-            if (instance->m_persistent)
-                instance->m_creatorGroup = 0;
-
-            auto npcStrings = Util::SplitStringBySeperator(npcString, " ");
-            for (const auto npcString : npcStrings)
-            {
-                if (uint32_t val = atol(npcString.c_str()))
-                    instance->m_killedNpcs.insert(val);
-            }
-
-            // this assumes that groups are already loaded at this point.
-            if (!instance->m_persistent && instance->m_creatorGroup && sObjectMgr.GetGroupById(instance->m_creatorGroup) == nullptr)
-            {
-                CharacterDatabase.Execute("DELETE FROM `instances` WHERE `id` = %u", instance->m_instanceId);
-                delete instance;
-                continue;
-            }
-
-            if (m_instances[instance->m_mapId] == nullptr)
-                m_instances[instance->m_mapId] = new InstanceMap;
-
-            m_instances[instance->m_mapId]->insert(InstanceMap::value_type(instance->m_instanceId, instance));
-
-        }
-        while (result->NextRow());
-        delete result;
+        _CreateInstance(mapid, getNextInstanceId());
     }
 }
 
@@ -1054,6 +1084,39 @@ void InstanceMgr::PlayerLeftGroup(Group* pGroup, Player* pPlayer)
     m_mapLock.Release();
 }
 
+bool InstanceMgr::PlayerOwnsInstance(Instance* pInstance, Player* pPlayer)
+{
+    // Expired?
+    if (pInstance->m_expiration && (UNIXTIME + 20) >= pInstance->m_expiration)
+    {
+        _DeleteInstance(pInstance, true);
+        return false;
+    }
+
+    // Persistent instance handling
+    if (pInstance->m_persistent)
+    {
+        return (pPlayer->GetPersistentInstanceId(pInstance->m_mapId, pInstance->m_difficulty) == pInstance->m_instanceId);
+    }
+
+    // Default instance handling
+    if ((pPlayer->GetGroup() && pInstance->m_creatorGroup == pPlayer->GetGroup()->GetID()) || pPlayer->getGuidLow() == pInstance->m_creatorGuid)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool InstanceMgr::HasInstanceExpired(Instance* pInstance)
+{
+    // expired?
+    if (pInstance->m_expiration && (UNIXTIME + 20) >= pInstance->m_expiration)
+        return true;
+
+    return false;
+}
+
 MapMgr* InstanceMgr::CreateBattlegroundInstance(uint32_t mapid)
 {
     // shouldn't happen
@@ -1067,7 +1130,7 @@ MapMgr* InstanceMgr::CreateBattlegroundInstance(uint32_t mapid)
             return nullptr;
     }
 
-    auto mapMgr = new MapMgr(m_maps[mapid], mapid, GenerateInstanceID());
+    auto mapMgr = new MapMgr(m_maps[mapid], mapid, getNextInstanceId());
     auto instance = new Instance();
 
     instance->m_creation = Util::getMSTime();
@@ -1108,7 +1171,7 @@ MapMgr* InstanceMgr::CreateInstance(uint32_t /*instanceType*/, uint32_t mapid)
             return nullptr;
     }
 
-    auto mapMgr = new MapMgr(m_maps[mapid], mapid, GenerateInstanceID());
+    auto mapMgr = new MapMgr(m_maps[mapid], mapid, getNextInstanceId());
     auto instance = new Instance();
 
     instance->m_creation = Util::getMSTime();
