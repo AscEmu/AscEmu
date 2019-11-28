@@ -101,7 +101,6 @@ class SERVER_DECL InstanceMgr
 
     private:
 
-        void _LoadInstances();
         void _CreateMap(uint32_t mapid);
         MapMgr* _CreateInstance(Instance* in);
         MapMgr* _CreateInstance(uint32_t mapid, uint32_t instanceid);        // only used on main maps!
@@ -120,10 +119,14 @@ class SERVER_DECL InstanceMgr
         time_t m_nextInstanceReset[MAX_NUM_MAPS] {0};
 
 public:
+
+    void generateInstances();
+    void loadInstanceResetTimes();
+    void deleteExpiredAndInvalidInstances();
+    void loadAndApplySavedInstanceValues();
+
     uint32_t getNextInstanceId();
-        //database stuff
-        
-        //MIT ends
+    //MIT ends
 };
 
 extern SERVER_DECL InstanceMgr sInstanceMgr;
