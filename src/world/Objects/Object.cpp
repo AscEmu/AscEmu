@@ -1026,8 +1026,7 @@ void Object::removeObjectFromInRangeSameFactionSet(Object* obj)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Owner
-//\ brief: is this really important in this class? Move it to class Unit otherwise
-Object* Object::getPlayerOwner() { return nullptr; }
+Player* Object::getPlayerOwner() { return nullptr; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
@@ -2983,9 +2982,6 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
 
     const auto spellInfo = sSpellMgr.getSpellInfo(spellID);
     if (spellInfo == nullptr)
-        return;
-
-    if (this->isPlayer() && !static_cast<Player*>(this)->canCast(spellInfo))
         return;
 
     //////////////////////////////////////////////////////////////////////////////////////////

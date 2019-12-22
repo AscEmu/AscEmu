@@ -1150,6 +1150,18 @@ bool Player::isClassWarrior() { return false; }
 bool Player::isClassPaladin() { return false; }
 bool Player::isClassDruid() { return false; }
 
+Player* Player::getPlayerOwner()
+{
+    if (getCharmedByGuid() != 0)
+    {
+        const auto charmerUnit = GetMapMgrUnit(getCharmedByGuid());
+        if (charmerUnit != nullptr && charmerUnit->isPlayer())
+            return dynamic_cast<Player*>(charmerUnit);
+    }
+
+    return this;
+}
+
 void Player::toggleAfk()
 {
     if (hasPlayerFlags(PLAYER_FLAG_AFK))
@@ -1223,17 +1235,11 @@ void Player::updateAutoRepeatSpell()
 
     if (isAttackReady(RANGED))
     {
-        // TODO: implement ::CanShootRangedWeapon() into new Spell::canCast()
-        // also currently if target gets too far away, your autorepeat spell will get interrupted
-        // it's related most likely to ::CanShootRangedWeapon()
-        const auto target = GetMapMgr()->GetUnit(autoRepeatSpell->m_targets.m_unitTarget);
-        const auto canCastAutoRepeatSpell = CanShootRangedWeapon(autoRepeatSpell->getSpellInfo()->getId(), target, isAutoShot);
+        const auto canCastAutoRepeatSpell = autoRepeatSpell->canCast(true, 0, 0);
         if (canCastAutoRepeatSpell != SPELL_CANCAST_OK)
         {
             if (!isAutoShot)
-            {
                 interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
-            }
             else if (isPlayer())
                 autoRepeatSpell->sendCastResult(static_cast<SpellCastResult>(canCastAutoRepeatSpell));
             return;

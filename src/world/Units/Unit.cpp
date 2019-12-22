@@ -2283,6 +2283,24 @@ uint8_t Unit::getPowerPct(PowerType powerType) const
     return static_cast<uint8_t>(getPower(powerIndex) * 100 / getMaxPower(powerIndex));
 }
 
+bool Unit::isTaggedByPlayerOrItsGroup(Player* tagger)
+{
+    if (!IsTagged() || tagger == nullptr)
+        return false;
+
+    if (GetTaggerGUID() == tagger->getGuid())
+        return true;
+
+    if (tagger->InGroup())
+    {
+        const auto playerTagger = GetMapMgrPlayer(GetTaggerGUID());
+        if (playerTagger != nullptr && tagger->GetGroup()->HasMember(playerTagger))
+            return true;
+    }
+
+    return false;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Death
 bool Unit::isAlive() const { return m_deathState == ALIVE; }
@@ -2394,8 +2412,8 @@ bool Unit::isUnitOwnerInParty(Unit* unit)
 {
     if (unit)
     {
-        Player* playOwner = static_cast<Player*>(getPlayerOwner());
-        Player* playerOwnerFromUnit = static_cast<Player*>(unit->getPlayerOwner());
+        Player* playOwner = getPlayerOwner();
+        Player* playerOwnerFromUnit = unit->getPlayerOwner();
         if (playOwner == nullptr || playerOwnerFromUnit == nullptr)
             return false;
 
@@ -2416,8 +2434,8 @@ bool Unit::isUnitOwnerInRaid(Unit* unit)
 {
     if (unit)
     {
-        Player* playerOwner = static_cast<Player*>(getPlayerOwner());
-        Player* playerOwnerFromUnit = static_cast<Player*>(unit->getPlayerOwner());
+        Player* playerOwner = getPlayerOwner();
+        Player* playerOwnerFromUnit = unit->getPlayerOwner();
         if (playerOwner == nullptr || playerOwnerFromUnit == nullptr)
             return false;
 

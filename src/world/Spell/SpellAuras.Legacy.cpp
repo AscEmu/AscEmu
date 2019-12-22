@@ -1053,7 +1053,7 @@ void Aura::UpdateModifiers()
 
 void Aura::EventUpdateGroupAA(float r)
 {
-    Player* owner = static_cast<Player*>(m_target->getPlayerOwner());
+    Player* owner = m_target->getPlayerOwner();
     if (owner == nullptr)
     {
         targets.clear();
@@ -1156,13 +1156,7 @@ void Aura::EventUpdateGroupAA(float r)
 
 void Aura::EventUpdateRaidAA(float r)
 {
-    Player* owner;
-
-    if (m_target->isPlayer())
-        owner = static_cast< Player* >(m_target);
-    else
-        owner = static_cast< Player* >(m_target->getPlayerOwner());
-
+    Player* owner = m_target->getPlayerOwner();
     if (owner == nullptr)
     {
         targets.clear();

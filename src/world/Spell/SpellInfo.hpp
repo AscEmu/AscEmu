@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "SpellDefines.hpp"
+#include "SpellScript.h"
 
 #include "CommonTypes.hpp"
 #include "WorldConf.h"
@@ -772,6 +773,11 @@ public:
     // SQL override coefficients (table spell_coefficient_override)
     float spell_coeff_direct_override;
     float spell_coeff_overtime_override;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Spell Script
+
+    SpellScript* spellScript;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     //custom values

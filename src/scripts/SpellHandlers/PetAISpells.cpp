@@ -70,7 +70,7 @@ class ShadowFiendAI : public CreatureAIScript
         if (getCreature()->isPet())
         {
             auto pet = dynamic_cast<Pet*>(getCreature());
-            auto playerOwner = dynamic_cast<Player*>(pet->getPlayerOwner());
+            auto playerOwner = pet->getPlayerOwner();
 
             const auto ownerBonus = static_cast<float>(playerOwner->GetDamageDoneMod(SCHOOL_SHADOW) * 0.375f); // 37.5%
             pet->BaseAttackType = SCHOOL_SHADOW; // Melee hits are supposed to do damage with the shadow school

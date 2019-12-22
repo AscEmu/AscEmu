@@ -141,8 +141,8 @@ protected:
     Player* m_Owner;
 
 public:
-    
-    Object* getPlayerOwner() override;
+
+    Player* getPlayerOwner() override;
 
     // MIT END
 

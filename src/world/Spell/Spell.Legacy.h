@@ -54,11 +54,11 @@ class SERVER_DECL Spell : public EventableObject
         // Spell cast checks
 
         // Second check in ::cast() should not be as strict as initial check
-        virtual SpellCastResult canCast(bool secondCheck, uint32_t* parameter1, uint32_t* parameter2);
+        virtual SpellCastResult canCast(const bool secondCheck, uint32_t* parameter1, uint32_t* parameter2);
 
         SpellCastResult checkItems(uint32_t* parameter1, uint32_t* parameter2) const;
         SpellCastResult checkCasterState() const;
-        SpellCastResult checkRange(bool secondCheck) const;
+        SpellCastResult checkRange(const bool secondCheck) const;
         SpellCastResult checkPower() const;
         SpellCastResult checkShapeshift(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const;
 

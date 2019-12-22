@@ -27,6 +27,7 @@
 #include "Units/Unit.h"
 #include "Management/ArenaTeam.h"
 #include "Server/ServerState.h"
+#include "Spell/SpellScript.h"
 
 #define ADD_CREATURE_FACTORY_FUNCTION(cl) public:\
 static CreatureAIScript* Create(Creature* c) { return new cl(c); }
@@ -157,6 +158,7 @@ typedef std::set<GossipScript*> CustomGossipScripts;
 typedef std::unordered_map<uint32, GossipScript*> GossipMap;
 typedef std::set<EventScript*> EventScripts;
 typedef std::set<QuestScript*> QuestScripts;
+typedef std::set<SpellScript*> SpellScripts;
 typedef std::set<void*> ServerHookList;
 typedef std::list< Arcemu::DynLib* > DynamicLibraryMap;
 
@@ -164,6 +166,8 @@ typedef std::list< Arcemu::DynLib* > DynamicLibraryMap;
 class SERVER_DECL ScriptMgr
 {
     private:
+        // APGL End
+        // MIT Start
         ScriptMgr() = default;
         ~ScriptMgr() = default;
 
@@ -174,6 +178,12 @@ class SERVER_DECL ScriptMgr
         ScriptMgr(ScriptMgr const&) = delete;
         ScriptMgr& operator=(ScriptMgr&&) = delete;
         ScriptMgr& operator=(ScriptMgr const&) = delete;
+
+        SpellCastResult callScriptedSpellCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) const;
+        void register_spell_script(uint32_t spellId, SpellScript* ss);
+
+        // MIT End
+        // APGL Start
 
         friend class HookInterface;
 
@@ -311,6 +321,7 @@ class SERVER_DECL ScriptMgr
         CustomGossipScripts _customgossipscripts;
         EventScripts _eventscripts;
         QuestScripts _questscripts;
+        SpellScripts _spellscripts;
         GossipMap creaturegossip_, gogossip_, itemgossip_;
 };
 

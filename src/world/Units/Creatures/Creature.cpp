@@ -125,7 +125,17 @@ void Creature::removeSanctuaryFlag()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Owner
-Object* Creature::getPlayerOwner() { return nullptr; }
+Player* Creature::getPlayerOwner()
+{
+    if (getCharmedByGuid() != 0)
+    {
+        const auto charmerUnit = GetMapMgrUnit(getCharmedByGuid());
+        if (charmerUnit != nullptr && charmerUnit->isPlayer())
+            return dynamic_cast<Player*>(charmerUnit);
+    }
+
+    return nullptr;
+}
 
 //MIT end
 
@@ -948,7 +958,7 @@ void Creature::CalcResistance(uint8_t type)
 
     if (isPet() && isAlive() && IsInWorld())
     {
-        Player* owner = dynamic_cast<Player*>(static_cast<Pet*>(this)->getPlayerOwner());
+        Player* owner = static_cast<Pet*>(this)->getPlayerOwner();
         if (type == 0 && owner)
             pos += int32(0.35f * owner->getResistance(type));
         else if (owner)
@@ -987,7 +997,7 @@ void Creature::CalcStat(uint8_t type)
 
     if (isPet())
     {
-        Player* owner = dynamic_cast<Player*>(static_cast<Pet*>(this)->getPlayerOwner());
+        Player* owner = static_cast<Pet*>(this)->getPlayerOwner();
         if (type == STAT_STAMINA && owner)
             pos += int32(0.45f * owner->getStat(STAT_STAMINA));
         else if (type == STAT_INTELLECT && owner && getCreatedBySpellId())
@@ -2274,7 +2284,7 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, 
 
     if (pVictim->isPvpFlagSet())
     {
-        if (auto p = static_cast<Player*>(getPlayerOwner()))
+        if (auto p = getPlayerOwner())
         {
             if (!p->isPvpFlagSet())
                 p->PvPToggle();
@@ -2286,7 +2296,7 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, 
     // Bg dmg counter
     if (pVictim != this)
     {
-        Player* p = static_cast< Player* >(getPlayerOwner());
+        Player* p = getPlayerOwner();
         if (p != NULL)
         {
             if (p->m_bg != NULL && GetMapMgr() == pVictim->GetMapMgr())

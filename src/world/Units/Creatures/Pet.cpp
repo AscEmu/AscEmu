@@ -49,7 +49,7 @@
 #define DANCINGRUNEWEAPON       27893
 
 //MIT START
-Object* Pet::getPlayerOwner() { return m_Owner; }
+Player* Pet::getPlayerOwner() { return m_Owner; }
 
 //MIT END
 
@@ -2268,7 +2268,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
                     player_tagger = static_cast<Player*>(unit_tagger);
 
                 if ((unit_tagger->isPet() || unit_tagger->isSummon()) && unit_tagger->getPlayerOwner())
-                    player_tagger = static_cast<Player*>(unit_tagger->getPlayerOwner());
+                    player_tagger = unit_tagger->getPlayerOwner();
 
                 if (player_tagger != nullptr)
                 {

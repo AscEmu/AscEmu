@@ -140,6 +140,14 @@ void GameObject::setAnimationProgress(uint8_t progress)
 
 bool GameObject::isQuestGiver() const { return getGoType() == GAMEOBJECT_TYPE_QUESTGIVER; }
 bool GameObject::isFishingNode() const { return getGoType() == GAMEOBJECT_TYPE_FISHINGNODE; }
+
+Player* GameObject::getPlayerOwner()
+{
+    if (m_summoner != nullptr && m_summoner->isPlayer())
+        return dynamic_cast<Player*>(m_summoner);
+
+    return nullptr;
+}
 // MIT End
 
 GameObject::GameObject(uint64 guid)

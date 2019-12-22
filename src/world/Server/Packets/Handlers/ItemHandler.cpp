@@ -2044,7 +2044,7 @@ void WorldSession::sendInventoryList(Creature* unit)
     uint32_t counter = 0;
     for (auto sellItem : *unit->getSellItems())
     {
-        if (sellItem.itemid && (sellItem.max_amount == 0 || sellItem.max_amount > 0 && sellItem.available_amount > 0))
+        if (sellItem.itemid)
         {
             if (const auto curItem = sMySQLStore.getItemProperties(sellItem.itemid))
             {

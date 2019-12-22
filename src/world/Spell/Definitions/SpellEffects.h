@@ -133,7 +133,7 @@ enum SpellEffect
     SPELL_EFFECT_START_TAXI,                //    123
     SPELL_EFFECT_PLAYER_PULL,               //    124
     SPELL_EFFECT_UNKNOWN_125,               //    125
-    SPELL_EFFECT_UNKNOWN_126,               //    126
+    SPELL_EFFECT_SPELL_STEAL,               //    126
     SPELL_EFFECT_PROSPECTING,               //    127
     SPELL_EFFECT_APPLY_FRIEND_AREA_AURA,    //    128
     SPELL_EFFECT_APPLY_ENEMY_AREA_AURA,     //    129

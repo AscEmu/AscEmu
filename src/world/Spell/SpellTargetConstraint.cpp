@@ -6,59 +6,52 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellTargetConstraint.h"
 #include <algorithm>
 
-SpellTargetConstraint::SpellTargetConstraint()
-{
-}
-
 SpellTargetConstraint::~SpellTargetConstraint()
 {
     m_creatureTargets.clear();
     m_gameobjectTargets.clear();
+    m_explicitTargets.clear();
 }
 
-bool SpellTargetConstraint::hasCreature(int id)
+bool SpellTargetConstraint::hasCreature(uint32_t entryId) const
 {
-    return find(begin(m_creatureTargets), end(m_creatureTargets), id) != end(m_creatureTargets);
+    return find(begin(m_creatureTargets), end(m_creatureTargets), entryId) != end(m_creatureTargets);
 }
 
-bool SpellTargetConstraint::hasGameObject(int id)
+bool SpellTargetConstraint::hasGameObject(uint32_t entryId) const
 {
-    return find(begin(m_gameobjectTargets), end(m_gameobjectTargets), id) != end(m_gameobjectTargets);
+    return find(begin(m_gameobjectTargets), end(m_gameobjectTargets), entryId) != end(m_gameobjectTargets);
 }
 
-void SpellTargetConstraint::addCreature(int id)
+void SpellTargetConstraint::addCreature(uint32_t entryId)
 {
-    if (!hasCreature(id))
-    {
-        m_creatureTargets.push_back(id);
-    }
+    if (!hasCreature(entryId))
+        m_creatureTargets.push_back(entryId);
 }
 
-void SpellTargetConstraint::addGameObject(int id)
+void SpellTargetConstraint::addGameObject(uint32_t entryId)
 {
-    if (!hasGameObject(id))
-    {
-        m_gameobjectTargets.push_back(id);
-    }
+    if (!hasGameObject(entryId))
+        m_gameobjectTargets.push_back(entryId);
 }
 
-void SpellTargetConstraint::addFocused(uint32_t value, uint32_t type)
+void SpellTargetConstraint::addExplicitTarget(uint32_t entryId)
 {
-    m_targetFocus.insert(std::make_pair(value, type));
+    if (!hasExplicitTarget(entryId))
+        m_explicitTargets.push_back(entryId);
 }
 
-bool SpellTargetConstraint::isFocused(uint32_t value)
+bool SpellTargetConstraint::hasExplicitTarget(uint32_t entryId) const
 {
-    auto target = m_targetFocus.find(value);
-    return target != m_targetFocus.end() ? target->second != 0 : false;
+    return find(begin(m_explicitTargets), end(m_explicitTargets), entryId) != end(m_explicitTargets);
 }
 
-std::vector<int> SpellTargetConstraint::getCreatures() const
+std::vector<uint32_t> SpellTargetConstraint::getCreatures() const
 {
     return m_creatureTargets;
 }
 
-std::vector<int> SpellTargetConstraint::getGameObjects() const
+std::vector<uint32_t> SpellTargetConstraint::getGameObjects() const
 {
     return m_gameobjectTargets;
 }

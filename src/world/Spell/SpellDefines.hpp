@@ -80,7 +80,7 @@ enum SpellAttributes
 enum SpellAttributesEx
 {
     ATTRIBUTESEX_NULL                               = 0x00000000,   // 0
-    ATTRIBUTESEX_UNK2                               = 0x00000001,   // 1 pet summonings
+    ATTRIBUTESEX_DISMISS_CURRENT_PET                = 0x00000001,   // 1 Dismisses current pet
     ATTRIBUTESEX_DRAIN_WHOLE_POWER                  = 0x00000002,   // 2 Uses all power / health
     ATTRIBUTESEX_CHANNELED_1                        = 0x00000004,   // 3 Channeled
     ATTRIBUTESEX_UNK5                               = 0x00000008,   // 4
@@ -127,7 +127,7 @@ enum SpellAttributesExB
     ATTRIBUTESEXB_UNK9                              = 0x00000080,   // 8
     ATTRIBUTESEXB_UNUSED1                           = 0x00000100,   // 9 not set in 3.0.3
     ATTRIBUTESEXB_UNK11                             = 0x00000200,   // 10 used by 2 spells, 30421 | Nether Portal - Perseverence and  30466 | Nether Portal - Perseverence
-    ATTRIBUTESEXB_TAME_X                            = 0x00000400,   // 11 tame [creature]
+    ATTRIBUTESEXB_TAME_BEAST                        = 0x00000400,   // 11 Hunter's Tame Beast and its pre-quest spells
     ATTRIBUTESEXB_FUNNEL                            = 0x00000800,   // 12 only funnel spells
     ATTRIBUTESEXB_UNK14                             = 0x00001000,   // 13 swipe / Cleave spells
     ATTRIBUTESEXB_ENCHANT_OWN_ONLY                  = 0x00002000,   // 14 no trade window targets, BoE items get soulbound to you

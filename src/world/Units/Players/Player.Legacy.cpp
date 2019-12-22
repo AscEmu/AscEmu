@@ -2788,47 +2788,6 @@ void Player::_SaveQuestLogEntry(QueryBuffer* buf)
     }
 }
 
-bool Player::canCast(SpellInfo const* m_spellInfo)
-{
-    if (m_spellInfo->getEquippedItemClass() != 0)
-    {
-        if (this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND))
-        {
-            if ((int32)this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->getItemProperties()->Class == m_spellInfo->getEquippedItemClass())
-            {
-                if (m_spellInfo->getEquippedItemSubClass() != 0)
-                {
-                    if (m_spellInfo->getEquippedItemSubClass() != 173555 && m_spellInfo->getEquippedItemSubClass() != 96 && m_spellInfo->getEquippedItemSubClass() != 262156)
-                    {
-                        if (pow(2.0, (this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->getItemProperties()->SubClass) != m_spellInfo->getEquippedItemSubClass()))
-                            return false;
-                    }
-                }
-            }
-        }
-        else if (m_spellInfo->getEquippedItemSubClass() == 173555)
-            return false;
-
-        if (this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED))
-        {
-            if ((int32)this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->getItemProperties()->Class == m_spellInfo->getEquippedItemClass())
-            {
-                if (m_spellInfo->getEquippedItemSubClass() != 0)
-                {
-                    if (m_spellInfo->getEquippedItemSubClass() != 173555 && m_spellInfo->getEquippedItemSubClass() != 96 && m_spellInfo->getEquippedItemSubClass() != 262156)
-                    {
-                        if (pow(2.0, (this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->getItemProperties()->SubClass) != m_spellInfo->getEquippedItemSubClass()))
-                            return false;
-                    }
-                }
-            }
-        }
-        else if (m_spellInfo->getEquippedItemSubClass() == 262156)
-            return false;
-    }
-    return true;
-}
-
 void Player::RemovePendingPlayer()
 {
     if (m_session)
@@ -6777,57 +6736,6 @@ uint32 Player::CalcTalentResetCost(uint32 resetnum)
         return  500000;
 
     return resetnum * 50000;
-}
-
-int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
-{
-    SpellInfo const* spell_info = sSpellMgr.getSpellInfo(spellid);
-    if (spell_info == nullptr)
-        return -1;
-
-    LogDebugFlag(LF_SPELL, "Canshootwithrangedweapon!?!? spell: [%u] %s" , spell_info->getId() , spell_info->getName().c_str());
-
-    // Player has clicked off target. Fail spell.
-    if (m_curSelection != getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->m_targets.m_unitTarget)
-        return SPELL_FAILED_INTERRUPTED;
-
-    // Supalosa - The hunter ability Auto Shot is using Shoot range, which is 5 yards shorter.
-    // So we'll use 114, which is the correct 35 yard range used by the other Hunter abilities (arcane shot, concussive shot...)
-    uint8 fail = 0;
-    uint32 rIndex = autoshot ? 114 : spell_info->getRangeIndex();
-
-    auto spell_range = sSpellRangeStore.LookupEntry(rIndex);
-    float minrange = GetMinRange(spell_range);
-    float dist = CalcDistance(this, target);
-    float maxr = GetMaxRange(spell_range) + 2.52f;
-
-    spellModFlatFloatValue(this->SM_FRange, &maxr, spell_info->getSpellFamilyFlags());
-    spellModPercentageFloatValue(this->SM_PRange, &maxr, spell_info->getSpellFamilyFlags());
-
-    //float bonusRange = 0;
-    // another hackfix: bonus range from hunter talent hawk eye: +2/4/6 yard range to ranged weapons
-    //if (autoshot)
-    //spellModFlatFloatValue(SM_FRange, &bonusRange, sSpellMgr.getSpellInfo(75)->SpellGroupType); // HORRIBLE hackfixes :P
-    // Partha: +2.52yds to max range, this matches the range the client is calculating.
-    // see extra/supalosa_range_research.txt for more info
-    //bonusRange = 2.52f;
-    //LogDefault("Bonus range = %f" , bonusRange);
-
-    // Check for too close
-    if (spellid != SPELL_RANGED_WAND)  //no min limit for wands
-        if (minrange > dist)
-            fail = SPELL_FAILED_TOO_CLOSE;
-
-    if (dist > maxr)
-    {
-        LogDebug("Auto shot failed: out of range (Maxr: %f, Dist: %f)" , maxr , dist);
-        fail = SPELL_FAILED_OUT_OF_RANGE;
-    }
-
-    if (fail == 0)
-        fail = getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->canCast(true, 0, 0);
-
-    return fail;
 }
 
 /*! \returns True if player's current battleground was queued for as a random battleground
@@ -12489,7 +12397,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
                     player_tagger = static_cast<Player*>(unit_tagger);
 
                 if ((unit_tagger->isPet() || unit_tagger->isSummon()) && unit_tagger->getPlayerOwner())
-                    player_tagger = static_cast<Player*>(unit_tagger->getPlayerOwner());
+                    player_tagger = unit_tagger->getPlayerOwner();
 
                 if (player_tagger != nullptr)
                 {
