@@ -37,5 +37,5 @@ public:
     bool isSummonedToSlot() const;
 
     Unit* getUnitOwner() const { return m_unitOwner; }
-    Object* getPlayerOwner() override;
+    Player* getPlayerOwner() override;
 };

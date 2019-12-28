@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum LOCKTYPES
+enum LockTypes : uint8_t
 {
     LOCKTYPE_PICKLOCK             = 1,
     LOCKTYPE_HERBALISM            = 2,
@@ -28,4 +28,10 @@ enum LOCKTYPES
     LOCKTYPE_FISHING              = 19,
     LOCKTYPE_INSCRIPTION          = 20,
     LOCKTYPE_VEHICLE              = 21
+};
+
+enum LockKeyTypes : uint8_t
+{
+    LOCK_KEY_ITEM                 = 1,
+    LOCK_KEY_SKILL                = 2
 };

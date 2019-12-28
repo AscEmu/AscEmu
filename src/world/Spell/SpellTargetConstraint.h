@@ -7,26 +7,36 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 #include <vector>
-#include <map>
+
+enum SpellTargetConstraintType : uint8_t
+{
+    SPELL_CONSTRAINT_EXPLICIT_CREATURE    = 0,
+    SPELL_CONSTRAINT_EXPLICIT_GAMEOBJECT,
+    SPELL_CONSTRAINT_IMPLICIT_CREATURE,
+    SPELL_CONSTRAINT_IMPLICIT_GAMEOBJECT
+};
 
 class SpellTargetConstraint
 {
-    std::vector<int> m_creatureTargets;
-    std::vector<int> m_gameobjectTargets;
-    std::map<uint32_t, uint32_t> m_targetFocus;
-public:
-    SpellTargetConstraint();
-    ~SpellTargetConstraint();
+    private:
+        std::vector<uint32_t> m_creatureTargets;
+        std::vector<uint32_t> m_gameobjectTargets;
+        std::vector<uint32_t> m_explicitTargets;
 
-    bool hasCreature(int id);
-    bool hasGameObject(int id);
+    public:
+        SpellTargetConstraint() = default;
+        ~SpellTargetConstraint();
 
-    void addCreature(int id);
-    void addGameObject(int id);
+        bool hasCreature(uint32_t entryId) const;
+        bool hasGameObject(uint32_t entryId) const;
 
-    void addFocused(uint32_t value, uint32_t type);
-    bool isFocused(uint32_t value);
+        void addCreature(uint32_t entryId);
+        void addGameObject(uint32_t entryId);
 
-    std::vector<int> getCreatures() const;
-    std::vector<int> getGameObjects() const;
+        // Explicit target = requires caster to target it
+        void addExplicitTarget(uint32_t entryId);
+        bool hasExplicitTarget(uint32_t value) const;
+
+        std::vector<uint32_t> getCreatures() const;
+        std::vector<uint32_t> getGameObjects() const;
 };

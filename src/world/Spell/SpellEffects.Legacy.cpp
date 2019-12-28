@@ -6327,7 +6327,7 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
 void Spell::SpellEffectRenamePet(uint8_t /*effectIndex*/)
 {
     if (!unitTarget || !unitTarget->isPet() ||
-        !static_cast< Pet* >(unitTarget)->getPlayerOwner() || dynamic_cast<Player*>(static_cast< Pet* >(unitTarget)->getPlayerOwner())->getClass() != HUNTER)
+        !static_cast< Pet* >(unitTarget)->getPlayerOwner() || static_cast< Pet* >(unitTarget)->getPlayerOwner()->getClass() != HUNTER)
         return;
 
     unitTarget->setPetFlags(unitTarget->getPetFlags() | PET_RENAME_ALLOWED);

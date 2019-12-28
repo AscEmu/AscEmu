@@ -159,10 +159,8 @@ class WebbedCreature : public CreatureAIScript
     void OnDied(Unit* pKiller) override
     {
         Player* QuestHolder = NULL;
-        if (pKiller->isPlayer())
-            QuestHolder = static_cast<Player*>(pKiller);
-        else if (pKiller->isPet() && static_cast<Pet*>(pKiller)->getPlayerOwner() != nullptr)
-            QuestHolder = dynamic_cast<Player*>(static_cast<Pet*>(pKiller)->getPlayerOwner());
+        if (pKiller->getPlayerOwner() != nullptr)
+            QuestHolder = pKiller->getPlayerOwner();
 
         if (QuestHolder == NULL)
             return;

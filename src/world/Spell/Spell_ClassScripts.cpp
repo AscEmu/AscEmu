@@ -80,7 +80,7 @@ public:
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new FireNova(Caster, info, triggered, aur); }
 
     bool HasFireTotem = false;
-    SpellCastResult canCast(bool tolerate, uint32_t* parameter1, uint32_t* parameter2)
+    SpellCastResult canCast(const bool tolerate, uint32_t* parameter1, uint32_t* parameter2)
     {
         auto result = Spell::canCast(tolerate, parameter1, parameter2);
 
@@ -367,7 +367,7 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new DeathCoilSpell(Caster, info, triggered, aur); }
 
-    SpellCastResult canCast(bool tolerate, uint32_t* parameter1, uint32_t* parameter2)
+    SpellCastResult canCast(const bool tolerate, uint32_t* parameter1, uint32_t* parameter2)
     {
         auto result = Spell::canCast(tolerate, parameter1, parameter2);
 

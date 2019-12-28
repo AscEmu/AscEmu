@@ -1175,6 +1175,17 @@ void Unit::Update(unsigned long time_passed)
                 m_diminishActive = false;
         }
 
+        // Update spell school lockout timer
+        // TODO: Moved here from Spell::CanCast, figure out a better way to handle this... -Appled
+        for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
+        {
+            if (SchoolCastPrevent[i] == 0)
+                continue;
+
+            if (Util::getMSTime() >= SchoolCastPrevent[i])
+                SchoolCastPrevent[i] = 0;
+        }
+
         // if health changed since last time. Would be perfect if it would work for creatures too :)
         // if (m_updateMask.GetBit(UNIT_FIELD_HEALTH))
         // EventHealthChangeSinceLastUpdate();
@@ -13896,7 +13907,7 @@ void Unit::UpdateAuraForGroup(uint8 slot)
     {
         if (getPlayerOwner())
         {
-            Player* owner = static_cast<Player*>(getPlayerOwner());
+            Player* owner = getPlayerOwner();
             if (owner->GetGroup())
             {
                 owner->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_AURAS);
@@ -13918,7 +13929,7 @@ void Unit::HandleUpdateFieldChange(uint32 Index)
         player = static_cast<Player*>(this);
     else if (getPlayerOwner())
     {
-        player = static_cast<Player*>(getPlayerOwner());
+        player = getPlayerOwner();
         pet = true;
     }
 

@@ -656,6 +656,8 @@ public:
     bool isTeamHorde() const;
     bool isTeamAlliance() const;
 
+    Player* getPlayerOwner() override;
+
     void toggleAfk();
     void toggleDnd();
 
@@ -1459,8 +1461,6 @@ public:
         uint32 GetBlockDamageReduction();
         void ApplyFeralAttackPower(bool apply, Item* item = NULL);
 
-        bool canCast(SpellInfo const* m_spellInfo);
-
         float GetSpellCritFromSpell() { return m_spellcritfromspell; }
         float GetHitFromSpell() { return m_hitfromspell; }
         void SetSpellCritFromSpell(float value) { m_spellcritfromspell = value; }
@@ -1559,7 +1559,6 @@ public:
         bool HasWonRbgToday();
         void SetHasWonRbgToday(bool value);
 
-        int32 CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot);
         void _InitialReputation();
         void EventActivateGameObject(GameObject* obj);
         void EventDeActivateGameObject(GameObject* obj);
@@ -2225,8 +2224,6 @@ public:
 
         bool CanBuyAt(MySQLStructure::VendorRestrictions const* vendor);
         bool CanTrainAt(Trainer*);
-
-        Object* getPlayerOwner() { return this; };
 
         void SetRoles(uint8 role) { m_roles = role; }
         uint8 GetRoles() { return m_roles; }

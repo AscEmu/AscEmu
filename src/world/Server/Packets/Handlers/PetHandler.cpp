@@ -382,17 +382,17 @@ void WorldSession::handlePetRename(WorldPacket& recvPacket)
 
     ARCEMU_ASSERT(pet->getPlayerOwner() != nullptr);
 
-    if (dynamic_cast<Player*>(pet->getPlayerOwner())->isPvpFlagSet())
+    if (pet->getPlayerOwner()->isPvpFlagSet())
         pet->setPvpFlag();
     else
         pet->removePvpFlag();
 
-    if (dynamic_cast<Player*>(pet->getPlayerOwner())->isFfaPvpFlagSet())
+    if (pet->getPlayerOwner()->isFfaPvpFlagSet())
         pet->setFfaPvpFlag();
     else
         pet->removeFfaPvpFlag();
 
-    if (dynamic_cast<Player*>(pet->getPlayerOwner())->isSanctuaryFlagSet())
+    if (pet->getPlayerOwner()->isSanctuaryFlagSet())
         pet->setSanctuaryFlag();
     else
         pet->removeSanctuaryFlag();

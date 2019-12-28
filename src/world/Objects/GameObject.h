@@ -434,6 +434,9 @@ public:
     uint8_t invisibilityFlag;
     uint8_t stealthFlag;
 
+    // Owner
+    Player* getPlayerOwner() override;
+
     // MIT End
 
         GameObject(uint64 guid);

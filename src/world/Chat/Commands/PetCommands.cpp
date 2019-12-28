@@ -87,7 +87,7 @@ bool ChatHandler::HandlePetDismissCommand(const char* /*args*/, WorldSession* m_
 
         selected_pet = static_cast< Pet* >(selected_creature);
 
-        selected_player = dynamic_cast<Player*>(selected_pet->getPlayerOwner());
+        selected_player = selected_pet->getPlayerOwner();
         selected_pet->Dismiss();
     }
 
@@ -244,7 +244,7 @@ bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_ses
 
         selected_pet = static_cast< Pet* >(selected_creature);
 
-        selected_player = dynamic_cast<Player*>(selected_pet->getPlayerOwner());
+        selected_player = selected_pet->getPlayerOwner();
     }
 
     if ((uint32)newLevel > selected_player->getLevel())

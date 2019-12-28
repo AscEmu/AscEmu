@@ -105,8 +105,8 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
     // on the opposite team we'll already know :p
     if ((objA->getPlayerOwner() != NULL) && (objB->getPlayerOwner() != NULL))
     {
-        Player* a = reinterpret_cast< Player* >(objA->getPlayerOwner());
-        Player* b = reinterpret_cast< Player* >(objB->getPlayerOwner());
+        Player* a = objA->getPlayerOwner();
+        Player* b = objB->getPlayerOwner();
 
         auto atA = a->GetArea();
         auto atB = b->GetArea();
@@ -165,8 +165,8 @@ SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
 
     if ((objA->getPlayerOwner() != NULL) && (objB->getPlayerOwner() != NULL))
     {
-        Player* a = static_cast< Player* >(objA->getPlayerOwner());
-        Player* b = static_cast< Player* >(objB->getPlayerOwner());
+        Player* a = objA->getPlayerOwner();
+        Player* b = objB->getPlayerOwner();
 
         if ((a->DuelingWith == b) && (a->GetDuelState() == DUEL_STATE_STARTED))
             return true;

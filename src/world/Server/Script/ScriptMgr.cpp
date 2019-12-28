@@ -38,11 +38,44 @@
 #include "Objects/Faction.h"
 #include "Common.hpp"
 
+// APGL End
+// MIT Start
+
 ScriptMgr& ScriptMgr::getInstance()
 {
     static ScriptMgr mInstance;
     return mInstance;
 }
+
+SpellCastResult ScriptMgr::callScriptedSpellCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) const
+{
+    if (spell->getSpellInfo()->spellScript == nullptr)
+        return SPELL_CANCAST_OK;
+
+    return spell->getSpellInfo()->spellScript->onCanCast(spell, parameter1, parameter2);
+}
+
+void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss)
+{
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    if (spellInfo == nullptr)
+    {
+        LogError("ScriptMgr tried to register a script for spell id %u but spell does not exist!", spellId);
+        return;
+    }
+
+    if (spellInfo->spellScript != nullptr)
+    {
+        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for spell id %u but this spell has already one.", spellId);
+        return;
+    }
+
+    const_cast<SpellInfo*>(spellInfo)->spellScript = ss;
+    _spellscripts.insert(ss);
+}
+
+// MIT End
+// APGL Start
 
 struct ScriptingEngine_dl
 {
@@ -174,6 +207,10 @@ void ScriptMgr::UnloadScripts()
     for (QuestScripts::iterator itr = _questscripts.begin(); itr != _questscripts.end(); ++itr)
         delete *itr;
     _questscripts.clear();
+
+    for (auto itr : _spellscripts)
+        delete itr;
+    _spellscripts.clear();
 
     UnloadScriptEngines();
 

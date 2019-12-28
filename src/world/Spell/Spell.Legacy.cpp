@@ -139,7 +139,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
             i_caster = nullptr;
             p_caster = nullptr;
             u_caster = static_cast<Unit*>(Caster);
-            if (u_caster->isPet() && static_cast<Pet*>(u_caster)->getPlayerOwner() != nullptr && dynamic_cast<Player*>(static_cast<Pet*>(u_caster)->getPlayerOwner())->GetDuelState() == DUEL_STATE_STARTED)
+            if (u_caster->isPet() && static_cast<Pet*>(u_caster)->getPlayerOwner() != nullptr && static_cast<Pet*>(u_caster)->getPlayerOwner()->GetDuelState() == DUEL_STATE_STARTED)
                 duelSpell = true;
         }
         break;
@@ -1842,7 +1842,7 @@ void Spell::Update(unsigned long time_passed)
             if (m_timer == 0 && !getSpellInfo()->isOnNextMeleeAttack() && !getSpellInfo()->isRangedAutoRepeat())
             {
                 // Skip checks for instant spells
-                castMe(m_castTime == 0);
+                castMe(m_castTime > 0);
             }
         }
         break;
@@ -3629,40 +3629,8 @@ uint8 Spell::CanCast(bool /*tolerate*/)
          */
         if (target)
         {
-            //you can't mind control someone already mind controlled
             switch (getSpellInfo()->getId())
             {
-                //SPELL_HASH_MIND_CONTROL
-                case 605:
-                case 11446:
-                case 15690:
-                case 36797:
-                case 36798:
-                case 43550:
-                case 43871:
-                case 43875:
-                case 45112:
-                case 67229:
-                {
-                    uint32 mindControl[] =
-                    {
-                        //SPELL_HASH_MIND_CONTROL
-                        605,
-                        11446,
-                        15690,
-                        36797,
-                        36798,
-                        43550,
-                        43871,
-                        43875,
-                        45112,
-                        67229,
-                        0
-                    };
-
-                    if (target->hasAurasWithId(mindControl))
-                        return SPELL_FAILED_BAD_TARGETS;
-                } break;
                 // SPELL_HASH_DEATH_PACT
                 case 17471:
                 case 17698:
@@ -3726,68 +3694,9 @@ uint8 Spell::CanCast(bool /*tolerate*/)
     if (p_caster)
     {
         /**
-         * Indoor/Outdoor check
-         */
-        if (worldConfig.terrainCollision.isCollisionEnabled)
-        {
-            if (getSpellInfo()->getMechanicsType() == MECHANIC_MOUNTED)
-            {
-                if (!MapManagement::AreaManagement::AreaStorage::IsOutdoor(p_caster->GetMapId(), p_caster->GetPositionNC().x, p_caster->GetPositionNC().y, p_caster->GetPositionNC().z))
-                    return SPELL_FAILED_NO_MOUNTS_ALLOWED;
-            }
-        }
-
-        /**
-         * Battlegrounds/Arena check
-         */
-        if (p_caster->m_bg)
-        {
-            if (!p_caster->m_bg->HasStarted() && (m_spellInfo->getId() == 1953 || m_spellInfo->getId() == 36554))  //Don't allow blink or shadowstep  if in a BG and the BG hasn't started.
-                return SPELL_FAILED_SPELL_UNAVAILABLE;
-        }
-
-        /**
-         * Duel request check
-         */
-        if (p_caster->GetDuelState() == DUEL_STATE_REQUESTED)
-        {
-            for (uint8_t i = 0; i < 3; ++i)
-            {
-                if (getSpellInfo()->getEffect(i) && getSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_AURA && getSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_PET_AREA_AURA
-                    && getSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_GROUP_AREA_AURA && getSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_RAID_AREA_AURA)
-                {
-                    return SPELL_FAILED_TARGET_DUELING;
-                }
-            }
-        }
-
-        /**
-         * Duel area check
-         */
-        if (getSpellInfo()->getId() == 7266)
-        {
-            auto at = p_caster->GetArea();
-            if (at->flags & AREA_CITY_AREA)
-                return SPELL_FAILED_NO_DUELING;
-            // instance & stealth checks
-            if (p_caster->GetMapMgr() && p_caster->GetMapMgr()->GetMapInfo() && p_caster->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL)
-                return SPELL_FAILED_NO_DUELING;
-            if (p_caster->isStealthed())
-                return SPELL_FAILED_CANT_DUEL_WHILE_STEALTHED;
-        }
-
-        /**
          * On taxi check
          */
-        if (p_caster->m_onTaxi)
-        {
-            if (!hasAttribute(ATTRIBUTES_MOUNT_CASTABLE)) // Are mount castable spells allowed on a taxi?
-            {
-                if (m_spellInfo->getId() != 33836 && m_spellInfo->getId() != 45072 && m_spellInfo->getId() != 45115 && m_spellInfo->getId() != 31958)   // exception for taxi bombs
-                    return SPELL_FAILED_NOT_ON_TAXI;
-            }
-        }
-        else
+        if (!p_caster->m_onTaxi)
         {
             if (m_spellInfo->getId() == 33836 || m_spellInfo->getId() == 45072 || m_spellInfo->getId() == 45115 || m_spellInfo->getId() == 31958)
                 return SPELL_FAILED_NOT_HERE;
@@ -3801,71 +3710,6 @@ uint8 Spell::CanCast(bool /*tolerate*/)
             if (getSpellInfo()->getId() == 25860) // Reindeer Transformation
                 return SPELL_FAILED_ONLY_MOUNTED;
         }
-
-        // check if spell is allowed while shapeshifted
-        if (p_caster->getShapeShiftForm())
-        {
-            switch (p_caster->getShapeShiftForm())
-            {
-                case FORM_TREE:
-                case FORM_BATTLESTANCE:
-                case FORM_DEFENSIVESTANCE:
-                case FORM_BERSERKERSTANCE:
-                case FORM_SHADOW:
-                case FORM_STEALTH:
-                case FORM_MOONKIN:
-                {
-                    break;
-                }
-
-                case FORM_SWIFT:
-                case FORM_FLIGHT:
-                {
-                    // check if item is allowed (only special items allowed in flight forms)
-                    if (i_caster && !(i_caster->getItemProperties()->Flags & ITEM_FLAG_SHAPESHIFT_OK))
-                        return SPELL_FAILED_NO_ITEMS_WHILE_SHAPESHIFTED;
-
-                    break;
-                }
-
-                //case FORM_CAT:
-                //case FORM_TRAVEL:
-                //case FORM_AQUA:
-                //case FORM_BEAR:
-                //case FORM_AMBIENT:
-                //case FORM_GHOUL:
-                //case FORM_DIREBEAR:
-                //case FORM_CREATUREBEAR:
-                //case FORM_GHOSTWOLF:
-
-                case FORM_SPIRITOFREDEMPTION:
-                {
-                    //Spirit of Redemption (20711) fix
-                    if (!(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_HEALING) && getSpellInfo()->getId() != 7355)
-                        return SPELL_FAILED_CASTER_DEAD;
-                    break;
-                }
-
-
-                default:
-                {
-                    // check if item is allowed (only special & equipped items allowed in other forms)
-                    if (i_caster && !(i_caster->getItemProperties()->Flags & ITEM_FLAG_SHAPESHIFT_OK))
-                        if (i_caster->getItemProperties()->InventoryType == INVTYPE_NON_EQUIP)
-                            return SPELL_FAILED_NO_ITEMS_WHILE_SHAPESHIFTED;
-                }
-            }
-        }
-
-        /**
-         * check if spell requires shapeshift
-         */
-         // I think Spell prototype's RequiredShapeShift is not entirely accurate ....
-         //if (GetProto()->RequiredShapeShift && !(GetProto()->RequiredShapeShift == (uint32)1 << (FORM_SHADOW - 1)) && !((uint32)1 << (p_caster->GetShapeShift()-1) & GetProto()->RequiredShapeShift))
-         //{
-         // return SPELL_FAILED_ONLY_SHAPESHIFT;
-         //}
-
 
          /**
           * check if spell is allowed while we have a battleground flag
@@ -3894,57 +3738,6 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                     break;
                 }
             }
-
-
-        }
-
-        /**
-         * check if we have the required gameobject focus
-         */
-        float focusRange;
-
-        if (getSpellInfo()->getRequiresSpellFocus())
-        {
-            bool found = false;
-
-            for (const auto& itr : p_caster->getInRangeObjectsSet())
-            {
-                auto obj = itr;
-                if (!obj || !itr->isGameObject())
-                    continue;
-
-                if ((static_cast<GameObject*>(itr))->getGoType() != GAMEOBJECT_TYPE_SPELL_FOCUS)
-                    continue;
-
-                if (!(p_caster->GetPhase() & itr->GetPhase()))    //We can't see this, can't be the focus, skip further checks
-                    continue;
-
-                auto gameobject_info = static_cast<GameObject*>(itr)->GetGameObjectProperties();
-                if (!gameobject_info)
-                {
-                    LogDebugFlag(LF_SPELL, "Warning: could not find info about game object %u", (itr)->getEntry());
-                    continue;
-                }
-
-                // professions use rangeIndex 1, which is 0yds, so we will use 5yds, which is standard interaction range.
-                if (gameobject_info->raw.parameter_1)
-                    focusRange = float(gameobject_info->raw.parameter_1);
-                else
-                    focusRange = GetMaxRange(sSpellRangeStore.LookupEntry(getSpellInfo()->getRangeIndex()));
-
-                // check if focus object is close enough
-                if (!obj->isInRange(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ(), (focusRange * focusRange)))
-                    continue;
-
-                if (gameobject_info->raw.parameter_0 == getSpellInfo()->getRequiresSpellFocus())
-                {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found)
-                return SPELL_FAILED_REQUIRES_SPELL_FOCUS;
         }
     }
 
@@ -3983,42 +3776,6 @@ uint8 Spell::CanCast(bool /*tolerate*/)
         {
             i_target = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
         }
-
-        ItemProperties const* proto = i_target->getItemProperties();
-
-        // check to make sure the targeted item is acceptable
-        switch (getSpellInfo()->getEffect(0))
-        {
-            // Feed Pet Targeted Item Check
-            case SPELL_EFFECT_FEED_PET:
-            {
-                Pet* pPet = p_caster->GetSummon();
-
-                // check if we have a pet
-                if (!pPet)
-                    return SPELL_FAILED_NO_PET;
-
-                // check if pet lives
-                if (!pPet->isAlive())
-                    return SPELL_FAILED_TARGETS_DEAD;
-
-                // check if item is food
-                if (!proto->FoodType)
-                    return SPELL_FAILED_BAD_TARGETS;
-
-                // check if food type matches pets diet
-                if (!(pPet->GetPetDiet() & (1 << (proto->FoodType - 1))))
-                    return SPELL_FAILED_WRONG_PET_FOOD;
-
-                // check food level: food should be max 30 lvls below pets level
-                if (pPet->getLevel() > proto->ItemLevel + 30)
-                    return SPELL_FAILED_FOOD_LOWLEVEL;
-
-                break;
-            }
-
-        } // end switch
-
     } // end targeted item
 
     /**
@@ -4030,61 +3787,6 @@ uint8 Spell::CanCast(bool /*tolerate*/)
 
         if (target)
         {
-            if (p_caster != nullptr)
-            {
-                if (target->isPlayer())
-                {
-                    // disallow spell casting in sanctuary zones
-                    // allow attacks in duels
-                    if (p_caster->DuelingWith != target && !isFriendly(p_caster, target))
-                    {
-                        auto atCaster = p_caster->GetArea();
-                        auto atTarget = target->GetArea();
-                        if (atCaster->flags & 0x800 || atTarget->flags & 0x800)
-                            return SPELL_FAILED_NOT_HERE;
-                    }
-                }
-                else
-                {
-                    if (target->GetAIInterface()->GetIsSoulLinked() && u_caster && target->GetAIInterface()->getSoullinkedWith() != u_caster)
-                        return SPELL_FAILED_BAD_TARGETS;
-                }
-
-                // pet training
-                if (getSpellInfo()->getEffectImplicitTargetA(0) == EFF_TARGET_PET &&
-                    getSpellInfo()->getEffect(0) == SPELL_EFFECT_LEARN_SPELL)
-                {
-                    Pet* pPet = p_caster->GetSummon();
-                    // check if we have a pet
-                    if (pPet == nullptr)
-                        return SPELL_FAILED_NO_PET;
-
-                    // other checks
-                    SpellInfo const* trig = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(0));
-                    if (trig == nullptr)
-                        return SPELL_FAILED_SPELL_UNAVAILABLE;
-
-                    uint32 status = pPet->CanLearnSpell(trig);
-                    if (status != 0)
-                        return static_cast<uint8>(status);
-                }
-
-                if (getSpellInfo()->getEffectApplyAuraName(0) == SPELL_AURA_MOD_POSSESS)  //mind control
-                {
-                    if (getSpellInfo()->getEffectBasePoints(0))  //got level req;
-                    {
-                        if ((int32)target->getLevel() > getSpellInfo()->getEffectBasePoints(0) + 1 + int32(p_caster->getLevel() - getSpellInfo()->getSpellLevel()))
-                            return SPELL_FAILED_HIGHLEVEL;
-                        else if (target->isCreature())
-                        {
-                            Creature* c = static_cast<Creature*>(target);
-                            if (c->GetCreatureProperties()->Rank > ELITE_ELITE)
-                                return SPELL_FAILED_HIGHLEVEL;
-                        }
-                    }
-                }
-            }
-
             // \todo Replace this awful hacks with a better solution
             // Nestlewood Owlkin - Quest 9303
             if (getSpellInfo()->getId() == 29528 && target->isCreature() && target->getEntry() == 16518)
@@ -4109,116 +3811,11 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                 return SPELL_FAILED_SUCCESS;
             }
 
-            ////////////////////////////////////////////////////// Target check spells that are only castable on certain creatures/gameobjects ///////////////
-
-            if (m_target_constraint != nullptr)
-            {
-                // target is the wrong creature
-                if (target->isCreature() && !m_target_constraint->hasCreature(target->getEntry()) && !m_target_constraint->isFocused(target->getEntry()))
-                    return SPELL_FAILED_BAD_TARGETS;
-
-                // target is the wrong GO :/
-                if (target->isGameObject() && !m_target_constraint->hasGameObject(target->getEntry()) && !m_target_constraint->isFocused(target->getEntry()))
-                    return SPELL_FAILED_BAD_TARGETS;
-
-                bool foundTarget = false;
-                Creature* pCreature = nullptr;
-                size_t creatures = m_target_constraint->getCreatures().size();
-
-                // Spells for Invisibl Creatures and or Gameobjects ( Casting Spells Near them )
-                for (size_t j = 0; j < creatures; ++j)
-                {
-                    if (!m_target_constraint->isFocused(m_target_constraint->getCreatures()[j]))
-                    {
-                        pCreature = m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->getCreatures()[j]);
-
-                        if (pCreature)
-                        {
-                            if (pCreature->getDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
-                            {
-                                SetTargetConstraintCreature(pCreature);
-                                foundTarget = true;
-                            }
-                        }
-                    }
-                }
-
-                GameObject* pGameobject = nullptr;
-                size_t gameobjects = m_target_constraint->getGameObjects().size();
-
-                for (size_t j = 0; j < gameobjects; ++j)
-                {
-                    if (!m_target_constraint->isFocused(m_target_constraint->getGameObjects()[j]))
-                    {
-                        pGameobject = m_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->getGameObjects()[j]);
-
-                        if (pGameobject)
-                        {
-                            if (pGameobject->getDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
-                            {
-                                SetTargetConstraintGameObject(pGameobject);
-                                foundTarget = true;
-                            }
-                        }
-                    }
-                }
-
-                if (!foundTarget)
-                    return SPELL_FAILED_BAD_TARGETS;
-            }
-
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             // scripted spell stuff
             switch (getSpellInfo()->getId())
             {
-                case 1515: // tame beast
-                {
-                    uint8 result = 0;
-                    Unit* tgt = unitTarget;
-                    if (tgt == nullptr)
-                    {
-                        // we have to pick a target manually as this is a dummy spell which triggers tame effect at end of channeling
-                        if (p_caster->GetSelection() != 0)
-                            tgt = p_caster->GetMapMgr()->GetUnit(p_caster->GetSelection());
-                        else
-                            return SPELL_FAILED_UNKNOWN;
-                    }
-
-                    Creature* tame = tgt->isCreature() ? static_cast<Creature*>(tgt) : NULL;
-
-                    if (tame == nullptr)
-                        result = PETTAME_INVALIDCREATURE;
-                    else if (!tame->isAlive())
-                        result = PETTAME_DEAD;
-                    else if (tame->isPet())
-                        result = PETTAME_CREATUREALREADYOWNED;
-                    else if (tame->GetCreatureProperties()->Type != UNIT_TYPE_BEAST || !tame->GetCreatureProperties()->Family || !(tame->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_TAMEABLE))
-                        result = PETTAME_NOTTAMEABLE;
-                    else if (!p_caster->isAlive() || p_caster->getClass() != HUNTER)
-                        result = PETTAME_UNITSCANTTAME;
-                    else if (tame->getLevel() > p_caster->getLevel())
-                        result = PETTAME_TOOHIGHLEVEL;
-                    else if (p_caster->GetSummon() || p_caster->GetUnstabledPetNumber())
-                        result = PETTAME_ANOTHERSUMMONACTIVE;
-                    else if (p_caster->GetPetCount() >= 5)
-                        result = PETTAME_TOOMANY;
-                    else if (!p_caster->HasSpell(53270) && tame->IsExotic())
-                        result = PETTAME_CANTCONTROLEXOTIC;
-                    else
-                    {
-                        auto cf = sCreatureFamilyStore.LookupEntry(tame->GetCreatureProperties()->Family);
-                        if (cf && !cf->tameable)
-                            result = PETTAME_NOTTAMEABLE;
-                    }
-                    if (result != 0)
-                    {
-                        SendTameFailure(result);
-                        return SPELL_FAILED_DONT_REPORT;
-                    }
-                }
-                break;
-
                 case 603: //curse of doom, can't be cast on players
                 case 30910:
                 case 47867: // Curse of doom rank 4
@@ -4291,26 +3888,6 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                 }
             }
 
-            if (getSpellInfo()->getEffect(0) == SPELL_EFFECT_SKINNING)  // skinning
-            {
-                // if target doesn't have skinnable flag, don't let it be skinned
-                if (!target->hasUnitFlags(UNIT_FLAG_SKINNABLE))
-                    return SPELL_FAILED_TARGET_UNSKINNABLE;
-                // if target is already skinned, don't let it be skinned again
-                if (target->isCreature() && static_cast<Creature*>(target)->Skinned)
-                    return SPELL_FAILED_TARGET_UNSKINNABLE;
-            }
-
-            // all spells with target 61 need to be in group or raid
-            ///\todo need to research this if its not handled by the client!!!
-            if (getSpellInfo()->getEffectImplicitTargetA(0) == EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS ||
-                getSpellInfo()->getEffectImplicitTargetA(1) == EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS ||
-                getSpellInfo()->getEffectImplicitTargetA(2) == EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS)
-            {
-                if (target->isPlayer() && !static_cast<Player*>(target)->InGroup())
-                    return SPELL_FAILED_TARGET_NOT_IN_PARTY;
-            }
-
             // fishing spells
             if (getSpellInfo()->getEffectImplicitTargetA(0) == EFF_TARGET_SELF_FISHING)  //||
                 //GetProto()->EffectImplicitTargetA[1] == EFF_TARGET_SELF_FISHING ||
@@ -4353,35 +3930,6 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                 }
             }
 
-            if (p_caster != nullptr)
-            {
-                if (getSpellInfo()->getCategory() == 1131) //Hammer of wrath, requires target to have 20- % of hp
-                {
-                    if (target->getHealth() == 0)
-                        return SPELL_FAILED_BAD_TARGETS;
-
-                    if (target->getMaxHealth() / target->getHealth() < 5)
-                        return SPELL_FAILED_BAD_TARGETS;
-                }
-                else if (getSpellInfo()->getCategory() == 672) //Conflagrate, requires immolation spell on victim
-                {
-                    if (!target->HasAuraVisual(46))
-                        return SPELL_FAILED_BAD_TARGETS;
-                }
-
-                if (target->dispels[getSpellInfo()->getDispelType()])
-                    return SPELL_FAILED_DAMAGE_IMMUNE; // hackfix - burlex
-
-                // Removed by Supalosa and moved to 'completed cast'
-                //  if (target->MechanicsDispels[GetProto()->MechanicsType])
-                //      return SPELL_FAILED_PREVENTED_BY_MECHANIC-1; // Why not just use SPELL_FAILED_DAMAGE_IMMUNE = 144,
-            }
-
-            // if we're replacing a higher rank, deny it
-            AuraCheckResponse acr = target->AuraCheck(getSpellInfo(), m_caster);
-            if (acr.Error == AURA_CHECK_RESULT_HIGHER_BUFF_PRESENT)
-                return SPELL_FAILED_AURA_BOUNCED;
-
             //check if we are trying to stealth or turn invisible but it is not allowed right now
             if (IsStealthSpell() || IsInvisibilitySpell())
             {
@@ -4414,27 +3962,6 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                     return SPELL_FAILED_SPELL_UNAVAILABLE;
             }
         }
-    }
-
-    // Special State Checks (for creatures & players)
-    if (u_caster != nullptr)
-    {
-        if (u_caster->SchoolCastPrevent[getSpellInfo()->getSchool()])
-        {
-            uint32 now_ = Util::getMSTime();
-            if (now_ > u_caster->SchoolCastPrevent[getSpellInfo()->getSchool()]) //this limit has expired,remove
-                u_caster->SchoolCastPrevent[getSpellInfo()->getSchool()] = 0;
-        }
-    }
-
-    /**
-     * Dead pet check
-     */
-    if (getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_REQ_DEAD_PET && p_caster != nullptr)
-    {
-        Pet* pPet = p_caster->GetSummon();
-        if (pPet != nullptr && !pPet->isDead())
-            return SPELL_FAILED_TARGET_NOT_DEAD;
     }
 
     // no problems found, so we must be ok
@@ -6171,7 +5698,7 @@ bool Spell::DuelSpellNoMoreValid() const
 {
     if (duelSpell && (
         (p_caster != nullptr && p_caster->GetDuelState() != DUEL_STATE_STARTED) ||
-        (u_caster != nullptr && u_caster->isPet() && static_cast<Pet*>(u_caster)->getPlayerOwner() && dynamic_cast<Player*>(static_cast<Pet*>(u_caster)->getPlayerOwner())->GetDuelState() != DUEL_STATE_STARTED)))
+        (u_caster != nullptr && u_caster->isPet() && static_cast<Pet*>(u_caster)->getPlayerOwner() && static_cast<Pet*>(u_caster)->getPlayerOwner()->GetDuelState() != DUEL_STATE_STARTED)))
         return true;
     else
         return false;

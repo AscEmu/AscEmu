@@ -3047,8 +3047,6 @@ void ObjectMgr::ResetDailies()
 
 void ObjectMgr::LoadSpellTargetConstraints()
 {
-    enum { CREATURE_FOCUS_TYPE, GAMEOBJECT_FOCUS_TYPE, CREATURE_TYPE, GAMEOBJECT_TYPE };
-
     LogNotice("ObjectMgr : Loading spell target constraints...");
 
     // Let's try to be idiot proof :/
@@ -3073,39 +3071,37 @@ void ObjectMgr::LoadSpellTargetConstraints()
                     m_spelltargetconstraints.insert(std::pair< uint32, SpellTargetConstraint* >(spellid, stc));
                 }
 
-                uint32 type = fields[1].GetUInt32();
+                uint8_t type = fields[1].GetUInt8();
                 uint32 value = fields[2].GetUInt32();
 
-                if (type == CREATURE_FOCUS_TYPE)
+                if (type == SPELL_CONSTRAINT_EXPLICIT_CREATURE)
                 {
                     if (stc != nullptr)
                     {
                         stc->addCreature(value);
-                        stc->addFocused(value, 1);
+                        stc->addExplicitTarget(value);
                     }
                 }
-                else if (type == GAMEOBJECT_FOCUS_TYPE)
+                else if (type == SPELL_CONSTRAINT_EXPLICIT_GAMEOBJECT)
                 {
                     if (stc != nullptr)
                     {
                         stc->addGameObject(value);
-                        stc->addFocused(value, 1);
+                        stc->addExplicitTarget(value);
                     }
                 }
-                else if (type == CREATURE_TYPE)
+                else if (type == SPELL_CONSTRAINT_IMPLICIT_CREATURE)
                 {
                     if (stc != nullptr)
                     {
                         stc->addCreature(value);
-                        stc->addFocused(value, 0);
                     }
                 }
-                else if (type == GAMEOBJECT_TYPE)
+                else if (type == SPELL_CONSTRAINT_IMPLICIT_GAMEOBJECT)
                 {
                     if (stc != nullptr)
                     {
-                        stc->addCreature(value);
-                        stc->addFocused(value, 0);
+                        stc->addGameObject(value);
                     }
                 }
 

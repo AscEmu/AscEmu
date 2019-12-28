@@ -682,6 +682,9 @@ public:
     uint8_t getHealthPct() const;
     uint8_t getPowerPct(PowerType powerType) const;
 
+    //\ todo: should this and other tag related variables be under Creature class?
+    bool isTaggedByPlayerOrItsGroup(Player* tagger);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Death
 protected:
