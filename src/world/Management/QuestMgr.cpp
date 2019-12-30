@@ -30,6 +30,7 @@
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.h"
 #include "Server/Packets/MsgQuestPushResult.h"
+#include "Server/Packets/SmsgQuestgiverQuestComplete.h"
 
 using namespace AscEmu::Packets;
 
@@ -620,7 +621,6 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
 }
 #endif
 
-#if VERSION_STRING < Cata
 void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 {
     uint32 xp;
@@ -660,27 +660,8 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
         }
     }
 
-    WorldPacket data(SMSG_QUESTGIVER_QUEST_COMPLETE, 72);
-
-    data << uint32(qst->id);
-    data << uint32(xp);
-    data << uint32(GenerateRewardMoney(plr, qst));
-    data << uint32(qst->bonushonor * 10);
-    data << uint32(rewardtalents);
-    data << uint32(qst->bonusarenapoints);
-    data << uint32(qst->count_reward_item); // Reward item count
-
-    for (uint8 i = 0; i < 4; ++i)
-    {
-        if (qst->reward_item[i])
-        {
-            data << uint32(qst->reward_item[i]);
-            data << uint32(qst->reward_itemcount[i]);
-        }
-    }
-    plr->SendPacket(&data);
+    plr->SendPacket(SmsgQuestgiverQuestComplete(qst->id, xp, GenerateRewardMoney(plr, qst), qst->bonushonor * 10, rewardtalents, qst->bonusarenapoints).serialise().get());
 }
-#endif
 
 void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32 language)
 {

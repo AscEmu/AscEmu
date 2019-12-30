@@ -370,6 +370,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgPvpCredit.h
    ${PATH_PREFIX}/SmsgPvpOptionsEnabled.h
    ${PATH_PREFIX}/SmsgQueryTimeResponse.h
+   ${PATH_PREFIX}/SmsgQuestgiverQuestComplete.h
    ${PATH_PREFIX}/SmsgQuestgiverStatus.h
    ${PATH_PREFIX}/SmsgQuestgiverStatusMultiple.h
    ${PATH_PREFIX}/SmsgRaidGroupOnly.h
