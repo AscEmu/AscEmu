@@ -325,6 +325,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgGuildInvite.h
    ${PATH_PREFIX}/SmsgInitialSpells.h
    ${PATH_PREFIX}/SmsgInstanceDifficulty.h
+   ${PATH_PREFIX}/SmsgInstanceReset.h
    ${PATH_PREFIX}/SmsgInventoryChangeFailure.h
    ${PATH_PREFIX}/SmsgItemNameQueryResponse.h
    ${PATH_PREFIX}/SmsgItemPushResult.h

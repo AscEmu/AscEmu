@@ -26,6 +26,7 @@
 #include "WorldCreator.h"
 #include "Server/Packets/SmsgUpdateLastInstance.h"
 #include "Server/Packets/SmsgUpdateInstanceOwnership.h"
+#include "Server/Packets/SmsgInstanceReset.h"
 
 using namespace AscEmu::Packets;
 
@@ -708,9 +709,7 @@ void InstanceMgr::ResetSavedInstances(Player* plr)
                     }
 
                     // <mapid> has been reset.
-                    WorldPacket data(SMSG_INSTANCE_RESET, 4);
-                    data << uint32_t(instance->m_mapId);
-                    plr->GetSession()->SendPacket(&data);
+                    plr->GetSession()->SendPacket(SmsgInstanceReset(instance->m_mapId).serialise().get());
 
                     // destroy the instance
                     _DeleteInstance(instance, true);

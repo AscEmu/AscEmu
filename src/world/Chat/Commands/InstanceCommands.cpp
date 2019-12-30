@@ -26,6 +26,9 @@
 #include "Map/WorldCreator.h"
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
+#include "Server/Packets/SmsgInstanceReset.h"
+
+using namespace AscEmu::Packets;
 
 //.instance create
 bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_session)
@@ -264,9 +267,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
     }
 
     // tell player the instance was reset
-    WorldPacket data(SMSG_INSTANCE_RESET, 4);
-    data << instance->m_mapId;
-    plr->GetSession()->SendPacket(&data);
+    plr->GetSession()->SendPacket(SmsgInstanceReset(instance->m_mapId).serialise().get());
 
     // shut down instance
     sInstanceMgr.DeleteBattlegroundInstance(instance->m_mapId, instance->m_instanceId);
