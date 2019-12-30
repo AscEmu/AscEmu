@@ -335,9 +335,9 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
     return questCount;
 }
 
-#if VERSION_STRING < Cata
 void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 /*menutype*/, uint32 language, Player* plr)
 {
+#if VERSION_STRING < Cata
     MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
     ItemProperties const* it;
 
@@ -431,12 +431,140 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
     {
         *data << uint32(0);
     }
-}
-#endif
 
-#if VERSION_STRING < Cata
+#else
+    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
+
+    std::string questGiverTextWindow = "";
+    std::string questGiverTargetName = "";
+    std::string questTurnTextWindow = "";
+    std::string questTurnTargetName = "";
+
+    data->SetOpcode(SMSG_QUESTGIVER_OFFER_REWARD);
+    *data << uint64_t(qst_giver->getGuid());
+    *data << uint32_t(qst->id);
+
+    *data << (lq ? lq->title : qst->title);
+    *data << (lq ? lq->completionText : qst->completiontext);
+
+    *data << questGiverTextWindow;
+    *data << questGiverTargetName;
+    *data << questTurnTextWindow;
+    *data << questTurnTargetName;
+
+    *data << uint32_t(0);                                                   // giver portrait
+    *data << uint32_t(0);                                                   // turn in portrait
+
+    *data << uint8_t(qst->next_quest_id ? 1 : 0);
+    *data << uint32_t(qst->quest_flags);
+    *data << uint32_t(qst->suggestedplayers);
+
+    *data << qst->completionemotecount;
+    for (uint8_t i = 0; i < qst->completionemotecount; i++)
+    {
+        *data << uint32_t(qst->completionemote[i]);
+        *data << uint32_t(qst->completionemotedelay[i]);
+    }
+
+    *data << uint32_t(qst->count_reward_choiceitem);
+    for (uint8_t i = 0; i < 6; ++i)
+    {
+        *data << uint32_t(qst->reward_choiceitem[i]);
+    }
+
+    for (uint8_t i = 0; i < 6; ++i)
+    {
+        *data << uint32(qst->reward_choiceitemcount[i]);
+    }
+
+    for (uint8_t i = 0; i < 6; ++i)
+    {
+        if (ItemProperties const* ip = sMySQLStore.getItemProperties(qst->reward_choiceitem[i]))
+        {
+            *data << uint32_t(ip->DisplayInfoID);
+        }
+        else
+        {
+            *data << uint32_t(0);
+        }
+    }
+
+    *data << uint32_t(qst->count_required_item);
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        *data << uint32_t(qst->reward_item[i]);
+    }
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        *data << uint32_t(qst->reward_itemcount[i]);
+    }
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        if (ItemProperties const* ip = sMySQLStore.getItemProperties(qst->reward_item[i]))
+        {
+            *data << uint32_t(ip->DisplayInfoID);
+        }
+        else
+        {
+            *data << uint32_t(0);
+        }
+    }
+
+    *data << uint32_t(GenerateRewardMoney(plr, qst));                       // Money reward
+    *data << uint32_t(GenerateQuestXP(plr, qst));
+
+    *data << uint32_t(qst->rewardtitleid);
+    *data << uint32_t(0);                                                   // Honor reward
+    *data << float(0.0f);                                                   // New 3.3
+    *data << uint32_t(0);                                                   // reward talent
+    *data << uint32_t(0);                                                   // unk
+    *data << uint32_t(0);                                                   // reputationmask
+
+    for (uint8_t i = 0; i < 5; ++i)
+    {
+        *data << uint32_t(0);
+    }
+
+    for (uint8_t i = 0; i < 5; ++i)
+    {
+        *data << int32_t(0);
+    }
+
+    for (uint8_t i = 0; i < 5; ++i)
+    {
+        *data << uint32_t(0);
+    }
+
+    *data << uint32_t(0);                                                   // reward spell
+    *data << uint32_t(0);                                                   // reward spell cast
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        *data << uint32_t(0);
+    }
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        *data << uint32_t(0);
+    }
+
+    *data << uint32_t(0);                                                   // rewskill
+    *data << uint32_t(0);                                                   // rewskillpoint
+
+    *data << uint32_t(4);                                                   // emote count
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        *data << uint32_t(qst->detailemote[i]);
+        *data << uint32_t(qst->detailemotedelay[i]);
+    }
+#endif
+}
+
 void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 /*menutype*/, uint32 language, Player* plr)
 {
+#if VERSION_STRING < Cata
     MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
     //std::map<uint32, uint8>::const_iterator itr;
 
@@ -543,12 +671,144 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     *data << uint32_t(EMOTE_ONESHOT_TALK);
     *data << uint32_t(0);                       // emote delay
 #endif
-}
-#endif
 
-#if VERSION_STRING < Cata
+#else
+MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
+    std::map<uint32_t, uint8_t>::const_iterator itr;
+
+    std::string questEndText = "";
+    std::string questGiverTextWindow = "";
+    std::string questGiverTargetName = "";
+    std::string questTurnTextWindow = "";
+    std::string questTurnTargetName = "";
+
+    data->SetOpcode(SMSG_QUESTGIVER_QUEST_DETAILS);
+    *data << uint64_t(qst_giver->getGuid());                                // npc guid
+    *data << uint64_t(0);                                                   // (questsharer?) guid
+    *data << uint32_t(qst->id);
+
+    *data << (lq ? lq->title : qst->title);
+    *data << (lq ? lq->details : qst->details);
+    *data << (lq ? lq->objectives : qst->objectives);
+
+    *data << questGiverTextWindow;                                          // 4.x
+    *data << questGiverTargetName;                                          // 4.x
+    *data << questTurnTextWindow;                                           // 4.x
+    *data << questTurnTargetName;                                           // 4.x
+
+    *data << uint32_t(0);                                                   // 4.x - qgportait
+    *data << uint32_t(0);                                                   // 4.x - qgturninportrait
+
+    *data << uint8_t(1);                                                    // Activate accept
+
+    *data << uint32_t(qst->quest_flags);
+    *data << uint32_t(qst->suggestedplayers);
+
+    *data << uint8_t(0);                                                    // finished? value is sent back to server in quest accept packet
+    *data << uint8_t(0);                                                    // 4.x Starts at AreaTrigger
+    *data << uint32_t(0);                                                   // required spell
+
+    *data << uint32_t(qst->count_reward_choiceitem);
+    for (uint8_t i = 0; i < 6; ++i)
+    {
+        *data << uint32_t(qst->reward_choiceitem[i]);
+    }
+
+    for (uint8_t i = 0; i < 6; ++i)
+    {
+        *data << uint32_t(qst->reward_choiceitemcount[i]);
+    }
+
+    for (uint8_t i = 0; i < 6; ++i)
+    {
+        if (ItemProperties const* ip = sMySQLStore.getItemProperties(qst->reward_choiceitem[i]))
+        {
+            *data << uint32_t(ip->DisplayInfoID);
+        }
+        else
+        {
+            *data << uint32_t(0);
+        }
+    }
+
+    *data << uint32_t(qst->count_required_item);
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        *data << uint32_t(qst->reward_item[i]);
+    }
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        *data << uint32_t(qst->reward_itemcount[i]);
+    }
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        if (ItemProperties const* ip = sMySQLStore.getItemProperties(qst->reward_item[i]))
+        {
+            *data << uint32_t(ip->DisplayInfoID);
+        }
+        else
+        {
+            *data << uint32_t(0);
+        }
+    }
+
+    *data << uint32_t(GenerateRewardMoney(plr, qst));                       // Money reward
+    *data << uint32_t(GenerateQuestXP(plr, qst));
+
+    *data << uint32_t(qst->rewardtitleid);
+    *data << uint32_t(0);                                                   // Honor reward
+    *data << float(0.0f);                                                   // New 3.3
+    *data << uint32_t(0);                                                   // reward talent
+    *data << uint32_t(0);                                                   // unk
+    *data << uint32_t(0);                                                   // reputationmask
+
+    for (uint8_t i = 0; i < 5; ++i)
+    {
+        *data << uint32_t(0);
+    }
+
+    for (uint8_t i = 0; i < 5; ++i)
+    {
+        *data << int32_t(0);
+    }
+
+    for (uint8_t i = 0; i < 5; ++i)
+    {
+        *data << uint32_t(0);
+    }
+
+    *data << uint32_t(0);                                                   // reward spell
+    *data << uint32_t(0);                                                   // reward spell cast
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        *data << uint32_t(0);
+    }
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        *data << uint32_t(0);
+    }
+
+    *data << uint32_t(0);                                                   // rewskill
+    *data << uint32_t(0);                                                   // rewskillpoint
+
+    *data << uint32_t(4);                                                   // emote count
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        *data << uint32_t(qst->detailemote[i]);
+        *data << uint32_t(qst->detailemotedelay[i]);
+    }
+#endif
+}
+
 void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 status, uint32 language)
 {
+#if VERSION_STRING < Cata
     MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
 
     ItemProperties const* it;
@@ -618,8 +878,74 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
     *data << uint32(4);
     *data << uint32(8);
     *data << uint32(10);
-}
+
+#else
+    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
+
+    data->SetOpcode(SMSG_QUESTGIVER_REQUEST_ITEMS);
+    *data << uint64_t(qst_giver->getGuid());
+    *data << uint32_t(qst->id);
+
+    *data << (lq ? lq->title : qst->title);
+    *data << (lq ? lq->incompleteText : qst->incompletetext);
+
+    *data << uint32_t(0);
+
+    if (status == QuestStatus::NotFinished)
+    {
+        *data << qst->incompleteemote;
+    }
+    else
+    {
+        *data << qst->completeemote;
+    }
+
+    *data << uint32_t(1);                                                   // close on cancel
+    *data << uint32_t(qst->quest_flags);
+    *data << uint32_t(qst->suggestedplayers);
+
+    *data << uint32_t(qst->reward_money < 0 ? -qst->reward_money : 0);      // Required Money
+
+    *data << uint32_t(qst->count_required_item);                            // item count
+
+    // (loop for each item)
+    for (uint8_t i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
+    {
+        if (!qst->required_item[i])
+        {
+            continue;
+        }
+
+        *data << uint32_t(qst->required_item[i]);
+        *data << uint32_t(qst->required_itemcount[i]);
+        if (ItemProperties const* it = sMySQLStore.getItemProperties(qst->required_item[i]))
+        {
+            *data << uint32_t(it->DisplayInfoID);
+        }
+        else
+        {
+            *data << uint32_t(0);
+        }
+    }
+
+    *data << uint32_t(0);                                                   // required currency count
+
+
+    if (status == QuestStatus::NotFinished)
+    {
+        *data << uint32_t(0);                                               // incomplete button
+    }
+    else
+    {
+        *data << uint32_t(2);
+    }
+
+    *data << uint32_t(4);
+    *data << uint32_t(8);
+    *data << uint32_t(16);
+    *data << uint32_t(64);
 #endif
+}
 
 void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 {
