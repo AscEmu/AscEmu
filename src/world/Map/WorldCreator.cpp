@@ -24,6 +24,10 @@
 #include "Server/MainServerDefines.h"
 #include "MapMgr.h"
 #include "WorldCreator.h"
+#include "Server/Packets/SmsgUpdateLastInstance.h"
+#include "Server/Packets/SmsgUpdateInstanceOwnership.h"
+
+using namespace AscEmu::Packets;
 
 //MIT
 inline bool checkInstanceGroup(Instance* instance, Group* group)
@@ -833,7 +837,6 @@ void InstanceMgr::CheckForExpiredInstances()
 
 void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
 {
-#if VERSION_STRING < Cata
     if (!plr->IsInWorld() || plr->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL)
     {
         m_mapLock.Acquire();
@@ -851,13 +854,9 @@ void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
                     {
                         m_mapLock.Release();
 
-                        WorldPacket instancePacket(SMSG_UPDATE_LAST_INSTANCE,4);
-                        instancePacket << uint32_t(instance->m_mapId);
-                        plr->GetSession()->SendPacket(&instancePacket);
+                        plr->GetSession()->SendPacket(SmsgUpdateLastInstance(instance->m_mapId).serialise().get());
 
-                        WorldPacket ownerPacket(SMSG_UPDATE_INSTANCE_OWNERSHIP,4);
-                        ownerPacket << uint32_t(0x01);
-                        plr->GetSession()->SendPacket(&ownerPacket);
+                        plr->GetSession()->SendPacket(SmsgUpdateInstanceOwnership(0x01).serialise().get());
 
                         return;
                     }
@@ -867,12 +866,7 @@ void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
         m_mapLock.Release();
     }
 
-    WorldPacket data(SMSG_UPDATE_INSTANCE_OWNERSHIP, 4);
-    data << uint32_t(0x00);
-    plr->GetSession()->SendPacket(&data);
-#else
-    if (plr == nullptr) { return; }
-#endif
+    plr->GetSession()->SendPacket(SmsgUpdateInstanceOwnership(0x00).serialise().get());
 }
 
 void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
