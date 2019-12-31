@@ -71,19 +71,11 @@ bool ChatHandler::HandleGuildDisbandCommand(const char* /*args*/, WorldSession* 
     if (selected_player == nullptr)
         return true;
 
-#if VERSION_STRING < Cata
     if (!selected_player->IsInGuild())
     {
         RedSystemMessage(m_session, "%s is not in a guild.", selected_player->getName().c_str());
         return true;
     }
-#else
-    if (!selected_player->GetGuild())
-    {
-        RedSystemMessage(m_session, "%s is not in a guild.", selected_player->getName().c_str());
-        return true;
-    }
-#endif
 
     GreenSystemMessage(m_session, "Disbanded Guild: %s", selected_player->GetGuild()->getName().c_str());
     sGMLog.writefromsession(m_session, "Disbanded Guild %s", selected_player->GetGuild()->getName().c_str());
@@ -120,19 +112,11 @@ bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_sessi
     if (selected_player == nullptr)
         return true;
 
-#if VERSION_STRING < Cata
     if (selected_player->IsInGuild())
     {
         RedSystemMessage(m_session, "%s is already in a guild.", selected_player->getName().c_str());
         return true;
     }
-#else
-    if (selected_player->GetGuild())
-    {
-        RedSystemMessage(m_session, "%s is already in a guild.", selected_player->getName().c_str());
-        return true;
-    }
-#endif
 
     if (!*args)
         return false;
@@ -185,19 +169,11 @@ bool ChatHandler::HandleRenameGuildCommand(const char* args, WorldSession* m_ses
     if (selected_player == nullptr)
         return true;
 
-#if VERSION_STRING < Cata
     if (selected_player->IsInGuild())
     {
         RedSystemMessage(m_session, "%s not in a guild.", selected_player->getName().c_str());
         return true;
     }
-#else
-    if (selected_player->GetGuild())
-    {
-        RedSystemMessage(m_session, "%s not in a guild.", selected_player->getName().c_str());
-        return true;
-    }
-#endif
 
     if (!*args)
         return false;

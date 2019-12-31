@@ -6,8 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_ShadowfangKeep.h"
 
-// Wotlk version
-#if VERSION_STRING < Cata
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.h"
 
@@ -1484,11 +1482,9 @@ bool ashrombeTeleportDummyAura(uint8_t /*effectIndex*/, Aura* pAura, bool /*appl
     }
 }
 
-#endif //VERSION_STRING != Cata
 
 void SetupShadowfangKeep(ScriptMgr* mgr)
 {
-#if VERSION_STRING < Cata
     // Map
     mgr->register_instance_script(SHADOWFANG_KEEP_MAP, &ShadowfangKeepInstance::Create);
 
@@ -1531,7 +1527,4 @@ void SetupShadowfangKeep(ScriptMgr* mgr)
     // Spells
     mgr->register_dummy_spell(SPELL_ASHCROMBE_UNLOCK, &ashrombeUnlockDummySpell);
     mgr->register_dummy_aura(SPELL_ASHCROMBE_FIRE, &ashrombeTeleportDummyAura);
-#else
-    if (mgr != nullptr) { return; }
-#endif //VERSION_STRING != Cata
 }

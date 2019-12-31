@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#if VERSION_STRING < Cata
 const uint32 SHADOWFANG_KEEP_MAP = 33;
 
 enum SFK_encounterIndexes : uint8
@@ -195,4 +194,3 @@ const Movement::Location SorcererAshcrombeWPS[ashcrombeWpCount] =
 // Arugal intro 2 (event after nendos death)
 const Movement::Location ArugalAtFenrusLoc = { -137.657944f, 2169.928467f, 136.57781f, 2.826001f };
 
-#endif // VERSION_STRING != Cata

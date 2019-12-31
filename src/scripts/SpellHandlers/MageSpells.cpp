@@ -41,7 +41,6 @@ bool Living_Bomb(uint8_t effectIndex, Aura* pAura, bool apply)
 
 bool HotStreak(uint8_t effectIndex, Aura* pAura, bool apply)
 {
-#if VERSION_STRING < Cata
     if (effectIndex == 0)
     {
         auto caster = pAura->GetUnitCaster();
@@ -56,7 +55,6 @@ bool HotStreak(uint8_t effectIndex, Aura* pAura, bool apply)
         else
             caster->RemoveProcTriggerSpell(48108);
     }
-#endif
 
     return true;
 }
