@@ -30,7 +30,6 @@
 
 using namespace AscEmu::Packets;
 
-#define  SENDSURVEY "\x03"
 #ifdef GM_TICKET_MY_MASTER_COMPATIBLE
 
 bool ChatHandler::HandleGMTicketListCommand(const char* /*args*/, WorldSession* m_session)
