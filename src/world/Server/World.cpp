@@ -137,7 +137,7 @@ void World::loadWorldConfigValues(bool reload /*false*/)
     settings.loadWorldConfigValues(reload);
 
     if (reload)
-        Channel::LoadConfSettings();
+        sChannelMgr.loadConfigSettings();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -779,7 +779,7 @@ bool World::setInitialWorldSettings()
     sLootMgr.initialize();
     sLootMgr.LoadLoot();
 
-    Channel::LoadConfSettings();
+    sChannelMgr.loadConfigSettings();
 
     LogDetail("World : Starting CsBattlegroundManager...");
     sBattlegroundManager.initialize();

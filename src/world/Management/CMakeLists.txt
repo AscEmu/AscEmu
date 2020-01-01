@@ -19,6 +19,7 @@ set(SRC_MANAGEMENT_FILES
    ${PATH_PREFIX}/CalendarMgr.h
    ${PATH_PREFIX}/Channel.cpp
    ${PATH_PREFIX}/Channel.h
+   ${PATH_PREFIX}/ChannelMgr.cpp
    ${PATH_PREFIX}/ChannelMgr.h
    ${PATH_PREFIX}/Container.cpp
    ${PATH_PREFIX}/Container.h

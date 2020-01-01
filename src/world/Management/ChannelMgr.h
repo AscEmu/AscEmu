@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CHANNEL_MGR_H
-#define CHANNEL_MGR_H
+#pragma once
 
 class SERVER_DECL ChannelMgr
 {
@@ -39,11 +38,20 @@ class SERVER_DECL ChannelMgr
         ChannelMgr& operator=(ChannelMgr&&) = delete;
         ChannelMgr& operator=(ChannelMgr const&) = delete;
 
+        void loadConfigSettings();
+
         Channel* GetCreateChannel(const char* name, Player* p, uint32 type_id);
+
         Channel* GetChannel(const char* name, Player* p);
         Channel* GetChannel(const char* name, uint32 team);
+
         void RemoveChannel(Channel* chn);
+
         bool seperatechannels;
+
+        Mutex m_confSettingLock;
+        std::vector<std::string> m_bannedChannels;
+        std::vector<std::string> m_minimumChannel;
 
     private:
 
@@ -55,6 +63,3 @@ class SERVER_DECL ChannelMgr
 };
 
 #define sChannelMgr ChannelMgr::getInstance()
-
-
-#endif  // CHANNEL_MGR_H

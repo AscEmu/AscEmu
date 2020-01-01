@@ -138,8 +138,6 @@ class SERVER_DECL Channel
 
         friend class ChannelIterator;
 
-        static void LoadConfSettings();
-
         std::string m_name;
         std::string m_password;
 
