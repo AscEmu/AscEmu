@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Guild.h"
 #include "Server/Packets/SmsgServerFirstAchievement.h"
 #include "Server/Packets/SmsgAchievementDeleted.h"
+#include "Server/Packets/SmsgCriteriaDeleted.h"
 
 using namespace AscEmu::Packets;
 
@@ -2048,30 +2049,25 @@ void AchievementMgr::GMResetAchievement(int32_t achievementID)
 /// is -1, all achievement criteria get reset, otherwise only the one specified gets reset
 void AchievementMgr::GMResetCriteria(int32_t criteriaID)
 {
-    std::ostringstream ss;
     if (criteriaID == -1)
     {
-        // reset all achievement criteria
-        for (auto iterCriteriaProgress : m_criteriaProgress)
+        for (auto criteriaProgress : m_criteriaProgress)
         {
-            WorldPacket resetData(SMSG_CRITERIA_DELETED, 4);
-            resetData << uint32_t(iterCriteriaProgress.first);
-            GetPlayer()->GetSession()->SendPacket(&resetData);
-            delete iterCriteriaProgress.second;
+            GetPlayer()->SendPacket(SmsgCriteriaDeleted(criteriaProgress.first).serialise().get());
+            delete criteriaProgress.second;
         }
+
         m_criteriaProgress.clear();
-        ss << "DELETE FROM character_achievement_progress WHERE guid = " << m_player->getGuidLow();
-        CharacterDatabase.Execute(ss.str().c_str());
+        CharacterDatabase.Execute("DELETE FROM character_achievement_progress WHERE guid = %u", m_player->getGuidLow());
     }
-    else // reset a single achievement criteria
+    else
     {
-        WorldPacket resetData(SMSG_CRITERIA_DELETED, 4);
-        resetData << uint32_t(criteriaID);
-        GetPlayer()->GetSession()->SendPacket(&resetData);
+        GetPlayer()->SendPacket(SmsgCriteriaDeleted(criteriaID).serialise().get());
+
         m_criteriaProgress.erase(criteriaID);
-        ss << "DELETE FROM character_achievement_progress WHERE guid = " << m_player->getGuidLow() << " AND criteria = " << criteriaID;
-        CharacterDatabase.Execute(ss.str().c_str());
+        CharacterDatabase.Execute("DELETE FROM character_achievement_progress WHERE guid = %u AND criteria = %u", m_player->getGuidLow(), static_cast<uint32_t>(criteriaID));
     }
+
     CheckAllAchievementCriteria();
 }
 

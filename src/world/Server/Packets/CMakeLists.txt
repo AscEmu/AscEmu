@@ -294,6 +294,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgCooldownEvent.h
    ${PATH_PREFIX}/SmsgCorpseReclaimDelay.h
    ${PATH_PREFIX}/SmsgCreatureQueryResponse.h
+   ${PATH_PREFIX}/SmsgCriteriaDeleted.h
    ${PATH_PREFIX}/SmsgCrossedInebriationThreshold.h
    ${PATH_PREFIX}/SmsgDeathReleaseLoc.h
    ${PATH_PREFIX}/SmsgDestoyObject.h
