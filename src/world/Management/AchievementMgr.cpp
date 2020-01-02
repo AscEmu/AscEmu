@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgServerFirstAchievement.h"
 #include "Server/Packets/SmsgAchievementDeleted.h"
 #include "Server/Packets/SmsgCriteriaDeleted.h"
+#include "Server/Packets/SmsgCriteriaUpdate.h"
 
 using namespace AscEmu::Packets;
 
@@ -508,24 +509,9 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
 void AchievementMgr::SendCriteriaUpdate(CriteriaProgress* progress)
 {
     if (progress == nullptr || isCharacterLoading)
-    {
         return;
-    }
 
-    WorldPacket data(SMSG_CRITERIA_UPDATE, 32);
-    data << uint32_t(progress->id);
-
-    data.appendPackGUID(progress->counter);
-
-    data << GetPlayer()->GetNewGUID();
-    data << uint32_t(0);
-    data << uint32_t(secsToTimeBitFields(progress->date));
-    data << uint32_t(0);                                   // timer 1
-    data << uint32_t(0);                                   // timer 2
-    if (!GetPlayer()->IsInWorld())                         //VLack: maybe we should NOT send these delayed, for 3.1.1, but seems logical
-        GetPlayer()->CopyAndSendDelayedPacket(&data);
-    else
-        GetPlayer()->GetSession()->SendPacket(&data);
+    GetPlayer()->SendPacket(SmsgCriteriaUpdate(progress->id, progress->counter, GetPlayer()->GetNewGUID(), secsToTimeBitFields(progress->date)).serialise().get());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
