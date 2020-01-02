@@ -12,34 +12,31 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class SmsgServerFirstAchievement : public ManagedPacket
+    class SmsgAchievementDeleted : public ManagedPacket
     {
 #if VERSION_STRING > TBC
     public:
-        std::string playerName;
-        uint64_t guid;
         uint32_t achivementId;
-        uint32_t nameClickable;
 
-        SmsgServerFirstAchievement() : SmsgServerFirstAchievement("", 0, 0, 0)
+        SmsgAchievementDeleted() : SmsgAchievementDeleted(0)
         {
         }
 
-        SmsgServerFirstAchievement(std::string playerName, uint64_t guid, uint32_t achivementId, uint32_t nameClickable) :
-            ManagedPacket(SMSG_SERVER_FIRST_ACHIEVEMENT, 0),
-            playerName(std::move(playerName)), guid(guid), achivementId(achivementId), nameClickable(nameClickable)
+        SmsgAchievementDeleted(uint32_t achivementId) :
+            ManagedPacket(SMSG_ACHIEVEMENT_DELETED, 0),
+            achivementId(achivementId)
         {
         }
 
     protected:
         size_t expectedSize() const override
         {
-            return playerName.size() + 1 + 8 + 4 + 4;
+            return 4;
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << playerName << guid << achivementId << nameClickable;
+            packet << achivementId;
 
             return true;
         }

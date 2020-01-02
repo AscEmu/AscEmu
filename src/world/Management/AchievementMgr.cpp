@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Definitions.h"
 #include "Guild.h"
 #include "Server/Packets/SmsgServerFirstAchievement.h"
+#include "Server/Packets/SmsgAchievementDeleted.h"
 
 using namespace AscEmu::Packets;
 
@@ -2025,29 +2026,20 @@ bool AchievementMgr::UpdateAchievementCriteria(Player* player, int32_t criteriaI
 /// achievementID is -1, all achievements get reset, otherwise the one specified gets reset
 void AchievementMgr::GMResetAchievement(int32_t achievementID)
 {
-    std::ostringstream ss;
     if (achievementID == -1)
     {
-        // reset all achievements
-        CompletedAchievementMap::iterator itr = m_completedAchievements.begin();
-        for (; itr != m_completedAchievements.end(); ++itr)
-        {
-            WorldPacket resetData(SMSG_ACHIEVEMENT_DELETED, 4);
-            resetData << uint32_t(itr->first);
-            GetPlayer()->GetSession()->SendPacket(&resetData);
-        }
+        for (auto& m_completedAchievement : m_completedAchievements)
+            GetPlayer()->SendPacket(SmsgAchievementDeleted(m_completedAchievement.first).serialise().get());
+
         m_completedAchievements.clear();
-        ss << "DELETE FROM character_achievement WHERE guid = " << m_player->getGuidLow();
-        CharacterDatabase.Execute(ss.str().c_str());
+        CharacterDatabase.Execute("DELETE FROM character_achievement WHERE guid = %u", m_player->getGuidLow());
     }
-    else // reset a single achievement
+    else
     {
-        WorldPacket resetData(SMSG_ACHIEVEMENT_DELETED, 4);
-        resetData << uint32_t(achievementID);
-        GetPlayer()->GetSession()->SendPacket(&resetData);
+        GetPlayer()->SendPacket(SmsgAchievementDeleted(achievementID).serialise().get());
+
         m_completedAchievements.erase(achievementID);
-        ss << "DELETE FROM character_achievement WHERE guid = " << m_player->getGuidLow() << " AND achievement = " << achievementID;
-        CharacterDatabase.Execute(ss.str().c_str());
+        CharacterDatabase.Execute("DELETE FROM character_achievement WHERE guid = %u AND achievement = %u", m_player->getGuidLow(), static_cast<uint32_t>(achievementID));
     }
 }
 
