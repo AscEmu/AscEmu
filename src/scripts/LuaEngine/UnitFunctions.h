@@ -5178,122 +5178,140 @@ public:
     static int IsInChannel(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            const char* channel_name = luaL_checkstring(L, 1);
-        if (!ptr || !channel_name)
+        const char* channelName = luaL_checkstring(L, 1);
+        if (!ptr || !channelName)
             return 0;
 
-        Channel* pChannel = sChannelMgr.GetChannel(channel_name, static_cast<Player*>(ptr));
-        if (pChannel->HasMember(static_cast<Player*>(ptr))) // Channels: "General", "Trade", "LocalDefense", "GuildRecruitment", "LookingForGroup", (or any custom channel)
+        Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+        // Channels: "General", "Trade", "LocalDefense", "GuildRecruitment", "LookingForGroup", (or any custom channel)
+        if (channel->HasMember(dynamic_cast<Player*>(ptr)))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
+
         return 1;
     }
 
     static int JoinChannel(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            const char* channel_name = luaL_checkstring(L, 1);
-        Channel* pChannel = sChannelMgr.GetChannel(channel_name, static_cast<Player*>(ptr));
-        const char* pw = luaL_optstring(L, 2, pChannel->m_password.c_str());
+        const char* channelName = luaL_checkstring(L, 1);
+        Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+        const char* password = luaL_optstring(L, 2, channel->m_password.c_str());
 
-        if (!ptr || !channel_name || pChannel->HasMember(static_cast<Player*>(ptr)) || !pChannel)
+        if (!ptr || !channelName || channel->HasMember(dynamic_cast<Player*>(ptr)) || !channel)
             return 0;
-        else
-            pChannel->AttemptJoin(static_cast<Player*>(ptr), pw);
+
+        channel->AttemptJoin(dynamic_cast<Player*>(ptr), password);
+
         return 1;
     }
 
     static int LeaveChannel(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            const char* channel_name = luaL_checkstring(L, 1);
-        Channel* pChannel = sChannelMgr.GetChannel(channel_name, static_cast<Player*>(ptr));
-        if (!ptr || !channel_name || !pChannel || !pChannel->HasMember(static_cast<Player*>(ptr)))
+        const char* channelName = luaL_checkstring(L, 1);
+        Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+        if (!ptr || !channelName || !channel || !channel->HasMember(dynamic_cast<Player*>(ptr)))
             return 0;
-        else
-            pChannel->Part(static_cast<Player*>(ptr), true);
+
+        channel->Part(dynamic_cast<Player*>(ptr), true);
+
         return 1;
     }
 
     static int SetChannelName(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            const char* current_name = luaL_checkstring(L, 1);
-        const char* new_name = luaL_checkstring(L, 2);
-        Channel* pChannel = sChannelMgr.GetChannel(current_name, static_cast<Player*>(ptr));
-        if (!current_name || !new_name || !ptr || !pChannel || pChannel->m_name == new_name)
+        const char* currentName = luaL_checkstring(L, 1);
+        const char* newName = luaL_checkstring(L, 2);
+        Channel* channel = sChannelMgr.getChannel(currentName, dynamic_cast<Player*>(ptr));
+        if (!currentName || !newName || !ptr || !channel || channel->m_name == newName)
             return 0;
-        pChannel->m_name = new_name;
+
+        channel->m_name = newName;
+
         return 1;
     }
 
     static int SetChannelPassword(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            const char* channel_name = luaL_checkstring(L, 1);
-        const char* pass = luaL_checkstring(L, 2);
-        Channel* pChannel = sChannelMgr.GetChannel(channel_name, static_cast<Player*>(ptr));
-        if (!pass || !ptr || pChannel->m_password == pass)
+        const char* channelName = luaL_checkstring(L, 1);
+        const char* password = luaL_checkstring(L, 2);
+        Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+        if (!password || !ptr || channel->m_password == password)
             return 0;
-        pChannel->Password(static_cast<Player*>(ptr), pass);
+
+        channel->Password(dynamic_cast<Player*>(ptr), password);
+
         return 1;
     }
 
     static int GetChannelPassword(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            const char* channel_name = luaL_checkstring(L, 1);
-        Channel* pChannel = sChannelMgr.GetChannel(channel_name, static_cast<Player*>(ptr));
+        const char* channelName = luaL_checkstring(L, 1);
+        Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
         if (!ptr)
             return 0;
-        lua_pushstring(L, pChannel->m_password.c_str());
+
+        lua_pushstring(L, channel->m_password.c_str());
+
         return 1;
     }
 
     static int KickFromChannel(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            const char* channel_name = luaL_checkstring(L, 1);
-        Player* plr = static_cast<Player*>(ptr);
-        Channel* pChannel = sChannelMgr.GetChannel(channel_name, plr);
-        if (!plr || !pChannel)
+        const char* channelName = luaL_checkstring(L, 1);
+        Player* player = dynamic_cast<Player*>(ptr);
+        Channel* channel = sChannelMgr.getChannel(channelName, player);
+        if (!channel)
             return 0;
-        pChannel->Kick(plr, plr, false);
+
+        channel->Kick(player, player, false);
+
         return 1;
     }
 
     static int BanFromChannel(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            const char* channel_name = luaL_checkstring(L, 1);
-        Player* plr = static_cast<Player*>(ptr);
-        Channel* pChannel = sChannelMgr.GetChannel(channel_name, plr);
-        if (!plr || !pChannel)
+        const char* channelName = luaL_checkstring(L, 1);
+        Player* player = dynamic_cast<Player*>(ptr);
+        Channel* channel = sChannelMgr.getChannel(channelName, player);
+        if (!channel)
             return 0;
-        pChannel->Kick(plr, plr, true);
+
+        channel->Kick(player, player, true);
+
         return 1;
     }
 
     static int UnbanFromChannel(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            const char* channel_name = luaL_checkstring(L, 1);
-        Player* plr = static_cast<Player*>(ptr);
-        Channel* pChannel = sChannelMgr.GetChannel(channel_name, plr);
-        if (!plr || !pChannel)
+        const char* channelName = luaL_checkstring(L, 1);
+        Player* player = dynamic_cast<Player*>(ptr);
+        Channel* channel = sChannelMgr.getChannel(channelName, player);
+        if (!channel)
             return 0;
-        pChannel->Unban(plr, plr->getPlayerInfo());
+
+        channel->Unban(player, player->getPlayerInfo());
+
         return 1;
     }
 
     static int GetChannelMemberCount(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            const char* channel_name = luaL_checkstring(L, 1);
-        if (!ptr || !channel_name)
+        const char* channelName = luaL_checkstring(L, 1);
+        if (!ptr || !channelName)
             return 0;
-        lua_pushnumber(L, static_cast<lua_Number>(sChannelMgr.GetChannel(channel_name, static_cast<Player*>(ptr))->GetNumMembers()));
+
+        lua_pushnumber(L, static_cast<lua_Number>(sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr))->GetNumMembers()));
+
         return 1;
     }
 

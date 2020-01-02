@@ -269,7 +269,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     WritePidFile();
 
     sChannelMgr.initialize();
-    sChannelMgr.seperatechannels = !worldConfig.player.isInterfactionChannelEnabled;
+    sChannelMgr.setSeperatedChannels(!worldConfig.player.isInterfactionChannelEnabled);
 
     sMailSystem.StartMailSystem();
 

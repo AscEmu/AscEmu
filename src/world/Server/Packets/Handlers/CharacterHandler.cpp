@@ -595,7 +595,7 @@ void WorldSession::initGMMyMaster()
     if (ticket)
     {
         //Send status change to gm_sync_channel
-        const auto channel = sChannelMgr.GetChannel(sWorld.getGmClientChannel().c_str(), _player);
+        const auto channel = sChannelMgr.getChannel(sWorld.getGmClientChannel(), _player);
         if (channel)
         {
             std::stringstream ss;

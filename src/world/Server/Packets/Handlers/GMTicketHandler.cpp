@@ -110,7 +110,7 @@ void WorldSession::handleGMTicketUpdateOpcode(WorldPacket& recvPacket)
     }
 
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
-    Channel* channel = sChannelMgr.GetChannel(sWorld.getGmClientChannel().c_str(), _player);
+    Channel* channel = sChannelMgr.getChannel(sWorld.getGmClientChannel(), _player);
     if (channel != nullptr)
     {
         std::stringstream ss;
@@ -131,7 +131,7 @@ void WorldSession::handleGMTicketDeleteOpcode(WorldPacket& /*recvPacket*/)
 
     SendPacket(SmsgGmTicketDeleteTicket(GMTTicketRemoved).serialise().get());
 
-    Channel* channel = sChannelMgr.GetChannel(worldConfig.getGmClientChannelName().c_str(), _player);
+    Channel* channel = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), _player);
     if (channel != nullptr && ticket != nullptr)
     {
         std::stringstream ss;
@@ -203,7 +203,7 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
     SendPacket(SmsgGmTicketCreate(GMTNoErrors).serialise().get());
 
     // send message indicating new ticket
-    Channel* channel = sChannelMgr.GetChannel(worldConfig.getGmClientChannelName().c_str(), _player);
+    Channel* channel = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), _player);
     if (channel != nullptr)
     {
         std::stringstream ss;

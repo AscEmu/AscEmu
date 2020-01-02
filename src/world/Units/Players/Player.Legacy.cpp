@@ -8020,7 +8020,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
 #else
             snprintf(updatedName, 95, chat_channels->name_pattern, at->area_name);
 #endif
-            Channel* newChannel = sChannelMgr.GetCreateChannel(updatedName, nullptr, chn->m_id);
+            Channel* newChannel = sChannelMgr.getOrCreateChannel(updatedName, nullptr, chn->m_id);
             if (newChannel == nullptr)
             {
                 LOG_ERROR("Could not create channel %s!", updatedName);
@@ -8106,7 +8106,7 @@ void Player::UpdateChannels(uint16 AreaID)
             channelname += AreaName;
         }
 
-        Channel* chn = sChannelMgr.GetCreateChannel(channelname.c_str(), this, c->m_id);
+        Channel* chn = sChannelMgr.getOrCreateChannel(channelname, this, c->m_id);
         if (chn != nullptr && !chn->HasMember(this))
         {
             c->Part(this);
@@ -10941,7 +10941,7 @@ void Player::CopyAndSendDelayedPacket(WorldPacket* data)
 
 void Player::PartLFGChannel()
 {
-    Channel* pChannel = sChannelMgr.GetChannel("LookingForGroup", this);
+    Channel* pChannel = sChannelMgr.getChannel("LookingForGroup", this);
     if (pChannel == nullptr)
         return;
 

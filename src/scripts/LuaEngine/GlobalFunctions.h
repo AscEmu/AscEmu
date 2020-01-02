@@ -624,12 +624,14 @@ namespace luaGlobalFunctions
     int SendPacketToChannel(lua_State* L)
     {
         WorldPacket* pack = CHECK_PACKET(L, 1);
-        const char* channel_name = luaL_checkstring(L, 2);
+        const char* channelName = luaL_checkstring(L, 2);
         uint32 team = CHECK_ULONG(L, 3);
-        Channel* pChannel = sChannelMgr.GetChannel(channel_name, team);
-        if (!pChannel || !pack)
+        Channel* channel = sChannelMgr.getChannel(channelName, team);
+        if (!channel || !pack)
             return 0;
-        pChannel->SendToAll(pack);
+
+        channel->SendToAll(pack);
+
         return 1;
     }
 

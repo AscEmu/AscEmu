@@ -1,65 +1,49 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #pragma once
 
 class SERVER_DECL ChannelMgr
 {
-    private:
 
-        ChannelMgr() = default;
-        ~ChannelMgr() = default;
+    ChannelMgr() = default;
+    ~ChannelMgr() = default;
 
-    public:
+public:
 
-        static ChannelMgr& getInstance();
-        void initialize();
-        void finalize();
+    ChannelMgr(ChannelMgr&&) = delete;
+    ChannelMgr(ChannelMgr const&) = delete;
+    ChannelMgr& operator=(ChannelMgr&&) = delete;
+    ChannelMgr& operator=(ChannelMgr const&) = delete;
 
-        ChannelMgr(ChannelMgr&&) = delete;
-        ChannelMgr(ChannelMgr const&) = delete;
-        ChannelMgr& operator=(ChannelMgr&&) = delete;
-        ChannelMgr& operator=(ChannelMgr const&) = delete;
+    static ChannelMgr& getInstance();
 
-        void loadConfigSettings();
+    void initialize();
+    void finalize();
 
-        Channel* GetCreateChannel(const char* name, Player* p, uint32 type_id);
+    void loadConfigSettings();
+    void setSeperatedChannels(bool enabled);
 
-        Channel* GetChannel(const char* name, Player* p);
-        Channel* GetChannel(const char* name, uint32 team);
+    Channel* getOrCreateChannel(std::string name, Player* player, uint32_t typeId);
+    void removeChannel(Channel* channel);
 
-        void RemoveChannel(Channel* chn);
+    Channel* getChannel(std::string name, Player* player);
+    Channel* getChannel(std::string name, uint32_t team);
 
-        bool seperatechannels;
+    Mutex m_confSettingLock;
+    std::vector<std::string> m_bannedChannels;
+    std::vector<std::string> m_minimumChannel;
 
-        Mutex m_confSettingLock;
-        std::vector<std::string> m_bannedChannels;
-        std::vector<std::string> m_minimumChannel;
+private:
 
-    private:
+    typedef std::map<std::string, Channel*> ChannelList;
+    ChannelList m_channelList[2];
 
-        typedef std::map<std::string, Channel*> ChannelList;
+    bool m_seperateChannels;
 
-        ChannelList Channels[2];
-
-        Mutex lock;
+    Mutex m_lock;
 };
 
 #define sChannelMgr ChannelMgr::getInstance()

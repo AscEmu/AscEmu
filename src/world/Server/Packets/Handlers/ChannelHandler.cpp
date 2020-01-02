@@ -40,7 +40,7 @@ void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
     if (!sWorld.settings.gm.gmClientChannelName.empty() && !stricmp(sWorld.settings.gm.gmClientChannelName.c_str(), srlPacket.channelName.c_str()) && !GetPermissionCount())
         return;
 
-    const auto channel = sChannelMgr.GetCreateChannel(srlPacket.channelName.c_str(), _player, srlPacket.dbcId);
+    const auto channel = sChannelMgr.getOrCreateChannel(srlPacket.channelName, _player, srlPacket.dbcId);
     if (channel == nullptr)
         return;
 
@@ -54,7 +54,7 @@ void WorldSession::handleGetChannelMemberCount(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     if (channel)
         SendPacket(SmgsChannelMemberCount(srlPacket.name, channel->m_flags, uint32_t(channel->GetNumMembers())).serialise().get());
 }
@@ -65,7 +65,7 @@ void WorldSession::handleChannelLeave(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     if (channel)
         channel->Part(_player);
 }
@@ -76,7 +76,7 @@ void WorldSession::handleChannelList(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     if (channel)
         channel->List(_player);
 }
@@ -87,7 +87,7 @@ void WorldSession::handleChannelPassword(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     if (channel)
         channel->Password(_player, srlPacket.password.c_str());
 }
@@ -98,7 +98,7 @@ void WorldSession::handleChannelSetOwner(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     const auto player = sObjectMgr.GetPlayer(srlPacket.setName.c_str(), false);
     if (channel && player)
         channel->SetOwner(_player, player);
@@ -110,7 +110,7 @@ void WorldSession::handleChannelOwner(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     if (channel)
         channel->GetOwner(_player);
 }
@@ -121,7 +121,7 @@ void WorldSession::handleChannelModerator(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     const auto player = sObjectMgr.GetPlayer(srlPacket.modName.c_str(), false);
     if (channel && player)
         channel->GiveModerator(_player, player);
@@ -133,7 +133,7 @@ void WorldSession::handleChannelUnmoderator(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     const auto player = sObjectMgr.GetPlayer(srlPacket.unmodName.c_str(), false);
     if (channel && player)
         channel->TakeModerator(_player, player);
@@ -145,7 +145,7 @@ void WorldSession::handleChannelMute(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     const auto player = sObjectMgr.GetPlayer(srlPacket.muteName.c_str(), false);
     if (channel && player)
         channel->Mute(_player, player);
@@ -157,7 +157,7 @@ void WorldSession::handleChannelUnmute(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     const auto player = sObjectMgr.GetPlayer(srlPacket.unmuteName.c_str(), false);
     if (channel && player)
         channel->Unmute(_player, player);
@@ -169,7 +169,7 @@ void WorldSession::handleChannelInvite(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     const auto player = sObjectMgr.GetPlayer(srlPacket.inviteName.c_str(), false);
     if (channel && player)
         channel->Invite(_player, player);
@@ -181,7 +181,7 @@ void WorldSession::handleChannelKick(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     const auto player = sObjectMgr.GetPlayer(srlPacket.kickName.c_str(), false);
     if (channel && player)
         channel->Kick(_player, player, false);
@@ -193,7 +193,7 @@ void WorldSession::handleChannelBan(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     const auto player = sObjectMgr.GetPlayer(srlPacket.banName.c_str(), false);
     if (channel && player)
         channel->Kick(_player, player, true);
@@ -205,7 +205,7 @@ void WorldSession::handleChannelUnban(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     const auto playerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.unbanName.c_str());
     if (channel && playerInfo)
         channel->Unban(_player, playerInfo);
@@ -217,7 +217,7 @@ void WorldSession::handleChannelAnnounce(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     if (channel)
         channel->Announce(_player);
 }
@@ -228,7 +228,7 @@ void WorldSession::handleChannelModerate(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     if (channel)
         channel->Moderate(_player);
 }
@@ -239,7 +239,7 @@ void WorldSession::handleChannelRosterQuery(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto channel = sChannelMgr.GetChannel(srlPacket.name.c_str(), _player);
+    const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     if (channel)
         channel->List(_player);
 }

@@ -302,7 +302,7 @@ void WorldSession::LogoutPlayer(bool Save)
         if (ticket != NULL)
         {
             // Send status change to gm_sync_channel
-            Channel* chn = sChannelMgr.GetChannel(sWorld.getGmClientChannel().c_str(), _player);
+            Channel* chn = sChannelMgr.getChannel(sWorld.getGmClientChannel(), _player);
             if (chn)
             {
                 std::stringstream ss;

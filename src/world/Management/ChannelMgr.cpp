@@ -4,15 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "StdAfx.h"
-#include "Server/MainServerDefines.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
-#include "Config/Config.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
-#include "Chat/ChatDefines.hpp"
-#include "WorldPacket.h"
 #include "Units/Players/Player.h"
 #include "Server/Packets/SmsgChannelNotify.h"
 
@@ -24,132 +20,150 @@ ChannelMgr& ChannelMgr::getInstance()
     return mInstance;
 }
 
+void ChannelMgr::initialize()
+{
+    m_seperateChannels = false;
+}
+
 void ChannelMgr::finalize()
 {
     for (uint8 i = 0; i < 2; ++i)
     {
-        ChannelList::iterator itr = this->Channels[i].begin();
-        for (; itr != this->Channels[i].end(); ++itr)
-        {
-            delete itr->second;
-        }
-        Channels[i].clear();
+        for (auto& channelList : this->m_channelList[i])
+            delete channelList.second;
+
+        m_channelList[i].clear();
     }
 }
 
 void ChannelMgr::loadConfigSettings()
 {
-    std::string BannedChannels = worldConfig.chat.bannedChannels;
-    std::string MinimumLevel = worldConfig.chat.minimumTalkLevel;
+    auto bannedChannels = worldConfig.chat.bannedChannels;
+    auto minimumLevel = worldConfig.chat.minimumTalkLevel;
 
     m_confSettingLock.Acquire();
-    m_bannedChannels = Util::SplitStringBySeperator(BannedChannels, ";");
-    m_minimumChannel = Util::SplitStringBySeperator(MinimumLevel, ";");
+
+    m_bannedChannels = Util::SplitStringBySeperator(bannedChannels, ";");
+    m_minimumChannel = Util::SplitStringBySeperator(minimumLevel, ";");
+
     m_confSettingLock.Release();
 }
 
-Channel* ChannelMgr::GetCreateChannel(const char* name, Player* p, uint32 type_id)
+void ChannelMgr::setSeperatedChannels(bool enabled)
 {
-    ChannelList::iterator itr;
-    ChannelList* cl = &Channels[0];
-    Channel* chn;
-    if (seperatechannels && p != NULL && stricmp(name, worldConfig.getGmClientChannelName().c_str()))
-        cl = &Channels[p->getTeam()];
+    m_seperateChannels = enabled;
+}
 
-    lock.Acquire();
-    for (itr = cl->begin(); itr != cl->end(); ++itr)
+Channel* ChannelMgr::getOrCreateChannel(std::string name, Player* player, uint32_t typeId)
+{
+    auto channelList = &m_channelList[0];
+    if (m_seperateChannels && player && name != worldConfig.getGmClientChannelName())
+        channelList = &m_channelList[player->getTeam()];
+
+    m_lock.Acquire();
+
+    for (auto& channelListMember : *channelList)
     {
-        if (!stricmp(name, itr->first.c_str()))
+        if (name == channelListMember.first)
         {
-            lock.Release();
-            return itr->second;
+            m_lock.Release();
+
+            return channelListMember.second;
         }
     }
 
-    // make sure the name isn't banned
     m_confSettingLock.Acquire();
-    for (std::vector<std::string>::iterator itr2 = m_bannedChannels.begin(); itr2 != m_bannedChannels.end(); ++itr2)
+
+    for (auto& m_bannedChannel : m_bannedChannels)
     {
-        if (!strnicmp(name, itr2->c_str(), itr2->size()))
+        if (name == m_bannedChannel)
         {
-            lock.Release();
+            m_lock.Release();
+
             m_confSettingLock.Release();
-            return NULL;
+
+            return nullptr;
         }
     }
 
-    chn = new Channel(name, (seperatechannels && p != NULL) ? p->getTeam() : TEAM_ALLIANCE, type_id);
-    m_confSettingLock.Release();//Channel::Channel() reads configs so we release the lock after we create the Channel.
-    cl->insert(make_pair(chn->m_name, chn));
-    lock.Release();
-    return chn;
+    auto channel = new Channel(name.c_str(), (m_seperateChannels && player) ? player->getTeam() : TEAM_ALLIANCE, typeId);
+
+    m_confSettingLock.Release();
+
+    channelList->insert(make_pair(channel->m_name, channel));
+
+    m_lock.Release();
+
+    return channel;
 }
 
-Channel* ChannelMgr::GetChannel(const char* name, Player* p)
+void ChannelMgr::removeChannel(Channel* channel)
 {
-    ChannelList::iterator itr;
-    ChannelList* cl = &Channels[0];
-    if (seperatechannels && stricmp(name, worldConfig.getGmClientChannelName().c_str()))
-        cl = &Channels[p->getTeam()];
+    if (!channel)
+        return;
 
-    lock.Acquire();
-    for (itr = cl->begin(); itr != cl->end(); ++itr)
+    auto channelList = &m_channelList[0];
+    if (m_seperateChannels)
+        channelList = &m_channelList[channel->m_team];
+
+    m_lock.Acquire();
+
+    for (auto channelListMember = channelList->begin(); channelListMember != channelList->end(); ++channelListMember)
     {
-        if (!stricmp(name, itr->first.c_str()))
+        if (channelListMember->second == channel)
         {
-            lock.Release();
-            return itr->second;
-        }
-    }
+            channelList->erase(channelListMember);
+            delete channel;
 
-    lock.Release();
-    return NULL;
-}
+            m_lock.Release();
 
-Channel* ChannelMgr::GetChannel(const char* name, uint32 team)
-{
-    ChannelList::iterator itr;
-    ChannelList* cl = &Channels[0];
-    if (seperatechannels && stricmp(name, worldConfig.getGmClientChannelName().c_str()))
-        cl = &Channels[team];
-
-    lock.Acquire();
-    for (itr = cl->begin(); itr != cl->end(); ++itr)
-    {
-        if (!stricmp(name, itr->first.c_str()))
-        {
-            lock.Release();
-            return itr->second;
-        }
-    }
-
-    lock.Release();
-    return NULL;
-}
-
-void ChannelMgr::RemoveChannel(Channel* chn)
-{
-    ChannelList::iterator itr;
-    ChannelList* cl = &Channels[0];
-    if (seperatechannels)
-        cl = &Channels[chn->m_team];
-
-    lock.Acquire();
-    for (itr = cl->begin(); itr != cl->end(); ++itr)
-    {
-        if (itr->second == chn)
-        {
-            cl->erase(itr);
-            delete chn;
-            lock.Release();
             return;
         }
     }
 
-    lock.Release();
+    m_lock.Release();
 }
 
-void ChannelMgr::initialize()
+Channel* ChannelMgr::getChannel(std::string name, Player* player)
 {
-    seperatechannels = false;
+    auto channelList = &m_channelList[0];
+    if (m_seperateChannels && player && name != worldConfig.getGmClientChannelName())
+        channelList = &m_channelList[player->getTeam()];
+
+    m_lock.Acquire();
+
+    for (auto& channelListMember : *channelList)
+    {
+        if (name == channelListMember.first)
+        {
+            m_lock.Release();
+            return channelListMember.second;
+        }
+    }
+
+    m_lock.Release();
+
+    return nullptr;
+}
+
+Channel* ChannelMgr::getChannel(std::string name, uint32_t team)
+{
+    auto channelList = &m_channelList[0];
+    if (m_seperateChannels && name != worldConfig.getGmClientChannelName())
+        channelList = &m_channelList[team];
+
+    m_lock.Acquire();
+
+    for (auto& channelListMember : *channelList)
+    {
+        if (name == channelListMember.first)
+        {
+            m_lock.Release();
+            return channelListMember.second;
+        }
+    }
+
+    m_lock.Release();
+
+    return nullptr;
 }

@@ -20,10 +20,8 @@
  */
 
 #include "StdAfx.h"
-#include "Server/MainServerDefines.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
-#include "Config/Config.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
@@ -58,7 +56,7 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
     m_id = type_id;
     m_minimumLevel = 1;
 
-    auto chat_channels = sChatChannelsStore.LookupEntry(type_id);
+    const auto chat_channels = sChatChannelsStore.LookupEntry(type_id);
     if (chat_channels != nullptr)
     {
         m_general = true;
@@ -77,11 +75,13 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
             m_flags |= CHANNEL_FLAGS_LFG;       // old 0x40;        // lfg flag
     }
     else
-        m_flags = CHANNEL_FLAGS_CUSTOM;         // old 0x01;
-
-    for (std::vector<std::string>::iterator itr = sChannelMgr.m_minimumChannel.begin(); itr != sChannelMgr.m_minimumChannel.end(); ++itr)
     {
-        if (stricmp(name, itr->c_str()))
+        m_flags = CHANNEL_FLAGS_CUSTOM;         // old 0x01;
+    }
+
+    for (const auto& channelName : sChannelMgr.m_minimumChannel)
+    {
+        if (name != channelName)
         {
             m_minimumLevel = 10;
             m_general = true;
@@ -180,7 +180,7 @@ void Channel::Part(Player* plr, bool send_packet)
     if (m_members.empty())
     {
         m_lock.Release();
-        sChannelMgr.RemoveChannel(this);
+        sChannelMgr.removeChannel(this);
     }
     else
     {

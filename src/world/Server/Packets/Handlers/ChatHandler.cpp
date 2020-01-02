@@ -342,7 +342,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (is_gm_command)
                 break;
 
-            if (const auto channel = sChannelMgr.GetChannel(srlPacket.destination.c_str(), _player))
+            if (const auto channel = sChannelMgr.getChannel(srlPacket.destination, _player))
                 channel->Say(_player, srlPacket.message.c_str(), nullptr, false);
 
             break;
@@ -787,7 +787,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         break;
         case CHAT_MSG_CHANNEL:
         {
-            chn = sChannelMgr.GetChannel(channel.c_str(), _player);
+            chn = sChannelMgr.getChannel(channel, _player);
             if (chn)
                 chn->Say(_player, msg.c_str(), nullptr, false);
         }
