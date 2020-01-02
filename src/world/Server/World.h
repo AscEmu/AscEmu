@@ -168,7 +168,7 @@ class SERVER_DECL World : public EventableObject, public IUpdatable
 
         void sendMessageToAll(const std::string& message, WorldSession* sendToSelf = nullptr);
         void sendAreaTriggerMessage(const std::string& message, WorldSession* sendToSelf = nullptr);
-        void sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf = nullptr);
+        void sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf = nullptr, int32_t team = -1);
 
         void sendZoneMessage(WorldPacket* worldPacket, uint32_t zoneId, WorldSession* sendToSelf = nullptr);
         void sendInstanceMessage(WorldPacket* worldPacket, uint32_t instanceId, WorldSession* sendToSelf = nullptr);

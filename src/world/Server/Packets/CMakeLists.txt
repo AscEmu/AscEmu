@@ -383,6 +383,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgResurrectFailed.h
    ${PATH_PREFIX}/SmsgSellItem.h
    ${PATH_PREFIX}/SmsgSendMailResult.h
+   ${PATH_PREFIX}/SmsgServerFirstAchievement.h
    ${PATH_PREFIX}/SmsgSetExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgSetFlatSpellModifier.h
    ${PATH_PREFIX}/SmsgSetPctSpellModifier.h

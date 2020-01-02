@@ -17,6 +17,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.h"
 #include "Server/Definitions.h"
 #include "Guild.h"
+#include "Server/Packets/SmsgServerFirstAchievement.h"
+
+using namespace AscEmu::Packets;
 
 #if VERSION_STRING > TBC
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -361,12 +364,13 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
     // Send Achievement message to everyone currently on the server
     if (achievement->flags & (ACHIEVEMENT_FLAG_REALM_FIRST_KILL | ACHIEVEMENT_FLAG_REALM_FIRST_REACH))
     {
-        WorldPacket data(SMSG_SERVER_FIRST_ACHIEVEMENT, 200);
-        data << GetPlayer()->getName().c_str();
-        data << uint64_t(GetPlayer()->getGuid());
-        data << uint32_t(achievement->ID);
-        data << uint32_t(0);
-        sWorld.sendGlobalMessage(&data);
+        std::string playerName = GetPlayer()->getName();
+        uint64_t guid = GetPlayer()->getGuid();
+
+        // own team = clickable name
+        sWorld.sendGlobalMessage(SmsgServerFirstAchievement(playerName, guid, achievement->ID, 1).serialise().get(), nullptr, GetPlayer()->GetTeam());
+        
+        sWorld.sendGlobalMessage(SmsgServerFirstAchievement(playerName, guid, achievement->ID, 0).serialise().get(), nullptr, GetPlayer()->GetTeam() == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE);
     }
     else
     {
