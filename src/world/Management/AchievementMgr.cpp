@@ -1984,7 +1984,7 @@ bool AchievementMgr::UpdateAchievementCriteria(Player* player, int32_t criteriaI
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
     {
         // can't complete this type of achivement (counter)
-        LogDebug("AchievementMgr Referred achievement (%lu) |Hachievement:%lu:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
+        LogDebug("AchievementMgr Referred achievement (%u) |Hachievement:%u:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
             achievement->ID, achievement->ID, player->getGuid(), achievement->name);
         return false;
     }
