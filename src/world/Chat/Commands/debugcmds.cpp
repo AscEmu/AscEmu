@@ -1122,7 +1122,7 @@ bool ChatHandler::HandleAIAgentDebugBegin(const char* /*args*/, WorldSession* m_
         aiagent_extra[(*itr)->getId()] = t;
     }
 
-    GreenSystemMessage(m_session, "Loaded %u spells for testing.", aiagent_spells.size());
+    GreenSystemMessage(m_session, "Loaded %u spells for testing.", static_cast<uint32_t>(aiagent_spells.size()));
     return true;
 }
 
