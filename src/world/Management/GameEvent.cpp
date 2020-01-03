@@ -112,10 +112,10 @@ void GameEvent::DestroyAllEntities()
         if (mEventScript != nullptr)
             mEventScript->OnBeforeCreatureDespawn(this, npc);
 
-        npc->Delete();
-
         if (mEventScript != nullptr)
             mEventScript->OnAfterCreatureDespawn(this, npc);
+
+        npc->Delete();
     }
 
     for (auto gameobject : active_gameobjects)
@@ -123,10 +123,10 @@ void GameEvent::DestroyAllEntities()
         if (mEventScript != nullptr)
             mEventScript->OnBeforeGameObjectDespawn(this, gameobject);
 
-        gameobject->Delete();
-
         if (mEventScript != nullptr)
             mEventScript->OnAfterGameObjectDespawn(this, gameobject);
+
+        gameobject->Delete();
     }
 
     active_npcs.clear();
