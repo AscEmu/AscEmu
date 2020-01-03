@@ -1688,7 +1688,7 @@ void ObjectMgr::LoadTrainers()
 
     } while (result->NextRow());
     delete result;
-    LogDetail("ObjectMgr : %u trainers loaded.", mTrainers.size());
+    LogDetail("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
 }
 #else
 void ObjectMgr::LoadTrainers()
@@ -1848,7 +1848,7 @@ void ObjectMgr::LoadTrainers()
     }
     while (result->NextRow());
     delete result;
-    LogDetail("ObjectMgr : %u trainers loaded.", mTrainers.size());
+    LogDetail("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
 #endif
 }
 #endif
