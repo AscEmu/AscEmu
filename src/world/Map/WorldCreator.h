@@ -125,7 +125,7 @@ public:
     void deleteExpiredAndInvalidInstances();
     void loadAndApplySavedInstanceValues();
 
-    void getNextInstanceId();
+    uint32_t getNextInstanceId();
     //MIT ends
 };
 
