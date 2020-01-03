@@ -254,7 +254,7 @@ namespace MMAP
         if (itr == loadedMMaps.end() || !itr->second)
         {
             // file may not exist, therefore not loaded
-            LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Asked to unload not loaded navmesh map. %04u%02i%02i.mmtile", mapId);
+            LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Asked to unload not loaded navmesh map. %04i.mmtile", mapId);
             return false;
         }
 
