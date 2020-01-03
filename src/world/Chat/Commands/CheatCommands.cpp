@@ -362,7 +362,7 @@ bool ChatHandler::HandleCheatItemStackCommand(const char* /*args*/, WorldSession
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "ItemStack cheat activated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "ItemStack cheat activated.");
         }
         else
         {
@@ -377,7 +377,7 @@ bool ChatHandler::HandleCheatItemStackCommand(const char* /*args*/, WorldSession
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "ItemStack cheat deactivated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "ItemStack cheat deactivated.");
         }
         else
         {
