@@ -1210,7 +1210,7 @@ void ObjectMgr::LoadVendors()
 
         delete result;
     }
-    LogDetail("ObjectMgr : %u vendors loaded.", mVendors.size());
+    LogDetail("ObjectMgr : %u vendors loaded.", static_cast<uint32_t>(mVendors.size()));
 }
 
 void ObjectMgr::ReloadVendors()
