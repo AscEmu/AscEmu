@@ -255,7 +255,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
             named_player->KillPlayer();
             RedSystemMessage(named_player->GetSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
             GreenSystemMessage(m_session, "Killed player %s.", args);
-            sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", m_session->GetPlayer()->getName().c_str(), named_player->getGuid(), named_player->getName().c_str());
+            sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", named_player->getName().c_str(), named_player->getGuid());
         }
     }
     else
