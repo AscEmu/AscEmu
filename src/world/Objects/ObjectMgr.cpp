@@ -2759,7 +2759,7 @@ void ObjectMgr::LoadInstanceReputationModifiers()
     while (result->NextRow());
     delete result;
 
-    LogDetail("ObjectMgr : %u instance reputation modifiers loaded.", m_reputation_instance.size());
+    LogDetail("ObjectMgr : %u instance reputation modifiers loaded.", static_cast<uint32_t>(m_reputation_instance.size()));
 }
 
 bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim)
