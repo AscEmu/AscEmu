@@ -2472,7 +2472,7 @@ void ObjectMgr::LoadGuildCharters()
     }
     while (result->NextRow());
     delete result;
-    LogDetail("ObjectMgr : %u charters loaded.", m_charters[0].size());
+    LogDetail("ObjectMgr : %u charters loaded.", static_cast<uint32_t>(m_charters[0].size()));
 }
 
 Charter* ObjectMgr::GetCharter(uint32 CharterId, CharterTypes Type)
