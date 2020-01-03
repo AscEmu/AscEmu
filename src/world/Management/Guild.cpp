@@ -2321,13 +2321,13 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
     Item* pDestItem = getBankTab(tabId)->getItem(slotId);
     Item* pSourceItem2 = pSourceItem;
 
-    if (pSourceItem != nullptr)
+    if (pSourceItem == nullptr)
+        return;
+
+    if (pSourceItem->isSoulbound() || pSourceItem->getItemProperties()->Class == ITEM_CLASS_QUEST)
     {
-        if (pSourceItem->isSoulbound() || pSourceItem->getItemProperties()->Class == ITEM_CLASS_QUEST)
-        {
-            player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_CANT_DROP_SOULBOUND);
-            return;
-        }
+        player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_CANT_DROP_SOULBOUND);
+        return;
     }
 
     if (!toChar)
@@ -2350,7 +2350,8 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
         {
             if (player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(playerBag, playerSlotId, false) == nullptr)
                 return;
-            if(pSourceItem)
+
+            if (pSourceItem)
                 pSourceItem->RemoveFromWorld();
         }
 
@@ -2365,9 +2366,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
 
                 pDestItem = sObjectMgr.CreateItem(pSourceItem2->getEntry(), player);
                 if (pDestItem == nullptr)
-                {
                     return;
-                }
 
                 pDestItem->setStackCount(splitedAmount);
                 pDestItem->setCreatorGuid(pSourceItem2->getCreatorGuid());
