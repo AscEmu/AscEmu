@@ -2822,7 +2822,7 @@ void ObjectMgr::LoadDisabledSpells()
         delete result;
     }
 
-    LogNotice("ObjectMgr : %u disabled spells.", m_disabled_spells.size());
+    LogNotice("ObjectMgr : %u disabled spells.", static_cast<uint32_t>(m_disabled_spells.size()));
 }
 
 void ObjectMgr::ReloadDisabledSpells()
