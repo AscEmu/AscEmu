@@ -154,7 +154,7 @@ bool Container::AddItem(int16 slot, Item* item)
     //ARCEMU_ASSERT(  m_Slot[slot] == NULL);
     if (m_Slot[slot] != NULL)
     {
-        LogError("Bad container item %u slot %d", item->getGuid(), slot);
+        LogError("Bad container item %u slot %d", item->getGuidLow(), slot);
         return false;
     }
 
