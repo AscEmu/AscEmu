@@ -1783,7 +1783,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
         if (dmg <= 0)
             return; //who would want a negative dmg here ?
 
-        LogDebugFlag(LF_AURA, "Adding periodic dmg aura, spellid: %lu", this->GetSpellId());
+        LogDebugFlag(LF_AURA, "Adding periodic dmg aura, spellid: %u", this->GetSpellId());
         sEventMgr.AddEvent(this, &Aura::EventPeriodicDamage, (uint32)dmg,
                            EVENT_AURA_PERIODIC_DAMAGE, GetSpellInfo()->getEffectAmplitude(mod->m_effectIndex), 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
