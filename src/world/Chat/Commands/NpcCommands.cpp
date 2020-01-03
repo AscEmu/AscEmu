@@ -829,7 +829,7 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
         {
             auto creature = static_cast<Creature*>(unit_target);
             BlueSystemMessage(m_session, "Creature %s selected.", creature->GetCreatureProperties()->Name.c_str());
-            sGMLog.writefromsession(m_session, "used possess command on Creature spawn_id %u", creature->GetCreatureProperties()->Name.c_str(), creature->GetSQL_id());
+            sGMLog.writefromsession(m_session, "used possess command on Creature %s spawn_id %u", creature->GetCreatureProperties()->Name.c_str(), creature->GetSQL_id());
         }
     }
     else
