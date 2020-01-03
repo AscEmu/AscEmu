@@ -231,7 +231,7 @@ void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
 
     const auto auctionHouse = creature->auctionHouse;
     const auto auction = auctionHouse->GetAuction(srlPacket.auctionId);
-    if (auction == nullptr || !auction->Owner || _player == nullptr)
+    if (auction == nullptr || !auction->Owner)
     {
         SendPacket(SmsgAuctionCommandResult(0, AUCTION_BID, AUCTION_ERROR_INTERNAL, 0).serialise().get());
         return;
