@@ -450,7 +450,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         }
         default:
         {
-            LogDebugFlag(LF_MAP, "MapMgr::RemoveObject", "called for invalid type %u.", obj->GetTypeFromGUID());
+            LogDebugFlag(LF_MAP, "MapMgr::RemoveObject called for invalid type %u.", obj->GetTypeFromGUID());
             break;
         }
     }
