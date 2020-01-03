@@ -493,12 +493,12 @@ bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session
         return true;
 
     uint32 fail = atol(args);
-    if (fail < SPELL_CANCAST_OK || fail > SPELL_FAILED_UNKNOWN)
+    if (fail > SPELL_FAILED_UNKNOWN)
     {
         RedSystemMessage(m_session, "Argument %u is out of range!", fail);
         return false;
     }
-    selected_player->sendCastFailedPacket(1, (uint8)fail, 0, 0);
+    selected_player->sendCastFailedPacket(1, static_cast<uint8>(fail), 0, 0);
 
     return true;
 }
