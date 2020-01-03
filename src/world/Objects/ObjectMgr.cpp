@@ -2090,7 +2090,7 @@ void ObjectMgr::GenerateLevelUpInfo()
             mLevelInfo.insert(LevelInfoMap::value_type(p, lMap));
         }
     }
-    LogNotice("ObjectMgr : %u level up information generated.", mLevelInfo.size());
+    LogNotice("ObjectMgr : %u level up information generated.", static_cast<uint32_t>(mLevelInfo.size()));
 }
 
 LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
