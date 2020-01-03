@@ -645,7 +645,7 @@ void SpellMgr::applyHackFixes()
 {
     //Updating spell.dbc
 
-    LogNotice("World : Processing %u spells...", sSpellMgr.getSpellInfoMap()->size());
+    LogNotice("World : Processing %u spells...", static_cast<uint32_t>(sSpellMgr.getSpellInfoMap()->size()));
 
     SpellInfo* sp = nullptr;
 
