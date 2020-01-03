@@ -810,7 +810,7 @@ public:
         return false;
     }
 
-    void CastSpell(Unit* victim, SpellInfo* CastingSpell, int* dmg_overwrite)
+    void CastSpell(Unit* victim, SpellInfo const* CastingSpell, int* dmg_overwrite)
     {
         SpellCastTargets targets;
         targets.m_unitTarget = victim->getGuid();
