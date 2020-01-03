@@ -647,7 +647,13 @@ void Guild::handleBuyBankTab(WorldSession* session, uint8_t tabId)
 void Guild::handleAcceptMember(WorldSession* session)
 {
     Player* player = session->GetPlayer();
+    if (player == nullptr)
+        return;
+
     Player* leader = sObjectMgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(getLeaderGUID()));
+    if (leader == nullptr)
+        return;
+
     if (worldConfig.player.isInterfactionGuildEnabled == false && player->getTeam() != leader->getTeam())
         return;
 
