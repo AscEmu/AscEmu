@@ -1034,7 +1034,7 @@ void World::logoutAllPlayers()
     for (activeSessionMap::iterator i = mActiveSessionMapStore.begin(); i != mActiveSessionMapStore.end(); ++i)
         (i->second)->LogoutPlayer(true);
 
-    LogNotice("World", "Deleting sessions...");
+    LogNotice("World : Deleting sessions...");
     for (activeSessionMap::iterator i = mActiveSessionMapStore.begin(); i != mActiveSessionMapStore.end();)
     {
         WorldSession* worldSession = i->second;
