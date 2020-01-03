@@ -1930,7 +1930,7 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32_t criteri
     if (!achievement)
     {
         // achievement not found
-        gmSession->SystemMessage("Referred achievement (%lu) entry not found.", criteria->referredAchievement);
+        gmSession->SystemMessage("Referred achievement (%u) entry not found.", criteria->referredAchievement);
         return false;
     }
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
