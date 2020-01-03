@@ -73,7 +73,7 @@ namespace DBC
                 uint32 sql_record_count = 0;
                 uint32 sql_highest_index = 0;
                 // SQL not yet implemented
-                auto result = 0;
+                //auto result = 0;
                 // Load data from SQL
                 if (sql)
                 {
@@ -87,10 +87,10 @@ namespace DBC
 
                 m_string_pool_list.push_back(dbc_loader.AutoProduceStrings(m_format, reinterpret_cast<char*>(m_data_table)));
 
-                if (result)
+                /*if (result)
                 {
                     assert(false && "SqlDbc not yet implemented");
-                }
+                }*/
 
                 return m_index_table.as_t != NULL;
             }
