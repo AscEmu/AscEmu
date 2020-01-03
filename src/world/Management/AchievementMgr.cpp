@@ -1879,7 +1879,7 @@ bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32_t achi
     }
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
     {
-        gmSession->SystemMessage("Achievement (%lu) |Hachievement:%lu:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
+        gmSession->SystemMessage("Achievement (%u) |Hachievement:%u:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
                                  achievement->ID, achievement->ID, gmSession->GetPlayer()->getGuid(), achievement->name);
         return false;
     }
