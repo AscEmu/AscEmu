@@ -974,11 +974,11 @@ void World::loadMySQLTablesByTask()
 
 void World::logEntitySize()
 {
-    LogNotice("World : Object size: %u bytes", sizeof(Object));
-    LogNotice("World : Unit size: %u bytes", sizeof(Unit) + sizeof(AIInterface));
-    LogNotice("World : Creature size: %u bytes", sizeof(Creature) + sizeof(AIInterface));
-    LogNotice("World : Player size: %u bytes", sizeof(Player) + sizeof(ItemInterface) + 50000 + 30000 + 1000 + sizeof(AIInterface));
-    LogNotice("World : GameObject size: %u bytes", sizeof(GameObject));
+    LogNotice("World : Object size: %lu bytes", sizeof(Object));
+    LogNotice("World : Unit size: %lu bytes", sizeof(Unit) + sizeof(AIInterface));
+    LogNotice("World : Creature size: %lu bytes", sizeof(Creature) + sizeof(AIInterface));
+    LogNotice("World : Player size: %lu bytes", sizeof(Player) + sizeof(ItemInterface) + 50000 + 30000 + 1000 + sizeof(AIInterface));
+    LogNotice("World : GameObject size: %lu bytes", sizeof(GameObject));
 }
 
 void World::Update(unsigned long timePassed)
