@@ -225,7 +225,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         Disconnect();
         Anticheat_Log->writefromsession(this, "Player tried to use an item with a spell that didn't match the spell in the database.");
         Anticheat_Log->writefromsession(this, "Possibly corrupted or intentionally altered itemcache.wdb");
-        Anticheat_Log->writefromsession(this, "Itemid: %lu", itemProto->ItemId);
+        Anticheat_Log->writefromsession(this, "Itemid: %u", itemProto->ItemId);
         Anticheat_Log->writefromsession(this, "Spellid: %lu", srlPacket.spellId);
         Anticheat_Log->writefromsession(this, "Player was disconnected.");
         return;
