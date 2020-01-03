@@ -1874,7 +1874,7 @@ bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32_t achi
     auto achievement = sAchievementStore.LookupEntry(achievementID);
     if (!achievement)
     {
-        gmSession->SystemMessage("Achievement %lu entry not found.", achievementID);
+        gmSession->SystemMessage("Achievement %d entry not found.", achievementID);
         return false;
     }
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
