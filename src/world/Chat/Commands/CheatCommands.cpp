@@ -69,7 +69,7 @@ bool ChatHandler::HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_s
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "You can now use all taxi nodes.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "You can now use all taxi nodes.");
         }
         else
         {
@@ -85,7 +85,7 @@ bool ChatHandler::HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_s
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "You can just use discovered taxi nodes from now.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "You can just use discovered taxi nodes from now.");
         }
         else
         {
