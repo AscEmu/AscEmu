@@ -32,6 +32,8 @@ Loot* WorldSession::getItemLootFromHighGuidType(WoWGuid wowGuid)
         {
             if (auto creature = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart()))
                 return &creature->loot;
+
+            return nullptr;
         }
         case HighGuid::GameObject:
         {
@@ -40,16 +42,22 @@ Loot* WorldSession::getItemLootFromHighGuidType(WoWGuid wowGuid)
                 if (gameObject->IsLootable())
                     return &dynamic_cast<GameObject_Lootable*>(gameObject)->loot;
             }
+
+            return nullptr;
         }
         case HighGuid::Item:
         {
             if (const auto item = _player->getItemInterface()->GetItemByGUID(wowGuid.GetOldGuid()))
                 return item->loot;
+
+            return nullptr;
         }
         case HighGuid::Player:
         {
             if (auto player = _player->GetMapMgr()->GetPlayer(wowGuid.getGuidLowPart()))
                 return &player->loot;
+
+            return nullptr;
         }
         default:
         {
