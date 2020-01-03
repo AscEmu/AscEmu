@@ -732,28 +732,30 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
             return;
         }
 
-        GuildMember const* memberMe = getMember(player->getGuid());
-        uint8_t rankId = memberMe->getRankId();
-        if (demote)
+        if (GuildMember const* memberMe = getMember(player->getGuid()))
         {
-            if (member->isRankNotLower(rankId))
+            uint8_t rankId = memberMe->getRankId();
+            if (demote)
             {
-                session->SendPacket(SmsgGuildCommandResult(type, name, GC_ERROR_RANK_TOO_HIGH_S).serialise().get());
-                return;
-            }
+                if (member->isRankNotLower(rankId))
+                {
+                    session->SendPacket(SmsgGuildCommandResult(type, name, GC_ERROR_RANK_TOO_HIGH_S).serialise().get());
+                    return;
+                }
 
-            if (member->getRankId() >= _getLowestRankId())
-            {
-                session->SendPacket(SmsgGuildCommandResult(type, name, GC_ERROR_RANK_TOO_LOW_S).serialise().get());
-                return;
+                if (member->getRankId() >= _getLowestRankId())
+                {
+                    session->SendPacket(SmsgGuildCommandResult(type, name, GC_ERROR_RANK_TOO_LOW_S).serialise().get());
+                    return;
+                }
             }
-        }
-        else
-        {
-            if (member->isRankNotLower(rankId + 1))
+            else
             {
-                session->SendPacket(SmsgGuildCommandResult(type, name, GC_ERROR_RANK_TOO_HIGH_S).serialise().get());
-                return;
+                if (member->isRankNotLower(rankId + 1))
+                {
+                    session->SendPacket(SmsgGuildCommandResult(type, name, GC_ERROR_RANK_TOO_HIGH_S).serialise().get());
+                    return;
+                }
             }
         }
 
