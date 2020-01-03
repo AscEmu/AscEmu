@@ -2344,7 +2344,7 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
 
     delete player_create_info_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo` table in %u ms!", _playerCreateInfoStore.size(), Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo` table in %u ms!", static_cast<uint32_t>(_playerCreateInfoStore.size()), Util::GetTimeDifferenceToNow(startTime));
 }
 
 void MySQLDataStore::loadPlayerCreateInfoSkillsTable()
