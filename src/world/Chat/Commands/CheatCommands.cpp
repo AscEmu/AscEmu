@@ -278,7 +278,7 @@ bool ChatHandler::HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_se
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "Fly cheat activated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "Fly cheat is now activated for you.");
         }
         else
         {
