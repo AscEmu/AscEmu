@@ -1918,12 +1918,12 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32_t criteri
     auto criteria = sAchievementCriteriaStore.LookupEntry(criteriaID);
     if (!criteria)
     {
-        gmSession->SystemMessage("Achievement criteria %lu not found.", criteriaID);
+        gmSession->SystemMessage("Achievement criteria %d not found.", criteriaID);
         return false;
     }
     if (IsCompletedCriteria(criteria))
     {
-        gmSession->SystemMessage("Achievement criteria %lu already completed.", criteriaID);
+        gmSession->SystemMessage("Achievement criteria %d already completed.", criteriaID);
         return false;
     }
     auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
