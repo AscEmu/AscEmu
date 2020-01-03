@@ -2646,7 +2646,7 @@ void MySQLDataStore::loadSpellOverrideTable()
 
     delete spelloverride_result;
 
-    LogDetail("MySQLDataLoads : %u spell overrides loaded.", _spellOverrideIdStore.size());
+    LogDetail("MySQLDataLoads : %u spell overrides loaded.", static_cast<uint32_t>(_spellOverrideIdStore.size()));
 }
 
 void MySQLDataStore::loadNpcGossipTextIdTable()
