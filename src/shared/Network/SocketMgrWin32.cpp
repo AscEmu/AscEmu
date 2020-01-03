@@ -142,7 +142,7 @@ void SocketMgr::ShutdownThreads()
 
 void SocketMgr::ShowStatus()
 {
-    LogDefault("sockets count = %u", socket_count.load());
+    LogDefault("sockets count = %u", static_cast<uint32_t>(socket_count.load()));
 }
 
 #endif
