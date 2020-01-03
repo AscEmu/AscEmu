@@ -865,24 +865,28 @@ bool X53Mount(uint8_t /*effectIndex*/, Aura *a, bool apply)
     if (apply)
     {
         uint32 newspell = 0;
-        Player* p = static_cast<Player*>(a->GetTarget());
-        auto area = p->GetArea();
-        uint32 skill = p->_GetSkillLineCurrent(SKILL_RIDING, true);
-
-        if (skill >= 225 && (((area->flags & 1024) && p->GetMapId() != 571) ||
-            ((area->flags & 1024) && p->GetMapId() == 571 && p->HasSpell(54197))))
+        if (Player* p = dynamic_cast<Player*>(a->GetTarget()))
         {
-            if (skill == 300)
+            if (auto area = p->GetArea())
             {
-                if (p->HasSpellWithAuraNameAndBasePoints(SPELL_AURA_ENABLE_FLIGHT2, 310))
-                    newspell = 76154;
-                else
-                    newspell = 75972;
+                uint32 skill = p->_GetSkillLineCurrent(SKILL_RIDING, true);
+
+                if (skill >= 225 && (((area->flags & 1024) && p->GetMapId() != 571) ||
+                    ((area->flags & 1024) && p->GetMapId() == 571 && p->HasSpell(54197))))
+                {
+                    if (skill == 300)
+                    {
+                        if (p->HasSpellWithAuraNameAndBasePoints(SPELL_AURA_ENABLE_FLIGHT2, 310))
+                            newspell = 76154;
+                        else
+                            newspell = 75972;
+                    }
+                    else
+                        newspell = 75957;
+                }
+                a->GetTarget()->castSpell(a->GetTarget(), newspell, true);
             }
-            else
-                newspell = 75957;
         }
-        a->GetTarget()->castSpell(a->GetTarget(), newspell, true);
     }
     return true;
 }
