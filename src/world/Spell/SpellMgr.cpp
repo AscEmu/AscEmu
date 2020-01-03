@@ -168,7 +168,7 @@ void SpellMgr::addAuraById(const uint32_t spellId, AuraScriptLinker auraScript)
     auto spellInfo = getMutableSpellInfo(spellId);
     if (spellInfo == nullptr)
     {
-        LogError("SpellMgr::addAuraById : Unknown spell id %u tried to register an aura script, skipped");
+        LogError("SpellMgr::addAuraById : Unknown spell id %u tried to register an aura script, skipped", spellId);
         return;
     }
     addAuraBySpellInfo(spellInfo, auraScript);
