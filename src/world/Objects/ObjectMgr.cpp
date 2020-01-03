@@ -2701,7 +2701,7 @@ void ObjectMgr::LoadReputationModifierTable(const char* tablename, ReputationMod
         while (result->NextRow());
         delete result;
     }
-    LogNotice("ObjectMgr : %u reputation modifiers on %s.", dmap->size(), tablename);
+    LogNotice("ObjectMgr : %u reputation modifiers on %s.", static_cast<uint32_t>(dmap->size()), tablename);
 }
 
 void ObjectMgr::LoadReputationModifiers()
