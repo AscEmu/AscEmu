@@ -3112,7 +3112,7 @@ void ObjectMgr::LoadSpellTargetConstraints()
 
     delete result;
 
-    LogNotice("ObjectMgr : Loaded constraints for %u spells...", m_spelltargetconstraints.size());
+    LogNotice("ObjectMgr : Loaded constraints for %u spells...", static_cast<uint32_t>(m_spelltargetconstraints.size()));
 }
 
 SpellTargetConstraint* ObjectMgr::GetSpellTargetConstraintForSpell(uint32 spellid)
