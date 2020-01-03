@@ -211,7 +211,7 @@ bool ChatHandler::HandleCheatPowerCommand(const char* /*args*/, WorldSession* m_
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "Power cheat deactivated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "Power cheat is now deactivated for you.");
         }
         else
         {
