@@ -776,7 +776,13 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
 void Guild::handleSetMemberRank(WorldSession* session, uint64_t targetGuid, uint64_t setterGuid, uint32_t rank)
 {
     Player* player = session->GetPlayer();
+    if (player == nullptr)
+        return;
+
     GuildMember* member = getMember(targetGuid);
+    if (member == nullptr)
+        return;
+
     GuildRankRights rights = GR_RIGHT_PROMOTE;
     GuildCommandType type = GC_TYPE_PROMOTE;
 
