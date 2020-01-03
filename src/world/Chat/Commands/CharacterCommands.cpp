@@ -1456,7 +1456,7 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldS
     }
     else
     {
-        BlueSystemMessage(m_session, "You repaired all your items.", player_target->getName().c_str());
+        BlueSystemMessage(m_session, "You repaired all your items.");
     }
 
     return true;
