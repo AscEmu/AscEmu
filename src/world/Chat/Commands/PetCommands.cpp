@@ -242,12 +242,12 @@ bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_ses
         if (!selected_creature->isPet())
             return false;
 
-        selected_pet = static_cast< Pet* >(selected_creature);
+        selected_pet = dynamic_cast< Pet* >(selected_creature);
 
         selected_player = selected_pet->getPlayerOwner();
     }
 
-    if ((uint32)newLevel > selected_player->getLevel())
+    if (static_cast<uint32_t>(newLevel) > selected_player->getLevel())
     {
         RedSystemMessage(m_session, "You can not set a pet level higher than thew player level!");
         newLevel = selected_player->getLevel();
@@ -261,13 +261,13 @@ bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_ses
 
     if (selected_player != m_session->GetPlayer())
     {
-        GreenSystemMessage(m_session, "Set %s's pet to level %lu.", selected_player->getName().c_str(), newLevel);
-        SystemMessage(selected_player->GetSession(), "%s set your pet to level %lu.", m_session->GetPlayer()->getName().c_str(), newLevel);
-        sGMLog.writefromsession(m_session, "leveled %s's pet to %lu", selected_player->getName().c_str(), newLevel);
+        GreenSystemMessage(m_session, "Set %s's pet to level %u.", selected_player->getName().c_str(), static_cast<uint32_t>(newLevel));
+        SystemMessage(selected_player->GetSession(), "%s set your pet to level %u.", m_session->GetPlayer()->getName().c_str(), static_cast<uint32_t>(newLevel));
+        sGMLog.writefromsession(m_session, "leveled %s's pet to %u", selected_player->getName().c_str(), static_cast<uint32_t>(newLevel));
     }
     else
     {
-        GreenSystemMessage(m_session, "You set your pet to level %lu.", newLevel);
+        GreenSystemMessage(m_session, "You set your pet to level %u.", static_cast<uint32_t>(newLevel));
     }
 
     return true;
