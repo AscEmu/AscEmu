@@ -210,7 +210,7 @@ public:
         return false;
     }
 
-    void CastSpell(Unit* /*victim*/, SpellInfo* /*castingSpell*/, int* /*dmgOverwrite*/)
+    void CastSpell(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, int* /*dmgOverwrite*/)
     {
         Unit* caster = mTarget->GetMapMgr()->GetUnit(mCaster);
         if (caster == nullptr)
