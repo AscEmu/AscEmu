@@ -221,7 +221,7 @@ void GameEventMgr::LoadFromDB()
             } while (result->NextRow());
             delete result;
         }
-        LogDetail("GameEventMgr : %u creature spawns for %u events from table event_creature_spawns loaded.", pCount, mGameEvents.size());
+        LogDetail("GameEventMgr : %u creature spawns for %u events from table event_creature_spawns loaded.", pCount, static_cast<uint32_t>(mGameEvents.size()));
     }
     // Loading event_gameobject from WorldDB
     LogNotice("GameEventMgr : Start loading game event gameobject spawns");
