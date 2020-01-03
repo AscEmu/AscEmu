@@ -125,10 +125,16 @@ Spell* SpellMgr::newSpell(Object* caster, SpellInfo const* info, bool triggered,
     // This will of course be changed later
     auto spellInfo = info != nullptr ? getMutableSpellInfo(info->getId()) : nullptr;
 
+    if (spellInfo == nullptr)
+    {
+        LogError("You tried to create a Spell without SpellInfo. This is not possible!");
+        return nullptr;
+    }
+
     // Spells with a script
     if (info->spellScriptLink != nullptr)
         return (*SpellScriptLinker(info->spellScriptLink))(caster, spellInfo, triggered, aur);
-    
+
     // Standard spells without a script
     return new Spell(caster, spellInfo, triggered, aur);
 }
