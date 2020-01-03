@@ -599,7 +599,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
         }
         else
         {
-            SystemMessage(m_session, "%lu results found.", numFound);
+            SystemMessage(m_session, "%hhu results found.", numFound);
         }
     }
     else
