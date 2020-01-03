@@ -114,7 +114,7 @@ bool ChatHandler::HandleCheatCooldownCommand(const char* /*args*/, WorldSession*
 
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "Cooldown cheat activated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "Cooldown cheat activated.");
         }
         else
         {
@@ -129,7 +129,7 @@ bool ChatHandler::HandleCheatCooldownCommand(const char* /*args*/, WorldSession*
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "Cooldown cheat deactivated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "Cooldown cheat deactivated.");
         }
         else
         {
