@@ -127,7 +127,7 @@ void ObjectMgr::finalize()
         delete i->second;
     }
 
-    LogNotice("ObjectMgr", "Deleting Charters...");
+    LogNotice("ObjectMgr : Deleting Charters...");
     for (uint8 i = 0; i < NUM_CHARTER_TYPES; ++i)
     {
         for (std::unordered_map<uint32, Charter*>::iterator itr = m_charters[i].begin(); itr != m_charters[i].end(); ++itr)
