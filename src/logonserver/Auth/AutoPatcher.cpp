@@ -157,7 +157,7 @@ void PatchMgr::initialize()
             continue;
         }
 
-        LogNotice("PatchMgr : Found patch for b%u locale `%s` (%u bytes).", srcversion, locality, sb.st_size);
+        LogNotice("PatchMgr : Found patch for b%u locale `%s` (%u bytes).", srcversion, locality, static_cast<uint32_t>(sb.st_size));
         pPatch = new Patch;
         size = sb.st_size;
         pPatch->FileSize = size;
