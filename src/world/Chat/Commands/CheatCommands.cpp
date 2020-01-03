@@ -196,7 +196,7 @@ bool ChatHandler::HandleCheatPowerCommand(const char* /*args*/, WorldSession* m_
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "Power cheat activated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "Power cheat activated.");
         }
         else
         {
@@ -237,7 +237,7 @@ bool ChatHandler::HandleCheatGodCommand(const char* /*args*/, WorldSession* m_se
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "God cheat activated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "God cheat activated.");
         }
         else
         {
@@ -252,7 +252,7 @@ bool ChatHandler::HandleCheatGodCommand(const char* /*args*/, WorldSession* m_se
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "God cheat deactivated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "God cheat deactivated.");
         }
         else
         {
@@ -293,7 +293,7 @@ bool ChatHandler::HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_se
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "Fly cheat deactivated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "Fly cheat deactivated.");
         }
         else
         {
@@ -321,7 +321,7 @@ bool ChatHandler::HandleCheatAuraStackCommand(const char* /*args*/, WorldSession
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "AuraStack cheat activated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "AuraStack cheat activated.");
         }
         else
         {
@@ -336,7 +336,7 @@ bool ChatHandler::HandleCheatAuraStackCommand(const char* /*args*/, WorldSession
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "AuraStack cheat deactivated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "AuraStack cheat deactivated.");
         }
         else
         {
