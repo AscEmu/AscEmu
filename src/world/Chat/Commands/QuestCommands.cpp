@@ -1418,7 +1418,7 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
 
 bool ChatHandler::HandleQuestLoadCommand(const char* /*args*/, WorldSession* m_session)
 {
-    BlueSystemMessage(m_session, "Load of quests from the database has been initiated ...", "");
+    BlueSystemMessage(m_session, "Load of quests from the database has been initiated ...");
     auto startTime = Util::TimeNow();
 
     sQuestMgr.LoadExtraQuestStuff();
