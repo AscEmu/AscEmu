@@ -2850,7 +2850,7 @@ void ObjectMgr::LoadGroups()
         delete result;
     }
 
-    LogDetail("ObjectMgr : %u groups loaded.", this->m_groups.size());
+    LogDetail("ObjectMgr : %u groups loaded.", static_cast<uint32_t>(this->m_groups.size()));
 }
 
 void ObjectMgr::LoadArenaTeams()
