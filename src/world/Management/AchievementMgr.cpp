@@ -1848,7 +1848,7 @@ bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32_t achi
             auto ach = sAchievementStore.LookupEntry(i);
             if (ach == nullptr)
             {
-                m_player->GetSession()->SystemMessage("Achievement %lu entry not found.", i);
+                m_player->GetSession()->SystemMessage("Achievement %u entry not found.", i);
             }
             else
             {
