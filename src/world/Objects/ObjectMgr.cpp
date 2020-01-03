@@ -484,7 +484,7 @@ void ObjectMgr::LoadPlayersInfo()
         while (result->NextRow());
         delete result;
     }
-    LogDetail("ObjectMgr : %u players loaded.", m_playersinfo.size());
+    LogDetail("ObjectMgr : %u players loaded.", static_cast<uint32_t>(m_playersinfo.size()));
 }
 
 PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
