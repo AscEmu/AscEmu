@@ -366,7 +366,7 @@ void ObjectMgr::LoadSpellSkills()
             mSpellSkills[skill_line_ability->spell] = skill_line_ability;
         }
     }
-    LogDetail("ObjectMgr : %u spell skills loaded.", mSpellSkills.size());
+    LogDetail("ObjectMgr : %u spell skills loaded.", static_cast<uint32_t>(mSpellSkills.size()));
 }
 
 DBC::Structures::SkillLineAbilityEntry const* ObjectMgr::GetSpellSkill(uint32 id)
