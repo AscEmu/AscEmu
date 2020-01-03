@@ -2283,14 +2283,10 @@ void Player::sendLevelupInfoPacket(uint32_t level, uint32_t hp, uint32_t mana, u
 
 void Player::sendItemPushResultPacket(bool created, bool recieved, bool sendtoset, uint8_t destbagslot, uint32_t destslot, uint32_t count, uint32_t entry, uint32_t suffix, uint32_t randomprop, uint32_t stack)
 {
-    const std::unique_ptr<WorldPacket>::pointer data = SmsgItemPushResult(getGuid(), recieved, created, destbagslot, destslot,
-                                                                    entry, suffix, randomprop, count,
-                                                                    stack).serialise().get();
-
     if (sendtoset && InGroup())
-        GetGroup()->SendPacketToAll(data);
+        GetGroup()->SendPacketToAll(SmsgItemPushResult(getGuid(), recieved, created, destbagslot, destslot, entry, suffix, randomprop, count, stack).serialise().get());
     else
-        m_session->SendPacket(data);
+        m_session->SendPacket(SmsgItemPushResult(getGuid(), recieved, created, destbagslot, destslot, entry, suffix, randomprop, count, stack).serialise().get());
 }
 
 void Player::sendClientControlPacket(Unit* target, uint8_t allowMove)
