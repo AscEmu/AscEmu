@@ -930,15 +930,15 @@ void ObjectMgr::SetHighestGuids()
 
 
 
-    LogNotice("ObjectMgr : HighGuid(CORPSE) = %u", m_hiCorpseGuid.load());
-    LogNotice("ObjectMgr : HighGuid(PLAYER) = %u", m_hiPlayerGuid.load());
-    LogNotice("ObjectMgr : HighGuid(GAMEOBJ) = %u", m_hiGameObjectSpawnId.load());
-    LogNotice("ObjectMgr : HighGuid(UNIT) = %u", m_hiCreatureSpawnId.load());
-    LogNotice("ObjectMgr : HighGuid(ITEM) = %u", m_hiItemGuid.load());
-    LogNotice("ObjectMgr : HighGuid(CONTAINER) = %u", m_hiItemGuid.load());
-    LogNotice("ObjectMgr : HighGuid(GROUP) = %u", m_hiGroupId.load());
-    LogNotice("ObjectMgr : HighGuid(CHARTER) = %u", m_hiCharterId.load());
-    LogNotice("ObjectMgr : HighGuid(GUILD) = %u", m_hiGuildId.load());
+    LogNotice("ObjectMgr : HighGuid(CORPSE) = %lu", m_hiCorpseGuid.load());
+    LogNotice("ObjectMgr : HighGuid(PLAYER) = %lu", m_hiPlayerGuid.load());
+    LogNotice("ObjectMgr : HighGuid(GAMEOBJ) = %lu", m_hiGameObjectSpawnId.load());
+    LogNotice("ObjectMgr : HighGuid(UNIT) = %lu", m_hiCreatureSpawnId.load());
+    LogNotice("ObjectMgr : HighGuid(ITEM) = %lu", m_hiItemGuid.load());
+    LogNotice("ObjectMgr : HighGuid(CONTAINER) = %lu", m_hiItemGuid.load());
+    LogNotice("ObjectMgr : HighGuid(GROUP) = %lu", m_hiGroupId.load());
+    LogNotice("ObjectMgr : HighGuid(CHARTER) = %lu", m_hiCharterId.load());
+    LogNotice("ObjectMgr : HighGuid(GUILD) = %lu", m_hiGuildId.load());
     LogNotice("ObjectMgr : HighGuid(BUGREPORT) = %u", uint32(m_reportID.load() - 1));
     LogNotice("ObjectMgr : HighGuid(TICKET) = %u", uint32(m_ticketid.load() - 1));
     LogNotice("ObjectMgr : HighGuid(MAIL) = %u", uint32(m_mailid.load()));
