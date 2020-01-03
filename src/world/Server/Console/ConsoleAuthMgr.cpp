@@ -15,7 +15,11 @@ ConsoleAuthMgr& ConsoleAuthMgr::getInstance()
 
 void ConsoleAuthMgr::initialize()
 {
+    consoleAuthMgrLock.Acquire();
+
     authRequestId = 1;
+
+    consoleAuthMgrLock.Release();
 }
 
 uint32_t ConsoleAuthMgr::getGeneratedId()
