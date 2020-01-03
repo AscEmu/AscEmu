@@ -47,7 +47,7 @@ SERVER_DECL InstanceMgr sInstanceMgr;
 
 void InstanceMgr::Load()
 {
-    m_InstanceHigh = getNextInstanceId();
+    getNextInstanceId();
 
     generateInstances();
 

@@ -151,20 +151,18 @@ void InstanceMgr::loadAndApplySavedInstanceValues()
     LogDetail("InstanceMgr : %u saved instances loaded.", count);
 }
 
-uint32_t InstanceMgr::getNextInstanceId()
+void InstanceMgr::getNextInstanceId()
 {
     if (m_InstanceHigh == 0)
     {
         if (QueryResult* result = CharacterDatabase.Query("SELECT MAX(id) FROM instances"))
-            return result->Fetch()[0].GetUInt32() + 1;
+            m_InstanceHigh = result->Fetch()[0].GetUInt32() + 1;
 
-        return 1;
+        m_InstanceHigh = 1;
     }
-
-    m_mapLock.Acquire();
-    const auto nextInstanceId = m_InstanceHigh++;
-    m_mapLock.Release();
-
-    return nextInstanceId;
+    else
+    {
+        m_InstanceHigh++;
+    }
 }
 
