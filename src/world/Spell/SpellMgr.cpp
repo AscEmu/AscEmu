@@ -147,6 +147,12 @@ Aura* SpellMgr::newAura(SpellInfo const* proto, int32_t duration, Object* caster
     // This will of course be changed later
     auto spellInfo = proto != nullptr ? getMutableSpellInfo(proto->getId()) : nullptr;
 
+    if (spellInfo == nullptr)
+    {
+        LogError("You tried to create an Aura without SpellInfo. This is not possible!");
+        return nullptr;
+    }
+
     // Auras with a script
     if (proto->auraScriptLink != nullptr)
         return (*AuraScriptLinker(proto->auraScriptLink))(spellInfo, duration, caster, target, temporary, i_caster);
