@@ -149,7 +149,7 @@ bool ChatHandler::HandleSetOrientationCommand(const char* args, WorldSession* se
 bool ChatHandler::HandleDebugDumpState(const char* /*args*/, WorldSession* session)
 {
     auto state = ServerState::instance();
-    SystemMessage(session, "Delta: %u", state->getDelta());
+    SystemMessage(session, "Delta: %u", static_cast<uint32_t>(state->getDelta()));
     return true;
 }
 
