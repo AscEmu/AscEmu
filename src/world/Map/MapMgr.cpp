@@ -377,7 +377,7 @@ void MapMgr::PushStaticObject(Object* obj)
             break;
 
         default:
-            LogDebugFlag(LF_MAP, "MapMgr::PushStaticObject", "called for invalid type %u.", obj->GetTypeFromGUID());
+            LogDebugFlag(LF_MAP, "MapMgr::PushStaticObject called for invalid type %u.", obj->GetTypeFromGUID());
             break;
     }
 }
