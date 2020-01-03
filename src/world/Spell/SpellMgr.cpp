@@ -157,7 +157,7 @@ void SpellMgr::addSpellById(const uint32_t spellId, SpellScriptLinker spellScrip
     auto spellInfo = getMutableSpellInfo(spellId);
     if (spellInfo == nullptr)
     {
-        LogError("SpellMgr::addSpellById : Unknown spell id %u tried to register a spell script, skipped");
+        LogError("SpellMgr::addSpellById : Unknown spell id %u tried to register a spell script, skipped", spellId);
         return;
     }
     addSpellBySpellInfo(spellInfo, spellScript);
