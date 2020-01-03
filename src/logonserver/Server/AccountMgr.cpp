@@ -210,7 +210,7 @@ void AccountMgr::reloadAccounts(bool silent)
     }
 
     if (!silent)
-        LogDefault("[AccountMgr] Found %u accounts.", _accountMap.size());
+        LogDefault("[AccountMgr] Found %u accounts.", static_cast<uint32_t>(_accountMap.size()));
 
     accountMgrMutex.Release();
 }
