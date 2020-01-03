@@ -1188,7 +1188,7 @@ void GameObject_FishingNode::onUse(Player* player)
         {
             LogError("ERROR: Fishing zone information for zone %u not found!", zone);
             EndFishing(true);
-            success = false;
+            return;
         }
 
         const uint32 maxskill = entry->maxSkill;
