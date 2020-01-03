@@ -155,7 +155,7 @@ bool ChatHandler::HandleCheatCastTimeCommand(const char* /*args*/, WorldSession*
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "CastTime cheat activated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "CastTime cheat activated.");
         }
         else
         {
@@ -170,7 +170,7 @@ bool ChatHandler::HandleCheatCastTimeCommand(const char* /*args*/, WorldSession*
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "CastTime cheat deactivated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "CastTime cheat deactivated.");
         }
         else
         {
