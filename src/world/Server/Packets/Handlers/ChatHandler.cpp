@@ -62,7 +62,7 @@ bool WorldSession::isFloodProtectionTriggered()
         {
             if (worldConfig.chat.enableSendFloodProtectionMessage)
             {
-                _player->BroadcastMessage("Your message has triggered serverside flood protection. You can speak again in %u seconds.",
+                _player->BroadcastMessage("Your message has triggered serverside flood protection. You can speak again in %ld seconds.",
                     floodTime - UNIXTIME);
             }
             return true;
