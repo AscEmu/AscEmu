@@ -403,7 +403,7 @@ bool ChatHandler::HandleCheatTriggerpassCommand(const char* /*args*/, WorldSessi
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "Triggerpass cheat activated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "Triggerpass cheat activated.");
         }
         else
         {
@@ -418,7 +418,7 @@ bool ChatHandler::HandleCheatTriggerpassCommand(const char* /*args*/, WorldSessi
     {
         if (player_target == m_session->GetPlayer())
         {
-            GreenSystemMessage(m_session, "Triggerpas cheat deactivated.", player_target->getName().c_str());
+            GreenSystemMessage(m_session, "Triggerpas cheat deactivated.");
         }
         else
         {
