@@ -50,7 +50,7 @@ bool ChatHandler::HandleCheatListCommand(const char* /*args*/, WorldSession* m_s
     else
     {
         if (player_target == m_session->GetPlayer())
-            SystemMessage(m_session, "You have no active cheats!", player_target->getName().c_str());
+            SystemMessage(m_session, "You have no active cheats!");
         else
             SystemMessage(m_session, "Player %s has no active cheats!", player_target->getName().c_str());
     }
