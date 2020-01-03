@@ -1077,7 +1077,7 @@ bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_s
 
         SpellInfo const* sp = *aiagent_spells.begin();
         aiagent_spells.erase(aiagent_spells.begin());
-        BlueSystemMessage(m_session, "Casting %u, " MSG_COLOR_SUBWHITE "%u remaining.", sp->getId(), aiagent_spells.size());
+        BlueSystemMessage(m_session, "Casting %u, " MSG_COLOR_SUBWHITE "%u remaining.", sp->getId(), static_cast<uint32_t>(aiagent_spells.size()));
 
         std::map<uint32, spell_thingo>::iterator it = aiagent_extra.find(sp->getId());
         ARCEMU_ASSERT(it != aiagent_extra.end());
