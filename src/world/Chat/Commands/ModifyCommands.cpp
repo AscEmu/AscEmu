@@ -525,10 +525,12 @@ bool ChatHandler::HandleModifyShadow(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify shadow from %u to %u on %s (%u)", oldShadow, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify shadow from %u to %u on %s (%u)", oldShadow, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the shadow of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldShadow, value);
+            BlueSystemMessage(session, "You modify the shadow of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldShadow, value);
+        }
     }
 
     unitTarget->setResistance(5, value);
