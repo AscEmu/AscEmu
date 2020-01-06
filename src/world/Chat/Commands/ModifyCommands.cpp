@@ -839,11 +839,13 @@ bool ChatHandler::HandleModifyFaction(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify faction from %u to %u on %s (%u)", oldFaction, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify faction from %u to %u on %s (%u)", oldFaction, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the faction of %s from %u to %u.", player->getName().c_str(), oldFaction, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your faction from %u to %u.", session->GetPlayer()->getName().c_str(), oldFaction, value);
+            BlueSystemMessage(session, "You modify the faction of %s from %u to %u.", player->getName().c_str(), oldFaction, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your faction from %u to %u.", session->GetPlayer()->getName().c_str(), oldFaction, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
