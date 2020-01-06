@@ -845,7 +845,7 @@ private:
         if (idx >= MAX_SPELL_EFFECTS)
         {
             LogError("Effect index id %u is invalid!", idx);
-            return 0;
+            return;
         }
 
         EffectRadiusMaxIndex[idx] = value;
@@ -856,7 +856,7 @@ private:
         if (idx >= MAX_SPELL_EFFECTS)
         {
             LogError("Effect index id %u is invalid!", idx);
-            return 0;
+            return;
         }
 
         EffectSpellId[idx] = value;
@@ -867,7 +867,7 @@ private:
         if (idx >= MAX_SPELL_EFFECTS)
         {
             LogError("Effect index id %u is invalid!", idx);
-            return 0;
+            return;
         }
 
         EffectIndex[idx] = value;
