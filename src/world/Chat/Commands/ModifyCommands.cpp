@@ -740,10 +740,12 @@ bool ChatHandler::HandleModifyScale(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify scale from %f to %f on %s (%u)", oldScale, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify scale from %f to %f on %s (%u)", oldScale, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the scale of %s from %f to %f.", creature->GetCreatureProperties()->Name.c_str(), oldScale, value);
+            BlueSystemMessage(session, "You modify the scale of %s from %f to %f.", creature->GetCreatureProperties()->Name.c_str(), oldScale, value);
+        }
     }
 
     unitTarget->setScale(value);
