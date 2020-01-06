@@ -69,7 +69,8 @@ GossipScript* GossipScript::getInterface(GameObject* gameObject)
 
 void GossipSpiritHealer::onHello(Object* object, Player* player)
 {
-    player->GetSession()->sendSpiritHealerRequest(dynamic_cast<Creature*>(object));
+    if (const auto creature = dynamic_cast<Creature*>(object))
+        player->GetSession()->sendSpiritHealerRequest(creature);
 }
 
 void GossipVendor::onHello(Object* object, Player* player)
