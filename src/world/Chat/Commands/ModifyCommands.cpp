@@ -725,11 +725,13 @@ bool ChatHandler::HandleModifyNativedisplayid(const char* args, WorldSession* se
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify nativedisplayid from %u to %u on %s (%u)", oldDisplayId, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify nativedisplayid from %u to %u on %s (%u)", oldDisplayId, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the nativedisplayid of %s from %u to %u.", player->getName().c_str(), oldDisplayId, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your nativedisplayid from %u to %u.", session->GetPlayer()->getName().c_str(), oldDisplayId, value);
+            BlueSystemMessage(session, "You modify the nativedisplayid of %s from %u to %u.", player->getName().c_str(), oldDisplayId, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your nativedisplayid from %u to %u.", session->GetPlayer()->getName().c_str(), oldDisplayId, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
