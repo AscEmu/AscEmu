@@ -521,11 +521,14 @@ void GossipGeneric::onHello(Object* object, Player* player)
     if (!sMySQLStore.getNpcText(gossipTextId))
         gossipTextId = DefaultGossipTextId;
 
-    GossipMenu menu(object->getGuid(), gossipTextId, player->GetSession()->language);
+    if (const auto creature = dynamic_cast<Creature*>(object))
+    {
+        GossipMenu menu(object->getGuid(), gossipTextId, player->GetSession()->language);
 
-    sQuestMgr.FillQuestMenu(dynamic_cast<Creature*>(object), player, menu);
+        sQuestMgr.FillQuestMenu(creature, player, menu);
 
-    menu.sendGossipPacket(player);
+        menu.sendGossipPacket(player);
+    }
 }
 
 void GossipGeneric::onSelectOption(Object* /*object*/, Player* /*player*/, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
