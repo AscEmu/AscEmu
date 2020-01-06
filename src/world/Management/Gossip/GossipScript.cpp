@@ -175,7 +175,8 @@ void GossipFlightMaster::onHello(Object* object, Player* player)
 
 void GossipFlightMaster::onSelectOption(Object* object, Player* player, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    player->GetSession()->sendTaxiList(dynamic_cast<Creature*>(object));
+    if (const auto creature = dynamic_cast<Creature*>(object))
+        player->GetSession()->sendTaxiList(creature);
 }
 
 void GossipAuctioneer::onHello(Object* object, Player* player)
