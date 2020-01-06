@@ -2038,7 +2038,7 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
 
     delete totemdisplayids_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `totemdisplayids` table in %u ms!", _totemDisplayIdsStore.size(), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `totemdisplayids` table in %u ms!", static_cast<uint32_t>(_totemDisplayIdsStore.size()), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::TotemDisplayIds const* MySQLDataStore::getTotemDisplayId(uint8_t race, uint32_t entry)
