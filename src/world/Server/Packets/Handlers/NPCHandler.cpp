@@ -272,29 +272,41 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
     LogDebugFlag(LF_OPCODE, "Received CMSG_GOSSIP_SELECT_OPTION: %u (gossipId), %i (option), %u (guidLow)",
         srlPacket.gossip_id, srlPacket.option, srlPacket.guid.getGuidLow());
 
+
     GossipScript* script = nullptr;
+    Object* object = nullptr;
 
-    Object* object;
-    if (srlPacket.guid.isItem())
+    switch (srlPacket.guid.getHigh())
     {
-        object = _player->getItemInterface()->GetItemByGUID(srlPacket.guid);
-        if (object != nullptr)
-            script = GossipScript::getInterface(dynamic_cast<Item*>(object));
-    }
-    else
-    {
-        object = _player->GetMapMgr()->_GetObject(srlPacket.guid);
+        case HighGuid::Item:
+        {
+            if (const auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.guid);)
+            {
+                script = GossipScript::getInterface(item);
+                object = item;
+            }
+        } break;
+        case HighGuid::Unit:
+        {
+            if (const auto creature = dynamic_cast<Creature*>(_player->GetMapMgr()->_GetObject(srlPacket.guid)))
+            {
+                script = GossipScript::getInterface(creature);
+                object = creature;
+            }
+        } break;
+        case HighGuid::GameObject:
+        {
+            if (const auto gameObject = dynamic_cast<GameObject*>(_player->GetMapMgr()->_GetObject(srlPacket.guid)))
+            {
+                script = GossipScript::getInterface(gameObject);
+                object = gameObject;
+            }
+        } break;
+        default:
+            break;
     }
 
-    if (object != nullptr)
-    {
-        if (srlPacket.guid.isUnit())
-            script = GossipScript::getInterface(dynamic_cast<Creature*>(object));
-        else if (srlPacket.guid.isGameObject())
-            script = GossipScript::getInterface(dynamic_cast<GameObject*>(object));
-    }
-
-    if (script != nullptr)
+    if (script && object)
     {
         if (srlPacket.input.length() > 0)
             script->onSelectOption(object, _player, srlPacket.option, srlPacket.input.c_str(), srlPacket.gossip_id);
