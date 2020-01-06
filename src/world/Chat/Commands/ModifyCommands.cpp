@@ -277,10 +277,12 @@ bool ChatHandler::HandleModifyIntelligence(const char* args, WorldSession* sessi
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify stat (intellect) from %u to %u on %s (%u)", oldIntellect, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify stat (intellect) from %u to %u on %s (%u)", oldIntellect, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the stat (intellect) of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldIntellect, value);
+            BlueSystemMessage(session, "You modify the stat (intellect) of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldIntellect, value);
+        }
     }
 
     unitTarget->setStat(STAT_INTELLECT, value);
