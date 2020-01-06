@@ -520,10 +520,12 @@ bool ChatHandler::HandleModifyFrost(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify frost from %u to %u on %s (%u)", oldFrost, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify frost from %u to %u on %s (%u)", oldFrost, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the frost of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldFrost, value);
+            BlueSystemMessage(session, "You modify the frost of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldFrost, value);
+        }
     }
 
     unitTarget->setResistance(4, value);
