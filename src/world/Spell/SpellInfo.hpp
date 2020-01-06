@@ -403,7 +403,12 @@ private:
 
     void setTotem(uint32_t totemId, uint8_t idx)                      // used in HackFixes.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEMS);
+        if (idx >= MAX_SPELL_TOTEMS)
+        {
+            LogError("Totem index id %u is invalid!", idx);
+            return;
+        }
+
         Totem[idx] = totemId;
     }
 
