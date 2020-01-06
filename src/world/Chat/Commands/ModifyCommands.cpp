@@ -239,11 +239,14 @@ bool ChatHandler::HandleModifyAgility(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify stat (agility) from %u to %u on %s (%u)", oldAgility, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify stat (agility) from %u to %u on %s (%u)", oldAgility, value, player->getName().c_str(), player->getGuidLow());
 
         BlueSystemMessage(session, "You modify the stat (agility) of %s from %u to %u.", player->getName().c_str(), oldAgility, value);
         GreenSystemMessage(player->GetSession(), "%s modify your stat (agility) from %u to %u.", session->GetPlayer()->getName().c_str(), oldAgility, value);
+    
+        }
     }
     else if (unitTarget->isCreature())
     {
