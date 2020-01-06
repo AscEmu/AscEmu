@@ -118,13 +118,23 @@ public:
 
     uint32_t getTotem(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEMS);
+        if (idx >= MAX_SPELL_TOTEMS)
+        {
+            LogError("Totem index id %u is invalid!", idx);
+            return 0;
+        }
+
         return Totem[idx];
     }
 
     int32_t getReagent(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_REAGENTS);
+        if (idx >= MAX_SPELL_REAGENTS)
+        {
+            LogError("Reagent index id %u is invalid!", idx);
+            return 0;
+        }
+
         return Reagent[idx];
     }
 
@@ -145,7 +155,12 @@ public:
 
     uint32_t getEffect(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return Effect[idx];
     }
 
@@ -173,7 +188,12 @@ public:
 
     int32_t getEffectBasePoints(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectBasePoints[idx];
     }
 
@@ -190,19 +210,34 @@ public:
 
     uint32_t getEffectImplicitTargetA(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectImplicitTargetA[idx];
     }
 
     uint32_t getEffectImplicitTargetB(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectImplicitTargetB[idx];
     }
 
     uint32_t getEffectRadiusIndex(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectRadiusIndex[idx];
     }
 
@@ -230,43 +265,78 @@ public:
 
     float getEffectMultipleValue(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectMultipleValue[idx];
     }
 
     uint32_t getEffectChainTarget(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectChainTarget[idx];
     }
 
     uint32_t getEffectItemType(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectItemType[idx];
     }
 
     int32_t getEffectMiscValue(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectMiscValue[idx];
     }
 
     int32_t getEffectMiscValueB(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectMiscValueB[idx];
     }
 
     uint32_t getEffectTriggerSpell(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectTriggerSpell[idx];
     }
 
     float getEffectPointsPerComboPoint(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectPointsPerComboPoint[idx];
     }
 
@@ -283,7 +353,12 @@ public:
 
     uint32_t* getEffectSpellClassMask(uint8_t idx1)
     {
-        ARCEMU_ASSERT(idx1 < MAX_SPELL_EFFECTS);
+        if (idx1 >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx1);
+            return 0;
+        }
+
         return EffectSpellClassMask[idx1];
     }
 
@@ -318,7 +393,12 @@ public:
 
     float getEffectDamageMultiplier(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectDamageMultiplier[idx];
     }
 
@@ -341,7 +421,12 @@ public:
 
     float getEffectBonusMultiplier(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectBonusMultiplier[idx];
     }
 
@@ -372,7 +457,12 @@ public:
 
     uint32_t getEffectCustomFlag(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectCustomFlag[idx];
     }
         
@@ -672,7 +762,12 @@ private:
 
     void setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8_t idx2)           // used in HackFixes.cpp
     {
-        ARCEMU_ASSERT(idx1 < MAX_SPELL_EFFECTS && idx2 < MAX_SPELL_EFFECTS);
+        if (idx1 >= MAX_SPELL_EFFECTS || idx2 >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id1 %u or id2 %u is invalid!", idx1, idx2);
+            return;
+        }
+
         EffectSpellClassMask[idx1][idx2] = spellClass;
     }
 
@@ -747,19 +842,34 @@ private:
 #if VERSION_STRING >= Cata
     void setEffectRadiusMaxIndex(uint32_t value, uint8_t idx)
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         EffectRadiusMaxIndex[idx] = value;
     }
 
     void setEffectSpellId(uint32_t value, uint8_t idx)
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         EffectSpellId[idx] = value;
     }
 
     void setEffectIndex(uint32_t value, uint8_t idx)
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         EffectIndex[idx] = value;
     }
 #endif
