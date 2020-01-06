@@ -103,10 +103,12 @@ bool ChatHandler::HandleModifyRage(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify power (rage) from %u to %u on %s (%u)", oldRage, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify power (rage) from %u to %u on %s (%u)", oldRage, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the power (rage) of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldRage, value);
+            BlueSystemMessage(session, "You modify the power (rage) of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldRage, value);
+        }
     }
 
     unitTarget->setPower(POWER_TYPE_RAGE, value);
