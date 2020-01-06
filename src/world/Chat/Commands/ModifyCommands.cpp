@@ -797,10 +797,12 @@ bool ChatHandler::HandleModifyFlags(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify flags from %u to %u on %s (%u)", oldUnitFlags, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify flags from %u to %u on %s (%u)", oldUnitFlags, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the flags of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldUnitFlags, value);
+            BlueSystemMessage(session, "You modify the flags of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldUnitFlags, value);
+        }
     }
 
     unitTarget->setUnitFlags(value);
