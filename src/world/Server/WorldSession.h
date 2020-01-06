@@ -175,23 +175,19 @@ class SERVER_DECL WorldSession
 
         void SetAccountData(uint32 index, char* data, bool initial, uint32 sz)
         {
-            ARCEMU_ASSERT(index < 8);
+            if (index >= 8)
+                return;
+
             if (sAccountData[index].data)
-            {
                 delete[] sAccountData[index].data;
-            }
 
             sAccountData[index].data = data;
             sAccountData[index].sz = sz;
 
             if (!initial && !sAccountData[index].bIsDirty)      // Mark as "changed" or "dirty"
-            {
                 sAccountData[index].bIsDirty = true;
-            }
             else if (initial)
-            {
                 sAccountData[index].bIsDirty = false;
-            }
         }
 
         AccountDataEntry* GetAccountData(uint32 index)
