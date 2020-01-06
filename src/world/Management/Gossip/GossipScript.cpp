@@ -472,8 +472,10 @@ void GossipClassTrainer::onSelectOption(Object* object, Player* player, uint32_t
     switch (Id)
     {
         case 1:
-            playerSession->sendTrainerList(dynamic_cast<Creature*>(object));
-            break;
+        {
+            if (const auto creature = dynamic_cast<Creature*>(object))
+                playerSession->sendTrainerList(creature);
+        } break;
         case 2:
             GossipMenu::sendQuickMenu(object->getGuid(), TXTID_TALENTRESET, player, 3, GOSSIP_ICON_CHAT, playerSession->LocalizedGossipOption(CLASSTRAINER_TALENTCONFIRM), 3);
             break;
