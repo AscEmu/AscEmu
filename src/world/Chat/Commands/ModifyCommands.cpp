@@ -659,10 +659,12 @@ bool ChatHandler::HandleModifyRangeap(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify rangeap from %u to %u on %s (%u)", oldRangedAp, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify rangeap from %u to %u on %s (%u)", oldRangedAp, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the rangeap of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldRangedAp, value);
+            BlueSystemMessage(session, "You modify the rangeap of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldRangedAp, value);
+        }
     }
 
     unitTarget->setRangedAttackPower(value);
