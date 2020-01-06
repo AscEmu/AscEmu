@@ -620,7 +620,12 @@ private:
 
     void setSpellFamilyFlags(uint32_t value, uint8_t idx)                             // used in HackFixes.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return;
+        }
+
         SpellFamilyFlags[idx] = value;
     }
 
