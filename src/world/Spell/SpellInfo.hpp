@@ -130,7 +130,12 @@ public:
 
     uint32_t getReagentCount(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_REAGENTS);
+        if (idx >= MAX_SPELL_REAGENTS)
+        {
+            LogError("ReagentCount index id %u is invalid!", idx);
+            return 0;
+        }
+
         return ReagentCount[idx];
     }
 
