@@ -900,10 +900,12 @@ bool ChatHandler::HandleModifyFaction(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify faction from %u to %u on %s (%u)", oldFaction, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify faction from %u to %u on %s (%u)", oldFaction, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the faction of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldFaction, value);
+            BlueSystemMessage(session, "You modify the faction of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldFaction, value);
+        }
     }
 
     unitTarget->setFactionTemplate(value);
