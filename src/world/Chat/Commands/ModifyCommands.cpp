@@ -61,11 +61,13 @@ bool ChatHandler::HandleModifyMana(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify power (mana) from %u to %u on %s (%u)", oldMana, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify power (mana) from %u to %u on %s (%u)", oldMana, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the power (mana) of %s from %u to %u.", player->getName().c_str(), oldMana, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your power (mana) from %u to %u.", session->GetPlayer()->getName().c_str(), oldMana, value);
+            BlueSystemMessage(session, "You modify the power (mana) of %s from %u to %u.", player->getName().c_str(), oldMana, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your power (mana) from %u to %u.", session->GetPlayer()->getName().c_str(), oldMana, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
