@@ -1094,10 +1094,12 @@ bool ChatHandler::HandleModifyBytes0(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify bytes0 from %u to %u on %s (%u)", oldBytes, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify bytes0 from %u to %u on %s (%u)", oldBytes, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the bytes0 of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldBytes, value);
+            BlueSystemMessage(session, "You modify the bytes0 of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldBytes, value);
+        }
     }
 
     unitTarget->setBytes0(value);
