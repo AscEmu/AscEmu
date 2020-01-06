@@ -537,7 +537,12 @@ private:
 
     void setEffectItemType(uint32_t itemEntryId, uint8_t idx)
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return;
+        }
+
         EffectItemType[idx] = itemEntryId;
     }
 
