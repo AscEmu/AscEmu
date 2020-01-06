@@ -247,17 +247,19 @@ bool ChatHandler::HandleModifyAgility(const char* args, WorldSession* session)
         {
             sGMLog.writefromsession(session, "used modify stat (agility) from %u to %u on %s (%u)", oldAgility, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the stat (agility) of %s from %u to %u.", player->getName().c_str(), oldAgility, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your stat (agility) from %u to %u.", session->GetPlayer()->getName().c_str(), oldAgility, value);
+            BlueSystemMessage(session, "You modify the stat (agility) of %s from %u to %u.", player->getName().c_str(), oldAgility, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your stat (agility) from %u to %u.", session->GetPlayer()->getName().c_str(), oldAgility, value);
     
         }
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify stat (agility) from %u to %u on %s (%u)", oldAgility, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify stat (agility) from %u to %u on %s (%u)", oldAgility, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the stat (agility) of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldAgility, value);
+            BlueSystemMessage(session, "You modify the stat (agility) of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldAgility, value);
+        }
     }
 
     unitTarget->setStat(STAT_AGILITY, value);
