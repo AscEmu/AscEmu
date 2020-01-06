@@ -143,10 +143,13 @@ void GossipTrainer::onHello(Object* object, Player* player)
 
 void GossipTrainer::onSelectOption(Object* object, Player* player, uint32_t Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    if (1 == Id)
-        player->GetSession()->sendTrainerList(dynamic_cast<Creature*>(object));
-    else
-        player->GetSession()->sendInventoryList(dynamic_cast<Creature*>(object));
+    if (const auto creature = dynamic_cast<Creature*>(object))
+    {
+        if (1 == Id)
+            player->GetSession()->sendTrainerList(creature);
+        else
+            player->GetSession()->sendInventoryList(creature);
+    }
 }
 
 void GossipFlightMaster::onHello(Object* object, Player* player)
