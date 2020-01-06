@@ -225,19 +225,20 @@ void GossipInnKeeper::onSelectOption(Object* object, Player* player, uint32_t Id
 
 void GossipBattleMaster::onHello(Object* object, Player* player)
 {
-    const auto creature = dynamic_cast<Creature*>(object);
+    if (const auto creature = dynamic_cast<Creature*>(object))
+    {
+        auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
+        if (!sMySQLStore.getNpcText(gossipTextId))
+            gossipTextId = DefaultGossipTextId;
 
-    auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-    if (!sMySQLStore.getNpcText(gossipTextId))
-        gossipTextId = DefaultGossipTextId;
+        GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
 
-    GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
+        menu.addItem(GOSSIP_ICON_BATTLE, BATTLEMASTER, 1);
 
-    menu.addItem(GOSSIP_ICON_BATTLE, BATTLEMASTER, 1);
+        sQuestMgr.FillQuestMenu(creature, player, menu);
 
-    sQuestMgr.FillQuestMenu(creature, player, menu);
-
-    menu.sendGossipPacket(player);
+        menu.sendGossipPacket(player);
+    }
 }
 
 void GossipBattleMaster::onSelectOption(Object* object, Player* player, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
