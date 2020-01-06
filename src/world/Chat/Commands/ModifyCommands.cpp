@@ -135,11 +135,13 @@ bool ChatHandler::HandleModifyEnergy(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify power (energy) from %u to %u on %s (%u)", oldEnergy, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify power (energy) from %u to %u on %s (%u)", oldEnergy, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the power (energy) of %s from %u to %u.", player->getName().c_str(), oldEnergy, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your power (energy) from %u to %u.", session->GetPlayer()->getName().c_str(), oldEnergy, value);
+            BlueSystemMessage(session, "You modify the power (energy) of %s from %u to %u.", player->getName().c_str(), oldEnergy, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your power (energy) from %u to %u.", session->GetPlayer()->getName().c_str(), oldEnergy, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
