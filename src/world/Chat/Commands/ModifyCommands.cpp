@@ -309,11 +309,13 @@ bool ChatHandler::HandleModifySpirit(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify stat (spirit) from %u to %u on %s (%u)", oldSpirit, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify stat (spirit) from %u to %u on %s (%u)", oldSpirit, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the stat (spirit) of %s from %u to %u.", player->getName().c_str(), oldSpirit, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your stat (spirit) from %u to %u.", session->GetPlayer()->getName().c_str(), oldSpirit, value);
+            BlueSystemMessage(session, "You modify the stat (spirit) of %s from %u to %u.", player->getName().c_str(), oldSpirit, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your stat (spirit) from %u to %u.", session->GetPlayer()->getName().c_str(), oldSpirit, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
