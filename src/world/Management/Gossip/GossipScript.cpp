@@ -97,7 +97,8 @@ void GossipVendor::onHello(Object* object, Player* player)
 
 void GossipVendor::onSelectOption(Object* object, Player* player, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    player->GetSession()->sendInventoryList(dynamic_cast<Creature*>(object));
+    if (const auto creature = dynamic_cast<Creature*>(object))
+        player->GetSession()->sendInventoryList(creature);
 }
 
 void GossipTrainer::onHello(Object* object, Player* player)
