@@ -526,13 +526,15 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
         {
             case GAMEOBJECT_TYPE_FISHINGNODE:
             {
-                auto pLGO = dynamic_cast<GameObject_Lootable*>(gameObject);
-                pLGO->loot.looters.erase(_player->getGuidLow());
-                if (gameObject->IsInWorld())
+                if (auto pLGO = dynamic_cast<GameObject_Lootable*>(gameObject))
                 {
-                    gameObject->RemoveFromWorld(true);
+                    pLGO->loot.looters.erase(_player->getGuidLow());
+
+                    if (gameObject->IsInWorld())
+                        gameObject->RemoveFromWorld(true);
+
+                    delete gameObject;
                 }
-                delete gameObject;
             }
             break;
             case GAMEOBJECT_TYPE_CHEST:
