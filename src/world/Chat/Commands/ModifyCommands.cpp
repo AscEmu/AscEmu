@@ -933,11 +933,13 @@ bool ChatHandler::HandleModifyHappiness(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify happiness from %u to %u on %s (%u)", oldHappiness, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify happiness from %u to %u on %s (%u)", oldHappiness, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the happiness of %s from %u to %u.", player->getName().c_str(), oldHappiness, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your happiness from %u to %u.", session->GetPlayer()->getName().c_str(), oldHappiness, value);
+            BlueSystemMessage(session, "You modify the happiness of %s from %u to %u.", player->getName().c_str(), oldHappiness, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your happiness from %u to %u.", session->GetPlayer()->getName().c_str(), oldHappiness, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
