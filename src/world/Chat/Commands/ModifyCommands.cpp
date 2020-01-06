@@ -99,11 +99,13 @@ bool ChatHandler::HandleModifyRage(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify power (rage) from %u to %u on %s (%u)", oldRage, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify power (rage) from %u to %u on %s (%u)", oldRage, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the power (rage) of %s from %u to %u.", player->getName().c_str(), oldRage, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your power (rage) from %u to %u.", session->GetPlayer()->getName().c_str(), oldRage, value);
+            BlueSystemMessage(session, "You modify the power (rage) of %s from %u to %u.", player->getName().c_str(), oldRage, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your power (rage) from %u to %u.", session->GetPlayer()->getName().c_str(), oldRage, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
