@@ -477,15 +477,18 @@ void GossipClassTrainer::onSelectOption(Object* object, Player* player, uint32_t
                 playerSession->sendTrainerList(creature);
         } break;
         case 2:
+        {
             GossipMenu::sendQuickMenu(object->getGuid(), TXTID_TALENTRESET, player, 3, GOSSIP_ICON_CHAT, playerSession->LocalizedGossipOption(CLASSTRAINER_TALENTCONFIRM), 3);
-            break;
+        } break;
         case 3:
+        {
             GossipMenu::senGossipComplete(player);
             player->sendTalentResetConfirmPacket();
-            break;
+        } break;
         case 4:
+        {
             GossipMenu::sendQuickMenu(object->getGuid(), TXTID_DUALSPECPURCHASE, player, 5, GOSSIP_ICON_CHAT, playerSession->LocalizedWorldSrv(PURCHASE_DTS), 10000000, playerSession->LocalizedWorldSrv(SURE_TO_PURCHASE_DTS));
-            break;
+        } break;
         case 5:
         {
             if (!player->hasEnoughCoinage(10000000))
