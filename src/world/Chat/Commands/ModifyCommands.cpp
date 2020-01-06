@@ -855,11 +855,13 @@ bool ChatHandler::HandleModifyDynamicflags(const char* args, WorldSession* sessi
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify dynamicflags from %u to %u on %s (%u)", oldDynamicFlags, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify dynamicflags from %u to %u on %s (%u)", oldDynamicFlags, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the dynamicflags of %s from %u to %u.", player->getName().c_str(), oldDynamicFlags, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your dynamicflags from %u to %u.", session->GetPlayer()->getName().c_str(), oldDynamicFlags, value);
+            BlueSystemMessage(session, "You modify the dynamicflags of %s from %u to %u.", player->getName().c_str(), oldDynamicFlags, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your dynamicflags from %u to %u.", session->GetPlayer()->getName().c_str(), oldDynamicFlags, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
