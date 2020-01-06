@@ -280,7 +280,7 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
     {
         case HighGuid::Item:
         {
-            if (const auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.guid);)
+            if (const auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.guid))
             {
                 script = GossipScript::getInterface(item);
                 object = item;

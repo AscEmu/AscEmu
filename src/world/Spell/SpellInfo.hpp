@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 #include "WorldConf.h"
 #include <string>
+#include "Log.hpp"
 
 class Player;
 class Unit;
@@ -490,7 +491,12 @@ private:
 
     void setEffectChainTarget(uint32_t chainTarget, uint8_t idx)                // used in HackFixes.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect id %u is invalid!", idx);
+            return;
+        }
+
         EffectChainTarget[idx] = chainTarget;
     }
 
