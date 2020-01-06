@@ -146,7 +146,12 @@ public:
 
     int32_t getEffectDieSides(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return 0;
+        }
+
         return EffectDieSides[idx];
     }
 
