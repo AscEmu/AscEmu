@@ -684,10 +684,12 @@ bool ChatHandler::HandleModifyAp(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify ap from %u to %u on %s (%u)", oldAttackPower, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify ap from %u to %u on %s (%u)", oldAttackPower, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the ap of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldAttackPower, value);
+            BlueSystemMessage(session, "You modify the ap of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldAttackPower, value);
+        }
     }
 
     unitTarget->setAttackPower(value);
