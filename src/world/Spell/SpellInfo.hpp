@@ -623,7 +623,12 @@ private:
 
     void setEffectBonusMultiplier(float value, uint8_t idx)
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return;
+        }
+
         EffectBonusMultiplier[idx] = value;
     }
 
