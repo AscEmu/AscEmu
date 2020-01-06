@@ -269,11 +269,13 @@ bool ChatHandler::HandleModifyIntelligence(const char* args, WorldSession* sessi
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify stat (intellect) from %u to %u on %s (%u)", oldIntellect, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify stat (intellect) from %u to %u on %s (%u)", oldIntellect, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the stat (intellect) of %s from %u to %u.", player->getName().c_str(), oldIntellect, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your stat (intellect) from %u to %u.", session->GetPlayer()->getName().c_str(), oldIntellect, value);
+            BlueSystemMessage(session, "You modify the stat (intellect) of %s from %u to %u.", player->getName().c_str(), oldIntellect, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your stat (intellect) from %u to %u.", session->GetPlayer()->getName().c_str(), oldIntellect, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
