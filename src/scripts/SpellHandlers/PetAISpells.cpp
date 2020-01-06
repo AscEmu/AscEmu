@@ -179,35 +179,37 @@ class DancingRuneWeaponAI : public CreatureAIScript
 
         if (getCreature()->isSummon())
         {
-            auto summon = dynamic_cast<Summon*>(getCreature());
-            auto unitOwner = summon->getUnitOwner();
-
-            if (unitOwner->isPlayer())
+            if (auto summon = dynamic_cast<Summon*>(getCreature()))
             {
-                auto playerOwner = dynamic_cast<Player*>(unitOwner);
-                const auto item = playerOwner->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                if (item != nullptr)
-                {
-                    for (uint8 si = 0; si < 5; si++)
-                    {
-                        if (item->getItemProperties()->Spells[si].Id == 0)
-                            continue;
+                auto unitOwner = summon->getUnitOwner();
 
-                        if (item->getItemProperties()->Spells[si].Trigger == CHANCE_ON_HIT)
-                            procSpell[si] = item->getItemProperties()->Spells[si].Id;
+                if (unitOwner->isPlayer())
+                {
+                    auto playerOwner = dynamic_cast<Player*>(unitOwner);
+                    const auto item = playerOwner->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    if (item != nullptr)
+                    {
+                        for (uint8 si = 0; si < 5; si++)
+                        {
+                            if (item->getItemProperties()->Spells[si].Id == 0)
+                                continue;
+
+                            if (item->getItemProperties()->Spells[si].Trigger == CHANCE_ON_HIT)
+                                procSpell[si] = item->getItemProperties()->Spells[si].Id;
+                        }
+
+                        summon->setVirtualItemSlotId(MELEE, item->getEntry());
+                        summon->setBaseAttackTime(MELEE, item->getItemProperties()->Delay);
                     }
 
-                    summon->setVirtualItemSlotId(MELEE, item->getEntry());
-                    summon->setBaseAttackTime(MELEE, item->getItemProperties()->Delay);
+#if VERSION_STRING == WotLK
+                    playerOwner->setPower(POWER_TYPE_RUNIC_POWER, 0);
+#endif
                 }
 
-#if VERSION_STRING == WotLK
-                playerOwner->setPower(POWER_TYPE_RUNIC_POWER, 0);
-#endif
+                summon->setMinDamage(float(unitOwner->GetDamageDoneMod(SCHOOL_NORMAL)));
+                summon->setMaxDamage(float(unitOwner->GetDamageDoneMod(SCHOOL_NORMAL)));
             }
-
-            summon->setMinDamage(float(unitOwner->GetDamageDoneMod(SCHOOL_NORMAL)));
-            summon->setMaxDamage(float(unitOwner->GetDamageDoneMod(SCHOOL_NORMAL)));
         }
     }
 
