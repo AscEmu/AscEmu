@@ -213,10 +213,13 @@ void GossipInnKeeper::onHello(Object* object, Player* player)
 
 void GossipInnKeeper::onSelectOption(Object* object, Player* player, uint32_t Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    if (1 == Id)
-        player->GetSession()->sendInnkeeperBind(dynamic_cast<Creature*>(object));
-    else
-        player->GetSession()->sendInventoryList(dynamic_cast<Creature*>(object));
+    if (const auto creature = dynamic_cast<Creature*>(object))
+    {
+        if (1 == Id)
+            player->GetSession()->sendInnkeeperBind(creature);
+        else
+            player->GetSession()->sendInventoryList(creature);
+    }
 }
 
 void GossipBattleMaster::onHello(Object* object, Player* player)
