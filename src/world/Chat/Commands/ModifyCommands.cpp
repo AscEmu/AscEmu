@@ -389,10 +389,12 @@ bool ChatHandler::HandleModifyHoly(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify holy from %u to %u on %s (%u)", oldHoly, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify holy from %u to %u on %s (%u)", oldHoly, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the holy of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldHoly, value);
+            BlueSystemMessage(session, "You modify the holy of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldHoly, value);
+        }
     }
 
     unitTarget->setResistance(1, value);
