@@ -446,10 +446,12 @@ bool ChatHandler::HandleModifyFire(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify fire from %u to %u on %s (%u)", oldFire, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify fire from %u to %u on %s (%u)", oldFire, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the fire of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldFire, value);
+            BlueSystemMessage(session, "You modify the fire of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldFire, value);
+        }
     }
 
     unitTarget->setResistance(2, value);
