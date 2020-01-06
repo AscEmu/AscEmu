@@ -315,7 +315,12 @@ public:
 #if VERSION_STRING > Classic
     uint32_t getTotemCategory(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEM_CATEGORIES);
+        if (idx >= MAX_SPELL_TOTEM_CATEGORIES)
+        {
+            LogError("TotemCategory index id %u is invalid!", idx);
+            return 0;
+        }
+
         return TotemCategory[idx];
     }
 #endif
