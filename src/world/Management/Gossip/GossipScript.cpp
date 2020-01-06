@@ -397,92 +397,93 @@ void GossipPetTrainer::onSelectOption(Object* object, Player* player, uint32_t I
 
 void GossipClassTrainer::onHello(Object* object, Player* player)
 {
-    auto creature = dynamic_cast<Creature*>(object);
-
-    const auto playerSession = player->GetSession();
-
-    auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-    if (!sMySQLStore.getNpcText(gossipTextId))
-        gossipTextId = DefaultGossipTextId;
-
-    GossipMenu menu(object->getGuid(), gossipTextId, playerSession->language);
-
-    const auto playerClass = player->getClass();
-    auto trainer = creature->GetTrainer();
-
-    if (trainer)
+    if (auto creature = dynamic_cast<Creature*>(object))
     {
-        if (trainer->RequiredClass != playerClass)
+        const auto playerSession = player->GetSession();
+
+        auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
+        if (!sMySQLStore.getNpcText(gossipTextId))
+            gossipTextId = DefaultGossipTextId;
+
+        GossipMenu menu(object->getGuid(), gossipTextId, playerSession->language);
+
+        const auto playerClass = player->getClass();
+        auto trainer = creature->GetTrainer();
+
+        if (trainer)
         {
-            menu.setTextID(trainer->Cannot_Train_GossipTextId);
-        }
-        else
-        {
-            menu.setTextID(trainer->Can_Train_Gossip_TextId);
-
-            std::string menuItemName = playerSession->LocalizedGossipOption(ISEEK);
-            std::string creatureName = creature->GetCreatureProperties()->Name;
-
-            std::string::size_type pos = creatureName.find(' ');
-
-            if (pos != std::string::npos)
-                creatureName = creatureName.substr(0, pos);
-
-            switch (playerClass)
+            if (trainer->RequiredClass != playerClass)
             {
-                case ::MAGE:
-                    menuItemName += std::string(playerSession->LocalizedGossipOption(GI_MAGE));
-                    break;
-                case ::SHAMAN:
-                    menuItemName += std::string(playerSession->LocalizedGossipOption(GI_SHAMAN));
-                    break;
-                case ::WARRIOR:
-                    menuItemName += std::string(playerSession->LocalizedGossipOption(GI_WARRIOR));
-                    break;
-                case ::PALADIN:
-                    menuItemName += std::string(playerSession->LocalizedGossipOption(GI_PALADIN));
-                    break;
-                case ::WARLOCK:
-                    menuItemName += std::string(playerSession->LocalizedGossipOption(GI_WARLOCK));
-                    break;
-                case ::HUNTER:
-                    menuItemName += std::string(playerSession->LocalizedGossipOption(GI_HUNTER));
-                    break;
-                case ::ROGUE:
-                    menuItemName += std::string(playerSession->LocalizedGossipOption(GI_ROGUE));
-                    break;
-                case ::DRUID:
-                    menuItemName += std::string(playerSession->LocalizedGossipOption(GI_DRUID));
-                    break;
-                case ::PRIEST:
-                    menuItemName += std::string(playerSession->LocalizedGossipOption(GI_PRIEST));
-                    break;
-#if VERSION_STRING > TBC
-                case ::DEATHKNIGHT:
-                    menuItemName += std::string(playerSession->LocalizedGossipOption(GI_DEATHKNIGHT));
-                    break;
-#endif
-                default:
-                    break;
+                menu.setTextID(trainer->Cannot_Train_GossipTextId);
             }
-            menuItemName += " ";
-            menuItemName += std::string(playerSession->LocalizedGossipOption(TRAINING)) + ", " + creatureName + ".";
-
-            menu.addItem(GOSSIP_ICON_TRAINER, 0, 1, menuItemName);
-
-            if (creature->getLevel() > TrainerTalentResetMinLevel && player->getLevel() > worldConfig.player.minTalentResetLevel && creature->GetTrainer()->RequiredClass == playerClass)
+            else
             {
-                menu.addItem(GOSSIP_ICON_CHAT, CLASSTRAINER_TALENTRESET, 2);
+                menu.setTextID(trainer->Can_Train_Gossip_TextId);
 
-                if (player->getLevel() >= worldConfig.player.minDualSpecLevel && player->m_talentSpecsCount < 2)
-                    menu.addItem(GOSSIP_ICON_CHAT, LEARN_DUAL_TS, 4);
+                std::string menuItemName = playerSession->LocalizedGossipOption(ISEEK);
+                std::string creatureName = creature->GetCreatureProperties()->Name;
+
+                std::string::size_type pos = creatureName.find(' ');
+
+                if (pos != std::string::npos)
+                    creatureName = creatureName.substr(0, pos);
+
+                switch (playerClass)
+                {
+                    case ::MAGE:
+                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_MAGE));
+                        break;
+                    case ::SHAMAN:
+                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_SHAMAN));
+                        break;
+                    case ::WARRIOR:
+                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_WARRIOR));
+                        break;
+                    case ::PALADIN:
+                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_PALADIN));
+                        break;
+                    case ::WARLOCK:
+                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_WARLOCK));
+                        break;
+                    case ::HUNTER:
+                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_HUNTER));
+                        break;
+                    case ::ROGUE:
+                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_ROGUE));
+                        break;
+                    case ::DRUID:
+                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_DRUID));
+                        break;
+                    case ::PRIEST:
+                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_PRIEST));
+                        break;
+    #if VERSION_STRING > TBC
+                    case ::DEATHKNIGHT:
+                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_DEATHKNIGHT));
+                        break;
+    #endif
+                    default:
+                        break;
+                }
+                menuItemName += " ";
+                menuItemName += std::string(playerSession->LocalizedGossipOption(TRAINING)) + ", " + creatureName + ".";
+
+                menu.addItem(GOSSIP_ICON_TRAINER, 0, 1, menuItemName);
+
+                if (creature->getLevel() > TrainerTalentResetMinLevel && player->getLevel() > worldConfig.player.minTalentResetLevel && creature->GetTrainer()->RequiredClass == playerClass)
+                {
+                    menu.addItem(GOSSIP_ICON_CHAT, CLASSTRAINER_TALENTRESET, 2);
+
+                    if (player->getLevel() >= worldConfig.player.minDualSpecLevel && player->m_talentSpecsCount < 2)
+                        menu.addItem(GOSSIP_ICON_CHAT, LEARN_DUAL_TS, 4);
+                }
             }
         }
+
+        sQuestMgr.FillQuestMenu(creature, player, menu);
+
+        menu.sendGossipPacket(player);
     }
-
-    sQuestMgr.FillQuestMenu(creature, player, menu);
-
-    menu.sendGossipPacket(player);
 }
 
 void GossipClassTrainer::onSelectOption(Object* object, Player* player, uint32_t Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
