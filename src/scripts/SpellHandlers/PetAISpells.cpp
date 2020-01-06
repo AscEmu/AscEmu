@@ -70,22 +70,24 @@ class ShadowFiendAI : public CreatureAIScript
     {
         if (getCreature()->isPet())
         {
-            auto pet = dynamic_cast<Pet*>(getCreature());
-            auto playerOwner = pet->getPlayerOwner();
-
-            const auto ownerBonus = static_cast<float>(playerOwner->GetDamageDoneMod(SCHOOL_SHADOW) * 0.375f); // 37.5%
-            pet->BaseAttackType = SCHOOL_SHADOW; // Melee hits are supposed to do damage with the shadow school
-            pet->setBaseAttackTime(MELEE, 1500); // Shadowfiend is supposed to do 10 attacks, sometimes it can be 11
-            pet->setMinDamage(pet->getMinDamage() + ownerBonus);
-            pet->setMaxDamage(pet->getMaxDamage() + ownerBonus);
-            pet->BaseDamage[0] += ownerBonus;
-            pet->BaseDamage[1] += ownerBonus;
-
-            const auto unitTarget = pet->GetMapMgr()->GetUnit(playerOwner->getTargetGuid());
-            if (unitTarget != nullptr && isAttackable(playerOwner, unitTarget))
+            if (auto pet = dynamic_cast<Pet*>(getCreature()))
             {
-                pet->GetAIInterface()->AttackReaction(unitTarget, 1);
-                pet->GetAIInterface()->setNextTarget(unitTarget);
+                auto playerOwner = pet->getPlayerOwner();
+
+                const auto ownerBonus = static_cast<float>(playerOwner->GetDamageDoneMod(SCHOOL_SHADOW) * 0.375f); // 37.5%
+                pet->BaseAttackType = SCHOOL_SHADOW; // Melee hits are supposed to do damage with the shadow school
+                pet->setBaseAttackTime(MELEE, 1500); // Shadowfiend is supposed to do 10 attacks, sometimes it can be 11
+                pet->setMinDamage(pet->getMinDamage() + ownerBonus);
+                pet->setMaxDamage(pet->getMaxDamage() + ownerBonus);
+                pet->BaseDamage[0] += ownerBonus;
+                pet->BaseDamage[1] += ownerBonus;
+
+                const auto unitTarget = pet->GetMapMgr()->GetUnit(playerOwner->getTargetGuid());
+                if (unitTarget != nullptr && isAttackable(playerOwner, unitTarget))
+                {
+                    pet->GetAIInterface()->AttackReaction(unitTarget, 1);
+                    pet->GetAIInterface()->setNextTarget(unitTarget);
+                }
             }
         }
     }
