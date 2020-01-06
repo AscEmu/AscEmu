@@ -41,12 +41,13 @@ class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 
         if (getCreature()->isSummon())
         {
-            auto summon = dynamic_cast<Summon*>(getCreature());
+            if (auto summon = dynamic_cast<Summon*>(getCreature()))
+            {
+                const auto parentBonus = summon->getUnitOwner()->GetDamageDoneMod(SCHOOL_NORMAL) * 0.04f;
 
-            const auto parentBonus = summon->getUnitOwner()->GetDamageDoneMod(SCHOOL_NORMAL) * 0.04f;
-
-            summon->setMinDamage(summon->getMinDamage() + parentBonus);
-            summon->setMaxDamage(summon->getMaxDamage() + parentBonus);
+                summon->setMinDamage(summon->getMinDamage() + parentBonus);
+                summon->setMaxDamage(summon->getMaxDamage() + parentBonus);
+            }
         }
     }
 
