@@ -187,26 +187,28 @@ class DancingRuneWeaponAI : public CreatureAIScript
 
                 if (unitOwner->isPlayer())
                 {
-                    auto playerOwner = dynamic_cast<Player*>(unitOwner);
-                    const auto item = playerOwner->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    if (item != nullptr)
+                    if (auto playerOwner = dynamic_cast<Player*>(unitOwner))
                     {
-                        for (uint8 si = 0; si < 5; si++)
+                        const auto item = playerOwner->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                        if (item != nullptr)
                         {
-                            if (item->getItemProperties()->Spells[si].Id == 0)
-                                continue;
+                            for (uint8 si = 0; si < 5; si++)
+                            {
+                                if (item->getItemProperties()->Spells[si].Id == 0)
+                                    continue;
 
-                            if (item->getItemProperties()->Spells[si].Trigger == CHANCE_ON_HIT)
-                                procSpell[si] = item->getItemProperties()->Spells[si].Id;
+                                if (item->getItemProperties()->Spells[si].Trigger == CHANCE_ON_HIT)
+                                    procSpell[si] = item->getItemProperties()->Spells[si].Id;
+                            }
+
+                            summon->setVirtualItemSlotId(MELEE, item->getEntry());
+                            summon->setBaseAttackTime(MELEE, item->getItemProperties()->Delay);
                         }
 
-                        summon->setVirtualItemSlotId(MELEE, item->getEntry());
-                        summon->setBaseAttackTime(MELEE, item->getItemProperties()->Delay);
-                    }
-
 #if VERSION_STRING == WotLK
-                    playerOwner->setPower(POWER_TYPE_RUNIC_POWER, 0);
+                        playerOwner->setPower(POWER_TYPE_RUNIC_POWER, 0);
 #endif
+                    }
                 }
 
                 summon->setMinDamage(float(unitOwner->GetDamageDoneMod(SCHOOL_NORMAL)));
