@@ -362,11 +362,13 @@ bool ChatHandler::HandleModifyArmor(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify armor from %u to %u on %s (%u)", oldArmor, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify armor from %u to %u on %s (%u)", oldArmor, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the armor of %s from %u to %u.", player->getName().c_str(), oldArmor, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your armor from %u to %u.", session->GetPlayer()->getName().c_str(), oldArmor, value);
+            BlueSystemMessage(session, "You modify the armor of %s from %u to %u.", player->getName().c_str(), oldArmor, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your armor from %u to %u.", session->GetPlayer()->getName().c_str(), oldArmor, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
