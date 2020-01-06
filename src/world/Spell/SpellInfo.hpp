@@ -502,7 +502,12 @@ private:
 
     void setEffectRadiusIndex(uint32_t radiusIndex, uint8_t idx)                // used in HackFixes.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return;
+        }
+
         EffectRadiusIndex[idx] = radiusIndex;
     }
 
