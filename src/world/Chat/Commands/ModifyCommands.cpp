@@ -777,10 +777,12 @@ bool ChatHandler::HandleModifyDisplayid(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify displayid from %u to %u on %s (%u)", oldDisplayId, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify displayid from %u to %u on %s (%u)", oldDisplayId, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the displayid of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldDisplayId, value);
+            BlueSystemMessage(session, "You modify the displayid of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldDisplayId, value);
+        }
     }
 
     unitTarget->setDisplayId(value);
