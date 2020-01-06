@@ -25,11 +25,13 @@ bool ChatHandler::HandleModifyHp(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify health from %u to %u on %s (%u)", oldHealth, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify health from %u to %u on %s (%u)", oldHealth, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the health of %s from %u to %u.", player->getName().c_str(), oldHealth, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your health from %u to %u.", session->GetPlayer()->getName().c_str(), oldHealth, value);
+            BlueSystemMessage(session, "You modify the health of %s from %u to %u.", player->getName().c_str(), oldHealth, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your health from %u to %u.", session->GetPlayer()->getName().c_str(), oldHealth, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
