@@ -170,10 +170,12 @@ bool ChatHandler::HandleModifyRunicpower(const char* args, WorldSession* session
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify power (runic) from %u to %u on %s (%u)", oldRunic, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify power (runic) from %u to %u on %s (%u)", oldRunic, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the power (runic) of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldRunic, value);
+            BlueSystemMessage(session, "You modify the power (runic) of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldRunic, value);
+        }
     }
 
     unitTarget->setPower(POWER_TYPE_RUNIC_POWER, value);
