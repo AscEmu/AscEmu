@@ -2590,13 +2590,15 @@ SpellCastResult Spell::checkPower() const
                     spellModPercentageIntValue(p_caster->SM_FCost, &runeCost[i], getSpellInfo()->getSpellFamilyFlags());
                 }
 
-                const auto dkPlayer = dynamic_cast<DeathKnight*>(p_caster);
-                // Get available runes and subtract them from the power cost
-                // If the outcome is over zero, it means player doesn't have enough runes available
-                const auto missingRunes = dkPlayer->HasRunes(RUNE_BLOOD, runeCost[RUNE_BLOOD]) + dkPlayer->HasRunes(RUNE_FROST, runeCost[RUNE_FROST]) + dkPlayer->HasRunes(RUNE_UNHOLY, runeCost[RUNE_UNHOLY]);
-                // If there aren't enough normal runes available, try death runes
-                if (missingRunes > 0 && dkPlayer->HasRunes(RUNE_DEATH, missingRunes) > 0)
-                    return SPELL_FAILED_NO_POWER;
+                if (const auto dkPlayer = dynamic_cast<DeathKnight*>(p_caster))
+                {
+                    // Get available runes and subtract them from the power cost
+                    // If the outcome is over zero, it means player doesn't have enough runes available
+                    const auto missingRunes = dkPlayer->HasRunes(RUNE_BLOOD, runeCost[RUNE_BLOOD]) + dkPlayer->HasRunes(RUNE_FROST, runeCost[RUNE_FROST]) + dkPlayer->HasRunes(RUNE_UNHOLY, runeCost[RUNE_UNHOLY]);
+                    // If there aren't enough normal runes available, try death runes
+                    if (missingRunes > 0 && dkPlayer->HasRunes(RUNE_DEATH, missingRunes) > 0)
+                        return SPELL_FAILED_NO_POWER;
+                }
             }
         }
     }
