@@ -1018,11 +1018,13 @@ bool ChatHandler::HandleModifyCombatreach(const char* args, WorldSession* sessio
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify combatreach from %f to %f on %s (%u)", oldReach, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify combatreach from %f to %f on %s (%u)", oldReach, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the combatreach of %s from %f to %f.", player->getName().c_str(), oldReach, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your combatreach from %f to %f.", session->GetPlayer()->getName().c_str(), oldReach, value);
+            BlueSystemMessage(session, "You modify the combatreach of %s from %f to %f.", player->getName().c_str(), oldReach, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your combatreach from %f to %f.", session->GetPlayer()->getName().c_str(), oldReach, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
