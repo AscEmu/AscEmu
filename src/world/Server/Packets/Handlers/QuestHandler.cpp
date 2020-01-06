@@ -496,8 +496,8 @@ void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
         if (quest_giver->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             bValid = true;
-            auto go_quest_giver = dynamic_cast<GameObject_QuestGiver*>(quest_giver);
-            status = sQuestMgr.CalcQuestStatus(qst_giver, _player, qst, static_cast<uint8_t>(go_quest_giver->GetQuestRelation(qst->id)), false);
+            if (auto go_quest_giver = dynamic_cast<GameObject_QuestGiver*>(quest_giver))
+                status = sQuestMgr.CalcQuestStatus(qst_giver, _player, qst, static_cast<uint8_t>(go_quest_giver->GetQuestRelation(qst->id)), false);
         }
     }
     else if (srlPacket.guid.isItem())
