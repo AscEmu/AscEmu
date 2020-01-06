@@ -260,16 +260,17 @@ void GossipBanker::onSelectOption(Object* /*object*/, Player* /*player*/, uint32
 
 void GossipCharterGiver::onHello(Object* object, Player* player)
 {
-    const auto creature = dynamic_cast<Creature*>(object);
+    if (const auto creature = dynamic_cast<Creature*>(object))
+    {
+        auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
+        if (!sMySQLStore.getNpcText(gossipTextId))
+            gossipTextId = DefaultGossipTextId;
 
-    auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-    if (!sMySQLStore.getNpcText(gossipTextId))
-        gossipTextId = DefaultGossipTextId;
-
-    if (creature->isTabardDesigner())
-        GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(FOUND_GUILD));
-    else
-        GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(FOUND_ARENATEAM));
+        if (creature->isTabardDesigner())
+            GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(FOUND_GUILD));
+        else
+            GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(FOUND_ARENATEAM));
+    }
 }
 
 void GossipCharterGiver::onSelectOption(Object* object, Player* player, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
