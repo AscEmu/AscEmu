@@ -943,10 +943,12 @@ bool ChatHandler::HandleModifyBoundingradius(const char* args, WorldSession* ses
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify boundingradius from %f to %f on %s (%u)", oldBounding, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify boundingradius from %f to %f on %s (%u)", oldBounding, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the boundingradius of %s from %f to %f.", creature->GetCreatureProperties()->Name.c_str(), oldBounding, value);
+            BlueSystemMessage(session, "You modify the boundingradius of %s from %f to %f.", creature->GetCreatureProperties()->Name.c_str(), oldBounding, value);
+        }
     }
 
     unitTarget->setBoundingRadius(value);
