@@ -113,12 +113,14 @@ void WorldSession::handleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/)
         if (inrangeObject == nullptr || !inrangeObject->isCreature())
             continue;
 
-        const auto creature = dynamic_cast<Creature*>(inrangeObject);
-        if (creature->isQuestGiver())
+        if (const auto creature = dynamic_cast<Creature*>(inrangeObject))
         {
-            temp.rawGuid = creature->getGuid();
-            temp.status = uint8_t(sQuestMgr.CalcStatus(creature, _player));
-            questgiverSet.push_back(temp);
+            if (creature->isQuestGiver())
+            {
+                temp.rawGuid = creature->getGuid();
+                temp.status = uint8_t(sQuestMgr.CalcStatus(creature, _player));
+                questgiverSet.push_back(temp);
+            }
         }
     }
 
