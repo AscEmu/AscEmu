@@ -103,44 +103,45 @@ void GossipVendor::onSelectOption(Object* object, Player* player, uint32_t /*Id*
 
 void GossipTrainer::onHello(Object* object, Player* player)
 {
-    auto creature = dynamic_cast<Creature*>(object);
-    
-    auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-    if (!sMySQLStore.getNpcText(gossipTextId))
-        gossipTextId = DefaultGossipTextId;
-
-    GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
-
-    if (const auto trainer = creature->GetTrainer())
+    if (auto creature = dynamic_cast<Creature*>(object))
     {
-        if (!player->CanTrainAt(trainer))
+        auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
+        if (!sMySQLStore.getNpcText(gossipTextId))
+            gossipTextId = DefaultGossipTextId;
+
+        GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
+
+        if (const auto trainer = creature->GetTrainer())
         {
-            menu.setTextID(trainer->Cannot_Train_GossipTextId);
-        }
-        else
-        {
-            std::string name = creature->GetCreatureProperties()->Name;
-            std::string::size_type pos = name.find(' ');
-
-            if (pos != std::string::npos)
-                name = name.substr(0, pos);
-
-            auto msg = std::string(player->GetSession()->LocalizedGossipOption(ISEEK));
-            msg += std::string(player->GetSession()->LocalizedGossipOption(TRAINING)) + ", " + name + ".";
-            menu.addItem(GOSSIP_ICON_TRAINER, 0, 1, msg);
-
-            if (creature->isVendor())
+            if (!player->CanTrainAt(trainer))
             {
-                const auto vendorRestrictions = sMySQLStore.getVendorRestriction(creature->GetCreatureProperties()->Id);
-                if (player->CanBuyAt(vendorRestrictions))
-                    menu.addItem(GOSSIP_ICON_VENDOR, VENDOR, 2);
+                menu.setTextID(trainer->Cannot_Train_GossipTextId);
+            }
+            else
+            {
+                std::string name = creature->GetCreatureProperties()->Name;
+                std::string::size_type pos = name.find(' ');
+
+                if (pos != std::string::npos)
+                    name = name.substr(0, pos);
+
+                auto msg = std::string(player->GetSession()->LocalizedGossipOption(ISEEK));
+                msg += std::string(player->GetSession()->LocalizedGossipOption(TRAINING)) + ", " + name + ".";
+                menu.addItem(GOSSIP_ICON_TRAINER, 0, 1, msg);
+
+                if (creature->isVendor())
+                {
+                    const auto vendorRestrictions = sMySQLStore.getVendorRestriction(creature->GetCreatureProperties()->Id);
+                    if (player->CanBuyAt(vendorRestrictions))
+                        menu.addItem(GOSSIP_ICON_VENDOR, VENDOR, 2);
+                }
             }
         }
+
+        sQuestMgr.FillQuestMenu(creature, player, menu);
+
+        menu.sendGossipPacket(player);
     }
-
-    sQuestMgr.FillQuestMenu(creature, player, menu);
-
-    menu.sendGossipPacket(player);
 }
 
 void GossipTrainer::onSelectOption(Object* object, Player* player, uint32_t Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
