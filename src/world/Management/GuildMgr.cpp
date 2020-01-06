@@ -130,7 +130,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LogDebug("Loaded %u guild definitions in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+            LogDebug("Loaded %u guild definitions in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -163,7 +163,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LogDebug("Loaded %u guild ranks in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+            LogDebug("Loaded %u guild ranks in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -197,7 +197,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow() && result2->NextRow());
 
-            LogDebug("Loaded %u guild members int %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+            LogDebug("Loaded %u guild members int %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -230,7 +230,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LogDebug("Loaded %u bank tab rights in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+            LogDebug("Loaded %u bank tab rights in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -263,7 +263,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LogDebug("Loaded %u guild event logs in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+            LogDebug("Loaded %u guild event logs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -295,7 +295,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LogDebug("Loaded %u guild bank event logs in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+            LogDebug("Loaded %u guild bank event logs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -328,7 +328,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LogDebug("Loaded %u guild new logs in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+            LogDebug("Loaded %u guild new logs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -361,7 +361,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LogDebug("Loaded %u guild bank tabs in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+            LogDebug("Loaded %u guild bank tabs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -390,7 +390,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LogNotice("Loaded %u guild bank items in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+            LogNotice("Loaded %u guild bank items in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -472,7 +472,7 @@ void GuildMgr::loadGuildXpForLevelFromDB()
         }
     }
 
-    LogDebug("Loaded %u xp for guild level definitions in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+    LogDebug("Loaded %u xp for guild level definitions in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void GuildMgr::loadGuildRewardsFromDB()
@@ -515,7 +515,7 @@ void GuildMgr::loadGuildRewardsFromDB()
         ++count;
     } while (result->NextRow());
 
-    LogDebug("Loaded %u guild reward definitions in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+    LogDebug("Loaded %u guild reward definitions in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void GuildMgr::resetTimes(bool week)

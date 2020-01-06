@@ -940,7 +940,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
         } while (result->NextRow());
     }
 
-    LogDebugFlag(LF_OPCODE, "Character Enum Built in %u ms.", Util::GetTimeDifferenceToNow(startTime));
+    LogDebugFlag(LF_OPCODE, "Character Enum Built in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     SendPacket(SmsgCharEnum(charRealCount, enumData).serialise().get());
 }
 

@@ -161,7 +161,7 @@ void LfgMgr::LoadRewards()
     }
     while (result->NextRow());
 
-    LogDetail("LFGMgr : Loaded %u lfg dungeon rewards in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("LFGMgr : Loaded %u lfg dungeon rewards in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void LfgMgr::Update(uint32 diff)

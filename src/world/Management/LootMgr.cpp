@@ -123,7 +123,7 @@ void LootMgr::LoadLoot()
     LoadLootTables("loot_pickpocketing", &PickpocketingLoot);
     is_loading = false;
 
-    LOG_DEBUG("Loaded loot tables in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    LOG_DEBUG("Loaded loot tables in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 DBC::Structures::ItemRandomPropertiesEntry const* LootMgr::GetRandomProperties(ItemProperties const* proto)

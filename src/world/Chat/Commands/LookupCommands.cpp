@@ -255,7 +255,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
         recout = "|cff00ccffNo matches found.";
         SendMultilineMessage(m_session, recout.c_str());
     }
-    BlueSystemMessage(m_session, "Search completed in %u ms.", Util::GetTimeDifferenceToNow(startTime));
+    BlueSystemMessage(m_session, "Search completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 #endif
     return true;
 }
@@ -313,7 +313,7 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
     if (count == 0)
         RedSystemMessage(m_session, "No results returned. aborting.");
 
-    BlueSystemMessage(m_session, "Search completed in %u ms.", Util::GetTimeDifferenceToNow(startTime));
+    BlueSystemMessage(m_session, "Search completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -362,7 +362,7 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
         }
     }
 
-    GreenSystemMessage(m_session, "Search completed in %u ms.", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "Search completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -418,7 +418,7 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
     if (count == 0)
         RedSystemMessage(m_session, "No results returned. aborting.");
 
-    BlueSystemMessage(m_session, "Search completed in %u ms.", Util::GetTimeDifferenceToNow(startTime));
+    BlueSystemMessage(m_session, "Search completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -474,7 +474,7 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
         SendMultilineMessage(m_session, recout.c_str());
     }
 
-    BlueSystemMessage(m_session, "Search completed in %u ms.", Util::GetTimeDifferenceToNow(startTime));
+    BlueSystemMessage(m_session, "Search completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -547,7 +547,7 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
         SendMultilineMessage(m_session, recout.c_str());
     }
 
-    BlueSystemMessage(m_session, "Search completed in %u ms.", Util::GetTimeDifferenceToNow(startTime));
+    BlueSystemMessage(m_session, "Search completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     return true;
 }
@@ -603,7 +603,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
         }
     }
 
-    GreenSystemMessage(m_session, "Search completed in %u ms.", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "Search completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -652,6 +652,6 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
         }
     }
 
-    GreenSystemMessage(m_session, "Search completed in %u ms.", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "Search completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }

@@ -1423,7 +1423,7 @@ bool ChatHandler::HandleQuestLoadCommand(const char* /*args*/, WorldSession* m_s
 
     sQuestMgr.LoadExtraQuestStuff();
 
-    BlueSystemMessage(m_session, "Load completed in %u ms.", Util::GetTimeDifferenceToNow(startTime));
+    BlueSystemMessage(m_session, "Load completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     WoWGuid wowGuid;
     wowGuid.Init(m_session->GetPlayer()->GetSelection());

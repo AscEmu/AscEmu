@@ -959,7 +959,7 @@ void World::loadMySQLTablesByTask()
 
     g_chatFilter = new WordFilter();
 
-    LogDetail("Done. Database loaded in %u ms.", Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("Done. Database loaded in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     // calling this puts all maps into our task list.
     sInstanceMgr.Load();
@@ -1005,7 +1005,7 @@ void World::saveAllPlayersToDb()
         {
             auto startTime = Util::TimeNow();
             itr->second->SaveToDB(false);
-            LogDetail("Saved player `%s` (level %u) in %u ms.", itr->second->getName().c_str(), itr->second->getLevel(), Util::GetTimeDifferenceToNow(startTime));
+            LogDetail("Saved player `%s` (level %u) in %u ms.", itr->second->getName().c_str(), itr->second->getLevel(), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
             ++count;
         }
     }

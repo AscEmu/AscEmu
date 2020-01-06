@@ -86,7 +86,7 @@ void LoadGameObjectModelList(std::string const& dataPath)
     }
 
     fclose(model_list_file);
-    LogNotice("LoadGameObjectModelList : Loaded %u GameObject models in %u ms", uint32(model_list.size()), Util::GetTimeDifferenceToNow(startTime));
+    LogNotice("LoadGameObjectModelList : Loaded %u GameObject models in %u ms", uint32(model_list.size()), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 GameObjectModel::~GameObjectModel()

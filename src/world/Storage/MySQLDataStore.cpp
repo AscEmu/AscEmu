@@ -154,7 +154,7 @@ void MySQLDataStore::loadItemPagesTable()
 
     delete itempages_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u pages from `item_pages` table in %u ms!", itempages_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u pages from `item_pages` table in %u ms!", itempages_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::ItemPage const* MySQLDataStore::getItemPage(uint32_t entry)
@@ -502,7 +502,7 @@ void MySQLDataStore::loadItemPropertiesTable()
         delete item_result;
     }
 
-    LogDetail("MySQLDataLoads : Loaded %u item_properties in %u ms!", item_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u item_properties in %u ms!", item_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 ItemProperties const* MySQLDataStore::getItemProperties(uint32_t entry)
@@ -836,7 +836,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         delete creature_properties_result;
     }
 
-    LogDetail("MySQLDataLoads : Loaded %u creature proto data in %u ms!", creature_properties_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u creature proto data in %u ms!", creature_properties_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 CreatureProperties const* MySQLDataStore::getCreatureProperties(uint32_t entry)
@@ -965,7 +965,7 @@ void MySQLDataStore::loadGameObjectPropertiesTable()
         delete gameobject_properties_result;
     }
 
-    LogDetail("MySQLDataLoads : Loaded %u gameobject data in %u ms!", gameobject_properties_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u gameobject data in %u ms!", gameobject_properties_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 GameObjectProperties const* MySQLDataStore::getGameObjectProperties(uint32_t entry)
@@ -1228,7 +1228,7 @@ void MySQLDataStore::loadQuestPropertiesTable()
         delete quest_result;
     }
 
-    LogDetail("MySQLDataLoads : Loaded %u quest_properties data in %u ms!", quest_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u quest_properties data in %u ms!", quest_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 QuestProperties const* MySQLDataStore::getQuestProperties(uint32_t entry)
@@ -1281,7 +1281,7 @@ void MySQLDataStore::loadGameObjectQuestItemBindingTable()
         delete gameobject_quest_item_result;
     }
 
-    LogDetail("MySQLDataLoads : Loaded %u data from `gameobject_quest_item_binding` table in %u ms!", gameobject_quest_item_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u data from `gameobject_quest_item_binding` table in %u ms!", gameobject_quest_item_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void MySQLDataStore::loadGameObjectQuestPickupBindingTable()
@@ -1327,7 +1327,7 @@ void MySQLDataStore::loadGameObjectQuestPickupBindingTable()
         delete gameobject_quest_pickup_result;
     }
 
-    LogDetail("MySQLDataLoads : Loaded %u data from `gameobject_quest_pickup_binding` table in %u ms!", gameobject_quest_pickup_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u data from `gameobject_quest_pickup_binding` table in %u ms!", gameobject_quest_pickup_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void MySQLDataStore::loadCreatureDifficultyTable()
@@ -1368,7 +1368,7 @@ void MySQLDataStore::loadCreatureDifficultyTable()
 
     delete creature_difficulty_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u creature difficulties info from `creature_difficulty` table in %u ms!", creature_difficulty_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u creature difficulties info from `creature_difficulty` table in %u ms!", creature_difficulty_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 uint32_t MySQLDataStore::getCreatureDifficulty(uint32_t entry, uint8_t difficulty_type)
@@ -1448,7 +1448,7 @@ void MySQLDataStore::loadDisplayBoundingBoxesTable()
 
     delete display_bounding_boxes_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u display bounding info from `display_bounding_boxes` table in %u ms!", display_bounding_boxes_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u display bounding info from `display_bounding_boxes` table in %u ms!", display_bounding_boxes_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::DisplayBoundingBoxes const* MySQLDataStore::getDisplayBounding(uint32_t entry)
@@ -1502,7 +1502,7 @@ void MySQLDataStore::loadVendorRestrictionsTable()
 
     delete vendor_restricitons_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u restrictions from `vendor_restrictions` table in %u ms!", vendor_restricitons_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u restrictions from `vendor_restrictions` table in %u ms!", vendor_restricitons_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::VendorRestrictions const* MySQLDataStore::getVendorRestriction(uint32_t entry)
@@ -1581,7 +1581,7 @@ void MySQLDataStore::loadNpcTextTable()
 
     delete npc_text_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_text` table in %u ms!", npc_text_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_text` table in %u ms!", npc_text_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::NpcText const* MySQLDataStore::getNpcText(uint32_t entry)
@@ -1638,7 +1638,7 @@ void MySQLDataStore::loadNpcScriptTextTable()
 
     delete npc_script_text_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_script_text` table in %u ms!", npc_script_text_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_script_text` table in %u ms!", npc_script_text_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::NpcScriptText const* MySQLDataStore::getNpcScriptText(uint32_t entry)
@@ -1684,7 +1684,7 @@ void MySQLDataStore::loadGossipMenuOptionTable()
 
     delete gossip_menu_optiont_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu_option` table in %u ms!", gossip_menu_optiont_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu_option` table in %u ms!", gossip_menu_optiont_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::GossipMenuOption const* MySQLDataStore::getGossipMenuOption(uint32_t entry)
@@ -1736,7 +1736,7 @@ void MySQLDataStore::loadGraveyardsTable()
 
     delete graveyards_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `graveyards` table in %u ms!", graveyards_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `graveyards` table in %u ms!", graveyards_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::Graveyards const* MySQLDataStore::getGraveyard(uint32_t entry)
@@ -1784,7 +1784,7 @@ void MySQLDataStore::loadTeleportCoordsTable()
 
     delete teleport_coords_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `spell_teleport_coords` table in %u ms!", teleport_coords_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `spell_teleport_coords` table in %u ms!", teleport_coords_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 TeleportCoords const* MySQLDataStore::getTeleportCoord(uint32_t entry)
@@ -1830,7 +1830,7 @@ void MySQLDataStore::loadFishingTable()
 
     delete fishing_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `fishing` table in %u ms!", fishing_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `fishing` table in %u ms!", fishing_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::FishingZones const* MySQLDataStore::getFishingZone(uint32_t entry)
@@ -1899,7 +1899,7 @@ void MySQLDataStore::loadWorldMapInfoTable()
 
     delete worldmap_info_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `worldmap_info` table in %u ms!", world_map_info_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `worldmap_info` table in %u ms!", world_map_info_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::MapInfo const* MySQLDataStore::getWorldMapInfo(uint32_t entry)
@@ -1945,7 +1945,7 @@ void MySQLDataStore::loadZoneGuardsTable()
 
     delete zone_guards_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `zoneguards` table in %u ms!", zone_guards_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `zoneguards` table in %u ms!", zone_guards_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::ZoneGuards const* MySQLDataStore::getZoneGuard(uint32_t entry)
@@ -1990,7 +1990,7 @@ void MySQLDataStore::loadBattleMastersTable()
 
     delete battlemasters_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `battlemasters` table in %u ms!", battlemasters_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `battlemasters` table in %u ms!", battlemasters_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::Battlemasters const* MySQLDataStore::getBattleMaster(uint32_t entry)
@@ -2038,7 +2038,7 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
 
     delete totemdisplayids_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `totemdisplayids` table in %u ms!", _totemDisplayIdsStore.size(), Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `totemdisplayids` table in %u ms!", _totemDisplayIdsStore.size(), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::TotemDisplayIds const* MySQLDataStore::getTotemDisplayId(uint8_t race, uint32_t entry)
@@ -2084,7 +2084,7 @@ void MySQLDataStore::loadSpellClickSpellsTable()
 
     delete spellclickspells_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `spellclickspells` table in %u ms!", spellclickspells_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `spellclickspells` table in %u ms!", spellclickspells_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 SpellClickSpell const* MySQLDataStore::getSpellClickSpell(uint32_t entry)
@@ -2129,7 +2129,7 @@ void MySQLDataStore::loadWorldStringsTable()
 
     delete worldstring_tables_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `worldstring_tables` table in %u ms!", worldstring_tables_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `worldstring_tables` table in %u ms!", worldstring_tables_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::WorldStringTable const* MySQLDataStore::getWorldString(uint32_t entry)
@@ -2179,7 +2179,7 @@ void MySQLDataStore::loadPointsOfInterestTable()
 
     delete points_of_interest_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `points_of_interest` table in %u ms!", points_of_interest_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `points_of_interest` table in %u ms!", points_of_interest_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::PointsOfInterest const* MySQLDataStore::getPointOfInterest(uint32_t entry)
@@ -2225,7 +2225,7 @@ void MySQLDataStore::loadItemSetLinkedSetBonusTable()
 
     delete linked_set_bonus_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `itemset_linked_itemsetbonus` table in %u ms!", linked_set_bonus_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `itemset_linked_itemsetbonus` table in %u ms!", linked_set_bonus_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 uint32_t MySQLDataStore::getItemSetLinkedBonus(int32_t itemset)
@@ -2277,7 +2277,7 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
 
     delete initial_equipment_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `creature_initial_equip` table in %u ms!", initial_equipment_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `creature_initial_equip` table in %u ms!", initial_equipment_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void MySQLDataStore::loadPlayerCreateInfoTable()
@@ -2344,7 +2344,7 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
 
     delete player_create_info_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo` table in %u ms!", static_cast<uint32_t>(_playerCreateInfoStore.size()), Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo` table in %u ms!", static_cast<uint32_t>(_playerCreateInfoStore.size()), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void MySQLDataStore::loadPlayerCreateInfoSkillsTable()
@@ -2393,7 +2393,7 @@ void MySQLDataStore::loadPlayerCreateInfoSkillsTable()
 
     delete player_create_info_skills_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_skills` table in %u ms!", player_create_info_skills_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_skills` table in %u ms!", player_create_info_skills_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void MySQLDataStore::loadPlayerCreateInfoSpellsTable()
@@ -2436,7 +2436,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellsTable()
 
     delete player_create_info_spells_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_spells` table in %u ms!", player_create_info_spells_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_spells` table in %u ms!", player_create_info_spells_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void MySQLDataStore::loadPlayerCreateInfoItemsTable()
@@ -2488,7 +2488,7 @@ void MySQLDataStore::loadPlayerCreateInfoItemsTable()
 
     delete player_create_info_items_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_items` table in %u ms!", player_create_info_items_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_items` table in %u ms!", player_create_info_items_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void MySQLDataStore::loadPlayerCreateInfoBarsTable(uint32_t player_info_index)
@@ -2581,7 +2581,7 @@ void MySQLDataStore::loadPlayerXpToLevelTable()
 
     delete player_xp_to_level_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `player_xp_for_level` table in %u ms!", player_xp_to_level_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `player_xp_for_level` table in %u ms!", player_xp_to_level_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     if (player_xp_to_level_count < (worldConfig.player.playerLevelCap - 1))
         LOG_ERROR("Table `player_xp_for_level` includes definitions for %u level, but your defined level cap is %u!", player_xp_to_level_count, worldConfig.player.playerLevelCap);
@@ -2684,7 +2684,7 @@ void MySQLDataStore::loadNpcGossipTextIdTable()
 
     delete npc_gossip_textid_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_gossip_textid` table in %u ms!", npc_gossip_textid_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_gossip_textid` table in %u ms!", npc_gossip_textid_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 uint32_t MySQLDataStore::getGossipTextIdForNpc(uint32_t entry)
@@ -2731,7 +2731,7 @@ void MySQLDataStore::loadPetLevelAbilitiesTable()
 
     delete pet_level_abilities_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `pet_level_abilities` table in %u ms!", pet_level_abilities_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `pet_level_abilities` table in %u ms!", pet_level_abilities_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     if (pet_level_abilities_count < worldConfig.player.playerLevelCap)
         LOG_ERROR("Table `pet_level_abilities` includes definitions for %u level, but your defined level cap is %u!", pet_level_abilities_count, worldConfig.player.playerLevelCap);
@@ -2785,7 +2785,7 @@ void MySQLDataStore::loadBroadcastTable()
 
     delete broadcast_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `worldbroadcast` table in %u ms!", broadcast_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `worldbroadcast` table in %u ms!", broadcast_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::WorldBroadCast const* MySQLDataStore::getWorldBroadcastById(uint32_t id)
@@ -2857,7 +2857,7 @@ void MySQLDataStore::loadAreaTriggerTable()
 
     delete area_trigger_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `areatriggers` table in %u ms!", areaTrigger_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `areatriggers` table in %u ms!", areaTrigger_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::AreaTrigger const* MySQLDataStore::getAreaTrigger(uint32_t entry)
@@ -2919,7 +2919,7 @@ void MySQLDataStore::loadWordFilterCharacterNames()
 
     delete filter_character_names_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `wordfilter_character_names` table in %u ms!", filter_character_names_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `wordfilter_character_names` table in %u ms!", filter_character_names_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 bool MySQLDataStore::isCharacterNameAllowed(std::string charName)
@@ -2977,7 +2977,7 @@ void MySQLDataStore::loadWordFilterChat()
 
     delete filter_chat_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `wordfilter_chat` table in %u ms!", filter_chat_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `wordfilter_chat` table in %u ms!", filter_chat_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void MySQLDataStore::loadCreatureFormationsTable()
@@ -3020,7 +3020,7 @@ void MySQLDataStore::loadCreatureFormationsTable()
 
     delete creature_formations_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `creature_formations` table in %u ms!", formations_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `creature_formations` table in %u ms!", formations_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::CreatureFormation const* MySQLDataStore::getCreatureFormationBySpawnId(uint32_t spawnId)
@@ -3070,7 +3070,7 @@ void MySQLDataStore::loadLocalesCreature()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_creature` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_creature` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::LocalesCreature const* MySQLDataStore::getLocalizedCreature(uint32_t entry, uint32_t sessionLocale)
@@ -3123,7 +3123,7 @@ void MySQLDataStore::loadLocalesGameobject()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_gameobject` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_gameobject` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::LocalesGameobject const* MySQLDataStore::getLocalizedGameobject(uint32_t entry, uint32_t sessionLocale)
@@ -3176,7 +3176,7 @@ void MySQLDataStore::loadLocalesGossipMenuOption()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_gossip_menu_option` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_gossip_menu_option` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::LocalesGossipMenuOption const* MySQLDataStore::getLocalizedGossipMenuOption(uint32_t entry, uint32_t sessionLocale)
@@ -3230,7 +3230,7 @@ void MySQLDataStore::loadLocalesItem()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_item` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_item` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::LocalesItem const* MySQLDataStore::getLocalizedItem(uint32_t entry, uint32_t sessionLocale)
@@ -3283,7 +3283,7 @@ void MySQLDataStore::loadLocalesItemPages()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_item_pages` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_item_pages` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::LocalesItemPages const* MySQLDataStore::getLocalizedItemPages(uint32_t entry, uint32_t sessionLocale)
@@ -3342,7 +3342,7 @@ void MySQLDataStore::loadLocalesNPCMonstersay()
 
     delete local_monstersay_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_monstersay` table in %u ms!", local_monstersay_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_monstersay` table in %u ms!", local_monstersay_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::LocalesNPCMonstersay const* MySQLDataStore::getLocalizedMonsterSay(uint32_t entry, uint32_t sessionLocale, uint32_t event)
@@ -3398,7 +3398,7 @@ void MySQLDataStore::loadLocalesNpcScriptText()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_script_text` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_script_text` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::LocalesNpcScriptText const* MySQLDataStore::getLocalizedNpcScriptText(uint32_t entry, uint32_t sessionLocale)
@@ -3456,7 +3456,7 @@ void MySQLDataStore::loadLocalesNpcText()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_text` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_text` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::LocalesNpcText const* MySQLDataStore::getLocalizedNpcText(uint32_t entry, uint32_t sessionLocale)
@@ -3518,7 +3518,7 @@ void MySQLDataStore::loadLocalesQuest()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_quest` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_quest` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::LocalesQuest const* MySQLDataStore::getLocalizedQuest(uint32_t entry, uint32_t sessionLocale)
@@ -3571,7 +3571,7 @@ void MySQLDataStore::loadLocalesWorldbroadcast()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldbroadcast` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldbroadcast` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::LocalesWorldbroadcast const* MySQLDataStore::getLocalizedWorldbroadcast(uint32_t entry, uint32_t sessionLocale)
@@ -3624,7 +3624,7 @@ void MySQLDataStore::loadLocalesWorldmapInfo()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldmap_info` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldmap_info` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::LocalesWorldmapInfo const* MySQLDataStore::getLocalizedWorldmapInfo(uint32_t entry, uint32_t sessionLocale)
@@ -3677,7 +3677,7 @@ void MySQLDataStore::loadLocalesWorldStringTable()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldstring_table` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldstring_table` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::LocalesWorldStringTable const* MySQLDataStore::getLocalizedWorldStringTable(uint32_t entry, uint32_t sessionLocale)
@@ -3807,7 +3807,7 @@ void MySQLDataStore::loadNpcMonstersayTable()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_monstersay` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_monstersay` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS _event)
@@ -3866,7 +3866,7 @@ MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uin
 //
 //    delete result;
 //
-//    LogDetail("MySQLDataLoads : Loaded %u rows from `petdefaultspells` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+//    LogDetail("MySQLDataLoads : Loaded %u rows from `petdefaultspells` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 //}
 
 //\brief This function is never called!     Zyres 2017/07/16 not used
@@ -3913,7 +3913,7 @@ void MySQLDataStore::loadProfessionDiscoveriesTable()
 
         delete result;
 
-        LogDetail("MySQLDataLoads : Loaded %u rows from `professiondiscoveries` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+        LogDetail("MySQLDataLoads : Loaded %u rows from `professiondiscoveries` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }
 }
 
@@ -3953,7 +3953,7 @@ void MySQLDataStore::loadTransportCreaturesTable()
 
         delete result;
 
-        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_creatures` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_creatures` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }
 }
 
@@ -4002,7 +4002,7 @@ void MySQLDataStore::loadTransportDataTable()
 
         delete result;
 
-        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_data` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_data` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }
 }
 
@@ -4037,7 +4037,7 @@ void MySQLDataStore::loadGossipMenuItemsTable()
 
         delete result;
 
-        LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+        LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }
 
     _gossipMenuItemsStores.clear();
@@ -4075,7 +4075,7 @@ void MySQLDataStore::loadGossipMenuItemsTable()
 
         delete resultItems;
 
-        LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu_items` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+        LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu_items` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }
 }
 

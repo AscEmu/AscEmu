@@ -126,6 +126,6 @@ bool ChatHandler::HandleEventReloadAllEvents(const char* /*args*/, WorldSession*
     // Reload events from DB
     sGameEventMgr.LoadFromDB();
 
-    SystemMessage(m_session, "Reloaded all game events in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    SystemMessage(m_session, "Reloaded all game events in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }

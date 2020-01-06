@@ -264,7 +264,7 @@ bool ChatHandler::HandleReloadGameobjectsCommand(const char* /*args*/, WorldSess
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadGameObjectPropertiesTable();
-    GreenSystemMessage(m_session, "WorldDB gameobjects tables reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB gameobjects tables reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -273,7 +273,7 @@ bool ChatHandler::HandleReloadCreaturesCommand(const char* /*args*/, WorldSessio
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadCreaturePropertiesTable();
-    GreenSystemMessage(m_session, "WorldDB creature tables reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB creature tables reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -282,7 +282,7 @@ bool ChatHandler::HandleReloadAreaTriggersCommand(const char* /*args*/, WorldSes
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadAreaTriggerTable();
-    GreenSystemMessage(m_session, "WorldDB table 'areatriggers' reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB table 'areatriggers' reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -293,7 +293,7 @@ bool ChatHandler::HandleReloadCommandOverridesCommand(const char* /*args*/, Worl
     sCommandTableStorage.Dealloc();
     sCommandTableStorage.Init();
     sCommandTableStorage.Load();
-    GreenSystemMessage(m_session, "CharactersDB 'command_overrides' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "CharactersDB 'command_overrides' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -302,7 +302,7 @@ bool ChatHandler::HandleReloadFishingCommand(const char* /*args*/, WorldSession*
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadFishingTable();
-    GreenSystemMessage(m_session, "WorldDB 'fishing' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'fishing' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -311,7 +311,7 @@ bool ChatHandler::HandleReloadGossipMenuOptionCommand(const char* /*args*/, Worl
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadGossipMenuOptionTable();
-    GreenSystemMessage(m_session, "WorldDB 'gossip_menu_option' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'gossip_menu_option' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -320,7 +320,7 @@ bool ChatHandler::HandleReloadGraveyardsCommand(const char* /*args*/, WorldSessi
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadGraveyardsTable();
-    GreenSystemMessage(m_session, "WorldDB 'graveyards' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'graveyards' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -329,7 +329,7 @@ bool ChatHandler::HandleReloadItemsCommand(const char* /*args*/, WorldSession* m
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadItemPropertiesTable();
-    GreenSystemMessage(m_session, "WorldDB table 'items' reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB table 'items' reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -338,7 +338,7 @@ bool ChatHandler::HandleReloadItempagesCommand(const char* /*args*/, WorldSessio
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadItemPagesTable();
-    GreenSystemMessage(m_session, "WorldDB 'itempages' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'itempages' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -347,7 +347,7 @@ bool ChatHandler::HandleReloadNpcScriptTextCommand(const char* /*args*/, WorldSe
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadNpcScriptTextTable();
-    GreenSystemMessage(m_session, "WorldDB 'npc_script_text' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'npc_script_text' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -356,7 +356,7 @@ bool ChatHandler::HandleReloadNpcTextCommand(const char* /*args*/, WorldSession*
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadNpcTextTable();
-    GreenSystemMessage(m_session, "WorldDB 'npc_text' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'npc_text' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -365,7 +365,7 @@ bool ChatHandler::HandleReloadPetLevelAbilitiesCommand(const char* /*args*/, Wor
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadPetLevelAbilitiesTable();
-    GreenSystemMessage(m_session, "WorldDB 'pet_level_abilities' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'pet_level_abilities' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -374,7 +374,7 @@ bool ChatHandler::HandleReloadPlayerXpForLevelCommand(const char* /*args*/, Worl
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadPlayerXpToLevelTable();
-    GreenSystemMessage(m_session, "WorldDB 'player_xp_for_level' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'player_xp_for_level' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -383,7 +383,7 @@ bool ChatHandler::HandleReloadPointsOfInterestCommand(const char* /*args*/, Worl
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadPointsOfInterestTable();
-    GreenSystemMessage(m_session, "WorldDB 'points_of_interest' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'points_of_interest' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -392,7 +392,7 @@ bool ChatHandler::HandleReloadQuestsCommand(const char* /*args*/, WorldSession* 
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadQuestPropertiesTable();
-    GreenSystemMessage(m_session, "WorldDB 'quest_properties' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'quest_properties' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -401,7 +401,7 @@ bool ChatHandler::HandleReloadTeleportCoordsCommand(const char* /*args*/, WorldS
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadTeleportCoordsTable();
-    GreenSystemMessage(m_session, "WorldDB 'teleport_coords' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'teleport_coords' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -410,7 +410,7 @@ bool ChatHandler::HandleReloadWorldbroadcastCommand(const char* /*args*/, WorldS
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadBroadcastTable();
-    GreenSystemMessage(m_session, "WorldDB 'worldbroadcast' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'worldbroadcast' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -419,7 +419,7 @@ bool ChatHandler::HandleReloadWorldmapInfoCommand(const char* /*args*/, WorldSes
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadWorldMapInfoTable();
-    GreenSystemMessage(m_session, "WorldDB 'worldmap_info' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'worldmap_info' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -428,7 +428,7 @@ bool ChatHandler::HandleReloadWorldstringTablesCommand(const char* /*args*/, Wor
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadWorldStringsTable();
-    GreenSystemMessage(m_session, "WorldDB 'worldstring_tables' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'worldstring_tables' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -437,7 +437,7 @@ bool ChatHandler::HandleReloadZoneguardsCommand(const char* /*args*/, WorldSessi
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadZoneGuardsTable();
-    GreenSystemMessage(m_session, "WorldDB 'zoneguards' table reloaded in %u ms", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "WorldDB 'zoneguards' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -446,6 +446,6 @@ bool ChatHandler::HandleServerReloadScriptsCommand(const char* /*args*/, WorldSe
 {
     auto startTime = Util::TimeNow();
     sScriptMgr.ReloadScriptEngines();
-    GreenSystemMessage(m_session, "Scripts reloaded in %u my.", Util::GetTimeDifferenceToNow(startTime));
+    GreenSystemMessage(m_session, "Scripts reloaded in %u my.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }

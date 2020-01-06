@@ -1378,7 +1378,7 @@ void ObjectMgr::LoadSkillLineAbilityMap()
         ++count;
     }
 
-    LogDetail("ObjectMgr : Loaded %u SkillLineAbility MultiMap Data in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+    LogDetail("ObjectMgr : Loaded %u SkillLineAbility MultiMap Data in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 SkillLineAbilityMapBounds ObjectMgr::GetSkillLineAbilityMapBounds(uint32_t spell_id) const
@@ -1437,7 +1437,7 @@ void ObjectMgr::LoadSpellRequired()
 
     } while (result->NextRow());
 
-    LogNotice("ObjectMgr: Loaded %u spell required records in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
+    LogNotice("ObjectMgr: Loaded %u spell required records in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 

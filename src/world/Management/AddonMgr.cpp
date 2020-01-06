@@ -338,7 +338,7 @@ void AddonMgr::LoadFromDB()
 
         delete clientAddonsResult;
 
-        LOG_DEBUG("Loaded %u known addons from table `clientaddons` in %u ms", knownAddonsCount, Util::GetTimeDifferenceToNow(startTime) );
+        LOG_DEBUG("Loaded %u known addons from table `clientaddons` in %u ms", knownAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)) );
     }
     else
     {
@@ -374,7 +374,7 @@ void AddonMgr::LoadFromDB()
 
         delete clientAddonsResult;
 
-        LOG_DEBUG("Loaded %u banned addons from table `clientaddons` in %u ms", bannedAddonsCount, Util::GetTimeDifferenceToNow(startTime));
+        LOG_DEBUG("Loaded %u banned addons from table `clientaddons` in %u ms", bannedAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }
 }
 
