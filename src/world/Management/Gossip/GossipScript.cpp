@@ -74,23 +74,24 @@ void GossipSpiritHealer::onHello(Object* object, Player* player)
 
 void GossipVendor::onHello(Object* object, Player* player)
 {
-    auto creature = dynamic_cast<Creature*>(object);
+    if (auto creature = dynamic_cast<Creature*>(object))
+    {
+        auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
+        if (!sMySQLStore.getNpcText(gossipTextId))
+            gossipTextId = DefaultGossipTextId;
 
-    auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-    if (!sMySQLStore.getNpcText(gossipTextId))
-        gossipTextId = DefaultGossipTextId;
+        GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
 
-    GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
+        const auto vendorRestrictions = sMySQLStore.getVendorRestriction(creature->GetCreatureProperties()->Id);
+        if (!player->CanBuyAt(vendorRestrictions))
+            menu.setTextID(vendorRestrictions->cannotbuyattextid);
+        else
+            menu.addItem(GOSSIP_ICON_VENDOR, VENDOR, 1);
 
-    const auto vendorRestrictions = sMySQLStore.getVendorRestriction(creature->GetCreatureProperties()->Id);
-    if (!player->CanBuyAt(vendorRestrictions))
-        menu.setTextID(vendorRestrictions->cannotbuyattextid);
-    else
-        menu.addItem(GOSSIP_ICON_VENDOR, VENDOR, 1);
+        sQuestMgr.FillQuestMenu(creature, player, menu);
 
-    sQuestMgr.FillQuestMenu(creature, player, menu);
-
-    menu.sendGossipPacket(player);
+        menu.sendGossipPacket(player);
+    }
 }
 
 void GossipVendor::onSelectOption(Object* object, Player* player, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
