@@ -557,11 +557,13 @@ bool ChatHandler::HandleModifyArcane(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify arcane from %u to %u on %s (%u)", oldArcane, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify arcane from %u to %u on %s (%u)", oldArcane, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the arcane of %s from %u to %u.", player->getName().c_str(), oldArcane, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your arcane from %u to %u.", session->GetPlayer()->getName().c_str(), oldArcane, value);
+            BlueSystemMessage(session, "You modify the arcane of %s from %u to %u.", player->getName().c_str(), oldArcane, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your arcane from %u to %u.", session->GetPlayer()->getName().c_str(), oldArcane, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
