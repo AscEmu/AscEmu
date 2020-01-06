@@ -302,12 +302,16 @@ void GossipTabardDesigner::onSelectOption(Object* object, Player* player, uint32
             player->GetSession()->sendTabardHelp(dynamic_cast<Creature*>(object));
             break;
         case 2:
-            if (dynamic_cast<Creature*>(object)->isCharterGiver())
-                player->GetSession()->sendCharterRequest(dynamic_cast<Creature*>(object));
-            break;
+        {
+            if (const auto creature = dynamic_cast<Creature*>(object))
+                if (creature->isCharterGiver())
+                    player->GetSession()->sendCharterRequest(creature);
+        } break;
         case 3:
-            player->GetSession()->sendInventoryList(dynamic_cast<Creature*>(object));
-            break;
+        {
+            if (const auto creature = dynamic_cast<Creature*>(object))
+                player->GetSession()->sendInventoryList(creature);
+        } break;
         default: 
             break;
     }
