@@ -439,11 +439,13 @@ bool ChatHandler::HandleModifyNature(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify nature from %u to %u on %s (%u)", oldNature, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify nature from %u to %u on %s (%u)", oldNature, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the nature of %s from %u to %u.", player->getName().c_str(), oldNature, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your nature from %u to %u.", session->GetPlayer()->getName().c_str(), oldNature, value);
+            BlueSystemMessage(session, "You modify the nature of %s from %u to %u.", player->getName().c_str(), oldNature, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your nature from %u to %u.", session->GetPlayer()->getName().c_str(), oldNature, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
