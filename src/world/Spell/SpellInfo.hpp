@@ -555,7 +555,12 @@ private:
 
     void setEffectTriggerSpell(uint32_t spell, uint8_t idx)                     // used in ObjectMgr.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect index id %u is invalid!", idx);
+            return;
+        }
+
         EffectTriggerSpell[idx] = spell;
     }
 
