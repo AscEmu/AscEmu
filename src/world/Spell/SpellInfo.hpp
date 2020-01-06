@@ -514,7 +514,12 @@ private:
 
     void setEffectMiscValueB(int32_t miscB, uint8_t idx)
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
+        if (idx >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Effect id %u is invalid!", idx);
+            return;
+        }
+
         EffectMiscValueB[idx] = miscB;
     }
 
