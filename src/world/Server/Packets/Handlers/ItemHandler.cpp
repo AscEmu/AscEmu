@@ -2309,12 +2309,14 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
             {
                 if (pItem->isContainer())
                 {
-                    Container* pContainer = dynamic_cast<Container*>(pItem);
-                    for (uint32_t j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
+                    if (const auto pContainer = dynamic_cast<Container*>(pItem))
                     {
-                        pItem = pContainer->GetItem(static_cast<int16_t>(j));
-                        if (pItem != nullptr)
-                            pItem->RepairItem(_player, srlPacket.isInGuild, &totalcost);
+                        for (uint32_t j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
+                        {
+                            pItem = pContainer->GetItem(static_cast<int16_t>(j));
+                            if (pItem != nullptr)
+                                pItem->RepairItem(_player, srlPacket.isInGuild, &totalcost);
+                        }   
                     }
                 }
                 else
