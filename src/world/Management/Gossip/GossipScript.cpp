@@ -320,9 +320,10 @@ void GossipTabardDesigner::onSelectOption(Object* object, Player* player, uint32
 
 void GossipStableMaster::onHello(Object* object, Player* player)
 {
-    const auto creature = dynamic_cast<Creature*>(object);
+    uint32_t gossipTextId = 0;
+    if (const auto creature = dynamic_cast<Creature*>(object))
+        gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
 
-    auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
     if (!sMySQLStore.getNpcText(gossipTextId))
         gossipTextId = DefaultGossipTextId;
 
