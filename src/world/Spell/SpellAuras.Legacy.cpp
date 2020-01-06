@@ -2864,7 +2864,8 @@ void Aura::SpellAuraModStealth(bool apply)
         m_target->setStandStateFlags(UNIT_STAND_FLAGS_CREEP);
 #if VERSION_STRING != Mop
         if (m_target->isPlayer())
-            dynamic_cast<Player*>(m_target)->setPlayerFieldBytes2(0x2000);
+            if (const auto player = dynamic_cast<Player*>(m_target))
+                player->setPlayerFieldBytes2(0x2000);
 #endif
 
         m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_STEALTH | AURA_INTERRUPT_ON_INVINCIBLE);
