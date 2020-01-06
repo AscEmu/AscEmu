@@ -281,8 +281,10 @@ void WorldSession::LogoutPlayer(bool Save)
                 switch (obj->getObjectTypeId())
                 {
                     case TYPEID_UNIT:
-                        dynamic_cast<Creature*>(obj)->loot.looters.erase(_player->getGuidLow());
-                        break;
+                    {
+                        if (const auto creature = dynamic_cast<Creature*>(obj))
+                            creature->loot.looters.erase(_player->getGuidLow());
+                    } break;
                     case TYPEID_GAMEOBJECT:
                         GameObject* go = dynamic_cast<GameObject*>(obj);
 
