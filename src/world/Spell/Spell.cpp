@@ -644,43 +644,45 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             if (itr == nullptr || !itr->isGameObject())
                 continue;
 
-            const auto obj = dynamic_cast<GameObject*>(itr);
-            if (obj->getGoType() != GAMEOBJECT_TYPE_SPELL_FOCUS)
-                continue;
-
-            // Skip objects from other phases
-            if (!(p_caster->GetPhase() & obj->GetPhase()))
-                continue;
-
-            const auto gameObjectInfo = obj->GetGameObjectProperties();
-            if (gameObjectInfo == nullptr)
+            if (const auto obj = dynamic_cast<GameObject*>(itr))
             {
-                LogDebugFlag(LF_SPELL, "Spell::canCast : Found gameobject entry %u with invalid gameobject properties, spawn id %u", obj->getEntry(), obj->getGuidLow());
-                continue;
-            }
+                if (obj->getGoType() != GAMEOBJECT_TYPE_SPELL_FOCUS)
+                    continue;
 
-            // Prefer to use range from gameobject_properties instead of spell's range
-            // That is required at least for profession spells since their range is set to 0 yards in DBC files
-            float_t distance = 0.0f;
-            if (gameObjectInfo->spell_focus.distance > 0)
-            {
-                // Database seems to already have squared distances
-                distance = static_cast<float_t>(gameObjectInfo->spell_focus.distance);
-            }
-            else
-            {
-                distance = GetMaxRange(sSpellRangeStore.LookupEntry(getSpellInfo()->getRangeIndex()));
-                distance *= distance;
-            }
+                // Skip objects from other phases
+                if (!(p_caster->GetPhase() & obj->GetPhase()))
+                    continue;
 
-            // Skip objects which are out of range
-            if (!p_caster->isInRange(obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), distance))
-                continue;
+                const auto gameObjectInfo = obj->GetGameObjectProperties();
+                if (gameObjectInfo == nullptr)
+                {
+                    LogDebugFlag(LF_SPELL, "Spell::canCast : Found gameobject entry %u with invalid gameobject properties, spawn id %u", obj->getEntry(), obj->getGuidLow());
+                    continue;
+                }
 
-            if (gameObjectInfo->spell_focus.focus_id == getSpellInfo()->getRequiresSpellFocus())
-            {
-                found = true;
-                break;
+                // Prefer to use range from gameobject_properties instead of spell's range
+                // That is required at least for profession spells since their range is set to 0 yards in DBC files
+                float_t distance = 0.0f;
+                if (gameObjectInfo->spell_focus.distance > 0)
+                {
+                    // Database seems to already have squared distances
+                    distance = static_cast<float_t>(gameObjectInfo->spell_focus.distance);
+                }
+                else
+                {
+                    distance = GetMaxRange(sSpellRangeStore.LookupEntry(getSpellInfo()->getRangeIndex()));
+                    distance *= distance;
+                }
+
+                // Skip objects which are out of range
+                if (!p_caster->isInRange(obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), distance))
+                    continue;
+
+                if (gameObjectInfo->spell_focus.focus_id == getSpellInfo()->getRequiresSpellFocus())
+                {
+                    found = true;
+                    break;
+                }
             }
         }
 
