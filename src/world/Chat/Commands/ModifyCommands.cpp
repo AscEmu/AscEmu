@@ -966,10 +966,12 @@ bool ChatHandler::HandleModifyHappiness(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify happiness from %u to %u on %s (%u)", oldHappiness, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify happiness from %u to %u on %s (%u)", oldHappiness, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the happiness of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldHappiness, value);
+            BlueSystemMessage(session, "You modify the happiness of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldHappiness, value);
+        }
     }
 
     unitTarget->setPower(POWER_TYPE_HAPPINESS, value);
