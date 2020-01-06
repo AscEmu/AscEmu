@@ -411,7 +411,7 @@ private:
     {
         if (idx >= MAX_SPELL_REAGENTS)
         {
-            LogError("Spellreagents id %u is invalid!", idx);
+            LogError("Spellreagents index id %u is invalid!", idx);
             return;
         }
 
@@ -450,7 +450,7 @@ private:
     {
         if (idx >= MAX_SPELL_EFFECTS)
         {
-            LogError("Effect id %u is invalid!", idx);
+            LogError("Effect index id %u is invalid!", idx);
             return;
         }
 
@@ -503,7 +503,7 @@ private:
     {
         if (idx >= MAX_SPELL_EFFECTS)
         {
-            LogError("Effect id %u is invalid!", idx);
+            LogError("Effect index id %u is invalid!", idx);
             return;
         }
 
@@ -531,7 +531,7 @@ private:
     {
         if (idx >= MAX_SPELL_EFFECTS)
         {
-            LogError("Effect id %u is invalid!", idx);
+            LogError("Effect index id %u is invalid!", idx);
             return;
         }
 
@@ -582,7 +582,7 @@ private:
     {
         if (idx >= MAX_SPELL_EFFECTS)
         {
-            LogError("Effect id %u is invalid!", idx);
+            LogError("Effect index id %u is invalid!", idx);
             return;
         }
 
