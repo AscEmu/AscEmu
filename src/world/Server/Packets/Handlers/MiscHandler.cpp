@@ -2106,45 +2106,46 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 
     if (Caster->isPlayer())
     {
-        Player* pcaster = dynamic_cast<Player*>(Caster);
-
-        data << uint8_t(pcaster->getGender());
-        data << uint8_t(pcaster->getClass());
-
-        // facial features
-        data << uint8_t(pcaster->getSkinColor());
-        data << uint8_t(pcaster->getFace());
-        data << uint8_t(pcaster->getHairStyle());
-        data << uint8_t(pcaster->getHairColor());
-        data << uint8_t(pcaster->getFacialFeatures());
-
-        if (pcaster->IsInGuild())
-            data << uint32_t(pcaster->getGuildId());
-        else
-            data << uint32_t(0);
-
-        static const uint32_t imageitemslots[] =
+        if (const auto pcaster = dynamic_cast<Player*>(Caster))
         {
-            EQUIPMENT_SLOT_HEAD,
-            EQUIPMENT_SLOT_SHOULDERS,
-            EQUIPMENT_SLOT_BODY,
-            EQUIPMENT_SLOT_CHEST,
-            EQUIPMENT_SLOT_WAIST,
-            EQUIPMENT_SLOT_LEGS,
-            EQUIPMENT_SLOT_FEET,
-            EQUIPMENT_SLOT_WRISTS,
-            EQUIPMENT_SLOT_HANDS,
-            EQUIPMENT_SLOT_BACK,
-            EQUIPMENT_SLOT_TABARD
-        };
+            data << uint8_t(pcaster->getGender());
+            data << uint8_t(pcaster->getClass());
 
-        for (uint8_t i = 0; i < 11; ++i)
-        {
-            Item* item = pcaster->getItemInterface()->GetInventoryItem(static_cast <int16_t> (imageitemslots[i]));
-            if (item != nullptr)
-                data << uint32_t(item->getItemProperties()->DisplayInfoID);
+            // facial features
+            data << uint8_t(pcaster->getSkinColor());
+            data << uint8_t(pcaster->getFace());
+            data << uint8_t(pcaster->getHairStyle());
+            data << uint8_t(pcaster->getHairColor());
+            data << uint8_t(pcaster->getFacialFeatures());
+
+            if (pcaster->IsInGuild())
+                data << uint32_t(pcaster->getGuildId());
             else
                 data << uint32_t(0);
+
+            static const uint32_t imageitemslots[] =
+            {
+                EQUIPMENT_SLOT_HEAD,
+                EQUIPMENT_SLOT_SHOULDERS,
+                EQUIPMENT_SLOT_BODY,
+                EQUIPMENT_SLOT_CHEST,
+                EQUIPMENT_SLOT_WAIST,
+                EQUIPMENT_SLOT_LEGS,
+                EQUIPMENT_SLOT_FEET,
+                EQUIPMENT_SLOT_WRISTS,
+                EQUIPMENT_SLOT_HANDS,
+                EQUIPMENT_SLOT_BACK,
+                EQUIPMENT_SLOT_TABARD
+            };
+
+            for (uint8_t i = 0; i < 11; ++i)
+            {
+                Item* item = pcaster->getItemInterface()->GetInventoryItem(static_cast <int16_t> (imageitemslots[i]));
+                if (item != nullptr)
+                    data << uint32_t(item->getItemProperties()->DisplayInfoID);
+                else
+                    data << uint32_t(0);
+            }
         }
     }
     else // do not send player data for creatures
