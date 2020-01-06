@@ -392,11 +392,13 @@ bool ChatHandler::HandleModifyHoly(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify holy from %u to %u on %s (%u)", oldHoly, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify holy from %u to %u on %s (%u)", oldHoly, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the holy of %s from %u to %u.", player->getName().c_str(), oldHoly, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your holy from %u to %u.", session->GetPlayer()->getName().c_str(), oldHoly, value);
+            BlueSystemMessage(session, "You modify the holy of %s from %u to %u.", player->getName().c_str(), oldHoly, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your holy from %u to %u.", session->GetPlayer()->getName().c_str(), oldHoly, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
