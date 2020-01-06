@@ -539,46 +539,58 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
             break;
             case GAMEOBJECT_TYPE_CHEST:
             {
-                auto gameObjectLootable = dynamic_cast<GameObject_Lootable*>(gameObject);
-                gameObjectLootable->loot.looters.erase(_player->getGuidLow());
-
-                bool despawn = false;
-                if (gameObject->GetGameObjectProperties()->chest.consumable == 1)
-                    despawn = true;
-
-                const uint32_t lootQuestId = sQuestMgr.GetGameObjectLootQuest(gameObject->getEntry());
-                const uint32_t longDespawnTime = 900000 + Util::getRandomUInt(600000);
-                const uint32_t despawnTime = lootQuestId ? 180000 + Util::getRandomUInt(180000) : longDespawnTime;
-                const uint32_t despawnTimeInstanceCheck = lootQuestId ? 180000 + Util::getRandomUInt(180000) : IS_INSTANCE(gameObject->GetMapId()) ? 0 : longDespawnTime;
-
-                const auto lockEntry = sLockStore.LookupEntry(gameObject->GetGameObjectProperties()->chest.lock_id);
-                if (lockEntry != nullptr)
+                if (auto gameObjectLootable = dynamic_cast<GameObject_Lootable*>(gameObject))
                 {
-                    for (uint32_t i = 0; i < LOCK_NUM_CASES; ++i)
+                    gameObjectLootable->loot.looters.erase(_player->getGuidLow());
+
+                    bool despawn = false;
+                    if (gameObject->GetGameObjectProperties()->chest.consumable == 1)
+                        despawn = true;
+
+                    const uint32_t lootQuestId = sQuestMgr.GetGameObjectLootQuest(gameObject->getEntry());
+                    const uint32_t longDespawnTime = 900000 + Util::getRandomUInt(600000);
+                    const uint32_t despawnTime = lootQuestId ? 180000 + Util::getRandomUInt(180000) : longDespawnTime;
+                    const uint32_t despawnTimeInstanceCheck = lootQuestId ? 180000 + Util::getRandomUInt(180000) : IS_INSTANCE(gameObject->GetMapId()) ? 0 : longDespawnTime;
+
+                    const auto lockEntry = sLockStore.LookupEntry(gameObject->GetGameObjectProperties()->chest.lock_id);
+                    if (lockEntry != nullptr)
                     {
-                        if (lockEntry->locktype[i] != 0)
+                        for (uint32_t i = 0; i < LOCK_NUM_CASES; ++i)
                         {
-                            if (lockEntry->locktype[i] == 1)
+                            if (lockEntry->locktype[i] != 0)
                             {
-                                if (despawn)
-                                    gameObject->Despawn(0, despawnTime);
+                                if (lockEntry->locktype[i] == 1)
+                                {
+                                    if (despawn)
+                                        gameObject->Despawn(0, despawnTime);
+                                    else
+                                        gameObject->setState(GO_STATE_CLOSED);
+
+                                    return;
+                                }
+
+                                if (lockEntry->locktype[i] == 2)
+                                {
+                                    if (lockEntry->lockmisc[i] == LOCKTYPE_MINING || lockEntry->lockmisc[i] == LOCKTYPE_HERBALISM)
+                                    {
+                                        if (gameObjectLootable->HasLoot())
+                                        {
+                                            gameObject->setState(GO_STATE_CLOSED);
+                                            return;
+                                        }
+
+                                        gameObject->Despawn(0, longDespawnTime);
+                                        return;
+                                    }
+                                }
                                 else
-                                    gameObject->setState(GO_STATE_CLOSED);
-
-                                return;
-                            }
-
-                            if (lockEntry->locktype[i] == 2)
-                            {
-                                if (lockEntry->lockmisc[i] == LOCKTYPE_MINING || lockEntry->lockmisc[i] == LOCKTYPE_HERBALISM)
                                 {
                                     if (gameObjectLootable->HasLoot())
                                     {
                                         gameObject->setState(GO_STATE_CLOSED);
                                         return;
                                     }
-
-                                    gameObject->Despawn(0, longDespawnTime);
+                                    gameObject->Despawn(0, despawnTimeInstanceCheck);
                                     return;
                                 }
                             }
@@ -586,34 +598,24 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
                             {
                                 if (gameObjectLootable->HasLoot())
                                 {
-                                    gameObject->setState(GO_STATE_CLOSED);
+                                    gameObject->setState(1);
                                     return;
                                 }
                                 gameObject->Despawn(0, despawnTimeInstanceCheck);
                                 return;
                             }
                         }
-                        else
+                    }
+                    else
+                    {
+                        if (gameObjectLootable->HasLoot())
                         {
-                            if (gameObjectLootable->HasLoot())
-                            {
-                                gameObject->setState(1);
-                                return;
-                            }
-                            gameObject->Despawn(0, despawnTimeInstanceCheck);
+                            gameObject->setState(GO_STATE_CLOSED);
                             return;
                         }
-                    }
-                }
-                else
-                {
-                    if (gameObjectLootable->HasLoot())
-                    {
-                        gameObject->setState(GO_STATE_CLOSED);
-                        return;
-                    }
 
-                    gameObject->Despawn(0, despawnTimeInstanceCheck);
+                        gameObject->Despawn(0, despawnTimeInstanceCheck);
+                    }
                 }
             }
             default:
