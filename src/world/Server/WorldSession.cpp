@@ -289,8 +289,8 @@ void WorldSession::LogoutPlayer(bool Save)
                         if (!go->IsLootable())
                             break;
 
-                        GameObject_Lootable* pLGO = dynamic_cast<GameObject_Lootable*>(go);
-                        pLGO->loot.looters.erase(_player->getGuidLow());
+                        if (const auto pLGO = dynamic_cast<GameObject_Lootable*>(go))
+                            pLGO->loot.looters.erase(_player->getGuidLow());
 
                         break;
                 }
