@@ -286,15 +286,16 @@ void WorldSession::LogoutPlayer(bool Save)
                             creature->loot.looters.erase(_player->getGuidLow());
                     } break;
                     case TYPEID_GAMEOBJECT:
-                        GameObject* go = dynamic_cast<GameObject*>(obj);
+                    {
+                        if (const auto go = dynamic_cast<GameObject*>(obj))
+                        {
+                            if (!go->IsLootable())
+                                break;
 
-                        if (!go->IsLootable())
-                            break;
-
-                        if (const auto pLGO = dynamic_cast<GameObject_Lootable*>(go))
-                            pLGO->loot.looters.erase(_player->getGuidLow());
-
-                        break;
+                            if (const auto pLGO = dynamic_cast<GameObject_Lootable*>(go))
+                                pLGO->loot.looters.erase(_player->getGuidLow());
+                        }
+                    } break;
                 }
             }
         }
