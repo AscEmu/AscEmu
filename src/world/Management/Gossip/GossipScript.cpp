@@ -339,22 +339,23 @@ void GossipStableMaster::onSelectOption(Object* object, Player* player, uint32_t
 
 void GossipPetTrainer::onHello(Object* object, Player* player)
 {
-    const auto creature = dynamic_cast<Creature*>(object);
+    if (const auto creature = dynamic_cast<Creature*>(object))
+    {
+        auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
+        if (!sMySQLStore.getNpcText(gossipTextId))
+            gossipTextId = DefaultGossipTextId;
 
-    auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-    if (!sMySQLStore.getNpcText(gossipTextId))
-        gossipTextId = DefaultGossipTextId;
+        GossipMenu menu(object->getGuid(), gossipTextId, player->GetSession()->language);
 
-    GossipMenu menu(object->getGuid(), gossipTextId, player->GetSession()->language);
+        menu.addItem(GOSSIP_ICON_TRAINER, BEASTTRAINING, 1);
 
-    menu.addItem(GOSSIP_ICON_TRAINER, BEASTTRAINING, 1);
+        if (player->getClass() == ::HUNTER && player->GetSummon() != nullptr)
+            menu.addItem(GOSSIP_ICON_CHAT, PETTRAINER_TALENTRESET, 2);
 
-    if (player->getClass() == ::HUNTER && player->GetSummon() != nullptr)
-        menu.addItem(GOSSIP_ICON_CHAT, PETTRAINER_TALENTRESET, 2);
+        sQuestMgr.FillQuestMenu(creature, player, menu);
 
-    sQuestMgr.FillQuestMenu(creature, player, menu);
-
-    menu.sendGossipPacket(player);
+        menu.sendGossipPacket(player);
+    }
 }
 
 void GossipPetTrainer::onSelectOption(Object* object, Player* player, uint32_t Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
