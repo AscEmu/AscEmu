@@ -603,10 +603,12 @@ bool ChatHandler::HandleModifyDamage(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify arcane from %f to %f on %s (%u)", oldDamage, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify arcane from %f to %f on %s (%u)", oldDamage, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the arcane of %s from %f to %f.", creature->GetCreatureProperties()->Name.c_str(), oldDamage, value);
+            BlueSystemMessage(session, "You modify the arcane of %s from %f to %f.", creature->GetCreatureProperties()->Name.c_str(), oldDamage, value);
+        }
     }
 
 
