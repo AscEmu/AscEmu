@@ -181,13 +181,14 @@ void GossipFlightMaster::onSelectOption(Object* object, Player* player, uint32_t
 
 void GossipAuctioneer::onHello(Object* object, Player* player)
 {
-    const auto creature = dynamic_cast<Creature*>(object);
+    if (const auto creature = dynamic_cast<Creature*>(object))
+    {
+        auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
+        if (!sMySQLStore.getNpcText(gossipTextId))
+            gossipTextId = DefaultGossipTextId;
 
-    auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-    if (!sMySQLStore.getNpcText(gossipTextId))
-        gossipTextId = DefaultGossipTextId;
-
-    GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_VENDOR, player->GetSession()->LocalizedGossipOption(AUCTIONEER));
+        GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_VENDOR, player->GetSession()->LocalizedGossipOption(AUCTIONEER));
+    }
 }
 
 void GossipAuctioneer::onSelectOption(Object* object, Player* player, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
