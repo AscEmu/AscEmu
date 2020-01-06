@@ -420,7 +420,12 @@ private:
 
     void setReagentCount(uint32_t reagentId, uint8_t idx)                 // used in HackFixes.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_REAGENTS);
+        if (idx >= MAX_SPELL_REAGENTS)
+        {
+            LogError("Reagentcount index id %u is invalid!", idx);
+            return;
+        }
+
         ReagentCount[idx] = reagentId;
     }
 
