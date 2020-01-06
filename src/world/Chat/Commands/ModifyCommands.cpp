@@ -1105,11 +1105,13 @@ bool ChatHandler::HandleModifyBytes1(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify bytes1 from %u to %u on %s (%u)", oldBytes, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify bytes1 from %u to %u on %s (%u)", oldBytes, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the bytes1 of %s from %u to %u.", player->getName().c_str(), oldBytes, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your bytes1 from %u to %u.", session->GetPlayer()->getName().c_str(), oldBytes, value);
+            BlueSystemMessage(session, "You modify the bytes1 of %s from %u to %u.", player->getName().c_str(), oldBytes, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your bytes1 from %u to %u.", session->GetPlayer()->getName().c_str(), oldBytes, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
