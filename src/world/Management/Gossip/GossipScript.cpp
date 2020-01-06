@@ -364,11 +364,14 @@ void GossipPetTrainer::onSelectOption(Object* object, Player* player, uint32_t I
     switch(Id)
     {
         case 1:
-            player->GetSession()->sendTrainerList(dynamic_cast<Creature*>(object));
-            break;
+        {
+            if (const auto creature = dynamic_cast<Creature*>(object))
+                player->GetSession()->sendTrainerList(creature);
+        } break;
         case 2:
+        {
             GossipMenu::sendQuickMenu(object->getGuid(), TXTID_PETUNTRAIN, player, 3, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET));
-            break;
+        } break;
         default:
         {
             GossipMenu::senGossipComplete(player);
