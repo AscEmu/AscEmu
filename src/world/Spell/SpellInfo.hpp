@@ -242,7 +242,12 @@ public:
 
     uint32_t getEffectSpellClassMask(uint8_t idx1, uint8_t idx2) const
     {
-        ARCEMU_ASSERT(idx1 < MAX_SPELL_EFFECTS && idx2 < MAX_SPELL_EFFECTS);
+        if (idx1 >= MAX_SPELL_TOTEMS || idx2 >= MAX_SPELL_EFFECTS)
+        {
+            LogError("Totem index id %u or effect index %u is invalid!", idx1, idx2);
+            return 0;
+        }
+
         return EffectSpellClassMask[idx1][idx2];
     }
 
