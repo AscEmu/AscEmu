@@ -623,11 +623,13 @@ bool ChatHandler::HandleModifyAp(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify ap from %u to %u on %s (%u)", oldAttackPower, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify ap from %u to %u on %s (%u)", oldAttackPower, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the ap of %s from %u to %u.", player->getName().c_str(), oldAttackPower, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your ap from %u to %u.", session->GetPlayer()->getName().c_str(), oldAttackPower, value);
+            BlueSystemMessage(session, "You modify the ap of %s from %u to %u.", player->getName().c_str(), oldAttackPower, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your ap from %u to %u.", session->GetPlayer()->getName().c_str(), oldAttackPower, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
