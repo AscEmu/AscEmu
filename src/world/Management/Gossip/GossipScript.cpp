@@ -270,27 +270,28 @@ void GossipCharterGiver::onSelectOption(Object* object, Player* player, uint32_t
 
 void GossipTabardDesigner::onHello(Object* object, Player* player)
 {
-    auto creature = dynamic_cast<Creature*>(object);
-
-    auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-    if (!sMySQLStore.getNpcText(gossipTextId))
-        gossipTextId = DefaultGossipTextId;
-
-    GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
-
-    menu.addItem(GOSSIP_ICON_TABARD, TABARD, 1);
-
-    if (creature->isCharterGiver())
-        menu.addItem(GOSSIP_ICON_CHAT, FOUND_GUILD, 2);
-
-    if (creature->isVendor())
+    if (auto creature = dynamic_cast<Creature*>(object))
     {
-        const auto vendorRestrictions = sMySQLStore.getVendorRestriction(creature->GetCreatureProperties()->Id);
-        if (player->CanBuyAt(vendorRestrictions))
-            menu.addItem(GOSSIP_ICON_VENDOR, VENDOR, 3);
-    }
+        auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
+        if (!sMySQLStore.getNpcText(gossipTextId))
+            gossipTextId = DefaultGossipTextId;
 
-    menu.sendGossipPacket(player);
+        GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
+
+        menu.addItem(GOSSIP_ICON_TABARD, TABARD, 1);
+
+        if (creature->isCharterGiver())
+            menu.addItem(GOSSIP_ICON_CHAT, FOUND_GUILD, 2);
+
+        if (creature->isVendor())
+        {
+            const auto vendorRestrictions = sMySQLStore.getVendorRestriction(creature->GetCreatureProperties()->Id);
+            if (player->CanBuyAt(vendorRestrictions))
+                menu.addItem(GOSSIP_ICON_VENDOR, VENDOR, 3);
+        }
+
+        menu.sendGossipPacket(player);
+    }
 }
 
 void GossipTabardDesigner::onSelectOption(Object* object, Player* player, uint32_t Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
