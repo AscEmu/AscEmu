@@ -407,11 +407,13 @@ bool ChatHandler::HandleModifyFire(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify fire from %u to %u on %s (%u)", oldFire, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify fire from %u to %u on %s (%u)", oldFire, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the fire of %s from %u to %u.", player->getName().c_str(), oldFire, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your fire from %u to %u.", session->GetPlayer()->getName().c_str(), oldFire, value);
+            BlueSystemMessage(session, "You modify the fire of %s from %u to %u.", player->getName().c_str(), oldFire, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your fire from %u to %u.", session->GetPlayer()->getName().c_str(), oldFire, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
