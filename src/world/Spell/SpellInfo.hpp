@@ -632,7 +632,12 @@ private:
 #if VERSION_STRING > Classic
     void setTotemCategory(uint32_t category, uint8_t idx)
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEM_CATEGORIES);
+        if (idx >= MAX_SPELL_TOTEM_CATEGORIES)
+        {
+            LogError("TotemCategory index id %u is invalid!", idx);
+            return;
+        }
+
         TotemCategory[idx] = category;
     }
 #endif
