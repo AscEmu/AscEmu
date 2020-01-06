@@ -205,11 +205,13 @@ bool ChatHandler::HandleModifyStrength(const char* args, WorldSession* session)
 
     if (unitTarget->isPlayer())
     {
-        const auto player = dynamic_cast<Player*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify stat (strength) from %u to %u on %s (%u)", oldStrength, value, player->getName().c_str(), player->getGuidLow());
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify stat (strength) from %u to %u on %s (%u)", oldStrength, value, player->getName().c_str(), player->getGuidLow());
 
-        BlueSystemMessage(session, "You modify the stat (strength) of %s from %u to %u.", player->getName().c_str(), oldStrength, value);
-        GreenSystemMessage(player->GetSession(), "%s modify your stat (strength) from %u to %u.", session->GetPlayer()->getName().c_str(), oldStrength, value);
+            BlueSystemMessage(session, "You modify the stat (strength) of %s from %u to %u.", player->getName().c_str(), oldStrength, value);
+            GreenSystemMessage(player->GetSession(), "%s modify your stat (strength) from %u to %u.", session->GetPlayer()->getName().c_str(), oldStrength, value);
+        }
     }
     else if (unitTarget->isCreature())
     {
