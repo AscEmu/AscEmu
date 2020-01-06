@@ -409,7 +409,12 @@ private:
 
     void setReagent(int32_t reagentId, uint8_t idx)                      // used in HackFixes.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_REAGENTS);
+        if (idx >= MAX_SPELL_REAGENTS)
+        {
+            LogError("Spellreagents id %u is invalid!", idx);
+            return;
+        }
+
         Reagent[idx] = reagentId;
     }
 
