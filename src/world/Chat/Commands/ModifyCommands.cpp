@@ -443,10 +443,12 @@ bool ChatHandler::HandleModifyNature(const char* args, WorldSession* session)
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify nature from %u to %u on %s (%u)", oldNature, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify nature from %u to %u on %s (%u)", oldNature, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the nature of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldNature, value);
+            BlueSystemMessage(session, "You modify the nature of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldNature, value);
+        }
     }
 
     unitTarget->setResistance(3, value);
