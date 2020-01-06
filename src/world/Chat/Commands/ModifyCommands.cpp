@@ -1041,10 +1041,12 @@ bool ChatHandler::HandleModifyEmotestate(const char* args, WorldSession* session
     }
     else if (unitTarget->isCreature())
     {
-        auto creature = dynamic_cast<Creature*>(unitTarget);
-        sGMLog.writefromsession(session, "used modify emotestate from %u to %u on %s (%u)", oldEmote, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify emotestate from %u to %u on %s (%u)", oldEmote, value, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
 
-        BlueSystemMessage(session, "You modify the emotestate of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldEmote, value);
+            BlueSystemMessage(session, "You modify the emotestate of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldEmote, value);
+        }
     }
 
     unitTarget->setEmoteState(value);
