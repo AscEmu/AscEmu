@@ -549,7 +549,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         if (!InactiveMoveTime && !forced_expire && GetMapInfo()->type != INSTANCE_NULL)
         {
             InactiveMoveTime = UNIXTIME + (30 * 60); //mapmgr inactive move time 30
-            LogDebugFlag(LF_MAP, "MapMgr", "Instance %u is now idle. (%s)", m_instanceID, GetBaseMap()->GetMapName().c_str());
+            LogDebugFlag(LF_MAP, "MapMgr : Instance %u is now idle. (%s)", m_instanceID, GetBaseMap()->GetMapName().c_str());
         }
     }
 }
