@@ -215,7 +215,7 @@ void ObjectMgr::finalize()
 
     m_spelltargetconstraints.clear();
 
-    LogNotice("ObjectMgr", "Cleaning up vehicle accessories...");
+    LogNotice("ObjectMgr : Cleaning up vehicle accessories...");
     for (std::map< uint32, std::vector< VehicleAccessoryEntry* >* >::iterator itr = vehicle_accessories.begin(); itr != vehicle_accessories.end(); ++itr)
     {
         std::vector< VehicleAccessoryEntry* > *v = itr->second;
