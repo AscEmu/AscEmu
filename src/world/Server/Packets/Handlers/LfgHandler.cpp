@@ -518,7 +518,7 @@ void WorldSession::handleLfgJoinOpcode(WorldPacket& recvPacket)
 
     if (!numDungeons)
     {
-        LogDebugFlag(LF_OPCODE, "CMSG_LFG_JOIN no dungeons selected", _player->getGuid());
+        LogDebugFlag(LF_OPCODE, "CMSG_LFG_JOIN no dungeons selected. Player %s", _player->getName().c_str());
         recvPacket.clear();
         return;
     }
