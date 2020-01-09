@@ -22,11 +22,11 @@
 
 #include "Setup.h"
 
-enum 
-{
-    // Lunaclaw ghost gossip
-    //GOSSIP_GHOST_MOONKIN "You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart."
-};
+//enum 
+//{
+//    // Lunaclaw ghost gossip
+//    GOSSIP_GHOST_MOONKIN "You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart."
+//};
 
 class Lunaclaw : public CreatureAIScript
 {
