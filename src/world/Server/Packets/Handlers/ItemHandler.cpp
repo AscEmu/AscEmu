@@ -853,10 +853,13 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
     {
         if (srcItem->isContainer())
         {
-            if (dynamic_cast<Container*>(srcItem)->HasItems())
+            if (const auto itemContainer = dynamic_cast<Container*>(srcItem))
             {
-                _player->getItemInterface()->BuildInventoryChangeError(srcItem, nullptr, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
-                return;
+                if (itemContainer->HasItems())
+                {
+                    _player->getItemInterface()->BuildInventoryChangeError(srcItem, nullptr, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
+                    return;
+                }
             }
         }
 
