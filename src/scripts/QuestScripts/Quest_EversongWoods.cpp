@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
  * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2009-2012 ArcEmu Team <http://www.arcemu.org>
  *

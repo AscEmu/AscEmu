@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2009 WhyScripts Team <http://www.whydb.org/>
  * Copyright (C) 2006-2008 U2 Team <http://www.undzwei.eu/>
  * Copyright (C) 2007-2008 Yelly Team
