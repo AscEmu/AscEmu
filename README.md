@@ -7,6 +7,8 @@ master | development
 
 [![Coverity Snac](https://scan.coverity.com/projects/4747/badge.svg)](https://scan.coverity.com/projects/4747)
 
+[![CodeFactor](https://www.codefactor.io/repository/github/ascemu/ascemu/badge)](https://www.codefactor.io/repository/github/ascemu/ascemu)
+
 [![Open HUB Stats](https://www.openhub.net/p/AscEmu/widgets/project_thin_badge.gif)](https://www.openhub.net/p/AscEmu)
 
 ## Introduction
