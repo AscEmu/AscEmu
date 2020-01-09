@@ -208,17 +208,20 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
 
     if (tradeItem->isContainer())
     {
-        if (dynamic_cast<Container*>(tradeItem)->HasItems())
+        if (const auto tradeContainer = dynamic_cast<Container*>(tradeItem))
         {
-            _player->getItemInterface()->BuildInventoryChangeError(tradeItem, nullptr, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
+            if (tradeContainer->HasItems())
+            {
+                _player->getItemInterface()->BuildInventoryChangeError(tradeItem, nullptr, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
 
-            SendPacket(SmsgTradeStatus(TRADE_STATUS_CANCELLED, 0).serialise().get());
-            _player->ResetTradeVariables();
+                SendPacket(SmsgTradeStatus(TRADE_STATUS_CANCELLED, 0).serialise().get());
+                _player->ResetTradeVariables();
 
-            playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_CANCELLED, 0).serialise().get());
-            playerTarget->ResetTradeVariables();
+                playerTarget->m_session->SendPacket(SmsgTradeStatus(TRADE_STATUS_CANCELLED, 0).serialise().get());
+                playerTarget->ResetTradeVariables();
 
-            return;
+                return;
+            }
         }
     }
 
