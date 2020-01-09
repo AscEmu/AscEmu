@@ -3117,7 +3117,8 @@ void Aura::SpellAuraModInvisibility(bool apply)
         {
 #if VERSION_STRING != Mop
             if (GetSpellId() == 32612)
-                dynamic_cast<Player*>(m_target)->setPlayerFieldBytes2(0x4000);
+                if (const auto player = dynamic_cast<Player*>(m_target))
+                    player->setPlayerFieldBytes2(0x4000);
 #endif
         }
     }
