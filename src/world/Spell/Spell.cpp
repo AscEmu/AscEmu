@@ -1370,10 +1370,15 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 }
                 else
                 {
-                    if (const auto creatureProto = dynamic_cast<Creature*>(target)->GetCreatureProperties())
-                        if (creatureProto->Type != UNIT_TYPE_HUMANOID && creatureProto->Type != UNIT_TYPE_DEMON &&
-                            creatureProto->Type != UNIT_TYPE_GIANT && creatureProto->Type != UNIT_TYPE_UNDEAD)
-                            return SPELL_FAILED_TARGET_NO_WEAPONS;
+                    if (const auto creature = dynamic_cast<Creature*>(target))
+                    {
+                        if (const auto creatureProto = creature->GetCreatureProperties())
+                        {
+                            if (creatureProto->Type != UNIT_TYPE_HUMANOID && creatureProto->Type != UNIT_TYPE_DEMON &&
+                                creatureProto->Type != UNIT_TYPE_GIANT && creatureProto->Type != UNIT_TYPE_UNDEAD)
+                                return SPELL_FAILED_TARGET_NO_WEAPONS;
+                        }
+                    }
 
                     // Check if creature is even wielding a weapon
                     if (target->getVirtualItemSlotId(MELEE) == 0)
