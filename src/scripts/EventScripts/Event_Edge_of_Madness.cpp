@@ -5,16 +5,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 
-enum
-{
-    //SPELL_MANABURN = 26046,
-    //SPELL_SLEEP = 24664,
-
-    //SPELL_SUMMON_NIGHTMARE_ILLUSIONS = 24728,
-
-    //SPELL_THOUSANDBLADES = 34799,
-    //SPELL_AMBUSH = 34794,
-};
+//enum
+//{
+//    SPELL_MANABURN = 26046,
+//    SPELL_SLEEP = 24664,
+//
+//    SPELL_SUMMON_NIGHTMARE_ILLUSIONS = 24728,
+//
+//    SPELL_THOUSANDBLADES = 34799,
+//    SPELL_AMBUSH = 34794,
+//};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //\details <b>Edge of Madness, Gri'lek</b>\n
