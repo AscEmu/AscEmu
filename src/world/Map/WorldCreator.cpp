@@ -530,76 +530,77 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
     if (obj->isPlayer())
     {
         // players can join instances based on their groups/solo status.
-        auto plr = dynamic_cast< Player* >(obj);
-
-        // single-instance maps never go into the instance set.
-        if (mapInfo->type == INSTANCE_NULL)
-            return m_singleMaps[obj->GetMapId()];
-
-        m_mapLock.Acquire();
-        auto instanceMap = m_instances[obj->GetMapId()];
-        if (instanceMap != nullptr)
+        if (auto player = dynamic_cast<Player*>(obj))
         {
-            // check our saved instance id. see if its valid, and if we can join before trying to find one.
-            auto itr = instanceMap->find(obj->GetInstanceID());
-            if (itr != instanceMap->end())
+            // single-instance maps never go into the instance set.
+            if (mapInfo->type == INSTANCE_NULL)
+                return m_singleMaps[player->GetMapId()];
+
+            m_mapLock.Acquire();
+            auto instanceMap = m_instances[player->GetMapId()];
+            if (instanceMap != nullptr)
             {
-                if (itr->second->m_mapMgr == nullptr)
+                // check our saved instance id. see if its valid, and if we can join before trying to find one.
+                auto itr = instanceMap->find(player->GetInstanceID());
+                if (itr != instanceMap->end())
                 {
-                    itr->second->m_mapMgr = _CreateInstance(itr->second);
-                }
-
-                if (itr->second->m_mapMgr)
-                {
-                    m_mapLock.Release();
-                    return itr->second->m_mapMgr;
-                }
-            }
-
-            // iterate over our instances, and see if any of them are owned/joinable by him.
-            for (itr = instanceMap->begin(); itr != instanceMap->end();)
-            {
-                Instance* in = itr->second;
-                ++itr;
-
-                uint32_t difficulty;
-
-                if (in->m_mapInfo->type == INSTANCE_RAID)
-                    difficulty = plr->GetRaidDifficulty();
-                else
-                    difficulty = plr->GetDungeonDifficulty();
-
-                if (in->m_difficulty == difficulty && PlayerOwnsInstance(in, plr))
-                {
-                    // this is our instance.
-                    if (in->m_mapMgr == nullptr)
+                    if (itr->second->m_mapMgr == nullptr)
                     {
-                        /*if (plr->m_TeleportState == 1)
-                        {
-                        // the player is loading. boot him out to the entry point, we don't want to spam useless instances on startup.
-                        m_mapLock.Release();
-                        return NULL;
-                        }*/
-
-                        // create the actual instance.
-                        in->m_mapMgr = _CreateInstance(in);
-                        m_mapLock.Release();
-                        return in->m_mapMgr;
+                        itr->second->m_mapMgr = _CreateInstance(itr->second);
                     }
+
+                    if (itr->second->m_mapMgr)
+                    {
+                        m_mapLock.Release();
+                        return itr->second->m_mapMgr;
+                    }
+                }
+
+                // iterate over our instances, and see if any of them are owned/joinable by him.
+                for (itr = instanceMap->begin(); itr != instanceMap->end();)
+                {
+                    Instance* in = itr->second;
+                    ++itr;
+
+                    uint32_t difficulty;
+
+                    if (in->m_mapInfo->type == INSTANCE_RAID)
+                        difficulty = player->GetRaidDifficulty();
                     else
+                        difficulty = player->GetDungeonDifficulty();
+
+                    if (in->m_difficulty == difficulty && PlayerOwnsInstance(in, player))
                     {
-                        // instance is already created.
-                        m_mapLock.Release();
-                        return in->m_mapMgr;
+                        // this is our instance.
+                        if (in->m_mapMgr == nullptr)
+                        {
+                            /*if (plr->m_TeleportState == 1)
+                            {
+                            // the player is loading. boot him out to the entry point, we don't want to spam useless instances on startup.
+                            m_mapLock.Release();
+                            return NULL;
+                            }*/
+
+                            // create the actual instance.
+                            in->m_mapMgr = _CreateInstance(in);
+                            m_mapLock.Release();
+                            return in->m_mapMgr;
+                        }
+                        else
+                        {
+                            // instance is already created.
+                            m_mapLock.Release();
+                            return in->m_mapMgr;
+                        }
                     }
                 }
             }
-        }
 
-        // if we're here, it means there are no instances on that map, or none of the instances on that map are joinable
-        // by this player.
-        m_mapLock.Release();
-        return nullptr;
+            // if we're here, it means there are no instances on that map, or none of the instances on that map are joinable
+            // by this player.
+            m_mapLock.Release();
+            return nullptr;
+        }
     }
     else
     {
