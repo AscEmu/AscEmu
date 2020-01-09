@@ -1347,6 +1347,8 @@ void Guild::broadcastToGuild(WorldSession* session, bool officerOnly, std::strin
                 }
             }
         }
+
+        delete data;
     }
 }
 
