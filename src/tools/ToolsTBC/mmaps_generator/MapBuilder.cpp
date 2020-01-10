@@ -122,7 +122,7 @@ namespace MMAP
             getDirContents(files, "vmaps", filter);
             for (uint32 i = 0; i < files.size(); ++i)
             {
-                tileX = uint32(atoi(files[i].substr(7,2).c_str()));
+                tileX = uint32(atoi(files[i].substr(8, 2).c_str()));
                 tileY = uint32(atoi(files[i].substr(5, 2).c_str()));
                 tileID = StaticMapTree::packTileID(tileY, tileX);
 
@@ -463,7 +463,7 @@ namespace MMAP
 
         int polyBits = DT_POLY_BITS;
 
-        const auto maxTiles = static_cast<int>(tiles->size());
+        int maxTiles = static_cast<int>(tiles->size());
         int maxPolysPerTile = 1 << polyBits;
 
         /***          calculate bounds of map         ***/
@@ -503,11 +503,11 @@ namespace MMAP
         printf("[Map %04i] Creating navMesh...\n", mapID);
         if (!navMesh->init(&navMeshParams))
         {
-            printf("[Map %04i] Failed creating navmesh! \n", mapID);
+            printf("[Map %04i] Failed creating navmesh!\n", mapID);
             return;
         }
 
-        char fileName[25];
+        char fileName[1024];
         sprintf(fileName, "mmaps/%04u.mmap", mapID);
 
         FILE* file = fopen(fileName, "wb");
@@ -797,7 +797,7 @@ namespace MMAP
                 // we have flat tiles with no actual geometry - don't build those, its useless
                 // keep in mind that we do output those into debug info
                 // drop tiles with only exact count - some tiles may have geometry while having less tiles
-                printf("%s No polygons to build on tile!              \n", tileString);
+                printf("%s No polygons to build on tile!\n", tileString);
                 break;
             }
             if (!params.detailMeshes || !params.detailVerts || !params.detailTris)
@@ -1031,7 +1031,7 @@ namespace MMAP
             return false;
 
         MmapTileHeader header;
-        const auto count = fread(&header, sizeof(MmapTileHeader), 1, file);
+        int count = static_cast<int>(fread(&header, sizeof(MmapTileHeader), 1, file));
         fclose(file);
         if (count != 1)
             return false;
@@ -1044,5 +1044,4 @@ namespace MMAP
 
         return true;
     }
-
 }

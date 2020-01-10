@@ -232,7 +232,7 @@ uint32 ReadMapDBC()
         map_ids[x].name[max_map_name_length - 1] = '\0';
     }
     printf("Done! (%u maps loaded)\n", (uint32)map_count);
-    return map_count;
+    return static_cast<uint32_t>(map_count);
 }
 
 void ReadAreaTableDBC()
@@ -254,7 +254,7 @@ void ReadAreaTableDBC()
     for(uint32 x = 0; x < area_count; ++x)
         areas[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
 
-    maxAreaId = dbc.getMaxId();
+    maxAreaId = static_cast<uint32_t>(dbc.getMaxId());
 
     printf("Done! (%u areas loaded)\n", (uint32)area_count);
 }
