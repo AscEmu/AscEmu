@@ -3720,11 +3720,7 @@ public:
         if (level <= worldConfig.player.playerLevelCap && level > 0)
         {
             if (ptr->isPlayer())
-            {
-                LevelInfo* Info = sObjectMgr.GetLevelInfo(ptr->getRace(), ptr->getClass(), level);
-                if (Info)
-                    static_cast<Player*>(ptr)->ApplyLevelInfo(Info, level);
-            }
+                static_cast<Player*>(ptr)->applyLevelInfo(level);
             else
                 ptr->setLevel(level);
         }
@@ -4224,7 +4220,7 @@ public:
     static int ResetAllTalents(lua_State* /*L*/, Unit* ptr)
     {
         TEST_PLAYER()
-            static_cast<Player*>(ptr)->Reset_AllTalents();
+            static_cast<Player*>(ptr)->resetAllTalents();
         return 0;
     }
 

@@ -4005,8 +4005,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
                 const auto spellInfo = sSpellMgr.getSpellInfo(21178);
 
                 Spell* sp = sSpellMgr.newSpell(m_target, spellInfo, true, nullptr);
-                SpellCastTargets tgt;
-                tgt.m_unitTarget = m_target->getGuid();
+                SpellCastTargets tgt(m_target->getGuid());
                 sp->prepare(&tgt);
             }
             else
@@ -4147,8 +4146,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
                         const auto spellInfo = sSpellMgr.getSpellInfo(furorSpell);
 
                         Spell* sp = sSpellMgr.newSpell(m_target, spellInfo, true, nullptr);
-                        SpellCastTargets tgt;
-                        tgt.m_unitTarget = m_target->getGuid();
+                        SpellCastTargets tgt(m_target->getGuid());
                         sp->prepare(&tgt);
                     }
                 }
@@ -4178,8 +4176,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
         const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
 
         Spell* sp = sSpellMgr.newSpell(m_target, spellInfo, true, nullptr);
-        SpellCastTargets tgt;
-        tgt.m_unitTarget = m_target->getGuid();
+        SpellCastTargets tgt(m_target->getGuid());
         sp->prepare(&tgt);
 
         /*if (spellId2 != 0) This cannot be true CID 52824
@@ -8124,9 +8121,9 @@ void Aura::SpellAuraModPenetration(bool apply) // armor penetration & spell pene
         {
 #if VERSION_STRING != Classic
             if (mod->m_miscValue & 124)
-                m_target->modInt32Value(PLAYER_FIELD_MOD_TARGET_RESISTANCE, mod->m_amount);
+                p_target->modModTargetResistance(mod->m_amount);
             if (mod->m_miscValue & 1)
-                m_target->modInt32Value(PLAYER_FIELD_MOD_TARGET_PHYSICAL_RESISTANCE, mod->m_amount);
+                p_target->modModTargetPhysicalResistance(mod->m_amount);
 #endif
         }
     }
@@ -8141,9 +8138,9 @@ void Aura::SpellAuraModPenetration(bool apply) // armor penetration & spell pene
         {
 #if VERSION_STRING != Classic
             if (mod->m_miscValue & 124)
-                m_target->modInt32Value(PLAYER_FIELD_MOD_TARGET_RESISTANCE, -mod->m_amount);
+                p_target->modModTargetResistance(-mod->m_amount);
             if (mod->m_miscValue & 1)
-                m_target->modInt32Value(PLAYER_FIELD_MOD_TARGET_PHYSICAL_RESISTANCE, -mod->m_amount);
+                p_target->modModTargetPhysicalResistance(-mod->m_amount);
 #endif
         }
     }
@@ -8671,8 +8668,7 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
         m_target->setHealth(1);
         SpellInfo const* sorInfo = sSpellMgr.getSpellInfo(27792);
         Spell* sor = sSpellMgr.newSpell(m_target, sorInfo, true, nullptr);
-        SpellCastTargets spellTargets;
-        spellTargets.m_unitTarget = m_target->getGuid();
+        SpellCastTargets spellTargets(m_target->getGuid());
         sor->prepare(&spellTargets);
     }
     else

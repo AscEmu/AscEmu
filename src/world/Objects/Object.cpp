@@ -426,11 +426,6 @@ void Object::setUInt32Value(uint16_t index, uint32_t value)
         static_cast<Unit*>(this)->HandleUpdateFieldChange(index);
     }
 
-    if (isPlayer())
-    {
-        static_cast<Player*>(this)->HandleUpdateFieldChanged(index);
-    }
-
     // Group update handling
     if (isPlayer())
     {

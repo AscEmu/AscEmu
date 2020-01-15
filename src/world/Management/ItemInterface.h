@@ -80,6 +80,7 @@ class SERVER_DECL ItemInterface
         // MIT Start
 
         bool hasItemForTotemCategory(uint32_t totemCategory);
+        bool isItemInTradeWindow(Item const* item) const;
 
         // MIT End
         // APGL Start

@@ -27,7 +27,7 @@ namespace AscEmu::Packets
 
         SmsgCriteriaUpdate(uint32_t criteriaId, int32_t counter, WoWGuid guid, uint32_t secsBitField) :
             ManagedPacket(SMSG_CRITERIA_UPDATE, 0),
-            criteriaId(criteriaId), counter(counter), guid(guid), secsBitField()
+            criteriaId(criteriaId), counter(counter), guid(guid), secsBitField(secsBitField)
         {
         }
 

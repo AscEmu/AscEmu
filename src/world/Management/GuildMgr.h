@@ -47,7 +47,9 @@ class SERVER_DECL GuildMgr
         uint32_t getXPForGuildLevel(uint8_t level) const;
         std::vector<GuildReward> const& getGuildRewards() const { return GuildRewards; }
 
+#if VERSION_STRING >= Cata
         void resetTimes(bool week);
+#endif
         uint32_t lastSave = 0;
         bool firstSave = false;
 

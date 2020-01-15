@@ -212,22 +212,30 @@ public:
     void handleMemberLogout(WorldSession* session);
     void handleDisband(WorldSession* session);
     void handleGuildPartyRequest(WorldSession* session);
+#if VERSION_STRING >= Cata
     void handleNewsSetSticky(WorldSession* session, uint32_t newsId, bool sticky);
     void handleGuildRequestChallengeUpdate(WorldSession* session);
+#endif
 
     void updateMemberData(Player* player, uint8_t dataid, uint32_t value);
     void onPlayerStatusChange(Player* player, uint32_t flag, bool state);
 
+#if VERSION_STRING >= Cata
     void sendGuildRankInfo(WorldSession* session) const;
+#endif
     void sendEventLog(WorldSession* session) const;
     void sendBankLog(WorldSession* session, uint8_t tabId) const;
     void sendBankList(WorldSession* session, uint8_t tabId, bool withContent, bool withTabInfo) const;
+#if VERSION_STRING >= Cata
     void sendGuildXP(WorldSession* session = nullptr) const;
+#endif
     void sendBankTabText(WorldSession* session, uint8_t tabId) const;
     void sendPermissions(WorldSession* session) const;
     void sendMoneyInfo(WorldSession* session) const;
     void sendLoginInfo(WorldSession* session);
+#if VERSION_STRING >= Cata
     void sendNewsUpdate(WorldSession* session);
+#endif
     static void sendTurnInPetitionResult(WorldSession* pClient, uint32_t result);
     void _sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlots = false) const;
 
@@ -278,12 +286,16 @@ public:
 
     void setBankTabText(uint8_t tabId, std::string const& text);
 
+#if VERSION_STRING >= Cata
     void giveXP(uint32_t xp, Player* source);
 
     void addGuildNews(uint8_t type, uint64_t guid, uint32_t flags, uint32_t value);
+#endif
 
     EmblemInfo const& getEmblemInfo() const { return m_emblemInfo; }
+#if VERSION_STRING >= Cata
     void resetTimes(bool weekly);
+#endif
 
     bool hasAchieved(uint32_t achievementId) const;
 
@@ -373,8 +385,10 @@ public:
     void logEvent(GuildEventLogTypes eventType, uint32_t playerGuid1, uint32_t playerGuid2 = 0, uint8_t newRank = 0);
     void logBankEvent(GuildBankEventLogTypes eventType, uint8_t tabId, uint32_t playerGuid, uint32_t itemOrMoney, uint16_t itemStackCount = 0, uint8_t destTabId = 0);
 
+#if VERSION_STRING >= Cata
     void sendGuildReputationWeeklyCap(WorldSession* session, uint32_t reputation) const;
     void sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint32_t rank);
+#endif
 
     void broadcastEvent(GuildEvents guildEvent, uint64_t guid, std::vector<std::string> vars) const;
 };

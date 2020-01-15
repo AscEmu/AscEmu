@@ -812,8 +812,7 @@ public:
 
     void CastSpell(Unit* victim, SpellInfo const* CastingSpell, int* dmg_overwrite)
     {
-        SpellCastTargets targets;
-        targets.m_unitTarget = victim->getGuid();
+        SpellCastTargets targets(victim->getGuid());
 
         Spell* spell = sSpellMgr.newSpell(mTarget, mSpell, true, nullptr);
         spell->forced_basepoints[0] = dmg_overwrite[0];

@@ -6,25 +6,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 
 #include "Player.h"
-#include "Server/Packets/Opcode.h"
+
 #include "Chat/ChatDefines.hpp"
-#include "Server/World.h"
-#include "Spell/Definitions/PowerType.h"
-#include "Spell/Definitions/Spec.h"
-#include "Spell/Definitions/SpellIsFlags.h"
-#include "Spell/Spell.h"
-#include "Spell/SpellAuras.h"
-#include "Spell/Definitions/SpellFailure.h"
-#include "Spell/SpellMgr.h"
-#include "Map/MapMgr.h"
 #include "Data/WoWPlayer.h"
 #include "Management/Battleground/Battleground.h"
-#include "Objects/GameObject.h"
-#include "Units/Creatures/Pet.h"
-#include "Server/Packets/SmsgNewWorld.h"
-#include "Objects/ObjectMgr.h"
 #include "Management/GuildMgr.h"
 #include "Management/ItemInterface.h"
+#include "Map/MapMgr.h"
+#include "Objects/GameObject.h"
+#include "Objects/ObjectMgr.h"
+#include "Server/Packets/Opcode.h"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
 #include "Server/Packets/SmsgPetUnlearnConfirm.h"
 #include "Server/Packets/MsgSetDungeonDifficulty.h"
@@ -54,12 +45,164 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgClientControlUpdate.h"
 #include "Server/Packets/SmsgGuildEvent.h"
 #include "Server/Packets/SmsgDestoyObject.h"
-#include "Storage/MySQLDataStore.hpp"
-#include "Spell/Definitions/AuraInterruptFlags.h"
+#include "Server/Packets/SmsgNewWorld.h"
 #include "Server/Packets/SmsgPvpCredit.h"
 #include "Server/Packets/SmsgRaidGroupOnly.h"
+#include "Server/World.h"
+#include "Spell/Definitions/AuraInterruptFlags.h"
+#include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/Spec.h"
+#include "Spell/Definitions/SpellFailure.h"
+#include "Spell/Definitions/SpellIsFlags.h"
+#include "Spell/Spell.h"
+#include "Spell/SpellAuras.h"
+#include "Spell/SpellMgr.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "Units/Creatures/Pet.h"
+#include "Units/Stats.h"
+#include "Units/UnitDefines.hpp"
 
 using namespace AscEmu::Packets;
+
+TradeData::TradeData(Player* player, Player* trader)
+{
+    m_player = player;
+    m_tradeTarget = trader;
+
+    m_accepted = false;
+
+    m_money = 0;
+    m_spell = 0;
+    m_spellCastItem = 0;
+    for (uint8_t i = 0; i < TRADE_SLOT_COUNT; ++i)
+        m_items[i] = 0;
+}
+
+Player* TradeData::getTradeTarget() const
+{
+    return m_tradeTarget;
+}
+
+TradeData* TradeData::getTargetTradeData() const
+{
+    return m_tradeTarget->getTradeData();
+}
+
+Item* TradeData::getTradeItem(TradeSlots slot) const
+{
+    return m_items[slot] != 0 ? m_player->getItemInterface()->GetItemByGUID(m_items[slot]) : nullptr;
+}
+
+bool TradeData::hasTradeItem(uint64_t itemGuid) const
+{
+    for (uint8_t i = 0; i < TRADE_SLOT_COUNT; ++i)
+    {
+        if (m_items[i] == itemGuid)
+            return true;
+    }
+
+    return false;
+}
+
+bool TradeData::hasPlayerOrTraderItemInTrade(uint64_t itemGuid) const
+{
+    for (uint8_t i = 0; i < TRADE_SLOT_COUNT; ++i)
+    {
+        if (m_items[i] == itemGuid)
+            return true;
+        if (getTargetTradeData()->m_items[i] == itemGuid)
+            return true;
+    }
+
+    return false;
+}
+
+uint32_t TradeData::getSpell() const
+{
+    return m_spell;
+}
+
+Item* TradeData::getSpellCastItem() const
+{
+    return hasSpellCastItem() ? m_player->getItemInterface()->GetItemByGUID(m_spellCastItem) : nullptr;
+}
+
+bool TradeData::hasSpellCastItem() const
+{
+    return m_spellCastItem != 0;
+}
+
+uint64_t TradeData::getTradeMoney() const
+{
+    return m_money;
+}
+
+void TradeData::setTradeMoney(uint64_t money)
+{
+    if (m_money == money)
+        return;
+
+    if (money > m_player->getCoinage())
+        return;
+
+    m_money = money;
+
+    setTradeAccepted(false);
+    getTargetTradeData()->setTradeAccepted(false);
+
+    // Send update packet to trader
+    m_tradeTarget->GetSession()->sendTradeUpdate(true);
+}
+
+void TradeData::setTradeAccepted(bool state, bool sendBoth/* = false*/)
+{
+    m_accepted = state;
+
+    if (!state)
+    {
+        if (sendBoth)
+            m_tradeTarget->GetSession()->sendTradeResult(TRADE_STATUS_STATE_CHANGED);
+        else
+            m_player->GetSession()->sendTradeResult(TRADE_STATUS_STATE_CHANGED);
+    }
+}
+
+bool TradeData::isTradeAccepted() const
+{
+    return m_accepted;
+}
+
+void TradeData::setTradeItem(TradeSlots slot, Item* item)
+{
+    const auto itemGuid = item != nullptr ? item->getGuid() : 0;
+    if (m_items[slot] == itemGuid)
+        return;
+
+    m_items[slot] = itemGuid;
+
+    setTradeAccepted(false);
+    getTargetTradeData()->setTradeAccepted(false);
+
+    // Send update packet to trader
+    m_tradeTarget->GetSession()->sendTradeUpdate(true);
+}
+
+void TradeData::setTradeSpell(uint32_t spell_id, Item* castItem /*= nullptr*/)
+{
+    const auto itemGuid = castItem != nullptr ? castItem->getGuid() : 0;
+    if (m_spell == spell_id && m_spellCastItem == itemGuid)
+        return;
+
+    m_spell = spell_id;
+    m_spellCastItem = itemGuid;
+
+    setTradeAccepted(false);
+    getTargetTradeData()->setTradeAccepted(false);
+
+    // Send update packet to both parties
+    m_player->GetSession()->sendTradeUpdate(false);
+    m_tradeTarget->GetSession()->sendTradeUpdate(true);
+}
 
 void Player::resendSpeed()
 {
@@ -92,7 +235,15 @@ uint64_t Player::getDuelArbiter() const { return playerData()->duel_arbiter; }
 void Player::setDuelArbiter(uint64_t guid) { write(playerData()->duel_arbiter, guid); }
 
 uint32_t Player::getPlayerFlags() const { return playerData()->player_flags; }
-void Player::setPlayerFlags(uint32_t flags) { write(playerData()->player_flags, flags); }
+void Player::setPlayerFlags(uint32_t flags)
+{
+    write(playerData()->player_flags, flags);
+
+#ifndef AE_TBC
+    // Update player cache
+    m_cache->SetUInt32Value(CACHE_PLAYER_FLAGS, getPlayerFlags());
+#endif
+}
 void Player::addPlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() | flags); }
 void Player::removePlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() & ~flags); }
 bool Player::hasPlayerFlags(uint32_t flags) const { return (getPlayerFlags() & flags) != 0; }
@@ -192,17 +343,76 @@ void Player::setXp(uint32_t xp) { write(playerData()->xp, xp); }
 uint32_t Player::getNextLevelXp() const { return playerData()->next_level_xp; }
 void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
 
-#if VERSION_STRING <= WotLK
-uint32_t Player::getFreeTalentPoints() const { return playerData()->character_points_1; }
-void Player::setFreeTalentPoints(uint32_t points) { write(playerData()->character_points_1, points); }
-
-uint32_t Player::getFreePrimaryProfessionPoints() const { return playerData()->character_points_2; }
-void Player::setFreePrimaryProfessionPoints(uint32_t points) { write(playerData()->character_points_2, points); }
+uint32_t Player::getFreeTalentPoints() const
+{
+#if VERSION_STRING < Cata
+    return playerData()->character_points_1;
 #else
-uint32_t Player::getFreeTalentPoints() const { return m_specs[m_talentActiveSpec].GetTP(); }
+    return m_specs[m_talentActiveSpec].GetTP();
+#endif
+}
 
-uint32_t Player::getFreePrimaryProfessionPoints() const { return playerData()->character_points_1; }
-void Player::setFreePrimaryProfessionPoints(uint32_t points) { write(playerData()->character_points_1, points); }
+#if VERSION_STRING < Cata
+void Player::setFreeTalentPoints(uint32_t points) { write(playerData()->character_points_1, points); }
+#endif
+
+uint32_t Player::getFreePrimaryProfessionPoints() const
+{
+#if VERSION_STRING < Cata
+    return playerData()->character_points_2;
+#else
+    return playerData()->character_points_1;
+#endif
+}
+
+void Player::setFreePrimaryProfessionPoints(uint32_t points)
+{
+#if VERSION_STRING < Cata
+    write(playerData()->character_points_2, points);
+#else
+    write(playerData()->character_points_1, points);
+#endif
+}
+
+float Player::getBlockPercentage() const { return playerData()->block_pct; }
+void Player::setBlockPercentage(float value) { write(playerData()->block_pct, value); }
+
+float Player::getDodgePercentage() const { return playerData()->dodge_pct; }
+void Player::setDodgePercentage(float value) { write(playerData()->dodge_pct, value); }
+
+float Player::getParryPercentage() const { return playerData()->parry_pct; }
+void Player::setParryPercentage(float value) { write(playerData()->parry_pct, value); }
+
+#if VERSION_STRING >= TBC
+uint32_t Player::getExpertise() const { return playerData()->expertise; }
+void Player::setExpertise(uint32_t value) { write(playerData()->expertise, value); }
+void Player::modExpertise(int32_t value) { setExpertise(getExpertise() + value); }
+
+uint32_t Player::getOffHandExpertise() const { return playerData()->offhand_expertise; }
+void Player::setOffHandExpertise(uint32_t value) { write(playerData()->offhand_expertise, value); }
+void Player::modOffHandExpertise(int32_t value) { setOffHandExpertise(getOffHandExpertise() + value); }
+#endif
+
+float Player::getMeleeCritPercentage() const { return playerData()->crit_pct; }
+void Player::setMeleeCritPercentage(float value) { write(playerData()->crit_pct, value); }
+
+float Player::getRangedCritPercentage() const { return playerData()->ranged_crit_pct; }
+void Player::setRangedCritPercentage(float value) { write(playerData()->ranged_crit_pct, value); }
+
+#if VERSION_STRING >= TBC
+float Player::getOffHandCritPercentage() const { return playerData()->offhand_crit_pct; }
+void Player::setOffHandCritPercentage(float value) { write(playerData()->offhand_crit_pct, value); }
+
+float Player::getSpellCritPercentage(uint8_t school) const { return playerData()->spell_crit_pct[school]; }
+void Player::setSpellCritPercentage(uint8_t school, float value) { write(playerData()->spell_crit_pct[school], value); }
+
+uint32_t Player::getShieldBlock() const { return playerData()->shield_block; }
+void Player::setShieldBlock(uint32_t value) { write(playerData()->shield_block, value); }
+#endif
+
+#if VERSION_STRING >= WotLK
+float Player::getShieldBlockCritPercentage() const { return playerData()->shield_block_crit_pct; }
+void Player::setShieldBlockCritPercentage(float value) { write(playerData()->shield_block_crit_pct, value); }
 #endif
 
 void Player::setExploredZone(uint32_t idx, uint32_t data)
@@ -255,33 +465,29 @@ void Player::modCoinage(int64_t coinage)
 #endif
 
 uint32_t Player::getModDamageDonePositive(uint16_t school) const { return playerData()->field_mod_damage_done_positive[school]; }
-void Player::modModDamageDonePositive(uint16_t school, uint32_t value)
-{
-    uint32_t damageDone = getModDamageDonePositive(school);
-    damageDone += value;
-    write(playerData()->field_mod_damage_done_positive[school], damageDone);
-}
+void Player::setModDamageDonePositive(uint16_t school, uint32_t value) { write(playerData()->field_mod_damage_done_positive[school], value); }
+void Player::modModDamageDonePositive(uint16_t school, int32_t value) { setModDamageDonePositive(school, getModDamageDonePositive(school) + value); }
 
 uint32_t Player::getModDamageDoneNegative(uint16_t school) const { return playerData()->field_mod_damage_done_negative[school]; }
-void Player::modModDamageDoneNegative(uint16_t school, uint32_t value)
-{
-    uint32_t damageDone = getModDamageDoneNegative(school);
-    damageDone += value;
-    write(playerData()->field_mod_damage_done_negative[school], damageDone);
-}
-
-#if VERSION_STRING > Classic
-uint32_t Player::getModHealingDone() const { return playerData()->field_mod_healing_done; }
-void Player::modModHealingDone(uint32_t value)
-{
-    uint32_t healingDone = getModHealingDone();
-    healingDone += value;
-    write(playerData()->field_mod_healing_done, healingDone);
-}
-#endif
+void Player::setModDamageDoneNegative(uint16_t school, uint32_t value) { write(playerData()->field_mod_damage_done_negative[school], value); }
+void Player::modModDamageDoneNegative(uint16_t school, int32_t value) { setModDamageDoneNegative(school, getModDamageDoneNegative(school) + value); }
 
 float Player::getModDamageDonePct(uint8_t shool) const { return playerData()->field_mod_damage_done_pct[shool]; }
 void Player::setModDamageDonePct(float damagePct, uint8_t shool) { write(playerData()->field_mod_damage_done_pct[shool], damagePct); }
+
+#if VERSION_STRING >= TBC
+uint32_t Player::getModHealingDone() const { return playerData()->field_mod_healing_done; }
+void Player::setModHealingDone(uint32_t value) { write(playerData()->field_mod_healing_done, value); }
+void Player::modModHealingDone(int32_t value) { setModHealingDone(getModHealingDone() + value); }
+
+uint32_t Player::getModTargetResistance() const { return playerData()->field_mod_target_resistance; }
+void Player::setModTargetResistance(uint32_t value) { write(playerData()->field_mod_target_resistance, value); }
+void Player::modModTargetResistance(int32_t value) { setModTargetResistance(getModTargetResistance() + value); }
+
+uint32_t Player::getModTargetPhysicalResistance() const { return playerData()->field_mod_target_physical_resistance; }
+void Player::setModTargetPhysicalResistance(uint32_t value) { write(playerData()->field_mod_target_physical_resistance, value); }
+void Player::modModTargetPhysicalResistance(int32_t value) { setModTargetPhysicalResistance(getModTargetPhysicalResistance() + value); }
+#endif
 
 uint32_t Player::getPlayerFieldBytes() const { return playerData()->player_field_bytes.raw; }
 void Player::setPlayerFieldBytes(uint32_t bytes) { write(playerData()->player_field_bytes.raw, bytes); }
@@ -299,30 +505,27 @@ uint32_t Player::getPlayerFieldBytes2() const { return playerData()->player_fiel
 void Player::setPlayerFieldBytes2(uint32_t bytes) { write(playerData()->player_field_bytes_2.raw, bytes); }
 #endif
 
-#if VERSION_STRING > TBC
-uint32_t Player::getGlyph(uint16_t slot) const { return playerData()->field_glyphs[slot]; }
-void Player::setGlyph(uint16_t slot, uint32_t glyph) { write(playerData()->field_glyphs[slot], glyph); }
-#endif
-
-#if VERSION_STRING > TBC
-uint32_t Player::getGlyphsEnabled() const { return playerData()->glyphs_enabled; }
-void Player::setGlyphsEnabled(uint32_t glyphs) { write(playerData()->glyphs_enabled, glyphs); }
-#endif
+uint32_t Player::getCombatRating(uint8_t combatRating) const { return playerData()->field_combat_rating[combatRating]; }
+void Player::setCombatRating(uint8_t combatRating, uint32_t value) { write(playerData()->field_combat_rating[combatRating], value); }
+void Player::modCombatRating(uint8_t combatRating, int32_t value) { setCombatRating(combatRating, getCombatRating(combatRating) + value); }
 
 #if VERSION_STRING > Classic
 #if VERSION_STRING < Cata
 uint32_t Player::getArenaCurrency() const { return playerData()->field_arena_currency; }
 void Player::setArenaCurrency(uint32_t amount) { write(playerData()->field_arena_currency, amount); }
-void Player::modArenaCurrency(int32_t value)
-{
-    setArenaCurrency(getArenaCurrency() + value);
-}
+void Player::modArenaCurrency(int32_t value) { setArenaCurrency(getArenaCurrency() + value); }
 #endif
 #endif
 
 #if VERSION_STRING >= WotLK
 uint32_t Player::getNoReagentCost(uint8_t index) const { return playerData()->no_reagent_cost[index]; }
 void Player::setNoReagentCost(uint8_t index, uint32_t value) { write(playerData()->no_reagent_cost[index], value); }
+
+uint32_t Player::getGlyph(uint16_t slot) const { return playerData()->field_glyphs[slot]; }
+void Player::setGlyph(uint16_t slot, uint32_t glyph) { write(playerData()->field_glyphs[slot], glyph); }
+
+uint32_t Player::getGlyphsEnabled() const { return playerData()->glyphs_enabled; }
+void Player::setGlyphsEnabled(uint32_t glyphs) { write(playerData()->glyphs_enabled, glyphs); }
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -999,109 +1202,6 @@ bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
 
     return false;
 }
-
-void Player::cancelTrade(bool sendback)
-{
-    if (m_TradeData)
-    {
-        auto trade_target = m_TradeData->getTradeTarget();
-
-        if (sendback || trade_target == nullptr)
-        {
-            GetSession()->sendTradeCancel();
-            delete m_TradeData;
-            m_TradeData = nullptr;
-        }
-        else
-        {
-            trade_target->GetSession()->sendTradeCancel();
-            delete trade_target->m_TradeData;
-            trade_target->m_TradeData = nullptr;
-        }
-    }
-}
-
-TradeData* TradeData::getTargetTradeData() const
-{
-    return m_tradeTarget->getTradeData();
-}
-
-Item* TradeData::getTradeItem(TradeSlots slot) const
-{
-    return m_items[slot] ? m_player->getItemInterface()->GetItemByGUID(m_items[slot]) : nullptr;
-}
-
-bool TradeData::hasTradeItem(uint64 item_guid) const
-{
-    for (uint8_t i = 0; i < TRADE_SLOT_COUNT; ++i)
-    {
-        if (m_items[i] == item_guid)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-Item* TradeData::getSpellCastItem() const
-{
-    return m_spellCastItem ? m_player->getItemInterface()->GetItemByGUID(m_spellCastItem) : nullptr;
-}
-
-void TradeData::setItem(TradeSlots slot, Item* item)
-{
-    ObjectGuid itemGuid;
-
-    if (item)
-    {
-        itemGuid = item->getGuid();
-    }
-    else
-    {
-        itemGuid = ObjectGuid();
-    }
-
-    if (m_items[slot] == itemGuid)
-    {
-        return;
-    }
-
-    m_items[slot] = itemGuid;
-
-    setAccepted(false);
-    getTargetTradeData()->setAccepted(false);
-
-    updateTrade();
-}
-
-void TradeData::setSpell(uint32_t spell_id, Item* cast_item /*= nullptr*/)
-{
-    ObjectGuid itemGuid;
-
-    if (cast_item)
-    {
-        itemGuid = cast_item->getGuid();
-    }
-    else
-    {
-        itemGuid = ObjectGuid();
-    }
-
-    if (m_spell == spell_id && m_spellCastItem == itemGuid)
-    {
-        return;
-    }
-
-    m_spell = spell_id;
-    m_spellCastItem = itemGuid;
-
-    setAccepted(false);
-    getTargetTradeData()->setAccepted(false);
-
-    updateTrade(true); // spell info to owner
-    updateTrade(false); // spell info to caster
-}
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1132,6 +1232,117 @@ void Player::setInitialDisplayIds(uint8_t gender, uint8_t race)
     {
         LOG_ERROR("Race %u is not supported by this AEVersion (%u)", race, getAEVersion());
     }
+}
+
+void Player::applyLevelInfo(uint32_t newLevel)
+{
+    // Save current level
+    const auto previousLevel = getLevel();
+
+    if (!m_FirstLogin)
+    {
+        const auto previousLevelInfo = lvlinfo;
+
+        // Get new level info
+        lvlinfo = sObjectMgr.GetLevelInfo(getRace(), getClass(), newLevel);
+        if (lvlinfo == nullptr)
+            return;
+
+        // Small chance that you die at the same time you level up, and you may enter in a weird state
+        if (isDead())
+            ResurrectPlayer();
+
+        setLevel(newLevel);
+
+        // Set new base health and mana
+        //\ TODO: LevelInfo base health and mana stats already have stamina and intellect calculated into them
+        const auto levelone = sObjectMgr.GetLevelInfo(getRace(), getClass(), 1);
+        if (levelone != nullptr)
+        {
+            setBaseHealth(lvlinfo->HP - ((lvlinfo->Stat[STAT_STAMINA] - levelone->Stat[STAT_STAMINA]) * 10));
+            setBaseMana(lvlinfo->Mana - ((lvlinfo->Stat[STAT_INTELLECT] - levelone->Stat[STAT_INTELLECT]) * 15));
+        }
+        else
+        {
+            setBaseHealth(lvlinfo->HP);
+            setBaseMana(lvlinfo->Mana);
+        }
+
+        // Set new base stats
+        for (uint8_t i = 0; i < STAT_COUNT; ++i)
+        {
+            BaseStats[i] = lvlinfo->Stat[i];
+            CalcStat(i);
+        }
+        UpdateStats();
+
+        // Set current health
+        setHealth(getMaxHealth());
+        // Restore powers to full
+        setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
+        setPower(POWER_TYPE_FOCUS, getMaxPower(POWER_TYPE_FOCUS));
+        setPower(POWER_TYPE_ENERGY, getMaxPower(POWER_TYPE_ENERGY));
+#if VERSION_STRING >= WotLK
+        setPower(POWER_TYPE_RUNES, getMaxPower(POWER_TYPE_RUNES));
+#endif
+        // Not sure if this is needed -Appled
+        setMaxMana(getMaxPower(POWER_TYPE_MANA));
+
+        // Send levelup info packet
+        sendLevelupInfoPacket(
+            newLevel,
+            lvlinfo->HP - previousLevelInfo->HP,
+            lvlinfo->Mana - previousLevelInfo->Mana,
+            lvlinfo->Stat[STAT_STRENGTH] - previousLevelInfo->Stat[STAT_STRENGTH],
+            lvlinfo->Stat[STAT_AGILITY] - previousLevelInfo->Stat[STAT_AGILITY],
+            lvlinfo->Stat[STAT_STAMINA] - previousLevelInfo->Stat[STAT_STAMINA],
+            lvlinfo->Stat[STAT_INTELLECT] - previousLevelInfo->Stat[STAT_INTELLECT],
+            lvlinfo->Stat[STAT_SPIRIT] - previousLevelInfo->Stat[STAT_SPIRIT]);
+    }
+
+    // Update max skill level
+    _UpdateMaxSkillCounts();
+
+    if (newLevel > previousLevel || m_FirstLogin)
+    {
+        setInitialTalentPoints();
+    }
+    else if (newLevel != previousLevel)
+    {
+        // Reset talents if new level is lower than the previous level
+        resetAllTalents();
+    }
+
+    m_playerInfo->lastLevel = previousLevel;
+
+#if VERSION_STRING >= WotLK
+    UpdateGlyphs();
+    GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
+#endif
+
+    // Send script hooks
+    if (m_FirstLogin)
+        sHookInterface.OnFirstEnterWorld(this);
+    else
+        sHookInterface.OnPostLevelUp(this);
+
+    // If player is warlock and has a summoned pet, its level should match owner's
+    if (getClass() == WARLOCK)
+    {
+        const auto pet = GetSummon();
+        if (pet != nullptr && pet->IsInWorld() && pet->isAlive())
+        {
+            pet->setLevel(newLevel);
+            pet->ApplyStatsForLevel();
+            pet->UpdateSpellList();
+        }
+    }
+
+    // Send talent info to client
+    smsg_TalentsInfo(false);
+
+    // Reset current played time
+    m_playedtime[0] = 0;
 }
 
 bool Player::isTransferPending() const
@@ -1206,6 +1417,182 @@ void Player::resetTeam()
 
 bool Player::isTeamHorde() const { return getTeam() == TEAM_HORDE; }
 bool Player::isTeamAlliance() const { return getTeam() == TEAM_ALLIANCE; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Stats
+void Player::setInitialPlayerData()
+{
+    ARCEMU_ASSERT(lvlinfo != nullptr);
+
+    //\ TODO: LevelInfo base health and mana stats already have stamina and intellect calculated into them
+    const auto levelone = sObjectMgr.GetLevelInfo(getRace(), getClass(), 1);
+    if (levelone != nullptr)
+    {
+        setBaseHealth(lvlinfo->HP - ((lvlinfo->Stat[STAT_STAMINA] - levelone->Stat[STAT_STAMINA]) * 10));
+        setBaseMana(lvlinfo->Mana - ((lvlinfo->Stat[STAT_INTELLECT] - levelone->Stat[STAT_INTELLECT]) * 15));
+    }
+    else
+    {
+        setBaseHealth(lvlinfo->HP);
+        setBaseMana(lvlinfo->Mana);
+    }
+
+    // Set max health and powers
+    setMaxHealth(lvlinfo->HP);
+    // First initialize all power fields to 0
+    for (uint8_t power = POWER_TYPE_MANA; power < TOTAL_PLAYER_POWER_TYPES; ++power)
+        setMaxPower(power, 0);
+
+    // Next set correct power for each class
+    switch (getClass())
+    {
+        case WARRIOR:
+            setMaxPower(POWER_TYPE_RAGE, info->rage);
+            break;
+#if VERSION_STRING >= Cata
+        case HUNTER:
+            setMaxPower(POWER_TYPE_FOCUS, info->focus);
+            break;
+#endif
+        case ROGUE:
+            setMaxPower(POWER_TYPE_ENERGY, info->energy);
+            break;
+#if VERSION_STRING >= WotLK
+        case DEATHKNIGHT:
+            setMaxPower(POWER_TYPE_RUNES, 8);
+            setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+            break;
+#endif
+        default:
+            setMaxPower(POWER_TYPE_MANA, getBaseMana());
+            setMaxMana(getBaseMana());
+            break;
+    }
+
+    setMinDamage(0.0f);
+    setMaxDamage(0.0f);
+    setMinOffhandDamage(0.0f);
+    setMaxOffhandDamage(0.0f);
+    setMinRangedDamage(0.0f);
+    setMaxRangedDamage(0.0f);
+
+    setBaseAttackTime(MELEE, 2000);
+    setBaseAttackTime(OFFHAND, 2000);
+    setBaseAttackTime(RANGED, 2000);
+
+    setAttackPower(0);
+    setAttackPowerMods(0);
+    setAttackPowerMultiplier(0.0f);
+    setRangedAttackPower(0);
+    setRangedAttackPowerMods(0);
+    setRangedAttackPowerMultiplier(0.0f);
+
+    setBlockPercentage(0.0f);
+    setDodgePercentage(0.0f);
+    setParryPercentage(0.0f);
+    setMeleeCritPercentage(0.0f);
+    setRangedCritPercentage(0.0f);
+#if VERSION_STRING >= TBC
+    setExpertise(0);
+    setOffHandExpertise(0);
+    setOffHandCritPercentage(0.0f);
+    setShieldBlock(0);
+#endif
+#if VERSION_STRING >= WotLK
+    setShieldBlockCritPercentage(0.0f);
+#endif
+
+#if VERSION_STRING >= TBC
+    setModHealingDone(0);
+
+    setModTargetResistance(0);
+    setModTargetPhysicalResistance(0);
+#endif
+
+    setModCastSpeed(1.0f);
+
+    for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
+    {
+        setModDamageDonePositive(i, 0);
+        setModDamageDoneNegative(i, 0);
+        setModDamageDonePct(1.0f, i);
+
+#if VERSION_STRING >= TBC
+        setSpellCritPercentage(i, 0.0f);
+#endif
+        setResistance(i, 0);
+
+        setPowerCostModifier(i, 0);
+        setPowerCostMultiplier(i, 0.0f);
+#if VERSION_STRING >= WotLK
+        setNoReagentCost(i, 0);
+#endif
+    }
+
+    for (uint8_t i = 0; i < MAX_PCR; ++i)
+        setCombatRating(i, 0);
+
+    for (uint8_t i = 0; i < STAT_COUNT; ++i)
+    {
+        BaseStats[i] = lvlinfo->Stat[i];
+        CalcStat(i);
+    }
+
+    UpdateStats();
+
+    setNextLevelXp(sMySQLStore.getPlayerXPForLevel(getLevel()));
+    setMaxLevel(worldConfig.player.playerLevelCap);
+
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
+    addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
+#if VERSION_STRING >= TBC
+    addUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
+#endif
+
+    setFreePrimaryProfessionPoints(worldConfig.player.maxProfessions);
+
+    // Set current health and power after stats are loaded
+    setHealth(getMaxHealth());
+    setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
+    setPower(POWER_TYPE_RAGE, 0);
+    setPower(POWER_TYPE_FOCUS, getMaxPower(POWER_TYPE_FOCUS));
+    setPower(POWER_TYPE_ENERGY, getMaxPower(POWER_TYPE_ENERGY));
+#if VERSION_STRING >= WotLK
+    setPower(POWER_TYPE_RUNES, getMaxPower(POWER_TYPE_RUNES));
+    setPower(POWER_TYPE_RUNIC_POWER, 0);
+#endif
+    // Not sure if this is needed -Appled
+    setMaxMana(getMaxPower(POWER_TYPE_MANA));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Database stuff
+bool Player::loadSpells(QueryResult* result)
+{
+    if (result == nullptr)
+        return false;
+
+    do
+    {
+        const auto fields = result->Fetch();
+        const auto spellId = fields[0].GetUInt32();
+
+        const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+        if (spellInfo == nullptr)
+            continue;
+
+        mSpells.insert(spellId);
+    } while (result->NextRow());
+
+    // Add initial spells on first login
+    if (m_FirstLogin)
+    {
+        for (const auto& spellId : info->spell_list)
+            mSpells.insert(spellId);
+    }
+
+    return true;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells
@@ -1555,6 +1942,27 @@ void Player::resetTalents()
     setInitialTalentPoints(true);
 }
 
+void Player::resetAllTalents()
+{
+    if (m_talentSpecsCount == 1)
+    {
+        resetTalents();
+        return;
+    }
+
+    const auto activeSpec = m_talentActiveSpec;
+    resetTalents();
+
+    if (activeSpec == SPEC_PRIMARY)
+        activateTalentSpec(SPEC_SECONDARY);
+    else
+        activateTalentSpec(SPEC_PRIMARY);
+
+    resetTalents();
+    // Change back to the original spec
+    activateTalentSpec(activeSpec);
+}
+
 void Player::setTalentPoints(uint32_t talentPoints, bool forBothSpecs /*= true*/)
 {
     if (!forBothSpecs)
@@ -1757,7 +2165,7 @@ void Player::activateTalentSpec(uint8_t specId)
         GetSummon()->Dismiss();
 
     // Remove old glyphs
-    for (auto i = 0; i < GLYPHS_COUNT; ++i)
+    for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
     {
         auto glyphProperties = sGlyphPropertiesStore.LookupEntry(m_specs[oldSpec].glyphs[i]);
         if (glyphProperties != nullptr)
@@ -1773,7 +2181,7 @@ void Player::activateTalentSpec(uint8_t specId)
     }
 
     // Add new glyphs
-    for (auto i = 0; i < GLYPHS_COUNT; ++i)
+    for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
     {
         auto glyphProperties = sGlyphPropertiesStore.LookupEntry(m_specs[m_talentActiveSpec].glyphs[i]);
         if (glyphProperties != nullptr)
@@ -1793,17 +2201,7 @@ void Player::activateTalentSpec(uint8_t specId)
     }
 
     // Set action buttons from new spec
-    WorldPacket data(SMSG_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
-    // Clears action bars clientside
-    data << uint8_t(1);
-    // Load buttons
-    for (auto i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-    {
-        data << m_specs[m_talentActiveSpec].mActions[i].Action;
-        data << m_specs[m_talentActiveSpec].mActions[i].Type;
-        data << m_specs[m_talentActiveSpec].mActions[i].Misc;
-    }
-    GetSession()->SendPacket(&data);
+    sendActionBars(true);
 
     // Reset power
     setPower(getPowerType(), 0);
@@ -1815,6 +2213,144 @@ void Player::activateTalentSpec(uint8_t specId)
     // Send talent points
     setInitialTalentPoints();
 #endif
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Actionbar
+void Player::setActionButton(uint8_t button, uint32_t action, uint8_t type, uint8_t misc)
+{
+    if (button >= PLAYER_ACTION_BUTTON_COUNT)
+        return;
+
+    getActiveSpec().mActions[button].Action = action;
+    getActiveSpec().mActions[button].Misc = misc;
+    getActiveSpec().mActions[button].Type = type;
+}
+
+void Player::sendActionBars(bool clearBars)
+{
+#if VERSION_STRING < Mop
+    WorldPacket data(SMSG_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
+
+#if VERSION_STRING == WotLK
+    // 0 does nothing, 1 clears bars from clientside
+    data << uint8_t(clearBars ? 1 : 0);
+#endif
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+    {
+        // TODO: this needs investigation
+        // action, as in spell id, can be and will be over uint16_t max (65535) on wotlk and cata
+        // but if I send action in uint32_t, client ignores the button completely and leaves an empty button slot, or corrupts other slots as well
+        // however casting the action to uint16_t seems to somehow work. I tested it with a spell id over 65535.
+        // but this is not a solution and can cause undefined behaviour... (previously ActionButton::Action was stored in uint16_t)
+        // I believe client accepts at most 4 bytes per button -Appled
+        data << uint16_t(getActiveSpec().mActions[i].Action);
+#if VERSION_STRING < WotLK
+        data << getActiveSpec().mActions[i].Type;
+        data << getActiveSpec().mActions[i].Misc;
+#else
+        // Since Wotlk misc needs to be sent before type
+        data << getActiveSpec().mActions[i].Misc;
+        data << getActiveSpec().mActions[i].Type;
+#endif
+    }
+#else
+    WorldPacket data(SMSG_ACTION_BUTTONS, (PLAYER_ACTION_BUTTON_COUNT * 8) + 1);
+
+    uint8_t buttons[PLAYER_ACTION_BUTTON_COUNT][8];
+
+    // Bits
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][4]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][5]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][3]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][1]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][6]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][7]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][0]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.writeBit(buttons[i][2]);
+
+    // Data
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][0]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][1]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][4]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][6]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][7]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][2]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][5]);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        data.WriteByteSeq(buttons[i][3]);
+#endif
+
+#if VERSION_STRING >= Cata
+    // 0 does nothing, 1 clears bars from clientside
+    data << uint8_t(clearBars ? 1 : 0);
+#endif
+
+    GetSession()->SendPacket(&data);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Trade
+Player* Player::getTradeTarget() const
+{
+    return m_TradeData != nullptr ? m_TradeData->getTradeTarget() : nullptr;
+}
+
+TradeData* Player::getTradeData() const
+{
+    return m_TradeData;
+}
+
+void Player::cancelTrade(bool sendToSelfAlso, bool silently /*= false*/)
+{
+    if (m_TradeData != nullptr)
+    {
+        if (sendToSelfAlso)
+            GetSession()->sendTradeResult(TRADE_STATUS_CANCELLED);
+
+        auto tradeTarget = m_TradeData->getTradeTarget();
+        if (tradeTarget != nullptr)
+        {
+            if (!silently)
+                tradeTarget->GetSession()->sendTradeResult(TRADE_STATUS_CANCELLED);
+
+            delete tradeTarget->m_TradeData;
+            tradeTarget->m_TradeData = nullptr;
+        }
+
+        delete m_TradeData;
+        m_TradeData = nullptr;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

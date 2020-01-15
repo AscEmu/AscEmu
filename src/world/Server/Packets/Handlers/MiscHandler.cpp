@@ -350,32 +350,27 @@ void WorldSession::handleSetActionButtonOpcode(WorldPacket& recvPacket)
     if (srlPacket.action == 0)
     {
         LogDebugFlag(LF_OPCODE, "MISC: Remove action from button %u", srlPacket.button);
-        _player->setAction(srlPacket.button, 0, 0, 0);
+        _player->setActionButton(srlPacket.button, 0, 0, 0);
     }
     else
     {
-#if VERSION_STRING > TBC
         if (srlPacket.button >= PLAYER_ACTION_BUTTON_COUNT)
             return;
-#else
-        if (srlPacket.button >= 120)
-            return;
-#endif
 
         if (srlPacket.type == 64 || srlPacket.type == 65)
         {
             LogDebugFlag(LF_OPCODE, "MISC: Added Macro %u into button %u", srlPacket.action, srlPacket.button);
-            _player->setAction(srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
+            _player->setActionButton(srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
         }
         else if (srlPacket.type == 128)
         {
             LogDebugFlag(LF_OPCODE, "MISC: Added Item %u into button %u", srlPacket.action, srlPacket.button);
-            _player->setAction(srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
+            _player->setActionButton(srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
         }
         else if (srlPacket.type == 0)
         {
             LogDebugFlag(LF_OPCODE, "MISC: Added Spell %u into button %u", srlPacket.action, srlPacket.button);
-            _player->setAction(srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
+            _player->setActionButton(srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
         }
     }
 }
@@ -746,8 +741,7 @@ void WorldSession::handleSelfResurrect(WorldPacket& /*recvPacket*/)
         const auto spellInfo = sSpellMgr.getSpellInfo(resurrectSpell);
         if (const auto spell = sSpellMgr.newSpell(_player, spellInfo, true, nullptr))
         {
-            SpellCastTargets spellCastTargets;
-            spellCastTargets.m_unitTarget = _player->getGuid();
+            SpellCastTargets spellCastTargets(_player->getGuid());
             spell->prepare(&spellCastTargets);
         }
     }

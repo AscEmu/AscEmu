@@ -45,7 +45,7 @@ enum ChannelMemberFlags
     CHANNEL_MEMBER_FLAG_MIC_MUTED       = 0x20
 };
 
-enum ChannelNotifyFlags
+enum ChannelNotifyFlags : uint8_t
 {
     CHANNEL_NOTIFY_FLAG_JOINED          = 0x00,
     CHANNEL_NOTIFY_FLAG_LEFT            = 0x01,

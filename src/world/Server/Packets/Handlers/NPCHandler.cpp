@@ -663,8 +663,7 @@ void WorldSession::handleSpiritHealerActivateOpcode(WorldPacket& /*recvPacket*/)
         if (aura == nullptr)
         {
             const auto spellInfo = sSpellMgr.getSpellInfo(15007);
-            SpellCastTargets targets;
-            targets.m_unitTarget = _player->getGuid();
+            SpellCastTargets targets(_player->getGuid());
             const auto spell = sSpellMgr.newSpell(_player, spellInfo, true, nullptr);
             spell->prepare(&targets);
         }

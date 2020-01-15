@@ -2513,10 +2513,10 @@ void MySQLDataStore::loadPlayerCreateInfoBarsTable(uint32_t player_info_index)
         Field* fields = player_create_info_bars_result->Fetch();
 
         CreateInfo_ActionBarStruct bar;
-        bar.button = fields[2].GetUInt32();
+        bar.button = fields[2].GetUInt8();
         bar.action = fields[3].GetUInt32();
-        bar.type = fields[4].GetUInt32();
-        bar.misc = fields[5].GetUInt32();
+        bar.type = fields[4].GetUInt8();
+        bar.misc = fields[5].GetUInt8();
 
         playerCreateInfo.actionbars.push_back(bar);
 

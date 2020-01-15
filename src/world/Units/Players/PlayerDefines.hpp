@@ -560,45 +560,38 @@ enum UnderwaterState
 #if VERSION_STRING >= Cata
 enum TradeStatus
 {
-    TRADE_STATUS_OPEN_WINDOW            = 0,
-    TRADE_STATUS_INITIATED              = 1,
-    TRADE_STATUS_NOT_ON_TAPLIST         = 2,
+    TRADE_STATUS_INITIATED              = 0,
+    TRADE_STATUS_UNK1                   = 1,
+    TRADE_STATUS_LOOT_ITEM              = 2,
     TRADE_STATUS_YOU_LOGOUT             = 3,
-    TRADE_STATUS_IGNORE_YOU             = 4,
+    TRADE_STATUS_IGNORES_YOU            = 4,
     TRADE_STATUS_TARGET_DEAD            = 5,
-    TRADE_STATUS_TRADE_ACCEPT           = 6,
+    TRADE_STATUS_ACCEPTED               = 6,
     TRADE_STATUS_TARGET_LOGOUT          = 7,
     TRADE_STATUS_UNK8                   = 8,
-    TRADE_STATUS_TRADE_COMPLETE         = 9,
-    TRADE_STATUS_UNK10                  = 10,
+    TRADE_STATUS_COMPLETE               = 9,
+    TRADE_STATUS_TRIAL_ACCOUNT          = 10,
     TRADE_STATUS_UNK11                  = 11,
-    TRADE_STATUS_BEGIN_TRADE            = 12,
+    TRADE_STATUS_PROPOSED               = 12,
     TRADE_STATUS_YOU_DEAD               = 13,
     TRADE_STATUS_UNK14                  = 14,
     TRADE_STATUS_UNK15                  = 15,
-    TRADE_STATUS_TARGET_TO_FAR          = 16,
-    TRADE_STATUS_NO_TARGET              = 17,
-    TRADE_STATUS_UNK18                  = 18,
+    TRADE_STATUS_TOO_FAR_AWAY           = 16,
+    TRADE_STATUS_PLAYER_NOT_FOUND       = 17,
+    TRADE_STATUS_ALREADY_TRADING        = 18,
     TRADE_STATUS_CURRENCY_NOT_TRADEABLE = 19,
     TRADE_STATUS_WRONG_FACTION          = 20,
-    TRADE_STATUS_BUSY                   = 21,
-    TRADE_STATUS_UNK22                  = 22,
-    TRADE_STATUS_TRADE_CANCELED         = 23,
+    TRADE_STATUS_PLAYER_BUSY            = 21,
+    TRADE_STATUS_UNACCEPTED             = 22,
+    TRADE_STATUS_CANCELLED              = 23,
     TRADE_STATUS_CURRENCY               = 24,
-    TRADE_STATUS_BACK_TO_TRADE          = 25,
+    TRADE_STATUS_STATE_CHANGED          = 25,
     TRADE_STATUS_ONLY_CONJURED          = 26,
     TRADE_STATUS_YOU_STUNNED            = 27,
     TRADE_STATUS_UNK28                  = 28,
     TRADE_STATUS_TARGET_STUNNED         = 29,
     TRADE_STATUS_UNK30                  = 30,
-    TRADE_STATUS_CLOSE_WINDOW           = 31
-};
-
-enum TradeSlots
-{
-    TRADE_SLOT_COUNT            = 7,
-    TRADE_SLOT_TRADED_COUNT     = 6,
-    TRADE_SLOT_NONTRADED        = 6
+    TRADE_STATUS_FAILED                 = 31
 };
 #else
 enum TradeStatus
@@ -606,27 +599,36 @@ enum TradeStatus
     TRADE_STATUS_PLAYER_BUSY        = 0x00,
     TRADE_STATUS_PROPOSED           = 0x01,
     TRADE_STATUS_INITIATED          = 0x02,
-    TRADE_STATUS_CANCELLED          = 0x03,
+    TRADE_STATUS_CANCELLED          = 0x03, // Trade cancelled
     TRADE_STATUS_ACCEPTED           = 0x04,
     TRADE_STATUS_ALREADY_TRADING    = 0x05,
-    TRADE_STATUS_PLAYER_NOT_FOUND   = 0x06,
+    TRADE_STATUS_PLAYER_NOT_FOUND   = 0x06, // You have no target
     TRADE_STATUS_STATE_CHANGED      = 0x07,
-    TRADE_STATUS_COMPLETE           = 0x08,
+    TRADE_STATUS_COMPLETE           = 0x08, // Trade complete
     TRADE_STATUS_UNACCEPTED         = 0x09,
-    TRADE_STATUS_TOO_FAR_AWAY       = 0x0A,
-    TRADE_STATUS_WRONG_FACTION      = 0x0B,
+    TRADE_STATUS_TOO_FAR_AWAY       = 0x0A, // Trade target is too far away
+    TRADE_STATUS_WRONG_FACTION      = 0x0B, // Target is unfriendly
     TRADE_STATUS_FAILED             = 0x0C,
-    TRADE_STATUS_DEAD               = 0x0D,
-    TRADE_STATUS_PETITION           = 0x0E,
-    TRADE_STATUS_PLAYER_IGNORED     = 0x0F
-};
-
-enum TradeData
-{
-    TRADE_GIVE        = 0x00,
-    TRADE_RECEIVE     = 0x01
+    TRADE_STATUS_UNK13              = 0x0D,
+    TRADE_STATUS_IGNORES_YOU        = 0x0E,
+    TRADE_STATUS_YOU_STUNNED        = 0x0F, // You are stunned
+    TRADE_STATUS_TARGET_STUNNED     = 0x10, // Target is stunned
+    TRADE_STATUS_YOU_DEAD           = 0x11, // You can't do that when you're dead
+    TRADE_STATUS_TARGET_DEAD        = 0x12, // You can't trade with dead players
+    TRADE_STATUS_YOU_LOGOUT         = 0x13, // You are logging out
+    TRADE_STATUS_TARGET_LOGOUT      = 0x14, // That player is logging out
+    TRADE_STATUS_TRIAL_ACCOUNT      = 0x15, // Trial accounts cannot perform that action
+    TRADE_STATUS_ONLY_CONJURED      = 0x16, // You may only trade conjured items to players from other realms
+    TRADE_STATUS_LOOT_ITEM          = 0x17  // You may only trade bound items to players that were originally eligible to loot the item
 };
 #endif
+
+enum TradeSlots
+{
+    TRADE_SLOT_COUNT                = 7,
+    TRADE_SLOT_TRADED_COUNT         = 6,
+    TRADE_SLOT_NONTRADED            = 6
+};
 
 enum DuelStatus
 {
@@ -650,7 +652,7 @@ enum DuelWinner
 const time_t attackTimeoutInterval = 5000;
 const time_t forcedResurrectInterval = 360000;  // 1000*60*6= 6 minutes
 
-enum PlayerCombatRating : uint16_t
+enum PlayerCombatRating : uint8_t
 {
     PCR_RANGED_SKILL                = 0,
     PCR_DEFENCE                     = 1,
@@ -1110,18 +1112,15 @@ static uint8_t getSideByRace(uint8_t race)
     }
 }
 
-// action button defines
-#if VERSION_STRING != TBC
+// Action bar / button defines
+#if VERSION_STRING >= WotLK
     #define PLAYER_ACTION_BUTTON_COUNT 144
 #else
-    #define PLAYER_ACTION_BUTTON_COUNT 132
+    ///\ todo: is it 132 or 120 for TBC and classic?
+    #define PLAYER_ACTION_BUTTON_COUNT 120
 #endif
 
-#if VERSION_STRING < Cata
-    #define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
-#else
-    #define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(uint32)
-#endif
+#define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
 
 #ifdef FT_DUAL_SPEC
 #define MAX_SPEC_COUNT 2
