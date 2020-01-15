@@ -159,8 +159,7 @@ bool LastStand(uint8_t /*effectIndex*/, Spell* s)
         return false;
     }
 
-    SpellCastTargets tgt;
-    tgt.m_unitTarget = playerTarget->getGuid();
+    SpellCastTargets tgt(playerTarget->getGuid());
 
     SpellInfo const* inf = sSpellMgr.getSpellInfo(12976);
     Spell* spe = sSpellMgr.newSpell(s->u_caster, inf, true, NULL);

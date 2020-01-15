@@ -84,9 +84,9 @@ void SpellProc::CastSpell(Unit* victim, SpellInfo const* CastingSpell, int* dmg_
 {
     SpellCastTargets targets;
     if (mProcFlags & PROC_TARGET_SELF)
-        targets.m_unitTarget = mTarget->getGuid();
+        targets.setUnitTarget(mTarget->getGuid());
     else
-        targets.m_unitTarget = victim->getGuid();
+        targets.setUnitTarget(victim->getGuid());
 
     Spell* spell = sSpellMgr.newSpell(mTarget, mSpell, true, nullptr);
     spell->forced_basepoints[0] = dmg_overwrite[0];

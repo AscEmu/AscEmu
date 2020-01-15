@@ -374,7 +374,7 @@ struct WoWPlayer : WoWUnit
     float offhand_crit_pct;
     float spell_crit_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t shield_block;
-    uint32_t shield_block_crit_pct;
+    float shield_block_crit_pct;
     uint32_t explored_zones[WOWPLAYER_EXPLORED_ZONES_COUNT];
     uint32_t rest_state_xp;
     uint32_t field_coinage;
@@ -407,7 +407,7 @@ struct WoWPlayer : WoWUnit
     uint32_t rune_regen[WOWPLAYER_RUNE_REGEN_COUNT];
     uint32_t no_reagent_cost[WOWPLAYER_NO_REAGENT_COST_COUNT];
     uint32_t field_glyph_slots[WOWPLAYER_GLYPH_SLOT_COUNT];
-    uint32_t field_glyphs[6];
+    uint32_t field_glyphs[WOWPLAYER_GLYPH_SLOT_COUNT];
     uint32_t glyphs_enabled;
     uint32_t pet_spell_power;
 };
@@ -424,6 +424,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_BANK_BAG_SLOT_COUNT 7
 #define WOWPLAYER_KEYRING_SLOT_COUNT 32
 #define WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT 32
+#define WOWPLAYER_GLYPH_SLOT_COUNT 9
 
 struct WoWPlayer_Quest
 {
@@ -487,7 +488,7 @@ struct WoWPlayer : WoWUnit
     float offhand_crit_pct;
     float spell_crit_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t shield_block;
-    uint32_t shield_block_crit_pct;
+    float shield_block_crit_pct;
     uint32_t mastery;
     uint32_t explored_zones[WOWPLAYER_EXPLORED_ZONES_COUNT];
     uint32_t rest_state_xp;
@@ -519,8 +520,8 @@ struct WoWPlayer : WoWUnit
     uint32_t field_daily_quests[WOWPLAYER_DAILY_QUESTS_COUNT];
     float rune_regen[4];
     uint32_t no_reagent_cost[3];
-    uint32_t field_glyph_slots[9];
-    uint32_t field_glyphs[9];
+    uint32_t field_glyph_slots[WOWPLAYER_GLYPH_SLOT_COUNT];
+    uint32_t field_glyphs[WOWPLAYER_GLYPH_SLOT_COUNT];
     uint32_t glyphs_enabled;
     uint32_t pet_spell_power;
     uint32_t researching[8];
@@ -619,7 +620,7 @@ struct WoWPlayer : WoWUnit
     float offhand_crit_pct;
     float spell_crit_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t shield_block;
-    uint32_t shield_block_crit_pct;
+    float shield_block_crit_pct;
     uint32_t mastery;
     uint32_t pvp_power_damage;
     uint32_t pvp_power_healing;

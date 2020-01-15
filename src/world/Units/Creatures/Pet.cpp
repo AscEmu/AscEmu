@@ -49,7 +49,49 @@
 #define DANCINGRUNEWEAPON       27893
 
 //MIT START
+//////////////////////////////////////////////////////////////////////////////////////////
+// Owner
 Player* Pet::getPlayerOwner() { return m_Owner; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Misc
+void Pet::giveXp(uint32_t xp)
+{
+    auto newXP = xp + getPetExperience();
+    auto nextLevelXp = getPetNextLevelExperience();
+    auto petLevel = getLevel();
+
+    // Check if pet levels up
+    auto levelUp = false;
+    while (newXP >= nextLevelXp && newXP > 0)
+    {
+        // Check owner's level
+        if (m_Owner->getLevel() <= petLevel)
+        {
+            // Pet is at the same level as owner, do not level up
+            newXP = nextLevelXp - 1;
+            break;
+        }
+
+        levelUp = true;
+        ++petLevel;
+
+        newXP -= nextLevelXp;
+        nextLevelXp = GetNextLevelXP(petLevel);
+        setPetNextLevelExperience(nextLevelXp);
+    }
+
+    if (levelUp)
+    {
+        setLevel(petLevel);
+        setPetTalentPoints(GetTPsForLevel(getLevel()) - GetSpentTPs());
+        ApplyStatsForLevel();
+        UpdateSpellList();
+        SendTalentsToOwner();
+    }
+
+    setPetExperience(newXP);
+}
 
 //MIT END
 
@@ -1261,26 +1303,6 @@ bool Pet::CanGainXP()
     return true;
 }
 
-void Pet::GiveXP(uint32 xp)
-{
-    xp += getPetExperience();
-    uint32 nxp = getPetNextLevelExperience();
-
-    if (xp >= nxp)
-    {
-        setPetTalentPoints(GetTPsForLevel(getLevel() + 1) - GetSpentTPs());
-        setLevel(1);
-        xp -= nxp;
-        nxp = GetNextLevelXP(getLevel());
-        setPetNextLevelExperience(nxp);
-        ApplyStatsForLevel();
-        UpdateSpellList();
-        SendTalentsToOwner();
-    }
-
-    setPetExperience(xp);
-}
-
 uint32 Pet::GetNextLevelXP(uint32 level)
 {
     // Pets need only 5% of xp to level up compared to players
@@ -2298,7 +2320,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
                                 xp = CalculateXpToGive(pVictim, player_tagger->GetSummon());
 
                                 if (xp > 0)
-                                    player_tagger->GetSummon()->GiveXP(xp);
+                                    player_tagger->GetSummon()->giveXp(xp);
                             }
                         }
                         //////////////////////////////////////////////////////////////////////////////////////////
@@ -2423,7 +2445,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
             {
                 Spell* curSpell = attacker->getCurrentSpell(CurrentSpellType(i));
-                if (curSpell != nullptr && curSpell->m_targets.m_unitTarget == getGuid())
+                if (curSpell != nullptr && curSpell->m_targets.getUnitTarget() == getGuid())
                     attacker->interruptSpellWithSpellType(CurrentSpellType(i));
             }
         }

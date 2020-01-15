@@ -2418,7 +2418,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
             {
                 Spell* curSpell = attacker->getCurrentSpell(CurrentSpellType(i));
-                if (curSpell != nullptr && curSpell->m_targets.m_unitTarget == getGuid())
+                if (curSpell != nullptr && curSpell->m_targets.getUnitTarget() == getGuid())
                     attacker->interruptSpellWithSpellType(CurrentSpellType(i));
             }
         }

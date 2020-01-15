@@ -435,6 +435,7 @@ void WorldSession::LogoutPlayer(bool Save)
         LOG_DEBUG("SESSION: Sent SMSG_LOGOUT_COMPLETE Message");
     }
     _loggingOut = false;
+    LoggingOut = false;
 
     SetLogoutTimer(0);
 }

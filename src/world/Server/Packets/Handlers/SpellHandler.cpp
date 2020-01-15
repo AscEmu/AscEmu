@@ -179,8 +179,8 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
         uint8_t hasMovementData; // 1 or 0
         recvPacket >> projectilePitch >> projectileSpeed >> hasMovementData;
 
-        LocationVector const spellDestination = targets.destination();
-        LocationVector const spellSource = targets.source();
+        LocationVector const spellDestination = targets.getDestination();
+        LocationVector const spellSource = targets.getSource();
         float const deltaX = spellDestination.x - spellSource.y; // Calculate change of x position
         float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
 
@@ -404,8 +404,8 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
         uint8_t hasMovementData; // 1 or 0
         recvPacket >> projectilePitch >> projectileSpeed >> hasMovementData;
 
-        LocationVector const spellDestination = targets.destination();
-        LocationVector const spellSource = targets.source();
+        LocationVector const spellDestination = targets.getDestination();
+        LocationVector const spellSource = targets.getSource();
         float const deltaX = spellDestination.x - spellSource.y; // Calculate change of x position
         float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
 

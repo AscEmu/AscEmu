@@ -152,8 +152,7 @@ bool GiftOfLife(uint8_t /*effectIndex*/, Spell* s)
     if (!playerTarget)
         return false;
 
-    SpellCastTargets tgt;
-    tgt.m_unitTarget = playerTarget->getGuid();
+    SpellCastTargets tgt(playerTarget->getGuid());
     SpellInfo const* inf = sSpellMgr.getSpellInfo(23782);
     Spell* spe = sSpellMgr.newSpell(s->u_caster, inf, true, NULL);
     spe->prepare(&tgt);

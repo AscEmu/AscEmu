@@ -104,6 +104,17 @@ bool ItemInterface::hasItemForTotemCategory(uint32_t totemCategory)
 #endif
 }
 
+bool ItemInterface::isItemInTradeWindow(Item const* item) const
+{
+    if (item == nullptr || item->getOwner() == nullptr)
+        return false;
+
+    if (item->getOwner()->getTradeData() == nullptr)
+        return false;
+
+    return item->getOwner()->getTradeData()->hasTradeItem(item->getGuid());
+}
+
 // MIT End
 // APGL Start
 

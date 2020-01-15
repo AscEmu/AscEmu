@@ -518,6 +518,7 @@ void GuildMgr::loadGuildRewardsFromDB()
     LogDebug("Loaded %u guild reward definitions in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
+#if VERSION_STRING >= Cata
 void GuildMgr::resetTimes(bool week)
 {
     for (auto itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
@@ -526,3 +527,4 @@ void GuildMgr::resetTimes(bool week)
             guild->resetTimes(week);
     }
 }
+#endif

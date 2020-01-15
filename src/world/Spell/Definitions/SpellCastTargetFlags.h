@@ -10,8 +10,8 @@ enum SpellCastTargetFlags
     TARGET_FLAG_SELF            = 0x00000,
     TARGET_FLAG_UNK1            = 0x00001,
     TARGET_FLAG_UNIT            = 0x00002,
-    TARGET_FLAG_UNK2            = 0x00004,
-    TARGET_FLAG_UNK3            = 0x00008,
+    TARGET_FLAG_UNK3            = 0x00004,
+    TARGET_FLAG_UNK4            = 0x00008,
     TARGET_FLAG_ITEM            = 0x00010,
     TARGET_FLAG_SOURCE_LOCATION = 0x00020,
     TARGET_FLAG_DEST_LOCATION   = 0x00040,
@@ -24,5 +24,6 @@ enum SpellCastTargetFlags
     TARGET_FLAG_STRING          = 0x02000,
     TARGET_FLAG_OPEN_LOCK       = 0x04000,
     TARGET_FLAG_CORPSE2         = 0x08000, // Resurrection Spells
+    TARGET_FLAG_UNK17           = 0x10000, // related to non-combat pets?
     TARGET_FLAG_GLYPH           = 0x20000
 };

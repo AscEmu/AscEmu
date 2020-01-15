@@ -286,16 +286,16 @@ namespace LuaSpell
         if (!sp || !sp->m_caster->IsInWorld())
             RET_NIL()
 
-            if (sp->m_targets.m_unitTarget)
+            if (sp->m_targets.getUnitTarget())
             {
-                PUSH_UNIT(L, sp->m_caster->GetMapMgr()->GetUnit(sp->m_targets.m_unitTarget));
+                PUSH_UNIT(L, sp->m_caster->GetMapMgr()->GetUnit(sp->m_targets.getUnitTarget()));
                 return 1;
             }
-            else if (sp->m_targets.m_itemTarget)
+            else if (sp->m_targets.getItemTarget())
             {
                 if (!sp->p_caster)
                     RET_NIL()
-                    PUSH_ITEM(L, sp->p_caster->getItemInterface()->GetItemByGUID(sp->m_targets.m_itemTarget));
+                    PUSH_ITEM(L, sp->p_caster->getItemInterface()->GetItemByGUID(sp->m_targets.getItemTarget()));
                 return 1;
             }
             else

@@ -163,21 +163,7 @@ bool ChatHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    player_target->ApplyLevelInfo(level_info, levels);
-
-    if (player_target->getClass() == WARLOCK)
-    {
-        std::list<Pet*> summons = player_target->GetSummons();
-        for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-        {
-            if ((*itr)->IsInWorld() && (*itr)->isAlive())
-            {
-                (*itr)->setLevel(levels);
-                (*itr)->ApplyStatsForLevel();
-                (*itr)->UpdateSpellList();
-            }
-        }
-    }
+    player_target->applyLevelInfo(levels);
 
     if (player_target != m_session->GetPlayer())
     {
@@ -1494,22 +1480,7 @@ bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_se
         BlueSystemMessage(m_session, "You set your own level to %u.", new_level);
     }
 
-    player_target->ApplyLevelInfo(level_info, new_level);
-
-    if (player_target->getClass() == WARLOCK)
-    {
-        std::list<Pet*> player_summons = player_target->GetSummons();
-        for (std::list<Pet*>::iterator itr = player_summons.begin(); itr != player_summons.end(); ++itr)
-        {
-            Pet* single_summon = *itr;
-            if (single_summon->IsInWorld() && single_summon->isAlive())
-            {
-                single_summon->setLevel(new_level);
-                single_summon->ApplyStatsForLevel();
-                single_summon->UpdateSpellList();
-            }
-        }
-    }
+    player_target->applyLevelInfo(new_level);
 
     return true;
 }

@@ -25,6 +25,8 @@ enum PowerType : int16_t
     POWER_TYPE_HOLY_POWER  = 9,
     POWER_TYPE_ALTERNATIVE = 10,
 #endif
+    TOTAL_PLAYER_POWER_TYPES,
+    // Vehicle power types?
     POWER_TYPE_STEAM       = 61,
     POWER_TYPE_PYRITE      = 41,
     POWER_TYPE_HEAT        = 101,
