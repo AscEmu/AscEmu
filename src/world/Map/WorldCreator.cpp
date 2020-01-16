@@ -625,6 +625,7 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
         m_mapLock.Release();
         return nullptr;
     }
+    return nullptr;
 }
 
 MapMgr* InstanceMgr::_CreateInstance(uint32_t mapid, uint32_t instanceid)
@@ -875,11 +876,11 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
 
     WorldPacket data(SMSG_RAID_INSTANCE_INFO, 4);
 
-    uint32_t _counter = data.wpos();
+    auto _counter = data.wpos();
 
     data << counter;
     m_mapLock.Acquire();
-  
+
     for (uint32_t i = 0; i < MAX_NUM_MAPS; ++i)
     {
         if (m_instances[i] != nullptr)
