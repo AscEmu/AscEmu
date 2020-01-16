@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2019 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
 
 if(MSVC_VERSION VERSION_LESS 19.13) #2017 6
     message(FATAL_ERROR "AscEmu requires at least Visual Studio 2017 update 6")
