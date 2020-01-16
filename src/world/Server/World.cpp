@@ -782,7 +782,7 @@ bool World::setInitialWorldSettings()
 
     sChannelMgr.loadConfigSettings();
 
-    LogDetail("World : Starting CsBattlegroundManager...");
+    LogDetail("World : Starting BattlegroundManager...");
     sBattlegroundManager.initialize();
 
     dw = std::move(std::make_unique<DayWatcherThread>());
