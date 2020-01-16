@@ -70,15 +70,6 @@ class Aura;
 
 struct OnHitSpell;
 
-#pragma pack(push,1)
-struct ActionButton
-{
-    uint16 Action;
-    uint8 Type;
-    uint8 Misc;
-};
-#pragma pack(pop)
-
 struct CreateInfo_ItemStruct
 {
     uint32 protoid;
@@ -93,13 +84,26 @@ struct CreateInfo_SkillStruct
     uint32 maxval;
 };
 
+// APGL End
+// MIT Start
+#pragma pack(push,1)
+struct ActionButton
+{
+    uint32_t Action;
+    uint8_t Type;
+    uint8_t Misc;
+};
+#pragma pack(pop)
+
 struct CreateInfo_ActionBarStruct
 {
-    uint32 button;
-    uint32 action;
-    uint32 type;
-    uint32 misc;
+    uint8_t button;
+    uint32_t action;
+    uint8_t type;
+    uint8_t misc;
 };
+// MIT End
+// APGL Start
 
 struct PlayerCreateInfo
 {
@@ -351,48 +355,40 @@ typedef std::map<uint32, PlayerCooldown>            PlayerCooldownMap;
 // AGPL End
 
 // MIT Start
-#if VERSION_STRING >= Cata
 class TradeData
 {
-    void updateTrade(bool for_trader = true);
-
+private:
     Player* m_player;
     Player* m_tradeTarget;
     bool m_accepted;
-    bool m_acceptProccess;
     uint64_t m_money;
     uint32_t m_spell;
     uint64_t m_spellCastItem;
     uint64_t m_items[TRADE_SLOT_COUNT];
 
-    public:
+ public:
+    TradeData(Player* player, Player* trader);
 
-        TradeData(Player* player, Player* trader) : m_player(player), m_tradeTarget(trader), m_accepted(false), m_acceptProccess(false), m_money(0), m_spell(0) {}
+    Player* getTradeTarget() const;
+    TradeData* getTargetTradeData() const;
 
-        Player* getTradeTarget() const { return m_tradeTarget; }
-        TradeData* getTargetTradeData() const;
+    Item* getTradeItem(TradeSlots slot) const;
+    bool hasTradeItem(uint64_t itemGuid) const;
+    bool hasPlayerOrTraderItemInTrade(uint64_t itemGuid) const;
 
-        Item* getTradeItem(TradeSlots slot) const;
-        bool hasTradeItem(uint64 item_guid) const;
+    uint32_t getSpell() const;
+    Item* getSpellCastItem() const;
+    bool hasSpellCastItem() const;
 
-        uint32_t getSpell() const { return m_spell; }
-        Item* getSpellCastItem() const;
-        bool hasSpellCastItem() const { return !m_spellCastItem; }
+    uint64_t getTradeMoney() const;
+    void setTradeMoney(uint64_t money);
 
-        uint64_t getMoney() const { return m_money; }
+    void setTradeAccepted(bool state, bool sendBoth = false);
+    bool isTradeAccepted() const;
 
-        void setAccepted(bool state, bool send_both = false);
-        bool isAccepted() const { return m_accepted; }
-
-        void setInAcceptProcess(bool state) { m_acceptProccess = state; }
-        bool isInAcceptProcess() const { return m_acceptProccess; }
-
-        void setItem(TradeSlots slot, Item* item);
-        void setSpell(uint32_t spell_id, Item* cast_item = nullptr);
-        void setMoney(uint64_t money);
-
+    void setTradeItem(TradeSlots slot, Item* item);
+    void setTradeSpell(uint32_t spell_id, Item* cast_item = nullptr);
 };
-#endif
 
 struct PlayerCheat
 {
@@ -521,6 +517,47 @@ public:
     uint32_t getFreePrimaryProfessionPoints() const;
     void setFreePrimaryProfessionPoints(uint32_t points);
 
+    float getBlockPercentage() const;
+    void setBlockPercentage(float value);
+
+    float getDodgePercentage() const;
+    void setDodgePercentage(float value);
+
+    float getParryPercentage() const;
+    void setParryPercentage(float value);
+
+#if VERSION_STRING >= TBC
+    uint32_t getExpertise() const;
+    void setExpertise(uint32_t value);
+    void modExpertise(int32_t value);
+
+    uint32_t getOffHandExpertise() const;
+    void setOffHandExpertise(uint32_t value);
+    void modOffHandExpertise(int32_t value);
+#endif
+
+    float getMeleeCritPercentage() const;
+    void setMeleeCritPercentage(float value);
+
+    float getRangedCritPercentage() const;
+    void setRangedCritPercentage(float value);
+
+#if VERSION_STRING >= TBC
+    float getOffHandCritPercentage() const;
+    void setOffHandCritPercentage(float value);
+
+    float getSpellCritPercentage(uint8_t school) const;
+    void setSpellCritPercentage(uint8_t school, float value);
+
+    uint32_t getShieldBlock() const;
+    void setShieldBlock(uint32_t value);
+#endif
+
+#if VERSION_STRING >= WotLK
+    float getShieldBlockCritPercentage() const;
+    void setShieldBlockCritPercentage(float value);
+#endif
+
     void setExploredZone(uint32_t idx, uint32_t data);
 
     uint32_t getSelfResurrectSpell() const;
@@ -546,14 +583,30 @@ public:
 #endif
 
     uint32_t getModDamageDonePositive(uint16_t school) const;
-    void modModDamageDonePositive(uint16_t school, uint32_t value);
+    void setModDamageDonePositive(uint16_t school, uint32_t value);
+    void modModDamageDonePositive(uint16_t school, int32_t value);
 
     uint32_t getModDamageDoneNegative(uint16_t school) const;
-    void modModDamageDoneNegative(uint16_t school, uint32_t value);
+    void setModDamageDoneNegative(uint16_t school, uint32_t value);
+    void modModDamageDoneNegative(uint16_t school, int32_t value);
 
-#if VERSION_STRING > Classic
+    float getModDamageDonePct(uint8_t shool) const;
+    void setModDamageDonePct(float damagePct, uint8_t shool);
+
+#if VERSION_STRING >= TBC
     uint32_t getModHealingDone() const;
-    void modModHealingDone(uint32_t value);
+    void setModHealingDone(uint32_t value);
+    void modModHealingDone(int32_t value);
+
+    // Spell penetration?
+    uint32_t getModTargetResistance() const;
+    void setModTargetResistance(uint32_t value);
+    void modModTargetResistance(int32_t value);
+
+    // Armor penetration?
+    uint32_t getModTargetPhysicalResistance() const;
+    void setModTargetPhysicalResistance(uint32_t value);
+    void modModTargetPhysicalResistance(int32_t value);
 #endif
 
     // playerfieldbytes start
@@ -574,18 +627,9 @@ public:
     void setPlayerFieldBytes2(uint32_t bytes);
     // playerfieldbytes2 end
 
-    float getModDamageDonePct(uint8_t shool) const;
-    void setModDamageDonePct(float damagePct, uint8_t shool);
-
-#if VERSION_STRING > TBC
-    uint32_t getGlyph(uint16_t slot) const;
-    void setGlyph(uint16_t slot, uint32_t glyph);
-#endif
-
-#if VERSION_STRING > TBC
-    uint32_t getGlyphsEnabled() const;
-    void setGlyphsEnabled(uint32_t glyphs);
-#endif
+    uint32_t getCombatRating(uint8_t combatRating) const;
+    void setCombatRating(uint8_t combatRating, uint32_t value);
+    void modCombatRating(uint8_t combatRating, int32_t value);
 
 #if VERSION_STRING > Classic
 #if VERSION_STRING < Cata
@@ -598,6 +642,12 @@ public:
 #if VERSION_STRING >= WotLK
     uint32_t getNoReagentCost(uint8_t index) const;
     void setNoReagentCost(uint8_t index, uint32_t value);
+
+    uint32_t getGlyph(uint16_t slot) const;
+    void setGlyph(uint16_t slot, uint32_t glyph);
+
+    uint32_t getGlyphsEnabled() const;
+    void setGlyphsEnabled(uint32_t glyphs);
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -632,6 +682,8 @@ public:
 
     void setInitialDisplayIds(uint8_t gender, uint8_t race);
 
+    void applyLevelInfo(uint32_t newLevel);
+
     bool isTransferPending() const;
 
     virtual bool isClassMage();
@@ -662,6 +714,15 @@ public:
     void toggleDnd();
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Stats
+    // Initializes stats and unit/playerdata fields
+    void setInitialPlayerData();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Database stuff
+    bool loadSpells(QueryResult* result);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
     bool isSpellFitByClassAndRace(uint32_t spell_id);
     void updateAutoRepeatSpell();
@@ -681,7 +742,10 @@ public:
     void learnTalent(uint32_t talentId, uint32_t talentRank);
     void addTalent(SpellInfo const* sp);
     void removeTalent(uint32_t spellId, bool onSpecChange = false);
+    // Resets only current spec's talents
     void resetTalents();
+    // Resets talents for both specs
+    void resetAllTalents();
     void setTalentPoints(uint32_t talentPoints, bool forBothSpecs = true);
     void addTalentPoints(uint32_t talentPoints, bool forBothSpecs = true);
     void setInitialTalentPoints(bool talentsResetted = false);
@@ -696,24 +760,25 @@ private:
     uint32_t m_talentPointsFromQuests;
 
 public:
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Actionbar
+    void setActionButton(uint8_t button, uint32_t action, uint8_t type, uint8_t misc);
+    void sendActionBars(bool clearBars);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Auction
     void sendAuctionCommandResult(Auction* auction, uint32_t Action, uint32_t ErrorCode, uint32_t bidError = 0);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Trade
-#if VERSION_STRING >= Cata
 private:
-
     TradeData* m_TradeData;
 
 public:
+    Player* getTradeTarget() const;
+    TradeData* getTradeData() const;
+    void cancelTrade(bool sendToSelfAlso, bool silently = false);
 
-    Player* getTradeTarget() const { return m_TradeData ? m_TradeData->getTradeTarget() : nullptr; }
-    TradeData* getTradeData() const { return m_TradeData; }
-    void cancelTrade(bool sendback);
-
-#endif
     //////////////////////////////////////////////////////////////////////////////////////////
     // Messages
 public:
@@ -825,14 +890,6 @@ public:
         Player(uint32 guid);
         ~Player();
     PlayerCache* m_cache;
-
-        
-
-        void HandleUpdateFieldChanged(uint32 index)
-        {
-            if (index == PLAYER_FLAGS)
-                m_cache->SetUInt32Value(CACHE_PLAYER_FLAGS, getUInt32Value(PLAYER_FLAGS));
-        }
 
         void EventGroupFullUpdate();
 
@@ -1176,12 +1233,6 @@ public:
         void AddShapeShiftSpell(uint32 id);
         void RemoveShapeShiftSpell(uint32 id);
         /////////////////////////////////////////////////////////////////////////////////////////
-        // Actionbar
-        /////////////////////////////////////////////////////////////////////////////////////////
-        void setAction(uint8 button, uint16 action, uint8 type, uint8 misc);
-        void SendInitialActions();
-
-        /////////////////////////////////////////////////////////////////////////////////////////
         // Reputation
         /////////////////////////////////////////////////////////////////////////////////////////
         void ModStanding(uint32 Faction, int32 Value);
@@ -1275,21 +1326,6 @@ public:
         Player* DuelingWith;
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        // Trade
-        /////////////////////////////////////////////////////////////////////////////////////////
-#if VERSION_STRING < Cata
-        void SendTradeUpdate(void);
-        void ResetTradeVariables()
-        {
-            mTradeGold = 0;
-            memset(&mTradeItems, 0, sizeof(Item*) * 8);
-            mTradeStatus = 0;
-            mTradeTarget = 0;
-            m_tradeSequence = 2;
-        }
-#endif
-
-        /////////////////////////////////////////////////////////////////////////////////////////
         // Pets
         /////////////////////////////////////////////////////////////////////////////////////////
         void AddSummon(Pet* pet) { m_Summons.push_front(pet); }
@@ -1379,7 +1415,6 @@ public:
         bool LoadFromDB(uint32 guid);
         void LoadFromDBProc(QueryResultVector & results);
 
-        bool LoadSpells(QueryResult* result);
         bool SaveSpells(bool NewCharacter, QueryBuffer* buf);
 
         bool LoadDeletedSpells(QueryResult* result);
@@ -1530,7 +1565,6 @@ public:
         uint32 m_modblockvaluefromspells;
         void SendInitialLogonPackets();
         void Reset_Spells();
-        void Reset_AllTalents();
         // Battlegrounds xD
         CBattleground* m_bg;
         CBattleground* m_pendingBattleground;
@@ -1758,7 +1792,6 @@ public:
         std::set<Object*> m_visibleFarsightObjects;
         void EventTeleport(uint32 mapid, float x, float y, float z);
         void EventTeleportTaxi(uint32 mapid, float x, float y, float z);
-        void ApplyLevelInfo(LevelInfo* Info, uint32 Level);
         void BroadcastMessage(const char* Format, ...);
         std::map<uint32, std::set<uint32> > SummonSpells;
         std::map<uint32, std::map<SpellInfo const*, uint16>*> PetSpells;
@@ -1896,7 +1929,6 @@ public:
         uint32 OnlineTime;
         bool tutorialsDirty;
         LevelInfo* lvlinfo;
-        void CalculateBaseStats();
         uint32 load_health;
         uint32 load_mana;
         void CompleteLoading();
@@ -1926,13 +1958,6 @@ public:
         uint32 m_speedChangeCounter;
 
         void SendAreaTriggerMessage(const char* message, ...);
-
-        // Trade Target
-#if VERSION_STRING < Cata
-        Player* GetTradeTarget();
-
-        Item* getTradeItem(uint32 slot) {return mTradeItems[slot];};
-#endif
 
         // Water level related stuff (they are public because they need to be accessed fast)
         // Nose level of the character (needed for proper breathing)
@@ -2007,16 +2032,6 @@ public:
 
         // Water level related stuff
         void SetNoseLevel();
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Trade
-        /////////////////////////////////////////////////////////////////////////////////////////
-#if VERSION_STRING < Cata
-        Item* mTradeItems[8];
-        uint32 mTradeGold;
-        uint32 mTradeTarget;
-        uint32 mTradeStatus;
-#endif
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Player Class systems, info and misc things

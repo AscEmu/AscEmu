@@ -1595,8 +1595,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             if (spell_entry)
             {
                 Spell* spe = sSpellMgr.newSpell(plr, spell_entry, true, NULL);
-                SpellCastTargets tgt;
-                tgt.m_unitTarget = plr->getGuid();
+                SpellCastTargets tgt(plr->getGuid());
                 spe->prepare(&tgt);
             }
         }
@@ -1742,8 +1741,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             if (spell_entry)
             {
                 Spell* spe = sSpellMgr.newSpell(plr, spell_entry, true, NULL);
-                SpellCastTargets tgt;
-                tgt.m_unitTarget = plr->getGuid();
+                SpellCastTargets tgt(plr->getGuid());
                 spe->prepare(&tgt);
             }
         }

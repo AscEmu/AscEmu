@@ -192,6 +192,13 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         }
     }
 
+    // Trade check
+    if (_player->getItemInterface()->isItemInTradeWindow(tmpItem))
+    {
+        _player->getItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_ITEM_NOT_FOUND);
+        return;
+    }
+
     // Start quest
     if (itemProto->QuestId)
     {
@@ -249,7 +256,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     {
         if (itemProto->ForcedPetId == 0)
         {
-            if (targets.m_unitTarget != _player->getGuid())
+            if (targets.getUnitTarget() != _player->getGuid())
             {
                 _player->sendCastFailedPacket(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, srlPacket.castCount, 0);
                 return;
@@ -291,8 +298,8 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         uint8_t hasMovementData; // 1 or 0
         recvPacket >> projectilePitch >> projectileSpeed >> hasMovementData;
 
-        LocationVector const spellDestination = targets.destination();
-        LocationVector const spellSource = targets.source();
+        LocationVector const spellDestination = targets.getDestination();
+        LocationVector const spellSource = targets.getSource();
         float const deltaX = spellDestination.x - spellSource.y; // Calculate change of x position
         float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
 

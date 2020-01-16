@@ -1361,7 +1361,7 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
             {
                 uint32 pet_xp = (uint32)(CalculateXpToGive(pVictim, plr->GetSummon()) * xp_mod);   // vojta: this isn't blizzlike probably but i have no idea, feel free to correct it
                 if (pet_xp> 0)
-                    plr->GetSummon()->GiveXP(pet_xp);
+                    plr->GetSummon()->giveXp(pet_xp);
             }
         }
     }
@@ -3712,8 +3712,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     int32 val = parentproc->getEffectBasePoints(0) + 1;
                     Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, NULL);
                     spell->forced_basepoints[0] = (val * dmg) / 300; //per tick
-                    SpellCastTargets targets;
-                    targets.m_unitTarget = getGuid();
+                    SpellCastTargets targets(getGuid());
                     spell->prepare(&targets);
                     continue;
                 }
@@ -7082,18 +7081,18 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         vskill = static_cast<Player*>(pVictim)->_GetSkillLineCurrent(SKILL_DEFENSE);
         if (weapon_damage_type != RANGED && !backAttack)                // block chance
         {
-            block = pVictim->getFloatValue(PLAYER_BLOCK_PERCENTAGE);    //shield check already done in Update chances
+            block = static_cast<Player*>(pVictim)->getBlockPercentage(); //shield check already done in Update chances
 
             if (pVictim->m_stunned <= 0)                                // dodge chance
             {
-                dodge = pVictim->getFloatValue(PLAYER_DODGE_PERCENTAGE);
+                dodge = static_cast<Player*>(pVictim)->getDodgePercentage();
             }
 
             if (pVictim->can_parry && !pVictim->disarmed)               // parry chance
             {
                 if (static_cast<Player*>(pVictim)->HasSpell(3127) || static_cast<Player*>(pVictim)->HasSpell(18848))
                 {
-                    parry = pVictim->getFloatValue(PLAYER_PARRY_PERCENTAGE);
+                    parry = static_cast<Player*>(pVictim)->getParryPercentage();
                 }
             }
         }
@@ -7483,7 +7482,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
         }
 
         self_skill += pr->_GetSkillLineCurrent(SubClassSkill);
-        crit = getFloatValue(PLAYER_CRIT_PERCENTAGE);
+        crit = static_cast<Player*>(this)->getMeleeCritPercentage();
     }
     else
     {
@@ -7595,9 +7594,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
         float expertise_bonus = plr->CalcRating(PCR_EXPERTISE);
 #if VERSION_STRING != Classic
         if (weapon_damage_type == MELEE)
-            expertise_bonus += plr->getUInt32Value(PLAYER_EXPERTISE);
+            expertise_bonus += plr->getExpertise();
         else if (weapon_damage_type == OFFHAND)
-            expertise_bonus += plr->getUInt32Value(PLAYER_OFFHAND_EXPERTISE);
+            expertise_bonus += plr->getOffHandExpertise();
 #endif
 
         dodge -= expertise_bonus;
@@ -7969,7 +7968,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
                                 float block_multiplier = (100.0f + static_cast<Player*>(pVictim)->m_modblockabsorbvalue) / 100.0f;
                                 if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-                                blocked_damage = float2int32((shield->getItemProperties()->Block + ((static_cast<Player*>(pVictim)->m_modblockvaluefromspells + pVictim->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK))) + ((pVictim->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
+                                blocked_damage = float2int32((shield->getItemProperties()->Block + ((static_cast<Player*>(pVictim)->m_modblockvaluefromspells + static_cast<Player*>(pVictim)->getCombatRating(PCR_BLOCK))) + ((pVictim->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
 
                                 if (Rand(m_BlockModPct))
                                     blocked_damage *= 2;
@@ -8175,9 +8174,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
     {
         if (isPlayer() && static_cast<Player*>(this)->m_onStrikeSpells.size())
         {
-            SpellCastTargets targets;
-            targets.m_unitTarget = pVictim->getGuid();
-            targets.m_targetMask = TARGET_FLAG_UNIT;
+            SpellCastTargets targets(pVictim->getGuid());
             Spell* cspell;
 
             // Loop on hit spells, and strike with those.
@@ -13032,11 +13029,11 @@ void Unit::EventStunOrImmobilize(Unit* proc_target, bool is_victim)
         SpellCastTargets targets;
 
         if (spellInfo->getProcFlags() & PROC_TARGET_SELF)
-            targets.m_unitTarget = getGuid();
+            targets.setUnitTarget(getGuid());
         else if (proc_target)
-            targets.m_unitTarget = proc_target->getGuid();
+            targets.setUnitTarget(proc_target->getGuid());
         else
-            targets.m_unitTarget = getGuid();
+            targets.setUnitTarget(getGuid());
 
         spell->prepare(&targets);
     }
@@ -13073,11 +13070,11 @@ void Unit::EventChill(Unit* proc_target, bool is_victim)
         SpellCastTargets targets;
 
         if (spellInfo->getProcFlags() & PROC_TARGET_SELF)
-            targets.m_unitTarget = getGuid();
+            targets.setUnitTarget(getGuid());
         else if (proc_target)
-            targets.m_unitTarget = proc_target->getGuid();
+            targets.setUnitTarget(proc_target->getGuid());
         else
-            targets.m_unitTarget = getGuid();
+            targets.setUnitTarget(getGuid());
 
         spell->prepare(&targets);
     }
@@ -13483,7 +13480,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo const* spell)
     {
         if (isPlayer())
         {
-            CritChance = getFloatValue(PLAYER_RANGED_CRIT_PERCENTAGE);
+            CritChance = static_cast<Player*>(this)->getRangedCritPercentage();
             if (victim->isPlayer())
                 CritChance += static_cast<Player*>(victim)->res_R_crit_get();
 
@@ -13500,7 +13497,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo const* spell)
     {
         // Same shit with the melee spells, such as Judgment/Seal of Command
         if (isPlayer())
-            CritChance = getFloatValue(PLAYER_CRIT_PERCENTAGE);
+            CritChance = static_cast<Player*>(this)->getMeleeCritPercentage();
 
         if (victim->isPlayer())
         {
@@ -13762,8 +13759,7 @@ void Unit::CastOnMeleeSpell()
     const auto spellInfo = sSpellMgr.getSpellInfo(GetOnMeleeSpell());
     Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, NULL);
     spell->extra_cast_number = GetOnMeleeSpellEcn();
-    SpellCastTargets targets;
-    targets.m_unitTarget = getTargetGuid();
+    SpellCastTargets targets(getTargetGuid());
     spell->prepare(&targets);
     SetOnMeleeSpell(0);
 }

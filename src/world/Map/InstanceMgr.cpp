@@ -120,9 +120,9 @@ void InstanceMgr::loadAndApplySavedInstanceValues()
 
             const std::string npcString = result->Fetch()[4].GetString();
             auto npcStrings = Util::SplitStringBySeperator(npcString, " ");
-            for (const auto npcString : npcStrings)
+            for (const auto str : npcStrings)
             {
-                if (uint32_t val = atol(npcString.c_str()))
+                if (uint32_t val = atol(str.c_str()))
                     instance->m_killedNpcs.insert(val);
             }
 

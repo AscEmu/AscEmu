@@ -1806,8 +1806,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                                 {
                                     SpellInfo const* info = sSpellMgr.getSpellInfo(CREATURE_SPELL_TO_DAZE);
                                     Spell* sp = sSpellMgr.newSpell(m_Unit, info, false, NULL);
-                                    SpellCastTargets targets;
-                                    targets.m_unitTarget = getNextTarget()->getGuid();
+                                    SpellCastTargets targets(getNextTarget()->getGuid());
                                     sp->prepare(&targets);
                                 }
                             }
@@ -1861,8 +1860,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                             if (info)
                             {
                                 Spell* sp = sSpellMgr.newSpell(m_Unit, info, false, NULL);
-                                SpellCastTargets targets;
-                                targets.m_unitTarget = getNextTarget()->getGuid();
+                                SpellCastTargets targets(getNextTarget()->getGuid());
                                 sp->prepare(&targets);
                                 //Lets make spell handle this
                                 //m_Unit->Strike(GetNextTarget(), (agent == AGENT_MELEE ? MELEE : RANGED), NULL, 0, 0, 0);
@@ -1924,12 +1922,12 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                         }
                         case TTYPE_SOURCE:
                         {
-                            m_Unit->castSpellLoc(targets.source(), spellInfo, true);
+                            m_Unit->castSpellLoc(targets.getSource(), spellInfo, true);
                             break;
                         }
                         case TTYPE_DESTINATION:
                         {
-                            m_Unit->castSpellLoc(targets.destination(), spellInfo, true);
+                            m_Unit->castSpellLoc(targets.getDestination(), spellInfo, true);
                             break;
                         }
                         default:
@@ -3049,7 +3047,7 @@ void AIInterface::CastSpell(Unit* caster, SpellInfo const* spellInfo, SpellCastT
     setAiState(AI_STATE_CASTING);
 #ifdef _AI_DEBUG
     LOG_DEBUG("AI DEBUG: Unit %u casting spell %s on target " I64FMT " ", caster->getEntry(),
-              sSpellStore.LookupString(spellInfo->Name), targets.m_unitTarget);
+              sSpellStore.LookupString(spellInfo->Name), targets.getUnitTarget());
 #endif
 
     //i wonder if this will lead to a memory leak :S
@@ -3073,22 +3071,23 @@ SpellInfo const* AIInterface::getSpellEntry(uint32 spellId)
 SpellCastTargets AIInterface::setSpellTargets(SpellInfo const* /*spellInfo*/, Unit* target) const
 {
     SpellCastTargets targets;
-    targets.m_unitTarget = target ? target->getGuid() : 0;
-    targets.m_itemTarget = 0;
+    targets.setGameObjectTarget(0);
+    targets.setUnitTarget(target ? target->getGuid() : 0);
+    targets.setItemTarget(0);
     targets.setSource(m_Unit->GetPosition());
     targets.setDestination(m_Unit->GetPosition());
 
     if (m_nextSpell && m_nextSpell->spelltargetType == TTYPE_SINGLETARGET)
     {
-        targets.m_targetMask = TARGET_FLAG_UNIT;
+        targets.setTargetMask(TARGET_FLAG_UNIT);
     }
     else if (m_nextSpell && m_nextSpell->spelltargetType == TTYPE_SOURCE)
     {
-        targets.m_targetMask = TARGET_FLAG_SOURCE_LOCATION;
+        targets.setTargetMask(TARGET_FLAG_SOURCE_LOCATION);
     }
     else if (m_nextSpell && m_nextSpell->spelltargetType == TTYPE_DESTINATION)
     {
-        targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
+        targets.setTargetMask(TARGET_FLAG_DEST_LOCATION);
         if (target)
         {
             targets.setDestination(target->GetPosition());
@@ -3096,8 +3095,8 @@ SpellCastTargets AIInterface::setSpellTargets(SpellInfo const* /*spellInfo*/, Un
     }
     else if (m_nextSpell && m_nextSpell->spelltargetType == TTYPE_CASTER)
     {
-        targets.m_targetMask = TARGET_FLAG_UNIT;
-        targets.m_unitTarget = m_Unit->getGuid();
+        targets.setTargetMask(TARGET_FLAG_UNIT);
+        targets.setUnitTarget(m_Unit->getGuid());
     }
 
     return targets;
@@ -3919,8 +3918,8 @@ void AIInterface::_UpdateTotem(uint32 p_time)
             //something happened to our target, pick another one
             SpellCastTargets targets(0);
             pSpell->GenerateTargets(&targets);
-            if (targets.m_targetMask & TARGET_FLAG_UNIT)
-                setNextTarget(targets.m_unitTarget);
+            if (targets.getTargetMask() & TARGET_FLAG_UNIT)
+                setNextTarget(targets.getUnitTarget());
         }
         nextTarget = getNextTarget();
         if (nextTarget)

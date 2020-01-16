@@ -445,17 +445,6 @@ public:
 
         void SetText(std::string &textString){ this->text = textString; }
         const std::string& GetText() const{ return this->text; }
-#if VERSION_STRING >= Cata
-    protected:
-
-        bool m_isInTrade;
-
-    public:
-
-        void setIsInTrade(bool inTrade = true) { m_isInTrade = inTrade; }
-        bool isInTrade() const { return m_isInTrade; }
-
-#endif
 
     protected:
 

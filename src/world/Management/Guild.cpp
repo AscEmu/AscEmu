@@ -446,9 +446,9 @@ void Guild::handleQuery(WorldSession* session)
     //LogDebugFlag(LF_OPCODE, "SMSG_GUILD_QUERY_RESPONSE %s", session->GetPlayer()->getName().c_str());
 }
 
+#if VERSION_STRING >= Cata
 void Guild::sendGuildRankInfo(WorldSession* session) const
 {
-#if VERSION_STRING >= Cata
     ByteBuffer rankData(100);
     WorldPacket data(SMSG_GUILD_RANK, 100);
 
@@ -488,8 +488,8 @@ void Guild::sendGuildRankInfo(WorldSession* session) const
     session->SendPacket(&data);
 
     LogDebugFlag(LF_OPCODE, "SMSG_GUILD_RANK %s", session->GetPlayer()->getName().c_str());
-#endif
 }
+#endif
 
 void Guild::handleSetMOTD(WorldSession* session, std::string const& motd)
 {
@@ -773,7 +773,11 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
     }
 }
 
+#if VERSION_STRING >= Cata
 void Guild::handleSetMemberRank(WorldSession* session, uint64_t targetGuid, uint64_t setterGuid, uint32_t rank)
+#else
+void Guild::handleSetMemberRank(WorldSession* session, uint64_t targetGuid, uint64_t /*setterGuid*/, uint32_t rank)
+#endif
 {
     Player* player = session->GetPlayer();
     if (player == nullptr)
@@ -804,7 +808,9 @@ void Guild::handleSetMemberRank(WorldSession* session, uint64_t targetGuid, uint
         return;
     }
 
+#if VERSION_STRING >= Cata
     sendGuildRanksUpdate(setterGuid, targetGuid, rank);
+#endif
 }
 
 void Guild::handleAddNewRank(WorldSession* session, std::string const& name)
@@ -934,9 +940,9 @@ void Guild::sendEventLog(WorldSession* session) const
     LogDebugFlag(LF_OPCODE, "SMSG_GUILD_EVENT_LOG_QUERY_RESULT %s", session->GetPlayer()->getName().c_str());
 }
 
+#if VERSION_STRING >= Cata
 void Guild::sendNewsUpdate(WorldSession* session)
 {
-#if VERSION_STRING >= Cata
     uint32_t size = mNewsLog->getSize();
     GuildLog* logs = mNewsLog->getGuildLog();
 
@@ -991,8 +997,8 @@ void Guild::sendNewsUpdate(WorldSession* session)
     session->SendPacket(&data);
 
     LogDebugFlag(LF_OPCODE, "SMSG_GUILD_NEWS_UPDATE %s", session->GetPlayer()->getName().c_str());
-#endif
 }
+#endif
 
 void Guild::sendBankLog(WorldSession* session, uint8_t tabId) const
 {
@@ -1855,9 +1861,9 @@ void Guild::broadcastEvent(GuildEvents guildEvent, uint64_t guid, std::vector<st
     LogDebugFlag(LF_OPCODE, "SMSG_GUILD_EVENT: %s (%u)", _GetGuildEventString(guildEvent).c_str(), guildEvent);
 }
 
-void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent, bool withTabInfo) const
-{
 #if VERSION_STRING < Cata
+void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool /*withContent*/, bool /*withTabInfo*/) const
+{
     bool sendAllSlots = true;
 
     WorldPacket data(SMSG_GUILD_BANK_LIST, 500);
@@ -1910,6 +1916,8 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
         }
     }
 #else
+void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent, bool withTabInfo) const
+{
     GuildMember const* member = getMember(session->GetPlayer()->getGuid());
     if (member == nullptr)
         return;
@@ -2009,9 +2017,9 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
 #endif
 }
 
+#if VERSION_STRING >= Cata
 void Guild::sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint32_t rank)
 {
-#if VERSION_STRING >= Cata
     ObjectGuid tarGuid = targetGuid;
     ObjectGuid setGuid = setterGuid;
 
@@ -2080,12 +2088,10 @@ void Guild::sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint3
 
     LogDebugFlag(LF_OPCODE, "SMSG_GUILD_RANKS_UPDATE target: %u, issuer: %u, rankId: %u",
         WoWGuid::getGuidLowPartFromUInt64(targetGuid), WoWGuid::getGuidLowPartFromUInt64(setterGuid), rank);
-#endif
 }
 
 void Guild::giveXP(uint32_t xp, Player* source)
 {
-#if VERSION_STRING >= Cata
     if (worldConfig.guild.levelingEnabled == false)
         return;
 
@@ -2139,12 +2145,10 @@ void Guild::giveXP(uint32_t xp, Player* source)
         addGuildNews(GN_LEVEL_UP, 0, 0, m_level);
         ++oldLevel;
     }
-#endif
 }
 
 void Guild::sendGuildXP(WorldSession* session) const
 {
-#if VERSION_STRING >= Cata
     WorldPacket data(SMSG_GUILD_XP, 40);
     data << uint64_t(/*member ? member->getTotalActivity() :*/ 0);
     data << uint64_t(sGuildMgr.getXPForGuildLevel(getLevel()) - getExperience());
@@ -2153,12 +2157,10 @@ void Guild::sendGuildXP(WorldSession* session) const
     data << uint64_t(getExperience());
 
     session->SendPacket(&data);
-#endif
 }
 
 void Guild::sendGuildReputationWeeklyCap(WorldSession* session, uint32_t reputation) const
 {
-#if VERSION_STRING >= Cata
     uint32_t cap = worldConfig.guild.maxRepPerWeek - reputation;
 
     WorldPacket data(SMSG_GUILD_REPUTATION_WEEKLY_CAP, 4);
@@ -2166,12 +2168,10 @@ void Guild::sendGuildReputationWeeklyCap(WorldSession* session, uint32_t reputat
     session->SendPacket(&data);
 
     LogDebugFlag(LF_OPCODE, "SMSG_GUILD_REPUTATION_WEEKLY_CAP %s: Left: %u", session->GetPlayer()->getName().c_str(), cap);
-#endif
 }
 
 void Guild::resetTimes(bool weekly)
 {
-#if VERSION_STRING >= Cata
     m_todayExperience = 0;
     for (GuildMembersStore::const_iterator itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
     {
@@ -2182,12 +2182,10 @@ void Guild::resetTimes(bool weekly)
             player->GetSession()->SendPacket(&data);
         }
     }
-#endif
 }
 
 void Guild::addGuildNews(uint8_t type, uint64_t guid, uint32_t flags, uint32_t value)
 {
-#if VERSION_STRING >= Cata
     uint32_t lowGuid = WoWGuid::getGuidLowPartFromUInt64(guid);
     GuildNewsLogEntry* news = new GuildNewsLogEntry(m_id, mNewsLog->getNextGUID(), GuildNews(type), lowGuid, flags, value);
 
@@ -2199,17 +2197,17 @@ void Guild::addGuildNews(uint8_t type, uint64_t guid, uint32_t flags, uint32_t v
     news->writeGuildLogPacket(data, buffer);
 
     broadcastPacket(&data);
-#endif
 }
+#endif
 
 bool Guild::hasAchieved(uint32_t /*achievementId*/) const
 {
     return false;
 }
 
+#if VERSION_STRING >= Cata
 void Guild::handleNewsSetSticky(WorldSession* session, uint32_t newsId, bool sticky)
 {
-#if VERSION_STRING >= Cata
     GuildLog* logs = mNewsLog->getGuildLog();
     GuildLog::iterator itr = logs->begin();
     while (itr != logs->end() && (*itr)->getGUID() != newsId)
@@ -2232,12 +2230,10 @@ void Guild::handleNewsSetSticky(WorldSession* session, uint32_t newsId, bool sti
     news->writeGuildLogPacket(data, buffer);
 
     session->SendPacket(&data);
-#endif
 }
 
 void Guild::handleGuildRequestChallengeUpdate(WorldSession* session)
 {
-#if VERSION_STRING >= Cata
     WorldPacket data(SMSG_GUILD_CHALLENGE_UPDATED, 4 * 4 * 5);
 
     for (int i = 0; i < 4; ++i)
@@ -2256,8 +2252,8 @@ void Guild::handleGuildRequestChallengeUpdate(WorldSession* session)
         data << uint32_t(0);
 
     session->SendPacket(&data);
-#endif
 }
+#endif
 
 void Guild::sendTurnInPetitionResult(WorldSession* pClient, uint32_t result)
 {

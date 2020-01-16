@@ -134,15 +134,18 @@ class SERVER_DECL Pet : public Creature
     friend class WorldSession;
 
     // MIT START
-
+public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Owner
+    Player* getPlayerOwner() override;
+
 protected:
     Player* m_Owner;
 
 public:
-
-    Player* getPlayerOwner() override;
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc
+    void giveXp(uint32_t xp);
 
     // MIT END
 
@@ -203,7 +206,6 @@ public:
         void Despawn(uint32 delay, uint32 respawntime);
 
         bool CanGainXP();
-        void GiveXP(uint32 xp);
         uint32 GetNextLevelXP(uint32 currentlevel);
         void ApplyStatsForLevel();
         void ApplySummonLevelAbilities();

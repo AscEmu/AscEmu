@@ -1183,11 +1183,11 @@ void Spell::castMe(bool check)
             if (TargetType & SPELL_TARGET_AREA_CURTARGET)
             {
                 //this just forces dest as the targets location :P
-                Object* target = m_caster->GetMapMgr()->_GetObject(m_targets.m_unitTarget);
+                Object* target = m_caster->GetMapMgr()->_GetObject(m_targets.getUnitTarget());
 
                 if (target != nullptr)
                 {
-                    m_targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
+                    m_targets.setTargetMask(TARGET_FLAG_DEST_LOCATION);
                     m_targets.setDestination(target->GetPosition());
                 }
             }
@@ -1472,7 +1472,7 @@ void Spell::castMe(bool check)
         /*SpellExtraInfo* sp = sObjectMgr.GetSpellExtraData(GetProto()->getId());
         if (sp)
         {
-        Unit* Target = sObjectMgr.GetUnit(m_targets.m_unitTarget);
+        Unit* Target = sObjectMgr.GetUnit(m_targets.getUnitTarget());
         if (Target)
         Target->RemoveBySpecialType(sp->specialtype, p_caster->getGuid());
         }*/
@@ -1515,14 +1515,14 @@ void Spell::castMe(bool check)
                     if (p_caster != nullptr)
                     {
                         //Use channel interrupt flags here
-                        if (m_targets.m_targetMask == TARGET_FLAG_DEST_LOCATION || m_targets.m_targetMask == TARGET_FLAG_SOURCE_LOCATION)
+                        if (m_targets.getTargetMask() == TARGET_FLAG_DEST_LOCATION || m_targets.getTargetMask() == TARGET_FLAG_SOURCE_LOCATION)
                             u_caster->setChannelObjectGuid(p_caster->GetSelection());
                         else if (p_caster->GetSelection() == m_caster->getGuid())
                         {
                             if (p_caster->GetSummon())
                                 u_caster->setChannelObjectGuid(p_caster->GetSummon()->getGuid());
-                            else if (m_targets.m_unitTarget)
-                                u_caster->setChannelObjectGuid(m_targets.m_unitTarget);
+                            else if (m_targets.getUnitTarget())
+                                u_caster->setChannelObjectGuid(m_targets.getUnitTarget());
                             else
                                 u_caster->setChannelObjectGuid(p_caster->GetSelection());
                         }
@@ -1532,8 +1532,8 @@ void Spell::castMe(bool check)
                                 u_caster->setChannelObjectGuid(p_caster->GetSelection());
                             else if (p_caster->GetSummon())
                                 u_caster->setChannelObjectGuid(p_caster->GetSummon()->getGuid());
-                            else if (m_targets.m_unitTarget)
-                                u_caster->setChannelObjectGuid(m_targets.m_unitTarget);
+                            else if (m_targets.getUnitTarget())
+                                u_caster->setChannelObjectGuid(m_targets.getUnitTarget());
                             else
                             {
                                 m_isCasting = false;
@@ -2538,7 +2538,7 @@ void Spell::SendSpellGo()
     }
 
 
-    if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
+    if (m_targets.hasDestination())
         data << uint8(0);   //some spells require this ? not sure if it is last byte or before that.
 #endif
 
@@ -2547,7 +2547,7 @@ void Spell::SendSpellGo()
     // spell log execute is still send 2.08
     // as I see with this combination, need to test it more
     //if (flags != 0x120 && GetProto()->Attributes & 16) // not ranged and flag 5
-    //SendLogExecute(0,m_targets.m_unitTarget);
+    //SendLogExecute(0,m_targets.getUnitTarget());
 }
 
 void Spell::writeSpellGoTargets(WorldPacket* data)
@@ -2930,19 +2930,13 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 
         if (p_caster != nullptr)
         {
-            if (m_targets.m_targetMask & TARGET_FLAG_ITEM)
-                itemTarget = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
-            if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+            if (m_targets.getTargetMask() & TARGET_FLAG_ITEM)
+                itemTarget = p_caster->getItemInterface()->GetItemByGUID(m_targets.getItemTarget());
+            if (m_targets.isTradeItem())
             {
-#if VERSION_STRING >= Cata
                 Player* p_trader = p_caster->getTradeTarget();
                 if (p_trader != nullptr)
-                    itemTarget = p_trader->getTradeData()->getTradeItem((TradeSlots)m_targets.m_itemTarget);
-#else
-                Player* p_trader = p_caster->GetTradeTarget();
-                if (p_trader != NULL)
-                    itemTarget = p_trader->getTradeItem((uint32)m_targets.m_itemTarget);
-#endif
+                    itemTarget = p_trader->getTradeData()->getTradeItem((TradeSlots)m_targets.getItemTarget());
             }
         }
     }
@@ -2963,19 +2957,13 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
             gameObjTarget = nullptr;
             corpseTarget = nullptr;
         }
-        else if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+        else if (m_targets.isTradeItem())
         {
             if (p_caster != nullptr)
             {
-#if VERSION_STRING >= Cata
                 Player* plr = p_caster->getTradeTarget();
                 if (plr != nullptr)
                     itemTarget = plr->getTradeData()->getTradeItem((TradeSlots)guid);
-#else
-                Player* plr = p_caster->GetTradeTarget();
-                if (plr)
-                    itemTarget = plr->getTradeItem((uint32)guid);
-#endif
             }
         }
         else
@@ -3426,9 +3414,9 @@ WPARCEMU_ASSERT(  spell);
 
 SpellCastTargets targets;
 if (TriggerSpellTarget)
-targets.m_unitTarget = TriggerSpellTarget;
+targets.getUnitTarget() = TriggerSpellTarget;
 else
-targets.m_unitTarget = m_targets.m_unitTarget;
+targets.getUnitTarget() = m_targets.getUnitTarget();
 
 spell->prepare(&targets);
 }
@@ -3622,7 +3610,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
      */
     if (m_caster && m_caster->IsInWorld())
     {
-        Unit* target = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
+        Unit* target = m_caster->GetMapMgr()->GetUnit(m_targets.getUnitTarget());
 
         /**
          * Check for valid targets
@@ -3742,48 +3730,11 @@ uint8 Spell::CanCast(bool /*tolerate*/)
     }
 
     /**
-    * Targeted Item Checks
-    */
-    if (p_caster && m_targets.m_itemTarget)
-    {
-        Item* i_target = nullptr;
-
-        // check if the targeted item is in the trade box
-        if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
-        {
-            switch (getSpellInfo()->getEffect(0))
-            {
-                // only lockpicking and enchanting can target items in the trade box
-                case SPELL_EFFECT_OPEN_LOCK:
-                case SPELL_EFFECT_ENCHANT_ITEM:
-                case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY:
-                {
-                    // get the player we are trading with
-#if VERSION_STRING >= Cata
-                    Player* t_player = p_caster->getTradeTarget();
-                    if (t_player != nullptr)
-                        i_target = t_player->getTradeData()->getTradeItem((TradeSlots)m_targets.m_itemTarget);
-#else
-                    Player* t_player = p_caster->GetTradeTarget();
-                    if (t_player)
-                        i_target = t_player->getTradeItem((uint32)m_targets.m_itemTarget);
-#endif
-                }
-            }
-        }
-        // targeted item is not in a trade box, so get our own item
-        else
-        {
-            i_target = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
-        }
-    } // end targeted item
-
-    /**
      * Targeted Unit Checks
      */
-    if (m_targets.m_unitTarget)
+    if (m_targets.getUnitTarget())
     {
-        Unit* target = (m_caster->IsInWorld()) ? m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget) : NULL;
+        Unit* target = (m_caster->IsInWorld()) ? m_caster->GetMapMgr()->GetUnit(m_targets.getUnitTarget()) : NULL;
 
         if (target)
         {
@@ -5657,8 +5608,7 @@ bool Spell::Reflect(Unit* refunit)
 
     Spell* spell = sSpellMgr.newSpell(refunit, refspell, true, nullptr);
     spell->SetReflected();
-    SpellCastTargets targets;
-    targets.m_unitTarget = m_caster->getGuid();
+    SpellCastTargets targets(m_caster->getGuid());
     spell->prepare(&targets);
 
     return true;
@@ -5764,9 +5714,9 @@ void Spell::HandleCastEffects(uint64 guid, uint32 i)
     {
         float destx, desty, destz, dist = 0;
 
-        if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
+        if (m_targets.hasDestination())
         {
-            auto destination = m_targets.destination();
+            auto destination = m_targets.getDestination();
             destx = destination.x;
             desty = destination.y;
             destz = destination.z;
@@ -5835,9 +5785,9 @@ void Spell::HandleModeratedTarget(uint64 guid)
     {
         float destx, desty, destz, dist = 0;
 
-        if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
+        if (m_targets.hasDestination())
         {
-            auto destination = m_targets.destination();
+            auto destination = m_targets.getDestination();
             destx = destination.x;
             desty = destination.y;
             destz = destination.z;
@@ -5918,9 +5868,9 @@ void Spell::SpellEffectJumpTarget(uint8_t effectIndex)
     float z = 0;
     float o = 0;
 
-    if (m_targets.m_targetMask & TARGET_FLAG_UNIT)
+    if (m_targets.getTargetMask() & TARGET_FLAG_UNIT)
     {
-        Object* uobj = m_caster->GetMapMgr()->_GetObject(m_targets.m_unitTarget);
+        Object* uobj = m_caster->GetMapMgr()->_GetObject(m_targets.getUnitTarget());
 
         if (uobj == nullptr || !uobj->isCreatureOrPlayer())
         {
@@ -5952,14 +5902,14 @@ void Spell::SpellEffectJumpTarget(uint8_t effectIndex)
         //this can also jump to a point
         if (m_targets.hasSource())
         {
-            auto source = m_targets.source();
+            auto source = m_targets.getSource();
             x = source.x;
             y = source.y;
             z = source.z;
         }
         if (m_targets.hasDestination())
         {
-            auto destination = m_targets.destination();
+            auto destination = m_targets.getDestination();
             x = destination.x;
             y = destination.y;
             z = destination.z;
@@ -5985,9 +5935,9 @@ void Spell::SpellEffectJumpBehindTarget(uint8_t /*i*/)
 {
     if (u_caster == nullptr)
         return;
-    if (m_targets.m_targetMask & TARGET_FLAG_UNIT)
+    if (m_targets.getTargetMask() & TARGET_FLAG_UNIT)
     {
-        Object* uobj = m_caster->GetMapMgr()->_GetObject(m_targets.m_unitTarget);
+        Object* uobj = m_caster->GetMapMgr()->_GetObject(m_targets.getUnitTarget());
 
         if (uobj == nullptr || !uobj->isCreatureOrPlayer())
             return;
@@ -6002,24 +5952,24 @@ void Spell::SpellEffectJumpBehindTarget(uint8_t /*i*/)
         if (u_caster->GetAIInterface() != nullptr)
             u_caster->GetAIInterface()->splineMoveJump(x, y, z, o);
     }
-    else if (m_targets.m_targetMask & (TARGET_FLAG_SOURCE_LOCATION | TARGET_FLAG_DEST_LOCATION))
+    else if (m_targets.getTargetMask() & (TARGET_FLAG_SOURCE_LOCATION | TARGET_FLAG_DEST_LOCATION))
     {
         float x = 0.0f;
         float y = 0.0f;
         float z = 0.0f;
 
         //this can also jump to a point
-        if (m_targets.m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
+        if (m_targets.hasSource())
         {
-            auto source = m_targets.source();
+            auto source = m_targets.getSource();
             x = source.x;
             y = source.y;
             z = source.z;
         }
 
-        if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
+        if (m_targets.hasDestination())
         {
-            auto destination = m_targets.destination();
+            auto destination = m_targets.getDestination();
             x = destination.x;
             y = destination.y;
             z = destination.z;
@@ -6057,6 +6007,6 @@ void Spell::HandleTargetNoObject()
         newz = m_caster->GetPositionZ();
     }
 
-    m_targets.m_targetMask |= TARGET_FLAG_DEST_LOCATION;
+    m_targets.addTargetMask(TARGET_FLAG_DEST_LOCATION);
     m_targets.setDestination(LocationVector(newx, newy, newz));
 }

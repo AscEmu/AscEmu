@@ -375,7 +375,7 @@ public:
         {
             if (m_caster != NULL && m_caster->IsInWorld())
             {
-                Unit* target = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
+                Unit* target = m_caster->GetMapMgr()->GetUnit(m_targets.getUnitTarget());
 
                 if (target == NULL || !(isAttackable(m_caster, target, false) || target->getRace() == RACE_UNDEAD))
                     result = SPELL_FAILED_BAD_TARGETS;

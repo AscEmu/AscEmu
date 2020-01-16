@@ -30,9 +30,9 @@ void GuildEventLogEntry::saveGuildLogToDB() const
         mGuildId, mGuid, uint8_t(mEventType), mPlayerGuid1, mPlayerGuid2, (uint32_t)mNewRank, mTimestamp);
 }
 
+#if VERSION_STRING >= Cata
 void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const
 {
-#if VERSION_STRING >= Cata
     ObjectGuid guid1 = MAKE_NEW_GUID(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
     ObjectGuid guid2 = MAKE_NEW_GUID(mPlayerGuid2, 0, HIGHGUID_TYPE_PLAYER);
 
@@ -79,6 +79,8 @@ void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& cont
     content.WriteByteSeq(guid1[6]);
     content.WriteByteSeq(guid1[1]);
 #else
+void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& /*content*/) const
+{
     data << uint8(mEventType);
     data << MAKE_NEW_GUID(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
 

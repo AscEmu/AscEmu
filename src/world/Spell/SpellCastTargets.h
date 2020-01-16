@@ -14,38 +14,50 @@ This file is released under the MIT license. See README-MIT for more information
 
 class SpellCastTargets
 {
+private:
+    uint32_t m_targetMask = 0;
+
+    uint64_t m_gameObjectTarget = 0;
+    uint64_t m_unitTarget = 0;
+    uint64_t m_itemTarget = 0;
+    // todo: transporter guids on source/destination
+    uint64_t unkuint64_1 = 0;
+    uint64_t unkuint64_2 = 0;
+
     LocationVector m_source = LocationVector();
     LocationVector m_destination = LocationVector();
 
-    void reset();
-public:
-    uint16_t m_targetMask = 0;
-    uint16_t m_targetMaskExtended = 0;
-    uint64_t m_unitTarget = 0;
-    uint64_t m_itemTarget = 0;
-
-    uint64_t unkuint64_1 = 0;
-    uint64_t unkuint64_2 = 0;
     std::string m_strTarget = std::string();
 
-    void read(WorldPacket & data, uint64 caster);
-    void write(WorldPacket & data) const;
+    void reset();
 
-    LocationVector source() const;
-    LocationVector destination() const;
-
-    void setSource(LocationVector source);
-    void setDestination(LocationVector destination);
-
-    SpellCastTargets();
-    SpellCastTargets(uint16_t TargetMask, uint64_t unitTarget, uint64_t itemTarget, LocationVector source, LocationVector destination);
+public:
+    SpellCastTargets() = default;
     SpellCastTargets(uint64_t unitTarget);
     SpellCastTargets(WorldPacket& data, uint64_t caster);
     SpellCastTargets& operator=(const SpellCastTargets& target);
     ~SpellCastTargets();
 
-    uint32 GetTargetMask() const;
-    bool hasSource() const;
+    void read(WorldPacket& data, uint64_t caster);
+    void write(WorldPacket& data) const;
 
+    bool hasSource() const;
     bool hasDestination() const;
+    bool isTradeItem() const;
+
+    uint32_t getTargetMask() const;
+    void setTargetMask(uint32_t mask);
+    void addTargetMask(uint32_t mask);
+
+    uint64_t getGameObjectTarget() const;
+    uint64_t getUnitTarget() const;
+    uint64_t getItemTarget() const;
+    LocationVector getSource() const;
+    LocationVector getDestination() const;
+
+    void setGameObjectTarget(uint64_t guid);
+    void setUnitTarget(uint64_t guid);
+    void setItemTarget(uint64_t guid);
+    void setSource(LocationVector source);
+    void setDestination(LocationVector destination);
 };

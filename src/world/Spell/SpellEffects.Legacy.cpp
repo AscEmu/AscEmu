@@ -932,9 +932,9 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
 #if VERSION_STRING != Classic
                     Item* it = static_cast<Item*>(p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND));
                     if (it && it->getItemProperties() && it->getItemProperties()->InventoryType == INVTYPE_SHIELD)
-                        dmg = float2int32(1.3f * p_caster->getUInt32Value(PLAYER_SHIELD_BLOCK));
+                        dmg = float2int32(1.3f * p_caster->getShieldBlock());
 #else
-                    dmg += float2int32(1.30f * p_caster->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + getSpellInfo()->getEffectBasePoints(0));
+                    dmg += float2int32(1.30f * p_caster->getCombatRating(PCR_BLOCK) + getSpellInfo()->getEffectBasePoints(0));
 #endif
                 }
             } break;
@@ -998,7 +998,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                         float block_multiplier = (100.0f + p_caster->m_modblockabsorbvalue) / 100.0f;
                         if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-                        int32 blockable_damage = float2int32((it->getItemProperties()->Block + p_caster->m_modblockvaluefromspells + p_caster->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + ((p_caster->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
+                        int32 blockable_damage = float2int32((it->getItemProperties()->Block + p_caster->m_modblockvaluefromspells + p_caster->getCombatRating(PCR_BLOCK) + ((p_caster->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
 
                         /*
                         3.2.0:
@@ -1492,7 +1492,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
         if (unitTarget == m_caster)
         {
             /* try to get a selection */
-            unitTarget = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
+            unitTarget = m_caster->GetMapMgr()->GetUnit(m_targets.getUnitTarget());
             if ((!unitTarget) || !isAttackable(p_caster, unitTarget, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)) || (unitTarget->CalcDistance(p_caster) > 28.0f))
             {
                 return;
@@ -2799,7 +2799,7 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
         return;
     }
 
-    switch (m_targets.m_targetMask)
+    switch (m_targets.getTargetMask())
     {
         case TARGET_FLAG_SELF:
         {
@@ -2833,13 +2833,13 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
         break;
         case TARGET_FLAG_SOURCE_LOCATION:
         {
-            auto source = m_targets.source();
+            auto source = m_targets.getSource();
             dynObj->Create(u_caster, this, source.x, source.y, source.z, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         case TARGET_FLAG_DEST_LOCATION:
         {
-            auto destination = m_targets.destination();
+            auto destination = m_targets.getDestination();
             if (u_caster != nullptr)
                 dynObj->Create(u_caster, this, destination.x, destination.y, destination.z, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
             else if (g_caster != nullptr)
@@ -2884,8 +2884,8 @@ void Spell::SpellEffectSummon(uint8_t effectIndex)
 
     LocationVector v(0.0f, 0.0f, 0.0f, 0.0f);
 
-    if ((m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION) != 0)
-        v = m_targets.destination();
+    if ((m_targets.hasDestination()) != 0)
+        v = m_targets.getDestination();
     else
         v = m_caster->GetPosition();
 
@@ -2989,9 +2989,9 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
         return;
     }
     float x, y, z;
-    if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION && m_targets.destination().isSet())
+    if (m_targets.hasDestination() && m_targets.getDestination().isSet())
     {
-        auto destination = m_targets.destination();
+        auto destination = m_targets.getDestination();
         x = destination.x;
         y = destination.y;
         z = destination.z;
@@ -3421,9 +3421,9 @@ void Spell::SpellEffectTriggerMissile(uint8_t effectIndex) // Trigger Missile
     }
 
     // Cast the triggered spell on the destination location, spells like Freezing Arrow use it
-    if ((u_caster != nullptr) && (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION))
+    if ((u_caster != nullptr) && (m_targets.hasDestination()))
     {
-        u_caster->castSpellLoc(m_targets.destination(), spInfo, true);
+        u_caster->castSpellLoc(m_targets.getDestination(), spInfo, true);
         return;
     }
 
@@ -3438,7 +3438,7 @@ void Spell::SpellEffectTriggerMissile(uint8_t effectIndex) // Trigger Missile
         Unit* t = static_cast<Unit*>(itr);
 
         float r;
-        auto destination = m_targets.destination();
+        auto destination = m_targets.getDestination();
         float d = destination.x - t->GetPositionX();
         r = d * d;
         d = destination.y - t->GetPositionY();
@@ -3452,8 +3452,7 @@ void Spell::SpellEffectTriggerMissile(uint8_t effectIndex) // Trigger Missile
             continue;
 
         Spell* sp = sSpellMgr.newSpell(m_caster, spInfo, true, nullptr);
-        SpellCastTargets tgt;
-        tgt.m_unitTarget = itr->getGuid();
+        SpellCastTargets tgt(itr->getGuid());
         sp->prepare(&tgt);
     }
 }
@@ -3617,7 +3616,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
             SpellInfo const* en = sSpellMgr.getSpellInfo(spellid);
             Spell* sp = sSpellMgr.newSpell(p_caster, en, true, nullptr);
             SpellCastTargets tgt;
-            tgt.m_unitTarget = gameObjTarget->getGuid();
+            tgt.setGameObjectTarget(gameObjTarget->getGuid());
             sp->prepare(&tgt);
             return;
         }
@@ -3726,7 +3725,7 @@ void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
     if (playerTarget == nullptr && unitTarget && unitTarget->isPet()) // something's wrong with this logic here.
     {
         // bug in target map fill?
-        //playerTarget = m_caster->GetMapMgr()->GetPlayer((uint32)m_targets.m_unitTarget);
+        //playerTarget = m_caster->GetMapMgr()->GetPlayer((uint32)m_targets.getUnitTarget());
         SpellEffectLearnPetSpell(effectIndex);
         return;
     }
@@ -3846,9 +3845,7 @@ void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
                 spellinfo->getEffect(j) == SPELL_EFFECT_DUAL_WIELD)
             {
                 Spell* sp = sSpellMgr.newSpell(unitTarget, spellinfo, true, nullptr);
-                SpellCastTargets targets;
-                targets.m_unitTarget = unitTarget->getGuid();
-                targets.m_targetMask = TARGET_FLAG_UNIT;
+                SpellCastTargets targets(unitTarget->getGuid());
                 sp->prepare(&targets);
                 break;
             }
@@ -3954,8 +3951,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
                             spell->forced_basepoints[0] = (aursp->getEffectBasePoints(0) + 1) * 9;   //damage effect
                             spell->ProcedOnSpell = getSpellInfo();
                             spell->pSpellId = aursp->getId();
-                            SpellCastTargets targets;
-                            targets.m_unitTarget = u_caster->getGuid();
+                            SpellCastTargets targets(u_caster->getGuid());
                             spell->prepare(&targets);
                         } break;
                     }
@@ -4039,9 +4035,9 @@ void Spell::SpellEffectSkillStep(uint8_t effectIndex) // Skill Step
     if (p_caster == nullptr)
     {
         // Check targets
-        if (m_targets.m_unitTarget)
+        if (m_targets.getUnitTarget())
         {
-            target = sObjectMgr.GetPlayer((uint32)m_targets.m_unitTarget);
+            target = sObjectMgr.GetPlayer((uint32)m_targets.getUnitTarget());
             if (!target)
                 return;
         }
@@ -4200,8 +4196,8 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
     {
         posx = px;
         posy = py;
-        auto destination = m_targets.destination();
-        if ((m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION) && destination.isSet())
+        auto destination = m_targets.getDestination();
+        if ((m_targets.hasDestination()) && destination.isSet())
         {
             posx = destination.x;
             posy = destination.y;
@@ -4731,14 +4727,14 @@ void Spell::SpellEffectDistract(uint8_t /*effectIndex*/) // Distract
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
-    if (m_targets.destination().isSet())
+    if (m_targets.getDestination().isSet())
     {
         //      unitTarget->GetAIInterface()->MoveTo(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, 0);
         uint32 Stare_duration = GetDuration();
         if (Stare_duration > 30 * 60 * 1000)
             Stare_duration = 10000;//if we try to stare for more then a half an hour then better not stare at all :P (bug)
 
-        auto destination = m_targets.destination();
+        auto destination = m_targets.getDestination();
         float newo = unitTarget->calcRadAngle(unitTarget->GetPositionX(), unitTarget->GetPositionY(), destination.x, destination.y);
         unitTarget->GetAIInterface()->StopMovement(Stare_duration);
         unitTarget->SetFacing(newo);
@@ -4776,10 +4772,10 @@ void Spell::SpellEffectAddFarsight(uint8_t effectIndex) // Add Farsight
     if (p_caster == nullptr)
         return;
 
-    auto lv = m_targets.destination();
+    auto lv = m_targets.getDestination();
     if (!lv.isSet())
     {
-        lv = m_targets.source();
+        lv = m_targets.getSource();
     }
 
     DynamicObject* dynObj = p_caster->GetMapMgr()->CreateDynamicObject();
@@ -5203,7 +5199,7 @@ void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)
     if (!p_caster)
         return;
 
-    Item* it = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+    Item* it = p_caster->getItemInterface()->GetItemByGUID(m_targets.getItemTarget());
     if (!it)
     {
         sendCastResult(SPELL_FAILED_CANT_BE_DISENCHANTED);
@@ -5274,8 +5270,7 @@ void Spell::SpellEffectFeedPet(uint8_t effectIndex)  // Feed Pet
     const auto spellInfo = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
     Spell* sp = sSpellMgr.newSpell(p_caster, spellInfo, true, nullptr);
     sp->forced_basepoints[0] = damage;
-    SpellCastTargets tgt;
-    tgt.m_unitTarget = pPet->getGuid();
+    SpellCastTargets tgt(pPet->getGuid());
     sp->prepare(&tgt);
 
     if (itemTarget->getStackCount() > 1)
@@ -5339,9 +5334,9 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     float dy = 0.0f;
     float dz = 0.0f;
 
-    if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
+    if (m_targets.hasDestination())
     {
-        auto destination = m_targets.destination();
+        auto destination = m_targets.getDestination();
         dx = destination.x;
         dy = destination.y;
         dz = destination.z;
@@ -5527,7 +5522,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
     if (!playerTarget)
     {
         // means we're "skinning" a corpse
-        corpse = sObjectMgr.GetCorpse((uint32)m_targets.m_unitTarget);  // hacky
+        corpse = sObjectMgr.GetCorpse((uint32)m_targets.getUnitTarget());  // hacky
     }
     else if (playerTarget->getDeathState() == CORPSE)   // repopped while we were casting
     {

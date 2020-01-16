@@ -38,7 +38,11 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING < Cata
             packet >> tradeSlot >> sourceBag >> sourceSlot;
+#else
+            packet >> sourceSlot >> tradeSlot >> sourceBag;
+#endif
             return true;
         }
     };

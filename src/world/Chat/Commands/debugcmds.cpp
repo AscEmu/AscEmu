@@ -1018,24 +1018,24 @@ std::map<uint32, spell_thingo> aiagent_extra;
 SpellCastTargets SetTargets(SpellInfo const* /*sp*/, uint32 /*type*/, uint32 targettype, Unit* dst, Creature* src)
 {
     SpellCastTargets targets;
-    targets.m_unitTarget = 0;
-    targets.m_itemTarget = 0;
+    targets.setUnitTarget(0);
+    targets.setItemTarget(0);
     targets.setSource(LocationVector(0, 0, 0));
     targets.setDestination(LocationVector(0, 0, 0));
 
     if (targettype == TTYPE_SINGLETARGET)
     {
-        targets.m_targetMask = TARGET_FLAG_UNIT;
-        targets.m_unitTarget = dst->getGuid();
+        targets.setTargetMask(TARGET_FLAG_UNIT);
+        targets.setUnitTarget(dst->getGuid());
     }
     else if (targettype == TTYPE_SOURCE)
     {
-        targets.m_targetMask = TARGET_FLAG_SOURCE_LOCATION;
+        targets.setTargetMask(TARGET_FLAG_SOURCE_LOCATION);
         targets.setSource(src->GetPosition());
     }
     else if (targettype == TTYPE_DESTINATION)
     {
-        targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
+        targets.setTargetMask(TARGET_FLAG_DEST_LOCATION);
         targets.setDestination(dst->GetPosition());
     }
 
@@ -1149,8 +1149,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
     Spell* sp = sSpellMgr.newSpell(caster, spellentry, false, NULL);
 
     BlueSystemMessage(m_session, "Casting spell %d on target.", spellid);
-    SpellCastTargets targets;
-    targets.m_unitTarget = target->getGuid();
+    SpellCastTargets targets(target->getGuid());
     sp->prepare(&targets);
 
     switch (target->getObjectTypeId())
@@ -1250,8 +1249,7 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
     Spell* sp = sSpellMgr.newSpell(target, spellentry, false, NULL);
 
     BlueSystemMessage(m_session, "Target is casting spell %d on himself.", spellid);
-    SpellCastTargets targets;
-    targets.m_unitTarget = target->getGuid();
+    SpellCastTargets targets(target->getGuid());
     sp->prepare(&targets);
 
     switch (target->getObjectTypeId())

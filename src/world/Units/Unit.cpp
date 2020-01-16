@@ -1473,8 +1473,8 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBa
     SpellCastTargets targets(0);
     if (target != nullptr)
     {
-        targets.m_targetMask |= TARGET_FLAG_UNIT;
-        targets.m_unitTarget = target->getGuid();
+        targets.addTargetMask(TARGET_FLAG_UNIT);
+        targets.setUnitTarget(target->getGuid());
     }
     else
         newSpell->GenerateTargets(&targets);
@@ -1490,7 +1490,7 @@ void Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInf
 
     SpellCastTargets targets;
     targets.setDestination(location);
-    targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
+    targets.setTargetMask(TARGET_FLAG_DEST_LOCATION);
 
     // Prepare the spell
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
@@ -1528,8 +1528,8 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBa
     SpellCastTargets targets(0);
     if (target != nullptr)
     {
-        targets.m_targetMask |= TARGET_FLAG_UNIT;
-        targets.m_unitTarget = target->getGuid();
+        targets.addTargetMask(TARGET_FLAG_UNIT);
+        targets.setUnitTarget(target->getGuid());
     }
     else
         newSpell->GenerateTargets(&targets);

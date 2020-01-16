@@ -628,7 +628,7 @@ void World::sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
         if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld()
-            && activeSessions->second != sendToSelf && (team == -1 || activeSessions->second->GetPlayer()->GetTeam() == team))
+            && activeSessions->second != sendToSelf && (team == -1 || activeSessions->second->GetPlayer()->GetTeam() == static_cast<uint32_t>(team)))
             activeSessions->second->SendPacket(worldPacket);
     }
 

@@ -64,9 +64,6 @@ Item::Item()
     m_inQueue = false;
     m_loadedFromDB = false;
     ItemExpiresOn = 0;
-#if VERSION_STRING >= Cata
-    m_isInTrade = false;
-#endif
     Enchantments.clear();
 
     for (uint8 i = 0; i < 3; ++i)
@@ -587,13 +584,6 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
         EnchantLog << Enchantment->Id;
         EnchantLog << uint8(0);
         m_owner->SendPacket(&EnchantLog);
-
-#if VERSION_STRING < Cata
-        if (m_owner->GetTradeTarget())
-        {
-            m_owner->SendTradeUpdate();
-        }
-#endif
 
         /* Only apply the enchantment bonus if we're equipped */
         int16 slot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());

@@ -227,7 +227,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
     // Target checks
 
     // Unit target
-    const auto target = m_caster->GetMapMgrUnit(m_targets.m_unitTarget);
+    const auto target = m_caster->GetMapMgrUnit(m_targets.getUnitTarget());
     if (target != nullptr)
     {
         // Target's aura state requirements
@@ -311,7 +311,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 // Check if target can be tamed
                 if (getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_TAME_BEAST)
                 {
-                    auto targetUnit = p_caster->GetMapMgrUnit(m_targets.m_unitTarget);
+                    auto targetUnit = p_caster->GetMapMgrUnit(m_targets.getUnitTarget());
                     // If spell is triggered, target may need to be picked manually
                     if (targetUnit == nullptr)
                     {
@@ -527,7 +527,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
     if (m_targets.hasDestination() && worldConfig.terrainCollision.isCollisionEnabled)
     {
         if (m_caster->IsInWorld() && !(getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SKIP_LINE_OF_SIGHT_CHECK) &&
-            !m_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_targets.destination().x, m_targets.destination().y, m_targets.destination().z))
+            !m_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_targets.getDestination().x, m_targets.getDestination().y, m_targets.getDestination().z))
             return SPELL_FAILED_LINE_OF_SIGHT;
     }
 
@@ -553,7 +553,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             auto areaGroup = sAreaGroupStore.LookupEntry(getSpellInfo()->getRequiresAreaId());
             while (areaGroup != nullptr)
             {
-                for (unsigned int i : areaGroup->AreaId)
+                for (const auto& i : areaGroup->AreaId)
                 {
                     if (i == areaEntry->id || (areaEntry->zone != 0 && i == areaEntry->zone))
                     {
@@ -639,7 +639,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
     if (p_caster != nullptr && getSpellInfo()->getRequiresSpellFocus() > 0)
     {
         auto found = false;
-        for (const auto itr : p_caster->getInRangeObjectsSet())
+        for (const auto& itr : p_caster->getInRangeObjectsSet())
         {
             if (itr == nullptr || !itr->isGameObject())
                 continue;
@@ -707,7 +707,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         auto foundTarget = false;
 
         // Check if target needs to be a certain creature
-        for (const auto entryId : m_target_constraint->getCreatures())
+        for (const auto& entryId : m_target_constraint->getCreatures())
         {
             if (!m_target_constraint->hasExplicitTarget(entryId))
             {
@@ -752,7 +752,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         }
 
         // Check if target needs to be a certain gameobject
-        for (const auto entryId : m_target_constraint->getGameObjects())
+        for (const auto& entryId : m_target_constraint->getGameObjects())
         {
             if (!m_target_constraint->hasExplicitTarget(entryId))
             {
@@ -772,9 +772,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             else
             {
                 // Spell requires an explicit target
-                ///\ TODO: implement this when gameobject targeting is implemented -Appled
-
-                /*const auto objectTarget = m_caster->GetMapMgrObject(m_targets.m_unitTarget);
+                const auto objectTarget = m_caster->GetMapMgrObject(m_targets.getGameObjectTarget());
                 if (objectTarget == nullptr)
                     continue;
 
@@ -788,7 +786,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 // Found target
                 SetTargetConstraintGameObject(dynamic_cast<GameObject*>(objectTarget));
                 foundTarget = true;
-                break;*/
+                break;
             }
         }
 
@@ -862,17 +860,55 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     break;
 
                 uint32_t lockId = 0;
-                // todo: missing checks for gameobject target
-                if (m_targets.m_itemTarget != 0)
+                if (m_targets.getGameObjectTarget() != 0)
                 {
-                    Item* targetItem = nullptr;
-                    if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+                    const auto objectTarget = p_caster->GetMapMgrGameObject(m_targets.getGameObjectTarget());
+                    if (objectTarget != nullptr)
                     {
-                        // todo: implement me
+                        // Get lock id
+                        switch (objectTarget->getGoType())
+                        {
+                            case GAMEOBJECT_TYPE_DOOR:
+                                lockId = objectTarget->GetGameObjectProperties()->door.lock_id;
+                                break;
+                            case GAMEOBJECT_TYPE_BUTTON:
+                                lockId = objectTarget->GetGameObjectProperties()->button.lock_id;
+                                break;
+                            case GAMEOBJECT_TYPE_CHEST:
+                                lockId = objectTarget->GetGameObjectProperties()->chest.lock_id;
+                                break;
+                            case GAMEOBJECT_TYPE_TRAP:
+                                lockId = objectTarget->GetGameObjectProperties()->trap.lock_id;
+                                break;
+                            case GAMEOBJECT_TYPE_GOOBER:
+                                lockId = objectTarget->GetGameObjectProperties()->goober.lock_id;
+                                break;
+                            case GAMEOBJECT_TYPE_CAMERA:
+                                lockId = objectTarget->GetGameObjectProperties()->camera.lock_id;
+                                break;
+                            case GAMEOBJECT_TYPE_FISHINGHOLE:
+                                lockId = objectTarget->GetGameObjectProperties()->fishinghole.lock_id;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (lockId == 0)
+                            return SPELL_FAILED_ALREADY_OPEN;
+                    }
+                }
+                else if (m_targets.getItemTarget() != 0)
+                {
+                    Item const* targetItem = nullptr;
+                    if (m_targets.isTradeItem())
+                    {
+                        const auto playerTrader = p_caster->getTradeTarget();
+                        if (playerTrader != nullptr)
+                            targetItem = playerTrader->getTradeData()->getTradeItem(TradeSlots(m_targets.getItemTarget()));
                     }
                     else
                     {
-                        targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                        targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.getItemTarget());
                     }
 
                     if (targetItem == nullptr)
@@ -1089,7 +1125,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && p_caster->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL)
                     return SPELL_FAILED_NO_DUELING;
 
-                const auto targetPlayer = p_caster->GetMapMgrPlayer(m_targets.m_unitTarget);
+                const auto targetPlayer = p_caster->GetMapMgrPlayer(m_targets.getUnitTarget());
                 if (targetPlayer != nullptr && targetPlayer->GetTransport() != p_caster->GetTransport())
                     return SPELL_FAILED_NOT_ON_TRANSPORT;
 
@@ -1224,7 +1260,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_TARGETS_DEAD;
 
                 // Get the food
-                const auto foodItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                const auto foodItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.getItemTarget());
                 if (foodItem == nullptr)
                     return SPELL_FAILED_BAD_TARGETS;
 
@@ -1255,7 +1291,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             } break;
             case SPELL_EFFECT_SPELL_STEAL:
             {
-                if (m_targets.m_unitTarget == m_caster->getGuid())
+                if (m_targets.getUnitTarget() == m_caster->getGuid())
                     return SPELL_FAILED_BAD_TARGETS;
             } break;
             default:
@@ -1480,6 +1516,29 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         }
     }
 
+    if (m_targets.isTradeItem())
+    {
+        if (p_caster == nullptr)
+            return SPELL_FAILED_SPELL_UNAVAILABLE;
+
+        // Slot must be the lowest
+        if (TradeSlots(m_targets.getItemTarget()) != TRADE_SLOT_NONTRADED)
+            return SPELL_FAILED_ITEM_NOT_FOUND;
+
+        // Check if player is even trading
+        if (p_caster->getTradeData() == nullptr)
+            return SPELL_FAILED_NOT_TRADING;
+
+        // Cast the trade spell only when both parties have accepted the trade
+        const auto tradeData = p_caster->getTradeData();
+        if (!tradeData->isTradeAccepted() || !tradeData->getTargetTradeData()->isTradeAccepted())
+        {
+            // If either one hasn't accepted the trade, save the spell and cast it on trade complete
+            tradeData->setTradeSpell(getSpellInfo()->getId(), i_caster);
+            return SPELL_FAILED_DONT_REPORT;
+        }
+    }
+
     // Call legacy CanCast for yet unhandled cases
     return m_triggeredSpell || ProcedOnSpell != nullptr ? SPELL_CANCAST_OK : SpellCastResult(CanCast(secondCheck));
 }
@@ -1502,17 +1561,8 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
             return SPELL_FAILED_ITEM_GONE;
 
         // Check if the item is in trade window
-        // todo: fix me!
-        /*if (p_caster->GetTradeTarget() != nullptr)
-        {
-            for (auto i = 0; i < 7; ++i)
-            {
-                if (p_caster->getTradeItem(i) == nullptr)
-                    continue;
-                if (p_caster->getTradeItem(i) == i_caster)
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-            }
-        }*/
+        if (p_caster->getTradeData() != nullptr && p_caster->getTradeData()->hasPlayerOrTraderItemInTrade(i_caster->getGuid()))
+            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
         const auto itemProperties = i_caster->getItemProperties();
         if (itemProperties == nullptr)
@@ -1539,7 +1589,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
         // Check health and power for consumables (potions, healthstones, mana items etc)
         if (itemProperties->Class == ITEM_CLASS_CONSUMABLE)
         {
-            const auto targetUnit = p_caster->GetMapMgrUnit(m_targets.m_unitTarget);
+            const auto targetUnit = p_caster->GetMapMgrUnit(m_targets.getUnitTarget());
             if (targetUnit != nullptr)
             {
                 SpellCastResult errorMessage = SPELL_CANCAST_OK;
@@ -1613,11 +1663,11 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
     }
 
     // Casted on an item
-    if (m_targets.m_itemTarget > 0)
+    if (m_targets.getItemTarget() > 0)
     {
-        Item* targetItem = nullptr;
+        Item const* targetItem = nullptr;
         // Check if the targeted item is in the trade window
-        if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+        if (m_targets.isTradeItem())
         {
             // Only enchanting and lockpicking effects can be used in trade window
             if (getSpellInfo()->getEffect(0) == SPELL_EFFECT_OPEN_LOCK ||
@@ -1627,14 +1677,15 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 if (getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_ENCHANT_OWN_ONLY)
                     return SPELL_FAILED_NOT_TRADEABLE;
 
-                // todo: implement trade checks here when trading is fixed -Appled
+                if (p_caster->getTradeTarget() != nullptr)
+                    targetItem = p_caster->getTradeTarget()->getTradeData()->getTradeItem(TradeSlots(m_targets.getItemTarget()));
             }
             else
                 return SPELL_FAILED_NOT_TRADEABLE;
         }
         else
         {
-            targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+            targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.getItemTarget());
         }
 
         if (targetItem == nullptr)
@@ -1652,7 +1703,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
             vellumTarget = true;
     }
     // Spell requires an item to be equipped
-    else if (m_targets.m_itemTarget == 0 && getSpellInfo()->getEquippedItemClass() >= 0)
+    else if (m_targets.getItemTarget() == 0 && getSpellInfo()->getEquippedItemClass() >= 0)
     {
         auto hasItemWithProperType = false;
         switch (getSpellInfo()->getEquippedItemClass())
@@ -1798,7 +1849,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
 #endif
         }
         // Reagents will always be checked for items in trade window
-        else if (m_targets.m_itemTarget != 0 && m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+        else if (m_targets.getItemTarget() != 0 && m_targets.isTradeItem())
         {
             checkForReagents = true;
         }
@@ -1901,16 +1952,16 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 } break;
             case SPELL_EFFECT_ENCHANT_ITEM:
                 // Check only for vellums here, normal checks are done in the next case
-                if (getSpellInfo()->getEffectItemType(i) != 0 && m_targets.m_itemTarget != 0 && vellumTarget)
+                if (getSpellInfo()->getEffectItemType(i) != 0 && m_targets.getItemTarget() != 0 && vellumTarget)
                 {
                     // Player can only enchant their own vellums
-                    if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+                    if (m_targets.isTradeItem())
                         return SPELL_FAILED_NOT_TRADEABLE;
                     // Scrolls (enchanted vellums) cannot be enchanted into another vellum (duping)
                     if (scrollItem)
                         return SPELL_FAILED_BAD_TARGETS;
 
-                    const auto vellumItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                    const auto vellumItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.getItemTarget());
                     if (vellumItem == nullptr)
                         return SPELL_FAILED_ITEM_NOT_FOUND;
                     // Check if vellum is appropriate target for the enchant
@@ -1942,17 +1993,18 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
             // no break here
             case SPELL_EFFECT_ADD_SOCKET:
             {
-                if (m_targets.m_itemTarget == 0)
+                if (m_targets.getItemTarget() == 0)
                     return SPELL_FAILED_ITEM_NOT_FOUND;
 
                 Item* targetItem = nullptr;
-                if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+                if (m_targets.isTradeItem())
                 {
-                    // todo: implement this when trading is fixed
+                    if (p_caster->getTradeTarget() != nullptr)
+                        targetItem = p_caster->getTradeTarget()->getTradeData()->getTradeItem(TradeSlots(m_targets.getItemTarget()));
                 }
                 else
                 {
-                    targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                    targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.getItemTarget());
                 }
 
                 if (targetItem == nullptr)
@@ -1983,7 +2035,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 }
 
                 // Loop through enchantment's types
-                for (unsigned int type : enchantEntry->type)
+                for (const auto& type : enchantEntry->type)
                 {
                     switch (type)
                     {
@@ -2016,17 +2068,18 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
             }
             case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY:
             {
-                if (m_targets.m_itemTarget == 0)
+                if (m_targets.getItemTarget() == 0)
                     return SPELL_FAILED_ITEM_NOT_FOUND;
 
-                Item* targetItem = nullptr;
-                if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+                Item const* targetItem = nullptr;
+                if (m_targets.isTradeItem())
                 {
-                    // todo: implement this when trading is fixed
+                    if (p_caster->getTradeTarget() != nullptr)
+                        targetItem = p_caster->getTradeTarget()->getTradeData()->getTradeItem(TradeSlots(m_targets.getItemTarget()));
                 }
                 else
                 {
-                    targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                    targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.getItemTarget());
                 }
 
                 if (targetItem == nullptr)
@@ -2049,13 +2102,13 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
             }
             case SPELL_EFFECT_DISENCHANT:
             {
-                if (m_targets.m_itemTarget == 0)
+                if (m_targets.getItemTarget() == 0)
                     return SPELL_FAILED_ITEM_GONE;
                 // Check if the item target is in a trade window
-                if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+                if (m_targets.isTradeItem())
                     return SPELL_FAILED_NOT_TRADEABLE;
 
-                const auto targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                const auto targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.getItemTarget());
                 if (targetItem == nullptr)
                     return SPELL_FAILED_ITEM_GONE;
 
@@ -2079,13 +2132,13 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
             }
             case SPELL_EFFECT_PROSPECTING:
             {
-                if (m_targets.m_itemTarget == 0)
+                if (m_targets.getItemTarget() == 0)
                     return SPELL_FAILED_ITEM_GONE;
                 // Check if the item target is in a trade window
-                if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+                if (m_targets.isTradeItem())
                     return SPELL_FAILED_NOT_TRADEABLE;
 
-                const auto targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                const auto targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.getItemTarget());
                 if (targetItem == nullptr)
                     return SPELL_FAILED_ITEM_GONE;
 
@@ -2113,13 +2166,13 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
             }
             case SPELL_EFFECT_MILLING:
             {
-                if (m_targets.m_itemTarget == 0)
+                if (m_targets.getItemTarget() == 0)
                     return SPELL_FAILED_ITEM_GONE;
                 // Check if the item target is in a trade window
-                if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+                if (m_targets.isTradeItem())
                     return SPELL_FAILED_NOT_TRADEABLE;
 
-                const auto targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+                const auto targetItem = p_caster->getItemInterface()->GetItemByGUID(m_targets.getItemTarget());
                 if (targetItem == nullptr)
                     return SPELL_FAILED_ITEM_GONE;
 
@@ -2418,7 +2471,7 @@ SpellCastResult Spell::checkRange(const bool secondCheck) const
     if (!secondCheck && getSpellInfo()->isOnNextMeleeAttack())
         return SPELL_CANCAST_OK;
 
-    auto targetUnit = m_caster->GetMapMgrUnit(m_targets.m_unitTarget);
+    auto targetUnit = m_caster->GetMapMgrUnit(m_targets.getUnitTarget());
 
     // Self cast spells don't need range check
     if (getSpellInfo()->getRangeIndex() == 1 || targetUnit == m_caster)
@@ -2482,7 +2535,7 @@ SpellCastResult Spell::checkRange(const bool secondCheck) const
 #endif
 
         // Player, creature or corpse target
-        if (u_caster != nullptr && (targetUnit != nullptr || m_targets.m_targetMask & (TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2)))
+        if (u_caster != nullptr && (targetUnit != nullptr || m_targets.getTargetMask() & (TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2)))
         {
             const float_t combatReach = targetUnit != nullptr ? targetUnit->getCombatReach() : u_caster->getCombatReach();
             rangeMod = u_caster->getCombatReach() + combatReach;
@@ -2537,7 +2590,7 @@ SpellCastResult Spell::checkRange(const bool secondCheck) const
     // AoE spells on targeted location
     if (m_targets.hasDestination())
     {
-        const float_t distance = m_caster->getDistanceSq(m_targets.destination());
+        const float_t distance = m_caster->getDistanceSq(m_targets.getDestination());
         if (minRange > 0.0f && distance < minRange)
             return SPELL_FAILED_TOO_CLOSE;
         if (distance > maxRange)
@@ -2717,7 +2770,7 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
 #elif VERSION_STRING >= WotLK
                 // Send the first area id from areagroup to player
                 auto areaGroup = sAreaGroupStore.LookupEntry(getSpellInfo()->getRequiresAreaId());
-                for (unsigned int areaId : areaGroup->AreaId)
+                for (const auto& areaId : areaGroup->AreaId)
                 {
                     if (areaId != 0)
                     {
