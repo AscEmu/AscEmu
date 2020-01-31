@@ -369,8 +369,61 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraNULL,                                                   // 313
     &Aura::SpellAuraNULL,                                                   // 314
     &Aura::SpellAuraNULL,                                                   // 315
-    &Aura::SpellAuraNULL                                                    // 316
-
+    &Aura::SpellAuraNULL,                                                   // 316
+    &Aura::SpellAuraNULL,                                                   // 317
+    &Aura::SpellAuraNULL,                                                   // 318
+    &Aura::SpellAuraNULL,                                                   // 319
+    &Aura::SpellAuraNULL,                                                   // 320
+    &Aura::SpellAuraNULL,                                                   // 321
+    &Aura::SpellAuraNULL,                                                   // 322
+    &Aura::SpellAuraNULL,                                                   // 323
+    &Aura::SpellAuraNULL,                                                   // 324
+    &Aura::SpellAuraNULL,                                                   // 325
+    &Aura::SpellAuraNULL,                                                   // 326
+    &Aura::SpellAuraNULL,                                                   // 327
+    &Aura::SpellAuraNULL,                                                   // 328
+    &Aura::SpellAuraNULL,                                                   // 329
+    &Aura::SpellAuraNULL,                                                   // 330
+    &Aura::SpellAuraNULL,                                                   // 331
+    &Aura::SpellAuraNULL,                                                   // 332
+    &Aura::SpellAuraNULL,                                                   // 333
+    &Aura::SpellAuraNULL,                                                   // 334
+    &Aura::SpellAuraNULL,                                                   // 335
+    &Aura::SpellAuraNULL,                                                   // 336
+    &Aura::SpellAuraNULL,                                                   // 337
+    &Aura::SpellAuraNULL,                                                   // 338
+    &Aura::SpellAuraNULL,                                                   // 339
+    &Aura::SpellAuraNULL,                                                   // 340
+    &Aura::SpellAuraNULL,                                                   // 341
+    &Aura::SpellAuraNULL,                                                   // 342
+    &Aura::SpellAuraNULL,                                                   // 343
+    &Aura::SpellAuraNULL,                                                   // 344
+    &Aura::SpellAuraNULL,                                                   // 345
+    &Aura::SpellAuraNULL,                                                   // 346
+    &Aura::SpellAuraNULL,                                                   // 347
+    &Aura::SpellAuraNULL,                                                   // 348
+    &Aura::SpellAuraNULL,                                                   // 349
+    &Aura::SpellAuraNULL,                                                   // 350
+    &Aura::SpellAuraNULL,                                                   // 351
+    &Aura::SpellAuraNULL,                                                   // 352
+    &Aura::SpellAuraNULL,                                                   // 353
+    &Aura::SpellAuraNULL,                                                   // 354
+    &Aura::SpellAuraNULL,                                                   // 355
+    &Aura::SpellAuraNULL,                                                   // 356
+    &Aura::SpellAuraNULL,                                                   // 357
+    &Aura::SpellAuraNULL,                                                   // 358
+    &Aura::SpellAuraNULL,                                                   // 359
+    &Aura::SpellAuraNULL,                                                   // 360
+    &Aura::SpellAuraNULL,                                                   // 361
+    &Aura::SpellAuraNULL,                                                   // 362
+    &Aura::SpellAuraNULL,                                                   // 363
+    &Aura::SpellAuraNULL,                                                   // 364
+    &Aura::SpellAuraNULL,                                                   // 365
+    &Aura::SpellAuraNULL,                                                   // 366
+    &Aura::SpellAuraNULL,                                                   // 367
+    &Aura::SpellAuraNULL,                                                   // 368
+    &Aura::SpellAuraNULL,                                                   // 369
+    &Aura::SpellAuraNULL                                                    // 370
 };
 
 const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
@@ -3199,9 +3252,9 @@ void Aura::EventPeriodicManaPct(float RegenPct)
     if (newPower <= m_target->getMaxPower(POWER_TYPE_MANA))
     {
         if (GetSpellInfo()->getId() != 60069)
-            m_target->Energize(m_target, m_spellInfo->getId(), add, POWER_TYPE_MANA);
+            m_target->energize(m_target, m_spellInfo->getId(), add, POWER_TYPE_MANA);
         else
-            m_target->Energize(m_target, 49766, add, POWER_TYPE_MANA);
+            m_target->energize(m_target, 49766, add, POWER_TYPE_MANA);
     }
     else
         m_target->setPower(POWER_TYPE_MANA, m_target->getMaxPower(POWER_TYPE_MANA));
@@ -3449,15 +3502,13 @@ void Aura::SpellAuraPeriodicEnergize(bool apply)
 
 void Aura::EventPeriodicEnergize(uint32 amount, uint32 type)
 {
-    uint32 POWER_TYPE = UNIT_FIELD_POWER1 + type;
-
-    ARCEMU_ASSERT(POWER_TYPE <= UNIT_FIELD_POWER5);
+    ARCEMU_ASSERT(type >= POWER_TYPE_MANA && type < TOTAL_PLAYER_POWER_TYPES);
 
     Unit* ucaster = GetUnitCaster();
     if (ucaster == nullptr)
         return;
 
-    ucaster->Energize(m_target, m_spellInfo->getId(), amount, type);
+    ucaster->energize(m_target, m_spellInfo->getId(), amount, static_cast<PowerType>(type));
 
     if ((GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP) && type == POWER_TYPE_MANA)
     {
@@ -3899,7 +3950,7 @@ void Aura::SpellAuraModIncreaseEnergy(bool apply)
     return; */
 
     int32 amount = apply ? mod->m_amount : -mod->m_amount;
-    uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
+    auto modValue = static_cast<PowerType>(mod->m_miscValue);
     m_target->modMaxPower(modValue, amount);
     m_target->modPower(modValue, amount);
 
@@ -5498,17 +5549,17 @@ void Aura::SpellAuraModPowerCostSchool(bool apply)
 {
     if (apply)
     {
-        for (uint32 x = 1; x < 7; x++)
+        for (uint16 x = 1; x < 7; x++)
             if (mod->m_miscValue & (((uint32)1) << x))
-                m_target->PowerCostMod[x] += mod->m_amount;
+                m_target->modPowerCostModifier(x, mod->m_amount);
     }
     else
     {
-        for (uint32 x = 1; x < 7; x++)
+        for (uint16 x = 1; x < 7; x++)
         {
             if (mod->m_miscValue & (((uint32)1) << x))
             {
-                m_target->PowerCostMod[x] -= mod->m_amount;
+                m_target->modPowerCostModifier(x, -mod->m_amount);
             }
         }
     }
@@ -5934,13 +5985,11 @@ void Aura::EventPeriodicTrigger(uint32 /*amount*/, uint32 /*type*/)
 
 void Aura::EventPeriodicEnergizeVariable(uint32 amount, uint32 type)
 {
-    uint32 POWER_TYPE = UNIT_FIELD_POWER1 + type;
-
-    ARCEMU_ASSERT(POWER_TYPE <= UNIT_FIELD_POWER5);
+    ARCEMU_ASSERT(type >= POWER_TYPE_MANA && type < TOTAL_PLAYER_POWER_TYPES);
 
     Unit* ucaster = GetUnitCaster();
     if (ucaster != nullptr)
-        ucaster->Energize(m_target, m_spellInfo->getId(), amount, type);
+        ucaster->energize(m_target, m_spellInfo->getId(), amount, static_cast<PowerType>(type));
 }
 
 void Aura::EventPeriodicDrink(uint32 amount)
@@ -6982,7 +7031,7 @@ void Aura::SpellAuraModIncreaseEnergyPerc(bool apply)
 {
     SetPositive();
 
-    uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
+    auto modValue = static_cast<PowerType>(mod->m_miscValue);
     if (apply)
     {
         mod->fixed_amount[mod->m_effectIndex] = m_target->getPercentModUInt32Value(UNIT_FIELD_MAXPOWER1 + modValue, mod->m_amount);
@@ -7477,8 +7526,8 @@ void Aura::EventPeriodicBurn(uint32 amount, uint32 misc)
         if (m_target->SchoolImmunityList[GetSpellInfo()->getSchool()])
             return;
 
-        uint32 Amount = (uint32)std::min(amount, m_target->getPower(static_cast<uint16_t>(misc)));
-        uint32 newHealth = m_target->getPower(static_cast<uint16_t>(misc)) - Amount;
+        uint32 Amount = (uint32)std::min(amount, m_target->getPower(static_cast<PowerType>(misc)));
+        uint32 newHealth = m_target->getPower(static_cast<PowerType>(misc)) - Amount;
 
         m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), newHealth, 0, 0, FLAG_PERIODIC_DAMAGE, false);
         m_caster->DealDamage(m_target, Amount, 0, 0, GetSpellInfo()->getId());
@@ -8555,26 +8604,17 @@ void Aura::SpellAuraIncreaseRating(bool apply)
     plr->UpdateStats();
 }
 
-void Aura::EventPeriodicRegenManaStatPct(uint32 perc, uint32 stat)
-{
-    if (m_target->isDead())
-        return;
-
-    uint32 mana = m_target->getPower(POWER_TYPE_MANA) + (m_target->getStat(static_cast<uint8_t>(stat)) * perc) / 100;
-
-    if (mana <= m_target->getMaxPower(POWER_TYPE_MANA))
-        m_target->setPower(POWER_TYPE_MANA, mana);
-    else
-        m_target->setPower(POWER_TYPE_MANA, m_target->getMaxPower(POWER_TYPE_MANA));
-}
-
 void Aura::SpellAuraRegenManaStatPCT(bool apply)
 {
+    if (!m_target->isPlayer())
+        return;
+
     if (apply)
-    {
-        SetPositive();
-        sEventMgr.AddEvent(this, &Aura::EventPeriodicRegenManaStatPct, (uint32)mod->m_amount, (uint32)mod->m_miscValue, EVENT_AURA_REGEN_MANA_STAT_PCT, 5000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    }
+        static_cast<Player*>(m_target)->m_modManaRegenFromStat[mod->m_miscValue] += mod->m_amount;
+    else
+        static_cast<Player*>(m_target)->m_modManaRegenFromStat[mod->m_miscValue] -= mod->m_amount;
+
+    static_cast<Player*>(m_target)->UpdateStats();
 }
 
 void Aura::SpellAuraSpellHealingStatPCT(bool apply)

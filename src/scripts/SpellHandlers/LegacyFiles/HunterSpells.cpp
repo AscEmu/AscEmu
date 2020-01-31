@@ -329,7 +329,7 @@ bool ChimeraShot(uint8_t /*effectIndex*/, Spell *spell)
     return true;
 }
 
-void SetupHunterSpells(ScriptMgr* mgr)
+void SetupLegacyHunterSpells(ScriptMgr* mgr)
 {
     mgr->register_dummy_spell(53209, &ChimeraShot);
     mgr->register_dummy_spell(24531, &Refocus);

@@ -902,7 +902,7 @@ bool SchoolsOfArcaneMagicMastery(uint8_t /*effectIndex*/, Spell* s)
     return true;
 }
 
-void SetupItemSpells_1(ScriptMgr* mgr)
+void SetupLegacyItemSpells_1(ScriptMgr* mgr)
 {
     mgr->register_dummy_spell(59317, &SchoolsOfArcaneMagicMastery); // The Schools of Arcane Magic - Mastery
     mgr->register_dummy_spell(29403, &BreathOfFire);                // Fiery Festival Brew

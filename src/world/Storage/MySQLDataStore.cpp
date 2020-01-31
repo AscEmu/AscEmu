@@ -516,6 +516,7 @@ ItemProperties const* MySQLDataStore::getItemProperties(uint32_t entry)
 
 //\ brief: On versions lower than wotlk our db includes the item entry instead of the displayid.
 //         In wotlk and newer the database includes the displayid since no more additional data is required for creature equipment.
+// Actually this is item entry id on all versions but wotlk and newer clients can get the display id by themselves from entry id - Appled
 uint32_t const MySQLDataStore::getItemDisplayIdForEntry(uint32_t entry)
 {
     if (entry != 0)

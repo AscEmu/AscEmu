@@ -17,5 +17,5 @@ public:
     SpellScript() {}
     virtual ~SpellScript() {}
 
-    virtual SpellCastResult onCanCast(Spell* /*spell*/, uint32_t* /*parameter1*/, uint32_t* /*parameter2*/) { return SPELL_CANCAST_OK; }
+    virtual SpellCastResult onCanCast(Spell* /*spell*/, uint32_t* /*parameter1*/, uint32_t* /*parameter2*/) { return SPELL_CAST_SUCCESS; }
 };

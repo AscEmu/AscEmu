@@ -17,20 +17,45 @@
 
 #pragma once
 
+#include "WorldConf.h"
+
 class ScriptMgr;
 
 // Class spell handlers
-void SetupShamanSpells(ScriptMgr* mgr);
-void SetupWarlockSpells(ScriptMgr* mgr);
-void SetupWarriorSpells(ScriptMgr* mgr);
-void SetupHunterSpells(ScriptMgr* mgr);
-void SetupMageSpells(ScriptMgr* mgr);
-void SetupPaladinSpells(ScriptMgr* mgr);
-void SetupRogueSpells(ScriptMgr* mgr);
-void SetupPriestSpells(ScriptMgr* mgr);
-void SetupDruidSpells(ScriptMgr* mgr);
-void SetupDeathKnightSpells(ScriptMgr* mgr);
-void SetupPetAISpells(ScriptMgr* mgr);
-void SetupQuestItems(ScriptMgr* mgr);
-void SetupItemSpells_1(ScriptMgr* mgr);
-void SetupMiscSpellhandlers(ScriptMgr* mgr);
+#if VERSION_STRING >= WotLK
+void setupDeathKnightSpells(ScriptMgr* mgr);
+#endif
+void setupDruidSpells(ScriptMgr* mgr);
+void setupHunterSpells(ScriptMgr* mgr);
+void setupMageSpells(ScriptMgr* mgr);
+#if VERSION_STRING >= Mop
+void setupMonkSpells(ScriptMgr* mgr);
+#endif
+void setupPaladinSpells(ScriptMgr* mgr);
+void setupPriestSpells(ScriptMgr* mgr);
+void setupRogueSpells(ScriptMgr* mgr);
+void setupShamanSpells(ScriptMgr* mgr);
+void setupWarlockSpells(ScriptMgr* mgr);
+void setupWarriorSpells(ScriptMgr* mgr);
+
+// Other spell handlers
+void setupItemSpells(ScriptMgr* mgr);
+void setupMiscSpells(ScriptMgr* mgr);
+void setupPetSpells(ScriptMgr* mgr);
+void setupQuestSpells(ScriptMgr* mgr);
+
+// Legacy spell handlers
+void SetupLegacyShamanSpells(ScriptMgr* mgr);
+void SetupLegacyWarlockSpells(ScriptMgr* mgr);
+void SetupLegacyWarriorSpells(ScriptMgr* mgr);
+void SetupLegacyHunterSpells(ScriptMgr* mgr);
+void SetupLegacyMageSpells(ScriptMgr* mgr);
+void SetupLegacyPaladinSpells(ScriptMgr* mgr);
+void SetupLegacyRogueSpells(ScriptMgr* mgr);
+void SetupLegacyPriestSpells(ScriptMgr* mgr);
+void SetupLegacyDruidSpells(ScriptMgr* mgr);
+void SetupLegacyDeathKnightSpells(ScriptMgr* mgr);
+void SetupLegacyPetAISpells(ScriptMgr* mgr);
+void SetupLegacyQuestItems(ScriptMgr* mgr);
+void SetupLegacyItemSpells_1(ScriptMgr* mgr);
+void SetupLegacyMiscSpellhandlers(ScriptMgr* mgr);

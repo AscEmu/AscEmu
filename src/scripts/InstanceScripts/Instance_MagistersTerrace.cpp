@@ -49,7 +49,7 @@ class SelinFireheartAI : public CreatureAIScript
     {
         // Selin Fireheart starts with 0 mana and drains it from the felcrystals in the room
         // \todo  Set it so mana regen is off
-        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, 0);
+        getCreature()->setPower(POWER_TYPE_MANA, 0);
     }
 
     // During the AIUpdate() Selin will spam FelExplosion until hes out of mana
@@ -98,7 +98,7 @@ class SelinFireheartAI : public CreatureAIScript
         if (mana >= getCreature()->getMaxPower(POWER_TYPE_MANA))
             mana = getCreature()->getMaxPower(POWER_TYPE_MANA);
 
-        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, mana);
+        getCreature()->setPower(POWER_TYPE_MANA, mana);
 
         // Re-Enable FelExplosion
         if (_getManaPercent() >= 100)
@@ -136,7 +136,7 @@ class SelinFireheartAI : public CreatureAIScript
         _castAISpell(FelExplosion);
 
         // No Idea why the mana isnt taken when the spell is cast so had to manually take it -_-
-        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, getCreature()->getPower(POWER_TYPE_MANA) - 3231);
+        getCreature()->setPower(POWER_TYPE_MANA, getCreature()->getPower(POWER_TYPE_MANA) - 3231);
     }
 
     SpellInfo const* ManaRage;

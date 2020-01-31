@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Definitions/PowerType.h"
 #include "SpellDefines.hpp"
 #include "SpellScript.h"
 
@@ -107,7 +108,7 @@ public:
     uint32_t getBaseLevel() const { return baseLevel; }
     uint32_t getSpellLevel() const { return spellLevel; }
     uint32_t getDurationIndex() const { return DurationIndex; }
-    int32_t getPowerType() const { return powerType; }
+    PowerType getPowerType() const { return powerType; }
     uint32_t getManaCost() const { return manaCost; }
     uint32_t getManaCostPerlevel() const { return manaCostPerlevel; } // not used!
     uint32_t getManaPerSecond() const { return manaPerSecond; } // not used!
@@ -342,7 +343,7 @@ public:
 
     uint32_t getEffectSpellClassMask(uint8_t idx1, uint8_t idx2) const
     {
-        if (idx1 >= MAX_SPELL_TOTEMS || idx2 >= MAX_SPELL_EFFECTS)
+        if (idx1 >= MAX_SPELL_EFFECTS || idx2 >= MAX_SPELL_EFFECTS)
         {
             LogError("Totem index id %u or effect index %u is invalid!", idx1, idx2);
             return 0;
@@ -362,7 +363,7 @@ public:
         return EffectSpellClassMask[idx1];
     }
 
-    uint32_t getSpellVisual() const { return SpellVisual; }
+    uint32_t getSpellVisual(uint8_t visualIndex) const { return SpellVisual[visualIndex]; }
     uint32_t getSpellIconID() const { return spellIconID; }
     uint32_t getActiveIconID() const { return activeIconID; }
     uint32_t getSpellPriority() const { return spellPriority; } // not used!
@@ -527,7 +528,7 @@ private:
     void setBaseLevel(uint32_t value) { baseLevel = value; }
     void setSpellLevel(uint32_t value) { spellLevel = value; }    // used in HackFixes.cpp
     void setDurationIndex(uint32_t value) { DurationIndex = value; }    // used in HackFixes.cpp / SpellEffects.cpp
-    void setPowerType(int32_t value) { powerType = value; }
+    void setPowerType(PowerType value) { powerType = value; }
     void setManaCost(uint32_t value) { manaCost = value; }
     void setManaCostPerlevel(uint32_t value) { manaCostPerlevel = value; }
     void setManaPerSecond(uint32_t value) { manaPerSecond = value; }
@@ -771,7 +772,7 @@ private:
         EffectSpellClassMask[idx1][idx2] = spellClass;
     }
 
-    void setSpellVisual(uint32_t value) { SpellVisual = value; }
+    void setSpellVisual(uint8_t visualIndex, uint32_t value) { SpellVisual[visualIndex] = value; }
     void setSpellIconID(uint32_t value) { spellIconID = value; }
     void setActiveIconID(uint32_t value) { activeIconID = value; }
     void setSpellPriority(uint32_t value) { spellPriority = value; }
@@ -930,7 +931,7 @@ private:
     uint32_t spellLevel;
     // Data from Spell.dbc (in Cataclysm)
     uint32_t DurationIndex;
-    int32_t powerType;
+    PowerType powerType;
     // Data from SpellPower.dbc (in Cataclysm)
     uint32_t manaCost;
     uint32_t manaCostPerlevel;
@@ -975,7 +976,7 @@ private:
     uint32_t EffectIndex[MAX_SPELL_EFFECTS];
 #endif
     // Data from Spell.dbc (in Cataclysm)
-    uint32_t SpellVisual;
+    uint32_t SpellVisual[2];
     uint32_t spellIconID;
     uint32_t activeIconID;
     uint32_t spellPriority;

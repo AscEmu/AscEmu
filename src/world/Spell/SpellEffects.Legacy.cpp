@@ -235,6 +235,26 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectNULL,                    // 160 unknown
     &Spell::SpellEffectLearnSpec,               // 161 Learn or unlearn a spec
     &Spell::SpellEffectActivateSpec,            // 162 Activate a spec
+    &Spell::SpellEffectNULL,                    // 163
+    &Spell::SpellEffectNULL,                    // 164
+    &Spell::SpellEffectNULL,                    // 165
+    &Spell::SpellEffectNULL,                    // 166
+    &Spell::SpellEffectNULL,                    // 167
+    &Spell::SpellEffectNULL,                    // 168
+    &Spell::SpellEffectNULL,                    // 169
+    &Spell::SpellEffectNULL,                    // 170
+    &Spell::SpellEffectNULL,                    // 171
+    &Spell::SpellEffectNULL,                    // 172
+    &Spell::SpellEffectNULL,                    // 173
+    &Spell::SpellEffectNULL,                    // 174
+    &Spell::SpellEffectNULL,                    // 175
+    &Spell::SpellEffectNULL,                    // 176
+    &Spell::SpellEffectNULL,                    // 177
+    &Spell::SpellEffectNULL,                    // 178
+    &Spell::SpellEffectNULL,                    // 179
+    &Spell::SpellEffectNULL,                    // 180
+    &Spell::SpellEffectNULL,                    // 181
+    &Spell::SpellEffectNULL                     // 182
 };
 
 const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
@@ -1832,9 +1852,9 @@ void Spell::SpellEffectPowerDrain(uint8_t effectIndex)  // Power Drain
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
-    uint32 powerField = UNIT_FIELD_POWER1 + getSpellInfo()->getEffectMiscValue(effectIndex);
-    uint32_t curPower = unitTarget->getUInt32Value(static_cast<uint16_t>(powerField));
-    if (powerField == UNIT_FIELD_POWER1 && unitTarget->isPlayer())
+    auto powerField = static_cast<PowerType>(getSpellInfo()->getEffectMiscValue(effectIndex));
+    auto curPower = unitTarget->getPower(powerField);
+    if (powerField == POWER_TYPE_MANA && unitTarget->isPlayer())
     {
         Player* mPlayer = static_cast< Player* >(unitTarget);
         if (mPlayer->IsInFeralForm())
@@ -1846,8 +1866,8 @@ void Spell::SpellEffectPowerDrain(uint8_t effectIndex)  // Power Drain
     uint32 amt = damage + ((u_caster->GetDamageDoneMod(getSpellInfo()->getSchool()) * 80) / 100);
     if (amt > curPower)
         amt = curPower;
-    unitTarget->setUInt32Value(static_cast<uint16_t>(powerField), curPower - amt);
-    u_caster->Energize(u_caster, getSpellInfo()->getId(), amt, getSpellInfo()->getEffectMiscValue(effectIndex));
+    unitTarget->setPower(powerField, curPower - amt);
+    u_caster->energize(u_caster, getSpellInfo()->getId(), amt, powerField);
 }
 
 void Spell::SpellEffectHealthLeech(uint8_t /*effectIndex*/) // Health Leech
@@ -3331,7 +3351,7 @@ void Spell::SpellEffectEnergize(uint8_t effectIndex) // Energize
         modEnergy = uint32(modEnergy * 1.4f);
     }
 
-    u_caster->Energize(unitTarget, getSpellInfo()->getId(), modEnergy, getSpellInfo()->getEffectMiscValue(effectIndex));
+    u_caster->energize(unitTarget, getSpellInfo()->getId(), modEnergy, static_cast<PowerType>(getSpellInfo()->getEffectMiscValue(effectIndex)));
 }
 
 void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent damage
@@ -5447,7 +5467,7 @@ void Spell::SpellEffectDestroyAllTotems(uint8_t effectIndex)
     }
 
     p_caster->summonhandler.ExpireSummonsInSlot();
-    p_caster->Energize(p_caster, getSpellInfo()->getId(), RetreivedMana, POWER_TYPE_MANA);
+    p_caster->energize(p_caster, getSpellInfo()->getId(), RetreivedMana, POWER_TYPE_MANA);
 }
 
 void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
@@ -6155,15 +6175,15 @@ void Spell::SpellEffectRestorePowerPct(uint8_t effectIndex)
     if (u_caster == nullptr || unitTarget == nullptr || !unitTarget->isAlive())
         return;
 
-    uint32 power_type = getSpellInfo()->getEffectMiscValue(effectIndex);
+    auto power_type = static_cast<PowerType>(getSpellInfo()->getEffectMiscValue(effectIndex));
     if (power_type > POWER_TYPE_HAPPINESS)
     {
         LOG_ERROR("Unhandled power type %u in %s, report this line to devs.", power_type, __FUNCTION__);
         return;
     }
 
-    uint32 amount = damage * unitTarget->getMaxPower(static_cast<uint16_t>(power_type)) / 100;
-    u_caster->Energize(unitTarget, getSpellInfo()->getId(), amount, power_type);
+    uint32 amount = damage * unitTarget->getMaxPower(power_type) / 100;
+    u_caster->energize(unitTarget, getSpellInfo()->getId(), amount, power_type);
 }
 
 void Spell::SpellEffectTriggerSpellWithValue(uint8_t effectIndex)

@@ -491,7 +491,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellDamageType.h"
 #include "Spell/Definitions/SpellDidHitResult.h"
 #include "Spell/Definitions/SpellEffectTarget.h"
-#include "Spell/Definitions/SpellGoFlags.h"
+#include "Spell/Definitions/SpellPacketFlags.h"
 #include "Spell/Definitions/SpellInFrontStatus.h"
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Spell/Definitions/SpellLog.h"

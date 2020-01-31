@@ -3,7 +3,6 @@ Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Definitions/PowerType.h"
 #include "Definitions/SpellEffects.h"
 #include "Definitions/SpellEffectTarget.h"
 #include "SpellAuras.h"
@@ -54,7 +53,7 @@ SpellInfo::SpellInfo()
     baseLevel = 0;
     spellLevel = 0;
     DurationIndex = 0;
-    powerType = 0;
+    powerType = POWER_TYPE_MANA;
     manaCost = 0;
     manaCostPerlevel = 0;
     manaPerSecond = 0;
@@ -69,7 +68,7 @@ SpellInfo::SpellInfo()
         Reagent[i] = 0;
         ReagentCount[i] = 0;
     }
-    EquippedItemClass = 0;
+    EquippedItemClass = -1;
     EquippedItemSubClass = 0;
     EquippedItemInventoryTypeMask = 0;
     for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -102,7 +101,8 @@ SpellInfo::SpellInfo()
         EffectDamageMultiplier[i] = 0;
         EffectBonusMultiplier[i] = 0;
     }
-    SpellVisual = 0;
+    for (uint8_t i = 0; i < 2; ++i)
+        SpellVisual[i] = 0;
     spellIconID = 0;
     activeIconID = 0;
     spellPriority = 0;
@@ -375,16 +375,7 @@ bool SpellInfo::isAffectingSpell(SpellInfo const* spellInfo) const
 
 bool SpellInfo::hasValidPowerType() const
 {
-#if VERSION_STRING < WotLK
-    if (getPowerType() <= POWER_TYPE_HAPPINESS)
-#elif VERSION_STRING == WotLK
-    if (getPowerType() <= POWER_TYPE_RUNIC_POWER)
-#elif VERSION_STRING >= Cata
-    if (getPowerType() <= POWER_TYPE_ALTERNATIVE)
-#endif
-        return true;
-
-    return false;
+    return getPowerType() < TOTAL_PLAYER_POWER_TYPES;
 }
 
 uint32_t SpellInfo::getSpellDefaultDuration(Unit const* caster) const

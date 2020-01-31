@@ -1840,7 +1840,7 @@ public:
     {
         uint32 val = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr != nullptr)
-            ptr->setUInt32Value(UNIT_FIELD_POWER1, val);
+            ptr->setPower(POWER_TYPE_MANA, val);
         return 0;
     }
 
@@ -2563,7 +2563,7 @@ public:
         uint32 type = CHECK_ULONG(L, 4);
         if (!target || !spellid || !amount || !type || !ptr)
             return 0;
-        ptr->Energize(target, spellid, amount, type);
+        ptr->energize(target, spellid, amount, static_cast<PowerType>(type));
         return 0;
     }
 
@@ -2615,7 +2615,7 @@ public:
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 1, -1));
 
-        lua_pushnumber(L, static_cast<int>(ptr->getPower(powertype) * 100.0f / ptr->getMaxPower(powertype)));
+        lua_pushnumber(L, static_cast<int>(ptr->getPower(static_cast<PowerType>(powertype)) * 100.0f / ptr->getMaxPower(static_cast<PowerType>(powertype))));
         return 1;
     }
 
@@ -2642,7 +2642,7 @@ public:
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 1, -1));
 
-        lua_pushnumber(L, ptr->getPower(powertype));
+        lua_pushnumber(L, ptr->getPower(static_cast<PowerType>(powertype)));
         return 1;
     }
 
@@ -2669,7 +2669,7 @@ public:
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 1, -1));
 
-        lua_pushnumber(L, ptr->getMaxPower(powertype));
+        lua_pushnumber(L, ptr->getMaxPower(static_cast<PowerType>(powertype)));
         return 1;
     }
 
@@ -2709,7 +2709,7 @@ public:
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 2, -1));
 
-        ptr->setMaxPower(powertype, amount);
+        ptr->setMaxPower(static_cast<PowerType>(powertype), amount);
         return 0;
     }
 
@@ -2726,7 +2726,7 @@ public:
         else
             powertype = static_cast<uint32>(luaL_optinteger(L, 2, -1));
 
-        ptr->setPower(powertype, amount);
+        ptr->setPower(static_cast<PowerType>(powertype), amount);
         return 0;
     }
 
@@ -2743,7 +2743,7 @@ public:
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 2, -1));
 
-        ptr->setPower(powertype, static_cast<int>(amount / 100) * (ptr->getMaxPower(powertype)));
+        ptr->setPower(static_cast<PowerType>(powertype), static_cast<int>(amount / 100) * (ptr->getMaxPower(static_cast<PowerType>(powertype))));
         return 0;
     }
 

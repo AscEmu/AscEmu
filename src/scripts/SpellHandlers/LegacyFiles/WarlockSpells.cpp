@@ -84,11 +84,7 @@ bool LifeTap(uint8_t effectIndex, Spell* s)
 
     s->p_caster->DealDamage(playerTarget, damage, 0, 0, s->getSpellInfo()->getId());
     damage = damage * (100 + playerTarget->m_lifetapbonus) / 100;    // Apply improved life tap
-    if (playerTarget->getPower(POWER_TYPE_MANA) + damage > playerTarget->getMaxPower(POWER_TYPE_MANA))
-        playerTarget->setPower(POWER_TYPE_MANA, playerTarget->getMaxPower(POWER_TYPE_MANA));
-    else
-        playerTarget->setPower(POWER_TYPE_MANA, playerTarget->getPower(POWER_TYPE_MANA) + damage);
-    s->SendHealManaSpellOnPlayer(s->p_caster, playerTarget, damage, POWER_TYPE_MANA, s->getSpellInfo()->getId());
+    s->p_caster->energize(playerTarget, s->getSpellInfo()->getId(), damage, POWER_TYPE_MANA);
 
     return true;
 }
@@ -675,7 +671,7 @@ bool DemonicCircleSummon(uint8_t /*effectIndex*/, Aura* a, bool apply)
     return true;
 }
 
-void SetupWarlockSpells(ScriptMgr* mgr)
+void SetupLegacyWarlockSpells(ScriptMgr* mgr)
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     // Dummy Effect

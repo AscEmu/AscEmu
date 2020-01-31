@@ -3151,7 +3151,7 @@ bool InducingVision(uint8_t /*effectIndex*/, Spell* pSpell)
     return true;
 }
 
-void SetupQuestItems(ScriptMgr* mgr)
+void SetupLegacyQuestItems(ScriptMgr* mgr)
 {
     mgr->register_dummy_spell(3607, &YennikuRelease);
     mgr->register_dummy_spell(4141, &ScrollOfMyzrael);

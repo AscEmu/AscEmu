@@ -276,7 +276,7 @@ bool ArmoredToTheTeeth(uint8_t /*effectIndex*/, Spell* /*s*/)
     return true;
 };
 
-void SetupWarriorSpells(ScriptMgr* mgr)
+void SetupLegacyWarriorSpells(ScriptMgr* mgr)
 {
     uint32 ExecuteIds[] =
     {

@@ -656,7 +656,7 @@ bool GeneralDummyEffect(uint8_t /*effectIndex*/, Spell* /*pSpell*/)
     return true;
 }
 
-void SetupMiscSpellhandlers(ScriptMgr* mgr)
+void SetupLegacyMiscSpellhandlers(ScriptMgr* mgr)
 {
     mgr->register_dummy_spell(51892, &EyeOfAcherusVisual);
     mgr->register_script_effect(52694, &RecallEyeOfAcherus);

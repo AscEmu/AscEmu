@@ -265,7 +265,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
                 case 11:
                     dpsSpell = 49895; // Death Coil x 2
                     break;
-            default: 
+            default:
                 break;
             }
             dpsCycle++;
@@ -328,7 +328,7 @@ class FrostBroodVanquisherAI : public CreatureAIScript
     }
 };
 
-void SetupPetAISpells(ScriptMgr* mgr)
+void SetupLegacyPetAISpells(ScriptMgr* mgr)
 {
     mgr->register_creature_script(24207, &ArmyOfTheDeadGhoulAI::Create);
     mgr->register_creature_script(19668, &ShadowFiendAI::Create);

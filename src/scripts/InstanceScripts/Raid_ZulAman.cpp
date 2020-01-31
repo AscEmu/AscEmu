@@ -266,8 +266,8 @@ class HalazziAI : public CreatureAIScript
     {
         CurrentHealth = getCreature()->getHealth();
         _setDisplayId(24144);
-        getCreature()->setHealth(240000);
         getCreature()->setMaxHealth(240000);
+        getCreature()->setHealth(240000);
 
         mLynx = spawnCreature(CN_LYNX_SPIRIT, getCreature()->GetPosition());
         if (mLynx)
@@ -288,10 +288,10 @@ class HalazziAI : public CreatureAIScript
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 12022, "Spirit, come back to me!");
         }
 
-        if (CurrentHealth)
-            getCreature()->setHealth(CurrentHealth);
         if (MaxHealth)
             getCreature()->setMaxHealth(MaxHealth);
+        if (CurrentHealth)
+            getCreature()->setHealth(CurrentHealth);
         _setDisplayId(21632);
 
         SplitCount++;

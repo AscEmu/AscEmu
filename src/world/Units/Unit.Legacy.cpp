@@ -515,8 +515,11 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
 
     //DK:modifiers
     PctRegenModifier = 0;
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < TOTAL_PLAYER_POWER_TYPES; i++)
+    {
         PctPowerRegenModifier[i] = 1;
+        m_powerFractions[i] = 0;
+    }
 
     m_speedModifier = 0;
     m_slowdown = 0;
@@ -653,7 +656,6 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
         BaseStats[i] = 0;
 
     m_H_regenTimer = 2000;
-    m_P_regenTimer = 2000;
 
     //  if (getObjectTypeId() == TYPEID_PLAYER) // only player for now
     //      CalculateActualArmor();
@@ -683,7 +685,6 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
         SchoolCastPrevent[i] = 0;
         DamageTakenPctMod[i] = 0;
         SpellCritChanceSchool[i] = 0;
-        PowerCostMod[i] = 0;
         PowerCostPctMod[i] = 0; // armor penetration & spell penetration
         AttackerCritChanceMod[i] = 0;
         CritMeleeDamageTakenPctMod[i] = 0;
@@ -731,7 +732,6 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
     CombatStatus.SetUnit(this);
     m_chargeSpellsInUse = false;
     // m_spellsbusy=false;
-    m_interruptedRegenTime = 0;
     m_hitfrommeleespell = 0;
     m_damageSplitTarget = NULL;
     m_extrastriketarget = false;
@@ -1124,22 +1124,23 @@ void Unit::Update(unsigned long time_passed)
         else
             m_H_regenTimer -= static_cast<uint16>(time_passed);
 
-        if (time_passed >= m_P_regenTimer)
+        regeneratePowers(static_cast<uint16_t>(time_passed));
+
+#if VERSION_STRING < Cata
+        if (time_passed >= m_powerRegenerationInterruptTime)
         {
-            RegeneratePower(false);
-            m_interruptedRegenTime = 0;
+            m_powerRegenerationInterruptTime = 0;
+
+#if VERSION_STRING != Classic
+            if (isPlayer())
+                setUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
+#endif
         }
         else
         {
-            m_P_regenTimer -= static_cast<uint16>(time_passed);
-            if (m_interruptedRegenTime)
-            {
-                if (time_passed >= m_interruptedRegenTime)
-                    RegeneratePower(true);
-                else
-                    m_interruptedRegenTime -= time_passed;
-            }
+            m_powerRegenerationInterruptTime -= time_passed;
         }
+#endif
 
         if (m_aiInterface != NULL)
         {
@@ -6869,135 +6870,6 @@ void Unit::RegenerateHealth()
     }
 }
 
-void Unit::RegeneratePower(bool isinterrupted)
-{
-    // This is only 2000 IF the power is not rage
-    if (isinterrupted)
-        m_interruptedRegenTime = 2000;
-    else
-        m_P_regenTimer = 2000;      //set next regen time
-
-    if (!isAlive())
-        return;
-
-    if (!isPlayer() && isVehicle())
-    {
-        uint8_t powertype = getPowerType();
-        float wrate = worldConfig.getFloatRate(RATE_VEHICLES_POWER_REGEN);
-        float amount = wrate * 20.0f;
-        setPower(powertype, static_cast<int32>(getPower(powertype) + amount));
-    }
-
-    //druids regen every tick, which is every 100ms, at one energy, as of 3.0.2
-    //I don't know how mana has changed exactly, but it has, will research it - optical
-    if (isPlayer() && getPowerType() == POWER_TYPE_ENERGY)
-    {
-        static_cast<Player*>(this)->RegenerateEnergy();
-        // druids regen mana when shapeshifted
-        if (getClass() == DRUID)
-        {
-            static_cast<Player*>(this)->RegenerateMana(isinterrupted);
-        }
-        return;
-    }
-
-    // player regen
-    if (this->isPlayer())
-    {
-        uint32 powertype = getPowerType();
-        switch (powertype)
-        {
-            case POWER_TYPE_MANA:
-                static_cast<Player*>(this)->RegenerateMana(isinterrupted);
-                break;
-
-            case POWER_TYPE_RAGE:
-            {
-                // These only NOT in combat
-                if (!CombatStatus.IsInCombat())
-                {
-                    m_P_regenTimer = 3000;
-                    if (HasAura(12296))
-                    {
-                        static_cast<Player*>(this)->LooseRage(20);
-                    }
-                    else
-                        static_cast<Player*>(this)->LooseRage(30);
-                }
-                else
-                {
-                    if (HasAura(12296))
-                    {
-                        m_P_regenTimer = 3000;
-                        static_cast<Player*>(this)->LooseRage(-10);
-                    }
-                }
-
-            }
-            break;
-
-            case POWER_TYPE_FOCUS:
-            {
-                m_P_regenTimer = 350; // This seems to be the exact Blizzlike timer
-                uint32 cur = getPower(POWER_TYPE_FOCUS);
-                uint32 mm = getMaxPower(POWER_TYPE_FOCUS);
-                if (cur >= mm)
-                    return;
-                cur += 2;
-                setPower(POWER_TYPE_FOCUS, (cur >= mm) ? mm : cur);
-            }
-            break;
-#if VERSION_STRING == WotLK
-            case POWER_TYPE_RUNIC_POWER:
-            {
-                if (!CombatStatus.IsInCombat())
-                {
-                    uint32 cur = getUInt32Value(UNIT_FIELD_POWER7);
-                    setPower(POWER_TYPE_RUNIC_POWER, cur - 20);
-                }
-            }
-            break;
-#endif
-        }
-
-        /*
-
-        There is a problem here for druids.
-        Druids when shapeshifted into bear have 2 power with different regen timers
-        a) Mana (which regenerates while shapeshifted
-        b) Rage
-
-        Mana has a regen timer of 2 seconds
-        Rage has a regen timer of 3 seconds
-
-        I think the only viable way of fixing this is to have 2 different timers
-        to check each individual power.
-
-        Atm, mana is being regen at 3 seconds while shapeshifted...
-
-        */
-
-
-        // druids regen mana when shapeshifted
-        if (getClass() == DRUID && powertype != POWER_TYPE_MANA)
-            static_cast<Player*>(this)->RegenerateMana(isinterrupted);
-    }
-    else
-    {
-        uint32 powertype = getPowerType();
-        switch (powertype)
-        {
-            case POWER_TYPE_MANA:
-                static_cast<Creature*>(this)->RegenerateMana();
-                break;
-            case POWER_TYPE_FOCUS:
-                static_cast<Creature*>(this)->RegenerateFocus();
-                m_P_regenTimer = 4000;
-                break;
-        }
-    }
-}
-
 void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInfo const* ability, float ArmorPctReduce)
 {
     float AverageResistance = 0.0f;
@@ -8225,7 +8097,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
             Player* owner = GetMapMgr()->GetPlayer((uint32)getSummonedByGuid());
             uint32 amount = static_cast<uint32>(owner->getMaxPower(POWER_TYPE_MANA) * 0.05f);
             if (owner != NULL)
-                this->Energize(owner, 34650, amount, POWER_TYPE_MANA);
+                this->energize(owner, 34650, amount, POWER_TYPE_MANA);
         }
         //ugly hack for Bloodsworm restoring hp
         if (getSummonedByGuid() != 0 && getEntry() == 28017)
@@ -10257,7 +10129,7 @@ uint32 Unit::ManaShieldAbsorb(uint32 dmg)
 
     uint32 cost = (potential * (100 + effectbonus)) / 50;
 
-    setUInt32Value(UNIT_FIELD_POWER1, mana - cost);
+    setPower(POWER_TYPE_MANA, mana - cost);
     m_manashieldamt -= potential;
     if (!m_manashieldamt)
         RemoveAura(m_manaShieldId);
@@ -10361,7 +10233,7 @@ bool Unit::HasAuraVisual(uint32 visualid)
 {
     //passive auras do not have visual (at least when code was written)
     for (uint32 x = MAX_REMOVABLE_AURAS_START; x < MAX_REMOVABLE_AURAS_END; x++)
-        if (m_auras[x] && m_auras[x]->GetSpellInfo()->getSpellVisual() == visualid)
+        if (m_auras[x] && m_auras[x]->GetSpellInfo()->getSpellVisual(0) == visualid)
             return true;
 
     return false;
@@ -12547,23 +12419,6 @@ void Unit::Heal(Unit* target, uint32 SpellId, uint32 amount)
     }
 }
 
-void Unit::Energize(Unit* target, uint32 SpellId, uint32 amount, uint32 type)
-{
-    //Static energize
-    if (!target || !SpellId || !amount)
-        return;
-
-    uint32 cur = target->getPower(static_cast<uint16_t>(POWER_TYPE_MANA + type));
-    uint32 max = target->getMaxPower(static_cast<uint16_t>(POWER_TYPE_MANA + type));
-
-    if (cur + amount > max)
-        amount = max - cur;
-
-    target->setPower(POWER_TYPE_MANA + type, cur + amount);
-
-    Spell::SendHealManaSpellOnPlayer(this, target, amount, type, SpellId);
-}
-
 void Unit::InheritSMMods(Unit* inherit_from)
 {
     if (inherit_from == NULL)
@@ -13245,30 +13100,6 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
     }
 }
 
-void Unit::SendPowerUpdate(bool self)
-{
-#if VERSION_STRING > TBC
-    uint32 amount = getUInt32Value(UNIT_FIELD_POWER1 + getPowerType()); //save the amount, so we send the same to the player and everyone else
-
-    SendMessageToSet(SmsgPowerUpdate(GetNewGUID(), getPowerType(), amount).serialise().get(), self);
-
-    //VLack: On 3.1.3, create and send a field update packet to everyone else, as this is the only way to update their GUI with the power values.
-    WorldPacket* pkt = BuildFieldUpdatePacket(UNIT_FIELD_POWER1 + getPowerType(), amount);
-    SendMessageToSet(pkt, false);
-    delete pkt;
-#endif
-}
-
-void Unit::UpdatePowerAmm()
-{
-#if VERSION_STRING > TBC
-    if (!isPlayer())
-        return;
-
-    SendMessageToSet(SmsgPowerUpdate(GetNewGUID(), getPowerType(), getUInt32Value(UNIT_FIELD_POWER1 + getPowerType())).serialise().get(), true);
-#endif
-}
-
 void Unit::AddGarbageAura(Aura* aur)
 {
     m_GarbageAuras.push_back(aur);
@@ -13911,79 +13742,6 @@ void Unit::UpdateAuraForGroup(uint8 slot)
             }
         }
     }
-}
-
-void Unit::HandleUpdateFieldChange(uint32 Index)
-{
-    Player* player = NULL;
-    bool pet = false;
-
-    if (!IsInWorld())
-        return;
-
-    if (isPlayer())
-        player = static_cast<Player*>(this);
-    else if (getPlayerOwner())
-    {
-        player = getPlayerOwner();
-        pet = true;
-    }
-
-    if (player == NULL || !player->IsInWorld() || !player->GetGroup())
-        return;
-
-    uint32 Flags = 0;
-    switch (Index)
-    {
-        case UNIT_FIELD_HEALTH:
-            Flags = pet ? GROUP_UPDATE_FLAG_PET_CUR_HP : GROUP_UPDATE_FLAG_CUR_HP;
-            break;
-
-        case UNIT_FIELD_MAXHEALTH:
-            Flags = pet ? GROUP_UPDATE_FLAG_PET_MAX_HP : GROUP_UPDATE_FLAG_MAX_HP;
-            break;
-
-        case UNIT_FIELD_POWER1:
-        case UNIT_FIELD_POWER2:
-        case UNIT_FIELD_POWER3:
-        case UNIT_FIELD_POWER4:
-        case UNIT_FIELD_POWER5:
-#if VERSION_STRING == WotLK
-        case UNIT_FIELD_POWER6:
-        case UNIT_FIELD_POWER7:
-#endif
-            Flags = pet ? GROUP_UPDATE_FLAG_PET_CUR_POWER : GROUP_UPDATE_FLAG_CUR_POWER;
-            break;
-
-        case UNIT_FIELD_MAXPOWER1:
-        case UNIT_FIELD_MAXPOWER2:
-        case UNIT_FIELD_MAXPOWER3:
-        case UNIT_FIELD_MAXPOWER4:
-        case UNIT_FIELD_MAXPOWER5:
-#if VERSION_STRING == WotLK
-        case UNIT_FIELD_MAXPOWER6:
-        case UNIT_FIELD_MAXPOWER7:
-#endif
-            Flags = pet ? GROUP_UPDATE_FLAG_PET_CUR_POWER : GROUP_UPDATE_FLAG_MAX_POWER;
-            break;
-
-        case UNIT_FIELD_DISPLAYID:
-            Flags = pet ? GROUP_UPDATE_FLAG_PET_MODEL_ID : 0;
-            break;
-        case UNIT_FIELD_LEVEL:
-            Flags = pet ? 0 : GROUP_UPDATE_FLAG_LEVEL;
-            break;
-        case UNIT_FIELD_BYTES_0:
-            Flags = pet ? GROUP_UPDATE_FLAG_PET_POWER_TYPE : GROUP_UPDATE_FLAG_POWER_TYPE;
-            break;
-        case UNIT_FIELD_BYTES_2:
-        case PLAYER_FLAGS:
-            Flags = pet ? 0 : GROUP_UPDATE_FLAG_STATUS;
-            break;
-        default:
-            break;
-    }
-    player->AddGroupUpdateFlag(Flags);
 }
 
 void Unit::Possess(Unit* pTarget, uint32 delay)

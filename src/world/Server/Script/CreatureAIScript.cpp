@@ -575,7 +575,6 @@ int32_t CreatureAIScript::_getManaPercent()
 void CreatureAIScript::_regenerateHealth()
 {
     _creature->RegenerateHealth();
-    _creature->RegeneratePower(false);
 }
 
 bool CreatureAIScript::_isCasting()

@@ -282,7 +282,6 @@ Player::Player(uint32 guid)
     int i, j;
 
     m_H_regenTimer = 0;
-    m_P_regenTimer = 0;
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_PLAYER;
     m_objectTypeId = TYPEID_PLAYER;
@@ -453,6 +452,8 @@ Player::Player(uint32 guid)
     m_IncreaseDmgSnaredSlowed = 0;
     m_ModInterrMRegenPCT = 0;
     m_ModInterrMRegen = 0;
+    for (uint8_t x = 0; x < STAT_COUNT; ++x)
+        m_modManaRegenFromStat[x] = 0;
     m_RegenManaOnSpellResist = 0;
     m_rap_mod_pct = 0;//only initialized to 0: why?
     m_modblockabsorbvalue = 0;
@@ -5992,27 +5993,7 @@ void Player::UpdateStats()
         if (getPower(POWER_TYPE_MANA) > res)
             setPower(POWER_TYPE_MANA, res);
 
-        uint32 level = getLevel();
-        if (level > DBC_PLAYER_LEVEL_CAP)
-            level = DBC_PLAYER_LEVEL_CAP;
-        //float amt = (0.001f + sqrt((float)Intellect) * Spirit * getBaseManaRegen(level))*PctPowerRegenModifier[POWER_TYPE_MANA];
-
-        // Mesmer: new Manaregen formula.
-        uint32 Spirit = getStat(STAT_SPIRIT);
-        uint32 Intellect = getStat(STAT_INTELLECT);
-        float amt = (0.001f + sqrt((float)Intellect) * Spirit * getBaseManaRegen(level)) * PctPowerRegenModifier[POWER_TYPE_MANA];
-#if VERSION_STRING > TBC
-        setFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER, amt + m_ModInterrMRegen * 0.2f);
-        setFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER, amt * m_ModInterrMRegenPCT / 100.0f + m_ModInterrMRegen * 0.2f);
-#elif VERSION_STRING == TBC
-        const static float BaseRegen[70] = { 0.034965f, 0.034191f, 0.033465f, 0.032526f, 0.031661f, 0.031076f, 0.030523f, 0.029994f, 0.029307f, 0.028661f, 0.027584f, 0.026215f, 0.025381f, 0.024300f, 0.023345f, 0.022748f, 0.021958f, 0.021386f, 0.020790f, 0.020121f, 0.019733f, 0.019155f, 0.018819f, 0.018316f, 0.017936f, 0.017576f, 0.017201f, 0.016919f, 0.016581f, 0.016233f, 0.015994f, 0.015707f, 0.015464f, 0.015204f, 0.014956f, 0.014744f, 0.014495f, 0.014302f, 0.014094f, 0.013895f, 0.013724f, 0.013522f, 0.013363f, 0.013175f, 0.012996f, 0.012853f, 0.012687f, 0.012539f, 0.012384f, 0.012233f, 0.012113f, 0.011973f, 0.011859f, 0.011714f, 0.011575f, 0.011473f, 0.011342f, 0.011245f, 0.011110f, 0.010999f, 0.010700f, 0.010522f, 0.010290f, 0.010119f, 0.009968f, 0.009808f, 0.009651f, 0.009553f, 0.009445f, 0.009327f };
-        if (level > 70)
-            level = 70;
-
-        float BCamt = (0.001f + sqrt((float)Intellect) * Spirit * BaseRegen[level - 1])*PctPowerRegenModifier[POWER_TYPE_MANA];
-        setFloatValue(PLAYER_FIELD_MOD_MANA_REGEN, BCamt + m_ModInterrMRegen / 5.0f);
-        setFloatValue(PLAYER_FIELD_MOD_MANA_REGEN_INTERRUPT, amt * m_ModInterrMRegenPCT / 100.0f + m_ModInterrMRegen / 5.0f);
-#endif
+        updateManaRegeneration();
     }
 
     // Spell haste rating
@@ -6920,45 +6901,6 @@ void Player::CalcStat(uint8_t type)
     }
 }
 
-void Player::RegenerateMana(bool is_interrupted)
-{
-    uint32 cur = getPower(POWER_TYPE_MANA);
-    uint32 mm = getMaxPower(POWER_TYPE_MANA);
-    if (cur >= mm)
-        return;
-
-    float wrate = worldConfig.getFloatRate(RATE_POWER1); // config file regen rate
-#if VERSION_STRING == TBC
-    float amt = (is_interrupted) ? getFloatValue(PLAYER_FIELD_MOD_MANA_REGEN_INTERRUPT) : getFloatValue(PLAYER_FIELD_MOD_MANA_REGEN);
-#elif VERSION_STRING == Classic
-    float amt = 10;
-#else
-    float amt = (is_interrupted) ? getFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER) : getFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER);
-#endif
-    amt *= wrate * 2.0f;
-
-    if (amt <= 1.0 && amt > 0) //this fixes regen like 0.98
-    {
-        if (is_interrupted)
-            return;
-        ++cur;
-    }
-    else
-        cur += float2int32(amt);
-
-    //    Unit::setPower() will call Object::SetUInt32Value(), which will (for players) call SendPowerUpdate(),
-    //    which can be slightly out-of-sync with client regeneration [with latency] (and wastes packets since client can handle this on its own)
-    if (wrate != 1.0) // our config has custom regen rate, so send new amount to player's client
-    {
-        setPower(POWER_TYPE_MANA, cur);
-    }
-    else // let player's own client handle normal regen rates.
-    {
-        setPower(POWER_TYPE_MANA, ((cur >= mm) ? mm : cur));
-        SendPowerUpdate(false); // send update to other in-range players
-    }
-}
-
 void Player::RegenerateHealth(bool inCombat)
 {
     uint32 cur = getHealth();
@@ -7021,53 +6963,6 @@ void Player::RegenerateHealth(bool inCombat)
         else
             DealDamage(this, float2int32(-amt), 0, 0, 0);
     }
-}
-
-void Player::LooseRage(int32 decayValue)
-{
-    //Rage is lost at a rate of 3 rage every 3 seconds.
-    //The Anger Management talent changes this to 2 rage every 3 seconds.
-    uint32 cur = getPower(POWER_TYPE_RAGE);
-    uint32 newrage = ((int)cur <= decayValue) ? 0 : cur - decayValue;
-    if (newrage > 1000)
-        newrage = 1000;
-
-    // Object::SetUInt32Value() will (for players) call SendPowerUpdate(),
-    // which can be slightly out-of-sync with client rage loss
-    // config file rage rate is rage gained, not lost, so we don't need that here
-    //    SetUInt32Value(UNIT_FIELD_POWER2,newrage);
-    setPower(POWER_TYPE_RAGE, newrage);
-    SendPowerUpdate(false); // send update to other in-range players
-}
-
-void Player::RegenerateEnergy()
-{
-    uint32 cur = getPower(POWER_TYPE_ENERGY);
-    uint32 mh = getMaxPower(POWER_TYPE_ENERGY);
-    if (cur >= mh)
-        return;
-
-    float wrate = worldConfig.getFloatRate(RATE_POWER4);
-    float amt = PctPowerRegenModifier[POWER_TYPE_ENERGY];
-    amt *= wrate * 20.0f;
-
-    cur += float2int32(amt);
-
-#if VERSION_STRING > TBC
-    //    Object::SetUInt32Value() will (for players) call SendPowerUpdate(),
-    //    which can be slightly out-of-sync with client regeneration [latency] (and wastes packets since client can handle this on its own)
-    if (wrate != 1.0f) // our config has custom regen rate, so send new amount to player's client
-    {
-        setPower(POWER_TYPE_ENERGY, (cur >= mh) ? mh : cur);
-    }
-    else // let player's own client handle normal regen rates.
-    {
-        m_uint32Values[UNIT_FIELD_POWER4] = (cur >= mh) ? mh : cur;
-        SendPowerUpdate(false); // send update to other in-range players
-    }
-#elif VERSION_STRING == TBC
-    setPower(POWER_TYPE_ENERGY, (cur >= mh) ? mh : cur);
-#endif
 }
 
 uint32 Player::GeneratePetNumber()
@@ -8744,7 +8639,7 @@ void Player::CompleteLoading()
             }
 
             // Check aurastate
-            if (spellInfo->getCasterAuraState() != 0 && !hasAuraState(AuraState(spellInfo->getCasterAuraState()), spellInfo, this))
+            if (spellInfo->getCasterAuraState() != 0 && !hasAuraState(static_cast<AuraState>(spellInfo->getCasterAuraState()), spellInfo, this))
                 continue;
 
             Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
@@ -8874,7 +8769,7 @@ void Player::CompleteLoading()
     }
 
     //sEventMgr.AddEvent(this,&Player::SendAllAchievementData,EVENT_SEND_ACHIEVEMNTS_TO_PLAYER,ACHIEVEMENT_SEND_DELAY,1,0);
-    sEventMgr.AddEvent(static_cast< Unit* >(this), &Unit::UpdatePowerAmm, EVENT_SEND_PACKET_TO_PLAYER_AFTER_LOGIN, LOGIN_CIENT_SEND_DELAY, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::sendPowerUpdate, true, EVENT_SEND_PACKET_TO_PLAYER_AFTER_LOGIN, LOGIN_CIENT_SEND_DELAY, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 #endif
 }
 
@@ -11195,13 +11090,6 @@ void Player::RemoveTempEnchantsOnArena()
             it->RemoveAllEnchantments(true);
         }
     }
-}
-
-void Player::UpdatePowerAmm()
-{
-#if VERSION_STRING > TBC
-    SendMessageToSet(SmsgPowerUpdate(GetNewGUID(), getPowerType(), getUInt32Value(UNIT_FIELD_POWER1 + getPowerType())).serialise().get(), true);
-#endif
 }
 
 // Initialize Glyphs or update them after level change

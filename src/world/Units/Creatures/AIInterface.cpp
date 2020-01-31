@@ -922,8 +922,8 @@ bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
             wpCreature->setLevel(wayPoint->id);
             wpCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
             wpCreature->SetFaction(player->getFactionTemplate());
-            wpCreature->setHealth(1);
             wpCreature->setMaxHealth(1);
+            wpCreature->setHealth(1);
             wpCreature->setStat(STAT_STRENGTH, wayPoint->flags);
 
             ByteBuffer buf(3000);
@@ -4922,8 +4922,8 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             uint32 health = properties_difficulty->MinHealth + Util::getRandomUInt(properties_difficulty->MaxHealth - properties_difficulty->MinHealth);
 
-            m_Unit->setHealth(health);
             m_Unit->setMaxHealth(health);
+            m_Unit->setHealth(health);
             m_Unit->setBaseHealth(health);
 
             m_Unit->setMaxPower(POWER_TYPE_MANA, properties_difficulty->Mana);

@@ -142,7 +142,7 @@ bool MirrorImage(uint8_t effectIndex, Aura* pAura, bool apply)
     return true;
 }
 
-void SetupMageSpells(ScriptMgr* mgr)
+void SetupLegacyMageSpells(ScriptMgr* mgr)
 {
     mgr->register_dummy_spell(11958, &Cold_Snap);
     mgr->register_dummy_aura(44457, &Living_Bomb);

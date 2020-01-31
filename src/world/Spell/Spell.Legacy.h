@@ -55,18 +55,33 @@ class SERVER_DECL Spell : public EventableObject
 
         // Second check in ::cast() should not be as strict as initial check
         virtual SpellCastResult canCast(const bool secondCheck, uint32_t* parameter1, uint32_t* parameter2);
+        SpellCastResult checkPower() const;
 
+    private:
         SpellCastResult checkItems(uint32_t* parameter1, uint32_t* parameter2) const;
         SpellCastResult checkCasterState() const;
         SpellCastResult checkRange(const bool secondCheck) const;
-        SpellCastResult checkPower() const;
+#if VERSION_STRING >= WotLK
+        SpellCastResult checkRunes(bool takeRunes) const;
+#endif
         SpellCastResult checkShapeshift(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const;
 
+    public:
         //////////////////////////////////////////////////////////////////////////////////////////
         // Spell packets
         void sendCastResult(SpellCastResult result, uint32_t parameter1 = 0, uint32_t parameter2 = 0);
+
+    private:
+        // Spell cast bar packet
+        void sendSpellStart();
+        // Spell "missile" packet
+        void sendSpellGo();
+
         void sendCastResult(Player* caster, uint8_t castCount, SpellCastResult result, uint32_t parameter1, uint32_t parameter2);
 
+        void writeProjectileDataToPacket(WorldPacket *data);
+
+    public:
         //////////////////////////////////////////////////////////////////////////////////////////
         // Cast time
         int32_t getFullCastTime() const;
@@ -78,10 +93,11 @@ class SERVER_DECL Spell : public EventableObject
 
     public:
         //////////////////////////////////////////////////////////////////////////////////////////
-        // Power cost
+        // Power
         uint32_t getPowerCost() const;
 
     private:
+        void takePower();
         uint32_t calculatePowerCost() const;
 
         uint32_t m_powerCost;
@@ -147,8 +163,6 @@ class SERVER_DECL Spell : public EventableObject
 
         void HandleModeratedEffects(uint64 guid);
 
-        // Take Power from the caster based on spell power usage
-        bool TakePower();
         // Trigger Spell function that triggers triggered spells
         //void TriggerSpell();
 
@@ -187,8 +201,6 @@ class SERVER_DECL Spell : public EventableObject
         GameObject* GetTargetConstraintGameObject() const;
 
         // Send Packet functions
-        void SendSpellStart();
-        void SendSpellGo();
         void SendLogExecute(uint32 damage, uint64 & targetGuid);
         void SendInterrupted(uint8 result);
         void SendChannelUpdate(uint32 time);
@@ -196,8 +208,6 @@ class SERVER_DECL Spell : public EventableObject
         void SendResurrectRequest(Player* target);
         void SendTameFailure(uint8 failure);
         static void SendHealSpellOnPlayer(Object* caster, Object* target, uint32 healed, bool critical, uint32 overhealed, uint32 spellid, uint32 absorbed = 0);
-        static void SendHealManaSpellOnPlayer(Object* caster, Object* target, uint32 dmg, uint32 powertype, uint32 spellid);
-
 
         void HandleAddAura(uint64 guid);
         void writeSpellGoTargets(WorldPacket* data);

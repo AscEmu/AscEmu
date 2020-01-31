@@ -19,20 +19,26 @@ extern "C" SCRIPT_DECL uint32 _exp_get_script_type()
 
 extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 {
-    SetupShamanSpells(mgr);
-    SetupWarlockSpells(mgr);
-    SetupWarriorSpells(mgr);
-    SetupHunterSpells(mgr);
-    SetupItemSpells_1(mgr);
-    SetupQuestItems(mgr); //this was commented for crash reason, let see what are those...
-    SetupMageSpells(mgr);
-    SetupPaladinSpells(mgr);
-    SetupRogueSpells(mgr);
-    SetupPriestSpells(mgr);
-    SetupPetAISpells(mgr);
-    SetupDruidSpells(mgr);
-    SetupDeathKnightSpells(mgr);
-    SetupMiscSpellhandlers(mgr);
+#if VERSION_STRING >= WotLK
+    setupDeathKnightSpells(mgr);
+#endif
+    setupDruidSpells(mgr);
+    setupHunterSpells(mgr);
+    setupMageSpells(mgr);
+#if VERSION_STRING >= Mop
+    setupMonkSpells(mgr);
+#endif
+    setupPaladinSpells(mgr);
+    setupPriestSpells(mgr);
+    setupRogueSpells(mgr);
+    setupShamanSpells(mgr);
+    setupWarlockSpells(mgr);
+    setupWarriorSpells(mgr);
+
+    setupItemSpells(mgr);
+    setupMiscSpells(mgr);
+    setupPetSpells(mgr);
+    setupQuestSpells(mgr);
 }
 
 #ifdef WIN32

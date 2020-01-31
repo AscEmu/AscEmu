@@ -295,7 +295,7 @@ bool KillingSpreeEffectDummy(uint8_t /*effectIndex*/, Spell* s)
     return true;
 }
 
-void SetupRogueSpells(ScriptMgr* mgr)
+void SetupLegacyRogueSpells(ScriptMgr* mgr)
 {
     mgr->register_dummy_spell(5938, &Shiv);
     mgr->register_dummy_spell(14185, &Preparation);

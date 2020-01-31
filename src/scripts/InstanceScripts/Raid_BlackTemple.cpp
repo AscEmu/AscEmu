@@ -1088,7 +1088,7 @@ class ShadowmoonDeathshaperAI : public CreatureAIScript
         addAISpell(SHADOWMOON_DEATHSHAPER_RAISE_DEAD, 12.0f, TARGET_SELF, 2, 30);
         addAISpell(SHADOWMOON_DEATHSHAPER_SHADOW_BOLT, 75.0f, TARGET_ATTACKING, 3, 0);
 
-        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, 100000);
+        getCreature()->setPower(POWER_TYPE_MANA, 100000);
     }
 
     void OnCombatStart(Unit* pTarget) override

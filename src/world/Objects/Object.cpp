@@ -415,51 +415,6 @@ void Object::setUInt32Value(uint16_t index, uint32_t value)
             updateObject();
         }
     }
-
-#ifdef AE_TBC
-    // TODO Fix this later
-    return;
-#endif
-
-    if (isCreatureOrPlayer())
-    {
-        static_cast<Unit*>(this)->HandleUpdateFieldChange(index);
-    }
-
-    // Group update handling
-    if (isPlayer())
-    {
-        switch (index)
-        {
-        case UNIT_FIELD_POWER1:
-        case UNIT_FIELD_POWER2:
-        case UNIT_FIELD_POWER4:
-#if VERSION_STRING == WotLK
-        case UNIT_FIELD_POWER7:
-#endif
-            static_cast<Unit*>(this)->SendPowerUpdate(true);
-            break;
-        default:
-            break;
-        }
-    }
-    else if (isCreature())
-    {
-        switch (index)
-        {
-        case UNIT_FIELD_POWER1:
-        case UNIT_FIELD_POWER2:
-        case UNIT_FIELD_POWER3:
-        case UNIT_FIELD_POWER4:
-#if VERSION_STRING == WotLK
-        case UNIT_FIELD_POWER7:
-#endif
-            static_cast<Creature*>(this)->SendPowerUpdate(false);
-            break;
-        default:
-            break;
-        }
-    }
 }
 
 uint32_t Object::getUInt32Value(uint16_t index) const
@@ -3200,7 +3155,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
                 uint32 maxmana = pl->getMaxPower(POWER_TYPE_MANA);
                 uint32 amount = static_cast<uint32>(maxmana * pl->m_RegenManaOnSpellResist);
 
-                pVictim->Energize(pVictim, 29442, amount, POWER_TYPE_MANA);
+                pVictim->energize(pVictim, 29442, amount, POWER_TYPE_MANA);
             }
             // we still stay in combat dude
             static_cast<Player*>(pVictim)->CombatStatusHandler_ResetPvPTimeout();
