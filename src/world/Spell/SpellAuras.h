@@ -434,7 +434,6 @@ class SERVER_DECL Aura : public EventableObject
         void EventPeriodicManaLeech(uint32);
         void EventPeriodicHealPct(float);
         void EventPeriodicManaPct(float);
-        void EventPeriodicRegenManaStatPct(uint32 perc, uint32 stat);
         void EventPeriodicTriggerDummy();
 
         void RelocateEvents();

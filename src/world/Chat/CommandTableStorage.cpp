@@ -293,7 +293,7 @@ void CommandTableStorage::Init()
         { "mana",               'm', &ChatHandler::HandleModifyMana,                "Mods mana points (MP) of selected target.",                nullptr },
         { "rage",               'm', &ChatHandler::HandleModifyRage,                "Mods rage points of selected target.",                     nullptr },
         { "energy",             'm', &ChatHandler::HandleModifyEnergy,              "Mods energy points of selected target.",                   nullptr },
-#if VERSION_STRING == WotLK
+#if VERSION_STRING >= WotLK
         { "runicpower",         'm', &ChatHandler::HandleModifyRunicpower,          "Mods runic power points of selected target.",              nullptr },
 #endif
         { "strength",           'm', &ChatHandler::HandleModifyStrength,            "Mods strength value of the selected target.",              nullptr },

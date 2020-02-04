@@ -77,7 +77,7 @@ namespace AscEmu::Packets
 
                 if (playerPet)
                 {
-                    const uint8_t petPowerType = playerPet->getPowerType();
+                    const auto petPowerType = playerPet->getPowerType();
                     packet << uint64_t(playerPet->getGuid());
                     packet << playerPet->GetName();
                     packet << uint16_t(playerPet->getDisplayId());

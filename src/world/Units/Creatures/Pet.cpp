@@ -1971,7 +1971,7 @@ uint32 Pet::CanLearnSpell(SpellInfo const* sp)
 HappinessState Pet::GetHappinessState()
 {
     //gets happiness state from happiness points
-    uint32 pts = getUInt32Value(UNIT_FIELD_POWER5);
+    auto pts = getPower(POWER_TYPE_HAPPINESS);
     if (pts < PET_HAPPINESS_UPDATE_VALUE)
         return UNHAPPY;
 
@@ -1996,7 +1996,7 @@ AI_Spell* Pet::HandleAutoCastEvent()
         if ((*itr)->autocast_type == AUTOCAST_EVENT_ATTACK)
         {
             // spells still spammed, I think the cooldowntime is being set incorrectly somewhere else
-            if (chance && (*itr)->spell &&Util::getMSTime() >= (*itr)->cooldowntime && getPower(static_cast<uint16_t>((*itr)->spell->getPowerType())) >= (*itr)->spell->getManaCost())
+            if (chance && (*itr)->spell &&Util::getMSTime() >= (*itr)->cooldowntime && getPower((*itr)->spell->getPowerType()) >= (*itr)->spell->getManaCost())
             {
                 return *itr;
             }

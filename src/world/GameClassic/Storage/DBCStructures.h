@@ -72,7 +72,7 @@ namespace DBC
             char const stable_slot_prices_format[] = "ni";
             char const spell_cast_times_format[] = "nixx";
             char const spell_duration_format[] = "niii";
-            char const spell_entry_format[] = "niixiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifxiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiffffffiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiifffixiiissssssssxssssssssxxxxxxxxxxxxxxxxxxxiiiiiiiiiixfffxxx";
+            char const spell_entry_format[] = "niixiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifxiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiffffffiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiifffiiiiissssssssxssssssssxxxxxxxxxxxxxxxxxxxiiiiiiiiiixfffxxx";
             char const spell_item_enchantment_format[] = "nxiiiiiiiiiiiissssssssssssssssxiiii";
             char const spell_radius_format[] = "nfff";
             char const spell_range_format[] = "nffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
@@ -643,7 +643,7 @@ namespace DBC
             uint32_t EffectTriggerSpell[MAX_SPELL_EFFECTS];             // 109 - 111
             float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS];         // 112 - 114
             uint32_t SpellVisual;                                       // 115
-            //uint32_t SpellVisual1;                                    // 116 not used
+            uint32_t SpellVisual1;                                      // 116
             uint32_t spellIconID;                                       // 117
             uint32_t activeIconID;                                      // 118 activeIconID;
             uint32_t spellPriority;                                     // 119

@@ -24,12 +24,12 @@ set(SRC_SPELL_DEFINITIONS_FILES
     ${PATH_PREFIX}/SpellEffectTarget.h
     ${PATH_PREFIX}/SpellFailure.h
     ${PATH_PREFIX}/SpellFamily.h
-    ${PATH_PREFIX}/SpellGoFlags.h
     ${PATH_PREFIX}/SpellInFrontStatus.h
     ${PATH_PREFIX}/SpellIsFlags.h
     ${PATH_PREFIX}/SpellLog.h
     ${PATH_PREFIX}/SpellMechanics.h
     ${PATH_PREFIX}/SpellModifierType.h
+    ${PATH_PREFIX}/SpellPacketFlags.h
     ${PATH_PREFIX}/SpellRanged.h
     ${PATH_PREFIX}/SpellSchoolConversionTable.h
     ${PATH_PREFIX}/SpellState.h

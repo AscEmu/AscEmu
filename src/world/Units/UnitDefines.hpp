@@ -24,33 +24,68 @@
 // APGL Ends
 // MIT Start
 
-enum StealthFlag
+enum StealthFlag : uint8_t
 {
-    STEALTH_FLAG_NORMAL,
-    STEALTH_FLAG_TRAP,
+    STEALTH_FLAG_NORMAL             = 0,
+    STEALTH_FLAG_TRAP               = 1,
     STEALTH_FLAG_TOTAL
 };
 
 // todo: missing possible cata invisiblility types
-enum InvisibilityFlag
+enum InvisibilityFlag : uint8_t
 {
-    INVIS_FLAG_NORMAL,              // Used by players
-    INVIS_FLAG_ELEMENTAL_SPIRIT,    // Shaman totem quests
-    INVIS_FLAG_UNKNOWN_2,           // Used by spell id 24306
-    INVIS_FLAG_TRAP,                // Used by gameobjects only
-    INVIS_FLAG_QUEST_4,             // Used by many quest creatures
-    INVIS_FLAG_DUNGEON_SET_NPC,     // Used by dungeon set 2 npcs
-    INVIS_FLAG_DRUNK,               // These can only be seen when drunk
-    INVIS_FLAG_QUEST_7,             // Used by many quest creatures
-    INVIS_FLAG_QUEST_8,             // Used by many quest creatures
-    INVIS_FLAG_QUEST_9,             // Used by many quest creatures
-    INVIS_FLAG_QUEST_10,            // Used by many quest creatures
-    INVIS_FLAG_UNKNOWN_11,          // Used by spell id 49962
-    INVIS_FLAG_UNUSED_12,
-    INVIS_FLAG_UNUSED_13,
-    INVIS_FLAG_UNUSED_14,
-    INVIS_FLAG_NEVER_VISIBLE,       // Used by trigger or placeholder npcs
+    INVIS_FLAG_NORMAL               = 0,  // Used by players
+    INVIS_FLAG_ELEMENTAL_SPIRIT     = 1,  // Shaman totem quests
+    INVIS_FLAG_UNKNOWN_2            = 2,  // Used by spell id 24306
+    INVIS_FLAG_TRAP                 = 3,  // Used by gameobjects only
+    INVIS_FLAG_QUEST_4              = 4,  // Used by many quest creatures
+    INVIS_FLAG_DUNGEON_SET_NPC      = 5,  // Used by dungeon set 2 npcs
+    INVIS_FLAG_DRUNK                = 6,  // These can only be seen when drunk
+    INVIS_FLAG_QUEST_7              = 7,  // Used by many quest creatures
+    INVIS_FLAG_QUEST_8              = 8,  // Used by many quest creatures
+    INVIS_FLAG_QUEST_9              = 9,  // Used by many quest creatures
+    INVIS_FLAG_QUEST_10             = 10, // Used by many quest creatures
+    INVIS_FLAG_UNKNOWN_11           = 11, // Used by spell id 49962
+    INVIS_FLAG_UNUSED_12            = 12,
+    INVIS_FLAG_UNUSED_13            = 13,
+    INVIS_FLAG_UNUSED_14            = 14,
+    INVIS_FLAG_NEVER_VISIBLE        = 15, // Used by trigger or placeholder npcs
     INVIS_FLAG_TOTAL
+};
+
+// In milliseconds
+enum RegenerationIntervals : uint16_t
+{
+#if VERSION_STRING < WotLK
+    REGENERATION_INTERVAL_MANA_ENERGY           = 2000,
+    REGENERATION_INTERVAL_RAGE_RUNIC_POWER      = 3000,
+    REGENERATION_INTERVAL_FOCUS                 = 4000,
+#else
+    REGENERATION_INTERVAL_MANA_ENERGY           = 100,
+    REGENERATION_INTERVAL_RAGE_RUNIC_POWER      = 800,
+    REGENERATION_INTERVAL_FOCUS                 = 200,
+#endif
+
+    REGENERATION_INTERVAL_HOLY_POWER            = 10000,
+
+    // Creature timers
+    //\ todo: this actually is 4000 in retail classic, maybe same for tbc, but needs more research
+    CREATURE_REGENERATION_INTERVAL_MANA_ENERGY  = 2000
+};
+
+enum PowerFieldIndexes : uint8_t
+{
+    POWER_FIELD_INDEX_1 = 1,
+    POWER_FIELD_INDEX_2 = 2,
+    POWER_FIELD_INDEX_3 = 3,
+    POWER_FIELD_INDEX_4 = 4,
+#if VERSION_STRING != WotLK
+    POWER_FIELD_INDEX_5 = 5
+#else
+    POWER_FIELD_INDEX_5 = 5,
+    POWER_FIELD_INDEX_6 = 6,
+    POWER_FIELD_INDEX_7 = 7
+#endif
 };
 
 // MIT End

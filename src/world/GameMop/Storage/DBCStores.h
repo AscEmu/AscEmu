@@ -156,6 +156,8 @@ std::string generateName(uint32 type = 0);
 
 uint32 const* getTalentTabPages(uint8 playerClass);
 
+uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerIndex);
+
 bool LoadDBCs();
 
 #endif

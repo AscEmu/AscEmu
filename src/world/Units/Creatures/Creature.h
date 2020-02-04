@@ -197,7 +197,6 @@ public:
 
         bool m_canRegenerateHP;
         void RegenerateHealth();
-        void RegenerateMana();
         int BaseAttackType;
 
         // Looting
@@ -274,7 +273,6 @@ public:
         void SetCreatureProperties(CreatureProperties const* creature_properties);
 
         Trainer* GetTrainer();
-        void RegenerateFocus();
 
         DBC::Structures::CreatureFamilyEntry const* myFamily;
 

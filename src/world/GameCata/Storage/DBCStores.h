@@ -108,6 +108,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureSpellDataEntry> sCre
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureFamilyEntry> sCreatureFamilyStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrPowerTypesEntry> sChrPowerTypesEntry;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoEntry>  sCreatureDisplayInfoStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore;
@@ -155,6 +156,8 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
 std::string generateName(uint32 type = 0);
 
 uint32 const* getTalentTabPages(uint8 playerClass);
+
+uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerIndex);
 
 bool LoadDBCs();
 

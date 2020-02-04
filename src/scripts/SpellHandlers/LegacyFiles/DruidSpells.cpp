@@ -141,7 +141,7 @@ bool LifeBloom(uint8_t effectIndex, Aura* a, bool apply)
     // you can't do this here! Breaks unix lib load.
     /*if (expired)
     {
-        
+
         Spell* spell = sSpellMgr.newSpell(pCaster, a->GetSpellInfo(), true, NULL);
         spell->SetUnitTarget(m_target);
         spell->Heal(a->GetModAmount(effectIndex));
@@ -168,7 +168,7 @@ bool LeaderOfThePack(uint8_t /*effectIndex*/, Aura* a, bool apply)
     return true;
 }
 
-void SetupDruidSpells(ScriptMgr* mgr)
+void SetupLegacyDruidSpells(ScriptMgr* mgr)
 {
     uint32 StarfallIds[] =
     {

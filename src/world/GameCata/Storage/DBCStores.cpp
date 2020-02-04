@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 #include "Server/World.h"
 #include "Spell/SpellAuras.h"
+#include "Units/Players/PlayerDefines.hpp"
 
 #if VERSION_STRING == Cata
 typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> WMOAreaInfoByTripple;
@@ -35,6 +36,8 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::CharStartOutfitEntry> sCharStartOut
 std::map<uint32_t, DBC::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore(DBC::Structures::chr_classes_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStore(DBC::Structures::chr_races_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrPowerTypesEntry> sChrPowerTypesEntry(DBC::Structures::chr_classes_xpower_types_format);
+uint8_t powerIndexByClass[MAX_PLAYER_CLASSES][TOTAL_PLAYER_POWER_TYPES];
 SERVER_DECL DBC::DBCStorage<DBC::Structures::CharTitlesEntry> sCharTitlesStore(DBC::Structures::char_titles_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ChatChannelsEntry> sChatChannelsStore(DBC::Structures::chat_channels_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtCombatRatingsEntry> sGtCombatRatingsStore(DBC::Structures::gt_combat_ratings_format);
@@ -348,6 +351,32 @@ bool LoadDBCs()
         area_map_collection->insert(std::pair<uint32, uint32>(map_object->id, map_object->linked_zone));
     }
 
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sChrPowerTypesEntry, dbc_path, "ChrClassesXPowerTypes.dbc");
+
+    // Initialize power index array
+    for (uint8_t i = 0; i < MAX_PLAYER_CLASSES; ++i)
+    {
+        for (uint8_t power = POWER_TYPE_MANA; power < TOTAL_PLAYER_POWER_TYPES; ++power)
+            powerIndexByClass[i][power] = TOTAL_PLAYER_POWER_TYPES;
+    }
+
+    // Insert data into the array
+    for (uint32_t i = 0; i < sChrPowerTypesEntry.GetNumRows(); ++i)
+    {
+        const auto powerEntry = sChrPowerTypesEntry.LookupEntry(i);
+        if (powerEntry != nullptr)
+        {
+            uint8_t index = 1;
+            for (uint8_t power = POWER_TYPE_MANA; power < TOTAL_PLAYER_POWER_TYPES; ++power)
+            {
+                if (powerIndexByClass[powerEntry->classId][power] != TOTAL_PLAYER_POWER_TYPES)
+                    ++index;
+            }
+
+            powerIndexByClass[powerEntry->classId][powerEntry->power] = index;
+        }
+    }
+
     return true;
 }
 
@@ -390,6 +419,11 @@ std::string generateName(uint32 type)
 uint32 const* getTalentTabPages(uint8 playerClass)
 {
     return InspectTalentTabPages[playerClass];
+}
+
+uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerType)
+{
+    return powerIndexByClass[playerClass][powerType];
 }
 
 #endif

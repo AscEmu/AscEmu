@@ -75,7 +75,7 @@ bool ManaTide(uint8_t /*effectIndex*/, Spell* s)
         return false;
 
     uint32 gain = (uint32)(unitTarget->getMaxPower(POWER_TYPE_MANA) * 0.06);
-    unitTarget->Energize(unitTarget, 16191, gain, POWER_TYPE_MANA);
+    unitTarget->energize(unitTarget, 16191, gain, POWER_TYPE_MANA);
 
     return true;
 }
@@ -109,7 +109,7 @@ bool Reincarnation(uint8_t /*effectIndex*/, Aura* a, bool apply)
     return true;
 }
 
-void SetupShamanSpells(ScriptMgr* mgr)
+void SetupLegacyShamanSpells(ScriptMgr* mgr)
 {
     uint32 FlametongueWeaponPassiveIds[] = { 10400, 15567, 15568, 15569, 16311, 16312, 16313, 58784, 58791, 58792, 0 };
     mgr->register_dummy_aura(FlametongueWeaponPassiveIds, &FlametongueWeaponPassive);

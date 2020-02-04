@@ -156,7 +156,6 @@ Creature::Creature(uint64 guid)
     spawnid = 0;
 
     m_H_regenTimer = 0;
-    m_P_regenTimer = 0;
     m_useAI = true;
     mTaxiNode = 0;
 
@@ -1115,44 +1114,6 @@ void Creature::RegenerateHealth()
     setHealth((cur >= mh) ? mh : cur);
 }
 
-void Creature::RegenerateMana()
-{
-    float amt;
-    if (m_interruptRegen)
-        return;
-
-    uint32 cur = getPower(POWER_TYPE_MANA);
-    uint32 mm = getMaxPower(POWER_TYPE_MANA);
-    if (cur >= mm)return;
-    amt = (getLevel() + 10) * PctPowerRegenModifier[POWER_TYPE_MANA];
-
-
-    amt *= worldConfig.getFloatRate(RATE_POWER1);
-    if (amt <= 1.0)  //this fixes regen like 0.98
-        cur++;
-    else
-        cur += (uint32)amt;
-
-    if (cur >= mm)
-        setPower(POWER_TYPE_MANA, mm);
-    else
-        setPower(POWER_TYPE_MANA, cur);
-}
-
-void Creature::RegenerateFocus()
-{
-    if (m_interruptRegen)
-        return;
-
-    uint32 cur = getPower(POWER_TYPE_FOCUS);
-    uint32 mm = getMaxPower(POWER_TYPE_FOCUS);
-    if (cur >= mm)return;
-    float regenrate = worldConfig.getFloatRate(RATE_POWER3);
-    float amt = 25.0f * PctPowerRegenModifier[POWER_TYPE_FOCUS] * regenrate;
-    cur += (uint32)amt;
-    setPower(POWER_TYPE_FOCUS, (cur >= mm) ? mm : cur);
-}
-
 void Creature::CallScriptUpdate()
 {
     ARCEMU_ASSERT(_myScriptClass != NULL);
@@ -1361,8 +1322,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         health = creature_properties->MinHealth + Util::getRandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
     }
 
-    setHealth(health);
     setMaxHealth(health);
+    setHealth(health);
     setBaseHealth(health);
 
     setMaxPower(POWER_TYPE_MANA, creature_properties->Mana);
@@ -1621,8 +1582,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     uint32 health = creature_properties->MinHealth + Util::getRandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
 
-    setHealth(health);
     setMaxHealth(health);
+    setHealth(health);
     setBaseHealth(health);
 
     setMaxPower(POWER_TYPE_MANA, creature_properties->Mana);

@@ -200,7 +200,7 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
     // Search for a previous judgement casted by this caster. He can have only 1 judgement active at a time
     uint32 index = 0;
     uint32 judgements[] =
-    { 
+    {
         //SPELL_HASH_JUDGEMENT_OF_LIGHT,
         20185,
         20267,
@@ -399,7 +399,7 @@ bool Illumination(uint8_t /*effectIndex*/, Spell* s)
             if (s->p_caster == NULL)
                 return false;
             SpellInfo const* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->getSpellInfo();
-            s->p_caster->Energize(s->p_caster, 20272, 60 * s->u_caster->getBaseMana() * sp->getManaCostPercentage() / 10000, POWER_TYPE_MANA);
+            s->p_caster->energize(s->p_caster, 20272, 60 * s->u_caster->getBaseMana() * sp->getManaCostPercentage() / 10000, POWER_TYPE_MANA);
         }
         break;
 
@@ -413,7 +413,7 @@ bool JudgementOfTheWise(uint8_t /*effectIndex*/, Spell* s)
     if (!s->p_caster)
         return false;
 
-    s->p_caster->Energize(s->p_caster, 31930, uint32(0.15f * s->p_caster->getBaseMana()), POWER_TYPE_MANA);
+    s->p_caster->energize(s->p_caster, 31930, uint32(0.15f * s->p_caster->getBaseMana()), POWER_TYPE_MANA);
     s->p_caster->castSpell(s->p_caster, 57669, false);
 
     return true;
@@ -430,7 +430,7 @@ bool GuardedByTheLight(uint8_t /*effectIndex*/, Spell* s)
     return true;
 }
 
-void SetupPaladinSpells(ScriptMgr* mgr)
+void SetupLegacyPaladinSpells(ScriptMgr* mgr)
 {
     mgr->register_dummy_aura(9799, &EyeForAnEye);
     mgr->register_dummy_aura(25988, &EyeForAnEye);

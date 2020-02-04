@@ -9,13 +9,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Players/Player.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/DiminishingGroup.h"
+#include "Spell/Definitions/PowerType.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include "Spell/SpellMgr.h"
 #include "Data/WoWUnit.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/SmsgEnvironmentalDamageLog.h"
-#include "Spell/Definitions/PowerType.h"
 #include "Server/Packets/SmsgMonsterMoveTransport.h"
+#include "Server/Packets/SmsgPowerUpdate.h"
 #include "Map/MapMgr.h"
 #include "Units/Creatures/Vehicle.h"
 
@@ -76,37 +77,81 @@ void Unit::setClass(uint8_t class_) { write(unitData()->field_bytes_0.s.unit_cla
 uint8_t Unit::getGender() const { return unitData()->field_bytes_0.s.gender; }
 void Unit::setGender(uint8_t gender) { write(unitData()->field_bytes_0.s.gender, gender); }
 
-uint8_t Unit::getPowerType() const { return unitData()->field_bytes_0.s.power_type; }
-void Unit::setPowerType(uint8_t powerType) { write(unitData()->field_bytes_0.s.power_type, powerType); }
+PowerType Unit::getPowerType() const { return static_cast<PowerType>(unitData()->field_bytes_0.s.power_type); }
+void Unit::setPowerType(uint8_t powerType)
+{
+    write(unitData()->field_bytes_0.s.power_type, powerType);
+
+#if VERSION_STRING == TBC
+    // TODO Fix this later
+    return;
+#endif
+
+    // Update power type also to group
+    const auto plr = getPlayerOwner();
+    if (plr == nullptr || !plr->IsInWorld() || plr->GetGroup() == nullptr)
+        return;
+
+    plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_POWER_TYPE : GROUP_UPDATE_FLAG_PET_POWER_TYPE);
+}
 //bytes_0 end
 
 uint32_t Unit::getHealth() const { return unitData()->health; }
-void Unit::setHealth(uint32_t health) { write(unitData()->health, health); }
+void Unit::setHealth(uint32_t health)
+{
+    const auto maxHealth = getMaxHealth();
+    if (health > maxHealth)
+        health = maxHealth;
+
+    write(unitData()->health, health);
+
+#if VERSION_STRING == TBC
+    // TODO Fix this later
+    return;
+#endif
+
+    // Update health also to group
+    const auto plr = getPlayerOwner();
+    if (plr == nullptr || !plr->IsInWorld() || plr->GetGroup() == nullptr)
+        return;
+
+    plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_CUR_HP : GROUP_UPDATE_FLAG_PET_CUR_HP);
+}
 void Unit::modHealth(int32_t health)
 {
-    uint32_t currentHealth = getHealth();
-    currentHealth += health;
-    setHealth(currentHealth);
+    int32_t newHealth = getHealth();
+    newHealth += health;
+
+    if (newHealth < 0)
+        newHealth = 0;
+
+    setHealth(newHealth);
 }
 
-uint32_t Unit::getPower(uint16_t index) const
+uint32_t Unit::getPower(PowerType type) const
 {
-    switch (index)
+    if (type == POWER_TYPE_HEALTH)
+        return getHealth();
+
+    // Since cata power fields work differently
+    // Get matching power index by power type
+    const auto powerIndex = getPowerIndexFromDBC(type);
+    switch (powerIndex)
     {
-        case POWER_TYPE_MANA:
+        case POWER_FIELD_INDEX_1:
             return unitData()->power_1;
-        case POWER_TYPE_RAGE:
+        case POWER_FIELD_INDEX_2:
             return unitData()->power_2;
-        case POWER_TYPE_FOCUS:
+        case POWER_FIELD_INDEX_3:
             return unitData()->power_3;
-        case POWER_TYPE_ENERGY:
+        case POWER_FIELD_INDEX_4:
             return unitData()->power_4;
-        case POWER_TYPE_HAPPINESS:
+        case POWER_FIELD_INDEX_5:
             return unitData()->power_5;
 #if VERSION_STRING == WotLK
-        case POWER_TYPE_RUNES :
+        case POWER_FIELD_INDEX_6:
             return unitData()->power_6;
-        case POWER_TYPE_RUNIC_POWER:
+        case POWER_FIELD_INDEX_7:
             return unitData()->power_7;
 #endif
         default:
@@ -114,82 +159,134 @@ uint32_t Unit::getPower(uint16_t index) const
     }
 }
 
-void Unit::setPower(uint16_t index, uint32_t value)
+void Unit::setPower(PowerType type, uint32_t value, bool sendPacket/* = true*/)
 {
-    const uint32_t maxPower = getMaxPower(index);
+    if (type == POWER_TYPE_HEALTH)
+    {
+        setHealth(value);
+        return;
+    }
+
+    const auto maxPower = getMaxPower(type);
     if (value > maxPower)
         value = maxPower;
 
-    switch (index)
+    if (getPower(type) == value)
+        return;
+
+    // Since cata power fields work differently
+    // Get matching power index by power type
+    const auto powerIndex = getPowerIndexFromDBC(type);
+    switch (powerIndex)
     {
-        case POWER_TYPE_MANA:
+        case POWER_FIELD_INDEX_1:
             write(unitData()->power_1, value);
-        case POWER_TYPE_RAGE:
+            break;
+        case POWER_FIELD_INDEX_2:
             write(unitData()->power_2, value);
-        case POWER_TYPE_FOCUS:
+            break;
+        case POWER_FIELD_INDEX_3:
             write(unitData()->power_3, value);
-        case POWER_TYPE_ENERGY:
+            break;
+        case POWER_FIELD_INDEX_4:
             write(unitData()->power_4, value);
-        case POWER_TYPE_HAPPINESS:
+            break;
+        case POWER_FIELD_INDEX_5:
             write(unitData()->power_5, value);
+            break;
 #if VERSION_STRING == WotLK
-        case POWER_TYPE_RUNES:
+        case POWER_FIELD_INDEX_6:
             write(unitData()->power_6, value);
-        case POWER_TYPE_RUNIC_POWER:
+            break;
+        case POWER_FIELD_INDEX_7:
             write(unitData()->power_7, value);
+            break;
 #endif
+        default:
+            return;
     }
+
+#if VERSION_STRING == TBC
+    // TODO Fix this later
+    return;
+#endif
+
+    // Send power update to client
+    if (sendPacket)
+        sendPowerUpdate(isPlayer());
+
+    // Update power also to group
+    const auto plr = getPlayerOwner();
+    if (plr == nullptr || !plr->IsInWorld() || plr->GetGroup() == nullptr)
+        return;
+
+    plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_CUR_POWER : GROUP_UPDATE_FLAG_PET_CUR_POWER);
 }
 
-void Unit::modPower(uint16_t index, int32_t value)
+void Unit::modPower(PowerType type, int32_t value)
 {
-    const int32_t power = static_cast<int32_t>(getPower(index));
-    const int32_t maxPower = static_cast<int32_t>(getMaxPower(index));
+    int32_t newPower = getPower(type);
+    newPower += value;
 
-    uint32_t newValue;
-    if (value <= power)
-        newValue = 0;
-    else
-        newValue = power + value;
+    if (newPower < 0)
+        newPower = 0;
 
-    if (value + power > maxPower)
-        newValue = maxPower;
-    else
-        newValue = power + value;
-
-    setPower(index, newValue);
+    setPower(type, newPower);
 }
-
 
 uint32_t Unit::getMaxHealth() const { return unitData()->max_health; }
-void Unit::setMaxHealth(uint32_t maxHealth) { write(unitData()->max_health, maxHealth); }
+void Unit::setMaxHealth(uint32_t maxHealth)
+{
+    write(unitData()->max_health, maxHealth);
+
+#if VERSION_STRING == TBC
+    // TODO Fix this later
+    return;
+#endif
+
+    // Update health also to group
+    const auto plr = getPlayerOwner();
+    if (plr != nullptr && plr->IsInWorld() && plr->GetGroup() != nullptr)
+        plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_MAX_HP : GROUP_UPDATE_FLAG_PET_MAX_HP);
+
+    if (maxHealth < getHealth())
+        setHealth(maxHealth);
+}
 void Unit::modMaxHealth(int32_t maxHealth)
 {
-    uint32_t currentHealth = getHealth();
-    currentHealth += maxHealth;
-    setHealth(currentHealth);
+    int32_t newMaxHealth = getMaxHealth();
+    newMaxHealth += maxHealth;
+
+    if (newMaxHealth < 0)
+        newMaxHealth = 0;
+
+    setMaxHealth(newMaxHealth);
 }
 
-void Unit::setMaxMana(uint32_t maxMana) { write(unitData()->max_mana, maxMana); }
-
-uint32_t Unit::getMaxPower(uint16_t index) const
+uint32_t Unit::getMaxPower(PowerType type) const
 {
-    switch (index)
+    if (type == POWER_TYPE_HEALTH)
+        return getMaxHealth();
+
+    // Since cata power fields work differently
+    // Get matching power index by power type
+    const auto powerIndex = getPowerIndexFromDBC(type);
+    switch (powerIndex)
     {
-        case POWER_TYPE_MANA:
+        case POWER_FIELD_INDEX_1:
             return unitData()->max_power_1;
-        case POWER_TYPE_RAGE:
+        case POWER_FIELD_INDEX_2:
             return unitData()->max_power_2;
-        case POWER_TYPE_FOCUS:
+        case POWER_FIELD_INDEX_3:
             return unitData()->max_power_3;
-        case POWER_TYPE_ENERGY:
+        case POWER_FIELD_INDEX_4:
             return unitData()->max_power_4;
-        case POWER_TYPE_HAPPINESS:
+        case POWER_FIELD_INDEX_5:
             return unitData()->max_power_5;
 #if VERSION_STRING == WotLK
-        case POWER_TYPE_RUNES:
+        case POWER_FIELD_INDEX_6:
             return unitData()->max_power_6;
-        case POWER_TYPE_RUNIC_POWER:
+        case POWER_FIELD_INDEX_7:
             return unitData()->max_power_7;
 #endif
         default:
@@ -197,39 +294,172 @@ uint32_t Unit::getMaxPower(uint16_t index) const
     }
 }
 
-void Unit::setMaxPower(uint16_t index, uint32_t value)
+void Unit::setMaxPower(PowerType type, uint32_t value)
 {
-    switch (index)
+    if (type == POWER_TYPE_HEALTH)
     {
-        case POWER_TYPE_MANA:
-            write(unitData()->max_power_1, value);
-        case POWER_TYPE_RAGE:
-            write(unitData()->max_power_2, value);
-        case POWER_TYPE_FOCUS:
-            write(unitData()->max_power_3, value);
-        case POWER_TYPE_ENERGY:
-            write(unitData()->max_power_4, value);
-        case POWER_TYPE_HAPPINESS:
-            write(unitData()->max_power_5, value);
-#if VERSION_STRING == WotLK
-        case POWER_TYPE_RUNES:
-            write(unitData()->max_power_6, value);
-        case POWER_TYPE_RUNIC_POWER:
-            write(unitData()->max_power_7, value);
-#endif
+        setMaxHealth(value);
+        return;
     }
+
+    // Since cata power fields work differently
+    // Get matching power index by power type
+    const auto powerIndex = getPowerIndexFromDBC(type);
+    switch (powerIndex)
+    {
+        case POWER_FIELD_INDEX_1:
+            write(unitData()->max_power_1, value);
+            break;
+        case POWER_FIELD_INDEX_2:
+            write(unitData()->max_power_2, value);
+            break;
+        case POWER_FIELD_INDEX_3:
+            write(unitData()->max_power_3, value);
+            break;
+        case POWER_FIELD_INDEX_4:
+            write(unitData()->max_power_4, value);
+            break;
+        case POWER_FIELD_INDEX_5:
+            write(unitData()->max_power_5, value);
+            break;
+#if VERSION_STRING == WotLK
+        case POWER_FIELD_INDEX_6:
+            write(unitData()->max_power_6, value);
+            break;
+        case POWER_FIELD_INDEX_7:
+            write(unitData()->max_power_7, value);
+            break;
+#endif
+        default:
+            return;
+    }
+
+#if VERSION_STRING == TBC
+    // TODO Fix this later
+    return;
+#endif
+
+    // Update power also to group
+    const auto plr = getPlayerOwner();
+    if (plr != nullptr && plr->IsInWorld() && plr->GetGroup() != nullptr)
+        plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_MAX_POWER : GROUP_UPDATE_FLAG_PET_MAX_POWER);
+
+    if (value < getPower(type))
+        setPower(type, value);
 }
 
-void Unit::modMaxPower(uint16_t index, int32_t value)
+void Unit::modMaxPower(PowerType type, int32_t value)
 {
-    int32_t newValue = getMaxPower(index);
+    int32_t newValue = getMaxPower(type);
     newValue += value;
 
     if (newValue < 0)
         newValue = 0;
 
-    setMaxPower(index, newValue);
+    setMaxPower(type, newValue);
 }
+
+#if VERSION_STRING >= WotLK
+float Unit::getPowerRegeneration(PowerType type) const
+{
+    if (type == POWER_TYPE_HEALTH)
+        return 0.0f;
+
+    const auto powerIndex = getPowerIndexFromDBC(type);
+    switch (powerIndex)
+    {
+        case POWER_FIELD_INDEX_1:
+        case POWER_FIELD_INDEX_2:
+        case POWER_FIELD_INDEX_3:
+        case POWER_FIELD_INDEX_4:
+        case POWER_FIELD_INDEX_5:
+#if VERSION_STRING == WotLK
+        case POWER_FIELD_INDEX_6:
+        case POWER_FIELD_INDEX_7:
+#endif
+            return unitData()->power_regen_flat_modifier[powerIndex - 1];
+        default:
+            return 0.0f;
+    }
+}
+
+void Unit::setPowerRegeneration(PowerType type, float value)
+{
+    if (type == POWER_TYPE_HEALTH)
+        return;
+
+    const auto powerIndex = getPowerIndexFromDBC(type);
+    switch (powerIndex)
+    {
+        case POWER_FIELD_INDEX_1:
+        case POWER_FIELD_INDEX_2:
+        case POWER_FIELD_INDEX_3:
+        case POWER_FIELD_INDEX_4:
+        case POWER_FIELD_INDEX_5:
+#if VERSION_STRING == WotLK
+        case POWER_FIELD_INDEX_6:
+        case POWER_FIELD_INDEX_7:
+#endif
+            write(unitData()->power_regen_flat_modifier[powerIndex - 1], value);
+            break;
+        default:
+            break;
+    }
+}
+
+float Unit::getManaRegeneration() const { return getPowerRegeneration(POWER_TYPE_MANA); }
+void Unit::setManaRegeneration(float value) { setPowerRegeneration(POWER_TYPE_MANA, value); }
+
+float Unit::getPowerRegenerationWhileCasting(PowerType type) const
+{
+    if (type == POWER_TYPE_HEALTH)
+        return 0.0f;
+
+    const auto powerIndex = getPowerIndexFromDBC(type);
+    switch (powerIndex)
+    {
+        case POWER_FIELD_INDEX_1:
+        case POWER_FIELD_INDEX_2:
+        case POWER_FIELD_INDEX_3:
+        case POWER_FIELD_INDEX_4:
+        case POWER_FIELD_INDEX_5:
+#if VERSION_STRING == WotLK
+        case POWER_FIELD_INDEX_6:
+        case POWER_FIELD_INDEX_7:
+#endif
+            return unitData()->power_regen_interrupted_flat_modifier[powerIndex - 1];
+        default:
+            return 0.0f;
+    }
+}
+
+void Unit::setPowerRegenerationWhileCasting(PowerType type, float value)
+{
+    if (type == POWER_TYPE_HEALTH)
+        return;
+
+    const auto powerIndex = getPowerIndexFromDBC(type);
+    switch (powerIndex)
+    {
+        case POWER_FIELD_INDEX_1:
+        case POWER_FIELD_INDEX_2:
+        case POWER_FIELD_INDEX_3:
+        case POWER_FIELD_INDEX_4:
+        case POWER_FIELD_INDEX_5:
+#if VERSION_STRING == WotLK
+        case POWER_FIELD_INDEX_6:
+        case POWER_FIELD_INDEX_7:
+#endif
+            write(unitData()->power_regen_interrupted_flat_modifier[powerIndex - 1], value);
+            break;
+        default:
+            break;
+    }
+}
+
+float Unit::getManaRegenerationWhileCasting() const { return getPowerRegenerationWhileCasting(POWER_TYPE_MANA); }
+void Unit::setManaRegenerationWhileCasting(float value) { setPowerRegenerationWhileCasting(POWER_TYPE_MANA, value); }
+#endif
 
 uint32_t Unit::getLevel() const { return unitData()->level; }
 void Unit::setLevel(uint32_t level)
@@ -237,6 +467,19 @@ void Unit::setLevel(uint32_t level)
     write(unitData()->level, level);
     if (isPlayer())
         static_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
+
+#if VERSION_STRING == TBC
+    // TODO Fix this later
+    return;
+#endif
+
+    // Update level also to group
+    const auto plr = getPlayerOwner();
+    if (plr == nullptr || !plr->IsInWorld() || plr->GetGroup() == nullptr)
+        return;
+
+    //\ todo: missing update flag for pet level
+    plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_LEVEL : 0);
 }
 
 uint32_t Unit::getFactionTemplate() const { return unitData()->faction_template; }
@@ -289,7 +532,23 @@ float Unit::getCombatReach() const { return unitData()->combat_reach; }
 void Unit::setCombatReach(float radius) { write(unitData()->combat_reach, radius); }
 
 uint32_t Unit::getDisplayId() const { return unitData()->display_id; }
-void Unit::setDisplayId(uint32_t id) { write(unitData()->display_id, id); }
+void Unit::setDisplayId(uint32_t id)
+{
+    write(unitData()->display_id, id);
+
+#if VERSION_STRING == TBC
+    // TODO Fix this later
+    return;
+#endif
+
+    // Update display id also to group
+    const auto plr = getPlayerOwner();
+    if (plr == nullptr || !plr->IsInWorld() || plr->GetGroup() == nullptr)
+        return;
+
+    //\ todo: missing update flag for player display id
+    plr->AddGroupUpdateFlag(isPlayer() ? 0 : GROUP_UPDATE_FLAG_PET_MODEL_ID);
+}
 
 uint32_t Unit::getNativeDisplayId() const { return unitData()->native_display_id; }
 void Unit::setNativeDisplayId(uint32_t id) { write(unitData()->native_display_id, id); }
@@ -391,7 +650,22 @@ uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_
 void Unit::setSheathType(uint8_t sheathType) { write(unitData()->field_bytes_2.s.sheath_type, sheathType); }
 
 uint8_t Unit::getPvpFlags() const { return unitData()->field_bytes_2.s.pvp_flag; }
-void Unit::setPvpFlags(uint8_t pvpFlags) { write(unitData()->field_bytes_2.s.pvp_flag, pvpFlags); }
+void Unit::setPvpFlags(uint8_t pvpFlags)
+{
+    write(unitData()->field_bytes_2.s.pvp_flag, pvpFlags);
+
+#if VERSION_STRING == TBC
+    // TODO Fix this later
+    return;
+#endif
+
+    // Update pvp flags also to group
+    const auto plr = getPlayerOwner();
+    if (plr == nullptr || !plr->IsInWorld() || plr->GetGroup() == nullptr)
+        return;
+
+    plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_STATUS : 0);
+}
 
 uint8_t Unit::getPetFlags() const { return unitData()->field_bytes_2.s.pet_flag; }
 void Unit::setPetFlags(uint8_t petFlags) { write(unitData()->field_bytes_2.s.pet_flag, petFlags); }
@@ -416,8 +690,12 @@ uint32_t Unit::getPowerCostModifier(uint16_t school) const { return unitData()->
 void Unit::setPowerCostModifier(uint16_t school, uint32_t modifier) { write(unitData()->power_cost_modifier[school], modifier); }
 void Unit::modPowerCostModifier(uint16_t school, int32_t modifier)
 {
-    uint32_t currentModifier = getPowerCostModifier(school);
+    int32_t currentModifier = getPowerCostModifier(school);
     currentModifier += modifier;
+
+    if (currentModifier < 0)
+        currentModifier = 0;
+
     setPowerCostModifier(school, currentModifier);
 }
 
@@ -516,7 +794,7 @@ void Unit::setHoverHeight(float height) { write(unitData()->hover_height, height
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
-#ifdef AE_TBC
+#if VERSION_STRING == TBC
 uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive)
 {
     bool out;
@@ -1603,7 +1881,7 @@ void Unit::addAuraStateAndAuras(AuraState state)
 {
     if (!(getAuraState() & (1 << (state - 1))))
     {
-        addAuraState(uint32_t(1 << (state - 1)));
+        addAuraState(static_cast<uint32_t>(1 << (state - 1)));
         if (isPlayer())
         {
             // Activate passive spells which require this aurastate
@@ -1617,7 +1895,7 @@ void Unit::addAuraStateAndAuras(AuraState state)
                 SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(spellId);
                 if (spellInfo == nullptr || !spellInfo->isPassive())
                     continue;
-                if (spellInfo->getCasterAuraState() == uint32_t(state))
+                if (spellInfo->getCasterAuraState() == static_cast<uint32_t>(state))
                     castSpell(this, spellId, true);
             }
         }
@@ -1628,7 +1906,7 @@ void Unit::removeAuraStateAndAuras(AuraState state)
 {
     if (getAuraState() & (1 << (state - 1)))
     {
-        removeAuraState(uint32_t(1 << (state - 1)));
+        removeAuraState(static_cast<uint32_t>(1 << (state - 1)));
         // Remove self-applied passive auras requiring this aurastate
         // Skip removing enrage effects
         for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
@@ -1637,7 +1915,7 @@ void Unit::removeAuraStateAndAuras(AuraState state)
                 continue;
             if (m_auras[i]->GetCasterGUID() != getGuid())
                 continue;
-            if (m_auras[i]->GetSpellInfo()->getCasterAuraState() != uint32_t(state))
+            if (m_auras[i]->GetSpellInfo()->getCasterAuraState() != static_cast<uint32_t>(state))
                 continue;
             if (m_auras[i]->GetSpellInfo()->isPassive() || state != AURASTATE_FLAG_ENRAGED)
                 RemoveAura(m_auras[i]);
@@ -1865,9 +2143,25 @@ bool Unit::canSee(Object* const obj)
     if ((GetPhase() & obj->GetPhase()) == 0)
         return false;
 
+    // Unit cannot see objects which are further than 100 yards away (visibility range)
+    //\ todo: should this be in MapMgr? also there are some objects which should be visibile even further and some objects which should always be visible
+    if (!isInRange(obj->GetPosition(), 100.0f * 100.0f))
+    {
+        // Battlegrounds have an increased visibility range
+        if (getPlayerOwner() != nullptr && getPlayerOwner()->m_bg != nullptr)
+        {
+            if (!isInRange(obj->GetPosition(), 300.0f * 300.0f))
+                return false;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     // Unit cannot see invisible Game Masters unless he/she has Game Master flag on
     if (obj->isPlayer() && static_cast<Player*>(obj)->m_isGmInvisible)
-        return isPlayer() && HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
+        return isPlayer() && static_cast<Player*>(this)->hasPlayerFlags(PLAYER_FLAG_GM);
 
     uint64_t ownerGuid = 0;
     if (getCharmedByGuid() != 0)
@@ -1882,7 +2176,7 @@ bool Unit::canSee(Object* const obj)
     // Player is dead and has released spirit
     if (isPlayer() && getDeathState() == CORPSE)
     {
-        const auto corpseViewDistance = 1600.f; // 40*40 yards
+        const float_t corpseViewDistance = 1600.0f; // 40*40 yards
         const auto playerMe = static_cast<Player*>(this);
         // If object is another player
         if (obj->isPlayer())
@@ -1894,7 +2188,7 @@ bool Unit::canSee(Object* const obj)
             // Player can see all friendly and unfriendly players within 40 yards from his/her corpse
             const auto playerObj = static_cast<Player*>(obj);
             if (playerMe->getMyCorpseInstanceId() == playerMe->GetInstanceID() &&
-                playerObj->getDistanceSq(playerMe->getMyCorpseLocation()) <= corpseViewDistance)
+                playerObj->isInRange(playerMe->getMyCorpseLocation(), corpseViewDistance))
                 return true;
 
             // Otherwise player can only see other players who have released their spirits as well
@@ -1912,7 +2206,7 @@ bool Unit::canSee(Object* const obj)
                 return true;
 
             // Player can see all objects within 40 yards from his/her own corpse
-            if (obj->getDistanceSq(playerMe->getMyCorpseLocation()) <= corpseViewDistance)
+            if (obj->isInRange(playerMe->getMyCorpseLocation(), corpseViewDistance))
                 return true;
         }
 
@@ -1943,11 +2237,12 @@ bool Unit::canSee(Object* const obj)
                     return HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
                 }
                 else
+                {
                     // Non-player units cannot see dead players
                     return false;
+                }
             }
-            break;
-        }
+        } break;
         case TYPEID_UNIT:
         {
             // Unit cannot see Spirit Healers when unit's alive
@@ -1986,8 +2281,7 @@ bool Unit::canSee(Object* const obj)
                 if (unitObj->GetAIInterface()->faction_visibility == 2)
                     return static_cast<Player*>(this)->isTeamHorde() ? false : true;
             }
-            break;
-        }
+        } break;
         case TYPEID_GAMEOBJECT:
         {
             const auto gameObjectObj = static_cast<GameObject*>(obj);
@@ -2011,8 +2305,7 @@ bool Unit::canSee(Object* const obj)
                     }
                 }
             }
-            break;
-        }
+        } break;
         default:
             break;
     }
@@ -2046,7 +2339,7 @@ bool Unit::canSee(Object* const obj)
     ////////////////////////////
     // Invisibility detection
 
-    for (auto i = 0; i < INVIS_FLAG_TOTAL; ++i)
+    for (uint8_t i = 0; i < INVIS_FLAG_TOTAL; ++i)
     {
         auto unitInvisibilityValue = meUnit->getInvisibilityLevel(InvisibilityFlag(i));
         auto unitInvisibilityDetection = meUnit->getInvisibilityDetection(InvisibilityFlag(i));
@@ -2132,7 +2425,7 @@ bool Unit::canSee(Object* const obj)
                 detectionValue -= gobTarget->GetGameObjectProperties()->trap.level * 5;
         }
 
-        auto visibilityRange = float_t(detectionValue * 0.3f + combatReach);
+        auto visibilityRange = static_cast<float_t>(detectionValue * 0.3f + combatReach);
         if (visibilityRange <= 0.0f)
             return false;
 
@@ -2207,6 +2500,356 @@ void Unit::setVisible(const bool visible)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Power related
+void Unit::regeneratePowers(uint16_t timePassed)
+{
+    if (!isAlive())
+        return;
+
+    // Mana and Energy
+    m_manaEnergyRegenerateTimer += timePassed;
+    if (isPlayer() || getPlayerOwner() != nullptr)
+    {
+        // Player and player owned creatures regen in real time since wotlk
+        if (m_manaEnergyRegenerateTimer >= REGENERATION_INTERVAL_MANA_ENERGY)
+        {
+            regeneratePower(POWER_TYPE_MANA);
+            regeneratePower(POWER_TYPE_ENERGY);
+            m_manaEnergyRegenerateTimer = 0;
+        }
+    }
+    else
+    {
+        if (m_manaEnergyRegenerateTimer >= CREATURE_REGENERATION_INTERVAL_MANA_ENERGY)
+        {
+            regeneratePower(POWER_TYPE_MANA);
+            regeneratePower(POWER_TYPE_ENERGY);
+            m_manaEnergyRegenerateTimer = 0;
+        }
+    }
+
+    // Focus
+    m_focusRegenerateTimer += timePassed;
+    if (m_focusRegenerateTimer >= REGENERATION_INTERVAL_FOCUS)
+    {
+        regeneratePower(POWER_TYPE_FOCUS);
+        m_focusRegenerateTimer = 0;
+    }
+
+    // Update player only resources
+    if (isPlayer())
+        static_cast<Player*>(this)->regeneratePlayerPowers(timePassed);
+}
+
+void Unit::regeneratePower(PowerType type)
+{
+#if VERSION_STRING >= Cata
+    if (getPowerIndexFromDBC(type) == TOTAL_PLAYER_POWER_TYPES)
+        return;
+#endif
+
+    if (isCreature())
+    {
+        // Check for correct power type
+        if (getPowerType() != type)
+            return;
+
+        if (static_cast<Creature*>(this)->m_interruptRegen)
+            return;
+    }
+
+    const auto currentPower = getPower(type);
+    const auto maxPower = getMaxPower(type);
+    if (maxPower == 0)
+        return;
+
+    // Helper lambda to get correct rate from config files
+    const auto getConfigRate = [&](WorldConfigRates rate) -> float_t
+    {
+        if (!isPlayer() && isVehicle())
+            return worldConfig.getFloatRate(RATE_VEHICLES_POWER_REGEN);
+        else
+            return worldConfig.getFloatRate(rate);
+    };
+
+    float_t amount = 0.0f;
+    auto sendUpdatePacket = false;
+    switch (type)
+    {
+        case POWER_TYPE_MANA:
+        {
+            const auto manaRate = getConfigRate(RATE_POWER1);
+            if (isPlayer())
+            {
+#if VERSION_STRING < Cata
+                // Check for 5 second regen interruption
+                if (isPowerRegenerationInterrupted())
+                    amount = static_cast<Player*>(this)->getManaRegenerationWhileCasting();
+                else
+                    amount = static_cast<Player*>(this)->getManaRegeneration();
+#else
+                // Check for combat (5 second rule was removed in cata)
+                if (CombatStatus.IsInCombat())
+                    amount = getManaRegenerationWhileCasting();
+                else
+                    amount = getManaRegeneration();
+#endif
+#if VERSION_STRING < WotLK
+                // Send update packet pre-wotlk
+                sendUpdatePacket = true;
+#endif
+            }
+            else
+            {
+                //\ todo: this creature mana regeneration is not correct, rewrite it
+                if (CombatStatus.IsInCombat())
+                {
+                    amount = (getLevel() + 10) * PctPowerRegenModifier[POWER_TYPE_MANA];
+                }
+                else
+                {
+                    // 33% of total mana per tick when out of combat
+                    amount = maxPower * 0.33f;
+                }
+
+                // Send update packet for creatures in all versions
+#if VERSION_STRING >= WotLK
+                // but not for player owned creatures after wotlk, they regen in real time
+                if (getPlayerOwner() == nullptr)
+#endif
+                {
+                    sendUpdatePacket = true;
+                }
+            }
+
+            // Mana regeneration is calculated per 1 second
+            // Convert it to correct amount for expansion / unit (i.e in wotlk 100ms for players and 2000ms for creatures)
+            amount *= manaRate * (m_manaEnergyRegenerateTimer * 0.001f);
+        } break;
+        case POWER_TYPE_RAGE:
+#if VERSION_STRING >= WotLK
+        case POWER_TYPE_RUNIC_POWER:
+#endif
+        {
+            // Rage and Runic Power do not decay while in combat
+            if (CombatStatus.IsInCombat())
+                return;
+
+            // TODO: fix this hackfix when aura system supports this
+            const auto hasAngerManagement = HasAura(12296);
+
+            // Rage and Runic Power are lost at rate of 1.25 point per 1 second (or 1 point per 800ms)
+            // Convert the value first to 5 seconds because regeneration modifiers work like that
+            float_t decayValue = 12.5f * 5;
+
+            // Anger Management slows out of combat rage decay
+            if (hasAngerManagement)
+                decayValue -= 17.0f;
+
+#if VERSION_STRING >= WotLK
+            // Divide it first by 5 and then multiply by 0.8 to get correct amount for 800ms
+            decayValue = (decayValue / 5) * 0.8f;
+#else
+            // Convert the value to 3 seconds (Pre-Wotlk rage decays every 3 seconds)
+            decayValue *= 0.6f;
+
+            sendUpdatePacket = true;
+#endif
+
+            amount = currentPower <= decayValue ? -static_cast<int32_t>(currentPower) : -decayValue;
+        } break;
+        case POWER_TYPE_FOCUS:
+        {
+            const auto focusRate = getConfigRate(RATE_POWER3);
+#if VERSION_STRING < WotLK
+            sendUpdatePacket = true;
+
+            // 24 focus per 4 seconds according to WoWWiki
+            amount = 24.0f;
+#else
+            // Focus regens 1 point per 200ms as of 3.0.2
+            amount = 1.0f;
+#endif
+            amount *= focusRate * PctPowerRegenModifier[POWER_TYPE_FOCUS];
+        } break;
+        case POWER_TYPE_ENERGY:
+        {
+            const auto energyRate = getConfigRate(RATE_POWER4);
+
+            // 10 energy per 1 second
+            // Convert it to correct amount for expansion / unit (i.e in wotlk 100ms for players and 2000ms for creatures)
+            amount = 10.0f * (m_manaEnergyRegenerateTimer * 0.001f);
+
+#if VERSION_STRING >= WotLK
+            // Do not send update packet for players or player owned creatures after wotlk
+            if (!isPlayer() && getPlayerOwner() == nullptr)
+#endif
+            {
+                sendUpdatePacket = true;
+            }
+
+            amount *= energyRate * PctPowerRegenModifier[POWER_TYPE_ENERGY];
+        } break;
+#if VERSION_STRING >= Cata
+        case POWER_TYPE_HOLY_POWER:
+        {
+            if (CombatStatus.IsInCombat())
+                return;
+
+            amount = -1.0f;
+        } break;
+#endif
+        default:
+            return;
+    }
+
+    if (amount < 0.0f)
+    {
+        if (currentPower == 0)
+            return;
+    }
+    else if (amount > 0.0f)
+    {
+        if (currentPower >= maxPower)
+            return;
+    }
+    else
+    {
+        return;
+    }
+
+    amount += m_powerFractions[type];
+
+    // Convert the float amount to integer and save the fraction for next power update
+    // This fixes regen like 0.98
+    auto powerResult = currentPower;
+    auto integerAmount = static_cast<uint32_t>(std::fabs(amount));
+
+    if (amount < 0.0f)
+    {
+        if (currentPower > integerAmount)
+        {
+            powerResult -= integerAmount;
+            m_powerFractions[type] = amount + integerAmount;
+        }
+        else
+        {
+            powerResult = 0;
+            m_powerFractions[type] = 0;
+        }
+    }
+    else
+    {
+        powerResult += integerAmount;
+        if (powerResult > maxPower)
+        {
+            powerResult = maxPower;
+            m_powerFractions[type] = 0;
+        }
+        else
+        {
+            m_powerFractions[type] = amount - integerAmount;
+        }
+    }
+
+    setPower(type, powerResult, sendUpdatePacket);
+}
+
+#if VERSION_STRING < Cata
+void Unit::interruptPowerRegeneration(uint32_t timeInMS)
+{
+#if VERSION_STRING != Classic
+    if (isPlayer() && !isPowerRegenerationInterrupted())
+        removeUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
+#endif
+
+    m_powerRegenerationInterruptTime = timeInMS;
+}
+
+bool Unit::isPowerRegenerationInterrupted() const
+{
+    return m_powerRegenerationInterruptTime != 0;
+}
+#endif
+
+void Unit::energize(Unit* target, uint32_t spellId, uint32_t amount, PowerType type)
+{
+    if (target == nullptr || spellId == 0 || amount == 0)
+        return;
+
+    // Send packet first
+    sendSpellEnergizeLog(target, spellId, amount, type);
+
+    target->setPower(type, target->getPower(type) + amount);
+
+#if VERSION_STRING >= Cata
+    // Reset Holy Power timer back to 10 seconds
+    if (isPlayer() && type == POWER_TYPE_HOLY_POWER)
+        static_cast<Player*>(this)->resetHolyPowerTimer();
+#endif
+}
+
+void Unit::sendSpellEnergizeLog(Unit* target, uint32_t spellId, uint32_t amount, PowerType type)
+{
+    WorldPacket data(SMSG_SPELLENERGIZELOG, 30);
+
+    data << target->GetNewGUID();
+    data << GetNewGUID();
+    data << uint32_t(spellId);
+    // For some reason power type needs to be sent as uint32_t
+    data << uint32_t(type);
+    data << uint32_t(amount);
+
+    SendMessageToSet(&data, true);
+}
+
+uint8_t Unit::getPowerPct(PowerType powerType) const
+{
+    if (powerType == POWER_TYPE_HEALTH)
+        return getHealthPct();
+
+    if (getPower(powerType) <= 0 || getMaxPower(powerType) <= 0)
+        return 0;
+
+    if (getPower(powerType) >= getMaxPower(powerType))
+        return 100;
+
+    return static_cast<uint8_t>(getPower(powerType) * 100 / getMaxPower(powerType));
+}
+
+void Unit::sendPowerUpdate(bool self)
+{
+    // Save current power so the same amount is sent to player and everyone else
+    const auto powerAmount = getPower(getPowerType());
+
+#if VERSION_STRING >= WotLK
+    SendMessageToSet(SmsgPowerUpdate(GetNewGUID(), static_cast<uint8_t>(getPowerType()), powerAmount).serialise().get(), self);
+#else
+    //\ todo: is this correct for TBC?
+    auto packet = BuildFieldUpdatePacket(UNIT_FIELD_POWER1 + (getPowerIndexFromDBC(getPowerType()) - 1), powerAmount);
+    SendMessageToSet(packet, false);
+    delete packet;
+#endif
+}
+
+uint8_t Unit::getPowerIndexFromDBC(PowerType type) const
+{
+#if VERSION_STRING <= WotLK
+    // Prior to Cataclysm power type equals index
+    return static_cast<uint8_t>(type + 1);
+#else
+    if (!isPlayer())
+    {
+        // For creatures return first index
+        //\ todo: can creatures use multiple power types?
+        return POWER_FIELD_INDEX_1;
+    }
+
+    return getPowerIndexByClass(getClass(), static_cast<uint8_t>(type));
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 void Unit::setAttackTimer(WeaponDamageType type, int32_t time)
 {
@@ -2227,7 +2870,7 @@ bool Unit::isAttackReady(WeaponDamageType type) const
 
 void Unit::resetAttackTimers()
 {
-    for (int8_t i = MELEE; i <= RANGED; ++i)
+    for (uint8_t i = MELEE; i <= RANGED; ++i)
         setAttackTimer(WeaponDamageType(i), getBaseAttackTime(i));
 }
 
@@ -2262,25 +2905,10 @@ uint8_t Unit::getHealthPct() const
     if (getHealth() <= 0 || getMaxHealth() <= 0)
         return 0;
 
-    if (getHealth() > getMaxHealth())
+    if (getHealth() >= getMaxHealth())
         return 100;
 
     return static_cast<uint8_t>(getHealth() * 100 / getMaxHealth());
-}
-
-uint8_t Unit::getPowerPct(PowerType powerType) const
-{
-    if (powerType == POWER_TYPE_HEALTH)
-        return getHealthPct();
-
-    const auto powerIndex = static_cast<uint16_t>(powerType);
-    if (getPower(powerIndex) <= 0 || getMaxPower(powerIndex) <= 0)
-        return 0;
-
-    if (getPower(powerIndex) > getMaxPower(powerIndex))
-        return 100;
-
-    return static_cast<uint8_t>(getPower(powerIndex) * 100 / getMaxPower(powerIndex));
 }
 
 bool Unit::isTaggedByPlayerOrItsGroup(Player* tagger)
@@ -2343,7 +2971,7 @@ void Unit::addPassengerToVehicle(uint64_t vehicleGuid, uint32_t delay)
 {
     if (delay > 0)
     {
-        sEventMgr.AddEvent(this, &Unit::addPassengerToVehicle, vehicleGuid, uint32_t(0), 0, delay, 1, 0);
+        sEventMgr.AddEvent(this, &Unit::addPassengerToVehicle, vehicleGuid, static_cast<uint32_t>(0), 0, delay, 1, 0);
         return;
     }
 

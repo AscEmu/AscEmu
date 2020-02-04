@@ -277,7 +277,7 @@ public:
     uint8_t getGender() const;
     void setGender(uint8_t gender);
 
-    uint8_t getPowerType() const;
+    PowerType getPowerType() const;
     void setPowerType(uint8_t powerType);
     //bytes_0 end
 
@@ -285,19 +285,30 @@ public:
     void setHealth(uint32_t health);
     void modHealth(int32_t health);
 
-    uint32_t getPower(uint16_t index) const;
-    void setPower(uint16_t index, uint32_t value);
-    void modPower(uint16_t index, int32_t value);
+    uint32_t getPower(PowerType type) const;
+    void setPower(PowerType type, uint32_t value, bool sendPacket = true);
+    void modPower(PowerType type, int32_t value);
 
     uint32_t getMaxHealth() const;
     void setMaxHealth(uint32_t maxHealth);
     void modMaxHealth(int32_t maxHealth);
 
-    void setMaxMana(uint32_t maxMana);
+    uint32_t getMaxPower(PowerType type) const;
+    void setMaxPower(PowerType type, uint32_t value);
+    void modMaxPower(PowerType type, int32_t value);
 
-    uint32_t getMaxPower(uint16_t index) const;
-    void setMaxPower(uint16_t index, uint32_t value);
-    void modMaxPower(uint16_t index, int32_t value);
+#if VERSION_STRING >= WotLK
+    float getPowerRegeneration(PowerType type) const;
+    void setPowerRegeneration(PowerType type, float value);
+    float getManaRegeneration() const;
+    void setManaRegeneration(float value);
+
+    // In cata+ these mean 'while in combat'
+    float getPowerRegenerationWhileCasting(PowerType type) const;
+    void setPowerRegenerationWhileCasting(PowerType type, float value);
+    float getManaRegenerationWhileCasting() const;
+    void setManaRegenerationWhileCasting(float value);
+#endif
 
     uint32_t getLevel() const;
     void setLevel(uint32_t level);
@@ -657,6 +668,40 @@ public:
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Power related
+    void regeneratePowers(uint16_t timePassed);
+    void regeneratePower(PowerType type);
+#if VERSION_STRING < Cata
+    void interruptPowerRegeneration(uint32_t timeInMS);
+    bool isPowerRegenerationInterrupted() const;
+#endif
+
+    void energize(Unit* target, uint32_t spellId, uint32_t amount, PowerType type);
+    void sendSpellEnergizeLog(Unit* target, uint32_t spellId, uint32_t amount, PowerType type);
+
+    uint8_t getPowerPct(PowerType powerType) const;
+
+    void sendPowerUpdate(bool self);
+
+private:
+    // Converts power type to power index
+    uint8_t getPowerIndexFromDBC(PowerType type) const;
+
+#if VERSION_STRING < Cata
+    // Five second mana regeneration interrupt timer
+    uint32_t m_powerRegenerationInterruptTime = 0;
+#endif
+
+    // The leftover power from power regeneration which will be added to new value on next power update
+    float_t m_powerFractions[TOTAL_PLAYER_POWER_TYPES];
+
+protected:
+    // Mana and Energy
+    uint16_t m_manaEnergyRegenerateTimer = 0;
+    uint16_t m_focusRegenerateTimer = 0;
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     void setAttackTimer(WeaponDamageType type, int32_t time);
     uint32_t getAttackTimer(WeaponDamageType type) const;
@@ -680,7 +725,6 @@ public:
     bool isSitting() const;
 
     uint8_t getHealthPct() const;
-    uint8_t getPowerPct(PowerType powerType) const;
 
     //\ todo: should this and other tag related variables be under Creature class?
     bool isTaggedByPlayerOrItsGroup(Player* tagger);
@@ -788,10 +832,7 @@ public:
     bool IsInInstance();
     void CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInfo const* ability, float ArmorPctReduce);
     void RegenerateHealth();
-    void RegeneratePower(bool isinterrupted);
     void setHRegenTimer(uint32 time) { m_H_regenTimer = static_cast<uint16>(time); }
-    void setPRegenTimer(uint32 time) { m_P_regenTimer = static_cast<uint16>(time); }
-    void DelayPowerRegeneration(uint32 time) { m_P_regenTimer = static_cast<uint16>(time); if (!m_interruptedRegenTime) m_interruptedRegenTime = 2000; }
     void DeMorph();
     uint32 ManaShieldAbsorb(uint32 dmg);
     void smsg_AttackStart(Unit* pVictim);
@@ -950,7 +991,6 @@ public:
     void unsetDetectRangeMod(uint64 guid);
     int32 getDetectRangeMod(uint64 guid);
     void Heal(Unit* target, uint32 SpellId, uint32 amount);
-    void Energize(Unit* target, uint32 SpellId, uint32 amount, uint32 type);
 
     Loot loot;
     uint32 SchoolCastPrevent[TOTAL_SPELL_SCHOOLS];
@@ -1143,7 +1183,6 @@ public:
     uint32 SchoolImmunityList[TOTAL_SPELL_SCHOOLS];
     float SpellCritChanceSchool[TOTAL_SPELL_SCHOOLS];
 
-    int32 PowerCostMod[TOTAL_SPELL_SCHOOLS];
     float PowerCostPctMod[TOTAL_SPELL_SCHOOLS];        // armor penetration & spell penetration
 
     int32 AttackerCritChanceMod[TOTAL_SPELL_SCHOOLS];
@@ -1153,9 +1192,8 @@ public:
     int32 CreatureRangedAttackPowerMod[12];
 
     int32 PctRegenModifier;
-    float PctPowerRegenModifier[4];
-
-    void UpdatePowerAmm();
+    // SPELL_AURA_MOD_POWER_REGEN_PERCENT
+    float PctPowerRegenModifier[TOTAL_PLAYER_POWER_TYPES];
 
     // Auras Modifiers
     int32 m_pacified;
@@ -1273,7 +1311,6 @@ public:
     void EventStrikeWithAbility(uint64 guid, SpellInfo const* sp, uint32 damage);
     void DispelAll(bool positive);
 
-    void SendPowerUpdate(bool self);
     void SendPeriodicAuraLog(const WoWGuid & CasterGUID, const WoWGuid & casterGUID, uint32 SpellID, uint32 School, uint32 Amount, uint32 abs_dmg, uint32 resisted_damage, uint32 Flags, bool is_critical);
     void SendPeriodicHealAuraLog(const WoWGuid & CasterGUID, const WoWGuid & TargetGUID, uint32 SpellID, uint32 healed, uint32 over_healed, bool is_critical);
 
@@ -1307,7 +1344,6 @@ public:
     void ResetAuraUpdateMaskForRaid() { m_auraRaidUpdateMask = 0; }
     void SetAuraUpdateMaskForRaid(uint8 slot) { m_auraRaidUpdateMask |= (uint64(1) << slot); }
     void UpdateAuraForGroup(uint8 slot);
-    void HandleUpdateFieldChange(uint32 Index);
 
     Movement::UnitMovementManager m_movementManager;
 protected:
@@ -1321,8 +1357,6 @@ protected:
     uint8 m_meleespell_ecn;         // extra_cast_number
 
     uint16 m_H_regenTimer;
-    uint16 m_P_regenTimer;
-    uint32 m_interruptedRegenTime;  //PowerInterruptedegenTimer.
 
     std::list<Aura*> m_GarbageAuras;
     std::list<Spell*> m_GarbageSpells;

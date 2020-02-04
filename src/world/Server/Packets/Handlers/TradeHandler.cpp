@@ -342,7 +342,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
 
         // Check if player is able to cast the spell
         const auto castResult = playerSpell->canCast(true, 0, 0);
-        if (castResult != SPELL_CANCAST_OK)
+        if (castResult != SPELL_CAST_SUCCESS)
         {
             playerSpell->sendCastResult(castResult);
             tradeData->setTradeSpell(0);
@@ -376,7 +376,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
 
         // Check if trader is able to cast the spell
         const auto castResult = traderSpell->canCast(true, 0, 0);
-        if (castResult != SPELL_CANCAST_OK)
+        if (castResult != SPELL_CAST_SUCCESS)
         {
             traderSpell->sendCastResult(castResult);
             targetTradeData->setTradeSpell(0);

@@ -59,7 +59,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
-#include "Units/Stats.h"
 #include "Units/UnitDefines.hpp"
 
 using namespace AscEmu::Packets;
@@ -239,10 +238,19 @@ void Player::setPlayerFlags(uint32_t flags)
 {
     write(playerData()->player_flags, flags);
 
-#ifndef AE_TBC
+#if VERSION_STRING == TBC
+    // TODO Fix this later
+    return;
+#endif
+
     // Update player cache
     m_cache->SetUInt32Value(CACHE_PLAYER_FLAGS, getPlayerFlags());
-#endif
+
+    // Update player flags also to group
+    if (!IsInWorld() || GetGroup() == nullptr)
+        return;
+
+    AddGroupUpdateFlag(GROUP_UPDATE_FLAG_STATUS);
 }
 void Player::addPlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() | flags); }
 void Player::removePlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() & ~flags); }
@@ -427,6 +435,20 @@ void Player::setSelfResurrectSpell(uint32_t spell) { write(playerData()->self_re
 
 uint32_t Player::getWatchedFaction() const { return playerData()->field_watched_faction_idx; }
 void Player::setWatchedFaction(uint32_t factionId) { write(playerData()->field_watched_faction_idx, factionId); }
+
+#if VERSION_STRING == Classic
+float Player::getManaRegeneration() const { return m_manaRegeneration; }
+void Player::setManaRegeneration(float value) { m_manaRegeneration = value; }
+
+float Player::getManaRegenerationWhileCasting() const { return m_manaRegenerationWhileCasting; }
+void Player::setManaRegenerationWhileCasting(float value) { m_manaRegenerationWhileCasting = value; }
+#elif VERSION_STRING == TBC
+float Player::getManaRegeneration() const { return playerData()->field_mod_mana_regen; }
+void Player::setManaRegeneration(float value) { write(playerData()->field_mod_mana_regen, value); }
+
+float Player::getManaRegenerationWhileCasting() const { return playerData()->field_mod_mana_regen_interrupt; }
+void Player::setManaRegenerationWhileCasting(float value) { write(playerData()->field_mod_mana_regen_interrupt, value); }
+#endif
 
 uint32_t Player::getMaxLevel() const
 {
@@ -639,7 +661,7 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
     }
 
     data << GetNewGUID();
-#ifdef AE_TBC
+#if VERSION_STRING == TBC
     // TODO : Move to own file
     if (speed_type != TYPE_SWIM_BACK)
     {
@@ -654,7 +676,7 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
     }
 #endif
 
-#ifndef AE_TBC
+#if VERSION_STRING != TBC
     BuildMovementPacket(&data);
 #endif
     data << float(speed);
@@ -1285,8 +1307,6 @@ void Player::applyLevelInfo(uint32_t newLevel)
 #if VERSION_STRING >= WotLK
         setPower(POWER_TYPE_RUNES, getMaxPower(POWER_TYPE_RUNES));
 #endif
-        // Not sure if this is needed -Appled
-        setMaxMana(getMaxPower(POWER_TYPE_MANA));
 
         // Send levelup info packet
         sendLevelupInfoPacket(
@@ -1441,32 +1461,53 @@ void Player::setInitialPlayerData()
     setMaxHealth(lvlinfo->HP);
     // First initialize all power fields to 0
     for (uint8_t power = POWER_TYPE_MANA; power < TOTAL_PLAYER_POWER_TYPES; ++power)
-        setMaxPower(power, 0);
+        setMaxPower(static_cast<PowerType>(power), 0);
 
     // Next set correct power for each class
     switch (getClass())
     {
         case WARRIOR:
+        {
             setMaxPower(POWER_TYPE_RAGE, info->rage);
-            break;
+        } break;
 #if VERSION_STRING >= Cata
         case HUNTER:
+        {
             setMaxPower(POWER_TYPE_FOCUS, info->focus);
-            break;
+        } break;
 #endif
         case ROGUE:
+        {
             setMaxPower(POWER_TYPE_ENERGY, info->energy);
-            break;
+        } break;
 #if VERSION_STRING >= WotLK
         case DEATHKNIGHT:
+        {
             setMaxPower(POWER_TYPE_RUNES, 8);
             setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
-            break;
+        } break;
 #endif
         default:
+        {
+#if VERSION_STRING >= Cata
+            // Another switch case to set secondary powers
+            switch (getClass())
+            {
+                case PALADIN:
+                    setMaxPower(POWER_TYPE_HOLY_POWER, 3);
+                    break;
+                case WARLOCK:
+                    setMaxPower(POWER_TYPE_SOUL_SHARDS, 3);
+                    break;
+                case DRUID:
+                    setMaxPower(POWER_TYPE_ECLIPSE, 100);
+                    break;
+                default:
+                    break;
+            }
+#endif
             setMaxPower(POWER_TYPE_MANA, getBaseMana());
-            setMaxMana(getBaseMana());
-            break;
+        } break;
     }
 
     setMinDamage(0.0f);
@@ -1540,7 +1581,6 @@ void Player::setInitialPlayerData()
 
     UpdateStats();
 
-    setNextLevelXp(sMySQLStore.getPlayerXPForLevel(getLevel()));
     setMaxLevel(worldConfig.player.playerLevelCap);
 
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
@@ -1561,9 +1601,46 @@ void Player::setInitialPlayerData()
     setPower(POWER_TYPE_RUNES, getMaxPower(POWER_TYPE_RUNES));
     setPower(POWER_TYPE_RUNIC_POWER, 0);
 #endif
-    // Not sure if this is needed -Appled
-    setMaxMana(getMaxPower(POWER_TYPE_MANA));
 }
+
+void Player::regeneratePlayerPowers(uint16_t diff)
+{
+    // Rage and Runic Power (neither decays while in combat)
+    if ((isClassDeathKnight() || isClassDruid() || isClassWarrior()) && !CombatStatus.IsInCombat())
+    {
+        m_rageRunicPowerRegenerateTimer += diff;
+        if (m_rageRunicPowerRegenerateTimer >= REGENERATION_INTERVAL_RAGE_RUNIC_POWER)
+        {
+            if (isClassDruid() || isClassWarrior())
+                regeneratePower(POWER_TYPE_RAGE);
+#if VERSION_STRING >= WotLK
+            if (isClassDeathKnight())
+                regeneratePower(POWER_TYPE_RUNIC_POWER);
+#endif
+            m_rageRunicPowerRegenerateTimer = 0;
+        }
+    }
+
+#if VERSION_STRING >= Cata
+    // Holy Power (does not decay while in combat)
+    if (isClassPaladin() && !CombatStatus.IsInCombat())
+    {
+        m_holyPowerRegenerateTimer += diff;
+        if (m_holyPowerRegenerateTimer >= REGENERATION_INTERVAL_HOLY_POWER)
+        {
+            regeneratePower(POWER_TYPE_HOLY_POWER);
+            m_holyPowerRegenerateTimer = 0;
+        }
+    }
+#endif
+}
+
+#if VERSION_STRING >= Cata
+void Player::resetHolyPowerTimer()
+{
+    m_holyPowerRegenerateTimer = 0;
+}
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Database stuff
@@ -1623,7 +1700,7 @@ void Player::updateAutoRepeatSpell()
     if (isAttackReady(RANGED))
     {
         const auto canCastAutoRepeatSpell = autoRepeatSpell->canCast(true, 0, 0);
-        if (canCastAutoRepeatSpell != SPELL_CANCAST_OK)
+        if (canCastAutoRepeatSpell != SPELL_CAST_SUCCESS)
         {
             if (!isAutoShot)
                 interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
@@ -1866,7 +1943,7 @@ void Player::addTalent(SpellInfo const* sp)
         if (sp->getRequiredShapeShift() == 0 || (getShapeShiftMask() != 0 && (sp->getRequiredShapeShift() & getShapeShiftMask())) ||
             (getShapeShiftMask() == 0 && (sp->getAttributesExB() & ATTRIBUTESEXB_NOT_NEED_SHAPESHIFT)))
         {
-            if (sp->getCasterAuraState() == 0 || hasAuraState(AuraState(sp->getCasterAuraState()), sp, this))
+            if (sp->getCasterAuraState() == 0 || hasAuraState(static_cast<AuraState>(sp->getCasterAuraState()), sp, this))
                 // TODO: temporarily check for this custom flag, will be removed when spell system checks properly for pets!
                 if (((sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0) || (sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET && GetSummon() != nullptr))
                     castSpell(getGuid(), sp, true);
@@ -2015,7 +2092,7 @@ void Player::setInitialTalentPoints(bool talentsResetted /*= false*/)
 #if VERSION_STRING >= Cata
     auto talentPointsAtLevel = sNumTalentsAtLevel.LookupEntry(getLevel());
     if (talentPointsAtLevel != nullptr)
-        talentPoints = uint32_t(talentPointsAtLevel->talentPoints);
+        talentPoints = static_cast<uint32_t>(talentPointsAtLevel->talentPoints);
 #else
     talentPoints = getLevel() - 9;
 #endif
@@ -2033,7 +2110,7 @@ void Player::setInitialTalentPoints(bool talentsResetted /*= false*/)
 #if VERSION_STRING >= Cata
             auto dkBaseTalentPoints = sNumTalentsAtLevel.LookupEntry(55);
             if (dkBaseTalentPoints != nullptr)
-                dkTalentPoints = getLevel() < 55 ? 0 : talentPoints - uint32_t(dkBaseTalentPoints->talentPoints);
+                dkTalentPoints = getLevel() < 55 ? 0 : talentPoints - static_cast<uint32_t>(dkBaseTalentPoints->talentPoints);
 #else
             dkTalentPoints = getLevel() < 55 ? 0 : getLevel() - 55;
 #endif
@@ -2205,7 +2282,7 @@ void Player::activateTalentSpec(uint8_t specId)
 
     // Reset power
     setPower(getPowerType(), 0);
-    SendPowerUpdate(false);
+    sendPowerUpdate(false);
 
     // Check offhand
     unEquipOffHandIfRequired();

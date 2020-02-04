@@ -22,6 +22,7 @@
 
 #include "Units/Players/PlayerDefines.hpp"
 #include "Units/Players/PlayerCache.h"
+#include "Units/Stats.h"
 #include "Server/Definitions.h"
 #include "Management/QuestDefines.hpp"
 #include "Management/Battleground/BattlegroundMgr.h"
@@ -566,6 +567,14 @@ public:
     uint32_t getWatchedFaction() const;
     void setWatchedFaction(uint32_t factionId);
 
+#if VERSION_STRING < WotLK
+    float getManaRegeneration() const;
+    void setManaRegeneration(float value);
+
+    float getManaRegenerationWhileCasting() const;
+    void setManaRegenerationWhileCasting(float value);
+#endif
+
     uint32_t getMaxLevel() const;
     void setMaxLevel(uint32_t level);
 
@@ -718,6 +727,30 @@ public:
     // Initializes stats and unit/playerdata fields
     void setInitialPlayerData();
 
+    // Not same as Unit::regeneratePowers
+    void regeneratePlayerPowers(uint16_t diff);
+#if VERSION_STRING >= Cata
+    void resetHolyPowerTimer();
+#endif
+
+    // PlayerStats.cpp
+    void updateManaRegeneration();
+
+private:
+    // Regenerate timers
+    // Rage and Runic Power
+    uint16_t m_rageRunicPowerRegenerateTimer = 0;
+#if VERSION_STRING >= Cata
+    uint16_t m_holyPowerRegenerateTimer = 0;
+#endif
+
+#if VERSION_STRING == Classic
+    // Classic doesn't have these in unit or playerdata
+    float m_manaRegeneration = 0.0f;
+    float m_manaRegenerationWhileCasting = 0.0f;
+#endif
+
+public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Database stuff
     bool loadSpells(QueryResult* result);
@@ -1560,7 +1593,6 @@ public:
         void EventCannibalize(uint32 amount);
         bool m_AllowAreaTriggerPort;
         void EventAllowTiggerPort(bool enable);
-        void UpdatePowerAmm();
         uint32 m_modblockabsorbvalue;
         uint32 m_modblockvaluefromspells;
         void SendInitialLogonPackets();
@@ -1618,8 +1650,12 @@ public:
         uint32 m_RootedCritChanceBonus;         // Class Script Override: Shatter
         uint32 m_IncreaseDmgSnaredSlowed;
 
+        // SPELL_AURA_MOD_MANA_REGEN_INTERRUPT
         uint32 m_ModInterrMRegenPCT;
+        // SPELL_AURA_MOD_POWER_REGEN
         int32 m_ModInterrMRegen;
+        // SPELL_AURA_REGEN_MANA_STAT_PCT
+        int32_t m_modManaRegenFromStat[STAT_COUNT];
         float m_RegenManaOnSpellResist;
         uint32 m_casted_amount[TOTAL_SPELL_SCHOOLS];   // Last casted spells amounts. Need for some spells. Like Ignite etc. DOesn't count HoTs and DoTs. Only directs
 
@@ -1639,10 +1675,7 @@ public:
         uint32* GetPlayedtime() { return m_playedtime; };
         void CalcStat(uint8_t t);
         float CalcRating(PlayerCombatRating t);
-        void RegenerateMana(bool is_interrupted);
         void RegenerateHealth(bool inCombat);
-        void RegenerateEnergy();
-        void LooseRage(int32 value);
 
         uint32 SoulStone;
         uint32 SoulStoneReceiver;

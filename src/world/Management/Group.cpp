@@ -967,7 +967,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_MAX_HP)
         *data << uint32(pPlayer->getMaxHealth());
 
-    uint8 powerType = pPlayer->getPowerType();
+    auto powerType = pPlayer->getPowerType();
     if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)
         *data << uint8(powerType);
 

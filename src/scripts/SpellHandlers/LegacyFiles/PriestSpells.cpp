@@ -287,7 +287,7 @@ bool PrayerOfMendingAura(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     return true;
 }
 
-void SetupPriestSpells(ScriptMgr* mgr)
+void SetupLegacyPriestSpells(ScriptMgr* mgr)
 {
     uint32 PenanceIds[] =
     {

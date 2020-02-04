@@ -173,7 +173,7 @@ namespace DBC
             char const chat_channels_format[] = "iixsx";
             char const chr_classes_format[] = "nixsxxxixiiiii";
             char const chr_races_format[] = "nxixiixixxxxixsxxxxxixxx";
-            //char const chr_classes_xpower_types_format[]="nii"; new
+            char const chr_classes_xpower_types_format[]="nii";
             //char const cinematic_sequences_format[]="nxxxxxxxxx"; new
             char const creature_display_info_format[]="nixifxxxxxxxxxxxx";
             char const creature_display_info_extra_format[]="nixxxxxxxxxxxxxxxxxxx";
@@ -254,7 +254,7 @@ namespace DBC
             char const spell_cooldowns_format[] = "diii";
             char const spell_difficulty_format[] = "niiii";
             char const spell_duration_format[] = "niii";
-            char const spell_entry_format[] = "niiiiiiiiiiiiiiifixiissxxiixxixiiiiiiixiiiiiiiix";
+            char const spell_entry_format[] = "niiiiiiiiiiiiiiifiiiissxxiixxixiiiiiiixiiiiiiiix";
             char const spell_item_enchantment_format[] = "nxiiiiiixxxiiisiiiiiiix";
             //char const skill_race_class_info_format[] = "diiiiixxx"; new
             char const spell_radius_format[] = "nfff";
@@ -889,13 +889,12 @@ namespace DBC
             //uint32_t unk23                    // 23
         };
 
-        //\todo danko
-        //struct ChrPowerTypesEntry
-        //{
-        //    uint32_t entry;                   // 0
-        //    uint32_t classId;                 // 1
-        //    uint32_t power;                   // 2
-        //};
+        struct ChrPowerTypesEntry
+        {
+            uint32_t entry;                     // 0
+            uint32_t classId;                   // 1 class
+            uint32_t power;                     // 2 power type
+        };
 
         struct CreatureDisplayInfoEntry
         {
@@ -1714,7 +1713,7 @@ namespace DBC
             uint32_t rangeIndex;                                  // 15
             float speed;                                          // 16
             uint32_t SpellVisual;                                 // 17
-            //uint32_t SpellVisual1;                              // 18
+            uint32_t SpellVisual1;                                // 18
             uint32_t spellIconID;                                 // 19
             uint32_t activeIconID;                                // 20
             const char* Name;                                     // 21

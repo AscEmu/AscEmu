@@ -30,7 +30,7 @@
  //////////////////////////////////////////////////////////////////////////////////////////
  // WoWData
 
-uint64_t Corpse::getOwnerGuid() const { return corpseData()->guid; }
+uint64_t Corpse::getOwnerGuid() const { return corpseData()->owner_guid; }
 void Corpse::setOwnerGuid(uint64_t guid) { write(corpseData()->owner_guid, guid); }
 
 // party

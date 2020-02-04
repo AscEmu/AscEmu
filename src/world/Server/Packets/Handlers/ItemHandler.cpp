@@ -300,7 +300,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
 
         LocationVector const spellDestination = targets.getDestination();
         LocationVector const spellSource = targets.getSource();
-        float const deltaX = spellDestination.x - spellSource.y; // Calculate change of x position
+        float const deltaX = spellDestination.x - spellSource.x; // Calculate change of x position
         float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
 
         uint32_t travelTime = 0;

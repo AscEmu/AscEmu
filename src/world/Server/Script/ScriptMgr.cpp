@@ -50,7 +50,7 @@ ScriptMgr& ScriptMgr::getInstance()
 SpellCastResult ScriptMgr::callScriptedSpellCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) const
 {
     if (spell->getSpellInfo()->spellScript == nullptr)
-        return SPELL_CANCAST_OK;
+        return SPELL_CAST_SUCCESS;
 
     return spell->getSpellInfo()->spellScript->onCanCast(spell, parameter1, parameter2);
 }

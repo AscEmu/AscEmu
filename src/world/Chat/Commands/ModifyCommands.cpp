@@ -43,6 +43,9 @@ bool ChatHandler::HandleModifyHp(const char* args, WorldSession* session)
         }
     }
 
+    if (value > unitTarget->getMaxHealth())
+        unitTarget->setMaxHealth(value);
+
     unitTarget->setHealth(value);
 
     return false;
@@ -80,6 +83,9 @@ bool ChatHandler::HandleModifyMana(const char* args, WorldSession* session)
             BlueSystemMessage(session, "You modify the power (mana) of %s from %u to %u.", creature->GetCreatureProperties()->Name.c_str(), oldMana, value);
         }
     }
+
+    if (value > unitTarget->getMaxPower(POWER_TYPE_MANA))
+        unitTarget->setMaxPower(POWER_TYPE_MANA, value);
 
     unitTarget->setPower(POWER_TYPE_MANA, value);
 
@@ -119,6 +125,9 @@ bool ChatHandler::HandleModifyRage(const char* args, WorldSession* session)
         }
     }
 
+    if (value > unitTarget->getMaxPower(POWER_TYPE_RAGE))
+        unitTarget->setMaxPower(POWER_TYPE_RAGE, value);
+
     unitTarget->setPower(POWER_TYPE_RAGE, value);
 
     return false;
@@ -157,11 +166,15 @@ bool ChatHandler::HandleModifyEnergy(const char* args, WorldSession* session)
         }
     }
 
+    if (value > unitTarget->getMaxPower(POWER_TYPE_ENERGY))
+        unitTarget->setMaxPower(POWER_TYPE_ENERGY, value);
+
     unitTarget->setPower(POWER_TYPE_ENERGY, value);
 
     return false;
 }
 
+#if VERSION_STRING >= WotLK
 //.modify runicpower
 bool ChatHandler::HandleModifyRunicpower(const char* args, WorldSession* session)
 {
@@ -172,7 +185,6 @@ bool ChatHandler::HandleModifyRunicpower(const char* args, WorldSession* session
     if (unitTarget == nullptr)
         return true;
 
-#if VERSION_STRING == WotLK
     const uint32_t value = atol(args);
     const uint32_t oldRunic = unitTarget->getPower(POWER_TYPE_RUNIC_POWER);
 
@@ -196,11 +208,14 @@ bool ChatHandler::HandleModifyRunicpower(const char* args, WorldSession* session
         }
     }
 
+    if (value > unitTarget->getMaxPower(POWER_TYPE_RUNIC_POWER))
+        unitTarget->setMaxPower(POWER_TYPE_RUNIC_POWER, value);
+
     unitTarget->setPower(POWER_TYPE_RUNIC_POWER, value);
-#endif
 
     return false;
 }
+#endif
 
 //.modify strength
 bool ChatHandler::HandleModifyStrength(const char* args, WorldSession* session)

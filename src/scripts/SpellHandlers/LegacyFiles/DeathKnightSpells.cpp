@@ -391,7 +391,7 @@ bool WillOfTheNecropolis(uint8_t effectIndex, Spell* spell)
     return true;
 }
 
-void SetupDeathKnightSpells(ScriptMgr* mgr)
+void SetupLegacyDeathKnightSpells(ScriptMgr* mgr)
 {
     mgr->register_dummy_spell(50842, &Pestilence);
     uint32 DeathStrikeIds[] =

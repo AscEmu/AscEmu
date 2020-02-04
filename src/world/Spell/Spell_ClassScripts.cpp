@@ -84,7 +84,8 @@ public:
     {
         auto result = Spell::canCast(tolerate, parameter1, parameter2);
 
-        if (result == SPELL_CANCAST_OK)
+#if VERSION_STRING >= WotLK
+        if (result == SPELL_CAST_SUCCESS)
         {
             if (u_caster)
             {
@@ -118,6 +119,7 @@ public:
                 }
             }
         }
+#endif
         return result;
     }
 
@@ -371,7 +373,7 @@ public:
     {
         auto result = Spell::canCast(tolerate, parameter1, parameter2);
 
-        if (result == SPELL_CANCAST_OK)
+        if (result == SPELL_CAST_SUCCESS)
         {
             if (m_caster != NULL && m_caster->IsInWorld())
             {

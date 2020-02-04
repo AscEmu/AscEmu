@@ -29,7 +29,6 @@
 #include "Definitions/ProcFlags.h"
 #include "Definitions/CastInterruptFlags.h"
 #include "Definitions/AuraInterruptFlags.h"
-#include "Definitions/SpellGoFlags.h"
 #include "Definitions/SpellTargetType.h"
 #include "Definitions/SpellRanged.h"
 #include "Definitions/SpellIsFlags.h"
@@ -205,7 +204,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     bRadSet[1] = false;
     bRadSet[2] = false;
 
-    cancastresult = SPELL_CANCAST_OK;
+    cancastresult = SPELL_CAST_SUCCESS;
 
     m_requiresCP = false;
     unitTarget = nullptr;
@@ -262,11 +261,11 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
 
 Spell::~Spell()
 {
-#if VERSION_STRING == WotLK
+#if VERSION_STRING >= WotLK
     // If this spell deals with rune power, send spell_go to update client
     // For instance, when Dk cast Empower Rune Weapon, if we don't send spell_go, the client won't update
     if (getSpellInfo()->getSchool() && getSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
-        SendSpellGo();
+        sendSpellGo();
 #endif
 
     m_caster->m_pendingSpells.erase(this);
@@ -930,7 +929,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         LogDebugFlag(LF_SPELL, "CanCast result: %u. Refer to SpellFailure.h to work out why." , cancastresult);
 
     ccr = cancastresult;
-    if (cancastresult != SPELL_CANCAST_OK)
+    if (cancastresult != SPELL_CAST_SUCCESS)
     {
         // Triggered spells also need to go through cancast check but they do not pop a error message
         sendCastResult(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : cancastresult, parameter1, parameter2);
@@ -969,7 +968,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
             }
         }
 
-        SendSpellStart();
+        sendSpellStart();
 
         // start cooldown handler
         if (p_caster != nullptr && !p_caster->m_cheats.CastTimeCheat && !m_triggeredSpell)
@@ -1127,16 +1126,16 @@ void Spell::castMe(bool check)
     else if (check)
         cancastresult = canCast(true, &parameter1, &parameter2);
     else
-        cancastresult = SPELL_CANCAST_OK;
+        cancastresult = SPELL_CAST_SUCCESS;
 
-    if (cancastresult == SPELL_CANCAST_OK)
+    if (cancastresult == SPELL_CAST_SUCCESS)
     {
         if (hasAttribute(ATTRIBUTES_ON_NEXT_ATTACK))
         {
             if (!m_triggeredSpell)
             {
                 // on next attack - we don't take the mana till it actually attacks.
-                if (checkPower() != SPELL_CANCAST_OK)
+                if (checkPower() != SPELL_CAST_SUCCESS)
                 {
                     SendInterrupted(SPELL_FAILED_NO_POWER);
                     sendCastResult(SPELL_FAILED_NO_POWER);
@@ -1147,27 +1146,14 @@ void Spell::castMe(bool check)
             else
             {
                 // this is the actual spell cast
-                if (!TakePower())   // shouldn't happen
-                {
-                    SendInterrupted(SPELL_FAILED_NO_POWER);
-                    sendCastResult(SPELL_FAILED_NO_POWER);
-                    finish(false);
-                    return;
-                }
+                takePower();
             }
         }
         else
         {
             if (!m_triggeredSpell)
             {
-                if (!TakePower()) //not enough mana
-                {
-                    //LOG_DEBUG("Spell::Not Enough Mana");
-                    SendInterrupted(SPELL_FAILED_NO_POWER);
-                    sendCastResult(SPELL_FAILED_NO_POWER);
-                    finish(false);
-                    return;
-                }
+                takePower();
             }
         }
 
@@ -1211,7 +1197,7 @@ void Spell::castMe(bool check)
         }
 
         sendCastResult(cancastresult);
-        if (cancastresult != SPELL_CANCAST_OK)
+        if (cancastresult != SPELL_CAST_SUCCESS)
         {
             finish(false);
             return;
@@ -1479,7 +1465,7 @@ void Spell::castMe(bool check)
 
         if (!(hasAttribute(ATTRIBUTES_ON_NEXT_ATTACK) && !m_triggeredSpell))  //on next attack
         {
-            SendSpellGo();
+            sendSpellGo();
 
             //******************** SHOOT SPELLS ***********************
             //* Flags are now 1,4,19,22 (4718610) //0x480012
@@ -1542,13 +1528,15 @@ void Spell::castMe(bool check)
                             }
                         }
                     }
+#if VERSION_STRING < Cata
                     if (u_caster && u_caster->getPowerType() == POWER_TYPE_MANA)
                     {
                         if (channelDuration <= 5000)
-                            u_caster->DelayPowerRegeneration(5000);
+                            u_caster->interruptPowerRegeneration(5000);
                         else
-                            u_caster->DelayPowerRegeneration(channelDuration);
+                            u_caster->interruptPowerRegeneration(channelDuration);
                     }
+#endif
                 }
             }
 
@@ -1661,7 +1649,7 @@ void Spell::castMe(bool check)
                         p_caster->m_procCounter = 0; //this is required for to be able to count the depth of procs (though i have no idea where/why we use proc on proc)
 
                         // This is wrong but leaving this here commented out for now -Appled
-                        //Target->removeAuraStateAndAuras(AuraState(getSpellInfo()->getTargetAuraState()));
+                        //Target->removeAuraStateAndAuras(static_cast<AuraState>(getSpellInfo()->getTargetAuraState()));
                     }
                 }
             }
@@ -1894,6 +1882,7 @@ void Spell::finish(bool successful)
         }
 
         u_caster->m_canMove = true;
+#if VERSION_STRING < Cata
         // mana           channeled                                                     power type is mana                             if spell wasn't cast successfully, don't delay mana regeneration
         if (m_usesMana && (getSpellInfo()->getChannelInterruptFlags() == 0 && !m_triggeredSpell) && u_caster->getPowerType() == POWER_TYPE_MANA && successful)
         {
@@ -1905,8 +1894,9 @@ void Spell::finish(bool successful)
             Several effects can increase this ratio, including:
             */
 
-            u_caster->DelayPowerRegeneration(5000);
+            u_caster->interruptPowerRegeneration(5000);
         }
+#endif
     }
     /* Mana Regenerates while in combat but not for 5 seconds after each spell */
     /* Only if the spell uses mana, will it cause a regen delay.
@@ -2147,7 +2137,7 @@ void Spell::finish(bool successful)
     /*
     Set cooldown on item
     */
-    if (i_caster && i_caster->getOwner() && cancastresult == SPELL_CANCAST_OK && !GetSpellFailed())
+    if (i_caster && i_caster->getOwner() && cancastresult == SPELL_CAST_SUCCESS && !GetSpellFailed())
     {
         uint8 x;
         for (x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
@@ -2221,333 +2211,11 @@ void Spell::finish(bool successful)
 
     if (p_caster != nullptr)
     {
-        if (hadEffect || (cancastresult == SPELL_CANCAST_OK && !GetSpellFailed()))
+        if (hadEffect || (cancastresult == SPELL_CAST_SUCCESS && !GetSpellFailed()))
             RemoveItems();
     }
 
     DecRef();
-}
-
-// uint16 0xFFFF
-enum SpellStartFlags
-{
-    //0x01
-    SPELL_START_FLAG_DEFAULT = 0x02, // atm set as default flag
-    //0x04
-    //0x08
-    //0x10
-    SPELL_START_FLAG_RANGED = 0x20,
-    //0x40
-    //0x80
-    //0x100
-    //0x200
-    //0x400
-    //0x800
-    //0x1000
-    //0x2000
-    //0x4000
-    //0x8000
-};
-
-void Spell::SendSpellStart()
-{
-    // no need to send this on passive spells
-    if (!m_caster->IsInWorld() || hasAttribute(ATTRIBUTES_PASSIVE) || m_triggeredSpell)
-        return;
-
-    WorldPacket data(150);
-
-#if VERSION_STRING >= WotLK
-    uint32 cast_flags = 2;
-#else
-    uint16_t cast_flags = 2;
-#endif
-
-    if (GetType() == SPELL_DMG_TYPE_RANGED)
-        cast_flags |= 0x20;
-
-    // hacky yeaaaa
-    if (getSpellInfo()->getId() == 8326)   // death
-        cast_flags = 0x0F;
-
-    data.SetOpcode(SMSG_SPELL_START);
-    if (i_caster != NULL)
-    {
-        data << i_caster->GetNewGUID();
-        data << u_caster->GetNewGUID();
-    }
-    else
-    {
-        data << m_caster->GetNewGUID();
-        data << m_caster->GetNewGUID();
-    }
-
-#if VERSION_STRING > TBC
-    data << extra_cast_number;
-    data << getSpellInfo()->getId();
-#else
-    data << getSpellInfo()->getId();
-    data << extra_cast_number;
-#endif
-    data << cast_flags;
-#if VERSION_STRING >= Cata
-    data << uint32(m_timer);
-#endif
-    data << (uint32)m_castTime;
-
-    m_targets.write(data);
-
-    if (GetType() == SPELL_DMG_TYPE_RANGED)
-    {
-        ItemProperties const* ip = nullptr;
-        if (getSpellInfo()->getId() == SPELL_RANGED_THROW)   // throw
-        {
-            if (p_caster != NULL)
-            {
-                auto item = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                if (item != nullptr)
-                {
-                    ip = item->getItemProperties();
-                    /* Throwing Weapon Patch by Supalosa
-                    p_caster->getItemInterface()->RemoveItemAmt(it->getEntry(),1);
-                    (Supalosa: Instead of removing one from the stack, remove one from durability)
-                    We don't need to check if the durability is 0, because you can't cast the Throw spell if the thrown weapon is broken, because it returns "Requires Throwing Weapon" or something.
-                    */
-
-                    // burlex - added a check here anyway (wpe suckers :P)
-                    if (item->getDurability() > 0)
-                    {
-                        item->setDurability(item->getDurability() - 1);
-                        if (item->getDurability() == 0)
-                            p_caster->ApplyItemMods(item, EQUIPMENT_SLOT_RANGED, false, true);
-                    }
-                }
-                else
-                {
-                    ip = sMySQLStore.getItemProperties(2512); /*rough arrow*/
-                }
-            }
-        }
-#if VERSION_STRING < Cata
-        else if (hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
-        {
-            if (p_caster != nullptr)
-                ip = sMySQLStore.getItemProperties(p_caster->getUInt32Value(PLAYER_AMMO_ID));
-            else
-                ip = sMySQLStore.getItemProperties(2512); /*rough arrow*/
-        }
-#endif
-
-        if (ip != nullptr)
-        {
-            data << ip->DisplayInfoID;
-            data << ip->InventoryType;
-        }
-#if VERSION_STRING >= Cata
-        else
-        {
-            data << uint32(0);
-            data << uint32(0);
-        }
-#endif
-    }
-
-#if VERSION_STRING >= WotLK
-    data << (uint32)139; // 3.0.2 seems to be some small value around 250 for shadow bolt.
-#endif
-    m_caster->SendMessageToSet(&data, true);
-}
-
-void Spell::SendSpellGo()
-{
-    // Fill UniqueTargets
-    std::vector<uint64_t>::iterator i, j;
-    for (uint8 x = 0; x < 3; x++)
-    {
-        if (getSpellInfo()->getEffect(x))
-        {
-            bool add = true;
-            for (i = m_targetUnits[x].begin(); i != m_targetUnits[x].end(); ++i)
-            {
-                add = true;
-                for (j = UniqueTargets.begin(); j != UniqueTargets.end(); ++j)
-                {
-                    if ((*j) == (*i))
-                    {
-                        add = false;
-                        break;
-                    }
-                }
-                if (add && (*i) != 0)
-                    UniqueTargets.push_back((*i));
-                //TargetsList::iterator itr = std::unique(m_targetUnits[x].begin(), m_targetUnits[x].end());
-                //UniqueTargets.insert(UniqueTargets.begin(),));
-                //UniqueTargets.insert(UniqueTargets.begin(), itr);
-            }
-        }
-    }
-
-    // no need to send this on passive spells
-    if (!m_caster->IsInWorld() || hasAttribute(ATTRIBUTES_PASSIVE))
-        return;
-
-    // Start Spell
-    WorldPacket data(200);
-    data.SetOpcode(SMSG_SPELL_GO);
-#if VERSION_STRING >= WotLK
-    uint32 flags = 0;
-    if (m_missileTravelTime != 0)
-        flags |= 0x20000;
-#else
-    uint16_t flags = 0;
-#endif
-
-    if (GetType() == SPELL_DMG_TYPE_RANGED)
-        flags |= SPELL_GO_FLAGS_RANGED; // 0x20 RANGED
-
-    if (i_caster != NULL)
-        flags |= SPELL_GO_FLAGS_ITEM_CASTER; // 0x100 ITEM CASTER
-
-    if (ModeratedTargets.size() > 0)
-        flags |= SPELL_GO_FLAGS_EXTRA_MESSAGE; // 0x400 TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
-
-#if VERSION_STRING == WotLK
-    if (p_caster != NULL && getSpellInfo()->getPowerType() != POWER_TYPE_HEALTH)
-        flags |= SPELL_GO_FLAGS_POWER_UPDATE;
-
-    //experiments with rune updates
-    uint8 cur_have_runes = 0;
-    if (p_caster && p_caster->isClassDeathKnight())   //send our rune updates ^^
-    {
-        if (getSpellInfo()->getRuneCostID() && getSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
-            flags |= SPELL_GO_FLAGS_ITEM_CASTER | SPELL_GO_FLAGS_RUNE_UPDATE | SPELL_GO_FLAGS_UNK40000;
-        //see what we will have after cast
-        cur_have_runes = static_cast<DeathKnight*>(p_caster)->GetRuneFlags();
-        if (cur_have_runes != m_rune_avail_before)
-            flags |= SPELL_GO_FLAGS_RUNE_UPDATE | SPELL_GO_FLAGS_UNK40000;
-    }
-#endif
-
-    // hacky..
-    if (getSpellInfo()->getId() == 8326)   // death
-        flags = SPELL_GO_FLAGS_ITEM_CASTER | 0x0D;
-
-    if (i_caster != NULL && u_caster != NULL)   // this is needed for correct cooldown on items
-    {
-        data << i_caster->GetNewGUID();
-        data << u_caster->GetNewGUID();
-    }
-    else
-    {
-        data << m_caster->GetNewGUID();
-        data << m_caster->GetNewGUID();
-    }
-
-#if VERSION_STRING > TBC
-    data << extra_cast_number; //3.0.2
-#endif
-    data << getSpellInfo()->getId();
-    data << flags;
-    data <<Util::getMSTime();
-    data << (uint8)(UniqueTargets.size()); //number of hits
-    writeSpellGoTargets(&data);
-
-    if (flags & SPELL_GO_FLAGS_EXTRA_MESSAGE)
-    {
-        data << (uint8)(ModeratedTargets.size()); //number if misses
-        writeSpellMissedTargets(&data);
-    }
-    else
-        data << uint8(0);   //moderated target size is 0 since we did not set the flag
-
-    m_targets.write(data);   // this write is included the target flag
-
-#if VERSION_STRING >= WotLK
-    if (flags & SPELL_GO_FLAGS_POWER_UPDATE)
-        data << (uint32)p_caster->getPower(static_cast<uint16_t>(getSpellInfo()->getPowerType()));
-#endif
-
-    // er why handle it being null inside if if you can't get into if if its null
-    if (GetType() == SPELL_DMG_TYPE_RANGED)
-    {
-        ItemProperties const* ip = nullptr;
-        if (getSpellInfo()->getId() == SPELL_RANGED_THROW)
-        {
-            if (p_caster != NULL)
-            {
-                Item* it = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                if (it != nullptr)
-                    ip = it->getItemProperties();
-            }
-            else
-                ip = sMySQLStore.getItemProperties(2512); /*rough arrow*/
-        }
-        else
-        {
-#if VERSION_STRING < Cata
-            if (p_caster != nullptr)
-                ip = sMySQLStore.getItemProperties(p_caster->getUInt32Value(PLAYER_AMMO_ID));
-            else // HACK FIX
-                ip = sMySQLStore.getItemProperties(2512); /*rough arrow*/
-#endif
-        }
-        if (ip != nullptr)
-        {
-            data << ip->DisplayInfoID;
-            data << ip->InventoryType;
-        }
-#if VERSION_STRING >= WotLK
-        else
-        {
-            data << uint32(0);
-            data << uint32(0);
-        }
-#endif
-    }
-
-    //data order depending on flags : 0x800, 0x200000, 0x20000, 0x20, 0x80000, 0x40 (this is not spellgoflag but seems to be from spellentry or packet..)
-    //.text:00401110                 mov     eax, [ecx+14h] -> them
-    //.text:00401115                 cmp     eax, [ecx+10h] -> us
-#if VERSION_STRING == WotLK
-    if (flags & SPELL_GO_FLAGS_RUNE_UPDATE)
-    {
-        data << uint8(m_rune_avail_before);
-        data << uint8(cur_have_runes);
-        for (uint8 k = 0; k < MAX_RUNES; k++)
-        {
-            uint8 x = (1 << k);
-            if ((x & m_rune_avail_before) != (x & cur_have_runes))
-                data << uint8(0);   //values of the rune converted into byte. We just think it is 0 but maybe it is not :P
-        }
-    }
-#endif
-
-
-
-    /*
-            float dx = targets.m_destX - targets.m_srcX;
-            float dy = targets.m_destY - targets.m_srcY;
-            if (missilepitch != M_PI / 4 && missilepitch != -M_PI / 4) //lets not divide by 0 lul
-            traveltime = (sqrtf(dx * dx + dy * dy) / (cosf(missilepitch) * missilespeed)) * 1000;
-            */
-#if VERSION_STRING >= WotLK
-    if (flags & 0x20000)
-    {
-        data << float(m_missilePitch);
-        data << uint32(m_missileTravelTime);
-    }
-
-
-    if (m_targets.hasDestination())
-        data << uint8(0);   //some spells require this ? not sure if it is last byte or before that.
-#endif
-
-    m_caster->SendMessageToSet(&data, true);
-
-    // spell log execute is still send 2.08
-    // as I see with this combination, need to test it more
-    //if (flags != 0x120 && GetProto()->Attributes & 16) // not ranged and flag 5
-    //SendLogExecute(0,m_targets.getUnitTarget());
 }
 
 void Spell::writeSpellGoTargets(WorldPacket* data)
@@ -2618,7 +2286,7 @@ void Spell::SendLogExecute(uint32 spellDamage, uint64 & targetGuid)
     data << m_caster->GetNewGUID();
     data << getSpellInfo()->getId();
     data << uint32(1);
-    data << getSpellInfo()->getSpellVisual();
+    data << getSpellInfo()->getSpellVisual(0);
     data << uint32(1);
     if (m_caster->getGuid() != targetGuid)
         data << targetGuid;
@@ -2751,164 +2419,6 @@ void Spell::SendTameFailure(uint8 result)
         WorldPacket data(SMSG_PET_TAME_FAILURE, 1);
         data << uint8(result);
         p_caster->GetSession()->SendPacket(&data);
-    }
-}
-
-bool Spell::TakePower()
-{
-    uint16_t powerField;
-    if (u_caster != nullptr)
-        if (u_caster->getNpcFlags() & UNIT_NPC_FLAG_TRAINER)
-            return true;
-
-    if (p_caster && p_caster->m_cheats.PowerCheat)
-        return true;
-
-    //Items do not use owner's power
-    if (i_caster != nullptr)
-        return true;
-
-    // Free cast for battle preparation
-    if (p_caster && p_caster->HasAura(44521))
-        return true;
-    if (p_caster && p_caster->HasAura(44535))
-        return true;
-    if (p_caster && p_caster->HasAura(32727))
-        return true;
-
-    switch (getSpellInfo()->getPowerType())
-    {
-        case POWER_TYPE_HEALTH:
-        {   powerField = UNIT_FIELD_HEALTH; }
-        break;
-        case POWER_TYPE_MANA:
-        {   powerField = UNIT_FIELD_POWER1; m_usesMana = true; }
-        break;
-        case POWER_TYPE_RAGE:
-        {   powerField = UNIT_FIELD_POWER2; }
-        break;
-        case POWER_TYPE_FOCUS:
-        {   powerField = UNIT_FIELD_POWER3; }
-        break;
-        case POWER_TYPE_ENERGY:
-        {   powerField = UNIT_FIELD_POWER4; }
-        break;
-        case POWER_TYPE_HAPPINESS:
-        {   powerField = UNIT_FIELD_POWER5; }
-        break;
-#if VERSION_STRING == WotLK
-        case POWER_TYPE_RUNIC_POWER:
-        {   powerField = UNIT_FIELD_POWER7; }
-        break;
-
-        case POWER_TYPE_RUNES:
-        {
-            if (getSpellInfo()->getRuneCostID() && p_caster)
-            {
-                auto spell_rune_cost = sSpellRuneCostStore.LookupEntry(getSpellInfo()->getRuneCostID());
-                if (!spell_rune_cost)
-                    return false;
-
-                DeathKnight* dk = static_cast<DeathKnight*>(p_caster);
-                uint32 credit = dk->TakeRunes(RUNE_BLOOD, spell_rune_cost->bloodRuneCost) +
-                    dk->TakeRunes(RUNE_FROST, spell_rune_cost->frostRuneCost) +
-                    dk->TakeRunes(RUNE_UNHOLY, spell_rune_cost->unholyRuneCost);
-                if (credit > 0 && dk->TakeRunes(RUNE_DEATH, credit) > 0)
-                    return false;
-                if (spell_rune_cost->runePowerGain)
-                {
-                    if (u_caster != nullptr)
-                    {
-                        const auto runicPowerAmount = static_cast<uint32_t>((spell_rune_cost->runePowerGain + u_caster->getPower(POWER_TYPE_RUNIC_POWER)) * worldConfig.getFloatRate(RATE_POWER7));
-                        u_caster->setPower(POWER_TYPE_RUNIC_POWER, runicPowerAmount);
-                    }
-                }
-            }
-            return true;
-        }
-#endif
-        default:
-        {
-            LogDebugFlag(LF_SPELL, "unknown power type");
-            // we shouldn't be here to return
-            return false;
-        }
-        break;
-    }
-
-    //FIX ME: add handler for UNIT_FIELD_POWER_COST_MODIFIER
-    //UNIT_FIELD_POWER_COST_MULTIPLIER
-    if (u_caster != nullptr)
-    {
-        if (hasAttributeEx(ATTRIBUTESEX_DRAIN_WHOLE_POWER))  // Uses %100 power
-        {
-            m_caster->setUInt32Value(powerField, 0);
-            return true;
-        }
-    }
-
-    uint32_t currentPower = m_caster->getUInt32Value(powerField);
-    int32 cost = 0;
-
-    if (getSpellInfo()->getManaCostPercentage()) //Percentage spells cost % of !!!BASE!!! mana
-    {
-        if (u_caster != nullptr)
-        {
-            if (getSpellInfo()->getPowerType() == POWER_TYPE_MANA)
-                cost = (u_caster->getBaseMana() * getSpellInfo()->getManaCostPercentage()) / 100;
-            else
-                cost = (u_caster->getBaseHealth() * getSpellInfo()->getManaCostPercentage()) / 100;
-        }
-    }
-    else
-    {
-        cost = getSpellInfo()->getManaCost();
-    }
-
-    if ((int32)getSpellInfo()->getPowerType() == POWER_TYPE_HEALTH)
-        cost -= getSpellInfo()->getBaseLevel();//FIX for life tap
-    else if (u_caster != nullptr)
-    {
-        if (getSpellInfo()->getPowerType() == POWER_TYPE_MANA)
-            cost += u_caster->PowerCostMod[getSpellInfo()->getSchool()];//this is not percent!
-        else
-            cost += u_caster->PowerCostMod[0];
-        cost += float2int32(cost * u_caster->getPowerCostMultiplier(static_cast<uint16_t>(getSpellInfo()->getSchool())));
-    }
-
-    //hackfix for shiv's energy cost
-    if (p_caster != nullptr && (m_spellInfo->getId() == 5938 || m_spellInfo->getId() == 5940))
-    {
-        Item* it = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-        if (it != nullptr)
-            cost += it->getItemProperties()->Delay / 100;//10 * it->GetProto()->Delay / 1000;
-    }
-
-    //apply modifiers
-    if (u_caster != nullptr)
-    {
-        spellModFlatIntValue(u_caster->SM_FCost, &cost, getSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageIntValue(u_caster->SM_PCost, &cost, getSpellInfo()->getSpellFamilyFlags());
-    }
-
-    if (cost <= 0)
-        return true;
-
-    //FIXME:DK:if field value < cost what happens
-    if (powerField == UNIT_FIELD_HEALTH)
-    {
-        m_caster->DealDamage(u_caster, cost, 0, 0, 0, true);
-        return true;
-    }
-    else
-    {
-        if (cost <= static_cast<int32_t>(currentPower)) // Unit has enough power (needed for creatures)
-        {
-            m_caster->setUInt32Value(powerField, currentPower - cost);
-            return true;
-        }
-        else
-            return false;
     }
 }
 
@@ -3748,7 +3258,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                 }
 
                 target->setTargetGuid(p_caster->getGuid());
-                return SPELL_FAILED_SUCCESS;
+                return SPELL_CAST_SUCCESS;
             }
 
             // Lazy Peons - Quest 5441
@@ -3759,7 +3269,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                     return SPELL_FAILED_BAD_TARGETS;
                 }
 
-                return SPELL_FAILED_SUCCESS;
+                return SPELL_CAST_SUCCESS;
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3916,7 +3426,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
     }
 
     // no problems found, so we must be ok
-    return SPELL_CANCAST_OK;
+    return SPELL_CAST_SUCCESS;
 }
 
 bool Spell::hasAttribute(SpellAttributes attribute)
@@ -4093,7 +3603,14 @@ exit:
     if (m_overrideBasePoints)
         basePoints = m_overridenBasePoints[i];
     else
+    {
+#if VERSION_STRING >= Cata
+        // In cata blizzard has corrected the base points in DBC files (no longer need to add 1)
+        basePoints = getSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i));
+#else
         basePoints = getSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i)) + 1;
+#endif
+    }
     int32 randomPoints = getSpellInfo()->getEffectDieSides(static_cast<uint8_t>(i));
 
     //added by Zack : some talents inherit their basepoints from the previously cast spell: see mage - Master of Elements
@@ -4975,22 +4492,6 @@ void Spell::SendHealSpellOnPlayer(Object* caster, Object* target, uint32 healed,
     data << overhealed;
     data << absorbed;
     data << uint8(critical);
-
-    caster->SendMessageToSet(&data, true);
-}
-
-void Spell::SendHealManaSpellOnPlayer(Object* caster, Object* target, uint32 dmg, uint32 powertype, uint32 spellid)
-{
-    if (caster == nullptr || target == nullptr || !target->isPlayer())
-        return;
-
-    WorldPacket data(SMSG_SPELLENERGIZELOG, 30);
-
-    data << target->GetNewGUID();
-    data << caster->GetNewGUID();
-    data << spellid;
-    data << powertype;
-    data << dmg;
 
     caster->SendMessageToSet(&data, true);
 }
