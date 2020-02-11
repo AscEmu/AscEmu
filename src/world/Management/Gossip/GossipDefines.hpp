@@ -316,15 +316,15 @@ enum MenuItemOptions
 };
 
 enum ws
-        {
-            SURE_TO_PURCHASE_DTS,               // ""
-            PURCHASE_DTS,                       // ""
-            NOT_ENOUGH_MONEY_DTS,               // ""
-        };
+{
+    SURE_TO_PURCHASE_DTS,               // ""
+    PURCHASE_DTS,                       // ""
+    NOT_ENOUGH_MONEY_DTS,               // ""
+};
 
-        enum GossipText
-        {
-            TXTID_TALENTRESET = 5674,           // NT_  ? ""
-            TXTID_PETUNTRAIN = 7722,            // NT_  ? ""
-            TXTID_DUALSPECPURCHASE = 14136      // NT_  ? this is not correct.
-        };
+enum GossipText
+{
+    TXTID_TALENTRESET = 5674,           // NT_  ? ""
+    TXTID_PETUNTRAIN = 7722,            // NT_  ? ""
+    TXTID_DUALSPECPURCHASE = 14136      // NT_  ? this is not correct.
+};

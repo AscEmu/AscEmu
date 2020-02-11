@@ -71,26 +71,29 @@ enum MailError
     MAIL_ERR_ITEM_HAS_EXPIRED           = 21
 };
 
-// see Stationery.dbc
+// Values based on Stationery.dbc
 enum MailStationery
 {
     // item:
-    MAIL_STATIONERY_TEST1       = 1,     // 8164
-    MAIL_STATIONERY_TEST2       = 41,    // 9311
-    MAIL_STATIONERY_GM          = 61,    // 18154
-    MAIL_STATIONERY_AUCTION     = 62,    // 21140
-    MAIL_STATIONERY_VAL         = 64,    // 22058, Valentines day
-    MAIL_STATIONERY_CHR         = 65     // 34171, Winter
+    MAIL_STATIONERY_TEST1               = 1,     // 8164
+    MAIL_STATIONERY_TEST2               = 41,    // 9311
+    MAIL_STATIONERY_GM                  = 61,    // 18154
+    MAIL_STATIONERY_AUCTION             = 62,    // 21140
+    MAIL_STATIONERY_VAL                 = 64,    // 22058, Valentines day
+    // WOTLK
+    MAIL_STATIONERY_CHR                 = 65,    // 34171, Winter
+    // Cataclysm
+    MAIL_STATIONERY_STATIONERY_ORP      = 67,    // 46830
 };
 
 enum MailCheckMask
 {
-    MAIL_CHECK_MASK_NONE        = 0x00,
-    MAIL_CHECK_MASK_READ        = 0x01,
-    MAIL_CHECK_MASK_RETURNED    = 0x02,
-    MAIL_CHECK_MASK_COPIED      = 0x04,
-    MAIL_CHECK_MASK_COD_PAYMENT = 0x08,
-    MAIL_CHECK_MASK_HAS_BODY    = 0x10,
+    MAIL_CHECK_MASK_NONE                = 0x00,
+    MAIL_CHECK_MASK_READ                = 0x01,
+    MAIL_CHECK_MASK_RETURNED            = 0x02,
+    MAIL_CHECK_MASK_COPIED              = 0x04,
+    MAIL_CHECK_MASK_COD_PAYMENT         = 0x08,
+    MAIL_CHECK_MASK_HAS_BODY            = 0x10,
 };
 
 #define MAIL_MAX_ITEM_SLOT 12
