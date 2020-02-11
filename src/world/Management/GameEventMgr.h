@@ -23,7 +23,7 @@ enum GameEventState
     GAMEEVENT_ACTIVE_FORCED     = 4     // Activated by GM command or script
 };
 
-// values based on Holidays.dbc
+// Values based on Holidays.dbc
 enum HolidayIds
 {
     HOLIDAY_NONE                        = 0,
