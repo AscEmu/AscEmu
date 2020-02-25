@@ -228,7 +228,7 @@ class SERVER_DECL WoWGuid
             uint32_t highGuid = *(reinterpret_cast<const uint32_t*>(&guid) + 1);
             return highGuid;
         }
-        
+
         HighGuid getHigh() const { return static_cast<HighGuid>(getGuidHighPart()); }
 
         static uint64_t createPetGuid(uint32_t entry, uint32_t lowGuid)

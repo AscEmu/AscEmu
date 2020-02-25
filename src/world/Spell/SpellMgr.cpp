@@ -668,7 +668,7 @@ void SpellMgr::loadSpellCoefficientOverride()
 
 void SpellMgr::loadSpellCustomOverride()
 {
-    //                                             0     1            2                         3                  4               5              6              7            8
+    //                                                 0        1          2                       3                     4              5             6                7            8
     const auto result = WorldDatabase.Query("SELECT spell_id, rank, assign_on_target_flag, assign_self_cast_only, assign_c_is_flag, proc_flags, proc_target_selfs, proc_chance, proc_charges, "
     //                                      9                       10                           11                         12
                                       "proc_interval, proc_effect_trigger_spell_0, proc_effect_trigger_spell_1, proc_effect_trigger_spell_2 FROM spell_custom_override");

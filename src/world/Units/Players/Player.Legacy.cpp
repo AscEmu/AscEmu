@@ -2328,7 +2328,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     ss << m_zoneId << ", '";
 
-    for (uint8 i = 0; i < 12; i++)
+    for (uint32_t i = 0; i < DBC_TAXI_MASK_SIZE; i++)
         ss << m_taximask[i] << " ";
 
     ss << "', "
@@ -6275,7 +6275,7 @@ void Player::LoadTaxiMask(const char* data)
     std::vector<std::string>::iterator iter;
 
     for (iter = tokens.begin(), index = 0;
-         (index < 12) && (iter != tokens.end()); ++iter, ++index)
+         (index < DBC_TAXI_MASK_SIZE) && (iter != tokens.end()); ++iter, ++index)
     {
         m_taximask[index] = atol((*iter).c_str());
     }

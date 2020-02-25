@@ -130,7 +130,7 @@ struct PlayerCreateInfo
     uint32 attackpower;
     float mindmg;
     float maxdmg;
-    uint32 taximask[12];
+    uint32_t taximask[DBC_TAXI_MASK_SIZE];
     std::list<CreateInfo_ItemStruct> items;
     std::list<CreateInfo_SkillStruct> skills;
     std::list<CreateInfo_ActionBarStruct> actionbars;
@@ -1072,7 +1072,7 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         TaxiPath* GetTaxiPath() { return m_CurrentTaxiPath; }
         bool isOnTaxi() const { return m_onTaxi; }
-        const uint32 & GetTaximask(uint8 index) const { return m_taximask[index]; }
+        const uint32 & GetTaximask(uint32_t index) const { return m_taximask[index]; }
         void LoadTaxiMask(const char* data);
         void TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node);
         void JumpToEndTaxiNode(TaxiPath* path);
@@ -1080,7 +1080,7 @@ public:
         void EventTaxiInterpolate();
 
         void SetTaxiState(bool state) { m_onTaxi = state; }
-        void SetTaximask(uint8 index, uint32 value) { m_taximask[index] = value; }
+        void SetTaximask(uint32_t index, uint32 value) { m_taximask[index] = value; }
         void SetTaxiPath(TaxiPath* path) { m_CurrentTaxiPath = path; }
         void SetTaxiPos() { m_taxi_pos_x = m_position.x; m_taxi_pos_y = m_position.y; m_taxi_pos_z = m_position.z; }
         void UnSetTaxiPos() { m_taxi_pos_x = 0; m_taxi_pos_y = 0; m_taxi_pos_z = 0; }
@@ -1091,7 +1091,7 @@ public:
         uint32 taxi_model_id;
         uint32 lastNode;
         uint32 m_taxi_ride_time;
-        uint32 m_taximask[12];
+        uint32_t m_taximask[DBC_TAXI_MASK_SIZE];
         float m_taxi_pos_x;
         float m_taxi_pos_y;
         float m_taxi_pos_z;
