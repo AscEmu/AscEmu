@@ -329,7 +329,12 @@ void SpellMgr::loadSpellInfoData()
         spellInfo.setSpellVisual(1, dbcSpellEntry->SpellVisual1);
         spellInfo.setSpellIconID(dbcSpellEntry->spellIconID);
         spellInfo.setActiveIconID(dbcSpellEntry->activeIconID);
-        spellInfo.setSchool(dbcSpellEntry->School);
+#if VERSION_STRING == Classic
+        // Classic doesn't have schools bitwise in DBC
+        spellInfo.setSchoolMask(1 << dbcSpellEntry->School);
+#else
+        spellInfo.setSchoolMask(dbcSpellEntry->School);
+#endif
 #if VERSION_STRING >= WotLK
         spellInfo.setRuneCostID(dbcSpellEntry->RuneCostID);
         spellInfo.setSpellDifficultyID(dbcSpellEntry->SpellDifficultyId);

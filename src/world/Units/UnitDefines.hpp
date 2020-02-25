@@ -827,11 +827,13 @@ enum DamageFlags
     DAMAGE_FLAG_ARCANE  = 64
 };
 
-enum WeaponDamageType // this is NOT the same as SPELL_ENTRY_Spell_Dmg_Type, or Spell::GetType(), or SPELL_ENTRY_School !!
+// this is NOT the same as SPELL_ENTRY_Spell_Dmg_Type, or Spell::GetType(), or SPELL_ENTRY_School !!
+enum WeaponDamageType : uint8_t
 {
     MELEE   = 0,
     OFFHAND = 1,
     RANGED  = 2,
+    TOTAL_WEAPON_DAMAGE_TYPES
 };
 
 enum VisualState

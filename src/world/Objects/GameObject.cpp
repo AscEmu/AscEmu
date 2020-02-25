@@ -1241,12 +1241,12 @@ void GameObject_FishingNode::onUse(Player* player)
     {
         if (success)
         {
-            channelledSpell->SendChannelUpdate(0);
+            channelledSpell->sendChannelUpdate(0);
             channelledSpell->finish(true);
         }
         else
         {
-            channelledSpell->SendChannelUpdate(0);
+            channelledSpell->sendChannelUpdate(0);
             channelledSpell->finish(false);
         }
     }

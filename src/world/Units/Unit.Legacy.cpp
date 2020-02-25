@@ -486,8 +486,11 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
     int i;
 
     m_canDualWield = false;
-    for (i = 0; i < 3; ++i)
+    for (i = 0; i < TOTAL_WEAPON_DAMAGE_TYPES; ++i)
+    {
         m_attackTimer[i] = 0;
+        m_attackSpeed[i] = 1.0f;
+    }
 
     m_ignoreArmorPctMaceSpec = 0;
     m_ignoreArmorPct = 0;
@@ -1449,9 +1452,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
             //this is wrong, dummy is too common to be based on this, we should use spellgroup or something
             if (spe->getSpellIconID() != CastingSpell->getSpellIconID())
             {
-                if (ospinfo && !ospinfo->getSchool())
+                if (ospinfo && !ospinfo->getSchoolMask())
                     continue;
-                if (ospinfo && ospinfo->getSchool() != CastingSpell->getSchool())
+                if (ospinfo && !(ospinfo->getSchoolMask() & CastingSpell->getSchoolMask()))
                     continue;
                 if (CastingSpell->getEffectImplicitTargetA(0) == EFF_TARGET_SELF || CastingSpell->getEffectImplicitTargetA(1) == EFF_TARGET_SELF || CastingSpell->getEffectImplicitTargetA(2) == EFF_TARGET_SELF)  //Prevents school based procs affecting caster when self buffing
                     continue;
@@ -2148,7 +2151,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->getSchool() != SCHOOL_FIRE)
+                    if (!(CastingSpell->getSchoolMask() & SCHOOL_MASK_FIRE))
                         continue;
                     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);   //we already modified this spell on server loading so it must exist
                     auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->getDurationIndex());
@@ -2832,8 +2835,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     //only trigger effect for specified spells
                     if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
                         continue;
-                    if (CastingSpell->getSchool() != SCHOOL_FIRE &&
-                        CastingSpell->getSchool() != SCHOOL_SHADOW)
+                    if (!(CastingSpell->getSchoolMask() & SCHOOL_MASK_FIRE) &&
+                        !(CastingSpell->getSchoolMask() & SCHOOL_MASK_SHADOW))
                         continue;
                 }
                 break;
@@ -3590,7 +3593,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING) || CastingSpell->getSchool() != SCHOOL_FIRE)
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING) || !(CastingSpell->getSchoolMask() & SCHOOL_MASK_FIRE))
                         continue;
                     if (flag & PROC_ON_SPELL_CRIT_HIT)
                     {
@@ -3619,7 +3622,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 //mage - Winter's Chill
                 case 12579:
                     // Winter's Chill shouldn't proc on self
-                    if (victim == this || CastingSpell->getSchool() != SCHOOL_FROST)
+                    if (victim == this || !(CastingSpell->getSchoolMask() & SCHOOL_MASK_FROST))
                         continue;
                     break;
                     //item - Thunderfury
@@ -4539,7 +4542,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->getSchool() != SCHOOL_FIRE && CastingSpell->getSchool() != SCHOOL_FROST) //fire and frost critical's
+                    if (!(CastingSpell->getSchoolMask() & SCHOOL_MASK_FIRE) && !(CastingSpell->getSchoolMask() & SCHOOL_MASK_FROST)) //fire and frost critical's
                         continue;
 
                     if (ospinfo)
@@ -5564,13 +5567,13 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 //SETBONUSES
                 case 37379:
                 {
-                    if (!CastingSpell || CastingSpell->getSchool() != SCHOOL_SHADOW || !(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
+                    if (!CastingSpell || !(CastingSpell->getSchoolMask() & SCHOOL_MASK_SHADOW) || !(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
                         continue;
                 }
                 break;
                 case 37378:
                 {
-                    if (!CastingSpell || CastingSpell->getSchool() != SCHOOL_FIRE || !(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
+                    if (!CastingSpell || !(CastingSpell->getSchoolMask() & SCHOOL_MASK_FIRE) || !(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
                         continue;
                 }
                 break;
@@ -6616,13 +6619,13 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         case 16188: // Druid - Nature's Swiftness
                         {
                             //if (CastingSpell->School!=SCHOOL_NATURE||(!sd->CastTime||sd->CastTime>10000)) continue;
-                            if (CastingSpell->getSchool() != SCHOOL_NATURE || spell_cast_time->CastTime == 0)
+                            if (!(CastingSpell->getSchoolMask() & SCHOOL_MASK_NATURE) || spell_cast_time->CastTime == 0)
                                 continue;
                         }
                         break;
                         case 16166:
                         {
-                            if (!(CastingSpell->getSchool() == SCHOOL_FIRE || CastingSpell->getSchool() == SCHOOL_FROST || CastingSpell->getSchool() == SCHOOL_NATURE))
+                            if (!(CastingSpell->getSchoolMask() & SCHOOL_MASK_FIRE || CastingSpell->getSchoolMask() & SCHOOL_MASK_FROST || CastingSpell->getSchoolMask() & SCHOOL_MASK_NATURE))
                                 continue;
                         }
                         break;
@@ -7207,7 +7210,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
     bool disable_dR = false;
 
     if (ability)
-        dmg.school_type = ability->getSchool();
+        dmg.school_type = ability->getFirstSchoolFromSchoolMask();
     else
     {
         if (isCreature())
@@ -8441,7 +8444,7 @@ void Unit::AddAura(Aura* aur)
         }
     }
 
-    if (aur->GetSpellInfo()->getSchool() && SchoolImmunityList[aur->GetSpellInfo()->getSchool()])
+    if (aur->GetSpellInfo()->getFirstSchoolFromSchoolMask() && SchoolImmunityList[aur->GetSpellInfo()->getFirstSchoolFromSchoolMask()])
     {
         delete aur;
         return;
@@ -9042,7 +9045,7 @@ void Unit::AddAura(Aura* aur)
         }
     }
 
-    if (aur->GetSpellInfo()->getSchool() && SchoolImmunityList[aur->GetSpellInfo()->getSchool()])
+    if (aur->GetSpellInfo()->getFirstSchoolFromSchoolMask() && SchoolImmunityList[aur->GetSpellInfo()->getFirstSchoolFromSchoolMask()])
     {
         delete aur;
         return;
@@ -9865,7 +9868,7 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellInfo const* spellInfo, int32 ba
 {
     float plus_damage = 0.0f;
     Unit* caster = this;
-    uint32 school = spellInfo->getSchool();
+    uint32 school = spellInfo->getFirstSchoolFromSchoolMask();
 
     if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_NOT_USING_DMG_BONUS)
         return 0;
@@ -9950,8 +9953,8 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellInfo const* spellInfo, int32 ba
 float Unit::CalcSpellDamageReduction(Unit* victim, SpellInfo const* spell, float res)
 {
     float reduced_damage = 0;
-    reduced_damage += static_cast<float>(victim->DamageTakenMod[spell->getSchool()]);
-    reduced_damage += res * victim->DamageTakenPctMod[spell->getSchool()];
+    reduced_damage += static_cast<float>(victim->DamageTakenMod[spell->getFirstSchoolFromSchoolMask()]);
+    reduced_damage += res * victim->DamageTakenPctMod[spell->getFirstSchoolFromSchoolMask()];
     reduced_damage += res * victim->ModDamageTakenByMechPCT[spell->getMechanicsType()];
     return reduced_damage;
 }
@@ -11405,7 +11408,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     case 16166: // [Shaman] Elemental Mastery
                     {
                         SpellInfo const* spi = sSpellMgr.getSpellInfo(skip);
-                        if (spi && !(spi->getSchool() == SCHOOL_FIRE || spi->getSchool() == SCHOOL_FROST || spi->getSchool() == SCHOOL_NATURE))
+                        if (spi && !(spi->getSchoolMask() & SCHOOL_MASK_FIRE || spi->getSchoolMask() & SCHOOL_MASK_FROST || spi->getSchoolMask() & SCHOOL_MASK_NATURE))
                             continue;
                     }
                     break;
@@ -11766,7 +11769,7 @@ void Unit::RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune)
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
     {
         if (m_auras[x]
-            && m_auras[x]->GetSpellInfo()->getSchool() == School
+            && m_auras[x]->GetSpellInfo()->getFirstSchoolFromSchoolMask() == School
             && (!m_auras[x]->IsPositive() || Positive)
             && (!Immune && m_auras[x]->GetSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY)
             )
@@ -12702,16 +12705,6 @@ void Unit::InheritSMMods(Unit* inherit_from)
     }
 }
 
-void Unit::EventStopChanneling(bool abort)
-{
-    Spell* spell = getCurrentSpell(CURRENT_CHANNELED_SPELL);
-    if (spell == nullptr)
-        return;
-
-    spell->SendChannelUpdate(0);
-    spell->finish(abort);
-}
-
 void Unit::EventStrikeWithAbility(uint64 guid, SpellInfo const* sp, uint32 /*damage*/)
 {
     Unit* victim = m_mapMgr ? m_mapMgr->GetUnit(guid) : NULL;
@@ -13316,7 +13309,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo const* spell)
                 CritChance += static_cast<Player*>(victim)->res_R_crit_get();
 
             if (victim->isCreatureOrPlayer())
-                CritChance += static_cast<float>(static_cast<Unit*>(victim)->AttackerCritChanceMod[spell->getSchool()]);
+                CritChance += static_cast<float>(static_cast<Unit*>(victim)->AttackerCritChanceMod[spell->getFirstSchoolFromSchoolMask()]);
         }
         else
             CritChance = 5.0f; // static value for mobs.. not blizzlike, but an unfinished formula is not fatal :)
@@ -13342,11 +13335,11 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo const* spell)
     }
     else
     {
-        CritChance = spellcritperc + SpellCritChanceSchool[spell->getSchool()];
+        CritChance = spellcritperc + SpellCritChanceSchool[spell->getFirstSchoolFromSchoolMask()];
 
         if (victim->isCreatureOrPlayer())
         {
-            CritChance += static_cast<float>(static_cast<Unit*>(victim)->AttackerCritChanceMod[spell->getSchool()]);
+            CritChance += static_cast<float>(static_cast<Unit*>(victim)->AttackerCritChanceMod[spell->getFirstSchoolFromSchoolMask()]);
 
             //\todo Zyres: is tis relly the way this should work?
             if (isPlayer() && (static_cast<Unit*>(victim)->m_rootCounter - static_cast<Unit*>(victim)->m_stunned))
@@ -13447,7 +13440,7 @@ float Unit::GetCriticalDamageBonusForSpell(Object* victim, SpellInfo const* spel
     {
         // the bonuses are halved by 50% (funky blizzard math :S)
         float b;
-        if (spell->getSchool() == 0 || spell->custom_is_melee_spell || spell->custom_is_ranged_spell) // physical || hackfix SoCommand/JoCommand
+        if (spell->getFirstSchoolFromSchoolMask() == 0 || spell->custom_is_melee_spell || spell->custom_is_ranged_spell) // physical || hackfix SoCommand/JoCommand
             b = critical_bonus / 100.0f + 1.0f;
         else
             b = critical_bonus / 200.0f + 1.0f;
@@ -13482,7 +13475,7 @@ bool Unit::IsCriticalHealForSpell(Object* victim, SpellInfo const* spell)
 {
     int32 crit_chance = 0;
 
-    crit_chance = float2int32(this->spellcritperc + this->SpellCritChanceSchool[spell->getSchool()]);
+    crit_chance = float2int32(this->spellcritperc + this->SpellCritChanceSchool[spell->getFirstSchoolFromSchoolMask()]);
 
     //Sacred Shield
     if (victim->isCreatureOrPlayer())

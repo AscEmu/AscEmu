@@ -83,7 +83,7 @@ enum SpellAttributesEx
     ATTRIBUTESEX_DISMISS_CURRENT_PET                = 0x00000001,   // 1 Dismisses current pet
     ATTRIBUTESEX_DRAIN_WHOLE_POWER                  = 0x00000002,   // 2 Uses all power / health
     ATTRIBUTESEX_CHANNELED_1                        = 0x00000004,   // 3 Channeled
-    ATTRIBUTESEX_UNK5                               = 0x00000008,   // 4
+    ATTRIBUTESEX_CANT_BE_REFLECTED                  = 0x00000008,   // 4
     ATTRIBUTESEX_IGNORE_IN_FRONT                    = 0x00000010,   // 5 ignore verification isInFront() in unit::strike
     ATTRIBUTESEX_NOT_BREAK_STEALTH                  = 0x00000020,   // 6 does not break stealth
     ATTRIBUTESEX_CHANNELED_2                        = 0x00000040,   // 7 Channeled - [POSSIBLY: dynamite, grenades from engineering etc..]
@@ -172,7 +172,7 @@ enum SpellAttributesExC
     ATTRIBUTESEXC_PLAYER_RANGED_SPELLS              = 0x00008000,
     ATTRIBUTESEXC_UNK18                             = 0x00010000,
     ATTRIBUTESEXC_UNK19                             = 0x00020000,
-    ATTRIBUTESEXC_UNK20                             = 0x00040000,
+    ATTRIBUTESEXC_UNK20                             = 0x00040000,   // probably these spells cannot be missed or resisted
     ATTRIBUTESEXC_UNK21                             = 0x00080000,   // e.g. Totemic mastery
     ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD = 0x00100000,
     ATTRIBUTESEXC_UNK23                             = 0x00200000,
@@ -228,7 +228,7 @@ enum SpellAttributesExD
 enum SpellAttributesExE
 {
     ATTRIBUTESEXE_NULL                              = 0x00000000,
-    ATTRIBUTESEXE_UNK2                              = 0x00000001,
+    ATTRIBUTESEXE_CAN_MOVE_WHILE_CHANNELING         = 0x00000001,   // Can move while channeling
     ATTRIBUTESEXE_REAGENT_REMOVAL                   = 0x00000002,   // if player has UNIT_FLAG_NO_REAGANT_COST, spells with this attribute won't use reagents
     ATTRIBUTESEXE_UNK4                              = 0x00000004,
     ATTRIBUTESEXE_USABLE_WHILE_STUNNED              = 0x00000008,   // usable while stunned

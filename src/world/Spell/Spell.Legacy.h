@@ -51,6 +51,20 @@ class SERVER_DECL Spell : public EventableObject
         // MIT Starts
 
         //////////////////////////////////////////////////////////////////////////////////////////
+        // Main control flow
+
+        // Prepares the spell that's going to cast to targets
+        SpellCastResult prepare(SpellCastTargets* targets);
+        // Casts the spell
+        void castMe(const bool doReCheck);
+        // Handles missed targets and effects
+        void handleMissedTarget(SpellTargetMod const missedTarget);
+        void handleMissedEffect(const uint64_t targetGuid);
+
+        // Update spell state based on time difference
+        void Update(unsigned long timePassed);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
         // Spell cast checks
 
         // Second check in ::cast() should not be as strict as initial check
@@ -70,16 +84,19 @@ class SERVER_DECL Spell : public EventableObject
         //////////////////////////////////////////////////////////////////////////////////////////
         // Spell packets
         void sendCastResult(SpellCastResult result, uint32_t parameter1 = 0, uint32_t parameter2 = 0);
+        void sendChannelUpdate(const uint32_t time);
 
     private:
         // Spell cast bar packet
         void sendSpellStart();
         // Spell "missile" packet
         void sendSpellGo();
+        void sendChannelStart(const uint32_t duration);
 
         void sendCastResult(Player* caster, uint8_t castCount, SpellCastResult result, uint32_t parameter1, uint32_t parameter2);
 
         void writeProjectileDataToPacket(WorldPacket *data);
+        void writeSpellMissedTargets(WorldPacket *data);
 
     public:
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -88,8 +105,8 @@ class SERVER_DECL Spell : public EventableObject
         int32_t getCastTimeLeft() const;
 
     private:
-        int32_t m_castTime;
-        int32_t m_timer;
+        int32_t m_castTime = 0;
+        int32_t m_timer = 0;
 
     public:
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -100,15 +117,47 @@ class SERVER_DECL Spell : public EventableObject
         void takePower();
         uint32_t calculatePowerCost() const;
 
-        uint32_t m_powerCost;
+        uint32_t m_powerCost = 0;
+
+    public:
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Caster
+
+    private:
+        float m_castPositionX = 0.0f;
+        float m_castPositionY = 0.0f;
+        float m_castPositionZ = 0.0f;
+        float m_castPositionO = 0.0f;
+
+    public:
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Targets
+
+    private:
+        // Stores unique hitted targets
+        std::vector<uint64_t> uniqueHittedTargets;
+        // Stores targets with hit result != SPELL_DID_HIT_SUCCESS
+        std::vector<SpellTargetMod> missedTargets;
+        // Stores hitted targets for each spell effect
+        std::vector<uint64_t> m_effectTargets[MAX_SPELL_EFFECTS];
 
     public:
         //////////////////////////////////////////////////////////////////////////////////////////
         // Misc
-        bool canAttackCreatureType(Creature* target) const;
-
         SpellInfo const* getSpellInfo() const;
 
+    private:
+        bool canAttackCreatureType(Creature* target) const;
+
+        void removeReagents();
+#if VERSION_STRING < Cata
+        void removeAmmo();
+#endif
+
+        // Spell reflect stuff
+        bool m_canBeReflected = false;
+
+    public:
         // MIT Ends
         // APGL Starts
         friend class DummySpellHandler;
@@ -145,23 +194,15 @@ class SERVER_DECL Spell : public EventableObject
 
         // See if we hit the target or can it resist (evade/immune/resist on spellgo) (0=success)
         uint8 DidHit(uint32 effindex, Unit* target);
-        // Prepares the spell that's going to cast to targets
-        uint8 prepare(SpellCastTargets* targets);
         // Cancels the current spell
         void cancel();
-        // Update spell state based on time difference
-        void Update(unsigned long time_passed);
         // Casts the spell
-        void castMe(bool);
+        void castMeOld();
         // Finishes the casted spell
         void finish(bool successful = true);
         // Handle the Effects of the Spell
         virtual void HandleEffects(uint64 guid, uint32 i);
         void HandleCastEffects(uint64 guid, uint32 i);
-
-        void HandleModeratedTarget(uint64 guid);
-
-        void HandleModeratedEffects(uint64 guid);
 
         // Trigger Spell function that triggers triggered spells
         //void TriggerSpell();
@@ -188,10 +229,6 @@ class SERVER_DECL Spell : public EventableObject
         void DetermineSkillUp();
         // Increases cast time of the spell
         void AddTime(uint32 type);
-        void AddCooldown();
-        void AddStartCooldown();
-
-        bool Reflect(Unit* refunit);
 
         uint32 getState() const;
         void SetUnitTarget(Unit* punit);
@@ -203,15 +240,12 @@ class SERVER_DECL Spell : public EventableObject
         // Send Packet functions
         void SendLogExecute(uint32 damage, uint64 & targetGuid);
         void SendInterrupted(uint8 result);
-        void SendChannelUpdate(uint32 time);
-        void SendChannelStart(uint32 duration);
         void SendResurrectRequest(Player* target);
         void SendTameFailure(uint8 failure);
         static void SendHealSpellOnPlayer(Object* caster, Object* target, uint32 healed, bool critical, uint32 overhealed, uint32 spellid, uint32 absorbed = 0);
 
         void HandleAddAura(uint64 guid);
         void writeSpellGoTargets(WorldPacket* data);
-        void writeSpellMissedTargets(WorldPacket* data);
         uint32 pSpellId;
         SpellInfo const* ProcedOnSpell;
         SpellCastTargets m_targets;
@@ -369,8 +403,6 @@ class SERVER_DECL Spell : public EventableObject
         uint32 GetType();
 
         std::map<uint64, Aura*> m_pendingAuras;
-        std::vector<uint64_t> UniqueTargets;
-        std::vector<SpellTargetMod> ModeratedTargets;
 
         Item* GetItemTarget() const;
         Unit* GetUnitTarget() const;
@@ -406,9 +438,6 @@ class SERVER_DECL Spell : public EventableObject
         //uint32 TriggerSpellId;  // used to set next spell to use
         //uint64 TriggerSpellTarget; // used to set next spell target
         bool m_requiresCP;
-        float m_castPositionX;
-        float m_castPositionY;
-        float m_castPositionZ;
         int32 m_charges;
 
         int32 damageToHit;
@@ -434,27 +463,13 @@ class SERVER_DECL Spell : public EventableObject
         bool GetSpellFailed() const;
         void SetSpellFailed(bool failed = true);
 
-        bool IsReflected() const;
-        void SetReflected(bool reflected = true);
-
-        /// Spell possibility's
-        bool GetCanReflect() const;
-        void SetCanReflect(bool reflect = true);
-
-
-        Spell* m_reflectedParent;
-
     protected:
 
         /// Spell state's
         bool m_usesMana;
         bool m_Spell_Failed;         //for 5sr
-        bool m_IsReflected;
         bool m_Delayed;
         uint8 m_DelayStep;            //3.0.2 - spells can only be delayed twice.
-
-        // Spell possibility's
-        bool m_CanRelect;
 
         bool m_IsCastedOnSelf;
 
@@ -495,7 +510,6 @@ class SERVER_DECL Spell : public EventableObject
         float m_missilePitch;
         uint32 m_missileTravelTime;
 
-        std::vector<uint64_t> m_targetUnits[3];
         void SafeAddTarget(std::vector<uint64_t>* tgt, uint64 guid);
 
         void SafeAddMissedTarget(uint64 guid);

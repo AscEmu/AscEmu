@@ -167,7 +167,7 @@ bool Give5kGold(uint8_t /*effectIndex*/, Spell* s)
         if (worldConfig.player.isGoldCapEnabled && (s->GetPlayerTarget()->getCoinage() + 50000000) > worldConfig.player.limitGoldAmount)
         {
             s->GetPlayerTarget()->setCoinage(worldConfig.player.limitGoldAmount);
-            s->GetPlayerTarget()->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
+            s->GetPlayerTarget()->getItemInterface()->buildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
         }
         else
         {
@@ -259,13 +259,13 @@ bool DeadlyThrowInterrupt(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
         if (m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
         {
-            school = m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getSpellInfo()->getSchool();
+            school = m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getSpellInfo()->getFirstSchoolFromSchoolMask();
             m_target->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
         }
         // No need to check cast time for generic spells, checked already in Object::isCastingSpell()
         else if (m_target->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
         {
-            school = m_target->getCurrentSpell(CURRENT_GENERIC_SPELL)->getSpellInfo()->getSchool();
+            school = m_target->getCurrentSpell(CURRENT_GENERIC_SPELL)->getSpellInfo()->getFirstSchoolFromSchoolMask();
             m_target->interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
         }
 

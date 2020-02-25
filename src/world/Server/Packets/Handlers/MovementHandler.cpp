@@ -202,7 +202,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
                  // This is done separately as not all channeled spells are canceled by all movement opcodes
                  if (auto spell = _player->getCurrentSpell(CURRENT_CHANNELED_SPELL))
                  {
-                     spell->SendChannelUpdate(0U);
+                     spell->sendChannelUpdate(0U);
                      spell->finish(false);
                  }
              }
@@ -583,7 +583,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
                 auto spell = _player->getCurrentSpell(CURRENT_CHANNELED_SPELL);
                 if (spell != nullptr)
                 {
-                    spell->SendChannelUpdate(0);
+                    spell->sendChannelUpdate(0);
                     spell->finish(false);
                 }
             }

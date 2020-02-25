@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum SpellDidHitResult
+enum SpellDidHitResult : uint8_t
 {
     SPELL_DID_HIT_SUCCESS = 0,
     SPELL_DID_HIT_MISS    = 1,

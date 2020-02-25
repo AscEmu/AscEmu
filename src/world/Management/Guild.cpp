@@ -2326,7 +2326,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
 
     if (pSourceItem->isSoulbound() || pSourceItem->getItemProperties()->Class == ITEM_CLASS_QUEST)
     {
-        player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_CANT_DROP_SOULBOUND);
+        player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_CANT_DROP_SOULBOUND);
         return;
     }
 

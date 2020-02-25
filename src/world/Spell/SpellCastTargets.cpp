@@ -101,11 +101,6 @@ void SpellCastTargets::read(WorldPacket& data, uint64_t caster)
         data >> lv.z;
 
         setSource(lv);
-
-        if (!(m_targetMask & TARGET_FLAG_DEST_LOCATION))
-        {
-            setDestination(lv);
-        }
     }
 
     if (m_targetMask & TARGET_FLAG_DEST_LOCATION)
@@ -120,11 +115,6 @@ void SpellCastTargets::read(WorldPacket& data, uint64_t caster)
         data >> lv.z;
 
         setDestination(lv);
-
-        if (!(m_targetMask & TARGET_FLAG_SOURCE_LOCATION))
-        {
-            setSource(lv);
-        }
     }
 
     if (m_targetMask & TARGET_FLAG_STRING)

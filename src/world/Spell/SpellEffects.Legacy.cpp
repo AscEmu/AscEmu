@@ -661,7 +661,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
-    if (unitTarget->SchoolImmunityList[getSpellInfo()->getSchool()])
+    if (unitTarget->SchoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()])
     {
         sendCastResult(SPELL_FAILED_IMMUNE);
         return;
@@ -1858,7 +1858,7 @@ void Spell::SpellEffectEnvironmentalDamage(uint8_t /*effectIndex*/)
 {
     if (!playerTarget) return;
 
-    if (playerTarget->SchoolImmunityList[getSpellInfo()->getSchool()])
+    if (playerTarget->SchoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()])
     {
         sendCastResult(SPELL_FAILED_IMMUNE);
         return;
@@ -1884,7 +1884,7 @@ void Spell::SpellEffectPowerDrain(uint8_t effectIndex)  // Power Drain
         // Resilience - reduces the effect of mana drains by (CalcRating*2)%.
         damage = float2int32(damage * (1 - ((static_cast< Player* >(unitTarget)->CalcRating(PCR_SPELL_CRIT_RESILIENCE) * 2) / 100.0f)));
     }
-    uint32 amt = damage + ((u_caster->GetDamageDoneMod(getSpellInfo()->getSchool()) * 80) / 100);
+    uint32 amt = damage + ((u_caster->GetDamageDoneMod(getSpellInfo()->getFirstSchoolFromSchoolMask()) * 80) / 100);
     if (amt > curPower)
         amt = curPower;
     unitTarget->setPower(powerField, curPower - amt);
@@ -3751,7 +3751,7 @@ void Spell::SpellEffectTransformItem(uint8_t effectIndex)
     result2 = owner->getItemInterface()->AddItemToFreeSlot(it);
     if (!result2) //should never get here
     {
-        owner->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_BAG_FULL);
+        owner->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_BAG_FULL);
         it->DeleteMe();
     }
 }
@@ -3913,7 +3913,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
     {
         start = MAX_POSITIVE_AURAS_EXTEDED_START;
         end = MAX_POSITIVE_AURAS_EXTEDED_END;
-        if (unitTarget->SchoolImmunityList[getSpellInfo()->getSchool()])
+        if (unitTarget->SchoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()])
             return;
     }
     else
@@ -4637,7 +4637,7 @@ void Spell::SpellEffectTriggerSpell(uint8_t effectIndex) // Trigger Spell
         return;
 
     SpellCastTargets targets = m_targets;
-    Spell* sp = sSpellMgr.newSpell(m_caster, entry, m_triggeredSpell, nullptr);
+    Spell* sp = sSpellMgr.newSpell(m_caster, entry, true, nullptr);
     sp->ProcedOnSpell = getSpellInfo();
     sp->prepare(&targets);
 }
@@ -4729,7 +4729,7 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
 
         if (TargetSpell != nullptr)
         {
-            uint32 school = TargetSpell->getSpellInfo()->getSchool(); // Get target's casting spell school
+            uint32 school = TargetSpell->getSpellInfo()->getFirstSchoolFromSchoolMask(); // Get target's casting spell school
             int32 duration = GetDuration(); // Duration of school lockout
 
             // Check for CastingTime (to prevent interrupting instant casts), PreventionType
@@ -4738,8 +4738,8 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
                 && (TargetSpell->getState() == SPELL_STATE_CASTING
                 || (TargetSpell->getState() == SPELL_STATE_PREPARING && TargetSpell->getSpellInfo()->getCastingTimeIndex() > 0))
                 && TargetSpell->getSpellInfo()->getPreventionType() == PREVENTION_TYPE_SILENCE
-                && ((TargetSpell->getSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_ON_INTERRUPT_SCHOOL)
-                || (TargetSpell->getSpellInfo()->getChannelInterruptFlags() & CHANNEL_INTERRUPT_ON_4)))
+                && ((TargetSpell->getSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_ON_AUTOATTACK)
+                || (TargetSpell->getSpellInfo()->getChannelInterruptFlags() & CHANNEL_INTERRUPT_ON_MOVEMENT)))
             {
                 if (unitTarget->isPlayer())
                 {
@@ -5177,7 +5177,7 @@ void Spell::SpellEffectSelfResurrect(uint8_t effectIndex)
     playerTarget->setSelfResurrectSpell(0);
 
     if (getSpellInfo()->getId() == 21169)
-        AddCooldown();
+        p_caster->addSpellCooldown(getSpellInfo(), i_caster);
 }
 
 void Spell::SpellEffectSkinning(uint8_t /*effectIndex*/)

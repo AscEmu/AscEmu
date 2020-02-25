@@ -229,7 +229,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
         // Check for gold cap
         if (worldConfig.player.isGoldCapEnabled && ((_player->getCoinage() + targetTradeData->getTradeMoney()) > worldConfig.player.limitGoldAmount))
         {
-            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
+            _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             tradeData->setTradeAccepted(false, true);
             return;
         }
@@ -240,7 +240,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
         // Check for gold cap
         if (worldConfig.player.isGoldCapEnabled && (tradeTarget->getCoinage() + tradeData->getTradeMoney()) > worldConfig.player.limitGoldAmount)
         {
-            tradeTarget->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
+            tradeTarget->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             targetTradeData->setTradeAccepted(false, true);
             return;
         }
@@ -295,7 +295,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
     // Check if player has enough free slots
     if ((_player->getItemInterface()->CalculateFreeSlots(nullptr) + itemCount) < targetItemCount)
     {
-        _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
+        _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
         tradeData->setTradeAccepted(false, true);
         return;
     }
@@ -506,7 +506,7 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
         const auto container = dynamic_cast<Container*>(tradeItem);
         if (container != nullptr && container->HasItems())
         {
-            _player->getItemInterface()->BuildInventoryChangeError(tradeItem, nullptr, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
+            _player->getItemInterface()->buildInventoryChangeError(tradeItem, nullptr, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
             return;
         }
     }
