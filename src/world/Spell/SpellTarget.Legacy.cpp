@@ -130,7 +130,14 @@ void Spell::FillTargetMap(uint32 i)
     //always add this guy :P
     if (!(TargetType & (SPELL_TARGET_AREA | SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_CURTARGET | SPELL_TARGET_AREA_CONE | SPELL_TARGET_OBJECT_SELF | SPELL_TARGET_OBJECT_PETOWNER)))
     {
-        Object* target = m_caster->GetMapMgr()->_GetObject(m_targets.getUnitTarget());
+        Object* target = nullptr;
+        if (TargetType & SPELL_TARGET_REQUIRE_GAMEOBJECT)
+            target = m_caster->GetMapMgrObject(m_targets.getGameObjectTarget());
+        else if (TargetType & SPELL_TARGET_REQUIRE_ITEM)
+            target = m_caster->GetMapMgrObject(m_targets.getItemTarget());
+        else
+            target = m_caster->GetMapMgrObject(m_targets.getUnitTarget());
+
         AddTarget(i, TargetType, target);
     }
 
@@ -204,7 +211,7 @@ void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 targetType, float r,
 
 void Spell::AddConeTargets(uint32 i, uint32 targetType, float /*r*/, uint32 maxtargets)
 {
-    std::vector<uint64_t>* list = &m_targetUnits[i];
+    std::vector<uint64_t>* list = &m_effectTargets[i];
     for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
         if (!itr || !itr->isCreatureOrPlayer() || !static_cast<Unit*>(itr)->isAlive())
@@ -233,7 +240,7 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
     if (targ == nullptr)
         return;
 
-    std::vector<uint64_t>* list = &m_targetUnits[i];
+    std::vector<uint64_t>* list = &m_effectTargets[i];
 
     //if selected target is party member, then jumps on party
     Unit* firstTarget = nullptr;
@@ -375,7 +382,7 @@ void Spell::AddAOETargets(uint32 i, uint32 targetType, float r, uint32 maxtarget
     if (m_caster->CalcDistance(source) <= r)
         AddTarget(i, targetType, m_caster);
 
-    std::vector<uint64_t>* t = &m_targetUnits[i];
+    std::vector<uint64_t>* t = &m_effectTargets[i];
 
     for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
@@ -393,7 +400,7 @@ void Spell::AddAOETargets(uint32 i, uint32 targetType, float r, uint32 maxtarget
 
 bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
 {
-    std::vector<uint64_t>* t = &m_targetUnits[i];
+    std::vector<uint64_t>* t = &m_effectTargets[i];
 
     if (obj == nullptr || !obj->IsInWorld())
         return false;
@@ -428,25 +435,25 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
     if (TargetType & (SPELL_TARGET_AREA | SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_CURTARGET | SPELL_TARGET_AREA_CONE | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID) && ((obj->isCreatureOrPlayer() && !static_cast<Unit*>(obj)->isAlive()) || (obj->isCreature() && obj->isTotem())))
         return false;
 
-    uint8 hitresult = (TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && obj->isCreatureOrPlayer()) ? DidHit(i, static_cast<Unit*>(obj)) : SPELL_DID_HIT_SUCCESS;
+    SpellDidHitResult hitresult = (TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && obj->isCreatureOrPlayer()) ? static_cast<SpellDidHitResult>(DidHit(i, static_cast<Unit*>(obj))) : SPELL_DID_HIT_SUCCESS;
     if (hitresult != SPELL_DID_HIT_SUCCESS)
     {
-        uint8 extended = 0;
+        SpellDidHitResult extended = SPELL_DID_HIT_SUCCESS;
         if (hitresult == SPELL_DID_HIT_REFLECT && u_caster != nullptr)
         {
             //for checks
             Unit* tmp = u_caster;
             u_caster = static_cast<Unit*>(obj);
-            extended = DidHit(i, tmp);
+            extended = static_cast<SpellDidHitResult>(DidHit(i, tmp));
             u_caster = tmp;
         }
-        ModeratedTargets.push_back(SpellTargetMod(obj->getGuid(), hitresult));
+        missedTargets.push_back(SpellTargetMod(obj->getGuid(), hitresult, extended));
         return false;
     }
     else
     {
         //check target isnt already in
-        for (std::vector<uint64_t>::iterator itr = m_targetUnits[i].begin(); itr != m_targetUnits[i].end(); ++itr)
+        for (std::vector<uint64_t>::iterator itr = m_effectTargets[i].begin(); itr != m_effectTargets[i].end(); ++itr)
         {
             if (obj->getGuid() == *itr)
                 return false;

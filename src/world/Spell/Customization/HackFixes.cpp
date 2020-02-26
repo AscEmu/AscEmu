@@ -664,32 +664,6 @@ void SpellMgr::applyHackFixes()
         sp->custom_base_range_or_radius_sqr = radius * radius;
 
         sp->ai_target_type = sp->aiTargetType();
-        // NEW SCHOOLS AS OF 2.4.0:
-        // (bitwise)
-        //SCHOOL_NORMAL = 1,
-        //SCHOOL_HOLY   = 2,
-        //SCHOOL_FIRE   = 4,
-        //SCHOOL_NATURE = 8,
-        //SCHOOL_FROST  = 16,
-        //SCHOOL_SHADOW = 32,
-        //SCHOOL_ARCANE = 64
-
-#if VERSION_STRING == Classic
-        // Classic doesn't have schools bitwise in DBC
-        sp->custom_SchoolMask = 1 << sp->getSchool();
-#else
-        // Save School as custom_SchoolMask, and set School as an index
-        sp->custom_SchoolMask = sp->getSchool();
-        for (uint8 i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
-        {
-            if (sp->getSchool() & (1 << i))
-            {
-                sp->setSchool(i);
-                break;
-            }
-        }
-#endif
-        ARCEMU_ASSERT(sp->getSchool() < TOTAL_SPELL_SCHOOLS);
 
         //there are some spells that change the "damage" value of 1 effect to another : devastate = bonus first then damage
         //this is a total bullshit so remove it when spell system supports effect overwriting
@@ -817,7 +791,7 @@ void SpellMgr::applyHackFixes()
             case 28593:     // Winter's Chill Rank 3
             case 63094:
             {
-                sp->setSchool(SCHOOL_FROST);
+                sp->setSchoolMask(SCHOOL_MASK_FROST);
             } break;
 
             // Name includes "Chain Heal"
@@ -893,7 +867,6 @@ void SpellMgr::applyHackFixes()
             case 68022:
             case 69403:
             {
-                sp->setSchool(SCHOOL_HOLY); //the procspells of the original seal of command have physical school instead of holy
                 sp->setDmgClass(SPELL_DMG_TYPE_MAGIC); //heh, crazy spell uses melee/ranged/magic dmg type for 1 spell. Now which one is correct ?
             } break;
 
@@ -947,7 +920,6 @@ void SpellMgr::applyHackFixes()
             case 53600:     // Shield of Righteousness Rank 1
             case 61411:     // Shield of Righteousness Rank 2
             {
-                sp->setSchool(SCHOOL_HOLY);
                 sp->setEffect(SPELL_EFFECT_DUMMY, 0);
                 sp->setEffect(SPELL_EFFECT_NULL, 1);          //hacks, handling it in Spell::SpellEffectSchoolDMG(uint32 i)
                 sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 2); //hack
@@ -975,7 +947,6 @@ void SpellMgr::applyHackFixes()
             case 69930:
             case 71122:
             {
-                sp->setSchool(SCHOOL_HOLY); //Consecration is a holy redirected spell.
                 sp->setDmgClass(SPELL_DMG_TYPE_MAGIC); //Speaks for itself.
             } break;
 
@@ -1168,21 +1139,6 @@ void SpellMgr::applyHackFixes()
     /////////////////////////////////////////////////////////////////
     //SPELL COEFFICIENT SETTINGS END
     /////////////////////////////////////////////////////////////////
-
-    ////////////////////////////////////////////////////////////
-    // thrown - add a 1.6 second cooldown
-    const static uint32 thrown_spells[] = { SPELL_RANGED_GENERAL, SPELL_RANGED_THROW, SPELL_RANGED_WAND, 26679, 29436, 37074, 41182, 41346, 0 };
-    for (uint32 i = 0; thrown_spells[i] != 0; ++i)
-    {
-        sp = getMutableSpellInfo(thrown_spells[i]);
-        if (sp != nullptr && sp->getRecoveryTime() == 0 && sp->getStartRecoveryTime() == 0)
-        {
-            if (sp->getId() == SPELL_RANGED_GENERAL)
-                sp->setRecoveryTime(500);    // cebernic: hunter general with 0.5s
-            else
-                sp->setRecoveryTime(1500); // 1.5cd
-        }
-    }
 
     ////////////////////////////////////////////////////////////
     // Wands
@@ -1392,29 +1348,15 @@ void SpellMgr::applyHackFixes()
         sp->setSpeed(0);    //without, no damage is done
     }
 
-    //Paladin - Seal of Martyr
-    sp = getMutableSpellInfo(53720);
-    if (sp != nullptr)
-    {
-        sp->setSchool(SCHOOL_HOLY);
-    }
-    //Paladin - seal of blood
-    sp = getMutableSpellInfo(31892);
-    if (sp != nullptr)
-    {
-        sp->setSchool(SCHOOL_HOLY);
-    }
     sp = getMutableSpellInfo(53719);
     if (sp != nullptr)
     {
-        sp->setSchool(SCHOOL_HOLY);
         sp->setDmgClass(SPELL_DMG_TYPE_MAGIC);
     }
     sp = getMutableSpellInfo(31893);
     if (sp != nullptr)
     {
         sp->setProcFlags(PROC_ON_PHYSICAL_ATTACK);
-        sp->setSchool(SCHOOL_HOLY);
         sp->setDmgClass(SPELL_DMG_TYPE_MAGIC);
     }
 
@@ -3062,28 +3004,24 @@ void SpellMgr::applyHackFixes()
     if (sp != nullptr)
     {
         sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-        sp->setSchool(SCHOOL_FIRE);
     }
 
     sp = getMutableSpellInfo(59170);
     if (sp != nullptr)
     {
         sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-        sp->setSchool(SCHOOL_FIRE);
     }
 
     sp = getMutableSpellInfo(59171);
     if (sp != nullptr)
     {
         sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-        sp->setSchool(SCHOOL_FIRE);
     }
 
     sp = getMutableSpellInfo(59172);
     if (sp != nullptr)
     {
         sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-        sp->setSchool(SCHOOL_FIRE);
     }
     // End Warlock chaos bolt
 

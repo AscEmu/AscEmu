@@ -83,7 +83,7 @@ void WorldSession::handleTakeMoneyOpcode(WorldPacket& recvPacket)
     {
         if (_player->getCoinage() + mailMessage->money > worldConfig.player.limitGoldAmount)
         {
-            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
+            _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             return;
         }
     }

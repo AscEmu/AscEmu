@@ -151,7 +151,7 @@ public:
     uint32 AbsorbDamage(uint32 /*School*/, uint32* dmg)
     {
         // Checking for 1 min cooldown
-        if (dSpell == NULL || !p_target->Cooldown_CanCast(dSpell))
+        if (dSpell == NULL || p_target->hasSpellOnCooldown(dSpell))
             return 0;
 
         // Check for proc chance
@@ -181,8 +181,7 @@ public:
         p_target->castSpell(p_target->getGuid(), 45182, true);
 
         // Better to add custom cooldown procedure then fucking with entry, or not!!
-        //dSpell->setRecoveryTime(60000);
-        p_target->Cooldown_Add(dSpell, NULL);
+        p_target->addSpellCooldown(dSpell, nullptr, 60000);
 
         // Calc abs and applying it
         uint32 real_dmg = (cur_hlth > min_hlth ? cur_hlth - min_hlth : 0);

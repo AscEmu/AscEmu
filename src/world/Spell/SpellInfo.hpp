@@ -34,6 +34,8 @@ public:
     bool isHealingSpell() const;
     int firstBeneficialEffect() const;
 
+    uint8_t getFirstSchoolFromSchoolMask() const;
+
     bool isDamagingEffect(uint8_t effIndex) const;
     bool isHealingEffect(uint8_t effIndex) const;
     bool hasDamagingEffect() const;
@@ -417,7 +419,7 @@ public:
 #endif
 
     int32_t getRequiresAreaId() const { return AreaGroupId; }
-    uint32_t getSchool() const { return School; }
+    uint32_t getSchoolMask() const { return SchoolMask; }
     uint32_t getRuneCostID() const { return RuneCostID; }
 
     float getEffectBonusMultiplier(uint8_t idx) const
@@ -454,7 +456,6 @@ public:
     bool getCustom_apply_on_shapeshift_change() const { return custom_apply_on_shapeshift_change; }
     bool getCustom_is_melee_spell() const { return custom_is_melee_spell; }
     bool getCustom_is_ranged_spell() const { return custom_is_ranged_spell; }
-    uint32_t getCustom_SchoolMask() const { return custom_SchoolMask; }
 
     uint32_t getEffectCustomFlag(uint8_t idx) const
     {
@@ -824,7 +825,7 @@ private:
 #endif
 
     void setRequiresAreaId(int32_t value) { AreaGroupId = value; }
-    void setSchool(uint32_t value) { School = value; }                  // used in HackFixes.cpp
+    void setSchoolMask(uint32_t value) { SchoolMask = value; }                  // used in HackFixes.cpp
     void setRuneCostID(uint32_t value) { RuneCostID = value; }
 
     void setEffectBonusMultiplier(float value, uint8_t idx)
@@ -1007,7 +1008,7 @@ private:
     // Data from SpellCastingRequirements.dbc (in Cataclysm)
     int32_t AreaGroupId;
     // Data from Spell.dbc (in Cataclysm)
-    uint32_t School;
+    uint32_t SchoolMask;
     uint32_t RuneCostID;
     // Data from SpellEffect.dbc (in Cataclysm)
     float EffectBonusMultiplier[MAX_SPELL_EFFECTS];
@@ -1105,9 +1106,6 @@ public:
     // set in Hackfixes.cpp - 1 spells (2094)
     // set in SpellCustomizations::SetRangedSpellBool based on school and dmg type
     bool custom_is_ranged_spell;
-
-    // set in HackFixes.cpp for all spells, based on school
-    uint32_t custom_SchoolMask;
 
     // from MySQL table spell_effects_override - 374 spells
     uint32_t EffectCustomFlag[MAX_SPELL_EFFECTS];

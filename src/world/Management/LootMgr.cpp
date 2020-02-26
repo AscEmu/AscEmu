@@ -791,7 +791,7 @@ void LootRoll::Finalize()
     int8 error;
     if ((error = _player->getItemInterface()->CanReceiveItem(it, 1)) != 0)
     {
-        _player->getItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
+        _player->getItemInterface()->buildInventoryChangeError(NULL, NULL, error, itemid);
         return;
     }
 
@@ -801,7 +801,7 @@ void LootRoll::Finalize()
         SlotResult slotresult = _player->getItemInterface()->FindFreeInventorySlot(it);
         if (!slotresult.Result)
         {
-            _player->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+            _player->getItemInterface()->buildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
             return;
         }
         LOG_DEBUG("AutoLootItem MISC");

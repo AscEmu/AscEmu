@@ -1924,7 +1924,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     if (!m_target->isAlive())
         return;
 
-    if (m_target->SchoolImmunityList[GetSpellInfo()->getSchool()])
+    if (m_target->SchoolImmunityList[GetSpellInfo()->getFirstSchoolFromSchoolMask()])
     {
         if (GetUnitCaster() != nullptr)
             SendTickImmune(m_target, GetUnitCaster());
@@ -1934,7 +1934,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     float res = static_cast<float>(amount);
     uint32 abs_dmg = 0;
     int32 bonus = 0;
-    uint32 school = GetSpellInfo()->getSchool();
+    uint32 school = GetSpellInfo()->getFirstSchoolFromSchoolMask();
     Unit* c = GetUnitCaster();
     uint32 aproc = PROC_ON_ANY_HOSTILE_ACTION;
     uint32 vproc = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM;
@@ -2044,7 +2044,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     SpellInfo* sp = m_spellInfo;
 
     if (m_target->m_damageSplitTarget)
-        res = static_cast<float>(m_target->DoDamageSplitTarget(static_cast<uint32>(res), GetSpellInfo()->getSchool(), false));
+        res = static_cast<float>(m_target->DoDamageSplitTarget(static_cast<uint32>(res), GetSpellInfo()->getFirstSchoolFromSchoolMask(), false));
 
     if (c != nullptr)
         c->DealDamage(m_target, static_cast<int32>(res), 2, 0, GetSpellId());
@@ -2391,12 +2391,12 @@ void Aura::EventPeriodicHeal(uint32 amount)
 
     if (c != nullptr)
     {
-        bonus += c->HealDoneMod[m_spellInfo->getSchool()] + m_target->HealTakenMod[m_spellInfo->getSchool()];
+        bonus += c->HealDoneMod[m_spellInfo->getFirstSchoolFromSchoolMask()] + m_target->HealTakenMod[m_spellInfo->getFirstSchoolFromSchoolMask()];
         if (c->isPlayer())
         {
             for (uint8_t a = 0; a < STAT_COUNT; a++)
             {
-                bonus += float2int32(static_cast<Player*>(c)->SpellHealDoneByAttribute[a][m_spellInfo->getSchool()] * static_cast<Player*>(c)->getStat(a));
+                bonus += float2int32(static_cast<Player*>(c)->SpellHealDoneByAttribute[a][m_spellInfo->getFirstSchoolFromSchoolMask()] * static_cast<Player*>(c)->getStat(a));
             }
         }
         //Spell Coefficient, bonus to HoT part
@@ -2465,7 +2465,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
     int add = (bonus + amount > 0) ? bonus + amount : 0;
     if (c != nullptr)
     {
-        add += float2int32(add * (m_target->HealTakenPctMod[m_spellInfo->getSchool()] + c->HealDonePctMod[GetSpellInfo()->getSchool()]));
+        add += float2int32(add * (m_target->HealTakenPctMod[m_spellInfo->getFirstSchoolFromSchoolMask()] + c->HealDonePctMod[GetSpellInfo()->getFirstSchoolFromSchoolMask()]));
         spellModPercentageIntValue(c->SM_PDOT, &add, m_spellInfo->getSpellFamilyFlags());
 
         if (this->DotCanCrit())
@@ -2572,38 +2572,27 @@ void Aura::SpellAuraModAttackSpeed(bool apply)
     else
         SetPositive();
 
-    if (m_target->isPlayer())
+    if (apply)
     {
-        if (apply)
-        {
-            static_cast< Player* >(m_target)->ModAttackSpeed(mod->m_amount, MOD_MELEE);
-        }
-        else
-        {
-            static_cast< Player* >(m_target)->ModAttackSpeed(-mod->m_amount, MOD_MELEE);
-        }
-        static_cast< Player* >(m_target)->UpdateStats();
+        m_target->modAttackSpeedModifier(MELEE, mod->m_amount);
+        //\ todo: confirm this for other versions!
+#if VERSION_STRING == Classic
+        m_target->modAttackSpeedModifier(OFFHAND, mod->m_amount);
+        m_target->modAttackSpeedModifier(RANGED, mod->m_amount);
+#endif
     }
     else
     {
-        if (apply)
-        {
-            mod->fixed_amount[0] = m_target->getBaseAttackTime(MELEE) * mod->m_amount / 100;
-            mod->fixed_amount[1] = m_target->getBaseAttackTime(OFFHAND) * mod->m_amount / 100;
-            mod->fixed_amount[2] = m_target->getBaseAttackTime(RANGED) * mod->m_amount / 100;
-
-            m_target->modBaseAttackTime(MELEE, -mod->fixed_amount[0]);
-            m_target->modBaseAttackTime(OFFHAND, -mod->fixed_amount[1]);
-            m_target->modBaseAttackTime(RANGED, -mod->fixed_amount[2]);
-        }
-        else
-        {
-            m_target->modBaseAttackTime(MELEE, mod->fixed_amount[0]);
-            m_target->modBaseAttackTime(OFFHAND, mod->fixed_amount[1]);
-            m_target->modBaseAttackTime(RANGED, mod->fixed_amount[2]);
-        }
+        m_target->modAttackSpeedModifier(MELEE, -mod->m_amount);
+        //\ todo: confirm this for other versions!
+#if VERSION_STRING == Classic
+        m_target->modAttackSpeedModifier(OFFHAND, -mod->m_amount);
+        m_target->modAttackSpeedModifier(RANGED, -mod->m_amount);
+#endif
     }
 
+    if (m_target->isPlayer())
+        static_cast<Player*>(m_target)->UpdateStats();
 }
 
 void Aura::SpellAuraModThreatGenerated(bool apply)
@@ -2894,7 +2883,7 @@ void Aura::SpellAuraDamageShield(bool apply)
         DamageProc ds;// = new DamageShield();
         ds.m_damage = mod->m_amount;
         ds.m_spellId = GetSpellInfo()->getId();
-        ds.m_school = GetSpellInfo()->getSchool();
+        ds.m_school = GetSpellInfo()->getFirstSchoolFromSchoolMask();
         ds.m_flags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_MISC; //maybe later we might want to add other flags too here
         ds.owner = (void*)this;
         m_target->m_damageShields.push_back(ds);
@@ -3273,7 +3262,7 @@ void Aura::EventPeriodicHealPct(float RegenPct)
     else
         m_target->setHealth(m_target->getMaxHealth());
 
-    m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), add, 0, 0, FLAG_PERIODIC_HEAL, false);
+    m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getFirstSchoolFromSchoolMask(), add, 0, 0, FLAG_PERIODIC_HEAL, false);
 
     if (GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
     {
@@ -3622,7 +3611,7 @@ void Aura::SpellAuraModRoot(bool apply)
             m_target->EventStunOrImmobilize(caster, true);
         }
 
-        if (GetSpellInfo()->getSchool() == SCHOOL_FROST && !m_target->asc_frozen++)
+        if (GetSpellInfo()->getSchoolMask() & SCHOOL_MASK_FROST && !m_target->asc_frozen++)
             m_target->addAuraStateAndAuras(AURASTATE_FLAG_FROZEN);
 
         ///\todo -Supalosa- TODO: Mobs will attack nearest enemy in range on aggro list when rooted. */
@@ -3638,7 +3627,7 @@ void Aura::SpellAuraModRoot(bool apply)
         if (m_target->isCreature())
             m_target->GetAIInterface()->AttackReaction(GetUnitCaster(), 1, 0);
 
-        if (GetSpellInfo()->getSchool() == SCHOOL_FROST && !--m_target->asc_frozen)
+        if (GetSpellInfo()->getSchoolMask() & SCHOOL_MASK_FROST && !--m_target->asc_frozen)
             m_target->removeAuraStateAndAuras(AURASTATE_FLAG_FROZEN);
     }
 }
@@ -3893,7 +3882,7 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
         }
 
         //let's check Mage talents if we proc anything
-        if (m_spellInfo->getSchool() == SCHOOL_FROST)
+        if (m_spellInfo->getSchoolMask() & SCHOOL_MASK_FROST)
         {
             //yes we are freezing the bastard, so can we proc anything on this ?
             Unit* caster = GetUnitCaster();
@@ -3927,7 +3916,7 @@ void Aura::UpdateAuraModDecreaseSpeed()
     }
 
     //let's check Mage talents if we proc anything
-    if (m_spellInfo->getSchool() == SCHOOL_FROST)
+    if (m_spellInfo->getSchoolMask() & SCHOOL_MASK_FROST)
     {
         //yes we are freezing the bastard, so can we proc anything on this ?
         Unit* caster = GetUnitCaster();
@@ -4587,7 +4576,7 @@ void Aura::SpellAuraProcTriggerDamage(bool apply)
         DamageProc ds;
         ds.m_damage = mod->m_amount;
         ds.m_spellId = GetSpellInfo()->getId();
-        ds.m_school = GetSpellInfo()->getSchool();
+        ds.m_school = GetSpellInfo()->getFirstSchoolFromSchoolMask();
         ds.m_flags = m_spellInfo->getProcFlags();
         ds.owner = (void*)this;
         m_target->m_damageShields.push_back(ds);
@@ -4772,7 +4761,7 @@ void Aura::EventPeriodicLeech(uint32 amount)
 
     SpellInfo* sp = GetSpellInfo();
 
-    if (m_target->SchoolImmunityList[sp->getSchool()])
+    if (m_target->SchoolImmunityList[sp->getFirstSchoolFromSchoolMask()])
     {
         SendTickImmune(m_target, m_caster);
         return;
@@ -4884,11 +4873,11 @@ void Aura::EventPeriodicLeech(uint32 amount)
         m_caster->setHealth(mh);
 
     m_target->SendPeriodicHealAuraLog(m_caster->GetNewGUID(), m_caster->GetNewGUID(), sp->getId(), heal_amount, 0, false);
-    m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), sp->getId(), sp->getSchool(), heal_amount, 0, 0, FLAG_PERIODIC_LEECH, is_critical);
+    m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), sp->getId(), sp->getFirstSchoolFromSchoolMask(), heal_amount, 0, 0, FLAG_PERIODIC_LEECH, is_critical);
 
     //deal damage before we add healing bonus to damage
     m_caster->DealDamage(m_target, dmg_amount, 0, 0, sp->getId(), true);
-    m_caster->SendSpellNonMeleeDamageLog(m_caster, m_target, sp->getId(), dmg_amount, (uint8)sp->getSchool(), 0, 0, true, 0, is_critical, true);
+    m_caster->SendSpellNonMeleeDamageLog(m_caster, m_target, sp->getId(), dmg_amount, sp->getFirstSchoolFromSchoolMask(), 0, 0, true, 0, is_critical, true);
 
     m_caster->HandleProc(aproc, m_target, sp, false, dmg_amount);
     m_caster->m_procCounter = 0;
@@ -5337,7 +5326,7 @@ void Aura::EventPeriodicHealthFunnel(uint32 amount)
         else
             m_caster->setHealth(mh);
 
-        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), 1000, 0, 0, FLAG_PERIODIC_LEECH, false);
+        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getFirstSchoolFromSchoolMask(), 1000, 0, 0, FLAG_PERIODIC_LEECH, false);
 
         m_caster->RemoveAurasByHeal();
     }
@@ -5632,7 +5621,7 @@ void Aura::SpellAuraReflectSpellsSchool(bool apply)
         if (m_spellInfo->getAttributes() == 0x400D0 && m_spellInfo->getAttributesEx() == 0)
             rss->school = (int)(log10((float)mod->m_miscValue) / log10((float)2));
         else
-            rss->school = m_spellInfo->getSchool();
+            rss->school = m_spellInfo->getFirstSchoolFromSchoolMask();
 
         rss->charges = 0;
 
@@ -6144,7 +6133,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
                     item->setCreatorGuid(pCaster->getGuid());
                     if (!pCaster->getItemInterface()->AddItemToFreeSlot(item))
                     {
-                        pCaster->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
+                        pCaster->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
                         item->DeleteMe();
                         return;
                     }
@@ -6240,7 +6229,7 @@ void Aura::EventPeriodicDamagePercent(uint32 amount)
     //DOT
     if (!m_target->isAlive())
         return;
-    if (m_target->SchoolImmunityList[GetSpellInfo()->getSchool()])
+    if (m_target->SchoolImmunityList[GetSpellInfo()->getFirstSchoolFromSchoolMask()])
         return;
 
     uint32 damage = float2int32(amount / 100.0f * m_target->getMaxHealth());
@@ -6249,7 +6238,7 @@ void Aura::EventPeriodicDamagePercent(uint32 amount)
 
     if (m_target->m_damageSplitTarget)
     {
-        damage = m_target->DoDamageSplitTarget(damage, GetSpellInfo()->getSchool(), false);
+        damage = m_target->DoDamageSplitTarget(damage, GetSpellInfo()->getFirstSchoolFromSchoolMask(), false);
     }
 
     if (c)
@@ -7247,46 +7236,26 @@ void Aura::SpellAuraModHaste(bool apply)
     else
         SetPositive();
 
-    if (p_target != nullptr)
+    if (apply)
     {
-        if (apply)
-        {
-            p_target->ModAttackSpeed(mod->m_amount, MOD_MELEE);
-        }
-        else
-        {
-            p_target->ModAttackSpeed(-mod->m_amount, MOD_MELEE);
-        }
+        m_target->modAttackSpeedModifier(MELEE, mod->m_amount);
+        m_target->modAttackSpeedModifier(OFFHAND, mod->m_amount);
 
-        p_target->UpdateAttackSpeed();
+        mod->fixed_amount[mod->m_effectIndex] = m_target->getBaseAttackTime(MELEE) * mod->m_amount / 100;
+        if (m_target->isCreature())
+            static_cast<Creature*>(m_target)->m_speedFromHaste += mod->fixed_amount[mod->m_effectIndex];
     }
     else
     {
-        if (apply)
-        {
-            mod->fixed_amount[mod->m_effectIndex] = m_target->getBaseAttackTime(MELEE) * mod->m_amount / 100;
-            mod->fixed_amount[mod->m_effectIndex * 2] = m_target->getBaseAttackTime(OFFHAND) * mod->m_amount / 100;
+        m_target->modAttackSpeedModifier(MELEE, -mod->m_amount);
+        m_target->modAttackSpeedModifier(OFFHAND, -mod->m_amount);
 
-            if ((int32)m_target->getBaseAttackTime(MELEE) <= mod->fixed_amount[mod->m_effectIndex])
-                mod->fixed_amount[mod->m_effectIndex] = m_target->getBaseAttackTime(MELEE);    //watch it, a negative timer might be bad ;)
-            if ((int32)m_target->getBaseAttackTime(OFFHAND) <= mod->fixed_amount[mod->m_effectIndex * 2])
-                mod->fixed_amount[mod->m_effectIndex * 2] = m_target->getBaseAttackTime(OFFHAND); //watch it, a negative timer might be bad ;)
-
-            m_target->modBaseAttackTime(MELEE, -mod->fixed_amount[mod->m_effectIndex]);
-            m_target->modBaseAttackTime(OFFHAND, -mod->fixed_amount[mod->m_effectIndex * 2]);
-
-            if (m_target->isCreature())
-                static_cast< Creature* >(m_target)->m_speedFromHaste += mod->fixed_amount[mod->m_effectIndex];
-        }
-        else
-        {
-            m_target->modBaseAttackTime(MELEE, mod->fixed_amount[mod->m_effectIndex]);
-            m_target->modBaseAttackTime(OFFHAND, mod->fixed_amount[mod->m_effectIndex * 2]);
-
-            if (m_target->isCreature())
-                static_cast< Creature* >(m_target)->m_speedFromHaste -= mod->fixed_amount[mod->m_effectIndex];
-        }
+        if (m_target->isCreature())
+            static_cast<Creature*>(m_target)->m_speedFromHaste -= mod->fixed_amount[mod->m_effectIndex];
     }
+
+    if (m_target->isPlayer())
+        static_cast<Player*>(m_target)->UpdateAttackSpeed();
 }
 
 void Aura::SpellAuraForceReaction(bool apply)
@@ -7324,32 +7293,13 @@ void Aura::SpellAuraModRangedHaste(bool apply)
     else
         SetPositive();
 
-    if (p_target != nullptr)
-    {
-        //  int32 amount = mod->m_amount;
-        //  if (GetSpellProto()->getId() == 6150)// Quick Shots
-        //  {
-        //      Unit* pCaster = GetUnitCaster();
-        //      if (pCaster)
-        //      spellModFlatIntValue(pCaster->SM_FSPELL_VALUE,&amount,0x100000);
-        //  }
-
-        if (apply)
-            p_target->ModAttackSpeed(mod->m_amount, MOD_RANGED);
-        else
-            p_target->ModAttackSpeed(-mod->m_amount, MOD_RANGED);
-
-        p_target->UpdateAttackSpeed();
-    }
+    if (apply)
+        m_target->modAttackSpeedModifier(RANGED, mod->m_amount);
     else
-    {
-        if (apply)
-        {
-            mod->fixed_amount[mod->m_effectIndex] = m_target->getPercentModUInt32Value(UNIT_FIELD_RANGEDATTACKTIME, mod->m_amount);
-            m_target->modBaseAttackTime(RANGED, -mod->fixed_amount[mod->m_effectIndex]);
-        }
-        else m_target->modBaseAttackTime(RANGED, mod->fixed_amount[mod->m_effectIndex]);
-    }
+        m_target->modAttackSpeedModifier(RANGED, -mod->m_amount);
+
+    if (m_target->isPlayer())
+        static_cast<Player*>(m_target)->UpdateAttackSpeed();
 }
 
 void Aura::SpellAuraModRangedAmmoHaste(bool apply)
@@ -7359,9 +7309,9 @@ void Aura::SpellAuraModRangedAmmoHaste(bool apply)
         return;
 
     if (apply)
-        p_target->ModAttackSpeed(mod->m_amount, MOD_RANGED);
+        p_target->modAttackSpeedModifier(RANGED, mod->m_amount);
     else
-        p_target->ModAttackSpeed(-mod->m_amount, MOD_RANGED);
+        p_target->modAttackSpeedModifier(RANGED, -mod->m_amount);
 
     p_target->UpdateAttackSpeed();
 }
@@ -7576,13 +7526,13 @@ void Aura::EventPeriodicBurn(uint32 amount, uint32 misc)
 
     if (m_target->isAlive() && m_caster->isAlive())
     {
-        if (m_target->SchoolImmunityList[GetSpellInfo()->getSchool()])
+        if (m_target->SchoolImmunityList[GetSpellInfo()->getFirstSchoolFromSchoolMask()])
             return;
 
         uint32 Amount = (uint32)std::min(amount, m_target->getPower(static_cast<PowerType>(misc)));
         uint32 newHealth = m_target->getPower(static_cast<PowerType>(misc)) - Amount;
 
-        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), newHealth, 0, 0, FLAG_PERIODIC_DAMAGE, false);
+        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getFirstSchoolFromSchoolMask(), newHealth, 0, 0, FLAG_PERIODIC_DAMAGE, false);
         m_caster->DealDamage(m_target, Amount, 0, 0, GetSpellInfo()->getId());
     }
 }
@@ -8360,36 +8310,21 @@ void Aura::SpellAuraMeleeHaste(bool apply)
     else
         SetPositive();
 
-    if (m_target->isPlayer())
+    if (apply)
     {
-        if (apply)
-            static_cast< Player* >(m_target)->ModAttackSpeed(mod->m_amount, MOD_MELEE);
-        else
-            static_cast< Player* >(m_target)->ModAttackSpeed(-mod->m_amount, MOD_MELEE);
-
-        static_cast< Player* >(m_target)->UpdateAttackSpeed();
+        m_target->modAttackSpeedModifier(MELEE, mod->m_amount);
+        m_target->modAttackSpeedModifier(OFFHAND, mod->m_amount);
+        m_target->modAttackSpeedModifier(RANGED, mod->m_amount);
     }
     else
     {
-        if (apply)
-        {
-            mod->fixed_amount[0] = m_target->getBaseAttackTime(MELEE) * mod->m_amount / 100;
-            mod->fixed_amount[1] = m_target->getBaseAttackTime(OFFHAND) * mod->m_amount / 100;
-
-            if ((int32)m_target->getBaseAttackTime(MELEE) <= mod->fixed_amount[0])
-                mod->fixed_amount[0] = m_target->getBaseAttackTime(MELEE);
-            if ((int32)m_target->getBaseAttackTime(OFFHAND) <= mod->fixed_amount[1])
-                mod->fixed_amount[1] = m_target->getBaseAttackTime(OFFHAND);
-
-            m_target->modBaseAttackTime(MELEE, -mod->fixed_amount[0]);
-            m_target->modBaseAttackTime(OFFHAND, -mod->fixed_amount[1]);
-        }
-        else
-        {
-            m_target->modBaseAttackTime(MELEE, mod->fixed_amount[0]);
-            m_target->modBaseAttackTime(OFFHAND, mod->fixed_amount[1]);
-        }
+        m_target->modAttackSpeedModifier(MELEE, -mod->m_amount);
+        m_target->modAttackSpeedModifier(OFFHAND, -mod->m_amount);
+        m_target->modAttackSpeedModifier(RANGED, -mod->m_amount);
     }
+
+    if (m_target->isPlayer())
+        static_cast<Player*>(m_target)->UpdateAttackSpeed();
 }
 
 /*
@@ -9130,7 +9065,7 @@ void Aura::SpellAuraModSpellDamageDOTPct(bool apply)
         case 59161:
         case 59163:
         case 59164:
-            m_target->DoTPctIncrease[m_spellInfo->getSchool()] += val;
+            m_target->DoTPctIncrease[m_spellInfo->getFirstSchoolFromSchoolMask()] += val;
             break;
         default:
         {
@@ -9432,10 +9367,10 @@ void AbsorbAura::SpellAuraSchoolAbsorb(bool apply)
 
         //For spells Affected by Bonus Healing we use spell_coeff_direct.
         if (GetSpellInfo()->spell_coeff_direct > 0)
-            val += float2int32(caster->HealDoneMod[GetSpellInfo()->getSchool()] * GetSpellInfo()->spell_coeff_direct);
+            val += float2int32(caster->HealDoneMod[GetSpellInfo()->getFirstSchoolFromSchoolMask()] * GetSpellInfo()->spell_coeff_direct);
         //For spells Affected by Bonus Damage we use spell_coeff_overtime.
         else if (GetSpellInfo()->spell_coeff_overtime > 0)
-            val += float2int32(caster->GetDamageDoneMod(GetSpellInfo()->getSchool()) * GetSpellInfo()->spell_coeff_overtime);
+            val += float2int32(caster->GetDamageDoneMod(GetSpellInfo()->getFirstSchoolFromSchoolMask()) * GetSpellInfo()->spell_coeff_overtime);
     }
 
     m_total_amount = val;

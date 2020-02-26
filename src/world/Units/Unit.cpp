@@ -2853,8 +2853,6 @@ uint8_t Unit::getPowerIndexFromDBC(PowerType type) const
 // Misc
 void Unit::setAttackTimer(WeaponDamageType type, int32_t time)
 {
-    // TODO: getModCastSpeed() is no longer used here, is it required?
-    // it was used in the old function but isnt it about spell casttime only.. - Appled
     m_attackTimer[type] = Util::getMSTime() + time;
 }
 
@@ -2868,10 +2866,22 @@ bool Unit::isAttackReady(WeaponDamageType type) const
     return Util::getMSTime() >= m_attackTimer[type];
 }
 
-void Unit::resetAttackTimers()
+void Unit::resetAttackTimer(WeaponDamageType type)
 {
-    for (uint8_t i = MELEE; i <= RANGED; ++i)
-        setAttackTimer(WeaponDamageType(i), getBaseAttackTime(i));
+    setAttackTimer(type, static_cast<int32_t>(getBaseAttackTime(type) * m_attackSpeed[type]));
+}
+
+void Unit::modAttackSpeedModifier(WeaponDamageType type, int32_t amount)
+{
+    if (amount > 0)
+        m_attackSpeed[type] *= 1.0f + static_cast<float>(amount / 100.0f);
+    else
+        m_attackSpeed[type] /= 1.0f + static_cast<float>((-amount) / 100.0f);
+}
+
+float Unit::getAttackSpeedModifier(WeaponDamageType type) const
+{
+    return m_attackSpeed[type];
 }
 
 void Unit::sendEnvironmentalDamageLogPacket(uint64_t guid, uint8_t type, uint32_t damage, uint64_t unk /*= 0*/)

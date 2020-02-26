@@ -706,7 +706,9 @@ public:
     void setAttackTimer(WeaponDamageType type, int32_t time);
     uint32_t getAttackTimer(WeaponDamageType type) const;
     bool isAttackReady(WeaponDamageType type) const;
-    void resetAttackTimers();
+    void resetAttackTimer(WeaponDamageType type);
+    void modAttackSpeedModifier(WeaponDamageType type, int32_t amount);
+    float getAttackSpeedModifier(WeaponDamageType type) const;
 
     void sendEnvironmentalDamageLogPacket(uint64_t guid, uint8_t type, uint32_t damage, uint64_t unk = 0);
 
@@ -729,6 +731,12 @@ public:
     //\ todo: should this and other tag related variables be under Creature class?
     bool isTaggedByPlayerOrItsGroup(Player* tagger);
 
+private:
+    uint32_t m_attackTimer[TOTAL_WEAPON_DAMAGE_TYPES];
+    //\ todo: there seems to be new haste update fields in playerdata in cata, and moved to unitdata in mop
+    float m_attackSpeed[TOTAL_WEAPON_DAMAGE_TYPES];
+
+public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Death
 protected:
@@ -788,8 +796,7 @@ public:
 
     // Do not alter anything below this line
     // -------------------------------------
-private:
-    uint32_t m_attackTimer[3];
+
     // MIT End
     // AGPL Start
 public:
@@ -1307,7 +1314,6 @@ public:
     CombatStatusHandler CombatStatus;
     bool m_temp_summon;
 
-    void EventStopChanneling(bool abort);
     void EventStrikeWithAbility(uint64 guid, SpellInfo const* sp, uint32 damage);
     void DispelAll(bool positive);
 
