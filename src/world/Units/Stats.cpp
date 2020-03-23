@@ -158,9 +158,8 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
         VictimLvl += ownerLvl - AttackerLvl;
         AttackerLvl = ownerLvl;
     }
-    else if ((int32)VictimLvl - (int32)AttackerLvl > 10)   //not wowwikilike but more balanced
+    else if ((int32)VictimLvl - (int32)AttackerLvl > 10) // not wowwikilike but more balanced
         return 0;
-
 
     float zd = 5;
     float g = 5;
@@ -168,8 +167,18 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     // get zero diff
     if (AttackerLvl >= DBC_PLAYER_LEVEL_CAP)
     {
-        g = 15;
+        zd = 21;
+        g = 17;
+    }
+    else if (AttackerLvl >= 75)
+    {
+        zd = 20;
+        g = 16;
+    }
+    else if (AttackerLvl >= 70)
+    {
         zd = 19;
+        g = 15;
     }
     else if (AttackerLvl >= 65)
     {

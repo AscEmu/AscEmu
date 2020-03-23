@@ -43,7 +43,7 @@ enum PlayerTeam : uint8_t
 #elif VERSION_STRING == Cata
     #define DBC_PLAYER_LEVEL_CAP 85
 #elif VERSION_STRING == Mop
-    #define DBC_PLAYER_LEVEL_CAP 85
+    #define DBC_PLAYER_LEVEL_CAP 90
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -62,6 +62,62 @@ enum PlayerTeam : uint8_t
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #define DBC_STAT_LEVEL_CAP 100
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// DBC_TAXI_MASK_SIZE
+//
+// \param max taxi mask
+//
+// Vanilla = ??
+// The Burning Crusade = ??
+// Wrath of the Lich King = 12
+// Cataclysm = 114
+// Mists of Pandaria = ??
+// Warlords of Draenor = ??
+// Legion = ??
+//
+//////////////////////////////////////////////////////////////////////////////////////////
+
+#if VERSION_STRING == Classic
+    #define DBC_TAXI_MASK_SIZE 12
+#elif VERSION_STRING == TBC
+    #define DBC_TAXI_MASK_SIZE 12
+#elif VERSION_STRING == WotLK
+    #define DBC_TAXI_MASK_SIZE 12
+#elif VERSION_STRING == Cata
+    #define DBC_TAXI_MASK_SIZE 114
+#elif VERSION_STRING == Mop
+    #define DBC_TAXI_MASK_SIZE 255
+#endif
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// PLAYER_ACTION_BUTTON_COUNT
+//
+// \param button defines
+//
+// Vanilla = 120
+// The Burning Crusade = 120
+// Wrath of the Lich King = 144
+// Cataclysm = ??
+// Mists of Pandaria = ??
+// Warlords of Draenor = ??
+// Legion = ??
+//
+//////////////////////////////////////////////////////////////////////////////////////////
+
+#if VERSION_STRING == Classic
+    #define PLAYER_ACTION_BUTTON_COUNT 120
+#elif VERSION_STRING == TBC
+    #define PLAYER_ACTION_BUTTON_COUNT 120
+#elif VERSION_STRING == WotLK
+    #define PLAYER_ACTION_BUTTON_COUNT 144
+#elif VERSION_STRING == Cata
+    #define PLAYER_ACTION_BUTTON_COUNT 255
+#elif VERSION_STRING == Mop
+    #define PLAYER_ACTION_BUTTON_COUNT 255
+#endif
+
+#define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // DBC_PLAYER_SKILL_MAX
@@ -89,7 +145,6 @@ enum PlayerTeam : uint8_t
 #elif VERSION_STRING == Mop
     #define DBC_PLAYER_SKILL_MAX 525
 #endif
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Minimum level required arena
@@ -925,16 +980,6 @@ static uint8_t getSideByRace(uint8_t race)
     }
 }
 
-// Action bar / button defines
-#if VERSION_STRING >= WotLK
-    #define PLAYER_ACTION_BUTTON_COUNT 144
-#else
-    ///\ todo: is it 132 or 120 for TBC and classic?
-    #define PLAYER_ACTION_BUTTON_COUNT 120
-#endif
-
-#define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
-
 #ifdef FT_DUAL_SPEC
 #define MAX_SPEC_COUNT 2
 #else
@@ -946,7 +991,6 @@ static uint8_t getSideByRace(uint8_t race)
 #elif VERSION_STRING == WotLK
 #define GLYPHS_COUNT 6
 #endif
-
 
 #if VERSION_STRING == Classic
 #define MAX_QUEST_SLOT 20

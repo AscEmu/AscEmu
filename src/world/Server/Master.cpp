@@ -53,8 +53,8 @@ SERVER_DECL SessionLog* Player_Log;
 ConfigMgr Config;
 
 // DB version
-static const char* REQUIRED_CHAR_DB_VERSION = "20180916-00_guild_tables";
-static const char* REQUIRED_WORLD_DB_VERSION = "20191117-00_creature_properties_gossip";
+static const char* REQUIRED_CHAR_DB_VERSION = "20200221-00_utf8mb4_unicode_ci";
+static const char* REQUIRED_WORLD_DB_VERSION = "20200221-00_utf8mb4_unicode_ci";
 
 void Master::_OnSignal(int s)
 {

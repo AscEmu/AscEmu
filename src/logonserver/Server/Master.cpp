@@ -21,7 +21,7 @@ std::set<AuthSocket*> _authSockets;
 
 ConfigMgr Config;
 
-static const char* REQUIRED_LOGON_DB_VERSION = "20180810-00_realms";
+static const char* REQUIRED_LOGON_DB_VERSION = "20200221-00_utf8mb4_unicode_ci";
 
 MasterLogon& MasterLogon::getInstance()
 {
