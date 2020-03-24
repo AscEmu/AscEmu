@@ -12,47 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.h"
 #include "Management/Gossip/GossipMenu.h"
 
-//#define USE_THE_STATUS    // Decoment this is for the status
-
-class ExarchNasuun_Gossip : public GossipScript
-{
-public:
-
-    void onHello(Object* pObject, Player* plr) override
-    {
-        GossipMenu menu(pObject->getGuid(), 12227);
-#ifdef USE_THE_STATUS
-        menu.addItem(GOSSIP_ICON_CHAT, (GI_SHATT_EXARCH_NASUUN_1), 1);   // this is the status
-        menu.addItem(GOSSIP_ICON_CHAT, (GI_SHATT_EXARCH_NASUUN_2), 2);
-#else
-        menu.addItem(GOSSIP_ICON_CHAT, GI_SHATT_EXARCH_NASUUN_2, 3);
-#endif
-        menu.sendGossipPacket(plr);
-    }
-
-    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
-    {
-        switch (Id)
-        {
-            case 0:
-                onHello(pObject, plr);
-                break;
-            case 1:
-                GossipMenu::sendQuickMenu(pObject->getGuid(), 12303, plr, 0, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SHATT_EXARCH_NASUUN_1));
-                break;
-            case 2:
-                GossipMenu::sendQuickMenu(pObject->getGuid(), 12305, plr, 0, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SHATT_EXARCH_NASUUN_2));
-                break;
-            case 3:
-                GossipMenu::sendQuickMenu(pObject->getGuid(), 12623, plr, 0, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SHATT_EXARCH_NASUUN_3));
-                break;
-            default:
-                break;
-        }
-    }
-
-};
-
 class ZephyrGossipScript : public GossipScript
 {
 public:
@@ -78,5 +37,4 @@ public:
 void SetupShattrathGossip(ScriptMgr* mgr)
 {
     mgr->register_creature_gossip(25967, new ZephyrGossipScript);  // Zephyr
-    mgr->register_creature_gossip(24932, new ExarchNasuun_Gossip); // Exarch Nasuun
 }

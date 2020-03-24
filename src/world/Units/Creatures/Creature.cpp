@@ -614,7 +614,7 @@ public:
 
     void onHello(Object* object, Player* player) override
     {
-        sObjectMgr.createGuardGossipMenuForPlayer(object->getGuid(), m_gossipMenuId, player);
+        sObjectMgr.generateDatabaseGossipMenu(object->getGuid(), m_gossipMenuId, player);
     }
 
     void onSelectOption(Object* object, Player* player, uint32_t intId, const char* /*Code*/, uint32_t gossipId) override
@@ -622,9 +622,9 @@ public:
         if (intId > 0)
         {
             if (gossipId != 0)
-                sObjectMgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, intId, gossipId);
+                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object->getGuid(), player, intId, gossipId);
             else
-                sObjectMgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, intId, m_gossipMenuId);
+                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object->getGuid(), player, intId, m_gossipMenuId);
         }
     }
 };

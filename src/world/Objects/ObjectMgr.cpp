@@ -1479,7 +1479,7 @@ uint32_t ObjectMgr::GetSpellRequired(uint32_t spell_id) const
 #endif
 
 //MIT
-void ObjectMgr::createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId /*= 0*/)
+void ObjectMgr::generateDatabaseGossipMenu(uint64_t senderGuid, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId /*= 0*/)
 {
     uint32_t textId = 2;
 
@@ -1514,7 +1514,7 @@ void ObjectMgr::createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gos
 }
 
 //MIT
-void ObjectMgr::createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId)
+void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(uint64_t senderGuid, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId)
 {
     LOG_DEBUG("GossipId: %u  gossipItemId: %u", gossipMenuId, gossipItemId);
 
@@ -1528,7 +1528,7 @@ void ObjectMgr::createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* p
         {
             if (itr->second.nextGossipMenu != 0)
             {
-                createGuardGossipMenuForPlayer(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
+                generateDatabaseGossipMenu(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
 
                 // one submenu menu sends a poi
                 if (itr->second.pointOfInterest != 0)
@@ -1536,7 +1536,7 @@ void ObjectMgr::createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* p
             }
             else
             {
-                createGuardGossipMenuForPlayer(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
+                generateDatabaseGossipMenu(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
 
                 if (itr->second.pointOfInterest != 0)
                     player->sendPoiById(itr->second.pointOfInterest);
