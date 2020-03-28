@@ -1,6 +1,13 @@
+---
+name: 👾 Support Request
+about: Support request AscEmu.
+labels: ""
+title: 👾 [Support Request] 
+---
+
 **Description**: 
 
-**Steps to reproduce the problem**: 
+**Steps to reproduce **: 
 1. 
 2. 
 3. 
