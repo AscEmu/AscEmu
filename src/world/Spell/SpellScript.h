@@ -11,6 +11,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 
 class Spell;
+
+enum class SpellScriptExecuteState : uint8_t
+{
+    EXECUTE_OK  = 0,        // Spell script is executed
+    EXECUTE_PREVENT,        // Spell script is executed but prevent default effect
+};
+
 class SERVER_DECL SpellScript
 {
 public:
@@ -28,4 +35,8 @@ public:
     virtual void doBeforeEffectHit(Spell* /*spell*/, uint8_t /*effectIndex*/) {}
     // Called after target missed/resisted the spell
     virtual void doAfterSpellMissed(Spell* /*spell*/, Unit* /*unitTarget*/) {}
+    // Called before spell effect type handling
+    virtual SpellScriptExecuteState beforeSpellEffect(Spell* /*spell*/, uint32_t /*effectType*/, uint8_t /*effectId*/) { return SpellScriptExecuteState::EXECUTE_OK; }
+    // Called after spell effect type handling
+    virtual void afterSpellEffect(Spell* /*spell*/, uint32_t /*effectType*/, uint8_t /*effectId*/) {}
 };
