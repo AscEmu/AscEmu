@@ -1885,16 +1885,12 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
     if (id < TOTAL_SPELL_EFFECTS)
     {
         LogDebugFlag(LF_SPELL, "WORLD: Spell effect id = %u (%s), damage = %d", id, SpellEffectNames[id], damage);
-        SpellScriptExecuteState scriptExecuteState = SpellScriptExecuteState::EXECUTE_OK;
-        SpellScript* spellScript = getSpellInfo()->spellScript;
-        if (spellScript)
-            scriptExecuteState = spellScript->beforeSpellEffect(this, id, static_cast<uint8_t>(i));
+        SpellScriptExecuteState scriptExecuteState = sScriptMgr.callScriptedSpellBeforeSpellEffect(this, id, static_cast<uint8_t>(i));
 
         if (scriptExecuteState != SpellScriptExecuteState::EXECUTE_PREVENT)
             (*this.*SpellEffectsHandler[id])(static_cast<uint8_t>(i));
 
-        if (spellScript)
-            spellScript->afterSpellEffect(this, id, static_cast<uint8_t>(i));
+        sScriptMgr.callScriptedSpellAfterSpellEffect(this, id, static_cast<uint8_t>(i));
     }
     else
         LOG_ERROR("SPELL: unknown effect %u spellid %u", id, getSpellInfo()->getId());

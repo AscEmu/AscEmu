@@ -87,6 +87,22 @@ void ScriptMgr::callScriptedSpellAfterMiss(Spell* spell, Unit* unitTarget)
     spell->getSpellInfo()->spellScript->doAfterSpellMissed(spell, unitTarget);
 }
 
+SpellScriptExecuteState ScriptMgr::callScriptedSpellBeforeSpellEffect(Spell* spell, uint32_t effectType, uint8_t effectId) const
+{
+    if (!spell->getSpellInfo()->spellScript)
+        return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
+
+    return spell->getSpellInfo()->spellScript->beforeSpellEffect(spell, effectType, static_cast<uint8_t>(effectId));
+}
+
+void ScriptMgr::callScriptedSpellAfterSpellEffect(Spell* spell, uint32_t effectType, uint8_t effectId)
+{
+    if (!spell->getSpellInfo()->spellScript)
+        return;
+
+    spell->getSpellInfo()->spellScript->afterSpellEffect(spell, effectType, static_cast<uint8_t>(effectId));
+}
+
 void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
