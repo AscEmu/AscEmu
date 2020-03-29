@@ -1,8 +1,15 @@
+---
+name: 👾 Bug Report
+about: Report any errors or defects that you encountered while using AscEmu.
+labels: "Issue - Needs retesting"
+title: 👾 [Bug Report] 
+---
+
 **Description**: 
 
 
 
-**Steps to reproduce the problem**:
+**Steps to reproduce the problem**: 
 1. 
 2. 
 3. 
