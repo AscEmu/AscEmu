@@ -267,9 +267,9 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
             {
                 if (_player->m_position.Distance2DSq(movement_info.position) > 3025.f)
                 {
-                    if (_player->getSpeedForType(TYPE_RUN) < 50.f && !_player->obj_movement_info.isOnTransport())
+                    if (_player->getSpeedRate(TYPE_RUN, true) < 50.f && !_player->obj_movement_info.isOnTransport())
                     {
-                        sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedForType(TYPE_RUN), sqrt(_player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y })));
+                        sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedRate(TYPE_RUN, true), sqrt(_player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y })));
                         Disconnect();
                         return;
                     }
@@ -281,7 +281,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         {
             if (!(_player->isOnTaxi() || _player->movement_info.isOnTransport()))
             {
-                _player->SDetector->addSample(movement_info.position, Util::getMSTime(), _player->getFastestSpeed());
+                _player->SDetector->addSample(movement_info.position, Util::getMSTime(), _player->getSpeedRate(_player->getFastestSpeedType(), true));
 
                 if (_player->SDetector->IsCheatDetected())
                     _player->SDetector->ReportCheater(_player);

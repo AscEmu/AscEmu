@@ -1494,14 +1494,14 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target
         const Unit* this_mover = this_player ? static_cast<Unit*>(this_player) : this_creature;
         ARCEMU_ASSERT(this_mover != nullptr);
 
-        *data << this_mover->getSpeedForType(TYPE_WALK);
-        *data << this_mover->getSpeedForType(TYPE_RUN);
-        *data << this_mover->getSpeedForType(TYPE_RUN_BACK);
-        *data << this_mover->getSpeedForType(TYPE_SWIM);
-        *data << this_mover->getSpeedForType(TYPE_SWIM_BACK);
-        *data << this_mover->getSpeedForType(TYPE_FLY);
-        *data << this_mover->getSpeedForType(TYPE_FLY_BACK);
-        *data << this_mover->getSpeedForType(TYPE_TURN_RATE);
+        *data << this_mover->getSpeedRate(TYPE_WALK, true);
+        *data << this_mover->getSpeedRate(TYPE_RUN, true);
+        *data << this_mover->getSpeedRate(TYPE_RUN_BACK, true);
+        *data << this_mover->getSpeedRate(TYPE_SWIM, true);
+        *data << this_mover->getSpeedRate(TYPE_SWIM_BACK, true);
+        *data << this_mover->getSpeedRate(TYPE_FLY, true);
+        *data << this_mover->getSpeedRate(TYPE_FLY_BACK, true);
+        *data << this_mover->getSpeedRate(TYPE_TURN_RATE, true);
     }
 
     if (spline_buffer)

@@ -568,6 +568,7 @@ public:
     float getSpeedRate(UnitSpeedType type, bool current) const;
     void setSpeedRate(UnitSpeedType type, float value, bool current);
     void resetCurrentSpeeds();
+    UnitSpeedType getFastestSpeedType() const;
 private:
     UnitSpeedInfo m_UnitSpeedInfo;
 

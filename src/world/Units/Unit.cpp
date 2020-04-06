@@ -1351,6 +1351,32 @@ void Unit::resetCurrentSpeeds()
         m_UnitSpeedInfo.m_currentSpeedRate[i] = m_UnitSpeedInfo.m_basicSpeedRate[i];
 }
 
+UnitSpeedType Unit::getFastestSpeedType() const
+{
+    float fastest_speed = 0.f;
+    UnitSpeedType fastest_speed_type = TYPE_WALK;
+    for (uint8_t i = TYPE_WALK; i < MAX_SPEED_TYPE; ++i)
+    {
+        UnitSpeedType const speedType = static_cast<UnitSpeedType>(i + 1);
+
+        switch (speedType)
+        {
+        case TYPE_TURN_RATE:
+        case TYPE_PITCH_RATE:
+            continue;
+        default:
+            break;
+        }
+
+        float const speed = getSpeedRate(speedType, true);
+
+        fastest_speed = speed > fastest_speed ? speed : fastest_speed;
+        fastest_speed_type = speed == fastest_speed ? speedType : fastest_speed_type;
+    }
+
+    return fastest_speed_type;
+}
+
 void Unit::sendMoveSplinePaket(UnitSpeedType speedType)
 {
     WorldPacket data(12);
