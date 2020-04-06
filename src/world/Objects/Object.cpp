@@ -1963,7 +1963,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
 
         data->WriteByteSeq(Guid[4]);
 
-        *data << unit->getSpeedForType(TYPE_RUN_BACK);
+        *data << unit->getSpeedRate(TYPE_RUN_BACK, true);
 
         if (hasFallData)
         {
@@ -1978,7 +1978,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
             *data << float(unit->movement_info.getJumpInfo().velocity);
         }
 
-        *data << unit->getSpeedForType(TYPE_SWIM_BACK);
+        *data << unit->getSpeedRate(TYPE_SWIM_BACK, true);
 
         if (hasElevation)
             *data << float(unit->movement_info.getSplineElevation());
@@ -2025,37 +2025,37 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
         }
 
         *data << float(unit->GetPositionX());
-        *data << float(unit->getSpeedForType(TYPE_PITCH_RATE));
+        *data << float(unit->getSpeedRate(TYPE_PITCH_RATE, true));
 
         data->WriteByteSeq(Guid[3]);
         data->WriteByteSeq(Guid[0]);
 
-        *data << float(unit->getSpeedForType(TYPE_SWIM));
+        *data << float(unit->getSpeedRate(TYPE_SWIM, true));
         *data << float(unit->GetPositionY());
 
         data->WriteByteSeq(Guid[7]);
         data->WriteByteSeq(Guid[1]);
         data->WriteByteSeq(Guid[2]);
 
-        *data << float(unit->getSpeedForType(TYPE_WALK));
+        *data << float(unit->getSpeedRate(TYPE_WALK, true));
 
         *data << uint32_t(Util::getMSTime());
 
-        *data << float(unit->getSpeedForType(TYPE_FLY_BACK));
+        *data << float(unit->getSpeedRate(TYPE_FLY_BACK, true));
 
         data->WriteByteSeq(Guid[6]);
 
-        *data << float(unit->getSpeedForType(TYPE_TURN_RATE));
+        *data << float(unit->getSpeedRate(TYPE_TURN_RATE, true));
 
         if (hasOrientation)
             *data << float(normalizeOrientation(unit->GetOrientation()));
 
-        *data << unit->getSpeedForType(TYPE_RUN);
+        *data << unit->getSpeedRate(TYPE_RUN, true);
 
         if (hasPitch)
             *data << float(unit->movement_info.getPitch());
 
-        *data << float(unit->getSpeedForType(TYPE_FLY));
+        *data << float(unit->getSpeedRate(TYPE_FLY, true));
     }
 
     if (updateFlags & UPDATEFLAG_VEHICLE)

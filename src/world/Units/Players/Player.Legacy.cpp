@@ -8055,7 +8055,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
         removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
         removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-        setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
     }
 
     if (obj_movement_info.getTransportGuid())
