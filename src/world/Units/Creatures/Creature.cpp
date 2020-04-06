@@ -856,7 +856,7 @@ void Creature::RemoveFromWorld(bool free_guid)
 
 void Creature::EnslaveExpire()
 {
-    m_enslaveCount++;
+    ++m_enslaveCount;
 
     uint64 charmer = getCharmedByGuid();
 
@@ -876,7 +876,7 @@ void Creature::EnslaveExpire()
     setCharmedByGuid(0);
     setSummonedByGuid(0);
 
-    resetCurrentSpeed();
+    resetCurrentSpeeds();
 
     switch (GetCreatureProperties()->Type)
     {
@@ -1298,10 +1298,10 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     spawnid = spawn->id;
     m_phase = spawn->phase;
 
-    setSpeedForType(TYPE_WALK, creature_properties->walk_speed, true);
-    setSpeedForType(TYPE_RUN, creature_properties->run_speed, true);
-    setSpeedForType(TYPE_FLY, creature_properties->fly_speed, true);
-    resetCurrentSpeed();
+    setSpeedRate(TYPE_WALK, creature_properties->walk_speed, false);
+    setSpeedRate(TYPE_RUN, creature_properties->run_speed, false);
+    setSpeedRate(TYPE_FLY, creature_properties->fly_speed, false);
+    resetCurrentSpeeds();
 
     //Set fields
     setEntry(creature_properties->Id);
@@ -1567,10 +1567,10 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
     }
 
-    setSpeedForType(TYPE_WALK, creature_properties->walk_speed, true);
-    setSpeedForType(TYPE_RUN, creature_properties->run_speed, true);
-    setSpeedForType(TYPE_FLY, creature_properties->fly_speed, true);
-    resetCurrentSpeed();
+    setSpeedRate(TYPE_WALK, creature_properties->walk_speed, false);
+    setSpeedRate(TYPE_RUN, creature_properties->run_speed, false);
+    setSpeedRate(TYPE_FLY, creature_properties->fly_speed, false);
+    resetCurrentSpeeds();
 
     //Set fields
     setEntry(creature_properties->Id);

@@ -706,9 +706,9 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         /* Anti-Teleport                                                        */
         /************************************************************************/
         if (worldConfig.antiHack.isTeleportHackCheckEnabled && _player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y }) > 3025.0f
-            && _player->getSpeedForType(TYPE_RUN) < 50.0f && !_player->obj_movement_info.transport_data.transportGuid)
+            && _player->getSpeedRate(TYPE_RUN, true) < 50.0f && !_player->obj_movement_info.transport_data.transportGuid)
         {
-            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedForType(TYPE_RUN), sqrt(_player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y })));
+            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedRate(TYPE_RUN, true), sqrt(_player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y })));
             Disconnect();
             return;
         }
@@ -718,7 +718,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     if (worldConfig.antiHack.isSpeedHackCkeckEnabled && !_player->isOnTaxi() && _player->obj_movement_info.transport_data.transportGuid == 0 && !_player->GetSession()->GetPermissionCount())
     {
         // simplified: just take the fastest speed. less chance of fuckups too
-        float speed = (_player->flying_aura) ? _player->getSpeedForType(TYPE_FLY) : (_player->getSpeedForType(TYPE_SWIM) > _player->getSpeedForType(TYPE_RUN)) ? _player->getSpeedForType(TYPE_SWIM) : _player->getSpeedForType(TYPE_RUN);
+        float speed = (_player->flying_aura) ? _player->getSpeedRate(TYPE_FLY, true) : (_player->getSpeedRate(TYPE_SWIM, true) > _player->getSpeedRate(TYPE_RUN, true)) ? _player->getSpeedRate(TYPE_SWIM, true) : _player->getSpeedRate(TYPE_RUN, true);
 
         _player->SDetector->AddSample(movement_info.position.x, movement_info.position.y, Util::getMSTime(), speed);
 

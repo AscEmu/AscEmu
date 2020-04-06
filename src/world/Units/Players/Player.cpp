@@ -214,8 +214,8 @@ void Player::resendSpeed()
 {
     if (resend_speed)
     {
-        setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
-        setSpeedForType(TYPE_FLY, getSpeedForType(TYPE_FLY));
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
+        setSpeedRate(TYPE_FLY, getSpeedRate(TYPE_FLY, true), true);
         resend_speed = false;
     }
 }
