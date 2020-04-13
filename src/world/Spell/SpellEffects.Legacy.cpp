@@ -5975,7 +5975,7 @@ void Spell::SpellEffectPlayerPull(uint8_t /*effectIndex*/)
     data << p_target->GetPositionX();
     data << p_target->GetPositionY();
     data << p_target->GetPositionZ();
-    data <<Util::getMSTime();
+    data << Util::getMSTime();
     data << uint8(4);
     data << pullO;
     data << uint32(0x00001000);
