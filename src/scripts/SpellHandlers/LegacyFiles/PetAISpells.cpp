@@ -194,7 +194,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
                         const auto item = playerOwner->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                         if (item != nullptr)
                         {
-                            for (uint8 si = 0; si < 5; si++)
+                            for (uint8_t si = 0; si < 5; si++)
                             {
                                 if (item->getItemProperties()->Spells[si].Id == 0)
                                     continue;

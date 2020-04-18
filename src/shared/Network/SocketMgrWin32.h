@@ -39,7 +39,7 @@ class SERVER_DECL SocketMgr
         void SpawnWorkerThreads();
         void CloseAll();
         void ShowStatus();
-        uint32 GetSocketCount() { return socket_count; }
+        uint32_t GetSocketCount() { return socket_count; }
         void AddSocket(Socket* s)
         {
             socketLock.Acquire();
@@ -63,7 +63,7 @@ class SERVER_DECL SocketMgr
 
 #define sSocketMgr SocketMgr::getInstance()
 
-typedef void(*OperationHandler)(Socket* s, uint32 len);
+typedef void(*OperationHandler)(Socket* s, uint32_t len);
 
 class SocketWorkerThread : public ThreadBase
 {
@@ -72,9 +72,9 @@ class SocketWorkerThread : public ThreadBase
         bool runThread();
 };
 
-void SERVER_DECL HandleReadComplete(Socket* s, uint32 len);
-void SERVER_DECL HandleWriteComplete(Socket* s, uint32 len);
-void SERVER_DECL HandleShutdown(Socket* s, uint32 len);
+void SERVER_DECL HandleReadComplete(Socket* s, uint32_t len);
+void SERVER_DECL HandleWriteComplete(Socket* s, uint32_t len);
+void SERVER_DECL HandleShutdown(Socket* s, uint32_t len);
 
 static OperationHandler ophandlers[NUM_SOCKET_IO_EVENTS] =
 {

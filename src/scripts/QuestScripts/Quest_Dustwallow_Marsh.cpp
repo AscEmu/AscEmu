@@ -33,7 +33,7 @@ class BalosJackenQAI : public CreatureAIScript
         friendlyTimer = BALOS_FRIENDLY_TIMER;
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         // If Balos Jacken HP - fAmount < 20%
         if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.2f)
@@ -99,9 +99,9 @@ class OverlordMokMorokk : public CreatureAIScript
         getCreature()->setStandState(STANDSTATE_STAND);
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
+    void OnDamageTaken(Unit* mAttacker, uint32_t fAmount) override
     {
-        uint32 chance = Util::getRandomUInt(100);
+        uint32_t chance = Util::getRandomUInt(100);
         if (chance < 25)
         {
             getCreature()->castSpell(mAttacker, sSpellMgr.getSpellInfo(6749), true);
@@ -170,7 +170,7 @@ class PrivateHendel : public CreatureAIScript
         getCreature()->setStandState(STANDSTATE_STAND);
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
+    void OnDamageTaken(Unit* mAttacker, uint32_t fAmount) override
     {
         if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.37f)
         {

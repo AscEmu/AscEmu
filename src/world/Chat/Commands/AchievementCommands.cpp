@@ -18,7 +18,7 @@ bool ChatHandler::HandleAchievementCompleteCommand(const char* args, WorldSessio
     if (!*args)
         return false;
 
-    uint32 achievement_id = atol(args);
+    uint32_t achievement_id = atol(args);
     if (achievement_id == 0)
     {
         achievement_id = GetAchievementIDFromLink(args);
@@ -52,7 +52,7 @@ bool ChatHandler::HandleAchievementCriteriaCommand(const char* args, WorldSessio
     if (!*args)
         return false;
 
-    uint32 criteria_id = atol(args);
+    uint32_t criteria_id = atol(args);
     if (criteria_id == 0)
     {
         if (stricmp(args, "all") == 0)
@@ -84,7 +84,7 @@ bool ChatHandler::HandleAchievementResetCommand(const char* args, WorldSession* 
 
     bool reset_achievement = true;
     bool reset_criteria = false;
-    int32 achievement_id;
+    int32_t achievement_id;
 
     if (strnicmp(args, "criteria ", 9) == 0)
     {

@@ -577,7 +577,7 @@ enum DrunkenState
     druid - restoration - 282
 */
 
-static const uint32 TalentTreesPerClass[MAX_PLAYER_CLASSES][3] =
+static const uint32_t TalentTreesPerClass[MAX_PLAYER_CLASSES][3] =
 {
 #if VERSION_STRING < Cata
     { 0, 0, 0 },        // NONE

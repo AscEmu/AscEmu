@@ -27,7 +27,7 @@ bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_
         Field* fields = result->Fetch();
         sstext << "TicketID: " << fields[0].GetUInt16()
             << " | Player: " << fields[2].GetString()
-            << " | Opened: " << Util::GetDateStringFromSeconds((uint32)UNIXTIME - fields[9].GetUInt32())
+            << " | Opened: " << Util::GetDateStringFromSeconds((uint32_t)UNIXTIME - fields[9].GetUInt32())
             << '\n';
     } while (result->NextRow());
 
@@ -53,7 +53,7 @@ bool ChatHandler::HandleTicketListAllCommand(const char* /*args*/, WorldSession*
         Field* fields = result->Fetch();
         sstext << "TicketID: " << fields[0].GetUInt16()
             << " | Player: " << fields[2].GetString()
-            << " | Opened: " << Util::GetDateStringFromSeconds((uint32)UNIXTIME - fields[9].GetUInt32())
+            << " | Opened: " << Util::GetDateStringFromSeconds((uint32_t)UNIXTIME - fields[9].GetUInt32())
             << '\n';
     } while (result->NextRow());
 
@@ -72,7 +72,7 @@ bool ChatHandler::HandleTicketGetCommand(const char* args, WorldSession* m_sessi
         return false;
     }
 
-    uint32 ticketID = atol(args);
+    uint32_t ticketID = atol(args);
 
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u", ticketID);
 
@@ -125,7 +125,7 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
         return false;
     }
 
-    uint32 ticketID = atol(args);
+    uint32_t ticketID = atol(args);
 
     Player* player = m_session->GetPlayer();
 
@@ -136,7 +136,7 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
         return false;
     }
     Field* fields = result->Fetch();
-    uint32 playerGuid = fields[1].GetUInt32();
+    uint32_t playerGuid = fields[1].GetUInt32();
 
     GM_Ticket* gm_ticket = sObjectMgr.GetGMTicketByPlayer(playerGuid);
     if (gm_ticket == nullptr)
@@ -157,7 +157,7 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
         ticketOwner->GetSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
         // Response - Send GM Survey
         WorldPacket datab(SMSG_GM_TICKET_STATUS_UPDATE, 1);
-        datab << uint32(3);
+        datab << uint32_t(3);
         ticketOwner->GetSession()->SendPacket(&datab);
     }
     else
@@ -183,7 +183,7 @@ bool ChatHandler::HandleTicketDeleteCommand(const char* args, WorldSession* m_se
         return false;
     }
 
-    uint32 ticketID = atol(args);
+    uint32_t ticketID = atol(args);
 
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u AND deleted = 1", ticketID);
     if (!result)

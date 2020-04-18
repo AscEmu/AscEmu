@@ -497,7 +497,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
 
 protected:
 
-    uint32 SummonTimer;
+    uint32_t SummonTimer;
     CreatureAISpells* summonNetherWraith1;
     CreatureAISpells* summonNetherWraith2;
     CreatureAISpells* summonNetherWraith3;

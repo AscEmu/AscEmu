@@ -114,7 +114,7 @@ struct ObjectGuid
 
         uint32_t getCounter()
         {
-            return uint32(_data.u64 & UINT64_C(0x00000000FFFFFFFF));
+            return uint32_t(_data.u64 & UINT64_C(0x00000000FFFFFFFF));
         }
 
     private:

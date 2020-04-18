@@ -3445,7 +3445,7 @@ void MySQLDataStore::loadLocalesNpcText()
         std::string locString = fields[1].GetString();
         localNpcText.languageCode = Util::getLanguagesIdFromString(locString);
 
-        for (uint8 j = 0; j < 8; ++j)
+        for (uint8_t j = 0; j < 8; ++j)
         {
             localNpcText.texts[j][0] = strdup(fields[2 + (2 * j)].GetString());
             localNpcText.texts[j][1] = strdup(fields[3 + (2 * j)].GetString());
@@ -3845,8 +3845,8 @@ MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uin
 //    do
 //    {
 //        Field* fields = result->Fetch();
-//        uint32 entry = fields[0].GetUInt32();
-//        uint32 spell = fields[1].GetUInt32();
+//        uint32_t entry = fields[0].GetUInt32();
+//        uint32_t spell = fields[1].GetUInt32();
 //        const auto spellInfo = sSpellMgr.getSpellInfo(spell);
 //
 //        if (spell && entry && spellInfo)

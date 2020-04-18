@@ -870,7 +870,7 @@ void Unit::setMoveWaterWalk()
         WorldPacket data(SMSG_MOVE_WATER_WALK, 12);
 #if VERSION_STRING < Cata
         data << GetNewGUID();
-        data << uint32(0);
+        data << uint32_t(0);
 #else
         movement_info.writeMovementInfo(data, SMSG_MOVE_WATER_WALK);
 #endif
@@ -898,7 +898,7 @@ void Unit::setMoveLandWalk()
         WorldPacket data(SMSG_MOVE_LAND_WALK, 12);
 #if VERSION_STRING < Cata
         data << GetNewGUID();
-        data << uint32(0);
+        data << uint32_t(0);
 #else
         movement_info.writeMovementInfo(data, SMSG_MOVE_LAND_WALK);
 #endif
@@ -926,7 +926,7 @@ void Unit::setMoveFeatherFall()
         WorldPacket data(SMSG_MOVE_FEATHER_FALL, 12);
 #if VERSION_STRING < Cata
         data << GetNewGUID();
-        data << uint32(0);
+        data << uint32_t(0);
 #else
         movement_info.writeMovementInfo(data, SMSG_MOVE_FEATHER_FALL);
 #endif
@@ -954,7 +954,7 @@ void Unit::setMoveNormalFall()
         WorldPacket data(SMSG_MOVE_NORMAL_FALL, 12);
 #if VERSION_STRING < Cata
         data << GetNewGUID();
-        data << uint32(0);
+        data << uint32_t(0);
 #else
         movement_info.writeMovementInfo(data, SMSG_MOVE_NORMAL_FALL);
 #endif
@@ -984,7 +984,7 @@ void Unit::setMoveHover(bool set_hover)
             WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32_t(0);
 #else
             movement_info.writeMovementInfo(data, SMSG_MOVE_SET_HOVER);
 #endif
@@ -997,7 +997,7 @@ void Unit::setMoveHover(bool set_hover)
             WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32_t(0);
 #else
             movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_HOVER);
 #endif
@@ -1053,7 +1053,7 @@ void Unit::setMoveCanFly(bool set_fly)
             WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(2);
+            data << uint32_t(2);
 #else
             movement_info.writeMovementInfo(data, SMSG_MOVE_SET_CAN_FLY);
 #endif
@@ -1069,7 +1069,7 @@ void Unit::setMoveCanFly(bool set_fly)
             WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(5);
+            data << uint32_t(5);
 #else
             movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_CAN_FLY);
 #endif
@@ -1123,7 +1123,7 @@ void Unit::setMoveRoot(bool set_root)
             WorldPacket data(SMSG_FORCE_MOVE_ROOT, 12);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32_t(0);
 #else
             movement_info.writeMovementInfo(data, SMSG_FORCE_MOVE_ROOT);
 #endif
@@ -1136,7 +1136,7 @@ void Unit::setMoveRoot(bool set_root)
             WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 12);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32_t(0);
 #else
             movement_info.writeMovementInfo(data, SMSG_FORCE_MOVE_UNROOT);
 #endif
@@ -1228,7 +1228,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
             WorldPacket data(SMSG_MOVE_GRAVITY_DISABLE, 13);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32_t(0);
 #else
             movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_DISABLE);
 #endif
@@ -1241,7 +1241,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
             WorldPacket data(SMSG_MOVE_GRAVITY_ENABLE, 13);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32_t(0);
 #else
             movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_ENABLE);
 #endif
@@ -1473,7 +1473,6 @@ void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic
     {
         sendMoveSplinePaket(speed_type);
     }
-
 }
 
 void Unit::resetCurrentSpeed()
@@ -1634,15 +1633,11 @@ void Unit::removeDiminishingReturnTimer(SpellInfo const* spell)
 
     // Make sure we have a group
     if (group == 0xFFFF)
-    {
         return;
-    }
 
     // Check if we don't apply to pve
     if (!pve && !isPlayer() && !isPet())
-    {
         return;
-    }
 
     /*There are cases in which you just refresh an aura duration instead of the whole aura,
     causing corruption on the diminishAura counter and locking the entire diminishing group.
@@ -1990,11 +1985,11 @@ uint32_t Unit::getAuraCountForId(uint32_t auraId)
     return auraCount;
 }
 
-Aura* Unit::getAuraWithIdForGuid(uint32_t* auraId, uint64 guid)
+Aura* Unit::getAuraWithIdForGuid(uint32_t* auraId, uint64_t guid)
 {
     for (int i = 0; auraId[i] != 0; ++i)
     {
-        for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+        for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
         {
             Aura* aura = m_auras[x];
             if (aura != nullptr && aura->GetSpellInfo()->getId() == auraId[i] && aura->m_casterGuid == guid)
@@ -2082,7 +2077,7 @@ uint64_t Unit::getSingleTargetGuidForAura(uint32_t spell)
 
 uint64_t Unit::getSingleTargetGuidForAura(uint32_t* spellIds, uint32_t* index)
 {
-    for (uint8 i = 0; ; i++)
+    for (uint8_t i = 0; ; i++)
     {
         if (!spellIds[i])
             return 0;
@@ -2336,7 +2331,7 @@ bool Unit::canSee(Object* const obj)
     const auto unitTarget = static_cast<Unit*>(obj);
     const auto gobTarget = static_cast<GameObject*>(obj);
 
-    ////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Invisibility detection
 
     for (uint8_t i = 0; i < INVIS_FLAG_TOTAL; ++i)
@@ -2366,7 +2361,7 @@ bool Unit::canSee(Object* const obj)
         }
     }
 
-    ////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Stealth detection
 
     if ((obj->isCreatureOrPlayer() && unitTarget->isStealthed()) || (obj->isGameObject() && gobTarget->inStealth))
@@ -3024,19 +3019,19 @@ void Unit::sendHopOffVehicle(Unit* vehicleOwner, LocationVector& /*landPosition*
     data << GetNewGUID();
 
     if (isPlayer())
-        data << uint8(1);
+        data << uint8_t(1);
     else
-        data << uint8(0);
+        data << uint8_t(0);
 
     data << float(GetPositionX());
     data << float(GetPositionY());
     data << float(GetPositionZ());
-    data << uint32(Util::getMSTime());
-    data << uint8(4);                            // SPLINETYPE_FACING_ANGLE
-    data << float(GetOrientation());             // guess
-    data << uint32(0x01000000);                  // SPLINEFLAG_EXIT_VEHICLE
-    data << uint32(0);                           // Time in between points
-    data << uint32(1);                           // 1 single waypoint
+    data << uint32_t(Util::getMSTime());
+    data << uint8_t(4);                            // SPLINETYPE_FACING_ANGLE
+    data << float(GetOrientation());               // guess
+    data << uint32_t(0x01000000);                  // SPLINEFLAG_EXIT_VEHICLE
+    data << uint32_t(0);                           // Time in between points
+    data << uint32_t(1);                           // 1 single waypoint
     data << float(vehicleOwner->GetPositionX());
     data << float(vehicleOwner->GetPositionY());
     data << float(vehicleOwner->GetPositionZ());

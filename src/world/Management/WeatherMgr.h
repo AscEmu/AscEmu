@@ -27,7 +27,7 @@
 
 class WeatherInfo;
 
-uint32 GetSound(uint32 Effect, float Density);
+uint32_t GetSound(uint32_t Effect, float Density);
 
 class SERVER_DECL WeatherMgr
 {
@@ -54,7 +54,7 @@ class SERVER_DECL WeatherMgr
 
     private:
 
-        std::map<uint32, WeatherInfo*> m_zoneWeathers;
+        std::map<uint32_t, WeatherInfo*> m_zoneWeathers;
 };
 
 class WeatherInfo : public EventableObject
@@ -75,16 +75,16 @@ class WeatherInfo : public EventableObject
 
         void _GenerateWeather();
 
-        uint32 m_zoneId;
+        uint32_t m_zoneId;
 
-        uint32 m_totalTime;
-        uint32 m_currentTime;
+        uint32_t m_totalTime;
+        uint32_t m_currentTime;
 
         float m_maxDensity;
         float m_currentDensity;
 
-        uint32 m_currentEffect;
-        std::map<uint32, uint32> m_effectValues;
+        uint32_t m_currentEffect;
+        std::map<uint32_t, uint32_t> m_effectValues;
 };
 
 #define sWeatherMgr WeatherMgr::getInstance()

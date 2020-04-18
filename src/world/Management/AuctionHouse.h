@@ -68,39 +68,39 @@ enum AuctionMailResult
 
 struct Auction
 {
-    uint32 Id;
+    uint32_t Id;
 
-    uint32 Owner;
-    uint32 HighestBidder;
-    uint32 HighestBid;
-    uint32 StartingPrice;
-    uint32 BuyoutPrice;
-    uint32 DepositAmount;
+    uint32_t Owner;
+    uint32_t HighestBidder;
+    uint32_t HighestBid;
+    uint32_t StartingPrice;
+    uint32_t BuyoutPrice;
+    uint32_t DepositAmount;
 
-    uint32 ExpiryTime;
+    uint32_t ExpiryTime;
     Item* pItem;
 
     void DeleteFromDB();
-    void SaveToDB(uint32 AuctionHouseId);
+    void SaveToDB(uint32_t AuctionHouseId);
     void UpdateInDB();
 #if VERSION_STRING < Cata
     void AddToPacket(WorldPacket& data);
 #else
-    uint32 GetAuctionOutBid();
+    uint32_t GetAuctionOutBid();
     bool BuildAuctionInfo(WorldPacket & data);
 #endif
     bool Deleted;
-    uint32 DeletedReason;
+    uint32_t DeletedReason;
 };
 
 class AuctionHouse
 {
     public:
 
-        AuctionHouse(uint32 ID);
+        AuctionHouse(uint32_t ID);
         ~AuctionHouse();
 
-        inline uint32 GetID() { return dbc->id; }
+        inline uint32_t GetID() { return dbc->id; }
         void LoadAuctions();
 
         void UpdateAuctions();
@@ -108,21 +108,21 @@ class AuctionHouse
 
         void RemoveAuction(Auction* auct);
         void AddAuction(Auction* auct);
-        Auction* GetAuction(uint32 Id);
-        void QueueDeletion(Auction* auct, uint32 Reason);
+        Auction* GetAuction(uint32_t Id);
+        void QueueDeletion(Auction* auct, uint32_t Reason);
 
         void SendOwnerListPacket(Player* plr, WorldPacket* packet);
-        void UpdateOwner(uint32 oldGuid, uint32 newGuid);
+        void UpdateOwner(uint32_t oldGuid, uint32_t newGuid);
         void SendBidListPacket(Player* plr, WorldPacket* packet);
         void SendAuctionBuyOutNotificationPacket(Auction* auct);
-        void SendAuctionOutBidNotificationPacket(Auction* auct, uint64 newBidder, uint32 newHighestBid);
+        void SendAuctionOutBidNotificationPacket(Auction* auct, uint64_t newBidder, uint32_t newHighestBid);
         void SendAuctionExpiredNotificationPacket(Auction* auct);
         void SendAuctionList(Player* plr, WorldPacket* packet);
 
     private:
 
         RWLock auctionLock;
-        std::unordered_map<uint32, Auction*> auctions;
+        std::unordered_map<uint32_t, Auction*> auctions;
 
         Mutex removalLock;
         std::list<Auction*> removalList;

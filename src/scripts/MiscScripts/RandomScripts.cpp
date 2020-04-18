@@ -13,7 +13,7 @@ void GuardsOnSalute(Player* pPlayer, Unit* pUnit)
     // Check if we are friendly with our Guards (they will salute only when You are)
     if (((pUnit->getEntry() == 68 || pUnit->getEntry() == 1976) && pPlayer->GetStandingRank(72) >= STANDING_FRIENDLY) || (pUnit->getEntry() == 3296 && pPlayer->GetStandingRank(76) >= STANDING_FRIENDLY))
     {
-        uint32 EmoteChance = Util::getRandomUInt(100);
+        uint32_t EmoteChance = Util::getRandomUInt(100);
         if (EmoteChance < 33) // 1/3 chance to get Salute from Guard
             pUnit->Emote(EMOTE_ONESHOT_SALUTE);
     }
@@ -27,7 +27,7 @@ void GaurdsOnKiss(Player* pPlayer, Unit* pUnit)
     // Check if we are friendly with our Guards (they will bow only when You are)
     if (((pUnit->getEntry() == 68 || pUnit->getEntry() == 1976) && pPlayer->GetStandingRank(72) >= STANDING_FRIENDLY) || (pUnit->getEntry() == 3296 && pPlayer->GetStandingRank(76) >= STANDING_FRIENDLY))
     {
-        uint32 EmoteChance = Util::getRandomUInt(100);
+        uint32_t EmoteChance = Util::getRandomUInt(100);
         if (EmoteChance < 33) // 1/3 chance to get Bow from Guard
             pUnit->Emote(EMOTE_ONESHOT_BOW);
     }
@@ -41,13 +41,13 @@ void GuardsOnWave(Player* pPlayer, Unit* pUnit)
     // Check if we are friendly with our Guards (they will wave only when You are)
     if (((pUnit->getEntry() == 68 || pUnit->getEntry() == 1976) && pPlayer->GetStandingRank(72) >= STANDING_FRIENDLY) || (pUnit->getEntry() == 3296 && pPlayer->GetStandingRank(76) >= STANDING_FRIENDLY))
     {
-        uint32 EmoteChance = Util::getRandomUInt(100);
+        uint32_t EmoteChance = Util::getRandomUInt(100);
         if (EmoteChance < 33) // 1/3 chance to get Bow from Guard
             pUnit->Emote(EMOTE_ONESHOT_WAVE);
     }
 }
 
-void OnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
+void OnEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)
 {
     if (!pUnit || !pUnit->isAlive() || pUnit->GetAIInterface()->getNextTarget())
         return;
@@ -87,7 +87,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* Plr, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* Plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Plr->castSpell(Plr, 64795, true);
         GossipMenu::senGossipComplete(Plr);
@@ -116,7 +116,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* Plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {

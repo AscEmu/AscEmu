@@ -32,15 +32,15 @@ class SERVER_DECL Arena : public CBattleground
         std::set<GameObject*> m_gates;
         GameObject* m_buffs[2];
         ArenaTeam* m_teams[2];
-        uint32 m_arenateamtype;
-        uint32 m_playersCount[2];
-        std::set<uint32> m_players2[2];
-        std::set<uint32> m_playersAlive;
+        uint32_t m_arenateamtype;
+        uint32_t m_playersCount[2];
+        std::set<uint32_t> m_players2[2];
+        std::set<uint32_t> m_playersAlive;
 
     public:
 
         bool rated_match;
-        Arena(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side);
+        Arena(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side);
         virtual ~Arena();
 
         bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
@@ -56,10 +56,10 @@ class SERVER_DECL Arena : public CBattleground
         void HookOnShadowSight() override;
         void HookGenerateLoot(Player* plr, Object* pCorpse) override;
         void UpdatePlayerCounts();
-        LocationVector GetStartingCoords(uint32 Team) override;
-        uint32 GetNameID() override { return 50; }
+        LocationVector GetStartingCoords(uint32_t Team) override;
+        uint32_t GetNameID() override { return 50; }
         void OnStart() override;
-        bool CanPlayerJoin(Player* plr, uint32 type) override
+        bool CanPlayerJoin(Player* plr, uint32_t type) override
         {
             if (m_started)
                 return false;
@@ -73,9 +73,9 @@ class SERVER_DECL Arena : public CBattleground
         void HookOnMount(Player* /*plr*/) override {}
         void HookFlagDrop(Player* /*plr*/, GameObject* /*obj*/) override {}
         void HookFlagStand(Player* /*plr*/, GameObject* /*obj*/) override {}
-        void HookOnAreaTrigger(Player* plr, uint32 id) override;
+        void HookOnAreaTrigger(Player* plr, uint32_t id) override;
 
-        int32 GetFreeTeam() const
+        int32_t GetFreeTeam() const
         {
             size_t c0 = m_players[0].size() + m_pendPlayers[0].size();
             size_t c1 = m_players[1].size() + m_pendPlayers[1].size();
@@ -87,11 +87,11 @@ class SERVER_DECL Arena : public CBattleground
         }
 
         // Returns the faction of the team
-        uint32 GetTeamFaction(uint32 team);
-        uint8 Rated() override { return rated_match; }
-        uint32 GetArenaTeamType() const { return m_arenateamtype; }
+        uint32_t GetTeamFaction(uint32_t team);
+        uint8_t Rated() override { return rated_match; }
+        uint32_t GetArenaTeamType() const { return m_arenateamtype; }
         ArenaTeam** GetTeams() { return m_teams; }
-        uint32 CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outcome);
+        uint32_t CalcDeltaRating(uint32_t oldRating, uint32_t opponentRating, bool outcome);
 };
 
 

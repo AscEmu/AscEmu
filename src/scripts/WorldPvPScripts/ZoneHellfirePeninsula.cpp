@@ -35,17 +35,17 @@ enum Towers
 };
 
 // Owners of the towers, used for save/restore
-int32 g_towerOwners[TOWER_COUNT] = { -1, -1, -1 };
+int32_t g_towerOwners[TOWER_COUNT] = { -1, -1, -1 };
 
 // global variables
-uint32 g_hordeTowers = 0;
-uint32 g_allianceTowers = 0;
-int32 g_superiorTeam = -1;            // SUPERIORITY
+uint32_t g_hordeTowers = 0;
+uint32_t g_allianceTowers = 0;
+int32_t g_superiorTeam = -1;            // SUPERIORITY
 
 // Fields to update visual view of the client map
-static const uint32 g_hordeStateFields[3] = { WORLDSTATE_HELLFIRE_STADIUM_HORDE, WORLDSTATE_HELLFIRE_OVERLOOK_HORDE, WORLDSTATE_HELLFIRE_BROKENHILL_HORDE };
-static const uint32 g_allianceStateFields[3] = { WORLDSTATE_HELLFIRE_STADIUM_ALLIANCE, WORLDSTATE_HELLFIRE_OVERLOOK_ALLIANCE, WORLDSTATE_HELLFIRE_BROKENHILL_ALLIANCE };
-static const uint32 g_neutralStateFields[3] = { WORLDSTATE_HELLFIRE_STADIUM_NEUTRAL, WORLDSTATE_HELLFIRE_OVERLOOK_NEUTRAL, WORLDSTATE_HELLFIRE_BROKENHILL_NEUTRAL };
+static const uint32_t g_hordeStateFields[3] = { WORLDSTATE_HELLFIRE_STADIUM_HORDE, WORLDSTATE_HELLFIRE_OVERLOOK_HORDE, WORLDSTATE_HELLFIRE_BROKENHILL_HORDE };
+static const uint32_t g_allianceStateFields[3] = { WORLDSTATE_HELLFIRE_STADIUM_ALLIANCE, WORLDSTATE_HELLFIRE_OVERLOOK_ALLIANCE, WORLDSTATE_HELLFIRE_BROKENHILL_ALLIANCE };
+static const uint32_t g_neutralStateFields[3] = { WORLDSTATE_HELLFIRE_STADIUM_NEUTRAL, WORLDSTATE_HELLFIRE_OVERLOOK_NEUTRAL, WORLDSTATE_HELLFIRE_BROKENHILL_NEUTRAL };
 
 // updates clients visual counter, and adds the buffs to players if needed
 inline void UpdateTowerCount(shared_ptr<MapMgr> mgr)
@@ -93,11 +93,11 @@ class HellfirePeninsulaBannerAI : public GameObjectAIScript
 public:
 
     GameObjectPointer  pBanner;
-    map<uint32, uint32> StoredPlayers;
-    uint32 Status;
+    map<uint32_t, uint32_t> StoredPlayers;
+    uint32_t Status;
     const char* ControlPointName;
-    uint32 towerid;
-    uint32 m_bannerStatus;
+    uint32_t towerid;
+    uint32_t m_bannerStatus;
 
     explicit HellfirePeninsulaBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
     {
@@ -126,7 +126,7 @@ public:
 
     void AIUpdate()
     {
-        uint32 plrcounts[2] = { 0, 0 };
+        uint32_t plrcounts[2] = { 0, 0 };
 
         // details:
         //   loop through inrange players, for new ones, send the enable CP worldstate.
@@ -135,8 +135,8 @@ public:
 
         unordered_set<PlayerPointer>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
         unordered_set<PlayerPointer>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
-        map<uint32, uint32>::iterator it2, it3;
-        uint32 timeptr = (uint32)UNIXTIME;
+        map<uint32_t, uint32_t>::iterator it2, it3;
+        uint32_t timeptr = (uint32_t)UNIXTIME;
         bool in_range;
         bool is_valid;
         PlayerPointer plr = nullptr;
@@ -285,7 +285,7 @@ public:
         }
 
         // work out current status for next tick
-        uint32 delta;
+        uint32_t delta;
         if(plrcounts[0] > plrcounts[1])
         {
             delta = plrcounts[0] - plrcounts[1];
@@ -318,10 +318,10 @@ public:
     void SetArtKit()
     {
         // big towers
-        static const uint32 artkits_towers[3][3] = { { 69, 67, 68 }, { 63, 62, 61 }, { 66, 65, 64 }, };
+        static const uint32_t artkits_towers[3][3] = { { 69, 67, 68 }, { 63, 62, 61 }, { 66, 65, 64 }, };
 
         // flag poles
-        static const uint32 artkits_flagpole[3] = { 3, 2, 1 };
+        static const uint32_t artkits_flagpole[3] = { 3, 2, 1 };
 
         // set away - we don't know the artkits anymore :(((
         //_gameobject->SetUInt32Value(GAMEOBJECT_ARTKIT, artkits_flagpole[m_bannerStatus]);
@@ -385,9 +385,9 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Zone Hook
 
-void ZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
+void ZoneHook(PlayerPointer plr, uint32_t Zone, uint32_t OldZone)
 {
-    static uint32 spellids[2] = { HELLFIRE_SUPERORITY_ALLIANCE, HELLFIRE_SUPERORITY_HORDE };
+    static uint32_t spellids[2] = { HELLFIRE_SUPERORITY_ALLIANCE, HELLFIRE_SUPERORITY_HORDE };
     if(Zone == ZONE_HELLFIRE_PENINSULA)
     {
         if(g_superiorTeam == plr->GetTeam())
@@ -405,17 +405,17 @@ void ZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
 
 struct sgodata
 {
-    uint32 entry;
+    uint32_t entry;
     float posx;
     float posy;
     float posz;
     float facing;
     float orientation[4];
-    uint32 state;
-    uint32 flags;
-    uint32 faction;
+    uint32_t state;
+    uint32_t flags;
+    uint32_t faction;
     float scale;
-    uint32 is_banner;
+    uint32_t is_banner;
 };
 
 void SpawnObjects(shared_ptr<MapMgr> pmgr)
@@ -440,7 +440,7 @@ void SpawnObjects(shared_ptr<MapMgr> pmgr)
     };
 
     const sgodata* p, *p2;
-    for(uint32 i = 0; i < 3; ++i)
+    for(uint32_t i = 0; i < 3; ++i)
     {
         p = &godata[i];
         p2 = &godata_banner[i];
@@ -460,7 +460,7 @@ void SpawnObjects(shared_ptr<MapMgr> pmgr)
         pGo->SetUInt32Value(GAMEOBJECT_FACTION, p->faction);
         pGo2->SetUInt32Value(GAMEOBJECT_FACTION, p2->faction);
 
-        for(uint32 j = 0; j < 4; ++j)
+        for(uint32_t j = 0; j < 4; ++j)
         {
             pGo->SetFloatValue(GAMEOBJECT_ROTATION + j, p->orientation[j]);
             pGo2->SetFloatValue(GAMEOBJECT_ROTATION + j, p2->orientation[j]);

@@ -48,8 +48,8 @@
 
 struct WorldState
 {
-    uint32 field;
-    uint32 value;
+    uint32_t field;
+    uint32_t value;
 
     WorldState()
     {
@@ -58,29 +58,29 @@ struct WorldState
     }
 };
 
-typedef std::set<uint32> InstanceBossTrashList;
+typedef std::set<uint32_t> InstanceBossTrashList;
 struct InstanceBossInfo
 {
-    uint32 mapid;
-    uint32 creatureid;
+    uint32_t mapid;
+    uint32_t creatureid;
     InstanceBossTrashList trash;
-    uint32 trashRespawnOverride;
+    uint32_t trashRespawnOverride;
 };
 
 struct GM_Ticket
 {
-    uint64 guid;
-    uint64 playerGuid;
+    uint64_t guid;
+    uint64_t playerGuid;
     std::string name;
-    uint32 level;
-    uint32 map;
+    uint32_t level;
+    uint32_t map;
     float posX;
     float posY;
     float posZ;
     std::string message;
-    uint32 timestamp;
+    uint32_t timestamp;
     bool deleted;
-    uint64 assignedToPlayer;
+    uint64_t assignedToPlayer;
     std::string comment;
 };
 
@@ -101,8 +101,8 @@ enum
 
 struct SpellReplacement
 {
-    uint32 count;
-    uint32* spells;
+    uint32_t count;
+    uint32_t* spells;
 };
 
 class Group;
@@ -135,65 +135,65 @@ struct TrainerSpell
     SpellInfo const* pCastSpell;
     SpellInfo const* pLearnSpell;
     SpellInfo const* pCastRealSpell;
-    uint32 DeleteSpell;
-    uint32 RequiredSpell;
-    uint32 RequiredSkillLine;
-    uint32 RequiredSkillLineValue;
+    uint32_t DeleteSpell;
+    uint32_t RequiredSpell;
+    uint32_t RequiredSkillLine;
+    uint32_t RequiredSkillLineValue;
     bool IsProfession;
-    uint32 Cost;
-    uint32 RequiredLevel;
+    uint32_t Cost;
+    uint32_t RequiredLevel;
 };
 #endif
 
 struct Trainer
 {
-    uint32 SpellCount;
+    uint32_t SpellCount;
     std::vector<TrainerSpell> Spells;
     char* UIMessage;
-    uint32 RequiredSkill;
-    uint32 RequiredSkillLine;
-    uint32 RequiredClass;
-    uint32 RequiredRace;
-    uint32 RequiredRepFaction;
-    uint32 RequiredRepValue;
-    uint32 TrainerType;
-    uint32 Can_Train_Gossip_TextId;
-    uint32 Cannot_Train_GossipTextId;
+    uint32_t RequiredSkill;
+    uint32_t RequiredSkillLine;
+    uint32_t RequiredClass;
+    uint32_t RequiredRace;
+    uint32_t RequiredRepFaction;
+    uint32_t RequiredRepValue;
+    uint32_t TrainerType;
+    uint32_t Can_Train_Gossip_TextId;
+    uint32_t Cannot_Train_GossipTextId;
 };
 
 struct LevelInfo
 {
-    uint32 HP;
-    uint32 Mana;
-    uint32 Stat[5];
+    uint32_t HP;
+    uint32_t Mana;
+    uint32_t Stat[5];
 };
 
 struct ReputationMod
 {
-    uint32 faction[2];
-    int32 value;
-    uint32 replimit;
+    uint32_t faction[2];
+    int32_t value;
+    uint32_t replimit;
 };
 
 struct InstanceReputationMod
 {
-    uint32 mapid;
-    uint32 mob_rep_reward;
-    uint32 mob_rep_limit;
-    uint32 boss_rep_reward;
-    uint32 boss_rep_limit;
-    uint32 faction[2];
+    uint32_t mapid;
+    uint32_t mob_rep_reward;
+    uint32_t mob_rep_limit;
+    uint32_t boss_rep_reward;
+    uint32_t boss_rep_limit;
+    uint32_t faction[2];
 };
 
 struct ReputationModifier
 {
-    uint32 entry;
+    uint32_t entry;
     std::vector<ReputationMod> mods;
 };
 
 struct InstanceReputationModifier
 {
-    uint32 mapid;
+    uint32_t mapid;
     std::vector<InstanceReputationMod> mods;
 };
 
@@ -218,23 +218,23 @@ enum AREATABLE_CATEGORY
 
 struct SimpleEventScript
 {
-    uint32 eventId;
-    uint8 function;
-    uint8 scripttype;
-    uint32 data_1;
-    uint32 data_2;
-    uint32 data_3;
-    uint32 data_4;
-    uint32 data_5;
-    uint32 x;
-    uint32 y;
-    uint32 z;
-    uint32 o;
-    uint32 delay;
-    uint32 nextevent;
+    uint32_t eventId;
+    uint8_t function;
+    uint8_t scripttype;
+    uint32_t data_1;
+    uint32_t data_2;
+    uint32_t data_3;
+    uint32_t data_4;
+    uint32_t data_5;
+    uint32_t x;
+    uint32_t y;
+    uint32_t z;
+    uint32_t o;
+    uint32_t delay;
+    uint32_t nextevent;
 };
 
-enum class ScriptCommands : uint8
+enum class ScriptCommands : uint8_t
 {
     SCRIPT_COMMAND_TALK                 = 0,
     SCRIPT_COMMAND_EMOTE                = 1,
@@ -262,7 +262,7 @@ enum class ScriptCommands : uint8
     SCRIPT_COMMAND_PLAYMOVIE            = 23
 };
 
-enum class EasyScriptTypes : uint8
+enum class EasyScriptTypes : uint8_t
 {
     SCRIPT_TYPE_SPELL_EFFECT            = 1,
     SCRIPT_TYPE_GAMEOBJECT              = 2,
@@ -271,8 +271,8 @@ enum class EasyScriptTypes : uint8
     SCRIPT_TYPE_DUMMY                   = 5
 };
 
-typedef std::multimap<uint32, SimpleEventScript> EventScriptMaps;
-typedef std::multimap<uint32, SimpleEventScript const*> SpellEffectMaps;
+typedef std::multimap<uint32_t, SimpleEventScript> EventScriptMaps;
+typedef std::multimap<uint32_t, SimpleEventScript const*> SpellEffectMaps;
 typedef std::pair<EventScriptMaps::const_iterator, EventScriptMaps::const_iterator> EventScriptBounds;
 typedef std::pair<SpellEffectMaps::const_iterator, SpellEffectMaps::const_iterator> SpellEffectMapBounds;
 
@@ -281,7 +281,7 @@ class Charter
 {
     public:
 
-        uint32 GetNumberOfSlotsByType()
+        uint32_t GetNumberOfSlotsByType()
         {
             switch(CharterType)
             {
@@ -302,28 +302,28 @@ class Charter
             }
         }
 
-        uint32 SignatureCount;
-        uint32* Signatures;
-        uint32 CharterType;
-        uint32 Slots;
-        uint32 LeaderGuid;
-        uint64 ItemGuid;
-        uint32 CharterId;
+        uint32_t SignatureCount;
+        uint32_t* Signatures;
+        uint32_t CharterType;
+        uint32_t Slots;
+        uint32_t LeaderGuid;
+        uint64_t ItemGuid;
+        uint32_t CharterId;
         std::string GuildName;
 
         /************************************************************************/
         /* Developer Fields                                                     */
         /************************************************************************/
-        uint32 PetitionSignerCount;
+        uint32_t PetitionSignerCount;
 
         Charter(Field* fields);
-        Charter(uint32 id, uint32 leader, uint32 type) : CharterType(type), LeaderGuid(leader), CharterId(id)
+        Charter(uint32_t id, uint32_t leader, uint32_t type) : CharterType(type), LeaderGuid(leader), CharterId(id)
         {
             SignatureCount = 0;
             ItemGuid = 0;
             Slots = GetNumberOfSlotsByType();
-            Signatures = new uint32[Slots];
-            memset(Signatures, 0, sizeof(uint32)*Slots);
+            Signatures = new uint32_t[Slots];
+            memset(Signatures, 0, sizeof(uint32_t)*Slots);
             PetitionSignerCount = 0;
         }
 
@@ -335,18 +335,18 @@ class Charter
         void SaveToDB();
         void Destroy();         // When item is deleted.
 
-        void AddSignature(uint32 PlayerGuid);
-        void RemoveSignature(uint32 PlayerGuid);
+        void AddSignature(uint32_t PlayerGuid);
+        void RemoveSignature(uint32_t PlayerGuid);
 
-        inline uint32 GetLeader() { return LeaderGuid; }
-        inline uint32 GetID() { return CharterId; }
+        inline uint32_t GetLeader() { return LeaderGuid; }
+        inline uint32_t GetID() { return CharterId; }
 
         inline bool IsFull() { return (SignatureCount == Slots); }
 };
 
-typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
+typedef std::unordered_map<uint32_t, Player*> PlayerStorageMap;
 typedef std::list<GM_Ticket*> GmTicketList;
-typedef std::map<uint32, InstanceBossInfo*> InstanceBossInfoMap;
+typedef std::map<uint32_t, InstanceBossInfo*> InstanceBossInfoMap;
 
 #if VERSION_STRING > TBC
 typedef std::list<DBC::Structures::AchievementCriteriaEntry const*> AchievementCriteriaEntryList;
@@ -383,7 +383,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
         ~ObjectMgr() = default;
 
     public:
-        //NIT
+        //MIT
         static ObjectMgr& getInstance();
         void initialize();
         void finalize();
@@ -395,35 +395,32 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         void generateDatabaseGossipMenu(uint64_t senderGuid, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
         void generateDatabaseGossipOptionAndSubMenu(uint64_t senderGuid, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
-        //NIT END
+        //MIT END
 
         void LoadCreatureWaypoints();
         void LoadCreatureTimedEmotes();
 
-        TimedEmoteList* GetTimedEmoteList(uint32 spawnid);
+        TimedEmoteList* GetTimedEmoteList(uint32_t spawnid);
 
         // Set typedef's
-        typedef std::unordered_map<uint32, Group*>                      GroupMap;
+        typedef std::unordered_map<uint32_t, Group*>                                            GroupMap;
+        typedef std::unordered_map<uint32_t, DBC::Structures::SkillLineAbilityEntry const*>     SLMap;
+        typedef std::unordered_map<uint32_t, std::vector<CreatureItem>*>                        VendorMap;
+        typedef std::unordered_map<uint32_t, Trainer*>                                          TrainerMap;
+        typedef std::unordered_map<uint32_t, ReputationModifier*>                               ReputationModMap;
+        typedef std::unordered_map<uint32_t, Corpse*>                                           CorpseMap;
+        typedef std::unordered_map<uint32_t, PlayerCache*>                                      PlayerCacheMap;
 
-        // HashMap typedef's
-        typedef std::unordered_map<uint32, DBC::Structures::SkillLineAbilityEntry const*>             SLMap;
-        typedef std::unordered_map<uint32, std::vector<CreatureItem>*>  VendorMap;
-        typedef std::unordered_map<uint32, Trainer*>                    TrainerMap;
-        typedef std::unordered_map<uint32, ReputationModifier*>         ReputationModMap;
-        typedef std::unordered_map<uint32, Corpse*>                     CorpseMap;
-        typedef std::unordered_map<uint32, PlayerCache*>                PlayerCacheMap;
+        typedef std::map<uint32_t, LevelInfo*>                                                  LevelMap;
+        typedef std::map<std::pair<uint32_t, uint32_t>, LevelMap*>                              LevelInfoMap;
 
-        // Map typedef's
-        typedef std::map<uint32, LevelInfo*>                            LevelMap;
-        typedef std::map<std::pair<uint32, uint32>, LevelMap*>          LevelInfoMap;
+        typedef std::map<uint32_t, uint32_t>                                                    PetSpellCooldownMap;
+        typedef std::multimap <uint32_t, uint32_t>                                              BCEntryStorage;
+        typedef std::map<uint32_t, SpellTargetConstraint*>                                      SpellTargetConstraintMap;
 
-        typedef std::map<uint32, uint32>                                PetSpellCooldownMap;
-        typedef std::multimap <uint32, uint32>                          BCEntryStorage;
-        typedef std::map<uint32, SpellTargetConstraint*>                SpellTargetConstraintMap;
-
-        typedef std::unordered_map<uint32, Transporter*>                TransportMap;
-        typedef std::set<Transporter*>                                  TransporterSet;
-        typedef std::map<uint32, TransporterSet>                        TransporterMap;
+        typedef std::unordered_map<uint32_t, Transporter*>                                      TransportMap;
+        typedef std::set<Transporter*>                                                          TransporterSet;
+        typedef std::map<uint32_t, TransporterSet>                                              TransporterMap;
 
         // object holders
         GmTicketList GM_TicketList;
@@ -432,11 +429,11 @@ class SERVER_DECL ObjectMgr : public EventableObject
         FastMutex m_playerCacheLock;
 
         Player* GetPlayer(const char* name, bool caseSensitive = true);
-        Player* GetPlayer(uint32 guid);
+        Player* GetPlayer(uint32_t guid);
 
-        void AddPlayerCache(uint32 guid, PlayerCache* cache);
-        void RemovePlayerCache(uint32 guid);
-        PlayerCache* GetPlayerCache(uint32 guid);
+        void AddPlayerCache(uint32_t guid, PlayerCache* cache);
+        void RemovePlayerCache(uint32_t guid);
+        PlayerCache* GetPlayerCache(uint32_t guid);
         PlayerCache* GetPlayerCache(const char* name, bool caseSensitive = true);
 
         CorpseMap m_corpses;
@@ -444,15 +441,15 @@ class SERVER_DECL ObjectMgr : public EventableObject
         Mutex _TransportLock;
         Mutex m_creatureSetMutex;
 
-        Item* CreateItem(uint32 entry, Player* owner);
-        Item* LoadItem(uint32 lowguid);
+        Item* CreateItem(uint32_t entry, Player* owner);
+        Item* LoadItem(uint32_t lowguid);
 
         // Groups
         Group* GetGroupByLeader(Player* pPlayer);
-        Group* GetGroupById(uint32 id);
+        Group* GetGroupById(uint32_t id);
 
-        uint32 GenerateGroupId();
-        uint32 GenerateGuildId();
+        uint32_t GenerateGroupId();
+        uint32_t GenerateGuildId();
 
         void AddGroup(Group* group)
         {
@@ -472,44 +469,44 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         // player names
         void AddPlayerInfo(PlayerInfo* pn);
-        PlayerInfo* GetPlayerInfo(uint32 guid);
+        PlayerInfo* GetPlayerInfo(uint32_t guid);
         PlayerInfo* GetPlayerInfoByName(const char* name);
         void RenamePlayerInfo(PlayerInfo* pn, const char* oldname, const char* newname);
-        void DeletePlayerInfo(uint32 guid);
+        void DeletePlayerInfo(uint32_t guid);
 
         //Corpse Stuff
-        Corpse* GetCorpseByOwner(uint32 ownerguid);
+        Corpse* GetCorpseByOwner(uint32_t ownerguid);
         void CorpseCollectorUnload();
         void CorpseAddEventDespawn(Corpse* pCorpse);
         void DelinkPlayerCorpses(Player* pOwner);
         Corpse* CreateCorpse();
         void AddCorpse(Corpse*);
         void RemoveCorpse(Corpse*);
-        Corpse* GetCorpse(uint32 corpseguid);
+        Corpse* GetCorpse(uint32_t corpseguid);
 
         // Gm Tickets
         void AddGMTicket(GM_Ticket* ticket, bool startup = false);
         void UpdateGMTicket(GM_Ticket* ticket);
-        void RemoveGMTicketByPlayer(uint64 playerGuid);
-        void RemoveGMTicket(uint64 ticketGuid);
-        void CloseTicket(uint64 ticketGuid);
-        void DeleteGMTicketPermanently(uint64 ticketGuid);
+        void RemoveGMTicketByPlayer(uint64_t playerGuid);
+        void RemoveGMTicket(uint64_t ticketGuid);
+        void CloseTicket(uint64_t ticketGuid);
+        void DeleteGMTicketPermanently(uint64_t ticketGuid);
         void DeleteAllRemovedGMTickets();
-        GM_Ticket* GetGMTicket(uint64 ticketGuid);
-        GM_Ticket* GetGMTicketByPlayer(uint64 playerGuid);
+        GM_Ticket* GetGMTicket(uint64_t ticketGuid);
+        GM_Ticket* GetGMTicketByPlayer(uint64_t playerGuid);
 
-        DBC::Structures::SkillLineAbilityEntry const* GetSpellSkill(uint32 id);
-        SpellInfo const* GetNextSpellRank(SpellInfo const* sp, uint32 level);
+        DBC::Structures::SkillLineAbilityEntry const* GetSpellSkill(uint32_t id);
+        SpellInfo const* GetNextSpellRank(SpellInfo const* sp, uint32_t level);
 
         //Vendors
-        std::vector<CreatureItem> *GetVendorList(uint32 entry);
-        void SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_);
+        std::vector<CreatureItem> *GetVendorList(uint32_t entry);
+        void SetVendorList(uint32_t Entry, std::vector<CreatureItem>* list_);
 
-        Pet* CreatePet(uint32 entry);
+        Pet* CreatePet(uint32_t entry);
 
-        uint32 GenerateArenaTeamId();
+        uint32_t GenerateArenaTeamId();
 
-        Player* CreatePlayer(uint8 _class);
+        Player* CreatePlayer(uint8_t _class);
         PlayerStorageMap _players;
         RWLock _playerslock;
 
@@ -521,12 +518,12 @@ class SERVER_DECL ObjectMgr : public EventableObject
 #if VERSION_STRING > TBC
         void LoadCompletedAchievements();
         AchievementRewardsMap AchievementRewards;
-        AchievementReward const * GetAchievementReward(uint32 entry, uint8 gender)
+        AchievementReward const * GetAchievementReward(uint32_t entry, uint8_t gender)
         {
             AchievementRewardsMapBounds bounds = AchievementRewards.equal_range(entry);
             for (AchievementRewardsMap::const_iterator iter = bounds.first; iter != bounds.second; ++iter)
             {
-                if (iter->second.gender == 2 || uint8(iter->second.gender) == gender)
+                if (iter->second.gender == 2 || uint8_t(iter->second.gender) == gender)
                     return &iter->second;
             }
             return NULL;
@@ -536,7 +533,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
 #endif
         void LoadPlayersInfo();
 
-        Corpse* LoadCorpse(uint32 guid);
+        Corpse* LoadCorpse(uint32_t guid);
         void LoadCorpses(MapMgr* mgr);
         void LoadGMTickets();
         void SaveGMTicket(GM_Ticket* ticket, QueryBuffer* buf);
@@ -547,14 +544,14 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         void LoadReputationModifierTable(const char* tablename, ReputationModMap* dmap);
         void LoadReputationModifiers();
-        ReputationModifier* GetReputationModifier(uint32 entry_id, uint32 faction_id);
+        ReputationModifier* GetReputationModifier(uint32_t entry_id, uint32_t faction_id);
 
         void SetHighestGuids();
-        uint32 GenerateLowGuid(uint32 guidhigh);
-        uint32 GenerateMailID();
-        uint32 GenerateReportID();
-        uint32 GenerateTicketID();
-        uint32 GenerateEquipmentSetID();
+        uint32_t GenerateLowGuid(uint32_t guidhigh);
+        uint32_t GenerateMailID();
+        uint32_t GenerateReportID();
+        uint32_t GenerateTicketID();
+        uint32_t GenerateEquipmentSetID();
 
         /////////////////////////////////////////////////////////////////////////////////////////////
         /// Transport Handler                                                                     ///
@@ -564,7 +561,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
         void LoadTransports();
 
         // Load Transport in Instance
-        Transporter*LoadTransportInInstance(MapMgr *instance, uint32 goEntry, uint32 period);
+        Transporter*LoadTransportInInstance(MapMgr *instance, uint32_t goEntry, uint32_t period);
 
         // Unloads Transporter from MapMgr
         void UnloadTransportFromInstance(Transporter *t);
@@ -592,44 +589,44 @@ class SERVER_DECL ObjectMgr : public EventableObject
 #endif
 
         void LoadTrainers();
-        Trainer* GetTrainer(uint32 Entry);
+        Trainer* GetTrainer(uint32_t Entry);
 
         void LoadCreatureAIAgents();
 
-        LevelInfo* GetLevelInfo(uint32 Race, uint32 Class, uint32 Level);
+        LevelInfo* GetLevelInfo(uint32_t Race, uint32_t Class, uint32_t Level);
         void GenerateLevelUpInfo();
 
-        uint32 GetPetSpellCooldown(uint32 SpellId);
+        uint32_t GetPetSpellCooldown(uint32_t SpellId);
         void LoadPetSpellCooldowns();
-        Movement::WayPointMap* GetWayPointMap(uint32 spawnid);
+        Movement::WayPointMap* GetWayPointMap(uint32_t spawnid);
 
         void ResetDailies();
 
-        uint32 GenerateCreatureSpawnID();
-        uint32 GenerateGameObjectSpawnID();
+        uint32_t GenerateCreatureSpawnID();
+        uint32_t GenerateGameObjectSpawnID();
 
-        Transporter* GetTransporter(uint32 guid);
-        Transporter* GetTransportOrThrow(uint32 guid);
-        Transporter* GetTransporterByEntry(uint32 entry);
+        Transporter* GetTransporter(uint32_t guid);
+        Transporter* GetTransportOrThrow(uint32_t guid);
+        Transporter* GetTransporterByEntry(uint32_t entry);
 
-        Charter* CreateCharter(uint32 LeaderGuid, CharterTypes Type);
-        Charter* GetCharter(uint32 CharterId, CharterTypes Type);
+        Charter* CreateCharter(uint32_t LeaderGuid, CharterTypes Type);
+        Charter* GetCharter(uint32_t CharterId, CharterTypes Type);
         void RemoveCharter(Charter*);
         void LoadGuildCharters();
         Charter* GetCharterByName(std::string & charter_name, CharterTypes Type);
-        Charter* GetCharterByItemGuid(uint64 guid);
-        Charter* GetCharterByGuid(uint64 playerguid, CharterTypes type);
+        Charter* GetCharterByItemGuid(uint64_t guid);
+        Charter* GetCharterByGuid(uint64_t playerguid, CharterTypes type);
 
-        ArenaTeam* GetArenaTeamByName(std::string & name, uint32 Type);
-        ArenaTeam* GetArenaTeamById(uint32 id);
-        ArenaTeam* GetArenaTeamByGuid(uint32 guid, uint32 Type);
+        ArenaTeam* GetArenaTeamByName(std::string & name, uint32_t Type);
+        ArenaTeam* GetArenaTeamById(uint32_t id);
+        ArenaTeam* GetArenaTeamByGuid(uint32_t guid, uint32_t Type);
         void UpdateArenaTeamRankings();
         void UpdateArenaTeamWeekly();
         void ResetArenaTeamRatings();
         void LoadArenaTeams();
 
-        std::unordered_map<uint32, ArenaTeam*> m_arenaTeamMap[3];
-        std::unordered_map<uint32, ArenaTeam*> m_arenaTeams;
+        std::unordered_map<uint32_t, ArenaTeam*> m_arenaTeamMap[3];
+        std::unordered_map<uint32_t, ArenaTeam*> m_arenaTeams;
 
         void RemoveArenaTeam(ArenaTeam* team);
         void AddArenaTeam(ArenaTeam* team);
@@ -638,7 +635,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
         bool HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim);
         void LoadInstanceReputationModifiers();
 
-        inline bool IsSpellDisabled(uint32 spellid)
+        inline bool IsSpellDisabled(uint32_t spellid)
         {
             if (m_disabled_spells.find(spellid) != m_disabled_spells.end())
                 return true;
@@ -648,27 +645,27 @@ class SERVER_DECL ObjectMgr : public EventableObject
         void LoadDisabledSpells();
         void ReloadDisabledSpells();
         void LoadSpellTargetConstraints();
-        SpellTargetConstraint* GetSpellTargetConstraintForSpell(uint32 spellid);
+        SpellTargetConstraint* GetSpellTargetConstraintForSpell(uint32_t spellid);
 
         ///////// Event Scripts ////////////////////
         void LoadEventScripts();
-        EventScriptBounds GetEventScripts(uint32 event_id) const;
-        SpellEffectMapBounds GetSpellEffectBounds(uint32 data_1) const;
-        bool CheckforScripts(Player* plr, uint32 event_id);
-        bool CheckforDummySpellScripts(Player* plr, uint32 data_1);
-        void EventScriptsUpdate(Player* plr, uint32 next_event);
+        EventScriptBounds GetEventScripts(uint32_t event_id) const;
+        SpellEffectMapBounds GetSpellEffectBounds(uint32_t data_1) const;
+        bool CheckforScripts(Player* plr, uint32_t event_id);
+        bool CheckforDummySpellScripts(Player* plr, uint32_t data_1);
+        void EventScriptsUpdate(Player* plr, uint32_t next_event);
         ////////////////////////////////////////////
 
 #if VERSION_STRING > TBC
         void LoadAchievementCriteriaList();
         AchievementCriteriaEntryList const & GetAchievementCriteriaByType(AchievementCriteriaTypes type);
-        std::set<uint32> allCompletedAchievements;
+        std::set<uint32_t> allCompletedAchievements;
 #endif
 
         void LoadVehicleAccessories();
-        std::vector< VehicleAccessoryEntry* >* GetVehicleAccessories(uint32 creature_entry);
+        std::vector< VehicleAccessoryEntry* >* GetVehicleAccessories(uint32_t creature_entry);
         void LoadWorldStateTemplates();
-        std::multimap< uint32, WorldState >* GetWorldStatesForMap(uint32 map) const;
+        std::multimap< uint32_t, WorldState >* GetWorldStatesForMap(uint32_t map) const;
 
     private:
 
@@ -704,18 +701,18 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         ReputationModMap m_reputation_faction;
         ReputationModMap m_reputation_creature;
-        std::unordered_map<uint32, InstanceReputationModifier*> m_reputation_instance;
+        std::unordered_map<uint32_t, InstanceReputationModifier*> m_reputation_instance;
 
-        std::unordered_map<uint32, Charter*> m_charters[NUM_CHARTER_TYPES];
+        std::unordered_map<uint32_t, Charter*> m_charters[NUM_CHARTER_TYPES];
 
-        std::set<uint32> m_disabled_spells;
+        std::set<uint32_t> m_disabled_spells;
 
-        uint64 TransportersCount;
-        std::unordered_map<uint32, PlayerInfo*> m_playersinfo;
+        uint64_t TransportersCount;
+        std::unordered_map<uint32_t, PlayerInfo*> m_playersinfo;
         PlayerNameStringIndexMap m_playersInfoByName;
 
-        std::unordered_map<uint32, Movement::WayPointMap*> mWayPointMap;           /// stored by spawnid
-        std::unordered_map<uint32, TimedEmoteList*> m_timedemotes;      /// stored by spawnid
+        std::unordered_map<uint32_t, Movement::WayPointMap*> mWayPointMap; // stored by spawnid
+        std::unordered_map<uint32_t, TimedEmoteList*> m_timedemotes;       // stored by spawnid
 
 
         // Group List
@@ -734,8 +731,8 @@ class SERVER_DECL ObjectMgr : public EventableObject
 #if VERSION_STRING > TBC
         AchievementCriteriaEntryList m_AchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
 #endif
-        std::map< uint32, std::vector<VehicleAccessoryEntry*>* > vehicle_accessories;
-        std::map< uint32, std::multimap<uint32, WorldState>* > worldstate_templates;
+        std::map< uint32_t, std::vector<VehicleAccessoryEntry*>* > vehicle_accessories;
+        std::map< uint32_t, std::multimap<uint32_t, WorldState>* > worldstate_templates;
 };
 
 #define sObjectMgr ObjectMgr::getInstance()

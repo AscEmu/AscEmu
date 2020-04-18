@@ -98,11 +98,11 @@ enum AccountFlags
 class BasicTaskExecutor : public ThreadBase
 {
     CallbackBase* cb;
-    uint32 priority;
+    uint32_t priority;
 
 public:
 
-    BasicTaskExecutor(CallbackBase* Callback, uint32 Priority) : cb(Callback), priority(Priority)
+    BasicTaskExecutor(CallbackBase* Callback, uint32_t Priority) : cb(Callback), priority(Priority)
     {}
     ~BasicTaskExecutor()
     {

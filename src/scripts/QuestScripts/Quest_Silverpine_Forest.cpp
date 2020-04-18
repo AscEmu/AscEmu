@@ -26,7 +26,7 @@ class Deathstalker_Erland : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(Deathstalker_Erland);
     explicit Deathstalker_Erland(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 9)
         {

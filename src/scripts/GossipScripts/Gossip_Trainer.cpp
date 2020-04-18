@@ -23,9 +23,9 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
-        uint32 textid;
+        uint32_t textid;
         if (1 == Id)
         {
             if (!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
@@ -58,7 +58,7 @@ public:
                 textid = 20008;
             else
             {
-                int32 unlearnGold = 0;
+                int32_t unlearnGold = 0;
                 if (plr->getLevel() <= 50)
                     unlearnGold = 250000;
                 if (plr->getLevel() > 50 && plr->getLevel() <= 65)
@@ -90,9 +90,9 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
-        uint32 textid;
+        uint32_t textid;
         if (1 == Id)
         {
             if (!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
@@ -125,7 +125,7 @@ public:
                 textid = 20008;
             else
             {
-                int32 unlearnGold = 0;
+                int32_t unlearnGold = 0;
                 if (plr->getLevel() <= 50)
                     unlearnGold = 250000;
                 if (plr->getLevel() > 50 && plr->getLevel() <= 65)
@@ -154,9 +154,9 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
-        uint32 textid;
+        uint32_t textid;
         if (1 == Id)
         {
             if (!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
@@ -189,7 +189,7 @@ public:
                 textid = 20008;
             else
             {
-                int32 unlearnGold = 0;
+                int32_t unlearnGold = 0;
                 if (plr->getLevel() <= 50)
                     unlearnGold = 250000;
                 if (plr->getLevel() > 50 && plr->getLevel() <= 65)

@@ -37,14 +37,14 @@ Vehicle::Vehicle()
 
 Vehicle::~Vehicle()
 {
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
         delete seats[i];
 
     installed_accessories.clear();
 }
 
 
-void Vehicle::Load(Unit* vehicleOwner, uint32 creatureEntry, uint32 vehicleid)
+void Vehicle::Load(Unit* vehicleOwner, uint32_t creatureEntry, uint32_t vehicleid)
 {
     if (vehicleOwner == nullptr)
     {
@@ -60,9 +60,9 @@ void Vehicle::Load(Unit* vehicleOwner, uint32 creatureEntry, uint32 vehicleid)
     }
     else
     {
-        for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+        for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
         {
-            uint32 seatid = vehicle_info->seatID[i];
+            uint32_t seatid = vehicle_info->seatID[i];
 
             if (seatid != 0)
             {
@@ -103,7 +103,7 @@ void Vehicle::Load(Unit* vehicleOwner, uint32 creatureEntry, uint32 vehicleid)
             break;
     }
 
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
         if ((seats[i] != nullptr) && seats[i]->Usable() && (!seats[i]->HasPassenger()))
             freeseats++;
 
@@ -120,8 +120,8 @@ bool Vehicle::HasEmptySeat()
 void Vehicle::AddPassenger(Unit* passenger)
 {
     // find seat
-    uint32 seatid = MAX_VEHICLE_SEATS;
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    uint32_t seatid = MAX_VEHICLE_SEATS;
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
         if ((seats[i] != nullptr) && seats[i]->Usable() && (!seats[i]->HasPassenger()))
         {
             seatid = i;
@@ -135,7 +135,7 @@ void Vehicle::AddPassenger(Unit* passenger)
     AddPassengerToSeat(passenger, seatid);
 }
 
-void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
+void Vehicle::AddPassengerToSeat(Unit* passenger, uint32_t seatid)
 {
 #if VERSION_STRING > TBC
     if (seats[seatid]->HasPassenger())
@@ -191,7 +191,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
         if (seats[seatid]->Controller())
         {
             pack.Initialize(SMSG_CLIENT_CONTROL_UPDATE);
-            pack << owner->GetNewGUID() << uint8(1);
+            pack << owner->GetNewGUID() << uint8_t(1);
             static_cast<Player*>(passenger)->sendClientControlPacket(owner, 1);
 
             passenger->setCharmGuid(owner->getGuid());
@@ -269,8 +269,8 @@ void Vehicle::EjectPassenger(Unit* passenger)
         return;
 
     // find the seat the passenger is on
-    uint32 seatid = MAX_VEHICLE_SEATS;
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    uint32_t seatid = MAX_VEHICLE_SEATS;
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
         if ((seats[i] != nullptr) && seats[i]->Usable() && seats[i]->HasPassenger() && (seats[i]->GetPassengerGUID() == passenger->getGuid()))
         {
             seatid = i;
@@ -283,7 +283,7 @@ void Vehicle::EjectPassenger(Unit* passenger)
     EjectPassengerFromSeat(seatid);
 }
 
-void Vehicle::EjectPassengerFromSeat(uint32 seatid)
+void Vehicle::EjectPassengerFromSeat(uint32_t seatid)
 {
     if (!seats[seatid]->Usable())
         return;
@@ -378,7 +378,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
 
 void Vehicle::EjectAllPassengers()
 {
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
         if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() != 0))
         {
             Unit* u = owner->GetMapMgr()->GetUnit(seats[i]->GetPassengerGUID());
@@ -395,10 +395,10 @@ void Vehicle::EjectAllPassengers()
         }
 }
 
-void Vehicle::MovePassengerToSeat(Unit* passenger, uint32 seat)
+void Vehicle::MovePassengerToSeat(Unit* passenger, uint32_t seat)
 {
-    uint32 oldseatid = 0;
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    uint32_t oldseatid = 0;
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
         if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == passenger->getGuid()))
         {
             oldseatid = i;
@@ -424,8 +424,8 @@ void Vehicle::MovePassengerToSeat(Unit* passenger, uint32 seat)
 
 void Vehicle::MovePassengerToNextSeat(Unit* passenger)
 {
-    uint32 oldseatid = 0;
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    uint32_t oldseatid = 0;
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
         if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == passenger->getGuid()))
         {
             oldseatid = i;
@@ -437,8 +437,8 @@ void Vehicle::MovePassengerToNextSeat(Unit* passenger)
         return;*/
 
     // Now find a next seat if possible
-    uint32 newseatid = oldseatid;
-    for (uint32 i = oldseatid + 1; i < MAX_VEHICLE_SEATS; i++)
+    uint32_t newseatid = oldseatid;
+    for (uint32_t i = oldseatid + 1; i < MAX_VEHICLE_SEATS; i++)
         if ((seats[i] != nullptr) && (seats[i]->Usable()) && (!seats[i]->HasPassenger()))
         {
             newseatid = i;
@@ -455,8 +455,8 @@ void Vehicle::MovePassengerToNextSeat(Unit* passenger)
 
 void Vehicle::MovePassengerToPrevSeat(Unit* passenger)
 {
-    uint32 oldseatid = MAX_VEHICLE_SEATS;
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    uint32_t oldseatid = MAX_VEHICLE_SEATS;
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
         if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == passenger->getGuid()))
         {
             oldseatid = i;
@@ -468,11 +468,11 @@ void Vehicle::MovePassengerToPrevSeat(Unit* passenger)
         return;
 
     // Now find a previous seat if possible
-    uint32 newseatid = oldseatid;
-    for (int32 i = static_cast<int32>(oldseatid)-1; i >= 0; i--)
+    uint32_t newseatid = oldseatid;
+    for (int32_t i = static_cast<int32_t>(oldseatid)-1; i >= 0; i--)
         if ((seats[i] != nullptr) && (seats[i]->Usable()) && (!seats[i]->HasPassenger()))
         {
-            newseatid = static_cast<uint32>(i);
+            newseatid = static_cast<uint32_t>(i);
             break;
         }
 
@@ -484,9 +484,9 @@ void Vehicle::MovePassengerToPrevSeat(Unit* passenger)
     AddPassengerToSeat(passenger, newseatid);
 }
 
-uint32 Vehicle::GetSeatEntryForPassenger(Unit* passenger)
+uint32_t Vehicle::GetSeatEntryForPassenger(Unit* passenger)
 {
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
         if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == passenger->getGuid()))
             return seats[i]->GetSeatInfo()->ID;
 
@@ -495,7 +495,7 @@ uint32 Vehicle::GetSeatEntryForPassenger(Unit* passenger)
 
 bool Vehicle::IsControler(Unit* aura)
 {
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
         if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == aura->getGuid()))
             return seats[i]->GetSeatInfo()->IsController();
 
@@ -504,7 +504,7 @@ bool Vehicle::IsControler(Unit* aura)
 
 void Vehicle::MovePassengers(float x, float y, float z, float o)
 {
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
     {
         if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() != 0))
         {
@@ -517,10 +517,10 @@ void Vehicle::MovePassengers(float x, float y, float z, float o)
     }
 }
 
-uint32 Vehicle::GetPassengerCount() const{
-    uint32 count = 0;
+uint32_t Vehicle::GetPassengerCount() const{
+    uint32_t count = 0;
 
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
     {
         if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() != 0))
         {
@@ -538,8 +538,8 @@ uint32 Vehicle::GetPassengerCount() const{
     return count;
 }
 
-uint16 Vehicle::GetMoveFlags2() const{
-    uint16 flags2 = 0;
+uint16_t Vehicle::GetMoveFlags2() const{
+    uint16_t flags2 = 0;
 
     if (vehicle_info->flags & VEHICLE_FLAG_NO_STRAFE)
         flags2 |= MOVEFLAG2_NO_STRAFING;
@@ -599,7 +599,7 @@ void Vehicle::InstallAccessories()
 
 void Vehicle::RemoveAccessories()
 {
-    for (std::vector< uint64 >::iterator itr = installed_accessories.begin(); itr != installed_accessories.end(); ++itr)
+    for (std::vector< uint64_t >::iterator itr = installed_accessories.begin(); itr != installed_accessories.end(); ++itr)
     {
         Unit* u = owner->GetMapMgr()->GetUnit(*itr);
         if (u == nullptr)
@@ -615,9 +615,9 @@ void Vehicle::RemoveAccessories()
     installed_accessories.clear();
 }
 
-bool Vehicle::HasAccessoryWithGUID(uint64 guid)
+bool Vehicle::HasAccessoryWithGUID(uint64_t guid)
 {
-    std::vector< uint64 >::iterator itr =
+    std::vector< uint64_t >::iterator itr =
         std::find(installed_accessories.begin(), installed_accessories.end(), guid);
 
     if (itr == installed_accessories.end())
@@ -626,9 +626,9 @@ bool Vehicle::HasAccessoryWithGUID(uint64 guid)
         return true;
 }
 
-uint32 Vehicle::GetPassengerSeatId(uint64 guid)
+uint32_t Vehicle::GetPassengerSeatId(uint64_t guid)
 {
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; i++)
         if ((seats[i] != nullptr && seats[i]->GetPassengerGUID() == guid))
             return seats[i]->GetSeatInfo()->ID;
     return 0;

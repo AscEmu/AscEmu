@@ -36,17 +36,17 @@ enum Towers
 };
 
 // Owners of the towers, used for save/restore
-int32 TFg_towerOwners[TOWER_COUNT] = { -1, -1, -1, -1, -1 };
+int32_t TFg_towerOwners[TOWER_COUNT] = { -1, -1, -1, -1, -1 };
 
 // global variables
-uint32 TFg_hordeTowers = 0;
-uint32 TFg_allianceTowers = 0;
-int32 TFg_superiorTeam = -1;            // SUPERIORITY
+uint32_t TFg_hordeTowers = 0;
+uint32_t TFg_allianceTowers = 0;
+int32_t TFg_superiorTeam = -1;            // SUPERIORITY
 
 // Fields to update visual view of the client map
-static const uint32 g_hordeStateFields[5]    = { WORLDSTATE_TEROKKAR_TOWER1_HORDE,    WORLDSTATE_TEROKKAR_TOWER2_HORDE,    WORLDSTATE_TEROKKAR_TOWER3_HORDE,    WORLDSTATE_TEROKKAR_TOWER4_HORDE,    WORLDSTATE_TEROKKAR_TOWER5_HORDE };
-static const uint32 g_allianceStateFields[5] = { WORLDSTATE_TEROKKAR_TOWER1_ALLIANCE, WORLDSTATE_TEROKKAR_TOWER2_ALLIANCE, WORLDSTATE_TEROKKAR_TOWER3_ALLIANCE, WORLDSTATE_TEROKKAR_TOWER4_ALLIANCE, WORLDSTATE_TEROKKAR_TOWER5_ALLIANCE };
-static const uint32 g_neutralStateFields[5]  = { WORLDSTATE_TEROKKAR_TOWER1_NEUTRAL,  WORLDSTATE_TEROKKAR_TOWER2_NEUTRAL,  WORLDSTATE_TEROKKAR_TOWER3_NEUTRAL,  WORLDSTATE_TEROKKAR_TOWER4_NEUTRAL,  WORLDSTATE_TEROKKAR_TOWER5_NEUTRAL };
+static const uint32_t g_hordeStateFields[5]    = { WORLDSTATE_TEROKKAR_TOWER1_HORDE,    WORLDSTATE_TEROKKAR_TOWER2_HORDE,    WORLDSTATE_TEROKKAR_TOWER3_HORDE,    WORLDSTATE_TEROKKAR_TOWER4_HORDE,    WORLDSTATE_TEROKKAR_TOWER5_HORDE };
+static const uint32_t g_allianceStateFields[5] = { WORLDSTATE_TEROKKAR_TOWER1_ALLIANCE, WORLDSTATE_TEROKKAR_TOWER2_ALLIANCE, WORLDSTATE_TEROKKAR_TOWER3_ALLIANCE, WORLDSTATE_TEROKKAR_TOWER4_ALLIANCE, WORLDSTATE_TEROKKAR_TOWER5_ALLIANCE };
+static const uint32_t g_neutralStateFields[5]  = { WORLDSTATE_TEROKKAR_TOWER1_NEUTRAL,  WORLDSTATE_TEROKKAR_TOWER2_NEUTRAL,  WORLDSTATE_TEROKKAR_TOWER3_NEUTRAL,  WORLDSTATE_TEROKKAR_TOWER4_NEUTRAL,  WORLDSTATE_TEROKKAR_TOWER5_NEUTRAL };
 
 // updates clients visual counter, and adds the buffs to players if needed
 inline void UpdateTowerCount(shared_ptr<MapMgr> mgr)
@@ -92,11 +92,11 @@ public:
 
     explicit TerokkarForestBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
     {
-        map<uint32, uint32> StoredPlayers;
-        uint32 Status;
+        map<uint32_t, uint32_t> StoredPlayers;
+        uint32_t Status;
         const char* ControlPointName;
-        uint32 towerid;
-        uint32 m_bannerStatus;
+        uint32_t towerid;
+        uint32_t m_bannerStatus;
 
         m_bannerStatus = BANNER_STATUS_NEUTRAL;
         Status = 50;
@@ -131,7 +131,7 @@ public:
 
     void AIUpdate()
     {
-        uint32 plrcounts[2] = { 0, 0 };
+        uint32_t plrcounts[2] = { 0, 0 };
 
         // details:
         //   loop through inrange players, for new ones, send the enable CP worldstate.
@@ -140,8 +140,8 @@ public:
 
         unordered_set<PlayerPointer>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
         unordered_set<PlayerPointer>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
-        map<uint32, uint32>::iterator it2, it3;
-        uint32 timeptr = (uint32)UNIXTIME;
+        map<uint32_t, uint32_t>::iterator it2, it3;
+        uint32_t timeptr = (uint32_t)UNIXTIME;
         bool in_range;
         bool is_valid;
         PlayerPointer plr;
@@ -290,7 +290,7 @@ public:
         }
 
         // work out current status for next tick
-        uint32 delta;
+        uint32_t delta;
         if(plrcounts[0] > plrcounts[1])
         {
             delta = plrcounts[0] - plrcounts[1];
@@ -322,7 +322,7 @@ public:
 
     void SetArtKit()
     {
-    static const uint32 artkits_flagpole[3] = { 3, 2, 1 };
+    static const uint32_t artkits_flagpole[3] = { 3, 2, 1 };
 //        _gameobject->SetUInt32Value(GAMEOBJECT_ARTKIT, artkits_flagpole[m_bannerStatus]);
     }
 
@@ -382,7 +382,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Zone Hook
 
-void TFZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
+void TFZoneHook(PlayerPointer plr, uint32_t Zone, uint32_t OldZone)
 {
     if(!plr)
         return;
@@ -404,17 +404,17 @@ void TFZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
 
 struct sgodata
 {
-    uint32 entry;
+    uint32_t entry;
     float posx;
     float posy;
     float posz;
     float facing;
     float orientation[4];
-    uint32 state;
-    uint32 flags;
-    uint32 faction;
+    uint32_t state;
+    uint32_t flags;
+    uint32_t faction;
     float scale;
-    uint32 is_banner;
+    uint32_t is_banner;
 };
 
 void TFSpawnObjects(shared_ptr<MapMgr> pmgr)
@@ -432,7 +432,7 @@ void TFSpawnObjects(shared_ptr<MapMgr> pmgr)
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     };
 
-    uint32 i;
+    uint32_t i;
     const sgodata* p;
     for(i = 0; i < 5; ++i)
     {
@@ -447,7 +447,7 @@ void TFSpawnObjects(shared_ptr<MapMgr> pmgr)
         pGo->SetUInt32Value(GAMEOBJECT_FLAGS, p->flags);
         pGo->SetUInt32Value(GAMEOBJECT_FACTION, p->faction);
 
-        for(uint32 j = 0; j < 4; ++j)
+        for(uint32_t j = 0; j < 4; ++j)
         {
             pGo->SetFloatValue(GAMEOBJECT_ROTATION + j, p->orientation[j]);
         }

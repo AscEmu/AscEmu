@@ -218,6 +218,7 @@ void LogonConsole::TranslateHelp(char* /*str*/)
 {
     ProcessHelp(NULL);
 }
+
 void LogonConsole::ProcessHelp(char* command)
 {
     if (command == NULL)
@@ -406,7 +407,7 @@ void LogonConsole::AccountChangePassword(char* str)
     std::cout << "Account password changed." << std::endl;
 }
 
-void LogonConsole::checkAccountName(std::string name, uint8 type)
+void LogonConsole::checkAccountName(std::string name, uint8_t type)
 {
     std::string aname(name);
 

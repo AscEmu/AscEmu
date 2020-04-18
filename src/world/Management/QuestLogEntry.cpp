@@ -46,7 +46,7 @@ QuestLogEntry::~QuestLogEntry()
     
 }
 
-void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint16 slot)
+void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint16_t slot)
 {
     ARCEMU_ASSERT(quest != nullptr);
     ARCEMU_ASSERT(plr != nullptr);
@@ -57,7 +57,7 @@ void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint16 slot)
 
     iscastquest = false;
     isemotequest = false;
-    for (uint8 i = 0; i < 4; ++i)
+    for (uint8_t i = 0; i < 4; ++i)
     {
         if (quest->required_spell[i] != 0)
         {
@@ -85,7 +85,7 @@ void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint16 slot)
     memset(m_explored_areas, 0, 4 * 4);
 
     if (m_quest->time > 0)
-        expirytime = static_cast<uint32>(UNIXTIME + m_quest->time / 1000);
+        expirytime = static_cast<uint32_t>(UNIXTIME + m_quest->time / 1000);
     else
         expirytime = 0;
 
@@ -137,14 +137,14 @@ void QuestLogEntry::SaveToDB(QueryBuffer* buf)
     ss.rdbuf()->str("");
 
     ss << "INSERT INTO questlog VALUES(";
-    ss << m_plr->getGuidLow() << "," << m_quest->id << "," << uint32(m_slot) << "," << expirytime;
-    for (uint8 i = 0; i < 4; ++i)
+    ss << m_plr->getGuidLow() << "," << m_quest->id << "," << uint32_t(m_slot) << "," << expirytime;
+    for (uint8_t i = 0; i < 4; ++i)
         ss << "," << m_explored_areas[i];
 
-    for (uint8 i = 0; i < 4; ++i)
+    for (uint8_t i = 0; i < 4; ++i)
         ss << "," << m_mobcount[i];
 
-    ss << "," << uint32(completed);
+    ss << "," << uint32_t(completed);
 
     ss << ")";
 
@@ -161,14 +161,14 @@ bool QuestLogEntry::LoadFromDB(Field* fields)
     ARCEMU_ASSERT(m_plr && m_quest);
     expirytime = fields[f].GetUInt32();
     f++;
-    for (uint8 i = 0; i < 4; ++i)
+    for (uint8_t i = 0; i < 4; ++i)
     {
         m_explored_areas[i] = fields[f].GetUInt32();
         f++;
         CALL_QUESTSCRIPT_EVENT(this, OnExploreArea)(m_explored_areas[i], m_plr, this);
     }
 
-    for (uint8 i = 0; i < 4; ++i)
+    for (uint8_t i = 0; i < 4; ++i)
     {
         m_mobcount[i] = fields[f].GetUInt32();
         f++;
@@ -190,7 +190,7 @@ bool QuestLogEntry::LoadFromDB(Field* fields)
 
 bool QuestLogEntry::CanBeFinished()
 {
-    uint32 i;
+    uint32_t i;
 
     if (m_quest->iscompletedbyspelleffect && (completed == QUEST_INCOMPLETE))
         return false;
@@ -238,7 +238,7 @@ bool QuestLogEntry::CanBeFinished()
     }
 
     //Check for Gold & AreaTrigger Requirements
-    if (m_quest->reward_money < 0 && m_plr->getCoinage() < uint32(-m_quest->reward_money))
+    if (m_quest->reward_money < 0 && m_plr->getCoinage() < uint32_t(-m_quest->reward_money))
         return false;
 
     for (i = 0; i < 4; ++i)
@@ -253,28 +253,28 @@ bool QuestLogEntry::CanBeFinished()
     return true;
 }
 
-void QuestLogEntry::SetMobCount(uint32 i, uint32 count)
+void QuestLogEntry::SetMobCount(uint32_t i, uint32_t count)
 {
     ARCEMU_ASSERT(i < 4);
     m_mobcount[i] = count;
     mDirty = true;
 }
 
-void QuestLogEntry::IncrementMobCount(uint32 i)
+void QuestLogEntry::IncrementMobCount(uint32_t i)
 {
     ARCEMU_ASSERT(i < 4);
     ++m_mobcount[i];
     mDirty = true;
 }
 
-void QuestLogEntry::SetTrigger(uint32 i)
+void QuestLogEntry::SetTrigger(uint32_t i)
 {
     ARCEMU_ASSERT(i < 4);
     m_explored_areas[i] = 1;
     mDirty = true;
 }
 
-void QuestLogEntry::SetSlot(uint16 i)
+void QuestLogEntry::SetSlot(uint16_t i)
 {
     m_slot = i;
 }
@@ -283,7 +283,7 @@ void QuestLogEntry::Finish()
 {
     sEventMgr.RemoveEvents(m_plr, EVENT_TIMED_QUEST_EXPIRE);
 
-    uint16 base = GetBaseField(m_slot);
+    uint16_t base = GetBaseField(m_slot);
     m_plr->setUInt32Value(base + 0, 0);
     m_plr->setUInt32Value(base + 1, 0);
     m_plr->setUInt64Value(base + 2, 0);
@@ -306,7 +306,7 @@ void QuestLogEntry::Fail(bool timerexpired)
     expirytime = 0;
     mDirty = true;
 
-    uint16 base = GetBaseField(m_slot);
+    uint16_t base = GetBaseField(m_slot);
     m_plr->setUInt32Value(base + 1, 2);
 
     if (timerexpired)
@@ -325,18 +325,18 @@ void QuestLogEntry::UpdatePlayerFields()
     if (!m_plr)
         return;
 
-    uint16 base = GetBaseField(m_slot);
+    uint16_t base = GetBaseField(m_slot);
     m_plr->setUInt32Value(base + 0, m_quest->id);
     uint32_t field0 = 0;          // 0x01000000 = "Objective Complete" - 0x02 = Quest Failed - 0x04 = Quest Accepted
 
     // next field is count (kills, etc)
-    uint64 field1 = 0;
+    uint64_t field1 = 0;
 
     // explored areas
     if (m_quest->count_requiredtriggers)
     {
-        uint32 count = 0;
-        for (uint8 i = 0; i < 4; ++i)
+        uint32_t count = 0;
+        for (uint8_t i = 0; i < 4; ++i)
         {
             if (m_quest->required_triggers[i])
             {
@@ -357,7 +357,7 @@ void QuestLogEntry::UpdatePlayerFields()
     if (iscastquest)
     {
         bool cast_complete = true;
-        for (uint8 i = 0; i < 4; ++i)
+        for (uint8_t i = 0; i < 4; ++i)
         {
             if (m_quest->required_spell[i] && m_quest->required_mob_or_go_count[i] > m_mobcount[i])
             {
@@ -373,7 +373,7 @@ void QuestLogEntry::UpdatePlayerFields()
     else if (isemotequest)
     {
         bool emote_complete = true;
-        for (uint8 i = 0; i < 4; ++i)
+        for (uint8_t i = 0; i < 4; ++i)
         {
             if (m_quest->required_emote[i] && m_quest->required_mob_or_go_count[i] > m_mobcount[i])
             {
@@ -390,11 +390,11 @@ void QuestLogEntry::UpdatePlayerFields()
     // mob hunting / counter
     if (m_quest->count_required_mob)
     {
-        uint8* p = (uint8*)&field1;
-        for (uint8 i = 0; i < 4; ++i)
+        uint8_t* p = (uint8_t*)&field1;
+        for (uint8_t i = 0; i < 4; ++i)
         {
             if (m_quest->required_mob_or_go[i] && m_mobcount[i] > 0)
-                p[2 * i] |= (uint8)m_mobcount[i];
+                p[2 * i] |= (uint8_t)m_mobcount[i];
         }
     }
 
@@ -428,7 +428,7 @@ void QuestLogEntry::SendQuestComplete()
     CALL_QUESTSCRIPT_EVENT(this, OnQuestComplete)(m_plr, this);
 }
 
-void QuestLogEntry::SendUpdateAddKill(uint32 i)
+void QuestLogEntry::SendUpdateAddKill(uint32_t i)
 {
     sQuestMgr.SendQuestUpdateAddKill(m_plr, m_quest->id, m_quest->required_mob_or_go[i], m_mobcount[i], m_quest->required_mob_or_go_count[i], 0);
 }

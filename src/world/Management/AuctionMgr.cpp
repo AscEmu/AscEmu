@@ -43,11 +43,11 @@ void AuctionMgr::LoadAuctionHouses()
 
     res = WorldDatabase.Query("SELECT DISTINCT ahgroup FROM auctionhouse");
     AuctionHouse* ah;
-    std::map<uint32, AuctionHouse*> tempmap;
+    std::map<uint32_t, AuctionHouse*> tempmap;
     if (res)
     {
-        uint32 period = (res->GetRowCount() / 20) + 1;
-        uint32 c = 0;
+        uint32_t period = (res->GetRowCount() / 20) + 1;
+        uint32_t c = 0;
         do
         {
             ah = new AuctionHouse(res->Fetch()[0].GetUInt32());
@@ -74,9 +74,9 @@ void AuctionMgr::LoadAuctionHouses()
     }
 }
 
-AuctionHouse* AuctionMgr::GetAuctionHouse(uint32 Entry)
+AuctionHouse* AuctionMgr::GetAuctionHouse(uint32_t Entry)
 {
-    std::unordered_map<uint32, AuctionHouse*>::iterator itr = auctionHouseEntryMap.find(Entry);
+    std::unordered_map<uint32_t, AuctionHouse*>::iterator itr = auctionHouseEntryMap.find(Entry);
     if (itr == auctionHouseEntryMap.end()) return NULL;
     return itr->second;
 }

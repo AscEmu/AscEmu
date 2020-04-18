@@ -34,12 +34,12 @@ class BIHWrap
     {
         const T* const* objects;
         RayCallback& _callback;
-        uint32 objects_size;
+        uint32_t objects_size;
 
-        MDLCallback(RayCallback& callback, const T* const* objects_array, uint32 objects_size ) : objects(objects_array), _callback(callback), objects_size(objects_size) { }
+        MDLCallback(RayCallback& callback, const T* const* objects_array, uint32_t objects_size ) : objects(objects_array), _callback(callback), objects_size(objects_size) { }
 
         /// Intersect ray
-        bool operator() (const G3D::Ray& ray, uint32 idx, float& maxDist, bool /*stopAtFirst*/)
+        bool operator() (const G3D::Ray& ray, uint32_t idx, float& maxDist, bool /*stopAtFirst*/)
         {
             if (idx >= objects_size)
                 return false;
@@ -49,7 +49,7 @@ class BIHWrap
         }
 
         /// Intersect point
-        void operator() (const G3D::Vector3& p, uint32 idx)
+        void operator() (const G3D::Vector3& p, uint32_t idx)
         {
             if (idx >= objects_size)
                 return;
@@ -62,7 +62,7 @@ class BIHWrap
 
     BIH m_tree;
     ObjArray m_objects;
-    G3D::Table<const T*, uint32> m_obj2Idx;
+    G3D::Table<const T*, uint32_t> m_obj2Idx;
     G3D::Set<const T*> m_objects_to_push;
     int unbalanced_times;
 
@@ -78,7 +78,7 @@ public:
     void remove(const T& obj)
     {
         ++unbalanced_times;
-        uint32 Idx = 0;
+        uint32_t Idx = 0;
         const T * temp;
         if (m_obj2Idx.getRemove(&obj, temp, Idx))
             m_objects[Idx] = NULL;

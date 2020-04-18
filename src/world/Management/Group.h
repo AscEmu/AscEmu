@@ -48,33 +48,33 @@ enum QuickGroupUpdateFlags
 enum PartyUpdateFlags
 {
     GROUP_UPDATE_FLAG_NONE              = 0x00000000,       // nothing
-    GROUP_UPDATE_FLAG_STATUS            = 0x00000001,       // uint16, flags
-    GROUP_UPDATE_FLAG_CUR_HP            = 0x00000002,       // uint32
-    GROUP_UPDATE_FLAG_MAX_HP            = 0x00000004,       // uint32
-    GROUP_UPDATE_FLAG_POWER_TYPE        = 0x00000008,       // uint8
-    GROUP_UPDATE_FLAG_CUR_POWER         = 0x00000010,       // uint16
-    GROUP_UPDATE_FLAG_MAX_POWER         = 0x00000020,       // uint16
-    GROUP_UPDATE_FLAG_LEVEL             = 0x00000040,       // uint16
-    GROUP_UPDATE_FLAG_ZONE              = 0x00000080,       // uint16
-    GROUP_UPDATE_FLAG_POSITION          = 0x00000100,       // uint16, uint16
-    GROUP_UPDATE_FLAG_AURAS             = 0x00000200,       // uint64 mask, for each bit set uint32 spellid + uint8 unk
-    GROUP_UPDATE_FLAG_PET_GUID          = 0x00000400,       // uint64 pet guid
+    GROUP_UPDATE_FLAG_STATUS            = 0x00000001,       // uint16_t, flags
+    GROUP_UPDATE_FLAG_CUR_HP            = 0x00000002,       // uint32_t
+    GROUP_UPDATE_FLAG_MAX_HP            = 0x00000004,       // uint32_t
+    GROUP_UPDATE_FLAG_POWER_TYPE        = 0x00000008,       // uint8_t
+    GROUP_UPDATE_FLAG_CUR_POWER         = 0x00000010,       // uint16_t
+    GROUP_UPDATE_FLAG_MAX_POWER         = 0x00000020,       // uint16_t
+    GROUP_UPDATE_FLAG_LEVEL             = 0x00000040,       // uint16_t
+    GROUP_UPDATE_FLAG_ZONE              = 0x00000080,       // uint16_t
+    GROUP_UPDATE_FLAG_POSITION          = 0x00000100,       // uint16_t, uint16_t
+    GROUP_UPDATE_FLAG_AURAS             = 0x00000200,       // uint64_t mask, for each bit set uint32_t spellid + uint8_t unk
+    GROUP_UPDATE_FLAG_PET_GUID          = 0x00000400,       // uint64_t pet guid
     GROUP_UPDATE_FLAG_PET_NAME          = 0x00000800,       // pet name, NULL terminated string
-    GROUP_UPDATE_FLAG_PET_MODEL_ID      = 0x00001000,       // uint16, model id
-    GROUP_UPDATE_FLAG_PET_CUR_HP        = 0x00002000,       // uint32 pet cur health
-    GROUP_UPDATE_FLAG_PET_MAX_HP        = 0x00004000,       // uint32 pet max health
-    GROUP_UPDATE_FLAG_PET_POWER_TYPE    = 0x00008000,       // uint8 pet power type
-    GROUP_UPDATE_FLAG_PET_CUR_POWER     = 0x00010000,       // uint16 pet cur power
-    GROUP_UPDATE_FLAG_PET_MAX_POWER     = 0x00020000,       // uint16 pet max power
-    GROUP_UPDATE_FLAG_PET_AURAS         = 0x00040000,       // uint64 mask, for each bit set uint32 spellid + uint8 unk, pet auras...
-    GROUP_UPDATE_FLAG_VEHICLE_SEAT      = 0x00080000,       // uint32 vehicle_seat_id (index from VehicleSeat.dbc)
+    GROUP_UPDATE_FLAG_PET_MODEL_ID      = 0x00001000,       // uint16_t, model id
+    GROUP_UPDATE_FLAG_PET_CUR_HP        = 0x00002000,       // uint32_t pet cur health
+    GROUP_UPDATE_FLAG_PET_MAX_HP        = 0x00004000,       // uint32_t pet max health
+    GROUP_UPDATE_FLAG_PET_POWER_TYPE    = 0x00008000,       // uint8_t pet power type
+    GROUP_UPDATE_FLAG_PET_CUR_POWER     = 0x00010000,       // uint16_t pet cur power
+    GROUP_UPDATE_FLAG_PET_MAX_POWER     = 0x00020000,       // uint16_t pet max power
+    GROUP_UPDATE_FLAG_PET_AURAS         = 0x00040000,       // uint64_t mask, for each bit set uint32_t spellid + uint8_t unk, pet auras...
+    GROUP_UPDATE_FLAG_VEHICLE_SEAT      = 0x00080000,       // uint32_t vehicle_seat_id (index from VehicleSeat.dbc)
     GROUP_UPDATE_PET                    = 0x0007FC00,       // all pet flags
     GROUP_UPDATE_FULL                   = 0x0007FFFF        // all known flags
 };
 
 
 #define GROUP_UPDATE_FLAGS_COUNT 20
-static const uint8 GroupUpdateLength[GROUP_UPDATE_FLAGS_COUNT] = { 0, 2, 2, 2, 1, 2, 2, 2, 2, 4, 8, 8, 1, 2, 2, 2, 1, 2, 2, 8 };
+static const uint8_t GroupUpdateLength[GROUP_UPDATE_FLAGS_COUNT] = { 0, 2, 2, 2, 1, 2, 2, 2, 2, 4, 8, 8, 1, 2, 2, 2, 1, 2, 2, 8 };
 
 enum GroupMemberOnlineStatus
 {
@@ -107,7 +107,7 @@ class SERVER_DECL SubGroup // Most stuff will be done through here, not through 
 public:
     friend class Group;
 
-    SubGroup(Group* parent, uint32 id) : m_Parent(parent), m_Id(id)  {}
+    SubGroup(Group* parent, uint32_t id) : m_Parent(parent), m_Id(id)  {}
     ~SubGroup();
 
     inline GroupMembersSet::iterator GetGroupMembersBegin(void) { return m_GroupMembers.begin(); }
@@ -119,20 +119,20 @@ public:
     inline bool IsFull(void)                 { return m_GroupMembers.size() >= MAX_GROUP_SIZE_PARTY; }
     inline size_t GetMemberCount(void)       { return m_GroupMembers.size(); }
 
-    inline uint32 GetID(void)                { return m_Id; }
-    inline void SetID(uint32 newid)          { m_Id = newid; }
+    inline uint32_t GetID(void)              { return m_Id; }
+    inline void SetID(uint32_t newid)        { m_Id = newid; }
 
     inline void   SetParent(Group* parent)   { m_Parent = parent; }
     inline Group* GetParent(void)            { return m_Parent; }
 
     void Disband();
-    bool HasMember(uint32 guid);
+    bool HasMember(uint32_t guid);
     GroupMembersSet& getGroupMembers();
 
 protected:
     GroupMembersSet m_GroupMembers;
     Group* m_Parent;
-    uint32 m_Id;
+    uint32_t m_Id;
 };
 
 class Arena;
@@ -147,12 +147,12 @@ public:
     ~Group();
 
     // Adding/Removal Management
-    bool AddMember(PlayerInfo* info, int32 subgroupid = -1);
+    bool AddMember(PlayerInfo* info, int32_t subgroupid = -1);
     void RemovePlayer(PlayerInfo* info);
 
     // Leaders and Looting
     void SetLeader(Player* pPlayer, bool silent);
-    void SetLooter(Player* pPlayer, uint8 method, uint16 threshold);
+    void SetLooter(Player* pPlayer, uint8_t method, uint16_t threshold);
 
     // Transferring data to clients
     void Update();
@@ -160,8 +160,8 @@ public:
     inline void SendPacketToAll(WorldPacket* packet) { SendPacketToAllButOne(packet, NULL); }
     void SendPacketToAllButOne(WorldPacket* packet, Player* pSkipTarget);
 
-    inline void OutPacketToAll(uint16 op, uint16 len, const void* data) { OutPacketToAllButOne(op, len, data, NULL); }
-    void OutPacketToAllButOne(uint16 op, uint16 len, const void* data, Player* pSkipTarget);
+    inline void OutPacketToAll(uint16_t op, uint16_t len, const void* data) { OutPacketToAllButOne(op, len, data, NULL); }
+    void OutPacketToAllButOne(uint16_t op, uint16_t len, const void* data, Player* pSkipTarget);
 
     void SendNullUpdate(Player* pPlayer);
 
@@ -170,7 +170,7 @@ public:
     Player* FindFirstPlayer();
 
     // Accessing functions
-    inline SubGroup* GetSubGroup(uint32 Id)
+    inline SubGroup* GetSubGroup(uint32_t Id)
     {
         if (Id >= 8)
             return 0;
@@ -178,18 +178,18 @@ public:
         return m_SubGroups[Id];
     }
 
-    inline uint32 GetSubGroupCount(void) { return m_SubGroupCount; }
+    inline uint32_t GetSubGroupCount(void) { return m_SubGroupCount; }
 
-    inline uint8 GetMethod(void) { return m_LootMethod; }
-    inline uint16 GetThreshold(void) { return m_LootThreshold; }
+    inline uint8_t GetMethod(void) { return m_LootMethod; }
+    inline uint16_t GetThreshold(void) { return m_LootThreshold; }
     inline PlayerInfo* GetLeader(void) { return m_Leader; }
     inline PlayerInfo* GetLooter(void) { return m_Looter; }
 
-    void MovePlayer(PlayerInfo* info, uint8 subgroup);
+    void MovePlayer(PlayerInfo* info, uint8_t subgroup);
 
     bool HasMember(Player* pPlayer);
     bool HasMember(PlayerInfo* info);
-    inline uint32 MemberCount(void) { return m_MemberCount; }
+    inline uint32_t MemberCount(void) { return m_MemberCount; }
     inline bool IsFull() { return ((m_GroupType == GROUP_TYPE_PARTY && m_MemberCount >= MAX_GROUP_SIZE_PARTY) || (m_GroupType == GROUP_TYPE_RAID && m_MemberCount >= MAX_GROUP_SIZE_RAID)); }
 
     SubGroup* FindFreeSubGroup();
@@ -199,15 +199,15 @@ public:
     void SaveToDB();
     void LoadFromDB(Field* fields);
 
-    inline uint8 getGroupType() const { return m_GroupType; }
-    inline uint32 GetID() { return m_Id; }
-    uint64 GetGUID() const;
+    inline uint8_t getGroupType() const { return m_GroupType; }
+    inline uint32_t GetID() { return m_Id; }
+    uint64_t GetGUID() const;
 
     void UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket* Packet);
     void UpdateAllOutOfRangePlayersFor(Player* pPlayer);
     bool isRaid() const;
 
-    uint64 m_targetIcons[8];
+    uint64_t m_targetIcons[8];
     bool m_disbandOnNoMembers;
     inline Mutex & getLock() { return m_groupLock; }
     inline void Lock() { m_groupLock.Acquire(); }
@@ -222,10 +222,10 @@ public:
     inline PlayerInfo* GetMainTank() { return m_mainTank; }
     inline PlayerInfo* GetMainAssist() { return m_mainAssist; }
 
-    uint32 m_instanceIds[MAX_NUM_MAPS][NUM_INSTANCE_MODES];
+    uint32_t m_instanceIds[MAX_NUM_MAPS][NUM_INSTANCE_MODES];
 
-    void SetDungeonDifficulty(uint8 diff);
-    void SetRaidDifficulty(uint8 diff);
+    void SetDungeonDifficulty(uint8_t diff);
+    void SetRaidDifficulty(uint8_t diff);
     void SendLootUpdates(Object* o);
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -242,7 +242,7 @@ public:
     Player* GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* plr_skip);
 
 #if VERSION_STRING > TBC
-    void UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time);
+    void UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTypes type, int32_t miscvalue1, int32_t miscvalue2, uint32_t time);
 #endif
     void Teleport(WorldSession* m_session);
     bool isLFGGroup()
@@ -252,11 +252,11 @@ public:
         return false;
     }
     void ExpandToLFG();
-    uint32 GetMembersCount() { return m_MemberCount; }
+    uint32_t GetMembersCount() { return m_MemberCount; }
 
-    uint64 GetGUID() { return uint64(GetID()); }
+    uint64_t GetGUID() { return uint64_t(GetID()); }
     SubGroup* m_SubGroups[8];
-    uint8 m_SubGroupCount;
+    uint8_t m_SubGroupCount;
     void GoOffline(Player* p);
 
 protected:
@@ -266,19 +266,19 @@ protected:
     PlayerInfo* m_mainTank;
     PlayerInfo* m_mainAssist;
 
-    uint8 m_LootMethod;
-    uint16 m_LootThreshold;
-    uint8 m_GroupType;
-    uint32 m_Id;
-    uint64 m_guid;
+    uint8_t m_LootMethod;
+    uint16_t m_LootThreshold;
+    uint8_t m_GroupType;
+    uint32_t m_Id;
+    uint64_t m_guid;
 
-    uint32 m_MemberCount;
+    uint32_t m_MemberCount;
     Mutex m_groupLock;
     bool m_dirty;
     bool m_updateblock;
-    uint32 updatecounter;
+    uint32_t updatecounter;
 
 public:
-    uint8 m_difficulty;
-    uint8 m_raiddifficulty;
+    uint8_t m_difficulty;
+    uint8_t m_raiddifficulty;
 };

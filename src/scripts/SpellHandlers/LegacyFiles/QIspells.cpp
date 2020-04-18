@@ -69,7 +69,7 @@ bool SummonCyclonian(uint8_t /*effectIndex*/, Spell* pSpell)
     return true;
 }
 
-bool ElementalPowerExtractor(uint32 /*i*/, Spell* pSpell)
+bool ElementalPowerExtractor(uint32_t /*i*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -567,8 +567,8 @@ bool Fumping(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer->HasQuest(10929) == false)
         return true;
 
-    uint32 chance = Util::getRandomUInt(1);
-    uint32 entry = 0;
+    uint32_t chance = Util::getRandomUInt(1);
+    uint32_t entry = 0;
     switch (chance)
     {
         case 0:
@@ -756,7 +756,7 @@ bool ZappedGiants(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector creatPos = creat->GetPosition();
 
-    uint32 cit = creat->getEntry();
+    uint32_t cit = creat->getEntry();
     switch (cit)
     {
         case 5360:
@@ -1101,7 +1101,7 @@ bool GoblinWeatherMachine(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->p_caster == nullptr)
         return true;
 
-    uint32 Weather = 46736 + Util::getRandomUInt(4);
+    uint32_t Weather = 46736 + Util::getRandomUInt(4);
 
     pSpell->p_caster->castSpell(pSpell->p_caster, sSpellMgr.getSpellInfo(Weather), true);
     return true;
@@ -1333,7 +1333,7 @@ bool PrayerBeads(uint8_t /*effectIndex*/, Spell* pSpell)
     return true;
 }
 
-bool CleansingVialDND(uint32 /*i*/, Spell* s)
+bool CleansingVialDND(uint32_t /*i*/, Spell* s)
 {
     QuestLogEntry* en = s->p_caster->GetQuestLogForEntry(9427);
     if (en == nullptr)
@@ -1358,7 +1358,7 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
     }
     else
     {
-        uint32 TamingSpellid = a->GetSpellInfo()->getEffectMiscValue(1);
+        uint32_t TamingSpellid = a->GetSpellInfo()->getEffectMiscValue(1);
 
         SpellInfo const* triggerspell = sSpellMgr.getSpellInfo(TamingSpellid);
         if (triggerspell == NULL)
@@ -1536,7 +1536,7 @@ bool CenarionMoondust(uint8_t /*effectIndex*/, Spell* pSpell) // Body And Heart 
         return true;
 
     lunaclaw->CreateCustomWaypointMap();
-    uint32 md = lunaclaw->getDisplayId();
+    uint32_t md = lunaclaw->getDisplayId();
 
     //Waypoints
     lunaclaw->LoadCustomWaypoint(6348.3833f, 132.5197f, 21.6042f, 4.19f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
@@ -1581,7 +1581,7 @@ bool CenarionLunardust(uint8_t /*effectIndex*/, Spell* pSpell)  // Body And Hear
         return true;
 
     lunaclaw->CreateCustomWaypointMap();
-    uint32 md = lunaclaw->getDisplayId();
+    uint32_t md = lunaclaw->getDisplayId();
 
     // Waypoints
     lunaclaw->LoadCustomWaypoint(-2448.2253f, -1625.0148f, 91.89f, 1.913f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
@@ -1620,7 +1620,7 @@ bool CurativeAnimalSalve(uint8_t /*effectIndex*/, Spell* pSpell) // Curing the S
 
     LocationVector targetPos = target->GetPosition();
 
-    uint32 entry = target->getEntry();
+    uint32_t entry = target->getEntry();
     if (entry == 12296 || entry == 12298)
     {
         caster->AddQuestKill(6129, 0, 0);
@@ -1675,13 +1675,13 @@ bool SymbolOfLife(uint8_t /*effectIndex*/, Spell* pSpell) // Alliance ress. ques
     if (target == nullptr)
         return true;
 
-    const uint32 targets[] = { 17542, 6177, 6172 };
-    const uint32 quests[] = { 9600, 1783, 1786 };
+    const uint32_t targets[] = { 17542, 6177, 6172 };
+    const uint32_t quests[] = { 9600, 1783, 1786 };
 
     bool questOk = false;
     bool targetOk = false;
 
-    for (uint8 j = 0; j < 3; j++)
+    for (uint8_t j = 0; j < 3; j++)
     {
         if (target->getEntry() == targets[j])
         {
@@ -1695,7 +1695,7 @@ bool SymbolOfLife(uint8_t /*effectIndex*/, Spell* pSpell) // Alliance ress. ques
 
     QuestLogEntry* quest_entry;
 
-    for (uint8 j = 0; j < 3; j++)
+    for (uint8_t j = 0; j < 3; j++)
     {
         if (plr->HasQuest(quests[j]))
         {
@@ -2293,7 +2293,7 @@ bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Arzeth's Demise
-bool FuryOfTheDreghoodElders(uint32 /*i*/, Spell* pSpell)
+bool FuryOfTheDreghoodElders(uint32_t /*i*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2364,7 +2364,7 @@ bool PlantForsakenBanner(uint8_t /*effectIndex*/, Spell* pSpell)
     if (target == nullptr || target->isAlive())
         return true;
 
-    uint32 cit = target->getEntry();
+    uint32_t cit = target->getEntry();
     switch (cit)
     {
         case 24161:
@@ -2591,9 +2591,9 @@ bool LeyLine(uint8_t /*effectIndex*/, Spell* pSpell)
     if (qle == nullptr)
         return true;
 
-    uint32 portals[] = { 25156, 25154, 25157 };
+    uint32_t portals[] = { 25156, 25154, 25157 };
 
-    for (uint8 i = 0; i < 3; i++)
+    for (uint8_t i = 0; i < 3; i++)
     {
         Object*  portal = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, portals[i]);
         if (portal != nullptr && qle->GetMobCount(i) < qle->GetQuest()->required_mob_or_go_count[i])
@@ -2619,8 +2619,8 @@ bool ManaRemnants(uint8_t /*effectIndex*/, Spell* pSpell)
     if (Ward == nullptr)
         return false;
 
-    uint32 quests[] = { 11496, 11523 };
-    for (uint8 i = 0; i < 2; i++)
+    uint32_t quests[] = { 11496, 11523 };
+    for (uint8_t i = 0; i < 2; i++)
     {
         QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(quests[i]);
         if (qle != nullptr && qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
@@ -2883,7 +2883,7 @@ bool ForceofNeltharakuSpell(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming 
     return true;
 }
 
-bool UnlockKarynakuChains(uint32 /*i*/, Spell* pSpell) // Becoming a Shadoweave Tailor
+bool UnlockKarynakuChains(uint32_t /*i*/, Spell* pSpell) // Becoming a Shadoweave Tailor
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -3048,8 +3048,8 @@ bool ReleaseUmisYeti(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Creature* target = static_cast<Creature*>(pSpell->GetUnitTarget());
-    static const uint32 friends[] = { 10978, 7583, 10977 };
-    for (uint8 j = 0; j < sizeof(friends) / sizeof(uint32); j++)
+    static const uint32_t friends[] = { 10978, 7583, 10977 };
+    for (uint8_t j = 0; j < sizeof(friends) / sizeof(uint32_t); j++)
     {
         if (target->getEntry() == friends[j] && qLogEntry->GetMobCount(j) < qLogEntry->GetQuest()->required_mob_or_go_count[j])
         {
@@ -3215,7 +3215,7 @@ void SetupLegacyQuestItems(ScriptMgr* mgr)
 
     mgr->register_script_effect(29297, &CleansingVial);
 
-    uint32 huntertamingquestspellids[] =
+    uint32_t huntertamingquestspellids[] =
     {
         19548,
         19674,

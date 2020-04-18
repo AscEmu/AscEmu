@@ -26,7 +26,7 @@ class ListenSocket : public ListenSocketBase
 {
     public:
 
-        ListenSocket(const char* ListenAddress, uint32 Port) : ListenSocketBase()
+        ListenSocket(const char* ListenAddress, uint32_t Port) : ListenSocketBase()
         {
             m_socket = socket(AF_INET, SOCK_STREAM, 0);
             SocketOps::ReuseAddr(m_socket);
@@ -106,7 +106,7 @@ class ListenSocket : public ListenSocketBase
         struct sockaddr_in m_address;
         struct sockaddr_in m_tempAddress;
         bool m_opened;
-        uint32 len;
+        uint32_t len;
         T* dsocket;
 };
 

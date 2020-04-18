@@ -18,10 +18,10 @@ class DB2Storage
         explicit DB2Storage(const char *f) : nCount(0), fieldCount(0), fmt(f), indexTable(NULL), m_dataTable(NULL) { }
         ~DB2Storage() { Clear(); }
 
-        T const* LookupEntry(uint32 id) const { return (id >= nCount) ? NULL : indexTable[id]; }
-        uint32  GetNumRows() const { return nCount; }
+        T const* LookupEntry(uint32_t id) const { return (id >= nCount) ? NULL : indexTable[id]; }
+        uint32_t  GetNumRows() const { return nCount; }
         char const* GetFormat() const { return fmt; }
-        uint32 GetFieldCount() const { return fieldCount; }
+        uint32_t GetFieldCount() const { return fieldCount; }
 
         bool Load(char const* fn, DBC::LocaleConstant loc)
         {
@@ -79,8 +79,8 @@ class DB2Storage
 
     private:
 
-        uint32 nCount;
-        uint32 fieldCount;
+        uint32_t nCount;
+        uint32_t fieldCount;
         char const* fmt;
         T** indexTable;
         T* m_dataTable;

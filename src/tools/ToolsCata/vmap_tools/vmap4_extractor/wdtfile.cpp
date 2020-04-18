@@ -47,7 +47,7 @@ bool WDTFile::init(char* /*map_id*/, unsigned int mapID)
     }
 
     char fourcc[5];
-    uint32 size;
+    uint32_t size;
 
     std::string dirname = std::string(szWorkDirWmo) + "/dir_bin";
     FILE *dirfile;

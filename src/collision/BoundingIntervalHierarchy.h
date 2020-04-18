@@ -34,22 +34,22 @@
 
 #define MAX_STACK_SIZE 64
 
-static inline uint32 floatToRawIntBits(float f)
+static inline uint32_t floatToRawIntBits(float f)
 {
     union
     {
-        uint32 ival;
+        uint32_t ival;
         float fval;
     } temp;
     temp.fval=f;
     return temp.ival;
 }
 
-static inline float intBitsToFloat(uint32 i)
+static inline float intBitsToFloat(uint32_t i)
 {
     union
     {
-        uint32 ival;
+        uint32_t ival;
         float fval;
     } temp;
     temp.ival=i;
@@ -82,7 +82,7 @@ class BIH
     public:
         BIH() { init_empty(); }
         template< class BoundsFunc, class PrimArray >
-        void build(const PrimArray &primitives, BoundsFunc &getBounds, uint32 leafSize = 3, bool printStats=false)
+        void build(const PrimArray &primitives, BoundsFunc &getBounds, uint32_t leafSize = 3, bool printStats=false)
         {
             if (primitives.size() == 0)
             {
@@ -93,23 +93,23 @@ class BIH
             buildData dat;
             dat.maxPrims = leafSize;
             dat.numPrims = static_cast<uint32_t>(primitives.size());
-            dat.indices = new uint32[dat.numPrims];
+            dat.indices = new uint32_t[dat.numPrims];
             dat.primBound = new G3D::AABox[dat.numPrims];
             getBounds(primitives[0], bounds);
-            for (uint32 i=0; i<dat.numPrims; ++i)
+            for (uint32_t i=0; i<dat.numPrims; ++i)
             {
                 dat.indices[i] = i;
                 getBounds(primitives[i], dat.primBound[i]);
                 bounds.merge(dat.primBound[i]);
             }
-            std::vector<uint32> tempTree;
+            std::vector<uint32_t> tempTree;
             BuildStats stats;
             buildHierarchy(tempTree, dat, stats);
             if (printStats)
                 stats.printStats();
 
             objects.resize(dat.numPrims);
-            for (uint32 i=0; i<dat.numPrims; ++i)
+            for (uint32_t i=0; i<dat.numPrims; ++i)
                 objects[i] = dat.indices[i];
             //nObjects = dat.numPrims;
             tree = tempTree;
@@ -117,7 +117,7 @@ class BIH
             delete[] dat.indices;
         }
 
-        uint32 primCount() const { return static_cast<uint32_t>(objects.size()); }
+        uint32_t primCount() const { return static_cast<uint32_t>(objects.size()); }
 
         template<typename RayCallback>
         void intersectRay(const G3D::Ray &r, RayCallback& intersectCallback, float &maxDist, bool stopAtFirst=false) const
@@ -152,10 +152,10 @@ class BIH
             intervalMin = std::max(intervalMin, 0.f);
             intervalMax = std::min(intervalMax, maxDist);
 
-            uint32 offsetFront[3];
-            uint32 offsetBack[3];
-            uint32 offsetFront3[3];
-            uint32 offsetBack3[3];
+            uint32_t offsetFront[3];
+            uint32_t offsetBack[3];
+            uint32_t offsetFront3[3];
+            uint32_t offsetBack3[3];
             // compute custom offsets from direction sign bit
 
             for (int i=0; i<3; ++i)
@@ -177,8 +177,8 @@ class BIH
             while (true) {
                 while (true)
                 {
-                    uint32 tn = tree[node];
-                    uint32 axis = (tn & (3 << 30)) >> 30;
+                    uint32_t tn = tree[node];
+                    uint32_t axis = (tn & (3 << 30)) >> 30;
                     bool BVH2 = (tn & (1 << 29)) != 0;
                     int offset = tn & ~(7 << 29);
                     if (!BVH2)
@@ -271,8 +271,8 @@ class BIH
             while (true) {
                 while (true)
                 {
-                    uint32 tn = tree[node];
-                    uint32 axis = (tn & (3 << 30)) >> 30;
+                    uint32_t tn = tree[node];
+                    uint32_t axis = (tn & (3 << 30)) >> 30;
                     bool BVH2 = (tn & (1 << 29)) != 0;
                     int offset = tn & ~(7 << 29);
                     if (!BVH2)
@@ -340,20 +340,20 @@ class BIH
         bool readFromFile(FILE* rf);
 
     protected:
-        std::vector<uint32> tree;
-        std::vector<uint32> objects;
+        std::vector<uint32_t> tree;
+        std::vector<uint32_t> objects;
         G3D::AABox bounds;
 
         struct buildData
         {
-            uint32 *indices;
+            uint32_t *indices;
             G3D::AABox *primBound;
-            uint32 numPrims;
+            uint32_t numPrims;
             int maxPrims;
         };
         struct StackNode
         {
-            uint32 node;
+            uint32_t node;
             float tnear;
             float tfar;
         };
@@ -387,16 +387,16 @@ class BIH
             void printStats();
         };
 
-        void buildHierarchy(std::vector<uint32> &tempTree, buildData &dat, BuildStats &stats);
+        void buildHierarchy(std::vector<uint32_t> &tempTree, buildData &dat, BuildStats &stats);
 
-        void createNode(std::vector<uint32> &tempTree, int nodeIndex, uint32 left, uint32 right) const
+        void createNode(std::vector<uint32_t> &tempTree, int nodeIndex, uint32_t left, uint32_t right) const
         {
             // write leaf node
             tempTree[nodeIndex + 0] = (3 << 30) | left;
             tempTree[nodeIndex + 1] = right - left + 1;
         }
 
-        void subdivide(int left, int right, std::vector<uint32> &tempTree, buildData &dat, AABound &gridBox, AABound &nodeBox, int nodeIndex, int depth, BuildStats &stats);
+        void subdivide(int left, int right, std::vector<uint32_t> &tempTree, buildData &dat, AABound &gridBox, AABound &nodeBox, int nodeIndex, int depth, BuildStats &stats);
 };
 
 #endif // _BIH_H

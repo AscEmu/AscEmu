@@ -725,7 +725,7 @@ void WorldSession::handleCharterQuery(WorldPacket& recvPacket)
         return;
 
     if (Charter* charter = sObjectMgr.GetCharterByItemGuid(srlPacket.itemGuid))
-        SendPacket(SmsgPetitionQueryResponse(srlPacket.charterId, static_cast<uint64>(charter->LeaderGuid),
+        SendPacket(SmsgPetitionQueryResponse(srlPacket.charterId, static_cast<uint64_t>(charter->LeaderGuid),
             charter->GuildName, charter->CharterType, charter->Slots).serialise().get());
 }
 

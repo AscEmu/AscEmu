@@ -38,36 +38,36 @@ namespace VMAP
     {
         public:
             MeshTriangle() : idx0(0), idx1(0), idx2(0) { }
-            MeshTriangle(uint32 na, uint32 nb, uint32 nc): idx0(na), idx1(nb), idx2(nc) { }
+            MeshTriangle(uint32_t na, uint32_t nb, uint32_t nc): idx0(na), idx1(nb), idx2(nc) { }
 
-            uint32 idx0;
-            uint32 idx1;
-            uint32 idx2;
+            uint32_t idx0;
+            uint32_t idx1;
+            uint32_t idx2;
     };
 
     class WmoLiquid
     {
         public:
-            WmoLiquid(uint32 width, uint32 height, const G3D::Vector3 &corner, uint32 type);
+            WmoLiquid(uint32_t width, uint32_t height, const G3D::Vector3 &corner, uint32_t type);
             WmoLiquid(const WmoLiquid &other);
             ~WmoLiquid();
             WmoLiquid& operator=(const WmoLiquid &other);
             bool GetLiquidHeight(const G3D::Vector3 &pos, float &liqHeight) const;
-            uint32 GetType() const { return iType; }
+            uint32_t GetType() const { return iType; }
             float *GetHeightStorage() { return iHeight; }
-            uint8 *GetFlagsStorage() { return iFlags; }
-            uint32 GetFileSize();
+            uint8_t *GetFlagsStorage() { return iFlags; }
+            uint32_t GetFileSize();
             bool writeToFile(FILE* wf);
             static bool readFromFile(FILE* rf, WmoLiquid* &liquid);
-            void getPosInfo(uint32 &tilesX, uint32 &tilesY, G3D::Vector3 &corner) const;
+            void getPosInfo(uint32_t &tilesX, uint32_t &tilesY, G3D::Vector3 &corner) const;
         private:
             WmoLiquid() : iTilesX(0), iTilesY(0), iCorner(), iType(0), iHeight(NULL), iFlags(NULL) { }
-            uint32 iTilesX;       //!< number of tiles in x direction, each
-            uint32 iTilesY;
+            uint32_t iTilesX;       //!< number of tiles in x direction, each
+            uint32_t iTilesY;
             G3D::Vector3 iCorner; //!< the lower corner
-            uint32 iType;         //!< liquid type
+            uint32_t iType;         //!< liquid type
             float *iHeight;       //!< (tilesX + 1)*(tilesY + 1) height values
-            uint8 *iFlags;        //!< info if liquid tile is used
+            uint8_t *iFlags;        //!< info if liquid tile is used
     };
 
     /*! holding additional info for WMO group files */
@@ -76,7 +76,7 @@ namespace VMAP
         public:
             GroupModel() : iBound(), iMogpFlags(0), iGroupWMOID(0), iLiquid(NULL) { }
             GroupModel(const GroupModel &other);
-            GroupModel(uint32 mogpFlags, uint32 groupWMOID, const G3D::AABox &bound):
+            GroupModel(uint32_t mogpFlags, uint32_t groupWMOID, const G3D::AABox &bound):
                         iBound(bound), iMogpFlags(mogpFlags), iGroupWMOID(groupWMOID), iLiquid(NULL) { }
             ~GroupModel() { delete iLiquid; }
 
@@ -86,17 +86,17 @@ namespace VMAP
             bool IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const;
             bool IsInsideObject(const G3D::Vector3 &pos, const G3D::Vector3 &down, float &z_dist) const;
             bool GetLiquidLevel(const G3D::Vector3 &pos, float &liqHeight) const;
-            uint32 GetLiquidType() const;
+            uint32_t GetLiquidType() const;
             bool writeToFile(FILE* wf);
             bool readFromFile(FILE* rf);
             const G3D::AABox& GetBound() const { return iBound; }
-            uint32 GetMogpFlags() const { return iMogpFlags; }
-            uint32 GetWmoID() const { return iGroupWMOID; }
+            uint32_t GetMogpFlags() const { return iMogpFlags; }
+            uint32_t GetWmoID() const { return iGroupWMOID; }
             void getMeshData(std::vector<G3D::Vector3>& outVertices, std::vector<MeshTriangle>& outTriangles, WmoLiquid*& liquid);
         protected:
             G3D::AABox iBound;
-            uint32 iMogpFlags;// 0x8 outdor; 0x2000 indoor
-            uint32 iGroupWMOID;
+            uint32_t iMogpFlags;// 0x8 outdor; 0x2000 indoor
+            uint32_t iGroupWMOID;
             std::vector<G3D::Vector3> vertices;
             std::vector<MeshTriangle> triangles;
             BIH meshTree;
@@ -111,7 +111,7 @@ namespace VMAP
 
             //! pass group models to WorldModel and create BIH. Passed vector is swapped with old geometry!
             void setGroupModels(std::vector<GroupModel> &models);
-            void setRootWmoID(uint32 id) { RootWMOID = id; }
+            void setRootWmoID(uint32_t id) { RootWMOID = id; }
             bool IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const;
             bool IntersectPoint(const G3D::Vector3 &p, const G3D::Vector3 &down, float &dist, AreaInfo &info) const;
             bool GetLocationInfo(const G3D::Vector3 &p, const G3D::Vector3 &down, float &dist, LocationInfo &info) const;
@@ -119,7 +119,7 @@ namespace VMAP
             bool readFile(const std::string &filename);
             void getGroupModels(std::vector<GroupModel>& outGroupModels);
         protected:
-            uint32 RootWMOID;
+            uint32_t RootWMOID;
             std::vector<GroupModel> groupModels;
             BIH groupTree;
     };

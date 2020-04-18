@@ -53,8 +53,8 @@ namespace VMAP
             void moveToBasePos(const G3D::Vector3& pBasePos) { iPos -= pBasePos; }
     };
 
-    typedef std::map<uint32, ModelSpawn> UniqueEntryMap;
-    typedef std::multimap<uint32, uint32> TileMap;
+    typedef std::map<uint32_t, ModelSpawn> UniqueEntryMap;
+    typedef std::multimap<uint32_t, uint32_t> TileMap;
 
     struct MapSpawns
     {
@@ -62,16 +62,16 @@ namespace VMAP
         TileMap TileEntries;
     };
 
-    typedef std::map<uint32, MapSpawns*> MapData;
+    typedef std::map<uint32_t, MapSpawns*> MapData;
     //===============================================
 
     struct GroupModel_Raw
     {
-        uint32 mogpflags;
-        uint32 GroupWMOID;
+        uint32_t mogpflags;
+        uint32_t GroupWMOID;
 
         G3D::AABox bounds;
-        uint32 liquidflags;
+        uint32_t liquidflags;
         std::vector<MeshTriangle> triangles;
         std::vector<G3D::Vector3> vertexArray;
         class WmoLiquid* liquid;
@@ -85,7 +85,7 @@ namespace VMAP
 
     struct WorldModel_Raw
     {
-        uint32 RootWMOID;
+        uint32_t RootWMOID;
         std::vector<GroupModel_Raw> groupsArray;
 
         bool Read(const char * path);

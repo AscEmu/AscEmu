@@ -25,7 +25,7 @@ class Professor_Phizzlethorpe : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(Professor_Phizzlethorpe);
     explicit Professor_Phizzlethorpe(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 15)
         {

@@ -42,21 +42,21 @@ void CalendarMgr::LoadFromDB()
         }
         if (result)
         {
-            uint32 count = 0;
+            uint32_t count = 0;
             do
             {
                 Field* fields = result->Fetch();
 
-                uint64 entry = fields[0].GetUInt32();
-                uint32 creator = fields[1].GetUInt32();
+                uint64_t entry = fields[0].GetUInt32();
+                uint32_t creator = fields[1].GetUInt32();
                 std::string title = fields[2].GetString();
                 std::string description = fields[3].GetString();
                 CalendarEventType type = CalendarEventType(fields[4].GetUInt32());
-                uint32 dungeon = fields[5].GetUInt32();
+                uint32_t dungeon = fields[5].GetUInt32();
                 time_t date = fields[6].GetUInt32();
-                uint32 flags = fields[7].GetUInt32();
+                uint32_t flags = fields[7].GetUInt32();
 
-                CalendarEvent* calendarEvent = new CalendarEvent(static_cast<uint32>(entry), creator, title, description, type, dungeon, time_t(date), flags);
+                CalendarEvent* calendarEvent = new CalendarEvent(static_cast<uint32_t>(entry), creator, title, description, type, dungeon, time_t(date), flags);
                 _events.insert(calendarEvent);
 
                 LOG_DEBUG("Title %s loaded", calendarEvent->title.c_str()); // remove me ;-)
@@ -82,18 +82,18 @@ void CalendarMgr::LoadFromDB()
         }
         if (result)
         {
-            uint32 count = 0;
+            uint32_t count = 0;
             do
             {
                 Field* fields = result->Fetch();
 
-                uint32 invite_id = fields[0].GetUInt32();       // unique invite id
-                uint32 event = fields[1].GetUInt32();           // entry of the calendar event
-                uint32 invitee = fields[2].GetUInt32();         // player id
-                uint32 sender = fields[3].GetUInt32();          // player id
+                uint32_t invite_id = fields[0].GetUInt32();       // unique invite id
+                uint32_t event = fields[1].GetUInt32();           // entry of the calendar event
+                uint32_t invitee = fields[2].GetUInt32();         // player id
+                uint32_t sender = fields[3].GetUInt32();          // player id
                 CalendarInviteStatus status = CalendarInviteStatus(fields[4].GetUInt32());
                 time_t statustime = fields[5].GetUInt32();
-                uint32 rank = fields[6].GetUInt32();
+                uint32_t rank = fields[6].GetUInt32();
                 std::string text = fields[7].GetString();
 
                 CalendarInvite* invite = new CalendarInvite(invite_id, event, invitee, sender, status, time_t(statustime), rank, text);

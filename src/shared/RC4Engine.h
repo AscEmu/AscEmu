@@ -46,7 +46,7 @@ class RC4Engine
 
             // Initialize RC4 state (all bytes to 0)
             for(; i < 256; ++i)
-                perm[i] = (uint8)i;
+                perm[i] = (uint8_t)i;
 
             // Set index values
             index1 = index2 = 0;

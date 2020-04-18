@@ -163,17 +163,17 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     bool in_front_of_creature = m_session->GetPlayer()->isInFront(selected_unit);
     float distance_to_creature = m_session->GetPlayer()->CalcDistance(selected_unit);
 
-    uint32 creature_state = selected_unit->GetAIInterface()->getCreatureState();
-    uint32 ai_state = selected_unit->GetAIInterface()->getAiState();
-    uint32 ai_type = selected_unit->GetAIInterface()->getAiScriptType();
-    uint32 ai_agent = selected_unit->GetAIInterface()->getCurrentAgent();
+    uint32_t creature_state = selected_unit->GetAIInterface()->getCreatureState();
+    uint32_t ai_state = selected_unit->GetAIInterface()->getAiState();
+    uint32_t ai_type = selected_unit->GetAIInterface()->getAiScriptType();
+    uint32_t ai_agent = selected_unit->GetAIInterface()->getCurrentAgent();
 
-    uint32 current_wp = selected_unit->GetAIInterface()->getCurrentWayPointId();
-    uint32 wp_script_type = selected_unit->GetAIInterface()->getWaypointScriptType();
+    uint32_t current_wp = selected_unit->GetAIInterface()->getCurrentWayPointId();
+    uint32_t wp_script_type = selected_unit->GetAIInterface()->getWaypointScriptType();
 
-    uint32 walk_mode = selected_unit->GetAIInterface()->getWalkMode();
+    uint32_t walk_mode = selected_unit->GetAIInterface()->getWalkMode();
 
-    uint32 attackerscount = static_cast<uint32>(selected_unit->GetAIInterface()->getAITargetsCount());
+    uint32_t attackerscount = static_cast<uint32_t>(selected_unit->GetAIInterface()->getAITargetsCount());
 
     if (selected_unit->isCreature())
         BlueSystemMessage(m_session, "Showing creature moveinfo for %s", static_cast<Creature*>(selected_unit)->GetCreatureProperties()->Name.c_str());
@@ -365,8 +365,8 @@ bool ChatHandler::HandleDebugSpeed(const char* args, WorldSession* m_session)
 //.debug pvpcredit
 bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session)
 {
-    uint32 rank;
-    uint32 points;
+    uint32_t rank;
+    uint32_t points;
     if (sscanf(args, "%u %u", &rank, &points) != 2)
     {
         RedSystemMessage(m_session, "Command must be in format <rank> <points>.");
@@ -475,7 +475,7 @@ bool ChatHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
     if (selected_player == nullptr)
         return true;
 
-    uint32 movie = atol(args);
+    uint32_t movie = atol(args);
 
     selected_player->sendMovie(movie);
 
@@ -492,13 +492,13 @@ bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session
     if (selected_player == nullptr)
         return true;
 
-    uint32 fail = atol(args);
+    uint32_t fail = atol(args);
     if (fail > SPELL_FAILED_UNKNOWN)
     {
         RedSystemMessage(m_session, "Argument %u is out of range!", fail);
         return false;
     }
-    selected_player->sendCastFailedPacket(1, static_cast<uint8>(fail), 0, 0);
+    selected_player->sendCastFailedPacket(1, static_cast<uint8_t>(fail), 0, 0);
 
     return true;
 }

@@ -44,23 +44,23 @@ class SERVER_DECL Map
 {
     public:
 
-        Map(uint32 mapid, MySQLStructure::MapInfo const* inf);
+        Map(uint32_t mapid, MySQLStructure::MapInfo const* inf);
         ~Map();
 
         std::string GetMapName();
 
-        CellSpawns* GetSpawnsList(uint32 cellx, uint32 celly);
+        CellSpawns* GetSpawnsList(uint32_t cellx, uint32_t celly);
 
-        CellSpawns* GetSpawnsListAndCreate(uint32 cellx, uint32 celly);
+        CellSpawns* GetSpawnsListAndCreate(uint32_t cellx, uint32_t celly);
 
-        void LoadSpawns(bool reload);           // set to true to make clean up
-        uint32 CreatureSpawnCount;
-        uint32 GameObjectSpawnCount;
+        void LoadSpawns(bool reload); // set to true to make clean up
+        uint32_t CreatureSpawnCount;
+        uint32_t GameObjectSpawnCount;
 
     private:
 
         MySQLStructure::MapInfo const* _mapInfo;
-        uint32 _mapId;
+        uint32_t _mapId;
         std::string name;
 
         CellSpawns** spawns[_sizeX];

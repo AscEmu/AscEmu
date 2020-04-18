@@ -31,8 +31,8 @@
 
 class LogonCommClientSocket : public Socket
 {
-    uint32 remaining;
-    uint16 opcode;
+    uint32_t remaining;
+    uint16_t opcode;
     RC4Engine _sendCrypto;
     RC4Engine _recvCrypto;
 
@@ -52,7 +52,7 @@ class LogonCommClientSocket : public Socket
         void HandlePong(WorldPacket& recvData);
         void HandleSessionInfo(WorldPacket& recvData);
         void HandleRequestAccountMapping(WorldPacket& recvData);
-        void UpdateAccountCount(uint32 account_id, uint8 add);
+        void UpdateAccountCount(uint32_t account_id, uint8_t add);
         void HandleDisconnectAccount(WorldPacket& recvData);
         void HandleConsoleAuthResult(WorldPacket& recvData);
         void HandlePopulationRequest(WorldPacket& recvData);
@@ -62,15 +62,15 @@ class LogonCommClientSocket : public Socket
 
         void OnDisconnect();
         void CompressAndSend(ByteBuffer& uncompressed);
-        uint32 last_ping;
-        uint32 last_pong;
+        uint32_t last_ping;
+        uint32_t last_pong;
 
-        uint32 pingtime;
-        uint32 latency;
-        uint32 _id;
-        uint32 authenticated;
+        uint32_t pingtime;
+        uint32_t latency;
+        uint32_t _id;
+        uint32_t authenticated;
         bool use_crypto;
-        std::set<uint32> realm_ids;
+        std::set<uint32_t> realm_ids;
 };
 
 typedef void (LogonCommClientSocket::*logonpacket_handler)(WorldPacket&);

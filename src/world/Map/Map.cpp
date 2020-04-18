@@ -27,7 +27,7 @@
 
 // Class Map
 // Holder for all instances of each mapmgr, handles transferring players between, and template holding.
-Map::Map(uint32 mapid, MySQLStructure::MapInfo const* inf)
+Map::Map(uint32_t mapid, MySQLStructure::MapInfo const* inf)
 {
     memset(spawns, 0, sizeof(CellSpawns*) * _sizeX);
 
@@ -48,11 +48,11 @@ Map::~Map()
 {
     LogNotice("Map : ~Map %u", this->_mapId);
 
-    for (uint32 x = 0; x < _sizeX; x++)
+    for (uint32_t x = 0; x < _sizeX; x++)
     {
         if (spawns[x])
         {
-            for (uint32 y = 0; y < _sizeY; y++)
+            for (uint32_t y = 0; y < _sizeY; y++)
             {
                 if (spawns[x][y])
                 {
@@ -81,7 +81,7 @@ std::string Map::GetMapName()
     return name;
 }
 
-CellSpawns* Map::GetSpawnsList(uint32 cellx, uint32 celly)
+CellSpawns* Map::GetSpawnsList(uint32_t cellx, uint32_t celly)
 {
     ARCEMU_ASSERT(cellx < _sizeX);
     ARCEMU_ASSERT(celly < _sizeY);
@@ -90,7 +90,7 @@ CellSpawns* Map::GetSpawnsList(uint32 cellx, uint32 celly)
     return spawns[cellx][celly];
 }
 
-CellSpawns* Map::GetSpawnsListAndCreate(uint32 cellx, uint32 celly)
+CellSpawns* Map::GetSpawnsListAndCreate(uint32_t cellx, uint32_t celly)
 {
     ARCEMU_ASSERT(cellx < _sizeX);
     ARCEMU_ASSERT(celly < _sizeY);
@@ -112,9 +112,9 @@ void Map::LoadSpawns(bool reload)
 {
     if (reload)   //perform cleanup
     { 
-        for (uint32 x = 0; x < _sizeX; x++)
+        for (uint32_t x = 0; x < _sizeX; x++)
         {
-            for (uint32 y = 0; y < _sizeY; y++)
+            for (uint32_t y = 0; y < _sizeY; y++)
             {
                 if (spawns[x][y])
                 {
@@ -137,7 +137,7 @@ void Map::LoadSpawns(bool reload)
         QueryResult* creature_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE map = %u AND min_build <= %u AND max_build >= %u AND event_entry = 0", (*tableiterator).c_str(), this->_mapId, getAEVersion(), getAEVersion());
         if (creature_spawn_result)
         {
-            uint32 creature_spawn_fields = creature_spawn_result->GetFieldCount();
+            uint32_t creature_spawn_fields = creature_spawn_result->GetFieldCount();
             if (creature_spawn_fields != CREATURESPAWNSFIELDCOUNT + 2 + 2)
             {
                 LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), creature_spawn_fields, CREATURESPAWNSFIELDCOUNT);
@@ -152,7 +152,7 @@ void Map::LoadSpawns(bool reload)
                     cspawn->id = fields[0].GetUInt32();
                     cspawn->form = sMySQLStore.getCreatureFormationBySpawnId(cspawn->id);
 
-                    uint32 creature_entry = fields[3].GetUInt32();
+                    uint32_t creature_entry = fields[3].GetUInt32();
                     auto creature_properties = sMySQLStore.getCreatureProperties(creature_entry);
                     if (creature_properties == nullptr)
                     {
@@ -167,8 +167,8 @@ void Map::LoadSpawns(bool reload)
                     cspawn->z = fields[7].GetFloat();
                     cspawn->o = fields[8].GetFloat();
 
-                    uint32 cellx = CellHandler<MapMgr>::GetPosX(cspawn->x);
-                    uint32 celly = CellHandler<MapMgr>::GetPosY(cspawn->y);
+                    uint32_t cellx = CellHandler<MapMgr>::GetPosX(cspawn->x);
+                    uint32_t celly = CellHandler<MapMgr>::GetPosY(cspawn->y);
                     if (spawns[cellx] == NULL)
                     {
                         spawns[cellx] = new CellSpawns*[_sizeY];
@@ -249,7 +249,7 @@ void Map::LoadSpawns(bool reload)
         QueryResult* gobject_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE map = %u AND min_build <= %u AND max_build >= %u AND event_entry = 0", (*tableiterator).c_str(), this->_mapId, VERSION_STRING, VERSION_STRING);
         if (gobject_spawn_result)
         {
-            uint32 gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
+            uint32_t gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
             if (gobject_spawn_fields != GOSPAWNSFIELDCOUNT + 1 + 2)
             {
                 LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), gobject_spawn_fields, GOSPAWNSFIELDCOUNT);
@@ -263,7 +263,7 @@ void Map::LoadSpawns(bool reload)
                     MySQLStructure::GameobjectSpawn* go_spawn = new MySQLStructure::GameobjectSpawn;
                     go_spawn->id = fields[0].GetUInt32();
 
-                    uint32 gameobject_entry = fields[3].GetUInt32();
+                    uint32_t gameobject_entry = fields[3].GetUInt32();
                     auto gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_entry);
                     if (gameobject_info == nullptr)
                     {
@@ -317,8 +317,8 @@ void Map::LoadSpawns(bool reload)
                     }
                     else
                     {
-                        uint32 cellx = CellHandler<MapMgr>::GetPosX(go_spawn->position_x);
-                        uint32 celly = CellHandler<MapMgr>::GetPosY(go_spawn->position_y);
+                        uint32_t cellx = CellHandler<MapMgr>::GetPosX(go_spawn->position_x);
+                        uint32_t celly = CellHandler<MapMgr>::GetPosY(go_spawn->position_y);
                         if (spawns[cellx] == NULL)
                         {
                             spawns[cellx] = new CellSpawns*[_sizeY];

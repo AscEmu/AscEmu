@@ -1,4 +1,4 @@
-/**
+/*
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
  *
@@ -66,7 +66,7 @@ enum CalendarInviteStatus
 
 struct CalendarEvent
 { 
-    CalendarEvent(uint32 p_entry = 0, uint32 p_creator = 0, std::string p_title = "", std::string p_description = "", CalendarEventType p_type = CALENDAR_TYPE_RAID, uint32 p_dungeon = 0, time_t p_date = 0, uint32 p_flags = 0)
+    CalendarEvent(uint32_t p_entry = 0, uint32_t p_creator = 0, std::string p_title = "", std::string p_description = "", CalendarEventType p_type = CALENDAR_TYPE_RAID, uint32_t p_dungeon = 0, time_t p_date = 0, uint32_t p_flags = 0)
     {
         entry = p_entry;
         creator = p_creator;
@@ -80,19 +80,19 @@ struct CalendarEvent
 
     ~CalendarEvent(){};
 
-    uint32 entry;               // entry of the calendar event (unique)
-    uint32 creator;             // id of the character
-    std::string title;          // title of the calendar event
-    std::string description;    // description of the event
-    CalendarEventType type;     // the calendar type
-    uint32 dungeon;             // the dungeon id
-    time_t date;                // the date
-    uint32 flags;               // the flag
+    uint32_t entry;               // entry of the calendar event (unique)
+    uint32_t creator;             // id of the character
+    std::string title;            // title of the calendar event
+    std::string description;      // description of the event
+    CalendarEventType type;       // the calendar type
+    uint32_t dungeon;             // the dungeon id
+    time_t date;                  // the date
+    uint32_t flags;               // the flag
 };
 
 struct CalendarInvite
 {
-    CalendarInvite(uint32 p_invite_id = 0, uint32 p_event = 0, uint32 p_invitee = 0, uint32 p_sender = 0, CalendarInviteStatus p_status = CALENDAR_STATUS_REMOVED, time_t p_statustime = 0, uint32 p_rank = 0, std::string p_text = "")
+    CalendarInvite(uint32_t p_invite_id = 0, uint32_t p_event = 0, uint32_t p_invitee = 0, uint32_t p_sender = 0, CalendarInviteStatus p_status = CALENDAR_STATUS_REMOVED, time_t p_statustime = 0, uint32_t p_rank = 0, std::string p_text = "")
     {
         invite_id = p_invite_id;
         event = p_event;
@@ -106,19 +106,19 @@ struct CalendarInvite
 
     ~CalendarInvite(){};
 
-    uint32 invite_id;               // entry of the calendar event (unique)
-    uint32 event;             // id of the character
-    uint32 invitee;
-    uint32 sender;
+    uint32_t invite_id;           // entry of the calendar event (unique)
+    uint32_t event;               // id of the character
+    uint32_t invitee;
+    uint32_t sender;
     CalendarInviteStatus status;
     time_t statustime;
-    uint32 rank;
+    uint32_t rank;
     std::string text;
 
 };
 typedef std::vector<CalendarInvite*> CalendarInviteStore;
 typedef std::set<CalendarEvent*> CalendarEventStore;
-typedef std::map<uint64 /* eventId */, CalendarInviteStore > CalendarEventInviteStore;
+typedef std::map<uint64_t /* eventId */, CalendarInviteStore > CalendarEventInviteStore;
 
 class CalendarMgr
 {
@@ -140,7 +140,6 @@ class CalendarMgr
         CalendarEventInviteStore _invites;
 
         void LoadFromDB();
-
 };
 
 #define sCalendarMgr CalendarMgr::getInstance()

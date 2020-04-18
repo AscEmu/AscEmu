@@ -40,9 +40,9 @@ enum
     REWARD_REPUTATION_VALUE = 20,
 };
 
-int32 silithyst_gathered[2] = { 0, 0 };
+int32_t silithyst_gathered[2] = { 0, 0 };
 
-int32 winners = -1;
+int32_t winners = -1;
 bool locked = false;
 
 void InitWorldStates(shared_ptr<MapMgr> pmgr)
@@ -57,7 +57,7 @@ void InitWorldStates(shared_ptr<MapMgr> pmgr)
     }
 }
 
-void SilithusZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
+void SilithusZoneHook(PlayerPointer plr, uint32_t Zone, uint32_t OldZone)
 {
     if(!plr)
         return;
@@ -74,7 +74,7 @@ void SilithusZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
     }
 }
 
-void AreatriggerHook(PlayerPointer pPlayer, uint32 triggerID)
+void AreatriggerHook(PlayerPointer pPlayer, uint32_t triggerID)
 {
     if(!pPlayer)
         return;
@@ -91,7 +91,7 @@ void AreatriggerHook(PlayerPointer pPlayer, uint32 triggerID)
             pPlayer->m_honorPoints += REWARD_HONOR;
             pPlayer->ModStanding(REWARD_REPUTATION_FACTION, REWARD_REPUTATION_VALUE);
 
-            uint32 quest = pPlayer->GetTeam() == ALLIANCE ? ALLIANCE_SILITHYST_QUEST : HORDE_SILITHYST_QUEST;
+            uint32_t quest = pPlayer->GetTeam() == ALLIANCE ? ALLIANCE_SILITHYST_QUEST : HORDE_SILITHYST_QUEST;
             QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(quest);
             if(qle)
                 qle->SendQuestComplete();
@@ -99,7 +99,7 @@ void AreatriggerHook(PlayerPointer pPlayer, uint32 triggerID)
             if(locked)
                 return;
             silithyst_gathered[ pPlayer->GetTeam() ]++;
-            uint32 worldstate = pPlayer->GetTeam() == ALLIANCE ? WORLDSTATE_SILITHUS_GATHERED_ALLIANCE : WORLDSTATE_SILITHUS_GATHERED_HORDE;
+            uint32_t worldstate = pPlayer->GetTeam() == ALLIANCE ? WORLDSTATE_SILITHUS_GATHERED_ALLIANCE : WORLDSTATE_SILITHUS_GATHERED_HORDE;
             pPlayer->GetMapMgr()->GetStateManager().UpdateWorldState(worldstate , silithyst_gathered[ pPlayer->GetTeam() ]);
             if(silithyst_gathered[ pPlayer->GetTeam() ] >= SILITHYST_MAX)
             {
@@ -129,11 +129,11 @@ public:
     }
 };
 
-void DropFlag(PlayerPointer  pPlayer, uint32 spellID)
+void DropFlag(PlayerPointer  pPlayer, uint32_t spellID)
 {
     if(!pPlayer || spellID != SILITHYST_SPELL)
         return;
-    uint32 triggerID = pPlayer->GetTeam() == ALLIANCE ? ALLIANCE_RETURN : HORDE_RETURN;
+    uint32_t triggerID = pPlayer->GetTeam() == ALLIANCE ? ALLIANCE_RETURN : HORDE_RETURN;
     // we have to use AreaTrigger.dbc here
     AreaTrigger* pAreaTrigger = AreaTriggerStorage.LookupEntry(triggerID);
     if(pAreaTrigger)

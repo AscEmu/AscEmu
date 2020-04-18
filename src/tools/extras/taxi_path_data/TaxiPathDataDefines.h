@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef uint32
     typedef unsigned int uint32;
 #endif

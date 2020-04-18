@@ -38,7 +38,7 @@ public:
         if (pCreature == nullptr)
             return;
 
-        uint32 chance = Util::getRandomUInt(1);
+        uint32_t chance = Util::getRandomUInt(1);
         if (chance == 0)
         {
             pCreature->SetFaction(14);
@@ -60,7 +60,7 @@ public:
     {
 #if VERSION_STRING > TBC
         // send packet for movie
-        uint32 id = 14;
+        uint32_t id = 14;
         mTarget->sendMovie(id);
 #endif
     }

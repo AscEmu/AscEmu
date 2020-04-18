@@ -44,16 +44,16 @@ namespace VMAP
     {
         public:
             //mapID, tileX, tileY, Flags, ID, Pos, Rot, Scale, Bound_lo, Bound_hi, name
-            uint32 flags;
-            uint16 adtId;
-            uint32 ID;
+            uint32_t flags;
+            uint16_t adtId;
+            uint32_t ID;
             G3D::Vector3 iPos;
             G3D::Vector3 iRot;
             float iScale;
             G3D::AABox iBound;
             std::string name;
             bool operator==(const ModelSpawn &other) const { return ID == other.ID; }
-            //uint32 hashCode() const { return ID; }
+            //uint32_t hashCode() const { return ID; }
             // temp?
             const G3D::AABox& getBounds() const { return iBound; }
 

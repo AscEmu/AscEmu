@@ -43,8 +43,8 @@ public:
         Item* of = static_cast<Player*>(mTarget)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
         if (mh != nullptr && of != nullptr)
         {
-            uint32 mhs = mh->getItemProperties()->Delay;
-            uint32 ohs = of->getItemProperties()->Delay;
+            uint32_t mhs = mh->getItemProperties()->Delay;
+            uint32_t ohs = of->getItemProperties()->Delay;
             mProcChance = mhs * ohs / (800 * (mhs + ohs));     // 0.75 ppm
         }
     }
@@ -52,7 +52,7 @@ public:
 
 void SpellProcMgr::SetupItems()
 {
-    uint32 mindNumbingPoison[] =
+    uint32_t mindNumbingPoison[] =
     {
         //SPELL_HASH_THE_TWIN_BLADES_OF_AZZINOTH
         41434,

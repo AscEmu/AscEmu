@@ -249,7 +249,7 @@ public:
         menu.sendGossipPacket(pPlayer);
     }
 
-    void onSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* pPlayer, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
@@ -316,7 +316,7 @@ public:
 
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());
+        uint32_t Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());
 
         // check if there is a entry in the db
         if (sMySQLStore.getNpcText(Text) == nullptr)
@@ -330,7 +330,7 @@ public:
         menu.sendGossipPacket(pPlayer);
     }
 
-    void onSelectOption(Object* pObject, Player* pPlayer, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* pPlayer, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         pPlayer->GetSession()->sendTaxiList(static_cast<Creature*>(pObject));
     }
@@ -543,7 +543,7 @@ class GearmasterMechazodAI : public CreatureAIScript
 
 protected:
 
-    uint32 phase;
+    uint32_t phase;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -562,7 +562,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* /*pPlayer*/, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* /*pPlayer*/, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* SaltyJohn = static_cast<Creature*>(pObject);
         SaltyJohn->SetFaction(14);
@@ -584,7 +584,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* /*pPlayer*/, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* /*pPlayer*/, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* TomHegger = static_cast<Creature*>(pObject);
         TomHegger->SetFaction(14);
@@ -606,7 +606,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* /*pPlayer*/, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* /*pPlayer*/, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* GuardMitch = static_cast<Creature*>(pObject);
         GuardMitch->SetFaction(14);

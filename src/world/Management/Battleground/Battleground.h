@@ -37,7 +37,7 @@ class SERVER_DECL CBattleground : public EventableObject
     /// True if battleground has ended
     bool m_ended;
     /// Team that won the battleground, set when m_ended is set
-    uint8 m_winningteam;
+    uint8_t m_winningteam;
 
     protected:
 
@@ -47,38 +47,38 @@ class SERVER_DECL CBattleground : public EventableObject
 
         MapMgr* m_mapMgr;
 
-        uint32 m_id;
-        uint32 m_type;
-        uint32 m_levelGroup;
-        uint32 m_deltaRating[2];
+        uint32_t m_id;
+        uint32_t m_type;
+        uint32_t m_levelGroup;
+        uint32_t m_deltaRating[2];
 
-        std::atomic<uint32> m_invisGMs;
+        std::atomic<uint32_t> m_invisGMs;
 
-        uint32 m_honorPerKill;
-        uint32 m_zoneid;
+        uint32_t m_honorPerKill;
+        uint32_t m_zoneid;
 
         std::recursive_mutex m_mutex;
 
         // PvP Log Data Map
-        std::map<uint32, BGScore> m_pvpData;
+        std::map<uint32_t, BGScore> m_pvpData;
 
         // Player count per team 
-        uint32 m_playerCountPerTeam;
+        uint32_t m_playerCountPerTeam;
 
         // "pending" players
-        std::set<uint32> m_pendPlayers[2];
+        std::set<uint32_t> m_pendPlayers[2];
 
         // starting time
-        uint32 m_startTime;
+        uint32_t m_startTime;
         bool m_started;
 
         // countdown stuff
-        uint32 m_countdownStage;
+        uint32_t m_countdownStage;
 
         // resurrect queue
 
-        std::map<Creature*, std::set<uint32> > m_resurrectMap;
-        uint32 m_lastResurrect;
+        std::map<Creature*, std::set<uint32_t> > m_resurrectMap;
+        uint32_t m_lastResurrect;
 
         bool m_isWeekend;
 
@@ -96,13 +96,13 @@ class SERVER_DECL CBattleground : public EventableObject
         bool HasStarted();
         bool HasEnded();
 
-        void AddHonorToTeam(uint32 team, uint32 amount);
+        void AddHonorToTeam(uint32_t team, uint32_t amount);
 
-        void CastSpellOnTeam(uint32 team, uint32 spell);
+        void CastSpellOnTeam(uint32_t team, uint32_t spell);
 
-        void RemoveAuraFromTeam(uint32 team, uint32 aura);
+        void RemoveAuraFromTeam(uint32_t team, uint32_t aura);
 
-        void SendChatMessage(uint32 Type, uint64 Guid, const char* Format, ...);
+        void SendChatMessage(uint32_t Type, uint64_t Guid, const char* Format, ...);
 
         // Hook Functions
         virtual bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam);
@@ -132,7 +132,7 @@ class SERVER_DECL CBattleground : public EventableObject
         virtual void HookOnHK(Player* plr) = 0;
 
         // On Area Trigger
-        virtual void HookOnAreaTrigger(Player* plr, uint32 id) = 0;
+        virtual void HookOnAreaTrigger(Player* plr, uint32_t id) = 0;
 
         // On Shadow Sight
         virtual void HookOnShadowSight() = 0;
@@ -147,15 +147,15 @@ class SERVER_DECL CBattleground : public EventableObject
         virtual void OnRemovePlayer(Player* plr) = 0;
 
         // Get the starting position for this team.
-        virtual LocationVector GetStartingCoords(uint32 Team) = 0;
+        virtual LocationVector GetStartingCoords(uint32_t Team) = 0;
 
         // Retrieval Functions
-        uint32 GetId();
-        uint32 GetLevelGroup();
+        uint32_t GetId();
+        uint32_t GetLevelGroup();
         MapMgr* GetMapMgr();
 
         // Creating a battleground requires a pre-existing map manager
-        CBattleground(MapMgr* mgr, uint32 id, uint32 levelgroup, uint32 type);
+        CBattleground(MapMgr* mgr, uint32_t id, uint32_t levelgroup, uint32_t type);
         virtual ~CBattleground();
 
         // Send the pvp log data of all players to this player
@@ -165,72 +165,72 @@ class SERVER_DECL CBattleground : public EventableObject
         void DistributePacketToAll(WorldPacket* packet);
 
         // send a packet to only this team
-        void DistributePacketToTeam(WorldPacket* packet, uint32 Team);
+        void DistributePacketToTeam(WorldPacket* packet, uint32_t Team);
 
-        void PlaySoundToTeam(uint32 Team, uint32 Sound);
+        void PlaySoundToTeam(uint32_t Team, uint32_t Sound);
 
-        void PlaySoundToAll(uint32 Sound);
+        void PlaySoundToAll(uint32_t Sound);
 
         bool IsFull() { return !(HasFreeSlots(0, m_type) || HasFreeSlots(1, m_type)); }
 
         // Are we full?
-        bool HasFreeSlots(uint32 Team, uint32 type);
+        bool HasFreeSlots(uint32_t Team, uint32_t type);
 
-        void AddPlayer(Player* plr, uint32 team);
+        void AddPlayer(Player* plr, uint32_t team);
         void RemovePlayer(Player* plr, bool logout);
         void PortPlayer(Player* plr, bool skip_teleport = false);
         void RemovePendingPlayer(Player* plr);
-        uint32 GetFreeSlots(uint32 t, uint32 type);
+        uint32_t GetFreeSlots(uint32_t t, uint32_t type);
 
-        GameObject* SpawnGameObject(uint32 entry, uint32 MapId, float x, float y, float z, float o, uint32 flags, uint32 faction, float scale);
-        GameObject* SpawnGameObject(uint32 entry, LocationVector& v, uint32 flags, uint32 faction, float scale);
-        Creature* SpawnCreature(uint32 entry, float x, float y, float z, float o, uint32 faction = 0);
-        Creature* SpawnCreature(uint32 entry, LocationVector& v, uint32 faction = 0);
+        GameObject* SpawnGameObject(uint32_t entry, uint32_t MapId, float x, float y, float z, float o, uint32_t flags, uint32_t faction, float scale);
+        GameObject* SpawnGameObject(uint32_t entry, LocationVector& v, uint32_t flags, uint32_t faction, float scale);
+        Creature* SpawnCreature(uint32_t entry, float x, float y, float z, float o, uint32_t faction = 0);
+        Creature* SpawnCreature(uint32_t entry, LocationVector& v, uint32_t faction = 0);
         void UpdatePvPData();
 
-        uint32 GetStartTime();
-        uint32 GetType();
+        uint32_t GetStartTime();
+        uint32_t GetType();
 
         // events should execute in the correct context
-        int32 event_GetInstanceID() override;
+        int32_t event_GetInstanceID() override;
         void EventCreate();
 
-        virtual uint32 GetNameID();
+        virtual uint32_t GetNameID();
         void EventCountdown();
 
         void Close();
 
-        void SetWorldState(uint32 Index, uint32 Value);
-        Creature* SpawnSpiritGuide(float x, float y, float z, float o, uint32 horde);
-        Creature* SpawnSpiritGuide(LocationVector& v, uint32 faction);
+        void SetWorldState(uint32_t Index, uint32_t Value);
+        Creature* SpawnSpiritGuide(float x, float y, float z, float o, uint32_t horde);
+        Creature* SpawnSpiritGuide(LocationVector& v, uint32_t faction);
 
-        uint32 GetLastResurrect();
+        uint32_t GetLastResurrect();
         void AddSpiritGuide(Creature* pCreature);
         void RemoveSpiritGuide(Creature* pCreature);
         void QueuePlayerForResurrect(Player* plr, Creature* spirit_healer);
         void RemovePlayerFromResurrect(Player* plr, Creature* spirit_healer);
         void EventResurrectPlayers();
-        virtual bool CanPlayerJoin(Player* plr, uint32 type);
+        virtual bool CanPlayerJoin(Player* plr, uint32_t type);
         virtual bool CreateCorpse(Player* plr);
 
         void BuildPvPUpdateDataPacket(WorldPacket* data);
-        virtual uint8 Rated();
+        virtual uint8_t Rated();
         void OnPlayerPushed(Player* plr);
 
         virtual void SetIsWeekend(bool isweekend);
         void QueueAtNearestSpiritGuide(Player* plr, Creature* old);
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// uint64 GetFlagHolderGUID(uint32 faction)
+        /// uint64_t GetFlagHolderGUID(uint32_t faction)
         /// Tells the GUID of the player who currently holds the flag
         ///
-        /// \param  uint32 faction - The faction of the flag holder we are interested in
+        /// \param  uint32_t faction - The faction of the flag holder we are interested in
         ///
-        /// \note   Returns a GUID as an uint64 if the flag is held.
+        /// \note   Returns a GUID as an uint64_t if the flag is held.
         ///         Returns 0 otherwise.
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-        virtual uint64 GetFlagHolderGUID(uint32 faction) const;
+        virtual uint64_t GetFlagHolderGUID(uint32_t faction) const;
 };
 
 

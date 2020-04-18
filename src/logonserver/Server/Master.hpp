@@ -44,8 +44,8 @@ class MasterLogon
         void PrintBanner();
         void WritePidFile();
 
-        uint32 clientMinBuild;
-        uint32 clientMaxBuild;
+        uint32_t clientMinBuild;
+        uint32_t clientMaxBuild;
 
     private:
 

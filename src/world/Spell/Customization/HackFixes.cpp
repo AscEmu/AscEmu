@@ -110,7 +110,7 @@ void SpellMgr::setMissingSpellLevel(SpellInfo* sp)
     //stupid spell ranking problem
     if (sp->getSpellLevel() == 0)
     {
-        uint32 new_level = 0;
+        uint32_t new_level = 0;
 
         // 16/03/08 Zyres: just replaced name assignes with spell ids. \todo remove not teachable spells.
         switch (sp->getId())
@@ -423,7 +423,7 @@ void SpellMgr::setMissingSpellLevel(SpellInfo* sp)
 
         if (new_level != 0)
         {
-            uint32 teachspell = 0;
+            uint32_t teachspell = 0;
             if (sp->getEffect(0) == SPELL_EFFECT_LEARN_SPELL)
                 teachspell = sp->getEffectTriggerSpell(0);
             else if (sp->getEffect(1) == SPELL_EFFECT_LEARN_SPELL)
@@ -455,7 +455,7 @@ void SpellMgr::modifyAuraInterruptFlags(SpellInfo* sp)
     // HACK FIX: Break roots/fear on damage.. this needs to be fixed properly!
     if (!(sp->getAuraInterruptFlags() & AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN))
     {
-        for (uint8 z = 0; z < 3; ++z)
+        for (uint8_t z = 0; z < 3; ++z)
         {
             if (sp->getEffectApplyAuraName(z) == SPELL_AURA_MOD_FEAR || sp->getEffectApplyAuraName(z) == SPELL_AURA_MOD_ROOT)
             {
@@ -679,7 +679,7 @@ void SpellMgr::applyHackFixes()
             case 62317:     // Devastate
             case 69902:     // Devastate
             {
-                uint32 temp;
+                uint32_t temp;
                 float ftemp;
                 temp = sp->getEffect(1);
                 sp->setEffect(sp->getEffect(2), 1);
@@ -745,7 +745,7 @@ void SpellMgr::applyHackFixes()
                 break;
         }
 
-        for (uint8 b = 0; b < 3; ++b)
+        for (uint8_t b = 0; b < 3; ++b)
         {
             if (sp->getEffectTriggerSpell(b) != 0 && sSpellMgr.getSpellInfo(sp->getEffectTriggerSpell(b)) == NULL)
             {
@@ -921,7 +921,7 @@ void SpellMgr::applyHackFixes()
             case 61411:     // Shield of Righteousness Rank 2
             {
                 sp->setEffect(SPELL_EFFECT_DUMMY, 0);
-                sp->setEffect(SPELL_EFFECT_NULL, 1);          //hacks, handling it in Spell::SpellEffectSchoolDMG(uint32 i)
+                sp->setEffect(SPELL_EFFECT_NULL, 1);          //hacks, handling it in Spell::SpellEffectSchoolDMG(uint32_t i)
                 sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 2); //hack
             } break;
 
@@ -1548,7 +1548,7 @@ void SpellMgr::applyHackFixes()
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setEffectTriggerSpell(34456, 0);
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF)); //maybe target master ?
+        sp->setProcFlags(PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32_t>(PROC_TARGET_SELF)); //maybe target master ?
         sp->setEffect(SPELL_EFFECT_NULL, 1); //remove this
     }
     sp = getMutableSpellInfo(34459);
@@ -1557,7 +1557,7 @@ void SpellMgr::applyHackFixes()
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setEffectTriggerSpell(34456, 0);
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF));
+        sp->setProcFlags(PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32_t>(PROC_TARGET_SELF));
         sp->setEffect(SPELL_EFFECT_NULL, 1); //remove this
     }
     sp = getMutableSpellInfo(34460);
@@ -1566,7 +1566,7 @@ void SpellMgr::applyHackFixes()
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setEffectTriggerSpell(34456, 0);
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF));
+        sp->setProcFlags(PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32_t>(PROC_TARGET_SELF));
         sp->setEffect(SPELL_EFFECT_NULL, 1); //remove this
     }
 
@@ -1588,7 +1588,7 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(34497);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF));
+        sp->setProcFlags(PROC_ON_SPELL_CRIT_HIT | static_cast<uint32_t>(PROC_TARGET_SELF));
         sp->setProcChance(sp->getEffectBasePoints(0) + 1);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(34720, 0);
@@ -1596,7 +1596,7 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(34498);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF));
+        sp->setProcFlags(PROC_ON_SPELL_CRIT_HIT | static_cast<uint32_t>(PROC_TARGET_SELF));
         sp->setProcChance(sp->getEffectBasePoints(0) + 1);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(34720, 0);
@@ -1604,7 +1604,7 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(34499);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF));
+        sp->setProcFlags(PROC_ON_SPELL_CRIT_HIT | static_cast<uint32_t>(PROC_TARGET_SELF));
         sp->setProcChance(sp->getEffectBasePoints(0) + 1);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(34720, 0);
@@ -1618,7 +1618,7 @@ void SpellMgr::applyHackFixes()
         sp->setEffectTriggerSpell(19615, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setProcChance(sp->getEffectBasePoints(0));
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
+        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32_t>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
     }
     sp = getMutableSpellInfo(19622);
     if (sp != nullptr)
@@ -1627,7 +1627,7 @@ void SpellMgr::applyHackFixes()
         sp->setEffectTriggerSpell(19615, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setProcChance(sp->getEffectBasePoints(0));
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
+        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32_t>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
     }
     sp = getMutableSpellInfo(19623);
     if (sp != nullptr)
@@ -1636,7 +1636,7 @@ void SpellMgr::applyHackFixes()
         sp->setEffectTriggerSpell(19615, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setProcChance(sp->getEffectBasePoints(0));
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
+        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32_t>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
     }
     sp = getMutableSpellInfo(19624);
     if (sp != nullptr)
@@ -1645,7 +1645,7 @@ void SpellMgr::applyHackFixes()
         sp->setEffectTriggerSpell(19615, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setProcChance(sp->getEffectBasePoints(0));
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
+        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32_t>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
     }
     sp = getMutableSpellInfo(19625);
     if (sp != nullptr)
@@ -1654,7 +1654,7 @@ void SpellMgr::applyHackFixes()
         sp->setEffectTriggerSpell(19615, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setProcChance(sp->getEffectBasePoints(0));
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
+        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32_t>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
     }
 
     //Hunter : Pathfinding
@@ -1673,12 +1673,12 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(34948);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_GAIN_EXPIERIENCE | static_cast<uint32>(PROC_TARGET_SELF));
+        sp->setProcFlags(PROC_ON_GAIN_EXPIERIENCE | static_cast<uint32_t>(PROC_TARGET_SELF));
     }
     sp = getMutableSpellInfo(34949);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_GAIN_EXPIERIENCE | static_cast<uint32>(PROC_TARGET_SELF));
+        sp->setProcFlags(PROC_ON_GAIN_EXPIERIENCE | static_cast<uint32_t>(PROC_TARGET_SELF));
     }
 
     // Feed pet
@@ -2238,7 +2238,7 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(20608);   //Reincarnation
     if (sp != nullptr)
     {
-        for (uint8 i = 0; i < 8; ++i)
+        for (uint8_t i = 0; i < 8; ++i)
         {
             if (sp->getReagent(i))
             {
@@ -2449,7 +2449,7 @@ void SpellMgr::applyHackFixes()
         sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(28682, 1);
-        sp->setProcFlags(PROC_ON_SPELL_HIT | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF));
+        sp->setProcFlags(PROC_ON_SPELL_HIT | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32_t>(PROC_TARGET_SELF));
         sp->setProcChance(0);
     }
 
@@ -2936,7 +2936,7 @@ void SpellMgr::applyHackFixes()
         sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
     }
     // Zyres: eeek
-    for (uint32 i = 23833; i <= 23844; ++i)
+    for (uint32_t i = 23833; i <= 23844; ++i)
     {
         sp = getMutableSpellInfo(i);
         if (sp != nullptr)
@@ -2979,7 +2979,7 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(18213);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_TARGET_DIE | static_cast<uint32>(PROC_TARGET_SELF));
+        sp->setProcFlags(PROC_ON_TARGET_DIE | static_cast<uint32_t>(PROC_TARGET_SELF));
         sp->setProcChance(100);
         sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
@@ -2990,7 +2990,7 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(18372);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_TARGET_DIE | static_cast<uint32>(PROC_TARGET_SELF));
+        sp->setProcFlags(PROC_ON_TARGET_DIE | static_cast<uint32_t>(PROC_TARGET_SELF));
         sp->setProcChance(100);
         sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
@@ -3027,7 +3027,7 @@ void SpellMgr::applyHackFixes()
 
     //Warlock Healthstones
     int HealthStoneID[8] = { 6201, 6202, 5699, 11729, 11730, 27230, 47871, 47878 };
-    for (uint8 i = 0; i < 8; i++)
+    for (uint8_t i = 0; i < 8; i++)
     {
         sp = getMutableSpellInfo(HealthStoneID[i]);
         if (sp != nullptr)
@@ -3162,7 +3162,7 @@ void SpellMgr::applyHackFixes()
         sp->setRequiredShapeShift(0);
 
     // Druid - Predatory Strikes
-    uint32 mm = decimalToMask(FORM_BEAR) | decimalToMask(FORM_DIREBEAR) | decimalToMask(FORM_MOONKIN) | decimalToMask(FORM_CAT);
+    uint32_t mm = decimalToMask(FORM_BEAR) | decimalToMask(FORM_DIREBEAR) | decimalToMask(FORM_MOONKIN) | decimalToMask(FORM_CAT);
 
     sp = getMutableSpellInfo(16972);
     if (sp != nullptr)
@@ -3628,7 +3628,7 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(20619);
     if (sp != nullptr)
     {
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < 3; ++i)
         {
             if (sp->getEffectImplicitTargetA(i) > 0)
                 sp->setEffectImplicitTargetA(EFF_TARGET_ALL_FRIENDLY_IN_AREA, i);
@@ -3641,7 +3641,7 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(21075);
     if (sp != nullptr)
     {
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < 3; ++i)
         {
             if (sp->getEffectImplicitTargetA(i) > 0)
                 sp->setEffectImplicitTargetA(EFF_TARGET_ALL_FRIENDLY_IN_AREA, i);
@@ -3985,7 +3985,7 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(7720);
     if (sp)
     {
-        const uint32 ritOfSummId = 62330;
+        const uint32_t ritOfSummId = 62330;
         createDummySpell(ritOfSummId);
         SpellInfo* ritOfSumm = getMutableSpellInfo(ritOfSummId);
         if (ritOfSumm != NULL)

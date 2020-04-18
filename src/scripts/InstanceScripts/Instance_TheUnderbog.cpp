@@ -182,7 +182,7 @@ class SwamplordMuselekAI : public CreatureAIScript
                 getCreature()->GetAIInterface()->StopMovement(2000);
                 if (!getCreature()->isCastingSpell())
                 {
-                    uint32 RangedSpell = Util::getRandomUInt(100);
+                    uint32_t RangedSpell = Util::getRandomUInt(100);
                     if (RangedSpell <= 20 && _isTimerFinished(aimedShot->mCooldownTimerId))
                     {
                         getCreature()->castSpell(target, aimedShot->mSpellInfo, true);

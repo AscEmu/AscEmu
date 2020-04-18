@@ -97,8 +97,8 @@ class AnomalusAI : public CreatureAIScript
 
 private:
 
-    int32 mSummonTimer;
-    uint8 mSummon;
+    int32_t mSummonTimer;
+    uint8_t mSummon;
     bool mRift;
     InstanceScript* mInstance;
 };
@@ -209,7 +209,7 @@ class TelestraBossAI : public CreatureAIScript
             _setTargetingDisabled(true);
             _applyAura(60191);
 
-            for (uint8 i = 0; i < 3; ++i)
+            for (uint8_t i = 0; i < 3; ++i)
             {
                 mAddArray[i] = spawnCreature(CN_TELESTRA_FIRE + i, FormSpawns[i].x, FormSpawns[i].y, FormSpawns[i].z, FormSpawns[i].o);
                 if (mAddArray[i] != NULL)
@@ -219,7 +219,7 @@ class TelestraBossAI : public CreatureAIScript
 
         if (isScriptPhase(2))
         {
-            for (uint8 i = 0; i < 3; ++i)
+            for (uint8_t i = 0; i < 3; ++i)
             {
                 if (mAddArray[i] != NULL)
                 {
@@ -243,7 +243,7 @@ class TelestraBossAI : public CreatureAIScript
 
     void OnCombatStop(Unit* /*pTarget*/) override
     {
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < 3; ++i)
         {
             if (mAddArray[i] != NULL)
             {
@@ -255,7 +255,7 @@ class TelestraBossAI : public CreatureAIScript
 
     void OnDied(Unit* /*pKiller*/) override
     {
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < 3; ++i)
         {
             if (mAddArray[i] != NULL)
             {
@@ -280,8 +280,8 @@ private:
 
     Creature* mAddArray[3];
 
-    int32 mPhaseRepeat;
-    int32 mAddCount;
+    int32_t mPhaseRepeat;
+    int32_t mAddCount;
 
     InstanceScript* mInstance;
 };
@@ -490,14 +490,14 @@ class NexusScript : public InstanceScript
 {
 public:
 
-    uint32 mAnomalusGUID;
-    uint32 mTelestraGUID;
-    uint32 mOrmorokGUID;
-    uint32 mKeristraszaGUID;
+    uint32_t mAnomalusGUID;
+    uint32_t mTelestraGUID;
+    uint32_t mOrmorokGUID;
+    uint32_t mKeristraszaGUID;
 
-    uint8 mCSCount;
+    uint8_t mCSCount;
 
-    uint32 m_uiEncounters[NEXUS_END];
+    uint32_t m_uiEncounters[NEXUS_END];
 
     explicit NexusScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
@@ -508,7 +508,7 @@ public:
 
         mCSCount = 0;
 
-        for (uint8 i = 0; i < NEXUS_END; ++i)
+        for (uint8_t i = 0; i < NEXUS_END; ++i)
             m_uiEncounters[i] = NotStarted;
 
         PrepareGameObjectsForState();
@@ -625,12 +625,12 @@ public:
             // team spawns
             if (player->getTeam() == TEAM_ALLIANCE)
             {
-                for (uint8 i = 0; i < 18; i++)
+                for (uint8_t i = 0; i < 18; i++)
                     spawnCreature(TrashHordeSpawns[i].entry, TrashHordeSpawns[i].x, TrashHordeSpawns[i].y, TrashHordeSpawns[i].z, TrashHordeSpawns[i].o, TrashHordeSpawns[i].faction);
             }
             else
             {
-                for (uint8 i = 0; i < 18; i++)
+                for (uint8_t i = 0; i < 18; i++)
                     spawnCreature(TrashAllySpawns[i].entry, TrashAllySpawns[i].x, TrashAllySpawns[i].y, TrashAllySpawns[i].z, TrashAllySpawns[i].o, TrashAllySpawns[i].faction);
             }
 

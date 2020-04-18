@@ -96,7 +96,7 @@ class SocketMgr
         /// closes all sockets
         void CloseAll();
 
-        uint32 GetSocketCount() { return socket_count.load(); }
+        uint32_t GetSocketCount() { return socket_count.load(); }
 
         /// spawns worker threads
         void SpawnWorkerThreads();

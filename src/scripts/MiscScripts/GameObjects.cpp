@@ -404,7 +404,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        uint32 Chance = Util::getRandomUInt(100);
+        uint32_t Chance = Util::getRandomUInt(100);
         if (Chance <= 10)
         {
             LocationVector pos = player->GetPosition();

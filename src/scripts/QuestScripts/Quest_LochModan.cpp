@@ -64,13 +64,13 @@ class Miran : public CreatureAIScript
     {
         WPCount = 7;
 
-        for (uint8 i = 1; i <= WPCount; ++i)
+        for (uint8_t i = 1; i <= WPCount; ++i)
             AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, WaypointsMiran[i]));
 
         pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 7)
         {
@@ -89,7 +89,7 @@ class Miran : public CreatureAIScript
         }
     }
 
-    uint8 WPCount;
+    uint8_t WPCount;
 };
 
 void SetupLochModan(ScriptMgr* mgr)

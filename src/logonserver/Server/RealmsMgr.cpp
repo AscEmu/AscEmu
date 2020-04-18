@@ -200,7 +200,7 @@ void RealmsMgr::sendRealms(AuthSocket* Socket)
 
     *reinterpret_cast<uint16_t*>(&data.contents()[1]) = uint16_t(data.size() - 3);
 
-    Socket->Send(static_cast<const uint8*>(data.contents()), uint32_t(data.size()));
+    Socket->Send(static_cast<const uint8_t*>(data.contents()), uint32_t(data.size()));
 
     std::list<LogonCommServerSocket*> server_sockets;
 

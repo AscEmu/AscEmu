@@ -102,7 +102,7 @@ class SamAI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class BerAI : public CreatureAIScript
@@ -157,7 +157,7 @@ class BerAI : public CreatureAIScript
     }
 
 protected:
-    uint32 timer;
+    uint32_t timer;
 
 };
 
@@ -217,7 +217,7 @@ class SigAI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class MaiAI : public CreatureAIScript
@@ -274,7 +274,7 @@ class MaiAI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 
@@ -345,7 +345,7 @@ class ThuAI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class UndeadAI : public CreatureAIScript
@@ -390,7 +390,7 @@ class UndeadAI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class Undead2AI : public CreatureAIScript
@@ -436,7 +436,7 @@ class Undead2AI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class Undead3AI : public CreatureAIScript
@@ -475,7 +475,7 @@ class Undead3AI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class TriggerAI : public CreatureAIScript
@@ -566,7 +566,7 @@ class TriggerAI : public CreatureAIScript
     }
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class Trigger2AI : public CreatureAIScript
@@ -651,7 +651,7 @@ class Trigger2AI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class Effectsground : public CreatureAIScript
@@ -767,7 +767,7 @@ class Effectsground : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class Effectsair : public CreatureAIScript
@@ -832,7 +832,7 @@ class Effectsair : public CreatureAIScript
     }
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 void SetupL70ETC(ScriptMgr* mgr)

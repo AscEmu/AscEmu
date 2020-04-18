@@ -24,7 +24,7 @@
 LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 65536, 524288)
 {
     // do nothing
-    last_ping = (uint32)UNIXTIME;
+    last_ping = (uint32_t)UNIXTIME;
     remaining = opcode = 0;
     removed = true;
 
@@ -77,8 +77,8 @@ void LogonCommServerSocket::OnRead()
                 return;     // no header
 
             // read header
-            readBuffer.Read((uint8*)&opcode, 2);
-            readBuffer.Read((uint8*)&remaining, 4);
+            readBuffer.Read((uint8_t*)&opcode, 2);
+            readBuffer.Read((uint8_t*)&remaining, 4);
 
             if (use_crypto)
             {
@@ -100,8 +100,8 @@ void LogonCommServerSocket::OnRead()
         if (remaining)
         {
             buff.resize(remaining);
-            //Read(remaining, (uint8*)buff.contents());
-            readBuffer.Read((uint8*)buff.contents(), remaining);
+            //Read(remaining, (uint8_t*)buff.contents());
+            readBuffer.Read((uint8_t*)buff.contents(), remaining);
         }
 
         if (use_crypto && remaining)
@@ -198,7 +198,7 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     sRealmsMgr.setStatusForRealm(realmId, 1);
 
     WorldPacket data(LRSMSG_REALM_REGISTER_RESULT, 4);
-    data << uint32(0);              // 0 = everything ok - success
+    data << uint32_t(0); // 0 = everything ok - success
     data << realmId;
     data << realm->name;
     SendPacket(&data);
@@ -213,14 +213,14 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
 
 void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
 {
-    uint32 request_id;
+    uint32_t request_id;
     std::string account_name;
 
     recvData >> request_id;
     recvData >> account_name;
 
     // get sessionkey!
-    uint32 error = 0;
+    uint32_t error = 0;
     std::shared_ptr<Account> acct = sAccountMgr.getAccountByName(account_name);
     if (acct == NULL || acct->SessionKey == NULL)
         error = 1;          // Unauthorized user.
@@ -236,7 +236,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
         data << acct->AccountId;
         data << acct->UsernamePtr->c_str();
         if (!acct->GMFlags)
-            data << uint8(0);
+            data << uint8_t(0);
         else
             data << acct->GMFlags;
 
@@ -256,7 +256,7 @@ void LogonCommServerSocket::HandlePing(WorldPacket & recvData)
 
     WorldPacket data(LRSMSG_LOGON_PING_RESULT, 4);
     SendPacket(&data);
-    last_ping = static_cast<uint32>(time(nullptr));
+    last_ping = static_cast<uint32_t>(time(nullptr));
 
     sRealmsMgr.setLastPing(realmId);
 }
@@ -269,7 +269,7 @@ void LogonCommServerSocket::SendPacket(WorldPacket* data)
     LogonWorldPacket header;
     header.opcode = data->GetOpcode();
     //header.size   = ntohl((u_long)data->size());
-    header.size = (uint32)data->size();
+    header.size = (uint32_t)data->size();
 #ifdef _MSC_VER
 #   pragma warning (push)
 #   pragma warning (disable : 4366)
@@ -282,14 +282,14 @@ void LogonCommServerSocket::SendPacket(WorldPacket* data)
     if (use_crypto)
         sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 6);
 
-    rv = BurstSend((uint8*)&header, 6);
+    rv = BurstSend((uint8_t*)&header, 6);
 
     if (data->size() > 0 && rv)
     {
         if (use_crypto)
-            sendCrypto.Process((unsigned char*)data->contents(), (unsigned char*)data->contents(), (uint32)data->size());
+            sendCrypto.Process((unsigned char*)data->contents(), (unsigned char*)data->contents(), (uint32_t)data->size());
 
-        rv = BurstSend(data->contents(), (uint32)data->size());
+        rv = BurstSend(data->contents(), (uint32_t)data->size());
     }
 
     if (rv) BurstPush();
@@ -351,7 +351,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
 void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 {
     // this packet is gzipped, whee! :D
-    uint32 real_size;
+    uint32_t real_size;
     recvData >> real_size;
     uLongf rsize = real_size;
 
@@ -359,16 +359,16 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
     buf.clear();
     buf.resize(real_size);
 
-    if (uncompress((uint8*)buf.contents(), &rsize, recvData.contents() + 4, (u_long)recvData.size() - 4) != Z_OK)
+    if (uncompress((uint8_t*)buf.contents(), &rsize, recvData.contents() + 4, (u_long)recvData.size() - 4) != Z_OK)
     {
         LOG_ERROR("Uncompress of mapping failed.");
         return;
     }
 
-    uint32 account_id;
-    uint8 number_of_characters;
-    uint32 count;
-    uint32 realm_id;
+    uint32_t account_id;
+    uint8_t number_of_characters;
+    uint32_t count;
+    uint32_t realm_id;
     buf >> realm_id;
     auto realm = sRealmsMgr.getRealmById(realm_id);
     if (!realm)
@@ -376,10 +376,10 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 
     sRealmsMgr.getRealmLock().Acquire();
 
-    std::unordered_map<uint32, uint8>::iterator itr;
+    std::unordered_map<uint32_t, uint8_t>::iterator itr;
     buf >> count;
     LOG_BASIC("Got mapping packet for realm %u, total of %u entries.", (unsigned int)realm_id, (unsigned int)count);
-    for (uint32 i = 0; i < count; ++i)
+    for (uint32_t i = 0; i < count; ++i)
     {
         buf >> account_id >> number_of_characters;
         itr = realm->_characterMap.find(account_id);
@@ -394,9 +394,9 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 
 void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
 {
-    uint32 realm_id;
-    uint32 account_id;
-    uint8 chars_to_add;
+    uint32_t realm_id;
+    uint32_t account_id;
+    uint8_t chars_to_add;
     recvData >> realm_id;
 
     auto realm = sRealmsMgr.getRealmById(realm_id);
@@ -419,9 +419,9 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
 void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
 {
     WorldPacket data(LRSMSG_LOGIN_CONSOLE_RESULT, 8);
-    uint32 request;
+    uint32_t request;
     std::string accountname;
-    uint8 key[20];
+    uint8_t key[20];
 
     recvData >> request;
     recvData >> accountname;
@@ -432,32 +432,32 @@ void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
     std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(accountname);
     if (pAccount == NULL)
     {
-        data << uint32(0);
+        data << uint32_t(0);
         SendPacket(&data);
         return;
     }
 
     if (pAccount->GMFlags == NULL || strchr(pAccount->GMFlags, 'z') == NULL)
     {
-        data << uint32(0);
+        data << uint32_t(0);
         SendPacket(&data);
         return;
     }
 
     if (memcmp(pAccount->SrpHash, key, 20) != 0)
     {
-        data << uint32(0);
+        data << uint32_t(0);
         SendPacket(&data);
         return;
     }
 
-    data << uint32(1);
+    data << uint32_t(1);
     SendPacket(&data);
 }
 
 void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
 {
-    uint32 method;
+    uint32_t method;
     recvData >> method;
 
     switch (method)
@@ -466,7 +466,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
         {
             std::string account;
             std::string banreason;
-            uint32 duration;
+            uint32_t duration;
             recvData >> account;
             recvData >> duration;
             recvData >> banreason;
@@ -511,7 +511,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
         case Method_Account_Set_Mute:
         {
             std::string account;
-            uint32 duration;
+            uint32_t duration;
             recvData >> account;
             recvData >> duration;
 
@@ -533,7 +533,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
         {
             std::string ip;
             std::string banreason;
-            uint32 duration;
+            uint32_t duration;
 
             recvData >> ip;
             recvData >> duration;
@@ -563,7 +563,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             std::string old_password;
             std::string new_password;
             std::string account_name;
-            uint8 result = 0;
+            uint8_t result = 0;
 
             recvData >> old_password;
             recvData >> new_password;
@@ -580,8 +580,8 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
                 // Send packet back... Your current password matches not your input!
                 result = Result_Account_PW_wrong;
 
-                data << uint32(method);     // method_id
-                data << uint8(result);
+                data << uint32_t(method);   // method_id
+                data << uint8_t(result);
                 data << account_name;       // account_name
                 SendPacket(&data);
             }
@@ -595,15 +595,14 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
                 // Send packet back... Everything is fine!
                 result = Result_Account_Finished;
 
-                data << uint32(method);     // method_id
-                data << uint8(result);
+                data << uint32_t(method);   // method_id
+                data << uint8_t(result);
                 data << account_name;       // account_name
                 SendPacket(&data);
                 //}
 
                 sAccountMgr.reloadAccounts(false);
             }
-
         }
         break;
         case Method_Account_Create:
@@ -614,7 +613,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             std::string name;
             std::string password;
             std::string account_name;
-            uint8 result = 0;
+            uint8_t result = 0;
 
             recvData >> name;
             recvData >> password;
@@ -631,8 +630,8 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             {
                 result = Result_Account_Exists;
 
-                data << uint32(method);     // method_id
-                data << uint8(result);
+                data << uint32_t(method);   // method_id
+                data << uint8_t(result);
                 data << account_name;       // account_name
                 data << name_save;          // created account name
                 SendPacket(&data);
@@ -648,8 +647,8 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
 
                 result = Result_Account_Finished;
 
-                data << uint32(method);     // method_id
-                data << uint8(result);
+                data << uint32_t(method);   // method_id
+                data << uint8_t(result);
                 data << account_name;       // account_name
                 data << name_save;          // created account name
                 SendPacket(&data);
@@ -663,20 +662,20 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
 
 void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
 {
-    uint32 method;
+    uint32_t method;
     recvData >> method;
 
 
-    std::string account_name;           // account to check
-    std::string request_name;           // account request the check
+    std::string account_name; // account to check
+    std::string request_name; // account request the check
 
     WorldPacket data(LRSMSG_ACCOUNT_RESULT, 300);
 
     switch (method)
     {
-        case 1:            // account exist?
+        case 1: // account exist?
         {
-            std::string additional;             // additional data
+            std::string additional; // additional data
 
             recvData >> account_name;
             recvData >> request_name;
@@ -693,25 +692,25 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
             if (account_check == nullptr)
             {
                 // Send packet "account not available"
-                data << uint8(1);
+                data << uint8_t(1);
                 data << account_name_save;  // requested account
                 data << request_name;       // account_name for receive the session
             }
             else if (!additional_data)
             {
                 // Send packet "No additional data set"
-                data << uint8(2);
+                data << uint8_t(2);
                 data << account_name_save;  // requested account
                 data << request_name;       // account_name for receive the session
             }
             else
             {
                 // Send packet "everything okay"
-                data << uint8(3);
+                data << uint8_t(3);
                 data << account_name_save;  // requested account
                 data << request_name;       // account_name for receive the session
                 data << additional;         // additional data
-                data << uint32(account_check->AccountId);
+                data << uint32_t(account_check->AccountId);
             }
         } break;
         case 2:            // get account id
@@ -728,17 +727,17 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
             if (account_check == nullptr)
             {
                 // Send packet "account not available"
-                data << uint8(1);
+                data << uint8_t(1);
                 data << account_name_save;  // requested account
                 data << request_name;       // account_name for receive the session
             }
             else
             {
                 // Send packet "account id"
-                data << uint8(4);
+                data << uint8_t(4);
                 data << account_name_save;  // requested account
                 data << request_name;       // account_name for receive the session
-                data << uint32(account_check->AccountId);
+                data << uint32_t(account_check->AccountId);
             }
         } break;
     }
@@ -774,7 +773,7 @@ void LogonCommServerSocket::HandleRequestAllAccounts(WorldPacket& /*recvData*/)
 void LogonCommServerSocket::HandlePopulationRespond(WorldPacket & recvData)
 {
     float population;
-    uint32 realmId;
+    uint32_t realmId;
     recvData >> realmId >> population;
     sRealmsMgr.updateRealmPop(realmId, population);
 }
@@ -785,7 +784,7 @@ void LogonCommServerSocket::RefreshRealmsPop()
         return;
 
     WorldPacket data(LRSMSG_REALM_POPULATION_REQUEST, 4);
-    std::set<uint32>::iterator itr = server_ids.begin();
+    std::set<uint32_t>::iterator itr = server_ids.begin();
     for (; itr != server_ids.end(); ++itr)
     {
         data.clear();

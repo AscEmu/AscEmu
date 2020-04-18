@@ -94,7 +94,7 @@ void Summon::onRemoveInRangeObject(Object* object)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Override Unit functions
-void Summon::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
+void Summon::Die(Unit* pAttacker, uint32_t damage, uint32_t spellid)
 {
     if (m_unitOwner->isTotem())
         m_unitOwner->Die(pAttacker, damage, spellid);

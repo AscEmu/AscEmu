@@ -66,7 +66,7 @@ Item::Item()
     ItemExpiresOn = 0;
     Enchantments.clear();
 
-    for (uint8 i = 0; i < 3; ++i)
+    for (uint8_t i = 0; i < 3; ++i)
         OnUseSpellIDs[i] = 0;
 
     m_isDirty = false;
@@ -101,9 +101,9 @@ Item::~Item()
 
 void Item::LoadFromDB(Field* fields, Player* plr, bool light)
 {
-    uint32 itemid = fields[2].GetUInt32();
-    uint32 randomProp, randomSuffix;
-    uint32 count;
+    uint32_t itemid = fields[2].GetUInt32();
+    uint32_t randomProp, randomSuffix;
+    uint32_t count;
 
     m_itemProperties = sMySQLStore.getItemProperties(itemid);
 
@@ -134,7 +134,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
 
     setRandomPropertiesId(randomProp);
 
-    int32 rprop = int32(randomProp);
+    int32_t rprop = int32_t(randomProp);
     // If random properties point is negative that means the item uses random suffix as random enchantment
     if (rprop < 0)
         setPropertySeed(randomSuffix);
@@ -153,10 +153,10 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
 
     std::string enchant_field = fields[15].GetString();
     std::vector< std::string > enchants = Util::SplitStringBySeperator(enchant_field, ";");
-    uint32 enchant_id;
+    uint32_t enchant_id;
 
-    uint32 time_left;
-    uint32 enchslot;
+    uint32_t time_left;
+    uint32_t enchslot;
 
     for (std::vector<std::string>::iterator itr = enchants.begin(); itr != enchants.end(); ++itr)
     {
@@ -175,14 +175,14 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     ItemExpiresOn = fields[16].GetUInt32();
 
     ///////////////////////////////////////////////////// Refund stuff ////////////////////////
-    std::pair< time_t, uint32 > refundentry;
+    std::pair< time_t, uint32_t > refundentry;
 
     refundentry.first = fields[17].GetUInt32();
     refundentry.second = fields[18].GetUInt32();
 
     if (refundentry.first != 0 && refundentry.second != 0 && getOwner() != NULL)
     {
-        uint32* played = getOwner()->GetPlayedtime();
+        uint32_t* played = getOwner()->GetPlayedtime();
         if (played[1] < (refundentry.first + 60 * 60 * 2))
             m_owner->getItemInterface()->AddRefundable(this, refundentry.second, refundentry.first);
     }
@@ -236,10 +236,10 @@ void Item::ApplyRandomProperties(bool apply)
     // apply random properties
     if (getRandomPropertiesId() != 0)
     {
-        if (int32(getRandomPropertiesId()) > 0)
+        if (int32_t(getRandomPropertiesId()) > 0)
         {
             auto item_random_properties = sItemRandomPropertiesStore.LookupEntry(getRandomPropertiesId());
-            for (uint8 k = 0; k < 3; k++)
+            for (uint8_t k = 0; k < 3; k++)
             {
                 if (item_random_properties == nullptr)
                     continue;
@@ -250,7 +250,7 @@ void Item::ApplyRandomProperties(bool apply)
                     if (spell_item_enchant == nullptr)
                         continue;
 
-                    int32 Slot = HasEnchantment(spell_item_enchant->Id);
+                    int32_t Slot = HasEnchantment(spell_item_enchant->Id);
                     if (Slot < 0)
                     {
                         Slot = FindFreeEnchantSlot(spell_item_enchant, 1);
@@ -265,7 +265,7 @@ void Item::ApplyRandomProperties(bool apply)
         {
             auto item_random_suffix = sItemRandomSuffixStore.LookupEntry(abs(int(getRandomPropertiesId())));
 
-            for (uint8 k = 0; k < 3; ++k)
+            for (uint8_t k = 0; k < 3; ++k)
             {
                 if (item_random_suffix == nullptr)
                     continue;
@@ -276,7 +276,7 @@ void Item::ApplyRandomProperties(bool apply)
                     if (spell_item_enchant == nullptr)
                         continue;
 
-                    int32 Slot = HasEnchantment(spell_item_enchant->Id);
+                    int32_t Slot = HasEnchantment(spell_item_enchant->Id);
                     if (Slot < 0)
                     {
                         Slot = FindFreeEnchantSlot(spell_item_enchant, 2);
@@ -290,15 +290,15 @@ void Item::ApplyRandomProperties(bool apply)
     }
 }
 
-void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* buf)
+void Item::SaveToDB(int8_t containerslot, int8_t slot, bool firstsave, QueryBuffer* buf)
 {
     if (m_isDirty == false && firstsave == false)
     {
         return;
     }
 
-    uint64 GiftCreatorGUID = getGiftCreatorGuid();
-    uint64 CreatorGUID = getCreatorGuid();
+    uint64_t GiftCreatorGUID = getGiftCreatorGuid();
+    uint64_t CreatorGUID = getCreatorGuid();
 
     std::stringstream ss;
 
@@ -327,7 +327,7 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
     ss << (WoWGuid::getGuidLowPartFromUInt64(CreatorGUID)) << ",";
 
     ss << getStackCount() << ",";
-    ss << int32(GetChargesLeft()) << ",";
+    ss << int32_t(GetChargesLeft()) << ",";
     ss << getFlags() << ",";
     ss << random_prop << ", " << random_suffix << ", ";
     ss << 0 << ",";
@@ -344,8 +344,8 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
             if (itr->second.RemoveAtLogout)
                 continue;
 
-            uint32 elapsed_duration = uint32(UNIXTIME - itr->second.ApplyTime);
-            int32 remaining_duration = itr->second.Duration - elapsed_duration;
+            uint32_t elapsed_duration = uint32_t(UNIXTIME - itr->second.ApplyTime);
+            int32_t remaining_duration = itr->second.Duration - elapsed_duration;
             if (remaining_duration < 0)
                 remaining_duration = 0;
 
@@ -366,21 +366,21 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
     // Check if the owner is instantiated. When sending mail he/she obviously will not be :P
     if (this->getOwner() != NULL)
     {
-        std::pair< time_t, uint32 > refundentry;
+        std::pair< time_t, uint32_t > refundentry;
 
         refundentry.first = 0;
         refundentry.second = 0;
 
         refundentry = this->getOwner()->getItemInterface()->LookupRefundable(this->getGuid());
 
-        ss << uint32(refundentry.first) << "','";
-        ss << uint32(refundentry.second);
+        ss << uint32_t(refundentry.first) << "','";
+        ss << uint32_t(refundentry.second);
 
     }
     else
     {
-        ss << uint32(0) << "','";
-        ss << uint32(0);
+        ss << uint32_t(0) << "','";
+        ss << uint32_t(0);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -406,9 +406,9 @@ void Item::DeleteFromDB()
     if (m_itemProperties->ContainerSlots > 0 && isContainer())
     {
         /* deleting a container */
-        for (uint32 i = 0; i < m_itemProperties->ContainerSlots; ++i)
+        for (uint32_t i = 0; i < m_itemProperties->ContainerSlots; ++i)
         {
-            if (static_cast< Container* >(this)->GetItem(static_cast<int16>(i)) != NULL)
+            if (static_cast< Container* >(this)->GetItem(static_cast<int16_t>(i)) != NULL)
             {
                 /* abort the delete */
                 return;
@@ -430,7 +430,7 @@ void Item::DeleteMe()
     delete this;
 }
 
-uint32 GetSkillByProto(uint32 Class, uint32 SubClass)
+uint32_t GetSkillByProto(uint32_t Class, uint32_t SubClass)
 {
     if (Class == 4 && SubClass < 7)
     {
@@ -447,12 +447,12 @@ uint32 GetSkillByProto(uint32 Class, uint32 SubClass)
 }
 
 //This map is used for profess.
-//Prof packet struct: {SMSG_SET_PROFICIENCY,(uint8)item_class,(uint32)1<<item_subclass}
+//Prof packet struct: {SMSG_SET_PROFICIENCY,(uint8_t)item_class,(uint32_t)1<<item_subclass}
 //ie: for fishing (it's class=2--weapon, subclass ==20 -- fishing rod) permissive packet
 // will have structure 0x2,524288
 //this table is needed to get class/subclass by skill, valid classes are 2 and 4
 
-const ItemProf* GetProficiencyBySkill(uint32 skill)
+const ItemProf* GetProficiencyBySkill(uint32_t skill)
 {
     switch (skill)
     {
@@ -503,16 +503,16 @@ const ItemProf* GetProficiencyBySkill(uint32 skill)
     }
 }
 
-uint32 GetSellPriceForItem(ItemProperties const* proto, uint32 count)
+uint32_t GetSellPriceForItem(ItemProperties const* proto, uint32_t count)
 {
-    int32 cost;
+    int32_t cost;
     cost = proto->SellPrice * ((count < 1) ? 1 : count);
     return cost;
 }
 
-uint32 GetBuyPriceForItem(ItemProperties const* proto, uint32 count, Player* plr, Creature* vendor)
+uint32_t GetBuyPriceForItem(ItemProperties const* proto, uint32_t count, Player* plr, Creature* vendor)
 {
-    int32 cost = proto->BuyPrice;
+    int32_t cost = proto->BuyPrice;
 
     if (plr != NULL && vendor != NULL)
     {
@@ -539,9 +539,9 @@ void Item::RemoveFromWorld()
     event_Relocate();
 }
 
-int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 Duration, bool /*Perm*/ /* = false */, bool apply /* = true */, bool RemoveAtLogout /* = false */, uint32 Slot_, uint32 RandomSuffix)
+int32_t Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32_t Duration, bool /*Perm*/ /* = false */, bool apply /* = true */, bool RemoveAtLogout /* = false */, uint32_t Slot_, uint32_t RandomSuffix)
 {
-    int32 Slot = Slot_;
+    int32_t Slot = Slot_;
     m_isDirty = true;
 
     // Create the enchantment struct.
@@ -556,11 +556,11 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
 
     // Set the enchantment in the item fields.
     setEnchantmentId(static_cast<uint8_t>(Slot), Enchantment->Id);
-    setEnchantmentDuration(static_cast<uint8_t>(Slot), static_cast<uint32>(Instance.ApplyTime));
+    setEnchantmentDuration(static_cast<uint8_t>(Slot), static_cast<uint32_t>(Instance.ApplyTime));
     setEnchantmentCharges(static_cast<uint8_t>(Slot), 0);
 
     // Add it to our map.
-    Enchantments.insert(std::make_pair(static_cast<uint32>(Slot), Instance));
+    Enchantments.insert(std::make_pair(static_cast<uint32_t>(Slot), Instance));
 
     if (m_owner == NULL)
         return Slot;
@@ -568,7 +568,7 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
     // Add the removal event.
     if (Duration)
     {
-        sEventMgr.AddEvent(this, &Item::RemoveEnchantment, uint32(Slot), EVENT_REMOVE_ENCHANTMENT1 + Slot, Duration * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(this, &Item::RemoveEnchantment, uint32_t(Slot), EVENT_REMOVE_ENCHANTMENT1 + Slot, Duration * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 
     // No need to send the log packet, if the owner isn't in world (we're still loading)
@@ -582,11 +582,11 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
         EnchantLog << m_owner->getGuid();
         EnchantLog << getEntry();
         EnchantLog << Enchantment->Id;
-        EnchantLog << uint8(0);
+        EnchantLog << uint8_t(0);
         m_owner->SendPacket(&EnchantLog);
 
         /* Only apply the enchantment bonus if we're equipped */
-        int16 slot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());
+        int16_t slot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());
         if (slot >= EQUIPMENT_SLOT_START && slot < EQUIPMENT_SLOT_END)
             ApplyEnchantmentBonus(Slot, true);
     }
@@ -594,7 +594,7 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
     return Slot;
 }
 
-void Item::RemoveEnchantment(uint32 EnchantmentSlot)
+void Item::RemoveEnchantment(uint32_t EnchantmentSlot)
 {
     // Make sure we actually exist.
     EnchantmentMap::iterator itr = Enchantments.find(EnchantmentSlot);
@@ -602,7 +602,7 @@ void Item::RemoveEnchantment(uint32 EnchantmentSlot)
         return;
 
     m_isDirty = true;
-    uint32 Slot = itr->first;
+    uint32_t Slot = itr->first;
     if (itr->second.BonusApplied)
         ApplyEnchantmentBonus(EnchantmentSlot, false);
 
@@ -618,7 +618,7 @@ void Item::RemoveEnchantment(uint32 EnchantmentSlot)
     Enchantments.erase(itr);
 }
 
-void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
+void Item::ApplyEnchantmentBonus(uint32_t Slot, bool Apply)
 {
     if (m_owner == nullptr)
         return;
@@ -628,7 +628,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
         return;
 
     DBC::Structures::SpellItemEnchantmentEntry const* Entry = itr->second.Enchantment;
-    uint32 RandomSuffixAmount = itr->second.RandomSuffix;
+    uint32_t RandomSuffixAmount = itr->second.RandomSuffix;
 
     if (itr->second.BonusApplied == Apply)
         return;
@@ -643,15 +643,15 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 
     // Apply the visual on the player.
 #if VERSION_STRING > TBC
-    uint32 ItemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) * 2;   //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
-    uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + ItemSlot;
+    uint32_t ItemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) * 2;   //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
+    uint32_t VisibleBase = PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + ItemSlot;
     if (VisibleBase <= PLAYER_VISIBLE_ITEM_19_ENCHANTMENT)
         m_owner->setUInt32Value(static_cast<uint16_t>(VisibleBase), Apply ? Entry->Id : 0);   //On 3.1 we can't add a Slot to the base now, as we no longer have multiple fields for storing them. This in some cases will try to write for example 3 visuals into one place, but now every item has only one field for this, and as we can't choose which visual to have, we'll accept the last one.
     else
         LOG_ERROR("Item::ApplyEnchantmentBonus visual out of range! Tried to address UInt32 field %i !!!", VisibleBase);
 #else
-    uint32 ItemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) * 16;
-    uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + ItemSlot;
+    uint32_t ItemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) * 16;
+    uint32_t VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + ItemSlot;
     if (VisibleBase <= PLAYER_VISIBLE_ITEM_19_PAD)
         m_owner->setUInt32Value(VisibleBase + 1 + Slot, Apply ? Entry->Id : 0);
     else
@@ -660,7 +660,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 
     // Another one of those for loop that where not indented properly god knows what will break
     // but i made it actually affect the code below it
-    for (uint32 c = 0; c < 3; c++)
+    for (uint32_t c = 0; c < 3; c++)
     {
         if (Entry->type[c])
         {
@@ -683,7 +683,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 
                 case 2:         // Mod damage done.
                 {
-                    int32 val = Entry->min[c];
+                    int32_t val = Entry->min[c];
                     if (RandomSuffixAmount)
                         val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
 
@@ -724,7 +724,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 
                 case 4:         // Modify physical resistance
                 {
-                    int32 val = Entry->min[c];
+                    int32_t val = Entry->min[c];
                     if (RandomSuffixAmount)
                         val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
 
@@ -744,7 +744,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 {
                     //spellid is enum ITEM_STAT_TYPE
                     //min=max is amount
-                    int32 val = Entry->min[c];
+                    int32_t val = Entry->min[c];
                     if (RandomSuffixAmount)
                         val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
 
@@ -759,20 +759,20 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                     {
                         //m_owner->modModDamageDonePositive(SCHOOL_NORMAL, Entry->min[c]);
                         //if I'm not wrong then we should apply DMPS formula for this. This will have somewhat a larger value 28->34
-                        int32 val = Entry->min[c];
+                        int32_t val = Entry->min[c];
                         if (RandomSuffixAmount)
                             val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
 
-                        int32 value = getItemProperties()->Delay * val / 1000;
+                        int32_t value = getItemProperties()->Delay * val / 1000;
                         m_owner->modModDamageDonePositive(SCHOOL_NORMAL, value);
                     }
                     else
                     {
-                        int32 val = Entry->min[c];
+                        int32_t val = Entry->min[c];
                         if (RandomSuffixAmount)
                             val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
 
-                        int32 value = -(int32)(getItemProperties()->Delay * val / 1000);
+                        int32_t value = -(int32_t)(getItemProperties()->Delay * val / 1000);
                         m_owner->modModDamageDonePositive(SCHOOL_NORMAL, value);
                     }
                     m_owner->CalcDamage();
@@ -783,13 +783,13 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 {
                     if (Apply)
                     {
-                        for (uint8 i = 0; i < 3; ++i)
+                        for (uint8_t i = 0; i < 3; ++i)
                             OnUseSpellIDs[i] = Entry->spell[i];
 
                     }
                     else
                     {
-                        for (uint8 i = 0; i < 3; ++i)
+                        for (uint8_t i = 0; i < 3; ++i)
                             OnUseSpellIDs[i] = 0;
                     }
                     break;
@@ -831,15 +831,15 @@ void Item::RemoveEnchantmentBonuses()
     }
 }
 
-void Item::EventRemoveEnchantment(uint32 Slot)
+void Item::EventRemoveEnchantment(uint32_t Slot)
 {
     // Remove the enchantment.
     RemoveEnchantment(Slot);
 }
 
-int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const* /*Enchantment*/, uint32 random_type)
+int32_t Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const* /*Enchantment*/, uint32_t random_type)
 {
-    uint32 GemSlotsReserve = GetSocketsCount();
+    uint32_t GemSlotsReserve = GetSocketsCount();
     if (getItemProperties()->SocketBonus)
         GemSlotsReserve++;
 
@@ -847,36 +847,36 @@ int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const
     {
         for (uint8_t Slot = PROP_ENCHANTMENT_SLOT_2; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
             if (getEnchantmentId(Slot) == 0)
-                return static_cast<int32>(Slot);
+                return static_cast<int32_t>(Slot);
     }
     else if (random_type == RANDOMSUFFIX)    // random suffix
     {
         for (uint8_t Slot = PROP_ENCHANTMENT_SLOT_0; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
             if (getEnchantmentId(Slot) == 0)
-                return static_cast<int32>(Slot);
+                return static_cast<int32_t>(Slot);
     }
 
     for (uint8_t Slot = static_cast<uint8_t>(GemSlotsReserve + 2); Slot < 11; Slot++)
     {
         if (getEnchantmentId(Slot) == 0)
-            return static_cast<int32>(Slot);
+            return static_cast<int32_t>(Slot);
     }
 
     return -1;
 }
 
-int32 Item::HasEnchantment(uint32 Id)
+int32_t Item::HasEnchantment(uint32_t Id)
 {
     for (uint8_t Slot = 0; Slot < MAX_ENCHANTMENT_SLOT; Slot++)
     {
         if (getEnchantmentId(Slot) == Id)
-            return static_cast<int32>(Slot);
+            return static_cast<int32_t>(Slot);
     }
 
     return -1;
 }
 
-bool Item::HasEnchantmentOnSlot(uint32 slot)
+bool Item::HasEnchantmentOnSlot(uint32_t slot)
 {
     EnchantmentMap::iterator itr = Enchantments.find(slot);
     if (itr == Enchantments.end())
@@ -885,7 +885,7 @@ bool Item::HasEnchantmentOnSlot(uint32 slot)
     return true;
 }
 
-void Item::ModifyEnchantmentTime(uint32 Slot, uint32 Duration)
+void Item::ModifyEnchantmentTime(uint32_t Slot, uint32_t Duration)
 {
     EnchantmentMap::iterator itr = Enchantments.find(Slot);
     if (itr == Enchantments.end())
@@ -902,7 +902,7 @@ void Item::ModifyEnchantmentTime(uint32 Slot, uint32 Duration)
     SendEnchantTimeUpdate(itr->second.Slot, Duration);
 }
 
-void Item::SendEnchantTimeUpdate(uint32 Slot, uint32 Duration)
+void Item::SendEnchantTimeUpdate(uint32_t Slot, uint32_t Duration)
 {
     /*
     {SERVER} Packet: (0x01EB) SMSG_ITEM_ENCHANT_TIME_UPDATE Size = 24
@@ -913,10 +913,10 @@ void Item::SendEnchantTimeUpdate(uint32 Slot, uint32 Duration)
     |51 46 35 00 00 00 00 00                         |QF5.....        |
     -------------------------------------------------------------------
 
-    uint64 item_guid
-    uint32 slot
-    uint32 time_in_seconds
-    uint64 player_guid
+    uint64_t item_guid
+    uint32_t slot
+    uint32_t time_in_seconds
+    uint64_t player_guid
     */
 
     WorldPacket* data = new WorldPacket(SMSG_ITEM_ENCHANT_TIME_UPDATE, 24);
@@ -984,7 +984,7 @@ void Item::RemoveSocketBonusEnchant()
     }
 }
 
-EnchantmentInstance* Item::GetEnchantment(uint32 slot)
+EnchantmentInstance* Item::GetEnchantment(uint32_t slot)
 {
     EnchantmentMap::iterator itr = Enchantments.find(slot);
     if (itr != Enchantments.end())
@@ -1001,13 +1001,13 @@ bool Item::IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchan
     return(Enchantment->GemEntry != 0);
 }
 
-uint32 Item::GetSocketsCount()
+uint32_t Item::GetSocketsCount()
 {
     if (isContainer()) // no sockets on containers.
         return 0;
 
-    uint32 c = 0;
-    for (uint32 x = 0; x < 3; ++x)
+    uint32_t c = 0;
+    for (uint32_t x = 0; x < 3; ++x)
         if (getItemProperties()->Sockets[x].SocketColor)
             c++;
     //prismatic socket
@@ -1016,7 +1016,7 @@ uint32 Item::GetSocketsCount()
     return c;
 }
 
-uint32 Item::GenerateRandomSuffixFactor(ItemProperties const* m_itemProto)
+uint32_t Item::GenerateRandomSuffixFactor(ItemProperties const* m_itemProto)
 {
     double value;
 
@@ -1029,12 +1029,12 @@ uint32 Item::GenerateRandomSuffixFactor(ItemProperties const* m_itemProto)
     return long2int32(value);
 }
 
-std::string Item::GetItemLink(uint32 language = 0)
+std::string Item::GetItemLink(uint32_t language = 0)
 {
     return GetItemLinkByProto(getItemProperties(), language);
 }
 
-std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language = 0)
+std::string GetItemLinkByProto(ItemProperties const* iProto, uint32_t language = 0)
 {
     const char* ItemLink;
     char buffer[256];
@@ -1087,7 +1087,7 @@ std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language = 0
     return ItemLink;
 }
 
-int32 GetStatScalingStatValueColumn(ItemProperties const* proto, uint32 type)
+int32_t GetStatScalingStatValueColumn(ItemProperties const* proto, uint32_t type)
 {
     switch (type)
     {
@@ -1146,10 +1146,10 @@ int32 GetStatScalingStatValueColumn(ItemProperties const* proto, uint32 type)
     return 1;
 }
 
-uint32 Item::CountGemsWithLimitId(uint32 LimitId)
+uint32_t Item::CountGemsWithLimitId(uint32_t LimitId)
 {
-    uint32 result = 0;
-    for (uint32 count = 0; count < GetSocketsCount(); count++)
+    uint32_t result = 0;
+    for (uint32_t count = 0; count < GetSocketsCount(); count++)
     {
         EnchantmentInstance* ei = GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + count);
         if (ei
@@ -1182,14 +1182,14 @@ void Item::SendDurationUpdate()
     //
     //  Structure:
     //
-    //  uint64 GUID                      - the identifier of the item (not the itemid)
-    //  uint32 remainingtime             - remaining duration
+    //  uint64_t GUID                      - the identifier of the item (not the itemid)
+    //  uint32_t remainingtime             - remaining duration
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
     WorldPacket durationupdate(SMSG_ITEM_TIME_UPDATE, 12);
-    durationupdate << uint64(getGuid());
+    durationupdate << uint64_t(getGuid());
 #if VERSION_STRING >= WotLK
-    durationupdate << uint32(GetItemExpireTime() - UNIXTIME);
+    durationupdate << uint32_t(GetItemExpireTime() - UNIXTIME);
 #else
     durationupdate << getDuration();
 #endif
@@ -1211,7 +1211,7 @@ bool Item::IsEligibleForRefund()
     if (proto->MaxCount > 1)
         return false;
 
-    for (uint8 i = 0; i < 5; ++i)
+    for (uint8_t i = 0; i < 5; ++i)
     {
         ItemSpell spell = proto->Spells[i];
 
@@ -1226,7 +1226,7 @@ bool Item::IsEligibleForRefund()
 void Item::RemoveFromRefundableMap()
 {
     Player* owner = NULL;
-    uint64 GUID = 0;
+    uint64_t GUID = 0;
 
     owner = this->getOwner();
     GUID = this->getGuid();
@@ -1235,7 +1235,7 @@ void Item::RemoveFromRefundableMap()
         owner->getItemInterface()->RemoveRefundable(GUID);
 }
 
-uint32 Item::RepairItemCost()
+uint32_t Item::RepairItemCost()
 {
     auto durability_costs = sDurabilityCostsStore.LookupEntry(m_itemProperties->ItemLevel);
     if (durability_costs == nullptr)
@@ -1251,15 +1251,15 @@ uint32 Item::RepairItemCost()
         return 0;
     }
 
-    uint32 dmodifier = durability_costs->modifier[m_itemProperties->Class == ITEM_CLASS_WEAPON ? m_itemProperties->SubClass : m_itemProperties->SubClass + 21];
-    uint32 cost = long2int32((getMaxDurability() - getDurability()) * dmodifier * double(durability_quality->quality_modifier));
+    uint32_t dmodifier = durability_costs->modifier[m_itemProperties->Class == ITEM_CLASS_WEAPON ? m_itemProperties->SubClass : m_itemProperties->SubClass + 21];
+    uint32_t cost = long2int32((getMaxDurability() - getDurability()) * dmodifier * double(durability_quality->quality_modifier));
     return cost;
 }
 
-bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost)   //pCost is needed for the guild log
+bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32_t* pCost)   //pCost is needed for the guild log
 {
-    //int32 cost = (int32)pItem->getMaxDurability()) - (int32)pItem->getDurability();
-    uint32 cost = RepairItemCost();
+    //int32_t cost = (int32_t)pItem->getMaxDurability()) - (int32_t)pItem->getDurability();
+    uint32_t cost = RepairItemCost();
     if (cost == 0)
         return false;
 
@@ -1276,7 +1276,7 @@ bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost)   //pCost 
         if (!pPlayer->hasEnoughCoinage(cost))
             return false;
 
-        pPlayer->modCoinage(-(int32)cost);
+        pPlayer->modCoinage(-(int32_t)cost);
     }
     setDurabilityToMax();
     m_isDirty = true;

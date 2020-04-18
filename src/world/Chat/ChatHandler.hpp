@@ -18,8 +18,8 @@ class WorldSession;
 class Player;
 class Unit;
 
-int32 GetSpellIDFromLink(const char* spelllink);
-uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid);
+int32_t GetSpellIDFromLink(const char* spelllink);
+uint16_t GetItemIDFromLink(const char* itemlink, uint32_t* itemid);
 
 class SERVER_DECL ChatHandler
 {
@@ -41,7 +41,7 @@ class SERVER_DECL ChatHandler
         ChatHandler& operator=(ChatHandler&&) = delete;
         ChatHandler& operator=(ChatHandler const&) = delete;
 
-        WorldPacket* FillMessageData(uint32 type, uint32 language,  const char* message, uint64 guid, uint8 flag = 0) const;
+        WorldPacket* FillMessageData(uint32_t type, uint32_t language,  const char* message, uint64_t guid, uint8_t flag = 0) const;
         WorldPacket* FillSystemMessageData(const char* message) const;
 
         int ParseCommands(const char* text, WorldSession* session);
@@ -56,8 +56,8 @@ class SERVER_DECL ChatHandler
 
         bool ExecuteCommandInTable(ChatCommand* table, const char* text, WorldSession* m_session);
         bool ShowHelpForCommand(WorldSession* m_session, ChatCommand* table, const char* cmd);
-        void SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32 id);
-        void SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32 language = LANG_UNIVERSAL);
+        void SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32_t id);
+        void SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32_t language = LANG_UNIVERSAL);
         bool HandleHelpCommand(const char* args, WorldSession* m_session);
         bool HandleCommandsCommand(const char* args, WorldSession* m_session);
         bool HandleGetSkillLevelCommand(const char* args, WorldSession* m_session);
@@ -67,11 +67,11 @@ class SERVER_DECL ChatHandler
         Player* GetSelectedPlayer(WorldSession* m_session, bool showerror = true, bool auto_self = false);
         Creature* GetSelectedCreature(WorldSession* m_session, bool showerror = true);
         Unit* GetSelectedUnit(WorldSession* m_session, bool showerror = true);
-        uint32 GetSelectedWayPointId(WorldSession* m_session);
+        uint32_t GetSelectedWayPointId(WorldSession* m_session);
         std::string GetNpcFlagString(Creature* creature);
-        const char* GetMapTypeString(uint8 type);
-        const char* GetDifficultyString(uint8 difficulty);
-        const char* GetRaidDifficultyString(uint8 diff);
+        const char* GetMapTypeString(uint8_t type);
+        const char* GetDifficultyString(uint8_t difficulty);
+        const char* GetRaidDifficultyString(uint8_t diff);
         std::string MyConvertIntToString(const int arg);
         std::string MyConvertFloatToString(const float arg);
         // For skill related GM commands
@@ -101,7 +101,7 @@ class SERVER_DECL ChatHandler
         bool HandleAdminPlayGlobalSoundCommand(const char* args, WorldSession* m_session);
 
         // Arena commands
-        uint8 GetArenaTeamInternalType(uint32 type, WorldSession* m_session);
+        uint8_t GetArenaTeamInternalType(uint32_t type, WorldSession* m_session);
         bool HandleArenaCreateTeam(const char* args, WorldSession* m_session);
         bool HandleArenaSetTeamLeader(const char* args, WorldSession* m_session);
         bool HandleArenaTeamResetAllRatings(const char* /*args*/, WorldSession* /*m_session*/);

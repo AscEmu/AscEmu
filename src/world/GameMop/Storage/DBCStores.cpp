@@ -17,7 +17,7 @@ typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*>
 struct NameGenData
 {
     std::string name;
-    uint32 type;
+    uint32_t type;
 };
 
 std::vector<NameGenData> _namegenData[3];
@@ -100,7 +100,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRangeEntry> sSpellRangeStore(D
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore(DBC::Structures::spell_rune_cost_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentEntry> sTalentStore(DBC::Structures::talent_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTabEntry> sTalentTabStore(DBC::Structures::talent_tab_format);
-static uint32 InspectTalentTabPages[12][3];
+static uint32_t InspectTalentTabPages[12][3];
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTreePrimarySpells> sTalentTreePrimarySpellsStore(DBC::Structures::talent_tree_primary_spells_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapOverlayEntry> sWorldMapOverlayStore(DBC::Structures::world_map_overlay_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore(DBC::Structures::gt_barber_shop_cost_format);
@@ -130,7 +130,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapAreaEntry> sWorldMapAreaSto
 
 bool LoadDBCs()
 {
-    uint32 available_dbc_locales = 0xFFFFFFFF;
+    uint32_t available_dbc_locales = 0xFFFFFFFF;
     DBC::StoreProblemList bad_dbc_files;
     std::string dbc_path = sWorld.settings.server.dataDir + "dbc/";
 
@@ -160,15 +160,15 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentStore, dbc_path, "Talent.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTabStore, dbc_path, "TalentTab.dbc");
     {
-        std::map< uint32, uint32 > InspectTalentTabPos;
-        std::map< uint32, uint32 > InspectTalentTabSize;
-        std::map< uint32, uint32 > InspectTalentTabBit;
+        std::map< uint32_t, uint32_t > InspectTalentTabPos;
+        std::map< uint32_t, uint32_t > InspectTalentTabSize;
+        std::map< uint32_t, uint32_t > InspectTalentTabBit;
 
-        uint32 talent_max_rank;
-        uint32 talent_pos;
-        uint32 talent_class;
+        uint32_t talent_max_rank;
+        uint32_t talent_pos;
+        uint32_t talent_class;
 
-        for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
+        for (uint32_t i = 0; i < sTalentStore.GetNumRows(); ++i)
         {
             auto talent_info = sTalentStore.LookupEntry(i);
             if (talent_info == nullptr)
@@ -183,7 +183,7 @@ bool LoadDBCs()
                 continue;
 
             talent_max_rank = 0;
-            for (uint32 j = 5; j > 0; --j)
+            for (uint32_t j = 5; j > 0; --j)
             {
                 if (talent_info->RankID[j - 1])
                 {
@@ -196,7 +196,7 @@ bool LoadDBCs()
             InspectTalentTabSize[talent_info->TalentTree] += talent_max_rank;
         }
 
-        for (uint32 i = 0; i < sTalentTabStore.GetNumRows(); ++i)
+        for (uint32_t i = 0; i < sTalentTabStore.GetNumRows(); ++i)
         {
             auto talent_tab = sTalentTabStore.LookupEntry(i);
             if (talent_tab == nullptr)
@@ -216,9 +216,9 @@ bool LoadDBCs()
             if (talent_class > 0 && talent_class < 12)
                 InspectTalentTabPages[talent_class][talent_tab->TabPage] = talent_tab->TalentTabID;
 
-            for (std::map<uint32, uint32>::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
+            for (std::map<uint32_t, uint32_t>::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
             {
-                uint32 talent_id = itr->first & 0xFFFF;
+                uint32_t talent_id = itr->first & 0xFFFF;
                 auto talent_info = sTalentStore.LookupEntry(talent_id);
                 if (talent_info == nullptr)
                     continue;
@@ -258,17 +258,17 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellTotemsStore, dbc_path, "SpellTotems.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellEffectStore, dbc_path, "SpellEffect.dbc");
 
-    for (uint32 i = 1; i < sSpellStore.GetNumRows(); ++i)
+    for (uint32_t i = 1; i < sSpellStore.GetNumRows(); ++i)
     {
         if (DBC::Structures::SpellEntry const* spell = sSpellStore.LookupEntry(i))
         {
             if (DBC::Structures::SpellCategoriesEntry const* category = spell->GetSpellCategories())
-                if (uint32 cat = category->Category)
+                if (uint32_t cat = category->Category)
                     sSpellCategoryStore[cat].insert(i);
         }
     }
 
-    for (uint32 i = 1; i < sSpellEffectStore.GetNumRows(); ++i)
+    for (uint32_t i = 1; i < sSpellEffectStore.GetNumRows(); ++i)
     {
         if (DBC::Structures::SpellEffectEntry const* spellEffect = sSpellEffectStore.LookupEntry(i))
         {
@@ -323,7 +323,7 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sQuestXPStore, dbc_path, "QuestXP.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sMailTemplateStore, dbc_path, "MailTemplate.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sWMOAreaTableStore, dbc_path, "WMOAreaTable.dbc");
-    for (uint32 i = 0; i < sWMOAreaTableStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sWMOAreaTableStore.GetNumRows(); ++i)
     {
         if (DBC::Structures::WMOAreaTableEntry const* entry = sWMOAreaTableStore.LookupEntry(i))
         {
@@ -342,13 +342,13 @@ bool LoadDBCs()
 
     MapManagement::AreaManagement::AreaStorage::Initialise(&sAreaStore);
     auto area_map_collection = MapManagement::AreaManagement::AreaStorage::GetMapCollection();
-    for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sMapStore.GetNumRows(); ++i)
     {
         auto map_object = sMapStore.LookupEntry(i);
         if (map_object == nullptr)
             continue;
 
-        area_map_collection->insert(std::pair<uint32, uint32>(map_object->id, map_object->linked_zone));
+        area_map_collection->insert(std::pair<uint32_t, uint32_t>(map_object->id, map_object->linked_zone));
     }
 
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sChrPowerTypesEntry, dbc_path, "ChrClassesXPowerTypes.dbc");
@@ -389,7 +389,7 @@ DBC::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t r
     return nullptr;
 }
 
-DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id)
+DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32_t root_id, int32_t adt_id, int32_t group_id)
 {
     auto iter = sWMOAreaInfoByTripple.find(WMOAreaTableTripple(root_id, adt_id, group_id));
     if (iter == sWMOAreaInfoByTripple.end())
@@ -397,7 +397,7 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
     return iter->second;
 }
 
-DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, uint8_t effect)
+DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32_t spellId, uint8_t effect)
 {
     DBC::Structures::SpellEffectMap::const_iterator itr = sSpellEffectMap.find(spellId);
     if (itr == sSpellEffectMap.end())
@@ -407,16 +407,16 @@ DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, uin
 }
 
 
-std::string generateName(uint32 type)
+std::string generateName(uint32_t type)
 {
     if (_namegenData[type].size() == 0)
         return "ERR";
 
-    uint32 ent = Util::getRandomUInt((uint32)_namegenData[type].size() - 1);
+    uint32_t ent = Util::getRandomUInt((uint32_t)_namegenData[type].size() - 1);
     return _namegenData[type].at(ent).name;
 }
 
-uint32 const* getTalentTabPages(uint8 playerClass)
+uint32_t const* getTalentTabPages(uint8_t playerClass)
 {
     return InspectTalentTabPages[playerClass];
 }

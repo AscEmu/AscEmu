@@ -208,13 +208,13 @@ class LakkaAI : public CreatureAIScript
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
         //WPs
-        for (uint8 i = 1; i < 4; ++i)
+        for (uint8_t i = 1; i < 4; ++i)
         {
             AddWaypoint(CreateWaypoint(i, 0, LakkaWaypoint[i].wp_flag, LakkaWaypoint[i].wp_location));
         }
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -356,7 +356,7 @@ class DarkweaverSythAI : public CreatureAIScript
 
 protected:
 
-    uint32 Summons;
+    uint32_t Summons;
     CreatureAISpells* summonFireEle;
     CreatureAISpells* summonFrostEle;
     CreatureAISpells* summonArcaneEle;
@@ -425,7 +425,7 @@ class TalonKingIkissAI : public CreatureAIScript
         }
     }
 
-    void OnCastSpell(uint32 spellId) override
+    void OnCastSpell(uint32_t spellId) override
     {
         if (spellId == SP_TALRON_K_IKISS_BLINK)
             Blink = true;
@@ -495,7 +495,7 @@ class ANZUAI : public CreatureAIScript
         getCreature()->castSpell(getCreature(), banish->mSpellInfo, true);
     }
 
-    void OnCastSpell(uint32 spellId) override
+    void OnCastSpell(uint32_t spellId) override
     {
         if (spellId == SP_ANZU_BANISH)
             Banished = true;

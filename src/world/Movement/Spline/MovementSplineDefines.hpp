@@ -12,7 +12,7 @@ namespace Movement::Spline
     {
         /* The first 4 bytes of the SplineFlags are actually an animation id 
          * So the structure is:
-         * uint8: anim_id
+         * uint8_t: anim_id
          * uint24: spline_flags */
 #if VERSION_STRING < Cata
         SPLINEFLAG_DONE = 0x00000100,

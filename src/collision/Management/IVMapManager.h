@@ -93,8 +93,8 @@ namespace VMAP
             Query world model area info.
             \param z gets adjusted to the ground height for which this are info is valid
             */
-            virtual bool getAreaInfo(unsigned int pMapId, float x, float y, float &z, uint32 &flags, int32 &adtId, int32 &rootId, int32 &groupId) const=0;
-            virtual bool GetLiquidLevel(uint32 pMapId, float x, float y, float z, uint8 ReqLiquidType, float &level, float &floor, uint32 &type) const=0;
+            virtual bool getAreaInfo(unsigned int pMapId, float x, float y, float &z, uint32_t &flags, int32_t &adtId, int32_t &rootId, int32_t &groupId) const=0;
+            virtual bool GetLiquidLevel(uint32_t pMapId, float x, float y, float z, uint8_t ReqLiquidType, float &level, float &floor, uint32_t &type) const=0;
     };
 
 }

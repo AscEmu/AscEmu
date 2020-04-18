@@ -887,7 +887,7 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
         LogDebugFlag(LF_OPCODE, "Received CMSG_BUG [Suggestion]");
 
     uint64_t accountId = GetAccountId();
-    uint32_t timeStamp = uint32(UNIXTIME);
+    uint32_t timeStamp = uint32_t(UNIXTIME);
     uint32_t reportId = sObjectMgr.GenerateReportID();
 
     std::stringstream ss;
@@ -1794,7 +1794,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     {
         data << guild->getGUID();
         data << uint32_t(guild->getLevel());
-        data << uint64(guild->getExperience());
+        data << uint64_t(guild->getExperience());
         data << uint32_t(guild->getMembersCount());
     }
 #endif
@@ -2166,7 +2166,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 }
 
 #if VERSION_STRING > TBC
-void WorldSession::sendClientCacheVersion(uint32 version)
+void WorldSession::sendClientCacheVersion(uint32_t version)
 {
     WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
     data << uint32_t(version);
@@ -2174,7 +2174,7 @@ void WorldSession::sendClientCacheVersion(uint32 version)
 }
 #endif
 
-void WorldSession::sendAccountDataTimes(uint32 mask)
+void WorldSession::sendAccountDataTimes(uint32_t mask)
 {
 #if VERSION_STRING == TBC
     StackWorldPacket<128> data(SMSG_ACCOUNT_DATA_TIMES);
@@ -2190,7 +2190,7 @@ void WorldSession::sendAccountDataTimes(uint32 mask)
 
         if (!acct_data->data)
         {
-            data << uint64(0) << uint64(0);
+            data << uint64_t(0) << uint64_t(0);
             continue;
         }
         md5hash.Initialize();
@@ -2204,10 +2204,10 @@ void WorldSession::sendAccountDataTimes(uint32 mask)
     data << uint32_t(UNIXTIME);
     data << uint8_t(1);
     data << uint32_t(mask);
-    for (uint8 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
+    for (uint8_t i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
     {
         if (mask & (1 << i))
-            data << uint32(0);
+            data << uint32_t(0);
     }
 #else
     WorldPacket data(SMSG_ACCOUNT_DATA_TIMES, 4 + 1 + 4 + 8 * 4);

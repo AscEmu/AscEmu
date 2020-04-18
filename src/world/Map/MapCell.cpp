@@ -31,7 +31,7 @@
 #include "Objects/ObjectMgr.h"
 
 Mutex m_cellloadLock;
-uint32 m_celltilesLoaded[MAX_NUM_MAPS][64][64];
+uint32_t m_celltilesLoaded[MAX_NUM_MAPS][64][64];
 
 extern bool bServerShutdown;
 
@@ -40,15 +40,15 @@ MapCell::~MapCell()
     RemoveObjects();
 }
 
-void MapCell::Init(uint32 x, uint32 y, MapMgr* mapmgr)
+void MapCell::Init(uint32_t x, uint32_t y, MapMgr* mapmgr)
 {
     _mapmgr = mapmgr;
     _active = false;
     _loaded = false;
     _playerCount = 0;
     _corpses.clear();
-    _x = static_cast<uint16>(x);
-    _y = static_cast<uint16>(y);
+    _x = static_cast<uint16_t>(x);
+    _y = static_cast<uint16_t>(y);
     _unloadpending = false;
     _objects.clear();
     objects_iterator = _objects.begin();
@@ -83,9 +83,9 @@ void MapCell::RemoveObject(Object* obj)
 
 void MapCell::SetActivity(bool state)
 {
-    uint32 mapId = _mapmgr->GetMapId();
-    uint32 tileX = _x / 8;
-    uint32 tileY = _y / 8;
+    uint32_t mapId = _mapmgr->GetMapId();
+    uint32_t tileX = _x / 8;
+    uint32_t tileY = _y / 8;
 
     if (!_active && state)
     {
@@ -218,13 +218,13 @@ void MapCell::LoadObjects(CellSpawns* sp)
     {
         for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
         {
-            uint32 respawnTimeOverride = 0;
+            uint32_t respawnTimeOverride = 0;
             if (pInstance)
             {
                 if (bossInfoMap != NULL && pInstance->isPersistent())
                 {
                     bool skip = false;
-                    for (std::set<uint32>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
+                    for (std::set<uint32_t>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
                     {
                         // Do not spawn the killed boss.
                         if ((*killedNpc) == (*i)->entry)
@@ -307,7 +307,7 @@ void MapCell::QueueUnloadPending()
 
     _unloadpending = true;
     LogDebugFlag(LF_MAP_CELL, "Queueing pending unload of cell %u %u", _x, _y);
-    sEventMgr.AddEvent(_mapmgr, &MapMgr::UnloadCell, (uint32)_x, (uint32)_y, MAKE_CELL_EVENT(_x, _y), worldConfig.server.mapUnloadTime * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(_mapmgr, &MapMgr::UnloadCell, (uint32_t)_x, (uint32_t)_y, MAKE_CELL_EVENT(_x, _y), worldConfig.server.mapUnloadTime * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void MapCell::CancelPendingUnload()

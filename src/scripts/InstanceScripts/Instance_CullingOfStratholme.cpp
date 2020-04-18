@@ -190,7 +190,7 @@ class MalganisAI : public CreatureAIScript
         getCreature()->RemoveAllAuras();
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         if (getCreature()->HasAura(52723))    //handling a dummy :)
         {
@@ -201,7 +201,7 @@ class MalganisAI : public CreatureAIScript
         {
             getCreature()->setMoveRoot(true);
             getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
-            for (uint8 i = 0; i < 7; ++i)
+            for (uint8_t i = 0; i < 7; ++i)
                 getCreature()->SchoolImmunityList[i] = 1;
 
             RemoveAIUpdateEvent();
@@ -223,13 +223,13 @@ public:
 
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        for (uint8 i = 0; i < 5; i++)
+        for (uint8_t i = 0; i < 5; i++)
         SpawnCrates(i, mTarget->GetMapMgr());
     }
 
-    static void SpawnCrates(uint32 id, MapMgr* pMapMgr)
+    static void SpawnCrates(uint32_t id, MapMgr* pMapMgr)
     {
-        uint32 entry = 190094;
+        uint32_t entry = 190094;
         float x = 0.0f, y = 0.0f, z = 0.0f, o = 0.0f;
         switch (id)
         {
@@ -304,7 +304,7 @@ class UtherAI : public CreatureAIScript
         check = true;
     }
 
-    void OnReachWP(uint32 i, bool /*usl*/) override
+    void OnReachWP(uint32_t i, bool /*usl*/) override
     {
         if (i == 3 && check)
         {
@@ -393,7 +393,7 @@ class ArthasAI : public CreatureAIScript
         phase = 0;
     }
 
-    void OnReachWP(uint32 i, bool /*usl*/) override
+    void OnReachWP(uint32_t i, bool /*usl*/) override
     {
         switch (i)
         {
@@ -482,7 +482,7 @@ class ArthasAI : public CreatureAIScript
                     c->bInvincible = true;
                     c->GetAIInterface()->m_canMove = false;
                     c->GetAIInterface()->SetAllowedToEnterCombat(false);
-                    for (uint8 i = 0; i < 7; i++)
+                    for (uint8_t i = 0; i < 7; i++)
                         c->SchoolImmunityList[i] = 1;
                     c->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                     //1 = 0s
@@ -502,7 +502,7 @@ class ArthasAI : public CreatureAIScript
 
 protected:
 
-    uint32 phase;
+    uint32_t phase;
 };
 
 
@@ -519,7 +519,7 @@ public:
         menu.sendGossipPacket(Plr);
     }
 
-    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {

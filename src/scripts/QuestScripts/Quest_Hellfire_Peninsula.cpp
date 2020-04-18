@@ -155,7 +155,7 @@ public:
 
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        int32 i = -1;
+        int32_t i = -1;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
         switch (pPrisoner->getEntry())
         {
@@ -185,10 +185,10 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* pPlayer, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* pPlayer, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
 
-        uint8 i = 66;
+        uint8_t i = 66;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
         switch (pPrisoner->getEntry())
         {

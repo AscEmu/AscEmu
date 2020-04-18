@@ -27,8 +27,8 @@ namespace luaSql
     {
         if (res != NULL)
         {
-            uint32 column = CHECK_ULONG(L, 1);
-            uint32 fields = res->GetFieldCount();
+            uint32_t column = CHECK_ULONG(L, 1);
+            uint32_t fields = res->GetFieldCount();
             if (column > fields)
                 luaL_error(L, "GetColumn, Column %d bigger than max column %d", column, res->GetFieldCount());
             else
@@ -156,7 +156,7 @@ namespace luaSql
             lua_pushnil(L);
         else
         {
-            uint64 guid = field->GetUInt64();
+            uint64_t guid = field->GetUInt64();
             PUSH_GUID(L, guid);
         }
         return 1;

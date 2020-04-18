@@ -115,7 +115,7 @@ public:
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new MountHyjalScript(pMapMgr); }
 
-    void SetLocaleInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+    void SetLocaleInstanceData(uint32_t pType, uint32_t pIndex, uint32_t pData)
     {
         if (pType >= HYJAL_TYPE_END || pIndex >= 10)
             return;
@@ -123,7 +123,7 @@ public:
         InstanceData[pType][pIndex] = pData;
     }
 
-    uint32 GetLocaleInstanceData(uint32 pType, uint32 pIndex)
+    uint32_t GetLocaleInstanceData(uint32_t pType, uint32_t pIndex)
     {
         if (pType >= HYJAL_TYPE_END || pIndex >= 10)
             return 0;
@@ -132,7 +132,7 @@ public:
     }
 
 private:
-    uint32 InstanceData[HYJAL_TYPE_END][10]; // Expand this to fit your needs.
+    uint32_t InstanceData[HYJAL_TYPE_END][10]; // Expand this to fit your needs.
     // Type 0 = Basic Data;
     //   Index 0 = Current Phase;
 };
@@ -172,7 +172,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* /*Plr*/, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* /*Plr*/, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
             return;
@@ -221,7 +221,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* /*Plr*/, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* /*Plr*/, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
             return;
@@ -490,8 +490,8 @@ class DoomfireAI : public CreatureAIScript
 
 protected:
 
-    uint32 DespawnTimer;
-    uint32 DirChange;
+    uint32_t DespawnTimer;
+    uint32_t DirChange;
 };
 
 /* * Doomfire - Leaves a trail of fire on the ground, which does 2400 fire

@@ -21,7 +21,7 @@ public:
     ~QuestLogEntry();
 
     inline QuestProperties const* GetQuest() { return m_quest; };
-    void Init(QuestProperties const* quest, Player* plr, uint16 slot);
+    void Init(QuestProperties const* quest, Player* plr, uint16_t slot);
 
     bool CanBeFinished();
     void Complete();
@@ -29,9 +29,9 @@ public:
     bool LoadFromDB(Field* fields);
     void UpdatePlayerFields();
 
-    void SetTrigger(uint32 i);
-    void SetMobCount(uint32 i, uint32 count);
-    void IncrementMobCount(uint32 i);
+    void SetTrigger(uint32_t i);
+    void SetMobCount(uint32_t i, uint32_t count);
+    void IncrementMobCount(uint32_t i);
 
     bool IsUnitAffected(Unit* target);
     inline bool IsCastQuest() { return iscastquest; }
@@ -39,7 +39,7 @@ public:
     void AddAffectedUnit(Unit* target);
     void ClearAffectedUnits();
 
-    void SetSlot(uint16 i);
+    void SetSlot(uint16_t i);
     void Finish();
 
 
@@ -68,15 +68,15 @@ public:
 
 
     void SendQuestComplete();
-    void SendUpdateAddKill(uint32 i);
-    inline uint32 GetMobCount(uint32 i) { return m_mobcount[i]; }
-    inline uint32 GetExploredAreas(uint32 i) { return m_explored_areas[i]; }
+    void SendUpdateAddKill(uint32_t i);
+    inline uint32_t GetMobCount(uint32_t i) { return m_mobcount[i]; }
+    inline uint32_t GetExploredAreas(uint32_t i) { return m_explored_areas[i]; }
 
-    uint16 GetBaseField(uint16 slot) { return PLAYER_QUEST_LOG_1_1 + (slot * 5); }
-    uint16 GetSlot() { return m_slot; }
+    uint16_t GetBaseField(uint16_t slot) { return PLAYER_QUEST_LOG_1_1 + (slot * 5); }
+    uint16_t GetSlot() { return m_slot; }
 
 private:
-    uint32 completed;
+    uint32_t completed;
 
     bool mInitialized;
     bool mDirty;
@@ -84,15 +84,15 @@ private:
     QuestProperties const* m_quest;
     Player* m_plr;
 
-    uint32 m_mobcount[4];
-    uint32 m_explored_areas[4];
+    uint32_t m_mobcount[4];
+    uint32_t m_explored_areas[4];
 
-    std::set<uint64> m_affected_units;
+    std::set<uint64_t> m_affected_units;
     bool iscastquest;
     bool isemotequest;
 
-    uint32 expirytime;
-    uint16 m_slot;
+    uint32_t expirytime;
+    uint16_t m_slot;
 };
 
 #define CALL_QUESTSCRIPT_EVENT(obj, func) if (static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript != NULL) static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript->func

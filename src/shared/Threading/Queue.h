@@ -30,10 +30,10 @@ class FQueue
         FQueue() { first = last = NULL; size = 0; }
         volatile unsigned int size;
 
-        uint32 get_size()
+        uint32_t get_size()
         {
             lock.Acquire();
-            ::uint32 retval = size;
+            ::uint32_t retval = size;
             lock.Release();
             return retval;
         }

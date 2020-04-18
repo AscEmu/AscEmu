@@ -10,10 +10,11 @@
 const char *Executable = "wow.exe";
 const char *OutputFile = "SpellFailure.h";
 
-const char *HDR = "/*\n * AscEmu Framework\n * Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>\n" \
+const char *HDR = "/*\n * AscEmu Framework\n" \
+" *\n * Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>\n" \
 " *\n * This program is free software: you can redistribute it and/or modify\n * it under the terms of the GNU General Public License as published by\n * the Free Software Foundation, either version 3 of the License, or" \
-" * any later version.\n *\n * This program is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the" \
-" * GNU General Public License for more details.\n *\n * You should have received a copy of the GNU General Public License\n * along with this program.  If not, see <http://www.gnu.org/licenses/>.\n *\n */";
+" * any later version.\n *\n * This program is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the" \
+" * GNU General Public License for more details.\n *\n * You should have received a copy of the GNU General Public License\n * along with this program. If not, see <http://www.gnu.org/licenses/>.\n *\n */";
 
 bool reverse_pointer_back_to_string(char ** ptr, char * str)
 {
@@ -66,30 +67,30 @@ int find_string_in_buffer(char * str, size_t str_len, char * buf, size_t buf_len
 
         if(i == str_len)
             return (int)(p - buf);
-
-        *p++;
     }
     return -1;
 }
 
 int main(int argc, char* argv[])
 {
+    FILE* fp = std::fopen("test.txt", "r");
+
     FILE * in = fopen( Executable, "rb");
     FILE * out = fopen( OutputFile, "w");
 
     if( in == NULL ){
         printf("ERROR: Couldn't open %s for reading!\n", Executable );
         printf("Exiting.\n");
-        fclose(in);
-        flose(out);
+        std::fclose(in);
+        std::fclose(out);
         return -1;
     }
 
     if( out == NULL ){
         printf("ERROR: Couldn't open %s for writing!\n", OutputFile );
         printf("Exiting.\n");
-        fclose(in);
-        flose(out);
+        std::fclose(in);
+        std::fclose(out);
         return -1;
     }
 
@@ -100,27 +101,27 @@ int main(int argc, char* argv[])
     char * buffer = (char*)malloc(len);
     if(!buffer)
     {
-        fclose(in);
-        flose(out);
+        std::fclose(in);
+        std::fclose(out);
         free(buffer);
         return 2;
     }
 
     if(fread(buffer, 1, len, in) != len)
     {
-        fclose(in);
-        flose(out);
+        std::fclose(in);
+        std::fclose(out);
         free(buffer);
         return 3;
     }
 
     printf("Searching for `%s`...", SEARCH_TEXT);
     size_t offset = find_string_in_buffer(SEARCH_TEXT, strlen(SEARCH_TEXT), buffer, len);
-    printf(" at %d.\n", offset);
+    printf(" at %zd.\n", offset);
     if(offset < 0)
     {
-        fclose(in);
-        flose(out);
+        std::fclose(in);
+        std::fclose(out);
         free(buffer);
         return 3;
     }
@@ -179,8 +180,8 @@ int main(int argc, char* argv[])
     fprintf(out, "};\n");
 
     fprintf(out, "\n#endif\n\n");
-    fclose(out);
-    fclose(in);
+    std::fclose(out);
+    std::fclose(in);
     free(buffer);
 
     printf("\nDone.\n");

@@ -56,7 +56,7 @@ bool ChatHandler::HandleModPeriodCommand(const char* args, WorldSession* m_sessi
 {
     try
     {
-        int32 time = args ? atol(args) : 0;
+        int32_t time = args ? atol(args) : 0;
         if (time == 0)
             return false;
 
@@ -115,7 +115,7 @@ bool ChatHandler::HandleStartTransport(const char* /*args*/, WorldSession* m_ses
             transport->setState(GO_STATE_OPEN);
             transport->setDynamic(0x10830010); //\todo When people see things in sniffs... probably wrong
             transport->setParentRotation(3, 1.0f);
-            std::set<uint32> mapsUsed;
+            std::set<uint32_t> mapsUsed;
             GameObjectProperties const* goinfo = transport->GetGameObjectProperties();
 
             transport->GenerateWaypoints(goinfo->raw.parameter_0);
@@ -139,8 +139,8 @@ bool ChatHandler::HandleSpawnInstanceTransport(const char* args, WorldSession* m
     if (!pPeriod)
         return false;
 
-    uint32 entry = atoi(pEntry);
-    uint32 period = atoi(pPeriod);
+    uint32_t entry = atoi(pEntry);
+    uint32_t period = atoi(pPeriod);
 
     sObjectMgr.LoadTransportInInstance(m_session->GetPlayerOrThrow()->GetMapMgr(), entry, period);
 

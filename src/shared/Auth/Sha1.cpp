@@ -31,14 +31,14 @@ Sha1Hash::~Sha1Hash()
     // nothing.. lol
 }
 
-void Sha1Hash::UpdateData(const uint8* dta, int len)
+void Sha1Hash::UpdateData(const uint8_t* dta, int len)
 {
     SHA1_Update(&mC, dta, len);
 }
 
 void Sha1Hash::UpdateData(const std::string & str)
 {
-    UpdateData((uint8*)str.c_str(), (int)str.length());
+    UpdateData((uint8_t*)str.c_str(), (int)str.length());
 }
 
 void Sha1Hash::UpdateBigNumbers(BigNumber* bn0, ...)

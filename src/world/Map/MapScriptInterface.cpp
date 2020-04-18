@@ -37,23 +37,23 @@ MapScriptInterface::~MapScriptInterface()
     mapMgr.ScriptInterface = nullptr;
 }
 
-uint32 MapScriptInterface::GetPlayerCountInRadius(float x, float y, float z /* = 0.0f */, float radius /* = 5.0f */)
+uint32_t MapScriptInterface::GetPlayerCountInRadius(float x, float y, float z /* = 0.0f */, float radius /* = 5.0f */)
 {
     // use a cell radius of 2
-    uint32 PlayerCount = 0;
-    uint32 cellX = mapMgr.GetPosX(x);
-    uint32 cellY = mapMgr.GetPosY(y);
+    uint32_t PlayerCount = 0;
+    uint32_t cellX = mapMgr.GetPosX(x);
+    uint32_t cellY = mapMgr.GetPosY(y);
 
-    uint32 endX = cellX < _sizeX ? cellX + 1 : _sizeX;
-    uint32 endY = cellY < _sizeY ? cellY + 1 : _sizeY;
-    uint32 startX = cellX > 0 ? cellX - 1 : 0;
-    uint32 startY = cellY > 0 ? cellY - 1 : 0;
+    uint32_t endX = cellX < _sizeX ? cellX + 1 : _sizeX;
+    uint32_t endY = cellY < _sizeY ? cellY + 1 : _sizeY;
+    uint32_t startX = cellX > 0 ? cellX - 1 : 0;
+    uint32_t startY = cellY > 0 ? cellY - 1 : 0;
     MapCell* pCell;
     ObjectSet::iterator iter, iter_end;
 
-    for (uint32 cx = startX; cx < endX; ++cx)
+    for (uint32_t cx = startX; cx < endX; ++cx)
     {
-        for (uint32 cy = startY; cy < endY; ++cy)
+        for (uint32_t cy = startY; cy < endY; ++cy)
         {
             pCell = mapMgr.GetCell(cx, cy);
             if (pCell == nullptr || pCell->GetPlayerCount() == 0)
@@ -76,7 +76,7 @@ uint32 MapScriptInterface::GetPlayerCountInRadius(float x, float y, float z /* =
     return PlayerCount;
 }
 
-GameObject* MapScriptInterface::SpawnGameObject(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, uint32 /*Misc1*/, uint32 /*Misc2*/, uint32 phase)
+GameObject* MapScriptInterface::SpawnGameObject(uint32_t Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, uint32_t /*Misc1*/, uint32_t /*Misc2*/, uint32_t phase)
 {
 
     GameObject* pGameObject = mapMgr.CreateGameObject(Entry);
@@ -113,7 +113,7 @@ GameObject* MapScriptInterface::SpawnGameObject(MySQLStructure::GameobjectSpawn*
 }
 
 // Zyres 11/06/2017 - bool tmplate not used!
-Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, bool /*tmplate*/, uint32 /*Misc1*/, uint32 /*Misc2*/, uint32 phase)
+Creature* MapScriptInterface::SpawnCreature(uint32_t Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, bool /*tmplate*/, uint32_t /*Misc1*/, uint32_t /*Misc2*/, uint32_t phase)
 {
     CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(Entry);
     if (creature_properties == nullptr)
@@ -121,8 +121,8 @@ Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, fl
 
     MySQLStructure::CreatureSpawn* spawn = new MySQLStructure::CreatureSpawn;
     spawn->entry = Entry;
-    uint32 DisplayID = 0;
-    uint8 Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&DisplayID);
+    uint32_t DisplayID = 0;
+    uint8_t Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&DisplayID);
     spawn->displayid = DisplayID;
     spawn->form = nullptr;
     spawn->id = 0;
@@ -182,10 +182,10 @@ Creature* MapScriptInterface::SpawnCreature(MySQLStructure::CreatureSpawn* sp, b
         return nullptr;
     }
 
-    uint8 Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&sp->displayid);
+    uint8_t Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&sp->displayid);
     Creature* p = this->mapMgr.CreateCreature(sp->entry);
     ARCEMU_ASSERT(p != NULL);
-    p->Load(sp, (uint32)NULL, nullptr);
+    p->Load(sp, (uint32_t)NULL, nullptr);
     p->setGender(Gender);
     p->spawnid = 0;
     p->m_spawn = nullptr;

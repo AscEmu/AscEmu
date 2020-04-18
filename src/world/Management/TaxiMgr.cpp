@@ -217,7 +217,7 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32_t time)
     auto* data = new WorldPacket(SMSG_MONSTER_MOVE, 2000);
 
     *data << riding->GetNewGUID();
-    *data << uint8_t(0);                  //VLack: usual uint8 after new style guid
+    *data << uint8_t(0);                  //VLack: usual uint8_t after new style guid
     *data << riding->GetPositionX();
     *data << riding->GetPositionY();
     *data << riding->GetPositionZ();
@@ -264,7 +264,7 @@ void TaxiMgr::_LoadTaxiNodes()
             n->y = taxiNodes->y;
             n->z = taxiNodes->z;
 
-            this->m_taxiNodes.insert(std::map<uint32, TaxiNode*>::value_type(n->id, n));
+            this->m_taxiNodes.insert(std::map<uint32_t, TaxiNode*>::value_type(n->id, n));
         }
     }
 
@@ -302,7 +302,7 @@ void TaxiMgr::_LoadTaxiPaths()
                 }
             }
             p->ComputeLen();
-            this->m_taxiPaths.insert(std::map<uint32, TaxiPath*>::value_type(p->m_id, p));
+            this->m_taxiPaths.insert(std::map<uint32_t, TaxiPath*>::value_type(p->m_id, p));
         }
     }
 }

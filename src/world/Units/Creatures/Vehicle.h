@@ -65,10 +65,10 @@ class VehicleSeat
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Adds a passenger to the seat
-        /// \param uint64 passenger_guid  -  GUID of the passenger
+        /// \param uint64_t passenger_guid  -  GUID of the passenger
         /// \return true on success, false on failure.
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool AddPassenger(uint64 passenger_guid)
+        bool AddPassenger(uint64_t passenger_guid)
         {
             if (HasPassenger())
                 return false;
@@ -85,7 +85,7 @@ class VehicleSeat
         /// \return the GUID of the passenger in the seat, if any
         /// \return 0 otherwise
         //////////////////////////////////////////////////////////////////////////////////////////
-        uint64 GetPassengerGUID() const
+        uint64_t GetPassengerGUID() const
         {
             return passenger;
         }
@@ -138,7 +138,7 @@ class VehicleSeat
 
     private:
 
-        uint64 passenger;              // GUID of the passenger
+        uint64_t passenger;              // GUID of the passenger
         DBC::Structures::VehicleSeatEntry const* seat_info;   // Seat info structure
 };
 
@@ -157,12 +157,12 @@ class SERVER_DECL Vehicle
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Loads and sets up the Vehicle
         /// \param Unit* owner           -  Pointer to the Unit this vehicle belongs to
-        /// \param uint32 creature_entry -  Host creature of the Vehicle
-        /// \param uint32 vehicleid      -  Index of Vehicle.dbc
+        /// \param uint32_t creature_entry -  Host creature of the Vehicle
+        /// \param uint32_t vehicleid      -  Index of Vehicle.dbc
         ///
         /// \return none
         //////////////////////////////////////////////////////////////////////////////////////////
-        void Load(Unit* owner, uint32 creature_entry, uint32 vehicleid);
+        void Load(Unit* owner, uint32_t creature_entry, uint32_t vehicleid);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Tells if the Vehicle has at least 1 empty seat.
@@ -181,10 +181,10 @@ class SERVER_DECL Vehicle
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Adds the passenger to the specified seat if possible
         /// \param Unit* passenger  -  Pointer to the passenger we want to add
-        /// \param uint32 seatid    -  The id of the seat we want the passenger to be added
+        /// \param uint32_t seatid    -  The id of the seat we want the passenger to be added
         /// \return none
         //////////////////////////////////////////////////////////////////////////////////////////
-        void AddPassengerToSeat(Unit* passenger, uint32 seatid);
+        void AddPassengerToSeat(Unit* passenger, uint32_t seatid);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Remove the passenger from the vehicle
@@ -195,10 +195,10 @@ class SERVER_DECL Vehicle
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Ejects the passenger from this seat.
-        /// \param uint32 seatid  -  Identifier of the seat we want to evict
+        /// \param uint32_t seatid  -  Identifier of the seat we want to evict
         /// \return none
         //////////////////////////////////////////////////////////////////////////////////////////
-        void EjectPassengerFromSeat(uint32 seatid);
+        void EjectPassengerFromSeat(uint32_t seatid);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Ejects all passengers from the vehicle
@@ -210,11 +210,11 @@ class SERVER_DECL Vehicle
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Moves the passenger to the specified seat
         /// \param Unit* passenger  -  The passenger we want to move
-        /// \param uint32 seat      -  The seat where we want to move this passenger to
+        /// \param uint32_t seat      -  The seat where we want to move this passenger to
         ///
         /// \return none
         //////////////////////////////////////////////////////////////////////////////////////////
-        void MovePassengerToSeat(Unit* passenger, uint32 seat);
+        void MovePassengerToSeat(Unit* passenger, uint32_t seat);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Moves the specified passenger to the next seat
@@ -235,7 +235,7 @@ class SERVER_DECL Vehicle
         /// \param Unit* passenger  -  Pointer to the passenger
         /// \return the entry ID of the seat this passenger occupies
         //////////////////////////////////////////////////////////////////////////////////////////
-        uint32 GetSeatEntryForPassenger(Unit* passenger);
+        uint32_t GetSeatEntryForPassenger(Unit* passenger);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// boolean controller aura
@@ -260,7 +260,7 @@ class SERVER_DECL Vehicle
         /// \param none
         /// \return the number of passengers.
         //////////////////////////////////////////////////////////////////////////////////////////
-        uint32 GetPassengerCount() const;
+        uint32_t GetPassengerCount() const;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Retrieves a pointer to the owner of the vehicle.
@@ -275,7 +275,7 @@ class SERVER_DECL Vehicle
         /// \param none
         /// \return the extra movement flags for this vehicle
         //////////////////////////////////////////////////////////////////////////////////////////
-        uint16 GetMoveFlags2() const;
+        uint16_t GetMoveFlags2() const;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Installs all accessories for this vehicle (turrets for example)
@@ -293,32 +293,32 @@ class SERVER_DECL Vehicle
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Tells if this vehicle has the specified accessory attached to it
-        /// \param uint64 guid  -  GUID of the accessory
+        /// \param uint64_t guid  -  GUID of the accessory
         /// \return true if the vehicle has the accessory attached, false otherwise.
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool HasAccessoryWithGUID(uint64 guid);
+        bool HasAccessoryWithGUID(uint64_t guid);
 
         DBC::Structures::VehicleEntry const* GetVehicleInfo() { return vehicle_info; }
-        uint32 GetPassengerSeatId(uint64 guid);
+        uint32_t GetPassengerSeatId(uint64_t guid);
 
     private:
 
         std::array<VehicleSeat*, MAX_VEHICLE_SEATS> seats;
-        std::vector<uint64> installed_accessories;
+        std::vector<uint64_t> installed_accessories;
 
-        uint32 creature_entry;
+        uint32_t creature_entry;
         Unit* owner;
 
         DBC::Structures::VehicleEntry const* vehicle_info;
 
-        uint32 passengercount;
-        uint32 freeseats;
+        uint32_t passengercount;
+        uint32_t freeseats;
 };
 
 struct VehicleAccessoryEntry
 {
-    uint32 accessory_entry;
-    uint32 seat;
+    uint32_t accessory_entry;
+    uint32_t seat;
 };
 
 #endif      // _VEHICLE_H

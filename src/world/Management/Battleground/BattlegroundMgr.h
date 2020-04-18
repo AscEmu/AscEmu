@@ -27,35 +27,35 @@
 
 #define ANTI_CHEAT
 
-const uint32 BG_SCORE_AB_BASES_ASSAULTED        = 0;
-const uint32 BG_SCORE_AB_BASES_CAPTURED         = 1;
-const uint32 BG_SCORE_AV_GRAVEYARDS_ASSAULTED   = 0;
-const uint32 BG_SCORE_AV_GRAVEYARDS_DEFENDED    = 1;
-const uint32 BG_SCORE_AV_TOWERS_ASSAULTED       = 2;
-const uint32 BG_SCORE_AV_TOWERS_DEFENDED        = 3;
-const uint32 BG_SCORE_AV_MINES_CAPTURES         = 4;
-const uint32 BG_SCORE_EOTS_FLAGS_CAPTURED       = 0;
-const uint32 BG_SCORE_WSG_FLAGS_CAPTURED        = 0;
-const uint32 BG_SCORE_WSG_FLAGS_RETURNED        = 1;
-const uint32 BG_SCORE_IOC_BASES_ASSAULTED       = 0;
-const uint32 BG_SCORE_IOC_BASES_DEFENDED        = 1;
+const uint32_t BG_SCORE_AB_BASES_ASSAULTED        = 0;
+const uint32_t BG_SCORE_AB_BASES_CAPTURED         = 1;
+const uint32_t BG_SCORE_AV_GRAVEYARDS_ASSAULTED   = 0;
+const uint32_t BG_SCORE_AV_GRAVEYARDS_DEFENDED    = 1;
+const uint32_t BG_SCORE_AV_TOWERS_ASSAULTED       = 2;
+const uint32_t BG_SCORE_AV_TOWERS_DEFENDED        = 3;
+const uint32_t BG_SCORE_AV_MINES_CAPTURES         = 4;
+const uint32_t BG_SCORE_EOTS_FLAGS_CAPTURED       = 0;
+const uint32_t BG_SCORE_WSG_FLAGS_CAPTURED        = 0;
+const uint32_t BG_SCORE_WSG_FLAGS_RETURNED        = 1;
+const uint32_t BG_SCORE_IOC_BASES_ASSAULTED       = 0;
+const uint32_t BG_SCORE_IOC_BASES_DEFENDED        = 1;
 
-const uint32 SOUND_BATTLEGROUND_BEGIN   = 3439;
-const uint32 SOUND_FLAG_RESPAWN         = 8232;
-const uint32 SOUND_HORDE_SCORES         = 8213;
-const uint32 SOUND_ALLIANCE_SCORES      = 8173;
-const uint32 SOUND_ALLIANCE_CAPTURE     = 8174;
-const uint32 SOUND_HORDE_CAPTURE        = 8212;
-const uint32 SOUND_FLAG_RETURNED        = 8192;
-const uint32 SOUND_HORDEWINS            = 8454;
-const uint32 SOUND_ALLIANCEWINS         = 8455;
-const uint32 SOUND_HORDE_BGALMOSTEND    = 8456;
-const uint32 SOUND_ALLIANCE_BGALMOSTEND = 8457;
+const uint32_t SOUND_BATTLEGROUND_BEGIN           = 3439;
+const uint32_t SOUND_FLAG_RESPAWN                 = 8232;
+const uint32_t SOUND_HORDE_SCORES                 = 8213;
+const uint32_t SOUND_ALLIANCE_SCORES              = 8173;
+const uint32_t SOUND_ALLIANCE_CAPTURE             = 8174;
+const uint32_t SOUND_HORDE_CAPTURE                = 8212;
+const uint32_t SOUND_FLAG_RETURNED                = 8192;
+const uint32_t SOUND_HORDEWINS                    = 8454;
+const uint32_t SOUND_ALLIANCEWINS                 = 8455;
+const uint32_t SOUND_HORDE_BGALMOSTEND            = 8456;
+const uint32_t SOUND_ALLIANCE_BGALMOSTEND         = 8457;
 
-const uint32 BG_PREPARATION             = 44521;
-const uint32 BG_REVIVE_PREPARATION      = 44535;
-const uint32 RESURRECT_SPELL            = 21074; // Spirit Healer Res
-const uint32 BG_DESERTER                = 26013;
+const uint32_t BG_PREPARATION                     = 44521;
+const uint32_t BG_REVIVE_PREPARATION              = 44535;
+const uint32_t RESURRECT_SPELL                    = 21074; // Spirit Healer Res
+const uint32_t BG_DESERTER                        = 26013;
 
 class CBattleground;
 class MapMgr;
@@ -128,7 +128,7 @@ enum BattleGroundTypes
     BATTLEGROUND_TIGERS_PEAK = 757,
 };
 
-inline bool isArena(uint32 x)
+inline bool isArena(uint32_t x)
 {
     return (x >= BATTLEGROUND_ARENA_2V2 && x <= BATTLEGROUND_ARENA_5V5);
 }
@@ -150,13 +150,13 @@ enum BattleGroundStatus
 
 struct BGScore
 {
-    uint32 KillingBlows;
-    uint32 HonorableKills;
-    uint32 Deaths;
-    uint32 BonusHonor;
-    uint32 DamageDone;
-    uint32 HealingDone;
-    uint32 MiscData[5];
+    uint32_t KillingBlows;
+    uint32_t HonorableKills;
+    uint32_t Deaths;
+    uint32_t BonusHonor;
+    uint32_t DamageDone;
+    uint32_t HealingDone;
+    uint32_t MiscData[5];
 
     BGScore()
     {
@@ -171,7 +171,7 @@ struct BGScore
 };
 
 // get level grouping for player
-static inline uint32 GetLevelGrouping(uint32 level)
+static inline uint32_t GetLevelGrouping(uint32_t level)
 {
     if (level < 10)
         return 0;
@@ -193,7 +193,7 @@ static inline uint32 GetLevelGrouping(uint32 level)
         return 8;
 }
 
-static inline uint32 GetFieldCount(uint32 BGType)
+static inline uint32_t GetFieldCount(uint32_t BGType)
 {
     switch (BGType)
     {
@@ -218,42 +218,42 @@ static inline uint32 GetFieldCount(uint32 BGType)
 
 class Arena;
 
-typedef CBattleground* (*BattlegroundFactoryMethod)(MapMgr* mgr, uint32 iid, uint32 group, uint32 type);
-typedef CBattleground* (*ArenaFactoryMethod)(MapMgr* mgr, uint32 iid, uint32 group, uint32 type, uint32 players_per_side);
+typedef CBattleground* (*BattlegroundFactoryMethod)(MapMgr* mgr, uint32_t iid, uint32_t group, uint32_t type);
+typedef CBattleground* (*ArenaFactoryMethod)(MapMgr* mgr, uint32_t iid, uint32_t group, uint32_t type, uint32_t players_per_side);
 
 
 class SERVER_DECL CBattlegroundManager : public EventableObject
 {
     // Battleground Instance Map
-    std::map<uint32, CBattleground*> m_instances[BATTLEGROUND_NUM_TYPES];
+    std::map<uint32_t, CBattleground*> m_instances[BATTLEGROUND_NUM_TYPES];
     Mutex m_instanceLock;
 
     // Max Id
-    uint32 m_maxBattlegroundId[BATTLEGROUND_NUM_TYPES];
+    uint32_t m_maxBattlegroundId[BATTLEGROUND_NUM_TYPES];
 
     // Queue System
     // Instance Id -> list<Player guid> [ BattlegroundType ] (instance 0 - first available)
-    std::list<uint32> m_queuedPlayers[BATTLEGROUND_NUM_TYPES][MAX_LEVEL_GROUP];
+    std::list<uint32_t> m_queuedPlayers[BATTLEGROUND_NUM_TYPES][MAX_LEVEL_GROUP];
 
     // Instance Id -> list<Group id> [BattlegroundType][LevelGroup]
-    std::list<uint32> m_queuedGroups[BATTLEGROUND_NUM_TYPES];
+    std::list<uint32_t> m_queuedGroups[BATTLEGROUND_NUM_TYPES];
 
     Mutex m_queueLock;
 
     // Bg factory methods by Bg map Id
-    std::map<uint32, BattlegroundFactoryMethod> bgFactories;
+    std::map<uint32_t, BattlegroundFactoryMethod> bgFactories;
 
     // Arena factory methods
     std::vector<ArenaFactoryMethod> arenaFactories;
 
     // Bg map IDs by Bg type Id
-    std::map<uint32, uint32> bgMaps;
+    std::map<uint32_t, uint32_t> bgMaps;
 
     // Arena map IDs
-    std::vector<uint32> arenaMaps;
+    std::vector<uint32_t> arenaMaps;
 
     // All battlegrounds that are available in random BG queue
-    std::vector<uint32> avalibleInRandom;
+    std::vector<uint32_t> avalibleInRandom;
 
     private:
 
@@ -271,51 +271,51 @@ class SERVER_DECL CBattlegroundManager : public EventableObject
         CBattlegroundManager& operator=(CBattlegroundManager const&) = delete;
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // void RegisterBgFactory(uint32 map, BattlegroundFactoryMethod method)
+        // void RegisterBgFactory(uint32_t map, BattlegroundFactoryMethod method)
         // \note   Registers the specified Battleground class factory method for
         //         the specified Battleground type.
         //         When trying to register a duplicate, the duplicate will be ignored.
         //
-        // \param  uint32 map                          -  The map of the Battleground
+        // \param  uint32_t map                          -  The map of the Battleground
         // \param  BattlegroundFactoryMethod method    -  The Battleground factory method
         //
         // \return none
         //
         //////////////////////////////////////////////////////////////////////////////////////////
-        void RegisterBgFactory(uint32 map, BattlegroundFactoryMethod method);
+        void RegisterBgFactory(uint32_t map, BattlegroundFactoryMethod method);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // void RegisterArenaFactory(uint32 map, ArenaFactoryMethod method)
+        // void RegisterArenaFactory(uint32_t map, ArenaFactoryMethod method)
         // \note   Registers the specified Arena class factory method for
         //         the specified Battleground type.
         //         When trying to register a duplicate, the duplicate will be ignored.
         //
-        // \param  uint32 map                  -  Map id
+        // \param  uint32_t map                  -  Map id
         // \param  ArenaFactoryMethod method   -  The Arena factory method
         //
         // \return none
         //
         //////////////////////////////////////////////////////////////////////////////////////////
-        void RegisterArenaFactory(uint32 map, ArenaFactoryMethod method);
+        void RegisterArenaFactory(uint32_t map, ArenaFactoryMethod method);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // void RegisterMapForBgType(uint32 type, uint32 map)
+        // void RegisterMapForBgType(uint32_t type, uint32_t map)
         // \note   Registers a Map Id for the specified Battleground type.
         //         When trying to register a duplicate, the duplicate will be ignored.
         //
-        // \param  uint32 type  -  The Battleground type
-        // \param  uint32 map   -  The map Id
+        // \param  uint32_t type  -  The Battleground type
+        // \param  uint32_t map   -  The map Id
         //
         // \return none
         //
         //////////////////////////////////////////////////////////////////////////////////////////
-        void RegisterMapForBgType(uint32 type, uint32 map);
+        void RegisterMapForBgType(uint32_t type, uint32_t map);
 
 
-        void HandleBattlegroundListPacket(WorldSession* m_session, uint32 BattlegroundType, uint8 from = 0);
-        void HandleArenaJoin(WorldSession* m_session, uint32 BattlegroundType, uint8 as_group, uint8 rated_match);
+        void HandleBattlegroundListPacket(WorldSession* m_session, uint32_t BattlegroundType, uint8_t from = 0);
+        void HandleArenaJoin(WorldSession* m_session, uint32_t BattlegroundType, uint8_t as_group, uint8_t rated_match);
 
         void OnPlayerLogout(Player* plr);
 
@@ -329,27 +329,27 @@ class SERVER_DECL CBattlegroundManager : public EventableObject
         void RemovePlayerFromQueues(Player* plr);
         void RemoveGroupFromQueues(Group* grp);
 
-        CBattleground* CreateInstance(uint32 Type, uint32 LevelGroup);
+        CBattleground* CreateInstance(uint32_t Type, uint32_t LevelGroup);
 
-        bool CanCreateInstance(uint32 Type, uint32 LevelGroup);
+        bool CanCreateInstance(uint32_t Type, uint32_t LevelGroup);
 
         void DeleteBattleground(CBattleground* bg);
 
-        void SendBattlefieldStatus(Player* plr, BattleGroundStatus Status, uint32 Type, uint32 InstanceID, uint32 Time, uint32 MapId, uint8 RatedMatch);
+        void SendBattlefieldStatus(Player* plr, BattleGroundStatus Status, uint32_t Type, uint32_t InstanceID, uint32_t Time, uint32_t MapId, uint8_t RatedMatch);
 
-        uint32 GetArenaGroupQInfo(Group* group, int type, uint32* avgRating);
+        uint32_t GetArenaGroupQInfo(Group* group, int type, uint32_t* avgRating);
 
         int CreateArenaType(int type, Group* group1, Group* group2);
 
-        void AddPlayerToBgTeam(CBattleground* bg, std::deque<uint32> *playerVec, uint32 i, uint32 j, int Team);
+        void AddPlayerToBgTeam(CBattleground* bg, std::deque<uint32_t> *playerVec, uint32_t i, uint32_t j, int Team);
 
-        void AddPlayerToBg(CBattleground* bg, std::deque<uint32> *playerVec, uint32 i, uint32 j);
+        void AddPlayerToBg(CBattleground* bg, std::deque<uint32_t> *playerVec, uint32_t i, uint32_t j);
 
-        void AddGroupToArena(CBattleground* bg, Group* group, uint32 nteam);
+        void AddGroupToArena(CBattleground* bg, Group* group, uint32_t nteam);
 
-        uint32 GetMinimumPlayers(uint32 dbcIndex);
+        uint32_t GetMinimumPlayers(uint32_t dbcIndex);
 
-        uint32 GetMaximumPlayers(uint32 dbcIndex);
+        uint32_t GetMaximumPlayers(uint32_t dbcIndex);
 };
 
 #define sBattlegroundManager CBattlegroundManager::getInstance()

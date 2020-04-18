@@ -7,15 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
-typedef int64_t int64;
-typedef int32_t int32;
-typedef int16_t int16;
-typedef int8_t int8;
-typedef uint64_t uint64;
-typedef uint32_t uint32;
-typedef uint16_t uint16;
-typedef uint8_t uint8;
-
 #ifdef _WIN32
     #ifndef SCRIPTLIB
         #define SERVER_DECL __declspec(dllexport)

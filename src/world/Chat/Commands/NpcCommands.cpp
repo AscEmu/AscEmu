@@ -21,16 +21,16 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     if (creature_target == nullptr)
         return true;
 
-    uint32 ai_type;
-    uint32 procEvent;
-    uint32 procChance;
-    uint32 maxcount;
-    uint32 spellId;
-    uint32 spellType;
-    uint32 spelltargetType;
-    uint32 spellCooldown;
+    uint32_t ai_type;
+    uint32_t procEvent;
+    uint32_t procChance;
+    uint32_t maxcount;
+    uint32_t spellId;
+    uint32_t spellType;
+    uint32_t spelltargetType;
+    uint32_t spellCooldown;
     float floatMisc1;
-    uint32 Misc2;
+    uint32_t Misc2;
 
     if (sscanf(args, "%u %u %u %u %u %u %u %u %f %u", &ai_type, &procEvent, &procChance, &maxcount, &spellId, &spellType, &spelltargetType, &spellCooldown, &floatMisc1, &Misc2) != 10)
     {
@@ -52,12 +52,12 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
 
 
     AI_Spell* ai_spell = new AI_Spell;
-    ai_spell->agent = static_cast<uint16>(ai_type);
+    ai_spell->agent = static_cast<uint16_t>(ai_type);
     ai_spell->procChance = procChance;
     ai_spell->procCount = maxcount;
     ai_spell->spell = spell_entry;
-    ai_spell->spellType = static_cast<uint8>(spellType);
-    ai_spell->spelltargetType = static_cast<uint8>(spelltargetType);
+    ai_spell->spellType = static_cast<uint8_t>(spellType);
+    ai_spell->spelltargetType = static_cast<uint8_t>(spelltargetType);
     ai_spell->floatMisc1 = floatMisc1;
     ai_spell->Misc2 = Misc2;
     ai_spell->cooldown = spellCooldown;
@@ -197,7 +197,7 @@ bool ChatHandler::HandleNpcCastCommand(const char* args, WorldSession* m_session
     if (creature_target == nullptr)
         return true;
 
-    uint32 spell_id;
+    uint32_t spell_id;
     if (sscanf(args, "%u", &spell_id) != 1)
     {
         RedSystemMessage(m_session, "Command must be in format: .npc cast <spellid>.");
@@ -252,7 +252,7 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_sessi
     {
         creature_target->GetAIInterface()->hideWayPoints(m_session->GetPlayer());
 
-        uint32 spawn_id = creature_target->spawnid;
+        uint32_t spawn_id = creature_target->spawnid;
 
         if (m_session->GetPlayer()->SaveAllChangesCommand)
             save_to_db = true;
@@ -271,8 +271,8 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_sessi
 
         if (creature_target->m_spawn)
         {
-            uint32 cellx = uint32(((_maxX - creature_target->m_spawn->x) / _cellSize));
-            uint32 celly = uint32(((_maxY - creature_target->m_spawn->y) / _cellSize));
+            uint32_t cellx = uint32_t(((_maxX - creature_target->m_spawn->x) / _cellSize));
+            uint32_t celly = uint32_t(((_maxY - creature_target->m_spawn->y) / _cellSize));
 
             if (cellx <= _sizeX && celly <= _sizeY)
             {
@@ -317,7 +317,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     if (creature_target == nullptr)
         return true;
 
-    uint32 guid = WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayer()->GetSelection());
+    uint32_t guid = WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayer()->GetSelection());
 
     SystemMessage(m_session, "Showing Creature info of %s =============", creature_target->GetCreatureProperties()->Name.c_str());
     RedSystemMessage(m_session, "EntryID: %d", creature_target->getEntry());
@@ -328,13 +328,13 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     SystemMessage(m_session, "DisplayID: %u", creature_target->getDisplayId());
 
-    uint8 creature_gender = creature_target->getGender();
+    uint8_t creature_gender = creature_target->getGender();
     if (creature_gender <= 2)
         SystemMessage(m_session, "Gender: %s", GENDER[creature_gender]);
     else
         SystemMessage(m_session, "Gender: invalid %u", creature_gender);
 
-    uint8 creature_class = creature_target->getClass();
+    uint8_t creature_class = creature_target->getClass();
     if (creature_class <= 11)
         SystemMessage(m_session, "Class: %s", CLASS[creature_class]);
     else
@@ -365,7 +365,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     else
         SystemMessage(m_session, "Not in combat!");
 
-    uint8 sheat = creature_target->getSheathType();
+    uint8_t sheat = creature_target->getSheathType();
     if (sheat <= 2)
         SystemMessage(m_session, "Sheat state: %s", SHEATSTATE[sheat]);
 
@@ -399,18 +399,18 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     //////////////////////////////////////////////////////////////////////////////////////////
     // show byte
     std::stringstream sstext;
-    uint32 theBytes = creature_target->getUInt32Value(UNIT_FIELD_BYTES_0);
-    sstext << "UNIT_FIELD_BYTES_0 are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
-    sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\n';
+    uint32_t theBytes = creature_target->getUInt32Value(UNIT_FIELD_BYTES_0);
+    sstext << "UNIT_FIELD_BYTES_0 are " << uint16_t((uint8_t)theBytes & 0xFF) << " " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << " ";
+    sstext << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << " " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\n';
 
 
     theBytes = creature_target->getUInt32Value(UNIT_FIELD_BYTES_1);
-    sstext << "UNIT_FIELD_BYTES_1 are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
-    sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\n';
+    sstext << "UNIT_FIELD_BYTES_1 are " << uint16_t((uint8_t)theBytes & 0xFF) << " " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << " ";
+    sstext << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << " " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\n';
 
     theBytes = creature_target->getUInt32Value(UNIT_FIELD_BYTES_2);
-    sstext << "UNIT_FIELD_BYTES_2 are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
-    sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\0';
+    sstext << "UNIT_FIELD_BYTES_2 are " << uint16_t((uint8_t)theBytes & 0xFF) << " " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << " ";
+    sstext << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << " " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\0';
 
     SystemMessage(m_session, "UNIT_FIELD_BYTES =================");
     SendMultilineMessage(m_session, sstext.str().c_str());
@@ -422,42 +422,42 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     std::string s = GetNpcFlagString(creature_target);
     GreenSystemMessage(m_session, "NpcFlags: %u%s", creature_target->getNpcFlags(), s.c_str());
 
-    uint8 pvp_flags = creature_target->getPvpFlags();
+    uint8_t pvp_flags = creature_target->getPvpFlags();
     GreenSystemMessage(m_session, "PvPFlags: %u", pvp_flags);
 
-    for (uint32 i = 0; i < numpvpflags; i++)
+    for (uint32_t i = 0; i < numpvpflags; i++)
         if ((pvp_flags & UnitPvPFlagToName[i].Flag) != 0)
             GreenSystemMessage(m_session, "%s", UnitPvPFlagToName[i].Name);
 
-    uint8 pet_flags = creature_target->getPetFlags();
+    uint8_t pet_flags = creature_target->getPetFlags();
     if (pet_flags != 0)
     {
         GreenSystemMessage(m_session, "PetFlags: %u", pet_flags);
-        for (uint32 i = 0; i < numpetflags; i++)
+        for (uint32_t i = 0; i < numpetflags; i++)
             if ((pet_flags & PetFlagToName[i].Flag) != 0)
                 GreenSystemMessage(m_session, "%s", PetFlagToName[i].Name);
     }
 
-    uint32 unit_flags = creature_target->getUnitFlags();
+    uint32_t unit_flags = creature_target->getUnitFlags();
     GreenSystemMessage(m_session, "UnitFlags: %u", unit_flags);
 
-    for (uint32 i = 0; i < numflags; i++)
+    for (uint32_t i = 0; i < numflags; i++)
         if ((unit_flags & UnitFlagToName[i].Flag) != 0)
             GreenSystemMessage(m_session, "-- %s", UnitFlagToName[i].Name);
 
 #if VERSION_STRING > Classic
-    uint32 unit_flags2 = creature_target->getUnitFlags2();
+    uint32_t unit_flags2 = creature_target->getUnitFlags2();
     GreenSystemMessage(m_session, "UnitFlags2: %u", unit_flags2);
 #endif
 
-    for (uint32 i = 0; i < numflags2; i++)
+    for (uint32_t i = 0; i < numflags2; i++)
         if ((unit_flags & UnitFlagToName2[i].Flag) != 0)
             GreenSystemMessage(m_session, "-- %s", UnitFlagToName2[i].Name);
 
-    uint32 dyn_flags = creature_target->getDynamicFlags();
+    uint32_t dyn_flags = creature_target->getDynamicFlags();
     GreenSystemMessage(m_session, "UnitDynamicFlags: %u", dyn_flags);
 
-    for (uint32 i = 0; i < numdynflags; i++)
+    for (uint32_t i = 0; i < numdynflags; i++)
         if ((dyn_flags & UnitDynFlagToName[i].Flag) != 0)
             GreenSystemMessage(m_session, "%s", UnitDynFlagToName[i].Name);
 
@@ -571,9 +571,9 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
     {
         std::stringstream ss;
         std::string color;
-        uint8 numFound = 0;
+        uint8_t numFound = 0;
 
-        uint32 minQuality = 0;
+        uint32_t minQuality = 0;
         if (*args)
             minQuality = atol(args);
 
@@ -723,7 +723,7 @@ bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_s
 //.npc spawn
 bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_session)
 {
-    uint32 entry = atol(args);
+    uint32_t entry = atol(args);
     if (entry == 0)
         return false;
 
@@ -735,7 +735,7 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     }
 
     auto creature_spawn = new MySQLStructure::CreatureSpawn;
-    uint8 gender = creature_properties->GetGenderAndCreateRandomDisplayID(&creature_spawn->displayid);
+    uint8_t gender = creature_properties->GetGenderAndCreateRandomDisplayID(&creature_spawn->displayid);
     creature_spawn->entry = entry;
     creature_spawn->form = 0;
     creature_spawn->id = sObjectMgr.GenerateCreatureSpawnID();
@@ -772,8 +772,8 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     creature->PushToWorld(m_session->GetPlayer()->GetMapMgr());
 
     // Add to map
-    uint32 x = m_session->GetPlayer()->GetMapMgr()->GetPosX(m_session->GetPlayer()->GetPositionX());
-    uint32 y = m_session->GetPlayer()->GetMapMgr()->GetPosY(m_session->GetPlayer()->GetPositionY());
+    uint32_t x = m_session->GetPlayer()->GetMapMgr()->GetPosX(m_session->GetPlayer()->GetPositionX());
+    uint32_t y = m_session->GetPlayer()->GetMapMgr()->GetPosY(m_session->GetPlayer()->GetPositionY());
     m_session->GetPlayer()->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
     MapCell* map_cell = m_session->GetPlayer()->GetMapMgr()->GetCell(x, y);
     if (map_cell != nullptr)
@@ -867,7 +867,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
         return true;
     }
 
-    uint32 item = atoi(pitem);
+    uint32_t item = atoi(pitem);
     int amount = -1;
 
     char* pamount = strtok(nullptr, " ");
@@ -880,7 +880,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
         return true;
     }
 
-    uint32 costid = 0;
+    uint32_t costid = 0;
     char* pcostid = strtok(nullptr, " ");
     if (pcostid)
         costid = atoi(pcostid);
@@ -915,7 +915,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
     if (!pitem)
         return false;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64_t guid = m_session->GetPlayer()->GetSelection();
     if (guid == 0)
     {
         SystemMessage(m_session, "No selection.");
@@ -947,11 +947,11 @@ bool ChatHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSessio
         return true;
     }
 
-    uint32 itemguid = atoi(iguid);
+    uint32_t itemguid = atoi(iguid);
     int slot = selected_creature->GetSlotByItemId(itemguid);
     if (slot != -1)
     {
-        uint32 creatureId = selected_creature->getEntry();
+        uint32_t creatureId = selected_creature->getEntry();
 
         WorldDatabase.Execute("DELETE FROM vendors WHERE entry = %u AND item = %u", creatureId, itemguid);
 
@@ -1068,7 +1068,7 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_se
 bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_session)
 {
     uint8_t equipment_slot;
-    uint32 item_id;
+    uint32_t item_id;
 
     if (sscanf(args, "%hhu %u", &equipment_slot, &item_id) != 2)
     {
@@ -1126,8 +1126,8 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
 //.npc set emote
 bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_session)
 {
-    uint32 emote;
-    uint32 save = 0;
+    uint32_t emote;
+    uint32_t save = 0;
 
     if (sscanf(args, "%u %u", (unsigned int*)&emote, (unsigned int*)&save) != 2)
     {
@@ -1143,7 +1143,7 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
     if (creature_target == nullptr)
         return true;
 
-    uint32 old_emote = creature_target->getEmoteState();
+    uint32_t old_emote = creature_target->getEmoteState();
     creature_target->setEmoteState(emote);
 
     if (m_session->GetPlayer()->SaveAllChangesCommand)
@@ -1180,7 +1180,7 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
 {
     float angle;
     float distance;
-    uint32 save = 0;
+    uint32_t save = 0;
 
     if (sscanf(args, "%f %f %u", &angle, &distance, &save) < 2)
     {
@@ -1233,7 +1233,7 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
 //.npc set formationclear
 bool ChatHandler::HandleNpcSetFormationClearCommand(const char* args, WorldSession* m_session)
 {
-    uint32 save = atol(args);
+    uint32_t save = atol(args);
 
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -1265,8 +1265,8 @@ bool ChatHandler::HandleNpcSetFormationClearCommand(const char* args, WorldSessi
 //.npc set flags
 bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_session)
 {
-    uint32 npc_flags;
-    uint32 save = 0;
+    uint32_t npc_flags;
+    uint32_t save = 0;
 
     if (sscanf(args, "%u %u", &npc_flags, &save) < 1)
     {
@@ -1279,7 +1279,7 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
     if (creature_target == nullptr)
         return false;
 
-    uint32 old_npc_flags = creature_target->getNpcFlags();
+    uint32_t old_npc_flags = creature_target->getNpcFlags();
     creature_target->addNpcFlags(npc_flags);
 
     if (m_session->GetPlayer()->SaveAllChangesCommand)
@@ -1319,12 +1319,12 @@ bool ChatHandler::HandleNpcSetOnGOCommand(const char* args, WorldSession* m_sess
     if (save)
     {
         creature_target->SaveToDB();
-        GreenSystemMessage(m_session, "onGameObject permanent set from %u to %u for Creature %s (%u)", uint32(old_ongo), uint32(creature_target->GetAIInterface()->onGameobject), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
-        sGMLog.writefromsession(m_session, "changed onGameObject permanent from %u to %u for Creature %s SpawnID: (%u)", uint32(old_ongo), uint32(creature_target->GetAIInterface()->onGameobject), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
+        GreenSystemMessage(m_session, "onGameObject permanent set from %u to %u for Creature %s (%u)", uint32_t(old_ongo), uint32_t(creature_target->GetAIInterface()->onGameobject), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
+        sGMLog.writefromsession(m_session, "changed onGameObject permanent from %u to %u for Creature %s SpawnID: (%u)", uint32_t(old_ongo), uint32_t(creature_target->GetAIInterface()->onGameobject), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
     }
     else
     {
-        GreenSystemMessage(m_session, "onGameObject temporarily set from %u to %u for Creature %s (%u)", uint32(old_ongo), uint32(creature_target->GetAIInterface()->onGameobject), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
+        GreenSystemMessage(m_session, "onGameObject temporarily set from %u to %u for Creature %s (%u)", uint32_t(old_ongo), uint32_t(creature_target->GetAIInterface()->onGameobject), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
     }
 
     SystemMessage(m_session, "You may have to leave and re-enter this zone for changes to take effect.");
@@ -1334,8 +1334,8 @@ bool ChatHandler::HandleNpcSetOnGOCommand(const char* args, WorldSession* m_sess
 //.npc set phase
 bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_session)
 {
-    uint32 npc_phase;
-    uint32 save = 0;
+    uint32_t npc_phase;
+    uint32_t save = 0;
 
     if (sscanf(args, "%u %u", &npc_phase, &save) < 1)
     {
@@ -1348,7 +1348,7 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
     if (creature_target == nullptr)
         return false;
 
-    uint32 old_npc_phase = creature_target->m_spawn->phase;
+    uint32_t old_npc_phase = creature_target->m_spawn->phase;
     creature_target->Phase(PHASE_SET, npc_phase);
 
     if (m_session->GetPlayer()->SaveAllChangesCommand)
@@ -1372,7 +1372,7 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
 bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* m_session)
 {
     uint8_t standstate;
-    uint32 save = 0;
+    uint32_t save = 0;
 
     if (sscanf(args, "%hhu %u", &standstate, &save) < 1)
     {
@@ -1385,7 +1385,7 @@ bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* 
     if (creature_target == nullptr)
         return true;
 
-    uint8 old_standstate = creature_target->getStandState();
+    uint8_t old_standstate = creature_target->getStandState();
     creature_target->setStandState(standstate);
 
     if (m_session->GetPlayer()->SaveAllChangesCommand)

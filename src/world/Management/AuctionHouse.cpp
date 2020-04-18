@@ -34,7 +34,7 @@ void Auction::DeleteFromDB()
     CharacterDatabase.WaitExecute("DELETE FROM auctions WHERE auctionId = %u", Id);
 }
 
-void Auction::SaveToDB(uint32 AuctionHouseId)
+void Auction::SaveToDB(uint32_t AuctionHouseId)
 {
     CharacterDatabase.Execute("INSERT INTO auctions VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)", Id, AuctionHouseId, pItem->getGuidLow(), Owner, StartingPrice, BuyoutPrice, ExpiryTime, HighestBidder, HighestBid, DepositAmount);
 }
@@ -44,7 +44,7 @@ void Auction::UpdateInDB()
     CharacterDatabase.Execute("UPDATE auctions SET bidder = %u, bid = %u WHERE auctionId = %u", HighestBidder, HighestBid, Id);
 }
 
-AuctionHouse::AuctionHouse(uint32 ID)
+AuctionHouse::AuctionHouse(uint32_t ID)
 {
     dbc = sAuctionHouseStore.LookupEntry(ID);
     ARCEMU_ASSERT(dbc != NULL);
@@ -57,12 +57,12 @@ AuctionHouse::AuctionHouse(uint32 ID)
 
 AuctionHouse::~AuctionHouse()
 {
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
+    std::unordered_map<uint32_t, Auction*>::iterator itr = auctions.begin();
     for (; itr != auctions.end(); ++itr)
         delete itr->second;
 }
 
-void AuctionHouse::QueueDeletion(Auction* auct, uint32 Reason)
+void AuctionHouse::QueueDeletion(Auction* auct, uint32_t Reason)
 {
     if (auct->Deleted)
         return;
@@ -96,8 +96,8 @@ void AuctionHouse::UpdateAuctions()
     auctionLock.AcquireReadLock();
     removalLock.Acquire();
 
-    uint32 t = (uint32)UNIXTIME;
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
+    uint32_t t = (uint32_t)UNIXTIME;
+    std::unordered_map<uint32_t, Auction*>::iterator itr = auctions.begin();
     Auction* auct;
     for (; itr != auctions.end();)
     {
@@ -129,16 +129,16 @@ void AuctionHouse::AddAuction(Auction* auct)
 {
     // add to the map
     auctionLock.AcquireWriteLock();
-    auctions.insert(std::unordered_map<uint32, Auction*>::value_type(auct->Id, auct));
+    auctions.insert(std::unordered_map<uint32_t, Auction*>::value_type(auct->Id, auct));
     auctionLock.ReleaseWriteLock();
 
     LOG_DEBUG("%u: Add auction %u, expire@ %u.", dbc->id, auct->Id, auct->ExpiryTime);
 }
 
-Auction* AuctionHouse::GetAuction(uint32 Id)
+Auction* AuctionHouse::GetAuction(uint32_t Id)
 {
     Auction* ret;
-    std::unordered_map<uint32, Auction*>::iterator itr;
+    std::unordered_map<uint32_t, Auction*>::iterator itr;
     auctionLock.AcquireReadLock();
     itr = auctions.find(Id);
     ret = (itr == auctions.end()) ? 0 : itr->second;
@@ -176,8 +176,8 @@ void AuctionHouse::RemoveAuction(Auction* auct)
             sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, dbc->id, auct->HighestBidder, subject, body, 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
             // Send a mail to the owner with his cut of the price.
-            uint32 auction_cut = float2int32(cut_percent * auct->HighestBid);
-            int32 amount = auct->HighestBid - auction_cut + auct->DepositAmount;
+            uint32_t auction_cut = float2int32(cut_percent * auct->HighestBid);
+            int32_t amount = auct->HighestBid - auction_cut + auct->DepositAmount;
             if (amount < 0)
                 amount = 0;
 
@@ -203,10 +203,10 @@ void AuctionHouse::RemoveAuction(Auction* auct)
         case AUCTION_REMOVE_CANCELLED:
         {
             snprintf(subject, 100, "%u:0:5", (unsigned int)auct->pItem->getEntry());
-            uint32 cut = float2int32(cut_percent * auct->HighestBid);
+            uint32_t cut = float2int32(cut_percent * auct->HighestBid);
             Player* plr = sObjectMgr.GetPlayer(auct->Owner);
             if (cut && plr && plr->hasEnoughCoinage(cut))
-                plr->modCoinage(-(int32)cut);
+                plr->modCoinage(-(int32_t)cut);
 
             sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, GetID(), auct->Owner, subject, "", 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
@@ -236,18 +236,18 @@ void AuctionHouse::RemoveAuction(Auction* auct)
 
 void Auction::AddToPacket(WorldPacket& data)
 {
-    data << uint32(Id);
-    data << uint32(pItem->getEntry());
+    data << uint32_t(Id);
+    data << uint32_t(pItem->getEntry());
 
-    for (uint8 i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; i++)
+    for (uint8_t i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; i++)
     {
-        data << uint32(pItem->getEnchantmentId(i));             // Enchantment ID
-        data << uint32(pItem->GetEnchantmentApplytime(i));      // Unknown / maybe ApplyTime
-        data << uint32(pItem->getEnchantmentCharges(i));        // charges
+        data << uint32_t(pItem->getEnchantmentId(i));              // Enchantment ID
+        data << uint32_t(pItem->GetEnchantmentApplytime(i));       // Unknown / maybe ApplyTime
+        data << uint32_t(pItem->getEnchantmentCharges(i));         // charges
     }
 
-    data << pItem->getRandomPropertiesId();                   // -ItemRandomSuffix / random property     : If the value is negative its ItemRandomSuffix if its possitive its RandomItemProperty
-    data << pItem->getPropertySeed();                 // when ItemRandomSuffix is used this is the modifier
+    data << pItem->getRandomPropertiesId();                        // -ItemRandomSuffix / random property : If the value is negative its ItemRandomSuffix if its possitive its RandomItemProperty
+    data << pItem->getPropertySeed();                              // when ItemRandomSuffix is used this is the modifier
 
     /******************** ItemRandomSuffix***************************
     * For what I have seen ItemRandomSuffix is like RandomItemProperty
@@ -263,30 +263,30 @@ void Auction::AddToPacket(WorldPacket& data)
     * (Modifier / 10000) * enchantmentvalue = EnchantmentGain;
     */
 
-    data << pItem->getStackCount();                     // Amount
-    data << pItem->GetChargesLeft();                    // Charges Left
-    data << uint32(0);                                  // Unknown
-    data << uint64(Owner);                              // Owner guid
-    data << uint32(StartingPrice);                      // Starting bid
-                                                        // If there's no bid yet, we should start at starting bid
-    data << uint32((HighestBid > 0 ? 50 : 0));          // Next bid value modifier, like current bid + this value
-    data << uint32(BuyoutPrice);                        // Buyout
-    data << uint32((ExpiryTime - UNIXTIME) * 1000);     // Time left
-    data << uint64(HighestBidder);                      // Last bidder
-    data << uint32(HighestBid);                         // The bid of the last bidder
+    data << pItem->getStackCount();                                // Amount
+    data << pItem->GetChargesLeft();                               // Charges Left
+    data << uint32_t(0);                                           // Unknown
+    data << uint64_t(Owner);                                       // Owner guid
+    data << uint32_t(StartingPrice);                               // Starting bid
+    // If there's no bid yet, we should start at starting bid
+    data << uint32_t((HighestBid > 0 ? 50 : 0));                   // Next bid value modifier, like current bid + this value
+    data << uint32_t(BuyoutPrice);                                 // Buyout
+    data << uint32_t((ExpiryTime - UNIXTIME) * 1000);              // Time left
+    data << uint64_t(HighestBidder);                               // Last bidder
+    data << uint32_t(HighestBid);                                  // The bid of the last bidder
 
 }
 
 void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* /*packet*/)
 {
-    uint32 count = 0;
+    uint32_t count = 0;
 
     WorldPacket data(SMSG_AUCTION_BIDDER_LIST_RESULT, 1024);
-    data << uint32(0);                                  // Placeholder
+    data << uint32_t(0); // Placeholder
 
     Auction* auct;
     auctionLock.AcquireReadLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
+    std::unordered_map<uint32_t, Auction*>::iterator itr = auctions.begin();
     for (; itr != auctions.end(); ++itr)
     {
         auct = itr->second;
@@ -295,7 +295,7 @@ void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* /*packet*/)
             if (auct->Deleted) continue;
 
             auct->AddToPacket(data);
-            (*(uint32*)&data.contents()[0])++;
+            (*(uint32_t*)&data.contents()[0])++;
             ++count;
         }
     }
@@ -305,10 +305,10 @@ void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* /*packet*/)
     plr->GetSession()->SendPacket(&data);
 }
 
-void AuctionHouse::UpdateOwner(uint32 oldGuid, uint32 newGuid)
+void AuctionHouse::UpdateOwner(uint32_t oldGuid, uint32_t newGuid)
 {
     auctionLock.AcquireWriteLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
+    std::unordered_map<uint32_t, Auction*>::iterator itr = auctions.begin();
     Auction* auction;
     for (; itr != auctions.end(); ++itr)
     {
@@ -327,14 +327,14 @@ void AuctionHouse::UpdateOwner(uint32 oldGuid, uint32 newGuid)
 //\todo remove unused function member.
 void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* /*packet*/)
 {
-    uint32 count = 0;
+    uint32_t count = 0;
 
     WorldPacket data(SMSG_AUCTION_OWNER_LIST_RESULT, 1024);
-    data << uint32(0);                                          // Placeholder
+    data << uint32_t(0);                                          // Placeholder
 
     Auction* auct;
     auctionLock.AcquireReadLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
+    std::unordered_map<uint32_t, Auction*>::iterator itr = auctions.begin();
     for (; itr != auctions.end(); ++itr)
     {
         auct = itr->second;
@@ -343,7 +343,7 @@ void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* /*packet*/)
             if (auct->Deleted) continue;
 
             auct->AddToPacket(data);
-            (*(uint32*)&data.contents()[0])++;
+            (*(uint32_t*)&data.contents()[0])++;
             ++count;
         }
     }
@@ -352,12 +352,12 @@ void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* /*packet*/)
     plr->GetSession()->SendPacket(&data);
 }
 
-void AuctionHouse::SendAuctionOutBidNotificationPacket(Auction* auct, uint64 newBidder, uint32 newHighestBid)
+void AuctionHouse::SendAuctionOutBidNotificationPacket(Auction* auct, uint64_t newBidder, uint32_t newHighestBid)
 {
     Player* bidder = sObjectMgr.GetPlayer(auct->HighestBidder);
     if (bidder != NULL && bidder->IsInWorld())
     {
-        uint32 outbid = (auct->HighestBid / 100) * 5;
+        uint32_t outbid = (auct->HighestBid / 100) * 5;
         if (!outbid)
             outbid = 1;
 
@@ -365,46 +365,46 @@ void AuctionHouse::SendAuctionOutBidNotificationPacket(Auction* auct, uint64 new
         WorldPacket data(SMSG_AUCTION_BIDDER_NOTIFICATION, 32);
         data << GetID();
         data << auct->Id;
-        data << uint64(newBidder);
-        data << uint32(newHighestBid);
-        data << uint32(outbid);
+        data << uint64_t(newBidder);
+        data << uint32_t(newHighestBid);
+        data << uint32_t(outbid);
         data << auct->pItem->getEntry();
-        data << uint32(0);
+        data << uint32_t(0);
         bidder->GetSession()->SendPacket(&data);
     }
 }
 
 void AuctionHouse::SendAuctionBuyOutNotificationPacket(Auction* auct)
 {
-    Player* bidder = sObjectMgr.GetPlayer((uint32)auct->HighestBidder);
+    Player* bidder = sObjectMgr.GetPlayer((uint32_t)auct->HighestBidder);
     if (bidder != NULL && bidder->IsInWorld())
     {
-        uint32 outbid = (auct->HighestBid / 100) * 5;
+        uint32_t outbid = (auct->HighestBid / 100) * 5;
         if (!outbid)
             outbid = 1;
 
         WorldPacket data(SMSG_AUCTION_BIDDER_NOTIFICATION, 32);
         data << GetID();
         data << auct->Id;
-        data << uint64(auct->HighestBidder);
-        data << uint32(0);
-        data << uint32(outbid);
+        data << uint64_t(auct->HighestBidder);
+        data << uint32_t(0);
+        data << uint32_t(outbid);
         data << auct->pItem->getEntry();
-        data << uint32(0);
+        data << uint32_t(0);
         bidder->GetSession()->SendPacket(&data);
     }
 
-    Player* owner = sObjectMgr.GetPlayer((uint32)auct->Owner);
+    Player* owner = sObjectMgr.GetPlayer((uint32_t)auct->Owner);
     if (owner != NULL && owner->IsInWorld())
     {
         WorldPacket ownerData(SMSG_AUCTION_OWNER_NOTIFICATION, 28);
         ownerData << GetID();
         ownerData << auct->Id;
-        ownerData << uint32(0);
-        ownerData << uint32(0);
-        ownerData << uint32(0);
+        ownerData << uint32_t(0);
+        ownerData << uint32_t(0);
+        ownerData << uint32_t(0);
         ownerData << auct->pItem->getEntry();
-        ownerData << uint32(0);
+        ownerData << uint32_t(0);
         owner->GetSession()->SendPacket(&ownerData);
     }
 }
@@ -413,17 +413,17 @@ void AuctionHouse::SendAuctionExpiredNotificationPacket(Auction* /*auct*/)
 {
     ///\todo I don't know the net code... so: TODO ;-)
 
-    //Player* owner = sObjectMgr.GetPlayer((uint32)auct->Owner);
+    //Player* owner = sObjectMgr.GetPlayer((uint32_t)auct->Owner);
     //if (owner != NULL && owner->IsInWorld())
     //{
     //  WorldPacket data(SMSG_AUCTION_REMOVED_NOTIFICATION, ??);
     //  data << GetID();
     //  data << auct->Id;
-    //  data << uint32(0);   // I don't have an active blizz account..so I can't get the netcode by myself.
-    //  data << uint32(0);
-    //  data << uint32(0);
+    //  data << uint32_t(0); // I don't have an active blizz account..so I can't get the netcode by myself.
+    //  data << uint32_t(0);
+    //  data << uint32_t(0);
     //  data << auct->pItem->getEntry();
-    //  data << uint32(0);
+    //  data << uint32_t(0);
     //  owner->GetSession()->SendPacket(&data);
     //}
 }
@@ -431,11 +431,11 @@ void AuctionHouse::SendAuctionExpiredNotificationPacket(Auction* /*auct*/)
 //\todo: eeeeeeek packet read outside of the packet class o.O
 void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
 {
-    uint32 start_index, current_index = 0;
-    uint32 counted_items = 0;
+    uint32_t start_index, current_index = 0;
+    uint32_t counted_items = 0;
     std::string auctionString;
-    uint8 levelRange1, levelRange2, usableCheck;
-    int32 inventory_type, itemclass, itemsubclass, rarityCheck;
+    uint8_t levelRange1, levelRange2, usableCheck;
+    int32_t inventory_type, itemclass, itemsubclass, rarityCheck;
 
     *packet >> start_index;
     *packet >> auctionString;
@@ -446,15 +446,15 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
     // convert auction string to lowercase for faster parsing.
     if (auctionString.length() > 0)
     {
-        for (uint32 j = 0; j < auctionString.length(); ++j)
+        for (uint32_t j = 0; j < auctionString.length(); ++j)
             auctionString[j] = static_cast<char>(tolower(auctionString[j]));
     }
 
     WorldPacket data(SMSG_AUCTION_LIST_RESULT, 7000);
-    data << uint32(0); // count of items
+    data << uint32_t(0); // count of items
 
     auctionLock.AcquireReadLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
+    std::unordered_map<uint32_t, Auction*>::iterator itr = auctions.begin();
     ItemProperties const* proto;
     for (; itr != auctions.end(); ++itr)
     {
@@ -464,15 +464,15 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
         // Check the auction for parameters
 
         // inventory type
-        if (inventory_type != -1 && inventory_type != (int32)proto->InventoryType)
+        if (inventory_type != -1 && inventory_type != (int32_t)proto->InventoryType)
             continue;
 
         // class
-        if (itemclass != -1 && itemclass != (int32)proto->Class)
+        if (itemclass != -1 && itemclass != (int32_t)proto->Class)
             continue;
 
         // subclass
-        if (itemsubclass != -1 && itemsubclass != (int32)proto->SubClass)
+        if (itemsubclass != -1 && itemsubclass != (int32_t)proto->SubClass)
             continue;
 
         // this is going to hurt. - name
@@ -481,7 +481,7 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
             continue;
 
         // rarity
-        if (rarityCheck != -1 && rarityCheck > (int32)proto->Quality)
+        if (rarityCheck != -1 && rarityCheck > (int32_t)proto->Quality)
             continue;
 
         // level range check - lower boundary
@@ -505,10 +505,10 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
             if (proto->AllowableRace && !(plr->getRaceMask() & proto->AllowableRace))
                 continue;
 
-            if (proto->Class == 4 && proto->SubClass && !(plr->GetArmorProficiency() & (((uint32)(1)) << proto->SubClass)))
+            if (proto->Class == 4 && proto->SubClass && !(plr->GetArmorProficiency() & (((uint32_t)(1)) << proto->SubClass)))
                 continue;
 
-            if (proto->Class == 2 && proto->SubClass && !(plr->GetWeaponProficiency() & (((uint32)(1)) << proto->SubClass)))
+            if (proto->Class == 2 && proto->SubClass && !(plr->GetWeaponProficiency() & (((uint32_t)(1)) << proto->SubClass)))
                 continue;
 
             if (proto->RequiredSkill && (!plr->_HasSkillLine(proto->RequiredSkill) || proto->RequiredSkillRank > plr->_GetSkillLineCurrent(proto->RequiredSkill, true)))
@@ -524,12 +524,12 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
 
         // all checks passed -> add to packet.
         itr->second->AddToPacket(data);
-        (*(uint32*)&data.contents()[0])++;
+        (*(uint32_t*)&data.contents()[0])++;
     }
 
     // total count
-    data << uint32(1 + counted_items);
-    data << uint32(300);
+    data << uint32_t(1 + counted_items);
+    data << uint32_t(300);
 
     auctionLock.ReleaseReadLock();
     plr->GetSession()->SendPacket(&data);
@@ -570,7 +570,7 @@ void AuctionHouse::LoadAuctions()
         auct->DeletedReason = 0;
         auct->Deleted = false;
 
-        auctions.insert(std::unordered_map<uint32, Auction*>::value_type(auct->Id, auct));
+        auctions.insert(std::unordered_map<uint32_t, Auction*>::value_type(auct->Id, auct));
     }
     while (result->NextRow());
     delete result;
@@ -582,7 +582,7 @@ void Auction::DeleteFromDB()
     CharacterDatabase.WaitExecute("DELETE FROM auctions WHERE auctionId = %u", Id);
 }
 
-void Auction::SaveToDB(uint32 AuctionHouseId)
+void Auction::SaveToDB(uint32_t AuctionHouseId)
 {
     CharacterDatabase.Execute("INSERT INTO auctions VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)", Id, AuctionHouseId, pItem->getGuidLow(), Owner, StartingPrice, BuyoutPrice, ExpiryTime, HighestBidder, HighestBid, DepositAmount);
 }
@@ -592,7 +592,7 @@ void Auction::UpdateInDB()
     CharacterDatabase.Execute("UPDATE auctions SET bidder = %u, bid = %u WHERE auctionId = %u", HighestBidder, HighestBid, Id);
 }
 
-AuctionHouse::AuctionHouse(uint32 ID)
+AuctionHouse::AuctionHouse(uint32_t ID)
 {
     dbc = sAuctionHouseStore.LookupEntry(ID);
     ARCEMU_ASSERT(dbc != NULL);
@@ -605,12 +605,12 @@ AuctionHouse::AuctionHouse(uint32 ID)
 
 AuctionHouse::~AuctionHouse()
 {
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
+    std::unordered_map<uint32_t, Auction*>::iterator itr = auctions.begin();
     for (; itr != auctions.end(); ++itr)
         delete itr->second;
 }
 
-void AuctionHouse::QueueDeletion(Auction* auct, uint32 Reason)
+void AuctionHouse::QueueDeletion(Auction* auct, uint32_t Reason)
 {
     if (auct->Deleted)
         return;
@@ -644,8 +644,8 @@ void AuctionHouse::UpdateAuctions()
     auctionLock.AcquireReadLock();
     removalLock.Acquire();
 
-    uint32 t = (uint32)UNIXTIME;
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
+    uint32_t t = (uint32_t)UNIXTIME;
+    std::unordered_map<uint32_t, Auction*>::iterator itr = auctions.begin();
     Auction* auct;
     for (; itr != auctions.end();)
     {
@@ -677,16 +677,16 @@ void AuctionHouse::AddAuction(Auction* auct)
 {
     // add to the map
     auctionLock.AcquireWriteLock();
-    auctions.insert(std::unordered_map<uint32, Auction*>::value_type(auct->Id, auct));
+    auctions.insert(std::unordered_map<uint32_t, Auction*>::value_type(auct->Id, auct));
     auctionLock.ReleaseWriteLock();
 
     LogDebug("AuctionHouse : %u: Add auction %u, expire@ %u.", dbc->id, auct->Id, auct->ExpiryTime);
 }
 
-Auction* AuctionHouse::GetAuction(uint32 Id)
+Auction* AuctionHouse::GetAuction(uint32_t Id)
 {
     Auction* ret;
-    std::unordered_map<uint32, Auction*>::iterator itr;
+    std::unordered_map<uint32_t, Auction*>::iterator itr;
     auctionLock.AcquireReadLock();
     itr = auctions.find(Id);
     ret = (itr == auctions.end()) ? 0 : itr->second;
@@ -724,8 +724,8 @@ void AuctionHouse::RemoveAuction(Auction* auct)
             sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, dbc->id, auct->HighestBidder, subject, body, 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
             // Send a mail to the owner with his cut of the price.
-            uint32 auction_cut = float2int32(cut_percent * auct->HighestBid);
-            int32 amount = auct->HighestBid - auction_cut + auct->DepositAmount;
+            uint32_t auction_cut = float2int32(cut_percent * auct->HighestBid);
+            int32_t amount = auct->HighestBid - auction_cut + auct->DepositAmount;
             if (amount < 0)
                 amount = 0;
 
@@ -751,10 +751,10 @@ void AuctionHouse::RemoveAuction(Auction* auct)
         case AUCTION_REMOVE_CANCELLED:
         {
             snprintf(subject, 100, "%u:0:5", (unsigned int)auct->pItem->getEntry());
-            uint32 cut = float2int32(cut_percent * auct->HighestBid);
+            uint32_t cut = float2int32(cut_percent * auct->HighestBid);
             Player* plr = sObjectMgr.GetPlayer(auct->Owner);
             if (cut && plr && plr->hasEnoughCoinage(cut))
-                plr->modCoinage(-(int32)cut);
+                plr->modCoinage(-(int32_t)cut);
 
             sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, GetID(), auct->Owner, subject, "", 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
@@ -784,14 +784,14 @@ void AuctionHouse::RemoveAuction(Auction* auct)
 
 void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* /*packet*/)
 {
-    uint32 count = 0;
-    uint32 totalcount = 0;
+    uint32_t count = 0;
+    uint32_t totalcount = 0;
 
     WorldPacket data(SMSG_AUCTION_BIDDER_LIST_RESULT, 4 + 4 + 4);
-    data << uint32(0);                  // Placeholder
+    data << uint32_t(0); // Placeholder
 
     auctionLock.AcquireReadLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
+    std::unordered_map<uint32_t, Auction*>::iterator itr = auctions.begin();
     for (; itr != auctions.end(); ++itr)
     {
         Auction* auct = itr->second;
@@ -807,17 +807,17 @@ void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* /*packet*/)
         }
     }
 
-    data.put<uint32>(0, count);         // add count to placeholder
+    data.put<uint32_t>(0, count); // add count to placeholder
     data << totalcount;
-    data << uint32(300);                //unk 2.3.0
+    data << uint32_t(300); //unk 2.3.0
     auctionLock.ReleaseReadLock();
     plr->GetSession()->SendPacket(&data);
 }
 
-void AuctionHouse::UpdateOwner(uint32 oldGuid, uint32 newGuid)
+void AuctionHouse::UpdateOwner(uint32_t oldGuid, uint32_t newGuid)
 {
     auctionLock.AcquireWriteLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
+    std::unordered_map<uint32_t, Auction*>::iterator itr = auctions.begin();
     Auction* auction;
     for (; itr != auctions.end(); ++itr)
     {
@@ -835,15 +835,15 @@ void AuctionHouse::UpdateOwner(uint32 oldGuid, uint32 newGuid)
 
 void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* /*packet*/)
 {
-    uint32 count = 0;
-    uint32 totalcount = 0;
+    uint32_t count = 0;
+    uint32_t totalcount = 0;
 
     WorldPacket data(SMSG_AUCTION_OWNER_LIST_RESULT, 4 + 4 + 4);
-    data << uint32(0);                       // Placeholder
+    data << uint32_t(0); // Placeholder
 
     Auction* auct;
     auctionLock.AcquireReadLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
+    std::unordered_map<uint32_t, Auction*>::iterator itr = auctions.begin();
     for (; itr != auctions.end(); ++itr)
     {
         auct = itr->second;
@@ -859,9 +859,9 @@ void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* /*packet*/)
         }
     }
 
-    data.put<uint32>(0, count);
-    data << uint32(totalcount);
-    data << uint32(0);
+    data.put<uint32_t>(0, count);
+    data << uint32_t(totalcount);
+    data << uint32_t(0);
     auctionLock.ReleaseReadLock();
     plr->GetSession()->SendPacket(&data);
 }
@@ -873,38 +873,38 @@ bool Auction::BuildAuctionInfo(WorldPacket& data)
         LOG_ERROR("Auction %u has a non-existent item: %u", Id, pItem->getEntry());
         return false;
     }
-    data << uint32(Id);
-    data << uint32(pItem->getEntry());
+    data << uint32_t(Id);
+    data << uint32_t(pItem->getEntry());
 
-    for (uint8 i = 0; i < PROP_ENCHANTMENT_SLOT_0; ++i) // PROP_ENCHANTMENT_SLOT_0 = 10
+    for (uint8_t i = 0; i < PROP_ENCHANTMENT_SLOT_0; ++i) // PROP_ENCHANTMENT_SLOT_0 = 10
     {
-        data << uint32(pItem->getEnchantmentId(EnchantmentSlot(i)));
-        data << uint32(pItem->getEnchantmentDuration(EnchantmentSlot(i)));
-        data << uint32(pItem->getEnchantmentCharges(EnchantmentSlot(i)));
+        data << uint32_t(pItem->getEnchantmentId(EnchantmentSlot(i)));
+        data << uint32_t(pItem->getEnchantmentDuration(EnchantmentSlot(i)));
+        data << uint32_t(pItem->getEnchantmentCharges(EnchantmentSlot(i)));
     }
 
-    data << int32(pItem->getRandomPropertiesId());                // Random item property id
-    data << uint32(pItem->getPropertySeed());             // SuffixFactor
-    data << uint32(pItem->getStackCount());                         // item->count
-    data << uint32(pItem->GetChargesLeft());                        // item->charge FFFFFFF
-    data << uint32(0);                                              // Unknown
-    data << uint64(Owner);                                          // Auction->owner
-    data << uint64(StartingPrice);                                  // Auction->startbid (not sure if useful)
-    data << uint64(HighestBid ? GetAuctionOutBid() : 0);
+    data << int32_t(pItem->getRandomPropertiesId());                  // Random item property id
+    data << uint32_t(pItem->getPropertySeed());                       // SuffixFactor
+    data << uint32_t(pItem->getStackCount());                         // item->count
+    data << uint32_t(pItem->GetChargesLeft());                        // item->charge FFFFFFF
+    data << uint32_t(0);                                              // Unknown
+    data << uint64_t(Owner);                                          // Auction->owner
+    data << uint64_t(StartingPrice);                                  // Auction->startbid (not sure if useful)
+    data << uint64_t(HighestBid ? GetAuctionOutBid() : 0);
     // Minimal outbid
-    data << uint64(BuyoutPrice);                                    // Auction->buyout
-    data << uint32((ExpiryTime - time(NULL)) * IN_MILLISECONDS);    // time left
-    data << uint64(HighestBidder);                                  // auction->bidder current
-    data << uint64(HighestBid);                                     // current bid
+    data << uint64_t(BuyoutPrice);                                    // Auction->buyout
+    data << uint32_t((ExpiryTime - time(NULL)) * IN_MILLISECONDS);    // time left
+    data << uint64_t(HighestBidder);                                  // auction->bidder current
+    data << uint64_t(HighestBid);                                     // current bid
     return true;
 }
 
-void AuctionHouse::SendAuctionOutBidNotificationPacket(Auction* auct, uint64 newBidder, uint32 newHighestBid)
+void AuctionHouse::SendAuctionOutBidNotificationPacket(Auction* auct, uint64_t newBidder, uint32_t newHighestBid)
 {
     Player* bidder = sObjectMgr.GetPlayer(auct->HighestBidder);
     if (bidder != NULL && bidder->IsInWorld())
     {
-        uint32 outbid = (auct->HighestBid / 100) * 5;
+        uint32_t outbid = (auct->HighestBid / 100) * 5;
         if (!outbid)
             outbid = 1;
 
@@ -912,46 +912,46 @@ void AuctionHouse::SendAuctionOutBidNotificationPacket(Auction* auct, uint64 new
         WorldPacket data(SMSG_AUCTION_BIDDER_NOTIFICATION, 32);
         data << GetID();
         data << auct->Id;
-        data << uint64(newBidder);
-        data << uint32(newHighestBid);
-        data << uint32(outbid);
+        data << uint64_t(newBidder);
+        data << uint32_t(newHighestBid);
+        data << uint32_t(outbid);
         data << auct->pItem->getEntry();
-        data << uint32(0);
+        data << uint32_t(0);
         bidder->GetSession()->SendPacket(&data);
     }
 }
 
 void AuctionHouse::SendAuctionBuyOutNotificationPacket(Auction* auct)
 {
-    Player* bidder = sObjectMgr.GetPlayer((uint32)auct->HighestBidder);
+    Player* bidder = sObjectMgr.GetPlayer((uint32_t)auct->HighestBidder);
     if (bidder != NULL && bidder->IsInWorld())
     {
-        uint32 outbid = (auct->HighestBid / 100) * 5;
+        uint32_t outbid = (auct->HighestBid / 100) * 5;
         if (!outbid)
             outbid = 1;
 
         WorldPacket data(SMSG_AUCTION_BIDDER_NOTIFICATION, 32);
         data << GetID();
         data << auct->Id;
-        data << uint64(auct->HighestBidder);
-        data << uint32(0);
-        data << uint32(outbid);
+        data << uint64_t(auct->HighestBidder);
+        data << uint32_t(0);
+        data << uint32_t(outbid);
         data << auct->pItem->getEntry();
-        data << uint32(0);
+        data << uint32_t(0);
         bidder->GetSession()->SendPacket(&data);
     }
 
-    Player* owner = sObjectMgr.GetPlayer((uint32)auct->Owner);
+    Player* owner = sObjectMgr.GetPlayer((uint32_t)auct->Owner);
     if (owner != NULL && owner->IsInWorld())
     {
         WorldPacket ownerData(SMSG_AUCTION_OWNER_NOTIFICATION, 28);
         ownerData << GetID();
         ownerData << auct->Id;
-        ownerData << uint32(0);
-        ownerData << uint32(0);
-        ownerData << uint32(0);
+        ownerData << uint32_t(0);
+        ownerData << uint32_t(0);
+        ownerData << uint32_t(0);
         ownerData << auct->pItem->getEntry();
-        ownerData << uint32(0);
+        ownerData << uint32_t(0);
         owner->GetSession()->SendPacket(&ownerData);
     }
 }
@@ -961,41 +961,41 @@ void AuctionHouse::SendAuctionExpiredNotificationPacket(Auction* /*auct*/)
     //todo danko
     ///\todo I don't know the net code... so: TODO ;-)
 
-    //Player* owner = sObjectMgr.GetPlayer((uint32)auct->Owner);
+    //Player* owner = sObjectMgr.GetPlayer((uint32_t)auct->Owner);
     //if (owner != NULL && owner->IsInWorld())
     //{
     //  WorldPacket data(SMSG_AUCTION_REMOVED_NOTIFICATION, ??);
     //  data << GetID();
     //  data << auct->Id;
-    //  data << uint32(0);   // I don't have an active blizz account..so I can't get the netcode by myself.
-    //  data << uint32(0);
-    //  data << uint32(0);
+    //  data << uint32_t(0); // I don't have an active blizz account..so I can't get the netcode by myself.
+    //  data << uint32_t(0);
+    //  data << uint32_t(0);
     //  data << auct->pItem->getEntry();
-    //  data << uint32(0);
+    //  data << uint32_t(0);
     //  owner->GetSession()->SendPacket(&data);
     //}
 }
 
 /// the sum of outbid is (1% from current bid)*5, if bid is very small, it is 1c
-uint32 Auction::GetAuctionOutBid()
+uint32_t Auction::GetAuctionOutBid()
 {
-    uint32 outbid = HighestBid * 5 / 100;
+    uint32_t outbid = HighestBid * 5 / 100;
     return outbid ? outbid : 1;
 }
 
 void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
 {
     std::string searchedname;
-    uint8 levelmin;
-    uint8 levelmax;
-    uint8 usable;
-    uint32 listfrom;
-    uint32 auctionSlotID;
-    uint32 auctionMainCategory;
-    uint32 auctionSubCategory;
-    uint32 quality;
+    uint8_t levelmin;
+    uint8_t levelmax;
+    uint8_t usable;
+    uint32_t listfrom;
+    uint32_t auctionSlotID;
+    uint32_t auctionMainCategory;
+    uint32_t auctionSubCategory;
+    uint32_t quality;
 
-    *packet >> listfrom;                // start, used for page control listing by 50 elements
+    *packet >> listfrom; // start, used for page control listing by 50 elements
     *packet >> searchedname;
     *packet >> levelmin;
     *packet >> levelmax;
@@ -1005,27 +1005,27 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
     *packet >> quality;
     *packet >> usable;
 
-    packet->read_skip<uint8>();
-    packet->read_skip<uint8>();
+    packet->read_skip<uint8_t>();
+    packet->read_skip<uint8_t>();
 
     // this block looks like it uses some lame byte packing or similar...
-    for (uint8 i = 0; i < 15; ++i)
-        packet->read_skip<uint8>();
+    for (uint8_t i = 0; i < 15; ++i)
+        packet->read_skip<uint8_t>();
 
     WorldPacket data(SMSG_AUCTION_LIST_RESULT, 7000);
-    uint32 count = 0;
-    uint32 totalcount = 0;
-    data << uint32(0);
+    uint32_t count = 0;
+    uint32_t totalcount = 0;
+    data << uint32_t(0);
 
     // convert auction string to lowercase for faster parsing.
     if (searchedname.length() > 0)
     {
-        for (uint32 j = 0; j < searchedname.length(); ++j)
+        for (uint32_t j = 0; j < searchedname.length(); ++j)
             searchedname[j] = static_cast<char>(tolower(searchedname[j]));
     }
 
     auctionLock.AcquireReadLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
+    std::unordered_map<uint32_t, Auction*>::iterator itr = auctions.begin();
     ItemProperties const* proto;
     for (; itr != auctions.end(); ++itr)
     {
@@ -1035,15 +1035,15 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
         // Check the auction for parameters
 
         // inventory type
-        if (auctionSlotID != -1 && auctionSlotID != (int32)proto->InventoryType)
+        if (auctionSlotID != -1 && auctionSlotID != (int32_t)proto->InventoryType)
             continue;
 
         // class
-        if (auctionMainCategory != 0xffffffff && auctionMainCategory != (int32)proto->Class)
+        if (auctionMainCategory != 0xffffffff && auctionMainCategory != (int32_t)proto->Class)
             continue;
 
         // subclass
-        if (auctionSubCategory != 0xffffffff && auctionSubCategory != (int32)proto->SubClass)
+        if (auctionSubCategory != 0xffffffff && auctionSubCategory != (int32_t)proto->SubClass)
             continue;
 
         // this is going to hurt. - name
@@ -1052,7 +1052,7 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
             continue;
 
         // rarity
-        if (quality != 0xffffffff && quality > (int32)proto->Quality)
+        if (quality != 0xffffffff && quality > (int32_t)proto->Quality)
             continue;
 
         // level range check - lower boundary
@@ -1076,10 +1076,10 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
             if (proto->AllowableRace && !(plr->getRaceMask() & proto->AllowableRace))
                 continue;
 
-            if (proto->Class == 4 && proto->SubClass && !(plr->GetArmorProficiency() & (((uint32)(1)) << proto->SubClass)))
+            if (proto->Class == 4 && proto->SubClass && !(plr->GetArmorProficiency() & (((uint32_t)(1)) << proto->SubClass)))
                 continue;
 
-            if (proto->Class == 2 && proto->SubClass && !(plr->GetWeaponProficiency() & (((uint32)(1)) << proto->SubClass)))
+            if (proto->Class == 2 && proto->SubClass && !(plr->GetWeaponProficiency() & (((uint32_t)(1)) << proto->SubClass)))
                 continue;
 
             if (proto->RequiredSkill && (!plr->_HasSkillLine(proto->RequiredSkill) || proto->RequiredSkillRank > plr->_GetSkillLineCurrent(proto->RequiredSkill, true)))
@@ -1097,9 +1097,9 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
     }
 
     // total count
-    data.put<uint32>(0, count);
-    data << uint32(totalcount);
-    data << uint32(300);
+    data.put<uint32_t>(0, count);
+    data << uint32_t(totalcount);
+    data << uint32_t(300);
 
     auctionLock.ReleaseReadLock();
     plr->GetSession()->SendPacket(&data);
@@ -1140,7 +1140,7 @@ void AuctionHouse::LoadAuctions()
         auct->DeletedReason = 0;
         auct->Deleted = false;
 
-        auctions.insert(std::unordered_map<uint32, Auction*>::value_type(auct->Id, auct));
+        auctions.insert(std::unordered_map<uint32_t, Auction*>::value_type(auct->Id, auct));
     }
     while (result->NextRow());
     delete result;

@@ -38,7 +38,7 @@ struct GameobjectModelData
     std::string name;
 };
 
-typedef std::unordered_map<uint32, GameobjectModelData> ModelList;
+typedef std::unordered_map<uint32_t, GameobjectModelData> ModelList;
 ModelList model_list;
 
 void LoadGameObjectModelList(std::string const& dataPath)
@@ -54,16 +54,16 @@ void LoadGameObjectModelList(std::string const& dataPath)
         return;
     }
 
-    uint32 name_length, displayId;
+    uint32_t name_length, displayId;
     char buff[500];
     while (true)
     {
         Vector3 v1, v2;
-        if (fread(&displayId, sizeof(uint32), 1, model_list_file) != 1)
+        if (fread(&displayId, sizeof(uint32_t), 1, model_list_file) != 1)
             if (feof(model_list_file))  // EOF flag is only set after failed reading attempt
                 break;
 
-        if (fread(&name_length, sizeof(uint32), 1, model_list_file) != 1
+        if (fread(&name_length, sizeof(uint32_t), 1, model_list_file) != 1
             || name_length >= sizeof(buff)
             || fread(&buff, sizeof(char), name_length, model_list_file) != name_length
             || fread(&v1, sizeof(Vector3), 1, model_list_file) != 1
@@ -86,7 +86,7 @@ void LoadGameObjectModelList(std::string const& dataPath)
     }
 
     fclose(model_list_file);
-    LogNotice("LoadGameObjectModelList : Loaded %u GameObject models in %u ms", uint32(model_list.size()), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    LogNotice("LoadGameObjectModelList : Loaded %u GameObject models in %u ms", uint32_t(model_list.size()), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 GameObjectModel::~GameObjectModel()
@@ -154,7 +154,7 @@ GameObjectModel* GameObjectModel::Create(std::unique_ptr<GameObjectModelOwnerBas
     return mdl;
 }
 
-bool GameObjectModel::intersectRay(const G3D::Ray& ray, float& MaxDist, bool StopAtFirstHit, uint32 ph_mask) const
+bool GameObjectModel::intersectRay(const G3D::Ray& ray, float& MaxDist, bool StopAtFirstHit, uint32_t ph_mask) const
 {
     if (!(phasemask & ph_mask) || !owner->IsSpawned())
         return false;

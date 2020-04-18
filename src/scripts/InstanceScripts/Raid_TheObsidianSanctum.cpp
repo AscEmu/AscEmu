@@ -10,7 +10,7 @@ class ObsidianSanctumScript : public InstanceScript
 {
 public:
 
-    uint32 m_creatureGuid[OS_DATA_END];
+    uint32_t m_creatureGuid[OS_DATA_END];
 
     explicit ObsidianSanctumScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
@@ -52,9 +52,9 @@ public:
         }
     }
 
-    void DoDrakeAura(uint8 pData)
+    void DoDrakeAura(uint8_t pData)
     {
-        uint32 pSpellEntry = 0;
+        uint32_t pSpellEntry = 0;
         switch (pData)
         {
             case DRAKE_TENEBRON:
@@ -78,7 +78,7 @@ public:
         pSartharion->RemoveAura(pSpellEntry);   // unproper hackfix
     }
 
-    Creature* GetCreature(uint8 pData)
+    Creature* GetCreature(uint8_t pData)
     {
         if (pData >= OS_DATA_END)   // impossible tho
             return NULL;
@@ -109,7 +109,7 @@ public:
 //                break;
 //        }
 //
-//        for (uint8 i = 0; i < 3; ++i)
+//        for (uint8_t i = 0; i < 3; ++i)
 //        {
 //            switch (RandomUInt(1))
 //            {
@@ -135,9 +135,9 @@ public:
 //    if (pCreatureAI == NULL)
 //        return;
 //
-//    for (uint8 i = 0; i < 2; ++i)
+//    for (uint8_t i = 0; i < 2; ++i)
 //    {
-//        uint32 j = Util::getRandomUInt(5);
+//        uint32_t j = Util::getRandomUInt(5);
 //        pCreatureAI->spawnCreature(CN_LAVA_BLAZE, pTarget->GetPositionX() + j, pTarget->GetPositionY() + j, pTarget->GetPositionZ(), pTarget->GetOrientation(), pCreatureAI->getCreature()->getFactionTemplate());
 //    }
 //}
@@ -174,7 +174,7 @@ class SartharionAI : public CreatureAIScript
         addEmoteForEvent(Event_OnTargetDied, 8853);
         addEmoteForEvent(Event_OnCombatStart, 8854);
 
-        for (uint8 i = 0; i < OS_DATA_END - 1; i++)
+        for (uint8_t i = 0; i < OS_DATA_END - 1; i++)
         {
             m_bDrakes[i] = false;
             m_cDrakes[i] = NULL;
@@ -219,7 +219,7 @@ class SartharionAI : public CreatureAIScript
 
         if (_getHealthPercent() <= 10 && m_bEnraged == false)   // enrage phase
         {
-            /*for (uint8 i = 0; i < 3; ++i)
+            /*for (uint8_t i = 0; i < 3; ++i)
                 CastSpellNowNoScheduling(mSummonLava);*/
 
             m_bEnraged = true;
@@ -233,7 +233,7 @@ class SartharionAI : public CreatureAIScript
 
         m_iDrakeCount = 0;
 
-        for (uint8 i = 0; i < (OS_DATA_END - 1); ++i)
+        for (uint8_t i = 0; i < (OS_DATA_END - 1); ++i)
         {
             m_cDrakes[i] = mInstance->GetCreature(i);
             if (m_cDrakes[i] != NULL && m_cDrakes[i]->isAlive())
@@ -285,7 +285,7 @@ class SartharionAI : public CreatureAIScript
 
 private:
     bool m_bDrakes[OS_DATA_END - 1];
-    int32 mDrakeTimer;
+    int32_t mDrakeTimer;
     bool m_bEnraged;
     int m_iDrakeCount;
 

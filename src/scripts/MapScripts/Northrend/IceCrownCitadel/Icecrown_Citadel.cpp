@@ -48,7 +48,7 @@ public:
         menu.sendGossipPacket(player);
     }
 
-    void onSelectOption(Object* /*object*/, Player* player, uint32 Id, const char* /*enteredcode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*object*/, Player* player, uint32_t Id, const char* /*enteredcode*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {

@@ -240,7 +240,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                 MarkTimer--;
                 if (!MarkTimer)
                 {
-//                    uint32 spellid = 0; UNUSED???
+//                    uint32_t spellid = 0; UNUSED???
                     switch (MarkCount)
                     {
                         case 0:
@@ -324,7 +324,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                 MarkTimer--;
                 if (!MarkTimer)
                 {
-//                    uint32 spellid = 0; UNUSED???
+//                    uint32_t spellid = 0; UNUSED???
                     switch (MarkCount)
                     {
                         case 0:
@@ -418,10 +418,10 @@ private:
     int minspell;
     int maxspell;
     bool form; //false = water | true = poison
-    uint32 MarkTimer;
-    uint32 MarkCount;
+    uint32_t MarkTimer;
+    uint32_t MarkCount;
     bool Enraged;
-    uint32 EnrageTimer;
+    uint32_t EnrageTimer;
 };
 
 class LurkerAI : public CreatureAIScript
@@ -470,7 +470,7 @@ class LurkerAI : public CreatureAIScript
  - Insidious whispers
 */
 
-uint32 LeotherasEventGreyheartToKill[1000000];
+uint32_t LeotherasEventGreyheartToKill[1000000];
 
 class LeotherasAI : public CreatureAIScript
 {
@@ -758,17 +758,17 @@ class LeotherasAI : public CreatureAIScript
     }
 
 protected:
-    uint32 SwitchTimer;
-    uint32 WhirlwindTimer;
-    uint32 EnrageTimer;
+    uint32_t SwitchTimer;
+    uint32_t WhirlwindTimer;
+    uint32_t EnrageTimer;
     bool Enraged;
     bool mInWhirlwind;
     bool IsMorphing;
-    uint32 Phase;
+    uint32_t Phase;
     SpellInfo const* info_whirlwind;
     SpellInfo const* info_chaos_blast;
-    uint32 FinalPhaseSubphase;
-    uint32 FinalPhaseTimer;
+    uint32_t FinalPhaseSubphase;
+    uint32_t FinalPhaseTimer;
 };
 
 class GreyheartSpellbinderAI : public CreatureAIScript
@@ -849,7 +849,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "At last I am liberated. It has been too long since I have tasted true freedom!");
         getCreature()->PlaySoundToSet(11309);
 
-        sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::removeUnitFlags, static_cast<uint32>(UNIT_FLAG_IGNORE_PLAYER_COMBAT), EVENT_CREATURE_UPDATE, 7500, 0, 1);
+        sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::removeUnitFlags, static_cast<uint32_t>(UNIT_FLAG_IGNORE_PLAYER_COMBAT), EVENT_CREATURE_UPDATE, 7500, 0, 1);
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -953,7 +953,7 @@ class KarathressAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            auto random_index = Util::getRandomUInt(0, uint32(TargetTable.size() - 1));
+            auto random_index = Util::getRandomUInt(0, uint32_t(TargetTable.size() - 1));
             auto random_target = TargetTable[random_index];
 
             if (random_target == nullptr)
@@ -986,13 +986,13 @@ class KarathressAI : public CreatureAIScript
         }
     }
 
-    uint32 AdvisorsLeft;
+    uint32_t AdvisorsLeft;
 
 private:
     SpellInfo const* info_cataclysmic_bolt;
-    uint32 CataclysmicBoltTimer;
-    uint32 EnrageTimer;
-    uint32 BlessingOfTidesCounter;
+    uint32_t CataclysmicBoltTimer;
+    uint32_t EnrageTimer;
+    uint32_t BlessingOfTidesCounter;
     bool Enraged;
 };
 
@@ -1052,7 +1052,7 @@ class FathomGuardSharkissAI : public CreatureAIScript
     }
 
 private:
-    uint32 SummonPetTimer;
+    uint32_t SummonPetTimer;
     Creature* CurrentPet;
 };
 
@@ -1115,7 +1115,7 @@ public:
     }
 
 private:
-    uint32 HealingWaveTimer;
+    uint32_t HealingWaveTimer;
 
 };
 
@@ -1239,7 +1239,7 @@ class EnchantedElementalAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -1438,7 +1438,7 @@ class VashjAI : public CreatureAIScript
         EnchantedElementalTimer--;
         if (!EnchantedElementalTimer)
         {
-            uint32 pos = Util::getRandomUInt(7);
+            uint32_t pos = Util::getRandomUInt(7);
             Creature* elemental = NULL;
             elemental = spawnCreature(CN_ENCHANTED_ELEMENTAL, ElementalSpawnPoints[pos].x, ElementalSpawnPoints[pos].y, ElementalSpawnPoints[pos].z, ElementalSpawnPoints[pos].o);
             if (elemental)
@@ -1502,7 +1502,7 @@ class VashjAI : public CreatureAIScript
         CoilfangEliteTimer--;
         if (!CoilfangEliteTimer)
         {
-            uint32 pos = Util::getRandomUInt(3);
+            uint32_t pos = Util::getRandomUInt(3);
             Creature* summoned = spawnCreature(CN_COILFANG_ELITE, CoilfangEliteSpawnPoints[pos].x, CoilfangEliteSpawnPoints[pos].y, CoilfangEliteSpawnPoints[pos].z, CoilfangEliteSpawnPoints[pos].o);
             if (summoned)
             {
@@ -1525,7 +1525,7 @@ class VashjAI : public CreatureAIScript
         TaintedElementalTimer--;
         if (!TaintedElementalTimer)
         {
-            uint32 pos = Util::getRandomUInt(7);
+            uint32_t pos = Util::getRandomUInt(7);
             spawnCreature(CN_TAINTED_ELEMENTAL, ElementalSpawnPoints[pos].x, ElementalSpawnPoints[pos].y, ElementalSpawnPoints[pos].z, ElementalSpawnPoints[pos].o);
             TaintedElementalTimer = 120;
         }
@@ -1577,7 +1577,7 @@ class VashjAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -1587,7 +1587,7 @@ class VashjAI : public CreatureAIScript
 
                 //setup shield
                 Creature* channel = NULL;
-                for (uint8 i = 0; i < 4; i++)
+                for (uint8_t i = 0; i < 4; i++)
                 {
                     channel = spawnCreature(CN_SHIELD_GENERATOR_CHANNEL, ShieldGeneratorCoords[i][0],  ShieldGeneratorCoords[i][1],  ShieldGeneratorCoords[i][2], 0);
                     if (channel)
@@ -1602,15 +1602,15 @@ class VashjAI : public CreatureAIScript
         }
     }
 
-    uint32 TaintedElementalTimer;
-    uint32 Phase;
+    uint32_t TaintedElementalTimer;
+    uint32_t Phase;
 
 protected:
-    uint32 EnchantedElementalTimer;
-    uint32 CoilfangStriderTimer;
-    uint32 CoilfangEliteTimer;
-    uint32 SporebatTimer;
-    uint32 ForkedLightningTimer;
+    uint32_t EnchantedElementalTimer;
+    uint32_t CoilfangStriderTimer;
+    uint32_t CoilfangEliteTimer;
+    uint32_t SporebatTimer;
+    uint32_t ForkedLightningTimer;
     SpellInfo const* info_multishot;
     SpellInfo const* info_shot;
 };
@@ -1701,7 +1701,7 @@ public:
         Vashj = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
         if (Vashj != NULL && static_cast< VashjAI* >(Vashj->GetScript())->Phase == 2)
         {
-            Vashj->modHealth(static_cast<int32>((Vashj->getMaxHealth() / 100) * 5));
+            Vashj->modHealth(static_cast<int32_t>((Vashj->getMaxHealth() / 100) * 5));
             Creature* channel = NULL;
             channel = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), CN_SHIELD_GENERATOR_CHANNEL);
             if (channel != NULL && channel->IsInWorld())
@@ -1873,7 +1873,7 @@ class ToxicSporeBatAI : public CreatureAIScript
 
         else
         {
-            uint32 val = Util::getRandomUInt(100);
+            uint32_t val = Util::getRandomUInt(100);
 
             if (val > 0 && val < 5)    // Flame Quills wp here!
             {
@@ -1883,7 +1883,7 @@ class ToxicSporeBatAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (Phase == 1)
         {
@@ -2014,14 +2014,14 @@ class ToxicSporeBatAI : public CreatureAIScript
 
 protected:
     bool FlameQuills;
-    uint32 QuillsCount;
+    uint32_t QuillsCount;
     bool Meteor;
-    uint32 PositionChange;
-    uint32 PhoenixSummon;
-    uint32 NextWP;
-    uint32 m_entry;
-    uint32 FlyWay;
-    uint32 Phase;
+    uint32_t PositionChange;
+    uint32_t PhoenixSummon;
+    uint32_t NextWP;
+    uint32_t m_entry;
+    uint32_t FlyWay;
+    uint32_t Phase;
 };
 
 class CoilfangAmbusherAI : public CreatureAIScript
@@ -2153,11 +2153,11 @@ class SerpentshrineCavern : public InstanceScript
 public:
 
     // Console & Bridge parts
-    uint32 mBridgePart[3];
+    uint32_t mBridgePart[3];
 
     explicit SerpentshrineCavern(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < 3; ++i)
             mBridgePart[i] = 0;
     }
 
@@ -2186,7 +2186,7 @@ public:
 
         GameObject* pBridgePart = NULL;
 
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < 3; ++i)
         {
             pBridgePart = GetGameObjectByGuid(mBridgePart[i]);
             if (pBridgePart != NULL)

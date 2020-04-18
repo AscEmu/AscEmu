@@ -51,7 +51,7 @@
 HANDLE WorldMpq = NULL;
 HANDLE LocaleMpq = NULL;
 
-uint32 CONF_TargetBuild = 15595;              // 4.3.4.15595
+uint32_t CONF_TargetBuild = 15595;              // 4.3.4.15595
 
 // List MPQ for extract maps from
 char const* CONF_mpq_list[]=
@@ -64,7 +64,7 @@ char const* CONF_mpq_list[]=
     "world2.MPQ",
 };
 
-uint32 const Builds[] = {13164, 13205, 13287, 13329, 13596, 13623, 13914, 14007, 14333, 14480, 14545, 15005, 15050, 15211, 15354, 15595, 0};
+uint32_t const Builds[] = {13164, 13205, 13287, 13329, 13596, 13623, 13914, 14007, 14333, 14480, 14545, 15005, 15050, 15211, 15354, 15595, 0};
 #define LAST_DBC_IN_DATA_BUILD 13623    // after this build mpqs with dbc are back to locale folder
 #define NEW_BASE_SET_BUILD  15211
 
@@ -101,7 +101,7 @@ typedef struct
 }map_id;
 
 map_id * map_ids;
-uint16 *LiqType = 0;
+uint16_t *LiqType = 0;
 uint32_t map_count;
 char output_path[128]=".";
 char input_path[1024]=".";
@@ -161,7 +161,7 @@ bool LoadLocaleMPQFile(int locale)
     return true;
 }
 
-void LoadCommonMPQFiles(uint32 build)
+void LoadCommonMPQFiles(uint32_t build)
 {
     TCHAR filename[512];
     _stprintf(filename, _T("%sworld.MPQ"), input_path);
@@ -262,10 +262,10 @@ void ReadLiquidTypeTableDBC()
 
     size_t LiqType_count = dbc.getRecordCount();
     size_t LiqType_maxid = dbc.getRecord(LiqType_count - 1).getUInt(0);
-    LiqType = new uint16[LiqType_maxid + 1];
-    memset(LiqType, 0xff, (LiqType_maxid + 1) * sizeof(uint16));
+    LiqType = new uint16_t[LiqType_maxid + 1];
+    memset(LiqType, 0xff, (LiqType_maxid + 1) * sizeof(uint16_t));
 
-    for(uint32 x = 0; x < LiqType_count; ++x)
+    for(uint32_t x = 0; x < LiqType_count; ++x)
         LiqType[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
 
     printf("Done! (%u LiqTypes loaded)\n", (unsigned int)LiqType_count);
@@ -346,7 +346,7 @@ bool ExtractSingleWmo(std::string& fname)
     //printf("root has %d groups\n", froot->nGroups);
     if (froot.nGroups !=0)
     {
-        for (uint32 i = 0; i < froot.nGroups; ++i)
+        for (uint32_t i = 0; i < froot.nGroups; ++i)
         {
             char temp[1024];
             strcpy(temp, fname.c_str());

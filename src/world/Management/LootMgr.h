@@ -48,25 +48,25 @@ class LootRoll : public EventableObject
 {
     public:
 
-        LootRoll(uint32 timer, uint32 groupcount, uint64 guid, uint32 slotid, uint32 itemid, uint32 itemunk1, uint32 itemunk2, MapMgr* mgr);
+        LootRoll(uint32_t timer, uint32_t groupcount, uint64_t guid, uint32_t slotid, uint32_t itemid, uint32_t itemunk1, uint32_t itemunk2, MapMgr* mgr);
         ~LootRoll();
 
-        void PlayerRolled(Player* player, uint8 choice);
+        void PlayerRolled(Player* player, uint8_t choice);
         void Finalize();
-        int32 event_GetInstanceID();
+        int32_t event_GetInstanceID();
 
     private:
 
-        std::map<uint32, uint32> m_NeedRolls;
-        std::map<uint32, uint32> m_GreedRolls;
-        std::set<uint32> m_passRolls;
-        uint32 _groupcount;
-        uint32 _slotid;
-        uint32 _itemid;
-        uint32 _randomsuffixid;
-        uint32 _randompropertyid;
-        uint32 _remaining;
-        uint64 _guid;
+        std::map<uint32_t, uint32_t> m_NeedRolls;
+        std::map<uint32_t, uint32_t> m_GreedRolls;
+        std::set<uint32_t> m_passRolls;
+        uint32_t _groupcount;
+        uint32_t _slotid;
+        uint32_t _itemid;
+        uint32_t _randomsuffixid;
+        uint32_t _randompropertyid;
+        uint32_t _remaining;
+        uint64_t _guid;
         MapMgr* _mgr;
 };
 
@@ -76,21 +76,21 @@ typedef std::vector<std::pair<DBC::Structures::ItemRandomSuffixEntry const*, flo
 struct _LootItem
 {
     ItemProperties const* itemproto;
-    uint32 displayid;
+    uint32_t displayid;
 };
 
-typedef std::set<uint32> LooterSet;
+typedef std::set<uint32_t> LooterSet;
 
 struct __LootItem
 {
     _LootItem item;
-    uint32 iItemsCount;
+    uint32_t iItemsCount;
     DBC::Structures::ItemRandomPropertiesEntry const* iRandomProperty;
     DBC::Structures::ItemRandomSuffixEntry const* iRandomSuffix;
     LootRoll* roll;
     bool passed;
     LooterSet has_looted;
-    uint32 ffa_loot;
+    uint32_t ffa_loot;
     bool looted;
 
     __LootItem()
@@ -142,21 +142,21 @@ struct StoreLootItem
     float chance2;      /// heroic dungeon / normal 25men raid
     float chance3;      /// heroic 10men raid
     float chance4;      /// heroic 25men raid
-    uint32 mincount;    /// minimum quantity to drop
-    uint32 maxcount;    /// maximum quantity to drop
-    uint32 ffa_loot;    /// can everyone from the group loot the item?
+    uint32_t mincount;    /// minimum quantity to drop
+    uint32_t maxcount;    /// maximum quantity to drop
+    uint32_t ffa_loot;    /// can everyone from the group loot the item?
 };
 
 struct StoreLootList
 {
-    uint32 count;
+    uint32_t count;
     StoreLootItem* items;
 };
 
 struct Loot
 {
     std::vector<__LootItem> items;
-    uint32 gold;
+    uint32_t gold;
     LooterSet looters;
 
     Loot()
@@ -179,16 +179,16 @@ struct Loot
 
 struct tempy
 {
-    uint32 itemid;
+    uint32_t itemid;
     float chance;
     float chance_2;
     float chance3;
     float chance4;
-    uint32 mincount;
-    uint32 maxcount;
+    uint32_t mincount;
+    uint32_t maxcount;
 };
 
-typedef std::map<uint32, StoreLootList> LootStore;
+typedef std::map<uint32_t, StoreLootList> LootStore;
 
 #define PARTY_LOOT_FFA 0
 #define PARTY_LOOT_MASTER 2
@@ -215,30 +215,30 @@ class SERVER_DECL LootMgr
         LootMgr& operator=(LootMgr&&) = delete;
         LootMgr& operator=(LootMgr const&) = delete;
 
-        void AddLoot(Loot* loot, uint32 itemid, uint32 mincount, uint32 maxcount);
+        void AddLoot(Loot* loot, uint32_t itemid, uint32_t mincount, uint32_t maxcount);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// bool HasLootForCreature(uint32 loot_id)
+        /// bool HasLootForCreature(uint32_t loot_id)
         /// Tells if there's loot cached for the specified creature.
         ///
-        /// \param uint32 loot_id - The identifier of the creature
+        /// \param uint32_t loot_id - The identifier of the creature
         ///
         /// \return true if there's loot for this creature, false otherwise.
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool HasLootForCreature(uint32 loot_id);
+        bool HasLootForCreature(uint32_t loot_id);
 
-        void FillCreatureLoot(Loot* loot, uint32 loot_id, uint8 type);
-        void FillGOLoot(Loot* loot, uint32 loot_id, uint8 type);
-        void FillItemLoot(Loot* loot, uint32 loot_id);
-        void FillFishingLoot(Loot* loot, uint32 loot_id);
-        void FillSkinningLoot(Loot* loot, uint32 loot_id);
-        void FillPickpocketingLoot(Loot* loot, uint32 loot_id);
-        bool CanGODrop(uint32 LootId, uint32 itemid);
-        bool IsPickpocketable(uint32 creatureId);
-        bool IsSkinnable(uint32 creatureId);
-        bool IsFishable(uint32 zoneid);
+        void FillCreatureLoot(Loot* loot, uint32_t loot_id, uint8_t type);
+        void FillGOLoot(Loot* loot, uint32_t loot_id, uint8_t type);
+        void FillItemLoot(Loot* loot, uint32_t loot_id);
+        void FillFishingLoot(Loot* loot, uint32_t loot_id);
+        void FillSkinningLoot(Loot* loot, uint32_t loot_id);
+        void FillPickpocketingLoot(Loot* loot, uint32_t loot_id);
+        bool CanGODrop(uint32_t LootId, uint32_t itemid);
+        bool IsPickpocketable(uint32_t creatureId);
+        bool IsSkinnable(uint32_t creatureId);
+        bool IsFishable(uint32_t zoneid);
 
         void LoadLoot();
         void LoadLootProp();
@@ -250,7 +250,7 @@ class SERVER_DECL LootMgr
         LootStore ItemLoot;
         LootStore PickpocketingLoot;
 
-        std::map<uint32, std::set<uint32>> quest_loot_go;
+        std::map<uint32_t, std::set<uint32_t>> quest_loot_go;
 
         DBC::Structures::ItemRandomPropertiesEntry const* GetRandomProperties(ItemProperties const* proto);
         DBC::Structures::ItemRandomSuffixEntry const* GetRandomSuffix(ItemProperties const* proto);
@@ -260,9 +260,9 @@ class SERVER_DECL LootMgr
     private:
 
         void LoadLootTables(const char* szTableName, LootStore* LootTable);
-        void PushLoot(StoreLootList* list, Loot* loot, uint8 type);
-        std::map<uint32, RandomPropertyVector> _randomprops;
-        std::map<uint32, RandomSuffixVector> _randomsuffix;
+        void PushLoot(StoreLootList* list, Loot* loot, uint8_t type);
+        std::map<uint32_t, RandomPropertyVector> _randomprops;
+        std::map<uint32_t, RandomSuffixVector> _randomsuffix;
 };
 
 #define sLootMgr LootMgr::getInstance()

@@ -30,8 +30,8 @@
 #include "Management/Group.h"
 
 SERVER_DECL bool Rand(float chance);
-SERVER_DECL bool Rand(uint32 chance);
-SERVER_DECL bool Rand(int32 chance);
+SERVER_DECL bool Rand(uint32_t chance);
+SERVER_DECL bool Rand(int32_t chance);
 
 class CreatureAIScript;
 class GossipScript;
@@ -43,7 +43,7 @@ struct QuestProperties;
 
 #define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->isCreature() && static_cast<Creature*>(obj)->GetScript() != NULL) static_cast<Creature*>(obj)->GetScript()->func
 
-uint8 get_byte(uint32 buffer, uint32 index);
+uint8_t get_byte(uint32_t buffer, uint32_t index);
 
 
 //MIT start
@@ -97,13 +97,13 @@ public:
 
         bool Teleport(const LocationVector& vec, MapMgr* map) override;
 
-        Creature(uint64 guid);
+        Creature(uint64_t guid);
         virtual ~Creature();
 
-        void addVehicleComponent(uint32 creature_entry, uint32 vehicleid);
+        void addVehicleComponent(uint32_t creature_entry, uint32_t vehicleid);
         void removeVehicleComponent();
 
-        bool Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo const* info);
+        bool Load(MySQLStructure::CreatureSpawn* spawn, uint8_t mode, MySQLStructure::MapInfo const* info);
         void Load(CreatureProperties const* c_properties, float x, float y, float z, float o = 0);
 
         void AddToWorld();
@@ -115,15 +115,15 @@ public:
         void PrepareForRemove();
 
         // Creation
-        void Create(uint32 mapid, float x, float y, float z, float ang);
-        void CreateWayPoint(uint32 WayPointID, uint32 mapid, float x, float y, float z, float ang);
+        void Create(uint32_t mapid, float x, float y, float z, float ang);
+        void CreateWayPoint(uint32_t WayPointID, uint32_t mapid, float x, float y, float z, float ang);
 
         // Updates
         void Update(unsigned long time_passed);
 
         // Creature inventory
-        uint32 GetItemIdBySlot(uint32 slot) { return m_SellItems->at(slot).itemid; }
-        uint32 GetItemAmountBySlot(uint32 slot) { return m_SellItems->at(slot).amount; }
+        uint32_t GetItemIdBySlot(uint32_t slot) { return m_SellItems->at(slot).itemid; }
+        uint32_t GetItemAmountBySlot(uint32_t slot) { return m_SellItems->at(slot).amount; }
 
         bool HasItems();
         void SummonExpire()
@@ -131,18 +131,18 @@ public:
             DeleteMe();
         }
 
-        int32 GetSlotByItemId(uint32 itemid);
+        int32_t GetSlotByItemId(uint32_t itemid);
 
-        uint32 GetItemAmountByItemId(uint32 itemid);
+        uint32_t GetItemAmountByItemId(uint32_t itemid);
 
-        void GetSellItemBySlot(uint32 slot, CreatureItem& ci);
+        void GetSellItemBySlot(uint32_t slot, CreatureItem& ci);
 
-        void GetSellItemByItemId(uint32 itemid, CreatureItem& ci);
+        void GetSellItemByItemId(uint32_t itemid, CreatureItem& ci);
 
 #if VERSION_STRING < Cata
-        DBC::Structures::ItemExtendedCostEntry const* GetItemExtendedCostByItemId(uint32 itemid);
+        DBC::Structures::ItemExtendedCostEntry const* GetItemExtendedCostByItemId(uint32_t itemid);
 #else
-        DB2::Structures::ItemExtendedCostEntry const* GetItemExtendedCostByItemId(uint32 itemid);
+        DB2::Structures::ItemExtendedCostEntry const* GetItemExtendedCostByItemId(uint32_t itemid);
 #endif
 
         std::vector<CreatureItem>::iterator GetSellItemBegin();
@@ -155,42 +155,42 @@ public:
 
         size_t GetSellItemCount();
 
-        void RemoveVendorItem(uint32 itemid);
+        void RemoveVendorItem(uint32_t itemid);
 #if VERSION_STRING < Cata
-        void AddVendorItem(uint32 itemid, uint32 amount, DBC::Structures::ItemExtendedCostEntry const* ec);
+        void AddVendorItem(uint32_t itemid, uint32_t amount, DBC::Structures::ItemExtendedCostEntry const* ec);
 #else
-        void AddVendorItem(uint32 itemid, uint32 amount, DB2::Structures::ItemExtendedCostEntry const* ec);
+        void AddVendorItem(uint32_t itemid, uint32_t amount, DB2::Structures::ItemExtendedCostEntry const* ec);
 #endif
-        void ModAvItemAmount(uint32 itemid, uint32 value);
-        void UpdateItemAmount(uint32 itemid);
+        void ModAvItemAmount(uint32_t itemid, uint32_t value);
+        void UpdateItemAmount(uint32_t itemid);
 
         // Quests
         void _LoadQuests();
         bool HasQuests();
-        bool HasQuest(uint32 id, uint32 type);
+        bool HasQuest(uint32_t id, uint32_t type);
         void AddQuest(QuestRelation* Q);
         void DeleteQuest(QuestRelation* Q);
-        QuestProperties const* FindQuest(uint32 quest_id, uint8 quest_relation);
-        uint16 GetQuestRelation(uint32 quest_id);
-        uint32 NumOfQuests();
+        QuestProperties const* FindQuest(uint32_t quest_id, uint8_t quest_relation);
+        uint16_t GetQuestRelation(uint32_t quest_id);
+        uint32_t NumOfQuests();
         std::list<QuestRelation*>::iterator QuestsBegin();
         std::list<QuestRelation*>::iterator QuestsEnd();
         void SetQuestList(std::list<QuestRelation*>* qst_lst);
 
-        uint32 GetHealthFromSpell();
+        uint32_t GetHealthFromSpell();
 
-        void SetHealthFromSpell(uint32 value);
+        void SetHealthFromSpell(uint32_t value);
 
-        int32 m_speedFromHaste;
-        int32 FlatResistanceMod[TOTAL_SPELL_SCHOOLS];
-        int32 BaseResistanceModPct[TOTAL_SPELL_SCHOOLS];
-        int32 ResistanceModPct[TOTAL_SPELL_SCHOOLS];
+        int32_t m_speedFromHaste;
+        int32_t FlatResistanceMod[TOTAL_SPELL_SCHOOLS];
+        int32_t BaseResistanceModPct[TOTAL_SPELL_SCHOOLS];
+        int32_t ResistanceModPct[TOTAL_SPELL_SCHOOLS];
 
-        int32 FlatStatMod[5];
-        int32 StatModPct[5];
-        int32 TotalStatModPct[5];
+        int32_t FlatStatMod[5];
+        int32_t StatModPct[5];
+        int32_t TotalStatModPct[5];
 
-        int32 ModDamageDone[TOTAL_SPELL_SCHOOLS];
+        int32_t ModDamageDone[TOTAL_SPELL_SCHOOLS];
         float ModDamageDonePct[TOTAL_SPELL_SCHOOLS];
         void CalcResistance(uint8_t type);
         void CalcStat(uint8_t type);
@@ -204,19 +204,19 @@ public:
         bool HasLootForPlayer(Player* plr);
 
         bool Skinned;
-        uint32 GetRequiredLootSkill();
+        uint32_t GetRequiredLootSkill();
 
         // Misc
-        uint32 GetSQL_id();
+        uint32_t GetSQL_id();
 
         virtual void setDeathState(DeathState s);
 
-        uint32 GetOldEmote();
+        uint32_t GetOldEmote();
 
-        void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
-        void SendScriptTextChatMessage(uint32 textid);
-        void SendTimedScriptTextChatMessage(uint32 textid, uint32 delay = 0);
-        void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr);
+        void SendChatMessage(uint8_t type, uint32_t lang, const char* msg, uint32_t delay = 0);
+        void SendScriptTextChatMessage(uint32_t textid);
+        void SendTimedScriptTextChatMessage(uint32_t textid, uint32_t delay = 0);
+        void SendChatMessageToPlayer(uint8_t type, uint32_t lang, const char* msg, Player* plr);
 
         // Serialization
         void SaveToDB();
@@ -242,18 +242,18 @@ public:
         void EnslaveExpire();
 
         // Pet
-        uint32 GetEnslaveCount();
+        uint32_t GetEnslaveCount();
 
-        void SetEnslaveCount(uint32 count);
+        void SetEnslaveCount(uint32_t count);
 
-        uint32 GetEnslaveSpell();
+        uint32_t GetEnslaveSpell();
 
-        void SetEnslaveSpell(uint32 spellId);
+        void SetEnslaveSpell(uint32_t spellId);
         bool RemoveEnslave();
 
         Group* GetGroup() override;
 
-        int32 GetDamageDoneMod(uint16_t school) override;
+        int32_t GetDamageDoneMod(uint16_t school) override;
 
         float GetDamageDonePctMod(uint16_t school) override;
 
@@ -281,18 +281,18 @@ public:
 
         bool isCritter() override;
 
-        void FormationLinkUp(uint32 SqlId);
-        void ChannelLinkUpGO(uint32 SqlId);
-        void ChannelLinkUpCreature(uint32 SqlId);
+        void FormationLinkUp(uint32_t SqlId);
+        void ChannelLinkUpGO(uint32_t SqlId);
+        void ChannelLinkUpCreature(uint32_t SqlId);
         bool haslinkupevent;
         Movement::WayPoint* CreateWaypointStruct();
-        uint32 spawnid;
-        uint32 original_emotestate;
+        uint32_t spawnid;
+        uint32_t original_emotestate;
 
         MySQLStructure::CreatureSpawn* m_spawn;
 
         void OnPushToWorld() override;
-        virtual void Despawn(uint32 delay, uint32 respawntime);
+        virtual void Despawn(uint32_t delay, uint32_t respawntime);
         void TriggerScriptEvent(int);
 
         AuctionHouse* auctionHouse;
@@ -301,37 +301,37 @@ public:
         bool CanAddToWorld();
 
         // scriptdev2
-        uint32 GetNpcTextId();
+        uint32_t GetNpcTextId();
 
         Movement::WayPointMap* m_custom_waypoint_map;
-        void LoadWaypointGroup(uint32 pWaypointGroup);
-        void LoadCustomWaypoint(float pX, float pY, float pZ, float pO, uint32 pWaitTime, uint32 pFlags, bool pForwardEmoteOneshot, uint32 pForwardEmoteId, bool pBackwardEmoteOneshot, uint32 pBackwardEmoteId, uint32 pForwardSkinId, uint32 pBackwardSkinId);
+        void LoadWaypointGroup(uint32_t pWaypointGroup);
+        void LoadCustomWaypoint(float pX, float pY, float pZ, float pO, uint32_t pWaitTime, uint32_t pFlags, bool pForwardEmoteOneshot, uint32_t pForwardEmoteId, bool pBackwardEmoteOneshot, uint32_t pBackwardEmoteId, uint32_t pForwardSkinId, uint32_t pBackwardSkinId);
         void SwitchToCustomWaypoints();
         Player* m_escorter;
         void DestroyCustomWaypointMap();
         bool IsInLimboState();
 
         void SetLimboState(bool set);
-    static uint32 GetLineByFamily(DBC::Structures::CreatureFamilyEntry const* family);
+    static uint32_t GetLineByFamily(DBC::Structures::CreatureFamilyEntry const* family);
         void RemoveLimboState(Unit* healer);
         void SetGuardWaypoints();
         bool m_corpseEvent;
         MapCell* m_respawnCell;
         bool m_noRespawn;
-        uint32 m_respawnTimeOverride;
+        uint32_t m_respawnTimeOverride;
 
         float GetBaseParry();
         bool isattackable(MySQLStructure::CreatureSpawn* spawn);
 
-        void DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras = false);
-        void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false);
-        void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
+        void DealDamage(Unit* pVictim, uint32_t damage, uint32_t targetEvent, uint32_t unitEvent, uint32_t spellId, bool no_remove_auras = false);
+        void TakeDamage(Unit* pAttacker, uint32_t damage, uint32_t spellid, bool no_remove_auras = false);
+        void Die(Unit* pAttacker, uint32_t damage, uint32_t spellid);
 
         void HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event);
 
-        uint32 GetType();
+        uint32_t GetType();
 
-        void SetType(uint32 t);
+        void SetType(uint32_t t);
 
     protected:
 
@@ -343,23 +343,23 @@ public:
         std::vector<CreatureItem>* m_SellItems;
 
         // Taxi data
-        uint32 mTaxiNode;
+        uint32_t mTaxiNode;
 
         // Quest data
         std::list<QuestRelation*>* m_quests;
 
-        uint32 m_enslaveCount;
-        uint32 m_enslaveSpell;
+        uint32_t m_enslaveCount;
+        uint32_t m_enslaveSpell;
 
         bool m_PickPocketed;
-        uint32 _fields[UNIT_END];
-        uint32 m_healthfromspell;
+        uint32_t _fields[UNIT_END];
+        uint32_t m_healthfromspell;
 
         CreatureProperties const* creature_properties;
 
     private:
 
-        uint32 m_Creature_type;
+        uint32_t m_Creature_type;
 
         // old EasyFunctions.h
     public:

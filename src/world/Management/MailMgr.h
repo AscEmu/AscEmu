@@ -100,39 +100,39 @@ enum MailCheckMask
 
 struct MailMessage
 {
-    uint32 message_id;
-    uint32 message_type;
-    uint64 player_guid;
-    uint64 sender_guid;
+    uint32_t message_id;
+    uint32_t message_type;
+    uint64_t player_guid;
+    uint64_t sender_guid;
     std::string subject;
     std::string body;
-    uint32 money;
-    std::vector<uint32> items;
-    uint32 cod;
-    uint32 stationery;
-    uint32 expire_time;
-    uint32 delivery_time;
-    uint32 checked_flag;
+    uint32_t money;
+    std::vector<uint32_t> items;
+    uint32_t cod;
+    uint32_t stationery;
+    uint32_t expire_time;
+    uint32_t delivery_time;
+    uint32_t checked_flag;
     bool deleted_flag;
 };
 
-typedef std::map<uint32, MailMessage> MessageMap;
+typedef std::map<uint32_t, MailMessage> MessageMap;
 
 class Mailbox
 {
     protected:
 
-        uint64 owner;
+        uint64_t owner;
         
 
     public:
         MessageMap Messages;
 
-        Mailbox(uint64 owner_) : owner(owner_) {}
+        Mailbox(uint64_t owner_) : owner(owner_) {}
 
         void AddMessage(MailMessage* Message);
-        void DeleteMessage(uint32 MessageId, bool sql);
-        MailMessage* GetMessage(uint32 message_id)
+        void DeleteMessage(uint32_t MessageId, bool sql);
+        MailMessage* GetMessage(uint32_t message_id)
         {
             MessageMap::iterator iter = Messages.find(message_id);
             if (iter == Messages.end())
@@ -142,7 +142,7 @@ class Mailbox
 
         void CleanupExpiredMessages();
         inline size_t MessageCount() { return Messages.size(); }
-        inline uint64 GetOwner() { return owner; }
+        inline uint64_t GetOwner() { return owner; }
         void Load(QueryResult* result);
 };
 
@@ -163,24 +163,24 @@ class SERVER_DECL MailSystem : public EventableObject
         MailSystem& operator=(MailSystem const&) = delete;
 
         void StartMailSystem();
-        MailError DeliverMessage(uint64 recipent, MailMessage* message);
-        void RemoveMessageIfDeleted(uint32 message_id, Player* plr);
+        MailError DeliverMessage(uint64_t recipent, MailMessage* message);
+        void RemoveMessageIfDeleted(uint32_t message_id, Player* plr);
         void SaveMessageToSQL(MailMessage* message);
-        void SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
-                                  uint32 cod, std::vector<uint64> &item_guids, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
+        void SendAutomatedMessage(uint32_t type, uint64_t sender, uint64_t receiver, std::string subject, std::string body, uint32_t money,
+                                  uint32_t cod, std::vector<uint64_t> &item_guids, uint32_t stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32_t deliverdelay = 0);
 
         /// overload to keep backward compatibility (passing just 1 item guid instead of a vector)
-        void SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
-                                  uint32 cod, uint64 item_guid, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
+        void SendAutomatedMessage(uint32_t type, uint64_t sender, uint64_t receiver, std::string subject, std::string body, uint32_t money,
+                                  uint32_t cod, uint64_t item_guid, uint32_t stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32_t deliverdelay = 0);
 
-        void SendCreatureGameobjectMail(uint32 type, uint32 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
-                                  uint32 cod, uint64 item_guid, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
+        void SendCreatureGameobjectMail(uint32_t type, uint32_t sender, uint64_t receiver, std::string subject, std::string body, uint32_t money,
+                                  uint32_t cod, uint64_t item_guid, uint32_t stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32_t deliverdelay = 0);
 
-        inline bool MailOption(uint32 flag)
+        inline bool MailOption(uint32_t flag)
         {
             return (config_flags & flag) ? true : false;
         }
-        uint32 config_flags;
+        uint32_t config_flags;
 
 };
 

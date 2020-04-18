@@ -20,7 +20,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
         return true;
     }
 
-    uint32 spell_id = atol(args);
+    uint32_t spell_id = atol(args);
     auto spell_entry = sSpellMgr.getSpellInfo(spell_id);
     if (!spell_entry)
     {
@@ -28,7 +28,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
         return true;
     }
 
-    for (uint8 i = 0; i < 3; ++i)
+    for (uint8_t i = 0; i < 3; ++i)
     {
         if (spell_entry->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
         {
@@ -68,7 +68,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
 //.admin dispellall
 bool ChatHandler::HandleAdminDispelAllCommand(const char* args, WorldSession* m_session)
 {
-    uint32 pos = 0;
+    uint32_t pos = 0;
     if (*args)
         pos = atoi(args);
 
@@ -125,13 +125,13 @@ bool ChatHandler::HandleAdminMassSummonCommand(const char* args, WorldSession* m
         snprintf(Buffer, 170, "%s%s Has requested a mass summon of all players. Do not feel obliged to accept the summon, as it is most likely for an event or a test of sorts", MSG_COLOR_GOLD, m_session->GetPlayer()->getName().c_str());
     }
 
-    uint32 summon_count = 0;
+    uint32_t summon_count = 0;
     for (itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         Player* plr = itr->second;
         if (plr->GetSession() && plr->IsInWorld())
         {
-            if (faction > -1 && plr->getTeam() == static_cast<uint32>(faction))
+            if (faction > -1 && plr->getTeam() == static_cast<uint32_t>(faction))
             {
                 plr->SummonRequest(summon_player->getGuidLow(), summon_player->GetZoneId(), summon_player->GetMapId(), summon_player->GetInstanceID(), summon_player->GetPosition());
                 ++summon_count;
@@ -158,7 +158,7 @@ bool ChatHandler::HandleAdminPlayGlobalSoundCommand(const char* args, WorldSessi
     if (!*args)
         return false;
 
-    uint32 sound_id = atoi(args);
+    uint32_t sound_id = atoi(args);
     if (sound_id == 0)
         return false;
 

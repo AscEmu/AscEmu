@@ -44,29 +44,29 @@ public:
 
         friend class WorldSession;
 
-        Container(uint32 high, uint32 low);
+        Container(uint32_t high, uint32_t low);
         ~Container();
 
-        void Create(uint32 itemid, Player* owner);
+        void Create(uint32_t itemid, Player* owner);
         void LoadFromDB(Field* fields);
 
-        bool AddItem(int16 slot, Item* item);
-        bool AddItemToFreeSlot(Item* pItem, uint32* r_slot);
-    Item* GetItem(int16 slot);
+        bool AddItem(int16_t slot, Item* item);
+        bool AddItemToFreeSlot(Item* pItem, uint32_t* r_slot);
+    Item* GetItem(int16_t slot);
 
-        int8 FindFreeSlot();
+        int8_t FindFreeSlot();
         bool HasItems();
 
-        void SwapItems(int8 SrcSlot, int8 DstSlot);
-        Item* SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy);  /// doesn't destroy item from memory
-        bool SafeFullRemoveItemFromSlot(int16 slot);                        /// destroys item fully
+        void SwapItems(int8_t SrcSlot, int8_t DstSlot);
+        Item* SafeRemoveAndRetreiveItemFromSlot(int16_t slot, bool destroy);  /// doesn't destroy item from memory
+        bool SafeFullRemoveItemFromSlot(int16_t slot);                        /// destroys item fully
 
-        void SaveBagToDB(int8 slot, bool first, QueryBuffer* buf);
+        void SaveBagToDB(int8_t slot, bool first, QueryBuffer* buf);
 
 protected:
 
         Item** m_Slot;
-        uint32 __fields[CONTAINER_END];
+        uint32_t __fields[CONTAINER_END];
 };
 
 #endif // CONTAINER_H

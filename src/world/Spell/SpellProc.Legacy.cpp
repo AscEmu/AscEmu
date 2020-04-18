@@ -28,7 +28,7 @@ bool SpellProc::CanProc(Unit* /*victim*/, SpellInfo const* /*CastingSpell*/)
     return true;
 }
 
-bool SpellProc::CheckProcFlags(uint32 flag)
+bool SpellProc::CheckProcFlags(uint32_t flag)
 {
     if (mProcFlags & flag)
         return true;
@@ -36,7 +36,7 @@ bool SpellProc::CheckProcFlags(uint32 flag)
         return false;
 }
 
-bool SpellProc::CanDelete(uint32 spellId, uint64 casterGuid, uint64 /*misc*/)
+bool SpellProc::CanDelete(uint32_t spellId, uint64_t casterGuid, uint64_t /*misc*/)
 {
     if (mSpell->getId() == spellId && (casterGuid == 0 || mCaster == casterGuid) && !mDeleted)
         return true;
@@ -55,7 +55,7 @@ bool SpellProc::CheckClassMask(Unit* /*victim*/, SpellInfo const* CastingSpell)
     return false;
 }
 
-bool SpellProc::DoEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
+bool SpellProc::DoEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, int* /*dmgOverwrite*/, uint32_t /*weaponDamageType*/)
 {
     return false;
 }
@@ -64,7 +64,7 @@ void SpellProc::Init(Object* /*obj*/)
 {
 }
 
-uint32 SpellProc::CalcProcChance(Unit* /*victim*/, SpellInfo const* /*CastingSpell*/)
+uint32_t SpellProc::CalcProcChance(Unit* /*victim*/, SpellInfo const* /*CastingSpell*/)
 {
     // Check if proc chance is based on combo points
     if (mTarget->isPlayer() && mOrigSpell && mOrigSpell->getAttributesEx() & ATTRIBUTESEX_REQ_COMBO_POINTS1 && mOrigSpell->getAttributesExD() & ATTRIBUTESEXD_PROCCHANCE_COMBOBASED)
@@ -100,12 +100,12 @@ void SpellProc::CastSpell(Unit* victim, SpellInfo const* CastingSpell, int* dmg_
     spell->prepare(&targets);
 }
 
-SpellProc* SpellProcMgr::NewSpellProc(Unit* target, uint32 spell_id, uint32 orig_spell_id, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj)
+SpellProc* SpellProcMgr::NewSpellProc(Unit* target, uint32_t spell_id, uint32_t orig_spell_id, uint64_t caster, uint32_t procChance, uint32_t procFlags, uint32_t procCharges, uint32_t* groupRelation, uint32_t* procClassMask, Object* obj)
 {
     return NewSpellProc(target, sSpellMgr.getSpellInfo(spell_id), sSpellMgr.getSpellInfo(orig_spell_id), caster, procChance, procFlags, procCharges, groupRelation, procClassMask, obj);
 }
 
-SpellProc* SpellProcMgr::NewSpellProc(Unit* target, SpellInfo const* spell, SpellInfo const* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj)
+SpellProc* SpellProcMgr::NewSpellProc(Unit* target, SpellInfo const* spell, SpellInfo const* orig_spell, uint64_t caster, uint32_t procChance, uint32_t procFlags, uint32_t procCharges, uint32_t* groupRelation, uint32_t* procClassMask, Object* obj)
 {
     if (spell == nullptr)
         return nullptr;

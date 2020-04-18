@@ -24,13 +24,13 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 
-bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
+bool FillTransporterPathVector(uint32_t PathID, TransportPath & Path)
 {
     // Store dbc values into current Path array
     Path.Resize(sTaxiPathNodeStore.GetNumRows());
 
-    uint32 i = 0;
-    for (uint32 j = 0; j < sTaxiPathNodeStore.GetNumRows(); ++j)
+    uint32_t i = 0;
+    for (uint32_t j = 0; j < sTaxiPathNodeStore.GetNumRows(); ++j)
     {
         auto pathnode = sTaxiPathNodeStore.LookupEntry(j);
         if (pathnode == nullptr)
@@ -52,7 +52,7 @@ bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
     return (i > 0 ? true : false);
 }
 
-Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry, uint32 period)
+Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32_t goEntry, uint32_t period)
 {
     auto gameobject_info = sMySQLStore.getGameObjectProperties(goEntry);
     if (gameobject_info == nullptr)
@@ -67,9 +67,9 @@ Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry
         return NULL;
     }
 
-    std::set<uint32> mapsUsed;
+    std::set<uint32_t> mapsUsed;
 
-    Transporter* t = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | goEntry);
+    Transporter* t = new Transporter((uint64_t)HIGHGUID_TYPE_TRANSPORTER << 32 | goEntry);
 
     // Generate waypoints
     if (!t->GenerateWaypoints(gameobject_info->mo_transport.taxi_path_id))
@@ -135,9 +135,9 @@ void ObjectMgr::LoadTransports()
         {
             GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(it.first);
 
-            std::set<uint32> mapsUsed;
+            std::set<uint32_t> mapsUsed;
 
-            Transporter* pTransporter = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | it.first);
+            Transporter* pTransporter = new Transporter((uint64_t)HIGHGUID_TYPE_TRANSPORTER << 32 | it.first);
 
             if (pTransporter->GenerateWaypoints(gameobject_info->mo_transport.taxi_path_id) == false)
             {
@@ -157,7 +157,7 @@ void ObjectMgr::LoadTransports()
             m_Transporters.insert(pTransporter);
             AddTransport(pTransporter);
 
-            for (std::set<uint32>::const_iterator i = mapsUsed.begin(); i != mapsUsed.end(); ++i)
+            for (std::set<uint32_t>::const_iterator i = mapsUsed.begin(); i != mapsUsed.end(); ++i)
             {
                 m_TransportersByMap[*i].insert(pTransporter);
             }
@@ -190,7 +190,7 @@ void ObjectMgr::LoadTransports()
     }
 }
 
-Transporter::Transporter(uint64 guid) : GameObject(guid), currenttguid(0)
+Transporter::Transporter(uint64_t guid) : GameObject(guid), currenttguid(0)
 {
 #if VERSION_STRING <= TBC
     m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_LOWGUID | UPDATEFLAG_TRANSPORT);
@@ -248,7 +248,7 @@ void Transporter::OnPushToWorld()
     sEventMgr.AddEvent(this, &Transporter::Update, EVENT_TRANSPORTER_NEXT_WAYPOINT, 100, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
-bool Transporter::Create(uint32 entry, int32 Time)
+bool Transporter::Create(uint32_t entry, int32_t Time)
 {
     auto gameobject_info = sMySQLStore.getGameObjectProperties(entry);
     if (gameobject_info == nullptr)
@@ -259,7 +259,7 @@ bool Transporter::Create(uint32 entry, int32 Time)
 
     // Create transport
     float x, y, z, o;
-    uint32 mapid;
+    uint32_t mapid;
     x = m_WayPoints[0].x;
     y = m_WayPoints[0].y;
     z = m_WayPoints[0].z;
@@ -287,7 +287,7 @@ bool Transporter::Create(uint32 entry, int32 Time)
     return true;
 }
 
-bool Transporter::GenerateWaypoints(uint32 pathid)
+bool Transporter::GenerateWaypoints(uint32_t pathid)
 {
     TransportPath path;
     FillTransporterPathVector(pathid, path);
@@ -404,7 +404,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
     m_WayPoints[0] = pos;
     t += keyFrames[0].delay * 1000;
 
-    uint32 cM = keyFrames[0].mapid;
+    uint32_t cM = keyFrames[0].mapid;
     for (size_t i = 0; i < keyFrames.size() - 1; ++i)        //
     {
         float d = 0;
@@ -498,7 +498,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
         //        LogDefault("------");
     }
 
-    uint32 timer = t;
+    uint32_t timer = t;
 
 
     mNextWaypoint = m_WayPoints.begin();
@@ -518,7 +518,7 @@ void Transporter::GetNextWaypoint()
         mNextWaypoint = m_WayPoints.begin();
 }
 
-void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, float y, float z)
+void Transporter::TeleportTransport(uint32_t newMapid, uint32_t oldmap, float x, float y, float z)
 {
     //sEventMgr.RemoveEvents(this, EVENT_TRANSPORTER_NEXT_WAYPOINT);
 
@@ -586,9 +586,9 @@ bool Transporter::RemovePassenger(Player* passenger)
     return true;
 }
 
-uint32 Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+uint32_t Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
-    uint32 cnt = Object::buildCreateUpdateBlockForPlayer(data, target);
+    uint32_t cnt = Object::buildCreateUpdateBlockForPlayer(data, target);
 
     // add all the npcs to the packet
     m_creatureSetMutex.Acquire();
@@ -601,7 +601,7 @@ uint32 Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* ta
     return cnt;
 }
 
-uint32 TimeStamp();
+uint32_t TimeStamp();
 void Transporter::Update()
 {
     if (m_WayPoints.size() <= 1)
@@ -661,7 +661,7 @@ void Transporter::Update()
     }
 }
 
-void Transporter::TransportGossip(uint32 route)
+void Transporter::TransportGossip(uint32_t route)
 {
     if (route == 241)
     {
@@ -677,12 +677,12 @@ void Transporter::TransportGossip(uint32 route)
     }
 }
 
-void Transporter::SetPeriod(int32 val)
+void Transporter::SetPeriod(int32_t val)
 {
     this->m_period = val;
 }
 
-int32 Transporter::GetPeriod()
+int32_t Transporter::GetPeriod()
 {
     return this->m_period;
 }
@@ -699,7 +699,7 @@ void Transporter::BuildStopMovePacket(MapMgr* /*targetMap*/)
     setState(GO_STATE_CLOSED);
 }
 
-uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y, float z, float o, uint32 anim)
+uint32_t Transporter::AddNPCPassenger(uint32_t tguid, uint32_t entry, float x, float y, float z, float o, uint32_t anim)
 {
     MapMgr* map = GetMapMgr();
 
@@ -758,7 +758,7 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     return tguid;
 }
 
-Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y, float z, float o, uint32 /*anim*/)
+Creature* Transporter::AddNPCPassengerInInstance(uint32_t entry, float x, float y, float z, float o, uint32_t /*anim*/)
 {
     MapMgr* map = GetMapMgr();
 

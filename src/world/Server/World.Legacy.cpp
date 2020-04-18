@@ -129,7 +129,7 @@ void TaskList::spawn()
     running = true;
     thread_count = 0;
 
-    uint32 threadcount;
+    uint32_t threadcount;
     if (worldConfig.startup.enableMultithreadedLoading)
     {
         // get processor count
@@ -160,7 +160,7 @@ void TaskList::spawn()
 
     LogNotice("World : Beginning %s server startup with %u threads.", (threadcount == 1) ? "progressive" : "parallel", threadcount);
 
-    for (uint32 x = 0; x < threadcount; ++x)
+    for (uint32_t x = 0; x < threadcount; ++x)
         ThreadPool.ExecuteTask(new TaskExecutor(this));
 }
 
@@ -228,20 +228,20 @@ void TaskList::waitForThreadsToExit()
 
 struct insert_playeritem
 {
-    uint32 ownerguid;
-    uint32 entry;
-    uint32 wrapped_item_id;
-    uint32 wrapped_creator;
-    uint32 creator;
-    uint32 count;
-    uint32 charges;
-    uint32 flags;
-    uint32 randomprop;
-    uint32 randomsuffix;
-    uint32 itemtext;
-    uint32 durability;
-    int32 containerslot;
-    int32 slot;
+    uint32_t ownerguid;
+    uint32_t entry;
+    uint32_t wrapped_item_id;
+    uint32_t wrapped_creator;
+    uint32_t creator;
+    uint32_t count;
+    uint32_t charges;
+    uint32_t flags;
+    uint32_t randomprop;
+    uint32_t randomsuffix;
+    uint32_t itemtext;
+    uint32_t durability;
+    int32_t containerslot;
+    int32_t slot;
     std::string enchantments;
 };
 

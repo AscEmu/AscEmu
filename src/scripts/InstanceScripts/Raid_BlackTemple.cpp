@@ -349,7 +349,7 @@ class MutantWarHoundAI : public CreatureAIScript
 
     void OnDied(Unit* /*pKiller*/) override
     {
-        Aura* pAura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(MUTANT_WAR_HOUND_CLOUD_OF_DISEASE), (uint32)20000, getCreature(), getCreature());
+        Aura* pAura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(MUTANT_WAR_HOUND_CLOUD_OF_DISEASE), (uint32_t)20000, getCreature(), getCreature());
         getCreature()->AddAura(pAura);
     }
 };
@@ -959,7 +959,7 @@ class EnslavedServantAI : public CreatureAIScript
         }
     }
 
-    int32 mHealthResetTimer;
+    int32_t mHealthResetTimer;
 };
 
 class HandOfGorefiendAI : public CreatureAIScript
@@ -1051,7 +1051,7 @@ class ImageOfDementiaAI : public CreatureAIScript
         addAISpell(IMAGE_OF_DEMENTIA_WHRILWIND, 15.0f, TARGET_SELF, 15, 30);
     }
 
-    void OnCastSpell(uint32 spellId) override
+    void OnCastSpell(uint32_t spellId) override
     {
         if (spellId == IMAGE_OF_DEMENTIA_WHRILWIND)
             despawn(25000);
@@ -1100,7 +1100,7 @@ class ShadowmoonDeathshaperAI : public CreatureAIScript
         }
     }
 
-    void OnCastSpell(uint32 spellId) override
+    void OnCastSpell(uint32_t spellId) override
     {
         if (spellId == SHADOWMOON_DEATHSHAPER_RAISE_DEAD)
         {
@@ -1531,7 +1531,7 @@ class SupremusAI : public CreatureAIScript
     {
         timer++;
 
-        uint32 val = Util::getRandomUInt(1000);
+        uint32_t val = Util::getRandomUInt(1000);
 
         if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
         {
@@ -1574,7 +1574,7 @@ class SupremusAI : public CreatureAIScript
     {
         timer++;
 
-        uint32 val = Util::getRandomUInt(1000);
+        uint32_t val = Util::getRandomUInt(1000);
 
         if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
         {
@@ -1617,8 +1617,8 @@ class SupremusAI : public CreatureAIScript
     }
 
 protected:
-    uint32 timer;
-    uint32 m_phase;
+    uint32_t timer;
+    uint32_t m_phase;
     bool m_MoltenFlame, m_HurtfulStrike, m_MoltenPunch, m_VolcanicGazer;
     SpellInfo const* infoMoltenFlame, *infoHurtfulStrike, *infoMoltenPunch, *infoVolcanicGazer;
 };
@@ -1697,7 +1697,7 @@ class GurtoggAI : public CreatureAIScript
 
 protected:
 
-    uint32 PhaseTimerId;
+    uint32_t PhaseTimerId;
 };
 
 class EssenceOfSufferingAI : public CreatureAIScript
@@ -1984,7 +1984,7 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
     bool SpawnedEnsalvedSoul;
     int Phase;                  // do we have negative phase?
     int DeadSoulCount;          // negative count?
-    uint32 mEnslavedSoulTimer;  // negative timer?
+    uint32_t mEnslavedSoulTimer;  // negative timer?
     CreatureAIScript* mEoS;
     CreatureAIScript* mEoD;
     CreatureAIScript* mEoA;
@@ -2034,7 +2034,7 @@ class ShahrazAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        AuraChange = (uint32)time(NULL) + 15;
+        AuraChange = (uint32_t)time(NULL) + 15;
         Enraged = false;
         SoundTimer = 5;
     }
@@ -2068,12 +2068,12 @@ class ShahrazAI : public CreatureAIScript
             Enraged = true;
         }
 
-        uint32 t = (uint32)time(NULL);
+        uint32_t t = (uint32_t)time(NULL);
 
         // In normal way it is applied to players all around enemy caster =/
         if (t > AuraChange)
         {
-            uint32 SpellId = 0;
+            uint32_t SpellId = 0;
             switch (Util::getRandomUInt(6))
             {
                 case 1:
@@ -2100,7 +2100,7 @@ class ShahrazAI : public CreatureAIScript
             }
 
             //_unit->castSpell(_unit, SpellId, true);
-            Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(SpellId), (uint32)15000, getCreature(), getCreature());
+            Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(SpellId), (uint32_t)15000, getCreature(), getCreature());
             getCreature()->AddAura(aura);
 
             AuraChange = t + 15;
@@ -2109,8 +2109,8 @@ class ShahrazAI : public CreatureAIScript
 
 protected:
 
-    uint32 SoundTimer;
-    uint32 AuraChange;
+    uint32_t SoundTimer;
+    uint32_t AuraChange;
     bool Enraged;
 };
 
@@ -2138,7 +2138,7 @@ class GathiosAI : public CreatureAIScript
         _applyAura(DEVOTION_AURA);
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         DealDamageToFriends(fAmount, getCreature()->getEntry());
     }
@@ -2148,7 +2148,7 @@ class GathiosAI : public CreatureAIScript
         mEncounterVector.push_back(pCreature);
     }
 
-    void DealDamageToFriends(uint32 val, uint32 pCreatureEntry)
+    void DealDamageToFriends(uint32_t val, uint32_t pCreatureEntry)
     {
         for (std::vector<Creature*>::iterator itr = mEncounterVector.begin(); itr != mEncounterVector.end(); ++itr)
         {
@@ -2189,7 +2189,7 @@ class VerasAI : public CreatureAIScript
             pGethois->AddEncounterCreature(getCreature());
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         pGethois->DealDamageToFriends(fAmount, getCreature()->getEntry());
     }
@@ -2216,7 +2216,7 @@ class ZerevorAI : public CreatureAIScript
             pGethois->AddEncounterCreature(getCreature());
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         pGethois->DealDamageToFriends(fAmount, getCreature()->getEntry());
     }
@@ -2243,7 +2243,7 @@ class MalandeAI : public CreatureAIScript
             pGethois->AddEncounterCreature(getCreature());
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         if (pGethois != NULL)
             pGethois->DealDamageToFriends(fAmount, getCreature()->getEntry());
@@ -2332,7 +2332,7 @@ class ShadeofakamaAI : public CreatureAIScript
         if (getCreature()->getHealthPct() <= 85 && hm == 100)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 2; i++)
+            for (uint8_t i = 0; i < 2; i++)
             {
                 cre = spawnCreature(23421, getCreature()->GetPosition());
                 if (cre)
@@ -2345,7 +2345,7 @@ class ShadeofakamaAI : public CreatureAIScript
         else if (getCreature()->getHealthPct() <= 70 && hm == 85)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 2; i++)
+            for (uint8_t i = 0; i < 2; i++)
             {
                 cre = spawnCreature(23215, getCreature()->GetPosition());
                 if (cre)
@@ -2358,7 +2358,7 @@ class ShadeofakamaAI : public CreatureAIScript
         else if (getCreature()->getHealthPct() <= 55 && hm == 70)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 2; i++)
+            for (uint8_t i = 0; i < 2; i++)
             {
                 cre = spawnCreature(23216, getCreature()->GetPosition());
                 if (cre)
@@ -2371,7 +2371,7 @@ class ShadeofakamaAI : public CreatureAIScript
         else if (getCreature()->getHealthPct() <= 40 && hm == 55)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 2; i++)
+            for (uint8_t i = 0; i < 2; i++)
             {
                 cre = spawnCreature(23523, getCreature()->GetPosition());
                 if (cre)
@@ -2384,7 +2384,7 @@ class ShadeofakamaAI : public CreatureAIScript
         else if (getCreature()->getHealthPct() <= 25 && hm == 40)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 5; i++)
+            for (uint8_t i = 0; i < 5; i++)
             {
                 cre = spawnCreature(23318, getCreature()->GetPosition());
                 if (cre)
@@ -2397,7 +2397,7 @@ class ShadeofakamaAI : public CreatureAIScript
         else if (getCreature()->getHealthPct() <= 10 && hm == 25)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 5; i++)
+            for (uint8_t i = 0; i < 5; i++)
             {
                 cre = spawnCreature(23524, getCreature()->GetPosition());
                 if (cre)
@@ -2463,13 +2463,13 @@ protected:
 
 struct Transformation
 {
-    uint32 mTimer;
-    uint32 mEmote;
-    uint32 mEmoteType;
+    uint32_t mTimer;
+    uint32_t mEmote;
+    uint32_t mEmoteType;
     const char* mText;
-    uint32 mSoundId;
-    uint32 mAura;
-    uint32 mUnAura;
+    uint32_t mSoundId;
+    uint32_t mAura;
+    uint32_t mUnAura;
     bool mEquipWeapons;
 };
 
@@ -2552,7 +2552,7 @@ static Movement::Location UnitPos[] =
     { 677.368286f, 285.374725f, 354.242157f, 5.645614f }  // Blade 2
 };
 
-uint32 DoorEventTimers[] =
+uint32_t DoorEventTimers[] =
 {
     1000 * 2,
     1000 * 4,
@@ -2574,7 +2574,7 @@ uint32 DoorEventTimers[] =
     1000 * 15
 };
 
-uint32 IllidanDialog[] =
+uint32_t IllidanDialog[] =
 {
     1000 * 1,
     1000 * 1,
@@ -2593,7 +2593,7 @@ uint32 IllidanDialog[] =
     1000 * 2
 };
 
-uint32 AkamaEscapeTimers[] =
+uint32_t AkamaEscapeTimers[] =
 {
     1000 * 1,
     1000 * 7,
@@ -2605,7 +2605,7 @@ uint32 AkamaEscapeTimers[] =
     1000 * 2
 };
 
-uint32 BladeEvent[] =
+uint32_t BladeEvent[] =
 {
     500 * 8,
     500 * 2,
@@ -2619,7 +2619,7 @@ uint32 BladeEvent[] =
     500 * 6
 };
 
-uint32 MaievTimers[] =
+uint32_t MaievTimers[] =
 {
     1000 * 3,
     1000 * 3,
@@ -2636,7 +2636,7 @@ uint32 MaievTimers[] =
     1000 * 2//3
 };
 
-uint32 DeathSceneTimers[] =
+uint32_t DeathSceneTimers[] =
 {
     // Maiev
     1000 * 1,
@@ -2673,7 +2673,7 @@ class GenericTriggerAI : public CreatureAIScript
         getCreature()->m_noRespawn = true;
 
         mSpellId = mDespawnTimer = 0;
-        uint32 AIUpdate = 2000;
+        uint32_t AIUpdate = 2000;
         bool OnSpawn = false;
         switch (getCreature()->getEntry())
         {
@@ -2728,8 +2728,8 @@ class GenericTriggerAI : public CreatureAIScript
         }
     }
 
-    uint32 mDespawnTimer;
-    uint32 mSpellId;
+    uint32_t mDespawnTimer;
+    uint32_t mSpellId;
 };
 
 class EyeBeamTriggerAI : public CreatureAIScript
@@ -2765,7 +2765,7 @@ class EyeBeamTriggerAI : public CreatureAIScript
         _applyAura(EYE_BLAST);
     }
 
-    int32    mPosition;
+    int32_t    mPosition;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2887,7 +2887,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* pPlayer, uint32_t Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
         Creature* pAIOwner = static_cast<Creature*>(pObject);
         if (pAIOwner->GetScript() == NULL)
@@ -2932,7 +2932,7 @@ class AkamaAI : public CreatureAIScript
         setCanEnterCombat(false);
         setScriptPhase(1);
 
-        for (uint8 i = 1; i < AKAMA_WAYPOINT_SIZE; ++i)
+        for (uint8_t i = 1; i < AKAMA_WAYPOINT_SIZE; ++i)
         {
             AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, ToIllidan[i]));
         }
@@ -3259,7 +3259,7 @@ class AkamaAI : public CreatureAIScript
                 setCanEnterCombat(false);
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
                 // azolex to prevent compile error
-                uint32 nullfix = 0;
+                uint32_t nullfix = 0;
                 getCreature()->GetAIInterface()->setNextTarget(nullfix);
                 getCreature()->GetAIInterface()->WipeTargetList();
                 getCreature()->GetAIInterface()->WipeHateList();
@@ -3295,7 +3295,7 @@ class AkamaAI : public CreatureAIScript
                         setCanEnterCombat(false);
                         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
                         // ugly code, trows compile error if left just null, this should do it ~ azolex
-                        uint32 nullfix = 0;
+                        uint32_t nullfix = 0;
                         getCreature()->GetAIInterface()->setNextTarget(nullfix);
                         getCreature()->GetAIInterface()->WipeTargetList();
                         getCreature()->GetAIInterface()->WipeHateList();
@@ -3376,7 +3376,7 @@ class AkamaAI : public CreatureAIScript
         ++mScenePart;
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -3457,8 +3457,8 @@ class AkamaAI : public CreatureAIScript
     CreatureAIScript* mOlumAI;
 
     // Other variables
-    int32 mScenePart;
-    uint32 mTimeLeft;
+    int32_t mScenePart;
+    uint32_t mTimeLeft;
 };
 
 class MaievAI : public CreatureAIScript
@@ -3514,7 +3514,7 @@ class MaievAI : public CreatureAIScript
         }
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t /*fAmount*/) override
     {
         getCreature()->setHealth(getCreature()->getMaxHealth());
     }
@@ -3782,10 +3782,10 @@ class MaievAI : public CreatureAIScript
 
     // Other variables
     bool mSummonTrap;
-    int32 mTrapTimer;
-    int32 mYellTimer;
-    uint32 mScenePart;
-    uint32 mTimeLeft;
+    int32_t mTrapTimer;
+    int32_t mYellTimer;
+    uint32_t mScenePart;
+    uint32_t mTimeLeft;
 
 };
 
@@ -3836,7 +3836,7 @@ class IllidanStormrageAI : public CreatureAIScript
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         setScriptPhase(1);
 
-        for (uint8 i = 1; i < ILLIDAN_WAYPOINT_SIZE; ++i)
+        for (uint8_t i = 1; i < ILLIDAN_WAYPOINT_SIZE; ++i)
         {
             AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, ForIllidan[i]));
         }
@@ -3918,7 +3918,7 @@ class IllidanStormrageAI : public CreatureAIScript
         {
             pTrigger->Despawn(0, 0);
         }
-        for (uint8 i = 0; i < 2; ++i)
+        for (uint8_t i = 0; i < 2; ++i)
         {
             Creature* pBlade = getNearestCreature(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, CN_BLADE_OF_AZZINOTH);
             if (pBlade != NULL)
@@ -4004,12 +4004,12 @@ class IllidanStormrageAI : public CreatureAIScript
             }
 
             getCreature()->GetAIInterface()->setNextTarget(pTarget);
-            getCreature()->GetAIInterface()->modThreatByPtr(pTarget, (int32)(fAmount * 2));
+            getCreature()->GetAIInterface()->modThreatByPtr(pTarget, (int32_t)(fAmount * 2));
             getCreature()->GetAIInterface()->RemoveThreatByPtr(mVictim);
         }
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
+    void OnDamageTaken(Unit* mAttacker, uint32_t fAmount) override
     {
         if (mAttacker->isCreature() && (mAttacker->getEntry() == CN_MAIEV || mAttacker->getEntry() == CN_AKAMA))
         {
@@ -4111,7 +4111,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     pAkamaAI->setCanEnterCombat(false);
                     pAkamaAI->getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
                     // ugly code, trows compile error if left just null, this should do it ~ azolex
-                    uint32 nullfix = 0;
+                    uint32_t nullfix = 0;
                     pAkamaAI->getCreature()->GetAIInterface()->setNextTarget(nullfix);
                     pAkamaAI->getCreature()->GetAIInterface()->WipeTargetList();
                     pAkamaAI->getCreature()->GetAIInterface()->WipeHateList();
@@ -4162,14 +4162,14 @@ class IllidanStormrageAI : public CreatureAIScript
                     }
                     break;
                 case 1:
-                    for (uint8 i = 0; i < 2; ++i)
+                    for (uint8_t i = 0; i < 2; ++i)
                     {
                         getCreature()->castSpellLoc(LocationVector(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z), sSpellMgr.getSpellInfo(ILLIDAN_THROW_GLAIVE1), false);
                     }
                     _setWieldWeapon(false);
                     break;
                 case 2:
-                    for (uint8 i = 0; i < 2; ++i)
+                    for (uint8_t i = 0; i < 2; ++i)
                     {
                         Creature* pBlade = spawnCreature(CN_BLADE_OF_AZZINOTH, UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, UnitPos[i].o);
                         if (pBlade != NULL)
@@ -4213,7 +4213,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     }
                     break;
                 case 5:
-                    for (uint8 i = 0; i < 2; ++i)
+                    for (uint8_t i = 0; i < 2; ++i)
                     {
                         Creature* Blade = getNearestCreature(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, CN_BLADE_OF_AZZINOTH);
                         if (Blade != NULL)
@@ -4347,7 +4347,7 @@ class IllidanStormrageAI : public CreatureAIScript
             {
                 if (mMiscEventPart == 1)
                 {
-                    uint32 FireWall = Util::getRandomUInt(7);
+                    uint32_t FireWall = Util::getRandomUInt(7);
                     while((int)FireWall == mLastFireWall || (int)FireWall == 7 - mLastFireWall)
                     {
                         FireWall = Util::getRandomUInt(7);
@@ -4362,7 +4362,7 @@ class IllidanStormrageAI : public CreatureAIScript
                         getCreature()->GetAIInterface()->setNextTarget(pTrigger);
 
                         float Distance = pTrigger->CalcDistance(EyeBeamPaths[7 - FireWall].x, EyeBeamPaths[7 - FireWall].y, EyeBeamPaths[7 - FireWall].z);
-                        uint32 TimeToReach = (uint32)(Distance * 1000 / pTrigger->getSpeedForType(TYPE_WALK));
+                        uint32_t TimeToReach = (uint32_t)(Distance * 1000 / pTrigger->getSpeedForType(TYPE_WALK));
                         EyeBeamTriggerAI* pEyeBeamTriggerAI = static_cast< EyeBeamTriggerAI* >(pTrigger->GetScript());
                         pEyeBeamTriggerAI->mPosition = FireWall;
                         pEyeBeamTriggerAI->despawn(TimeToReach + 1500, 0);
@@ -4399,7 +4399,7 @@ class IllidanStormrageAI : public CreatureAIScript
         }
     }
 
-    void Transform(Transformation* pTransformation, uint32 pMaxPart)
+    void Transform(Transformation* pTransformation, uint32_t pMaxPart)
     {
         mTimeLeft -= GetAIUpdateFreq();
         if (mTimeLeft > 0)
@@ -4800,7 +4800,7 @@ class IllidanStormrageAI : public CreatureAIScript
                                 }
                                 else
                                 {
-                                    pAI->RegisterAIUpdateEvent((uint32)(Distance * 1000 / 32.796));
+                                    pAI->RegisterAIUpdateEvent((uint32_t)(Distance * 1000 / 32.796));
                                 }
                             }
                         }
@@ -4810,7 +4810,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     return;
                 }
 
-                /*uint32 Spell = Util::getRandomUInt() % 100;
+                /*uint32_t Spell = Util::getRandomUInt() % 100;
                 if (Spell <= 80)
                     CastSpellNowNoScheduling(mShadowBlast);*/
             }
@@ -4880,7 +4880,7 @@ class IllidanStormrageAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32 pWaypointId, bool /*pForwards*/) override
+    void OnReachWP(uint32_t pWaypointId, bool /*pForwards*/) override
     {
         if (pWaypointId == 1)
         {
@@ -4942,23 +4942,23 @@ class IllidanStormrageAI : public CreatureAIScript
     }
 
     // Global variables
-    uint32 mPhaseBackup;
-    uint32 mScenePart;
-    int32 mTimeLeft;
+    uint32_t mPhaseBackup;
+    uint32_t mScenePart;
+    int32_t mTimeLeft;
     bool mAllow;
 
     // Phase 1 variables
-    int32 mParasiticTimer;
+    int32_t mParasiticTimer;
     /*SpellDesc* mParasiticDmg;
     SpellDesc* mParasitic;*/
 
     // Phase 2 variables
     CreatureAIScript* mFoA1;
     CreatureAIScript* mFoA2;
-    int32 mMovementTimer;
-    int32 mFireWallTimer;
-    int32 mLastFireWall;
-    uint32 mMiscEventPart;
+    int32_t mMovementTimer;
+    int32_t mFireWallTimer;
+    int32_t mLastFireWall;
+    uint32_t mMiscEventPart;
     //SpellDesc* mGlaiveThrow;
     //SpellDesc* mGlaiveReturns;
 
@@ -4966,8 +4966,8 @@ class IllidanStormrageAI : public CreatureAIScript
     //SpellDesc* mShadowPrison;
 
     // Phase 4 variables
-    int32 mShadowDemonsTimer;
-    int32 mFlameBurstTimer;
+    int32_t mShadowDemonsTimer;
+    int32_t mFlameBurstTimer;
     /*SpellDesc* mFlameBurst;
     SpellDesc* mShadowDemons;
     SpellDesc* mShadowBlast;
@@ -4976,14 +4976,14 @@ class IllidanStormrageAI : public CreatureAIScript
     bool mPlaySound;
 
     // Phase 3 & 4 variables
-    int32 mDemonTimer;
+    int32_t mDemonTimer;
 
     // Phase 5 variables
-    int32 mYellTimer;
-    int32 mEnrageTimer;
+    int32_t mYellTimer;
+    int32_t mEnrageTimer;
 
     // Temporary variables
-    uint32 mCurrentWaypoint;
+    uint32_t mCurrentWaypoint;
 };
 
 //void SpellFunc_Illidan_Parasitic(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType /*pType*/)
@@ -5053,7 +5053,7 @@ class CageTrapTriggerAI : public CreatureAIScript
 
             if (mTriggerAIList.size() == 0 && pIllidan->isAlive() && getRangeToObject(pIllidan) <= 5.0f && !pAI->_isCasting())
             {
-                for (uint8 i = 0; i < 8; ++i)
+                for (uint8_t i = 0; i < 8; ++i)
                 {
                     CreatureAIScript* pTriggerAI = spawnCreatureAndGetAIScript(CN_CAGE_TRAP_TRIGGER, getCreature()->GetPositionX() + PositionAdds[i][0], getCreature()->GetPositionY() + PositionAdds[i][1], getCreature()->GetPositionZ(), getCreature()->GetOrientation());
                     if (pTriggerAI != nullptr)
@@ -5218,7 +5218,7 @@ class FlameOfAzzinothAI : public CreatureAIScript
         getCreature()->m_noRespawn = true;
     }
 
-    void OnCastSpell(uint32 spellId) override
+    void OnCastSpell(uint32_t spellId) override
     {
         if (spellId == FLAME_OF_AZZINOTH_FLAME_BLAST)
         {

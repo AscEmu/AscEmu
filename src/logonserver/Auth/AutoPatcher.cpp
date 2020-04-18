@@ -47,9 +47,9 @@ void PatchMgr::initialize()
     Patch* pPatch;
     DWORD size, sizehigh;
     HANDLE hFile;
-    uint32 srcversion;
+    uint32_t srcversion;
     char locality[5];
-    uint32 i;
+    uint32_t i;
 
     if (!GetCurrentDirectory(MAX_PATH * 10, Buffer))
         return;
@@ -74,12 +74,12 @@ void PatchMgr::initialize()
         pPatch = new Patch;
         size = GetFileSize(hFile, &sizehigh);
         pPatch->FileSize = size;
-        pPatch->Data = new uint8[size];
+        pPatch->Data = new uint8_t[size];
         pPatch->Version = srcversion;
         for (i = 0; i < 4; ++i)
             pPatch->Locality[i] = static_cast<char>(tolower(locality[i]));
         pPatch->Locality[4] = 0;
-        pPatch->uLocality = *(uint32*)pPatch->Locality;
+        pPatch->uLocality = *(uint32_t*)pPatch->Locality;
 
         if (pPatch->Data == NULL)
         {
@@ -122,9 +122,9 @@ void PatchMgr::initialize()
     MD5Hash md5;
     Patch* pPatch;
     int size;
-    uint32 srcversion;
+    uint32_t srcversion;
     char locality[5];
-    uint32 i;
+    uint32_t i;
     struct stat sb;
 
     strcpy(Buffer, "./ClientPatches");
@@ -161,12 +161,12 @@ void PatchMgr::initialize()
         pPatch = new Patch;
         size = sb.st_size;
         pPatch->FileSize = size;
-        pPatch->Data = new uint8[size];
+        pPatch->Data = new uint8_t[size];
         pPatch->Version = srcversion;
         for (i = 0; i < 4; ++i)
             pPatch->Locality[i] = tolower(locality[i]);
         pPatch->Locality[4] = 0;
-        pPatch->uLocality = *(uint32*)pPatch->Locality;
+        pPatch->uLocality = *(uint32_t*)pPatch->Locality;
 
         if (pPatch->Data == NULL)
         {
@@ -196,17 +196,17 @@ void PatchMgr::initialize()
 #endif
 }
 
-Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)
+Patch* PatchMgr::FindPatchForClient(uint32_t Version, const char* Locality)
 {
     char tmplocality[5];
-    uint32 ulocality;
-    uint32 i;
+    uint32_t ulocality;
+    uint32_t i;
     std::vector<Patch*>::iterator itr;
     Patch* fallbackPatch = NULL;
     for (i = 0; i < 4; ++i)
         tmplocality[i] = static_cast<char>(tolower(Locality[i]));
     tmplocality[4] = 0;
-    ulocality = *(uint32*)tmplocality;
+    ulocality = *(uint32_t*)tmplocality;
 
     for (itr = m_patches.begin(); itr != m_patches.end(); ++itr)
     {
@@ -225,7 +225,7 @@ Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)
     return fallbackPatch;
 }
 
-void PatchMgr::BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32 Skip)
+void PatchMgr::BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32_t Skip)
 {
     PatchJob* pJob;
 
@@ -282,17 +282,17 @@ void PatchMgr::AbortPatchJob(PatchJob* pJob)
 
 struct TransferInitiatePacket
 {
-    uint8 cmd;
-    uint8 strsize;
+    uint8_t cmd;
+    uint8_t strsize;
     char name[6];
-    uint64 filesize;
-    uint8 md5hash[MD5_DIGEST_LENGTH];
+    uint64_t filesize;
+    uint8_t md5hash[MD5_DIGEST_LENGTH];
 };
 
 struct TransferDataPacket
 {
-    uint8 cmd;
-    uint16 chunk_size;
+    uint8_t cmd;
+    uint16_t chunk_size;
 };
 
 #pragma pack(pop)
@@ -311,10 +311,10 @@ bool PatchJob::Update()
     TransferDataPacket header;
     bool result;
     header.cmd = 0x31;
-    header.chunk_size = static_cast<uint16>((m_bytesLeft > 1500) ? 1500 : m_bytesLeft);
+    header.chunk_size = static_cast<uint16_t>((m_bytesLeft > 1500) ? 1500 : m_bytesLeft);
     //LogDebug("PatchJob : Sending %u byte chunk", header.chunk_size);
 
-    result = m_client->BurstSend((const uint8*)&header, sizeof(TransferDataPacket));
+    result = m_client->BurstSend((const uint8_t*)&header, sizeof(TransferDataPacket));
     if (result)
     {
         result = m_client->BurstSend(m_dataPointer, header.chunk_size);
@@ -354,7 +354,7 @@ bool PatchMgr::InitiatePatch(Patch* pPatch, AuthSocket* pClient)
 
     // send it to the client
     pClient->BurstBegin();
-    result = pClient->BurstSend((const uint8*)&init, sizeof(TransferInitiatePacket));
+    result = pClient->BurstSend((const uint8_t*)&init, sizeof(TransferInitiatePacket));
     if (result)
         pClient->BurstPush();
     pClient->BurstEnd();

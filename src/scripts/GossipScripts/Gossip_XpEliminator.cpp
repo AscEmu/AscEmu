@@ -27,7 +27,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         // turning xp gains on/off costs 10g each time
         if (plr->hasEnoughCoinage(100000))

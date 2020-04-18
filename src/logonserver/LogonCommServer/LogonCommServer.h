@@ -25,15 +25,15 @@
 
 class LogonCommServerSocket : public Socket
 {
-    uint32 remaining;
-    uint16 opcode;
-    uint32 seed;
+    uint32_t remaining;
+    uint16_t opcode;
+    uint32_t seed;
     RC4Engine sendCrypto;
     RC4Engine recvCrypto;
 
     public:
 
-        uint32 authenticated;
+        uint32_t authenticated;
         bool use_crypto;
 
         LogonCommServerSocket(SOCKET fd);
@@ -63,7 +63,7 @@ class LogonCommServerSocket : public Socket
 
         std::atomic<unsigned long> last_ping;
         bool removed;
-        std::set<uint32> server_ids;
+        std::set<uint32_t> server_ids;
 };
 
 typedef void (LogonCommServerSocket::*logonpacket_handler)(WorldPacket&);

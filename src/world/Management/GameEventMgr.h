@@ -65,64 +65,64 @@ struct GameEventFinishCondition
 {
     float reqNum;               // required number // use float, since some events use percent
     float done;                 // done number
-    uint32 max_world_state;     // max resource count world state update id
-    uint32 done_world_state;    // done resource count world state update id
+    uint32_t max_world_state;     // max resource count world state update id
+    uint32_t done_world_state;    // done resource count world state update id
 };
 
-typedef std::map<uint32 /*condition id*/, GameEventFinishCondition> GameEventConditionMap;
+typedef std::map<uint32_t /*condition id*/, GameEventFinishCondition> GameEventConditionMap;
 
 struct EventNamesQueryResult
 {
-    uint32 entry;
+    uint32_t entry;
     time_t start_time;
     time_t end_time;
-    uint32 occurence;
-    uint32 length;
+    uint32_t occurence;
+    uint32_t length;
     HolidayIds holiday_id;
     std::string description;
     GameEventState world_event;
-    uint8 announce;
+    uint8_t announce;
 };
 
 struct EventCreatureSpawnsQueryResult
 {
-    uint32 event_entry;
-    uint32 id;
-    uint32 entry;
-    uint16 map_id;
+    uint32_t event_entry;
+    uint32_t id;
+    uint32_t entry;
+    uint16_t map_id;
     float position_x;
     float position_y;
     float position_z;
     float orientation;
-    uint8 movetype;
-    uint32 displayid;
-    uint32 faction;
-    uint32 flags;
-    uint32 bytes0;
-    uint32 bytes1;
-    uint32 bytes2;
-    uint16 emote_state;
-    uint32 npc_respawn_link;
-    uint32 channel_spell;
-    uint32 channel_target_sqlid;
-    uint32 channel_target_sqlid_creature;
-    uint8 standstate;
-    uint8 death_state;
-    uint32 mountdisplayid;
-    uint32 slot1item;
-    uint32 slot2item;
-    uint32 slot3item;
-    uint16 CanFly;
-    uint32 phase;
-    uint32 waypoint_group;
+    uint8_t movetype;
+    uint32_t displayid;
+    uint32_t faction;
+    uint32_t flags;
+    uint32_t bytes0;
+    uint32_t bytes1;
+    uint32_t bytes2;
+    uint16_t emote_state;
+    uint32_t npc_respawn_link;
+    uint32_t channel_spell;
+    uint32_t channel_target_sqlid;
+    uint32_t channel_target_sqlid_creature;
+    uint8_t standstate;
+    uint8_t death_state;
+    uint32_t mountdisplayid;
+    uint32_t slot1item;
+    uint32_t slot2item;
+    uint32_t slot3item;
+    uint16_t CanFly;
+    uint32_t phase;
+    uint32_t waypoint_group;
 };
 
 struct EventGameObjectSpawnsQueryResult
 {
-    uint32 event_entry;
-    uint32 id;
-    uint32 entry;
-    uint32 map_id;
+    uint32_t event_entry;
+    uint32_t id;
+    uint32_t entry;
+    uint32_t map_id;
     float position_x;
     float position_y;
     float position_z;
@@ -131,19 +131,19 @@ struct EventGameObjectSpawnsQueryResult
     float orientation2;
     float orientation3;
     float orientation4;
-    uint32 state;
-    uint32 flags;
-    uint32 faction;
+    uint32_t state;
+    uint32_t flags;
+    uint32_t faction;
     float scale;
-    uint32 stateNpcLink;
-    uint32 phase;
-    uint32 overrides;
+    uint32_t stateNpcLink;
+    uint32_t phase;
+    uint32_t overrides;
 };
 
 struct GameEventData
 {
-    GameEventData(time_t pstart = 0, time_t pend = 0, time_t pnextstart = 0, uint32 poccurence = 0, uint32 plength = 0, HolidayIds pholiday_id = HOLIDAY_NONE,
-                  GameEventState pstate = GAMEEVENT_INACTIVE, uint8 pannounce = 0)
+    GameEventData(time_t pstart = 0, time_t pend = 0, time_t pnextstart = 0, uint32_t poccurence = 0, uint32_t plength = 0, HolidayIds pholiday_id = HOLIDAY_NONE,
+                  GameEventState pstate = GAMEEVENT_INACTIVE, uint8_t pannounce = 0)
     {
         start = pstart;
         end = pend;
@@ -171,27 +171,27 @@ struct GameEventData
     {
     };
 
-    uint32 event_id;
+    uint32_t event_id;
     time_t start;
     time_t end;
     time_t nextstart;                   // after this time the follow-up events count this phase completed
-    uint32 occurence;
-    uint32 length;
+    uint32_t occurence;
+    uint32_t length;
     HolidayIds holiday_id;
-    std::set<uint16 /*gameevent id*/> prerequisite_events;
+    std::set<uint16_t /*gameevent id*/> prerequisite_events;
     std::string description;
     GameEventState state;               // state of the game event, these are saved into the game_event table on change!
     GameEventConditionMap conditions;   // conditions to finish
-    uint8 announce;
+    uint8_t announce;
 
     bool isValid() const { return length > 0 && end > time(0); }
 };
 
-typedef std::map<uint32, GameEvent*> GameEvents;
-typedef std::set<uint16> ActiveEvents;
+typedef std::map<uint32_t, GameEvent*> GameEvents;
+typedef std::set<uint16_t> ActiveEvents;
 
-typedef std::map<uint32, uint32> NPCGuidList;
-typedef std::map<uint32, uint32> GOBGuidList;
+typedef std::map<uint32_t, uint32_t> NPCGuidList;
+typedef std::map<uint32_t, uint32_t> GOBGuidList;
 
 class GameEventMgr
 {
@@ -239,7 +239,7 @@ class GameEventMgr
         ActiveEvents const& GetActiveEventList() const { return mActiveEvents; }
         void StartArenaEvents();
         void LoadFromDB();
-        GameEvent* GetEventById(uint32 pEventId);
+        GameEvent* GetEventById(uint32_t pEventId);
 
         GameEvents mGameEvents;
         ActiveEvents mActiveEvents;

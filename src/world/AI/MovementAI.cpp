@@ -130,13 +130,13 @@ void MovementAI::sendMovePacket()
     data << float(m_destination.x);
     data << float(m_destination.y);
     data << float(m_destination.z);
-    data << uint32(m_origin_time);
+    data << uint32_t(m_origin_time);
     // Id of first spline, so always 0
-    data << uint8(0);
+    data << uint8_t(0);
 
-    data << uint32(0x1000); //move flags: run
-    data << uint32_t(calculateExpectedMoveTime()); //movetime
-    data << uint32(1); //1 point
+    data << uint32_t(0x1000); // move flags: run
+    data << uint32_t(calculateExpectedMoveTime()); // movetime
+    data << uint32_t(1); // 1 point
     data << float(m_destination.x);
     data << float(m_destination.y);
     data << float(m_destination.z);

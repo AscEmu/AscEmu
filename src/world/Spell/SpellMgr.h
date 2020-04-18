@@ -29,7 +29,7 @@ struct SpellArea
 typedef std::unordered_map<uint32_t, SpellInfo> SpellInfoMap;
 
 typedef Spell* (*SpellScriptLinker)(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
-typedef Aura* (*AuraScriptLinker)(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster);
+typedef Aura* (*AuraScriptLinker)(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary, Item* i_caster);
 
 typedef std::multimap<uint32_t, SpellArea> SpellAreaMap;
 typedef std::multimap<uint32_t, SpellArea const*> SpellAreaForQuestMap;

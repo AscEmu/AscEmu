@@ -40,10 +40,10 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
 {
     if (pUnit->getEntry() == 15760)
     {
-        uint32 Winteritem = 0;
+        uint32_t Winteritem = 0;
         SlotResult slotresult;
 
-        uint32 chance = Util::getRandomUInt(2);
+        uint32_t chance = Util::getRandomUInt(2);
         switch (chance)
         {
             case 0:
@@ -105,7 +105,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
     }
 }
 
-void WinterVeilEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
+void WinterVeilEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)
 {
     pUnit = pPlayer->GetMapMgr()->GetUnit(pPlayer->GetSelection());
     if (!pUnit || !pUnit->isAlive() || pUnit->GetAIInterface()->getNextTarget())

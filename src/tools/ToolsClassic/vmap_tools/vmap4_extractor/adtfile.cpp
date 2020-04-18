@@ -76,12 +76,12 @@ ADTFile::ADTFile(char* filename): ADT(filename), nWMO(0), nMDX(0), WmoInstansNam
     Adtfilename.append(filename);
 }
 
-bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
+bool ADTFile::init(uint32_t map_num, uint32_t tileX, uint32_t tileY)
 {
     if(ADT.isEof ())
         return false;
 
-    uint32 size;
+    uint32_t size;
 
     std::string xMap;
     std::string yMap;
@@ -171,7 +171,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
                 nMDX = (int)size / 36;
                 for (int i=0; i<nMDX; ++i)
                 {
-                    uint32 id;
+                    uint32_t id;
                     ADT.read(&id, 4);
                     ModelInstance inst(ADT,ModelInstansName[id].c_str(), map_num, tileX, tileY, dirfile);
                 }
@@ -186,7 +186,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
                 nWMO = (int)size / 64;
                 for (int i=0; i<nWMO; ++i)
                 {
-                    uint32 id;
+                    uint32_t id;
                     ADT.read(&id, 4);
                     WMOInstance inst(ADT,WmoInstansName[id].c_str(), map_num, tileX, tileY, dirfile);
                 }

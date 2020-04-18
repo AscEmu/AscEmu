@@ -40,7 +40,7 @@ void WorldSession::handleDelFriendOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->Social_RemoveFriend((uint32)srlPacket.guid);
+    _player->Social_RemoveFriend((uint32_t)srlPacket.guid);
 }
 
 void WorldSession::handleAddIgnoreOpcode(WorldPacket& recvPacket)
@@ -58,7 +58,7 @@ void WorldSession::handleDelIgnoreOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->Social_RemoveIgnore((uint32)srlPacket.guid);
+    _player->Social_RemoveIgnore((uint32_t)srlPacket.guid);
 }
 
 void WorldSession::handleSetFriendNote(WorldPacket& recvPacket)
@@ -67,5 +67,5 @@ void WorldSession::handleSetFriendNote(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->Social_SetNote((uint32)srlPacket.guid, srlPacket.note.size() ? srlPacket.note.c_str() : nullptr);
+    _player->Social_SetNote((uint32_t)srlPacket.guid, srlPacket.note.size() ? srlPacket.note.c_str() : nullptr);
 }

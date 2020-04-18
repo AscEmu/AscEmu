@@ -36,14 +36,14 @@ uint64_t Container::getSlot(uint16_t slot) const { return containerData()->item_
 void Container::setSlot(uint16_t slot, uint64_t guid) { write(containerData()->item_slot[slot].guid, guid); }
 // MIT end
 
-Container::Container(uint32 high, uint32 low) : Item()
+Container::Container(uint32_t high, uint32_t low) : Item()
 {
     m_objectType |= (TYPE_ITEM | TYPE_CONTAINER);
     m_objectTypeId = TYPEID_CONTAINER;
     m_valuesCount = CONTAINER_END;
 
     m_uint32Values = __fields;
-    memset(m_uint32Values, 0, (CONTAINER_END)*sizeof(uint32));
+    memset(m_uint32Values, 0, (CONTAINER_END)*sizeof(uint32_t));
     m_updateMask.SetCount(CONTAINER_END);
 
     setOType(TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
@@ -60,7 +60,7 @@ Container::Container(uint32 high, uint32 low) : Item()
 
 Container::~Container()
 {
-    for (uint32 i = 0; i < m_itemProperties->ContainerSlots; ++i)
+    for (uint32_t i = 0; i < m_itemProperties->ContainerSlots; ++i)
     {
         if (m_Slot[i] && m_Slot[i]->getOwner() == m_owner)
         {
@@ -73,7 +73,7 @@ Container::~Container()
 
 void Container::LoadFromDB(Field* fields)
 {
-    uint32 itemid = fields[2].GetUInt32();
+    uint32_t itemid = fields[2].GetUInt32();
     m_itemProperties = sMySQLStore.getItemProperties(itemid);
 
     ARCEMU_ASSERT(m_itemProperties != nullptr);
@@ -97,7 +97,7 @@ void Container::LoadFromDB(Field* fields)
 
 }
 
-void Container::Create(uint32 itemid, Player* owner)
+void Container::Create(uint32_t itemid, Player* owner)
 {
     m_itemProperties = sMySQLStore.getItemProperties(itemid);
     ARCEMU_ASSERT(m_itemProperties != nullptr);
@@ -119,10 +119,10 @@ void Container::Create(uint32 itemid, Player* owner)
     m_owner = owner;
 }
 
-int8 Container::FindFreeSlot()
+int8_t Container::FindFreeSlot()
 {
-    int8 TotalSlots = static_cast<int8>(getSlotCount());
-    for (int8 i = 0; i < TotalSlots; ++i)
+    int8_t TotalSlots = static_cast<int8_t>(getSlotCount());
+    for (int8_t i = 0; i < TotalSlots; ++i)
     {
         if (!m_Slot[i])
         {
@@ -135,8 +135,8 @@ int8 Container::FindFreeSlot()
 
 bool Container::HasItems()
 {
-    int8 TotalSlots = static_cast<int8>(getSlotCount());
-    for (int8 i = 0; i < TotalSlots; i++)
+    int8_t TotalSlots = static_cast<int8_t>(getSlotCount());
+    for (int8_t i = 0; i < TotalSlots; i++)
     {
         if (m_Slot[i])
         {
@@ -146,9 +146,9 @@ bool Container::HasItems()
     return false;
 }
 
-bool Container::AddItem(int16 slot, Item* item)
+bool Container::AddItem(int16_t slot, Item* item)
 {
-    if (slot < 0 || (uint32)slot >= getItemProperties()->ContainerSlots)
+    if (slot < 0 || (uint32_t)slot >= getItemProperties()->ContainerSlots)
         return false;
 
     //ARCEMU_ASSERT(  m_Slot[slot] == NULL);
@@ -184,7 +184,7 @@ bool Container::AddItem(int16 slot, Item* item)
         item->PushToWorld(m_owner->GetMapMgr());
 
         ByteBuffer buf(3000);
-        uint32 count = item->buildCreateUpdateBlockForPlayer(&buf, m_owner);
+        uint32_t count = item->buildCreateUpdateBlockForPlayer(&buf, m_owner);
         m_owner->getUpdateMgr().pushCreationData(&buf, count);
     }
 #if VERSION_STRING > TBC
@@ -193,19 +193,19 @@ bool Container::AddItem(int16 slot, Item* item)
     return true;
 }
 
-void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
+void Container::SwapItems(int8_t SrcSlot, int8_t DstSlot)
 {
     Item* temp;
-    if (SrcSlot < 0 || SrcSlot >= (int8)m_itemProperties->ContainerSlots)
+    if (SrcSlot < 0 || SrcSlot >= (int8_t)m_itemProperties->ContainerSlots)
         return;
 
-    if (DstSlot < 0 || DstSlot >= (int8)m_itemProperties->ContainerSlots)
+    if (DstSlot < 0 || DstSlot >= (int8_t)m_itemProperties->ContainerSlots)
         return;
 
-    uint32 destMaxCount = (m_owner->m_cheats.ItemStackCheat) ? 0x7fffffff : ((m_Slot[DstSlot]) ? m_Slot[DstSlot]->getItemProperties()->MaxCount : 0);
+    uint32_t destMaxCount = (m_owner->m_cheats.ItemStackCheat) ? 0x7fffffff : ((m_Slot[DstSlot]) ? m_Slot[DstSlot]->getItemProperties()->MaxCount : 0);
     if (m_Slot[DstSlot] && m_Slot[SrcSlot] && m_Slot[DstSlot]->getEntry() == m_Slot[SrcSlot]->getEntry() && m_Slot[SrcSlot]->wrapped_item_id == 0 && m_Slot[DstSlot]->wrapped_item_id == 0 && destMaxCount > 1)
     {
-        uint32 total = m_Slot[SrcSlot]->getStackCount() + m_Slot[DstSlot]->getStackCount();
+        uint32_t total = m_Slot[SrcSlot]->getStackCount() + m_Slot[DstSlot]->getStackCount();
         m_Slot[DstSlot]->m_isDirty = m_Slot[SrcSlot]->m_isDirty = true;
         if (total <= destMaxCount)
         {
@@ -221,7 +221,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
             }
             else
             {
-                int32 delta = destMaxCount - m_Slot[DstSlot]->getStackCount();
+                int32_t delta = destMaxCount - m_Slot[DstSlot]->getStackCount();
                 m_Slot[DstSlot]->setStackCount(destMaxCount);
                 m_Slot[SrcSlot]->modStackCount(-delta);
                 return;
@@ -254,9 +254,9 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
     }
 }
 
-Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
+Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16_t slot, bool destroy)
 {
-    if (slot < 0 || (uint32)slot >= getItemProperties()->ContainerSlots)
+    if (slot < 0 || (uint32_t)slot >= getItemProperties()->ContainerSlots)
         return NULL;
 
     Item* pItem = m_Slot[slot];
@@ -288,9 +288,9 @@ Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
     return pItem;
 }
 
-bool Container::SafeFullRemoveItemFromSlot(int16 slot)
+bool Container::SafeFullRemoveItemFromSlot(int16_t slot)
 {
-    if (slot < 0 || (uint32)slot >= getItemProperties()->ContainerSlots)
+    if (slot < 0 || (uint32_t)slot >= getItemProperties()->ContainerSlots)
         return false;
 
     Item* pItem = m_Slot[slot];
@@ -311,9 +311,9 @@ bool Container::SafeFullRemoveItemFromSlot(int16 slot)
     return true;
 }
 
-bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
+bool Container::AddItemToFreeSlot(Item* pItem, uint32_t* r_slot)
 {
-    uint32 slot;
+    uint32_t slot;
     for (slot = 0; slot < getItemProperties()->ContainerSlots; slot++)
     {
         if (!m_Slot[slot])
@@ -324,13 +324,13 @@ bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
             pItem->setContainer(this);
             pItem->setOwner(m_owner);
 
-            setSlot(uint16(slot), pItem->getGuid());
+            setSlot(uint16_t(slot), pItem->getGuid());
 
             if (m_owner->IsInWorld() && !pItem->IsInWorld())
             {
                 pItem->PushToWorld(m_owner->GetMapMgr());
                 ByteBuffer buf(2500);
-                uint32 count = pItem->buildCreateUpdateBlockForPlayer(&buf, m_owner);
+                uint32_t count = pItem->buildCreateUpdateBlockForPlayer(&buf, m_owner);
                 m_owner->getUpdateMgr().pushCreationData(&buf, count);
             }
             if (r_slot)
@@ -345,23 +345,23 @@ bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
     return false;
 }
 
-Item* Container::GetItem(int16 slot)
+Item* Container::GetItem(int16_t slot)
 {
-    if (slot >= 0 && (uint16)slot < getItemProperties()->ContainerSlots)
+    if (slot >= 0 && (uint16_t)slot < getItemProperties()->ContainerSlots)
         return m_Slot[slot];
     else
         return 0;
 }
 
-void Container::SaveBagToDB(int8 slot, bool first, QueryBuffer* buf)
+void Container::SaveBagToDB(int8_t slot, bool first, QueryBuffer* buf)
 {
     SaveToDB(INVENTORY_SLOT_NOT_SET, slot, first, buf);
 
-    for (uint32 i = 0; i < m_itemProperties->ContainerSlots; ++i)
+    for (uint32_t i = 0; i < m_itemProperties->ContainerSlots; ++i)
     {
         if (m_Slot[i] && !((m_Slot[i]->getItemProperties()->Flags) & 2))
         {
-            m_Slot[i]->SaveToDB(slot, static_cast<int8>(i), first, buf);
+            m_Slot[i]->SaveToDB(slot, static_cast<int8_t>(i), first, buf);
         }
     }
 }

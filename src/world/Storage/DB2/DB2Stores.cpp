@@ -97,7 +97,7 @@ void LoadDB2Stores()
         for (StoreProblemList1::iterator i = bad_db2_files.begin(); i != bad_db2_files.end(); ++i)
             str += *i + "\n";
 
-        LogError("LoadDB2Stores : Some required *.db2 files (%u from %d) not found or not compatible:%s", (uint32)bad_db2_files.size(), DB2_Count, str.c_str());
+        LogError("LoadDB2Stores : Some required *.db2 files (%u from %d) not found or not compatible:%s", (uint32_t)bad_db2_files.size(), DB2_Count, str.c_str());
         exit(1);
     }
 

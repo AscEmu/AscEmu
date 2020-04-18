@@ -115,7 +115,7 @@ class NalorakkAI : public CreatureAIScript
     }
 
     CreatureAISpells* Morph;
-    int32 MorphTimer;
+    int32_t MorphTimer;
 
     CreatureAISpells* mLocaleEnrageSpell;
     uint32_t mLocaleEnrageTimerId;
@@ -149,7 +149,7 @@ class AkilzonAI : public CreatureAIScript
         if (_isTimerFinished(mSummonTime))
         {
             // Spawn 3 Soaring Eagles
-            for (uint8 x = 0; x < 3; x++)
+            for (uint8_t x = 0; x < 3; x++)
             {
                 /*CreatureAIScript* Eagle =*/ spawnCreatureAndGetAIScript(CN_SOARING_EAGLE, (getCreature()->GetPositionX() + Util::getRandomFloat(12) - 10), (getCreature()->GetPositionY() + Util::getRandomFloat(12) - 15),
                                       getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->getFactionTemplate());
@@ -161,7 +161,7 @@ class AkilzonAI : public CreatureAIScript
         }
     }
 
-    int32 mSummonTime;
+    int32_t mSummonTime;
 };
 
 class SoaringEagleAI : public CreatureAIScript
@@ -312,9 +312,9 @@ class HalazziAI : public CreatureAIScript
 
     Creature* mLynx;
     CreatureAISpells* Transfigure;
-    int32 mTotemTimer;
-    int32 CurrentHealth;
-    int32 MaxHealth;
+    int32_t mTotemTimer;
+    int32_t CurrentHealth;
+    int32_t MaxHealth;
     int SplitCount;
 };
 

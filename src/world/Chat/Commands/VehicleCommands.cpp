@@ -117,7 +117,7 @@ bool ChatHandler::HandleVehicleRemoveAccessoriesCommand(const char* /*args*/, Wo
 bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSession* session)
 {
     std::stringstream ss(args);
-    uint32 creature_entry;
+    uint32_t creature_entry;
     ss >> creature_entry;
     if (ss.fail())
     {

@@ -58,13 +58,13 @@ class SERVER_DECL ThreadController
 {
     public:
         HANDLE hThread;
-        uint32 thread_id;
+        uint32_t thread_id;
 
         void Setup(HANDLE h)
         {
             hThread = h;
             // whoops! GetThreadId is for windows 2003 and up only! :<         - Burlex
-            //thread_id = (uint32)GetThreadId(h);
+            //thread_id = (uint32_t)GetThreadId(h);
         }
 
         void Suspend()
@@ -90,7 +90,7 @@ class SERVER_DECL ThreadController
             WaitForSingleObject(hThread, INFINITE);
         }
 
-        uint32 GetId() { return thread_id; }
+        uint32_t GetId() { return thread_id; }
 };
 
 #else
@@ -133,7 +133,7 @@ class ThreadController
             pthread_join(handle, NULL);
         }
 
-        inline uint32 GetId() { return (uint32)thread_id; }
+        inline uint32_t GetId() { return (uint32_t)thread_id; }
 };
 
 #else
@@ -169,7 +169,7 @@ class ThreadController
         {
             pthread_join(handle, NULL);
         }
-        inline uint32 GetId() { return (uint32)thread_id; }
+        inline uint32_t GetId() { return (uint32_t)thread_id; }
 };
 
 #endif
@@ -189,11 +189,11 @@ class SERVER_DECL CThreadPool
     typedef std::set<Thread*> ThreadSet;
     int GetNumCpus();
 
-    uint32 _threadsRequestedSinceLastCheck;
-    uint32 _threadsFreedSinceLastCheck;
-    uint32 _threadsExitedSinceLastCheck;
-    uint32 _threadsToExit;
-    int32 _threadsEaten;
+    uint32_t _threadsRequestedSinceLastCheck;
+    uint32_t _threadsFreedSinceLastCheck;
+    uint32_t _threadsExitedSinceLastCheck;
+    uint32_t _threadsToExit;
+    int32_t _threadsEaten;
     Mutex _mutex;
 
     ThreadSet m_activeThreads;
@@ -225,16 +225,16 @@ public:
     void ShowStats();
 
     // kills x free threads
-    void KillFreeThreads(uint32 count);
+    void KillFreeThreads(uint32_t count);
 
     // resets the gobble counter
-    inline void Gobble() { _threadsEaten = (int32)m_freeThreads.size(); }
+    inline void Gobble() { _threadsEaten = (int32_t)m_freeThreads.size(); }
 
     // gets active thread count
-    inline uint32 GetActiveThreadCount() { return (uint32)m_activeThreads.size(); }
+    inline uint32_t GetActiveThreadCount() { return (uint32_t)m_activeThreads.size(); }
 
     // gets free thread count
-    inline uint32 GetFreeThreadCount() { return (uint32)m_freeThreads.size(); }
+    inline uint32_t GetFreeThreadCount() { return (uint32_t)m_freeThreads.size(); }
 };
 
 long Sync_Add(volatile long* value);

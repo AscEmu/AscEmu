@@ -25,13 +25,13 @@
 
 class Creature;
 
-const uint8 INVALID_BACKPACK_SLOT = 0xFF;
+const uint8_t INVALID_BACKPACK_SLOT = 0xFF;
 
 struct SlotResult
 {
     SlotResult() { ContainerSlot = -1, Slot = -1, Result = false; }
-    int8 ContainerSlot;
-    int8 Slot;
+    int8_t ContainerSlot;
+    int8_t Slot;
     bool Result;
 };
 
@@ -54,13 +54,13 @@ enum AddItemResult
 // RefundableMap
 // Contains refundable item data.
 //
-//Key:     uint64 GUID     - GUID of the item
+//Key:     uint64_t GUID     - GUID of the item
 //
 // \param time_t buytime    - time of purchase in Unixtime
-// \param uint32 costid     - extendedcostID of the cost
+// \param uint32_t costid     - extendedcostID of the cost
 //
 //////////////////////////////////////////////////////////////////////////////////////////
-typedef std::map<uint64, std::pair<time_t, uint32>> RefundableMap;
+typedef std::map<uint64_t, std::pair<time_t, uint32_t>> RefundableMap;
 
 class SERVER_DECL ItemInterface
 {
@@ -73,7 +73,7 @@ class SERVER_DECL ItemInterface
 
         RefundableMap m_refundableitems;
 
-        AddItemResult m_AddItem(Item* item, int8 ContainerSlot, int16 slot);
+        AddItemResult m_AddItem(Item* item, int8_t ContainerSlot, int16_t slot);
 
     public:
         // APGL End
@@ -94,126 +94,126 @@ class SERVER_DECL ItemInterface
         ~ItemInterface();
 
         Player* GetOwner() { return m_pOwner; }
-        bool IsBagSlot(int16 slot);
+        bool IsBagSlot(int16_t slot);
 
-        uint32 m_CreateForPlayer(ByteBuffer* data);
+        uint32_t m_CreateForPlayer(ByteBuffer* data);
         void m_DestroyForPlayer();
 
         void mLoadItemsFromDatabase(QueryResult* result);
         void mSaveItemsToDatabase(bool first, QueryBuffer* buf);
 
-        Item* GetInventoryItem(int16 slot);
-        Item* GetInventoryItem(int8 ContainerSlot, int16 slot);
-        Container* GetContainer(int8 containerSlot);
-        int16 GetInventorySlotById(uint32 ID);
-        int16 GetInventorySlotByGuid(uint64 guid);
-        int16 GetBagSlotByGuid(uint64 guid);
+        Item* GetInventoryItem(int16_t slot);
+        Item* GetInventoryItem(int8_t ContainerSlot, int16_t slot);
+        Container* GetContainer(int8_t containerSlot);
+        int16_t GetInventorySlotById(uint32_t ID);
+        int16_t GetInventorySlotByGuid(uint64_t guid);
+        int16_t GetBagSlotByGuid(uint64_t guid);
 
-        Item* SafeAddItem(uint32 ItemId, int8 ContainerSlot, int16 slot);
-        AddItemResult SafeAddItem(Item* pItem, int8 ContainerSlot, int16 slot);
-        Item* SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16 slot, bool destroy);  // doesn't destroy item from memory
-        Item* SafeRemoveAndRetreiveItemByGuid(uint64 guid, bool destroy);
-        bool SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot);                        // destroys item fully
-        bool SafeFullRemoveItemByGuid(uint64 guid);                                             // destroys item fully
+        Item* SafeAddItem(uint32_t ItemId, int8_t ContainerSlot, int16_t slot);
+        AddItemResult SafeAddItem(Item* pItem, int8_t ContainerSlot, int16_t slot);
+        Item* SafeRemoveAndRetreiveItemFromSlot(int8_t ContainerSlot, int16_t slot, bool destroy);  // doesn't destroy item from memory
+        Item* SafeRemoveAndRetreiveItemByGuid(uint64_t guid, bool destroy);
+        bool SafeFullRemoveItemFromSlot(int8_t ContainerSlot, int16_t slot);                        // destroys item fully
+        bool SafeFullRemoveItemByGuid(uint64_t guid);                                               // destroys item fully
         AddItemResult AddItemToFreeSlot(Item* item);
         AddItemResult AddItemToFreeBankSlot(Item* item);
 
-        Item* FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank);
-        uint32 GetItemCount(uint32 itemid, bool IncBank = false);
-        uint32 RemoveItemAmt(uint32 id, uint32 amt);
-        uint32 RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item** pointer);
-        uint32 RemoveItemAmtByGuid(uint64 guid, uint32 amt);
+        Item* FindItemLessMax(uint32_t itemid, uint32_t cnt, bool IncBank);
+        uint32_t GetItemCount(uint32_t itemid, bool IncBank = false);
+        uint32_t RemoveItemAmt(uint32_t id, uint32_t amt);
+        uint32_t RemoveItemAmt_ProtectPointer(uint32_t id, uint32_t amt, Item** pointer);
+        uint32_t RemoveItemAmtByGuid(uint64_t guid, uint32_t amt);
         void RemoveAllConjured();
-        void BuyItem(ItemProperties const* item, uint32 total_amount, Creature* pVendor);
+        void BuyItem(ItemProperties const* item, uint32_t total_amount, Creature* pVendor);
 
-        uint32 CalculateFreeSlots(ItemProperties const* proto);
+        uint32_t CalculateFreeSlots(ItemProperties const* proto);
         void ReduceItemDurability();
 
-        uint8 LastSearchItemBagSlot() { return m_result.ContainerSlot; }
-        uint8 LastSearchItemSlot() { return m_result.Slot; }
+        uint8_t LastSearchItemBagSlot() { return m_result.ContainerSlot; }
+        uint8_t LastSearchItemSlot() { return m_result.Slot; }
         SlotResult* LastSearchResult() { return &m_result; }
 
         //Searching functions
         SlotResult FindFreeInventorySlot(ItemProperties const* proto);
         SlotResult FindFreeBankSlot(ItemProperties const* proto);
         SlotResult FindAmmoBag();
-        int8 FindFreeBackPackSlot();
-        uint8 FindFreeBackPackSlotMax();
-        int8 FindFreeKeyringSlot();
-        int16 FindFreeCurrencySlot();
-        int8 FindSpecialBag(Item* item);
+        int8_t FindFreeBackPackSlot();
+        uint8_t FindFreeBackPackSlotMax();
+        int8_t FindFreeKeyringSlot();
+        int16_t FindFreeCurrencySlot();
+        int8_t FindSpecialBag(Item* item);
 
 
-        int8 CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemProperties const* item, bool ignore_combat = false, bool skip_2h_check = false);
-        int8 CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, bool ignore_combat = false, bool skip_2h_check = false);
-        int8 CanReceiveItem(ItemProperties const* item, uint32 amount);
-        int8 CanAffordItem(ItemProperties const* item, uint32 amount, Creature* pVendor);
-        int8 GetItemSlotByType(uint32 type);
-        Item* GetItemByGUID(uint64 itemGuid);
+        int8_t CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemProperties const* item, bool ignore_combat = false, bool skip_2h_check = false);
+        int8_t CanEquipItemInSlot2(int8_t DstInvSlot, int8_t slot, Item* item, bool ignore_combat = false, bool skip_2h_check = false);
+        int8_t CanReceiveItem(ItemProperties const* item, uint32_t amount);
+        int8_t CanAffordItem(ItemProperties const* item, uint32_t amount, Creature* pVendor);
+        int8_t GetItemSlotByType(uint32_t type);
+        Item* GetItemByGUID(uint64_t itemGuid);
 
-        void SwapItemSlots(int8 srcslot, int8 dstslot);
+        void SwapItemSlots(int8_t srcslot, int8_t dstslot);
 
-        uint8 GetInternalBankSlotFromPlayer(int8 islot);         // converts inventory slots into 0-x numbers
+        uint8_t GetInternalBankSlotFromPlayer(int8_t islot); // converts inventory slots into 0-x numbers
 
         // buyback stuff
-        inline Item* GetBuyBack(int32 slot)
+        inline Item* GetBuyBack(int32_t slot)
         {
             if (slot >= 0 && slot < MAX_BUYBACK_SLOT)
                 return m_pBuyBack[slot];
             else
                 return nullptr;
         }
-        void AddBuyBackItem(Item* it, uint32 price);
-        void RemoveBuyBackItem(uint32 index);
+        void AddBuyBackItem(Item* it, uint32_t price);
+        void RemoveBuyBackItem(uint32_t index);
         void EmptyBuyBack();
-        bool IsEquipped(uint32 itemid);
+        bool IsEquipped(uint32_t itemid);
 
         void CheckAreaItems();
 
-        uint32 GetItemCountByLimitId(uint32 LimitId, bool IncBank);
-        uint32 GetEquippedCountByItemLimit(uint32 LimitId);
+        uint32_t GetItemCountByLimitId(uint32_t LimitId, bool IncBank);
+        uint32_t GetEquippedCountByItemLimit(uint32_t LimitId);
 
         void HandleItemDurations();
 
         // Refundable item stuff start
-        void AddRefundable(uint64 GUID, uint32 extendedcost);
-        void AddRefundable(uint64 GUID, uint32 extendedcost, time_t buytime);
-        void AddRefundable(Item* item, uint32 extendedcost, time_t buytime);
-        void RemoveRefundable(uint64 GUID);
-        std::pair<time_t, uint32> LookupRefundable(uint64 GUID);
+        void AddRefundable(uint64_t GUID, uint32_t extendedcost);
+        void AddRefundable(uint64_t GUID, uint32_t extendedcost, time_t buytime);
+        void AddRefundable(Item* item, uint32_t extendedcost, time_t buytime);
+        void RemoveRefundable(uint64_t GUID);
+        std::pair<time_t, uint32_t> LookupRefundable(uint64_t GUID);
         // Refundable item stuff end
 
     public:
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // bool AddItemById(uint32 itemid, uint32 count, int32 randomprop)
+        // bool AddItemById(uint32_t itemid, uint32_t count, int32_t randomprop)
         // Adds item(s) to a Player
         //
-        // \param uint32 itemid     -  ID of the item(s) to add
-        // \param uint32 count      -  Amount of items to add
-        // \param int32 randomprop  -  Random prop or suffix id for the items to add.
+        // \param uint32_t itemid     -  ID of the item(s) to add
+        // \param uint32_t count      -  Amount of items to add
+        // \param int32_t randomprop  -  Random prop or suffix id for the items to add.
         //
         // \note If positive it's prop, if negative it's suffix, if 0 it's autogenerated.
         //
         // \return true on success, false on failure.
         //
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool AddItemById(uint32 itemid, uint32 count, int32 randomprop);
+        bool AddItemById(uint32_t itemid, uint32_t count, int32_t randomprop);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // void SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, int8 SrcSlot)
+        // void SwapItems(int8_t DstInvSlot, int8_t DstSlot, int8_t SrcInvSlot, int8_t SrcSlot)
         // Exchanges items A and B
         //
-        // \param int8 DstInvSlot  -  Item A's bag inventory slot (-1 if it's an equipment slot)
-        // \param int8 DstSlot     -  Item A's slotid within that bag
-        // \param int8 SrcInvSlot  -  Item B's bag inventory slot (-1 if it's an equipment slot)
-        // \param int8 SrcSlot     -  Item B's slotid within that bag
+        // \param int8_t DstInvSlot  -  Item A's bag inventory slot (-1 if it's an equipment slot)
+        // \param int8_t DstSlot     -  Item A's slotid within that bag
+        // \param int8_t SrcInvSlot  -  Item B's bag inventory slot (-1 if it's an equipment slot)
+        // \param int8_t SrcSlot     -  Item B's slotid within that bag
         //
         // \return true on success, false on failure.
         //
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, int8 SrcSlot);
+        bool SwapItems(int8_t DstInvSlot, int8_t DstSlot, int8_t SrcInvSlot, int8_t SrcSlot);
 
         void removeLootableItems();
 };
@@ -222,8 +222,8 @@ class ItemIterator
 {
     bool m_atEnd;
     bool m_searchInProgress;
-    uint32 m_slot;
-    uint32 m_containerSlot;
+    uint32_t m_slot;
+    uint32_t m_containerSlot;
     Container* m_container;
     Item* m_currentItem;
     ItemInterface* m_target;

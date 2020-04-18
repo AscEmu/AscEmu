@@ -15,8 +15,8 @@ class TotemsAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(TotemsAI);
     explicit TotemsAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        uint32 Despawn = 30000;
-        uint32 AIUpdate = 1000;
+        uint32_t Despawn = 30000;
+        uint32_t AIUpdate = 1000;
 
         SpellID = 1;
         switch (getCreature()->getEntry())
@@ -62,10 +62,10 @@ class TotemsAI : public CreatureAIScript
 
 protected:
 
-    uint32 SpellID;
+    uint32_t SpellID;
 };
 
-uint32 Totems[4] = { 20208, 18176, 18177, 14662 };
+uint32_t Totems[4] = { 20208, 18176, 18177, 14662 };
 
 class MennuTheBetrayerAI : public CreatureAIScript
 {
@@ -75,7 +75,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
 
     explicit MennuTheBetrayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        for (uint8 i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
             SummonedTotems[i] = false;
 
         auto lighningBolt = addAISpell(LIGHTNING_BOLT, 10.0f, TARGET_ATTACKING, 0, 15);
@@ -105,7 +105,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        for (uint8 i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
             SummonedTotems[i] = false;
 
         TotemCounter = 0;
@@ -125,12 +125,12 @@ class MennuTheBetrayerAI : public CreatureAIScript
         getCreature()->setAttackTimer(MELEE, 1500);
 
         bool Spawned = false;
-        uint32 Counter = 0;
+        uint32_t Counter = 0;
         while(!Spawned)
         {
             if (Counter >= 2)
             {
-                for (uint8 i = 0; i < 4; i++)
+                for (uint8_t i = 0; i < 4; i++)
                 {
                     if (!SummonedTotems[i])
                     {
@@ -147,7 +147,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
                 Spawned = true;
             }
 
-            uint32 i = Util::getRandomUInt(3);
+            uint32_t i = Util::getRandomUInt(3);
             if (SummonedTotems[i])
                 Counter++;
             else
@@ -176,7 +176,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
 
         if (TotemCounter == 4)
         {
-            for (uint8 i = 0; i < 4; i++)
+            for (uint8_t i = 0; i < 4; i++)
                 SummonedTotems[i] = false;
 
             TotemCounter = 0;
@@ -185,7 +185,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
 
 protected:
 
-    uint32 TotemCounter;
+    uint32_t TotemCounter;
     CreatureAISpells* earthgrabTotem;
     CreatureAISpells* stoneskinTotem;
     CreatureAISpells* novaTotem;

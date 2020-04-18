@@ -38,7 +38,7 @@ namespace Arcemu
         EquipmentSets.clear();
     }
 
-    EquipmentSet* EquipmentSetMgr::GetEquipmentSet(uint32 id)
+    EquipmentSet* EquipmentSetMgr::GetEquipmentSet(uint32_t id)
     {
         EquipmentSetStorage::iterator itr;
 
@@ -50,16 +50,16 @@ namespace Arcemu
             return NULL;
     }
 
-    bool EquipmentSetMgr::AddEquipmentSet(uint32 setGUID, EquipmentSet* set)
+    bool EquipmentSetMgr::AddEquipmentSet(uint32_t setGUID, EquipmentSet* set)
     {
         std::pair< EquipmentSetStorage::iterator, bool > retval;
 
-        retval = EquipmentSets.insert(std::pair< uint32, EquipmentSet* >(setGUID, set));
+        retval = EquipmentSets.insert(std::pair< uint32_t, EquipmentSet* >(setGUID, set));
 
         return retval.second;
     }
 
-    bool EquipmentSetMgr::DeleteEquipmentSet(uint32 setGUID)
+    bool EquipmentSetMgr::DeleteEquipmentSet(uint32_t setGUID)
     {
         EquipmentSetStorage::iterator itr;
 
@@ -84,7 +84,7 @@ namespace Arcemu
         if (result == NULL)
             return false;
 
-        uint32 setcount = 0;
+        uint32_t setcount = 0;
         EquipmentSet* set = NULL;
         Field* fields = NULL;
 
@@ -107,10 +107,10 @@ namespace Arcemu
             set->SetName = fields[3].GetString();
             set->IconName = fields[4].GetString();
 
-            for (uint32 i = 0; i < set->ItemGUID.size(); ++i)
+            for (uint32_t i = 0; i < set->ItemGUID.size(); ++i)
                 set->ItemGUID[i] = fields[5 + i].GetUInt32();
 
-            EquipmentSets.insert(std::pair< uint32, EquipmentSet* >(set->SetGUID, set));
+            EquipmentSets.insert(std::pair< uint32_t, EquipmentSet* >(set->SetGUID, set));
             set = NULL;
             setcount++;
 
@@ -144,7 +144,7 @@ namespace Arcemu
             ss << CharacterDatabase.EscapeString(set->SetName) << "','";
             ss << set->IconName << "'";
 
-            for (uint32 j = 0; j < set->ItemGUID.size(); ++j)
+            for (uint32_t j = 0; j < set->ItemGUID.size(); ++j)
             {
                 ss << ",'";
                 ss << set->ItemGUID[j];
@@ -162,31 +162,31 @@ namespace Arcemu
     void EquipmentSetMgr::FillEquipmentSetListPacket(WorldPacket& data)
     {
 #if VERSION_STRING >= Cata
-        uint32 count = 0;
+        uint32_t count = 0;
         size_t count_pos = data.wpos();
-        data << uint32(count);
+        data << uint32_t(count);
 #endif
-        data << uint32(EquipmentSets.size());
+        data << uint32_t(EquipmentSets.size());
 
         for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
         {
             EquipmentSet* set = itr->second;
 
-            data << WoWGuid(uint64(set->SetGUID));
-            data << uint32(set->SetID);
+            data << WoWGuid(uint64_t(set->SetGUID));
+            data << uint32_t(set->SetID);
             data << std::string(set->SetName);
             data << std::string(set->IconName);
 
-            for (uint32 i = 0; i < set->ItemGUID.size(); ++i)
+            for (uint32_t i = 0; i < set->ItemGUID.size(); ++i)
             {
-                data << WoWGuid(uint64(WoWGuid::createItemGuid(set->ItemGUID[i])));
+                data << WoWGuid(uint64_t(WoWGuid::createItemGuid(set->ItemGUID[i])));
             }
 #if VERSION_STRING >= Cata
             ++count;
 #endif
         }
 #if VERSION_STRING >= Cata
-        data.put<uint32>(count_pos, count);
+        data.put<uint32_t>(count_pos, count);
 #endif
     }
 }

@@ -38,7 +38,7 @@ Group::Group(bool Assign)
     memset(m_SubGroups, 0, sizeof(SubGroup*) * 8);
     m_SubGroups[0] = new SubGroup(this, 0);
 
-    memset(m_instanceIds, 0, sizeof(uint32) * MAX_NUM_MAPS * NUM_INSTANCE_MODES);
+    memset(m_instanceIds, 0, sizeof(uint32_t) * MAX_NUM_MAPS * NUM_INSTANCE_MODES);
 
     m_Leader = NULL;
     m_Looter = NULL;
@@ -57,7 +57,7 @@ Group::Group(bool Assign)
     m_dirty = false;
     m_updateblock = false;
     m_disbandOnNoMembers = true;
-    memset(m_targetIcons, 0, sizeof(uint64) * 8);
+    memset(m_targetIcons, 0, sizeof(uint64_t) * 8);
     m_isqueued = false;
     m_difficulty = 0;
     m_raiddifficulty = 0;
@@ -69,7 +69,7 @@ Group::Group(bool Assign)
 
 Group::~Group()
 {
-    for (uint32 j = 0; j < m_SubGroupCount; ++j)
+    for (uint32_t j = 0; j < m_SubGroupCount; ++j)
     {
         SubGroup* sub = GetSubGroup(j);
         if (sub)
@@ -95,12 +95,12 @@ bool SubGroup::AddPlayer(PlayerInfo* info)
     if (IsFull())
         return false;
 
-    info->subGroup = (int8)GetID();
+    info->subGroup = (int8_t)GetID();
     m_GroupMembers.insert(info);
     return true;
 }
 
-bool SubGroup::HasMember(uint32 guid)
+bool SubGroup::HasMember(uint32_t guid)
 {
     for (GroupMembersSet::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end(); ++itr)
         if ((*itr) != NULL)
@@ -117,14 +117,14 @@ GroupMembersSet& SubGroup::getGroupMembers()
 
 SubGroup* Group::FindFreeSubGroup()
 {
-    for (uint32 i = 0; i < m_SubGroupCount; i++)
+    for (uint32_t i = 0; i < m_SubGroupCount; i++)
         if (!m_SubGroups[i]->IsFull())
             return m_SubGroups[i];
 
     return NULL;
 }
 
-bool Group::AddMember(PlayerInfo* info, int32 subgroupid/* =-1 */)
+bool Group::AddMember(PlayerInfo* info, int32_t subgroupid/* =-1 */)
 {
     m_groupLock.Acquire();
     Player* pPlayer = info->m_loggedInPlayer;
@@ -156,7 +156,7 @@ bool Group::AddMember(PlayerInfo* info, int32 subgroupid/* =-1 */)
                 m_Leader = info;
 
             info->m_Group = this;
-            info->subGroup = (int8)subgroup->GetID();
+            info->subGroup = (int8_t)subgroup->GetID();
 
             ++m_MemberCount;
             m_dirty = true;
@@ -225,8 +225,8 @@ void Group::Update()
 
     GroupMembersSet::iterator itr1, itr2;
 
-    uint8 i = 0, j = 0;
-    uint8 flags;
+    uint8_t i = 0, j = 0;
+    uint8_t flags;
     SubGroup* sg1 = NULL;
     SubGroup* sg2 = NULL;
     m_groupLock.Acquire();
@@ -250,8 +250,8 @@ void Group::Update()
                 }
 
                 WorldPacket data(SMSG_GROUP_LIST, (50 + (m_MemberCount * 20)));
-                data << uint8(m_GroupType);
-                data << uint8((*itr1)->subGroup);
+                data << uint8_t(m_GroupType);
+                data << uint8_t((*itr1)->subGroup);
 
                 flags = 0;
                 if ((*itr1) == m_assistantLeader)
@@ -260,25 +260,25 @@ void Group::Update()
                     flags |= 2;
                 if ((*itr1) == m_mainAssist)
                     flags |= 4;
-                data << uint8(flags);
+                data << uint8_t(flags);
 
                 if (m_Leader != NULL && m_Leader->m_loggedInPlayer != NULL && m_Leader->m_loggedInPlayer->IsInBg())
-                    data << uint8(1);   //if the leader is in a BG, then the group is a BG group
+                    data << uint8_t(1);   //if the leader is in a BG, then the group is a BG group
                 else
-                    data << uint8(0);
+                    data << uint8_t(0);
 
                 if (m_GroupType & GROUP_TYPE_LFD)
                 {
-                    data << uint8(sLfgMgr.GetState(GetID()) == LFG_STATE_FINISHED_DUNGEON ? 2 : 0);
-                    data << uint32(sLfgMgr.GetDungeon(GetID()));
+                    data << uint8_t(sLfgMgr.GetState(GetID()) == LFG_STATE_FINISHED_DUNGEON ? 2 : 0);
+                    data << uint32_t(sLfgMgr.GetDungeon(GetID()));
 #if VERSION_STRING >= Cata
-                    data << uint8(0); //unk
+                    data << uint8_t(0); //unk
 #endif
                 }
 
-                data << uint64(GetID());            // Group guid
-                data << uint32(updatecounter++);    // 3.3 - increments every time a group list update is being sent to client
-                data << uint32(m_MemberCount - 1);  // we don't include self
+                data << uint64_t(GetID());            // Group guid
+                data << uint32_t(updatecounter++);    // 3.3 - increments every time a group list update is being sent to client
+                data << uint32_t(m_MemberCount - 1);  // we don't include self
 
                 for (j = 0; j < m_SubGroupCount; j++)
                 {
@@ -300,14 +300,14 @@ void Group::Update()
                             if(plr)
                                 data << plr->getGuid();
                             else
-                                data << (*itr2)->guid << uint32(0); // highguid
+                                data << (*itr2)->guid << uint32_t(0); // highguid
 
                             if ((*itr2)->m_loggedInPlayer != NULL)
-                                data << uint8(1);
+                                data << uint8_t(1);
                             else
-                                data << uint8(0);
+                                data << uint8_t(0);
 
-                            data << uint8((*itr2)->subGroup);
+                            data << uint8_t((*itr2)->subGroup);
 
                             flags = 0;
 
@@ -318,28 +318,28 @@ void Group::Update()
                             if ((*itr2) == m_mainAssist)
                                 flags |= 4;
 
-                            data << uint8(flags);
-                            data << uint8(plr ? plr->GetRoles() : 0);   // Player roles
+                            data << uint8_t(flags);
+                            data << uint8_t(plr ? plr->GetRoles() : 0);   // Player roles
                         }
                     }
                 }
 
                 if (m_Leader != NULL)
-                    data << m_Leader->guid << uint32(0);
+                    data << m_Leader->guid << uint32_t(0);
                 else
-                    data << uint64(0);
+                    data << uint64_t(0);
 
-                data << uint8(m_LootMethod);
+                data << uint8_t(m_LootMethod);
 
                 if (m_Looter != NULL)
-                    data << m_Looter->guid << uint32(0);
+                    data << m_Looter->guid << uint32_t(0);
                 else
-                    data << uint64(0);
+                    data << uint64_t(0);
 
-                data << uint8(m_LootThreshold);
-                data << uint8(m_difficulty);
-                data << uint8(m_raiddifficulty);
-                data << uint8(0);   // 3.3 - unk
+                data << uint8_t(m_LootThreshold);
+                data << uint8_t(m_difficulty);
+                data << uint8_t(m_raiddifficulty);
+                data << uint8_t(0);   // 3.3 - unk
 
                 if (!(*itr1)->m_loggedInPlayer->IsInWorld())
                     (*itr1)->m_loggedInPlayer->CopyAndSendDelayedPacket(&data);
@@ -373,7 +373,7 @@ void Group::Disband()
         sBattlegroundManager.RemoveGroupFromQueues(this);
     }
 
-    uint8 i = 0;
+    uint8_t i = 0;
     for (i = 0; i < m_SubGroupCount; i++)
     {
         SubGroup* sg = m_SubGroups[i];
@@ -390,9 +390,9 @@ void SubGroup::Disband()
 {
     WorldPacket data(SMSG_GROUP_DESTROYED, 1);
     WorldPacket data2(SMSG_PARTY_COMMAND_RESULT, 12);
-    data2 << uint32(2);
-    data2 << uint8(0);
-    data2 << uint32(m_Parent->m_difficulty);    // you leave the group
+    data2 << uint32_t(2);
+    data2 << uint8_t(0);
+    data2 << uint32_t(m_Parent->m_difficulty);    // you leave the group
 
     for (GroupMembersSet::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end();)
     {
@@ -402,7 +402,7 @@ void SubGroup::Disband()
             {
                 if ((*itr)->m_loggedInPlayer->GetSession() != nullptr)
                 {
-                    data2.put(5, uint32((*itr)->m_loggedInPlayer->iInstanceType));
+                    data2.put(5, uint32_t((*itr)->m_loggedInPlayer->iInstanceType));
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data2);
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data);
 #if VERSION_STRING >= Cata
@@ -430,7 +430,7 @@ Player* Group::FindFirstPlayer()
     GroupMembersSet::iterator itr;
     m_groupLock.Acquire();
 
-    for (uint8 i = 0; i < m_SubGroupCount; i++)
+    for (uint8_t i = 0; i < m_SubGroupCount; i++)
     {
         if (m_SubGroups[i] != NULL)
         {
@@ -473,7 +473,7 @@ void Group::RemovePlayer(PlayerInfo* info)
 
     if (sg == NULL || sg->m_GroupMembers.find(info) == sg->m_GroupMembers.end())
     {
-        for (uint8 i = 0; i < m_SubGroupCount; ++i)
+        for (uint8_t i = 0; i < m_SubGroupCount; ++i)
         {
             if (m_SubGroups[i] != NULL)
             {
@@ -521,15 +521,15 @@ void Group::RemovePlayer(PlayerInfo* info)
             pPlayer->GetSession()->sendEmptyGroupList(pPlayer);
 #else
             data.Initialize(SMSG_PARTY_COMMAND_RESULT);
-            data << uint32(2);
-            data << uint8(0);
-            data << uint32(0);  // you leave the group
+            data << uint32_t(2);
+            data << uint8_t(0);
+            data << uint32_t(0);  // you leave the group
             pPlayer->GetSession()->SendPacket(&data);
 #endif
         }
 
         //Remove some party auras.
-        for (uint32 i = MAX_POSITIVE_AURAS_EXTEDED_START; i < MAX_POSITIVE_AURAS_EXTEDED_END; i++)
+        for (uint32_t i = MAX_POSITIVE_AURAS_EXTEDED_START; i < MAX_POSITIVE_AURAS_EXTEDED_END; i++)
         {
             if (pPlayer->m_auras[i] && pPlayer->m_auras[i]->m_areaAura)
             {
@@ -592,7 +592,7 @@ void Group::ExpandToRaid()
     m_groupLock.Acquire();
     m_SubGroupCount = 8;
 
-    for (uint8 i = 1; i < m_SubGroupCount; ++i)
+    for (uint8_t i = 1; i < m_SubGroupCount; ++i)
         m_SubGroups[i] = new SubGroup(this, i);
 
     m_GroupType = GROUP_TYPE_RAID;
@@ -601,7 +601,7 @@ void Group::ExpandToRaid()
     m_groupLock.Release();
 }
 
-void Group::SetLooter(Player* pPlayer, uint8 method, uint16 threshold)
+void Group::SetLooter(Player* pPlayer, uint8_t method, uint16_t threshold)
 {
     if (pPlayer != NULL)
     {
@@ -616,7 +616,7 @@ void Group::SetLooter(Player* pPlayer, uint8 method, uint16 threshold)
 void Group::SendPacketToAllButOne(WorldPacket* packet, Player* pSkipTarget)
 {
     GroupMembersSet::iterator itr;
-    uint8 i = 0;
+    uint8_t i = 0;
     m_groupLock.Acquire();
     for (; i < m_SubGroupCount; i++)
     {
@@ -630,10 +630,10 @@ void Group::SendPacketToAllButOne(WorldPacket* packet, Player* pSkipTarget)
     m_groupLock.Release();
 }
 
-void Group::OutPacketToAllButOne(uint16 op, uint16 len, const void* data, Player* pSkipTarget)
+void Group::OutPacketToAllButOne(uint16_t op, uint16_t len, const void* data, Player* pSkipTarget)
 {
     GroupMembersSet::iterator itr;
-    uint8 i = 0;
+    uint8_t i = 0;
     m_groupLock.Acquire();
     for (; i < m_SubGroupCount; i++)
     {
@@ -655,7 +655,7 @@ bool Group::HasMember(Player* pPlayer)
     GroupMembersSet::iterator itr;
     m_groupLock.Acquire();
 
-    for (uint8 i = 0; i < m_SubGroupCount; i++)
+    for (uint8_t i = 0; i < m_SubGroupCount; i++)
     {
         if (m_SubGroups[i] != NULL)
         {
@@ -674,7 +674,7 @@ bool Group::HasMember(Player* pPlayer)
 bool Group::HasMember(PlayerInfo* info)
 {
     GroupMembersSet::iterator itr;
-    uint8 i = 0;
+    uint8_t i = 0;
 
     m_groupLock.Acquire();
 
@@ -691,7 +691,7 @@ bool Group::HasMember(PlayerInfo* info)
     return false;
 }
 
-void Group::MovePlayer(PlayerInfo* info, uint8 subgroup)
+void Group::MovePlayer(PlayerInfo* info, uint8_t subgroup)
 {
     if (subgroup >= m_SubGroupCount)
         return;
@@ -707,7 +707,7 @@ void Group::MovePlayer(PlayerInfo* info, uint8 subgroup)
 
     if (sg == NULL || sg->m_GroupMembers.find(info) == sg->m_GroupMembers.end())
     {
-        for (uint8 i = 0; i < m_SubGroupCount; ++i)
+        for (uint8_t i = 0; i < m_SubGroupCount; ++i)
         {
             if (m_SubGroups[i] != NULL)
             {
@@ -736,7 +736,7 @@ void Group::MovePlayer(PlayerInfo* info, uint8 subgroup)
     }
     else
     {
-        info->subGroup = (int8)sg->GetID();
+        info->subGroup = (int8_t)sg->GetID();
     }
 
     Update();
@@ -746,7 +746,7 @@ void Group::MovePlayer(PlayerInfo* info, uint8 subgroup)
 void Group::SendNullUpdate(Player* pPlayer)
 {
     // this packet is 28 bytes long.    // AS OF 3.3
-    uint8 buffer[28];
+    uint8_t buffer[28];
     memset(buffer, 0, 28);
     pPlayer->GetSession()->OutPacket(SMSG_GROUP_LIST, 28, buffer);
 }
@@ -757,7 +757,7 @@ void Group::LoadFromDB(Field* fields)
 
     m_groupLock.Acquire();
 
-    uint32 g;
+    uint32_t g;
     m_updateblock = true;
 
     m_Id = fields[0].GetUInt32();
@@ -776,15 +776,15 @@ void Group::LoadFromDB(Field* fields)
     LOAD_ASSISTANT(9, m_mainAssist);
 
     // create groups
-    for (uint8 i = 1; i < m_SubGroupCount; ++i)
+    for (uint8_t i = 1; i < m_SubGroupCount; ++i)
         m_SubGroups[i] = new SubGroup(this, i);
 
     // assign players into groups
-    for (uint8 i = 0; i < m_SubGroupCount; ++i)
+    for (uint8_t i = 0; i < m_SubGroupCount; ++i)
     {
-        for (uint8 j = 0; j < 5; ++j)
+        for (uint8_t j = 0; j < 5; ++j)
         {
-            uint32 guid = fields[10 + (i * 5) + j].GetUInt32();
+            uint32_t guid = fields[10 + (i * 5) + j].GetUInt32();
             if (guid == 0)
                 continue;
 
@@ -810,9 +810,9 @@ void Group::LoadFromDB(Field* fields)
         if (s == NULL || s > p)
             continue;
         *s = 0;
-        uint32 mapId = atoi(q);
-        uint32 mode = atoi(r + 1);
-        uint32 instanceId = atoi(s + 1);
+        uint32_t mapId = atoi(q);
+        uint32_t mode = atoi(r + 1);
+        uint32_t instanceId = atoi(s + 1);
 
         if (mapId >= MAX_NUM_MAPS)
             continue;
@@ -835,8 +835,8 @@ void Group::SaveToDB()
         return;
 
     std::stringstream ss;
-    //uint32 i = 0;
-    //uint32 fillers = 8 - m_SubGroupCount;
+    //uint32_t i = 0;
+    //uint32_t fillers = 8 - m_SubGroupCount;
 
 
     ss << "DELETE FROM `groups` WHERE `group_id` = ";
@@ -858,12 +858,12 @@ void Group::SaveToDB()
           group8member1, group8member2, group8member3, group8member4, group8member5,\
                     timestamp, instanceids) VALUES("
         << m_Id << "," // group_id (1/52)
-        << uint32(m_GroupType) << "," // group_type (2/52)
-        << uint32(m_SubGroupCount) << "," // subgroup_count (3/52)
-        << uint32(m_LootMethod) << "," // loot_method (4/52)
-        << uint32(m_LootThreshold) << "," // loot_threshold (5/52)
-        << uint32(m_difficulty) << "," // difficulty (6/52)
-        << uint32(m_raiddifficulty) << ","; // raiddifficulty (7/52)
+        << uint32_t(m_GroupType) << "," // group_type (2/52)
+        << uint32_t(m_SubGroupCount) << "," // subgroup_count (3/52)
+        << uint32_t(m_LootMethod) << "," // loot_method (4/52)
+        << uint32_t(m_LootThreshold) << "," // loot_threshold (5/52)
+        << uint32_t(m_difficulty) << "," // difficulty (6/52)
+        << uint32_t(m_raiddifficulty) << ","; // raiddifficulty (7/52)
 
     // assistant_leader (8/52)
     if (m_assistantLeader)
@@ -886,9 +886,9 @@ void Group::SaveToDB()
     auto membersNotFilled = 40;
 
     // For each subgroup
-    for (uint8 i = 0; i < m_SubGroupCount; ++i)
+    for (uint8_t i = 0; i < m_SubGroupCount; ++i)
     {
-        uint8 j = 0;
+        uint8_t j = 0;
 
         // For each member in the group, while membercount is less than 5 (guard clause), add their ID to query
         for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); j < 5 && itr != m_SubGroups[i]->GetGroupMembersEnd(); ++j, ++itr)
@@ -907,16 +907,16 @@ void Group::SaveToDB()
     for (membersNotFilled; membersNotFilled > 0; --membersNotFilled)
         ss << "0,";
 
-    //for (uint32 i = 0; i < fillers; ++i)
+    //for (uint32_t i = 0; i < fillers; ++i)
     //    ss << "0, 0, 0, 0, 0,";
 
     // timestamp (51/52)
-    ss << (uint32)UNIXTIME << ",'";
+    ss << (uint32_t)UNIXTIME << ",'";
 
     // instanceids (52/52)
-    for (uint32 i = 0; i < MAX_NUM_MAPS; i++)
+    for (uint32_t i = 0; i < MAX_NUM_MAPS; i++)
     {
-        for (uint32 j = 0; j < NUM_INSTANCE_MODES; j++)
+        for (uint32_t j = 0; j < NUM_INSTANCE_MODES; j++)
         {
             if (m_instanceIds[i][j] > 0)
             {
@@ -934,7 +934,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (pPlayer == nullptr)
         return;
 
-    uint32 mask = pPlayer->GetGroupUpdateFlags();
+    uint32_t mask = pPlayer->GetGroupUpdateFlags();
     if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)                // if update power type, update current/max power also
         mask |= (GROUP_UPDATE_FLAG_CUR_POWER | GROUP_UPDATE_FLAG_MAX_POWER);
 
@@ -945,8 +945,8 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
         data = new WorldPacket(SMSG_PARTY_MEMBER_STATS, 500);
     if (pPlayer->m_isGmInvisible)
         mask = GROUP_UPDATE_FLAG_STATUS;
-    uint32 byteCount = 0;
-    for (uint8 i = 1; i < GROUP_UPDATE_FLAGS_COUNT; ++i)
+    uint32_t byteCount = 0;
+    for (uint8_t i = 1; i < GROUP_UPDATE_FLAGS_COUNT; ++i)
         if (mask & (1 << i))
             byteCount += GroupUpdateLength[i];
     data->Initialize(SMSG_PARTY_MEMBER_STATS, 8 + 4 + byteCount);
@@ -956,50 +956,50 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_STATUS)
     {
         if (pPlayer && !pPlayer->m_isGmInvisible)
-            *data << uint16(pPlayer->GetGroupStatus());
+            *data << uint16_t(pPlayer->GetGroupStatus());
         else
-            *data << uint16(MEMBER_STATUS_OFFLINE);
+            *data << uint16_t(MEMBER_STATUS_OFFLINE);
     }
 
     if (mask & GROUP_UPDATE_FLAG_CUR_HP)
-        *data << uint32(pPlayer->getHealth());
+        *data << uint32_t(pPlayer->getHealth());
 
     if (mask & GROUP_UPDATE_FLAG_MAX_HP)
-        *data << uint32(pPlayer->getMaxHealth());
+        *data << uint32_t(pPlayer->getMaxHealth());
 
     auto powerType = pPlayer->getPowerType();
     if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)
-        *data << uint8(powerType);
+        *data << uint8_t(powerType);
 
     if (mask & GROUP_UPDATE_FLAG_CUR_POWER)
-        *data << uint16(pPlayer->getPower(powerType));
+        *data << uint16_t(pPlayer->getPower(powerType));
 
     if (mask & GROUP_UPDATE_FLAG_MAX_POWER)
-        *data << uint16(pPlayer->getMaxPower(powerType));
+        *data << uint16_t(pPlayer->getMaxPower(powerType));
 
     if (mask & GROUP_UPDATE_FLAG_LEVEL)
-        *data << uint16(pPlayer->getLevel());
+        *data << uint16_t(pPlayer->getLevel());
 
     if (mask & GROUP_UPDATE_FLAG_ZONE)
-        *data << uint16(pPlayer->GetZoneId());
+        *data << uint16_t(pPlayer->GetZoneId());
 
     if (mask & GROUP_UPDATE_FLAG_POSITION)
     {
-        *data << uint16(pPlayer->GetPositionX());
-        *data << uint16(pPlayer->GetPositionY());
+        *data << uint16_t(pPlayer->GetPositionX());
+        *data << uint16_t(pPlayer->GetPositionY());
     }
 
     if (mask & GROUP_UPDATE_FLAG_AURAS)
     {
-        uint64 auramask = pPlayer->GetAuraUpdateMaskForRaid();
-        *data << uint64(auramask);
-        for (uint32 i = 0; i < 64; ++i)
+        uint64_t auramask = pPlayer->GetAuraUpdateMaskForRaid();
+        *data << uint64_t(auramask);
+        for (uint32_t i = 0; i < 64; ++i)
         {
-            if (auramask & (uint64(1) << i))
+            if (auramask & (uint64_t(1) << i))
             {
                 Aura * aurApp = pPlayer->GetAuraWithSlot(i);
-                *data << uint32(aurApp ? aurApp->GetSpellId() : 0);
-                *data << uint8(1);
+                *data << uint32_t(aurApp ? aurApp->GetSpellId() : 0);
+                *data << uint8_t(1);
             }
         }
     }
@@ -1008,9 +1008,9 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_GUID)
     {
         if (pet)
-            *data << (uint64)pet->getGuid();
+            *data << (uint64_t)pet->getGuid();
         else
-            *data << (uint64)0;
+            *data << (uint64_t)0;
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_NAME)
@@ -1018,55 +1018,55 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
         if (pet)
             *data << pet->GetName().c_str();
         else
-            *data << uint8(0);
+            *data << uint8_t(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_MODEL_ID)
     {
         if (pet)
-            *data << uint16(pet->getDisplayId());
+            *data << uint16_t(pet->getDisplayId());
         else
-            *data << uint16(0);
+            *data << uint16_t(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_CUR_HP)
     {
         if (pet)
-            *data << uint32(pet->getHealth());
+            *data << uint32_t(pet->getHealth());
         else
-            *data << uint32(0);
+            *data << uint32_t(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_MAX_HP)
     {
         if (pet)
-            *data << uint32(pet->getMaxHealth());
+            *data << uint32_t(pet->getMaxHealth());
         else
-            *data << uint32(0);
+            *data << uint32_t(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_POWER_TYPE)
     {
         if (pet)
-            *data << uint8(pet->getPowerType());
+            *data << uint8_t(pet->getPowerType());
         else
-            *data << uint8(0);
+            *data << uint8_t(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_CUR_POWER)
     {
         if (pet)
-            *data << uint16(pet->getPower(pet->getPowerType()));
+            *data << uint16_t(pet->getPower(pet->getPowerType()));
         else
-            *data << uint16(0);
+            *data << uint16_t(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_MAX_POWER)
     {
         if (pet)
-            *data << uint16(pet->getMaxPower(pet->getPowerType()));
+            *data << uint16_t(pet->getMaxPower(pet->getPowerType()));
         else
-            *data << uint16(0);
+            *data << uint16_t(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_VEHICLE_SEAT)
@@ -1074,7 +1074,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
 #if VERSION_STRING < Cata
 #ifdef FT_VEHICLES
         if (Vehicle* veh = pPlayer->getCurrentVehicle())
-            *data << uint32(veh->GetVehicleInfo()->seatID[pPlayer->getMovementInfo()->transport_seat]);
+            *data << uint32_t(veh->GetVehicleInfo()->seatID[pPlayer->getMovementInfo()->transport_seat]);
 #endif
 #endif
     }
@@ -1083,27 +1083,27 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     {
         if (pet)
         {
-            uint64 auramask = pet->GetAuraUpdateMaskForRaid();
-            *data << uint64(auramask);
-            for (uint32 i = 0; i < 64; ++i)
+            uint64_t auramask = pet->GetAuraUpdateMaskForRaid();
+            *data << uint64_t(auramask);
+            for (uint32_t i = 0; i < 64; ++i)
             {
-                if (auramask & (uint64(1) << i))
+                if (auramask & (uint64_t(1) << i))
                 {
                     Aura * aurApp = pet->GetAuraWithSlot(i);
-                    *data << uint32(aurApp ? aurApp->GetSpellId() : 0);
-                    *data << uint8(1);
+                    *data << uint32_t(aurApp ? aurApp->GetSpellId() : 0);
+                    *data << uint8_t(1);
                 }
             }
         }
         else
-            *data << uint64(0);
+            *data << uint64_t(0);
     }
     if (Distribute && pPlayer->IsInWorld())
     {
         Player* plr;
         float dist = pPlayer->GetMapMgr()->m_UpdateDistance;
         m_groupLock.Acquire();
-        for (uint8 i = 0; i < m_SubGroupCount; ++i)
+        for (uint8_t i = 0; i < m_SubGroupCount; ++i)
         {
             if (m_SubGroups[i] == NULL)
                 continue;
@@ -1147,7 +1147,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
     hisMask.SetCount(PLAYER_END);
 
     m_groupLock.Acquire();
-    for (uint8 i = 0; i < m_SubGroupCount; ++i)
+    for (uint8_t i = 0; i < m_SubGroupCount; ++i)
     {
         if (m_SubGroups[i] == NULL)
             continue;
@@ -1171,11 +1171,11 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
                     myMask.Clear();
                     u1 = u2 = false;
 #if VERSION_STRING == TBC
-                    for (uint16 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_1; ++j)
+                    for (uint16_t j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_1; ++j)
 #elif VERSION_STRING == Classic
-                    for (uint16 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_15_4; ++j)
+                    for (uint16_t j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_15_4; ++j)
 #else
-                    for (uint16 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_5; ++j)
+                    for (uint16_t j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_5; ++j)
 #endif
                     {
                         if (plr->getUInt32Value(j))
@@ -1252,12 +1252,12 @@ void Group::SetAssistantLeader(PlayerInfo* pMember)
     Update();
 }
 
-void Group::SetDungeonDifficulty(uint8 diff)
+void Group::SetDungeonDifficulty(uint8_t diff)
 {
     m_difficulty = diff;
 
     Lock();
-    for (uint8 i = 0; i < GetSubGroupCount(); ++i)
+    for (uint8_t i = 0; i < GetSubGroupCount(); ++i)
     {
         for (GroupMembersSet::iterator itr = GetSubGroup(i)->GetGroupMembersBegin(); itr != GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
         {
@@ -1271,13 +1271,13 @@ void Group::SetDungeonDifficulty(uint8 diff)
     Unlock();
 }
 
-void Group::SetRaidDifficulty(uint8 diff)
+void Group::SetRaidDifficulty(uint8_t diff)
 {
     m_raiddifficulty = diff;
 
     Lock();
 
-    for (uint8 i = 0; i < GetSubGroupCount(); ++i)
+    for (uint8_t i = 0; i < GetSubGroupCount(); ++i)
     {
         for (GroupMembersSet::iterator itr = GetSubGroup(i)->GetGroupMembersBegin(); itr != GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
         {
@@ -1299,7 +1299,7 @@ void Group::SendLootUpdates(Object* o)
         // Build the actual update.
         ByteBuffer buf(500);
 
-        uint32 Flags = static_cast<Unit*>(o)->getDynamicFlags();
+        uint32_t Flags = static_cast<Unit*>(o)->getDynamicFlags();
 
         Flags |= U_DYN_FLAG_LOOTABLE;
         Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
@@ -1319,7 +1319,7 @@ void Group::SendLootUpdates(Object* o)
                 SubGroup* sGrp = NULL;
                 GroupMembersSet::iterator itr2;
 
-                for (uint32 Index = 0; Index < GetSubGroupCount(); ++Index)
+                for (uint32_t Index = 0; Index < GetSubGroupCount(); ++Index)
                 {
                     sGrp = GetSubGroup(Index);
                     itr2 = sGrp->GetGroupMembersBegin();
@@ -1363,7 +1363,7 @@ Player* Group::GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* p
     std::vector<Player*> players;
 
     // We must iterate through all subgroups
-    for (uint8 i = 0; i < 8; ++i)
+    for (uint8_t i = 0; i < 8; ++i)
     {
         SubGroup* s_grp = GetSubGroup(i);
 
@@ -1393,7 +1393,7 @@ Player* Group::GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* p
     if (players.size() > 0)
     {
         // Get a random player in members subset
-        uint32 i = Util::getRandomUInt((uint32)players.size() - 1);
+        uint32_t i = Util::getRandomUInt((uint32_t)players.size() - 1);
         new_plr = players[i];
         players.clear();
     }
@@ -1402,14 +1402,14 @@ Player* Group::GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* p
 }
 
 #if VERSION_STRING > TBC
-void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time)
+void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTypes type, int32_t miscvalue1, int32_t miscvalue2, uint32_t time)
 {
     Lock();
 
     SubGroup* sGrp = NULL;
     GroupMembersSet::iterator itr2;
 
-    for (uint32 Index = 0; Index < GetSubGroupCount(); ++Index)
+    for (uint32_t Index = 0; Index < GetSubGroupCount(); ++Index)
     {
         sGrp = GetSubGroup(Index);
         itr2 = sGrp->GetGroupMembersBegin();
@@ -1430,7 +1430,7 @@ void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTy
 void Group::Teleport(WorldSession* m_session)
 {
     GroupMembersSet::iterator itr1, itr2;
-    uint8 i = 0;
+    uint8_t i = 0;
     SubGroup* sg1 = NULL;
     Player * member = NULL;
     m_groupLock.Acquire();
@@ -1465,22 +1465,22 @@ void Group::ExpandToLFG()
 
 void Group::GoOffline(Player* p)
 {
-    uint32 mask = GROUP_UPDATE_FLAG_STATUS;
-    uint32 byteCount = 0;
+    uint32_t mask = GROUP_UPDATE_FLAG_STATUS;
+    uint32_t byteCount = 0;
 
-    for (uint8 i = 1; i < GROUP_UPDATE_FLAGS_COUNT; ++i)
+    for (uint8_t i = 1; i < GROUP_UPDATE_FLAGS_COUNT; ++i)
         if (mask & (1 << i))
             byteCount += GroupUpdateLength[i];
 
     WorldPacket data(SMSG_PARTY_MEMBER_STATS, 8 + 4 + byteCount);
     data << p->GetNewGUID();
     data << mask;
-    data << uint16(MEMBER_STATUS_OFFLINE);
+    data << uint16_t(MEMBER_STATUS_OFFLINE);
 
     if (p->IsInWorld())
     {
         m_groupLock.Acquire();
-        for (uint8 i = 0; i < m_SubGroupCount; ++i)
+        for (uint8_t i = 0; i < m_SubGroupCount; ++i)
         {
             if (m_SubGroups[i] == NULL)
                 continue;

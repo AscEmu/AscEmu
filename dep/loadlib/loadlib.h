@@ -25,14 +25,14 @@
 
 #include <string>
 
-#define FILE_FORMAT_VERSION    18
+#define FILE_FORMAT_VERSION 18
 
 #pragma pack(push, 1)
 
 union u_map_fcc
 {
     char   fcc_txt[4];
-    uint32 fcc;
+    uint32_t fcc;
 };
 
 //
@@ -40,21 +40,23 @@ union u_map_fcc
 //
 struct file_MVER
 {
-    union{
-        uint32 fcc;
+    union
+    {
+        uint32_t fcc;
         char   fcc_txt[4];
     };
-    uint32 size;
-    uint32 ver;
+    uint32_t size;
+    uint32_t ver;
 };
 
-class FileLoader{
-    uint8  *data;
-    uint32  data_size;
+class FileLoader
+{
+    uint8_t  *data;
+    uint32_t  data_size;
 public:
     virtual bool prepareLoadedData();
-    uint8 *GetData()     {return data;}
-    uint32 GetDataSize() {return data_size;}
+    uint8_t *GetData()     {return data;}
+    uint32_t GetDataSize() {return data_size;}
 
     file_MVER *version;
     FileLoader();

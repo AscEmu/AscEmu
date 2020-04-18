@@ -2,51 +2,51 @@ struct M2Header
 {
     char id[4];
     unsigned char version[4];
-    uint32 nameLength;
-    uint32 nameOfs;
-    uint32 type;
-    uint32 nGlobalSequences;
-    uint32 ofsGlobalSequences;
-    uint32 nAnimations;
-    uint32 ofsAnimations;
-    uint32 nAnimationLookup;
-    uint32 osdAnimationLookup;
-    uint32 nBones;
-    uint32 ofsBones;
-    uint32 nKeyBoneLookup;
-    uint32 ofsKeyBoneLookup;
+    uint32_t nameLength;
+    uint32_t nameOfs;
+    uint32_t type;
+    uint32_t nGlobalSequences;
+    uint32_t ofsGlobalSequences;
+    uint32_t nAnimations;
+    uint32_t ofsAnimations;
+    uint32_t nAnimationLookup;
+    uint32_t osdAnimationLookup;
+    uint32_t nBones;
+    uint32_t ofsBones;
+    uint32_t nKeyBoneLookup;
+    uint32_t ofsKeyBoneLookup;
 
-    uint32 nVertices;
-    uint32 ofsVertices;
-    uint32 nViews;
+    uint32_t nVertices;
+    uint32_t ofsVertices;
+    uint32_t nViews;
 
-    uint32 nColors;
-    uint32 ofsColors;
+    uint32_t nColors;
+    uint32_t ofsColors;
 
-    uint32 nTextures;
-    uint32 ofsTextures;
+    uint32_t nTextures;
+    uint32_t ofsTextures;
 
-    uint32 nTransparency;
-    uint32 ofsTransparency;
-    uint32 nUVAnimation;
-    uint32 ofsUVAnimation;
-    uint32 nTexReplace;
-    uint32 ofsTexReplace;
+    uint32_t nTransparency;
+    uint32_t ofsTransparency;
+    uint32_t nUVAnimation;
+    uint32_t ofsUVAnimation;
+    uint32_t nTexReplace;
+    uint32_t ofsTexReplace;
 
-    uint32 nRenderFlags;
-    uint32 ofsRenderFlags;
-    uint32 nBoneLookupTable;
-    uint32 ofsBoneLookupTable;
+    uint32_t nRenderFlags;
+    uint32_t ofsRenderFlags;
+    uint32_t nBoneLookupTable;
+    uint32_t ofsBoneLookupTable;
 
-    uint32 nTexLookup;
-    uint32 ofsTexLookup;
+    uint32_t nTexLookup;
+    uint32_t ofsTexLookup;
 
-    uint32 nTexUnitLookup;
-    uint32 ofsTexUnitLookup;
-    uint32 nTransparencyLookup;
-    uint32 ofsTransparencyLookup;
-    uint32 nUVAnimLookup;
-    uint32 ofsUVAnimLookup;
+    uint32_t nTexUnitLookup;
+    uint32_t ofsTexUnitLookup;
+    uint32_t nTransparencyLookup;
+    uint32_t ofsTransparencyLookup;
+    uint32_t nUVAnimLookup;
+    uint32_t ofsUVAnimLookup;
 
     float vertexbox1[3];
     float vertexbox2[3];
@@ -55,45 +55,45 @@ struct M2Header
     float boundingbox2[3];
     float boundingradius;
 
-    uint32 nBoundingTriangles;
-    uint32 ofsBoundingTriangles;
-    uint32 nBoundingVertices;
-    uint32 ofsBoundingVertices;
-    uint32 nBoundingNormals;
-    uint32 ofsBoundingNormals;
+    uint32_t nBoundingTriangles;
+    uint32_t ofsBoundingTriangles;
+    uint32_t nBoundingVertices;
+    uint32_t ofsBoundingVertices;
+    uint32_t nBoundingNormals;
+    uint32_t ofsBoundingNormals;
 
-    uint32 nAttachments;
-    uint32 ofsAttachments;
-    uint32 nAttachmentLookup;
-    uint32 ofsAttachmentLookup;
-    uint32 nEvents;
-    uint32 ofsEvents;
-    uint32 nLights;
-    uint32 ofsLights;
-    uint32 nCameras;
-    uint32 ofsCameras;
-    uint32 nCameraLookup;
-    uint32 ofsCameraLookup;
-    uint32 nRibbonEmitters;
-    uint32 ofsRibbonEmitters;
-    uint32 nParticleEmitters;
-    uint32 ofsParticleEmitters;
+    uint32_t nAttachments;
+    uint32_t ofsAttachments;
+    uint32_t nAttachmentLookup;
+    uint32_t ofsAttachmentLookup;
+    uint32_t nEvents;
+    uint32_t ofsEvents;
+    uint32_t nLights;
+    uint32_t ofsLights;
+    uint32_t nCameras;
+    uint32_t ofsCameras;
+    uint32_t nCameraLookup;
+    uint32_t ofsCameraLookup;
+    uint32_t nRibbonEmitters;
+    uint32_t ofsRibbonEmitters;
+    uint32_t nParticleEmitters;
+    uint32_t ofsParticleEmitters;
 };
 
 struct AnimationBlock
 {
-    uint16 interpolation;
-    uint16 globalsequenceid;
-    uint32 list1offset;
-    uint32 timestampdataoffset;
-    uint32 list2offset;
-    uint32 keysoffset;
+    uint16_t interpolation;
+    uint16_t globalsequenceid;
+    uint32_t list1offset;
+    uint32_t timestampdataoffset;
+    uint32_t list2offset;
+    uint32_t keysoffset;
 };
 
 struct M2Attachment
 {
-    uint32 id;
-    uint32 bone;
+    uint32_t id;
+    uint32_t bone;
     float pos[3];
     AnimationBlock unk;
 };
@@ -111,9 +111,9 @@ struct M2Vertex
 struct M2Bone
 {
     int keyboneid;
-    uint32 flags;
+    uint32_t flags;
     short parentbone;
-    uint16 unk[3];
+    uint16_t unk[3];
     AnimationBlock translation;
     AnimationBlock rotation;
     AnimationBlock scaling;

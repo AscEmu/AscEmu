@@ -66,7 +66,7 @@ class ElizaAI : public CreatureAIScript
         }
     }
 
-    uint32 mElizaCombatTimer;
+    uint32_t mElizaCombatTimer;
     CreatureAISpells* mSummonGuard;
     Creature* mElizaGuard;
 };

@@ -21,7 +21,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         auto quest_entry = plr->GetQuestLogForEntry(11142);
         if (quest_entry == nullptr)
@@ -44,7 +44,7 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         // Send quests and gossip menu.
-        uint32 Text = sMySQLStore.getGossipTextIdForNpc(pObject->getEntry());
+        uint32_t Text = sMySQLStore.getGossipTextIdForNpc(pObject->getEntry());
         if (sMySQLStore.getNpcText(Text) == nullptr)
             Text = DefaultGossipTextId;
 
@@ -56,7 +56,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         GossipMenu::sendSimpleMenu(pObject->getGuid(), 1794, plr);
     }

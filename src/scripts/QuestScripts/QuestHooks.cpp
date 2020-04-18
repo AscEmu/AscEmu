@@ -322,7 +322,7 @@ void InnkeeperChicken(Player* pPlayer, Unit* pUnit)
     }
 }
 
-void OnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
+void OnEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)
 {
     pUnit = pPlayer->GetMapMgr()->GetUnit(pPlayer->GetSelection());
     if(!pUnit || !pUnit->isAlive() || pUnit->GetAIInterface()->getNextTarget())
@@ -351,7 +351,7 @@ void OnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
 //////////////////////////////////////////////////////////////////////////////////////////
 // On areatrigger
 
-void InvasionPointCataclysm(Player* pPlayer, uint32 /*AreaTrigger*/)
+void InvasionPointCataclysm(Player* pPlayer, uint32_t /*AreaTrigger*/)
 {
     QuestLogEntry* en = pPlayer->GetQuestLogForEntry(10766);
     if(en == nullptr)
@@ -359,7 +359,7 @@ void InvasionPointCataclysm(Player* pPlayer, uint32 /*AreaTrigger*/)
     pPlayer->SafeTeleport(530, 0, -2723.674561f, 1952.664673f, 146.939743f, 3.185559f);
 }
 
-void Scratches(Player* pPlayer, uint32 /*AreaTrigger*/)
+void Scratches(Player* pPlayer, uint32_t /*AreaTrigger*/)
 {
     QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10556);
     if(qle == nullptr)
@@ -375,7 +375,7 @@ void Scratches(Player* pPlayer, uint32 /*AreaTrigger*/)
     qle->UpdatePlayerFields();
 }
 
-void OnAreaTrigger(Player* pPlayer, uint32 AreaTrigger)
+void OnAreaTrigger(Player* pPlayer, uint32_t AreaTrigger)
 {
     switch(AreaTrigger)
     {

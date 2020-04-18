@@ -181,4 +181,3 @@ void DBCFile::DumpAsCVS(char *filename)
     }
     fclose(fout);
 }
-

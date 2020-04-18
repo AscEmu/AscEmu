@@ -37,12 +37,12 @@ class CObjectFactory
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Creates an instance of the GameObject class.
-        /// \param uint32 Id  -  Entry if of the GameObject
-        /// \param uint32 LowGUID  -  Unique ID of this instance
+        /// \param uint32_t Id  -  Entry if of the GameObject
+        /// \param uint32_t LowGUID  -  Unique ID of this instance
         ///
         /// \return none
         //////////////////////////////////////////////////////////////////////////////////////////
-        GameObject* CreateGameObject(uint32 Id, uint32 LowGUID);
+        GameObject* CreateGameObject(uint32_t Id, uint32_t LowGUID);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Disposes of the created Object

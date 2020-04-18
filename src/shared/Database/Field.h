@@ -38,18 +38,18 @@ class Field
         inline float GetFloat() { return mValue ? static_cast<float>(atof(mValue)) : 0; }
         inline bool GetBool() { return mValue ? atoi(mValue) > 0 : false; }
 
-        inline uint8 GetUInt8() { return mValue ? static_cast<uint8>(atol(mValue)) : 0; }
-        inline int8 GetInt8() { return mValue ? static_cast<int8>(atol(mValue)) : 0; }
-        inline uint16 GetUInt16() { return mValue ? static_cast<uint16>(atol(mValue)) : 0; }
-        inline int16 GetInt16() { return mValue ? static_cast<int16>(atol(mValue)) : 0; }
-        inline uint32 GetUInt32() { return mValue ? static_cast<uint32>(atol(mValue)) : 0; }
-        inline int32 GetInt32() { return mValue ? static_cast<int32>(atol(mValue)) : 0; }
+        inline uint8_t GetUInt8() { return mValue ? static_cast<uint8_t>(atol(mValue)) : 0; }
+        inline int8_t GetInt8() { return mValue ? static_cast<int8_t>(atol(mValue)) : 0; }
+        inline uint16_t GetUInt16() { return mValue ? static_cast<uint16_t>(atol(mValue)) : 0; }
+        inline int16_t GetInt16() { return mValue ? static_cast<int16_t>(atol(mValue)) : 0; }
+        inline uint32_t GetUInt32() { return mValue ? static_cast<uint32_t>(atol(mValue)) : 0; }
+        inline int32_t GetInt32() { return mValue ? static_cast<int32_t>(atol(mValue)) : 0; }
 
-        uint64 GetUInt64()
+        uint64_t GetUInt64()
         {
             if (mValue)
             {
-                uint64 value;
+                uint64_t value;
                 int return_value;
 #ifndef WIN32    // Make GCC happy.
                 return_value = sscanf(mValue, I64FMTD, (long long unsigned int*)&value);

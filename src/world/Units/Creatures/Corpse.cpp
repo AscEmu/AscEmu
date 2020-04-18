@@ -75,7 +75,7 @@ void Corpse::setDynamicFlags(uint32_t flags) { write(corpseData()->dynamic_flags
 
  // MIT End
  // AGPL Start
-Corpse::Corpse(uint32 high, uint32 low)
+Corpse::Corpse(uint32_t high, uint32_t low)
 {
     m_objectType |= TYPE_CORPSE;
     m_objectTypeId = TYPEID_CORPSE;
@@ -91,7 +91,7 @@ Corpse::Corpse(uint32 high, uint32 low)
     m_valuesCount = CORPSE_END;
 
     m_uint32Values = _fields;
-    memset(m_uint32Values, 0, (CORPSE_END)*sizeof(uint32));
+    memset(m_uint32Values, 0, (CORPSE_END)*sizeof(uint32_t));
     m_updateMask.SetCount(CORPSE_END);
 
     setOType(TYPE_CORPSE | TYPE_OBJECT);
@@ -118,7 +118,7 @@ Corpse::~Corpse()
 }
 
 
-void Corpse::Create(Player* owner, uint32 mapid, float x, float y, float z, float ang)
+void Corpse::Create(Player* owner, uint32_t mapid, float x, float y, float z, float ang)
 {
     Object::_Create(mapid, x, y, z, ang);
 
@@ -145,7 +145,7 @@ void Corpse::SaveToDB()
         << "', '" << GetMapId() 
         << "', '";
 
-    for (uint16 i = 0; i < m_valuesCount; i++)
+    for (uint16_t i = 0; i < m_valuesCount; i++)
         ss << getUInt32Value(i) << " ";
 
     ss << "', " << GetInstanceID() << ")";
@@ -180,7 +180,7 @@ void Corpse::SpawnBones()
     setFlags(CORPSE_FLAG_BONE | CORPSE_FLAG_UNK1);
     SetOwner(0); // remove corpse owner association
     //remove item association
-    for (uint8 i = 0; i < EQUIPMENT_SLOT_END; i++)
+    for (uint8_t i = 0; i < EQUIPMENT_SLOT_END; i++)
     {
         if (getItem(i))
             setItem(i, 0);
@@ -198,7 +198,7 @@ void Corpse::Delink()
     DeleteFromDB();
 }
 
-void Corpse::SetOwner(uint64 guid)
+void Corpse::SetOwner(uint64_t guid)
 {
     setOwnerGuid(guid);
     if (guid == 0)

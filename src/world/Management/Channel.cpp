@@ -45,7 +45,7 @@ bool Channel::HasMember(Player* pPlayer)
     return true;
 }
 
-Channel::Channel(const char* name, uint32 team, uint32 type_id)
+Channel::Channel(const char* name, uint32_t team, uint32_t type_id)
 {
     m_flags = 0;
     m_announce = true;
@@ -62,21 +62,21 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
         m_general = true;
         m_announce = false;
 
-        m_flags |= CHANNEL_FLAGS_GENERAL;       // old 0x10;            // general flag
+        m_flags |= CHANNEL_FLAGS_GENERAL; // old 0x10; // general flag
         // flags (0x01 = custom?, 0x04 = trade?, 0x20 = city?, 0x40 = lfg?, , 0x80 = voice?,
 
         if (chat_channels->flags & CHANNEL_DBC_TRADE)
-            m_flags |= CHANNEL_FLAGS_TRADE;     // old 0x08;        // trade
+            m_flags |= CHANNEL_FLAGS_TRADE; // old 0x08; // trade
 
         if (chat_channels->flags & CHANNEL_DBC_CITY_ONLY_1 || chat_channels->flags & CHANNEL_DBC_CITY_ONLY_2)
-            m_flags |= CHANNEL_FLAGS_CITY;      // old 0x20;        // city flag
+            m_flags |= CHANNEL_FLAGS_CITY; // old 0x20; // city flag
 
         if (chat_channels->flags & CHANNEL_DBC_LFG)
-            m_flags |= CHANNEL_FLAGS_LFG;       // old 0x40;        // lfg flag
+            m_flags |= CHANNEL_FLAGS_LFG; // old 0x40; // lfg flag
     }
     else
     {
-        m_flags = CHANNEL_FLAGS_CUSTOM;         // old 0x01;
+        m_flags = CHANNEL_FLAGS_CUSTOM; // old 0x01;
     }
 
     for (const auto& channelName : sChannelMgr.m_minimumChannel)
@@ -94,7 +94,7 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
 void Channel::AttemptJoin(Player* plr, const char* password)
 {
     Guard mGuard(m_lock);
-    uint32 flags = CHANNEL_MEMBER_FLAG_NONE;
+    uint32_t flags = CHANNEL_MEMBER_FLAG_NONE;
 
     if (!m_general && plr->GetSession()->CanUseCommand('c'))
         flags |= CHANNEL_MEMBER_FLAG_MODERATOR;
@@ -152,7 +152,7 @@ void Channel::Part(Player* plr, bool send_packet)
         return;
     }
 
-    uint32 flags = itr->second;
+    uint32_t flags = itr->second;
     m_members.erase(itr);
 
     plr->LeftChannel(this);
@@ -192,7 +192,7 @@ void Channel::SetOwner(Player* oldpl, Player* plr)
 {
     Guard mGuard(m_lock);
     Player* pOwner = NULL;
-    uint32 oldflags = 0, oldflags2 = 0;
+    uint32_t oldflags = 0, oldflags2 = 0;
     if (oldpl != NULL)
     {
         MemberMap::iterator itr = m_members.find(oldpl);
@@ -255,7 +255,7 @@ void Channel::SetOwner(Player* oldpl, Player* plr)
     }
 
     if (pOwner == nullptr)
-        return;        // obviously no members
+        return; // obviously no members
 
 
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_CHGOWNER, m_name, pOwner->getGuid()).serialise().get());
@@ -340,15 +340,15 @@ void Channel::Say(Player* plr, const char* message, Player* for_gm_client, bool 
     }
 
     WorldPacket data(SMSG_MESSAGECHAT, strlen(message) + 100);
-    data << uint8(CHAT_MSG_CHANNEL);
-    data << uint32(0);        // language
-    data << plr->getGuid();    // guid
-    data << uint32(0);        // rank?
-    data << m_name;            // channel name
-    data << plr->getGuid();    // guid again?
-    data << uint32(strlen(message) + 1);
+    data << uint8_t(CHAT_MSG_CHANNEL);
+    data << uint32_t(0);        // language
+    data << plr->getGuid();     // guid
+    data << uint32_t(0);        // rank?
+    data << m_name;             // channel name
+    data << plr->getGuid();     // guid again?
+    data << uint32_t(strlen(message) + 1);
     data << message;
-    data << (uint8)(plr->isGMFlagSet() ? 4 : 0);
+    data << (uint8_t)(plr->isGMFlagSet() ? 4 : 0);
     if (for_gm_client != nullptr)
         for_gm_client->SendPacket(&data);
     else
@@ -389,7 +389,7 @@ void Channel::Kick(Player* plr, Player* die_player, bool ban)
         return;
     }
 
-    uint32 flags = itr->second;
+    uint32_t flags = itr->second;
 
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_KICKED, m_name, die_player->getGuid()).serialise().get());
 
@@ -426,7 +426,7 @@ void Channel::Unban(Player* plr, PlayerInfo* bplr)
         return;
     }
 
-    std::set<uint32>::iterator it2 = m_bannedMembers.find(bplr->guid);
+    std::set<uint32_t>::iterator it2 = m_bannedMembers.find(bplr->guid);
     if (it2 == m_bannedMembers.end())
     {
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_name, bplr->guid).serialise().get());
@@ -461,7 +461,7 @@ void Channel::Voice(Player* plr, Player* v_player)
         return;
     }
 
-    uint32 oldflags = itr2->second;
+    uint32_t oldflags = itr2->second;
     itr2->second |= CHANNEL_MEMBER_FLAG_VOICED;
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_name, v_player->getGuid(), oldflags, 0, itr2->second).serialise().get());
 }
@@ -490,7 +490,7 @@ void Channel::Devoice(Player* plr, Player* v_player)
         return;
     }
 
-    uint32 oldflags = itr2->second;
+    uint32_t oldflags = itr2->second;
     itr2->second &= ~CHANNEL_MEMBER_FLAG_VOICED;
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_name, v_player->getGuid(), oldflags, 0, itr2->second).serialise().get());
 
@@ -520,7 +520,7 @@ void Channel::Mute(Player* plr, Player* die_player)
         return;
     }
 
-    uint32 oldflags = itr2->second;
+    uint32_t oldflags = itr2->second;
     itr2->second |= CHANNEL_MEMBER_FLAG_MUTED;
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_name, die_player->getGuid(), oldflags, 0, itr2->second).serialise().get());
 
@@ -550,7 +550,7 @@ void Channel::Unmute(Player* plr, Player* die_player)
         return;
     }
 
-    uint32 oldflags = itr2->second;
+    uint32_t oldflags = itr2->second;
     itr2->second &= ~CHANNEL_MEMBER_FLAG_MUTED;
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_name, die_player->getGuid(), oldflags, 0, itr2->second).serialise().get());
 }
@@ -579,7 +579,7 @@ void Channel::GiveModerator(Player* plr, Player* new_player)
         return;
     }
 
-    uint32 oldflags = itr2->second;
+    uint32_t oldflags = itr2->second;
     itr2->second |= CHANNEL_MEMBER_FLAG_MODERATOR;
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_name, new_player->getGuid(), oldflags, 0, itr2->second).serialise().get());
 }
@@ -608,7 +608,7 @@ void Channel::TakeModerator(Player* plr, Player* new_player)
         return;
     }
 
-    uint32 oldflags = itr2->second;
+    uint32_t oldflags = itr2->second;
     itr2->second &= ~CHANNEL_MEMBER_FLAG_MODERATOR;
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_name, new_player->getGuid(), oldflags, 0, itr2->second).serialise().get());
 
@@ -668,11 +668,11 @@ void Channel::List(Player* plr)
         return;
     }
 
-    uint8 flags;
-    data << uint8(1);
+    uint8_t flags;
+    data << uint8_t(1);
     data << m_name;
-    data << uint8(m_flags);
-    data << uint32(m_members.size());
+    data << uint8_t(m_flags);
+    data << uint32_t(m_members.size());
     for (itr = m_members.begin(); itr != m_members.end(); ++itr)
     {
         data << itr->first->getGuid();

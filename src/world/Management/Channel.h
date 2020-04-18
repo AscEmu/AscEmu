@@ -128,11 +128,11 @@ class SERVER_DECL Channel
 {
     Mutex m_lock;
 
-    typedef std::map<Player*, uint32> MemberMap;
+    typedef std::map<Player*, uint32_t> MemberMap;
 
     MemberMap m_members;
 
-    std::set<uint32> m_bannedMembers;
+    std::set<uint32_t> m_bannedMembers;
 
     public:
 
@@ -141,18 +141,18 @@ class SERVER_DECL Channel
         std::string m_name;
         std::string m_password;
 
-        uint8 m_flags;
-        uint32 m_id;
+        uint8_t m_flags;
+        uint32_t m_id;
         bool m_general;
         bool m_muted;
         bool m_announce;
-        uint32 m_team;
+        uint32_t m_team;
 
         inline size_t GetNumMembers() { return m_members.size(); }
 
-        uint32 m_minimumLevel;
+        uint32_t m_minimumLevel;
 
-        Channel(const char* name, uint32 team, uint32 type_id);
+        Channel(const char* name, uint32_t team, uint32_t type_id);
         ~Channel();
 
         void AttemptJoin(Player* plr, const char* password);
@@ -181,7 +181,7 @@ class SERVER_DECL Channel
         void SendNotOn(Player* plr);
         void SendNotOwner(Player* plr);
         void SendYouCantSpeak(Player* plr);
-        void SendModeChange(Player* plr, uint8 old_flags, uint8 new_flags);
+        void SendModeChange(Player* plr, uint8_t old_flags, uint8_t new_flags);
 
         void SendToAll(WorldPacket* data);
         void SendToAll(WorldPacket* data, Player* plr);

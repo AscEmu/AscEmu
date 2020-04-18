@@ -58,7 +58,7 @@ bool NoggenFoggerElixr(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pSpell->p_caster)
         return true;
 
-    uint32 chance = Util::getRandomUInt(2);
+    uint32_t chance = Util::getRandomUInt(2);
 
     switch (chance)
     {
@@ -278,7 +278,7 @@ bool WinterWondervolt(uint8_t /*effectIndex*/, Spell* pSpell)
     if (target == NULL || !target->isPlayer())
         return true;
 
-    uint32 outfitspells[] =
+    uint32_t outfitspells[] =
     {
         26157, // green male
         26272, // green female
@@ -286,9 +286,9 @@ bool WinterWondervolt(uint8_t /*effectIndex*/, Spell* pSpell)
         26274  // red female
     };
 
-    uint32 team = target->GetTeam();
-    uint32 gender = target->getGender();
-    uint32 spellid = 0;
+    uint32_t team = target->GetTeam();
+    uint32_t gender = target->getGender();
+    uint32_t spellid = 0;
 
     if (team == TEAM_HORDE)
         spellid = outfitspells[2 + gender];
@@ -340,7 +340,7 @@ bool MinionsOfGurok(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool PurifyBoarMeat(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    uint32 bormeat = Util::getRandomUInt(2);
+    uint32_t bormeat = Util::getRandomUInt(2);
     switch (bormeat)
     {
         case 0:
@@ -376,7 +376,7 @@ bool OrbOfTheSindorei(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
         return true;
     if (apply)
     {
-        uint32 spellid = 0;
+        uint32_t spellid = 0;
 
         if (target->getGender() == 0)
             spellid = 46355;
@@ -389,7 +389,7 @@ bool OrbOfTheSindorei(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool ScalingMountDummyAura(uint32 /*i*/, Aura* pAura, bool /*apply*/)
+bool ScalingMountDummyAura(uint32_t /*i*/, Aura* pAura, bool /*apply*/)
 {
     // Remove dummy aura on application, dummy effect will occur directly after
     pAura->Remove();
@@ -400,7 +400,7 @@ bool BigBlizzardBear(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (Player* plr = pSpell->GetPlayerTarget())
     {
-        uint32 newspell = 58997;
+        uint32_t newspell = 58997;
         if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 150)
             plr->castSpell(plr, newspell, true);
     }
@@ -412,7 +412,7 @@ bool WingedSteed(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (Player* plr = pSpell->GetPlayerTarget())
     {
-        uint32 newspell = 54726;
+        uint32_t newspell = 54726;
         if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
             newspell = 54727;
         plr->castSpell(plr, newspell, true);
@@ -425,7 +425,7 @@ bool HeadlessHorsemanMount(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (Player* plr = pSpell->GetPlayerTarget())
     {
-        uint32 newspell = 51621;
+        uint32_t newspell = 51621;
         auto pArea = plr->GetArea();
         if (pArea && (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 225 && ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
             (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpell(54197)))))
@@ -448,7 +448,7 @@ bool MagicBroomMount(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (Player* plr = pSpell->GetPlayerTarget())
     {
-        uint32 newspell = 42680;
+        uint32_t newspell = 42680;
         auto pArea = plr->GetArea();
         if (pArea && (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 225 &&
             ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
@@ -480,7 +480,7 @@ bool Invincible(uint8_t /*effectIndex*/, Spell* pSpell)
     // Apply the new aura in the 3rd effect call
     if (Player* plr = pSpell->GetPlayerTarget())
     {
-        uint32 newspell = 72281;
+        uint32_t newspell = 72281;
         auto pArea = plr->GetArea();
         if (pArea && (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 225 && ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
             (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpell(54197)))))
@@ -518,9 +518,9 @@ bool SixDemonBag(uint8_t /*effectIndex*/, Spell* s)
     if (!unitTarget || !unitTarget->isAlive())
         return false;
 
-    uint32 ClearSpellId[6] = { 8401, 8408, 930, 118, 1680, 10159 };
-    uint32 randid = Util::getRandomUInt(5);
-    uint32 spelltocast = ClearSpellId[randid];
+    uint32_t ClearSpellId[6] = { 8401, 8408, 930, 118, 1680, 10159 };
+    uint32_t randid = Util::getRandomUInt(5);
+    uint32_t spelltocast = ClearSpellId[randid];
 
     s->u_caster->castSpell(unitTarget, spelltocast, true);
 
@@ -530,7 +530,7 @@ bool SixDemonBag(uint8_t /*effectIndex*/, Spell* s)
 bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
 {
     bool check = false;
-    uint32 cloudtype = 0;
+    uint32_t cloudtype = 0;
     Creature* creature = nullptr;
 
     if (!s->p_caster)
@@ -558,8 +558,8 @@ bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
     if (!check)
         return false;
 
-    uint32 item = 0;
-    uint32 count = 0;
+    uint32_t item = 0;
+    uint32_t count = 0;
 
     count = 3 + (Util::getRandomUInt(3));
 
@@ -583,7 +583,7 @@ bool BrittleArmor(uint8_t /*effectIndex*/, Spell* s)
     if (s->u_caster == NULL)
         return false;
 
-    for (uint8 j = 0; j < 20; j++)
+    for (uint8_t j = 0; j < 20; j++)
         s->u_caster->castSpell(s->u_caster, 24575, true);
 
     return true;
@@ -612,7 +612,7 @@ bool NitroBoosts(uint8_t /*effectIndex*/, Spell* s)
     if (s->p_caster == NULL)
         return true;
 
-    uint32 engineeringskill = s->p_caster->_GetSkillLineCurrent(SKILL_ENGINEERING);
+    uint32_t engineeringskill = s->p_caster->_GetSkillLineCurrent(SKILL_ENGINEERING);
 
     if (engineeringskill >= 400)
         s->p_caster->castSpell(s->p_caster, 54861, true);
@@ -641,13 +641,13 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
     if (s->p_caster == NULL)
         return true;
 
-    uint32 spellids[] =
+    uint32_t spellids[] =
     {
         13004, // grow
         13010  // shrink
     };
 
-    uint32 chance = Util::getRandomUInt(5);
+    uint32_t chance = Util::getRandomUInt(5);
     bool malfunction = false;
 
     if (chance == 5)
@@ -661,8 +661,8 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
     }
     else
     {
-        uint32 spellindex = Util::getRandomUInt(1);
-        uint32 who = Util::getRandomUInt(3);
+        uint32_t spellindex = Util::getRandomUInt(1);
+        uint32_t who = Util::getRandomUInt(3);
 
         switch (who)
         {
@@ -751,7 +751,7 @@ bool ChampioningTabards(uint8_t /*effectIndex*/, Aura* a, bool apply)
     if (p_caster == NULL)
         return true;
 
-    uint32 Faction = a->GetSpellInfo()->getEffectMiscValue(0);
+    uint32_t Faction = a->GetSpellInfo()->getEffectMiscValue(0);
 
     if (apply)
         p_caster->SetChampioningFaction(Faction);
@@ -785,8 +785,8 @@ bool Spinning(uint8_t /*effectIndex*/, Spell* s)
     float X = p_caster->GetPositionX();
     float Y = p_caster->GetPositionY();
     float Z = p_caster->GetPositionZ();
-    uint32 mapid = p_caster->GetMapId();
-    uint32 instanceid = p_caster->GetInstanceID();
+    uint32_t mapid = p_caster->GetMapId();
+    uint32_t instanceid = p_caster->GetInstanceID();
 
     p_caster->SafeTeleport(mapid, instanceid, X, Y, Z, neworientation);
 
@@ -847,7 +847,7 @@ bool DrinkDummyAura(uint8_t /*effectIndex*/, Aura* a, bool apply)
         return true;
 
     float famount = 2.2f * (static_cast<float>(a->GetSpellInfo()->getEffectBasePoints(1)) / 5.0f);
-    int32 amount = static_cast<int32>(std::round(famount));
+    int32_t amount = static_cast<int32_t>(std::round(famount));
 
     a->EventPeriodicDrink(amount);
 
@@ -864,12 +864,12 @@ bool X53Mount(uint8_t /*effectIndex*/, Aura *a, bool apply)
 
     if (apply)
     {
-        uint32 newspell = 0;
+        uint32_t newspell = 0;
         if (Player* p = dynamic_cast<Player*>(a->GetTarget()))
         {
             if (auto area = p->GetArea())
             {
-                uint32 skill = p->_GetSkillLineCurrent(SKILL_RIDING, true);
+                uint32_t skill = p->_GetSkillLineCurrent(SKILL_RIDING, true);
 
                 if (skill >= 225 && (((area->flags & 1024) && p->GetMapId() != 571) ||
                     ((area->flags & 1024) && p->GetMapId() == 571 && p->HasSpell(54197))))
@@ -913,7 +913,7 @@ void SetupLegacyItemSpells_1(ScriptMgr* mgr)
     mgr->register_dummy_spell(8213, &CookedDeviateFish);            // Savory Deviate Delight
     mgr->register_dummy_spell(26074, &HolidayCheer);                // Holiday Cheer
     mgr->register_dummy_spell(13120, &NetOMatic);                   // Net-o-Matic
-    uint32 BanishExileIds[] = { 4130, 4131, 4132, 0 };
+    uint32_t BanishExileIds[] = { 4130, 4131, 4132, 0 };
     mgr->register_dummy_spell(BanishExileIds, &BanishExile);        // Essence of the Exile Quest
     mgr->register_dummy_spell(19938, &ForemansBlackjack);           // Lazy Peons Quest
     mgr->register_dummy_spell(39105, &NetherWraithBeacon);          // Spellfire Tailor Quest
@@ -948,7 +948,7 @@ void SetupLegacyItemSpells_1(ScriptMgr* mgr)
 
     mgr->register_dummy_spell(13006, &ShrinkRay);
 
-    uint32 championingspellids[] =
+    uint32_t championingspellids[] =
     {
         57819,
         57820,
@@ -962,7 +962,7 @@ void SetupLegacyItemSpells_1(ScriptMgr* mgr)
 
     mgr->register_dummy_aura(50493, &ListeningToMusic);
 
-    uint32 DrinkDummySpellIDs[] =
+    uint32_t DrinkDummySpellIDs[] =
     {
         430,
         431,

@@ -161,9 +161,9 @@ static inline int int32abs(const int value)
 }
 
 // fast int abs and recast to unsigned
-static inline uint32 int32abs2uint32(const int value)
+static inline uint32_t int32abs2uint32(const int value)
 {
-    return (uint32)(value ^ (value >> 31)) - (value >> 31);
+    return (uint32_t)(value ^ (value >> 31)) - (value >> 31);
 }
 
 // Fastest Method of float2int32

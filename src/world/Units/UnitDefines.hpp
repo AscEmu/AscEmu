@@ -625,7 +625,6 @@ enum EmoteType
     EMOTE_STATE_READ_CHRISTMAS          = 518
 };
 
-
 enum UnitStates
 {
     UNIT_STATE_NONE      = 0x0000,
@@ -895,7 +894,7 @@ enum AURA_CHECK_RESULT
 
 struct TransportData
 {
-    uint64 transportGuid;
+    uint64_t transportGuid;
     LocationVector relativePosition;
 };
 
@@ -903,13 +902,13 @@ struct TransportData
 // values used in .npc info command
 struct UnitFlagNames
 {
-    uint32 Flag;
+    uint32_t Flag;
     const char* Name;
 };
 
 struct UnitDynFlagNames
 {
-    uint32 Flag;
+    uint32_t Flag;
     const char* Name;
 };
 
@@ -960,7 +959,7 @@ static const UnitFlagNames UnitFlagToName[] =
     { UNIT_FLAG_UNKNOWN_32, "UNIT_FLAG_UNKNOWN_32" }
 };
 
-static uint32 numflags = sizeof(UnitFlagToName) / sizeof(UnitFlagNames);
+static uint32_t numflags = sizeof(UnitFlagToName) / sizeof(UnitFlagNames);
 
 static const UnitFlagNames UnitFlagToName2[] =
 {
@@ -985,7 +984,7 @@ static const UnitFlagNames UnitFlagToName2[] =
     { UNIT_FLAG2_ALLOW_CHEAT_SPELLS, "UNIT_FLAG2_ALLOW_CHEAT_SPELLS" }
 };
 
-static uint32 numflags2 = sizeof(UnitFlagToName2) / sizeof(UnitFlagNames);
+static uint32_t numflags2 = sizeof(UnitFlagToName2) / sizeof(UnitFlagNames);
 
 static const UnitDynFlagNames UnitDynFlagToName[] =
 {
@@ -997,7 +996,7 @@ static const UnitDynFlagNames UnitDynFlagToName[] =
     { U_DYN_FLAG_DEAD, "U_DYN_FLAG_DEAD" }
 };
 
-static uint32 numdynflags = sizeof(UnitDynFlagToName) / sizeof(UnitDynFlagNames);
+static uint32_t numdynflags = sizeof(UnitDynFlagToName) / sizeof(UnitDynFlagNames);
 
 static const char* GENDER[] =
 {
@@ -1031,7 +1030,7 @@ static const char* SHEATSTATE[] =
 
 struct UnitPvPFlagNames
 {
-    uint32 Flag;
+    uint32_t Flag;
     const char* Name;
 };
 
@@ -1042,11 +1041,11 @@ static const UnitPvPFlagNames UnitPvPFlagToName[] =
     { U_FIELD_BYTES_FLAG_SANCTUARY, "U_FIELD_BYTES_FLAG_SANCTUARY" }
 };
 
-static const uint32 numpvpflags = sizeof(UnitPvPFlagToName) / sizeof(UnitPvPFlagNames);
+static const uint32_t numpvpflags = sizeof(UnitPvPFlagToName) / sizeof(UnitPvPFlagNames);
 
 struct PetFlagNames
 {
-    uint32 Flag;
+    uint32_t Flag;
     const char* Name;
 };
 
@@ -1056,4 +1055,4 @@ static const PetFlagNames PetFlagToName[] =
     { UNIT_CAN_BE_ABANDONED, "UNIT_CAN_BE_ABANDONED" }
 };
 
-static const uint32 numpetflags = sizeof(PetFlagToName) / sizeof(PetFlagNames);
+static const uint32_t numpetflags = sizeof(PetFlagToName) / sizeof(PetFlagNames);

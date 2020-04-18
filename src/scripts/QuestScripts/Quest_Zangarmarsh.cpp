@@ -27,9 +27,9 @@ public:
 
     void onHello(Object* pObject, Player* plr) override
     {
-        uint32 entry = pObject->getEntry();
+        uint32_t entry = pObject->getEntry();
         const char* text = "";
-        uint32 TextId = 0;
+        uint32_t TextId = 0;
 
         if (entry == 17900)
         {
@@ -50,7 +50,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* casta = static_cast<Creature*>(pObject);
         switch (pObject->getEntry())
@@ -101,7 +101,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {

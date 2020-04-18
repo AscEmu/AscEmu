@@ -449,7 +449,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     /************************************************************************/
     /* Remove Spells                                                        */
     /************************************************************************/
-    uint32 flags = 0;
+    uint32_t flags = 0;
     if ((movement_info.flags & MOVEFLAG_MOTION_MASK) != 0)
         flags |= AURA_INTERRUPT_ON_MOVEMENT;
 
@@ -520,37 +520,37 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 #pragma comment(lib, "winmm.lib")
 #define DELTA_EPOCH_IN_USEC 11644473600000000ULL
 
-uint32 TimeStamp()
+uint32_t TimeStamp()
 {
     //return timeGetTime();
 
     FILETIME ft;
-    uint64 t;
+    uint64_t t;
     GetSystemTimeAsFileTime(&ft);
 
-    t = (uint64)ft.dwHighDateTime << 32;
+    t = (uint64_t)ft.dwHighDateTime << 32;
     t |= ft.dwLowDateTime;
     t /= 10;
     t -= DELTA_EPOCH_IN_USEC;
 
-    return uint32(((t / 1000000L) * 1000) + ((t % 1000000L) / 1000));
+    return uint32_t(((t / 1000000L) * 1000) + ((t % 1000000L) / 1000));
 }
 
-uint32 mTimeStamp()
+uint32_t mTimeStamp()
 {
     return timeGetTime();
 }
 
 #else
 
-uint32 TimeStamp()
+uint32_t TimeStamp()
 {
     struct timeval tp;
     gettimeofday(&tp, NULL);
     return (tp.tv_sec * 1000) + (tp.tv_usec / 1000);
 }
 
-uint32 mTimeStamp()
+uint32_t mTimeStamp()
 {
     struct timeval tp;
     gettimeofday(&tp, NULL);
@@ -648,7 +648,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     /* Update player movement state                                         */
     /************************************************************************/
 
-    uint16 opcode = recvPacket.GetOpcode();
+    uint16_t opcode = recvPacket.GetOpcode();
     switch (opcode)
     {
         case MSG_MOVE_START_FORWARD:
@@ -747,7 +747,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 #if 0
     LOG_DEBUG("=========================================================");
     LOG_DEBUG("Full movement flags: 0x%.8X", movement_info.flags);
-    uint32 z, b;
+    uint32_t z, b;
     for (z = 1, b = 1; b < 32;)
     {
         if (movement_info.flags & z)
@@ -771,8 +771,8 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     /* Calculate the timestamp of the packet we have to send out            */
     /************************************************************************/
     size_t pos = (size_t)m_MoverWoWGuid.GetNewGuidLen() + 1;
-    uint32 mstime = mTimeStamp();
-    int32 move_time;
+    uint32_t mstime = mTimeStamp();
+    int32_t move_time;
     if (m_clientTimeDelay == 0)
         m_clientTimeDelay = mstime - movement_info.time;
 
@@ -792,9 +792,9 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         {
             Player* p = static_cast<Player*>(itr);
 
-            *(uint32*)&movement_packet[pos + 6] = uint32(move_time + p->GetSession()->m_moveDelayTime);
+            *(uint32_t*)&movement_packet[pos + 6] = uint32_t(move_time + p->GetSession()->m_moveDelayTime);
 
-            p->GetSession()->OutPacket(recvPacket.GetOpcode(), uint16(recvPacket.size() + pos), movement_packet);
+            p->GetSession()->OutPacket(recvPacket.GetOpcode(), uint16_t(recvPacket.size() + pos), movement_packet);
         }
     }
 
@@ -805,7 +805,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
-        data << uint32(5);      // unknown 0
+        data << uint32_t(5);      // unknown 0
         SendPacket(&data);
     }
 
@@ -813,7 +813,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
-        data << uint32(5);      // unknown 0
+        data << uint32_t(5);      // unknown 0
         SendPacket(&data);
     }
 
@@ -837,7 +837,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
                 mover->z_axisposition = movement_info.position.z;
 
             // calculate distance fallen
-            uint32 falldistance = float2int32(mover->z_axisposition - movement_info.position.z);
+            uint32_t falldistance = float2int32(mover->z_axisposition - movement_info.position.z);
             if (mover->z_axisposition <= movement_info.position.z)
                 falldistance = 1;
             /*Safe Fall*/
@@ -852,7 +852,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
                 ((mover->getGuid() != _player->getGuid()) || (!_player->m_cheats.GodModeCheat && (UNIXTIME >= _player->m_fallDisabledUntil))))
             {
                 // 1.7% damage for each unit fallen on Z axis over 13
-                uint32 health_loss = static_cast<uint32>(mover->getHealth() * (falldistance - 12) * 0.017f);
+                uint32_t health_loss = static_cast<uint32_t>(mover->getHealth() * (falldistance - 12) * 0.017f);
 
                 if (health_loss >= mover->getHealth())
                     health_loss = mover->getHealth();
@@ -945,7 +945,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     /************************************************************************/
     /* Remove Spells                                                        */
     /************************************************************************/
-    uint32 flags = 0;
+    uint32_t flags = 0;
     if ((movement_info.flags & MOVEFLAG_MOTION_MASK) != 0)
         flags |= AURA_INTERRUPT_ON_MOVEMENT;
 
@@ -1154,8 +1154,8 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         ///* Calculate the timestamp of the packet we have to send out            */
         ///************************************************************************/
         //size_t pos = (size_t)m_MoverWoWGuid.GetNewGuidLen() + 1;
-        //uint32 mstime = Util::getMSTime();
-        //int32 move_time;
+        //uint32_t mstime = Util::getMSTime();
+        //int32_t move_time;
         //if (m_clientTimeDelay == 0)
         //    m_clientTimeDelay = mstime - movement_info.time;
 
@@ -1176,9 +1176,9 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 
         //        Player* p = static_cast< Player* >((*itr));
 
-        //        *(uint32*)&movement_packet[pos + 6] = uint32(move_time + p->GetSession()->m_moveDelayTime);
+        //        *(uint32_t*)&movement_packet[pos + 6] = uint32_t(move_time + p->GetSession()->m_moveDelayTime);
 
-        //        p->GetSession()->OutPacket(recvPacket.GetOpcode(), uint16(recvPacket.size() + pos), movement_packet);
+        //        p->GetSession()->OutPacket(recvPacket.GetOpcode(), uint16_t(recvPacket.size() + pos), movement_packet);
 
         //    }
         //}
@@ -1190,7 +1190,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //{
         //    WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         //    data << _player->GetNewGUID();
-        //    data << uint32(5);      // unknown 0
+        //    data << uint32_t(5);      // unknown 0
         //    SendPacket(&data);
         //}
 
@@ -1198,7 +1198,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //{
         //    WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         //    data << _player->GetNewGUID();
-        //    data << uint32(5);      // unknown 0
+        //    data << uint32_t(5);      // unknown 0
         //    SendPacket(&data);
         //}
 
@@ -1222,7 +1222,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //            mover->z_axisposition = movement_info.position.z;
 
         //        // calculate distance fallen
-        //        uint32 falldistance = float2int32(mover->z_axisposition - movement_info.position.z);
+        //        uint32_t falldistance = float2int32(mover->z_axisposition - movement_info.position.z);
         //        if (mover->z_axisposition <= movement_info.position.z)
         //            falldistance = 1;
         //        /*Safe Fall*/
@@ -1237,7 +1237,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //            ((mover->GetGUID() != _player->GetGUID()) || (!_player->GodModeCheat && (UNIXTIME >= _player->m_fallDisabledUntil))))
         //        {
         //            // 1.7% damage for each unit fallen on Z axis over 13
-        //            uint32 health_loss = static_cast<uint32>(mover->GetHealth() * (falldistance - 12) * 0.017f);
+        //            uint32_t health_loss = static_cast<uint32_t>(mover->GetHealth() * (falldistance - 12) * 0.017f);
 
         //            if (health_loss >= mover->GetHealth())
         //                health_loss = mover->GetHealth();

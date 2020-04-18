@@ -29,15 +29,14 @@
 #include "Objects/ObjectMgr.h"
 #include "Spell/SpellMgr.h"
 
-const uint32 ARENA_PREPARATION = 32727;
+const uint32_t ARENA_PREPARATION = 32727;
 
-const uint32 GREEN_TEAM = 0;
-const uint32 GOLD_TEAM = 1;
+const uint32_t GREEN_TEAM = 0;
+const uint32_t GOLD_TEAM = 1;
 
-Arena::Arena(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : CBattleground(mgr, id, lgroup, t)
+Arena::Arena(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) : CBattleground(mgr, id, lgroup, t)
 {
-
-    for (uint8 i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < 2; i++)
     {
         m_players[i].clear();
         m_pendPlayers[i].clear();
@@ -94,7 +93,7 @@ Arena::Arena(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per
 
 Arena::~Arena()
 {
-    for (uint8 i = 0; i < 2; ++i)
+    for (uint8_t i = 0; i < 2; ++i)
     {
         // buffs may not be spawned, so delete them if they're not
         if (m_buffs[i] && m_buffs[i]->IsInWorld() == false)
@@ -119,9 +118,9 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
     if (rated_match)
     {
         m_deltaRating[0] = m_deltaRating[1] = 0;
-        for (uint8 i = 0; i < 2; ++i)
+        for (uint8_t i = 0; i < 2; ++i)
         {
-            uint8 j = i ? 0 : 1; // opposing side
+            uint8_t j = i ? 0 : 1; // opposing side
             bool outcome;
 
             if (m_teams[i] == NULL || m_teams[j] == NULL)
@@ -136,9 +135,9 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
 
             m_deltaRating[i] = CalcDeltaRating(m_teams[i]->m_stats.rating, m_teams[j]->m_stats.rating, outcome);
             m_teams[i]->m_stats.rating += m_deltaRating[i];
-            if (static_cast<int32>(m_teams[i]->m_stats.rating) < 0) m_teams[i]->m_stats.rating = 0;
+            if (static_cast<int32_t>(m_teams[i]->m_stats.rating) < 0) m_teams[i]->m_stats.rating = 0;
 
-            for (std::set<uint32>::iterator itr = m_players2[i].begin(); itr != m_players2[i].end(); ++itr)
+            for (std::set<uint32_t>::iterator itr = m_players2[i].begin(); itr != m_players2[i].end(); ++itr)
             {
                 PlayerInfo* info = sObjectMgr.GetPlayerInfo(*itr);
                 if (info)
@@ -148,7 +147,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
                     if (tp != NULL)
                     {
                         tp->PersonalRating += CalcDeltaRating(tp->PersonalRating, m_teams[j]->m_stats.rating, outcome);
-                        if (static_cast<int32>(tp->PersonalRating) < 0)
+                        if (static_cast<int32_t>(tp->PersonalRating) < 0)
                             tp->PersonalRating = 0;
 
                         if (outcome)
@@ -173,7 +172,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
     sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
     sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-    for (uint8 i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < 2; i++)
     {
         bool victorious = (i == winningTeam);
         std::set<Player*>::iterator itr = m_players[i].begin();
@@ -200,7 +199,7 @@ void Arena::OnAddPlayer(Player* plr)
     plr->m_deathVision = true;
 
     // remove all buffs (exclude talents, include flasks)
-    for (uint32 x = MAX_REMOVABLE_AURAS_START; x < MAX_REMOVABLE_AURAS_END; x++)
+    for (uint32_t x = MAX_REMOVABLE_AURAS_START; x < MAX_REMOVABLE_AURAS_END; x++)
     {
         if (plr->m_auras[x])
         {
@@ -310,7 +309,7 @@ void Arena::HookOnShadowSight()
 void Arena::OnStart()
 {
     // remove arena readiness buff
-    for (uint8 i = 0; i < 2; ++i)
+    for (uint8_t i = 0; i < 2; ++i)
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
@@ -332,7 +331,7 @@ void Arena::OnStart()
         }
     }
 
-    for (uint8 i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < 2; i++)
     {
         if (m_teams[i] == NULL)
             continue;
@@ -380,7 +379,7 @@ void Arena::UpdatePlayerCounts()
         this->EndBattleground(TEAM_HORDE);
 }
 
-uint32 Arena::CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outcome)
+uint32_t Arena::CalcDeltaRating(uint32_t oldRating, uint32_t opponentRating, bool outcome)
 {
     double power = (int)(opponentRating - oldRating) / 400.0f;
     double divisor = pow(((double)(10.0)), power);
@@ -397,14 +396,14 @@ uint32 Arena::CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outc
     return long2int32(32.0 * multiplier);
 }
 
-uint32 Arena::GetTeamFaction(uint32 team)
+uint32_t Arena::GetTeamFaction(uint32_t team)
 {
     std::set< Player* >::iterator itr = m_players[team].begin();
     Player* p = *itr;
     return p->getTeam();
 }
 
-LocationVector Arena::GetStartingCoords(uint32 /*Team*/)
+LocationVector Arena::GetStartingCoords(uint32_t /*Team*/)
 {
     return LocationVector(0, 0, 0, 0);
 }
@@ -414,9 +413,9 @@ bool Arena::HookHandleRepop(Player* /*plr*/)
     return false;
 }
 
-void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
+void Arena::HookOnAreaTrigger(Player* plr, uint32_t id)
 {
-    int32 buffslot = -1;
+    int32_t buffslot = -1;
 
     ARCEMU_ASSERT(plr != NULL);
 

@@ -32,12 +32,12 @@ class BigNumber
     public:
         BigNumber();
         BigNumber(const BigNumber & bn);
-        BigNumber(uint32);
+        BigNumber(uint32_t);
         ~BigNumber();
 
-        void SetDword(uint32);
-        void SetQword(uint64);
-        void SetBinary(const uint8* bytes, int len);
+        void SetDword(uint32_t);
+        void SetQword(uint64_t);
+        void SetBinary(const uint8_t* bytes, int len);
         void SetHexStr(const char* str);
 
         void SetRand(int numbits);
@@ -82,17 +82,17 @@ class BigNumber
 
         struct bignum_st* BN() { return _bn; }
 
-        uint32 AsDword();
-        uint8* AsByteArray();
+        uint32_t AsDword();
+        uint8_t* AsByteArray();
         ByteBuffer AsByteBuffer();
-        std::vector<uint8> AsByteVector();
+        std::vector<uint8_t> AsByteVector();
 
         const char* AsHexStr();
         const char* AsDecStr();
 
     private:
         struct bignum_st* _bn;
-        uint8* _array;
+        uint8_t* _array;
 };
 
 #endif      //_AUTH_BIGNUMBER_H

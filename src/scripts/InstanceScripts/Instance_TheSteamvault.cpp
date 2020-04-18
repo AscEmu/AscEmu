@@ -77,7 +77,7 @@ class SteamriggerMechanicAI : public CreatureAIScript
         getCreature()->GetAIInterface()->SetUnitToFollowAngle(0.0f);
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t /*fAmount*/) override
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
     }
@@ -185,7 +185,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
         if ((getCreature()->getHealthPct() <= 75 && GnomeCounter == 0) || (getCreature()->getHealthPct() <= 50 && GnomeCounter == 1) || (getCreature()->getHealthPct() <= 25 && GnomeCounter == 2))
         {
             Unit* Gnome = NULL;
-            for (uint8 i = 0; i < 3; i++)
+            for (uint8_t i = 0; i < 3; i++)
             {
                 Gnome = spawnCreature(CN_STEAMRIGGER_MECHANIC, SpawnCoords[i].x, SpawnCoords[i].y, SpawnCoords[i].z, SpawnCoords[i].o, getCreature()->getFactionTemplate());
                 if (Gnome)
@@ -204,7 +204,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
 
 protected:
 
-    uint8 GnomeCounter;
+    uint8_t GnomeCounter;
 };
 
 
@@ -279,7 +279,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        RagePhaseTimer = (uint32)time(NULL) + Util::getRandomUInt(15) + 10;
+        RagePhaseTimer = (uint32_t)time(NULL) + Util::getRandomUInt(15) + 10;
         DistillerNumber = 0;
         EnrageTimer = 0;
         RagePhase = 0;
@@ -320,7 +320,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        uint32 t = (uint32)time(NULL);
+        uint32_t t = (uint32_t)time(NULL);
         if (t > RagePhaseTimer)
         {
             if (EnrageTimer != 0)
@@ -411,7 +411,7 @@ class WarlordKalitreshAI : public CreatureAIScript
         Unit* pDistiller = NULL;
         Unit* Unit2Check = NULL;
 
-        for (uint8 i = 1; i < 5; i++)
+        for (uint8_t i = 1; i < 5; i++)
         {
             Unit2Check = getNearestCreature(Distiller[i].x, Distiller[i].y, Distiller[i].z, 17954);
             if (!Unit2Check)
@@ -434,10 +434,10 @@ class WarlordKalitreshAI : public CreatureAIScript
 
 protected:
 
-    uint32 DistillerNumber;
-    uint32 RagePhaseTimer;
-    uint32 EnrageTimer;
-    uint32 RagePhase;
+    uint32_t DistillerNumber;
+    uint32_t RagePhaseTimer;
+    uint32_t EnrageTimer;
+    uint32_t RagePhase;
 };
 
 /** \todo Check all spells/creatures and evenatually balance them (if needed!)

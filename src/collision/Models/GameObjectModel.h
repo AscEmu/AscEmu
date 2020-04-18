@@ -40,8 +40,8 @@ class GameObjectModelOwnerBase
 {
 public:
     virtual bool IsSpawned() const { return false; }
-    virtual uint32 GetDisplayId() const { return 0; }
-    virtual uint32 GetPhaseMask() const { return 0; }
+    virtual uint32_t GetDisplayId() const { return 0; }
+    virtual uint32_t GetPhaseMask() const { return 0; }
     virtual G3D::Vector3 GetPosition() const { return G3D::Vector3::zero(); }
     virtual float GetOrientation() const { return 0.0f; }
     virtual float GetScale() const { return 1.0f; }
@@ -62,11 +62,11 @@ public:
 
     /**    Enables\disables collision. */
     void disable() { phasemask = 0;}
-    void enable(uint32 ph_mask) { phasemask = ph_mask;}
+    void enable(uint32_t ph_mask) { phasemask = ph_mask;}
 
     bool isEnabled() const {return phasemask != 0;}
 
-    bool intersectRay(const G3D::Ray& Ray, float& MaxDist, bool StopAtFirstHit, uint32 ph_mask) const;
+    bool intersectRay(const G3D::Ray& Ray, float& MaxDist, bool StopAtFirstHit, uint32_t ph_mask) const;
 
     static GameObjectModel* Create(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath);
 
@@ -75,7 +75,7 @@ public:
 private:
     bool initialize(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath);
 
-    uint32 phasemask;
+    uint32_t phasemask;
     G3D::AABox iBound;
     G3D::Matrix3 iInvRot;
     G3D::Vector3 iPos;

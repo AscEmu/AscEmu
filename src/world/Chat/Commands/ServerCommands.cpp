@@ -12,8 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 //.server info
 bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
-    uint16 online_gm = 0;
-    uint16 online_count = 0;
+    uint16_t online_gm = 0;
+    uint16_t online_count = 0;
     float latency_avg = 0;
 
     sObjectMgr._playerslock.AcquireReadLock();
@@ -39,7 +39,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
     }
     sObjectMgr._playerslock.ReleaseReadLock();
 
-    uint32 active_sessions = uint32(sWorld.getSessionCount());
+    uint32_t active_sessions = uint32_t(sWorld.getSessionCount());
 
     GreenSystemMessage(m_session, "Server Revision: |r%sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
     GreenSystemMessage(m_session, "Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
@@ -116,7 +116,7 @@ bool ChatHandler::HandleServerSaveCommand(const char* args, WorldSession* m_sess
 bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto start_time = Util::TimeNow();
-    uint32 online_count = 0;
+    uint32_t online_count = 0;
 
     sObjectMgr._playerslock.AcquireReadLock();
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
@@ -162,7 +162,7 @@ bool ChatHandler::HandleServerSetMotdCommand(const char* args, WorldSession* m_s
 //.server shutdown
 bool ChatHandler::HandleServerShutdownCommand(const char* args, WorldSession* m_session)
 {
-    uint32 shutdowntime;
+    uint32_t shutdowntime;
     if (!args)
         shutdowntime = 30;
     else
@@ -227,7 +227,7 @@ bool ChatHandler::HandleServerCancelShutdownCommand(const char* /*args*/, WorldS
 //.server restart
 bool ChatHandler::HandleServerRestartCommand(const char* args, WorldSession* m_session)
 {
-    uint32 shutdowntime;
+    uint32_t shutdowntime;
     if (!args)
         shutdowntime = 30;
     else

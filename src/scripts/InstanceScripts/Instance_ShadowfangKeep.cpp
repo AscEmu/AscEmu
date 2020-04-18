@@ -13,25 +13,25 @@ This file is released under the MIT license. See README-MIT for more information
 class ShadowfangKeepInstance : public InstanceScript
 {
     // Gameobjects low guids
-    uint32 go_leftCell_GUID;
-    uint32 go_middleCell_GUID;
-    uint32 go_rightCell_GUID;
-    uint32 go_arugalsLair_GUID;
-    uint32 go_sorcererGate_GUID;
-    uint32 go_leftCellLever_GUID;
-    uint32 go_middleCellLever_GUID;
-    uint32 go_rightCellLever_GUID;
-    uint32 go_courtyarDoor_GUID;
+    uint32_t go_leftCell_GUID;
+    uint32_t go_middleCell_GUID;
+    uint32_t go_rightCell_GUID;
+    uint32_t go_arugalsLair_GUID;
+    uint32_t go_sorcererGate_GUID;
+    uint32_t go_leftCellLever_GUID;
+    uint32_t go_middleCellLever_GUID;
+    uint32_t go_rightCellLever_GUID;
+    uint32_t go_courtyarDoor_GUID;
 
     // Creatures low guids
-    uint32 npc_ashcrombe_GUID;
-    uint32 npc_adamant_GUID;
+    uint32_t npc_ashcrombe_GUID;
+    uint32_t npc_adamant_GUID;
 
     // Nandos event related
-    std::list<uint32 /*guid*/> nandos_summons;
+    std::list<uint32_t /*guid*/> nandos_summons;
 
     // Encounters data
-    uint32 m_encounterData[INDEX_MAX];
+    uint32_t m_encounterData[INDEX_MAX];
 
 public:
 
@@ -61,7 +61,7 @@ public:
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ShadowfangKeepInstance(pMapMgr); }
 
-    void SetLocaleInstanceData(uint32 /*pType*/, uint32 pIndex, uint32 pData)
+    void SetLocaleInstanceData(uint32_t /*pType*/, uint32_t pIndex, uint32_t pData)
     {
         if (pIndex >= INDEX_MAX)
             return;
@@ -89,7 +89,7 @@ public:
                 // Despawn all summons on fail or on boos death
                 if (pData == InvalidState || pData == Finished)
                 {
-                    for (std::list<uint32>::iterator itr = nandos_summons.begin(); itr != nandos_summons.end();)
+                    for (std::list<uint32_t>::iterator itr = nandos_summons.begin(); itr != nandos_summons.end();)
                     {
                         if (Creature* pCreature = GetInstance()->GetCreature(*itr))
                         {
@@ -185,7 +185,7 @@ public:
         m_encounterData[pIndex] = pData;
     }
 
-    uint32 GetInstanceData(uint32 /*pType*/, uint32 pIndex)
+    uint32_t GetInstanceData(uint32_t /*pType*/, uint32_t pIndex)
     {
         return pIndex >= INDEX_MAX ? 0 : m_encounterData[pIndex];
     }
@@ -462,7 +462,7 @@ class ArugalAI : public CreatureAIScript
 
 protected:
 
-    uint32 stage;
+    uint32_t stage;
     ShadowfangKeepInstance* SFK_Instance;
 };
 
@@ -475,7 +475,7 @@ class AdamantAI : public CreatureAIScript
     {
         SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
 
-        for (uint8 i = 0; i < adamantWpCount; ++i)
+        for (uint8_t i = 0; i < adamantWpCount; ++i)
         {
             float waitTime = 0;
             float distanceX = 0;
@@ -500,7 +500,7 @@ class AdamantAI : public CreatureAIScript
             }
             waitTime = 1000 * std::abs(DeathstalkerAdamantWPS[i].wp_flag == Movement::WP_MOVE_TYPE_WALK ? distance / walkSpeed : distance / runSpeed);
 
-            AddWaypoint(CreateWaypoint(i + 1, static_cast<uint32>(waitTime), DeathstalkerAdamantWPS[i].wp_flag, DeathstalkerAdamantWPS[i].wp_location));
+            AddWaypoint(CreateWaypoint(i + 1, static_cast<uint32_t>(waitTime), DeathstalkerAdamantWPS[i].wp_flag, DeathstalkerAdamantWPS[i].wp_location));
         }
 
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -509,7 +509,7 @@ class AdamantAI : public CreatureAIScript
         pCreature->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -582,7 +582,7 @@ class AdamantAI : public CreatureAIScript
 
 protected:
 
-    uint32 stage;
+    uint32_t stage;
     ShadowfangKeepInstance* SFK_instance;
 
 public:
@@ -609,7 +609,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         if (Id == 1)
         {
@@ -638,7 +638,7 @@ class AshcrombeAI : public CreatureAIScript
     {
         SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
 
-        for (uint8 i = 0; i < ashcrombeWpCount; ++i)
+        for (uint8_t i = 0; i < ashcrombeWpCount; ++i)
         {
             float waitTime = 0;
             float distanceX = 0;
@@ -659,7 +659,7 @@ class AshcrombeAI : public CreatureAIScript
                 distance = std::sqrt(distanceX + distanceY);
             }
             waitTime = 300.0f + (1000 * std::abs(distance / walkSpeed));
-            AddWaypoint(CreateWaypoint(i + 1, static_cast<uint32>(waitTime), Movement::WP_MOVE_TYPE_WALK, SorcererAshcrombeWPS[i]));
+            AddWaypoint(CreateWaypoint(i + 1, static_cast<uint32_t>(waitTime), Movement::WP_MOVE_TYPE_WALK, SorcererAshcrombeWPS[i]));
         }
 
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -669,7 +669,7 @@ class AshcrombeAI : public CreatureAIScript
         pCreature->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 10)
         {
@@ -748,7 +748,7 @@ class AshcrombeAI : public CreatureAIScript
 
 protected:
 
-    uint32 stage;
+    uint32_t stage;
     ShadowfangKeepInstance* SFK_instance;
 
     // Used to say text after Adamant, after boss kill
@@ -776,7 +776,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         if (Id == 1)
         {
@@ -861,7 +861,7 @@ class RethilgoreAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(RethilgoreAI);
 
-    const uint32 SPELL_SOUL_DRAIN = 7295;
+    const uint32_t SPELL_SOUL_DRAIN = 7295;
 
     explicit RethilgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -874,7 +874,7 @@ class NandosAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(NandosAI);
 
-    enum NandosAISpells : uint32
+    enum NandosAISpells : uint32_t
     {
         SPELL_CALL_BLEAK_WORG        = 7487,
         SPELL_CALL_SLAVERING_WORG    = 7488,
@@ -951,9 +951,9 @@ class NandosAI : public CreatureAIScript
 protected:
 
     ShadowfangKeepInstance* SFK_instance;
-    uint32 sCallBleakWorg_Timer;
-    uint32 sCallSlaveringWorg_Timer;
-    uint32 sCallLupineHorror_Timer;
+    uint32_t sCallBleakWorg_Timer;
+    uint32_t sCallSlaveringWorg_Timer;
+    uint32_t sCallLupineHorror_Timer;
 
     CreatureAISpells* sCallBleakWord;
     CreatureAISpells* sCallSlaveringWorg;
@@ -969,7 +969,7 @@ class BaronSilverlaineAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BaronSilverlaineAI);
 
-    const uint32 SPELL_VEIL_OF_SHADOW = 7068;
+    const uint32_t SPELL_VEIL_OF_SHADOW = 7068;
 
     explicit BaronSilverlaineAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -982,7 +982,7 @@ class BlindWatcherAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BlindWatcherAI);
 
-    enum ODO_THE_BLINDWATCHER_SPELLS : uint32
+    enum ODO_THE_BLINDWATCHER_SPELLS : uint32_t
     {
         ODO_HOWLING_RAGE1 = 7481,
         ODO_HOWLING_RAGE2 = 7483,
@@ -1040,7 +1040,7 @@ class FenrusAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FenrusAI);
 
-    const uint32 SPELL_TOXIC_SALIVA = 7125;
+    const uint32_t SPELL_TOXIC_SALIVA = 7125;
 
     explicit FenrusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -1053,7 +1053,7 @@ class ArugalBossAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ArugalBossAI);
 
-    enum Arugal_Boss_Spells : uint32
+    enum Arugal_Boss_Spells : uint32_t
     {
         SPELL_VOID_BOLT                 = 7588,
         SPELL_SHADOW_PORT_UPPER_LEDGE   = 7587,
@@ -1063,7 +1063,7 @@ class ArugalBossAI : public CreatureAIScript
         SPELL_ARUGALS_CURSE             = 7621
     };
 
-    enum ArugalLoc : uint8
+    enum ArugalLoc : uint8_t
     {
         ARUGAL_LOC_LEDGE        = 0,    // Arugal's base spawn location
         ARUGAL_LOC_UPPER_LEDGE  = 1,    // Room corner
@@ -1088,7 +1088,7 @@ class ArugalBossAI : public CreatureAIScript
         originalRegen = getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA];
     }
 
-    void OnCastSpell(uint32 spellId) override
+    void OnCastSpell(uint32_t spellId) override
     {
         if (spellId == SPELL_ARUGALS_CURSE)
         {
@@ -1119,7 +1119,7 @@ class ArugalBossAI : public CreatureAIScript
         Reset();
     }
 
-    void FenrusEvent(uint32 pStage)
+    void FenrusEvent(uint32_t pStage)
     {
         switch (pStage)
         {
@@ -1137,7 +1137,7 @@ class ArugalBossAI : public CreatureAIScript
                 }
 
                 // Spawn Arugal's Voidwalkers
-                for (uint8 x = 0; x < ArugalVoidCount; x++)
+                for (uint8_t x = 0; x < ArugalVoidCount; x++)
                 {
                     if (CreatureAIScript* voidwalker = spawnCreatureAndGetAIScript(CN_VOIDWALKER, voidwalkerSpawns[x].x, voidwalkerSpawns[x].y, voidwalkerSpawns[x].z, voidwalkerSpawns[x].o))
                     {
@@ -1209,12 +1209,12 @@ class ArugalBossAI : public CreatureAIScript
 
 protected:
 
-    uint8 stage;
-    uint8 arugalPosition;
+    uint8_t stage;
+    uint8_t arugalPosition;
     ShadowfangKeepInstance* SFK_instance;
     CreatureAISpells* sVoidBolt;
 
-    uint32 aiUpdateOriginal;
+    uint32_t aiUpdateOriginal;
     float originalRegen;
 };
 
@@ -1223,7 +1223,7 @@ class RazorclawTheButcherAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(RazorclawTheButcherAI);
 
-    const uint32 SPELL_BUTCHER_DRAIN = 7485;
+    const uint32_t SPELL_BUTCHER_DRAIN = 7485;
 
     explicit RazorclawTheButcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -1237,7 +1237,7 @@ class RazorclawTheButcherAI : public CreatureAIScript
 // Creature entry: 3866
 class VileBatAI : public CreatureAIScript
 {
-    enum VileBatSpells : uint32
+    enum VileBatSpells : uint32_t
     {
         SPELL_DIVING_SWEEP  = 7145,
         SPELL_DISARM        = 6713
@@ -1256,7 +1256,7 @@ class BloodSeekerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BloodSeekerAI);
 
-    const uint32 SPELL_EXPOSE_WEAKNESS = 7140;
+    const uint32_t SPELL_EXPOSE_WEAKNESS = 7140;
 
     explicit BloodSeekerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -1349,7 +1349,7 @@ class ShadowfangRagetoothAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShadowfangRagetoothAI);
 
-    const uint32 SPELL_WILD_RAGE = 7072;
+    const uint32_t SPELL_WILD_RAGE = 7072;
 
     ShadowfangRagetoothAI(Creature* pCreature) : CreatureAIScript(pCreature), sWildRageCasted(false)
     {

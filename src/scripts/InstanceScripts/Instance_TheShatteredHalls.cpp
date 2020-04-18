@@ -291,8 +291,8 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
         GrandWarlock = getNearestCreature(178.811996f, 292.377991f, -8.190210f, CN_GRAND_WARLOCK_NETHEKURSE);
         if (GrandWarlock)    // any emotes needed?
         {
-            uint32 Counter = 0;
-            for (uint8 i = 0; i < 3; i++)
+            uint32_t Counter = 0;
+            for (uint8_t i = 0; i < 3; i++)
             {
                 Creature* Servant = NULL;
                 Servant = getNearestCreature(Darkcasters[i].x, Darkcasters[i].y, Darkcasters[i].z, CN_SHADOWMOON_DARKCASTER);
@@ -559,10 +559,10 @@ class WarbringerOmroggAI : public CreatureAIScript
 
     CreatureAIScript* mLeftHead;
     CreatureAIScript* mRightHead;
-    int32 mAggroShiftTimer;
-    uint32 mBlastWaveTimer;
-    uint32 mSpeechTimer;
-    int32 mSpeechId;
+    int32_t mAggroShiftTimer;
+    uint32_t mBlastWaveTimer;
+    uint32_t mSpeechTimer;
+    int32_t mSpeechId;
     CreatureAISpells* mBlastWave;
 };
 

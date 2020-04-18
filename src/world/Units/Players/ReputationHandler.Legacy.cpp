@@ -28,7 +28,7 @@
 #include "Objects/ObjectMgr.h"
 #include "ReputationHandler.hpp"
 
-Standing Player::GetReputationRankFromStanding(int32 Standing_)
+Standing Player::GetReputationRankFromStanding(int32_t Standing_)
 {
     if (Standing_ >= 42000)
         return STANDING_EXALTED;
@@ -47,14 +47,14 @@ Standing Player::GetReputationRankFromStanding(int32 Standing_)
     return STANDING_HATED;
 }
 
-inline bool CanToggleAtWar(uint8 flag) { return (flag & FACTION_FLAG_DISABLE_ATWAR) == 0; }
-inline bool AtWar(uint8 flag) { return (flag & FACTION_FLAG_AT_WAR) != 0; }
-inline bool ForcedInvisible(uint8 flag) { return (flag & FACTION_FLAG_FORCED_INVISIBLE) != 0; }
-inline bool Visible(uint8 flag) { return (flag & FACTION_FLAG_VISIBLE) != 0; }
-inline bool Hidden(uint8 flag) { return (flag & FACTION_FLAG_HIDDEN) != 0; }
-inline bool Inactive(uint8 flag) { return (flag & FACTION_FLAG_INACTIVE) != 0; }
+inline bool CanToggleAtWar(uint8_t flag) { return (flag & FACTION_FLAG_DISABLE_ATWAR) == 0; }
+inline bool AtWar(uint8_t flag) { return (flag & FACTION_FLAG_AT_WAR) != 0; }
+inline bool ForcedInvisible(uint8_t flag) { return (flag & FACTION_FLAG_FORCED_INVISIBLE) != 0; }
+inline bool Visible(uint8_t flag) { return (flag & FACTION_FLAG_VISIBLE) != 0; }
+inline bool Hidden(uint8_t flag) { return (flag & FACTION_FLAG_HIDDEN) != 0; }
+inline bool Inactive(uint8_t flag) { return (flag & FACTION_FLAG_INACTIVE) != 0; }
 
-inline bool SetFlagAtWar(uint8 & flag, bool set)
+inline bool SetFlagAtWar(uint8_t & flag, bool set)
 {
     if (set && !AtWar(flag))
         flag |= FACTION_FLAG_AT_WAR;
@@ -66,7 +66,7 @@ inline bool SetFlagAtWar(uint8 & flag, bool set)
     return true;
 }
 
-inline bool SetFlagVisible(uint8 & flag, bool set)
+inline bool SetFlagVisible(uint8_t & flag, bool set)
 {
     if (ForcedInvisible(flag) || Hidden(flag))
         return false;
@@ -80,7 +80,7 @@ inline bool SetFlagVisible(uint8 & flag, bool set)
     return true;
 }
 
-inline bool SetFlagInactive(uint8 & flag, bool set)
+inline bool SetFlagInactive(uint8_t & flag, bool set)
 {
     if (set && !Inactive(flag))
         flag |= FACTION_FLAG_INACTIVE;
@@ -92,12 +92,12 @@ inline bool SetFlagInactive(uint8 & flag, bool set)
     return true;
 }
 
-inline bool RankChanged(int32 Standing, int32 Change)
+inline bool RankChanged(int32_t Standing, int32_t Change)
 {
     return (Player::GetReputationRankFromStanding(Standing) != Player::GetReputationRankFromStanding(Standing + Change));
 }
 
-inline bool RankChangedFlat(int32 Standing, int32 NewStanding)
+inline bool RankChangedFlat(int32_t Standing, int32_t NewStanding)
 {
     return (Player::GetReputationRankFromStanding(Standing) != Player::GetReputationRankFromStanding(NewStanding));
 }
@@ -110,7 +110,7 @@ void Player::smsg_InitialFactions()
     uint32_t a = 0;
 
     WorldPacket data(SMSG_INITIALIZE_FACTIONS, factionCount * (1 + 4) + 32);
-    for (uint32 i = 0; i < 128; ++i)
+    for (uint32_t i = 0; i < 128; ++i)
     {
         FactionReputation* rep = reputationByListId[i];
         if (rep == nullptr)
@@ -139,15 +139,15 @@ void Player::smsg_InitialFactions()
     data.append(buffer);
 #else
     WorldPacket data(SMSG_INITIALIZE_FACTIONS, 764);
-    data << uint32(128);
+    data << uint32_t(128);
     FactionReputation* rep;
-    for (uint8 i = 0; i < 128; ++i)
+    for (uint8_t i = 0; i < 128; ++i)
     {
         rep = reputationByListId[i];
         if (rep == NULL)
         {
-            data << uint8(0);
-            data << uint32(0);
+            data << uint8_t(0);
+            data << uint32_t(0);
         }
         else
         {
@@ -162,14 +162,14 @@ void Player::smsg_InitialFactions()
 void Player::_InitialReputation()
 {
     DBC::Structures::FactionEntry const* f;
-    for (uint32 i = 0; i < sFactionStore.GetNumRows(); i++)
+    for (uint32_t i = 0; i < sFactionStore.GetNumRows(); i++)
     {
         f = sFactionStore.LookupEntry(i);
         AddNewFaction(f, 0, true);
     }
 }
 
-int32 Player::GetStanding(uint32 Faction)
+int32_t Player::GetStanding(uint32_t Faction)
 {
     ReputationMap::iterator itr = m_reputation.find(Faction);
     if (itr != m_reputation.end())
@@ -177,7 +177,7 @@ int32 Player::GetStanding(uint32 Faction)
     return 0;
 }
 
-int32 Player::GetBaseStanding(uint32 Faction)
+int32_t Player::GetBaseStanding(uint32_t Faction)
 {
     ReputationMap::iterator itr = m_reputation.find(Faction);
     if (itr != m_reputation.end())
@@ -185,12 +185,12 @@ int32 Player::GetBaseStanding(uint32 Faction)
     return 0;
 }
 
-void Player::SetStanding(uint32 Faction, int32 Value)
+void Player::SetStanding(uint32_t Faction, int32_t Value)
 {
-    const int32 minReputation = -42000;      //   0/36000 Hated
-    const int32 exaltedReputation = 42000;   //   0/1000  Exalted
-    const int32 maxReputation = 42999;       // 999/1000  Exalted
-    int32 newValue = Value;
+    const int32_t minReputation = -42000;      //   0/36000 Hated
+    const int32_t exaltedReputation = 42000;   //   0/1000  Exalted
+    const int32_t maxReputation = 42999;       // 999/1000  Exalted
+    int32_t newValue = Value;
     DBC::Structures::FactionEntry const* f = sFactionStore.LookupEntry(Faction);
     if (f == NULL || f->RepListId < 0)
         return;
@@ -240,7 +240,7 @@ void Player::SetStanding(uint32 Faction, int32 Value)
     }
 }
 
-Standing Player::GetStandingRank(uint32 Faction)
+Standing Player::GetStandingRank(uint32_t Faction)
 {
     return Standing(GetReputationRankFromStanding(GetStanding(Faction)));
 }
@@ -255,18 +255,18 @@ bool Player::IsHostileBasedOnReputation(DBC::Structures::FactionEntry const* dbc
         return false;
 
     // forced reactions take precedence
-    std::map<uint32, uint32>::iterator itr = m_forcedReactions.find(dbc->ID);
+    std::map<uint32_t, uint32_t>::iterator itr = m_forcedReactions.find(dbc->ID);
     if (itr != m_forcedReactions.end())
         return (itr->second <= STANDING_HOSTILE);
 
     return (AtWar(rep->flag) || GetReputationRankFromStanding(rep->standing) <= STANDING_HOSTILE);
 }
 
-void Player::ModStanding(uint32 Faction, int32 Value)
+void Player::ModStanding(uint32_t Faction, int32_t Value)
 {
-    const int32 minReputation = -42000;      //   0/36000 Hated
-    const int32 exaltedReputation = 42000;   //   0/1000  Exalted
-    const int32 maxReputation = 42999;       // 999/1000  Exalted
+    const int32_t minReputation = -42000;      //   0/36000 Hated
+    const int32_t exaltedReputation = 42000;   //   0/1000  Exalted
+    const int32_t maxReputation = 42999;       // 999/1000  Exalted
 
     // WE ARE THE CHAMPIONS MY FRIENDS! WE KEEP ON FIGHTING 'TILL THE END!
     //
@@ -276,7 +276,7 @@ void Player::ModStanding(uint32 Faction, int32 Value)
         Faction = ChampioningFactionID;
 
     DBC::Structures::FactionEntry const* f = sFactionStore.LookupEntry(Faction);
-    int32 newValue = Value;
+    int32_t newValue = Value;
     if (f == NULL || f->RepListId < 0)
         return;
     ReputationMap::iterator itr = m_reputation.find(Faction);
@@ -331,7 +331,7 @@ void Player::ModStanding(uint32 Faction, int32 Value)
     }
 }
 
-void Player::SetAtWar(uint32 Faction, bool Set)
+void Player::SetAtWar(uint32_t Faction, bool Set)
 {
     if (Faction >= 128)
         return;
@@ -389,7 +389,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
         /* loop the rep for group members */
         m_Group->getLock().Acquire();
         GroupMembersSet::iterator it;
-        for (uint32 i = 0; i < m_Group->GetSubGroupCount(); i++)
+        for (uint32_t i = 0; i < m_Group->GetSubGroupCount(); i++)
         {
             for (it = m_Group->GetSubGroup(i)->GetGroupMembersBegin(); it != m_Group->GetSubGroup(i)->GetGroupMembersEnd(); ++it)
             {
@@ -401,7 +401,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
         return;
     }
 
-    uint32 team = getTeam();
+    uint32_t team = getTeam();
     ReputationModifier* modifier = sObjectMgr.GetReputationModifier(pUnit->getEntry(), pUnit->m_factionEntry->ID);
     if (modifier != nullptr)
     {
@@ -416,7 +416,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
             {
                 if ((*itr).replimit)
                 {
-                    if (GetStanding((*itr).faction[team]) >= (int32)(*itr).replimit)
+                    if (GetStanding((*itr).faction[team]) >= (int32_t)(*itr).replimit)
                         continue;
                 }
             }
@@ -431,7 +431,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
         if (pUnit->m_factionEntry->RepListId < 0)
             return;
 
-        int32 change = int32(-5.0f * worldConfig.getFloatRate(RATE_KILLREPUTATION));
+        int32_t change = int32_t(-5.0f * worldConfig.getFloatRate(RATE_KILLREPUTATION));
         ModStanding(pUnit->m_factionEntry->ID, change);
     }
 }
@@ -452,26 +452,26 @@ void Player::Reputation_OnTalk(DBC::Structures::FactionEntry const* dbc)
     }
 }
 
-void Player::SetFactionInactive(uint32 faction, bool /*set*/)
+void Player::SetFactionInactive(uint32_t faction, bool /*set*/)
 {
     FactionReputation* rep = reputationByListId[faction];
     if (rep == NULL)
         return;
 }
 
-bool Player::AddNewFaction(DBC::Structures::FactionEntry const* dbc, int32 standing, bool base)    // if (base) standing = baseRepValue
+bool Player::AddNewFaction(DBC::Structures::FactionEntry const* dbc, int32_t standing, bool base)    // if (base) standing = baseRepValue
 {
     if (dbc == NULL || dbc->RepListId < 0)
         return false;
 
-    uint32 RaceMask = getRaceMask();
-    uint32 ClassMask = getClassMask();
-    for (uint8 i = 0; i < 4; i++)
+    uint32_t RaceMask = getRaceMask();
+    uint32_t ClassMask = getClassMask();
+    for (uint8_t i = 0; i < 4; i++)
     {
         if ((dbc->RaceMask[i] & RaceMask || (dbc->RaceMask[i] == 0 && dbc->ClassMask[i] != 0)) && (dbc->ClassMask[i] & ClassMask || dbc->ClassMask[i] == 0))
         {
             FactionReputation* rep = new FactionReputation;
-            rep->flag = static_cast<uint8>(dbc->repFlags[i]);
+            rep->flag = static_cast<uint8_t>(dbc->repFlags[i]);
             rep->baseStanding = dbc->baseRepValue[i];
             rep->standing = (base) ? dbc->baseRepValue[i] : standing;
             m_reputation[dbc->ID] = rep;
@@ -494,19 +494,19 @@ void Player::OnModStanding(DBC::Structures::FactionEntry const* dbc, FactionRepu
     if (Visible(rep->flag) && IsInWorld())
     {
         WorldPacket data(SMSG_SET_FACTION_STANDING, 17);
-        data << uint32(0);
-        data << uint8(1);   //count
-        data << uint32(rep->flag);
+        data << uint32_t(0);
+        data << uint8_t(1); // count
+        data << uint32_t(rep->flag);
         data << dbc->RepListId;
         data << rep->CalcStanding();
         m_session->SendPacket(&data);
     }
 }
 
-uint32 Player::GetExaltedCount(void)
+uint32_t Player::GetExaltedCount(void)
 {
-    const int32 exaltedReputation = 42000;
-    uint32 ec = 0;
+    const int32_t exaltedReputation = 42000;
+    uint32_t ec = 0;
 
     ReputationMap::iterator itr = m_reputation.begin();
     while (itr != m_reputation.end())

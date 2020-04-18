@@ -39,11 +39,11 @@ class HallsOfLightningScript : public InstanceScript
 {
 public:
 
-    uint32 mGeneralDoorsGUID;
-    uint32 mVolkhanDoorsGUID;
-    uint32 mLokenDoorsGUID;
-    uint32 mIonarDoors1GUID;
-    uint32 mIonarDoors2GUID;
+    uint32_t mGeneralDoorsGUID;
+    uint32_t mVolkhanDoorsGUID;
+    uint32_t mLokenDoorsGUID;
+    uint32_t mIonarDoors1GUID;
+    uint32_t mIonarDoors2GUID;
 
     explicit HallsOfLightningScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
@@ -183,7 +183,7 @@ class GeneralBjarngrimAI : public CreatureAIScript
     }
 
     // case for scriptPhase and spell emotes
-    void switchStance(int32 pStance)
+    void switchStance(int32_t pStance)
     {
         switch (pStance)
         {
@@ -213,7 +213,7 @@ class GeneralBjarngrimAI : public CreatureAIScript
 
 private:
 
-    int32 mStanceTimer;
+    int32_t mStanceTimer;
 };
 
 class Volkhan : public CreatureAIScript
@@ -286,7 +286,7 @@ class Volkhan : public CreatureAIScript
         } 
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 1)
         {
@@ -334,7 +334,7 @@ class Volkhan : public CreatureAIScript
     Movement::Location m_cVolkhanWP;
     bool m_bStomp;
     uint32_t mStompTimerId;
-    int32 mPhase;
+    int32_t mPhase;
 };
 
 class MoltenGolem : public CreatureAIScript
@@ -499,8 +499,8 @@ class LokenAI : public CreatureAIScript
     CreatureAISpells* mNova;
 
     uint32_t mNovaTimerId;
-    uint32 mRespondTimer;
-    uint8 mSpeech;
+    uint32_t mRespondTimer;
+    uint8_t mSpeech;
 };
 
 void SetupHallsOfLightning(ScriptMgr* mgr)

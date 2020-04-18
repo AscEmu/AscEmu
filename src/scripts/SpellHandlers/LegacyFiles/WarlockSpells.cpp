@@ -27,7 +27,7 @@
 #include <Units/Creatures/Pet.h>
 
  //////////////////////////////////////////////////////////////
- //bool SoulLinkParent( uint32 i, Spell *s )
+ //bool SoulLinkParent( uint32_t i, Spell *s )
  //
  //Precondition(s)
  //  Caster is a Player.
@@ -65,7 +65,7 @@ bool LifeTap(uint8_t effectIndex, Spell* s)
         return false;
     }
 
-    uint32 mod;    // spirit bonus coefficient multiplied by 2
+    uint32_t mod;    // spirit bonus coefficient multiplied by 2
     if (s->getSpellInfo()->getId() == 1454)
         mod = 2;
     else if (s->getSpellInfo()->getId() == 1455)
@@ -77,7 +77,7 @@ bool LifeTap(uint8_t effectIndex, Spell* s)
     else
         mod = 6;
 
-    uint32 damage = s->getSpellInfo()->getEffectBasePoints(effectIndex) + 1 + mod * playerTarget->getStat(STAT_SPIRIT) / 2;
+    uint32_t damage = s->getSpellInfo()->getEffectBasePoints(effectIndex) + 1 + mod * playerTarget->getStat(STAT_SPIRIT) / 2;
 
     if (damage >= playerTarget->getHealth())
         return false;
@@ -227,9 +227,9 @@ bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
     if (!s->p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0;
-    uint32 inc_resist_by_level = 0;
-    uint32 inc_resist_by_level_spell = 0;
+    uint32_t casted_spell_id = 0;
+    uint32_t inc_resist_by_level = 0;
+    uint32_t inc_resist_by_level_spell = 0;
 
     if (unitTarget->getEntry() == 416) //in case it is imp
         casted_spell_id = 23759;
@@ -285,9 +285,9 @@ bool MasterDemonologist2(uint8_t /*effectIndex*/, Spell* s)
     if (!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0;
-    uint32 inc_resist_by_level = 0;
-    uint32 inc_resist_by_level_spell = 0;
+    uint32_t casted_spell_id = 0;
+    uint32_t inc_resist_by_level = 0;
+    uint32_t inc_resist_by_level_spell = 0;
 
     if (unitTarget->getEntry() == 416) //in case it is imp
         casted_spell_id = 23826;
@@ -342,9 +342,9 @@ bool MasterDemonologist3(uint8_t /*effectIndex*/, Spell* s)
     if (!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0;
-    uint32 inc_resist_by_level = 0;
-    uint32 inc_resist_by_level_spell = 0;
+    uint32_t casted_spell_id = 0;
+    uint32_t inc_resist_by_level = 0;
+    uint32_t inc_resist_by_level_spell = 0;
 
     if (unitTarget->getEntry() == 416) //in case it is imp
         casted_spell_id = 23827;
@@ -398,9 +398,9 @@ bool MasterDemonologist4(uint8_t /*effectIndex*/, Spell* s)
     if (!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0;
-    uint32 inc_resist_by_level = 0;
-    uint32 inc_resist_by_level_spell = 0;
+    uint32_t casted_spell_id = 0;
+    uint32_t inc_resist_by_level = 0;
+    uint32_t inc_resist_by_level_spell = 0;
 
     if (unitTarget->getEntry() == 416) //in case it is imp
         casted_spell_id = 23828;
@@ -454,9 +454,9 @@ bool MasterDemonologist5(uint8_t /*effectIndex*/, Spell* s)
     if (!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0;
-    uint32 inc_resist_by_level = 0;
-    uint32 inc_resist_by_level_spell = 0;
+    uint32_t casted_spell_id = 0;
+    uint32_t inc_resist_by_level = 0;
+    uint32_t inc_resist_by_level_spell = 0;
 
     if (unitTarget->getEntry() == 416) //in case it is imp
         casted_spell_id = 23829;
@@ -564,17 +564,17 @@ bool DemonicKnowledge(uint8_t effectIndex, Aura* a, bool apply)
         Player* PetOwner = static_cast<Pet*>(m_target)->getPlayerOwner();
         if (PetOwner != nullptr)
         {
-            uint32 val1 = m_target->getStat(STAT_STAMINA);
-            uint32 val2 = m_target->getStat(STAT_INTELLECT);
-            uint32 val0 = val1 + val2;
+            uint32_t val1 = m_target->getStat(STAT_STAMINA);
+            uint32_t val2 = m_target->getStat(STAT_INTELLECT);
+            uint32_t val0 = val1 + val2;
             float dmginc = (float)(val0 * a->GetModAmount(effectIndex)) / 100;
 
-            int32 val;
+            int32_t val;
 
             if (apply)
-                val = (int32)dmginc;
+                val = (int32_t)dmginc;
             else
-                val = (int32)-dmginc;
+                val = (int32_t)-dmginc;
 
             for (uint16_t x = 0; x < 7; x++)
                 PetOwner->modModDamageDonePositive(x, val);
@@ -593,7 +593,7 @@ bool ImprovedLifeTap(uint8_t effectIndex, Aura* a, bool apply)
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
-    int32 amount = a->GetModAmount(effectIndex);
+    int32_t amount = a->GetModAmount(effectIndex);
 
 
     if (apply)
@@ -607,7 +607,7 @@ bool ImprovedLifeTap(uint8_t effectIndex, Aura* a, bool apply)
 bool SoulSiphon(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* caster = a->GetUnitCaster();
-    int32 amount = a->GetModAmount(effectIndex);
+    int32_t amount = a->GetModAmount(effectIndex);
 
     if (caster)
     {
@@ -627,12 +627,12 @@ bool SoulStoneResurrection(uint8_t /*effectIndex*/, Aura* a, bool apply)
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
-    uint32 soulstone = a->GetSpellInfo()->getEffectMiscValue(0);
+    uint32_t soulstone = a->GetSpellInfo()->getEffectMiscValue(0);
 
     if (apply)
     {
         p_target->SetSoulStone(soulstone);
-        p_target->SetSoulStoneReceiver((uint32)a->m_casterGuid);
+        p_target->SetSoulStoneReceiver((uint32_t)a->m_casterGuid);
     }
     else if (p_target->isAlive())
     {
@@ -731,7 +731,7 @@ void SetupLegacyWarlockSpells(ScriptMgr* mgr)
 
     mgr->register_dummy_aura(35696, &DemonicKnowledge);
 
-    uint32 improvedlifetapids[] =
+    uint32_t improvedlifetapids[] =
     {
         18182,
         18183,
@@ -739,7 +739,7 @@ void SetupLegacyWarlockSpells(ScriptMgr* mgr)
     };
     mgr->register_dummy_aura(improvedlifetapids, &ImprovedLifeTap);
 
-    uint32 soulsiphonids[] =
+    uint32_t soulsiphonids[] =
     {
         17804,
         17805,
@@ -747,7 +747,7 @@ void SetupLegacyWarlockSpells(ScriptMgr* mgr)
     };
     mgr->register_dummy_aura(soulsiphonids, &SoulSiphon);
 
-    uint32 soulstoneresurrectionids[] =
+    uint32_t soulstoneresurrectionids[] =
     {
         20707,
         20762,

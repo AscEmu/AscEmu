@@ -91,7 +91,7 @@ class ZerekethAI : public CreatureAIScript
         if (!TargetTable.size())
             return;
 
-        auto random_index = Util::getRandomUInt(0, uint32(TargetTable.size() - 1));
+        auto random_index = Util::getRandomUInt(0, uint32_t(TargetTable.size() - 1));
         auto random_target = TargetTable[random_index];
 
         if (random_target == nullptr)
@@ -124,8 +124,8 @@ class ZerekethAI : public CreatureAIScript
 
 protected:
 
-    int32 SpeechTimer;
-    int32 VoidTimer;
+    int32_t SpeechTimer;
+    int32_t VoidTimer;
 };
 
 class VoidZoneARC : public CreatureAIScript
@@ -142,7 +142,7 @@ class VoidZoneARC : public CreatureAIScript
     void AIUpdate() override
     {
         // M4ksiu: I'm not sure if it should be cast once, on start
-        uint32 SpellId = CONSUMPTION;
+        uint32_t SpellId = CONSUMPTION;
         if (_isHeroic())
             SpellId = CONSUMPTION_H;
 
@@ -271,7 +271,7 @@ class HarbringerSkyrissAI : public CreatureAIScript
 
 protected:
 
-    uint8 IllusionCount;
+    uint8_t IllusionCount;
     CreatureAISpells* Illusion66;
     CreatureAISpells* Illusion33;
 };
@@ -587,10 +587,10 @@ class WardenMellicharAI : public CreatureAIScript
 
 protected:
 
-    uint8 Phasepart;
-    uint32 NPC_ID_Spawn;
-    uint32 Spawncounter;
-    int32 Phase_Timer;
+    uint8_t Phasepart;
+    uint32_t NPC_ID_Spawn;
+    uint32_t Spawncounter;
+    int32_t Phase_Timer;
 
     Creature* NPC_orb1;
     Creature* NPC_orb2;

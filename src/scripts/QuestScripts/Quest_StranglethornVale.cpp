@@ -40,7 +40,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* doctor = static_cast<Creature*>(pObject);
 
@@ -256,21 +256,21 @@ class FacingNegolash : public QuestScript
     {
         GameObject* obj = nullptr;
 
-        for (uint8 i = 0; i < 9; ++i)
+        for (uint8_t i = 0; i < 9; ++i)
         {
             obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_MEAT, MeatSpawnPoints[i].x, MeatSpawnPoints[i].y, MeatSpawnPoints[i].z, MeatSpawnPoints[i].o, 1);
             if (obj != nullptr)
                 obj->Despawn(2 * 60 * 1000, 0);
         }
 
-        for (uint8 i = 0; i < 5; ++i)
+        for (uint8_t i = 0; i < 5; ++i)
         {
             obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_BOTTLE, BottleSpawnPoints[i].x, BottleSpawnPoints[i].y, BottleSpawnPoints[i].z, BottleSpawnPoints[i].o, 1);
             if (obj != nullptr)
                 obj->Despawn(2 * 60 * 1000, 0);
         }
 
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < 3; ++i)
         {
             obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_BREAD, BreadSpawnPoints[i].x, BreadSpawnPoints[i].y, BreadSpawnPoints[i].z, BreadSpawnPoints[i].o, 1);
             if (obj != nullptr)

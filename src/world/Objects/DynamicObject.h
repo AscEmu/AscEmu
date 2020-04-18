@@ -33,7 +33,7 @@ enum DynamicObjectType
     DYNAMIC_OBJECT_FARSIGHT_FOCUS   = 0x2
 };
 
-typedef std::set<uint64> DynamicObjectList;
+typedef std::set<uint64_t> DynamicObjectList;
 
 struct WoWDynamicObject;
 class SERVER_DECL DynamicObject : public Object
@@ -80,14 +80,14 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
-    void Create(Unit* caster, Spell* pSpell, LocationVector lv, uint32 duration, float radius, uint32 type);
+    void Create(Unit* caster, Spell* pSpell, LocationVector lv, uint32_t duration, float radius, uint32_t type);
     // MIT End
 
-        DynamicObject(uint32 high, uint32 low);
+        DynamicObject(uint32_t high, uint32_t low);
         ~DynamicObject();
 
 
-        void Create(Unit* caster, Spell* pSpell, float x, float y, float z, uint32 duration, float radius, uint32 type);
+        void Create(Unit* caster, Spell* pSpell, float x, float y, float z, uint32_t duration, float radius, uint32_t type);
         void UpdateTargets();
 
         void addToInRangeObjects(Object* pObj);
@@ -102,8 +102,8 @@ public:
         Spell* m_parentSpell;
         DynamicObjectList targets;
 
-        uint32 m_aliveDuration;
-        uint32 _fields[DYNAMICOBJECT_END];
+        uint32_t m_aliveDuration;
+        uint32_t _fields[DYNAMICOBJECT_END];
 };
 
 #endif // WOWSERVER_DYNAMICOBJECT_H

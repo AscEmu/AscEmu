@@ -172,7 +172,7 @@ class VoidReaverAI : public CreatureAIScript
     CreatureAISpells* mLocaleEnrageSpell;
     uint32_t mLocaleEnrageTimerId;
 
-    uint32 mArcaneOrbTimer;
+    uint32_t mArcaneOrbTimer;
     CreatureAISpells* mArcaneOrb;
 };
 
@@ -281,7 +281,7 @@ class HighAstromancerSolarianAI : public CreatureAIScript
             }
             else if (_isTimerFinished(mAgentsTimer) && !_isCasting())
             {
-                for (uint8 SpawnIter = 0; SpawnIter < 4; SpawnIter++)
+                for (uint8_t SpawnIter = 0; SpawnIter < 4; SpawnIter++)
                 {
                     spawnCreature(CN_SOLARIUMAGENT, mSpawnPositions[0][0], mSpawnPositions[0][1], 17, 0, getCreature()->getFactionTemplate());
                     spawnCreature(CN_SOLARIUMAGENT, mSpawnPositions[1][0], mSpawnPositions[1][1], 17, 0, getCreature()->getFactionTemplate());
@@ -312,14 +312,14 @@ class HighAstromancerSolarianAI : public CreatureAIScript
     }
 
     CreatureAISpells* mVoidForm;
-    int32 mSplitTimer;
-    uint32 mAgentsTimer;
-    uint32 mSolarianTimer;
+    int32_t mSplitTimer;
+    uint32_t mAgentsTimer;
+    uint32_t mSolarianTimer;
     float mSpawnPositions[3][2];
     bool isNotInitialPhase;
 };
 
-bool Dummy_Solarian_WrathOfTheAstromancer(uint32 /*pEffectIndex*/, Spell* pSpell)
+bool Dummy_Solarian_WrathOfTheAstromancer(uint32_t /*pEffectIndex*/, Spell* pSpell)
 {
     Unit* Caster = pSpell->u_caster;
     if (!Caster) return true;
@@ -477,7 +477,7 @@ class DarkenerAI : public CreatureAIScript
         return false;
     }
 
-    int32 mGazeSwitchTimer;
+    int32_t mGazeSwitchTimer;
     Unit* mCurrentTarget;
 };
 
@@ -666,7 +666,7 @@ class PhoenixAI : public CreatureAIScript
         double PercMaxHP = (double)getCreature()->getMaxHealth() * 0.05;
         if (CurrentHP > PercMaxHP && _isTimerFinished(mBurnTimer))
         {
-            getCreature()->setHealth((uint32)(CurrentHP - PercMaxHP));
+            getCreature()->setHealth((uint32_t)(CurrentHP - PercMaxHP));
             _resetTimer(mBurnTimer, 3000);
             _applyAura(PHOENIX_BURN);
         }
@@ -677,7 +677,7 @@ class PhoenixAI : public CreatureAIScript
         }            
     }
 
-    int32 mBurnTimer;
+    int32_t mBurnTimer;
 };
 
 class PhoenixEggAI : public CreatureAIScript
@@ -785,7 +785,7 @@ class KaelThasAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(KaelThasAI);
     explicit KaelThasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        for (uint8 i = 1; i < 4; ++i)
+        for (uint8_t i = 1; i < 4; ++i)
         {
             AddWaypoint(CreateWaypoint(1, 0, Waypoints[i].wp_flag, Waypoints[i].wp_location));
         }
@@ -841,7 +841,7 @@ class KaelThasAI : public CreatureAIScript
         mEventTimer = 0;
         mAdvisorPhase = PHASE_SPEECH;
 
-        for (uint8 i = 0; i < 4; ++i)
+        for (uint8_t i = 0; i < 4; ++i)
         {
             Creature* creature = getNearestCreature(Advisors[i].x, Advisors[i].y, Advisors[i].z, Advisors[i].addition);
             if (creature != NULL)
@@ -861,7 +861,7 @@ class KaelThasAI : public CreatureAIScript
         setAIAgent(AGENT_SPELL);
         setRooted(true);
 
-        for (uint8 i = 0; i < 2; ++i)
+        for (uint8_t i = 0; i < 2; ++i)
         {
             GameObject* pGameobject = getNearestGameObject(Gates[i].x, Gates[i].y, Gates[i].z, Gates[i].addition);
             if (pGameobject != NULL && pGameobject->getState() == 0)
@@ -882,7 +882,7 @@ class KaelThasAI : public CreatureAIScript
 
         if (isAlive())
         {
-            for (uint8 i = 0; i < 4; ++i)
+            for (uint8_t i = 0; i < 4; ++i)
             {
                 Creature* pCreature = getNearestCreature(Advisors[i].x, Advisors[i].y, Advisors[i].z, Advisors[i].addition);
                 if (pCreature != NULL)
@@ -894,7 +894,7 @@ class KaelThasAI : public CreatureAIScript
             }
         }
 
-        for (uint8 i = 0; i < 2; ++i)
+        for (uint8_t i = 0; i < 2; ++i)
         {
             GameObject* pGameobject = getNearestGameObject(Gates[i].x, Gates[i].y, Gates[i].z, Gates[i].addition);
             if (pGameobject != NULL && pGameobject->getState() == 1)
@@ -966,7 +966,7 @@ class KaelThasAI : public CreatureAIScript
     {
         if (getScriptPhase() < 5)
         {
-            uint32 i = getScriptPhase() > 0 ? getScriptPhase() - 1 : 0;
+            uint32_t i = getScriptPhase() > 0 ? getScriptPhase() - 1 : 0;
             Creature* pCreature = getNearestCreature(Advisors[i].x, Advisors[i].y, Advisors[i].z, Advisors[i].addition);
             if (pCreature == NULL || (!pCreature->isAlive() && mAdvisorPhase != PHASE_ADV_FIGHT))
             {
@@ -1006,7 +1006,7 @@ class KaelThasAI : public CreatureAIScript
             }
             else if (mEventTimer == -2)
             {
-                for (uint8 i = 0; i < 7; ++i)
+                for (uint8_t i = 0; i < 7; ++i)
                 {
                     spawnCreature(KaelthasWeapons[i].addition, KaelthasWeapons[i].x, KaelthasWeapons[i].y, KaelthasWeapons[i].z, KaelthasWeapons[i].o);
                 }
@@ -1017,7 +1017,7 @@ class KaelThasAI : public CreatureAIScript
             }
             else if (_isTimerFinished(mEventTimer))
             {
-                for (uint8 i = 0; i < 4; ++i)
+                for (uint8_t i = 0; i < 4; ++i)
                 {
                     if (mAdvCoords.size() <= (size_t)i)
                         break;
@@ -1126,11 +1126,11 @@ class KaelThasAI : public CreatureAIScript
     CreatureAISpells* mNetherBeam;
 
     AdvisorPhase mAdvisorPhase;
-    int32 mArcaneDisruptionTimer;
-    int32 mShockBarrierTimer;
-    int32 mFlameStrikeTimer;
-    uint32 mPhoenixTimer;
-    int32 mEventTimer;
+    int32_t mArcaneDisruptionTimer;
+    int32_t mShockBarrierTimer;
+    int32_t mFlameStrikeTimer;
+    uint32_t mPhoenixTimer;
+    int32_t mEventTimer;
 
     std::vector<LocationExtra> mAdvCoords;
 };

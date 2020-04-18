@@ -125,6 +125,6 @@ void SetupCityDalaran(ScriptMgr* mgr)
     mgr->register_creature_script(29255, &SunreaversMageGuard::Create);
 
     // Neutral Masters
-    uint32 FactionVisibleIds[] = { 31852, 31851, 32335, 32336, 32206, 32207,  0 };
+    uint32_t FactionVisibleIds[] = { 31852, 31851, 32335, 32336, 32206, 32207,  0 };
     mgr->register_creature_script(FactionVisibleIds, &FactionInvisible::Create);
 }

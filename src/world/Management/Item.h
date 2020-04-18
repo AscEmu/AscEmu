@@ -35,11 +35,11 @@ struct EnchantmentInstance
     DBC::Structures::SpellItemEnchantmentEntry const* Enchantment;
     bool BonusApplied;
     //\todo slot is < 255 set to uint8_t and get rid of casts.
-    uint32 Slot;
+    uint32_t Slot;
     time_t ApplyTime;
-    uint32 Duration;
+    uint32_t Duration;
     bool RemoveAtLogout;
-    uint32 RandomSuffix;
+    uint32_t RandomSuffix;
 };
 
 const static ItemProf prof[22] =
@@ -49,7 +49,7 @@ const static ItemProf prof[22] =
     {2, 262144}, {2, 524288}, {2, 1048576}
 };
 
-const static uint32 arm_skills[7] =
+const static uint32_t arm_skills[7] =
 {
     0,
     SKILL_CLOTH,
@@ -60,7 +60,7 @@ const static uint32 arm_skills[7] =
     SKILL_SHIELD
 };
 
-const static uint32 weap_skills[21] =
+const static uint32_t weap_skills[21] =
 {
     SKILL_AXES,
     SKILL_2H_AXES,
@@ -130,7 +130,7 @@ const static double SuffixMods[NUM_INVENTORY_TYPES] =
     0.26,        // RELIC
 };
 
-typedef std::map<uint32, EnchantmentInstance> EnchantmentMap;
+typedef std::map<uint32_t, EnchantmentInstance> EnchantmentMap;
 
 enum scalingstatmodtypes
 {
@@ -275,11 +275,11 @@ public:
 
         void SetDirty(){ m_isDirty = true; }
 
-        void SetRandomSuffix(uint32 id)
+        void SetRandomSuffix(uint32_t id)
         {
-            int32 r_id = -(int32(id));
-            uint32 v = Item::GenerateRandomSuffixFactor(m_itemProperties);
-            setRandomPropertiesId((uint32)r_id);
+            int32_t r_id = -(int32_t(id));
+            uint32_t v = Item::GenerateRandomSuffixFactor(m_itemProperties);
+            setRandomPropertiesId((uint32_t)r_id);
             setPropertySeed(v);
             //\todo why override random_suffix set by functions above?
             random_suffix = id;
@@ -287,28 +287,28 @@ public:
 
 
 #if VERSION_STRING <= TBC
-        uint32 getEnchantmentId(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index); }
-        void setEnchantmentId(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index, value); }
+        uint32_t getEnchantmentId(uint32_t index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index); }
+        void setEnchantmentId(uint32_t index, uint32_t value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index, value); }
 
-        uint32 getEnchantmentDuration(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 1 + 3 * index); }
-        void setEnchantmentDuration(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 1 + 3 * index, value); }
+        uint32_t getEnchantmentDuration(uint32_t index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 1 + 3 * index); }
+        void setEnchantmentDuration(uint32_t index, uint32_t value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 1 + 3 * index, value); }
 
-        uint32 getEnchantmentCharges(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index); }
-        void setEnchantmentCharges(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index, value); }
+        uint32_t getEnchantmentCharges(uint32_t index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index); }
+        void setEnchantmentCharges(uint32_t index, uint32_t value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index, value); }
 
-        void setTextId(uint32 textId);
+        void setTextId(uint32_t textId);
 #endif
 
         // DB Serialization
         void LoadFromDB(Field* fields, Player* plr, bool light);
-        void SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* buf);
-        bool LoadAuctionItemFromDB(uint64 guid);
+        void SaveToDB(int8_t containerslot, int8_t slot, bool firstsave, QueryBuffer* buf);
+        bool LoadAuctionItemFromDB(uint64_t guid);
         void DeleteFromDB();
         void DeleteMe();
         bool IsEligibleForRefund();
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // uint32 GetChargesLeft()
+        // uint32_t GetChargesLeft()
         // Finds an on-use spell on the item and returns the charges left
         //
         // \param none
@@ -316,7 +316,7 @@ public:
         // \returns the charges left if an on-use spell is found, 0 if no such spell found.
         //
         //////////////////////////////////////////////////////////////////////////////////////////
-        uint32 GetChargesLeft() const
+        uint32_t GetChargesLeft() const
         {
             for (uint8_t x = 0; x < 5; ++x)
                 if ((m_itemProperties->Spells[x].Id != 0) && (m_itemProperties->Spells[x].Trigger == USE))
@@ -326,16 +326,16 @@ public:
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // void SetChargesLeft(uint32 charges)
+        // void SetChargesLeft(uint32_t charges)
         // Finds an on-use spell on the item, and sets the remaining charges.
         // If no such spell found, nothing changes.
         //
-        // \param uint32 charges  -  Number to be set as charges left.
+        // \param uint32_t charges  -  Number to be set as charges left.
         //
         // \returns none
         //
         //////////////////////////////////////////////////////////////////////////////////////////
-        void SetChargesLeft(uint32 charges)
+        void SetChargesLeft(uint32_t charges)
         {
             for (uint8_t x = 0; x < 5; ++x)
             {
@@ -347,7 +347,7 @@ public:
             }
         }
 
-        time_t GetEnchantmentApplytime(uint32 slot)
+        time_t GetEnchantmentApplytime(uint32_t slot)
         {
             EnchantmentMap::iterator itr = Enchantments.find(slot);
             if (itr == Enchantments.end())
@@ -357,17 +357,17 @@ public:
         }
 
         // Adds an enchantment to the item.
-        int32 AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 Duration, bool Perm = false, bool apply = true, bool RemoveAtLogout = false, uint32 Slot_ = 0, uint32 RandomSuffix = 0);
-        uint32 GetSocketsCount();
+        int32_t AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32_t Duration, bool Perm = false, bool apply = true, bool RemoveAtLogout = false, uint32_t Slot_ = 0, uint32_t RandomSuffix = 0);
+        uint32_t GetSocketsCount();
 
         /// Removes an enchantment from the item.
-        void RemoveEnchantment(uint32 EnchantmentSlot);
+        void RemoveEnchantment(uint32_t EnchantmentSlot);
 
         // Removes related temporary enchants
         void RemoveRelatedEnchants(DBC::Structures::SpellItemEnchantmentEntry const* newEnchant);
 
         /// Adds the bonus on an enchanted item.
-        void ApplyEnchantmentBonus(uint32 Slot, bool Apply);
+        void ApplyEnchantmentBonus(uint32_t Slot, bool Apply);
 
         /// Applies all enchantment bonuses (use on equip)
         void ApplyEnchantmentBonuses();
@@ -376,25 +376,25 @@ public:
         void RemoveEnchantmentBonuses();
 
         /// Event to remove an enchantment.
-        void EventRemoveEnchantment(uint32 Slot);
+        void EventRemoveEnchantment(uint32_t Slot);
 
         /// Check if we have an enchantment of this id?
-        int32 HasEnchantment(uint32 Id);
+        int32_t HasEnchantment(uint32_t Id);
 
         /// Check if we have an enchantment on that slot
-        bool HasEnchantmentOnSlot(uint32 slot);
+        bool HasEnchantmentOnSlot(uint32_t slot);
 
         /// Modify the time of an existing enchantment.
-        void ModifyEnchantmentTime(uint32 Slot, uint32 Duration);
+        void ModifyEnchantmentTime(uint32_t Slot, uint32_t Duration);
 
         /// Find free enchantment slot.
-        int32 FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 random_type);
+        int32_t FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32_t random_type);
 
         /// Removes all enchantments.
         void RemoveAllEnchantments(bool OnlyTemporary);
 
         /// Sends SMSG_ITEM_UPDATE_ENCHANT_TIME
-        void SendEnchantTimeUpdate(uint32 Slot, uint32 Duration);
+        void SendEnchantTimeUpdate(uint32_t Slot, uint32_t Duration);
 
         void SendDurationUpdate();
 
@@ -405,11 +405,11 @@ public:
         void RemoveSocketBonusEnchant();
 
         /// gets the itemlink for a message to the player
-        std::string GetItemLink(uint32 language);
+        std::string GetItemLink(uint32_t language);
 
         bool IsAmmoBag() { return (m_itemProperties->Class == ITEM_CLASS_QUIVER); }
 
-        uint32 CountGemsWithLimitId(uint32 Limit);
+        uint32_t CountGemsWithLimitId(uint32_t Limit);
 
         void RemoveFromWorld();
 
@@ -417,26 +417,26 @@ public:
         bool locked;
         bool m_isDirty;
 
-        EnchantmentInstance* GetEnchantment(uint32 slot);
+        EnchantmentInstance* GetEnchantment(uint32_t slot);
         bool IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment);
 
-        static uint32 GenerateRandomSuffixFactor(ItemProperties const* m_itemProto);
+        static uint32_t GenerateRandomSuffixFactor(ItemProperties const* m_itemProto);
 
         bool HasEnchantments() { return (Enchantments.size() > 0) ? true : false; }
 
-        uint32 wrapped_item_id;
+        uint32_t wrapped_item_id;
 
         time_t GetItemExpireTime() { return ItemExpiresOn; }
         void SetItemExpireTime(time_t timesec) { ItemExpiresOn = timesec; }
         void EventRemoveItem();
         void RemoveFromRefundableMap();
-        bool RepairItem(Player* pPlayer, bool guildmoney = false, int32* pCost = NULL);
-        uint32 RepairItemCost();
+        bool RepairItem(Player* pPlayer, bool guildmoney = false, int32_t* pCost = NULL);
+        uint32_t RepairItemCost();
 
-        uint32 GetOnUseSpellID(uint32 index) { return OnUseSpellIDs[index]; }
-        bool HasOnUseSpellID(uint32 id)
+        uint32_t GetOnUseSpellID(uint32_t index) { return OnUseSpellIDs[index]; }
+        bool HasOnUseSpellID(uint32_t id)
         {
-            for (uint8 i = 0; i < 3; ++i)
+            for (uint8_t i = 0; i < 3; ++i)
                 if (OnUseSpellIDs[i] == id)
                     return true;
 
@@ -450,26 +450,26 @@ public:
 
         ItemProperties const* m_itemProperties;
         EnchantmentMap Enchantments;
-        uint32 _fields[ITEM_END];   /// this mem is wasted in case of container... but this will be fixed in future
+        uint32_t _fields[ITEM_END];   /// this mem is wasted in case of container... but this will be fixed in future
         Player* m_owner;            /// let's not bother the manager with unneeded requests
-        uint32 random_prop;
-        uint32 random_suffix;
+        uint32_t random_prop;
+        uint32_t random_suffix;
         time_t ItemExpiresOn;       /// this is for existingduration
 
     private:
         /// Enchant type 3 spellids, like engineering gadgets appliable to items.
-        uint32 OnUseSpellIDs[3];
+        uint32_t OnUseSpellIDs[3];
         std::string text;
 };
 
 //\todo move these functions to ItemProperties/Player class.
-uint32 GetSkillByProto(uint32, uint32);
+uint32_t GetSkillByProto(uint32_t, uint32_t);
 
-uint32 GetSellPriceForItem(ItemProperties const* proto, uint32 count);
-uint32 GetBuyPriceForItem(ItemProperties const* proto, uint32 count, Player* plr, Creature* vendor);
+uint32_t GetSellPriceForItem(ItemProperties const* proto, uint32_t count);
+uint32_t GetBuyPriceForItem(ItemProperties const* proto, uint32_t count, Player* plr, Creature* vendor);
 
-std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language);
+std::string GetItemLinkByProto(ItemProperties const* iProto, uint32_t language);
 
-int32 GetStatScalingStatValueColumn(ItemProperties const* proto, uint32 type);
+int32_t GetStatScalingStatValueColumn(ItemProperties const* proto, uint32_t type);
 
 #endif // WOWSERVER_ITEM_H

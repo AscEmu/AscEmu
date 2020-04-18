@@ -25,7 +25,7 @@
 #include "Units/Unit.h"
 
 class AIInterface;
-typedef void(AIInterface::*pAIEvent)(Unit* punit, uint32 misc1);
+typedef void(AIInterface::*pAIEvent)(Unit* punit, uint32_t misc1);
 
 enum AiEvents
 {

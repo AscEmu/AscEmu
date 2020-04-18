@@ -11,11 +11,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace MapManagement::AreaManagement
 {
-    typedef std::map<uint32, uint32> AreaFlagByAreaID;
-    typedef std::map<uint32, uint32> AreaFlagByMapID;
+    typedef std::map<uint32_t, uint32_t> AreaFlagByAreaID;
+    typedef std::map<uint32_t, uint32_t> AreaFlagByMapID;
 
     // Temporary 
-    typedef std::map<uint32, uint32> MapEntryPair;
+    typedef std::map<uint32_t, uint32_t> MapEntryPair;
 
     class AreaStorage
     {
@@ -34,27 +34,27 @@ namespace MapManagement::AreaManagement
         static DBC::DBCStorage<DBC::Structures::AreaTableEntry>* GetStorage();
 
         /* Get Area */
-        //static DBC::Structures::AreaTableEntry const* GetAreaByPosition(uint32 map_id, float x, float y, float z);
-        //static DBC::Structures::AreaTableEntry const* GetAreaByFlagAndMapId(uint32 area_flag, uint32 map_id);
-        static DBC::Structures::AreaTableEntry const* GetAreaById(uint32 area_id);
-        static DBC::Structures::AreaTableEntry const* GetAreaByFlag(uint32 area_flag);
-        static DBC::Structures::AreaTableEntry const* GetAreaByMapId(uint32 map_id);
+        //static DBC::Structures::AreaTableEntry const* GetAreaByPosition(uint32_t map_id, float x, float y, float z);
+        //static DBC::Structures::AreaTableEntry const* GetAreaByFlagAndMapId(uint32_t area_flag, uint32_t map_id);
+        static DBC::Structures::AreaTableEntry const* GetAreaById(uint32_t area_id);
+        static DBC::Structures::AreaTableEntry const* GetAreaByFlag(uint32_t area_flag);
+        static DBC::Structures::AreaTableEntry const* GetAreaByMapId(uint32_t map_id);
 
         /* Get Flag */
-        static int32 GetFlagById(uint32 area_id);
-        static uint32 GetFlagByMapId(uint32 map_id);
+        static int32_t GetFlagById(uint32_t area_id);
+        static uint32_t GetFlagByMapId(uint32_t map_id);
 
         /* Get ID */
-        static uint32 GetIdByFlag(uint32 area_flag);
-        static uint32 GetIdByMapId(uint32 map_id);
+        static uint32_t GetIdByFlag(uint32_t area_flag);
+        static uint32_t GetIdByMapId(uint32_t map_id);
 
         /* Get ID & Zone */
-        static void GetZoneAndIdByFlag(uint32& zone_id, uint32& area_id, uint16 area_flag, uint32 map_id);
+        static void GetZoneAndIdByFlag(uint32_t& zone_id, uint32_t& area_id, uint16_t area_flag, uint32_t map_id);
 
         /* Misc */
-        static bool IsOutdoor(uint32 mapId, float x, float y, float z);
-        static bool IsOutdoorWMO(uint32 mogpFlags, int32 /*adtId*/, int32 /*rootId*/, int32 /*groupId*/, DBC::Structures::WMOAreaTableEntry const* wmoEntry, DBC::Structures::AreaTableEntry const* atEntry);
+        static bool IsOutdoor(uint32_t mapId, float x, float y, float z);
+        static bool IsOutdoorWMO(uint32_t mogpFlags, int32_t /*adtId*/, int32_t /*rootId*/, int32_t /*groupId*/, DBC::Structures::WMOAreaTableEntry const* wmoEntry, DBC::Structures::AreaTableEntry const* atEntry);
         
-        static const uint32 GetFlagByPosition(uint32 area_flag_without_adt_id, bool have_area_info, uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, uint32 map_id, float x, float y, float z, bool* _out_is_outdoors = nullptr);
+        static const uint32_t GetFlagByPosition(uint32_t area_flag_without_adt_id, bool have_area_info, uint32_t mogp_flags, int32_t adt_id, int32_t root_id, int32_t group_id, uint32_t map_id, float x, float y, float z, bool* _out_is_outdoors = nullptr);
     };
 } // </ MapManagement::AreaManagement>

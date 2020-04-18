@@ -50,7 +50,7 @@ public:
         pPlayer->castSpell(pPlayer, 24832, true);
         pPlayer->setMoveRoot(true);
         _gameobject->PlaySoundToSet(8476);
-        mPlayerGuid = static_cast<uint32>(pPlayer->getGuid());
+        mPlayerGuid = static_cast<uint32_t>(pPlayer->getGuid());
         RegisterAIUpdateEvent(2200);
     }
 
@@ -86,7 +86,7 @@ public:
 
 protected:
 
-    uint32 mPlayerGuid;
+    uint32_t mPlayerGuid;
 };
 
 /*
@@ -98,15 +98,15 @@ Drop Mine - 39685, 25024
 Nitrous Boost - 27746
 
 
-const uint32 CANNON = 24933            //39692, 34154
-const uint32 MORTAR = 25003            //33861 -- Triggers Explosion, 39695 --- Summons Mortar
-const uint32 NITROUS = 27746           //Needs Scripting
-const uint32 FLAMETHROWER = 39693      //25027
-const uint32 MACHINEGUN = 25026
-const uint32 DROPMINE = 25024
-const uint32 SHIELD = 27759
+const uint32_t CANNON = 24933            //39692, 34154
+const uint32_t MORTAR = 25003            //33861 -- Triggers Explosion, 39695 --- Summons Mortar
+const uint32_t NITROUS = 27746           //Needs Scripting
+const uint32_t FLAMETHROWER = 39693      //25027
+const uint32_t MACHINEGUN = 25026
+const uint32_t DROPMINE = 25024
+const uint32_t SHIELD = 27759
 
-static uint32 TonkSpecials[4] = { FLAMETHROWER, MACHINEGUN, DROPMINE, SHIELD };
+static uint32_t TonkSpecials[4] = { FLAMETHROWER, MACHINEGUN, DROPMINE, SHIELD };
 
 /// Tonk Control Consoles
 class TonkControlConsole : public GameObjectAIScript
@@ -176,8 +176,8 @@ class SetupCarnies_Gossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        uint32 textId = 0;
-        uint32 randomNumber = Util::getRandomUInt(3);
+        uint32_t textId = 0;
+        uint32_t randomNumber = Util::getRandomUInt(3);
 
         switch (randomNumber)
         {
@@ -225,8 +225,8 @@ public:
 
     void onHello(Object* pObject, Player* plr) override
     {
-        uint32 textId = 0;
-        uint32 randomNumber = Util::getRandomUInt(1);
+        uint32_t textId = 0;
+        uint32_t randomNumber = Util::getRandomUInt(1);
 
         switch (randomNumber)
         {
@@ -288,7 +288,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         GossipMenu menu(pObject->getGuid(), BARK_MAXIMA_2, plr->GetSession()->language);
         menu.sendGossipPacket(plr);
@@ -324,7 +324,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -415,7 +415,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -622,7 +622,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 IntId, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t IntId, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         //Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -673,7 +673,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         GossipMenu::sendSimpleMenu(pObject->getGuid(), 7336, plr);
     }

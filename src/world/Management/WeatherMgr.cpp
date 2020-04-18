@@ -52,9 +52,9 @@ enum WeatherSounds
     WEATHER_SANDSTORMHEAVY      = 8558
 };
 
-uint32 GetSound(uint32 Effect, float Density)
+uint32_t GetSound(uint32_t Effect, float Density)
 {
-    uint32 sound;
+    uint32_t sound;
     if (Density <= 0.30f)
         return WEATHER_NOSOUND;
 
@@ -100,7 +100,7 @@ WeatherMgr& WeatherMgr::getInstance()
 
 void WeatherMgr::finalize()
 {
-    std::map<uint32, WeatherInfo*>::iterator itr;
+    std::map<uint32_t, WeatherInfo*>::iterator itr;
     for (itr = m_zoneWeathers.begin(); itr != m_zoneWeathers.end(); ++itr)
     {
         delete itr->second;
@@ -140,7 +140,7 @@ void WeatherMgr::LoadFromDB()
 
 void WeatherMgr::SendWeather(Player* plr)  //Update weather when player has changed zone (WorldSession::handleZoneupdate)
 {
-    std::map<uint32, WeatherInfo*>::iterator itr = m_zoneWeathers.find(plr->GetZoneId());
+    std::map<uint32_t, WeatherInfo*>::iterator itr = m_zoneWeathers.find(plr->GetZoneId());
 
     if (itr == m_zoneWeathers.end())
     {
@@ -194,9 +194,9 @@ void WeatherInfo::_GenerateWeather()
     m_maxDensity = fd + 1; //1 - 2
     m_totalTime = (Util::getRandomUInt(11) + 5) * 1000 * 120; //update approx. every 1-2 minutes
 
-    uint32 rv = Util::getRandomUInt(100);
+    uint32_t rv = Util::getRandomUInt(100);
 
-    std::map<uint32, uint32>::iterator itr;
+    std::map<uint32_t, uint32_t>::iterator itr;
 
     if (rv <= m_effectValues[4])  // %chance on changing weather from sunny to m_effectValues[5]
     {
@@ -213,8 +213,8 @@ void WeatherInfo::_GenerateWeather()
 
     SendUpdate();
 
-    sEventMgr.AddEvent(this, &WeatherInfo::BuildUp, EVENT_WEATHER_UPDATE, (uint32)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 2), 0, 0);
-    LOG_DEBUG("Forecast for zone:%d new type:%d new interval:%d ms", m_zoneId, m_currentEffect, (uint32)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 2));
+    sEventMgr.AddEvent(this, &WeatherInfo::BuildUp, EVENT_WEATHER_UPDATE, (uint32_t)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 2), 0, 0);
+    LOG_DEBUG("Forecast for zone:%d new type:%d new interval:%d ms", m_zoneId, m_currentEffect, (uint32_t)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 2));
 }
 
 void WeatherInfo::BuildUp()
@@ -223,8 +223,8 @@ void WeatherInfo::BuildUp()
     if (m_currentDensity >= 0.50f)
     {
         sEventMgr.RemoveEvents(this, EVENT_WEATHER_UPDATE);
-        sEventMgr.AddEvent(this, &WeatherInfo::Update, EVENT_WEATHER_UPDATE, (uint32)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 4), 0, 0);
-        //        LOG_DEBUG("Weather starting random for zone:%d type:%d new interval:%d ms",m_zoneId,m_currentEffect,(uint32)(m_totalTime/ceil(m_maxDensity/WEATHER_DENSITY_UPDATE)*4));
+        sEventMgr.AddEvent(this, &WeatherInfo::Update, EVENT_WEATHER_UPDATE, (uint32_t)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 4), 0, 0);
+        //        LOG_DEBUG("Weather starting random for zone:%d type:%d new interval:%d ms",m_zoneId,m_currentEffect,(uint32_t)(m_totalTime/ceil(m_maxDensity/WEATHER_DENSITY_UPDATE)*4));
     }
     else
     {

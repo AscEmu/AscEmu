@@ -241,7 +241,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
 
 protected:
 
-    uint32 PlantTimer;
+    uint32_t PlantTimer;
 
     CreatureAISpells* plantRedSeedling;
     CreatureAISpells* plantGreenSeedling;
@@ -356,7 +356,7 @@ class LajAI : public CreatureAIScript
 
 protected:
 
-    uint32 TeleportTimer;
+    uint32_t TeleportTimer;
     CreatureAISpells* teleportSelf;
 };
 
@@ -413,7 +413,7 @@ class WarpSplinterAI : public CreatureAIScript
 
 protected:
 
-    uint32 SummonTimer;
+    uint32_t SummonTimer;
     CreatureAISpells* summonSaplings;
 };
 

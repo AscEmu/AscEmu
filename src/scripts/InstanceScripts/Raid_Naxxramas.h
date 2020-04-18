@@ -39,10 +39,10 @@ class DeathKnightUnderstudyAI;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Carrion Spinner
-const uint32 CN_CARRION_SPINNER = 15975;
-const uint32 CARRION_SPINNER_POISON_BOLT_NORMAL = 30043;
-const uint32 CARRION_SPINNER_POISON_BOLT_HEROIC = 56032;
-const uint32 CARRION_SPINNER_WEB_WRAP = 28618; //\todo  PULL EFFECT *FUN*
+const uint32_t CN_CARRION_SPINNER = 15975;
+const uint32_t CARRION_SPINNER_POISON_BOLT_NORMAL = 30043;
+const uint32_t CARRION_SPINNER_POISON_BOLT_HEROIC = 56032;
+const uint32_t CARRION_SPINNER_WEB_WRAP = 28618; //\todo  PULL EFFECT *FUN*
 
 class CarrionSpinnerAI : public CreatureAIScript
 {
@@ -52,9 +52,9 @@ class CarrionSpinnerAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Dread Creeper
-const uint32 CN_DREAD_CREEPER = 15974;
-const uint32 DREAD_CREEPER_VEIL_OF_SHADOW_NORMAL = 53803;
-const uint32 DREAD_CREEPER_VEIL_OF_SHADOW_HEROIC = 28440;
+const uint32_t CN_DREAD_CREEPER = 15974;
+const uint32_t DREAD_CREEPER_VEIL_OF_SHADOW_NORMAL = 53803;
+const uint32_t DREAD_CREEPER_VEIL_OF_SHADOW_HEROIC = 28440;
 
 class DreadCreeperAI : public CreatureAIScript
 {
@@ -64,9 +64,9 @@ class DreadCreeperAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Naxxramas Cultist
-const uint32 CN_NAXXRAMAS_CULTIST = 15980;
-const uint32 NAXXRAMAS_CULTIST_KNOCKBACK_NORMAL = 53850;
-const uint32 NAXXRAMAS_CULTIST_KNOCKBACK_HEROIC = 53851;
+const uint32_t CN_NAXXRAMAS_CULTIST = 15980;
+const uint32_t NAXXRAMAS_CULTIST_KNOCKBACK_NORMAL = 53850;
+const uint32_t NAXXRAMAS_CULTIST_KNOCKBACK_HEROIC = 53851;
 
 class NaxxramasCultistAI : public CreatureAIScript
 {
@@ -78,9 +78,9 @@ class NaxxramasCultistAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Venom Stalker
-const uint32 CN_VENOM_STALKER = 15976;
-const uint32 VENOM_STALKER_POISON_CHARGE_NORMAL = 28431;
-const uint32 VENOM_STALKER_POISON_CHARGE_HEROIC = 53809;
+const uint32_t CN_VENOM_STALKER = 15976;
+const uint32_t VENOM_STALKER_POISON_CHARGE_NORMAL = 28431;
+const uint32_t VENOM_STALKER_POISON_CHARGE_HEROIC = 53809;
 
 class VenomStalkerAI : public CreatureAIScript
 {
@@ -90,12 +90,12 @@ class VenomStalkerAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Tomb Horror
-const uint32 CN_TOMB_HORROR = 15979;
-const uint32 TOMB_HORROR_SPIKE_VOLLEY = 28615;
-const uint32 TOMB_HORROR_CRYPT_SCARAB_SWARM_NORMAL = 54313;
-const uint32 TOMB_HORROR_CRYPT_SCARAB_SWARM_HEROIC = 54317;
-const uint32 TOMB_HORROR_CRYPT_SCARABS_NORMAL = 54311;
-const uint32 TOMB_HORROR_CRYPT_SCARABS_HEROIC = 54316;
+const uint32_t CN_TOMB_HORROR = 15979;
+const uint32_t TOMB_HORROR_SPIKE_VOLLEY = 28615;
+const uint32_t TOMB_HORROR_CRYPT_SCARAB_SWARM_NORMAL = 54313;
+const uint32_t TOMB_HORROR_CRYPT_SCARAB_SWARM_HEROIC = 54317;
+const uint32_t TOMB_HORROR_CRYPT_SCARABS_NORMAL = 54311;
+const uint32_t TOMB_HORROR_CRYPT_SCARABS_HEROIC = 54316;
 
 class TombHorrorAI : public CreatureAIScript
 {
@@ -105,11 +105,11 @@ class TombHorrorAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Naxxramas Acolyte
-const uint32 CN_NAXXRAMAS_ACOLYTE = 16368;
-const uint32 NAXXRAMAS_ACOLYTE_SHADOW_BOLT_VOLLEY_NORMAL = 56064;
-const uint32 NAXXRAMAS_ACOLYTE_SHADOW_BOLT_VOLLEY_HEROIC = 56065;
-const uint32 NAXXRAMAS_ACOLYTE_ARCANE_EXPLOSION_NORMAL = 56063;
-const uint32 NAXXRAMAS_ACOLYTE_ARCANE_EXPLOSION_HEROIC = 56067;
+const uint32_t CN_NAXXRAMAS_ACOLYTE = 16368;
+const uint32_t NAXXRAMAS_ACOLYTE_SHADOW_BOLT_VOLLEY_NORMAL = 56064;
+const uint32_t NAXXRAMAS_ACOLYTE_SHADOW_BOLT_VOLLEY_HEROIC = 56065;
+const uint32_t NAXXRAMAS_ACOLYTE_ARCANE_EXPLOSION_NORMAL = 56063;
+const uint32_t NAXXRAMAS_ACOLYTE_ARCANE_EXPLOSION_HEROIC = 56067;
 // To check: "total caster" + Explosion only when players are close ?
 class NaxxramasAcolyteAI : public CreatureAIScript
 {
@@ -119,10 +119,10 @@ class NaxxramasAcolyteAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Vigilant Shade
-const uint32 CN_VIGILANT_SHADE = 30085;
-const uint32 VIGILANT_SHADE_INVISIBILITY = 55848;
-const uint32 VIGILANT_SHADE_SHADOW_BOLT_VOLLEY_NORMAL = 55850;
-const uint32 VIGILANT_SHADE_SHADOW_BOLT_VOLLEY_HEROIC = 55851;
+const uint32_t CN_VIGILANT_SHADE = 30085;
+const uint32_t VIGILANT_SHADE_INVISIBILITY = 55848;
+const uint32_t VIGILANT_SHADE_SHADOW_BOLT_VOLLEY_NORMAL = 55850;
+const uint32_t VIGILANT_SHADE_SHADOW_BOLT_VOLLEY_HEROIC = 55851;
 // Invisiblity should be removed OnCombatStart ?
 class VigilantShadeAI : public CreatureAIScript
 {
@@ -135,9 +135,9 @@ class VigilantShadeAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Crypt Reaver
-const uint32 CN_CRYPT_REAVER = 15978;
-const uint32 CRYPT_REAVER_CLEAVE = 40504;
-const uint32 CRYPT_REAVER_FRENZY = 56625;
+const uint32_t CN_CRYPT_REAVER = 15978;
+const uint32_t CRYPT_REAVER_CLEAVE = 40504;
+const uint32_t CRYPT_REAVER_FRENZY = 56625;
 
 class CryptReaverAI : public CreatureAIScript
 {
@@ -147,7 +147,7 @@ class CryptReaverAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Web Wrap
-const uint32 CN_WEB_WRAP = 16486;
+const uint32_t CN_WEB_WRAP = 16486;
 
 class WebWrapAI : public CreatureAIScript
 {
@@ -160,14 +160,14 @@ class WebWrapAI : public CreatureAIScript
     void AIUpdate() override;
     void Destroy() override;
 
-    uint64    mPlayerGuid;
+    uint64_t    mPlayerGuid;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Maexxna Spiderling
-const uint32 CN_MAEXXNA_SPIDERLING = 17055;
-const uint32 MAEXXNA_SPIDERLING_NECROTIC_POISON_NORMAL = 54121;
-const uint32 MAEXXNA_SPIDERLING_NECROTIC_POISON_HEROIC = 28776;
+const uint32_t CN_MAEXXNA_SPIDERLING = 17055;
+const uint32_t MAEXXNA_SPIDERLING_NECROTIC_POISON_NORMAL = 54121;
+const uint32_t MAEXXNA_SPIDERLING_NECROTIC_POISON_HEROIC = 28776;
 
 class MaexxnaSpiderlingAI : public CreatureAIScript
 {
@@ -177,16 +177,16 @@ class MaexxnaSpiderlingAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Maexxna
-const uint32 CN_MAEXXNA = 15952;
-const uint32 MAEXXNA_WEB_WRAP = 28622;
-const uint32 MAEXXNA_WEB_SPRAY_NORMAL = 29484;
-const uint32 MAEXXNA_WEB_SPRAY_HEROIC = 54125;
-const uint32 MAEXXNA_POISON_SHOCK_NORMAL = 28741;
-const uint32 MAEXXNA_POISON_SHOCK_HEROIC = 54122;
-const uint32 MAEXXNA_NECROTIC_POISON_NORMAL = 54121;
-const uint32 MAEXXNA_NECROTIC_POISON_HEROIC = 28776;
-const uint32 MAEXXNA_FRENZY_NORMAL = 54123;
-const uint32 MAEXXNA_FRENZY_HEROIC = 54124;
+const uint32_t CN_MAEXXNA = 15952;
+const uint32_t MAEXXNA_WEB_WRAP = 28622;
+const uint32_t MAEXXNA_WEB_SPRAY_NORMAL = 29484;
+const uint32_t MAEXXNA_WEB_SPRAY_HEROIC = 54125;
+const uint32_t MAEXXNA_POISON_SHOCK_NORMAL = 28741;
+const uint32_t MAEXXNA_POISON_SHOCK_HEROIC = 54122;
+const uint32_t MAEXXNA_NECROTIC_POISON_NORMAL = 54121;
+const uint32_t MAEXXNA_NECROTIC_POISON_HEROIC = 28776;
+const uint32_t MAEXXNA_FRENZY_NORMAL = 54123;
+const uint32_t MAEXXNA_FRENZY_HEROIC = 54124;
 
 static Movement::Location WebWrapPos[] =
 {
@@ -213,18 +213,18 @@ class MaexxnaAI : public CreatureAIScript
 
     bool mHasEnraged;
     bool mLeftWall;
-    int32 mAddsSummonTimer;
-    int32 mWebSprayTimer;
-    uint32 mWebWrapTimer;
+    int32_t mAddsSummonTimer;
+    int32_t mWebSprayTimer;
+    uint32_t mWebWrapTimer;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Naxxramas Worshipper
-const uint32 CN_NAXXRAMAS_WORSHIPPER = 16506;
-const uint32 NAXXRAMAS_WORSHIPPER_FIREBALL_NORMAL = 54095;
-const uint32 NAXXRAMAS_WORSHIPPER_FIREBALL_HEROIC = 54096;
-const uint32 NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE = 28732;
-const uint32 NAXXRAMAS_WORSHIPPER_MIND_EXHAUSTION = 28727;
+const uint32_t CN_NAXXRAMAS_WORSHIPPER = 16506;
+const uint32_t NAXXRAMAS_WORSHIPPER_FIREBALL_NORMAL = 54095;
+const uint32_t NAXXRAMAS_WORSHIPPER_FIREBALL_HEROIC = 54096;
+const uint32_t NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE = 28732;
+const uint32_t NAXXRAMAS_WORSHIPPER_MIND_EXHAUSTION = 28727;
 
 class NaxxramasWorshipperAI : public CreatureAIScript
 {
@@ -232,7 +232,7 @@ class NaxxramasWorshipperAI : public CreatureAIScript
     NaxxramasWorshipperAI(Creature* pCreature);
     friend class GrandWidowFaerlinaAI;
 
-    void OnCastSpell(uint32 pSpellId) override;
+    void OnCastSpell(uint32_t pSpellId) override;
     void OnDied(Unit* pKiller) override;
     void AIUpdate() override;
     void Destroy() override;
@@ -243,9 +243,9 @@ class NaxxramasWorshipperAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Naxxramas Follower
-const uint32 CN_NAXXRAMAS_FOLLOWER = 16505;
-const uint32 NAXXRAMAS_FOLLOWER_BERSERKER_CHARGE_HEROIC = 56107;
-const uint32 NAXXRAMAS_FOLLOWER_SILENCE_HEROIC = 54093;
+const uint32_t CN_NAXXRAMAS_FOLLOWER = 16505;
+const uint32_t NAXXRAMAS_FOLLOWER_BERSERKER_CHARGE_HEROIC = 56107;
+const uint32_t NAXXRAMAS_FOLLOWER_SILENCE_HEROIC = 54093;
 
 //void SpellFunc_NaxxramasFollowerCharge(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -262,13 +262,13 @@ class NaxxramasFollowerAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Grand Widow Faerlina
-const uint32 CN_GRAND_WIDOW_FAERLINA = 15953;
-const uint32 GRAND_WIDOW_FAERLINA_POISON_VOLLEY_BOLT_NORMAL = 28796;
-const uint32 GRAND_WIDOW_FAERLINA_POISON_VOLLEY_BOLT_HEROIC = 54098;
-const uint32 GRAND_WIDOW_FAERLINA_FRENZY_NORMAL = 28798;
-const uint32 GRAND_WIDOW_FAERLINA_FRENZY_HEROIC = 54100;
-const uint32 GRAND_WIDOW_RAIN_OF_FIRE_NORMAL = 39024;
-const uint32 GRAND_WIDOW_RAIN_OF_FIRE_HEROIC = 58936;
+const uint32_t CN_GRAND_WIDOW_FAERLINA = 15953;
+const uint32_t GRAND_WIDOW_FAERLINA_POISON_VOLLEY_BOLT_NORMAL = 28796;
+const uint32_t GRAND_WIDOW_FAERLINA_POISON_VOLLEY_BOLT_HEROIC = 54098;
+const uint32_t GRAND_WIDOW_FAERLINA_FRENZY_NORMAL = 28798;
+const uint32_t GRAND_WIDOW_FAERLINA_FRENZY_HEROIC = 54100;
+const uint32_t GRAND_WIDOW_RAIN_OF_FIRE_NORMAL = 39024;
+const uint32_t GRAND_WIDOW_RAIN_OF_FIRE_HEROIC = 58936;
 
 static Movement::Location Worshippers[4] =
 {
@@ -298,17 +298,17 @@ class GrandWidowFaerlinaAI : public CreatureAIScript
     std::set< NaxxramasFollowerAI* > mFollowers;
     CreatureAISpells* mFrenzy;
     CreatureAISpells* mPoisonVolleyBolt;
-    int32 mFrenzyTimer;
-    int32 mPoisonVolleyBoltTimer;
+    int32_t mFrenzyTimer;
+    int32_t mPoisonVolleyBoltTimer;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Crypt Guard
-const uint32 CN_CRYPT_GUARD = 16573;
-const uint32 CRYPT_GUARD_ACID_SPLIT_NORMAL = 28969;
-const uint32 CRYPT_GUARD_ACID_SPLIT_HEROIC = 56098;
-const uint32 CRYPT_GUARD_CLEAVE = 40504;
-const uint32 CRYPT_GUARD_FRENZY = 8269;
+const uint32_t CN_CRYPT_GUARD = 16573;
+const uint32_t CRYPT_GUARD_ACID_SPLIT_NORMAL = 28969;
+const uint32_t CRYPT_GUARD_ACID_SPLIT_HEROIC = 56098;
+const uint32_t CRYPT_GUARD_CLEAVE = 40504;
+const uint32_t CRYPT_GUARD_FRENZY = 8269;
 
 class CryptGuardAI : public CreatureAIScript
 {
@@ -326,7 +326,7 @@ class CryptGuardAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Corpse Scarab
-const uint32 CN_CORPSE_SCARAB = 16698;
+const uint32_t CN_CORPSE_SCARAB = 16698;
 
 class CorpseScarabAI : public CreatureAIScript
 {
@@ -341,14 +341,14 @@ class CorpseScarabAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Anub'Rekhan
-const uint32 CN_ANUBREKHAN = 15956;
-const uint32 ANUBREKHAN_IMPALE_NORMAL = 28783;
-const uint32 ANUBREKHAN_IMPALE_HEROIC = 56090;
-const uint32 ANUBREKHAN_LOCUST_SWARM_NORMAL = 28785;
-const uint32 ANUBREKHAN_LOCUST_SWARM_HEROIC = 54021;
-const uint32 ANUBREKHAN_SUMMON_CORPSE_SCARABS_5 = 29105;
-const uint32 ANUBREKHAN_SUMMON_CORPSE_SCARABS_10 = 28864;
-const uint32 ANUBREKHAN_BERSERK = 26662;
+const uint32_t CN_ANUBREKHAN = 15956;
+const uint32_t ANUBREKHAN_IMPALE_NORMAL = 28783;
+const uint32_t ANUBREKHAN_IMPALE_HEROIC = 56090;
+const uint32_t ANUBREKHAN_LOCUST_SWARM_NORMAL = 28785;
+const uint32_t ANUBREKHAN_LOCUST_SWARM_HEROIC = 54021;
+const uint32_t ANUBREKHAN_SUMMON_CORPSE_SCARABS_5 = 29105;
+const uint32_t ANUBREKHAN_SUMMON_CORPSE_SCARABS_10 = 28864;
+const uint32_t ANUBREKHAN_BERSERK = 26662;
 
 static Movement::Location CryptGuards[] =
 {
@@ -372,10 +372,10 @@ class AnubRekhanAI : public CreatureAIScript
 
     std::set< CorpseScarabAI* > mScarabs;
     std::set< CryptGuardAI* > mCryptGuards;
-    std::set< uint32 > mUsedCorpseGuids;
+    std::set< uint32_t > mUsedCorpseGuids;
     CreatureAISpells* mLocustSwarm;
-    int32 mLocustSwarmTimer;
-    uint32 mCryptSpawnTimer;
+    int32_t mLocustSwarmTimer;
+    uint32_t mCryptSpawnTimer;
 
     CreatureAISpells* mLocaleEnrageSpell;
     uint32_t mLocaleEnrageTimerId;
@@ -386,12 +386,12 @@ class AnubRekhanAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Infectious Ghoul
-const uint32 CN_INFECTIOUS_GHOUL = 16244;
-const uint32 INFECTIOUS_GHOUL_FLESH_ROT = 54709;
-const uint32 INFECTIOUS_GHOUL_REND_NORMAL = 54703;
-const uint32 INFECTIOUS_GHOUL_REND_HEROIC = 54708;
-const uint32 INFECTIOUS_GHOUL_FRENZY_NORMAL = 54701;
-const uint32 INFECTIOUS_GHOUL_FRENZY_HEROIC = 24318;
+const uint32_t CN_INFECTIOUS_GHOUL = 16244;
+const uint32_t INFECTIOUS_GHOUL_FLESH_ROT = 54709;
+const uint32_t INFECTIOUS_GHOUL_REND_NORMAL = 54703;
+const uint32_t INFECTIOUS_GHOUL_REND_HEROIC = 54708;
+const uint32_t INFECTIOUS_GHOUL_FRENZY_NORMAL = 54701;
+const uint32_t INFECTIOUS_GHOUL_FRENZY_HEROIC = 24318;
 
 class InfectiousGhoulAI : public CreatureAIScript
 {
@@ -406,11 +406,11 @@ class InfectiousGhoulAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Stoneskin Gargoyle
-const uint32 CN_STONESKIN_GARGOYLE = 16168;
-const uint32 STONESKIN_GARGOYLE_ACID_VOLLEY_NORMAL = 29325;
-const uint32 STONESKIN_GARGOYLE_ACID_VOLLEY_HEROIC = 54714;
-const uint32 STONESKIN_GARGOYLE_STONESKIN_NORMAL = 28995;
-const uint32 STONESKIN_GARGOYLE_STONESKIN_HEROIC = 54722;
+const uint32_t CN_STONESKIN_GARGOYLE = 16168;
+const uint32_t STONESKIN_GARGOYLE_ACID_VOLLEY_NORMAL = 29325;
+const uint32_t STONESKIN_GARGOYLE_ACID_VOLLEY_HEROIC = 54714;
+const uint32_t STONESKIN_GARGOYLE_STONESKIN_NORMAL = 28995;
+const uint32_t STONESKIN_GARGOYLE_STONESKIN_HEROIC = 54722;
 
 class StoneskinGargoyleAI : public CreatureAIScript
 {
@@ -425,8 +425,8 @@ class StoneskinGargoyleAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Frenzied Bat
-const uint32 CN_FRENZIED_BAT = 16036;
-const uint32 FRENZIED_BAT_FRENZIED_DIVE = 54781;
+const uint32_t CN_FRENZIED_BAT = 16036;
+const uint32_t FRENZIED_BAT_FRENZIED_DIVE = 54781;
 
 class FrenziedBatAI : public CreatureAIScript
 {
@@ -436,11 +436,11 @@ class FrenziedBatAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Plague Beast
-const uint32 CN_PLAGUE_BEAST = 16034;
-const uint32 PLAGUE_BEAST_PLAGUE_SPLASH_NORMAL = 54780;
-const uint32 PLAGUE_BEAST_PLAGUE_SPLASH_HEROIC = 56538;
-const uint32 PLAGUE_BEAST_MUTATED_SPORES = 30110;
-const uint32 PLAGUE_BEAST_TRAMPLE = 5568;
+const uint32_t CN_PLAGUE_BEAST = 16034;
+const uint32_t PLAGUE_BEAST_PLAGUE_SPLASH_NORMAL = 54780;
+const uint32_t PLAGUE_BEAST_PLAGUE_SPLASH_HEROIC = 56538;
+const uint32_t PLAGUE_BEAST_MUTATED_SPORES = 30110;
+const uint32_t PLAGUE_BEAST_TRAMPLE = 5568;
 
 class PlagueBeastAI : public CreatureAIScript
 {
@@ -453,9 +453,9 @@ class PlagueBeastAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Eye Stalker
-const uint32 CN_EYE_STALKER = 16236;
-const uint32 EYE_STALKER_MIND_FLAY_NORMAL = 29407;
-const uint32 EYE_STALKER_MIND_FLAY_HEROIC = 54805;
+const uint32_t CN_EYE_STALKER = 16236;
+const uint32_t EYE_STALKER_MIND_FLAY_NORMAL = 29407;
+const uint32_t EYE_STALKER_MIND_FLAY_HEROIC = 54805;
 
 class EyeStalkerAI : public CreatureAIScript
 {
@@ -468,12 +468,12 @@ class EyeStalkerAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Noth the Plaguebringer
-const uint32 CN_NOTH_THE_PLAGUEBRINGER = 15954;
-const uint32 NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC = 29208;
-const uint32 NOTH_THE_PLAGUEBRINGER_CRIPLE_HEROIC = 29212;
-const uint32 NOTH_THE_PLAGUEBRINGER_CURSE_OF_THE_PLAGUE_NORMAL = 29213;    // I must check if it's target-limited spell
-const uint32 NOTH_THE_PLAGUEBRINGER_CURSE_OF_THE_PLAGUE_HEROIC = 54835;    // I must check if it's target-limited spell
-const uint32 NOTH_THE_PLAGUEBRINGER_BERSERK = 47008;    // Guessed
+const uint32_t CN_NOTH_THE_PLAGUEBRINGER = 15954;
+const uint32_t NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC = 29208;
+const uint32_t NOTH_THE_PLAGUEBRINGER_CRIPLE_HEROIC = 29212;
+const uint32_t NOTH_THE_PLAGUEBRINGER_CURSE_OF_THE_PLAGUE_NORMAL = 29213;    // I must check if it's target-limited spell
+const uint32_t NOTH_THE_PLAGUEBRINGER_CURSE_OF_THE_PLAGUE_HEROIC = 54835;    // I must check if it's target-limited spell
+const uint32_t NOTH_THE_PLAGUEBRINGER_BERSERK = 47008;    // Guessed
 
 static Movement::Location SkelPosPhase1[] =
 {
@@ -513,17 +513,17 @@ class NothThePlaguebringerAI : public CreatureAIScript
     std::set<PlaguedChampionAI*> mChampions;
     std::set<PlaguedGuardianAI*> mGuardians;
 
-    int32 mBlinkTimer;
-    int32 mSkeletonTimer;
-    int32 mPhaseSwitchTimer;
-    uint32 mPhaseCounter;
+    int32_t mBlinkTimer;
+    int32_t mSkeletonTimer;
+    int32_t mPhaseSwitchTimer;
+    uint32_t mPhaseCounter;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Plagued Warrior
-const uint32 CN_PLAGUED_WARRIOR = 16984;
-const uint32 PLAGUED_WARRIOR_STRIKE = 12057;
-const uint32 PLAGUED_WARRIOR_CLEAVE = 15496;
+const uint32_t CN_PLAGUED_WARRIOR = 16984;
+const uint32_t PLAGUED_WARRIOR_STRIKE = 12057;
+const uint32_t PLAGUED_WARRIOR_CLEAVE = 15496;
 
 class PlaguedWarriorAI : public CreatureAIScript
 {
@@ -537,11 +537,11 @@ class PlaguedWarriorAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Plagued Champion
-const uint32 CN_PLAGUED_CHAMPION = 16983;
-const uint32 PLAGUED_CHAMPION_MORTAL_STRIKE_NORMAL = 32736;
-const uint32 PLAGUED_CHAMPION_MORTAL_STRIKE_HEROIC = 13737;
-const uint32 PLAGUED_CHAMPION_SHADOW_SHOCK_NORMAL = 30138;
-const uint32 PLAGUED_CHAMPION_SHADOW_SHOCK_HEROIC = 54889;
+const uint32_t CN_PLAGUED_CHAMPION = 16983;
+const uint32_t PLAGUED_CHAMPION_MORTAL_STRIKE_NORMAL = 32736;
+const uint32_t PLAGUED_CHAMPION_MORTAL_STRIKE_HEROIC = 13737;
+const uint32_t PLAGUED_CHAMPION_SHADOW_SHOCK_NORMAL = 30138;
+const uint32_t PLAGUED_CHAMPION_SHADOW_SHOCK_HEROIC = 54889;
 
 class PlaguedChampionAI : public CreatureAIScript
 {
@@ -555,10 +555,10 @@ class PlaguedChampionAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Plagued Guardian
-const uint32 CN_PLAGUED_GUARDIAN = 16981;
-const uint32 PLAGUED_GUARDIAN_ARCANE_EXPLOSION_NORMAL = 54890;
-const uint32 PLAGUED_GUARDIAN_ARCANE_EXPLOSION_HEROIC = 54891;
-const uint32 PLAGUED_GUARDIAN_BLINK = 29208;
+const uint32_t CN_PLAGUED_GUARDIAN = 16981;
+const uint32_t PLAGUED_GUARDIAN_ARCANE_EXPLOSION_NORMAL = 54890;
+const uint32_t PLAGUED_GUARDIAN_ARCANE_EXPLOSION_HEROIC = 54891;
+const uint32_t PLAGUED_GUARDIAN_BLINK = 29208;
 
 class PlaguedGuardianAI : public CreatureAIScript
 {
@@ -572,14 +572,14 @@ class PlaguedGuardianAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Heigan the Unclean
-const uint32 CN_HEIGAN_THE_UNCLEAN = 15936;
-const uint32 HEIGAN_THE_UNCLEAN_SPELL_DISRUPTION = 29310;
-const uint32 HEIGAN_THE_UNCLEAN_DECREPIT_FEVER_NORMAL = 29998;
-const uint32 HEIGAN_THE_UNCLEAN_DECREPIT_FEVER_HEROIC = 55011;
-const uint32 HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_CHANNEL = 29350;
-const uint32 HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_DAMAGE = 30122;
-const uint32 HEIGAN_THE_UNCLEAN_TELEPORT = 34673;   // Guessed.
-const uint32 FISSURE_TRIGGER_ERUPTION = 29371;
+const uint32_t CN_HEIGAN_THE_UNCLEAN = 15936;
+const uint32_t HEIGAN_THE_UNCLEAN_SPELL_DISRUPTION = 29310;
+const uint32_t HEIGAN_THE_UNCLEAN_DECREPIT_FEVER_NORMAL = 29998;
+const uint32_t HEIGAN_THE_UNCLEAN_DECREPIT_FEVER_HEROIC = 55011;
+const uint32_t HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_CHANNEL = 29350;
+const uint32_t HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_DAMAGE = 30122;
+const uint32_t HEIGAN_THE_UNCLEAN_TELEPORT = 34673;   // Guessed.
+const uint32_t FISSURE_TRIGGER_ERUPTION = 29371;
 
 float HeiganPos[2] = { 2796, -3707 };
 const float HeiganEruptionSlope[3] =
@@ -595,23 +595,23 @@ class HeiganTheUncleanAI : public CreatureAIScript
     HeiganTheUncleanAI(Creature* pCreature);
     friend class PlagueFissureGO;
 
-    static uint32 CalculateTriggerArea(float pPosX, float pPosY);
-    void CallEruptionEvent(int32 pTimerId, int32 pNewTime);
+    static uint32_t CalculateTriggerArea(float pPosX, float pPosY);
+    void CallEruptionEvent(int32_t pTimerId, int32_t pNewTime);
     void OnCombatStart(Unit* pTarget) override;
     void OnCombatStop(Unit* pTarget) override;
     void AIUpdate() override;
     void Destroy() override;
 
-    std::set<std::pair<uint32, PlagueFissureGO*>> mFissures;
-    int32 mPhaseSwitchTimer;
-    int32 mEruptionTimer;
-    int32 mEruptionPhase;
+    std::set<std::pair<uint32_t, PlagueFissureGO*>> mFissures;
+    int32_t mPhaseSwitchTimer;
+    int32_t mEruptionTimer;
+    int32_t mEruptionPhase;
     bool mClockWiseEruption;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Plague Fissure
-const uint32 GO_PLAGUE_FISSURE = 181533;
+const uint32_t GO_PLAGUE_FISSURE = 181533;
 
 class PlagueFissureGO : public GameObjectAIScript
 {
@@ -631,16 +631,16 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Loatheb
-const uint32 CN_LOATHEB = 16011;
-const uint32 LOATHEB_NECROTIC_AURA = 55593;
-const uint32 LOATHEB_SUMMON_SPORE = 29234;
-const uint32 LOATHEB_DEATHBLOOM_NORMAL = 29865;
-const uint32 LOATHEB_DEATHBLOOM_HEROIC = 55053;
-const uint32 LOATHEB_DEATHBLOOM_DAMAGE_NORMAL = 55594;
-const uint32 LOATHEB_DEATHBLOOM_DAMAGE_HEROIC = 55601;
-const uint32 LOATHEB_INEVITABLE_DOOM_NORMAL = 29204;
-const uint32 LOATHEB_INEVITABLE_DOOM_HEROIC = 55052;
-const uint32 LOATHEB_BERSERK = 26662;    // Unused
+const uint32_t CN_LOATHEB = 16011;
+const uint32_t LOATHEB_NECROTIC_AURA = 55593;
+const uint32_t LOATHEB_SUMMON_SPORE = 29234;
+const uint32_t LOATHEB_DEATHBLOOM_NORMAL = 29865;
+const uint32_t LOATHEB_DEATHBLOOM_HEROIC = 55053;
+const uint32_t LOATHEB_DEATHBLOOM_DAMAGE_NORMAL = 55594;
+const uint32_t LOATHEB_DEATHBLOOM_DAMAGE_HEROIC = 55601;
+const uint32_t LOATHEB_INEVITABLE_DOOM_NORMAL = 29204;
+const uint32_t LOATHEB_INEVITABLE_DOOM_HEROIC = 55052;
+const uint32_t LOATHEB_BERSERK = 26662;    // Unused
 
 static Movement::Location Spores[] =
 {
@@ -662,17 +662,17 @@ class LoathebAI : public CreatureAIScript
     void Destroy() override;
 
     std::set<SporeAI*> mSpores;
-    uint32 mDoomStaticTimer;
-    int32 mSporeTimer;
-    int32 mDoomTimer;
-    int32 mDeathbloomTimer;
+    uint32_t mDoomStaticTimer;
+    int32_t mSporeTimer;
+    int32_t mDoomTimer;
+    int32_t mDeathbloomTimer;
     bool mDeathbloomDamagePhase;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spore
-const uint32 CN_SPORE = 16286;
-const uint32 SPORE_FUNGAL_CREEP = 29232;
+const uint32_t CN_SPORE = 16286;
+const uint32_t SPORE_FUNGAL_CREEP = 29232;
 
 class SporeAI : public CreatureAIScript
 {
@@ -690,12 +690,12 @@ class SporeAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Death Knight
-const uint32 CN_DEATH_KNIGHT = 16146;
-const uint32 DEATH_KNIGHT_BLOOD_PRESENCE = 55212;
-const uint32 DEATH_KNIGHT_DEATH_COIL_NORMAL = 55209;
-const uint32 DEATH_KNIGHT_DEATH_COIL_HEROIC = 55320;
-const uint32 DEATH_KNIGHT_DEATH_COIL_HEAL = 55210;
-const uint32 DEATH_KNIGHT_HYSTERIA = 55213;
+const uint32_t CN_DEATH_KNIGHT = 16146;
+const uint32_t DEATH_KNIGHT_BLOOD_PRESENCE = 55212;
+const uint32_t DEATH_KNIGHT_DEATH_COIL_NORMAL = 55209;
+const uint32_t DEATH_KNIGHT_DEATH_COIL_HEROIC = 55320;
+const uint32_t DEATH_KNIGHT_DEATH_COIL_HEAL = 55210;
+const uint32_t DEATH_KNIGHT_HYSTERIA = 55213;
 
 class DeathKnightAI : public CreatureAIScript
 {
@@ -707,12 +707,12 @@ class DeathKnightAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Death Knight Captain
-const uint32 CN_DEATH_KNIGHT_CAPTAIN = 16145;
-const uint32 DEATH_KNIGHT_CAPTAIN_UNHOLY_PRESENCE = 55222;
-const uint32 DEATH_KNIGHT_CAPTAIN_RAISE_DEAD = 28353;
-const uint32 DEATH_KNIGHT_CAPTAIN_PLAGUE_STRIKE_NORMAL = 55255;
-const uint32 DEATH_KNIGHT_CAPTAIN_PLAGUE_STRIKE_HEROIC = 55321;
-const uint32 DEATH_KNIGHT_CAPTAIN_WHIRLWIND = 28335;
+const uint32_t CN_DEATH_KNIGHT_CAPTAIN = 16145;
+const uint32_t DEATH_KNIGHT_CAPTAIN_UNHOLY_PRESENCE = 55222;
+const uint32_t DEATH_KNIGHT_CAPTAIN_RAISE_DEAD = 28353;
+const uint32_t DEATH_KNIGHT_CAPTAIN_PLAGUE_STRIKE_NORMAL = 55255;
+const uint32_t DEATH_KNIGHT_CAPTAIN_PLAGUE_STRIKE_HEROIC = 55321;
+const uint32_t DEATH_KNIGHT_CAPTAIN_WHIRLWIND = 28335;
 
 class DeathKnightCaptainAI : public CreatureAIScript
 {
@@ -727,7 +727,7 @@ class DeathKnightCaptainAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Ghost of Naxxramas
-const uint32 CN_GHOST_OF_NAXXRAMAS = 16419;
+const uint32_t CN_GHOST_OF_NAXXRAMAS = 16419;
 
 class GhostOfNaxxramasAI : public CreatureAIScript
 {
@@ -737,10 +737,10 @@ class GhostOfNaxxramasAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Shade of Naxxramas
-const uint32 CN_SHADE_OF_NAXXRAMAS = 16164;
-const uint32 SHADE_OF_NAXXRAMAS_PORTAL_OF_SHADOWS = 28383;
-const uint32 SHADE_OF_NAXXRAMAS_SHADOW_BOLT_VOLLEY_NORMAL = 28407;
-const uint32 SHADE_OF_NAXXRAMAS_SHADOW_BOLT_VOLLEY_HEROIC = 55323;
+const uint32_t CN_SHADE_OF_NAXXRAMAS = 16164;
+const uint32_t SHADE_OF_NAXXRAMAS_PORTAL_OF_SHADOWS = 28383;
+const uint32_t SHADE_OF_NAXXRAMAS_SHADOW_BOLT_VOLLEY_NORMAL = 28407;
+const uint32_t SHADE_OF_NAXXRAMAS_SHADOW_BOLT_VOLLEY_HEROIC = 55323;
 
 class ShadeOfNaxxramasAI : public CreatureAIScript
 {
@@ -756,7 +756,7 @@ class ShadeOfNaxxramasAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Portal of Shadows
-const uint32 CN_PORTAL_OF_SHADOWS = 16420;
+const uint32_t CN_PORTAL_OF_SHADOWS = 16420;
 
 class PortalOfShadowsAI : public CreatureAIScript
 {
@@ -769,18 +769,18 @@ class PortalOfShadowsAI : public CreatureAIScript
     void Destroy() override;
 
     ShadeOfNaxxramasAI* mShadeAI;
-    int32 mSpawnTimer;
+    int32_t mSpawnTimer;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Necro Knight
-const uint32 CN_NECRO_KNIGHT = 16165;
-const uint32 NECRO_KNIGHT_ARCANE_EXPLOSION = 15453;
-const uint32 NECRO_KNIGHT_BLAST_WAVE = 30092;
-const uint32 NECRO_KNIGHT_BLINK = 28391;
-const uint32 NECRO_KNIGHT_CONE_OF_COLD = 30095;
-const uint32 NECRO_KNIGHT_FLAMESTRIKE = 30091;
-const uint32 NECRO_KNIGHT_FROST_NOVA = 30094;
+const uint32_t CN_NECRO_KNIGHT = 16165;
+const uint32_t NECRO_KNIGHT_ARCANE_EXPLOSION = 15453;
+const uint32_t NECRO_KNIGHT_BLAST_WAVE = 30092;
+const uint32_t NECRO_KNIGHT_BLINK = 28391;
+const uint32_t NECRO_KNIGHT_CONE_OF_COLD = 30095;
+const uint32_t NECRO_KNIGHT_FLAMESTRIKE = 30091;
+const uint32_t NECRO_KNIGHT_FROST_NOVA = 30094;
 
 //void SpellFunc_NecroKnightBlink(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -792,11 +792,11 @@ class NecroKnightAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Skeletal Smith
-const uint32 CN_SKELETAL_SMITH = 16193;
-const uint32 SKELETAL_SMITH_CRUSH_ARMOR = 33661;
-const uint32 SKELETAL_SMITH_DISARM = 6713;
-const uint32 SKELETAL_SMITH_THUNDERCLAP = 23931;
-//const uint32 SKELETAL_SMITH_SUDDER_ARMOR = 24317;
+const uint32_t CN_SKELETAL_SMITH = 16193;
+const uint32_t SKELETAL_SMITH_CRUSH_ARMOR = 33661;
+const uint32_t SKELETAL_SMITH_DISARM = 6713;
+const uint32_t SKELETAL_SMITH_THUNDERCLAP = 23931;
+//const uint32_t SKELETAL_SMITH_SUDDER_ARMOR = 24317;
 
 class SkeletalSmithAI : public CreatureAIScript
 {
@@ -806,17 +806,17 @@ class SkeletalSmithAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Death Knight Cavalier
-const uint32 CN_DEATH_KNIGHT_CAVALIER = 16163;
-const uint32 DEATH_KNIGHT_CAVALIER_BONE_ARMOR_NORMAL = 55315;
-const uint32 DEATH_KNIGHT_CAVALIER_BONE_ARMOR_HEROIC = 55336;
-const uint32 DEATH_KNIGHT_CAVALIER_DISMOUNT_DEATHCHARGER = 55294;
-const uint32 DEATH_KNIGHT_CAVALIER_ICY_TOUCH_NORMAL = 55313;
-const uint32 DEATH_KNIGHT_CAVALIER_ICY_TOUCH_HEROIC = 55331;
-const uint32 DEATH_KNIGHT_CAVALIER_STRANGULATE_NORMAL = 55314;
-const uint32 DEATH_KNIGHT_CAVALIER_STRANGULATE_HEROIC = 55334;
-const uint32 DEATH_KNIGHT_CAVALIER_AURA_OF_AGONY = 28413;
-const uint32 DEATH_KNIGHT_CAVALIER_CLEAVE = 15284;
-const uint32 DEATH_KNIGHT_CAVALIER_DEATH_COIL = 28412;
+const uint32_t CN_DEATH_KNIGHT_CAVALIER = 16163;
+const uint32_t DEATH_KNIGHT_CAVALIER_BONE_ARMOR_NORMAL = 55315;
+const uint32_t DEATH_KNIGHT_CAVALIER_BONE_ARMOR_HEROIC = 55336;
+const uint32_t DEATH_KNIGHT_CAVALIER_DISMOUNT_DEATHCHARGER = 55294;
+const uint32_t DEATH_KNIGHT_CAVALIER_ICY_TOUCH_NORMAL = 55313;
+const uint32_t DEATH_KNIGHT_CAVALIER_ICY_TOUCH_HEROIC = 55331;
+const uint32_t DEATH_KNIGHT_CAVALIER_STRANGULATE_NORMAL = 55314;
+const uint32_t DEATH_KNIGHT_CAVALIER_STRANGULATE_HEROIC = 55334;
+const uint32_t DEATH_KNIGHT_CAVALIER_AURA_OF_AGONY = 28413;
+const uint32_t DEATH_KNIGHT_CAVALIER_CLEAVE = 15284;
+const uint32_t DEATH_KNIGHT_CAVALIER_DEATH_COIL = 28412;
 
 class DeathKnightCavalierAI : public CreatureAIScript
 {
@@ -834,8 +834,8 @@ class DeathKnightCavalierAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Deathcharger Steed
-const uint32 CN_DEATHCHARGER_STEED = 29818;
-const uint32 DEATHCHARGER_STEED_CHARGE = 55317;
+const uint32_t CN_DEATHCHARGER_STEED = 29818;
+const uint32_t DEATHCHARGER_STEED_CHARGE = 55317;
 
 //void SpellFunc_DeathchargerSteedCharge(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -854,9 +854,9 @@ class DeathchargerSteedAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Dark Touched Warrior
-const uint32 CN_DARK_TOUCHED_WARRIOR = 16156;
-const uint32 DARK_TOUCHED_WARRIOR_WHIRLWIND = 55267;
-//const uint32 DARK_TOUCHED_WARRIOR_WHIRLWIND = 55266;    // This one disables mob's melee
+const uint32_t CN_DARK_TOUCHED_WARRIOR = 16156;
+const uint32_t DARK_TOUCHED_WARRIOR_WHIRLWIND = 55267;
+//const uint32_t DARK_TOUCHED_WARRIOR_WHIRLWIND = 55266;    // This one disables mob's melee
 
 class DarkTouchedWarriorAI : public CreatureAIScript
 {
@@ -866,13 +866,13 @@ class DarkTouchedWarriorAI : public CreatureAIScript
     void OnCombatStart(Unit* /*pTarget*/) override;
     void AIUpdate() override;
 
-    int32    mResetHateTimer;
+    int32_t    mResetHateTimer;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Risen Squire
-const uint32 CN_RISEN_SQUIRE = 16154;
-const uint32 RISEN_SQUIRE_PIERCE_ARMOR = 55318;
+const uint32_t CN_RISEN_SQUIRE = 16154;
+const uint32_t RISEN_SQUIRE_PIERCE_ARMOR = 55318;
 
 class RisenSquireAI : public CreatureAIScript
 {
@@ -882,11 +882,11 @@ class RisenSquireAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Unholy Axe
-const uint32 CN_UNHOLY_AXE = 16194;
-const uint32 UNHOLY_AXE_MORTAL_STRIKE_NORMAL = 16856;
-const uint32 UNHOLY_AXE_MORTAL_STRIKE_HEROIC = 15708;
-const uint32 UNHOLY_AXE_WHIRLWIND_NORMAL = 55463;
-const uint32 UNHOLY_AXE_WHIRLWIND_HEROIC = 24236;
+const uint32_t CN_UNHOLY_AXE = 16194;
+const uint32_t UNHOLY_AXE_MORTAL_STRIKE_NORMAL = 16856;
+const uint32_t UNHOLY_AXE_MORTAL_STRIKE_HEROIC = 15708;
+const uint32_t UNHOLY_AXE_WHIRLWIND_NORMAL = 55463;
+const uint32_t UNHOLY_AXE_WHIRLWIND_HEROIC = 24236;
 
 class UnholyAxeAI : public CreatureAIScript
 {
@@ -896,9 +896,9 @@ class UnholyAxeAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Unholy Sword
-const uint32 CN_UNHOLY_SWORD = 16216;
-const uint32 UNHOLY_SWORD_CLEAVE_NORMAL = 15284;
-const uint32 UNHOLY_SWORD_CLEAVE_HEROIC = 19632;
+const uint32_t CN_UNHOLY_SWORD = 16216;
+const uint32_t UNHOLY_SWORD_CLEAVE_NORMAL = 15284;
+const uint32_t UNHOLY_SWORD_CLEAVE_HEROIC = 19632;
 
 class UnholySwordAI : public CreatureAIScript
 {
@@ -908,11 +908,11 @@ class UnholySwordAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Unholy Staff
-const uint32 CN_UNHOLY_STAFF = 16215;
-const uint32 UNHOLY_STAFF_ARCANE_EXPLOSION_NORMAL = 28450;
-const uint32 UNHOLY_STAFF_ARCANE_EXPLOSION_HEROIC = 55467;
-const uint32 UNHOLY_STAFF_FROST_NOVA = 29849;
-const uint32 UNHOLY_STAFF_POLYMORPH = 29848;
+const uint32_t CN_UNHOLY_STAFF = 16215;
+const uint32_t UNHOLY_STAFF_ARCANE_EXPLOSION_NORMAL = 28450;
+const uint32_t UNHOLY_STAFF_ARCANE_EXPLOSION_HEROIC = 55467;
+const uint32_t UNHOLY_STAFF_FROST_NOVA = 29849;
+const uint32_t UNHOLY_STAFF_POLYMORPH = 29848;
 
 class UnholyStaffAI : public CreatureAIScript
 {
@@ -922,12 +922,12 @@ class UnholyStaffAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Instructor Razuvious
-const uint32 CN_INSTRUCTOR_RAZUVIOUS = 16061;
-const uint32 INSTRUCTOR_RAZUVIOUS_DISRUPTING_SHOUT_NORMAL = 55543;
-const uint32 INSTRUCTOR_RAZUVIOUS_DISRUPTING_SHOUT_HEROIC = 29107;
-const uint32 INSTRUCTOR_RAZUVIOUS_JAGGED_KNIFE = 55550;
-const uint32 INSTRUCTOR_RAZUVIOUS_UNBALANCING_STRIKE = 55470;
-const uint32 INSTRUCTOR_RAZUVIOUS_HOPELESS = 29125;
+const uint32_t CN_INSTRUCTOR_RAZUVIOUS = 16061;
+const uint32_t INSTRUCTOR_RAZUVIOUS_DISRUPTING_SHOUT_NORMAL = 55543;
+const uint32_t INSTRUCTOR_RAZUVIOUS_DISRUPTING_SHOUT_HEROIC = 29107;
+const uint32_t INSTRUCTOR_RAZUVIOUS_JAGGED_KNIFE = 55550;
+const uint32_t INSTRUCTOR_RAZUVIOUS_UNBALANCING_STRIKE = 55470;
+const uint32_t INSTRUCTOR_RAZUVIOUS_HOPELESS = 29125;
 
 class InstructorRazuviousAI : public CreatureAIScript
 {
@@ -944,10 +944,10 @@ InstructorRazuviousAI::InstructorRazuviousAI(Creature* pCreature) : CreatureAISc
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Death Knight Understudy
-const uint32 CN_DEATH_KNIGHT_UNDERSTUDY = 16803;
-const uint32 DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE = 61696;
-const uint32 DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER = 29061;
-const uint32 DEATH_KNIGHT_UNDERSTUDY_TAUNT = 29060;
+const uint32_t CN_DEATH_KNIGHT_UNDERSTUDY = 16803;
+const uint32_t DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE = 61696;
+const uint32_t DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER = 29061;
+const uint32_t DEATH_KNIGHT_UNDERSTUDY_TAUNT = 29060;
 
 class DeathKnightUnderstudyAI : public CreatureAIScript
 {
@@ -1050,14 +1050,14 @@ void DeathKnightUnderstudyAI::Destroy()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Patchwork Golem
-const uint32 CN_PATCHWORK_GOLEM = 16017;
-const uint32 PATCHWORK_GOLEM_CLEAVE = 27794;
-const uint32 PATCHWORK_GOLEM_DISEASE_CLOUD_NORMAL = 27793;
-const uint32 PATCHWORK_GOLEM_DISEASE_CLOUD_HEROIC = 28362;
-const uint32 PATCHWORK_GOLEM_EXECUTE_NORMAL = 7160;
-const uint32 PATCHWORK_GOLEM_EXECUTE_HEROIC = 56426;
-const uint32 PATCHWORK_GOLEM_WAR_STOMP_NORMAL = 27758;
-const uint32 PATCHWORK_GOLEM_WAR_STOMP_HEROIC = 56427;
+const uint32_t CN_PATCHWORK_GOLEM = 16017;
+const uint32_t PATCHWORK_GOLEM_CLEAVE = 27794;
+const uint32_t PATCHWORK_GOLEM_DISEASE_CLOUD_NORMAL = 27793;
+const uint32_t PATCHWORK_GOLEM_DISEASE_CLOUD_HEROIC = 28362;
+const uint32_t PATCHWORK_GOLEM_EXECUTE_NORMAL = 7160;
+const uint32_t PATCHWORK_GOLEM_EXECUTE_HEROIC = 56426;
+const uint32_t PATCHWORK_GOLEM_WAR_STOMP_NORMAL = 27758;
+const uint32_t PATCHWORK_GOLEM_WAR_STOMP_HEROIC = 56427;
 
 class PatchworkGolemAI : public CreatureAIScript
 {
@@ -1070,10 +1070,10 @@ class PatchworkGolemAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Bile Retcher
-const uint32 CN_BILE_RETCHER = 16018;
-const uint32 BILE_RETCHER_BILE_VOMIT_NORMAL = 27807;
-const uint32 BILE_RETCHER_BILE_VOMIT_HEROIC = 54326;
-const uint32 BILE_RETCHER_BILE_RETCHER_SLAM = 27862;
+const uint32_t CN_BILE_RETCHER = 16018;
+const uint32_t BILE_RETCHER_BILE_VOMIT_NORMAL = 27807;
+const uint32_t BILE_RETCHER_BILE_VOMIT_HEROIC = 54326;
+const uint32_t BILE_RETCHER_BILE_RETCHER_SLAM = 27862;
 
 class BileRetcherAI : public CreatureAIScript
 {
@@ -1083,8 +1083,8 @@ class BileRetcherAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Sewage Slime
-const uint32 CN_SEWAGE_SLIME = 16375;
-const uint32 SEWAGE_SLIME_DISEASE_CLOUD = 28156;
+const uint32_t CN_SEWAGE_SLIME = 16375;
+const uint32_t SEWAGE_SLIME_DISEASE_CLOUD = 28156;
 
 class SewageSlimeAI : public CreatureAIScript
 {
@@ -1097,8 +1097,8 @@ class SewageSlimeAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Embalming Slime
-const uint32 CN_EMBALMING_SLIME = 16024;
-const uint32 EMBALMING_SLIME_EMBALMING_CLOUD = 28322;
+const uint32_t CN_EMBALMING_SLIME = 16024;
+const uint32_t EMBALMING_SLIME_EMBALMING_CLOUD = 28322;
 
 class EmbalmingSlimeAI : public CreatureAIScript
 {
@@ -1111,11 +1111,11 @@ class EmbalmingSlimeAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Mad Scientist
-const uint32 CN_MAD_SCIENTIST = 16020;
-const uint32 MAD_SCIENTIST_GREAT_HEAL_NORMAL = 28306;
-const uint32 MAD_SCIENTIST_GREAT_HEAL_HEROIC = 54337;
-const uint32 MAD_SCIENTIST_MANA_BURN_NORMAL = 28301;
-const uint32 MAD_SCIENTIST_MANA_BURN_HEROIC = 54338;
+const uint32_t CN_MAD_SCIENTIST = 16020;
+const uint32_t MAD_SCIENTIST_GREAT_HEAL_NORMAL = 28306;
+const uint32_t MAD_SCIENTIST_GREAT_HEAL_HEROIC = 54337;
+const uint32_t MAD_SCIENTIST_MANA_BURN_NORMAL = 28301;
+const uint32_t MAD_SCIENTIST_MANA_BURN_HEROIC = 54338;
 
 class MadScientistAI : public CreatureAIScript
 {
@@ -1125,11 +1125,11 @@ class MadScientistAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Living Monstrosity
-const uint32 CN_LIVING_MONSTROSITY = 16021;
-const uint32 LIVING_MONSTROSITY_FEAR = 27990;
-const uint32 LIVING_MONSTROSITY_LIGHTNING_TOTEM = 28294;
-const uint32 LIVING_MONSTROSITY_CHAIN_LIGHTNING_NORMAL = 28293;
-const uint32 LIVING_MONSTROSITY_CHAIN_LIGHTNING_HEROIC = 54334;
+const uint32_t CN_LIVING_MONSTROSITY = 16021;
+const uint32_t LIVING_MONSTROSITY_FEAR = 27990;
+const uint32_t LIVING_MONSTROSITY_LIGHTNING_TOTEM = 28294;
+const uint32_t LIVING_MONSTROSITY_CHAIN_LIGHTNING_NORMAL = 28293;
+const uint32_t LIVING_MONSTROSITY_CHAIN_LIGHTNING_HEROIC = 54334;
 
 class LivingMonstrosityAI : public CreatureAIScript
 {
@@ -1139,9 +1139,9 @@ class LivingMonstrosityAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Lightning Totem
-const uint32 CN_LIGHTNING_TOTEM = 16385;
-const uint32 LIGHTNING_TOTEM_SHOCK_NORMAL = 28297;
-const uint32 LIGHTNING_TOTEM_SHOCK_HEROIC = 54333;
+const uint32_t CN_LIGHTNING_TOTEM = 16385;
+const uint32_t LIGHTNING_TOTEM_SHOCK_NORMAL = 28297;
+const uint32_t LIGHTNING_TOTEM_SHOCK_HEROIC = 54333;
 
 class LightningTotemAI : public CreatureAIScript
 {
@@ -1154,10 +1154,10 @@ class LightningTotemAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Stitched Colossus
-const uint32 CN_STITCHED_COLOSSUS = 30071;
-const uint32 STITCHED_COLOSSUS_MASSIVE_STOMP_NORMAL = 55821;
-const uint32 STITCHED_COLOSSUS_MASSIVE_STOMP_HEROIC = 55826;
-const uint32 STITCHED_COLOSSUS_UNSTOPPABLE_ENRAGE = 54356;
+const uint32_t CN_STITCHED_COLOSSUS = 30071;
+const uint32_t STITCHED_COLOSSUS_MASSIVE_STOMP_NORMAL = 55821;
+const uint32_t STITCHED_COLOSSUS_MASSIVE_STOMP_HEROIC = 55826;
+const uint32_t STITCHED_COLOSSUS_UNSTOPPABLE_ENRAGE = 54356;
 
 class StitchedColossusAI : public CreatureAIScript
 {
@@ -1172,8 +1172,8 @@ class StitchedColossusAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Marauding Geist
-const uint32 CN_MARAUDING_GEIST = 30083;
-const uint32 MARAUDING_GEIST_FRENZIED_LEAP = 56729;
+const uint32_t CN_MARAUDING_GEIST = 30083;
+const uint32_t MARAUDING_GEIST_FRENZIED_LEAP = 56729;
 
 class MaraudingGeistAI : public CreatureAIScript
 {
@@ -1186,11 +1186,11 @@ class MaraudingGeistAI : public CreatureAIScript
 
 //void SpellFunc_PatchwerkHatefulStrike(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
-const uint32 CN_PATCHWERK = 16028;
-const uint32 PATCHWERK_FRENZY = 28131;
-const uint32 PATCHWERK_BERSERK = 26662;
-const uint32 PATCHWERK_HATEFUL_STRIKE_10 = 41926;
-const uint32 PATCHWERK_HATEFUL_STRIKE_25 = 59192;
+const uint32_t CN_PATCHWERK = 16028;
+const uint32_t PATCHWERK_FRENZY = 28131;
+const uint32_t PATCHWERK_BERSERK = 26662;
+const uint32_t PATCHWERK_HATEFUL_STRIKE_10 = 41926;
+const uint32_t PATCHWERK_HATEFUL_STRIKE_25 = 59192;
 
 class PatchwerkAI : public CreatureAIScript
 {
@@ -1217,10 +1217,10 @@ class PatchwerkAI : public CreatureAIScript
 // Abomination Wing 
 
 // Stitched Spewer AI
-const uint32 STICKED_SPEWER = 16025;
+const uint32_t STICKED_SPEWER = 16025;
 
-const uint32 CN_SLIME_BOLT = 32309;
-const uint32 CN_UPPERCUT = 26007;
+const uint32_t CN_SLIME_BOLT = 32309;
+const uint32_t CN_UPPERCUT = 26007;
 
 class StickedSpewerAI : public CreatureAIScript
 {
@@ -1250,9 +1250,9 @@ class StickedSpewerAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Surgical Assistant AI
-const uint32 CN_SURGICAL_ASSISTANT = 16022;
+const uint32_t CN_SURGICAL_ASSISTANT = 16022;
 
-const uint32 SURGICALASSISTANT_AI_MIND_FLAY = 28310;
+const uint32_t SURGICALASSISTANT_AI_MIND_FLAY = 28310;
 
 class SurgicalAssistantAI : public CreatureAIScript
 {
@@ -1279,10 +1279,10 @@ class SurgicalAssistantAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Sludge Belcher AI
-const uint32 CN_SLUDGE_BELCHER = 16029;
+const uint32_t CN_SLUDGE_BELCHER = 16029;
 
-const uint32 DISEISE_BUFFET = 27891;
-const uint32 SUMMON_BILE_SLIMES = 27889; //\todo  GAWD :P
+const uint32_t DISEISE_BUFFET = 27891;
+const uint32_t SUMMON_BILE_SLIMES = 27889; //\todo  GAWD :P
 
 class SludgeBelcherAI : public CreatureAIScript
 {
@@ -1316,12 +1316,12 @@ class SludgeBelcherAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Grobbulus AI
-const uint32 CN_GROBBULUS = 15931;
+const uint32_t CN_GROBBULUS = 15931;
 
-const uint32 POISON_CLOUD_GROB = 31259; // self
-const uint32 SLIME_SPRAY = 28157; // various
-const uint32 SUMMON_FALLOUT_SLIME = 28218; //\todo  cast on slime sprayd targets
-const uint32 MUTATING_INJECTION = 28169; //\todo  DUMMY AURA
+const uint32_t POISON_CLOUD_GROB = 31259; // self
+const uint32_t SLIME_SPRAY = 28157; // various
+const uint32_t SUMMON_FALLOUT_SLIME = 28218; //\todo  cast on slime sprayd targets
+const uint32_t MUTATING_INJECTION = 28169; //\todo  DUMMY AURA
 
 class GrobbulusAI : public CreatureAIScript
 {
@@ -1356,12 +1356,12 @@ private:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Gluth AI
-const uint32 CN_GLUTH = 15932;
+const uint32_t CN_GLUTH = 15932;
 
-const uint32 MORTAL_WOUND = 28308; // target
-const uint32 DECIMATE = 28374; //\todo  needs to be scripted
-const uint32 TERRIFYING_ROAR = 37939;
-const uint32 FRENZY = 38664; // self
+const uint32_t MORTAL_WOUND = 28308; // target
+const uint32_t DECIMATE = 28374; //\todo  needs to be scripted
+const uint32_t TERRIFYING_ROAR = 37939;
+const uint32_t FRENZY = 38664; // self
 
 class GluthAI : public CreatureAIScript
 {
@@ -1390,9 +1390,9 @@ class GluthAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Bony Construct AI
-const uint32 CN_BONY_CONSTRUCT = 16167;
+const uint32_t CN_BONY_CONSTRUCT = 16167;
 
-const uint32 SWEEPING_SLAM = 25322;
+const uint32_t SWEEPING_SLAM = 25322;
 //\todo  Melee Chain Cleave - Strikes enemies in front of the Construct, chaining to anyone in melee range of the targets.
 
 class BonyConstructAI : public CreatureAIScript
@@ -1413,9 +1413,9 @@ class BonyConstructAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Death Lord AI
-const uint32 CN_DEATH_LORD = 16861;
+const uint32_t CN_DEATH_LORD = 16861;
 
-const uint32 AURA_OF_AGONY = 28413;
+const uint32_t AURA_OF_AGONY = 28413;
 
 class DeathLordAI : public CreatureAIScript
 {
@@ -1437,8 +1437,8 @@ class DeathLordAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Instructor Razuvious AI
-const uint32 UNBALANCING_STRIKE = 26613;
-const uint32 DISRUPTING_SHOUT = 29107;
+const uint32_t UNBALANCING_STRIKE = 26613;
+const uint32_t DISRUPTING_SHOUT = 29107;
 
 class RazuviousAI : public CreatureAIScript
 {
@@ -1483,10 +1483,10 @@ class RazuviousAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Thane Korth'azz AI
-const uint32 CN_THANE_KORTHAZZ = 16064;
+const uint32_t CN_THANE_KORTHAZZ = 16064;
 
-const uint32 MARK_OF_KORTHAZZ = 28832;
-const uint32 METEOR = 35181; // 1 target
+const uint32_t MARK_OF_KORTHAZZ = 28832;
+const uint32_t METEOR = 35181; // 1 target
 
 class KorthazzAI : public CreatureAIScript
 {
@@ -1550,7 +1550,7 @@ class KorthazzAI : public CreatureAIScript
 
     protected:
 
-    uint32 tountcooldown, tountcont;
+    uint32_t tountcooldown, tountcont;
     CreatureAISpells* meteor;
 };
 
@@ -1573,15 +1573,15 @@ class KorthazzAI : public CreatureAIScript
 */
 
 // Baron Rivendare AI
-const uint32 CN_Baron_Rivendare_4H = 30549; //4H not to confuse with Strat UD Side..
+const uint32_t CN_Baron_Rivendare_4H = 30549; //4H not to confuse with Strat UD Side..
 //Gief new Strat boss blizz or you make Stab a sad panda
 
 
 // Lady Blaumeux AI
-const uint32 CN_LADY_BLAUMEUX = 16065;
+const uint32_t CN_LADY_BLAUMEUX = 16065;
 
-const uint32 MARK_OF_BLAUMEUX = 28833;
-const uint32 VOID_ZONE = 28863; //\todo  DUMMY PART
+const uint32_t MARK_OF_BLAUMEUX = 28833;
+const uint32_t VOID_ZONE = 28863; //\todo  DUMMY PART
 
 class BlaumeuxAI : public CreatureAIScript
 {
@@ -1645,7 +1645,7 @@ class BlaumeuxAI : public CreatureAIScript
 
 protected:
 
-    uint32 tountcooldown, tountcont;
+    uint32_t tountcooldown, tountcont;
     CreatureAISpells* voidZone;
 };
 
@@ -1668,10 +1668,10 @@ protected:
 */
 
 // Sir Zeliek AI
-const uint32 CN_SIR_ZELIEK = 16063;
+const uint32_t CN_SIR_ZELIEK = 16063;
 
-const uint32 MARK_OF_ZELIEK = 28835;
-const uint32 HOLY_WRATH = 32445; // 1target
+const uint32_t MARK_OF_ZELIEK = 28835;
+const uint32_t HOLY_WRATH = 32445; // 1target
 
 class ZeliekAI : public CreatureAIScript
 {
@@ -1736,7 +1736,7 @@ class ZeliekAI : public CreatureAIScript
 
 protected:
 
-    uint32 tountcooldown, tountcont;
+    uint32_t tountcooldown, tountcont;
     CreatureAISpells* holyWrath;
 };
 
@@ -1748,18 +1748,18 @@ protected:
 
 // Frost Breath TrgiggerAI
 
-const uint32 CN_FROST_BREATH_TRIGGER = 50010;   // Flying "ball" of frost energy
-const uint32 CN_FROST_BREATH_TRIGGER2 = 50011;    // Explosion
-const uint32 CN_FROST_BREATH_TRIGGER3 = 50012;    // Wing Buffet
-const uint32 CN_CHILL_TRIGGER = 50013;    // Mass chill trigger (used, because we can't cast many aoe triggers on one character >_>)
+const uint32_t CN_FROST_BREATH_TRIGGER = 50010;   // Flying "ball" of frost energy
+const uint32_t CN_FROST_BREATH_TRIGGER2 = 50011;    // Explosion
+const uint32_t CN_FROST_BREATH_TRIGGER3 = 50012;    // Wing Buffet
+const uint32_t CN_CHILL_TRIGGER = 50013;    // Mass chill trigger (used, because we can't cast many aoe triggers on one character >_>)
 
 // Air phase spells
-const uint32 FROST_BREATH = 28524;
-const uint32 FROST_BREATH_EFFECT = 30101;
-const uint32 FROST_BREATH_DAMAGE = 29318;
+const uint32_t FROST_BREATH = 28524;
+const uint32_t FROST_BREATH_EFFECT = 30101;
+const uint32_t FROST_BREATH_DAMAGE = 29318;
 
 // Additional spells
-const uint32 SAPPHIRONS_WING_BUFFET = 29328;
+const uint32_t SAPPHIRONS_WING_BUFFET = 29328;
 
 struct Movement::Location PhaseTwoWP[] =
 {
@@ -1907,34 +1907,34 @@ public:
 
 // SapphironAI
 // Missing spawning effect with building skeleton of Sappiron
-const uint32 CN_SAPPHIRON = 15989;
+const uint32_t CN_SAPPHIRON = 15989;
 
 // Land phase spells
-const uint32 LIFE_DRAIN = 28542;
-const uint32 CHILL = 28547;
-const uint32 FROST_AURA = 28531;
+const uint32_t LIFE_DRAIN = 28542;
+const uint32_t CHILL = 28547;
+const uint32_t FROST_AURA = 28531;
 
 // Air phase spells
-const uint32 ICEBOLT = 28522;
+const uint32_t ICEBOLT = 28522;
 
 // Additional spells
-const uint32 SAPPHIRON_DIES = 29357;
-const uint32 BERSERK = 26662;    // 28498 - casts frostbolt (would be cool for Sapphiron), but every 2 sec for 5 min (~16k dmg per hit);
+const uint32_t SAPPHIRON_DIES = 29357;
+const uint32_t BERSERK = 26662;    // 28498 - casts frostbolt (would be cool for Sapphiron), but every 2 sec for 5 min (~16k dmg per hit);
 // 27680 - 10 mins instead 5 mins
 // Researches
-const uint32 SAPPHIRON_BIRTH = 181356;
-const uint32 FROSTWYRM_WATERFALL_DOOR = 181225;
-const uint32 ICE_BLOCK_GO = 181247;
+const uint32_t SAPPHIRON_BIRTH = 181356;
+const uint32_t FROSTWYRM_WATERFALL_DOOR = 181225;
+const uint32_t ICE_BLOCK_GO = 181247;
 
 // Immunities
-const uint32 IMMUNITY_DISEASE = 6681;
-const uint32 IMMUNITY_SHADOW = 7743;
-const uint32 IMMUNITY_FROST = 7940;
-const uint32 IMMUNITY_NATURE = 7941;
-const uint32 IMMUNITY_FIRE = 7942;
-const uint32 IMMUNITY_HOLY = 34182;
-const uint32 IMMUNITY_ARCANE = 34184;
-const uint32 IMMUNITY_PHYSICAL = 34310;
+const uint32_t IMMUNITY_DISEASE = 6681;
+const uint32_t IMMUNITY_SHADOW = 7743;
+const uint32_t IMMUNITY_FROST = 7940;
+const uint32_t IMMUNITY_NATURE = 7941;
+const uint32_t IMMUNITY_FIRE = 7942;
+const uint32_t IMMUNITY_HOLY = 34182;
+const uint32_t IMMUNITY_ARCANE = 34184;
+const uint32_t IMMUNITY_PHYSICAL = 34310;
 
 class SapphironAI : public CreatureAIScript
 {
@@ -1991,7 +1991,7 @@ class SapphironAI : public CreatureAIScript
 
         RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
-        PhaseTimer = (uint32)time(NULL) + 35;
+        PhaseTimer = (uint32_t)time(NULL) + 35;
         ChillTarget = NULL;
         FlightActions = 0;
         ChillCounter = 0;
@@ -2005,7 +2005,7 @@ class SapphironAI : public CreatureAIScript
         if (BreathTrigger != NULL)
             BreathTrigger->Despawn(0, 0);
 
-        for (uint8 i = 1; i < 21; i++)
+        for (uint8_t i = 1; i < 21; i++)
         {
             GameObject* IceBlock = getNearestGameObject(IceBlocks[i].x, IceBlocks[i].y, IceBlocks[i].z, ICE_BLOCK_GO);
             if (IceBlock != NULL)
@@ -2063,7 +2063,7 @@ class SapphironAI : public CreatureAIScript
 
         if (getCreature()->getHealthPct() > 10)
         {
-            uint32 t = (uint32)time(NULL);
+            uint32_t t = (uint32_t)time(NULL);
             if (t > PhaseTimer)
             {
                 if (getCreature()->isCastingSpell())
@@ -2115,10 +2115,10 @@ class SapphironAI : public CreatureAIScript
                     FlightActions++;
                     if (FlightActions >= 5)
                     {
-                        uint32 LastOne = 0;
-                        for (uint8 i = 0; i < 2; i++)
+                        uint32_t LastOne = 0;
+                        for (uint8_t i = 0; i < 2; i++)
                         {
-                            uint32 Block = 0;
+                            uint32_t Block = 0;
                             while (LastOne == Block)
                             {
                                 Block = Util::getRandomUInt(5) + 15;
@@ -2142,9 +2142,9 @@ class SapphironAI : public CreatureAIScript
 
                     if (FlightActions == 2)
                     {
-                        for (uint8 i = 0; i < 2; i++)
+                        for (uint8_t i = 0; i < 2; i++)
                         {
-                            uint32 Block = 0;
+                            uint32_t Block = 0;
                             if (i == 0)
                                 Block = Util::getRandomUInt(1, 3);
                             else
@@ -2161,9 +2161,9 @@ class SapphironAI : public CreatureAIScript
 
                     if (FlightActions == 4)
                     {
-                        for (uint8 i = 0; i < 2; i++)
+                        for (uint8_t i = 0; i < 2; i++)
                         {
-                            uint32 Block = 0;
+                            uint32_t Block = 0;
                             if (i == 0)
                                 Block = Util::getRandomUInt(3) + 7;
                             else
@@ -2205,7 +2205,7 @@ class SapphironAI : public CreatureAIScript
 
             if (FlightActions == 6)
             {
-                for (uint8 i = 1; i < 21; i++)
+                for (uint8_t i = 1; i < 21; i++)
                 {
                     GameObject* IceBlock = getNearestGameObject(IceBlocks[i].x, IceBlocks[i].y, IceBlocks[i].z, ICE_BLOCK_GO);
                     if (IceBlock != NULL)
@@ -2235,7 +2235,7 @@ class SapphironAI : public CreatureAIScript
                 RemoveAIUpdateEvent();
                 RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
-                PhaseTimer = (uint32)time(NULL) + 67;
+                PhaseTimer = (uint32_t)time(NULL) + 67;
                 ChillTarget = NULL;
                 FlightActions = 0;
                 ChillCounter = 0;
@@ -2246,7 +2246,7 @@ class SapphironAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 1)
         {
@@ -2270,21 +2270,21 @@ class SapphironAI : public CreatureAIScript
 
     Unit* ChillTarget;    // I don't like it >_>
 
-    uint32 FlightActions;
-    uint32 ChillCounter;
-    uint32 PhaseTimer;
-    uint32 m_phase;
+    uint32_t FlightActions;
+    uint32_t ChillCounter;
+    uint32_t PhaseTimer;
+    uint32_t m_phase;
 };
 
 // -- Kel'thuzad Encounter by M4ksiu -- //
 
 // Encounter mobs
 
-const uint32 CN_THE_LICH_KING = 16980;
-const uint32 CN_SOLDIER_OF_THE_FROZEN_WASTES = 16427;
-const uint32 CN_UNSTOPPABLE_ABOMINATION = 16428;
-const uint32 CN_SOUL_WEAVER = 16429;
-const uint32 CN_GUARDIAN_OF_ICECROWN = 16441;
+const uint32_t CN_THE_LICH_KING = 16980;
+const uint32_t CN_SOLDIER_OF_THE_FROZEN_WASTES = 16427;
+const uint32_t CN_UNSTOPPABLE_ABOMINATION = 16428;
+const uint32_t CN_SOUL_WEAVER = 16429;
+const uint32_t CN_GUARDIAN_OF_ICECROWN = 16441;
 
 /*
     _____
@@ -2431,16 +2431,16 @@ static Movement::Location Waves[] =            // Spawn positions of units that 
 // Kel'thuzad AI
 // each ~10-20 sec new mob
 
-const uint32 CN_KELTHUZAD = 15990;
+const uint32_t CN_KELTHUZAD = 15990;
 
-const uint32 SFROSTBOLT = 28478;
-const uint32 MFROSTBOLT = 28479;
-const uint32 CHAINS_OF_KELTHUZAD = 28410;
-const uint32 DETONATE_MANA = 27819;
-const uint32 SHADOW_FISSURE = 27810;
-const uint32 FROST_BLAST = 27808;
+const uint32_t SFROSTBOLT = 28478;
+const uint32_t MFROSTBOLT = 28479;
+const uint32_t CHAINS_OF_KELTHUZAD = 28410;
+const uint32_t DETONATE_MANA = 27819;
+const uint32_t SHADOW_FISSURE = 27810;
+const uint32_t FROST_BLAST = 27808;
 
-const uint32 KELTHUZAD_CHANNEL = 29423;
+const uint32_t KELTHUZAD_CHANNEL = 29423;
 
 class KelthuzadAI : public CreatureAIScript
 {
@@ -2452,7 +2452,7 @@ class KelthuzadAI : public CreatureAIScript
 
     explicit KelthuzadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        for (uint8 i = 0; i < 7; i++)
+        for (uint8_t i = 0; i < 7; i++)
         {
             FrozenWastes[i] = false;
             Abominations[i] = false;
@@ -2538,7 +2538,7 @@ class KelthuzadAI : public CreatureAIScript
         if (KelGate != NULL)
             KelGate->setState(GO_STATE_OPEN);
 
-        for (uint8 i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
         {
             GameObject* WindowGate = getNearestGameObject(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
             if (WindowGate != NULL)
@@ -2588,7 +2588,7 @@ class KelthuzadAI : public CreatureAIScript
         if (KelGate != NULL)
             KelGate->setState(GO_STATE_OPEN);
 
-        for (uint8 i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
         {
             GameObject* WindowGate = getNearestGameObject(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
             if (WindowGate != NULL)
@@ -2636,7 +2636,7 @@ class KelthuzadAI : public CreatureAIScript
             SpawnTimer++;
             if (SpawnTimer == 5 || SpawnTimer == 10)
             {
-                for (uint8 i = 0; i < 7; i++)
+                for (uint8_t i = 0; i < 7; i++)
                 {
                     int Counter = 0;
 
@@ -2644,9 +2644,9 @@ class KelthuzadAI : public CreatureAIScript
                     {
                         if (FrozenWastes[i] == false && (Util::getRandomUInt(3) == 0 || SpawnCounter > 0))
                         {
-                            for (uint8 x = 0; x < 10; x++)
+                            for (uint8_t x = 0; x < 10; x++)
                             {
-                                uint32 SpawnID = 10 * i + x;
+                                uint32_t SpawnID = 10 * i + x;
                                 spawnCreature(CN_SOLDIER_OF_THE_FROZEN_WASTES, SFrozenWastes[SpawnID].x, SFrozenWastes[SpawnID].y, SFrozenWastes[SpawnID].z, SFrozenWastes[SpawnID].o);
                             }
 
@@ -2656,9 +2656,9 @@ class KelthuzadAI : public CreatureAIScript
 
                         if (Abominations[i] == false && (Util::getRandomUInt(3) == 0 || SpawnCounter > 0))
                         {
-                            for (uint8 x = 0; x < 3; x++)
+                            for (uint8_t x = 0; x < 3; x++)
                             {
-                                uint32 SpawnID = 3 * i + x;
+                                uint32_t SpawnID = 3 * i + x;
                                 spawnCreature(CN_UNSTOPPABLE_ABOMINATION, Abomination[SpawnID].x, Abomination[SpawnID].y, Abomination[SpawnID].z, Abomination[SpawnID].o);
                             }
 
@@ -2668,7 +2668,7 @@ class KelthuzadAI : public CreatureAIScript
 
                         if (SoulWeavers[i] == false && ((Util::getRandomUInt(3) == 0 && Counter < 2) || Counter == 0 || SpawnCounter > 0))
                         {
-                            uint32 SpawnID = i;
+                            uint32_t SpawnID = i;
                             spawnCreature(CN_SOUL_WEAVER, SoulWeaver[SpawnID].x, SoulWeaver[SpawnID].y, SoulWeaver[SpawnID].z, SoulWeaver[SpawnID].o);
 
                             SoulWeavers[i] = true;
@@ -2685,7 +2685,7 @@ class KelthuzadAI : public CreatureAIScript
 
             if (SpawnCounter == 2)
             {
-                for (uint8 i = 0; i < 7; i++)
+                for (uint8_t i = 0; i < 7; i++)
                 {
                     FrozenWastes[i] = false;
                     Abominations[i] = false;
@@ -2742,8 +2742,8 @@ class KelthuzadAI : public CreatureAIScript
             }
             else if (!WaveTimer && PhaseTimer > 5)
             {
-                uint32 SpawnPoint = Util::getRandomUInt(6);
-                uint32 RandomSU = 0;
+                uint32_t SpawnPoint = Util::getRandomUInt(6);
+                uint32_t RandomSU = 0;
                 if (PhaseTimer > 250)
                     RandomSU = Util::getRandomUInt(4);
                 if (PhaseTimer <= 250 && PhaseTimer >= 150)
@@ -2753,7 +2753,7 @@ class KelthuzadAI : public CreatureAIScript
                 if (PhaseTimer <= 100)
                     RandomSU = Util::getRandomUInt(7);
 
-                uint32 UnitType;
+                uint32_t UnitType;
 
                 switch (RandomSU)
                 {
@@ -2809,7 +2809,7 @@ class KelthuzadAI : public CreatureAIScript
                     getCreature()->PlaySoundToSet(8824);
                 }
 
-                for (uint8 i = 0; i < 4; i++)
+                for (uint8_t i = 0; i < 4; i++)
                 {
                     GameObject* WindowGate = getNearestGameObject(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
                     if (WindowGate)
@@ -2820,7 +2820,7 @@ class KelthuzadAI : public CreatureAIScript
             if (HelpDialog == 10 || HelpDialog == 12 || HelpDialog == 14 || HelpDialog == 16 || HelpDialog == 18)
             {
                 Unit* Guardian = NULL;
-                uint32 i = Util::getRandomUInt(3);
+                uint32_t i = Util::getRandomUInt(3);
                 Guardian = spawnCreature(CN_GUARDIAN_OF_ICECROWN, Guardians[i].x, Guardians[i].y, Guardians[i].z, Guardians[i].o);
                 if (Guardian != NULL)
                 {
@@ -2850,13 +2850,13 @@ class KelthuzadAI : public CreatureAIScript
     protected:
 
     bool DespawnTrash, EventStart;
-    uint32 SpawnCounter;
-    uint32 HelpDialog;
-    uint32 SpawnTimer;
-    uint32 PhaseTimer;
-    uint32 WaveTimer;
-    uint32 GCounter;
-    uint32 m_phase;
+    uint32_t SpawnCounter;
+    uint32_t HelpDialog;
+    uint32_t SpawnTimer;
+    uint32_t PhaseTimer;
+    uint32_t WaveTimer;
+    uint32_t GCounter;
+    uint32_t m_phase;
 };
 
 // The Lich KingAI
@@ -2872,7 +2872,7 @@ class TheLichKingAI : public CreatureAIScript
 
 // Soldier of the Frozen WastesAI
 
-const uint32 DARK_BLAST = 28457; // 28458
+const uint32_t DARK_BLAST = 28457; // 28458
 
 class SoldierOfTheFrozenWastesAI : public CreatureAIScript
 {
@@ -2930,7 +2930,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
         }
         if (OnStart == false)
         {
-            for (uint8 i = 0; i < 7; i++)
+            for (uint8_t i = 0; i < 7; i++)
             {
                 if (getCreature()->GetPositionX() == Waves[i].x && getCreature()->GetPositionY() == Waves[i].y && getCreature()->GetPositionZ() == Waves[i].z)
                 {
@@ -2972,7 +2972,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
 
 // Unstoppable Abomination AI
 
-const uint32 UA_MORTAL_WOUND = 25646;    // 36814
+const uint32_t UA_MORTAL_WOUND = 25646;    // 36814
 
 class UnstoppableAbominationAI : public CreatureAIScript
 {
@@ -3034,7 +3034,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
         }
         if (OnStart == false)
         {
-            for (uint8 i = 0; i < 7; i++)
+            for (uint8_t i = 0; i < 7; i++)
             {
                 if (getCreature()->GetPositionX() == Waves[i].x && getCreature()->GetPositionY() == Waves[i].y && getCreature()->GetPositionZ() == Waves[i].z)
                 {
@@ -3069,7 +3069,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
 
 // Soul Weaver AI
 
-const uint32 WAIL_OF_SOULS = 28459;
+const uint32_t WAIL_OF_SOULS = 28459;
 
 class SoulWeaverAI : public CreatureAIScript
 {
@@ -3127,7 +3127,7 @@ class SoulWeaverAI : public CreatureAIScript
         }
         if (OnStart == false)
         {
-            for (uint8 i = 0; i < 7; i++)
+            for (uint8_t i = 0; i < 7; i++)
             {
                 if (getCreature()->GetPositionX() == Waves[i].x && getCreature()->GetPositionY() == Waves[i].y && getCreature()->GetPositionZ() == Waves[i].z)
                 {
@@ -3162,7 +3162,7 @@ class SoulWeaverAI : public CreatureAIScript
 
 // Guardian of Icecrown AI
 
-const uint32 BLOOD_TAP = 28459;
+const uint32_t BLOOD_TAP = 28459;
 
 class GuardianOfIcecrownAI : public CreatureAIScript
 {
@@ -3218,7 +3218,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
         }
         if (OnStart == false)
         {
-            for (uint8 i = 0; i < 4; i++)
+            for (uint8_t i = 0; i < 4; i++)
             {
                 if (getCreature()->GetPositionX() == Guardians[i].x && getCreature()->GetPositionY() == Guardians[i].y && getCreature()->GetPositionZ() == Guardians[i].z)
                 {

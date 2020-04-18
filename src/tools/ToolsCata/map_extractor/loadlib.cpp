@@ -48,7 +48,7 @@ bool FileLoader::loadFile(HANDLE mpq, char* filename, bool log)
     }
 
     data_size = SFileGetFileSize(file, NULL);
-    data = new uint8[data_size];
+    data = new uint8_t[data_size];
     SFileReadFile(file, data, data_size, NULL/*bytesRead*/, NULL);
     if (prepareLoadedData())
     {

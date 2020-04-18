@@ -186,7 +186,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
         return;
 
     // teach the spell
-    _player->modCoinage(-static_cast<int32>(trainerSpell->Cost));
+    _player->modCoinage(-static_cast<int32_t>(trainerSpell->Cost));
     if (trainerSpell->pCastSpell)
     {
         _player->castSpell(_player, trainerSpell->pCastSpell->getId(), true);

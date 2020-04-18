@@ -60,14 +60,14 @@ enum AuraTickFlags
 
 struct Modifier
 {
-    //uint32 m_actamt;       // actual amt, for percent and stuff
-    uint32 m_type;           // What does it modify? (str,int,hp)
-    int32 m_amount;          // By how much does it mod?
-    int32_t m_miscValue;       // Misc Value
+    //uint32_t m_actamt;          // actual amt, for percent and stuff
+    uint32_t m_type;              // What does it modify? (str,int,hp)
+    int32_t m_amount;             // By how much does it mod?
+    int32_t m_miscValue;          // Misc Value
     uint8_t m_effectIndex;
 
     ///needed for per level effect
-    int32 realamount;
+    int32_t realamount;
     //need this to store % values or they cannot be reverted correctly (i think :D)
     signed int fixed_amount[TOTAL_SPELL_SCHOOLS];
 };
@@ -75,40 +75,40 @@ struct Modifier
 
 struct ProcTriggerSpellOnSpell
 {
-    uint32 origId;
-    uint32 spellId;
-    uint64 caster;
-    uint32 procChance;
-    uint32 procFlags;
-    uint32 RemainingCharges;
-    uint32 LastTrigger;
-    void* owner;                //mark the owner of this proc to know which one to delete
+    uint32_t origId;
+    uint32_t spellId;
+    uint64_t caster;
+    uint32_t procChance;
+    uint32_t procFlags;
+    uint32_t RemainingCharges;
+    uint32_t LastTrigger;
+    void* owner;                  // mark the owner of this proc to know which one to delete
 };
 
 struct DamageSplitTarget
 {
-    uint64 m_target;            // we store them
-    uint32 m_spellId;
-    float m_pctDamageSplit;     // % of taken damage to transfer (i.e. Soul Link)
-    uint32 m_flatDamageSplit;   // flat damage to transfer (i.e. Blessing of Sacrifice)
-    uint8 damage_type;          // bitwise 0-127 thingy
+    uint64_t m_target;            // we store them
+    uint32_t m_spellId;
+    float m_pctDamageSplit;       // % of taken damage to transfer (i.e. Soul Link)
+    uint32_t m_flatDamageSplit;   // flat damage to transfer (i.e. Blessing of Sacrifice)
+    uint8_t damage_type;          // bitwise 0-127 thingy
     void* creator;
 };
 
-typedef std::set< uint64 > AreaAuraList;
+typedef std::set< uint64_t > AreaAuraList;
 
 class SERVER_DECL Aura : public EventableObject
 {
     public:
 
-        Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
+        Aura(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
         ~Aura();
 
         void Remove();
         void AddMod(uint32_t t, int32_t a, int32_t miscValue, uint8_t effectIndex);
 
         inline SpellInfo* GetSpellInfo() const { return m_spellInfo; }
-        inline uint32 GetSpellId() const { return m_spellInfo->getId(); }
+        inline uint32_t GetSpellId() const { return m_spellInfo->getId(); }
         inline bool IsPassive() { if (!m_spellInfo) return false; return (m_spellInfo->isPassive() && !m_areaAura); }
 #ifdef AE_TBC
     // MIT
@@ -124,22 +124,22 @@ class SERVER_DECL Aura : public EventableObject
         //////////////////////////////////////////////////////////////////////////////////////////
         void Refresh();
 
-        inline int32 GetDuration() const { return m_duration; }
-        void SetDuration(int32 duration)
+        inline int32_t GetDuration() const { return m_duration; }
+        void SetDuration(int32_t duration)
         {
             m_duration = duration;
             ResetDuration();
         }
 
-        inline uint16 GetAuraSlot() const { return m_auraSlot; }
-        void SetAuraSlot(uint16 slot) { m_auraSlot = slot; }
+        inline uint16_t GetAuraSlot() const { return m_auraSlot; }
+        void SetAuraSlot(uint16_t slot) { m_auraSlot = slot; }
 
         inline bool IsPositive() { return m_positive > 0; }
         void SetNegative(signed char value = 1) { m_positive -= value; }
         void SetPositive(signed char value = 1) { m_positive += value; }
 
         Object* GetCaster();
-        inline uint64 GetCasterGUID() { return m_casterGuid; }
+        inline uint64_t GetCasterGUID() { return m_casterGuid; }
         Unit* GetUnitCaster();
         Player* GetPlayerCaster();
         inline Unit* GetTarget() { return m_target; }
@@ -177,20 +177,20 @@ class SERVER_DECL Aura : public EventableObject
         bool DotCanCrit();
 
         //! GetTimeLeft() milliseconds
-        uint32 GetTimeLeft()
+        uint32_t GetTimeLeft()
         {
             if (m_duration == -1)
-                return (uint32)-1;
-            int32 n = int32((UNIXTIME - time_t(expirytime)) * 1000);
+                return (uint32_t)-1;
+            int32_t n = int32_t((UNIXTIME - time_t(expirytime)) * 1000);
             if (n >= m_duration)
                 return 0;
             else
                 return (m_duration - n);
         }
 
-        bool HasModType(uint32 type)
+        bool HasModType(uint32_t type)
         {
-            for (uint8 x = 0; x < m_modcount; ++x)
+            for (uint8_t x = 0; x < m_modcount; ++x)
                 if (m_modList[x].m_type == type)
                     return true;
             return false;
@@ -393,7 +393,7 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraMeleeHaste(bool apply);
         void SpellAuraReduceEffectDuration(bool apply);
         void HandleAuraControlVehicle(bool apply);
-        void EventPeriodicDrink(uint32 amount);
+        void EventPeriodicDrink(uint32_t amount);
         void SpellAuraMirrorImage(bool apply);
         void SpellAuraModCombatResultChance(bool apply);
         void SpellAuraAddHealth(bool apply);
@@ -416,28 +416,28 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraConvertRune(bool apply);
         void UpdateAuraModDecreaseSpeed();
 
-        void SendModifierLog(int32** m, int32 v, uint32* mask, uint8 type, bool pct = false);
-        void SendDummyModifierLog(std::map<SpellInfo*, uint32> * m, SpellInfo* spellInfo, uint32 i, bool apply, bool pct = false);
+        void SendModifierLog(int32_t** m, int32_t v, uint32_t* mask, uint8_t type, bool pct = false);
+        void SendDummyModifierLog(std::map<SpellInfo*, uint32_t> * m, SpellInfo* spellInfo, uint32_t i, bool apply, bool pct = false);
 
         // Events
-        void EventPeriodicDamage(uint32);
-        void EventPeriodicDamagePercent(uint32);
-        void EventPeriodicHeal(uint32);
-        void EventPeriodicTriggerSpell(SpellInfo const* spellInfo, bool overridevalues, int32 overridevalue);
-        void EventPeriodicTrigger(uint32 amount, uint32 type);
-        void EventPeriodicEnergize(uint32, uint32);
-        void EventPeriodicEnergizeVariable(uint32, uint32);
-        void EventPeriodicHeal1(uint32);
-        void EventPeriodicLeech(uint32);
-        void EventPeriodicBurn(uint32, uint32);
-        void EventPeriodicHealthFunnel(uint32);
-        void EventPeriodicManaLeech(uint32);
+        void EventPeriodicDamage(uint32_t);
+        void EventPeriodicDamagePercent(uint32_t);
+        void EventPeriodicHeal(uint32_t);
+        void EventPeriodicTriggerSpell(SpellInfo const* spellInfo, bool overridevalues, int32_t overridevalue);
+        void EventPeriodicTrigger(uint32_t amount, uint32_t type);
+        void EventPeriodicEnergize(uint32_t, uint32_t);
+        void EventPeriodicEnergizeVariable(uint32_t, uint32_t);
+        void EventPeriodicHeal1(uint32_t);
+        void EventPeriodicLeech(uint32_t);
+        void EventPeriodicBurn(uint32_t, uint32_t);
+        void EventPeriodicHealthFunnel(uint32_t);
+        void EventPeriodicManaLeech(uint32_t);
         void EventPeriodicHealPct(float);
         void EventPeriodicManaPct(float);
         void EventPeriodicTriggerDummy();
 
         void RelocateEvents();
-        int32 event_GetInstanceID();
+        int32_t event_GetInstanceID();
         bool WasCastInDuel() { return m_castInDuel; }
 
         // This stuff can be cached in spellproto.
@@ -448,28 +448,28 @@ class SERVER_DECL Aura : public EventableObject
             return (m_modcount && (((m_flags & MOD_0_RESISTED) + (m_flags & MOD_1_RESISTED) + (m_flags & MOD_2_RESISTED)) == m_modcount));
         }
 
-        int32 GetModAmount(uint32 i) { if (i < 3) return m_modList[i].m_amount; return 0; }
-        int32 GetModAmountByMod() { return mod->m_amount; };
-        uint32 GetAuraFlags() { return m_flags; }
+        int32_t GetModAmount(uint32_t i) { if (i < 3) return m_modList[i].m_amount; return 0; }
+        int32_t GetModAmountByMod() { return mod->m_amount; };
+        uint32_t GetAuraFlags() { return m_flags; }
         void AssignModifiers(Aura* aura);
 
         virtual bool IsAbsorb() { return false; }
 
         SpellInfo* m_spellInfo;
         AreaAuraList targets; // This is only used for AA
-        uint64 m_casterGuid;
-        uint16 m_auraSlot;
-        uint32 m_castedItemId;
-        uint64 itemCasterGUID;
+        uint64_t m_casterGuid;
+        uint16_t m_auraSlot;
+        uint32_t m_castedItemId;
+        uint64_t itemCasterGUID;
         bool m_areaAura; // Area aura stuff -> never passive.
-        uint8 m_visualSlot;
-        uint32 pSpellId; // This represents the triggering spell id
+        uint8_t m_visualSlot;
+        uint32_t pSpellId; // This represents the triggering spell id
         bool m_castInDuel;
 
     private:
 
-        uint32 GetCasterFaction() { return m_casterfaction; }
-        void SetCasterFaction(uint32 faction) { m_casterfaction = faction; }
+        uint32_t GetCasterFaction() { return m_casterfaction; }
+        void SetCasterFaction(uint32_t faction) { m_casterfaction = faction; }
 
         inline bool IsInrange(float x1, float y1, float z1, Object* o, float square_r)
         {
@@ -486,28 +486,28 @@ class SERVER_DECL Aura : public EventableObject
 
     protected:
 
-        uint32 m_casterfaction;
+        uint32_t m_casterfaction;
         Unit* m_target;
         Player* p_target;
-        uint32 expirytime;
-        int32 m_duration; // In Milliseconds
+        uint32_t expirytime;
+        int32_t m_duration; // In Milliseconds
         // bool m_positive;
         signed char m_positive;
-        uint32 m_dynamicValue;
-        uint32 m_flags;
-        uint32 m_modcount;
+        uint32_t m_dynamicValue;
+        uint32_t m_flags;
+        uint32_t m_modcount;
         Modifier m_modList[3];
         Modifier* mod;
 
-        void SendInterrupted(uint8 result, Object* m_caster);
-        void SendChannelUpdate(uint32 time, Object* m_caster);
+        void SendInterrupted(uint8_t result, Object* m_caster);
+        void SendChannelUpdate(uint32_t time, Object* m_caster);
         void SendTickImmune(Unit* target, Unit* caster);
 
     public:
         uint32_t getExpiryTime() const { return expirytime; }
         bool m_temporary;       // Skip saving
         bool m_deleted;
-        int16 m_interrupted;
+        int16_t m_interrupted;
         bool m_ignoreunapply;   // \\\"special\\\" case, for unapply
 
         inline bool IsInterrupted() { return (m_interrupted >= 0); }
@@ -517,15 +517,15 @@ class AbsorbAura : public Aura
 {
     public:
 
-        AbsorbAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr) :
+        AbsorbAura(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr) :
             Aura(proto, duration, caster, target, temporary, i_caster), m_total_amount(0), m_amount(0), m_pct_damage(0) {}
 
-        static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
+        static Aura* Create(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         {
             return new AbsorbAura(proto, duration, caster, target, temporary, i_caster);
         }
 
-        virtual uint32 AbsorbDamage(uint32 School, uint32* dmg);
+        virtual uint32_t AbsorbDamage(uint32_t School, uint32_t* dmg);
 
         void SpellAuraSchoolAbsorb(bool apply);
 
@@ -533,25 +533,25 @@ class AbsorbAura : public Aura
 
     protected:
 
-        uint32 GetSchoolMask()
+        uint32_t GetSchoolMask()
         {
-            for (uint8 x = 0; x < 3; ++x)
+            for (uint8_t x = 0; x < 3; ++x)
                 if (GetSpellInfo()->getEffect(x) == SPELL_EFFECT_APPLY_AURA && GetSpellInfo()->getEffectApplyAuraName(x) == SPELL_AURA_SCHOOL_ABSORB)
                     return m_modList[x].m_miscValue;
             return 0;
         }
 
-        virtual int32 CalcAbsorbAmount() { return mod->m_amount; }
-        virtual int32 CalcPctDamage() { return 100; }
+        virtual int32_t CalcAbsorbAmount() { return mod->m_amount; }
+        virtual int32_t CalcPctDamage() { return 100; }
 
         // Total amount to be absorbed
-        int32 m_total_amount;
+        int32_t m_total_amount;
 
         // Amount left to be absorbed
-        int32 m_amount;
+        int32_t m_amount;
 
         // Pct of damage to absorb
-        int32 m_pct_damage;
+        int32_t m_pct_damage;
 };
 
 typedef void(Aura::*pSpellAura)(bool apply);

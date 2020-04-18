@@ -526,7 +526,7 @@ void Object::modFloatValue(uint16_t index, float value)
     updateObject();
 }
 
-void Object::modFloatValueByPCT(uint16_t index, int32 byPct)
+void Object::modFloatValueByPCT(uint16_t index, int32_t byPct)
 {
     ARCEMU_ASSERT(index < m_valuesCount);
     if (byPct > 0)
@@ -1004,7 +1004,7 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     m_phase = 1;                //Set the default phase: 00000000 00000000 00000000 00000001
 
     m_mapMgr = nullptr;
-    m_mapCell_x = m_mapCell_y = uint32(-1);
+    m_mapCell_x = m_mapCell_y = uint32_t(-1);
 
     m_factionTemplate = nullptr;
     m_factionEntry = nullptr;
@@ -1087,7 +1087,7 @@ Object::~Object()
     return at;
 }
 
-void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
+void Object::_Create(uint32_t mapid, float x, float y, float z, float ang)
 {
     m_mapId = mapid;
     m_position.ChangeCoords({ x, y, z, ang });
@@ -1096,7 +1096,7 @@ void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
 }
 
 #if VERSION_STRING <= TBC
-uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     if (!target)
         return 0;
@@ -1173,13 +1173,13 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 #endif
 
 #if VERSION_STRING > TBC
-uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     if (!target)
         return 0;
 
-    uint8 updatetype = UPDATETYPE_CREATE_OBJECT;
-    uint16 updateflags = m_updateFlag;
+    uint8_t updatetype = UPDATETYPE_CREATE_OBJECT;
+    uint16_t updateflags = m_updateFlag;
 
 #if VERSION_STRING < Cata
     if (target == this)
@@ -1261,9 +1261,9 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     // we shouldn't be here, under any circumstances, unless we have a wowguid..
     ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
     // build our actual update
-    *data << uint8(updatetype);
+    *data << uint8_t(updatetype);
     *data << m_wowGuid;
-    *data << uint8(m_objectTypeId);
+    *data << uint8_t(m_objectTypeId);
 
     buildMovementUpdate(data, updateflags, target);
 
@@ -1280,81 +1280,80 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 }
 #endif
 
-
 //That is dirty fix it actually creates update of 1 field with
 //the given value ignoring existing changes in fields and so on
 //useful if we want update this field for certain players
 //NOTE: it does not change fields. This is also very fast method
-WorldPacket* Object::BuildFieldUpdatePacket(uint32 index, uint32 value)
+WorldPacket* Object::BuildFieldUpdatePacket(uint32_t index, uint32_t value)
 {
-    // uint64 guidfields = getGuid();
-    // uint8 guidmask = 0;
+    // uint64_t guidfields = getGuid();
+    // uint8_t guidmask = 0;
     WorldPacket* packet = new WorldPacket(1500);
     packet->SetOpcode(SMSG_UPDATE_OBJECT);
 
-    *packet << uint32(1);                   //number of update/create blocks
+    *packet << uint32_t(1);                    // number of update/create blocks
 #if VERSION_STRING == TBC
-    * packet << uint8(0);                    //unknown removed in 3.1
+    * packet << uint8_t(0);                    // unknown removed in 3.1
 #endif
 
-    *packet << uint8(UPDATETYPE_VALUES);    // update type == update
+    *packet << uint8_t(UPDATETYPE_VALUES);     // update type == update
     *packet << GetNewGUID();
 
-    uint32 mBlocks = index / 32 + 1;
-    *packet << uint8(mBlocks);
+    uint32_t mBlocks = index / 32 + 1;
+    *packet << uint8_t(mBlocks);
 
-    for (uint32 dword_n = mBlocks - 1; dword_n; dword_n--)
-        *packet << uint32(0);
+    for (uint32_t dword_n = mBlocks - 1; dword_n; dword_n--)
+        *packet << uint32_t(0);
 
-    *packet << (((uint32)(1)) << (index % 32));
+    *packet << (((uint32_t)(1)) << (index % 32));
     *packet << value;
 
     return packet;
 }
 
-void Object::BuildFieldUpdatePacket(Player* Target, uint32 Index, uint32 Value)
+void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Value)
 {
     ByteBuffer buf(500);
-    buf << uint8(UPDATETYPE_VALUES);
+    buf << uint8_t(UPDATETYPE_VALUES);
     buf << GetNewGUID();
 
-    uint32 mBlocks = Index / 32 + 1;
-    buf << uint8(mBlocks);
+    uint32_t mBlocks = Index / 32 + 1;
+    buf << uint8_t(mBlocks);
 
-    for (uint32 dword_n = mBlocks - 1; dword_n; dword_n--)
-        buf << uint32(0);
+    for (uint32_t dword_n = mBlocks - 1; dword_n; dword_n--)
+        buf << uint32_t(0);
 
-    buf << (((uint32)(1)) << (Index % 32));
+    buf << (((uint32_t)(1)) << (Index % 32));
     buf << Value;
 
     Target->getUpdateMgr().pushUpdateData(&buf, 1);
 }
 
-void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32 Index, uint32 Value)
+void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Value)
 {
-    *buf << uint8(UPDATETYPE_VALUES);
+    *buf << uint8_t(UPDATETYPE_VALUES);
     *buf << GetNewGUID();
 
-    uint32 mBlocks = Index / 32 + 1;
-    *buf << uint8(mBlocks);
+    uint32_t mBlocks = Index / 32 + 1;
+    *buf << uint8_t(mBlocks);
 
-    for (uint32 dword_n = mBlocks - 1; dword_n; dword_n--)
-        *buf << uint32(0);
+    for (uint32_t dword_n = mBlocks - 1; dword_n; dword_n--)
+        *buf << uint32_t(0);
 
-    *buf << (((uint32)(1)) << (Index % 32));
+    *buf << (((uint32_t)(1)) << (Index % 32));
     *buf << Value;
 }
 
-uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     UpdateMask updateMask;
     updateMask.SetCount(m_valuesCount);
     _SetUpdateBits(&updateMask, target);
-    for (uint32 x = 0; x < m_valuesCount; ++x)
+    for (uint32_t x = 0; x < m_valuesCount; ++x)
     {
         if (updateMask.GetBit(x))
         {
-            *data << uint8(UPDATETYPE_VALUES);              // update type == update
+            *data << uint8_t(UPDATETYPE_VALUES); // update type == update
             ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
             *data << m_wowGuid;
 
@@ -1366,11 +1365,11 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     return 0;
 }
 
-uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask)
+uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask)
 {
     // returns: update count
     // update type == update
-    *buf << uint8(UPDATETYPE_VALUES);
+    *buf << uint8_t(UPDATETYPE_VALUES);
 
     ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
     *buf << m_wowGuid;
@@ -1384,7 +1383,7 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Build the Movement Data portion of the update packet Fills the data with this object's movement/speed info
 ///\todo rewrite this stuff, document unknown fields and flags
-uint32 TimeStamp();
+uint32_t TimeStamp();
 
 // MIT Start
 #if VERSION_STRING < WotLK
@@ -1529,9 +1528,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target
 #endif
 
 #if VERSION_STRING == WotLK
-void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16_t flags, Player* target)
 {
-    uint32 flags2 = 0;
+    uint32_t flags2 = 0;
 
     ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->getSplineMgr().popSplinePacket(getGuid()) : 0;
 
@@ -1545,7 +1544,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
         }
     }
 
-    uint16 moveflags2 = 0;      // mostly seem to be used by vehicles to control what kind of movement is allowed
+    uint16_t moveflags2 = 0; // mostly seem to be used by vehicles to control what kind of movement is allowed
 
     if (isVehicle())
     {
@@ -1561,7 +1560,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
     }
 
-    *data << uint16(flags);
+    *data << uint16_t(flags);
 
     Player* pThis = nullptr;
     MovementInfo* moveinfo = nullptr;
@@ -1615,14 +1614,14 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
             {
                 //do not send shit we can't honor
 #define UNKNOWN_FLAGS2 (0x00002000 | 0x04000000 | 0x08000000)
-                uint32 inherit = uThis->GetCreatureProperties()->extra_a9_flags & UNKNOWN_FLAGS2;
+                uint32_t inherit = uThis->GetCreatureProperties()->extra_a9_flags & UNKNOWN_FLAGS2;
                 flags2 |= inherit;
             }
         }
 
-        *data << uint32(flags2);
+        *data << uint32_t(flags2);
 
-        *data << uint16(moveflags2);
+        *data << uint16_t(moveflags2);
 
         *data << Util::getMSTime(); // this appears to be time in ms but can be any thing. Maybe packet serializer ?
 
@@ -1645,8 +1644,8 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
             *data << float(GetTransPositionY());
             *data << float(GetTransPositionZ());
             *data << float(GetTransPositionO());
-            *data << uint32(GetTransTime());
-            *data << uint8(GetTransSeat());
+            *data << uint32_t(GetTransTime());
+            *data << uint8_t(GetTransSeat());
         }
 
         if ((flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING))   // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH
@@ -1660,7 +1659,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
         if (pThis && moveinfo)
             *data << moveinfo->fall_time;
         else
-            *data << uint32(0); //last fall time
+            *data << uint32_t(0); //last fall time
 
         if (flags2 & MOVEFLAG_REDIRECTED)   // 0x00001000
         {
@@ -1720,7 +1719,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
     {
         if (flags & UPDATEFLAG_POSITION)        //0x0100
         {
-            *data << uint8(0);                  //some say it is like parent guid ?
+            *data << uint8_t(0); //some say it is like parent guid ?
             *data << float(m_position.x);
             *data << float(m_position.y);
             *data << float(m_position.z);
@@ -1764,7 +1763,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
         if (isCreatureOrPlayer())
             FastGUIDPack(*data, static_cast<Unit*>(this)->getTargetGuid()); //some compressed GUID
         else
-            *data << uint64(0);
+            *data << uint64_t(0);
     }
 
     if (flags & UPDATEFLAG_TRANSPORT)   //0x2
@@ -1774,7 +1773,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
     if (flags & UPDATEFLAG_VEHICLE)
     {
-        uint32 vehicleid = 0;
+        uint32_t vehicleid = 0;
 
         if (isCreature())
             vehicleid = static_cast<Creature*>(this)->GetCreatureProperties()->vehicleid;
@@ -1782,7 +1781,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
             if (isPlayer())
                 vehicleid = static_cast<Player*>(this)->mountvehicleid;
 
-        *data << uint32(vehicleid);
+        *data << uint32_t(vehicleid);
         *data << float(GetOrientation());
     }
 
@@ -1795,7 +1794,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 #endif
 
 #if VERSION_STRING >= Cata
-void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /*target*/)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
 {
     ObjectGuid Guid = getGuid();
 
@@ -1998,7 +1997,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
             data->WriteByteSeq(tGuid[5]);
             data->WriteByteSeq(tGuid[7]);
 
-            *data << uint32(unit->movement_info.getTransportTime());
+            *data << uint32_t(unit->movement_info.getTransportTime());
             *data << float(normalizeOrientation(unit->movement_info.getTransportPosition()->o));
 
             if (hasTransportTime2)
@@ -2425,8 +2424,8 @@ void Object::LoadValues(const char* data)
     // thread-safe ;) strtok is not.
     std::string ndata = data;
     std::string::size_type last_pos = 0, pos = 0;
-    uint32 index = 0;
-    uint32 val;
+    uint32_t index = 0;
+    uint32_t val;
     do
     {
         // prevent overflow
@@ -2452,7 +2451,7 @@ void Object::_SetUpdateBits(UpdateMask* updateMask, Player* /*target*/) const
 void Object::_SetCreateBits(UpdateMask* updateMask, Player* /*target*/) const
 {
 
-    for (uint32 i = 0; i < m_valuesCount; ++i)
+    for (uint32_t i = 0; i < m_valuesCount; ++i)
         if (m_uint32Values[i] != 0)
             updateMask->SetBit(i);
 }
@@ -2612,13 +2611,13 @@ void Object::RemoveFromWorld(bool free_guid)
     event_Relocate();
 }
 
-void Object::SetFlag(const uint16 index, uint32 newFlag)
+void Object::SetFlag(const uint16_t index, uint32_t newFlag)
 {
     setUInt32Value(index, getUInt32Value(index) | newFlag);
 }
 
 
-void Object::RemoveFlag(const uint16 index, uint32 oldFlag)
+void Object::RemoveFlag(const uint16_t index, uint32_t oldFlag)
 {
     setUInt32Value(index, getUInt32Value(index) & ~oldFlag);
 }
@@ -2886,7 +2885,7 @@ void Object::setServersideFaction()
     }
     else if (isGameObject())
     {
-        uint32 go_faction_id = static_cast<GameObject*>(this)->getFactionTemplate();
+        uint32_t go_faction_id = static_cast<GameObject*>(this)->getFactionTemplate();
         faction_template = sFactionTemplateStore.LookupEntry(go_faction_id);
         if (go_faction_id != 0)         // faction = 0 means it has no faction.
         {
@@ -2910,20 +2909,20 @@ void Object::setServersideFaction()
     }
 }
 
-uint32 Object::getServersideFaction()
+uint32_t Object::getServersideFaction()
 {
     return m_factionTemplate->Faction;
 }
 
-void Object::EventSetUInt32Value(uint16 index, uint32 value)
+void Object::EventSetUInt32Value(uint16_t index, uint32_t value)
 {
     setUInt32Value(index, value);
 }
 
-void Object::DealDamage(Unit* /*pVictim*/, uint32 /*damage*/, uint32 /*targetEvent*/, uint32 /*unitEvent*/, uint32 /*spellId*/, bool /*no_remove_auras*/)
+void Object::DealDamage(Unit* /*pVictim*/, uint32_t /*damage*/, uint32_t /*targetEvent*/, uint32_t /*unitEvent*/, uint32_t /*spellId*/, bool /*no_remove_auras*/)
 {}
 
-void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage, bool allowProc, bool static_damage, bool /*no_remove_auras*/)
+void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32_t spellID, uint32_t damage, bool allowProc, bool static_damage, bool /*no_remove_auras*/)
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     //Unacceptable Cases Processing
@@ -2939,8 +2938,8 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     float res = static_cast<float>(damage);
     bool critical = false;
 
-    uint32 aproc = PROC_ON_ANY_HOSTILE_ACTION; /*| PROC_ON_SPELL_HIT;*/
-    uint32 vproc = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM; /*| PROC_ON_SPELL_HIT_VICTIM;*/
+    uint32_t aproc = PROC_ON_ANY_HOSTILE_ACTION; /*| PROC_ON_SPELL_HIT;*/
+    uint32_t vproc = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM; /*| PROC_ON_SPELL_HIT_VICTIM;*/
 
     //A school damage is not necessarily magic
     switch (spellInfo->getDmgClass())
@@ -3027,9 +3026,9 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         res += static_cast<Unit*>(this)->CalcSpellDamageReduction(pVictim, spellInfo, res);
 
     //absorption
-    uint32 ress = static_cast<uint32>(res);
-    uint32 abs_dmg = pVictim->AbsorbDamage(spellInfo->getFirstSchoolFromSchoolMask(), &ress);
-    uint32 ms_abs_dmg = pVictim->ManaShieldAbsorb(ress);
+    uint32_t ress = static_cast<uint32_t>(res);
+    uint32_t abs_dmg = pVictim->AbsorbDamage(spellInfo->getFirstSchoolFromSchoolMask(), &ress);
+    uint32_t ms_abs_dmg = pVictim->ManaShieldAbsorb(ress);
     if (ms_abs_dmg)
     {
         if (ms_abs_dmg > ress)
@@ -3046,7 +3045,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     // Incanter's Absorption
     if (pVictim->isPlayer())
     {
-        uint32 incanterSAbsorption[] =
+        uint32_t incanterSAbsorption[] =
         {
             //SPELL_HASH_INCANTER_S_ABSORPTION
             44394,
@@ -3067,8 +3066,8 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
             else if (pl->HasAura(44396))
                 pctmod = 0.15f;
 
-            uint32 hp = static_cast<uint32>(0.05f * pl->getMaxHealth());
-            uint32 spellpower = static_cast<uint32>(pctmod * pl->getModDamageDonePositive(SCHOOL_NORMAL));
+            uint32_t hp = static_cast<uint32_t>(0.05f * pl->getMaxHealth());
+            uint32_t spellpower = static_cast<uint32_t>(pctmod * pl->getModDamageDonePositive(SCHOOL_NORMAL));
 
             if (spellpower > hp)
                 spellpower = hp;
@@ -3094,7 +3093,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     if (res > 0 && this->isCreatureOrPlayer())
     {
         static_cast<Unit*>(this)->CalculateResistanceReduction(pVictim, &dmg, spellInfo, 0);
-        if ((int32)dmg.resisted_damage > dmg.full_damage)
+        if ((int32_t)dmg.resisted_damage > dmg.full_damage)
             res = 0;
         else
             res = static_cast<float>(dmg.full_damage - dmg.resisted_damage);
@@ -3110,17 +3109,17 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     // Paladin: Blessing of Sacrifice, and Warlock: Soul Link
     if (pVictim->m_damageSplitTarget)
     {
-        res = (float)pVictim->DoDamageSplitTarget((uint32)res, spellInfo->getFirstSchoolFromSchoolMask(), false);
+        res = (float)pVictim->DoDamageSplitTarget((uint32_t)res, spellInfo->getFirstSchoolFromSchoolMask(), false);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     //Data Sending ProcHandling
-    SendSpellNonMeleeDamageLog(this, pVictim, spellID, static_cast<int32>(res), spellInfo->getFirstSchoolFromSchoolMask(), abs_dmg, dmg.resisted_damage, false, 0, critical, isPlayer());
-    DealDamage(pVictim, static_cast<int32>(res), 2, 0, spellID);
+    SendSpellNonMeleeDamageLog(this, pVictim, spellID, static_cast<int32_t>(res), spellInfo->getFirstSchoolFromSchoolMask(), abs_dmg, dmg.resisted_damage, false, 0, critical, isPlayer());
+    DealDamage(pVictim, static_cast<int32_t>(res), 2, 0, spellID);
 
     if (isCreatureOrPlayer())
     {
-        int32 dmg2 = static_cast<int32>(res);
+        int32_t dmg2 = static_cast<int32_t>(res);
 
         pVictim->HandleProc(vproc, static_cast<Unit*>(this), spellInfo, !allowProc, dmg2, abs_dmg);
         pVictim->m_procCounter = 0;
@@ -3129,7 +3128,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     }
     if (this->isPlayer())
     {
-        static_cast<Player*>(this)->m_casted_amount[spellInfo->getFirstSchoolFromSchoolMask()] = (uint32)res;
+        static_cast<Player*>(this)->m_casted_amount[spellInfo->getFirstSchoolFromSchoolMask()] = (uint32_t)res;
     }
 
     if (!(dmg.full_damage == 0 && abs_dmg))
@@ -3143,7 +3142,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
 
     //////////////////////////////////////////////////////////////////////////////////////////
     //Post Damage Processing
-    if ((int32)dmg.resisted_damage == dmg.full_damage && !abs_dmg)
+    if ((int32_t)dmg.resisted_damage == dmg.full_damage && !abs_dmg)
     {
         //Magic Absorption
         if (pVictim->isPlayer())
@@ -3152,8 +3151,8 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
             {
                 Player* pl = static_cast<Player*>(pVictim);
 
-                uint32 maxmana = pl->getMaxPower(POWER_TYPE_MANA);
-                uint32 amount = static_cast<uint32>(maxmana * pl->m_RegenManaOnSpellResist);
+                uint32_t maxmana = pl->getMaxPower(POWER_TYPE_MANA);
+                uint32_t amount = static_cast<uint32_t>(maxmana * pl->m_RegenManaOnSpellResist);
 
                 pVictim->energize(pVictim, 29442, amount, POWER_TYPE_MANA);
             }
@@ -3170,8 +3169,8 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
             //Shadow Word:Death
             if (spellID == 32379 || spellID == 32996 || spellID == 48157 || spellID == 48158)
             {
-                uint32 damage2 = static_cast<uint32>(res + abs_dmg);
-                uint32 absorbed = static_cast<Unit*>(this)->AbsorbDamage(spellInfo->getFirstSchoolFromSchoolMask(), &damage2);
+                uint32_t damage2 = static_cast<uint32_t>(res + abs_dmg);
+                uint32_t absorbed = static_cast<Unit*>(this)->AbsorbDamage(spellInfo->getFirstSchoolFromSchoolMask(), &damage2);
                 DealDamage(static_cast<Unit*>(this), damage2, 2, 0, spellID);
                 SendSpellNonMeleeDamageLog(this, this, spellID, damage2, spellInfo->getFirstSchoolFromSchoolMask(), absorbed, 0, false, 0, false, isPlayer());
             }
@@ -3182,7 +3181,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
 //////////////////////////////////////////////////////////////////////////////////////////
 /// SpellLog packets just to keep the code cleaner and better to read
 //////////////////////////////////////////////////////////////////////////////////////////
-void Object::SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 SpellLogType)
+void Object::SendSpellLog(Object* Caster, Object* Target, uint32_t Ability, uint8_t SpellLogType)
 {
     if (Caster == nullptr || Target == nullptr || Ability == 0)
         return;
@@ -3190,22 +3189,22 @@ void Object::SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 
 
     WorldPacket data(SMSG_SPELLLOGMISS, 26);
 
-    data << uint32(Ability);            // spellid
+    data << uint32_t(Ability);            // spellid
     data << Caster->getGuid();          // caster / player
-    data << uint8(1);                   // unknown but I think they are const
-    data << uint32(1);                  // unknown but I think they are const
+    data << uint8_t(1);                   // unknown but I think they are const
+    data << uint32_t(1);                  // unknown but I think they are const
     data << Target->getGuid();          // target
-    data << uint8(SpellLogType);        // spelllogtype
+    data << uint8_t(SpellLogType);        // spelllogtype
 
     Caster->SendMessageToSet(&data, true);
 }
 
-void Object::SendSpellNonMeleeDamageLog(Object* Caster, Object* Target, uint32 SpellID, uint32 Damage, uint8 School, uint32 AbsorbedDamage, uint32 ResistedDamage, bool PhysicalDamage, uint32 BlockedDamage, bool CriticalHit, bool bToset)
+void Object::SendSpellNonMeleeDamageLog(Object* Caster, Object* Target, uint32_t SpellID, uint32_t Damage, uint8_t School, uint32_t AbsorbedDamage, uint32_t ResistedDamage, bool PhysicalDamage, uint32_t BlockedDamage, bool CriticalHit, bool bToset)
 {
     if (!Caster || !Target || !SpellID)
         return;
 
-    uint32 Overkill = 0;
+    uint32_t Overkill = 0;
 
     if (Target->isCreatureOrPlayer() && Damage > static_cast<Unit*>(Target)->getHealth())
         Overkill = Damage - static_cast<Unit*>(Target)->getHealth();
@@ -3214,101 +3213,99 @@ void Object::SendSpellNonMeleeDamageLog(Object* Caster, Object* Target, uint32 S
 
     data << Target->GetNewGUID();
     data << Caster->GetNewGUID();
-    data << uint32(SpellID);                        // SpellID / AbilityID
-    data << uint32(Damage);                         // All Damage
-    data << uint32(Overkill);                       // Overkill
-    data << uint8(g_spellSchoolConversionTable[School]);        // School
-    data << uint32(AbsorbedDamage);                 // Absorbed Damage
-    data << uint32(ResistedDamage);                 // Resisted Damage
-    data << uint8(PhysicalDamage);                  // Physical Damage (true/false)
-    data << uint8(0);                               // unknown or it binds with Physical Damage
-    data << uint32(BlockedDamage);                  // Physical Damage (true/false)
+    data << uint32_t(SpellID);                               // SpellID / AbilityID
+    data << uint32_t(Damage);                                // All Damage
+    data << uint32_t(Overkill);                              // Overkill
+    data << uint8_t(g_spellSchoolConversionTable[School]);   // School
+    data << uint32_t(AbsorbedDamage);                        // Absorbed Damage
+    data << uint32_t(ResistedDamage);                        // Resisted Damage
+    data << uint8_t(PhysicalDamage);                         // Physical Damage (true/false)
+    data << uint8_t(0);                                      // unknown or it binds with Physical Damage
+    data << uint32_t(BlockedDamage);                         // Physical Damage (true/false)
 
     // unknown const
     if (CriticalHit)
-        data << uint8(7);
+        data << uint8_t(7);
     else
-        data << uint8(5);
+        data << uint8_t(5);
 
-    data << uint32(0);
+    data << uint32_t(0);
 
     Caster->SendMessageToSet(&data, bToset);
 }
 
 #if VERSION_STRING <= TBC
-void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage* Dmg, uint32 Damage, uint32 Abs, uint32 BlockedDamage, uint32 HitStatus, uint32 VState)
+void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage* Dmg, uint32_t Damage, uint32_t Abs, uint32_t BlockedDamage, uint32_t HitStatus, uint32_t VState)
 {
     if (!Caster || !Target || !Dmg)
         return;
 
-    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 70); //guessed size
+    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 70); // guessed size
 
-    data << uint32(HitStatus);
+    data << uint32_t(HitStatus);
     data << Caster->GetNewGUID();
     data << Target->GetNewGUID();
 
-    data << uint32(Damage);                 // Realdamage
-    data << uint8(1);                       // Damage type counter / swing type
+    data << uint32_t(Damage); // Realdamage
+    data << uint8_t(1); // Damage type counter / swing type
 
-    data << uint32(g_spellSchoolConversionTable[Dmg->school_type]);         // Damage school
-    data << float(Dmg->full_damage);        // Damage float
-    data << uint32(Dmg->full_damage);       // Damage amount
-    data << uint32(Abs);                    // Damage absorbed
-    data << uint32(Dmg->resisted_damage);
+    data << uint32_t(g_spellSchoolConversionTable[Dmg->school_type]); // Damage school
+    data << float(Dmg->full_damage); // Damage float
+    data << uint32_t(Dmg->full_damage); // Damage amount
+    data << uint32_t(Abs); // Damage absorbed
+    data << uint32_t(Dmg->resisted_damage);
 
-    data << uint8(VState);
-    data << uint32(0x03E8);          // can be 0,1000 or -1
-    data << uint32(0);
-    data << uint32(BlockedDamage);  // Damage amount blocked
-
+    data << uint8_t(VState);
+    data << uint32_t(0x03E8); // can be 0,1000 or -1
+    data << uint32_t(0);
+    data << uint32_t(BlockedDamage); // Damage amount blocked
 
     SendMessageToSet(&data, Caster->isPlayer());
 }
 #else
-void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage* Dmg, uint32 Damage, uint32 Abs, uint32 BlockedDamage, uint32 HitStatus, uint32 VState)
+void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage* Dmg, uint32_t Damage, uint32_t Abs, uint32_t BlockedDamage, uint32_t HitStatus, uint32_t VState)
 {
     if (!Caster || !Target || !Dmg)
         return;
 
     WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 108);
 
-    uint32 Overkill = 0;
+    uint32_t Overkill = 0;
 
     if (Target->isCreatureOrPlayer() && Damage > static_cast<Unit*>(Target)->getHealth())
         Overkill = Damage - static_cast<Unit*>(Target)->getHealth();
 
-    data << uint32(HitStatus);
+    data << uint32_t(HitStatus);
     data << Caster->GetNewGUID();
     data << Target->GetNewGUID();
 
-    data << uint32(Damage);                 // Realdamage
-    data << uint32(Overkill);               // Overkill
-    data << uint8(1);                       // Damage type counter / swing type
+    data << uint32_t(Damage); // Realdamage
+    data << uint32_t(Overkill); // Overkill
+    data << uint8_t(1); // Damage type counter / swing type
 
-    data << uint32(g_spellSchoolConversionTable[Dmg->school_type]);         // Damage school
-    data << float(Dmg->full_damage);        // Damage float
-    data << uint32(Dmg->full_damage);       // Damage amount
+    data << uint32_t(g_spellSchoolConversionTable[Dmg->school_type]); // Damage school
+    data << float(Dmg->full_damage); // Damage float
+    data << uint32_t(Dmg->full_damage); // Damage amount
 
     if (HitStatus & HITSTATUS_ABSORBED)
-        data << uint32(Abs);                // Damage absorbed
+        data << uint32_t(Abs); // Damage absorbed
 
     if (HitStatus & HITSTATUS_RESIST)
-        data << uint32(Dmg->resisted_damage);   // Damage resisted
+        data << uint32_t(Dmg->resisted_damage); // Damage resisted
 
-    data << uint8(VState);
-    data << uint32(0);          // can be 0,1000 or -1
-    data << uint32(0);
+    data << uint8_t(VState);
+    data << uint32_t(0); // can be 0,1000 or -1
+    data << uint32_t(0);
 
     if (HitStatus & HITSTATUS_BLOCK)
-        data << uint32(BlockedDamage);  // Damage amount blocked
-
+        data << uint32_t(BlockedDamage); // Damage amount blocked
 
     if (HitStatus & HITSTATUS_RAGE_GAIN)
-        data << uint32(0);              // unknown
+        data << uint32_t(0); // unknown
 
     if (HitStatus & HITSTATUS_UNK_00)
     {
-        data << uint32(0);
+        data << uint32_t(0);
         data << float(0);
         data << float(0);
         data << float(0);
@@ -3318,23 +3315,23 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
         data << float(0);
         data << float(0);
 
-        data << float(0);       // Found in loop
-        data << float(0);       // Found in loop
-        data << uint32(0);
+        data << float(0); // Found in loop
+        data << float(0); // Found in loop
+        data << uint32_t(0);
     }
 
     SendMessageToSet(&data, Caster->isPlayer());
 }
 #endif
 
-int32 Object::event_GetInstanceID()
+int32_t Object::event_GetInstanceID()
 {
     // \return -1 for non-inworld.. so we get our shit moved to the right thread
     // \return default value is -1, if it's something else then we are/will be soon InWorld.
     return m_instanceId;
 }
 
-void Object::EventSpellDamage(uint64 Victim, uint32 SpellID, uint32 Damage)
+void Object::EventSpellDamage(uint64_t Victim, uint32_t SpellID, uint32_t Damage)
 {
     if (!IsInWorld())
         return;
@@ -3408,7 +3405,7 @@ void Object::Deactivate(MapMgr* mgr)
     Active = false;
 }
 
-void Object::SetZoneId(uint32 newZone)
+void Object::SetZoneId(uint32_t newZone)
 {
     m_zoneId = newZone;
 
@@ -3420,7 +3417,7 @@ void Object::SetZoneId(uint32 newZone)
     }
 }
 
-void Object::PlaySoundToSet(uint32 sound_entry)
+void Object::PlaySoundToSet(uint32_t sound_entry)
 {
     SendMessageToSet(SmsgPlaySound(sound_entry).serialise().get(), true);
 }
@@ -3437,9 +3434,9 @@ bool Object::IsInBg()
     return false;
 }
 
-uint32 Object::GetTeam()
+uint32_t Object::GetTeam()
 {
-
+    // FIX ME CATA
     switch (m_factionEntry->ID)
     {
         // Human
@@ -3467,7 +3464,7 @@ uint32 Object::GetTeam()
         return TEAM_HORDE;
     }
 
-    return static_cast<uint32>(-1);
+    return static_cast<uint32_t>(-1);
 }
 
 Transporter* Object::GetTransport() const
@@ -3483,7 +3480,7 @@ Transporter* Object::GetTransport() const
 /// Manipulates the phase value, see "enum PHASECOMMANDS" in
 /// Object.h for a longer explanation!
 //////////////////////////////////////////////////////////////////////////////////////////
-void Object::Phase(uint8 command, uint32 newphase)
+void Object::Phase(uint8_t command, uint32_t newphase)
 {
     switch (command)
     {
@@ -3506,7 +3503,7 @@ void Object::Phase(uint8 command, uint32 newphase)
     return;
 }
 
-void Object::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool /*self*/)
+void Object::OutPacketToSet(uint16_t Opcode, uint16_t Len, const void* Data, bool /*self*/)
 {
     if (!IsInWorld())
         return;
@@ -3524,7 +3521,7 @@ void Object::SendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
     if (!IsInWorld())
         return;
 
-    uint32 myphase = GetPhase();
+    uint32_t myphase = GetPhase();
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr && (itr->GetPhase() & myphase) != 0)
@@ -3534,7 +3531,7 @@ void Object::SendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
 
 void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
 {
-    uint32 myphase = GetPhase();
+    uint32_t myphase = GetPhase();
     for (const auto& itr : mInRangePlayersSet)
     {
         Object* object = itr;
@@ -3607,7 +3604,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
 
 void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::NpcMonsterSay* npcMonsterSay, int randChoice, uint32_t event)
 {
-    uint32 myphase = GetPhase();
+    uint32_t myphase = GetPhase();
     for (const auto& itr : mInRangePlayersSet)
     {
         Object* object = itr;
@@ -3673,7 +3670,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     test = strstr((char*)text, "$r");
                 if (test != nullptr)
                 {
-                    uint64 targetGUID = creature->getTargetGuid();
+                    uint64_t targetGUID = creature->getTargetGuid();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
                     if (CurrentTarget)
                     {
@@ -3686,7 +3683,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     test = strstr((char*)text, "$n");
                 if (test != nullptr)
                 {
-                    uint64 targetGUID = creature->getTargetGuid();
+                    uint64_t targetGUID = creature->getTargetGuid();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
                     if (CurrentTarget && CurrentTarget->isPlayer())
                     {
@@ -3699,7 +3696,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     test = strstr((char*)text, "$c");
                 if (test != nullptr)
                 {
-                    uint64 targetGUID = creature->getTargetGuid();
+                    uint64_t targetGUID = creature->getTargetGuid();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
                     if (CurrentTarget)
                     {
@@ -3712,7 +3709,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     test = strstr((char*)text, "$g");
                 if (test != nullptr)
                 {
-                    uint64 targetGUID = creature->getTargetGuid();
+                    uint64_t targetGUID = creature->getTargetGuid();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
                     if (CurrentTarget)
                     {
@@ -3770,7 +3767,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
     }
 }
 
-Object* Object::GetMapMgrObject(const uint64 & guid)
+Object* Object::GetMapMgrObject(const uint64_t & guid)
 {
     if (!IsInWorld())
         return nullptr;
@@ -3778,7 +3775,7 @@ Object* Object::GetMapMgrObject(const uint64 & guid)
     return GetMapMgr()->_GetObject(guid);
 }
 
-Pet* Object::GetMapMgrPet(const uint64 & guid)
+Pet* Object::GetMapMgrPet(const uint64_t & guid)
 {
     if (!IsInWorld())
         return nullptr;
@@ -3789,7 +3786,7 @@ Pet* Object::GetMapMgrPet(const uint64 & guid)
     return GetMapMgr()->GetPet(wowGuid.getGuidLowPart());
 }
 
-Unit* Object::GetMapMgrUnit(const uint64 & guid)
+Unit* Object::GetMapMgrUnit(const uint64_t & guid)
 {
     if (!IsInWorld())
         return nullptr;
@@ -3797,7 +3794,7 @@ Unit* Object::GetMapMgrUnit(const uint64 & guid)
     return GetMapMgr()->GetUnit(guid);
 }
 
-Player* Object::GetMapMgrPlayer(const uint64 & guid)
+Player* Object::GetMapMgrPlayer(const uint64_t & guid)
 {
     if (!IsInWorld())
         return nullptr;
@@ -3808,7 +3805,7 @@ Player* Object::GetMapMgrPlayer(const uint64 & guid)
     return GetMapMgr()->GetPlayer(wowGuid.getGuidLowPart());
 }
 
-Creature* Object::GetMapMgrCreature(const uint64 & guid)
+Creature* Object::GetMapMgrCreature(const uint64_t & guid)
 {
     if (!IsInWorld())
         return nullptr;
@@ -3819,7 +3816,7 @@ Creature* Object::GetMapMgrCreature(const uint64 & guid)
     return GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
 }
 
-GameObject* Object::GetMapMgrGameObject(const uint64 & guid)
+GameObject* Object::GetMapMgrGameObject(const uint64_t & guid)
 {
     if (!IsInWorld())
         return nullptr;
@@ -3830,7 +3827,7 @@ GameObject* Object::GetMapMgrGameObject(const uint64 & guid)
     return GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
 }
 
-DynamicObject* Object::GetMapMgrDynamicObject(const uint64 & guid)
+DynamicObject* Object::GetMapMgrDynamicObject(const uint64_t & guid)
 {
     if (!IsInWorld())
         return nullptr;
@@ -3851,8 +3848,8 @@ void Object::SetMapCell(MapCell* cell)
 {
     if (cell == nullptr)
     {
-        //mapcell coordinates are uint16, so using uint32(-1) will always make GetMapCell() return NULL.
-        m_mapCell_x = m_mapCell_y = uint32(-1);
+        // mapcell coordinates are uint16_t, so using uint32_t(-1) will always make GetMapCell() return NULL.
+        m_mapCell_x = m_mapCell_y = uint32_t(-1);
     }
     else
     {
@@ -3861,11 +3858,11 @@ void Object::SetMapCell(MapCell* cell)
     }
 }
 
-void Object::SendAIReaction(uint32 reaction)
+void Object::SendAIReaction(uint32_t reaction)
 {
     WorldPacket data(SMSG_AI_REACTION, 12);
-    data << uint64(getGuid());
-    data << uint32(reaction);
+    data << uint64_t(getGuid());
+    data << uint32_t(reaction);
     SendMessageToSet(&data, false);
 }
 
@@ -3882,7 +3879,7 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
     outy = GetPositionY() + rad * sin(angle);
     outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
     float waterz;
-    uint32 watertype;
+    uint32_t watertype;
     GetMapMgr()->GetLiquidInfo(outx, outy, GetPositionZ() + 2, waterz, watertype);
     outz = std::max(waterz, outz);
 

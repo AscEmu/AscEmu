@@ -27,7 +27,7 @@ namespace luPacket
     // Normal operations
     int CreatePacket(lua_State* L, WorldPacket* /*packet*/)
     {
-        uint16 opcode = static_cast<uint16>(luaL_checkinteger(L, 1));
+        uint16_t opcode = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         size_t size = static_cast<size_t>(luaL_checkinteger(L, 2));
         if (opcode >= NUM_MSG_TYPES)
             luaL_error(L, "CreatePacket got opcode %d greater than max opcode %d.", opcode, NUM_MSG_TYPES);
@@ -62,7 +62,7 @@ namespace luPacket
             lua_pushnil(L);
         else
         {
-            uint8 byte;
+            uint8_t byte;
             (*packet) >> byte;
             lua_pushinteger(L, byte);
         }
@@ -74,7 +74,7 @@ namespace luPacket
             lua_pushnil(L);
         else
         {
-            int8 byte;
+            int8_t byte;
             (*packet) >> byte;
             lua_pushinteger(L, byte);
         }
@@ -82,7 +82,7 @@ namespace luPacket
     }
     int ReadShort(lua_State* L, WorldPacket* packet)
     {
-        int16 val;
+        int16_t val;
         if (packet != NULL)
         {
             (*packet) >> val;
@@ -94,7 +94,7 @@ namespace luPacket
     }
     int ReadUShort(lua_State* L, WorldPacket* packet)
     {
-        uint16 val;
+        uint16_t val;
         if (packet != NULL)
         {
             (*packet) >> val;
@@ -106,7 +106,7 @@ namespace luPacket
     }
     int ReadLong(lua_State* L, WorldPacket* packet)
     {
-        int32 val;
+        int32_t val;
         if (packet != NULL)
         {
             (*packet) >> val;
@@ -118,7 +118,7 @@ namespace luPacket
     }
     int ReadULong(lua_State* L, WorldPacket* packet)
     {
-        uint32 val;
+        uint32_t val;
         if (packet != NULL)
         {
             (*packet) >> val;
@@ -154,7 +154,7 @@ namespace luPacket
     }
     int ReadGUID(lua_State* L, WorldPacket* packet)
     {
-        uint64 guid;
+        uint64_t guid;
         if (packet != NULL)
         {
             (*packet) >> guid;
@@ -192,37 +192,37 @@ namespace luPacket
     // Write operations
     int WriteByte(lua_State* L, WorldPacket* packet)
     {
-        int8 byte = (int8)luaL_checkinteger(L, 1);
+        int8_t byte = (int8_t)luaL_checkinteger(L, 1);
         (*packet) << byte;
         return 0;
     }
     int WriteUByte(lua_State* L, WorldPacket* packet)
     {
-        uint8 byte = (uint8)luaL_checkinteger(L, 1);
+        uint8_t byte = (uint8_t)luaL_checkinteger(L, 1);
         (*packet) << byte;
         return 0;
     }
     int WriteShort(lua_State* L, WorldPacket* packet)
     {
-        int16 val = (int16)luaL_checkinteger(L, 1);
+        int16_t val = (int16_t)luaL_checkinteger(L, 1);
         (*packet) << val;
         return 0;
     }
     int WriteUShort(lua_State* L, WorldPacket* packet)
     {
-        uint16 val = (uint16)luaL_checkinteger(L, 1);
+        uint16_t val = (uint16_t)luaL_checkinteger(L, 1);
         (*packet) << val;
         return 0;
     }
     int WriteLong(lua_State* L, WorldPacket* packet)
     {
-        int32 val = (int32)luaL_checkinteger(L, 1);
+        int32_t val = (int32_t)luaL_checkinteger(L, 1);
         (*packet) << val;
         return 0;
     }
     int WriteULong(lua_State* L, WorldPacket* packet)
     {
-        uint32 val = (uint32)luaL_checkinteger(L, 1);
+        uint32_t val = (uint32_t)luaL_checkinteger(L, 1);
         (*packet) << val;
         return 0;
     }
@@ -240,7 +240,7 @@ namespace luPacket
     }
     int WriteGUID(lua_State* L, WorldPacket* packet)
     {
-        uint64 guid = CHECK_GUID(L, 1);
+        uint64_t guid = CHECK_GUID(L, 1);
         (*packet) << guid;
         return 0;
     }

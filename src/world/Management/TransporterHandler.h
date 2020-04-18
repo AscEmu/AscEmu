@@ -13,10 +13,10 @@ class TransportPath
     public:
         struct PathNode
         {
-            uint32 mapid;
+            uint32_t mapid;
             float x, y, z;
-            uint32 actionFlag;
-            uint32 delay;
+            uint32_t actionFlag;
+            uint32_t delay;
         };
 
         inline void SetLength(const unsigned int sz)
@@ -50,7 +50,7 @@ class TransportPath
 
 struct keyFrame
 {
-    keyFrame(float _x, float _y, float _z, uint32 _mapid, int _actionflag, int _delay)
+    keyFrame(float _x, float _y, float _z, uint32_t _mapid, int _actionflag, int _delay)
     {
         x = _x;
         y = _y;
@@ -68,7 +68,7 @@ struct keyFrame
     float x;
     float y;
     float z;
-    uint32 mapid;
+    uint32_t mapid;
     int actionflag;
     int delay;
     float distSinceStop;
@@ -80,9 +80,9 @@ struct keyFrame
 struct TWayPoint
 {
     TWayPoint() : mapid(0), x(0), y(0), z(0), o(0), teleport(0), delayed(false) {}
-    TWayPoint(uint32 _mapid, float _x, float _y, float _z, bool _teleport) :
+    TWayPoint(uint32_t _mapid, float _x, float _y, float _z, bool _teleport) :
         mapid(_mapid), x(_x), y(_y), z(_z), o(0), teleport(_teleport), delayed(false) {}
-    uint32 mapid;
+    uint32_t mapid;
     float x;
     float y;
     float z;
@@ -91,7 +91,7 @@ struct TWayPoint
     bool delayed;
 };
 
-bool FillTransporterPathVector(uint32 PathID, TransportPath & Path);
+bool FillTransporterPathVector(uint32_t PathID, TransportPath & Path);
 
 class SERVER_DECL Transporter : public GameObject
 {
@@ -101,17 +101,17 @@ protected:
 
 public:
 
-    Transporter(uint64 guid);
+    Transporter(uint64_t guid);
     ~Transporter();
     
     void AddCreature(TransportSpawn creature);
     void RespawnCreaturePassengers();
 
     // Creates The Transporter
-    bool Create(uint32 entry, int32 Time);
+    bool Create(uint32_t entry, int32_t Time);
 
     // Start Generating of the Waypoints
-    bool GenerateWaypoints(uint32 pathid);
+    bool GenerateWaypoints(uint32_t pathid);
 
     // Update Transporter Position and Transport Passengers
     void Update();
@@ -126,18 +126,18 @@ public:
     void OnPushToWorld();
 
     // Build Update for Player
-    uint32  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
+    uint32_t  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
 
-    std::set<uint32> const& GetPassengers() const { return m_passengers; }
+    std::set<uint32_t> const& GetPassengers() const { return m_passengers; }
 
     typedef std::set<Creature*> CreatureSet;
     CreatureSet m_NPCPassengerSet;
 
     // Spawning of the Creatures on Continent Transports
-    uint32 AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y, float z, float o, uint32 anim = 0);
+    uint32_t AddNPCPassenger(uint32_t tguid, uint32_t entry, float x, float y, float z, float o, uint32_t anim = 0);
 
     // Spawning of the Creatures in Instance Transports
-    Creature* AddNPCPassengerInInstance(uint32 entry, float x, float y, float z, float o, uint32 anim = 0);
+    Creature* AddNPCPassengerInInstance(uint32_t entry, float x, float y, float z, float o, uint32_t anim = 0);
 
     // Removes NPC Passenger
     void RemovePassenger(Creature* passenger) { m_NPCPassengerSet.erase(passenger); }
@@ -155,21 +155,21 @@ public:
     void BuildStopMovePacket(MapMgr* targetMap);
 
     // Transport Gossip
-    void TransportGossip(uint32 route);
+    void TransportGossip(uint32_t route);
 
-    void SetPeriod(int32 val);
-    int32 GetPeriod();
+    void SetPeriod(int32_t val);
+    int32_t GetPeriod();
 
-    uint32 m_pathTime;
-    uint32 m_timer;
+    uint32_t m_pathTime;
+    uint32_t m_timer;
 
-    std::set<uint32> m_passengers;
+    std::set<uint32_t> m_passengers;
 
-    uint32 currenttguid;
+    uint32_t currenttguid;
 
 private:
 
-    typedef std::map<uint32, TWayPoint> WaypointMap;
+    typedef std::map<uint32_t, TWayPoint> WaypointMap;
 
     WaypointMap::const_iterator mCurrentWaypoint;
     WaypointMap::const_iterator mNextWaypoint;
@@ -180,9 +180,9 @@ public:
 
 private:
 
-    void TeleportTransport(uint32 newMapid, uint32 oldmap, float x, float y, float z);
+    void TeleportTransport(uint32_t newMapid, uint32_t oldmap, float x, float y, float z);
     void GetNextWaypoint();
-    int32 m_period;
+    int32_t m_period;
 
 protected:
 

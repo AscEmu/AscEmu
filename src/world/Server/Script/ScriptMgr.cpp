@@ -129,7 +129,7 @@ struct ScriptingEngine_dl
 {
     Arcemu::DynLib* dl;
     exp_script_register InitializeCall;
-    uint32 Type;
+    uint32_t Type;
 
     ScriptingEngine_dl()
     {
@@ -273,7 +273,7 @@ void ScriptMgr::DumpUnimplementedSpells()
     std::ofstream of;
 
     LOG_BASIC("Dumping IDs for spells with unimplemented dummy/script effect(s)");
-    uint32 count = 0;
+    uint32_t count = 0;
 
     of.open("unimplemented1.txt");
 
@@ -341,7 +341,7 @@ void ScriptMgr::DumpUnimplementedSpells()
     LOG_BASIC("Dumped %u IDs.", count);
 }
 
-void ScriptMgr::register_creature_script(uint32 entry, exp_create_creature_ai callback)
+void ScriptMgr::register_creature_script(uint32_t entry, exp_create_creature_ai callback)
 {
     m_creaturesMutex.Acquire();
 
@@ -353,7 +353,7 @@ void ScriptMgr::register_creature_script(uint32 entry, exp_create_creature_ai ca
     m_creaturesMutex.Release();
 }
 
-void ScriptMgr::register_gameobject_script(uint32 entry, exp_create_gameobject_ai callback)
+void ScriptMgr::register_gameobject_script(uint32_t entry, exp_create_gameobject_ai callback)
 {
     if (_gameobjects.find(entry) != _gameobjects.end())
         LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for GameObject ID: %u but this go has already one.", entry);
@@ -361,7 +361,7 @@ void ScriptMgr::register_gameobject_script(uint32 entry, exp_create_gameobject_a
     _gameobjects.insert(GameObjectCreateMap::value_type(entry, callback));
 }
 
-void ScriptMgr::register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback)
+void ScriptMgr::register_dummy_aura(uint32_t entry, exp_handle_dummy_aura callback)
 {
     if (_auras.find(entry) != _auras.end())
     {
@@ -381,7 +381,7 @@ void ScriptMgr::register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback
     _auras.insert(HandleDummyAuraMap::value_type(entry, callback));
 }
 
-void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callback)
+void ScriptMgr::register_dummy_spell(uint32_t entry, exp_handle_dummy_spell callback)
 {
     if (_spells.find(entry) != _spells.end())
     {
@@ -402,7 +402,7 @@ void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callba
     _spells.insert(HandleDummySpellMap::value_type(entry, callback));
 }
 
-void ScriptMgr::register_quest_script(uint32 entry, QuestScript* qs)
+void ScriptMgr::register_quest_script(uint32_t entry, QuestScript* qs)
 {
     QuestProperties const* q = sMySQLStore.getQuestProperties(entry);
     if (q != nullptr)
@@ -416,7 +416,7 @@ void ScriptMgr::register_quest_script(uint32 entry, QuestScript* qs)
     _questscripts.insert(qs);
 }
 
-void ScriptMgr::register_event_script(uint32 entry, EventScript* es)
+void ScriptMgr::register_event_script(uint32_t entry, EventScript* es)
 {
     auto gameEvent = sGameEventMgr.GetEventById(entry);
     if (gameEvent != nullptr)
@@ -432,7 +432,7 @@ void ScriptMgr::register_event_script(uint32 entry, EventScript* es)
     }
 }
 
-void ScriptMgr::register_instance_script(uint32 pMapId, exp_create_instance_ai pCallback)
+void ScriptMgr::register_instance_script(uint32_t pMapId, exp_create_instance_ai pCallback)
 {
     if (mInstances.find(pMapId) != mInstances.end())
         LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Instance ID: %u but this instance already has one.", pMapId);
@@ -440,47 +440,47 @@ void ScriptMgr::register_instance_script(uint32 pMapId, exp_create_instance_ai p
     mInstances.insert(InstanceCreateMap::value_type(pMapId, pCallback));
 };
 
-void ScriptMgr::register_creature_script(uint32* entries, exp_create_creature_ai callback)
+void ScriptMgr::register_creature_script(uint32_t* entries, exp_create_creature_ai callback)
 {
-    for (uint32 y = 0; entries[y] != 0; y++)
+    for (uint32_t y = 0; entries[y] != 0; y++)
     {
         register_creature_script(entries[y], callback);
     }
 };
 
-void ScriptMgr::register_gameobject_script(uint32* entries, exp_create_gameobject_ai callback)
+void ScriptMgr::register_gameobject_script(uint32_t* entries, exp_create_gameobject_ai callback)
 {
-    for (uint32 y = 0; entries[y] != 0; y++)
+    for (uint32_t y = 0; entries[y] != 0; y++)
     {
         register_gameobject_script(entries[y], callback);
     }
 };
 
-void ScriptMgr::register_dummy_aura(uint32* entries, exp_handle_dummy_aura callback)
+void ScriptMgr::register_dummy_aura(uint32_t* entries, exp_handle_dummy_aura callback)
 {
-    for (uint32 y = 0; entries[y] != 0; y++)
+    for (uint32_t y = 0; entries[y] != 0; y++)
     {
         register_dummy_aura(entries[y], callback);
     }
 };
 
-void ScriptMgr::register_dummy_spell(uint32* entries, exp_handle_dummy_spell callback)
+void ScriptMgr::register_dummy_spell(uint32_t* entries, exp_handle_dummy_spell callback)
 {
-    for (uint32 y = 0; entries[y] != 0; y++)
+    for (uint32_t y = 0; entries[y] != 0; y++)
     {
         register_dummy_spell(entries[y], callback);
     }
 };
 
-void ScriptMgr::register_script_effect(uint32* entries, exp_handle_script_effect callback)
+void ScriptMgr::register_script_effect(uint32_t* entries, exp_handle_script_effect callback)
 {
-    for (uint32 y = 0; entries[y] != 0; y++)
+    for (uint32_t y = 0; entries[y] != 0; y++)
     {
         register_script_effect(entries[y], callback);
     }
 };
 
-void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect callback)
+void ScriptMgr::register_script_effect(uint32_t entry, exp_handle_script_effect callback)
 {
 
     HandleScriptEffectMap::iterator itr = SpellScriptEffects.find(entry);
@@ -501,12 +501,12 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
     if (!sp->hasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->hasEffect(SPELL_EFFECT_SEND_EVENT))
         LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->getName().c_str());
 
-    SpellScriptEffects.insert(std::pair< uint32, exp_handle_script_effect >(entry, callback));
+    SpellScriptEffects.insert(std::pair< uint32_t, exp_handle_script_effect >(entry, callback));
 }
 
 CreatureAIScript* ScriptMgr::CreateAIScriptClassForEntry(Creature* pCreature)
 {
-    uint32 entry = pCreature->getEntry();
+    uint32_t entry = pCreature->getEntry();
 
     m_creaturesMutex.Acquire();
     CreatureCreateMap::iterator itr = _creatures.find(entry);
@@ -519,7 +519,7 @@ CreatureAIScript* ScriptMgr::CreateAIScriptClassForEntry(Creature* pCreature)
     return (function_ptr)(pCreature);
 }
 
-GameObjectAIScript* ScriptMgr::CreateAIScriptClassForGameObject(uint32 /*uEntryId*/, GameObject* pGameObject)
+GameObjectAIScript* ScriptMgr::CreateAIScriptClassForGameObject(uint32_t /*uEntryId*/, GameObject* pGameObject)
 {
     GameObjectCreateMap::iterator itr = _gameobjects.find(pGameObject->getEntry());
     if (itr == _gameobjects.end())
@@ -529,7 +529,7 @@ GameObjectAIScript* ScriptMgr::CreateAIScriptClassForGameObject(uint32 /*uEntryI
     return (function_ptr)(pGameObject);
 }
 
-InstanceScript* ScriptMgr::CreateScriptClassForInstance(uint32 /*pMapId*/, MapMgr* pMapMgr)
+InstanceScript* ScriptMgr::CreateScriptClassForInstance(uint32_t /*pMapId*/, MapMgr* pMapMgr)
 {
     InstanceCreateMap::iterator Iter = mInstances.find(pMapMgr->GetMapId());
     if (Iter == mInstances.end())
@@ -538,7 +538,7 @@ InstanceScript* ScriptMgr::CreateScriptClassForInstance(uint32 /*pMapId*/, MapMg
     return (function_ptr)(pMapMgr);
 };
 
-bool ScriptMgr::CallScriptedDummySpell(uint32 uSpellId, uint8_t effectIndex, Spell* pSpell)
+bool ScriptMgr::CallScriptedDummySpell(uint32_t uSpellId, uint8_t effectIndex, Spell* pSpell)
 {
     HandleDummySpellMap::iterator itr = _spells.find(uSpellId);
     if (itr == _spells.end())
@@ -548,7 +548,7 @@ bool ScriptMgr::CallScriptedDummySpell(uint32 uSpellId, uint8_t effectIndex, Spe
     return (function_ptr)(effectIndex, pSpell);
 }
 
-bool ScriptMgr::HandleScriptedSpellEffect(uint32 SpellId, uint8_t effectIndex, Spell* s)
+bool ScriptMgr::HandleScriptedSpellEffect(uint32_t SpellId, uint8_t effectIndex, Spell* s)
 {
     HandleScriptEffectMap::iterator itr = SpellScriptEffects.find(SpellId);
     if (itr == SpellScriptEffects.end())
@@ -558,7 +558,7 @@ bool ScriptMgr::HandleScriptedSpellEffect(uint32 SpellId, uint8_t effectIndex, S
     return (ptr)(effectIndex, s);
 }
 
-bool ScriptMgr::CallScriptedDummyAura(uint32 uSpellId, uint8_t effectIndex, Aura* pAura, bool apply)
+bool ScriptMgr::CallScriptedDummyAura(uint32_t uSpellId, uint8_t effectIndex, Aura* pAura, bool apply)
 {
     HandleDummyAuraMap::iterator itr = _auras.find(uSpellId);
     if (itr == _auras.end())
@@ -715,24 +715,24 @@ void InstanceScript::generateBossDataState()
 void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_a, uint8_t value_b)
 {
     WorldPacket data(SMSG_UPDATE_INSTANCE_ENCOUNTER_UNIT, 16);
-    data << uint32(type);
+    data << uint32_t(type);
 
     if (type == 0 || type == 1 || type == 2)        // engage, disengage, priority upd.
     {
         if (unit)
         {
             data << unit->GetNewGUID();
-            data << uint8(value_a);
+            data << uint8_t(value_a);
         }
     }
     else if (type == 3 || type == 4 || type == 6)   // add timer, objectives on, objectives off
     {
-        data << uint8(value_a);
+        data << uint8_t(value_a);
     }
     else if (type == 5)                             // objectives upd.
     {
-        data << uint8(value_a);
-        data << uint8(value_b);
+        data << uint8_t(value_a);
+        data << uint8_t(value_b);
     }
 
     // 7 sort encounters
@@ -1087,32 +1087,32 @@ void ScriptMgr::register_hook(ServerHookEvents event, void* function_pointer)
     _hooks[event].insert(function_pointer);
 }
 
-bool ScriptMgr::has_creature_script(uint32 entry) const
+bool ScriptMgr::has_creature_script(uint32_t entry) const
 {
     return (_creatures.find(entry) != _creatures.end());
 }
 
-bool ScriptMgr::has_gameobject_script(uint32 entry) const
+bool ScriptMgr::has_gameobject_script(uint32_t entry) const
 {
     return (_gameobjects.find(entry) != _gameobjects.end());
 }
 
-bool ScriptMgr::has_dummy_aura_script(uint32 entry) const
+bool ScriptMgr::has_dummy_aura_script(uint32_t entry) const
 {
     return (_auras.find(entry) != _auras.end());
 }
 
-bool ScriptMgr::has_dummy_spell_script(uint32 entry) const
+bool ScriptMgr::has_dummy_spell_script(uint32_t entry) const
 {
     return (_spells.find(entry) != _spells.end());
 }
 
-bool ScriptMgr::has_script_effect(uint32 entry) const
+bool ScriptMgr::has_script_effect(uint32_t entry) const
 {
     return (SpellScriptEffects.find(entry) != SpellScriptEffects.end());
 }
 
-bool ScriptMgr::has_instance_script(uint32 id) const
+bool ScriptMgr::has_instance_script(uint32_t id) const
 {
     return (mInstances.find(id) != mInstances.end());
 }
@@ -1122,13 +1122,13 @@ bool ScriptMgr::has_hook(ServerHookEvents evt, void* ptr) const
     return (_hooks[evt].size() != 0 && _hooks[evt].find(ptr) != _hooks[evt].end());
 }
 
-bool ScriptMgr::has_quest_script(uint32 entry) const
+bool ScriptMgr::has_quest_script(uint32_t entry) const
 {
     QuestProperties const* q = sMySQLStore.getQuestProperties(entry);
     return (q == NULL || q->pQuestScript != NULL);
 }
 
-void ScriptMgr::register_creature_gossip(uint32 entry, GossipScript* script)
+void ScriptMgr::register_creature_gossip(uint32_t entry, GossipScript* script)
 {
     const auto itr = creaturegossip_.find(entry);
     if (itr == creaturegossip_.end())
@@ -1137,12 +1137,12 @@ void ScriptMgr::register_creature_gossip(uint32 entry, GossipScript* script)
     _customgossipscripts.insert(script);
 }
 
-bool ScriptMgr::has_creature_gossip(uint32 entry) const
+bool ScriptMgr::has_creature_gossip(uint32_t entry) const
 {
     return creaturegossip_.find(entry) != creaturegossip_.end();
 }
 
-GossipScript* ScriptMgr::get_creature_gossip(uint32 entry) const
+GossipScript* ScriptMgr::get_creature_gossip(uint32_t entry) const
 {
     const auto itr = creaturegossip_.find(entry);
     if (itr != creaturegossip_.end())
@@ -1150,7 +1150,7 @@ GossipScript* ScriptMgr::get_creature_gossip(uint32 entry) const
     return nullptr;
 }
 
-void ScriptMgr::register_item_gossip(uint32 entry, GossipScript* script)
+void ScriptMgr::register_item_gossip(uint32_t entry, GossipScript* script)
 {
     const auto itr = itemgossip_.find(entry);
     if (itr == itemgossip_.end())
@@ -1159,7 +1159,7 @@ void ScriptMgr::register_item_gossip(uint32 entry, GossipScript* script)
     _customgossipscripts.insert(script);
 }
 
-void ScriptMgr::register_go_gossip(uint32 entry, GossipScript* script)
+void ScriptMgr::register_go_gossip(uint32_t entry, GossipScript* script)
 {
     const auto itr = gogossip_.find(entry);
     if (itr == gogossip_.end())
@@ -1168,17 +1168,17 @@ void ScriptMgr::register_go_gossip(uint32 entry, GossipScript* script)
     _customgossipscripts.insert(script);
 }
 
-bool ScriptMgr::has_item_gossip(uint32 entry) const
+bool ScriptMgr::has_item_gossip(uint32_t entry) const
 {
     return itemgossip_.find(entry) != itemgossip_.end();
 }
 
-bool ScriptMgr::has_go_gossip(uint32 entry) const
+bool ScriptMgr::has_go_gossip(uint32_t entry) const
 {
     return gogossip_.find(entry) != gogossip_.end();
 }
 
-GossipScript* ScriptMgr::get_go_gossip(uint32 entry) const
+GossipScript* ScriptMgr::get_go_gossip(uint32_t entry) const
 {
     const auto itr = gogossip_.find(entry);
     if (itr != gogossip_.end())
@@ -1186,7 +1186,7 @@ GossipScript* ScriptMgr::get_go_gossip(uint32 entry) const
     return nullptr;
 }
 
-GossipScript* ScriptMgr::get_item_gossip(uint32 entry) const
+GossipScript* ScriptMgr::get_item_gossip(uint32_t entry) const
 {
     const auto itr = itemgossip_.find(entry);
     if (itr != itemgossip_.end())
@@ -1247,7 +1247,7 @@ HookInterface& HookInterface::getInstance()
     return mInstance;
 }
 
-bool HookInterface::OnNewCharacter(uint32 Race, uint32 Class, WorldSession* Session, const char* Name)
+bool HookInterface::OnNewCharacter(uint32_t Race, uint32_t Class, WorldSession* Session, const char* Name)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_NEW_CHARACTER];
     bool ret_val = true;
@@ -1322,7 +1322,7 @@ bool HookInterface::OnRepop(Player* pPlayer)
     return ret_val;
 }
 
-void HookInterface::OnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
+void HookInterface::OnEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_EMOTE];
     for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
@@ -1376,14 +1376,14 @@ void HookInterface::OnQuestAccept(Player* pPlayer, QuestProperties const* pQuest
         ((tOnQuestAccept)*itr)(pPlayer, pQuest, pQuestGiver);
 }
 
-void HookInterface::OnZone(Player* pPlayer, uint32 zone, uint32 oldZone)
+void HookInterface::OnZone(Player* pPlayer, uint32_t zone, uint32_t oldZone)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_ZONE];
     for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
         ((tOnZone)*itr)(pPlayer, zone, oldZone);
 }
 
-bool HookInterface::OnChat(Player* pPlayer, uint32 type, uint32 lang, const char* message, const char* misc)
+bool HookInterface::OnChat(Player* pPlayer, uint32_t type, uint32_t lang, const char* message, const char* misc)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_CHAT];
     bool ret_val = true;
@@ -1396,14 +1396,14 @@ bool HookInterface::OnChat(Player* pPlayer, uint32 type, uint32 lang, const char
     return ret_val;
 }
 
-void HookInterface::OnLoot(Player* pPlayer, Unit* pTarget, uint32 money, uint32 itemId)
+void HookInterface::OnLoot(Player* pPlayer, Unit* pTarget, uint32_t money, uint32_t itemId)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_LOOT];
     for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
         ((tOnLoot)*itr)(pPlayer, pTarget, money, itemId);
 }
 
-void HookInterface::OnObjectLoot(Player* pPlayer, Object* pTarget, uint32 money, uint32 itemId)
+void HookInterface::OnObjectLoot(Player* pPlayer, Object* pTarget, uint32_t money, uint32_t itemId)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_OBJECTLOOT];
     for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
@@ -1445,7 +1445,7 @@ void HookInterface::OnArenaFinish(Player* pPlayer, ArenaTeam* pTeam, bool victor
         ((tOnArenaFinish)*itr)(pPlayer, pTeam, victory, rated);
 }
 
-void HookInterface::OnAreaTrigger(Player* pPlayer, uint32 areaTrigger)
+void HookInterface::OnAreaTrigger(Player* pPlayer, uint32_t areaTrigger)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_AREATRIGGER];
     for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
@@ -1473,7 +1473,7 @@ bool HookInterface::OnPreUnitDie(Unit* killer, Unit* victim)
 }
 
 
-void HookInterface::OnAdvanceSkillLine(Player* pPlayer, uint32 skillLine, uint32 current)
+void HookInterface::OnAdvanceSkillLine(Player* pPlayer, uint32_t skillLine, uint32_t current)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE];
     for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)

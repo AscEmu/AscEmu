@@ -81,7 +81,7 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, Wo
     if (!cmd.length())
         return false;
 
-    for (uint32 i = 0; table[i].Name != NULL; i++)
+    for (uint32_t i = 0; table[i].Name != NULL; i++)
     {
         if (!hasStringAbbr(table[i].Name, cmd.c_str()))
             continue;
@@ -98,7 +98,7 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, Wo
                 else
                 {
                     GreenSystemMessage(m_session, "Available Subcommands:");
-                    for (uint32 k = 0; table[i].ChildCommands[k].Name; k++)
+                    for (uint32_t k = 0; table[i].ChildCommands[k].Name; k++)
                     {
                         if (table[i].ChildCommands[k].CommandGroup == '0' || (table[i].ChildCommands[k].CommandGroup != '0'
                             && m_session->CanUseCommand(table[i].ChildCommands[k].CommandGroup)))
@@ -165,11 +165,11 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
     return 1;
 }
 
-WorldPacket* ChatHandler::FillMessageData(uint32 type, uint32 language, const char* message, uint64 guid, uint8 flag) const
+WorldPacket* ChatHandler::FillMessageData(uint32_t type, uint32_t language, const char* message, uint64_t guid, uint8_t flag) const
 {
     ARCEMU_ASSERT(type != CHAT_MSG_CHANNEL);
     //channels are handled in channel handler and so on
-    uint32 messageLength = (uint32)strlen(message) + 1;
+    uint32_t messageLength = (uint32_t)strlen(message) + 1;
 
 #if VERSION_STRING >= Cata
     WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, messageLength + 60);
@@ -177,38 +177,38 @@ WorldPacket* ChatHandler::FillMessageData(uint32 type, uint32 language, const ch
     WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, messageLength + 30);
 #endif
 
-    *data << uint8(type);
+    *data << uint8_t(type);
     *data << language;
 
     *data << guid;
-    *data << uint32(0);
+    *data << uint32_t(0);
 
     *data << guid;
 
     *data << messageLength;
     *data << message;
 
-    *data << uint8(flag);
+    *data << uint8_t(flag);
     return data;
 }
 
 WorldPacket* ChatHandler::FillSystemMessageData(const char* message) const
 {
-    uint32 messageLength = (uint32)strlen(message) + 1;
+    uint32_t messageLength = (uint32_t)strlen(message) + 1;
 
     WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, 30 + messageLength);
-    *data << uint8(CHAT_MSG_SYSTEM);
-    *data << uint32(LANG_UNIVERSAL);
+    *data << uint8_t(CHAT_MSG_SYSTEM);
+    *data << uint32_t(LANG_UNIVERSAL);
 
     // Who cares about guid when there's no nickname displayed heh ?
-    *data << uint64(0);
-    *data << uint32(0);
-    *data << uint64(0);
+    *data << uint64_t(0);
+    *data << uint32_t(0);
+    *data << uint64_t(0);
 
     *data << messageLength;
     *data << message;
 
-    *data << uint8(0);
+    *data << uint8_t(0);
 
     return data;
 }
@@ -220,7 +220,7 @@ Player* ChatHandler::GetSelectedPlayer(WorldSession* m_session, bool showerror, 
 
     bool is_creature = false;
     Player* player_target = nullptr;
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64_t guid = m_session->GetPlayer()->GetSelection();
 
     WoWGuid wowGuid;
     wowGuid.Init(guid);
@@ -255,7 +255,7 @@ Player* ChatHandler::GetSelectedPlayer(WorldSession* m_session, bool showerror, 
     }
     else
     {
-        player_target = m_session->GetPlayer()->GetMapMgr()->GetPlayer((uint32)guid);
+        player_target = m_session->GetPlayer()->GetMapMgr()->GetPlayer((uint32_t)guid);
     }
 
     return player_target;
@@ -302,7 +302,7 @@ Unit* ChatHandler::GetSelectedUnit(WorldSession* m_session, bool showerror)
     if (m_session == nullptr || m_session->GetPlayer() == nullptr)
         return nullptr;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64_t guid = m_session->GetPlayer()->GetSelection();
 
     Unit* unit = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid);
     if (unit == nullptr)
@@ -315,9 +315,9 @@ Unit* ChatHandler::GetSelectedUnit(WorldSession* m_session, bool showerror)
     return unit;
 }
 
-uint32 ChatHandler::GetSelectedWayPointId(WorldSession* m_session)
+uint32_t ChatHandler::GetSelectedWayPointId(WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64_t guid = m_session->GetPlayer()->GetSelection();
     WoWGuid wowGuid;
     wowGuid.Init(m_session->GetPlayer()->GetSelection());
 
@@ -336,7 +336,7 @@ uint32 ChatHandler::GetSelectedWayPointId(WorldSession* m_session)
     return WoWGuid::getGuidLowPartFromUInt64(guid);
 }
 
-const char* ChatHandler::GetMapTypeString(uint8 type)
+const char* ChatHandler::GetMapTypeString(uint8_t type)
 {
     switch (type)
     {
@@ -355,7 +355,7 @@ const char* ChatHandler::GetMapTypeString(uint8 type)
     }
 }
 
-const char* ChatHandler::GetDifficultyString(uint8 difficulty)
+const char* ChatHandler::GetDifficultyString(uint8_t difficulty)
 {
     switch (difficulty)
     {
@@ -368,7 +368,7 @@ const char* ChatHandler::GetDifficultyString(uint8 difficulty)
     }
 }
 
-const char* ChatHandler::GetRaidDifficultyString(uint8 diff)
+const char* ChatHandler::GetRaidDifficultyString(uint8_t diff)
 {
     switch (diff)
     {
@@ -533,7 +533,7 @@ std::string ChatHandler::MyConvertFloatToString(const float arg)
 
 bool ChatHandler::ShowHelpForCommand(WorldSession* m_session, ChatCommand* table, const char* cmd)
 {
-    for (uint32 i = 0; table[i].Name != NULL; i++)
+    for (uint32_t i = 0; table[i].Name != NULL; i++)
     {
         if (!hasStringAbbr(table[i].Name, cmd))
             continue;
@@ -584,11 +584,11 @@ bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession* m_sessio
     ChatCommand* table = sCommandTableStorage.Get();
 
     std::string output;
-    uint32 count = 0;
+    uint32_t count = 0;
 
     output = "Available commands: \n\n";
 
-    for (uint32 i = 0; table[i].Name != NULL; i++)
+    for (uint32_t i = 0; table[i].Name != NULL; i++)
     {
         if (*args && !hasStringAbbr(table[i].Name, (char*)args))
             continue;
@@ -648,14 +648,14 @@ bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession* m_sessio
     return true;
 }
 
-uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid)
+uint16_t GetItemIDFromLink(const char* itemlink, uint32_t* itemid)
 {
     if (itemlink == NULL)
     {
         *itemid = 0;
         return 0;
     }
-    uint16 slen = (uint16)strlen(itemlink);
+    uint16_t slen = (uint16_t)strlen(itemlink);
     const char* ptr = strstr(itemlink, "|Hitem:");
     if (ptr == NULL)
     {
@@ -677,7 +677,7 @@ uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid)
 /// DGM: Get skill level command for getting information about a skill
 bool ChatHandler::HandleGetSkillLevelCommand(const char* args, WorldSession* m_session)
 {
-    uint32 skill = 0;
+    uint32_t skill = 0;
     char* pSkill = strtok((char*)args, " ");
     if (!pSkill)
         return false;
@@ -701,14 +701,14 @@ bool ChatHandler::HandleGetSkillLevelCommand(const char* args, WorldSession* m_s
         BlueSystemMessage(m_session, "Player does not have %s skill.", SkillName);
         return false;
     }
-    uint32 nobonus = plr->_GetSkillLineCurrent(skill, false);
-    uint32 bonus = plr->_GetSkillLineCurrent(skill, true) - nobonus;
-    uint32 max = plr->_GetSkillLineMax(skill);
+    uint32_t nobonus = plr->_GetSkillLineCurrent(skill, false);
+    uint32_t bonus = plr->_GetSkillLineCurrent(skill, true) - nobonus;
+    uint32_t max = plr->_GetSkillLineMax(skill);
     BlueSystemMessage(m_session, "Player's %s skill has level: %u maxlevel: %u. (+ %u bonus)", SkillName, nobonus, max, bonus);
     return true;
 }
 
-int32 GetSpellIDFromLink(const char* spelllink)
+int32_t GetSpellIDFromLink(const char* spelllink)
 {
     if (spelllink == NULL)
         return 0;
@@ -722,7 +722,7 @@ int32 GetSpellIDFromLink(const char* spelllink)
     return atol(ptr + 8);       // spell id is just past "|Hspell:" (8 bytes)
 }
 
-void ChatHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32 language)
+void ChatHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32_t language)
 {
     if (!iProto || !pSession)
         return;
@@ -731,8 +731,8 @@ void ChatHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSessio
 
     if (ItemCount)
     {
-        int8 count = static_cast<int8>(owner->getItemInterface()->GetItemCount(iProto->ItemId, true));
-        //int8 slot = owner->getItemInterface()->GetInventorySlotById(iProto->ItemId); //DISABLED due to being a retarded concept
+        int8_t count = static_cast<int8_t>(owner->getItemInterface()->GetItemCount(iProto->ItemId, true));
+        //int8_t slot = owner->getItemInterface()->GetInventorySlotById(iProto->ItemId); //DISABLED due to being a retarded concept
         if (iProto->ContainerSlots > 0)
         {
             SystemMessage(pSession, "Item %u %s Count %u ContainerSlots %u", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str(), count, iProto->ContainerSlots);
@@ -755,7 +755,7 @@ void ChatHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSessio
     }
 }
 
-void ChatHandler::SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32 id)
+void ChatHandler::SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32_t id)
 {
     char message[1024];
     char start[50];

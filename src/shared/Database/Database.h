@@ -109,7 +109,7 @@ class SERVER_DECL Database
         //////////////////////////////////////////////////////////////////////////////////////////
         virtual bool Initialize(const char* Hostname, unsigned int port,
                                 const char* Username, const char* Password, const char* DatabaseName,
-                                uint32 ConnectionCount, uint32 BufferSize) = 0;
+                                uint32_t ConnectionCount, uint32_t BufferSize) = 0;
 
         virtual void Shutdown() = 0;
 
@@ -128,10 +128,10 @@ class SERVER_DECL Database
 
         const std::string & GetHostName() { return mHostname; }
         const std::string & GetDatabaseName() { return mDatabaseName; }
-        uint32 GetQueueSize() { return queries_queue.get_size(); }
+        uint32_t GetQueueSize() { return queries_queue.get_size(); }
 
         virtual std::string EscapeString(std::string Escape) = 0;
-        virtual void EscapeLongString(const char* str, uint32 len, std::stringstream & out) = 0;
+        virtual void EscapeLongString(const char* str, uint32_t len, std::stringstream & out) = 0;
         virtual std::string EscapeString(const char* esc, DatabaseConnection* con) = 0;
 
         void QueueAsyncQuery(AsyncQuery* query);
@@ -169,17 +169,17 @@ class SERVER_DECL Database
         FQueue<char*> queries_queue;
         DatabaseConnection** Connections;
 
-        uint32 _counter;
+        uint32_t _counter;
         //////////////////////////////////////////////////////////////////////////////////////////
 
-        int32 mConnectionCount;
+        int32_t mConnectionCount;
 
         // For reconnecting a broken connection
         std::string mHostname;
         std::string mUsername;
         std::string mPassword;
         std::string mDatabaseName;
-        uint32 mPort;
+        uint32_t mPort;
 
         QueryThread* qt;
 };
@@ -188,20 +188,20 @@ class SERVER_DECL QueryResult
 {
     public:
 
-        QueryResult(uint32 fields, uint32 rows) : mFieldCount(fields), mRowCount(rows), mCurrentRow(NULL) {}
+        QueryResult(uint32_t fields, uint32_t rows) : mFieldCount(fields), mRowCount(rows), mCurrentRow(NULL) {}
         virtual ~QueryResult() {}
 
         virtual bool NextRow() = 0;
         void Delete() { delete this; }
 
         inline Field* Fetch() { return mCurrentRow; }
-        inline uint32 GetFieldCount() const { return mFieldCount; }
-        inline uint32 GetRowCount() const { return mRowCount; }
+        inline uint32_t GetFieldCount() const { return mFieldCount; }
+        inline uint32_t GetRowCount() const { return mRowCount; }
 
     protected:
 
-        uint32 mFieldCount;
-        uint32 mRowCount;
+        uint32_t mFieldCount;
+        uint32_t mRowCount;
         Field* mCurrentRow;
 };
 

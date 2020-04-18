@@ -42,7 +42,7 @@ class SERVER_DECL MapCell
         typedef std::set<Object*> ObjectSet;
 
         //Init
-        void Init(uint32 x, uint32 y, MapMgr* mapmgr);
+        void Init(uint32_t x, uint32_t y, MapMgr* mapmgr);
 
         //Object Managing
         void AddObject(Object* obj);
@@ -63,15 +63,15 @@ class SERVER_DECL MapCell
 
         //Object Loading Managing
         void LoadObjects(CellSpawns* sp);
-        inline uint32 GetPlayerCount() { return _playerCount; }
+        inline uint32_t GetPlayerCount() { return _playerCount; }
 
         inline bool IsUnloadPending() { return _unloadpending; }
         inline void SetUnloadPending(bool up) { _unloadpending = up; }
         void QueueUnloadPending();
         void CancelPendingUnload();
         void Unload();
-        inline uint16 GetPositionX() { return _x; }
-        inline uint16 GetPositionY() { return _y; }
+        inline uint16_t GetPositionX() { return _x; }
+        inline uint16_t GetPositionY() { return _y; }
 
         ObjectSet _respawnObjects;
         ObjectSet::iterator objects_iterator;           /// required by MapCell::RemoveObjects() removing Creatures which will remove their guardians and corrupt itr.
@@ -82,14 +82,14 @@ class SERVER_DECL MapCell
 
     private:
 
-        uint16 _x;
-        uint16 _y;
+        uint16_t _x;
+        uint16_t _y;
         ObjectSet _objects;
         bool _active;
         bool _loaded;
         bool _unloadpending;
 
-        uint16 _playerCount;
+        uint16_t _playerCount;
 
         /// checks if the MapCell can be unloaded, based on _corpses and if it's in a battleground
         bool CanUnload();

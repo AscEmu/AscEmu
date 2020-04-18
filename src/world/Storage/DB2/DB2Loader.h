@@ -20,8 +20,8 @@ namespace DB2
         FT_NA_POINTER = 'p',        // fill default value into dest, pointer size, Use this only with static data (otherwise mem-leak)
         FT_STRING = 's',            // char*
         FT_FLOAT = 'f',             // float
-        FT_INT = 'i',               // uint32
-        FT_BYTE = 'b',              // uint8
+        FT_INT = 'i',               // uint32_t
+        FT_BYTE = 'b',              // uint8_t
         FT_SORT = 'd',              // sorted by this field, field is not included
         FT_IND = 'n',               // the same,but parsed to data
         FT_LOGIC = 'l'              // Logical (boolean)
@@ -47,17 +47,17 @@ namespace DB2
                         convertEndian(val);
                         return val;
                     }
-                    uint32 getUInt(size_t field) const
+                    uint32_t getUInt(size_t field) const
                     {
                         assert(field < file.fieldCount);
-                        uint32 val = *reinterpret_cast<uint32*>(offset + file.GetOffset(field));
+                        uint32_t val = *reinterpret_cast<uint32_t*>(offset + file.GetOffset(field));
                         convertEndian(val);
                         return val;
                     }
-                    uint8 getUInt8(size_t field) const
+                    uint8_t getUInt8(size_t field) const
                     {
                         assert(field < file.fieldCount);
-                        return *reinterpret_cast<uint8*>(offset + file.GetOffset(field));
+                        return *reinterpret_cast<uint8_t*>(offset + file.GetOffset(field));
                     }
 
                     const char *getString(size_t field) const

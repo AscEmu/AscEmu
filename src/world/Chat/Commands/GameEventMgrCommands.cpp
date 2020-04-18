@@ -31,7 +31,7 @@ bool ChatHandler::HandleEventListEvents(const char* /*args*/, WorldSession* m_se
 //.event start
 bool ChatHandler::HandleEventStartEvent(const char* args, WorldSession* m_session)
 {
-    uint32 eventid = atoi(args);
+    uint32_t eventid = atoi(args);
     if (eventid == 0)
     {
         SystemMessage(m_session, "Invalid argument: %s", args);
@@ -56,7 +56,7 @@ bool ChatHandler::HandleEventStartEvent(const char* args, WorldSession* m_sessio
 //.event stop
 bool ChatHandler::HandleEventStopEvent(const char* args, WorldSession* m_session)
 {
-    uint32 eventid = atoi(args);
+    uint32_t eventid = atoi(args);
     if (eventid == 0)
     {
         SystemMessage(m_session, "Invalid argument: %s", args);
@@ -81,7 +81,7 @@ bool ChatHandler::HandleEventStopEvent(const char* args, WorldSession* m_session
 //.event reset
 bool ChatHandler::HandleEventResetEvent(const char* args, WorldSession* m_session)
 {
-    uint32 eventid = atoi(args);
+    uint32_t eventid = atoi(args);
     if (eventid == 0)
     {
         SystemMessage(m_session, "Invalid argument: %s", args);

@@ -25,22 +25,22 @@
 #include "Log.hpp"
 #include "Map/MapManagementGlobals.hpp"
 
-TerrainHolder::TerrainHolder(uint32 mapid)
+TerrainHolder::TerrainHolder(uint32_t mapid)
 {
-    for (uint8 i = 0; i < TERRAIN_NUM_TILES; ++i)
-        for (uint8 j = 0; j < TERRAIN_NUM_TILES; ++j)
+    for (uint8_t i = 0; i < TERRAIN_NUM_TILES; ++i)
+        for (uint8_t j = 0; j < TERRAIN_NUM_TILES; ++j)
             m_tiles[i][j] = NULL;
     m_mapid = mapid;
 }
 
 TerrainHolder::~TerrainHolder()
 {
-    for (uint8 i = 0; i < TERRAIN_NUM_TILES; ++i)
-        for (uint8 j = 0; j < TERRAIN_NUM_TILES; ++j)
+    for (uint8_t i = 0; i < TERRAIN_NUM_TILES; ++i)
+        for (uint8_t j = 0; j < TERRAIN_NUM_TILES; ++j)
             UnloadTile(i, j);
 }
 
-uint32 TerrainHolder::GetAreaFlagWithoutAdtId(float x, float y)
+uint32_t TerrainHolder::GetAreaFlagWithoutAdtId(float x, float y)
 {
     auto tile = this->GetTile(x, y);
     if (tile)
@@ -53,13 +53,13 @@ uint32 TerrainHolder::GetAreaFlagWithoutAdtId(float x, float y)
 
 TerrainTile* TerrainHolder::GetTile(float x, float y)
 {
-    int32 tx = (int32)(32 - (x / TERRAIN_TILE_SIZE));
-    int32 ty = (int32)(32 - (y / TERRAIN_TILE_SIZE));
+    int32_t tx = (int32_t)(32 - (x / TERRAIN_TILE_SIZE));
+    int32_t ty = (int32_t)(32 - (y / TERRAIN_TILE_SIZE));
 
     return GetTile(tx, ty);
 }
 
-TerrainTile* TerrainHolder::GetTile(int32 tx, int32 ty)
+TerrainTile* TerrainHolder::GetTile(int32_t tx, int32_t ty)
 {
     m_lock[tx][ty].Acquire();
 
@@ -74,12 +74,12 @@ TerrainTile* TerrainHolder::GetTile(int32 tx, int32 ty)
 
 void TerrainHolder::LoadTile(float x, float y)
 {
-    int32 tx = (int32)(32 - (x / TERRAIN_TILE_SIZE));
-    int32 ty = (int32)(32 - (y / TERRAIN_TILE_SIZE));
+    int32_t tx = (int32_t)(32 - (x / TERRAIN_TILE_SIZE));
+    int32_t ty = (int32_t)(32 - (y / TERRAIN_TILE_SIZE));
     LoadTile(tx, ty);
 }
 
-void TerrainHolder::LoadTile(int32 tx, int32 ty)
+void TerrainHolder::LoadTile(int32_t tx, int32_t ty)
 {
     m_lock[tx][ty].Acquire();
 
@@ -95,12 +95,12 @@ void TerrainHolder::LoadTile(int32 tx, int32 ty)
 
 void TerrainHolder::UnloadTile(float x, float y)
 {
-    int32 tx = (int32)(32 - (x / TERRAIN_TILE_SIZE));
-    int32 ty = (int32)(32 - (y / TERRAIN_TILE_SIZE));
+    int32_t tx = (int32_t)(32 - (x / TERRAIN_TILE_SIZE));
+    int32_t ty = (int32_t)(32 - (y / TERRAIN_TILE_SIZE));
     UnloadTile(tx, ty);
 }
 
-void TerrainHolder::UnloadTile(int32 tx, int32 ty)
+void TerrainHolder::UnloadTile(int32_t tx, int32_t ty)
 {
     m_lock[tx][ty].Acquire();
 
@@ -125,7 +125,7 @@ void TerrainHolder::UnloadTile(int32 tx, int32 ty)
     }
 }
 
-uint32 TerrainHolder::GetAreaFlag(float x, float y)
+uint32_t TerrainHolder::GetAreaFlag(float x, float y)
 {
     TerrainTile* tile = GetTile(x, y);
     if (tile == nullptr)
@@ -133,7 +133,7 @@ uint32 TerrainHolder::GetAreaFlag(float x, float y)
         // No generated map for this area (usually instances)
         return 0;
     }
-    uint32 rv = tile->m_map.GetTileArea(x, y);
+    uint32_t rv = tile->m_map.GetTileArea(x, y);
     tile->DecRef();
     return rv;
 }
@@ -143,7 +143,7 @@ TerrainTile::~TerrainTile()
     m_parent->m_tiles[m_tx][m_ty] = NULL;
 }
 
-TerrainTile::TerrainTile(TerrainHolder* parent, uint32 mapid, int32 x, int32 y)
+TerrainTile::TerrainTile(TerrainHolder* parent, uint32_t mapid, int32_t x, int32_t y)
 {
     m_parent = parent;
     m_mapid = mapid;
@@ -154,16 +154,16 @@ TerrainTile::TerrainTile(TerrainHolder* parent, uint32 mapid, int32 x, int32 y)
 
 float TileMap::GetHeightB(float x, float y, int x_int, int y_int)
 {
-    int32 a, b, c;
-    uint8* V9_h1_ptr = &m_heightMap9B[x_int * 128 + x_int + y_int];
+    int32_t a, b, c;
+    uint8_t* V9_h1_ptr = &m_heightMap9B[x_int * 128 + x_int + y_int];
     if (x + y < 1)
     {
         if (x > y)
         {
             // 1 triangle (h1, h2, h5 points)
-            int32 h1 = V9_h1_ptr[0];
-            int32 h2 = V9_h1_ptr[129];
-            int32 h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
+            int32_t h1 = V9_h1_ptr[0];
+            int32_t h2 = V9_h1_ptr[129];
+            int32_t h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
             a = h2 - h1;
             b = h5 - h1 - h2;
             c = h1;
@@ -171,9 +171,9 @@ float TileMap::GetHeightB(float x, float y, int x_int, int y_int)
         else
         {
             // 2 triangle (h1, h3, h5 points)
-            int32 h1 = V9_h1_ptr[0];
-            int32 h3 = V9_h1_ptr[1];
-            int32 h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
+            int32_t h1 = V9_h1_ptr[0];
+            int32_t h3 = V9_h1_ptr[1];
+            int32_t h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
             a = h5 - h1 - h3;
             b = h3 - h1;
             c = h1;
@@ -184,9 +184,9 @@ float TileMap::GetHeightB(float x, float y, int x_int, int y_int)
         if (x > y)
         {
             // 3 triangle (h2, h4, h5 points)
-            int32 h2 = V9_h1_ptr[129];
-            int32 h4 = V9_h1_ptr[130];
-            int32 h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
+            int32_t h2 = V9_h1_ptr[129];
+            int32_t h4 = V9_h1_ptr[130];
+            int32_t h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
             a = h2 + h4 - h5;
             b = h4 - h2;
             c = h5 - h4;
@@ -194,9 +194,9 @@ float TileMap::GetHeightB(float x, float y, int x_int, int y_int)
         else
         {
             // 4 triangle (h3, h4, h5 points)
-            int32 h3 = V9_h1_ptr[1];
-            int32 h4 = V9_h1_ptr[130];
-            int32 h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
+            int32_t h3 = V9_h1_ptr[1];
+            int32_t h4 = V9_h1_ptr[130];
+            int32_t h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
             a = h4 - h3;
             b = h3 + h4 - h5;
             c = h5 - h4;
@@ -209,16 +209,16 @@ float TileMap::GetHeightB(float x, float y, int x_int, int y_int)
 
 float TileMap::GetHeightS(float x, float y, int x_int, int y_int)
 {
-    int32 a, b, c;
-    uint16* V9_h1_ptr = &m_heightMap9S[x_int * 128 + x_int + y_int];
+    int32_t a, b, c;
+    uint16_t* V9_h1_ptr = &m_heightMap9S[x_int * 128 + x_int + y_int];
     if (x + y < 1)
     {
         if (x > y)
         {
             // 1 triangle (h1, h2, h5 points)
-            int32 h1 = V9_h1_ptr[0];
-            int32 h2 = V9_h1_ptr[129];
-            int32 h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
+            int32_t h1 = V9_h1_ptr[0];
+            int32_t h2 = V9_h1_ptr[129];
+            int32_t h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
             a = h2 - h1;
             b = h5 - h1 - h2;
             c = h1;
@@ -226,9 +226,9 @@ float TileMap::GetHeightS(float x, float y, int x_int, int y_int)
         else
         {
             // 2 triangle (h1, h3, h5 points)
-            int32 h1 = V9_h1_ptr[0];
-            int32 h3 = V9_h1_ptr[1];
-            int32 h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
+            int32_t h1 = V9_h1_ptr[0];
+            int32_t h3 = V9_h1_ptr[1];
+            int32_t h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
             a = h5 - h1 - h3;
             b = h3 - h1;
             c = h1;
@@ -239,9 +239,9 @@ float TileMap::GetHeightS(float x, float y, int x_int, int y_int)
         if (x > y)
         {
             // 3 triangle (h2, h4, h5 points)
-            int32 h2 = V9_h1_ptr[129];
-            int32 h4 = V9_h1_ptr[130];
-            int32 h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
+            int32_t h2 = V9_h1_ptr[129];
+            int32_t h4 = V9_h1_ptr[130];
+            int32_t h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
             a = h2 + h4 - h5;
             b = h4 - h2;
             c = h5 - h4;
@@ -249,9 +249,9 @@ float TileMap::GetHeightS(float x, float y, int x_int, int y_int)
         else
         {
             // 4 triangle (h3, h4, h5 points)
-            int32 h3 = V9_h1_ptr[1];
-            int32 h4 = V9_h1_ptr[130];
-            int32 h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
+            int32_t h3 = V9_h1_ptr[1];
+            int32_t h4 = V9_h1_ptr[130];
+            int32_t h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
             a = h4 - h3;
             b = h3 + h4 - h5;
             c = h5 - h4;
@@ -338,7 +338,7 @@ float TileMap::GetHeight(float x, float y)
     return GetHeightF(x, y, x_int, y_int);
 }
 
-const bool TerrainHolder::GetAreaInfo(float x, float y, float z, uint32 &mogp_flags, int32 &adt_id, int32 &root_id, int32 &group_id)
+const bool TerrainHolder::GetAreaInfo(float x, float y, float z, uint32_t &mogp_flags, int32_t &adt_id, int32_t &root_id, int32_t &group_id)
 {
     float vmap_z = z;
     auto vmap_manager = VMAP::VMapFactory::createOrGetVMapManager();
@@ -444,8 +444,8 @@ void TileMap::LoadLiquidData(FILE* f, TileMapHeader & header)
 
     if (!(liquidHeader.flags & MAP_LIQUID_NO_TYPE))
     {
-        m_liquidType = new uint8[16 * 16];
-        if (fread(m_liquidType, sizeof(uint8), 16 * 16, f) != 16 * 16)
+        m_liquidType = new uint8_t[16 * 16];
+        if (fread(m_liquidType, sizeof(uint8_t), 16 * 16, f) != 16 * 16)
             return;
     }
 
@@ -474,20 +474,20 @@ void TileMap::LoadHeightData(FILE* f, TileMapHeader & header)
     {
         m_heightMapMult = (mapHeader.gridMaxHeight - mapHeader.gridHeight) / 65535;
 
-        m_heightMap9S = new uint16[129 * 129];
-        m_heightMap8S = new uint16[128 * 128];
-        if (fread(m_heightMap9S, sizeof(uint16), 129 * 129, f) != 129 * 129 ||
-            fread(m_heightMap8S, sizeof(uint16), 128 * 128, f) != 128 * 128)
+        m_heightMap9S = new uint16_t[129 * 129];
+        m_heightMap8S = new uint16_t[128 * 128];
+        if (fread(m_heightMap9S, sizeof(uint16_t), 129 * 129, f) != 129 * 129 ||
+            fread(m_heightMap8S, sizeof(uint16_t), 128 * 128, f) != 128 * 128)
             return;
     }
     else if (m_heightMapFlags & MAP_HEIGHT_AS_INT8)
     {
         m_heightMapMult = (mapHeader.gridMaxHeight - mapHeader.gridHeight) / 255;
 
-        m_heightMap9B = new uint8[129 * 129];
-        m_heightMap8B = new uint8[128 * 128];
-        if (fread(m_heightMap9B, sizeof(uint8), 129 * 129, f) != 129 * 129 ||
-            fread(m_heightMap8B, sizeof(uint8), 128 * 128, f) != 128 * 128)
+        m_heightMap9B = new uint8_t[129 * 129];
+        m_heightMap8B = new uint8_t[128 * 128];
+        if (fread(m_heightMap9B, sizeof(uint8_t), 129 * 129, f) != 129 * 129 ||
+            fread(m_heightMap8B, sizeof(uint8_t), 128 * 128, f) != 128 * 128)
             return;
     }
     else
@@ -513,8 +513,8 @@ void TileMap::LoadAreaData(FILE* f, TileMapHeader & header)
     m_area = areaHeader.gridArea;
     if (!(areaHeader.flags & MAP_AREA_NO_AREA))
     {
-        m_areaMap = new uint16[16 * 16];
-        if (fread(m_areaMap, sizeof(uint16), 16 * 16, f) != 16 * 16)
+        m_areaMap = new uint16_t[16 * 16];
+        if (fread(m_areaMap, sizeof(uint16_t), 16 * 16, f) != 16 * 16)
             return;
     }
 }
@@ -539,10 +539,10 @@ float TileMap::GetTileLiquidHeight(float x, float y)
     return m_liquidMap[cx_int * m_liquidWidth + cy_int];
 }
 
-uint8 TileMap::GetTileLiquidType(float x, float y)
+uint8_t TileMap::GetTileLiquidType(float x, float y)
 {
     if (m_liquidType == NULL)
-        return (uint8)m_defaultLiquidType;
+        return (uint8_t)m_defaultLiquidType;
 
     x = 16 * (32 - x / TERRAIN_TILE_SIZE);
     y = 16 * (32 - y / TERRAIN_TILE_SIZE);
@@ -551,7 +551,7 @@ uint8 TileMap::GetTileLiquidType(float x, float y)
     return m_liquidType[lx * 16 + ly];
 }
 
-uint32 TileMap::GetTileArea(float x, float y)
+uint32_t TileMap::GetTileArea(float x, float y)
 {
     if (m_areaMap == NULL)
         return m_area;

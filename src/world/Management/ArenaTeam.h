@@ -26,11 +26,11 @@
 struct ArenaTeamMember
 {
     PlayerInfo* Info;
-    uint32 Played_ThisWeek;
-    uint32 Won_ThisWeek;
-    uint32 Played_ThisSeason;
-    uint32 Won_ThisSeason;
-    uint32 PersonalRating;
+    uint32_t Played_ThisWeek;
+    uint32_t Won_ThisWeek;
+    uint32_t Played_ThisSeason;
+    uint32_t Won_ThisSeason;
+    uint32_t PersonalRating;
 };
 
 struct ArenaTeamEmblem
@@ -54,9 +54,9 @@ struct ArenaTeamStats
 
 class SERVER_DECL ArenaTeam
 {
-        void AllocateSlots(uint16 Type)
+        void AllocateSlots(uint16_t Type)
         {
-            uint32 Slots = 0;
+            uint32_t Slots = 0;
             if (Type == ARENA_TEAM_TYPE_2V2)
                 Slots = 4;
             else if (Type == ARENA_TEAM_TYPE_3V3)
@@ -72,19 +72,19 @@ class SERVER_DECL ArenaTeam
 
     public:
 
-        uint32 m_id;
+        uint32_t m_id;
         uint16_t m_type;
-        uint32 m_leader;
-        uint32 m_slots;
+        uint32_t m_leader;
+        uint32_t m_slots;
         std::string m_name;
-        uint32 m_memberCount;
+        uint32_t m_memberCount;
         ArenaTeamMember* m_members;
 
         ArenaTeamEmblem m_emblem;
 
         ArenaTeamStats m_stats;
 
-        ArenaTeam(uint16 Type, uint32 Id);
+        ArenaTeam(uint16_t Type, uint32_t Id);
         ArenaTeam(Field* f);
         ~ArenaTeam()
         {
@@ -99,12 +99,12 @@ class SERVER_DECL ArenaTeam
 
         bool AddMember(PlayerInfo* info);
         bool RemoveMember(PlayerInfo* info);
-        bool HasMember(uint32 guid);
+        bool HasMember(uint32_t guid);
         void SetLeader(PlayerInfo* info);
         ArenaTeamMember* GetMember(PlayerInfo* info);
-        ArenaTeamMember* GetMemberByGuid(uint32 guid);
+        ArenaTeamMember* GetMemberByGuid(uint32_t guid);
 
-        uint32 GetPlayersPerTeam()
+        uint32_t GetPlayersPerTeam()
         {
             switch(m_type)
             {

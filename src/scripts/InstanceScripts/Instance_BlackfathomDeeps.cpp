@@ -92,7 +92,7 @@ class MorriduneGossip : public GossipScript
         menu.sendGossipPacket(pPlayer);
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* pPlayer, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {

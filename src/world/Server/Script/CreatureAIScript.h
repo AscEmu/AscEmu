@@ -158,13 +158,13 @@ public:
     virtual void OnCastSpell(uint32_t /*_spellId*/) {}
     virtual void OnTargetParried(Unit* /*_target*/) {}
     virtual void OnTargetDodged(Unit* /*_target*/) {}
-    virtual void OnTargetBlocked(Unit* /*_target*/, int32 /*_amount*/) {}
-    virtual void OnTargetCritHit(Unit* /*_target*/, int32 /*_amount*/) {}
+    virtual void OnTargetBlocked(Unit* /*_target*/, int32_t /*_amount*/) {}
+    virtual void OnTargetCritHit(Unit* /*_target*/, int32_t /*_amount*/) {}
     virtual void OnTargetDied(Unit* /*_target*/) {}
     virtual void OnParried(Unit* /*_target*/) {}
     virtual void OnDodged(Unit* /*_target*/) {}
-    virtual void OnBlocked(Unit* /*_target*/, int32 /*_amount*/) {}
-    virtual void OnCritHit(Unit* /*_target*/, int32 /*_amount*/) {}
+    virtual void OnBlocked(Unit* /*_target*/, int32_t /*_amount*/) {}
+    virtual void OnCritHit(Unit* /*_target*/, int32_t /*_amount*/) {}
     virtual void OnHit(Unit* /*_target*/, float /*_amount*/) {}
     virtual void OnDied(Unit* /*_killer*/) {}
     virtual void OnAssistTargetDied(Unit* /*_assistTarget*/) {}

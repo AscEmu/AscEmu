@@ -26,10 +26,10 @@
 #include "Server/WorldSession.h"
 #include "QuestMgr.h"
 
-uint32 QuestProperties::GetRewardItemCount() const
+uint32_t QuestProperties::GetRewardItemCount() const
 {
-    uint32 count = 0;
-    for (uint8 i = 0; i < 4; ++i)
+    uint32_t count = 0;
+    for (uint8_t i = 0; i < 4; ++i)
     {
         if (reward_item[i] != 0)
         {

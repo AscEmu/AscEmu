@@ -904,7 +904,7 @@ void Player::handleFall(MovementInfo const& movementInfo)
         z_axisposition = movementInfo.getPosition()->z;
     }
 
-    uint32 falldistance = float2int32(z_axisposition - movementInfo.getPosition()->z);
+    uint32_t falldistance = float2int32(z_axisposition - movementInfo.getPosition()->z);
     if (z_axisposition <= movementInfo.getPosition()->z)
     {
         falldistance = 1;
@@ -2676,7 +2676,7 @@ void Player::sendMovie(uint32_t movieId)
 #endif
 }
 
-uint8 Player::GetPlayerStatus() const { return m_status; }
+uint8_t Player::GetPlayerStatus() const { return m_status; }
 
 PlayerSpec& Player::getActiveSpec()
 {
@@ -2758,7 +2758,7 @@ bool Player::logOntoTransport()
 #if VERSION_STRING < Cata
         const auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
 #else
-        const auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(static_cast<uint32>(obj_movement_info.getTransportGuid())));
+        const auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(static_cast<uint32_t>(obj_movement_info.getTransportGuid())));
 #endif
         if (transporter)
         {

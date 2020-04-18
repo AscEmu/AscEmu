@@ -24,13 +24,13 @@
 #include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
 
-void WorldStatesHandler::SetWorldStateForZone(uint32 zone, uint32 /*area*/, uint32 field, uint32 value)
+void WorldStatesHandler::SetWorldStateForZone(uint32_t zone, uint32_t /*area*/, uint32_t field, uint32_t value)
 {
-    std::unordered_map< uint32, std::unordered_map< uint32, uint32 > >::iterator itr = worldstates.find(zone);
+    std::unordered_map< uint32_t, std::unordered_map< uint32_t, uint32_t > >::iterator itr = worldstates.find(zone);
     if (itr == worldstates.end())
         return;
 
-    std::unordered_map< uint32, uint32 >::iterator itr2 = itr->second.find(field);
+    std::unordered_map< uint32_t, uint32_t >::iterator itr2 = itr->second.find(field);
     if (itr2 == itr->second.end())
         return;
 
@@ -40,59 +40,60 @@ void WorldStatesHandler::SetWorldStateForZone(uint32 zone, uint32 /*area*/, uint
         observer->onWorldStateUpdate(zone, field, value);
 }
 
-uint32 WorldStatesHandler::GetWorldStateForZone(uint32 zone, uint32 /*area*/, uint32 field) const
+uint32_t WorldStatesHandler::GetWorldStateForZone(uint32_t zone, uint32_t /*area*/, uint32_t field) const
 {
-    std::unordered_map< uint32, std::unordered_map< uint32, uint32 > >::const_iterator itr = worldstates.find(zone);
+    std::unordered_map< uint32_t, std::unordered_map< uint32_t, uint32_t > >::const_iterator itr = worldstates.find(zone);
     if (itr == worldstates.end())
         return 0;
 
-    std::unordered_map< uint32, uint32 >::const_iterator itr2 = itr->second.find(field);
+    std::unordered_map< uint32_t, uint32_t >::const_iterator itr2 = itr->second.find(field);
     if (itr2 == itr->second.end())
         return 0;
 
     return itr2->second;
 }
 
-void WorldStatesHandler::BuildInitWorldStatesForZone(uint32 zone, uint32 area, WorldPacket &data) const{
-    data << uint32(map);
-    data << uint32(zone);
-    data << uint32(area);
+void WorldStatesHandler::BuildInitWorldStatesForZone(uint32_t zone, uint32_t area, WorldPacket &data) const
+{
+    data << uint32_t(map);
+    data << uint32_t(zone);
+    data << uint32_t(area);
 
-    std::unordered_map< uint32, std::unordered_map< uint32, uint32 > >::const_iterator itr = worldstates.find(zone);
+    std::unordered_map< uint32_t, std::unordered_map< uint32_t, uint32_t > >::const_iterator itr = worldstates.find(zone);
 
     if (itr != worldstates.end())
     {
-        data << uint16(2 + itr->second.size());
+        data << uint16_t(2 + itr->second.size());
 
-        for (std::unordered_map< uint32, uint32 >::const_iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); ++itr2)
+        for (std::unordered_map< uint32_t, uint32_t >::const_iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); ++itr2)
         {
-            data << uint32(itr2->first);
-            data << uint32(itr2->second);
+            data << uint32_t(itr2->first);
+            data << uint32_t(itr2->second);
         }
 
     }
     else
     {
-        data << uint16(2);
+        data << uint16_t(2);
     }
 
 #if VERSION_STRING > TBC
-    data << uint32(3191);
-    data << uint32(worldConfig.arena.arenaSeason);
-    data << uint32(3901);
-    data << uint32(worldConfig.arena.arenaProgress);
+    data << uint32_t(3191);
+    data << uint32_t(worldConfig.arena.arenaSeason);
+    data << uint32_t(3901);
+    data << uint32_t(worldConfig.arena.arenaProgress);
 #endif
 }
 
-void WorldStatesHandler::InitWorldStates(std::multimap< uint32, WorldState > *states)
+void WorldStatesHandler::InitWorldStates(std::multimap< uint32_t, WorldState > *states)
 {
     if (states == NULL)
         return;
 
-    for (std::multimap< uint32, WorldState >::iterator itr = states->begin(); itr != states->end(); ++itr)
+    for (std::multimap< uint32_t, WorldState >::iterator itr = states->begin(); itr != states->end(); ++itr)
     {
-        uint32 zone = itr->first;
+        uint32_t zone = itr->first;
         worldstates[zone];
-        worldstates[zone].insert(std::pair< uint32, uint32 >(itr->second.field, itr->second.value));
+        worldstates[zone].insert(std::pair< uint32_t, uint32_t >(itr->second.field, itr->second.value));
     }
 }

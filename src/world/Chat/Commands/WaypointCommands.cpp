@@ -43,32 +43,32 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
     }
 
     char* pWaitTime = strtok((char*)args, " ");
-    uint32 WaitTime = (pWaitTime) ? atoi(pWaitTime) : 10000;
+    uint32_t WaitTime = (pWaitTime) ? atoi(pWaitTime) : 10000;
 
     char* pFlags = strtok(NULL, " ");
-    uint32 Flags = (pFlags) ? atoi(pFlags) : 0;
+    uint32_t Flags = (pFlags) ? atoi(pFlags) : 0;
 
     char* pForwardEmoteId = strtok(NULL, " ");
-    uint32 ForwardEmoteId = (pForwardEmoteId) ? atoi(pForwardEmoteId) : 0;
+    uint32_t ForwardEmoteId = (pForwardEmoteId) ? atoi(pForwardEmoteId) : 0;
 
     char* pBackwardEmoteId = strtok(NULL, " ");
-    uint32 BackwardEmoteId = (pBackwardEmoteId) ? atoi(pBackwardEmoteId) : 0;
+    uint32_t BackwardEmoteId = (pBackwardEmoteId) ? atoi(pBackwardEmoteId) : 0;
 
     char* pForwardSkinId = strtok(NULL, " ");
-    uint32 ForwardSkinId = (pForwardSkinId) ? atoi(pForwardSkinId) : creature_target->getNativeDisplayId();
+    uint32_t ForwardSkinId = (pForwardSkinId) ? atoi(pForwardSkinId) : creature_target->getNativeDisplayId();
 
     char* pBackwardSkinId = strtok(NULL, " ");
-    uint32 BackwardSkinId = (pBackwardSkinId) ? atoi(pBackwardSkinId) : creature_target->getNativeDisplayId();
+    uint32_t BackwardSkinId = (pBackwardSkinId) ? atoi(pBackwardSkinId) : creature_target->getNativeDisplayId();
 
     char* pForwardEmoteOneShot = strtok(NULL, " ");
-    uint32 ForwardEmoteOneShot = (pForwardEmoteOneShot) ? atoi(pForwardEmoteOneShot) : 1;
+    uint32_t ForwardEmoteOneShot = (pForwardEmoteOneShot) ? atoi(pForwardEmoteOneShot) : 1;
 
     char* pBackwardEmoteOneShot = strtok(NULL, " ");
-    uint32 BackwardEmoteOneShot = (pBackwardEmoteOneShot) ? atoi(pBackwardEmoteOneShot) : 1;
+    uint32_t BackwardEmoteOneShot = (pBackwardEmoteOneShot) ? atoi(pBackwardEmoteOneShot) : 1;
 
     Movement::WayPoint* waypoint = new Movement::WayPoint;
     bool showing = ai->isShowWayPointsActive();
-    waypoint->id = uint32(ai->getWayPointsCount() + 1);
+    waypoint->id = uint32_t(ai->getWayPointsCount() + 1);
     waypoint->x = player->GetPositionX();
     waypoint->y = player->GetPositionY();
     waypoint->z = player->GetPositionZ();
@@ -134,29 +134,29 @@ bool ChatHandler::HandleWayPointAddFlyCommand(const char* args, WorldSession* m_
     }
 
     char* pWaitTime = strtok((char*)args, " ");
-    uint32 WaitTime = (pWaitTime) ? atoi(pWaitTime) : 10000;
+    uint32_t WaitTime = (pWaitTime) ? atoi(pWaitTime) : 10000;
 
     char* pForwardEmoteId = strtok(NULL, " ");
-    uint32 ForwardEmoteId = (pForwardEmoteId) ? atoi(pForwardEmoteId) : 0;
+    uint32_t ForwardEmoteId = (pForwardEmoteId) ? atoi(pForwardEmoteId) : 0;
 
     char* pBackwardEmoteId = strtok(NULL, " ");
-    uint32 BackwardEmoteId = (pBackwardEmoteId) ? atoi(pBackwardEmoteId) : 0;
+    uint32_t BackwardEmoteId = (pBackwardEmoteId) ? atoi(pBackwardEmoteId) : 0;
 
     char* pForwardSkinId = strtok(NULL, " ");
-    uint32 ForwardSkinId = (pForwardSkinId) ? atoi(pForwardSkinId) : creature_target->getNativeDisplayId();
+    uint32_t ForwardSkinId = (pForwardSkinId) ? atoi(pForwardSkinId) : creature_target->getNativeDisplayId();
 
     char* pBackwardSkinId = strtok(NULL, " ");
-    uint32 BackwardSkinId = (pBackwardSkinId) ? atoi(pBackwardSkinId) : creature_target->getNativeDisplayId();
+    uint32_t BackwardSkinId = (pBackwardSkinId) ? atoi(pBackwardSkinId) : creature_target->getNativeDisplayId();
 
     char* pForwardEmoteOneShot = strtok(NULL, " ");
-    uint32 ForwardEmoteOneShot = (pForwardEmoteOneShot) ? atoi(pForwardEmoteOneShot) : 1;
+    uint32_t ForwardEmoteOneShot = (pForwardEmoteOneShot) ? atoi(pForwardEmoteOneShot) : 1;
 
     char* pBackwardEmoteOneShot = strtok(NULL, " ");
-    uint32 BackwardEmoteOneShot = (pBackwardEmoteOneShot) ? atoi(pBackwardEmoteOneShot) : 1;
+    uint32_t BackwardEmoteOneShot = (pBackwardEmoteOneShot) ? atoi(pBackwardEmoteOneShot) : 1;
 
     Movement::WayPoint* waypoint = new Movement::WayPoint;
     bool showing = ai->isShowWayPointsActive();
-    waypoint->id = (uint32)ai->getWayPointsCount() + 1;
+    waypoint->id = (uint32_t)ai->getWayPointsCount() + 1;
     waypoint->x = player->GetPositionX();
     waypoint->y = player->GetPositionY();
     waypoint->z = player->GetPositionZ();
@@ -192,7 +192,7 @@ bool ChatHandler::HandleWayPointAddFlyCommand(const char* args, WorldSession* m_
 //.waypoint change
 bool ChatHandler::HandleWayPointChangeNumberCommand(const char* args, WorldSession* m_session)
 {
-    uint32 wpid = GetSelectedWayPointId(m_session);
+    uint32_t wpid = GetSelectedWayPointId(m_session);
     Player* player = m_session->GetPlayer();
     AIInterface* ai = player->waypointunit;
     if (ai == nullptr || !ai->GetUnit())
@@ -202,7 +202,7 @@ bool ChatHandler::HandleWayPointChangeNumberCommand(const char* args, WorldSessi
     }
 
     char* pNewID = strtok((char*)args, " ");
-    uint32 NewID = (pNewID) ? atoi(pNewID) : 0;
+    uint32_t NewID = (pNewID) ? atoi(pNewID) : 0;
 
     if (NewID == wpid)
         return true;
@@ -232,7 +232,7 @@ bool ChatHandler::HandleWayPointChangeNumberCommand(const char* args, WorldSessi
 //.waypoint delete
 bool ChatHandler::HandleWayPointDeleteCommand(const char* /*args*/, WorldSession* m_session)
 {
-    uint32 wpid = GetSelectedWayPointId(m_session);
+    uint32_t wpid = GetSelectedWayPointId(m_session);
     Player* player = m_session->GetPlayer();
     AIInterface* ai = player->waypointunit;
     if (ai == nullptr || !ai->GetUnit())
@@ -286,7 +286,7 @@ bool ChatHandler::HandleWayPointDeleteAllCommand(const char* /*args*/, WorldSess
 //.waypoint emote
 bool ChatHandler::HandleWayPointEmoteCommand(const char* args, WorldSession* m_session)
 {
-    uint32 wpid = GetSelectedWayPointId(m_session);
+    uint32_t wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
     AIInterface* ai = player->waypointunit;
@@ -295,7 +295,7 @@ bool ChatHandler::HandleWayPointEmoteCommand(const char* args, WorldSession* m_s
         SystemMessage(m_session, "Invalid Creature, please select another one.");
         return true;
     }
-    uint32 EmoteId = 0;
+    uint32_t EmoteId = 0;
     bool OneShot = true;
 
     if (wpid)
@@ -304,7 +304,7 @@ bool ChatHandler::HandleWayPointEmoteCommand(const char* args, WorldSession* m_s
         if (waypoint != nullptr)
         {
             char* pBackwards = strtok((char*)args, " ");
-            uint32 Backwards = (pBackwards) ? atoi(pBackwards) : 0;
+            uint32_t Backwards = (pBackwards) ? atoi(pBackwards) : 0;
             char* pEmoteId = strtok(NULL, " ");
             EmoteId = (pEmoteId) ? atoi(pEmoteId) : 0;
             char* pOneShot = strtok(NULL, " ");
@@ -324,7 +324,7 @@ bool ChatHandler::HandleWayPointEmoteCommand(const char* args, WorldSession* m_s
             ai->saveWayPoints();
         }
 
-        SystemMessage(m_session, "EmoteID for Waypoint %u is now %u amd oneshot is set to %u", wpid, EmoteId, uint32(OneShot));
+        SystemMessage(m_session, "EmoteID for Waypoint %u is now %u amd oneshot is set to %u", wpid, EmoteId, uint32_t(OneShot));
     }
     else
     {
@@ -337,7 +337,7 @@ bool ChatHandler::HandleWayPointEmoteCommand(const char* args, WorldSession* m_s
 //.waypoint flags
 bool ChatHandler::HandleWayPointFlagsCommand(const char* args, WorldSession* m_session)
 {
-    uint32 wpid = GetSelectedWayPointId(m_session);
+    uint32_t wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
     AIInterface* ai = player->waypointunit;
@@ -356,10 +356,10 @@ bool ChatHandler::HandleWayPointFlagsCommand(const char* args, WorldSession* m_s
             return true;
         }
 
-        uint32 flags = waypoint->flags;
+        uint32_t flags = waypoint->flags;
 
         char* pNewFlags = strtok((char*)args, " ");
-        uint32 NewFlags = (pNewFlags) ? atoi(pNewFlags) : 0;
+        uint32_t NewFlags = (pNewFlags) ? atoi(pNewFlags) : 0;
 
         waypoint->flags = NewFlags;
 
@@ -405,16 +405,16 @@ bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* 
         return true;
     }
 
-    uint32 range = atoi(pR);
+    uint32_t range = atoi(pR);
     char* pC = strtok(NULL, " ");
     if (!pC)
     {
         SystemMessage(m_session, "Randomly generate wps params: waypoint count");
         return true;
     }
-    uint8 wp_count = static_cast<uint8>(atol(pC));
+    uint8_t wp_count = static_cast<uint8_t>(atol(pC));
 
-    for (uint8 i = 0; i < wp_count; ++i)
+    for (uint8_t i = 0; i < wp_count; ++i)
     {
         if (range < 1)
         {
@@ -433,7 +433,7 @@ bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* 
         float z = creature_target->GetMapMgr()->GetLandHeight(x, y, creature_target->GetPositionZ() + 3);
 
         Movement::WayPoint* wp = new Movement::WayPoint;
-        wp->id = (uint32)creature_target->GetAIInterface()->getWayPointsCount() + 1;
+        wp->id = (uint32_t)creature_target->GetAIInterface()->getWayPointsCount() + 1;
         wp->x = x;
         wp->y = y;
         wp->z = z;
@@ -493,7 +493,7 @@ bool ChatHandler::HandleWayPointHideCommand(const char* /*args*/, WorldSession* 
 //.waypoint info
 bool ChatHandler::HandleWayPointInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
-    uint32 wpid = GetSelectedWayPointId(m_session);
+    uint32_t wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
     AIInterface* ai = player->waypointunit;
@@ -540,7 +540,7 @@ bool ChatHandler::HandleWayPointInfoCommand(const char* /*args*/, WorldSession* 
 //.waypoint movehere
 bool ChatHandler::HandleWayPpointMoveHereCommand(const char* /*args*/, WorldSession* m_session)
 {
-    uint32 wpid = GetSelectedWayPointId(m_session);
+    uint32_t wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
     AIInterface* ai = player->waypointunit;
@@ -581,7 +581,7 @@ bool ChatHandler::HandleWayPpointMoveHereCommand(const char* /*args*/, WorldSess
 //.waypoint movetype
 bool ChatHandler::HandleWayPointMoveTypeCommand(const char* args, WorldSession* m_session)
 {
-    uint32 option = atoi((char*)args);
+    uint32_t option = atoi((char*)args);
 
     if (option > 2 || !*args)
     {
@@ -672,7 +672,7 @@ bool ChatHandler::HandleWayPointShowCommand(const char* args, WorldSession* m_se
 //.waypoint skin
 bool ChatHandler::HandleWayPointSkinCommand(const char* args, WorldSession* m_session)
 {
-    uint32 wpid = GetSelectedWayPointId(m_session);
+    uint32_t wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
     AIInterface* ai = player->waypointunit;
@@ -681,7 +681,7 @@ bool ChatHandler::HandleWayPointSkinCommand(const char* args, WorldSession* m_se
         SystemMessage(m_session, "Invalid Creature, please select another one.");
         return true;
     }
-    uint32 SkinId = 0;
+    uint32_t SkinId = 0;
 
     if (wpid)
     {
@@ -689,7 +689,7 @@ bool ChatHandler::HandleWayPointSkinCommand(const char* args, WorldSession* m_se
         if (waypoint)
         {
             char* pBackwards = strtok((char*)args, " ");
-            uint32 Backwards = (pBackwards) ? atoi(pBackwards) : 0;
+            uint32_t Backwards = (pBackwards) ? atoi(pBackwards) : 0;
             char* pSkinId = strtok(NULL, " ");
             SkinId = (pSkinId) ? atoi(pSkinId) : 0;
 
@@ -715,7 +715,7 @@ bool ChatHandler::HandleWayPointSkinCommand(const char* args, WorldSession* m_se
 //.waypoint wait
 bool ChatHandler::HandleWayPointWaitCommand(const char* args, WorldSession* m_session)
 {
-    uint32 wpid = GetSelectedWayPointId(m_session);
+    uint32_t wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
     AIInterface* ai = player->waypointunit;
@@ -725,7 +725,7 @@ bool ChatHandler::HandleWayPointWaitCommand(const char* args, WorldSession* m_se
         return true;
     }
 
-    uint32 Wait = 10000;
+    uint32_t Wait = 10000;
 
     if (wpid)
     {

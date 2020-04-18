@@ -101,7 +101,7 @@ void Socket::SetupReadEvent()
     m_readMutex.Release();
 }
 
-void Socket::ReadCallback(uint32 len)
+void Socket::ReadCallback(uint32_t len)
 {
     readBuffer.IncrementWritten(len);
     OnRead();

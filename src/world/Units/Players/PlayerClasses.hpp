@@ -22,11 +22,11 @@ enum SPELL_RUNE_TYPES
     RUNE_MAX_TYPES = 4
 };
 
-const uint8 base_runes[MAX_RUNES] = { RUNE_BLOOD, RUNE_BLOOD, RUNE_FROST, RUNE_FROST, RUNE_UNHOLY, RUNE_UNHOLY };
+const uint8_t base_runes[MAX_RUNES] = { RUNE_BLOOD, RUNE_BLOOD, RUNE_FROST, RUNE_FROST, RUNE_UNHOLY, RUNE_UNHOLY };
 
 struct Rune
 {
-    uint8 type;
+    uint8_t type;
     bool is_used;
 };
 
@@ -35,18 +35,18 @@ class DeathKnight : public Player
     Rune m_runes[MAX_RUNES];
 
     // Holds last slot used
-    uint8 m_last_used_rune_slot;
+    uint8_t m_last_used_rune_slot;
 
 protected:
 
-    void SendRuneUpdate(uint8 slot);
+    void SendRuneUpdate(uint8_t slot);
 
 public:
 
-    explicit DeathKnight(uint32 guid) : Player(guid)
+    explicit DeathKnight(uint32_t guid) : Player(guid)
     {
         m_last_used_rune_slot = 0;
-        for (uint8 i = 0; i < MAX_RUNES; ++i)
+        for (uint8_t i = 0; i < MAX_RUNES; ++i)
         {
             m_runes[i].type = base_runes[i];
             m_runes[i].is_used = false;
@@ -58,16 +58,16 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Runes
 
-    uint8 GetBaseRuneType(uint8 slot);
-    uint8 GetRuneType(uint8 slot);
-    bool GetRuneIsUsed(uint8 slot);
-    void ConvertRune(uint8 slot, uint8 type);
-    uint32 HasRunes(uint8 type, uint32 count);
-    uint32 TakeRunes(uint8 type, uint32 count);
-    void ResetRune(uint8 slot);
-    uint8 GetRuneFlags();
-    bool IsAllRunesOfTypeInUse(uint8 type);
-    uint8 GetLastUsedUnitSlot() { return m_last_used_rune_slot; }
+    uint8_t GetBaseRuneType(uint8_t slot);
+    uint8_t GetRuneType(uint8_t slot);
+    bool GetRuneIsUsed(uint8_t slot);
+    void ConvertRune(uint8_t slot, uint8_t type);
+    uint32_t HasRunes(uint8_t type, uint32_t count);
+    uint32_t TakeRunes(uint8_t type, uint32_t count);
+    void ResetRune(uint8_t slot);
+    uint8_t GetRuneFlags();
+    bool IsAllRunesOfTypeInUse(uint8_t type);
+    uint8_t GetLastUsedUnitSlot() { return m_last_used_rune_slot; }
 };
 
 class Druid : public Player

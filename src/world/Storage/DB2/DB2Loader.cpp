@@ -137,7 +137,7 @@ bool DB2::DB2FileLoader::Load(const char *filename, const char *fmt)
         fieldsOffset[i] = fieldsOffset[i - 1];
         if (fmt[i - 1] == 'b' || fmt[i - 1] == 'X') // byte fields
             fieldsOffset[i] += 1;
-        else                                // 4 byte fields (int32/float/strings)
+        else                                // 4 byte fields (int32_t/float/strings)
             fieldsOffset[i] += 4;
     }
 
@@ -168,7 +168,7 @@ DB2::DB2FileLoader::Record DB2::DB2FileLoader::getRecord(size_t id)
     return Record(*this, data + id*recordSize);
 }
 
-uint32 DB2::DB2FileLoader::GetFormatRecordSize(const char * format, int32_t* index_pos)
+uint32_t DB2::DB2FileLoader::GetFormatRecordSize(const char * format, int32_t* index_pos)
 {
     uint32_t recordsize = 0;
     int32_t i = -1;
@@ -213,7 +213,7 @@ uint32 DB2::DB2FileLoader::GetFormatRecordSize(const char * format, int32_t* ind
     return recordsize;
 }
 
-uint32 DB2::DB2FileLoader::GetFormatStringsFields(const char * format)
+uint32_t DB2::DB2FileLoader::GetFormatStringsFields(const char * format)
 {
     uint32_t stringfields = 0;
     for (uint32_t x = 0; format[x]; ++x)

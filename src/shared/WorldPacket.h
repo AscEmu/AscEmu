@@ -31,62 +31,62 @@ class SERVER_DECL WorldPacket : public ByteBuffer
 #if VERSION_STRING != Mop
     public:
         __inline WorldPacket() : ByteBuffer(0), m_opcode(MSG_NULL_ACTION) { }
-        __inline WorldPacket(uint16 opcode, size_t res) : ByteBuffer(res), m_opcode(opcode) {}
+        __inline WorldPacket(uint16_t opcode, size_t res) : ByteBuffer(res), m_opcode(opcode) {}
         __inline WorldPacket(size_t res) : ByteBuffer(res), m_opcode(0) { }
         __inline WorldPacket(const WorldPacket & packet) : ByteBuffer(packet), m_opcode(packet.m_opcode) {}
 
         //! Clear packet and set opcode all in one mighty blow
-        __inline void Initialize(uint16 opcode, size_t newres = 200)
+        __inline void Initialize(uint16_t opcode, size_t newres = 200)
         {
             clear();
             _storage.reserve(newres);
             m_opcode = opcode;
         }
 
-        __inline uint16 GetOpcode() const { return m_opcode; }
-        __inline void SetOpcode(uint16 opcode) { m_opcode = opcode; }
+        __inline uint16_t GetOpcode() const { return m_opcode; }
+        __inline void SetOpcode(uint16_t opcode) { m_opcode = opcode; }
 
     protected:
-        uint16 m_opcode;
+        uint16_t m_opcode;
 #else
 public:
     __inline WorldPacket() : ByteBuffer(0), m_opcode(MSG_NULL_ACTION) { }
-    __inline WorldPacket(uint32 opcode, size_t res) : ByteBuffer(res), m_opcode(opcode) {}
+    __inline WorldPacket(uint32_t opcode, size_t res) : ByteBuffer(res), m_opcode(opcode) {}
     __inline WorldPacket(size_t res) : ByteBuffer(res), m_opcode(0) { }
     __inline WorldPacket(const WorldPacket & packet) : ByteBuffer(packet), m_opcode(packet.m_opcode) {}
 
     //! Clear packet and set opcode all in one mighty blow
-    __inline void Initialize(uint16 opcode, size_t newres = 200)
+    __inline void Initialize(uint16_t opcode, size_t newres = 200)
     {
         clear();
         _storage.reserve(newres);
         m_opcode = opcode;
     }
 
-    __inline uint32 GetOpcode() const { return m_opcode; }
-    __inline void SetOpcode(uint32 opcode) { m_opcode = opcode; }
+    __inline uint32_t GetOpcode() const { return m_opcode; }
+    __inline void SetOpcode(uint32_t opcode) { m_opcode = opcode; }
 
 protected:
-    uint16 m_opcode;
+    uint16_t m_opcode;
 #endif
 };
 
-template<uint32 Size>
+template<uint32_t Size>
 class SERVER_DECL StackWorldPacket : public StackBuffer<Size>
 {
-        uint16 m_opcode;
+        uint16_t m_opcode;
     public:
-        __inline StackWorldPacket(uint16 opcode) : StackBuffer<Size>(), m_opcode(opcode) { }
+        __inline StackWorldPacket(uint16_t opcode) : StackBuffer<Size>(), m_opcode(opcode) { }
 
         //! Clear packet and set opcode all in one mighty blow
-        __inline void Initialize(uint16 opcode)
+        __inline void Initialize(uint16_t opcode)
         {
             StackBuffer<Size>::Clear();
             m_opcode = opcode;
         }
 
-        uint16 GetOpcode() { return m_opcode; }
-        __inline void SetOpcode(uint16 opcode) { m_opcode = opcode; }
+        uint16_t GetOpcode() { return m_opcode; }
+        __inline void SetOpcode(uint16_t opcode) { m_opcode = opcode; }
 };
 
 #endif

@@ -47,16 +47,16 @@ bool ChatHandler::HandleGMTicketListCommand(const char* /*args*/, WorldSession* 
         if ((*itr)->deleted)
             continue;
 
-        Player* plr = sObjectMgr.GetPlayer((uint32)(*itr)->playerGuid);
+        Player* plr = sObjectMgr.GetPlayer((uint32_t)(*itr)->playerGuid);
 
         if (plr == NULL)
             continue;
 
-        //        Player* aplr = ((*itr)->assignedToPlayer == 0 ? NULL : sObjectMgr.GetPlayer((uint32)(*itr)->assignedToPlayer));
+        //        Player* aplr = ((*itr)->assignedToPlayer == 0 ? NULL : sObjectMgr.GetPlayer((uint32_t)(*itr)->assignedToPlayer));
 
         std::stringstream ss;
 
-        uint32 zone = 0;
+        uint32_t zone = 0;
         if (plr->IsInWorld())
         {
             zone = plr->GetZoneId();
@@ -159,7 +159,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
 
     // Response - Send GM Survey
     WorldPacket datab(SMSG_GM_TICKET_STATUS_UPDATE, 1);
-    datab << uint32(3);
+    datab << uint32_t(3);
     plr->GetSession()->SendPacket(&datab);
 
     return true;
@@ -187,15 +187,15 @@ bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_se
         if ((*itr)->deleted)
             continue;
 
-        Player* plr = sObjectMgr.GetPlayer((uint32)(*itr)->playerGuid);
+        Player* plr = sObjectMgr.GetPlayer((uint32_t)(*itr)->playerGuid);
 
         Player* aplr = NULL;
         PlayerInfo* aplri = NULL;
         if ((*itr)->assignedToPlayer != 0)
         {
-            aplr = sObjectMgr.GetPlayer((uint32)(*itr)->assignedToPlayer);
+            aplr = sObjectMgr.GetPlayer((uint32_t)(*itr)->assignedToPlayer);
             if (aplr == NULL)
-                aplri = sObjectMgr.GetPlayerInfo((uint32)(*itr)->assignedToPlayer);
+                aplri = sObjectMgr.GetPlayerInfo((uint32_t)(*itr)->assignedToPlayer);
         }
 
         std::stringstream ss;
@@ -214,7 +214,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_se
 
 bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m_session)
 {
-    uint64 ticketGuid = (args ? atoi(args) : 0);
+    uint64_t ticketGuid = (args ? atoi(args) : 0);
     if (!ticketGuid)
     {
         RedSystemMessage(m_session, "You must specify a ticket id.");
@@ -270,7 +270,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
 
 bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession* m_session)
 {
-    uint64 ticketGuid = (args ? atoi(args) : 0);
+    uint64_t ticketGuid = (args ? atoi(args) : 0);
     if (!ticketGuid)
     {
         RedSystemMessage(m_session, "You must specify a ticket id.");
@@ -295,7 +295,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
         return true;
     }
 
-    Player* plr = sObjectMgr.GetPlayer((uint32)ticket->playerGuid);
+    Player* plr = sObjectMgr.GetPlayer((uint32_t)ticket->playerGuid);
 
     std::stringstream ss;
     ss << "GmTicket:" << GM_TICKET_CHAT_OPCODE_REMOVED;
@@ -313,7 +313,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
     plr->GetSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
     // Response - Send GM Survey
     WorldPacket datab(SMSG_GM_TICKET_STATUS_UPDATE, 1);
-    datab << uint32(3);
+    datab << uint32_t(3);
     plr->GetSession()->SendPacket(&datab);
     //plr->GetSession()->GetPlayer()->OutPacketToSet(SMSG_GM_TICKET_STATUS_UPDATE, 1, SENDSURVEY,true);
     SystemMessageToPlr(plr, "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
@@ -323,7 +323,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
 
 bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* m_session)
 {
-    uint64 ticketGuid;
+    uint64_t ticketGuid;
     char guidString[100], name[100];
     int argc = sscanf(args, "%s %s", guidString, name);
     if (argc < 1 || argc > 2)
@@ -349,7 +349,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
         return true;
     }
 
-    Player* mplr = sObjectMgr.GetPlayer((uint32)ticket->playerGuid);
+    Player* mplr = sObjectMgr.GetPlayer((uint32_t)ticket->playerGuid);
     Player* plr = (argc == 1 ? cplr : sObjectMgr.GetPlayer(name, false));
     if (plr == NULL)
     {
@@ -377,7 +377,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
 
     if (ticket->assignedToPlayer != 0 && ticket->assignedToPlayer != cplr->getGuid())
     {
-        Player* aplr = sObjectMgr.GetPlayer((uint32)ticket->assignedToPlayer);
+        Player* aplr = sObjectMgr.GetPlayer((uint32_t)ticket->assignedToPlayer);
         if (aplr != NULL && aplr->IsInWorld() && !cplr->GetSession()->CanUseCommand('z'))
         {
             chn->Say(cplr, "GmTicket:0:Ticket already assigned to another GM.", cplr, true);
@@ -395,14 +395,14 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
     chn->Say(cplr, ss.str().c_str(), NULL, true);
     //Send Response Packet to update Ticket
     //WorldPacket data(SMSG_GMTICKET_GETTICKET, 400);
-    //data << uint32(6); // Packet Status
-    //data << uint8(0x7);//static Category
+    //data << uint32_t(6); // Packet Status
+    //data << uint8_t(0x7);//static Category
     //data << ticket->message.c_str();//ticketDescription
     //data << float(0.0);//ticketAge - days //update time =  last time ticket was modified?
     //data << float(0.0);//oldestTicketTime - days
     //data << float(0.0);//updateTime - days | How recent is the data for oldest ticket time, measured in days.  If this number 1 hour, we have bad data.
     //data << unit64(2);//assignedToGM |0 - ticket is not currently assigned to a gm | 1 - ticket is assigned to a normal gm |    2 - ticket is in the escalation queue
-    //data << uint64(1);//openedByGM | 0 - ticket has never been opened by a gm | 1 - ticket has been opened by a gm
+    //data << uint64_t(1);//openedByGM | 0 - ticket has never been opened by a gm | 1 - ticket has been opened by a gm
     //mplr->GetSession()->SendPacket(&data);
     SystemMessageToPlr(mplr, "SYSTEM: Your ticket has been escalated. A Senior Game Master will be with you shortly!");
     return true;
@@ -410,7 +410,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
 
 bool ChatHandler::HandleGMTicketReleaseCommand(const char* args, WorldSession* m_session)
 {
-    uint64 ticketGuid = (args ? atoi(args) : 0);
+    uint64_t ticketGuid = (args ? atoi(args) : 0);
     if (!ticketGuid)
     {
         RedSystemMessage(m_session, "You must specify a ticket id.");
@@ -435,7 +435,7 @@ bool ChatHandler::HandleGMTicketReleaseCommand(const char* args, WorldSession* m
         return true;
     }
 
-    Player* plr = sObjectMgr.GetPlayer((uint32)ticket->assignedToPlayer);
+    Player* plr = sObjectMgr.GetPlayer((uint32_t)ticket->assignedToPlayer);
     if (!cplr->GetSession()->CanUseCommand('z') && plr != NULL && plr->IsInWorld() && plr->GetSession()->CanUseCommand('z'))
     {
         chn->Say(cplr, "GmTicket:0:You can not release tickets from Senior Game Masters.", cplr, true);
@@ -455,7 +455,7 @@ bool ChatHandler::HandleGMTicketReleaseCommand(const char* args, WorldSession* m
 
 bool ChatHandler::HandleGMTicketCommentCommand(const char* args, WorldSession* m_session)
 {
-    uint64 ticketGuid;
+    uint64_t ticketGuid;
     int argc = 1;
     char* comment = NULL;
     char* guidString = (char*)args;
@@ -509,7 +509,7 @@ bool ChatHandler::HandleGMTicketCommentCommand(const char* args, WorldSession* m
 
 bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSession* m_session)
 {
-    uint64 ticketGuid = (args ? atoi(args) : 0);
+    uint64_t ticketGuid = (args ? atoi(args) : 0);
     if (!ticketGuid)
     {
         RedSystemMessage(m_session, "You must specify a ticket id.");
@@ -532,7 +532,7 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
 
     if (!ticket->deleted)
     {
-        plr = sObjectMgr.GetPlayer((uint32)ticket->playerGuid);
+        plr = sObjectMgr.GetPlayer((uint32_t)ticket->playerGuid);
 
         std::stringstream ss;
         ss << "GmTicket:" << GM_TICKET_CHAT_OPCODE_REMOVED;
@@ -551,7 +551,7 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
 
         // Response - Send GM Survey
         WorldPacket datab(SMSG_GM_TICKET_STATUS_UPDATE, 1);
-        datab << uint32(3);
+        datab << uint32_t(3);
         plr->GetSession()->SendPacket(&datab);
         //plr->GetSession()->GetPlayer()->OutPacketToSet(SMSG_GM_TICKET_STATUS_UPDATE, 1, SENDSURVEY,true);
         SystemMessageToPlr(plr, "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");

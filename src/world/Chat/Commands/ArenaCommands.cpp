@@ -7,9 +7,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
 
-uint8 ChatHandler::GetArenaTeamInternalType(uint32 type, WorldSession* m_session)
+uint8_t ChatHandler::GetArenaTeamInternalType(uint32_t type, WorldSession* m_session)
 {
-    uint8 internal_type;
+    uint8_t internal_type;
     switch (type)
     {
         case 2:
@@ -33,7 +33,7 @@ uint8 ChatHandler::GetArenaTeamInternalType(uint32 type, WorldSession* m_session
 
 bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_session)
 {
-    uint32 team_type;
+    uint32_t team_type;
     char team_name[1000];
 
     auto player = GetSelectedPlayer(m_session, true, true);
@@ -43,7 +43,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
         return true;
     }
 
-    uint8 internal_type = GetArenaTeamInternalType(team_type, m_session);
+    uint8_t internal_type = GetArenaTeamInternalType(team_type, m_session);
     if (internal_type == 10)
         return true;
 
@@ -59,7 +59,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
         return true;
     }
 
-    auto arena_team = new ArenaTeam(uint32(internal_type), sObjectMgr.GenerateArenaTeamId());
+    auto arena_team = new ArenaTeam(uint32_t(internal_type), sObjectMgr.GenerateArenaTeamId());
     arena_team->m_emblem.emblemStyle = 22;
     arena_team->m_emblem.emblemColour = 4292133532UL;
     arena_team->m_emblem.borderColour = 4294931722UL;
@@ -78,7 +78,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
 
 bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_session)
 {
-    uint32 team_type;
+    uint32_t team_type;
 
     auto player = GetSelectedPlayer(m_session, true, true);
     if (sscanf(args, "%u", &team_type) != 1)
@@ -87,7 +87,7 @@ bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_ses
         return true;
     }
 
-    uint8 internal_type = GetArenaTeamInternalType(team_type, m_session);
+    uint8_t internal_type = GetArenaTeamInternalType(team_type, m_session);
     if (internal_type == 10)
         return true;
 

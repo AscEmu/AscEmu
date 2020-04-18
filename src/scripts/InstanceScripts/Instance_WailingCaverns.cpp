@@ -241,7 +241,7 @@ public:
         }
 
     }
-    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : nullptr;
         if (pCreature == nullptr)
@@ -279,7 +279,7 @@ class DofNaralexAI : public CreatureAIScript
     {
         Mutanus = nullptr;
 
-        for (uint8 i = 1; i < 39; ++i)
+        for (uint8_t i = 1; i < 39; ++i)
         {
             AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, ToNaralex[i]));
         }
@@ -293,7 +293,7 @@ class DofNaralexAI : public CreatureAIScript
         SpawnTimer = 0;
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         ForceWaypointMove(iWaypointId + 1);
         if (isScriptPhase(1) && GetCurrentWaypoint() == 39)
@@ -380,7 +380,7 @@ class DofNaralexAI : public CreatureAIScript
         Mutanus = spawnCreature(CN_MUTANUS, 136.337006f, 263.769989f, -102.666000f, 4.002330f);
     }
 
-    int32 SpawnTimer;
+    int32_t SpawnTimer;
     CreatureAISpells* Awakening;
     Creature* Mutanus;
 };

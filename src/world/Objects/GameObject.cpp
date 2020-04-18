@@ -150,7 +150,7 @@ Player* GameObject::getPlayerOwner()
 }
 // MIT End
 
-GameObject::GameObject(uint64 guid)
+GameObject::GameObject(uint64_t guid)
 {
     m_objectType |= TYPE_GAMEOBJECT;
     m_objectTypeId = TYPEID_GAMEOBJECT;
@@ -203,7 +203,7 @@ GameObject::~GameObject()
 
     //\todo guid (uint64_t) can not be used for GetPlayer... however it seems to be common to cast uint64_t to uint32_t.
     // it would be probably the best to store player guid as uint64_t instead of uint32_t
-    uint32 guid = static_cast<uint32_t>(getCreatedByGuid());
+    uint32_t guid = static_cast<uint32_t>(getCreatedByGuid());
     if (guid)
     {
         Player* plr = sObjectMgr.GetPlayer(guid);
@@ -218,7 +218,7 @@ GameObject::~GameObject()
         m_respawnCell->_respawnObjects.erase(this);
 
     if (m_summonedGo && m_summoner)
-        for (uint8 i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
             if (m_summoner->m_ObjectSlots[i] == getGuidLow())
                 m_summoner->m_ObjectSlots[i] = 0;
 }
@@ -228,7 +228,7 @@ GameObjectProperties const* GameObject::GetGameObjectProperties() const
     return gameobject_properties;
 }
 
-bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0, float r1, float r2, float r3, uint32 overrides)
+bool GameObject::CreateFromProto(uint32_t entry, uint32_t mapid, float x, float y, float z, float ang, float r0, float r1, float r2, float r3, uint32_t overrides)
 {
     gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
     if (gameobject_properties == nullptr)
@@ -247,7 +247,7 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
     setAnimationProgress(0);
     setState(1);
     setDisplayId(gameobject_properties->display_id);
-    setGoType(static_cast<uint8>(gameobject_properties->type));
+    setGoType(static_cast<uint8_t>(gameobject_properties->type));
     InitAI();
 
     return true;
@@ -275,11 +275,11 @@ void GameObject::Spawn(MapMgr* m)
     PushToWorld(m);
 }
 
-void GameObject::Despawn(uint32 delay, uint32 respawntime)
+void GameObject::Despawn(uint32_t delay, uint32_t respawntime)
 {
     if (delay)
     {
-        sEventMgr.AddEvent(this, &GameObject::Despawn, (uint32)0, respawntime, EVENT_GAMEOBJECT_EXPIRE, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(this, &GameObject::Despawn, (uint32_t)0, respawntime, EVENT_GAMEOBJECT_EXPIRE, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         return;
     }
 
@@ -289,7 +289,7 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
     //This is for go get deleted while looting
     if (m_spawn)
     {
-        setState(static_cast<uint8>(m_spawn->state));
+        setState(static_cast<uint8_t>(m_spawn->state));
         setFlags(m_spawn->flags);
     }
 
@@ -338,8 +338,8 @@ void GameObject::SaveToDB()
         m_spawn->phase = GetPhase();
         m_spawn->overrides = GetOverrides();
 
-        uint32 cx = GetMapMgr()->GetPosX(GetPositionX());
-        uint32 cy = GetMapMgr()->GetPosY(GetPositionY());
+        uint32_t cx = GetMapMgr()->GetPosX(GetPositionX());
+        uint32_t cy = GetMapMgr()->GetPosY(GetPositionY());
 
         GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(m_spawn);
     }
@@ -401,7 +401,7 @@ void GameObject::SaveToFile(std::stringstream & name)
         << getParentRotation(1) << ","
         << getParentRotation(2) << ","
         << getParentRotation(3) << ","
-        << uint32(getState()) << ","
+        << uint32_t(getState()) << ","
         << getFlags() << ","
         << getFactionTemplate() << ","
         << getScale() << ","
@@ -433,7 +433,7 @@ bool GameObject::Load(MySQLStructure::GameobjectSpawn* go_spawn)
     m_spawn = go_spawn;
     m_phase = go_spawn->phase;
     setFlags(go_spawn->flags);
-    setState(static_cast<uint8>(go_spawn->state));
+    setState(static_cast<uint8_t>(go_spawn->state));
     if (go_spawn->faction)
     {
         SetFaction(go_spawn->faction);
@@ -523,7 +523,7 @@ void GameObject::onRemoveInRangeObject(Object* pObj)
     Object::onRemoveInRangeObject(pObj);
     if (m_summonedGo && m_summoner == pObj)
     {
-        for (uint8 i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
             if (m_summoner->m_ObjectSlots[i] == getGuidLow())
                 m_summoner->m_ObjectSlots[i] = 0;
 
@@ -540,14 +540,14 @@ void GameObject::RemoveFromWorld(bool free_guid)
     Object::RemoveFromWorld(free_guid);
 }
 
-uint32 GameObject::GetGOReqSkill()
+uint32_t GameObject::GetGOReqSkill()
 {
     // Here we check the SpellFocus table against the dbcs
     auto lock = sLockStore.LookupEntry(GetGameObjectProperties()->raw.parameter_0);
     if (!lock)
         return 0;
 
-    for (uint8 i = 0; i < LOCK_NUM_CASES; i++)
+    for (uint8_t i = 0; i < LOCK_NUM_CASES; i++)
     {
         if (lock->locktype[i] == 2 && lock->minlockskill[i])
             return lock->minlockskill[i];
@@ -559,7 +559,7 @@ using G3D::Quat;
 struct QuaternionCompressed
 {
     QuaternionCompressed() : m_raw(0) {}
-    QuaternionCompressed(int64 val) : m_raw(val) {}
+    QuaternionCompressed(int64_t val) : m_raw(val) {}
     QuaternionCompressed(const Quat& quat) { Set(quat); }
 
     enum
@@ -570,10 +570,10 @@ struct QuaternionCompressed
 
     void Set(const Quat& quat)
     {
-        int8 w_sign = (quat.w >= 0 ? 1 : -1);
-        int64 X = int32(quat.x * PACK_COEFF_X) * w_sign & ((1 << 22) - 1);
-        int64 Y = int32(quat.y * PACK_COEFF_YZ) * w_sign & ((1 << 21) - 1);
-        int64 Z = int32(quat.z * PACK_COEFF_YZ) * w_sign & ((1 << 21) - 1);
+        int8_t w_sign = (quat.w >= 0 ? 1 : -1);
+        int64_t X = int32_t(quat.x * PACK_COEFF_X) * w_sign & ((1 << 22) - 1);
+        int64_t Y = int32_t(quat.y * PACK_COEFF_YZ) * w_sign & ((1 << 21) - 1);
+        int64_t Z = int32_t(quat.z * PACK_COEFF_YZ) * w_sign & ((1 << 21) - 1);
         m_raw = Z | (Y << 21) | (X << 42);
     }
 
@@ -589,7 +589,7 @@ struct QuaternionCompressed
         return Quat(float(x), float(y), float(z), float(w));
     }
 
-    int64 m_raw;
+    int64_t m_raw;
 };
 
 void GameObject::SetRotationQuat(float qx, float qy, float qz, float qw)
@@ -613,7 +613,7 @@ void GameObject::SetRotationAngles(float z_rot, float y_rot, float x_rot)
     SetRotationQuat(quat.x, quat.y, quat.z, quat.w);
 }
 
-void GameObject::CastSpell(uint64 TargetGUID, SpellInfo const* sp)
+void GameObject::CastSpell(uint64_t TargetGUID, SpellInfo const* sp)
 {
     Spell* s = sSpellMgr.newSpell(this, sp, true, nullptr);
 
@@ -625,7 +625,7 @@ void GameObject::CastSpell(uint64 TargetGUID, SpellInfo const* sp)
     s->prepare(&tgt);
 }
 
-void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
+void GameObject::CastSpell(uint64_t TargetGUID, uint32_t SpellID)
 {
     SpellInfo const* sp = sSpellMgr.getSpellInfo(SpellID);
     if (sp == nullptr)
@@ -646,7 +646,7 @@ void GameObject::sendGameobjectCustomAnim(uint32_t anim)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Door
-GameObject_Door::GameObject_Door(uint64 GUID) : GameObject(GUID)
+GameObject_Door::GameObject_Door(uint64_t GUID) : GameObject(GUID)
 { }
 
 GameObject_Door::~GameObject_Door()
@@ -690,7 +690,7 @@ void GameObject_Door::onUse(Player* /*player*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Button
-GameObject_Button::GameObject_Button(uint64 GUID) : GameObject(GUID)
+GameObject_Button::GameObject_Button(uint64_t GUID) : GameObject(GUID)
 {
     spell = nullptr;
 }
@@ -748,7 +748,7 @@ void GameObject_Button::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_QuestGiver
-GameObject_QuestGiver::GameObject_QuestGiver(uint64 GUID) : GameObject(GUID)
+GameObject_QuestGiver::GameObject_QuestGiver(uint64_t GUID) : GameObject(GUID)
 {
     m_quests = NULL;
 }
@@ -783,7 +783,7 @@ void GameObject_QuestGiver::DeleteQuest(QuestRelation* Q)
     }
 }
 
-QuestProperties const* GameObject_QuestGiver::FindQuest(uint32 quest_id, uint8 quest_relation)
+QuestProperties const* GameObject_QuestGiver::FindQuest(uint32_t quest_id, uint8_t quest_relation)
 {
     for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
@@ -797,9 +797,9 @@ QuestProperties const* GameObject_QuestGiver::FindQuest(uint32 quest_id, uint8 q
     return nullptr;
 }
 
-uint16 GameObject_QuestGiver::GetQuestRelation(uint32 quest_id)
+uint16_t GameObject_QuestGiver::GetQuestRelation(uint32_t quest_id)
 {
-    uint16 quest_relation = 0;
+    uint16_t quest_relation = 0;
 
     for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
@@ -814,7 +814,7 @@ uint16 GameObject_QuestGiver::GetQuestRelation(uint32 quest_id)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Chest
-GameObject_Chest::GameObject_Chest(uint64 GUID) : GameObject_Lootable(GUID)
+GameObject_Chest::GameObject_Chest(uint64_t GUID) : GameObject_Lootable(GUID)
 {
     spell = nullptr;
 }
@@ -887,7 +887,7 @@ void GameObject_Chest::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Trap
-GameObject_Trap::GameObject_Trap(uint64 GUID) : GameObject(GUID)
+GameObject_Trap::GameObject_Trap(uint64_t GUID) : GameObject(GUID)
 {
     spell = NULL;
     targetupdatetimer = 0;
@@ -1036,7 +1036,7 @@ void GameObject_Chair::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_SpellFocus
-GameObject_SpellFocus::GameObject_SpellFocus(uint64 GUID) : GameObject(GUID)
+GameObject_SpellFocus::GameObject_SpellFocus(uint64_t GUID) : GameObject(GUID)
 { }
 
 GameObject_SpellFocus::~GameObject_SpellFocus()
@@ -1050,7 +1050,7 @@ void GameObject_SpellFocus::OnPushToWorld()
 
 void GameObject_SpellFocus::SpawnLinkedTrap()
 {
-    uint32 trapid = gameobject_properties->spell_focus.linked_trap_id;
+    uint32_t trapid = gameobject_properties->spell_focus.linked_trap_id;
     if (trapid == 0)
         return;
 
@@ -1074,7 +1074,7 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Goober
-GameObject_Goober::GameObject_Goober(uint64 GUID) : GameObject(GUID)
+GameObject_Goober::GameObject_Goober(uint64_t GUID) : GameObject(GUID)
 {
     spell = NULL;
 }
@@ -1145,7 +1145,7 @@ void GameObject_Camera::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_FishingNode
-GameObject_FishingNode::GameObject_FishingNode(uint64 GUID) : GameObject_Lootable(GUID)
+GameObject_FishingNode::GameObject_FishingNode(uint64_t GUID) : GameObject_Lootable(GUID)
 {
     FishHooked = false;
 }
@@ -1155,15 +1155,15 @@ GameObject_FishingNode::~GameObject_FishingNode()
 
 void GameObject_FishingNode::OnPushToWorld()
 {
-    uint32 zone = 0; // GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
+    uint32_t zone = 0; // GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
     if (zone == 0)
         zone = GetZoneId();
 
     // Only set a 'splash' if there is any loot in this area / zone
     if (sLootMgr.IsFishable(zone))
     {
-        uint32 seconds[] = { 0, 4, 10, 14 };
-        uint32 rnd = Util::getRandomUInt(3);
+        uint32_t seconds[] = { 0, 4, 10, 14 };
+        uint32_t rnd = Util::getRandomUInt(3);
         sEventMgr.AddEvent(this, &GameObject_FishingNode::EventFishHooked, EVENT_GAMEOBJECT_FISH_HOOKED, seconds[rnd] * 1000, 1, 0);
 
     }
@@ -1178,7 +1178,7 @@ void GameObject_FishingNode::onUse(Player* player)
 
     if (success)
     {
-        uint32 zone = player->GetAreaID();
+        uint32_t zone = player->GetAreaID();
         if (zone == 0)                  // If the player's area ID is 0, use the zone ID instead
             zone = player->GetZoneId();
 
@@ -1190,8 +1190,8 @@ void GameObject_FishingNode::onUse(Player* player)
             return;
         }
 
-        const uint32 maxskill = entry->maxSkill;
-        const uint32 minskill = entry->minSkill;
+        const uint32_t maxskill = entry->maxSkill;
+        const uint32_t minskill = entry->minSkill;
 
         if (player->_GetSkillLineCurrent(SKILL_FISHING, false) < maxskill)
             player->_AdvanceSkillLine(SKILL_FISHING, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
@@ -1294,7 +1294,7 @@ bool GameObject_FishingNode::HasLoot()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Ritual
-GameObject_Ritual::GameObject_Ritual(uint64 GUID) : GameObject(GUID)
+GameObject_Ritual::GameObject_Ritual(uint64_t GUID) : GameObject(GUID)
 {
     Ritual = NULL;
 }
@@ -1370,7 +1370,7 @@ void GameObject_Ritual::onUse(Player* player)
         }
         else if (gameobject_properties->entry == 177193)    // doom portal
         {
-            uint32 victimid = Util::getRandomUInt(GetRitual()->GetMaxMembers() - 1);
+            uint32_t victimid = Util::getRandomUInt(GetRitual()->GetMaxMembers() - 1);
 
             // kill the sacrifice player
             Player* psacrifice = player->GetMapMgr()->GetPlayer(GetRitual()->GetMemberGUIDBySlot(victimid));
@@ -1427,7 +1427,7 @@ void GameObject_Ritual::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_SpellCaster
-GameObject_SpellCaster::GameObject_SpellCaster(uint64 GUID) : GameObject(GUID)
+GameObject_SpellCaster::GameObject_SpellCaster(uint64_t GUID) : GameObject(GUID)
 {
     spell = nullptr;
 }
@@ -1476,7 +1476,7 @@ void GameObject_SpellCaster::onUse(Player* player)
 void GameObject_Meetingstone::onUse(Player* player)
 {
     // Use selection
-    Player* pPlayer = sObjectMgr.GetPlayer(static_cast<uint32>(player->GetSelection()));
+    Player* pPlayer = sObjectMgr.GetPlayer(static_cast<uint32_t>(player->GetSelection()));
     if (pPlayer == nullptr)
         return;
 
@@ -1519,7 +1519,7 @@ void GameObject_FlagStand::onUse(Player* /*player*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_FishingHole
-GameObject_FishingHole::GameObject_FishingHole(uint64 GUID) : GameObject_Lootable(GUID)
+GameObject_FishingHole::GameObject_FishingHole(uint64_t GUID) : GameObject_Lootable(GUID)
 {
     usage_remaining = 0;
 }
@@ -1545,7 +1545,7 @@ void GameObject_FishingHole::CatchFish()
     ASSERT(usage_remaining > 0);
     usage_remaining--;
     if (usage_remaining == 0)
-        sEventMgr.AddEvent(static_cast<GameObject*>(this), &GameObject::Despawn, uint32(0), (1800000 + Util::getRandomUInt(3600000)), EVENT_GAMEOBJECT_EXPIRE, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT); // respawn in 30 - 90 minutes
+        sEventMgr.AddEvent(static_cast<GameObject*>(this), &GameObject::Despawn, uint32_t(0), (1800000 + Util::getRandomUInt(3600000)), EVENT_GAMEOBJECT_EXPIRE, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT); // respawn in 30 - 90 minutes
 }
 
 void GameObject_FishingHole::CalcFishRemaining(bool force)
@@ -1594,7 +1594,7 @@ void GameObject_BarberChair::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Destructible
-GameObject_Destructible::GameObject_Destructible(uint64 GUID) : GameObject(GUID)
+GameObject_Destructible::GameObject_Destructible(uint64_t GUID) : GameObject(GUID)
 {
     hitpoints = 0;
     maxhitpoints = 0;
@@ -1609,7 +1609,7 @@ void GameObject_Destructible::InitAI()
     Rebuild();
 }
 
-void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
+void GameObject_Destructible::Damage(uint32_t damage, uint64_t AttackerGUID, uint64_t ControllerGUID, uint32_t SpellID)
 {
     // If we are already destroyed there's nothing to damage!
     if (hitpoints == 0)
@@ -1656,12 +1656,12 @@ void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 
         CALL_GO_SCRIPT_EVENT(this, OnDamaged)(damage);
     }
 
-    uint8 animprogress = static_cast<uint8>(std::round(hitpoints / float(maxhitpoints)) * 255);
+    uint8_t animprogress = static_cast<uint8_t>(std::round(hitpoints / float(maxhitpoints)) * 255);
     setAnimationProgress(animprogress);
     SendDamagePacket(damage, AttackerGUID, ControllerGUID, SpellID);
 }
 
-void GameObject_Destructible::SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
+void GameObject_Destructible::SendDamagePacket(uint32_t damage, uint64_t AttackerGUID, uint64_t ControllerGUID, uint32_t SpellID)
 {
 #if VERSION_STRING > TBC
     WorldPacket data(SMSG_DESTRUCTIBLE_BUILDING_DAMAGE, 29);
@@ -1669,8 +1669,8 @@ void GameObject_Destructible::SendDamagePacket(uint32 damage, uint64 AttackerGUI
     data << WoWGuid(GetNewGUID());
     data << WoWGuid(AttackerGUID);
     data << WoWGuid(ControllerGUID);
-    data << uint32(damage);
-    data << uint32(SpellID);
+    data << uint32_t(damage);
+    data << uint32_t(SpellID);
     SendMessageToSet(&data, false, false);
 #endif
 }

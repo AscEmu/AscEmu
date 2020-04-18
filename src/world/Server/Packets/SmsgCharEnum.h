@@ -220,7 +220,7 @@ namespace AscEmu::Packets
                     const uint8_t hairStyle = uint8_t((data.bytes >> 16) & 0xFF);
                     const uint8_t hairColor = uint8_t((data.bytes >> 24) & 0xFF);
                     const uint8_t facialHair = uint8_t(data.bytes & 0xFF);
-                    buffer << uint8(hairStyle);
+                    buffer << uint8_t(hairStyle);
 
                     buffer.WriteByteSeq(guildGuid[2]);
                     buffer.WriteByteSeq(guildGuid[0]);

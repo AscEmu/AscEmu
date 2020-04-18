@@ -18,7 +18,7 @@ inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
 
     return radius->radius_min;
 }
-inline uint32 GetCastTime(DBC::Structures::SpellCastTimesEntry const* time)
+inline uint32_t GetCastTime(DBC::Structures::SpellCastTimesEntry const* time)
 {
     if (time == nullptr)
         return 0;
@@ -39,14 +39,14 @@ inline float GetMinRange(DBC::Structures::SpellRangeEntry const* range)
 
     return range->minRange;
 }
-inline uint32 GetDuration(DBC::Structures::SpellDurationEntry const* dur)
+inline uint32_t GetDuration(DBC::Structures::SpellDurationEntry const* dur)
 {
     if (dur == nullptr)
         return 0;
     return dur->Duration1;
 }
 
-DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, uint8_t effect);
+DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32_t spellId, uint8_t effect);
 
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapOverlayEntry> sWorldMapOverlayStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore;
@@ -151,11 +151,11 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapAreaEntry> sWorldMap
 
 DBC::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t race, uint8_t class_, uint8_t gender);
 
-DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id);
+DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32_t root_id, int32_t adt_id, int32_t group_id);
 
-std::string generateName(uint32 type = 0);
+std::string generateName(uint32_t type = 0);
 
-uint32 const* getTalentTabPages(uint8 playerClass);
+uint32_t const* getTalentTabPages(uint8_t playerClass);
 
 uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerIndex);
 

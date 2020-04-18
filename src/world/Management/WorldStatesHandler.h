@@ -33,10 +33,10 @@ class SERVER_DECL WorldStatesHandler
         {
             public:
                 virtual ~WorldStatesObserver(){}
-                virtual void onWorldStateUpdate(uint32 zone, uint32 field, uint32 value) = 0;
+                virtual void onWorldStateUpdate(uint32_t zone, uint32_t field, uint32_t value) = 0;
         };
 
-        WorldStatesHandler(uint32 mapid)
+        WorldStatesHandler(uint32_t mapid)
         {
             map = mapid;
             observer = NULL;
@@ -47,52 +47,52 @@ class SERVER_DECL WorldStatesHandler
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Sets the specified worldstate's value for the specified zone
-        /// \param  uint32 zone  -  the zone where we set the worldstate
-        /// \param  uint32 area  -  the area where we set the worldstate
-        /// \param  uint32 field -  the worldstate field we are setting
-        /// \param  uint32 value -  the value we assign to the field
+        /// \param  uint32_t zone  -  the zone where we set the worldstate
+        /// \param  uint32_t area  -  the area where we set the worldstate
+        /// \param  uint32_t field -  the worldstate field we are setting
+        /// \param  uint32_t value -  the value we assign to the field
         ///
         /// \return none
         ////////////////////////////////////////////////////////////////////////////////////////////
-        void SetWorldStateForZone(uint32 zone, uint32 area, uint32 field, uint32 value);
+        void SetWorldStateForZone(uint32_t zone, uint32_t area, uint32_t field, uint32_t value);
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// Returns the value of the worldstate field queried.
-        /// \param   uint32 zone  -  the zone where we are querying
-        /// \param  uint32 area  -  the area where we querying
-        /// \param  uint32 field -  the field that we querying
+        /// \param   uint32_t zone  -  the zone where we are querying
+        /// \param  uint32_t area  -  the area where we querying
+        /// \param  uint32_t field -  the field that we querying
         ///
         /// \return the value of the queried field. 0 even if there is no such field.
         ////////////////////////////////////////////////////////////////////////////////////////////
-        uint32 GetWorldStateForZone(uint32 zone, uint32 area, uint32 field) const;
+        uint32_t GetWorldStateForZone(uint32_t zone, uint32_t area, uint32_t field) const;
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// Builds the initial worldstates packet, that tells the client what worldstates exist
-        /// \param  uint32 zone        -  The zone we are building the packet for
-        /// \param  uint32 area        -  The area we are building the packet for
+        /// \param  uint32_t zone        -  The zone we are building the packet for
+        /// \param  uint32_t area        -  The area we are building the packet for
         /// \param  WorldPacket &data  -  The packet we will fill with the worldstates data
         ///
         /// \return none
         ////////////////////////////////////////////////////////////////////////////////////////////
-        void BuildInitWorldStatesForZone(uint32 zone, uint32 area, WorldPacket &data) const;
+        void BuildInitWorldStatesForZone(uint32_t zone, uint32_t area, WorldPacket &data) const;
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// Sets up this worldstate handler with the initial data
-        /// \param  std::multimap< uint32, WorldState > *states  -  The source of the initial data
+        /// \param  std::multimap< uint32_t, WorldState > *states  -  The source of the initial data
         ///
         /// \return none
         ////////////////////////////////////////////////////////////////////////////////////////////
-        void InitWorldStates(std::multimap<uint32, WorldState> *states);
+        void InitWorldStates(std::multimap<uint32_t, WorldState> *states);
 
         void setObserver(WorldStatesObserver* pObserver){ this->observer = pObserver; }
 
     private:
 
-        std::unordered_map<uint32, std::unordered_map<uint32, uint32>> worldstates;
-        uint32 map;
+        std::unordered_map<uint32_t, std::unordered_map<uint32_t, uint32_t>> worldstates;
+        uint32_t map;
         WorldStatesObserver* observer;
 };
 

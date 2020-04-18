@@ -27,7 +27,7 @@ void ChannelMgr::initialize()
 
 void ChannelMgr::finalize()
 {
-    for (uint8 i = 0; i < 2; ++i)
+    for (uint8_t i = 0; i < 2; ++i)
     {
         for (auto& channelList : this->m_channelList[i])
             delete channelList.second;

@@ -27,14 +27,14 @@ namespace MapManagement::AreaManagement
         m_storage = dbc_storage;
 
         // Preload this stuff to make lookups easier elsewhere in code
-        for (uint32 i = 0; i < m_storage->GetNumRows(); ++i)
+        for (uint32_t i = 0; i < m_storage->GetNumRows(); ++i)
         {
             if (auto area = m_storage->LookupEntry(i))
             {
-                m_area_flag_by_id_collection.insert(std::map<uint16, uint32>::value_type(uint16(area->id), area->explore_flag));
+                m_area_flag_by_id_collection.insert(std::map<uint16_t, uint32_t>::value_type(uint16_t(area->id), area->explore_flag));
                 if (area->zone == 0 && area->map_id != 0 && area->map_id != 1 && area->map_id != 530 && area->map_id != 571)
                 {
-                    m_area_flag_by_map_id_collection.insert(std::map<uint32, uint32>::value_type(area->map_id, area->explore_flag));
+                    m_area_flag_by_map_id_collection.insert(std::map<uint32_t, uint32_t>::value_type(area->map_id, area->explore_flag));
                 }
             }
         }
@@ -46,7 +46,7 @@ namespace MapManagement::AreaManagement
         return m_storage;
     }
 
-    int32 AreaStorage::GetFlagById(uint32 area_id)
+    int32_t AreaStorage::GetFlagById(uint32_t area_id)
     {
         auto iter = m_area_flag_by_id_collection.find(area_id);
         if (iter == m_area_flag_by_id_collection.end())
@@ -55,7 +55,7 @@ namespace MapManagement::AreaManagement
         return iter->second;
     }
 
-    uint32 AreaStorage::GetFlagByMapId(uint32 map_id)
+    uint32_t AreaStorage::GetFlagByMapId(uint32_t map_id)
     {
         auto iter = m_area_flag_by_map_id_collection.find(map_id);
         if (iter == m_area_flag_by_map_id_collection.end())
@@ -64,12 +64,12 @@ namespace MapManagement::AreaManagement
             return iter->second;
     }
 
-    DBC::Structures::AreaTableEntry const* AreaStorage::GetAreaByFlag(uint32 area_flag)
+    DBC::Structures::AreaTableEntry const* AreaStorage::GetAreaByFlag(uint32_t area_flag)
     {
         return m_storage->LookupEntry(area_flag);
     }
 
-    DBC::Structures::AreaTableEntry const* AreaStorage::GetAreaByMapId(uint32 map_id)
+    DBC::Structures::AreaTableEntry const* AreaStorage::GetAreaByMapId(uint32_t map_id)
     {
         for (auto map_object : m_map_storage)
         {
@@ -82,16 +82,16 @@ namespace MapManagement::AreaManagement
         return nullptr;
     }
 
-    DBC::Structures::AreaTableEntry const* AreaStorage::GetAreaById(uint32 area_id)
+    DBC::Structures::AreaTableEntry const* AreaStorage::GetAreaById(uint32_t area_id)
     {
-        int32 area_flag = AreaStorage::GetFlagById(area_id);
+        int32_t area_flag = AreaStorage::GetFlagById(area_id);
         if (area_flag < 0)
             return NULL;
 
         return m_storage->LookupEntry(area_flag);
     }
 
-    void AreaStorage::GetZoneAndIdByFlag(uint32& zone_id, uint32& area_id, uint16 area_flag, uint32 map_id)
+    void AreaStorage::GetZoneAndIdByFlag(uint32_t& zone_id, uint32_t& area_id, uint16_t area_flag, uint32_t map_id)
     {
         auto area = AreaStorage::GetAreaByFlag(area_flag);
         if (!area)
@@ -103,12 +103,12 @@ namespace MapManagement::AreaManagement
         zone_id = area ? ((area->zone != 0) ? area->zone : area->id) : 0;
     }
 
-    bool AreaStorage::IsOutdoor(uint32 mapId, float x, float y, float z)
+    bool AreaStorage::IsOutdoor(uint32_t mapId, float x, float y, float z)
     {
         VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
 
-        uint32 mogpFlags;
-        int32 adtId, rootId, groupId;
+        uint32_t mogpFlags;
+        int32_t adtId, rootId, groupId;
 
         if (!mgr->getAreaInfo(mapId, x, y, z, mogpFlags, adtId, rootId, groupId))
             return true;
@@ -125,7 +125,7 @@ namespace MapManagement::AreaManagement
         return IsOutdoorWMO(mogpFlags, adtId, rootId, groupId, wmoEntry, atEntry);
     }
 
-    bool AreaStorage::IsOutdoorWMO(uint32 mogpFlags, int32 /*adtId*/, int32 /*rootId*/, int32 /*groupId*/, DBC::Structures::WMOAreaTableEntry const* wmoEntry, DBC::Structures::AreaTableEntry const* atEntry)
+    bool AreaStorage::IsOutdoorWMO(uint32_t mogpFlags, int32_t /*adtId*/, int32_t /*rootId*/, int32_t /*groupId*/, DBC::Structures::WMOAreaTableEntry const* wmoEntry, DBC::Structures::AreaTableEntry const* atEntry)
     {
         bool outdoor = true;
 
@@ -149,7 +149,7 @@ namespace MapManagement::AreaManagement
         return outdoor;
     }
 
-    uint32 AreaStorage::GetIdByFlag(uint32 area_flag)
+    uint32_t AreaStorage::GetIdByFlag(uint32_t area_flag)
     {
         auto area = AreaStorage::GetAreaByFlag(area_flag);
         if (area)
@@ -158,7 +158,7 @@ namespace MapManagement::AreaManagement
             return 0;
     }
 
-    uint32 AreaStorage::GetIdByMapId(uint32 map_id)
+    uint32_t AreaStorage::GetIdByMapId(uint32_t map_id)
     {
         auto area = AreaStorage::GetAreaByMapId(map_id);
         if (area)
@@ -167,7 +167,7 @@ namespace MapManagement::AreaManagement
             return 0;
     }
 
-    const uint32 AreaStorage::GetFlagByPosition(uint32 area_flag_without_adt_id, bool have_area_info, uint32 /*mogp_flags*/, int32 adt_id, int32 root_id, int32 group_id, uint32 map_id, float /*x*/, float /*y*/, float /*z*/, bool* /*_out_is_outdoors*/)
+    const uint32_t AreaStorage::GetFlagByPosition(uint32_t area_flag_without_adt_id, bool have_area_info, uint32_t /*mogp_flags*/, int32_t adt_id, int32_t root_id, int32_t group_id, uint32_t map_id, float /*x*/, float /*y*/, float /*z*/, bool* /*_out_is_outdoors*/)
     {
         ::DBC::Structures::AreaTableEntry const* at_entry = nullptr;
         if (have_area_info)
@@ -179,7 +179,7 @@ namespace MapManagement::AreaManagement
             }
         }
 
-        //uint16 area_flag;
+        //uint16_t area_flag;
 
         if (at_entry)
         {

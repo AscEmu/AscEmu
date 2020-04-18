@@ -58,7 +58,7 @@ bool ChatHandler::HandleDebugInFrontCommand(const char* /*args*/, WorldSession* 
 {
     Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64_t guid = m_session->GetPlayer()->GetSelection();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
@@ -103,7 +103,7 @@ bool ChatHandler::HandleShowReactionCommand(const char* args, WorldSession* m_se
     if (!pReaction)
         return false;
 
-    uint32 Reaction = atoi(pReaction);
+    uint32_t Reaction = atoi(pReaction);
 
     obj->SendAIReaction(Reaction);
 
@@ -118,7 +118,7 @@ bool ChatHandler::HandleDistanceCommand(const char* /*args*/, WorldSession* m_se
 {
     Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64_t guid = m_session->GetPlayer()->GetSelection();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
@@ -160,10 +160,10 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
 
     //m_session->GetPlayer()->GetOrientation();
 
-    uint32 Move = 1;
-    uint32 Run = 0;
-    uint32 Time = 0;
-    uint32 Meth = 0;
+    uint32_t Move = 1;
+    uint32_t Run = 0;
+    uint32_t Time = 0;
+    uint32_t Meth = 0;
 
     char* pMove = strtok((char*)args, " ");
     if (pMove)
@@ -271,7 +271,7 @@ bool ChatHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    uint32 Orentation = 0;
+    uint32_t Orentation = 0;
     char* pOrentation = strtok((char*)args, " ");
     if (pOrentation)
         Orentation = atoi(pOrentation);
@@ -290,7 +290,7 @@ bool ChatHandler::HandleSetBytesCommand(const char* args, WorldSession* m_sessio
 {
     Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64_t guid = m_session->GetPlayer()->GetSelection();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
@@ -308,38 +308,38 @@ bool ChatHandler::HandleSetBytesCommand(const char* args, WorldSession* m_sessio
     if (!pBytesIndex)
         return false;
 
-    uint16 BytesIndex = static_cast<uint16>(atoi(pBytesIndex));
+    uint16_t BytesIndex = static_cast<uint16_t>(atoi(pBytesIndex));
 
     char* pValue1 = strtok(NULL, " ");
     if (!pValue1)
         return false;
 
-    uint8 Value1 = static_cast<uint8>(atol(pValue1));
+    uint8_t Value1 = static_cast<uint8_t>(atol(pValue1));
 
     char* pValue2 = strtok(NULL, " ");
     if (!pValue2)
         return false;
 
-    uint8 Value2 = static_cast<uint8>(atol(pValue2));
+    uint8_t Value2 = static_cast<uint8_t>(atol(pValue2));
 
     char* pValue3 = strtok(NULL, " ");
     if (!pValue3)
         return false;
 
-    uint8 Value3 = static_cast<uint8>(atol(pValue3));
+    uint8_t Value3 = static_cast<uint8_t>(atol(pValue3));
 
     char* pValue4 = strtok(NULL, " ");
     if (!pValue4)
         return false;
 
-    uint8 Value4 = static_cast<uint8>(atol(pValue4));
+    uint8_t Value4 = static_cast<uint8_t>(atol(pValue4));
 
     std::stringstream sstext;
     sstext << "Set Field " << BytesIndex
-        << " bytes to " << uint16((uint8)Value1)
-        << " " << uint16((uint8)Value2)
-        << " " << uint16((uint8)Value3)
-        << " " << uint16((uint8)Value4)
+        << " bytes to " << uint16_t((uint8_t)Value1)
+        << " " << uint16_t((uint8_t)Value2)
+        << " " << uint16_t((uint8_t)Value3)
+        << " " << uint16_t((uint8_t)Value4)
         << '\0';
     obj->setUInt32Value(BytesIndex, ((Value1) | (Value2 << 8) | (Value3 << 16) | (Value4 << 24)));
     SystemMessage(m_session, sstext.str().c_str());
@@ -351,7 +351,7 @@ bool ChatHandler::HandleGetBytesCommand(const char* args, WorldSession* m_sessio
 {
     Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64_t guid = m_session->GetPlayer()->GetSelection();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
@@ -367,12 +367,12 @@ bool ChatHandler::HandleGetBytesCommand(const char* args, WorldSession* m_sessio
     if (!pBytesIndex)
         return false;
 
-    uint16 BytesIndex = static_cast<uint16>(atoi(pBytesIndex));
-    uint32 theBytes = obj->getUInt32Value(BytesIndex);
+    uint16_t BytesIndex = static_cast<uint16_t>(atoi(pBytesIndex));
+    uint32_t theBytes = obj->getUInt32Value(BytesIndex);
 
     std::stringstream sstext;
-    sstext << "bytes for Field " << BytesIndex << " are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
-    sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\0';
+    sstext << "bytes for Field " << BytesIndex << " are " << uint16_t((uint8_t)theBytes & 0xFF) << " " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << " ";
+    sstext << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << " " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\0';
 
     SystemMessage(m_session, sstext.str().c_str());
     return true;
@@ -471,7 +471,7 @@ bool ChatHandler::HandleCalcThreatCommand(const char* args, WorldSession* m_sess
     if (!spellId)
         return false;
 
-    uint32 threat = target->GetAIInterface()->_CalcThreat(atol(dmg), sSpellMgr.getSpellInfo(atoi(spellId)), m_session->GetPlayer());
+    uint32_t threat = target->GetAIInterface()->_CalcThreat(atol(dmg), sSpellMgr.getSpellInfo(atoi(spellId)), m_session->GetPlayer());
 
     std::stringstream sstext;
     sstext << "generated threat is: " << threat << '\0';
@@ -513,11 +513,11 @@ bool ChatHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_
 
 bool ChatHandler::HandleSendItemPushResult(const char* args, WorldSession* m_session)
 {
-    uint32 uint_args[7];
+    uint32_t uint_args[7];
     char* arg = const_cast<char*>(args);
     char* token = strtok(arg, " ");
 
-    uint8 i = 0;
+    uint8_t i = 0;
     while (token != NULL && i < 7)
     {
         uint_args[i] = atol(token);
@@ -527,16 +527,16 @@ bool ChatHandler::HandleSendItemPushResult(const char* args, WorldSession* m_ses
     for (; i < 7; i++)
         uint_args[i] = 0;
 
-    if (uint_args[0] == 0)   // null itemid
+    if (uint_args[0] == 0)  // null itemid
         return false;
 
     WorldPacket data;
     data.SetOpcode(SMSG_ITEM_PUSH_RESULT);
-    data << m_session->GetPlayer()->getGuid();    // recivee_guid
+    data << m_session->GetPlayer()->getGuid(); // recivee_guid
     data << uint_args[2];   // type
-    data << uint32(1);      // unk
+    data << uint32_t(1);    // unk
     data << uint_args[1];   // count
-    data << uint8(0xFF);    // uint8 unk const 0xFF
+    data << uint8_t(0xFF);  // uint8_t unk const 0xFF
     data << uint_args[3];   // unk1
     data << uint_args[0];   // item id
     data << uint_args[4];   // unk2
@@ -551,7 +551,7 @@ bool ChatHandler::HandleModifyBitCommand(const char* args, WorldSession* m_sessi
 {
     Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64_t guid = m_session->GetPlayer()->GetSelection();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
@@ -573,8 +573,8 @@ bool ChatHandler::HandleModifyBitCommand(const char* args, WorldSession* m_sessi
     if (!pBit)
         return false;
 
-    uint16 field = static_cast<uint16>(atoi(pField));
-    uint32 bit = atoi(pBit);
+    uint16_t field = static_cast<uint16_t>(atoi(pField));
+    uint32_t bit = atoi(pBit);
 
     if (field < 1 || field >= PLAYER_END)
     {
@@ -609,7 +609,7 @@ bool ChatHandler::HandleModifyValueCommand(const char* args, WorldSession* m_ses
 {
     Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64_t guid = m_session->GetPlayer()->GetSelection();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
@@ -629,8 +629,8 @@ bool ChatHandler::HandleModifyValueCommand(const char* args, WorldSession* m_ses
     if (!pValue)
         return false;
 
-    uint16 field = static_cast<uint16>(atoi(pField));
-    uint32 value = atoi(pValue);
+    uint16_t field = static_cast<uint16_t>(atoi(pField));
+    uint32_t value = atoi(pValue);
 
     if (field < 1 || field >= PLAYER_END)
     {
@@ -639,7 +639,7 @@ bool ChatHandler::HandleModifyValueCommand(const char* args, WorldSession* m_ses
     }
 
     char buf[256];
-    uint32 oldValue = obj->getUInt32Value(field);
+    uint32_t oldValue = obj->getUInt32Value(field);
     obj->setUInt32Value(field, value);
 
     snprintf((char*)buf, 256, "Set Field %i from %i to %i.", (unsigned int)field, (unsigned int)oldValue, (unsigned int)value);
@@ -668,8 +668,8 @@ bool ChatHandler::HandleDebugDumpCoordsCommmand(const char* /*args*/, WorldSessi
 
 bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_session)
 {
-    uint32 count, npcid;
-    uint32 health = 0;
+    uint32_t count, npcid;
+    uint32_t health = 0;
 
     // takes 2 or 3 arguments: npcid, count, (health)
     if (sscanf(args, "%u %u %u", &npcid, &count, &health) != 3)
@@ -738,8 +738,8 @@ bool ChatHandler::HandleUpdateWorldStateCommand(const char *args, WorldSession* 
         return true;
     }
 
-    uint32 field = 0;
-    uint32 state = 0;
+    uint32_t field = 0;
+    uint32_t state = 0;
 
     std::stringstream ss(args);
 
@@ -766,7 +766,7 @@ bool ChatHandler::HandleInitWorldStatesCommand(const char* /*args*/, WorldSessio
 {
     Player* p = session->GetPlayer();
 
-    uint32 zone = p->GetZoneId();
+    uint32_t zone = p->GetZoneId();
     if (zone == 0)
         zone = p->GetAreaID();
 
@@ -781,7 +781,7 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSessi
 {
     Player* p = session->GetPlayer();
 
-    uint32 zone = p->GetZoneId();
+    uint32_t zone = p->GetZoneId();
     if (zone == 0)
         zone = p->GetAreaID();
 
@@ -789,10 +789,10 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSessi
 
     WorldPacket data(SMSG_INIT_WORLD_STATES, 16);
 
-    data << uint32(p->GetMapId());
-    data << uint32(p->GetZoneId());
-    data << uint32(p->GetAreaID());
-    data << uint16(0);
+    data << uint32_t(p->GetMapId());
+    data << uint32_t(p->GetZoneId());
+    data << uint32_t(p->GetAreaID());
+    data << uint16_t(0);
 
     p->SendPacket(&data);
 
@@ -807,7 +807,7 @@ bool ChatHandler::HandleAuraUpdateRemove(const char* args, WorldSession* m_sessi
     char* pArgs = strtok((char*)args, " ");
     if (!pArgs)
         return false;
-    uint8 VisualSlot = (uint8)atoi(pArgs);
+    uint8_t VisualSlot = (uint8_t)atoi(pArgs);
     Player* Pl = m_session->GetPlayer();
     Aura* AuraPtr = Pl->getAuraWithId(Pl->m_auravisuals[VisualSlot]);
     if (!AuraPtr)
@@ -825,7 +825,7 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
     if (!args)
         return false;
 
-    uint32 SpellID = 0;
+    uint32_t SpellID = 0;
     int Flags = 0;
     int StackCount = 0;
     if (sscanf(args, "%u 0x%X %i", &SpellID, &Flags, &StackCount) != 3 && sscanf(args, "%u %u %i", &SpellID, &Flags, &StackCount) != 3)
@@ -834,7 +834,7 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
     Player* Pl = m_session->GetPlayer();
     if (Aura* AuraPtr = Pl->getAuraWithId(SpellID))
     {
-        uint8 VisualSlot = AuraPtr->m_visualSlot;
+        uint8_t VisualSlot = AuraPtr->m_visualSlot;
         Pl->SendAuraUpdate(AuraPtr->m_auraSlot, false);
         SystemMessage(m_session, "SMSG_AURA_UPDATE (update): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", VisualSlot, SpellID, Flags, Flags, StackCount);
     }
@@ -849,7 +849,7 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
         Spell* SpellPtr = sSpellMgr.newSpell(Pl, Sp, false, NULL);
         AuraPtr = sSpellMgr.newAura(Sp, SpellPtr->GetDuration(), Pl, Pl);
         SystemMessage(m_session, "SMSG_AURA_UPDATE (add): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", AuraPtr->m_visualSlot, SpellID, Flags, Flags, StackCount);
-        Pl->AddAura(AuraPtr);       // Serves purpose to just add the aura to our auraslots
+        Pl->AddAura(AuraPtr); // Serves purpose to just add the aura to our auraslots
 
         delete SpellPtr;
     }
@@ -887,7 +887,7 @@ bool ChatHandler::HandleSimpleDistanceCommand(const char* args, WorldSession* m_
 bool ChatHandler::HandleRangeCheckCommand(const char* /*args*/, WorldSession* m_session)
 {
     WorldPacket data;
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64_t guid = m_session->GetPlayer()->GetSelection();
     m_session->SystemMessage("=== RANGE CHECK ===");
     if (guid == 0)
     {
@@ -1008,14 +1008,14 @@ bool ChatHandler::HandleGetDeathState(const char* /*args*/, WorldSession* m_sess
 
 struct spell_thingo
 {
-    uint32 type;
-    uint32 target;
+    uint32_t type;
+    uint32_t target;
 };
 
 std::list<SpellInfo const*> aiagent_spells;
-std::map<uint32, spell_thingo> aiagent_extra;
+std::map<uint32_t, spell_thingo> aiagent_extra;
 
-SpellCastTargets SetTargets(SpellInfo const* /*sp*/, uint32 /*type*/, uint32 targettype, Unit* dst, Creature* src)
+SpellCastTargets SetTargets(SpellInfo const* /*sp*/, uint32_t /*type*/, uint32_t targettype, Unit* dst, Creature* src)
 {
     SpellCastTargets targets;
     targets.setUnitTarget(0);
@@ -1044,10 +1044,10 @@ SpellCastTargets SetTargets(SpellInfo const* /*sp*/, uint32 /*type*/, uint32 tar
 
 bool ChatHandler::HandleAIAgentDebugSkip(const char* args, WorldSession* m_session)
 {
-    uint32 count = atoi(args);
+    uint32_t count = atoi(args);
     if (!count) return false;
 
-    for (uint32 i = 0; i < count; ++i)
+    for (uint32_t i = 0; i < count; ++i)
     {
         if (!aiagent_spells.size())
             break;
@@ -1060,7 +1060,7 @@ bool ChatHandler::HandleAIAgentDebugSkip(const char* args, WorldSession* m_sessi
 
 bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_session)
 {
-    uint32 count = atoi(args);
+    uint32_t count = atoi(args);
     if (!count)
         return false;
 
@@ -1070,7 +1070,7 @@ bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_s
 
     Player* pPlayer = m_session->GetPlayer();
 
-    for (uint32 i = 0; i < count; ++i)
+    for (uint32_t i = 0; i < count; ++i)
     {
         if (!aiagent_spells.size())
             break;
@@ -1079,7 +1079,7 @@ bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_s
         aiagent_spells.erase(aiagent_spells.begin());
         BlueSystemMessage(m_session, "Casting %u, " MSG_COLOR_SUBWHITE "%u remaining.", sp->getId(), static_cast<uint32_t>(aiagent_spells.size()));
 
-        std::map<uint32, spell_thingo>::iterator it = aiagent_extra.find(sp->getId());
+        std::map<uint32_t, spell_thingo>::iterator it = aiagent_extra.find(sp->getId());
         ARCEMU_ASSERT(it != aiagent_extra.end());
 
         SpellCastTargets targets;
@@ -1138,7 +1138,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
         return false;
     }
 
-    uint32 spellid = atol(args);
+    uint32_t spellid = atol(args);
     SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellid);
     if (!spellentry)
     {
@@ -1178,7 +1178,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
         return false;
     }
 
-    uint32 spellId = atol(args);
+    uint32_t spellId = atol(args);
     SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellId);
     if (!spellentry)
     {
@@ -1193,24 +1193,24 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     data << caster->GetNewGUID();
     data << caster->GetNewGUID();
     data << spellId;
-    data << uint8(0);
-    data << uint16(0);
-    data << uint32(0);
-    data << uint16(2);
+    data << uint8_t(0);
+    data << uint16_t(0);
+    data << uint32_t(0);
+    data << uint16_t(2);
     data << target->getGuid();
-    //        WPARCEMU_ASSERT(  data.size() == 36);
+    // WPARCEMU_ASSERT(  data.size() == 36);
     m_session->SendPacket(&data);
 
     data.Initialize(SMSG_SPELL_GO);
     data << caster->GetNewGUID();
     data << caster->GetNewGUID();
     data << spellId;
-    data << uint8(0) << uint8(1) << uint8(1);
+    data << uint8_t(0) << uint8_t(1) << uint8_t(1);
     data << target->getGuid();
-    data << uint8(0);
-    data << uint16(2);
+    data << uint8_t(0);
+    data << uint16_t(2);
     data << target->getGuid();
-    //        WPARCEMU_ASSERT(  data.size() == 42);
+    // WPARCEMU_ASSERT(  data.size() == 42);
     m_session->SendPacket(&data);
 
     switch (target->getObjectTypeId())
@@ -1238,7 +1238,7 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
         return false;
     }
 
-    uint32 spellid = atol(args);
+    uint32_t spellid = atol(args);
     SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellid);
     if (!spellentry)
     {

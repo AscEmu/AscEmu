@@ -20,13 +20,13 @@ namespace Packets::Movement
         data << float(pUnit->GetPositionX());
         data << float(pUnit->GetPositionY());
         data << float(pUnit->GetPositionZ());
-        data << uint32(Util::getMSTime());
+        data << uint32_t(Util::getMSTime());
         // Id of first spline, so always 0
-        data << uint8(0);
+        data << uint8_t(0);
 
-        data << uint32(0x1000); //move flags: run
-        data << uint32(0); //movetime
-        data << uint32(1); //1 point
+        data << uint32_t(0x1000); //move flags: run
+        data << uint32_t(0); //movetime
+        data << uint32_t(1); //1 point
         data << pUnit->GetPositionX();
         data << pUnit->GetPositionY();
         data << pUnit->GetPositionZ();
@@ -43,14 +43,14 @@ namespace Packets::Movement
         WorldPacket data(SMSG_MONSTER_MOVE, 100);
         data << pUnit->GetNewGUID();
         // Id of first spline, so always 0
-        data << uint8(0);
+        data << uint8_t(0);
         if (spline.IsSplineEmpty())
         {
             data << float(pUnit->GetPositionX());
             data << float(pUnit->GetPositionY());
             data << float(pUnit->GetPositionZ());
-            data << uint32(Util::getMSTime());
-            data << uint8(1);
+            data << uint32_t(Util::getMSTime());
+            data << uint8_t(1);
         }
         else
         {
@@ -63,21 +63,21 @@ namespace Packets::Movement
             switch (spline.m_splineFaceType.GetFlag())
             {
                 case ::Movement::Spline::MonsterMoveFacingAngle:
-                    data << uint8(::Movement::Spline::MonsterMoveFacingAngle);
+                    data << uint8_t(::Movement::Spline::MonsterMoveFacingAngle);
                     data << spline.m_splineFaceType.GetAngle();
                     break;
                 case ::Movement::Spline::MonsterMoveFacingLocation:
-                    data << uint8(::Movement::Spline::MonsterMoveFacingLocation);
+                    data << uint8_t(::Movement::Spline::MonsterMoveFacingLocation);
                     data << spline.m_splineFaceType.GetX();
                     data << spline.m_splineFaceType.GetY();
                     data << spline.m_splineFaceType.GetZ();
                     break;
                 case ::Movement::Spline::MonsterMoveFacingTarget:
-                    data << uint8(::Movement::Spline::MonsterMoveFacingTarget);
+                    data << uint8_t(::Movement::Spline::MonsterMoveFacingTarget);
                     data << spline.m_splineFaceType.GetGuid();
                     break;
                 default:
-                    data << uint8(0);
+                    data << uint8_t(0);
                     break;
             }
 
@@ -106,7 +106,7 @@ namespace Packets::Movement
                 auto pointCount = spline.GetSplinePoints()->size() - 1;
                 if (splineFlags->m_splineFlagsRaw.cyclic)
                 {
-                    data << uint32(pointCount + 1);
+                    data << uint32_t(pointCount + 1);
                     // This is discarded by the client
                     data << finalPoint.pos.x;
                     data << finalPoint.pos.y;
@@ -118,7 +118,7 @@ namespace Packets::Movement
                 }
                 else
                 {
-                    data << uint32(pointCount);
+                    data << uint32_t(pointCount);
                     data << finalPoint.pos.x;
                     data << finalPoint.pos.y;
                     data << finalPoint.pos.z;
@@ -128,7 +128,7 @@ namespace Packets::Movement
             {
                 // This is the index of the last spline point
                 // Possibly requires [first,last,other] ordering?
-                data << uint32(spline.GetSplinePoints()->size() - 1);
+                data << uint32_t(spline.GetSplinePoints()->size() - 1);
                 auto finalpoint = pUnit->m_movementManager.m_spline.GetLastSplinePoint();
                 data << finalpoint.pos.x;
                 data << finalpoint.pos.y;
@@ -148,7 +148,7 @@ namespace Packets::Movement
                         float tmpz = (midz - point.pos.z) * 4;
 
                         //pack it
-                        data << uint32(int(tmpx) & 0x7FF | ((int(tmpy) & 0x7FF) << 11) | ((int(tmpz) & 0x3FF) << 22));
+                        data << uint32_t(int(tmpx) & 0x7FF | ((int(tmpy) & 0x7FF) << 11) | ((int(tmpz) & 0x3FF) << 22));
 
                     }
                 }

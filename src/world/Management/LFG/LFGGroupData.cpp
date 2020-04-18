@@ -51,7 +51,7 @@ void LfgGroupData::RestoreState()
     m_State = m_OldState;
 }
 
-void LfgGroupData::SetDungeon(uint32 dungeon)
+void LfgGroupData::SetDungeon(uint32_t dungeon)
 {
     m_Dungeon = dungeon;
 }
@@ -67,7 +67,7 @@ LfgState LfgGroupData::GetState() const
     return m_State;
 }
 
-uint32 LfgGroupData::GetDungeon(bool asId /* = true */) const
+uint32_t LfgGroupData::GetDungeon(bool asId /* = true */) const
 {
     if (asId)
         return (m_Dungeon & 0x00FFFFFF);
@@ -75,12 +75,12 @@ uint32 LfgGroupData::GetDungeon(bool asId /* = true */) const
         return m_Dungeon;
 }
 
-uint8 LfgGroupData::GetVotesNeeded() const
+uint8_t LfgGroupData::GetVotesNeeded() const
 {
     return m_VotesNeeded;
 }
 
-uint8 LfgGroupData::GetKicksLeft() const
+uint8_t LfgGroupData::GetKicksLeft() const
 {
     return m_KicksLeft;
 }

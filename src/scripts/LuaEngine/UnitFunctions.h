@@ -95,7 +95,7 @@ public:
         int IntId = static_cast<int>(luaL_checkinteger(L, 3));
         bool coded = (luaL_checkinteger(L, 4) ? true : false);
         const char * boxmessage = luaL_optstring(L, 5, "");
-        uint32 boxmoney = static_cast<uint32>(luaL_optinteger(L, 6, 0));
+        uint32_t boxmoney = static_cast<uint32_t>(luaL_optinteger(L, 6, 0));
 
         if (LuaGlobal::instance()->m_menu == NULL){
             DLLLogDetail("There is no menu to add items to!");
@@ -141,14 +141,14 @@ public:
     static int GossipSendQuickMenu(lua_State *L, Unit *ptr){
         TEST_UNIT()
 
-        uint32 text_id = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t text_id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player *player = CHECK_PLAYER(L, 2);
-        uint32 itemid = static_cast<uint32>(luaL_checkinteger(L, 3));
-        uint8 itemicon = CHECK_UINT8(L, 4);
+        uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 3));
+        uint8_t itemicon = CHECK_UINT8(L, 4);
         const char *itemtext = luaL_checkstring(L, 5);
-        uint32 requiredmoney = CHECK_ULONG(L, 6);
+        uint32_t requiredmoney = CHECK_ULONG(L, 6);
         const char *moneytext = luaL_checkstring(L, 7);
-        uint8 extra = CHECK_UINT8(L, 8);
+        uint8_t extra = CHECK_UINT8(L, 8);
 
         if (player == NULL)
             return 0;
@@ -227,8 +227,8 @@ public:
         if (ptr == nullptr)
             return 0;
 
-        uint32 emote_id = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 time = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t emote_id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t time = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         if (emote_id == 0)
             return 0;
         if (time > 0)
@@ -263,7 +263,7 @@ public:
 
     static int PhaseSet(lua_State* L, Unit* ptr)
     {
-        uint32 newphase = CHECK_ULONG(L, 1);
+        uint32_t newphase = CHECK_ULONG(L, 1);
         bool Save = (luaL_optinteger(L, 2, false) > 0 ? true : false);
         Creature* crt = NULL;
         Player* p_target = NULL;
@@ -299,7 +299,7 @@ public:
 
     static int PhaseAdd(lua_State* L, Unit* ptr)
     {
-        uint32 newphase = CHECK_ULONG(L, 1);
+        uint32_t newphase = CHECK_ULONG(L, 1);
         bool Save = (luaL_optinteger(L, 2, false) > 0 ? true : false);
         Creature* crt = NULL;
         Player* p_target = NULL;
@@ -335,7 +335,7 @@ public:
 
     static int PhaseDelete(lua_State* L, Unit* ptr)
     {
-        uint32 newphase = CHECK_ULONG(L, 1);
+        uint32_t newphase = CHECK_ULONG(L, 1);
         bool Save = (luaL_checkinteger(L, 2) > 0 ? true : false);
         Creature* crt = NULL;
         Player* p_target = NULL;
@@ -380,7 +380,7 @@ public:
     {
         TEST_UNIT()
             uint8_t typ = static_cast<uint8_t>(CHECK_ULONG(L, 1));
-        uint32 lang = CHECK_ULONG(L, 2);
+        uint32_t lang = CHECK_ULONG(L, 2);
         const char* message = luaL_checklstring(L, 3, NULL);
         if (message == NULL)
             return 0;
@@ -392,8 +392,8 @@ public:
     static int PlayerSendChatMessage(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            uint32 type = CHECK_ULONG(L, 1);
-        uint32 lang = CHECK_ULONG(L, 2);
+            uint32_t type = CHECK_ULONG(L, 1);
+        uint32_t lang = CHECK_ULONG(L, 2);
         const char* msg = luaL_checklstring(L, 3, NULL);
         Player* plr = static_cast<Player*>(ptr);
         if (msg == NULL || !plr)
@@ -473,7 +473,7 @@ public:
     static int SetMovementType(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-            uint32 typ = CHECK_ULONG(L, 1);
+            uint32_t typ = CHECK_ULONG(L, 1);
         ptr->GetAIInterface()->setWaypointScriptType((Movement::WaypointMovementScript)typ);
         return 0;
     }
@@ -516,7 +516,7 @@ public:
 
     static int CastSpell(lua_State* L, Unit* ptr)
     {
-        uint32 sp = CHECK_ULONG(L, 1);
+        uint32_t sp = CHECK_ULONG(L, 1);
         if (sp && ptr)
             ptr->castSpell(ptr, sSpellMgr.getSpellInfo(sp), true);
         return 0;
@@ -524,7 +524,7 @@ public:
 
     static int FullCastSpell(lua_State* L, Unit* ptr)
     {
-        uint32 sp = CHECK_ULONG(L, 1);
+        uint32_t sp = CHECK_ULONG(L, 1);
         if (sp && ptr)
             ptr->castSpell(ptr, sSpellMgr.getSpellInfo(sp), false);
         return 0;
@@ -533,7 +533,7 @@ public:
     {
         if (ptr != NULL)
         {
-            uint32 sp = CHECK_ULONG(L, 1);
+            uint32_t sp = CHECK_ULONG(L, 1);
             Object* target = CHECK_OBJECT(L, 2);
             if (sp && target != NULL)
                 ptr->castSpell(target->getGuid(), sp, false);
@@ -542,7 +542,7 @@ public:
     }
     static int CastSpellOnTarget(lua_State* L, Unit* ptr)
     {
-        uint32 sp = CHECK_ULONG(L, 1);
+        uint32_t sp = CHECK_ULONG(L, 1);
         Object* target = CHECK_OBJECT(L, 2);
         if (ptr != NULL && sp && target != NULL)
             ptr->castSpell(target->getGuid(), sp, true);
@@ -551,17 +551,17 @@ public:
     static int SpawnCreature(lua_State* L, Unit* ptr)
     {
         if (ptr == NULL) return 0;
-        uint32 entry = CHECK_ULONG(L, 1);
+        uint32_t entry = CHECK_ULONG(L, 1);
         float x = CHECK_FLOAT(L, 2);
         float y = CHECK_FLOAT(L, 3);
         float z = CHECK_FLOAT(L, 4);
         float o = CHECK_FLOAT(L, 5);
-        uint32 faction = CHECK_ULONG(L, 6);
-        uint32 duration = CHECK_ULONG(L, 7);
-        uint32 equip1 = static_cast<uint32>(luaL_optinteger(L, 8, 1));
-        uint32 equip2 = static_cast<uint32>(luaL_optinteger(L, 9, 1));
-        uint32 equip3 = static_cast<uint32>(luaL_optinteger(L, 10, 1));
-        uint32 phase = static_cast<uint32>(luaL_optinteger(L, 11, ptr->m_phase));
+        uint32_t faction = CHECK_ULONG(L, 6);
+        uint32_t duration = CHECK_ULONG(L, 7);
+        uint32_t equip1 = static_cast<uint32_t>(luaL_optinteger(L, 8, 1));
+        uint32_t equip2 = static_cast<uint32_t>(luaL_optinteger(L, 9, 1));
+        uint32_t equip3 = static_cast<uint32_t>(luaL_optinteger(L, 10, 1));
+        uint32_t phase = static_cast<uint32_t>(luaL_optinteger(L, 11, ptr->m_phase));
         bool save = (luaL_optinteger(L, 12, 0) ? true : false);
 
         if (!entry)
@@ -599,14 +599,14 @@ public:
     static int SpawnGameObject(lua_State* L, Unit* ptr)
     {
         if (ptr == NULL) return 0;
-        uint32 entry_id = CHECK_ULONG(L, 1);
+        uint32_t entry_id = CHECK_ULONG(L, 1);
         float x = CHECK_FLOAT(L, 2);
         float y = CHECK_FLOAT(L, 3);
         float z = CHECK_FLOAT(L, 4);
         float o = CHECK_FLOAT(L, 5);
-        uint32 duration = CHECK_ULONG(L, 6);
+        uint32_t duration = CHECK_ULONG(L, 6);
         float scale = (float)(luaL_optinteger(L, 7, 100) / 100.0f);
-        uint32 phase = static_cast<uint32>(luaL_optinteger(L, 8, ptr->m_phase));
+        uint32_t phase = static_cast<uint32_t>(luaL_optinteger(L, 8, ptr->m_phase));
         bool save = luaL_optinteger(L, 9, 0) ? true : false;
         if (entry_id)
         {
@@ -619,7 +619,7 @@ public:
             }
 
             GameObject* go = ptr->GetMapMgr()->CreateGameObject(entry_id);
-            uint32 mapid = ptr->GetMapId();
+            uint32_t mapid = ptr->GetMapId();
             go->CreateFromProto(entry_id, mapid, x, y, z, o);
             go->Phase(PHASE_SET, phase);
             go->setScale(scale);
@@ -653,8 +653,8 @@ public:
         {
             Creature* creature = static_cast<Creature*>(ptr);
             sEventMgr.AddEvent(creature, &Creature::TriggerScriptEvent, functionRef, EVENT_LUA_CREATURE_EVENTS, delay, repeats, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            std::map< uint64, std::set<int> > & objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-            std::map< uint64, std::set<int> >::iterator itr = objRefs.find(ptr->getGuid());
+            std::map< uint64_t, std::set<int> > & objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
+            std::map< uint64_t, std::set<int> >::iterator itr = objRefs.find(ptr->getGuid());
             if (itr == objRefs.end())
             {
                 std::set<int> refs;
@@ -691,8 +691,8 @@ public:
         {
             TimedEvent* ev = TimedEvent::Allocate(ptr, new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), EVENT_LUA_CREATURE_EVENTS, delay, repeats);
             ptr->event_AddEvent(ev);
-            std::map< uint64, std::set<int> > & objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-            std::map< uint64, std::set<int> >::iterator itr = objRefs.find(ptr->getGuid());
+            std::map< uint64_t, std::set<int> > & objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
+            std::map< uint64_t, std::set<int> >::iterator itr = objRefs.find(ptr->getGuid());
             if (itr == objRefs.end())
             {
                 std::set<int> refs;
@@ -712,8 +712,8 @@ public:
         TEST_UNITPLAYER();
         sEventMgr.RemoveEvents(ptr, EVENT_LUA_CREATURE_EVENTS);
         //Unref all contained references
-        std::map< uint64, std::set<int> > & objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-        std::map< uint64, std::set<int> >::iterator itr = objRefs.find(ptr->getGuid());
+        std::map< uint64_t, std::set<int> > & objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
+        std::map< uint64_t, std::set<int> >::iterator itr = objRefs.find(ptr->getGuid());
         if (itr != objRefs.end())
         {
             std::set<int> & refs = itr->second;
@@ -785,7 +785,7 @@ public:
 
     static int SetModel(lua_State* L, Unit* ptr)
     {
-        uint32 model = CHECK_ULONG(L, 1);
+        uint32_t model = CHECK_ULONG(L, 1);
         if (ptr != NULL)
             ptr->setDisplayId(model);
         else
@@ -803,7 +803,7 @@ public:
     static int SetMount(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        uint32 DsplId = CHECK_ULONG(L, 1);
+        uint32_t DsplId = CHECK_ULONG(L, 1);
         ptr->setMountDisplayId(DsplId);
         return 0;
     }
@@ -851,7 +851,7 @@ public:
             modelid = pCreature->getDisplayId();
 
         Movement::WayPoint* wp = new Movement::WayPoint;
-        wp->id = (uint32)pCreature->m_custom_waypoint_map->size() + 1;
+        wp->id = (uint32_t)pCreature->m_custom_waypoint_map->size() + 1;
         wp->x = x;
         wp->y = y;
         wp->z = z;
@@ -878,14 +878,14 @@ public:
         else
         {
             Creature* crc = static_cast<Creature*>(ptr);
-            uint32 id = CHECK_ULONG(L, 1);
+            uint32_t id = CHECK_ULONG(L, 1);
             float x = CHECK_FLOAT(L, 2);
             float y = CHECK_FLOAT(L, 3);
             float z = CHECK_FLOAT(L, 4);
             float o = CHECK_FLOAT(L, 5);
-            uint32 waitime = CHECK_ULONG(L, 6);
-            uint32 flags = CHECK_ULONG(L, 7);
-            uint32 model = static_cast<uint32>(luaL_optinteger(L, 8, 0));
+            uint32_t waitime = CHECK_ULONG(L, 6);
+            uint32_t flags = CHECK_ULONG(L, 7);
+            uint32_t model = static_cast<uint32_t>(luaL_optinteger(L, 8, 0));
             Movement::WayPoint* wp = new Movement::WayPoint;
             wp->id = id;
             wp->x = x;
@@ -922,8 +922,8 @@ public:
     static int RemoveItem(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 id = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 count = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t count = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
         static_cast<Player*>(ptr)->getItemInterface()->RemoveItemAmt(id, count);
         return 0;
@@ -932,8 +932,8 @@ public:
     static int AddItem(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 id = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 count = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t count = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
         auto player = static_cast<Player*>(ptr);
         ItemProperties const* item_proto = sMySQLStore.getItemProperties(id);
@@ -958,7 +958,7 @@ public:
             item_add->modStackCount(count);
             item_add->SetDirty();
             player->sendItemPushResultPacket(false, true, false, 
-                                       static_cast<uint8>(player->getItemInterface()->GetBagSlotByGuid(item_add->getGuid())), 0,
+                                       static_cast<uint8_t>(player->getItemInterface()->GetBagSlotByGuid(item_add->getGuid())), 0,
                                        count, item_add->getEntry(), item_add->getPropertySeed(), item_add->getRandomPropertiesId(), item_add->getStackCount());
         }
         PUSH_ITEM(L, item_add);
@@ -1012,8 +1012,8 @@ public:
         {
             case RANDOM_ANY:
             {
-                uint32 count = static_cast<uint32>(ptr->getInRangePlayersCount());
-                uint32 r = Util::getRandomUInt(count - 1);
+                uint32_t count = static_cast<uint32_t>(ptr->getInRangePlayersCount());
+                uint32_t r = Util::getRandomUInt(count - 1);
                 count = 0;
                 for (const auto& itr : ptr->getInRangePlayersSet())
                 {
@@ -1035,7 +1035,7 @@ public:
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
             }
             break;
             case RANDOM_IN_MIDRANGE:
@@ -1048,7 +1048,7 @@ public:
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
             }
             break;
             case RANDOM_IN_LONGRANGE:
@@ -1060,7 +1060,7 @@ public:
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
             }
             break;
             case RANDOM_WITH_MANA:
@@ -1072,7 +1072,7 @@ public:
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
             }
             break;
             case RANDOM_WITH_ENERGY:
@@ -1084,7 +1084,7 @@ public:
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
             }
             break;
             case RANDOM_WITH_RAGE:
@@ -1096,7 +1096,7 @@ public:
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
             }
             break;
             case RANDOM_NOT_MAINTANK:
@@ -1112,7 +1112,7 @@ public:
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
             }
             break;
         }
@@ -1137,7 +1137,7 @@ public:
                 allies.push_back(obj);
         }
         if (allies.size())
-            PUSH_UNIT(L, allies[Util::getRandomUInt(static_cast<uint32>(allies.size() - 1))]);
+            PUSH_UNIT(L, allies[Util::getRandomUInt(static_cast<uint32_t>(allies.size() - 1))]);
         else
             lua_pushnil(L);
         return 1;
@@ -1155,7 +1155,7 @@ public:
                 enemies.push_back(obj);
         }
         if (enemies.size())
-            PUSH_UNIT(L, enemies[Util::getRandomUInt(static_cast<uint32>(enemies.size() - 1))]);
+            PUSH_UNIT(L, enemies[Util::getRandomUInt(static_cast<uint32_t>(enemies.size() - 1))]);
         else
             lua_pushnil(L);
         return 1;
@@ -1164,7 +1164,7 @@ public:
     static int StopMovement(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        uint32 tim = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t tim = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         ptr->GetAIInterface()->StopMovement(tim);
         return 0;
     }
@@ -1172,7 +1172,7 @@ public:
     static int RemoveAura(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER()
-        uint32 auraid = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t auraid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         ptr->RemoveAura(auraid);
         return 0;
     }
@@ -1192,7 +1192,7 @@ public:
     static int PlaySoundToSet(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER();
-        uint32 soundid = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t soundid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         ptr->PlaySoundToSet(soundid);
         return 0;
     }
@@ -1200,7 +1200,7 @@ public:
     static int PlaySoundToPlayer(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER();
-        uint32 soundid = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t soundid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
         plr->sendPlayObjectSoundPacket(plr->getGuid(), soundid);
         return 0;
@@ -1208,7 +1208,7 @@ public:
 
     static int GetUnitBySqlId(lua_State* L, Unit* ptr)
     {
-        uint32 sqlid = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t sqlid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (!ptr || !sqlid)
             return 0;
         PUSH_UNIT(L, ptr->GetMapMgr()->GetSqlIdCreature(sqlid));
@@ -1218,8 +1218,8 @@ public:
     static int GetInventoryItem(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        int8 containerslot = static_cast<int8>(luaL_checkinteger(L, 1));
-        int16 slot = static_cast<int16>(luaL_checkinteger(L, 2));
+        int8_t containerslot = static_cast<int8_t>(luaL_checkinteger(L, 1));
+        int16_t slot = static_cast<int16_t>(luaL_checkinteger(L, 2));
         Player* plr = static_cast<Player*>(ptr);
         PUSH_ITEM(L, plr->getItemInterface()->GetInventoryItem(containerslot, slot));
         return 1;
@@ -1228,17 +1228,17 @@ public:
     static int GetInventoryItemById(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            uint32 entry = CHECK_ULONG(L, 1);
+            uint32_t entry = CHECK_ULONG(L, 1);
         Player* plr = static_cast<Player*>(ptr);
-        int16 slot = plr->getItemInterface()->GetInventorySlotById(entry);
+        int16_t slot = plr->getItemInterface()->GetInventorySlotById(entry);
         if (slot == -1)  //check bags
         {
-            for (uint8 contslot = INVENTORY_SLOT_BAG_START; contslot != INVENTORY_SLOT_BAG_END; contslot++)
+            for (uint8_t contslot = INVENTORY_SLOT_BAG_START; contslot != INVENTORY_SLOT_BAG_END; contslot++)
             {
                 Container* bag = static_cast< Container* >(plr->getItemInterface()->GetInventoryItem(contslot));
                 if (bag == NULL)
                     continue;
-                for (uint8 bslot = 0; bslot != bag->getSlotCount(); bslot++)
+                for (uint8_t bslot = 0; bslot != bag->getSlotCount(); bslot++)
                 {
                     if (bag->GetItem(bslot) && bag->GetItem(bslot)->getEntry() == entry)
                     {
@@ -1281,8 +1281,8 @@ public:
     static int Despawn(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        uint32 delay = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 respawntime = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t delay = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t respawntime = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         static_cast<Creature*>(ptr)->Despawn(delay, respawntime);
         return 0;
     }
@@ -1291,7 +1291,7 @@ public:
         if (ptr == nullptr)
             return 0;
 
-        uint32 count = 0;
+        uint32_t count = 0;
         lua_newtable(L);
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
@@ -1311,7 +1311,7 @@ public:
         if (ptr == nullptr)
             return 0;
 
-        uint32 count = 0;
+        uint32_t count = 0;
         lua_newtable(L);
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
@@ -1331,7 +1331,7 @@ public:
         if (ptr == nullptr)
             return 0;
 
-        uint32 count = 0;
+        uint32_t count = 0;
         lua_newtable(L);
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
@@ -1357,7 +1357,7 @@ public:
 
     static int SetHealthPct(lua_State* L, Unit* ptr)
     {
-        uint32 val = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t val = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (val && ptr)
             ptr->SetHealthPct(val);
         return 0;
@@ -1366,7 +1366,7 @@ public:
     static int GetItemCount(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 itemid = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         lua_pushinteger(L, static_cast<Player*>(ptr)->getItemInterface()->GetItemCount(itemid, false));
         return 1;
     }
@@ -1438,7 +1438,7 @@ public:
     static int ModThreat(lua_State* L, Unit* ptr)
     {
         Unit* target = CHECK_UNIT(L, 1);
-        int32 amount = static_cast<int32>(luaL_checkinteger(L, 2));
+        int32_t amount = static_cast<int32_t>(luaL_checkinteger(L, 2));
         if (ptr && target && amount)
             ptr->GetAIInterface()->modThreatByPtr(target, amount);
         return 0;
@@ -1487,7 +1487,7 @@ public:
     static int HasFinishedQuest(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER_RET()
-        uint32 questid = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t questid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (static_cast<Player*>(ptr)->HasFinishedQuest(questid))
             lua_pushboolean(L, 1);
         else
@@ -1498,7 +1498,7 @@ public:
     static int FinishQuest(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER_RET()
-        uint32 quest_id = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t quest_id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
 
         QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
@@ -1536,7 +1536,7 @@ public:
     static int StartQuest(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER_RET()
-        uint32 quest_id = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t quest_id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
 
         QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
@@ -1557,7 +1557,7 @@ public:
                 }
                 else
                 {
-                    uint16 open_slot = plr->GetOpenQuestSlot();
+                    uint16_t open_slot = plr->GetOpenQuestSlot();
                     if (open_slot > MAX_QUEST_SLOT)
                     {
                         sQuestMgr.SendQuestLogFull(plr);
@@ -1571,7 +1571,7 @@ public:
                         qle->UpdatePlayerFields();
 
                         // If the quest should give any items on begin, give them the items.
-                        for (uint8 i = 0; i < 4; ++i)
+                        for (uint8_t i = 0; i < 4; ++i)
                         {
                             if (qst->receive_items[i])
                             {
@@ -1611,7 +1611,7 @@ public:
     static int UnlearnSpell(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 spellid = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t spellid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         static_cast<Player*>(ptr)->removeSpell(spellid, false, false, 0);
         return 0;
     }
@@ -1619,7 +1619,7 @@ public:
     static int LearnSpell(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 spellid = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t spellid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         static_cast<Player*>(ptr)->addSpell(spellid);
         return 0;
     }
@@ -1651,7 +1651,7 @@ public:
     static int MarkQuestObjectiveAsComplete(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 questid = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t questid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         int objective = static_cast<int>(luaL_checkinteger(L, 2));
         Player* pl = static_cast<Player*>(ptr);
         if (!pl->HasFinishedQuest(questid))
@@ -1692,7 +1692,7 @@ public:
     static int TeleportUnit(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            uint32 mapId = CHECK_ULONG(L, 1);
+            uint32_t mapId = CHECK_ULONG(L, 1);
         float posX = CHECK_FLOAT(L, 2);
         float posY = CHECK_FLOAT(L, 3);
         float posZ = CHECK_FLOAT(L, 4);
@@ -1733,7 +1733,7 @@ public:
 
     static int SetHealth(lua_State* L, Unit* ptr)
     {
-        uint32 val = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t val = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (ptr != nullptr && val > 0)
         {
             if (val > ptr->getMaxHealth())
@@ -1746,7 +1746,7 @@ public:
 
     static int SetMaxHealth(lua_State* L, Unit* ptr)
     {
-        uint32 val = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t val = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (ptr != nullptr && val > 0)
         {
             if (val < ptr->getHealth())
@@ -1838,7 +1838,7 @@ public:
 
     static int SetMana(lua_State* L, Unit* ptr)
     {
-        uint32 val = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t val = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (ptr != nullptr)
             ptr->setPower(POWER_TYPE_MANA, val);
         return 0;
@@ -1846,7 +1846,7 @@ public:
 
     static int SetMaxMana(lua_State* L, Unit* ptr)
     {
-        uint32 val = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t val = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (ptr != nullptr && val > 0)
         {
             if (val < ptr->getPower(POWER_TYPE_MANA))
@@ -1889,7 +1889,7 @@ public:
 
     static int HasAura(lua_State* L, Unit* ptr)
     {
-        uint32 spellid = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t spellid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (!ptr || !spellid)
             return 0;
         else
@@ -1965,7 +1965,7 @@ public:
     static int GetCreatureNearestCoords(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        uint32 entryid = CHECK_ULONG(L, 4);
+        uint32_t entryid = CHECK_ULONG(L, 4);
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
@@ -1976,7 +1976,7 @@ public:
     static int GetGameObjectNearestCoords(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        uint32 entryid = CHECK_ULONG(L, 4);
+        uint32_t entryid = CHECK_ULONG(L, 4);
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
@@ -1995,15 +1995,15 @@ public:
 
         WorldPacket data(SMSG_MONSTER_MOVE, 50);
         data << ptr->GetNewGUID();
-        data << uint8(0);
+        data << uint8_t(0);
         data << ptr->GetPositionX();
         data << ptr->GetPositionY();
         data << ptr->GetPositionZ();
         data << Util::getMSTime();
-        data << uint8(0x00);
-        data << uint32(256);
-        data << uint32(1);
-        data << uint32(1);
+        data << uint8_t(0x00);
+        data << uint32_t(256);
+        data << uint32_t(1);
+        data << uint32_t(1);
         data << x << y << z;
 
         ptr->SendMessageToSet(&data, true);
@@ -2024,7 +2024,7 @@ public:
 
     static int IsInPhase(lua_State* L, Unit* ptr)
     {
-        uint32 phase = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t phase = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         lua_pushboolean(L, ((ptr->m_phase & phase) != 0) ? 1 : 0);
         return 1;
     }
@@ -2032,8 +2032,8 @@ public:
     static int HasFlag(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET();
-        uint16 index = static_cast<uint16>(luaL_checkinteger(L, 1));
-        uint32 flag = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint32_t flag = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         lua_pushboolean(L, ptr->HasFlag(index, flag) ? 1 : 0);
         return 1;
     }
@@ -2042,7 +2042,7 @@ public:
     {
         TEST_UNIT()
             Creature* unit = static_cast<Creature*>(ptr);
-        uint32 quest_id = (uint32)luaL_checknumber(L, 1);
+        uint32_t quest_id = (uint32_t)luaL_checknumber(L, 1);
         if (!(unit->getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER))
             unit->addNpcFlags(UNIT_NPC_FLAG_QUESTGIVER);
         if (!quest_id)
@@ -2052,7 +2052,7 @@ public:
         if (!qst)
             return 0;
 
-        uint32 quest_giver = unit->getEntry();
+        uint32_t quest_giver = unit->getEntry();
 
         char my_query1[200];
         sprintf(my_query1, "SELECT id FROM creature_quest_starter WHERE id = %d AND quest = %d AND min_build <= %u AND max_build >= %u", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
@@ -2071,10 +2071,10 @@ public:
         qstrel->qst = qst;
         qstrel->type = QUESTGIVER_QUEST_START;
 
-        uint8 qstrelid;
+        uint8_t qstrelid;
         if (unit->HasQuests())
         {
-            qstrelid = (uint8)unit->GetQuestRelation(quest_id);
+            qstrelid = (uint8_t)unit->GetQuestRelation(quest_id);
             unit->DeleteQuest(qstrel);
         }
         unit->_LoadQuests();
@@ -2085,7 +2085,7 @@ public:
     {
         TEST_UNIT()
             Creature* unit = static_cast<Creature*>(ptr);
-        uint32 quest_id = CHECK_ULONG(L, 1);
+        uint32_t quest_id = CHECK_ULONG(L, 1);
         if (!(unit->getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER))
             unit->addNpcFlags(UNIT_NPC_FLAG_QUESTGIVER);
         if (!quest_id)
@@ -2095,7 +2095,7 @@ public:
         if (!qst)
             return 0;
 
-        uint32 quest_giver = unit->getEntry();
+        uint32_t quest_giver = unit->getEntry();
 
         char my_query1[200];
         sprintf(my_query1, "SELECT id FROM creature_quest_finisher WHERE id = %d AND quest = %d AND min_build <= %u AND max_build >= %u", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
@@ -2116,10 +2116,10 @@ public:
         qstrel->qst = qst;
         qstrel->type = QUESTGIVER_QUEST_END;
 
-        uint8 qstrelid;
+        uint8_t qstrelid;
         if (unit->HasQuests())
         {
-            qstrelid = (uint8)unit->GetQuestRelation(quest_id);
+            qstrelid = (uint8_t)unit->GetQuestRelation(quest_id);
             unit->DeleteQuest(qstrel);
         }
         unit->_LoadQuests();
@@ -2131,7 +2131,7 @@ public:
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
-        uint32 sp = CHECK_ULONG(L, 4);
+        uint32_t sp = CHECK_ULONG(L, 4);
         if (!sp || !ptr)
             return 0;
         ptr->castSpellLoc(LocationVector(x, y, z), sSpellMgr.getSpellInfo(sp), true);
@@ -2143,7 +2143,7 @@ public:
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
-        uint32 sp = CHECK_ULONG(L, 4);
+        uint32_t sp = CHECK_ULONG(L, 4);
         if (!sp || !ptr)
             return 0;
         ptr->castSpellLoc(LocationVector(x, y, z), sSpellMgr.getSpellInfo(sp), false);
@@ -2248,7 +2248,7 @@ public:
     static int SetOutOfCombatRange(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        uint32 range = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t range = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (range)
             ptr->GetAIInterface()->setOutOfCombatRange(range);
         return 0;
@@ -2348,8 +2348,8 @@ public:
     {
         TEST_UNIT()
         Unit* target = CHECK_UNIT(L, 1);
-        uint32 event_id = static_cast<uint32>(luaL_checkinteger(L, 2));
-        uint32 misc_1 = static_cast<uint32>(luaL_checkinteger(L, 3));
+        uint32_t event_id = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+        uint32_t misc_1 = static_cast<uint32_t>(luaL_checkinteger(L, 3));
         ptr->GetAIInterface()->HandleEvent(event_id, target, misc_1);
         return 1;
     }
@@ -2449,7 +2449,7 @@ public:
     static int ModUInt32Value(lua_State* L, Unit* ptr)
     {
         uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
-        int32 value = static_cast<int32>(luaL_checkinteger(L, 2));
+        int32_t value = static_cast<int32_t>(luaL_checkinteger(L, 2));
         if (ptr)
             ptr->modInt32Value(field, value);
         return 0;
@@ -2466,8 +2466,8 @@ public:
 
     static int SetUInt32Value(lua_State* L, Unit* ptr)
     {
-        uint16 field = static_cast<uint16>(luaL_checkinteger(L, 1));
-        uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         if (ptr)
             ptr->setUInt32Value(field, value);
         return 0;
@@ -2475,8 +2475,8 @@ public:
 
     static int SetUInt64Value(lua_State* L, Unit* ptr)
     {
-        uint16 field = static_cast<uint16>(CHECK_ULONG(L, 1));
-        uint64 guid = CHECK_GUID(L, 2);
+        uint16_t field = static_cast<uint16_t>(CHECK_ULONG(L, 1));
+        uint64_t guid = CHECK_GUID(L, 2);
         if (ptr)
             ptr->setUInt64Value(field, guid);
         return 0;
@@ -2484,8 +2484,8 @@ public:
 
     static int RemoveFlag(lua_State* L, Unit* ptr)
     {
-        uint16 field = static_cast<uint16>(luaL_checkinteger(L, 1));
-        uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         if (ptr)
             ptr->RemoveFlag(field, value);
         return 0;
@@ -2493,8 +2493,8 @@ public:
 
     static int SetFlag(lua_State* L, Unit* ptr)
     {
-        uint16 field = static_cast<uint16>(luaL_checkinteger(L, 1));
-        uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         if (ptr)
             ptr->SetFlag(field, value);
         return 0;
@@ -2502,7 +2502,7 @@ public:
 
     static int SetFloatValue(lua_State* L, Unit* ptr)
     {
-        uint16 field = static_cast<uint16>(luaL_checkinteger(L, 1));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         float value = CHECK_FLOAT(L, 2);
         if (ptr)
             ptr->setFloatValue(field, value);
@@ -2511,7 +2511,7 @@ public:
 
     static int GetUInt32Value(lua_State* L, Unit* ptr)
     {
-        uint16 field = static_cast<uint16>(luaL_checkinteger(L, 1));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
             lua_pushnumber(L, ptr->getUInt32Value(field));
         return 1;
@@ -2519,7 +2519,7 @@ public:
 
     static int GetUInt64Value(lua_State* L, Unit* ptr)
     {
-        uint16 field = static_cast<uint16>(luaL_checkinteger(L, 1));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
             PUSH_GUID(L, ptr->getUInt64Value(field));
         return 1;
@@ -2528,8 +2528,8 @@ public:
     static int AdvanceQuestObjective(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 questid = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 objective = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t questid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t objective = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         Player* pl = static_cast<Player*>(ptr);
         QuestLogEntry* qle = pl->GetQuestLogForEntry(questid);
         if (qle != nullptr)
@@ -2547,8 +2547,8 @@ public:
     static int Heal(lua_State* L, Unit* ptr)
     {
         Unit* target = CHECK_UNIT(L, 1);
-        uint32 spellid = CHECK_ULONG(L, 2);
-        uint32 amount = CHECK_ULONG(L, 3);
+        uint32_t spellid = CHECK_ULONG(L, 2);
+        uint32_t amount = CHECK_ULONG(L, 3);
         if (!target || !spellid || !amount || !ptr)
             return 0;
         ptr->Heal(target, spellid, amount);
@@ -2558,9 +2558,9 @@ public:
     static int Energize(lua_State* L, Unit* ptr)
     {
         Unit* target = CHECK_UNIT(L, 1);
-        uint32 spellid = CHECK_ULONG(L, 2);
-        uint32 amount = CHECK_ULONG(L, 3);
-        uint32 type = CHECK_ULONG(L, 4);
+        uint32_t spellid = CHECK_ULONG(L, 2);
+        uint32_t amount = CHECK_ULONG(L, 3);
+        uint32_t type = CHECK_ULONG(L, 4);
         if (!target || !spellid || !amount || !type || !ptr)
             return 0;
         ptr->energize(target, spellid, amount, static_cast<PowerType>(type));
@@ -2569,9 +2569,9 @@ public:
 
     static int SendChatMessageAlternateEntry(lua_State* L, Unit* ptr)
     {
-        uint32 entry = CHECK_ULONG(L, 1);
-        uint8 type = static_cast<uint8>(CHECK_ULONG(L, 2));
-        uint32 lang = CHECK_ULONG(L, 3);
+        uint32_t entry = CHECK_ULONG(L, 1);
+        uint8_t type = static_cast<uint8_t>(CHECK_ULONG(L, 2));
+        uint32_t lang = CHECK_ULONG(L, 3);
         const char* msg = luaL_checkstring(L, 4);
         if (!entry || !lang || !msg)
             return 0;
@@ -2581,8 +2581,8 @@ public:
 
     static int SendChatMessageToPlayer(lua_State* L, Unit* ptr)
     {
-        uint8 type = static_cast<uint8>(CHECK_ULONG(L, 1));
-        uint32 lang = CHECK_ULONG(L, 2);
+        uint8_t type = static_cast<uint8_t>(CHECK_ULONG(L, 1));
+        uint32_t lang = CHECK_ULONG(L, 2);
         const char* msg = luaL_checkstring(L, 3);
         Player* plr = CHECK_PLAYER(L, 4);
         if (!plr || !msg || !ptr)
@@ -2595,7 +2595,7 @@ public:
     {
         if (!ptr)
             return 0;
-        if (ptr->getPowerType() == (uint8)POWER_TYPE_MANA)
+        if (ptr->getPowerType() == (uint8_t)POWER_TYPE_MANA)
             lua_pushnumber(L, (int)(ptr->getPower(POWER_TYPE_MANA) * 100.0f / ptr->getMaxPower(POWER_TYPE_MANA)));
         else
             lua_pushnil(L);
@@ -2609,11 +2609,11 @@ public:
             lua_pushnil(L);
             return 1;
         }
-        uint16 powertype;
+        uint16_t powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
             powertype = ptr->getPowerType();
         else
-            powertype = static_cast<uint16>(luaL_optinteger(L, 1, -1));
+            powertype = static_cast<uint16_t>(luaL_optinteger(L, 1, -1));
 
         lua_pushnumber(L, static_cast<int>(ptr->getPower(static_cast<PowerType>(powertype)) * 100.0f / ptr->getMaxPower(static_cast<PowerType>(powertype))));
         return 1;
@@ -2636,11 +2636,11 @@ public:
             lua_pushnil(L);
             return 1;
         }
-        uint16 powertype;
+        uint16_t powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
             powertype = ptr->getPowerType();
         else
-            powertype = static_cast<uint16>(luaL_optinteger(L, 1, -1));
+            powertype = static_cast<uint16_t>(luaL_optinteger(L, 1, -1));
 
         lua_pushnumber(L, ptr->getPower(static_cast<PowerType>(powertype)));
         return 1;
@@ -2663,11 +2663,11 @@ public:
             lua_pushnil(L);
             return 1;
         }
-        uint16 powertype;
+        uint16_t powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
             powertype = ptr->getPowerType();
         else
-            powertype = static_cast<uint16>(luaL_optinteger(L, 1, -1));
+            powertype = static_cast<uint16_t>(luaL_optinteger(L, 1, -1));
 
         lua_pushnumber(L, ptr->getMaxPower(static_cast<PowerType>(powertype)));
         return 1;
@@ -2686,11 +2686,11 @@ public:
         POWER_TYPE_RUNES        = 5,
         POWER_TYPE_RUNIC_POWER  = 6 */
 
-        uint8 powertype;
+        uint8_t powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
             powertype = ptr->getPowerType();
         else
-            powertype = static_cast<uint8>(luaL_optinteger(L, 1, -1));
+            powertype = static_cast<uint8_t>(luaL_optinteger(L, 1, -1));
 
         ptr->setPowerType(powertype);
         return 0;
@@ -2701,13 +2701,13 @@ public:
         if (ptr == nullptr)
             return 0;
 
-        uint32 amount = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t amount = static_cast<uint32_t>(luaL_checkinteger(L, 1));
 
-        uint16 powertype;
+        uint16_t powertype;
         if (luaL_optinteger(L, 2, -1) == -1)
             powertype = ptr->getPowerType();
         else
-            powertype = static_cast<uint16>(luaL_optinteger(L, 2, -1));
+            powertype = static_cast<uint16_t>(luaL_optinteger(L, 2, -1));
 
         ptr->setMaxPower(static_cast<PowerType>(powertype), amount);
         return 0;
@@ -2718,13 +2718,13 @@ public:
         if (ptr == nullptr)
             return 0;
 
-        uint32 amount = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t amount = static_cast<uint32_t>(luaL_checkinteger(L, 1));
 
-        uint32 powertype;
+        uint32_t powertype;
         if (luaL_optinteger(L, 2, -1) == -1)
             powertype = ptr->getPowerType();
         else
-            powertype = static_cast<uint32>(luaL_optinteger(L, 2, -1));
+            powertype = static_cast<uint32_t>(luaL_optinteger(L, 2, -1));
 
         ptr->setPower(static_cast<PowerType>(powertype), amount);
         return 0;
@@ -2735,13 +2735,13 @@ public:
         if (ptr == nullptr)
             return 0;
 
-        uint32 amount = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t amount = static_cast<uint32_t>(luaL_checkinteger(L, 1));
 
-        uint16 powertype;
+        uint16_t powertype;
         if (luaL_optinteger(L, 2, -1) == -1)
             powertype = ptr->getPowerType();
         else
-            powertype = static_cast<uint16>(luaL_optinteger(L, 2, -1));
+            powertype = static_cast<uint16_t>(luaL_optinteger(L, 2, -1));
 
         ptr->setPower(static_cast<PowerType>(powertype), static_cast<int>(amount / 100) * (ptr->getMaxPower(static_cast<PowerType>(powertype))));
         return 0;
@@ -2762,11 +2762,11 @@ public:
         TEST_UNIT_RET();
 
         Unit* target = CHECK_UNIT(L, 1);
-        uint32 weapon_damage_type = static_cast<uint32>(luaL_checkinteger(L, 2));
-        uint32 sp = CHECK_ULONG(L, 3);
-        int32 adddmg = static_cast<int32>(luaL_checkinteger(L, 4));
-        uint32 exclusive_damage = CHECK_ULONG(L, 5);
-        int32 pct_dmg_mod = static_cast<int32>(luaL_checkinteger(L, 6));
+        uint32_t weapon_damage_type = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+        uint32_t sp = CHECK_ULONG(L, 3);
+        int32_t adddmg = static_cast<int32_t>(luaL_checkinteger(L, 4));
+        uint32_t exclusive_damage = CHECK_ULONG(L, 5);
+        int32_t pct_dmg_mod = static_cast<int32_t>(luaL_checkinteger(L, 6));
 
         if (!target)
             return 0;
@@ -2779,7 +2779,7 @@ public:
         if (ptr == nullptr)
             return 0;
 
-        int32 timer = static_cast<int32>(luaL_checkinteger(L, 1));
+        int32_t timer = static_cast<int32_t>(luaL_checkinteger(L, 1));
         bool offhand = CHECK_BOOL(L, 2);
         if (!timer)
             return 0;
@@ -2799,8 +2799,8 @@ public:
     static int DealDamage(lua_State* L, Unit* ptr)
     {
         Unit* target = CHECK_UNIT(L, 1);
-        uint32 damage = CHECK_ULONG(L, 2);
-        uint32 spellid = CHECK_ULONG(L, 3);
+        uint32_t damage = CHECK_ULONG(L, 2);
+        uint32_t spellid = CHECK_ULONG(L, 3);
         if (!ptr || !target)
             return 0;
         ptr->DealDamage(target, damage, 0, 0, spellid, true);
@@ -2940,10 +2940,10 @@ public:
 
     static int CreateGuardian(lua_State* L, Unit* ptr)
     {
-        uint32 entry = CHECK_ULONG(L, 1);
-        //uint32 duration = CHECK_ULONG(L, 2);
+        uint32_t entry = CHECK_ULONG(L, 1);
+        //uint32_t duration = CHECK_ULONG(L, 2);
         float angle = CHECK_FLOAT(L, 3);
-        uint32 lvl = CHECK_ULONG(L, 4);
+        uint32_t lvl = CHECK_ULONG(L, 4);
 
         if ((ptr == NULL) || (entry == 0) || (lvl == 0))
             return 0;
@@ -3008,7 +3008,7 @@ public:
 
     static int GetUnitByGUID(lua_State* L, Unit* ptr)
     {
-        uint64 guid = CHECK_GUID(L, 1);
+        uint64_t guid = CHECK_GUID(L, 1);
         if (ptr && guid)
             PUSH_UNIT(L, ptr->GetMapMgr()->GetUnit(guid));
         return 1;
@@ -3042,7 +3042,7 @@ public:
     static int GetInRangePlayers(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        uint32 count = 0;
+        uint32_t count = 0;
         lua_newtable(L);
         for (const auto& itr : ptr->getInRangePlayersSet())
         {
@@ -3062,14 +3062,14 @@ public:
         TEST_PLAYER()
             Player* _player = static_cast<Player*>(ptr);
         Group* party = _player->GetGroup();
-        uint32 count = 0;
+        uint32_t count = 0;
         lua_newtable(L);
         if (party)
         {
             GroupMembersSet::iterator itr;
             SubGroup* sgrp;
             party->getLock().Acquire();
-            for (uint32 i = 0; i < party->GetSubGroupCount(); i++)
+            for (uint32_t i = 0; i < party->GetSubGroupCount(); i++)
             {
                 sgrp = party->GetSubGroup(i);
                 for (itr = sgrp->GetGroupMembersBegin(); itr != sgrp->GetGroupMembersEnd(); ++itr)
@@ -3147,7 +3147,7 @@ public:
             }
             else
             {
-                uint32 gId = pInstance->m_creatorGroup;
+                uint32_t gId = pInstance->m_creatorGroup;
                 auto group_id = sObjectMgr.GetGroupById(gId);
 
                 if (group_id == nullptr)
@@ -3190,7 +3190,7 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         Player* _plr = CHECK_PLAYER(L, 1);
-        int32 subgroup = static_cast<int32>(luaL_optinteger(L, 2, -1));
+        int32_t subgroup = static_cast<int32_t>(luaL_optinteger(L, 2, -1));
         plr->GetGroup()->AddMember(_plr->getPlayerInfo(), subgroup);
         return 0;
     }
@@ -3203,7 +3203,7 @@ public:
         MODE_HEROIC_10MEN   =   2,
         MODE_HEROIC_25MEN   =   3
         */
-        uint8 difficulty = static_cast<uint8>(CHECK_ULONG(L, 1));
+        uint8_t difficulty = static_cast<uint8_t>(CHECK_ULONG(L, 1));
         if (!ptr)
             return 0;
         if (ptr->IsInInstance())
@@ -3242,7 +3242,7 @@ public:
             return 0;
 
         lua_newtable(L);
-        uint32 count = 0;
+        uint32_t count = 0;
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
             if (itr && itr->isGameObject())
@@ -3354,7 +3354,7 @@ public:
     static int KickPlayer(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 delay = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t delay = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         static_cast<Player*>(ptr)->Kick(delay);
         return 0;
     }
@@ -3412,8 +3412,8 @@ public:
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
-        uint32 map = CHECK_ULONG(L, 4);
-        uint32 zone = CHECK_ULONG(L, 5);
+        uint32_t map = CHECK_ULONG(L, 4);
+        uint32_t zone = CHECK_ULONG(L, 5);
         if (!x || !y || !z || !zone)
             return 0;
         plr->SetBindPoint(x, y, z, map, zone);
@@ -3451,8 +3451,8 @@ public:
         {
             if (unit->m_spawn)
             {
-                uint32 cellx = uint32(((_maxX - unit->m_spawn->x) / _cellSize));
-                uint32 celly = uint32(((_maxY - unit->m_spawn->y) / _cellSize));
+                uint32_t cellx = uint32_t(((_maxX - unit->m_spawn->x) / _cellSize));
+                uint32_t celly = uint32_t(((_maxY - unit->m_spawn->y) / _cellSize));
 
                 if (cellx <= _sizeX && celly <= _sizeY)
                 {
@@ -3485,8 +3485,8 @@ public:
     static int SpellNonMeleeDamageLog(lua_State* L, Unit* ptr)
     {
         Unit* pVictim = CHECK_UNIT(L, 1);
-        uint32 spellid = CHECK_ULONG(L, 2);
-        uint32 damage = CHECK_ULONG(L, 3);
+        uint32_t spellid = CHECK_ULONG(L, 2);
+        uint32_t damage = CHECK_ULONG(L, 3);
         bool allowproc = CHECK_BOOL(L, 4);
         bool static_dmg = CHECK_BOOL(L, 5);
         bool no_remove_auras = CHECK_BOOL(L, 6);
@@ -3515,8 +3515,8 @@ public:
     static int AttackReaction(lua_State* L, Unit* ptr)
     {
         Unit* target = CHECK_UNIT(L, 1);
-        uint32 damage = static_cast<uint32>(luaL_checkinteger(L, 2));
-        uint32 spell = static_cast<uint32>(luaL_checkinteger(L, 3));
+        uint32_t damage = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+        uint32_t spell = static_cast<uint32_t>(luaL_checkinteger(L, 3));
         if (ptr && target && damage)
             ptr->GetAIInterface()->AttackReaction(target, damage, spell);
         return 0;
@@ -3526,9 +3526,9 @@ public:
     {
         TEST_UNITPLAYER()
             Unit* target = CHECK_UNIT(L, 1);
-        uint32 sp = CHECK_ULONG(L, 2);
-        uint32 delay = CHECK_ULONG(L, 3);
-        uint32 repeats = CHECK_ULONG(L, 4);
+        uint32_t sp = CHECK_ULONG(L, 2);
+        uint32_t delay = CHECK_ULONG(L, 3);
+        uint32_t repeats = CHECK_ULONG(L, 4);
         if (ptr && sp)
         {
             switch (ptr->getObjectTypeId())
@@ -3564,7 +3564,7 @@ public:
     static int GetFactionStanding(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 faction = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t faction = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (faction)
         {
             switch (static_cast<Player*>(ptr)->GetStandingRank(faction))
@@ -3601,7 +3601,7 @@ public:
     static int SetPlayerAtWar(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER_RET()
-            uint32 faction = CHECK_ULONG(L, 1);
+            uint32_t faction = CHECK_ULONG(L, 1);
         bool set = CHECK_BOOL(L, 3);
         if (faction)
         {
@@ -3613,8 +3613,8 @@ public:
     static int SetPlayerStanding(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 faction = static_cast<uint32>(luaL_checkinteger(L, 1));
-        int32 value = static_cast<int32>(luaL_checkinteger(L, 2));
+        uint32_t faction = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        int32_t value = static_cast<int32_t>(luaL_checkinteger(L, 2));
         if (faction && value)
             static_cast<Player*>(ptr)->SetStanding(faction, value);
         return 0;
@@ -3638,7 +3638,7 @@ public:
     {
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
-        uint32 honor = CHECK_ULONG(L, 1);
+        uint32_t honor = CHECK_ULONG(L, 1);
         plr->AddHonor(honor, true);
         return 0;
     }
@@ -3647,7 +3647,7 @@ public:
     {
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
-        uint32 honor = CHECK_ULONG(L, 1);
+        uint32_t honor = CHECK_ULONG(L, 1);
 
         if (plr->m_honorPoints < honor)
             plr->m_honorPoints = 0;
@@ -3666,7 +3666,7 @@ public:
     static int GetStanding(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 faction = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t faction = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (faction)
             lua_pushinteger(L, static_cast<Player*>(ptr)->GetStanding(faction));
         return 1;
@@ -3684,7 +3684,7 @@ public:
     static int HasItem(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 itemid = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (itemid)
         {
             if (static_cast<Player*>(ptr)->getItemInterface()->GetItemCount(itemid, false) > 0)
@@ -3697,8 +3697,8 @@ public:
 
     static int PlaySpellVisual(lua_State* L, Unit* ptr)
     {
-        uint64 guid = CHECK_GUID(L, 1);
-        uint32 spell = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint64_t guid = CHECK_GUID(L, 1);
+        uint32_t spell = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         if (ptr && guid && spell)
         {
             ptr->playSpellVisual(guid, spell);
@@ -3716,7 +3716,7 @@ public:
     static int SetLevel(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        uint32 level = CHECK_ULONG(L, 1);
+        uint32_t level = CHECK_ULONG(L, 1);
         if (level <= worldConfig.player.playerLevelCap && level > 0)
         {
             if (ptr->isPlayer())
@@ -3730,9 +3730,9 @@ public:
     static int AddSkill(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 skill = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 current = static_cast<uint32>(luaL_checkinteger(L, 2));
-        uint32 max = static_cast<uint32>(luaL_checkinteger(L, 3));
+        uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t current = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+        uint32_t max = static_cast<uint32_t>(luaL_checkinteger(L, 3));
         Player* plr = static_cast<Player*>(ptr);
         if (!max)
             max = 475;
@@ -3746,7 +3746,7 @@ public:
     static int RemoveSkill(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 skill = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (!ptr || !skill)
             return 0;
         Player* plr = static_cast<Player*>(ptr);
@@ -3766,8 +3766,8 @@ public:
     static int AdvanceSkill(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 skill = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 count = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t count = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         Player* plr = static_cast<Player*>(ptr);
         if (skill && count)
         {
@@ -3780,7 +3780,7 @@ public:
     static int RemoveAurasByMechanic(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER()
-        uint32 mechanic = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t mechanic = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         bool hostileonly = CHECK_BOOL(L, 2);
         if (ptr && mechanic)
             ptr->RemoveAllAurasByMechanic(mechanic, 0, hostileonly);
@@ -3790,7 +3790,7 @@ public:
     static int RemoveAurasType(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER()
-        uint32 type = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t type = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (ptr && type)
             ptr->RemoveAllAuraType(type);
         return 0;
@@ -3799,8 +3799,8 @@ public:
     static int AddAura(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER()
-        uint32 spellid = static_cast<uint32>(luaL_checkinteger(L, 1));
-        int32 duration = static_cast<int32>(luaL_checkinteger(L, 2));
+        uint32_t spellid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        int32_t duration = static_cast<int32_t>(luaL_checkinteger(L, 2));
         bool temp = CHECK_BOOL(L, 3);
         if (ptr && spellid)
         {
@@ -3816,7 +3816,7 @@ public:
     static int SetAIState(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        uint32 state = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t state = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (state)
         {
             switch (state)
@@ -3937,7 +3937,7 @@ public:
     static int deleteWaypoint(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        uint32 wp = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t wp = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (wp)
             static_cast<Creature*>(ptr)->GetAIInterface()->deleteWayPointById(wp);
         return 0;
@@ -3947,14 +3947,14 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        uint32 debt = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t debt = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (debt < 0)
             return 0;
         if (!plr->hasEnoughCoinage(debt))
             lua_pushboolean(L, 0);
         else
         {
-            plr->modCoinage(-(int32)debt);
+            plr->modCoinage(-(int32_t)debt);
             lua_pushboolean(L, 1);
         }
         return 1;
@@ -3963,7 +3963,7 @@ public:
     static int DealGoldMerit(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            uint32 profit = CHECK_ULONG(L, 1);
+            uint32_t profit = CHECK_ULONG(L, 1);
         static_cast<Player*>(ptr)->modCoinage(profit);
         return 0;
     }
@@ -4057,8 +4057,8 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Item* pItem = NULL;
         Container* pContainer = NULL;
-        uint16 j;
-        uint16 i;
+        uint16_t j;
+        uint16_t i;
 
         for (i = 0; i < MAX_INVENTORY_SLOT; i++)
         {
@@ -4162,7 +4162,7 @@ public:
     static int GetMaxSkill(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 skill = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         lua_pushinteger(L, static_cast<Player*>(ptr)->_GetSkillLineMax(skill));
         return 1;
     }
@@ -4170,7 +4170,7 @@ public:
     static int GetCurrentSkill(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 skill = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         lua_pushinteger(L, static_cast<Player*>(ptr)->_GetSkillLineCurrent(skill));
         return 1;
     }
@@ -4178,7 +4178,7 @@ public:
     static int HasSkill(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 skill = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         lua_pushboolean(L, (static_cast<Player*>(ptr)->_HasSkillLine(skill)) ? 1 : 0);
         return 1;
     }
@@ -4198,14 +4198,14 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        plr->ClearCooldownForSpell(static_cast<uint32>(luaL_checkinteger(L, 1)));
+        plr->ClearCooldownForSpell(static_cast<uint32_t>(luaL_checkinteger(L, 1)));
         return 0;
     }
 
     static int HasSpell(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            uint32 sp = CHECK_ULONG(L, 1);
+            uint32_t sp = CHECK_ULONG(L, 1);
         lua_pushboolean(L, (sp && static_cast<Player*>(ptr)->HasSpell(sp)) ? 1 : 0);
         return 1;
     }
@@ -4263,7 +4263,7 @@ public:
     static int HasQuest(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            uint32 quest_id = CHECK_ULONG(L, 1);
+            uint32_t quest_id = CHECK_ULONG(L, 1);
         if (quest_id && static_cast<Player*>(ptr)->HasQuest(quest_id))
             lua_pushboolean(L, 1);
         else
@@ -4275,7 +4275,7 @@ public:
     {
         TEST_UNIT()
             Creature* ctr = static_cast<Creature*>(ptr);
-        uint32 questid = CHECK_ULONG(L, 1);
+        uint32_t questid = CHECK_ULONG(L, 1);
         QuestProperties const* qst = sMySQLStore.getQuestProperties(questid);
         if (ctr->HasQuest(qst->id, qst->type))
             lua_pushboolean(L, 1);
@@ -4308,8 +4308,8 @@ public:
 
         Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 2));
-        uint32 miscint = static_cast<uint32>(luaL_checkinteger(L, 3));
-        uint32 actionid = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t miscint = static_cast<uint32_t>(luaL_checkinteger(L, 3));
+        uint32_t actionid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (!crc && actionid < 9)
             return 0;
         if (actionid == 1) plr->GetSession()->sendInventoryList(crc);
@@ -4380,7 +4380,7 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));
-        uint32 bgid = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t bgid = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         if (bgid && crc != NULL)
             plr->GetSession()->sendBattlegroundList(crc, bgid); //player filler ftw
         return 0;
@@ -4389,9 +4389,9 @@ public:
     static int SendLootWindow(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            uint64 guid = CHECK_GUID(L, 1);
-        uint8 loot_type = (uint8)luaL_checkinteger(L, 2);
-        uint8 loot_type2 = 1;
+            uint64_t guid = CHECK_GUID(L, 1);
+        uint8_t loot_type = (uint8_t)luaL_checkinteger(L, 2);
+        uint8_t loot_type2 = 1;
         Player* plr = static_cast<Player*>(ptr);
         plr->SetLootGUID(guid);
 
@@ -4461,9 +4461,9 @@ public:
             if ((lua_gettop(L) != 3) || (lua_gettop(L) != 5))
                 return 0;
 
-        uint32 itemid = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 mincount = static_cast<uint32>(luaL_checkinteger(L, 2));
-        uint32 maxcount = static_cast<uint32>(luaL_checkinteger(L, 3));
+        uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t mincount = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+        uint32_t maxcount = static_cast<uint32_t>(luaL_checkinteger(L, 3));
         bool perm = ((luaL_optinteger(L, 4, 0) == 1) ? true : false);
         if (perm)
         {
@@ -4481,9 +4481,9 @@ public:
     {
         TEST_UNIT()
         Creature* ctr = static_cast<Creature*>(ptr);
-        uint32 itemid = (uint32)luaL_checknumber(L, 1);
-        uint32 amount = (uint32)luaL_checknumber(L, 2);
-        uint32 costid = (uint32)luaL_checknumber(L, 3);
+        uint32_t itemid = (uint32_t)luaL_checknumber(L, 1);
+        uint32_t amount = (uint32_t)luaL_checknumber(L, 2);
+        uint32_t costid = (uint32_t)luaL_checknumber(L, 3);
 
         auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : NULL;
         if (itemid && amount)
@@ -4496,7 +4496,7 @@ public:
     {
         TEST_UNIT()
             Creature* ctr = static_cast<Creature*>(ptr);
-        uint32 itemid = (uint32)luaL_checknumber(L, 1);
+        uint32_t itemid = (uint32_t)luaL_checknumber(L, 1);
         int slot = ctr->GetSlotByItemId(itemid);
         if (itemid && slot > 0)
             ctr->RemoveVendorItem(itemid);
@@ -4507,10 +4507,10 @@ public:
     {
         TEST_UNIT()
             Creature* ctr = static_cast<Creature*>(ptr);
-        uint32 i = 0;
+        uint32_t i = 0;
         if (ctr->HasItems())
         {
-            uint32 creatureitemids[200];
+            uint32_t creatureitemids[200];
             size_t count = ctr->GetSellItemCount();
             for (std::vector<CreatureItem>::iterator itr = ctr->GetSellItemBegin(); itr != ctr->GetSellItemEnd(); ++itr)
             {
@@ -4528,9 +4528,9 @@ public:
     static int EquipWeapons(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        uint32 equip1 = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 equip2 = static_cast<uint32>(luaL_checkinteger(L, 2));
-        uint32 equip3 = static_cast<uint32>(luaL_checkinteger(L, 3));
+        uint32_t equip1 = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t equip2 = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+        uint32_t equip3 = static_cast<uint32_t>(luaL_checkinteger(L, 3));
         ptr->setVirtualItemSlotId(MELEE, equip1);
         ptr->setVirtualItemSlotId(OFFHAND, equip2);
         ptr->setVirtualItemSlotId(RANGED, equip3);
@@ -4556,7 +4556,7 @@ public:
     {
         TEST_PLAYER()
         Player* pl = static_cast<Player*>(ptr);
-        uint32 exp = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t exp = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         pl->GiveXP(exp, pl->getGuid(), true);
         return 0;
     }
@@ -4565,7 +4565,7 @@ public:
     {
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
-        uint32 skillvalue = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t skillvalue = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         plr->_AdvanceAllSkills(skillvalue);
         return 0;
     }
@@ -4583,7 +4583,7 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         TaxiPath* tp = CHECK_TAXIPATH(L, 1);
-        uint32 mount_id = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t mount_id = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         plr->TaxiStart(tp, mount_id, 0);
         return 0;
     }
@@ -4628,7 +4628,7 @@ public:
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
         float o = CHECK_FLOAT(L, 4);
-        uint32 mov_flag = CHECK_ULONG(L, 5); //0 - walk, 256 - teleport, 4096 - run, 12288 - fly
+        uint32_t mov_flag = CHECK_ULONG(L, 5); //0 - walk, 256 - teleport, 4096 - run, 12288 - fly
         float moveSpeed = (float)luaL_optnumber(L, 6, 1.0f);
         if (moveSpeed == 1.0f)
         {
@@ -4640,18 +4640,18 @@ public:
         ptr->SetFacing(o);
         ptr->SetOrientation(o);
         float distance = ptr->CalcDistance(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ(), x, y, z);
-        uint32 moveTime = uint32(distance / moveSpeed);
+        uint32_t moveTime = uint32_t(distance / moveSpeed);
         WorldPacket data(SMSG_MONSTER_MOVE, 50);
         data << ptr->GetNewGUID();
-        data << uint8(0);
+        data << uint8_t(0);
         data << ptr->GetPositionX();
         data << ptr->GetPositionY();
         data << ptr->GetPositionZ();
         data << Util::getMSTime();
-        data << uint8(0x00);
-        data << uint32(mov_flag);
+        data << uint8_t(0x00);
+        data << uint32_t(mov_flag);
         data << moveTime;
-        data << uint32(1);
+        data << uint32_t(1);
         data << x << y << z;
 
         ptr->SendMessageToSet(&data, true);
@@ -4661,7 +4661,7 @@ public:
 
     static int ChannelSpell(lua_State* L, Unit* ptr)
     {
-        uint32 Csp = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t Csp = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Object* target = CHECK_OBJECT(L, 2);
         if (Csp && target != nullptr)
         {
@@ -4795,7 +4795,7 @@ public:
     static int AddArenaPoints(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 pnts = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t pnts = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
         if (pnts > 0)
         {
@@ -4807,9 +4807,9 @@ public:
     static int RemoveArenaPoints(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 pnts = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t pnts = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
-        int32 npts = plr->m_arenaPoints - pnts;
+        int32_t npts = plr->m_arenaPoints - pnts;
         if (npts >= 0)
         {
             plr->m_arenaPoints = npts;
@@ -4825,7 +4825,7 @@ public:
     static int AddLifetimeKills(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 pnts = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t pnts = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
         plr->m_killsLifetime += pnts;
         return 0;
@@ -4843,7 +4843,7 @@ public:
         if (!ptr)
             return 0;
 
-        uint8 gender = static_cast<uint8>(luaL_checkinteger(L, 1));
+        uint8_t gender = static_cast<uint8_t>(luaL_checkinteger(L, 1));
         ptr->setGender(gender);
         return 0;
     }
@@ -4856,7 +4856,7 @@ public:
         Guild* guild = nullptr;
         if (luaL_optinteger(L, 2, -1) > 0)
         {
-            guild = sGuildMgr.getGuildById(static_cast<uint32>(luaL_optinteger(L, 2, 0)));
+            guild = sGuildMgr.getGuildById(static_cast<uint32_t>(luaL_optinteger(L, 2, 0)));
         }
         else
         {
@@ -4893,7 +4893,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        uint32 rank = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t rank = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (plr->IsInGuild())
             plr->setGuildRank(rank);
         return 0;
@@ -4959,7 +4959,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Guild* guild = nullptr;
         if (luaL_optinteger(L, 1, -1) >= 0)
-            guild = sGuildMgr.getGuildById(static_cast<uint32>(luaL_optinteger(L, 1, -1)));
+            guild = sGuildMgr.getGuildById(static_cast<uint32_t>(luaL_optinteger(L, 1, -1)));
         else
             guild = plr->GetGuild();
 
@@ -4984,7 +4984,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        uint32 g_id = CHECK_ULONG(L, 1);
+        uint32_t g_id = CHECK_ULONG(L, 1);
         uint8_t rank = static_cast<uint8_t>(luaL_optinteger(L, 2, -1));
         Guild* target = sGuildMgr.getGuildById(g_id);
         if (target)
@@ -5033,7 +5033,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Guild* guild = nullptr;
         if (luaL_optinteger(L, 1, -1) >= 0)
-            guild = sGuildMgr.getGuildById(static_cast<uint32>(luaL_optinteger(L, 1, -1)));
+            guild = sGuildMgr.getGuildById(static_cast<uint32_t>(luaL_optinteger(L, 1, -1)));
         else
             guild = plr->GetGuild();
         if (guild != nullptr)
@@ -5078,7 +5078,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        uint32 amount = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t amount = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (plr->GetGuild() != NULL)
             plr->GetGuild()->handleMemberDepositMoney(plr->GetSession(), amount, true);
 
@@ -5089,7 +5089,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        uint32 amount = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t amount = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (plr->GetGuild() != NULL)
             plr->GetGuild()->handleMemberWithdrawMoney(plr->GetSession(), amount, false);
 
@@ -5101,9 +5101,9 @@ public:
         if (ptr == nullptr)
             return 0;
 
-        uint16 index = static_cast<uint16>(luaL_checkinteger(L, 1));
-        uint8 index1 = static_cast<uint8>(luaL_checkinteger(L, 2));
-        uint8 value = static_cast<uint8>(luaL_checkinteger(L, 3));
+        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint8_t index1 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
+        uint8_t value = static_cast<uint8_t>(luaL_checkinteger(L, 3));
         ptr->setByteValue(index, index1, value);
         return 0;
     }
@@ -5113,8 +5113,8 @@ public:
         if (ptr == nullptr)
             return 0;
 
-        uint16 index = static_cast<uint16>(luaL_checkinteger(L, 1));
-        uint8 index1 = static_cast<uint8>(luaL_checkinteger(L, 2));
+        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint8_t index1 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         lua_pushinteger(L, ptr->getByteValue(index, index1));
         return 1;
     }
@@ -5419,14 +5419,14 @@ public:
     static int GetTalentPoints(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32 spec = static_cast<uint32>(luaL_checkinteger(L, 1)); //0 or 1
+        uint32_t spec = static_cast<uint32_t>(luaL_checkinteger(L, 1)); //0 or 1
 #ifdef FT_DUAL_SPEC
         PlayerSpec plrSpec = static_cast<Player*>(ptr)->m_specs[spec];
 #else
         PlayerSpec plrSpec = static_cast<Player*>(ptr)->m_spec;
 #endif
-        //uint32 Lvl = static_cast<Player*>(ptr)->getLevel();
-        uint32 FreePoints = plrSpec.GetTP();
+        //uint32_t Lvl = static_cast<Player*>(ptr)->getLevel();
+        uint32_t FreePoints = plrSpec.GetTP();
 
         lua_pushnumber(L, FreePoints);
         return 1;
@@ -5435,10 +5435,10 @@ public:
     static int EventChat(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        uint8 typ = static_cast<uint8>(luaL_checkinteger(L, 1));
-        uint32 lang = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint8_t typ = static_cast<uint8_t>(luaL_checkinteger(L, 1));
+        uint32_t lang = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         const char* message = luaL_checkstring(L, 3);
-        uint32 delay = static_cast<uint32>(luaL_checkinteger(L, 4));
+        uint32_t delay = static_cast<uint32_t>(luaL_checkinteger(L, 4));
         if (message != NULL && delay)
             ptr->SendChatMessage(typ, lang, message, delay);
         return 0;
@@ -5447,7 +5447,7 @@ public:
     static int GetEquippedItemBySlot(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        int16 slot = static_cast<int16>(luaL_checkinteger(L, 1));
+        int16_t slot = static_cast<int16_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
         Item* pItem = plr->getItemInterface()->GetInventoryItem(slot);
         if (pItem)
@@ -5462,7 +5462,7 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         Guild* pGuild = plr->GetGuild();
-        uint32 count = 0;
+        uint32_t count = 0;
         lua_newtable(L);
         if (pGuild != NULL)
         {
@@ -5488,7 +5488,7 @@ public:
     {
         TEST_PLAYER()
 #if VERSION_STRING > TBC
-        int32 achievementID = static_cast<int32>(luaL_checkinteger(L, 1));
+        int32_t achievementID = static_cast<int32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
         if(plr->GetAchievementMgr().GMCompleteAchievement(NULL, achievementID))
             lua_pushboolean(L, 1);
@@ -5502,7 +5502,7 @@ public:
     {
         TEST_PLAYER()
 #if VERSION_STRING > TBC
-        int32 achievementID = static_cast<int32>(luaL_checkinteger(L, 1));
+        int32_t achievementID = static_cast<int32_t>(luaL_checkinteger(L, 1));
         static_cast<Player*>(ptr)->GetAchievementMgr().GMResetAchievement(achievementID);
 #endif
         return 0;
@@ -5512,7 +5512,7 @@ public:
     {
         TEST_PLAYER()
 #if VERSION_STRING > TBC
-        uint32 achievementID = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t achievementID = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         lua_pushboolean(L, static_cast<Player*>(ptr)->GetAchievementMgr().HasCompleted(achievementID) ? 1 : 0);
 #endif
         return 1;
@@ -5548,7 +5548,7 @@ public:
     static int GetAura(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET();
-        uint32 slot = CHECK_ULONG(L, 1);
+        uint32_t slot = CHECK_ULONG(L, 1);
         if (slot > MAX_TOTAL_AURAS_START && slot < MAX_TOTAL_AURAS_END)
             RET_NUMBER(ptr->m_auras[slot]->GetSpellId());
         RET_NIL()
@@ -5557,7 +5557,7 @@ public:
     static int GetAuraObject(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET();
-        uint32 slot = CHECK_ULONG(L, 1);
+        uint32_t slot = CHECK_ULONG(L, 1);
         if (slot > MAX_TOTAL_AURAS_START && slot < MAX_TOTAL_AURAS_END)
         {
             PUSH_AURA(L, ptr->m_auras[slot]);
@@ -5577,7 +5577,7 @@ public:
     static int HasAuraWithMechanic(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET();
-        uint32 mechanic = CHECK_ULONG(L, 1);
+        uint32_t mechanic = CHECK_ULONG(L, 1);
         if (mechanic && ptr->HasAuraWithMechanics(mechanic))
             RET_BOOL(true)
             RET_BOOL(false)
@@ -5586,7 +5586,7 @@ public:
     static int HasNegativeAura(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET();
-        for (uint32 x = MAX_NEGATIVE_VISUAL_AURAS_START; x < MAX_NEGATIVE_VISUAL_AURAS_END; ++x)
+        for (uint32_t x = MAX_NEGATIVE_VISUAL_AURAS_START; x < MAX_NEGATIVE_VISUAL_AURAS_END; ++x)
         {
             if (ptr->m_auras[x] && ptr->m_auras[x]->m_spellInfo)
                 RET_BOOL(true)
@@ -5597,7 +5597,7 @@ public:
     static int HasPositiveAura(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER()
-            for (uint32 x = MAX_POSITIVE_VISUAL_AURAS_START; x < MAX_POSITIVE_VISUAL_AURAS_END; ++x)
+            for (uint32_t x = MAX_POSITIVE_VISUAL_AURAS_START; x < MAX_POSITIVE_VISUAL_AURAS_END; ++x)
             {
                 if (ptr->m_auras[x] && ptr->m_auras[x]->m_spellInfo)
                     RET_BOOL(true)
@@ -5739,17 +5739,17 @@ public:
     static int GetByte(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER()
-        uint16 index = static_cast<uint16>(luaL_checkinteger(L, 1));
-        uint8 index2 = static_cast<uint8>(luaL_checkinteger(L, 2));
-        uint8 value = ptr->getByteValue(index, index2);
+        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint8_t index2 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
+        uint8_t value = ptr->getByteValue(index, index2);
         RET_INT(value);
     }
     static int SetByte(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET();
-        uint16 index = static_cast<uint16>(luaL_checkinteger(L, 1));
-        uint8 index2 = static_cast<uint8>(luaL_checkinteger(L, 2));
-        uint8 value = static_cast<uint8>(luaL_checkinteger(L, 3));
+        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint8_t index2 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
+        uint8_t value = static_cast<uint8_t>(luaL_checkinteger(L, 3));
         ptr->setByteValue(index, index2, value);
         RET_BOOL(true)
     }
@@ -5766,7 +5766,7 @@ public:
     static int GetObject(lua_State* L, Unit* ptr)
     {
         TEST_UNIT();
-        uint64 guid = CHECK_GUID(L, 1);
+        uint64_t guid = CHECK_GUID(L, 1);
         Object* obj = ptr->GetMapMgr()->_GetObject(guid);
         if (obj != NULL && obj->isCreatureOrPlayer())
             PUSH_UNIT(L, obj);
@@ -5816,15 +5816,15 @@ public:
         ptr->SetPosition(x, y, z, ptr->GetOrientation());
         WorldPacket data(SMSG_MONSTER_MOVE, 50);
         data << ptr->GetNewGUID();
-        data << uint8(0);
+        data << uint8_t(0);
         data << ptr->GetPositionX();
         data << ptr->GetPositionY();
         data << ptr->GetPositionZ();
         data << Util::getMSTime();
-        data << uint8(0x0);
-        data << uint32(0x100);
-        data << uint32(1);
-        data << uint32(1);
+        data << uint8_t(0x0);
+        data << uint32_t(0x100);
+        data << uint32_t(1);
+        data << uint32_t(1);
         data << x;
         data << y;
         data << z;
@@ -5869,12 +5869,12 @@ public:
     static int GetMovementType(lua_State* L, Unit* ptr)
     {
         TEST_UNIT();
-        RET_NUMBER((uint32)ptr->GetAIInterface()->getWaypointScriptType());
+        RET_NUMBER((uint32_t)ptr->GetAIInterface()->getWaypointScriptType());
     }
     static int GetQuestLogSlot(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER();
-        uint32 entry = CHECK_ULONG(L, 1);
+        uint32_t entry = CHECK_ULONG(L, 1);
         QuestLogEntry* qle = static_cast<Player*>(ptr)->GetQuestLogForEntry(entry);
         if (!qle)
             RET_NUMBER(-1);
@@ -5885,7 +5885,7 @@ public:
     static int GetAuraStackCount(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET();
-        uint32 id = CHECK_ULONG(L, 1);
+        uint32_t id = CHECK_ULONG(L, 1);
         RET_NUMBER(ptr->GetAuraStackCount(id));
     }
 
@@ -5901,7 +5901,7 @@ public:
     static int GetAuraObjectById(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER();
-        uint32 id = CHECK_ULONG(L, 1);
+        uint32_t id = CHECK_ULONG(L, 1);
         PUSH_AURA(L, ptr->getAuraWithId(id));
         return 1;
     }
@@ -5915,8 +5915,8 @@ public:
     static int GetQuestObjectiveCompletion(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER_RET()
-        uint32 questid = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 objective = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t questid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t objective = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         Player* pl = static_cast<Player*>(ptr);
         QuestLogEntry* qle = pl->GetQuestLogForEntry(questid);
         if (qle != nullptr)
@@ -5939,14 +5939,14 @@ public:
     {
         TEST_UNITPLAYER()
 
-        uint32 creature_entry = 0;
-        uint32 delay = 0;
+        uint32_t creature_entry = 0;
+        uint32_t delay = 0;
 
         if (lua_gettop(L) != 2)
             return 0;
 
-        creature_entry = static_cast<uint32>(luaL_checkinteger(L, 1));
-        delay = static_cast<uint32>(luaL_checkinteger(L, 2));
+        creature_entry = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        delay = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
         if (delay < 1 * 1000)
             delay = 1 * 1000;
@@ -6026,7 +6026,7 @@ public:
         if (lua_gettop(L) != 1)
             return 0;
 
-        uint32 creature_entry = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t creature_entry = static_cast<uint32_t>(luaL_checkinteger(L, 1));
 
         CreatureProperties const* cp = sMySQLStore.getCreatureProperties(creature_entry);
         if (cp == nullptr)
@@ -6070,8 +6070,8 @@ public:
             if (lua_gettop(L) != 2)
                 return 0;
 
-        uint64 guid = CHECK_GUID(L, 1);
-        uint32 delay = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint64_t guid = CHECK_GUID(L, 1);
+        uint32_t delay = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
         ptr->addPassengerToVehicle(guid, delay);
 
@@ -6125,7 +6125,7 @@ public:
         if (lua_gettop(L) != 1)
             return 0;
 
-        uint32 seat = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t seat = static_cast<uint32_t>(luaL_checkinteger(L, 1));
 
         u->getVehicleComponent()->EjectPassengerFromSeat(seat);
 
@@ -6143,7 +6143,7 @@ public:
             return 0;
 
         Unit *passenger = CHECK_UNIT(L, 1);
-        uint32 seat = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t seat = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
         if (passenger == NULL)
             return 0;
@@ -6155,7 +6155,7 @@ public:
     static int SendCinematic(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER();
-        uint32 id = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         static_cast<Player*>(ptr)->SendCinematicCamera(id);
         return 0;
     }
@@ -6166,13 +6166,13 @@ public:
         if (lua_gettop(L) != 1)
             return 0;
 
-        uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t field = static_cast<uint32_t>(luaL_checkinteger(L, 1));
 
         auto a = ptr->GetMapMgr()->GetArea(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
         if (a == NULL)
             return 0;
 
-        uint32 zone = a->zone;
+        uint32_t zone = a->zone;
 
         if (zone == 0)
             zone = a->id;
@@ -6180,7 +6180,7 @@ public:
         if (zone == 0)
             return 0;
 
-        uint32 value
+        uint32_t value
             = ptr->GetMapMgr()->GetWorldStatesHandler().GetWorldStateForZone(zone, 0, field);
 
         lua_pushinteger(L, value);
@@ -6195,14 +6195,14 @@ public:
         if (lua_gettop(L) != 2)
             return 0;
 
-        uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t field = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
         auto a = ptr->GetMapMgr()->GetArea(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
         if (a == NULL)
             return 0;
 
-        uint32 zone = a->zone;
+        uint32_t zone = a->zone;
 
         if (zone == 0)
             zone = a->id;
@@ -6222,8 +6222,8 @@ public:
         if (lua_gettop(L) != 2)
             return 0;
 
-        uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t field = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
         static_cast<Player*>(ptr)->SendWorldStateUpdate(field, value);
 

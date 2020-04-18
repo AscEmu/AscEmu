@@ -50,13 +50,13 @@ typedef std::set<Object*> ObjectSet;
 typedef std::set<Object*> UpdateQueue;
 typedef std::set<Player*> PUpdateQueue;
 typedef std::set<Player*> PlayerSet;
-typedef std::set<uint64> CombatProgressMap;
+typedef std::set<uint64_t> CombatProgressMap;
 typedef std::set<Creature*> CreatureSet;
 typedef std::set<GameObject*> GameObjectSet;
 
-typedef std::unordered_map<uint32, Object*> StorageMap;
-typedef std::unordered_map<uint32, Creature*> CreatureSqlIdMap;
-typedef std::unordered_map<uint32, GameObject*> GameObjectSqlIdMap;
+typedef std::unordered_map<uint32_t, Object*> StorageMap;
+typedef std::unordered_map<uint32_t, Creature*> CreatureSqlIdMap;
+typedef std::unordered_map<uint32_t, GameObject*> GameObjectSqlIdMap;
 
 class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject, public CThread, public WorldStatesHandler::WorldStatesObserver
 {
@@ -67,7 +67,7 @@ public:
 
     CObjectFactory ObjectFactory;
 
-    uint32 GetAreaFlag(float x, float y, float z, bool *is_outdoors = nullptr) const;
+    uint32_t GetAreaFlag(float x, float y, float z, bool *is_outdoors = nullptr) const;
 
     // This will be done in regular way soon
     std::set<MapCell*> m_forcedcells;
@@ -80,74 +80,74 @@ public:
     void AddObject(Object*);
 
     // Local (mapmgr) storage/generation of GameObjects
-    uint32 m_GOHighGuid;
+    uint32_t m_GOHighGuid;
     std::vector<GameObject*> GOStorage;
-    GameObject* CreateGameObject(uint32 entry);
-    GameObject* CreateAndSpawnGameObject(uint32 entryID, float x, float y, float z, float o, float scale);
+    GameObject* CreateGameObject(uint32_t entry);
+    GameObject* CreateAndSpawnGameObject(uint32_t entryID, float x, float y, float z, float o, float scale);
 
-    uint32 GenerateGameobjectGuid() { return ++m_GOHighGuid; }
+    uint32_t GenerateGameobjectGuid() { return ++m_GOHighGuid; }
 
-    GameObject* GetGameObject(uint32 guid);
+    GameObject* GetGameObject(uint32_t guid);
 
     // Local (mapmgr) storage/generation of Creatures
-    uint32 m_CreatureHighGuid;
+    uint32_t m_CreatureHighGuid;
     std::vector<Creature*> CreatureStorage;
     CreatureSet::iterator creature_iterator;        /// required by owners despawning creatures and deleting *(++itr)
-    uint64 GenerateCreatureGUID(uint32 entry);
-    Creature* CreateCreature(uint32 entry);
-    Creature* CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO);
+    uint64_t GenerateCreatureGUID(uint32_t entry);
+    Creature* CreateCreature(uint32_t entry);
+    Creature* CreateAndSpawnCreature(uint32_t pEntry, float pX, float pY, float pZ, float pO);
 
-    Creature* GetCreature(uint32 guid);
+    Creature* GetCreature(uint32_t guid);
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    /// Summon* CreateSummon(uint32 entry, SummonType type)
+    /// Summon* CreateSummon(uint32_t entry, SummonType type)
     /// Summon factory function, creates and returns the appropriate summon subclass.
     ///
-    /// \param uint32 entry     -  entry of the summon (NPC id)
+    /// \param uint32_t entry     -  entry of the summon (NPC id)
     /// \param SummonType type  -  Type of the summon
     ///
     /// \return pointer to a summon
     ///
     //////////////////////////////////////////////////////////////////////////////////////////
-    Summon* CreateSummon(uint32 entry, SummonType type);
+    Summon* CreateSummon(uint32_t entry, SummonType type);
 
 
     // Local (mapmgr) storage/generation of DynamicObjects
-    uint32 m_DynamicObjectHighGuid;
-    typedef std::unordered_map<uint32, DynamicObject*> DynamicObjectStorageMap;
+    uint32_t m_DynamicObjectHighGuid;
+    typedef std::unordered_map<uint32_t, DynamicObject*> DynamicObjectStorageMap;
     DynamicObjectStorageMap m_DynamicObjectStorage;
     DynamicObject* CreateDynamicObject();
 
-    DynamicObject* GetDynamicObject(uint32 guid);
+    DynamicObject* GetDynamicObject(uint32_t guid);
 
     // Local (mapmgr) storage of pets
-    typedef std::unordered_map<uint32, Pet*> PetStorageMap;
+    typedef std::unordered_map<uint32_t, Pet*> PetStorageMap;
     PetStorageMap m_PetStorage;
     PetStorageMap::iterator pet_iterator;
-    Pet* GetPet(uint32 guid);
+    Pet* GetPet(uint32_t guid);
 
 
     // Local (mapmgr) storage of players for faster lookup
     // double typedef lolz// a compile breaker..
-    typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
+    typedef std::unordered_map<uint32_t, Player*> PlayerStorageMap;
     PlayerStorageMap m_PlayerStorage;
-    Player* GetPlayer(uint32 guid);
+    Player* GetPlayer(uint32_t guid);
 
     // Local (mapmgr) storage of combats in progress
     CombatProgressMap _combatProgress;
-    void AddCombatInProgress(uint64 guid);
+    void AddCombatInProgress(uint64_t guid);
 
-    void RemoveCombatInProgress(uint64 guid);
+    void RemoveCombatInProgress(uint64_t guid);
 
     // Lookup Wrappers
-    Unit* GetUnit(const uint64 & guid);
-    Object* _GetObject(const uint64 & guid);
+    Unit* GetUnit(const uint64_t & guid);
+    Object* _GetObject(const uint64_t & guid);
 
     bool runThread() override;
     bool Do();
 
-    MapMgr(Map* map, uint32 mapid, uint32 instanceid);
+    MapMgr(Map* map, uint32_t mapid, uint32_t instanceid);
     ~MapMgr();
 
     void PushObject(Object* obj);
@@ -158,7 +158,7 @@ public:
 
     /// Mark object as updated
     void ObjectUpdated(Object* obj);
-    void UpdateCellActivity(uint32 x, uint32 y, uint32 radius);
+    void UpdateCellActivity(uint32_t x, uint32_t y, uint32_t radius);
 
     // Terrain Functions
     float GetLandHeight(float x, float y, float z);
@@ -167,17 +167,17 @@ public:
 
     bool IsUnderground(float x, float y, float z);
 
-    bool GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32& liquidtype);
+    bool GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32_t& liquidtype);
 
     float GetLiquidHeight(float x, float y);
 
-    uint8 GetLiquidType(float x, float y);
+    uint8_t GetLiquidType(float x, float y);
 
     const ::DBC::Structures::AreaTableEntry* GetArea(float x, float y, float z);
 
     bool isInLineOfSight(float x, float y, float z, float x2, float y2, float z2);
 
-    uint32 GetMapId();
+    uint32_t GetMapId();
 
     void PushToProcessed(Player* plr);
 
@@ -186,7 +186,7 @@ public:
     bool IsCombatInProgress();
     void TeleportPlayers();
 
-    uint32 GetInstanceID();
+    uint32_t GetInstanceID();
 
     MySQLStructure::MapInfo const* GetMapInfo();
 
@@ -194,26 +194,26 @@ public:
 
     MapScriptInterface* GetInterface();
 
-    virtual int32 event_GetInstanceID() override;
+    virtual int32_t event_GetInstanceID() override;
 
-    uint32 GetPlayerCount();
+    uint32_t GetPlayerCount();
 
     void _PerformObjectDuties();
-    uint32 mLoopCounter;
-    uint32 lastGameobjectUpdate;
-    uint32 lastUnitUpdate;
-    void EventCorpseDespawn(uint64 guid);
+    uint32_t mLoopCounter;
+    uint32_t lastGameobjectUpdate;
+    uint32_t lastUnitUpdate;
+    void EventCorpseDespawn(uint64_t guid);
 
     time_t InactiveMoveTime;
-    uint8 iInstanceMode;
+    uint8_t iInstanceMode;
 
-    void UnloadCell(uint32 x, uint32 y);
-    void EventRespawnCreature(Creature* c, uint16 x, uint16 y);
-    void EventRespawnGameObject(GameObject* o, uint16 x, uint16 y);
-    void SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint32 cell_radius, uint32 langpos, int32 lang, WorldSession* originator);
-    void SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Message, ...);
+    void UnloadCell(uint32_t x, uint32_t y);
+    void EventRespawnCreature(Creature* c, uint16_t x, uint16_t y);
+    void EventRespawnGameObject(GameObject* o, uint16_t x, uint16_t y);
+    void SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint32_t cell_radius, uint32_t langpos, int32_t lang, WorldSession* originator);
+    void SendPvPCaptureMessage(int32_t ZoneMask, uint32_t ZoneId, const char* Message, ...);
     void SendPacketToAllPlayers(WorldPacket* packet) const;
-    void SendPacketToPlayersInZone(uint32 zone, WorldPacket* packet) const;
+    void SendPacketToPlayersInZone(uint32_t zone, WorldPacket* packet) const;
 
     Instance* pInstance;
     void BeginInstanceExpireCountdown();
@@ -229,10 +229,10 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     ///Finds and returns the nearest GameObject with this type from Object's inrange set.
     /// \param    Object* o - Pointer to the Object that's inrange set we are searching
-    /// \param    uint32 type - Type of the GameObject we want to find
+    /// \param    uint32_t type - Type of the GameObject we want to find
     /// \return a pointer to the GameObject if found, NULL if there isn't such a GameObject.
     //////////////////////////////////////////////////////////////////////////////////////////
-    GameObject* FindNearestGoWithType(Object* o, uint32 type);
+    GameObject* FindNearestGoWithType(Object* o, uint32_t type);
 
 protected:
 
@@ -242,10 +242,10 @@ protected:
 private:
 
     /// Objects that exist on map
-    uint32 _mapId;
+    uint32_t _mapId;
     std::set<Object*> _mapWideStaticObjects;
 
-    bool _CellActive(uint32 x, uint32 y);
+    bool _CellActive(uint32_t x, uint32_t y);
     void UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuffer** buf);
 
     //Zyres: Refactoring 05/04/2016
@@ -269,7 +269,7 @@ private:
 
     // Map Information
     MySQLStructure::MapInfo const* pMapInfo;
-    uint32 m_instanceID;
+    uint32_t m_instanceID;
 
     MapScriptInterface* ScriptInterface;
 
@@ -293,10 +293,10 @@ public:
     void LoadInstanceScript();
     void CallScriptUpdate();
 
-    Creature* GetSqlIdCreature(uint32 sqlid);
-    GameObject* GetSqlIdGameObject(uint32 sqlid);
-    std::deque<uint32> _reusable_guids_gameobject;
-    std::deque<uint32> _reusable_guids_creature;
+    Creature* GetSqlIdCreature(uint32_t sqlid);
+    GameObject* GetSqlIdGameObject(uint32_t sqlid);
+    std::deque<uint32_t> _reusable_guids_gameobject;
+    std::deque<uint32_t> _reusable_guids_creature;
 
     bool forced_expire;
     bool thread_kill_only;
@@ -304,7 +304,7 @@ public:
 
     WorldStatesHandler& GetWorldStatesHandler();
 
-    void onWorldStateUpdate(uint32 zone, uint32 field, uint32 value) override;
+    void onWorldStateUpdate(uint32_t zone, uint32_t field, uint32_t value) override;
 
 protected:
 

@@ -86,7 +86,7 @@ enum ScriptTypes
 };
 
 // Hook typedefs
-typedef bool(*tOnNewCharacter)(uint32 Race, uint32 Class, WorldSession* Session, const char* Name);
+typedef bool(*tOnNewCharacter)(uint32_t Race, uint32_t Class, WorldSession* Session, const char* Name);
 typedef void(*tOnKillPlayer)(Player* pPlayer, Player* pVictim);
 typedef void(*tOCharacterCreate)(Player* pPlayer);
 typedef void(*tOnFirstEnterWorld)(Player* pPlayer);
@@ -95,26 +95,26 @@ typedef void(*tOnGuildCreate)(Player* pLeader, Guild* pGuild);
 typedef void(*tOnGuildJoin)(Player* pPlayer, Guild* pGuild);
 typedef void(*tOnDeath)(Player* pPlayer);
 typedef bool(*tOnRepop)(Player* pPlayer);
-typedef void(*tOnEmote)(Player* pPlayer, uint32 Emote, Unit* pUnit);
+typedef void(*tOnEmote)(Player* pPlayer, uint32_t Emote, Unit* pUnit);
 typedef void(*tOnEnterCombat)(Player* pPlayer, Unit* pTarget);
 typedef bool(*tOnCastSpell)(Player* pPlayer, SpellInfo const* pSpell, Spell* spell);
 typedef void(*tOnTick)();
 typedef bool(*tOnLogoutRequest)(Player* pPlayer);
 typedef void(*tOnLogout)(Player* pPlayer);
 typedef void(*tOnQuestAccept)(Player* pPlayer, QuestProperties const* pQuest, Object* pQuestGiver);
-typedef void(*tOnZone)(Player* pPlayer, uint32 Zone, uint32 oldzone);
-typedef bool(*tOnChat)(Player* pPlayer, uint32 Type, uint32 Lang, const char* Message, const char* Misc);
-typedef void(*tOnLoot)(Player* pPlayer, Unit* pTarget, uint32 Money, uint32 ItemId);
+typedef void(*tOnZone)(Player* pPlayer, uint32_t Zone, uint32_t oldzone);
+typedef bool(*tOnChat)(Player* pPlayer, uint32_t Type, uint32_t Lang, const char* Message, const char* Misc);
+typedef void(*tOnLoot)(Player* pPlayer, Unit* pTarget, uint32_t Money, uint32_t ItemId);
 typedef bool(*ItemScript)(Item* pItem, Player* pPlayer);
 typedef void(*tOnQuestCancel)(Player* pPlayer, QuestProperties const* pQuest);
 typedef void(*tOnQuestFinished)(Player* pPlayer, QuestProperties const* pQuest, Object* pQuestGiver);
 typedef void(*tOnHonorableKill)(Player* pPlayer, Player* pKilled);
 typedef void(*tOnArenaFinish)(Player* pPlayer, ArenaTeam* pTeam, bool victory, bool rated);
-typedef void(*tOnObjectLoot)(Player* pPlayer, Object* pTarget, uint32 Money, uint32 ItemId);
-typedef void(*tOnAreaTrigger)(Player* pPlayer, uint32 areaTrigger);
+typedef void(*tOnObjectLoot)(Player* pPlayer, Object* pTarget, uint32_t Money, uint32_t ItemId);
+typedef void(*tOnAreaTrigger)(Player* pPlayer, uint32_t areaTrigger);
 typedef void(*tOnPostLevelUp)(Player* pPlayer);
 typedef bool(*tOnPreUnitDie)(Unit* killer, Unit* target);
-typedef void(*tOnAdvanceSkillLine)(Player* pPlayer, uint32 SkillLine, uint32 Current);
+typedef void(*tOnAdvanceSkillLine)(Player* pPlayer, uint32_t SkillLine, uint32_t Current);
 typedef void(*tOnDuelFinished)(Player* Winner, Player* Looser);
 typedef void(*tOnAuraRemove)(Aura* aura);
 typedef bool(*tOnResurrect)(Player* pPlayer);
@@ -143,19 +143,19 @@ typedef bool(*exp_handle_dummy_aura)(uint8_t effectIndex, Aura* pAura, bool appl
 typedef void(*exp_script_register)(ScriptMgr* mgr);
 typedef void(*exp_engine_reload)();
 typedef void(*exp_engine_unload)();
-typedef uint32(*exp_get_script_type)();
+typedef uint32_t(*exp_get_script_type)();
 typedef const char*(*exp_get_version)();
 typedef void(*exp_set_serverstate_singleton)(ServerState* state);
 
 // Hashmap typedefs
-typedef std::unordered_map<uint32, exp_create_creature_ai> CreatureCreateMap;
-typedef std::unordered_map<uint32, exp_create_gameobject_ai> GameObjectCreateMap;
-typedef std::unordered_map<uint32, exp_handle_dummy_aura> HandleDummyAuraMap;
-typedef std::unordered_map<uint32, exp_handle_dummy_spell> HandleDummySpellMap;
-typedef std::unordered_map< uint32, exp_handle_script_effect > HandleScriptEffectMap;
-typedef std::unordered_map<uint32, exp_create_instance_ai> InstanceCreateMap;
+typedef std::unordered_map<uint32_t, exp_create_creature_ai> CreatureCreateMap;
+typedef std::unordered_map<uint32_t, exp_create_gameobject_ai> GameObjectCreateMap;
+typedef std::unordered_map<uint32_t, exp_handle_dummy_aura> HandleDummyAuraMap;
+typedef std::unordered_map<uint32_t, exp_handle_dummy_spell> HandleDummySpellMap;
+typedef std::unordered_map< uint32_t, exp_handle_script_effect > HandleScriptEffectMap;
+typedef std::unordered_map<uint32_t, exp_create_instance_ai> InstanceCreateMap;
 typedef std::set<GossipScript*> CustomGossipScripts;
-typedef std::unordered_map<uint32, GossipScript*> GossipMap;
+typedef std::unordered_map<uint32_t, GossipScript*> GossipMap;
 typedef std::set<EventScript*> EventScripts;
 typedef std::set<QuestScript*> QuestScripts;
 typedef std::set<SpellScript*> SpellScripts;
@@ -206,75 +206,75 @@ class SERVER_DECL ScriptMgr
         void DumpUnimplementedSpells();
 
         CreatureAIScript* CreateAIScriptClassForEntry(Creature* pCreature);
-        GameObjectAIScript* CreateAIScriptClassForGameObject(uint32 uEntryId, GameObject* pGameObject);
-        InstanceScript* CreateScriptClassForInstance(uint32 pMapId, MapMgr* pMapMgr);
+        GameObjectAIScript* CreateAIScriptClassForGameObject(uint32_t uEntryId, GameObject* pGameObject);
+        InstanceScript* CreateScriptClassForInstance(uint32_t pMapId, MapMgr* pMapMgr);
 
-        bool CallScriptedDummySpell(uint32 uSpellId, uint8_t effectIndex, Spell* pSpell);
-        bool HandleScriptedSpellEffect(uint32 SpellId, uint8_t effectIndex, Spell* s);
-        bool CallScriptedDummyAura(uint32 uSpellId, uint8_t effectIndex, Aura* pAura, bool apply);
+        bool CallScriptedDummySpell(uint32_t uSpellId, uint8_t effectIndex, Spell* pSpell);
+        bool HandleScriptedSpellEffect(uint32_t SpellId, uint8_t effectIndex, Spell* s);
+        bool CallScriptedDummyAura(uint32_t uSpellId, uint8_t effectIndex, Aura* pAura, bool apply);
         bool CallScriptedItem(Item* pItem, Player* pPlayer);
 
         //Single Entry Registers
-        void register_creature_script(uint32 entry, exp_create_creature_ai callback);
-        void register_gameobject_script(uint32 entry, exp_create_gameobject_ai callback);
-        void register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback);
-        void register_dummy_spell(uint32 entry, exp_handle_dummy_spell callback);
-        void register_script_effect(uint32 entry, exp_handle_script_effect callback);
-        void register_instance_script(uint32 pMapId, exp_create_instance_ai pCallback);
+        void register_creature_script(uint32_t entry, exp_create_creature_ai callback);
+        void register_gameobject_script(uint32_t entry, exp_create_gameobject_ai callback);
+        void register_dummy_aura(uint32_t entry, exp_handle_dummy_aura callback);
+        void register_dummy_spell(uint32_t entry, exp_handle_dummy_spell callback);
+        void register_script_effect(uint32_t entry, exp_handle_script_effect callback);
+        void register_instance_script(uint32_t pMapId, exp_create_instance_ai pCallback);
         void register_hook(ServerHookEvents event, void* function_pointer);
-        void register_quest_script(uint32 entry, QuestScript* qs);
-        void register_event_script(uint32 entry, EventScript* es);
+        void register_quest_script(uint32_t entry, QuestScript* qs);
+        void register_event_script(uint32_t entry, EventScript* es);
 
         // GOSSIP INTERFACE REGISTRATION
-        void register_creature_gossip(uint32, GossipScript*);
-        void register_item_gossip(uint32, GossipScript*);
-        void register_go_gossip(uint32, GossipScript*);
+        void register_creature_gossip(uint32_t, GossipScript*);
+        void register_item_gossip(uint32_t, GossipScript*);
+        void register_go_gossip(uint32_t, GossipScript*);
 
         // Mutliple Entry Registers
-        void register_creature_script(uint32* entries, exp_create_creature_ai callback);
-        void register_gameobject_script(uint32* entries, exp_create_gameobject_ai callback);
-        void register_dummy_aura(uint32* entries, exp_handle_dummy_aura callback);
-        void register_dummy_spell(uint32* entries, exp_handle_dummy_spell callback);
-        void register_script_effect(uint32* entries, exp_handle_script_effect callback);
+        void register_creature_script(uint32_t* entries, exp_create_creature_ai callback);
+        void register_gameobject_script(uint32_t* entries, exp_create_gameobject_ai callback);
+        void register_dummy_aura(uint32_t* entries, exp_handle_dummy_aura callback);
+        void register_dummy_spell(uint32_t* entries, exp_handle_dummy_spell callback);
+        void register_script_effect(uint32_t* entries, exp_handle_script_effect callback);
 
         void ReloadScriptEngines();
         void UnloadScriptEngines();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Purpose: Returns true if ScriptMgr has already registered the specified creature id.
-        // Parameter: uint32 - the id of the creature to search for.
+        // Parameter: uint32_t - the id of the creature to search for.
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool has_creature_script(uint32) const;
+        bool has_creature_script(uint32_t) const;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Purpose: Returns true if ScriptMgr has already registered the specified gameobject id.
-        // Parameter: uint32 - the id of the gameobject to search for
+        // Parameter: uint32_t - the id of the gameobject to search for
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool has_gameobject_script(uint32) const;
+        bool has_gameobject_script(uint32_t) const;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Purpose: Returns true if ScriptMgr has already registered the specified aura id.
-        // Parameter: uint32 - the aura id to search for
+        // Parameter: uint32_t - the aura id to search for
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool has_dummy_aura_script(uint32) const;
+        bool has_dummy_aura_script(uint32_t) const;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Purpose: Returns true if ScriptMgr has already registered the specified dummy spell id.
-        // Parameter: uint32 - the spell id to search for
+        // Parameter: uint32_t - the spell id to search for
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool has_dummy_spell_script(uint32) const;
+        bool has_dummy_spell_script(uint32_t) const;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Purpose: Returns true if ScriptMgr has already registered the specified spell id.
-        // Parameter: uint32 - the spell id to search for
+        // Parameter: uint32_t - the spell id to search for
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool has_script_effect(uint32) const;
+        bool has_script_effect(uint32_t) const;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Purpose: Returns true if ScriptMgr has already registered the specified map id.
-        // Parameter: uint32 - the map id to search for
+        // Parameter: uint32_t - the map id to search for
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool has_instance_script(uint32) const;
+        bool has_instance_script(uint32_t) const;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Purpose: Returns true if ScriptMgr has registered the specified function ptr to the specified event.
@@ -285,17 +285,17 @@ class SERVER_DECL ScriptMgr
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Purpose: Returns true if ScriptMgr has already registered the specified quest id.
-        // Parameter: uint32 - the quest id to search for
+        // Parameter: uint32_t - the quest id to search for
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool has_quest_script(uint32) const;
+        bool has_quest_script(uint32_t) const;
 
-        bool has_creature_gossip(uint32) const;
-        bool has_item_gossip(uint32) const;
-        bool has_go_gossip(uint32) const;
+        bool has_creature_gossip(uint32_t) const;
+        bool has_item_gossip(uint32_t) const;
+        bool has_go_gossip(uint32_t) const;
 
-        GossipScript* get_creature_gossip(uint32) const;
-        GossipScript* get_go_gossip(uint32) const;
-        GossipScript* get_item_gossip(uint32) const;
+        GossipScript* get_creature_gossip(uint32_t) const;
+        GossipScript* get_go_gossip(uint32_t) const;
+        GossipScript* get_item_gossip(uint32_t) const;
 
         // Default Gossip Script Interfaces
         GossipTrainer trainerScript_;
@@ -482,14 +482,14 @@ class SERVER_DECL EventScript
         virtual void Destroy() {}
 
         // Data sharing between scripts
-        virtual void setInstanceData(uint32 /*dataType*/, uint32 /*value*/) {}
-        virtual uint32 getInstanceData(uint32 /*data*/) const { return 0;  }
-        virtual void setGuidData(uint32 /*guidType*/, uint64 /*guidData*/) {}
-        virtual uint64 getGuidData(uint32 /*guidType*/) const { return 0; }
+        virtual void setInstanceData(uint32_t /*dataType*/, uint32_t /*value*/) {}
+        virtual uint32_t getInstanceData(uint32_t /*data*/) const { return 0;  }
+        virtual void setGuidData(uint32_t /*guidType*/, uint64_t /*guidData*/) {}
+        virtual uint64_t getGuidData(uint32_t /*guidType*/) const { return 0; }
 
         // UpdateEvent
-        void RegisterUpdateEvent(uint32 pFrequency);
-        void ModifyUpdateEvent(uint32 pNewFrequency);
+        void RegisterUpdateEvent(uint32_t pFrequency);
+        void ModifyUpdateEvent(uint32_t pNewFrequency);
         void RemoveUpdateEvent();
 };
 
@@ -505,19 +505,19 @@ class SERVER_DECL GameObjectAIScript
         virtual void OnDespawn() {}
         virtual void OnLootTaken(Player* /*pLooter*/, ItemProperties const* /*pItemInfo*/) {}
         virtual void OnActivate(Player* /*pPlayer*/) {}
-        virtual void OnDamaged(uint32 /*damage*/){}
+        virtual void OnDamaged(uint32_t /*damage*/){}
         virtual void OnDestroyed(){}
         virtual void AIUpdate() {}
         virtual void Destroy() { delete this; }
 
         // Data sharing between scripts
-        virtual void setGameObjectData(uint32 /*type*/) {}
-        virtual uint32 getGameObjectData(uint32 /*type*/) const { return 0; }
-        virtual void setGuidData(uint32 /*guidType*/, uint64 /*guidData*/) {}
-        virtual uint64 getGuidData(uint32 /*guidType*/) const { return 0; }
+        virtual void setGameObjectData(uint32_t /*type*/) {}
+        virtual uint32_t getGameObjectData(uint32_t /*type*/) const { return 0; }
+        virtual void setGuidData(uint32_t /*guidType*/, uint64_t /*guidData*/) {}
+        virtual uint64_t getGuidData(uint32_t /*guidType*/) const { return 0; }
 
-        void RegisterAIUpdateEvent(uint32 frequency);
-        void ModifyAIUpdateEvent(uint32 newfrequency);
+        void RegisterAIUpdateEvent(uint32_t frequency);
+        void ModifyAIUpdateEvent(uint32_t newfrequency);
         void RemoveAIUpdateEvent();
 
     protected:
@@ -535,10 +535,10 @@ class SERVER_DECL QuestScript
         virtual void OnQuestStart(Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
         virtual void OnQuestComplete(Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
         virtual void OnQuestCancel(Player* /*mTarget*/) {}
-        virtual void OnGameObjectActivate(uint32 /*entry*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
-        virtual void OnCreatureKill(uint32 /*entry*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
-        virtual void OnExploreArea(uint32 /*areaId*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
-        virtual void OnPlayerItemPickup(uint32 /*itemId*/, uint32 /*totalCount*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
+        virtual void OnGameObjectActivate(uint32_t /*entry*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
+        virtual void OnCreatureKill(uint32_t /*entry*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
+        virtual void OnExploreArea(uint32_t /*areaId*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
+        virtual void OnPlayerItemPickup(uint32_t /*itemId*/, uint32_t /*totalCount*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -565,8 +565,8 @@ typedef std::set<GameObject*> GameObjectSet;
 typedef std::pair<uint32_t, uint32_t> InstanceTimerPair;
 typedef std::vector<InstanceTimerPair> InstanceTimerArray;
 
-const int32 INVALIDATE_TIMER = -1;
-const uint32 DEFAULT_DESPAWN_TIMER = 2000;      //milliseconds
+const int32_t INVALIDATE_TIMER = -1;
+const uint32_t DEFAULT_DESPAWN_TIMER = 2000;      //milliseconds
 
 const uint32_t defaultUpdateFrequency = 1000;
 
@@ -579,16 +579,16 @@ class SERVER_DECL InstanceScript
 
         // Procedures that had been here before
         virtual GameObject* GetObjectForOpenLock(Player* /*pCaster*/, Spell* /*pSpell*/, SpellInfo const* /*pSpellEntry*/) { return NULL; }
-        virtual void SetLockOptions(uint32 /*pEntryId*/, GameObject* /*pGameObject*/) {}
-        virtual uint32 GetRespawnTimeForCreature(uint32 /*pEntryId*/, Creature* /*pCreature*/) { return 240000; }
+        virtual void SetLockOptions(uint32_t /*pEntryId*/, GameObject* /*pGameObject*/) {}
+        virtual uint32_t GetRespawnTimeForCreature(uint32_t /*pEntryId*/, Creature* /*pCreature*/) { return 240000; }
 
         // Player
         virtual void OnPlayerDeath(Player* /*pVictim*/, Unit* /*pKiller*/) {}
 
         // Area and AreaTrigger
         virtual void OnPlayerEnter(Player* /*pPlayer*/) {}
-        virtual void OnAreaTrigger(Player* /*pPlayer*/, uint32 /*pAreaId*/) {}
-        virtual void OnZoneChange(Player* /*pPlayer*/, uint32 /*pNewZone*/, uint32 /*pOldZone*/) {}
+        virtual void OnAreaTrigger(Player* /*pPlayer*/, uint32_t /*pAreaId*/) {}
+        virtual void OnZoneChange(Player* /*pPlayer*/, uint32_t /*pNewZone*/, uint32_t /*pOldZone*/) {}
 
         // Creature / GameObject - part of it is simple reimplementation for easier use Creature / GO < --- > Script
         virtual void OnCreatureDeath(Creature* /*pVictim*/, Unit* /*pKiller*/) {}
@@ -734,7 +734,7 @@ class SERVER_DECL HookInterface
 
         friend class ScriptMgr;
 
-        bool OnNewCharacter(uint32 Race, uint32 Class, WorldSession* Session, const char* Name);
+        bool OnNewCharacter(uint32_t Race, uint32_t Class, WorldSession* Session, const char* Name);
         void OnKillPlayer(Player* pPlayer, Player* pVictim);
         void OnFirstEnterWorld(Player* pPlayer);
         void OnEnterWorld(Player* pPlayer);
@@ -742,26 +742,26 @@ class SERVER_DECL HookInterface
         void OnGuildJoin(Player* pPlayer, Guild* pGuild);
         void OnDeath(Player* pPlayer);
         bool OnRepop(Player* pPlayer);
-        void OnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit);
+        void OnEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit);
         void OnEnterCombat(Player* pPlayer, Unit* pTarget);
         bool OnCastSpell(Player* pPlayer, SpellInfo const* pSpell, Spell* spell);
         bool OnLogoutRequest(Player* pPlayer);
         void OnLogout(Player* pPlayer);
         void OnQuestAccept(Player* pPlayer, QuestProperties const* pQuest, Object* pQuestGiver);
-        void OnZone(Player* pPlayer, uint32 Zone, uint32 oldZone);
-        bool OnChat(Player* pPlayer, uint32 Type, uint32 Lang, const char* Message, const char* Misc);
-        void OnLoot(Player* pPlayer, Unit* pTarget, uint32 Money, uint32 ItemId);
+        void OnZone(Player* pPlayer, uint32_t Zone, uint32_t oldZone);
+        bool OnChat(Player* pPlayer, uint32_t Type, uint32_t Lang, const char* Message, const char* Misc);
+        void OnLoot(Player* pPlayer, Unit* pTarget, uint32_t Money, uint32_t ItemId);
         void OnFullLogin(Player* pPlayer);
         void OnCharacterCreate(Player* pPlayer);
         void OnQuestCancelled(Player* pPlayer, QuestProperties const* pQuest);
         void OnQuestFinished(Player* pPlayer, QuestProperties const* pQuest, Object* pQuestGiver);
         void OnHonorableKill(Player* pPlayer, Player* pKilled);
         void OnArenaFinish(Player* pPlayer, ArenaTeam* pTeam, bool victory, bool rated);
-        void OnObjectLoot(Player* pPlayer, Object* pTarget, uint32 Money, uint32 ItemId);
-        void OnAreaTrigger(Player* pPlayer, uint32 areaTrigger);
+        void OnObjectLoot(Player* pPlayer, Object* pTarget, uint32_t Money, uint32_t ItemId);
+        void OnAreaTrigger(Player* pPlayer, uint32_t areaTrigger);
         void OnPostLevelUp(Player* pPlayer);
         bool OnPreUnitDie(Unit* Killer, Unit* Victim);
-        void OnAdvanceSkillLine(Player* pPlayer, uint32 SkillLine, uint32 Current);
+        void OnAdvanceSkillLine(Player* pPlayer, uint32_t SkillLine, uint32_t Current);
         void OnDuelFinished(Player* Winner, Player* Looser);
         void OnAuraRemove(Aura* aura);
         bool OnResurrect(Player* pPlayer);

@@ -72,7 +72,7 @@ bool SocketWorkerThread::runThread()
     return true;
 }
 
-void HandleReadComplete(Socket* s, uint32 len)
+void HandleReadComplete(Socket* s, uint32_t len)
 {
     //s->m_readEvent= NULL;
     if(!s->IsDeleted())
@@ -89,7 +89,7 @@ void HandleReadComplete(Socket* s, uint32 len)
     }
 }
 
-void HandleWriteComplete(Socket* s, uint32 len)
+void HandleWriteComplete(Socket* s, uint32_t len)
 {
     if(!s->IsDeleted())
     {
@@ -104,7 +104,7 @@ void HandleWriteComplete(Socket* s, uint32 len)
     }
 }
 
-void HandleShutdown(Socket* /*s*/, uint32 /*len*/)
+void HandleShutdown(Socket* /*s*/, uint32_t /*len*/)
 {
 
 }

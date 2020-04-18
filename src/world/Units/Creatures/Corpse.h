@@ -104,16 +104,16 @@ public:
 
 // MIT End
 // AGPL Start
-        Corpse(uint32 high, uint32 low);
+        Corpse(uint32_t high, uint32_t low);
         ~Corpse();
 
         // void Create();
-        void Create(Player* owner, uint32 mapid, float x, float y, float z, float ang);
+        void Create(Player* owner, uint32_t mapid, float x, float y, float z, float ang);
 
         void SaveToDB();
         void DeleteFromDB();
-        inline void SetCorpseState(uint32 state) { m_state = state; }
-        inline uint32 GetCorpseState() { return m_state; }
+        inline void SetCorpseState(uint32_t state) { m_state = state; }
+        inline uint32_t GetCorpseState() { return m_state; }
         void Despawn();
 
         inline void SetLoadedFromDB(bool value) { _loadedfromdb = value; }
@@ -128,14 +128,14 @@ public:
         time_t GetDeathClock() { return m_time; }
 
         //Easy functions
-        void SetOwner(uint64 guid);
+        void SetOwner(uint64_t guid);
 
 
     private:
 
-        uint32 m_state;
+        uint32_t m_state;
         time_t m_time;
-        uint32 _fields[CORPSE_END];
+        uint32_t _fields[CORPSE_END];
         bool _loadedfromdb;
 };
 

@@ -29,7 +29,7 @@
 #include "ServerState.h"
 
 
-uint8 loglevel = 0;
+uint8_t loglevel = 0;
 
 #ifndef WIN32
 int unix_main(int argc, char** argv)

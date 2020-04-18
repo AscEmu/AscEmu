@@ -8,8 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma pack(push,1)
 struct TeleportCoords
 {
-    uint32 id;
-    uint32 mapId;
+    uint32_t id;
+    uint32_t mapId;
     float x;
     float y;
     float z;

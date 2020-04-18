@@ -43,7 +43,7 @@ class CalvinMontague : public CreatureAIScript
         getCreature()->setStandState(STANDSTATE_STAND);
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 /*fAmount*/) override
+    void OnDamageTaken(Unit* mAttacker, uint32_t /*fAmount*/) override
     {
         if (getCreature()->getHealthPct() < 10)
         {
@@ -70,7 +70,7 @@ class CalvinMontague : public CreatureAIScript
             getCreature()->SetFaction(68);
             getCreature()->setStandState(STANDSTATE_SIT);
             getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(433), true);
-            sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::setStandState, (uint8)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
+            sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::setStandState, (uint8_t)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
             getCreature()->GetAIInterface()->WipeTargetList();
             getCreature()->GetAIInterface()->WipeHateList();
             getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
@@ -107,7 +107,7 @@ class Zealot : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(Zealot);
     explicit Zealot(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (!getCreature()->HasAura(3287))
             return;

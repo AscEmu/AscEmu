@@ -28,22 +28,22 @@ namespace Movement::Spline
         m_splineFlags.m_splineFlagsRaw.as_uint32() = pInitialFlags;
     }
 
-    /*void MoveSpline::SetSplineFlag(uint32 pFlags)
+    /*void MoveSpline::SetSplineFlag(uint32_t pFlags)
     {
         m_splineFlags.m_splineFlags = pFlags;
     }
 
-    uint32 MoveSpline::HasSplineFlag(uint32 pFlags)
+    uint32_t MoveSpline::HasSplineFlag(uint32_t pFlags)
     {
         return m_splineFlags.m_splineFlags & pFlags;
     }
 
-    void MoveSpline::AddSplineFlag(uint32 pFlags)
+    void MoveSpline::AddSplineFlag(uint32_t pFlags)
     {
         m_splineFlags.m_splineFlags |= pFlags;
     }
 
-    void MoveSpline::RemoveSplineFlag(uint32 pFlags)
+    void MoveSpline::RemoveSplineFlag(uint32_t pFlags)
     {
        m_splineFlags.m_splineFlags &= ~pFlags;
     }*/

@@ -25,10 +25,10 @@ class PreallocatedQueue
 {
     public:
 
-        PreallocatedQueue(uint32 size, uint32 realloc_size = 100)
+        PreallocatedQueue(uint32_t size, uint32_t realloc_size = 100)
         {
             // create buffer
-            Buffer = (uint8*)malloc(size * sizeof(Type));
+            Buffer = (uint8_t*)malloc(size * sizeof(Type));
             m_readpos = m_writepos = 0;
             m_buffersize = size * sizeof(Type);
             type_size = sizeof(Type);
@@ -75,23 +75,23 @@ class PreallocatedQueue
             return false;
         }
 
-        void reallocate(uint32 size)
+        void reallocate(uint32_t size)
         {
-            Buffer = (uint8*)realloc(Buffer, size);
+            Buffer = (uint8_t*)realloc(Buffer, size);
             assert(Buffer);
             m_buffersize = size;
         }
 
     protected:
 
-        uint8* Buffer;
+        uint8_t* Buffer;
 
-        uint32 m_readpos;
-        uint32 m_writepos;
-        uint32 m_writesize;
-        uint32 m_buffersize;
-        uint32 type_size;
-        uint32 m_reallocsize;
+        uint32_t m_readpos;
+        uint32_t m_writepos;
+        uint32_t m_writesize;
+        uint32_t m_buffersize;
+        uint32_t type_size;
+        uint32_t m_reallocsize;
 };
 
 #endif      //_PREALLOCATED_QUEUE_H

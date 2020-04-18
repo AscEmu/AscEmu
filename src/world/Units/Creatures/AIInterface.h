@@ -177,34 +177,34 @@ enum CreatureState
 
 class SpellInfo;
 
-const uint32 AISPELL_ANY_DIFFICULTY = 4;
+const uint32_t AISPELL_ANY_DIFFICULTY = 4;
 
 struct AI_Spell
 {
-    ~AI_Spell() { autocast_type = (uint32) - 1; }
-    uint32 entryId;
-    uint8 instance_mode;
-    uint16 agent;
-    uint32 procChance;
+    ~AI_Spell() { autocast_type = (uint32_t) - 1; }
+    uint32_t entryId;
+    uint8_t instance_mode;
+    uint16_t agent;
+    uint32_t procChance;
     SpellInfo const* spell;
-    uint8 spellType;
-    uint8 spelltargetType;
-    uint32 cooldown;
-    uint32 cooldowntime;
-    uint32 procCount;
-    uint32 procCounter;
+    uint8_t spellType;
+    uint8_t spelltargetType;
+    uint32_t cooldown;
+    uint32_t cooldowntime;
+    uint32_t procCount;
+    uint32_t procCounter;
     float floatMisc1;
-    uint32 Misc2;
+    uint32_t Misc2;
     float minrange;
     float maxrange;
-    uint32 autocast_type;
+    uint32_t autocast_type;
 };
 
 
-typedef std::unordered_map<uint64, int32> TargetMap;
+typedef std::unordered_map<uint64_t, int32_t> TargetMap;
 
 typedef std::set<Unit*> AssistTargetSet;
-typedef std::map<uint32, AI_Spell*> SpellMap;
+typedef std::map<uint32_t, AI_Spell*> SpellMap;
 
 
 //MIT start
@@ -248,7 +248,7 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         Movement::WayPointMap* mWayPointMap;
         bool mWaypointMapIsLoadedFromDB;
-        uint32 mCurrentWaypoint;
+        uint32_t mCurrentWaypoint;
         bool mMoveWaypointsBackwards;
 
         bool mShowWayPoints;
@@ -393,35 +393,35 @@ class SERVER_DECL AIInterface : public IUpdatable
         Unit* GetPetOwner() const;
         void DismissPet();
         void SetUnitToFollow(Unit* un);
-        void SetUnitToFollow(uint64 guid) { m_UnitToFollow = guid; };
+        void SetUnitToFollow(uint64_t guid) { m_UnitToFollow = guid; };
         void ResetUnitToFollow() { m_UnitToFollow = 0; };
 
         void SetUnitToFear(Unit* un);
-        void SetUnitToFear(uint64 guid)  { m_UnitToFear = guid; };
+        void SetUnitToFear(uint64_t guid)  { m_UnitToFear = guid; };
         void ResetUnitToFear() { m_UnitToFear = 0; };
 
         void SetUnitToFollowBackup(Unit* un);
-        void SetUnitToFollowBackup(uint64 guid) { m_UnitToFollow_backup = guid; };
+        void SetUnitToFollowBackup(uint64_t guid) { m_UnitToFollow_backup = guid; };
         void SetFollowDistance(float dist) { FollowDistance = dist; };
         void SetUnitToFollowAngle(float angle) { m_fallowAngle = angle; }
         bool setInFront(Unit* target);
         Unit* getUnitToFollow();
-        uint64 getUnitToFollowGUID() { return m_UnitToFollow; }
+        uint64_t getUnitToFollowGUID() { return m_UnitToFollow; }
         Unit* getUnitToFollowBackup();
-        uint64 getUnitToFollowBackupGUID() { return m_UnitToFollow_backup; }
+        uint64_t getUnitToFollowBackupGUID() { return m_UnitToFollow_backup; }
         Unit* getUnitToFear();
-        uint64 getUnitToFearGUID() { return m_UnitToFear; }
+        uint64_t getUnitToFearGUID() { return m_UnitToFear; }
         Creature* getFormationLinkTarget();
 
-        inline uint8 getCurrentAgent() { return static_cast<uint8>(m_aiCurrentAgent); }
+        inline uint8_t getCurrentAgent() { return static_cast<uint8_t>(m_aiCurrentAgent); }
         void setCurrentAgent(AI_Agent agent) { m_aiCurrentAgent = agent; }
-        uint32 getThreatByGUID(uint64 guid);
-        uint32 getThreatByPtr(Unit* obj);
+        uint32_t getThreatByGUID(uint64_t guid);
+        uint32_t getThreatByPtr(Unit* obj);
         Unit* GetMostHated();
         Unit* GetSecondHated();
-        bool modThreatByGUID(uint64 guid, int32 mod);
-        bool modThreatByPtr(Unit* obj, int32 mod);
-        void RemoveThreatByGUID(uint64 guid);
+        bool modThreatByGUID(uint64_t guid, int32_t mod);
+        bool modThreatByPtr(Unit* obj, int32_t mod);
+        void RemoveThreatByGUID(uint64_t guid);
         void RemoveThreatByPtr(Unit* obj);
         inline AssistTargetSet GetAssistTargets() { return m_assistTargets; }
         inline void LockAITargets(bool lock)
@@ -440,34 +440,34 @@ class SERVER_DECL AIInterface : public IUpdatable
         void SetSoulLinkedWith(Unit* target);
         bool GetIsSoulLinked();
         inline size_t getAITargetsCount() { return m_aiTargets.size(); }
-        inline uint32 getOutOfCombatRange() { return m_outOfCombatRange; }
-        void setOutOfCombatRange(uint32 val) { m_outOfCombatRange = val; }
+        inline uint32_t getOutOfCombatRange() { return m_outOfCombatRange; }
+        void setOutOfCombatRange(uint32_t val) { m_outOfCombatRange = val; }
 
         // Spell
         void CastSpell(Unit* caster, SpellInfo const* spellInfo, SpellCastTargets targets);
-        SpellInfo const* getSpellEntry(uint32 spellId);
+        SpellInfo const* getSpellEntry(uint32_t spellId);
         SpellCastTargets setSpellTargets(SpellInfo const* spellInfo, Unit* target) const;
         AI_Spell* getSpell();
         void addSpellToList(AI_Spell* sp);
 
         // Event Handler
-        void HandleEvent(uint32 event, Unit* pUnit, uint32 misc1);
+        void HandleEvent(uint32_t event, Unit* pUnit, uint32_t misc1);
 
-        void EventForceRedirected(Unit* pUnit, uint32 misc1);
-        void EventHostileAction(Unit* pUnit, uint32 misc1);
-        void EventUnitDied(Unit* pUnit, uint32 misc1);
-        void EventUnwander(Unit* pUnit, uint32 misc1);
-        void EventWander(Unit* pUnit, uint32 misc1);
-        void EventUnfear(Unit* pUnit, uint32 misc1);
-        void EventFear(Unit* pUnit, uint32 misc1);
-        void EventFollowOwner(Unit* pUnit, uint32 misc1);
-        void EventDamageTaken(Unit* pUnit, uint32 misc1);
-        void EventLeaveCombat(Unit* pUnit, uint32 misc1);
-        void EventEnterCombat(Unit* pUnit, uint32 misc1);
+        void EventForceRedirected(Unit* pUnit, uint32_t misc1);
+        void EventHostileAction(Unit* pUnit, uint32_t misc1);
+        void EventUnitDied(Unit* pUnit, uint32_t misc1);
+        void EventUnwander(Unit* pUnit, uint32_t misc1);
+        void EventWander(Unit* pUnit, uint32_t misc1);
+        void EventUnfear(Unit* pUnit, uint32_t misc1);
+        void EventFear(Unit* pUnit, uint32_t misc1);
+        void EventFollowOwner(Unit* pUnit, uint32_t misc1);
+        void EventDamageTaken(Unit* pUnit, uint32_t misc1);
+        void EventLeaveCombat(Unit* pUnit, uint32_t misc1);
+        void EventEnterCombat(Unit* pUnit, uint32_t misc1);
 
         void OnDeath(Object* pKiller);
-        void AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellId = 0);
-        void HealReaction(Unit* caster, Unit* victim, SpellInfo const* sp, uint32 amount);
+        void AttackReaction(Unit* pUnit, uint32_t damage_dealt, uint32_t spellId = 0);
+        void HealReaction(Unit* caster, Unit* victim, SpellInfo const* sp, uint32_t amount);
         void EventAiInterfaceParamsetFinish();
         void EventChangeFaction(Unit* ForceAttackersToHateThisInstead = NULL);    /// we have to tell our current enemies to stop attacking us, we should also forget about our targets
 
@@ -476,14 +476,14 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         void SetReturnPosition();
 
-        void _UpdateTotem(uint32 p_time);
+        void _UpdateTotem(uint32_t p_time);
 
         // Calculation
         float _CalcAggroRange(Unit* target);
         void _CalcDestinationAndMove(Unit* target, float dist);
         float _CalcCombatRange(Unit* target, bool ranged);
         float _CalcDistanceFromHome();
-        uint32 _CalcThreat(uint32 damage, SpellInfo const* sp, Unit* Attacker);
+        uint32_t _CalcThreat(uint32_t damage, SpellInfo const* sp, Unit* Attacker);
 
         void SetAllowedToEnterCombat(bool val) { m_AllowedToEnterCombat = val; }
         inline bool GetAllowedToEnterCombat(void) { return m_AllowedToEnterCombat; }
@@ -493,7 +493,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         bool m_canMove;
 
         //visibility
-        uint32 faction_visibility;
+        uint32_t faction_visibility;
 
         bool onGameobject;
 
@@ -501,24 +501,24 @@ class SERVER_DECL AIInterface : public IUpdatable
         bool m_canCallForHelp;
         bool m_canRangedAttack;
         float m_FleeHealth;
-        uint32 m_FleeDuration;
+        uint32_t m_FleeDuration;
         float m_CallForHelpHealth;
-        uint32 m_totemspelltimer;
-        uint32 m_totemspelltime;
+        uint32_t m_totemspelltimer;
+        uint32_t m_totemspelltime;
         SpellInfo const* totemspell;
 
-        uint32 m_totalMoveTime;
-        inline void AddStopTime(uint32 Time) { m_moveTimer += Time; }
+        uint32_t m_totalMoveTime;
+        inline void AddStopTime(uint32_t Time) { m_moveTimer += Time; }
         inline void SetNextSpell(AI_Spell* sp) { m_nextSpell = sp; }
         Unit* getNextTarget();
         void setNextTarget(Unit* nextTarget);
-        void setNextTarget(uint64 nextTarget);
+        void setNextTarget(uint64_t nextTarget);
         void resetNextTarget();
 
-        uint64 m_formationLinkTarget;
+        uint64_t m_formationLinkTarget;
         float m_formationFollowDistance;
         float m_formationFollowAngle;
-        uint32 m_formationLinkSqlId;
+        uint32_t m_formationLinkSqlId;
 
         void WipeReferences();
         TimedEmoteList* timed_emotes;
@@ -528,7 +528,7 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         bool waiting_for_cooldown;
 
-        uint32 next_spell_time;
+        uint32_t next_spell_time;
 
         void CheckNextSpell(AI_Spell* sp)
         {
@@ -541,12 +541,12 @@ class SERVER_DECL AIInterface : public IUpdatable
         // deletes the old waypoint map as default. In case m_custom_waypoint_map is used, just call SetWaypointMap(NULL): this will delete m_custom_waypoint_map too.
         void SetWaypointMap(Movement::WayPointMap* m, bool delete_old_map = true);
         inline Movement::WayPointMap* GetWaypointMap() { return mWayPointMap; }
-        void LoadWaypointMapFromDB(uint32 spawnid);
+        void LoadWaypointMapFromDB(uint32_t spawnid);
         bool m_isGuard;
         bool m_isNeutralGuard;
         // bool m_fastMove;
-        void setGuardTimer(uint32 timer) { m_guardTimer = timer; }
-        virtual void _UpdateCombat(uint32 p_time);
+        void setGuardTimer(uint32_t timer) { m_guardTimer = timer; }
+        virtual void _UpdateCombat(uint32_t p_time);
 
     protected:
 
@@ -555,25 +555,25 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         // Update
         void _UpdateTargets();
-        void _UpdateMovement(uint32 p_time);
-        void _UpdateTimer(uint32 p_time);
+        void _UpdateMovement(uint32_t p_time);
+        void _UpdateTimer(uint32_t p_time);
 
         bool m_updateAssist;
         bool m_updateTargets;
-        uint32 m_updateAssistTimer;
-        uint32 m_updateTargetsTimer;
-        uint32 m_updateTargetsTimer2;
+        uint32_t m_updateAssistTimer;
+        uint32_t m_updateTargetsTimer;
+        uint32_t m_updateTargetsTimer2;
 
         // Misc
         Unit* FindTarget();
         Unit* FindTargetForSpell(AI_Spell* sp);
         bool FindFriends(float dist);
         AI_Spell* m_nextSpell;
-        uint64 m_nextTarget;
-        uint32 m_fleeTimer;
+        uint64_t m_nextTarget;
+        uint32_t m_fleeTimer;
         bool m_hasFleed;
         bool m_hasCalledForHelp;
-        uint32 m_outOfCombatRange;
+        uint32_t m_outOfCombatRange;
 
         // Unit* gracefull_hit_on_target;
         Unit* m_Unit;
@@ -607,9 +607,9 @@ class SERVER_DECL AIInterface : public IUpdatable
         bool MoveTo(float x, float y, float z, float o = 0.0f);
         bool MoveDone() const;
 
-        void SendCurrentMove(Player* plyr/*uint64 guid*/);
+        void SendCurrentMove(Player* plyr/*uint64_t guid*/);
         void SendMoveToPacket();
-        bool StopMovement(uint32 time);
+        bool StopMovement(uint32_t time);
 
         void AddSpline(float x, float y, float z);
 
@@ -622,9 +622,9 @@ class SERVER_DECL AIInterface : public IUpdatable
         void MoveEvadeReturn();
 
         bool CreatePath(float x, float y, float z, bool onlytest = false);
-        dtStatus findSmoothPath(const float* startPos, const float* endPos, const dtPolyRef* polyPath, const uint32 polyPathSize, float* smoothPath, int* smoothPathSize, bool & usedOffmesh, const uint32 maxSmoothPathSize, dtNavMesh* mesh, dtNavMeshQuery* query, dtQueryFilter & filter);
-        bool getSteerTarget(const float* startPos, const float* endPos, const float minTargetDist, const dtPolyRef* path, const uint32 pathSize, float* steerPos, unsigned char & steerPosFlag, dtPolyRef & steerPosRef, dtNavMeshQuery* query);
-        uint32 fixupCorridor(dtPolyRef* path, const uint32 npath, const uint32 maxPath, const dtPolyRef* visited, const uint32 nvisited);
+        dtStatus findSmoothPath(const float* startPos, const float* endPos, const dtPolyRef* polyPath, const uint32_t polyPathSize, float* smoothPath, int* smoothPathSize, bool & usedOffmesh, const uint32_t maxSmoothPathSize, dtNavMesh* mesh, dtNavMeshQuery* query, dtQueryFilter & filter);
+        bool getSteerTarget(const float* startPos, const float* endPos, const float minTargetDist, const dtPolyRef* path, const uint32_t pathSize, float* steerPos, unsigned char & steerPosFlag, dtPolyRef & steerPosRef, dtNavMeshQuery* query);
+        uint32_t fixupCorridor(dtPolyRef* path, const uint32_t npath, const uint32_t maxPath, const dtPolyRef* visited, const uint32_t nvisited);
 
         //Path creation helpers
         bool CanCreatePath(float x, float y, float z) { return CreatePath(x, y, z, true); }
@@ -643,22 +643,22 @@ class SERVER_DECL AIInterface : public IUpdatable
         float m_lastFollowX;
         float m_lastFollowY;
 
-        uint64 m_UnitToFollow;
-        uint64 m_UnitToFollow_backup;   // used unly when forcing creature to wander (blind spell) so when effect wears off we can follow our master again (guardian)
-        uint64 m_UnitToFear;
+        uint64_t m_UnitToFollow;
+        uint64_t m_UnitToFollow_backup; // used unly when forcing creature to wander (blind spell) so when effect wears off we can follow our master again (guardian)
+        uint64_t m_UnitToFear;
 
-        uint32 m_timeToMove;
-        uint32 m_timeMoved;
-        uint32 m_moveTimer;
-        uint32 m_FearTimer;
-        uint32 m_WanderTimer;
+        uint32_t m_timeToMove;
+        uint32_t m_timeMoved;
+        uint32_t m_moveTimer;
+        uint32_t m_FearTimer;
+        uint32_t m_WanderTimer;
 
         //Movement::WaypointMovementScript m_MovementType;
         MovementState m_MovementState;
-        uint32 m_guardTimer;
-        int32 m_currentHighestThreat;
+        uint32_t m_guardTimer;
+        int32_t m_currentHighestThreat;
         std::list<spawn_timed_emotes*>::iterator next_timed_emote;
-        uint32 timed_emote_expire;
+        uint32_t timed_emote_expire;
 
         float last_updated_orientation;
 
@@ -669,8 +669,8 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         void WipeCurrentTarget();
 
-        void SetCreatureProtoDifficulty(uint32 entry);
-        uint8 GetDifficultyType();
+        void SetCreatureProtoDifficulty(uint32_t entry);
+        uint8_t GetDifficultyType();
 };
 
 #endif  //WOWSERVER_AIINTERFACE_H

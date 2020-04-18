@@ -43,15 +43,15 @@ class GameEvent
 
     public:
 
-        uint32 event_id; // Event ID
+        uint32_t event_id; // Event ID
         time_t start; // Event start time
         time_t end; // Event end time
-        uint32 occurence;
-        uint32 length;
+        uint32_t occurence;
+        uint32_t length;
         HolidayIds holiday_id;
         std::string description;
         GameEventState state; // state of the game event, these are saved into the game_event table on change!
-        uint8 announce;
+        uint8_t announce;
 
         time_t nextstart; // The next time this event should be allowed to change from GAMEEVENT_INACTIVE
 
@@ -62,7 +62,7 @@ class GameEvent
 
         // UNUSED
         GameEventConditionMap conditions;  // conditions to finish
-        std::set<uint16 /*gameevent id*/> prerequisite_events;
+        std::set<uint16_t /*gameevent id*/> prerequisite_events;
 
         void SetState(GameEventState pState);
         GameEventState GetState() { return state; }

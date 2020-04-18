@@ -49,7 +49,7 @@ Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
 
 extern bool bServerShutdown;
 
-MapMgr::MapMgr(Map* map, uint32 mapId, uint32 instanceid) : CellHandler<MapCell>(map), _mapId(mapId), eventHolder(instanceid), worldstateshandler(mapId)
+MapMgr::MapMgr(Map* map, uint32_t mapId, uint32_t instanceid) : CellHandler<MapCell>(map), _mapId(mapId), eventHolder(instanceid), worldstateshandler(mapId)
 {
     _terrain = new TerrainHolder(mapId);
     _shutdown = false;
@@ -120,11 +120,11 @@ MapMgr::~MapMgr()
     // Remove objects
     if (_cells)
     {
-        for (uint32 i = 0; i < _sizeX; i++)
+        for (uint32_t i = 0; i < _sizeX; i++)
         {
             if (_cells[i] != 0)
             {
-                for (uint32 j = 0; j < _sizeY; j++)
+                for (uint32_t j = 0; j < _sizeY; j++)
                 {
                     if (_cells[i][j] != 0)
                     {
@@ -219,8 +219,8 @@ void MapMgr::PushObject(Object* obj)
     ARCEMU_ASSERT(_cells != nullptr);
 
     // Get cell coordinates
-    uint32 x = GetPosX(obj->GetPositionX());
-    uint32 y = GetPosY(obj->GetPositionY());
+    uint32_t x = GetPosX(obj->GetPositionX());
+    uint32_t y = GetPosY(obj->GetPositionY());
 
     if (x >= _sizeX || y >= _sizeY)
     {
@@ -240,7 +240,7 @@ void MapMgr::PushObject(Object* obj)
 
     // Build update-block for player
     ByteBuffer* buf = 0;
-    uint32 count;
+    uint32_t count;
     Player* plObj = nullptr;
 
     if (obj->isPlayer())
@@ -254,16 +254,16 @@ void MapMgr::PushObject(Object* obj)
     }
 
     // Build in-range data
-    uint8 cellNumber = worldConfig.server.mapCellNumber;
+    uint8_t cellNumber = worldConfig.server.mapCellNumber;
 
-    uint32 endX = (x <= _sizeX) ? x + cellNumber : (_sizeX - cellNumber);
-    uint32 endY = (y <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
-    uint32 startX = x > 0 ? x - cellNumber : 0;
-    uint32 startY = y > 0 ? y - cellNumber : 0;
+    uint32_t endX = (x <= _sizeX) ? x + cellNumber : (_sizeX - cellNumber);
+    uint32_t endY = (y <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
+    uint32_t startX = x > 0 ? x - cellNumber : 0;
+    uint32_t startY = y > 0 ? y - cellNumber : 0;
 
-    for (uint32 posX = startX; posX <= endX; posX++)
+    for (uint32_t posX = startX; posX <= endX; posX++)
     {
-        for (uint32 posY = startY; posY <= endY; posY++)
+        for (uint32_t posY = startY; posY <= endY; posY++)
         {
             MapCell* cell = GetCell(posX, posY);
             if (cell)
@@ -334,7 +334,7 @@ void MapMgr::PushObject(Object* obj)
         // Add the map wide objects
         if (_mapWideStaticObjects.size())
         {
-            uint32 globalcount = 0;
+            uint32_t globalcount = 0;
             if (!buf)
                 buf = new ByteBuffer(300);
 
@@ -495,7 +495,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
     obj->removeSelfFromInrangeSets();
     obj->clearInRangeSets();             // Clear object's in-range set
 
-    uint8 cellNumber = worldConfig.server.mapCellNumber;
+    uint8_t cellNumber = worldConfig.server.mapCellNumber;
 
     // If it's a player - update his nearby cells
     if (!_shutdown)
@@ -504,8 +504,8 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         {// get x/y
             if (obj->GetPositionX() < _maxX || obj->GetPositionX() > _minY || obj->GetPositionY() < _maxY || obj->GetPositionY() > _minY)
             {
-                uint32 x = GetPosX(obj->GetPositionX());
-                uint32 y = GetPosY(obj->GetPositionY());
+                uint32_t x = GetPosX(obj->GetPositionX());
+                uint32_t y = GetPosY(obj->GetPositionY());
                 UpdateCellActivity(x, y, 2 + cellNumber);
             }
             m_PlayerStorage.erase(static_cast<Player*>(obj)->getGuidLow());
@@ -514,8 +514,8 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         {
             if (obj->GetPositionX() < _maxX || obj->GetPositionX() > _minY || obj->GetPositionY() < _maxY || obj->GetPositionY() > _minY)
             {
-                uint32 x = GetPosX(obj->GetPositionX());
-                uint32 y = GetPosY(obj->GetPositionY());
+                uint32_t x = GetPosX(obj->GetPositionX());
+                uint32_t y = GetPosY(obj->GetPositionY());
                 UpdateCellActivity(x, y, 2 + cellNumber);
             }
         }
@@ -618,8 +618,8 @@ void MapMgr::ChangeObjectLocation(Object* obj)
         OutOfMapBoundariesTeleport(obj);
     }
 
-    uint32 cellX = GetPosX(obj->GetPositionX());
-    uint32 cellY = GetPosY(obj->GetPositionY());
+    uint32_t cellX = GetPosX(obj->GetPositionX());
+    uint32_t cellY = GetPosY(obj->GetPositionY());
 
     if (cellX >= _sizeX || cellY >= _sizeY)
     {
@@ -636,7 +636,7 @@ void MapMgr::ChangeObjectLocation(Object* obj)
 
     ARCEMU_ASSERT(objCell != nullptr);
 
-    uint8 cellNumber = worldConfig.server.mapCellNumber;
+    uint8_t cellNumber = worldConfig.server.mapCellNumber;
 
     // If object moved cell
     if (objCell != pOldCell)
@@ -674,10 +674,10 @@ void MapMgr::ChangeObjectLocation(Object* obj)
     }
 
     // Update in-range set for new objects
-    uint32 endX = cellX + cellNumber;
-    uint32 endY = cellY + cellNumber;
-    uint32 startX = cellX > 0 ? cellX - cellNumber : 0;
-    uint32 startY = cellY > 0 ? cellY - cellNumber : 0;
+    uint32_t endX = cellX + cellNumber;
+    uint32_t endY = cellY + cellNumber;
+    uint32_t startX = cellX > 0 ? cellX - cellNumber : 0;
+    uint32_t startY = cellY > 0 ? cellY - cellNumber : 0;
 
     //If the object announcing it's position is a special one, then it should do so in a much wider area - like the distance between the two transport towers in Orgrimmar, or more. - By: VLack
     if (obj->isGameObject() && (static_cast< GameObject* >(obj)->GetOverrides() & GAMEOBJECT_ONMOVEWIDE))
@@ -688,9 +688,9 @@ void MapMgr::ChangeObjectLocation(Object* obj)
         startY = cellY > 5 ? cellY - 6 : 0;
     }
 
-    for (uint32 posX = startX; posX <= endX; ++posX)
+    for (uint32_t posX = startX; posX <= endX; ++posX)
     {
-        for (uint32 posY = startY; posY <= endY; ++posY)
+        for (uint32_t posY = startY; posY <= endY; ++posY)
         {
             MapCell* cell = GetCell(posX, posY);
             if (cell)
@@ -902,7 +902,7 @@ void MapMgr::_UpdateObjects()
         return;
 
     ByteBuffer update(2500);
-    uint32 count = 0;
+    uint32_t count = 0;
 
     m_updateMutex.Acquire();
 
@@ -992,22 +992,22 @@ void MapMgr::_UpdateObjects()
 }
 
 
-uint32 MapMgr::GetPlayerCount()
+uint32_t MapMgr::GetPlayerCount()
 {
-    return static_cast<uint32>(m_PlayerStorage.size());
+    return static_cast<uint32_t>(m_PlayerStorage.size());
 }
 
-void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
+void MapMgr::UpdateCellActivity(uint32_t x, uint32_t y, uint32_t radius)
 {
     CellSpawns* sp;
-    uint32 endX = (x + radius) <= _sizeX ? x + radius : (_sizeX - 1);
-    uint32 endY = (y + radius) <= _sizeY ? y + radius : (_sizeY - 1);
-    uint32 startX = x > radius ? x - radius : 0;
-    uint32 startY = y > radius ? y - radius : 0;
+    uint32_t endX = (x + radius) <= _sizeX ? x + radius : (_sizeX - 1);
+    uint32_t endY = (y + radius) <= _sizeY ? y + radius : (_sizeY - 1);
+    uint32_t startX = x > radius ? x - radius : 0;
+    uint32_t startY = y > radius ? y - radius : 0;
 
-    for (uint32 posX = startX; posX <= endX; posX++)
+    for (uint32_t posX = startX; posX <= endX; posX++)
     {
-        for (uint32 posY = startY; posY <= endY; posY++)
+        for (uint32_t posY = startY; posY <= endY; posY++)
         {
             MapCell* objCell = GetCell(posX, posY);
             if (objCell == nullptr)
@@ -1020,7 +1020,7 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
                     LogDebugFlag(LF_MAP_CELL, "MapMgr : Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, this->_mapId, m_instanceID);
                     objCell->SetActivity(true);
 
-                    _terrain->LoadTile((int32)posX / 8, (int32)posY / 8);
+                    _terrain->LoadTile((int32_t)posX / 8, (int32_t)posY / 8);
 
                     ARCEMU_ASSERT(!objCell->IsLoaded());
 
@@ -1038,7 +1038,7 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
                 {
                     LogDebugFlag(LF_MAP_CELL, "Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, this->_mapId, m_instanceID);
 
-                    _terrain->LoadTile((int32)posX / 8, (int32)posY / 8);
+                    _terrain->LoadTile((int32_t)posX / 8, (int32_t)posY / 8);
                     objCell->SetActivity(true);
 
                     if (!objCell->IsLoaded())
@@ -1055,7 +1055,7 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
                     LogDebugFlag(LF_MAP_CELL, "Cell [%u,%u] on map %u (instance %u) is now idle.", posX, posY, _mapId, m_instanceID);
                     objCell->SetActivity(false);
 
-                    _terrain->UnloadTile((int32)posX / 8, (int32)posY / 8);
+                    _terrain->UnloadTile((int32_t)posX / 8, (int32_t)posY / 8);
                 }
             }
         }
@@ -1092,7 +1092,7 @@ bool MapMgr::IsUnderground(float x, float y, float z)
     return GetADTLandHeight(x, y) > (z + 0.5f);
 }
 
-bool MapMgr::GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32& liquidtype)
+bool MapMgr::GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32_t& liquidtype)
 {
     VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
 
@@ -1121,13 +1121,13 @@ float MapMgr::GetLiquidHeight(float x, float y)
     return rv;
 }
 
-uint8 MapMgr::GetLiquidType(float x, float y)
+uint8_t MapMgr::GetLiquidType(float x, float y)
 {
     TerrainTile* tile = _terrain->GetTile(x, y);
     if (tile == nullptr)
         return 0;
 
-    uint8 rv = tile->m_map.GetTileLiquidType(x, y);
+    uint8_t rv = tile->m_map.GetTileLiquidType(x, y);
     tile->DecRef();
 
     return rv;
@@ -1135,10 +1135,10 @@ uint8 MapMgr::GetLiquidType(float x, float y)
 
 const ::DBC::Structures::AreaTableEntry* MapMgr::GetArea(float x, float y, float z)
 {
-    uint32 mogp_flags;
-    int32 adt_id;
-    int32 root_id;
-    int32 group_id;
+    uint32_t mogp_flags;
+    int32_t adt_id;
+    int32_t root_id;
+    int32_t group_id;
 
     bool have_area_info = _terrain->GetAreaInfo(x, y, z, mogp_flags, adt_id, root_id, group_id);
     auto area_flag_without_adt_id = _terrain->GetAreaFlagWithoutAdtId(x, y);
@@ -1157,23 +1157,23 @@ bool MapMgr::isInLineOfSight(float x, float y, float z, float x2, float y2, floa
     return vmgr->isInLineOfSight(GetMapId(), x, y, z, x2, y2, z2);
 }
 
-uint32 MapMgr::GetMapId()
+uint32_t MapMgr::GetMapId()
 {
     return _mapId;
 }
 
-bool MapMgr::_CellActive(uint32 x, uint32 y)
+bool MapMgr::_CellActive(uint32_t x, uint32_t y)
 {
-    uint8 cellNumber = worldConfig.server.mapCellNumber;
+    uint8_t cellNumber = worldConfig.server.mapCellNumber;
 
-    uint32 endX = ((x + cellNumber) <= _sizeX) ? x + cellNumber : (_sizeX - cellNumber);
-    uint32 endY = ((y + cellNumber) <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
-    uint32 startX = x > 0 ? x - cellNumber : 0;
-    uint32 startY = y > 0 ? y - cellNumber : 0;
+    uint32_t endX = ((x + cellNumber) <= _sizeX) ? x + cellNumber : (_sizeX - cellNumber);
+    uint32_t endY = ((y + cellNumber) <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
+    uint32_t startX = x > 0 ? x - cellNumber : 0;
+    uint32_t startY = y > 0 ? y - cellNumber : 0;
 
-    for (uint32 posX = startX; posX <= endX; posX++)
+    for (uint32_t posX = startX; posX <= endX; posX++)
     {
-        for (uint32 posY = startY; posY <= endY; posY++)
+        for (uint32_t posY = startY; posY <= endY; posY++)
         {
             MapCell* objCell = GetCell(posX, posY);
             if (objCell != nullptr)
@@ -1214,7 +1214,7 @@ bool MapMgr::IsCombatInProgress()
 
 void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
 {
-    uint8 cellNumber = worldConfig.server.mapCellNumber;
+    uint8_t cellNumber = worldConfig.server.mapCellNumber;
 
     if (farsight == 0)
     {
@@ -1229,16 +1229,16 @@ void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
     }
     else
     {
-        uint32 cellX = GetPosX(farsight->GetPositionX());
-        uint32 cellY = GetPosY(farsight->GetPositionY());
-        uint32 endX = (cellX <= _sizeX) ? cellX + cellNumber : (_sizeX - cellNumber);
-        uint32 endY = (cellY <= _sizeY) ? cellY + cellNumber : (_sizeY - cellNumber);
-        uint32 startX = cellX > 0 ? cellX - cellNumber : 0;
-        uint32 startY = cellY > 0 ? cellY - cellNumber : 0;
+        uint32_t cellX = GetPosX(farsight->GetPositionX());
+        uint32_t cellY = GetPosY(farsight->GetPositionY());
+        uint32_t endX = (cellX <= _sizeX) ? cellX + cellNumber : (_sizeX - cellNumber);
+        uint32_t endY = (cellY <= _sizeY) ? cellY + cellNumber : (_sizeY - cellNumber);
+        uint32_t startX = cellX > 0 ? cellX - cellNumber : 0;
+        uint32_t startY = cellY > 0 ? cellY - cellNumber : 0;
 
-        for (uint32 posX = startX; posX <= endX; ++posX)
+        for (uint32_t posX = startX; posX <= endX; ++posX)
         {
-            for (uint32 posY = startY; posY <= endY; ++posY)
+            for (uint32_t posY = startY; posY <= endY; ++posY)
             {
                 MapCell* cell = GetCell(posX, posY);
                 if (cell != nullptr)
@@ -1252,7 +1252,7 @@ void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
                         if (!plr->IsVisible(obj->getGuid()) && plr->canSee(obj) && farsight->GetDistance2dSq(obj) <= m_UpdateDistance)
                         {
                             ByteBuffer buf;
-                            uint32 count = obj->buildCreateUpdateBlockForPlayer(&buf, plr);
+                            uint32_t count = obj->buildCreateUpdateBlockForPlayer(&buf, plr);
                             plr->getUpdateMgr().pushCreationData(&buf, count);
                             plr->m_visibleFarsightObjects.insert(obj);
                         }
@@ -1286,7 +1286,7 @@ bool MapMgr::Do()
     ThreadState = THREADSTATE_BUSY;
     SetThreadName("Map mgr - M%u|I%u", this->_mapId, this->m_instanceID);
 
-    uint32 last_exec = Util::getMSTime();
+    uint32_t last_exec = Util::getMSTime();
 
     // Create Instance script
     LoadInstanceScript();
@@ -1316,7 +1316,7 @@ bool MapMgr::Do()
 
     while (GetThreadState() != THREADSTATE_TERMINATE && !_shutdown)
     {
-        uint32 exec_start = Util::getMSTime();
+        uint32_t exec_start = Util::getMSTime();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         //first push to world new objects
@@ -1337,7 +1337,7 @@ bool MapMgr::Do()
         _PerformObjectDuties();
 
         last_exec = Util::getMSTime();
-        uint32 exec_time = last_exec - exec_start;
+        uint32_t exec_time = last_exec - exec_start;
         if (exec_time < 100)  //mapmgr update period 100
             Arcemu::Sleep(100 - exec_time);
 
@@ -1426,7 +1426,7 @@ void MapMgr::AddObject(Object* obj)
     m_objectinsertlock.Release();
 }
 
-Unit* MapMgr::GetUnit(const uint64 & guid)
+Unit* MapMgr::GetUnit(const uint64_t & guid)
 {
     if (guid == 0)
         return nullptr;
@@ -1448,7 +1448,7 @@ Unit* MapMgr::GetUnit(const uint64 & guid)
     return nullptr;
 }
 
-Object* MapMgr::_GetObject(const uint64 & guid)
+Object* MapMgr::_GetObject(const uint64_t & guid)
 {
     if (!guid)
         return nullptr;
@@ -1476,8 +1476,8 @@ void MapMgr::_PerformObjectDuties()
 {
     ++mLoopCounter;
 
-    uint32 mstime = Util::getMSTime();
-    uint32 difftime = mstime - lastUnitUpdate;
+    uint32_t mstime = Util::getMSTime();
+    uint32_t difftime = mstime - lastUnitUpdate;
 
     if (difftime > 500)
         difftime = 500;
@@ -1567,7 +1567,7 @@ void MapMgr::_PerformObjectDuties()
                 continue;
             }
 
-            uint8 result;
+            uint8_t result;
 
             if ((result = session->Update(m_instanceID)) != 0)
             {
@@ -1585,9 +1585,9 @@ void MapMgr::_PerformObjectDuties()
     _UpdateObjects();
 }
 
-void MapMgr::EventCorpseDespawn(uint64 guid)
+void MapMgr::EventCorpseDespawn(uint64_t guid)
 {
-    Corpse* pCorpse = sObjectMgr.GetCorpse((uint32)guid);
+    Corpse* pCorpse = sObjectMgr.GetCorpse((uint32_t)guid);
     if (pCorpse == nullptr)     // Already Deleted
         return;
 
@@ -1619,7 +1619,7 @@ void MapMgr::TeleportPlayers()
     }
 }
 
-uint32 MapMgr::GetInstanceID()
+uint32_t MapMgr::GetInstanceID()
 {
     return m_instanceID;
 }
@@ -1634,12 +1634,12 @@ MapScriptInterface* MapMgr::GetInterface()
     return ScriptInterface;
 }
 
-int32 MapMgr::event_GetInstanceID()
+int32_t MapMgr::event_GetInstanceID()
 {
     return m_instanceID;
 }
 
-void MapMgr::UnloadCell(uint32 x, uint32 y)
+void MapMgr::UnloadCell(uint32_t x, uint32_t y)
 {
     MapCell* c = GetCell(x, y);
     if (c == nullptr || c->HasPlayers() || _CellActive(x, y) || !c->IsUnloadPending())
@@ -1650,7 +1650,7 @@ void MapMgr::UnloadCell(uint32 x, uint32 y)
     c->Unload();
 }
 
-void MapMgr::EventRespawnCreature(Creature* c, uint16 x, uint16 y)
+void MapMgr::EventRespawnCreature(Creature* c, uint16_t x, uint16_t y)
 {
     MapCell* cell = GetCell(x, y);
     if (cell == nullptr)    //cell got deleted while waiting for respawn.
@@ -1665,7 +1665,7 @@ void MapMgr::EventRespawnCreature(Creature* c, uint16 x, uint16 y)
     }
 }
 
-void MapMgr::EventRespawnGameObject(GameObject* o, uint16 x, uint16 y)
+void MapMgr::EventRespawnGameObject(GameObject* o, uint16_t x, uint16_t y)
 {
     MapCell* cell = GetCell(x, y);
     if (cell == nullptr)   //cell got deleted while waiting for respawn.
@@ -1680,19 +1680,19 @@ void MapMgr::EventRespawnGameObject(GameObject* o, uint16 x, uint16 y)
     }
 }
 
-void MapMgr::SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint32 cell_radius, uint32 langpos, int32 lang, WorldSession* originator)
+void MapMgr::SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint32_t cell_radius, uint32_t langpos, int32_t lang, WorldSession* originator)
 {
-    uint32 cellX = GetPosX(obj->GetPositionX());
-    uint32 cellY = GetPosY(obj->GetPositionY());
-    uint32 endX = ((cellX + cell_radius) <= _sizeX) ? cellX + cell_radius : (_sizeX - 1);
-    uint32 endY = ((cellY + cell_radius) <= _sizeY) ? cellY + cell_radius : (_sizeY - 1);
-    uint32 startX = cellX > cell_radius ? cellX - cell_radius : 0;
-    uint32 startY = cellY > cell_radius ? cellY - cell_radius : 0;
+    uint32_t cellX = GetPosX(obj->GetPositionX());
+    uint32_t cellY = GetPosY(obj->GetPositionY());
+    uint32_t endX = ((cellX + cell_radius) <= _sizeX) ? cellX + cell_radius : (_sizeX - 1);
+    uint32_t endY = ((cellY + cell_radius) <= _sizeY) ? cellY + cell_radius : (_sizeY - 1);
+    uint32_t startX = cellX > cell_radius ? cellX - cell_radius : 0;
+    uint32_t startY = cellY > cell_radius ? cellY - cell_radius : 0;
 
     MapCell::ObjectSet::iterator iter, iend;
-    for (uint32 posX = startX; posX <= endX; ++posX)
+    for (uint32_t posX = startX; posX <= endX; ++posX)
     {
-        for (uint32 posY = startY; posY <= endY; ++posY)
+        for (uint32_t posY = startY; posY <= endY; ++posY)
         {
             MapCell* cell = GetCell(posX, posY);
             if (cell && cell->HasPlayers())
@@ -1713,27 +1713,27 @@ void MapMgr::SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint
     }
 }
 
-Creature* MapMgr::GetSqlIdCreature(uint32 sqlid)
+Creature* MapMgr::GetSqlIdCreature(uint32_t sqlid)
 {
     auto itr = _sqlids_creatures.find(sqlid);
     return itr == _sqlids_creatures.end() ? nullptr : itr->second;
 }
 
-GameObject* MapMgr::GetSqlIdGameObject(uint32 sqlid)
+GameObject* MapMgr::GetSqlIdGameObject(uint32_t sqlid)
 {
     auto itr = _sqlids_gameobjects.find(sqlid);
     return itr == _sqlids_gameobjects.end() ? nullptr : itr->second;
 }
 
-uint64 MapMgr::GenerateCreatureGUID(uint32 entry)
+uint64_t MapMgr::GenerateCreatureGUID(uint32_t entry)
 {
-    uint64 newguid = 0;
+    uint64_t newguid = 0;
 
     CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(entry);
     if (creature_properties == nullptr || creature_properties->vehicleid == 0)
-        newguid = static_cast<uint64>(HIGHGUID_TYPE_UNIT) << 32;
+        newguid = static_cast<uint64_t>(HIGHGUID_TYPE_UNIT) << 32;
     else
-        newguid = static_cast<uint64>(HIGHGUID_TYPE_VEHICLE) << 32;
+        newguid = static_cast<uint64_t>(HIGHGUID_TYPE_VEHICLE) << 32;
 
     char* pHighGuid = reinterpret_cast<char*>(&newguid);
     char* pEntry = reinterpret_cast<char*>(&entry);
@@ -1743,7 +1743,7 @@ uint64 MapMgr::GenerateCreatureGUID(uint32 entry)
     pHighGuid[5] |= pEntry[2];
     pHighGuid[6] |= pEntry[3];
 
-    uint32 guid = 0;
+    uint32_t guid = 0;
 
     if (!_reusable_guids_creature.empty())
     {
@@ -1769,13 +1769,13 @@ uint64 MapMgr::GenerateCreatureGUID(uint32 entry)
     return newguid;
 }
 
-Creature* MapMgr::CreateCreature(uint32 entry)
+Creature* MapMgr::CreateCreature(uint32_t entry)
 {
-    uint64 guid = GenerateCreatureGUID(entry);
+    uint64_t guid = GenerateCreatureGUID(entry);
     return new Creature(guid);
 }
 
-Creature* MapMgr::CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO)
+Creature* MapMgr::CreateAndSpawnCreature(uint32_t pEntry, float pX, float pY, float pZ, float pO)
 {
     auto creature = CreateCreature(pEntry);
     auto cp = sMySQLStore.getCreatureProperties(pEntry);
@@ -1787,7 +1787,7 @@ Creature* MapMgr::CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, floa
     return creature;
 }
 
-Creature* MapMgr::GetCreature(uint32 guid)
+Creature* MapMgr::GetCreature(uint32_t guid)
 {
     if (guid > m_CreatureHighGuid)
         return nullptr;
@@ -1795,9 +1795,9 @@ Creature* MapMgr::GetCreature(uint32 guid)
     return CreatureStorage[guid];
 }
 
-Summon* MapMgr::CreateSummon(uint32 entry, SummonType type)
+Summon* MapMgr::CreateSummon(uint32_t entry, SummonType type)
 {
-    uint64 guid = GenerateCreatureGUID(entry);
+    uint64_t guid = GenerateCreatureGUID(entry);
 
     switch (type)
     {
@@ -1818,7 +1818,7 @@ Summon* MapMgr::CreateSummon(uint32 entry, SummonType type)
 
 
 // Spawns the object too, without which you can not interact with the object
-GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, float z, float o, float scale)
+GameObject* MapMgr::CreateAndSpawnGameObject(uint32_t entryID, float x, float y, float z, float o, float scale)
 {
     auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);
     if (gameobject_info == nullptr)
@@ -1832,7 +1832,7 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     GameObject* go = CreateGameObject(entryID);
 
     //Player* chr = m_session->GetPlayer();
-    uint32 mapid = GetMapId();
+    uint32_t mapid = GetMapId();
     // Setup game object
     go->CreateFromProto(entryID, mapid, x, y, z, o);
     go->setScale(scale);
@@ -1860,8 +1860,8 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     go_spawn->phase = go->GetPhase();
     go_spawn->overrides = go->GetOverrides();
 
-    uint32 cx = GetPosX(x);
-    uint32 cy = GetPosY(y);
+    uint32_t cx = GetPosX(x);
+    uint32_t cy = GetPosY(y);
 
     GetBaseMap()->GetSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(go_spawn);
     go->m_spawn = go_spawn;
@@ -1874,7 +1874,7 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     return go;
 }
 
-GameObject* MapMgr::GetGameObject(uint32 guid)
+GameObject* MapMgr::GetGameObject(uint32_t guid)
 {
     if (guid > m_GOHighGuid)
         return nullptr;
@@ -1882,13 +1882,13 @@ GameObject* MapMgr::GetGameObject(uint32 guid)
     return GOStorage[guid];
 }
 
-GameObject* MapMgr::CreateGameObject(uint32 entry)
+GameObject* MapMgr::CreateGameObject(uint32_t entry)
 {
-    uint32 GUID = 0;
+    uint32_t GUID = 0;
 
     if (_reusable_guids_gameobject.size() > GO_GUID_RECYCLE_INTERVAL)
     {
-        uint32 guid = _reusable_guids_gameobject.front();
+        uint32_t guid = _reusable_guids_gameobject.front();
         _reusable_guids_gameobject.pop_front();
 
         GUID = guid;
@@ -1917,37 +1917,37 @@ DynamicObject* MapMgr::CreateDynamicObject()
     return new DynamicObject(HIGHGUID_TYPE_DYNAMICOBJECT, (++m_DynamicObjectHighGuid));
 }
 
-DynamicObject* MapMgr::GetDynamicObject(uint32 guid)
+DynamicObject* MapMgr::GetDynamicObject(uint32_t guid)
 {
     auto itr = m_DynamicObjectStorage.find(guid);
     return itr != m_DynamicObjectStorage.end() ? itr->second : nullptr;
 }
 
-Pet* MapMgr::GetPet(uint32 guid)
+Pet* MapMgr::GetPet(uint32_t guid)
 {
     auto itr = m_PetStorage.find(guid);
     return itr != m_PetStorage.end() ? itr->second : nullptr;
 }
 
-Player* MapMgr::GetPlayer(uint32 guid)
+Player* MapMgr::GetPlayer(uint32_t guid)
 {
     auto itr = m_PlayerStorage.find(guid);
     return itr != m_PlayerStorage.end() ? itr->second : nullptr;
 }
 
-void MapMgr::AddCombatInProgress(uint64 guid)
+void MapMgr::AddCombatInProgress(uint64_t guid)
 {
     _combatProgress.insert(guid);
 }
 
-void MapMgr::RemoveCombatInProgress(uint64 guid)
+void MapMgr::RemoveCombatInProgress(uint64_t guid)
 {
     _combatProgress.erase(guid);
 }
 
 void MapMgr::AddForcedCell(MapCell* c)
 {
-    uint8 cellNumber = worldConfig.server.mapCellNumber;
+    uint8_t cellNumber = worldConfig.server.mapCellNumber;
 
     m_forcedcells.insert(c);
     UpdateCellActivity(c->GetPositionX(), c->GetPositionY(), cellNumber);
@@ -1955,7 +1955,7 @@ void MapMgr::AddForcedCell(MapCell* c)
 
 void MapMgr::RemoveForcedCell(MapCell* c)
 {
-    uint8 cellNumber = worldConfig.server.mapCellNumber;
+    uint8_t cellNumber = worldConfig.server.mapCellNumber;
 
     m_forcedcells.erase(c);
     UpdateCellActivity(c->GetPositionX(), c->GetPositionY(), cellNumber);
@@ -1978,7 +1978,7 @@ float MapMgr::GetFirstZWithCPZ(float x, float y, float z)
     return posZ;
 }
 
-GameObject* MapMgr::FindNearestGoWithType(Object* o, uint32 type)
+GameObject* MapMgr::FindNearestGoWithType(Object* o, uint32_t type)
 {
     GameObject* go = nullptr;
     float r = FLT_MAX;
@@ -2009,7 +2009,7 @@ GameObject* MapMgr::FindNearestGoWithType(Object* o, uint32 type)
     return go;
 }
 
-void MapMgr::SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Message, ...)
+void MapMgr::SendPvPCaptureMessage(int32_t ZoneMask, uint32_t ZoneId, const char* Message, ...)
 {
     va_list ap;
     va_start(ap, Message);
@@ -2020,7 +2020,7 @@ void MapMgr::SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Me
     va_end(ap);
 
     data << ZoneId;
-    data << uint32(strlen(msgbuf) + 1);
+    data << uint32_t(strlen(msgbuf) + 1);
     data << msgbuf;
 
     for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
@@ -2028,7 +2028,7 @@ void MapMgr::SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Me
         Player* plr = itr->second;
         ++itr;
 
-        if ((ZoneMask != ZONE_MASK_ALL && plr->GetZoneId() != (uint32)ZoneMask))
+        if ((ZoneMask != ZONE_MASK_ALL && plr->GetZoneId() != (uint32_t)ZoneMask))
             continue;
 
         plr->GetSession()->SendPacket(&data);
@@ -2046,7 +2046,7 @@ void MapMgr::SendPacketToAllPlayers(WorldPacket* packet) const
     }
 }
 
-void MapMgr::SendPacketToPlayersInZone(uint32 zone, WorldPacket* packet) const
+void MapMgr::SendPacketToPlayersInZone(uint32_t zone, WorldPacket* packet) const
 {
     for (const auto& itr : m_PlayerStorage)
     {
@@ -2074,12 +2074,12 @@ void MapMgr::CallScriptUpdate()
     mInstanceScript->updateTimers();
 };
 
-uint32 MapMgr::GetAreaFlag(float x, float y, float z, bool * /*isOutdoors*/) const
+uint32_t MapMgr::GetAreaFlag(float x, float y, float z, bool * /*isOutdoors*/) const
 {
-    uint32 mogp_flags;
-    int32 adt_id;
-    int32 root_id;
-    int32 group_id;
+    uint32_t mogp_flags;
+    int32_t adt_id;
+    int32_t root_id;
+    int32_t group_id;
 
     bool have_area_info = _terrain->GetAreaInfo(x, y, z, mogp_flags, adt_id, root_id, group_id);
     auto area_flag_without_adt_id = _terrain->GetAreaFlagWithoutAdtId(x, y);
@@ -2092,11 +2092,11 @@ WorldStatesHandler& MapMgr::GetWorldStatesHandler()
     return worldstateshandler;
 }
 
-void MapMgr::onWorldStateUpdate(uint32 zone, uint32 field, uint32 value)
+void MapMgr::onWorldStateUpdate(uint32_t zone, uint32_t field, uint32_t value)
 {
     WorldPacket data(SMSG_UPDATE_WORLD_STATE, 8);
-    data << uint32(field);
-    data << uint32(value);
+    data << uint32_t(field);
+    data << uint32_t(value);
 
     SendPacketToPlayersInZone(zone, &data);
 }

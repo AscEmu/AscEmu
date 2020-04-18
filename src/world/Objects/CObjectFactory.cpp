@@ -23,7 +23,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "CObjectFactory.h"
 
-GameObject* CObjectFactory::CreateGameObject(uint32 Id, uint32 LowGUID)
+GameObject* CObjectFactory::CreateGameObject(uint32_t Id, uint32_t LowGUID)
 {
     GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(Id);
     if (gameobject_properties == nullptr)
@@ -31,7 +31,7 @@ GameObject* CObjectFactory::CreateGameObject(uint32 Id, uint32 LowGUID)
 
     GameObject* gameobject = nullptr;
 
-    uint64 GUID = uint64((uint64(HIGHGUID_TYPE_GAMEOBJECT) << 32) | LowGUID);
+    uint64_t GUID = uint64_t((uint64_t(HIGHGUID_TYPE_GAMEOBJECT) << 32) | LowGUID);
 
     switch (gameobject_properties->type)
     {

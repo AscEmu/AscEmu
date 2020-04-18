@@ -23,66 +23,66 @@
 #pragma pack(push,1)
 typedef struct
 {
-    uint8   cmd;
-    uint8   error;          // 0x00
-    uint16  size;           // 0x0026
-    uint8   gamename[4];    // 'WoW'
-    uint8   version1;       // 0x00
-    uint8   version2;       // 0x08 (0.8.0)
-    uint8   version3;       // 0x00
-    uint16  build;          // 3734
-    uint8   platform[4];    // 'x86'
-    uint8   os[4];          // 'Win'
-    uint8   country[4];     // 'enUS'
-    uint32  timezone_bias;  // -419
-    uint32  ip;             // client ip
-    uint8   I_len;          // length of account name
-    uint8   I[50];          // account name
+    uint8_t   cmd;
+    uint8_t   error;          // 0x00
+    uint16_t  size;           // 0x0026
+    uint8_t   gamename[4];    // 'WoW'
+    uint8_t   version1;       // 0x00
+    uint8_t   version2;       // 0x08 (0.8.0)
+    uint8_t   version3;       // 0x00
+    uint16_t  build;          // 3734
+    uint8_t   platform[4];    // 'x86'
+    uint8_t   os[4];          // 'Win'
+    uint8_t   country[4];     // 'enUS'
+    uint32_t  timezone_bias;  // -419
+    uint32_t  ip;             // client ip
+    uint8_t   I_len;          // length of account name
+    uint8_t   I[50];          // account name
 } sAuthLogonChallenge_C;
 
 typedef sAuthLogonChallenge_C sAuthReconnectChallenge_C;
 
 typedef struct
 {
-    uint8   cmd;            // 0x00 CMD_AUTH_LOGON_CHALLENGE
-    uint8   error;          // 0 - ok
-    uint8   unk2;           // 0x00
-    uint8   B[32];
-    uint8   g_len;          // 0x01
-    uint8   g;
-    uint8   N_len;          // 0x20
-    uint8   N[32];
-    uint8   s[32];
-    uint8   unk3[16];
-    uint8   unk4;
+    uint8_t   cmd;            // 0x00 CMD_AUTH_LOGON_CHALLENGE
+    uint8_t   error;          // 0 - ok
+    uint8_t   unk2;           // 0x00
+    uint8_t   B[32];
+    uint8_t   g_len;          // 0x01
+    uint8_t   g;
+    uint8_t   N_len;          // 0x20
+    uint8_t   N[32];
+    uint8_t   s[32];
+    uint8_t   unk3[16];
+    uint8_t   unk4;
 } sAuthLogonChallenge_S;
 
 typedef struct
 {
-    uint8   cmd;            // 0x01
-    uint8   A[32];
-    uint8   M1[20];
-    uint8   crc_hash[20];
-    uint8   number_of_keys;
-    uint8   unk;
+    uint8_t   cmd;            // 0x01
+    uint8_t   A[32];
+    uint8_t   M1[20];
+    uint8_t   crc_hash[20];
+    uint8_t   number_of_keys;
+    uint8_t   unk;
 } sAuthLogonProof_C;
 
 typedef struct
 {
-    uint16  unk1;
-    uint32  unk2;
-    uint8   unk3[4];
-    uint16  unk4[20];       // sha1(A,g,?)
-}  sAuthLogonProofKey_C;
+    uint16_t  unk1;
+    uint32_t  unk2;
+    uint8_t   unk3[4];
+    uint16_t  unk4[20];       // sha1(A,g,?)
+} sAuthLogonProofKey_C;
 
 typedef struct
 {
-    uint8   cmd;            // 0x01 CMD_AUTH_LOGON_PROOF
-    uint8   error;
-    uint8   M2[20];
-    uint32  unk2;
-    uint32  unk3;
-    uint16  unk203;
+    uint8_t   cmd;            // 0x01 CMD_AUTH_LOGON_PROOF
+    uint8_t   error;
+    uint8_t   M2[20];
+    uint32_t  unk2;
+    uint32_t  unk3;
+    uint16_t  unk203;
 } sAuthLogonProof_S;
 
 #pragma pack(pop)

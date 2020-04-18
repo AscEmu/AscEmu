@@ -51,11 +51,11 @@ bool Model::open()
         f.seekRelative(header.ofsBoundingVertices);
         vertices = new Vec3D[header.nBoundingVertices];
         f.read(vertices, header.nBoundingVertices * 12);
-        for (uint32 i = 0; i < header.nBoundingVertices; i++)
+        for (uint32_t i = 0; i < header.nBoundingVertices; i++)
             vertices[i] = fixCoordSystem(vertices[i]);
         f.seek(0);
         f.seekRelative(header.ofsBoundingTriangles);
-        indices = new uint16[header.nBoundingTriangles];
+        indices = new uint16_t[header.nBoundingTriangles];
         f.read(indices, header.nBoundingTriangles * 2);
         f.close();
     }
@@ -78,32 +78,32 @@ bool Model::ConvertToVMAPModel(const char * outfilename)
         return false;
     }
     fwrite(szRawVMAPMagic, 8, 1, output);
-    uint32 nVertices = header.nBoundingVertices;
+    uint32_t nVertices = header.nBoundingVertices;
     fwrite(&nVertices, sizeof(int), 1, output);
-    uint32 nofgroups = 1;
-    fwrite(&nofgroups, sizeof(uint32), 1, output);
+    uint32_t nofgroups = 1;
+    fwrite(&nofgroups, sizeof(uint32_t), 1, output);
     fwrite(N, 4 * 3, 1, output);// rootwmoid, flags, groupid
     fwrite(N, sizeof(float), 3 * 2, output);//bbox, only needed for WMO currently
     fwrite(N, 4, 1, output);// liquidflags
     fwrite("GRP ", 4, 1, output);
-    uint32 branches = 1;
+    uint32_t branches = 1;
     int wsize;
-    wsize = sizeof(branches) + sizeof(uint32) * branches;
+    wsize = sizeof(branches) + sizeof(uint32_t) * branches;
     fwrite(&wsize, sizeof(int), 1, output);
     fwrite(&branches, sizeof(branches), 1, output);
-    uint32 nIndexes = header.nBoundingTriangles;
-    fwrite(&nIndexes, sizeof(uint32), 1, output);
+    uint32_t nIndexes = header.nBoundingTriangles;
+    fwrite(&nIndexes, sizeof(uint32_t), 1, output);
     fwrite("INDX", 4, 1, output);
-    wsize = sizeof(uint32) + sizeof(unsigned short) * nIndexes;
+    wsize = sizeof(uint32_t) + sizeof(unsigned short) * nIndexes;
     fwrite(&wsize, sizeof(int), 1, output);
-    fwrite(&nIndexes, sizeof(uint32), 1, output);
+    fwrite(&nIndexes, sizeof(uint32_t), 1, output);
     if (nIndexes > 0)
     {
-        for (uint32 i = 0; i < nIndexes; ++i)
+        for (uint32_t i = 0; i < nIndexes; ++i)
         {
             if ((i % 3) - 1 == 0 && i + 1 < nIndexes)
             {
-                uint16 tmp = indices[i];
+                uint16_t tmp = indices[i];
                 indices[i] = indices[i + 1];
                 indices[i + 1] = tmp;
             }
@@ -117,7 +117,7 @@ bool Model::ConvertToVMAPModel(const char * outfilename)
     fwrite(&nVertices, sizeof(int), 1, output);
     if (nVertices > 0)
     {
-        for (uint32 vpos = 0; vpos < nVertices; ++vpos)
+        for (uint32_t vpos = 0; vpos < nVertices; ++vpos)
         {
             float tmp = vertices[vpos].y;
             vertices[vpos].y = -vertices[vpos].z;
@@ -143,7 +143,7 @@ Vec3D fixCoordSystem2(Vec3D v)
     return Vec3D(v.x, v.z, v.y);
 }
 
-ModelInstance::ModelInstance(MPQFile& f, char const* ModelInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE *pDirfile)
+ModelInstance::ModelInstance(MPQFile& f, char const* ModelInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE *pDirfile)
     : id(0), scale(0), flags(0)
 {
     float ff[3];
@@ -175,22 +175,22 @@ ModelInstance::ModelInstance(MPQFile& f, char const* ModelInstName, uint32 mapID
     if (count != 1 || nVertices == 0)
         return;
 
-    uint16 adtId = 0;// not used for models
-    uint32 flags = MOD_M2;
+    uint16_t adtId = 0; // not used for models
+    uint32_t flags = MOD_M2;
     if (tileX == 65 && tileY == 65)
         flags |= MOD_WORLDSPAWN;
 
     //write mapID, tileX, tileY, Flags, ID, Pos, Rot, Scale, name
-    fwrite(&mapID, sizeof(uint32), 1, pDirfile);
-    fwrite(&tileX, sizeof(uint32), 1, pDirfile);
-    fwrite(&tileY, sizeof(uint32), 1, pDirfile);
-    fwrite(&flags, sizeof(uint32), 1, pDirfile);
-    fwrite(&adtId, sizeof(uint16), 1, pDirfile);
-    fwrite(&id, sizeof(uint32), 1, pDirfile);
+    fwrite(&mapID, sizeof(uint32_t), 1, pDirfile);
+    fwrite(&tileX, sizeof(uint32_t), 1, pDirfile);
+    fwrite(&tileY, sizeof(uint32_t), 1, pDirfile);
+    fwrite(&flags, sizeof(uint32_t), 1, pDirfile);
+    fwrite(&adtId, sizeof(uint16_t), 1, pDirfile);
+    fwrite(&id, sizeof(uint32_t), 1, pDirfile);
     fwrite(&pos, sizeof(float), 3, pDirfile);
     fwrite(&rot, sizeof(float), 3, pDirfile);
     fwrite(&sc, sizeof(float), 1, pDirfile);
     uint32_t nlen = static_cast<uint32_t>(strlen(ModelInstName));
-    fwrite(&nlen, sizeof(uint32), 1, pDirfile);
+    fwrite(&nlen, sizeof(uint32_t), 1, pDirfile);
     fwrite(ModelInstName, sizeof(char), nlen, pDirfile);
 }

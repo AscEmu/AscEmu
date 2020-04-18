@@ -94,7 +94,7 @@ class SelinFireheartAI : public CreatureAIScript
 
         // Mana Rage giving of mana doesnt work so we give 10%(3231) / AIUpdate() Event.
         _castAISpell(ManaRageTrigger);
-        uint32 mana = getCreature()->getPower(POWER_TYPE_MANA) + 3231;
+        uint32_t mana = getCreature()->getPower(POWER_TYPE_MANA) + 3231;
         if (mana >= getCreature()->getMaxPower(POWER_TYPE_MANA))
             mana = getCreature()->getMaxPower(POWER_TYPE_MANA);
 
@@ -120,7 +120,7 @@ class SelinFireheartAI : public CreatureAIScript
     {
         // Find a FelCrystal
         Unit* FC = nullptr;
-        for (uint8 x = 0; x < 5; x++)
+        for (uint8_t x = 0; x < 5; x++)
         {
             FC = getNearestCreature(FelCrystals[x].x, FelCrystals[x].y, FelCrystals[x].z, FelCrystals[x].addition);
             if (!FC || !FC->isAlive() || FC->GetInstanceID() != getCreature()->GetInstanceID())
@@ -187,7 +187,7 @@ class VexallusAI : public CreatureAIScript
     }
 
     CreatureAISpells* mPureEnergy;
-    uint8 mSummon;
+    uint8_t mSummon;
 };
 
 class Priestess_DelrissaAI : public CreatureAIScript
@@ -253,8 +253,8 @@ class Priestess_DelrissaAI : public CreatureAIScript
 
 protected:
 
-    uint8 mKilledPlayers;
-    int32 mClearHateList;
+    uint8_t mKilledPlayers;
+    int32_t mClearHateList;
 };
 
 class KaganiNightstrikeAI : public CreatureAIScript

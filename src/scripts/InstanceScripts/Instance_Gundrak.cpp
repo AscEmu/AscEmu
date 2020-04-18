@@ -11,23 +11,23 @@ class GundrakScript : public InstanceScript
 {
 public:
 
-    uint32 mSladranAltarGUID;
-    uint32 mSladranStatueGUID;
-    uint32 mColossusAltarGUID;
-    uint32 mColossusStatueGUID;
-    uint32 mMoorabiAltarGUID;
-    uint32 mMoorabiStatueGUID;
+    uint32_t mSladranAltarGUID;
+    uint32_t mSladranStatueGUID;
+    uint32_t mColossusAltarGUID;
+    uint32_t mColossusStatueGUID;
+    uint32_t mMoorabiAltarGUID;
+    uint32_t mMoorabiStatueGUID;
 
-    uint32 mEckDoorsGUID;
+    uint32_t mEckDoorsGUID;
 
-    uint32 mTrapDoorGUID;
-    uint32 mCoilisionGUID;
+    uint32_t mTrapDoorGUID;
+    uint32_t mCoilisionGUID;
 
-    uint32 mCombatDoorsGUID;
-    uint32 mDoor1GUID;
-    uint32 mDoor2GUID;
+    uint32_t mCombatDoorsGUID;
+    uint32_t mDoor1GUID;
+    uint32_t mDoor2GUID;
 
-    uint8 mStatueCount;
+    uint8_t mStatueCount;
 
     explicit GundrakScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {

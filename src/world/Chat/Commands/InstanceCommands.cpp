@@ -38,7 +38,7 @@ bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_
         return true;
 
     float x, y, z;
-    uint32 mapid;
+    uint32_t mapid;
 
     if (sscanf(args, "%u %f %f %f", (unsigned int*)&mapid, &x, &y, &z) != 4)
         return false;
@@ -65,7 +65,7 @@ bool ChatHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_
     if (plr == nullptr)
         return true;
 
-    uint32 entry;
+    uint32_t entry;
     if (sscanf(args, "%u", (unsigned int*)&entry) != 1)
         return false;
 
@@ -100,7 +100,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
         return false;
 
     bool userInput = true;
-    uint32 instanceId = (args ? atoi(args) : 0);
+    uint32_t instanceId = (args ? atoi(args) : 0);
     if (instanceId == 0)
     {
         userInput = false;
@@ -130,7 +130,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
     ss << "Persistent: " << MSG_COLOR_CYAN << (instance->m_persistent ? "Yes" : "No") << "|r\n";
     if (instance->m_mapInfo != nullptr)
     {
-        ss << "Type: " << MSG_COLOR_CYAN << GetMapTypeString(static_cast<uint8>(instance->m_mapInfo->type)) << "|r";
+        ss << "Type: " << MSG_COLOR_CYAN << GetMapTypeString(static_cast<uint8_t>(instance->m_mapInfo->type)) << "|r";
 
         if (instance->m_mapInfo->type == INSTANCE_MULTIMODE)
         {
@@ -146,7 +146,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
     }
     ss << "Created: " << MSG_COLOR_CYAN << Util::GetDateTimeStringFromTimeStamp(instance->m_creation) << "|r\n";
     if (instance->m_expiration != 0)
-        ss << "Expires: " << MSG_COLOR_CYAN << Util::GetDateTimeStringFromTimeStamp((uint32)instance->m_expiration) << "|r\n";
+        ss << "Expires: " << MSG_COLOR_CYAN << Util::GetDateTimeStringFromTimeStamp((uint32_t)instance->m_expiration) << "|r\n";
 
     if (instance->m_mapMgr == NULL)
     {
@@ -161,7 +161,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
     }
     else
     {
-        ss << "Status: " << MSG_COLOR_GREEN << "In use|r (" << MSG_COLOR_GREEN << (uint32)instance->m_mapMgr->GetPlayerCount() << MSG_COLOR_CYAN << " players inside|r)\n";
+        ss << "Status: " << MSG_COLOR_GREEN << "In use|r (" << MSG_COLOR_GREEN << (uint32_t)instance->m_mapMgr->GetPlayerCount() << MSG_COLOR_CYAN << " players inside|r)\n";
 
     }
     SendMultilineMessage(m_session, ss.str().c_str());
@@ -176,7 +176,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
 bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_session)
 {
 
-    uint32 instanceId;
+    uint32_t instanceId;
     int argc = 1;
     char* playername = NULL;
     char* guidString = (char*)args;
@@ -224,13 +224,13 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
         {
             bool foundSomething = false;
             plr->getPlayerInfo()->savedInstanceIdsLock.Acquire();
-            for (uint8 difficulty = 0; difficulty < NUM_INSTANCE_MODES; difficulty++)
+            for (uint8_t difficulty = 0; difficulty < NUM_INSTANCE_MODES; difficulty++)
             {
                 PlayerInstanceMap::iterator itr = plr->getPlayerInfo()->savedInstanceIds[difficulty].find(instance->m_mapId);
                 if (itr == plr->getPlayerInfo()->savedInstanceIds[difficulty].end() || (*itr).second != instance->m_instanceId)
                     continue;
                 plr->SetPersistentInstanceId(instance->m_mapId, difficulty, 0);
-                SystemMessage(m_session, "Instance with id %u (%s) is persistent and will only be revoked from player.", instanceId, GetDifficultyString(static_cast<uint8>(difficulty)));
+                SystemMessage(m_session, "Instance with id %u (%s) is persistent and will only be revoked from player.", instanceId, GetDifficultyString(static_cast<uint8_t>(difficulty)));
                 foundSomething = true;
             }
             plr->getPlayerInfo()->savedInstanceIdsLock.Release();
@@ -312,7 +312,7 @@ bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession*
 //.instance shutdown
 bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* m_session)
 {
-    uint32 instanceId = (args ? atoi(args) : 0);
+    uint32_t instanceId = (args ? atoi(args) : 0);
     if (instanceId == 0)
         return false;
 

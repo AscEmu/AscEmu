@@ -88,7 +88,7 @@ void EventableObject::event_AddEvent(TimedEvent* ptr)
 
     ptr->IncRef();
     ptr->instanceId = m_event_Instanceid;
-    std::pair<uint32, TimedEvent*> p(ptr->eventType, ptr);
+    std::pair<uint32_t, TimedEvent*> p(ptr->eventType, ptr);
     m_events.insert(p);
     m_lock.Release();
 
@@ -122,7 +122,7 @@ void EventableObject::event_RemoveByPointer(TimedEvent* ev)
     m_lock.Release();
 }
 
-void EventableObject::event_RemoveEvents(uint32 EventType)
+void EventableObject::event_RemoveEvents(uint32_t EventType)
 {
     m_lock.Acquire();
     if (!m_events.size())
@@ -168,7 +168,7 @@ void EventableObject::event_RemoveEvents()
     event_RemoveEvents(EVENT_REMOVAL_FLAG_ALL);
 }
 
-void EventableObject::event_ModifyTimeLeft(uint32 EventType, time_t TimeLeft, bool unconditioned)
+void EventableObject::event_ModifyTimeLeft(uint32_t EventType, time_t TimeLeft, bool unconditioned)
 {
     m_lock.Acquire();
     if (!m_events.size())
@@ -193,7 +193,7 @@ void EventableObject::event_ModifyTimeLeft(uint32 EventType, time_t TimeLeft, bo
     m_lock.Release();
 }
 
-bool EventableObject::event_GetTimeLeft(uint32 EventType, time_t* Time)
+bool EventableObject::event_GetTimeLeft(uint32_t EventType, time_t* Time)
 {
     m_lock.Acquire();
     if (!m_events.size())
@@ -213,7 +213,7 @@ bool EventableObject::event_GetTimeLeft(uint32 EventType, time_t* Time)
                 continue;
             }
 
-            *Time = (uint32)itr->second->currTime;
+            *Time = (uint32_t)itr->second->currTime;
             m_lock.Release();
             return true;
 
@@ -225,7 +225,7 @@ bool EventableObject::event_GetTimeLeft(uint32 EventType, time_t* Time)
     return false;
 }
 
-void EventableObject::event_ModifyTime(uint32 EventType, time_t Time)
+void EventableObject::event_ModifyTime(uint32_t EventType, time_t Time)
 {
     m_lock.Acquire();
     if (!m_events.size())
@@ -248,7 +248,7 @@ void EventableObject::event_ModifyTime(uint32 EventType, time_t Time)
     m_lock.Release();
 }
 
-void EventableObject::event_ModifyTimeAndTimeLeft(uint32 EventType, time_t Time)
+void EventableObject::event_ModifyTimeAndTimeLeft(uint32_t EventType, time_t Time)
 {
     m_lock.Acquire();
     if (!m_events.size())
@@ -272,7 +272,7 @@ void EventableObject::event_ModifyTimeAndTimeLeft(uint32 EventType, time_t Time)
 }
 
 
-bool EventableObject::event_HasEvent(uint32 EventType)
+bool EventableObject::event_HasEvent(uint32_t EventType)
 {
     bool ret = false;
     m_lock.Acquire();
@@ -302,7 +302,7 @@ bool EventableObject::event_HasEvent(uint32 EventType)
     return ret;
 }
 
-EventableObjectHolder::EventableObjectHolder(int32 instance_id) : mInstanceId(instance_id)
+EventableObjectHolder::EventableObjectHolder(int32_t instance_id) : mInstanceId(instance_id)
 {
     m_insertPool.clear();
     sEventMgr.AddEventHolder(this, instance_id);
@@ -456,13 +456,13 @@ void EventableObject::event_Relocate()
     m_lock.Release();
 }
 
-uint32 EventableObject::event_GetEventPeriod(uint32 EventType)
+uint32_t EventableObject::event_GetEventPeriod(uint32_t EventType)
 {
-    uint32 ret = 0;
+    uint32_t ret = 0;
     m_lock.Acquire();
     EventMap::iterator itr = m_events.find(EventType);
     if (itr != m_events.end())
-        ret = (uint32)itr->second->msTime;
+        ret = (uint32_t)itr->second->msTime;
 
     m_lock.Release();
     return ret;

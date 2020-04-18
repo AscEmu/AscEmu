@@ -133,12 +133,12 @@ public:
     TaxiMgr& operator=(TaxiMgr const&) = delete;
 
     TaxiPath* GetTaxiPath(uint32_t path);
-    TaxiPath* GetTaxiPath(uint32_t from, uint32 to);
+    TaxiPath* GetTaxiPath(uint32_t from, uint32_t to);
     TaxiNode* GetTaxiNode(uint32_t node);
 
     uint32_t getNearestNodeForPlayer(Player* player);
 
-    uint32 GetNearestTaxiNode(float x, float y, float z, uint32 mapid);
+    uint32_t GetNearestTaxiNode(float x, float y, float z, uint32_t mapid);
     bool GetGlobalTaxiNodeMask(uint32_t curloc, uint32_t* mask);
 
 private:

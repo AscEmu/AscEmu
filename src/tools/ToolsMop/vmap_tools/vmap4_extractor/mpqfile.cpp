@@ -42,7 +42,7 @@ MPQFile::MPQFile(HANDLE mpq, const char* filename, bool warnNoExist /*= true*/) 
 
     if (hi)
     {
-        fprintf(stderr, "Can't open %s, size[hi] = %u!\n", filename, uint32(hi));
+        fprintf(stderr, "Can't open %s, size[hi] = %u!\n", filename, uint32_t(hi));
         SFileCloseFile(file);
         eof = true;
         return;
@@ -50,7 +50,7 @@ MPQFile::MPQFile(HANDLE mpq, const char* filename, bool warnNoExist /*= true*/) 
 
     if (size <= 1)
     {
-        fprintf(stderr, "Can't open %s, size = %u!\n", filename, uint32(size));
+        fprintf(stderr, "Can't open %s, size = %u!\n", filename, uint32_t(size));
         SFileCloseFile(file);
         eof = true;
         return;
@@ -60,7 +60,7 @@ MPQFile::MPQFile(HANDLE mpq, const char* filename, bool warnNoExist /*= true*/) 
     buffer = new char[size];
     if (!SFileReadFile(file, buffer, (DWORD)size, &read, nullptr) || size != read)
     {
-        fprintf(stderr, "Can't read %s, size=%u read=%u!\n", filename, uint32(size), uint32(read));
+        fprintf(stderr, "Can't read %s, size=%u read=%u!\n", filename, uint32_t(size), uint32_t(read));
         SFileCloseFile(file);
         eof = true;
         return;

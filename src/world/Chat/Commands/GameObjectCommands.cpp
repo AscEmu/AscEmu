@@ -11,8 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 //.gobject damage
 bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
 {
-    uint32 damage = 0;
-    uint32 spellid = 0;
+    uint32_t damage = 0;
+    uint32_t spellid = 0;
 
     if (sscanf(args, "%u %u", &damage, &spellid) < 1)
     {
@@ -46,7 +46,7 @@ bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
         return true;
     }
 
-    uint64 guid = session->GetPlayer()->getGuid();
+    uint64_t guid = session->GetPlayer()->getGuid();
     dgo->Damage(damage, guid, 0, spellid);
 
     GreenSystemMessage(session, "GameObject has been damaged for %u hitpoints", damage);
@@ -73,8 +73,8 @@ bool ChatHandler::HandleGODeleteCommand(const char* /*args*/, WorldSession* m_se
 
     if (selected_gobject->m_spawn != nullptr && selected_gobject->m_spawn->entry == selected_gobject->getEntry())
     {
-        uint32 cellx = uint32(((_maxX - selected_gobject->m_spawn->position_x) / _cellSize));
-        uint32 celly = uint32(((_maxY - selected_gobject->m_spawn->position_y) / _cellSize));
+        uint32_t cellx = uint32_t(((_maxX - selected_gobject->m_spawn->position_x) / _cellSize));
+        uint32_t celly = uint32_t(((_maxY - selected_gobject->m_spawn->position_y) / _cellSize));
 
         if (cellx < _sizeX && celly < _sizeY)
         {
@@ -315,7 +315,7 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
 //.gobject movehere
 bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_session)
 {
-    uint32 save = 0;
+    uint32_t save = 0;
     sscanf(args, "%u", &save);
 
     auto gameobject = m_session->GetPlayer()->GetSelectedGo();
@@ -357,7 +357,7 @@ bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_sess
         GreenSystemMessage(m_session, "GameObject position temporarily set to your current position.");
     }
 
-    uint32 new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
+    uint32_t new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
     gameobject->SetNewGuid(new_go_guid);
     gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
@@ -409,7 +409,7 @@ bool ChatHandler::HandleGORebuildCommand(const char* /*args*/, WorldSession* ses
 
     GameObject_Destructible* dgo = static_cast<GameObject_Destructible*>(gameobject);
 
-    uint32 oldHitPoints = dgo->GetHP();
+    uint32_t oldHitPoints = dgo->GetHP();
 
     dgo->Rebuild();
 
@@ -459,7 +459,7 @@ bool ChatHandler::HandleGORotateCommand(const char* args, WorldSession* m_sessio
 
     GreenSystemMessage(m_session, "Gameobject spawn id: %u rotated", go->m_spawn->id);
 
-    uint32 NewGuid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
+    uint32_t NewGuid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
     go->RemoveFromWorld(true);
     go->SetNewGuid(NewGuid);
     go->PushToWorld(m_session->GetPlayer()->GetMapMgr());
@@ -547,7 +547,7 @@ bool ChatHandler::HandleGOSelectCommand(const char* args, WorldSession* m_sessio
 //.gobject selectguid
 bool ChatHandler::HandleGOSelectGuidCommand(const char* args, WorldSession* m_session)
 {
-    uint32 guid = 0;
+    uint32_t guid = 0;
     if (sscanf(args, "%u", &guid) != 1)
     {
         RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject selectguid <guid>");
@@ -569,8 +569,8 @@ bool ChatHandler::HandleGOSelectGuidCommand(const char* args, WorldSession* m_se
 //.gobject spawn
 bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session)
 {
-    uint32 go_entry = 0;
-    uint32 save = 0;
+    uint32_t go_entry = 0;
+    uint32_t save = 0;
     if (sscanf(args, "%u %u", &go_entry, &save) < 1)
     {
         RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject spawn <entry>");
@@ -588,7 +588,7 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
     auto player = m_session->GetPlayer();
     auto gameobject = player->GetMapMgr()->CreateGameObject(go_entry);
 
-    uint32 mapid = player->GetMapId();
+    uint32_t mapid = player->GetMapId();
     float x = player->GetPositionX();
     float y = player->GetPositionY();
     float z = player->GetPositionZ();
@@ -619,8 +619,8 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
     go_spawn->phase = gameobject->GetPhase();
     go_spawn->overrides = gameobject->GetOverrides();
 
-    uint32 cx = player->GetMapMgr()->GetPosX(player->GetPositionX());
-    uint32 cy = player->GetMapMgr()->GetPosY(player->GetPositionY());
+    uint32_t cx = player->GetMapMgr()->GetPosX(player->GetPositionX());
+    uint32_t cy = player->GetMapMgr()->GetPosY(player->GetPositionY());
     player->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(go_spawn);
     gameobject->m_spawn = go_spawn;
 
@@ -653,7 +653,7 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
 //.gobject set animprogress
 bool ChatHandler::HandleGOSetAnimProgressCommand(const char* args, WorldSession* m_session)
 {
-    uint32 animprogress;
+    uint32_t animprogress;
 
     if (sscanf(args, "%u", &animprogress) != 1)
     {
@@ -669,7 +669,7 @@ bool ChatHandler::HandleGOSetAnimProgressCommand(const char* args, WorldSession*
         return true;
     }
 
-    gameobject->setAnimationProgress(static_cast<uint8>(animprogress));
+    gameobject->setAnimationProgress(static_cast<uint8_t>(animprogress));
     GreenSystemMessage(m_session, "Gameobject animprogress set to %u", animprogress);
 
     return true;
@@ -678,8 +678,8 @@ bool ChatHandler::HandleGOSetAnimProgressCommand(const char* args, WorldSession*
 //.gobject set faction
 bool ChatHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_session)
 {
-    uint32 go_faction = 0;
-    uint32 save = 0;
+    uint32_t go_faction = 0;
+    uint32_t save = 0;
     if (sscanf(args, "%u %u", &go_faction, &save) < 1)
     {
         RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setfaction <faction>");
@@ -732,8 +732,8 @@ bool ChatHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_se
 //.gobject set flags
 bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_session)
 {
-    uint32 go_flags;
-    uint32 save = 0;
+    uint32_t go_flags;
+    uint32_t save = 0;
 
     if (sscanf(args, "%u %u", &go_flags, &save) < 1)
     {
@@ -780,8 +780,8 @@ bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_sess
 //.gobject set overrides
 bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_session)
 {
-    uint32 go_override;
-    uint32 save = 0;
+    uint32_t go_override;
+    uint32_t save = 0;
     if (sscanf(args, "%u %u", &go_override, &save) < 1)
     {
         RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setoverride <value>");
@@ -820,7 +820,7 @@ bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_
         GreenSystemMessage(m_session, "Gameobject overrides temporarily set to %u for spawn ID: %u.", go_override, go_spawn->id);
     }
 
-    uint32 new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
+    uint32_t new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
     gameobject->SetNewGuid(new_go_guid);
     gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
@@ -834,8 +834,8 @@ bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_
 //.gobject set phase
 bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_session)
 {
-    uint32 phase;
-    uint32 save = 0;
+    uint32_t phase;
+    uint32_t save = 0;
 
     if (sscanf(args, "%u %u", &phase, &save) < 1)
     {
@@ -876,7 +876,7 @@ bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_sess
         GreenSystemMessage(m_session, "GameObject phase temporarily set to %u.", phase);
     }
 
-    uint32 new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
+    uint32_t new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
     gameobject->SetNewGuid(new_go_guid);
     gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
@@ -890,7 +890,7 @@ bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_sess
 bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_session)
 {
     float scale = 0.0f;
-    uint32 save = 0;
+    uint32_t save = 0;
     if (sscanf(args, "%f %u", &scale, &save) < 1)
     {
         RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setscale <scale>");
@@ -929,7 +929,7 @@ bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_sess
         GreenSystemMessage(m_session, "Gameobject scale temporarily set to %3.3lf for spawn ID: %u.", scale, go_spawn->id);
     }
 
-    uint32 new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
+    uint32_t new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
     gameobject->SetNewGuid(new_go_guid);
     gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
@@ -942,8 +942,8 @@ bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_sess
 //.gobject set state
 bool ChatHandler::HandleGOSetStateCommand(const char* args, WorldSession* m_session)
 {
-    uint32 go_state;
-    uint32 save = 0;
+    uint32_t go_state;
+    uint32_t save = 0;
 
     if (sscanf(args, "%u %u", &go_state, &save) < 1)
     {
@@ -958,7 +958,7 @@ bool ChatHandler::HandleGOSetStateCommand(const char* args, WorldSession* m_sess
         return true;
     }
 
-    gameobject->setState(static_cast<uint8>(go_state));
+    gameobject->setState(static_cast<uint8_t>(go_state));
 
     auto go_spawn = gameobject->m_spawn;
 

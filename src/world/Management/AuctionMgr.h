@@ -56,23 +56,23 @@ class AuctionMgr
         void LoadAuctionHouses();
         void Update();
 
-        AuctionHouse* GetAuctionHouse(uint32 Entry);
+        AuctionHouse* GetAuctionHouse(uint32_t Entry);
 
-        uint32 GenerateAuctionId()
+        uint32_t GenerateAuctionId()
         {
-            uint32 id = ++maxId;
+            uint32_t id = ++maxId;
 
             return id;
         }
 
     private:
 
-        std::unordered_map<uint32, AuctionHouse*> auctionHouseEntryMap;
+        std::unordered_map<uint32_t, AuctionHouse*> auctionHouseEntryMap;
         std::vector<AuctionHouse*> auctionHouses;
 
         std::atomic<unsigned long> maxId;
 
-        uint32 loopcount;
+        uint32_t loopcount;
 };
 
 #define sAuctionMgr AuctionMgr::getInstance()

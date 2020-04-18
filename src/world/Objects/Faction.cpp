@@ -63,8 +63,8 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
     if (!objB->m_factionTemplate || !objA->m_factionTemplate)
         return false;
 
-    uint32 faction = objB->m_factionTemplate->Mask;
-    uint32 host = objA->m_factionTemplate->HostileMask;
+    uint32_t faction = objB->m_factionTemplate->Mask;
+    uint32_t host = objA->m_factionTemplate->HostileMask;
 
     if ((faction & host) != 0)
         hostile = true;
@@ -76,7 +76,7 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
         hostile = true;
 
     // check friend/enemy list
-    for (uint8 i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         if (objA->m_factionTemplate->EnemyFactions[i] == objB->m_factionTemplate->Faction)
         {
@@ -228,15 +228,15 @@ bool isCombatSupport(Object* objA, Object* objB)// B combat supports A?
 
     bool combatSupport = false;
 
-    uint32 fSupport = objB->m_factionTemplate->FriendlyMask;
-    uint32 myFaction = objA->m_factionTemplate->Mask;
+    uint32_t fSupport = objB->m_factionTemplate->FriendlyMask;
+    uint32_t myFaction = objA->m_factionTemplate->Mask;
 
     if (myFaction & fSupport)
     {
         combatSupport = true;
     }
     // check friend/enemy list
-    for (uint8 i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         if (objB->m_factionTemplate->EnemyFactions[i] == objA->m_factionTemplate->Faction)
         {
@@ -264,14 +264,14 @@ bool isAlliance(Object* objA)// A is alliance?
         return true;
 
     //bool hostile = false;
-    uint32 faction = m_sw_faction->Faction;
-    uint32 host = objA->m_factionTemplate->HostileMask;
+    uint32_t faction = m_sw_faction->Faction;
+    uint32_t host = objA->m_factionTemplate->HostileMask;
 
     if (faction & host)
         return false;
 
     // check friend/enemy list
-    for (uint8 i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         if (objA->m_factionTemplate->EnemyFactions[i] == faction)
             return false;
@@ -284,7 +284,7 @@ bool isAlliance(Object* objA)// A is alliance?
         return false;
 
     // check friend/enemy list
-    for (uint8 i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         if (objA->m_factionTemplate->EnemyFactions[i] == faction)
             return false;

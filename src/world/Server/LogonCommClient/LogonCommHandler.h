@@ -136,7 +136,7 @@ class LogonCommHandler
         void removeIpBan(const char* ip);
 
         // Worldsocket stuff
-        uint32 clientConnectionId(std::string AccountName, WorldSocket* Socket);
+        uint32_t clientConnectionId(std::string AccountName, WorldSocket* Socket);
         void removeUnauthedClientSocketClose(uint32_t id);
         void removeUnauthedClientSocket(uint32_t id);
 

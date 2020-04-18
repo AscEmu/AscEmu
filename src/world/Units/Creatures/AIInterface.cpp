@@ -318,7 +318,7 @@ void AIInterface::generateWaypointScriptRandom()
                         {
                             if (mCurrentWaypoint == 0)
                             {
-                                mCurrentWaypoint = Util::getRandomUInt(1, (uint32)getWayPointsCount());
+                                mCurrentWaypoint = Util::getRandomUInt(1, (uint32_t)getWayPointsCount());
                                 isFirstWP = true;
                             }
                             else
@@ -326,7 +326,7 @@ void AIInterface::generateWaypointScriptRandom()
                                 mCurrentWaypoint = mNextPoint;
                             }
 
-                            mNextPoint = Util::getRandomUInt(1, (uint32)getWayPointsCount());
+                            mNextPoint = Util::getRandomUInt(1, (uint32_t)getWayPointsCount());
                         }
 
                         //////////////////////////////////////////////////////////////////////////////////////////
@@ -904,7 +904,7 @@ bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
         {
             Creature* targetCreature = static_cast<Creature*>(GetUnit());
 
-            Creature* wpCreature = new Creature((uint64)HIGHGUID_TYPE_WAYPOINT << 32 | wayPoint->id);
+            Creature* wpCreature = new Creature((uint64_t)HIGHGUID_TYPE_WAYPOINT << 32 | wayPoint->id);
             wpCreature->CreateWayPoint(wayPoint->id, player->GetMapId(), wayPoint->x, wayPoint->y, wayPoint->z, 0);
             wpCreature->SetCreatureProperties(targetCreature->GetCreatureProperties());
             wpCreature->setEntry(1);
@@ -1306,7 +1306,7 @@ Unit* AIInterface::GetPetOwner() const
     return m_PetOwner;
 }
 
-void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
+void AIInterface::HandleEvent(uint32_t event, Unit* pUnit, uint32_t misc1)
 {
     if (m_Unit == nullptr)
         return;
@@ -1407,7 +1407,7 @@ void AIInterface::Update(unsigned long time_passed)
         {
             if ((*next_timed_emote)->type == 1)   //standstate
             {
-                m_Unit->setStandState(static_cast<uint8>((*next_timed_emote)->value));
+                m_Unit->setStandState(static_cast<uint8_t>((*next_timed_emote)->value));
                 m_Unit->setEmoteState(0);
             }
             else if ((*next_timed_emote)->type == 2)   //emotestate
@@ -1436,7 +1436,7 @@ void AIInterface::Update(unsigned long time_passed)
     }
 }
 
-void AIInterface::_UpdateTimer(uint32 p_time)
+void AIInterface::_UpdateTimer(uint32_t p_time)
 {
     if (m_updateAssistTimer > p_time)
     {
@@ -1585,7 +1585,7 @@ void AIInterface::_UpdateTargets()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Updates Combat Status of m_Unit
-void AIInterface::_UpdateCombat(uint32 /*p_time*/)
+void AIInterface::_UpdateCombat(uint32_t /*p_time*/)
 {
     if (!isAiScriptType(AI_SCRIPT_PET) && isCombatDisabled())
         return;
@@ -1595,7 +1595,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
     if (getNextTarget() == m_Unit)
         setNextTarget(GetMostHated());
 
-    uint16 agent = static_cast<uint16>(m_aiCurrentAgent);
+    uint16_t agent = static_cast<uint16_t>(m_aiCurrentAgent);
 
     // If creature is very far from spawn point return to spawnpoint
     // If at instance don't return -- this is wrong ... instance creatures always returns to spawnpoint, dunno how do you got this idea.
@@ -1783,7 +1783,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                             if (t_unit == nullptr)
                                 return;
 
-                            uint32 health_before_strike = t_unit->getHealth();
+                            uint32_t health_before_strike = t_unit->getHealth();
 #endif
                             if (m_Unit->GetOnMeleeSpell() != 0)
                             {
@@ -1908,7 +1908,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                         StopMovement(0);
 
                     SpellCastTargets targets = setSpellTargets(spellInfo, getNextTarget());
-                    uint32 targettype = 0;
+                    uint32_t targettype = 0;
                     if (m_nextSpell)
                         targettype = m_nextSpell->spelltargetType;
 
@@ -1938,7 +1938,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                     if (m_nextSpell && m_nextSpell->cooldown)
                         m_nextSpell->cooldowntime = Util::getMSTime() + m_nextSpell->cooldown;
 
-                    next_spell_time = (uint32)UNIXTIME + MOB_SPELLCAST_GLOBAL_COOLDOWN;
+                    next_spell_time = (uint32_t)UNIXTIME + MOB_SPELLCAST_GLOBAL_COOLDOWN;
 
                     m_nextSpell = NULL;
                 }
@@ -1975,14 +1975,14 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
 
                 WorldPacket data(SMSG_MESSAGECHAT, 100);
                 std::string msg = "%s attempts to run away in fear!";
-                data << uint8(CHAT_MSG_CHANNEL);
-                data << uint32(LANG_UNIVERSAL);
-                data << uint32(static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Name.size());
+                data << uint8_t(CHAT_MSG_CHANNEL);
+                data << uint32_t(LANG_UNIVERSAL);
+                data << uint32_t(static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Name.size());
                 data << static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Name;
-                data << uint64(0);
-                data << uint32(msg.size() + 1);
+                data << uint64_t(0);
+                data << uint32_t(msg.size() + 1);
                 data << msg;
-                data << uint8(0);
+                data << uint8_t(0);
 
                 m_Unit->SendMessageToSet(&data, false);
 
@@ -2031,7 +2031,7 @@ void AIInterface::DismissPet()
 
     WorldPacket data;
     data.Initialize(SMSG_PET_SPELLS);
-    data << (uint64)0;
+    data << (uint64_t)0;
     TO< Player* >(m_PetOwner)->GetSession()->SendPacket(&data);
 
     sEventMgr.RemoveEvents(((Creature*)m_Unit));
@@ -2067,7 +2067,7 @@ void AIInterface::SetUnitToFollowBackup(Unit* un)
         m_UnitToFollow_backup = un->getGuid();
 }
 
-void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellId)
+void AIInterface::AttackReaction(Unit* pUnit, uint32_t damage_dealt, uint32_t spellId)
 {
     if (isAiState(AI_STATE_EVADE) || !pUnit || !pUnit->isAlive() || m_Unit->isDead() || (m_Unit == pUnit) || isAiScriptType(AI_SCRIPT_PASSIVE) || isCombatDisabled())
         return;
@@ -2130,7 +2130,7 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
     HandleEvent(EVENT_DAMAGETAKEN, pUnit, _CalcThreat(damage_dealt, spellId ? sSpellMgr.getSpellInfo(spellId) : NULL, pUnit));
 }
 
-void AIInterface::HealReaction(Unit* caster, Unit* victim, SpellInfo const* sp, uint32 amount)
+void AIInterface::HealReaction(Unit* caster, Unit* victim, SpellInfo const* sp, uint32_t amount)
 {
     if (!caster || !victim)
         return;
@@ -2147,7 +2147,7 @@ void AIInterface::HealReaction(Unit* caster, Unit* victim, SpellInfo const* sp, 
     if (!victimInList && !casterInList) // none of the Casters is in the Creatures Threat list
         return;
 
-    int32 threat = int32(amount / 2);
+    int32_t threat = int32_t(amount / 2);
     if (caster->getClass() == PALADIN)
         threat = threat / 2; //Paladins only get 50% threat per heal than other classes
 
@@ -2430,7 +2430,7 @@ Unit* AIInterface::FindTarget()
 
         if (target->getCreatedByGuid() != 0)
         {
-            uint64 charmer = target->getCharmedByGuid();
+            uint64_t charmer = target->getCharmedByGuid();
 
             Unit* target2 = m_Unit->GetMapMgr()->GetPlayer(WoWGuid::getGuidLowPartFromUInt64(charmer));
 
@@ -2527,11 +2527,11 @@ bool AIInterface::FindFriends(float dist)
         }
     }
 
-    uint32 family = static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Type;
+    uint32_t family = static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Type;
 
     CreatureProperties const* pt = static_cast< Creature* >(m_Unit)->GetCreatureProperties();
 
-    uint32 summonguard = 0;
+    uint32_t summonguard = 0;
 
     summonguard = pt->summonguard;
 
@@ -2551,11 +2551,11 @@ bool AIInterface::FindFriends(float dist)
         if (!zoneSpawn)
             return result;
 
-        uint32 team = 1; // horde default
+        uint32_t team = 1; // horde default
         if (isAlliance(m_Unit))
             team = 0;
 
-        uint32 guardid = zoneSpawn->allianceEntry;
+        uint32_t guardid = zoneSpawn->allianceEntry;
         if (team == 1)
             guardid = zoneSpawn->hordeEntry;
 
@@ -2573,7 +2573,7 @@ bool AIInterface::FindFriends(float dist)
         if (fabs(z - m_Unit->GetPositionZ()) > 10.0f)
             z = m_Unit->GetPositionZ();
 
-        uint8 spawned = 0;
+        uint8_t spawned = 0;
 
         for (const auto& hostileItr : m_Unit->getInRangePlayersSet())
         {
@@ -2586,7 +2586,7 @@ bool AIInterface::FindFriends(float dist)
 
             if (spawned == 0)
             {
-                uint32 languageid = (team == 0) ? LANG_COMMON : LANG_ORCISH;
+                uint32_t languageid = (team == 0) ? LANG_COMMON : LANG_ORCISH;
                 m_Unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, languageid, "Guards!");
             }
 
@@ -2598,7 +2598,7 @@ bool AIInterface::FindFriends(float dist)
 
             if (guard->CanAddToWorld())
             {
-                uint32 t = Util::getRandomUInt(8) * 1000;
+                uint32_t t = Util::getRandomUInt(8) * 1000;
                 if (t == 0)
                     guard->PushToWorld(m_Unit->GetMapMgr());
                 else
@@ -2627,8 +2627,8 @@ float AIInterface::_CalcAggroRange(Unit* target)
     float baseAR[17] = { 19.0f, 18.5f, 18.0f, 17.5f, 17.0f, 16.5f, 16.0f, 15.5f, 15.0f, 14.5f, 12.0f, 10.5f, 8.5f, 7.5f, 6.5f, 6.5f, 5.0f };
     // Lvl Diff -8 -7 -6 -5 -4 -3 -2 -1 +0 +1 +2  +3  +4  +5  +6  +7  +8
     // Arr Pos   0  1  2  3  4  5  6  7  8  9 10  11  12  13  14  15  16
-    int8 lvlDiff = static_cast<int8>(target->getLevel() - m_Unit->getLevel());
-    uint8 realLvlDiff = lvlDiff;
+    int8_t lvlDiff = static_cast<int8_t>(target->getLevel() - m_Unit->getLevel());
+    uint8_t realLvlDiff = lvlDiff;
     if (lvlDiff > 8)
     {
         lvlDiff = 8;
@@ -2679,7 +2679,7 @@ float AIInterface::_CalcAggroRange(Unit* target)
     }
 
     // SPELL_AURA_MOD_DETECT_RANGE
-    int32 modDetectRange = target->getDetectRangeMod(m_Unit->getGuid());
+    int32_t modDetectRange = target->getDetectRangeMod(m_Unit->getGuid());
     AggroRange += modDetectRange;
     if (target->isPlayer())
     {
@@ -2798,15 +2798,15 @@ float AIInterface::_CalcDistanceFromHome()
 /************************************************************************************************************
 SendMoveToPacket:
 Comments: Some comments on the SMSG_MONSTER_MOVE packet:
-the uint8 field:
+the uint8_t field:
 0: Default                                                            known
 1: Don't move                                                        known
 2: there is an extra 3 floats, also known as a vector                unknown
-3: there is an extra uint64 most likely a guid.                        unknown
+3: there is an extra uint64_t most likely a guid.                        unknown
 4: there is an extra float that causes the orientation to be set.    known
 
 note:    when this field is 1.
-there is no need to send  the next 3 uint32's as they aren't used by the client
+there is no need to send  the next 3 uint32_t's as they aren't used by the client
 
 the MoveFlags:
 0x00000000 - Walk
@@ -2826,7 +2826,7 @@ void AIInterface::SendMoveToPacket()
     ::Packets::Movement::SendMoveToPacket(m_Unit);
 }
 
-bool AIInterface::StopMovement(uint32 time)
+bool AIInterface::StopMovement(uint32_t time)
 {
     if (m_Unit->getCurrentVehicle() != nullptr)
     {
@@ -2889,22 +2889,22 @@ void AIInterface::SendCurrentMove(Player* plyr)
         return;
 
     auto start = m_Unit->m_movementManager.m_spline.GetFirstSplinePoint();
-    uint32 timepassed = Util::getMSTime() - start.setoff;
+    uint32_t timepassed = Util::getMSTime() - start.setoff;
 
     ByteBuffer* splineBuf = new ByteBuffer(20 * 4);
-    *splineBuf << uint32(0); // spline flags
-    *splineBuf << uint32(timepassed); //Time Passed (start Position)
-    *splineBuf << uint32(m_Unit->m_movementManager.m_spline.m_currentSplineTotalMoveTime); //Total Time
-    *splineBuf << uint32(0); //Unknown
+    *splineBuf << uint32_t(0); // spline flags
+    *splineBuf << uint32_t(timepassed); //Time Passed (start Position)
+    *splineBuf << uint32_t(m_Unit->m_movementManager.m_spline.m_currentSplineTotalMoveTime); //Total Time
+    *splineBuf << uint32_t(0); //Unknown
     *splineBuf << float(0); //unk
     *splineBuf << float(0); //unk
 
     *splineBuf << float(0); //trajectory parabolic soeed
-    *splineBuf << uint32(0); //trajectory time
+    *splineBuf << uint32_t(0); //trajectory time
 
     if (m_Unit->m_movementManager.m_spline.GetSplinePoints()->size() < 4)  //client requires 4, lets generate shit for it
     {
-        *splineBuf << uint32(m_Unit->m_movementManager.m_spline.GetSplinePoints()->size() + 1 /* 1 fake start */ + 2 /* 2 fake ends */); //Spline Count
+        *splineBuf << uint32_t(m_Unit->m_movementManager.m_spline.GetSplinePoints()->size() + 1 /* 1 fake start */ + 2 /* 2 fake ends */); //Spline Count
         auto end = m_Unit->m_movementManager.m_spline.GetLastSplinePoint();
 
         *splineBuf << start.pos.x << start.pos.y << start.pos.z;
@@ -2918,12 +2918,12 @@ void AIInterface::SendCurrentMove(Player* plyr)
 
         *splineBuf << end.pos.x << end.pos.y << end.pos.z + 0.1f;
         *splineBuf << end.pos.x << end.pos.y << end.pos.z + 0.2f;
-        *splineBuf << uint8(0);
+        *splineBuf << uint8_t(0);
         *splineBuf << end.pos.x << end.pos.y << end.pos.z;
     }
     else
     {
-        *splineBuf << uint32(m_Unit->m_movementManager.m_spline.GetSplinePoints()->size());
+        *splineBuf << uint32_t(m_Unit->m_movementManager.m_spline.GetSplinePoints()->size());
         auto splinePoints = *m_Unit->m_movementManager.m_spline.GetSplinePoints();
         for (auto point : splinePoints)
         {
@@ -2932,7 +2932,7 @@ void AIInterface::SendCurrentMove(Player* plyr)
             *splineBuf << point.pos.z;
         }
         auto end = m_Unit->m_movementManager.m_spline.GetLastSplinePoint();
-        *splineBuf << uint8(0);
+        *splineBuf << uint8_t(0);
         *splineBuf << end.pos.x << end.pos.y << end.pos.z;
     }
 
@@ -2958,7 +2958,7 @@ bool AIInterface::setInFront(Unit* target) // not the best way to do it, though
     return m_Unit->isInFront(target);
 }
 
-void AIInterface::_UpdateMovement(uint32 p_time)
+void AIInterface::_UpdateMovement(uint32_t p_time)
 {
     if (!m_Unit->isAlive())
     {
@@ -2970,7 +2970,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     if (m_Unit->isCastingSpell())
         return;
 
-    uint32 timediff = 0;
+    uint32_t timediff = 0;
 
     if (m_moveTimer > 0)
     {
@@ -3055,7 +3055,7 @@ void AIInterface::CastSpell(Unit* caster, SpellInfo const* spellInfo, SpellCastT
     nspell->prepare(&targets);
 }
 
-SpellInfo const* AIInterface::getSpellEntry(uint32 spellId)
+SpellInfo const* AIInterface::getSpellEntry(uint32_t spellId)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
 
@@ -3104,7 +3104,7 @@ SpellCastTargets AIInterface::setSpellTargets(SpellInfo const* /*spellInfo*/, Un
 
 AI_Spell* AIInterface::getSpell()
 {
-    if (next_spell_time > (uint32)UNIXTIME)
+    if (next_spell_time > (uint32_t)UNIXTIME)
         return nullptr;
 
     waiting_for_cooldown = false;
@@ -3112,9 +3112,9 @@ AI_Spell* AIInterface::getSpell()
     // look at our spells
     AI_Spell* sp = nullptr;
     AI_Spell* def_spell = nullptr;
-    uint32 cool_time = 0;
-    uint32 cool_time2;
-    uint32 nowtime = Util::getMSTime();
+    uint32_t cool_time = 0;
+    uint32_t cool_time2;
+    uint32_t nowtime = Util::getMSTime();
 
     if (m_Unit->isPet())
     {
@@ -3206,11 +3206,11 @@ AI_Spell* AIInterface::getSpell()
     {
         cool_time2 = cool_time / 1000;
         if (cool_time2)
-            next_spell_time = (uint32)UNIXTIME + cool_time2;
+            next_spell_time = (uint32_t)UNIXTIME + cool_time2;
     }
     else
     {
-        next_spell_time = (uint32)UNIXTIME + MOB_SPELLCAST_REFRESH_COOLDOWN_INTERVAL;
+        next_spell_time = (uint32_t)UNIXTIME + MOB_SPELLCAST_REFRESH_COOLDOWN_INTERVAL;
         waiting_for_cooldown = false;
     }
 
@@ -3230,7 +3230,7 @@ void AIInterface::addSpellToList(AI_Spell* sp)
     m_spells.push_back(sp2);
 }
 
-uint32 AIInterface::getThreatByGUID(uint64 guid)
+uint32_t AIInterface::getThreatByGUID(uint64_t guid)
 {
     if (m_Unit->GetMapMgr() == nullptr)
         return 0;
@@ -3242,7 +3242,7 @@ uint32 AIInterface::getThreatByGUID(uint64 guid)
     return 0;
 }
 
-uint32 AIInterface::getThreatByPtr(Unit* obj)
+uint32_t AIInterface::getThreatByPtr(Unit* obj)
 {
     if (!obj || m_Unit->GetMapMgr() == nullptr)
         return 0;
@@ -3274,7 +3274,7 @@ Unit* AIInterface::GetMostHated()
     if (ResultUnit != nullptr)
         return ResultUnit;
 
-    std::pair<Unit*, int32> currentTarget;
+    std::pair<Unit*, int32_t> currentTarget;
     currentTarget.first = 0;
     currentTarget.second = -1;
 
@@ -3319,7 +3319,7 @@ Unit* AIInterface::GetSecondHated()
 
     Unit* ResultUnit = GetMostHated();
 
-    std::pair<Unit*, int32> currentTarget;
+    std::pair<Unit*, int32_t> currentTarget;
     currentTarget.first = 0;
     currentTarget.second = -1;
 
@@ -3352,7 +3352,7 @@ Unit* AIInterface::GetSecondHated()
     return currentTarget.first;
 }
 
-bool AIInterface::modThreatByGUID(uint64 guid, int32 mod)
+bool AIInterface::modThreatByGUID(uint64_t guid, int32_t mod)
 {
     if (!m_aiTargets.size())
         return false;
@@ -3367,14 +3367,14 @@ bool AIInterface::modThreatByGUID(uint64 guid, int32 mod)
     return false;
 }
 
-bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
+bool AIInterface::modThreatByPtr(Unit* obj, int32_t mod)
 {
     if (!obj)
         return false;
 
     LockAITargets(true);
 
-    int32 tempthreat;
+    int32_t tempthreat;
     TargetMap::iterator it = m_aiTargets.find(obj->getGuid());
     if (it != m_aiTargets.end())
     {
@@ -3430,7 +3430,7 @@ bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
     return true;
 }
 
-void AIInterface::RemoveThreatByGUID(uint64 guid)
+void AIInterface::RemoveThreatByGUID(uint64_t guid)
 {
     if (!m_aiTargets.size())
         return;
@@ -3523,7 +3523,7 @@ bool AIInterface::taunt(Unit* caster, bool apply)
         {
             //check if we have to add him to our agro list
             //GetMostHated(); //update our most hated list/ Note that at this point we do not have a taunter yet. If we would have then this funtion will not give real mosthated
-            int32 oldthreat = getThreatByPtr(caster);
+            int32_t oldthreat = getThreatByPtr(caster);
             //make sure we rush the target anyway. Since we are not taunted yet, this will also set our target
             modThreatByPtr(caster, abs(m_currentHighestThreat - oldthreat) + 1); //we need to be the most hated at this moment
             //            SetNextTarget(caster);
@@ -3668,7 +3668,7 @@ void AIInterface::CheckTarget(Unit* target)
         tauntedBy = nullptr;
 }
 
-uint32 AIInterface::_CalcThreat(uint32 damage, SpellInfo const* sp, Unit* Attacker)
+uint32_t AIInterface::_CalcThreat(uint32_t damage, SpellInfo const* sp, Unit* Attacker)
 {
     if (!Attacker)
         return 0; // No attacker means no threat and we prevent crashes this way
@@ -3677,13 +3677,13 @@ uint32 AIInterface::_CalcThreat(uint32 damage, SpellInfo const* sp, Unit* Attack
         if (isSameFaction(m_Unit, Attacker))
             return 0;
 
-    int32 mod = 0;
+    int32_t mod = 0;
     if (sp != nullptr && sp->custom_ThreatForSpell != 0)
     {
         mod = sp->custom_ThreatForSpell;
     }
     if (sp != nullptr && sp->custom_ThreatForSpellCoef != 0.0f)
-        mod += int32(damage * sp->custom_ThreatForSpellCoef);
+        mod += int32_t(damage * sp->custom_ThreatForSpellCoef);
     else
         mod += damage;
 
@@ -3694,7 +3694,7 @@ uint32 AIInterface::_CalcThreat(uint32 damage, SpellInfo const* sp, Unit* Attack
     }
 
     if (Attacker->getClass() == ROGUE)
-        mod = int32(mod * 0.71); // Rogues generate 0.71x threat per damage.
+        mod = int32_t(mod * 0.71); // Rogues generate 0.71x threat per damage.
 
     // modify threat by Buffs
     if (sp != nullptr)
@@ -3819,7 +3819,7 @@ void AIInterface::setNextTarget(Unit* nextTarget)
         resetNextTarget();
 }
 
-void AIInterface::setNextTarget(uint64 nextTarget)
+void AIInterface::setNextTarget(uint64_t nextTarget)
 {
     m_nextTarget = nextTarget;
     m_Unit->setTargetGuid(m_nextTarget);
@@ -3879,7 +3879,7 @@ Creature* AIInterface::getFormationLinkTarget()
     return creature;
 }
 
-void AIInterface::LoadWaypointMapFromDB(uint32 spawnid)
+void AIInterface::LoadWaypointMapFromDB(uint32_t spawnid)
 {
     mWayPointMap = sObjectMgr.GetWayPointMap(spawnid);
     if (mWayPointMap != nullptr && mWayPointMap->size() != 0)
@@ -3898,7 +3898,7 @@ void AIInterface::SetWaypointMap(Movement::WayPointMap* m, bool delete_old_map)
     mWaypointMapIsLoadedFromDB = false;
 }
 
-void AIInterface::_UpdateTotem(uint32 p_time)
+void AIInterface::_UpdateTotem(uint32_t p_time)
 {
     ARCEMU_ASSERT(totemspell != 0);
     if (p_time >= m_totemspelltimer)
@@ -3967,7 +3967,7 @@ void AIInterface::UpdateMovementSpline()
 
     float o = atan2(current->pos.x - prev->pos.x, current->pos.y - prev->pos.y);
 
-    uint32 curmstime = Util::getMSTime();
+    uint32_t curmstime = Util::getMSTime();
 
     if (curmstime >= current->arrive)
     {
@@ -4033,11 +4033,11 @@ void AIInterface::AddSpline(float x, float y, float z)
     float dz = z - prev.pos.z;
     float dist = std::sqrt(dx * dx + dy * dy + dz * dz);
 
-    uint32 movetime;
+    uint32_t movetime;
 
     if (m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.flying)
     {
-        movetime = (uint32)(dist / m_flySpeed);
+        movetime = (uint32_t)(dist / m_flySpeed);
     }
     else if (m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode)
     {
@@ -4045,10 +4045,10 @@ void AIInterface::AddSpline(float x, float y, float z)
         {
             case WALKMODE_SPRINT:
             case WALKMODE_RUN:
-                movetime = (uint32)(dist / m_runSpeed);
+                movetime = (uint32_t)(dist / m_runSpeed);
                 break;
             case WALKMODE_WALK:
-                movetime = (uint32)(dist / m_walkSpeed);
+                movetime = (uint32_t)(dist / m_walkSpeed);
                 break;
             default:
                 LOG_ERROR("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
@@ -4112,7 +4112,7 @@ bool AIInterface::CreatePath(float x, float y, float z, bool onlytest /*= false*
         return false;
 
     float points[MAX_PATH_LENGTH * 3];
-    int32 pointcount;
+    int32_t pointcount;
     bool usedoffmesh;
 
     if (dtStatusFailed(findSmoothPath(start, end, path, pathcount, points, &pointcount, usedoffmesh, MAX_PATH_LENGTH, nav, nav_query, filter)))
@@ -4121,7 +4121,7 @@ bool AIInterface::CreatePath(float x, float y, float z, bool onlytest /*= false*
     //add to spline
     if (!onlytest)
     {
-        for (int32 i = 0; i < pointcount; ++i)
+        for (int32_t i = 0; i < pointcount; ++i)
         {
             AddSpline(points[i * 3 + 2], points[i * 3 + 0], points[i * 3 + 1]);
         }
@@ -4129,15 +4129,15 @@ bool AIInterface::CreatePath(float x, float y, float z, bool onlytest /*= false*
     return true;
 }
 
-dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos, const dtPolyRef* polyPath, const uint32 polyPathSize, float* smoothPath, int* smoothPathSize, bool & usedOffmesh, const uint32 maxSmoothPathSize, dtNavMesh* mesh, dtNavMeshQuery* query, dtQueryFilter & filter)
+dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos, const dtPolyRef* polyPath, const uint32_t polyPathSize, float* smoothPath, int* smoothPathSize, bool & usedOffmesh, const uint32_t maxSmoothPathSize, dtNavMesh* mesh, dtNavMeshQuery* query, dtQueryFilter & filter)
 {
     *smoothPathSize = 0;
-    uint32 nsmoothPath = 0;
+    uint32_t nsmoothPath = 0;
     usedOffmesh = false;
 
     dtPolyRef polys[MAX_PATH_LENGTH];
     memcpy(polys, polyPath, sizeof(dtPolyRef)*polyPathSize);
-    uint32 npolys = polyPathSize;
+    uint32_t npolys = polyPathSize;
 
     float iterPos[VERTEX_SIZE], targetPos[VERTEX_SIZE];
     if (dtStatusFailed(query->closestPointOnPolyBoundary(polys[0], startPos, iterPos)))
@@ -4179,10 +4179,10 @@ dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos,
 
         // Move
         float result[VERTEX_SIZE];
-        const static uint32 MAX_VISIT_POLY = 16;
+        const static uint32_t MAX_VISIT_POLY = 16;
         dtPolyRef visited[MAX_VISIT_POLY];
 
-        uint32 nvisited = 0;
+        uint32_t nvisited = 0;
         query->moveAlongSurface(polys[0], iterPos, moveTgt, &filter, result, visited, (int*)&nvisited, MAX_VISIT_POLY);
         npolys = fixupCorridor(polys, npolys, MAX_PATH_LENGTH, visited, nvisited);
 
@@ -4209,7 +4209,7 @@ dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos,
             // Advance the path up to and over the off-mesh connection.
             dtPolyRef prevRef = 0;
             dtPolyRef polyRef = polys[0];
-            uint32 npos = 0;
+            uint32_t npos = 0;
             while (npos < npolys && polyRef != steerPosRef)
             {
                 prevRef = polyRef;
@@ -4217,7 +4217,7 @@ dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos,
                 npos++;
             }
 
-            for (uint32 i = npos; i < npolys; ++i)
+            for (uint32_t i = npos; i < npolys; ++i)
             {
                 polys[i - npos] = polys[i];
             }
@@ -4253,21 +4253,21 @@ dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos,
     return nsmoothPath < maxSmoothPathSize ? DT_SUCCESS : DT_FAILURE;
 }
 
-bool AIInterface::getSteerTarget(const float* startPos, const float* endPos, const float minTargetDist, const dtPolyRef* path, const uint32 pathSize, float* steerPos, unsigned char & steerPosFlag, dtPolyRef & steerPosRef, dtNavMeshQuery* query)
+bool AIInterface::getSteerTarget(const float* startPos, const float* endPos, const float minTargetDist, const dtPolyRef* path, const uint32_t pathSize, float* steerPos, unsigned char & steerPosFlag, dtPolyRef & steerPosRef, dtNavMeshQuery* query)
 {
     // Find steer target.
-    static const uint32 MAX_STEER_POINTS = 3;
+    static const uint32_t MAX_STEER_POINTS = 3;
     float steerPath[MAX_STEER_POINTS * VERTEX_SIZE];
     unsigned char steerPathFlags[MAX_STEER_POINTS];
     dtPolyRef steerPathPolys[MAX_STEER_POINTS];
-    uint32 nsteerPath = 0;
+    uint32_t nsteerPath = 0;
     dtStatus dtResult = query->findStraightPath(startPos, endPos, path, pathSize,
                                                 steerPath, steerPathFlags, steerPathPolys, (int*)&nsteerPath, MAX_STEER_POINTS);
     if (!nsteerPath || dtStatusFailed(dtResult))
         return false;
 
     // Find vertex far enough to steer to.
-    uint32 ns = 0;
+    uint32_t ns = 0;
     while (ns < nsteerPath)
     {
         // Stop at Off-Mesh link or when point is further than slop away.
@@ -4290,16 +4290,16 @@ bool AIInterface::getSteerTarget(const float* startPos, const float* endPos, con
     return true;
 }
 
-uint32 AIInterface::fixupCorridor(dtPolyRef* path, const uint32 npath, const uint32 maxPath, const dtPolyRef* visited, const uint32 nvisited)
+uint32_t AIInterface::fixupCorridor(dtPolyRef* path, const uint32_t npath, const uint32_t maxPath, const dtPolyRef* visited, const uint32_t nvisited)
 {
-    int32 furthestPath = -1;
-    int32 furthestVisited = -1;
+    int32_t furthestPath = -1;
+    int32_t furthestVisited = -1;
 
     // Find furthest common polygon.
-    for (int32 i = npath - 1; i >= 0; --i)
+    for (int32_t i = npath - 1; i >= 0; --i)
     {
         bool found = false;
-        for (int32 j = nvisited - 1; j >= 0; --j)
+        for (int32_t j = nvisited - 1; j >= 0; --j)
         {
             if (path[i] == visited[j])
             {
@@ -4320,9 +4320,9 @@ uint32 AIInterface::fixupCorridor(dtPolyRef* path, const uint32 npath, const uin
     // Concatenate paths.
 
     // Adjust beginning of the buffer to include the visited.
-    uint32 req = nvisited - furthestVisited;
-    uint32 orig = uint32(furthestPath + 1) < npath ? furthestPath + 1 : npath;
-    uint32 size = npath - orig > 0 ? npath - orig : 0;
+    uint32_t req = nvisited - furthestVisited;
+    uint32_t orig = uint32_t(furthestPath + 1) < npath ? furthestPath + 1 : npath;
+    uint32_t size = npath - orig > 0 ? npath - orig : 0;
     if (req + size > maxPath)
         size = maxPath - req;
 
@@ -4330,7 +4330,7 @@ uint32 AIInterface::fixupCorridor(dtPolyRef* path, const uint32 npath, const uin
         memmove(path + req, path + orig, size * sizeof(dtPolyRef));
 
     // Store visited
-    for (uint32 i = 0; i < req; ++i)
+    for (uint32_t i = 0; i < req; ++i)
     {
         path[i] = visited[(nvisited - 1) - i];
     }
@@ -4338,7 +4338,7 @@ uint32 AIInterface::fixupCorridor(dtPolyRef* path, const uint32 npath, const uin
     return req + size;
 }
 
-void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
+void AIInterface::EventEnterCombat(Unit* pUnit, uint32_t misc1)
 {
     if (isAiState(AI_STATE_EVADE))
         return;
@@ -4414,7 +4414,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
         Player* pGroupGuy;
         GroupMembersSet::iterator itr;
         pGroup->Lock();
-        for (uint32 i = 0; i < pGroup->GetSubGroupCount(); i++)
+        for (uint32_t i = 0; i < pGroup->GetSubGroupCount(); i++)
         {
             for (itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
             {
@@ -4431,7 +4431,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
     m_Unit->smsg_AttackStart(pUnit);
 }
 
-void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 /*misc1*/)
+void AIInterface::EventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
 {
     if (isAiState(AI_STATE_EVADE))
         return;
@@ -4590,7 +4590,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 /*misc1*/)
     m_Unit->smsg_AttackStop(pUnit);
 }
 
-void AIInterface::EventDamageTaken(Unit* pUnit, uint32 misc1)
+void AIInterface::EventDamageTaken(Unit* pUnit, uint32_t misc1)
 {
     if (isAiState(AI_STATE_EVADE))
         return;
@@ -4611,7 +4611,7 @@ void AIInterface::EventDamageTaken(Unit* pUnit, uint32 misc1)
     pUnit->CombatStatus.OnDamageDealt(m_Unit);
 }
 
-void AIInterface::EventFollowOwner(Unit* /*pUnit*/, uint32 /*misc1*/)
+void AIInterface::EventFollowOwner(Unit* /*pUnit*/, uint32_t /*misc1*/)
 {
     if (isAiState(AI_STATE_EVADE))
         return;
@@ -4635,7 +4635,7 @@ void AIInterface::EventFollowOwner(Unit* /*pUnit*/, uint32 /*misc1*/)
     setSplineRun();
 }
 
-void AIInterface::EventFear(Unit* pUnit, uint32 /*misc1*/)
+void AIInterface::EventFear(Unit* pUnit, uint32_t /*misc1*/)
 {
     if (pUnit == nullptr)
         return;
@@ -4666,7 +4666,7 @@ void AIInterface::EventFear(Unit* pUnit, uint32 /*misc1*/)
     resetNextTarget();
 }
 
-void AIInterface::EventUnfear(Unit* /*pUnit*/, uint32 /*misc1*/)
+void AIInterface::EventUnfear(Unit* /*pUnit*/, uint32_t /*misc1*/)
 {
     if (isAiState(AI_STATE_EVADE))
         return;
@@ -4679,7 +4679,7 @@ void AIInterface::EventUnfear(Unit* /*pUnit*/, uint32 /*misc1*/)
     StopMovement(1);
 }
 
-void AIInterface::EventWander(Unit* pUnit, uint32 /*misc1*/)
+void AIInterface::EventWander(Unit* pUnit, uint32_t /*misc1*/)
 {
     if (isAiState(AI_STATE_EVADE))
         return;
@@ -4713,7 +4713,7 @@ void AIInterface::EventWander(Unit* pUnit, uint32 /*misc1*/)
     resetNextTarget();
 }
 
-void AIInterface::EventUnwander(Unit* /*pUnit*/, uint32 /*misc1*/)
+void AIInterface::EventUnwander(Unit* /*pUnit*/, uint32_t /*misc1*/)
 {
     if (isAiState(AI_STATE_EVADE))
         return;
@@ -4725,7 +4725,7 @@ void AIInterface::EventUnwander(Unit* /*pUnit*/, uint32 /*misc1*/)
     StopMovement(1);
 }
 
-void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
+void AIInterface::EventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 {
     if (pUnit == nullptr)
         return;
@@ -4783,7 +4783,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
 
         if (pInstance->isPersistent() && bossInfoMap != NULL)
         {
-            uint32 npcGuid = pCreature->GetCreatureProperties()->Id;
+            uint32_t npcGuid = pCreature->GetCreatureProperties()->Id;
             InstanceBossInfoMap::const_iterator bossInfo = bossInfoMap->find(npcGuid);
             if (bossInfo != bossInfoMap->end())
             {
@@ -4813,7 +4813,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
         if (found == false)
         {
             // No instance boss information ... so fallback ...
-            uint32 npcGuid = pCreature->GetSQL_id();
+            uint32_t npcGuid = pCreature->GetSQL_id();
             m_Unit->GetMapMgr()->pInstance->m_killedNpcs.insert(npcGuid);
             sInstanceMgr.SaveInstanceToDB(m_Unit->GetMapMgr()->pInstance);
         }
@@ -4830,7 +4830,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
     }
 }
 
-void AIInterface::EventHostileAction(Unit* /*pUnit*/, uint32 /*misc1*/)
+void AIInterface::EventHostileAction(Unit* /*pUnit*/, uint32_t /*misc1*/)
 {
     m_combatResetX = m_Unit->GetPositionX();
     m_combatResetY = m_Unit->GetPositionY();
@@ -4866,7 +4866,7 @@ void AIInterface::MoveEvadeReturn()
     generateAndSendSplinePath(m_returnX, m_returnY, m_returnZ);
 }
 
-void AIInterface::EventForceRedirected(Unit* /*pUnit*/, uint32 /*misc1*/)
+void AIInterface::EventForceRedirected(Unit* /*pUnit*/, uint32_t /*misc1*/)
 {
     if (isAiState(AI_STATE_IDLE))
         SetReturnPosition();
@@ -4895,11 +4895,11 @@ void AIInterface::SetReturnPosition()
     }
 }
 
-void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
+void AIInterface::SetCreatureProtoDifficulty(uint32_t entry)
 {
     if (GetDifficultyType() != 0)
     {
-        uint32 creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(entry, GetDifficultyType());
+        uint32_t creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(entry, GetDifficultyType());
         auto properties_difficulty = sMySQLStore.getCreatureProperties(creature_difficulty_entry);
         Creature* creature = static_cast<Creature*>(m_Unit);
         if (properties_difficulty != nullptr)
@@ -4920,7 +4920,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             m_Unit->setScale(properties_difficulty->Scale);
 
-            uint32 health = properties_difficulty->MinHealth + Util::getRandomUInt(properties_difficulty->MaxHealth - properties_difficulty->MinHealth);
+            uint32_t health = properties_difficulty->MinHealth + Util::getRandomUInt(properties_difficulty->MaxHealth - properties_difficulty->MinHealth);
 
             m_Unit->setMaxHealth(health);
             m_Unit->setHealth(health);
@@ -4932,7 +4932,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             m_Unit->setLevel(properties_difficulty->MinLevel + (Util::getRandomUInt(properties_difficulty->MaxLevel - properties_difficulty->MinLevel)));
 
-            for (uint8 i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
+            for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
             {
                 m_Unit->setResistance(i, properties_difficulty->Resistances[i]);
             }
@@ -4966,12 +4966,12 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_Unit->setNpcFlags(properties_difficulty->NPCFLags);
 
             // resistances
-            for (uint8 j = 0; j < TOTAL_SPELL_SCHOOLS; ++j)
+            for (uint8_t j = 0; j < TOTAL_SPELL_SCHOOLS; ++j)
             {
                 m_Unit->BaseResistance[j] = m_Unit->getResistance(j);
             }
 
-            for (uint8 j = 0; j < STAT_COUNT; ++j)
+            for (uint8_t j = 0; j < STAT_COUNT; ++j)
             {
                 m_Unit->BaseStats[j] = m_Unit->getStat(j);
             }
@@ -5017,9 +5017,9 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
     }
 }
 
-uint8 AIInterface::GetDifficultyType()
+uint8_t AIInterface::GetDifficultyType()
 {
-    uint8 difficulty_type;
+    uint8_t difficulty_type;
 
     Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, m_Unit->GetInstanceID());
     if (instance != nullptr)

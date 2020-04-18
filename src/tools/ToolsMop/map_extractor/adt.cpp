@@ -76,13 +76,13 @@ bool ADT_file::prepareLoadedData()
         return false;
 
     // funny offsets calculations because there is no mapping for them and they have variable lengths
-    uint8* ptr = (uint8*)a_grid + a_grid->size + 8;
-    uint32 mcnk_count = 0;
+    uint8_t* ptr = (uint8_t*)a_grid + a_grid->size + 8;
+    uint32_t mcnk_count = 0;
     memset(cells, 0, ADT_CELLS_PER_GRID * ADT_CELLS_PER_GRID * sizeof(adt_MCNK*));
     while (ptr < GetData() + GetDataSize())
     {
-        uint32 header = *(uint32*)ptr;
-        uint32 size = *(uint32*)(ptr + 4);
+        uint32_t header = *(uint32_t*)ptr;
+        uint32_t size = *(uint32_t*)(ptr + 4);
         if (header == MCNKMagic.fcc)
         {
             cells[mcnk_count / ADT_CELLS_PER_GRID][mcnk_count % ADT_CELLS_PER_GRID] = (adt_MCNK*)ptr;

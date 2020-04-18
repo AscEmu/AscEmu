@@ -43,7 +43,7 @@ class VishasAI : public CreatureAIScript
 
 private:
 
-    uint8 m_uiSay;
+    uint8_t m_uiSay;
 };
 
 class ThalnosAI : public CreatureAIScript
@@ -105,7 +105,7 @@ class DoanAI : public CreatureAIScript
         addEmoteForEvent(Event_OnCombatStart, 2099);     // You will not defile these mysteries!
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t /*fAmount*/) override
     {
         if (_getHealthPercent() <= 50 && !m_bShielded)
             Shield();
@@ -212,7 +212,7 @@ class WhitemaneAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, SAY_WHITEMANE_03);
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         if (fAmount < 5)
             return;

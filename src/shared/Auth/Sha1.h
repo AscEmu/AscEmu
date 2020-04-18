@@ -36,13 +36,13 @@ class Sha1Hash
         void UpdateFinalizeBigNumbers(BigNumber* bn0, ...);
         void UpdateBigNumbers(BigNumber* bn0, ...);
 
-        void UpdateData(const uint8* dta, int len);
+        void UpdateData(const uint8_t* dta, int len);
         void UpdateData(const std::string & str);
 
         void Initialize();
         void Finalize();
 
-        uint8* GetDigest(void) { return mDigest; };
+        uint8_t* GetDigest(void) { return mDigest; };
         int GetLength(void) { return SHA_DIGEST_LENGTH; };
 
         BigNumber GetBigNumber();
@@ -50,7 +50,7 @@ class Sha1Hash
     private:
 
         SHA_CTX mC;
-        uint8 mDigest[SHA_DIGEST_LENGTH];
+        uint8_t mDigest[SHA_DIGEST_LENGTH];
 };
 
 #endif

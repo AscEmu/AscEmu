@@ -22,32 +22,32 @@ enum UtgardeData
 
 struct ForgeMasterData
 {
-    ForgeMasterData(uint32 pB = 0, uint32 pF = 0, uint32 pA = 0)
+    ForgeMasterData(uint32_t pB = 0, uint32_t pF = 0, uint32_t pA = 0)
     {
         mBellow = pB;
         mFire = pF;
         mAnvil = pA;
     }
 
-    uint32 mBellow;
-    uint32 mFire;
-    uint32 mAnvil;
+    uint32_t mBellow;
+    uint32_t mFire;
+    uint32_t mAnvil;
 };
 
 class UtgardeKeepScript : public InstanceScript
 {
 public:
  
-    uint32 mKelesethGUID;
-    uint32 mSkarvaldGUID;
-    uint32 mDalronnGUID;
-    uint32 mIngvarGUID;
+    uint32_t mKelesethGUID;
+    uint32_t mSkarvaldGUID;
+    uint32_t mDalronnGUID;
+    uint32_t mIngvarGUID;
 
     ForgeMasterData m_fmData[3];
-    uint32 mDalronnDoorsGUID;
-    uint32 mIngvarDoors[2];
+    uint32_t mDalronnDoorsGUID;
+    uint32_t mIngvarDoors[2];
 
-    uint32 mUtgardeData[UTGARDE_DATA_END];
+    uint32_t mUtgardeData[UTGARDE_DATA_END];
 
     explicit UtgardeKeepScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
@@ -56,19 +56,19 @@ public:
         mDalronnGUID = 0;
         mIngvarGUID = 0;
 
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < 3; ++i)
         {
             m_fmData[i] = ForgeMasterData();
         }
 
         mDalronnDoorsGUID = 0;
 
-        for (uint8 i = 0; i < 2; ++i)
+        for (uint8_t i = 0; i < 2; ++i)
         {
             mIngvarDoors[i] = 0;
         }
 
-        for (uint8 i = 0; i < UTGARDE_DATA_END; ++i)
+        for (uint8_t i = 0; i < UTGARDE_DATA_END; ++i)
         {
             mUtgardeData[i] = 0;
         }
@@ -138,7 +138,7 @@ public:
         }
     }
 
-    void SetLocaleInstanceData(uint32 /*pType*/, uint32 pIndex, uint32 pData)
+    void SetLocaleInstanceData(uint32_t /*pType*/, uint32_t pIndex, uint32_t pData)
     {
         switch (pIndex)
         {
@@ -154,7 +154,7 @@ public:
                 if (pData == Finished)
                 {
                     GameObject* pGO = nullptr;
-                    for (uint8 i = 0; i < 2; ++i)
+                    for (uint8_t i = 0; i < 2; ++i)
                     {
                         pGO = GetGameObjectByGuid(mIngvarDoors[i]);
                         if (pGO)
@@ -442,7 +442,7 @@ class SkarvaldTheConstructorAI : public CreatureAIScript
     }
 
 private:
-    uint32 mReplyTimer;
+    uint32_t mReplyTimer;
     CreatureAIScript* pDalronn;
     CreatureAIScript* pDalronnGhost;
 };
@@ -525,7 +525,7 @@ class DalronnTheControllerAI : public CreatureAIScript
     }
 
 private:
-    int32 mSummonTimer;
+    int32_t mSummonTimer;
     CreatureAIScript* pSkarvald;
     CreatureAIScript* pSkarvaldGhost;
 };

@@ -94,14 +94,14 @@ void DynamicObject::setCastTime(uint32_t time) { write(dynamicObjectData()->cast
 
  //////////////////////////////////////////////////////////////////////////////////////////
  // Misc
-void DynamicObject::Create(Unit* caster, Spell* spell, LocationVector lv, uint32 duration, float radius, uint32 type)
+void DynamicObject::Create(Unit* caster, Spell* spell, LocationVector lv, uint32_t duration, float radius, uint32_t type)
 {
     Create(caster, spell, lv.x, lv.y, lv.z, duration, radius, type);
 }
 
 // MIT End
 
-DynamicObject::DynamicObject(uint32 high, uint32 low)
+DynamicObject::DynamicObject(uint32_t high, uint32_t low)
 {
     m_objectType |= TYPE_DYNAMICOBJECT;
     m_objectTypeId = TYPEID_DYNAMICOBJECT;
@@ -116,7 +116,7 @@ DynamicObject::DynamicObject(uint32 high, uint32 low)
 
     m_valuesCount = DYNAMICOBJECT_END;
     m_uint32Values = _fields;
-    memset(m_uint32Values, 0, (DYNAMICOBJECT_END)*sizeof(uint32));
+    memset(m_uint32Values, 0, (DYNAMICOBJECT_END)*sizeof(uint32_t));
     m_updateMask.SetCount(DYNAMICOBJECT_END);
     setOType(TYPE_DYNAMICOBJECT | TYPE_OBJECT);
     m_uint32Values[OBJECT_FIELD_GUID] = low;
@@ -138,7 +138,7 @@ DynamicObject::~DynamicObject()
         u_caster->dynObj = nullptr;
 }
 
-void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float z, uint32 duration, float radius, uint32 type)
+void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float z, uint32_t duration, float radius, uint32_t type)
 {
     Object::_Create(caster->GetMapId(), x, y, z, 0);
     if (pSpell->g_caster)
@@ -241,7 +241,7 @@ void DynamicObject::UpdateTargets()
             if (getDistanceSq(target) <= radius)
             {
                 pAura = sSpellMgr.newAura(m_spellProto, m_aliveDuration, u_caster, target, true);
-                for (uint8 i = 0; i < 3; ++i)
+                for (uint8_t i = 0; i < 3; ++i)
                 {
                     if (m_spellProto->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                     {
@@ -304,10 +304,10 @@ void DynamicObject::Remove()
         return;
     }
 
-    for (std::set< uint64 >::iterator itr = targets.begin(); itr != targets.end(); ++itr)
+    for (std::set< uint64_t >::iterator itr = targets.begin(); itr != targets.end(); ++itr)
     {
 
-        uint64 TargetGUID = *itr;
+        uint64_t TargetGUID = *itr;
 
         target = m_mapMgr->GetUnit(TargetGUID);
 

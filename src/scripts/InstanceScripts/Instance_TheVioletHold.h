@@ -72,7 +72,7 @@ const Movement::Location VHPortalLocations[] =
     { 1908.31f, 809.657f, 38.7037f, 3.08701f },
 };
 
-enum VHTimers : int32
+enum VHTimers : int32_t
 {
     VH_TIMER_UPDATE = 100,
 

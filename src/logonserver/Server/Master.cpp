@@ -109,7 +109,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
         WritePidFile();
 
-        uint32 loop_counter = 0;
+        uint32_t loop_counter = 0;
 
         LogDefault("Success! Ready for connections");
         while (mrunning)
@@ -214,7 +214,7 @@ void MasterLogon::WritePidFile()
     FILE* pidFile = fopen("logonserver.pid", "w");
     if (pidFile)
     {
-        uint32 pid;
+        uint32_t pid;
 #ifdef WIN32
         pid = GetCurrentProcessId();
 #else

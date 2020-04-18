@@ -123,7 +123,7 @@ enum PetType
     WARLOCKPET  = 2,
 };
 
-typedef std::map<SpellInfo const*, uint16> PetSpellMap;
+typedef std::map<SpellInfo const*, uint16_t> PetSpellMap;
 struct PlayerPet;
 
 
@@ -149,7 +149,7 @@ public:
 
     // MIT END
 
-        Pet(uint64 guid);
+        Pet(uint64_t guid);
         ~Pet();
 
         // Override superclass method that returns false
@@ -157,7 +157,7 @@ public:
 
         void LoadFromDB(Player* owner, PlayerPet* pi);
         /// returns false if an error occurred. The caller MUST delete us.
-        bool CreateAsSummon(uint32 entry, CreatureProperties const* properties_, Creature* created_from_creature, Player* owner, SpellInfo const* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec = NULL, bool dismiss_old_pet = true);
+        bool CreateAsSummon(uint32_t entry, CreatureProperties const* properties_, Creature* created_from_creature, Player* owner, SpellInfo const* created_by_spell, uint32_t type, uint32_t expiretime, LocationVector* Vec = NULL, bool dismiss_old_pet = true);
 
         void Update(unsigned long time_passed);
         void OnPushToWorld();
@@ -165,17 +165,17 @@ public:
         void InitializeSpells();
         void InitializeMe(bool first);
         void SendSpellsToOwner();
-        void SendCastFailed(uint32 spellid, uint8 fail);
+        void SendCastFailed(uint32_t spellid, uint8_t fail);
         void SendActionFeedback(PetActionFeedback value);
         void BuildPetSpellList(WorldPacket& data);
 
-        inline void SetPetAction(uint32 act) { m_Action = act; }
-        inline uint32 GetPetAction(void) { return m_Action; }
+        inline void SetPetAction(uint32_t act) { m_Action = act; }
+        inline uint32_t GetPetAction(void) { return m_Action; }
 
-        inline void SetPetState(uint32 state) { m_State = state; }
-        inline uint32 GetPetState(void) { return m_State; }
+        inline void SetPetState(uint32_t state) { m_State = state; }
+        inline uint32_t GetPetState(void) { return m_State; }
 
-        inline void SetPetDiet(uint32 diet) { m_Diet = diet; }
+        inline void SetPetDiet(uint32_t diet) { m_Diet = diet; }
         inline void SetPetDiet()
         { 
             if (myFamily)
@@ -183,11 +183,11 @@ public:
             else
                 m_Diet = 0;
         }
-        inline uint32 GetPetDiet(void) { return m_Diet; }
+        inline uint32_t GetPetDiet(void) { return m_Diet; }
 
-        inline AI_Spell* GetAISpellForSpellId(uint32 spellid)
+        inline AI_Spell* GetAISpellForSpellId(uint32_t spellid)
         {
-            std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(spellid);
+            std::map<uint32_t, AI_Spell*>::iterator itr = m_AISpellStore.find(spellid);
             if (itr != m_AISpellStore.end())
                 return itr->second;
             else
@@ -202,43 +202,43 @@ public:
         void PrepareForRemove(bool bUpdate, bool bSetOffline);
         void RemoveFromWorld(bool free_guid);
         void OnRemoveFromWorld();
-        void DelayedRemove(bool bTime, bool dismiss = false, uint32 delay = PET_DELAYED_REMOVAL_TIME);
-        void Despawn(uint32 delay, uint32 respawntime);
+        void DelayedRemove(bool bTime, bool dismiss = false, uint32_t delay = PET_DELAYED_REMOVAL_TIME);
+        void Despawn(uint32_t delay, uint32_t respawntime);
 
         bool CanGainXP();
-        uint32 GetNextLevelXP(uint32 currentlevel);
+        uint32_t GetNextLevelXP(uint32_t currentlevel);
         void ApplyStatsForLevel();
         void ApplySummonLevelAbilities();
         void ApplyPetLevelAbilities();
         void UpdateAP();
-        void LoadPetAuras(int32 id);
+        void LoadPetAuras(int32_t id);
         void SetDefaultActionbar();
-        void SetActionBarSlot(uint32 slot, uint32 spell) { ActionBar[slot] = spell; }
+        void SetActionBarSlot(uint32_t slot, uint32_t spell) { ActionBar[slot] = spell; }
 
         void AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell = true);
         void RemoveSpell(SpellInfo const* sp, bool showUnlearnSpell = true);
         void WipeTalents();
-        uint32 GetUntrainCost();
-        void SetSpellState(SpellInfo const* sp, uint16 State);
-        uint16 GetSpellState(SpellInfo const* sp);
-        bool HasSpell(uint32 SpellID)
+        uint32_t GetUntrainCost();
+        void SetSpellState(SpellInfo const* sp, uint16_t State);
+        uint16_t GetSpellState(SpellInfo const* sp);
+        bool HasSpell(uint32_t SpellID)
         {
             const auto sp = sSpellMgr.getSpellInfo(SpellID);
             if (sp)
                 return mSpells.find(sp) != mSpells.end();
             return false;
         }
-        inline void RemoveSpell(uint32 SpellID)
+        inline void RemoveSpell(uint32_t SpellID)
         {
             const auto sp = sSpellMgr.getSpellInfo(SpellID);
             if (sp) RemoveSpell(sp);
         }
-        inline void SetSpellState(uint32 SpellID, uint16 State)
+        inline void SetSpellState(uint32_t SpellID, uint16_t State)
         {
             const auto sp = sSpellMgr.getSpellInfo(SpellID);
             if (sp) SetSpellState(sp, State);
         }
-        inline uint16 GetSpellState(uint32 SpellID)
+        inline uint16_t GetSpellState(uint32_t SpellID)
         {
             if (SpellID == 0)
                 return DEFAULT_SPELL_STATE;
@@ -256,52 +256,52 @@ public:
         void SetAutoCastSpell(AI_Spell* sp);
         void Rename(std::string NewName);
         inline std::string & GetName() { return m_name; }
-        uint32 CanLearnSpell(SpellInfo const* sp);
+        uint32_t CanLearnSpell(SpellInfo const* sp);
         void UpdateSpellList(bool showLearnSpells = true);
 
         // talents
         void SendTalentsToOwner();        // Send talentpoints and talent spells to owner
-        inline uint8 GetTPsForLevel(uint32 level) { return (level >= 20) ? uint8(level - 16) >> 2 : 0; }    // pet gain first talent point at lvl 20, then every 4 lvls another point
-        inline uint8 GetSpentTPs() { return GetTPsForLevel(getLevel()) - this->getPetTalentPoints(); }    // returns amount of spent talent points
+        inline uint8_t GetTPsForLevel(uint32_t level) { return (level >= 20) ? uint8_t(level - 16) >> 2 : 0; }    // pet gain first talent point at lvl 20, then every 4 lvls another point
+        inline uint8_t GetSpentTPs() { return GetTPsForLevel(getLevel()) - this->getPetTalentPoints(); }    // returns amount of spent talent points
 
         void HandleAutoCastEvent(AutoCastEvents Type);
         AI_Spell* HandleAutoCastEvent();
-        void SetPetSpellState(uint32 spell, uint16 state);
+        void SetPetSpellState(uint32_t spell, uint16_t state);
         void SetAutoCast(AI_Spell* sp, bool on);
         float GetHappinessDmgMod() { return 0.25f * GetHappinessState() + 0.5f; };
         bool IsBeingDeleted() { return ScheduledForDeletion; }
 
         virtual Group* GetGroup();
 
-        void DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras = false) override;
-        void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false) override;
-        void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
+        void DealDamage(Unit* pVictim, uint32_t damage, uint32_t targetEvent, uint32_t unitEvent, uint32_t spellId, bool no_remove_auras = false) override;
+        void TakeDamage(Unit* pAttacker, uint32_t damage, uint32_t spellid, bool no_remove_auras = false) override;
+        void Die(Unit* pAttacker, uint32_t damage, uint32_t spellid);
 
     protected:
 
         PetSpellMap mSpells;
         PlayerPet* mPi;
-        uint32 ActionBar[10];       /// 10 slots
+        uint32_t ActionBar[10];       /// 10 slots
 
-        std::map<uint32, AI_Spell*> m_AISpellStore;
+        std::map<uint32_t, AI_Spell*> m_AISpellStore;
 
-        uint32 m_AutoCombatSpell;
+        uint32_t m_AutoCombatSpell;
 
-        uint32 m_HappinessTimer;
-        uint32 m_PetNumber;
-        uint32 m_Action;
-        uint32 m_State;
-        uint32 m_ExpireTime;
-        uint32 m_Diet;
+        uint32_t m_HappinessTimer;
+        uint32_t m_PetNumber;
+        uint32_t m_Action;
+        uint32_t m_State;
+        uint32_t m_ExpireTime;
+        uint32_t m_Diet;
         time_t reset_time;
-        uint32 reset_cost;
+        uint32_t reset_cost;
         bool bExpires;
         bool Summon;
         bool ScheduledForDeletion;
         std::string m_name;
         HappinessState GetHappinessState();
-        void SetNameForEntry(uint32 entry);
-        uint32 GetAutoCastTypeForSpell(SpellInfo const* ent);
+        void SetNameForEntry(uint32_t entry);
+        uint32_t GetAutoCastTypeForSpell(SpellInfo const* ent);
         void SafeDelete();
 
     std::list<AI_Spell*> m_autoCastSpells[AUTOCAST_EVENT_COUNT];

@@ -39,7 +39,7 @@ using namespace AscEmu::Packets;
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
-WorldSession::WorldSession(uint32 id, std::string name, WorldSocket* sock) :
+WorldSession::WorldSession(uint32_t id, std::string name, WorldSocket* sock) :
     m_loggingInPlayer(nullptr),
     m_currMsTime(Util::getMSTime()),
     m_lastPing(0),
@@ -81,7 +81,7 @@ WorldSession::WorldSession(uint32 id, std::string name, WorldSocket* sock) :
     movement_info.redirect_velocity = 0;
 #endif
 
-    for (uint8 x = 0; x < 8; x++)
+    for (uint8_t x = 0; x < 8; x++)
         sAccountData[x].data = nullptr;
 }
 
@@ -102,7 +102,7 @@ WorldSession::~WorldSession()
     while ((packet = _recvQueue.Pop()) != nullptr)
         delete packet;
 
-    for (uint32 x = 0; x < 8; x++)
+    for (uint32_t x = 0; x < 8; x++)
     {
         delete[]sAccountData[x].data;
     }
@@ -116,7 +116,7 @@ WorldSession::~WorldSession()
     deleteMutex.Release();
 }
 
-uint8 WorldSession::Update(uint32 InstanceID)
+uint8_t WorldSession::Update(uint32_t InstanceID)
 {
     m_currMsTime = Util::getMSTime();
 
@@ -226,7 +226,7 @@ uint8 WorldSession::Update(uint32 InstanceID)
             LogoutPlayer(true);
     }
 
-    if (m_lastPing + WORLDSOCKET_TIMEOUT < static_cast<uint32>(UNIXTIME))
+    if (m_lastPing + WORLDSOCKET_TIMEOUT < static_cast<uint32_t>(UNIXTIME))
     {
         // Check if the player is in the process of being moved. We can't
         // delete him
@@ -244,7 +244,7 @@ uint8 WorldSession::Update(uint32 InstanceID)
             _socket = nullptr;
         }
 
-        m_lastPing = static_cast<uint32>(UNIXTIME); // Prevent calling this code over and
+        m_lastPing = static_cast<uint32_t>(UNIXTIME); // Prevent calling this code over and
         // over.
         if (!_logoutTime)
             _logoutTime = m_currMsTime + PLAYER_LOGOUT_DELAY;
@@ -403,7 +403,7 @@ void WorldSession::LogoutPlayer(bool Save)
         {
             std::stringstream ss;
             ss << "UPDATE account_data SET ";
-            for (uint32 ui = 0; ui < 8; ui++)
+            for (uint32_t ui = 0; ui < 8; ui++)
             {
                 if (sAccountData[ui].bIsDirty)
                 {
@@ -453,7 +453,7 @@ void WorldSession::LoadSecurity(std::string securitystring)
 {
     std::list < char >tmp;
     bool hasa = false;
-    for (uint32 i = 0; i < securitystring.length(); ++i)
+    for (uint32_t i = 0; i < securitystring.length(); ++i)
     {
         char c = securitystring.at(i);
         c = static_cast<char>(tolower(c));
@@ -476,7 +476,7 @@ void WorldSession::LoadSecurity(std::string securitystring)
 
     permissions = new char[tmp.size() + 1];
     memset(permissions, 0, tmp.size() + 1);
-    permissioncount = static_cast<uint32>(tmp.size());
+    permissioncount = static_cast<uint32_t>(tmp.size());
     int k = 0;
 
     for (std::list <char>::iterator itr = tmp.begin(); itr != tmp.end(); ++itr)
@@ -529,7 +529,7 @@ void WorldSession::SendNotification(const char* message, ...)
 void WorldSession::InitPacketHandlerTable()
 {
     // Nullify Everything, default to STATUS_LOGGEDIN
-    for (uint32 i = 0; i < NUM_MSG_TYPES; ++i)
+    for (uint32_t i = 0; i < NUM_MSG_TYPES; ++i)
     {
         WorldPacketHandlers[i].status = STATUS_LOGGEDIN;
         WorldPacketHandlers[i].handler = nullptr;
@@ -578,16 +578,16 @@ void WorldSession::SystemMessage(const char* format, ...)
     delete data;
 }
 
-void WorldSession::SendChatPacket(WorldPacket* data, uint32 langpos, int32 lang, WorldSession* originator)
+void WorldSession::SendChatPacket(WorldPacket* data, uint32_t langpos, int32_t lang, WorldSession* originator)
 {
     if (lang == -1)
-        *reinterpret_cast<uint32*>(& data->contents()[langpos]) = lang;
+        *reinterpret_cast<uint32_t*>(& data->contents()[langpos]) = lang;
     else
     {
         if (CanUseCommand('c') || (originator && originator->CanUseCommand('c')))
-            *reinterpret_cast<uint32*>(& data->contents()[langpos]) = LANG_UNIVERSAL;
+            *reinterpret_cast<uint32_t*>(& data->contents()[langpos]) = LANG_UNIVERSAL;
         else
-            *reinterpret_cast<uint32*>(& data->contents()[langpos]) = lang;
+            *reinterpret_cast<uint32_t*>(& data->contents()[langpos]) = lang;
     }
 
     SendPacket(data);
@@ -609,7 +609,7 @@ char szError[64];
 
 // Returns a gossip menu option indexed by id
 // These strings can be found in gossip_menu_option tables in the database
-const char* WorldSession::LocalizedGossipOption(uint32 id)
+const char* WorldSession::LocalizedGossipOption(uint32_t id)
 {
     MySQLStructure::GossipMenuOption const* wst = sMySQLStore.getGossipMenuOption(id);
     if (!wst)
@@ -632,7 +632,7 @@ const char* WorldSession::LocalizedGossipOption(uint32 id)
 
 // Returns a worldstring indexed by id
 // These strings can be found in the worldstring tables in the database
-const char* WorldSession::LocalizedWorldSrv(uint32 id)
+const char* WorldSession::LocalizedWorldSrv(uint32_t id)
 {
     MySQLStructure::WorldStringTable const* wst = sMySQLStore.getWorldString(id);
     if (!wst)
@@ -653,7 +653,7 @@ const char* WorldSession::LocalizedWorldSrv(uint32 id)
     }
 }
 
-const char* WorldSession::LocalizedMapName(uint32 id)
+const char* WorldSession::LocalizedMapName(uint32_t id)
 {
     MySQLStructure::MapInfo const* mi = sMySQLStore.getWorldMapInfo(id);
     if (!mi)
@@ -674,7 +674,7 @@ const char* WorldSession::LocalizedMapName(uint32 id)
     }
 }
 
-const char* WorldSession::LocalizedBroadCast(uint32 id)
+const char* WorldSession::LocalizedBroadCast(uint32_t id)
 {
     MySQLStructure::WorldBroadCast const* wb = sMySQLStore.getWorldBroadcastById(id);
     if (!wb)
@@ -737,7 +737,7 @@ void WorldSession::SendPacket(StackBufferBase* packet)
     }
 }
 
-void WorldSession::OutPacket(uint16 opcode)
+void WorldSession::OutPacket(uint16_t opcode)
 {
     if (_socket && _socket->IsConnected())
     {
@@ -745,7 +745,7 @@ void WorldSession::OutPacket(uint16 opcode)
     }
 }
 
-void WorldSession::OutPacket(uint16 opcode, uint16 len, const void* data)
+void WorldSession::OutPacket(uint16_t opcode, uint16_t len, const void* data)
 {
     if (_socket && _socket->IsConnected())
     {
@@ -755,7 +755,7 @@ void WorldSession::OutPacket(uint16 opcode, uint16 len, const void* data)
 
 void WorldSession::QueuePacket(WorldPacket* packet)
 {
-    m_lastPing = static_cast<uint32>(UNIXTIME);
+    m_lastPing = static_cast<uint32_t>(UNIXTIME);
     _recvQueue.Push(packet);
 }
 

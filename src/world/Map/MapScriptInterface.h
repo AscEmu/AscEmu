@@ -45,7 +45,7 @@ class SERVER_DECL MapScriptInterface
         MapScriptInterface(MapMgr & mgr);
         ~MapScriptInterface();
 
-        template<class T, uint32 TypeId> T* GetObjectNearestCoords(uint32 Entry, float x, float y, float z = 0.0f)
+        template<class T, uint32_t TypeId> T* GetObjectNearestCoords(uint32_t Entry, float x, float y, float z = 0.0f)
         {
             MapCell* pCell = mapMgr.GetCell(mapMgr.GetPosX(x), mapMgr.GetPosY(y));
             if (pCell == 0)
@@ -72,26 +72,26 @@ class SERVER_DECL MapScriptInterface
             return ClosestObject;
         }
 
-        inline GameObject* GetGameObjectNearestCoords(float x, float y, float z = 0.0f, uint32 Entry = 0)
+        inline GameObject* GetGameObjectNearestCoords(float x, float y, float z = 0.0f, uint32_t Entry = 0)
         {
             return GetObjectNearestCoords<GameObject, TYPEID_GAMEOBJECT>(Entry, x, y, z);
         }
 
-        inline Creature* GetCreatureNearestCoords(float x, float y, float z = 0.0f, uint32 Entry = 0)
+        inline Creature* GetCreatureNearestCoords(float x, float y, float z = 0.0f, uint32_t Entry = 0)
         {
             return GetObjectNearestCoords<Creature, TYPEID_UNIT>(Entry, x, y, z);
         }
 
-        inline Player* GetPlayerNearestCoords(float x, float y, float z = 0.0f, uint32 Entry = 0)
+        inline Player* GetPlayerNearestCoords(float x, float y, float z = 0.0f, uint32_t Entry = 0)
         {
             return GetObjectNearestCoords<Player, TYPEID_PLAYER>(Entry, x, y, z);
         }
 
-        uint32 GetPlayerCountInRadius(float x, float y, float z = 0.0f, float radius = 5.0f);
+        uint32_t GetPlayerCountInRadius(float x, float y, float z = 0.0f, float radius = 5.0f);
 
-        GameObject* SpawnGameObject(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, uint32 Misc1, uint32 Misc2, uint32 phase = 0xFFFFFFF);
+        GameObject* SpawnGameObject(uint32_t Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, uint32_t Misc1, uint32_t Misc2, uint32_t phase = 0xFFFFFFF);
         GameObject* SpawnGameObject(MySQLStructure::GameobjectSpawn* gs, bool AddToWorld);
-        Creature* SpawnCreature(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, bool tmplate, uint32 Misc1, uint32 Misc2, uint32 phase = 0xFFFFFFF);
+        Creature* SpawnCreature(uint32_t Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, bool tmplate, uint32_t Misc1, uint32_t Misc2, uint32_t phase = 0xFFFFFFF);
         Creature* SpawnCreature(MySQLStructure::CreatureSpawn* sp, bool AddToWorld);
         Movement::WayPoint* CreateWaypoint();
 

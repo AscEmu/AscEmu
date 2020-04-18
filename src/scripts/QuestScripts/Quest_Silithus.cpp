@@ -38,7 +38,7 @@ public:
         menu.sendGossipPacket(Plr);
     }
 
-    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
@@ -107,7 +107,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* Plr, uint32 IntId, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t IntId, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (IntId)
         {
@@ -181,7 +181,7 @@ public:
         menu.sendGossipPacket(pPlayer);
     };
 
-    void onSelectOption(Object* object, Player* player, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* object, Player* player, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
