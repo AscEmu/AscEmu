@@ -11998,7 +11998,7 @@ void Unit::SetFacing(float newo)
     data << GetPositionX();
     data << GetPositionY();
     data << GetPositionZ();
-    data <<Util::getMSTime();
+    data << Util::getMSTime();
     data << uint8_t(4); // set orientation
     data << newo;
     data << uint32_t(0x1000); // move flags: run

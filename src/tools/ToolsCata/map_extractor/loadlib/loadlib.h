@@ -21,8 +21,9 @@
 #define LOAD_LIB_H
 
 #include "StormLib.h"
+#include <cstdint>
 
-#define FILE_FORMAT_VERSION    18
+#define FILE_FORMAT_VERSION 18
 
 #pragma pack(push, 1)
 

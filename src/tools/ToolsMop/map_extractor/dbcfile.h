@@ -43,7 +43,7 @@ public:
         std::string message;
     };
 
-    class NotFound: public Exception
+    class NotFound : public Exception
     {
     public:
         NotFound() : Exception("Key was not found") { }
