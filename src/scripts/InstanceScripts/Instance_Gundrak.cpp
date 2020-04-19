@@ -227,7 +227,7 @@ public:
 // Status: 50% done, missing add related stuff and maybe correct timers
 class SladranAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SladranAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SladranAI)
     explicit SladranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         CreatureAISpells* sdPoisonNova = nullptr;
@@ -260,7 +260,7 @@ class SladranAI : public CreatureAIScript
 // Status: 20% done, missing rihno part, need vehicle support for that, missing stampade script
 class GalDarahAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GalDarahAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GalDarahAI)
     explicit GalDarahAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())

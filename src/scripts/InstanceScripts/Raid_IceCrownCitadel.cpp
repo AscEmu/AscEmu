@@ -215,7 +215,7 @@ const uint32_t SOUL_FEAST = 71203;       // Needs a script
 
 class LordMarrowgarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LordMarrowgarAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LordMarrowgarAI)
     explicit LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         sendDBChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
@@ -332,7 +332,7 @@ const uint32_t IMPALED = 69065;
 
 class BoneSpikeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI)
     explicit BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);  // On wowhead they said "kill them not just looking at them".

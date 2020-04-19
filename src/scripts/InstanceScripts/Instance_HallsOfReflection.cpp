@@ -41,7 +41,7 @@ public:
 // JainaAI
 class JainaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(JainaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(JainaAI)
     explicit JainaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {}
 
@@ -147,7 +147,7 @@ public:
 
 class Marwyn : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Marwyn);
+    ADD_CREATURE_FACTORY_FUNCTION(Marwyn)
     explicit Marwyn(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         CreatureAISpells* spellWell = nullptr;
@@ -192,7 +192,7 @@ class Marwyn : public CreatureAIScript
 
 class Falric : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Falric);
+    ADD_CREATURE_FACTORY_FUNCTION(Falric)
     explicit Falric(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic() == false)

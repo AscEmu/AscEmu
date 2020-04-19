@@ -121,7 +121,7 @@ public:
 
 class GeneralBjarngrimAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GeneralBjarngrimAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GeneralBjarngrimAI)
     explicit GeneralBjarngrimAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Battle Stance
@@ -218,7 +218,7 @@ private:
 
 class Volkhan : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Volkhan);
+    ADD_CREATURE_FACTORY_FUNCTION(Volkhan)
     explicit Volkhan(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -339,7 +339,7 @@ class Volkhan : public CreatureAIScript
 
 class MoltenGolem : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MoltenGolem);
+    ADD_CREATURE_FACTORY_FUNCTION(MoltenGolem)
     explicit MoltenGolem(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SPELL_BLAST_WAVE, 25.0f, TARGET_SELF, 0, 20);
@@ -359,7 +359,7 @@ class MoltenGolem : public CreatureAIScript
 
 class BrittleGolem : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BrittleGolem);
+    ADD_CREATURE_FACTORY_FUNCTION(BrittleGolem)
     explicit BrittleGolem(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
@@ -369,7 +369,7 @@ class BrittleGolem : public CreatureAIScript
 
 class VolkhansAnvil : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VolkhansAnvil);
+    ADD_CREATURE_FACTORY_FUNCTION(VolkhansAnvil)
     explicit VolkhansAnvil(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -382,7 +382,7 @@ class VolkhansAnvil : public CreatureAIScript
 //\todo missing spark phase
 class IonarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IonarAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IonarAI)
     explicit IonarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -406,7 +406,7 @@ class IonarAI : public CreatureAIScript
 
 class LokenAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LokenAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LokenAI)
     explicit LokenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())

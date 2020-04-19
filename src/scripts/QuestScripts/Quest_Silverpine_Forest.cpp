@@ -23,7 +23,7 @@
 
 class Deathstalker_Erland : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Deathstalker_Erland);
+    ADD_CREATURE_FACTORY_FUNCTION(Deathstalker_Erland)
     explicit Deathstalker_Erland(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
@@ -48,7 +48,7 @@ class Deathstalker_Erland : public CreatureAIScript
 
 class Nightlash : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Nightlash);
+    ADD_CREATURE_FACTORY_FUNCTION(Nightlash)
     explicit Nightlash(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnDied(Unit* mKiller) override
     {

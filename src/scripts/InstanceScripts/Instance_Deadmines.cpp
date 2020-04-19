@@ -148,7 +148,7 @@ static Movement::Location Guards[] =
 
 class RhahkZorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RhahkZorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RhahkZorAI)
     explicit RhahkZorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(6304, 8.0f, TARGET_ATTACKING, 1500, 3);    // Rhahk'Zor Slam
@@ -161,7 +161,7 @@ class RhahkZorAI : public CreatureAIScript
 
 class MrSmiteAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MrSmiteAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MrSmiteAI)
     explicit MrSmiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto smiteSlam = addAISpell(SMITE_SLAM, 25.0f, TARGET_ATTACKING, 0, 15, false, true);
@@ -293,7 +293,7 @@ protected:
 
 class VanCleefAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VanCleefAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VanCleefAI)
     explicit VanCleefAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(3391, 25.0f, TARGET_SELF); // Thrash (Gives the caster 2 extra attacks.)

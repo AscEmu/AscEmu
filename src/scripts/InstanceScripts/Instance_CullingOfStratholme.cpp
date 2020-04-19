@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class MeathookAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MeathookAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MeathookAI)
     explicit MeathookAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -47,7 +47,7 @@ class MeathookAI : public CreatureAIScript
 
 class SalramTheFleshcrafterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SalramTheFleshcrafterAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SalramTheFleshcrafterAI)
     explicit SalramTheFleshcrafterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -94,7 +94,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
 
 class ChronoLordEpochAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChronoLordEpochAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ChronoLordEpochAI)
     explicit ChronoLordEpochAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -130,7 +130,7 @@ class ChronoLordEpochAI : public CreatureAIScript
 
 class InfiniteCorruptorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InfiniteCorruptorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(InfiniteCorruptorAI)
     explicit InfiniteCorruptorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // VoidStrike
@@ -152,7 +152,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
 
 class MalganisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MalganisAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MalganisAI)
     explicit MalganisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -295,7 +295,7 @@ static Movement::Location walk[] =
 
 class UtherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UtherAI);
+    ADD_CREATURE_FACTORY_FUNCTION(UtherAI)
     explicit UtherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddWaypoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_RUN, walk[1]));
@@ -376,7 +376,7 @@ static Movement::Location ArthasWalk[] =
 
 class ArthasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArthasAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ArthasAI)
     explicit ArthasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);

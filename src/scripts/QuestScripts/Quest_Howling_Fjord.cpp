@@ -22,7 +22,7 @@
 
 class NorthFleet : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NorthFleet);
+    ADD_CREATURE_FACTORY_FUNCTION(NorthFleet)
     explicit NorthFleet(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -35,7 +35,7 @@ class NorthFleet : public CreatureAIScript
 };
 class ChillmereScourge : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChillmereScourge);
+    ADD_CREATURE_FACTORY_FUNCTION(ChillmereScourge)
     explicit ChillmereScourge(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -48,7 +48,7 @@ class ChillmereScourge : public CreatureAIScript
 };
 class Baleheim : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Baleheim);
+    ADD_CREATURE_FACTORY_FUNCTION(Baleheim)
     explicit Baleheim(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override

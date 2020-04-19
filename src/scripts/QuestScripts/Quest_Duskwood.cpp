@@ -29,7 +29,7 @@ enum
 
 class ElizaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ElizaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ElizaAI)
     explicit ElizaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mElizaCombatTimer = 0;

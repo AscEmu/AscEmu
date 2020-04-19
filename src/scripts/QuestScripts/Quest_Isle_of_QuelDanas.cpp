@@ -118,7 +118,7 @@ public:
 // The Battle for the Sun's Reach Armory
 class TheBattleForTheSunReachArmory : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheBattleForTheSunReachArmory);
+    ADD_CREATURE_FACTORY_FUNCTION(TheBattleForTheSunReachArmory)
     explicit TheBattleForTheSunReachArmory(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* pKiller) override

@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Zereketh the UnboundAI
 class ZerekethAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ZerekethAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ZerekethAI)
     explicit ZerekethAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto seedOfC = addAISpell(SEED_OF_C, 6.0f, TARGET_RANDOM_SINGLE, 2, 20);
@@ -130,7 +130,7 @@ protected:
 
 class VoidZoneARC : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VoidZoneARC);
+    ADD_CREATURE_FACTORY_FUNCTION(VoidZoneARC)
     explicit VoidZoneARC(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();
@@ -156,7 +156,7 @@ class VoidZoneARC : public CreatureAIScript
 // sounds missing related to Wrath... (look on script below this one)
 class DalliahTheDoomsayerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DalliahTheDoomsayerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DalliahTheDoomsayerAI)
     explicit DalliahTheDoomsayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(GIFT_OF_THE_DOOMSAYER, 8.0f, TARGET_ATTACKING);
@@ -193,7 +193,7 @@ class DalliahTheDoomsayerAI : public CreatureAIScript
 // so haven't added them.
 class WrathScryerSoccothratesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WrathScryerSoccothratesAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WrathScryerSoccothratesAI)
     explicit WrathScryerSoccothratesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(IMMOLATION, 10.0f, TARGET_SELF);
@@ -223,7 +223,7 @@ class WrathScryerSoccothratesAI : public CreatureAIScript
 // Add sounds related to his dialog with mind controlled guy
 class HarbringerSkyrissAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HarbringerSkyrissAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HarbringerSkyrissAI)
     explicit HarbringerSkyrissAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(MIND_REND, 15.0f, TARGET_ATTACKING);
@@ -279,7 +279,7 @@ protected:
 // Warden MellicharAI
 class WardenMellicharAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WardenMellicharAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WardenMellicharAI)
     explicit WardenMellicharAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setRooted(true);

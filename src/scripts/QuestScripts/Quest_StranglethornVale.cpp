@@ -60,7 +60,7 @@ public:
 
 class Beka : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Beka);
+    ADD_CREATURE_FACTORY_FUNCTION(Beka)
     explicit Beka(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -95,7 +95,7 @@ class Beka : public CreatureAIScript
 
 class Beka1 : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Beka1);
+    ADD_CREATURE_FACTORY_FUNCTION(Beka1)
     explicit Beka1(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -130,7 +130,7 @@ class Beka1 : public CreatureAIScript
 
 class Beka2 : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Beka2);
+    ADD_CREATURE_FACTORY_FUNCTION(Beka2)
     explicit Beka2(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -287,8 +287,7 @@ class FacingNegolash : public QuestScript
 
 class NegolashAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NegolashAI);
-
+    ADD_CREATURE_FACTORY_FUNCTION(NegolashAI)
     explicit NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
     void OnDied(Unit* /*mKiller*/) override

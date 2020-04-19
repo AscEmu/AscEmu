@@ -25,7 +25,7 @@
 // This script covers Onyxia's mind
 class OnyxiaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OnyxiaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(OnyxiaAI)
     explicit OnyxiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_phase = 1;

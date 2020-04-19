@@ -45,8 +45,7 @@ public:
 
 class ScreecherSpirit : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ScreecherSpirit);
-
+    ADD_CREATURE_FACTORY_FUNCTION(ScreecherSpirit)
     explicit ScreecherSpirit(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

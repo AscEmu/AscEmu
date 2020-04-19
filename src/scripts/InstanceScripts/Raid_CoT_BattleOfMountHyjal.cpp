@@ -139,7 +139,7 @@ private:
 
 class JainaProudmooreAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(JainaProudmooreAI);
+    ADD_CREATURE_FACTORY_FUNCTION(JainaProudmooreAI)
     explicit JainaProudmooreAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
@@ -191,7 +191,7 @@ public:
 
 class ThrallAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThrallAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ThrallAI)
     explicit ThrallAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
@@ -239,7 +239,7 @@ public:
 
 class RageWinterchillAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RageWinterchillAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RageWinterchillAI)
     explicit RageWinterchillAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto frostbold = addAISpell(FROSTBOLT, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
@@ -269,7 +269,7 @@ class RageWinterchillAI : public CreatureAIScript
 
 class AnetheronAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AnetheronAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AnetheronAI)
     explicit AnetheronAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto vampiricAura = addAISpell(VAMPIRIC_AURA, 8.0f, TARGET_SELF, 0, 8, false, true);
@@ -298,7 +298,7 @@ class AnetheronAI : public CreatureAIScript
 
 class KazrogalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KazrogalAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KazrogalAI)
     explicit KazrogalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(K_CLEAVE, 8.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -330,7 +330,7 @@ class KazrogalAI : public CreatureAIScript
 
 class AzgalorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AzgalorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AzgalorAI)
     explicit AzgalorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(CLEAVE, 8.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -357,7 +357,7 @@ class AzgalorAI : public CreatureAIScript
 
 class ArchimondeTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArchimondeTriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ArchimondeTriggerAI)
     explicit ArchimondeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -375,7 +375,7 @@ class ArchimondeTriggerAI : public CreatureAIScript
 
 class DoomfireAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DoomfireAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DoomfireAI)
     explicit DoomfireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -499,7 +499,7 @@ protected:
 
 class ArchimondeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArchimondeAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ArchimondeAI)
     explicit ArchimondeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto airBurst = addAISpell(AIR_BURST, 5.0f, TARGET_ATTACKING, 0, 25, false, true);

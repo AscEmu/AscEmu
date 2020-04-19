@@ -22,7 +22,7 @@
 
 class The_Defias_Traitor : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(The_Defias_Traitor);
+    ADD_CREATURE_FACTORY_FUNCTION(The_Defias_Traitor)
     explicit The_Defias_Traitor(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override

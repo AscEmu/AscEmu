@@ -42,7 +42,7 @@ enum
 
 class JeklikAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(JeklikAI);
+    ADD_CREATURE_FACTORY_FUNCTION(JeklikAI)
     explicit JeklikAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells[0].info = sSpellMgr.getSpellInfo(TRANSFORM_BAT);
@@ -120,7 +120,7 @@ class JeklikAI : public CreatureAIScript
 
 class VenoxisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VenoxisAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VenoxisAI)
     explicit VenoxisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells[0].info = sSpellMgr.getSpellInfo(TRANSFORM_SNAKE);

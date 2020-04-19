@@ -24,7 +24,7 @@
 
 class WyrmcultBlackwhelp : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WyrmcultBlackwhelp);
+    ADD_CREATURE_FACTORY_FUNCTION(WyrmcultBlackwhelp)
     explicit WyrmcultBlackwhelp(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -61,7 +61,7 @@ class WyrmcultBlackwhelp : public CreatureAIScript
 // The Bladespire Threat Quest
 class BladespireQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BladespireQAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BladespireQAI)
     explicit BladespireQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -89,7 +89,7 @@ public:
 
 class MagnetoAura : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MagnetoAura);
+    ADD_CREATURE_FACTORY_FUNCTION(MagnetoAura)
     explicit MagnetoAura(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -146,7 +146,7 @@ public:
 
 class FunnyDragon : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FunnyDragon);
+    ADD_CREATURE_FACTORY_FUNCTION(FunnyDragon)
     explicit FunnyDragon(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         i = 0;      // rename this....
@@ -232,7 +232,7 @@ public:
 
 class BloodmaulQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BloodmaulQAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BloodmaulQAI)
     explicit BloodmaulQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -251,7 +251,7 @@ class BloodmaulQAI : public CreatureAIScript
 
 class Thuk_the_DefiantAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Thuk_the_DefiantAI);
+    ADD_CREATURE_FACTORY_FUNCTION(Thuk_the_DefiantAI)
     explicit Thuk_the_DefiantAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -316,7 +316,7 @@ enum CreatureEntry
 // Bloodmaul Brutebane Stout Trigger
 class BrutebaneStoutTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BrutebaneStoutTriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BrutebaneStoutTriggerAI)
     explicit BrutebaneStoutTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->SetFaction(35);

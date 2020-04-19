@@ -66,7 +66,7 @@ void GuildNewsLogEntry::saveGuildLogToDB() const
         mGuildId, getGUID(), static_cast<uint32_t>(getType()), static_cast<uint32_t>(getPlayerGuid()), getFlags(), getValue(), getTimestamp());
 }
 
-void GuildNewsLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer&) const
+void GuildNewsLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& /*content*/) const
 {
     data.writeBits(0, 26);
     ObjectGuid guid = getPlayerGuid();

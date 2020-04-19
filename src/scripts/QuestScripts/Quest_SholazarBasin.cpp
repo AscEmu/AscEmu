@@ -35,7 +35,7 @@ enum
 
 class ChickenEscapee : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChickenEscapee);
+    ADD_CREATURE_FACTORY_FUNCTION(ChickenEscapee)
     explicit ChickenEscapee(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()

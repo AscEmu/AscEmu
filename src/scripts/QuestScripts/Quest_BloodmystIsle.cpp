@@ -110,7 +110,7 @@ public:
 
 class HighChiefBristlelimb : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HighChiefBristlelimb);
+    ADD_CREATURE_FACTORY_FUNCTION(HighChiefBristlelimb)
     explicit HighChiefBristlelimb(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         fulborgskilled = 0;
@@ -139,7 +139,7 @@ private:
 
 class WebbedCreature : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WebbedCreature);
+    ADD_CREATURE_FACTORY_FUNCTION(WebbedCreature)
     explicit WebbedCreature(Creature* pCreature) : CreatureAIScript(pCreature)
     {}
 

@@ -30,7 +30,7 @@
 
 class Lunaclaw : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Lunaclaw);
+    ADD_CREATURE_FACTORY_FUNCTION(Lunaclaw)
     explicit Lunaclaw(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)

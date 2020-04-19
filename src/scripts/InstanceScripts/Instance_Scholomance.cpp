@@ -25,7 +25,7 @@
 
 class DoctorTheolenKrastinovAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DoctorTheolenKrastinovAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DoctorTheolenKrastinovAI)
     explicit DoctorTheolenKrastinovAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto rend = addAISpell(SP_DR_THEOL_REND, 20.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -54,7 +54,7 @@ protected:
 
 class InstructorMaliciaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InstructorMaliciaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(InstructorMaliciaAI)
     explicit InstructorMaliciaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto callOfGrave = addAISpell(SP_MALICIA_CALL_OF_GRAVE, 10.0f, TARGET_DESTINATION, 0, 10, false, true);
@@ -76,7 +76,7 @@ class InstructorMaliciaAI : public CreatureAIScript
 
 class TheRavenianAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheRavenianAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TheRavenianAI)
     explicit TheRavenianAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto trample = addAISpell(SP_RAVENIAN_TRAMPLE, 8.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -95,7 +95,7 @@ class TheRavenianAI : public CreatureAIScript
 
 class LadyIlluciaBarovAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LadyIlluciaBarovAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LadyIlluciaBarovAI)
     explicit LadyIlluciaBarovAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto curseOfAgony = addAISpell(SP_ILLUCIA_CURSE_OF_AGONY, 8.0f, TARGET_VARIOUS, 0, 0, false, true);
@@ -117,7 +117,7 @@ class LadyIlluciaBarovAI : public CreatureAIScript
 
 class RasForstwhisperAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RasForstwhisperAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RasForstwhisperAI)
     explicit RasForstwhisperAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto frostbolt = addAISpell(SP_RAS_FORTH_FROSTBOLT, 14.0f, TARGET_ATTACKING);
@@ -151,7 +151,7 @@ protected:
 
 class JandiceBarovAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(JandiceBarovAI);
+    ADD_CREATURE_FACTORY_FUNCTION(JandiceBarovAI)
     explicit JandiceBarovAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto curseOfBlood = addAISpell(SP_JANDICE_CURSE_OF_BLOOD, 8.0f, TARGET_DESTINATION, 0, 0, false, true);
@@ -167,7 +167,7 @@ class JandiceBarovAI : public CreatureAIScript
 
 class KormokAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KormokAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KormokAI)
     explicit KormokAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowVolley = addAISpell(SP_KORMOK_SHADOW_B_VOLLEY, 11.0f, TARGET_VARIOUS, 0, 0, false, true);
@@ -192,7 +192,7 @@ protected:
 
 class VectusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VectusAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VectusAI)
     explicit VectusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto blastWave = addAISpell(SP_VECTUS_BLAST_WAVE, 18.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -228,7 +228,7 @@ protected:
 
 class LordAlexeiBarovAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LordAlexeiBarovAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LordAlexeiBarovAI)
     explicit LordAlexeiBarovAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         unholyAura = addAISpell(SP_ALEXEI_UNHOLY_AURA, 0.0f, TARGET_SELF, 0, 0, false, true);
@@ -253,7 +253,7 @@ protected:
 
 class LorekeeperPolkeltAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LorekeeperPolkeltAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LorekeeperPolkeltAI)
     explicit LorekeeperPolkeltAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto volatileInfection = addAISpell(SP_LORE_VOLATILE_INFECTION, 6.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -272,7 +272,7 @@ class LorekeeperPolkeltAI : public CreatureAIScript
 
 class DarkmasterGandlingAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DarkmasterGandlingAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DarkmasterGandlingAI)
     explicit DarkmasterGandlingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto arcaneMissiles = addAISpell(SP_GANDLING_ARCANE_MISSILES, 12.0f, TARGET_ATTACKING, 0, 0, false, true);

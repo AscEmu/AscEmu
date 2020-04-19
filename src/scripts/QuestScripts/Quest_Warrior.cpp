@@ -60,7 +60,7 @@ public:
 
 class Bartleby : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Bartleby);
+    ADD_CREATURE_FACTORY_FUNCTION(Bartleby)
     explicit Bartleby(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

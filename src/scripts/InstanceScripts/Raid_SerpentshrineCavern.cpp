@@ -139,7 +139,7 @@ enum
 
 class HydrossTheUnstableAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HydrossTheUnstableAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HydrossTheUnstableAI)
     explicit HydrossTheUnstableAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(WATER_TOMB);
@@ -426,7 +426,7 @@ private:
 
 class LurkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LurkerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LurkerAI)
     explicit LurkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells[0].info = sSpellMgr.getSpellInfo(WHIRL);
@@ -474,7 +474,7 @@ uint32_t LeotherasEventGreyheartToKill[1000000];
 
 class LeotherasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LeotherasAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LeotherasAI)
     explicit LeotherasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         ////Insidious Whisper (inner demons)
@@ -773,7 +773,7 @@ protected:
 
 class GreyheartSpellbinderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GreyheartSpellbinderAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GreyheartSpellbinderAI)
     explicit GreyheartSpellbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(MIND_BLAST);
@@ -838,7 +838,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
 
 class ShadowofLeotherasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowofLeotherasAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowofLeotherasAI)
     explicit ShadowofLeotherasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         info_chaos_blast = sSpellMgr.getSpellInfo(CHAOS_BLAST_ANIMATION);
@@ -893,7 +893,7 @@ protected:
 // Fathom-Lord Karathress
 class KarathressAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KarathressAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KarathressAI)
     explicit KarathressAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         info_cataclysmic_bolt = sSpellMgr.getSpellInfo(CATACLYSMIC_BOLT);
@@ -998,7 +998,7 @@ private:
 
 class FathomGuardSharkissAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FathomGuardSharkissAI);
+    ADD_CREATURE_FACTORY_FUNCTION(FathomGuardSharkissAI)
     explicit FathomGuardSharkissAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(MULTI_SHOT, 10.0f, TARGET_ATTACKING);
@@ -1058,7 +1058,7 @@ private:
 
 class FathomGuardTidalvessAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FathomGuardTidalvessAI);
+    ADD_CREATURE_FACTORY_FUNCTION(FathomGuardTidalvessAI)
     explicit FathomGuardTidalvessAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //totems
@@ -1088,7 +1088,7 @@ class FathomGuardCaribdisAI : public CreatureAIScript
 {
 public:
 
-    ADD_CREATURE_FACTORY_FUNCTION(FathomGuardCaribdisAI);
+    ADD_CREATURE_FACTORY_FUNCTION(FathomGuardCaribdisAI)
     explicit FathomGuardCaribdisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(TIDAL_SURGE, 20.0f, TARGET_SELF, 0, 10);
@@ -1121,7 +1121,7 @@ private:
 
 class MorogrimAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MorogrimAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MorogrimAI)
     explicit MorogrimAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
@@ -1161,7 +1161,7 @@ class MorogrimAI : public CreatureAIScript
 
 class TidewalkerLurkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TidewalkerLurkerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TidewalkerLurkerAI)
     explicit TidewalkerLurkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Unit* target = FindTargetForSpell();
@@ -1224,7 +1224,7 @@ class TidewalkerLurkerAI : public CreatureAIScript
 
 class EnchantedElementalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EnchantedElementalAI);
+    ADD_CREATURE_FACTORY_FUNCTION(EnchantedElementalAI)
     explicit EnchantedElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -1267,7 +1267,7 @@ class EnchantedElementalAI : public CreatureAIScript
 
 class VashjAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VashjAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VashjAI)
     explicit VashjAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         info_multishot = sSpellMgr.getSpellInfo(EEMULTI_SHOT);
@@ -1617,7 +1617,7 @@ protected:
 
 class TaintedElementalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TaintedElementalAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TaintedElementalAI)
     explicit TaintedElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         spell_poison_spit = new AI_Spell();
@@ -1714,7 +1714,7 @@ public:
 
 class ToxicSporeBatAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ToxicSporeBatAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ToxicSporeBatAI)
     explicit ToxicSporeBatAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Waypoints
@@ -2026,7 +2026,7 @@ protected:
 
 class CoilfangAmbusherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilfangAmbusherAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CoilfangAmbusherAI)
     explicit CoilfangAmbusherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(CA_MULTI_SHOT, 10.0f, TARGET_SELF);
@@ -2035,7 +2035,7 @@ class CoilfangAmbusherAI : public CreatureAIScript
 
 class CoilfangFathomWitchAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilfangFathomWitchAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CoilfangFathomWitchAI)
     explicit CoilfangFathomWitchAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILFANGFATHOM_WITCH_AI_SHADOW_BOLT, 2.0f, TARGET_ATTACKING);
@@ -2045,7 +2045,7 @@ class CoilfangFathomWitchAI : public CreatureAIScript
 
 class CoilfangGuardianAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilfangGuardianAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CoilfangGuardianAI)
     explicit CoilfangGuardianAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILFANG_GUARDIAN_AI_CLEAVE, 3.0f, TARGET_RANDOM_DESTINATION);
@@ -2054,7 +2054,7 @@ class CoilfangGuardianAI : public CreatureAIScript
 
 class CoilfangPriestessAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilfangPriestessAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CoilfangPriestessAI)
     explicit CoilfangPriestessAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILFANG_PRIESTESS_AI_HOLY_NOVA, 2.0f, TARGET_SELF);
@@ -2065,7 +2065,7 @@ class CoilfangPriestessAI : public CreatureAIScript
 
 class UnderbogColossusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UnderbogColossusAI);
+    ADD_CREATURE_FACTORY_FUNCTION(UnderbogColossusAI)
     explicit UnderbogColossusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //these mobs pick from a random set of abilities
@@ -2110,7 +2110,7 @@ class UnderbogColossusAI : public CreatureAIScript
 
 class TidewalkerWarriorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TidewalkerWarriorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TidewalkerWarriorAI)
     explicit TidewalkerWarriorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(TW_CLEAVE, 1.0f, TARGET_RANDOM_DESTINATION);
@@ -2121,7 +2121,7 @@ class TidewalkerWarriorAI : public CreatureAIScript
 
 class CoilfangSerpentguardAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilfangSerpentguardAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CoilfangSerpentguardAI)
     explicit CoilfangSerpentguardAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(CSERP_CLEAVE, 1.0f, TARGET_RANDOM_DESTINATION);
@@ -2132,7 +2132,7 @@ class CoilfangSerpentguardAI : public CreatureAIScript
 
 class CoilfangShattererAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilfangShattererAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CoilfangShattererAI)
     explicit CoilfangShattererAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(CSHATT_ARMOR, 2.0f, TARGET_ATTACKING);
@@ -2141,7 +2141,7 @@ class CoilfangShattererAI : public CreatureAIScript
 
 class CoilfangStriderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilfangStriderAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CoilfangStriderAI)
     explicit CoilfangStriderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(CSTRID_SCREAM, 2.0f, TARGET_ATTACKING);

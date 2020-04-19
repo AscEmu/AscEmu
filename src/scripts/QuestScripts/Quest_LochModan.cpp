@@ -59,7 +59,7 @@ static Movement::Location WaypointsMiran[] =
 
 class Miran : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Miran);
+    ADD_CREATURE_FACTORY_FUNCTION(Miran)
     explicit Miran(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WPCount = 7;

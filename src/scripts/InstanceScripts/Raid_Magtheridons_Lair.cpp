@@ -115,7 +115,7 @@ static Movement::Location CubeTriggers[] =
 
 class MagtheridonTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MagtheridonTriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MagtheridonTriggerAI)
     std::vector<Unit*> ChannelersTable;    // Vector "list" of Channelers
     bool KilledChanneler[5];            // Bool that says if channeler died or not
 
@@ -632,7 +632,7 @@ protected:
 
 class CubeTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CubeTriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CubeTriggerAI)
     explicit CubeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -642,7 +642,7 @@ class CubeTriggerAI : public CreatureAIScript
 
 class HellfireWarderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HellfireWarderAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HellfireWarderAI)
     explicit HellfireWarderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBoltVolley = addAISpell(HW_SHADOW_BOLT_VOLLEY, 15.0f, TARGET_VARIOUS, 0, 5, false, true);
@@ -676,7 +676,7 @@ class HellfireWarderAI : public CreatureAIScript
 
 class HellfireChannelerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HellfireChannelerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HellfireChannelerAI)
     explicit HellfireChannelerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBoltVolley = addAISpell(SHADOW_BOLT_VOLLEY, 10.0f, TARGET_VARIOUS, 0, 5);
@@ -740,7 +740,7 @@ class HellfireChannelerAI : public CreatureAIScript
 
 class BurningAbyssalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BurningAbyssalAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BurningAbyssalAI)
     explicit BurningAbyssalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fireBlast = addAISpell(FIRE_BLAST, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
@@ -753,7 +753,7 @@ class BurningAbyssalAI : public CreatureAIScript
 
 class MagtheridonAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MagtheridonAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MagtheridonAI)
     explicit MagtheridonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(CLEAVE, 6.0f, TARGET_ATTACKING, 0, 15, false, true);

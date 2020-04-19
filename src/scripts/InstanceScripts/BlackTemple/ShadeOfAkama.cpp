@@ -38,7 +38,7 @@ enum
 
 class ShadeofakamaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadeofakamaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadeofakamaAI)
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 
@@ -270,7 +270,7 @@ protected:
 // Ashtongue Defender AI
 class AshtonguedefenderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtonguedefenderAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtonguedefenderAI)
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 
@@ -372,7 +372,7 @@ protected:
 // AshtongueElementalist AI
 class AshtongueelementalistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueelementalistAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtongueelementalistAI)
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 
@@ -477,7 +477,7 @@ protected:
 // AshtongueRogue AI
 class AshtonguerogueAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtonguerogueAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtonguerogueAI)
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 
@@ -580,7 +580,7 @@ protected:
 // AshtongueRogue AI
 class AshtonguespiritbinderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtonguespiritbinderAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtonguespiritbinderAI)
     SP_AI_Spell spells[2];
     bool m_spellcheck[2];
 
@@ -691,7 +691,7 @@ protected:
 // Ashtongue Channeler AI
 class AshtongueChannelerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueChannelerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtongueChannelerAI)
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 

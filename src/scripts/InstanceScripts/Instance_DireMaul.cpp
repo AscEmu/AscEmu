@@ -25,7 +25,7 @@
 
 class AlzzinTheWildshaper : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AlzzinTheWildshaper);
+    ADD_CREATURE_FACTORY_FUNCTION(AlzzinTheWildshaper)
     explicit AlzzinTheWildshaper(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto mangle = addAISpell(22689, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -42,7 +42,7 @@ class AlzzinTheWildshaper : public CreatureAIScript
 
 class CaptainKromcrush : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CaptainKromcrush);
+    ADD_CREATURE_FACTORY_FUNCTION(CaptainKromcrush)
     explicit CaptainKromcrush(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto mortalStrike = addAISpell(15708, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -56,7 +56,7 @@ class CaptainKromcrush : public CreatureAIScript
 
 class ChoRushTheObserver : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChoRushTheObserver);
+    ADD_CREATURE_FACTORY_FUNCTION(ChoRushTheObserver)
     explicit ChoRushTheObserver(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknown = addAISpell(10947, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -70,7 +70,7 @@ class ChoRushTheObserver : public CreatureAIScript
 
 class GuardFengus : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GuardFengus);
+    ADD_CREATURE_FACTORY_FUNCTION(GuardFengus)
     explicit GuardFengus(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto strike = addAISpell(15580, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -90,7 +90,7 @@ class GuardFengus : public CreatureAIScript
 
 class GuardMolDar : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GuardMolDar);
+    ADD_CREATURE_FACTORY_FUNCTION(GuardMolDar)
     explicit GuardMolDar(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto strike = addAISpell(15580, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -107,7 +107,7 @@ class GuardMolDar : public CreatureAIScript
 
 class GuardSlipKik : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GuardSlipKik);
+    ADD_CREATURE_FACTORY_FUNCTION(GuardSlipKik)
     explicit GuardSlipKik(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto strike = addAISpell(15580, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -124,7 +124,7 @@ class GuardSlipKik : public CreatureAIScript
 
 class Hydrospawn : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Hydrospawn);
+    ADD_CREATURE_FACTORY_FUNCTION(Hydrospawn)
     explicit Hydrospawn(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto riptide = addAISpell(22419, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -141,7 +141,7 @@ class Hydrospawn : public CreatureAIScript
 
 class MassiveGeyser : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MassiveGeyser);
+    ADD_CREATURE_FACTORY_FUNCTION(MassiveGeyser)
     explicit MassiveGeyser(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto water = addAISpell(22422, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -152,7 +152,7 @@ class MassiveGeyser : public CreatureAIScript
 
 class IllyanaRavenoak : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllyanaRavenoak);
+    ADD_CREATURE_FACTORY_FUNCTION(IllyanaRavenoak)
     explicit IllyanaRavenoak(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto concussiveShot = addAISpell(5116, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -172,7 +172,7 @@ class IllyanaRavenoak : public CreatureAIScript
 
 class Immolthar : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Immolthar);
+    ADD_CREATURE_FACTORY_FUNCTION(Immolthar)
     explicit Immolthar(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto infectedBite = addAISpell(16128, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -189,7 +189,7 @@ class Immolthar : public CreatureAIScript
 
 class EyeOfImmolThar : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EyeOfImmolThar);
+    ADD_CREATURE_FACTORY_FUNCTION(EyeOfImmolThar)
     explicit EyeOfImmolThar(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto eyeOfImmolThar = addAISpell(22909, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -200,7 +200,7 @@ class EyeOfImmolThar : public CreatureAIScript
 
 class KingGordok : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KingGordok);
+    ADD_CREATURE_FACTORY_FUNCTION(KingGordok)
     explicit KingGordok(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto mortalStrike = addAISpell(15708, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -214,7 +214,7 @@ class KingGordok : public CreatureAIScript
 
 class Lethtendris : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Lethtendris);
+    ADD_CREATURE_FACTORY_FUNCTION(Lethtendris)
     explicit Lethtendris(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknow = addAISpell(11668, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -228,7 +228,7 @@ class Lethtendris : public CreatureAIScript
 
 class LordHelNurath : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LordHelNurath);
+    ADD_CREATURE_FACTORY_FUNCTION(LordHelNurath)
     explicit LordHelNurath(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknow = addAISpell(10984, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -239,7 +239,7 @@ class LordHelNurath : public CreatureAIScript
 
 class MagisterKalendris : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MagisterKalendris);
+    ADD_CREATURE_FACTORY_FUNCTION(MagisterKalendris)
     explicit MagisterKalendris(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknow = addAISpell(10894, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -256,7 +256,7 @@ class MagisterKalendris : public CreatureAIScript
 
 class PrinceTortheldrin : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PrinceTortheldrin);
+    ADD_CREATURE_FACTORY_FUNCTION(PrinceTortheldrin)
     explicit PrinceTortheldrin(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(20691, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -270,7 +270,7 @@ class PrinceTortheldrin : public CreatureAIScript
 
 class Pusillin : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Pusillin);
+    ADD_CREATURE_FACTORY_FUNCTION(Pusillin)
     explicit Pusillin(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto blastWave = addAISpell(22424, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -287,7 +287,7 @@ class Pusillin : public CreatureAIScript
 
 class SkarrTheUnbreakable : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SkarrTheUnbreakable);
+    ADD_CREATURE_FACTORY_FUNCTION(SkarrTheUnbreakable)
     explicit SkarrTheUnbreakable(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(20691, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -301,7 +301,7 @@ class SkarrTheUnbreakable : public CreatureAIScript
 
 class TendrisWarpwood : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TendrisWarpwood);
+    ADD_CREATURE_FACTORY_FUNCTION(TendrisWarpwood)
     explicit TendrisWarpwood(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto trample = addAISpell(15550, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -318,7 +318,7 @@ class TendrisWarpwood : public CreatureAIScript
 
 class ZevrimThornhoof : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ZevrimThornhoof);
+    ADD_CREATURE_FACTORY_FUNCTION(ZevrimThornhoof)
     explicit ZevrimThornhoof(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto intensePain = addAISpell(22478, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -332,7 +332,7 @@ class ZevrimThornhoof : public CreatureAIScript
 
 class GordokMageLord : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GordokMageLord);
+    ADD_CREATURE_FACTORY_FUNCTION(GordokMageLord)
     explicit GordokMageLord(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fireBlast = addAISpell(20832, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -352,7 +352,7 @@ class GordokMageLord : public CreatureAIScript
 
 class GordokReaver : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GordokReaver);
+    ADD_CREATURE_FACTORY_FUNCTION(GordokReaver)
     explicit GordokReaver(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto bruisingBlow = addAISpell(22572, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -366,7 +366,7 @@ class GordokReaver : public CreatureAIScript
 
 class GordokBrute : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GordokBrute);
+    ADD_CREATURE_FACTORY_FUNCTION(GordokBrute)
     explicit GordokBrute(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto mortalStrike = addAISpell(13737, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -383,7 +383,7 @@ class GordokBrute : public CreatureAIScript
 
 class FelLash : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FelLash);
+    ADD_CREATURE_FACTORY_FUNCTION(FelLash)
     explicit FelLash(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto arcaneExplosion = addAISpell(22460, 20.0f, TARGET_ATTACKING, 0, 10, false, true);

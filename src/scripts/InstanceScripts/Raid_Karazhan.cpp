@@ -51,7 +51,7 @@ const uint32_t ATTUMEN_INTANGIBLE_PRESENCE = 29833;
 
 class AttumenTheHuntsmanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AttumenTheHuntsmanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AttumenTheHuntsmanAI)
     explicit AttumenTheHuntsmanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //All phase spells
@@ -101,7 +101,7 @@ class AttumenTheHuntsmanAI : public CreatureAIScript
 
 class MidnightAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MidnightAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MidnightAI)
     explicit MidnightAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
@@ -180,7 +180,7 @@ const uint32_t MOROES_GARROTE = 37066;
 
 class MoroesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MoroesAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MoroesAI)
     explicit MoroesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Initialize timers
@@ -281,7 +281,7 @@ const uint32_t MAIDENOFVIRTUE_HOLY_WRATH = 32445;
 
 class MaidenOfVirtueAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MaidenOfVirtueAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MaidenOfVirtueAI)
     explicit MaidenOfVirtueAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Spells
@@ -320,7 +320,7 @@ const uint32_t PBS_TAUNT = 30755;    // Picnic Basket Smell (taunt)
 
 class BigBadWolfAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BigBadWolfAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BigBadWolfAI)
     explicit BigBadWolfAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_threattimer = 0;
@@ -373,7 +373,7 @@ const uint32_t DEBUFF_LITTLE_RED_RIDING_HOOD = 30756;
 
 class THEBIGBADWOLFAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(THEBIGBADWOLFAI);
+    ADD_CREATURE_FACTORY_FUNCTION(THEBIGBADWOLFAI)
     explicit THEBIGBADWOLFAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
@@ -516,7 +516,7 @@ static Movement::Location Barnes[] =
 
 class BarnesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BarnesAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BarnesAI)
     explicit BarnesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -772,7 +772,7 @@ protected:
 
 class StageLight : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StageLight);
+    ADD_CREATURE_FACTORY_FUNCTION(StageLight)
     explicit StageLight(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -795,7 +795,7 @@ const uint32_t BERSERK = 26662;
 
 class CuratorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CuratorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CuratorAI)
     explicit CuratorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         evocation = false;
@@ -918,7 +918,7 @@ const uint32_t ARCING_SEAR = 30235;
 
 class AstralFlareAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AstralFlareAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AstralFlareAI)
     explicit AstralFlareAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASTRAL_FLARE_PASSIVE, 100.0f, TARGET_SELF, 0, 3);
@@ -968,7 +968,7 @@ enum SUPERSPELL
 
 class ShadeofAranAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadeofAranAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadeofAranAI)
     explicit ShadeofAranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(FROSTBOLT);
@@ -1397,7 +1397,7 @@ protected:
 
 class WaterEleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WaterEleAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WaterEleAI)
     explicit WaterEleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WaterBolt = 0;
@@ -1432,7 +1432,7 @@ protected:
 
 class ShadowofAranAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowofAranAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowofAranAI)
     explicit ShadowofAranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         ShadowPyro = 0;
@@ -1497,7 +1497,7 @@ const uint32_t CN_FPORTAL = 17265;
 
 class IllhoofAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllhoofAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IllhoofAI)
     explicit IllhoofAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SHADOW_BOLT);
@@ -1665,7 +1665,7 @@ protected:
 // Kil'Rek
 class KilrekAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KilrekAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KilrekAI)
     explicit KilrekAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(AMPLIFY_FLAMES);
@@ -1698,7 +1698,7 @@ class KilrekAI : public CreatureAIScript
 // Fiendish Imp
 class FiendishImpAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FiendishImpAI);
+    ADD_CREATURE_FACTORY_FUNCTION(FiendishImpAI)
     explicit FiendishImpAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(FIREBALL_IMP);
@@ -1754,7 +1754,7 @@ class FiendishImpAI : public CreatureAIScript
 
 class DemonChains : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DemonChains);
+    ADD_CREATURE_FACTORY_FUNCTION(DemonChains)
     explicit DemonChains(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(CHAINS_VISUAL), true);
@@ -1781,7 +1781,7 @@ class DemonChains : public CreatureAIScript
 
 class FiendPortal : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FiendPortal);
+    ADD_CREATURE_FACTORY_FUNCTION(FiendPortal)
     explicit FiendPortal(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setMoveRoot(true);
@@ -1832,7 +1832,7 @@ AXETOSS2? - 9317
 
 class MalchezaarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MalchezaarAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MalchezaarAI)
     explicit MalchezaarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_phase = 1;
@@ -2209,7 +2209,7 @@ protected:
 
 class NetherInfernalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NetherInfernalAI);
+    ADD_CREATURE_FACTORY_FUNCTION(NetherInfernalAI)
     explicit NetherInfernalAI(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
     void OnLoad() override
@@ -2232,7 +2232,7 @@ class NetherInfernalAI : public CreatureAIScript
 
 class InfernalDummyAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InfernalDummyAI);
+    ADD_CREATURE_FACTORY_FUNCTION(InfernalDummyAI)
     explicit InfernalDummyAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -2249,7 +2249,7 @@ class InfernalDummyAI : public CreatureAIScript
 
 class MAxesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MAxesAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MAxesAI)
     explicit MAxesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
@@ -2312,7 +2312,7 @@ const uint32_t NETHERBURN = 30522;
 
 class NetherspiteAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NetherspiteAI);
+    ADD_CREATURE_FACTORY_FUNCTION(NetherspiteAI)
     explicit NetherspiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(NETHERBREATH);
@@ -2404,7 +2404,7 @@ class NetherspiteAI : public CreatureAIScript
 
 class VoidZoneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VoidZoneAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VoidZoneAI)
     explicit VoidZoneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setMoveRoot(true);
@@ -2475,7 +2475,7 @@ static Movement::Location coords[] =
 
 class NightbaneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NightbaneAI);
+    ADD_CREATURE_FACTORY_FUNCTION(NightbaneAI)
     explicit NightbaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         ////ground phase spells
@@ -2731,7 +2731,7 @@ const uint32_t SP_SUMMON_TITO = 31014;
 
 class DorotheeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DorotheeAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DorotheeAI)
     uint32_t summontito;
 
     explicit DorotheeAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -2836,7 +2836,7 @@ const uint32_t SP_ANNOYING_YIPPING = 31015;
 
 class TitoAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TitoAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TitoAI)
     explicit TitoAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_ANNOYING_YIPPING);
@@ -2866,7 +2866,7 @@ const uint32_t SP_BRAIN_BASH = 31046;
 
 class StrawmanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StrawmanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(StrawmanAI)
     explicit StrawmanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells[0].info = sSpellMgr.getSpellInfo(SP_BURNING_STRAW);//  NEEDS TO BE SO IT ONLY AFFECTS HIM WHEN HE IS HIT BY FIRE DMG!
@@ -2925,7 +2925,7 @@ const uint32_t SP_RUST = 31086;
 
 class TinheadAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TinheadAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TinheadAI)
     explicit TinheadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_CLEAVE);
@@ -2980,7 +2980,7 @@ const uint32_t CN_ROAR = 17546;
 
 class RoarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RoarAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RoarAI)
 
     explicit RoarAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -3018,7 +3018,7 @@ const uint32_t SP_CHAIN_LIGHTNING = 32337;
 
 class CroneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CroneAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CroneAI)
     explicit CroneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_SUMMON_CYCLONE);
@@ -3093,7 +3093,7 @@ const uint32_t CYCLONE_KNOCK = 38517;
 
 class CycloneOZ : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CycloneOZ);
+    ADD_CREATURE_FACTORY_FUNCTION(CycloneOZ)
     explicit CycloneOZ(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(CYCLONE_VISUAL), true);
@@ -3127,7 +3127,7 @@ const uint32_t SP_DARING = 30841;
 
 class RomuloAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RomuloAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RomuloAI)
     explicit RomuloAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_BACKWARD_LUNGE);
@@ -3233,7 +3233,7 @@ const uint32_t SP_DEVOTION = 30887;
 
 class JulianneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(JulianneAI);
+    ADD_CREATURE_FACTORY_FUNCTION(JulianneAI)
     explicit JulianneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_ETERNAL_AFFECTION);

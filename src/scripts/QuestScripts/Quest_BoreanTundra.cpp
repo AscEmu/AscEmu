@@ -107,7 +107,7 @@ public:
 
 class PurifyingTotemAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PurifyingTotemAI);
+    ADD_CREATURE_FACTORY_FUNCTION(PurifyingTotemAI)
     explicit PurifyingTotemAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
@@ -139,7 +139,7 @@ public:
 // Bury Those Cockroaches!
 class SeaforiumDepthCharge : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SeaforiumDepthCharge);
+    ADD_CREATURE_FACTORY_FUNCTION(SeaforiumDepthCharge)
     explicit SeaforiumDepthCharge(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setRooted(true);
@@ -491,7 +491,7 @@ public:
 ///\todo: Change to spellevent (target player), npc say is not ready yet. Add Visual Aura on Spawn.
 class GearmasterMechazodAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GearmasterMechazodAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GearmasterMechazodAI)
     explicit GearmasterMechazodAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setVirtualItemSlotId(MELEE, 28487);
@@ -654,7 +654,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
 
 class Worm : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Worm);
+    ADD_CREATURE_FACTORY_FUNCTION(Worm)
     explicit Worm(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

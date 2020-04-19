@@ -48,7 +48,7 @@ static Movement::Location WaypointPlainVision[] =
 
 class The_Plains_Vision : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(The_Plains_Vision);
+    ADD_CREATURE_FACTORY_FUNCTION(The_Plains_Vision)
     explicit The_Plains_Vision(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WPCount = 22;

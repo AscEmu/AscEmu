@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class ShatteredSunSpawner : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredSunSpawner);
+    ADD_CREATURE_FACTORY_FUNCTION(ShatteredSunSpawner)
     explicit ShatteredSunSpawner(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* mTarget)

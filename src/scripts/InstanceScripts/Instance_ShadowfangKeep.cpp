@@ -380,7 +380,7 @@ public:
 
 class ArugalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArugalAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ArugalAI)
     ArugalAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0)
     {
         SFK_Instance = static_cast<ShadowfangKeepInstance*>(pCreature->GetMapMgr()->GetScript());
@@ -470,7 +470,7 @@ protected:
 
 class AdamantAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AdamantAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AdamantAI)
     AdamantAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0), eventStarted(false)
     {
         SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
@@ -633,7 +633,7 @@ public:
 // Prisoner Sorcerer Ashcrombe (entry: 3850) gossip, escort event
 class AshcrombeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshcrombeAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshcrombeAI)
     AshcrombeAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0), argued(false), eventStarted(false)
     {
         SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
@@ -803,7 +803,7 @@ public:
 // Creature entry: 4278
 class SpringvaleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SpringvaleAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SpringvaleAI)
 
     enum SpringvaleSpells
     {
@@ -859,7 +859,7 @@ protected:
 // Creature entry: 3914
 class RethilgoreAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RethilgoreAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RethilgoreAI)
 
     const uint32_t SPELL_SOUL_DRAIN = 7295;
 
@@ -872,7 +872,7 @@ class RethilgoreAI : public CreatureAIScript
 // Creature entry: 3927
 class NandosAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NandosAI);
+    ADD_CREATURE_FACTORY_FUNCTION(NandosAI)
 
     enum NandosAISpells : uint32_t
     {
@@ -967,7 +967,7 @@ protected:
 // Creature entry: 3887
 class BaronSilverlaineAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BaronSilverlaineAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BaronSilverlaineAI)
 
     const uint32_t SPELL_VEIL_OF_SHADOW = 7068;
 
@@ -980,7 +980,7 @@ class BaronSilverlaineAI : public CreatureAIScript
 // Creature entry: 4279
 class BlindWatcherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BlindWatcherAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BlindWatcherAI)
 
     enum ODO_THE_BLINDWATCHER_SPELLS : uint32_t
     {
@@ -1038,7 +1038,7 @@ protected:
 // Creature entry: 4274
 class FenrusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FenrusAI);
+    ADD_CREATURE_FACTORY_FUNCTION(FenrusAI)
 
     const uint32_t SPELL_TOXIC_SALIVA = 7125;
 
@@ -1051,7 +1051,7 @@ class FenrusAI : public CreatureAIScript
 // Creature entry: 4275
 class ArugalBossAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArugalBossAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ArugalBossAI)
 
     enum Arugal_Boss_Spells : uint32_t
     {
@@ -1221,7 +1221,7 @@ protected:
 // Creature entry: 3886
 class RazorclawTheButcherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RazorclawTheButcherAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RazorclawTheButcherAI)
 
     const uint32_t SPELL_BUTCHER_DRAIN = 7485;
 
@@ -1243,7 +1243,7 @@ class VileBatAI : public CreatureAIScript
         SPELL_DISARM        = 6713
     };
 
-    ADD_CREATURE_FACTORY_FUNCTION(VileBatAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VileBatAI)
     explicit VileBatAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SPELL_DIVING_SWEEP, 8.0f, TARGET_ATTACKING);
@@ -1254,7 +1254,7 @@ class VileBatAI : public CreatureAIScript
 // Creature entry: 3868
 class BloodSeekerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BloodSeekerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BloodSeekerAI)
 
     const uint32_t SPELL_EXPOSE_WEAKNESS = 7140;
 
@@ -1267,7 +1267,7 @@ class BloodSeekerAI : public CreatureAIScript
 // Creature entry: 4627
 class VoidWalkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VoidWalkerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VoidWalkerAI)
     explicit VoidWalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Dark Offering
@@ -1278,7 +1278,7 @@ class VoidWalkerAI : public CreatureAIScript
 // Creature entry: 3861
 class BleakWorgAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BleakWorgAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BleakWorgAI)
     explicit BleakWorgAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Wavering Will
@@ -1289,7 +1289,7 @@ class BleakWorgAI : public CreatureAIScript
 // Creature entry: 3863
 class LupineHorrorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LupineHorrorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LupineHorrorAI)
     explicit LupineHorrorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Summon Lupine Delusions
@@ -1300,7 +1300,7 @@ class LupineHorrorAI : public CreatureAIScript
 // Creature entry: 2529
 class SonOfArugalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SonOfArugalAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SonOfArugalAI)
     explicit SonOfArugalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Arugal's Gift
@@ -1311,7 +1311,7 @@ class SonOfArugalAI : public CreatureAIScript
 // Creature entry: 3853
 class ShadowfangMoonwalkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangMoonwalkerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangMoonwalkerAI)
     explicit ShadowfangMoonwalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Anti-Magic Shield
@@ -1322,7 +1322,7 @@ class ShadowfangMoonwalkerAI : public CreatureAIScript
 // Creature entry: 3855
 class ShadowfangDarksoulAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangDarksoulAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangDarksoulAI)
     explicit ShadowfangDarksoulAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Befuddlement
@@ -1336,7 +1336,7 @@ class ShadowfangDarksoulAI : public CreatureAIScript
 // Creature entry: 3857
 class ShadowfangGluttonAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangGluttonAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangGluttonAI)
     explicit ShadowfangGluttonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Blood Tap
@@ -1347,7 +1347,7 @@ class ShadowfangGluttonAI : public CreatureAIScript
 // Creature entry: 3859
 class ShadowfangRagetoothAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangRagetoothAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangRagetoothAI)
 
     const uint32_t SPELL_WILD_RAGE = 7072;
 
@@ -1373,7 +1373,7 @@ protected:
 // Creature entry: 3864
 class FelSteedAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FelSteedAI);
+    ADD_CREATURE_FACTORY_FUNCTION(FelSteedAI)
     explicit FelSteedAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Fel Stomp
@@ -1384,7 +1384,7 @@ class FelSteedAI : public CreatureAIScript
 // Creature entry: 3872
 class DeathswornCaptainAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeathswornCaptainAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DeathswornCaptainAI)
     explicit DeathswornCaptainAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Hamstring
@@ -1398,7 +1398,7 @@ class DeathswornCaptainAI : public CreatureAIScript
 // Creature entry: 3873
 class TormentedOfficerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TormentedOfficerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TormentedOfficerAI)
     explicit TormentedOfficerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Forsaken Skills (TODO: implement dummy aura of this spell)
@@ -1409,7 +1409,7 @@ class TormentedOfficerAI : public CreatureAIScript
 // Creature entry: 3875
 class HauntedServitorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HauntedServitorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HauntedServitorAI)
     explicit HauntedServitorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Haunting Spirits (TODO: implement dummy aura of this spell)
@@ -1420,7 +1420,7 @@ class HauntedServitorAI : public CreatureAIScript
 // Creature entry: 3877
 class WaillingGuardsmanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WaillingGuardsmanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WaillingGuardsmanAI)
     explicit WaillingGuardsmanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Screams of the Past
@@ -1431,7 +1431,7 @@ class WaillingGuardsmanAI : public CreatureAIScript
 // Creature entry: 3877
 class WorlfguardWorgAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WorlfguardWorgAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WorlfguardWorgAI)
     explicit WorlfguardWorgAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }

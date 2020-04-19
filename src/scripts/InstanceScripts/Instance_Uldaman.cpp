@@ -25,7 +25,7 @@
 
 class Archaedas : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Archaedas);
+    ADD_CREATURE_FACTORY_FUNCTION(Archaedas)
     explicit Archaedas(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto groundTremor = addAISpell(6524, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -36,7 +36,7 @@ class Archaedas : public CreatureAIScript
 
 class Revelosh : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Revelosh);
+    ADD_CREATURE_FACTORY_FUNCTION(Revelosh)
     explicit Revelosh(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknown = addAISpell(10392, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -50,7 +50,7 @@ class Revelosh : public CreatureAIScript
 
 class Grimlok : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Grimlok);
+    ADD_CREATURE_FACTORY_FUNCTION(Grimlok)
     explicit Grimlok(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto chainBolt = addAISpell(8292, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -67,7 +67,7 @@ class Grimlok : public CreatureAIScript
 
 class Baelog : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Baelog);
+    ADD_CREATURE_FACTORY_FUNCTION(Baelog)
     explicit Baelog(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknown = addAISpell(15613, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -81,7 +81,7 @@ class Baelog : public CreatureAIScript
 
 class GalgannFirehammer : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GalgannFirehammer);
+    ADD_CREATURE_FACTORY_FUNCTION(GalgannFirehammer)
     explicit GalgannFirehammer(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknown = addAISpell(10448, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -98,7 +98,7 @@ class GalgannFirehammer : public CreatureAIScript
 
 class Ironaya : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Ironaya);
+    ADD_CREATURE_FACTORY_FUNCTION(Ironaya)
     explicit Ironaya(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto arcingSmash = addAISpell(16169, 20.0f, TARGET_ATTACKING, 0, 10, false, true);

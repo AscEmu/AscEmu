@@ -96,7 +96,7 @@ public:
 
 class PrisonersatDeatholme : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PrisonersatDeatholme);
+    ADD_CREATURE_FACTORY_FUNCTION(PrisonersatDeatholme)
     explicit PrisonersatDeatholme(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

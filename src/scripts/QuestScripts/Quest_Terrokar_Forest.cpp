@@ -23,7 +23,7 @@
 
 class ThreatFromAboveQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThreatFromAboveQAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ThreatFromAboveQAI)
     explicit ThreatFromAboveQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)
@@ -37,7 +37,7 @@ class ThreatFromAboveQAI : public CreatureAIScript
 
 class TheInfestedProtectorsQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheInfestedProtectorsQAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TheInfestedProtectorsQAI)
     explicit TheInfestedProtectorsQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         min = 0;
@@ -91,8 +91,7 @@ private:
 
 class TakenInTheNight : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TakenInTheNight);
-
+    ADD_CREATURE_FACTORY_FUNCTION(TakenInTheNight)
     explicit TakenInTheNight(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()
@@ -152,8 +151,7 @@ class TakenInTheNight : public CreatureAIScript
 
 class AnImproperBurial : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AnImproperBurial);
-
+    ADD_CREATURE_FACTORY_FUNCTION(AnImproperBurial)
     explicit AnImproperBurial(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()

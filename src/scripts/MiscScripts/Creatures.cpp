@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Explosive Sheep (Summoned by ItemID: 4384)
 class ExplosiveSheep : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ExplosiveSheep);
+    ADD_CREATURE_FACTORY_FUNCTION(ExplosiveSheep)
     explicit ExplosiveSheep(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()
@@ -29,7 +29,7 @@ class ExplosiveSheep : public CreatureAIScript
 // Crimson Hammersmith
 class CrimsonHammersmith : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CrimsonHammersmith);
+    ADD_CREATURE_FACTORY_FUNCTION(CrimsonHammersmith)
     explicit CrimsonHammersmith(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -42,7 +42,7 @@ class CrimsonHammersmith : public CreatureAIScript
 // Corrupt Minor Manifestation Water Dead
 class Corrupt_Minor_Manifestation_Water_Dead : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Corrupt_Minor_Manifestation_Water_Dead);
+    ADD_CREATURE_FACTORY_FUNCTION(Corrupt_Minor_Manifestation_Water_Dead)
     explicit Corrupt_Minor_Manifestation_Water_Dead(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* /*mKiller*/) override
@@ -85,7 +85,7 @@ public:
 // Lazy Peons
 class PeonSleepingAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PeonSleepingAI);
+    ADD_CREATURE_FACTORY_FUNCTION(PeonSleepingAI)
     explicit PeonSleepingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(3000 + Util::getRandomUInt(180000));
@@ -100,7 +100,7 @@ class PeonSleepingAI : public CreatureAIScript
 
 class KirithAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KirithAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KirithAI)
     explicit KirithAI(Creature* pCreature) : CreatureAIScript(pCreature)  {}
 
     void OnDied(Unit* mKiller)
@@ -116,7 +116,7 @@ class KirithAI : public CreatureAIScript
 
 class AllianceGryphon : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AllianceGryphon);
+    ADD_CREATURE_FACTORY_FUNCTION(AllianceGryphon)
 
     explicit AllianceGryphon(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -137,7 +137,7 @@ class AllianceGryphon : public CreatureAIScript
 
 class AllianceHippogryph : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AllianceHippogryph);
+    ADD_CREATURE_FACTORY_FUNCTION(AllianceHippogryph)
     explicit AllianceHippogryph(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* mTarget)
@@ -157,7 +157,7 @@ class AllianceHippogryph : public CreatureAIScript
 
 class HordeWyvern : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HordeWyvern);
+    ADD_CREATURE_FACTORY_FUNCTION(HordeWyvern)
     explicit HordeWyvern(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* mTarget)
@@ -177,7 +177,7 @@ class HordeWyvern : public CreatureAIScript
 
 class HordeBat : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HordeBat);
+    ADD_CREATURE_FACTORY_FUNCTION(HordeBat)
     explicit HordeBat(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* mTarget)
@@ -229,7 +229,7 @@ class NeutralMasters : public CreatureAIScript
 
 class TyrandeWhisperwind : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TyrandeWhisperwind);
+    ADD_CREATURE_FACTORY_FUNCTION(TyrandeWhisperwind)
     explicit TyrandeWhisperwind(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -240,7 +240,7 @@ class TyrandeWhisperwind : public CreatureAIScript
 
 class ProphetVelen : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ProphetVelen);
+    ADD_CREATURE_FACTORY_FUNCTION(ProphetVelen)
     explicit ProphetVelen(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -251,7 +251,7 @@ class ProphetVelen : public CreatureAIScript
 
 class KingMagniBronzebeard : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KingMagniBronzebeard);
+    ADD_CREATURE_FACTORY_FUNCTION(KingMagniBronzebeard)
     explicit KingMagniBronzebeard(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -262,7 +262,7 @@ class KingMagniBronzebeard : public CreatureAIScript
 
 class Thrall : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Thrall);
+    ADD_CREATURE_FACTORY_FUNCTION(Thrall)
     explicit Thrall(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -273,7 +273,7 @@ class Thrall : public CreatureAIScript
 
 class CairneBloodhoof : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CairneBloodhoof);
+    ADD_CREATURE_FACTORY_FUNCTION(CairneBloodhoof)
     explicit CairneBloodhoof(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -284,7 +284,7 @@ class CairneBloodhoof : public CreatureAIScript
 
 class LadySylvanasWindrunner : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LadySylvanasWindrunner);
+    ADD_CREATURE_FACTORY_FUNCTION(LadySylvanasWindrunner)
     explicit LadySylvanasWindrunner(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -295,7 +295,7 @@ class LadySylvanasWindrunner : public CreatureAIScript
 
 class TrollRoofStalker : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TrollRoofStalker);
+    ADD_CREATURE_FACTORY_FUNCTION(TrollRoofStalker)
     explicit TrollRoofStalker(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()
@@ -317,7 +317,7 @@ class TrollRoofStalker : public CreatureAIScript
 //////////////////////////////////////////////////////////////////////////////////////////
 class DISCO : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DISCO);
+    ADD_CREATURE_FACTORY_FUNCTION(DISCO)
     explicit DISCO(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()
@@ -331,7 +331,7 @@ class DISCO : public CreatureAIScript
 // Silithid Creeper Egg
 class SilithidCreeperEgg : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SilithidCreeperEgg);
+    ADD_CREATURE_FACTORY_FUNCTION(SilithidCreeperEgg)
     explicit SilithidCreeperEgg(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCreature->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -352,7 +352,7 @@ class SilithidCreeperEgg : public CreatureAIScript
 
 class DraeneiSurvivor : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DraeneiSurvivor);
+    ADD_CREATURE_FACTORY_FUNCTION(DraeneiSurvivor)
     explicit DraeneiSurvivor(Creature* pCreature) : CreatureAIScript(pCreature)
     { }
 
@@ -364,7 +364,7 @@ class DraeneiSurvivor : public CreatureAIScript
 
 class GuardRoberts : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GuardRoberts);
+    ADD_CREATURE_FACTORY_FUNCTION(GuardRoberts)
     explicit GuardRoberts(Creature* pCreature) : CreatureAIScript(pCreature)
     { }
 
@@ -381,7 +381,7 @@ class GuardRoberts : public CreatureAIScript
 
 class SotaAntiPersonnalCannon : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SotaAntiPersonnalCannon);
+    ADD_CREATURE_FACTORY_FUNCTION(SotaAntiPersonnalCannon)
     explicit SotaAntiPersonnalCannon(Creature* pCreature) : CreatureAIScript(pCreature)
     { }
 
@@ -395,7 +395,7 @@ class SotaAntiPersonnalCannon : public CreatureAIScript
 // Nestlewood Owlkin - Quest 9303
 class NestlewoodOwlkin : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NestlewoodOwlkin);
+    ADD_CREATURE_FACTORY_FUNCTION(NestlewoodOwlkin)
     explicit NestlewoodOwlkin(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         respawn = false;

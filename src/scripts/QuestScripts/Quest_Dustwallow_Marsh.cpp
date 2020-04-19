@@ -27,7 +27,7 @@ enum
 
 class BalosJackenQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BalosJackenQAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BalosJackenQAI)
     explicit BalosJackenQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         friendlyTimer = BALOS_FRIENDLY_TIMER;
@@ -91,7 +91,7 @@ protected:
 
 class OverlordMokMorokk : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OverlordMokMorokk);
+    ADD_CREATURE_FACTORY_FUNCTION(OverlordMokMorokk)
     explicit OverlordMokMorokk(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -161,7 +161,7 @@ public:
 
 class PrivateHendel : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PrivateHendel);
+    ADD_CREATURE_FACTORY_FUNCTION(PrivateHendel)
     explicit PrivateHendel(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

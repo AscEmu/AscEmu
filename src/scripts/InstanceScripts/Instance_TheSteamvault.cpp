@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class HydromancerThespiaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HydromancerThespiaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HydromancerThespiaAI)
     explicit HydromancerThespiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto envelopingWinds = addAISpell(ENVELOPING_WINDS, 9.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
@@ -46,7 +46,7 @@ static Movement::Location SpawnCoords[] =
 // Should they really fight?
 class SteamriggerMechanicAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SteamriggerMechanicAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SteamriggerMechanicAI)
     explicit SteamriggerMechanicAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -86,7 +86,7 @@ class SteamriggerMechanicAI : public CreatureAIScript
 // Must spawn 3 Steamrigger Mechanics when his health is on 75%, 50% and 25%
 class MekgineerSteamriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MekgineerSteamriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MekgineerSteamriggerAI)
     std::vector <Unit*> Gnomes;
 
     explicit MekgineerSteamriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -228,7 +228,7 @@ static Movement::Location DistillerMoveTo[] =
 
 class NagaDistillerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NagaDistillerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(NagaDistillerAI)
     explicit NagaDistillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
@@ -246,7 +246,7 @@ class NagaDistillerAI : public CreatureAIScript
 
 class WarlordKalitreshAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WarlordKalitreshAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WarlordKalitreshAI)
     explicit WarlordKalitreshAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto impale = addAISpell(IMPALE, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);

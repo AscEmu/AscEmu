@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Hmmm... next boss without sounds?
 class ShirrakTheDeadWatcherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShirrakTheDeadWatcherAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShirrakTheDeadWatcherAI)
     explicit ShirrakTheDeadWatcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto inhibitMagic = addAISpell(INHIBIT_MAGIC, 7.0f, TARGET_SELF, 0, 10, false, true);
@@ -32,7 +32,7 @@ class ShirrakTheDeadWatcherAI : public CreatureAIScript
 // Avatar of the MartyredAI
 class AvatarOfTheMartyredAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AvatarOfTheMartyredAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AvatarOfTheMartyredAI)
     explicit AvatarOfTheMartyredAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto sunderArmor = addAISpell(SUNDER_ARMOR, 15.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -70,7 +70,7 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
 // Exarch MaladaarAI
 class EXARCH_MALADAAR_AI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EXARCH_MALADAAR_AI);
+    ADD_CREATURE_FACTORY_FUNCTION(EXARCH_MALADAAR_AI)
     explicit EXARCH_MALADAAR_AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto souldScream = addAISpell(SOUL_SCREAM, 10.0f, TARGET_VARIOUS, 0, 15, false, true);

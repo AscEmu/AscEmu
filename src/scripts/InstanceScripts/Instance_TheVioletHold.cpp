@@ -233,7 +233,7 @@ public:
 //\TODO: Replace spell casting logic for all instances, this is temp
 class VHCreatureAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHCreatureAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VHCreatureAI)
     explicit VHCreatureAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //this->CreateWaypoint(1, 0, 0, VH_DOOR_ATTACK_POSITION);
@@ -370,7 +370,7 @@ protected:
 
 class VHIntroAzureBinder : VHCreatureAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureBinder);
+    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureBinder)
 
     const int SPELL_ARCANE_BARRAGE = 58456;
     const int SPELL_ARCANE_EXPLOSION = 58455;
@@ -409,7 +409,7 @@ class VHIntroAzureBinder : VHCreatureAI
 class VHIntroAzureInvader : VHCreatureAI
 {
 
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureInvader);
+    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureInvader)
 
     const int SPELL_CLEAVE = 15496;
     const int SPELL_IMPALE = 58459;
@@ -447,7 +447,7 @@ class VHIntroAzureInvader : VHCreatureAI
 
 class VHIntroAzureMageSlayer : VHCreatureAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureMageSlayer);
+    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureMageSlayer)
 
     const int SPELL_ARCANE_EMPOWERMENT = 58469;
 
@@ -474,7 +474,7 @@ class VHIntroAzureMageSlayer : VHCreatureAI
 
 class VHIntroAzureSpellBreaker : VHCreatureAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureSpellBreaker);
+    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureSpellBreaker)
 
     const int SPELL_ARCANE_BLAST = 58462;
     const int SPELL_SLOW = 25603;

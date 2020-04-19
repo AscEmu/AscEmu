@@ -25,7 +25,7 @@
 
 class AmnennarTheColdbringerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AmnennarTheColdbringerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AmnennarTheColdbringerAI)
     explicit AmnennarTheColdbringerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknow = addAISpell(10179, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -42,7 +42,7 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
 
 class GluttonAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GluttonAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GluttonAI)
     explicit GluttonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mDiseaseCloud = addAISpell(SP_GLUTTON_DISEASE_CLOUD, 0.0f, TARGET_SELF, 0, 0, false, true);
@@ -62,7 +62,7 @@ class GluttonAI : public CreatureAIScript
 
 class MordreshFireEyeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MordreshFireEyeAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MordreshFireEyeAI)
     explicit MordreshFireEyeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_MORDRESH_FIRE_NOVA, 10.0f, TARGET_SELF, 2, 0);
@@ -72,7 +72,7 @@ class MordreshFireEyeAI : public CreatureAIScript
 
 class PlaguemawTheRottingAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PlaguemawTheRottingAI);
+    ADD_CREATURE_FACTORY_FUNCTION(PlaguemawTheRottingAI)
     explicit PlaguemawTheRottingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto witheredTouch = addAISpell(12947, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -85,7 +85,7 @@ class PlaguemawTheRottingAI : public CreatureAIScript
 
 class RagglesnoutAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RagglesnoutAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RagglesnoutAI)
     explicit RagglesnoutAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto unknown = addAISpell(10892, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -99,7 +99,7 @@ class RagglesnoutAI : public CreatureAIScript
 
 class TutenKashAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TutenKashAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TutenKashAI)
     explicit TutenKashAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto curseOfTutenKash = addAISpell(12255, 20.0f, TARGET_ATTACKING, 0, 10, false, true);

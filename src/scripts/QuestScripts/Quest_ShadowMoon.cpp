@@ -38,7 +38,7 @@ enum
 
 class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InfiltratingDragonmawFortressQAI);
+    ADD_CREATURE_FACTORY_FUNCTION(InfiltratingDragonmawFortressQAI)
     explicit InfiltratingDragonmawFortressQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)
@@ -52,7 +52,7 @@ class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 
 class KneepadsQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KneepadsQAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KneepadsQAI)
     explicit KneepadsQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)
@@ -83,7 +83,7 @@ const WPWaitTimes DeathbringerJovaanWP[] =
 
 class DeathbringerJovaanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeathbringerJovaanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DeathbringerJovaanAI)
     explicit DeathbringerJovaanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mJovaanTimer = 0;
@@ -185,7 +185,7 @@ class DeathbringerJovaanAI : public CreatureAIScript
 
 class WarbringerRazuunAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WarbringerRazuunAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WarbringerRazuunAI)
     explicit WarbringerRazuunAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -295,7 +295,7 @@ public:
 
 class EnslavedNetherwingDrakeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI);
+    ADD_CREATURE_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI)
     explicit EnslavedNetherwingDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Movement::LocationWithFlag WayPoint = { getCreature()->GetPositionX(), getCreature()->GetPositionY() + 30, getCreature()->GetPositionZ() + 100, getCreature()->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
