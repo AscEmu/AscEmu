@@ -2,8 +2,7 @@ THE MOPAQ ARCHIVE FORMAT
 v0.9 (Thursday, June 30, 2005)
 by Justin Olbrantz(Quantam)
 
-Distribution and reproduction of this specification are allowed without limitation, as long as it is not altered. Quoting
-in other works is freely allowed, as long as the source and author of the quote is stated.
+Distribution and reproduction of this specification are allowed without limitation, as long as it is not altered. Quoting in other works is freely allowed, as long as the source and author of the quote is stated.
 
 TABLE OF CONTENTS
 1. Introduction to the MoPaQ Format

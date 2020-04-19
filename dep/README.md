@@ -2,6 +2,14 @@
 
 # Opensource software in this folder:
 
+## Folder: StormLib
+- Web: https://github.com/ladislav-zezula/StormLib
+- Version: 9.11 (2018/11/08)
+
+## Folder: cotire
+- Web: https://github.com/sakra/cotire
+- Version: 1.8.1 (2019/12/23)
+
 ## Folder: utf8cpp
 - Web: https://github.com/nemtrif/utfcpp
 - Version: 944ef0561ddcd33eb4fd94934538458b2b2de252 (2020/03/15)
@@ -34,14 +42,6 @@
 - Web: https://github.com/mbroemme/libmpq
 - Version: d59b4cf1d107b5f6a0f67d6bc545c6c6ebef3d74 (2011/11/08)
 
-## Folder: StormLib
-- Web: http://www.zezula.net/en/mpq/stormlib.html
-- Version: (2012/06/05)
-
 ## Folder: bzip2
 - Web: http://www.bzip.org
 - Version: 1.0.6 (2010/09/20)
-
-## Folder: cotire
-- Web: https://github.com/sakra/cotire
-- Version: 1.8.0 (2018/03/18)
