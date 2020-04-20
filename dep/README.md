@@ -20,7 +20,7 @@
 
 ## Folder: recastnavigation
 - Web: https://github.com/memononen/recastnavigation
-- Version: 64385e9ed0822427bca5814d03a3f4c4d7a6db9f (2016/08/17)  
+- Version: 57610fa6ef31b39020231906f8c5d40eaa8294ae (2019/10/21)
 
 ## Folder: OpenSSL
 - Web: https://www.openssl.org
