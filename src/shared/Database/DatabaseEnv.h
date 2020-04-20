@@ -26,7 +26,7 @@
 #include "CThreads.h"
 
 //! Our own includes.
-#include "Database/Field.h"
+#include "Database/Field.hpp"
 #include "Database/Database.h"
 
 #endif      //_DATABASE_ENV_H

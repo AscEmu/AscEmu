@@ -28,7 +28,7 @@ set(sources
     CrashHandler.cpp
     crc32.cpp
     CThreads.cpp
-    DatabaseUpdater.cpp
+    Database/DatabaseUpdater.cpp
     DynLib.cpp
     LocationVector.cpp
     Log.cpp
@@ -57,7 +57,7 @@ set(headers
     crc32.h
     CRefcounter.h
     CThreads.h
-    DatabaseUpdater.h
+    Database/DatabaseUpdater.h
     DynLib.hpp
     Errors.h
     FastQueue.h
@@ -84,7 +84,7 @@ set(headers
     Auth/WowCrypt.h
     Config/Config.h
     Database/Database.h
-    Database/Field.h
+    Database/Field.hpp
     Database/MySQLDatabase.h
     Exceptions/Exceptions.hpp
     Exceptions/PlayerExceptions.hpp

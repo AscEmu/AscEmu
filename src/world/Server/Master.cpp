@@ -34,7 +34,7 @@
 #include "Management/AuctionMgr.h"
 #include "Spell/SpellTarget.h"
 #include "Util.hpp"
-#include "DatabaseUpdater.h"
+#include "Database/DatabaseUpdater.h"
 
 std::string LogFileName;
 bool bLogChat;
