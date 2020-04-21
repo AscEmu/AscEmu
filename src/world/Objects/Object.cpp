@@ -1494,14 +1494,14 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target
         const Unit* this_mover = this_player ? static_cast<Unit*>(this_player) : this_creature;
         ARCEMU_ASSERT(this_mover != nullptr);
 
-        *data << this_mover->getSpeedForType(TYPE_WALK);
-        *data << this_mover->getSpeedForType(TYPE_RUN);
-        *data << this_mover->getSpeedForType(TYPE_RUN_BACK);
-        *data << this_mover->getSpeedForType(TYPE_SWIM);
-        *data << this_mover->getSpeedForType(TYPE_SWIM_BACK);
-        *data << this_mover->getSpeedForType(TYPE_FLY);
-        *data << this_mover->getSpeedForType(TYPE_FLY_BACK);
-        *data << this_mover->getSpeedForType(TYPE_TURN_RATE);
+        *data << this_mover->getSpeedRate(TYPE_WALK, true);
+        *data << this_mover->getSpeedRate(TYPE_RUN, true);
+        *data << this_mover->getSpeedRate(TYPE_RUN_BACK, true);
+        *data << this_mover->getSpeedRate(TYPE_SWIM, true);
+        *data << this_mover->getSpeedRate(TYPE_SWIM_BACK, true);
+        *data << this_mover->getSpeedRate(TYPE_FLY, true);
+        *data << this_mover->getSpeedRate(TYPE_FLY_BACK, true);
+        *data << this_mover->getSpeedRate(TYPE_TURN_RATE, true);
     }
 
     if (spline_buffer)
@@ -1682,15 +1682,15 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
         if (Unit* unit = static_cast<Unit*>(this))
         {
-            *data << unit->getSpeedForType(TYPE_WALK);
-            *data << unit->getSpeedForType(TYPE_RUN);
-            *data << unit->getSpeedForType(TYPE_RUN_BACK);
-            *data << unit->getSpeedForType(TYPE_SWIM);
-            *data << unit->getSpeedForType(TYPE_SWIM_BACK);
-            *data << unit->getSpeedForType(TYPE_FLY);
-            *data << unit->getSpeedForType(TYPE_FLY_BACK);
-            *data << unit->getSpeedForType(TYPE_TURN_RATE);
-            *data << unit->getSpeedForType(TYPE_PITCH_RATE);
+            *data << unit->getSpeedRate(TYPE_WALK, true);
+            *data << unit->getSpeedRate(TYPE_RUN, true);
+            *data << unit->getSpeedRate(TYPE_RUN_BACK, true);
+            *data << unit->getSpeedRate(TYPE_SWIM, true);
+            *data << unit->getSpeedRate(TYPE_SWIM_BACK, true);
+            *data << unit->getSpeedRate(TYPE_FLY, true);
+            *data << unit->getSpeedRate(TYPE_FLY_BACK, true);
+            *data << unit->getSpeedRate(TYPE_TURN_RATE, true);
+            *data << unit->getSpeedRate(TYPE_PITCH_RATE, true);
         }
         else                                //\todo Zyres: this is ridiculous... only units have these types, but this function is a mess so don't breake anything.
         {
@@ -1963,7 +1963,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
 
         data->WriteByteSeq(Guid[4]);
 
-        *data << unit->getSpeedForType(TYPE_RUN_BACK);
+        *data << unit->getSpeedRate(TYPE_RUN_BACK, true);
 
         if (hasFallData)
         {
@@ -1978,7 +1978,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
             *data << float(unit->movement_info.getJumpInfo().velocity);
         }
 
-        *data << unit->getSpeedForType(TYPE_SWIM_BACK);
+        *data << unit->getSpeedRate(TYPE_SWIM_BACK, true);
 
         if (hasElevation)
             *data << float(unit->movement_info.getSplineElevation());
@@ -2025,37 +2025,37 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
         }
 
         *data << float(unit->GetPositionX());
-        *data << float(unit->getSpeedForType(TYPE_PITCH_RATE));
+        *data << float(unit->getSpeedRate(TYPE_PITCH_RATE, true));
 
         data->WriteByteSeq(Guid[3]);
         data->WriteByteSeq(Guid[0]);
 
-        *data << float(unit->getSpeedForType(TYPE_SWIM));
+        *data << float(unit->getSpeedRate(TYPE_SWIM, true));
         *data << float(unit->GetPositionY());
 
         data->WriteByteSeq(Guid[7]);
         data->WriteByteSeq(Guid[1]);
         data->WriteByteSeq(Guid[2]);
 
-        *data << float(unit->getSpeedForType(TYPE_WALK));
+        *data << float(unit->getSpeedRate(TYPE_WALK, true));
 
         *data << uint32_t(Util::getMSTime());
 
-        *data << float(unit->getSpeedForType(TYPE_FLY_BACK));
+        *data << float(unit->getSpeedRate(TYPE_FLY_BACK, true));
 
         data->WriteByteSeq(Guid[6]);
 
-        *data << float(unit->getSpeedForType(TYPE_TURN_RATE));
+        *data << float(unit->getSpeedRate(TYPE_TURN_RATE, true));
 
         if (hasOrientation)
             *data << float(normalizeOrientation(unit->GetOrientation()));
 
-        *data << unit->getSpeedForType(TYPE_RUN);
+        *data << unit->getSpeedRate(TYPE_RUN, true);
 
         if (hasPitch)
             *data << float(unit->movement_info.getPitch());
 
-        *data << float(unit->getSpeedForType(TYPE_FLY));
+        *data << float(unit->getSpeedRate(TYPE_FLY, true));
     }
 
     if (updateFlags & UPDATEFLAG_VEHICLE)

@@ -1623,10 +1623,10 @@ bool ChatHandler::HandleCharSetSpeedCommand(const char* args, WorldSession* m_se
         BlueSystemMessage(m_session, "Setting your speed to %3.2f.", speed);
     }
 
-    player_target->setSpeedForType(TYPE_RUN, speed);
-    player_target->setSpeedForType(TYPE_SWIM, speed);
-    player_target->setSpeedForType(TYPE_RUN_BACK, speed / 2);
-    player_target->setSpeedForType(TYPE_FLY, speed * 2);
+    player_target->setSpeedRate(TYPE_RUN, speed, true);
+    player_target->setSpeedRate(TYPE_SWIM, speed, true);
+    player_target->setSpeedRate(TYPE_RUN_BACK, speed / 2, true);
+    player_target->setSpeedRate(TYPE_FLY, speed * 2, true);
 
     return true;
 }

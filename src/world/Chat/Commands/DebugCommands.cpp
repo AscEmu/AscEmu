@@ -353,11 +353,11 @@ bool ChatHandler::HandleDebugSpeed(const char* args, WorldSession* m_session)
 
     BlueSystemMessage(m_session, "Setting speeds of selected unit to %3.2f.", speed);
 
-    selected_unit->setSpeedForType(TYPE_WALK, speed);
-    selected_unit->setSpeedForType(TYPE_RUN, (speed + speed / 2));
-    selected_unit->setSpeedForType(TYPE_SWIM, speed);
-    selected_unit->setSpeedForType(TYPE_RUN_BACK, speed / 2);
-    selected_unit->setSpeedForType(TYPE_FLY, speed * 2);
+    selected_unit->setSpeedRate(TYPE_WALK, speed, true);
+    selected_unit->setSpeedRate(TYPE_RUN, (speed + speed / 2), true);
+    selected_unit->setSpeedRate(TYPE_SWIM, speed, true);
+    selected_unit->setSpeedRate(TYPE_RUN_BACK, speed / 2, true);
+    selected_unit->setSpeedRate(TYPE_FLY, speed * 2, true);
 
     return true;
 }

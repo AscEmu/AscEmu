@@ -4362,7 +4362,7 @@ class IllidanStormrageAI : public CreatureAIScript
                         getCreature()->GetAIInterface()->setNextTarget(pTrigger);
 
                         float Distance = pTrigger->CalcDistance(EyeBeamPaths[7 - FireWall].x, EyeBeamPaths[7 - FireWall].y, EyeBeamPaths[7 - FireWall].z);
-                        uint32 TimeToReach = (uint32)(Distance * 1000 / pTrigger->getSpeedForType(TYPE_WALK));
+                        uint32 TimeToReach = (uint32)(Distance * 1000 / pTrigger->getSpeedRate(TYPE_WALK, true));
                         EyeBeamTriggerAI* pEyeBeamTriggerAI = static_cast< EyeBeamTriggerAI* >(pTrigger->GetScript());
                         pEyeBeamTriggerAI->mPosition = FireWall;
                         pEyeBeamTriggerAI->despawn(TimeToReach + 1500, 0);
