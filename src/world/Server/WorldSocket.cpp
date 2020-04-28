@@ -916,9 +916,9 @@ void WorldSocket::UpdateQueuePosition(uint32_t Position)
     // cebernic: Displays re-correctly until 2.4.3,there will not be always 0
     WorldPacket QueuePacket(SMSG_AUTH_RESPONSE, 16);
     QueuePacket << uint8_t(0x1B) << uint8_t(0x2C) << uint8_t(0x73) << uint8_t(0) << uint8_t(0);
-    QueuePacket << uint32_t(0) << uint8_t(0);// << uint8_t(0);
+    QueuePacket << uint32_t(0) << uint8_t(0) << uint8_t(0);
     QueuePacket << Position;
-    //    QueuePacket << uint8_t(1);
+    QueuePacket << uint8_t(1);
 #elif VERSION_STRING == Cata
     WorldPacket QueuePacket(SMSG_AUTH_RESPONSE, 21);    // 17 + 4 if queued
     QueuePacket.writeBit(true);                         // has queue
