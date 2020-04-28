@@ -617,14 +617,14 @@ public:
         sObjectMgr.generateDatabaseGossipMenu(object->getGuid(), m_gossipMenuId, player);
     }
 
-    void onSelectOption(Object* object, Player* player, uint32_t intId, const char* /*Code*/, uint32_t gossipId) override
+    void onSelectOption(Object* object, Player* player, uint32_t gossipItemId, const char* /*Code*/, uint32_t gossipMenuId) override
     {
-        if (intId > 0)
+        if (gossipItemId > 0)
         {
-            if (gossipId != 0)
-                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object->getGuid(), player, intId, gossipId);
+            if (gossipMenuId != 0)
+                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object->getGuid(), player, gossipItemId, gossipMenuId);
             else
-                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object->getGuid(), player, intId, m_gossipMenuId);
+                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object->getGuid(), player, gossipItemId, m_gossipMenuId);
         }
     }
 };

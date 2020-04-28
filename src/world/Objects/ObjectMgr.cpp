@@ -1506,6 +1506,8 @@ void ObjectMgr::generateDatabaseGossipMenu(uint64_t senderGuid, uint32_t gossipM
     std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(gossipMenuId);
     for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
     {
+        // check requirements
+
         if (itr->first == gossipMenuId)
             menu.addItem(itr->second.icon, itr->second.menuOptionText, itr->second.itemOrder);
     }
@@ -1526,20 +1528,27 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(uint64_t senderGuid, Play
     {
         if (itr->second.itemOrder == gossipItemId)
         {
-            if (itr->second.nextGossipMenu != 0)
-            {
-                generateDatabaseGossipMenu(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
+            // onChooseAction
+            // 0 = None
+            // 1 = sendPoiById
+            // 2 = castSpell
 
-                // one submenu menu sends a poi
-                if (itr->second.pointOfInterest != 0)
-                    player->sendPoiById(itr->second.pointOfInterest);
-            }
-            else
+            // onChooseData
+            // depending on Action...
+            switch (itr->second.onChooseAction)
             {
-                generateDatabaseGossipMenu(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
+                case 1:
+                {
+                    generateDatabaseGossipMenu(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
 
-                if (itr->second.pointOfInterest != 0)
-                    player->sendPoiById(itr->second.pointOfInterest);
+                    // one submenu menu sends a poi
+                    if (itr->second.onChooseData != 0)
+                        player->sendPoiById(itr->second.onChooseData);
+                } break;
+                default: // action 0
+                {
+                    generateDatabaseGossipMenu(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
+                } break;
             }
         }
     }
