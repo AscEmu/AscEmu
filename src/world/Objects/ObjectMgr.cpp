@@ -1530,8 +1530,9 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(uint64_t senderGuid, Play
         {
             // onChooseAction
             // 0 = None
-            // 1 = sendPoiById
-            // 2 = castSpell
+            // 1 = sendPoiById (on_choose_data = poiId)
+            // 2 = castSpell (on_choose_data = spellId)
+            // 3 = sendTaxi (on_choose_data = taxiId, on_choose_data2 = modelId)
 
             // onChooseData
             // depending on Action...
@@ -1541,9 +1542,27 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(uint64_t senderGuid, Play
                 {
                     generateDatabaseGossipMenu(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
 
-                    // one submenu menu sends a poi
                     if (itr->second.onChooseData != 0)
                         player->sendPoiById(itr->second.onChooseData);
+
+                } break;
+                case 2:
+                {
+                    if (itr->second.onChooseData != 0)
+                    {
+                        player->castSpell(player, sSpellMgr.getSpellInfo(itr->second.onChooseData), true);
+                        GossipMenu::senGossipComplete(player);
+                    }
+
+                } break;
+                case 3:
+                {
+                    if (itr->second.onChooseData != 0)
+                    {
+                        player->TaxiStart(sTaxiMgr.GetTaxiPath(itr->second.onChooseData), itr->second.onChooseData2, 0);
+                        GossipMenu::senGossipComplete(player);
+                    }
+
                 } break;
                 default: // action 0
                 {

@@ -17,8 +17,6 @@ set(sources
     Gossip_Stormwind.cpp
     Gossip_Moonglade.cpp
     Gossip_Theramore.cpp
-    Gossip_BoreanTundra.cpp
-    Gossip_WyrmrestTemple.cpp
     Gossip_XpEliminator.cpp
     Setup.cpp
     # Required for linker

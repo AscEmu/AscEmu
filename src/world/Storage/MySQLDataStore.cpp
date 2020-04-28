@@ -4043,8 +4043,8 @@ void MySQLDataStore::loadGossipMenuItemsTable()
 
     _gossipMenuItemsStores.clear();
 
-    //                                                      0       1            2        3            4                5               6               7
-    QueryResult* resultItems = WorldDatabase.Query("SELECT id, item_order, menu_option, icon, on_choose_action, on_choose_data, next_gossip_menu, next_gossip_text FROM gossip_menu_items ORDER BY id, item_order");
+    //                                                      0       1            2        3            4                5               6               7                 8
+    QueryResult* resultItems = WorldDatabase.Query("SELECT id, item_order, menu_option, icon, on_choose_action, on_choose_data, on_choose_data2, next_gossip_menu, next_gossip_text FROM gossip_menu_items ORDER BY id, item_order");
     if (resultItems == nullptr)
     {
         LogNotice("MySQLDataLoads : Table `gossip_menu_items` is empty!");
@@ -4068,8 +4068,9 @@ void MySQLDataStore::loadGossipMenuItemsTable()
             gMenuItem.icon = fields[3].GetUInt8();
             gMenuItem.onChooseAction = fields[4].GetUInt8();
             gMenuItem.onChooseData = fields[5].GetUInt32();
-            gMenuItem.nextGossipMenu = fields[6].GetUInt32();
-            gMenuItem.nextGossipMenuText = fields[7].GetUInt32();
+            gMenuItem.onChooseData2 = fields[6].GetUInt32();
+            gMenuItem.nextGossipMenu = fields[7].GetUInt32();
+            gMenuItem.nextGossipMenuText = fields[8].GetUInt32();
 
             _gossipMenuItemsStores.insert(GossipMenuItemsContainer::value_type(gMenuItem.gossipMenu, gMenuItem));
             ++load_count;

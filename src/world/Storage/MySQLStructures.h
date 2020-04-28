@@ -239,6 +239,7 @@ namespace MySQLStructure
         uint8_t icon;
         uint8_t onChooseAction;
         uint32_t onChooseData;
+        uint32_t onChooseData2;
         uint32_t nextGossipMenu;
         uint32_t nextGossipMenuText;
     };
