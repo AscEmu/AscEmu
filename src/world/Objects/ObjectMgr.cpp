@@ -1479,7 +1479,7 @@ uint32_t ObjectMgr::GetSpellRequired(uint32_t spell_id) const
 #endif
 
 //MIT
-void ObjectMgr::generateDatabaseGossipMenu(uint64_t senderGuid, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId /*= 0*/)
+void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId /*= 0*/)
 {
     uint32_t textId = 2;
 
@@ -1500,23 +1500,33 @@ void ObjectMgr::generateDatabaseGossipMenu(uint64_t senderGuid, uint32_t gossipM
         textId = forcedTextId;
     }
 
-    GossipMenu menu(senderGuid, textId, player->GetSession()->language, gossipMenuId);
+    GossipMenu menu(object->getGuid(), textId, player->GetSession()->language, gossipMenuId);
+
+    sQuestMgr.FillQuestMenu(dynamic_cast<Creature*>(object), player, menu);
 
     typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
     std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(gossipMenuId);
     for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
     {
         // check requirements
+        // 0 = none
+        // 1 = has(active)Quest
+        // 2 = has(finished)Quest
 
         if (itr->first == gossipMenuId)
+        {
+            if (itr->second.requirementType == 1 && !player->HasQuest(itr->second.requirementData))
+                continue;
+
             menu.addItem(itr->second.icon, itr->second.menuOptionText, itr->second.itemOrder);
+        }
     }
 
     menu.sendGossipPacket(player);
 }
 
 //MIT
-void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(uint64_t senderGuid, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId)
+void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId)
 {
     LOG_DEBUG("GossipId: %u  gossipItemId: %u", gossipMenuId, gossipItemId);
 
@@ -1533,6 +1543,8 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(uint64_t senderGuid, Play
             // 1 = sendPoiById (on_choose_data = poiId)
             // 2 = castSpell (on_choose_data = spellId)
             // 3 = sendTaxi (on_choose_data = taxiId, on_choose_data2 = modelId)
+            // 4 = required standing (on_choose_data = factionId, on_choose_data2 = standing, on_choose_data3 = broadcastTextId)
+            // 5 = close window
 
             // onChooseData
             // depending on Action...
@@ -1540,7 +1552,7 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(uint64_t senderGuid, Play
             {
                 case 1:
                 {
-                    generateDatabaseGossipMenu(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
+                    generateDatabaseGossipMenu(object, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
 
                     if (itr->second.onChooseData != 0)
                         player->sendPoiById(itr->second.onChooseData);
@@ -1564,9 +1576,25 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(uint64_t senderGuid, Play
                     }
 
                 } break;
+                case 4:
+                {
+                    if (itr->second.onChooseData != 0)
+                    {
+                        if (player->GetStanding(itr->second.onChooseData) >= itr->second.onChooseData2)
+                            player->castSpell(player, sSpellMgr.getSpellInfo(itr->second.onChooseData3), true);
+                        else
+                            player->BroadcastMessage(player->GetSession()->LocalizedWorldSrv(itr->second.onChooseData4));                        GossipMenu::senGossipComplete(player);
+                    }
+
+                } break;
+                case 5:
+                {
+                    GossipMenu::senGossipComplete(player);
+
+                } break;
                 default: // action 0
                 {
-                    generateDatabaseGossipMenu(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
+                    generateDatabaseGossipMenu(object, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
                 } break;
             }
         }
