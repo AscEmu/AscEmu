@@ -1572,6 +1572,10 @@ void Player::setInitialPlayerData()
 
         setPowerCostModifier(i, 0);
         setPowerCostMultiplier(i, 0.0f);
+    }
+
+    for (uint8_t i = 0; i < WOWPLAYER_NO_REAGENT_COST_COUNT; ++i)
+    {
 #if VERSION_STRING >= WotLK
         setNoReagentCost(i, 0);
 #endif
