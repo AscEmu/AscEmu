@@ -53,7 +53,7 @@ bool FileLoader::loadFile(std::string const& fileName, bool log)
 
     data_size = mf.getSize();
 
-    data = new uint8 [data_size];
+    data = new uint8_t [data_size];
     mf.read(data, data_size);
     mf.close();
     if (prepareLoadedData())
