@@ -1252,7 +1252,6 @@ void LoadCommonMPQFiles(uint32 build)
         }
         else
             _tprintf(_T("Loaded %s\n"), filename);
-
     }
 
     char const* prefix = NULL;
