@@ -1685,7 +1685,7 @@ void ObjectMgr::LoadTrainers()
             delete tr;
             continue;
         }
-        if (result2->GetFieldCount() != 6)
+        if (result2->GetFieldCount() != 9)
         {
             LOG_ERROR("Trainers table format is invalid. Please update your database.", NULL);
             delete tr;
@@ -1699,11 +1699,11 @@ void ObjectMgr::LoadTrainers()
             {
                 Field* fields2 = result2->Fetch();
                 uint32 entry1 = fields2[0].GetUInt32();
-                uint32 spell = fields2[1].GetUInt32();
-                uint32 spellCost = fields2[2].GetUInt32();
-                uint32 reqSkill = fields2[3].GetUInt16();
-                uint32 reqSkillValue = fields2[4].GetUInt16();
-                uint32 reqLevel = fields2[5].GetUInt8();
+                uint32 spell = fields2[2].GetUInt32();
+                uint32 spellCost = fields2[3].GetUInt32();
+                uint32 reqSkill = fields2[5].GetUInt16();
+                uint32 reqSkillValue = fields2[6].GetUInt16();
+                uint32 reqLevel = fields2[7].GetUInt8();
 
                 TrainerSpell ts;
                 ts.spell = spell;

@@ -30,7 +30,7 @@ public:
     ~DBCFile();
 
     // Open database. It must be openened before it can be used.
-    bool open();
+    virtual bool open();
 
     // Database exceptions
     class Exception
@@ -38,14 +38,12 @@ public:
     public:
         Exception(const std::string &message) : message(message) { }
         virtual ~Exception() { }
-        const std::string &getMessage() {
-            return message;
-        }
+        const std::string &getMessage() { return message; }
     private:
         std::string message;
     };
 
-    class NotFound : public Exception
+    class NotFound: public Exception
     {
     public:
         NotFound() : Exception("Key was not found") { }
@@ -107,12 +105,8 @@ public:
         }
 
         /// Return address of current instance
-        Record const& operator*() const {
-            return record;
-        }
-        Record const* operator->() const {
-            return &record;
-        }
+        Record const& operator*() const { return record; }
+        Record const* operator->() const { return &record; }
 
         /// Comparison
         bool operator==(Iterator const& b) const
@@ -138,15 +132,11 @@ public:
     /// Get begin iterator over records
     Iterator end();
     /// Trivial
-    size_t getRecordCount() const {
-        return _recordCount;
-    }
-    size_t getFieldCount() const {
-        return _fieldCount;
-    }
+    size_t getRecordCount() const { return _recordCount; }
+    size_t getFieldCount() const { return _fieldCount; }
     size_t getMaxId();
 
-private:
+protected:
     HANDLE _file;
     size_t _recordSize;
     size_t _recordCount;
