@@ -83,6 +83,21 @@ enum BattlegroundDbcIndex
     BGDBC_ROWS = 30,
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Values based on BattlemasterList.dbc (BATTLEGROUND_NUM_TYPES = Max entry's +1)
+
+#if VERSION_STRING != Classic
+    #define BATTLEGROUND_NUM_TYPES 8
+#elif VERSION_STRING != TBC
+    #define BATTLEGROUND_NUM_TYPES 8
+#elif VERSION_STRING != WotLK
+    #define BATTLEGROUND_NUM_TYPES 33
+#elif VERSION_STRING != Cata
+    #define BATTLEGROUND_NUM_TYPES 657
+#elif VERSION_STRING != Mop
+    #define BATTLEGROUND_NUM_TYPES 758
+#endif
+
 enum BattleGroundTypes
 {
     BATTLEGROUND_ALTERAC_VALLEY = 1,
@@ -92,10 +107,25 @@ enum BattleGroundTypes
     BATTLEGROUND_ARENA_3V3 = 5,
     BATTLEGROUND_ARENA_5V5 = 6,
     BATTLEGROUND_EYE_OF_THE_STORM = 7,
+	// WOTLK
     BATTLEGROUND_STRAND_OF_THE_ANCIENT = 9,
     BATTLEGROUND_ISLE_OF_CONQUEST = 30,
-    BATTLEGROUND_RANDOM = 32,
-    BATTLEGROUND_NUM_TYPES = 33   // Based on BattlemasterList.dbc, make the storage arrays big enough! On 3.1.3 the last one was 11 The Ring of Valor, so 12 was enough here, but on 3.2.0 there is 32 All Battlegrounds!
+	BATTLEGROUND_RANDOM = 32,
+    // Cataclysm
+    BATTLEGROUND_RATED_10 = 100,
+    BATTLEGROUND_RATED_15 = 101,
+    BATTLEGROUND_RATED_5 = 102,
+    BATTLEGROUND_TWIN_PEAKS = 108,
+    BATTLEGROUND_BATTLE_FOR_GILNEAS_CITY = 120,
+    BATTLEGROUND_ICECROWN_CITADEL = 441, 
+    BATTLEGROUND_RUBY_SANCTUM = 443,
+    BATTLEGROUND_EYE_OF_THE_STORM_RATED = 656,
+    // MOP
+    BATTLEGROUND_TEMPLE_OF_KOTMOGU = 699,
+    BATTLEGROUND_SILVERSHARD_MINES = 708,
+    BATTLEGROUND_TOL_VIRON_ARENA = 719,
+    BATTLEGROUND_DEEPWIND_GORGE = 754,
+    BATTLEGROUND_TIGERS_PEAK = 757,
 };
 
 inline bool isArena(uint32 x)

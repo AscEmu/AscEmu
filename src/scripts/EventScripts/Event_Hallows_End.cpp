@@ -221,7 +221,7 @@ public:
 
         if (!slotresult.Result)
         {
-            pPlayer->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+            pPlayer->getItemInterface()->buildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
             return;
         }
         else
@@ -241,7 +241,7 @@ public:
             }
             else
             {
-                pPlayer->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                pPlayer->getItemInterface()->buildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                 return;
             }
         }

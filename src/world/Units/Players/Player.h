@@ -130,7 +130,7 @@ struct PlayerCreateInfo
     uint32 attackpower;
     float mindmg;
     float maxdmg;
-    uint32 taximask[12];
+    uint32_t taximask[DBC_TAXI_MASK_SIZE];
     std::list<CreateInfo_ItemStruct> items;
     std::list<CreateInfo_SkillStruct> skills;
     std::list<CreateInfo_ActionBarStruct> actionbars;
@@ -764,6 +764,14 @@ public:
     bool canDualWield2H() const;
     void setDualWield2H(bool enable);
 
+    // Cooldowns
+    bool hasSpellOnCooldown(SpellInfo const* spellInfo);
+    bool hasSpellGlobalCooldown(SpellInfo const* spellInfo);
+    // Do NOT add cooldownTime if you don't know what you're doing (it's required for spells with dynamic cooldown)
+    void addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster, int32_t cooldownTime = 0);
+    void addGlobalCooldown(SpellInfo const* spellInfo, const bool sendPacket = false);
+    void sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t duration, const bool isGcd);
+
     bool m_FirstCastAutoRepeat;
 
 private:
@@ -982,10 +990,7 @@ public:
 
     public:
         void SetLastPotion(uint32 itemid) { m_lastPotionId = itemid; }
-        void Cooldown_AddStart(SpellInfo const* pSpell);
-        void Cooldown_Add(SpellInfo const* pSpell, Item* pItemCaster);
         void Cooldown_AddItem(ItemProperties const* pProto, uint32 x);
-        bool Cooldown_CanCast(SpellInfo const* pSpell);
         bool Cooldown_CanCast(ItemProperties const* pProto, uint32 x);
         void UpdatePotionCooldown();
         bool HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoints);
@@ -1072,7 +1077,7 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         TaxiPath* GetTaxiPath() { return m_CurrentTaxiPath; }
         bool isOnTaxi() const { return m_onTaxi; }
-        const uint32 & GetTaximask(uint8 index) const { return m_taximask[index]; }
+        const uint32 & GetTaximask(uint32_t index) const { return m_taximask[index]; }
         void LoadTaxiMask(const char* data);
         void TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node);
         void JumpToEndTaxiNode(TaxiPath* path);
@@ -1080,7 +1085,7 @@ public:
         void EventTaxiInterpolate();
 
         void SetTaxiState(bool state) { m_onTaxi = state; }
-        void SetTaximask(uint8 index, uint32 value) { m_taximask[index] = value; }
+        void SetTaximask(uint32_t index, uint32 value) { m_taximask[index] = value; }
         void SetTaxiPath(TaxiPath* path) { m_CurrentTaxiPath = path; }
         void SetTaxiPos() { m_taxi_pos_x = m_position.x; m_taxi_pos_y = m_position.y; m_taxi_pos_z = m_position.z; }
         void UnSetTaxiPos() { m_taxi_pos_x = 0; m_taxi_pos_y = 0; m_taxi_pos_z = 0; }
@@ -1091,7 +1096,7 @@ public:
         uint32 taxi_model_id;
         uint32 lastNode;
         uint32 m_taxi_ride_time;
-        uint32 m_taximask[12];
+        uint32_t m_taximask[DBC_TAXI_MASK_SIZE];
         float m_taxi_pos_x;
         float m_taxi_pos_y;
         float m_taxi_pos_z;
@@ -1518,7 +1523,6 @@ public:
         float GetSkillUpChance(uint32 id);
 
         float SpellHasteRatingBonus;
-        void ModAttackSpeed(int32 mod, ModType type);
         void UpdateAttackSpeed();
         float GetDefenseChance(uint32 opLevel);
         float GetDodgeChance();
@@ -1644,7 +1648,6 @@ public:
         float m_resist_critical[2];             // when we are a victim we can have talents to decrease chance for critical hit. This is a negative value and it's added to critchances
         float m_resist_hit[2];                  // 0 = melee; 1= ranged;
         int32 m_resist_hit_spell[TOTAL_SPELL_SCHOOLS]; // spell resist per school
-        float m_attack_speed[3];
         float SpellHealDoneByAttribute[5][TOTAL_SPELL_SCHOOLS];
         uint32 m_modphyscritdmgPCT;
         uint32 m_RootedCritChanceBonus;         // Class Script Override: Shatter

@@ -81,7 +81,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
 
         if (!slotresult.Result)
         {
-            pPlayer->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+            pPlayer->getItemInterface()->buildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
             return;
         }
         else

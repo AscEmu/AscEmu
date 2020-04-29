@@ -237,9 +237,15 @@ namespace MySQLStructure
         uint32_t itemOrder;
         uint32_t menuOptionText;
         uint8_t icon;
-        uint32_t pointOfInterest;
+        uint8_t onChooseAction;
+        uint32_t onChooseData;
+        uint32_t onChooseData2;
+        uint32_t onChooseData3;
+        uint32_t onChooseData4;
         uint32_t nextGossipMenu;
         uint32_t nextGossipMenuText;
+        uint8_t requirementType;
+        uint32_t requirementData;
     };
 
     //gossip_menu_option

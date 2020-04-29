@@ -22,16 +22,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
     SetupDalaranGossip(mgr);
     SetupInnkeepers(mgr);
     SetupTrainerScript(mgr);
-    SetupMulgoreGossip(mgr);
-    SetupShattrathGossip(mgr);
-    SetupTanarisGossip(mgr);
     SetupMoongladeGossip(mgr);
-    SetupStormwindGossip(mgr);
-    SetupTheramoreGossip(mgr);
-    SetupTeldrassilGossip(mgr);
-    SetupBoreanTundraGossip(mgr);
-    SetupWyrmrestTempleGossip(mgr);
-    SetupXpEliminatorGossip(mgr);
 }
 
 #ifdef WIN32

@@ -115,6 +115,42 @@ bool ItemInterface::isItemInTradeWindow(Item const* item) const
     return item->getOwner()->getTradeData()->hasTradeItem(item->getGuid());
 }
 
+void ItemInterface::buildInventoryChangeError(Item const* srcItem, Item const* dstItem, uint8_t inventoryError, uint32_t srcItemId/* = 0*/)
+{
+    uint64_t srcGuid = 0;
+    uint64_t destGuid = 0;
+    uint32_t extraData = 0;
+    auto sendExtraData = false;
+
+    if (srcItem != nullptr)
+        srcGuid = srcItem->getGuid();
+
+    if (dstItem != nullptr)
+        destGuid = dstItem->getGuid();
+
+    const auto itemProperties = srcItem != nullptr ? srcItem->getItemProperties() : sMySQLStore.getItemProperties(srcItemId);
+    switch (inventoryError)
+    {
+        case INV_ERR_YOU_MUST_REACH_LEVEL_N:
+        case INV_ERR_PURCHASE_LEVEL_TOO_LOW:
+        {
+            extraData = itemProperties != nullptr ? itemProperties->RequiredLevel : 0;
+            sendExtraData = true;
+        } break;
+        case INV_ERR_ITEM_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED:
+        case INV_ERR_ITEM_MAX_LIMIT_CATEGORY_SOCKETED_EXCEEDED:
+        case INV_ERR_ITEM_MAX_LIMIT_CATEGORY_EQUIPPED_EXCEEDED:
+        {
+            extraData = itemProperties != nullptr ? itemProperties->ItemLimitCategory : 0;
+            sendExtraData = true;
+        } break;
+        default:
+            break;
+    }
+
+    m_pOwner->SendPacket(SmsgInventoryChangeFailure(inventoryError, srcGuid, destGuid, extraData, sendExtraData).serialise().get());
+}
+
 // MIT End
 // APGL Start
 
@@ -2819,32 +2855,6 @@ Item* ItemInterface::GetItemByGUID(uint64 Guid)
     return nullptr;
 }
 
-// Inventory Error report
-void ItemInterface::BuildInventoryChangeError(Item* SrcItem, Item* DstItem, uint8 Error)
-{
-    uint64_t srcGuid = 0;
-    uint64_t destGuid = 0;
-    uint32_t reqLevel = 0;
-    bool sendExtraData = false;
-
-    if (SrcItem != nullptr)
-        srcGuid = SrcItem->getGuid();
-
-    if (DstItem != nullptr)
-        destGuid = DstItem->getGuid();
-
-    if (Error == INV_ERR_YOU_MUST_REACH_LEVEL_N || Error == INV_ERR_PURCHASE_LEVEL_TOO_LOW)
-    {
-        if (SrcItem)
-        {
-            sendExtraData = true;
-            reqLevel = SrcItem->getItemProperties()->RequiredLevel;
-        }
-    }
-
-    m_pOwner->SendPacket(SmsgInventoryChangeFailure(Error, srcGuid, destGuid, reqLevel, sendExtraData).serialise().get());
-}
-
 void ItemInterface::EmptyBuyBack()
 {
     for (uint32 j = 0; j < MAX_BUYBACK_SLOT; ++j)
@@ -4171,7 +4181,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
 
     if (DstInvSlot == SrcSlot && SrcInvSlot == -1)   // player trying to add self container to self container slots
     {
-        BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEMS_CANT_BE_SWAPPED);
+        buildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEMS_CANT_BE_SWAPPED);
         return false;
     }
 
@@ -4198,7 +4208,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
                 {
                     if (!IsBagSlot(SrcSlot))
                     {
-                        BuildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
+                        buildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
                         return false;
                     }
                 }
@@ -4208,7 +4218,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
             {
                 if ((error = CanEquipItemInSlot2(SrcInvSlot, SrcSlot, DstItem)) != 0)
                 {
-                    BuildInventoryChangeError(SrcItem, DstItem, error);
+                    buildInventoryChangeError(SrcItem, DstItem, error);
                     return false;
                 }
             }
@@ -4219,14 +4229,14 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
             {
                 if (static_cast<Container*>(DstItem)->HasItems())
                 {
-                    BuildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
+                    buildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
                     return false;
                 }
             }
 
             if ((error = CanEquipItemInSlot2(SrcInvSlot, SrcInvSlot, DstItem)) != 0)
             {
-                BuildInventoryChangeError(SrcItem, DstItem, error);
+                buildInventoryChangeError(SrcItem, DstItem, error);
                 return false;
             }
         }
@@ -4243,7 +4253,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
                 {
                     if (!IsBagSlot(DstSlot))
                     {
-                        BuildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
+                        buildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
                         return false;
                     }
                 }
@@ -4253,7 +4263,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
             {
                 if ((error = CanEquipItemInSlot2(DstInvSlot, DstSlot, SrcItem)) != 0)
                 {
-                    BuildInventoryChangeError(SrcItem, DstItem, error);
+                    buildInventoryChangeError(SrcItem, DstItem, error);
                     return false;
                 }
             }
@@ -4264,14 +4274,14 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
             {
                 if (static_cast<Container*>(SrcItem)->HasItems())
                 {
-                    BuildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
+                    buildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
                     return false;
                 }
             }
 
             if ((error = CanEquipItemInSlot2(DstInvSlot, DstInvSlot, SrcItem)) != 0)
             {
-                BuildInventoryChangeError(SrcItem, DstItem, error);
+                buildInventoryChangeError(SrcItem, DstItem, error);
                 return false;
             }
         }
@@ -4339,7 +4349,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
                 bool result = SafeFullRemoveItemFromSlot(SrcInvSlot, SrcSlot);
                 if (!result)
                 {
-                    BuildInventoryChangeError(SrcItem, DstItem, INV_ERR_ITEM_CANT_STACK);
+                    buildInventoryChangeError(SrcItem, DstItem, INV_ERR_ITEM_CANT_STACK);
                 }
                 return false;
             }

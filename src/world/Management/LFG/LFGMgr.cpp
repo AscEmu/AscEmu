@@ -1995,7 +1995,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                         auto slotresult = player->getItemInterface()->FindFreeInventorySlot(proto);
                         if (!slotresult.Result)
                         {
-                            player->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                            player->getItemInterface()->buildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                         }
                         else
                         {
@@ -2089,7 +2089,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                         auto slotresult = player->getItemInterface()->FindFreeInventorySlot(proto);
                         if (!slotresult.Result)
                         {
-                            player->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                            player->getItemInterface()->buildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                         }
                         else
                         {

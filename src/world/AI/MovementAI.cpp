@@ -36,7 +36,7 @@ void MovementAI::moveTo(LocationVector destination)
     m_origin = m_owner->GetPosition();
     m_origin_time = Util::getMSTime();
     m_destination = destination;
-    m_destination_time = m_origin_time + calculateTimeToReachPoint(m_owner->getRunSpeed(), destination);
+    m_destination_time = m_origin_time + calculateTimeToReachPoint(m_owner->getSpeedRate(TYPE_RUN, true), destination);
     m_diff = 0;
     m_moving = true;
     sendMovePacket();

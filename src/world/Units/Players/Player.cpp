@@ -52,16 +52,23 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/AuraInterruptFlags.h"
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Definitions/Spec.h"
+#include "Spell/Definitions/SpellDamageType.h"
 #include "Spell/Definitions/SpellFailure.h"
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Spell/Spell.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/SpellHelpers.h"
 #include "Spell/SpellMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Units/UnitDefines.hpp"
 
 using namespace AscEmu::Packets;
+
+using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
+using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
+using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
+using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
 
 TradeData::TradeData(Player* player, Player* trader)
 {
@@ -207,8 +214,8 @@ void Player::resendSpeed()
 {
     if (resend_speed)
     {
-        setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
-        setSpeedForType(TYPE_FLY, getSpeedForType(TYPE_FLY));
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
+        setSpeedRate(TYPE_FLY, getSpeedRate(TYPE_FLY, true), true);
         resend_speed = false;
     }
 }
@@ -1565,10 +1572,14 @@ void Player::setInitialPlayerData()
 
         setPowerCostModifier(i, 0);
         setPowerCostMultiplier(i, 0.0f);
-#if VERSION_STRING >= WotLK
-        setNoReagentCost(i, 0);
-#endif
     }
+
+#if VERSION_STRING >= WotLK
+    for (uint8_t i = 0; i < WOWPLAYER_NO_REAGENT_COST_COUNT; ++i)
+    {
+        setNoReagentCost(i, 0);
+    }
+#endif
 
     for (uint8_t i = 0; i < MAX_PCR; ++i)
         setCombatRating(i, 0);
@@ -1776,6 +1787,137 @@ bool Player::canDualWield2H() const
 void Player::setDualWield2H(bool enable)
 {
     m_canDualWield2H = enable;
+}
+
+bool Player::hasSpellOnCooldown(SpellInfo const* spellInfo)
+{
+    const auto curTime = Util::getMSTime();
+
+    // Check category cooldown
+    if (spellInfo->getCategory() > 0)
+    {
+        const auto itr = m_cooldownMap[COOLDOWN_TYPE_CATEGORY].find(spellInfo->getCategory());
+        if (itr != m_cooldownMap[COOLDOWN_TYPE_CATEGORY].end())
+        {
+            if (curTime < itr->second.ExpireTime)
+                return true;
+
+            // Cooldown has expired
+            m_cooldownMap[COOLDOWN_TYPE_CATEGORY].erase(itr);
+        }
+    }
+
+    // Check spell cooldown
+    const auto itr = m_cooldownMap[COOLDOWN_TYPE_SPELL].find(spellInfo->getId());
+    if (itr != m_cooldownMap[COOLDOWN_TYPE_SPELL].end())
+    {
+        if (curTime < itr->second.ExpireTime)
+            return true;
+
+        // Cooldown has expired
+        m_cooldownMap[COOLDOWN_TYPE_SPELL].erase(itr);
+    }
+
+    return false;
+}
+
+bool Player::hasSpellGlobalCooldown(SpellInfo const* spellInfo)
+{
+    const auto curTime = Util::getMSTime();
+
+    // Check for cooldown cheat as well
+    if (spellInfo->getStartRecoveryTime() > 0 && m_globalCooldown > 0 && !m_cheats.CooldownCheat)
+    {
+        if (curTime < m_globalCooldown)
+            return true;
+
+        // Global cooldown has expired
+        m_globalCooldown = 0;
+    }
+
+    return false;
+}
+
+void Player::addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster, int32_t cooldownTime/* = 0*/)
+{
+    const auto curTime = Util::getMSTime();
+    const auto spellId = spellInfo->getId();
+
+    // Set category cooldown
+    int32_t spellCategoryCooldown = static_cast<int32_t>(spellInfo->getCategoryRecoveryTime());
+    if (spellCategoryCooldown > 0 && spellInfo->getCategory() > 0)
+    {
+        // Add cooldown modifiers
+        spellModFlatIntValue(SM_FCooldownTime, &spellCategoryCooldown, spellInfo->getSpellFamilyFlags());
+        spellModPercentageIntValue(SM_PCooldownTime, &spellCategoryCooldown, spellInfo->getSpellFamilyFlags());
+
+        AddCategoryCooldown(spellInfo->getCategory(), spellCategoryCooldown + curTime, spellId, itemCaster != nullptr ? itemCaster->getEntry() : 0);
+    }
+
+    // Set spell cooldown
+    int32_t spellCooldown = cooldownTime == 0 ? static_cast<int32_t>(spellInfo->getRecoveryTime()) : cooldownTime;
+    if (spellCooldown > 0)
+    {
+        // Add cooldown modifers
+        spellModFlatIntValue(SM_FCooldownTime, &spellCooldown, spellInfo->getSpellFamilyFlags());
+        spellModPercentageIntValue(SM_PCooldownTime, &spellCooldown, spellInfo->getSpellFamilyFlags());
+
+        _Cooldown_Add(COOLDOWN_TYPE_SPELL, spellId, spellCooldown + curTime, spellId, itemCaster != nullptr ? itemCaster->getEntry() : 0);
+    }
+
+    // Send cooldown packet
+    sendSpellCooldownPacket(spellInfo, spellCooldown > spellCategoryCooldown ? spellCooldown : spellCategoryCooldown, false);
+}
+
+void Player::addGlobalCooldown(SpellInfo const* spellInfo, const bool sendPacket/* = false*/)
+{
+    if (spellInfo->getStartRecoveryTime() == 0 && spellInfo->getStartRecoveryCategory() == 0)
+        return;
+
+    const auto curTime = Util::getMSTime();
+    auto gcdDuration = static_cast<int32_t>(spellInfo->getStartRecoveryTime());
+
+    // Apply global cooldown modifiers
+    spellModFlatIntValue(SM_FGlobalCooldown, &gcdDuration, spellInfo->getSpellFamilyFlags());
+    spellModPercentageIntValue(SM_PGlobalCooldown, &gcdDuration, spellInfo->getSpellFamilyFlags());
+
+    // Apply haste modifier only to magic spells
+    if (spellInfo->getStartRecoveryCategory() == 133 && spellInfo->getDmgClass() == SPELL_DMG_TYPE_MAGIC &&
+        !(spellInfo->getAttributes() & ATTRIBUTES_RANGED) && !(spellInfo->getAttributes() & ATTRIBUTES_ABILITY))
+    {
+        gcdDuration = static_cast<int32_t>(gcdDuration * getModCastSpeed());
+
+        // Global cooldown cannot be shorter than 1 second or longer than 1.5 seconds
+        gcdDuration = std::max(gcdDuration, 1000);
+        gcdDuration = std::min(gcdDuration, 1500);
+    }
+
+    if (gcdDuration <= 0)
+        return;
+
+    m_globalCooldown = curTime + gcdDuration;
+
+    if (sendPacket)
+        sendSpellCooldownPacket(spellInfo, 0, true);
+}
+
+void Player::sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t duration, const bool isGcd)
+{
+    // Initialize packet size
+#if VERSION_STRING == Classic
+    const uint8_t packetSize = 16;
+#else
+    const uint8_t packetSize = 17;
+#endif
+
+    WorldPacket data(SMSG_SPELL_COOLDOWN, packetSize);
+    data << GetNewGUID();
+#if VERSION_STRING >= TBC
+    data << uint8_t(isGcd ? 1 : 0); // flags
+#endif
+    data << uint32_t(spellInfo->getId());
+    data << uint32_t(duration);
+    SendMessageToSet(&data, true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

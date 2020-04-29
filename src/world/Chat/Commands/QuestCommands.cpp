@@ -379,7 +379,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                             auto slotresult = plr->getItemInterface()->FindFreeInventorySlot(proto);
                             if (!slotresult.Result)
                             {
-                                plr->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                                plr->getItemInterface()->buildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                             }
                             else
                             {
@@ -418,7 +418,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                         auto slotresult = plr->getItemInterface()->FindFreeInventorySlot(proto);
                         if (!slotresult.Result)
                         {
-                            plr->getItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                            plr->getItemInterface()->buildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                         }
                         else
                         {

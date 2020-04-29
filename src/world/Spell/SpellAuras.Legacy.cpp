@@ -53,7 +53,7 @@ using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
 
 pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
 {
-    &Aura::SpellAuraNULL,                                                   //   0 SPELL_AURA_NONE
+    &Aura::SpellAuraNULL,                                                   //   0 SPELL_AURA_NULL_0
     &Aura::SpellAuraBindSight,                                              //   1 SPELL_AURA_BIND_SIGHT
     &Aura::SpellAuraModPossess,                                             //   2 SPELL_AURA_MOD_POSSESS
     &Aura::SpellAuraPeriodicDamage,                                         //   3 SPELL_AURA_PERIODIC_DAMAGE
@@ -62,15 +62,15 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraModCharm,                                               //   6 SPELL_AURA_MOD_CHARM
     &Aura::SpellAuraModFear,                                                //   7 SPELL_AURA_MOD_FEAR
     &Aura::SpellAuraPeriodicHeal,                                           //   8 SPELL_AURA_PERIODIC_HEAL
-    &Aura::SpellAuraModAttackSpeed,                                         //   9 SPELL_AURA_MOD_ATTACKSPEED
-    &Aura::SpellAuraModThreatGenerated,                                     //  10 SPELL_AURA_MOD_THREAT
+    &Aura::SpellAuraModAttackSpeed,                                         //   9 SPELL_AURA_MOD_ATTACK_SPEED
+    &Aura::SpellAuraModThreatGenerated,                                     //  10 SPELL_AURA_MOD_THREAT_GENERATED
     &Aura::SpellAuraModTaunt,                                               //  11 SPELL_AURA_MOD_TAUNT
     &Aura::SpellAuraModStun,                                                //  12 SPELL_AURA_MOD_STUN
     &Aura::SpellAuraModDamageDone,                                          //  13 SPELL_AURA_MOD_DAMAGE_DONE
     &Aura::SpellAuraModDamageTaken,                                         //  14 SPELL_AURA_MOD_DAMAGE_TAKEN
     &Aura::SpellAuraDamageShield,                                           //  15 SPELL_AURA_DAMAGE_SHIELD
     &Aura::SpellAuraModStealth,                                             //  16 SPELL_AURA_MOD_STEALTH
-    &Aura::SpellAuraModStealthDetection,                                    //  17 SPELL_AURA_MOD_DETECT
+    &Aura::SpellAuraModStealthDetection,                                    //  17 SPELL_AURA_MOD_STEALTH_DETECTION
     &Aura::SpellAuraModInvisibility,                                        //  18 SPELL_AURA_MOD_INVISIBILITY
     &Aura::SpellAuraModInvisibilityDetection,                               //  19 SPELL_AURA_MOD_INVISIBILITY_DETECTION
     &Aura::SpellAuraModTotalHealthRegenPct,                                 //  20 SPELL_AURA_MOD_TOTAL_HEALTH_REGEN_PCT
@@ -90,58 +90,58 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraModIncreaseHealth,                                      //  34 SPELL_AURA_MOD_INCREASE_HEALTH
     &Aura::SpellAuraModIncreaseEnergy,                                      //  35 SPELL_AURA_MOD_INCREASE_ENERGY
     &Aura::SpellAuraModShapeshift,                                          //  36 SPELL_AURA_MOD_SHAPESHIFT
-    &Aura::SpellAuraModEffectImmunity,                                      //  37 SPELL_AURA_EFFECT_IMMUNITY
-    &Aura::SpellAuraModStateImmunity,                                       //  38 SPELL_AURA_STATE_IMMUNITY
-    &Aura::SpellAuraModSchoolImmunity,                                      //  39 SPELL_AURA_SCHOOL_IMMUNITY
-    &Aura::SpellAuraModDmgImmunity,                                         //  40 SPELL_AURA_DAMAGE_IMMUNITY
-    &Aura::SpellAuraModDispelImmunity,                                      //  41 SPELL_AURA_DISPEL_IMMUNITY
+    &Aura::SpellAuraModEffectImmunity,                                      //  37 SPELL_AURA_MOD_EFFECT_IMMUNITY
+    &Aura::SpellAuraModStateImmunity,                                       //  38 SPELL_AURA_MOD_STATE_IMMUNITY
+    &Aura::SpellAuraModSchoolImmunity,                                      //  39 SPELL_AURA_MOD_SCHOOL_IMMUNITY
+    &Aura::SpellAuraModDmgImmunity,                                         //  40 SPELL_AURA_MOD_DMG_IMMUNITY
+    &Aura::SpellAuraModDispelImmunity,                                      //  41 SPELL_AURA_MOD_DISPEL_IMMUNITY
     &Aura::SpellAuraProcTriggerSpell,                                       //  42 SPELL_AURA_PROC_TRIGGER_SPELL
     &Aura::SpellAuraProcTriggerDamage,                                      //  43 SPELL_AURA_PROC_TRIGGER_DAMAGE
     &Aura::SpellAuraTrackCreatures,                                         //  44 SPELL_AURA_TRACK_CREATURES
     &Aura::SpellAuraTrackResources,                                         //  45 SPELL_AURA_TRACK_RESOURCES
-    &Aura::SpellAuraNULL,                                                   //  46 SPELL_AURA_MOD_PARRY_SKILL, obsolete? not used in 1.12.1 spell.dbc
-    &Aura::SpellAuraModParryPerc,                                           //  47 SPELL_AURA_MOD_PARRY_PERCENT
-    &Aura::SpellAuraNULL,                                                   //  48 SPELL_AURA_MOD_DODGE_SKILL obsolete?
-    &Aura::SpellAuraModDodgePerc,                                           //  49 SPELL_AURA_MOD_DODGE_PERCENT
-    &Aura::SpellAuraNULL,                                                   //  50 SPELL_AURA_MOD_BLOCK_SKILL obsolete?,
-    &Aura::SpellAuraModBlockPerc,                                           //  51 SPELL_AURA_MOD_BLOCK_PERCENT
-    &Aura::SpellAuraModCritPerc,                                            //  52 SPELL_AURA_MOD_CRIT_PERCENT
+    &Aura::SpellAuraNULL,                                                   //  46 SPELL_AURA_NULL_46
+    &Aura::SpellAuraModParryPerc,                                           //  47 SPELL_AURA_MOD_PARRY_PERC
+    &Aura::SpellAuraNULL,                                                   //  48 SPELL_AURA_NULL_48
+    &Aura::SpellAuraModDodgePerc,                                           //  49 SPELL_AURA_MOD_DODGE_PERC
+    &Aura::SpellAuraNULL,                                                   //  50 SPELL_AURA_NULL_50
+    &Aura::SpellAuraModBlockPerc,                                           //  51 SPELL_AURA_MOD_BLOCK_PERC
+    &Aura::SpellAuraModCritPerc,                                            //  52 SPELL_AURA_MOD_CRIT_PERC
     &Aura::SpellAuraPeriodicLeech,                                          //  53 SPELL_AURA_PERIODIC_LEECH
     &Aura::SpellAuraModHitChance,                                           //  54 SPELL_AURA_MOD_HIT_CHANCE
     &Aura::SpellAuraModSpellHitChance,                                      //  55 SPELL_AURA_MOD_SPELL_HIT_CHANCE
     &Aura::SpellAuraTransform,                                              //  56 SPELL_AURA_TRANSFORM
     &Aura::SpellAuraModSpellCritChance,                                     //  57 SPELL_AURA_MOD_SPELL_CRIT_CHANCE
-    &Aura::SpellAuraIncreaseSwimSpeed,                                      //  58 SPELL_AURA_MOD_INCREASE_SWIM_SPEED
-    &Aura::SpellAuraModCratureDmgDone,                                      //  59 SPELL_AURA_MOD_DAMAGE_DONE_CREATURE
-    &Aura::SpellAuraPacifySilence,                                          //  60 SPELL_AURA_MOD_PACIFY_SILENCE
+    &Aura::SpellAuraIncreaseSwimSpeed,                                      //  58 SPELL_AURA_INCREASE_SWIM_SPEED
+    &Aura::SpellAuraModCratureDmgDone,                                      //  59 SPELL_AURA_MOD_CRATURE_DMG_DONE
+    &Aura::SpellAuraPacifySilence,                                          //  60 SPELL_AURA_PACIFY_SILENCE
     &Aura::SpellAuraModScale,                                               //  61 SPELL_AURA_MOD_SCALE
     &Aura::SpellAuraPeriodicHealthFunnel,                                   //  62 SPELL_AURA_PERIODIC_HEALTH_FUNNEL
-    &Aura::SpellAuraNULL,                                                   //  63 SPELL_AURA_PERIODIC_MANA_FUNNEL obsolete?
-    &Aura::SpellAuraPeriodicManaLeech,                                      //  64 SPELL_AURA_PERIODIC_MANA_LEECH
+    &Aura::SpellAuraNULL,                                                   //  63 SPELL_AURA_NULL_63
+    &Aura::SpellAuraPeriodicManaLeech,                                      //  64 SPELL_AURA_PERIODIC_MANALEECH
     &Aura::SpellAuraModCastingSpeed,                                        //  65 SPELL_AURA_MOD_CASTING_SPEED
     &Aura::SpellAuraFeignDeath,                                             //  66 SPELL_AURA_FEIGN_DEATH
     &Aura::SpellAuraModDisarm,                                              //  67 SPELL_AURA_MOD_DISARM
     &Aura::SpellAuraModStalked,                                             //  68 SPELL_AURA_MOD_STALKED
     &Aura::SpellAuraSchoolAbsorb,                                           //  69 SPELL_AURA_SCHOOL_ABSORB
-    &Aura::SpellAuraNULL,                                                   //  70 SPELL_AURA_EXTRA_ATTACKS obsolete?
+    &Aura::SpellAuraNULL,                                                   //  70 SPELL_AURA_NULL_70
     &Aura::SpellAuraModSpellCritChanceSchool,                               //  71 SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL
     &Aura::SpellAuraModPowerCost,                                           //  72 SPELL_AURA_MOD_POWER_COST
     &Aura::SpellAuraModPowerCostSchool,                                     //  73 SPELL_AURA_MOD_POWER_COST_SCHOOL
     &Aura::SpellAuraReflectSpellsSchool,                                    //  74 SPELL_AURA_REFLECT_SPELLS_SCHOOL
     &Aura::SpellAuraModLanguage,                                            //  75 SPELL_AURA_MOD_LANGUAGE
-    &Aura::SpellAuraAddFarSight,                                            //  76 SPELL_AURA_FAR_SIGHT
+    &Aura::SpellAuraAddFarSight,                                            //  76 SPELL_AURA_ADD_FAR_SIGHT
     &Aura::SpellAuraMechanicImmunity,                                       //  77 SPELL_AURA_MECHANIC_IMMUNITY
     &Aura::SpellAuraMounted,                                                //  78 SPELL_AURA_MOUNTED
-    &Aura::SpellAuraModDamagePercDone,                                      //  79 SPELL_AURA_MOD_DAMAGE_PERCENT_DONE
-    &Aura::SpellAuraModPercStat,                                            //  80 SPELL_AURA_MOD_PERCENT_STAT
+    &Aura::SpellAuraModDamagePercDone,                                      //  79 SPELL_AURA_MOD_DAMAGE_PERC_DONE
+    &Aura::SpellAuraModPercStat,                                            //  80 SPELL_AURA_MOD_PERC_STAT
     &Aura::SpellAuraSplitDamage,                                            //  81 SPELL_AURA_SPLIT_DAMAGE
     &Aura::SpellAuraWaterBreathing,                                         //  82 SPELL_AURA_WATER_BREATHING
     &Aura::SpellAuraModBaseResistance,                                      //  83 SPELL_AURA_MOD_BASE_RESISTANCE
     &Aura::SpellAuraModRegen,                                               //  84 SPELL_AURA_MOD_REGEN
     &Aura::SpellAuraModPowerRegen,                                          //  85 SPELL_AURA_MOD_POWER_REGEN
     &Aura::SpellAuraChannelDeathItem,                                       //  86 SPELL_AURA_CHANNEL_DEATH_ITEM
-    &Aura::SpellAuraModDamagePercTaken,                                     //  87 SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN
-    &Aura::SpellAuraModRegenPercent,                                        //  88 SPELL_AURA_MOD_PERCENT_REGEN
+    &Aura::SpellAuraModDamagePercTaken,                                     //  87 SPELL_AURA_MOD_DAMAGE_PERC_TAKEN
+    &Aura::SpellAuraModRegenPercent,                                        //  88 SPELL_AURA_MOD_REGEN_PERCENT
     &Aura::SpellAuraPeriodicDamagePercent,                                  //  89 SPELL_AURA_PERIODIC_DAMAGE_PERCENT
     &Aura::SpellAuraModResistChance,                                        //  90 SPELL_AURA_MOD_RESIST_CHANCE
     &Aura::SpellAuraModDetectRange,                                         //  91 SPELL_AURA_MOD_DETECT_RANGE
@@ -149,11 +149,11 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraModUnattackable,                                        //  93 SPELL_AURA_MOD_UNATTACKABLE
     &Aura::SpellAuraInterruptRegen,                                         //  94 SPELL_AURA_INTERRUPT_REGEN
     &Aura::SpellAuraGhost,                                                  //  95 SPELL_AURA_GHOST
-    &Aura::SpellAuraMagnet,                                                 //  96 SPELL_AURA_SPELL_MAGNET
+    &Aura::SpellAuraMagnet,                                                 //  96 SPELL_AURA_MAGNET
     &Aura::SpellAuraManaShield,                                             //  97 SPELL_AURA_MANA_SHIELD
-    &Aura::SpellAuraSkillTalent,                                            //  98 SPELL_AURA_MOD_SKILL_TALENT
+    &Aura::SpellAuraSkillTalent,                                            //  98 SPELL_AURA_SKILL_TALENT
     &Aura::SpellAuraModAttackPower,                                         //  99 SPELL_AURA_MOD_ATTACK_POWER
-    &Aura::SpellAuraVisible,                                                // 100 SPELL_AURA_AURAS_VISIBLE
+    &Aura::SpellAuraVisible,                                                // 100 SPELL_AURA_VISIBLE
     &Aura::SpellAuraModResistancePCT,                                       // 101 SPELL_AURA_MOD_RESISTANCE_PCT
     &Aura::SpellAuraModCreatureAttackPower,                                 // 102 SPELL_AURA_MOD_CREATURE_ATTACK_POWER
     &Aura::SpellAuraModTotalThreat,                                         // 103 SPELL_AURA_MOD_TOTAL_THREAT
@@ -161,592 +161,645 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraFeatherFall,                                            // 105 SPELL_AURA_FEATHER_FALL
     &Aura::SpellAuraHover,                                                  // 106 SPELL_AURA_HOVER
     &Aura::SpellAuraAddFlatModifier,                                        // 107 SPELL_AURA_ADD_FLAT_MODIFIER
-    &Aura::SpellAuraAddPctMod,                                              // 108 SPELL_AURA_ADD_PCT_MODIFIER
+    &Aura::SpellAuraAddPctMod,                                              // 108 SPELL_AURA_ADD_PCT_MOD
     &Aura::SpellAuraAddClassTargetTrigger,                                  // 109 SPELL_AURA_ADD_CLASS_TARGET_TRIGGER
-    &Aura::SpellAuraModPowerRegPerc,                                        // 110 SPELL_AURA_MOD_POWER_REGEN_PERCENT
-    &Aura::SpellAuraNULL,                                                   // 111 SPELL_AURA_ADD_CASTER_HIT_TRIGGER
+    &Aura::SpellAuraModPowerRegPerc,                                        // 110 SPELL_AURA_MOD_POWER_REG_PERC
+    &Aura::SpellAuraNULL,                                                   // 111 SPELL_AURA_NULL_111
     &Aura::SpellAuraOverrideClassScripts,                                   // 112 SPELL_AURA_OVERRIDE_CLASS_SCRIPTS
     &Aura::SpellAuraModRangedDamageTaken,                                   // 113 SPELL_AURA_MOD_RANGED_DAMAGE_TAKEN
-    &Aura::SpellAuraNULL,                                                   // 114 SPELL_AURA_MOD_RANGED_DAMAGE_TAKEN_PCT obadac na mangosie
+    &Aura::SpellAuraNULL,                                                   // 114 SPELL_AURA_NULL_114
     &Aura::SpellAuraModHealing,                                             // 115 SPELL_AURA_MOD_HEALING
     &Aura::SpellAuraIgnoreRegenInterrupt,                                   // 116 SPELL_AURA_IGNORE_REGEN_INTERRUPT
     &Aura::SpellAuraModMechanicResistance,                                  // 117 SPELL_AURA_MOD_MECHANIC_RESISTANCE
     &Aura::SpellAuraModHealingPCT,                                          // 118 SPELL_AURA_MOD_HEALING_PCT
-    &Aura::SpellAuraNULL,                                                   // 119 SPELL_AURA_SHARE_PET_TRACKING obsolete
+    &Aura::SpellAuraNULL,                                                   // 119 SPELL_AURA_NULL_119
     &Aura::SpellAuraUntrackable,                                            // 120 SPELL_AURA_UNTRACKABLE
-    &Aura::SpellAuraEmphaty,                                                // 121 SPELL_AURA_EMPATHY
-    &Aura::SpellAuraModOffhandDamagePCT,                                    // 122 SPELL_AURA_MOD_OFFHAND_DAMAGE_PCT
-    &Aura::SpellAuraModPenetration,                                         // 123 SPELL_AURA_MOD_POWER_COST_PCT --> armor penetration & spell penetration, NOT POWER COST!
+    &Aura::SpellAuraEmphaty,                                                // 121 SPELL_AURA_EMPHATY
+    &Aura::SpellAuraModOffhandDamagePCT,                                    // 122 SPELL_AURA_MOD_OFFHANDDAMAGE_PCT
+    &Aura::SpellAuraModPenetration,                                         // 123 SPELL_AURA_MOD_PENETRATION
     &Aura::SpellAuraModRangedAttackPower,                                   // 124 SPELL_AURA_MOD_RANGED_ATTACK_POWER
     &Aura::SpellAuraModMeleeDamageTaken,                                    // 125 SPELL_AURA_MOD_MELEE_DAMAGE_TAKEN
     &Aura::SpellAuraModMeleeDamageTakenPct,                                 // 126 SPELL_AURA_MOD_MELEE_DAMAGE_TAKEN_PCT
-    &Aura::SpellAuraRAPAttackerBonus,                                       // 127 SPELL_AURA_RANGED_ATTACK_POWER_ATTACKER_BONUS
+    &Aura::SpellAuraRAPAttackerBonus,                                       // 127 SPELL_AURA_RAP_ATTACKER_BONUS
     &Aura::SpellAuraModPossessPet,                                          // 128 SPELL_AURA_MOD_POSSESS_PET
     &Aura::SpellAuraModIncreaseSpeedAlways,                                 // 129 SPELL_AURA_MOD_INCREASE_SPEED_ALWAYS
-    &Aura::SpellAuraModIncreaseMountedSpeed,                                // 130 SPELL_AURA_MOD_MOUNTED_SPEED_ALWAYS
+    &Aura::SpellAuraModIncreaseMountedSpeed,                                // 130 SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED
     &Aura::SpellAuraModCreatureRangedAttackPower,                           // 131 SPELL_AURA_MOD_CREATURE_RANGED_ATTACK_POWER
-    &Aura::SpellAuraModIncreaseEnergyPerc,                                  // 132 SPELL_AURA_MOD_INCREASE_ENERGY_PERCENT
-    &Aura::SpellAuraModIncreaseHealthPerc,                                  // 133 SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT
-    &Aura::SpellAuraModManaRegInterrupt,                                    // 134 SPELL_AURA_MOD_MANA_REGEN_INTERRUPT
+    &Aura::SpellAuraModIncreaseEnergyPerc,                                  // 132 SPELL_AURA_MOD_INCREASE_ENERGY_PERC
+    &Aura::SpellAuraModIncreaseHealthPerc,                                  // 133 SPELL_AURA_MOD_INCREASE_HEALTH_PERC
+    &Aura::SpellAuraModManaRegInterrupt,                                    // 134 SPELL_AURA_MOD_MANA_REG_INTERRUPT
     &Aura::SpellAuraModHealingDone,                                         // 135 SPELL_AURA_MOD_HEALING_DONE
-    &Aura::SpellAuraModHealingDonePct,                                      // 136 SPELL_AURA_MOD_HEALING_DONE_PERCENT
-    &Aura::SpellAuraModTotalStatPerc,                                       // 137 SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE
+    &Aura::SpellAuraModHealingDonePct,                                      // 136 SPELL_AURA_MOD_HEALING_DONE_PCT
+    &Aura::SpellAuraModTotalStatPerc,                                       // 137 SPELL_AURA_MOD_TOTAL_STAT_PERC
     &Aura::SpellAuraModHaste,                                               // 138 SPELL_AURA_MOD_HASTE
     &Aura::SpellAuraForceReaction,                                          // 139 SPELL_AURA_FORCE_REACTION
     &Aura::SpellAuraModRangedHaste,                                         // 140 SPELL_AURA_MOD_RANGED_HASTE
     &Aura::SpellAuraModRangedAmmoHaste,                                     // 141 SPELL_AURA_MOD_RANGED_AMMO_HASTE
-    &Aura::SpellAuraModBaseResistancePerc,                                  // 142 SPELL_AURA_MOD_BASE_RESISTANCE_PCT
+    &Aura::SpellAuraModBaseResistancePerc,                                  // 142 SPELL_AURA_MOD_BASE_RESISTANCE_PERC
     &Aura::SpellAuraModResistanceExclusive,                                 // 143 SPELL_AURA_MOD_RESISTANCE_EXCLUSIVE
     &Aura::SpellAuraSafeFall,                                               // 144 SPELL_AURA_SAFE_FALL
-    &Aura::SpellAuraNULL,                                                   // 145 SPELL_AURA_CHARISMA obsolete?
-    &Aura::SpellAuraNULL,                                                   // 146 SPELL_AURA_PERSUADED obsolete
-    &Aura::SpellAuraNULL,                                                   // 147 SPELL_AURA_ADD_CREATURE_IMMUNITY http://wow.allakhazam.com/db/spell.html?wspell=36798
+    &Aura::SpellAuraNULL,                                                   // 145 SPELL_AURA_NULL_145
+    &Aura::SpellAuraNULL,                                                   // 146 SPELL_AURA_NULL_146
+    &Aura::SpellAuraNULL,                                                   // 147 SPELL_AURA_NULL_147
     &Aura::SpellAuraRetainComboPoints,                                      // 148 SPELL_AURA_RETAIN_COMBO_POINTS
-    &Aura::SpellAuraResistPushback,                                         // 149 SPELL_AURA_RESIST_PUSHBACK Resist Pushback //Simply resist spell casting delay
-    &Aura::SpellAuraModShieldBlockPCT,                                      // 150 SPELL_AURA_MOD_SHIELD_BLOCK_PCT Mod Shield Absorbed dmg %
-    &Aura::SpellAuraTrackStealthed,                                         // 151 SPELL_AURA_TRACK_STEALTHED Track Stealthed
-    &Aura::SpellAuraModDetectedRange,                                       // 152 SPELL_AURA_MOD_DETECTED_RANGE Mod Detected Range
-    &Aura::SpellAuraSplitDamageFlat,                                        // 153 SPELL_AURA_SPLIT_DAMAGE_FLAT Split Damage Flat
-    &Aura::SpellAuraModStealthLevel,                                        // 154 SPELL_AURA_MOD_STEALTH_LEVEL Stealth Level Modifier
-    &Aura::SpellAuraModUnderwaterBreathing,                                 // 155 SPELL_AURA_MOD_WATER_BREATHING Mod Water Breathing
-    &Aura::SpellAuraModReputationAdjust,                                    // 156 SPELL_AURA_MOD_REPUTATION_ADJUST Mod Reputation Gain
-    &Aura::SpellAuraNULL,                                                   // 157 SPELL_AURA_PET_DAMAGE_MULTI Mod Pet Damage
-    &Aura::SpellAuraModBlockValue,                                          // 158 SPELL_AURA_MOD_SHIELD_BLOCKVALUE used Apply Aura: Mod Shield Block //http://www.thottbot.com/?sp=25036
-    &Aura::SpellAuraNoPVPCredit,                                            // 159 SPELL_AURA_NO_PVP_CREDIT used Apply Aura: No PVP Credit http://www.thottbot.com/?sp=2479
-    &Aura::SpellAuraNULL,                                                   // 160 SPELL_AURA_MOD_AOE_AVOIDANCE Apply Aura: Mod Side/Rear PBAE Damage Taken %//used http://www.thottbot.com/?sp=23198
-    &Aura::SpellAuraModHealthRegInCombat,                                   // 161 SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT
-    &Aura::SpellAuraPowerBurn,                                              // 162 missing used //Apply Aura: Power Burn (Mana) //http://www.thottbot.com/?sp=19659
-    &Aura::SpellAuraModCritDmgPhysical,                                     // 163 missing Apply Aura: Mod Crit Damage Bonus (Physical)
-    &Aura::SpellAuraNULL,                                                   // 164 missing used //test spell
-    &Aura::SpellAuraAPAttackerBonus,                                        // 165 SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS // Melee AP Attacker Bonus
-    &Aura::SpellAuraModPAttackPower,                                        // 166 missing used //Apply Aura: Mod Attack Power % // http://www.thottbot.com/?sp=30803
-    &Aura::SpellAuraModRangedAttackPowerPct,                                // 167 missing http://www.thottbot.com/s34485
-    &Aura::SpellAuraIncreaseDamageTypePCT,                                  // 168 missing used //Apply Aura: Increase Damage % *type* //http://www.thottbot.com/?sp=24991
-    &Aura::SpellAuraIncreaseCricticalTypePCT,                               // 169 missing used //Apply Aura: Increase Critical % *type* //http://www.thottbot.com/?sp=24293
-    &Aura::SpellAuraNULL,                                                   // 170 SPELL_AURA_DETECT_AMORE //used //Apply Aura: Detect Amore //http://www.thottbot.com/?sp=26802
-    &Aura::SpellAuraIncreasePartySpeed,                                     // 171 SPELL_AURA_MOD_SPEED_NOT_STACK
-    &Aura::SpellAuraIncreaseMovementAndMountedSpeed,                        // 172 SPELL_AURA_MOD_MOUNTED_SPEED_NOT_STACK //used //Apply Aura: Increase Movement and Mounted Speed (Non-Stacking) //http://www.thottbot.com/?sp=26022 2e effect
-    &Aura::SpellAuraNULL,                                                   // 173 SPELL_AURA_ALLOW_CHAMPION_SPELLS // Apply Aura: Allow Champion Spells
-    &Aura::SpellAuraIncreaseSpellDamageByAttribute,                         // 174 SPELL_AURA_MOD_SPELL_DAMAGE_OF_STAT_PERCENT //used //Apply Aura: Increase Spell Damage by % Spirit (Spells) //http://www.thottbot.com/?sp=15031
-    &Aura::SpellAuraIncreaseHealingByAttribute,                             // 175 SPELL_AURA_MOD_SPELL_HEALING_OF_STAT_PERCENT //used //Apply Aura: Increase Spell Healing by % Spirit //http://www.thottbot.com/?sp=15031
-    &Aura::SpellAuraSpiritOfRedemption,                                     // 176 SPELL_AURA_SPIRIT_OF_REDEMPTION //used // Apply Aura: Spirit of Redemption
-    &Aura::SpellAuraNULL,                                                   // 177 SPELL_AURA_AOE_CHARM //used //Apply Aura: Area Charm // http://www.thottbot.com/?sp=26740
-    &Aura::SpellAuraNULL,                                                   // 178 missing //Apply Aura: Increase Debuff Resistance mangos
-    &Aura::SpellAuraIncreaseAttackerSpellCrit,                              // 179 SPELL_AURA_INCREASE_ATTACKER_SPELL_CRIT//Apply Aura: Increase Attacker Spell Crit % *type* //http://www.thottbot.com/?sp=12579
-    &Aura::SpellAuraNULL,                                                   // 180 missing //used //Apply Aura: Increase Spell Damage *type* //http://www.thottbot.com/?sp=29113 mangos
-    &Aura::SpellAuraNULL,                                                   // 181 missing
-    &Aura::SpellAuraIncreaseArmorByPctInt,                                  // 182 missing //used //Apply Aura: Increase Armor by % of Intellect //http://www.thottbot.com/?sp=28574  SPELL_AURA_INC_ARMOR_BY_PCT_INT
-    &Aura::SpellAuraNULL,                                                   // 183 SPELL_AURA_MOD_CRITICAL_THREAT = 183 //used //Apply Aura: Decrease Critical Threat by % (Spells) //http://www.thottbot.com/?sp=28746
-    &Aura::SpellAuraReduceAttackerMHitChance,                               // 184 //Apply Aura: Reduces Attacker Chance to Hit with Melee //http://www.thottbot.com/s31678
-    &Aura::SpellAuraReduceAttackerRHitChance,                               // 185 //Apply Aura: Reduces Attacker Chance to Hit with Ranged //http://www.thottbot.com/?sp=30895
-    &Aura::SpellAuraReduceAttackerSHitChance,                               // 186 //Apply Aura: Reduces Attacker Chance to Hit with Spells (Spells) //http://www.thottbot.com/?sp=30895
-    &Aura::SpellAuraReduceEnemyMCritChance,                                 // 187 missing //used //Apply Aura: Reduces Attacker Chance to Crit with Melee (Ranged?) //http://www.thottbot.com/?sp=30893
-    &Aura::SpellAuraReduceEnemyRCritChance,                                 // 188 missing //used //Apply Aura: Reduces Attacker Chance to Crit with Ranged (Melee?) //http://www.thottbot.com/?sp=30893
-    &Aura::SpellAuraIncreaseRating,                                         // 189 missing //Apply Aura: Increases Rating
-    &Aura::SpellAuraIncreaseRepGainPct,                                     // 190 SPELL_AURA_MOD_FACTION_REPUTATION_GAIN //used // Apply Aura: Increases Reputation Gained by % //http://www.thottbot.com/?sp=30754
-    &Aura::SpellAuraLimitSpeed,                                             // 191 missing //used // noname //http://www.thottbot.com/?sp=29894
-    &Aura::SpellAuraMeleeHaste,                                             // 192 Apply Aura: Melee Slow %
-    &Aura::SpellAuraIncreaseTimeBetweenAttacksPCT,                          // 193 Apply Aura: Increase Time Between Attacks (Melee, Ranged and Spell) by %
-    &Aura::SpellAuraNULL,                                                   // 194 &Aura::SpellAuraIncreaseSpellDamageByInt,// Apply Aura: Increase Spell Damage by % of Intellect (All)
-    &Aura::SpellAuraNULL,                                                   // 195 &Aura::SpellAuraIncreaseHealingByInt,// Apply Aura: Increase Healing by % of Intellect
-    &Aura::SpellAuraNULL,                                                   // 196 Apply Aura: Mod All Weapon Skills (6)
-    &Aura::SpellAuraModAttackerCritChance,                                  // 197 Apply Aura: Reduce Attacker Critical Hit Chance by %
-    &Aura::SpellAuraIncreaseAllWeaponSkill,                                 // 198
-    &Aura::SpellAuraIncreaseHitRate,                                        // 199 Apply Aura: Increases Spell % To Hit (Fire, Nature, Frost)
-    &Aura::SpellAuraNULL,                                                   // 200 Increases experience earned by $s1%.  Lasts $d.
-    &Aura::SpellAuraAllowFlight,                                            // 201 SPELL_AURA_FLY 201 isn't it same like 206 and 207?
-    &Aura::SpellAuraFinishingMovesCannotBeDodged,                           // 202 Finishing moves cannot be dodged - 32601, 44452
-    &Aura::SpellAuraReduceCritMeleeAttackDmg,                               // 203 Apply Aura: Reduces Attacker Critical Hit Damage with Melee by %
-    &Aura::SpellAuraReduceCritRangedAttackDmg,                              // 204 Apply Aura: Reduces Attacker Critical Hit Damage with Ranged by %
-    &Aura::SpellAuraNULL,                                                   // 205 "School" Vulnerability
-    &Aura::SpellAuraEnableFlight,                                           // 206 Take flight on a worn old carpet. - Spell 43343
-    &Aura::SpellAuraEnableFlight,                                           // 207 set fly mod flight speed?
-    &Aura::SpellAuraEnableFlightWithUnmountedSpeed,                         // 208 mod flight speed?
-    &Aura::SpellAuraNULL,                                                   // 209 mod flight speed?
-    &Aura::SpellAuraNULL,                                                   // 210 commentator's command - spell 42009
-    &Aura::SpellAuraIncreaseFlightSpeed,                                    // 211
-    &Aura::SpellAuraIncreaseRAPbyStatPct,                                   // SPELL_AURA_MOD_RANGED_ATTACK_POWER_BY_STAT_PCT //212 Apply Aura: Increase Ranged Atk Power by % of stat
-    &Aura::SpellAuraIncreaseRageFromDamageDealtPCT,                         // 213 Apply Aura: Increase Rage from Damage Dealt by %
-    &Aura::SpellAuraNULL,                                                   // 214 // Tamed Pet Passive (DND)
-    &Aura::SpellAuraRemoveReagentCost,                                      // 215 // arena preparation buff - cancel soul shard requirement?
-    &Aura::SpellAuraModCastingSpeed,                                        // 216 Increases casting time %, reuse existing handler...
-    &Aura::SpellAuraNULL,                                                   // 217 // not used
-    &Aura::SpellAuraNULL,                                                   // 218 // increases time between ranged attacks
-    &Aura::SpellAuraRegenManaStatPCT,                                       // 219 Regenerate mana equal to $s1% of your Intellect every 5 sec, even while casting
-    &Aura::SpellAuraSpellHealingStatPCT,                                    // 220 Increases your healing spells  by up to $s1% of your Strength // increases your critical strike rating by 35% of your spirit // Molten Armor only?
-    &Aura::SpellAuraNULL,                                                   // 221 Detaunt "Ignores an enemy, forcing the caster to not attack it unless there is no other target nearby. When the effect wears off, the creature will attack the most threatening target."
-    &Aura::SpellAuraNULL,                                                   // 222 // not used
-    &Aura::SpellAuraNULL,                                                   // 223 // used in one spell, cold stare 43593
-    &Aura::SpellAuraNULL,                                                   // 224 // not used
-    &Aura::SpellAuraNULL,                                                   // 225 // Prayer of Mending "Places a spell on the target that heals them for $s1 the next time they take damage.  When the heal occurs, Prayer of Mending jumps to a raid member within $a1 yards.  Jumps up to $n times and lasts $d after each jump.  This spell can only be placed on one target at a time."
-    &Aura::SpellAuraPeriodicTriggerDummy,                                   // 226 // used in brewfest spells, headless horseman, Aspect of the Viper
-    &Aura::SpellAuraPeriodicTriggerSpellWithValue,                          // 227 // Used by Mind Flay, Siege Turrets 'Machine gun' and a few other spells.
-    &Aura::SpellAuraNULL,                                                   // 228 Stealth Detection. http://www.thottbot.com/s34709 // handled in Unit::canSee
-    &Aura::SpellAuraReduceAOEDamageTaken,                                   // 229 Apply Aura:Reduces the damage your pet takes from area of effect attacks http://www.thottbot.com/s35694
-    &Aura::SpellAuraIncreaseMaxHealth,                                      // 230 Increase Max Health (commanding shout);
-    &Aura::SpellAuraProcTriggerSpell,                                       // 231 curse a target http://www.thottbot.com/s40303
-    &Aura::SpellAuraReduceEffectDuration,                                   // 232 // Reduces duration of Magic effects by $s2%. SPELL_AURA_MECHANIC_DURATION_MOD
-    &Aura::SpellAuraNULL,                                                   // 233 // Beer Goggles
-    &Aura::SpellAuraReduceEffectDuration,                                   // 234 Apply Aura: Reduces Silence or Interrupt effects, Item spell magic http://www.thottbot.com/s42184
-    &Aura::SpellAuraNULL,                                                   // 235 33206 Instantly reduces a friendly target's threat by $44416s1%, reduces all damage taken by $s1% and increases resistance to Dispel mechanics by $s2% for $d.
-    &Aura::HandleAuraControlVehicle,                                        // 236
-    &Aura::SpellAuraModHealingByAP,                                         // 237   //increase spell healing by X pct from attack power
-    &Aura::SpellAuraModSpellDamageByAP,                                     // 238   //increase spell dmg by X pct from attack power
-    &Aura::SpellAuraModScale,                                               // 239
+    &Aura::SpellAuraResistPushback,                                         // 149 SPELL_AURA_RESIST_PUSHBACK
+    &Aura::SpellAuraModShieldBlockPCT,                                      // 150 SPELL_AURA_MOD_SHIELD_BLOCK_PCT
+    &Aura::SpellAuraTrackStealthed,                                         // 151 SPELL_AURA_TRACK_STEALTHED
+    &Aura::SpellAuraModDetectedRange,                                       // 152 SPELL_AURA_MOD_DETECTED_RANGE
+    &Aura::SpellAuraSplitDamageFlat,                                        // 153 SPELL_AURA_SPLIT_DAMAGE_FLAT
+    &Aura::SpellAuraModStealthLevel,                                        // 154 SPELL_AURA_MOD_STEALTH_LEVEL
+    &Aura::SpellAuraModUnderwaterBreathing,                                 // 155 SPELL_AURA_MOD_UNDERWATER_BREATHING
+    &Aura::SpellAuraModReputationAdjust,                                    // 156 SPELL_AURA_MOD_REPUTATION_ADJUST
+    &Aura::SpellAuraNULL,                                                   // 157 SPELL_AURA_NULL_157
+    &Aura::SpellAuraModBlockValue,                                          // 158 SPELL_AURA_MOD_BLOCK_VALUE
+    &Aura::SpellAuraNoPVPCredit,                                            // 159 SPELL_AURA_NO_PVP_CREDIT
+    &Aura::SpellAuraNULL,                                                   // 160 SPELL_AURA_NULL_160
+    &Aura::SpellAuraModHealthRegInCombat,                                   // 161 SPELL_AURA_MOD_HEALTH_REG_IN_COMBAT
+    &Aura::SpellAuraPowerBurn,                                              // 162 SPELL_AURA_POWER_BURN
+    &Aura::SpellAuraModCritDmgPhysical,                                     // 163 SPELL_AURA_MOD_CRIT_DMG_PHYSICAL
+    &Aura::SpellAuraNULL,                                                   // 164 SPELL_AURA_NULL_164
+    &Aura::SpellAuraAPAttackerBonus,                                        // 165 SPELL_AURA_AP_ATTACKER_BONUS
+    &Aura::SpellAuraModPAttackPower,                                        // 166 SPELL_AURA_MOD_P_ATTACK_POWER
+    &Aura::SpellAuraModRangedAttackPowerPct,                                // 167 SPELL_AURA_MOD_RANGED_ATTACK_POWER_PCT
+    &Aura::SpellAuraIncreaseDamageTypePCT,                                  // 168 SPELL_AURA_INCREASE_DAMAGE_TYPE_PCT
+    &Aura::SpellAuraIncreaseCricticalTypePCT,                               // 169 SPELL_AURA_INCREASE_CRICTICAL_TYPE_PCT
+    &Aura::SpellAuraNULL,                                                   // 170 SPELL_AURA_NULL_170
+    &Aura::SpellAuraIncreasePartySpeed,                                     // 171 SPELL_AURA_INCREASE_PARTY_SPEED
+    &Aura::SpellAuraIncreaseMovementAndMountedSpeed,                        // 172 SPELL_AURA_INCREASE_MOVEMENT_AND_MOUNTED_SPEED
+    &Aura::SpellAuraNULL,                                                   // 173 SPELL_AURA_NULL_173
+    &Aura::SpellAuraIncreaseSpellDamageByAttribute,                         // 174 SPELL_AURA_INCREASE_SPELL_DAMAGE_BY_ATTRIBUTE
+    &Aura::SpellAuraIncreaseHealingByAttribute,                             // 175 SPELL_AURA_INCREASE_HEALING_BY_ATTRIBUTE
+    &Aura::SpellAuraSpiritOfRedemption,                                     // 176 SPELL_AURA_SPIRIT_OF_REDEMPTION
+    &Aura::SpellAuraNULL,                                                   // 177 SPELL_AURA_NULL_177
+    &Aura::SpellAuraNULL,                                                   // 178 SPELL_AURA_NULL_178
+    &Aura::SpellAuraIncreaseAttackerSpellCrit,                              // 179 SPELL_AURA_INCREASE_ATTACKER_SPELL_CRIT
+    &Aura::SpellAuraNULL,                                                   // 180 SPELL_AURA_NULL_180
+    &Aura::SpellAuraNULL,                                                   // 181 SPELL_AURA_NULL_181
+    &Aura::SpellAuraIncreaseArmorByPctInt,                                  // 182 SPELL_AURA_INCREASE_ARMOR_BY_PCT_INT
+    &Aura::SpellAuraNULL,                                                   // 183 SPELL_AURA_NULL_183
+    &Aura::SpellAuraReduceAttackerMHitChance,                               // 184 SPELL_AURA_REDUCE_ATTACKER_M_HIT_CHANCE
+    &Aura::SpellAuraReduceAttackerRHitChance,                               // 185 SPELL_AURA_REDUCE_ATTACKER_R_HIT_CHANCE
+    &Aura::SpellAuraReduceAttackerSHitChance,                               // 186 SPELL_AURA_REDUCE_ATTACKER_S_HIT_CHANCE
+    &Aura::SpellAuraReduceEnemyMCritChance,                                 // 187 SPELL_AURA_REDUCE_ENEMY_M_CRIT_CHANCE
+    &Aura::SpellAuraReduceEnemyRCritChance,                                 // 188 SPELL_AURA_REDUCE_ENEMY_R_CRIT_CHANCE
+    &Aura::SpellAuraIncreaseRating,                                         // 189 SPELL_AURA_INCREASE_RATING
+    &Aura::SpellAuraIncreaseRepGainPct,                                     // 190 SPELL_AURA_INCREASE_REP_GAIN_PCT
+    &Aura::SpellAuraLimitSpeed,                                             // 191 SPELL_AURA_LIMIT_SPEED
+    &Aura::SpellAuraMeleeHaste,                                             // 192 SPELL_AURA_MELEE_HASTE
+    &Aura::SpellAuraIncreaseTimeBetweenAttacksPCT,                          // 193 SPELL_AURA_INCREASE_TIME_BETWEEN_ATTACKS_PCT
+    &Aura::SpellAuraNULL,                                                   // 194 SPELL_AURA_NULL_194
+    &Aura::SpellAuraNULL,                                                   // 195 SPELL_AURA_NULL_195
+    &Aura::SpellAuraNULL,                                                   // 196 SPELL_AURA_NULL_196
+    &Aura::SpellAuraModAttackerCritChance,                                  // 197 SPELL_AURA_MOD_ATTACKER_CRIT_CHANCE
+    &Aura::SpellAuraIncreaseAllWeaponSkill,                                 // 198 SPELL_AURA_INCREASE_ALL_WEAPON_SKILL 
+    &Aura::SpellAuraIncreaseHitRate,                                        // 199 SPELL_AURA_INCREASE_HIT_RATE
+    &Aura::SpellAuraNULL,                                                   // 200 SPELL_AURA_NULL_200
+    &Aura::SpellAuraAllowFlight,                                            // 201 SPELL_AURA_ALLOW_FLIGHT
+    &Aura::SpellAuraFinishingMovesCannotBeDodged,                           // 202 SPELL_AURA_FINISHING_MOVES_CANNOT_BE_DODGED
+    &Aura::SpellAuraReduceCritMeleeAttackDmg,                               // 203 SPELL_AURA_REDUCE_CRIT_MELEE_ATTACK_DMG
+    &Aura::SpellAuraReduceCritRangedAttackDmg,                              // 204 SPELL_AURA_REDUCE_CRIT_RANGED_ATTACK_DMG
+    &Aura::SpellAuraNULL,                                                   // 205 SPELL_AURA_NULL_205
+    &Aura::SpellAuraEnableFlight,                                           // 206 SPELL_AURA_ENABLE_FLIGHT
+    &Aura::SpellAuraEnableFlight,                                           // 207 SPELL_AURA_ENABLE_FLIGHT
+    &Aura::SpellAuraEnableFlightWithUnmountedSpeed,                         // 208 SPELL_AURA_ENABLE_FLIGHT_WITH_UNMOUNTED_SPEED
+    &Aura::SpellAuraNULL,                                                   // 209 SPELL_AURA_NULL_209
+    &Aura::SpellAuraNULL,                                                   // 210 SPELL_AURA_NULL_210
+    &Aura::SpellAuraIncreaseFlightSpeed,                                    // 211 SPELL_AURA_INCREASE_FLIGHT_SPEED
+    &Aura::SpellAuraIncreaseRAPbyStatPct,                                   // 212 SPELL_AURA_INCREASE_RAP_BY_STAT_PCT
+    &Aura::SpellAuraIncreaseRageFromDamageDealtPCT,                         // 213 SPELL_AURA_INCREASE_RAGE_FROM_DAMAGE_DEALT_PCT
+    &Aura::SpellAuraNULL,                                                   // 214 SPELL_AURA_NULL_214
+    &Aura::SpellAuraRemoveReagentCost,                                      // 215 SPELL_AURA_REMOVE_REAGENT_COST
+    &Aura::SpellAuraModCastingSpeed,                                        // 216 SPELL_AURA_MOD_CASTING_SPEED
+    &Aura::SpellAuraNULL,                                                   // 217 SPELL_AURA_NULL_217
+    &Aura::SpellAuraNULL,                                                   // 218 SPELL_AURA_NULL_218
+    &Aura::SpellAuraRegenManaStatPCT,                                       // 219 SPELL_AURA_REGEN_MANA_STAT_PCT
+    &Aura::SpellAuraSpellHealingStatPCT,                                    // 220 SPELL_AURA_SPELL_HEALING_STAT_PCT
+    &Aura::SpellAuraNULL,                                                   // 221 SPELL_AURA_NULL_221
+    &Aura::SpellAuraNULL,                                                   // 222 SPELL_AURA_NULL_222
+    &Aura::SpellAuraNULL,                                                   // 223 SPELL_AURA_NULL_223
+    &Aura::SpellAuraNULL,                                                   // 224 SPELL_AURA_NULL_224
+    &Aura::SpellAuraNULL,                                                   // 225 SPELL_AURA_NULL_225
+    &Aura::SpellAuraPeriodicTriggerDummy,                                   // 226 SPELL_AURA_PERIODIC_TRIGGER_DUMMY
+    &Aura::SpellAuraPeriodicTriggerSpellWithValue,                          // 227 SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE
+    &Aura::SpellAuraNULL,                                                   // 228 SPELL_AURA_NULL_228
+    &Aura::SpellAuraReduceAOEDamageTaken,                                   // 229 SPELL_AURA_REDUCE_AOE_DAMAGE_TAKEN
+    &Aura::SpellAuraIncreaseMaxHealth,                                      // 230 SPELL_AURA_INCREASE_MAX_HEALTH
+    &Aura::SpellAuraProcTriggerSpell,                                       // 231 SPELL_AURA_PROC_TRIGGER_SPELL
+    &Aura::SpellAuraReduceEffectDuration,                                   // 232 SPELL_AURA_REDUCE_EFFECT_DURATION
+    &Aura::SpellAuraNULL,                                                   // 233 SPELL_AURA_NULL_233
+    &Aura::SpellAuraReduceEffectDuration,                                   // 234 SPELL_AURA_REDUCE_EFFECT_DURATION
+    &Aura::SpellAuraNULL,                                                   // 235 SPELL_AURA_NULL_235
+    &Aura::HandleAuraControlVehicle,                                        // 236 HANDLE_AURA_CONTROL_VEHICLE
+    &Aura::SpellAuraModHealingByAP,                                         // 237 SPELL_AURA_MOD_HEALING_BY_AP
+    &Aura::SpellAuraModSpellDamageByAP,                                     // 238 SPELL_AURA_MOD_SPELL_DAMAGE_BY_AP
+    &Aura::SpellAuraModScale,                                               // 239 SPELL_AURA_MOD_SCALE
     &Aura::SpellAuraExpertise,                                              // 240 SPELL_AURA_EXPERTISE
-    &Aura::SpellAuraForceMoveForward,                                       // 241 makes target to run forward
-    &Aura::SpellAuraNULL,                                                   // 242
-    &Aura::SpellAuraNULL,                                                   // 243
-    &Aura::SpellAuraComprehendLang,                                         // 244 allows target to understand itself while talking in different language
-    &Aura::SpellAuraNULL,                                                   // 245
-    &Aura::SpellAuraNULL,                                                   // 246
-    &Aura::SpellAuraMirrorImage,                                            // 247
+    &Aura::SpellAuraForceMoveForward,                                       // 241 SPELL_AURA_FORCE_MOVE_FORWARD
+    &Aura::SpellAuraNULL,                                                   // 242 SPELL_AURA_NULL_242
+    &Aura::SpellAuraNULL,                                                   // 243 SPELL_AURA_NULL_243
+    &Aura::SpellAuraComprehendLang,                                         // 244 SPELL_AURA_COMPREHEND_LANG
+    &Aura::SpellAuraNULL,                                                   // 245 SPELL_AURA_NULL_245
+    &Aura::SpellAuraNULL,                                                   // 246 SPELL_AURA_NULL_246
+    &Aura::SpellAuraMirrorImage,                                            // 247 SPELL_AURA_MIRROR_IMAGE
     &Aura::SpellAuraModCombatResultChance,                                  // 248 SPELL_AURA_MOD_COMBAT_RESULT_CHANCE
     &Aura::SpellAuraConvertRune,                                            // 249 SPELL_AURA_CONVERT_RUNE
-    &Aura::SpellAuraAddHealth,                                              // 250
-    &Aura::SpellAuraNULL,                                                   // 251  Mod Enemy Dodge
-    &Aura::SpellAuraNULL,                                                   // 252 Reduces the target's ranged, melee attack, and casting speed by X pct for Y sec.
+    &Aura::SpellAuraAddHealth,                                              // 250 SPELL_AURA_ADD_HEALTH
+    &Aura::SpellAuraNULL,                                                   // 251 SPELL_AURA_NULL_251
+    &Aura::SpellAuraNULL,                                                   // 252 SPELL_AURA_NULL_252
     &Aura::SpellAuraBlockMultipleDamage,                                    // 253 SPELL_AURA_BLOCK_MULTIPLE_DAMAGE
-    &Aura::SpellAuraModDisarm,                                              // 254 SPELL_AURA_MOD_DISARM_OFFHAND
-    &Aura::SpellAuraModMechanicDmgTakenPct,                                 // 255 SPELL_AURA_MOD_MECHANIC_DAMAGE_TAKEN_PERCENT
-    &Aura::SpellAuraRemoveReagentCost,                                      // 256 Remove reagent cost
-    &Aura::SpellAuraNULL,                                                   // 257 Mod Target Resist By Spell Class (does damage in the form of X damage, ignoring all resistances, absorption, and immunity mechanics. - http://thottbot.com/s47271)
-    &Aura::SpellAuraNULL,                                                   // 258 Mod Spell Visual
-    &Aura::SpellAuraNULL,                                                   // 259 Mod Periodic Damage Taken Pct - Periodic Shadow damage taken increased by 3% (http://thottbot.com/s60448)
-    &Aura::SpellAuraNULL,                                                   // 260 Screen Effect
-    &Aura::SpellAuraPhase,                                                  // 261
-    &Aura::SpellAuraNULL,                                                   // 262 SPELL_AURA_IGNORE_TARGET_AURA_STATE
+    &Aura::SpellAuraModDisarm,                                              // 254 SPELL_AURA_MOD_DISARM
+    &Aura::SpellAuraModMechanicDmgTakenPct,                                 // 255 SPELL_AURA_MOD_MECHANIC_DMG_TAKEN_PCT
+    &Aura::SpellAuraRemoveReagentCost,                                      // 256 SPELL_AURA_REMOVE_REAGENT_COST
+    &Aura::SpellAuraNULL,                                                   // 257 SPELL_AURA_NULL_257
+    &Aura::SpellAuraNULL,                                                   // 258 SPELL_AURA_NULL_258
+    &Aura::SpellAuraNULL,                                                   // 259 SPELL_AURA_NULL_259
+    &Aura::SpellAuraNULL,                                                   // 260 SPELL_AURA_NULL_260
+    &Aura::SpellAuraPhase,                                                  // 261 SPELL_AURA_PHASE
+    &Aura::SpellAuraNULL,                                                   // 262 SPELL_AURA_NULL_262
     &Aura::SpellAuraAllowOnlyAbility,                                       // 263 SPELL_AURA_ALLOW_ONLY_ABILITY
-    &Aura::SpellAuraNULL,                                                   // 264
-    &Aura::SpellAuraNULL,                                                   // 265
-    &Aura::SpellAuraNULL,                                                   // 266
-    &Aura::SpellAuraNULL,                                                   // 267 Prevent the application of harmful magical effects. used only by Dk's Anti Magic Shell
-    &Aura::SpellAuraIncreaseAPbyStatPct,                                    // 268 Increase attack power by % of stat
-    &Aura::SpellAuraNULL,                                                   // 269 Damage reduction effects ignored. (?) - http://thottbot.com/s57318
-    &Aura::SpellAuraNULL,                                                   // 270 Ignore target resist
-    &Aura::SpellAuraModSpellDamageDOTPct,                                   // 271
-    &Aura::SpellAuraNULL,                                                   // 272 Unknown
-    &Aura::SpellAuraNULL,                                                   // 273 Some sort of dummy aura? (http://thottbot.com/s54844 + http://thottbot.com/s26659)
-    &Aura::SpellAuraConsumeNoAmmo,                                          // 274 Consumes no ammo
-    &Aura::SpellAuraNULL,                                                   // 275 Ignore shapeshift or stance
-    &Aura::SpellAuraNULL,                                                   // 276 Mod Damage % Mechanic
-    &Aura::SpellAuraNULL,                                                   // 277 SPELL_AURA_REDIRECT_THREAT or SPELL_AURA_MOD_MAX_AFFECTED_TARGETS ?
-    &Aura::SpellAuraModDisarm,                                              // 278 SPELL_AURA_MOD_DISARM_RANGED
-    &Aura::SpellAuraMirrorImage2,                                           // 279 Modify models(?)
-    &Aura::SpellAuraModIgnoreArmorPct,                                      // 280 SPELL_AURA_IGNORE_ARMOR_PCT
-    &Aura::SpellAuraNULL,                                                   // 281 Mod Honor gain increased by X pct. Final Reward Honor increased by X pct for Y Rank and above. (http://thottbot.com/s58560 && http://thottbot.com/s58557)
+    &Aura::SpellAuraNULL,                                                   // 264 SPELL_AURA_NULL_264
+    &Aura::SpellAuraNULL,                                                   // 265 SPELL_AURA_NULL_265
+    &Aura::SpellAuraNULL,                                                   // 266 SPELL_AURA_NULL_266
+    &Aura::SpellAuraNULL,                                                   // 267 SPELL_AURA_NULL_267
+    &Aura::SpellAuraIncreaseAPbyStatPct,                                    // 268 SPELL_AURA_INCREASE_AP_BY_STAT_PCT
+    &Aura::SpellAuraNULL,                                                   // 269 SPELL_AURA_NULL_269
+    &Aura::SpellAuraNULL,                                                   // 270 SPELL_AURA_NULL_270
+    &Aura::SpellAuraModSpellDamageDOTPct,                                   // 271 SPELL_AURA_MOD_SPELL_DAMAGE_DOT_PCT
+    &Aura::SpellAuraNULL,                                                   // 272 SPELL_AURA_NULL_272
+    &Aura::SpellAuraNULL,                                                   // 273 SPELL_AURA_NULL_273
+    &Aura::SpellAuraConsumeNoAmmo,                                          // 274 SPELL_AURA_CONSUME_NO_AMMO
+    &Aura::SpellAuraNULL,                                                   // 275 SPELL_AURA_NULL_275
+    &Aura::SpellAuraNULL,                                                   // 276 SPELL_AURA_NULL_276
+    &Aura::SpellAuraNULL,                                                   // 277 SPELL_AURA_NULL_277
+    &Aura::SpellAuraModDisarm,                                              // 278 SPELL_AURA_MOD_DISARM
+    &Aura::SpellAuraMirrorImage2,                                           // 279 SPELL_AURA_MIRROR_IMAGE2
+    &Aura::SpellAuraModIgnoreArmorPct,                                      // 280 SPELL_AURA_MOD_IGNORE_ARMOR_PCT
+    &Aura::SpellAuraNULL,                                                   // 281 SPELL_AURA_NULL_281
     &Aura::SpellAuraModBaseHealth,                                          // 282 SPELL_AURA_MOD_BASE_HEALTH
-    &Aura::SpellAuraModHealingPCT,                                          // 283 Increases all healing received by X pct
-    &Aura::SpellAuraNULL,                                                   // 284 not used by any spells (3.08a)
+    &Aura::SpellAuraModHealingPCT,                                          // 283 SPELL_AURA_MOD_HEALING_PCT
+    &Aura::SpellAuraNULL,                                                   // 284 SPELL_AURA_NULL_284
     &Aura::SpellAuraModAttackPowerOfArmor,                                  // 285 SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR
-    &Aura::SpellAuraNULL,                                                   // 286 SPELL_AURA_ALLOW_DOT_TO_CRIT
+    &Aura::SpellAuraNULL,                                                   // 286 SPELL_AURA_NULL_286
     &Aura::SpellAuraDeflectSpells,                                          // 287 SPELL_AURA_DEFLECT_SPELLS
-    &Aura::SpellAuraNULL,                                                   // 288 not used by any spells (3.09) except 1 test spell.
-    &Aura::SpellAuraNULL,                                                   // 289 unused
-    &Aura::SpellAuraNULL,                                                   // 290 unused
-    &Aura::SpellAuraNULL,                                                   // 291 unused
-    &Aura::SpellAuraCallStabledPet,                                         // 292 call stabled pet
-    &Aura::SpellAuraNULL,                                                   // 293 2 test spells
-    &Aura::SpellAuraNULL,                                                   // 294 2 spells, possible prevent mana regen
-    &Aura::SpellAuraNULL,                                                   // 295
-    &Aura::SpellAuraNULL,                                                   // 296
-    &Aura::SpellAuraNULL,                                                   // 297
-    &Aura::SpellAuraNULL,                                                   // 298
-    &Aura::SpellAuraNULL,                                                   // 299
-    &Aura::SpellAuraNULL,                                                   // 300
-    &Aura::SpellAuraNULL,                                                   // 301
-    &Aura::SpellAuraNULL,                                                   // 302
-    &Aura::SpellAuraNULL,                                                   // 303
-    &Aura::SpellAuraNULL,                                                   // 304
-    &Aura::SpellAuraNULL,                                                   // 305
-    &Aura::SpellAuraNULL,                                                   // 306
-    &Aura::SpellAuraNULL,                                                   // 307
-    &Aura::SpellAuraNULL,                                                   // 308
-    &Aura::SpellAuraNULL,                                                   // 309
-    &Aura::SpellAuraNULL,                                                   // 310
-    &Aura::SpellAuraNULL,                                                   // 311
-    &Aura::SpellAuraNULL,                                                   // 312
-    &Aura::SpellAuraNULL,                                                   // 313
-    &Aura::SpellAuraNULL,                                                   // 314
-    &Aura::SpellAuraNULL,                                                   // 315
-    &Aura::SpellAuraNULL,                                                   // 316
-    &Aura::SpellAuraNULL,                                                   // 317
-    &Aura::SpellAuraNULL,                                                   // 318
-    &Aura::SpellAuraNULL,                                                   // 319
-    &Aura::SpellAuraNULL,                                                   // 320
-    &Aura::SpellAuraNULL,                                                   // 321
-    &Aura::SpellAuraNULL,                                                   // 322
-    &Aura::SpellAuraNULL,                                                   // 323
-    &Aura::SpellAuraNULL,                                                   // 324
-    &Aura::SpellAuraNULL,                                                   // 325
-    &Aura::SpellAuraNULL,                                                   // 326
-    &Aura::SpellAuraNULL,                                                   // 327
-    &Aura::SpellAuraNULL,                                                   // 328
-    &Aura::SpellAuraNULL,                                                   // 329
-    &Aura::SpellAuraNULL,                                                   // 330
-    &Aura::SpellAuraNULL,                                                   // 331
-    &Aura::SpellAuraNULL,                                                   // 332
-    &Aura::SpellAuraNULL,                                                   // 333
-    &Aura::SpellAuraNULL,                                                   // 334
-    &Aura::SpellAuraNULL,                                                   // 335
-    &Aura::SpellAuraNULL,                                                   // 336
-    &Aura::SpellAuraNULL,                                                   // 337
-    &Aura::SpellAuraNULL,                                                   // 338
-    &Aura::SpellAuraNULL,                                                   // 339
-    &Aura::SpellAuraNULL,                                                   // 340
-    &Aura::SpellAuraNULL,                                                   // 341
-    &Aura::SpellAuraNULL,                                                   // 342
-    &Aura::SpellAuraNULL,                                                   // 343
-    &Aura::SpellAuraNULL,                                                   // 344
-    &Aura::SpellAuraNULL,                                                   // 345
-    &Aura::SpellAuraNULL,                                                   // 346
-    &Aura::SpellAuraNULL,                                                   // 347
-    &Aura::SpellAuraNULL,                                                   // 348
-    &Aura::SpellAuraNULL,                                                   // 349
-    &Aura::SpellAuraNULL,                                                   // 350
-    &Aura::SpellAuraNULL,                                                   // 351
-    &Aura::SpellAuraNULL,                                                   // 352
-    &Aura::SpellAuraNULL,                                                   // 353
-    &Aura::SpellAuraNULL,                                                   // 354
-    &Aura::SpellAuraNULL,                                                   // 355
-    &Aura::SpellAuraNULL,                                                   // 356
-    &Aura::SpellAuraNULL,                                                   // 357
-    &Aura::SpellAuraNULL,                                                   // 358
-    &Aura::SpellAuraNULL,                                                   // 359
-    &Aura::SpellAuraNULL,                                                   // 360
-    &Aura::SpellAuraNULL,                                                   // 361
-    &Aura::SpellAuraNULL,                                                   // 362
-    &Aura::SpellAuraNULL,                                                   // 363
-    &Aura::SpellAuraNULL,                                                   // 364
-    &Aura::SpellAuraNULL,                                                   // 365
-    &Aura::SpellAuraNULL,                                                   // 366
-    &Aura::SpellAuraNULL,                                                   // 367
-    &Aura::SpellAuraNULL,                                                   // 368
-    &Aura::SpellAuraNULL,                                                   // 369
-    &Aura::SpellAuraNULL                                                    // 370
+    &Aura::SpellAuraNULL,                                                   // 288 SPELL_AURA_NULL_288
+    &Aura::SpellAuraNULL,                                                   // 289 SPELL_AURA_NULL_289
+    &Aura::SpellAuraNULL,                                                   // 290 SPELL_AURA_NULL_290
+    &Aura::SpellAuraNULL,                                                   // 291 SPELL_AURA_NULL_291
+    &Aura::SpellAuraCallStabledPet,                                         // 292 SPELL_AURA_CALL_STABLED_PET
+    &Aura::SpellAuraNULL,                                                   // 293 SPELL_AURA_NULL_293
+    &Aura::SpellAuraNULL,                                                   // 294 SPELL_AURA_NULL_294
+    &Aura::SpellAuraNULL,                                                   // 295 SPELL_AURA_NULL_295
+    &Aura::SpellAuraNULL,                                                   // 296 SPELL_AURA_NULL_296
+    &Aura::SpellAuraNULL,                                                   // 297 SPELL_AURA_NULL_297
+    &Aura::SpellAuraNULL,                                                   // 298 SPELL_AURA_NULL_298
+    &Aura::SpellAuraNULL,                                                   // 299 SPELL_AURA_NULL_299
+    &Aura::SpellAuraNULL,                                                   // 300 SPELL_AURA_NULL_300
+    &Aura::SpellAuraNULL,                                                   // 301 SPELL_AURA_NULL_301
+    &Aura::SpellAuraNULL,                                                   // 302 SPELL_AURA_NULL_302
+    &Aura::SpellAuraNULL,                                                   // 303 SPELL_AURA_NULL_303
+    &Aura::SpellAuraNULL,                                                   // 304 SPELL_AURA_NULL_304
+    &Aura::SpellAuraNULL,                                                   // 305 SPELL_AURA_NULL_305
+    &Aura::SpellAuraNULL,                                                   // 306 SPELL_AURA_NULL_306
+    &Aura::SpellAuraNULL,                                                   // 307 SPELL_AURA_NULL_307
+    &Aura::SpellAuraNULL,                                                   // 308 SPELL_AURA_NULL_308
+    &Aura::SpellAuraNULL,                                                   // 309 SPELL_AURA_NULL_309
+    &Aura::SpellAuraNULL,                                                   // 310 SPELL_AURA_NULL_310
+    &Aura::SpellAuraNULL,                                                   // 311 SPELL_AURA_NULL_311
+    &Aura::SpellAuraNULL,                                                   // 312 SPELL_AURA_NULL_312
+    &Aura::SpellAuraNULL,                                                   // 313 SPELL_AURA_NULL_313
+    &Aura::SpellAuraNULL,                                                   // 314 SPELL_AURA_NULL_314
+    &Aura::SpellAuraNULL,                                                   // 315 SPELL_AURA_NULL_315
+    &Aura::SpellAuraNULL,                                                   // 316 SPELL_AURA_NULL_316
+    &Aura::SpellAuraNULL,                                                   // 317 SPELL_AURA_NULL_317
+    &Aura::SpellAuraNULL,                                                   // 318 SPELL_AURA_NULL_318
+    &Aura::SpellAuraNULL,                                                   // 319 SPELL_AURA_NULL_319
+    &Aura::SpellAuraNULL,                                                   // 320 SPELL_AURA_NULL_320
+    &Aura::SpellAuraNULL,                                                   // 321 SPELL_AURA_NULL_321
+    &Aura::SpellAuraNULL,                                                   // 322 SPELL_AURA_NULL_322
+    &Aura::SpellAuraNULL,                                                   // 323 SPELL_AURA_NULL_323
+    &Aura::SpellAuraNULL,                                                   // 324 SPELL_AURA_NULL_324
+    &Aura::SpellAuraNULL,                                                   // 325 SPELL_AURA_NULL_325
+    &Aura::SpellAuraNULL,                                                   // 326 SPELL_AURA_NULL_326
+    &Aura::SpellAuraNULL,                                                   // 327 SPELL_AURA_NULL_327
+    &Aura::SpellAuraNULL,                                                   // 328 SPELL_AURA_NULL_328
+    &Aura::SpellAuraNULL,                                                   // 329 SPELL_AURA_NULL_329
+    &Aura::SpellAuraNULL,                                                   // 330 SPELL_AURA_NULL_330
+    &Aura::SpellAuraNULL,                                                   // 331 SPELL_AURA_NULL_331
+    &Aura::SpellAuraNULL,                                                   // 332 SPELL_AURA_NULL_332
+    &Aura::SpellAuraNULL,                                                   // 333 SPELL_AURA_NULL_333
+    &Aura::SpellAuraNULL,                                                   // 334 SPELL_AURA_NULL_334
+    &Aura::SpellAuraNULL,                                                   // 335 SPELL_AURA_NULL_335
+    &Aura::SpellAuraNULL,                                                   // 336 SPELL_AURA_NULL_336
+    &Aura::SpellAuraNULL,                                                   // 337 SPELL_AURA_NULL_337
+    &Aura::SpellAuraNULL,                                                   // 338 SPELL_AURA_NULL_338
+    &Aura::SpellAuraNULL,                                                   // 339 SPELL_AURA_NULL_339
+    &Aura::SpellAuraNULL,                                                   // 340 SPELL_AURA_NULL_340
+    &Aura::SpellAuraNULL,                                                   // 341 SPELL_AURA_NULL_341
+    &Aura::SpellAuraNULL,                                                   // 342 SPELL_AURA_NULL_342
+    &Aura::SpellAuraNULL,                                                   // 343 SPELL_AURA_NULL_343
+    &Aura::SpellAuraNULL,                                                   // 344 SPELL_AURA_NULL_344
+    &Aura::SpellAuraNULL,                                                   // 345 SPELL_AURA_NULL_345
+    &Aura::SpellAuraNULL,                                                   // 346 SPELL_AURA_NULL_346
+    &Aura::SpellAuraNULL,                                                   // 347 SPELL_AURA_NULL_347
+    &Aura::SpellAuraNULL,                                                   // 348 SPELL_AURA_NULL_348
+    &Aura::SpellAuraNULL,                                                   // 349 SPELL_AURA_NULL_349
+    &Aura::SpellAuraNULL,                                                   // 350 SPELL_AURA_NULL_350
+    &Aura::SpellAuraNULL,                                                   // 351 SPELL_AURA_NULL_351
+    &Aura::SpellAuraNULL,                                                   // 352 SPELL_AURA_NULL_352
+    &Aura::SpellAuraNULL,                                                   // 353 SPELL_AURA_NULL_353
+    &Aura::SpellAuraNULL,                                                   // 354 SPELL_AURA_NULL_354
+    &Aura::SpellAuraNULL,                                                   // 355 SPELL_AURA_NULL_355
+    &Aura::SpellAuraNULL,                                                   // 356 SPELL_AURA_NULL_356
+    &Aura::SpellAuraNULL,                                                   // 357 SPELL_AURA_NULL_357
+    &Aura::SpellAuraNULL,                                                   // 358 SPELL_AURA_NULL_358
+    &Aura::SpellAuraNULL,                                                   // 359 SPELL_AURA_NULL_359
+    &Aura::SpellAuraNULL,                                                   // 360 SPELL_AURA_NULL_360
+    &Aura::SpellAuraNULL,                                                   // 361 SPELL_AURA_NULL_361
+    &Aura::SpellAuraNULL,                                                   // 362 SPELL_AURA_NULL_362
+    &Aura::SpellAuraNULL,                                                   // 363 SPELL_AURA_NULL_363
+    &Aura::SpellAuraNULL,                                                   // 364 SPELL_AURA_NULL_364
+    &Aura::SpellAuraNULL,                                                   // 365 SPELL_AURA_NULL_365
+    &Aura::SpellAuraNULL,                                                   // 366 SPELL_AURA_NULL_366
+    &Aura::SpellAuraNULL,                                                   // 367 SPELL_AURA_NULL_367
+    &Aura::SpellAuraNULL,                                                   // 368 SPELL_AURA_NULL_368
+    &Aura::SpellAuraNULL,                                                   // 369 SPELL_AURA_NULL_369
+    &Aura::SpellAuraNULL                                                    // 370 SPELL_AURA_NULL_370
 };
 
 const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
 {
-    "NONE",                                             //   0 None
-    "BIND_SIGHT",                                       //   1 Bind Sight
-    "MOD_POSSESS",                                      //   2 Mod Possess
-    "PERIODIC_DAMAGE",                                  //   3 Periodic Damage
-    "DUMMY",                                            //   4 Script Aura
-    "MOD_CONFUSE",                                      //   5 Mod Confuse
-    "MOD_CHARM",                                        //   6 Mod Charm
-    "MOD_FEAR",                                         //   7 Mod Fear
-    "PERIODIC_HEAL",                                    //   8 Periodic Heal
-    "MOD_ATTACKSPEED",                                  //   9 Mod Attack Speed
-    "MOD_THREAT",                                       //  10 Mod Threat
-    "MOD_TAUNT",                                        //  11 Taunt
-    "MOD_STUN",                                         //  12 Stun
-    "MOD_DAMAGE_DONE",                                  //  13 Mod Damage Done
-    "MOD_DAMAGE_TAKEN",                                 //  14 Mod Damage Taken
-    "DAMAGE_SHIELD",                                    //  15 Damage Shield
-    "MOD_STEALTH",                                      //  16 Mod Stealth
-    "MOD_DETECT",                                       //  17 Mod Detect
-    "MOD_INVISIBILITY",                                 //  18 Mod Invisibility
-    "MOD_INVISIBILITY_DETECTION",                       //  19 Mod Invisibility Detection
-    "MOD_TOTAL_HEALTH_REGEN_PCT",                       //  20
-    "MOD_TOTAL_MANA_REGEN_PCT",                         //  21
-    "MOD_RESISTANCE",                                   //  22 Mod Resistance
-    "PERIODIC_TRIGGER_SPELL",                           //  23 Periodic Trigger
-    "PERIODIC_ENERGIZE",                                //  24 Periodic Energize
-    "MOD_PACIFY",                                       //  25 Pacify
-    "MOD_ROOT",                                         //  26 Root
-    "MOD_SILENCE",                                      //  27 Silence
-    "REFLECT_SPELLS",                                   //  28 Reflect Spells %
-    "MOD_STAT",                                         //  29 Mod Stat
-    "MOD_SKILL",                                        //  30 Mod Skill
-    "MOD_INCREASE_SPEED",                               //  31 Mod Speed
-    "MOD_INCREASE_MOUNTED_SPEED",                       //  32 Mod Speed Mounted
-    "MOD_DECREASE_SPEED",                               //  33 Mod Speed Slow
-    "MOD_INCREASE_HEALTH",                              //  34 Mod Increase Health
-    "MOD_INCREASE_ENERGY",                              //  35 Mod Increase Energy
-    "MOD_SHAPESHIFT",                                   //  36 Shapeshift
-    "EFFECT_IMMUNITY",                                  //  37 Immune Effect
-    "STATE_IMMUNITY",                                   //  38 Immune State
-    "SCHOOL_IMMUNITY",                                  //  39 Immune School
-    "DAMAGE_IMMUNITY",                                  //  40 Immune Damage
-    "DISPEL_IMMUNITY",                                  //  41 Immune Dispel Type
-    "PROC_TRIGGER_SPELL",                               //  42 Proc Trigger Spell
-    "PROC_TRIGGER_DAMAGE",                              //  43 Proc Trigger Damage
-    "TRACK_CREATURES",                                  //  44 Track Creatures
-    "TRACK_RESOURCES",                                  //  45 Track Resources
-    "MOD_PARRY_SKILL",                                  //  46 Mod Parry Skill
-    "MOD_PARRY_PERCENT",                                //  47 Mod Parry Percent
-    "MOD_DODGE_SKILL",                                  //  48 Mod Dodge Skill
-    "MOD_DODGE_PERCENT",                                //  49 Mod Dodge Percent
-    "MOD_BLOCK_SKILL",                                  //  50 Mod Block Skill
-    "MOD_BLOCK_PERCENT",                                //  51 Mod Block Percent
-    "MOD_CRIT_PERCENT",                                 //  52 Mod Crit Percent
-    "PERIODIC_LEECH",                                   //  53 Periodic Leech
-    "MOD_HIT_CHANCE",                                   //  54 Mod Hit Chance
-    "MOD_SPELL_HIT_CHANCE",                             //  55 Mod Spell Hit Chance
-    "TRANSFORM",                                        //  56 Transform
-    "MOD_SPELL_CRIT_CHANCE",                            //  57 Mod Spell Crit Chance
-    "MOD_INCREASE_SWIM_SPEED",                          //  58 Mod Speed Swim
-    "MOD_DAMAGE_DONE_CREATURE",                         //  59 Mod Creature Dmg Done
-    "MOD_PACIFY_SILENCE",                               //  60 Pacify & Silence
-    "MOD_SCALE",                                        //  61 Mod Scale
-    "PERIODIC_HEALTH_FUNNEL",                           //  62 Periodic Health Funnel
-    "PERIODIC_MANA_FUNNEL",                             //  63 Periodic Mana Funnel
-    "PERIODIC_MANA_LEECH",                              //  64 Periodic Mana Leech
-    "MOD_CASTING_SPEED",                                //  65 Haste - Spells
-    "FEIGN_DEATH",                                      //  66 Feign Death
-    "MOD_DISARM",                                       //  67 Disarm
-    "MOD_STALKED",                                      //  68 Mod Stalked
-    "SCHOOL_ABSORB",                                    //  69 School Absorb
-    "EXTRA_ATTACKS",                                    //  70 Extra Attacks
-    "MOD_SPELL_CRIT_CHANCE_SCHOOL",                     //  71 Mod School Spell Crit Chance
-    "MOD_POWER_COST",                                   //  72 Mod Power Cost
-    "MOD_POWER_COST_SCHOOL",                            //  73 Mod School Power Cost
-    "REFLECT_SPELLS_SCHOOL",                            //  74 Reflect School Spells %
-    "MOD_LANGUAGE",                                     //  75 Mod Language
-    "FAR_SIGHT",                                        //  76 Far Sight
-    "MECHANIC_IMMUNITY",                                //  77 Immune Mechanic
-    "MOUNTED",                                          //  78 Mounted
-    "MOD_DAMAGE_PERCENT_DONE",                          //  79 Mod Dmg %
-    "MOD_PERCENT_STAT",                                 //  80 Mod Stat %
-    "SPLIT_DAMAGE",                                     //  81 Split Damage
-    "WATER_BREATHING",                                  //  82 Water Breathing
-    "MOD_BASE_RESISTANCE",                              //  83 Mod Base Resistance
-    "MOD_REGEN",                                        //  84 Mod Health Regen
-    "MOD_POWER_REGEN",                                  //  85 Mod Power Regen
-    "CHANNEL_DEATH_ITEM",                               //  86 Create Death Item
-    "MOD_DAMAGE_PERCENT_TAKEN",                         //  87 Mod Dmg % Taken
-    "MOD_PERCENT_REGEN",                                //  88 Mod Health Regen Percent
-    "PERIODIC_DAMAGE_PERCENT",                          //  89 Periodic Damage Percent
-    "MOD_RESIST_CHANCE",                                //  90 Mod Resist Chance
-    "MOD_DETECT_RANGE",                                 //  91 Mod Detect Range
-    "PREVENTS_FLEEING",                                 //  92 Prevent Fleeing
-    "MOD_UNATTACKABLE",                                 //  93 Mod Uninteractible
-    "INTERRUPT_REGEN",                                  //  94 Interrupt Regen
-    "GHOST",                                            //  95 Ghost
-    "SPELL_MAGNET",                                     //  96 Spell Magnet
-    "MANA_SHIELD",                                      //  97 Mana Shield
-    "MOD_SKILL_TALENT",                                 //  98 Mod Skill Talent
-    "MOD_ATTACK_POWER",                                 //  99 Mod Attack Power
-    "AURAS_VISIBLE",                                    // 100 Auras Visible
-    "MOD_RESISTANCE_PCT",                               // 101 Mod Resistance %
-    "MOD_CREATURE_ATTACK_POWER",                        // 102 Mod Creature Attack Power
-    "MOD_TOTAL_THREAT",                                 // 103 Mod Total Threat (Fade)
-    "WATER_WALK",                                       // 104 Water Walk
-    "FEATHER_FALL",                                     // 105 Feather Fall
-    "HOVER",                                            // 106 Hover
-    "ADD_FLAT_MODIFIER",                                // 107 Add Flat Modifier
-    "ADD_PCT_MODIFIER",                                 // 108 Add % Modifier
-    "ADD_TARGET_TRIGGER",                               // 109 Add Class Target Trigger
-    "MOD_POWER_REGEN_PERCENT",                          // 110 Mod Power Regen %
-    "ADD_CASTER_HIT_TRIGGER",                           // 111 Add Class Caster Hit Trigger
-    "OVERRIDE_CLASS_SCRIPTS",                           // 112 Override Class Scripts
-    "MOD_RANGED_DAMAGE_TAKEN",                          // 113 Mod Ranged Dmg Taken
-    "MOD_RANGED_DAMAGE_TAKEN_PCT",                      // 114 Mod Ranged % Dmg Taken
-    "MOD_HEALING",                                      // 115 Mod Healing
-    "IGNORE_REGEN_INTERRUPT",                           // 116 Regen During Combat
-    "MOD_MECHANIC_RESISTANCE",                          // 117 Mod Mechanic Resistance
-    "MOD_HEALING_PCT",                                  // 118 Mod Healing %
-    "SHARE_PET_TRACKING",                               // 119 Share Pet Tracking
-    "UNTRACKABLE",                                      // 120 Untrackable
-    "EMPATHY",                                          // 121 Empathy (Lore, whatever)
-    "MOD_OFFHAND_DAMAGE_PCT",                           // 122 Mod Offhand Dmg %
-    "MOD_POWER_COST_PCT",                               // 123 Mod Power Cost % --> armor penetration & spell penetration
-    "MOD_RANGED_ATTACK_POWER",                          // 124 Mod Ranged Attack Power
-    "MOD_MELEE_DAMAGE_TAKEN",                           // 125 Mod Melee Dmg Taken
-    "MOD_MELEE_DAMAGE_TAKEN_PCT",                       // 126 Mod Melee % Dmg Taken
-    "RANGED_ATTACK_POWER_ATTACKER_BONUS",               // 127 Rngd Atk Pwr Attckr Bonus
-    "MOD_POSSESS_PET",                                  // 128 Mod Possess Pet
-    "MOD_INCREASE_SPEED_ALWAYS",                        // 129 Mod Speed Always
-    "MOD_MOUNTED_SPEED_ALWAYS",                         // 130 Mod Mounted Speed Always
-    "MOD_CREATURE_RANGED_ATTACK_POWER",                 // 131 Mod Creature Ranged Attack Power
-    "MOD_INCREASE_ENERGY_PERCENT",                      // 132 Mod Increase Energy %
-    "MOD_INCREASE_HEALTH_PERCENT",                      // 133 Mod Max Health %
-    "MOD_MANA_REGEN_INTERRUPT",                         // 134 Mod Interrupted Mana Regen
-    "MOD_HEALING_DONE",                                 // 135 Mod Healing Done
-    "MOD_HEALING_DONE_PERCENT",                         // 136 Mod Healing Done %
-    "MOD_TOTAL_STAT_PERCENTAGE",                        // 137 Mod Total Stat %
-    "MOD_HASTE",                                        // 138 Haste - Melee
-    "FORCE_REACTION",                                   // 139 Force Reaction
-    "MOD_RANGED_HASTE",                                 // 140 Haste - Ranged
-    "MOD_RANGED_AMMO_HASTE",                            // 141 Haste - Ranged (Ammo Only)
-    "MOD_BASE_RESISTANCE_PCT",                          // 142 Mod Base Resistance %
-    "MOD_RESISTANCE_EXCLUSIVE",                         // 143 Mod Resistance Exclusive
-    "SAFE_FALL",                                        // 144 Safe Fall
-    "CHARISMA",                                         // 145 Charisma
-    "PERSUADED",                                        // 146 Persuaded
-    "ADD_CREATURE_IMMUNITY",                            // 147 Add Creature Immunity
-    "RETAIN_COMBO_POINTS",                              // 148 Retain Combo Points
-    "RESIST_PUSHBACK",                                  // 149 Resist Pushback
-    "MOD_SHIELD_BLOCK_PCT",                             // 150 Mod Shield Block %
-    "TRACK_STEALTHED",                                  // 151 Track Stealthed
-    "MOD_DETECTED_RANGE",                               // 152 Mod Detected Range
-    "SPLIT_DAMAGE_FLAT",                                // 153 Split Damage Flat
-    "MOD_STEALTH_LEVEL",                                // 154 Stealth Level Modifier
-    "MOD_WATER_BREATHING",                              // 155 Mod Water Breathing
-    "MOD_REPUTATION_ADJUST",                            // 156 Mod Reputation Gain
-    "PET_DAMAGE_MULTI",                                 // 157 Mod Pet Damage
-    "MOD_SHIELD_BLOCK",                                 // 158 Mod Shield Block
-    "NO_PVP_CREDIT",                                    // 159 No PVP Credit
-    "MOD_SIDE_REAR_PDAE_DAMAGE_TAKEN",                  // 160 Mod Side/Rear PBAE Damage Taken
-    "MOD_HEALTH_REGEN_IN_COMBAT",                       // 161 Mod Health Regen In Combat
-    "POWER_BURN",                                       // 162 Power Burn
-    "MOD_CRIT_DAMAGE_BONUS_MELEE",                      // 163 Mod Critical Damage Bonus (Physical)
-    "",                                                 // 164
-    "MELEE_ATTACK_POWER_ATTACKER_BONUS",                // 165 Melee AP Attacker Bonus
-    "MOD_ATTACK_POWER_PCT",                             // 166 Mod Attack Power
-    "MOD_RANGED_ATTACK_POWER_PCT",                      // 167 Mod Ranged Attack Power %
-    "INCREASE_DAMAGE",                                  // 168 Increase Damage Type
-    "INCREASE_CRITICAL",                                // 169 Increase Critical Type
-    "DETECT_AMORE",                                     // 170 Detect Amore
-    "",                                                 // 171
-    "INCREASE_MOVEMENT_AND_MOUNTED_SPEED",              // 172 Increase Movement and Mounted Speed (Non-Stacking)
-    "",                                                 // 173
-    "INCREASE_SPELL_DAMAGE_PCT",                        // 174 Increase Spell Damage by % status
-    "INCREASE_SPELL_HEALING_PCT",                       // 175 Increase Spell Healing by % status
-    "SPIRIT_OF_REDEMPTION",                             // 176 Spirit of Redemption Auras
-    "AREA_CHARM",                                       // 177 Area Charm
-    "",                                                 // 178
-    "INCREASE_ATTACKER_SPELL_CRIT",                     // 179 Increase Attacker Spell Crit Type
-    "INCREASE_SPELL_DAMAGE_VS_TYPE",                    // 180 Increase Spell Damage Type
-    "",                                                 // 181
-    "INCREASE_ARMOR_BASED_ON_INTELLECT_PCT",            // 182 Increase Armor based on Intellect
-    "DECREASE_CRIT_THREAT",                             // 183 Decrease Critical Threat by
-    "DECREASE_ATTACKER_CHANCE_TO_HIT_MELEE",            // 184 Reduces Attacker Chance to Hit with Melee
-    "DECREASE_ATTACKER_CHANGE_TO_HIT_RANGED",           // 185 Reduces Attacker Chance to Hit with Ranged
-    "DECREASE_ATTACKER_CHANGE_TO_HIT_SPELLS",           // 186 Reduces Attacker Chance to Hit with Spells
-    "DECREASE_ATTACKER_CHANGE_TO_CRIT_MELEE",           // 187 Reduces Attacker Chance to Crit with Melee (Ranged?)
-    "DECREASE_ATTACKER_CHANGE_TO_CRIT_RANGED",          // 188 Reduces Attacker Chance to Crit with Ranged (Melee?)
-    "",                                                 // 189
-    "INCREASE_REPUTATION",                              // 190 Increases reputation from killed creatures
-    "SPEED_LIMIT",                                      // 191 speed limit
-    "MELEE_SLOW_PCT",                                   // 192
-    "INCREASE_TIME_BETWEEN_ATTACKS",                    // 193
-    "INCREASE_SPELL_DAMAGE_PCT_OF_INTELLECT",           // 194 NOT USED ANYMORE - 174 used instead
-    "INCREASE_HEALING_PCT_OF_INTELLECT",                // 195 NOT USED ANYMORE - 175 used instead
-    "MOD_ALL_WEAPON_SKILLS",                            // 196
-    "REDUCE_ATTACKER_CRICTICAL_HIT_CHANCE_PCT",         // 197
-    "",                                                 // 198
-    "INCREASE_SPELL_HIT_PCT",                           // 199
-    "",                                                 // 200
-    "CANNOT_BE_DODGED",                                 // 201
-    "FINISHING_MOVES_CANNOT_BE_DODGED",                 // 202
-    "REDUCE_ATTACKER_CRICTICAL_HIT_DAMAGE_MELEE_PCT",   // 203
-    "REDUCE_ATTACKER_CRICTICAL_HIT_DAMAGE_RANGED_PCT",  // 204
-    "",                                                 // 205
-    "SPELL_AURA_ENABLE_FLIGHT",                         // 206
-    "SPELL_AURA_ENABLE_FLIGHT2",                        // 207
-    "SPELL_AURA_ENABLE_FLIGHT_WITH_UNMOUNTED_SPEED",    // 208
-    "",                                                 // 209
-    "",                                                 // 210
-    "",                                                 // 211
-    "INCREASE_RANGED_ATTACK_POWER_PCT_OF_INTELLECT",    // 212
-    "INCREASE_RAGE_FROM_DAMAGE_DEALT_PCT",              // 213
-    "",                                                 // 214
-    "",                                                 // 215
-    "INCREASE_CASTING_TIME_PCT",                        // 216
-    "",                                                 // 217
-    "",                                                 // 218
-    "REGEN_MANA_STAT_PCT",                              // 219
-    "HEALING_STAT_PCT",                                 // 220
-    "",                                                 // 221
-    "",                                                 // 222
-    "",                                                 // 223
-    "",                                                 // 224
-    "",                                                 // 225
-    "PERIODIC_TRIGGER_DUMMY",                           // 226
-    "TRIGGER_SPELL_WITH_VALUE",                         // 227 Used by Mind Flay and some other spells.
-    "",                                                 // 228
-    "SPELL_AURA_REDUCE_AOE_DAMAGE_TAKEN",               // 229
-    "INCREASE_MAX_HEALTH",                              // 230 Used by Commanding Shout
-    "SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE",         // 231
-    "SPELL_AURA_MECHANIC_DURATION_MOD",                 // 232
-    "",                                                 // 233
-    "",                                                 // 234
-    "",                                                 // 235
-    "CONTROL_VEHICLE",                                  // 236
-    "SPELL_AURA_MOD_HEALING_FROM_AP",                   // 237
-    "SPELL_AURA_MOD_SPELL_DAMAGE_FROM_AP",              // 238
-    "",                                                 // 239
-    "EXPERTISE",                                        // 240
-    "241",                                              // 241
-    "MOD_SPELL_DAMAGE_FROM_HEALING",                    // 242
-    "243",                                              // 243
-    "244",                                              // 244
-    "MOD_DURATION_OF_MAGIC_EFFECTS",                    // 245
-    "246",                                              // 246
-    "247",                                              // 247
-    "MOD_COMBAT_RESULT_CHANCE",                         // 248
-    "CONVERT_RUNE",                                     // 249 Convert rune
-    "MOD_INCREASE_HEALTH_2",                            // 250
-    "MOD_ENEMY_DODGE",                                  // 251
-    "",                                                 // 252
-    "SPELL_AURA_BLOCK_MULTIPLE_DAMAGE",                 // 253
-    "SPELL_AURA_MOD_DISARM_OFFHAND",                    // 254
-    "SPELL_AURA_MOD_MECHANIC_DAMAGE_TAKEN_PERCENT",     // 255
-    "",                                                 // 256
-    "",                                                 // 257
-    "",                                                 // 258
-    "",                                                 // 259
-    "",                                                 // 260
-    "SPELL_AURA_SET_PHASE",                             // 261
-    "SPELL_AURA_IGNORE_TARGET_AURA_STATE",              // 262
-    "SPELL_AURA_ALLOW_ONLY_ABILITY",                    // 263
-    "",                                                 // 264
-    "",                                                 // 265
-    "",                                                 // 266
-    "",                                                 // 267
-    "MOD_SHAMMY_ATTACK_POWER",                          // 268 Mental Dexterity (increases ap by x% of intellect)
-    "",                                                 // 269
-    "",                                                 // 270
-    "SPELL_AURA_INCREASE_SPELL_DOT_DAMAGE_PCT",         // 271
-    "",                                                 // 272
-    "",                                                 // 273
-    "SPELL_AURA_CONSUMES_NO_AMMO",                      // 274
-    "SPELL_AURA_IGNORE_SHAPESHIFT",                     // 275 Ignores form/shapeshift requirements
-    "",                                                 // 276
-    "",                                                 // 277
-    "SPELL_AURA_MOD_DISARM_RANGED",                     // 278
-    "",                                                 // 279
-    "SPELL_AURA_IGNORE_ARMOR_PCT",                      // 280
-    "",                                                 // 281
-    "SPELL_AURA_MOD_BASE_HEALTH",                       // 282
-    "",                                                 // 283
-    "",                                                 // 284
-    "SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR",             // 285
-    "SPELL_AURA_ALLOW_CRIT_PERIODIC_DAMAGE",            // 286
-    "SPELL_AURA_DEFLECT_SPELLS",                        // 287
-    "",                                                 // 288
-    "",                                                 // 289
-    "",                                                 // 290
-    "",                                                 // 291
-    "SPELL_AURA_CALL_STABLED_PET",                      // 292
-    "",                                                 // 293
-    "",                                                 // 294
-    "",                                                 // 295
-    "",                                                 // 296
-    "",                                                 // 297
-    "",                                                 // 298
-    "",                                                 // 299
-    "",                                                 // 300
-    "",                                                 // 301
-    "",                                                 // 302
-    "",                                                 // 303
-    "",                                                 // 304
-    "",                                                 // 305
-    "",                                                 // 306
-    "",                                                 // 307
-    "",                                                 // 308
-    "",                                                 // 309
-    "",                                                 // 310
-    "",                                                 // 311
-    "",                                                 // 312
-    "",                                                 // 313
-    "",                                                 // 314
-    "",                                                 // 315
-    ""                                                  // 316
+    "SPELL_AURA_NULL_0",                                                    //   0 None
+    "SPELL_AURA_BIND_SIGHT",                                                //   1 Bind Sight
+    "SPELL_AURA_MOD_POSSESS",                                               //   2 Mod Possess
+    "SPELL_AURA_PERIODIC_DAMAGE",                                           //   3 Periodic Damage
+    "SPELL_AURA_DUMMY",                                                     //   4 Script Aura
+    "SPELL_AURA_MOD_CONFUSE",                                               //   5 Mod Confuse
+    "SPELL_AURA_MOD_CHARM",                                                 //   6 Mod Charm
+    "SPELL_AURA_MOD_FEAR",                                                  //   7 Mod Fear
+    "SPELL_AURA_PERIODIC_HEAL",                                             //   8 Periodic Heal
+    "SPELL_AURA_MOD_ATTACK_SPEED",                                          //   9 Mod Attack Speed
+    "SPELL_AURA_MOD_THREAT_GENERATED",                                      //  10 Mod Threat
+    "SPELL_AURA_MOD_TAUNT",                                                 //  11 Taunt
+    "SPELL_AURA_MOD_STUN",                                                  //  12 Stun
+    "SPELL_AURA_MOD_DAMAGE_DONE",                                           //  13 Mod Damage Done
+    "SPELL_AURA_MOD_DAMAGE_TAKEN",                                          //  14 Mod Damage Taken
+    "SPELL_AURA_DAMAGE_SHIELD",                                             //  15 Damage Shield
+    "SPELL_AURA_MOD_STEALTH",                                               //  16 Mod Stealth
+    "SPELL_AURA_MOD_STEALTH_DETECTION",                                     //  17 Mod Detect
+    "SPELL_AURA_MOD_INVISIBILITY",                                          //  18 Mod Invisibility
+    "SPELL_AURA_MOD_INVISIBILITY_DETECTION",                                //  19 Mod Invisibility Detection
+    "SPELL_AURA_MOD_TOTAL_HEALTH_REGEN_PCT",                                //  20
+    "SPELL_AURA_MOD_TOTAL_MANA_REGEN_PCT",                                  //  21
+    "SPELL_AURA_MOD_RESISTANCE",                                            //  22 Mod Resistance
+    "SPELL_AURA_PERIODIC_TRIGGER_SPELL",                                    //  23 Periodic Trigger
+    "SPELL_AURA_PERIODIC_ENERGIZE",                                         //  24 Periodic Energize
+    "SPELL_AURA_MOD_PACIFY",                                                //  25 Pacify
+    "SPELL_AURA_MOD_ROOT",                                                  //  26 Root
+    "SPELL_AURA_MOD_SILENCE",                                               //  27 Silence
+    "SPELL_AURA_REFLECT_SPELLS",                                            //  28 Reflect Spells %
+    "SPELL_AURA_MOD_STAT",                                                  //  29 Mod Stat
+    "SPELL_AURA_MOD_SKILL",                                                 //  30 Mod Skill
+    "SPELL_AURA_MOD_INCREASE_SPEED",                                        //  31 Mod Speed
+    "SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED",                                //  32 Mod Speed Mounted
+    "SPELL_AURA_MOD_DECREASE_SPEED",                                        //  33 Mod Speed Slow
+    "SPELL_AURA_MOD_INCREASE_HEALTH",                                       //  34 Mod Increase Health
+    "SPELL_AURA_MOD_INCREASE_ENERGY",                                       //  35 Mod Increase Energy
+    "SPELL_AURA_MOD_SHAPESHIFT",                                            //  36 Shapeshift
+    "SPELL_AURA_MOD_EFFECT_IMMUNITY",                                       //  37 Immune Effect
+    "SPELL_AURA_MOD_STATE_IMMUNITY",                                        //  38 Immune State
+    "SPELL_AURA_MOD_SCHOOL_IMMUNITY",                                       //  39 Immune School
+    "SPELL_AURA_MOD_DMG_IMMUNITY",                                          //  40 Immune Damage
+    "SPELL_AURA_MOD_DISPEL_IMMUNITY",                                       //  41 Immune Dispel Type
+    "SPELL_AURA_PROC_TRIGGER_SPELL",                                        //  42 Proc Trigger Spell
+    "SPELL_AURA_PROC_TRIGGER_DAMAGE",                                       //  43 Proc Trigger Damage
+    "SPELL_AURA_TRACK_CREATURES",                                           //  44 Track Creatures
+    "SPELL_AURA_TRACK_RESOURCES",                                           //  45 Track Resources
+    "SPELL_AURA_NULL_46",                                                   //  46 Mod Parry Skill
+    "SPELL_AURA_MOD_PARRY_PERC",                                            //  47 Mod Parry Percent
+    "SPELL_AURA_NULL_48",                                                   //  48 Mod Dodge Skill
+    "SPELL_AURA_MOD_DODGE_PERC",                                            //  49 Mod Dodge Percent
+    "SPELL_AURA_NULL_50",                                                   //  50 Mod Block Skill
+    "SPELL_AURA_MOD_BLOCK_PERC",                                            //  51 Mod Block Percent
+    "SPELL_AURA_MOD_CRIT_PERC",                                             //  52 Mod Crit Percent
+    "SPELL_AURA_PERIODIC_LEECH",                                            //  53 Periodic Leech
+    "SPELL_AURA_MOD_HIT_CHANCE",                                            //  54 Mod Hit Chance
+    "SPELL_AURA_MOD_SPELL_HIT_CHANCE",                                      //  55 Mod Spell Hit Chance
+    "SPELL_AURA_TRANSFORM",                                                 //  56 Transform
+    "SPELL_AURA_MOD_SPELL_CRIT_CHANCE",                                     //  57 Mod Spell Crit Chance
+    "SPELL_AURA_INCREASE_SWIM_SPEED",                                       //  58 Mod Speed Swim
+    "SPELL_AURA_MOD_CRATURE_DMG_DONE",                                      //  59 Mod Creature Dmg Done
+    "SPELL_AURA_PACIFY_SILENCE",                                            //  60 Pacify & Silence
+    "SPELL_AURA_MOD_SCALE",                                                 //  61 Mod Scale
+    "SPELL_AURA_PERIODIC_HEALTH_FUNNEL",                                    //  62 Periodic Health Funnel
+    "SPELL_AURA_NULL_63",                                                   //  63 Periodic Mana Funnel
+    "SPELL_AURA_PERIODIC_MANALEECH",                                        //  64 Periodic Mana Leech
+    "SPELL_AURA_MOD_CASTING_SPEED",                                         //  65 Haste - Spells
+    "SPELL_AURA_FEIGN_DEATH",                                               //  66 Feign Death
+    "SPELL_AURA_MOD_DISARM",                                                //  67 Disarm
+    "SPELL_AURA_MOD_STALKED",                                               //  68 Mod Stalked
+    "SPELL_AURA_SCHOOL_ABSORB",                                             //  69 School Absorb
+    "SPELL_AURA_NULL_70",                                                   //  70 Extra Attacks
+    "SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL",                              //  71 Mod School Spell Crit Chance
+    "SPELL_AURA_MOD_POWER_COST",                                            //  72 Mod Power Cost
+    "SPELL_AURA_MOD_POWER_COST_SCHOOL",                                     //  73 Mod School Power Cost
+    "SPELL_AURA_REFLECT_SPELLS_SCHOOL",                                     //  74 Reflect School Spells %
+    "SPELL_AURA_MOD_LANGUAGE",                                              //  75 Mod Language
+    "SPELL_AURA_ADD_FAR_SIGHT",                                             //  76 Far Sight
+    "SPELL_AURA_MECHANIC_IMMUNITY",                                         //  77 Immune Mechanic
+    "SPELL_AURA_MOUNTED",                                                   //  78 Mounted
+    "SPELL_AURA_MOD_DAMAGE_PERC_DONE",                                      //  79 Mod Dmg %
+    "SPELL_AURA_MOD_PERC_STAT",                                             //  80 Mod Stat %
+    "SPELL_AURA_SPLIT_DAMAGE",                                              //  81 Split Damage
+    "SPELL_AURA_WATER_BREATHING",                                           //  82 Water Breathing
+    "SPELL_AURA_MOD_BASE_RESISTANCE",                                       //  83 Mod Base Resistance
+    "SPELL_AURA_MOD_REGEN",                                                 //  84 Mod Health Regen
+    "SPELL_AURA_MOD_POWER_REGEN",                                           //  85 Mod Power Regen
+    "SPELL_AURA_CHANNEL_DEATH_ITEM",                                        //  86 Create Death Item
+    "SPELL_AURA_MOD_DAMAGE_PERC_TAKEN",                                     //  87 Mod Dmg % Taken
+    "SPELL_AURA_MOD_REGEN_PERCENT",                                         //  88 Mod Health Regen Percent
+    "SPELL_AURA_PERIODIC_DAMAGE_PERCENT",                                   //  89 Periodic Damage Percent
+    "SPELL_AURA_MOD_RESIST_CHANCE",                                         //  90 Mod Resist Chance
+    "SPELL_AURA_MOD_DETECT_RANGE",                                          //  91 Mod Detect Range
+    "SPELL_AURA_PREVENTS_FLEEING",                                          //  92 Prevent Fleeing
+    "SPELL_AURA_MOD_UNATTACKABLE",                                          //  93 Mod Uninteractible
+    "SPELL_AURA_INTERRUPT_REGEN",                                           //  94 Interrupt Regen
+    "SPELL_AURA_GHOST",                                                     //  95 Ghost
+    "SPELL_AURA_MAGNET",                                                    //  96 Spell Magnet
+    "SPELL_AURA_MANA_SHIELD",                                               //  97 Mana Shield
+    "SPELL_AURA_SKILL_TALENT",                                              //  98 Mod Skill Talent
+    "SPELL_AURA_MOD_ATTACK_POWER",                                          //  99 Mod Attack Power
+    "SPELL_AURA_VISIBLE",                                                   // 100 Auras Visible
+    "SPELL_AURA_MOD_RESISTANCE_PCT",                                        // 101 Mod Resistance %
+    "SPELL_AURA_MOD_CREATURE_ATTACK_POWER",                                 // 102 Mod Creature Attack Power
+    "SPELL_AURA_MOD_TOTAL_THREAT",                                          // 103 Mod Total Threat (Fade)
+    "SPELL_AURA_WATER_WALK",                                                // 104 Water Walk
+    "SPELL_AURA_FEATHER_FALL",                                              // 105 Feather Fall
+    "SPELL_AURA_HOVER",                                                     // 106 Hover
+    "SPELL_AURA_ADD_FLAT_MODIFIER",                                         // 107 Add Flat Modifier
+    "SPELL_AURA_ADD_PCT_MOD",                                               // 108 Add % Modifier
+    "SPELL_AURA_ADD_CLASS_TARGET_TRIGGER",                                  // 109 Add Class Target Trigger
+    "SPELL_AURA_MOD_POWER_REG_PERC",                                        // 110 Mod Power Regen %
+    "SPELL_AURA_NULL_111",                                                  // 111 Add Class Caster Hit Trigger
+    "SPELL_AURA_OVERRIDE_CLASS_SCRIPTS",                                    // 112 Override Class Scripts
+    "SPELL_AURA_MOD_RANGED_DAMAGE_TAKEN",                                   // 113 Mod Ranged Dmg Taken
+    "SPELL_AURA_NULL_114",                                                  // 114 Mod Ranged % Dmg Taken
+    "SPELL_AURA_MOD_HEALING",                                               // 115 Mod Healing
+    "SPELL_AURA_IGNORE_REGEN_INTERRUPT",                                    // 116 Regen During Combat
+    "SPELL_AURA_MOD_MECHANIC_RESISTANCE",                                   // 117 Mod Mechanic Resistance
+    "SPELL_AURA_MOD_HEALING_PCT",                                           // 118 Mod Healing %
+    "SPELL_AURA_NULL_119",                                                  // 119 Share Pet Tracking
+    "SPELL_AURA_UNTRACKABLE",                                               // 120 Untrackable
+    "SPELL_AURA_EMPHATY",                                                   // 121 Empathy (Lore, whatever)
+    "SPELL_AURA_MOD_OFFHANDDAMAGE_PCT",                                     // 122 Mod Offhand Dmg %
+    "SPELL_AURA_MOD_PENETRATION",                                           // 123 Mod Power Cost % (armor penetration & spell penetration. NOT power cost!)
+    "SPELL_AURA_MOD_RANGED_ATTACK_POWER",                                   // 124 Mod Ranged Attack Power
+    "SPELL_AURA_MOD_MELEE_DAMAGE_TAKEN",                                    // 125 Mod Melee Dmg Taken
+    "SPELL_AURA_MOD_MELEE_DAMAGE_TAKEN_PCT",                                // 126 Mod Melee % Dmg Taken
+    "SPELL_AURA_RAP_ATTACKER_BONUS",                                        // 127 Rngd Atk Pwr Attckr Bonus
+    "SPELL_AURA_MOD_POSSESS_PET",                                           // 128 Mod Possess Pet
+    "SPELL_AURA_MOD_INCREASE_SPEED_ALWAYS",                                 // 129 Mod Speed Always
+    "SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED",                                // 130 Mod Mounted Speed Always
+    "SPELL_AURA_MOD_CREATURE_RANGED_ATTACK_POWER",                          // 131 Mod Creature Ranged Attack Power
+    "SPELL_AURA_MOD_INCREASE_ENERGY_PERC",                                  // 132 Mod Increase Energy %
+    "SPELL_AURA_MOD_INCREASE_HEALTH_PERC",                                  // 133 Mod Max Health %
+    "SPELL_AURA_MOD_MANA_REG_INTERRUPT",                                    // 134 Mod Interrupted Mana Regen
+    "SPELL_AURA_MOD_HEALING_DONE",                                          // 135 Mod Healing Done
+    "SPELL_AURA_MOD_HEALING_DONE_PCT",                                      // 136 Mod Healing Done %
+    "SPELL_AURA_MOD_TOTAL_STAT_PERC",                                       // 137 Mod Total Stat %
+    "SPELL_AURA_MOD_HASTE",                                                 // 138 Haste - Melee
+    "SPELL_AURA_FORCE_REACTION",                                            // 139 Force Reaction
+    "SPELL_AURA_MOD_RANGED_HASTE",                                          // 140 Haste - Ranged
+    "SPELL_AURA_MOD_RANGED_AMMO_HASTE",                                     // 141 Haste - Ranged (Ammo Only)
+    "SPELL_AURA_MOD_BASE_RESISTANCE_PERC",                                  // 142 Mod Base Resistance %
+    "SPELL_AURA_MOD_RESISTANCE_EXCLUSIVE",                                  // 143 Mod Resistance Exclusive
+    "SPELL_AURA_SAFE_FALL",                                                 // 144 Safe Fall
+    "SPELL_AURA_NULL_145",                                                  // 145 Charisma
+    "SPELL_AURA_NULL_146",                                                  // 146 Persuaded
+    "SPELL_AURA_NULL_147",                                                  // 147 Add Creature Immunity // https://www.wowhead.com/spell=36798/
+    "SPELL_AURA_RETAIN_COMBO_POINTS",                                       // 148 Retain Combo Points
+    "SPELL_AURA_RESIST_PUSHBACK",                                           // 149 Resist Pushback // Simply resist spell casting delay
+    "SPELL_AURA_MOD_SHIELD_BLOCK_PCT",                                      // 150 Mod Shield Block %
+    "SPELL_AURA_TRACK_STEALTHED",                                           // 151 Track Stealthed
+    "SPELL_AURA_MOD_DETECTED_RANGE",                                        // 152 Mod Detected Range
+    "SPELL_AURA_SPLIT_DAMAGE_FLAT",                                         // 153 Split Damage Flat
+    "SPELL_AURA_MOD_STEALTH_LEVEL",                                         // 154 Stealth Level Modifier
+    "SPELL_AURA_MOD_UNDERWATER_BREATHING",                                  // 155 Mod Water Breathing
+    "SPELL_AURA_MOD_REPUTATION_ADJUST",                                     // 156 Mod Reputation Gain
+    "SPELL_AURA_NULL_157",                                                  // 157 Mod Pet Damage
+    "SPELL_AURA_MOD_BLOCK_VALUE",                                           // 158 used Apply Aura: Mod Shield Block // https://classic.wowhead.com/spell=25036/
+    "SPELL_AURA_NO_PVP_CREDIT",                                             // 159 used Apply Aura: No PVP Credit // https://classic.wowhead.com/spell=2479/
+    "SPELL_AURA_NULL_160",                                                  // 160 used Apply Aura: Mod Side/Rear PBAE Damage Taken % // https://classic.wowhead.com/spell=23198
+    "SPELL_AURA_MOD_HEALTH_REG_IN_COMBAT",                                  // 161 Mod Health Regen In Combat
+    "SPELL_AURA_POWER_BURN",                                                // 162 Power Burn
+    "SPELL_AURA_MOD_CRIT_DMG_PHYSICAL",                                     // 163 missing Apply Aura: Mod Critical Damage Bonus (Physical)
+    "SPELL_AURA_NULL_164",                                                  // 164 missing used // test spell
+    "SPELL_AURA_AP_ATTACKER_BONUS",                                         // 165 Melee AP Attacker Bonus
+    "SPELL_AURA_MOD_P_ATTACK_POWER",                                        // 166 missing used Apply Aura: Mod Attack Power % // https://classic.wowhead.com/spell=30803/
+    "SPELL_AURA_MOD_RANGED_ATTACK_POWER_PCT",                               // 167 Mod Ranged Attack Power % // missing // http://www.thottbot.com/s34485
+    "SPELL_AURA_INCREASE_DAMAGE_TYPE_PCT",                                  // 168 missing used // Apply Aura: Increase Damage % *type* // https://classic.wowhead.com/spell=24991
+    "SPELL_AURA_INCREASE_CRICTICAL_TYPE_PCT",                               // 169 missing used // Apply Aura: Increase Critical % *type* // https://classic.wowhead.com/spell=24293
+    "SPELL_AURA_NULL_170",                                                  // 170 Detect Amore // Apply Aura: Detect Amore // https://classic.wowhead.com/spell=26802
+    "SPELL_AURA_INCREASE_PARTY_SPEED",                                      // 171
+    "SPELL_AURA_INCREASE_MOVEMENT_AND_MOUNTED_SPEED",                       // 172 // used // Apply Aura: Increase Movement and Mounted Speed (Non-Stacking) // https://classic.wowhead.com/spell=26022 2e effect
+    "SPELL_AURA_NULL_173",                                                  // 173 // Apply Aura: Allow Champion Spells
+    "SPELL_AURA_INCREASE_SPELL_DAMAGE_BY_ATTRIBUTE",                        // 174 // used // Apply Aura: Increase Spell Damage by % Spirit (Spells) // https://classic.wowhead.com/spell=15031
+    "SPELL_AURA_INCREASE_HEALING_BY_ATTRIBUTE",                             // 175 // used // Apply Aura: Increase Spell Healing by % Spirit // https://classic.wowhead.com/spell=15031
+    "SPELL_AURA_SPIRIT_OF_REDEMPTION",                                      // 176 // used // Apply Aura: Spirit of Redemption
+    "SPELL_AURA_NULL_177",                                                  // 177 // used // Apply Aura: Area Charm // https://classic.wowhead.com/spell=26740
+    "SPELL_AURA_NULL_178",                                                  // 178 missing // Apply Aura: Increase Debuff Resistance 
+    "SPELL_AURA_INCREASE_ATTACKER_SPELL_CRIT",                              // 179 Apply Aura: Increase Attacker Spell Crit % *type* // https://classic.wowhead.com/spell=12579
+    "SPELL_AURA_NULL_180",                                                  // 180 // Apply Aura: Increase Spell Damage *type* // https://classic.wowhead.com/spell=29113
+    "SPELL_AURA_NULL_181",                                                  // 181 missing
+    "SPELL_AURA_INCREASE_ARMOR_BY_PCT_INT",                                 // 182 missing // Apply Aura: Increase Armor by % of Intellect // https://classic.wowhead.com/spell=28574
+    "SPELL_AURA_NULL_183",                                                  // 183 // used // Apply Aura: Decrease Critical Threat by % (Spells) // https://classic.wowhead.com/spell=28746/ (SPELL_AURA_MOD_CRITICAL_THREAT)
+    "SPELL_AURA_REDUCE_ATTACKER_M_HIT_CHANCE",                              // 184 // Apply Aura: Reduces Attacker Chance to Hit with Melee // http://www.thottbot.com/s31678
+    "SPELL_AURA_REDUCE_ATTACKER_R_HIT_CHANCE",                              // 185 // Apply Aura: Reduces Attacker Chance to Hit with Ranged // https://classic.wowhead.com/spell=30895
+    "SPELL_AURA_REDUCE_ATTACKER_S_HIT_CHANCE",                              // 186 // Apply Aura: Reduces Attacker Chance to Hit with Spells (Spells) // https://classic.wowhead.com/spell=30895
+    "SPELL_AURA_REDUCE_ENEMY_M_CRIT_CHANCE",                                // 187 missing // used // Apply Aura: Reduces Attacker Chance to Crit with Melee (Ranged?)
+    "SPELL_AURA_REDUCE_ENEMY_R_CRIT_CHANCE",                                // 188 missing // used // Apply Aura: Reduces Attacker Chance to Crit with Ranged (Melee?)
+    "SPELL_AURA_INCREASE_RATING",                                           // 189 missing // Apply Aura: Increases Rating
+    "SPELL_AURA_INCREASE_REP_GAIN_PCT",                                     // 190 // used // Apply Aura: Increases Reputation Gained by % // https://classic.wowhead.com/spell=30754/ (SPELL_AURA_MOD_FACTION_REPUTATION_GAIN)
+    "SPELL_AURA_LIMIT_SPEED",                                               // 191 speed limit // https://classic.wowhead.com/spell=29894/
+    "SPELL_AURA_MELEE_HASTE",                                               // 192 Apply Aura: Melee Slow %
+    "SPELL_AURA_INCREASE_TIME_BETWEEN_ATTACKS_PCT",                         // 193 Apply Aura: Increase Time Between Attacks (Melee, Ranged and Spell) by %
+    "SPELL_AURA_NULL_194",                                                  // 194 NOT USED ANYMORE - 174 used instead // Apply Aura: Increase Spell Damage by % of Intellect (All)
+    "SPELL_AURA_NULL_195",                                                  // 195 NOT USED ANYMORE - 175 used instead // Apply Aura: Increase Healing by % of Intellect
+    "SPELL_AURA_NULL_196",                                                  // 196 Apply Aura: Mod All Weapon Skills (6)
+    "SPELL_AURA_MOD_ATTACKER_CRIT_CHANCE",                                  // 197 Apply Aura: Reduce Attacker Critical Hit Chance by %
+    "SPELL_AURA_INCREASE_ALL_WEAPON_SKILL",                                 // 198
+    "SPELL_AURA_INCREASE_HIT_RATE",                                         // 199 Apply Aura: Increases Spell % To Hit (Fire, Nature, Frost)
+    "SPELL_AURA_NULL_200",                                                  // 200 Increases experience earned by $s1%. Lasts $d.
+    "SPELL_AURA_ALLOW_FLIGHT",                                              // 201 isn't it same like 206 and 207?
+    "SPELL_AURA_FINISHING_MOVES_CANNOT_BE_DODGED",                          // 202 Finishing moves cannot be dodged - 32601, 44452
+    "SPELL_AURA_REDUCE_CRIT_MELEE_ATTACK_DMG",                              // 203 Apply Aura: Reduces Attacker Critical Hit Damage with Melee by %
+    "SPELL_AURA_REDUCE_CRIT_RANGED_ATTACK_DMG",                             // 204 Apply Aura: Reduces Attacker Critical Hit Damage with Ranged by %
+    "SPELL_AURA_NULL_205",                                                  // 205 "School" Vulnerability
+    "SPELL_AURA_ENABLE_FLIGHT",                                             // 206 Take flight on a worn old carpet. - Spell 43343
+    "SPELL_AURA_ENABLE_FLIGHT",                                             // 207 set fly mod flight speed?
+    "SPELL_AURA_ENABLE_FLIGHT_WITH_UNMOUNTED_SPEED",                        // 208 mod flight speed?
+    "SPELL_AURA_NULL_209",                                                  // 209 mod flight speed?
+    "SPELL_AURA_NULL_210",                                                  // 210 commentator's command - spell 42009
+    "SPELL_AURA_INCREASE_FLIGHT_SPEED",                                     // 211 Apply Aura: Increase Ranged Atk Power by % of stat
+    "SPELL_AURA_INCREASE_RAP_BY_STAT_PCT",                                  // 212 Apply Aura: Increase Rage from Damage Dealt by %
+    "SPELL_AURA_INCREASE_RAGE_FROM_DAMAGE_DEALT_PCT",                       // 213 // Tamed Pet Passive (DND)
+    "SPELL_AURA_NULL_214",                                                  // 214 // arena preparation buff - cancel soul shard requirement?
+    "SPELL_AURA_REMOVE_REAGENT_COST",                                       // 215 Increases casting time %, reuse existing handler...
+    "SPELL_AURA_MOD_CASTING_SPEED",                                         // 216 // not used
+    "SPELL_AURA_NULL_217",                                                  // 217 // increases time between ranged attacks
+    "SPELL_AURA_NULL_218",                                                  // 218 Regenerate mana equal to $s1% of your Intellect every 5 sec, even while casting
+    "SPELL_AURA_REGEN_MANA_STAT_PCT",                                       // 219 Increases your healing spells  by up to $s1% of your Strength // increases your critical strike rating by 35% of your spirit // Molten Armor only?
+    "SPELL_AURA_SPELL_HEALING_STAT_PCT",                                    // 220 Detaunt "Ignores an enemy, forcing the caster to not attack it unless there is no other target nearby. When the effect wears off, the creature will attack the most threatening target."
+    "SPELL_AURA_NULL_221",                                                  // 221 // not used
+    "SPELL_AURA_NULL_222",                                                  // 222 // used in one spell, cold stare 43593
+    "SPELL_AURA_NULL_223",                                                  // 223 // not used
+    "SPELL_AURA_NULL_224",                                                  // 224
+    "SPELL_AURA_NULL_225",                                                  // 225 // Prayer of Mending "Places a spell on the target that heals them for $s1 the next time they take damage.  When the heal occurs, Prayer of Mending jumps to a raid member within $a1 yards.  Jumps up to $n times and lasts $d after each jump.  This spell can only be placed on one target at a time."
+    "SPELL_AURA_PERIODIC_TRIGGER_DUMMY",                                    // 226 // used in brewfest spells, headless horseman, Aspect of the Viper
+    "SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE",                         // 227 // Used by Mind Flay, Siege Turrets 'Machine gun' and a few other spells.
+    "SPELL_AURA_NULL_228",                                                  // 228 Stealth Detection. https://www.wowhead.com/spell=34709 // handled in Unit::canSee
+    "SPELL_AURA_REDUCE_AOE_DAMAGE_TAKEN",                                   // 229  Apply Aura:Reduces the damage your pet takes from area of effect attacks // http://www.thottbot.com/s35694
+    "SPELL_AURA_INCREASE_MAX_HEALTH",                                       // 230 Used by Increase Max Health (commanding shout);
+    "SPELL_AURA_PROC_TRIGGER_SPELL",                                        // 231 curse a target https://www.wowhead.com/spell=40303
+    "SPELL_AURA_REDUCE_EFFECT_DURATION",                                    // 232 // Reduces duration of Magic effects by $s2%.
+    "SPELL_AURA_NULL_233",                                                  // 233 // Beer Goggles
+    "SPELL_AURA_REDUCE_EFFECT_DURATION",                                    // 234 Apply Aura: Reduces Silence or Interrupt effects, Item spell magic https://www.wowhead.com/spell=42184
+    "SPELL_AURA_NULL_235",                                                  // 235 // 33206 Instantly reduces a friendly target's threat by $44416s1%, reduces all damage taken by $s1% and increases resistance to Dispel mechanics by $s2% for $d.
+    "HANDLE_AURA_CONTROL_VEHICLE",                                          // 236
+    "SPELL_AURA_MOD_HEALING_BY_AP",                                         // 237 // increase spell healing by X pct from attack power
+    "SPELL_AURA_MOD_SPELL_DAMAGE_BY_AP",                                    // 238 // increase spell dmg by X pct from attack power
+    "SPELL_AURA_MOD_SCALE",                                                 // 239
+    "SPELL_AURA_EXPERTISE",                                                 // 240
+    "SPELL_AURA_FORCE_MOVE_FORWARD",                                        // 241 makes target to run forward
+    "SPELL_AURA_NULL_242",                                                  // 242
+    "SPELL_AURA_NULL_243",                                                  // 243
+    "SPELL_AURA_COMPREHEND_LANG",                                           // 244 allows target to understand itself while talking in different language
+    "SPELL_AURA_NULL_245",                                                  // 245
+    "SPELL_AURA_NULL_246",                                                  // 246
+    "SPELL_AURA_MIRROR_IMAGE",                                              // 247
+    "SPELL_AURA_MOD_COMBAT_RESULT_CHANCE",                                  // 248
+    "SPELL_AURA_CONVERT_RUNE",                                              // 249 Convert rune
+    "SPELL_AURA_ADD_HEALTH",                                                // 250
+    "SPELL_AURA_NULL_251",                                                  // 251 Mod Enemy Dodge
+    "SPELL_AURA_NULL_252",                                                  // 252 Reduces the target's ranged, melee attack, and casting speed by X pct for Y sec.
+    "SPELL_AURA_BLOCK_MULTIPLE_DAMAGE",                                     // 253
+    "SPELL_AURA_MOD_DISARM",                                                // 254
+    "SPELL_AURA_MOD_MECHANIC_DMG_TAKEN_PCT",                                // 255
+    "SPELL_AURA_REMOVE_REAGENT_COST",                                       // 256 Remove reagent cost
+    "SPELL_AURA_NULL_257",                                                  // 257 Mod Target Resist By Spell Class (does damage in the form of X damage, ignoring all resistances, absorption, and immunity mechanics. - http://thottbot.com/s47271)
+    "SPELL_AURA_NULL_258",                                                  // 258 Mod Spell Visual
+    "SPELL_AURA_NULL_259",                                                  // 259 Mod Periodic Damage Taken Pct - Periodic Shadow damage taken increased by 3% // http://thottbot.com/s60448
+    "SPELL_AURA_NULL_260",                                                  // 260 Screen Effect
+    "SPELL_AURA_PHASE",                                                     // 261
+    "SPELL_AURA_NULL_262",                                                  // 262
+    "SPELL_AURA_ALLOW_ONLY_ABILITY",                                        // 263
+    "SPELL_AURA_NULL_264",                                                  // 264
+    "SPELL_AURA_NULL_265",                                                  // 265
+    "SPELL_AURA_NULL_266",                                                  // 266
+    "SPELL_AURA_NULL_267",                                                  // 267 Prevent the application of harmful magical effects. used only by Dk's Anti Magic Shell
+    "SPELL_AURA_INCREASE_AP_BY_STAT_PCT",                                   // 268 Mental Dexterity (increases ap by x% of intellect)
+    "SPELL_AURA_NULL_269",                                                  // 269 Damage reduction effects ignored. (?) - http://thottbot.com/s57318
+    "SPELL_AURA_NULL_270",                                                  // 270 Ignore target resist
+    "SPELL_AURA_MOD_SPELL_DAMAGE_DOT_PCT",                                  // 271
+    "SPELL_AURA_NULL_272",                                                  // 272
+    "SPELL_AURA_NULL_273",                                                  // 273 Some sort of dummy aura? https://www.wowhead.com/spell=54844 + https://classic.wowhead.com/spell=26659
+    "SPELL_AURA_CONSUME_NO_AMMO",                                           // 274 Consumes no ammo
+    "SPELL_AURA_NULL_275",                                                  // 275 Ignores form/shapeshift requirements
+    "SPELL_AURA_NULL_276",                                                  // 276 Mod Damage % Mechanic
+    "SPELL_AURA_NULL_277",                                                  // 277
+    "SPELL_AURA_MOD_DISARM",                                                // 278
+    "SPELL_AURA_MIRROR_IMAGE2",                                             // 279 Modify models(?)
+    "SPELL_AURA_MOD_IGNORE_ARMOR_PCT",                                      // 280
+    "SPELL_AURA_NULL_281",                                                  // 281 Mod Honor gain increased by X pct. Final Reward Honor increased by X pct for Y Rank and above. https://www.wowhead.com/spell=58560 && https://www.wowhead.com/spell=58557/
+    "SPELL_AURA_MOD_BASE_HEALTH",                                           // 282
+    "SPELL_AURA_MOD_HEALING_PCT",                                           // 283 Increases all healing received by X pct
+    "SPELL_AURA_NULL_284",                                                  // 284 not used by any spells (3.08a)
+    "SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR",                                 // 285
+    "SPELL_AURA_NULL_286",                                                  // 286
+    "SPELL_AURA_DEFLECT_SPELLS",                                            // 287
+    "SPELL_AURA_NULL_288",                                                  // 288 not used by any spells (3.09) except 1 test spell.
+    "SPELL_AURA_NULL_289",                                                  // 289
+    "SPELL_AURA_NULL_290",                                                  // 290
+    "SPELL_AURA_NULL_291",                                                  // 291
+    "SPELL_AURA_CALL_STABLED_PET",                                          // 292 call stabled pet
+    "SPELL_AURA_NULL_293",                                                  // 293 2 test spells
+    "SPELL_AURA_NULL_294",                                                  // 294 2 spells, possible prevent mana regen
+    "SPELL_AURA_NULL_295",                                                  // 295
+    "SPELL_AURA_NULL_296",                                                  // 296
+    "SPELL_AURA_NULL_297",                                                  // 297
+    "SPELL_AURA_NULL_298",                                                  // 298
+    "SPELL_AURA_NULL_299",                                                  // 299
+    "SPELL_AURA_NULL_300",                                                  // 300
+    "SPELL_AURA_NULL_301",                                                  // 301
+    "SPELL_AURA_NULL_302",                                                  // 302
+    "SPELL_AURA_NULL_303",                                                  // 303
+    "SPELL_AURA_NULL_304",                                                  // 304
+    "SPELL_AURA_NULL_305",                                                  // 305
+    "SPELL_AURA_NULL_306",                                                  // 306
+    "SPELL_AURA_NULL_307",                                                  // 307
+    "SPELL_AURA_NULL_308",                                                  // 308
+    "SPELL_AURA_NULL_309",                                                  // 309
+    "SPELL_AURA_NULL_310",                                                  // 310
+    "SPELL_AURA_NULL_311",                                                  // 311
+    "SPELL_AURA_NULL_312",                                                  // 312
+    "SPELL_AURA_NULL_313",                                                  // 313
+    "SPELL_AURA_NULL_314",                                                  // 314
+    "SPELL_AURA_NULL_315",                                                  // 315
+    "SPELL_AURA_NULL_316",                                                  // 316
+    "SPELL_AURA_NULL_317",                                                  // 317
+    "SPELL_AURA_NULL_318",                                                  // 318
+    "SPELL_AURA_NULL_319",                                                  // 319
+    "SPELL_AURA_NULL_320",                                                  // 320
+    "SPELL_AURA_NULL_321",                                                  // 321
+    "SPELL_AURA_NULL_322",                                                  // 322
+    "SPELL_AURA_NULL_323",                                                  // 323
+    "SPELL_AURA_NULL_324",                                                  // 324
+    "SPELL_AURA_NULL_325",                                                  // 325
+    "SPELL_AURA_NULL_326",                                                  // 326
+    "SPELL_AURA_NULL_327",                                                  // 327
+    "SPELL_AURA_NULL_328",                                                  // 328
+    "SPELL_AURA_NULL_329",                                                  // 329
+    "SPELL_AURA_NULL_330",                                                  // 330
+    "SPELL_AURA_NULL_331",                                                  // 331
+    "SPELL_AURA_NULL_332",                                                  // 332
+    "SPELL_AURA_NULL_333",                                                  // 333
+    "SPELL_AURA_NULL_334",                                                  // 334
+    "SPELL_AURA_NULL_335",                                                  // 335
+    "SPELL_AURA_NULL_336",                                                  // 336
+    "SPELL_AURA_NULL_337",                                                  // 337
+    "SPELL_AURA_NULL_338",                                                  // 338
+    "SPELL_AURA_NULL_339",                                                  // 339
+    "SPELL_AURA_NULL_340",                                                  // 340
+    "SPELL_AURA_NULL_341",                                                  // 341
+    "SPELL_AURA_NULL_342",                                                  // 342
+    "SPELL_AURA_NULL_343",                                                  // 343
+    "SPELL_AURA_NULL_344",                                                  // 344
+    "SPELL_AURA_NULL_345",                                                  // 345
+    "SPELL_AURA_NULL_346",                                                  // 346
+    "SPELL_AURA_NULL_347",                                                  // 347
+    "SPELL_AURA_NULL_348",                                                  // 348
+    "SPELL_AURA_NULL_349",                                                  // 349
+    "SPELL_AURA_NULL_350",                                                  // 350
+    "SPELL_AURA_NULL_351",                                                  // 351
+    "SPELL_AURA_NULL_352",                                                  // 352
+    "SPELL_AURA_NULL_353",                                                  // 353
+    "SPELL_AURA_NULL_354",                                                  // 354
+    "SPELL_AURA_NULL_355",                                                  // 355
+    "SPELL_AURA_NULL_356",                                                  // 356
+    "SPELL_AURA_NULL_357",                                                  // 357
+    "SPELL_AURA_NULL_358",                                                  // 358
+    "SPELL_AURA_NULL_359",                                                  // 359
+    "SPELL_AURA_NULL_360",                                                  // 360
+    "SPELL_AURA_NULL_361",                                                  // 361
+    "SPELL_AURA_NULL_362",                                                  // 362
+    "SPELL_AURA_NULL_363",                                                  // 363
+    "SPELL_AURA_NULL_364",                                                  // 364
+    "SPELL_AURA_NULL_365",                                                  // 365
+    "SPELL_AURA_NULL_366",                                                  // 366
+    "SPELL_AURA_NULL_367",                                                  // 367
+    "SPELL_AURA_NULL_368",                                                  // 368
+    "SPELL_AURA_NULL_369",                                                  // 369
+    "SPELL_AURA_NULL_370",                                                  // 370
 };
-
 
 Player* Aura::GetPlayerCaster()
 {
@@ -1871,7 +1924,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     if (!m_target->isAlive())
         return;
 
-    if (m_target->SchoolImmunityList[GetSpellInfo()->getSchool()])
+    if (m_target->SchoolImmunityList[GetSpellInfo()->getFirstSchoolFromSchoolMask()])
     {
         if (GetUnitCaster() != nullptr)
             SendTickImmune(m_target, GetUnitCaster());
@@ -1881,7 +1934,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     float res = static_cast<float>(amount);
     uint32 abs_dmg = 0;
     int32 bonus = 0;
-    uint32 school = GetSpellInfo()->getSchool();
+    uint32 school = GetSpellInfo()->getFirstSchoolFromSchoolMask();
     Unit* c = GetUnitCaster();
     uint32 aproc = PROC_ON_ANY_HOSTILE_ACTION;
     uint32 vproc = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM;
@@ -1991,7 +2044,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     SpellInfo* sp = m_spellInfo;
 
     if (m_target->m_damageSplitTarget)
-        res = static_cast<float>(m_target->DoDamageSplitTarget(static_cast<uint32>(res), GetSpellInfo()->getSchool(), false));
+        res = static_cast<float>(m_target->DoDamageSplitTarget(static_cast<uint32>(res), GetSpellInfo()->getFirstSchoolFromSchoolMask(), false));
 
     if (c != nullptr)
         c->DealDamage(m_target, static_cast<int32>(res), 2, 0, GetSpellId());
@@ -2338,12 +2391,12 @@ void Aura::EventPeriodicHeal(uint32 amount)
 
     if (c != nullptr)
     {
-        bonus += c->HealDoneMod[m_spellInfo->getSchool()] + m_target->HealTakenMod[m_spellInfo->getSchool()];
+        bonus += c->HealDoneMod[m_spellInfo->getFirstSchoolFromSchoolMask()] + m_target->HealTakenMod[m_spellInfo->getFirstSchoolFromSchoolMask()];
         if (c->isPlayer())
         {
             for (uint8_t a = 0; a < STAT_COUNT; a++)
             {
-                bonus += float2int32(static_cast<Player*>(c)->SpellHealDoneByAttribute[a][m_spellInfo->getSchool()] * static_cast<Player*>(c)->getStat(a));
+                bonus += float2int32(static_cast<Player*>(c)->SpellHealDoneByAttribute[a][m_spellInfo->getFirstSchoolFromSchoolMask()] * static_cast<Player*>(c)->getStat(a));
             }
         }
         //Spell Coefficient, bonus to HoT part
@@ -2412,7 +2465,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
     int add = (bonus + amount > 0) ? bonus + amount : 0;
     if (c != nullptr)
     {
-        add += float2int32(add * (m_target->HealTakenPctMod[m_spellInfo->getSchool()] + c->HealDonePctMod[GetSpellInfo()->getSchool()]));
+        add += float2int32(add * (m_target->HealTakenPctMod[m_spellInfo->getFirstSchoolFromSchoolMask()] + c->HealDonePctMod[GetSpellInfo()->getFirstSchoolFromSchoolMask()]));
         spellModPercentageIntValue(c->SM_PDOT, &add, m_spellInfo->getSpellFamilyFlags());
 
         if (this->DotCanCrit())
@@ -2519,38 +2572,27 @@ void Aura::SpellAuraModAttackSpeed(bool apply)
     else
         SetPositive();
 
-    if (m_target->isPlayer())
+    if (apply)
     {
-        if (apply)
-        {
-            static_cast< Player* >(m_target)->ModAttackSpeed(mod->m_amount, MOD_MELEE);
-        }
-        else
-        {
-            static_cast< Player* >(m_target)->ModAttackSpeed(-mod->m_amount, MOD_MELEE);
-        }
-        static_cast< Player* >(m_target)->UpdateStats();
+        m_target->modAttackSpeedModifier(MELEE, mod->m_amount);
+        //\ todo: confirm this for other versions!
+#if VERSION_STRING == Classic
+        m_target->modAttackSpeedModifier(OFFHAND, mod->m_amount);
+        m_target->modAttackSpeedModifier(RANGED, mod->m_amount);
+#endif
     }
     else
     {
-        if (apply)
-        {
-            mod->fixed_amount[0] = m_target->getBaseAttackTime(MELEE) * mod->m_amount / 100;
-            mod->fixed_amount[1] = m_target->getBaseAttackTime(OFFHAND) * mod->m_amount / 100;
-            mod->fixed_amount[2] = m_target->getBaseAttackTime(RANGED) * mod->m_amount / 100;
-
-            m_target->modBaseAttackTime(MELEE, -mod->fixed_amount[0]);
-            m_target->modBaseAttackTime(OFFHAND, -mod->fixed_amount[1]);
-            m_target->modBaseAttackTime(RANGED, -mod->fixed_amount[2]);
-        }
-        else
-        {
-            m_target->modBaseAttackTime(MELEE, mod->fixed_amount[0]);
-            m_target->modBaseAttackTime(OFFHAND, mod->fixed_amount[1]);
-            m_target->modBaseAttackTime(RANGED, mod->fixed_amount[2]);
-        }
+        m_target->modAttackSpeedModifier(MELEE, -mod->m_amount);
+        //\ todo: confirm this for other versions!
+#if VERSION_STRING == Classic
+        m_target->modAttackSpeedModifier(OFFHAND, -mod->m_amount);
+        m_target->modAttackSpeedModifier(RANGED, -mod->m_amount);
+#endif
     }
 
+    if (m_target->isPlayer())
+        static_cast<Player*>(m_target)->UpdateStats();
 }
 
 void Aura::SpellAuraModThreatGenerated(bool apply)
@@ -2841,7 +2883,7 @@ void Aura::SpellAuraDamageShield(bool apply)
         DamageProc ds;// = new DamageShield();
         ds.m_damage = mod->m_amount;
         ds.m_spellId = GetSpellInfo()->getId();
-        ds.m_school = GetSpellInfo()->getSchool();
+        ds.m_school = GetSpellInfo()->getFirstSchoolFromSchoolMask();
         ds.m_flags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_MISC; //maybe later we might want to add other flags too here
         ds.owner = (void*)this;
         m_target->m_damageShields.push_back(ds);
@@ -3220,7 +3262,7 @@ void Aura::EventPeriodicHealPct(float RegenPct)
     else
         m_target->setHealth(m_target->getMaxHealth());
 
-    m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), add, 0, 0, FLAG_PERIODIC_HEAL, false);
+    m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getFirstSchoolFromSchoolMask(), add, 0, 0, FLAG_PERIODIC_HEAL, false);
 
     if (GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
     {
@@ -3502,6 +3544,7 @@ void Aura::SpellAuraPeriodicEnergize(bool apply)
 
 void Aura::EventPeriodicEnergize(uint32 amount, uint32 type)
 {
+    // Zyres: type (uint32_t) is always greater/equal 0 (POWER_TYPE_MANA)
     ARCEMU_ASSERT(type >= POWER_TYPE_MANA && type < TOTAL_PLAYER_POWER_TYPES);
 
     Unit* ucaster = GetUnitCaster();
@@ -3569,7 +3612,7 @@ void Aura::SpellAuraModRoot(bool apply)
             m_target->EventStunOrImmobilize(caster, true);
         }
 
-        if (GetSpellInfo()->getSchool() == SCHOOL_FROST && !m_target->asc_frozen++)
+        if (GetSpellInfo()->getSchoolMask() & SCHOOL_MASK_FROST && !m_target->asc_frozen++)
             m_target->addAuraStateAndAuras(AURASTATE_FLAG_FROZEN);
 
         ///\todo -Supalosa- TODO: Mobs will attack nearest enemy in range on aggro list when rooted. */
@@ -3585,7 +3628,7 @@ void Aura::SpellAuraModRoot(bool apply)
         if (m_target->isCreature())
             m_target->GetAIInterface()->AttackReaction(GetUnitCaster(), 1, 0);
 
-        if (GetSpellInfo()->getSchool() == SCHOOL_FROST && !--m_target->asc_frozen)
+        if (GetSpellInfo()->getSchoolMask() & SCHOOL_MASK_FROST && !--m_target->asc_frozen)
             m_target->removeAuraStateAndAuras(AURASTATE_FLAG_FROZEN);
     }
 }
@@ -3840,7 +3883,7 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
         }
 
         //let's check Mage talents if we proc anything
-        if (m_spellInfo->getSchool() == SCHOOL_FROST)
+        if (m_spellInfo->getSchoolMask() & SCHOOL_MASK_FROST)
         {
             //yes we are freezing the bastard, so can we proc anything on this ?
             Unit* caster = GetUnitCaster();
@@ -3874,7 +3917,7 @@ void Aura::UpdateAuraModDecreaseSpeed()
     }
 
     //let's check Mage talents if we proc anything
-    if (m_spellInfo->getSchool() == SCHOOL_FROST)
+    if (m_spellInfo->getSchoolMask() & SCHOOL_MASK_FROST)
     {
         //yes we are freezing the bastard, so can we proc anything on this ?
         Unit* caster = GetUnitCaster();
@@ -4534,7 +4577,7 @@ void Aura::SpellAuraProcTriggerDamage(bool apply)
         DamageProc ds;
         ds.m_damage = mod->m_amount;
         ds.m_spellId = GetSpellInfo()->getId();
-        ds.m_school = GetSpellInfo()->getSchool();
+        ds.m_school = GetSpellInfo()->getFirstSchoolFromSchoolMask();
         ds.m_flags = m_spellInfo->getProcFlags();
         ds.owner = (void*)this;
         m_target->m_damageShields.push_back(ds);
@@ -4719,7 +4762,7 @@ void Aura::EventPeriodicLeech(uint32 amount)
 
     SpellInfo* sp = GetSpellInfo();
 
-    if (m_target->SchoolImmunityList[sp->getSchool()])
+    if (m_target->SchoolImmunityList[sp->getFirstSchoolFromSchoolMask()])
     {
         SendTickImmune(m_target, m_caster);
         return;
@@ -4831,11 +4874,11 @@ void Aura::EventPeriodicLeech(uint32 amount)
         m_caster->setHealth(mh);
 
     m_target->SendPeriodicHealAuraLog(m_caster->GetNewGUID(), m_caster->GetNewGUID(), sp->getId(), heal_amount, 0, false);
-    m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), sp->getId(), sp->getSchool(), heal_amount, 0, 0, FLAG_PERIODIC_LEECH, is_critical);
+    m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), sp->getId(), sp->getFirstSchoolFromSchoolMask(), heal_amount, 0, 0, FLAG_PERIODIC_LEECH, is_critical);
 
     //deal damage before we add healing bonus to damage
     m_caster->DealDamage(m_target, dmg_amount, 0, 0, sp->getId(), true);
-    m_caster->SendSpellNonMeleeDamageLog(m_caster, m_target, sp->getId(), dmg_amount, (uint8)sp->getSchool(), 0, 0, true, 0, is_critical, true);
+    m_caster->SendSpellNonMeleeDamageLog(m_caster, m_target, sp->getId(), dmg_amount, sp->getFirstSchoolFromSchoolMask(), 0, 0, true, 0, is_critical, true);
 
     m_caster->HandleProc(aproc, m_target, sp, false, dmg_amount);
     m_caster->m_procCounter = 0;
@@ -5172,17 +5215,20 @@ void Aura::SpellAuraIncreaseSwimSpeed(bool apply)
 {
     if (apply)
     {
-        if (m_target->isAlive())  SetPositive();
-        m_target->m_currentSpeedSwim = 0.04722222f * (100 + mod->m_amount);
+        if (m_target->isAlive())
+            SetPositive();
+
+        m_target->setSpeedRate(TYPE_SWIM, 0.04722222f * (100 + mod->m_amount), true);
     }
     else
-        m_target->m_currentSpeedSwim = m_target->m_basicSpeedSwim;
+        m_target->setSpeedRate(TYPE_SWIM, m_target->getSpeedRate(TYPE_SWIM, false), false);
+
     if (p_target != nullptr)
     {
         WorldPacket data(SMSG_FORCE_SWIM_SPEED_CHANGE, 17);
         data << p_target->GetNewGUID();
         data << (uint32)2;
-        data << m_target->m_currentSpeedSwim;
+        data << m_target->getSpeedRate(TYPE_SWIM, true);
         p_target->GetSession()->SendPacket(&data);
     }
 }
@@ -5284,7 +5330,7 @@ void Aura::EventPeriodicHealthFunnel(uint32 amount)
         else
             m_caster->setHealth(mh);
 
-        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), 1000, 0, 0, FLAG_PERIODIC_LEECH, false);
+        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getFirstSchoolFromSchoolMask(), 1000, 0, 0, FLAG_PERIODIC_LEECH, false);
 
         m_caster->RemoveAurasByHeal();
     }
@@ -5579,7 +5625,7 @@ void Aura::SpellAuraReflectSpellsSchool(bool apply)
         if (m_spellInfo->getAttributes() == 0x400D0 && m_spellInfo->getAttributesEx() == 0)
             rss->school = (int)(log10((float)mod->m_miscValue) / log10((float)2));
         else
-            rss->school = m_spellInfo->getSchool();
+            rss->school = m_spellInfo->getFirstSchoolFromSchoolMask();
 
         rss->charges = 0;
 
@@ -5985,6 +6031,7 @@ void Aura::EventPeriodicTrigger(uint32 /*amount*/, uint32 /*type*/)
 
 void Aura::EventPeriodicEnergizeVariable(uint32 amount, uint32 type)
 {
+    // Zyres: type (uint32_t) is always greater/equal 0 (POWER_TYPE_MANA)
     ARCEMU_ASSERT(type >= POWER_TYPE_MANA && type < TOTAL_PLAYER_POWER_TYPES);
 
     Unit* ucaster = GetUnitCaster();
@@ -6091,7 +6138,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
                     item->setCreatorGuid(pCaster->getGuid());
                     if (!pCaster->getItemInterface()->AddItemToFreeSlot(item))
                     {
-                        pCaster->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
+                        pCaster->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
                         item->DeleteMe();
                         return;
                     }
@@ -6187,7 +6234,7 @@ void Aura::EventPeriodicDamagePercent(uint32 amount)
     //DOT
     if (!m_target->isAlive())
         return;
-    if (m_target->SchoolImmunityList[GetSpellInfo()->getSchool()])
+    if (m_target->SchoolImmunityList[GetSpellInfo()->getFirstSchoolFromSchoolMask()])
         return;
 
     uint32 damage = float2int32(amount / 100.0f * m_target->getMaxHealth());
@@ -6196,7 +6243,7 @@ void Aura::EventPeriodicDamagePercent(uint32 amount)
 
     if (m_target->m_damageSplitTarget)
     {
-        damage = m_target->DoDamageSplitTarget(damage, GetSpellInfo()->getSchool(), false);
+        damage = m_target->DoDamageSplitTarget(damage, GetSpellInfo()->getFirstSchoolFromSchoolMask(), false);
     }
 
     if (c)
@@ -7194,46 +7241,26 @@ void Aura::SpellAuraModHaste(bool apply)
     else
         SetPositive();
 
-    if (p_target != nullptr)
+    if (apply)
     {
-        if (apply)
-        {
-            p_target->ModAttackSpeed(mod->m_amount, MOD_MELEE);
-        }
-        else
-        {
-            p_target->ModAttackSpeed(-mod->m_amount, MOD_MELEE);
-        }
+        m_target->modAttackSpeedModifier(MELEE, mod->m_amount);
+        m_target->modAttackSpeedModifier(OFFHAND, mod->m_amount);
 
-        p_target->UpdateAttackSpeed();
+        mod->fixed_amount[mod->m_effectIndex] = m_target->getBaseAttackTime(MELEE) * mod->m_amount / 100;
+        if (m_target->isCreature())
+            static_cast<Creature*>(m_target)->m_speedFromHaste += mod->fixed_amount[mod->m_effectIndex];
     }
     else
     {
-        if (apply)
-        {
-            mod->fixed_amount[mod->m_effectIndex] = m_target->getBaseAttackTime(MELEE) * mod->m_amount / 100;
-            mod->fixed_amount[mod->m_effectIndex * 2] = m_target->getBaseAttackTime(OFFHAND) * mod->m_amount / 100;
+        m_target->modAttackSpeedModifier(MELEE, -mod->m_amount);
+        m_target->modAttackSpeedModifier(OFFHAND, -mod->m_amount);
 
-            if ((int32)m_target->getBaseAttackTime(MELEE) <= mod->fixed_amount[mod->m_effectIndex])
-                mod->fixed_amount[mod->m_effectIndex] = m_target->getBaseAttackTime(MELEE);    //watch it, a negative timer might be bad ;)
-            if ((int32)m_target->getBaseAttackTime(OFFHAND) <= mod->fixed_amount[mod->m_effectIndex * 2])
-                mod->fixed_amount[mod->m_effectIndex * 2] = m_target->getBaseAttackTime(OFFHAND); //watch it, a negative timer might be bad ;)
-
-            m_target->modBaseAttackTime(MELEE, -mod->fixed_amount[mod->m_effectIndex]);
-            m_target->modBaseAttackTime(OFFHAND, -mod->fixed_amount[mod->m_effectIndex * 2]);
-
-            if (m_target->isCreature())
-                static_cast< Creature* >(m_target)->m_speedFromHaste += mod->fixed_amount[mod->m_effectIndex];
-        }
-        else
-        {
-            m_target->modBaseAttackTime(MELEE, mod->fixed_amount[mod->m_effectIndex]);
-            m_target->modBaseAttackTime(OFFHAND, mod->fixed_amount[mod->m_effectIndex * 2]);
-
-            if (m_target->isCreature())
-                static_cast< Creature* >(m_target)->m_speedFromHaste -= mod->fixed_amount[mod->m_effectIndex];
-        }
+        if (m_target->isCreature())
+            static_cast<Creature*>(m_target)->m_speedFromHaste -= mod->fixed_amount[mod->m_effectIndex];
     }
+
+    if (m_target->isPlayer())
+        static_cast<Player*>(m_target)->UpdateAttackSpeed();
 }
 
 void Aura::SpellAuraForceReaction(bool apply)
@@ -7271,32 +7298,13 @@ void Aura::SpellAuraModRangedHaste(bool apply)
     else
         SetPositive();
 
-    if (p_target != nullptr)
-    {
-        //  int32 amount = mod->m_amount;
-        //  if (GetSpellProto()->getId() == 6150)// Quick Shots
-        //  {
-        //      Unit* pCaster = GetUnitCaster();
-        //      if (pCaster)
-        //      spellModFlatIntValue(pCaster->SM_FSPELL_VALUE,&amount,0x100000);
-        //  }
-
-        if (apply)
-            p_target->ModAttackSpeed(mod->m_amount, MOD_RANGED);
-        else
-            p_target->ModAttackSpeed(-mod->m_amount, MOD_RANGED);
-
-        p_target->UpdateAttackSpeed();
-    }
+    if (apply)
+        m_target->modAttackSpeedModifier(RANGED, mod->m_amount);
     else
-    {
-        if (apply)
-        {
-            mod->fixed_amount[mod->m_effectIndex] = m_target->getPercentModUInt32Value(UNIT_FIELD_RANGEDATTACKTIME, mod->m_amount);
-            m_target->modBaseAttackTime(RANGED, -mod->fixed_amount[mod->m_effectIndex]);
-        }
-        else m_target->modBaseAttackTime(RANGED, mod->fixed_amount[mod->m_effectIndex]);
-    }
+        m_target->modAttackSpeedModifier(RANGED, -mod->m_amount);
+
+    if (m_target->isPlayer())
+        static_cast<Player*>(m_target)->UpdateAttackSpeed();
 }
 
 void Aura::SpellAuraModRangedAmmoHaste(bool apply)
@@ -7306,9 +7314,9 @@ void Aura::SpellAuraModRangedAmmoHaste(bool apply)
         return;
 
     if (apply)
-        p_target->ModAttackSpeed(mod->m_amount, MOD_RANGED);
+        p_target->modAttackSpeedModifier(RANGED, mod->m_amount);
     else
-        p_target->ModAttackSpeed(-mod->m_amount, MOD_RANGED);
+        p_target->modAttackSpeedModifier(RANGED, -mod->m_amount);
 
     p_target->UpdateAttackSpeed();
 }
@@ -7523,13 +7531,13 @@ void Aura::EventPeriodicBurn(uint32 amount, uint32 misc)
 
     if (m_target->isAlive() && m_caster->isAlive())
     {
-        if (m_target->SchoolImmunityList[GetSpellInfo()->getSchool()])
+        if (m_target->SchoolImmunityList[GetSpellInfo()->getFirstSchoolFromSchoolMask()])
             return;
 
         uint32 Amount = (uint32)std::min(amount, m_target->getPower(static_cast<PowerType>(misc)));
         uint32 newHealth = m_target->getPower(static_cast<PowerType>(misc)) - Amount;
 
-        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), newHealth, 0, 0, FLAG_PERIODIC_DAMAGE, false);
+        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getFirstSchoolFromSchoolMask(), newHealth, 0, 0, FLAG_PERIODIC_DAMAGE, false);
         m_caster->DealDamage(m_target, Amount, 0, 0, GetSpellInfo()->getId());
     }
 }
@@ -8307,36 +8315,21 @@ void Aura::SpellAuraMeleeHaste(bool apply)
     else
         SetPositive();
 
-    if (m_target->isPlayer())
+    if (apply)
     {
-        if (apply)
-            static_cast< Player* >(m_target)->ModAttackSpeed(mod->m_amount, MOD_MELEE);
-        else
-            static_cast< Player* >(m_target)->ModAttackSpeed(-mod->m_amount, MOD_MELEE);
-
-        static_cast< Player* >(m_target)->UpdateAttackSpeed();
+        m_target->modAttackSpeedModifier(MELEE, mod->m_amount);
+        m_target->modAttackSpeedModifier(OFFHAND, mod->m_amount);
+        m_target->modAttackSpeedModifier(RANGED, mod->m_amount);
     }
     else
     {
-        if (apply)
-        {
-            mod->fixed_amount[0] = m_target->getBaseAttackTime(MELEE) * mod->m_amount / 100;
-            mod->fixed_amount[1] = m_target->getBaseAttackTime(OFFHAND) * mod->m_amount / 100;
-
-            if ((int32)m_target->getBaseAttackTime(MELEE) <= mod->fixed_amount[0])
-                mod->fixed_amount[0] = m_target->getBaseAttackTime(MELEE);
-            if ((int32)m_target->getBaseAttackTime(OFFHAND) <= mod->fixed_amount[1])
-                mod->fixed_amount[1] = m_target->getBaseAttackTime(OFFHAND);
-
-            m_target->modBaseAttackTime(MELEE, -mod->fixed_amount[0]);
-            m_target->modBaseAttackTime(OFFHAND, -mod->fixed_amount[1]);
-        }
-        else
-        {
-            m_target->modBaseAttackTime(MELEE, mod->fixed_amount[0]);
-            m_target->modBaseAttackTime(OFFHAND, mod->fixed_amount[1]);
-        }
+        m_target->modAttackSpeedModifier(MELEE, -mod->m_amount);
+        m_target->modAttackSpeedModifier(OFFHAND, -mod->m_amount);
+        m_target->modAttackSpeedModifier(RANGED, -mod->m_amount);
     }
+
+    if (m_target->isPlayer())
+        static_cast<Player*>(m_target)->UpdateAttackSpeed();
 }
 
 /*
@@ -9077,7 +9070,7 @@ void Aura::SpellAuraModSpellDamageDOTPct(bool apply)
         case 59161:
         case 59163:
         case 59164:
-            m_target->DoTPctIncrease[m_spellInfo->getSchool()] += val;
+            m_target->DoTPctIncrease[m_spellInfo->getFirstSchoolFromSchoolMask()] += val;
             break;
         default:
         {
@@ -9379,10 +9372,10 @@ void AbsorbAura::SpellAuraSchoolAbsorb(bool apply)
 
         //For spells Affected by Bonus Healing we use spell_coeff_direct.
         if (GetSpellInfo()->spell_coeff_direct > 0)
-            val += float2int32(caster->HealDoneMod[GetSpellInfo()->getSchool()] * GetSpellInfo()->spell_coeff_direct);
+            val += float2int32(caster->HealDoneMod[GetSpellInfo()->getFirstSchoolFromSchoolMask()] * GetSpellInfo()->spell_coeff_direct);
         //For spells Affected by Bonus Damage we use spell_coeff_overtime.
         else if (GetSpellInfo()->spell_coeff_overtime > 0)
-            val += float2int32(caster->GetDamageDoneMod(GetSpellInfo()->getSchool()) * GetSpellInfo()->spell_coeff_overtime);
+            val += float2int32(caster->GetDamageDoneMod(GetSpellInfo()->getFirstSchoolFromSchoolMask()) * GetSpellInfo()->spell_coeff_overtime);
     }
 
     m_total_amount = val;

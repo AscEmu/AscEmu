@@ -55,6 +55,54 @@ SpellCastResult ScriptMgr::callScriptedSpellCanCast(Spell* spell, uint32_t* para
     return spell->getSpellInfo()->spellScript->onCanCast(spell, parameter1, parameter2);
 }
 
+void ScriptMgr::callScriptedSpellAtStartCasting(Spell* spell)
+{
+    if (spell->getSpellInfo()->spellScript == nullptr)
+        return;
+
+    spell->getSpellInfo()->spellScript->doAtStartCasting(spell);
+}
+
+void ScriptMgr::callScriptedSpellFilterTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets)
+{
+    if (spell->getSpellInfo()->spellScript == nullptr)
+        return;
+
+    spell->getSpellInfo()->spellScript->filterEffectTargets(spell, effectIndex, effectTargets);
+}
+
+void ScriptMgr::callScriptedSpellBeforeHit(Spell* spell, uint8_t effectIndex)
+{
+    if (spell->getSpellInfo()->spellScript == nullptr)
+        return;
+
+    spell->getSpellInfo()->spellScript->doBeforeEffectHit(spell, effectIndex);
+}
+
+void ScriptMgr::callScriptedSpellAfterMiss(Spell* spell, Unit* unitTarget)
+{
+    if (spell->getSpellInfo()->spellScript == nullptr)
+        return;
+
+    spell->getSpellInfo()->spellScript->doAfterSpellMissed(spell, unitTarget);
+}
+
+SpellScriptExecuteState ScriptMgr::callScriptedSpellBeforeSpellEffect(Spell* spell, uint32_t effectType, uint8_t effectId) const
+{
+    if (!spell->getSpellInfo()->spellScript)
+        return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
+
+    return spell->getSpellInfo()->spellScript->beforeSpellEffect(spell, effectType, effectId);
+}
+
+void ScriptMgr::callScriptedSpellAfterSpellEffect(Spell* spell, uint32_t effectType, uint8_t effectId)
+{
+    if (!spell->getSpellInfo()->spellScript)
+        return;
+
+    spell->getSpellInfo()->spellScript->afterSpellEffect(spell, effectType, effectId);
+}
+
 void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);

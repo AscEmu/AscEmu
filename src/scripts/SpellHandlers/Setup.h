@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "Server/Script/ScriptMgr.h"
 #include "WorldConf.h"
 
 class ScriptMgr;

@@ -564,7 +564,7 @@ public:
                 auto slotresult = plr->getItemInterface()->FindFreeInventorySlot(proto);
                 if (!slotresult.Result)
                 {
-                    plr->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
+                    plr->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
                     return;
                 }
                 else

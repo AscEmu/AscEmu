@@ -214,7 +214,7 @@ void CThreadPool::Shutdown()
 {
     _mutex.Acquire();
     size_t tcount = m_activeThreads.size() + m_freeThreads.size();        // exit all
-    LogDebug("ThreadPool : Shutting down %u threads.", tcount);
+    LogDebug("ThreadPool : Shutting down %zu threads.", tcount);
     KillFreeThreads((uint32)m_freeThreads.size());
     _threadsToExit += (uint32)m_activeThreads.size();
 

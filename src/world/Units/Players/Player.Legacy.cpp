@@ -414,9 +414,6 @@ Player::Player(uint32 guid)
 
     m_resist_critical[0] = m_resist_critical[1] = 0;
 
-    for (i = 0; i < 3; i++)
-        m_attack_speed[i] = 1.0f;
-
     for (i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
         m_resist_hit_spell[i] = 0;
 
@@ -1114,7 +1111,8 @@ void Player::Update(unsigned long time_passed)
 
 void Player::EventDismount(uint32 money, float x, float y, float z)
 {
-    modCoinage(-(int32)money);
+    if (money)
+        modCoinage(-(int32)money);
 
     if (money > 0 && m_fallDisabledUntil < time(nullptr) + 5)
         m_fallDisabledUntil = time(nullptr) + 5; //VLack: If the ride wasn't free, the player shouldn't die after arrival because of fall damage... So we'll disable it for 5 seconds.
@@ -1131,7 +1129,7 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
     removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
     removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
-    setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
+    setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
 
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_INTERPOLATE);
 
@@ -2328,7 +2326,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     ss << m_zoneId << ", '";
 
-    for (uint8 i = 0; i < 12; i++)
+    for (uint32_t i = 0; i < DBC_TAXI_MASK_SIZE; i++)
         ss << m_taximask[i] << " ";
 
     ss << "', "
@@ -5744,20 +5742,6 @@ void Player::UpdateChanceFields()
 #endif
 }
 
-void Player::ModAttackSpeed(int32 mod, ModType type)
-{
-    if (mod == 0)
-        return;
-
-    if (mod > 0)
-        m_attack_speed[type] *= 1.0f + ((float)mod / 100.0f);
-    else
-        m_attack_speed[type] /= 1.0f + ((float)(-mod) / 100.0f);
-
-    if (type == MOD_SPELL)
-        setModCastSpeed(1.0f / (m_attack_speed[MOD_SPELL] * SpellHasteRatingBonus));
-}
-
 void Player::UpdateAttackSpeed()
 {
     uint32 speed = 2000;
@@ -5778,14 +5762,14 @@ void Player::UpdateAttackSpeed()
             speed = weap->getItemProperties()->Delay;
     }
     setBaseAttackTime(MELEE,
-                      (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
+                      (uint32)((float)speed / (getAttackSpeedModifier(MELEE) * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
 
     weap = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (weap != nullptr && weap->getItemProperties()->Class == ITEM_CLASS_WEAPON)
     {
         speed = weap->getItemProperties()->Delay;
         setBaseAttackTime(OFFHAND,
-                          (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
+                          (uint32)((float)speed / (getAttackSpeedModifier(OFFHAND) * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
     }
 
     weap = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
@@ -5793,7 +5777,7 @@ void Player::UpdateAttackSpeed()
     {
         speed = weap->getItemProperties()->Delay;
         setBaseAttackTime(RANGED,
-                          (uint32)((float)speed / (m_attack_speed[MOD_RANGED] * (1.0f + CalcRating(PCR_RANGED_HASTE) / 100.0f))));
+                          (uint32)((float)speed / (getAttackSpeedModifier(RANGED) * (1.0f + CalcRating(PCR_RANGED_HASTE) / 100.0f))));
     }
 }
 
@@ -6275,7 +6259,7 @@ void Player::LoadTaxiMask(const char* data)
     std::vector<std::string>::iterator iter;
 
     for (iter = tokens.begin(), index = 0;
-         (index < 12) && (iter != tokens.end()); ++iter, ++index)
+         (index < DBC_TAXI_MASK_SIZE) && (iter != tokens.end()); ++iter, ++index)
     {
         m_taximask[index] = atol((*iter).c_str());
     }
@@ -6833,7 +6817,7 @@ void Player::JumpToEndTaxiNode(TaxiPath* path)
     removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
     removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
-    setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
+    setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
 
     SafeTeleport(pathnode->mapid, 0, LocationVector(pathnode->x, pathnode->y, pathnode->z));
 
@@ -7982,7 +7966,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         setMountDisplayId(0);
         removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
         removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-        setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
     }
 
     if (obj_movement_info.transport_data.transportGuid)
@@ -8071,7 +8055,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
         removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
         removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-        setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
     }
 
     if (obj_movement_info.getTransportGuid())
@@ -10468,100 +10452,6 @@ void Player::_Cooldown_Add(uint32 Type, uint32 Misc, uint32 Time, uint32 SpellId
     LogDebugFlag(LF_SPELL, "Cooldown added cooldown for type %u misc %u time %u item %u spell %u", Type, Misc, Time - Util::getMSTime(), ItemId, SpellId);
 }
 
-void Player::Cooldown_Add(SpellInfo const* pSpell, Item* pItemCaster)
-{
-    uint32 mstime = Util::getMSTime();
-    int32 cool_time;
-    uint32 spell_id = pSpell->getId();
-    uint32 category_id = pSpell->getCategory();
-
-    uint32 spell_category_recovery_time = pSpell->getCategoryRecoveryTime();
-    if (spell_category_recovery_time > 0 && category_id)
-    {
-        spellModFlatIntValue(SM_FCooldownTime, &cool_time, pSpell->getSpellFamilyFlags());
-        spellModPercentageIntValue(SM_PCooldownTime, &cool_time, pSpell->getSpellFamilyFlags());
-
-        AddCategoryCooldown(category_id, spell_category_recovery_time + mstime, spell_id, pItemCaster ? pItemCaster->getItemProperties()->ItemId : 0);
-    }
-
-    uint32 spell_recovery_t = pSpell->getRecoveryTime();
-    if (spell_recovery_t > 0)
-    {
-        spellModFlatIntValue(SM_FCooldownTime, &cool_time, pSpell->getSpellFamilyFlags());
-        spellModPercentageIntValue(SM_PCooldownTime, &cool_time, pSpell->getSpellFamilyFlags());
-
-        _Cooldown_Add(COOLDOWN_TYPE_SPELL, spell_id, spell_recovery_t + mstime, spell_id, pItemCaster ? pItemCaster->getItemProperties()->ItemId : 0);
-    }
-}
-
-void Player::Cooldown_AddStart(SpellInfo const* pSpell)
-{
-    if (pSpell->getStartRecoveryTime() == 0)
-        return;
-
-    uint32 mstime = Util::getMSTime();
-    int32 atime; // = float2int32(float(pSpell->StartRecoveryTime) / SpellHasteRatingBonus);
-
-    if (getModCastSpeed() >= 1.0f)
-        atime = pSpell->getStartRecoveryTime();
-    else
-        atime = float2int32(pSpell->getStartRecoveryTime() * getModCastSpeed());
-
-    spellModFlatIntValue(SM_FGlobalCooldown, &atime, pSpell->getSpellFamilyFlags());
-    spellModPercentageIntValue(SM_PGlobalCooldown, &atime, pSpell->getSpellFamilyFlags());
-
-    if (atime < 0)
-        return;
-
-    if (pSpell->getStartRecoveryCategory() && pSpell->getStartRecoveryCategory() != 133)        // if we have a different cool category to the actual spell category - only used by few spells
-        AddCategoryCooldown(pSpell->getStartRecoveryCategory(), mstime + atime, pSpell->getId(), 0);
-    //else if (pSpell->Category)                // cooldowns are grouped
-    //_Cooldown_Add(COOLDOWN_TYPE_CATEGORY, pSpell->Category, mstime + pSpell->StartRecoveryTime, pSpell->getId(), 0);
-    else                                    // no category, so it's a gcd
-    {
-        //LogDebugFlag(LF_SPELL, "Cooldown Global cooldown adding: %u ms", atime);
-        m_globalCooldown = mstime + atime;
-
-    }
-}
-
-bool Player::Cooldown_CanCast(SpellInfo const* pSpell)
-{
-    PlayerCooldownMap::iterator itr;
-    uint32 mstime = Util::getMSTime();
-
-    if (pSpell->getCategory())
-    {
-        itr = m_cooldownMap[COOLDOWN_TYPE_CATEGORY].find(pSpell->getCategory());
-        if (itr != m_cooldownMap[COOLDOWN_TYPE_CATEGORY].end())
-        {
-            if (mstime < itr->second.ExpireTime)
-                return false;
-            
-            m_cooldownMap[COOLDOWN_TYPE_CATEGORY].erase(itr);
-        }
-    }
-
-    itr = m_cooldownMap[COOLDOWN_TYPE_SPELL].find(pSpell->getId());
-    if (itr != m_cooldownMap[COOLDOWN_TYPE_SPELL].end())
-    {
-        if (mstime < itr->second.ExpireTime)
-            return false;
-        
-        m_cooldownMap[COOLDOWN_TYPE_SPELL].erase(itr);
-    }
-
-    if (pSpell->getStartRecoveryTime() && m_globalCooldown && !this->m_cheats.CooldownCheat /* cebernic:GCD also cheat :D */)            /* gcd doesn't affect spells without a cooldown it seems */
-    {
-        if (mstime < m_globalCooldown)
-            return false;
-        
-        m_globalCooldown = 0;
-    }
-
-    return true;
-}
-
 void Player::Cooldown_AddItem(ItemProperties const* pProto, uint32 x)
 {
     if (pProto->Spells[x].CategoryCooldown <= 0 && pProto->Spells[x].Cooldown <= 0)
@@ -11375,7 +11265,7 @@ void Player::SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs)
         if (spellInfo->getAttributes() & ATTRIBUTES_TRIGGER_COOLDOWN)
             continue;
 
-        if (spellInfo->getSchool() == SpellSchool)
+        if (spellInfo->getFirstSchoolFromSchoolMask() == SpellSchool)
         {
             data << uint32(SpellId);
             data << uint32(unTimeMs);                       // in m.secs
@@ -11987,7 +11877,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             if (self_res_spell == 0 && bReincarnation)
             {
                 SpellInfo const* m_reincarnSpellInfo = sSpellMgr.getSpellInfo(20608);
-                if (Cooldown_CanCast(m_reincarnSpellInfo))
+                if (!hasSpellOnCooldown(m_reincarnSpellInfo))
                 {
                     uint32 ankh_count = getItemInterface()->GetItemCount(17030);
                     if (ankh_count)
@@ -12325,7 +12215,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
 
         if (getItemInterface()->CalculateFreeSlots(nullptr) < slots_required)
         {
-            getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_BAG_FULL);
+            getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_BAG_FULL);
             sQuestMgr.SendQuestFailed(FAILED_REASON_INV_FULL, qst, this);
             return;
         }
@@ -13046,8 +12936,8 @@ void Player::RemoteRevive()
 {
     ResurrectPlayer();
     setMoveRoot(false);
-    setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN, true));
-    setSpeedForType(TYPE_SWIM, getSpeedForType(TYPE_SWIM, true));
+    setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, false), true);
+    setSpeedRate(TYPE_SWIM, getSpeedRate(TYPE_SWIM, false), true);
     setMoveLandWalk();
     setHealth(getMaxHealth());
 }

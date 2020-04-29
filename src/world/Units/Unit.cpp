@@ -1312,148 +1312,20 @@ void Unit::setMoveWalk(bool set_walk)
     }
 }
 
-float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic) const
+float Unit::getSpeedRate(UnitSpeedType type, bool current) const
 {
-    switch (speed_type)
-    {
-        case TYPE_WALK:
-            return (get_basic ? m_basicSpeedWalk : m_currentSpeedWalk);
-        case TYPE_RUN:
-            return (get_basic ? m_basicSpeedRun : m_currentSpeedRun);
-        case TYPE_RUN_BACK:
-            return (get_basic ? m_basicSpeedRunBack : m_currentSpeedRunBack);
-        case TYPE_SWIM:
-            return (get_basic ? m_basicSpeedSwim : m_currentSpeedSwim);
-        case TYPE_SWIM_BACK:
-            return (get_basic ? m_basicSpeedSwimBack : m_currentSpeedSwimBack);
-        case TYPE_TURN_RATE:
-            return (get_basic ? m_basicTurnRate : m_currentTurnRate);
-        case TYPE_FLY:
-            return (get_basic ? m_basicSpeedFly : m_currentSpeedFly);
-        case TYPE_FLY_BACK:
-            return (get_basic ? m_basicSpeedFlyBack : m_currentSpeedFlyBack);
-        case TYPE_PITCH_RATE:
-            return (get_basic ? m_basicPitchRate : m_currentPitchRate);
-        default:
-            return m_basicSpeedWalk;
-    }
+    if (current)
+        return m_UnitSpeedInfo.m_currentSpeedRate[type];
+    else
+        return m_UnitSpeedInfo.m_basicSpeedRate[type];
 }
 
-float Unit::getFlySpeed() const
+void Unit::setSpeedRate(UnitSpeedType type, float value, bool current)
 {
-    return getSpeedForType(TYPE_FLY);
-}
-
-float Unit::getSwimSpeed() const
-{
-    return getSpeedForType(TYPE_SWIM);
-}
-
-float Unit::getRunSpeed() const
-{
-    return getSpeedForType(TYPE_RUN);
-}
-
-UnitSpeedType Unit::getFastestSpeedType() const
-{
-    auto fastest_speed = 0.f;
-    auto fastest_speed_type = TYPE_WALK;
-    for (uint32_t i = TYPE_WALK; i <= TYPE_PITCH_RATE; ++i)
-    {
-        const auto speedType = static_cast<UnitSpeedType>(i + 1);
-
-        switch(speedType)
-        {
-        case TYPE_TURN_RATE:
-        case TYPE_PITCH_RATE:
-            continue;
-            default:
-            break;
-        }
-
-        const auto speed = getSpeedForType(speedType);
-
-        fastest_speed = speed > fastest_speed ? speed : fastest_speed;
-        fastest_speed_type = speed == fastest_speed ? speedType : fastest_speed_type;
-    }
-    return fastest_speed_type;
-}
-
-
-float Unit::getFastestSpeed() const
-{
-    return getSpeedForType(getFastestSpeedType());
-}
-
-
-void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic)
-{
-    switch (speed_type)
-    {
-        case TYPE_WALK:
-        {
-            if (set_basic)
-                m_basicSpeedWalk = speed;
-            else
-                m_currentSpeedWalk = speed;
-        } break;
-        case TYPE_RUN:
-        {
-            if (set_basic)
-                m_basicSpeedRun = speed;
-            else
-                m_currentSpeedRun = speed;
-        } break;
-        case TYPE_RUN_BACK:
-        {
-            if (set_basic)
-                m_basicSpeedRunBack = speed;
-            else
-                m_currentSpeedRunBack = speed;
-        } break;
-        case TYPE_SWIM:
-        {
-            if (set_basic)
-                m_basicSpeedSwim = speed;
-            else
-                m_currentSpeedSwim = speed;
-        } break;
-        case TYPE_SWIM_BACK:
-        {
-            if (set_basic)
-                m_basicSpeedSwimBack = speed;
-            else
-                m_currentSpeedSwimBack = speed;
-        } break;
-        case TYPE_TURN_RATE:
-        {
-            if (set_basic)
-                m_basicTurnRate = speed;
-            else
-                m_currentTurnRate = speed;
-        } break;
-        case TYPE_FLY:
-        {
-            if (set_basic)
-                 m_basicSpeedFly = speed;
-            else
-                m_currentSpeedFly = speed;
-        } break;
-        case TYPE_FLY_BACK:
-        {
-            if (set_basic)
-                m_basicSpeedFlyBack = speed;
-            else
-                m_currentSpeedFlyBack = speed;
-        } break;
-        case TYPE_PITCH_RATE:
-        {
-            if (set_basic)
-                m_basicPitchRate = speed;
-            else
-                m_currentPitchRate = speed;
-        } break;
-    }
+    if (current)
+        m_UnitSpeedInfo.m_currentSpeedRate[type] = value;
+    else
+        m_UnitSpeedInfo.m_basicSpeedRate[type] = value;
 
     Player* player_mover = GetMapMgrPlayer(getCharmedByGuid());
     if (player_mover == nullptr)
@@ -1465,28 +1337,44 @@ void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic
     if (player_mover != nullptr)
     {
 #if VERSION_STRING < Cata
-        player_mover->sendForceMovePacket(speed_type, speed);
+        player_mover->sendForceMovePacket(type, value);
 #endif
-        player_mover->sendMoveSetSpeedPaket(speed_type, speed);
+        player_mover->sendMoveSetSpeedPaket(type, value);
     }
     else
-    {
-        sendMoveSplinePaket(speed_type);
-    }
-
+        sendMoveSplinePaket(type);
 }
 
-void Unit::resetCurrentSpeed()
+void Unit::resetCurrentSpeeds()
 {
-    m_currentSpeedWalk = m_basicSpeedWalk;
-    m_currentSpeedRun = m_basicSpeedRun;
-    m_currentSpeedRunBack = m_basicSpeedRunBack;
-    m_currentSpeedSwim = m_basicSpeedSwim;
-    m_currentSpeedSwimBack = m_basicSpeedSwimBack;
-    m_currentTurnRate = m_basicTurnRate;
-    m_currentSpeedFly = m_basicSpeedFly;
-    m_currentSpeedFlyBack = m_basicSpeedFlyBack;
-    m_currentPitchRate = m_basicPitchRate;
+    for (uint8_t i = 0; i < MAX_SPEED_TYPE; ++i)
+        m_UnitSpeedInfo.m_currentSpeedRate[i] = m_UnitSpeedInfo.m_basicSpeedRate[i];
+}
+
+UnitSpeedType Unit::getFastestSpeedType() const
+{
+    float fastest_speed = 0.f;
+    UnitSpeedType fastest_speed_type = TYPE_WALK;
+    for (uint8_t i = TYPE_WALK; i < MAX_SPEED_TYPE; ++i)
+    {
+        UnitSpeedType const speedType = static_cast<UnitSpeedType>(i + 1);
+
+        switch (speedType)
+        {
+        case TYPE_TURN_RATE:
+        case TYPE_PITCH_RATE:
+            continue;
+        default:
+            break;
+        }
+
+        float const speed = getSpeedRate(speedType, true);
+
+        fastest_speed = speed > fastest_speed ? speed : fastest_speed;
+        fastest_speed_type = speed == fastest_speed ? speedType : fastest_speed_type;
+    }
+
+    return fastest_speed_type;
 }
 
 void Unit::sendMoveSplinePaket(UnitSpeedType speedType)
@@ -1527,7 +1415,7 @@ void Unit::sendMoveSplinePaket(UnitSpeedType speedType)
     }
 
     data << GetNewGUID();
-    data << float(getSpeedForType(speedType));
+    data << float(getSpeedRate(speedType, true));
 
     SendMessageToSet(&data, false);
 }
@@ -2853,8 +2741,6 @@ uint8_t Unit::getPowerIndexFromDBC(PowerType type) const
 // Misc
 void Unit::setAttackTimer(WeaponDamageType type, int32_t time)
 {
-    // TODO: getModCastSpeed() is no longer used here, is it required?
-    // it was used in the old function but isnt it about spell casttime only.. - Appled
     m_attackTimer[type] = Util::getMSTime() + time;
 }
 
@@ -2868,10 +2754,22 @@ bool Unit::isAttackReady(WeaponDamageType type) const
     return Util::getMSTime() >= m_attackTimer[type];
 }
 
-void Unit::resetAttackTimers()
+void Unit::resetAttackTimer(WeaponDamageType type)
 {
-    for (uint8_t i = MELEE; i <= RANGED; ++i)
-        setAttackTimer(WeaponDamageType(i), getBaseAttackTime(i));
+    setAttackTimer(type, static_cast<int32_t>(getBaseAttackTime(type) * m_attackSpeed[type]));
+}
+
+void Unit::modAttackSpeedModifier(WeaponDamageType type, int32_t amount)
+{
+    if (amount > 0)
+        m_attackSpeed[type] *= 1.0f + static_cast<float>(amount / 100.0f);
+    else
+        m_attackSpeed[type] /= 1.0f + static_cast<float>((-amount) / 100.0f);
+}
+
+float Unit::getAttackSpeedModifier(WeaponDamageType type) const
+{
+    return m_attackSpeed[type];
 }
 
 void Unit::sendEnvironmentalDamageLogPacket(uint64_t guid, uint8_t type, uint32_t damage, uint64_t unk /*= 0*/)

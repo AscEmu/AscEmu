@@ -1494,14 +1494,14 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target
         const Unit* this_mover = this_player ? static_cast<Unit*>(this_player) : this_creature;
         ARCEMU_ASSERT(this_mover != nullptr);
 
-        *data << this_mover->getSpeedForType(TYPE_WALK);
-        *data << this_mover->getSpeedForType(TYPE_RUN);
-        *data << this_mover->getSpeedForType(TYPE_RUN_BACK);
-        *data << this_mover->getSpeedForType(TYPE_SWIM);
-        *data << this_mover->getSpeedForType(TYPE_SWIM_BACK);
-        *data << this_mover->getSpeedForType(TYPE_FLY);
-        *data << this_mover->getSpeedForType(TYPE_FLY_BACK);
-        *data << this_mover->getSpeedForType(TYPE_TURN_RATE);
+        *data << this_mover->getSpeedRate(TYPE_WALK, true);
+        *data << this_mover->getSpeedRate(TYPE_RUN, true);
+        *data << this_mover->getSpeedRate(TYPE_RUN_BACK, true);
+        *data << this_mover->getSpeedRate(TYPE_SWIM, true);
+        *data << this_mover->getSpeedRate(TYPE_SWIM_BACK, true);
+        *data << this_mover->getSpeedRate(TYPE_FLY, true);
+        *data << this_mover->getSpeedRate(TYPE_FLY_BACK, true);
+        *data << this_mover->getSpeedRate(TYPE_TURN_RATE, true);
     }
 
     if (spline_buffer)
@@ -1682,15 +1682,15 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
         if (Unit* unit = static_cast<Unit*>(this))
         {
-            *data << unit->getSpeedForType(TYPE_WALK);
-            *data << unit->getSpeedForType(TYPE_RUN);
-            *data << unit->getSpeedForType(TYPE_RUN_BACK);
-            *data << unit->getSpeedForType(TYPE_SWIM);
-            *data << unit->getSpeedForType(TYPE_SWIM_BACK);
-            *data << unit->getSpeedForType(TYPE_FLY);
-            *data << unit->getSpeedForType(TYPE_FLY_BACK);
-            *data << unit->getSpeedForType(TYPE_TURN_RATE);
-            *data << unit->getSpeedForType(TYPE_PITCH_RATE);
+            *data << unit->getSpeedRate(TYPE_WALK, true);
+            *data << unit->getSpeedRate(TYPE_RUN, true);
+            *data << unit->getSpeedRate(TYPE_RUN_BACK, true);
+            *data << unit->getSpeedRate(TYPE_SWIM, true);
+            *data << unit->getSpeedRate(TYPE_SWIM_BACK, true);
+            *data << unit->getSpeedRate(TYPE_FLY, true);
+            *data << unit->getSpeedRate(TYPE_FLY_BACK, true);
+            *data << unit->getSpeedRate(TYPE_TURN_RATE, true);
+            *data << unit->getSpeedRate(TYPE_PITCH_RATE, true);
         }
         else                                //\todo Zyres: this is ridiculous... only units have these types, but this function is a mess so don't breake anything.
         {
@@ -1963,7 +1963,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
 
         data->WriteByteSeq(Guid[4]);
 
-        *data << unit->getSpeedForType(TYPE_RUN_BACK);
+        *data << unit->getSpeedRate(TYPE_RUN_BACK, true);
 
         if (hasFallData)
         {
@@ -1978,7 +1978,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
             *data << float(unit->movement_info.getJumpInfo().velocity);
         }
 
-        *data << unit->getSpeedForType(TYPE_SWIM_BACK);
+        *data << unit->getSpeedRate(TYPE_SWIM_BACK, true);
 
         if (hasElevation)
             *data << float(unit->movement_info.getSplineElevation());
@@ -2025,37 +2025,37 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
         }
 
         *data << float(unit->GetPositionX());
-        *data << float(unit->getSpeedForType(TYPE_PITCH_RATE));
+        *data << float(unit->getSpeedRate(TYPE_PITCH_RATE, true));
 
         data->WriteByteSeq(Guid[3]);
         data->WriteByteSeq(Guid[0]);
 
-        *data << float(unit->getSpeedForType(TYPE_SWIM));
+        *data << float(unit->getSpeedRate(TYPE_SWIM, true));
         *data << float(unit->GetPositionY());
 
         data->WriteByteSeq(Guid[7]);
         data->WriteByteSeq(Guid[1]);
         data->WriteByteSeq(Guid[2]);
 
-        *data << float(unit->getSpeedForType(TYPE_WALK));
+        *data << float(unit->getSpeedRate(TYPE_WALK, true));
 
         *data << uint32_t(Util::getMSTime());
 
-        *data << float(unit->getSpeedForType(TYPE_FLY_BACK));
+        *data << float(unit->getSpeedRate(TYPE_FLY_BACK, true));
 
         data->WriteByteSeq(Guid[6]);
 
-        *data << float(unit->getSpeedForType(TYPE_TURN_RATE));
+        *data << float(unit->getSpeedRate(TYPE_TURN_RATE, true));
 
         if (hasOrientation)
             *data << float(normalizeOrientation(unit->GetOrientation()));
 
-        *data << unit->getSpeedForType(TYPE_RUN);
+        *data << unit->getSpeedRate(TYPE_RUN, true);
 
         if (hasPitch)
             *data << float(unit->movement_info.getPitch());
 
-        *data << float(unit->getSpeedForType(TYPE_FLY));
+        *data << float(unit->getSpeedRate(TYPE_FLY, true));
     }
 
     if (updateFlags & UPDATEFLAG_VEHICLE)
@@ -3028,7 +3028,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
 
     //absorption
     uint32 ress = static_cast<uint32>(res);
-    uint32 abs_dmg = pVictim->AbsorbDamage(spellInfo->getSchool(), &ress);
+    uint32 abs_dmg = pVictim->AbsorbDamage(spellInfo->getFirstSchoolFromSchoolMask(), &ress);
     uint32 ms_abs_dmg = pVictim->ManaShieldAbsorb(ress);
     if (ms_abs_dmg)
     {
@@ -3083,7 +3083,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
 
     res = static_cast<float>(ress);
     dealdamage dmg;
-    dmg.school_type = spellInfo->getSchool();
+    dmg.school_type = spellInfo->getFirstSchoolFromSchoolMask();
     dmg.full_damage = ress;
     dmg.resisted_damage = 0;
 
@@ -3110,12 +3110,12 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     // Paladin: Blessing of Sacrifice, and Warlock: Soul Link
     if (pVictim->m_damageSplitTarget)
     {
-        res = (float)pVictim->DoDamageSplitTarget((uint32)res, spellInfo->getSchool(), false);
+        res = (float)pVictim->DoDamageSplitTarget((uint32)res, spellInfo->getFirstSchoolFromSchoolMask(), false);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     //Data Sending ProcHandling
-    SendSpellNonMeleeDamageLog(this, pVictim, spellID, static_cast<int32>(res), static_cast<uint8>(spellInfo->getSchool()), abs_dmg, dmg.resisted_damage, false, 0, critical, isPlayer());
+    SendSpellNonMeleeDamageLog(this, pVictim, spellID, static_cast<int32>(res), spellInfo->getFirstSchoolFromSchoolMask(), abs_dmg, dmg.resisted_damage, false, 0, critical, isPlayer());
     DealDamage(pVictim, static_cast<int32>(res), 2, 0, spellID);
 
     if (isCreatureOrPlayer())
@@ -3129,16 +3129,16 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     }
     if (this->isPlayer())
     {
-        static_cast<Player*>(this)->m_casted_amount[spellInfo->getSchool()] = (uint32)res;
+        static_cast<Player*>(this)->m_casted_amount[spellInfo->getFirstSchoolFromSchoolMask()] = (uint32)res;
     }
 
     if (!(dmg.full_damage == 0 && abs_dmg))
     {
         //Only pushback the victim current spell if it's not fully absorbed
         if (pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
-            pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->AddTime(spellInfo->getSchool());
+            pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->AddTime(spellInfo->getFirstSchoolFromSchoolMask());
         else if (pVictim->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr && pVictim->getCurrentSpell(CURRENT_GENERIC_SPELL)->getCastTimeLeft() > 0)
-            pVictim->getCurrentSpell(CURRENT_GENERIC_SPELL)->AddTime(spellInfo->getSchool());
+            pVictim->getCurrentSpell(CURRENT_GENERIC_SPELL)->AddTime(spellInfo->getFirstSchoolFromSchoolMask());
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -3163,7 +3163,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         if (isPlayer())
             static_cast<Player*>(this)->CombatStatusHandler_ResetPvPTimeout();
     }
-    if (spellInfo->getSchool() == SCHOOL_SHADOW)
+    if (spellInfo->getSchoolMask() & SCHOOL_MASK_SHADOW)
     {
         if (pVictim->isAlive() && this->isCreatureOrPlayer())
         {
@@ -3171,9 +3171,9 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
             if (spellID == 32379 || spellID == 32996 || spellID == 48157 || spellID == 48158)
             {
                 uint32 damage2 = static_cast<uint32>(res + abs_dmg);
-                uint32 absorbed = static_cast<Unit*>(this)->AbsorbDamage(spellInfo->getSchool(), &damage2);
+                uint32 absorbed = static_cast<Unit*>(this)->AbsorbDamage(spellInfo->getFirstSchoolFromSchoolMask(), &damage2);
                 DealDamage(static_cast<Unit*>(this), damage2, 2, 0, spellID);
-                SendSpellNonMeleeDamageLog(this, this, spellID, damage2, static_cast<uint8>(spellInfo->getSchool()), absorbed, 0, false, 0, false, isPlayer());
+                SendSpellNonMeleeDamageLog(this, this, spellID, damage2, spellInfo->getFirstSchoolFromSchoolMask(), absorbed, 0, false, 0, false, isPlayer());
             }
         }
     }

@@ -618,13 +618,13 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
                 }
                 else
                 {
-                    _player->getItemInterface()->BuildInventoryChangeError(item, nullptr, INV_ERR_ITEM_LOCKED);
+                    _player->getItemInterface()->buildInventoryChangeError(item, nullptr, INV_ERR_ITEM_LOCKED);
                     return;
                 }
             }
             else if (lockEntry->locktype[lockCase] == 2 && item->locked)
             {
-                _player->getItemInterface()->BuildInventoryChangeError(item, nullptr, INV_ERR_ITEM_LOCKED);
+                _player->getItemInterface()->buildInventoryChangeError(item, nullptr, INV_ERR_ITEM_LOCKED);
                 return;
             }
         }
@@ -1558,7 +1558,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
     {
         if (_player->getLevel() < itemProperties->RequiredLevel)
         {
-            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+            _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
 #if VERSION_STRING < Cata
             _player->setAmmoId(0);
 #endif
@@ -1570,7 +1570,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
     {
         if (!_player->_HasSkillLine(itemProperties->RequiredSkill))
         {
-            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+            _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
 #if VERSION_STRING < Cata
             _player->setAmmoId(0);
 #endif
@@ -1582,7 +1582,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
         {
             if (_player->_GetSkillLineCurrent(itemProperties->RequiredSkill, false) < itemProperties->RequiredSkillRank)
             {
-                _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+                _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
 #if VERSION_STRING < Cata
                 _player->setAmmoId(0);
 #endif
@@ -1602,7 +1602,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING > TBC
         case DEATHKNIGHT:
 #endif
-            _player->getItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
+            _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
 #if VERSION_STRING < Cata
             _player->setAmmoId(0);
 #endif

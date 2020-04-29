@@ -17,7 +17,7 @@ namespace AscEmu::Packets
         uint8_t error;
         uint64_t srcGuid;
         uint64_t destGuid;
-        uint32_t reqLevel;
+        uint32_t extraData;
 
         bool sendExtraData;
 
@@ -25,12 +25,12 @@ namespace AscEmu::Packets
         {
         }
 
-        SmsgInventoryChangeFailure(uint8_t error, uint64_t srcGuid, uint64_t destGuid, uint32_t reqLevel, bool sendExtraData) :
+        SmsgInventoryChangeFailure(uint8_t error, uint64_t srcGuid, uint64_t destGuid, uint32_t extraData, bool sendExtraData) :
             ManagedPacket(SMSG_INVENTORY_CHANGE_FAILURE, 0),
             error(error),
             srcGuid(srcGuid),
             destGuid(destGuid),
-            reqLevel(reqLevel),
+            extraData(extraData),
             sendExtraData(sendExtraData)
         {
         }
@@ -43,7 +43,7 @@ namespace AscEmu::Packets
         {
             packet << error << srcGuid << destGuid << uint8_t(0);
             if (sendExtraData)
-                packet << reqLevel;
+                packet << extraData;
 
             return true;
         }

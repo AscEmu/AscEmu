@@ -659,7 +659,7 @@ public:
     bool DoEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 dmg, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/)
     {
         // Only proc for damaging shadow spells
-        if (castingSpell->getSchool() != SCHOOL_SHADOW || !castingSpell->isDamagingSpell())
+        if (castingSpell->getSchoolMask() & SCHOOL_MASK_SHADOW || !castingSpell->isDamagingSpell())
             return true;
 
         // Only proc for single target spells

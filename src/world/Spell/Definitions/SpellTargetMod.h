@@ -5,13 +5,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "SpellDidHitResult.h"
+
 struct SpellTargetMod
 {
-    SpellTargetMod(uint64_t targetGuid, uint8_t targetModType) : targetGuid(targetGuid),
-                                                                 targetModType(targetModType)
+    SpellTargetMod(uint64_t targetGuid, SpellDidHitResult hitResult, SpellDidHitResult extendedHitResult)
+        : targetGuid(targetGuid), hitResult(hitResult), extendedHitResult(extendedHitResult)
     {
     }
 
     uint64_t targetGuid;
-    uint8_t targetModType;
+    SpellDidHitResult hitResult;
+    SpellDidHitResult extendedHitResult; // used with reflected spells
 };

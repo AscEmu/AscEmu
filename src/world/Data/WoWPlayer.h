@@ -424,6 +424,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_BANK_BAG_SLOT_COUNT 7
 #define WOWPLAYER_KEYRING_SLOT_COUNT 32
 #define WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT 32
+#define WOWPLAYER_NO_REAGENT_COST_COUNT 3
 #define WOWPLAYER_GLYPH_SLOT_COUNT 9
 
 struct WoWPlayer_Quest
@@ -519,7 +520,7 @@ struct WoWPlayer : WoWUnit
     uint32_t field_max_level;
     uint32_t field_daily_quests[WOWPLAYER_DAILY_QUESTS_COUNT];
     float rune_regen[4];
-    uint32_t no_reagent_cost[3];
+    uint32_t no_reagent_cost[WOWPLAYER_NO_REAGENT_COST_COUNT];
     uint32_t field_glyph_slots[WOWPLAYER_GLYPH_SLOT_COUNT];
     uint32_t field_glyphs[WOWPLAYER_GLYPH_SLOT_COUNT];
     uint32_t glyphs_enabled;
