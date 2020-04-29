@@ -11,4 +11,3 @@ void SetupDalaranGossip(ScriptMgr* mgr);
 void SetupInnkeepers(ScriptMgr* mgr);
 void SetupTrainerScript(ScriptMgr* mgr);
 void SetupMoongladeGossip(ScriptMgr* mgr);
-void SetupXpEliminatorGossip(ScriptMgr* mgr);

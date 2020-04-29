@@ -23,7 +23,6 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
     SetupInnkeepers(mgr);
     SetupTrainerScript(mgr);
     SetupMoongladeGossip(mgr);
-    SetupXpEliminatorGossip(mgr);
 }
 
 #ifdef WIN32

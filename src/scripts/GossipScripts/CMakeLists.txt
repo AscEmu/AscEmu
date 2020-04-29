@@ -14,7 +14,6 @@ set(sources
     Gossip_Innkeepers.cpp
     Gossip_Trainer.cpp
     Gossip_Moonglade.cpp
-    Gossip_XpEliminator.cpp
     Setup.cpp
     # Required for linker
     ../../world/Server/ServerState.cpp

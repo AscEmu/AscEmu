@@ -1512,11 +1512,29 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId
         // 0 = none
         // 1 = has(active)Quest
         // 2 = has(finished)Quest
+        // 3 = canGainXP
+        // 4 = canNotGainXP
 
         if (itr->first == gossipMenuId)
         {
             if (itr->second.requirementType == 1 && !player->HasQuest(itr->second.requirementData))
                 continue;
+
+            if (itr->second.requirementType == 3)
+            {
+                if (player->CanGainXp())
+                    menu.addItem(itr->second.icon, itr->second.menuOptionText, itr->second.itemOrder, "", itr->second.onChooseData, player->GetSession()->LocalizedGossipOption(itr->second.onChooseData2));
+                
+                continue;
+            }
+
+            if (itr->second.requirementType == 4)
+            {
+                if (!player->CanGainXp())
+                    menu.addItem(itr->second.icon, itr->second.menuOptionText, itr->second.itemOrder, "", itr->second.onChooseData, player->GetSession()->LocalizedGossipOption(itr->second.onChooseData2));
+                
+                continue;
+            }
 
             menu.addItem(itr->second.icon, itr->second.menuOptionText, itr->second.itemOrder);
         }
@@ -1545,6 +1563,7 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
             // 3 = sendTaxi (on_choose_data = taxiId, on_choose_data2 = modelId)
             // 4 = required standing (on_choose_data = factionId, on_choose_data2 = standing, on_choose_data3 = broadcastTextId)
             // 5 = close window
+            // 6 = toggleXPGain
 
             // onChooseData
             // depending on Action...
@@ -1591,6 +1610,15 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
                 {
                     GossipMenu::senGossipComplete(player);
 
+                } break;
+                case 6:
+                {
+                    if (player->hasEnoughCoinage(itr->second.onChooseData))
+                    {
+                        player->modCoinage(-static_cast<int32_t>(itr->second.onChooseData));
+                        player->ToggleXpGain();
+                        GossipMenu::senGossipComplete(player);
+                    }
                 } break;
                 default: // action 0
                 {
