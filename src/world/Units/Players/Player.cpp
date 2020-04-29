@@ -1574,12 +1574,12 @@ void Player::setInitialPlayerData()
         setPowerCostMultiplier(i, 0.0f);
     }
 
+#if VERSION_STRING >= WotLK
     for (uint8_t i = 0; i < WOWPLAYER_NO_REAGENT_COST_COUNT; ++i)
     {
-#if VERSION_STRING >= WotLK
         setNoReagentCost(i, 0);
-#endif
     }
+#endif
 
     for (uint8_t i = 0; i < MAX_PCR; ++i)
         setCombatRating(i, 0);
