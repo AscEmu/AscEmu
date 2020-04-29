@@ -1699,11 +1699,11 @@ void ObjectMgr::LoadTrainers()
             {
                 Field* fields2 = result2->Fetch();
                 uint32_t entry1 = fields2[0].GetUInt32();
-                uint32_t spell = fields2[1].GetUInt32();
-                uint32_t spellCost = fields2[2].GetUInt32();
-                uint32_t reqSkill = fields2[3].GetUInt16();
-                uint32_t reqSkillValue = fields2[4].GetUInt16();
-                uint32_t reqLevel = fields2[5].GetUInt8();
+                uint32_t spell = fields2[2].GetUInt32();
+                uint32_t spellCost = fields2[3].GetUInt32();
+                uint32_t reqSkill = fields2[5].GetUInt16();
+                uint32_t reqSkillValue = fields2[6].GetUInt16();
+                uint32_t reqLevel = fields2[7].GetUInt8();
 
                 TrainerSpell ts;
                 ts.spell = spell;

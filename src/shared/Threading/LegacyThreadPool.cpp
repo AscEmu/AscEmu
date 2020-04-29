@@ -218,6 +218,7 @@ void CThreadPool::Shutdown()
     KillFreeThreads((uint32_t)m_freeThreads.size());
     _threadsToExit += (uint32_t)m_activeThreads.size();
 
+
     for(std::set< Thread* >::iterator itr = m_activeThreads.begin(); itr != m_activeThreads.end(); ++itr)
     {
 

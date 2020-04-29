@@ -8095,7 +8095,6 @@ void Unit::Strike(Unit* pVictim, uint32_t weapon_damage_type, SpellInfo const* a
             if (owner)
             {
                 uint32_t amount = static_cast<uint32_t>(owner->getMaxPower(POWER_TYPE_MANA) * 0.05f);
-
                 this->energize(owner, 34650, amount, POWER_TYPE_MANA);
             }
         }

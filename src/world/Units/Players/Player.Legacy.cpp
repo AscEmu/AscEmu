@@ -5039,6 +5039,7 @@ void Player::BuildPlayerRepop()
     WorldPacket data(SMSG_PRE_RESURRECT, 8);
     FastGUIDPack(data, getGuid());         // caster guid
     GetSession()->SendPacket(&data);
+#endif
 
     // Cleanup first
     uint32_t AuraIds[] = { 20584, 9036, 8326, 0 };
@@ -5069,14 +5070,10 @@ void Player::BuildPlayerRepop()
 
     setMoveRoot(false);
     setMoveWaterWalk();
-#endif
 }
 
 void Player::RepopRequestedPlayer()
 {
-    //  if (HasAuraWithName(SPELL_AURA_PREVENT_RESURRECTION))
-    //      return;
-
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_CHECKFORCHEATS); // cebernic:-> Remove this first
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_FORCED_RESURRECT);   //in case somebody resurrected us before this event happened
 
@@ -5147,8 +5144,6 @@ void Player::RepopRequestedPlayer()
         }
         else
         {
-            // RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
-            // Cebernic: Mapinfo NULL? let's search from bindposition.
             RepopAtGraveyard(GetBindPositionX(), GetBindPositionY(), GetBindPositionZ(), GetBindMapId());
         }
     }
