@@ -54,7 +54,7 @@ class Vehicle;
 
 struct FactionDBC;
 
-enum UnitSpeedType
+enum UnitSpeedType : uint8_t
 {
     TYPE_WALK           = 0,
     TYPE_RUN            = 1,
@@ -64,7 +64,50 @@ enum UnitSpeedType
     TYPE_TURN_RATE      = 5,
     TYPE_FLY            = 6,
     TYPE_FLY_BACK       = 7,
-    TYPE_PITCH_RATE     = 8
+    TYPE_PITCH_RATE     = 8,
+
+    MAX_SPEED_TYPE      = 9
+};
+
+struct UnitSpeedInfo
+{
+    UnitSpeedInfo()
+    {
+        // Current speed
+        m_currentSpeedRate[TYPE_WALK]       = 2.5f;
+        m_currentSpeedRate[TYPE_RUN]        = 7.0f;
+        m_currentSpeedRate[TYPE_RUN_BACK]   = 4.5f;
+        m_currentSpeedRate[TYPE_SWIM]       = 4.722222f;
+        m_currentSpeedRate[TYPE_SWIM_BACK]  = 2.5f;
+        m_currentSpeedRate[TYPE_TURN_RATE]  = 3.141594f;
+        m_currentSpeedRate[TYPE_FLY]        = 7.0f;
+        m_currentSpeedRate[TYPE_FLY_BACK]   = 4.5f;
+        m_currentSpeedRate[TYPE_PITCH_RATE] = 3.14f;
+
+        // Basic speeds
+        m_basicSpeedRate[TYPE_WALK]         = 2.5f;
+        m_basicSpeedRate[TYPE_RUN]          = 7.0f;
+        m_basicSpeedRate[TYPE_RUN_BACK]     = 4.5f;
+        m_basicSpeedRate[TYPE_SWIM]         = 4.722222f;
+        m_basicSpeedRate[TYPE_SWIM_BACK]    = 2.5f;
+        m_basicSpeedRate[TYPE_TURN_RATE]    = 3.141594f;
+        m_basicSpeedRate[TYPE_FLY]          = 7.0f;
+        m_basicSpeedRate[TYPE_FLY_BACK]     = 4.5f;
+        m_basicSpeedRate[TYPE_PITCH_RATE]   = 3.14f;
+    }
+
+    UnitSpeedInfo(UnitSpeedInfo const& speedInfo)
+    {
+        // Current speed
+        for (uint8_t i = 0; i < MAX_SPEED_TYPE; ++i)
+        {
+            m_currentSpeedRate[i] = speedInfo.m_currentSpeedRate[i];
+            m_basicSpeedRate[i] = speedInfo.m_basicSpeedRate[i];
+        }
+    }
+
+    float m_currentSpeedRate[MAX_SPEED_TYPE];
+    float m_basicSpeedRate[MAX_SPEED_TYPE];
 };
 
 // MIT End
@@ -521,40 +564,15 @@ public:
     void setMoveWalk(bool set_walk);
  
     // Speed
+    UnitSpeedInfo const* getSpeedInfo() const { return &m_UnitSpeedInfo; }
+    float getSpeedRate(UnitSpeedType type, bool current) const;
+    void setSpeedRate(UnitSpeedType type, float value, bool current);
+    void resetCurrentSpeeds();
+    UnitSpeedType getFastestSpeedType() const;
 private:
-
-    float m_currentSpeedWalk;
-    float m_currentSpeedRun;
-    float m_currentSpeedRunBack;
-    float m_currentSpeedSwim;
-    float m_currentSpeedSwimBack;
-    float m_currentTurnRate;
-    float m_currentSpeedFly;
-    float m_currentSpeedFlyBack;
-    float m_currentPitchRate;
-
-    float m_basicSpeedWalk;
-    float m_basicSpeedRun;
-    float m_basicSpeedRunBack;
-    float m_basicSpeedSwim;
-    float m_basicSpeedSwimBack;
-    float m_basicTurnRate;
-    float m_basicSpeedFly;
-    float m_basicSpeedFlyBack;
-    float m_basicPitchRate;
+    UnitSpeedInfo m_UnitSpeedInfo;
 
 public:
-
-    float getSpeedForType(UnitSpeedType speed_type, bool get_basic = false) const;
-    float getFlySpeed() const;
-    float getSwimSpeed() const;
-    float getRunSpeed() const;
-    UnitSpeedType getFastestSpeedType() const;
-    float getFastestSpeed() const;
-
-    void setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic = false);
-    void resetCurrentSpeed();
-
     void sendMoveSplinePaket(UnitSpeedType speed_type);
 
     // Mover

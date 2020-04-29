@@ -614,17 +614,17 @@ public:
 
     void onHello(Object* object, Player* player) override
     {
-        sObjectMgr.generateDatabaseGossipMenu(object->getGuid(), m_gossipMenuId, player);
+        sObjectMgr.generateDatabaseGossipMenu(object, m_gossipMenuId, player);
     }
 
-    void onSelectOption(Object* object, Player* player, uint32_t intId, const char* /*Code*/, uint32_t gossipId) override
+    void onSelectOption(Object* object, Player* player, uint32_t gossipItemId, const char* /*Code*/, uint32_t gossipMenuId) override
     {
-        if (intId > 0)
+        if (gossipItemId > 0)
         {
-            if (gossipId != 0)
-                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object->getGuid(), player, intId, gossipId);
+            if (gossipMenuId != 0)
+                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object, player, gossipItemId, gossipMenuId);
             else
-                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object->getGuid(), player, intId, m_gossipMenuId);
+                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object, player, gossipItemId, m_gossipMenuId);
         }
     }
 };
@@ -856,7 +856,7 @@ void Creature::RemoveFromWorld(bool free_guid)
 
 void Creature::EnslaveExpire()
 {
-    m_enslaveCount++;
+    ++m_enslaveCount;
 
     uint64_t charmer = getCharmedByGuid();
 
@@ -876,7 +876,7 @@ void Creature::EnslaveExpire()
     setCharmedByGuid(0);
     setSummonedByGuid(0);
 
-    resetCurrentSpeed();
+    resetCurrentSpeeds();
 
     switch (GetCreatureProperties()->Type)
     {
@@ -1298,10 +1298,10 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8_t mode, MySQLStr
     spawnid = spawn->id;
     m_phase = spawn->phase;
 
-    setSpeedForType(TYPE_WALK, creature_properties->walk_speed, true);
-    setSpeedForType(TYPE_RUN, creature_properties->run_speed, true);
-    setSpeedForType(TYPE_FLY, creature_properties->fly_speed, true);
-    resetCurrentSpeed();
+    setSpeedRate(TYPE_WALK, creature_properties->walk_speed, false);
+    setSpeedRate(TYPE_RUN, creature_properties->run_speed, false);
+    setSpeedRate(TYPE_FLY, creature_properties->fly_speed, false);
+    resetCurrentSpeeds();
 
     //Set fields
     setEntry(creature_properties->Id);
@@ -1567,10 +1567,10 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
     }
 
-    setSpeedForType(TYPE_WALK, creature_properties->walk_speed, true);
-    setSpeedForType(TYPE_RUN, creature_properties->run_speed, true);
-    setSpeedForType(TYPE_FLY, creature_properties->fly_speed, true);
-    resetCurrentSpeed();
+    setSpeedRate(TYPE_WALK, creature_properties->walk_speed, false);
+    setSpeedRate(TYPE_RUN, creature_properties->run_speed, false);
+    setSpeedRate(TYPE_FLY, creature_properties->fly_speed, false);
+    resetCurrentSpeeds();
 
     //Set fields
     setEntry(creature_properties->Id);

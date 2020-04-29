@@ -1111,7 +1111,8 @@ void Player::Update(unsigned long time_passed)
 
 void Player::EventDismount(uint32_t money, float x, float y, float z)
 {
-    modCoinage(-(int32_t)money);
+    if (money)
+        modCoinage(-(int32_t)money);
 
     if (money > 0 && m_fallDisabledUntil < time(nullptr) + 5)
         m_fallDisabledUntil = time(nullptr) + 5; //VLack: If the ride wasn't free, the player shouldn't die after arrival because of fall damage... So we'll disable it for 5 seconds.
@@ -1128,7 +1129,7 @@ void Player::EventDismount(uint32_t money, float x, float y, float z)
     removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
     removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
-    setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
+    setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
 
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_INTERPOLATE);
 
@@ -6816,7 +6817,7 @@ void Player::JumpToEndTaxiNode(TaxiPath* path)
     removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
     removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
-    setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
+    setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
 
     SafeTeleport(pathnode->mapid, 0, LocationVector(pathnode->x, pathnode->y, pathnode->z));
 
@@ -7965,7 +7966,7 @@ bool Player::SafeTeleport(uint32_t MapID, uint32_t InstanceID, const LocationVec
         setMountDisplayId(0);
         removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
         removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-        setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
     }
 
     if (obj_movement_info.transport_data.transportGuid)
@@ -8054,7 +8055,7 @@ bool Player::SafeTeleport(uint32_t MapID, uint32_t InstanceID, const LocationVec
         setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
         removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
         removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-        setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
     }
 
     if (obj_movement_info.getTransportGuid())
@@ -12935,8 +12936,8 @@ void Player::RemoteRevive()
 {
     ResurrectPlayer();
     setMoveRoot(false);
-    setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN, true));
-    setSpeedForType(TYPE_SWIM, getSpeedForType(TYPE_SWIM, true));
+    setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, false), true);
+    setSpeedRate(TYPE_SWIM, getSpeedRate(TYPE_SWIM, false), true);
     setMoveLandWalk();
     setHealth(getMaxHealth());
 }

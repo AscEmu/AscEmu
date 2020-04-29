@@ -2258,7 +2258,7 @@ public:
     {
         float Speed = CHECK_FLOAT(L, 1);
         if (ptr && Speed)
-            ptr->setSpeedForType(TYPE_RUN, Speed);
+            ptr->setSpeedRate(TYPE_RUN, Speed, true);
         return 0;
     }
 
@@ -2266,7 +2266,7 @@ public:
     {
         float Speed = CHECK_FLOAT(L, 1);
         if (ptr && Speed)
-            ptr->setSpeedForType(TYPE_WALK, Speed);
+            ptr->setSpeedRate(TYPE_WALK, Speed, true);
         return 0;
     }
 
@@ -2274,7 +2274,7 @@ public:
     {
         float Speed = CHECK_FLOAT(L, 1);
         if (ptr && Speed)
-            ptr->setSpeedForType(TYPE_FLY, Speed);
+            ptr->setSpeedRate(TYPE_FLY, Speed, true);
         return 0;
     }
 
@@ -3627,10 +3627,10 @@ public:
         float Speed = CHECK_FLOAT(L, 1);
         if (Speed < 1 || Speed > 255)
             return 0;
-        plr->setSpeedForType(TYPE_RUN, Speed);
-        plr->setSpeedForType(TYPE_SWIM, Speed);
-        plr->setSpeedForType(TYPE_RUN_BACK, Speed / 2);
-        plr->setSpeedForType(TYPE_FLY, Speed * 2);
+        plr->setSpeedRate(TYPE_RUN, Speed, true);
+        plr->setSpeedRate(TYPE_SWIM, Speed, true);
+        plr->setSpeedRate(TYPE_RUN_BACK, Speed / 2, true);
+        plr->setSpeedRate(TYPE_FLY, Speed * 2, true);
         return 0;
     }
 

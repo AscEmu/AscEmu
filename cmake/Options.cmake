@@ -20,7 +20,7 @@ option(BUILD_LUAENGINE "Build LuaEngine." ON)
 set(ASCEMU_TOOLS_PATH "tools" CACHE PATH "The directory where you want the tools installed.")
 option(BUILD_WITH_WARNINGS "Enable/Disable warnings on compilation" ON)
 option(USE_PCH "Enable precompiled headers - it will reduce compilation time" ON)
-option(TREAT_WARNINGS_AS_ERRORS "Treats warnings as errors" ON)
+option(TREAT_WARNINGS_AS_ERRORS "Treats warnings as errors" OFF)
 
 if(NOT USE_PCH)
     set(ASCEMU_COMMENT_PCH //)

@@ -3368,11 +3368,10 @@ void Spell::SpellEffectEnergize(uint8_t effectIndex) // Energize
     }
 
     if (unitTarget->HasAura(17619))
-    {
         modEnergy = uint32_t(modEnergy * 1.4f);
-    }
 
-    u_caster->energize(unitTarget, getSpellInfo()->getId(), modEnergy, static_cast<PowerType>(getSpellInfo()->getEffectMiscValue(effectIndex)));
+    if (u_caster)
+        u_caster->energize(unitTarget, getSpellInfo()->getId(), modEnergy, static_cast<PowerType>(getSpellInfo()->getEffectMiscValue(effectIndex)));
 }
 
 void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent damage

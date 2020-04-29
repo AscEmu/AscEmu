@@ -393,8 +393,8 @@ class SERVER_DECL ObjectMgr : public EventableObject
         ObjectMgr& operator=(ObjectMgr&&) = delete;
         ObjectMgr& operator=(ObjectMgr const&) = delete;
 
-        void generateDatabaseGossipMenu(uint64_t senderGuid, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
-        void generateDatabaseGossipOptionAndSubMenu(uint64_t senderGuid, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
+        void generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
+        void generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
         //MIT END
 
         void LoadCreatureWaypoints();

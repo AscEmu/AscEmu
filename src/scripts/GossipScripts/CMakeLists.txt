@@ -13,13 +13,7 @@ set(sources
     Gossip_Dalaran.cpp
     Gossip_Innkeepers.cpp
     Gossip_Trainer.cpp
-    Gossip_Shattrath.cpp
-    Gossip_Stormwind.cpp
     Gossip_Moonglade.cpp
-    Gossip_Theramore.cpp
-    Gossip_BoreanTundra.cpp
-    Gossip_WyrmrestTemple.cpp
-    Gossip_XpEliminator.cpp
     Setup.cpp
     # Required for linker
     ../../world/Server/ServerState.cpp

@@ -4043,8 +4043,8 @@ void MySQLDataStore::loadGossipMenuItemsTable()
 
     _gossipMenuItemsStores.clear();
 
-    //                                                      0       1            2        3            4                  5                6
-    QueryResult* resultItems = WorldDatabase.Query("SELECT id, item_order, menu_option, icon, point_of_interest, next_gossip_menu, next_gossip_text FROM gossip_menu_items ORDER BY id, item_order");
+    //                                                      0       1            2        3            4                5               6               7                 8                9                10                11                 12
+    QueryResult* resultItems = WorldDatabase.Query("SELECT id, item_order, menu_option, icon, on_choose_action, on_choose_data, on_choose_data2, on_choose_data3, on_choose_data4, next_gossip_menu, next_gossip_text, requirement_type, requirement_data FROM gossip_menu_items ORDER BY id, item_order");
     if (resultItems == nullptr)
     {
         LogNotice("MySQLDataLoads : Table `gossip_menu_items` is empty!");
@@ -4066,9 +4066,15 @@ void MySQLDataStore::loadGossipMenuItemsTable()
             gMenuItem.itemOrder = fields[1].GetUInt32();
             gMenuItem.menuOptionText = fields[2].GetUInt32();
             gMenuItem.icon = fields[3].GetUInt8();
-            gMenuItem.pointOfInterest = fields[4].GetUInt32();
-            gMenuItem.nextGossipMenu = fields[5].GetUInt32();
-            gMenuItem.nextGossipMenuText = fields[6].GetUInt32();
+            gMenuItem.onChooseAction = fields[4].GetUInt8();
+            gMenuItem.onChooseData = fields[5].GetUInt32();
+            gMenuItem.onChooseData2 = fields[6].GetUInt32();
+            gMenuItem.onChooseData3 = fields[7].GetUInt32();
+            gMenuItem.onChooseData4 = fields[8].GetUInt32();
+            gMenuItem.nextGossipMenu = fields[9].GetUInt32();
+            gMenuItem.nextGossipMenuText = fields[10].GetUInt32();
+            gMenuItem.requirementType = fields[11].GetUInt8();
+            gMenuItem.requirementData = fields[12].GetUInt32();
 
             _gossipMenuItemsStores.insert(GossipMenuItemsContainer::value_type(gMenuItem.gossipMenu, gMenuItem));
             ++load_count;

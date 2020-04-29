@@ -214,8 +214,8 @@ void Player::resendSpeed()
 {
     if (resend_speed)
     {
-        setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
-        setSpeedForType(TYPE_FLY, getSpeedForType(TYPE_FLY));
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
+        setSpeedRate(TYPE_FLY, getSpeedRate(TYPE_FLY, true), true);
         resend_speed = false;
     }
 }
@@ -1572,10 +1572,14 @@ void Player::setInitialPlayerData()
 
         setPowerCostModifier(i, 0);
         setPowerCostMultiplier(i, 0.0f);
-#if VERSION_STRING >= WotLK
-        setNoReagentCost(i, 0);
-#endif
     }
+
+#if VERSION_STRING >= WotLK
+    for (uint8_t i = 0; i < WOWPLAYER_NO_REAGENT_COST_COUNT; ++i)
+    {
+        setNoReagentCost(i, 0);
+    }
+#endif
 
     for (uint8_t i = 0; i < MAX_PCR; ++i)
         setCombatRating(i, 0);

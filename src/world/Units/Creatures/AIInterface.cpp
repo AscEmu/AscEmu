@@ -1271,9 +1271,9 @@ void AIInterface::Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScr
 
     m_Unit = un;
 
-    m_walkSpeed = m_Unit->m_currentSpeedWalk * 0.001f; //move distance per ms time
-    m_runSpeed = m_Unit->m_currentSpeedRun * 0.001f; //move distance per ms time
-    m_flySpeed = m_Unit->m_currentSpeedFly * 0.001f;
+    m_walkSpeed = m_Unit->getSpeedRate(TYPE_WALK, true) * 0.001f; //move distance per ms time
+    m_runSpeed = m_Unit->getSpeedRate(TYPE_RUN, true) * 0.001f; //move distance per ms time
+    m_flySpeed = m_Unit->getSpeedRate(TYPE_FLY, true) * 0.001f;
 
     m_guardTimer = Util::getMSTime();
 }
@@ -1291,9 +1291,9 @@ void AIInterface::Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScr
     m_Unit = un;
     m_PetOwner = owner;
 
-    m_walkSpeed = m_Unit->m_currentSpeedWalk * 0.001f; //move distance per ms time
-    m_runSpeed = m_Unit->m_currentSpeedRun * 0.001f; //move/ms
-    m_flySpeed = m_Unit->m_currentSpeedFly * 0.001f;
+    m_walkSpeed = m_Unit->getSpeedRate(TYPE_WALK, true) * 0.001f; //move distance per ms time
+    m_runSpeed = m_Unit->getSpeedRate(TYPE_RUN, true) * 0.001f; //move distance per ms time
+    m_flySpeed = m_Unit->getSpeedRate(TYPE_FLY, true) * 0.001f;
 }
 
 Unit* AIInterface::GetUnit() const
@@ -2318,7 +2318,7 @@ Unit* AIInterface::FindTarget()
 
         if (target)
         {
-            m_Unit->m_currentSpeedRun = m_Unit->m_basicSpeedRun * 2.0f;
+            m_Unit->setSpeedRate(TYPE_RUN, m_Unit->getSpeedRate(TYPE_RUN, false) * 2.0f, true);
             AttackReaction(target, 1, 0);
 
             m_Unit->SendAIReaction();
@@ -2874,13 +2874,13 @@ bool AIInterface::MoveTo(float x, float y, float z, float o /*= 0.0f*/)
 void AIInterface::UpdateSpeeds()
 {
     if (hasWalkMode(WALKMODE_SPRINT))
-        m_runSpeed = (m_Unit->m_currentSpeedRun + 5.0f) * 0.001f;
+        m_runSpeed = (m_Unit->getSpeedRate(TYPE_RUN, true) + 5.0f) * 0.001f;
 
     if (hasWalkMode(WALKMODE_RUN))
-        m_runSpeed = m_Unit->m_currentSpeedRun * 0.001f;
+        m_runSpeed = m_Unit->getSpeedRate(TYPE_RUN, true) * 0.001f;
 
-    m_walkSpeed = m_Unit->m_currentSpeedWalk * 0.001f;
-    m_flySpeed = m_Unit->m_currentSpeedFly * 0.001f;
+    m_walkSpeed = m_Unit->getSpeedRate(TYPE_WALK, true) * 0.001f;
+    m_flySpeed = m_Unit->getSpeedRate(TYPE_FLY, true) * 0.001f;
 }
 
 void AIInterface::SendCurrentMove(Player* plyr)
@@ -4914,8 +4914,11 @@ void AIInterface::SetCreatureProtoDifficulty(uint32_t entry)
                 m_Unit->GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
             }
 
-            m_walkSpeed = m_Unit->m_basicSpeedWalk = properties_difficulty->walk_speed;
-            m_runSpeed = m_Unit->m_basicSpeedRun = properties_difficulty->run_speed;
+            m_Unit->setSpeedRate(TYPE_WALK, properties_difficulty->walk_speed, false);
+            m_Unit->setSpeedRate(TYPE_RUN, properties_difficulty->run_speed, false);
+            m_Unit->setSpeedRate(TYPE_FLY, properties_difficulty->fly_speed, false);
+            m_walkSpeed = properties_difficulty->walk_speed;
+            m_runSpeed = properties_difficulty->run_speed;
             m_flySpeed = properties_difficulty->fly_speed;
 
             m_Unit->setScale(properties_difficulty->Scale);

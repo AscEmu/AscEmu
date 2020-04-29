@@ -127,7 +127,8 @@ void GameEventMgr::LoadFromDB()
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    LOG_ERROR("Could not find event for event_save entry %u", event_id);
+                    CharacterDatabase.Query("DELETE FROM event_save WHERE event_entry=%u", event_id);
+                    LogDetail("Deleted invalid event_save with entry %u", event_id);
                     continue;
                 }
 

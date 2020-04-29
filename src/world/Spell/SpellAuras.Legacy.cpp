@@ -3544,6 +3544,7 @@ void Aura::SpellAuraPeriodicEnergize(bool apply)
 
 void Aura::EventPeriodicEnergize(uint32_t amount, uint32_t type)
 {
+    // Zyres: type (uint32_t) is always greater/equal 0 (POWER_TYPE_MANA)
     ARCEMU_ASSERT(type >= POWER_TYPE_MANA && type < TOTAL_PLAYER_POWER_TYPES);
 
     Unit* ucaster = GetUnitCaster();
@@ -5214,17 +5215,20 @@ void Aura::SpellAuraIncreaseSwimSpeed(bool apply)
 {
     if (apply)
     {
-        if (m_target->isAlive())  SetPositive();
-        m_target->m_currentSpeedSwim = 0.04722222f * (100 + mod->m_amount);
+        if (m_target->isAlive())
+            SetPositive();
+
+        m_target->setSpeedRate(TYPE_SWIM, 0.04722222f * (100 + mod->m_amount), true);
     }
     else
-        m_target->m_currentSpeedSwim = m_target->m_basicSpeedSwim;
+        m_target->setSpeedRate(TYPE_SWIM, m_target->getSpeedRate(TYPE_SWIM, false), false);
+
     if (p_target != nullptr)
     {
         WorldPacket data(SMSG_FORCE_SWIM_SPEED_CHANGE, 17);
         data << p_target->GetNewGUID();
         data << (uint32_t)2;
-        data << m_target->m_currentSpeedSwim;
+        data << m_target->getSpeedRate(TYPE_SWIM, true);
         p_target->GetSession()->SendPacket(&data);
     }
 }
@@ -6027,6 +6031,7 @@ void Aura::EventPeriodicTrigger(uint32_t /*amount*/, uint32_t /*type*/)
 
 void Aura::EventPeriodicEnergizeVariable(uint32_t amount, uint32_t type)
 {
+    // Zyres: type (uint32_t) is always greater/equal 0 (POWER_TYPE_MANA)
     ARCEMU_ASSERT(type >= POWER_TYPE_MANA && type < TOTAL_PLAYER_POWER_TYPES);
 
     Unit* ucaster = GetUnitCaster();
