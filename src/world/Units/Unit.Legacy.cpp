@@ -8092,9 +8092,11 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
         if (getSummonedByGuid() != 0 && getEntry() == 19668)
         {
             Player* owner = GetMapMgr()->GetPlayer((uint32)getSummonedByGuid());
-            uint32 amount = static_cast<uint32>(owner->getMaxPower(POWER_TYPE_MANA) * 0.05f);
-            if (owner != NULL)
+            if (owner)
+            {
+                uint32 amount = static_cast<uint32>(owner->getMaxPower(POWER_TYPE_MANA) * 0.05f);
                 this->energize(owner, 34650, amount, POWER_TYPE_MANA);
+            }
         }
         //ugly hack for Bloodsworm restoring hp
         if (getSummonedByGuid() != 0 && getEntry() == 28017)
