@@ -3544,6 +3544,7 @@ void Aura::SpellAuraPeriodicEnergize(bool apply)
 
 void Aura::EventPeriodicEnergize(uint32 amount, uint32 type)
 {
+    // Zyres: type (uint32_t) is always greater/equal 0 (POWER_TYPE_MANA)
     ARCEMU_ASSERT(type >= POWER_TYPE_MANA && type < TOTAL_PLAYER_POWER_TYPES);
 
     Unit* ucaster = GetUnitCaster();
@@ -6030,6 +6031,7 @@ void Aura::EventPeriodicTrigger(uint32 /*amount*/, uint32 /*type*/)
 
 void Aura::EventPeriodicEnergizeVariable(uint32 amount, uint32 type)
 {
+    // Zyres: type (uint32_t) is always greater/equal 0 (POWER_TYPE_MANA)
     ARCEMU_ASSERT(type >= POWER_TYPE_MANA && type < TOTAL_PLAYER_POWER_TYPES);
 
     Unit* ucaster = GetUnitCaster();
