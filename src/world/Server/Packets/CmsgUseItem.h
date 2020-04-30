@@ -48,8 +48,14 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING == TBC
+            uint8_t temp;
+            packet >> containerIndex >> inventorySlot >> temp >> castCount >> itemGuid;
+            return true;
+#else
             packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuid >> glyphIndex >> castFlags;
             return true;
+#endif
         }
     };
 }

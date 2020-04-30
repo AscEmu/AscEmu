@@ -211,7 +211,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         sQuestMgr.BuildQuestDetails(&data, quest, tmpItem, 0, language, _player);
         SendPacket(&data);
     }
-
+#if VERSION_STRING != TBC
     // Anticheat to prevent WDB editing
     bool found = false;
     for (uint8_t i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
@@ -249,7 +249,131 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         LogError("WORLD: Unknown spell id %i in ::handleUseItemOpcode() from item id %i", srlPacket.spellId, itemProto->ItemId);
         return;
     }
+#else
+    SpellCastTargets targets(recvPacket, _player->getGuid());
+    uint32 x;
+    uint32_t spellId;
+    for (x = 0; x < 5; x++)
+    {
+        if (itemProto->Spells[x].Trigger == USE)
+        {
+            if (itemProto->Spells[x].Id)
+            {
+                spellId = itemProto->Spells[x].Id;
 
+                // check for spell id
+                const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+                Spell* tempSpell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
+
+                if (!spellInfo || !sHookInterface.OnCastSpell(_player, spellInfo, tempSpell))
+                {
+                    LogError("WORLD: unknown spell id %i\n", spellId);
+                    return;
+                }
+
+                if (spellInfo->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
+                {
+                    if (_player->CombatStatus.IsInCombat() || _player->IsMounted())
+                    {
+                        _player->getItemInterface()->buildInventoryChangeError(tmpItem, nullptr, INV_ERR_CANT_DO_IN_COMBAT);
+                        return;
+                    }
+
+                    if (_player->getStandState() != 1)
+                        _player->setStandState(STANDSTATE_SIT);
+                    // loop through the auras and removing existing eating spells
+                }
+                else
+                { // cebernic: why not stand up
+                    if (!_player->CombatStatus.IsInCombat() && !_player->IsMounted())
+                    {
+                        if (_player->getStandState())//not standing-> standup
+                            _player->setStandState(STANDSTATE_STAND);//probably mobs also must standup
+                    }
+                }
+
+                // cebernic: remove stealth on using item
+                if (!(spellInfo->getAuraInterruptFlags() & ATTRIBUTESEX_NOT_BREAK_STEALTH))
+                {
+                    if (_player->isStealthed())
+                        _player->RemoveAllAuraType(SPELL_AURA_MOD_STEALTH);
+                }
+
+                if (itemProto->RequiredLevel)
+                {
+                    if (_player->getLevel() < itemProto->RequiredLevel)
+                    {
+                        _player->getItemInterface()->buildInventoryChangeError(tmpItem, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+                        return;
+                    }
+                }
+
+                if (itemProto->RequiredSkill)
+                {
+                    if (!_player->_HasSkillLine(itemProto->RequiredSkill))
+                    {
+                        _player->getItemInterface()->buildInventoryChangeError(tmpItem, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+                        return;
+                    }
+
+                    if (itemProto->RequiredSkillRank)
+                    {
+                        if (_player->_GetSkillLineCurrent(itemProto->RequiredSkill, false) < itemProto->RequiredSkillRank)
+                        {
+                            _player->getItemInterface()->buildInventoryChangeError(tmpItem, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+                            return;
+                        }
+                    }
+                }
+
+                if (itemProto->AllowableClass && !(_player->getClassMask() & itemProto->AllowableClass) || itemProto->AllowableRace && !(_player->getRaceMask() & itemProto->AllowableRace))
+                {
+                    _player->getItemInterface()->buildInventoryChangeError(tmpItem, nullptr, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
+                    return;
+                }
+
+                /*if (!_player->Cooldown_CanCast(itemProto, x))
+                {
+                    _player->sendCastResult(spellInfo->Id, SPELL_FAILED_NOT_READY, srlPacket.castCount, 0);
+                    return;
+                }
+
+                if (_player->m_currentSpell)
+                {
+                    _player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, srlPacket.castCount, 0);
+                    return;
+                }
+
+                if (itemProto->ForcedPetId >= 0)
+                {
+                    if (itemProto->ForcedPetId == 0)
+                    {
+                        if (_player->getGuid() != targets.m_unitTarget)
+                        {
+                            _player->SendCastResult(spellInfo->Id, SPELL_FAILED_BAD_TARGETS, srlPacket.castCount, 0);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        if (!_player->GetSummon() || _player->GetSummon()->getEntry() != static_cast<uint32>(itemProto->ForcedPetId))
+                        {
+                            _player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, srlPacket.castCount, 0);
+                            return;
+                        }
+                    }
+                }*/
+
+                Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
+                spell->extra_cast_number = srlPacket.castCount;
+                spell->i_caster = tmpItem;
+                uint8 result = spell->prepare(&targets);
+            }
+        }
+    }
+#endif
+
+#if VERSION_STRING != TBC
     // TODO: remove this and get rid of 'ForcedPetId' hackfix
     // move the spells from MySQLDataStore.cpp to SpellScript
     if (itemProto->ForcedPetId >= 0)
@@ -321,7 +445,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     }
 
     spell->prepare(&targets);
-
+#endif
 #if VERSION_STRING > TBC
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM, itemProto->ItemId, 0, 0);
 #endif
