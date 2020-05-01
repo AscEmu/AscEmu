@@ -2,6 +2,10 @@
 
 # Opensource software in this folder:
 
+## Folder: utf8cpp
+- Web: https://github.com/nemtrif/utfcpp
+- Version: 944ef0561ddcd33eb4fd94934538458b2b2de252 (2020/03/15)
+
 ## Folder: recastnavigation
 - Web: https://github.com/memononen/recastnavigation
 - Version: 64385e9ed0822427bca5814d03a3f4c4d7a6db9f (2016/08/17)  
@@ -41,7 +45,3 @@
 ## Folder: cotire
 - Web: https://github.com/sakra/cotire
 - Version: 1.8.0 (2018/03/18)
-
-## Folder: utf8cpp
-- Web: http://utfcpp.sourceforge.net/
-- Version: 2.4.3
