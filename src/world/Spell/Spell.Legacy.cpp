@@ -3773,7 +3773,7 @@ void Spell::HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target
         data << Target->GetPositionX();
         data << Target->GetPositionY();
         data << Target->GetPositionZ();
-        data <<Util::getMSTime();
+        data << Util::getMSTime();
         data << uint8(0x00);
         data << uint32(256);
         data << uint32(1);

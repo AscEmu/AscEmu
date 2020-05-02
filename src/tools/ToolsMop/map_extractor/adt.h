@@ -113,7 +113,7 @@ public:
             uint32 offsMCNR;        // Normal vectors for each vertex
         } offsets;
         uint64 HighResHoles;
-    } union_5_3_0;
+    };
     uint32 offsMCLY;        // Texture layer definitions
     uint32 offsMCRF;        // A list of indices into the parent file's MDDF chunk
     uint32 offsMCAL;        // Alpha maps for additional texture layers
