@@ -114,12 +114,12 @@ enum GameObject_Entry
 
 struct NexusSpawns
 {
-    uint32 entry;
+    uint32_t entry;
     float x;
     float y;
     float z;
     float o;
-    uint32 faction;
+    uint32_t faction;
 };
 
 const NexusSpawns TrashAllySpawns[18] = {

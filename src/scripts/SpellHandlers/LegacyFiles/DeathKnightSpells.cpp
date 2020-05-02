@@ -76,7 +76,7 @@ bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
     Unit* Target = pSpell->GetUnitTarget();
 
     // Get count of diseases on target which were casted by caster
-    uint32 count = Target->GetAuraCountWithDispelType(DISPEL_DISEASE, pSpell->p_caster->getGuid());
+    uint32_t count = Target->GetAuraCountWithDispelType(DISPEL_DISEASE, pSpell->p_caster->getGuid());
 
     // Not a logical error, Death Strike should heal only when diseases are presented on its target
     if (count)
@@ -88,9 +88,9 @@ bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
         float amt = static_cast<float>(pSpell->p_caster->getMaxHealth()) * pSpell->getSpellInfo()->getEffectDamageMultiplier(0) / 100.0f;
 
         // Calculate heal amount with diseases on target
-        uint32 val = static_cast<uint32>(amt * count);
+        uint32_t val = static_cast<uint32_t>(amt * count);
 
-        uint32 improvedDeathStrike[] =
+        uint32_t improvedDeathStrike[] =
         {
             //SPELL_HASH_IMPROVED_DEATH_STRIKE
             62905,
@@ -221,19 +221,19 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
         posY = d * sinf(alpha) + unitTarget->GetPositionY();
         posZ = s->u_caster->GetPositionZ();
 
-        uint32 time = uint32((unitTarget->CalcDistance(s->m_caster) / ((unitTarget->getSpeedRate(TYPE_RUN, true) * 3.5f) * 0.001f)) + 0.5f);
+        uint32_t time = uint32_t((unitTarget->CalcDistance(s->m_caster) / ((unitTarget->getSpeedRate(TYPE_RUN, true) * 3.5f) * 0.001f)) + 0.5f);
 
         WorldPacket data(SMSG_MONSTER_MOVE, 60);
         data << unitTarget->GetNewGUID();
-        data << uint8(0); //VLack: the usual change in SMSG_MONSTER_MOVE packets, initial idea from Mangos
+        data << uint8_t(0); //VLack: the usual change in SMSG_MONSTER_MOVE packets, initial idea from Mangos
         data << unitTarget->GetPositionX();
         data << unitTarget->GetPositionY();
         data << unitTarget->GetPositionZ();
-        data << uint32(Util::getMSTime());
-        data << uint8(0x00);
-        data << uint32(0x00001000);
+        data << uint32_t(Util::getMSTime());
+        data << uint8_t(0x00);
+        data << uint32_t(0x00001000);
         data << time;
-        data << uint32(1);
+        data << uint32_t(1);
         data << posX;
         data << posY;
         data << posZ;
@@ -260,7 +260,7 @@ bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
     if (s->p_caster == NULL || unitTarget == NULL)
         return false;
 
-    int32 dmg = s->damage;
+    int32_t dmg = s->damage;
 
     if (isAttackable(s->p_caster, unitTarget, false))
     {
@@ -269,7 +269,7 @@ bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
     else if (unitTarget->isPlayer() && unitTarget->getRace() == RACE_UNDEAD)
     {
         float multiplier = 1.5f;
-        dmg = static_cast<int32>((dmg * multiplier));
+        dmg = static_cast<int32_t>((dmg * multiplier));
         s->p_caster->castSpell(unitTarget, 47633, dmg, true);
     }
 
@@ -300,7 +300,7 @@ bool DeathAndDecay(uint8_t effectIndex, Aura* pAura, bool apply)
         if (caster == NULL)
             return true;
 
-        int32 value = int32(pAura->GetModAmount(effectIndex) + (int32)caster->GetAP() * 0.064);
+        int32_t value = int32_t(pAura->GetModAmount(effectIndex) + (int32_t)caster->GetAP() * 0.064);
 
         caster->castSpell(pAura->GetTarget(), 52212, value, true);
     }
@@ -326,7 +326,7 @@ bool DeathRuneMastery(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
     if (apply)
     {
-        static uint32 classMask[3] = { 0x10, 0x20000, 0 };
+        static uint32_t classMask[3] = { 0x10, 0x20000, 0 };
         target->AddProcTriggerSpell(50806, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
     }
     else
@@ -354,7 +354,7 @@ bool Hysteria(uint8_t effectIndex, Aura* pAura, bool apply)
 
     Unit* target = pAura->GetTarget();
 
-    uint32 dmg = (uint32)target->getMaxHealth() * (pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1) / 100;
+    uint32_t dmg = (uint32_t)target->getMaxHealth() * (pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1) / 100;
     target->DealDamage(target, dmg, 0, 0, 0);
 
     return true;
@@ -394,7 +394,7 @@ bool WillOfTheNecropolis(uint8_t effectIndex, Spell* spell)
 void SetupLegacyDeathKnightSpells(ScriptMgr* mgr)
 {
     mgr->register_dummy_spell(50842, &Pestilence);
-    uint32 DeathStrikeIds[] =
+    uint32_t DeathStrikeIds[] =
     {
         49998, // Rank 1
         49999, // Rank 2
@@ -421,7 +421,7 @@ void SetupLegacyDeathKnightSpells(ScriptMgr* mgr)
     mgr->register_dummy_spell(49894, &DeathCoil);   // Rank 4
     mgr->register_dummy_spell(49895, &DeathCoil);   // Rank 5
 
-    uint32 bladedarmorids[] =
+    uint32_t bladedarmorids[] =
     {
         48978,
         49390,

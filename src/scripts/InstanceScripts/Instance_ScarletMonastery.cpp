@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class VishasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VishasAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VishasAI)
     explicit VishasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_VISHAS_SHADOW_WORD, 20.0f, TARGET_RANDOM_SINGLE, 0, 8);
@@ -43,12 +43,12 @@ class VishasAI : public CreatureAIScript
 
 private:
 
-    uint8 m_uiSay;
+    uint8_t m_uiSay;
 };
 
 class ThalnosAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThalnosAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ThalnosAI)
     explicit ThalnosAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_THALNOS_SHADOW_BOLT, 20.0f, TARGET_RANDOM_SINGLE, 3, 2);
@@ -82,7 +82,7 @@ private:
 // Library
 class LokseyAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LokseyAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LokseyAI)
     explicit LokseyAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_LOKSEY_BLOODLUST, 5.0f, TARGET_SELF, 0, 40);
@@ -93,7 +93,7 @@ class LokseyAI : public CreatureAIScript
 
 class DoanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DoanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DoanAI)
     explicit DoanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_DOAN_SILENCE, 25.0f, TARGET_SELF, 2, 14);
@@ -105,7 +105,7 @@ class DoanAI : public CreatureAIScript
         addEmoteForEvent(Event_OnCombatStart, 2099);     // You will not defile these mysteries!
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t /*fAmount*/) override
     {
         if (_getHealthPercent() <= 50 && !m_bShielded)
             Shield();
@@ -132,7 +132,7 @@ private:
 // Armory
 class HerodAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HerodAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HerodAI)
     explicit HerodAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto whirlwind = addAISpell(SP_HEROD_WHIRLWINDSPELL, 12.0f, TARGET_SELF, 0, 12);
@@ -167,7 +167,7 @@ class HerodAI : public CreatureAIScript
 // Cathedral
 class MograineAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MograineAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MograineAI)
     explicit MograineAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shield = addAISpell(SP_MORGRAINE_SHIELD, 5.0f, TARGET_SELF, 0, 10, false, true);
@@ -194,7 +194,7 @@ class MograineAI : public CreatureAIScript
 
 class WhitemaneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WhitemaneAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WhitemaneAI)
     explicit WhitemaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto smite = addAISpell(SP_WHITEMANE_SMITE, 15.0f, TARGET_ATTACKING);
@@ -212,7 +212,7 @@ class WhitemaneAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, SAY_WHITEMANE_03);
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         if (fAmount < 5)
             return;
@@ -250,7 +250,7 @@ protected:
 
 class FairbanksAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FairbanksAI);
+    ADD_CREATURE_FACTORY_FUNCTION(FairbanksAI)
     explicit FairbanksAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto blood = addAISpell(SP_FAIRBANKS_BLOOD, 15.0f, TARGET_ATTACKING, 0, 20, false, true);

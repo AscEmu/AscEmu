@@ -49,7 +49,7 @@ bool HotStreak(uint8_t effectIndex, Aura* pAura, bool apply)
 
         if (apply)
         {
-            static uint32 classMask[3] = { 0x13, 0x21000, 0 };
+            static uint32_t classMask[3] = { 0x13, 0x21000, 0 };
             caster->AddProcTriggerSpell(48108, pAura->GetSpellInfo()->getId(), caster->getGuid(), pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1, PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_HIT, 0, pAura->GetSpellInfo()->getEffectSpellClassMask(effectIndex), classMask);
         }
         else
@@ -79,7 +79,7 @@ bool TormentOfTheWeak(uint8_t effectIndex, Aura* a, bool apply)
 
     if (m_target->isPlayer())
     {
-        static_cast<Player*>(m_target)->m_IncreaseDmgSnaredSlowed += ((apply) ? 1 : -1) * (uint32)(((float)a->GetModAmount(effectIndex)) / 100);
+        static_cast<Player*>(m_target)->m_IncreaseDmgSnaredSlowed += ((apply) ? 1 : -1) * (uint32_t)(((float)a->GetModAmount(effectIndex)) / 100);
     }
 
     return true;
@@ -149,12 +149,12 @@ void SetupLegacyMageSpells(ScriptMgr* mgr)
     mgr->register_dummy_aura(55359, &Living_Bomb);
     mgr->register_dummy_aura(55360, &Living_Bomb);
 
-    uint32 HotStreakIds[] = { 44445, 44446, 44448, 0 };
+    uint32_t HotStreakIds[] = { 44445, 44446, 44448, 0 };
     mgr->register_dummy_aura(HotStreakIds, &HotStreak);
 
     mgr->register_dummy_spell(31687, &SummonWaterElemental);
 
-    uint32 tormentoftheweakids[] =
+    uint32_t tormentoftheweakids[] =
     {
         29447,
         55339,
@@ -163,7 +163,7 @@ void SetupLegacyMageSpells(ScriptMgr* mgr)
     };
     mgr->register_dummy_aura(tormentoftheweakids, &TormentOfTheWeak);
 
-    uint32 fingersoffrostids[] =
+    uint32_t fingersoffrostids[] =
     {
         44543,
         44545,
@@ -171,7 +171,7 @@ void SetupLegacyMageSpells(ScriptMgr* mgr)
     };
     mgr->register_dummy_aura(fingersoffrostids, &FingersOfFrost);
 
-    uint32 brainfreezeids[] =
+    uint32_t brainfreezeids[] =
     {
         44546,
         44548,
@@ -180,7 +180,7 @@ void SetupLegacyMageSpells(ScriptMgr* mgr)
     };
     mgr->register_dummy_aura(brainfreezeids, &BrainFreeze);
 
-    uint32 magicabsorbtionids[] =
+    uint32_t magicabsorbtionids[] =
     {
         29441,
         29444,

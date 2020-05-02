@@ -48,7 +48,7 @@ public:
     //    menu.sendGossipPacket(player);
     //}
 
-    //void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode, uint32 gossipId)
+    //void OnSelectOption(Object* object, Player* player, uint32_t Id, const char* enteredcode, uint32_t gossipId)
     //{
     //    Menu::senGossipComplete(player);
 

@@ -25,7 +25,7 @@
 
 class GeneralDrakkisathAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GeneralDrakkisathAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GeneralDrakkisathAI)
     explicit GeneralDrakkisathAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto firenova = addAISpell(SPELL_FIRENOVA, 15.0f, TARGET_VARIOUS);
@@ -45,7 +45,7 @@ class GeneralDrakkisathAI : public CreatureAIScript
 
 class PyroguardEmbersserAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PyroguardEmbersserAI);
+    ADD_CREATURE_FACTORY_FUNCTION(PyroguardEmbersserAI)
     explicit PyroguardEmbersserAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto firenova = addAISpell(SPELL_FIRENOVA, 15.0f, TARGET_VARIOUS);
@@ -62,7 +62,7 @@ class PyroguardEmbersserAI : public CreatureAIScript
 //\todo  PHASES. D:
 class RendBlackhandAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RendBlackhandAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RendBlackhandAI)
     explicit RendBlackhandAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto whirlwind = addAISpell(SPELL_WHIRLWIND, 30.0f, TARGET_VARIOUS);
@@ -79,7 +79,7 @@ class RendBlackhandAI : public CreatureAIScript
 
 class GythAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GythAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GythAI)
     explicit GythAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto corrosiveacid = addAISpell(SPELL_CORROSIVEACID, 24.0f, TARGET_VARIOUS);
@@ -124,7 +124,7 @@ protected:
 
 class TheBeastAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheBeastAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TheBeastAI)
     explicit TheBeastAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto flameBreak = addAISpell(SPELL_FLAMEBREAK, 20.0f, TARGET_VARIOUS);
@@ -141,7 +141,7 @@ class TheBeastAI : public CreatureAIScript
 
 class HighlordOmokkAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HighlordOmokkAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HighlordOmokkAI)
     explicit HighlordOmokkAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto warstomp = addAISpell(SPELL_WARSTOMP, 20.0f, TARGET_VARIOUS);
@@ -170,7 +170,7 @@ class HighlordOmokkAI : public CreatureAIScript
 
 class ShadowHunterVoshAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowHunterVoshAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowHunterVoshAI)
     explicit ShadowHunterVoshAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto curseOfBlood = addAISpell(SPELL_CURSEOFBLOOD, 15.0f, TARGET_VARIOUS);
@@ -187,7 +187,7 @@ class ShadowHunterVoshAI : public CreatureAIScript
 
 class WarMasterVooneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WarMasterVooneAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WarMasterVooneAI)
     explicit WarMasterVooneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto snapkick = addAISpell(SPELL_SNAPKICK, 20.0f, TARGET_VARIOUS);
@@ -213,7 +213,7 @@ class WarMasterVooneAI : public CreatureAIScript
 
 class MotherSmolderwebAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MotherSmolderwebAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MotherSmolderwebAI)
     explicit MotherSmolderwebAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto crystalize = addAISpell(SPELL_CRYSTALIZE, 25.0f, TARGET_VARIOUS);
@@ -233,7 +233,7 @@ class MotherSmolderwebAI : public CreatureAIScript
 
 class UrokDoomhowlAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UrokDoomhowlAI);
+    ADD_CREATURE_FACTORY_FUNCTION(UrokDoomhowlAI)
     explicit UrokDoomhowlAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto warstomp = addAISpell(SPELL_WARSTOMP_UD, 20.0f, TARGET_VARIOUS);
@@ -262,7 +262,7 @@ class UrokDoomhowlAI : public CreatureAIScript
 
 class QuartermasterZigrisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(QuartermasterZigrisAI);
+    ADD_CREATURE_FACTORY_FUNCTION(QuartermasterZigrisAI)
     explicit QuartermasterZigrisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shoot = addAISpell(SPELL_SHOOT, 40.0f, TARGET_VARIOUS);
@@ -279,7 +279,7 @@ class QuartermasterZigrisAI : public CreatureAIScript
 
 class HalyconAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HalyconAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HalyconAI)
     explicit HalyconAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto crowdpummel = addAISpell(SPELL_CROWDPUMMEL, 25.0f, TARGET_VARIOUS);
@@ -321,7 +321,7 @@ protected:
 
 class OverlordWyrmthalakAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OverlordWyrmthalakAI);
+    ADD_CREATURE_FACTORY_FUNCTION(OverlordWyrmthalakAI)
     explicit OverlordWyrmthalakAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto blastWave = addAISpell(SPELL_BLASTWAVE, 25.0f, TARGET_VARIOUS);

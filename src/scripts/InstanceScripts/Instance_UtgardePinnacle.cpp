@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class SvalaSorrowgraveAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SvalaSorrowgraveAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SvalaSorrowgraveAI)
     explicit SvalaSorrowgraveAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
@@ -16,7 +16,7 @@ class SvalaSorrowgraveAI : public CreatureAIScript
 
 class GortokPalehoofAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GortokPalehoofAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GortokPalehoofAI)
     explicit GortokPalehoofAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addEmoteForEvent(Event_OnCombatStart, SAY_GROTOK_PALEHOOF_01);
@@ -27,7 +27,7 @@ class GortokPalehoofAI : public CreatureAIScript
 
 class SkadiTheRuthlessAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SkadiTheRuthlessAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SkadiTheRuthlessAI)
     explicit SkadiTheRuthlessAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addEmoteForEvent(Event_OnCombatStart, SAY_SKADI_RUTHLESS_START);
@@ -39,7 +39,7 @@ class SkadiTheRuthlessAI : public CreatureAIScript
 
 class KingYmironAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KingYmironAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KingYmironAI)
     explicit KingYmironAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addEmoteForEvent(Event_OnCombatStart, SAY_KING_YMIRON_START);

@@ -47,7 +47,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
         plr->AddQuestKill(9663, 0, 0);
     }
@@ -66,7 +66,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
         plr->AddQuestKill(9663, 1, 0);
     }
@@ -85,7 +85,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
         plr->AddQuestKill(9663, 2, 0);
     }
@@ -110,7 +110,7 @@ public:
 
 class HighChiefBristlelimb : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HighChiefBristlelimb);
+    ADD_CREATURE_FACTORY_FUNCTION(HighChiefBristlelimb)
     explicit HighChiefBristlelimb(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         fulborgskilled = 0;
@@ -139,7 +139,7 @@ private:
 
 class WebbedCreature : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WebbedCreature);
+    ADD_CREATURE_FACTORY_FUNCTION(WebbedCreature)
     explicit WebbedCreature(Creature* pCreature) : CreatureAIScript(pCreature)
     {}
 
@@ -172,7 +172,7 @@ class WebbedCreature : public CreatureAIScript
         if (qle == nullptr)
         {
             // Creatures from Bloodmyst Isle
-            uint32 Id[51] = { 17681, 17887, 17550, 17323, 17338, 17341, 17333, 17340, 17353, 17320, 17339, 17337, 17715, 17322, 17494, 17654, 17342, 17328, 17331, 17325, 17321, 17330, 17522, 17329, 17524, 17327, 17661, 17352, 17334, 17326, 17324, 17673, 17336, 17346, 17589, 17609, 17608, 17345, 17527, 17344, 17347, 17525, 17713, 17523, 17348, 17606, 17604, 17607, 17610, 17358, 17588 };
+            uint32_t Id[51] = { 17681, 17887, 17550, 17323, 17338, 17341, 17333, 17340, 17353, 17320, 17339, 17337, 17715, 17322, 17494, 17654, 17342, 17328, 17331, 17325, 17321, 17330, 17522, 17329, 17524, 17327, 17661, 17352, 17334, 17326, 17324, 17673, 17336, 17346, 17589, 17609, 17608, 17345, 17527, 17344, 17347, 17525, 17713, 17523, 17348, 17606, 17604, 17607, 17610, 17358, 17588 };
             RandomCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(Id[Util::getRandomUInt(50)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
             if (RandomCreature != NULL)
             {
@@ -182,7 +182,7 @@ class WebbedCreature : public CreatureAIScript
         }
         else
         {
-            uint32 Id[8] = { 17681, 17321, 17330, 17522, 17673, 17336, 17346, 17589 };
+            uint32_t Id[8] = { 17681, 17321, 17330, 17522, 17673, 17336, 17346, 17589 };
             RandomCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(Id[Util::getRandomUInt(7)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
             if (RandomCreature != NULL)
             {

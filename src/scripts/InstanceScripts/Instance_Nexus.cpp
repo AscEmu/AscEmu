@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class AnomalusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AnomalusAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AnomalusAI)
     explicit AnomalusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mInstance = getInstanceScript();
@@ -97,15 +97,15 @@ class AnomalusAI : public CreatureAIScript
 
 private:
 
-    int32 mSummonTimer;
-    uint8 mSummon;
+    int32_t mSummonTimer;
+    uint8_t mSummon;
     bool mRift;
     InstanceScript* mInstance;
 };
 
 class ChaoticRiftAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChaoticRiftAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ChaoticRiftAI)
     explicit ChaoticRiftAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -137,7 +137,7 @@ class ChaoticRiftAI : public CreatureAIScript
 
 class CraziedManaWrathAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CraziedManaWrathAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CraziedManaWrathAI)
     explicit CraziedManaWrathAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStop(Unit* /*pTarget*/) override
@@ -160,7 +160,7 @@ static Movement::Location FormSpawns[] =
 
 class TelestraBossAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TelestraBossAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TelestraBossAI)
     explicit TelestraBossAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mInstance = getInstanceScript();
@@ -209,7 +209,7 @@ class TelestraBossAI : public CreatureAIScript
             _setTargetingDisabled(true);
             _applyAura(60191);
 
-            for (uint8 i = 0; i < 3; ++i)
+            for (uint8_t i = 0; i < 3; ++i)
             {
                 mAddArray[i] = spawnCreature(CN_TELESTRA_FIRE + i, FormSpawns[i].x, FormSpawns[i].y, FormSpawns[i].z, FormSpawns[i].o);
                 if (mAddArray[i] != NULL)
@@ -219,7 +219,7 @@ class TelestraBossAI : public CreatureAIScript
 
         if (isScriptPhase(2))
         {
-            for (uint8 i = 0; i < 3; ++i)
+            for (uint8_t i = 0; i < 3; ++i)
             {
                 if (mAddArray[i] != NULL)
                 {
@@ -243,7 +243,7 @@ class TelestraBossAI : public CreatureAIScript
 
     void OnCombatStop(Unit* /*pTarget*/) override
     {
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < 3; ++i)
         {
             if (mAddArray[i] != NULL)
             {
@@ -255,7 +255,7 @@ class TelestraBossAI : public CreatureAIScript
 
     void OnDied(Unit* /*pKiller*/) override
     {
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < 3; ++i)
         {
             if (mAddArray[i] != NULL)
             {
@@ -280,15 +280,15 @@ private:
 
     Creature* mAddArray[3];
 
-    int32 mPhaseRepeat;
-    int32 mAddCount;
+    int32_t mPhaseRepeat;
+    int32_t mAddCount;
 
     InstanceScript* mInstance;
 };
 
 class TelestraFireAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TelestraFireAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TelestraFireAI)
     explicit TelestraFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -306,7 +306,7 @@ class TelestraFireAI : public CreatureAIScript
 
 class TelestraFrostAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TelestraFrostAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TelestraFrostAI)
     explicit TelestraFrostAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -324,7 +324,7 @@ class TelestraFrostAI : public CreatureAIScript
 
 class TelestraArcaneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TelestraArcaneAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TelestraArcaneAI)
     explicit TelestraArcaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(TIME_STOP, 30.0f, TARGET_SELF, 2, 30);
@@ -334,7 +334,7 @@ class TelestraArcaneAI : public CreatureAIScript
 
 class OrmorokAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OrmorokAI);
+    ADD_CREATURE_FACTORY_FUNCTION(OrmorokAI)
     explicit OrmorokAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mInstance = getInstanceScript();
@@ -391,7 +391,7 @@ private:
 
 class CrystalSpikeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CrystalSpikeAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CrystalSpikeAI)
     explicit CrystalSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_part = 0;
@@ -436,7 +436,7 @@ private:
 // \todo currently unfinished
 class KeristraszaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KeristraszaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KeristraszaAI)
     explicit KeristraszaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -490,14 +490,14 @@ class NexusScript : public InstanceScript
 {
 public:
 
-    uint32 mAnomalusGUID;
-    uint32 mTelestraGUID;
-    uint32 mOrmorokGUID;
-    uint32 mKeristraszaGUID;
+    uint32_t mAnomalusGUID;
+    uint32_t mTelestraGUID;
+    uint32_t mOrmorokGUID;
+    uint32_t mKeristraszaGUID;
 
-    uint8 mCSCount;
+    uint8_t mCSCount;
 
-    uint32 m_uiEncounters[NEXUS_END];
+    uint32_t m_uiEncounters[NEXUS_END];
 
     explicit NexusScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
@@ -508,7 +508,7 @@ public:
 
         mCSCount = 0;
 
-        for (uint8 i = 0; i < NEXUS_END; ++i)
+        for (uint8_t i = 0; i < NEXUS_END; ++i)
             m_uiEncounters[i] = NotStarted;
 
         PrepareGameObjectsForState();
@@ -625,12 +625,12 @@ public:
             // team spawns
             if (player->getTeam() == TEAM_ALLIANCE)
             {
-                for (uint8 i = 0; i < 18; i++)
+                for (uint8_t i = 0; i < 18; i++)
                     spawnCreature(TrashHordeSpawns[i].entry, TrashHordeSpawns[i].x, TrashHordeSpawns[i].y, TrashHordeSpawns[i].z, TrashHordeSpawns[i].o, TrashHordeSpawns[i].faction);
             }
             else
             {
-                for (uint8 i = 0; i < 18; i++)
+                for (uint8_t i = 0; i < 18; i++)
                     spawnCreature(TrashAllySpawns[i].entry, TrashAllySpawns[i].x, TrashAllySpawns[i].y, TrashAllySpawns[i].z, TrashAllySpawns[i].o, TrashAllySpawns[i].faction);
             }
 

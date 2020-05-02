@@ -46,7 +46,7 @@ int LuaGameObject::GossipCreateMenu(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GossipMenuAddItem(lua_State* L, GameObject* /*ptr*/)
 {
-    uint8 icon = static_cast<uint8>(luaL_checkinteger(L, 1));
+    uint8_t icon = static_cast<uint8_t>(luaL_checkinteger(L, 1));
     const char* menu_text = luaL_checkstring(L, 2);
     int IntId = static_cast<int>(luaL_checkinteger(L, 3));
     bool coded = (luaL_checkinteger(L, 4)) ? true : false;
@@ -120,11 +120,11 @@ int LuaGameObject::GossipSendQuickMenu(lua_State* L, GameObject* ptr)
     uint32_t text_id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
     Player* player = CHECK_PLAYER(L, 2);
     uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 3));
-    uint8 itemicon = CHECK_UINT8(L, 4);
+    uint8_t itemicon = CHECK_UINT8(L, 4);
     const char* itemtext = luaL_checkstring(L, 5);
     uint32_t requiredmoney = CHECK_ULONG(L, 6);
     const char* moneytext = luaL_checkstring(L, 7);
-    uint8 extra = CHECK_UINT8(L, 8);
+    uint8_t extra = CHECK_UINT8(L, 8);
 
     if (player == NULL)
         return 0;
@@ -577,7 +577,7 @@ int LuaGameObject::SetUInt32Value(lua_State* L, GameObject* ptr)
 int LuaGameObject::SetUInt64Value(lua_State* L, GameObject* ptr)
 {
     uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
-    uint64 guid = CHECK_GUID(L, 1);
+    uint64_t guid = CHECK_GUID(L, 1);
     if (ptr && field)
         ptr->setUInt64Value(field, guid);
     return 0;
@@ -910,7 +910,7 @@ int LuaGameObject::GetDungeonDifficulty(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::SetDungeonDifficulty(lua_State* L, GameObject* ptr)
 {
-    uint8 difficulty = static_cast<uint8>(luaL_checkinteger(L, 1));
+    uint8_t difficulty = static_cast<uint8_t>(luaL_checkinteger(L, 1));
     MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(ptr->GetMapId());
     if (pMapinfo) //this block = IsInInstace()
     {
@@ -1011,7 +1011,7 @@ int LuaGameObject::GetByte(lua_State* L, GameObject* ptr)
     TEST_GO()
         uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     uint8_t index2 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
-    uint8 value = ptr->getByteValue(index, index2);
+    uint8_t value = ptr->getByteValue(index, index2);
     RET_INT(value);
 }
 
@@ -1088,7 +1088,7 @@ int LuaGameObject::GetSpawnLocation(lua_State* L, GameObject* ptr)
 int LuaGameObject::GetWoWObject(lua_State* L, GameObject* ptr)
 {
     TEST_GO();
-    uint64 guid = CHECK_GUID(L, 1);
+    uint64_t guid = CHECK_GUID(L, 1);
     Object* obj = ptr->GetMapMgr()->_GetObject(guid);
     if (obj != NULL && obj->isCreatureOrPlayer())
     PUSH_UNIT(L, obj);
@@ -1118,8 +1118,8 @@ int LuaGameObject::RegisterEvent(lua_State* L, GameObject* ptr)
     {
         TimedEvent* ev = TimedEvent::Allocate(ptr, new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), EVENT_LUA_GAMEOBJ_EVENTS, delay, repeats);
         ptr->event_AddEvent(ev);
-        std::map<uint64, std::set<int>>& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-        std::map<uint64, std::set<int>>::iterator itr = objRefs.find(ptr->getGuid());
+        std::map<uint64_t, std::set<int>>& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
+        std::map<uint64_t, std::set<int>>::iterator itr = objRefs.find(ptr->getGuid());
         if (itr == objRefs.end())
         {
             std::set<int> refs;
@@ -1139,8 +1139,8 @@ int LuaGameObject::RemoveEvents(lua_State* L, GameObject* ptr)
 {
     TEST_GO();
     sEventMgr.RemoveEvents(ptr, EVENT_LUA_GAMEOBJ_EVENTS);
-    std::map<uint64, std::set<int>>& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-    std::map<uint64, std::set<int>>::iterator itr = objRefs.find(ptr->getGuid());
+    std::map<uint64_t, std::set<int>>& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
+    std::map<uint64_t, std::set<int>>::iterator itr = objRefs.find(ptr->getGuid());
     if (itr != objRefs.end())
     {
         std::set<int>& refs = itr->second;
@@ -1201,7 +1201,7 @@ int LuaGameObject::Damage(lua_State* L, GameObject* ptr)
 
     GameObject_Destructible* dt = static_cast<GameObject_Destructible*>(ptr);
     uint32_t damage = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-    uint64 guid = CHECK_GUID(L, 2);
+    uint64_t guid = CHECK_GUID(L, 2);
     uint32_t spellid = static_cast<uint32_t>(luaL_checkinteger(L, 3));
 
     dt->Damage(damage, guid, guid, spellid);

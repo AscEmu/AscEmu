@@ -38,7 +38,7 @@ public:
 
     static CreatureAIScript* Create(Creature* creature) { return new SinclariAI(creature); }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -105,7 +105,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* pPlayer, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         VioletHold* pInstance = (VioletHold*)pPlayer->GetMapMgr()->GetScript();
         if (!pInstance)

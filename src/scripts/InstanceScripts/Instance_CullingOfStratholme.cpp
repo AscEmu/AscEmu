@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class MeathookAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MeathookAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MeathookAI)
     explicit MeathookAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -47,7 +47,7 @@ class MeathookAI : public CreatureAIScript
 
 class SalramTheFleshcrafterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SalramTheFleshcrafterAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SalramTheFleshcrafterAI)
     explicit SalramTheFleshcrafterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -94,7 +94,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
 
 class ChronoLordEpochAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChronoLordEpochAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ChronoLordEpochAI)
     explicit ChronoLordEpochAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -130,7 +130,7 @@ class ChronoLordEpochAI : public CreatureAIScript
 
 class InfiniteCorruptorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InfiniteCorruptorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(InfiniteCorruptorAI)
     explicit InfiniteCorruptorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // VoidStrike
@@ -152,7 +152,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
 
 class MalganisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MalganisAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MalganisAI)
     explicit MalganisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -190,7 +190,7 @@ class MalganisAI : public CreatureAIScript
         getCreature()->RemoveAllAuras();
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         if (getCreature()->HasAura(52723))    //handling a dummy :)
         {
@@ -201,7 +201,7 @@ class MalganisAI : public CreatureAIScript
         {
             getCreature()->setMoveRoot(true);
             getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
-            for (uint8 i = 0; i < 7; ++i)
+            for (uint8_t i = 0; i < 7; ++i)
                 getCreature()->SchoolImmunityList[i] = 1;
 
             RemoveAIUpdateEvent();
@@ -223,13 +223,13 @@ public:
 
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        for (uint8 i = 0; i < 5; i++)
+        for (uint8_t i = 0; i < 5; i++)
         SpawnCrates(i, mTarget->GetMapMgr());
     }
 
-    static void SpawnCrates(uint32 id, MapMgr* pMapMgr)
+    static void SpawnCrates(uint32_t id, MapMgr* pMapMgr)
     {
-        uint32 entry = 190094;
+        uint32_t entry = 190094;
         float x = 0.0f, y = 0.0f, z = 0.0f, o = 0.0f;
         switch (id)
         {
@@ -295,7 +295,7 @@ static Movement::Location walk[] =
 
 class UtherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UtherAI);
+    ADD_CREATURE_FACTORY_FUNCTION(UtherAI)
     explicit UtherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddWaypoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_RUN, walk[1]));
@@ -304,7 +304,7 @@ class UtherAI : public CreatureAIScript
         check = true;
     }
 
-    void OnReachWP(uint32 i, bool /*usl*/) override
+    void OnReachWP(uint32_t i, bool /*usl*/) override
     {
         if (i == 3 && check)
         {
@@ -376,7 +376,7 @@ static Movement::Location ArthasWalk[] =
 
 class ArthasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArthasAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ArthasAI)
     explicit ArthasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -393,7 +393,7 @@ class ArthasAI : public CreatureAIScript
         phase = 0;
     }
 
-    void OnReachWP(uint32 i, bool /*usl*/) override
+    void OnReachWP(uint32_t i, bool /*usl*/) override
     {
         switch (i)
         {
@@ -482,7 +482,7 @@ class ArthasAI : public CreatureAIScript
                     c->bInvincible = true;
                     c->GetAIInterface()->m_canMove = false;
                     c->GetAIInterface()->SetAllowedToEnterCombat(false);
-                    for (uint8 i = 0; i < 7; i++)
+                    for (uint8_t i = 0; i < 7; i++)
                         c->SchoolImmunityList[i] = 1;
                     c->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                     //1 = 0s
@@ -502,7 +502,7 @@ class ArthasAI : public CreatureAIScript
 
 protected:
 
-    uint32 phase;
+    uint32_t phase;
 };
 
 
@@ -519,7 +519,7 @@ public:
         menu.sendGossipPacket(Plr);
     }
 
-    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {

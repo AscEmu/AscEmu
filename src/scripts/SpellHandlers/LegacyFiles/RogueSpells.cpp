@@ -67,7 +67,7 @@ bool Shiv(uint8_t /*effectIndex*/, Spell* pSpell)
     if (ench)
     {
         DBC::Structures::SpellItemEnchantmentEntry const* Entry = ench->Enchantment;
-        for (uint8 c = 0; c < 3; c++)
+        for (uint8_t c = 0; c < 3; c++)
         {
             if (Entry->type[c] && Entry->spell[c])
             {
@@ -105,7 +105,7 @@ bool CutToTheChase(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
     if (apply)
     {
-        static uint32 classMask[3] = { 0x20000, 0x8, 0 };
+        static uint32_t classMask[3] = { 0x20000, 0x8, 0 };
         target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
     }
     else
@@ -120,7 +120,7 @@ bool DeadlyBrew(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
     if (apply)
     {
-        static uint32 classMask[3] = { 0x1000A000, 0, 0 };
+        static uint32_t classMask[3] = { 0x1000A000, 0, 0 };
         target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL, 0, NULL, classMask);
     }
     else
@@ -137,7 +137,7 @@ bool CloakOfShadows(uint8_t /*effectIndex*/, Spell* s)
         return false;
 
     Aura* pAura;
-    for (uint32 j = MAX_NEGATIVE_AURAS_EXTEDED_START; j < MAX_NEGATIVE_AURAS_EXTEDED_END; ++j)
+    for (uint32_t j = MAX_NEGATIVE_AURAS_EXTEDED_START; j < MAX_NEGATIVE_AURAS_EXTEDED_END; ++j)
     {
         pAura = unitTarget->m_auras[j];
         if (pAura != NULL && !pAura->IsPassive()
@@ -161,7 +161,7 @@ bool CheatDeath(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
     if (p_target != NULL)
     {
-        int32 m = (int32)(8.0f * p_target->CalcRating(PCR_MELEE_CRIT_RESILIENCE));
+        int32_t m = (int32_t)(8.0f * p_target->CalcRating(PCR_MELEE_CRIT_RESILIENCE));
         if (m > 90)
             m = 90;
 
@@ -178,7 +178,7 @@ bool CheatDeath(uint8_t /*effectIndex*/, Aura* a, bool apply)
             val = m / 100.0f;
         }
 
-        for (uint32 x = 0; x < 7; x++)
+        for (uint32_t x = 0; x < 7; x++)
             p_target->DamageTakenPctMod[x] += val;
     }
 
@@ -193,7 +193,7 @@ bool MasterOfSubtlety(uint8_t effectIndex, Aura* a, bool apply)
 
     Player* p_target = static_cast<Player*>(u_target);
 
-    int32 amount = a->GetModAmount(effectIndex);
+    int32_t amount = a->GetModAmount(effectIndex);
 
     if (apply)
     {
@@ -229,8 +229,8 @@ bool PreyOnTheWeakPeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool apply)
         if (target == NULL)
             return true;
 
-        uint32 plrHP = p_target->getHealth();
-        uint32 targetHP = target->getHealth();
+        uint32_t plrHP = p_target->getHealth();
+        uint32_t targetHP = target->getHealth();
 
         if (plrHP > targetHP)
             p_target->castSpell(p_target, 58670, true);
@@ -269,7 +269,7 @@ bool KillingSpreePeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool /*apply*/)
                 if (!itr->isCreatureOrPlayer() || !static_cast<Unit*>(itr)->isAlive())
                     continue;
 
-                uint64 spellTarget = itr->getGuid();
+                uint64_t spellTarget = itr->getGuid();
                 //SPELL_EFFECT_TELEPORT
                 p_target->castSpell(spellTarget, 57840, true);
                 //SPELL_EFFECT_NORMALIZED_WEAPON_DMG and triggering 57842 with the same effect
@@ -301,7 +301,7 @@ void SetupLegacyRogueSpells(ScriptMgr* mgr)
     mgr->register_dummy_spell(14185, &Preparation);
     mgr->register_dummy_spell(30918, &ImprovedSprint);
 
-    uint32 CutToTheChaseIds[] = { 51664, 51665, 51667, 51668, 51669, 0 };
+    uint32_t CutToTheChaseIds[] = { 51664, 51665, 51667, 51668, 51669, 0 };
     mgr->register_dummy_aura(CutToTheChaseIds, &CutToTheChase);
 
     mgr->register_dummy_aura(51625, &DeadlyBrew);
@@ -312,7 +312,7 @@ void SetupLegacyRogueSpells(ScriptMgr* mgr)
     mgr->register_dummy_aura(45182, &CheatDeath);
 
 
-    uint32 masterofsubtletyids[] =
+    uint32_t masterofsubtletyids[] =
     {
         31223,
         31222,
@@ -321,7 +321,7 @@ void SetupLegacyRogueSpells(ScriptMgr* mgr)
     };
     mgr->register_dummy_aura(masterofsubtletyids, &MasterOfSubtlety);
 
-    uint32 preyontheweakids[] =
+    uint32_t preyontheweakids[] =
     {
         51685,
         51686,

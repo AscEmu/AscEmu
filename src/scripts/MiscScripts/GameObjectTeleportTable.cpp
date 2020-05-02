@@ -16,14 +16,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 struct GameobjectTeleport
 {
-    uint32 mapid;
+    uint32_t mapid;
     float x, y, z, o;
-    uint32 req_level;
-    uint8 req_class;
-    uint32 req_achievement;
+    uint32_t req_level;
+    uint8_t req_class;
+    uint32_t req_achievement;
 };
 
-std::map<uint32, GameobjectTeleport*> m_teleStorage;
+std::map<uint32_t, GameobjectTeleport*> m_teleStorage;
 
 class CustomTeleport : public GameObjectAIScript // Custom Portals
 {
@@ -38,15 +38,15 @@ public:
     void OnActivate(Player* pPlayer)
     {
         float x, y, z, orientation;
-        uint32 mapid;
+        uint32_t mapid;
 
-        std::map<uint32, GameobjectTeleport*>::iterator itr = m_teleStorage.find(this->_gameobject->getEntry());
+        std::map<uint32_t, GameobjectTeleport*>::iterator itr = m_teleStorage.find(this->_gameobject->getEntry());
         if (itr != m_teleStorage.end())
         {
             GameobjectTeleport* gt = itr->second;
-            uint32 required_level = gt->req_level;
-            uint8 req_class = gt->req_class;
-            uint32 req_achievement = gt->req_achievement;
+            uint32_t required_level = gt->req_level;
+            uint8_t req_class = gt->req_class;
+            uint32_t req_achievement = gt->req_achievement;
 
             if (required_level > pPlayer->getLevel())
             {
@@ -97,7 +97,7 @@ void InitializeGameObjectTeleportTable(ScriptMgr* mgr)
         {
             GameobjectTeleport* gt = new GameobjectTeleport;
             Field* fields = result->Fetch();
-            uint32 entry = fields[0].GetUInt32();
+            uint32_t entry = fields[0].GetUInt32();
             gt->mapid = fields[1].GetUInt32();
             gt->x = fields[2].GetFloat();
             gt->y = fields[3].GetFloat();

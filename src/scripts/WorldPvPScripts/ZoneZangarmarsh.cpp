@@ -31,25 +31,25 @@ enum Towers
 };
 
 // Owners of the towers, used for save/restore
-int32 ZMg_towerOwners[TOWER_COUNT] = { -1, -1 };
+int32_t ZMg_towerOwners[TOWER_COUNT] = { -1, -1 };
 
 // global variables
-uint32 ZMg_hordeTowers = 0;
-uint32 ZMg_allianceTowers = 0;
-int32 ZMg_superiorTeam = -1;            // SUPERIORITY
-int32 ZMCityOwners = -1;
+uint32_t ZMg_hordeTowers = 0;
+uint32_t ZMg_allianceTowers = 0;
+int32_t ZMg_superiorTeam = -1;            // SUPERIORITY
+int32_t ZMCityOwners = -1;
 
 // Visual view for MAP
-static const uint32 g_hordeStateFields_MAP[TOWER_COUNT] = { WORLDSTATE_ZANGARMARSH_EAST_HORDE_MAP, WORLDSTATE_ZANGARMARSH_WEST_HORDE_MAP };
-static const uint32 g_allianceStateFields_MAP[TOWER_COUNT] = { WORLDSTATE_ZANGARMARSH_EAST_ALLIANCE_MAP, WORLDSTATE_ZANGARMARSH_WEST_ALLIANCE_MAP };
-static const uint32 g_neutralStateFields_MAP[TOWER_COUNT] = { WORLDSTATE_ZANGARMARSH_EAST_NEUTRAL_MAP, WORLDSTATE_ZANGARMARSH_WEST_NEUTRAL_MAP };
+static const uint32_t g_hordeStateFields_MAP[TOWER_COUNT] = { WORLDSTATE_ZANGARMARSH_EAST_HORDE_MAP, WORLDSTATE_ZANGARMARSH_WEST_HORDE_MAP };
+static const uint32_t g_allianceStateFields_MAP[TOWER_COUNT] = { WORLDSTATE_ZANGARMARSH_EAST_ALLIANCE_MAP, WORLDSTATE_ZANGARMARSH_WEST_ALLIANCE_MAP };
+static const uint32_t g_neutralStateFields_MAP[TOWER_COUNT] = { WORLDSTATE_ZANGARMARSH_EAST_NEUTRAL_MAP, WORLDSTATE_ZANGARMARSH_WEST_NEUTRAL_MAP };
 
 // Visual view for UI
-static const uint32 g_hordeStateFields_UI[TOWER_COUNT] = { WORLDSTATE_ZANGARMARSH_EAST_HORDE_UI, WORLDSTATE_ZANGARMARSH_WEST_HORDE_UI };
-static const uint32 g_allianceStateFields_UI[TOWER_COUNT] = { WORLDSTATE_ZANGARMARSH_EAST_ALLIANCE_UI, WORLDSTATE_ZANGARMARSH_WEST_ALLIANCE_UI };
-static const uint32 g_neutralStateFields_UI[TOWER_COUNT] = { WORLDSTATE_ZANGARMARSH_EAST_NEUTRAL_UI, WORLDSTATE_ZANGARMARSH_WEST_NEUTRAL_UI };
+static const uint32_t g_hordeStateFields_UI[TOWER_COUNT] = { WORLDSTATE_ZANGARMARSH_EAST_HORDE_UI, WORLDSTATE_ZANGARMARSH_WEST_HORDE_UI };
+static const uint32_t g_allianceStateFields_UI[TOWER_COUNT] = { WORLDSTATE_ZANGARMARSH_EAST_ALLIANCE_UI, WORLDSTATE_ZANGARMARSH_WEST_ALLIANCE_UI };
+static const uint32_t g_neutralStateFields_UI[TOWER_COUNT] = { WORLDSTATE_ZANGARMARSH_EAST_NEUTRAL_UI, WORLDSTATE_ZANGARMARSH_WEST_NEUTRAL_UI };
 
-void ZMSpawnBanners(shared_ptr<MapMgr> bmgr, int32 side);
+void ZMSpawnBanners(shared_ptr<MapMgr> bmgr, int32_t side);
 
 void SetGrave(shared_ptr<MapMgr> pmgr)
 {
@@ -57,7 +57,7 @@ void SetGrave(shared_ptr<MapMgr> pmgr)
         return;
 
     // any better solution?
-    uint32 gOwners = ZMCityOwners == 0 ? 0 : 1;
+    uint32_t gOwners = ZMCityOwners == 0 ? 0 : 1;
     if(ZMCityOwners == -1)
         gOwners = 3;
 
@@ -138,11 +138,11 @@ enum BannerStatus
 
 class ZangarmarshBannerAI : public GameObjectAIScript
 {
-    map<uint32, uint32> StoredPlayers;
-    uint32 Status;
+    map<uint32_t, uint32_t> StoredPlayers;
+    uint32_t Status;
     const char* ControlPointName;
-    uint32 towerid;
-    uint32 m_bannerStatus;
+    uint32_t towerid;
+    uint32_t m_bannerStatus;
 
 public:
 
@@ -171,7 +171,7 @@ public:
 
     void AIUpdate()
     {
-        uint32 plrcounts[2] = { 0, 0 };
+        uint32_t plrcounts[2] = { 0, 0 };
 
         // details:
         //   loop through inrange players, for new ones, send the enable CP worldstate.
@@ -180,8 +180,8 @@ public:
 
         unordered_set<PlayerPointer>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
         unordered_set<PlayerPointer>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
-        map<uint32, uint32>::iterator it2, it3;
-        uint32 timeptr = (uint32)UNIXTIME;
+        map<uint32_t, uint32_t>::iterator it2, it3;
+        uint32_t timeptr = (uint32_t)UNIXTIME;
         bool in_range;
         bool is_valid;
         PlayerPointer plr;
@@ -356,7 +356,7 @@ public:
         }
 
         // work out current status for next tick
-        uint32 delta;
+        uint32_t delta;
         if(plrcounts[0] > plrcounts[1])
         {
             delta = plrcounts[0] - plrcounts[1];
@@ -453,7 +453,7 @@ public:
 
     void GossipHello(ObjectPointer pObject, PlayerPointer  plr, bool AutoSend)
     {
-        uint32 Team = plr->GetTeam();
+        uint32_t Team = plr->GetTeam();
         if(Team > 1)
             Team = 1;
 
@@ -469,7 +469,7 @@ public:
             Menu->SendTo(plr);
     }
 
-    void GossipSelectOption(ObjectPointer pObject, PlayerPointer  plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(ObjectPointer pObject, PlayerPointer  plr, uint32_t Id, uint32_t IntId, const char* Code)
     {
         if(!plr)
             return;
@@ -485,7 +485,7 @@ public:
             return;
         }
 
-        uint32 CastSpellID = IntId == 1 ? 32430 : 32431;
+        uint32_t CastSpellID = IntId == 1 ? 32430 : 32431;
         if(CastSpellID != 0)
         if(!plr->HasAura(CastSpellID)) pCreature->CastSpell(plr, CastSpellID, true);
             return;
@@ -509,14 +509,14 @@ public:
         if(!pPlayer)
             return;
 
-        uint32 pTeam = pPlayer->GetTeam();
+        uint32_t pTeam = pPlayer->GetTeam();
         if(pTeam > 1)
             pTeam = 1;
 
         if(ZMg_superiorTeam != pTeam || ZMCityOwners == pTeam)
             return;
 
-        uint32 flagaura = (pTeam == 0 ? 32430 : 32431);
+        uint32_t flagaura = (pTeam == 0 ? 32430 : 32431);
 
         if(pPlayer->HasAura(flagaura))
             pPlayer->RemoveAura(flagaura);
@@ -533,7 +533,7 @@ public:
 
         SetGrave(_gameobject->GetMapMgr());
 
-        uint32 oppositeTeam = (pTeam == 0 ? 1 : 0);
+        uint32_t oppositeTeam = (pTeam == 0 ? 1 : 0);
 
         _gameobject->GetMapMgr()->CastSpellOnPlayers(pTeam, TWIN_SPIRE_BLESSING);
         _gameobject->GetMapMgr()->RemovePositiveAuraFromPlayers(oppositeTeam, TWIN_SPIRE_BLESSING);
@@ -548,7 +548,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Zone Hook
 
-void ZMZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
+void ZMZoneHook(PlayerPointer plr, uint32_t Zone, uint32_t OldZone)
 {
     if(!plr)
         return;
@@ -570,20 +570,20 @@ void ZMZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
 
 struct sgodata
 {
-    uint32 entry;
+    uint32_t entry;
     float posx;
     float posy;
     float posz;
     float facing;
     float orientation[4];
-    uint32 state;
-    uint32 flags;
-    uint32 faction;
+    uint32_t state;
+    uint32_t flags;
+    uint32_t faction;
     float scale;
-    uint32 is_banner;
+    uint32_t is_banner;
 };
 
-void ZMSpawnBanners(shared_ptr<MapMgr> bmgr, int32 side)
+void ZMSpawnBanners(shared_ptr<MapMgr> bmgr, int32_t side)
 {
     if(!bmgr)
         return;
@@ -599,7 +599,7 @@ void ZMSpawnBanners(shared_ptr<MapMgr> bmgr, int32 side)
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     };
 
-    uint32 i = side + 1;
+    uint32_t i = side + 1;
     if(i > 2)   // how does that happen? oO
         i = 2;
     const sgodata* b;
@@ -614,7 +614,7 @@ void ZMSpawnBanners(shared_ptr<MapMgr> bmgr, int32 side)
     bGo->SetUInt32Value(GAMEOBJECT_FLAGS, b->flags);
     bGo->SetUInt32Value(GAMEOBJECT_FACTION, b->faction);
 
-    for(uint32 j = 0; j < 4; ++j)
+    for(uint32_t j = 0; j < 4; ++j)
     {
         bGo->SetFloatValue(GAMEOBJECT_ROTATION + j, b->orientation[j]);
     }
@@ -636,7 +636,7 @@ void ZMSpawnObjects(shared_ptr<MapMgr> pmgr)
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     };
 
-    uint32 i;
+    uint32_t i;
     const sgodata* p;
     for(i = 0; i < 2; ++i)
     {
@@ -651,7 +651,7 @@ void ZMSpawnObjects(shared_ptr<MapMgr> pmgr)
         pGo->SetUInt32Value(GAMEOBJECT_FLAGS, p->flags);
         pGo->SetUInt32Value(GAMEOBJECT_FACTION, p->faction);
 
-        for(uint32 j = 0; j < 4; ++j)
+        for(uint32_t j = 0; j < 4; ++j)
         {
             pGo->SetFloatValue(GAMEOBJECT_ROTATION + j, p->orientation[j]);
         }
@@ -672,7 +672,7 @@ void Tokens(PlayerPointer pPlayer, PlayerPointer pVictim)
     if(!pPlayer->HasAura(TWIN_SPIRE_BLESSING) || pPlayer->GetTeam() == pVictim->GetTeam())
         return;
 
-    uint32 TokenSpell = pPlayer->GetTeam() == 0 ? 32155 : 32158;
+    uint32_t TokenSpell = pPlayer->GetTeam() == 0 ? 32155 : 32158;
 
     pPlayer->CastSpell(pPlayer, TokenSpell, true);
 }

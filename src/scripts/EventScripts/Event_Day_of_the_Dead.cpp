@@ -41,7 +41,7 @@ void Catrina(Player* pPlayer, Unit* pUnit)
 #endif
 }
 
-void OnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
+void OnEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)
 {
     switch (Emote)
     {

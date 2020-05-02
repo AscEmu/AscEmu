@@ -40,7 +40,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         plr->castSpell(plr, sSpellMgr.getSpellInfo(23122), true);
         GossipMenu::senGossipComplete(plr);
@@ -61,7 +61,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         GossipMenu::sendSimpleMenu(pObject->getGuid(), 7014, plr);
         plr->castSpell(plr, sSpellMgr.getSpellInfo(23123), true);
@@ -74,7 +74,7 @@ public:
 
     void onHello(Object* pObject, Player* plr) override
     {
-        uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());
+        uint32_t Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());
         if (sMySQLStore.getNpcText(Text) == nullptr)
             Text = DefaultGossipTextId;
 
@@ -88,7 +88,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         plr->castSpell(plr, DALARAN_TELEPORT_SPELL, true);
     }

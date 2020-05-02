@@ -9,12 +9,12 @@ This file is released under the MIT license. See README-MIT for more information
 // Allianze & Horde spawns
 struct ICCSpawns
 {
-    uint32 entry;
+    uint32_t entry;
     float x;
     float y;
     float z;
     float o;
-    uint32 faction;
+    uint32_t faction;
 };
 
 const ICCSpawns AllySpawns[13] = {

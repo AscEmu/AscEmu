@@ -23,7 +23,7 @@
 
 class ThreatFromAboveQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThreatFromAboveQAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ThreatFromAboveQAI)
     explicit ThreatFromAboveQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)
@@ -37,7 +37,7 @@ class ThreatFromAboveQAI : public CreatureAIScript
 
 class TheInfestedProtectorsQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheInfestedProtectorsQAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TheInfestedProtectorsQAI)
     explicit TheInfestedProtectorsQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         min = 0;
@@ -71,7 +71,7 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
                     float SSZ = getCreature()->GetPositionZ();
                     float SSO = getCreature()->GetOrientation();
 
-                    for (uint8 i = 0; i < finall; i++)
+                    for (uint8_t i = 0; i < finall; i++)
                     {
                         Creature * NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(22419, SSX + Util::getRandomFloat(3.0f), SSY + Util::getRandomFloat(3.0f), SSZ, SSO + Util::getRandomFloat(1.0f), true, false, 0, 0);
                         if (NewCreature != NULL)
@@ -84,15 +84,14 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
 
 private:
 
-    uint32 min;
-    uint32 max;
-    uint32 finall;
+    uint32_t min;
+    uint32_t max;
+    uint32_t finall;
 };
 
 class TakenInTheNight : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TakenInTheNight);
-
+    ADD_CREATURE_FACTORY_FUNCTION(TakenInTheNight)
     explicit TakenInTheNight(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()
@@ -107,8 +106,8 @@ class TakenInTheNight : public CreatureAIScript
             return;
 
         Player* plr = static_cast<Player*>(mKiller);
-        uint8 chance = (uint8)Util::getRandomUInt(5);
-        uint32 spawn = 0;
+        uint8_t chance = (uint8_t)Util::getRandomUInt(5);
+        uint32_t spawn = 0;
 
         switch (chance)
         {
@@ -152,8 +151,7 @@ class TakenInTheNight : public CreatureAIScript
 
 class AnImproperBurial : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AnImproperBurial);
-
+    ADD_CREATURE_FACTORY_FUNCTION(AnImproperBurial)
     explicit AnImproperBurial(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()
@@ -177,7 +175,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* plr, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
         plr->getItemInterface()->RemoveItemAmt(2799, 1);
 

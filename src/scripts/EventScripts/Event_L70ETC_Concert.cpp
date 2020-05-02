@@ -48,7 +48,7 @@ enum L80Spells
 
 class SamAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SamAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SamAI)
     explicit SamAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -102,12 +102,12 @@ class SamAI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class BerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BerAI)
     explicit BerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -157,13 +157,13 @@ class BerAI : public CreatureAIScript
     }
 
 protected:
-    uint32 timer;
+    uint32_t timer;
 
 };
 
 class SigAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SigAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SigAI)
     explicit SigAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -217,12 +217,12 @@ class SigAI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class MaiAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MaiAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MaiAI)
     explicit MaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -274,13 +274,13 @@ class MaiAI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 
 class ThuAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThuAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ThuAI)
     explicit ThuAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -345,12 +345,12 @@ class ThuAI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class UndeadAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UndeadAI);
+    ADD_CREATURE_FACTORY_FUNCTION(UndeadAI)
     explicit UndeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -390,12 +390,12 @@ class UndeadAI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class Undead2AI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Undead2AI);
+    ADD_CREATURE_FACTORY_FUNCTION(Undead2AI)
     explicit Undead2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -436,12 +436,12 @@ class Undead2AI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class Undead3AI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Undead3AI);
+    ADD_CREATURE_FACTORY_FUNCTION(Undead3AI)
     explicit Undead3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -475,12 +475,12 @@ class Undead3AI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class TriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TriggerAI)
     explicit TriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -566,12 +566,12 @@ class TriggerAI : public CreatureAIScript
     }
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class Trigger2AI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Trigger2AI);
+    ADD_CREATURE_FACTORY_FUNCTION(Trigger2AI)
     explicit Trigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -651,12 +651,12 @@ class Trigger2AI : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class Effectsground : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Effectsground);
+    ADD_CREATURE_FACTORY_FUNCTION(Effectsground)
     explicit Effectsground(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -767,12 +767,12 @@ class Effectsground : public CreatureAIScript
 
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 class Effectsair : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Effectsair);
+    ADD_CREATURE_FACTORY_FUNCTION(Effectsair)
     explicit Effectsair(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -832,7 +832,7 @@ class Effectsair : public CreatureAIScript
     }
 protected:
 
-    uint32 timer;
+    uint32_t timer;
 };
 
 void SetupL70ETC(ScriptMgr* mgr)

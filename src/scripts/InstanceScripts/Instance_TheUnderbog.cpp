@@ -29,7 +29,7 @@
 
 class HungarfenAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HungarfenAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HungarfenAI)
     explicit HungarfenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto mushroom = addAISpell(UNDERBOG_MUSHROOM, 0.0f, TARGET_RANDOM_DESTINATION, 0, 15, false, true);
@@ -77,7 +77,7 @@ protected:
 
 class GhazanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GhazanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GhazanAI)
     explicit GhazanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto acidSpit = addAISpell(ACID_SPIT, 8.0f, TARGET_VARIOUS, 0, 20, false, true);
@@ -118,7 +118,7 @@ protected:
 
 class ClawAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ClawAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ClawAI)
     explicit ClawAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto maul = addAISpell(MAUL, 15.0f, TARGET_ATTACKING, 0, 15, false, true);
@@ -138,7 +138,7 @@ class ClawAI : public CreatureAIScript
 
 class SwamplordMuselekAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SwamplordMuselekAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SwamplordMuselekAI)
     explicit SwamplordMuselekAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto freezingTrap = addAISpell(THROW_FREEZING_TRAP, 8.0f, TARGET_RANDOM_SINGLE, 0, 30, false, true);
@@ -182,7 +182,7 @@ class SwamplordMuselekAI : public CreatureAIScript
                 getCreature()->GetAIInterface()->StopMovement(2000);
                 if (!getCreature()->isCastingSpell())
                 {
-                    uint32 RangedSpell = Util::getRandomUInt(100);
+                    uint32_t RangedSpell = Util::getRandomUInt(100);
                     if (RangedSpell <= 20 && _isTimerFinished(aimedShot->mCooldownTimerId))
                     {
                         getCreature()->castSpell(target, aimedShot->mSpellInfo, true);
@@ -218,7 +218,7 @@ private:
 
 class TheBlackStalkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheBlackStalkerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TheBlackStalkerAI)
     explicit TheBlackStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto chainLighning = addAISpell(CHAIN_LIGHTNING, 12.0f, TARGET_RANDOM_SINGLE, 0, 15);

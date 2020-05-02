@@ -32,7 +32,7 @@ class InnkeeperGossip : public GossipScript
 public:
 
     void onHello(Object* pObject, Player* Plr) override;
-    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId) override;
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* Code, uint32_t gossipId) override;
     void destroy() { delete this; }
 };
 
@@ -44,8 +44,8 @@ void InnkeeperGossip::onHello(Object* pObject, Player* Plr)
         return;
     }
 
-    uint32 TextID = 820;
-    uint32 Text = sMySQLStore.getGossipTextIdForNpc(pCreature->getEntry());
+    uint32_t TextID = 820;
+    uint32_t Text = sMySQLStore.getGossipTextIdForNpc(pCreature->getEntry());
     if (Text != 0)
     {
         MySQLStructure::NpcText const* text = sMySQLStore.getNpcText(Text);
@@ -81,7 +81,7 @@ void InnkeeperGossip::onHello(Object* pObject, Player* Plr)
     menu.sendGossipPacket(Plr);
 }
 
-void InnkeeperGossip::onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
+void InnkeeperGossip::onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/)
 {
     Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : nullptr;
 
@@ -116,7 +116,7 @@ void InnkeeperGossip::onSelectOption(Object* pObject, Player* Plr, uint32 Id, co
                 }
                 else
                 {
-                    int32 trickspell = 0;
+                    int32_t trickspell = 0;
                     switch (Util::getRandomUInt(5))
                     {
                         case 0:

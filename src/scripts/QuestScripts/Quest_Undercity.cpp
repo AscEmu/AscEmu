@@ -43,10 +43,10 @@ public:
 
         // Players can't interact with Sylvanas for 180000 ms.
         // Cast creat to an object because the EventSetUInt32Value method is in Object class.
-        sEventMgr.AddEvent(static_cast<Object*>(creat), &Object::EventSetUInt32Value, (uint16)UNIT_NPC_FLAGS, (uint32)2, EVENT_SCRIPT_UPDATE_EVENT, 180000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(static_cast<Object*>(creat), &Object::EventSetUInt32Value, (uint16_t)UNIT_NPC_FLAGS, (uint32_t)2, EVENT_SCRIPT_UPDATE_EVENT, 180000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 
-    void SpawnHighborneLamenter(Player* pThis, uint32 entry, float posX, float posY, float posZ, float posO)
+    void SpawnHighborneLamenter(Player* pThis, uint32_t entry, float posX, float posY, float posZ, float posO)
     {
         CreatureProperties const* p = sMySQLStore.getCreatureProperties(entry);
         if (p == nullptr)

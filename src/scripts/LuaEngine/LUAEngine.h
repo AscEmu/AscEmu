@@ -335,7 +335,7 @@ public:
             lua_pushnil(L);
     }
 
-    void PUSH_INT(int32 value)
+    void PUSH_INT(int32_t value)
     {
         lua_pushinteger(lu, value);
     }

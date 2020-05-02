@@ -26,20 +26,20 @@ class TheVioletHoldScript : public InstanceScript
     friend class SinclariGossip; // Friendship forever ;-)
 
 
-    uint32 m_phaseData[TVH_END];
-    uint32 m_lastState = InvalidState;
+    uint32_t m_phaseData[TVH_END];
+    uint32_t m_lastState = InvalidState;
 
     // NotStarted
-    int32 S0_SpawnIntroMobsTimer = 0;   // Spawn mobs every 15s
+    int32_t S0_SpawnIntroMobsTimer = 0;   // Spawn mobs every 15s
 
     // PreProgress
-    int32 S1_GuardFleeTimer = -1;       // Delay guards fleeing room for 2.5s (arbitrary)
+    int32_t S1_GuardFleeTimer = -1;       // Delay guards fleeing room for 2.5s (arbitrary)
 
 public:
 
     explicit TheVioletHoldScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
-        for (uint8 i = 0; i < TVH_END; ++i)
+        for (uint8_t i = 0; i < TVH_END; ++i)
             m_phaseData[i] = NotStarted;
 
         addData(MAP_VIOLET_HOLD);
@@ -91,7 +91,7 @@ public:
 
     void S0_RemoveDeadIntroMobs()
     {
-        auto introMobs = this->getCreatureSetForEntries(std::vector<uint32> { CN_INTRO_AZURE_BINDER_ARCANE, CN_INTRO_AZURE_INVADER_ARMS, CN_INTRO_AZURE_MAGE_SLAYER_MELEE, CN_INTRO_AZURE_SPELLBREAKER_ARCANE });
+        auto introMobs = this->getCreatureSetForEntries(std::vector<uint32_t> { CN_INTRO_AZURE_BINDER_ARCANE, CN_INTRO_AZURE_INVADER_ARMS, CN_INTRO_AZURE_MAGE_SLAYER_MELEE, CN_INTRO_AZURE_SPELLBREAKER_ARCANE });
         for (auto mob : introMobs)
         {
             if (mob == nullptr || mob->isAlive())
@@ -204,7 +204,7 @@ public:
         return CN_INTRO_AZURE_SPELLBREAKER_ARCANE;
     }
 
-    void OnStateChange(uint32 /*pLastState*/, uint32 pNewState)
+    void OnStateChange(uint32_t /*pLastState*/, uint32_t pNewState)
     {
         switch (pNewState)
         {
@@ -233,7 +233,7 @@ public:
 //\TODO: Replace spell casting logic for all instances, this is temp
 class VHCreatureAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHCreatureAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VHCreatureAI)
     explicit VHCreatureAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //this->CreateWaypoint(1, 0, 0, VH_DOOR_ATTACK_POSITION);
@@ -248,7 +248,7 @@ class VHCreatureAI : public CreatureAIScript
         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -370,7 +370,7 @@ protected:
 
 class VHIntroAzureBinder : VHCreatureAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureBinder);
+    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureBinder)
 
     const int SPELL_ARCANE_BARRAGE = 58456;
     const int SPELL_ARCANE_EXPLOSION = 58455;
@@ -409,7 +409,7 @@ class VHIntroAzureBinder : VHCreatureAI
 class VHIntroAzureInvader : VHCreatureAI
 {
 
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureInvader);
+    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureInvader)
 
     const int SPELL_CLEAVE = 15496;
     const int SPELL_IMPALE = 58459;
@@ -447,7 +447,7 @@ class VHIntroAzureInvader : VHCreatureAI
 
 class VHIntroAzureMageSlayer : VHCreatureAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureMageSlayer);
+    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureMageSlayer)
 
     const int SPELL_ARCANE_EMPOWERMENT = 58469;
 
@@ -474,7 +474,7 @@ class VHIntroAzureMageSlayer : VHCreatureAI
 
 class VHIntroAzureSpellBreaker : VHCreatureAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureSpellBreaker);
+    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureSpellBreaker)
 
     const int SPELL_ARCANE_BLAST = 58462;
     const int SPELL_SLOW = 25603;

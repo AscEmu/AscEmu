@@ -59,7 +59,7 @@ public:
 
 class ArajTheSummoner : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArajTheSummoner);
+    ADD_CREATURE_FACTORY_FUNCTION(ArajTheSummoner)
     explicit ArajTheSummoner(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
     void OnDied(Unit* mKiller)

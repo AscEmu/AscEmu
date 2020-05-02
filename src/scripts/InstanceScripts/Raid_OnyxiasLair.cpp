@@ -25,7 +25,7 @@
 // This script covers Onyxia's mind
 class OnyxiaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OnyxiaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(OnyxiaAI)
     explicit OnyxiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_phase = 1;
@@ -106,7 +106,7 @@ class OnyxiaAI : public CreatureAIScript
         m_whelpCooldown = 7;
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -210,7 +210,7 @@ class OnyxiaAI : public CreatureAIScript
 
             return;
         }
-        uint32 val = Util::getRandomUInt(1000);
+        uint32_t val = Util::getRandomUInt(1000);
         SpellCast(val);
     }
 
@@ -243,7 +243,7 @@ class OnyxiaAI : public CreatureAIScript
         }
         if (!m_fCastCount)
         {
-            uint32 val = Util::getRandomUInt(1250);
+            uint32_t val = Util::getRandomUInt(1250);
             if (val < 250)//Move left
             {
                 m_currentWP++;
@@ -285,7 +285,7 @@ class OnyxiaAI : public CreatureAIScript
         if (!m_whelpCooldown)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 6; i++)
+            for (uint8_t i = 0; i < 6; i++)
             {
                 cre = spawnCreature(11262, whelpCoords[i].x, whelpCoords[i].y, whelpCoords[i].z, whelpCoords[i].o);
                 if (cre)
@@ -314,14 +314,14 @@ class OnyxiaAI : public CreatureAIScript
             m_aoeFearCooldown = 30;
             return;
         }
-        uint32 val = Util::getRandomUInt(1000);
+        uint32_t val = Util::getRandomUInt(1000);
         SpellCast(val);
         m_whelpCooldown--;
         m_aoeFearCooldown--;
         if (!m_whelpCooldown)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 6; i++)
+            for (uint8_t i = 0; i < 6; i++)
             {
                 cre = spawnCreature(11262, whelpCoords[i].x, whelpCoords[i].y, whelpCoords[i].z, whelpCoords[i].o);
                 if (cre)
@@ -358,7 +358,7 @@ class OnyxiaAI : public CreatureAIScript
         getCreature()->GetAIInterface()->unsetSplineFlying();
     }
 
-    void SpellCast(uint32 val)
+    void SpellCast(uint32_t val)
     {
         if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
         {
@@ -422,14 +422,14 @@ protected:
     bool m_kAway;
     bool m_wBuffet;
     bool m_Cleave;
-    uint32 m_entry;
-    uint32 m_phase;
+    uint32_t m_entry;
+    uint32_t m_phase;
     bool m_useSpell;
-    uint32 m_eFlamesCooldown;
-    uint32 m_whelpCooldown;
-    uint32 m_aoeFearCooldown;
-    uint32 m_fCastCount;
-    uint32 m_currentWP;
+    uint32_t m_eFlamesCooldown;
+    uint32_t m_whelpCooldown;
+    uint32_t m_aoeFearCooldown;
+    uint32_t m_fCastCount;
+    uint32_t m_currentWP;
     SpellInfo const* infoFear, *infoWBuffet, *infoCleave, *infoFBreath, *infoKAway, *infoSFireball, *infoDeepBreath;
 };
 

@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class RagefireShamanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RagefireShamanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RagefireShamanAI)
     explicit RagefireShamanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_RF_SHAMAN_HEALIN_WAVE, 15.0f, TARGET_RANDOM_FRIEND, 3, 10);
@@ -18,7 +18,7 @@ class RagefireShamanAI : public CreatureAIScript
 
 class RagefireTroggAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RagefireTroggAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RagefireTroggAI)
     explicit RagefireTroggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_RF_TROGG_STRIKE, 40.0f, TARGET_ATTACKING, 0, 0);
@@ -27,7 +27,7 @@ class RagefireTroggAI : public CreatureAIScript
 
 class SearingBladeWarlockAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SearingBladeWarlockAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SearingBladeWarlockAI)
     explicit SearingBladeWarlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_SB_WARLOCK_SHADOW_BOLT, 20.0f, TARGET_ATTACKING, 3, 0);
@@ -36,7 +36,7 @@ class SearingBladeWarlockAI : public CreatureAIScript
 
 class SearingBladeEnforcerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SearingBladeEnforcerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SearingBladeEnforcerAI)
     explicit SearingBladeEnforcerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_SB_ENFORCERER_SHIELD_SLAM, 15.0f, TARGET_ATTACKING, 0, 0);
@@ -45,7 +45,7 @@ class SearingBladeEnforcerAI : public CreatureAIScript
 
 class BladeCultistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BladeCultistAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BladeCultistAI)
     explicit BladeCultistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_SB_CULTIST_CURSE_OF_AGONY, 30.0f, TARGET_ATTACKING, 0, 15);
@@ -54,7 +54,7 @@ class BladeCultistAI : public CreatureAIScript
 
 class MoltenElementalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MoltenElementalAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MoltenElementalAI)
     explicit MoltenElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_MOLTEN_ELEMENTAL_FIRE_SHIELD, 40.0f, TARGET_SELF, 1, 15);
@@ -63,7 +63,7 @@ class MoltenElementalAI : public CreatureAIScript
 
 class EarthborerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EarthborerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(EarthborerAI)
     explicit EarthborerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_EARTHBORER_ACID, 15.0f, TARGET_ATTACKING, 0, 0);
@@ -104,7 +104,7 @@ public:
 
 class OggleflintAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OggleflintAI);
+    ADD_CREATURE_FACTORY_FUNCTION(OggleflintAI)
     explicit OggleflintAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_OGGLEFLINT_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 1);
@@ -113,7 +113,7 @@ class OggleflintAI : public CreatureAIScript
 
 class TaragamanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TaragamanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TaragamanAI)
     explicit TaragamanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_TARAGAMAN_FIRE_NOVA, 10.0f, TARGET_SELF, 2, 0);
@@ -123,7 +123,7 @@ class TaragamanAI : public CreatureAIScript
 
 class JergoshAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(JergoshAI);
+    ADD_CREATURE_FACTORY_FUNCTION(JergoshAI)
     explicit JergoshAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_JERGOSH_IMMOLATE, 15.0f, TARGET_ATTACKING, 2, 0);
@@ -133,7 +133,7 @@ class JergoshAI : public CreatureAIScript
 
 class BazzalanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BazzalanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BazzalanAI)
     explicit BazzalanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_BAZZLAN_SINISTER_STRIKE, 15.0f, TARGET_ATTACKING, 0, 0);

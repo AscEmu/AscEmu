@@ -115,14 +115,14 @@ static Movement::Location CubeTriggers[] =
 
 class MagtheridonTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MagtheridonTriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MagtheridonTriggerAI)
     std::vector<Unit*> ChannelersTable;    // Vector "list" of Channelers
     bool KilledChanneler[5];            // Bool that says if channeler died or not
 
     explicit MagtheridonTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // We set default value for KillerdChanneler array to avoid any unexpected situations
-        for (uint8 i = 0; i < 5; i++)
+        for (uint8_t i = 0; i < 5; i++)
         {
             KilledChanneler[i] = false;
         }
@@ -181,7 +181,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
             // We clear old "list"
             ChannelersTable.clear();
             // In order to recreate channeler "list" we need ot look for them in hardcoded spawn positions
-            for (uint8 i = 0; i < 5; i++)
+            for (uint8_t i = 0; i < 5; i++)
             {
                 Unit* Channeler = getNearestCreature(Channelers[i].x, Channelers[i].y, Channelers[i].z, 17256);
                 if (!Channeler)
@@ -241,7 +241,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         if (BuffedChanneler && BuffedChanneler != Channeler && BuffedChanneler->isAlive())
                         {
                             // We apply Soul Transfer Aura to channeler who should be buffed
-                            Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(SOUL_TRANSFER), (uint32) - 1, BuffedChanneler, BuffedChanneler);
+                            Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(SOUL_TRANSFER), (uint32_t) - 1, BuffedChanneler, BuffedChanneler);
                             BuffedChanneler->AddAura(aura);
                         }
                     }
@@ -432,9 +432,9 @@ protected:
 
     bool EventStarted;
 
-    uint32 PhaseOneTimer;
-    uint32 YellTimer;
-    uint32 Phase;
+    uint32_t PhaseOneTimer;
+    uint32_t YellTimer;
+    uint32_t Phase;
 };
 
 class ManticronCubeGO : public GameObjectAIScript
@@ -462,7 +462,7 @@ public:
         // If we don't have Magtheridon we try to find it (with normal "getting creature" it was NOT working mostly).
         if (!Magtheridon)
         {
-            for (uint8 i = 0; i < 6; i++)
+            for (uint8_t i = 0; i < 6; i++)
             {
                 if (Magtheridon)
                     continue;
@@ -543,8 +543,8 @@ public:
         // Safe check to prevent crashes when Channeler was nulled
         if (!Channeler)
         {
-            uint32 Counter = 0;
-            for (uint8 i = 0; i < 5; i++)
+            uint32_t Counter = 0;
+            for (uint8_t i = 0; i < 5; i++)
             {
                 Unit* GlobalCubeTrigger = NULL;
                 GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
@@ -572,8 +572,8 @@ public:
         }
 
         // We count Cubes that channel spell on Magtheridon
-        uint32 Counter = 0;
-        for (uint8 i = 0; i < 5; i++)
+        uint32_t Counter = 0;
+        for (uint8_t i = 0; i < 5; i++)
         {
             Unit* GlobalCubeTrigger = NULL;
             GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
@@ -601,7 +601,7 @@ public:
                 Magtheridon->interruptSpell();
 
             // We add channeling player aura that does not allow that go to be used again in 1.3 min
-            Aura* auraT = sSpellMgr.newAura(sSpellMgr.getSpellInfo(MIND_EXHAUSTION), (int32)78000, Magtheridon, Channeler);
+            Aura* auraT = sSpellMgr.newAura(sSpellMgr.getSpellInfo(MIND_EXHAUSTION), (int32_t)78000, Magtheridon, Channeler);
             Channeler->AddAura(auraT);
 
             MagYell = true;
@@ -632,7 +632,7 @@ protected:
 
 class CubeTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CubeTriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CubeTriggerAI)
     explicit CubeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -642,7 +642,7 @@ class CubeTriggerAI : public CreatureAIScript
 
 class HellfireWarderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HellfireWarderAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HellfireWarderAI)
     explicit HellfireWarderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBoltVolley = addAISpell(HW_SHADOW_BOLT_VOLLEY, 15.0f, TARGET_VARIOUS, 0, 5, false, true);
@@ -676,7 +676,7 @@ class HellfireWarderAI : public CreatureAIScript
 
 class HellfireChannelerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HellfireChannelerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HellfireChannelerAI)
     explicit HellfireChannelerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBoltVolley = addAISpell(SHADOW_BOLT_VOLLEY, 10.0f, TARGET_VARIOUS, 0, 5);
@@ -725,7 +725,7 @@ class HellfireChannelerAI : public CreatureAIScript
         }
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t /*fAmount*/) override
     {
         if (!getCreature()->GetAIInterface()->GetAllowedToEnterCombat())
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
@@ -740,7 +740,7 @@ class HellfireChannelerAI : public CreatureAIScript
 
 class BurningAbyssalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BurningAbyssalAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BurningAbyssalAI)
     explicit BurningAbyssalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fireBlast = addAISpell(FIRE_BLAST, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
@@ -753,7 +753,7 @@ class BurningAbyssalAI : public CreatureAIScript
 
 class MagtheridonAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MagtheridonAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MagtheridonAI)
     explicit MagtheridonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(CLEAVE, 6.0f, TARGET_ATTACKING, 0, 15, false, true);
@@ -769,7 +769,7 @@ class MagtheridonAI : public CreatureAIScript
 
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
-        Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(BANISHMENT), (uint32) - 1, getCreature(), getCreature());
+        Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(BANISHMENT), (uint32_t) - 1, getCreature(), getCreature());
         getCreature()->AddAura(aura);
 
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(BANISH), true);
@@ -801,7 +801,7 @@ class MagtheridonAI : public CreatureAIScript
             return;
 
         GameObject* Gate = NULL;
-        for (uint8 i = 0; i < 6; i++)
+        for (uint8_t i = 0; i < 6; i++)
         {
             Gate = getNearestGameObject(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
             if (Gate)
@@ -844,7 +844,7 @@ class MagtheridonAI : public CreatureAIScript
             {
                 getCreature()->castSpell(getCreature(), quake1->mSpellInfo, true);
 
-                for (uint8 i = 0; i < 6; i++)
+                for (uint8_t i = 0; i < 6; i++)
                 {
                     Unit* Trigger = getNearestCreature(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
                     if (Trigger)
@@ -896,7 +896,7 @@ class MagtheridonAI : public CreatureAIScript
             {
                 getCreature()->castSpell(getCreature(), quake1->mSpellInfo, true);
 
-                for (uint8 i = 0; i < 6; i++)
+                for (uint8_t i = 0; i < 6; i++)
                 {
                     Unit* Trigger = getNearestCreature(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
                     if (Trigger)
@@ -943,7 +943,7 @@ class MagtheridonAI : public CreatureAIScript
             if (timer_caveIn == 3)
             {
                 GameObject* Gate = NULL;
-                for (uint8 i = 0; i < 6; i++)
+                for (uint8_t i = 0; i < 6; i++)
                 {
                     Gate = getNearestGameObject(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
                     if (Gate)
@@ -957,7 +957,7 @@ class MagtheridonAI : public CreatureAIScript
 
             if (timer_caveIn == 5)
             {
-                for (uint8 i = 0; i < 6; i++)
+                for (uint8_t i = 0; i < 6; i++)
                 {
                     Unit* Trigger = getNearestCreature(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
                     if (Trigger)

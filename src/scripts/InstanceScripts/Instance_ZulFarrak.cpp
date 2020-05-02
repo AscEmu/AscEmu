@@ -33,7 +33,7 @@ Fevered Plague 16186 =  Inflicts 72 to 78 Nature damage to an enemy, then an add
 
 class ThekaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThekaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ThekaAI)
     explicit ThekaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         morph = sSpellMgr.getSpellInfo(SP_THEKA_TRANSFORM);
@@ -113,7 +113,7 @@ he summons Servant of antu'sul 8156 25% with spell 11894 each 15 second
 */
 class AntusulTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AntusulTriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AntusulTriggerAI)
     explicit AntusulTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* mTarget) override
@@ -139,7 +139,7 @@ class AntusulTriggerAI : public CreatureAIScript
 /// \note healing ward and earthgrab ward commented out since they need time and work wich i dont have right now
 class AntusulAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AntusulAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AntusulAI)
     explicit AntusulAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         add1 = add2 = add3 = add4 = add5 = add6 = trigger = NULL;

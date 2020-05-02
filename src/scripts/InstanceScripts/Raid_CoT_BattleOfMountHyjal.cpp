@@ -115,7 +115,7 @@ public:
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new MountHyjalScript(pMapMgr); }
 
-    void SetLocaleInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+    void SetLocaleInstanceData(uint32_t pType, uint32_t pIndex, uint32_t pData)
     {
         if (pType >= HYJAL_TYPE_END || pIndex >= 10)
             return;
@@ -123,7 +123,7 @@ public:
         InstanceData[pType][pIndex] = pData;
     }
 
-    uint32 GetLocaleInstanceData(uint32 pType, uint32 pIndex)
+    uint32_t GetLocaleInstanceData(uint32_t pType, uint32_t pIndex)
     {
         if (pType >= HYJAL_TYPE_END || pIndex >= 10)
             return 0;
@@ -132,14 +132,14 @@ public:
     }
 
 private:
-    uint32 InstanceData[HYJAL_TYPE_END][10]; // Expand this to fit your needs.
+    uint32_t InstanceData[HYJAL_TYPE_END][10]; // Expand this to fit your needs.
     // Type 0 = Basic Data;
     //   Index 0 = Current Phase;
 };
 
 class JainaProudmooreAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(JainaProudmooreAI);
+    ADD_CREATURE_FACTORY_FUNCTION(JainaProudmooreAI)
     explicit JainaProudmooreAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
@@ -172,7 +172,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* /*Plr*/, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* /*Plr*/, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
             return;
@@ -191,7 +191,7 @@ public:
 
 class ThrallAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThrallAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ThrallAI)
     explicit ThrallAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
@@ -221,7 +221,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* /*Plr*/, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* /*Plr*/, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
             return;
@@ -239,7 +239,7 @@ public:
 
 class RageWinterchillAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RageWinterchillAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RageWinterchillAI)
     explicit RageWinterchillAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto frostbold = addAISpell(FROSTBOLT, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
@@ -269,7 +269,7 @@ class RageWinterchillAI : public CreatureAIScript
 
 class AnetheronAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AnetheronAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AnetheronAI)
     explicit AnetheronAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto vampiricAura = addAISpell(VAMPIRIC_AURA, 8.0f, TARGET_SELF, 0, 8, false, true);
@@ -298,7 +298,7 @@ class AnetheronAI : public CreatureAIScript
 
 class KazrogalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KazrogalAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KazrogalAI)
     explicit KazrogalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(K_CLEAVE, 8.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -330,7 +330,7 @@ class KazrogalAI : public CreatureAIScript
 
 class AzgalorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AzgalorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AzgalorAI)
     explicit AzgalorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(CLEAVE, 8.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -357,7 +357,7 @@ class AzgalorAI : public CreatureAIScript
 
 class ArchimondeTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArchimondeTriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ArchimondeTriggerAI)
     explicit ArchimondeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -375,7 +375,7 @@ class ArchimondeTriggerAI : public CreatureAIScript
 
 class DoomfireAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DoomfireAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DoomfireAI)
     explicit DoomfireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -490,8 +490,8 @@ class DoomfireAI : public CreatureAIScript
 
 protected:
 
-    uint32 DespawnTimer;
-    uint32 DirChange;
+    uint32_t DespawnTimer;
+    uint32_t DirChange;
 };
 
 /* * Doomfire - Leaves a trail of fire on the ground, which does 2400 fire
@@ -499,7 +499,7 @@ protected:
 
 class ArchimondeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArchimondeAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ArchimondeAI)
     explicit ArchimondeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto airBurst = addAISpell(AIR_BURST, 5.0f, TARGET_ATTACKING, 0, 25, false, true);

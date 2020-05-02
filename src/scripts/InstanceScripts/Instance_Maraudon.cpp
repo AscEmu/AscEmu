@@ -26,7 +26,7 @@
 
 class CelebrasTheCursedAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CelebrasTheCursedAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CelebrasTheCursedAI)
     explicit CelebrasTheCursedAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto wrath = addAISpell(21667, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -43,7 +43,7 @@ class CelebrasTheCursedAI : public CreatureAIScript
 
 class LordVyletongueAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LordVyletongueAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LordVyletongueAI)
     explicit LordVyletongueAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto putridBreath = addAISpell(21080, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -57,7 +57,7 @@ class LordVyletongueAI : public CreatureAIScript
 
 class MeshlokTheHarvesterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MeshlokTheHarvesterAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MeshlokTheHarvesterAI)
     explicit MeshlokTheHarvesterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto warStomp = addAISpell(24375, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -71,7 +71,7 @@ class MeshlokTheHarvesterAI : public CreatureAIScript
 
 class PrincessTheradrasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PrincessTheradrasAI);
+    ADD_CREATURE_FACTORY_FUNCTION(PrincessTheradrasAI)
     explicit PrincessTheradrasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto duelField = addAISpell(21909, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -91,7 +91,7 @@ class PrincessTheradrasAI : public CreatureAIScript
 
 class RazorlashAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RazorlashAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RazorlashAI)
     explicit RazorlashAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto puncture = addAISpell(21911, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -108,7 +108,7 @@ class RazorlashAI : public CreatureAIScript
 
 class TinkererGizlockAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TinkererGizlockAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TinkererGizlockAI)
     explicit TinkererGizlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto goblinDragonGun = addAISpell(21833, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -122,7 +122,7 @@ class TinkererGizlockAI : public CreatureAIScript
 
 class NoxxionAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NoxxionAI);
+    ADD_CREATURE_FACTORY_FUNCTION(NoxxionAI)
     explicit NoxxionAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto toxicVolley = addAISpell(21687, 20.0f, TARGET_ATTACKING, 0, 10, false, true);

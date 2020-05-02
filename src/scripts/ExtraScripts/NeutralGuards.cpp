@@ -11,14 +11,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 class ShatteredSunSpawner : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredSunSpawner);
+    ADD_CREATURE_FACTORY_FUNCTION(ShatteredSunSpawner)
     explicit ShatteredSunSpawner(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* mTarget)
     {
         if (mTarget != NULL && mTarget->isPlayer())
         {
-            for (uint8 i = 0; i < 3; ++i)
+            for (uint8_t i = 0; i < 3; ++i)
             {
                 float x = mTarget->GetPositionX() + Util::getRandomUInt(20) - 10;
                 float y = mTarget->GetPositionY() + Util::getRandomUInt(20) - 10;

@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Cast spell 54028 on horde player if he is in the alliance area
 class SilverCovenantMageGuard : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SilverCovenantMageGuard);
+    ADD_CREATURE_FACTORY_FUNCTION(SilverCovenantMageGuard)
     explicit SilverCovenantMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
@@ -54,7 +54,7 @@ class SilverCovenantMageGuard : public CreatureAIScript
 // Cast spell 54029 on alliance player if he is in the horde area
 class SunreaversMageGuard : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunreaversMageGuard);
+    ADD_CREATURE_FACTORY_FUNCTION(SunreaversMageGuard)
     explicit SunreaversMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
@@ -97,7 +97,7 @@ class SunreaversMageGuard : public CreatureAIScript
 
 class FactionInvisible : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FactionInvisible);
+    ADD_CREATURE_FACTORY_FUNCTION(FactionInvisible)
     explicit FactionInvisible(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // 0 = all (default), 1 = horde, 2 = alliance
@@ -125,6 +125,6 @@ void SetupCityDalaran(ScriptMgr* mgr)
     mgr->register_creature_script(29255, &SunreaversMageGuard::Create);
 
     // Neutral Masters
-    uint32 FactionVisibleIds[] = { 31852, 31851, 32335, 32336, 32206, 32207,  0 };
+    uint32_t FactionVisibleIds[] = { 31852, 31851, 32335, 32336, 32206, 32207,  0 };
     mgr->register_creature_script(FactionVisibleIds, &FactionInvisible::Create);
 }

@@ -40,7 +40,7 @@ public:
 // BOSSES
 class ForgemasterGarfrostAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ForgemasterGarfrostAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ForgemasterGarfrostAI)
     explicit ForgemasterGarfrostAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -123,7 +123,7 @@ class ForgemasterGarfrostAI : public CreatureAIScript
 //\todo replace manual spellcast as much as possible
 class IckAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IckAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IckAI)
     explicit IckAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -333,7 +333,7 @@ class IckAI : public CreatureAIScript
 
 class KrickAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KrickAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KrickAI)
     explicit KrickAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Get Instance Script
@@ -513,7 +513,7 @@ class KrickAI : public CreatureAIScript
 // Barrage Spell Creature
 class BarrageAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BarrageAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BarrageAI)
     explicit BarrageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);

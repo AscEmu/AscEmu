@@ -33,16 +33,16 @@ bool Execute(uint8_t effectIndex, Spell* pSpell)
     Player* Caster = pSpell->p_caster;
     Unit* Target = pSpell->GetUnitTarget();
 
-    uint32 rage = Caster->getPower(POWER_TYPE_RAGE);
+    uint32_t rage = Caster->getPower(POWER_TYPE_RAGE);
 
     if (Caster->HasAura(58367))     // Glyph of Execution: Your Execute ability deals damage as if you had 10 additional rage.
     {
         rage += 10;
     }
 
-    uint32 toadd = 0;
-    int32 dmg = 0;
-    uint32 multiple[] = { 0, 3, 6, 9, 12, 15, 18, 21, 30, 38, };
+    uint32_t toadd = 0;
+    int32_t dmg = 0;
+    uint32_t multiple[] = { 0, 3, 6, 9, 12, 15, 18, 21, 30, 38, };
 
     if (rage >= 30)
     {
@@ -100,11 +100,11 @@ bool HeroicFury(uint8_t /*effectIndex*/, Spell* s)
         p_caster->ClearCooldownForSpell(20252);
     }
 
-    for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
+    for (uint32_t x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
     {
         if (p_caster->m_auras[x])
         {
-            for (uint8 y = 0; y < 3; ++y)
+            for (uint8_t y = 0; y < 3; ++y)
             {
                 switch (p_caster->m_auras[x]->GetSpellInfo()->getEffectApplyAuraName(y))
                 {
@@ -127,10 +127,10 @@ bool Charge(uint8_t effectIndex, Spell* s)
         return false;
     }
 
-    uint32 rage_to_gen = s->getSpellInfo()->getEffectBasePoints(effectIndex) + 1;
+    uint32_t rage_to_gen = s->getSpellInfo()->getEffectBasePoints(effectIndex) + 1;
     if (s->p_caster)
     {
-        for (std::set<uint32>::iterator itr = s->p_caster->mSpells.begin(); itr != s->p_caster->mSpells.end(); ++itr)
+        for (std::set<uint32_t>::iterator itr = s->p_caster->mSpells.begin(); itr != s->p_caster->mSpells.end(); ++itr)
         {
             if (*itr == 12697)
             {
@@ -192,7 +192,7 @@ bool BerserkerRage(uint8_t /*effectIndex*/, Aura* a, bool apply)
         p_target->rageFromDamageTaken -= 100;
     }
 
-    for (uint8 i = 0; i < 3; i++)
+    for (uint8_t i = 0; i < 3; i++)
     {
         if (apply)
         {
@@ -278,7 +278,7 @@ bool ArmoredToTheTeeth(uint8_t /*effectIndex*/, Spell* /*s*/)
 
 void SetupLegacyWarriorSpells(ScriptMgr* mgr)
 {
-    uint32 ExecuteIds[] =
+    uint32_t ExecuteIds[] =
     {
         5308,  // Rank 1
         20658, // Rank 2
@@ -309,7 +309,7 @@ void SetupLegacyWarriorSpells(ScriptMgr* mgr)
 
     mgr->register_dummy_aura(12328, &SweepingStrikes);
 
-    uint32 tacticalandstancemasteryids[] =
+    uint32_t tacticalandstancemasteryids[] =
     {
         12295,
         12676,
@@ -322,7 +322,7 @@ void SetupLegacyWarriorSpells(ScriptMgr* mgr)
     mgr->register_dummy_aura(29834, &SecondWind);
     mgr->register_dummy_aura(29838, &SecondWind2);
 
-    uint32 ArmoredToTheTeethIDs[] =
+    uint32_t ArmoredToTheTeethIDs[] =
     {
         61216,
         61221,

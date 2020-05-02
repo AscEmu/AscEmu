@@ -29,7 +29,7 @@
 struct LuaSpellEntry
 {
     const char* name;
-    uint32 typeId; //0: int, 1: char*, 2: bool, 3: float
+    uint32_t typeId; //0: int, 1: char*, 2: bool, 3: float
     size_t offset;
 };
 
@@ -169,7 +169,7 @@ LuaSpellEntry luaSpellVars[] =
 
 LuaSpellEntry GetLuaSpellEntryByName(const char* name)
 {
-    for (uint32 itr = 0; luaSpellVars[itr].name != NULL; itr++)
+    for (uint32_t itr = 0; luaSpellVars[itr].name != NULL; itr++)
     {
         LuaSpellEntry l = luaSpellVars[itr];
         if (strcmp(l.name, name) == 0)  //they entered a correct var name

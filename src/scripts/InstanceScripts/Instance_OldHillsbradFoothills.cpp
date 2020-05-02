@@ -86,15 +86,15 @@ static Movement::Location ThrallWP1[] = // pre 2nd boss
     { 2054.77f, 243.723f, 63.2682f, 2.39857f }
 };
 
-const uint32 MAX_THRALLWP1 = 27;
+const uint32_t MAX_THRALLWP1 = 27;
 
 
 //class OldHilsbradInstance : public InstanceScript
 //{
 //private:
 //
-//    int32 m_numBarrel;
-//    uint32 m_phaseData[OHF_END];
+//    int32_t m_numBarrel;
+//    uint32_t m_phaseData[OHF_END];
 //
 //public:
 //
@@ -102,7 +102,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //    {
 //        m_numBarrel = 0;
 //
-//        for (uint8 i = 0; i < OHF_END; ++i)
+//        for (uint8_t i = 0; i < OHF_END; ++i)
 //            m_phaseData[i] = OHF_DATA_NOT_STARTED;
 //    }
 //
@@ -116,7 +116,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //            pPlayer->castSpell(pPlayer, 35483, true);   // Human Female illusion
 //    }
 //
-//    void SetData(uint32 pIndex, uint32 pData)
+//    void SetData(uint32_t pIndex, uint32_t pData)
 //    {
 //        if (pIndex >= OHF_END)
 //            return;
@@ -127,7 +127,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //        m_phaseData[pIndex] = pData;
 //    }
 //
-//    uint32 GetData(uint32 pIndex)
+//    uint32_t GetData(uint32_t pIndex)
 //    {
 //        if (pIndex >= OHF_END)
 //            return 0;
@@ -161,7 +161,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //            qle->UpdatePlayerFields();
 //        }
 //
-//        for (uint8 i = 0; i < 21; ++i)
+//        for (uint8_t i = 0; i < 21; ++i)
 //        {
 //            GameObject* pGO = SpawnGameObject(GO_FIRE, Fires[i].x, Fires[i].y, Fires[i].z, Fires[i].o);
 //            if (pGO != nullptr)
@@ -191,7 +191,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //        menu.sendGossipPacket(Plr);
 //    }
 //
-//    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+//    void OnSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* Code, uint32_t gossipId)
 //    {
 //        switch (Id)
 //        {
@@ -216,7 +216,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //        menu.sendGossipPacket(Plr);
 //    }
 //
-//    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+//    void OnSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* Code, uint32_t gossipId)
 //    {
 //        switch (Id)
 //        {
@@ -241,7 +241,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //class LieutenantDrakeAI : public CreatureAIScript
 //{
-//    ADD_CREATURE_FACTORY_FUNCTION(LieutenantDrakeAI);
+//    ADD_CREATURE_FACTORY_FUNCTION(LieutenantDrakeAI)
 //
 //    OldHilsbradInstance* pInstance;
 //
@@ -265,11 +265,11 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //class ThrallAI : public CreatureAIScript // this will be replaced with escortAI
 //{
-//    ADD_CREATURE_FACTORY_FUNCTION(ThrallAI);
+//    ADD_CREATURE_FACTORY_FUNCTION(ThrallAI)
 //    explicit ThrallAI(Creature* pCreature) : CreatureAIScript(pCreature)
 //    {
 //        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-//        for (uint8 i = 1; i < MAX_THRALLWP1; ++i)
+//        for (uint8_t i = 1; i < MAX_THRALLWP1; ++i)
 //            AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_WALK, ThrallWP1[i]));
 //
 //        m_currentWp = 0;
@@ -290,12 +290,12 @@ const uint32 MAX_THRALLWP1 = 27;
 //        SetWaypointToMove(m_currentWp);
 //    }
 //
-//    void OnReachWP(uint32 iWaypointId, bool bForwards)
+//    void OnReachWP(uint32_t iWaypointId, bool bForwards)
 //    {
 //        m_currentWp = iWaypointId;
 //    }
 //
-//    uint32 m_currentWp;
+//    uint32_t m_currentWp;
 //};
 //
 //class ThrallGossip : public Script
@@ -309,7 +309,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //        menu.sendGossipPacket(Plr);
 //    }
 //
-//    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId)
+//    void OnSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* Code, uint32_t gossipId)
 //    {
 //        ThrallAI* pThrall = static_cast<ThrallAI*>(static_cast<Creature*>(pObject)->GetScript());
 //        if (pThrall)

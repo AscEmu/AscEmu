@@ -30,7 +30,7 @@ class SCRIPT_DECL CorenDirebrewGossip : public GossipScript
 {
 public:
     void onHello(Object* pObject, Player* Plr);
-    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32 gossipId);
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* EnteredCode, uint32_t gossipId);
 };
 
 void CorenDirebrewGossip::onHello(Object* pObject, Player * Plr)
@@ -40,7 +40,7 @@ void CorenDirebrewGossip::onHello(Object* pObject, Player * Plr)
     menu.sendGossipPacket(Plr);
 }
 
-void CorenDirebrewGossip::onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char * /*Code*/, uint32 /*gossipId*/)
+void CorenDirebrewGossip::onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char * /*Code*/, uint32_t /*gossipId*/)
 {
     Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -65,7 +65,7 @@ void CorenDirebrewGossip::onSelectOption(Object* pObject, Player* Plr, uint32 Id
 
 class CorenDirebrew : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CorenDirebrew);
+    ADD_CREATURE_FACTORY_FUNCTION(CorenDirebrew)
     explicit CorenDirebrew(Creature* pCreature) : CreatureAIScript(pCreature)
     { }
 };

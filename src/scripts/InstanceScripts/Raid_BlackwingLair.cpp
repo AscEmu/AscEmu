@@ -48,7 +48,7 @@ enum
 
 class DTcaptainAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DTcaptainAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DTcaptainAI)
     explicit DTcaptainAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto markOfFlames = addAISpell(MARK_OF_FLAMES, 15.0f, TARGET_ATTACKING);
@@ -71,7 +71,7 @@ The Captain can also dispel any Hibernate effect cast on Death Talon Wyrmkin.
 
 class DTflamescaleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DTflamescaleAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DTflamescaleAI)
     explicit DTflamescaleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto flameShock = addAISpell(FLAME_SHOCK, 15.0f, TARGET_ATTACKING);
@@ -101,7 +101,7 @@ As of patch 1.12 Seethers now have a Flame Buffet ability that deals roughly 1k 
 
 class DTwyrmkinAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DTwyrmkinAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DTwyrmkinAI)
     explicit DTwyrmkinAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fireballVolley = addAISpell(FIREBALL_VOLLEY, 40.0f, TARGET_VARIOUS);
@@ -121,7 +121,7 @@ They can be put to sleep by a druid's hibernate ability, but due to their high l
 
 class TechnicianAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TechnicianAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TechnicianAI)
     explicit TechnicianAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto granade = addAISpell(GRANADE, 25.0f, TARGET_ATTACKING);
@@ -133,7 +133,7 @@ class TechnicianAI : public CreatureAIScript
 
 class BlackWarlockAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BlackWarlockAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BlackWarlockAI)
     explicit BlackWarlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto rainOfFire = addAISpell(RAIN_OF_FIRE, 10.0f, TARGET_DESTINATION);
@@ -177,7 +177,7 @@ It would appear more accurate to say that the polymorph is targetted at people w
 
 class LashlayerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LashlayerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LashlayerAI)
     explicit LashlayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fireNovaLash = addAISpell(FIRE_NOVA_LASH, 15.0f, TARGET_VARIOUS);
@@ -205,7 +205,7 @@ class FiremawAI : public CreatureAIScript
 
 class EbonrocAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EbonrocAI);
+    ADD_CREATURE_FACTORY_FUNCTION(EbonrocAI)
     explicit EbonrocAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
@@ -218,7 +218,7 @@ class EbonrocAI : public CreatureAIScript
 
 class FlamegorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FlamegorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(FlamegorAI)
     explicit FlamegorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
@@ -251,7 +251,7 @@ Over the course of this fight, he will do this repeatedly on all of your tanks.
 
 class VaelastraszAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VaelastraszAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VaelastraszAI)
     explicit VaelastraszAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         essenceOfTheRed = addAISpell(ESSENCE_OF_THE_RED, 0.0f, TARGET_VARIOUS);
@@ -263,7 +263,7 @@ class VaelastraszAI : public CreatureAIScript
         auto burningAdrenaline = addAISpell(BURNING_ADRENALINE, 3.0f, TARGET_ATTACKING);
         burningAdrenaline->setAttackStopTimer(2000);
 
-        getCreature()->setHealth((uint32)(getCreature()->getMaxHealth() * 0.3f));
+        getCreature()->setHealth((uint32_t)(getCreature()->getMaxHealth() * 0.3f));
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override

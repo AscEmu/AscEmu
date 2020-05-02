@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class DevouringEctoplasmAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DevouringEctoplasmAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DevouringEctoplasmAI)
     explicit DevouringEctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Summon Evolving Ectoplasm
@@ -19,7 +19,7 @@ class DevouringEctoplasmAI : public CreatureAIScript
 
 class DruidFangAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DruidFangAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DruidFangAI)
     explicit DruidFangAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Serpent Form
@@ -46,7 +46,7 @@ class DruidFangAI : public CreatureAIScript
 // BOSSES
 class LadyAnacondraAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LadyAnacondraAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LadyAnacondraAI)
     explicit LadyAnacondraAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Lightning Bolt
@@ -60,7 +60,7 @@ class LadyAnacondraAI : public CreatureAIScript
 
 class LordCobrahnAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LordCobrahnAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LordCobrahnAI)
     explicit LordCobrahnAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Lightning Bolt
@@ -98,7 +98,7 @@ class LordCobrahnAI : public CreatureAIScript
 
 class LordPythasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LordPythasAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LordPythasAI)
     explicit LordPythasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Lightning Bolt
@@ -114,7 +114,7 @@ class LordPythasAI : public CreatureAIScript
 
 class LordSerpentisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LordSerpentisAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LordSerpentisAI)
     explicit LordSerpentisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Lightning Bolt
@@ -128,7 +128,7 @@ class LordSerpentisAI : public CreatureAIScript
 
 class VerdanEverlivingAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VerdanEverlivingAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VerdanEverlivingAI)
     explicit VerdanEverlivingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Grasping Vines
@@ -138,7 +138,7 @@ class VerdanEverlivingAI : public CreatureAIScript
 
 class SkumAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SkumAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SkumAI)
     explicit SkumAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Chained Bolt
@@ -161,7 +161,7 @@ class SkumAI : public CreatureAIScript
 
 class MutanusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MutanusAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MutanusAI)
     explicit MutanusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Thundercrack
@@ -241,7 +241,7 @@ public:
         }
 
     }
-    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : nullptr;
         if (pCreature == nullptr)
@@ -274,12 +274,12 @@ public:
 
 class DofNaralexAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DofNaralexAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DofNaralexAI)
     explicit DofNaralexAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Mutanus = nullptr;
 
-        for (uint8 i = 1; i < 39; ++i)
+        for (uint8_t i = 1; i < 39; ++i)
         {
             AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, ToNaralex[i]));
         }
@@ -293,7 +293,7 @@ class DofNaralexAI : public CreatureAIScript
         SpawnTimer = 0;
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         ForceWaypointMove(iWaypointId + 1);
         if (isScriptPhase(1) && GetCurrentWaypoint() == 39)
@@ -380,7 +380,7 @@ class DofNaralexAI : public CreatureAIScript
         Mutanus = spawnCreature(CN_MUTANUS, 136.337006f, 263.769989f, -102.666000f, 4.002330f);
     }
 
-    int32 SpawnTimer;
+    int32_t SpawnTimer;
     CreatureAISpells* Awakening;
     Creature* Mutanus;
 };
@@ -388,7 +388,7 @@ class DofNaralexAI : public CreatureAIScript
 
 class DeviateMoccasinAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeviateMoccasinAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DeviateMoccasinAI)
     explicit DeviateMoccasinAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
@@ -396,7 +396,7 @@ class DeviateMoccasinAI : public CreatureAIScript
 
 class EctoplasmAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EctoplasmAI);
+    ADD_CREATURE_FACTORY_FUNCTION(EctoplasmAI)
     explicit EctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
@@ -404,7 +404,7 @@ class EctoplasmAI : public CreatureAIScript
 
 class Naralex : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Naralex);
+    ADD_CREATURE_FACTORY_FUNCTION(Naralex)
     explicit Naralex(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);

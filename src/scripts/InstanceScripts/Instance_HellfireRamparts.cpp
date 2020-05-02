@@ -25,7 +25,7 @@
 // \todo "Do you smell that? Fresh meat has somehow breached our citadel. Be wary of any intruders." should be on some areatrigger
 class WatchkeeperGargolmarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WatchkeeperGargolmarAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WatchkeeperGargolmarAI)
     explicit WatchkeeperGargolmarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto surge = addAISpell(WATCHKEEPER_SURGE, 20.0f, TARGET_RANDOM_SINGLE, 0, 15);
@@ -76,7 +76,7 @@ class WatchkeeperGargolmarAI : public CreatureAIScript
 
 class OmorTheUnscarredAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OmorTheUnscarredAI);
+    ADD_CREATURE_FACTORY_FUNCTION(OmorTheUnscarredAI)
     explicit OmorTheUnscarredAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pShield = addAISpell(OMOR_DEMONIC_SHIELD, 30.0f, TARGET_SELF, 0, 25);

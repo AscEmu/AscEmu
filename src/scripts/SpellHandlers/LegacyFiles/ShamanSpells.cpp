@@ -58,7 +58,7 @@ bool SkyShatterRegalia(uint8_t /*effectIndex*/, Spell* s)
     {
         Aura* aur = sSpellMgr.newAura(sSpellMgr.getSpellInfo(38437), 5000, s->p_caster, s->p_caster, true);
 
-        for (uint8 j = 0; j < 3; j++)
+        for (uint8_t j = 0; j < 3; j++)
             aur->AddMod(aur->GetSpellInfo()->getEffectRadiusIndex(j), aur->GetSpellInfo()->getEffectBasePoints(j) + 1, aur->GetSpellInfo()->getEffectMiscValue(j), j);
 
         s->p_caster->AddAura(aur);
@@ -74,7 +74,7 @@ bool ManaTide(uint8_t /*effectIndex*/, Spell* s)
     if (unitTarget == NULL || unitTarget->isDead() || unitTarget->getClass() == WARRIOR || unitTarget->getClass() == ROGUE)
         return false;
 
-    uint32 gain = (uint32)(unitTarget->getMaxPower(POWER_TYPE_MANA) * 0.06);
+    uint32_t gain = (uint32_t)(unitTarget->getMaxPower(POWER_TYPE_MANA) * 0.06);
     unitTarget->energize(unitTarget, 16191, gain, POWER_TYPE_MANA);
 
     return true;
@@ -111,14 +111,14 @@ bool Reincarnation(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
 void SetupLegacyShamanSpells(ScriptMgr* mgr)
 {
-    uint32 FlametongueWeaponPassiveIds[] = { 10400, 15567, 15568, 15569, 16311, 16312, 16313, 58784, 58791, 58792, 0 };
+    uint32_t FlametongueWeaponPassiveIds[] = { 10400, 15567, 15568, 15569, 16311, 16312, 16313, 58784, 58791, 58792, 0 };
     mgr->register_dummy_aura(FlametongueWeaponPassiveIds, &FlametongueWeaponPassive);
 
     mgr->register_dummy_spell(38443, &SkyShatterRegalia);
 
     mgr->register_dummy_spell(39610, &ManaTide);
 
-    uint32 earthshielddummyauraids[] =
+    uint32_t earthshielddummyauraids[] =
     {
         974,
         32593,
