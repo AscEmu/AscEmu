@@ -21,7 +21,7 @@
 #include "StdAfx.h"
 #include "Management/EquipmentSetMgr.h"
 #include "Server/MainServerDefines.h"
-#include "Database/Field.h"
+#include "Database/Field.hpp"
 #include "Log.hpp"
 #include "Database/Database.h"
 #include "WoWGuid.h"

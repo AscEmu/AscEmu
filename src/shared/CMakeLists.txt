@@ -84,7 +84,7 @@ set(headers
     Auth/WowCrypt.h
     Config/Config.h
     Database/Database.h
-    Database/Field.h
+    Database/Field.hpp
     Database/MySQLDatabase.h
     Exceptions/Exceptions.hpp
     Exceptions/PlayerExceptions.hpp

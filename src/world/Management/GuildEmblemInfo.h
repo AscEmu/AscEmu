@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "WorldPacket.h"
-#include "Database/Field.h"
+#include "Database/Field.hpp"
 
 class EmblemInfo
 {

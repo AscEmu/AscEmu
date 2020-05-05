@@ -60,7 +60,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | DynLib.hpp
 * 2008 | DynLib.cpp
 * 2008 | Database/MySQLDatabase.h
-* 2008 | Database/Field.h
 * 2008 | Database/DatabaseEnv.h
 * 2008 | Database/Database.h
 * 2008 | Database/Database.cpp
@@ -146,6 +145,9 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | MersenneTwister.h
 * 2008 | MersenneTwister.cpp
 
+### Removed on 20 Apr 2020
+* 2008 | Database/Field.h
+
 ### New files
 * 2017 | Common.hpp
 * 2017 | Log.cpp
@@ -155,3 +157,4 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2017 | Util.hpp
 * 2017 | Auth/WowCrypt.cpp
 * 2017 | Auth/WowCrypt.h
+* 2020 | Field.hpp
