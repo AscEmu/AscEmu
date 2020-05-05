@@ -72,7 +72,14 @@ public:
     inline uint32 GetMobCount(uint32 i) { return m_mobcount[i]; }
     inline uint32 GetExploredAreas(uint32 i) { return m_explored_areas[i]; }
 
-    uint16 GetBaseField(uint16 slot) { return PLAYER_QUEST_LOG_1_1 + (slot * 5); }
+    uint16 GetBaseField(uint16 slot)
+    {
+#if VERSION_STRING > TBC
+        return PLAYER_QUEST_LOG_1_1 + (slot * 5);
+#else
+        return PLAYER_QUEST_LOG_1_1 + (slot * 4);
+#endif
+    }
     uint16 GetSlot() { return m_slot; }
 
 private:

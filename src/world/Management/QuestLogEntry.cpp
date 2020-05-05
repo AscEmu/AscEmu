@@ -286,8 +286,12 @@ void QuestLogEntry::Finish()
     uint16 base = GetBaseField(m_slot);
     m_plr->setUInt32Value(base + 0, 0);
     m_plr->setUInt32Value(base + 1, 0);
+#if VERSION_STRING > TBC
     m_plr->setUInt64Value(base + 2, 0);
     m_plr->setUInt32Value(base + 4, 0);
+#else
+    m_plr->setUInt32Value(base + 3, 0);
+#endif
 
     // clear from player log
     m_plr->SetQuestLogSlot(NULL, m_slot);
@@ -330,7 +334,11 @@ void QuestLogEntry::UpdatePlayerFields()
     uint32_t field0 = 0;          // 0x01000000 = "Objective Complete" - 0x02 = Quest Failed - 0x04 = Quest Accepted
 
     // next field is count (kills, etc)
+#if VERSION_STRING > TBC
     uint64 field1 = 0;
+#else
+    uint32 field1 = 0;
+#endif
 
     // explored areas
     if (m_quest->count_requiredtriggers)
@@ -386,7 +394,7 @@ void QuestLogEntry::UpdatePlayerFields()
             field0 |= 0x1000000;       // "Objective Complete"
         }
     }
-
+#if VERSION_STRING > TBC
     // mob hunting / counter
     if (m_quest->count_required_mob)
     {
@@ -397,6 +405,14 @@ void QuestLogEntry::UpdatePlayerFields()
                 p[2 * i] |= (uint8)m_mobcount[i];
         }
     }
+#else
+        uint8* p = (uint8*)&field1;
+        for (int i = 0; i < 4; ++i)
+        {
+            if (m_quest->required_mob_or_go[i] && m_mobcount[i] > 0)
+                p[i] |= (uint8)m_mobcount[i];
+        }
+#endif
 
     if ((m_quest->time != 0) && (expirytime < UNIXTIME))
         completed = QUEST_FAILED;
@@ -404,6 +420,7 @@ void QuestLogEntry::UpdatePlayerFields()
     if (completed == QUEST_FAILED)
         field0 |= 2;
 
+#if VERSION_STRING > TBC
     m_plr->setUInt32Value(base + 1, field0);
     m_plr->setUInt64Value(base + 2, field1);
 
@@ -414,6 +431,18 @@ void QuestLogEntry::UpdatePlayerFields()
     }
     else
         m_plr->setUInt32Value(base + 4, 0);
+#else
+    m_plr->setUInt32Value(base + 1, 0);
+    m_plr->setUInt32Value(base + 2, field1);
+
+    if ((m_quest->time != 0) && (completed != QUEST_FAILED))
+    {
+        m_plr->setUInt32Value(base + 3, expirytime);
+        sEventMgr.AddEvent(m_plr, &Player::EventTimedQuestExpire, m_quest->id, EVENT_TIMED_QUEST_EXPIRE, (expirytime - UNIXTIME) * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    }
+    else
+        m_plr->setUInt32Value(base + 3, 0);
+#endif
 }
 
 void QuestLogEntry::SendQuestComplete()

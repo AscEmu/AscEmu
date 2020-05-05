@@ -25,7 +25,7 @@ namespace AscEmu::Packets
         }
 
         MsgCorspeQuery(uint8_t show, uint32_t mapId, LocationVector position, uint32_t corpseMapId, uint32_t unknown) :
-            ManagedPacket(MSG_CORPSE_QUERY, 25),
+            ManagedPacket(MSG_CORPSE_QUERY, 21),
             show(show),
             mapId(mapId),
             position(position),

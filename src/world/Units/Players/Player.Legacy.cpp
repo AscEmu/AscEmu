@@ -2165,7 +2165,7 @@ void Player::InitVisibleUpdateBits()
 #if VERSION_STRING == Classic
     for (uint16 i = PLAYER_QUEST_LOG_1_1; i <= PLAYER_QUEST_LOG_15_1; i += 5)
 #else
-    for (uint16 i = PLAYER_QUEST_LOG_1_1; i <= PLAYER_QUEST_LOG_25_1; i += 5)
+    for (uint16 i = PLAYER_QUEST_LOG_1_1; i <= PLAYER_QUEST_LOG_25_1; i += 4)
 #endif
     {
         Player::m_visibleUpdateMask.SetBit(i);
@@ -4191,11 +4191,20 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
     // clear all fields
     for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
     {
+#if VERSION_STRING > TBC
         uint16_t baseindex = PLAYER_QUEST_LOG_1_1 + (i * 5);
+#else
+        uint16_t baseindex = PLAYER_QUEST_LOG_1_1 + (i * 4);
+#endif
         setUInt32Value(baseindex + 0, 0);
         setUInt32Value(baseindex + 1, 0);
+#if VERSION_STRING > TBC
         setUInt64Value(baseindex + 2, 0);
         setUInt32Value(baseindex + 4, 0);
+#else
+        setUInt32Value(baseindex + 2, 0);
+        setUInt32Value(baseindex + 3, 0);
+#endif
     }
 
     uint16 slot = 0;

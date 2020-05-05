@@ -828,6 +828,24 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
         *data << (qst->incompletetext[0] ? qst->incompletetext : qst->details);
     }
 
+#if VERSION_STRING < WotLK
+
+    if (status == QuestStatus::NotFinished)
+    {
+        *data << qst->incompleteemote;
+    }
+    else
+    {
+        *data << qst->completeemote;
+    }
+
+    *data << uint32(1);
+
+    *data << qst->quest_flags;
+    *data << qst->suggestedplayers;
+    *data << uint32(qst->reward_money < 0 ? -qst->reward_money : 0);
+
+#else
     *data << uint32(0);
 
     if (status == QuestStatus::NotFinished)
@@ -843,7 +861,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
     *data << qst->quest_flags;
     *data << qst->suggestedplayers;
     *data << uint32(qst->reward_money < 0 ? -qst->reward_money : 0); // Required Money
-
+#endif
     // item count
     *data << qst->count_required_item;
 
@@ -875,7 +893,9 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
         *data << uint32(3);
     }
 
+#if VERSION_STRING > TBC
     *data << uint32(4);
+#endif
     *data << uint32(8);
     *data << uint32(10);
 
