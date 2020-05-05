@@ -893,6 +893,17 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
 
                 if (instance->m_persistent && PlayerOwnsInstance(instance, plr))
                 {
+#if VERSION_STRING <= TBC
+                    data << uint32_t(instance->m_mapId);
+                    if (instance->m_expiration > UNIXTIME)
+                        data << uint32_t(instance->m_expiration - UNIXTIME);
+                    else
+                        data << uint32_t(0);
+
+                    data << uint64_t(instance->m_instanceId);
+
+                    data << uint32_t(0);    //unknown
+#else
                     data << uint32_t(instance->m_mapId);
                     data << uint32_t(instance->m_difficulty);
                     data << uint64_t(instance->m_instanceId);
@@ -903,7 +914,7 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
                         data << uint32_t(instance->m_expiration - UNIXTIME);
                     else
                         data << uint32_t(0);
-
+#endif
 #if VERSION_STRING >= Cata
                     data << uint32_t(0);
 #endif

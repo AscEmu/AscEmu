@@ -1309,8 +1309,10 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
             data << uint8(0xC);
             data << uint32(6);
             data << uint16(0x1F90);
+#if VERSION_STRING > TBC
             data << uint8(0);                 // 3.3.0
             data << uint8(0);                 // 3.3.0
+#endif
             data << uint32(11);
             data << uint8(RatedMatch);        // 1 = rated match
         }
@@ -1320,8 +1322,10 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
             data << uint8(0);
             data << uint8(2);
             data << Type;
+#if VERSION_STRING > TBC
             data << uint8(0);                 // 3.3.0
             data << uint8(0);                 // 3.3.0
+#endif
             data << uint16(0x1F90);
             data << InstanceID;
             data << uint8(0);
@@ -1337,12 +1341,16 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
                 break;
             case BGSTATUS_READY:              // Ready to join!
                 data << MapId;
+#if VERSION_STRING > TBC
                 data << uint64(0);
+#endif
                 data << Time;
                 break;
             case BGSTATUS_TIME:
                 data << MapId;
+#if VERSION_STRING > TBC
                 data << uint64(0);
+#endif
                 data << uint32(0);
                 data << Time;
                 if (isArena(Type))

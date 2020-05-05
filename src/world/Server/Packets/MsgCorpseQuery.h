@@ -36,7 +36,11 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING > TBC
             packet << show << mapId << position << corpseMapId << unknown;
+#else
+            packet << show << mapId << position << corpseMapId;
+#endif
             return true;
         }
 
