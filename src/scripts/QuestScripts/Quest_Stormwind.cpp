@@ -22,7 +22,7 @@
 
 class DashelStonefist : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DashelStonefist);
+    ADD_CREATURE_FACTORY_FUNCTION(DashelStonefist)
     explicit DashelStonefist(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -31,7 +31,7 @@ class DashelStonefist : public CreatureAIScript
         getCreature()->setStandState(STANDSTATE_STAND);
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
+    void OnDamageTaken(Unit* mAttacker, uint32_t fAmount) override
     {
         if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.2f)
         {
@@ -82,7 +82,7 @@ public:
         Dashel->GetAIInterface()->setMeleeDisabled(false);
         Dashel->GetAIInterface()->SetAllowedToEnterCombat(true);
 
-        uint32 chance = Util::getRandomUInt(100);
+        uint32_t chance = Util::getRandomUInt(100);
         if (chance < 15)
         {
             std::string say = "Now you're gonna get it good, ";

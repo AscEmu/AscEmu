@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-const uint32 SHADOWFANG_KEEP_MAP = 33;
+const uint32_t SHADOWFANG_KEEP_MAP = 33;
 
-enum SFK_encounterIndexes : uint8
+enum SFK_encounterIndexes : uint8_t
 {
     // Main encounters
     INDEX_VOIDWALKER    = 0,
@@ -25,7 +25,7 @@ enum SFK_encounterIndexes : uint8
     INDEX_MAX
 };
 
-enum SFK_creatureEntries : uint32
+enum SFK_creatureEntries : uint32_t
 {
     // Bosses
     CN_RAZORCLAW_THE_BUTCHER    = 3886,
@@ -68,7 +68,7 @@ enum SFK_creatureEntries : uint32
     CN_WOLFGUARD_WORG           = 5058
 };
 
-enum SFK_scriptTexts : uint32
+enum SFK_scriptTexts : uint32_t
 {
     // Sorcerer Ashcrombe texts
     SAY_ASHCROMBE_BYE           = 2115,     // "There it is! Wide open. Good luck to you conquering what lies beyond. I must report back to the Kirin Tor at once!"
@@ -99,7 +99,7 @@ enum SFK_scriptTexts : uint32
     YELL_ARUGAL_COMBAT          = 8796      // "Release your rage!"
 };
 
-enum SFK_gameobjectEntries : uint32
+enum SFK_gameobjectEntries : uint32_t
 {
     GO_SORCERER_GATE            = 18972,
 
@@ -115,7 +115,7 @@ enum SFK_gameobjectEntries : uint32
     GO_COURTYARD_DOOR           = 18895
 };
 
-enum SFK_spellEntries : uint32
+enum SFK_spellEntries : uint32_t
 {
     SPELL_ASHCROMBE_UNLOCK      = 6421,
     SPELL_ASHCROMBE_FIRE        = 6422,
@@ -123,7 +123,7 @@ enum SFK_spellEntries : uint32
 };
 
 // On death event Arugal summons serveral void walkers
-const uint8 ArugalVoidCount = 4;
+const uint8_t ArugalVoidCount = 4;
 static Movement::Location voidwalkerSpawns[ArugalVoidCount] =
 {
     { -154.274368f, 2177.196533f, 128.448517f, 5.760980f },
@@ -132,10 +132,10 @@ static Movement::Location voidwalkerSpawns[ArugalVoidCount] =
     { -150.860092f, 2165.156250f, 128.448502f, 0.999966f }
 };
 
-const uint32 prisonerGossipOptionID = 606;
+const uint32_t prisonerGossipOptionID = 606;
 
 // Deathstalker Adamant (entry: 3849) waypoints
-const uint8 adamantWpCount = 31;
+const uint8_t adamantWpCount = 31;
 const Movement::LocationWithFlag DeathstalkerAdamantWPS[adamantWpCount] =
 {
     // Walking to gates
@@ -175,7 +175,7 @@ const Movement::LocationWithFlag DeathstalkerAdamantWPS[adamantWpCount] =
 };
 
 // Sorcerer Ashcrombe (entry: 3850) waypoints
-const uint8 ashcrombeWpCount = 11;
+const uint8_t ashcrombeWpCount = 11;
 const Movement::Location SorcererAshcrombeWPS[ashcrombeWpCount] =
 {
     { -252.528229f, 2126.949951f, 81.179657f, 0 },   // 1

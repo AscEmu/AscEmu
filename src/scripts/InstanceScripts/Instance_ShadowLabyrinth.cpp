@@ -26,7 +26,7 @@
 
 class CabalAcolyteAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CabalAcolyteAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CabalAcolyteAI)
     explicit CabalAcolyteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowProtection = addAISpell(SP_CABAL_ACOLYTE_SHADOW_PROTECTION, 6.0f, TARGET_SELF, 0, 0, false, true);
@@ -39,7 +39,7 @@ class CabalAcolyteAI : public CreatureAIScript
 
 class CabalDeathswornAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CabalDeathswornAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CabalDeathswornAI)
     explicit CabalDeathswornAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowCleave = addAISpell(SP_CABAL_DEATHSWORN_SHADOW_CLEAVE, 9.0f, TARGET_VARIOUS, 0, 0, false, true);
@@ -55,7 +55,7 @@ class CabalDeathswornAI : public CreatureAIScript
 
 class CabalFanaticAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CabalFanaticAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CabalFanaticAI)
     explicit CabalFanaticAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fanaticFixate = addAISpell(SP_CABAL_FANATIC_FIXATE, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -65,7 +65,7 @@ class CabalFanaticAI : public CreatureAIScript
 
 class CabalShadowPriestAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CabalShadowPriestAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CabalShadowPriestAI)
     explicit CabalShadowPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto mindFlay = addAISpell(SP_CABAL_SHADOW_PRIEST_MIND_FLAY, 7.0f, TARGET_ATTACKING);
@@ -78,7 +78,7 @@ class CabalShadowPriestAI : public CreatureAIScript
 
 class CabalSpellbinderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CabalSpellbinderAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CabalSpellbinderAI)
     explicit CabalSpellbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto mindControl = addAISpell(SP_CABAL_SPELLBINDER_MIND_CONTROL, 7.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -91,7 +91,7 @@ class CabalSpellbinderAI : public CreatureAIScript
 
 class CabalWarlockAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CabalWarlockAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CabalWarlockAI)
     explicit CabalWarlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBolt = addAISpell(SP_CABAL_WARLOCK_SHADOW_BOLT, 13.0f, TARGET_ATTACKING);
@@ -104,7 +104,7 @@ class CabalWarlockAI : public CreatureAIScript
 
 class CabalZealotAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CabalZealotAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CabalZealotAI)
     explicit CabalZealotAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBolt = addAISpell(SP_CABAL_ZEALOT_SHADOW_BOLT, 13.0f, TARGET_ATTACKING);
@@ -132,7 +132,7 @@ class CabalZealotAI : public CreatureAIScript
     */
 class CabalRitualistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CabalRitualistAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CabalRitualistAI)
     explicit CabalRitualistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto gouge = addAISpell(SP_CABAL_RITUALIST_GOUGE, 8.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -157,7 +157,7 @@ class CabalRitualistAI : public CreatureAIScript
 
 class FelOverseerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FelOverseerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(FelOverseerAI)
     explicit FelOverseerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shout = addAISpell(SP_FEL_OVERSEER_INTIMIDATING_SHOUT, 4.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -211,7 +211,7 @@ protected:
 
 class MaliciousInstructorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MaliciousInstructorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MaliciousInstructorAI)
     explicit MaliciousInstructorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowNova = addAISpell(SP_MILICIOUS_INSTRUCT_SHADOW_NOVA, 12.0f, TARGET_VARIOUS, 0, 0, false, true);
@@ -227,7 +227,7 @@ class MaliciousInstructorAI : public CreatureAIScript
 
 class AmbassadorHellmawAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AmbassadorHellmawAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AmbassadorHellmawAI)
     explicit AmbassadorHellmawAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto corrosiveAcide = addAISpell(SP_AMBASSADOR_HELMAW_CORROSIVE_ACID, 10.0f, TARGET_VARIOUS, 0, 15);
@@ -274,7 +274,7 @@ protected:
 
 class BlackheartTheInciterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BlackheartTheInciterAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BlackheartTheInciterAI)
     explicit BlackheartTheInciterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto charge = addAISpell(SP_BLACKHEART_INCITER_CHARGE, 10.0f, TARGET_RANDOM_SINGLE, 0, 15, false, true);
@@ -329,7 +329,7 @@ around him, and Voidwalkers will start spawning, at an increasingly
 faster rate as the battle progresses.*/
 class GrandmasterVorpilAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GrandmasterVorpilAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GrandmasterVorpilAI)
     explicit GrandmasterVorpilAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBoltVolley = addAISpell(SP_GRDMASTER_VORPIL_SHADOW_BOLT_VOLLEY, 15.0f, TARGET_VARIOUS, 0, 10, false, true);
@@ -352,7 +352,7 @@ class GrandmasterVorpilAI : public CreatureAIScript
 
 class MurmurAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MurmurAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MurmurAI)
     explicit MurmurAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto boom1 = addAISpell(SP_MURMUR_SONIC_BOOM1, 10.0f, TARGET_SELF, 0, 25);

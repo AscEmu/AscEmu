@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Raid_Naxxramas.h"
 
-//const uint32 CN_THADDIUS = 15928;
+//const uint32_t CN_THADDIUS = 15928;
 
 class NaxxramasScript : public InstanceScript
 {
@@ -202,7 +202,7 @@ void WebWrapAI::OnDied(Unit* /*pKiller*/)
     // Slower, but safer
     if (mPlayerGuid != 0)
     {
-        Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32>(mPlayerGuid));
+        Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32_t>(mPlayerGuid));
         if (PlayerPtr != NULL && PlayerPtr->HasAura(MAEXXNA_WEB_WRAP))
         {
             PlayerPtr->RemoveAura(MAEXXNA_WEB_WRAP);
@@ -217,7 +217,7 @@ void WebWrapAI::AIUpdate()
 {
     if (mPlayerGuid != 0)
     {
-        Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32>(mPlayerGuid));
+        Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32_t>(mPlayerGuid));
         if (PlayerPtr == NULL || !PlayerPtr->isAlive() || !PlayerPtr->HasAura(MAEXXNA_WEB_WRAP))
         {
             mPlayerGuid = 0;
@@ -231,7 +231,7 @@ void WebWrapAI::Destroy()
 {
     if (mPlayerGuid != 0)
     {
-        Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32>(mPlayerGuid));
+        Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32_t>(mPlayerGuid));
         if (PlayerPtr != NULL && PlayerPtr->HasAura(MAEXXNA_WEB_WRAP))
         {
             PlayerPtr->RemoveAura(MAEXXNA_WEB_WRAP);
@@ -302,7 +302,7 @@ void MaexxnaAI::AIUpdate()
 {
     if (_isTimerFinished(mAddsSummonTimer))
     {
-        for (uint8 i = 0; i < 8; ++i)
+        for (uint8_t i = 0; i < 8; ++i)
         {
             CreatureAIScript* Spiderling = spawnCreatureAndGetAIScript(CN_MAEXXNA_SPIDERLING, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
             if (Spiderling != nullptr)
@@ -354,7 +354,7 @@ void MaexxnaAI::AIUpdate()
 //        if (pTarget == NULL || !pTarget->isPlayer() || pTarget->HasAura(MAEXXNA_WEB_WRAP) || Maexxna->getCreature() == NULL || Maexxna->getCreature()->GetMapMgr() == NULL)
 //            return;
 //
-//        uint32 Id = Util::getRandomUInt(1);
+//        uint32_t Id = Util::getRandomUInt(1);
 //        if (!Maexxna->mLeftWall)
 //            Id += 3;
 //
@@ -393,7 +393,7 @@ NaxxramasWorshipperAI::NaxxramasWorshipperAI(Creature* pCreature) : CreatureAISc
     mPossessed = false;
 }
 
-void NaxxramasWorshipperAI::OnCastSpell(uint32 /*pSpellId*/)
+void NaxxramasWorshipperAI::OnCastSpell(uint32_t /*pSpellId*/)
 {
 }
 
@@ -496,7 +496,7 @@ void NaxxramasFollowerAI::Destroy()
 
 GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
-    for (uint8 i = 0; i < 4; ++i)
+    for (uint8_t i = 0; i < 4; ++i)
     {
         CreatureAIScript* whorshipper = spawnCreatureAndGetAIScript(CN_NAXXRAMAS_WORSHIPPER, 3353.364502f + Worshippers[i].x, -3620.322998f, 260.996857f, 4.725017f);
         if (whorshipper != nullptr)
@@ -509,7 +509,7 @@ GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : CreatureAIScri
 
     if (_isHeroic())
     {
-        for (uint8 i = 0; i < 2; ++i)
+        for (uint8_t i = 0; i < 2; ++i)
         {
             CreatureAIScript* follower = spawnCreatureAndGetAIScript(CN_NAXXRAMAS_FOLLOWER, 3353.364502f + Followers[i].x, -3620.322998f, 260.996857f, 4.725017f);
             if (follower != nullptr)
@@ -581,7 +581,7 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* /*pTarget*/)
 
     if (isAlive())
     {
-        for (uint8 i = 0; i < 4; ++i)
+        for (uint8_t i = 0; i < 4; ++i)
         {
             CreatureAIScript* whorshipper = spawnCreatureAndGetAIScript(CN_NAXXRAMAS_WORSHIPPER, 3353.364502f + Worshippers[i].x, -3620.322998f, 260.996857f, 4.725017f);
             if (whorshipper != nullptr)
@@ -594,7 +594,7 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* /*pTarget*/)
 
         if (_isHeroic())
         {
-            for (uint8 i = 0; i < 2; ++i)
+            for (uint8_t i = 0; i < 2; ++i)
             {
                 CreatureAIScript* follower = spawnCreatureAndGetAIScript(CN_NAXXRAMAS_FOLLOWER, 3353.364502f + Followers[i].x, -3620.322998f, 260.996857f, 4.725017f);
                 if (follower != nullptr)
@@ -717,7 +717,7 @@ AnubRekhanAI::AnubRekhanAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     if (_isHeroic())
     {
-        for (uint8 i = 0; i < 2; ++i)
+        for (uint8_t i = 0; i < 2; ++i)
         {
             CryptGuardAI* CryptAI = static_cast< CryptGuardAI* >(spawnCreatureAndGetAIScript(CN_CRYPT_GUARD, CryptGuards[i].x, CryptGuards[i].y, CryptGuards[i].z, CryptGuards[i].o));
             if (CryptAI != nullptr)
@@ -790,7 +790,7 @@ void AnubRekhanAI::OnCombatStop(Unit* /*pTarget*/)
 
     if (_isHeroic() && isAlive())
     {
-        for (uint8 i = 0; i < 2; ++i)
+        for (uint8_t i = 0; i < 2; ++i)
         {
             CryptGuardAI* CryptAI = static_cast< CryptGuardAI* >(spawnCreatureAndGetAIScript(CN_CRYPT_GUARD, CryptGuards[i].x, CryptGuards[i].y, CryptGuards[i].z, CryptGuards[i].o));
             if (CryptAI != nullptr)
@@ -876,7 +876,7 @@ void AnubRekhanAI::Destroy()
 //                continue;
 //
 //            PlayerPtr = static_cast<Player*>(Iter);
-//            std::set<uint32>::iterator PlayerIter = AnubRekhan->mUsedCorpseGuids.find(static_cast<uint32>(PlayerPtr->getGuid()));
+//            std::set<uint32_t>::iterator PlayerIter = AnubRekhan->mUsedCorpseGuids.find(static_cast<uint32_t>(PlayerPtr->getGuid()));
 //            if (PlayerIter != AnubRekhan->mUsedCorpseGuids.end())
 //            {
 //                if (PlayerPtr->isAlive())
@@ -914,11 +914,11 @@ void AnubRekhanAI::Destroy()
 //
 //        if (PlayerCorpses.size() > 0)
 //        {
-//            uint32 Id = Util::getRandomUInt(static_cast<uint32>(PlayerCorpses.size() - 1));
+//            uint32_t Id = Util::getRandomUInt(static_cast<uint32_t>(PlayerCorpses.size() - 1));
 //            PlayerPtr = PlayerCorpses[Id].first;
-//            AnubRekhan->mUsedCorpseGuids.insert(static_cast<uint32>(PlayerPtr->getGuid()));
+//            AnubRekhan->mUsedCorpseGuids.insert(static_cast<uint32_t>(PlayerPtr->getGuid()));
 //
-//            for (uint8 i = 0; i < 5; ++i)
+//            for (uint8_t i = 0; i < 5; ++i)
 //            {
 //                CorpseScarabAI* ScarabAI = static_cast< CorpseScarabAI* >(AnubRekhan->spawnCreatureAndGetAIScript(CN_CORPSE_SCARAB, PlayerCorpses[Id].second.x, PlayerCorpses[Id].second.y, PlayerCorpses[Id].second.z, PlayerCorpses[Id].second.o));
 //                if (ScarabAI != nullptr)
@@ -960,7 +960,7 @@ void AnubRekhanAI::Destroy()
 //
 //        if (CryptCorpses.size() > 0)
 //        {
-//            uint32 Id = Util::getRandomUInt(static_cast<uint32>(CryptCorpses.size() - 1));
+//            uint32_t Id = Util::getRandomUInt(static_cast<uint32_t>(CryptCorpses.size() - 1));
 //            CreaturePtr = CryptCorpses[Id];
 //
 //            float X, Y, Z, O;
@@ -969,7 +969,7 @@ void AnubRekhanAI::Destroy()
 //            Z = CreaturePtr->GetPositionZ();
 //            O = CreaturePtr->GetOrientation();
 //
-//            for (uint8 i = 0; i < 10; ++i)
+//            for (uint8_t i = 0; i < 10; ++i)
 //            {
 //                CorpseScarabAI* ScarabAI = static_cast< CorpseScarabAI* >(AnubRekhan->spawnCreatureAndGetAIScript(CN_CORPSE_SCARAB, X, Y, Z, O));
 //                if (ScarabAI != nullptr)
@@ -1256,23 +1256,23 @@ void NothThePlaguebringerAI::AIUpdate()
 
         if (_isTimerFinished(mSkeletonTimer))
         {
-            uint32 SkelLimit = 2;
+            uint32_t SkelLimit = 2;
             if (_isHeroic())
                 SkelLimit = 3;
 
             bool PosTaken[3];
-            for (uint8 i = 0; i < 3; ++i)
+            for (uint8_t i = 0; i < 3; ++i)
             {
                 PosTaken[i] = false;
             }
 
-            uint32 Id = 0;
-            for (uint8 i = 0; i < SkelLimit; ++i)
+            uint32_t Id = 0;
+            for (uint8_t i = 0; i < SkelLimit; ++i)
             {
                 Id = Util::getRandomUInt(0, (SkelLimit - 1));    // SkellPosPhase1 is 0-indexed
                 if (PosTaken[Id])
                 {
-                    for (uint32 j = 0; j < 3; ++j)
+                    for (uint32_t j = 0; j < 3; ++j)
                     {
                         if (!PosTaken[j])
                         {
@@ -1313,27 +1313,27 @@ void NothThePlaguebringerAI::AIUpdate()
 
         if (_isTimerFinished(mSkeletonTimer))
         {
-            uint32 SpawnLimit = 2;
+            uint32_t SpawnLimit = 2;
             if (_isHeroic())
                 ++SpawnLimit;
 
-            uint32 Id = 0;
-            uint32 Champions = 0;
+            uint32_t Id = 0;
+            uint32_t Champions = 0;
             if (mPhaseCounter <= SpawnLimit + 1)
                 Champions = SpawnLimit - mPhaseCounter + 1;
 
             bool PosTaken[4];
-            for (uint8 i = 0; i < 4; ++i)
+            for (uint8_t i = 0; i < 4; ++i)
             {
                 PosTaken[i] = false;
             }
 
-            for (uint8 i = 0; i < Champions; ++i)
+            for (uint8_t i = 0; i < Champions; ++i)
             {
                 Id = Util::getRandomUInt(1, 3);
                 if (PosTaken[Id])
                 {
-                    for (uint32 j = 0; j < 4; ++j)
+                    for (uint32_t j = 0; j < 4; ++j)
                     {
                         if (!PosTaken[Id])
                         {
@@ -1354,12 +1354,12 @@ void NothThePlaguebringerAI::AIUpdate()
                 PosTaken[Id] = true;
             }
 
-            for (uint8 i = 0; i < SpawnLimit - Champions; ++i)
+            for (uint8_t i = 0; i < SpawnLimit - Champions; ++i)
             {
                 Id = Util::getRandomUInt(1, 3);
                 if (PosTaken[Id])
                 {
-                    for (uint32 j = 0; j < 4; ++j)
+                    for (uint32_t j = 0; j < 4; ++j)
                     {
                         if (!PosTaken[Id])
                         {
@@ -1594,7 +1594,7 @@ HeiganTheUncleanAI::HeiganTheUncleanAI(Creature* pCreature) : CreatureAIScript(p
     mClockWiseEruption = true;
 }
 
-uint32 HeiganTheUncleanAI::CalculateTriggerArea(float pPosX, float pPosY)
+uint32_t HeiganTheUncleanAI::CalculateTriggerArea(float pPosX, float pPosY)
 {
     pPosY -= HeiganPos[1];
     if (pPosY < 1.0f)
@@ -1605,19 +1605,19 @@ uint32 HeiganTheUncleanAI::CalculateTriggerArea(float pPosX, float pPosY)
         return 3;
 
     float slope = pPosY / pPosX;
-    for (uint8 i = 0; i < 3; ++i)
+    for (uint8_t i = 0; i < 3; ++i)
         if (slope > HeiganEruptionSlope[i])
             return i;
 
     return 3;
 }
 
-void HeiganTheUncleanAI::CallEruptionEvent(int32 pTimerId, int32 pNewTime)
+void HeiganTheUncleanAI::CallEruptionEvent(int32_t pTimerId, int32_t pNewTime)
 {
     if (pTimerId < 0)
         return;
 
-    for (std::set< std::pair< uint32, PlagueFissureGO* > >::iterator Iter = mFissures.begin(); Iter != mFissures.end(); ++Iter)
+    for (std::set< std::pair< uint32_t, PlagueFissureGO* > >::iterator Iter = mFissures.begin(); Iter != mFissures.end(); ++Iter)
     {
         if ((int)(*Iter).first != mEruptionPhase)
         {
@@ -1672,7 +1672,7 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* /*pTarget*/)
                 if (Fissure->GetScript() == nullptr)
                     continue;
 
-                uint32 AreaId = CalculateTriggerArea(Fissure->GetPositionX(), Fissure->GetPositionY());
+                uint32_t AreaId = CalculateTriggerArea(Fissure->GetPositionX(), Fissure->GetPositionY());
                 PlagueFissureGO* FissureGO = static_cast< PlagueFissureGO* >(Fissure->GetScript());
                 mFissures.insert(std::make_pair(AreaId, FissureGO));
                 FissureGO->mHeiganAI = this;
@@ -1748,7 +1748,7 @@ void HeiganTheUncleanAI::AIUpdate()
 
 void HeiganTheUncleanAI::Destroy()
 {
-    for (std::set< std::pair< uint32, PlagueFissureGO* > >::iterator itr = mFissures.begin(); itr != mFissures.end(); ++itr)
+    for (std::set< std::pair< uint32_t, PlagueFissureGO* > >::iterator itr = mFissures.begin(); itr != mFissures.end(); ++itr)
     {
         (*itr).second->ResetHeiganAI();
     }
@@ -1788,7 +1788,7 @@ void PlagueFissureGO::Destroy()
 {
     if (mHeiganAI != NULL)
     {
-        for (std::set< std::pair< uint32, PlagueFissureGO* > >::iterator Iter = mHeiganAI->mFissures.begin(); Iter != mHeiganAI->mFissures.end(); ++Iter)
+        for (std::set< std::pair< uint32_t, PlagueFissureGO* > >::iterator Iter = mHeiganAI->mFissures.begin(); Iter != mHeiganAI->mFissures.end(); ++Iter)
         {
             if ((*Iter).second == this)
             {
@@ -1843,18 +1843,18 @@ void LoathebAI::AIUpdate()
     if (_isTimerFinished(mSporeTimer))
     {
         bool PosTaken[4];
-        for (uint8 i = 0; i < 4; ++i)
+        for (uint8_t i = 0; i < 4; ++i)
         {
             PosTaken[i] = false;
         }
 
-        uint32 Id = 0;
-        for (uint8 i = 0; i < 3; ++i)
+        uint32_t Id = 0;
+        for (uint8_t i = 0; i < 3; ++i)
         {
             Id = Util::getRandomUInt(3);
             if (PosTaken[Id])
             {
-                for (uint32 j = 0; j < 4; ++j)
+                for (uint32_t j = 0; j < 4; ++j)
                 {
                     if (!PosTaken[j])
                     {
@@ -2554,7 +2554,7 @@ MaraudingGeistAI::MaraudingGeistAI(Creature* pCreature) : CreatureAIScript(pCrea
 //    if (!pThis || !pCreatureAI)
 //        return;
 //
-//    uint32 _mostHP = 0;
+//    uint32_t _mostHP = 0;
 //    Player* pBestTarget = NULL;
 //
 //    for (const auto& PlayerIter : pCreatureAI->getCreature()->getInRangePlayersSet())
@@ -2639,12 +2639,12 @@ void SetupNaxxramas(ScriptMgr* pScriptMgr)
     pScriptMgr->register_creature_script(CN_PLAGUED_CHAMPION, &PlaguedChampionAI::Create);
     pScriptMgr->register_creature_script(CN_PLAGUED_GUARDIAN, &PlaguedGuardianAI::Create);
     pScriptMgr->register_creature_script(CN_SPORE, &SporeAI::Create);
-    for (uint32 Id = 181510; Id < 181553; ++Id)
+    for (uint32_t Id = 181510; Id < 181553; ++Id)
     {
         pScriptMgr->register_gameobject_script(Id, &PlagueFissureGO::Create);
     }
 
-    for (uint32 Id = 181676; Id < 181679; ++Id)
+    for (uint32_t Id = 181676; Id < 181679; ++Id)
     {
         pScriptMgr->register_gameobject_script(Id, &PlagueFissureGO::Create);
     }

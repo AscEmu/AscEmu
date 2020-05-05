@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class LadySarevessAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LadySarevessAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LadySarevessAI)
     explicit LadySarevessAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(8435, 10.0f, TARGET_ATTACKING, 2, 0);    // Forked Lightning
@@ -21,7 +21,7 @@ class LadySarevessAI : public CreatureAIScript
 
 class BaronAquanisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BaronAquanisAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BaronAquanisAI)
     explicit BaronAquanisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(15043, 20.0f, TARGET_ATTACKING, 3, 0);    // Frostbolt
@@ -56,7 +56,7 @@ protected:
 
 class KelrisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KelrisAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KelrisAI)
     explicit KelrisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto sleep = addAISpell(8399, 12.0f, TARGET_RANDOM_SINGLE);
@@ -71,7 +71,7 @@ class KelrisAI : public CreatureAIScript
 
 class AkumaiAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AkumaiAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AkumaiAI)
     explicit AkumaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(3490, 12.0f, TARGET_SELF, 0, 0);     // Frenzied Rage
@@ -92,7 +92,7 @@ class MorriduneGossip : public GossipScript
         menu.sendGossipPacket(pPlayer);
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* pPlayer, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {

@@ -25,7 +25,7 @@
 // Fel Orc Scavengers
 class FelOrcScavengersQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FelOrcScavengersQAI);
+    ADD_CREATURE_FACTORY_FUNCTION(FelOrcScavengersQAI)
     explicit FelOrcScavengersQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)
@@ -39,7 +39,7 @@ class FelOrcScavengersQAI : public CreatureAIScript
 
 class Dreadtusk : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Dreadtusk);
+    ADD_CREATURE_FACTORY_FUNCTION(Dreadtusk)
     explicit Dreadtusk(Creature* pCreature) : CreatureAIScript(pCreature) { }
     void OnDied(Unit* mKiller)
     {
@@ -155,7 +155,7 @@ public:
 
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        int32 i = -1;
+        int32_t i = -1;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
         switch (pPrisoner->getEntry())
         {
@@ -185,10 +185,10 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* pPlayer, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* pPlayer, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
 
-        uint8 i = 66;
+        uint8_t i = 66;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
         switch (pPrisoner->getEntry())
         {
@@ -217,7 +217,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 class PrisonersDreghoodElders : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PrisonersDreghoodElders);
+    ADD_CREATURE_FACTORY_FUNCTION(PrisonersDreghoodElders)
     explicit PrisonersDreghoodElders(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -231,7 +231,7 @@ class PrisonersDreghoodElders : public CreatureAIScript
 //////////////////////////////////////////////////////////////////////////////////////////
 class AncestralSpiritWolf : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AncestralSpiritWolf);
+    ADD_CREATURE_FACTORY_FUNCTION(AncestralSpiritWolf)
     explicit AncestralSpiritWolf(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnLoad() override
     {
@@ -241,7 +241,7 @@ class AncestralSpiritWolf : public CreatureAIScript
 
 class HellfireDeadNPC : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HellfireDeadNPC);
+    ADD_CREATURE_FACTORY_FUNCTION(HellfireDeadNPC)
     explicit HellfireDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

@@ -35,7 +35,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         GossipMenu::sendSimpleMenu(pObject->getGuid(), 3558, plr);
 
@@ -54,10 +54,10 @@ public:
 
 class Wizzlecranks_Shredder : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Wizzlecranks_Shredder);
+    ADD_CREATURE_FACTORY_FUNCTION(Wizzlecranks_Shredder)
     explicit Wizzlecranks_Shredder(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 195)
         {
@@ -79,10 +79,10 @@ class Wizzlecranks_Shredder : public CreatureAIScript
 
 class Gilthares_Firebough : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Gilthares_Firebough);
+    ADD_CREATURE_FACTORY_FUNCTION(Gilthares_Firebough)
     explicit Gilthares_Firebough(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 100)
         {
@@ -105,7 +105,7 @@ class Gilthares_Firebough : public CreatureAIScript
 int kolkarskilled = 0;
 class VerogtheDervish : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VerogtheDervish);
+    ADD_CREATURE_FACTORY_FUNCTION(VerogtheDervish)
     explicit VerogtheDervish(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnDied(Unit* mKiller) override
     {

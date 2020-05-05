@@ -52,7 +52,7 @@ bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    uint32 spell_id = 0;
+    uint32_t spell_id = 0;
 
     if (isAttackable(caster, target))
     {
@@ -198,8 +198,8 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
     }
 
     // Search for a previous judgement casted by this caster. He can have only 1 judgement active at a time
-    uint32 index = 0;
-    uint32 judgements[] =
+    uint32_t index = 0;
+    uint32_t judgements[] =
     {
         //SPELL_HASH_JUDGEMENT_OF_LIGHT,
         20185,
@@ -223,7 +223,7 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
         0
     };
 
-    uint64 prev_target = caster->getSingleTargetGuidForAura(judgements, &index);
+    uint64_t prev_target = caster->getSingleTargetGuidForAura(judgements, &index);
     if (prev_target)
     {
         Unit* t = caster->GetMapMgr()->GetUnit(prev_target);
@@ -236,7 +236,7 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
     }
 
     // Search for seal to unleash its energy
-    uint32 seals[] = { 20375, 20165, 20164, 21084, 31801, 53736, 20166, 0 };
+    uint32_t seals[] = { 20375, 20165, 20164, 21084, 31801, 53736, 20166, 0 };
 
     Aura* aura = caster->getAuraWithId(seals);
     if (aura == nullptr)
@@ -244,7 +244,7 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    uint32 id = 0;
+    uint32_t id = 0;
     switch (aura->GetSpellId())
     {
         case 20375:
@@ -351,7 +351,7 @@ bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
         return false;
 
     Unit* targets[3];
-    uint32 targets_got = 0;
+    uint32_t targets_got = 0;
 
     for (const auto& itr : unitTarget->getInRangeObjectsSet())
     {
@@ -370,11 +370,11 @@ bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
         }
     }
 
-    for (uint32 j = 0; j < targets_got; j++)
+    for (uint32_t j = 0; j < targets_got; j++)
     {
         //set threat to this target so we are the msot hated
-        uint32 threat_to_him = targets[j]->GetAIInterface()->getThreatByPtr(unitTarget);
-        uint32 threat_to_us = targets[j]->GetAIInterface()->getThreatByPtr(s->u_caster);
+        uint32_t threat_to_him = targets[j]->GetAIInterface()->getThreatByPtr(unitTarget);
+        uint32_t threat_to_us = targets[j]->GetAIInterface()->getThreatByPtr(s->u_caster);
         int threat_dif = threat_to_him - threat_to_us;
         if (threat_dif > 0) //should nto happen
             targets[j]->GetAIInterface()->modThreatByPtr(s->u_caster, threat_dif);
@@ -413,7 +413,7 @@ bool JudgementOfTheWise(uint8_t /*effectIndex*/, Spell* s)
     if (!s->p_caster)
         return false;
 
-    s->p_caster->energize(s->p_caster, 31930, uint32(0.15f * s->p_caster->getBaseMana()), POWER_TYPE_MANA);
+    s->p_caster->energize(s->p_caster, 31930, uint32_t(0.15f * s->p_caster->getBaseMana()), POWER_TYPE_MANA);
     s->p_caster->castSpell(s->p_caster, 57669, false);
 
     return true;
@@ -435,7 +435,7 @@ void SetupLegacyPaladinSpells(ScriptMgr* mgr)
     mgr->register_dummy_aura(9799, &EyeForAnEye);
     mgr->register_dummy_aura(25988, &EyeForAnEye);
 
-    uint32 HolyShockIds[] = { 20473, 20929, 20930, 27174, 33072, 48824, 48825, 0 };
+    uint32_t HolyShockIds[] = { 20473, 20929, 20930, 27174, 33072, 48824, 48825, 0 };
     mgr->register_dummy_spell(HolyShockIds, &HolyShock);
 
     mgr->register_dummy_aura(21084, &SealOfRighteousness);

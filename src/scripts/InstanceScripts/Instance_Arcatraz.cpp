@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Zereketh the UnboundAI
 class ZerekethAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ZerekethAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ZerekethAI)
     explicit ZerekethAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto seedOfC = addAISpell(SEED_OF_C, 6.0f, TARGET_RANDOM_SINGLE, 2, 20);
@@ -91,7 +91,7 @@ class ZerekethAI : public CreatureAIScript
         if (!TargetTable.size())
             return;
 
-        auto random_index = Util::getRandomUInt(0, uint32(TargetTable.size() - 1));
+        auto random_index = Util::getRandomUInt(0, uint32_t(TargetTable.size() - 1));
         auto random_target = TargetTable[random_index];
 
         if (random_target == nullptr)
@@ -124,13 +124,13 @@ class ZerekethAI : public CreatureAIScript
 
 protected:
 
-    int32 SpeechTimer;
-    int32 VoidTimer;
+    int32_t SpeechTimer;
+    int32_t VoidTimer;
 };
 
 class VoidZoneARC : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VoidZoneARC);
+    ADD_CREATURE_FACTORY_FUNCTION(VoidZoneARC)
     explicit VoidZoneARC(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();
@@ -142,7 +142,7 @@ class VoidZoneARC : public CreatureAIScript
     void AIUpdate() override
     {
         // M4ksiu: I'm not sure if it should be cast once, on start
-        uint32 SpellId = CONSUMPTION;
+        uint32_t SpellId = CONSUMPTION;
         if (_isHeroic())
             SpellId = CONSUMPTION_H;
 
@@ -156,7 +156,7 @@ class VoidZoneARC : public CreatureAIScript
 // sounds missing related to Wrath... (look on script below this one)
 class DalliahTheDoomsayerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DalliahTheDoomsayerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DalliahTheDoomsayerAI)
     explicit DalliahTheDoomsayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(GIFT_OF_THE_DOOMSAYER, 8.0f, TARGET_ATTACKING);
@@ -193,7 +193,7 @@ class DalliahTheDoomsayerAI : public CreatureAIScript
 // so haven't added them.
 class WrathScryerSoccothratesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WrathScryerSoccothratesAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WrathScryerSoccothratesAI)
     explicit WrathScryerSoccothratesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(IMMOLATION, 10.0f, TARGET_SELF);
@@ -223,7 +223,7 @@ class WrathScryerSoccothratesAI : public CreatureAIScript
 // Add sounds related to his dialog with mind controlled guy
 class HarbringerSkyrissAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HarbringerSkyrissAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HarbringerSkyrissAI)
     explicit HarbringerSkyrissAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(MIND_REND, 15.0f, TARGET_ATTACKING);
@@ -271,7 +271,7 @@ class HarbringerSkyrissAI : public CreatureAIScript
 
 protected:
 
-    uint8 IllusionCount;
+    uint8_t IllusionCount;
     CreatureAISpells* Illusion66;
     CreatureAISpells* Illusion33;
 };
@@ -279,7 +279,7 @@ protected:
 // Warden MellicharAI
 class WardenMellicharAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WardenMellicharAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WardenMellicharAI)
     explicit WardenMellicharAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setRooted(true);
@@ -587,10 +587,10 @@ class WardenMellicharAI : public CreatureAIScript
 
 protected:
 
-    uint8 Phasepart;
-    uint32 NPC_ID_Spawn;
-    uint32 Spawncounter;
-    int32 Phase_Timer;
+    uint8_t Phasepart;
+    uint32_t NPC_ID_Spawn;
+    uint32_t Spawncounter;
+    int32_t Phase_Timer;
 
     Creature* NPC_orb1;
     Creature* NPC_orb2;

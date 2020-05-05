@@ -7,7 +7,7 @@ void SetupPvPHellfirePeninsula(ScriptMgr* mgr);
 void SetupPvPSilithus(ScriptMgr* mgr);
 void SetupPvPZangarmarsh(ScriptMgr* mgr);
 
-extern "C" SCRIPT_DECL uint32 _exp_get_script_type()
+extern "C" SCRIPT_DECL uint32_t _exp_get_script_type()
 {
     return SCRIPT_TYPE_MISC;
 }

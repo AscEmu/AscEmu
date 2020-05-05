@@ -39,11 +39,11 @@ class HallsOfLightningScript : public InstanceScript
 {
 public:
 
-    uint32 mGeneralDoorsGUID;
-    uint32 mVolkhanDoorsGUID;
-    uint32 mLokenDoorsGUID;
-    uint32 mIonarDoors1GUID;
-    uint32 mIonarDoors2GUID;
+    uint32_t mGeneralDoorsGUID;
+    uint32_t mVolkhanDoorsGUID;
+    uint32_t mLokenDoorsGUID;
+    uint32_t mIonarDoors1GUID;
+    uint32_t mIonarDoors2GUID;
 
     explicit HallsOfLightningScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
@@ -121,7 +121,7 @@ public:
 
 class GeneralBjarngrimAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GeneralBjarngrimAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GeneralBjarngrimAI)
     explicit GeneralBjarngrimAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Battle Stance
@@ -183,7 +183,7 @@ class GeneralBjarngrimAI : public CreatureAIScript
     }
 
     // case for scriptPhase and spell emotes
-    void switchStance(int32 pStance)
+    void switchStance(int32_t pStance)
     {
         switch (pStance)
         {
@@ -213,12 +213,12 @@ class GeneralBjarngrimAI : public CreatureAIScript
 
 private:
 
-    int32 mStanceTimer;
+    int32_t mStanceTimer;
 };
 
 class Volkhan : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Volkhan);
+    ADD_CREATURE_FACTORY_FUNCTION(Volkhan)
     explicit Volkhan(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -286,7 +286,7 @@ class Volkhan : public CreatureAIScript
         } 
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 1)
         {
@@ -334,12 +334,12 @@ class Volkhan : public CreatureAIScript
     Movement::Location m_cVolkhanWP;
     bool m_bStomp;
     uint32_t mStompTimerId;
-    int32 mPhase;
+    int32_t mPhase;
 };
 
 class MoltenGolem : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MoltenGolem);
+    ADD_CREATURE_FACTORY_FUNCTION(MoltenGolem)
     explicit MoltenGolem(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SPELL_BLAST_WAVE, 25.0f, TARGET_SELF, 0, 20);
@@ -359,7 +359,7 @@ class MoltenGolem : public CreatureAIScript
 
 class BrittleGolem : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BrittleGolem);
+    ADD_CREATURE_FACTORY_FUNCTION(BrittleGolem)
     explicit BrittleGolem(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
@@ -369,7 +369,7 @@ class BrittleGolem : public CreatureAIScript
 
 class VolkhansAnvil : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VolkhansAnvil);
+    ADD_CREATURE_FACTORY_FUNCTION(VolkhansAnvil)
     explicit VolkhansAnvil(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -382,7 +382,7 @@ class VolkhansAnvil : public CreatureAIScript
 //\todo missing spark phase
 class IonarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IonarAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IonarAI)
     explicit IonarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -406,7 +406,7 @@ class IonarAI : public CreatureAIScript
 
 class LokenAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LokenAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LokenAI)
     explicit LokenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -499,8 +499,8 @@ class LokenAI : public CreatureAIScript
     CreatureAISpells* mNova;
 
     uint32_t mNovaTimerId;
-    uint32 mRespondTimer;
-    uint8 mSpeech;
+    uint32_t mRespondTimer;
+    uint8_t mSpeech;
 };
 
 void SetupHallsOfLightning(ScriptMgr* mgr)

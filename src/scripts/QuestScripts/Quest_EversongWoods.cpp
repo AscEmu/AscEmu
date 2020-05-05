@@ -42,7 +42,7 @@ class ProspectorAnvilwardGossip : public GossipScript
 public:
 
     void onHello(Object* pObject, Player* Plr) override;
-    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32 gossipId) override;
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* EnteredCode, uint32_t gossipId) override;
     void destroy() override { delete this; }
 };
 
@@ -55,7 +55,7 @@ void ProspectorAnvilwardGossip::onHello(Object* pObject, Player * Plr)
     menu.sendGossipPacket(Plr);
 }
 
-void ProspectorAnvilwardGossip::onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
+void ProspectorAnvilwardGossip::onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/)
 {
     switch (Id)
     {
@@ -80,13 +80,13 @@ void ProspectorAnvilwardGossip::onSelectOption(Object* pObject, Player* Plr, uin
 
 class ProspectorAnvilward : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ProspectorAnvilward);
+    ADD_CREATURE_FACTORY_FUNCTION(ProspectorAnvilward)
     explicit ProspectorAnvilward(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 9)
         {

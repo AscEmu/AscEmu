@@ -31,7 +31,7 @@ namespace luaItem
     // GOSSIP
     int GossipCreateMenu(lua_State* L, Item* ptr)
     {
-        uint32 text_id = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t text_id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         auto player = CHECK_PLAYER(L, 2);
         int autosend = static_cast<int>(luaL_checkinteger(L, 3));
 
@@ -51,12 +51,12 @@ namespace luaItem
 
     int GossipMenuAddItem(lua_State* L, Item* /*ptr*/)
     {
-        uint8 icon = static_cast<uint8>(luaL_checkinteger(L, 1));
+        uint8_t icon = static_cast<uint8_t>(luaL_checkinteger(L, 1));
         const char* menu_text = luaL_checkstring(L, 2);
-        uint32 IntId = static_cast<uint32>(luaL_checkinteger(L, 3));
+        uint32_t IntId = static_cast<uint32_t>(luaL_checkinteger(L, 3));
         bool coded = (luaL_checkinteger(L, 4)) ? true : false;
         const char* boxmessage = luaL_optstring(L, 5, "");
-        uint32 boxmoney = static_cast<uint32>(luaL_optinteger(L, 6, 0));
+        uint32_t boxmoney = static_cast<uint32_t>(luaL_optinteger(L, 6, 0));
 
         if (LuaGlobal::instance()->m_menu == NULL)
         {
@@ -104,9 +104,9 @@ namespace luaItem
         Player* plr = CHECK_PLAYER(L, 1);
         float x = CHECK_FLOAT(L, 2);
         float y = CHECK_FLOAT(L, 3);
-        uint32 icon = static_cast<uint32>(luaL_checkinteger(L, 4));
-        uint32 flags = static_cast<uint32>(luaL_checkinteger(L, 5));
-        uint32 data = static_cast<uint32>(luaL_checkinteger(L, 6));
+        uint32_t icon = static_cast<uint32_t>(luaL_checkinteger(L, 4));
+        uint32_t flags = static_cast<uint32_t>(luaL_checkinteger(L, 5));
+        uint32_t data = static_cast<uint32_t>(luaL_checkinteger(L, 6));
         const char* name = luaL_checkstring(L, 7);
 
         plr->sendGossipPoiPacket(x, y, icon, flags, data, name);
@@ -118,14 +118,14 @@ namespace luaItem
         if (ptr == NULL)
             return 0;
 
-        uint32 text_id = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t text_id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player *player = CHECK_PLAYER(L, 2);
-        uint32 itemid = static_cast<uint32>(luaL_checkinteger(L, 3));
-        uint8 itemicon = CHECK_UINT8(L, 4);
+        uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 3));
+        uint8_t itemicon = CHECK_UINT8(L, 4);
         const char *itemtext = luaL_checkstring(L, 5);
-        uint32 requiredmoney = CHECK_ULONG(L, 6);
+        uint32_t requiredmoney = CHECK_ULONG(L, 6);
         const char *moneytext = luaL_checkstring(L, 7);
-        uint8 extra = CHECK_UINT8(L, 8);
+        uint8_t extra = CHECK_UINT8(L, 8);
 
         if (player == NULL)
             return 0;
@@ -148,8 +148,8 @@ namespace luaItem
 
     int AddEnchantment(lua_State* L, Item* ptr)
     {
-        uint32 entry = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 duration = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t entry = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t duration = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         bool permanent = (duration == 0) ? true : false;
         bool temp = (luaL_checkinteger(L, 3) == 1) ? true : false;
 
@@ -208,7 +208,7 @@ namespace luaItem
         if (ptr == nullptr)
             return 0;
 
-        uint32 index = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t index = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (index >= 5)
             return 0;
 
@@ -222,7 +222,7 @@ namespace luaItem
         if (ptr == nullptr)
             return 0;
 
-        uint32 index = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t index = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (index >= 5)
             return 0;
 
@@ -243,9 +243,9 @@ namespace luaItem
         //TEST_UNIT()
         if ((lua_gettop(L) != 3) || (lua_gettop(L) != 5))
             return 0;
-        uint32 itemid = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 mincount = static_cast<uint32>(luaL_checkinteger(L, 2));
-        uint32 maxcount = static_cast<uint32>(luaL_checkinteger(L, 3));
+        uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t mincount = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+        uint32_t maxcount = static_cast<uint32_t>(luaL_checkinteger(L, 3));
         bool perm = ((luaL_optinteger(L, 4, 0) == 1) ? true : false);
         if (perm)
         {
@@ -264,7 +264,7 @@ namespace luaItem
         if (ptr == nullptr)
             return 0;
 
-        uint32 lang = static_cast<uint32>(luaL_optinteger(L, 1, LANG_UNIVERSAL));
+        uint32_t lang = static_cast<uint32_t>(luaL_optinteger(L, 1, LANG_UNIVERSAL));
         lua_pushstring(L, ptr->GetItemLink(lang).c_str());
         return 1;
     }
@@ -349,8 +349,8 @@ namespace luaItem
         if (ptr == nullptr)
             return 0;
 
-        uint32 slot = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 duration = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint32_t slot = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t duration = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
         ptr->ModifyEnchantmentTime(slot, duration);
         return 1;
@@ -361,7 +361,7 @@ namespace luaItem
         if (ptr == nullptr)
             return 0;
 
-        uint32 count = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t count = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (!count || count > 1000)
             return 0;
         ptr->setStackCount(count);
@@ -373,8 +373,8 @@ namespace luaItem
         if (ptr == nullptr)
             return 0;
 
-        uint16 index = static_cast<uint16>(luaL_checkinteger(L, 1));
-        uint32 flag = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint32_t flag = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         lua_pushboolean(L, ptr->HasFlag(index, flag) ? 1 : 0);
         return 1;
     }
@@ -399,12 +399,12 @@ namespace luaItem
 
     int GetContainerItemCount(lua_State* L, Item* ptr)
     {
-        uint32 itemid = CHECK_ULONG(L, 1);
+        uint32_t itemid = CHECK_ULONG(L, 1);
         if (!ptr->isContainer() || !itemid) return 0;
         Container* pCont = static_cast< Container* >(ptr);
-        int16 TotalSlots = static_cast<int16>(pCont->getSlotCount());
+        int16_t TotalSlots = static_cast<int16_t>(pCont->getSlotCount());
         int cnt = 0;
-        for (int16 i = 0; i < TotalSlots; i++)
+        for (int16_t i = 0; i < TotalSlots; i++)
         {
             Item* item = pCont->GetItem(i);
             if (item)
@@ -445,8 +445,8 @@ namespace luaItem
 
     int Create(lua_State* L, Item* /*ptr*/)
     {
-        uint32 id = CHECK_ULONG(L, 1);
-        uint32 stackcount = CHECK_ULONG(L, 2);
+        uint32_t id = CHECK_ULONG(L, 1);
+        uint32_t stackcount = CHECK_ULONG(L, 2);
         Item* pItem = sObjectMgr.CreateItem(id, NULL);
         if (!pItem)
             RET_NIL();
@@ -459,7 +459,7 @@ namespace luaItem
     int ModUInt32Value(lua_State* L, Item* ptr)
     {
         uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
-        int32 value = static_cast<int32>(luaL_checkinteger(L, 2));
+        int32_t value = static_cast<int32_t>(luaL_checkinteger(L, 2));
         if (ptr)
             ptr->modInt32Value(field, value);
         return 0;
@@ -494,8 +494,8 @@ namespace luaItem
 
     int RemoveFlag(lua_State* L, Item* ptr)
     {
-        uint16 field = static_cast<uint16>(luaL_checkinteger(L, 1));
-        uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         if (ptr)
             ptr->RemoveFlag(field, value);
         return 0;
@@ -503,8 +503,8 @@ namespace luaItem
 
     int SetFlag(lua_State* L, Item* ptr)
     {
-        uint16 field = static_cast<uint16>(luaL_checkinteger(L, 1));
-        uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         if (ptr)
             ptr->SetFlag(field, value);
         return 0;

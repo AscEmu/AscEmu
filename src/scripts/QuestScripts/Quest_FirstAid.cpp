@@ -24,14 +24,14 @@
 //#define SAY_DOC2 "HOORAY! I AM SAVED!"
 //#define SAY_DOC3 "Sweet, sweet embrace... take me..."
 
-const uint32 allianceSoldierId[3] =
+const uint32_t allianceSoldierId[3] =
 {
     12938, // 12938 Injured Alliance Soldier
     12936, // 12936 Badly injured Alliance Soldier
     12937  // 12937 Critically injured Alliance Soldier
 };
 
-const uint32 hordeSoldierId[3] =
+const uint32_t hordeSoldierId[3] =
 {
     12923, //12923 Injured Soldier
     12924, //12924 Badly injured Soldier
@@ -40,7 +40,7 @@ const uint32 hordeSoldierId[3] =
 
 class InjuredSoldier : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InjuredSoldier);
+    ADD_CREATURE_FACTORY_FUNCTION(InjuredSoldier)
     explicit InjuredSoldier(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()
@@ -48,7 +48,7 @@ class InjuredSoldier : public CreatureAIScript
         getCreature()->addUnitFlags(UNIT_FLAG_COMBAT);
         getCreature()->setStandState(STANDSTATE_DEAD);
 
-        uint32 sid = getCreature()->getEntry();
+        uint32_t sid = getCreature()->getEntry();
 
         switch (sid)
         {

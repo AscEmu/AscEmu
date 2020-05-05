@@ -33,7 +33,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
         Creature* Prisoner12 = static_cast<Creature*>(pObject);
 
@@ -57,7 +57,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
         Creature* Prisoner22 = static_cast<Creature*>(pObject);
 
@@ -82,7 +82,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
         Creature* Prisoner32 = static_cast<Creature*>(pObject);
 
@@ -96,7 +96,7 @@ public:
 
 class PrisonersatDeatholme : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PrisonersatDeatholme);
+    ADD_CREATURE_FACTORY_FUNCTION(PrisonersatDeatholme)
     explicit PrisonersatDeatholme(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

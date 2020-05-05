@@ -41,7 +41,7 @@ public:
 // JainaAI
 class JainaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(JainaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(JainaAI)
     explicit JainaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {}
 
@@ -135,7 +135,7 @@ public:
         GossipMenu::sendQuickMenu(pObject->getGuid(), 1, plr, 1, GOSSIP_ICON_CHAT, "Can you remove the sword?");
     }
 
-    static void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/)
+    static void OnSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*Code*/)
     {
         if (JainaAI* pJaina = static_cast< JainaAI* >(static_cast<Creature*>(pObject)->GetScript()))
             pJaina->StartInstance();
@@ -147,7 +147,7 @@ public:
 
 class Marwyn : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Marwyn);
+    ADD_CREATURE_FACTORY_FUNCTION(Marwyn)
     explicit Marwyn(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         CreatureAISpells* spellWell = nullptr;
@@ -192,7 +192,7 @@ class Marwyn : public CreatureAIScript
 
 class Falric : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Falric);
+    ADD_CREATURE_FACTORY_FUNCTION(Falric)
     explicit Falric(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic() == false)

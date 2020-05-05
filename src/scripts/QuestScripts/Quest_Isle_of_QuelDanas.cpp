@@ -71,7 +71,7 @@ public:
         menu.sendGossipPacket(pPlayer);
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* pPlayer, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
@@ -106,7 +106,7 @@ public:
         menu.sendGossipPacket(pPlayer);
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* pPlayer, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         TaxiPath* pPath = sTaxiMgr.GetTaxiPath(788);
         pPlayer->TaxiStart(pPath, 22840, 0);
@@ -118,7 +118,7 @@ public:
 // The Battle for the Sun's Reach Armory
 class TheBattleForTheSunReachArmory : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheBattleForTheSunReachArmory);
+    ADD_CREATURE_FACTORY_FUNCTION(TheBattleForTheSunReachArmory)
     explicit TheBattleForTheSunReachArmory(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* pKiller) override

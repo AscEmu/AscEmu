@@ -23,13 +23,13 @@
 
 // \todo Whole corpses/consume thingo is wrong
 
-const uint32 INVASION_INTERVAL = 20000;
-const uint32 INVADERS_PER_INVASION = 1;
+const uint32_t INVASION_INTERVAL = 20000;
+const uint32_t INVADERS_PER_INVASION = 1;
 //two mobs per 10s
 
 class TrollgoreAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TrollgoreAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TrollgoreAI)
     explicit TrollgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         invastion_timer = 0;
@@ -65,7 +65,7 @@ class TrollgoreAI : public CreatureAIScript
             _resetTimer(invastion_timer, INVASION_INTERVAL);
 
             //spawn invaders ;)
-            for (uint8 i = 0; i < INVADERS_PER_INVASION; i++)
+            for (uint8_t i = 0; i < INVADERS_PER_INVASION; i++)
             {
                 CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_DRAKKARI_INVADER);
                 if (cp != nullptr)
@@ -87,7 +87,7 @@ class TrollgoreAI : public CreatureAIScript
 
 protected:
 
-    uint32 invastion_timer;
+    uint32_t invastion_timer;
 };
 
 /*
@@ -98,14 +98,14 @@ protected:
  */
 
 // NovosTheSummonerAI
-const uint32 INVADE_INTERVAL = 30000; //4 mobs per 30s
-const uint32 INVADERS_COUNT = 3;
-const uint32 HANDLER_INTERVAL = 60000; //one handler per 60s
-const uint32 ELITE_CHANCE = 20; //how much chance for elite we've got each invasion?
+const uint32_t INVADE_INTERVAL = 30000; //4 mobs per 30s
+const uint32_t INVADERS_COUNT = 3;
+const uint32_t HANDLER_INTERVAL = 60000; //one handler per 60s
+const uint32_t ELITE_CHANCE = 20; //how much chance for elite we've got each invasion?
 
 class NovosTheSummonerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NovosTheSummonerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(NovosTheSummonerAI)
     explicit NovosTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         invasion_timer = 0;
@@ -135,13 +135,13 @@ class NovosTheSummonerAI : public CreatureAIScript
     {
         getCreature()->castSpell(getCreature(), 47346, false);
         //spawn 4 Ritual Crystal
-        for (uint8 i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
             SpawnCrystal(i);
 
         handler_timer = Util::getMSTime() + HANDLER_INTERVAL;
         _setMeleeDisabled(true);
 
-        for (uint8 i = 0; i < 7; i++)
+        for (uint8_t i = 0; i < 7; i++)
             getCreature()->SchoolImmunityList[i] = 1;
         sendDBChatMessage(SAY_NOVOS_SUMMONER_05);
         sendDBChatMessage(SAY_NOVOS_SUMMONER_06);
@@ -156,7 +156,7 @@ class NovosTheSummonerAI : public CreatureAIScript
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        for (uint8 i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
         {
             if (getCreature()->m_ObjectSlots[i])
             {
@@ -187,7 +187,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             }
 
             bool new_phase = true;
-            for (uint8 i = 0; i < 4; i++)
+            for (uint8_t i = 0; i < 4; i++)
             {
                 if (getCreature()->m_ObjectSlots[i])
                 {
@@ -205,7 +205,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                 _setMeleeDisabled(false);
                 setScriptPhase(2);
 
-                for (uint8 i = 0; i < 7; i++)
+                for (uint8_t i = 0; i < 7; i++)
                     getCreature()->SchoolImmunityList[i] = 0;
             }
         }
@@ -219,15 +219,15 @@ class NovosTheSummonerAI : public CreatureAIScript
     
     Player* GetRandomPlayerTarget()
     {
-        std::vector< uint32 > possible_targets;
+        std::vector< uint32_t > possible_targets;
         for (const auto& iter : getCreature()->getInRangePlayersSet())
         {
             if (iter && static_cast<Player*>(iter)->isAlive())
-                possible_targets.push_back(static_cast<uint32>(iter->getGuid()));
+                possible_targets.push_back(static_cast<uint32_t>(iter->getGuid()));
         }
         if (possible_targets.size() > 0)
         {
-            uint32 random_player = possible_targets[Rand(uint32(possible_targets.size() - 1))];
+            uint32_t random_player = possible_targets[Rand(uint32_t(possible_targets.size() - 1))];
             return getCreature()->GetMapMgr()->GetPlayer(random_player);
         }
         return nullptr;
@@ -235,12 +235,12 @@ class NovosTheSummonerAI : public CreatureAIScript
 
     // scriptPhase
     //type: 1 - normal, 0 - handler
-    void SpawnInvader(uint32 type)
+    void SpawnInvader(uint32_t type)
     {
         sendDBChatMessage(SAY_NOVOS_SUMMONER_04);
         //x                y                z
         //-379.101227f    -824.835449f    60.0f
-        uint32 mob_entry = 0;
+        uint32_t mob_entry = 0;
         if (type)
         {
             mob_entry = 26627;
@@ -266,14 +266,14 @@ class NovosTheSummonerAI : public CreatureAIScript
         }
         else
         {
-            for (uint8 i = 0; i < INVADERS_COUNT; i++)
+            for (uint8_t i = 0; i < INVADERS_COUNT; i++)
             {
                 mob_entry = 0;
                 if (Rand(ELITE_CHANCE))
                     mob_entry = 27597;
                 else
                 {
-                    uint32 mobs[2] = { 27598, 27600 };
+                    uint32_t mobs[2] = { 27598, 27600 };
                     mob_entry = mobs[Util::getRandomUInt(1)];
                 }
                 CreatureProperties const* cp = sMySQLStore.getCreatureProperties(mob_entry);
@@ -297,9 +297,9 @@ class NovosTheSummonerAI : public CreatureAIScript
             }
         }
     }
-    void SpawnCrystal(uint32 id)
+    void SpawnCrystal(uint32_t id)
     {
-        uint32 entry = 0;
+        uint32_t entry = 0;
         float x = 0.0f, y = 0.0f, z = 0.0f, o = 0.0f;
         switch (id)
         {
@@ -348,14 +348,14 @@ class NovosTheSummonerAI : public CreatureAIScript
 
 protected:
 
-    uint32 invasion_timer;
-    uint32 handler_timer;
+    uint32_t invasion_timer;
+    uint32_t handler_timer;
 };
 
 
 class CrystalHandlerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CrystalHandlerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CrystalHandlerAI)
     explicit CrystalHandlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -369,7 +369,7 @@ class CrystalHandlerAI : public CreatureAIScript
         Unit* Novos = getCreature()->GetMapMgr()->GetUnit(getCreature()->getSummonedByGuid());
         if (Novos)
         {
-            for (uint8 i = 0; i < 4; i++)
+            for (uint8_t i = 0; i < 4; i++)
             {
                 if (Novos->m_ObjectSlots[i])
                 {
@@ -389,7 +389,7 @@ class CrystalHandlerAI : public CreatureAIScript
 // \todo King Dred Call nearby friends
 class KingDreadAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KingDreadAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KingDreadAI)
     explicit KingDreadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -415,13 +415,13 @@ class KingDreadAI : public CreatureAIScript
  - Figure out why players are not always changed to skeletons while chaning phases
  */
 
-const uint32 WINDSERPENT_PHASE_INTERVAL = 60000; //change phase each 60s
-const uint32 WINDSERPENT_PHASE_LENGTH = 30000; //30s
-const uint32 PHASES_COUNT = 2;
+const uint32_t WINDSERPENT_PHASE_INTERVAL = 60000; //change phase each 60s
+const uint32_t WINDSERPENT_PHASE_LENGTH = 30000; //30s
+const uint32_t PHASES_COUNT = 2;
 
 class TheProphetTaronjaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheProphetTaronjaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TheProphetTaronjaAI)
     explicit TheProphetTaronjaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         phase_timer = 0;
@@ -462,7 +462,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
         getCreature()->setDisplayId(getCreature()->getNativeDisplayId());
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t /*fAmount*/) override
     {
         if (getCreature()->getHealthPct() < 2 && getScriptPhase() == 2)
         {
@@ -492,8 +492,8 @@ class TheProphetTaronjaAI : public CreatureAIScript
         }
     }
 
-    uint32 phase_timer;
-    uint32 phase_length;
+    uint32_t phase_timer;
+    uint32_t phase_length;
 };
 
 void SetupDrakTharonKeep(ScriptMgr* mgr)

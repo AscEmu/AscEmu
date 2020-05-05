@@ -22,7 +22,7 @@ class TabletOfTheSeven : public QuestScript
 {
 public:
 
-    void OnGameObjectActivate(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnGameObjectActivate(uint32_t entry, Player* mTarget, QuestLogEntry* qLogEntry)
     {
         if (mTarget == nullptr || qLogEntry == nullptr || entry != 169294)
             return;

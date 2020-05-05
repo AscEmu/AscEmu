@@ -81,13 +81,13 @@ bool TheBeastWithin(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
-    uint32 mechanics[15] = { MECHANIC_CHARMED, MECHANIC_DISORIENTED,    MECHANIC_DISTRACED, MECHANIC_FLEEING,
+    uint32_t mechanics[15] = { MECHANIC_CHARMED, MECHANIC_DISORIENTED,    MECHANIC_DISTRACED, MECHANIC_FLEEING,
                              MECHANIC_ROOTED, MECHANIC_ASLEEP, MECHANIC_ENSNARED, MECHANIC_STUNNED,
                              MECHANIC_FROZEN, MECHANIC_INCAPACIPATED, MECHANIC_POLYMORPHED, MECHANIC_BANISHED,
                              MECHANIC_SEDUCED, MECHANIC_HORRIFIED, MECHANIC_SAPPED
     };
 
-    for (uint32 x = 0; x < 15; x++)
+    for (uint32_t x = 0; x < 15; x++)
     {
         if (apply)
         {
@@ -106,13 +106,13 @@ bool BestialWrath(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
-    uint32 mechanics[15] = { MECHANIC_CHARMED, MECHANIC_DISORIENTED,    MECHANIC_DISTRACED, MECHANIC_FLEEING,
+    uint32_t mechanics[15] = { MECHANIC_CHARMED, MECHANIC_DISORIENTED,    MECHANIC_DISTRACED, MECHANIC_FLEEING,
                              MECHANIC_ROOTED, MECHANIC_ASLEEP, MECHANIC_ENSNARED, MECHANIC_STUNNED,
                              MECHANIC_FROZEN, MECHANIC_INCAPACIPATED, MECHANIC_POLYMORPHED, MECHANIC_BANISHED,
                              MECHANIC_SEDUCED, MECHANIC_HORRIFIED, MECHANIC_SAPPED
     };
 
-    for (uint32 x = 0; x < 15; x++)
+    for (uint32_t x = 0; x < 15; x++)
     {
         if (apply)
         {
@@ -133,7 +133,7 @@ bool Misdirection(uint8_t /*effectIndex*/, Aura* a, bool apply)
         return true;
 
     if (!apply)
-        sEventMgr.AddEvent(caster, &Player::SetMisdirectionTarget, (uint64)0, EVENT_UNK, 250, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(caster, &Player::SetMisdirectionTarget, (uint64_t)0, EVENT_UNK, 250, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     return true;
 }
@@ -146,7 +146,7 @@ bool ExplosiveShot(uint8_t effectIndex, Aura* a, bool apply)
     Unit* m_target = a->GetTarget();
 
     a->SetNegative();
-    int32 dmg = a->GetModAmount(effectIndex);
+    int32_t dmg = a->GetModAmount(effectIndex);
     dmg += float2int32(m_target->getRangedAttackPower() * 0.16f);
 
     a->EventPeriodicDamage(dmg);
@@ -159,7 +159,7 @@ class HasNameHash : public AuraCondition
 public:
     bool operator()(Aura *aura)
     {
-        uint32 spellId = aura->GetSpellInfo()->getId();
+        uint32_t spellId = aura->GetSpellInfo()->getId();
 
         if (std::find(spellIds.begin(), spellIds.end(), spellId) != spellIds.end())
             return true;
@@ -167,20 +167,20 @@ public:
             return false;
     }
 
-    void AddSpellIdToCheck(uint32 hash)
+    void AddSpellIdToCheck(uint32_t hash)
     {
         spellIds.push_back(hash);
     }
 
 private:
-    std::vector< uint32 > spellIds;
+    std::vector< uint32_t > spellIds;
 };
 
 class ChimeraShotAction : public AuraAction
 {
 public:
     void operator()(Aura *a) {
-        uint32 spellId = a->GetSpellInfo()->getId();
+        uint32_t spellId = a->GetSpellInfo()->getId();
 
         Unit *caster = a->GetUnitCaster();
         Unit *target = a->GetTarget();
@@ -339,7 +339,7 @@ void SetupLegacyHunterSpells(ScriptMgr* mgr)
     mgr->register_dummy_aura(34471, &TheBeastWithin);
     mgr->register_dummy_aura(34477, &Misdirection);
 
-    uint32 explosiveshotids[] =
+    uint32_t explosiveshotids[] =
     {
         53301,
         60051,

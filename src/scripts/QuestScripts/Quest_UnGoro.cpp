@@ -23,7 +23,7 @@
 
 class RingoDeadNPC : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RingoDeadNPC);
+    ADD_CREATURE_FACTORY_FUNCTION(RingoDeadNPC)
     explicit RingoDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -100,10 +100,10 @@ public:
 
 class A_Me01 : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(A_Me01);
+    ADD_CREATURE_FACTORY_FUNCTION(A_Me01)
     explicit A_Me01(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 28)
         {

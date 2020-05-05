@@ -27,13 +27,13 @@ enum
 
 class BalosJackenQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BalosJackenQAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BalosJackenQAI)
     explicit BalosJackenQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         friendlyTimer = BALOS_FRIENDLY_TIMER;
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         // If Balos Jacken HP - fAmount < 20%
         if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.2f)
@@ -91,7 +91,7 @@ protected:
 
 class OverlordMokMorokk : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OverlordMokMorokk);
+    ADD_CREATURE_FACTORY_FUNCTION(OverlordMokMorokk)
     explicit OverlordMokMorokk(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -99,9 +99,9 @@ class OverlordMokMorokk : public CreatureAIScript
         getCreature()->setStandState(STANDSTATE_STAND);
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
+    void OnDamageTaken(Unit* mAttacker, uint32_t fAmount) override
     {
-        uint32 chance = Util::getRandomUInt(100);
+        uint32_t chance = Util::getRandomUInt(100);
         if (chance < 25)
         {
             getCreature()->castSpell(mAttacker, sSpellMgr.getSpellInfo(6749), true);
@@ -161,7 +161,7 @@ public:
 
 class PrivateHendel : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PrivateHendel);
+    ADD_CREATURE_FACTORY_FUNCTION(PrivateHendel)
     explicit PrivateHendel(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -170,7 +170,7 @@ class PrivateHendel : public CreatureAIScript
         getCreature()->setStandState(STANDSTATE_STAND);
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
+    void OnDamageTaken(Unit* mAttacker, uint32_t fAmount) override
     {
         if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.37f)
         {

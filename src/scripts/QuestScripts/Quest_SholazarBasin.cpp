@@ -35,7 +35,7 @@ enum
 
 class ChickenEscapee : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChickenEscapee);
+    ADD_CREATURE_FACTORY_FUNCTION(ChickenEscapee)
     explicit ChickenEscapee(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad()
@@ -84,7 +84,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -122,7 +122,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -159,7 +159,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 

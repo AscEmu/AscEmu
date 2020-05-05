@@ -323,7 +323,7 @@ public:
 
 class DragonTurtleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DragonTurtleAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DragonTurtleAI)
     explicit DragonTurtleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGON_TRUTLE_SHELL_SHIELD, 10.0f, TARGET_SELF, 0, 25);
@@ -333,7 +333,7 @@ class DragonTurtleAI : public CreatureAIScript
 
 class LeviathanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LeviathanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LeviathanAI)
     explicit LeviathanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(LEVIATHAN_DEBILITATING_SPRAY, 8.0f, TARGET_RANDOM_SINGLE, 3, 20);
@@ -344,19 +344,19 @@ class LeviathanAI : public CreatureAIScript
 
 class MutantWarHoundAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MutantWarHoundAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MutantWarHoundAI)
     explicit MutantWarHoundAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* /*pKiller*/) override
     {
-        Aura* pAura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(MUTANT_WAR_HOUND_CLOUD_OF_DISEASE), (uint32)20000, getCreature(), getCreature());
+        Aura* pAura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(MUTANT_WAR_HOUND_CLOUD_OF_DISEASE), (uint32_t)20000, getCreature(), getCreature());
         getCreature()->AddAura(pAura);
     }
 };
 
 class ShadowmoonRidingHoundAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonRidingHoundAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonRidingHoundAI)
     explicit ShadowmoonRidingHoundAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_RIDING_HOUND_CARNIVOROUS_BITE, 10.0f, TARGET_ATTACKING, 0, 20);
@@ -370,7 +370,7 @@ class ShadowmoonRidingHoundAI : public CreatureAIScript
 
 class SisterOfPleasureAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SisterOfPleasureAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SisterOfPleasureAI)
     explicit SisterOfPleasureAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SISTER_OF_PLEASURE_GREATER_HEAL, 10.0f, TARGET_RANDOM_FRIEND, 2, 45);
@@ -382,7 +382,7 @@ class SisterOfPleasureAI : public CreatureAIScript
 
 class SisterOfPainAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SisterOfPainAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SisterOfPainAI)
     explicit SisterOfPainAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SISTER_OF_PAIN_LASH_OF_PAIN, 10.0f, TARGET_ATTACKING, 0, 25);
@@ -396,7 +396,7 @@ class SisterOfPainAI : public CreatureAIScript
 
 class PriestessOfDementiaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PriestessOfDementiaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(PriestessOfDementiaAI)
     explicit PriestessOfDementiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(PRIESTESS_OF_DEMENTIA_CONFUSION, 8.0f, TARGET_SELF, 0, 30);
@@ -406,7 +406,7 @@ class PriestessOfDementiaAI : public CreatureAIScript
 
 class PriestessOfDelightAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PriestessOfDelightAI);
+    ADD_CREATURE_FACTORY_FUNCTION(PriestessOfDelightAI)
     explicit PriestessOfDelightAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(PRIESTESS_OF_DELIGHT_CURSE_OF_VITALITY, 10.0f, TARGET_RANDOM_SINGLE, 0, 30);
@@ -415,7 +415,7 @@ class PriestessOfDelightAI : public CreatureAIScript
 
 class IllidariNightlordAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariNightlordAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IllidariNightlordAI)
     explicit IllidariNightlordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_NIGHTLORD_SUMMON_SHADOWFIENDS, 7.0f, TARGET_SELF, 0, 45);            // does it work?
@@ -427,7 +427,7 @@ class IllidariNightlordAI : public CreatureAIScript
 
 class IllidariHeartseekerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariHeartseekerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IllidariHeartseekerAI)
     explicit IllidariHeartseekerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto bleakheart = addAISpell(ILLIDARI_HEARTSEEKER_CURSE_OF_THE_BLEAKHEART, 8.0f, TARGET_RANDOM_SINGLE, 0, 40);
@@ -469,7 +469,7 @@ class IllidariHeartseekerAI : public CreatureAIScript
 
 class IllidariFearbringerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariFearbringerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IllidariFearbringerAI)
     explicit IllidariFearbringerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_FEARBRINGER_ILLIDARI_FLAMES, 8.0f, TARGET_ATTACKING, 2, 25);
@@ -480,7 +480,7 @@ class IllidariFearbringerAI : public CreatureAIScript
 
 class IllidariDefilerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariDefilerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IllidariDefilerAI)
     explicit IllidariDefilerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_DEFILER_BANISH, 8.0f, TARGET_RANDOM_SINGLE, 1, 30);
@@ -492,7 +492,7 @@ class IllidariDefilerAI : public CreatureAIScript
 
 class IllidariCenturionAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariCenturionAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IllidariCenturionAI)
     explicit IllidariCenturionAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_CENTURION_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 20);
@@ -502,7 +502,7 @@ class IllidariCenturionAI : public CreatureAIScript
 
 class IllidariBoneslicerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariBoneslicerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IllidariBoneslicerAI)
     explicit IllidariBoneslicerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_BONESLICER_CLOAK_OF_SHADOWS, 8.0f, TARGET_SELF, 0, 25);
@@ -515,7 +515,7 @@ class IllidariBoneslicerAI : public CreatureAIScript
 // Humanoid AIs
 class AshtongueBattlelordAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueBattlelordAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtongueBattlelordAI)
     explicit AshtongueBattlelordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_BATTLELORD_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 15);
@@ -527,7 +527,7 @@ class AshtongueBattlelordAI : public CreatureAIScript
 
 class AshtongueDefenderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueDefenderAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtongueDefenderAI)
     explicit AshtongueDefenderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_DEFENDER_DEBILITATING_STRIKE, 10.0f, TARGET_ATTACKING, 0, 20);
@@ -537,7 +537,7 @@ class AshtongueDefenderAI : public CreatureAIScript
 
 class AshtongueElementalistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueElementalistAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtongueElementalistAI)
     explicit AshtongueElementalistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_ELEMENTALIST_LIGHTNING_BOLT, 8.0f, TARGET_ATTACKING, 1, 20);
@@ -548,7 +548,7 @@ class AshtongueElementalistAI : public CreatureAIScript
 //\ todo Add Totem AIs
 class AshtongueMysticAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueMysticAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtongueMysticAI)
     explicit AshtongueMysticAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_MYSTIC_BLOODLUST, 5.0f, TARGET_SELF, 0, 45);
@@ -563,7 +563,7 @@ class AshtongueMysticAI : public CreatureAIScript
 
 class AshtonguePrimalistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtonguePrimalistAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtonguePrimalistAI)
     explicit AshtonguePrimalistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_PRIMALIST_MULTISHOT, 8.0f, TARGET_ATTACKING, 0, 40);
@@ -597,7 +597,7 @@ class AshtonguePrimalistAI : public CreatureAIScript
 
 class AshtongueRogueAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueRogueAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtongueRogueAI)
     explicit AshtongueRogueAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_ROGUE_DEBILITATING_POISON, 7.0f, TARGET_ATTACKING, 0, 30);
@@ -607,7 +607,7 @@ class AshtongueRogueAI : public CreatureAIScript
 
 class AshtongueSpiritbinderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueSpiritbinderAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtongueSpiritbinderAI)
     explicit AshtongueSpiritbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_SPIRITBINDER_CHAIN_HEAL, 7.0f, TARGET_RANDOM_FRIEND, 1, 25);
@@ -624,7 +624,7 @@ class AshtongueSpiritbinderAI : public CreatureAIScript
 //\brief Completely guessed mechanics
 class AshtongueStalkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueStalkerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtongueStalkerAI)
     explicit AshtongueStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_STALKER_BLIND, 7.0f, TARGET_RANDOM_SINGLE, 1, 25);
@@ -644,7 +644,7 @@ class AshtongueStalkerAI : public CreatureAIScript
 
 class AshtongueStormcallerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueStormcallerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AshtongueStormcallerAI)
     explicit AshtongueStormcallerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_STORMCALLER_CHAIN_LIGHTNING, 7.0f, TARGET_ATTACKING, 3, 35);
@@ -655,7 +655,7 @@ class AshtongueStormcallerAI : public CreatureAIScript
 
 class BonechewerBehemothAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerBehemothAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BonechewerBehemothAI)
     explicit BonechewerBehemothAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCharge = addAISpell(BONECHEWER_BEHEMOTH_BEHEMOTH_CHARGE, 0.0f, TARGET_ATTACKING, 0, 20);
@@ -678,7 +678,7 @@ class BonechewerBehemothAI : public CreatureAIScript
 
 class BonechewerBladeFuryAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerBladeFuryAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BonechewerBladeFuryAI)
     explicit BonechewerBladeFuryAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BONECHEWER_BLADE_FURY_WHIRLWIND, 7.0f, TARGET_ATTACKING, 8, 40);
@@ -687,7 +687,7 @@ class BonechewerBladeFuryAI : public CreatureAIScript
 
 class BonechewerBloodProphetAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerBloodProphetAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BonechewerBloodProphetAI)
     explicit BonechewerBloodProphetAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BONECHEWER_BLOOD_PROPHET_BLOOD_DRAIN, 6.0f, TARGET_ATTACKING, 5, 30);
@@ -703,7 +703,7 @@ class BonechewerBloodProphetAI : public CreatureAIScript
 
 class BonechewerBrawlerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerBrawlerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BonechewerBrawlerAI)
     explicit BonechewerBrawlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BONECHEWER_BRAWLER_FRENZY, 7.0f, TARGET_SELF, 0, 30);
@@ -712,7 +712,7 @@ class BonechewerBrawlerAI : public CreatureAIScript
 
 class BonechewerCombatantAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerCombatantAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BonechewerCombatantAI)
     explicit BonechewerCombatantAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BONECHEWER_COMBATANT_FRENZY, 7.0f, TARGET_SELF, 0, 45);
@@ -721,7 +721,7 @@ class BonechewerCombatantAI : public CreatureAIScript
 
 class BonechewerShieldDiscipleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerShieldDiscipleAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BonechewerShieldDiscipleAI)
     explicit BonechewerShieldDiscipleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pIntervene = addAISpell(BONECHEWER_SHIELD_DISCIPLE_INTERVENE, 0.0f, TARGET_ATTACKING, 0, 20);
@@ -743,7 +743,7 @@ class BonechewerShieldDiscipleAI : public CreatureAIScript
 
 class BonechewerSpectatorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerSpectatorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BonechewerSpectatorAI)
     explicit BonechewerSpectatorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCharge = addAISpell(BONECHEWER_SPECTATOR_CHARGE, 0.0f, TARGET_ATTACKING, 0, 20);
@@ -766,7 +766,7 @@ class BonechewerSpectatorAI : public CreatureAIScript
 
 class BonechewerTaskmasterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerTaskmasterAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BonechewerTaskmasterAI)
     explicit BonechewerTaskmasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BONECHEWER_TASKMASTER_DISGRUNTLED, 5.0f, TARGET_SELF, 0, 45);
@@ -776,7 +776,7 @@ class BonechewerTaskmasterAI : public CreatureAIScript
 
 class BonechewerWorkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerWorkerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BonechewerWorkerAI)
     explicit BonechewerWorkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BONECHEWER_WORKER_THROW_PICK, 8.0f, TARGET_RANDOM_SINGLE, 0, 15);
@@ -785,7 +785,7 @@ class BonechewerWorkerAI : public CreatureAIScript
 
 class CharmingCourtesanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CharmingCourtesanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CharmingCourtesanAI)
     explicit CharmingCourtesanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(CHARMING_COURTESAN_INFATUATION, 7.0f, TARGET_RANDOM_SINGLE, 20, 40);
@@ -795,7 +795,7 @@ class CharmingCourtesanAI : public CreatureAIScript
 
 class CoilskarGeneralAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilskarGeneralAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CoilskarGeneralAI)
     explicit CoilskarGeneralAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILSKAR_GENERAL_BOOMING_VOICE, 7.0f, TARGET_SELF, 0, 35);
@@ -806,7 +806,7 @@ class CoilskarGeneralAI : public CreatureAIScript
 //\todo Is it Ranged unit throwing spears all the time?
 class CoilskarHarpoonerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilskarHarpoonerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CoilskarHarpoonerAI)
     explicit CoilskarHarpoonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pMark = addAISpell(COILSKAR_HARPOONER_HARPOONERS_MARK, 7.0f, TARGET_RANDOM_SINGLE, 0, 35);
@@ -827,7 +827,7 @@ class CoilskarHarpoonerAI : public CreatureAIScript
 
 class CoilskarSeacallerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilskarSeacallerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CoilskarSeacallerAI)
     explicit CoilskarSeacallerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILSKAR_SEACALLER_FORKED_LIGHTNING, 8.0f, TARGET_SELF, 2, 20);
@@ -838,7 +838,7 @@ class CoilskarSeacallerAI : public CreatureAIScript
 
 class CoilskarSoothsayerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilskarSoothsayerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CoilskarSoothsayerAI)
     explicit CoilskarSoothsayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILSKAR_SOOTHSAYER_HOLY_NOVA, 10.0f, TARGET_SELF, 0, 20);
@@ -848,7 +848,7 @@ class CoilskarSoothsayerAI : public CreatureAIScript
 
 class CoilskarWranglerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilskarWranglerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CoilskarWranglerAI)
     explicit CoilskarWranglerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILSKAR_WRANGLER_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 20);
@@ -859,7 +859,7 @@ class CoilskarWranglerAI : public CreatureAIScript
 
 class DragonmawSkyStalkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DragonmawSkyStalkerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DragonmawSkyStalkerAI)
     explicit DragonmawSkyStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONMAW_SKY_STALKER_IMMOLATION_ARROW, 8.0f, TARGET_ATTACKING, 2, 15);
@@ -892,7 +892,7 @@ class DragonmawSkyStalkerAI : public CreatureAIScript
 //\todo Should it run away from tank when he's close?
 class DragonmawWindReaverAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DragonmawWindReaverAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DragonmawWindReaverAI)
     explicit DragonmawWindReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONMAW_WIND_REAVER_DOOM_BOLT, 10.0f, TARGET_ATTACKING, 2, 15);
@@ -925,7 +925,7 @@ class DragonmawWindReaverAI : public CreatureAIScript
 
 class DragonmawWyrmcallerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DragonmawWyrmcallerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DragonmawWyrmcallerAI)
     explicit DragonmawWyrmcallerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONMAW_WYRMCALLER_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 15);
@@ -936,7 +936,7 @@ class DragonmawWyrmcallerAI : public CreatureAIScript
 
 class EnslavedServantAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EnslavedServantAI);
+    ADD_CREATURE_FACTORY_FUNCTION(EnslavedServantAI)
     explicit EnslavedServantAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ENSLAVED_SERVANT_KIDNEY_SHOT, 7.0f, TARGET_ATTACKING, 0, 25);
@@ -959,12 +959,12 @@ class EnslavedServantAI : public CreatureAIScript
         }
     }
 
-    int32 mHealthResetTimer;
+    int32_t mHealthResetTimer;
 };
 
 class HandOfGorefiendAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HandOfGorefiendAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HandOfGorefiendAI)
     explicit HandOfGorefiendAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(HAND_OF_GOREFIEND_FRENZY, 6.0f, TARGET_SELF, 0, 45);
@@ -974,7 +974,7 @@ class HandOfGorefiendAI : public CreatureAIScript
 //\todo Mechanics are guessed. I'm also not sure if it's not typical caster unit
 class IllidariArchonAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariArchonAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IllidariArchonAI)
     explicit IllidariArchonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         switch (Util::getRandomUInt(1))
@@ -995,7 +995,7 @@ class IllidariArchonAI : public CreatureAIScript
 //\todo Couldn't find mechanics nowhere around the net, so kept it simple
 class IllidariAssassinAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariAssassinAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IllidariAssassinAI)
     explicit IllidariAssassinAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_ASSASSIN_PARALYZING_POISON, 8.0f, TARGET_ATTACKING, 0, 25);
@@ -1014,7 +1014,7 @@ class IllidariAssassinAI : public CreatureAIScript
 //\todo I've parted it on frost and fire mage - correct me if it's wrong (also slap me if it's typical caster)
 class IllidariBattlemageAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariBattlemageAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IllidariBattlemageAI)
     explicit IllidariBattlemageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         switch (Util::getRandomUInt(1))
@@ -1033,7 +1033,7 @@ class IllidariBattlemageAI : public CreatureAIScript
 
 class IllidariBloodLordAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariBloodLordAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IllidariBloodLordAI)
     explicit IllidariBloodLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_BLOOD_LORD_DIVINE_SHIELD, 8.0f, TARGET_SELF, 0, 30);
@@ -1045,13 +1045,13 @@ class IllidariBloodLordAI : public CreatureAIScript
 //\todo Should be summoned by Priestess of Dementia
 class ImageOfDementiaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ImageOfDementiaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ImageOfDementiaAI)
     explicit ImageOfDementiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(IMAGE_OF_DEMENTIA_WHRILWIND, 15.0f, TARGET_SELF, 15, 30);
     }
 
-    void OnCastSpell(uint32 spellId) override
+    void OnCastSpell(uint32_t spellId) override
     {
         if (spellId == IMAGE_OF_DEMENTIA_WHRILWIND)
             despawn(25000);
@@ -1060,7 +1060,7 @@ class ImageOfDementiaAI : public CreatureAIScript
 
 class ShadowmoonBloodMageAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonBloodMageAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonBloodMageAI)
     explicit ShadowmoonBloodMageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_BLOOD_MAGE_BLOOD_SIPHON, 8.0f, TARGET_SELF, 0, 35);
@@ -1070,7 +1070,7 @@ class ShadowmoonBloodMageAI : public CreatureAIScript
 
 class ShadowmoonChampionAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonChampionAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonChampionAI)
     explicit ShadowmoonChampionAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_CHAMPION_CHAOTIC_LIGHT, 8.0f, TARGET_ATTACKING, 0, 25);
@@ -1080,7 +1080,7 @@ class ShadowmoonChampionAI : public CreatureAIScript
 
 class ShadowmoonDeathshaperAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonDeathshaperAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonDeathshaperAI)
     explicit ShadowmoonDeathshaperAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_DEATHSHAPER_DEATH_COIL, 7.0f, TARGET_RANDOM_SINGLE, 0, 30);
@@ -1100,7 +1100,7 @@ class ShadowmoonDeathshaperAI : public CreatureAIScript
         }
     }
 
-    void OnCastSpell(uint32 spellId) override
+    void OnCastSpell(uint32_t spellId) override
     {
         if (spellId == SHADOWMOON_DEATHSHAPER_RAISE_DEAD)
         {
@@ -1132,14 +1132,14 @@ class ShadowmoonDeathshaperAI : public CreatureAIScript
 //\todo No entry in my DB, but AI may stay :)?
 class ShadowmoonFallenAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonFallenAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonFallenAI)
     explicit ShadowmoonFallenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     { }
 };
 
 class ShadowmoonHoundmasterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonHoundmasterAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonHoundmasterAI)
     explicit ShadowmoonHoundmasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_HOUNDMASTER_FLARE, 5.0f, TARGET_RANDOM_DESTINATION, 0, 30);
@@ -1176,7 +1176,7 @@ class ShadowmoonHoundmasterAI : public CreatureAIScript
 
 class ShadowmoonReaverAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonReaverAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonReaverAI)
     explicit ShadowmoonReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_REAVER_SPELL_ABSORPTION, 8.0f, TARGET_SELF, 0, 35);
@@ -1185,7 +1185,7 @@ class ShadowmoonReaverAI : public CreatureAIScript
 
 class ShadowmoonSoldierAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonSoldierAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonSoldierAI)
     explicit ShadowmoonSoldierAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_SOLDIER_STRIKE, 10.0f, TARGET_ATTACKING, 0, 15);
@@ -1195,7 +1195,7 @@ class ShadowmoonSoldierAI : public CreatureAIScript
 //\todo Haven't found informations about Shield Wall ability
 class ShadowmoonWeaponMasterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonWeaponMasterAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonWeaponMasterAI)
     explicit ShadowmoonWeaponMasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto knockAway = addAISpell(SHADOWMOON_WEAPON_MASTER_KNOCK_AWAY, 9.0f, TARGET_ATTACKING, 0, 25);
@@ -1265,7 +1265,7 @@ class ShadowmoonWeaponMasterAI : public CreatureAIScript
 
 class SpellboundAttendantAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SpellboundAttendantAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SpellboundAttendantAI)
     explicit SpellboundAttendantAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SPELLBOUND_ATTENDANT_KICK, 9.0f, TARGET_ATTACKING, 0, 25);
@@ -1275,7 +1275,7 @@ class SpellboundAttendantAI : public CreatureAIScript
 
 class TempleConcubineAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TempleConcubineAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TempleConcubineAI)
     explicit TempleConcubineAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(TEMPLE_CONCUBINE_LOVE_TAP, 9.0f, TARGET_ATTACKING, 0, 25);
@@ -1287,7 +1287,7 @@ class TempleConcubineAI : public CreatureAIScript
 // Elemental AIs
 class StormFuryAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StormFuryAI);
+    ADD_CREATURE_FACTORY_FUNCTION(StormFuryAI)
     explicit StormFuryAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mStormBlink = addAISpell(STORM_FURY_STORM_BLINK, 8.0f, TARGET_SELF, 1, 0);    // Mechanics was guessed
@@ -1307,7 +1307,7 @@ class StormFuryAI : public CreatureAIScript
 
 class AqueousSurgerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AqueousSurgerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AqueousSurgerAI)
     explicit AqueousSurgerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(AQUEOUS_SURGER_POISON_BOLT_VOLLEY, 7.0f, TARGET_SELF, 0, 20);
@@ -1316,7 +1316,7 @@ class AqueousSurgerAI : public CreatureAIScript
 
 class AqueousSpawnAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AqueousSpawnAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AqueousSpawnAI)
     explicit AqueousSpawnAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(AQUEOUS_SPAWN_MERGE, 7.0f, TARGET_SELF, 11, 45);
@@ -1326,7 +1326,7 @@ class AqueousSpawnAI : public CreatureAIScript
 
 class AqueousLordAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AqueousLordAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AqueousLordAI)
     explicit AqueousLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(AQUEOUS_LORD_CRASHING_WAVE, 8.0f, TARGET_SELF, 0, 35);
@@ -1355,7 +1355,7 @@ class AqueousLordAI : public CreatureAIScript
 // Mechanical AIs
 class PromenadeSentinelAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PromenadeSentinelAI);
+    ADD_CREATURE_FACTORY_FUNCTION(PromenadeSentinelAI)
     explicit PromenadeSentinelAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(PROMENADE_SENTINEL_L5_ARCANE_CHARGE, 8.0f, TARGET_RANDOM_SINGLE, 3, 35);
@@ -1366,7 +1366,7 @@ class PromenadeSentinelAI : public CreatureAIScript
 // Uncategorized AIs
 class AngeredSoulFragmentAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AngeredSoulFragmentAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AngeredSoulFragmentAI)
     explicit AngeredSoulFragmentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ANGERED_SOUL_FRAGMENT_ANGER, 10.0f, TARGET_SELF, 3, 25);
@@ -1377,7 +1377,7 @@ class AngeredSoulFragmentAI : public CreatureAIScript
 // Undead AIs
 class EnslavedSoulAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EnslavedSoulAI);
+    ADD_CREATURE_FACTORY_FUNCTION(EnslavedSoulAI)
     explicit EnslavedSoulAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* /*mKiller*/) override
@@ -1389,7 +1389,7 @@ class EnslavedSoulAI : public CreatureAIScript
 
 class HungeringSoulFragmentAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HungeringSoulFragmentAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HungeringSoulFragmentAI)
     explicit HungeringSoulFragmentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _applyAura(HUNGERING_SOUL_FRAGMENT_CONSUMING_STRIKES);
@@ -1406,7 +1406,7 @@ class HungeringSoulFragmentAI : public CreatureAIScript
 
 class ShadowyConstructAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowyConstructAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowyConstructAI)
     explicit ShadowyConstructAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWY_CONSTRUCT_ATROPHY, 10.0f, TARGET_ATTACKING, 0, 45);
@@ -1415,7 +1415,7 @@ class ShadowyConstructAI : public CreatureAIScript
 
 class SufferingSoulFragmentAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SufferingSoulFragmentAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SufferingSoulFragmentAI)
     explicit SufferingSoulFragmentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SUFFERING_SOUL_FRAGMENT_SOUL_BLAST, 8.0f, TARGET_SELF, 2, 30);
@@ -1425,7 +1425,7 @@ class SufferingSoulFragmentAI : public CreatureAIScript
 //\todo Teron Gorefiend transforms random player into it with those abilities, but AI might be handy too (too overpowered?) - cannot check (no npc in DB)
 class VangefulSpiritAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VangefulSpiritAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VangefulSpiritAI)
     explicit VangefulSpiritAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(VANGEFUL_SPIRIT_SPIRIT_CHAINS, 8.0f, TARGET_SELF, 0, 25);
@@ -1438,7 +1438,7 @@ class VangefulSpiritAI : public CreatureAIScript
 
 class WrathboneFlayerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WrathboneFlayerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WrathboneFlayerAI)
     explicit WrathboneFlayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(WRATHBONE_FLAYER_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 15);
@@ -1453,7 +1453,7 @@ class WrathboneFlayerAI : public CreatureAIScript
 // There are also other sounds, but Idk where they should go (mostly specials and enrage - which erange spell is that O_O)
 class NajentusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NajentusAI);
+    ADD_CREATURE_FACTORY_FUNCTION(NajentusAI)
     explicit NajentusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto crashingWave = addAISpell(CRASHING_WAVE, 10.0f, TARGET_VARIOUS, 0, 15);
@@ -1481,7 +1481,7 @@ class NajentusAI : public CreatureAIScript
 
 class SupremusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SupremusAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SupremusAI)
     explicit SupremusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_MoltenFlame = m_HurtfulStrike = m_MoltenPunch = m_VolcanicGazer = true;
@@ -1531,7 +1531,7 @@ class SupremusAI : public CreatureAIScript
     {
         timer++;
 
-        uint32 val = Util::getRandomUInt(1000);
+        uint32_t val = Util::getRandomUInt(1000);
 
         if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
         {
@@ -1574,7 +1574,7 @@ class SupremusAI : public CreatureAIScript
     {
         timer++;
 
-        uint32 val = Util::getRandomUInt(1000);
+        uint32_t val = Util::getRandomUInt(1000);
 
         if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
         {
@@ -1617,15 +1617,15 @@ class SupremusAI : public CreatureAIScript
     }
 
 protected:
-    uint32 timer;
-    uint32 m_phase;
+    uint32_t timer;
+    uint32_t m_phase;
     bool m_MoltenFlame, m_HurtfulStrike, m_MoltenPunch, m_VolcanicGazer;
     SpellInfo const* infoMoltenFlame, *infoHurtfulStrike, *infoMoltenPunch, *infoVolcanicGazer;
 };
 
 class GurtoggAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GurtoggAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GurtoggAI)
     explicit GurtoggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto arcingSmash = addAISpell(ARCING_SMASH, 5.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -1697,12 +1697,12 @@ class GurtoggAI : public CreatureAIScript
 
 protected:
 
-    uint32 PhaseTimerId;
+    uint32_t PhaseTimerId;
 };
 
 class EssenceOfSufferingAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EssenceOfSufferingAI);
+    ADD_CREATURE_FACTORY_FUNCTION(EssenceOfSufferingAI)
     explicit EssenceOfSufferingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(EOS_FIXATE, 10.0f, TARGET_ATTACKING, 0, 5);
@@ -1746,7 +1746,7 @@ class EssenceOfSufferingAI : public CreatureAIScript
 
 class EssenceOfDesireAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EssenceOfDesireAI);
+    ADD_CREATURE_FACTORY_FUNCTION(EssenceOfDesireAI)
     explicit EssenceOfDesireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(EOD_RUNE_SHIELD, 6.0f, TARGET_SELF, 0, 15);
@@ -1791,7 +1791,7 @@ class EssenceOfDesireAI : public CreatureAIScript
 
 class EssenceOfAngerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EssenceOfAngerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(EssenceOfAngerAI)
     explicit EssenceOfAngerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mTaunt = addAISpell(EOA_SEETHE, 0.0f, TARGET_ATTACKING); // on Taunt
@@ -1836,7 +1836,7 @@ class EssenceOfAngerAI : public CreatureAIScript
 
 class ReliquaryOfSoulsAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ReliquaryOfSoulsAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ReliquaryOfSoulsAI)
     explicit ReliquaryOfSoulsAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mSummonSuffering = addAISpell(ROS_SUMMON_SUFFERING, 0.0f, TARGET_SELF, 0, 0);
@@ -1984,7 +1984,7 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
     bool SpawnedEnsalvedSoul;
     int Phase;                  // do we have negative phase?
     int DeadSoulCount;          // negative count?
-    uint32 mEnslavedSoulTimer;  // negative timer?
+    uint32_t mEnslavedSoulTimer;  // negative timer?
     CreatureAIScript* mEoS;
     CreatureAIScript* mEoD;
     CreatureAIScript* mEoA;
@@ -1996,7 +1996,7 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
 // Dunno where "spell" sounds/texts should go
 class ShahrazAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShahrazAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShahrazAI)
     explicit ShahrazAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto saberLash = addAISpell(SABER_LASH, 8.0f, TARGET_ATTACKING, 0, 15, false, true);
@@ -2034,7 +2034,7 @@ class ShahrazAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        AuraChange = (uint32)time(NULL) + 15;
+        AuraChange = (uint32_t)time(NULL) + 15;
         Enraged = false;
         SoundTimer = 5;
     }
@@ -2068,12 +2068,12 @@ class ShahrazAI : public CreatureAIScript
             Enraged = true;
         }
 
-        uint32 t = (uint32)time(NULL);
+        uint32_t t = (uint32_t)time(NULL);
 
         // In normal way it is applied to players all around enemy caster =/
         if (t > AuraChange)
         {
-            uint32 SpellId = 0;
+            uint32_t SpellId = 0;
             switch (Util::getRandomUInt(6))
             {
                 case 1:
@@ -2100,7 +2100,7 @@ class ShahrazAI : public CreatureAIScript
             }
 
             //_unit->castSpell(_unit, SpellId, true);
-            Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(SpellId), (uint32)15000, getCreature(), getCreature());
+            Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(SpellId), (uint32_t)15000, getCreature(), getCreature());
             getCreature()->AddAura(aura);
 
             AuraChange = t + 15;
@@ -2109,8 +2109,8 @@ class ShahrazAI : public CreatureAIScript
 
 protected:
 
-    uint32 SoundTimer;
-    uint32 AuraChange;
+    uint32_t SoundTimer;
+    uint32_t AuraChange;
     bool Enraged;
 };
 
@@ -2118,7 +2118,7 @@ typedef std::vector<Creature*> EncounterVector;
 
 class GathiosAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GathiosAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GathiosAI)
     explicit GathiosAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(HAMMER_OF_JUSTICE, 15.0f, TARGET_RANDOM_SINGLE, 0, 14);
@@ -2138,7 +2138,7 @@ class GathiosAI : public CreatureAIScript
         _applyAura(DEVOTION_AURA);
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         DealDamageToFriends(fAmount, getCreature()->getEntry());
     }
@@ -2148,7 +2148,7 @@ class GathiosAI : public CreatureAIScript
         mEncounterVector.push_back(pCreature);
     }
 
-    void DealDamageToFriends(uint32 val, uint32 pCreatureEntry)
+    void DealDamageToFriends(uint32_t val, uint32_t pCreatureEntry)
     {
         for (std::vector<Creature*>::iterator itr = mEncounterVector.begin(); itr != mEncounterVector.end(); ++itr)
         {
@@ -2174,7 +2174,7 @@ private:
 
 class VerasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VerasAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VerasAI)
     explicit VerasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DEADLY_POISON, 15.0f, TARGET_RANDOM_SINGLE, 0, 20);
@@ -2189,7 +2189,7 @@ class VerasAI : public CreatureAIScript
             pGethois->AddEncounterCreature(getCreature());
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         pGethois->DealDamageToFriends(fAmount, getCreature()->getEntry());
     }
@@ -2199,7 +2199,7 @@ class VerasAI : public CreatureAIScript
 
 class ZerevorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ZerevorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ZerevorAI)
     explicit ZerevorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ARCANE_BOLT, 65.0f, TARGET_ATTACKING, 2, 6);
@@ -2216,7 +2216,7 @@ class ZerevorAI : public CreatureAIScript
             pGethois->AddEncounterCreature(getCreature());
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         pGethois->DealDamageToFriends(fAmount, getCreature()->getEntry());
     }
@@ -2226,7 +2226,7 @@ class ZerevorAI : public CreatureAIScript
 
 class MalandeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MalandeAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MalandeAI)
     explicit MalandeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DIVINE_WRATH, 15.0f, TARGET_RANDOM_SINGLE, 0, 14);
@@ -2243,7 +2243,7 @@ class MalandeAI : public CreatureAIScript
             pGethois->AddEncounterCreature(getCreature());
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
         if (pGethois != NULL)
             pGethois->DealDamageToFriends(fAmount, getCreature()->getEntry());
@@ -2255,7 +2255,7 @@ class MalandeAI : public CreatureAIScript
 // Dunno where other sounds should go
 class TeronGorefiendAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TeronGorefiendAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TeronGorefiendAI)
     explicit TeronGorefiendAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto doomBlossom = addAISpell(DOOM_BLOSSOM, 8.0f, TARGET_SELF, 0, 25, false, true);
@@ -2281,7 +2281,7 @@ class TeronGorefiendAI : public CreatureAIScript
 
 class ShadeofakamaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadeofakamaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadeofakamaAI)
     explicit ShadeofakamaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         hm = 0;
@@ -2332,7 +2332,7 @@ class ShadeofakamaAI : public CreatureAIScript
         if (getCreature()->getHealthPct() <= 85 && hm == 100)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 2; i++)
+            for (uint8_t i = 0; i < 2; i++)
             {
                 cre = spawnCreature(23421, getCreature()->GetPosition());
                 if (cre)
@@ -2345,7 +2345,7 @@ class ShadeofakamaAI : public CreatureAIScript
         else if (getCreature()->getHealthPct() <= 70 && hm == 85)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 2; i++)
+            for (uint8_t i = 0; i < 2; i++)
             {
                 cre = spawnCreature(23215, getCreature()->GetPosition());
                 if (cre)
@@ -2358,7 +2358,7 @@ class ShadeofakamaAI : public CreatureAIScript
         else if (getCreature()->getHealthPct() <= 55 && hm == 70)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 2; i++)
+            for (uint8_t i = 0; i < 2; i++)
             {
                 cre = spawnCreature(23216, getCreature()->GetPosition());
                 if (cre)
@@ -2371,7 +2371,7 @@ class ShadeofakamaAI : public CreatureAIScript
         else if (getCreature()->getHealthPct() <= 40 && hm == 55)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 2; i++)
+            for (uint8_t i = 0; i < 2; i++)
             {
                 cre = spawnCreature(23523, getCreature()->GetPosition());
                 if (cre)
@@ -2384,7 +2384,7 @@ class ShadeofakamaAI : public CreatureAIScript
         else if (getCreature()->getHealthPct() <= 25 && hm == 40)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 5; i++)
+            for (uint8_t i = 0; i < 5; i++)
             {
                 cre = spawnCreature(23318, getCreature()->GetPosition());
                 if (cre)
@@ -2397,7 +2397,7 @@ class ShadeofakamaAI : public CreatureAIScript
         else if (getCreature()->getHealthPct() <= 10 && hm == 25)
         {
             Creature* cre = NULL;
-            for (uint8 i = 0; i < 5; i++)
+            for (uint8_t i = 0; i < 5; i++)
             {
                 cre = spawnCreature(23524, getCreature()->GetPosition());
                 if (cre)
@@ -2463,13 +2463,13 @@ protected:
 
 struct Transformation
 {
-    uint32 mTimer;
-    uint32 mEmote;
-    uint32 mEmoteType;
+    uint32_t mTimer;
+    uint32_t mEmote;
+    uint32_t mEmoteType;
     const char* mText;
-    uint32 mSoundId;
-    uint32 mAura;
-    uint32 mUnAura;
+    uint32_t mSoundId;
+    uint32_t mAura;
+    uint32_t mUnAura;
     bool mEquipWeapons;
 };
 
@@ -2552,7 +2552,7 @@ static Movement::Location UnitPos[] =
     { 677.368286f, 285.374725f, 354.242157f, 5.645614f }  // Blade 2
 };
 
-uint32 DoorEventTimers[] =
+uint32_t DoorEventTimers[] =
 {
     1000 * 2,
     1000 * 4,
@@ -2574,7 +2574,7 @@ uint32 DoorEventTimers[] =
     1000 * 15
 };
 
-uint32 IllidanDialog[] =
+uint32_t IllidanDialog[] =
 {
     1000 * 1,
     1000 * 1,
@@ -2593,7 +2593,7 @@ uint32 IllidanDialog[] =
     1000 * 2
 };
 
-uint32 AkamaEscapeTimers[] =
+uint32_t AkamaEscapeTimers[] =
 {
     1000 * 1,
     1000 * 7,
@@ -2605,7 +2605,7 @@ uint32 AkamaEscapeTimers[] =
     1000 * 2
 };
 
-uint32 BladeEvent[] =
+uint32_t BladeEvent[] =
 {
     500 * 8,
     500 * 2,
@@ -2619,7 +2619,7 @@ uint32 BladeEvent[] =
     500 * 6
 };
 
-uint32 MaievTimers[] =
+uint32_t MaievTimers[] =
 {
     1000 * 3,
     1000 * 3,
@@ -2636,7 +2636,7 @@ uint32 MaievTimers[] =
     1000 * 2//3
 };
 
-uint32 DeathSceneTimers[] =
+uint32_t DeathSceneTimers[] =
 {
     // Maiev
     1000 * 1,
@@ -2655,7 +2655,7 @@ uint32 DeathSceneTimers[] =
 
 class UnselectableTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UnselectableTriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(UnselectableTriggerAI)
     explicit UnselectableTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -2666,14 +2666,14 @@ class UnselectableTriggerAI : public CreatureAIScript
 
 class GenericTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GenericTriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GenericTriggerAI)
     explicit GenericTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setRooted(true);
         getCreature()->m_noRespawn = true;
 
         mSpellId = mDespawnTimer = 0;
-        uint32 AIUpdate = 2000;
+        uint32_t AIUpdate = 2000;
         bool OnSpawn = false;
         switch (getCreature()->getEntry())
         {
@@ -2728,13 +2728,13 @@ class GenericTriggerAI : public CreatureAIScript
         }
     }
 
-    uint32 mDespawnTimer;
-    uint32 mSpellId;
+    uint32_t mDespawnTimer;
+    uint32_t mSpellId;
 };
 
 class EyeBeamTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EyeBeamTriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(EyeBeamTriggerAI)
     explicit EyeBeamTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
@@ -2765,7 +2765,7 @@ class EyeBeamTriggerAI : public CreatureAIScript
         _applyAura(EYE_BLAST);
     }
 
-    int32    mPosition;
+    int32_t    mPosition;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2773,7 +2773,7 @@ class EyeBeamTriggerAI : public CreatureAIScript
 
 class ShadowDemonAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowDemonAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowDemonAI)
     explicit ShadowDemonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mParalyze = addAISpell(SHADOW_DEMON_PARALYZE, 0.0f, TARGET_ATTACKING);
@@ -2837,7 +2837,7 @@ class ShadowDemonAI : public CreatureAIScript
 
 class ParasiticShadowfiendAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ParasiticShadowfiendAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ParasiticShadowfiendAI)
     explicit ParasiticShadowfiendAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(PARASITIC_SHADOWFIEND_WITH_DAMAGE, 0.0f, TARGET_ATTACKING);
@@ -2887,7 +2887,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* pPlayer, uint32_t Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
         Creature* pAIOwner = static_cast<Creature*>(pObject);
         if (pAIOwner->GetScript() == NULL)
@@ -2912,7 +2912,7 @@ public:
 
 class AkamaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AkamaAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AkamaAI)
     explicit AkamaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto blessingOfKings = addAISpell(AKAMA_BLESSING_OF_KINGS, 15.0f, TARGET_SELF, 0, 60);
@@ -2932,7 +2932,7 @@ class AkamaAI : public CreatureAIScript
         setCanEnterCombat(false);
         setScriptPhase(1);
 
-        for (uint8 i = 1; i < AKAMA_WAYPOINT_SIZE; ++i)
+        for (uint8_t i = 1; i < AKAMA_WAYPOINT_SIZE; ++i)
         {
             AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, ToIllidan[i]));
         }
@@ -3259,7 +3259,7 @@ class AkamaAI : public CreatureAIScript
                 setCanEnterCombat(false);
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
                 // azolex to prevent compile error
-                uint32 nullfix = 0;
+                uint32_t nullfix = 0;
                 getCreature()->GetAIInterface()->setNextTarget(nullfix);
                 getCreature()->GetAIInterface()->WipeTargetList();
                 getCreature()->GetAIInterface()->WipeHateList();
@@ -3295,7 +3295,7 @@ class AkamaAI : public CreatureAIScript
                         setCanEnterCombat(false);
                         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
                         // ugly code, trows compile error if left just null, this should do it ~ azolex
-                        uint32 nullfix = 0;
+                        uint32_t nullfix = 0;
                         getCreature()->GetAIInterface()->setNextTarget(nullfix);
                         getCreature()->GetAIInterface()->WipeTargetList();
                         getCreature()->GetAIInterface()->WipeHateList();
@@ -3376,7 +3376,7 @@ class AkamaAI : public CreatureAIScript
         ++mScenePart;
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -3457,13 +3457,13 @@ class AkamaAI : public CreatureAIScript
     CreatureAIScript* mOlumAI;
 
     // Other variables
-    int32 mScenePart;
-    uint32 mTimeLeft;
+    int32_t mScenePart;
+    uint32_t mTimeLeft;
 };
 
 class MaievAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MaievAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MaievAI)
     explicit MaievAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto strike = addAISpell(MAIEV_SHADOW_STRIKE, 10.0f, TARGET_ATTACKING, 0, 30);
@@ -3514,7 +3514,7 @@ class MaievAI : public CreatureAIScript
         }
     }
 
-    void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t /*fAmount*/) override
     {
         getCreature()->setHealth(getCreature()->getMaxHealth());
     }
@@ -3782,16 +3782,16 @@ class MaievAI : public CreatureAIScript
 
     // Other variables
     bool mSummonTrap;
-    int32 mTrapTimer;
-    int32 mYellTimer;
-    uint32 mScenePart;
-    uint32 mTimeLeft;
+    int32_t mTrapTimer;
+    int32_t mYellTimer;
+    uint32_t mScenePart;
+    uint32_t mTimeLeft;
 
 };
 
 class IllidanStormrageAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidanStormrageAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IllidanStormrageAI)
     explicit IllidanStormrageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Phase 1 spells
@@ -3836,7 +3836,7 @@ class IllidanStormrageAI : public CreatureAIScript
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         setScriptPhase(1);
 
-        for (uint8 i = 1; i < ILLIDAN_WAYPOINT_SIZE; ++i)
+        for (uint8_t i = 1; i < ILLIDAN_WAYPOINT_SIZE; ++i)
         {
             AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, ForIllidan[i]));
         }
@@ -3918,7 +3918,7 @@ class IllidanStormrageAI : public CreatureAIScript
         {
             pTrigger->Despawn(0, 0);
         }
-        for (uint8 i = 0; i < 2; ++i)
+        for (uint8_t i = 0; i < 2; ++i)
         {
             Creature* pBlade = getNearestCreature(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, CN_BLADE_OF_AZZINOTH);
             if (pBlade != NULL)
@@ -4004,12 +4004,12 @@ class IllidanStormrageAI : public CreatureAIScript
             }
 
             getCreature()->GetAIInterface()->setNextTarget(pTarget);
-            getCreature()->GetAIInterface()->modThreatByPtr(pTarget, (int32)(fAmount * 2));
+            getCreature()->GetAIInterface()->modThreatByPtr(pTarget, (int32_t)(fAmount * 2));
             getCreature()->GetAIInterface()->RemoveThreatByPtr(mVictim);
         }
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
+    void OnDamageTaken(Unit* mAttacker, uint32_t fAmount) override
     {
         if (mAttacker->isCreature() && (mAttacker->getEntry() == CN_MAIEV || mAttacker->getEntry() == CN_AKAMA))
         {
@@ -4111,7 +4111,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     pAkamaAI->setCanEnterCombat(false);
                     pAkamaAI->getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
                     // ugly code, trows compile error if left just null, this should do it ~ azolex
-                    uint32 nullfix = 0;
+                    uint32_t nullfix = 0;
                     pAkamaAI->getCreature()->GetAIInterface()->setNextTarget(nullfix);
                     pAkamaAI->getCreature()->GetAIInterface()->WipeTargetList();
                     pAkamaAI->getCreature()->GetAIInterface()->WipeHateList();
@@ -4162,14 +4162,14 @@ class IllidanStormrageAI : public CreatureAIScript
                     }
                     break;
                 case 1:
-                    for (uint8 i = 0; i < 2; ++i)
+                    for (uint8_t i = 0; i < 2; ++i)
                     {
                         getCreature()->castSpellLoc(LocationVector(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z), sSpellMgr.getSpellInfo(ILLIDAN_THROW_GLAIVE1), false);
                     }
                     _setWieldWeapon(false);
                     break;
                 case 2:
-                    for (uint8 i = 0; i < 2; ++i)
+                    for (uint8_t i = 0; i < 2; ++i)
                     {
                         Creature* pBlade = spawnCreature(CN_BLADE_OF_AZZINOTH, UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, UnitPos[i].o);
                         if (pBlade != NULL)
@@ -4213,7 +4213,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     }
                     break;
                 case 5:
-                    for (uint8 i = 0; i < 2; ++i)
+                    for (uint8_t i = 0; i < 2; ++i)
                     {
                         Creature* Blade = getNearestCreature(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, CN_BLADE_OF_AZZINOTH);
                         if (Blade != NULL)
@@ -4347,7 +4347,7 @@ class IllidanStormrageAI : public CreatureAIScript
             {
                 if (mMiscEventPart == 1)
                 {
-                    uint32 FireWall = Util::getRandomUInt(7);
+                    uint32_t FireWall = Util::getRandomUInt(7);
                     while((int)FireWall == mLastFireWall || (int)FireWall == 7 - mLastFireWall)
                     {
                         FireWall = Util::getRandomUInt(7);
@@ -4362,7 +4362,7 @@ class IllidanStormrageAI : public CreatureAIScript
                         getCreature()->GetAIInterface()->setNextTarget(pTrigger);
 
                         float Distance = pTrigger->CalcDistance(EyeBeamPaths[7 - FireWall].x, EyeBeamPaths[7 - FireWall].y, EyeBeamPaths[7 - FireWall].z);
-                        uint32 TimeToReach = (uint32)(Distance * 1000 / pTrigger->getSpeedRate(TYPE_WALK, true));
+                        uint32_t TimeToReach = (uint32_t)(Distance * 1000 / pTrigger->getSpeedRate(TYPE_WALK, true));
                         EyeBeamTriggerAI* pEyeBeamTriggerAI = static_cast< EyeBeamTriggerAI* >(pTrigger->GetScript());
                         pEyeBeamTriggerAI->mPosition = FireWall;
                         pEyeBeamTriggerAI->despawn(TimeToReach + 1500, 0);
@@ -4399,7 +4399,7 @@ class IllidanStormrageAI : public CreatureAIScript
         }
     }
 
-    void Transform(Transformation* pTransformation, uint32 pMaxPart)
+    void Transform(Transformation* pTransformation, uint32_t pMaxPart)
     {
         mTimeLeft -= GetAIUpdateFreq();
         if (mTimeLeft > 0)
@@ -4800,7 +4800,7 @@ class IllidanStormrageAI : public CreatureAIScript
                                 }
                                 else
                                 {
-                                    pAI->RegisterAIUpdateEvent((uint32)(Distance * 1000 / 32.796));
+                                    pAI->RegisterAIUpdateEvent((uint32_t)(Distance * 1000 / 32.796));
                                 }
                             }
                         }
@@ -4810,7 +4810,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     return;
                 }
 
-                /*uint32 Spell = Util::getRandomUInt() % 100;
+                /*uint32_t Spell = Util::getRandomUInt() % 100;
                 if (Spell <= 80)
                     CastSpellNowNoScheduling(mShadowBlast);*/
             }
@@ -4880,7 +4880,7 @@ class IllidanStormrageAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32 pWaypointId, bool /*pForwards*/) override
+    void OnReachWP(uint32_t pWaypointId, bool /*pForwards*/) override
     {
         if (pWaypointId == 1)
         {
@@ -4942,23 +4942,23 @@ class IllidanStormrageAI : public CreatureAIScript
     }
 
     // Global variables
-    uint32 mPhaseBackup;
-    uint32 mScenePart;
-    int32 mTimeLeft;
+    uint32_t mPhaseBackup;
+    uint32_t mScenePart;
+    int32_t mTimeLeft;
     bool mAllow;
 
     // Phase 1 variables
-    int32 mParasiticTimer;
+    int32_t mParasiticTimer;
     /*SpellDesc* mParasiticDmg;
     SpellDesc* mParasitic;*/
 
     // Phase 2 variables
     CreatureAIScript* mFoA1;
     CreatureAIScript* mFoA2;
-    int32 mMovementTimer;
-    int32 mFireWallTimer;
-    int32 mLastFireWall;
-    uint32 mMiscEventPart;
+    int32_t mMovementTimer;
+    int32_t mFireWallTimer;
+    int32_t mLastFireWall;
+    uint32_t mMiscEventPart;
     //SpellDesc* mGlaiveThrow;
     //SpellDesc* mGlaiveReturns;
 
@@ -4966,8 +4966,8 @@ class IllidanStormrageAI : public CreatureAIScript
     //SpellDesc* mShadowPrison;
 
     // Phase 4 variables
-    int32 mShadowDemonsTimer;
-    int32 mFlameBurstTimer;
+    int32_t mShadowDemonsTimer;
+    int32_t mFlameBurstTimer;
     /*SpellDesc* mFlameBurst;
     SpellDesc* mShadowDemons;
     SpellDesc* mShadowBlast;
@@ -4976,14 +4976,14 @@ class IllidanStormrageAI : public CreatureAIScript
     bool mPlaySound;
 
     // Phase 3 & 4 variables
-    int32 mDemonTimer;
+    int32_t mDemonTimer;
 
     // Phase 5 variables
-    int32 mYellTimer;
-    int32 mEnrageTimer;
+    int32_t mYellTimer;
+    int32_t mEnrageTimer;
 
     // Temporary variables
-    uint32 mCurrentWaypoint;
+    uint32_t mCurrentWaypoint;
 };
 
 //void SpellFunc_Illidan_Parasitic(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType /*pType*/)
@@ -5017,7 +5017,7 @@ float PositionAdds[8][2] =
 
 class CageTrapTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CageTrapTriggerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CageTrapTriggerAI)
     explicit CageTrapTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -5053,7 +5053,7 @@ class CageTrapTriggerAI : public CreatureAIScript
 
             if (mTriggerAIList.size() == 0 && pIllidan->isAlive() && getRangeToObject(pIllidan) <= 5.0f && !pAI->_isCasting())
             {
-                for (uint8 i = 0; i < 8; ++i)
+                for (uint8_t i = 0; i < 8; ++i)
                 {
                     CreatureAIScript* pTriggerAI = spawnCreatureAndGetAIScript(CN_CAGE_TRAP_TRIGGER, getCreature()->GetPositionX() + PositionAdds[i][0], getCreature()->GetPositionY() + PositionAdds[i][1], getCreature()->GetPositionZ(), getCreature()->GetOrientation());
                     if (pTriggerAI != nullptr)
@@ -5178,7 +5178,7 @@ public:
 
 class DranaeiSpiritAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DranaeiSpiritAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DranaeiSpiritAI)
     explicit DranaeiSpiritAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         despawn(45000);
@@ -5207,7 +5207,7 @@ class DranaeiSpiritAI : public CreatureAIScript
 
 class FlameOfAzzinothAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FlameOfAzzinothAI);
+    ADD_CREATURE_FACTORY_FUNCTION(FlameOfAzzinothAI)
     explicit FlameOfAzzinothAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mFlameBlast = addAISpell(FLAME_OF_AZZINOTH_FLAME_BLAST, 15.0f, TARGET_ATTACKING, 0, 25);
@@ -5218,7 +5218,7 @@ class FlameOfAzzinothAI : public CreatureAIScript
         getCreature()->m_noRespawn = true;
     }
 
-    void OnCastSpell(uint32 spellId) override
+    void OnCastSpell(uint32_t spellId) override
     {
         if (spellId == FLAME_OF_AZZINOTH_FLAME_BLAST)
         {

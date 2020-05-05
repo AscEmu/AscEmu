@@ -33,8 +33,8 @@ bool Penance(uint8_t /*effectIndex*/, Spell* pSpell)
     Player* player = pSpell->p_caster;
 
     // index 0 contains the spell for the first tick, index 1 is the peroidic cast spell.
-    uint32 hostileSpell[] = { 0, 0 };
-    uint32 friendlySpell[] = { 0, 0 };
+    uint32_t hostileSpell[] = { 0, 0 };
+    uint32_t friendlySpell[] = { 0, 0 };
 
     switch (pSpell->getSpellInfo()->getId())
     {
@@ -100,7 +100,7 @@ bool ImprovedDevouringPlague(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
     if (apply)
     {
-        static uint32 classMask[3] = { 0x2000000, 0, 0 };
+        static uint32_t classMask[3] = { 0x2000000, 0, 0 };
         target->AddProcTriggerSpell(63675, pAura->GetSpellInfo()->getId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL, 0, NULL, classMask);
     }
     else
@@ -151,7 +151,7 @@ bool EmpoweredRenew(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
     if (apply)
     {
-        static uint32 classMask[3] = { 0x40, 0, 0 };
+        static uint32_t classMask[3] = { 0x40, 0, 0 };
         target->AddProcTriggerSpell(63544, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL, 0, NULL, classMask);
     }
     else
@@ -166,7 +166,7 @@ bool ImprovedMindBlast(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
     if (apply)
     {
-        static uint32 classMask[3] = { 0x2000, 0, 0 };
+        static uint32_t classMask[3] = { 0x2000, 0, 0 };
         target->AddProcTriggerSpell(48301, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_SPELL_HIT, 0, NULL, classMask);
     }
     else
@@ -181,7 +181,7 @@ bool PainAndSufferingAura(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
     if (apply)
     {
-        static uint32 classMask[3] = { 0, 0, 0x40 };
+        static uint32_t classMask[3] = { 0, 0, 0x40 };
         target->AddProcTriggerSpell(47948, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL, 0, NULL, classMask);
     }
     else
@@ -200,7 +200,7 @@ bool PainAndSufferingProc(uint8_t /*effectIndex*/, Spell* pSpell)
     if (target == NULL)
         return true;
 
-    uint32 shadowWordPain[] =
+    uint32_t shadowWordPain[] =
     {
         //SPELL_HASH_SHADOW_WORD__PAIN
         589,
@@ -262,7 +262,7 @@ bool BodyAndSoul(uint8_t effectIndex, Aura* pAura, bool apply)
 
     if (apply)
     {
-        static uint32 classMask[3] = { 0, 1, 0 };
+        static uint32_t classMask[3] = { 0, 1, 0 };
         target->AddProcTriggerSpell(64134, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetModAmount(effectIndex), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
     }
     else
@@ -279,7 +279,7 @@ bool PrayerOfMendingAura(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
         target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_ANY_DAMAGE_VICTIM, pAura->GetSpellInfo()->getProcCharges(), NULL, NULL);
     else
     {
-        int32 count = target->GetAuraStackCount(pAura->GetSpellId());
+        int32_t count = target->GetAuraStackCount(pAura->GetSpellId());
         if (count == 1)
             target->RemoveProcTriggerSpell(pAura->GetSpellId(), pAura->m_casterGuid);
     }
@@ -289,7 +289,7 @@ bool PrayerOfMendingAura(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
 void SetupLegacyPriestSpells(ScriptMgr* mgr)
 {
-    uint32 PenanceIds[] =
+    uint32_t PenanceIds[] =
     {
         47540, // Rank 1
         53005, // Rank 2
@@ -299,24 +299,24 @@ void SetupLegacyPriestSpells(ScriptMgr* mgr)
     };
     mgr->register_dummy_spell(PenanceIds, &Penance);
 
-    uint32 DivineAegisIds[] = { 47509, 47511, 47515, 0 };
+    uint32_t DivineAegisIds[] = { 47509, 47511, 47515, 0 };
     mgr->register_dummy_aura(DivineAegisIds, &DivineAegis);
 
-    uint32 ImprovedDevouringPlagueIds[] = { 63625, 63626, 63627, 0 };
+    uint32_t ImprovedDevouringPlagueIds[] = { 63625, 63626, 63627, 0 };
     mgr->register_dummy_aura(ImprovedDevouringPlagueIds, &ImprovedDevouringPlague);
 
     mgr->register_dummy_aura(15286, &VampiricEmbrace);
 
-    uint32 VampiricTouchIds[] = { 34914, 34916, 34917, 48159, 48160, 0 };
+    uint32_t VampiricTouchIds[] = { 34914, 34916, 34917, 48159, 48160, 0 };
     mgr->register_dummy_aura(VampiricTouchIds, &VampiricTouch);
 
-    uint32 EmpoweredRenewIds[] = { 63534, 63542, 63543, 0 };
+    uint32_t EmpoweredRenewIds[] = { 63534, 63542, 63543, 0 };
     mgr->register_dummy_aura(EmpoweredRenewIds, &EmpoweredRenew);
 
-    uint32 ImprovedMindBlastIds[] = { 15273, 15312, 15313, 15314, 15316, 0 };
+    uint32_t ImprovedMindBlastIds[] = { 15273, 15312, 15313, 15314, 15316, 0 };
     mgr->register_dummy_aura(ImprovedMindBlastIds, &ImprovedMindBlast);
 
-    uint32 PainAndSufferingAuraIds[] = { 47580, 47581, 47582, 0 };
+    uint32_t PainAndSufferingAuraIds[] = { 47580, 47581, 47582, 0 };
     mgr->register_dummy_aura(PainAndSufferingAuraIds, &PainAndSufferingAura);
 
     mgr->register_script_effect(47948, &PainAndSufferingProc);
@@ -324,6 +324,6 @@ void SetupLegacyPriestSpells(ScriptMgr* mgr)
     mgr->register_dummy_aura(64127, &BodyAndSoul);
     mgr->register_dummy_aura(64129, &BodyAndSoul);
 
-    uint32 PrayerOfMendingAuraIds[] = { 41635, 48110, 48111, 0 };
+    uint32_t PrayerOfMendingAuraIds[] = { 41635, 48110, 48111, 0 };
     mgr->register_dummy_aura(PrayerOfMendingAuraIds, &PrayerOfMendingAura);
 }

@@ -1473,7 +1473,7 @@ public:
         RELEASE_LOCK
     }
 
-    void OnTargetBlocked(Unit* mTarget, int32 iAmount)
+    void OnTargetBlocked(Unit* mTarget, int32_t iAmount)
     {
         CHECK_BINDING_ACQUIRELOCK
 
@@ -1487,7 +1487,7 @@ public:
         RELEASE_LOCK
     }
 
-    void OnTargetCritHit(Unit* mTarget, int32 fAmount)
+    void OnTargetCritHit(Unit* mTarget, int32_t fAmount)
     {
         CHECK_BINDING_ACQUIRELOCK
 
@@ -1527,7 +1527,7 @@ public:
         RELEASE_LOCK
     }
 
-    void OnBlocked(Unit* mTarget, int32 iAmount)
+    void OnBlocked(Unit* mTarget, int32_t iAmount)
     {
         CHECK_BINDING_ACQUIRELOCK
 
@@ -1541,7 +1541,7 @@ public:
         RELEASE_LOCK
     }
 
-    void OnCritHit(Unit* mTarget, int32 fAmount)
+    void OnCritHit(Unit* mTarget, int32_t fAmount)
     {
         CHECK_BINDING_ACQUIRELOCK
 
@@ -1691,7 +1691,7 @@ public:
         LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
         LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_EMOTE);
         LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
-        LuaGlobal::instance()->luaEngine()->PUSH_INT((int32)Emote);
+        LuaGlobal::instance()->luaEngine()->PUSH_INT((int32_t)Emote);
         LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
 
         RELEASE_LOCK

@@ -114,11 +114,11 @@ public:
             switch (player->getTeam())
             {
                 case TEAM_ALLIANCE:
-                    for (uint8 i = 0; i < 13; i++)
+                    for (uint8_t i = 0; i < 13; i++)
                         spawnCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
                     break;
                 case TEAM_HORDE:
-                    for (uint8 i = 0; i < 13; i++)
+                    for (uint8_t i = 0; i < 13; i++)
                         spawnCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
                     break;
             }
@@ -161,7 +161,7 @@ public:
         menu.sendGossipPacket(player);
     }
 
-    void onSelectOption(Object* /*object*/, Player* player, uint32 Id, const char* /*enteredcode*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* /*object*/, Player* player, uint32_t Id, const char* /*enteredcode*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
@@ -207,15 +207,15 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Boss: Lord Marrowgar
-const uint32 LM_BERSERK = 47008;
-const uint32 BONE_SLICE = 69055;
-const uint32 BONE_SPIKE = 69057;       // Not shure about this
-const uint32 BONE_STORM = 69076;
-const uint32 SOUL_FEAST = 71203;       // Needs a script
+const uint32_t LM_BERSERK = 47008;
+const uint32_t BONE_SLICE = 69055;
+const uint32_t BONE_SPIKE = 69057;       // Not shure about this
+const uint32_t BONE_STORM = 69076;
+const uint32_t SOUL_FEAST = 71203;       // Needs a script
 
 class LordMarrowgarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LordMarrowgarAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LordMarrowgarAI)
     explicit LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         sendDBChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
@@ -260,7 +260,7 @@ class LordMarrowgarAI : public CreatureAIScript
     {
     }
 
-    void OnCastSpell(uint32 /*spellId*/) override
+    void OnCastSpell(uint32_t /*spellId*/) override
     {
     }
 
@@ -328,11 +328,11 @@ class LordMarrowgarAI : public CreatureAIScript
     }
 };
 
-const uint32 IMPALED = 69065;
+const uint32_t IMPALED = 69065;
 
 class BoneSpikeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI)
     explicit BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);  // On wowhead they said "kill them not just looking at them".

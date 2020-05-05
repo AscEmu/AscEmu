@@ -25,7 +25,7 @@
 //\todo move AddEmote to database
 class NalorakkAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NalorakkAI);
+    ADD_CREATURE_FACTORY_FUNCTION(NalorakkAI)
     explicit NalorakkAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto brutalSwipe = addAISpell(NALORAKK_BRUTAL_SWIPE, 2.0f, TARGET_ATTACKING, 0, 35);
@@ -115,7 +115,7 @@ class NalorakkAI : public CreatureAIScript
     }
 
     CreatureAISpells* Morph;
-    int32 MorphTimer;
+    int32_t MorphTimer;
 
     CreatureAISpells* mLocaleEnrageSpell;
     uint32_t mLocaleEnrageTimerId;
@@ -123,7 +123,7 @@ class NalorakkAI : public CreatureAIScript
 
 class AkilzonAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AkilzonAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AkilzonAI)
     explicit AkilzonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(AKILZON_STATIC_DISRUPTION, 2.0f, TARGET_SELF, 0, 60);
@@ -149,7 +149,7 @@ class AkilzonAI : public CreatureAIScript
         if (_isTimerFinished(mSummonTime))
         {
             // Spawn 3 Soaring Eagles
-            for (uint8 x = 0; x < 3; x++)
+            for (uint8_t x = 0; x < 3; x++)
             {
                 /*CreatureAIScript* Eagle =*/ spawnCreatureAndGetAIScript(CN_SOARING_EAGLE, (getCreature()->GetPositionX() + Util::getRandomFloat(12) - 10), (getCreature()->GetPositionY() + Util::getRandomFloat(12) - 15),
                                       getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->getFactionTemplate());
@@ -161,12 +161,12 @@ class AkilzonAI : public CreatureAIScript
         }
     }
 
-    int32 mSummonTime;
+    int32_t mSummonTime;
 };
 
 class SoaringEagleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SoaringEagleAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SoaringEagleAI)
     explicit SoaringEagleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(EAGLE_SWOOP, 5.0f, TARGET_DESTINATION, 0, 0);
@@ -176,7 +176,7 @@ class SoaringEagleAI : public CreatureAIScript
 
 class HalazziAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HalazziAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HalazziAI)
     explicit HalazziAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto saberLash = addAISpell(HALAZZI_SABER_LASH, 0.5f, TARGET_DESTINATION, 0, 0);
@@ -312,15 +312,15 @@ class HalazziAI : public CreatureAIScript
 
     Creature* mLynx;
     CreatureAISpells* Transfigure;
-    int32 mTotemTimer;
-    int32 CurrentHealth;
-    int32 MaxHealth;
+    int32_t mTotemTimer;
+    int32_t CurrentHealth;
+    int32_t MaxHealth;
     int SplitCount;
 };
 
 class LynxSpiritAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LynxSpiritAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LynxSpiritAI)
     explicit LynxSpiritAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Lynx Flurry

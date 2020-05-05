@@ -37,10 +37,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 //Its coming soon ^.^
 #define CHECK_FLOAT(L,narg) (lua_isnoneornil(L,(narg)) ) ? 0.00f : (float)luaL_checknumber(L,(narg));
-#define CHECK_ULONG(L,narg) (uint32)luaL_checknumber((L),(narg))
-#define CHECK_USHORT(L, narg) (uint16)luaL_checkinteger((L),(narg))
+#define CHECK_ULONG(L,narg) (uint32_t)luaL_checknumber((L),(narg))
+#define CHECK_USHORT(L, narg) (uint16_t)luaL_checkinteger((L),(narg))
 #define CHECK_BOOL(L,narg) LuaGlobal::instance()->luaEngine()->CheckBool(L,narg)
-#define CHECK_UINT8( L, narg ) static_cast< uint8 >( luaL_checkinteger( ( L ), ( narg ) ) )
+#define CHECK_UINT8( L, narg ) static_cast< uint8_t >( luaL_checkinteger( ( L ), ( narg ) ) )
 
 #define PUSH_UNIT(L, unit) LuaGlobal::instance()->luaEngine()->PushUnit(static_cast<Unit*>(unit),L)
 #define PUSH_GO(L, go) LuaGlobal::instance()->luaEngine()->PushGo(static_cast<GameObject*>(go),L)

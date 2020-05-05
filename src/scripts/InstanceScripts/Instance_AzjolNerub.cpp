@@ -27,7 +27,7 @@
 // Krikthir The Gatewatcher
 class KrikthirAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KrikthirAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KrikthirAI)
     explicit KrikthirAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (!_isHeroic())
@@ -75,7 +75,7 @@ class KrikthirAI : public CreatureAIScript
 // Hadronox
 class HadronoxAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HadronoxAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HadronoxAI)
     explicit HadronoxAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (!_isHeroic())
@@ -106,7 +106,7 @@ class HadronoxAI : public CreatureAIScript
 // Watcher Gashra
 class GashraAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GashraAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GashraAI)
     explicit GashraAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(GASHRA_WEBWRAP, 22.0f, TARGET_RANDOM_SINGLE, 0, 35);
@@ -117,7 +117,7 @@ class GashraAI : public CreatureAIScript
 // Watcher Narjil
 class NarjilAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NarjilAI);
+    ADD_CREATURE_FACTORY_FUNCTION(NarjilAI)
     explicit NarjilAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(NARJIL_WEBWRAP, 22.0f, TARGET_RANDOM_SINGLE, 0, 35);
@@ -129,7 +129,7 @@ class NarjilAI : public CreatureAIScript
 // Watcher Silthik
 class SilthikAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SilthikAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SilthikAI)
     explicit SilthikAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(NARJIL_WEBWRAP, 22.0f, TARGET_RANDOM_SINGLE, 0, 35);
@@ -141,7 +141,7 @@ class SilthikAI : public CreatureAIScript
 // Anub'ar Shadowcaster (anub shadowcaster)
 class AnubShadowcasterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AnubShadowcasterAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AnubShadowcasterAI)
     explicit AnubShadowcasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWCASTER_SHADOWBOLT, 36.0f, TARGET_RANDOM_SINGLE, 0, 8);

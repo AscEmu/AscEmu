@@ -38,7 +38,7 @@ enum
 
 class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InfiltratingDragonmawFortressQAI);
+    ADD_CREATURE_FACTORY_FUNCTION(InfiltratingDragonmawFortressQAI)
     explicit InfiltratingDragonmawFortressQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)
@@ -52,7 +52,7 @@ class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 
 class KneepadsQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KneepadsQAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KneepadsQAI)
     explicit KneepadsQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller)
@@ -69,7 +69,7 @@ class KneepadsQAI : public CreatureAIScript
 struct WPWaitTimes
 {
     Movement::Location mCoords;
-    uint32 WaitTime;
+    uint32_t WaitTime;
 };
 
 const WPWaitTimes DeathbringerJovaanWP[] =
@@ -83,7 +83,7 @@ const WPWaitTimes DeathbringerJovaanWP[] =
 
 class DeathbringerJovaanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeathbringerJovaanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(DeathbringerJovaanAI)
     explicit DeathbringerJovaanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mJovaanTimer = 0;
@@ -159,7 +159,7 @@ class DeathbringerJovaanAI : public CreatureAIScript
         
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -179,13 +179,13 @@ class DeathbringerJovaanAI : public CreatureAIScript
         }
     }
 
-    uint32    mJovaanTimer;
-    int32    mJovaanPhase;
+    uint32_t    mJovaanTimer;
+    int32_t    mJovaanPhase;
 };
 
 class WarbringerRazuunAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WarbringerRazuunAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WarbringerRazuunAI)
     explicit WarbringerRazuunAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -243,8 +243,8 @@ class WarbringerRazuunAI : public CreatureAIScript
         
     }
 
-    uint32 mRazuunTimer;
-    int32 mRazuunPhase;
+    uint32_t mRazuunTimer;
+    int32_t mRazuunPhase;
 };
 
 class NeltharakusTale_Gossip : public GossipScript
@@ -263,7 +263,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
@@ -295,7 +295,7 @@ public:
 
 class EnslavedNetherwingDrakeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI);
+    ADD_CREATURE_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI)
     explicit EnslavedNetherwingDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Movement::LocationWithFlag WayPoint = { getCreature()->GetPositionX(), getCreature()->GetPositionY() + 30, getCreature()->GetPositionZ() + 100, getCreature()->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
@@ -304,7 +304,7 @@ class EnslavedNetherwingDrakeAI : public CreatureAIScript
         AddWaypoint(CreateWaypoint(1, 0, WayPoint.wp_flag, WayPoint.wp_location));
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 1)
         {
@@ -340,7 +340,7 @@ class FlanisSwiftwing_Gossip : public GossipScript
 public:
 
     void onHello(Object* pObject, Player* Plr) override;
-    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId) override;
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* Code, uint32_t gossipId) override;
 };
 
 void FlanisSwiftwing_Gossip::onHello(Object* pObject, Player* plr)
@@ -352,7 +352,7 @@ void FlanisSwiftwing_Gossip::onHello(Object* pObject, Player* plr)
     menu.sendGossipPacket(plr);
 };
 
-void FlanisSwiftwing_Gossip::onSelectOption(Object* /*pObject*/, Player* Plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/)
+void FlanisSwiftwing_Gossip::onSelectOption(Object* /*pObject*/, Player* Plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/)
 {
     Item* item = sObjectMgr.CreateItem(30658, Plr);
     if (item == nullptr)

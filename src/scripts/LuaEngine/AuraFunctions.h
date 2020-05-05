@@ -86,7 +86,7 @@ namespace LuaAura
         if (!aura)
             return 0;
 
-        uint32 duration = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint32_t duration = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         aura->SetDuration(duration);
         sEventMgr.ModifyEventTimeLeft(aura, EVENT_AURA_REMOVE, static_cast<time_t>(duration));
         return 0;
@@ -208,7 +208,7 @@ namespace LuaAura
     int SetAuraSlot(lua_State* L, Aura* aura)
     {
         if (!aura) return 0;
-        uint16 slot = CHECK_USHORT(L, 1);
+        uint16_t slot = CHECK_USHORT(L, 1);
         aura->SetAuraSlot(slot);
         return 0;
     }

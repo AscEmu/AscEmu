@@ -29,7 +29,7 @@ bool Starfall(uint8_t effectIndex, Spell* pSpell)
     if (m_caster == NULL)
         return true;
 
-    uint8 am = 0;
+    uint8_t am = 0;
     for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
         if (!itr || !itr->isCreatureOrPlayer())
@@ -52,7 +52,7 @@ bool ImprovedLeaderOfThePack(uint8_t /*effectIndex*/, Spell* s)
     if (s->p_caster == NULL)
         return false;
 
-    s->p_caster->AddProcTriggerSpell(34299, 34299, s->p_caster->getGuid(), 100, PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF), 0, NULL, NULL);
+    s->p_caster->AddProcTriggerSpell(34299, 34299, s->p_caster->getGuid(), 100, PROC_ON_CRIT_ATTACK | static_cast<uint32_t>(PROC_TARGET_SELF), 0, NULL, NULL);
 
     return true;
 }
@@ -60,7 +60,7 @@ bool ImprovedLeaderOfThePack(uint8_t /*effectIndex*/, Spell* s)
 bool PredatoryStrikes(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
-    int32 realamount = 0;
+    int32_t realamount = 0;
 
 
     realamount = (a->GetModAmount(effectIndex) * m_target->getLevel()) / 100;
@@ -100,7 +100,7 @@ bool Furor(uint8_t effectIndex, Aura* a, bool apply)
 bool Tranquility(uint8_t effectIndex, Aura* a, bool apply)
 {
     if (apply)
-        sEventMgr.AddEvent(a, &Aura::EventPeriodicHeal1, (uint32)a->GetModAmount(effectIndex), EVENT_AURA_PERIODIC_HEAL, 2000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(a, &Aura::EventPeriodicHeal1, (uint32_t)a->GetModAmount(effectIndex), EVENT_AURA_PERIODIC_HEAL, 2000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     else
         sEventMgr.RemoveEvents(a, EVENT_AURA_PERIODIC_HEAL);
 
@@ -124,7 +124,7 @@ bool LifeBloom(uint8_t effectIndex, Aura* a, bool apply)
 
     // Remove other Lifeblooms - but do NOT handle unapply again
     bool expired = true;
-    for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
+    for (uint32_t x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
     {
         if (m_target->m_auras[x])
         {
@@ -170,7 +170,7 @@ bool LeaderOfThePack(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
 void SetupLegacyDruidSpells(ScriptMgr* mgr)
 {
-    uint32 StarfallIds[] =
+    uint32_t StarfallIds[] =
     {
         50286, // Rank 1
         53196, // Rank 2
@@ -183,7 +183,7 @@ void SetupLegacyDruidSpells(ScriptMgr* mgr)
     mgr->register_dummy_spell(34297, &ImprovedLeaderOfThePack);
     mgr->register_dummy_spell(34300, &ImprovedLeaderOfThePack);
 
-    uint32 predatorystrikesids[] =
+    uint32_t predatorystrikesids[] =
     {
         16972,
         16974,
@@ -192,7 +192,7 @@ void SetupLegacyDruidSpells(ScriptMgr* mgr)
     };
     mgr->register_dummy_aura(predatorystrikesids, &PredatoryStrikes);
 
-    uint32 furorids[] =
+    uint32_t furorids[] =
     {
         17056,
         17058,
@@ -203,7 +203,7 @@ void SetupLegacyDruidSpells(ScriptMgr* mgr)
     };
     mgr->register_dummy_aura(furorids, &Furor);
 
-    uint32 tranquilityids[] =
+    uint32_t tranquilityids[] =
     {
         740,
         8918,
@@ -216,7 +216,7 @@ void SetupLegacyDruidSpells(ScriptMgr* mgr)
     };
     mgr->register_dummy_aura(tranquilityids, &Tranquility);
 
-    uint32 lifebloomids[] =
+    uint32_t lifebloomids[] =
     {
         33763,
         48450,

@@ -21,6 +21,7 @@
 #define LOAD_LIB_H
 
 #include "StormLib.h"
+#include <cstdint>
 
 #ifdef _WIN32
 typedef __int64            int64;
@@ -48,7 +49,7 @@ typedef uint16_t           uint16;
 typedef uint8_t            uint8;
 #endif
 
-#define FILE_FORMAT_VERSION    18
+#define FILE_FORMAT_VERSION 18
 
 #pragma pack(push, 1)
 

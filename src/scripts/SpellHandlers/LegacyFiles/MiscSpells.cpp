@@ -43,7 +43,7 @@ bool FrostWarding(uint8_t /*effectIndex*/, Spell* s)
     if (!unitTarget)
         return false;
 
-    uint32 spellId = s->getSpellInfo()->getId();
+    uint32_t spellId = s->getSpellInfo()->getId();
 
     unitTarget->RemoveReflect(spellId, true);
 
@@ -114,7 +114,7 @@ bool Cannibalize(uint8_t effectIndex, Spell* s)
     {
         s->p_caster->cannibalize = true;
         s->p_caster->cannibalizeCount = 0;
-        sEventMgr.AddEvent(s->p_caster, &Player::EventCannibalize, uint32(7), EVENT_CANNIBALIZE, 2000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(s->p_caster, &Player::EventCannibalize, uint32_t(7), EVENT_CANNIBALIZE, 2000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         s->p_caster->setEmoteState(EMOTE_STATE_CANNIBALIZE);
     }
 
@@ -193,12 +193,12 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
     if (Rand(chance))
     {
         // Type 0 = Major, 1 = Minor
-        uint32 glyphType = (s->getSpellInfo()->getId() == 61177) ? 0 : 1;
+        uint32_t glyphType = (s->getSpellInfo()->getId() == 61177) ? 0 : 1;
 
-        std::vector<uint32> discoverableGlyphs;
+        std::vector<uint32_t> discoverableGlyphs;
 
         // how many of these are the right type (minor/major) of glyph, and learnable by the player
-        for (uint32 idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
+        for (uint32_t idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
         {
             auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx);
             if (skill_line_ability == nullptr)
@@ -236,7 +236,7 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
 
         if (discoverableGlyphs.size() > 0)
         {
-            uint32 newGlyph = discoverableGlyphs.at(Util::getRandomUInt(static_cast<uint32>(discoverableGlyphs.size() - 1)));
+            uint32_t newGlyph = discoverableGlyphs.at(Util::getRandomUInt(static_cast<uint32_t>(discoverableGlyphs.size() - 1)));
             s->p_caster->addSpell(newGlyph);
         }
     }
@@ -287,7 +287,7 @@ bool WaitingToResurrect(uint8_t /*effectIndex*/, Aura* a, bool apply)
     if (apply)        // already applied in opcode handler
         return true;
 
-    uint64 crtguid = p_target->m_areaSpiritHealer_guid;
+    uint64_t crtguid = p_target->m_areaSpiritHealer_guid;
 
     WoWGuid wowGuid;
     wowGuid.Init(crtguid);
@@ -426,22 +426,22 @@ bool CrystalSpikes(uint8_t /*effectIndex*/, Spell* pSpell)
 
     Unit* pCaster = pSpell->u_caster;
 
-    for (uint8 i = 1; i < 6; ++i)
+    for (uint8_t i = 1; i < 6; ++i)
     {
         pCaster->GetMapMgr()->GetInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() + (3 * i) + Util::getRandomUInt(2), pCaster->GetPositionY() + (3 * i) + Util::getRandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
     }
 
-    for (uint8 i = 1; i < 6; ++i)
+    for (uint8_t i = 1; i < 6; ++i)
     {
         pCaster->GetMapMgr()->GetInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() - (3 * i) - Util::getRandomUInt(2), pCaster->GetPositionY() + (3 * i) + Util::getRandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
     }
 
-    for (uint8 i = 1; i < 6; ++i)
+    for (uint8_t i = 1; i < 6; ++i)
     {
         pCaster->GetMapMgr()->GetInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() + (3 * i) + Util::getRandomUInt(2), pCaster->GetPositionY() - (3 * i) - Util::getRandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
     }
 
-    for (uint8 i = 1; i < 6; ++i)
+    for (uint8_t i = 1; i < 6; ++i)
     {
         pCaster->GetMapMgr()->GetInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() - (3 * i) - Util::getRandomUInt(2), pCaster->GetPositionY() - (3 * i) - Util::getRandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
     }
@@ -534,7 +534,7 @@ bool IOCTeleporterIn(uint8_t /*effectIndex*/, Spell* s)
     if ((p->m_bg != NULL) && !p->m_bg->HasStarted())
         return true;
 
-    uint32 j;
+    uint32_t j;
     for (j = 0; j < 6; j++)
     {
         if (p->getDistanceSq(IOCTeleOutLocations[j][0], IOCTeleOutLocations[j][1], IOCTeleOutLocations[j][2]) <= 20.0f)
@@ -565,7 +565,7 @@ bool IOCTeleporterOut(uint8_t /*effectIndex*/, Spell* s)
     if ((p->m_bg != NULL) && !p->m_bg->HasStarted())
         return true;
 
-    uint32 j;
+    uint32_t j;
     for (j = 0; j < 6; j++)
     {
         if (p->getDistanceSq(IOCTeleInLocations[j][0], IOCTeleInLocations[j][1], IOCTeleInLocations[j][2]) <= 20.0f)
@@ -600,9 +600,9 @@ bool SOTATeleporter(uint8_t /*effectIndex*/, Spell* s)
         return true;
 
     LocationVector dest;
-    uint32 closest_platform = 0;
+    uint32_t closest_platform = 0;
 
-    for (uint8 i = 0; i < 5; i++)
+    for (uint8_t i = 0; i < 5; i++)
     {
         float distance = plr->getDistanceSq(sotaTransDest[i][0], sotaTransDest[i][1], sotaTransDest[i][2]);
 
@@ -666,7 +666,7 @@ void SetupLegacyMiscSpellhandlers(ScriptMgr* mgr)
     mgr->register_dummy_spell(66550, &IOCTeleporterOut);
     mgr->register_dummy_spell(66551, &IOCTeleporterIn);
 
-    uint32 SpellTeleports[] =
+    uint32_t SpellTeleports[] =
     {
         // ICCTeleports
         70781,
@@ -717,7 +717,7 @@ void SetupLegacyMiscSpellhandlers(ScriptMgr* mgr)
 
     mgr->register_dummy_aura(2584, &WaitingToResurrect);
 
-    uint32 negativecrapids[] =
+    uint32_t negativecrapids[] =
     {
         26013,
         41425,
@@ -745,7 +745,7 @@ void SetupLegacyMiscSpellhandlers(ScriptMgr* mgr)
 
     mgr->register_script_effect(50499, &ListeningToMusicParent);
 
-    uint32 teleportToCoordinates[] =
+    uint32_t teleportToCoordinates[] =
     {
         25140,
         25143,
@@ -761,7 +761,7 @@ void SetupLegacyMiscSpellhandlers(ScriptMgr* mgr)
     };
     mgr->register_script_effect(teleportToCoordinates, &TeleportToCoordinates);
 
-    uint32 auraWithoutNeededEffect[] =
+    uint32_t auraWithoutNeededEffect[] =
     {
         71764,      // DiseasedWolf just apply GFX
         33209,      // Gossip NPC Periodic - Despawn (Aura hidden, Cast time hidden, no clue what it should do)
@@ -773,7 +773,7 @@ void SetupLegacyMiscSpellhandlers(ScriptMgr* mgr)
     };
     mgr->register_dummy_aura(auraWithoutNeededEffect, &GeneralDummyAura);
 
-    uint32 spellWithoutNeededEffect[] =
+    uint32_t spellWithoutNeededEffect[] =
     {
         29403,      // Holiday Breath of Fire, Effect (NPC) Triggered by 29421 Apply Aura 29402 (Aura is hidden)
         52124,      // Sky Darkener Assault. Triggered by 52147 (Apply Aura: Periodically trigger spell) (Aura is hidden)

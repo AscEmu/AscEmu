@@ -34,13 +34,13 @@ public:
 
 class KayaFlathoof : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KayaFlathoof);
+    ADD_CREATURE_FACTORY_FUNCTION(KayaFlathoof)
     explicit KayaFlathoof(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {

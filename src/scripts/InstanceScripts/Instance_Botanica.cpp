@@ -25,7 +25,7 @@
 
 class BloodProtectorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BloodProtectorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BloodProtectorAI)
     explicit BloodProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto crystalStrike = addAISpell(CRYSTAL_STRIKE, 10.0f, TARGET_ATTACKING);
@@ -43,7 +43,7 @@ class BloodProtectorAI : public CreatureAIScript
 
 class BloodGreenkeeperAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BloodGreenkeeperAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BloodGreenkeeperAI)
     explicit BloodGreenkeeperAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto greenkeeperFury = addAISpell(GREENKEEPER_FURY, 10.0f, TARGET_ATTACKING);
@@ -53,7 +53,7 @@ class BloodGreenkeeperAI : public CreatureAIScript
 
 class SunchemistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunchemistAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SunchemistAI)
     explicit SunchemistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto flameBreath = addAISpell(FLAME_BREATH, 10.0f, TARGET_VARIOUS);
@@ -66,7 +66,7 @@ class SunchemistAI : public CreatureAIScript
 
 class SunResearcherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunResearcherAI);
+    ADD_CREATURE_FACTORY_FUNCTION(SunResearcherAI)
     explicit SunResearcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         poisonShield = addAISpell(POISON_SHIELD, 0.0f, TARGET_SELF);
@@ -95,7 +95,7 @@ protected:
 
 class CommanderSarannisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CommanderSarannisAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CommanderSarannisAI)
     explicit CommanderSarannisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         GuardAdds = false;
@@ -152,7 +152,7 @@ protected:
 
 class HighBotanistFreywinnAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HighBotanistFreywinnAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HighBotanistFreywinnAI)
     explicit HighBotanistFreywinnAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         PlantTimer = 10;
@@ -241,7 +241,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
 
 protected:
 
-    uint32 PlantTimer;
+    uint32_t PlantTimer;
 
     CreatureAISpells* plantRedSeedling;
     CreatureAISpells* plantGreenSeedling;
@@ -252,7 +252,7 @@ protected:
 
 class ThorngrinTheTenderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThorngrinTheTenderAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ThorngrinTheTenderAI)
     explicit ThorngrinTheTenderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Enraged = false;
@@ -309,7 +309,7 @@ protected:
 
 class LajAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LajAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LajAI)
     explicit LajAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         TeleportTimer = 20;    // It's sth about that
@@ -356,14 +356,14 @@ class LajAI : public CreatureAIScript
 
 protected:
 
-    uint32 TeleportTimer;
+    uint32_t TeleportTimer;
     CreatureAISpells* teleportSelf;
 };
 
 
 class WarpSplinterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WarpSplinterAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WarpSplinterAI)
     explicit WarpSplinterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         SummonTimer = 20;    // It's sth about that
@@ -413,7 +413,7 @@ class WarpSplinterAI : public CreatureAIScript
 
 protected:
 
-    uint32 SummonTimer;
+    uint32_t SummonTimer;
     CreatureAISpells* summonSaplings;
 };
 

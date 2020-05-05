@@ -48,17 +48,17 @@ static Movement::Location WaypointPlainVision[] =
 
 class The_Plains_Vision : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(The_Plains_Vision);
+    ADD_CREATURE_FACTORY_FUNCTION(The_Plains_Vision)
     explicit The_Plains_Vision(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WPCount = 22;
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
 
-        for (uint8 i = 1; i < WPCount; ++i)
+        for (uint8_t i = 1; i < WPCount; ++i)
             AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, WaypointPlainVision[i]));
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 1)
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You follow me.");
@@ -70,7 +70,7 @@ class The_Plains_Vision : public CreatureAIScript
         }
     }
 
-    uint8 WPCount;
+    uint8_t WPCount;
 };
 
 void SetupMulgore(ScriptMgr* mgr)

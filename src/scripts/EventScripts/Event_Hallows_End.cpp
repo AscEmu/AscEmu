@@ -23,7 +23,7 @@ enum
 // Black Cat
 class BlackCat : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BlackCat);
+    ADD_CREATURE_FACTORY_FUNCTION(BlackCat)
     explicit BlackCat(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* pKiller) override
@@ -69,7 +69,7 @@ static Movement::Location WaypointGoldshire[] =
 
 class HeadlessHorsemanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HeadlessHorsemanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HeadlessHorsemanAI)
     explicit HeadlessHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Scarlet Monastery Boss
@@ -77,10 +77,10 @@ class HeadlessHorsemanAI : public CreatureAIScript
 };
 
 // Headless Horseman - Fire
-const uint32 CN_HEADLESS_HORSEMAN_FIRE = 23537;
+const uint32_t CN_HEADLESS_HORSEMAN_FIRE = 23537;
 class HeadlessHorsemanFireAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HeadlessHorsemanFireAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HeadlessHorsemanFireAI)
     explicit HeadlessHorsemanFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->castSpell(getCreature(), 42971, true);
@@ -97,7 +97,7 @@ class HeadlessHorsemanFireAI : public CreatureAIScript
 */
 class ShadeOfTheHorsemanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadeOfTheHorsemanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadeOfTheHorsemanAI)
     explicit ShadeOfTheHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
@@ -119,7 +119,7 @@ class ShadeOfTheHorsemanAI : public CreatureAIScript
                 case 87: // Goldshire
                 {
                     WPCount = 29;
-                    for (uint8 i = 0; i <= WPCount; ++i)
+                    for (uint8_t i = 0; i <= WPCount; ++i)
                     {
                         AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, WaypointGoldshire[i]));
                     }
@@ -130,12 +130,12 @@ class ShadeOfTheHorsemanAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         auto area = getCreature()->GetArea();
         auto area_id = area ? area->id : 0;
 
-        if (iWaypointId == uint32(WPCount))   // Reached end
+        if (iWaypointId == uint32_t(WPCount))   // Reached end
         {
             StopWaypointMovement();
             if (getNearestCreature(CN_HEADLESS_HORSEMAN_FIRE) == NULL)     // CASE players win
@@ -173,12 +173,12 @@ class ShadeOfTheHorsemanAI : public CreatureAIScript
             getCreature()->castSpell(Pumpkin->getGuid(), 42277, true);
     }
 
-    int8 WPCount;
+    int8_t WPCount;
 };
 
 class HeadlessHorsemanWispInvisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HeadlessHorsemanWispInvisAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HeadlessHorsemanWispInvisAI)
     explicit HeadlessHorsemanWispInvisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mHeadlessHorseman = nullptr;

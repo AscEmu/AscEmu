@@ -20,8 +20,10 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-
 #include "AscemuServerDefines.hpp"
+#include "DynLib.hpp"
+#include "SysInfo.hpp"
+#include "PerformanceCounter.hpp"
 
 #include <cstdlib>
 #include <cstdio>
@@ -214,11 +216,6 @@ static inline int long2int32(const double value)
     #include <sys/timeb.h>
 #endif
 
-#ifndef WIN32
-    #define FALSE 0
-    #define TRUE  1
-#endif
-
 // returns true if the ip hits the mask, otherwise false
 inline static bool ParseCIDRBan(unsigned int IP, unsigned int Mask, unsigned int MaskBits)
 {
@@ -281,10 +278,5 @@ inline static unsigned int MakeIP(const char* str)
     res = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
     return res;
 }
-
-#include "DynLib.hpp"
-#include "SysInfo.hpp"
-#include "PerformanceCounter.hpp"
-
 
 #endif      //_COMMON_H

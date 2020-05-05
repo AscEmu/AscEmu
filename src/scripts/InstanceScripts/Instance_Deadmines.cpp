@@ -59,13 +59,13 @@ static Movement::Location Guards[] =
 //            switch (pGameObject->getEntry())
 //            {
 //                case GO_FACTORY_DOOR:
-//                    mFactoryDoor_GUID = static_cast<uint32>(pGameObject->getGuid());
+//                    mFactoryDoor_GUID = static_cast<uint32_t>(pGameObject->getGuid());
 //                    break;
 //                case GO_FACTORY_DOOR_LEVER:
-//                    mDoorLever_GUID = static_cast<uint32>(pGameObject->getGuid());
+//                    mDoorLever_GUID = static_cast<uint32_t>(pGameObject->getGuid());
 //                    break;
 //                case GO_IRONCLAD_DOOR:
-//                    mIronCladDoor_GUID = static_cast<uint32>(pGameObject->getGuid());
+//                    mIronCladDoor_GUID = static_cast<uint32_t>(pGameObject->getGuid());
 //                    break;
 //            }
 //        }
@@ -138,17 +138,17 @@ static Movement::Location Guards[] =
 //
 //    protected:
 //
-//        uint32 mFactoryDoor_GUID;
-//        uint32 mDefiasCannon_GUID;
-//        uint32 mDoorLever_GUID;
-//        uint32 mMrSmiteChest_GUID;
-//        uint32 mIronCladDoor_GUID;
-//        uint32 InstanceEncounter;
+//        uint32_t mFactoryDoor_GUID;
+//        uint32_t mDefiasCannon_GUID;
+//        uint32_t mDoorLever_GUID;
+//        uint32_t mMrSmiteChest_GUID;
+//        uint32_t mIronCladDoor_GUID;
+//        uint32_t InstanceEncounter;
 //};
 
 class RhahkZorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RhahkZorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RhahkZorAI)
     explicit RhahkZorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(6304, 8.0f, TARGET_ATTACKING, 1500, 3);    // Rhahk'Zor Slam
@@ -161,7 +161,7 @@ class RhahkZorAI : public CreatureAIScript
 
 class MrSmiteAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MrSmiteAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MrSmiteAI)
     explicit MrSmiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto smiteSlam = addAISpell(SMITE_SLAM, 25.0f, TARGET_ATTACKING, 0, 15, false, true);
@@ -288,12 +288,12 @@ class MrSmiteAI : public CreatureAIScript
 protected:
 
     CreatureAISpells* mStomp;
-    uint32 mWaitAtChest;
+    uint32_t mWaitAtChest;
 };
 
 class VanCleefAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VanCleefAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VanCleefAI)
     explicit VanCleefAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(3391, 25.0f, TARGET_SELF); // Thrash (Gives the caster 2 extra attacks.)
@@ -325,7 +325,7 @@ class VanCleefAI : public CreatureAIScript
         {
             sendDBChatMessage(7725);     // Fools! Our cause is righteous!
 
-            for (uint8 x = 0; x < 2; x++)
+            for (uint8_t x = 0; x < 2; x++)
             {
                 Creature* Guard = spawnCreature(636, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
                 if (Guard != nullptr)

@@ -21,14 +21,14 @@
 
 #include "Setup.h"
 
-const uint32 CN_LAIR_BRUTE = 19389;
-const uint32 LAIR_BRUTE_MORTALSTRIKE = 39171;
-const uint32 LAIR_BRUTE_CLEAVE = 39174;
-const uint32 LAIR_BRUTE_CHARGE = 24193;
+const uint32_t CN_LAIR_BRUTE = 19389;
+const uint32_t LAIR_BRUTE_MORTALSTRIKE = 39171;
+const uint32_t LAIR_BRUTE_CLEAVE = 39174;
+const uint32_t LAIR_BRUTE_CHARGE = 24193;
 
 class LairBruteAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LairBruteAI);
+    ADD_CREATURE_FACTORY_FUNCTION(LairBruteAI)
     explicit LairBruteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(LAIR_BRUTE_CLEAVE, 20.0f, TARGET_ATTACKING, 0, 15);
@@ -36,7 +36,7 @@ class LairBruteAI : public CreatureAIScript
         addAISpell(LAIR_BRUTE_CHARGE, 7.0f, TARGET_ATTACKING, 0, 35);
     }
 
-    void OnCastSpell(uint32 spellId) override
+    void OnCastSpell(uint32_t spellId) override
     {
         if (spellId == LAIR_BRUTE_CHARGE)
         {
@@ -52,14 +52,14 @@ class LairBruteAI : public CreatureAIScript
 };
 
 
-const uint32 CN_GRONN_PRIEST = 21350;
-const uint32 GRONN_PRIEST_PSYCHICSCREAM = 22884;
-const uint32 GRONN_PRIEST_RENEW = 36679;
-const uint32 GRONN_PRIEST_HEAL = 36678;
+const uint32_t CN_GRONN_PRIEST = 21350;
+const uint32_t GRONN_PRIEST_PSYCHICSCREAM = 22884;
+const uint32_t GRONN_PRIEST_RENEW = 36679;
+const uint32_t GRONN_PRIEST_HEAL = 36678;
 
 class GronnPriestAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GronnPriestAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GronnPriestAI)
     explicit GronnPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(GRONN_PRIEST_PSYCHICSCREAM, 8.0f, TARGET_SELF, 0, 20);
@@ -72,22 +72,22 @@ class GronnPriestAI : public CreatureAIScript
     }
 };
 
-const uint32 CN_HIGH_KING_MAULGAR = 18831;
-const uint32 HIGH_KING_MAULGAR_BERSERKER_CHARGE = 26561;
-const uint32 HIGH_KING_MAULGAR_INTIMIDATING_ROAR = 16508;
-const uint32 HIGH_KING_MAULGAR_MIGHTY_BLOW = 33230;
-const uint32 HIGH_KING_MAULGAR_FLURRY = 33232;
-const uint32 HIGH_KING_MAULGAR_ARCING_SMASH = 28168;
-const uint32 HIGH_KING_MAULGAR_ARCING_SMASH2 = 39144;
-const uint32 HIGH_KING_MAULGAR_WHIRLWIND = 33238;
-const uint32 HIGH_KING_MAULGAR_WHIRLWIND2 = 33239;
+const uint32_t CN_HIGH_KING_MAULGAR = 18831;
+const uint32_t HIGH_KING_MAULGAR_BERSERKER_CHARGE = 26561;
+const uint32_t HIGH_KING_MAULGAR_INTIMIDATING_ROAR = 16508;
+const uint32_t HIGH_KING_MAULGAR_MIGHTY_BLOW = 33230;
+const uint32_t HIGH_KING_MAULGAR_FLURRY = 33232;
+const uint32_t HIGH_KING_MAULGAR_ARCING_SMASH = 28168;
+const uint32_t HIGH_KING_MAULGAR_ARCING_SMASH2 = 39144;
+const uint32_t HIGH_KING_MAULGAR_WHIRLWIND = 33238;
+const uint32_t HIGH_KING_MAULGAR_WHIRLWIND2 = 33239;
 
 // 4th unit sometimes cannot be found - blame cell system
-uint32 Adds[4] = { 18832, 18834, 18836, 18835 };
+uint32_t Adds[4] = { 18832, 18834, 18836, 18835 };
 
 class HighKingMaulgarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HighKingMaulgarAI);
+    ADD_CREATURE_FACTORY_FUNCTION(HighKingMaulgarAI)
     explicit HighKingMaulgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto charge = addAISpell(HIGH_KING_MAULGAR_BERSERKER_CHARGE, 10.0f, TARGET_RANDOM_SINGLE, 0, 25);
@@ -120,7 +120,7 @@ class HighKingMaulgarAI : public CreatureAIScript
         
         mAliveAdds = 0;
         mLastYell = -1;
-        for (uint8 i = 0; i < 4; ++i)
+        for (uint8_t i = 0; i < 4; ++i)
         {
             Unit* pAdd = getNearestCreature(Adds[i]);
             if (pAdd != NULL && pAdd->isAlive())
@@ -184,7 +184,7 @@ class HighKingMaulgarAI : public CreatureAIScript
             --mAliveAdds;
             if (mAliveAdds > 1)
             {
-                uint32 RandomText = Util::getRandomUInt(1);
+                uint32_t RandomText = Util::getRandomUInt(1);
                 while((int)RandomText == mLastYell)
                 {
                     RandomText = Util::getRandomUInt(1);
@@ -212,21 +212,21 @@ class HighKingMaulgarAI : public CreatureAIScript
         }
     }
 
-    uint32 mAliveAdds;
-    int32 mLastYell;
+    uint32_t mAliveAdds;
+    int32_t mLastYell;
     CreatureAISpells* mEnrage;
 };
 
 
-const uint32 CN_KIGGLER_THE_CRAZED = 18835;
-const uint32 KIGGLER_THE_CRAZED_LIGHTNING_BOLT = 36152;
-const uint32 KIGGLER_THE_CRAZED_GREATER_POLYMORPH = 33173;
-const uint32 KIGGLER_THE_CRAZED_ARCANE_EXPLOSION = 33237;
-const uint32 KIGGLER_THE_CRAZED_ARCANE_SHOCK = 33175;
+const uint32_t CN_KIGGLER_THE_CRAZED = 18835;
+const uint32_t KIGGLER_THE_CRAZED_LIGHTNING_BOLT = 36152;
+const uint32_t KIGGLER_THE_CRAZED_GREATER_POLYMORPH = 33173;
+const uint32_t KIGGLER_THE_CRAZED_ARCANE_EXPLOSION = 33237;
+const uint32_t KIGGLER_THE_CRAZED_ARCANE_SHOCK = 33175;
 
 class KigglerTheCrazedAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KigglerTheCrazedAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KigglerTheCrazedAI)
     explicit KigglerTheCrazedAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(KIGGLER_THE_CRAZED_LIGHTNING_BOLT, 70.0f, TARGET_ATTACKING, 2, 0);
@@ -268,14 +268,14 @@ class KigglerTheCrazedAI : public CreatureAIScript
     }
 };
 
-const uint32 CN_BLINDEYE_THE_SEER = 18836;
-const uint32 BLINDEYE_THE_SEER_PRAYER_OF_HEALING = 33152;
-const uint32 BLINDEYE_THE_SEER_GREAT_POWER_WORD_SHIELD = 33147;
-const uint32 BLINDEYE_THE_SEER_HEAL = 33144;
+const uint32_t CN_BLINDEYE_THE_SEER = 18836;
+const uint32_t BLINDEYE_THE_SEER_PRAYER_OF_HEALING = 33152;
+const uint32_t BLINDEYE_THE_SEER_GREAT_POWER_WORD_SHIELD = 33147;
+const uint32_t BLINDEYE_THE_SEER_HEAL = 33144;
 
 class BlindeyeTheSeerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BlindeyeTheSeerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BlindeyeTheSeerAI)
     explicit BlindeyeTheSeerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BLINDEYE_THE_SEER_PRAYER_OF_HEALING, 5.0f, TARGET_SELF, 4, 30);
@@ -294,14 +294,14 @@ class BlindeyeTheSeerAI : public CreatureAIScript
     }
 };
 
-const uint32 CN_OLM_THE_SUMMONER = 18834;
-const uint32 OLM_THE_SUMMONER_DEATH_COIL = 33130;
-const uint32 OLM_THE_SUMMONER_SUMMON_WILD_FELHUNTER = 33131;
-const uint32 OLM_THE_SUMMONER_DARK_DECAY = 33129;
+const uint32_t CN_OLM_THE_SUMMONER = 18834;
+const uint32_t OLM_THE_SUMMONER_DEATH_COIL = 33130;
+const uint32_t OLM_THE_SUMMONER_SUMMON_WILD_FELHUNTER = 33131;
+const uint32_t OLM_THE_SUMMONER_DARK_DECAY = 33129;
 
 class OlmTheSummonerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OlmTheSummonerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(OlmTheSummonerAI)
     explicit OlmTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(OLM_THE_SUMMONER_DEATH_COIL, 7.0f, TARGET_RANDOM_SINGLE, 0, 10);
@@ -320,32 +320,32 @@ class OlmTheSummonerAI : public CreatureAIScript
     }
 };
 
-const uint32 CN_WILD_FEL_STALKER = 18847;
-const uint32 WILD_FEL_STALKER_WILD_BITE = 33086;
+const uint32_t CN_WILD_FEL_STALKER = 18847;
+const uint32_t WILD_FEL_STALKER_WILD_BITE = 33086;
 
 class WildFelStalkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WildFelStalkerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WildFelStalkerAI)
     explicit WildFelStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(WILD_FEL_STALKER_WILD_BITE, 10.0f, TARGET_ATTACKING, 0, 10);
     }
 };
 
-const uint32 CN_KROSH_FIREHAND = 18832;
+const uint32_t CN_KROSH_FIREHAND = 18832;
 
 /* He will first spellshield on himself, and recast every 30 sec,
    then spam great fireball to the target, also if there is any unit
    close to him (15yr) he'll cast blast wave
 */
 
-const uint32 GREAT_FIREBALL = 33051;
-const uint32 BALST_WAVE = 33061;
-const uint32 SPELLSHIELD = 33054;
+const uint32_t GREAT_FIREBALL = 33051;
+const uint32_t BALST_WAVE = 33061;
+const uint32_t SPELLSHIELD = 33054;
 
 class KroshFirehandAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KroshFirehandAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KroshFirehandAI)
     explicit KroshFirehandAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells
@@ -402,20 +402,20 @@ class KroshFirehandAI : public CreatureAIScript
 
     CreatureAISpells* mSpellShield;
     CreatureAISpells* mBlastWave;
-    int32 mEventTimer;
-    int32 mBlastWaveTimer;
+    int32_t mEventTimer;
+    int32_t mBlastWaveTimer;
 };
 
-const uint32 CN_GRUUL_THE_DRAGONKILLER = 19044;
-const uint32 GRUUL_THE_DRAGONKILLER_GROWTH = 36300;   // +
-const uint32 GRUUL_THE_DRAGONKILLER_CAVE_IN = 36240;   // + 
-const uint32 GRUUL_THE_DRAGONKILLER_GROUND_SLAM = 33525;    // +
-const uint32 GRUUL_THE_DRAGONKILLER_GROUND_SLAM2 = 39187;    // +
-const uint32 GRUUL_THE_DRAGONKILLER_SHATTER = 33671;    // does not make dmg - to script
-const uint32 GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE = 33813;   // +
-const uint32 GRUUL_THE_DRAGONKILLER_REVERBERATION = 36297;    // +
-const uint32 GRUUL_THE_DRAGONKILLER_STONED = 33652;    // +
-const uint32 GRUUL_THE_DRAGONKILLER_GRONN_LORDS_GRASP = 33572;    // Should be used only after Ground Slam
+const uint32_t CN_GRUUL_THE_DRAGONKILLER = 19044;
+const uint32_t GRUUL_THE_DRAGONKILLER_GROWTH = 36300;   // +
+const uint32_t GRUUL_THE_DRAGONKILLER_CAVE_IN = 36240;   // + 
+const uint32_t GRUUL_THE_DRAGONKILLER_GROUND_SLAM = 33525;    // +
+const uint32_t GRUUL_THE_DRAGONKILLER_GROUND_SLAM2 = 39187;    // +
+const uint32_t GRUUL_THE_DRAGONKILLER_SHATTER = 33671;    // does not make dmg - to script
+const uint32_t GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE = 33813;   // +
+const uint32_t GRUUL_THE_DRAGONKILLER_REVERBERATION = 36297;    // +
+const uint32_t GRUUL_THE_DRAGONKILLER_STONED = 33652;    // +
+const uint32_t GRUUL_THE_DRAGONKILLER_GRONN_LORDS_GRASP = 33572;    // Should be used only after Ground Slam
 
 //void SpellFunc_Gruul_GroundSlam(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 //void SpellFunc_Gruul_Stoned(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
@@ -423,7 +423,7 @@ const uint32 GRUUL_THE_DRAGONKILLER_GRONN_LORDS_GRASP = 33572;    // Should be u
 
 class GruulTheDragonkillerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GruulTheDragonkillerAI);
+    ADD_CREATURE_FACTORY_FUNCTION(GruulTheDragonkillerAI)
     explicit GruulTheDragonkillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mHurtfulStrike = addAISpell(GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE, 0.0f, TARGET_ATTACKING, 0, 8);
@@ -464,7 +464,7 @@ class GruulTheDragonkillerAI : public CreatureAIScript
             pGate->setState(GO_STATE_CLOSED);
     }
 
-    void OnCastSpell(uint32 spellId) override
+    void OnCastSpell(uint32_t spellId) override
     {
         if (spellId == GRUUL_THE_DRAGONKILLER_GROUND_SLAM)
         {
@@ -543,9 +543,9 @@ class GruulTheDragonkillerAI : public CreatureAIScript
         }
     }
 
-    uint32 mGrowthStacks;        // temporary way to store it
-    int32 mHurtfulTimer;
-    int32 mGrowthTimer;
+    uint32_t mGrowthStacks;        // temporary way to store it
+    int32_t mHurtfulTimer;
+    int32_t mGrowthTimer;
 
     CreatureAISpells* mHurtfulStrike;
     CreatureAISpells* mGroundSlam;

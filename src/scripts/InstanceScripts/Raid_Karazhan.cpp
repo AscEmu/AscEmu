@@ -28,7 +28,7 @@ public:
         menu.sendGossipPacket(Plr);
     }
 
-    void onSelectOption(Object* /*pObject*/, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* Plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
@@ -43,15 +43,15 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Attumen the Huntsman (and Midnight)
-const uint32 CN_MIDNIGHT = 16151;
-const uint32 CN_ATTUMEN = 15550;
-const uint32 ATTUMEN_SHADOW_CLEAVE = 29832;
-const uint32 ATTUMEN_BERSERKER_CHARGE = 22886;
-const uint32 ATTUMEN_INTANGIBLE_PRESENCE = 29833;
+const uint32_t CN_MIDNIGHT = 16151;
+const uint32_t CN_ATTUMEN = 15550;
+const uint32_t ATTUMEN_SHADOW_CLEAVE = 29832;
+const uint32_t ATTUMEN_BERSERKER_CHARGE = 22886;
+const uint32_t ATTUMEN_INTANGIBLE_PRESENCE = 29833;
 
 class AttumenTheHuntsmanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AttumenTheHuntsmanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AttumenTheHuntsmanAI)
     explicit AttumenTheHuntsmanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //All phase spells
@@ -101,7 +101,7 @@ class AttumenTheHuntsmanAI : public CreatureAIScript
 
 class MidnightAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MidnightAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MidnightAI)
     explicit MidnightAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
@@ -171,16 +171,16 @@ class MidnightAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Moroes
-const uint32 CN_MOROES = 15687;
-const uint32 MOROES_GOUGE = 28456;
-const uint32 MOROES_VANISH = 29448;
-const uint32 MOROES_BLIND = 34654;
-const uint32 MOROES_ENRAGE = 37023;
-const uint32 MOROES_GARROTE = 37066;
+const uint32_t CN_MOROES = 15687;
+const uint32_t MOROES_GOUGE = 28456;
+const uint32_t MOROES_VANISH = 29448;
+const uint32_t MOROES_BLIND = 34654;
+const uint32_t MOROES_ENRAGE = 37023;
+const uint32_t MOROES_GARROTE = 37066;
 
 class MoroesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MoroesAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MoroesAI)
     explicit MoroesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Initialize timers
@@ -267,21 +267,21 @@ class MoroesAI : public CreatureAIScript
     CreatureAISpells* mVanish;
     CreatureAISpells* mGarrote;
     CreatureAISpells* mEnrage;
-    uint32 mVanishTimer;
-    uint32 mGarroteTimer;
+    uint32_t mVanishTimer;
+    uint32_t mGarroteTimer;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Maiden of Virtue
-const uint32 CN_MAIDENOFVIRTUE = 16457;
-const uint32 MAIDENOFVIRTUE_REPENTANCE = 29511;
-const uint32 MAIDENOFVIRTUE_HOLY_GROUND = 29512;
-const uint32 MAIDENOFVIRTUE_HOLY_FIRE = 29522;
-const uint32 MAIDENOFVIRTUE_HOLY_WRATH = 32445;
+const uint32_t CN_MAIDENOFVIRTUE = 16457;
+const uint32_t MAIDENOFVIRTUE_REPENTANCE = 29511;
+const uint32_t MAIDENOFVIRTUE_HOLY_GROUND = 29512;
+const uint32_t MAIDENOFVIRTUE_HOLY_FIRE = 29522;
+const uint32_t MAIDENOFVIRTUE_HOLY_WRATH = 32445;
 
 class MaidenOfVirtueAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MaidenOfVirtueAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MaidenOfVirtueAI)
     explicit MaidenOfVirtueAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Spells
@@ -310,17 +310,17 @@ class MaidenOfVirtueAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //The Big Bad Wolf
-const uint32 CN_BIGBADWOLF = 17521;
+const uint32_t CN_BIGBADWOLF = 17521;
 
-const uint32 TERRIFYING_HOWL = 30752;
-const uint32 WIDE_SWIPE = 6749;
+const uint32_t TERRIFYING_HOWL = 30752;
+const uint32_t WIDE_SWIPE = 6749;
 // Combines display visual + buff
-const uint32 REDRIDINGHOOD_DEBUFF = 30768;
-const uint32 PBS_TAUNT = 30755;    // Picnic Basket Smell (taunt)
+const uint32_t REDRIDINGHOOD_DEBUFF = 30768;
+const uint32_t PBS_TAUNT = 30755;    // Picnic Basket Smell (taunt)
 
 class BigBadWolfAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BigBadWolfAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BigBadWolfAI)
     explicit BigBadWolfAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_threattimer = 0;
@@ -367,13 +367,13 @@ protected:
 };
 
 
-const uint32 THEBIGBADWOLF_TERRIFYING_HOWL = 30752;
-const uint32 MORPH_LITTLE_RED_RIDING_HOOD = 30768;
-const uint32 DEBUFF_LITTLE_RED_RIDING_HOOD = 30756;
+const uint32_t THEBIGBADWOLF_TERRIFYING_HOWL = 30752;
+const uint32_t MORPH_LITTLE_RED_RIDING_HOOD = 30768;
+const uint32_t DEBUFF_LITTLE_RED_RIDING_HOOD = 30756;
 
 class THEBIGBADWOLFAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(THEBIGBADWOLFAI);
+    ADD_CREATURE_FACTORY_FUNCTION(THEBIGBADWOLFAI)
     explicit THEBIGBADWOLFAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
@@ -428,7 +428,7 @@ class THEBIGBADWOLFAI : public CreatureAIScript
 };
 
 
-uint32 WayStartBBW[1000000];
+uint32_t WayStartBBW[1000000];
 class BarnesGS : public GossipScript
 {
 public:
@@ -448,7 +448,7 @@ public:
         }
     }
 
-    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
@@ -489,7 +489,7 @@ public:
         menu.sendGossipPacket(Plr);
     }
 
-    void onSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
@@ -516,7 +516,7 @@ static Movement::Location Barnes[] =
 
 class BarnesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BarnesAI);
+    ADD_CREATURE_FACTORY_FUNCTION(BarnesAI)
     explicit BarnesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -546,7 +546,7 @@ class BarnesAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -672,7 +672,7 @@ class BarnesAI : public CreatureAIScript
         // Timed text 3
         getCreature()->SendTimedScriptTextChatMessage(2010, 32000); // Will she survive? Will she prevail? Only time will tell. And now: On with the show!", 32000);
         // Applause
-        sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::PlaySoundToSet, (uint32_t)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 
     void EventWOZ()
@@ -709,7 +709,7 @@ class BarnesAI : public CreatureAIScript
         // Timed text 3
         getCreature()->SendTimedScriptTextChatMessage(2018, 32000);     // But don't take it from me. See for yourself what tragedy lies ahead when the paths of star-crossed lovers meet. And now: On with the show!
         // Applause
-        sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::PlaySoundToSet, (uint32_t)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 
     void EventRJ()
@@ -742,7 +742,7 @@ class BarnesAI : public CreatureAIScript
         // Timed text 3
         getCreature()->SendTimedScriptTextChatMessage(2014, 32000);     // But don't let me pull the wool over your eyes. See for yourself what lies beneath those covers. And now: On with the show!
         // Applause
-        sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::PlaySoundToSet, (uint32_t)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 
     void EventRed()
@@ -772,7 +772,7 @@ protected:
 
 class StageLight : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StageLight);
+    ADD_CREATURE_FACTORY_FUNCTION(StageLight)
     explicit StageLight(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -785,17 +785,17 @@ class StageLight : public CreatureAIScript
 };
 
 // The Curator + Astral Flare
-const uint32 CN_CURATOR = 15691;
-const uint32 CN_ASTRALFLARE = 17096;
+const uint32_t CN_CURATOR = 15691;
+const uint32_t CN_ASTRALFLARE = 17096;
 
-const uint32 HATEFUL_BOLT = 30383;
-const uint32 EVOCATION = 30254;
-const uint32 C_ENRAGE = 28747;
-const uint32 BERSERK = 26662;
+const uint32_t HATEFUL_BOLT = 30383;
+const uint32_t EVOCATION = 30254;
+const uint32_t C_ENRAGE = 28747;
+const uint32_t BERSERK = 26662;
 
 class CuratorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CuratorAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CuratorAI)
     explicit CuratorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         evocation = false;
@@ -810,7 +810,7 @@ class CuratorAI : public CreatureAIScript
 
         evocation = false;
         enrage = false;
-        uint32 t = (uint32)time(NULL);
+        uint32_t t = (uint32_t)time(NULL);
         Timer = t + 10;
 
         RegisterAIUpdateEvent(1000);
@@ -850,7 +850,7 @@ class CuratorAI : public CreatureAIScript
         if (!Target_List.size())
             return;
 
-        auto random_index = Util::getRandomUInt(0, uint32(Target_List.size() - 1));
+        auto random_index = Util::getRandomUInt(0, uint32_t(Target_List.size() - 1));
         Unit* random_target = Target_List[random_index];
 
         if (random_target == nullptr)
@@ -908,17 +908,17 @@ protected:
     bool evocation;
     bool enrage;
     bool berserk;
-    uint32 Timer;
+    uint32_t Timer;
 };
 
 // Astral Flare
-const uint32 ASTRAL_FLARE_PASSIVE = 30234;
-const uint32 ASTRAL_FLARE_VISUAL = 30237;
-const uint32 ARCING_SEAR = 30235;
+const uint32_t ASTRAL_FLARE_PASSIVE = 30234;
+const uint32_t ASTRAL_FLARE_VISUAL = 30237;
+const uint32_t ARCING_SEAR = 30235;
 
 class AstralFlareAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AstralFlareAI);
+    ADD_CREATURE_FACTORY_FUNCTION(AstralFlareAI)
     explicit AstralFlareAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASTRAL_FLARE_PASSIVE, 100.0f, TARGET_SELF, 0, 3);
@@ -928,36 +928,36 @@ class AstralFlareAI : public CreatureAIScript
 };
 
 // Shade of Aran
-const uint32 SHADEOFARAN = 16524;
+const uint32_t SHADEOFARAN = 16524;
 
-const uint32 FROSTBOLT = 29954;
-const uint32 FIREBALL = 29953;
-const uint32 ARCMISSLE = 29955;
-const uint32 CHAINSOFICE = 29991;
-const uint32 DRAGONSBREATH = 29964;
-const uint32 AOE_COUNTERSPELL = 29961;
+const uint32_t FROSTBOLT = 29954;
+const uint32_t FIREBALL = 29953;
+const uint32_t ARCMISSLE = 29955;
+const uint32_t CHAINSOFICE = 29991;
+const uint32_t DRAGONSBREATH = 29964;
+const uint32_t AOE_COUNTERSPELL = 29961;
 
-const uint32 BLIZZARD = 29952;
-const uint32 FLAME_WREATH = 29946; // detonate -> 30004
+const uint32_t BLIZZARD = 29952;
+const uint32_t FLAME_WREATH = 29946; // detonate -> 30004
 
-const uint32 BLINK_CENTER = 29967;
-const uint32 MAGNETIC_PULL = 38540;
-const uint32 MASSSLOW = 30035;
-const uint32 AEXPLOSION = 29973;
+const uint32_t BLINK_CENTER = 29967;
+const uint32_t MAGNETIC_PULL = 38540;
+const uint32_t MASSSLOW = 30035;
+const uint32_t AEXPLOSION = 29973;
 
-const uint32 MASS_POLYMORPH = 29963;
-const uint32 CONJURE = 29975;
-const uint32 DRINK = 30024;
-const uint32 AOE_PYROBLAST = 29978;
+const uint32_t MASS_POLYMORPH = 29963;
+const uint32_t CONJURE = 29975;
+const uint32_t DRINK = 30024;
+const uint32_t AOE_PYROBLAST = 29978;
 
-const uint32 SUMMON_ELEMENTAL_1 = 37051;
-const uint32 SUMMON_ELEMENTAL_2 = 37052;
-const uint32 SUMMON_ELEMENTAL_3 = 37053;
-const uint32 WATERELE = 17167;
-const uint32 WATERBOLT = 31012;
+const uint32_t SUMMON_ELEMENTAL_1 = 37051;
+const uint32_t SUMMON_ELEMENTAL_2 = 37052;
+const uint32_t SUMMON_ELEMENTAL_3 = 37053;
+const uint32_t WATERELE = 17167;
+const uint32_t WATERBOLT = 31012;
 
-const uint32 SHADOWOFARAN = 18254;
-const uint32 SHADOWPYRO = 29978;
+const uint32_t SHADOWOFARAN = 18254;
+const uint32_t SHADOWPYRO = 29978;
 
 enum SUPERSPELL
 {
@@ -968,7 +968,7 @@ enum SUPERSPELL
 
 class ShadeofAranAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadeofAranAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadeofAranAI)
     explicit ShadeofAranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(FROSTBOLT);
@@ -1087,7 +1087,7 @@ class ShadeofAranAI : public CreatureAIScript
         setAIAgent(AGENT_SPELL);
         RegisterAIUpdateEvent(1000);
         m_time_enrage = 900;
-        m_time_special = (uint32)Util::getRandomUInt(5) + 25;
+        m_time_special = (uint32_t)Util::getRandomUInt(5) + 25;
         m_time_pyroblast = 0;
         drinking = false;
         enraged = false;
@@ -1142,7 +1142,7 @@ class ShadeofAranAI : public CreatureAIScript
         if (FlameWreathTimer)
         {
             FlameWreathTimer--;
-            for (uint8 i = 0; i < 3; i++)
+            for (uint8_t i = 0; i < 3; i++)
             {
                 if (!FlameWreathTarget[i])
                     continue;
@@ -1229,7 +1229,7 @@ class ShadeofAranAI : public CreatureAIScript
             float ERY = 5 * sin(Util::getRandomFloat(6.28f)) + getCreature()->GetPositionY();
             float ERZ = getCreature()->GetPositionZ();
 
-            for (uint8 i = 0; i < 4; i++)
+            for (uint8_t i = 0; i < 4; i++)
             {
                 spawnCreature(SHADOWOFARAN, ERX, ERY, ERZ, 0);
             }
@@ -1242,7 +1242,7 @@ class ShadeofAranAI : public CreatureAIScript
         else if (!m_time_special)
         {
             CastSpecial();
-            m_time_special = (uint32)Util::getRandomUInt(5) + 25;
+            m_time_special = (uint32_t)Util::getRandomUInt(5) + 25;
             return;
         }
     }
@@ -1273,9 +1273,9 @@ class ShadeofAranAI : public CreatureAIScript
         }
 
         while (Targets.size() > 3)
-            Targets.erase(Targets.begin() + Util::getRandomUInt(static_cast<uint32>(Targets.size())));
+            Targets.erase(Targets.begin() + Util::getRandomUInt(static_cast<uint32_t>(Targets.size())));
 
-        uint32 i = 0;
+        uint32_t i = 0;
         for (std::vector<Player*>::iterator itr = Targets.begin(); itr != Targets.end(); ++itr)
         {
             if (*itr)
@@ -1374,12 +1374,12 @@ protected:
     float FWTargPosX[3];
     float FWTargPosY[3];
     int LastSuperSpell;
-    uint32 m_time_enrage;
-    uint32 m_time_special;
-    uint32 m_time_pyroblast;
-    uint32 m_time_conjure;
-    uint32 FlameWreathTimer;
-    uint64 FlameWreathTarget[3];
+    uint32_t m_time_enrage;
+    uint32_t m_time_special;
+    uint32_t m_time_pyroblast;
+    uint32_t m_time_conjure;
+    uint32_t FlameWreathTimer;
+    uint64_t FlameWreathTarget[3];
     SpellInfo const* info_flame_wreath;
     SpellInfo const* info_aexplosion;
     SpellInfo const* info_blizzard;
@@ -1397,7 +1397,7 @@ protected:
 
 class WaterEleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WaterEleAI);
+    ADD_CREATURE_FACTORY_FUNCTION(WaterEleAI)
     explicit WaterEleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WaterBolt = 0;
@@ -1432,7 +1432,7 @@ protected:
 
 class ShadowofAranAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowofAranAI);
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowofAranAI)
     explicit ShadowofAranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         ShadowPyro = 0;
@@ -1470,34 +1470,34 @@ protected:
 };
 
 // Terestian Illhoof
-const uint32 CN_ILLHOOF = 15688;
+const uint32_t CN_ILLHOOF = 15688;
 
-//const uint32 SHADOW_BOLT = 19729;
-// const uint32 S_DEMONCHAINS = 30120;
-const uint32 S_KILREK = 30066;
-// const uint32 F_PORTAL1 = 30179;
-// const uint32 F_PORTAL2 = 30171;
-const uint32 I_ENRAGE = 32964;
-const uint32 SACRIFICE = 30115;
+//const uint32_t SHADOW_BOLT = 19729;
+// const uint32_t S_DEMONCHAINS = 30120;
+const uint32_t S_KILREK = 30066;
+// const uint32_t F_PORTAL1 = 30179;
+// const uint32_t F_PORTAL2 = 30171;
+const uint32_t I_ENRAGE = 32964;
+const uint32_t SACRIFICE = 30115;
 
 // Kil'Rek
-const uint32 CN_KILREK = 17229;
-const uint32 AMPLIFY_FLAMES = 30053;
-const uint32 BROKEN_PACT = 30065;
+const uint32_t CN_KILREK = 17229;
+const uint32_t AMPLIFY_FLAMES = 30053;
+const uint32_t BROKEN_PACT = 30065;
 
 // Imps
-const uint32 CN_FIENDISH_IMP = 17267;
-const uint32 FIREBALL_IMP = 31620;
+const uint32_t CN_FIENDISH_IMP = 17267;
+const uint32_t FIREBALL_IMP = 31620;
 
 // Demon Chains
-const uint32 CN_DEMONCHAINS = 17248;
-const uint32 CHAINS_VISUAL = 30206;
+const uint32_t CN_DEMONCHAINS = 17248;
+const uint32_t CHAINS_VISUAL = 30206;
 
-const uint32 CN_FPORTAL = 17265;
+const uint32_t CN_FPORTAL = 17265;
 
 class IllhoofAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllhoofAI);
+    ADD_CREATURE_FACTORY_FUNCTION(IllhoofAI)
     explicit IllhoofAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SHADOW_BOLT);
@@ -1524,7 +1524,7 @@ class IllhoofAI : public CreatureAIScript
     {
         sendDBChatMessage(2050);     // Ah, you're just in time. The rituals are about to begin.
 
-        uint32 t = (uint32)time(NULL);
+        uint32_t t = (uint32_t)time(NULL);
 
         DemonChain = t + 45;
         ImpTimer = t + 10;
@@ -1570,7 +1570,7 @@ class IllhoofAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        uint32 t = (uint32)time(NULL);
+        uint32_t t = (uint32_t)time(NULL);
         if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())
         {
             if (t > ImpTimer)
@@ -1638,7 +1638,7 @@ class IllhoofAI : public CreatureAIScript
         if (!TargetTable.size())
             return;
 
-        auto random_index = Util::getRandomUInt(0, uint32(TargetTable.size() - 1));
+        auto random_index = Util::getRandomUInt(0, uint32_t(TargetTable.size() - 1));
         auto random_target = TargetTable[random_index];
 
         if (random_target == nullptr)
@@ -1657,15 +1657,15 @@ class IllhoofAI : public CreatureAIScript
 protected:
 
     bool ReSummon;
-    uint32 ImpTimer;
-    uint32 ReKilrek;
-    uint32 DemonChain;
+    uint32_t ImpTimer;
+    uint32_t ReKilrek;
+    uint32_t DemonChain;
 };
 
 // Kil'Rek
 class KilrekAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KilrekAI);
+    ADD_CREATURE_FACTORY_FUNCTION(KilrekAI)
     explicit KilrekAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(AMPLIFY_FLAMES);
@@ -1682,7 +1682,7 @@ class KilrekAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        //spells[0].casttime = (uint32)time(NULL) + spells[0].cooldown;
+        //spells[0].casttime = (uint32_t)time(NULL) + spells[0].cooldown;
 
         RegisterAIUpdateEvent(1000);
     }
@@ -1698,7 +1698,7 @@ class KilrekAI : public CreatureAIScript
 // Fiendish Imp
 class FiendishImpAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FiendishImpAI);
+    ADD_CREATURE_FACTORY_FUNCTION(FiendishImpAI)
     explicit FiendishImpAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(FIREBALL_IMP);
@@ -1754,7 +1754,7 @@ class FiendishImpAI : public CreatureAIScript
 
 class DemonChains : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DemonChains);
+    ADD_CREATURE_FACTORY_FUNCTION(DemonChains)
     explicit DemonChains(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(CHAINS_VISUAL), true);
@@ -1781,7 +1781,7 @@ class DemonChains : public CreatureAIScript
 
 class FiendPortal : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FiendPortal);
+    ADD_CREATURE_FACTORY_FUNCTION(FiendPortal)
     explicit FiendPortal(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setMoveRoot(true);
@@ -1802,29 +1802,29 @@ class FiendPortal : public CreatureAIScript
 };
 
 // Prince Malchezaar
-const uint32 CN_MALCHEZAAR = 15690;
-const uint32 CN_INFERNAL = 17646;
-const uint32 CN_AXES = 17650;
-const uint32 CN_DUMMY = 17644;
+const uint32_t CN_MALCHEZAAR = 15690;
+const uint32_t CN_INFERNAL = 17646;
+const uint32_t CN_AXES = 17650;
+const uint32_t CN_DUMMY = 17644;
 
-const uint32 ENFEEBLE = 30843;
-const uint32 SHADOWNOVA = 30852;
-const uint32 SW_PAIN = 30854;
-const uint32 THRASH_AURA = 12787;
-const uint32 SUNDER_ARMOR = 25225;
-const uint32 AMPLIFY_DMG = 39095; // old 12738
-const uint32 SUMMON_AXES = 30891;
-const uint32 WIELD_AXES = 30857;
+const uint32_t ENFEEBLE = 30843;
+const uint32_t SHADOWNOVA = 30852;
+const uint32_t SW_PAIN = 30854;
+const uint32_t THRASH_AURA = 12787;
+const uint32_t SUNDER_ARMOR = 25225;
+const uint32_t AMPLIFY_DMG = 39095; // old 12738
+const uint32_t SUMMON_AXES = 30891;
+const uint32_t WIELD_AXES = 30857;
 
 // Extra creature info
-const uint32 INF_RAIN = 33814;
-const uint32 HELLFIRE = 39131;
-const uint32 DEMONIC_FRENZY = 32851;
+const uint32_t INF_RAIN = 33814;
+const uint32_t HELLFIRE = 39131;
+const uint32_t DEMONIC_FRENZY = 32851;
 
 // Item model info
-const uint32 AXE_ITEM_MODEL = 40066;
-const uint32 AXE_ITEM_INFO = 33488898;
-const uint32 AXE_ITEM_SLOT = 768;
+const uint32_t AXE_ITEM_MODEL = 40066;
+const uint32_t AXE_ITEM_INFO = 33488898;
+const uint32_t AXE_ITEM_SLOT = 768;
 /* Emotes:
 SPECIAL? - 9223 - 9320
 AXETOSS2? - 9317
@@ -1832,7 +1832,7 @@ AXETOSS2? - 9317
 
 class MalchezaarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MalchezaarAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MalchezaarAI)
     explicit MalchezaarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_phase = 1;
@@ -1951,7 +1951,7 @@ class MalchezaarAI : public CreatureAIScript
         getCreature()->setMinDamage(cp->MinDamage);
         getCreature()->setMaxDamage(cp->MaxDamage);
 
-        for (uint8 i = 0; i < 5; ++i)
+        for (uint8_t i = 0; i < 5; ++i)
             Enfeeble_Targets[i] = 0;
 
         if (getLinkedCreatureAIScript() != NULL)
@@ -2067,7 +2067,7 @@ class MalchezaarAI : public CreatureAIScript
         {
             sendDBChatMessage(2020);     // Time is the fire in which you'll burn!");
 
-            /*uint32 t = (uint32)time(NULL);
+            /*uint32_t t = (uint32_t)time(NULL);
             spells[0].casttime = 0;
             spells[3].casttime = t + spells[3].cooldown;
             spells[3].perctrigger = 50.0f;
@@ -2098,7 +2098,7 @@ class MalchezaarAI : public CreatureAIScript
         {
             sendDBChatMessage(2024);     // How can you hope to withstand against such overwhelming power?
 
-            /*uint32 t = (uint32)time(NULL);
+            /*uint32_t t = (uint32_t)time(NULL);
 
             spells[0].targettype = TARGET_RANDOM_SINGLE;
             spells[0].casttime = t + spells[0].cooldown;
@@ -2148,8 +2148,8 @@ class MalchezaarAI : public CreatureAIScript
         //{
         //    getLinkedCreatureAIScript()->getCreature()->castSpellLoc(LocationVector(ranX, ranY, 275.0f), spells[2].info, spells[2].instant); // Shoots the missile
         //    float dist = getLinkedCreatureAIScript()->getCreature()->CalcDistance(ranX, ranY, 275.0f);
-        //    uint32 dtime = (uint32)(dist / spells[2].info->getSpeed());
-        //    m_spawn_infernal = (uint32)time(NULL) + dtime + 1;
+        //    uint32_t dtime = (uint32_t)(dist / spells[2].info->getSpeed());
+        //    m_spawn_infernal = (uint32_t)time(NULL) + dtime + 1;
         //    m_infernal = true;
         //}
     }
@@ -2168,7 +2168,7 @@ class MalchezaarAI : public CreatureAIScript
         }
 
         while (Targets.size() > 5)
-            Targets.erase(Targets.begin() + Util::getRandomUInt(static_cast<uint32>(Targets.size())));
+            Targets.erase(Targets.begin() + Util::getRandomUInt(static_cast<uint32_t>(Targets.size())));
 
         /*for (std::vector<Player*>::iterator E_Itr = Targets.begin(); E_Itr != Targets.end(); ++E_Itr)
         {
@@ -2186,7 +2186,7 @@ class MalchezaarAI : public CreatureAIScript
 
     void EnfeebleOff()
     {
-        for (uint8 i = 0; i < 5; ++i)
+        for (uint8_t i = 0; i < 5; ++i)
         {
             Unit* ETarget = getCreature()->GetMapMgr()->GetUnit(Enfeeble_Targets[i]);
             if (ETarget && ETarget->isAlive())
@@ -2201,15 +2201,15 @@ protected:
     float ranY;
     int m_phase;
     bool m_infernal;
-    uint32 m_enfeebleoff;
-    uint32 m_spawn_infernal;
-    uint64 Enfeeble_Targets[5];
-    uint32 Enfeeble_Health[5];
+    uint32_t m_enfeebleoff;
+    uint32_t m_spawn_infernal;
+    uint64_t Enfeeble_Targets[5];
+    uint32_t Enfeeble_Health[5];
 };
 
 class NetherInfernalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NetherInfernalAI);
+    ADD_CREATURE_FACTORY_FUNCTION(NetherInfernalAI)
     explicit NetherInfernalAI(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
     void OnLoad() override
@@ -2232,7 +2232,7 @@ class NetherInfernalAI : public CreatureAIScript
 
 class InfernalDummyAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InfernalDummyAI);
+    ADD_CREATURE_FACTORY_FUNCTION(InfernalDummyAI)
     explicit InfernalDummyAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -2249,7 +2249,7 @@ class InfernalDummyAI : public CreatureAIScript
 
 class MAxesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MAxesAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MAxesAI)
     explicit MAxesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
@@ -2264,7 +2264,7 @@ class MAxesAI : public CreatureAIScript
     {
         RegisterAIUpdateEvent(6000);
 
-        //spells[0].casttime = (uint32)time(NULL) + spells[0].cooldown;
+        //spells[0].casttime = (uint32_t)time(NULL) + spells[0].cooldown;
 
         std::vector<Unit* > TargetTable;
         for (const auto& itr : getCreature()->getInRangePlayersSet())
@@ -2279,7 +2279,7 @@ class MAxesAI : public CreatureAIScript
         if (!TargetTable.size())
             return;
 
-        auto random_index = Util::getRandomUInt(0, uint32(TargetTable.size() - 1));
+        auto random_index = Util::getRandomUInt(0, uint32_t(TargetTable.size() - 1));
         auto random_target = TargetTable[random_index];
 
         if (random_target == nullptr)
@@ -2290,7 +2290,7 @@ class MAxesAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        /*uint32 t = (uint32)time(NULL);
+        /*uint32_t t = (uint32_t)time(NULL);
         if (t > spells[0].casttime)
         {
             getCreature()->castSpell(getCreature(), spells[0].info, spells[0].instant);
@@ -2300,19 +2300,19 @@ class MAxesAI : public CreatureAIScript
 };
 
 // Netherspite
-const uint32 CN_NETHERSPITE = 15689;
-const uint32 CN_VOIDZONE = 17470;
+const uint32_t CN_NETHERSPITE = 15689;
+const uint32_t CN_VOIDZONE = 17470;
 
-// const uint32 NETHERBURN = 30523; //not aura
-// const uint32 VOIDZONE = 28863;
-const uint32 CONSUMPTION = 32251; // used by void zone
-const uint32 NETHERBREATH = 38524; // old 36631
-const uint32 N_BERSERK = 38688;
-const uint32 NETHERBURN = 30522;
+// const uint32_t NETHERBURN = 30523; //not aura
+// const uint32_t VOIDZONE = 28863;
+const uint32_t CONSUMPTION = 32251; // used by void zone
+const uint32_t NETHERBREATH = 38524; // old 36631
+const uint32_t N_BERSERK = 38688;
+const uint32_t NETHERBURN = 30522;
 
 class NetherspiteAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NetherspiteAI);
+    ADD_CREATURE_FACTORY_FUNCTION(NetherspiteAI)
     explicit NetherspiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(NETHERBREATH);
@@ -2336,10 +2336,10 @@ class NetherspiteAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        /*for (uint8 i = 0; i < nrspells; i++)
+        /*for (uint8_t i = 0; i < nrspells; i++)
             spells[i].casttime = spells[i].cooldown;
 
-        uint32 t = (uint32)time(NULL);
+        uint32_t t = (uint32_t)time(NULL);
         VoidTimer = t + 25;
         getCreature()->castSpell(getCreature(), spells[2].info, spells[2].instant);*/
 
@@ -2371,7 +2371,7 @@ class NetherspiteAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        /*uint32 t = (uint32)time(NULL);
+        /*uint32_t t = (uint32_t)time(NULL);
         if (t > VoidTimer && getCreature()->GetAIInterface()->getNextTarget())
         {
             VoidTimer = t + 20;
@@ -2387,7 +2387,7 @@ class NetherspiteAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            auto random_index = Util::getRandomUInt(0, uint32(TargetTable.size() - 1));
+            auto random_index = Util::getRandomUInt(0, uint32_t(TargetTable.size() - 1));
             auto random_target = TargetTable[random_index];
 
             if (random_target == nullptr)
@@ -2404,7 +2404,7 @@ class NetherspiteAI : public CreatureAIScript
 
 class VoidZoneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VoidZoneAI);
+    ADD_CREATURE_FACTORY_FUNCTION(VoidZoneAI)
     explicit VoidZoneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setMoveRoot(true);
@@ -2420,14 +2420,14 @@ class VoidZoneAI : public CreatureAIScript
         /*spells[0].info = sSpellMgr.getSpellInfo(CONSUMPTION);
         spells[0].instant = true;
         spells[0].cooldown = 2;
-        spells[0].casttime = (uint32)time(NULL) + spells[0].cooldown;
+        spells[0].casttime = (uint32_t)time(NULL) + spells[0].cooldown;
 
         getCreature()->castSpell(getCreature(), spells[0].info, spells[0].instant);*/
     }
 
     void AIUpdate() override
     {
-        /*uint32 t = (uint32)time(NULL);
+        /*uint32_t t = (uint32_t)time(NULL);
         if (t > spells[0].casttime)
         {
             getCreature()->castSpell(getCreature(), spells[0].casttime, spells[0].instant);
@@ -2444,25 +2444,25 @@ class VoidZoneAI : public CreatureAIScript
  - Summons five Restless Skeletons.
 */
 
-const uint32 CN_NIGHTBANE = 17225;
-const uint32 CN_RESTLESS_SKELETON = 17261; // not needed if spell works
+const uint32_t CN_NIGHTBANE = 17225;
+const uint32_t CN_RESTLESS_SKELETON = 17261; // not needed if spell works
 
 
 // ground spells
-const uint32 BELLOWING_ROAR = 36922;
-const uint32 CHARRED_EARTH = 30129; //Also 30209 (Target Charred Earth) triggers this
+const uint32_t BELLOWING_ROAR = 36922;
+const uint32_t CHARRED_EARTH = 30129; //Also 30209 (Target Charred Earth) triggers this
 #undef CLEAVE
-const uint32 CLEAVE = 31043; // fixme: correct spell?!
-const uint32 SMOLDERING_BREATH = 39385;
-const uint32 TAIL_SWEEP = 25653;//\todo  how to use this spell???
-const uint32 DISTRACTING_ASH = 30280;
+const uint32_t CLEAVE = 31043; // fixme: correct spell?!
+const uint32_t SMOLDERING_BREATH = 39385;
+const uint32_t TAIL_SWEEP = 25653;//\todo  how to use this spell???
+const uint32_t DISTRACTING_ASH = 30280;
 
 // air spells
-const uint32 DISTRACTING_ASH_FLY = 30130; // all guides say ground spell but animation is flying?!
-const uint32 RAIN_OF_BONES = 37091; // Spell bugged: should debuff with 37098
-const uint32 SMOKING_BLAST = 37057;
-const uint32 FIREBALL_BARRAGE = 30282;
-const uint32 SUMMON_BONE_SKELETONS = 30170;
+const uint32_t DISTRACTING_ASH_FLY = 30130; // all guides say ground spell but animation is flying?!
+const uint32_t RAIN_OF_BONES = 37091; // Spell bugged: should debuff with 37098
+const uint32_t SMOKING_BLAST = 37057;
+const uint32_t FIREBALL_BARRAGE = 30282;
+const uint32_t SUMMON_BONE_SKELETONS = 30170;
 
 static Movement::Location coords[] =
 {
@@ -2475,7 +2475,7 @@ static Movement::Location coords[] =
 
 class NightbaneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NightbaneAI);
+    ADD_CREATURE_FACTORY_FUNCTION(NightbaneAI)
     explicit NightbaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         ////ground phase spells
@@ -2516,7 +2516,7 @@ class NightbaneAI : public CreatureAIScript
 
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
-        for (uint8 i = 1; i < 5; i++)
+        for (uint8_t i = 1; i < 5; i++)
         {
             AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, coords[i]));
         }
@@ -2563,7 +2563,7 @@ class NightbaneAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -2715,24 +2715,24 @@ class NightbaneAI : public CreatureAIScript
     }
 
 protected:
-    uint32 m_phase;
-    uint32 m_FlyPhaseTimer;
-    uint32 m_currentWP;
-    uint32 mTailSweepTimer;
+    uint32_t m_phase;
+    uint32_t m_FlyPhaseTimer;
+    uint32_t m_currentWP;
+    uint32_t mTailSweepTimer;
 };
 
 //Opera Event
 //Wizzard of Oz
-const uint32 CN_DOROTHEE = 17535;
+const uint32_t CN_DOROTHEE = 17535;
 
-const uint32 SP_AOE_FEAR = 29321;
-const uint32 SP_WATER_BOLT = 31012;
-const uint32 SP_SUMMON_TITO = 31014;
+const uint32_t SP_AOE_FEAR = 29321;
+const uint32_t SP_WATER_BOLT = 31012;
+const uint32_t SP_SUMMON_TITO = 31014;
 
 class DorotheeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DorotheeAI);
-    uint32 summontito;
+    ADD_CREATURE_FACTORY_FUNCTION(DorotheeAI)
+    uint32_t summontito;
 
     explicit DorotheeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -2828,15 +2828,15 @@ protected:
     bool titoDeadSpeech;
 };
 
-const uint32 CN_TITO = 17548;
+const uint32_t CN_TITO = 17548;
 
-const uint32 SP_ANNOYING_YIPPING = 31015;
+const uint32_t SP_ANNOYING_YIPPING = 31015;
 
 //No kill sound
 
 class TitoAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TitoAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TitoAI)
     explicit TitoAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_ANNOYING_YIPPING);
@@ -2859,14 +2859,14 @@ class TitoAI : public CreatureAIScript
     }
 };
 
-const uint32 CN_STRAWMAN = 17543;
+const uint32_t CN_STRAWMAN = 17543;
 
-const uint32 SP_BURNING_STRAW = 31075;
-const uint32 SP_BRAIN_BASH = 31046;
+const uint32_t SP_BURNING_STRAW = 31075;
+const uint32_t SP_BRAIN_BASH = 31046;
 
 class StrawmanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StrawmanAI);
+    ADD_CREATURE_FACTORY_FUNCTION(StrawmanAI)
     explicit StrawmanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells[0].info = sSpellMgr.getSpellInfo(SP_BURNING_STRAW);//  NEEDS TO BE SO IT ONLY AFFECTS HIM WHEN HE IS HIT BY FIRE DMG!
@@ -2917,15 +2917,15 @@ class StrawmanAI : public CreatureAIScript
     }
 };
 
-const uint32 CN_TINHEAD = 17547;
+const uint32_t CN_TINHEAD = 17547;
 
-const uint32 SP_CLEAVE = 15284;
-const uint32 SP_RUST = 31086;
+const uint32_t SP_CLEAVE = 15284;
+const uint32_t SP_RUST = 31086;
 //dont bother.. spell does not work.. needs fix
 
 class TinheadAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TinheadAI);
+    ADD_CREATURE_FACTORY_FUNCTION(TinheadAI)
     explicit TinheadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_CLEAVE);
@@ -2976,11 +2976,11 @@ class TinheadAI : public CreatureAIScript
     }
 };
 
-const uint32 CN_ROAR = 17546;
+const uint32_t CN_ROAR = 17546;
 
 class RoarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RoarAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RoarAI)
 
     explicit RoarAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -3011,14 +3011,14 @@ class RoarAI : public CreatureAIScript
     }
 };
 
-const uint32 CN_CRONE = 18168;
+const uint32_t CN_CRONE = 18168;
 
-const uint32 SP_SUMMON_CYCLONE = 38337;
-const uint32 SP_CHAIN_LIGHTNING = 32337;
+const uint32_t SP_SUMMON_CYCLONE = 38337;
+const uint32_t SP_CHAIN_LIGHTNING = 32337;
 
 class CroneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CroneAI);
+    ADD_CREATURE_FACTORY_FUNCTION(CroneAI)
     explicit CroneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_SUMMON_CYCLONE);
@@ -3087,13 +3087,13 @@ class CroneAI : public CreatureAIScript
     }
 };
 
-const uint32 CN_CYCLONEOZ = 22104;
-const uint32 CYCLONE_VISUAL = 32332;
-const uint32 CYCLONE_KNOCK = 38517;
+const uint32_t CN_CYCLONEOZ = 22104;
+const uint32_t CYCLONE_VISUAL = 32332;
+const uint32_t CYCLONE_KNOCK = 38517;
 
 class CycloneOZ : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CycloneOZ);
+    ADD_CREATURE_FACTORY_FUNCTION(CycloneOZ)
     explicit CycloneOZ(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(CYCLONE_VISUAL), true);
@@ -3115,19 +3115,19 @@ class CycloneOZ : public CreatureAIScript
 };
 
 //Romulo & Julianne
-const uint32 CN_ROMULO = 17533;
+const uint32_t CN_ROMULO = 17533;
 
-const uint32 SP_BACKWARD_LUNGE = 30815;
-const uint32 SP_DEADLY_SWATHE = 30817;
-const uint32 SP_POISONED_THRUST = 30822;
-const uint32 SP_DARING = 30841;
+const uint32_t SP_BACKWARD_LUNGE = 30815;
+const uint32_t SP_DEADLY_SWATHE = 30817;
+const uint32_t SP_POISONED_THRUST = 30822;
+const uint32_t SP_DARING = 30841;
 
 //\todo play sound on resurection
 //sendDBChatMessage(2005);     // Thou detestable maw, thou womb of death; I enforce thy rotten jaws to open!
 
 class RomuloAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RomuloAI);
+    ADD_CREATURE_FACTORY_FUNCTION(RomuloAI)
     explicit RomuloAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_BACKWARD_LUNGE);
@@ -3221,19 +3221,19 @@ class RomuloAI : public CreatureAIScript
     }
 };
 
-const uint32 CN_JULIANNE = 17534;
+const uint32_t CN_JULIANNE = 17534;
 
-const uint32 SP_ETERNAL_AFFECTION = 30878;
-const uint32 SP_POWERFUL_ATTRACTION = 30889;
-const uint32 SP_BINDING_PASSION = 30890;
-const uint32 SP_DEVOTION = 30887;
+const uint32_t SP_ETERNAL_AFFECTION = 30878;
+const uint32_t SP_POWERFUL_ATTRACTION = 30889;
+const uint32_t SP_BINDING_PASSION = 30890;
+const uint32_t SP_DEVOTION = 30887;
 
 //\todo play sound on resurrection
 //sendDBChatMessage(2000);     // Come, gentle night; and give me back my Romulo!
 
 class JulianneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(JulianneAI);
+    ADD_CREATURE_FACTORY_FUNCTION(JulianneAI)
     explicit JulianneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_ETERNAL_AFFECTION);
