@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/Guild/GuildDefinitions.h"
 #include "GuildBankRightsAndSlots.h"
-#include "Database/Field.h"
+#include "Database/Field.hpp"
 
 class Guild;
 

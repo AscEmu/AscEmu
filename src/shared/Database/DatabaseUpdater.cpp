@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DatabaseUpdater.h"
 #include "../Log.hpp"
 #include "Database.h"
-#include "Field.h"
+#include "Field.hpp"
 #include "../Common.hpp"
 #include "../Util.hpp"
 #include <iostream>
