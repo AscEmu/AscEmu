@@ -236,7 +236,7 @@ class ItemIterator
         void BeginSearch()
         {
             // iteminterface doesn't use mutexes, maybe it should :P
-            ARCEMU_ASSERT(!m_searchInProgress);
+            ARCEMU_ASSERT(!m_searchInProgress)
             m_atEnd = false;
             m_searchInProgress = true;
             m_container = nullptr;
@@ -248,7 +248,7 @@ class ItemIterator
         void EndSearch()
         {
             // nothing here either
-            ARCEMU_ASSERT(m_searchInProgress);
+            ARCEMU_ASSERT(m_searchInProgress)
             m_atEnd = true;
             m_searchInProgress = false;
         }

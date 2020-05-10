@@ -70,14 +70,14 @@ class SERVER_DECL ThreadController
         void Suspend()
         {
             // We can't be suspended by someone else. That is a big-no-no and will lead to crashes.
-            ASSERT(GetCurrentThreadId() == thread_id);
+            ASSERT(GetCurrentThreadId() == thread_id)
             SuspendThread(hThread);
         }
 
         void Resume()
         {
             // This SHOULD be called by someone else.
-            ASSERT(GetCurrentThreadId() != thread_id);
+            ASSERT(GetCurrentThreadId() != thread_id)
             if(ResumeThread(hThread) == DWORD(-1))
             {
                 DWORD le = GetLastError();

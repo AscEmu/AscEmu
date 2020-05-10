@@ -88,13 +88,13 @@ struct ObjectGuid
 
         uint8_t& operator[](uint32_t index)
         {
-            ASSERT(index < sizeof(uint64_t));
+            ASSERT(index < sizeof(uint64_t))
             return _data.byte[index];
         }
 
         uint8_t const& operator[](uint32_t index) const
         {
-            ASSERT(index < sizeof(uint64_t));
+            ASSERT(index < sizeof(uint64_t))
             return _data.byte[index];
         }
 
@@ -288,8 +288,8 @@ class SERVER_DECL WoWGuid
 
         void AppendField(uint8_t field)
         {
-            ASSERT(!m_compiled);
-            ASSERT(m_fieldcount < BitCount8(guidmask));
+            ASSERT(!m_compiled)
+            ASSERT(m_fieldcount < BitCount8(guidmask))
 
             m_guidfields[m_fieldcount++] = field;
 
@@ -309,7 +309,7 @@ class SERVER_DECL WoWGuid
 
         void _CompileByOld()
         {
-            ASSERT(!m_compiled);
+            ASSERT(!m_compiled)
 
             m_fieldcount = 0;
 
@@ -330,7 +330,7 @@ class SERVER_DECL WoWGuid
 
         void _CompileByNew()
         {
-            ASSERT(!m_compiled || m_fieldcount == BitCount8(guidmask));
+            ASSERT(!m_compiled || m_fieldcount == BitCount8(guidmask))
 
             int j = 0;
 

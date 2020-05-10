@@ -192,7 +192,7 @@ class SERVER_DECL WorldSession
 
         AccountDataEntry* GetAccountData(uint32 index)
         {
-            ARCEMU_ASSERT(index < 8);
+            ARCEMU_ASSERT(index < 8)
             return &sAccountData[index];
         }
 

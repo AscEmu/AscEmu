@@ -206,7 +206,7 @@ class ChannelIterator
         void BeginSearch()
         {
             // iteminterface doesn't use mutexes, maybe it should :P
-            ARCEMU_ASSERT(!m_searchInProgress);
+            ARCEMU_ASSERT(!m_searchInProgress)
             m_target->m_lock.Acquire();
             m_itr = m_target->m_members.begin();
             m_endItr = m_target->m_members.end();
@@ -216,7 +216,7 @@ class ChannelIterator
         void EndSearch()
         {
             // nothing here either
-            ARCEMU_ASSERT(m_searchInProgress);
+            ARCEMU_ASSERT(m_searchInProgress)
             m_target->m_lock.Release();
             m_searchInProgress = false;
         }

@@ -596,7 +596,7 @@ public:
 
         bool HasFlag(const uint16 index, uint32 flag) const
         {
-            ARCEMU_ASSERT(index < m_valuesCount);
+            ARCEMU_ASSERT(index < m_valuesCount)
             return (m_uint32Values[index] & flag) != 0;
         }
 
@@ -617,7 +617,7 @@ public:
 
         bool HasUpdateField(uint32 index)
         {
-            ARCEMU_ASSERT(index < m_valuesCount);
+            ARCEMU_ASSERT(index < m_valuesCount)
             return m_updateMask.GetBit(index);
         }
 
