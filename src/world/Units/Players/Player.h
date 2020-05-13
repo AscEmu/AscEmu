@@ -496,6 +496,25 @@ public:
     uint32_t getGuildTimestamp() const;
     void setGuildTimestamp(uint32_t timestamp);
 
+    //QuestLog start
+    uint32_t getQuestLogEntryForSlot(uint8_t slot) const;
+    void setQuestLogEntryBySlot(uint8_t slot, uint32_t questEntry);
+
+    uint32_t getQuestLogStateForSlot(uint8_t slot) const;
+    void setQuestLogStateBySlot(uint8_t slot, uint32_t state);
+
+#if VERSION_STRING > TBC
+    uint64_t getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const;
+    void setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint64_t mobOrGoCount);
+#else
+    uint32_t getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const;
+    void setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint32_t mobOrGoCount);
+#endif
+
+    uint32_t getQuestLogExpireTimeForSlot(uint8_t slot) const;
+    void setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime);
+    //QuestLog end
+
     uint64_t getFarsightGuid() const;
     void setFarsightGuid(uint64_t farsightGuid);
 

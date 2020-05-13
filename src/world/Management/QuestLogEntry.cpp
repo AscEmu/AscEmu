@@ -283,18 +283,13 @@ void QuestLogEntry::Finish()
 {
     sEventMgr.RemoveEvents(m_plr, EVENT_TIMED_QUEST_EXPIRE);
 
-    uint16 base = GetBaseField(m_slot);
-    m_plr->setUInt32Value(base + 0, 0);
-    m_plr->setUInt32Value(base + 1, 0);
-#if VERSION_STRING > TBC
-    m_plr->setUInt64Value(base + 2, 0);
-    m_plr->setUInt32Value(base + 4, 0);
-#else
-    m_plr->setUInt32Value(base + 3, 0);
-#endif
+    m_plr->setQuestLogEntryBySlot(m_slot, 0);
+    m_plr->setQuestLogStateBySlot(m_slot, 0);
+    m_plr->setQuestLogRequiredMobOrGoBySlot(m_slot, 0);
+    m_plr->setQuestLogExpireTimeBySlot(m_slot, 0);
 
     // clear from player log
-    m_plr->SetQuestLogSlot(NULL, m_slot);
+    m_plr->SetQuestLogSlot(nullptr, m_slot);
     m_plr->PushToRemovedQuests(m_quest->id);
     m_plr->UpdateNearbyGameObjects();
 
@@ -310,8 +305,7 @@ void QuestLogEntry::Fail(bool timerexpired)
     expirytime = 0;
     mDirty = true;
 
-    uint16 base = GetBaseField(m_slot);
-    m_plr->setUInt32Value(base + 1, 2);
+    m_plr->setQuestLogStateBySlot(m_slot, 2);
 
     if (timerexpired)
         sQuestMgr.SendQuestUpdateFailedTimer(m_quest, m_plr);
@@ -329,8 +323,7 @@ void QuestLogEntry::UpdatePlayerFields()
     if (!m_plr)
         return;
 
-    uint16 base = GetBaseField(m_slot);
-    m_plr->setUInt32Value(base + 0, m_quest->id);
+    m_plr->setQuestLogEntryBySlot(m_slot, m_quest->id);
     uint32_t field0 = 0;          // 0x01000000 = "Objective Complete" - 0x02 = Quest Failed - 0x04 = Quest Accepted
 
     // next field is count (kills, etc)
@@ -414,35 +407,22 @@ void QuestLogEntry::UpdatePlayerFields()
         }
 #endif
 
-    if ((m_quest->time != 0) && (expirytime < UNIXTIME))
+    if (m_quest->time != 0 && expirytime < UNIXTIME)
         completed = QUEST_FAILED;
 
     if (completed == QUEST_FAILED)
         field0 |= 2;
 
-#if VERSION_STRING > TBC
-    m_plr->setUInt32Value(base + 1, field0);
-    m_plr->setUInt64Value(base + 2, field1);
+    m_plr->setQuestLogStateBySlot(m_slot, field0);
+    m_plr->setQuestLogRequiredMobOrGoBySlot(m_slot, field1);
 
-    if ((m_quest->time != 0) && (completed != QUEST_FAILED))
+    if (m_quest->time != 0 && completed != QUEST_FAILED)
     {
-        m_plr->setUInt32Value(base + 4, expirytime);
+        m_plr->setQuestLogExpireTimeBySlot(m_slot, expirytime);
         sEventMgr.AddEvent(m_plr, &Player::EventTimedQuestExpire, m_quest->id, EVENT_TIMED_QUEST_EXPIRE, (expirytime - UNIXTIME) * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else
-        m_plr->setUInt32Value(base + 4, 0);
-#else
-    m_plr->setUInt32Value(base + 1, 0);
-    m_plr->setUInt32Value(base + 2, field1);
-
-    if ((m_quest->time != 0) && (completed != QUEST_FAILED))
-    {
-        m_plr->setUInt32Value(base + 3, expirytime);
-        sEventMgr.AddEvent(m_plr, &Player::EventTimedQuestExpire, m_quest->id, EVENT_TIMED_QUEST_EXPIRE, (expirytime - UNIXTIME) * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    }
-    else
-        m_plr->setUInt32Value(base + 3, 0);
-#endif
+        m_plr->setQuestLogExpireTimeBySlot(m_slot, 0);
 }
 
 void QuestLogEntry::SendQuestComplete()

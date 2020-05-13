@@ -4188,26 +4188,13 @@ void Player::RolloverHonor()
 
 void Player::_LoadQuestLogEntry(QueryResult* result)
 {
-    // clear all fields
-    for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
+    for (uint8_t slot = 0; slot < MAX_QUEST_SLOT; ++slot)
     {
-#if VERSION_STRING > TBC
-        uint16_t baseindex = PLAYER_QUEST_LOG_1_1 + (i * 5);
-#else
-        uint16_t baseindex = PLAYER_QUEST_LOG_1_1 + (i * 4);
-#endif
-        setUInt32Value(baseindex + 0, 0);
-        setUInt32Value(baseindex + 1, 0);
-#if VERSION_STRING > TBC
-        setUInt64Value(baseindex + 2, 0);
-        setUInt32Value(baseindex + 4, 0);
-#else
-        setUInt32Value(baseindex + 2, 0);
-        setUInt32Value(baseindex + 3, 0);
-#endif
+        setQuestLogEntryBySlot(slot, 0);
+        setQuestLogStateBySlot(slot, 0);
+        setQuestLogRequiredMobOrGoBySlot(slot, 0);
+        setQuestLogExpireTimeBySlot(slot, 0);
     }
-
-    uint16 slot = 0;
 
     if (result)
     {
@@ -4216,7 +4203,7 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
             Field* fields = result->Fetch();
             uint32 questid = fields[1].GetUInt32();
             QuestProperties const* quest = sMySQLStore.getQuestProperties(questid);
-            slot = fields[2].GetUInt16();
+            uint8_t slot = fields[2].GetUInt8();
 
             // remove on next save if bad quest
             if (!quest)

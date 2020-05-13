@@ -210,9 +210,10 @@ struct WoWPlayer : WoWUnit
 
 struct WoWPlayer_Quest
 {
-    uint32_t unk1;  // id
-    uint32_t unk2;  // state
-    uint64_t unk3;  // 4 x uint16_t mob_or_go_count
+    uint32_t quest_id;
+    uint32_t state;
+    uint32_t required_mob_or_go;
+    uint32_t expire_time;
 };
 
 struct WoWPlayer_VisibleItem
@@ -317,10 +318,10 @@ struct WoWPlayer : WoWUnit
 
 struct WoWPlayer_Quest
 {
-    uint32_t unk1;  // id
-    uint32_t unk2;  // state
-    uint64_t unk3;  // 4 x uint16_t mob_or_go_count
-    uint32_t unk5;  // time
+    uint32_t quest_id;
+    uint32_t state;
+    uint64_t required_mob_or_go;
+    uint32_t expire_time;
 };
 
 struct WoWPlayer_VisibleItem
@@ -429,10 +430,10 @@ struct WoWPlayer : WoWUnit
 
 struct WoWPlayer_Quest
 {
-    uint32_t unk1;  // id
-    uint32_t unk2;  // state
-    uint64_t unk3;  // 4 x uint16_t mob_or_go_count
-    uint32_t unk5;  // time
+    uint32_t quest_id;
+    uint32_t state;
+    uint64_t required_mob_or_go;
+    uint32_t expire_time;
 };
 
 struct WoWPlayer_VisibleItem
@@ -552,10 +553,10 @@ struct WoWPlayer : WoWUnit
 
 struct WoWPlayer_Quest
 {
-    uint32_t unk1;  // id
-    uint32_t unk2;  // state
-    uint64_t unk3;  // 4 x uint16_t mob_or_go_count
-    uint32_t unk5;  // time
+    uint32_t quest_id;
+    uint32_t state;
+    uint64_t required_mob_or_go;
+    uint32_t expire_time;
 };
 
 struct WoWPlayer_VisibleItem
