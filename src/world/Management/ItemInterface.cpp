@@ -418,13 +418,14 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         else
         {
             m_pOwner->setUInt32Value(VisibleBase, item->getEntry());
-            m_pOwner->setUInt32Value(VisibleBase + 1, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT));
-            m_pOwner->setUInt32Value(VisibleBase + 2, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 3));
-            m_pOwner->setUInt32Value(VisibleBase + 3, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 6));
-            m_pOwner->setUInt32Value(VisibleBase + 4, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 9));
-            m_pOwner->setUInt32Value(VisibleBase + 5, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
-            m_pOwner->setUInt32Value(VisibleBase + 6, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
-            m_pOwner->setUInt32Value(VisibleBase + 7, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
+            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), item->getEnchantmentId(0));
+            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 2), item->getEnchantmentId(3));
+            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 3), item->getEnchantmentId(6));
+            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 4), item->getEnchantmentId(9));
+            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 5), item->getEnchantmentId(12));
+            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 6), item->getEnchantmentId(15));
+            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 7), item->getEnchantmentId(18));
+
             m_pOwner->setInt32Value(VisibleBase + 8, item->getRandomPropertiesId());
         }
     }
@@ -3217,13 +3218,13 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             {
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (srcslot * 16);
                 m_pOwner->setUInt32Value(VisibleBase, m_pItems[(int)srcslot]->getEntry());
-                m_pOwner->setUInt32Value(VisibleBase + 1, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT));
-                m_pOwner->setUInt32Value(VisibleBase + 2, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 3));
-                m_pOwner->setUInt32Value(VisibleBase + 3, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 6));
-                m_pOwner->setUInt32Value(VisibleBase + 4, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 9));
-                m_pOwner->setUInt32Value(VisibleBase + 5, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
-                m_pOwner->setUInt32Value(VisibleBase + 6, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
-                m_pOwner->setUInt32Value(VisibleBase + 7, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), m_pItems[(int)srcslot]->getEnchantmentId(0));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 2), m_pItems[(int)srcslot]->getEnchantmentId(3));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 3), m_pItems[(int)srcslot]->getEnchantmentId(6));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 4), m_pItems[(int)srcslot]->getEnchantmentId(9));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 5), m_pItems[(int)srcslot]->getEnchantmentId(12));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 6), m_pItems[(int)srcslot]->getEnchantmentId(15));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 7), m_pItems[(int)srcslot]->getEnchantmentId(18));
                 m_pOwner->setInt32Value(VisibleBase + 8, m_pItems[(int)srcslot]->getRandomPropertiesId());
             }
 
@@ -3298,13 +3299,13 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             {
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (dstslot * 16);
                 m_pOwner->setUInt32Value(VisibleBase, m_pItems[(int)dstslot]->getEntry());
-                m_pOwner->setUInt32Value(VisibleBase + 1, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT));
-                m_pOwner->setUInt32Value(VisibleBase + 2, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 3));
-                m_pOwner->setUInt32Value(VisibleBase + 3, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 6));
-                m_pOwner->setUInt32Value(VisibleBase + 4, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 9));
-                m_pOwner->setUInt32Value(VisibleBase + 5, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
-                m_pOwner->setUInt32Value(VisibleBase + 6, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
-                m_pOwner->setUInt32Value(VisibleBase + 7, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), m_pItems[(int)dstslot]->getEnchantmentId(0));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 2), m_pItems[(int)dstslot]->getEnchantmentId(3));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 3), m_pItems[(int)dstslot]->getEnchantmentId(6));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 4), m_pItems[(int)dstslot]->getEnchantmentId(9));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 5), m_pItems[(int)dstslot]->getEnchantmentId(12));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 6), m_pItems[(int)dstslot]->getEnchantmentId(15));
+                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 7), m_pItems[(int)dstslot]->getEnchantmentId(18));
                 m_pOwner->setInt32Value(VisibleBase + 8, m_pItems[(int)dstslot]->getRandomPropertiesId());
             }
 

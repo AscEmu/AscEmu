@@ -19,31 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #if VERSION_STRING == Classic
 
 #define WOWITEM_SPELL_CHARGES_COUNT 5
-#define WOWITEM_ENCHANTMENT_COUNT 21
-
-struct WoWItem : WoWObject
-{
-    guid_union owner_guid;
-    guid_union container_guid;
-    guid_union creator_guid;
-    guid_union gift_creator_guid;
-    uint32_t stack_count;
-    uint32_t duration;
-    int32_t spell_charges[WOWITEM_SPELL_CHARGES_COUNT];
-    uint32_t flags;
-    uint32_t enchantment[WOWITEM_ENCHANTMENT_COUNT];
-    uint32_t property_seed;
-    uint32_t random_properties_id;
-    uint32_t item_text_id;
-    uint32_t durability;
-    uint32_t max_durability;
-};
-#endif
-
-#if VERSION_STRING == TBC
-
-#define WOWITEM_SPELL_CHARGES_COUNT 5
-#define WOWITEM_ENCHANTMENT_COUNT 33
+#define WOWITEM_ENCHANTMENT_COUNT 7
 
 //\todo verify this
 struct WoWItem_Enchantment
@@ -63,7 +39,39 @@ struct WoWItem : WoWObject
     uint32_t duration;
     int32_t spell_charges[WOWITEM_SPELL_CHARGES_COUNT];
     uint32_t flags;
-    uint32_t enchantment[WOWITEM_ENCHANTMENT_COUNT];
+    WoWItem_Enchantment enchantment[WOWITEM_ENCHANTMENT_COUNT];
+    uint32_t property_seed;
+    uint32_t random_properties_id;
+    uint32_t item_text_id;
+    uint32_t durability;
+    uint32_t max_durability;
+};
+#endif
+
+#if VERSION_STRING == TBC
+
+#define WOWITEM_SPELL_CHARGES_COUNT 5
+#define WOWITEM_ENCHANTMENT_COUNT 11
+
+//\todo verify this
+struct WoWItem_Enchantment
+{
+    uint32_t id;
+    uint32_t duration;
+    uint32_t charges;
+};
+
+struct WoWItem : WoWObject
+{
+    guid_union owner_guid;
+    guid_union container_guid;
+    guid_union creator_guid;
+    guid_union gift_creator_guid;
+    uint32_t stack_count;
+    uint32_t duration;
+    int32_t spell_charges[WOWITEM_SPELL_CHARGES_COUNT];
+    uint32_t flags;
+    WoWItem_Enchantment enchantment[WOWITEM_ENCHANTMENT_COUNT];
     uint32_t property_seed;
     uint32_t random_properties_id;
     uint32_t item_text_id;

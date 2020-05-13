@@ -132,7 +132,6 @@ void Item::addFlags(uint32_t flags) { setFlags(getFlags() | flags); }
 void Item::removeFlags(uint32_t flags) { setFlags(getFlags() & ~flags); }
 bool Item::hasFlags(uint32_t flags) const { return (getFlags() & flags) != 0; }
 
-#if VERSION_STRING >= WotLK
 uint32_t Item::getEnchantmentId(uint8_t index) const { return itemData()->enchantment[index].id; }
 void Item::setEnchantmentId(uint8_t index, uint32_t id) { write(itemData()->enchantment[index].id, id); }
 
@@ -141,7 +140,6 @@ void Item::setEnchantmentDuration(uint8_t index, uint32_t duration) { write(item
 
 uint32_t Item::getEnchantmentCharges(uint8_t index) const { return itemData()->enchantment[index].charges; }
 void Item::setEnchantmentCharges(uint8_t index, uint32_t charges) { write(itemData()->enchantment[index].charges, charges); }
-#endif
 
 uint32_t Item::getPropertySeed() const { return itemData()->property_seed; }
 void Item::setPropertySeed(uint32_t seed)

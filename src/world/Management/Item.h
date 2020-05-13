@@ -222,7 +222,6 @@ public:
     void removeFlags(uint32_t flags);
     bool hasFlags(uint32_t flags) const;
 
-#if VERSION_STRING >= WotLK
     uint32_t getEnchantmentId(uint8_t index) const;
     void setEnchantmentId(uint8_t index, uint32_t id);
 
@@ -231,7 +230,6 @@ public:
 
     uint32_t getEnchantmentCharges(uint8_t index) const;
     void setEnchantmentCharges(uint8_t index, uint32_t charges);
-#endif
 
     uint32_t getPropertySeed() const;
     void setPropertySeed(uint32_t seed);
@@ -285,17 +283,7 @@ public:
             random_suffix = id;
         }
 
-
 #if VERSION_STRING <= TBC
-        uint32 getEnchantmentId(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index); }
-        void setEnchantmentId(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index, value); }
-
-        uint32 getEnchantmentDuration(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 1 + 3 * index); }
-        void setEnchantmentDuration(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 1 + 3 * index, value); }
-
-        uint32 getEnchantmentCharges(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index); }
-        void setEnchantmentCharges(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index, value); }
-
         void setTextId(uint32 textId);
 #endif
 
