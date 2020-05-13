@@ -230,11 +230,11 @@ class LakkaAI : public CreatureAIScript
                         if (pPlayer != nullptr)
                         {
                             QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10097);
-                            if (pQuest != nullptr && pQuest->GetMobCount(1) < 1)
+                            if (pQuest != nullptr && pQuest->getMobCountByIndex(1) < 1)
                             {
-                                pQuest->SetMobCount(1, 1);
+                                pQuest->setMobCountForIndex(1, 1);
                                 pQuest->SendUpdateAddKill(1);
-                                pQuest->UpdatePlayerFields();
+                                pQuest->updatePlayerFields();
                             }
                         }
                     }

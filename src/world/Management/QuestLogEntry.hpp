@@ -12,94 +12,71 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Players/Player.h"
 #include "Server/Script/ScriptMgr.h"
 
+enum QuestLogState : uint32_t
+{
+    QLS_None = 0x00,
+    QLS_Failed = 0x02,
+    QLS_Accepted = 0x04,
+    QLS_ObjectiveCompleted = 0x01000000
+};
+
 class SERVER_DECL QuestLogEntry : public EventableObject
 {
     friend class QuestMgr;
 
 public:
-    QuestLogEntry();
+    QuestLogEntry(QuestProperties const* questProperties, Player* player, uint8_t slot);
     ~QuestLogEntry();
 
-    inline QuestProperties const* GetQuest() { return m_quest; };
-    void Init(QuestProperties const* quest, Player* plr, uint16 slot);
+    void initPlayerData();
 
-    bool CanBeFinished();
-    void Complete();
-    void SaveToDB(QueryBuffer* buf);
-    bool LoadFromDB(Field* fields);
-    void UpdatePlayerFields();
+    void loadFromDB(Field* fields);
+    void saveToDB(QueryBuffer* queryBuffer);
 
-    void SetTrigger(uint32 i);
-    void SetMobCount(uint32 i, uint32 count);
-    void IncrementMobCount(uint32 i);
+    uint8_t getSlot() const;
+    void setSlot(uint8_t slot);
 
-    bool IsUnitAffected(Unit* target);
-    inline bool IsCastQuest() { return iscastquest; }
-    inline bool IsEmoteQuest() { return isemotequest; }
-    void AddAffectedUnit(Unit* target);
-    void ClearAffectedUnits();
+    void setStateComplete();
 
-    void SetSlot(uint16 i);
-    void Finish();
+    uint32_t getMobCountByIndex(uint8_t index) const;
+    void setMobCountForIndex(uint8_t index, uint32_t count);
+    void incrementMobCountForIndex(uint8_t index);
 
+    uint32_t getExploredAreaByIndex(uint8_t index) const;
+    void setExploredAreaForIndex(uint8_t index);
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// void Fail(bool timerexpired)
-    /// Marks the quest as failed
-    ///
-    /// \param bool timerexpired  -  true if the reason for failure is timer expiration.
-    ///
-    /// \return none
-    ///
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void Fail(bool timerexpired);
+    bool isCastQuest() const;
+    bool isEmoteQuest() const;
 
+    QuestProperties const* getQuestProperties() const;
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// bool HasFailed()
-    /// Tells if the Quest has failed.
-    ///
-    /// \param none
-    ///
-    /// \return true if the quest has failed, false otherwise.
-    ///
-    //////////////////////////////////////////////////////////////////////////////////////////
-    bool HasFailed();
+    bool isUnitAffected(Unit* unit) const;
+    void addAffectedUnit(Unit* unit);
+    void clearAffectedUnits();
 
+    bool canBeFinished() const;
+    void finishAndRemove();
+    void sendQuestFailed(bool isTimerExpired = false);
 
-    void SendQuestComplete();
-    void SendUpdateAddKill(uint32 i);
-    inline uint32 GetMobCount(uint32 i) { return m_mobcount[i]; }
-    inline uint32 GetExploredAreas(uint32 i) { return m_explored_areas[i]; }
-
-    uint16 GetBaseField(uint16 slot)
-    {
-#if VERSION_STRING > TBC
-        return PLAYER_QUEST_LOG_1_1 + (slot * 5);
-#else
-        return PLAYER_QUEST_LOG_1_1 + (slot * 4);
-#endif
-    }
-    uint16 GetSlot() { return m_slot; }
+    void updatePlayerFields();
+    void sendQuestComplete();
+    void SendUpdateAddKill(uint8_t index);
 
 private:
-    uint32 completed;
 
-    bool mInitialized;
-    bool mDirty;
+    uint8_t m_slot = 0;
+    uint32_t m_state = 0;
+    uint32_t m_mobcount[4] = {0};
+    uint32_t m_explored_areas[4] = {0};
+    uint32_t m_expirytime = 0;
 
-    QuestProperties const* m_quest;
-    Player* m_plr;
+    bool m_isCastQuest = false;
+    bool m_isEmoteQuest = false;
 
-    uint32 m_mobcount[4];
-    uint32 m_explored_areas[4];
+    QuestProperties const* m_questProperties = nullptr;
+    Player* m_player = nullptr;
 
-    std::set<uint64> m_affected_units;
-    bool iscastquest;
-    bool isemotequest;
-
-    uint32 expirytime;
-    uint16 m_slot;
+    std::set<uint64_t> m_affected_units;
 };
 
-#define CALL_QUESTSCRIPT_EVENT(obj, func) if (static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript != NULL) static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript->func
+#define CALL_QUESTSCRIPT_EVENT(obj, func) if (static_cast<QuestLogEntry*>(obj)->getQuestProperties()->pQuestScript != NULL) static_cast<QuestLogEntry*>(obj)->getQuestProperties()->pQuestScript->func

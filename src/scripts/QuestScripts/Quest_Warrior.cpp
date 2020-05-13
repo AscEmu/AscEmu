@@ -80,7 +80,7 @@ class Bartleby : public CreatureAIScript
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1640);
                 if (!qle)
                     return;
-                qle->SendQuestComplete();
+                qle->sendQuestComplete();
             }
         }
     }

@@ -43,7 +43,7 @@ class Paoka_Swiftmountain : public CreatureAIScript
                 auto quest_entry = plr->GetQuestLogForEntry(4770);
                 if (quest_entry == nullptr)
                     return;
-                quest_entry->SendQuestComplete();
+                quest_entry->sendQuestComplete();
             }
         }
     }

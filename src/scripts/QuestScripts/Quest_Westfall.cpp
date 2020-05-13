@@ -43,7 +43,7 @@ class The_Defias_Traitor : public CreatureAIScript
             if (quest_entry == nullptr)
                 return;
 
-            quest_entry->SendQuestComplete();
+            quest_entry->sendQuestComplete();
         }
     }
 };

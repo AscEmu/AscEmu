@@ -2335,9 +2335,9 @@ void Spell::SpellEffectQuestComplete(uint8_t effectIndex) // Quest Complete
     QuestLogEntry* en = p_caster->GetQuestLogForEntry(getSpellInfo()->getEffectMiscValue(effectIndex));
     if (en)
     {
-        en->Complete();
-        en->UpdatePlayerFields();
-        en->SendQuestComplete();
+        en->setStateComplete();
+        en->updatePlayerFields();
+        en->sendQuestComplete();
     }
 }
 

@@ -32,7 +32,7 @@ public:
 
         GossipMenu menu(pObject->getGuid(), 7736, Plr->GetSession()->language);
 
-        if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
+        if (en && en->getMobCountByIndex(1) < en->getQuestProperties()->required_mob_or_go_count[1])
             menu.addItem(GOSSIP_ICON_CHAT, 477, 3);         // Hello, Rutgar. The Commander has sent me here to gather some information about his missing wife.
 
         menu.sendGossipPacket(Plr);
@@ -99,7 +99,7 @@ public:
     void onHello(Object* pObject, Player* Plr) override
     {
         QuestLogEntry* en = Plr->GetQuestLogForEntry(8304);
-        if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0] && en->GetMobCount(1) == 1)
+        if (en && en->getMobCountByIndex(0) < en->getQuestProperties()->required_mob_or_go_count[0] && en->getMobCountByIndex(1) == 1)
         {
             GossipMenu menu(pObject->getGuid(), 7735, Plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 485, 3);          // Hello, Frankal. I've heard that you might have some information as to the whe

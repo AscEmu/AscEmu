@@ -2187,7 +2187,7 @@ public:
 
         LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_ACCEPT]);
         LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->getQuestProperties()->id);
         LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
         RELEASE_LOCK
@@ -2199,7 +2199,7 @@ public:
 
         LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_COMPLETE]);
         LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->getQuestProperties()->id);
         LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
         RELEASE_LOCK
@@ -2223,7 +2223,7 @@ public:
         LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_GAMEOBJECT_ACTIVATE]);
         LuaGlobal::instance()->luaEngine()->PUSH_UINT(entry);
         LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->getQuestProperties()->id);
         LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
 
         RELEASE_LOCK
@@ -2236,7 +2236,7 @@ public:
         LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_CREATURE_KILL]);
         LuaGlobal::instance()->luaEngine()->PUSH_UINT(entry);
         LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->getQuestProperties()->id);
         LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
 
         RELEASE_LOCK
@@ -2249,7 +2249,7 @@ public:
         LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_EXPLORE_AREA]);
         LuaGlobal::instance()->luaEngine()->PUSH_UINT(areaId);
         LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->getQuestProperties()->id);
         LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
 
         RELEASE_LOCK
@@ -2263,7 +2263,7 @@ public:
         LuaGlobal::instance()->luaEngine()->PUSH_UINT(itemId);
         LuaGlobal::instance()->luaEngine()->PUSH_UINT(totalCount);
         LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
-        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->getQuestProperties()->id);
         LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
 
         RELEASE_LOCK

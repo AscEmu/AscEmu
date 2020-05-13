@@ -355,7 +355,7 @@ public:
         if (quest_entry == nullptr)
             return;
 
-        if (quest_entry->GetMobCount(0) != 0)
+        if (quest_entry->getMobCountByIndex(0) != 0)
             return;
 
         Creature* Twonky = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25830, 4117.513672f, 5089.670898f, -1.506265f, 2.043593f);
@@ -384,7 +384,7 @@ public:
         if (quest_entry == nullptr)
             return;
 
-        if (quest_entry->GetMobCount(1) != 0)
+        if (quest_entry->getMobCountByIndex(1) != 0)
             return;
 
         Creature* Ed210 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25831, 4218.529785f, 4802.284668f, -12.975346f, 5.833142f);
@@ -413,7 +413,7 @@ public:
         if (quest_entry == nullptr)
             return;
 
-        if (quest_entry->GetMobCount(2) != 0)
+        if (quest_entry->getMobCountByIndex(2) != 0)
             return;
 
         Creature* MaxBlasto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25832, 4029.974609f, 4890.195313f, -12.775084f, 1.081481f);
@@ -442,7 +442,7 @@ public:
         if (quest_entry == nullptr)
             return;
 
-        if (quest_entry->GetMobCount(3) != 0)
+        if (quest_entry->getMobCountByIndex(3) != 0)
             return;
 
         Creature* TheGrinder = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25833, 3787.021484f, 4821.941895f, -12.967110f, 5.097224f);
@@ -472,11 +472,11 @@ public:
         if (quest_entry == nullptr)
             return;
 
-        if (quest_entry->GetMobCount(0) == 0)
+        if (quest_entry->getMobCountByIndex(0) == 0)
         {
-            quest_entry->SetMobCount(0, 1);
+            quest_entry->setMobCountForIndex(0, 1);
             quest_entry->SendUpdateAddKill(0);
-            quest_entry->UpdatePlayerFields();
+            quest_entry->updatePlayerFields();
         }
 
         Creature* GearmasterMechazod = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f);
@@ -627,7 +627,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
 
     if (pCreature->getEntry() == 26248)
     {
-        if (qle->GetMobCount(2) == 0)
+        if (qle->getMobCountByIndex(2) == 0)
         {
             pCreature->castSpell(pCreature, 46798, true);
             pCreature->castSpell(pCreature, 46799, true);
@@ -639,7 +639,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
 
     if (pCreature->getEntry() == 26249)
     {
-        if (qle->GetMobCount(1) == 0)
+        if (qle->getMobCountByIndex(1) == 0)
         {
             pCreature->castSpell(pCreature, 46798, true);
             pCreature->castSpell(pCreature, 46799, true);

@@ -42,7 +42,7 @@ class DashelStonefist : public CreatureAIScript
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1447);
                 if (!qle)
                     return;
-                qle->SendQuestComplete();
+                qle->sendQuestComplete();
             }
         }
     }

@@ -99,12 +99,12 @@ public:
         if (qle == nullptr)
             return;
 
-        if (qle->GetMobCount(0) != 0)
+        if (qle->getMobCountByIndex(0) != 0)
             return;
 
-        qle->SetMobCount(0, 1);
+        qle->setMobCountForIndex(0, 1);
         qle->SendUpdateAddKill(0);
-        qle->UpdatePlayerFields();
+        qle->updatePlayerFields();
     }
 };
 
@@ -136,12 +136,12 @@ public:
         if (qle == nullptr)
             return;
 
-        if (qle->GetMobCount(0) != 0)
+        if (qle->getMobCountByIndex(0) != 0)
             return;
 
-        qle->SetMobCount(1, 1);
+        qle->setMobCountForIndex(1, 1);
         qle->SendUpdateAddKill(1);
-        qle->UpdatePlayerFields();
+        qle->updatePlayerFields();
     }
 };
 
@@ -174,12 +174,12 @@ public:
         if (qle == nullptr)
             return;
 
-        if (qle->GetMobCount(0) != 0)
+        if (qle->getMobCountByIndex(0) != 0)
             return;
 
-        qle->SetMobCount(2, 1);
+        qle->setMobCountForIndex(2, 1);
         qle->SendUpdateAddKill(2);
-        qle->UpdatePlayerFields();
+        qle->updatePlayerFields();
     }
 };
 

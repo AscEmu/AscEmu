@@ -603,9 +603,9 @@ void WorldSession::handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
         LogDebugFlag(LF_OPCODE, " No quest in slot %d.", srlPacket.questLogSlot);
         return;
     }
-    QuestProperties const* qPtr = qEntry->GetQuest();
+    QuestProperties const* qPtr = qEntry->getQuestProperties();
     CALL_QUESTSCRIPT_EVENT(qEntry, OnQuestCancel)(_player);
-    qEntry->Finish();
+    qEntry->finishAndRemove();
 
     for (uint8_t i = 0; i < 4; ++i)
     {
@@ -862,7 +862,7 @@ void WorldSession::handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (qle && !qle->CanBeFinished())
+    if (qle && !qle->canBeFinished())
     {
         LogDebugFlag(LF_OPCODE, "Quest not finished.");
         return;

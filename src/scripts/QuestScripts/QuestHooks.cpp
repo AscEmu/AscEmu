@@ -234,9 +234,9 @@ void InnkeeperFlex(Player* pPlayer, Unit* pUnit)
         if(qle == NULL)
             return;
 
-        qle->SetMobCount(0, qle->GetMobCount(0) + 1);
+        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
         qle->SendUpdateAddKill(0);
-        qle->UpdatePlayerFields();
+        qle->updatePlayerFields();
     }
     else if(pUnit->getEntry() == 6929)
     {
@@ -244,9 +244,9 @@ void InnkeeperFlex(Player* pPlayer, Unit* pUnit)
         if(qle == NULL)
             return;
 
-        qle->SetMobCount(0, qle->GetMobCount(0) + 1);
+        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
         qle->SendUpdateAddKill(0);
-        qle->UpdatePlayerFields();
+        qle->updatePlayerFields();
     }
 }
 
@@ -258,9 +258,9 @@ void InnkeeperDance(Player* pPlayer, Unit* pUnit)
         if(qle == NULL)
             return;
 
-        qle->SetMobCount(0, qle->GetMobCount(0) + 1);
+        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
         qle->SendUpdateAddKill(0);
-        qle->UpdatePlayerFields();
+        qle->updatePlayerFields();
     }
     else if(pUnit->getEntry() == 6746)
     {
@@ -268,9 +268,9 @@ void InnkeeperDance(Player* pPlayer, Unit* pUnit)
         if(qle == NULL)
             return;
 
-        qle->SetMobCount(0, qle->GetMobCount(0) + 1);
+        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
         qle->SendUpdateAddKill(0);
-        qle->UpdatePlayerFields();
+        qle->updatePlayerFields();
     }
 }
 
@@ -282,9 +282,9 @@ void InnkeeperTrain(Player* pPlayer, Unit* pUnit)
         if(qle == NULL)
             return;
 
-        qle->SetMobCount(0, qle->GetMobCount(0) + 1);
+        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
         qle->SendUpdateAddKill(0);
-        qle->UpdatePlayerFields();
+        qle->updatePlayerFields();
     }
     else if(pUnit->getEntry() == 11814)
     {
@@ -292,9 +292,9 @@ void InnkeeperTrain(Player* pPlayer, Unit* pUnit)
         if(qle == NULL)
             return;
 
-        qle->SetMobCount(0, qle->GetMobCount(0) + 1);
+        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
         qle->SendUpdateAddKill(0);
-        qle->UpdatePlayerFields();
+        qle->updatePlayerFields();
     }
 }
 
@@ -306,9 +306,9 @@ void InnkeeperChicken(Player* pPlayer, Unit* pUnit)
         if(qle == NULL)
             return;
 
-        qle->SetMobCount(0, qle->GetMobCount(0) + 1);
+        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
         qle->SendUpdateAddKill(0);
-        qle->UpdatePlayerFields();
+        qle->updatePlayerFields();
     }
     else if(pUnit->getEntry() == 6741)
     {
@@ -316,9 +316,9 @@ void InnkeeperChicken(Player* pPlayer, Unit* pUnit)
         if(qle == NULL)
             return;
 
-        qle->SetMobCount(0, qle->GetMobCount(0) + 1);
+        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
         qle->SendUpdateAddKill(0);
-        qle->UpdatePlayerFields();
+        qle->updatePlayerFields();
     }
 }
 
@@ -370,9 +370,9 @@ void Scratches(Player* pPlayer, uint32_t /*AreaTrigger*/)
         return;
 
     Kaliri->Despawn(0, 0);
-    qle->SetMobCount(0, qle->GetMobCount(0) + 1);
+    qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
     qle->SendUpdateAddKill(0);
-    qle->UpdatePlayerFields();
+    qle->updatePlayerFields();
 }
 
 void OnAreaTrigger(Player* pPlayer, uint32_t AreaTrigger)

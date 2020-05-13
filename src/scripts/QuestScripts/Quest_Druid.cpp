@@ -75,12 +75,12 @@ public:
                 if (qle == nullptr)
                     return;
 
-                if (qle->CanBeFinished())
+                if (qle->canBeFinished())
                     return;
 
-                qle->Complete();
-                qle->SendQuestComplete();
-                qle->UpdatePlayerFields();
+                qle->setStateComplete();
+                qle->sendQuestComplete();
+                qle->updatePlayerFields();
 
                 pCreature->Emote(EMOTE_ONESHOT_WAVE);
                 pCreature->Despawn(240000, 0);
@@ -95,12 +95,12 @@ public:
                 if (qle == nullptr)
                     return;
 
-                if (qle->CanBeFinished())
+                if (qle->canBeFinished())
                     return;
 
-                qle->Complete();
-                qle->SendQuestComplete();
-                qle->UpdatePlayerFields();
+                qle->setStateComplete();
+                qle->sendQuestComplete();
+                qle->updatePlayerFields();
 
                 pCreature->Emote(EMOTE_ONESHOT_WAVE);
                 pCreature->Despawn(240000, 0);
@@ -159,12 +159,12 @@ public:
                 if (qle == nullptr)
                     return;
 
-                if (qle->CanBeFinished())
+                if (qle->canBeFinished())
                     return;
 
-                qle->Complete();
-                qle->SendQuestComplete();
-                qle->UpdatePlayerFields();
+                qle->setStateComplete();
+                qle->sendQuestComplete();
+                qle->updatePlayerFields();
                 break;
             }
             case 5:
@@ -196,12 +196,12 @@ public:
                 if (qle == nullptr)
                     return;
 
-                if (qle->CanBeFinished())
+                if (qle->canBeFinished())
                     return;
 
-                qle->Complete();
-                qle->SendQuestComplete();
-                qle->UpdatePlayerFields();
+                qle->setStateComplete();
+                qle->sendQuestComplete();
+                qle->updatePlayerFields();
                 break;
             }
         }

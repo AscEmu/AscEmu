@@ -27,7 +27,7 @@ public:
         if (mTarget == nullptr || qLogEntry == nullptr || entry != 169294)
             return;
 
-        if (mTarget->getItemInterface()->GetItemCount(11470) < qLogEntry->GetQuest()->required_itemcount[0])
+        if (mTarget->getItemInterface()->GetItemCount(11470) < qLogEntry->getQuestProperties()->required_itemcount[0])
             mTarget->castSpell(mTarget, 15065, false);
     }
 };

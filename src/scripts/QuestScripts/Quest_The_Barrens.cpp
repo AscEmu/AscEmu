@@ -43,12 +43,12 @@ public:
         if (qle == nullptr)
             return;
 
-        if (qle->GetMobCount(0) != 0)
+        if (qle->getMobCountByIndex(0) != 0)
             return;
 
-        qle->SetMobCount(0, 1);
+        qle->setMobCountForIndex(0, 1);
         qle->SendUpdateAddKill(0);
-        qle->UpdatePlayerFields();
+        qle->updatePlayerFields();
     }
 };
 
@@ -72,7 +72,7 @@ class Wizzlecranks_Shredder : public CreatureAIScript
             auto quest_entry = plr->GetQuestLogForEntry(863);
             if (quest_entry == nullptr)
                 return;
-            quest_entry->SendQuestComplete();
+            quest_entry->sendQuestComplete();
         }
     }
 };
@@ -97,7 +97,7 @@ class Gilthares_Firebough : public CreatureAIScript
             auto quest_entry = plr->GetQuestLogForEntry(898);
             if (quest_entry == nullptr)
                 return;
-            quest_entry->SendQuestComplete();
+            quest_entry->sendQuestComplete();
         }
     }
 };

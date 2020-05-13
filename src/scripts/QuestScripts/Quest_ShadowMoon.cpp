@@ -327,9 +327,9 @@ public:
         if (pQuest == NULL)
             return;
 
-        pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
+        pQuest->setMobCountForIndex(0, pQuest->getMobCountByIndex(0) + 1);
         pQuest->SendUpdateAddKill(0);
-        pQuest->UpdatePlayerFields();
+        pQuest->updatePlayerFields();
     }
 };
 

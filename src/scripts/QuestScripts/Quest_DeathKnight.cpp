@@ -89,12 +89,12 @@ public:
             pCreature->GetAIInterface()->AttackReaction(pPlayer, 1, 0);
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have committed a big mistake, demon");
 
-            if (en->GetMobCount(0) != 0)
+            if (en->getMobCountByIndex(0) != 0)
                 return;
 
-            en->SetMobCount(0, 1);
+            en->setMobCountForIndex(0, 1);
             en->SendUpdateAddKill(0);
-            en->UpdatePlayerFields();
+            en->updatePlayerFields();
         }
 
     }

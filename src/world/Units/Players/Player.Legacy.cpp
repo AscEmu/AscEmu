@@ -2567,20 +2567,20 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
 void Player::_SaveQuestLogEntry(QueryBuffer* buf)
 {
-    for (std::set<uint32>::iterator itr = m_removequests.begin(); itr != m_removequests.end(); ++itr)
+    for (auto removeableQuestId : m_removequests)
     {
         if (buf == nullptr)
-            CharacterDatabase.Execute("DELETE FROM questlog WHERE player_guid=%u AND quest_id=%u", getGuidLow(), (*itr));
+            CharacterDatabase.Execute("DELETE FROM questlog WHERE player_guid=%u AND quest_id=%u", getGuidLow(), removeableQuestId);
         else
-            buf->AddQuery("DELETE FROM questlog WHERE player_guid=%u AND quest_id=%u", getGuidLow(), (*itr));
+            buf->AddQuery("DELETE FROM questlog WHERE player_guid=%u AND quest_id=%u", getGuidLow(), removeableQuestId);
     }
 
     m_removequests.clear();
 
-    for (uint8 i = 0; i < 25; ++i)
+    for (auto& questlogEntry : m_questlog)
     {
-        if (m_questlog[i] != nullptr)
-            m_questlog[i]->SaveToDB(buf);
+        if (questlogEntry != nullptr)
+            questlogEntry->saveToDB(buf);
     }
 }
 
@@ -4202,22 +4202,22 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
         {
             Field* fields = result->Fetch();
             uint32 questid = fields[1].GetUInt32();
-            QuestProperties const* quest = sMySQLStore.getQuestProperties(questid);
+            QuestProperties const* questProperties = sMySQLStore.getQuestProperties(questid);
             uint8_t slot = fields[2].GetUInt8();
 
             // remove on next save if bad quest
-            if (!quest)
+            if (!questProperties)
             {
                 m_removequests.insert(questid);
                 continue;
             }
+
             if (m_questlog[slot] != nullptr)
                 continue;
 
-            QuestLogEntry* entry = new QuestLogEntry;
-            entry->Init(quest, this, slot);
-            entry->LoadFromDB(fields);
-            entry->UpdatePlayerFields();
+            QuestLogEntry* questLogEntry = new QuestLogEntry(questProperties, this, slot);
+            questLogEntry->loadFromDB(fields);
+            questLogEntry->updatePlayerFields();
 
         }
         while (result->NextRow());
@@ -4230,7 +4230,7 @@ QuestLogEntry* Player::GetQuestLogForEntry(uint32 quest)
     {
         if (m_questlog[i] != nullptr)
         {
-            if (m_questlog[i]->GetQuest()->id == quest)
+            if (m_questlog[i]->getQuestProperties()->id == quest)
                 return m_questlog[i];
         }
     }
@@ -5470,7 +5470,7 @@ bool Player::IsGroupMember(Player* plyr)
     return false;
 }
 
-uint16 Player::GetOpenQuestSlot()
+uint8_t Player::GetOpenQuestSlot()
 {
     for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
         if (m_questlog[i] == nullptr)
@@ -5495,7 +5495,7 @@ bool Player::HasFinishedQuest(uint32 quest_id)
 bool Player::HasTimedQuest()
 {
     for (uint8 i = 0; i < MAX_QUEST_SLOT; i++)
-        if (m_questlog[i] != nullptr && m_questlog[i]->GetQuest()->time != 0)
+        if (m_questlog[i] != nullptr && m_questlog[i]->getQuestProperties()->time != 0)
             return true;
 
     return false;
@@ -6262,7 +6262,7 @@ bool Player::HasQuestForItem(uint32 itemid)
     {
         if (m_questlog[i] != nullptr)
         {
-            QuestProperties const* qst = m_questlog[i]->GetQuest();
+            QuestProperties const* qst = m_questlog[i]->getQuestProperties();
 
             // Check the item_quest_association table for an entry related to this item
             QuestAssociationList* tempList = sQuestMgr.GetQuestAssociationListForItemId(itemid);
@@ -6418,15 +6418,15 @@ void Player::EventDeActivateGameObject(GameObject* obj)
 
 void Player::EventTimedQuestExpire(uint32 questid)
 {
-    QuestLogEntry* qle = this->GetQuestLogForEntry(questid);
-    if (qle == nullptr)
+    QuestLogEntry* questLogEntry = this->GetQuestLogForEntry(questid);
+    if (questLogEntry == nullptr)
         return;
 
-    QuestProperties const* qst = qle->GetQuest();
+    QuestProperties const* qst = questLogEntry->getQuestProperties();
 
     sQuestMgr.SendQuestUpdateFailedTimer(qst, this);
-    CALL_QUESTSCRIPT_EVENT(qle, OnQuestCancel)(this);
-    qle->Fail(true);
+    CALL_QUESTSCRIPT_EVENT(questLogEntry, OnQuestCancel)(this);
+    questLogEntry->sendQuestFailed(true);
 }
 
 void Player::AreaExploredOrEventHappens(uint32 questId)
@@ -6529,10 +6529,10 @@ void Player::UpdateNearbyGameObjects()
                 {
                     if ((qle = GetQuestLogForEntry(GOitr->first->id)) != nullptr)
                     {
-                        for (uint32 i = 0; i < qle->GetQuest()->count_required_mob; ++i)
+                        for (uint32 i = 0; i < qle->getQuestProperties()->count_required_mob; ++i)
                         {
-                            if (qle->GetQuest()->required_mob_or_go[i] == static_cast<int32>(go->getEntry()) &&
-                                qle->GetMobCount(i) < qle->GetQuest()->required_mob_or_go_count[i])
+                            if (qle->getQuestProperties()->required_mob_or_go[i] == static_cast<int32>(go->getEntry()) &&
+                                qle->getMobCountByIndex(i) < qle->getQuestProperties()->required_mob_or_go_count[i])
                             {
                                 activate_quest_object = true;
                                 break;
@@ -10248,7 +10248,7 @@ bool Player::HasQuest(uint32 entry)
 {
     for (uint8 i = 0; i < MAX_QUEST_SLOT; i++)
     {
-        if (m_questlog[i] != nullptr && m_questlog[i]->GetQuest()->id == entry)
+        if (m_questlog[i] != nullptr && m_questlog[i]->getQuestProperties()->id == entry)
             return true;
     }
 
@@ -12097,7 +12097,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     bool bValid = false;
     bool hasquest = true;
     bool bSkipLevelCheck = false;
-    QuestProperties const* qst = nullptr;
+    QuestProperties const* questProperties = nullptr;
     Object* qst_giver = nullptr;
     WoWGuid wowGuid;
     wowGuid.Init(guid);
@@ -12114,7 +12114,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         if (quest_giver->isQuestGiver())
         {
             bValid = true;
-            qst = sMySQLStore.getQuestProperties(quest_id);
+            questProperties = sMySQLStore.getQuestProperties(quest_id);
         }
     }
     else if (wowGuid.isGameObject())
@@ -12126,7 +12126,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
 
         bValid = true;
-        qst = sMySQLStore.getQuestProperties(quest_id);
+        questProperties = sMySQLStore.getQuestProperties(quest_id);
     }
     else if (wowGuid.isItem())
     {
@@ -12138,7 +12138,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
 
         bValid = true;
         bSkipLevelCheck = true;
-        qst = sMySQLStore.getQuestProperties(quest_id);
+        questProperties = sMySQLStore.getQuestProperties(quest_id);
     }
     else if (wowGuid.isPlayer())
     {
@@ -12149,7 +12149,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
 
         bValid = true;
-        qst = sMySQLStore.getQuestProperties(quest_id);
+        questProperties = sMySQLStore.getQuestProperties(quest_id);
     }
 
     if (!qst_giver)
@@ -12158,16 +12158,16 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         return;
     }
 
-    if (!bValid || qst == nullptr)
+    if (!bValid || questProperties == nullptr)
     {
         LOG_DEBUG("WORLD: Creature is not a questgiver.");
         return;
     }
 
-    if (HasQuest(qst->id))
+    if (HasQuest(questProperties->id))
         return;
 
-    if (qst_giver->isCreature() && static_cast< Creature* >(qst_giver)->m_escorter != nullptr)
+    if (qst_giver->isCreature() && dynamic_cast<Creature*>(qst_giver)->m_escorter != nullptr)
     {
         m_session->SystemMessage("You cannot accept this quest at this time.");
         return;
@@ -12175,9 +12175,9 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
 
     // Check the player hasn't already taken this quest, or
     // it isn't available.
-    uint32 status = sQuestMgr.CalcQuestStatus(qst_giver, this, qst, 3, bSkipLevelCheck);
+    uint32 status = sQuestMgr.CalcQuestStatus(qst_giver, this, questProperties, 3, bSkipLevelCheck);
 
-    if ((!sQuestMgr.IsQuestRepeatable(qst) && HasFinishedQuest(qst->id))
+    if ((!sQuestMgr.IsQuestRepeatable(questProperties) && HasFinishedQuest(questProperties->id))
         || (status != QuestStatus::Available && status != QuestStatus::Repeatable && status != QuestStatus::AvailableChat)
         || !hasquest)
     {
@@ -12187,41 +12187,40 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         return;
     }
 
-    uint16 log_slot = GetOpenQuestSlot();
+    uint8_t log_slot = GetOpenQuestSlot();
     if (log_slot > MAX_QUEST_SLOT)
     {
         sQuestMgr.SendQuestLogFull(this);
         return;
     }
 
-    if ((qst->time != 0) && HasTimedQuest())
+    if ((questProperties->time != 0) && HasTimedQuest())
     {
         sQuestMgr.SendQuestInvalid(INVALID_REASON_HAVE_TIMED_QUEST, this);
         return;
     }
 
-    if (qst->count_receiveitems || qst->srcitem)
+    if (questProperties->count_receiveitems || questProperties->srcitem)
     {
-        uint32 slots_required = qst->count_receiveitems;
+        uint32 slots_required = questProperties->count_receiveitems;
 
         if (getItemInterface()->CalculateFreeSlots(nullptr) < slots_required)
         {
             getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_BAG_FULL);
-            sQuestMgr.SendQuestFailed(FAILED_REASON_INV_FULL, qst, this);
+            sQuestMgr.SendQuestFailed(FAILED_REASON_INV_FULL, questProperties, this);
             return;
         }
     }
 
-    QuestLogEntry* qle = new QuestLogEntry();
-    qle->Init(qst, this, log_slot);
-    qle->UpdatePlayerFields();
+    QuestLogEntry* questLogEntry = new QuestLogEntry(questProperties, this, log_slot);
+    questLogEntry->updatePlayerFields();
 
     // If the quest should give any items on begin, give them the items.
     for (uint8 i = 0; i < 4; ++i)
     {
-        if (qst->receive_items[i])
+        if (questProperties->receive_items[i])
         {
-            Item* item = sObjectMgr.CreateItem(qst->receive_items[i], this);
+            Item* item = sObjectMgr.CreateItem(questProperties->receive_items[i], this);
             if (item == nullptr)
                 continue;
 
@@ -12236,21 +12235,21 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         }
     }
 
-    if (qst->srcitem && qst->srcitem != qst->receive_items[0])
+    if (questProperties->srcitem && questProperties->srcitem != questProperties->receive_items[0])
     {
-        if (!qst_giver->isItem() || (qst_giver->getEntry() != qst->srcitem))
+        if (!qst_giver->isItem() || (qst_giver->getEntry() != questProperties->srcitem))
         {
-            Item *item = sObjectMgr.CreateItem(qst->srcitem, this);
+            Item *item = sObjectMgr.CreateItem(questProperties->srcitem, this);
             if (item != nullptr)
             {
-                item->setStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
+                item->setStackCount(questProperties->srcitemcount ? questProperties->srcitemcount : 1);
                 if (!getItemInterface()->AddItemToFreeSlot(item))
                     item->DeleteMe();
             }
         }
     }
 
-    if (qst->count_required_item || qst_giver->isGameObject())    // gameobject quests deactivate
+    if (questProperties->count_required_item || qst_giver->isGameObject())    // gameobject quests deactivate
         UpdateNearbyGameObjects();
 
     // Some spells applied at quest activation
@@ -12267,10 +12266,10 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         }
     }
 
-    sQuestMgr.OnQuestAccepted(this, qst, qst_giver);
+    sQuestMgr.OnQuestAccepted(this, questProperties, qst_giver);
 
     LOG_DEBUG("WORLD: Added new QLE.");
-    sHookInterface.OnQuestAccept(this, qst, qst_giver);
+    sHookInterface.OnQuestAccept(this, questProperties, qst_giver);
 }
 
 bool Player::LoadReputations(QueryResult *result)
@@ -12526,16 +12525,16 @@ void Player::AddQuestKill(uint32 questid, uint8 reqid, uint32 delay)
     if (quest_entry == nullptr)
         return;
 
-    QuestProperties const* quest = quest_entry->GetQuest();
-    if (quest_entry->GetMobCount(reqid) >= quest->required_mob_or_go_count[reqid])
+    QuestProperties const* quest = quest_entry->getQuestProperties();
+    if (quest_entry->getMobCountByIndex(reqid) >= quest->required_mob_or_go_count[reqid])
         return;
 
-    quest_entry->IncrementMobCount(reqid);
+    quest_entry->incrementMobCountForIndex(reqid);
     quest_entry->SendUpdateAddKill(reqid);
-    quest_entry->UpdatePlayerFields();
+    quest_entry->updatePlayerFields();
 
-    if (quest_entry->CanBeFinished())
-        quest_entry->SendQuestComplete();
+    if (quest_entry->canBeFinished())
+        quest_entry->sendQuestComplete();
 }
 
 bool Player::CanBuyAt(MySQLStructure::VendorRestrictions const* vendor)

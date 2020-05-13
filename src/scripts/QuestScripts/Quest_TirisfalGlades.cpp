@@ -54,7 +54,7 @@ class CalvinMontague : public CreatureAIScript
                 if (!qle)
                     return;
 
-                qle->SendQuestComplete();
+                qle->sendQuestComplete();
 
                 setScriptPhase(2);
             }

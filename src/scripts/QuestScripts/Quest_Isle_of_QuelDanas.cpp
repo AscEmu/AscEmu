@@ -40,9 +40,9 @@ public:
             if (pOrb)
             {
                 pOrb->setState(GO_STATE_OPEN);
-                qle->SetMobCount(0, 1);
+                qle->setMobCountForIndex(0, 1);
                 qle->SendUpdateAddKill(0);
-                qle->UpdatePlayerFields();
+                qle->updatePlayerFields();
             }
             return;
         }

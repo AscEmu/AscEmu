@@ -505,7 +505,7 @@ public:
     {
         QuestLogEntry* qle = player->GetQuestLogForEntry(8345);
         if (qle != nullptr)
-            qle->SendQuestComplete();
+            qle->sendQuestComplete();
     }
 };
 

@@ -2241,7 +2241,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
                                 {
                                     if (const auto quest_log = target->GetQuestLogForEntry(quest_go.first->id))
                                     {
-                                        const auto quest = quest_log->GetQuest();
+                                        const auto quest = quest_log->getQuestProperties();
                                         if (quest->count_required_mob == 0)
                                             continue;
 
@@ -2249,7 +2249,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
                                         {
                                             if (quest->required_mob_or_go[i] == static_cast<int32_t>(this_go->getEntry()))
                                             {
-                                                if (quest_log->GetMobCount(i) < quest->required_mob_or_go_count[i])
+                                                if (quest_log->getMobCountByIndex(i) < quest->required_mob_or_go_count[i])
                                                 {
                                                     activate_quest_object = true;
                                                     break;

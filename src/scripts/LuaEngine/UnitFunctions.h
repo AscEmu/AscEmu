@@ -1517,7 +1517,7 @@ public:
                     sQuestMgr.GenerateQuestXP(plr, qst);
                     sQuestMgr.BuildQuestComplete(plr, qst);
 
-                    IsPlrOnQuest->Finish();
+                    IsPlrOnQuest->finishAndRemove();
                     plr->AddToFinishedQuests(quest_id);
                     lua_pushnumber(L, 1);
                     return 1;
@@ -1537,19 +1537,19 @@ public:
     {
         TEST_PLAYER_RET()
         uint32_t quest_id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        Player* plr = static_cast<Player*>(ptr);
+        Player* player = static_cast<Player*>(ptr);
 
-        QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
-        if (qst)
+        QuestProperties const* questProperties = sMySQLStore.getQuestProperties(quest_id);
+        if (questProperties && player)
         {
-            if (plr->HasFinishedQuest(quest_id))
+            if (player->HasFinishedQuest(quest_id))
             {
                 lua_pushnumber(L, 0);
                 return 1;
             }
             else
             {
-                QuestLogEntry* IsPlrOnQuest = plr->GetQuestLogForEntry(quest_id);
+                QuestLogEntry* IsPlrOnQuest = player->GetQuestLogForEntry(quest_id);
                 if (IsPlrOnQuest)
                 {
                     lua_pushnumber(L, 1);
@@ -1557,45 +1557,44 @@ public:
                 }
                 else
                 {
-                    uint16_t open_slot = plr->GetOpenQuestSlot();
+                    uint8_t open_slot = player->GetOpenQuestSlot();
                     if (open_slot > MAX_QUEST_SLOT)
                     {
-                        sQuestMgr.SendQuestLogFull(plr);
+                        sQuestMgr.SendQuestLogFull(player);
                         lua_pushnumber(L, 2);
                         return 1;
                     }
                     else
                     {
-                        QuestLogEntry* qle = new QuestLogEntry();
-                        qle->Init(qst, plr, open_slot);
-                        qle->UpdatePlayerFields();
+                        QuestLogEntry* questLogEntry = new QuestLogEntry(questProperties, player, open_slot);
+                        questLogEntry->updatePlayerFields();
 
                         // If the quest should give any items on begin, give them the items.
                         for (uint8_t i = 0; i < 4; ++i)
                         {
-                            if (qst->receive_items[i])
+                            if (questProperties->receive_items[i])
                             {
-                                Item* item = sObjectMgr.CreateItem(qst->receive_items[i], plr);
-                                if (item == NULL)
+                                Item* item = sObjectMgr.CreateItem(questProperties->receive_items[i], player);
+                                if (item == nullptr)
                                     return false;
 
-                                if (!plr->getItemInterface()->AddItemToFreeSlot(item))
+                                if (!player->getItemInterface()->AddItemToFreeSlot(item))
                                     item->DeleteMe();
                             }
                         }
 
-                        if (qst->srcitem && qst->srcitem != qst->receive_items[0])
+                        if (questProperties->srcitem && questProperties->srcitem != questProperties->receive_items[0])
                         {
-                            Item* item = sObjectMgr.CreateItem(qst->srcitem, plr);
+                            Item* item = sObjectMgr.CreateItem(questProperties->srcitem, player);
                             if (item)
                             {
-                                item->setStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
-                                if (!plr->getItemInterface()->AddItemToFreeSlot(item))
+                                item->setStackCount(questProperties->srcitemcount ? questProperties->srcitemcount : 1);
+                                if (!player->getItemInterface()->AddItemToFreeSlot(item))
                                     item->DeleteMe();
                             }
                         }
 
-                        sHookInterface.OnQuestAccept(plr, qst, NULL);
+                        sHookInterface.OnQuestAccept(player, questProperties, NULL);
 
                         lua_pushnumber(L, 3);
                         return 1;
@@ -1659,12 +1658,12 @@ public:
             auto questlog_entry = pl->GetQuestLogForEntry(questid);
             if (questlog_entry != nullptr)
             {
-                questlog_entry->SetMobCount(objective, questlog_entry->GetQuest()->required_mob_or_go[objective]);
+                questlog_entry->setMobCountForIndex(objective, questlog_entry->getQuestProperties()->required_mob_or_go[objective]);
                 questlog_entry->SendUpdateAddKill(objective);
-                if (questlog_entry->CanBeFinished())
+                if (questlog_entry->canBeFinished())
                 {
-                    questlog_entry->SendQuestComplete();
-                    questlog_entry->UpdatePlayerFields();
+                    questlog_entry->sendQuestComplete();
+                    questlog_entry->updatePlayerFields();
                 }
             }
         }
@@ -2534,12 +2533,12 @@ public:
         QuestLogEntry* qle = pl->GetQuestLogForEntry(questid);
         if (qle != nullptr)
         {
-            qle->SetMobCount(objective, qle->GetMobCount(objective) + 1);
+            qle->setMobCountForIndex(objective, qle->getMobCountByIndex(objective) + 1);
             qle->SendUpdateAddKill(objective);
-            if (qle->CanBeFinished())
-                qle->SendQuestComplete();
+            if (qle->canBeFinished())
+                qle->sendQuestComplete();
 
-            qle->UpdatePlayerFields();
+            qle->updatePlayerFields();
         }
         return 0;
     }
@@ -5878,7 +5877,7 @@ public:
         QuestLogEntry* qle = static_cast<Player*>(ptr)->GetQuestLogForEntry(entry);
         if (!qle)
             RET_NUMBER(-1);
-        lua_pushnumber(L, qle->GetSlot());
+        lua_pushnumber(L, qle->getSlot());
         return 1;
     }
 
@@ -5920,7 +5919,7 @@ public:
         Player* pl = static_cast<Player*>(ptr);
         QuestLogEntry* qle = pl->GetQuestLogForEntry(questid);
         if (qle != nullptr)
-            lua_pushnumber(L, qle->GetMobCount(objective));
+            lua_pushnumber(L, qle->getMobCountByIndex(objective));
         else
             lua_pushnil(L);
         return 1;

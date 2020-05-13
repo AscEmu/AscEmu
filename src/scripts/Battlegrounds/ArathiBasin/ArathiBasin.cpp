@@ -729,16 +729,16 @@ void ArathiBasin::CaptureControlPoint(uint32_t Id, uint32_t Team)
             if (Team)
             {
                 if (m_capturedBases[Team] >= 4 && (*itr)->GetQuestLogForEntry(8121))
-                    (*itr)->GetQuestLogForEntry(8121)->SendQuestComplete();
+                    (*itr)->GetQuestLogForEntry(8121)->sendQuestComplete();
                 if (m_capturedBases[Team] == 5 && (*itr)->GetQuestLogForEntry(8122))
-                    (*itr)->GetQuestLogForEntry(8122)->SendQuestComplete();
+                    (*itr)->GetQuestLogForEntry(8122)->sendQuestComplete();
             }
             else
             {
                 if (m_capturedBases[Team] >= 4 && (*itr)->GetQuestLogForEntry(8114))
-                    (*itr)->GetQuestLogForEntry(8114)->SendQuestComplete();
+                    (*itr)->GetQuestLogForEntry(8114)->sendQuestComplete();
                 if (m_capturedBases[Team] == 5 && (*itr)->GetQuestLogForEntry(8115))
-                    (*itr)->GetQuestLogForEntry(8115)->SendQuestComplete();
+                    (*itr)->GetQuestLogForEntry(8115)->sendQuestComplete();
             }
         }
     }

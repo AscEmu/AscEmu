@@ -40,7 +40,7 @@ class Dalinda_Malem : public CreatureAIScript
             auto quest_entry = plr->GetQuestLogForEntry(1440);
             if (quest_entry == nullptr)
                 return;
-            quest_entry->SendQuestComplete();
+            quest_entry->sendQuestComplete();
         }
     }
 };

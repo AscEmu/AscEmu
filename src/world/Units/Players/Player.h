@@ -1134,7 +1134,7 @@ public:
             return false;
         }
 
-        uint16 GetOpenQuestSlot();
+        uint8_t GetOpenQuestSlot();
         QuestLogEntry* GetQuestLogForEntry(uint32 quest);
         QuestLogEntry* GetQuestLogInSlot(uint32 slot) { return m_questlog[slot]; }
         uint32 GetQuestSharer() { return m_questSharer; }

@@ -42,7 +42,7 @@ class Professor_Phizzlethorpe : public CreatureAIScript
             auto quest_entry = plr->GetQuestLogForEntry(665);
             if (quest_entry == nullptr)
                 return;
-            quest_entry->SendQuestComplete();
+            quest_entry->sendQuestComplete();
         }
     }
 };

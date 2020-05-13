@@ -85,7 +85,7 @@ class Miran : public CreatureAIScript
             auto quest_entry = player->GetQuestLogForEntry(309);
             if (quest_entry == nullptr)
                 return;
-            quest_entry->SendQuestComplete();
+            quest_entry->sendQuestComplete();
         }
     }
 

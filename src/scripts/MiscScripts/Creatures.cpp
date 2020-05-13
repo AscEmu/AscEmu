@@ -436,11 +436,11 @@ class NestlewoodOwlkin : public CreatureAIScript
                 if (quest_entry == nullptr)
                     return;
 
-                if (quest_entry->GetMobCount(0) < 6)
+                if (quest_entry->getMobCountByIndex(0) < 6)
                 {
-                    quest_entry->IncrementMobCount(0);
+                    quest_entry->incrementMobCountForIndex(0);
                     quest_entry->SendUpdateAddKill(0);
-                    quest_entry->UpdatePlayerFields();
+                    quest_entry->updatePlayerFields();
 
                     RegisterAIUpdateEvent(240000);  // update after 4 mins
                 }

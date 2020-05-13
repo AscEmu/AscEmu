@@ -3559,14 +3559,14 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 QuestLogEntry* pQuest = plr->GetQuestLogForEntry(itr->second.data_2);
                 if (pQuest != nullptr)
                 {
-                    if (pQuest->GetQuest()->required_mob_or_go[itr->second.data_5] >= 0)
+                    if (pQuest->getQuestProperties()->required_mob_or_go[itr->second.data_5] >= 0)
                     {
-                        uint32 required_mob = static_cast<uint32>(pQuest->GetQuest()->required_mob_or_go[itr->second.data_5]);
-                        if (pQuest->GetMobCount(itr->second.data_5) < required_mob)
+                        uint32 required_mob = static_cast<uint32>(pQuest->getQuestProperties()->required_mob_or_go[itr->second.data_5]);
+                        if (pQuest->getMobCountByIndex(itr->second.data_5) < required_mob)
                         {
-                            pQuest->SetMobCount(itr->second.data_5, pQuest->GetMobCount(itr->second.data_5) + 1);
+                            pQuest->setMobCountForIndex(itr->second.data_5, pQuest->getMobCountByIndex(itr->second.data_5) + 1);
                             pQuest->SendUpdateAddKill(itr->second.data_5);
-                            pQuest->UpdatePlayerFields();
+                            pQuest->updatePlayerFields();
                         }
                     }
                 }

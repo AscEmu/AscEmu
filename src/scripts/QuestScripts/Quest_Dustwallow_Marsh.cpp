@@ -115,7 +115,7 @@ class OverlordMokMorokk : public CreatureAIScript
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1173);
                 if (!qle)
                     return;
-                qle->SendQuestComplete();
+                qle->sendQuestComplete();
             }
         }
     }
@@ -181,7 +181,7 @@ class PrivateHendel : public CreatureAIScript
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1324);
                 if (!qle)
                     return;
-                qle->SendQuestComplete();
+                qle->sendQuestComplete();
             }
         }
     }
