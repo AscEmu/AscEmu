@@ -399,18 +399,29 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     //////////////////////////////////////////////////////////////////////////////////////////
     // show byte
     std::stringstream sstext;
-    uint32 theBytes = creature_target->getUInt32Value(UNIT_FIELD_BYTES_0);
-    sstext << "UNIT_FIELD_BYTES_0 are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
-    sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\n';
+    uint32 theBytes = creature_target->getBytes0();
+    sstext << "UNIT_FIELD_BYTES_0 are:" << '\n';
+    sstext << " -Race: " << uint16((uint8)theBytes & 0xFF) << '\n';
+    sstext << " -Class: " << uint16((uint8)(theBytes >> 8) & 0xFF) << '\n';
+    sstext << " -Gender: " << uint16((uint8)(theBytes >> 16) & 0xFF) << '\n';
+    sstext << " -Power Type: " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\n';
+    sstext << '\n';
 
+    theBytes = creature_target->getBytes1();
+    sstext << "UNIT_FIELD_BYTES_1 are:" << '\n';
+    sstext << " -StandState: " << uint16((uint8)theBytes & 0xFF) << '\n';
+    sstext << " -Pet TP: " << uint16((uint8)(theBytes >> 8) & 0xFF) << '\n';
+    sstext << " -StandState Flag: " << uint16((uint8)(theBytes >> 16) & 0xFF) << '\n';
+    sstext << " -Animation Flag: " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\n';
+    sstext << '\n';
 
-    theBytes = creature_target->getUInt32Value(UNIT_FIELD_BYTES_1);
-    sstext << "UNIT_FIELD_BYTES_1 are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
-    sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\n';
-
-    theBytes = creature_target->getUInt32Value(UNIT_FIELD_BYTES_2);
-    sstext << "UNIT_FIELD_BYTES_2 are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
-    sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\0';
+    theBytes = creature_target->getBytes2();
+    sstext << "UNIT_FIELD_BYTES_2 are:" << '\n';
+    sstext << " -SheathType: " << uint16((uint8)theBytes & 0xFF) << '\n';
+    sstext << " -PvP Flag: " << uint16((uint8)(theBytes >> 8) & 0xFF) << '\n';
+    sstext << " -Pet Flag: " << uint16((uint8)(theBytes >> 16) & 0xFF) << '\n';
+    sstext << " -ShapeShift Form: " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\n';
+    sstext << '\0';
 
     SystemMessage(m_session, "UNIT_FIELD_BYTES =================");
     SendMultilineMessage(m_session, sstext.str().c_str());

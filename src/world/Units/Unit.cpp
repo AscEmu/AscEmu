@@ -68,6 +68,46 @@ void Unit::setChannelSpellId(uint32_t spell_id) { write(unitData()->channel_spel
 uint32_t Unit::getBytes0() const { return unitData()->field_bytes_0.raw; }
 void Unit::setBytes0(uint32_t bytes) { write(unitData()->field_bytes_0.raw, bytes); }
 
+uint8_t Unit::getBytes0ByOffset(uint32_t offset) const
+{
+    switch (offset)
+    {
+        case 0:
+            return getRace();
+        case 1:
+            return getClass();
+        case 2:
+            return getGender();
+        case 3:
+            return getPowerType();
+        default:
+            LogError("Offset %u is not a valid offset value for byte_0 data (max 3). Returning 0", offset);
+            return 0;
+    }
+}
+
+void Unit::setBytes0ForOffset(uint32_t offset, uint8_t value)
+{
+    switch (offset)
+    {
+        case 0:
+            setRace(value);
+            break;
+        case 1:
+            setClass(value);
+            break;
+        case 2:
+            setGender(value);
+            break;
+        case 3:
+            setPowerType(value);
+            break;
+        default:
+            LogError("Offset %u is not a valid offset value for byte_0 data (max 3)", offset);
+            break;
+    }
+}
+
 uint8_t Unit::getRace() const { return unitData()->field_bytes_0.s.race; }
 void Unit::setRace(uint8_t race) { write(unitData()->field_bytes_0.s.race, race); }
 
@@ -572,6 +612,46 @@ void Unit::setMaxOffhandDamage(float damage) { write(unitData()->maximum_offhand
 uint32_t Unit::getBytes1() const { return unitData()->field_bytes_1.raw; }
 void Unit::setBytes1(uint32_t bytes) { write(unitData()->field_bytes_1.raw, bytes); }
 
+uint8_t Unit::getBytes1ByOffset(uint32_t offset) const
+{
+    switch (offset)
+    {
+        case 0:
+            return getStandState();
+        case 1:
+            return getPetTalentPoints();
+        case 2:
+            return getStandStateFlags();
+        case 3:
+            return getAnimationFlags();
+        default:
+            LogError("Offset %u is not a valid offset value for byte_1 data (max 3). Returning 0", offset);
+            return 0;
+    }
+}
+
+void Unit::setBytes1ForOffset(uint32_t offset, uint8_t value)
+{
+    switch (offset)
+    {
+        case 0:
+            setStandState(value);
+            break;
+        case 1:
+            setPetTalentPoints(value);
+            break;
+        case 2:
+            setStandStateFlags(value);
+            break;
+        case 3:
+            setAnimationFlags(value);
+            break;
+        default:
+            LogError("Offset %u is not a valid offset value for byte_1 data (max 3)", offset);
+            break;
+    }
+}
+
 uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }
 void Unit::setStandState(uint8_t standState) { write(unitData()->field_bytes_1.s.stand_state, standState); }
 
@@ -636,6 +716,12 @@ void Unit::setNegStat(uint8_t stat, uint32_t value) { write(unitData()->negative
 uint32_t Unit::getResistance(uint8_t type) const { return unitData()->resistance[type]; }
 void Unit::setResistance(uint8_t type, uint32_t value) { write(unitData()->resistance[type], value); }
 
+uint32_t Unit::getResistanceBuffModPositive(uint8_t type) const { return unitData()->resistance_buff_mod_positive[type]; }
+void Unit::setResistanceBuffModPositive(uint8_t type, uint32_t value) { write(unitData()->resistance_buff_mod_positive[type], value); }
+
+uint32_t Unit::getResistanceBuffModNegative(uint8_t type) const { return unitData()->resistance_buff_mod_negative[type]; }
+void Unit::setResistanceBuffModNegative(uint8_t type, uint32_t value) { write(unitData()->resistance_buff_mod_negative[type], value); }
+
 uint32_t Unit::getBaseMana() const { return unitData()->base_mana; }
 void Unit::setBaseMana(uint32_t baseMana) { write(unitData()->base_mana, baseMana); }
 
@@ -645,6 +731,46 @@ void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, b
 //byte_2 begin
 uint32_t Unit::getBytes2() const { return unitData()->field_bytes_2.raw; }
 void Unit::setBytes2(uint32_t bytes) { write(unitData()->field_bytes_2.raw, bytes); }
+
+uint8_t Unit::getBytes2ByOffset(uint32_t offset) const
+{
+    switch (offset)
+    {
+        case 0:
+            return getSheathType();
+        case 1:
+            return getPvpFlags();
+        case 2:
+            return getPetFlags();
+        case 3:
+            return getShapeShiftForm();
+        default:
+            LogError("Offset %u is not a valid offset value for byte_2 data (max 3). Returning 0", offset);
+            return 0;
+    }
+}
+
+void Unit::setBytes2ForOffset(uint32_t offset, uint8_t value)
+{
+    switch (offset)
+    {
+        case 0:
+            setSheathType(value);
+            break;
+        case 1:
+            setPvpFlags(value);
+            break;
+        case 2:
+            setPetFlags(value);
+            break;
+        case 3:
+            setShapeShiftForm(value);
+            break;
+        default:
+            LogError("Offset %u is not a valid offset value for byte_2 data (max 3)", offset);
+            break;
+    }
+}
 
 uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_type; }
 void Unit::setSheathType(uint8_t sheathType) { write(unitData()->field_bytes_2.s.sheath_type, sheathType); }
@@ -801,8 +927,7 @@ uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive)
     return addAuraVisual(spell_id, count, positive, out);
 }
 
-uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive,
-    bool& skip_client_update)
+uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool& skip_client_update)
 {
     auto free = -1;
     uint32_t start = positive ? MAX_POSITIVE_VISUAL_AURAS_START : MAX_POSITIVE_VISUAL_AURAS_END;

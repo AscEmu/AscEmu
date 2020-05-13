@@ -508,9 +508,9 @@ void Creature::SaveToDB()
         m_spawn->emote_state = getEmoteState();
         m_spawn->flags = getUnitFlags();
         m_spawn->factionid = getFactionTemplate();
-        m_spawn->bytes0 = m_uint32Values[UNIT_FIELD_BYTES_0];
-        m_spawn->bytes1 = m_uint32Values[UNIT_FIELD_BYTES_1];
-        m_spawn->bytes2 = m_uint32Values[UNIT_FIELD_BYTES_2];
+        m_spawn->bytes0 = getBytes0();
+        m_spawn->bytes1 = getBytes1();
+        m_spawn->bytes2 = getBytes2();
         m_spawn->stand_state = getStandState();
         m_spawn->death_state = 0;
         m_spawn->channel_target_creature = 0;
@@ -569,9 +569,9 @@ void Creature::SaveToDB()
         << getDisplayId() << ","
         << getFactionTemplate() << ","
         << getUnitFlags() << ","
-        << m_uint32Values[UNIT_FIELD_BYTES_0] << ","
-        << m_uint32Values[UNIT_FIELD_BYTES_1] << ","
-        << m_uint32Values[UNIT_FIELD_BYTES_2] << ","
+        << getBytes0() << ","
+        << getBytes1() << ","
+        << getBytes2() << ","
         << getEmoteState() << ",0,";
 
     ss << m_spawn->channel_spell << ","
@@ -975,8 +975,8 @@ void Creature::CalcResistance(uint8_t type)
         pos += FlatResistanceMod[type];
 
 #if VERSION_STRING != Classic
-    setUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSPOSITIVE + type, pos);
-    setUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE + type, neg);
+    setResistanceBuffModPositive(type, pos);
+    setResistanceBuffModNegative(type, neg);
 #endif
 
     int32 tot = BaseResistance[type] + pos - neg;
@@ -1425,9 +1425,9 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     BaseAttackType = creature_properties->attackSchool;
 
     setModCastSpeed(1.0f);   // better set this one
-    setUInt32Value(UNIT_FIELD_BYTES_0, spawn->bytes0);
-    setUInt32Value(UNIT_FIELD_BYTES_1, spawn->bytes1);
-    setUInt32Value(UNIT_FIELD_BYTES_2, spawn->bytes2);
+    setBytes0(spawn->bytes0);
+    setBytes1(spawn->bytes1);
+    setBytes2(spawn->bytes2);
 
     ////////////AI
 

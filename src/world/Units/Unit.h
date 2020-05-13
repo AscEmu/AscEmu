@@ -309,6 +309,9 @@ public:
     uint32_t getBytes0() const;
     void setBytes0(uint32_t bytes);
 
+    uint8_t getBytes0ByOffset(uint32_t offset) const;
+    void setBytes0ForOffset(uint32_t offset, uint8_t value);
+
     uint8_t getRace() const;
     void setRace(uint8_t race);
     uint32_t getRaceMask() { return 1 << (getRace() - 1); }
@@ -421,6 +424,9 @@ public:
     uint32_t getBytes1() const;
     void setBytes1(uint32_t bytes);
 
+    uint8_t getBytes1ByOffset(uint32_t offset) const;
+    void setBytes1ForOffset(uint32_t offset, uint8_t value);
+
     uint8_t getStandState() const;
     void setStandState(uint8_t standState);
 
@@ -480,6 +486,12 @@ public:
     uint32_t getResistance(uint8_t type) const;
     void setResistance(uint8_t type, uint32_t value);
 
+    uint32_t getResistanceBuffModPositive(uint8_t type) const;
+    void setResistanceBuffModPositive(uint8_t type, uint32_t value);
+
+    uint32_t getResistanceBuffModNegative(uint8_t type) const;
+    void setResistanceBuffModNegative(uint8_t type, uint32_t value);
+
     uint32_t getBaseMana() const;
     void setBaseMana(uint32_t baseMana);
 
@@ -489,6 +501,9 @@ public:
     //byte_2 begin
     uint32_t getBytes2() const;
     void setBytes2(uint32_t bytes);
+
+    uint8_t getBytes2ByOffset(uint32_t offset) const;
+    void setBytes2ForOffset(uint32_t offset, uint8_t value);
 
     uint8_t getSheathType() const;
     void setSheathType(uint8_t sheathType);

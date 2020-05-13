@@ -409,15 +409,15 @@ bool ChatHandler::HandleDebugSetUnitByteCommand(const char* args, WorldSession* 
     {
         case 0:
         {
-            unit_target->setByteValue(UNIT_FIELD_BYTES_0, static_cast<uint8_t>(offset), static_cast<uint8_t>(value));
+            unit_target->setBytes0ForOffset(offset, static_cast<uint8_t>(value));
         } break;
         case 1:
         {
-            unit_target->setByteValue(UNIT_FIELD_BYTES_1, static_cast<uint8_t>(offset), static_cast<uint8_t>(value));
+            unit_target->setBytes1ForOffset(offset, static_cast<uint8_t>(value));
         } break;
         case 2:
         {
-            unit_target->setByteValue(UNIT_FIELD_BYTES_2, static_cast<uint8_t>(offset), static_cast<uint8_t>(value));
+            unit_target->setBytes2ForOffset(offset, static_cast<uint8_t>(value));
         } break;
         default:
         {

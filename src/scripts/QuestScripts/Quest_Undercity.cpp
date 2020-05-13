@@ -27,23 +27,21 @@ public:
 
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* creat = mTarget->GetMapMgr()->GetSqlIdCreature(19175); //Lady Sylvanas Windrunner - NCDB guid
-        if (creat == nullptr)
-            return;
+        if (Creature* creat = mTarget->GetMapMgr()->GetSqlIdCreature(19175))
+        {
+            SpawnHighborneLamenter(mTarget, 21628, 1295.222656f, 314.253998f, -57.320854f, 2.365611f);
+            SpawnHighborneLamenter(mTarget, 21628, 1293.403931f, 311.264465f, -57.320854f, 1.939140f);
+            SpawnHighborneLamenter(mTarget, 21628, 1286.532104f, 311.452423f, -57.320854f, 0.592182f);
+            SpawnHighborneLamenter(mTarget, 21628, 1284.536011f, 314.496338f, -57.320845f, 0.580401f);
 
-        SpawnHighborneLamenter(mTarget, 21628, 1295.222656f, 314.253998f, -57.320854f, 2.365611f);
-        SpawnHighborneLamenter(mTarget, 21628, 1293.403931f, 311.264465f, -57.320854f, 1.939140f);
-        SpawnHighborneLamenter(mTarget, 21628, 1286.532104f, 311.452423f, -57.320854f, 0.592182f);
-        SpawnHighborneLamenter(mTarget, 21628, 1284.536011f, 314.496338f, -57.320845f, 0.580401f);
+            creat->PlaySoundToSet(10896);
+            creat->castSpell(creat, sSpellMgr.getSpellInfo(36568), false);
 
-        creat->PlaySoundToSet(10896);
-        creat->castSpell(creat, sSpellMgr.getSpellInfo(36568), false);
+            creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
 
-        creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
-
-        // Players can't interact with Sylvanas for 180000 ms.
-        // Cast creat to an object because the EventSetUInt32Value method is in Object class.
-        sEventMgr.AddEvent(static_cast<Object*>(creat), &Object::EventSetUInt32Value, (uint16_t)UNIT_NPC_FLAGS, (uint32_t)2, EVENT_SCRIPT_UPDATE_EVENT, 180000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            // Players can't interact with Sylvanas for 180000 ms.
+            sEventMgr.AddEvent(static_cast<Unit*>(creat), &Unit::setNpcFlags, static_cast<uint32_t>(2), EVENT_SCRIPT_UPDATE_EVENT, 180000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        }
     }
 
     void SpawnHighborneLamenter(Player* pThis, uint32_t entry, float posX, float posY, float posZ, float posO)

@@ -6503,8 +6503,8 @@ void Player::CalcResistance(uint8_t type)
         res = 1;
 
 #if VERSION_STRING != Classic
-    setUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSPOSITIVE + type, pos);
-    setUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE + type, -neg);
+    setResistanceBuffModPositive(type, pos);
+    setResistanceBuffModNegative(type, -neg);
 #endif
     setResistance(type, res > 0 ? res : 0);
 

@@ -7081,7 +7081,7 @@ void Aura::SpellAuraModIncreaseEnergyPerc(bool apply)
     auto modValue = static_cast<PowerType>(mod->m_miscValue);
     if (apply)
     {
-        mod->fixed_amount[mod->m_effectIndex] = m_target->getPercentModUInt32Value(UNIT_FIELD_MAXPOWER1 + modValue, mod->m_amount);
+        mod->fixed_amount[mod->m_effectIndex] = (m_target->getMaxPower(modValue) * mod->m_amount) / 100;
         m_target->modMaxPower(modValue, mod->fixed_amount[mod->m_effectIndex]);
         if (p_target != nullptr && mod->m_miscValue == POWER_TYPE_MANA)
             p_target->SetManaFromSpell(p_target->GetManaFromSpell() + mod->fixed_amount[mod->m_effectIndex]);
@@ -7099,7 +7099,7 @@ void Aura::SpellAuraModIncreaseHealthPerc(bool apply)
     SetPositive();
     if (apply)
     {
-        mod->fixed_amount[mod->m_effectIndex] = m_target->getPercentModUInt32Value(UNIT_FIELD_MAXHEALTH, mod->m_amount);
+        mod->fixed_amount[mod->m_effectIndex] = (m_target->getMaxHealth() * mod->m_amount) / 100;
         m_target->modMaxHealth(mod->fixed_amount[mod->m_effectIndex]);
         if (p_target != nullptr)
             p_target->SetHealthFromSpell(p_target->GetHealthFromSpell() + mod->fixed_amount[mod->m_effectIndex]);

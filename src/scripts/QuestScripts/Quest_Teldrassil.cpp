@@ -25,14 +25,13 @@ public:
 
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* creat = mTarget->GetMapMgr()->GetSqlIdCreature(43727);
-        if (creat == NULL)
-            return;
+        if (Creature* creature = mTarget->GetMapMgr()->GetSqlIdCreature(43727))
+        {
+            creature->setDisplayId(901);
+            creature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Ribbit! No! This cannot...ribbit...be! You have duped me with...ribbit..your foul trickery! Ribbit!");
 
-        creat->setDisplayId(901);
-        creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Ribbit! No! This cannot...ribbit...be! You have duped me with...ribbit..your foul trickery! Ribbit!");
-
-        sEventMgr.AddEvent(static_cast<Object*>(creat), &Object::EventSetUInt32Value, (uint16_t)UNIT_FIELD_DISPLAYID, (uint32_t)10035, EVENT_UNK, 50000, 0, 1);
+            sEventMgr.AddEvent(static_cast<Unit*>(creature), &Unit::setDisplayId, static_cast<uint32_t>(10035), EVENT_UNK, 50000, 0, 1);
+        }
     }
 };
 

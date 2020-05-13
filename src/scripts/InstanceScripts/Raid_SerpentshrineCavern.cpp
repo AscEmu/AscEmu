@@ -1254,8 +1254,8 @@ class EnchantedElementalAI : public CreatureAIScript
                 if (Vashj)
                 {
                     //Increase Lady Vashj attack by 5%
-                    Vashj->modFloatValue(UNIT_FIELD_MINDAMAGE, (Vashj->getMinDamage() / 100) * 5);
-                    Vashj->modFloatValue(UNIT_FIELD_MAXDAMAGE, (Vashj->getMaxDamage() / 100) * 5);
+                    Vashj->setMinDamage(Vashj->getMinDamage() + (Vashj->getMinDamage() / 100) * 5);
+                    Vashj->setMaxDamage(Vashj->getMaxDamage() + (Vashj->getMaxDamage() / 100) * 5);
                 }
 
                 //despawn
