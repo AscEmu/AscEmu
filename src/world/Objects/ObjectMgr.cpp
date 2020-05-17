@@ -25,6 +25,7 @@
 #include "Exceptions/Exceptions.hpp"
 #include "Units/Stats.h"
 #include "Management/ArenaTeam.h"
+#include "Management/TaxiMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Units/Players/PlayerClasses.hpp"
