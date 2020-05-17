@@ -1426,7 +1426,7 @@ void Group::Teleport(WorldSession* m_session)
     GroupMembersSet::iterator itr1, itr2;
     uint8 i = 0;
     SubGroup* sg1 = NULL;
-    Player * member = NULL;
+    Player* member = NULL;
     m_groupLock.Acquire();
     for(i = 0; i < m_SubGroupCount; i++)
     {
