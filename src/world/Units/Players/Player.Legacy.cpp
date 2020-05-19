@@ -7746,9 +7746,7 @@ void Player::EndDuel(uint8 WinCondition)
     //Announce Winner
     SendMessageToSet(SmsgDuelWinner(WinCondition, getName(), DuelingWith->getName()).serialise().get(), true);
 
-    WorldPacket data(SMSG_DUEL_COMPLETE, 1);
-    data << uint8(1);
-    SendMessageToSet(&data, true);
+    SendMessageToSet(SmsgDuelComplete(1).serialise().get(), true);
 
     //Send hook OnDuelFinished
 
