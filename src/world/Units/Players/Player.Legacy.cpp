@@ -13295,12 +13295,11 @@ void Player::SendInitialLogonPackets()
     sendSetProficiencyPacket(4, armor_proficiency);
     sendSetProficiencyPacket(2, weapon_proficiency);
 
-    //Tutorial Flags
-    WorldPacket datab(SMSG_TUTORIAL_FLAGS, 4 * 8);
-    for (int i = 0; i < 8; ++i)
-        datab << uint32_t(m_Tutorials[i]);
+    std::vector<uint32_t> tutorials;
+    for (auto tutorial : m_Tutorials)
+        tutorials.push_back(tutorial);
 
-    m_session->SendPacket(&datab);
+    m_session->SendPacket(SmsgTutorialFlags(tutorials).serialise().get());
 
 #if VERSION_STRING > TBC
     smsg_TalentsInfo(false);
