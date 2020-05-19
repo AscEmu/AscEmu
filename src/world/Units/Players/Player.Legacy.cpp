@@ -92,6 +92,7 @@
 #include "Server/Packets/SmsgSupercededSpell.h"
 #include "Server/Packets/SmsgRemovedSpell.h"
 #include "Server/Packets/SmsgTransferPending.h"
+#include "Server/Packets/SmsgTransferAborted.h"
 
 using namespace AscEmu::Packets;
 
@@ -6966,13 +6967,7 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
         uint32 status = sInstanceMgr.PreTeleport(mapid, this, instance_id);
         if (status != INSTANCE_OK)
         {
-            WorldPacket data(SMSG_TRANSFER_ABORTED, 8);
-
-            data << uint32(mapid);
-            data << uint32(status);
-
-            m_session->SendPacket(&data);
-
+            m_session->SendPacket(SmsgTransferAborted(mapid, status).serialise().get());
             return;
         }
 
