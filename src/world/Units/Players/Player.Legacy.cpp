@@ -85,6 +85,7 @@
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Packets/SmsgAreaTriggerMessage.h"
 #include "Server/Packets/SmsgLoginSetTimespeed.h"
+#include "Server/Packets/SmsgSendUnlearnSpells.h"
 
 using namespace AscEmu::Packets;
 
@@ -13308,16 +13309,7 @@ void Player::SendInitialLogonPackets()
     smsg_InitialSpells();
 
 #if VERSION_STRING > TBC
-#if VERSION_STRING == Mop
-    WorldPacket unlearnPacket(SMSG_SEND_UNLEARN_SPELLS, 4);
-    unlearnPacket.writeBits(0, 22); // Count
-    unlearnPacket.flushBits();
-    GetSession()->SendPacket(&unlearnPacket);
-#elif VERSION_STRING < Mop
-    WorldPacket data(SMSG_SEND_UNLEARN_SPELLS, 4);
-    data << uint32(0); // count, for (count) uint32;
-    GetSession()->SendPacket(&data);
-#endif
+    m_session->SendPacket(SmsgSendUnlearnSpells().serialise().get());
 #endif
 
     sendActionBars(false);
