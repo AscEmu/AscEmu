@@ -90,6 +90,7 @@
 #include "Server/Packets/SmsgLearnedSpell.h"
 #include "Server/Packets/SmsgTimeSyncReq.h"
 #include "Server/Packets/SmsgSupercededSpell.h"
+#include "Server/Packets/SmsgRemovedSpell.h"
 
 using namespace AscEmu::Packets;
 
@@ -6378,7 +6379,7 @@ bool Player::removeSpell(uint32 SpellID, bool MoveToDeleted, bool SupercededSpel
     if (SupercededSpell)
         m_session->SendPacket(SmsgSupercededSpell(SpellID, SupercededSpellID).serialise().get());
     else
-        m_session->OutPacket(SMSG_REMOVED_SPELL, 4, &SpellID);
+        m_session->SendPacket(SmsgRemovedSpell(SpellID).serialise().get());
 
     return true;
 }
