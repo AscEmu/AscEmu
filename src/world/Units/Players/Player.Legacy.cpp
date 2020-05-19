@@ -88,6 +88,7 @@
 #include "Server/Packets/SmsgSendUnlearnSpells.h"
 #include "Server/Packets/SmsgUpdateWorldState.h"
 #include "Server/Packets/SmsgLearnedSpell.h"
+#include "Server/Packets/SmsgTimeSyncReq.h"
 
 using namespace AscEmu::Packets;
 
@@ -4328,9 +4329,7 @@ void Player::OnPushToWorld()
     AddItemsToWorld();
 
     // delay the unlock movement packet
-    WorldPacket* data = new WorldPacket(SMSG_TIME_SYNC_REQ, 4);
-    *data << uint32(0);
-    getUpdateMgr().queueDelayedPacket(data);
+    getUpdateMgr().queueDelayedPacket(SmsgTimeSyncReq(0).serialise().get());
 
     // set fly if cheat is active
     // TODO Validate that this isn't breaking logon by messaging player without delay
@@ -4441,9 +4440,7 @@ void Player::OnPushToWorld()
     AddItemsToWorld();
 
     // delay the unlock movement packet
-    WorldPacket* data = new WorldPacket(SMSG_TIME_SYNC_REQ, 4);
-    *data << uint32(0);
-    getUpdateMgr().queueDelayedPacket(data);
+    getUpdateMgr().queueDelayedPacket(SmsgTimeSyncReq(0).serialise().get());
 
     // set fly if cheat is active
     setMoveCanFly(m_cheats.FlyCheat);
@@ -12631,9 +12628,7 @@ void Player::ResetTimeSync()
 
 void Player::SendTimeSync()
 {
-    WorldPacket data(SMSG_TIME_SYNC_REQ, 4);
-    data << uint32(m_timeSyncCounter++);
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(SmsgTimeSyncReq(m_timeSyncCounter++).serialise().get());
 
     // Schedule next sync in 10 sec
     m_timeSyncTimer = 10000;
