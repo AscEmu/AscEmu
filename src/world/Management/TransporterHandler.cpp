@@ -23,6 +23,9 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
+#include "Server/Packets/SmsgTransferPending.h"
+
+using namespace AscEmu::Packets;
 
 bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
 {
@@ -527,18 +530,13 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
     SetPosition(x, y, z, m_position.o, false);
     AddToWorld();
 
-    WorldPacket packet(SMSG_TRANSFER_PENDING, 12);
-    packet << newMapid;
-    packet << getEntry();
-    packet << oldmap;
-
     for (auto passengerGuid : m_passengers)
     {
         auto passenger = sObjectMgr.GetPlayer(passengerGuid);
         if (passenger == nullptr)
             continue;
 
-        passenger->GetSession()->SendPacket(&packet);
+        passenger->GetSession()->SendPacket(SmsgTransferPending(newMapid, true, getEntry(), oldmap).serialise().get());
         bool teleport_successful = passenger->Teleport(LocationVector(x, y, z, passenger->GetOrientation()), this->GetMapMgr());
         if (!teleport_successful)
         {

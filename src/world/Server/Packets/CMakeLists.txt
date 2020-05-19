@@ -411,6 +411,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgTotemCreated.h
    ${PATH_PREFIX}/SmsgTradeStatus.h
    ${PATH_PREFIX}/SmsgTrainerBuySucceeded.h
+   ${PATH_PREFIX}/SmsgTransferPending.h
    ${PATH_PREFIX}/SmsgTutorialFlags.h
    ${PATH_PREFIX}/SmsgUpdateAccountDataComplete.h
    ${PATH_PREFIX}/SmsgUpdateAuraDuration.h

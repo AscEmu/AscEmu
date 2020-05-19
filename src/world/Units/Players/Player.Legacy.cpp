@@ -91,6 +91,7 @@
 #include "Server/Packets/SmsgTimeSyncReq.h"
 #include "Server/Packets/SmsgSupercededSpell.h"
 #include "Server/Packets/SmsgRemovedSpell.h"
+#include "Server/Packets/SmsgTransferPending.h"
 
 using namespace AscEmu::Packets;
 
@@ -6952,19 +6953,8 @@ void Player::RemovePlayerPet(uint32 pet_number)
 void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending, bool force_new_world, uint32 instance_id)
 {
     //this func must only be called when switching between maps!
-    WorldPacket data(41);
     if (sendpending && mapid != m_mapId && force_new_world)
-    {
-        data.SetOpcode(SMSG_TRANSFER_PENDING);
-
-#if VERSION_STRING >= Cata
-        data.writeBit(0);
-        data.writeBit(0);
-#endif
-        data << mapid;
-
-        m_session->SendPacket(&data);
-    }
+        m_session->SendPacket(SmsgTransferPending(mapid).serialise().get());
 
     bool sendpacket = (mapid == m_mapId);
     //Dismount before teleport and before being removed from world,
@@ -6976,7 +6966,7 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
         uint32 status = sInstanceMgr.PreTeleport(mapid, this, instance_id);
         if (status != INSTANCE_OK)
         {
-            data.Initialize(SMSG_TRANSFER_ABORTED);
+            WorldPacket data(SMSG_TRANSFER_ABORTED, 8);
 
             data << uint32(mapid);
             data << uint32(status);
@@ -8159,9 +8149,8 @@ void Player::SafeTeleport(MapMgr* mgr, const LocationVector & vec)
 
     m_mapId = mgr->GetMapId();
     m_instanceId = mgr->GetInstanceID();
-    WorldPacket data(SMSG_TRANSFER_PENDING, 20);
-    data << mgr->GetMapId();
-    GetSession()->SendPacket(&data);
+
+    GetSession()->SendPacket(SmsgTransferPending(mgr->GetMapId()).serialise().get());
 
     GetSession()->SendPacket(SmsgNewWorld(mgr->GetMapId(), vec).serialise().get());
 
