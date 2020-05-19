@@ -43,7 +43,9 @@
 #include "WorldCreatorDefines.hpp"
 #include "WorldCreator.h"
 #include "Units/Creatures/Pet.h"
+#include "Server/Packets/SmsgUpdateWorldState.h"
 
+using namespace AscEmu::Packets;
 
 Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
 
@@ -2094,9 +2096,5 @@ WorldStatesHandler& MapMgr::GetWorldStatesHandler()
 
 void MapMgr::onWorldStateUpdate(uint32 zone, uint32 field, uint32 value)
 {
-    WorldPacket data(SMSG_UPDATE_WORLD_STATE, 8);
-    data << uint32(field);
-    data << uint32(value);
-
-    SendPacketToPlayersInZone(zone, &data);
+    SendPacketToPlayersInZone(zone, SmsgUpdateWorldState(field, value).serialise().get());
 }

@@ -413,6 +413,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgUpdateInstanceOwnership.h
    ${PATH_PREFIX}/SmsgUpdateLastInstance.h
    ${PATH_PREFIX}/SmsgUpdateObject.h
+   ${PATH_PREFIX}/SmsgUpdateWorldState.h
    ${PATH_PREFIX}/SmsgWeather.h
    ${PATH_PREFIX}/SmsgWorldStateUiTimerUpdate.h
 )

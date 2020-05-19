@@ -86,6 +86,7 @@
 #include "Server/Packets/SmsgAreaTriggerMessage.h"
 #include "Server/Packets/SmsgLoginSetTimespeed.h"
 #include "Server/Packets/SmsgSendUnlearnSpells.h"
+#include "Server/Packets/SmsgUpdateWorldState.h"
 
 using namespace AscEmu::Packets;
 
@@ -12944,15 +12945,7 @@ void Player::SetMover(Unit* target)
 
 void Player::SendWorldStateUpdate(uint32 WorldState, uint32 Value)
 {
-    WorldPacket data(SMSG_UPDATE_WORLD_STATE, 8);
-
-#if VERSION_STRING == Mop
-    data.writeBit(0);
-#endif
-    data << uint32(WorldState);
-    data << uint32(Value);
-
-    m_session->SendPacket(&data);
+    m_session->SendPacket(SmsgUpdateWorldState(WorldState, Value).serialise().get());
 }
 
 /*Loot type MUST be
@@ -13250,49 +13243,14 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     addUnitFlags(UNIT_FLAG_LOOTING);
 }
 
-#ifdef AE_TBC
-// MIT Start
-// TODO: Move to own file
 void Player::SendInitialLogonPackets()
 {
-    // SMSG_SET_REST_START
+#if VERSION_STRING == TBC
     m_session->OutPacket(SMSG_SET_REST_START, 4, &m_timeLogoff); // Seem to be unused by client
-
-    m_session->SendPacket(SmsgBindPointUpdate(m_bind_pos_x, m_bind_pos_y, m_bind_pos_z, m_bind_mapid, m_bind_zoneid).serialise().get());
-    m_session->SendPacket(SmsgSetProficiency(4, armor_proficiency).serialise().get());
-    m_session->SendPacket(SmsgSetProficiency(2, weapon_proficiency).serialise().get());
-
-    std::vector<uint32_t> tutorials;
-    for (auto tutorial : m_Tutorials)
-        tutorials.push_back(tutorial);
-
-    m_session->SendPacket(SmsgTutorialFlags(tutorials).serialise().get());
-    // Normal difficulty - TODO implement
-    //m_session->SendPacket(SmsgInstanceDifficulty(0).serialise().get());
-
-    smsg_InitialSpells();
-
-    // MIT End
-
-    sendActionBars(false);
-    smsg_InitialFactions();
-
-    m_session->SendPacket(SmsgLoginSetTimespeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
-
-    UpdateSpeed();
-    LOG_DETAIL("WORLD: Sent initial logon packets for %s.", getName().c_str());
-}
 #endif
 
-#ifndef AE_TBC
-void Player::SendInitialLogonPackets()
-{
-    // Initial Packets... they seem to be re-sent on port.
-    //m_session->OutPacket(SMSG_SET_REST_START_OBSOLETE, 4, &m_timeLogoff); // Seem to be unused by client
-
     m_session->SendPacket(SmsgBindPointUpdate(m_bind_pos_x, m_bind_pos_y, m_bind_pos_z, m_bind_mapid, m_bind_zoneid).serialise().get());
 
-    //Proficiencies
     sendSetProficiencyPacket(4, armor_proficiency);
     sendSetProficiencyPacket(2, weapon_proficiency);
 
@@ -13320,18 +13278,11 @@ void Player::SendInitialLogonPackets()
     UpdateSpeed();
 
 #if VERSION_STRING > TBC
-    WorldPacket ArenaSettings(SMSG_UPDATE_WORLD_STATE, 16);
-
-    ArenaSettings << uint32(0xC77);
-    ArenaSettings << uint32(worldConfig.arena.arenaProgress);
-    ArenaSettings << uint32(0xF3D);
-    ArenaSettings << uint32(worldConfig.arena.arenaSeason);
-
-    m_session->SendPacket(&ArenaSettings);
+    m_session->SendPacket(SmsgUpdateWorldState(0xC77, worldConfig.arena.arenaProgress, 0xF3D, worldConfig.arena.arenaSeason).serialise().get());
 #endif
+
     LOG_DETAIL("WORLD: Sent initial logon packets for %s.", getName().c_str());
 }
-#endif
 
 void Player::SendLootUpdate(Object* o)
 {
