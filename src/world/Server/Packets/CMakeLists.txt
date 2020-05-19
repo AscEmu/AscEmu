@@ -402,6 +402,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgStandstateUpdate.h
    ${PATH_PREFIX}/SmsgStopMirrorTimer.h
    ${PATH_PREFIX}/SmsgSummonRequest.h
+   ${PATH_PREFIX}/SmsgSupercededSpell.h
    ${PATH_PREFIX}/SmsgTaxinodeStatus.h
    ${PATH_PREFIX}/SmsgTextEmote.h
    ${PATH_PREFIX}/SmsgTimeSyncReq.h

@@ -89,6 +89,7 @@
 #include "Server/Packets/SmsgUpdateWorldState.h"
 #include "Server/Packets/SmsgLearnedSpell.h"
 #include "Server/Packets/SmsgTimeSyncReq.h"
+#include "Server/Packets/SmsgSupercededSpell.h"
 
 using namespace AscEmu::Packets;
 
@@ -6375,15 +6376,9 @@ bool Player::removeSpell(uint32 SpellID, bool MoveToDeleted, bool SupercededSpel
         setDualWield2H(false);
 
     if (SupercededSpell)
-    {
-        WorldPacket data(SMSG_SUPERCEDED_SPELL, 8);
-        data << SpellID << SupercededSpellID;
-        m_session->SendPacket(&data);
-    }
+        m_session->SendPacket(SmsgSupercededSpell(SpellID, SupercededSpellID).serialise().get());
     else
-    {
         m_session->OutPacket(SMSG_REMOVED_SPELL, 4, &SpellID);
-    }
 
     return true;
 }
