@@ -37,8 +37,11 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            // All versions share same implementation
+#if VERSION_STRING != Mop
             packet << x << y << z << map_id << zone_id;
+#else
+            packet << x << z << y << map_id << zone_id;
+#endif
             return true;
         }
 

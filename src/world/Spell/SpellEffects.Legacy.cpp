@@ -2323,6 +2323,9 @@ void Spell::SpellEffectBind(uint8_t effectIndex)
     data << playerTarget->GetBindZoneId();
     playerTarget->GetSession()->SendPacket(&data);
 
+    playerTarget->GetSession()->SendPacket(SmsgBindPointUpdate(playerTarget->GetBindPositionX(), playerTarget->GetBindPositionY(), playerTarget->GetBindPositionZ(),
+        playerTarget->GetBindMapId(), playerTarget->GetBindZoneId()).serialise().get());
+
     data.Initialize(SMSG_PLAYERBOUND);
     data << m_caster->getGuid();
     data << playerTarget->GetBindZoneId();

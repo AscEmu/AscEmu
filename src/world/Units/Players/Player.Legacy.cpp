@@ -13289,23 +13289,7 @@ void Player::SendInitialLogonPackets()
     // Initial Packets... they seem to be re-sent on port.
     //m_session->OutPacket(SMSG_SET_REST_START_OBSOLETE, 4, &m_timeLogoff); // Seem to be unused by client
 
-    StackWorldPacket<32> data(SMSG_BINDPOINTUPDATE);
-
-#if VERSION_STRING != Mop
-    data << float(m_bind_pos_x);
-    data << float(m_bind_pos_y);
-    data << float(m_bind_pos_z);
-    data << uint32(m_bind_mapid);
-    data << uint32(m_bind_zoneid);
-#elif VERSION_STRING == Mop
-    data << float(m_bind_pos_x);
-    data << float(m_bind_pos_z);
-    data << float(m_bind_pos_y);
-    data << uint32(m_bind_zoneid);
-    data << uint32(m_bind_mapid);
-#endif
-
-    m_session->SendPacket(&data);
+    m_session->SendPacket(SmsgBindPointUpdate(m_bind_pos_x, m_bind_pos_y, m_bind_pos_z, m_bind_mapid, m_bind_zoneid).serialise().get());
 
     //Proficiencies
     sendSetProficiencyPacket(4, armor_proficiency);
@@ -13331,7 +13315,7 @@ void Player::SendInitialLogonPackets()
     unlearnPacket.flushBits();
     GetSession()->SendPacket(&unlearnPacket);
 #elif VERSION_STRING < Mop
-    data.Initialize(SMSG_SEND_UNLEARN_SPELLS);
+    WorldPacket data(SMSG_SEND_UNLEARN_SPELLS, 4);
     data << uint32(0); // count, for (count) uint32;
     GetSession()->SendPacket(&data);
 #endif
