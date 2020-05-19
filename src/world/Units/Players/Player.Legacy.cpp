@@ -84,6 +84,7 @@
 #include "Server/Packets/SmsgPowerUpdate.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Packets/SmsgAreaTriggerMessage.h"
+#include "Server/Packets/SmsgLoginSetTimespeed.h"
 
 using namespace AscEmu::Packets;
 
@@ -13275,13 +13276,7 @@ void Player::SendInitialLogonPackets()
     sendActionBars(false);
     smsg_InitialFactions();
 
-    StackWorldPacket<32> data(SMSG_BINDPOINTUPDATE);
-    data.Initialize(SMSG_LOGIN_SETTIMESPEED);
-
-    data << uint32(Util::getGameTime());
-    data << float(0.0166666669777748f);    // Normal Game Speed
-
-    m_session->SendPacket(&data);
+    m_session->SendPacket(SmsgLoginSetTimespeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
 
     UpdateSpeed();
     LOG_DETAIL("WORLD: Sent initial logon packets for %s.", getName().c_str());
@@ -13345,23 +13340,7 @@ void Player::SendInitialLogonPackets()
     sendActionBars(false);
     smsg_InitialFactions();
 
-    data.Initialize(SMSG_LOGIN_SETTIMESPEED);
-
-#if VERSION_STRING != Mop
-    data << uint32(Util::getGameTime());
-    data << float(0.0166666669777748f);    // Normal Game Speed
-#if VERSION_STRING > TBC
-    data << uint32(0);   // 3.1.2
-#endif
-#elif VERSION_STRING == Mop
-    data << uint32_t(0);
-    data << uint32_t(Util::getGameTime());
-    data << uint32_t(0);
-    data << uint32_t(Util::getGameTime());
-    data << float(0.0166666669777748f);    // Normal Game Speed
-#endif
-
-    m_session->SendPacket(&data);
+    m_session->SendPacket(SmsgLoginSetTimespeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
 
     UpdateSpeed();
 
