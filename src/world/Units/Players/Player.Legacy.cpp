@@ -94,6 +94,7 @@
 #include "Server/Packets/SmsgTransferPending.h"
 #include "Server/Packets/SmsgTransferAborted.h"
 #include "Server/Packets/SmsgClearCooldown.h"
+#include "Server/Packets/SmsgDuelRequested.h"
 
 using namespace AscEmu::Packets;
 
@@ -7593,10 +7594,7 @@ void Player::RequestDuel(Player* pTarget)
 
     pGameObj->PushToWorld(m_mapMgr);
 
-    WorldPacket data(SMSG_DUEL_REQUESTED, 16);
-    data << pGameObj->getGuid();
-    data << getGuid();
-    pTarget->GetSession()->SendPacket(&data);
+    pTarget->GetSession()->SendPacket(SmsgDuelRequested(pGameObj->getGuid(), getGuid()).serialise().get());
 }
 
 void Player::DuelCountdown()

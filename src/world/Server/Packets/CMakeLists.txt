@@ -303,6 +303,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgDismountResult.h
    ${PATH_PREFIX}/SmsgDuelComplete.h
    ${PATH_PREFIX}/SmsgDuelCountdown.h
+   ${PATH_PREFIX}/SmsgDuelRequested.h
    ${PATH_PREFIX}/SmsgDuelWinner.h
    ${PATH_PREFIX}/SmsgEmote.h
    ${PATH_PREFIX}/SmsgEnvironmentalDamageLog.h
