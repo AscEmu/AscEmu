@@ -93,6 +93,7 @@
 #include "Server/Packets/SmsgRemovedSpell.h"
 #include "Server/Packets/SmsgTransferPending.h"
 #include "Server/Packets/SmsgTransferAborted.h"
+#include "Server/Packets/SmsgClearCooldown.h"
 
 using namespace AscEmu::Packets;
 
@@ -7134,10 +7135,7 @@ void Player::_Kick()
 
 void Player::ClearCooldownForSpell(uint32 spell_id)
 {
-    WorldPacket data(SMSG_CLEAR_COOLDOWN, 12);
-    data << uint32_t(spell_id);
-    data << uint64_t(getGuid());
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(SmsgClearCooldown(spell_id, getGuid()).serialise().get());
 
     if (const auto spellInfo = sSpellMgr.getSpellInfo(spell_id))
     {

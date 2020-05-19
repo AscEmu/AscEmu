@@ -288,6 +288,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgCharRename.h
    ${PATH_PREFIX}/SmsgCharEnum.h
    ${PATH_PREFIX}/SmsgChatPlayerNotFound.h
+   ${PATH_PREFIX}/SmsgClearCooldown.h
    ${PATH_PREFIX}/SmsgClearExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgClientControlUpdate.h
    ${PATH_PREFIX}/SmsgComplainResult.h
