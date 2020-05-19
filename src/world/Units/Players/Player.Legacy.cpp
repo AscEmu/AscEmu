@@ -87,6 +87,7 @@
 #include "Server/Packets/SmsgLoginSetTimespeed.h"
 #include "Server/Packets/SmsgSendUnlearnSpells.h"
 #include "Server/Packets/SmsgUpdateWorldState.h"
+#include "Server/Packets/SmsgLearnedSpell.h"
 
 using namespace AscEmu::Packets;
 
@@ -1951,16 +1952,7 @@ void Player::addSpell(uint32 spell_id)
 
     mSpells.insert(spell_id);
     if (IsInWorld())
-    {
-        WorldPacket data(SMSG_LEARNED_SPELL, 6);
-        data << uint32(spell_id);
-#if VERSION_STRING < Cata
-        data << uint16(0);
-#else
-        data << uint32(0);
-#endif
-        m_session->SendPacket(&data);
-    }
+        m_session->SendPacket(SmsgLearnedSpell(spell_id).serialise().get());
 
     // Check if we're a deleted spell
     iter = mDeletedSpells.find(spell_id);
