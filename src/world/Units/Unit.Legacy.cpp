@@ -53,6 +53,7 @@
 #include "Server/Packets/SmsgPowerUpdate.h"
 #include "Server/Packets/SmsgSpellDamageShield.h"
 #include "Server/Packets/SmsgAuraUpdateAll.h"
+#include "Server/Packets/SmsgAuraUpdate.h"
 
 using namespace AscEmu::Packets;
 
@@ -11545,60 +11546,41 @@ void Unit::SendFullAuraUpdate()
 #endif
 }
 
-#if VERSION_STRING < Cata
 void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
 {
 #if VERSION_STRING > TBC
-    Aura* aur = m_auras[AuraSlot];
-    ARCEMU_ASSERT(aur != NULL);
-
-    WorldPacket data(SMSG_AURA_UPDATE, 30);
-
-    if (remove)
+    if (Aura* aur = m_auras[AuraSlot])
     {
-        data << WoWGuid(getGuid());
-        data << uint8(aur->m_visualSlot);
-        data << uint32(0);
-    }
-    else
-    {
-        uint8 flags = (AFLAG_EFFECT_1 | AFLAG_EFFECT_2 | AFLAG_EFFECT_3);
+        SmsgAuraUpdate::AuraUpdate auraUpdate;
+
+        auraUpdate.flags = (AFLAG_EFFECT_1 | AFLAG_EFFECT_2 | AFLAG_EFFECT_3);
 
         if (aur->IsPositive())
-            flags |= AFLAG_CANCELLABLE;
+            auraUpdate.flags |= AFLAG_CANCELLABLE;
         else
-            flags |= AFLAG_NEGATIVE;
+            auraUpdate.flags |= AFLAG_NEGATIVE;
 
-        if (aur->GetDuration() != 0 && !(aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
-            flags |= AFLAG_DURATION;
+        if (aur->GetDuration() > 0 && !(aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
+            auraUpdate.flags |= AFLAG_DURATION;
 
-        data << WoWGuid(getGuid());
-        data << uint8(aur->m_visualSlot);
+        auraUpdate.visualSlot = aur->m_visualSlot;
+        auraUpdate.spellId = aur->GetSpellId();
 
-        data << uint32(aur->GetSpellId());
-        data << uint8(flags);
+        auraUpdate.level = getLevel();
+        auraUpdate.stackCount = m_auraStackCount[aur->m_visualSlot];
 
-        Unit* caster = aur->GetUnitCaster();
-        if (caster != NULL)
-            data << uint8(caster->getLevel());
-        else
-            data << uint8(worldConfig.player.playerLevelCap);
+        if (!(auraUpdate.flags & AFLAG_NOT_CASTER))
+            auraUpdate.casterGuid = aur->GetCasterGUID();
 
-        data << uint8(m_auraStackCount[aur->m_visualSlot]);
-
-        if ((flags & AFLAG_NOT_CASTER) == 0)
-            data << WoWGuid(aur->GetCasterGUID());
-
-        if (flags & AFLAG_DURATION)
+        if (auraUpdate.flags & AFLAG_DURATION)
         {
-            data << uint32(aur->GetDuration());
-            data << uint32(aur->GetTimeLeft());
+            auraUpdate.duration = aur->GetDuration();
+            auraUpdate.timeLeft = aur->GetTimeLeft();
         }
+
+        SendMessageToSet(SmsgAuraUpdate(GetNewGUID(), auraUpdate, remove).serialise().get(), true);
     }
-
-    SendMessageToSet(&data, true);
 #endif
-
 #ifdef AE_TBC
     if (AuraSlot >= MAX_TOTAL_AURAS_END)
         return;
@@ -11625,57 +11607,6 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
     }
 #endif
 }
-#else
-void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
-{
-    Aura* aur = m_auras[AuraSlot];
-    ARCEMU_ASSERT(aur != NULL);
-
-    WorldPacket data(SMSG_AURA_UPDATE, 200);
-    data << WoWGuid(getGuid());
-    data << uint8(aur->m_visualSlot);
-
-    if (remove)
-    {
-        data << uint32(0);
-    }
-    else
-    {
-        data << uint32(aur->GetSpellId());
-
-        uint32 flags = (AFLAG_EFFECT_1 | AFLAG_EFFECT_2 | AFLAG_EFFECT_3);
-
-        if (aur->IsPositive())
-            flags |= AFLAG_CANCELLABLE;
-        else
-            flags |= AFLAG_NEGATIVE;
-
-        if (aur->GetDuration() != 0 && !(aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
-            flags |= AFLAG_DURATION;
-
-        data << uint16(flags);
-
-        Unit* caster = aur->GetUnitCaster();
-        if (caster != nullptr)
-            data << uint8(caster->getLevel());
-        else
-            data << uint8(worldConfig.player.playerLevelCap);
-
-        data << uint8(m_auraStackCount[aur->m_visualSlot]);
-
-        if ((flags & AFLAG_NOT_CASTER) == 0)
-            data << WoWGuid(aur->GetCasterGUID());
-
-        if (flags & AFLAG_DURATION)
-        {
-            data << uint32(aur->GetDuration());
-            data << uint32(aur->GetTimeLeft());
-        }
-    }
-
-    SendMessageToSet(&data, true);
-}
-#endif
 
 void Unit::ModVisualAuraStackCount(Aura* aur, int32 count)
 {
