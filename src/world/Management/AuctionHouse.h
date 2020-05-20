@@ -25,6 +25,12 @@
 #include "WorldConf.h"
 #include "Item.h"
 
+namespace AscEmu {
+    namespace Packets {
+        class CmsgAuctionListItems;
+    }
+}
+
 enum AuctionRemoveType
 {
     AUCTION_REMOVE_EXPIRED,
@@ -83,12 +89,9 @@ struct Auction
     void DeleteFromDB();
     void SaveToDB(uint32 AuctionHouseId);
     void UpdateInDB();
-#if VERSION_STRING < Cata
     void AddToPacket(WorldPacket& data);
-#else
     uint32 GetAuctionOutBid();
-    bool BuildAuctionInfo(WorldPacket & data);
-#endif
+
     bool Deleted;
     uint32 DeletedReason;
 };
@@ -117,7 +120,7 @@ class AuctionHouse
         void SendAuctionBuyOutNotificationPacket(Auction* auct);
         void SendAuctionOutBidNotificationPacket(Auction* auct, uint64 newBidder, uint32 newHighestBid);
         void SendAuctionExpiredNotificationPacket(Auction* auct);
-        void SendAuctionList(Player* plr, WorldPacket* packet);
+        void SendAuctionList(Player* plr, AscEmu::Packets::CmsgAuctionListItems srlPacket);
 
     private:
 

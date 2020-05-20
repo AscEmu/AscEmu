@@ -48,7 +48,7 @@ void WorldSession::handleAuctionListItems(WorldPacket& recvPacket)
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
-    creature->auctionHouse->SendAuctionList(_player, &recvPacket);
+    creature->auctionHouse->SendAuctionList(_player, srlPacket);
 }
 
 void WorldSession::handleCancelAuction(WorldPacket& recvPacket)
