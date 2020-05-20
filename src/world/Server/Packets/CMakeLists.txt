@@ -401,6 +401,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgSetProficiency.h
    ${PATH_PREFIX}/SmsgShowBank.h
    ${PATH_PREFIX}/SmsgShowTaxiNodes.h
+   ${PATH_PREFIX}/SmsgSpellDamageShield.h
    ${PATH_PREFIX}/SmsgSpiritHealerConfirm.h
    ${PATH_PREFIX}/SmsgStableResult.h
    ${PATH_PREFIX}/SmsgStandstateUpdate.h

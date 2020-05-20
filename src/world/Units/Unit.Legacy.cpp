@@ -51,6 +51,7 @@
 #include "Server/Packets/SmsgAttackStart.h"
 #include "Server/Packets/SmsgAttackStop.h"
 #include "Server/Packets/SmsgPowerUpdate.h"
+#include "Server/Packets/SmsgSpellDamageShield.h"
 
 using namespace AscEmu::Packets;
 
@@ -6806,8 +6807,8 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
     if (m_damgeShieldsInUse)
         return;
     m_damgeShieldsInUse = true;
+
     //charges are already removed in handleproc
-    WorldPacket data(24);
     for (std::list<DamageProc>::iterator i = m_damageShields.begin(); i != m_damageShields.end();)    // Deal Damage to Attacker
     {
         std::list<DamageProc>::iterator i2 = i++; //we should not proc on proc.. not get here again.. not needed.Better safe then sorry.
@@ -6815,14 +6816,12 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
         {
             if (PROC_MISC & (*i2).m_flags)
             {
-                data.Initialize(SMSG_SPELLDAMAGESHIELD);
-                data << this->getGuid();
-                data << attacker->getGuid();
-                data << (*i2).m_spellId;
-                data << (*i2).m_damage;
-                data << (1 << (*i2).m_school);
-                SendMessageToSet(&data, true);
-                this->DealDamage(attacker, (*i2).m_damage, 0, 0, (*i2).m_spellId);
+                if (const auto spellInfo = sSpellMgr.getSpellInfo((*i2).m_spellId))
+                {
+                    SendMessageToSet(SmsgSpellDamageShield(this->getGuid(), attacker->getGuid(), spellInfo->getId(), (*i2).m_damage, spellInfo->getSchoolMask()).serialise().get(), true);
+
+                    this->DealDamage(attacker, (*i2).m_damage, 0, 0, (*i2).m_spellId);
+                }
             }
             else
             {
