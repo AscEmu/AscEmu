@@ -92,8 +92,8 @@ struct Auction
     void AddToPacket(WorldPacket& data);
     uint32 GetAuctionOutBid();
 
-    bool Deleted;
-    uint32 DeletedReason;
+    bool isRemoved;
+    uint32 removedType;
 };
 
 class AuctionHouse
@@ -103,7 +103,7 @@ class AuctionHouse
         AuctionHouse(uint32 ID);
         ~AuctionHouse();
 
-        inline uint32 GetID() { return dbc->id; }
+        uint32 GetID();
         void LoadAuctions();
 
         void UpdateAuctions();

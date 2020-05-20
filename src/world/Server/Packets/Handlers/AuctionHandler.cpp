@@ -204,8 +204,8 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
         auction->Id = sAuctionMgr.GenerateAuctionId();
         auction->Owner = _player->getGuidLow();
         auction->pItem = item;
-        auction->Deleted = false;
-        auction->DeletedReason = 0;
+        auction->isRemoved = false;
+        auction->removedType = 0;
         auction->DepositAmount = item_deposit;
 
         auctionHouse->AddAuction(auction);
