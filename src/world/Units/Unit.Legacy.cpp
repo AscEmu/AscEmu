@@ -52,6 +52,7 @@
 #include "Server/Packets/SmsgAttackStop.h"
 #include "Server/Packets/SmsgPowerUpdate.h"
 #include "Server/Packets/SmsgSpellDamageShield.h"
+#include "Server/Packets/SmsgAuraUpdateAll.h"
 
 using namespace AscEmu::Packets;
 
@@ -8513,7 +8514,7 @@ void Unit::AddAura(Aura* aur)
             //uint32 flag3 = aur->GetSpellProto()->Flags3;
 
             AuraCheckResponse acr;
-            WorldPacket data(21);
+            
             bool deleteAur = false;
 
             //check if we already have this aura by this caster -> update duration
@@ -9113,7 +9114,6 @@ void Unit::AddAura(Aura* aur)
             SpellInfo const* info = aur->GetSpellInfo();
             //uint32 flag3 = aur->GetSpellProto()->Flags3;
 
-            WorldPacket data(21);
             bool deleteAur = false;
 
             //check if we already have this aura by this caster -> update duration
@@ -11494,13 +11494,11 @@ bool Unit::IsPoisoned()
     return false;
 }
 
-#if VERSION_STRING < Cata
 void Unit::SendFullAuraUpdate()
 {
 #if VERSION_STRING > TBC
-    WorldPacket data(SMSG_AURA_UPDATE_ALL, 200);
 
-    data << WoWGuid(GetNewGUID());
+    auto smsgAuraUpdateAll = SmsgAuraUpdateAll(GetNewGUID(), {});
 
     uint32 Updates = 0;
 
@@ -11508,94 +11506,44 @@ void Unit::SendFullAuraUpdate()
     {
         if (Aura* aur = m_auras[i])
         {
-            uint8 Flags = uint8(aur->GetAuraFlags());
+            SmsgAuraUpdateAll::AuraUpdate auraUpdate;
 
-            Flags = (AFLAG_EFFECT_1 | AFLAG_EFFECT_2 | AFLAG_EFFECT_3);
+            //\todo: investigate this.
+            auraUpdate.flags = (AFLAG_EFFECT_1 | AFLAG_EFFECT_2 | AFLAG_EFFECT_3);
 
             if (aur->IsPositive())
-                Flags |= AFLAG_CANCELLABLE;
+                auraUpdate.flags |= AFLAG_CANCELLABLE;
             else
-                Flags |= AFLAG_NEGATIVE;
+                auraUpdate.flags |= AFLAG_NEGATIVE;
 
-            if (aur->GetDuration() != 0)
-                Flags |= AFLAG_DURATION;
+            if (aur->GetDuration() > 0 && !(aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
+                auraUpdate.flags |= AFLAG_DURATION;
 
-            data << uint8(aur->m_visualSlot);
-            data << uint32(aur->GetSpellId());
+            auraUpdate.visualSlot = aur->m_visualSlot;
+            auraUpdate.spellId = aur->GetSpellId();
 
-            data << uint8(Flags);
+            auraUpdate.level = getLevel();
+            auraUpdate.stackCount = m_auraStackCount[aur->m_visualSlot];
 
-            data << uint8(getLevel());
-            data << uint8(m_auraStackCount[aur->m_visualSlot]);
+            if (!(auraUpdate.flags & AFLAG_NOT_CASTER))
+                auraUpdate.casterGuid = aur->GetCasterGUID();
 
-            if ((Flags & AFLAG_NOT_CASTER) == 0)
-                data << WoWGuid(aur->GetCasterGUID());
-
-            if (Flags & AFLAG_DURATION)
+            if (auraUpdate.flags & AFLAG_DURATION)
             {
-                data << uint32(aur->GetDuration());
-                data << uint32(aur->GetTimeLeft());
+                auraUpdate.duration = aur->GetDuration();
+                auraUpdate.timeLeft = aur->GetTimeLeft();
             }
+
+            smsgAuraUpdateAll.addAuraUpdate(auraUpdate);
 
             ++Updates;
         }
     }
-    SendMessageToSet(&data, true);
+    SendMessageToSet(smsgAuraUpdateAll.serialise().get(), true);
 
     LOG_DEBUG("Full Aura Update: GUID: " I64FMT " - Updates: %u", getGuid(), Updates);
 #endif
 }
-#else
-void Unit::SendFullAuraUpdate()
-{
-    WorldPacket data(SMSG_AURA_UPDATE_ALL, 200);
-
-    data << WoWGuid(GetNewGUID());
-
-    uint32 Updates = 0;
-
-    for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
-    {
-        Aura* aur = m_auras[i];
-        if (aur != NULL)
-        {
-            uint8 Flags = uint8(aur->GetAuraFlags());
-
-            Flags = (AFLAG_EFFECT_1 | AFLAG_EFFECT_2 | AFLAG_EFFECT_3);
-
-            if (aur->IsPositive())
-                Flags |= AFLAG_CANCELLABLE;
-            else
-                Flags |= AFLAG_NEGATIVE;
-
-            if (aur->GetDuration() != 0)
-                Flags |= AFLAG_DURATION;
-
-            data << uint8(aur->m_visualSlot);
-            data << uint32(aur->GetSpellId());
-
-            data << uint16(Flags);
-
-            data << uint8(getLevel());
-            data << uint8(m_auraStackCount[aur->m_visualSlot]);
-
-            if ((Flags & AFLAG_NOT_CASTER) == 0)
-                data << WoWGuid(aur->GetCasterGUID());
-
-            if (Flags & AFLAG_DURATION)
-            {
-                data << uint32(aur->GetDuration());
-                data << uint32(aur->GetTimeLeft());
-            }
-
-            ++Updates;
-        }
-    }
-    SendMessageToSet(&data, true);
-
-    LOG_DEBUG("Full Aura Update: GUID: " I64FMT " - Updates: %u", getGuid(), Updates);
-}
-#endif
 
 #if VERSION_STRING < Cata
 void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)

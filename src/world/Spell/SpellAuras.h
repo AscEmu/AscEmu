@@ -36,7 +36,7 @@ enum AURA_FLAGS
     AFLAG_SET           = 0x09,
     AFLAG_CANCELLABLE   = 0x10,
     AFLAG_DURATION      = 0x20,
-    AFLAG_HIDE          = 0x40, // Seems to hide the aura and tell client the aura was removed
+    AFLAG_ANY_EFFECT_AMOUNT_SENT  = 0x40, // used with AFLAG_EFFECT_0/1/2
     AFLAG_NEGATIVE      = 0x80
 };
 
