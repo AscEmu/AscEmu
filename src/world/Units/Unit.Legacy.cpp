@@ -54,6 +54,7 @@
 #include "Server/Packets/SmsgSpellDamageShield.h"
 #include "Server/Packets/SmsgAuraUpdateAll.h"
 #include "Server/Packets/SmsgAuraUpdate.h"
+#include "Server/Packets/SmsgPeriodicAuraLog.h"
 
 using namespace AscEmu::Packets;
 
@@ -13118,42 +13119,28 @@ void Unit::TakeDamage(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/
 void Unit::Die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/)
 {}
 
-void Unit::SendPeriodicAuraLog(const WoWGuid & CasterGUID, const WoWGuid & TargetGUID, uint32 SpellID, uint32 School, uint32 Amount, uint32 abs_dmg, uint32 resisted_damage, uint32 Flags, bool is_critical)
+void Unit::SendPeriodicAuraLog(const WoWGuid & CasterGUID, const WoWGuid & TargetGUID, uint32 SpellID, uint32 School, uint32 Amount, uint32 abs_dmg, uint32 resisted_damage, bool is_critical, uint32_t mod, int32_t misc, uint32 over_healed)
 {
-    WorldPacket data(SMSG_PERIODICAURALOG, 47);
+    switch (mod)
+    {
+        case SPELL_AURA_PERIODIC_DAMAGE:
+        case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
+            break;
+        case SPELL_AURA_PERIODIC_HEAL:
+        case SPELL_AURA_MOD_TOTAL_HEALTH_REGEN_PCT:
+            break;
+        case SPELL_AURA_MOD_TOTAL_MANA_REGEN_PCT:
+        case SPELL_AURA_PERIODIC_ENERGIZE:
+            break;
+        case SPELL_AURA_PERIODIC_MANA_LEECH:
+            break;
+        default:
+            LogError("SendPeriodicAuraLog: unknown aura type %u", mod);
+            return;
+    }
 
-    data << TargetGUID;             // target guid
-    data << CasterGUID;             // caster guid
-    data << uint32(SpellID);        // spellid
-    data << uint32(1);              // unknown? need research?
-    data << uint32(Flags | 0x1);    // aura school
-    data << uint32(Amount);         // amount of done to target / heal / damage
-    data << uint32(0);              // cebernic: unknown?? needs more research, but it should fix unknown damage type with suffered.
-    data << uint32(g_spellSchoolConversionTable[School]);
-    data << uint32(abs_dmg);
-    data << uint32(resisted_damage);
-    data << uint8(is_critical);
-
-    SendMessageToSet(&data, true);
+    SendMessageToSet(SmsgPeriodicAuraLog(TargetGUID, CasterGUID, SpellID, mod, Amount, over_healed, g_spellSchoolConversionTable[School], abs_dmg, resisted_damage, is_critical, misc, 0).serialise().get(), true);
 }
-
-void Unit::SendPeriodicHealAuraLog(const WoWGuid & CasterGUID, const WoWGuid & TargetGUID, uint32 SpellID, uint32 healed, uint32 over_healed, bool is_critical)
-{
-    WorldPacket data(SMSG_PERIODICAURALOG, 41);
-
-    data << TargetGUID;
-    data << CasterGUID;
-    data << SpellID;
-    data << uint32(1);
-    data << uint32(FLAG_PERIODIC_HEAL);
-    data << uint32(healed);
-    data << uint32(over_healed);
-    data << uint32(0);              // I don't know what it is. maybe something related to absorbed heal?
-    data << uint8(is_critical);
-
-    SendMessageToSet(&data, true);
-}
-
 
 void Unit::Phase(uint8 command, uint32 newphase)
 {
