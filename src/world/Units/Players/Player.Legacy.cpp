@@ -95,6 +95,7 @@
 #include "Server/Packets/SmsgTransferAborted.h"
 #include "Server/Packets/SmsgClearCooldown.h"
 #include "Server/Packets/SmsgDuelRequested.h"
+#include "Server/Packets/SmsgPreResurrect.h"
 
 using namespace AscEmu::Packets;
 
@@ -4976,9 +4977,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
 void Player::BuildPlayerRepop()
 {
 #if VERSION_STRING > TBC
-    WorldPacket data(SMSG_PRE_RESURRECT, 8);
-    FastGUIDPack(data, getGuid());         // caster guid
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(SmsgPreResurrect(getGuid()).serialise().get());
 #endif
 
     // Cleanup first
