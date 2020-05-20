@@ -81,7 +81,11 @@ void UpdateManager::processPendingUpdates()
     lock_guard<mutex> packet_guard(mtx_delayedPacketsLock);
 
     internalProcessPendingUpdates();
+
+    // seems to be wrong but these packets needs to be send after "real" full login.
     m_owner->resendSpeed();
+    m_owner->ResetTimeSync();
+    m_owner->SendTimeSync();
 }
 
 void UpdateManager::queueDelayedPacket(WorldPacket * packet)

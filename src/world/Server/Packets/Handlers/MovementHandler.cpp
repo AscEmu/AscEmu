@@ -1450,6 +1450,9 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
         _player->m_TeleportState = 2;
         _player->AddToWorld();
     }
+
+    _player->ResetTimeSync();
+    _player->SendTimeSync();
 }
 
 void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)

@@ -1117,6 +1117,14 @@ void Player::Update(unsigned long time_passed)
         pending_packet = m_cache->m_pendingPackets.pop();
     }
 
+    if (m_timeSyncTimer > 0)
+    {
+        if (time_passed >= m_timeSyncTimer)
+            SendTimeSync();
+        else
+            m_timeSyncTimer -= time_passed;
+    }
+
     SendUpdateToOutOfRangeGroupMembers();
 }
 
@@ -1577,110 +1585,49 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 
 void Player::smsg_InitialSpells()
 {
-    uint16 spellCount = (uint16)mSpells.size();
-    size_t itemCount = m_cooldownMap[0].size() + m_cooldownMap[1].size();
+    auto smsgInitialSpells = SmsgInitialSpells();
+
     uint32 mstime = Util::getMSTime();
 
-    WorldPacket data(SMSG_INITIAL_SPELLS, 5 + (spellCount * 4) + (itemCount * 4));
-#if VERSION_STRING == Mop
-    data.writeBit(0);
-    data.writeBits(spellCount, 22);
-    data.flushBits();
-
-    for (SpellSet::iterator sitr = mSpells.begin(); sitr != mSpells.end(); ++sitr)
+    for (auto sitr = mSpells.begin(); sitr != mSpells.end(); ++sitr)
     {
-        data << uint32(*sitr);                   // spell id
-    }
-    data.flushBits();
-    GetSession()->SendPacket(&data);
-#else
-    data << uint8(0);
-    data << uint16(spellCount); // spell count
-
-    for (SpellSet::iterator sitr = mSpells.begin(); sitr != mSpells.end(); ++sitr)
-    {
-        //\todo check out when we should send 0x0 and when we should send 0xeeee this is not slot, values is always eeee or 0, seems to be cooldown
-#if VERSION_STRING == TBC
-        data << uint16(*sitr);                   // spell id
-#else
-        data << uint32(*sitr);                   // spell id
-#endif
-        data << uint16(0x0000);
+        smsgInitialSpells.addSpellIds(*sitr);
     }
 
-    size_t pos = data.wpos();
-    data << uint16(0);        // placeholder
-
-    itemCount = 0;
-    for (PlayerCooldownMap::iterator itr = m_cooldownMap[COOLDOWN_TYPE_SPELL].begin(); itr != m_cooldownMap[COOLDOWN_TYPE_SPELL].end();)
+    for (auto itr = m_cooldownMap[COOLDOWN_TYPE_SPELL].begin(); itr != m_cooldownMap[COOLDOWN_TYPE_SPELL].end();)
     {
-        PlayerCooldownMap::iterator itr2 = itr++;
+        auto itr2 = itr++;
 
-        // don't keep around expired cooldowns
         if (itr2->second.ExpireTime < mstime || (itr2->second.ExpireTime - mstime) < 10000)
         {
             m_cooldownMap[COOLDOWN_TYPE_SPELL].erase(itr2);
             continue;
         }
 
-#if VERSION_STRING == TBC
-        data << uint16(itr2->first);                        // spell id
-#else
-        data << uint32(itr2->first);                        // spell id
-#endif
-#if VERSION_STRING == WotLK
-        data << uint16(itr2->second.ItemId);                // item id
-#else
-        data << uint32(itr2->second.ItemId);                // item id
-#endif
-        data << uint16(0);                                  // spell category
-        data << uint32(itr2->second.ExpireTime - mstime);   // cooldown remaining in ms (for spell)
-        data << uint32(0);                                  // cooldown remaining in ms (for category)
-
-        ++itemCount;
-
         LogDebugFlag(LF_OPCODE, "InitialSpells sending spell cooldown for spell %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
+
+        smsgInitialSpells.addSpellCooldown(itr2->first, itr2->second.ItemId, 0, itr2->second.ExpireTime - mstime, 0);
     }
 
-    for (PlayerCooldownMap::iterator itr = m_cooldownMap[COOLDOWN_TYPE_CATEGORY].begin(); itr != m_cooldownMap[COOLDOWN_TYPE_CATEGORY].end();)
+    for (auto itr = m_cooldownMap[COOLDOWN_TYPE_CATEGORY].begin(); itr != m_cooldownMap[COOLDOWN_TYPE_CATEGORY].end();)
     {
         PlayerCooldownMap::iterator itr2 = itr++;
 
-        // don't keep around expired cooldowns
         if (itr2->second.ExpireTime < mstime || (itr2->second.ExpireTime - mstime) < 10000)
         {
             m_cooldownMap[COOLDOWN_TYPE_CATEGORY].erase(itr2);
             continue;
         }
 
-#if VERSION_STRING == TBC
-        data << uint16(itr2->second.SpellId);                // spell id
-#else
-        data << uint32(itr2->second.SpellId);                // spell id
-#endif
-
-        data << uint16(itr2->second.ItemId);                // item id
-
-        data << uint16(itr2->first);                        // spell category
-        data << uint32(0);                                // cooldown remaining in ms (for spell)
-        data << uint32(itr2->second.ExpireTime - mstime);    // cooldown remaining in ms (for category)
-
-        ++itemCount;
-
         LogDebugFlag(LF_OPCODE, "InitialSpells sending category cooldown for cat %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
+
+        smsgInitialSpells.addSpellCooldown(itr2->first, itr2->second.ItemId, itr2->first, 0, itr2->second.ExpireTime - mstime);
     }
 
+    GetSession()->SendPacket(smsgInitialSpells.serialise().get());
 
-    *(uint16*)&data.contents()[pos] = (uint16)itemCount;
-
-    GetSession()->SendPacket(&data);
-
-#if VERSION_STRING != TBC
     uint32 v = 0;
     GetSession()->OutPacket(SMSG_SERVER_BUCK_DATA, 4, &v);
-#endif
-#endif
-    //Log::getSingleton().outDetail("CHARACTER: Sent Initial Spells");
 }
 
 void PlayerSpec::AddTalent(uint32 talentid, uint8 rankid)
@@ -4335,7 +4282,6 @@ void Player::OnPushToWorld()
     AddItemsToWorld();
 
     // delay the unlock movement packet
-    getUpdateMgr().queueDelayedPacket(SmsgTimeSyncReq(0).serialise().get());
 
     // set fly if cheat is active
     // TODO Validate that this isn't breaking logon by messaging player without delay
@@ -4428,6 +4374,9 @@ void Player::OnPushToWorld()
         resetTalents();
         resettalents = false;
     }
+
+    ResetTimeSync();
+    SendTimeSync();
 }
 #else
 void Player::OnPushToWorld()
@@ -4444,9 +4393,6 @@ void Player::OnPushToWorld()
     SpeedCheatReset();
     m_beingPushed = false;
     AddItemsToWorld();
-
-    // delay the unlock movement packet
-    getUpdateMgr().queueDelayedPacket(SmsgTimeSyncReq(0).serialise().get());
 
     // set fly if cheat is active
     setMoveCanFly(m_cheats.FlyCheat);
@@ -8723,7 +8669,6 @@ void Player::OnWorldPortAck()
         if (isDead() && pMapinfo->type != INSTANCE_NULL)
             ResurrectPlayer();
 
-        WorldPacket data(4);
         if (pMapinfo->hasFlag(WMI_INSTANCE_WELCOME) && GetMapMgr())
         {
             std::string welcome_msg;
