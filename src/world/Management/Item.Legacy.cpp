@@ -1010,9 +1010,13 @@ uint32 Item::GetSocketsCount()
     for (uint32 x = 0; x < 3; ++x)
         if (getItemProperties()->Sockets[x].SocketColor)
             c++;
+
+#if VERSION_STRING > TBC
     //prismatic socket
     if (GetEnchantment(PRISMATIC_ENCHANTMENT_SLOT) != NULL)
         c++;
+#endif
+
     return c;
 }
 

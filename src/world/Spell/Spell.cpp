@@ -2906,13 +2906,15 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                             }
                             break;
                         case 8: // Enchants a new prismatic socket slot to item
+#if VERSION_STRING > TBC
                             // Check if the item already has a prismatic gem slot enchanted
                             if (targetItem->getEnchantmentId(PRISMATIC_ENCHANTMENT_SLOT) != 0)
                             {
                                 return SPELL_FAILED_ITEM_ALREADY_ENCHANTED;
                             }
+#endif
                             // or if the item already has the maximum amount of socket slots
-                            else if (targetItem->GetSocketsCount() >= MAX_ITEM_PROTO_SOCKETS)
+                            if (targetItem->GetSocketsCount() >= MAX_ITEM_PROTO_SOCKETS)
                             {
 #if VERSION_STRING < WotLK
                                 return SPELL_FAILED_BAD_TARGETS;

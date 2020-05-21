@@ -2633,10 +2633,11 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
             // tried to put gem in socket where no socket exists (take care about prismatic sockets)
             if (!TargetProto->Sockets[i].SocketColor)
             {
+#if VERSION_STRING > TBC
                 // no prismatic socket
                 if (!TargetItem->GetEnchantment(PRISMATIC_ENCHANTMENT_SLOT))
                     return;
-
+#endif
                 // not first not-colored (not normally used) socket
                 if (i != 0 && !TargetProto->Sockets[i - 1].SocketColor && (i + 1 >= 3
                     || TargetProto->Sockets[i + 1].SocketColor))
