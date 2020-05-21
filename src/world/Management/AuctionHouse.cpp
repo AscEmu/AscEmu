@@ -12,6 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Objects/ObjectMgr.h"
 #include "Util.hpp"
+#include "Server/Packets/SmsgAuctionBidderNotification.h"
+
+using namespace AscEmu::Packets;
 
 void Auction::deleteFromDB()
 {
@@ -35,7 +38,7 @@ void Auction::addToPacket(WorldPacket& data)
     data << Id;
     data << auctionItem->getEntry();
 
-    for (uint8_t i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; i++)
+    for (uint8_t i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)    //6 on tbc, 7 on wotlk, 11 on cata
     {
         data << uint32_t(auctionItem->getEnchantmentId(i));
         data << uint32_t(auctionItem->getEnchantmentDuration(i));
@@ -385,20 +388,7 @@ void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
         if (!outbid)
             outbid = 1;
 
-        WorldPacket data(SMSG_AUCTION_BIDDER_NOTIFICATION, 32);
-        data << getId();
-        data << auction->Id;
-        data << uint64_t(auction->highestBidderGuid);
-#if VERSION_STRING < Cata
-        data << uint32_t(0);
-        data << uint32_t(outbid);
-#else
-        data << uint64_t(0);
-        data << uint64_t(outbid);
-#endif
-        data << auction->auctionItem->getEntry();
-        data << uint32_t(0);
-        bidder->GetSession()->SendPacket(&data);
+        bidder->GetSession()->SendPacket(SmsgAuctionBidderNotification(getId(), auction->Id, auction->highestBidderGuid, 0, outbid, auction->auctionItem->getEntry()).serialise().get());
     }
 
     Player* owner = sObjectMgr.GetPlayer(auction->ownerGuid.getGuidLow());
@@ -431,22 +421,7 @@ void AuctionHouse::sendAuctionOutBidNotificationPacket(Auction* auction, uint64_
         if (!outbid)
             outbid = 1;
 
-        WorldPacket data(SMSG_AUCTION_BIDDER_NOTIFICATION, 32);
-        data << getId();
-        data << auction->Id;
-        data << newBidder;
-
-#if VERSION_STRING < Cata
-        data << uint32_t(newHighestBid);
-        data << uint32_t(outbid);
-#else
-        data << uint64_t(newHighestBid);
-        data << uint64_t(outbid);
-#endif
-
-        data << auction->auctionItem->getEntry();
-        data << uint32_t(0);
-        bidder->GetSession()->SendPacket(&data);
+        bidder->GetSession()->SendPacket(SmsgAuctionBidderNotification(getId(), auction->Id, newBidder, newHighestBid, outbid, auction->auctionItem->getEntry()).serialise().get());
     }
 }
 
