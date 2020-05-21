@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgArenaTeamStats.h"
 #include "Server/Packets/SmsgArenaTeamQueryResponse.h"
 #include "Server/Packets/SmsgArenaTeamInvite.h"
+#include "Server/Packets/SmsgArenaTeamRooster.h"
 
 using namespace AscEmu::Packets;
 
@@ -340,9 +341,8 @@ void WorldSession::handleArenaTeamRosterOpcode(WorldPacket& recvPacket)
 
     if (auto arenaTeam = sObjectMgr.GetArenaTeamById(srlPacket.teamId))
     {
-        WorldPacket data(1000);
-        arenaTeam->Roster(data);
-        SendPacket(&data);
+        const auto memberList = arenaTeam->getRoosterMembers();
+        SendPacket(SmsgArenaTeamRooster(arenaTeam->m_id, memberList.size(), arenaTeam->GetPlayersPerTeam(), memberList).serialise().get());
     }
 }
 

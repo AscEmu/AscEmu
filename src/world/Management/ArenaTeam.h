@@ -23,6 +23,23 @@
 
 #include "Units/Players/Player.h"
 
+//MIT
+struct ArenaTeamPacketList
+{
+    uint64_t guid;
+    uint8_t isLoggedIn;
+    std::string name;
+    uint32_t isLeader;
+    uint8_t lastLevel;
+    uint8_t cl;
+
+    uint32_t playedWeek;
+    uint32_t wonWeek;
+    uint32_t playedSeason;
+    uint32_t wonSeason;
+    uint32_t rating;
+};
+
 struct ArenaTeamMember
 {
     PlayerInfo* Info;
@@ -92,7 +109,6 @@ class SERVER_DECL ArenaTeam
         }
 
         void SendPacket(WorldPacket* data);
-        void Roster(WorldPacket& data);
         void Inspect(WorldPacket& data);
         void Destroy();
         void SaveToDB();
@@ -121,6 +137,9 @@ class SERVER_DECL ArenaTeam
             // never reached
             return 2;
         }
+
+    //MIT
+    std::vector<ArenaTeamPacketList> getRoosterMembers() const;
 };
 
 #endif //ARENATEAMS_H

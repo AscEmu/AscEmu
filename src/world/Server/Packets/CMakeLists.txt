@@ -268,6 +268,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgArenaError.h
    ${PATH_PREFIX}/SmsgArenaTeamInvite.h
    ${PATH_PREFIX}/SmsgArenaTeamQueryResponse.h
+   ${PATH_PREFIX}/SmsgArenaTeamRooster.h
    ${PATH_PREFIX}/SmsgArenaTeamStats.h
    ${PATH_PREFIX}/SmsgAttackStart.h
    ${PATH_PREFIX}/SmsgAttackStop.h

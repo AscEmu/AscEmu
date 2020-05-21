@@ -58,9 +58,7 @@ ArenaTeam::ArenaTeam(uint16 Type, uint32 Id)
 
 ArenaTeam::ArenaTeam(Field* f)
 {
-    uint32 z = 0, i, guid;
-    const char* data;
-    int ret;
+    uint32 z = 0;
 
     m_id = f[z++].GetUInt32();
     m_type = f[z++].GetUInt16();
@@ -72,6 +70,7 @@ ArenaTeam::ArenaTeam(Field* f)
     m_emblem.borderColour = f[z++].GetUInt32();
     m_emblem.backgroundColour = f[z++].GetUInt32();
     m_stats.rating = f[z++].GetUInt32();
+
     AllocateSlots(m_type);
 
     m_stats.played_week = 0;
@@ -79,20 +78,23 @@ ArenaTeam::ArenaTeam(Field* f)
     m_stats.won_season = 0;
     m_stats.won_week = 0;
     m_stats.ranking = 0;
+
     if (sscanf(f[z++].GetString(), "%u %u %u %u", &m_stats.played_week, &m_stats.won_week, &m_stats.played_season, &m_stats.won_season) != 3)
         return;
 
     m_stats.ranking = f[z++].GetUInt32();
-    for (i = 0; i < m_slots; ++i)
+    for (uint32 i = 0; i < m_slots; ++i)
     {
-        data = f[z++].GetString();
-        ret = sscanf(data, "%u %u %u %u %u %u", &guid, &m_members[i].Played_ThisWeek, &m_members[i].Won_ThisWeek,
-                     &m_members[i].Played_ThisSeason, &m_members[i].Won_ThisSeason, &m_members[i].PersonalRating);
+        uint32 guid;
+        const char* data = f[z++].GetString();
+        int ret = sscanf(data, "%u %u %u %u %u %u", &guid, &m_members[i].Played_ThisWeek, &m_members[i].Won_ThisWeek,
+                         &m_members[i].Played_ThisSeason, &m_members[i].Won_ThisSeason, &m_members[i].PersonalRating);
         if (ret >= 5)
         {
             m_members[i].Info = sObjectMgr.GetPlayerInfo(guid);
             if (m_members[i].Info)
                 ++m_memberCount;
+
             if (ret == 5)
             {
                 // In case PersonalRating is not in the string just set the rating to the team rating
@@ -100,43 +102,41 @@ ArenaTeam::ArenaTeam(Field* f)
             }
         }
         else
-            m_members[i].Info = NULL;
+        {
+            m_members[i].Info = nullptr;
+        }
     }
 }
 
 void ArenaTeam::SendPacket(WorldPacket* data)
 {
-    PlayerInfo* info;
     for (uint32 i = 0; i < m_memberCount; ++i)
     {
-        info = m_members[i].Info;
-        if (info && info->m_loggedInPlayer)
-            info->m_loggedInPlayer->GetSession()->SendPacket(data);
+        const auto playerInfo = m_members[i].Info;
+        if (playerInfo && playerInfo->m_loggedInPlayer)
+            playerInfo->m_loggedInPlayer->GetSession()->SendPacket(data);
     }
 }
 
 void ArenaTeam::Destroy()
 {
-    char buffer[1024];
-    WorldPacket* data;
     std::vector<PlayerInfo*> tokill;
-    uint32 i;
     tokill.reserve(m_memberCount);
+
+    char buffer[1024];
     snprintf(buffer, 1024, "The arena team, '%s', disbanded.", m_name.c_str());
-    data = sChatHandler.FillSystemMessageData(buffer);
+    WorldPacket* data = sChatHandler.FillSystemMessageData(buffer);
     SendPacket(data);
     delete data;
 
-    for (i = 0; i < m_memberCount; ++i)
+    for (uint32 i = 0; i < m_memberCount; ++i)
     {
         if (m_members[i].Info)
             tokill.push_back(m_members[i].Info);
     }
 
-    for (std::vector<PlayerInfo*>::iterator itr = tokill.begin(); itr != tokill.end(); ++itr)
-    {
+    for (auto itr = tokill.begin(); itr != tokill.end(); ++itr)
         RemoveMember(*itr);
-    }
 
     sObjectMgr.RemoveArenaTeam(this);
     delete this;
@@ -144,11 +144,9 @@ void ArenaTeam::Destroy()
 
 bool ArenaTeam::AddMember(PlayerInfo* info)
 {
-    Player* plr = info->m_loggedInPlayer;
+    Player* player = info->m_loggedInPlayer;
     if (m_memberCount >= m_slots)
-    {
         return false;
-    }
 
     memset(&m_members[m_memberCount], 0, sizeof(ArenaTeamMember));
     m_members[m_memberCount].PersonalRating = 1500;
@@ -156,14 +154,15 @@ bool ArenaTeam::AddMember(PlayerInfo* info)
     SaveToDB();
 
 #if VERSION_STRING != Classic
-    if (plr)
+    if (player)
     {
-        uint16_t base_field = (m_type * 7) + PLAYER_FIELD_ARENA_TEAM_INFO_1_1;
-        plr->setUInt32Value(base_field, m_id);
-        plr->setUInt32Value(base_field + 1, m_leader);
+        const uint16_t baseField = (m_type * 7) + PLAYER_FIELD_ARENA_TEAM_INFO_1_1;
+        player->setUInt32Value(baseField, m_id);
+        player->setUInt32Value(baseField + 1, m_leader);
 
-        plr->m_arenaTeams[m_type] = this;
-        plr->GetSession()->SystemMessage("You are now a member of the arena team, '%s'.", m_name.c_str());
+        player->m_arenaTeams[m_type] = this;
+
+        player->GetSession()->SystemMessage("You are now a member of the arena team, '%s'.", m_name.c_str());
     }
 #endif
 
@@ -178,9 +177,7 @@ bool ArenaTeam::RemoveMember(PlayerInfo* info)
         {
             /* memcpy all the blocks in front of him back (so we only loop O(members) instead of O(slots) */
             for (uint32 j = (i + 1); j < m_memberCount; ++j)
-            {
                 memcpy(&m_members[j - 1], &m_members[j], sizeof(ArenaTeamMember));
-            }
 
             --m_memberCount;
             SaveToDB();
@@ -189,7 +186,7 @@ bool ArenaTeam::RemoveMember(PlayerInfo* info)
             if (info->m_loggedInPlayer)
             {
                 info->m_loggedInPlayer->setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (m_type * 7), 0);
-                info->m_loggedInPlayer->m_arenaTeams[m_type] = 0;
+                info->m_loggedInPlayer->m_arenaTeams[m_type] = nullptr;
             }
 #endif
 
@@ -200,34 +197,34 @@ bool ArenaTeam::RemoveMember(PlayerInfo* info)
     return false;
 }
 
-void ArenaTeam::Roster(WorldPacket& data)
+//MIT
+std::vector<ArenaTeamPacketList> ArenaTeam::getRoosterMembers() const
 {
-    data.Initialize(SMSG_ARENA_TEAM_ROSTER);
-    data.reserve(m_memberCount * 81 + 9);
-    data << m_id;
-    data << uint8(0); // 3.0.8
-    data << m_memberCount;
-    data << GetPlayersPerTeam();
+    std::vector<ArenaTeamPacketList> arenaTeamList{};
 
     for (uint32 i = 0; i < m_memberCount; ++i)
     {
-        PlayerInfo* info = m_members[i].Info;
-        ///\todo figure out why this became null
-        if (info != NULL)
+        if (const auto playerInfo = m_members[i].Info)
         {
-            data << uint64(info->guid);
-            data << uint8((info->m_loggedInPlayer != NULL) ? 1 : 0);
-            data << info->name;
-            data << uint32(m_members[i].Info->guid == m_leader ? 0 : 1);  // Unk
-            data << uint8(info->lastLevel);
-            data << uint8(info->cl);
-            data << m_members[i].Played_ThisWeek;
-            data << m_members[i].Won_ThisWeek;
-            data << m_members[i].Played_ThisSeason;
-            data << m_members[i].Won_ThisSeason;
-            data << m_members[i].PersonalRating;
+            ArenaTeamPacketList arenaTeamListMember;
+
+            arenaTeamListMember.guid = playerInfo->guid;
+            arenaTeamListMember.isLoggedIn = playerInfo->m_loggedInPlayer ? 1 : 0;
+            arenaTeamListMember.name = playerInfo->name;
+            arenaTeamListMember.isLeader = m_members[i].Info->guid == m_leader ? 0 : 1;
+            arenaTeamListMember.lastLevel = playerInfo->lastLevel;
+            arenaTeamListMember.cl = playerInfo->cl;
+            arenaTeamListMember.playedWeek = m_members[i].Played_ThisWeek;
+            arenaTeamListMember.wonWeek = m_members[i].Won_ThisWeek;
+            arenaTeamListMember.playedSeason = m_members[i].Played_ThisSeason;
+            arenaTeamListMember.wonSeason = m_members[i].Won_ThisSeason;
+            arenaTeamListMember.rating = m_members[i].PersonalRating;
+
+            arenaTeamList.push_back(arenaTeamListMember);
         }
     }
+
+    return arenaTeamList;
 }
 
 void ArenaTeam::SaveToDB()
@@ -293,15 +290,14 @@ bool ArenaTeam::HasMember(uint32 guid)
 
 void ArenaTeam::SetLeader(PlayerInfo* info)
 {
-    uint32 old_leader = m_leader;
     char buffer[1024];
-    WorldPacket* data;
     snprintf(buffer, 1024, "%s is now the captain of the arena team, '%s'.", info->name, m_name.c_str());
-    data = sChatHandler.FillSystemMessageData(buffer);
-    m_leader = info->guid;
+    WorldPacket* data = sChatHandler.FillSystemMessageData(buffer);
     SendPacket(data);
     delete data;
 
+    const uint32 old_leader = m_leader;
+    m_leader = info->guid;
     /* set the fields */
     for (uint32 i = 0; i < m_memberCount; ++i)
     {
@@ -327,7 +323,7 @@ ArenaTeamMember* ArenaTeam::GetMember(PlayerInfo* info)
         if (m_members[i].Info == info)
             return &m_members[i];
     }
-    return NULL;
+    return nullptr;
 }
 
 ArenaTeamMember* ArenaTeam::GetMemberByGuid(uint32 guid)
@@ -337,5 +333,5 @@ ArenaTeamMember* ArenaTeam::GetMemberByGuid(uint32 guid)
         if (m_members[i].Info && m_members[i].Info->guid == guid)
             return &m_members[i];
     }
-    return NULL;
+    return nullptr;
 }
