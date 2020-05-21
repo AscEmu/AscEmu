@@ -56,6 +56,49 @@ enum AuctionMailResult
     AUCTION_CANCELLED
 };
 
+struct AuctionPacketItemEnchantment
+{
+    uint32_t Id;
+    uint32_t duration;
+    uint32_t charges;
+};
+
+struct AuctionPacketList
+{
+    uint32_t Id;
+    uint32_t itemEntry;
+
+    AuctionPacketItemEnchantment itemEnchantment[MAX_INSPECTED_ENCHANTMENT_SLOT];
+
+    uint32_t propertiesId;
+    uint32_t propertySeed;
+    uint32_t stackCount;
+    uint32_t chargesLeft;
+    uint32_t unknown;
+
+    uint64_t ownerGuid;
+
+#if VERSION_STRING < Cata
+    uint32_t startPrice;
+    uint32_t outBid;
+    uint32_t buyoutPrice;
+#else
+    uint64_t startPrice;
+    uint64_t outBid;
+    uint64_t buyoutPrice;
+#endif
+
+    uint32_t expireTime;
+
+    uint64_t highestBidderGuid;
+
+#if VERSION_STRING < Cata
+    uint32_t highestBid;
+#else
+    uint64_t highestBid;
+#endif
+};
+
 struct Auction
 {
     uint32_t Id;
@@ -91,6 +134,8 @@ struct Auction
 
     bool isRemoved;
     uint32_t removedType;
+
+    AuctionPacketList getListMember();
 };
 
 class AuctionHouse

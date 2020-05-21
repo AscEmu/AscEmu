@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Util.hpp"
 #include "Server/Packets/SmsgAuctionBidderNotification.h"
 #include "Server/Packets/SmsgAuctionOwnerNotification.h"
+#include "Server/Packets/SmsgAuctionOwnerListResult.h"
 
 using namespace AscEmu::Packets;
 
@@ -32,6 +33,38 @@ void Auction::saveToDB(uint32_t auctionHouseId)
 void Auction::updateInDB()
 {
     CharacterDatabase.Execute("UPDATE auctions SET bidder = %u, bid = %u WHERE auctionId = %u", highestBidderGuid.getGuidLow(), static_cast<uint32_t>(highestBid), Id);
+}
+
+AuctionPacketList Auction::getListMember()
+{
+    AuctionPacketList auctionList;
+    auctionList.Id = Id;
+    auctionList.itemEntry = auctionItem->getEntry();
+
+    for (uint8_t i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
+    {
+        auctionList.itemEnchantment[i].Id = auctionItem->getEnchantmentId(i);
+        auctionList.itemEnchantment[i].duration = auctionItem->getEnchantmentDuration(i);
+        auctionList.itemEnchantment[i].charges = auctionItem->getEnchantmentCharges(i);
+    }
+
+    auctionList.propertiesId = auctionItem->getRandomPropertiesId();
+    auctionList.propertySeed = auctionItem->getPropertySeed();
+    auctionList.stackCount = auctionItem->getStackCount();
+    auctionList.chargesLeft = auctionItem->GetChargesLeft();
+    auctionList.unknown = 0;
+
+    auctionList.ownerGuid = ownerGuid;
+
+    auctionList.startPrice = startPrice;
+    auctionList.outBid = (highestBid ? getAuctionOutBid() : 0);
+    auctionList.buyoutPrice = buyoutPrice;
+
+    auctionList.expireTime = ((expireTime - UNIXTIME) * 1000);
+    auctionList.highestBidderGuid = highestBidderGuid;
+    auctionList.highestBid = highestBid;
+
+    return auctionList;
 }
 
 void Auction::addToPacket(WorldPacket& data)
@@ -303,11 +336,7 @@ void AuctionHouse::queueDeletion(Auction* auction, uint32_t reasonType)
 
 void AuctionHouse::sendOwnerListPacket(Player* player, WorldPacket* /*packet*/)
 {
-    uint32_t count = 0;
-    uint32_t totalcount = 0;
-
-    WorldPacket data(SMSG_AUCTION_OWNER_LIST_RESULT, 4 + 4 + 4);
-    data << uint32_t(0);
+    std::vector<AuctionPacketList> auctionPacketList{};
 
     auctionLock.AcquireReadLock();
     for (auto& itr : auctions)
@@ -318,18 +347,12 @@ void AuctionHouse::sendOwnerListPacket(Player* player, WorldPacket* /*packet*/)
             if (auction->isRemoved)
                 continue;
 
-            auction->addToPacket(data);
-            ++count;
-
-            ++totalcount;
+            auctionPacketList.push_back(auction->getListMember());
         }
     }
-
-    data.put<uint32_t>(0, count);
-    data << uint32_t(totalcount);
-    data << uint32_t(0);
     auctionLock.ReleaseReadLock();
-    player->GetSession()->SendPacket(&data);
+
+    player->SendPacket(SmsgAuctionOwnerListResult(auctionPacketList.size(), auctionPacketList, auctionPacketList.size()).serialise().get());
 }
 
 void AuctionHouse::updateOwner(uint32_t oldGuid, uint32_t newGuid)

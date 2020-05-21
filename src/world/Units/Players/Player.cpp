@@ -2525,9 +2525,19 @@ void Player::sendActionBars(bool clearBars)
 void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_t errorCode, uint32_t bidError)
 {
     const auto auctionId = auction ? auction->Id : 0;
-    const auto outBid = auction->highestBid ? auction->getAuctionOutBid() : 0;
 
-    SendPacket(SmsgAuctionCommandResult(auctionId, action, errorCode, outBid, auction->highestBid, bidError, auction->highestBidderGuid).serialise().get());
+    uint32_t outBid = 0;
+    uint32_t highestBid = 0;
+    uint64_t highestBidderGuid = 0;
+
+    if (auction)
+    {
+        outBid = auction->highestBid ? auction->getAuctionOutBid() : 0;
+        highestBid = auction->highestBid;
+        highestBidderGuid = auction->highestBidderGuid;
+    }
+
+    SendPacket(SmsgAuctionCommandResult(auctionId, action, errorCode, outBid, highestBid, bidError, highestBidderGuid).serialise().get());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -143,6 +143,24 @@ enum scalingstatmodtypes
 /// -1 from client enchantment slot number
 enum EnchantmentSlot
 {
+#if VERSION_STRING <= TBC
+    PERM_ENCHANTMENT_SLOT           = 0,
+    TEMP_ENCHANTMENT_SLOT           = 1,
+    SOCK_ENCHANTMENT_SLOT1          = 2,
+    SOCK_ENCHANTMENT_SLOT2          = 3,
+    SOCK_ENCHANTMENT_SLOT3          = 4,
+    BONUS_ENCHANTMENT_SLOT          = 5,
+    MAX_INSPECTED_ENCHANTMENT_SLOT  = 6,
+
+    PROP_ENCHANTMENT_SLOT_0         = 6,    // used with RandomSuffix
+    PROP_ENCHANTMENT_SLOT_1         = 7,    // used with RandomSuffix
+    PROP_ENCHANTMENT_SLOT_2         = 8,    // used with RandomSuffix and RandomProperty
+    PROP_ENCHANTMENT_SLOT_3         = 9,    // used with RandomProperty
+    PROP_ENCHANTMENT_SLOT_4         = 10,   // used with RandomProperty
+    MAX_ENCHANTMENT_SLOT            = 11
+#endif
+
+#if VERSION_STRING == WotLK
     PERM_ENCHANTMENT_SLOT           = 0,
     TEMP_ENCHANTMENT_SLOT           = 1,
     SOCK_ENCHANTMENT_SLOT1          = 2,
@@ -150,26 +168,35 @@ enum EnchantmentSlot
     SOCK_ENCHANTMENT_SLOT3          = 4,
     BONUS_ENCHANTMENT_SLOT          = 5,
     PRISMATIC_ENCHANTMENT_SLOT      = 6,
-#if VERSION_STRING < Cata
     MAX_INSPECTED_ENCHANTMENT_SLOT  = 7,
 
-    PROP_ENCHANTMENT_SLOT_0         = 7,        /// used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_1         = 8,        /// used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_2         = 9,        /// used with RandomSuffix and RandomProperty
-    PROP_ENCHANTMENT_SLOT_3         = 10,       /// used with RandomProperty
-    PROP_ENCHANTMENT_SLOT_4         = 11,       /// used with RandomProperty
+    PROP_ENCHANTMENT_SLOT_0         = 7,    // used with RandomSuffix
+    PROP_ENCHANTMENT_SLOT_1         = 8,    // used with RandomSuffix
+    PROP_ENCHANTMENT_SLOT_2         = 9,    // used with RandomSuffix and RandomProperty
+    PROP_ENCHANTMENT_SLOT_3         = 10,   // used with RandomProperty
+    PROP_ENCHANTMENT_SLOT_4         = 11,   // used with RandomProperty
     MAX_ENCHANTMENT_SLOT            = 12
-#else
-    REFORGE_ENCHANTMENT_SLOT = 8,
-    TRANSMOGRIFY_ENCHANTMENT_SLOT = 9,
-    MAX_INSPECTED_ENCHANTMENT_SLOT = 10,
+#endif
 
-    PROP_ENCHANTMENT_SLOT_0 = 10,   // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_1 = 11,   // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_2 = 12,   // used with RandomSuffix and RandomProperty
-    PROP_ENCHANTMENT_SLOT_3 = 13,   // used with RandomProperty
-    PROP_ENCHANTMENT_SLOT_4 = 14,   // used with RandomProperty
-    MAX_ENCHANTMENT_SLOT = 15
+#if VERSION_STRING >= Cata
+    PERM_ENCHANTMENT_SLOT           = 0,
+    TEMP_ENCHANTMENT_SLOT           = 1,
+    SOCK_ENCHANTMENT_SLOT1          = 2,
+    SOCK_ENCHANTMENT_SLOT2          = 3,
+    SOCK_ENCHANTMENT_SLOT3          = 4,
+    BONUS_ENCHANTMENT_SLOT          = 5,
+    PRISMATIC_ENCHANTMENT_SLOT      = 6,
+
+    REFORGE_ENCHANTMENT_SLOT        = 8,
+    TRANSMOGRIFY_ENCHANTMENT_SLOT   = 9,
+    MAX_INSPECTED_ENCHANTMENT_SLOT  = 10,
+
+    PROP_ENCHANTMENT_SLOT_0         = 10,   // used with RandomSuffix
+    PROP_ENCHANTMENT_SLOT_1         = 11,   // used with RandomSuffix
+    PROP_ENCHANTMENT_SLOT_2         = 12,   // used with RandomSuffix and RandomProperty
+    PROP_ENCHANTMENT_SLOT_3         = 13,   // used with RandomProperty
+    PROP_ENCHANTMENT_SLOT_4         = 14,   // used with RandomProperty
+    MAX_ENCHANTMENT_SLOT            = 15
 #endif
 };
 
