@@ -1,25 +1,9 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef AUCTIONHOUSE_H
-#define AUCTIONHOUSE_H
+#pragma once
 
 #include "Storage/DBC/DBCStructures.hpp"
 #include "WorldConf.h"
@@ -38,12 +22,12 @@ enum AuctionRemoveType
     AUCTION_REMOVE_CANCELLED
 };
 
-enum AUCTIONRESULT
+enum AuctionAction
 {
-    AUCTION_CREATE,
-    AUCTION_CANCEL,
-    AUCTION_BID,
-    AUCTION_BUYOUT
+    AUCTION_ACTION_CREATE,
+    AUCTION_ACTION_CANCEL,
+    AUCTION_ACTION_BID,
+    AUCTION_ACTION_BUYOUT
 };
 
 #define MIN_AUCTION_TIME (12 * HOUR)
@@ -74,69 +58,80 @@ enum AuctionMailResult
 
 struct Auction
 {
-    uint32 Id;
+    uint32_t Id;
 
-    uint32 Owner;
-    uint32 HighestBidder;
-    uint32 HighestBid;
-    uint32 StartingPrice;
-    uint32 BuyoutPrice;
-    uint32 DepositAmount;
+    WoWGuid ownerGuid;
+    WoWGuid highestBidderGuid;
 
-    uint32 ExpiryTime;
-    Item* pItem;
+ #if VERSION_STRING < Cata
+    uint32_t highestBid;
+    uint32_t startPrice;
+    uint32_t buyoutPrice;
+#else
+    uint64_t highestBid;
+    uint64_t startPrice;
+    uint64_t buyoutPrice;
+#endif
 
-    void DeleteFromDB();
-    void SaveToDB(uint32 AuctionHouseId);
-    void UpdateInDB();
-    void AddToPacket(WorldPacket& data);
-    uint32 GetAuctionOutBid();
+    uint32_t depositAmount;
+
+    uint32_t expireTime;
+    Item* auctionItem;
+
+    void deleteFromDB();
+    void saveToDB(uint32_t auctionHouseId);
+    void updateInDB();
+    void addToPacket(WorldPacket& data);
+
+#if VERSION_STRING < Cata
+    uint32_t getAuctionOutBid() const;
+#else
+    uint64_t getAuctionOutBid() const;
+#endif
 
     bool isRemoved;
-    uint32 removedType;
+    uint32_t removedType;
 };
 
 class AuctionHouse
 {
     public:
 
-        AuctionHouse(uint32 ID);
+        AuctionHouse(uint32_t id);
         ~AuctionHouse();
 
-        uint32 GetID();
-        void LoadAuctions();
+        uint32_t getId() const;
+        void loadAuctionsFromDB();
 
-        void UpdateAuctions();
-        void UpdateDeletionQueue();
+        void updateAuctions();
+        void updateDeletionQueue();
 
-        void RemoveAuction(Auction* auct);
-        void AddAuction(Auction* auct);
-        Auction* GetAuction(uint32 Id);
-        void QueueDeletion(Auction* auct, uint32 Reason);
+        void removeAuction(Auction* auction);
+        void addAuction(Auction* auction);
+        Auction* getAuction(uint32_t id);
+        void queueDeletion(Auction* auction, uint32_t reasonType);
 
-        void SendOwnerListPacket(Player* plr, WorldPacket* packet);
-        void UpdateOwner(uint32 oldGuid, uint32 newGuid);
-        void SendBidListPacket(Player* plr, WorldPacket* packet);
-        void SendAuctionBuyOutNotificationPacket(Auction* auct);
-        void SendAuctionOutBidNotificationPacket(Auction* auct, uint64 newBidder, uint32 newHighestBid);
-        void SendAuctionExpiredNotificationPacket(Auction* auct);
-        void SendAuctionList(Player* plr, AscEmu::Packets::CmsgAuctionListItems srlPacket);
+        void sendOwnerListPacket(Player* player, WorldPacket* packet);
+        void updateOwner(uint32_t oldGuid, uint32_t newGuid);
+        void sendBidListPacket(Player* player, WorldPacket* packet);
+        void sendAuctionBuyOutNotificationPacket(Auction* auction);
+        void sendAuctionOutBidNotificationPacket(Auction* auction, uint64_t newBidder, uint32_t newHighestBid);
+        void sendAuctionExpiredNotificationPacket(Auction* auction);
+        void sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionListItems srlPacket);
 
     private:
 
         RWLock auctionLock;
-        std::unordered_map<uint32, Auction*> auctions;
+        std::unordered_map<uint32_t, Auction*> auctions;
 
         Mutex removalLock;
         std::list<Auction*> removalList;
 
-        DBC::Structures::AuctionHouseEntry const* dbc;
+        DBC::Structures::AuctionHouseEntry const* auctionHouseEntryDbc;
 
     public:
 
-        float cut_percent;
-        float deposit_percent;
-        bool enabled;
+        float cutPercent;
+        float depositPercent;
+        bool isEnabled;
 };
-
-#endif // AUCTIONHOUSE_H

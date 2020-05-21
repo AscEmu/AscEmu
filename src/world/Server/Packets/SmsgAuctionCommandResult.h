@@ -46,8 +46,9 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << auctionId << command << error;
-            if (command == 2)   //AUCTION_BID
+            if (!error && command == 2)   //AUCTION_BID
                 packet << misc;
+
             return true;
         }
 

@@ -15,14 +15,18 @@ namespace AscEmu::Packets
     {
     public:
         WoWGuid guid;
+        uint32_t listForm;
+        uint32_t outbiddedCount;
 
-        CmsgAuctionListIBidderItemse() : CmsgAuctionListIBidderItemse(0)
+        CmsgAuctionListIBidderItemse() : CmsgAuctionListIBidderItemse(0, 0, 0)
         {
         }
 
-        CmsgAuctionListIBidderItemse(uint64_t guid) :
+        CmsgAuctionListIBidderItemse(uint64_t guid, uint32_t listForm, uint32_t outbiddedCount) :
             ManagedPacket(CMSG_AUCTION_LIST_BIDDER_ITEMS, 0),
-            guid(guid)
+            guid(guid),
+            listForm(listForm),
+            outbiddedCount(outbiddedCount)
         {
         }
 
@@ -35,7 +39,7 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             uint64_t unpacked_guid;
-            packet >> unpacked_guid;
+            packet >> unpacked_guid >> listForm >> outbiddedCount;
             guid.Init(unpacked_guid);
             return true;
         }

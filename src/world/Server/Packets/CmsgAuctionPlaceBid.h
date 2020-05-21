@@ -16,7 +16,11 @@ namespace AscEmu::Packets
     public:
         WoWGuid guid;
         uint32_t auctionId;
+#if VERSION_STRING < Cata
         uint32_t price;
+#else
+        uint64_t price;
+#endif
 
         CmsgAuctionPlaceBid() : CmsgAuctionPlaceBid(0, 0, 0)
         {

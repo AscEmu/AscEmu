@@ -1,22 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
 #include "Management/AuctionHouse.h"
@@ -28,76 +13,76 @@
 #include "Objects/ObjectMgr.h"
 #include "Util.hpp"
 
-void Auction::DeleteFromDB()
+void Auction::deleteFromDB()
 {
     CharacterDatabase.WaitExecute("DELETE FROM auctions WHERE auctionId = %u", Id);
 }
 
-void Auction::SaveToDB(uint32 AuctionHouseId)
+void Auction::saveToDB(uint32_t auctionHouseId)
 {
-    CharacterDatabase.Execute("INSERT INTO auctions VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)", Id, AuctionHouseId, pItem->getGuidLow(), Owner, StartingPrice, BuyoutPrice, ExpiryTime, HighestBidder, HighestBid, DepositAmount);
+    CharacterDatabase.Execute("INSERT INTO auctions VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)", 
+        Id, auctionHouseId, auctionItem->getGuidLow(), ownerGuid.getGuidLow(), static_cast<uint32_t>(startPrice), static_cast<uint32_t>(buyoutPrice), expireTime, highestBidderGuid.getGuidLow(), 
+        static_cast<uint32_t>(highestBid), depositAmount);
 }
 
-void Auction::UpdateInDB()
+void Auction::updateInDB()
 {
-    CharacterDatabase.Execute("UPDATE auctions SET bidder = %u, bid = %u WHERE auctionId = %u", HighestBidder, HighestBid, Id);
+    CharacterDatabase.Execute("UPDATE auctions SET bidder = %u, bid = %u WHERE auctionId = %u", highestBidderGuid.getGuidLow(), static_cast<uint32_t>(highestBid), Id);
 }
 
-void Auction::AddToPacket(WorldPacket& data)
+void Auction::addToPacket(WorldPacket& data)
 {
-    data << uint32(Id);
-    data << uint32(pItem->getEntry());
+    data << Id;
+    data << auctionItem->getEntry();
 
-    for (uint8 i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; i++)
+    for (uint8_t i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; i++)
     {
-        data << uint32(pItem->getEnchantmentId(i));
-        data << uint32(pItem->getEnchantmentDuration(i));
-        data << uint32(pItem->getEnchantmentCharges(i));
+        data << uint32_t(auctionItem->getEnchantmentId(i));
+        data << uint32_t(auctionItem->getEnchantmentDuration(i));
+        data << uint32_t(auctionItem->getEnchantmentCharges(i));
     }
 
-    data << pItem->getRandomPropertiesId();
-    data << pItem->getPropertySeed();
-    data << pItem->getStackCount();
-    data << pItem->GetChargesLeft();
-    data << uint32(0);
-    data << uint64(Owner);
+    data << auctionItem->getRandomPropertiesId();
+    data << auctionItem->getPropertySeed();
+    data << auctionItem->getStackCount();
+    data << auctionItem->GetChargesLeft();
+    data << uint32_t(0);
+    data << ownerGuid;
 
-#if VERSION_STRING < Cata
-    data << uint32(StartingPrice);
-    data << uint32(HighestBid ? GetAuctionOutBid() : 0);
-    data << uint32(BuyoutPrice);
-#else
-    data << uint64(StartingPrice);
-    data << uint64(HighestBid ? GetAuctionOutBid() : 0);
-    data << uint64(BuyoutPrice);
-#endif
+    data << startPrice;
+    data << (highestBid ? getAuctionOutBid() : 0);
+    data << buyoutPrice;
 
-    data << uint32((ExpiryTime - UNIXTIME) * 1000);
-    data << uint64(HighestBidder);
+    data << uint32_t((expireTime - UNIXTIME) * 1000);
+    data << highestBidderGuid;
 
-#if VERSION_STRING < Cata
-    data << uint32(HighestBid);
-#else
-    data << uint64(HighestBid);
-#endif
+    data << uint32_t(highestBid);
 }
 
 /// the sum of outbid is (1% from current bid)*5, if bid is very small, it is 1c
-uint32 Auction::GetAuctionOutBid()
+#if VERSION_STRING < Cata
+uint32_t Auction::getAuctionOutBid() const
 {
-    uint32 outbid = HighestBid * 5 / 100;
+    uint32_t outbid = highestBid * 5 / 100;
     return outbid ? outbid : 1;
 }
-
-AuctionHouse::AuctionHouse(uint32 ID)
+#else
+uint64_t Auction::getAuctionOutBid() const
 {
-    dbc = sAuctionHouseStore.LookupEntry(ID);
-    ARCEMU_ASSERT(dbc != NULL);
+    uint64_t outbid = highestBid * 5 / 100;
+    return outbid ? outbid : 1;
+}
+#endif
 
-    cut_percent = dbc->tax / 100.0f;
-    deposit_percent = dbc->fee / 100.0f;
+AuctionHouse::AuctionHouse(uint32_t id)
+{
+    auctionHouseEntryDbc = sAuctionHouseStore.LookupEntry(id);
+    ARCEMU_ASSERT(auctionHouseEntryDbc != NULL);
 
-    enabled = true;
+    cutPercent = auctionHouseEntryDbc->tax / 100.0f;
+    depositPercent = auctionHouseEntryDbc->fee / 100.0f;
+
+    isEnabled = true;
 }
 
 AuctionHouse::~AuctionHouse()
@@ -106,11 +91,11 @@ AuctionHouse::~AuctionHouse()
         delete itr->second;
 }
 
-uint32 AuctionHouse::GetID() { return dbc->id; }
+uint32_t AuctionHouse::getId() const { return auctionHouseEntryDbc->id; }
 
-void AuctionHouse::LoadAuctions()
+void AuctionHouse::loadAuctionsFromDB()
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM auctions WHERE auctionhouse =%u", GetID());
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM auctions WHERE auctionhouse =%u", getId());
     if (!result)
         return;
 
@@ -128,41 +113,41 @@ void AuctionHouse::LoadAuctions()
             continue;
         }
 
-        auction->pItem = pItem;
-        auction->Owner = fields[3].GetUInt32();
-        auction->StartingPrice = fields[4].GetUInt32();
-        auction->BuyoutPrice = fields[5].GetUInt32();
-        auction->ExpiryTime = fields[6].GetUInt32();
-        auction->HighestBidder = fields[7].GetUInt32();
-        auction->HighestBid = fields[8].GetUInt32();
-        auction->DepositAmount = fields[9].GetUInt32();
+        auction->auctionItem = pItem;
+        auction->ownerGuid = fields[3].GetUInt32();
+        auction->startPrice = fields[4].GetUInt32();
+        auction->buyoutPrice = fields[5].GetUInt32();
+        auction->expireTime = fields[6].GetUInt32();
+        auction->highestBidderGuid = fields[7].GetUInt32();
+        auction->highestBid = fields[8].GetUInt32();
+        auction->depositAmount = fields[9].GetUInt32();
 
-        auction->removedType = 0;
+        auction->removedType = AUCTION_REMOVE_EXPIRED;
         auction->isRemoved = false;
 
-        auctions.insert(std::unordered_map<uint32, Auction*>::value_type(auction->Id, auction));
+        auctions.insert(std::unordered_map<uint32_t, Auction*>::value_type(auction->Id, auction));
     }
     while (result->NextRow());
     delete result;
 }
 
-void AuctionHouse::UpdateAuctions()
+void AuctionHouse::updateAuctions()
 {
     auctionLock.AcquireReadLock();
     removalLock.Acquire();
 
-    auto const time = static_cast<uint32>(UNIXTIME);
+    auto const time = static_cast<uint32_t>(UNIXTIME);
     for (auto itr = auctions.begin(); itr != auctions.end();)
     {
         auto auction = itr->second;
         ++itr;
 
-        if (time >= auction->ExpiryTime)
+        if (time >= auction->expireTime)
         {
-            if (auction->HighestBidder == 0)
+            if (auction->highestBidderGuid.getGuidLow() == 0)
             {
                 auction->removedType = AUCTION_REMOVE_EXPIRED;
-                this->SendAuctionExpiredNotificationPacket(auction);
+                this->sendAuctionExpiredNotificationPacket(auction);
             }
             else
             {
@@ -178,88 +163,88 @@ void AuctionHouse::UpdateAuctions()
     auctionLock.ReleaseReadLock();
 }
 
-void AuctionHouse::UpdateDeletionQueue()
+void AuctionHouse::updateDeletionQueue()
 {
     removalLock.Acquire();
 
-    for (auto auct : removalList)
+    for (auto auction : removalList)
     {
-        ARCEMU_ASSERT(auct->isRemoved);
-        RemoveAuction(auct);
+        ARCEMU_ASSERT(auction->isRemoved);
+        removeAuction(auction);
     }
 
     removalList.clear();
     removalLock.Release();
 }
 
-void AuctionHouse::RemoveAuction(Auction* auct)
+void AuctionHouse::removeAuction(Auction* auction)
 {
-    LOG_DEBUG("%u: Removing auction %u, reason %u.", dbc->id, auct->Id, auct->removedType);
+    LOG_DEBUG("%u: Removing auction %u, reason %u.", auctionHouseEntryDbc->id, auction->Id, auction->removedType);
 
     char subject[100];
     char body[200];
-    switch (auct->removedType)
+    switch (auction->removedType)
     {
         case AUCTION_REMOVE_EXPIRED:
         {
             // ItemEntry:0:3
-            snprintf(subject, 100, "%u:0:3", (unsigned int)auct->pItem->getEntry());
+            snprintf(subject, 100, "%u:0:3", (unsigned int)auction->auctionItem->getEntry());
 
             // Auction expired, resend item, no money to owner.
-            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, dbc->id, auct->Owner, subject, "", 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouseEntryDbc->id, auction->ownerGuid, subject, "", 0, 0, auction->auctionItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
         }
         break;
 
         case AUCTION_REMOVE_WON:
         {
             // ItemEntry:0:1
-            snprintf(subject, 100, "%u:0:1", (unsigned int)auct->pItem->getEntry());
+            snprintf(subject, 100, "%u:0:1", (unsigned int)auction->auctionItem->getEntry());
 
             // <owner player guid>:bid:buyout
-            snprintf(body, 200, "%X:%u:%u", (unsigned int)auct->Owner, (unsigned int)auct->HighestBid, (unsigned int)auct->BuyoutPrice);
+            snprintf(body, 200, "%X:%u:%u", (unsigned int)auction->ownerGuid.getGuidLow(), (unsigned int)auction->highestBid, (unsigned int)auction->buyoutPrice);
 
             // Auction won by highest bidder. He gets the item.
-            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, dbc->id, auct->HighestBidder, subject, body, 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouseEntryDbc->id, auction->highestBidderGuid, subject, body, 0, 0, auction->auctionItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
             // Send a mail to the owner with his cut of the price.
-            const uint32 auction_cut = float2int32(cut_percent * auct->HighestBid);
-            int32 amount = auct->HighestBid - auction_cut + auct->DepositAmount;
+            const uint32_t auction_cut = float2int32(cutPercent * auction->highestBid);
+            int32 amount = auction->highestBid - auction_cut + auction->depositAmount;
             if (amount < 0)
                 amount = 0;
 
             // ItemEntry:0:2
-            snprintf(subject, 100, "%u:0:2", (unsigned int)auct->pItem->getEntry());
+            snprintf(subject, 100, "%u:0:2", (unsigned int)auction->auctionItem->getEntry());
 
             // <hex player guid>:bid:0:deposit:cut
-            if (auct->HighestBid == auct->BuyoutPrice)       // Buyout
-                snprintf(body, 200, "%X:%u:%u:%u:%u", (unsigned int)auct->HighestBidder, (unsigned int)auct->HighestBid, (unsigned int)auct->BuyoutPrice, (unsigned int)auct->DepositAmount, (unsigned int)auction_cut);
+            if (auction->highestBid == auction->buyoutPrice)       // Buyout
+                snprintf(body, 200, "%X:%u:%u:%u:%u", (unsigned int)auction->highestBidderGuid.getGuidLow(), (unsigned int)auction->highestBid, (unsigned int)auction->buyoutPrice, (unsigned int)auction->depositAmount, (unsigned int)auction_cut);
             else
-                snprintf(body, 200, "%X:%u:0:%u:%u", (unsigned int)auct->HighestBidder, (unsigned int)auct->HighestBid, (unsigned int)auct->DepositAmount, (unsigned int)auction_cut);
+                snprintf(body, 200, "%X:%u:0:%u:%u", (unsigned int)auction->highestBidderGuid.getGuidLow(), (unsigned int)auction->highestBid, (unsigned int)auction->depositAmount, (unsigned int)auction_cut);
 
             // send message away.
-            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, dbc->id, auct->Owner, subject, body, amount, 0, 0, MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouseEntryDbc->id, auction->ownerGuid, subject, body, amount, 0, 0, MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
             // If it's not a buyout (otherwise the players has been already notified)
-            if (auct->HighestBid < auct->BuyoutPrice || auct->BuyoutPrice == 0)
+            if (auction->highestBid < auction->buyoutPrice || auction->buyoutPrice == 0)
             {
-                this->SendAuctionBuyOutNotificationPacket(auct);
+                this->sendAuctionBuyOutNotificationPacket(auction);
             }
         }
         break;
         case AUCTION_REMOVE_CANCELLED:
         {
-            snprintf(subject, 100, "%u:0:5", (unsigned int)auct->pItem->getEntry());
-            const uint32 cut = float2int32(cut_percent * auct->HighestBid);
-            Player* plr = sObjectMgr.GetPlayer(auct->Owner);
+            snprintf(subject, 100, "%u:0:5", (unsigned int)auction->auctionItem->getEntry());
+            const uint32_t cut = float2int32(cutPercent * auction->highestBid);
+            Player* plr = sObjectMgr.GetPlayer(auction->ownerGuid.getGuidLow());
             if (cut && plr && plr->hasEnoughCoinage(cut))
                 plr->modCoinage(-(int32)cut);
 
-            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, GetID(), auct->Owner, subject, "", 0, 0, auct->pItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, getId(), auction->ownerGuid, subject, "", 0, 0, auction->auctionItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
             // return bidders money
-            if (auct->HighestBidder)
+            if (auction->highestBidderGuid)
             {
-                sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, GetID(), auct->HighestBidder, subject, "", auct->HighestBid, 0, 0, MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+                sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, getId(), auction->highestBidderGuid, subject, "", auction->highestBid, 0, 0, MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
             }
 
         }
@@ -268,169 +253,168 @@ void AuctionHouse::RemoveAuction(Auction* auct)
 
     // Remove the auction from the hashmap.
     auctionLock.AcquireWriteLock();
-    auctions.erase(auct->Id);
+    auctions.erase(auction->Id);
     auctionLock.ReleaseWriteLock();
 
     // Destroy the item from memory (it still remains in the db)
-    if (auct->pItem)
-        auct->pItem->DeleteMe();
+    if (auction->auctionItem)
+        auction->auctionItem->DeleteMe();
 
     // Finally destroy the auction instance.
-    auct->DeleteFromDB();
-    delete auct;
+    auction->deleteFromDB();
+    delete auction;
 }
 
-void AuctionHouse::AddAuction(Auction* auct)
+void AuctionHouse::addAuction(Auction* auction)
 {
     // add to the map
     auctionLock.AcquireWriteLock();
-    auctions.insert(std::unordered_map<uint32, Auction*>::value_type(auct->Id, auct));
+    auctions.insert(std::unordered_map<uint32_t, Auction*>::value_type(auction->Id, auction));
     auctionLock.ReleaseWriteLock();
 
-    LogDebug("AuctionHouse : %u: Add auction %u, expire@ %u.", dbc->id, auct->Id, auct->ExpiryTime);
+    LogDebug("AuctionHouse : %u: Add auction %u, expire@ %u.", auctionHouseEntryDbc->id, auction->Id, auction->expireTime);
 }
 
-Auction* AuctionHouse::GetAuction(uint32 Id)
+Auction* AuctionHouse::getAuction(uint32_t id)
 {
     auctionLock.AcquireReadLock();
-    const auto auctionsMap = auctions.find(Id);
+    const auto auctionsMap = auctions.find(id);
     const auto auction = auctionsMap == auctions.end() ? nullptr : auctionsMap->second;
     auctionLock.ReleaseReadLock();
 
     return auction;
 }
 
-void AuctionHouse::QueueDeletion(Auction* auct, uint32 Reason)
+void AuctionHouse::queueDeletion(Auction* auction, uint32_t reasonType)
 {
-    if (auct->isRemoved)
+    if (auction->isRemoved)
         return;
 
-    auct->isRemoved = true;
-    auct->removedType = Reason;
+    auction->isRemoved = true;
+    auction->removedType = reasonType;
     removalLock.Acquire();
-    removalList.push_back(auct);
+    removalList.push_back(auction);
     removalLock.Release();
 }
 
-void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* /*packet*/)
+void AuctionHouse::sendOwnerListPacket(Player* player, WorldPacket* /*packet*/)
 {
-    uint32 count = 0;
-    uint32 totalcount = 0;
+    uint32_t count = 0;
+    uint32_t totalcount = 0;
 
     WorldPacket data(SMSG_AUCTION_OWNER_LIST_RESULT, 4 + 4 + 4);
-    data << uint32(0);
+    data << uint32_t(0);
 
     auctionLock.AcquireReadLock();
     for (auto& itr : auctions)
     {
         auto auction = itr.second;
-        if (auction->Owner == plr->getGuid())
+        if (auction->ownerGuid == player->getGuid())
         {
             if (auction->isRemoved)
                 continue;
 
-            auction->AddToPacket(data);
+            auction->addToPacket(data);
             ++count;
 
             ++totalcount;
         }
     }
 
-    data.put<uint32>(0, count);
-    data << uint32(totalcount);
-    data << uint32(0);
+    data.put<uint32_t>(0, count);
+    data << uint32_t(totalcount);
+    data << uint32_t(0);
     auctionLock.ReleaseReadLock();
-    plr->GetSession()->SendPacket(&data);
+    player->GetSession()->SendPacket(&data);
 }
 
-void AuctionHouse::UpdateOwner(uint32 oldGuid, uint32 newGuid)
+void AuctionHouse::updateOwner(uint32_t oldGuid, uint32_t newGuid)
 {
     auctionLock.AcquireWriteLock();
     for (auto& itr : auctions)
     {
         auto auction = itr.second;
-        if (auction->Owner == oldGuid)
-            auction->Owner = newGuid;
-        if (auction->HighestBidder == oldGuid)
+        if (auction->ownerGuid.getGuidLow() == oldGuid)
+            auction->ownerGuid = newGuid;
+
+        if (auction->highestBidderGuid.getGuidLow() == oldGuid)
         {
-            auction->HighestBidder = newGuid;
-            auction->UpdateInDB();
+            auction->highestBidderGuid = newGuid;
+            auction->updateInDB();
         }
     }
     auctionLock.ReleaseWriteLock();
 }
 
-void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* /*packet*/)
+void AuctionHouse::sendBidListPacket(Player* player, WorldPacket* /*packet*/)
 {
-    uint32 count = 0;
-    uint32 totalcount = 0;
+    uint32_t count = 0;
+    uint32_t totalcount = 0;
 
     WorldPacket data(SMSG_AUCTION_BIDDER_LIST_RESULT, 4 + 4 + 4);
-    data << uint32(0);
+    data << uint32_t(0);
 
     auctionLock.AcquireReadLock();
     for (auto itr = auctions.begin(); itr != auctions.end(); ++itr)
     {
         auto auction = itr->second;
-        if (auction->HighestBidder == plr->getGuid())
+        if (auction->highestBidderGuid == player->getGuid())
         {
             if (auction->isRemoved)
                 continue;
 
-            auction->AddToPacket(data);
+            auction->addToPacket(data);
             ++count;
             ++totalcount;
         }
     }
 
-    data.put<uint32>(0, count);
+    data.put<uint32_t>(0, count);
     data << totalcount;
-    data << uint32(300);
+    data << uint32_t(300);
     auctionLock.ReleaseReadLock();
-    plr->GetSession()->SendPacket(&data);
+    player->GetSession()->SendPacket(&data);
 }
 
-void AuctionHouse::SendAuctionBuyOutNotificationPacket(Auction* auct)
+void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
 {
-    Player* bidder = sObjectMgr.GetPlayer(static_cast<uint32>(auct->HighestBidder));
+    Player* bidder = sObjectMgr.GetPlayer(auction->highestBidderGuid.getGuidLow());
     if (bidder && bidder->IsInWorld())
     {
-        uint32 outbid = (auct->HighestBid / 100) * 5;
+        auto outbid = (auction->highestBid / 100) * 5;
         if (!outbid)
             outbid = 1;
 
         WorldPacket data(SMSG_AUCTION_BIDDER_NOTIFICATION, 32);
-        data << GetID();
-        data << auct->Id;
-        data << uint64(auct->HighestBidder);
+        data << getId();
+        data << auction->Id;
+        data << uint64_t(auction->highestBidderGuid);
 #if VERSION_STRING < Cata
-        data << uint32(0);
-        data << uint32(outbid);
+        data << uint32_t(0);
+        data << uint32_t(outbid);
 #else
-        data << uint64(0);
-        data << uint64(outbid);
+        data << uint64_t(0);
+        data << uint64_t(outbid);
 #endif
-        data << auct->pItem->getEntry();
-        data << uint32(0);
+        data << auction->auctionItem->getEntry();
+        data << uint32_t(0);
         bidder->GetSession()->SendPacket(&data);
     }
 
-    Player* owner = sObjectMgr.GetPlayer(static_cast<uint32>(auct->Owner));
+    Player* owner = sObjectMgr.GetPlayer(auction->ownerGuid.getGuidLow());
     if (owner && owner->IsInWorld())
     {
         WorldPacket ownerData(SMSG_AUCTION_OWNER_NOTIFICATION, 28);
-        ownerData << auct->Id;
+        ownerData << auction->Id;
+        ownerData << auction->highestBid;
+
 #if VERSION_STRING < Cata
-        ownerData << uint32(auct->HighestBid);
-        ownerData << uint32(0);
-        ownerData << uint32(0);
+        ownerData << uint32_t(0) << uint32_t(0);
 #else
-        ownerData << uint64(auct->HighestBid);
-        ownerData << uint64(0);
-        ownerData << uint64(0);
+        ownerData << uint64_t(0) << uint64_t(0);
 #endif
-        ownerData << auct->pItem->getEntry();
-        ownerData << uint32(0);
+        ownerData << auction->auctionItem->getEntry();
+        ownerData << uint32_t(0);
  #if VERSION_STRING > TBC
         ownerData << float(0);
 #endif
@@ -438,47 +422,54 @@ void AuctionHouse::SendAuctionBuyOutNotificationPacket(Auction* auct)
     }
 }
 
-void AuctionHouse::SendAuctionOutBidNotificationPacket(Auction* auct, uint64 newBidder, uint32 newHighestBid)
+void AuctionHouse::sendAuctionOutBidNotificationPacket(Auction* auction, uint64_t newBidder, uint32_t newHighestBid)
 {
-    Player* bidder = sObjectMgr.GetPlayer(auct->HighestBidder);
+    Player* bidder = sObjectMgr.GetPlayer(auction->highestBidderGuid.getGuidLow());
     if (bidder && bidder->IsInWorld())
     {
-        uint32 outbid = (auct->HighestBid / 100) * 5;
+        auto outbid = (auction->highestBid / 100) * 5;
         if (!outbid)
             outbid = 1;
 
         WorldPacket data(SMSG_AUCTION_BIDDER_NOTIFICATION, 32);
-        data << GetID();
-        data << auct->Id;
-        data << uint64(newBidder);
-        data << uint32(newHighestBid);
-        data << uint32(outbid);
-        data << auct->pItem->getEntry();
-        data << uint32(0);
+        data << getId();
+        data << auction->Id;
+        data << newBidder;
+
+#if VERSION_STRING < Cata
+        data << uint32_t(newHighestBid);
+        data << uint32_t(outbid);
+#else
+        data << uint64_t(newHighestBid);
+        data << uint64_t(outbid);
+#endif
+
+        data << auction->auctionItem->getEntry();
+        data << uint32_t(0);
         bidder->GetSession()->SendPacket(&data);
     }
 }
 
-void AuctionHouse::SendAuctionExpiredNotificationPacket(Auction* /*auct*/)
+void AuctionHouse::sendAuctionExpiredNotificationPacket(Auction* /*auct*/)
 {
     ///\todo I don't know the net code... so: TODO ;-)
 
-    //Player* owner = sObjectMgr.GetPlayer((uint32)auct->Owner);
+    //Player* owner = sObjectMgr.GetPlayer(auct->ownerGuid.getGuidLow());
     //if (owner && owner->IsInWorld())
     //{
     //  WorldPacket data(SMSG_AUCTION_REMOVED_NOTIFICATION, ??);
     //  data << GetID();
     //  data << auct->Id;
-    //  data << uint32(0);   // I don't have an active blizz account..so I can't get the netcode by myself.
-    //  data << uint32(0);
-    //  data << uint32(0);
+    //  data << uint32_t(0);   // I don't have an active blizz account..so I can't get the netcode by myself.
+    //  data << uint32_t(0);
+    //  data << uint32_t(0);
     //  data << auct->pItem->getEntry();
-    //  data << uint32(0);
+    //  data << uint32_t(0);
     //  owner->GetSession()->SendPacket(&data);
     //}
 }
 
-void AuctionHouse::SendAuctionList(Player* plr, AscEmu::Packets::CmsgAuctionListItems srlPacket)
+void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionListItems srlPacket)
 {
     uint32_t count = 0;
     uint32_t totalcount = 0;
@@ -499,7 +490,7 @@ void AuctionHouse::SendAuctionList(Player* plr, AscEmu::Packets::CmsgAuctionList
         if (auction.second->isRemoved)
             continue;
 
-        ItemProperties const* proto = auction.second->pItem->getItemProperties();
+        ItemProperties const* proto = auction.second->auctionItem->getItemProperties();
 
         // Check the auction for parameters
 
@@ -536,39 +527,39 @@ void AuctionHouse::SendAuctionList(Player* plr, AscEmu::Packets::CmsgAuctionList
         if (srlPacket.usable)
         {
             // allowed class
-            if (proto->AllowableClass && !(plr->getClassMask() & proto->AllowableClass))
+            if (proto->AllowableClass && !(player->getClassMask() & proto->AllowableClass))
                 continue;
 
-            if (proto->RequiredLevel && proto->RequiredLevel > plr->getLevel())
+            if (proto->RequiredLevel && proto->RequiredLevel > player->getLevel())
                 continue;
 
-            if (proto->AllowableRace && !(plr->getRaceMask() & proto->AllowableRace))
+            if (proto->AllowableRace && !(player->getRaceMask() & proto->AllowableRace))
                 continue;
 
-            if (proto->Class == 4 && proto->SubClass && !(plr->GetArmorProficiency() & (((uint32_t)(1)) << proto->SubClass)))
+            if (proto->Class == 4 && proto->SubClass && !(player->GetArmorProficiency() & (((uint32_t)(1)) << proto->SubClass)))
                 continue;
 
-            if (proto->Class == 2 && proto->SubClass && !(plr->GetWeaponProficiency() & (((uint32_t)(1)) << proto->SubClass)))
+            if (proto->Class == 2 && proto->SubClass && !(player->GetWeaponProficiency() & (((uint32_t)(1)) << proto->SubClass)))
                 continue;
 
-            if (proto->RequiredSkill && (!plr->_HasSkillLine(proto->RequiredSkill) || proto->RequiredSkillRank > plr->_GetSkillLineCurrent(proto->RequiredSkill, true)))
+            if (proto->RequiredSkill && (!player->_HasSkillLine(proto->RequiredSkill) || proto->RequiredSkillRank > player->_GetSkillLineCurrent(proto->RequiredSkill, true)))
                 continue;
         }
 
         if (count < 50 && totalcount >= srlPacket.listFrom)
         {
             ++count;
-            auction.second->AddToPacket(data);
+            auction.second->addToPacket(data);
         }
 
         ++totalcount;
     }
 
     // total count
-    data.put<uint32>(0, count);
+    data.put<uint32_t>(0, count);
     data << uint32_t(totalcount);
     data << uint32_t(300);
 
     auctionLock.ReleaseReadLock();
-    plr->GetSession()->SendPacket(&data);
+    player->GetSession()->SendPacket(&data);
 }

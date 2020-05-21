@@ -51,7 +51,7 @@ void AuctionMgr::LoadAuctionHouses()
         do
         {
             ah = new AuctionHouse(res->Fetch()[0].GetUInt32());
-            ah->LoadAuctions();
+            ah->loadAuctionsFromDB();
             auctionHouses.push_back(ah);
             tempmap.insert(std::make_pair(res->Fetch()[0].GetUInt32(), ah));
             if (!((++c) % period))
@@ -89,10 +89,10 @@ void AuctionMgr::Update()
     std::vector<AuctionHouse*>::iterator itr = auctionHouses.begin();
     for (; itr != auctionHouses.end(); ++itr)
     {
-        (*itr)->UpdateDeletionQueue();
+        (*itr)->updateDeletionQueue();
 
         // Actual auction loop is on a separate timer.
         if (!(loopcount % 1200))
-            (*itr)->UpdateAuctions();
+            (*itr)->updateAuctions();
     }
 }

@@ -110,7 +110,7 @@ void WorldSession::sendAuctionList(Creature* creature)
     if (auctionHouse == nullptr)
         return;
 
-    SendPacket(MsgAuctionHello(creature->getGuid(), auctionHouse->GetID(), auctionHouse->enabled ? 1 : 0).serialise().get());
+    SendPacket(MsgAuctionHello(creature->getGuid(), auctionHouse->getId(), auctionHouse->isEnabled ? 1 : 0).serialise().get());
 }
 
 //helper
