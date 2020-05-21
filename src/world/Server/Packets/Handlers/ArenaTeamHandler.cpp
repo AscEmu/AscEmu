@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgArenaTeamRoster.h"
 #include "Server/Packets/SmsgArenaTeamStats.h"
 #include "Server/Packets/SmsgArenaTeamQueryResponse.h"
+#include "Server/Packets/SmsgArenaTeamInvite.h"
 
 using namespace AscEmu::Packets;
 
@@ -92,10 +93,7 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
 
     player->m_arenateaminviteguid = _player->m_arenaTeams[arenaTeam->m_type]->m_id;
 
-    WorldPacket data(SMSG_ARENA_TEAM_INVITE, 40);
-    data << _player->getName().c_str();
-    data << _player->m_arenaTeams[arenaTeam->m_type]->m_name;
-    player->GetSession()->SendPacket(&data);
+    player->SendPacket(SmsgArenaTeamInvite(_player->getName(), _player->m_arenaTeams[arenaTeam->m_type]->m_name).serialise().get());
 }
 
 void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)

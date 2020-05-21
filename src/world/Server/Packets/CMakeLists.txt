@@ -266,6 +266,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgAreaSpiritHealerTime.h
    ${PATH_PREFIX}/SmsgAreaTriggerMessage.h
    ${PATH_PREFIX}/SmsgArenaError.h
+   ${PATH_PREFIX}/SmsgArenaTeamInvite.h
    ${PATH_PREFIX}/SmsgArenaTeamQueryResponse.h
    ${PATH_PREFIX}/SmsgArenaTeamStats.h
    ${PATH_PREFIX}/SmsgAttackStart.h
