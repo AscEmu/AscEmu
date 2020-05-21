@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Util.hpp"
 #include "Server/Packets/SmsgAuctionBidderNotification.h"
+#include "Server/Packets/SmsgAuctionOwnerNotification.h"
 
 using namespace AscEmu::Packets;
 
@@ -394,21 +395,7 @@ void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
     Player* owner = sObjectMgr.GetPlayer(auction->ownerGuid.getGuidLow());
     if (owner && owner->IsInWorld())
     {
-        WorldPacket ownerData(SMSG_AUCTION_OWNER_NOTIFICATION, 28);
-        ownerData << auction->Id;
-        ownerData << auction->highestBid;
-
-#if VERSION_STRING < Cata
-        ownerData << uint32_t(0) << uint32_t(0);
-#else
-        ownerData << uint64_t(0) << uint64_t(0);
-#endif
-        ownerData << auction->auctionItem->getEntry();
-        ownerData << uint32_t(0);
- #if VERSION_STRING > TBC
-        ownerData << float(0);
-#endif
-        owner->GetSession()->SendPacket(&ownerData);
+        owner->GetSession()->SendPacket(SmsgAuctionOwnerNotification(auction->Id, auction->highestBid, auction->auctionItem->getEntry()).serialise().get());
     }
 }
 

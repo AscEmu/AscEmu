@@ -272,6 +272,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgAttackStop.h
    ${PATH_PREFIX}/SmsgAuctionBidderNotification.h
    ${PATH_PREFIX}/SmsgAuctionCommandResult.h
+   ${PATH_PREFIX}/SmsgAuctionOwnerNotification.h
    ${PATH_PREFIX}/SmsgAuraUpdate.h
    ${PATH_PREFIX}/SmsgAuraUpdateAll.h
    ${PATH_PREFIX}/SmsgBarberShopResult.h
