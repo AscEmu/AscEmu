@@ -576,6 +576,7 @@ uint32_t Player::getGlyphsEnabled() const { return playerData()->glyphs_enabled;
 void Player::setGlyphsEnabled(uint32_t glyphs) { write(playerData()->glyphs_enabled, glyphs); }
 #endif
 
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
@@ -728,9 +729,6 @@ bool Player::isSpellFitByClassAndRace(uint32_t /*spell_id*/)
     return false;
 }
 
-void Player::sendAuctionCommandResult(Auction* /*auction*/, uint32_t /*action*/, uint32_t /*errorCode*/, uint32_t /*bidError*/)
-{
-}
 #else
 void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
 {
@@ -1183,41 +1181,6 @@ void Player::sendChatPacket(uint32_t type, uint32_t language, const char* messag
     // send to self
     WorldPacket selfData = buildChatMessagePacket(this, type, language, message, guid, flag);
     this->SendPacket(&selfData);
-}
-
-void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_t errorCode, uint32_t bidError)
-{
-    WorldPacket data(SMSG_AUCTION_COMMAND_RESULT);
-    data << uint32_t(auction ? auction->Id : 0);
-    data << uint32_t(action);
-    data << uint32_t(errorCode);
-
-    switch (errorCode)
-    {
-        case AUCTION_ERROR_NONE:
-        {
-            if (action == AUCTION_BID)
-            {
-                data << uint64_t(auction->HighestBid ? auction->GetAuctionOutBid() : 0);
-            }
-            break;
-        }
-        case AUCTION_ERROR_INVENTORY:
-        {
-            data << uint32_t(bidError);
-            break;
-        }
-        case AUCTION_ERROR_HIGHER_BID:
-        {
-            data << uint64_t(auction->HighestBidder);
-            data << uint64_t(auction->HighestBid);
-            data << uint64_t(auction->HighestBid ? auction->GetAuctionOutBid() : 0);
-            break;
-        }
-        default: break;
-    }
-
-    SendPacket(&data);
 }
 
 bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
@@ -2555,6 +2518,16 @@ void Player::sendActionBars(bool clearBars)
 #endif
 
     GetSession()->SendPacket(&data);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Auction
+void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_t errorCode, uint32_t bidError)
+{
+    const auto auctionId = auction ? auction->Id : 0;
+    const auto outBid = auction->highestBid ? auction->getAuctionOutBid() : 0;
+
+    SendPacket(SmsgAuctionCommandResult(auctionId, action, errorCode, outBid, auction->highestBid, bidError, auction->highestBidderGuid).serialise().get());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
