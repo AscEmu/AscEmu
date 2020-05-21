@@ -15,6 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAuctionBidderNotification.h"
 #include "Server/Packets/SmsgAuctionOwnerNotification.h"
 #include "Server/Packets/SmsgAuctionOwnerListResult.h"
+#include "Server/Packets/SmsgAuctionBidderListResult.h"
+#include "Server/Packets/SmsgAuctionListResult.h"
 
 using namespace AscEmu::Packets;
 
@@ -65,35 +67,6 @@ AuctionPacketList Auction::getListMember()
     auctionList.highestBid = highestBid;
 
     return auctionList;
-}
-
-void Auction::addToPacket(WorldPacket& data)
-{
-    data << Id;
-    data << auctionItem->getEntry();
-
-    for (uint8_t i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)    //6 on tbc, 7 on wotlk, 11 on cata
-    {
-        data << uint32_t(auctionItem->getEnchantmentId(i));
-        data << uint32_t(auctionItem->getEnchantmentDuration(i));
-        data << uint32_t(auctionItem->getEnchantmentCharges(i));
-    }
-
-    data << auctionItem->getRandomPropertiesId();
-    data << auctionItem->getPropertySeed();
-    data << auctionItem->getStackCount();
-    data << auctionItem->GetChargesLeft();
-    data << uint32_t(0);
-    data << ownerGuid;
-
-    data << startPrice;
-    data << (highestBid ? getAuctionOutBid() : 0);
-    data << buyoutPrice;
-
-    data << uint32_t((expireTime - UNIXTIME) * 1000);
-    data << highestBidderGuid;
-
-    data << uint32_t(highestBid);
 }
 
 /// the sum of outbid is (1% from current bid)*5, if bid is very small, it is 1c
@@ -375,11 +348,7 @@ void AuctionHouse::updateOwner(uint32_t oldGuid, uint32_t newGuid)
 
 void AuctionHouse::sendBidListPacket(Player* player, WorldPacket* /*packet*/)
 {
-    uint32_t count = 0;
-    uint32_t totalcount = 0;
-
-    WorldPacket data(SMSG_AUCTION_BIDDER_LIST_RESULT, 4 + 4 + 4);
-    data << uint32_t(0);
+    std::vector<AuctionPacketList> auctionPacketList{};
 
     auctionLock.AcquireReadLock();
     for (auto itr = auctions.begin(); itr != auctions.end(); ++itr)
@@ -390,17 +359,12 @@ void AuctionHouse::sendBidListPacket(Player* player, WorldPacket* /*packet*/)
             if (auction->isRemoved)
                 continue;
 
-            auction->addToPacket(data);
-            ++count;
-            ++totalcount;
+            auctionPacketList.push_back(auction->getListMember());
         }
     }
-
-    data.put<uint32_t>(0, count);
-    data << totalcount;
-    data << uint32_t(300);
     auctionLock.ReleaseReadLock();
-    player->GetSession()->SendPacket(&data);
+
+    player->SendPacket(SmsgAuctionBidderListResult(auctionPacketList.size(), auctionPacketList, auctionPacketList.size(), 300).serialise().get());
 }
 
 void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
@@ -456,6 +420,8 @@ void AuctionHouse::sendAuctionExpiredNotificationPacket(Auction* /*auct*/)
 
 void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionListItems srlPacket)
 {
+    std::vector<AuctionPacketList> auctionPacketList{};
+
     uint32_t count = 0;
     uint32_t totalcount = 0;
 
@@ -465,9 +431,6 @@ void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionL
         for (uint32_t j = 0; j < srlPacket.searchedName.length(); ++j)
             srlPacket.searchedName[j] = static_cast<char>(tolower(srlPacket.searchedName[j]));
     }
-
-    WorldPacket data(SMSG_AUCTION_LIST_RESULT, 7000);
-    data << uint32_t(0); // count of items
 
     auctionLock.AcquireReadLock();
     for (auto& auction : auctions)
@@ -534,17 +497,13 @@ void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionL
         if (count < 50 && totalcount >= srlPacket.listFrom)
         {
             ++count;
-            auction.second->addToPacket(data);
+
+            auctionPacketList.push_back(auction.second->getListMember());
         }
 
         ++totalcount;
     }
-
-    // total count
-    data.put<uint32_t>(0, count);
-    data << uint32_t(totalcount);
-    data << uint32_t(300);
-
     auctionLock.ReleaseReadLock();
-    player->GetSession()->SendPacket(&data);
+
+    player->SendPacket(SmsgAuctionListResult(auctionPacketList.size(), auctionPacketList, auctionPacketList.size(), 300).serialise().get());
 }

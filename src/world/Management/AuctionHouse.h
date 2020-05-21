@@ -124,7 +124,6 @@ struct Auction
     void deleteFromDB();
     void saveToDB(uint32_t auctionHouseId);
     void updateInDB();
-    void addToPacket(WorldPacket& data);
 
 #if VERSION_STRING < Cata
     uint32_t getAuctionOutBid() const;
