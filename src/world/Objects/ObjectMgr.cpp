@@ -2970,7 +2970,7 @@ ArenaTeam* ObjectMgr::GetArenaTeamByGuid(uint32 guid, uint32 Type)
     m_arenaTeamLock.Acquire();
     for (std::unordered_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeamMap[Type].begin(); itr != m_arenaTeamMap[Type].end(); ++itr)
     {
-        if (itr->second->HasMember(guid))
+        if (itr->second->isMember(guid))
         {
             m_arenaTeamLock.Release();
             return itr->second;

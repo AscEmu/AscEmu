@@ -71,6 +71,67 @@ struct ArenaTeamStats
 
 class SERVER_DECL ArenaTeam
 {
+    public:
+
+        ArenaTeam(uint16 Type, uint32 Id);
+        ArenaTeam(Field* f);
+        ~ArenaTeam()
+        {
+            delete [] m_members;
+        }
+
+    
+        void SaveToDB();
+
+        void Destroy();
+
+        void SendPacket(WorldPacket* data);
+        
+
+        bool AddMember(PlayerInfo* info);
+        bool RemoveMember(PlayerInfo* info);
+
+        bool isMember(uint32_t guid) const;
+
+        void SetLeader(PlayerInfo* info);
+        ArenaTeamMember* GetMember(PlayerInfo* info);
+        ArenaTeamMember* GetMemberByGuid(uint32 guid);
+
+        uint32 GetPlayersPerTeam()
+        {
+            switch (m_type)
+            {
+                case ARENA_TEAM_TYPE_2V2:
+                    return 2;
+
+                case ARENA_TEAM_TYPE_3V3:
+                    return 3;
+
+                case ARENA_TEAM_TYPE_5V5:
+                    return 5;
+
+                default:
+                    return 2;
+            }
+        }
+
+        //MIT
+        std::vector<ArenaTeamPacketList> getRoosterMembers() const;
+
+        uint32 m_id;
+        uint16_t m_type;
+        uint32 m_leader;
+        uint32 m_slots;
+        std::string m_name;
+        uint32 m_memberCount;
+        ArenaTeamMember* m_members;
+
+        ArenaTeamEmblem m_emblem;
+
+        ArenaTeamStats m_stats;
+
+    private:
+
         void AllocateSlots(uint16 Type)
         {
             uint32 Slots = 0;
@@ -86,60 +147,6 @@ class SERVER_DECL ArenaTeam
             m_slots = Slots;
             m_memberCount = 0;
         }
-
-    public:
-
-        uint32 m_id;
-        uint16_t m_type;
-        uint32 m_leader;
-        uint32 m_slots;
-        std::string m_name;
-        uint32 m_memberCount;
-        ArenaTeamMember* m_members;
-
-        ArenaTeamEmblem m_emblem;
-
-        ArenaTeamStats m_stats;
-
-        ArenaTeam(uint16 Type, uint32 Id);
-        ArenaTeam(Field* f);
-        ~ArenaTeam()
-        {
-            delete [] m_members;
-        }
-
-        void SendPacket(WorldPacket* data);
-        void Inspect(WorldPacket& data);
-        void Destroy();
-        void SaveToDB();
-
-        bool AddMember(PlayerInfo* info);
-        bool RemoveMember(PlayerInfo* info);
-        bool HasMember(uint32 guid);
-        void SetLeader(PlayerInfo* info);
-        ArenaTeamMember* GetMember(PlayerInfo* info);
-        ArenaTeamMember* GetMemberByGuid(uint32 guid);
-
-        uint32 GetPlayersPerTeam()
-        {
-            switch(m_type)
-            {
-                case ARENA_TEAM_TYPE_2V2:
-                    return 2;
-
-                case ARENA_TEAM_TYPE_3V3:
-                    return 3;
-
-                case ARENA_TEAM_TYPE_5V5:
-                    return 5;
-            }
-
-            // never reached
-            return 2;
-        }
-
-    //MIT
-    std::vector<ArenaTeamPacketList> getRoosterMembers() const;
 };
 
 #endif //ARENATEAMS_H

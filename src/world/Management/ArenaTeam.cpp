@@ -278,9 +278,9 @@ void ArenaTeam::SaveToDB()
     CharacterDatabase.Execute(ss.str().c_str());
 }
 
-bool ArenaTeam::HasMember(uint32 guid)
+bool ArenaTeam::isMember(uint32_t guid) const
 {
-    for (uint32 i = 0; i < m_memberCount; ++i)
+    for (uint32_t i = 0; i < m_memberCount; ++i)
     {
         if (m_members[i].Info && m_members[i].Info->guid == guid)
             return true;

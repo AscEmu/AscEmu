@@ -49,7 +49,7 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
     if (arenaTeam == nullptr)
         return;
 
-    if (!arenaTeam->HasMember(GetPlayer()->getGuidLow()))
+    if (!arenaTeam->isMember(GetPlayer()->getGuidLow()))
     {
         GetPlayer()->SoftDisconnect();
         return;
@@ -133,7 +133,7 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (!arenaTeam->HasMember(playerInfo->guid))
+    if (!arenaTeam->isMember(playerInfo->guid))
     {
         SystemMessage("That player is not in your arena team.");
         return;
@@ -324,7 +324,7 @@ void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (!arenaTeam->HasMember(playerInfo->guid))
+    if (!arenaTeam->isMember(playerInfo->guid))
     {
         SystemMessage("That player is not a member of your arena team.");
         return;
