@@ -591,6 +591,9 @@ void Player::modArenaCurrency(int32_t value) { setArenaCurrency(getArenaCurrency
 uint32_t Player::getNoReagentCost(uint8_t index) const { return playerData()->no_reagent_cost[index]; }
 void Player::setNoReagentCost(uint8_t index, uint32_t value) { write(playerData()->no_reagent_cost[index], value); }
 
+uint32_t Player::getGlyphSlot(uint16_t slot) const { return playerData()->field_glyphs[slot]; }
+void Player::setGlyphSlot(uint16_t slot, uint32_t glyph) { write(playerData()->field_glyphs[slot], glyph); }
+
 uint32_t Player::getGlyph(uint16_t slot) const { return playerData()->field_glyphs[slot]; }
 void Player::setGlyph(uint16_t slot, uint32_t glyph) { write(playerData()->field_glyphs[slot], glyph); }
 

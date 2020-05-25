@@ -693,6 +693,9 @@ public:
     uint32_t getNoReagentCost(uint8_t index) const;
     void setNoReagentCost(uint8_t index, uint32_t value);
 
+    uint32_t getGlyphSlot(uint16_t slot) const;
+    void setGlyphSlot(uint16_t slot, uint32_t glyph);
+
     uint32_t getGlyph(uint16_t slot) const;
     void setGlyph(uint16_t slot, uint32_t glyph);
 

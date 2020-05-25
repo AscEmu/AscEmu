@@ -10903,7 +10903,7 @@ void Player::UpdateGlyphs()
                 continue;
 
             if (glyph_slot->Slot > 0)
-                setUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + y++, glyph_slot->Id);
+                setGlyphSlot(y++, glyph_slot->Id);
         }
     }
 
@@ -10942,7 +10942,7 @@ void Player::UpdateGlyphs()
     {
         if (DBC::Structures::GlyphSlotEntry const* glyphSlot = sGlyphSlotStore.LookupEntry(i))
         {
-            setUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_GLYPH_SLOTS_1 + slot++), glyphSlot->Id);
+            setGlyphSlot(slot++), glyphSlot->Id);
         }
     }
 

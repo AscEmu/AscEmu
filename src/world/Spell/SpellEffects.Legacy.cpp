@@ -4862,7 +4862,7 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
         }
     }
 
-    auto glyph_slot = sGlyphSlotStore.LookupEntry(p_caster->getUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_GLYPH_SLOTS_1 + m_glyphslot)));
+    auto glyph_slot = sGlyphSlotStore.LookupEntry(p_caster->getGlyphSlot(m_glyphslot));
     if (glyph_slot)
     {
         if (glyph_slot->Type != glyph_prop_new->Type)
