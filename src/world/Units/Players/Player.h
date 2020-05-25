@@ -526,6 +526,11 @@ public:
     void setChosenTitle(uint32_t title);
 #endif
 
+#if VERSION_STRING == WotLK
+    uint64_t getKnownCurrencies() const;
+    void setKnownCurrencies(uint64_t currencies);
+#endif
+
     uint32_t getXp() const;
     void setXp(uint32_t xp);
 

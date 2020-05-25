@@ -11057,15 +11057,15 @@ void Player::UpdateKnownCurrencies(uint32 itemId, bool apply)
     {
         if (apply)
         {
-            uint64 oldval = getUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES);
+            uint64 oldval = getKnownCurrencies();
             uint64 newval = oldval | (1LL << (currency_type_entry->bit_index - 1));
-            setUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES, newval);
+            setKnownCurrencies(newval);
         }
         else
         {
-            uint64 oldval = getUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES);
+            uint64 oldval = getKnownCurrencies();
             uint64 newval = oldval & ~(1LL << (currency_type_entry->bit_index - 1));
-            setUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES, newval);
+            setKnownCurrencies(newval);
         }
     }
 #else

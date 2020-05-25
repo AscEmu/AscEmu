@@ -374,6 +374,11 @@ uint32_t Player::getChosenTitle() const { return playerData()->chosen_title; }
 void Player::setChosenTitle(uint32_t title) { write(playerData()->chosen_title, title); }
 #endif
 
+#if VERSION_STRING == WotLK
+uint64_t Player::getKnownCurrencies() const { return playerData()->field_known_currencies; }
+void Player::setKnownCurrencies(uint64_t currencies) { write(playerData()->field_known_currencies, currencies); }
+#endif
+
 uint32_t Player::getXp() const { return playerData()->xp; }
 void Player::setXp(uint32_t xp) { write(playerData()->xp, xp); }
 
