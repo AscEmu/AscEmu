@@ -2215,7 +2215,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         << getUInt64Value(PLAYER_FIELD_KNOWN_TITLES1) << ","
         << getUInt64Value(PLAYER_FIELD_KNOWN_TITLES2) << ","
 #endif
-        << m_uint32Values[PLAYER_FIELD_COINAGE] << ",";
+        << static_cast<uint32_t>(getCoinage()) << ",";
 
     if (getClass() == MAGE || getClass() == PRIEST || (getClass() == WARLOCK))
         ss << (uint32)0 << ","; // make sure ammo slot is 0 for these classes, otherwise it can mess up wand shoot
@@ -2783,7 +2783,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     get_next_field; //skip available_pvp_titles2
 
 
-    m_uint32Values[PLAYER_FIELD_COINAGE] = get_next_field.GetUInt32();
+    setCoinage(get_next_field.GetUInt32());
 
     m_uint32Values[PLAYER_AMMO_ID] = get_next_field.GetUInt32();
     m_uint32Values[PLAYER_CHARACTER_POINTS2] = get_next_field.GetUInt32();
@@ -3502,7 +3502,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     get_next_field.GetUInt32();
     get_next_field.GetUInt32();
 #endif
-    m_uint32Values[PLAYER_FIELD_COINAGE] = get_next_field.GetUInt32();
+    setCoinage(get_next_field.GetUInt32());
 #if VERSION_STRING < Cata
     m_uint32Values[PLAYER_AMMO_ID] = get_next_field.GetUInt32();
     m_uint32Values[PLAYER_CHARACTER_POINTS2] = get_next_field.GetUInt32();
