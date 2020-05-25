@@ -604,6 +604,9 @@ void Player::setArenaTeamMemberRank(uint8_t teamSlot, uint32_t rank) { write(pla
     // field_arena_team_info end
 #endif
 
+uint64_t Player::getInventorySlotItemGuid(uint8_t index) const { return playerData()->inventory_slot[index]; }
+void Player::setInventorySlotItemGuid(uint8_t index, uint64_t guid) { write(playerData()->inventory_slot[index], guid); }
+
 #if VERSION_STRING > Classic
 #if VERSION_STRING < Cata
 uint32_t Player::getHonorCurrency() const { return playerData()->field_honor_currency; }

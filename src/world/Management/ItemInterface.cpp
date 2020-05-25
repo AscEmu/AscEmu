@@ -368,7 +368,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
                 uint32 count = item->buildCreateUpdateBlockForPlayer(&buf, m_pOwner);
                 m_pOwner->getUpdateMgr().pushCreationData(&buf, count);
             }
-            m_pOwner->SetInventorySlot(slot, item->getGuid());
+            m_pOwner->setInventorySlotItemGuid(slot, item->getGuid());
         }
         else
         {
@@ -519,7 +519,7 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
         {
             pItem->m_isDirty = true;
 
-            m_pOwner->SetInventorySlot(slot, 0);
+            m_pOwner->setInventorySlotItemGuid(slot, 0);
 
             if (slot < EQUIPMENT_SLOT_END)
             {
@@ -683,7 +683,7 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
         {
             pItem->m_isDirty = true;
 
-            m_pOwner->SetInventorySlot(slot, 0);
+            m_pOwner->setInventorySlotItemGuid(slot, 0);
 
             if (slot < EQUIPMENT_SLOT_END)
             {
@@ -3153,24 +3153,24 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 
     if (m_pItems[(int)dstslot] != nullptr)
     {
-        //LOG_DEBUG("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot * 2 , m_pItems[(int)dstslot]->getGuid());
-        m_pOwner->SetInventorySlot(dstslot, m_pItems[(int)dstslot]->getGuid());
+        //LOG_DEBUG("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot , m_pItems[(int)dstslot]->getGuid());
+        m_pOwner->setInventorySlotItemGuid(dstslot, m_pItems[(int)dstslot]->getGuid());
     }
     else
     {
-        //LOG_DEBUG("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot * 2);
-        m_pOwner->SetInventorySlot(dstslot, 0);
+        //LOG_DEBUG("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot);
+        m_pOwner->setInventorySlotItemGuid(dstslot, 0);
     }
 
     if (m_pItems[(int)srcslot] != nullptr)
     {
-        //LOG_DEBUG("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot * 2 , m_pItems[(int)srcslot]->getGuid());
-        m_pOwner->SetInventorySlot(srcslot, m_pItems[(int)srcslot]->getGuid());
+        //LOG_DEBUG("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot , m_pItems[(int)srcslot]->getGuid());
+        m_pOwner->setInventorySlotItemGuid(srcslot, m_pItems[(int)srcslot]->getGuid());
     }
     else
     {
-        //LOG_DEBUG("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot * 2);
-        m_pOwner->SetInventorySlot(srcslot, 0);
+        //LOG_DEBUG("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot);
+        m_pOwner->setInventorySlotItemGuid(srcslot, 0);
     }
 
 #if VERSION_STRING > TBC

@@ -706,6 +706,9 @@ public:
     // field_arena_team_info end
 #endif
 
+    uint64_t getInventorySlotItemGuid(uint8_t index) const;
+    void setInventorySlotItemGuid(uint8_t index, uint64_t guid);
+
 #if VERSION_STRING > Classic
 #if VERSION_STRING < Cata
     uint32_t getHonorCurrency() const;
@@ -1955,8 +1958,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // EASY FUNCTIONS - MISC
         /////////////////////////////////////////////////////////////////////////////////////////
-
-        void SetInventorySlot(uint16_t slot, uint64 guid) { setUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD + (slot * 2), guid); }
 
         //\todo fix this
         void ModPrimaryProfessionPoints(int32 amt)
