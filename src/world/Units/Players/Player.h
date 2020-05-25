@@ -522,6 +522,11 @@ public:
     void setFarsightGuid(uint64_t farsightGuid);
 
 #if VERSION_STRING > Classic
+    uint64_t getKnownTitles(uint8_t index) const;
+    void setKnownTitles(uint8_t index, uint64_t title);
+#endif
+
+#if VERSION_STRING > Classic
     uint32_t getChosenTitle() const;
     void setChosenTitle(uint32_t title);
 #endif
@@ -1371,7 +1376,9 @@ public:
 
         bool HasTitle(RankTitles title)
         {
-            return (getUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1)) & (uint64(1) << (title % 64))) != 0;
+            const uint8_t index = title / 32;
+
+            return (getKnownTitles(index) & 1 << (title % 32)) != 0;
         }
         void SetKnownTitle(RankTitles title, bool set);
         void SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshift_form, bool active);

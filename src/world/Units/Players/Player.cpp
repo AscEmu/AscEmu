@@ -370,6 +370,11 @@ uint64_t Player::getFarsightGuid() const { return playerData()->farsight_guid; }
 void Player::setFarsightGuid(uint64_t farsightGuid) { write(playerData()->farsight_guid, farsightGuid); }
 
 #if VERSION_STRING > Classic
+uint64_t Player::getKnownTitles(uint8_t index) const { return playerData()->field_known_titles[index]; }
+void Player::setKnownTitles(uint8_t index, uint64_t title) { write(playerData()->field_known_titles[index], title); }
+#endif
+
+#if VERSION_STRING > Classic
 uint32_t Player::getChosenTitle() const { return playerData()->chosen_title; }
 void Player::setChosenTitle(uint32_t title) { write(playerData()->chosen_title, title); }
 #endif

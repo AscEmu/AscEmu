@@ -207,6 +207,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_COMBAT_RATING_COUNT 24
 #define WOWPLAYER_ARENA_TEAM_SLOTS 3
 #define WOWPLAYER_DAILY_QUESTS_COUNT 25
+#define WOWPLAYER_KNOWN_TITLES_SIZE 1
 
 struct WoWPlayer_Quest
 {
@@ -258,7 +259,7 @@ struct WoWPlayer : WoWUnit
     uint64_t key_ring_slot[WOWPLAYER_KEYRING_SLOT_COUNT];
     uint64_t vanity_pet_slot[WOWPLAYER_VANITY_PET_SLOT_COUNT];
     uint64_t farsight_guid;
-    uint64_t known_titles;
+    uint64_t field_known_titles[WOWPLAYER_KNOWN_TITLES_SIZE];
     uint32_t xp;
     uint32_t next_level_xp;
     uint32_t skill_info[WOWPLAYER_SKILL_INFO_COUNT];
@@ -325,6 +326,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_RUNE_REGEN_COUNT 4
 #define WOWPLAYER_NO_REAGENT_COST_COUNT 3
 #define WOWPLAYER_GLYPH_SLOT_COUNT 6
+#define WOWPLAYER_KNOWN_TITLES_SIZE 3
 
 struct WoWPlayer_Quest
 {
@@ -375,9 +377,7 @@ struct WoWPlayer : WoWUnit
     uint64_t key_ring_slot[WOWPLAYER_KEYRING_SLOT_COUNT];
     uint64_t currencytoken_slot[WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT];
     uint64_t farsight_guid;
-    uint64_t field_known_titles;
-    uint64_t field_known_titles1;
-    uint64_t field_known_titles2;
+    uint64_t field_known_titles[WOWPLAYER_KNOWN_TITLES_SIZE];
     uint64_t field_known_currencies;
     uint32_t xp;
     uint32_t next_level_xp;
@@ -449,6 +449,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT 32
 #define WOWPLAYER_NO_REAGENT_COST_COUNT 3
 #define WOWPLAYER_GLYPH_SLOT_COUNT 9
+#define WOWPLAYER_KNOWN_TITLES_SIZE 4
 
 struct WoWPlayer_Quest
 {
@@ -498,10 +499,7 @@ struct WoWPlayer : WoWUnit
     uint64_t bank_bag_slot[WOWPLAYER_BANK_BAG_SLOT_COUNT];
     uint64_t vendor_buy_back_slot[WOWPLAYER_BUY_BACK_COUNT];
     uint64_t farsight_guid;
-    uint64_t known_titles;
-    uint64_t known_titles1;
-    uint64_t known_titles2;
-    uint64_t known_titles3;
+    uint64_t field_known_titles[WOWPLAYER_KNOWN_TITLES_SIZE];
     uint32_t xp;
     uint32_t next_level_xp;
     uint32_t skill_line[64];
@@ -584,6 +582,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_BANK_BAG_SLOT_COUNT 7
 #define WOWPLAYER_KEYRING_SLOT_COUNT 32
 #define WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT 32
+#define WOWPLAYER_KNOWN_TITLES_SIZE 5
 
 struct WoWPlayer_Quest
 {
@@ -638,11 +637,7 @@ struct WoWPlayer : WoWUnit
     uint64_t bank_bag_slot[WOWPLAYER_BANK_BAG_SLOT_COUNT];
     uint64_t vendor_buy_back_slot[WOWPLAYER_BUY_BACK_COUNT];
     uint64_t farsight_guid;
-    uint64_t known_titles;
-    uint64_t known_titles1;
-    uint64_t known_titles2;
-    uint64_t known_titles3;
-    uint64_t known_titles4;
+    uint64_t field_known_titles[WOWPLAYER_KNOWN_TITLES_SIZE];
     uint64_t field_coinage;
     uint32_t xp;
     uint32_t next_level_xp;

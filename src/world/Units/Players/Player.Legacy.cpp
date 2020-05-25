@@ -2207,13 +2207,13 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 #else
         << uint32(0) << ","
 #endif
-        << getUInt64Value(PLAYER_FIELD_KNOWN_TITLES) << ","
+        << getKnownTitles(0) << ","
 #if VERSION_STRING < WotLK
         << uint32(0) << ","
         << uint32(0) << ","
 #else
-        << getUInt64Value(PLAYER_FIELD_KNOWN_TITLES1) << ","
-        << getUInt64Value(PLAYER_FIELD_KNOWN_TITLES2) << ","
+        << getKnownTitles(1) << ","
+        << getKnownTitles(2) << ","
 #endif
         << static_cast<uint32_t>(getCoinage()) << ",";
 
@@ -2777,7 +2777,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 #else
     get_next_field; //skip selected_pvp_titles
 #endif
-    setUInt64Value(PLAYER_FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
+    setKnownTitles(0, get_next_field.GetUInt64());
 
     get_next_field; //skip available_pvp_titles1
     get_next_field; //skip available_pvp_titles2
@@ -3494,10 +3494,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 #if VERSION_STRING > Classic
     setChosenTitle(get_next_field.GetUInt32());
 #endif
-    setUInt64Value(PLAYER_FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
+    setKnownTitles(0, get_next_field.GetUInt64());
 #if VERSION_STRING > TBC
-    setUInt64Value(PLAYER_FIELD_KNOWN_TITLES1, get_next_field.GetUInt64());
-    setUInt64Value(PLAYER_FIELD_KNOWN_TITLES2, get_next_field.GetUInt64());
+    setKnownTitles(1, get_next_field.GetUInt64());
+    setKnownTitles(2, get_next_field.GetUInt64());
 #else
     get_next_field.GetUInt32();
     get_next_field.GetUInt32();
@@ -10987,14 +10987,16 @@ void Player::LoadFieldsFromString(const char* string, uint16 /*firstField*/, uin
 
 void Player::SetKnownTitle(RankTitles title, bool set)
 {
-    if (!HasTitle(title) ^ set)
+    if (!set && !HasTitle(title))
         return;
 
-    uint64 current = getUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1));
+    const uint8_t index = title / 32;
+    const uint64_t current = getKnownTitles(index);
+
     if (set)
-        setUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1), current | uint64(1) << (title % 64));
+        setKnownTitles(index, current | 1 << (title % 32));
     else
-        setUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1), current & ~uint64(1) << (title % 64));
+        setKnownTitles(index, current & ~1 << (title % 32));
 
     m_session->SendPacket(SmsgTitleEarned(title, set ? 1 : 0).serialise().get());
 }
