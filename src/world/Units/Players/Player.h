@@ -653,6 +653,9 @@ public:
     void setAmmoId(uint32_t id);
 #endif
 
+    uint32_t getBuybackPriceSlot(uint8_t slot) const;
+    void setBuybackPriceSlot(uint8_t slot, uint32_t price);
+
     // playerfieldbytes2 start
     uint32_t getPlayerFieldBytes2() const;
     void setPlayerFieldBytes2(uint32_t bytes);

@@ -1621,7 +1621,7 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
         }
 
         // Check for gold
-        uint32_t cost = _player->getUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_PRICE_1 + srlPacket.buybackSlot));
+        uint32_t cost = _player->getBuybackPriceSlot(srlPacket.buybackSlot);
         if (!_player->hasEnoughCoinage(cost))
         {
             sendBuyFailed(srlPacket.buybackSlot, itemid, 2);
