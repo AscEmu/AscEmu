@@ -669,6 +669,16 @@ public:
     void setFieldKills(uint32_t kills);
 #endif
 
+#if VERSION_STRING > Classic
+#if VERSION_STRING < Cata
+    uint32_t getContributionToday() const;
+    void setContributionToday(uint32_t contribution);
+
+    uint32_t getContributionYesterday() const;
+    void setContributionYesterday(uint32_t contribution);
+#endif
+#endif
+
     uint32_t getLifetimeHonorableKills() const;
     void setLifetimeHonorableKills(uint32_t kills);
 

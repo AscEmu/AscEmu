@@ -567,6 +567,16 @@ uint32_t Player::getFieldKills() const { return playerData()->field_kills; }
 void Player::setFieldKills(uint32_t kills) { write(playerData()->field_kills, kills); }
 #endif
 
+#if VERSION_STRING > Classic
+#if VERSION_STRING < Cata
+    uint32_t Player::getContributionToday() const { return playerData()->field_contribution_today; }
+    void Player::setContributionToday(uint32_t contribution) { write(playerData()->field_contribution_today, contribution); }
+
+    uint32_t Player::getContributionYesterday() const { return playerData()->field_contribution_yesterday; }
+    void Player::setContributionYesterday(uint32_t contribution) { write(playerData()->field_contribution_yesterday, contribution); }
+#endif
+#endif
+
 uint32_t Player::getLifetimeHonorableKills() const { return playerData()->field_lifetime_honorable_kills; }
 void Player::setLifetimeHonorableKills(uint32_t kills) { write(playerData()->field_lifetime_honorable_kills, kills); }
 
