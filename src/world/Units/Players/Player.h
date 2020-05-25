@@ -659,6 +659,11 @@ public:
     uint32_t getBuybackTimestampSlot(uint8_t slot) const;
     void setBuybackTimestampSlot(uint8_t slot, uint32_t timestamp);
 
+#if VERSION_STRING > Classic
+    uint32_t getFieldKills() const;
+    void setFieldKills(uint32_t kills);
+#endif
+
     uint32_t getLifetimeHonorableKills() const;
     void setLifetimeHonorableKills(uint32_t kills);
 

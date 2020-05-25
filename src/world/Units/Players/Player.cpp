@@ -557,6 +557,11 @@ void Player::setBuybackPriceSlot(uint8_t slot, uint32_t price) { write(playerDat
 uint32_t Player::getBuybackTimestampSlot(uint8_t slot) const { return playerData()->field_buy_back_timestamp[slot]; }
 void Player::setBuybackTimestampSlot(uint8_t slot, uint32_t timestamp) { write(playerData()->field_buy_back_timestamp[slot], timestamp); }
 
+#if VERSION_STRING > Classic
+uint32_t Player::getFieldKills() const { return playerData()->field_kills; }
+void Player::setFieldKills(uint32_t kills) { write(playerData()->field_kills, kills); }
+#endif
+
 uint32_t Player::getLifetimeHonorableKills() const { return playerData()->field_lifetime_honorable_kills; }
 void Player::setLifetimeHonorableKills(uint32_t kills) { write(playerData()->field_lifetime_honorable_kills, kills); }
 

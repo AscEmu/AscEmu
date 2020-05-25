@@ -8460,7 +8460,7 @@ void Player::AddHonor(uint32 honorPoints, bool sendUpdate)
 void Player::UpdateHonor()
 {
 #if VERSION_STRING != Classic
-    this->setUInt32Value(PLAYER_FIELD_KILLS, uint16(this->m_killsToday) | (this->m_killsYesterday << 16));
+    this->setFieldKills(uint32_t(this->m_killsToday | (this->m_killsYesterday << 16)));
 #if VERSION_STRING < Cata
     this->setUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, this->m_honorToday);
     this->setUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, this->m_honorYesterday);

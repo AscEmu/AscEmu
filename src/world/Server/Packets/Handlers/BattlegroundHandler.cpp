@@ -53,7 +53,7 @@ void WorldSession::handleInspectHonorStatsOpcode(WorldPacket& recvPacket)
     uint32_t yesterdayContrib = 0;
 
 #if VERSION_STRING != Classic
-    kills = player->getUInt32Value(PLAYER_FIELD_KILLS);
+    kills = player->getFieldKills();
 #if VERSION_STRING < Cata
     todayContrib = player->getUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION);
     yesterdayContrib = player->getUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION);
