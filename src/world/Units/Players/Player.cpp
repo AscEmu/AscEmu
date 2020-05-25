@@ -586,6 +586,10 @@ void Player::setArenaTeamMemberRank(uint8_t teamSlot, uint32_t rank) { write(pla
 
 #if VERSION_STRING > Classic
 #if VERSION_STRING < Cata
+uint32_t Player::getHonorCurrency() const { return playerData()->field_honor_currency; }
+void Player::setHonorCurrency(uint32_t amount) { write(playerData()->field_honor_currency, amount); }
+void Player::modHonorCurrency(int32_t value) { setArenaCurrency(getArenaCurrency() + value); }
+
 uint32_t Player::getArenaCurrency() const { return playerData()->field_arena_currency; }
 void Player::setArenaCurrency(uint32_t amount) { write(playerData()->field_arena_currency, amount); }
 void Player::modArenaCurrency(int32_t value) { setArenaCurrency(getArenaCurrency() + value); }

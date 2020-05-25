@@ -688,6 +688,10 @@ public:
 
 #if VERSION_STRING > Classic
 #if VERSION_STRING < Cata
+    uint32_t getHonorCurrency() const;
+    void setHonorCurrency(uint32_t amount);
+    void modHonorCurrency(int32_t value);
+
     uint32_t getArenaCurrency() const;
     void setArenaCurrency(uint32_t amount);
     void modArenaCurrency(int32_t value);
@@ -1939,35 +1943,6 @@ public:
             modUInt32Value(PLAYER_CHARACTER_POINTS2, amt);
 #else
             if (amt == 0) { return; }
-#endif
-        }
-
-        void SetHonorCurrency(uint32 value)
-        {
-#if VERSION_STRING >= Cata
-            if (value == 0) { return; }
-#elif VERSION_STRING == Classic
-#else
-            setUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, value);
-#endif
-        }
-        void ModHonorCurrency(uint32 value)
-        {
-#if VERSION_STRING >= Cata
-            if (value == 0) { return; }
-#elif VERSION_STRING == Classic
-#else
-            modUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, value);
-#endif
-        }
-        uint32 GetHonorCurrency()
-        {
-#if VERSION_STRING >= Cata
-            return 0;
-#elif VERSION_STRING == Classic
-            return 0;
-#else
-            return getUInt32Value(PLAYER_FIELD_HONOR_CURRENCY);
 #endif
         }
 

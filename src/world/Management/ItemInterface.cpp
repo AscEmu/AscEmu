@@ -2598,14 +2598,14 @@ void ItemInterface::BuyItem(ItemProperties const* item, uint32 total_amount, Cre
                 m_pOwner->getItemInterface()->RemoveItemAmt(item_extended_cost->item[i], total_amount * item_extended_cost->count[i]);
         }
 
-        if (m_pOwner->GetHonorCurrency() >= (item_extended_cost->honor_points * total_amount))
+#if VERSION_STRING > Classic
+#if VERSION_STRING < Cata
+        if (m_pOwner->getHonorCurrency() >= (item_extended_cost->honor_points * total_amount))
         {
-            m_pOwner->ModHonorCurrency(-int32((item_extended_cost->honor_points * total_amount)));
+            m_pOwner->modHonorCurrency(-int32((item_extended_cost->honor_points * total_amount)));
             m_pOwner->m_honorPoints -= int32(item_extended_cost->honor_points * total_amount);
         }
 
-#if VERSION_STRING > Classic
-#if VERSION_STRING < Cata
         if (m_pOwner->getArenaCurrency() >= item_extended_cost->arena_points * total_amount)
         {
             m_pOwner->modArenaCurrency(-int32(item_extended_cost->arena_points * total_amount));
@@ -2630,11 +2630,11 @@ int8 ItemInterface::CanAffordItem(ItemProperties const* item, uint32 amount, Cre
             }
         }
 
-        if (m_pOwner->GetHonorCurrency() < (item_extended_cost->honor_points * amount))
-            return INV_ERR_NOT_ENOUGH_HONOR_POINTS;
-
 #if VERSION_STRING > Classic
 #if VERSION_STRING < Cata
+        if (m_pOwner->getHonorCurrency() < (item_extended_cost->honor_points * amount))
+            return INV_ERR_NOT_ENOUGH_HONOR_POINTS;
+
         if (m_pOwner->getArenaCurrency() < item_extended_cost->arena_points * amount)
             return INV_ERR_NOT_ENOUGH_ARENA_POINTS;
 #endif

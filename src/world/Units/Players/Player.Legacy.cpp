@@ -8464,10 +8464,11 @@ void Player::UpdateHonor()
 #if VERSION_STRING < Cata
     this->setUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, this->m_honorToday);
     this->setUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, this->m_honorYesterday);
+
+    this->setHonorCurrency(this->m_honorPoints);
 #endif
 #endif
     this->setLifetimeHonorableKills(this->m_killsLifetime);
-    this->SetHonorCurrency(this->m_honorPoints);
 
     this->UpdateKnownCurrencies(43308, true); //Honor Points
 }

@@ -45,7 +45,14 @@ void WorldSession::handleInspectHonorStatsOpcode(WorldPacket& recvPacket)
     if (player == nullptr)
         return;
 
-    const uint8_t honorCurrency = static_cast<uint8_t>(player->GetHonorCurrency());
+    uint8_t honorCurrency = 0;
+
+#if VERSION_STRING > Classic
+#if VERSION_STRING < Cata
+    honorCurrency = static_cast<uint8_t>(player->getHonorCurrency());
+#endif
+#endif
+
     const uint32_t lifetimeKills = player->getLifetimeHonorableKills();
 
     uint32_t kills = 0;
