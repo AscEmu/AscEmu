@@ -362,9 +362,9 @@ void WorldSession::handleInspectArenaStatsOpcode(WorldPacket& recvPacket)
     std::vector<ArenaTeamsList> arenaTeamList;
     ArenaTeamsList tempList{};
 
-    for (uint8_t offset = 0; offset < 3; ++offset)
+    for (uint8_t offset = 0; offset < NUM_ARENA_TEAM_TYPES; ++offset)
     {
-        const uint32_t teamId = player->getUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (offset * 7));
+        const uint32_t teamId = player->getArenaTeamId(offset);
         if (teamId > 0)
         {
             const auto arenaTeam = sObjectMgr.GetArenaTeamById(teamId);

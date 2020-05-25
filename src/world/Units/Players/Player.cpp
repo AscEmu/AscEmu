@@ -558,6 +558,16 @@ void Player::setCombatRating(uint8_t combatRating, uint32_t value) { write(playe
 void Player::modCombatRating(uint8_t combatRating, int32_t value) { setCombatRating(combatRating, getCombatRating(combatRating) + value); }
 
 #if VERSION_STRING > Classic
+    // field_arena_team_info start
+uint32_t Player::getArenaTeamId(uint8_t teamSlot) const { return playerData()->field_arena_team_info[teamSlot].team_id; }
+void Player::setArenaTeamId(uint8_t teamSlot, uint32_t teamId) { write(playerData()->field_arena_team_info[teamSlot].team_id, teamId); }
+
+uint32_t Player::getArenaTeamMemberRank(uint8_t teamSlot) const { return playerData()->field_arena_team_info[teamSlot].member_rank; }
+void Player::setArenaTeamMemberRank(uint8_t teamSlot, uint32_t rank) { write(playerData()->field_arena_team_info[teamSlot].member_rank, rank); }
+    // field_arena_team_info end
+#endif
+
+#if VERSION_STRING > Classic
 #if VERSION_STRING < Cata
 uint32_t Player::getArenaCurrency() const { return playerData()->field_arena_currency; }
 void Player::setArenaCurrency(uint32_t amount) { write(playerData()->field_arena_currency, amount); }

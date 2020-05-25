@@ -156,9 +156,8 @@ bool ArenaTeam::AddMember(PlayerInfo* info)
 #if VERSION_STRING != Classic
     if (player)
     {
-        const uint16_t baseField = (m_type * 7) + PLAYER_FIELD_ARENA_TEAM_INFO_1_1;
-        player->setUInt32Value(baseField, m_id);
-        player->setUInt32Value(baseField + 1, m_leader);
+        player->setArenaTeamId(m_type, m_id);
+        player->setArenaTeamMemberRank(m_type, 1);
 
         player->m_arenaTeams[m_type] = this;
 
@@ -185,7 +184,7 @@ bool ArenaTeam::RemoveMember(PlayerInfo* info)
 #if VERSION_STRING != Classic
             if (info->m_loggedInPlayer)
             {
-                info->m_loggedInPlayer->setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (m_type * 7), 0);
+                info->m_loggedInPlayer->setArenaTeamId(m_type, 0);
                 info->m_loggedInPlayer->m_arenaTeams[m_type] = nullptr;
             }
 #endif
@@ -305,12 +304,12 @@ void ArenaTeam::SetLeader(PlayerInfo* info)
         if (m_members[i].Info == info)        /* new leader */
         {
             if (m_members[i].Info->m_loggedInPlayer)
-                m_members[i].Info->m_loggedInPlayer->setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (m_type * 7) + 1, 0);
+                m_members[i].Info->m_loggedInPlayer->setArenaTeamMemberRank(m_type, 0);
         }
         else if (m_members[i].Info->guid == old_leader)
         {
             if (m_members[i].Info->m_loggedInPlayer)
-                m_members[i].Info->m_loggedInPlayer->setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (m_type * 7) + 1, 1);
+                m_members[i].Info->m_loggedInPlayer->setArenaTeamMemberRank(m_type, 1);
         }
 #endif
     }

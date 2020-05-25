@@ -2893,17 +2893,19 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
     for (uint32 z = 0; z < NUM_CHARTER_TYPES; ++z)
         m_charters[z] = sObjectMgr.GetCharterByGuid(getGuid(), (CharterTypes)z);
+
     for (uint16 z = 0; z < NUM_ARENA_TEAM_TYPES; ++z)
     {
         m_arenaTeams[z] = sObjectMgr.GetArenaTeamByGuid(getGuidLow(), z);
         if (m_arenaTeams[z] != nullptr)
         {
 #if VERSION_STRING != Classic
-            setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7), m_arenaTeams[z]->m_id);
+            setArenaTeamId(z, m_arenaTeams[z]->m_id);
+
             if (m_arenaTeams[z]->m_leader == getGuidLow())
-                setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7) + 1, 0);
+                setArenaTeamMemberRank(z, 0);
             else
-                setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7) + 1, 1);
+                setArenaTeamMemberRank(z, 1);
 #endif
         }
     }
@@ -3616,17 +3618,19 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
     for (uint32 z = 0; z < NUM_CHARTER_TYPES; ++z)
         m_charters[z] = sObjectMgr.GetCharterByGuid(getGuid(), (CharterTypes)z);
+
     for (uint16 z = 0; z < NUM_ARENA_TEAM_TYPES; ++z)
     {
         m_arenaTeams[z] = sObjectMgr.GetArenaTeamByGuid(getGuidLow(), z);
         if (m_arenaTeams[z] != nullptr)
         {
 #if VERSION_STRING != Classic
-            setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7), m_arenaTeams[z]->m_id);
+            setArenaTeamId(z, m_arenaTeams[z]->m_id);
+
             if (m_arenaTeams[z]->m_leader == getGuidLow())
-                setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7) + 1, 0);
+                setArenaTeamMemberRank(z, 0);
             else
-                setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7) + 1, 1);
+                setArenaTeamMemberRank(z, 1);
 #endif
         }
     }

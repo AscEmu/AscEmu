@@ -660,6 +660,16 @@ public:
     void modCombatRating(uint8_t combatRating, int32_t value);
 
 #if VERSION_STRING > Classic
+    // field_arena_team_info start
+    uint32_t getArenaTeamId(uint8_t teamSlot) const;
+    void setArenaTeamId(uint8_t teamSlot, uint32_t teamId);
+
+    uint32_t getArenaTeamMemberRank(uint8_t teamSlot) const;
+    void setArenaTeamMemberRank(uint8_t teamSlot, uint32_t rank);
+    // field_arena_team_info end
+#endif
+
+#if VERSION_STRING > Classic
 #if VERSION_STRING < Cata
     uint32_t getArenaCurrency() const;
     void setArenaCurrency(uint32_t amount);

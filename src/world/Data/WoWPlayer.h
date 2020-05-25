@@ -205,7 +205,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_EXPLORED_ZONES_COUNT 128
 #define WOWPLAYER_BUY_BACK_COUNT 12
 #define WOWPLAYER_COMBAT_RATING_COUNT 24
-#define WOWPLAYER_ARENA_TEAM_INFO_COUNT 18
+#define WOWPLAYER_ARENA_TEAM_SLOTS 3
 #define WOWPLAYER_DAILY_QUESTS_COUNT 25
 
 struct WoWPlayer_Quest
@@ -222,6 +222,16 @@ struct WoWPlayer_VisibleItem
     uint32_t visible_items[WOWPLAYER_VISIBLE_ITEM_0_COUNT];
     uint32_t properties;
     uint32_t padding;
+};
+
+struct WoWPlayer_ArenaTeamInfo
+{
+    uint32_t team_id;
+    uint32_t member_rank;
+    uint32_t games_week;
+    uint32_t games_season;
+    uint32_t wins_season;
+    uint32_t personal_rating;
 };
 
 struct WoWPlayer : WoWUnit
@@ -288,7 +298,7 @@ struct WoWPlayer : WoWUnit
     player_field_bytes_2_union player_field_bytes_2;
     uint32_t field_watched_faction_idx;
     uint32_t field_combat_rating[WOWPLAYER_COMBAT_RATING_COUNT];
-    uint32_t field_arena_team_info[WOWPLAYER_ARENA_TEAM_INFO_COUNT];
+    WoWPlayer_ArenaTeamInfo field_arena_team_info[WOWPLAYER_ARENA_TEAM_SLOTS];
     uint32_t field_honor_currency;
     uint32_t field_arena_currency;
     float field_mod_mana_regen;
@@ -310,7 +320,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_SPELL_SCHOOL_COUNT 7
 #define WOWPLAYER_BUY_BACK_COUNT 12
 #define WOWPLAYER_COMBAT_RATING_COUNT 25
-#define WOWPLAYER_ARENA_TEAM_INFO_COUNT 21
+#define WOWPLAYER_ARENA_TEAM_SLOTS 3
 #define WOWPLAYER_DAILY_QUESTS_COUNT 25
 #define WOWPLAYER_RUNE_REGEN_COUNT 4
 #define WOWPLAYER_NO_REAGENT_COST_COUNT 3
@@ -328,6 +338,17 @@ struct WoWPlayer_VisibleItem
 {
     uint32_t entry;
     uint32_t enchantment;
+};
+
+struct WoWPlayer_ArenaTeamInfo
+{
+    uint32_t team_id;
+    uint32_t type;
+    uint32_t member_rank;
+    uint32_t games_week;
+    uint32_t games_season;
+    uint32_t wins_season;
+    uint32_t personal_rating;
 };
 
 struct WoWPlayer : WoWUnit
@@ -400,7 +421,7 @@ struct WoWPlayer : WoWUnit
     player_field_bytes_2_union player_field_bytes_2;
     uint32_t field_watched_faction_idx;
     uint32_t field_combat_rating[WOWPLAYER_COMBAT_RATING_COUNT];
-    uint32_t field_arena_team_info[WOWPLAYER_ARENA_TEAM_INFO_COUNT];
+    WoWPlayer_ArenaTeamInfo field_arena_team_info[WOWPLAYER_ARENA_TEAM_SLOTS];
     uint32_t field_honor_currency;
     uint32_t field_arena_currency;
     uint32_t field_max_level;
@@ -416,6 +437,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_EXPLORED_ZONES_COUNT 156
 #define WOWPLAYER_SPELL_SCHOOL_COUNT 7
 #define WOWPLAYER_BUY_BACK_COUNT 12
+#define WOWPLAYER_ARENA_TEAM_SLOTS 3
 #define WOWPLAYER_DAILY_QUESTS_COUNT 25
 #define WOWPLAYER_QUEST_COUNT 50
 #define WOWPLAYER_VISIBLE_ITEM_COUNT 19
@@ -440,6 +462,17 @@ struct WoWPlayer_VisibleItem
 {
     uint32_t entry;
     uint32_t enchantment;
+};
+
+struct WoWPlayer_ArenaTeamInfo
+{
+    uint32_t team_id;
+    uint32_t type;
+    uint32_t member_rank;
+    uint32_t games_week;
+    uint32_t games_season;
+    uint32_t wins_season;
+    uint32_t personal_rating;
 };
 
 struct WoWPlayer : WoWUnit
@@ -516,7 +549,7 @@ struct WoWPlayer : WoWUnit
     player_field_bytes_2_union player_field_bytes_2;
     uint32_t field_watched_faction_idx;
     uint32_t field_combat_rating[26];
-    uint32_t field_arena_team_info[21];
+    WoWPlayer_ArenaTeamInfo field_arena_team_info[WOWPLAYER_ARENA_TEAM_SLOTS];
     uint32_t battleground_rating;
     uint32_t field_max_level;
     uint32_t field_daily_quests[WOWPLAYER_DAILY_QUESTS_COUNT];
@@ -541,6 +574,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_EXPLORED_ZONES_COUNT 200
 #define WOWPLAYER_SPELL_SCHOOL_COUNT 7
 #define WOWPLAYER_BUY_BACK_COUNT 12
+#define WOWPLAYER_ARENA_TEAM_SLOTS 3
 #define WOWPLAYER_DAILY_QUESTS_COUNT 25
 #define WOWPLAYER_QUEST_COUNT 150
 #define WOWPLAYER_VISIBLE_ITEM_COUNT 19
@@ -563,6 +597,19 @@ struct WoWPlayer_VisibleItem
 {
     uint32_t entry;
     uint32_t enchantment;
+};
+
+//\todo: guessed structure
+struct WoWPlayer_ArenaTeamInfo
+{
+    uint32_t team_id;
+    uint32_t type;
+    uint32_t member_rank;
+    uint32_t games_week;
+    uint32_t games_season;
+    uint32_t wins_season;
+    uint32_t personal_rating;
+    uint32_t unk;
 };
 
 struct WoWPlayer : WoWUnit
@@ -651,7 +698,7 @@ struct WoWPlayer : WoWUnit
     uint32_t field_lifetime_honorable_kills;
     uint32_t field_watched_faction_idx;
     uint32_t field_combat_rating[27];
-    uint32_t field_arena_team_info[24];
+    WoWPlayer_ArenaTeamInfo field_arena_team_info[WOWPLAYER_ARENA_TEAM_SLOTS];
     uint32_t field_max_level;
     float rune_regen[4];
     uint32_t no_reagent_cost[4];
