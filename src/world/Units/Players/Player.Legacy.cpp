@@ -2221,7 +2221,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         ss << (uint32)0 << ","; // make sure ammo slot is 0 for these classes, otherwise it can mess up wand shoot
     else
 #if VERSION_STRING < Cata
-        ss << m_uint32Values[PLAYER_AMMO_ID] << ",";
+        ss << getAmmoId() << ",";
 #else
         ss << (uint32)0 << ",";
 #endif
@@ -2785,7 +2785,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     setCoinage(get_next_field.GetUInt32());
 
-    m_uint32Values[PLAYER_AMMO_ID] = get_next_field.GetUInt32();
+    setAmmoId(get_next_field.GetUInt32());
     m_uint32Values[PLAYER_CHARACTER_POINTS2] = get_next_field.GetUInt32();
 
     load_health = get_next_field.GetUInt32();
@@ -3504,7 +3504,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 #endif
     setCoinage(get_next_field.GetUInt32());
 #if VERSION_STRING < Cata
-    m_uint32Values[PLAYER_AMMO_ID] = get_next_field.GetUInt32();
+    setAmmoId(get_next_field.GetUInt32());
     m_uint32Values[PLAYER_CHARACTER_POINTS2] = get_next_field.GetUInt32();
 #else
     get_next_field.GetUInt32();
