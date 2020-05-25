@@ -656,6 +656,9 @@ public:
     uint32_t getBuybackPriceSlot(uint8_t slot) const;
     void setBuybackPriceSlot(uint8_t slot, uint32_t price);
 
+    uint32_t getBuybackTimestampSlot(uint8_t slot) const;
+    void setBuybackTimestampSlot(uint8_t slot, uint32_t timestamp);
+
     // playerfieldbytes2 start
     uint32_t getPlayerFieldBytes2() const;
     void setPlayerFieldBytes2(uint32_t bytes);
