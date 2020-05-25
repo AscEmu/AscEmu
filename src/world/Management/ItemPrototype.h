@@ -28,7 +28,6 @@ class Spell;
 
 #define MAX_INVENTORY_SLOT 150
 #define MAX_BUYBACK_SLOT 12
-//#define MAX_BUYBACK_SLOT ((PLAYER_FIELD_KEYRING_SLOT_1 - PLAYER_FIELD_VENDORBUYBACK_SLOT_1) >> 1)
 
 #define ITEM_NO_SLOT_AVAILABLE -1   /// works for all kind of slots now
 #define INVENTORY_SLOT_NOT_SET -1

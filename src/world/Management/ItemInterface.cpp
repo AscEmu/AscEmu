@@ -2880,7 +2880,7 @@ void ItemInterface::EmptyBuyBack()
                 m_pBuyBack[j] = nullptr;
             }
 
-            m_pOwner->setUInt64Value(static_cast<uint16_t>(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + (2 * j)), 0);
+            m_pOwner->setVendorBuybackSlot(j, 0);
             m_pOwner->setUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_PRICE_1 + j), 0);
             m_pOwner->setUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + j), 0);
             m_pBuyBack[j] = nullptr;
@@ -2890,9 +2890,10 @@ void ItemInterface::EmptyBuyBack()
     }
 }
 
+//\note: first set buyback item gets removed, new one gets added on last position.
 void ItemInterface::AddBuyBackItem(Item* it, uint32 price)
 {
-    if ((m_pBuyBack[MAX_BUYBACK_SLOT - 1] != nullptr) && (m_pOwner->getUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + (MAX_BUYBACK_SLOT - 1) * 2) != 0))
+    if ((m_pBuyBack[MAX_BUYBACK_SLOT - 1] != nullptr) && (m_pOwner->getVendorBuybackSlot(MAX_BUYBACK_SLOT - 1) != 0))
     {
         if (m_pBuyBack[0] != nullptr)
         {
@@ -2918,32 +2919,31 @@ void ItemInterface::AddBuyBackItem(Item* it, uint32 price)
 
         for (uint8 j = 0; j < MAX_BUYBACK_SLOT - 1; ++j)
         {
-            //SetUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + (2*j),buyback[j+1]->getGuid());
-            m_pOwner->setUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + (2 * j), m_pOwner->getUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + ((j + 1) * 2)));
+            m_pOwner->setVendorBuybackSlot(j, m_pOwner->getVendorBuybackSlot(j + 1));
             m_pOwner->setUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + j, m_pOwner->getUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + j + 1));
             m_pOwner->setUInt32Value(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + j, m_pOwner->getUInt32Value(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + j + 1));
             m_pBuyBack[j] = m_pBuyBack[j + 1];
         }
         m_pBuyBack[MAX_BUYBACK_SLOT - 1] = it;
 
-        m_pOwner->setUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + (2 * (MAX_BUYBACK_SLOT - 1)), m_pBuyBack[MAX_BUYBACK_SLOT - 1]->getGuid());
+        m_pOwner->setVendorBuybackSlot(MAX_BUYBACK_SLOT - 1, m_pBuyBack[MAX_BUYBACK_SLOT - 1]->getGuid());
         m_pOwner->setUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + MAX_BUYBACK_SLOT - 1, price);
         m_pOwner->setUInt32Value(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + MAX_BUYBACK_SLOT - 1, (uint32)UNIXTIME);
-        return;
     }
-
-    for (uint8 i = 0; i <= (MAX_BUYBACK_SLOT - 1) * 2; i += 2) //at least 1 slot is empty
+    else
     {
-        if ((m_pOwner->getUInt32Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + i) == 0) || (m_pBuyBack[i / 2] == nullptr))
+        for (uint8 i = 0; i < MAX_BUYBACK_SLOT - 1; ++i) //at least 1 slot is empty
         {
-            LOG_DETAIL("setting buybackslot %u", i / 2);
-            m_pBuyBack[i >> 1] = it;
+            if (m_pOwner->getVendorBuybackSlot(i) == 0 || m_pBuyBack[i] == nullptr)
+            {
+                LOG_DETAIL("setting buybackslot %u", i / 2);
+                m_pBuyBack[i] = it;
 
-            m_pOwner->setUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + i, m_pBuyBack[i >> 1]->getGuid());
-            //SetUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + i,it->getGuid());
-            m_pOwner->setUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + (i >> 1), price);
-            m_pOwner->setUInt32Value(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + (i >> 1), (uint32)UNIXTIME);
-            return;
+                m_pOwner->setVendorBuybackSlot(i, m_pBuyBack[i]->getGuid());
+                m_pOwner->setUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + i, price);
+                m_pOwner->setUInt32Value(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + i, (uint32)UNIXTIME);
+                return;
+            }
         }
     }
 }
@@ -2953,13 +2953,13 @@ void ItemInterface::RemoveBuyBackItem(uint32 index)
     uint32_t j = 0;
     for (j = index; j < MAX_BUYBACK_SLOT - 1; ++j)
     {
-        if (m_pOwner->getUInt64Value(static_cast<uint16_t>(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + (j * 2))) != 0)
+        if (m_pOwner->getVendorBuybackSlot(j) != 0)
         {
-            m_pOwner->setUInt64Value(static_cast<uint16_t>(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + (2 * j)), m_pOwner->getUInt64Value(static_cast<uint16_t>(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + ((j + 1) * 2))));
+            m_pOwner->setVendorBuybackSlot(j, m_pOwner->getVendorBuybackSlot(j + 1));
             m_pOwner->setUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_PRICE_1 + j), m_pOwner->getUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_PRICE_1 + j + 1)));
             m_pOwner->setUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + j), m_pOwner->getUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + j + 1)));
 
-            if (m_pBuyBack[j + 1] != nullptr && (m_pOwner->getUInt64Value(static_cast<uint16_t>(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + ((j + 1) * 2))) != 0))
+            if (m_pBuyBack[j + 1] != nullptr && m_pOwner->getVendorBuybackSlot(j + 1) != 0)
             {
                 m_pBuyBack[j] = m_pBuyBack[j + 1];
             }
@@ -2975,7 +2975,7 @@ void ItemInterface::RemoveBuyBackItem(uint32 index)
     }
 
     j = 11;
-    m_pOwner->setUInt64Value(static_cast<uint16_t>(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + (2 * j)), m_pOwner->getUInt64Value(static_cast<uint16_t>(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + ((j + 1) * 2))));
+    m_pOwner->setVendorBuybackSlot(j, m_pOwner->getVendorBuybackSlot(j + 1));
     m_pOwner->setUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_PRICE_1 + j), m_pOwner->getUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_PRICE_1 + j + 1)));
     m_pOwner->setUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + j), m_pOwner->getUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + j + 1)));
 

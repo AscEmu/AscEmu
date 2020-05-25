@@ -515,6 +515,9 @@ public:
     void setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime);
     //QuestLog end
 
+    uint64_t getVendorBuybackSlot(uint8_t slot) const;
+    void setVendorBuybackSlot(uint8_t slot, uint64_t guid);
+
     uint64_t getFarsightGuid() const;
     void setFarsightGuid(uint64_t farsightGuid);
 
