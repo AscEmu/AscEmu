@@ -46,7 +46,7 @@ void WorldSession::handleInspectHonorStatsOpcode(WorldPacket& recvPacket)
         return;
 
     const uint8_t honorCurrency = static_cast<uint8_t>(player->GetHonorCurrency());
-    const uint32_t lifetimeKills = player->getUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS);
+    const uint32_t lifetimeKills = player->getLifetimeHonorableKills();
 
     uint32_t kills = 0;
     uint32_t todayContrib = 0;

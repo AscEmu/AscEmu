@@ -659,6 +659,9 @@ public:
     uint32_t getBuybackTimestampSlot(uint8_t slot) const;
     void setBuybackTimestampSlot(uint8_t slot, uint32_t timestamp);
 
+    uint32_t getLifetimeHonorableKills() const;
+    void setLifetimeHonorableKills(uint32_t kills);
+
     // playerfieldbytes2 start
     uint32_t getPlayerFieldBytes2() const;
     void setPlayerFieldBytes2(uint32_t bytes);
