@@ -10943,7 +10943,7 @@ void Player::UpdateGlyphs()
     {
         if (DBC::Structures::GlyphSlotEntry const* glyphSlot = sGlyphSlotStore.LookupEntry(i))
         {
-            setGlyphSlot(slot++), glyphSlot->Id);
+            setGlyphSlot(slot++, glyphSlot->Id);
         }
     }
 
