@@ -1055,7 +1055,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_CANT_CAST_ON_TAPPED;
 
                 // GM flagged players should be immune to other players' casts, but not their own
-                if (target->isPlayer() && (dynamic_cast<Player*>(target)->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) || dynamic_cast<Player*>(target)->m_isGmInvisible))
+                if (target->isPlayer() && (dynamic_cast<Player*>(target)->hasPlayerFlags(PLAYER_FLAG_GM) || dynamic_cast<Player*>(target)->m_isGmInvisible))
                 {
 #if VERSION_STRING == Classic
                     return SPELL_FAILED_BAD_TARGETS;

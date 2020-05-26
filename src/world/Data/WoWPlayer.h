@@ -96,7 +96,7 @@ union
 #if VERSION_STRING == Classic
 #define WOWPLAYER_QUEST_COUNT 20
 #define WOWPLAYER_VISIBLE_ITEM_COUNT 19
-#define WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT 8
+#define WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT 6
 
 #define WOWPLAYER_INVENTORY_SLOT_COUNT 23
 #define WOWPLAYER_PACK_SLOT_COUNT 16
@@ -120,6 +120,7 @@ struct WoWPlayer_Quest
 struct WoWPlayer_VisibleItem
 {
     uint64_t creator;
+    uint32_t entry;
     uint32_t unk0[WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT];
     uint32_t properties;
     uint32_t padding;
@@ -192,7 +193,7 @@ struct WoWPlayer : WoWUnit
 #elif VERSION_STRING == TBC
 #define WOWPLAYER_QUEST_COUNT 25
 #define WOWPLAYER_VISIBLE_ITEM_COUNT 19
-#define WOWPLAYER_VISIBLE_ITEM_0_COUNT 12
+#define WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT 11
 #define WOWPLAYER_INVENTORY_SLOT_COUNT 23
 #define WOWPLAYER_PACK_SLOT_COUNT 16
 #define WOWPLAYER_BANK_SLOT_COUNT 28
@@ -220,7 +221,8 @@ struct WoWPlayer_Quest
 struct WoWPlayer_VisibleItem
 {
     uint64_t creator;
-    uint32_t visible_items[WOWPLAYER_VISIBLE_ITEM_0_COUNT];
+    uint32_t entry;
+    uint32_t unk0[WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT];
     uint32_t properties;
     uint32_t padding;
 };
@@ -426,7 +428,7 @@ struct WoWPlayer : WoWUnit
     uint32_t field_arena_currency;
     uint32_t field_max_level;
     uint32_t field_daily_quests[WOWPLAYER_DAILY_QUESTS_COUNT];
-    uint32_t rune_regen[WOWPLAYER_RUNE_REGEN_COUNT];
+    float rune_regen[WOWPLAYER_RUNE_REGEN_COUNT];
     uint32_t no_reagent_cost[WOWPLAYER_NO_REAGENT_COST_COUNT];
     uint32_t field_glyph_slots[WOWPLAYER_GLYPH_SLOT_COUNT];
     uint32_t field_glyphs[WOWPLAYER_GLYPH_SLOT_COUNT];

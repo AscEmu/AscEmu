@@ -2247,7 +2247,7 @@ bool Unit::canSee(Object* const obj)
                         return true;
 
                     // Game Masters can see all dead players
-                    return HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
+                    return dynamic_cast<Player*>(this)->hasPlayerFlags(PLAYER_FLAG_GM);
                 }
                 else
                 {
@@ -2261,7 +2261,7 @@ bool Unit::canSee(Object* const obj)
             // Unit cannot see Spirit Healers when unit's alive
             // unless unit is a Game Master
             if (obj->isCreature() && static_cast<Creature*>(obj)->isSpiritHealer())
-                return isPlayer() && HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
+                return isPlayer() && dynamic_cast<Player*>(this)->hasPlayerFlags(PLAYER_FLAG_GM);
 
             const auto unitObj = static_cast<Unit*>(obj);
 
@@ -2324,7 +2324,7 @@ bool Unit::canSee(Object* const obj)
     }
 
     // Game Masters can see invisible and stealthed objects
-    if (isPlayer() && HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+    if (isPlayer() && dynamic_cast<Player*>(this)->hasPlayerFlags(PLAYER_FLAG_GM))
         return true;
 
     // Hunter Marked units are always visible to caster

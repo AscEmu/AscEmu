@@ -1142,9 +1142,9 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
     Player* plr;
     bool u1, u2;
     UpdateMask myMask;
-    myMask.SetCount(PLAYER_END);
+    myMask.SetCount(getSizeOfStructure(WoWPlayer));
     UpdateMask hisMask;
-    hisMask.SetCount(PLAYER_END);
+    hisMask.SetCount(getSizeOfStructure(WoWPlayer));
 
     m_groupLock.Acquire();
     for (uint8 i = 0; i < m_SubGroupCount; ++i)
@@ -1170,13 +1170,8 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
                     hisMask.Clear();
                     myMask.Clear();
                     u1 = u2 = false;
-#if VERSION_STRING == TBC
-                    for (uint16 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_1; ++j)
-#elif VERSION_STRING == Classic
-                    for (uint16 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_15_4; ++j)
-#else
-                    for (uint16 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_5; ++j)
-#endif
+
+                    for (uint16 j = getOffsetForStructuredField(WoWPlayer, quests); j < getOffsetForStructuredField(WoWPlayer, visible_items); ++j)
                     {
                         if (plr->getUInt32Value(j))
                         {
@@ -1304,7 +1299,7 @@ void Group::SendLootUpdates(Object* o)
         Flags |= U_DYN_FLAG_LOOTABLE;
         Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
 
-        o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, Flags);
+        o->BuildFieldUpdatePacket(&buf, getOffsetForStructuredField(WoWUnit, dynamic_flags), Flags);
 
         Lock();
 

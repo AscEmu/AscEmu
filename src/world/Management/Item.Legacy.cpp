@@ -52,9 +52,9 @@ Item::Item()
     m_updateFlag = UPDATEFLAG_NONE;
 #endif
 
-    m_valuesCount = ITEM_END;
+    m_valuesCount = getSizeOfStructure(WoWItem);
     m_uint32Values = _fields;
-    m_updateMask.SetCount(ITEM_END);
+    m_updateMask.SetCount(getSizeOfStructure(WoWItem));
     random_prop = 0;
     random_suffix = 0;
     m_mapMgr = 0;
@@ -642,21 +642,22 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
     }
 
     // Apply the visual on the player.
+    uint32 ItemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());
+    if (ItemSlot < EQUIPMENT_SLOT_END)
+    {
 #if VERSION_STRING > TBC
-    uint32 ItemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) * 2;   //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
-    uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + ItemSlot;
-    if (VisibleBase <= PLAYER_VISIBLE_ITEM_19_ENCHANTMENT)
-        m_owner->setUInt32Value(static_cast<uint16_t>(VisibleBase), Apply ? Entry->Id : 0);   //On 3.1 we can't add a Slot to the base now, as we no longer have multiple fields for storing them. This in some cases will try to write for example 3 visuals into one place, but now every item has only one field for this, and as we can't choose which visual to have, we'll accept the last one.
-    else
-        LOG_ERROR("Item::ApplyEnchantmentBonus visual out of range! Tried to address UInt32 field %i !!!", VisibleBase);
+        //On 3.1 we can't add a Slot to the base now, as we no longer have multiple fields for storing them. 
+        //This in some cases will try to write for example 3 visuals into one place, but now every item has only one 
+        //field for this, and as we can't choose which visual to have, we'll accept the last one.
+        m_owner->setVisibleItemEnchantment(ItemSlot, Apply ? Entry->Id : 0);
 #else
-    uint32 ItemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) * 16;
-    uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + ItemSlot;
-    if (VisibleBase <= PLAYER_VISIBLE_ITEM_19_PAD)
-        m_owner->setUInt32Value(VisibleBase + 1 + Slot, Apply ? Entry->Id : 0);
-    else
-        LOG_ERROR("Item::ApplyEnchantmentBonus visual out of range! Tried to address UInt32 field %i !!!", VisibleBase);
+        m_owner->setVisibleItemEnchantment(ItemSlot, Slot, Apply ? Entry->Id : 0);
 #endif
+    }
+    else
+    {
+        LOG_ERROR("Item::ApplyEnchantmentBonus visual out of range! Tried to address UInt32 field %i !!!", ItemSlot);
+    }
 
     // Another one of those for loop that where not indented properly god knows what will break
     // but i made it actually affect the code below it

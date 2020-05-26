@@ -38,6 +38,7 @@
 #include "Management/Guild.h"
 #include "Management/ObjectUpdates/SplineManager.h"
 #include "Management/ObjectUpdates/UpdateManager.h"
+#include "Data/WoWPlayer.h"
 
 struct CharCreate;
 class QuestLogEntry;
@@ -515,6 +516,18 @@ public:
     void setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime);
     //QuestLog end
 
+//VisibleItem start
+    uint32_t getVisibleItemEntry(uint32_t slot) const;
+    void setVisibleItemEntry(uint32_t slot, uint32_t entry);
+#if VERSION_STRING > TBC
+    uint32_t getVisibleItemEnchantment(uint32_t slot) const;
+    void setVisibleItemEnchantment(uint32_t slot, uint32_t enchantment);
+#else
+    uint32_t getVisibleItemEnchantment(uint32_t slot, uint32_t pos) const;
+    void setVisibleItemEnchantment(uint32_t slot, uint32_t pos, uint32_t enchantment);
+#endif
+//VisibleItem end
+
     uint64_t getVendorBuybackSlot(uint8_t slot) const;
     void setVendorBuybackSlot(uint8_t slot, uint64_t guid);
 
@@ -542,6 +555,11 @@ public:
     uint32_t getNextLevelXp() const;
     void setNextLevelXp(uint32_t xp);
 
+#if VERSION_STRING < Cata
+    uint32_t getValueFromSkillInfoIndex(uint32_t index) const;
+    void setValueBySkillInfoIndex(uint32_t index, uint32_t value);
+#endif
+
     uint32_t getFreeTalentPoints() const;
 #if VERSION_STRING < Cata
     void setFreeTalentPoints(uint32_t points);
@@ -549,6 +567,12 @@ public:
 
     uint32_t getFreePrimaryProfessionPoints() const;
     void setFreePrimaryProfessionPoints(uint32_t points);
+
+    uint32_t getTrackCreature() const;
+    void setTrackCreature(uint32_t id);
+
+    uint32_t getTrackResource() const;
+    void setTrackResource(uint32_t id);
 
     float getBlockPercentage() const;
     void setBlockPercentage(float value);
@@ -591,6 +615,7 @@ public:
     void setShieldBlockCritPercentage(float value);
 #endif
 
+    uint32_t getExploredZone(uint32_t idx) const;
     void setExploredZone(uint32_t idx, uint32_t data);
 
     uint32_t getSelfResurrectSpell() const;
@@ -609,6 +634,14 @@ public:
 
     uint32_t getMaxLevel() const;
     void setMaxLevel(uint32_t level);
+
+#if VERSION_STRING >= WotLK
+    float getRuneRegen(uint8_t rune) const;
+    void setRuneRegen(uint8_t rune, float regen);
+#endif
+
+    uint32_t getRestStateXp() const;
+    void setRestStateXp(uint32_t xp);
 
     //\brief: the playerfield coinage is an uint64_t since cata
 #if VERSION_STRING < Cata
@@ -1481,15 +1514,7 @@ public:
         // Item Interface
         /////////////////////////////////////////////////////////////////////////////////////////
         void ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false) { _ApplyItemMods(item, slot, apply, justdrokedown); }
-        /// item interface variables
-        int32 GetVisibleBase(int16 slot)
-        {
-#if VERSION_STRING < WotLK
-            return (PLAYER_VISIBLE_ITEM_1_0 + (slot * 16));
-#else
-            return (PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2));
-#endif
-        }
+
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Loot
@@ -1963,7 +1988,14 @@ public:
         void ModPrimaryProfessionPoints(int32 amt)
         {
 #if VERSION_STRING < Cata
-            modUInt32Value(PLAYER_CHARACTER_POINTS2, amt);
+            int32_t value = getFreePrimaryProfessionPoints();
+            value += amt;
+
+            if (value < 0)
+                value = 0;
+
+            setFreePrimaryProfessionPoints(value);
+
 #else
             if (amt == 0) { return; }
 #endif
@@ -2201,7 +2233,7 @@ public:
         int32 myCorpseInstanceId;
 
         uint32 m_lastHonorResetTime;
-        uint32 _fields[PLAYER_END];
+        uint32 _fields[getSizeOfStructure(WoWPlayer)];
         int hearth_of_wild_pct;        // druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
 
         uint32 m_indoorCheckTimer;

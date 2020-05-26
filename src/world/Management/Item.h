@@ -27,6 +27,7 @@
 #include "Objects/Object.h"
 #include "WorldConf.h"
 #include "LootMgr.h"
+#include "Data/WoWItem.h"
 
 class Container;
 
@@ -465,7 +466,7 @@ public:
 
         ItemProperties const* m_itemProperties;
         EnchantmentMap Enchantments;
-        uint32 _fields[ITEM_END];   /// this mem is wasted in case of container... but this will be fixed in future
+        uint32 _fields[getSizeOfStructure(WoWItem)];   /// this mem is wasted in case of container... but this will be fixed in future
         Player* m_owner;            /// let's not bother the manager with unneeded requests
         uint32 random_prop;
         uint32 random_suffix;

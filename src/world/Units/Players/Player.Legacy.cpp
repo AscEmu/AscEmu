@@ -300,24 +300,24 @@ Player::Player(uint32 guid)
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_PLAYER;
     m_objectTypeId = TYPEID_PLAYER;
-    m_valuesCount = PLAYER_END;
+    m_valuesCount = getSizeOfStructure(WoWPlayer);
     //////////////////////////////////////////////////////////////////////////
 
     //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
     m_uint32Values = _fields;
 
-    memset(m_uint32Values, 0, (PLAYER_END)* sizeof(uint32));
-    m_updateMask.SetCount(PLAYER_END);
+    memset(m_uint32Values, 0, (getSizeOfStructure(WoWPlayer))* sizeof(uint32));
+    m_updateMask.SetCount(getSizeOfStructure(WoWPlayer));
 
     setObjectType(TYPEID_PLAYER);
     setGuidLow(guid);
     m_wowGuid.Init(getGuid());
 
 #if VERSION_STRING >= WotLK
-    setFloatValue(PLAYER_RUNE_REGEN_1, 0.100000f);
-    setFloatValue(PLAYER_RUNE_REGEN_1 + 1, 0.100000f);
-    setFloatValue(PLAYER_RUNE_REGEN_1 + 2, 0.100000f);
-    setFloatValue(PLAYER_RUNE_REGEN_1 + 3, 0.100000f);
+    setRuneRegen(0, 0.100000f);
+    setRuneRegen(1, 0.100000f);
+    setRuneRegen(2, 0.100000f);
+    setRuneRegen(3, 0.100000f);
 #endif
 
     for (i = 0; i < 28; i++)
@@ -1380,10 +1380,9 @@ bool Player::HasAreaExplored(::DBC::Structures::AreaTableEntry const* at)
         return false;
 
     uint16_t offset = static_cast<uint16_t>(at->explore_flag / 32);
-    offset += PLAYER_EXPLORED_ZONES_1;
 
     uint32 val = (uint32)(1 << (at->explore_flag % 32));
-    uint32 currFields = getUInt32Value(offset);
+    uint32 currFields = getExploredZone(offset);
 
     return (currFields & val) != 0;
 }
@@ -1409,10 +1408,9 @@ void Player::_EventExploration()
     uint32 AreaId = at->id;
 
     uint16_t offset = static_cast<uint16_t>(at->explore_flag / 32);
-    offset += PLAYER_EXPLORED_ZONES_1;
 
     uint32 val = (uint32)(1 << (at->explore_flag % 32));
-    uint32 currFields = getUInt32Value(offset);
+    uint32 currFields = getExploredZone(offset);
 
     if (AreaId != m_AreaID)
     {
@@ -1480,7 +1478,7 @@ void Player::_EventExploration()
     if (!(currFields & val) && !isOnTaxi() && obj_movement_info.getTransportGuid().IsEmpty()) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
 #endif
     {
-        setUInt32Value(offset, (uint32)(currFields | val));
+        setExploredZone(offset, static_cast<uint32>(currFields | val));
 
         uint32 explore_xp = at->area_level * 10;
         explore_xp *= float2int32(worldConfig.getFloatRate(RATE_EXPLOREXP));
@@ -2010,122 +2008,123 @@ void Player::_SetUpdateBits(UpdateMask* updateMask, Player* target) const
 
 void Player::InitVisibleUpdateBits()
 {
-    Player::m_visibleUpdateMask.SetCount(PLAYER_END);
+    Player::m_visibleUpdateMask.SetCount(getSizeOfStructure(WoWPlayer));
     Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_GUID);
     Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_TYPE);
     Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_ENTRY);
     Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_SCALE_X);
 
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_SUMMON);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_SUMMON + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid) + 1);
 
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_TARGET);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_TARGET + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, target_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, target_guid) + 1);
 
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_HEALTH);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER1);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER2);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER3);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER4);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER5);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, health));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_3));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_4));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_5));
 #if VERSION_STRING == WotLK
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER6);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER7);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_6));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_7));
 #endif
 
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXHEALTH);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER1);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER2);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER3);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER4);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER5);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_health));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_3));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_4));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_5));
 #if VERSION_STRING == WotLK
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER6);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER7);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_6));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_7));
 #endif
 
 #if VERSION_STRING > TBC
-    Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID);
-    Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID + 1);
-    Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID + 2);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, virtual_item_slot_display[0]));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, virtual_item_slot_display[1]));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, virtual_item_slot_display[2]));
 #endif
 
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_LEVEL);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_FACTIONTEMPLATE);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BYTES_0);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_FLAGS);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, level));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, faction_template));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_0));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, unit_flags));
 #if VERSION_STRING != Classic
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_FLAGS_2);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, unit_flags_2));
 #endif
 
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BASEATTACKTIME);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BASEATTACKTIME + 1);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BOUNDINGRADIUS);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_COMBATREACH);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_DISPLAYID);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_NATIVEDISPLAYID);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MOUNTDISPLAYID);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BYTES_1);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MOUNTDISPLAYID);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_PETNUMBER);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_PET_NAME_TIMESTAMP);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_CHANNEL_OBJECT);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_CHANNEL_OBJECT + 1);
-    Player::m_visibleUpdateMask.SetBit(UNIT_CHANNEL_SPELL);
-    Player::m_visibleUpdateMask.SetBit(UNIT_DYNAMIC_FLAGS);
-    Player::m_visibleUpdateMask.SetBit(UNIT_NPC_FLAGS);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, base_attack_time[0]));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, base_attack_time[1]) + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, bounding_radius));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, combat_reach));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, display_id));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, native_display_id));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, mount_display_id));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, pet_number));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, pet_name_timestamp));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_spell));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, dynamic_flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, npc_flags));
 #if VERSION_STRING > TBC
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_HOVERHEIGHT);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, hover_height));
 #endif
 
-    Player::m_visibleUpdateMask.SetBit(PLAYER_FLAGS);
-    Player::m_visibleUpdateMask.SetBit(PLAYER_BYTES);
-    Player::m_visibleUpdateMask.SetBit(PLAYER_BYTES_2);
-    Player::m_visibleUpdateMask.SetBit(PLAYER_BYTES_3);
-    Player::m_visibleUpdateMask.SetBit(PLAYER_GUILD_TIMESTAMP);
-    Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_TEAM);
-    Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_ARBITER);
-    Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_ARBITER + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes_3));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_timestamp));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_team));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_arbiter));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_arbiter) + 1);
 #if VERSION_STRING < Cata
-    Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDID);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_id));
 #endif
-    Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDRANK);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BASE_MANA);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BYTES_2);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_AURASTATE);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_rank));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, base_mana));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, aura_state));
 
     // Players visible items are not inventory stuff
     for (uint16 i = 0; i < EQUIPMENT_SLOT_END; ++i)
     {
 #if VERSION_STRING > TBC
-        uint32 offset = i * 2; //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
-
-        // item entry
-        Player::m_visibleUpdateMask.SetBit(PLAYER_VISIBLE_ITEM_1_ENTRYID + offset);
-        // enchant
-        Player::m_visibleUpdateMask.SetBit(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + offset);
+        //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been 
+        //calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
+        uint32 offset = i * 2;
 #else
         uint32 offset = i * 16;
-        // item entry
-        Player::m_visibleUpdateMask.SetBit(PLAYER_VISIBLE_ITEM_1_0 + offset);
-        // enchant
-        Player::m_visibleUpdateMask.SetBit(PLAYER_VISIBLE_ITEM_1_0 + 1 + offset);
 #endif
+
+        // item entry
+        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + offset);
+        // enchant
+        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + 1 + offset);
     }
 
     //VLack: we have to send our quest list to the members of our group all the time for quest sharing's "who's on that quest" feature to work (in the quest log this way a number will be shown before the quest's name).
     //Unfortunately we don't have code for doing this only on our group's members, so everyone will receive it. The non-group member's client will do whatever it wants with it, probably wasting a few CPU cycles, but that's fine with me.
 #if VERSION_STRING == Classic
-    for (uint16 i = PLAYER_QUEST_LOG_1_1; i <= PLAYER_QUEST_LOG_15_1; i += 5)
+    uint16_t questIdOffset = 3;
+#elif VERSION_STRING == TBC
+    uint16_t questIdOffset = 4;
 #else
-    for (uint16 i = PLAYER_QUEST_LOG_1_1; i <= PLAYER_QUEST_LOG_25_1; i += 4)
+    uint16_t questIdOffset = 5;
 #endif
+
+    for (uint16 i = getOffsetForStructuredField(WoWPlayer, quests); i < getOffsetForStructuredField(WoWPlayer, visible_items); i += questIdOffset)
     {
         Player::m_visibleUpdateMask.SetBit(i);
     }
 
 #if VERSION_STRING != Classic
-    Player::m_visibleUpdateMask.SetBit(PLAYER_CHOSEN_TITLE);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, chosen_title) );
 #endif
 }
 
@@ -2197,8 +2196,8 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         // dump exploration data
         << "'";
 
-    for (uint8 i = 0; i < PLAYER_EXPLORED_ZONES_LENGTH; ++i)
-        ss << m_uint32Values[PLAYER_EXPLORED_ZONES_1 + i] << ",";
+    for (uint8 i = 0; i < WOWPLAYER_EXPLORED_ZONES_COUNT; ++i)
+        ss << getExploredZone(i) << ",";
 
     ss << "',";
 
@@ -2458,7 +2457,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     bool saveData = worldConfig.server.saveExtendedCharData;
     if (saveData)
     {
-        for (uint32 offset = OBJECT_END; offset < PLAYER_END; offset++)
+        for (uint32 offset = OBJECT_END; offset < getSizeOfStructure(WoWPlayer); offset++)
             ss << uint32(m_uint32Values[offset]) << ";";
     }
     ss << "', '";
@@ -2733,7 +2732,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         m_cheats.TaxiCheat = true;
 
     // Process exploration data.
-    LoadFieldsFromString(get_next_field.GetString(), PLAYER_EXPLORED_ZONES_1, PLAYER_EXPLORED_ZONES_LENGTH);
+    LoadFieldsFromString(get_next_field.GetString(), getOffsetForStructuredField(WoWPlayer, explored_zones), WOWPLAYER_EXPLORED_ZONES_COUNT);
 
     // Process skill data.
     uint32 Counter = 0;
@@ -2789,7 +2788,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setCoinage(get_next_field.GetUInt32());
 
     setAmmoId(get_next_field.GetUInt32());
-    m_uint32Values[PLAYER_CHARACTER_POINTS2] = get_next_field.GetUInt32();
+    setFreePrimaryProfessionPoints(get_next_field.GetUInt32());
 
     load_health = get_next_field.GetUInt32();
     load_mana = get_next_field.GetUInt32();
@@ -3452,7 +3451,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         m_cheats.TaxiCheat = true;
 
     // Process exploration data.
-    LoadFieldsFromString(get_next_field.GetString(), PLAYER_EXPLORED_ZONES_1, PLAYER_EXPLORED_ZONES_LENGTH);
+    LoadFieldsFromString(get_next_field.GetString(), getOffsetForStructuredField(WoWPlayer, explored_zones), WOWPLAYER_EXPLORED_ZONES_COUNT);
 
     // Process skill data.
     uint32 Counter = 0;
@@ -3508,7 +3507,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setCoinage(get_next_field.GetUInt32());
 #if VERSION_STRING < Cata
     setAmmoId(get_next_field.GetUInt32());
-    m_uint32Values[PLAYER_CHARACTER_POINTS2] = get_next_field.GetUInt32();
+    setFreePrimaryProfessionPoints(get_next_field.GetUInt32());
 #else
     get_next_field.GetUInt32();
     get_next_field.GetUInt32();
@@ -6033,7 +6032,7 @@ void Player::UpdateRestState()
     setRestState(m_restState);
 
     //update needle (weird, works at 1/2 rate)
-    setUInt32Value(PLAYER_REST_STATE_EXPERIENCE, m_restAmount >> 1);
+    setRestStateXp(m_restAmount >> 1);
 }
 
 void Player::ApplyPlayerRestState(bool apply)
@@ -9628,13 +9627,11 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
 #endif
 }
 
+#if VERSION_STRING < Cata
 void Player::_UpdateSkillFields()
 {
-#if VERSION_STRING < Cata
-    uint16 f = PLAYER_SKILL_INFO_1_1;
-#else
-    uint16 f = PLAYER_SKILL_LINEID_0;
-#endif
+    uint16 f = 0;
+
     /* Set the valid skills */
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end();)
     {
@@ -9645,49 +9642,93 @@ void Player::_UpdateSkillFields()
             continue;
         }
 
-#if VERSION_STRING < Cata
-        ARCEMU_ASSERT(f <= PLAYER_CHARACTER_POINTS1)
-#else
-        ARCEMU_ASSERT(f <= PLAYER_CHARACTER_POINTS);
-#endif
+        uint16_t maxField = WOWPLAYER_SKILL_INFO_COUNT;
+
+        ARCEMU_ASSERT(f < maxField)
+
         if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
         {
-            setUInt32Value(f++, itr->first | 0x10000);
+            //field 0
+            setValueBySkillInfoIndex(f++, itr->first | 0x10000);
 #if VERSION_STRING > TBC
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
 #endif
         }
-#if VERSION_STRING >= Cata
-        else if (itr->second.Skill->type == SKILL_TYPE_SECONDARY)
-        {
-            setUInt32Value(f++, itr->first | 0x40000);
-            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
-        }
-#endif
         else
         {
-            setUInt32Value(f++, itr->first);
+            //field 0
+            setValueBySkillInfoIndex(f++, itr->first);
 #if VERSION_STRING > TBC
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, itr->second.Skill->id, itr->second.MaximumValue / 75, 0);
 #endif
         }
 
+        //field 1
+        setValueBySkillInfoIndex(f++, (itr->second.MaximumValue << 16) | itr->second.CurrentValue);
+        //field 2
+        setValueBySkillInfoIndex(f++, itr->second.BonusValue);
+        ++itr;
+    }
+
+    /* Null out the rest of the fields */
+    for (; f < WOWPLAYER_SKILL_INFO_COUNT; f++)
+    {
+        if (getValueFromSkillInfoIndex(f) != 0)
+            setValueBySkillInfoIndex(f, 0);
+    }
+}
+#else
+//\todo these fields are not correct for Cata!
+void Player::_UpdateSkillFields()
+{
+    uint16 f = getOffsetForStructuredField(WoWPlayer, skill_line);
+
+    /* Set the valid skills */
+    for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end();)
+    {
+        if (!itr->first)
+        {
+            SkillMap::iterator it2 = itr++;
+            m_skills.erase(it2);
+            continue;
+        }
+
+        ARCEMU_ASSERT(f <= getOffsetForStructuredField(WoWPlayer, skill_step));
+
+        if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
+        {
+            // current: field skill_line
+            setUInt32Value(f++, itr->first | 0x10000);
+            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
+        }
+        else if (itr->second.Skill->type == SKILL_TYPE_SECONDARY)
+        {
+            // current: field skill_line
+            setUInt32Value(f++, itr->first | 0x40000);
+            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
+        }
+        else
+        {
+            // current: field skill_line
+            setUInt32Value(f++, itr->first);
+            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, itr->second.Skill->id, itr->second.MaximumValue / 75, 0);
+        }
+
+        // current: field skill_step
         setUInt32Value(f++, (itr->second.MaximumValue << 16) | itr->second.CurrentValue);
+        // current: field skill_rank
         setUInt32Value(f++, itr->second.BonusValue);
         ++itr;
     }
 
     /* Null out the rest of the fields */
-#if VERSION_STRING < Cata
-    for (; f < PLAYER_CHARACTER_POINTS1; ++f)
-#else
-    for (; f < PLAYER_CHARACTER_POINTS; ++f)
-#endif
+    for (; f < getOffsetForStructuredField(WoWPlayer, skill_step); f++)
     {
         if (m_uint32Values[f] != 0)
             setUInt32Value(f, 0);
     }
 }
+#endif
 
 bool Player::_HasSkillLine(uint32 SkillLine)
 {
@@ -13214,7 +13255,7 @@ void Player::SendLootUpdate(Object* o)
         Flags |= U_DYN_FLAG_LOOTABLE;
         Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
 
-        o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, Flags);
+        o->BuildFieldUpdatePacket(&buf, getOffsetForStructuredField(WoWUnit, dynamic_flags), Flags);
 
         getUpdateMgr().pushUpdateData(&buf, 1);
     }
@@ -13284,8 +13325,8 @@ void Player::TagUnit(Object* o)
         ByteBuffer buf(500);
         ByteBuffer buf1(500);
 
-        o->BuildFieldUpdatePacket(&buf1, UNIT_DYNAMIC_FLAGS, Flags);
-        o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, o->getUInt32Value(UNIT_DYNAMIC_FLAGS));
+        o->BuildFieldUpdatePacket(&buf1, getOffsetForStructuredField(WoWUnit, dynamic_flags), Flags);
+        o->BuildFieldUpdatePacket(&buf, getOffsetForStructuredField(WoWUnit, dynamic_flags), dynamic_cast<Unit*>(o)->getDynamicFlags());
 
         SendUpdateDataToSet(&buf1, &buf, true);
     }

@@ -505,13 +505,13 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
                         return;
                 }
             }
-            creature->BuildFieldUpdatePacket(_player, UNIT_DYNAMIC_FLAGS, 0);
+            creature->BuildFieldUpdatePacket(_player, getOffsetForStructuredField(WoWUnit, dynamic_flags), 0);
 
             if (!creature->Skinned)
             {
                 if (sLootMgr.IsSkinnable(creature->getEntry()))
                 {
-                    creature->BuildFieldUpdatePacket(_player, UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
+                    creature->BuildFieldUpdatePacket(_player, getOffsetForStructuredField(WoWUnit, unit_flags), UNIT_FLAG_SKINNABLE);
                 }
             }
         }

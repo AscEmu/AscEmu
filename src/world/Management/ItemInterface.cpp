@@ -396,38 +396,21 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
 #if VERSION_STRING > TBC
     if (slot < EQUIPMENT_SLOT_END && ContainerSlot == INVENTORY_SLOT_NOT_SET)
     {
-        int VisibleBase = GetOwner()->GetVisibleBase(slot);
-        if (VisibleBase > PLAYER_VISIBLE_ITEM_19_ENTRYID)
-        {
-            LOG_DEBUG("Slot warning: slot: %d", slot);
-        }
-        else
-        {
-            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), item->getEntry());
-            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), item->getEnchantmentId(0));
-        }
+        m_pOwner->setVisibleItemEntry(slot, item->getEntry());
+        m_pOwner->setVisibleItemEnchantment(slot, item->getEnchantmentId(0));
     }
 #else
     if (slot < EQUIPMENT_SLOT_END && ContainerSlot == INVENTORY_SLOT_NOT_SET)
     {
-        int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (slot * 16);
-        if (VisibleBase > PLAYER_VISIBLE_ITEM_19_0)
-        {
-            LOG_DEBUG("Slot warning: slot: %d", slot);
-        }
-        else
-        {
-            m_pOwner->setUInt32Value(VisibleBase, item->getEntry());
-            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), item->getEnchantmentId(0));
-            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 2), item->getEnchantmentId(3));
-            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 3), item->getEnchantmentId(6));
-            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 4), item->getEnchantmentId(9));
-            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 5), item->getEnchantmentId(12));
-            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 6), item->getEnchantmentId(15));
-            m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 7), item->getEnchantmentId(18));
-
-            m_pOwner->setInt32Value(VisibleBase + 8, item->getRandomPropertiesId());
-        }
+        m_pOwner->setVisibleItemEntry(slot, item->getEntry());
+        m_pOwner->setVisibleItemEnchantment(slot, 0, item->getEnchantmentId(0));
+        m_pOwner->setVisibleItemEnchantment(slot, 1, item->getEnchantmentId(3));
+        m_pOwner->setVisibleItemEnchantment(slot, 2, item->getEnchantmentId(6));
+        m_pOwner->setVisibleItemEnchantment(slot, 3, item->getEnchantmentId(9));
+        m_pOwner->setVisibleItemEnchantment(slot, 4, item->getEnchantmentId(12));
+        m_pOwner->setVisibleItemEnchantment(slot, 5, item->getEnchantmentId(15));
+        m_pOwner->setVisibleItemEnchantment(slot, 6, item->getEnchantmentId(18));
+        m_pOwner->setVisibleItemEnchantment(slot, 7, item->getRandomPropertiesId());
     }
 #endif
 
@@ -524,11 +507,14 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
             if (slot < EQUIPMENT_SLOT_END)
             {
                 m_pOwner->ApplyItemMods(pItem, slot, false);
-                int VisibleBase = GetOwner()->GetVisibleBase(slot);
-                for (int i = VisibleBase; i < VisibleBase + 2; ++i)
-                {
-                    m_pOwner->setUInt32Value(static_cast<uint16_t>(i), 0);
-                }
+
+                m_pOwner->setVisibleItemEntry(slot, 0);
+#if VERSION_STRING > TBC
+                m_pOwner->setVisibleItemEnchantment(slot, 0);
+#else
+                for (uint8_t i = 0; i < WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT; ++i)
+                    m_pOwner->setVisibleItemEnchantment(slot, i, 0);
+#endif
             }
             else if (slot < INVENTORY_SLOT_BAG_END)
                 m_pOwner->ApplyItemMods(pItem, slot, false);
@@ -688,11 +674,14 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
             if (slot < EQUIPMENT_SLOT_END)
             {
                 m_pOwner->ApplyItemMods(pItem, slot, false);
-                int VisibleBase = GetOwner()->GetVisibleBase(slot);
-                for (int i = VisibleBase; i < VisibleBase + 2; ++i)
-                {
-                    m_pOwner->setUInt32Value(static_cast<uint16_t>(i), 0);
-                }
+
+                m_pOwner->setVisibleItemEntry(slot, 0);
+#if VERSION_STRING > Classic
+                m_pOwner->setVisibleItemEnchantment(slot, 0);
+#else
+                for (uint8_t i = 0; i < WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT; ++i)
+                    m_pOwner->setVisibleItemEnchantment(slot, i, 0);
+#endif
             }
             else if (slot < INVENTORY_SLOT_BAG_END)
                 m_pOwner->ApplyItemMods(pItem, slot, false);  //watch containers that give attackspeed and stuff ;)
@@ -3173,86 +3162,54 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
         m_pOwner->setInventorySlotItemGuid(srcslot, 0);
     }
 
-#if VERSION_STRING > TBC
     if (srcslot < INVENTORY_SLOT_BAG_END)    // source item is equipped
     {
-        if (m_pItems[(int)srcslot])   // dstitem goes into here.
+        if (m_pItems[srcslot])   // dstitem goes into here.
         {
             // Bags aren't considered "visible".
             if (srcslot < EQUIPMENT_SLOT_END)
             {
-                int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (srcslot * 2);
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), m_pItems[(int)srcslot]->getEntry());
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), m_pItems[(int)srcslot]->getEnchantmentId(0));
-            }
-
-            // handle bind on equip
-            if (m_pItems[(int)srcslot]->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
-                m_pItems[(int)srcslot]->addFlags(ITEM_FLAG_SOULBOUND);
-        }
-        else
-        {
-            // Bags aren't considered "visible".
-            if (srcslot < EQUIPMENT_SLOT_END)
-            {
-                int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (srcslot * 2);
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), 0);
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), 0);
-                /*  m_pOwner->SetUInt32Value(VisibleBase + 2, 0);
-                    m_pOwner->SetUInt32Value(VisibleBase + 3, 0);
-                    m_pOwner->SetUInt32Value(VisibleBase + 4, 0);
-                    m_pOwner->SetUInt32Value(VisibleBase + 5, 0);
-                    m_pOwner->SetUInt32Value(VisibleBase + 6, 0);
-                    m_pOwner->SetUInt32Value(VisibleBase + 7, 0);
-                    m_pOwner->SetUInt32Value(VisibleBase + 8, 0);*/
-            }
-        }
-    }
-#else
-    if (srcslot < INVENTORY_SLOT_BAG_END)   // source item is equiped
-    {
-        if (m_pItems[(int)srcslot])         // dstitem goes into here.
-        {
-            // Bags aren't considered "visible".
-            if (srcslot < EQUIPMENT_SLOT_END)
-            {
-                int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (srcslot * 16);
-                m_pOwner->setUInt32Value(VisibleBase, m_pItems[(int)srcslot]->getEntry());
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), m_pItems[(int)srcslot]->getEnchantmentId(0));
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 2), m_pItems[(int)srcslot]->getEnchantmentId(3));
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 3), m_pItems[(int)srcslot]->getEnchantmentId(6));
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 4), m_pItems[(int)srcslot]->getEnchantmentId(9));
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 5), m_pItems[(int)srcslot]->getEnchantmentId(12));
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 6), m_pItems[(int)srcslot]->getEnchantmentId(15));
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 7), m_pItems[(int)srcslot]->getEnchantmentId(18));
-                m_pOwner->setInt32Value(VisibleBase + 8, m_pItems[(int)srcslot]->getRandomPropertiesId());
-            }
-
-            // handle bind on equip
-            if (m_pItems[(int)srcslot]->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
-                m_pItems[(int)srcslot]->addFlags(ITEM_FLAG_SOULBOUND);
-        }
-        else
-        {
-            // Bags aren't considered "visible".
-            if (srcslot < EQUIPMENT_SLOT_END)
-            {
-                int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (srcslot * 16);
-                m_pOwner->setUInt32Value(VisibleBase, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 1, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 2, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 3, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 4, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 5, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 6, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 7, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 8, 0);
-            }
-        }
-    }
-#endif
-
+                m_pOwner->setVisibleItemEntry(srcslot, m_pItems[srcslot]->getEntry());
 #if VERSION_STRING > TBC
+                m_pOwner->setVisibleItemEnchantment(srcslot, m_pItems[srcslot]->getEnchantmentId(0));
+#else
+                m_pOwner->setVisibleItemEnchantment(srcslot, 0, m_pItems[srcslot]->getEnchantmentId(0));
+                m_pOwner->setVisibleItemEnchantment(srcslot, 1, m_pItems[srcslot]->getEnchantmentId(3));
+                m_pOwner->setVisibleItemEnchantment(srcslot, 2, m_pItems[srcslot]->getEnchantmentId(6));
+                m_pOwner->setVisibleItemEnchantment(srcslot, 3, m_pItems[srcslot]->getEnchantmentId(9));
+                m_pOwner->setVisibleItemEnchantment(srcslot, 4, m_pItems[srcslot]->getEnchantmentId(12));
+                m_pOwner->setVisibleItemEnchantment(srcslot, 5, m_pItems[srcslot]->getEnchantmentId(15));
+                m_pOwner->setVisibleItemEnchantment(srcslot, 6, m_pItems[srcslot]->getEnchantmentId(18));
+                m_pOwner->setVisibleItemEnchantment(srcslot, 7, m_pItems[srcslot]->getRandomPropertiesId());
+#endif
+            }
+
+            // handle bind on equip
+            if (m_pItems[srcslot]->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
+                m_pItems[srcslot]->addFlags(ITEM_FLAG_SOULBOUND);
+        }
+        else
+        {
+            // Bags aren't considered "visible".
+            if (srcslot < EQUIPMENT_SLOT_END)
+            {
+                m_pOwner->setVisibleItemEntry(srcslot, 0);
+#if VERSION_STRING > TBC
+                m_pOwner->setVisibleItemEnchantment(srcslot, 0);
+#else
+                m_pOwner->setVisibleItemEnchantment(srcslot, 0, 0);
+                m_pOwner->setVisibleItemEnchantment(srcslot, 1, 0);
+                m_pOwner->setVisibleItemEnchantment(srcslot, 2, 0);
+                m_pOwner->setVisibleItemEnchantment(srcslot, 3, 0);
+                m_pOwner->setVisibleItemEnchantment(srcslot, 4, 0);
+                m_pOwner->setVisibleItemEnchantment(srcslot, 5, 0);
+                m_pOwner->setVisibleItemEnchantment(srcslot, 6, 0);
+                m_pOwner->setVisibleItemEnchantment(srcslot, 7, 0);
+#endif
+            }
+        }
+    }
+
     if (dstslot < INVENTORY_SLOT_BAG_END)     // source item is inside inventory
     {
         if (m_pItems[(int)dstslot] != nullptr)   // srcitem goes into here.
@@ -3260,53 +3217,19 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // Bags aren't considered "visible".
             if (dstslot < EQUIPMENT_SLOT_END)
             {
-                int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (dstslot * 2);
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), m_pItems[(int)dstslot]->getEntry());
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), m_pItems[(int)dstslot]->getEnchantmentId(0));
-            }
-
-            // handle bind on equip
-            if (m_pItems[(int)dstslot]->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
-                m_pItems[(int)dstslot]->addFlags(ITEM_FLAG_SOULBOUND);
-
-        }
-        else
-        {
-
-            // bags aren't considered visible
-            if (dstslot < EQUIPMENT_SLOT_END)
-            {
-                int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (dstslot * 2);
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase), 0);
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), 0);
-                /*                m_pOwner->SetUInt32Value(VisibleBase + 2, 0);
-                                m_pOwner->SetUInt32Value(VisibleBase + 3, 0);
-                                m_pOwner->SetUInt32Value(VisibleBase + 4, 0);
-                                m_pOwner->SetUInt32Value(VisibleBase + 5, 0);
-                                m_pOwner->SetUInt32Value(VisibleBase + 6, 0);
-                                m_pOwner->SetUInt32Value(VisibleBase + 7, 0);
-                                m_pOwner->SetUInt32Value(VisibleBase + 8, 0);*/
-            }
-        }
-    }
+                m_pOwner->setVisibleItemEntry(dstslot, m_pItems[dstslot]->getEntry());
+#if VERSION_STRING > TBC
+                m_pOwner->setVisibleItemEnchantment(dstslot, m_pItems[dstslot]->getEnchantmentId(0));
 #else
-    if (dstslot < INVENTORY_SLOT_BAG_END)   // source item is inside inventory
-    {
-        if (m_pItems[(int)dstslot] != nullptr) // srcitem goes into here.
-        {
-            // Bags aren't considered "visible".
-            if (dstslot < EQUIPMENT_SLOT_END)
-            {
-                int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (dstslot * 16);
-                m_pOwner->setUInt32Value(VisibleBase, m_pItems[(int)dstslot]->getEntry());
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 1), m_pItems[(int)dstslot]->getEnchantmentId(0));
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 2), m_pItems[(int)dstslot]->getEnchantmentId(3));
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 3), m_pItems[(int)dstslot]->getEnchantmentId(6));
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 4), m_pItems[(int)dstslot]->getEnchantmentId(9));
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 5), m_pItems[(int)dstslot]->getEnchantmentId(12));
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 6), m_pItems[(int)dstslot]->getEnchantmentId(15));
-                m_pOwner->setUInt32Value(static_cast<uint16_t>(VisibleBase + 7), m_pItems[(int)dstslot]->getEnchantmentId(18));
-                m_pOwner->setInt32Value(VisibleBase + 8, m_pItems[(int)dstslot]->getRandomPropertiesId());
+                m_pOwner->setVisibleItemEnchantment(dstslot, 0, m_pItems[dstslot]->getEnchantmentId(0));
+                m_pOwner->setVisibleItemEnchantment(dstslot, 1, m_pItems[dstslot]->getEnchantmentId(3));
+                m_pOwner->setVisibleItemEnchantment(dstslot, 2, m_pItems[dstslot]->getEnchantmentId(6));
+                m_pOwner->setVisibleItemEnchantment(dstslot, 3, m_pItems[dstslot]->getEnchantmentId(9));
+                m_pOwner->setVisibleItemEnchantment(dstslot, 4, m_pItems[dstslot]->getEnchantmentId(12));
+                m_pOwner->setVisibleItemEnchantment(dstslot, 5, m_pItems[dstslot]->getEnchantmentId(15));
+                m_pOwner->setVisibleItemEnchantment(dstslot, 6, m_pItems[dstslot]->getEnchantmentId(18));
+                m_pOwner->setVisibleItemEnchantment(dstslot, 7, m_pItems[dstslot]->getRandomPropertiesId());
+#endif
             }
 
             // handle bind on equip
@@ -3320,20 +3243,22 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // bags aren't considered visible
             if (dstslot < EQUIPMENT_SLOT_END)
             {
-                int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (dstslot * 16);
-                m_pOwner->setUInt32Value(VisibleBase, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 1, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 2, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 3, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 4, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 5, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 6, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 7, 0);
-                m_pOwner->setUInt32Value(VisibleBase + 8, 0);
+                m_pOwner->setVisibleItemEntry(dstslot, 0);
+#if VERSION_STRING > TBC
+                m_pOwner->setVisibleItemEnchantment(dstslot, 0);
+#else
+                m_pOwner->setVisibleItemEnchantment(dstslot, 0, 0);
+                m_pOwner->setVisibleItemEnchantment(dstslot, 1, 0);
+                m_pOwner->setVisibleItemEnchantment(dstslot, 2, 0);
+                m_pOwner->setVisibleItemEnchantment(dstslot, 3, 0);
+                m_pOwner->setVisibleItemEnchantment(dstslot, 4, 0);
+                m_pOwner->setVisibleItemEnchantment(dstslot, 5, 0);
+                m_pOwner->setVisibleItemEnchantment(dstslot, 6, 0);
+                m_pOwner->setVisibleItemEnchantment(dstslot, 7, 0);
+#endif
             }
         }
     }
-#endif
     // handle dual wield
     if (dstslot == EQUIPMENT_SLOT_OFFHAND || srcslot == EQUIPMENT_SLOT_OFFHAND)
     {

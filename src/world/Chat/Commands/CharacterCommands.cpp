@@ -1332,9 +1332,9 @@ bool ChatHandler::HandleCharSetAllExploredCommand(const char* /*args*/, WorldSes
     GreenSystemMessage(player_target->GetSession(), "%s sets all areas as explored for you.", m_session->GetPlayer()->getName().c_str());
     sGMLog.writefromsession(m_session, "sets all areas as explored for player %s", player_target->getName().c_str());
 
-    for (uint8 i = 0; i < PLAYER_EXPLORED_ZONES_LENGTH; ++i)
+    for (uint8 i = 0; i < WOWPLAYER_EXPLORED_ZONES_COUNT; ++i)
     {
-        player_target->SetFlag(PLAYER_EXPLORED_ZONES_1 + i, 0xFFFFFFFF);
+        player_target->setExploredZone(i, 0xFFFFFFFF);
     }
 
 #if VERSION_STRING > TBC

@@ -364,6 +364,19 @@ uint32_t Player::getQuestLogExpireTimeForSlot(uint8_t slot) const { return playe
 void Player::setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime) { write(playerData()->quests[slot].expire_time, expireTime); }
 //QuestLog end
 
+//VisibleItem start
+uint32_t Player::getVisibleItemEntry(uint32_t slot) const { return playerData()->visible_items[slot].entry; }
+void Player::setVisibleItemEntry(uint32_t slot, uint32_t entry) { write(playerData()->visible_items[slot].entry, entry); }
+
+#if VERSION_STRING > TBC
+uint32_t Player::getVisibleItemEnchantment(uint32_t slot) const { return playerData()->visible_items[slot].enchantment; }
+void Player::setVisibleItemEnchantment(uint32_t slot, uint32_t enchantment) { write(playerData()->visible_items[slot].enchantment, enchantment); }
+#else
+uint32_t Player::getVisibleItemEnchantment(uint32_t slot, uint32_t pos) const { return playerData()->visible_items[slot].unk0[pos]; }
+void Player::setVisibleItemEnchantment(uint32_t slot, uint32_t pos, uint32_t enchantment)  { write(playerData()->visible_items[slot].unk0[pos], enchantment); }
+#endif
+//VisibleItem end
+
 uint64_t Player::getVendorBuybackSlot(uint8_t slot) const { return playerData()->vendor_buy_back_slot[slot]; }
 void Player::setVendorBuybackSlot(uint8_t slot, uint64_t guid) { write(playerData()->vendor_buy_back_slot[slot], guid); }
 
@@ -390,6 +403,11 @@ void Player::setXp(uint32_t xp) { write(playerData()->xp, xp); }
 
 uint32_t Player::getNextLevelXp() const { return playerData()->next_level_xp; }
 void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
+
+#if VERSION_STRING < Cata
+uint32_t Player::getValueFromSkillInfoIndex(uint32_t index) const { return playerData()->skill_info[index]; }
+void Player::setValueBySkillInfoIndex(uint32_t index, uint32_t value) { write(playerData()->skill_info[index], value); }
+#endif
 
 uint32_t Player::getFreeTalentPoints() const
 {
@@ -421,6 +439,12 @@ void Player::setFreePrimaryProfessionPoints(uint32_t points)
     write(playerData()->character_points_1, points);
 #endif
 }
+
+uint32_t Player::getTrackCreature() const { return playerData()->track_creatures; }
+void Player::setTrackCreature(uint32_t id) { write(playerData()->track_creatures, id); }
+
+uint32_t Player::getTrackResource() const { return playerData()->track_resources; }
+void Player::setTrackResource(uint32_t id) { write(playerData()->track_resources, id); }
 
 float Player::getBlockPercentage() const { return playerData()->block_pct; }
 void Player::setBlockPercentage(float value) { write(playerData()->block_pct, value); }
@@ -462,6 +486,13 @@ void Player::setShieldBlock(uint32_t value) { write(playerData()->shield_block, 
 float Player::getShieldBlockCritPercentage() const { return playerData()->shield_block_crit_pct; }
 void Player::setShieldBlockCritPercentage(float value) { write(playerData()->shield_block_crit_pct, value); }
 #endif
+
+uint32_t Player::getExploredZone(uint32_t idx) const
+{
+    ARCEMU_ASSERT(idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
+
+    return playerData()->explored_zones[idx];
+}
 
 void Player::setExploredZone(uint32_t idx, uint32_t data)
 {
@@ -507,6 +538,14 @@ void Player::setMaxLevel(uint32_t level)
     max_level = level;
 #endif 
 }
+
+#if VERSION_STRING >= WotLK
+float Player::getRuneRegen(uint8_t rune) const { return playerData()->rune_regen[rune]; }
+void Player::setRuneRegen(uint8_t rune, float regen) { write(playerData()->rune_regen[rune], regen); }
+#endif
+
+uint32_t Player::getRestStateXp() const { return playerData()->rest_state_xp; }
+void Player::setRestStateXp(uint32_t xp)  { write(playerData()->rest_state_xp, xp); }
 
 #if VERSION_STRING < Cata
 uint32_t Player::getCoinage() const { return playerData()->field_coinage; }

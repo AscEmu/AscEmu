@@ -576,7 +576,7 @@ bool ChatHandler::HandleModifyBitCommand(const char* args, WorldSession* m_sessi
     uint16 field = static_cast<uint16>(atoi(pField));
     uint32 bit = atoi(pBit);
 
-    if (field < 1 || field >= PLAYER_END)
+    if (field < 1 || field >= getSizeOfStructure(WoWPlayer))
     {
         SystemMessage(m_session, "Incorrect values.");
         return true;
@@ -632,7 +632,7 @@ bool ChatHandler::HandleModifyValueCommand(const char* args, WorldSession* m_ses
     uint16 field = static_cast<uint16>(atoi(pField));
     uint32 value = atoi(pValue);
 
-    if (field < 1 || field >= PLAYER_END)
+    if (field < 1 || field >= getSizeOfStructure(WoWPlayer))
     {
         SystemMessage(m_session, "Incorrect Field.");
         return true;

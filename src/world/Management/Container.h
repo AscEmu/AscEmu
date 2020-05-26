@@ -66,7 +66,7 @@ public:
 protected:
 
         Item** m_Slot;
-        uint32 __fields[CONTAINER_END];
+        uint32 __fields[getSizeOfStructure(WoWContainer)];
 };
 
 #endif // CONTAINER_H

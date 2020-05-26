@@ -460,7 +460,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     setSummonedByGuid(owner->getGuid());
     setCreatedByGuid(owner->getGuid());
 
-    setUInt32Value(UNIT_FIELD_BYTES_0, 2048 | (0 << 24));
+    setBytes0(2048 | (0 << 24));
 
     setBaseAttackTime(MELEE, 2000);
     setBaseAttackTime(OFFHAND, 2000);
@@ -952,7 +952,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     setBaseAttackTime(OFFHAND, 2000);
     setModCastSpeed(1.0f);          // better set this one
 
-    setUInt32Value(UNIT_FIELD_BYTES_0, 2048 | (0 << 24));
+    setBytes0(2048 | (0 << 24));
 
     if (pi->type == WARLOCKPET)
     {

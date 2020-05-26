@@ -40,11 +40,11 @@ Container::Container(uint32 high, uint32 low) : Item()
 {
     m_objectType |= (TYPE_ITEM | TYPE_CONTAINER);
     m_objectTypeId = TYPEID_CONTAINER;
-    m_valuesCount = CONTAINER_END;
+    m_valuesCount = getSizeOfStructure(WoWContainer);
 
     m_uint32Values = __fields;
-    memset(m_uint32Values, 0, (CONTAINER_END)*sizeof(uint32));
-    m_updateMask.SetCount(CONTAINER_END);
+    memset(m_uint32Values, 0, (getSizeOfStructure(WoWContainer))*sizeof(uint32));
+    m_updateMask.SetCount(getSizeOfStructure(WoWContainer));
 
     setOType(TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
 

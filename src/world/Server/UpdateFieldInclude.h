@@ -25,3 +25,5 @@ This file is released under the MIT license. See README-MIT for more information
 
 #define getSizeOfStructure(s) static_cast<uint32_t>(sizeof(s) / 4)
 
+#define getSizeOfStructuredField(s,m)
+

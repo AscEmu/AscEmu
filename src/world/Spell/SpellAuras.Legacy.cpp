@@ -2784,8 +2784,6 @@ void Aura::SpellAuraModDamageDone(bool apply)
 
     if (m_target->isPlayer())
     {
-        uint16_t index;
-
         if (mod->m_amount > 0)
         {
             if (apply)
@@ -2797,7 +2795,12 @@ void Aura::SpellAuraModDamageDone(bool apply)
             {
                 val = -mod->m_amount;
             }
-            index = PLAYER_FIELD_MOD_DAMAGE_DONE_POS;
+
+            for (uint16_t x = 0; x < 7; ++x)
+            {
+                if (mod->m_miscValue & (((uint32)1) << x))
+                    dynamic_cast<Player*>(m_target)->modModDamageDonePositive(x, val);
+            }
 
         }
         else
@@ -2811,14 +2814,11 @@ void Aura::SpellAuraModDamageDone(bool apply)
             {
                 val = mod->m_amount;
             }
-            index = PLAYER_FIELD_MOD_DAMAGE_DONE_NEG;
-        }
 
-        for (uint16_t x = 0; x < 7; x++)
-        {
-            if (mod->m_miscValue & (((uint32)1) << x))
+            for (uint16_t x = 0; x < 7; ++x)
             {
-                m_target->modInt32Value(index + x, val);
+                if (mod->m_miscValue & (((uint32)1) << x))
+                    dynamic_cast<Player*>(m_target)->modModDamageDoneNegative(x, val);
             }
         }
     }
@@ -2850,12 +2850,10 @@ void Aura::SpellAuraModDamageDone(bool apply)
             }
         }
 
-        for (uint32 x = 0; x < 7; x++)
+        for (uint32 x = 0; x < 7; ++x)
         {
             if (mod->m_miscValue & (((uint32)1) << x))
-            {
                 static_cast< Creature* >(m_target)->ModDamageDone[x] += val;
-            }
         }
     }
 
@@ -4605,13 +4603,13 @@ void Aura::SpellAuraTrackCreatures(bool apply)
             if (p_target->TrackingSpell != 0)
                 p_target->RemoveAura(p_target->TrackingSpell);
 
-            p_target->setUInt32Value(PLAYER_TRACK_CREATURES, (uint32)1 << (mod->m_miscValue - 1));
+            p_target->setTrackCreature((uint32)1 << (mod->m_miscValue - 1));
             p_target->TrackingSpell = GetSpellId();
         }
         else
         {
             p_target->TrackingSpell = 0;
-            p_target->setUInt32Value(PLAYER_TRACK_CREATURES, 0);
+            p_target->setTrackCreature(0);
         }
     }
 }
@@ -4625,13 +4623,13 @@ void Aura::SpellAuraTrackResources(bool apply)
             if (p_target->TrackingSpell != 0)
                 p_target->RemoveAura(p_target->TrackingSpell);
 
-            p_target->setUInt32Value(PLAYER_TRACK_RESOURCES, (uint32)1 << (mod->m_miscValue - 1));
+            p_target->setTrackResource((uint32)1 << (mod->m_miscValue - 1));
             p_target->TrackingSpell = GetSpellId();
         }
         else
         {
             p_target->TrackingSpell = 0;
-            p_target->setUInt32Value(PLAYER_TRACK_RESOURCES, 0);
+            p_target->setTrackResource(0);
         }
     }
 }
@@ -5484,22 +5482,28 @@ void Aura::SpellAuraFeignDeath(bool apply)
 
 void Aura::SpellAuraModDisarm(bool apply)
 {
+    enum AuraModUnitFlag
+    {
+        UnitFlag,
+        UnitFlag2
+    };
+
     uint32_t flag;
     uint16_t field;
 
     switch (mod->m_type)
     {
         case SPELL_AURA_MOD_DISARM:
-            field = UNIT_FIELD_FLAGS;
+            field = UnitFlag;
             flag = UNIT_FLAG_DISARMED;
             break;
 #if VERSION_STRING != Classic
         case SPELL_AURA_MOD_DISARM_OFFHAND:
-            field = UNIT_FIELD_FLAGS_2;
+            field = UnitFlag2;
             flag = UNIT_FLAG2_DISARM_OFFHAND;
             break;
         case SPELL_AURA_MOD_DISARM_RANGED:
-            field = UNIT_FIELD_FLAGS_2;
+            field = UnitFlag2;
             flag = UNIT_FLAG2_DISARM_RANGED;
             break;
 #endif
@@ -5516,13 +5520,21 @@ void Aura::SpellAuraModDisarm(bool apply)
 
         m_target->disarmed = true;
         m_target->addUnitStateFlag(UNIT_STATE_DISARMED);
-        m_target->SetFlag(field, flag);
+
+        if (field == UnitFlag)
+            m_target->addUnitFlags(flag);
+        else
+            m_target->addUnitFlags2(flag);
     }
     else
     {
         m_target->disarmed = false;
         m_target->removeUnitStateFlag(UNIT_STATE_DISARMED);
-        m_target->RemoveFlag(field, flag);
+
+        if (field == UnitFlag)
+            m_target->removeUnitFlags(flag);
+        else
+            m_target->removeUnitFlags2(flag);
     }
 }
 
@@ -8112,7 +8124,7 @@ void Aura::SpellAuraEmphaty(bool apply)
     if (apply)
         dynflags |= U_DYN_FLAG_PLAYER_INFO;
 
-    m_target->BuildFieldUpdatePacket(caster, UNIT_DYNAMIC_FLAGS, dynflags);
+    m_target->BuildFieldUpdatePacket(caster, getOffsetForStructuredField(WoWUnit, dynamic_flags), dynflags);
 }
 
 void Aura::SpellAuraModOffhandDamagePCT(bool apply)
