@@ -119,9 +119,9 @@ DynamicObject::DynamicObject(uint32 high, uint32 low)
     memset(m_uint32Values, 0, (getSizeOfStructure(WoWDynamicObject))*sizeof(uint32));
     m_updateMask.SetCount(getSizeOfStructure(WoWDynamicObject));
     setOType(TYPE_DYNAMICOBJECT | TYPE_OBJECT);
-    m_uint32Values[OBJECT_FIELD_GUID] = low;
-    m_uint32Values[OBJECT_FIELD_GUID + 1] = high;
-    m_wowGuid.Init(getGuid());
+
+    setGuid(low, high);
+
     setScale(1.0f);
 
 

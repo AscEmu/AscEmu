@@ -141,11 +141,11 @@ Player* Creature::getPlayerOwner()
 
 Creature::Creature(uint64 guid)
 {
-    m_valuesCount = UNIT_END;
+    m_valuesCount = getSizeOfStructure(WoWUnit);
     m_objectTypeId = TYPEID_UNIT;
     m_uint32Values = _fields;
-    memset(m_uint32Values, 0, ((UNIT_END)*sizeof(uint32)));
-    m_updateMask.SetCount(UNIT_END);
+    memset(m_uint32Values, 0, ((getSizeOfStructure(WoWUnit))*sizeof(uint32)));
+    m_updateMask.SetCount(getSizeOfStructure(WoWUnit));
     setOType(TYPE_UNIT | TYPE_OBJECT);
     setGuid(guid);
     m_wowGuid.Init(getGuid());

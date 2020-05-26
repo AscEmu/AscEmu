@@ -352,7 +352,7 @@ public:
         uint32 m_enslaveSpell;
 
         bool m_PickPocketed;
-        uint32 _fields[UNIT_END];
+        uint32 _fields[getSizeOfStructure(WoWUnit)];
         uint32 m_healthfromspell;
 
         CreatureProperties const* creature_properties;

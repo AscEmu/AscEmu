@@ -393,16 +393,12 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         }
     }
 
+    if (slot < EQUIPMENT_SLOT_END && ContainerSlot == INVENTORY_SLOT_NOT_SET)
+    {
+        m_pOwner->setVisibleItemEntry(slot, item->getEntry());
 #if VERSION_STRING > TBC
-    if (slot < EQUIPMENT_SLOT_END && ContainerSlot == INVENTORY_SLOT_NOT_SET)
-    {
-        m_pOwner->setVisibleItemEntry(slot, item->getEntry());
         m_pOwner->setVisibleItemEnchantment(slot, item->getEnchantmentId(0));
-    }
 #else
-    if (slot < EQUIPMENT_SLOT_END && ContainerSlot == INVENTORY_SLOT_NOT_SET)
-    {
-        m_pOwner->setVisibleItemEntry(slot, item->getEntry());
         m_pOwner->setVisibleItemEnchantment(slot, 0, item->getEnchantmentId(0));
         m_pOwner->setVisibleItemEnchantment(slot, 1, item->getEnchantmentId(3));
         m_pOwner->setVisibleItemEnchantment(slot, 2, item->getEnchantmentId(6));
@@ -411,8 +407,9 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         m_pOwner->setVisibleItemEnchantment(slot, 5, item->getEnchantmentId(15));
         m_pOwner->setVisibleItemEnchantment(slot, 6, item->getEnchantmentId(18));
         m_pOwner->setVisibleItemEnchantment(slot, 7, item->getRandomPropertiesId());
-    }
 #endif
+    }
+
 
     if (m_pOwner->IsInWorld() && slot < INVENTORY_SLOT_BAG_END && ContainerSlot == INVENTORY_SLOT_NOT_SET)
     {
@@ -676,7 +673,7 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
                 m_pOwner->ApplyItemMods(pItem, slot, false);
 
                 m_pOwner->setVisibleItemEntry(slot, 0);
-#if VERSION_STRING > Classic
+#if VERSION_STRING > TBC
                 m_pOwner->setVisibleItemEnchantment(slot, 0);
 #else
                 for (uint8_t i = 0; i < WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT; ++i)

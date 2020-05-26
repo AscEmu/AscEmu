@@ -32,10 +32,6 @@ struct WoWObject
         uint64_t guid;
     };
 
-#if VERSION_STRING >= Cata
-    uint64_t data;
-#endif
-
     uint32_t type;
     uint32_t entry;
     float scale_x;

@@ -48,9 +48,7 @@ Container::Container(uint32 high, uint32 low) : Item()
 
     setOType(TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
 
-    setGuidLow(low);
-    setGuidHigh(high);
-    m_wowGuid.Init(getGuid());
+    setGuid(low, high);
 
     setScale(1);   //always 1
 

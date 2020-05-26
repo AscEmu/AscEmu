@@ -2178,7 +2178,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
     uint32_t old_flags = 0;
 
     // Create a new object
-    if (updateMask->GetBit(OBJECT_FIELD_GUID) && target)
+    if (updateMask->GetBit(getOffsetForStructuredField(WoWObject, guid)) && target)
     {
         if (isCreature())
         {

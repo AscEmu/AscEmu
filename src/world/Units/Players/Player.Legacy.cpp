@@ -311,7 +311,7 @@ Player::Player(uint32 guid)
 
     setObjectType(TYPEID_PLAYER);
     setGuidLow(guid);
-    m_wowGuid.Init(getGuid());
+
 
 #if VERSION_STRING >= WotLK
     setRuneRegen(0, 0.100000f);
@@ -2009,10 +2009,10 @@ void Player::_SetUpdateBits(UpdateMask* updateMask, Player* target) const
 void Player::InitVisibleUpdateBits()
 {
     Player::m_visibleUpdateMask.SetCount(getSizeOfStructure(WoWPlayer));
-    Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_GUID);
-    Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_TYPE);
-    Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_ENTRY);
-    Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_SCALE_X);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, type));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, entry));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, scale_x));
 
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid) + 1);
@@ -2457,7 +2457,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     bool saveData = worldConfig.server.saveExtendedCharData;
     if (saveData)
     {
-        for (uint32 offset = OBJECT_END; offset < getSizeOfStructure(WoWPlayer); offset++)
+        for (uint32 offset = getSizeOfStructure(WoWObject); offset < getSizeOfStructure(WoWPlayer); offset++)
             ss << uint32(m_uint32Values[offset]) << ";";
     }
     ss << "', '";

@@ -43,6 +43,7 @@
 #include "../shared/CommonDefines.hpp"
 #include "WorldPacket.h"
 #include "Units/Creatures/CreatureDefines.hpp"
+#include "Data/WoWObject.h"
 
 #if VERSION_STRING < Cata
 #include "Data/MovementInfo.h"
@@ -489,8 +490,8 @@ public:
 
         const WoWGuid & GetNewGUID() const { return m_wowGuid; }
 
-    uint32 GetTypeFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID + 1] & HIGHGUID_TYPE_MASK); }
-    uint32 GetUIdFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID] & LOWGUID_ENTRY_MASK); }
+    uint32 GetTypeFromGUID() const { return (getGuidHigh() & HIGHGUID_TYPE_MASK); }
+    uint32 GetUIdFromGUID() const { return (getGuidLow() & LOWGUID_ENTRY_MASK); }
 
         // typeFlags
         bool IsType(TYPE type_mask) const { return (type_mask & m_objectType) != 0; }

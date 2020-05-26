@@ -96,9 +96,7 @@ Corpse::Corpse(uint32 high, uint32 low)
 
     setOType(TYPE_CORPSE | TYPE_OBJECT);
 
-    setGuidLow(low);
-    setGuidHigh(high);
-    m_wowGuid.Init(getGuid());
+    setGuid(low, high);
 
     setScale(1);   //always 1
 
