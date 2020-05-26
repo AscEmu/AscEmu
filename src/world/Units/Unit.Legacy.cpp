@@ -10286,6 +10286,7 @@ void Unit::UpdateSpeed()
     if (getMountDisplayId() == 0)
     {
         setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true) * (1.0f + static_cast<float>(m_speedModifier) / 100.0f), true);
+        resetCurrentSpeeds();
     }
     else
     {
