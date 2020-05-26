@@ -3866,15 +3866,13 @@ void ItemInterface::RemoveRefundable(uint64 GUID)
 }
 
 /// Looks up an item in the RefundableMap, and returns the data
-std::pair< time_t, uint32 > ItemInterface::LookupRefundable(uint64 GUID)
+std::pair<time_t, uint32> ItemInterface::LookupRefundable(uint64 GUID)
 {
-    std::pair< time_t, uint32 > RefundableEntry;
-    RefundableMap::iterator itr;
-
+    std::pair<time_t, uint32> RefundableEntry;
     RefundableEntry.first = 0;          // time of purchase in playedtime
     RefundableEntry.second = 0;         // extendedcost
 
-    itr = this->m_refundableitems.find(GUID);
+    RefundableMap::iterator itr = this->m_refundableitems.find(GUID);
     if (itr != this->m_refundableitems.end())
     {
         RefundableEntry.first = itr->second.first;
