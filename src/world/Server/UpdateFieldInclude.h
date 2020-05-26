@@ -18,3 +18,10 @@ This file is released under the MIT license. See README-MIT for more information
 #elif VERSION_STRING == Mop
 #include "../world/GameMop/UpdateFields.h"
 #endif
+
+#include <stddef.h>
+
+#define getOffsetForStructuredField(s,m) static_cast<uint32_t>(offsetof(s,m) / 4)
+
+#define getSizeOfStructure(s) static_cast<uint32_t>(sizeof(s) / 4)
+

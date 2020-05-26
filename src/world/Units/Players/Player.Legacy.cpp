@@ -6349,12 +6349,12 @@ bool Player::removeDeletedSpell(uint32 SpellID)
 
 void Player::EventActivateGameObject(GameObject* obj)
 {
-    obj->BuildFieldUpdatePacket(this, GAMEOBJECT_DYNAMIC, 1 | 8);
+    obj->BuildFieldUpdatePacket(this, getOffsetForStructuredField(struct WoWGameObject, dynamic), 1 | 8);
 }
 
 void Player::EventDeActivateGameObject(GameObject* obj)
 {
-    obj->BuildFieldUpdatePacket(this, GAMEOBJECT_DYNAMIC, 0);
+    obj->BuildFieldUpdatePacket(this, getOffsetForStructuredField(struct WoWGameObject, dynamic), 0);
 }
 
 void Player::EventTimedQuestExpire(uint32 questid)
