@@ -384,38 +384,38 @@ enum EPlayerFields
 
 enum EGameObjectFields
 {
-    OBJECT_FIELD_CREATED_BY                          = OBJECT_END + 0x0000, // Size: 2, Type: LONG, Flags: PUBLIC
-    GAMEOBJECT_DISPLAYID                             = OBJECT_END + 0x0002, // Size: 1, Type: INT, Flags: PUBLIC
-    GAMEOBJECT_FLAGS                                 = OBJECT_END + 0x0003, // Size: 1, Type: INT, Flags: PUBLIC
-    GAMEOBJECT_PARENTROTATION                        = OBJECT_END + 0x0004, // Size: 4, Type: FLOAT, Flags: PUBLIC
-    GAMEOBJECT_DYNAMIC                               = OBJECT_END + 0x0008, // Size: 1, Type: TWO_SHORT, Flags: DYNAMIC
-    GAMEOBJECT_FACTION                               = OBJECT_END + 0x0009, // Size: 1, Type: INT, Flags: PUBLIC
-    GAMEOBJECT_LEVEL                                 = OBJECT_END + 0x000A, // Size: 1, Type: INT, Flags: PUBLIC
-    GAMEOBJECT_BYTES_1                               = OBJECT_END + 0x000B, // Size: 1, Type: BYTES, Flags: PUBLIC
-    GAMEOBJECT_END                                   = OBJECT_END + 0x000C
+    //OBJECT_FIELD_CREATED_BY                          = OBJECT_END + 0x0000, // Size: 2, Type: LONG, Flags: PUBLIC
+    //GAMEOBJECT_DISPLAYID                             = OBJECT_END + 0x0002, // Size: 1, Type: INT, Flags: PUBLIC
+    //GAMEOBJECT_FLAGS                                 = OBJECT_END + 0x0003, // Size: 1, Type: INT, Flags: PUBLIC
+    //GAMEOBJECT_PARENTROTATION                        = OBJECT_END + 0x0004, // Size: 4, Type: FLOAT, Flags: PUBLIC
+    //GAMEOBJECT_DYNAMIC                               = OBJECT_END + 0x0008, // Size: 1, Type: TWO_SHORT, Flags: DYNAMIC
+    //GAMEOBJECT_FACTION                               = OBJECT_END + 0x0009, // Size: 1, Type: INT, Flags: PUBLIC
+    //GAMEOBJECT_LEVEL                                 = OBJECT_END + 0x000A, // Size: 1, Type: INT, Flags: PUBLIC
+    //GAMEOBJECT_BYTES_1                               = OBJECT_END + 0x000B, // Size: 1, Type: BYTES, Flags: PUBLIC
+    //GAMEOBJECT_END                                   = OBJECT_END + 0x000C
 };
 
 enum EDynamicObjectFields
 {
-    DYNAMICOBJECT_CASTER                             = OBJECT_END + 0x0000, // Size: 2, Type: LONG, Flags: PUBLIC
-    DYNAMICOBJECT_BYTES                              = OBJECT_END + 0x0002, // Size: 1, Type: BYTES, Flags: PUBLIC
-    DYNAMICOBJECT_SPELLID                            = OBJECT_END + 0x0003, // Size: 1, Type: INT, Flags: PUBLIC
-    DYNAMICOBJECT_RADIUS                             = OBJECT_END + 0x0004, // Size: 1, Type: FLOAT, Flags: PUBLIC
-    DYNAMICOBJECT_CASTTIME                           = OBJECT_END + 0x0005, // Size: 1, Type: INT, Flags: PUBLIC
-    DYNAMICOBJECT_END                                = OBJECT_END + 0x0006
+    //DYNAMICOBJECT_CASTER                             = OBJECT_END + 0x0000, // Size: 2, Type: LONG, Flags: PUBLIC
+    //DYNAMICOBJECT_BYTES                              = OBJECT_END + 0x0002, // Size: 1, Type: BYTES, Flags: PUBLIC
+    //DYNAMICOBJECT_SPELLID                            = OBJECT_END + 0x0003, // Size: 1, Type: INT, Flags: PUBLIC
+    //DYNAMICOBJECT_RADIUS                             = OBJECT_END + 0x0004, // Size: 1, Type: FLOAT, Flags: PUBLIC
+    //DYNAMICOBJECT_CASTTIME                           = OBJECT_END + 0x0005, // Size: 1, Type: INT, Flags: PUBLIC
+    //DYNAMICOBJECT_END                                = OBJECT_END + 0x0006
 };
 
 enum ECorpseFields
 {
-    CORPSE_FIELD_OWNER                               = OBJECT_END + 0x0000, // Size: 2, Type: LONG, Flags: PUBLIC
-    CORPSE_FIELD_PARTY                               = OBJECT_END + 0x0002, // Size: 2, Type: LONG, Flags: PUBLIC
-    CORPSE_FIELD_DISPLAY_ID                          = OBJECT_END + 0x0004, // Size: 1, Type: INT, Flags: PUBLIC
-    CORPSE_FIELD_ITEM                                = OBJECT_END + 0x0005, // Size: 19, Type: INT, Flags: PUBLIC
-    CORPSE_FIELD_BYTES_1                             = OBJECT_END + 0x0018, // Size: 1, Type: BYTES, Flags: PUBLIC
-    CORPSE_FIELD_BYTES_2                             = OBJECT_END + 0x0019, // Size: 1, Type: BYTES, Flags: PUBLIC
-    CORPSE_FIELD_GUILD                               = OBJECT_END + 0x001A, // Size: 1, Type: INT, Flags: PUBLIC
-    CORPSE_FIELD_FLAGS                               = OBJECT_END + 0x001B, // Size: 1, Type: INT, Flags: PUBLIC
-    CORPSE_FIELD_DYNAMIC_FLAGS                       = OBJECT_END + 0x001C, // Size: 1, Type: INT, Flags: DYNAMIC
-    CORPSE_FIELD_PAD                                 = OBJECT_END + 0x001D, // Size: 1, Type: INT, Flags: NONE
-    CORPSE_END                                       = OBJECT_END + 0x001E
+    //CORPSE_FIELD_OWNER                               = OBJECT_END + 0x0000, // Size: 2, Type: LONG, Flags: PUBLIC
+    //CORPSE_FIELD_PARTY                               = OBJECT_END + 0x0002, // Size: 2, Type: LONG, Flags: PUBLIC
+    //CORPSE_FIELD_DISPLAY_ID                          = OBJECT_END + 0x0004, // Size: 1, Type: INT, Flags: PUBLIC
+    //CORPSE_FIELD_ITEM                                = OBJECT_END + 0x0005, // Size: 19, Type: INT, Flags: PUBLIC
+    //CORPSE_FIELD_BYTES_1                             = OBJECT_END + 0x0018, // Size: 1, Type: BYTES, Flags: PUBLIC
+    //CORPSE_FIELD_BYTES_2                             = OBJECT_END + 0x0019, // Size: 1, Type: BYTES, Flags: PUBLIC
+    //CORPSE_FIELD_GUILD                               = OBJECT_END + 0x001A, // Size: 1, Type: INT, Flags: PUBLIC
+    //CORPSE_FIELD_FLAGS                               = OBJECT_END + 0x001B, // Size: 1, Type: INT, Flags: PUBLIC
+    //CORPSE_FIELD_DYNAMIC_FLAGS                       = OBJECT_END + 0x001C, // Size: 1, Type: INT, Flags: DYNAMIC
+    //CORPSE_FIELD_PAD                                 = OBJECT_END + 0x001D, // Size: 1, Type: INT, Flags: NONE
+    //CORPSE_END                                       = OBJECT_END + 0x001E
 };

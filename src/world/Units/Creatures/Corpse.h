@@ -23,6 +23,7 @@
 
 #include "Objects/Object.h"
 #include "Management/LootMgr.h"
+#include "Data/WoWCorpse.h"
 
 enum CORPSE_STATE
 {
@@ -135,7 +136,7 @@ public:
 
         uint32 m_state;
         time_t m_time;
-        uint32 _fields[CORPSE_END];
+        uint32 _fields[getSizeOfStructure(WoWCorpse)];
         bool _loadedfromdb;
 };
 

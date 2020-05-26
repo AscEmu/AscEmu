@@ -48,6 +48,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Server/Packets/SmsgPvpCredit.h"
 #include "Server/Packets/SmsgRaidGroupOnly.h"
+#include "Server/Packets/SmsgAuctionCommandResult.h"
 #include "Server/World.h"
 #include "Spell/Definitions/AuraInterruptFlags.h"
 #include "Spell/Definitions/PowerType.h"

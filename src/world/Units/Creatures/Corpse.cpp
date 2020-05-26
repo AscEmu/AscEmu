@@ -88,11 +88,11 @@ Corpse::Corpse(uint32 high, uint32 low)
     m_updateFlag = UPDATEFLAG_POSITION;
 #endif
 
-    m_valuesCount = CORPSE_END;
+    m_valuesCount = getSizeOfStructure(WoWCorpse);
 
     m_uint32Values = _fields;
-    memset(m_uint32Values, 0, (CORPSE_END)*sizeof(uint32));
-    m_updateMask.SetCount(CORPSE_END);
+    memset(m_uint32Values, 0, (getSizeOfStructure(WoWCorpse))*sizeof(uint32));
+    m_updateMask.SetCount(getSizeOfStructure(WoWCorpse));
 
     setOType(TYPE_CORPSE | TYPE_OBJECT);
 

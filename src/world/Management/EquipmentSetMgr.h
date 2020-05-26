@@ -20,6 +20,7 @@
 
 #include <array>
 #include <map>
+#include <string>
 
 #define EQUIPMENTSET_SLOTS 10
 

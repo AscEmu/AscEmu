@@ -62,6 +62,7 @@
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
+#include "Server/Packets/SmsgBindPointUpdate.h"
 
 using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
 using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;

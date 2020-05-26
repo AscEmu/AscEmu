@@ -23,6 +23,7 @@
 
 #include "Object.h"
 #include "Units/Unit.h"
+#include "Data/WoWDynamicObject.h"
 
 class SpellInfo;
 
@@ -103,7 +104,7 @@ public:
         DynamicObjectList targets;
 
         uint32 m_aliveDuration;
-        uint32 _fields[DYNAMICOBJECT_END];
+        uint32 _fields[getSizeOfStructure(WoWDynamicObject)];
 };
 
 #endif // WOWSERVER_DYNAMICOBJECT_H

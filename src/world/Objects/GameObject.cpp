@@ -163,10 +163,10 @@ GameObject::GameObject(uint64 guid)
     m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
 #endif
 
-    m_valuesCount = GAMEOBJECT_END;
+    m_valuesCount = getSizeOfStructure(WoWGameObject);
     m_uint32Values = _fields;
-    std::fill(m_uint32Values, &m_uint32Values[GAMEOBJECT_END], 0);
-    m_updateMask.SetCount(GAMEOBJECT_END);
+    std::fill(m_uint32Values, &m_uint32Values[getSizeOfStructure(WoWGameObject)], 0);
+    m_updateMask.SetCount(getSizeOfStructure(WoWGameObject));
 
     setOType(TYPE_GAMEOBJECT | TYPE_OBJECT);
     setGuid(guid);

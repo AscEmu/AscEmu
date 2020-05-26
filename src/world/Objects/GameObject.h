@@ -24,6 +24,7 @@
 #include "Management/CRitual.h"
 #include "Management/QuestMgr.h"
 #include "Map/Map.h"
+#include "Data/WoWGameObject.h"
 
 enum GameObject_State : uint8_t
 {
@@ -519,7 +520,7 @@ public:
         bool m_deleted;
         GameObjectProperties const* gameobject_properties;
         GameObjectAIScript* myScript;
-        uint32 _fields[GAMEOBJECT_END];
+        uint32 _fields[getSizeOfStructure(WoWGameObject)];
 
         uint32 m_overrides;             //See enum GAMEOBJECT_OVERRIDES!
 

@@ -96,6 +96,9 @@
 #include "Server/Packets/SmsgClearCooldown.h"
 #include "Server/Packets/SmsgDuelRequested.h"
 #include "Server/Packets/SmsgPreResurrect.h"
+#include "Server/Packets/SmsgDuelComplete.h"
+#include "Server/Packets/SmsgBindPointUpdate.h"
+#include "Server/Packets/SmsgTutorialFlags.h"
 
 using namespace AscEmu::Packets;
 
