@@ -395,21 +395,8 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
 
     if (slot < EQUIPMENT_SLOT_END && ContainerSlot == INVENTORY_SLOT_NOT_SET)
     {
-        m_pOwner->setVisibleItemEntry(slot, item->getEntry());
-#if VERSION_STRING > TBC
-        m_pOwner->setVisibleItemEnchantment(slot, item->getEnchantmentId(0));
-#else
-        m_pOwner->setVisibleItemEnchantment(slot, 0, item->getEnchantmentId(0));
-        m_pOwner->setVisibleItemEnchantment(slot, 1, item->getEnchantmentId(3));
-        m_pOwner->setVisibleItemEnchantment(slot, 2, item->getEnchantmentId(6));
-        m_pOwner->setVisibleItemEnchantment(slot, 3, item->getEnchantmentId(9));
-        m_pOwner->setVisibleItemEnchantment(slot, 4, item->getEnchantmentId(12));
-        m_pOwner->setVisibleItemEnchantment(slot, 5, item->getEnchantmentId(15));
-        m_pOwner->setVisibleItemEnchantment(slot, 6, item->getEnchantmentId(18));
-        m_pOwner->setVisibleItemEnchantment(slot, 7, item->getRandomPropertiesId());
-#endif
+        m_pOwner->setVisibleItemFields(slot, item);
     }
-
 
     if (m_pOwner->IsInWorld() && slot < INVENTORY_SLOT_BAG_END && ContainerSlot == INVENTORY_SLOT_NOT_SET)
     {
@@ -504,14 +491,7 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
             if (slot < EQUIPMENT_SLOT_END)
             {
                 m_pOwner->ApplyItemMods(pItem, slot, false);
-
-                m_pOwner->setVisibleItemEntry(slot, 0);
-#if VERSION_STRING > TBC
-                m_pOwner->setVisibleItemEnchantment(slot, 0);
-#else
-                for (uint8_t i = 0; i < WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT; ++i)
-                    m_pOwner->setVisibleItemEnchantment(slot, i, 0);
-#endif
+                m_pOwner->setVisibleItemFields(slot, nullptr);
             }
             else if (slot < INVENTORY_SLOT_BAG_END)
                 m_pOwner->ApplyItemMods(pItem, slot, false);
@@ -671,14 +651,7 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
             if (slot < EQUIPMENT_SLOT_END)
             {
                 m_pOwner->ApplyItemMods(pItem, slot, false);
-
-                m_pOwner->setVisibleItemEntry(slot, 0);
-#if VERSION_STRING > TBC
-                m_pOwner->setVisibleItemEnchantment(slot, 0);
-#else
-                for (uint8_t i = 0; i < WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT; ++i)
-                    m_pOwner->setVisibleItemEnchantment(slot, i, 0);
-#endif
+                m_pOwner->setVisibleItemFields(slot, nullptr);
             }
             else if (slot < INVENTORY_SLOT_BAG_END)
                 m_pOwner->ApplyItemMods(pItem, slot, false);  //watch containers that give attackspeed and stuff ;)
@@ -3166,19 +3139,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // Bags aren't considered "visible".
             if (srcslot < EQUIPMENT_SLOT_END)
             {
-                m_pOwner->setVisibleItemEntry(srcslot, m_pItems[srcslot]->getEntry());
-#if VERSION_STRING > TBC
-                m_pOwner->setVisibleItemEnchantment(srcslot, m_pItems[srcslot]->getEnchantmentId(0));
-#else
-                m_pOwner->setVisibleItemEnchantment(srcslot, 0, m_pItems[srcslot]->getEnchantmentId(0));
-                m_pOwner->setVisibleItemEnchantment(srcslot, 1, m_pItems[srcslot]->getEnchantmentId(3));
-                m_pOwner->setVisibleItemEnchantment(srcslot, 2, m_pItems[srcslot]->getEnchantmentId(6));
-                m_pOwner->setVisibleItemEnchantment(srcslot, 3, m_pItems[srcslot]->getEnchantmentId(9));
-                m_pOwner->setVisibleItemEnchantment(srcslot, 4, m_pItems[srcslot]->getEnchantmentId(12));
-                m_pOwner->setVisibleItemEnchantment(srcslot, 5, m_pItems[srcslot]->getEnchantmentId(15));
-                m_pOwner->setVisibleItemEnchantment(srcslot, 6, m_pItems[srcslot]->getEnchantmentId(18));
-                m_pOwner->setVisibleItemEnchantment(srcslot, 7, m_pItems[srcslot]->getRandomPropertiesId());
-#endif
+                m_pOwner->setVisibleItemFields(srcslot, m_pItems[srcslot]);
             }
 
             // handle bind on equip
@@ -3190,19 +3151,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // Bags aren't considered "visible".
             if (srcslot < EQUIPMENT_SLOT_END)
             {
-                m_pOwner->setVisibleItemEntry(srcslot, 0);
-#if VERSION_STRING > TBC
-                m_pOwner->setVisibleItemEnchantment(srcslot, 0);
-#else
-                m_pOwner->setVisibleItemEnchantment(srcslot, 0, 0);
-                m_pOwner->setVisibleItemEnchantment(srcslot, 1, 0);
-                m_pOwner->setVisibleItemEnchantment(srcslot, 2, 0);
-                m_pOwner->setVisibleItemEnchantment(srcslot, 3, 0);
-                m_pOwner->setVisibleItemEnchantment(srcslot, 4, 0);
-                m_pOwner->setVisibleItemEnchantment(srcslot, 5, 0);
-                m_pOwner->setVisibleItemEnchantment(srcslot, 6, 0);
-                m_pOwner->setVisibleItemEnchantment(srcslot, 7, 0);
-#endif
+                m_pOwner->setVisibleItemFields(srcslot, nullptr);
             }
         }
     }
@@ -3214,19 +3163,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // Bags aren't considered "visible".
             if (dstslot < EQUIPMENT_SLOT_END)
             {
-                m_pOwner->setVisibleItemEntry(dstslot, m_pItems[dstslot]->getEntry());
-#if VERSION_STRING > TBC
-                m_pOwner->setVisibleItemEnchantment(dstslot, m_pItems[dstslot]->getEnchantmentId(0));
-#else
-                m_pOwner->setVisibleItemEnchantment(dstslot, 0, m_pItems[dstslot]->getEnchantmentId(0));
-                m_pOwner->setVisibleItemEnchantment(dstslot, 1, m_pItems[dstslot]->getEnchantmentId(3));
-                m_pOwner->setVisibleItemEnchantment(dstslot, 2, m_pItems[dstslot]->getEnchantmentId(6));
-                m_pOwner->setVisibleItemEnchantment(dstslot, 3, m_pItems[dstslot]->getEnchantmentId(9));
-                m_pOwner->setVisibleItemEnchantment(dstslot, 4, m_pItems[dstslot]->getEnchantmentId(12));
-                m_pOwner->setVisibleItemEnchantment(dstslot, 5, m_pItems[dstslot]->getEnchantmentId(15));
-                m_pOwner->setVisibleItemEnchantment(dstslot, 6, m_pItems[dstslot]->getEnchantmentId(18));
-                m_pOwner->setVisibleItemEnchantment(dstslot, 7, m_pItems[dstslot]->getRandomPropertiesId());
-#endif
+                m_pOwner->setVisibleItemFields(dstslot, m_pItems[dstslot]);
             }
 
             // handle bind on equip
@@ -3240,19 +3177,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // bags aren't considered visible
             if (dstslot < EQUIPMENT_SLOT_END)
             {
-                m_pOwner->setVisibleItemEntry(dstslot, 0);
-#if VERSION_STRING > TBC
-                m_pOwner->setVisibleItemEnchantment(dstslot, 0);
-#else
-                m_pOwner->setVisibleItemEnchantment(dstslot, 0, 0);
-                m_pOwner->setVisibleItemEnchantment(dstslot, 1, 0);
-                m_pOwner->setVisibleItemEnchantment(dstslot, 2, 0);
-                m_pOwner->setVisibleItemEnchantment(dstslot, 3, 0);
-                m_pOwner->setVisibleItemEnchantment(dstslot, 4, 0);
-                m_pOwner->setVisibleItemEnchantment(dstslot, 5, 0);
-                m_pOwner->setVisibleItemEnchantment(dstslot, 6, 0);
-                m_pOwner->setVisibleItemEnchantment(dstslot, 7, 0);
-#endif
+                m_pOwner->setVisibleItemFields(dstslot, nullptr);
             }
         }
     }

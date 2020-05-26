@@ -3262,3 +3262,33 @@ void Player::sendRaidGroupOnly(uint32_t timeInMs, uint32_t type)
 {
     this->SendPacket(SmsgRaidGroupOnly(timeInMs, type).serialise().get());
 }
+
+void Player::setVisibleItemFields(uint32_t slot, Item* item)
+{
+    if (item)
+    {
+        setVisibleItemEntry(slot, item->getEntry());
+#if VERSION_STRING > TBC
+        setVisibleItemEnchantment(slot, item->getEnchantmentId(0));
+#else
+        setVisibleItemEnchantment(slot, 0, item->getEnchantmentId(0));
+        setVisibleItemEnchantment(slot, 1, item->getEnchantmentId(3));
+        setVisibleItemEnchantment(slot, 2, item->getEnchantmentId(6));
+        setVisibleItemEnchantment(slot, 3, item->getEnchantmentId(9));
+        setVisibleItemEnchantment(slot, 4, item->getEnchantmentId(12));
+        setVisibleItemEnchantment(slot, 5, item->getEnchantmentId(15));
+        setVisibleItemEnchantment(slot, 6, item->getEnchantmentId(18));
+        setVisibleItemEnchantment(slot, 7, item->getRandomPropertiesId());
+#endif
+    }
+    else
+    {
+        setVisibleItemEntry(slot, 0);
+#if VERSION_STRING > TBC
+        setVisibleItemEnchantment(slot, 0);
+#else
+        for (uint8_t i = 0; i < WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT; ++i)
+            setVisibleItemEnchantment(slot, i, 0);
+#endif
+    }
+}

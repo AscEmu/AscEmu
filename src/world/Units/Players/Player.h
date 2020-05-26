@@ -1026,6 +1026,8 @@ public:
     void sendPvpCredit(uint32_t honor, uint64_t victimGuid, uint32_t victimRank);
     void sendRaidGroupOnly(uint32_t timeInMs, uint32_t type);
 
+    void setVisibleItemFields(uint32_t slot, Item* item);
+
 public:
     //MIT End
     //AGPL Start
