@@ -2011,7 +2011,11 @@ void Player::InitVisibleUpdateBits()
 {
     Player::m_visibleUpdateMask.SetCount(getSizeOfStructure(WoWPlayer));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid));
+#if VERSION_STRING < Cata
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, type));
+#else
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, raw_parts));
+#endif
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, entry));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, scale_x));
 
@@ -7954,7 +7958,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         SetTaxiPath(nullptr);
         UnSetTaxiPos();
         m_taxi_ride_time = 0;
-        setMountDisplayId(0)
+        setMountDisplayId(0);
         removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
         removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
         setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);

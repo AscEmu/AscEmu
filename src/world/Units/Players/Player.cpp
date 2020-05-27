@@ -280,11 +280,11 @@ void Player::setGuildId(uint32_t guildId)
     write(objectData()->data, MAKE_NEW_GUID(guildId, 0, HIGHGUID_TYPE_GUILD));
 
     if (guildId)
-        _player->addPlayerFlags(PLAYER_FLAGS_GUILD_LVL_ENABLED);
+        addPlayerFlags(PLAYER_FLAGS_GUILD_LVL_ENABLED);
     else
-        _player->removePlayerFlags(PLAYER_FLAGS_GUILD_LVL_ENABLED);
+        removePlayerFlags(PLAYER_FLAGS_GUILD_LVL_ENABLED);
 
-    write(objectData()->parts.guild_id, guildId != 0);
+    write(objectData()->parts.guild_id, static_cast<uint16_t>(guildId != 0 ? 1 : 0));
 #endif
 }
 
@@ -3180,7 +3180,7 @@ void Player::setPvpFlag()
 #if VERSION_STRING > TBC
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
 #else
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
+    addUnitFlags(UNIT_FLAG_PVP);
 #endif
 
     addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
@@ -3199,7 +3199,7 @@ void Player::removePvpFlag()
 #if VERSION_STRING > TBC
     setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_PVP);
 #else
-    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
+    removeUnitFlags(UNIT_FLAG_PVP);
 #endif
 
     removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
