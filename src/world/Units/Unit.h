@@ -486,11 +486,13 @@ public:
     uint32_t getResistance(uint8_t type) const;
     void setResistance(uint8_t type, uint32_t value);
 
+#if VERSION_STRING > Classic
     uint32_t getResistanceBuffModPositive(uint8_t type) const;
     void setResistanceBuffModPositive(uint8_t type, uint32_t value);
 
     uint32_t getResistanceBuffModNegative(uint8_t type) const;
     void setResistanceBuffModNegative(uint8_t type, uint32_t value);
+#endif
 
     uint32_t getBaseMana() const;
     void setBaseMana(uint32_t baseMana);

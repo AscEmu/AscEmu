@@ -114,8 +114,9 @@ union
 
 struct WoWPlayer_Quest
 {
-    uint32_t unk1;  // id
-    uint64_t unk2;  // 4 x uint16_t mob_or_go_count
+    uint32_t quest_id;
+    uint32_t required_count_state;
+    uint32_t expire_time;
 };
 
 struct WoWPlayer_VisibleItem
@@ -166,8 +167,8 @@ struct WoWPlayer : WoWUnit
     uint32_t field_coinage;
     uint32_t pos_stat[WOWPLAYER_STAT_COUNT];
     uint32_t neg_stat[WOWPLAYER_STAT_COUNT];
-    uint32_t resistance_buff_mod_pos[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    uint32_t resistance_buff_mod_neg[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    uint32_t resistance_buff_mod_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    uint32_t resistance_buff_mod_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t field_mod_damage_done_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t field_mod_damage_done_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
     float field_mod_damage_done_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
@@ -597,6 +598,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT 32
 #define WOWPLAYER_KNOWN_TITLES_SIZE 5
 #define WOWPLAYER_SKILL_INFO_COUNT 448
+#define WOWPLAYER_NO_REAGENT_COST_COUNT 4
 
 struct WoWPlayer_Quest
 {
@@ -719,7 +721,7 @@ struct WoWPlayer : WoWUnit
     WoWPlayer_ArenaTeamInfo field_arena_team_info[WOWPLAYER_ARENA_TEAM_SLOTS];
     uint32_t field_max_level;
     float rune_regen[4];
-    uint32_t no_reagent_cost[4];
+    uint32_t no_reagent_cost[WOWPLAYER_NO_REAGENT_COST_COUNT];
     uint32_t field_glyph_slots[6];
     uint32_t field_glyphs[6];
     uint32_t glyphs_enabled;

@@ -357,15 +357,40 @@ void Player::setGuildTimestamp(uint32_t timestamp) { write(playerData()->guild_t
 uint32_t Player::getQuestLogEntryForSlot(uint8_t slot) const { return playerData()->quests[slot].quest_id; }
 void Player::setQuestLogEntryBySlot(uint8_t slot, uint32_t questEntry) { write(playerData()->quests[slot].quest_id, questEntry); }
 
+#if VERSION_STRING > Classic
 uint32_t Player::getQuestLogStateForSlot(uint8_t slot) const { return playerData()->quests[slot].state; }
 void Player::setQuestLogStateBySlot(uint8_t slot, uint32_t state) { write(playerData()->quests[slot].state, state); }
+#else
+uint32_t Player::getQuestLogStateForSlot(uint8_t slot) const
+{
+    //\todo: get last 1*8 bits as state
+    return playerData()->quests[slot].required_count_state;
+}
+
+void Player::setQuestLogStateBySlot(uint8_t slot, uint32_t state)
+{
+    //\todo: write last 1*8 bits as state
+    write(playerData()->quests[slot].required_count_state, state);
+}
+#endif
 
 #if VERSION_STRING > TBC
 uint64_t Player::getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const { return playerData()->quests[slot].required_mob_or_go; }
 void Player::setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint64_t mobOrGoCount) { write(playerData()->quests[slot].required_mob_or_go, mobOrGoCount); }
-#else
+#elif VERSION_STRING == TBC
 uint32_t Player::getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const { return playerData()->quests[slot].required_mob_or_go; }
 void Player::setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint32_t mobOrGoCount) { write(playerData()->quests[slot].required_mob_or_go, mobOrGoCount); }
+#else
+uint32_t Player::getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const
+{
+    //\todo: get first 4*6 bits as required count
+    return playerData()->quests[slot].required_count_state;
+}
+void Player::setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint32_t mobOrGoCount)
+{
+    //\todo: write first 4*6 bits as required count
+    write(playerData()->quests[slot].required_count_state, mobOrGoCount);
+}
 #endif
 
 uint32_t Player::getQuestLogExpireTimeForSlot(uint8_t slot) const { return playerData()->quests[slot].expire_time; }
@@ -569,6 +594,14 @@ void Player::modCoinage(int64_t coinage)
 {
     setCoinage(getCoinage() + coinage);
 }
+#endif
+
+#if VERSION_STRING == Classic
+uint32_t Player::getResistanceBuffModPositive(uint8_t type) const { return playerData()->resistance_buff_mod_positive[type]; }
+void Player::setResistanceBuffModPositive(uint8_t type, uint32_t value) { write(playerData()->resistance_buff_mod_positive[type], value); }
+
+uint32_t Player::getResistanceBuffModNegative(uint8_t type) const { return playerData()->resistance_buff_mod_negative[type]; }
+void Player::setResistanceBuffModNegative(uint8_t type, uint32_t value) { write(playerData()->resistance_buff_mod_negative[type], value); }
 #endif
 
 uint32_t Player::getModDamageDonePositive(uint16_t school) const { return playerData()->field_mod_damage_done_positive[school]; }

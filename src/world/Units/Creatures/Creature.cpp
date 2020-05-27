@@ -974,7 +974,7 @@ void Creature::CalcResistance(uint8_t type)
     else
         pos += FlatResistanceMod[type];
 
-#if VERSION_STRING != Classic
+#if VERSION_STRING > Classic
     setResistanceBuffModPositive(type, pos);
     setResistanceBuffModNegative(type, neg);
 #endif

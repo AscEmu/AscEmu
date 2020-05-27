@@ -716,11 +716,13 @@ void Unit::setNegStat(uint8_t stat, uint32_t value) { write(unitData()->negative
 uint32_t Unit::getResistance(uint8_t type) const { return unitData()->resistance[type]; }
 void Unit::setResistance(uint8_t type, uint32_t value) { write(unitData()->resistance[type], value); }
 
+#if VERSION_STRING > Classic
 uint32_t Unit::getResistanceBuffModPositive(uint8_t type) const { return unitData()->resistance_buff_mod_positive[type]; }
 void Unit::setResistanceBuffModPositive(uint8_t type, uint32_t value) { write(unitData()->resistance_buff_mod_positive[type], value); }
 
 uint32_t Unit::getResistanceBuffModNegative(uint8_t type) const { return unitData()->resistance_buff_mod_negative[type]; }
 void Unit::setResistanceBuffModNegative(uint8_t type, uint32_t value) { write(unitData()->resistance_buff_mod_negative[type], value); }
+#endif
 
 uint32_t Unit::getBaseMana() const { return unitData()->base_mana; }
 void Unit::setBaseMana(uint32_t baseMana) { write(unitData()->base_mana, baseMana); }
@@ -935,10 +937,10 @@ uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, b
 
     for (auto x = start; x < end; ++x)
     {
-        if (free == -1 && m_uint32Values[UNIT_FIELD_AURA + x] == 0)
+        if (free == -1 && m_uint32Values[getOffsetForStructuredField(WoWUnit, aura) + x] == 0)
             free = x;
 
-        if (m_uint32Values[UNIT_FIELD_AURA + x] == spell_id)
+        if (m_uint32Values[getOffsetForStructuredField(WoWUnit, aura)+ x] == spell_id)
         {
             const auto aura = m_auras[x];
             ModVisualAuraStackCount(aura, count);
@@ -953,7 +955,7 @@ uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, b
         return 0xff;
 
     const auto flag_slot = static_cast<uint8_t>((free / 4));
-    const uint16_t val_slot = UNIT_FIELD_AURAFLAGS + flag_slot;
+    const uint16_t val_slot = getOffsetForStructuredField(WoWUnit, aura_flags) + flag_slot;
     auto value = m_uint32Values[val_slot];
     const auto aura_pos = free % 4 * 8;
     value &= ~(0xff << aura_pos);
@@ -963,7 +965,7 @@ uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, b
         value |= 0x9 << aura_pos;
 
     m_uint32Values[val_slot] = value;
-    m_uint32Values[UNIT_FIELD_AURA + free] = spell_id;
+    m_uint32Values[getOffsetForStructuredField(WoWUnit, aura) + free] = spell_id;
     const auto aura = m_auras[free];
     ModVisualAuraStackCount(aura, 1);
     setAuraSlotLevel(free, positive);
@@ -974,7 +976,7 @@ uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, b
 void Unit::setAuraSlotLevel(uint32_t slot, bool positive)
 {
     const auto index = slot / 4;
-    auto value = m_uint32Values[UNIT_FIELD_AURALEVELS + index];
+    auto value = m_uint32Values[getOffsetForStructuredField(WoWUnit, aura_levels) + index];
     const auto bit = slot % 4 * 8;
     value &= ~(0xff << bit);
     if (positive)
@@ -982,7 +984,7 @@ void Unit::setAuraSlotLevel(uint32_t slot, bool positive)
     else
         value |= 0x19 << bit;
 
-    m_uint32Values[UNIT_FIELD_AURALEVELS + index] = value;
+    m_uint32Values[getOffsetForStructuredField(WoWUnit, aura_levels) + index] = value;
 }
 #endif
 
@@ -2839,7 +2841,7 @@ void Unit::sendPowerUpdate(bool self)
     SendMessageToSet(SmsgPowerUpdate(GetNewGUID(), static_cast<uint8_t>(getPowerType()), powerAmount).serialise().get(), self);
 #else
     //\ todo: is this correct for TBC?
-    auto packet = BuildFieldUpdatePacket(UNIT_FIELD_POWER1 + (getPowerIndexFromDBC(getPowerType()) - 1), powerAmount);
+    auto packet = BuildFieldUpdatePacket(getOffsetForStructuredField(WoWUnit, power_1) + (getPowerIndexFromDBC(getPowerType()) - 1), powerAmount);
     SendMessageToSet(packet, false);
     delete packet;
 #endif

@@ -928,7 +928,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 
     if (m_objectTypeId == TYPEID_GAMEOBJECT)
     {
-        switch (m_uint32Values[GAMEOBJECT_TYPE_ID])
+        switch (((GameObject*)this)->getGoType())
         {
         case GAMEOBJECT_TYPE_MO_TRANSPORT:
             if (GetTypeFromGUID() != HIGHGUID_TYPE_TRANSPORTER)

@@ -1727,6 +1727,7 @@ bool ChatHandler::HandleCharSetTalentpointsCommand(const char* args, WorldSessio
 //.character set title
 bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_session)
 {
+#if VERSION_STRING > Classic
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
         return true;
@@ -1769,6 +1770,10 @@ bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_se
     sGMLog.writefromsession(m_session, logtext.str().c_str());
 
     return true;
+#else
+    RedSystemMessage(m_session, "This command is not available for Classic!");
+    return true;
+#endif
 }
 
 //.character set forcerename

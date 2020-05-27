@@ -2180,25 +2180,7 @@ void WorldSession::sendAccountDataTimes(uint32 mask)
     StackWorldPacket<128> data(SMSG_ACCOUNT_DATA_TIMES);
     for (auto i = 0; i < 32; ++i)
         data << uint32_t(0);
-    SendPacket(&data);
-    return;
 
-    MD5Hash md5hash;
-    for (int i = 0; i < 8; ++i)
-    {
-        AccountDataEntry* acct_data = GetAccountData(i);
-
-        if (!acct_data->data)
-        {
-            data << uint64(0) << uint64(0);
-            continue;
-        }
-        md5hash.Initialize();
-        md5hash.UpdateData((const uint8_t*)acct_data->data, acct_data->sz);
-        md5hash.Finalize();
-
-        data.Write(md5hash.GetDigest(), MD5_DIGEST_LENGTH);
-    }
 #elif VERSION_STRING <= Cata
     WorldPacket data(SMSG_ACCOUNT_DATA_TIMES, 4 + 1 + 4 + 8 * 4);
     data << uint32_t(UNIXTIME);

@@ -2214,7 +2214,12 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 #else
         << uint32(0) << ","
 #endif
+#if VERSION_STRING > Classic
         << getKnownTitles(0) << ","
+#else
+        << uint32(0) << ","
+#endif
+
 #if VERSION_STRING < WotLK
         << uint32(0) << ","
         << uint32(0) << ","
@@ -2784,7 +2789,12 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 #else
     get_next_field; //skip selected_pvp_titles
 #endif
+
+#if VERSION_STRING > Classic
     setKnownTitles(0, get_next_field.GetUInt64());
+#else
+    get_next_field; //skip available_pvp_titles
+#endif
 
     get_next_field; //skip available_pvp_titles1
     get_next_field; //skip available_pvp_titles2
@@ -6429,7 +6439,7 @@ void Player::CalcResistance(uint8_t type)
     if (res < 0)
         res = 1;
 
-#if VERSION_STRING != Classic
+#if VERSION_STRING > Classic
     setResistanceBuffModPositive(type, pos);
     setResistanceBuffModNegative(type, -neg);
 #endif
@@ -11028,6 +11038,7 @@ void Player::LoadFieldsFromString(const char* string, uint16 /*firstField*/, uin
 
 void Player::SetKnownTitle(RankTitles title, bool set)
 {
+#if VERSION_STRING > Classic
     if (!set && !HasTitle(title))
         return;
 
@@ -11040,6 +11051,7 @@ void Player::SetKnownTitle(RankTitles title, bool set)
         setKnownTitles(index, current & ~1 << (title % 32));
 
     m_session->SendPacket(SmsgTitleEarned(title, set ? 1 : 0).serialise().get());
+#endif
 }
 
 uint32 Player::GetInitialFactionId()

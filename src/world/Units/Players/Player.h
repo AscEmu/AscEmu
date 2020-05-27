@@ -658,6 +658,14 @@ public:
     void modCoinage(int64_t coinage);
 #endif
 
+#if VERSION_STRING == Classic
+    uint32_t getResistanceBuffModPositive(uint8_t type) const;
+    void setResistanceBuffModPositive(uint8_t type, uint32_t value);
+
+    uint32_t getResistanceBuffModNegative(uint8_t type) const;
+    void setResistanceBuffModNegative(uint8_t type, uint32_t value);
+#endif
+
     uint32_t getModDamageDonePositive(uint16_t school) const;
     void setModDamageDonePositive(uint16_t school, uint32_t value);
     void modModDamageDonePositive(uint16_t school, int32_t value);
@@ -1416,9 +1424,13 @@ public:
 
         bool HasTitle(RankTitles title)
         {
+#if VERSION_STRING > Classic
             const uint8_t index = title / 32;
 
             return (getKnownTitles(index) & 1 << (title % 32)) != 0;
+#else
+            return false;
+#endif
         }
         void SetKnownTitle(RankTitles title, bool set);
         void SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshift_form, bool active);

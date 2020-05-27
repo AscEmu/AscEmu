@@ -5497,7 +5497,7 @@ void Aura::SpellAuraModDisarm(bool apply)
             field = UnitFlag;
             flag = UNIT_FLAG_DISARMED;
             break;
-#if VERSION_STRING != Classic
+#if VERSION_STRING > Classic
         case SPELL_AURA_MOD_DISARM_OFFHAND:
             field = UnitFlag2;
             flag = UNIT_FLAG2_DISARM_OFFHAND;
@@ -5523,8 +5523,10 @@ void Aura::SpellAuraModDisarm(bool apply)
 
         if (field == UnitFlag)
             m_target->addUnitFlags(flag);
+#if VERSION_STRING > Classic
         else
             m_target->addUnitFlags2(flag);
+#endif
     }
     else
     {
@@ -5533,8 +5535,10 @@ void Aura::SpellAuraModDisarm(bool apply)
 
         if (field == UnitFlag)
             m_target->removeUnitFlags(flag);
+#if VERSION_STRING > Classic
         else
             m_target->removeUnitFlags2(flag);
+#endif
     }
 }
 
