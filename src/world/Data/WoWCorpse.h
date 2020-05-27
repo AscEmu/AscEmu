@@ -21,7 +21,7 @@ union
     {
         uint8_t unk1;
         uint8_t race;
-        uint8_t unk2;
+        uint8_t gender;
         uint8_t skin_color;
     } s;
     uint32_t raw;

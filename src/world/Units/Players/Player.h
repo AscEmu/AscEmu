@@ -467,7 +467,8 @@ public:
     uint8_t getFacialFeatures() const;
     void setFacialFeatures(uint8_t feature);
 
-    //unk1
+    uint8_t getBytes2UnknownField() const;
+    void setBytes2UnknownField(uint8_t value);
 
     uint8_t getBankSlots() const;
     void setBankSlots(uint8_t slots);
@@ -484,11 +485,14 @@ public:
     uint8_t getPlayerGender() const;
     void setPlayerGender(uint8_t gender);
 
-    uint16_t getDrunkValue() const;
-    void setDrunkValue(uint16_t value);
+    uint8_t getDrunkValue() const;
+    void setDrunkValue(uint8_t value);
 
     uint8_t getPvpRank() const;
     void setPvpRank(uint8_t rank);
+
+    uint8_t getArenaFaction() const;
+    void setArenaFaction(uint8_t faction);
     //bytes3 end
 
     uint32_t getDuelTeam() const;
@@ -555,10 +559,8 @@ public:
     uint32_t getNextLevelXp() const;
     void setNextLevelXp(uint32_t xp);
 
-#if VERSION_STRING < Cata
     uint32_t getValueFromSkillInfoIndex(uint32_t index) const;
     void setValueBySkillInfoIndex(uint32_t index, uint32_t value);
-#endif
 
     uint32_t getFreeTalentPoints() const;
 #if VERSION_STRING < Cata

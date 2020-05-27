@@ -63,8 +63,9 @@ union
     struct
     {
         uint8_t gender;
-        uint16_t drunk_value;   // not sure
+        uint8_t drunk_value;
         uint8_t pvp_rank;
+        uint8_t arena_faction;
     } s;
     uint32_t raw;
 } typedef player_bytes_3_union;
@@ -452,6 +453,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_NO_REAGENT_COST_COUNT 3
 #define WOWPLAYER_GLYPH_SLOT_COUNT 9
 #define WOWPLAYER_KNOWN_TITLES_SIZE 4
+#define WOWPLAYER_SKILL_INFO_COUNT 384
 
 struct WoWPlayer_Quest
 {
@@ -504,12 +506,21 @@ struct WoWPlayer : WoWUnit
     uint64_t field_known_titles[WOWPLAYER_KNOWN_TITLES_SIZE];
     uint32_t xp;
     uint32_t next_level_xp;
-    uint32_t skill_line[64];
-    uint32_t skill_step[64];
-    uint32_t skill_rank[64];
-    uint32_t skill_max_rank[64];
-    uint32_t skill_mod[64];
-    uint32_t skill_talent[64];
+
+    union
+    {
+        struct
+        {
+            uint32_t skill_line[64];
+            uint32_t skill_step[64];
+            uint32_t skill_rank[64];
+            uint32_t skill_max_rank[64];
+            uint32_t skill_mod[64];
+            uint32_t skill_talent[64];
+        } skill_info_parts;
+        uint32_t skill_info[WOWPLAYER_SKILL_INFO_COUNT];
+    };
+
     uint32_t character_points_1;
     uint32_t track_creatures;
     uint32_t track_resources;
@@ -585,6 +596,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_KEYRING_SLOT_COUNT 32
 #define WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT 32
 #define WOWPLAYER_KNOWN_TITLES_SIZE 5
+#define WOWPLAYER_SKILL_INFO_COUNT 448
 
 struct WoWPlayer_Quest
 {
@@ -643,13 +655,22 @@ struct WoWPlayer : WoWUnit
     uint64_t field_coinage;
     uint32_t xp;
     uint32_t next_level_xp;
-    uint32_t skill_line[64];
-    uint32_t skill_step[64];
-    uint32_t skill_rank[64];
-    uint32_t skill_starting_rank[64];
-    uint32_t skill_max_rank[64];
-    uint32_t skill_mod[64];
-    uint32_t skill_talent[64];
+
+    union
+    {
+        struct
+        {
+            uint32_t skill_line[64];
+            uint32_t skill_step[64];
+            uint32_t skill_rank[64];
+            uint32_t skill_starting_rank[64];
+            uint32_t skill_max_rank[64];
+            uint32_t skill_mod[64];
+            uint32_t skill_talent[64];
+        } skill_info_parts;
+        uint32_t skill_info[WOWPLAYER_SKILL_INFO_COUNT];
+    };
+
     uint32_t character_points_1;
     uint32_t max_talent_tiers;
     uint32_t track_creatures;

@@ -1118,7 +1118,11 @@ void WorldSession::handleAutoDeclineGuildInvites(WorldPacket& recvPacket)
 
     bool enabled = enable > 0 ? true : false;
 
-    _player->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_AUTO_DECLINE_GUILD, enabled);
+    if (enabled)
+        _player->addPlayerFlags(PLAYER_FLAGS_AUTO_DECLINE_GUILD);
+    else
+        _player->removePlayerFlags(PLAYER_FLAGS_AUTO_DECLINE_GUILD);
+
 }
 
 void WorldSession::handleGuildRewardsQueryOpcode(WorldPacket& recvPacket)

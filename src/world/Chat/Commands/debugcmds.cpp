@@ -288,7 +288,8 @@ bool ChatHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleSetBytesCommand(const char* args, WorldSession* m_session)
 {
-    Object* obj;
+    SystemMessage(m_session, "This command is no longer availabe!");
+    /*Object* obj;
 
     uint64 guid = m_session->GetPlayer()->GetSelection();
     if (guid != 0)
@@ -342,19 +343,21 @@ bool ChatHandler::HandleSetBytesCommand(const char* args, WorldSession* m_sessio
         << " " << uint16((uint8)Value4)
         << '\0';
     obj->setUInt32Value(BytesIndex, ((Value1) | (Value2 << 8) | (Value3 << 16) | (Value4 << 24)));
-    SystemMessage(m_session, sstext.str().c_str());
+    SystemMessage(m_session, sstext.str().c_str());*/
 
     return true;
 }
 
 bool ChatHandler::HandleGetBytesCommand(const char* args, WorldSession* m_session)
 {
-    Object* obj;
+    SystemMessage(m_session, "This command is no longer availabe!");
+
+    /*Object* obj;
 
     uint64 guid = m_session->GetPlayer()->GetSelection();
     if (guid != 0)
     {
-        if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
+        if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == nullptr)
         {
             SystemMessage(m_session, "You should select a character or a creature.");
             return true;
@@ -374,7 +377,7 @@ bool ChatHandler::HandleGetBytesCommand(const char* args, WorldSession* m_sessio
     sstext << "bytes for Field " << BytesIndex << " are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
     sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\0';
 
-    SystemMessage(m_session, sstext.str().c_str());
+    SystemMessage(m_session, sstext.str().c_str());*/
     return true;
 }
 bool ChatHandler::HandleDebugLandWalk(const char* /*args*/, WorldSession* m_session)
@@ -549,7 +552,9 @@ bool ChatHandler::HandleSendItemPushResult(const char* args, WorldSession* m_ses
 
 bool ChatHandler::HandleModifyBitCommand(const char* args, WorldSession* m_session)
 {
-    Object* obj;
+    SystemMessage(m_session, "This command is no longer availabe!");
+
+    /*Object* obj;
 
     uint64 guid = m_session->GetPlayer()->GetSelection();
     if (guid != 0)
@@ -601,13 +606,15 @@ bool ChatHandler::HandleModifyBitCommand(const char* args, WorldSession* m_sessi
         snprintf((char*)buf, 256, "Set bit %i in field %i.", (unsigned int)bit, (unsigned int)field);
     }
 
-    SystemMessage(m_session, buf);
+    SystemMessage(m_session, buf);*/
     return true;
 }
 
 bool ChatHandler::HandleModifyValueCommand(const char* args, WorldSession* m_session)
 {
-    Object* obj;
+    SystemMessage(m_session, "This command is no longer availabe!");
+
+    /*Object* obj;
 
     uint64 guid = m_session->GetPlayer()->GetSelection();
     if (guid != 0)
@@ -647,7 +654,7 @@ bool ChatHandler::HandleModifyValueCommand(const char* args, WorldSession* m_ses
     if (obj->isPlayer())
         static_cast< Player* >(obj)->UpdateChances();
 
-    SystemMessage(m_session, buf);
+    SystemMessage(m_session, buf);*/
 
     return true;
 }

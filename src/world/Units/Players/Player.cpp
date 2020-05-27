@@ -279,8 +279,12 @@ void Player::setGuildId(uint32_t guildId)
 #else
     write(objectData()->data, MAKE_NEW_GUID(guildId, 0, HIGHGUID_TYPE_GUILD));
 
-    ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LVL_ENABLED, guildId != 0);
-    setUInt16Value(OBJECT_FIELD_TYPE, 1, guildId != 0);
+    if (guildId)
+        _player->addPlayerFlags(PLAYER_FLAGS_GUILD_LVL_ENABLED);
+    else
+        _player->removePlayerFlags(PLAYER_FLAGS_GUILD_LVL_ENABLED);
+
+    write(objectData()->parts.guild_id, guildId != 0);
 #endif
 }
 
@@ -316,7 +320,8 @@ void Player::setPlayerBytes2(uint32_t bytes2) { write(playerData()->player_bytes
 uint8_t Player::getFacialFeatures() const { return playerData()->player_bytes_2.s.facial_hair; }
 void Player::setFacialFeatures(uint8_t feature) { write(playerData()->player_bytes_2.s.facial_hair, feature); }
 
-//unk1
+uint8_t Player::getBytes2UnknownField() const { return playerData()->player_bytes_2.s.unk1; }
+void Player::setBytes2UnknownField(uint8_t value) { write(playerData()->player_bytes_2.s.unk1, value); }
 
 uint8_t Player::getBankSlots() const { return playerData()->player_bytes_2.s.bank_slots; }
 void Player::setBankSlots(uint8_t slots) { write(playerData()->player_bytes_2.s.bank_slots, slots); }
@@ -332,11 +337,14 @@ void Player::setPlayerBytes3(uint32_t bytes3) { write(playerData()->player_bytes
 uint8_t Player::getPlayerGender() const { return playerData()->player_bytes_3.s.gender; }
 void Player::setPlayerGender(uint8_t gender) { write(playerData()->player_bytes_3.s.gender, gender); }
 
-uint16_t Player::getDrunkValue() const { return playerData()->player_bytes_3.s.drunk_value; }
-void Player::setDrunkValue(uint16_t value) { write(playerData()->player_bytes_3.s.drunk_value, value); }
+uint8_t Player::getDrunkValue() const { return playerData()->player_bytes_3.s.drunk_value; }
+void Player::setDrunkValue(uint8_t value) { write(playerData()->player_bytes_3.s.drunk_value, value); }
 
 uint8_t Player::getPvpRank() const { return playerData()->player_bytes_3.s.pvp_rank; }
 void Player::setPvpRank(uint8_t rank) { write(playerData()->player_bytes_3.s.pvp_rank, rank); }
+
+uint8_t Player::getArenaFaction() const { return playerData()->player_bytes_3.s.arena_faction; }
+void Player::setArenaFaction(uint8_t faction) { write(playerData()->player_bytes_3.s.arena_faction, faction); }
 //bytes3 end
 
 uint32_t Player::getDuelTeam() const { return playerData()->duel_team; }
@@ -404,10 +412,8 @@ void Player::setXp(uint32_t xp) { write(playerData()->xp, xp); }
 uint32_t Player::getNextLevelXp() const { return playerData()->next_level_xp; }
 void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
 
-#if VERSION_STRING < Cata
 uint32_t Player::getValueFromSkillInfoIndex(uint32_t index) const { return playerData()->skill_info[index]; }
 void Player::setValueBySkillInfoIndex(uint32_t index, uint32_t value) { write(playerData()->skill_info[index], value); }
-#endif
 
 uint32_t Player::getFreeTalentPoints() const
 {

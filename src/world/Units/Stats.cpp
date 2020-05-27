@@ -578,20 +578,33 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         }
     }
 
+    float min_damage = .0f;
+    float max_damage = .0f;
+
     if (pAttacker->disarmed && pAttacker->isPlayer())
     {
         offset = getOffsetForStructuredField(WoWUnit, minimum_damage);
         it = static_cast< Player* >(pAttacker)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
     }
     else if (weapon_damage_type == MELEE)
+    {
         offset = getOffsetForStructuredField(WoWUnit, minimum_damage);
+        min_damage = pAttacker->getMinDamage();
+        max_damage = pAttacker->getMaxDamage();
+    }
     else if (weapon_damage_type == OFFHAND)
+    {
         offset = getOffsetForStructuredField(WoWUnit, minimum_offhand_damage);
+        min_damage = pAttacker->getMinOffhandDamage();
+        max_damage = pAttacker->getMaxOffhandDamage();
+    }
     else  // weapon_damage_type == RANGED
+    {
         offset = getOffsetForStructuredField(WoWUnit, minimum_ranged_damage);
+        min_damage = pAttacker->getMinRangedDamage();
+        max_damage = pAttacker->getMaxRangedDamage();
+    }
 
-    float min_damage = pAttacker->getFloatValue(offset);
-    float max_damage = pAttacker->getFloatValue(offset + 1);
     if (it)
     {
         min_damage -= it->getItemProperties()->Damage[0].Min;

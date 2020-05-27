@@ -878,14 +878,15 @@ bool Player::Create(CharCreate& charCreateContent)
 
     // PLAYER_BYTES_2
     setFacialFeatures(charCreateContent.facialHair);
-    //SetByte(PLAYER_BYTES_2, 1, 0);  // unknown
-    //SetByte(PLAYER_BYTES_2, 2, 0);  // bank_slots
+    setBytes2UnknownField(0);
+    setBankSlots(0);
     setRestState(RESTSTATE_NORMAL);
 
     // PLAYER_BYTES_3
     setPlayerGender(charCreateContent.gender);
-    //setByteValue(PLAYER_BYTES_3, 1, 0);  // drunkvalue?
-    //setByteValue(PLAYER_BYTES_3, 2, 0);  // unknown
+    setDrunkValue(0);
+    setPvpRank(0);
+    setArenaFaction(0);
 
     setPlayerFieldBytes(0x08);
 
@@ -3158,14 +3159,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     HonorHandler::RecalculateHonorFields(this);
 
-#if VERSION_STRING > TBC
-    UpdateGlyphs();
-
-    for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
-    {
-        SetGlyph(i, m_specs[m_talentActiveSpec].glyphs[i]);
-    }
-#endif
     //class fixes
     switch (getClass())
     {
@@ -3195,7 +3188,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 #endif
 
     if (getGuildId())
-        setUInt32Value(PLAYER_GUILD_TIMESTAMP, (uint32)UNIXTIME);
+        setGuildTimestamp(static_cast<uint32_t>(UNIXTIME));
 
 #undef get_next_field
 
@@ -7961,7 +7954,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         SetTaxiPath(nullptr);
         UnSetTaxiPos();
         m_taxi_ride_time = 0;
-        setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+        setMountDisplayId(0)
         removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
         removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
         setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
@@ -9681,7 +9674,7 @@ void Player::_UpdateSkillFields()
 //\todo these fields are not correct for Cata!
 void Player::_UpdateSkillFields()
 {
-    uint16 f = getOffsetForStructuredField(WoWPlayer, skill_line);
+    uint16 f = 0;
 
     /* Set the valid skills */
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end();)
@@ -9693,39 +9686,39 @@ void Player::_UpdateSkillFields()
             continue;
         }
 
-        ARCEMU_ASSERT(f <= getOffsetForStructuredField(WoWPlayer, skill_step));
+        ARCEMU_ASSERT(f <= WOWPLAYER_SKILL_INFO_COUNT);
 
         if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
         {
             // current: field skill_line
-            setUInt32Value(f++, itr->first | 0x10000);
+            setValueBySkillInfoIndex(f++, itr->first | 0x10000);
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
         }
         else if (itr->second.Skill->type == SKILL_TYPE_SECONDARY)
         {
             // current: field skill_line
-            setUInt32Value(f++, itr->first | 0x40000);
+            setValueBySkillInfoIndex(f++, itr->first | 0x40000);
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
         }
         else
         {
             // current: field skill_line
-            setUInt32Value(f++, itr->first);
+            setValueBySkillInfoIndex(f++, itr->first);
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, itr->second.Skill->id, itr->second.MaximumValue / 75, 0);
         }
 
         // current: field skill_step
-        setUInt32Value(f++, (itr->second.MaximumValue << 16) | itr->second.CurrentValue);
+        setValueBySkillInfoIndex(f++, (itr->second.MaximumValue << 16) | itr->second.CurrentValue);
         // current: field skill_rank
-        setUInt32Value(f++, itr->second.BonusValue);
+        setValueBySkillInfoIndex(f++, itr->second.BonusValue);
         ++itr;
     }
 
     /* Null out the rest of the fields */
-    for (; f < getOffsetForStructuredField(WoWPlayer, skill_step); f++)
+    for (; f < WOWPLAYER_SKILL_INFO_COUNT; f++)
     {
-        if (m_uint32Values[f] != 0)
-            setUInt32Value(f, 0);
+        if (getValueFromSkillInfoIndex(f) != 0)
+            setValueBySkillInfoIndex(f, 0);
     }
 }
 #endif

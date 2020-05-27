@@ -258,6 +258,7 @@ void Object::setGuidLow(uint32_t low) { setGuid(low, objectData()->guid_parts.hi
 uint32_t Object::getGuidHigh() const { return objectData()->guid_parts.high; }
 void Object::setGuidHigh(uint32_t high) { setGuid(objectData()->guid_parts.low, high); }
 
+#if VERSION_STRING < Cata
 uint32_t Object::getOType() const { return objectData()->type; }
 void Object::setOType(uint32_t type) { write(objectData()->type, type); }
 void Object::setObjectType(uint8_t objectTypeId)
@@ -292,252 +293,48 @@ void Object::setObjectType(uint8_t objectTypeId)
     m_objectTypeId = objectTypeId;
     write(objectData()->type, static_cast<uint32_t>(m_objectType));
 }
+#else
+uint16_t Object::getOType() const { return objectData()->parts.type; }
+void Object::setOType(uint16_t type) { write(objectData()->parts.type, type); }
+void Object::setObjectType(uint8_t objectTypeId)
+{
+    uint16_t object_type = TYPE_OBJECT;
+    switch (objectTypeId)
+    {
+    case TYPEID_CONTAINER:
+        object_type |= TYPE_CONTAINER;
+    case TYPEID_ITEM:
+        object_type |= TYPE_ITEM;
+        break;
+    case TYPEID_PLAYER:
+        object_type |= TYPE_PLAYER;
+    case TYPEID_UNIT:
+        object_type |= TYPE_UNIT;
+        break;
+    case TYPEID_GAMEOBJECT:
+        object_type |= TYPE_GAMEOBJECT;
+        break;
+    case TYPEID_DYNAMICOBJECT:
+        object_type |= TYPE_DYNAMICOBJECT;
+        break;
+    case TYPEID_CORPSE:
+        object_type |= TYPE_CORPSE;
+        break;
+    default:
+        break;
+    }
+
+    m_objectType = object_type;
+    m_objectTypeId = objectTypeId;
+    write(objectData()->parts.type, static_cast<uint16_t>(m_objectType));
+}
+#endif
 
 uint32_t Object::getEntry() const { return objectData()->entry; }
 void Object::setEntry(uint32_t entry) { write(objectData()->entry, entry); }
 
 float Object::getScale() const { return objectData()->scale_x; }
 void Object::setScale(float scaleX) { write(objectData()->scale_x, scaleX); }
-
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Object values
-void Object::setByteValue(uint16_t index, uint8_t offset, uint8_t value)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-
-    if (offset > 3)
-    {
-        LOG_DEBUG("wrong offset %u", offset);
-        return;
-    }
-
-    if (uint8_t(m_uint32Values[index] >> (offset * 8)) != value)
-    {
-        m_uint32Values[index] &= ~uint32_t(uint32_t(0xFF) << (offset * 8));
-        m_uint32Values[index] |= uint32_t(uint32_t(value) << (offset * 8));
-        m_updateMask.SetBit(index);
-
-        updateObject();
-    }
-}
-
-uint8_t Object::getByteValue(uint16_t index, uint8_t offset) const
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    ARCEMU_ASSERT(offset < 4);
-    return *(((uint8_t*)&m_uint32Values[index]) + offset);
-}
-
-void Object::setByteFlag(uint16_t index, uint8_t offset, uint8_t newFlag)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-
-    if (offset > 3)
-    {
-        LOG_DEBUG("wrong offset %u", offset);
-        return;
-    }
-
-    if (!(uint8_t(m_uint32Values[index] >> (offset * 8)) & newFlag))
-    {
-        m_uint32Values[index] |= uint32_t(uint32_t(newFlag) << (offset * 8));
-
-        m_updateMask.SetBit(index);
-
-        updateObject();
-    }
-}
-
-void Object::removeByteFlag(uint16_t index, uint8_t offset, uint8_t oldFlag)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-
-    if (offset > 3)
-    {
-        LOG_DEBUG("wrong offset %u", offset);
-        return;
-    }
-
-    if (uint8_t(m_uint32Values[index] >> (offset * 8)) & oldFlag)
-    {
-        m_uint32Values[index] &= ~uint32_t(uint32_t(oldFlag) << (offset * 8));
-
-        m_updateMask.SetBit(index);
-
-        updateObject();
-    }
-}
-
-bool Object::hasByteFlag(uint16_t index, uint8_t offset, uint8_t flag)
-{
-    return ((getByteValue(index, offset) & flag) != 0);
-}
-
-void Object::setUInt16Value(uint16_t index, uint8_t offset, uint16_t value)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-
-    if (offset > 1)
-    {
-        LOG_DEBUG("wrong offset %u", offset);
-        return;
-    }
-
-    if (uint16_t(m_uint32Values[index] >> (offset * 16)) != value)
-    {
-        m_uint32Values[index] &= ~uint32_t(uint32_t(0xFFFF) << (offset * 16));
-        m_uint32Values[index] |= uint32_t(uint32_t(value) << (offset * 16));
-        m_updateMask.SetBit(index);
-
-        updateObject();
-    }
-}
-
-uint16_t Object::getUInt16Value(uint16_t index, uint8_t offset) const
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    ARCEMU_ASSERT(offset < 2);
-    return *(((uint16_t*)&m_uint32Values[index]) + offset);
-}
-
-void Object::setUInt32Value(uint16_t index, uint32_t value)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-
-    if (m_uint32Values[index] != value)
-    {
-        m_uint32Values[index] = value;
-        if (IsInWorld())
-        {
-            m_updateMask.SetBit(index);
-
-            updateObject();
-        }
-    }
-}
-
-uint32_t Object::getUInt32Value(uint16_t index) const
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    return m_uint32Values[index];
-}
-
-void Object::modUInt32Value(uint16_t index, int32_t mod)
-{
-    int32_t value = m_uint32Values[index];
-    value += mod;
-
-    if (value < 0)
-        value = 0;
-
-    setUInt32Value(index, value);
-}
-
-uint32_t Object::getPercentModUInt32Value(uint16_t index, const int32_t value)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    int32_t basevalue = (int32_t)m_uint32Values[index];
-    return ((basevalue * value) / 100);
-}
-
-void Object::setInt32Value(uint16_t index, int32_t value)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-
-    if (m_int32Values[index] != value)
-    {
-        m_int32Values[index] = value;
-        m_updateMask.SetBit(index);
-
-        updateObject();
-    }
-}
-
-uint32_t Object::getInt32Value(uint16_t index) const
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    return m_int32Values[index];
-}
-
-void Object::modInt32Value(uint16_t index, int32_t mod)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    if (mod == 0)
-        return;
-
-    m_int32Values[index] += mod;
-
-    m_updateMask.SetBit(index);
-
-    updateObject();
-}
-
-void Object::setUInt64Value(uint16_t index, uint64_t value)
-{
-    ARCEMU_ASSERT(index + 1 < m_valuesCount);
-
-    uint64_t* _value = reinterpret_cast<uint64_t*>(&m_uint32Values[index]);
-
-    if (*_value != value)
-    {
-        *_value = value;
-
-        m_updateMask.SetBit(index);
-        m_updateMask.SetBit(index + 1);
-
-        updateObject();
-    }
-}
-
-uint64_t Object::getUInt64Value(uint16_t index) const
-{
-    ARCEMU_ASSERT(index + 1 < m_valuesCount);
-    return *reinterpret_cast<uint64_t*>(&m_uint32Values[index]);
-}
-
-void Object::setFloatValue(uint16_t index, float value)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    if (m_floatValues[index] == value)
-    {
-        return;
-    }
-
-    m_floatValues[index] = value;
-    m_updateMask.SetBit(index);
-
-    updateObject();
-}
-
-float Object::getFloatValue(uint16_t index) const
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    return m_floatValues[index];
-}
-
-void Object::modFloatValue(uint16_t index, float value)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    m_floatValues[index] += value;
-
-    m_updateMask.SetBit(index);
-
-    updateObject();
-}
-
-void Object::modFloatValueByPCT(uint16_t index, int32 byPct)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    if (byPct > 0)
-        m_floatValues[index] *= 1.0f + byPct / 100.0f;
-    else
-        m_floatValues[index] /= 1.0f - byPct / 100.0f;
-
-    m_updateMask.SetBit(index);
-
-    updateObject();
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Object update
@@ -2417,41 +2214,13 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
     return result;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Fill the object's Update Values from a space delimitated list of values.
-//////////////////////////////////////////////////////////////////////////////////////////
-void Object::LoadValues(const char* data)
-{
-    // thread-safe ;) strtok is not.
-    std::string ndata = data;
-    std::string::size_type last_pos = 0, pos = 0;
-    uint32 index = 0;
-    uint32 val;
-    do
-    {
-        // prevent overflow
-        if (index >= m_valuesCount)
-        {
-            break;
-        }
-        pos = ndata.find(" ", last_pos);
-        val = atol(ndata.substr(last_pos, (pos - last_pos)).c_str());
-        if (m_uint32Values[index] == 0)
-            m_uint32Values[index] = val;
-        last_pos = pos + 1;
-        ++index;
-    } while (pos != std::string::npos);
-}
-
 void Object::_SetUpdateBits(UpdateMask* updateMask, Player* /*target*/) const
 {
     *updateMask = m_updateMask;
 }
 
-
 void Object::_SetCreateBits(UpdateMask* updateMask, Player* /*target*/) const
 {
-
     for (uint32 i = 0; i < m_valuesCount; ++i)
         if (m_uint32Values[i] != 0)
             updateMask->SetBit(i);
@@ -2611,18 +2380,6 @@ void Object::RemoveFromWorld(bool free_guid)
     // update our event holder
     event_Relocate();
 }
-
-void Object::SetFlag(const uint16 index, uint32 newFlag)
-{
-    setUInt32Value(index, getUInt32Value(index) | newFlag);
-}
-
-
-void Object::RemoveFlag(const uint16 index, uint32 oldFlag)
-{
-    setUInt32Value(index, getUInt32Value(index) & ~oldFlag);
-}
-
 
 float Object::CalcDistance(Object* Ob)
 {
@@ -2913,11 +2670,6 @@ void Object::setServersideFaction()
 uint32 Object::getServersideFaction()
 {
     return m_factionTemplate->Faction;
-}
-
-void Object::EventSetUInt32Value(uint16 index, uint32 value)
-{
-    setUInt32Value(index, value);
 }
 
 void Object::DealDamage(Unit* /*pVictim*/, uint32 /*damage*/, uint32 /*targetEvent*/, uint32 /*unitEvent*/, uint32 /*spellId*/, bool /*no_remove_auras*/)

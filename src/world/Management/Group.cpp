@@ -1155,7 +1155,8 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
         for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
         {
             plr = (*itr)->m_loggedInPlayer;
-            if (!plr || plr == pPlayer) continue;
+            if (!plr || plr == pPlayer)
+                continue;
 
             if (!plr->IsVisible(pPlayer->getGuid()))
             {
@@ -1171,18 +1172,30 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
                     myMask.Clear();
                     u1 = u2 = false;
 
-                    for (uint16 j = getOffsetForStructuredField(WoWPlayer, quests); j < getOffsetForStructuredField(WoWPlayer, visible_items); ++j)
+#if VERSION_STRING == Classic
+                    uint16_t questIdOffset = 3;
+#elif VERSION_STRING == TBC
+                    uint16_t questIdOffset = 4;
+#else
+                    uint16_t questIdOffset = 5;
+#endif
+
+                    for (uint8_t x = 0; x < WOWPLAYER_QUEST_COUNT; ++x)
                     {
-                        if (plr->getUInt32Value(j))
+                        if (plr->getQuestLogEntryForSlot(x))
                         {
-                            hisMask.SetBit(j);
+                            for (uint16 j = getOffsetForStructuredField(WoWPlayer, quests[x]); j < getOffsetForStructuredField(WoWPlayer, quests[x]) + questIdOffset; ++j)
+                                hisMask.SetBit(j);
+
                             u1 = true;
                         }
 
-                        if (pPlayer->getUInt32Value(j))
+                        if (pPlayer->getQuestLogEntryForSlot(x))
                         {
                             u2 = true;
-                            myMask.SetBit(j);
+
+                            for (uint16 j = getOffsetForStructuredField(WoWPlayer, quests[x]); j < getOffsetForStructuredField(WoWPlayer, quests[x]) + questIdOffset; ++j)
+                                myMask.SetBit(j);
                         }
                     }
 

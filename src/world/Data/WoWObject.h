@@ -62,7 +62,16 @@ struct WoWObject
 
     uint64_t data;
 
-    uint32_t type;
+    union
+    {
+        struct
+        {
+            uint16_t type;
+            uint16_t guild_id;
+        } parts;
+        uint32_t raw_parts;
+    };
+
     uint32_t entry;
     float scale_x;
     uint32_t padding_object;
@@ -92,7 +101,16 @@ struct WoWObject
 
     uint64_t data;
 
-    uint32_t type;
+    union
+    {
+        struct
+        {
+            uint16_t type;
+            uint16_t guild_id;
+        } parts;
+        uint32_t raw_parts;
+    };
+
     uint32_t entry;
     uint32_t dynamic_flags;
     float scale_x;

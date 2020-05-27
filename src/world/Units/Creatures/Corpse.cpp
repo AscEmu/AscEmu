@@ -42,18 +42,25 @@ uint32_t Corpse::getItem(uint8_t slot) const { return corpseData()->item[slot]; 
 void Corpse::setItem(uint8_t slot, uint32_t item) { write(corpseData()->item[slot], item); }
 
 //bytes 1 start
+uint32_t Corpse::getBytes1() const { return corpseData()->corpse_bytes_1.raw; }
+void Corpse::setBytes1(uint32_t bytes) { write(corpseData()->corpse_bytes_1.raw, bytes); }
+
 //unk1
 
 uint8_t Corpse::getRace() const { return corpseData()->corpse_bytes_1.s.race; }
 void Corpse::setRace(uint8_t race) { write(corpseData()->corpse_bytes_1.s.race, race); }
 
-//unk2
+uint8_t Corpse::getGender() const { return corpseData()->corpse_bytes_1.s.gender; }
+void Corpse::setGender(uint8_t gender) { write(corpseData()->corpse_bytes_1.s.gender, gender); }
 
 uint8_t Corpse::getSkinColor() const { return corpseData()->corpse_bytes_1.s.skin_color; }
 void Corpse::setSkinColor(uint8_t color) { write(corpseData()->corpse_bytes_1.s.skin_color, color); }
 //bytes 1 end
 
 //bytes 2 start
+uint32_t Corpse::getBytes2() const { return corpseData()->corpse_bytes_2.raw; }
+void Corpse::setBytes2(uint32_t bytes) { write(corpseData()->corpse_bytes_2.raw, bytes); }
+
 uint8_t Corpse::getFace() const { return corpseData()->corpse_bytes_2.s.face; }
 void Corpse::setFace(uint8_t face) { write(corpseData()->corpse_bytes_2.s.face, face); }
 
@@ -72,6 +79,63 @@ void Corpse::setFlags(uint32_t flags) { write(corpseData()->corpse_flags, flags)
 
 uint32_t Corpse::getDynamicFlags() const { return corpseData()->dynamic_flags; }
 void Corpse::setDynamicFlags(uint32_t flags) { write(corpseData()->dynamic_flags, flags); }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Misc
+void Corpse::setCorpseDataFromDbString(std::string dbString)
+{
+    std::string seperator = " ";
+    auto dataVector = Util::SplitStringBySeperator(dbString, seperator);
+
+    char const achievement_format[] = "luif";
+    uint8_t countPosition = 0;
+    uint8_t itemOffset = 6;
+    for (auto stringValue : dataVector)
+    {
+        switch (countPosition)
+        {
+            case 0: setGuid(std::stoull(stringValue)); break;
+            case 1: setOType(std::stoul(stringValue)); break;
+            case 2: setEntry(std::stoul(stringValue)); break;
+            case 3: setScale(std::stof(stringValue)); break;
+
+            case 4: setOwnerGuid(std::stoull(stringValue)); break;
+            case 5: setDisplayId(std::stoul(stringValue)); break;
+            
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+            case 20:
+            case 21:
+            case 22:
+            case 23:
+            case 24:
+                setItem(countPosition - itemOffset, std::stoul(stringValue));
+            break;
+
+            case 25: setBytes1(std::stoul(stringValue)); break;
+            case 26: setBytes2(std::stoul(stringValue)); break;
+            case 27: setFlags(std::stoul(stringValue)); break;
+            case 28: setDynamicFlags(std::stoul(stringValue)); break;
+        }
+        std::stoi(stringValue);     // signed long int32_t case
+        std::stoull(stringValue);   // unsigned long long uint64_t (depending where not always 64 bit)
+        std::stoul(stringValue);    // unsigned long uint32_t cast
+        std::stof(stringValue);     // floating
+        ++countPosition;
+    }
+}
 
  // MIT End
  // AGPL Start
@@ -140,11 +204,16 @@ void Corpse::SaveToDB()
         << "', '" << GetPositionZ() 
         << "', '" << GetOrientation() 
         << "', '" << GetZoneId() 
-        << "', '" << GetMapId() 
-        << "', '";
+        << "', '" << GetMapId()
 
-    for (uint16 i = 0; i < m_valuesCount; i++)
-        ss << getUInt32Value(i) << " ";
+        << "', '";
+    ss << getGuid() << " " << getOType() << " " << getEntry() << " " << getScale() << " ";
+    ss << getOwnerGuid() << " " << getDisplayId() << " ";
+
+    for (uint8_t i = 0; i < WOWCORPSE_ITEM_COUNT; ++i)
+        ss << getItem(i) << " ";
+
+    ss << getBytes1() << " " << getBytes2() << " " << getFlags() << " " << getDynamicFlags() << " ";
 
     ss << "', " << GetInstanceID() << ")";
 

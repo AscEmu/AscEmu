@@ -2031,9 +2031,9 @@ public:
     static int HasFlag(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET();
-        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint32_t flag = static_cast<uint32_t>(luaL_checkinteger(L, 2));
-        lua_pushboolean(L, ptr->HasFlag(index, flag) ? 1 : 0);
+        lua_pushboolean(L, ptr->HasFlag(index, flag) ? 1 : 0);*/
         return 1;
     }
 
@@ -2410,9 +2410,9 @@ public:
 
     static int GetFloatValue(lua_State* L, Unit* ptr)
     {
-        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
-            lua_pushnumber(L, ptr->getFloatValue(field));
+            lua_pushnumber(L, ptr->getFloatValue(field));*/
         return 1;
     }
 
@@ -2447,80 +2447,80 @@ public:
 
     static int ModUInt32Value(lua_State* L, Unit* ptr)
     {
-        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         int32_t value = static_cast<int32_t>(luaL_checkinteger(L, 2));
         if (ptr)
-            ptr->modInt32Value(field, value);
+            ptr->modInt32Value(field, value);*/
         return 0;
     }
 
     static int ModFloatValue(lua_State* L, Unit* ptr)
     {
-        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         float value = CHECK_FLOAT(L, 2);
         if (ptr)
-            ptr->modFloatValue(field, value);
+            ptr->modFloatValue(field, value);*/
         return 0;
     }
 
     static int SetUInt32Value(lua_State* L, Unit* ptr)
     {
-        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         if (ptr)
-            ptr->setUInt32Value(field, value);
+            ptr->setUInt32Value(field, value);*/
         return 0;
     }
 
     static int SetUInt64Value(lua_State* L, Unit* ptr)
     {
-        uint16_t field = static_cast<uint16_t>(CHECK_ULONG(L, 1));
+        /*uint16_t field = static_cast<uint16_t>(CHECK_ULONG(L, 1));
         uint64_t guid = CHECK_GUID(L, 2);
         if (ptr)
-            ptr->setUInt64Value(field, guid);
+            ptr->setUInt64Value(field, guid);*/
         return 0;
     }
 
     static int RemoveFlag(lua_State* L, Unit* ptr)
     {
-        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         if (ptr)
-            ptr->RemoveFlag(field, value);
+            ptr->RemoveFlag(field, value);*/
         return 0;
     }
 
     static int SetFlag(lua_State* L, Unit* ptr)
     {
-        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         if (ptr)
-            ptr->SetFlag(field, value);
+            ptr->SetFlag(field, value);*/
         return 0;
     }
 
     static int SetFloatValue(lua_State* L, Unit* ptr)
     {
-        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         float value = CHECK_FLOAT(L, 2);
         if (ptr)
-            ptr->setFloatValue(field, value);
+            ptr->setFloatValue(field, value);*/
         return 0;
     }
 
     static int GetUInt32Value(lua_State* L, Unit* ptr)
     {
-        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
-            lua_pushnumber(L, ptr->getUInt32Value(field));
+            lua_pushnumber(L, ptr->getUInt32Value(field));*/
         return 1;
     }
 
     static int GetUInt64Value(lua_State* L, Unit* ptr)
     {
-        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
-            PUSH_GUID(L, ptr->getUInt64Value(field));
+            PUSH_GUID(L, ptr->getUInt64Value(field));*/
         return 1;
     }
 
@@ -5100,10 +5100,10 @@ public:
         if (ptr == nullptr)
             return 0;
 
-        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint8_t index1 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         uint8_t value = static_cast<uint8_t>(luaL_checkinteger(L, 3));
-        ptr->setByteValue(index, index1, value);
+        ptr->setByteValue(index, index1, value);*/
         return 0;
     }
 
@@ -5112,9 +5112,9 @@ public:
         if (ptr == nullptr)
             return 0;
 
-        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint8_t index1 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
-        lua_pushinteger(L, ptr->getByteValue(index, index1));
+        lua_pushinteger(L, ptr->getByteValue(index, index1));*/
         return 1;
     }
 
@@ -5738,18 +5738,19 @@ public:
     static int GetByte(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER()
-        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint8_t index2 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         uint8_t value = ptr->getByteValue(index, index2);
-        RET_INT(value);
+        RET_INT(value);*/
+        RET_INT(0)
     }
     static int SetByte(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET();
-        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        /*uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint8_t index2 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         uint8_t value = static_cast<uint8_t>(luaL_checkinteger(L, 3));
-        ptr->setByteValue(index, index2, value);
+        ptr->setByteValue(index, index2, value);*/
         RET_BOOL(true)
     }
 
