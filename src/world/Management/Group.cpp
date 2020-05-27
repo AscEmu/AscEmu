@@ -1182,9 +1182,10 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
 
                     for (uint8_t x = 0; x < WOWPLAYER_QUEST_COUNT; ++x)
                     {
+                        const uint32_t startBit = getOffsetForStructuredField(WoWPlayer, quests);
                         if (plr->getQuestLogEntryForSlot(x))
                         {
-                            for (uint16 j = getOffsetForStructuredField(WoWPlayer, quests[x]); j < getOffsetForStructuredField(WoWPlayer, quests[x]) + questIdOffset; ++j)
+                            for (uint16 j = startBit * x; j < startBit * x + questIdOffset; ++j)
                                 hisMask.SetBit(j);
 
                             u1 = true;
@@ -1194,7 +1195,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
                         {
                             u2 = true;
 
-                            for (uint16 j = getOffsetForStructuredField(WoWPlayer, quests[x]); j < getOffsetForStructuredField(WoWPlayer, quests[x]) + questIdOffset; ++j)
+                            for (uint16 j = startBit * x; j < startBit * x + questIdOffset; ++j)
                                 myMask.SetBit(j);
                         }
                     }
