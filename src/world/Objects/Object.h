@@ -264,9 +264,7 @@ protected:
     {
         uint8_t* wow_data_ptr;
         WoWObject* wow_data;
-        int32_t* m_int32Values;
         uint32_t* m_uint32Values;
-        float* m_floatValues;
     };
 
     bool skipping_updates = false;

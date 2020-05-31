@@ -148,22 +148,25 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
         return;
 
     std::string enchant_field = fields[15].GetString();
-    std::vector<std::string> enchants = Util::SplitStringBySeperator(enchant_field, ";");
-    uint32 enchant_id;
-
-    uint32 time_left;
-    uint32 enchslot;
-
-    for (auto& enchant : enchants)
+    if (!enchant_field.empty())
     {
-        if (sscanf(enchant.c_str(), "%u,%u,%u", (unsigned int*)&enchant_id, (unsigned int*)&time_left, (unsigned int*)&enchslot) == 3)
-        {
-            auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
-            if (spell_item_enchant == nullptr)
-                continue;
+        std::vector<std::string> enchants = Util::SplitStringBySeperator(enchant_field, ";");
+        uint32 enchant_id;
 
-            if (spell_item_enchant->Id == enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-                AddEnchantment(spell_item_enchant, time_left, (time_left == 0), false, false, enchslot);
+        uint32 time_left;
+        uint32 enchslot;
+
+        for (auto& enchant : enchants)
+        {
+            if (sscanf(enchant.c_str(), "%u,%u,%u", (unsigned int*)&enchant_id, (unsigned int*)&time_left, (unsigned int*)&enchslot) == 3)
+            {
+                auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
+                if (spell_item_enchant == nullptr)
+                    continue;
+
+                if (spell_item_enchant->Id == enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+                    AddEnchantment(spell_item_enchant, time_left, (time_left == 0), false, false, enchslot);
+            }
         }
     }
 
