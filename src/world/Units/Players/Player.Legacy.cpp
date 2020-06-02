@@ -2923,6 +2923,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     uint32 Counter = 0;
     char* start = nullptr;
     char* end = nullptr;
+#if VERSION_STRING > TBC
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         start = (char*)field[67 + s].GetString();
@@ -2954,6 +2955,41 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             Counter++;
         }
     }
+#else
+	
+    {	
+        auto& spec = m_spec;	
+
+        start = (char*)field[67].GetString();
+        Counter = 0;	
+        while (Counter < PLAYER_ACTION_BUTTON_COUNT)	
+        {	
+            if (start == nullptr)	
+                break;	
+
+            end = strchr(start, ',');	
+            if (!end)	
+                break;	
+            *end = 0;	
+            spec.mActions[Counter].Action = (uint32_t)atol(start);	
+            start = end + 1;	
+            end = strchr(start, ',');	
+            if (!end)	
+                break;	
+            *end = 0;	
+            spec.mActions[Counter].Type = (uint8)atol(start);	
+            start = end + 1;	
+            end = strchr(start, ',');	
+            if (!end)	
+                break;	
+            *end = 0;	
+            spec.mActions[Counter].Misc = (uint8)atol(start);	
+            start = end + 1;	
+
+            Counter++;	
+        }	
+    }
+#endif
 
     if (m_FirstLogin)
     {
@@ -3048,6 +3084,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     SetDrunkValue(uint16(soberFactor * field[79].GetUInt32()));
 
+#if VERSION_STRING > TBC
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         start = (char*)field[80 + 2 * s].GetString();
@@ -3083,10 +3120,37 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             m_specs[s].talents.insert(std::pair<uint32, uint8>(talentid, rank));
         }
     }
+#else
+    {
+        auto& spec = m_spec;	
+
+        //Load talents for spec	
+        start = (char*)field[81].GetString();  // talents1	
+        while (end != nullptr)	
+        {	
+            end = strchr(start, ',');	
+            if (!end)	
+                break;	
+            *end = 0;	
+            uint32 talentid = atol(start);	
+            start = end + 1;	
+
+            end = strchr(start, ',');	
+            if (!end)	
+                break;	
+            *end = 0;	
+            uint8 rank = (uint8)atol(start);	
+            start = end + 1;	
+
+            spec.talents.insert(std::pair<uint32, uint8>(talentid, rank));	
+        }
+    }
+#endif
 
     m_talentSpecsCount = field[84].GetUInt8();
     m_talentActiveSpec = field[85].GetUInt8();
 
+#if VERSION_STRING > TBC
     {
         if (auto talentPoints = field[86].GetString())
         {
@@ -3103,6 +3167,22 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         setFreeTalentPoints(getActiveSpec().GetTP());
 #endif
     }
+#else
+    {
+        if (auto talentPoints = field[86].GetString())
+        {
+            uint32_t tps[2] = {0,0};
+
+            auto talentPointsVector = Util::SplitStringBySeperator(talentPoints, " ");
+            for (uint8_t i = 0; i < 2; ++i)
+                tps[i] = std::stoi(talentPointsVector[i]);
+
+            m_spec.SetTP(tps[0]);
+        }
+
+        setFreeTalentPoints(getActiveSpec().GetTP());
+    }
+#endif
 
 #if VERSION_STRING >= Cata
     m_FirstTalentTreeLock = field[87].GetUInt32(); // Load First Set Talent Tree
