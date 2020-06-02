@@ -47,14 +47,24 @@ namespace Util
 
     std::vector<std::string> SplitStringBySeperator(const std::string& str_src, const std::string& str_sep)
     {
-        std::vector<std::string> string_vector;
-        std::stringstream string_stream(str_src);
+        std::vector<std::string> string_vector {};
+
+        //\NOTE: somehow people think it is a good idea to use a separator as last char in a string
+        //       just remove it from the string before processing single strings (shitty db saving and loading)
+        std::string source = str_src;
+        if (source[source.size()] == str_sep[0])
+            source = source.substr(0, source.size() -1);
+
+        std::stringstream string_stream(source);
         std::string isolated_string;
 
         std::vector<char> seperator(str_sep.c_str(), str_sep.c_str() + str_sep.size() + 1);
 
         while (std::getline(string_stream, isolated_string, seperator[0]))
-            string_vector.push_back(isolated_string);
+        {
+            if (isolated_string.size() != 0)
+                string_vector.push_back(isolated_string);
+        }
 
         return string_vector;
     }

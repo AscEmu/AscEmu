@@ -85,7 +85,7 @@ void QuestLogEntry::saveToDB(QueryBuffer* queryBuffer)
     std::stringstream ss;
 
     ss << "REPLACE INTO questlog VALUES(";
-    ss << m_player->getGuidLow() << "," << m_questProperties->id << "," << m_slot << "," << m_expirytime;
+    ss << m_player->getGuidLow() << "," << m_questProperties->id << "," << uint32_t(m_slot) << "," << m_expirytime;
 
     for (uint8_t i = 0; i < 4; ++i)
         ss << "," << m_explored_areas[i];
