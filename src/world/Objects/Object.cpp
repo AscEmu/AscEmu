@@ -821,30 +821,6 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     mInRangeSameFactionSet.clear();
 
     Active = false;
-
-    //#define WOW_STRUCT_CHECK
-#ifdef WOW_STRUCT_CHECK
-    //size check
-    auto size_object = OBJECT_END * sizeof(uint32_t);
-    auto size_object_struct = sizeof(WoWObject);
-
-    std::cout << "Struct size of object: " << size_object_struct << " enum: " << size_object << std::endl;
-
-    auto size_player = PLAYER_END * sizeof(uint32_t);
-    auto size_player_struct = sizeof(WoWPlayer);
-
-    std::cout << "Struct size of player: " << size_player_struct << " enum: " << size_player << std::endl;
-
-    auto size_unit = UNIT_END * sizeof(uint32_t);
-    auto size_unit_struct = sizeof(WoWUnit);
-
-    std::cout << "Struct size of unit: " << size_unit_struct << " enum: " << size_unit << std::endl;
-
-    auto size_gobj = GAMEOBJECT_END * sizeof(uint32_t);
-    auto size_gobj_struct = sizeof(WoWGameObject);
-
-    std::cout << "Struct size of gobj: " << size_gobj_struct << " enum: " << size_gobj << std::endl;
-#endif
 }
 
 Object::~Object()
