@@ -2319,7 +2319,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
            << uint32(m_spec.mActions[i].Type) << ","
            << uint32(m_spec.mActions[i].Misc) << ",";
     }
-    ss << "'" << "''" << ", ";
+    ss << "'" << ", " << "''" << ", ";
 #endif
 
     if (!bNewCharacter)
