@@ -12,35 +12,31 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class SmsgSpellFailedOther : public ManagedPacket
+    class SmsgSpellOrDamageImmune : public ManagedPacket
     {
     public:
-        WoWGuid casterGuid;
-        uint8_t castNumber;
+        uint64_t casterGuid;
+        uint64_t targetGuid;
         uint32_t spellId;
-        uint8_t result;
+        uint8_t logEnabled;
 
-        SmsgSpellFailedOther() : SmsgSpellFailedOther(WoWGuid(), 0, 0, 0)
+        SmsgSpellOrDamageImmune() : SmsgSpellOrDamageImmune(0, 0, 0, 0)
         {
         }
 
-        SmsgSpellFailedOther(WoWGuid casterGuid, uint8_t castNumber, uint32_t spellId, uint8_t result) :
-            ManagedPacket(SMSG_SPELL_FAILED_OTHER, 8 + 4),
+        SmsgSpellOrDamageImmune(uint64_t casterGuid, uint64_t targetGuid, uint32_t spellId, uint8_t logEnabled = 0) :
+            ManagedPacket(SMSG_SPELLORDAMAGE_IMMUNE, 8 + 8 + 4 + 1),
             casterGuid(casterGuid),
-            castNumber(castNumber),
+            targetGuid(targetGuid),
             spellId(spellId),
-            result(result)
+            logEnabled(logEnabled)
         {
         }
 
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << casterGuid;
-#if VERSION_STRING > TBC
-            packet << castNumber;
-#endif
-            packet << spellId << result;
+            packet << casterGuid << targetGuid << spellId << logEnabled;
 
             return true;
         }

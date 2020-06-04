@@ -45,6 +45,7 @@
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Packets/SmsgSetExtraAuraInfo.h"
 #include "Server/Packets/MsgChannelUpdate.h"
+#include "Server/Packets/SmsgSpellOrDamageImmune.h"
 
 using namespace AscEmu::Packets;
 
@@ -4896,12 +4897,7 @@ void Aura::EventPeriodicLeech(uint32 amount)
 
 void Aura::SendTickImmune(Unit* target, Unit* caster)
 {
-    WorldPacket data(SMSG_SPELLORDAMAGE_IMMUNE, 21);
-    data << (caster ? caster->getGuid() : target->getGuid());
-    data << target->getGuid();
-    data << GetSpellInfo()->getId();
-    data << uint8(1);
-    target->SendMessageToSet(&data, true);
+    target->SendMessageToSet(SmsgSpellOrDamageImmune(caster ? caster->getGuid() : target->getGuid(), target->getGuid(), GetSpellInfo()->getId()).serialise().get(), true);
 }
 
 void Aura::SpellAuraModHitChance(bool apply)
