@@ -64,6 +64,7 @@
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Packets/SmsgBindPointUpdate.h"
 #include "Server/Packets/SmsgClearTarget.h"
+#include "Server/Packets/SmsgSpellStealLog.h"
 
 using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
 using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
@@ -6098,19 +6099,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
 
     if (!stealedSpells.empty())
     {
-        WorldPacket data(SMSG_SPELLSTEALLOG, 25 + stealedSpells.size() * 5);
-        data << m_caster->GetNewGUID();
-        data << unitTarget->GetNewGUID();
-        data << getSpellInfo()->getId();
-        data << uint8(0);               // unused
-        data << uint32(stealedSpells.size());
-        for (std::list< uint32 >::iterator itr = stealedSpells.begin(); itr != stealedSpells.end(); ++itr)
-        {
-            data << uint32(*itr);       // stealed spell id
-            data << uint8(1);           // 0 = dispelled, else cleansed
-        }
-
-        m_caster->SendMessageToSet(&data, true);
+        m_caster->SendMessageToSet(SmsgSpellStealLog(m_caster->getGuid(), unitTarget->getGuid(), getSpellInfo()->getId(), stealedSpells).serialise().get(), true);
     }
 }
 
