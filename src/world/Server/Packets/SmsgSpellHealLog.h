@@ -24,7 +24,7 @@ namespace AscEmu::Packets
         uint8_t isCritical;
         uint8_t unused;
 
-        SmsgSpellHealLog() : SmsgSpellHealLog(0, 0, 0, )
+        SmsgSpellHealLog() : SmsgSpellHealLog(WoWGuid(), WoWGuid(), 0, 0, 0, 0, 0)
         {
         }
 
@@ -44,7 +44,11 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << casterGuid << targetGuid << spellId << healed << overHealed << absorb << isCritical << unused;
+            packet << casterGuid << targetGuid << spellId << healed;
+#if VERSION_STRING > TBC
+            packet << overHealed << absorb;
+#endif
+            packet << isCritical << unused;
 
             return true;
         }
