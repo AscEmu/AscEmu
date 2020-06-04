@@ -45,6 +45,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/UnitDefines.hpp"
 #include "Util.hpp"
 #include "Server/Packets/MsgChannelUpdate.h"
+#include "Server/Packets/MsgChannelStart.h"
 
 using namespace AscEmu::Packets;
 
@@ -3851,27 +3852,7 @@ void Spell::sendSpellGo()
 
 void Spell::sendChannelStart(const uint32_t duration)
 {
-    // Initialize packet size
-#if VERSION_STRING == Classic
-    const uint8_t packetSize = 8;
-#elif VERSION_STRING < Cata
-    const uint8_t packetSize = 16;
-#else
-    const uint8_t packetSize = 18;
-#endif
-
-    WorldPacket data(MSG_CHANNEL_START, packetSize);
-#if VERSION_STRING >= TBC
-    data << m_caster->GetNewGUID();
-#endif
-    data << uint32_t(getSpellInfo()->getId());
-    data << uint32_t(duration);
-#if VERSION_STRING >= Cata
-    //\ todo: figure these out
-    data << uint8_t(0);
-    data << uint8_t(0);
-#endif
-    m_caster->SendMessageToSet(&data, true);
+    m_caster->SendMessageToSet(MsgChannelStart(m_caster->GetNewGUID(), getSpellInfo()->getId(), duration).serialise().get(), true);
 
     Object const* channelTarget = nullptr;
     if (!uniqueHittedTargets.empty())
@@ -3886,15 +3867,14 @@ void Spell::sendChannelStart(const uint32_t duration)
                 channelTarget = targetUnit;
                 break;
             }
-            else
+
+            const auto objTarget = m_caster->GetMapMgrGameObject(targetGuid);
+            if (objTarget != nullptr)
             {
-                const auto objTarget = m_caster->GetMapMgrGameObject(targetGuid);
-                if (objTarget != nullptr)
-                {
-                    channelTarget = objTarget;
-                    break;
-                }
+                channelTarget = objTarget;
+                break;
             }
+
         }
     }
 

@@ -1684,7 +1684,7 @@ void Spell::writeSpellGoTargets(WorldPacket* data)
     }
 }
 
-// Not called
+//\todo: Not called, should be send after targetting
 void Spell::SendLogExecute(uint32 spellDamage, uint64 & targetGuid)
 {
     WorldPacket data(SMSG_SPELLLOGEXECUTE, 37);
