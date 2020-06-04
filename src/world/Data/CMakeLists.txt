@@ -16,5 +16,16 @@ set(SRC_DATA_FILES
    ${PATH_PREFIX}/MovementInfo.h
 )
 
+if("${ASCEMU_VERSION}" STREQUAL "Cata")
+   set(SRC_DATA_FILES
+   ${SRC_DATA_FILES}
+   ${PATH_PREFIX}/WoWAreaTrigger.h)
+endif()
+if("${ASCEMU_VERSION}" STREQUAL "Mop")
+   set(SRC_DATA_FILES
+   ${SRC_DATA_FILES}
+   ${PATH_PREFIX}/WoWAreaTrigger.h)
+endif()
+
 source_group(Data FILES ${SRC_DATA_FILES})
 unset(PATH_PREFIX)
