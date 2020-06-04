@@ -63,6 +63,7 @@
 #include "Server/Packets/SmsgTaxinodeStatus.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Packets/SmsgBindPointUpdate.h"
+#include "Server/Packets/SmsgClearTarget.h"
 
 using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
 using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
@@ -166,7 +167,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectNULL,                    //  90 SPELL_EFFECT_NULL_90
     &Spell::SpellEffectNULL,                    //  91 SPELL_EFFECT_NULL_91
     &Spell::SpellEffectEnchantHeldItem,         //  92 SPELL_EFFECT_ENCHANT_HELD_ITEM
-    &Spell::SpellEffectSetMirrorName,           //  93 SPELL_EFFECT_SET_MIRROR_NAME
+    &Spell::SpellEffectForceDeselect,           //  93 SPELL_EFFECT_SET_MIRROR_NAME
     &Spell::SpellEffectSelfResurrect,           //  94 SPELL_EFFECT_SELF_RESURRECT
     &Spell::SpellEffectSkinning,                //  95 SPELL_EFFECT_SKINNING
     &Spell::SpellEffectCharge,                  //  96 SPELL_EFFECT_CHARGE
@@ -353,7 +354,7 @@ const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
     "SPELL_EFFECT_NULL_90",                     //    90
     "SPELL_EFFECT_NULL_91",                     //    91
     "SPELL_EFFECT_ENCHANT_HELD_ITEM",           //    92
-    "SPELL_EFFECT_SET_MIRROR_NAME",             //    93
+    "SPELL_EFFECT_FORCE_DESELECT",              //    93
     "SPELL_EFFECT_SELF_RESURRECT",              //    94
     "SPELL_EFFECT_SKINNING",                    //    95
     "SPELL_EFFECT_CHARGE",                      //    96
@@ -6648,9 +6649,12 @@ void Spell::SpellEffectActivateRunes(uint8_t effectIndex)
     }
 }
 
-void Spell::SpellEffectSetMirrorName(uint8_t /*effectIndex*/)
+void Spell::SpellEffectForceDeselect(uint8_t /*effectIndex*/)
 {
-    WorldPacket data(SMSG_CLEAR_TARGET, 8);
-    data << uint64(m_caster->getGuid());
-    m_caster->SendMessageToSet(&data, true);
+    //clear focus SMSG_BREAK_TARGET
+
+    //clear target
+    m_caster->SendMessageToSet(SmsgClearTarget(m_caster->getGuid()).serialise().get(), true);
+
+    //stop attacking and pet target
 }

@@ -5412,8 +5412,6 @@ void Aura::SpellAuraFeignDeath(bool apply)
 {
     if (p_target != nullptr)
     {
-        WorldPacket data(50);
-
         if (apply)
         {
             p_target->EventAttackStop();
@@ -5446,19 +5444,12 @@ void Aura::SpellAuraFeignDeath(bool apply)
                         Player* plr = static_cast<Player*>(itr);
                         if (plr->isCastingSpell())
                             plr->interruptSpell(); // cancel current casting spell
-
-                        plr->GetSession()->SendPacket(&data);
                     }
                 }
             }
 
             // this looks awkward!
             p_target->SendMirrorTimer(MIRROR_TYPE_FIRE, GetDuration(), GetDuration(), 0xFFFFFFFF);
-
-            p_target->GetSession()->SendPacket(&data);
-
-            data.Initialize(SMSG_CLEAR_TARGET);
-            data << p_target->getGuid();
 
             p_target->removeUnitFlags(UNIT_FLAG_COMBAT);
 

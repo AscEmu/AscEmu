@@ -299,6 +299,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgChatPlayerNotFound.h
    ${PATH_PREFIX}/SmsgClearCooldown.h
    ${PATH_PREFIX}/SmsgClearExtraAuraInfo.h
+   ${PATH_PREFIX}/SmsgClearTarget.h
    ${PATH_PREFIX}/SmsgClientControlUpdate.h
    ${PATH_PREFIX}/SmsgComplainResult.h
    ${PATH_PREFIX}/SmsgCooldownEvent.h

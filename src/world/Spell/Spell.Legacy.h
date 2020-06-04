@@ -337,7 +337,7 @@ class SERVER_DECL Spell : public EventableObject
         void SpellEffectActivateObject(uint8_t effectIndex);
         void SpellEffectBuildingDamage(uint8_t effectIndex);
         void SpellEffectEnchantHeldItem(uint8_t effectIndex);
-        void SpellEffectSetMirrorName(uint8_t effectIndex);
+        void SpellEffectForceDeselect(uint8_t effectIndex);
         void SpellEffectSelfResurrect(uint8_t effectIndex);
         void SpellEffectSkinning(uint8_t effectIndex);
         void SpellEffectCharge(uint8_t effectIndex);
