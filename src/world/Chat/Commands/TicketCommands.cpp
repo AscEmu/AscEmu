@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgGmTicketDeleteTicket.h"
+#include "Server/Packets/SmsgGmTicketStatusUpdate.h"
 
 using namespace AscEmu::Packets;
 
@@ -156,9 +157,7 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
         // Notify player about removing ticket
         ticketOwner->GetSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
         // Response - Send GM Survey
-        WorldPacket datab(SMSG_GM_TICKET_STATUS_UPDATE, 1);
-        datab << uint32(3);
-        ticketOwner->GetSession()->SendPacket(&datab);
+        ticketOwner->GetSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
     }
     else
     {

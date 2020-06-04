@@ -27,6 +27,7 @@
 #include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgGmTicketDeleteTicket.h"
+#include "Server/Packets/SmsgGmTicketStatusUpdate.h"
 
 using namespace AscEmu::Packets;
 
@@ -158,9 +159,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
     plr->GetSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
 
     // Response - Send GM Survey
-    WorldPacket datab(SMSG_GM_TICKET_STATUS_UPDATE, 1);
-    datab << uint32(3);
-    plr->GetSession()->SendPacket(&datab);
+    plr->GetSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
 
     return true;
 }
@@ -311,11 +310,10 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
 
     // Notify player about removing ticket
     plr->GetSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
+
     // Response - Send GM Survey
-    WorldPacket datab(SMSG_GM_TICKET_STATUS_UPDATE, 1);
-    datab << uint32(3);
-    plr->GetSession()->SendPacket(&datab);
-    //plr->GetSession()->GetPlayer()->OutPacketToSet(SMSG_GM_TICKET_STATUS_UPDATE, 1, SENDSURVEY,true);
+    plr->GetSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
+
     SystemMessageToPlr(plr, "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
     return true;
 }
@@ -550,10 +548,8 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
         plr->GetSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
 
         // Response - Send GM Survey
-        WorldPacket datab(SMSG_GM_TICKET_STATUS_UPDATE, 1);
-        datab << uint32(3);
-        plr->GetSession()->SendPacket(&datab);
-        //plr->GetSession()->GetPlayer()->OutPacketToSet(SMSG_GM_TICKET_STATUS_UPDATE, 1, SENDSURVEY,true);
+        plr->GetSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
+
         SystemMessageToPlr(plr, "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
     }
 
