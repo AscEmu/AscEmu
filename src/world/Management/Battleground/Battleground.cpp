@@ -29,6 +29,7 @@
 #include "Spell/Definitions/PowerType.h"
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgBattlegroundPlayerLeft.h"
+#include "Server/Packets/SmsgBattlegroundPlayerJoined.h"
 
 uint32 CBattleground::GetId()
 {
@@ -318,17 +319,13 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
 
     plr->FullHPMP();
     plr->setTeam(plr->getBgTeam());
+
+    //Do not let everyone know an invisible gm has joined.
     if (plr->m_isGmInvisible == false)
-    {
-        //Do not let everyone know an invisible gm has joined.
-        WorldPacket data(SMSG_BATTLEGROUND_PLAYER_JOINED, 8);
-        data << plr->getGuid();
-        DistributePacketToTeam(&data, plr->getBgTeam());
-    }
+        DistributePacketToTeam(AscEmu::Packets::SmsgBattlegroundPlayerJoined(plr->getGuid()).serialise().get(), plr->getBgTeam());
     else
-    {
         ++m_invisGMs;
-    }
+
     m_players[plr->getBgTeam()].insert(plr);
 
     /* remove from any auto queue remove events */

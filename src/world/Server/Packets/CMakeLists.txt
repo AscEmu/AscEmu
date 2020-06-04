@@ -283,6 +283,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgAuraUpdate.h
    ${PATH_PREFIX}/SmsgAuraUpdateAll.h
    ${PATH_PREFIX}/SmsgBarberShopResult.h
+   ${PATH_PREFIX}/SmsgBattlegroundPlayerJoined.h
    ${PATH_PREFIX}/SmsgBattlegroundPlayerLeft.h
    ${PATH_PREFIX}/SmsgBinderConfirm.h
    ${PATH_PREFIX}/SmsgBindPointUpdate.h
