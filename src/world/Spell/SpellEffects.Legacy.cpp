@@ -65,6 +65,7 @@
 #include "Server/Packets/SmsgBindPointUpdate.h"
 #include "Server/Packets/SmsgClearTarget.h"
 #include "Server/Packets/SmsgSpellStealLog.h"
+#include "Server/Packets/SmsgSpellDispellLog.h"
 
 using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
 using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
@@ -4010,19 +4011,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
     // send spell dispell log packet
     if (!dispelledSpells.empty())
     {
-        WorldPacket data(SMSG_SPELLDISPELLOG, 25 + dispelledSpells.size() * 5);
-        data << m_caster->GetNewGUID();
-        data << unitTarget->GetNewGUID();
-        data << getSpellInfo()->getId();
-        data << uint8(0);               // unused
-        data << uint32(dispelledSpells.size());
-        for (std::list< uint32 >::iterator itr = dispelledSpells.begin(); itr != dispelledSpells.end(); ++itr)
-        {
-            data << uint32(*itr);       // dispelled spell id
-            data << uint8(0);           // 0 = dispelled, else cleansed
-        }
-
-        m_caster->SendMessageToSet(&data, true);
+        m_caster->SendMessageToSet(SmsgSpellDispellLog(m_caster->getGuid(), unitTarget->getGuid(), getSpellInfo()->getId(), dispelledSpells).serialise().get(), true);
     }
 }
 
