@@ -58,6 +58,7 @@
 #include "Server/Packets/SmsgSpellFailure.h"
 #include "Server/Packets/SmsgSpellFailedOther.h"
 #include "Server/Packets/SmsgSpellHealLog.h"
+#include "Server/Packets/SmsgResurrectRequest.h"
 
 using namespace AscEmu::Packets;
 
@@ -1726,12 +1727,21 @@ void Spell::SendInterrupted(uint8 result)
 
 void Spell::SendResurrectRequest(Player* target)
 {
-    WorldPacket data(SMSG_RESURRECT_REQUEST, 13);
-    data << m_caster->getGuid();
-    data << uint32(0);
-    data << uint8(0);
+    bool resurrectionSickness = false;
+    std::string casterName;
+    if (!m_caster->isPlayer() && m_caster->isCreature())
+    {
+        casterName = dynamic_cast<Creature*>(m_caster)->GetCreatureProperties()->Name;
 
-    target->GetSession()->SendPacket(&data);
+        if (dynamic_cast<Creature*>(m_caster)->isSpiritHealer())
+            resurrectionSickness = true;
+    }
+
+    bool overrideTimer = false;
+    if (m_spellInfo->getAttributesExC() & ATTRIBUTESEXC_IGNORE_RESURRECTION_TIMER)
+        overrideTimer = true;
+
+    target->GetSession()->SendPacket(SmsgResurrectRequest(m_caster->getGuid(), casterName, resurrectionSickness, overrideTimer, m_spellInfo->getId()).serialise().get());
     target->m_resurrecter = m_caster->getGuid();
 }
 

@@ -405,6 +405,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgRealmSplit.h
    ${PATH_PREFIX}/SmsgRemovedSpell.h
    ${PATH_PREFIX}/SmsgResurrectFailed.h
+   ${PATH_PREFIX}/SmsgResurrectRequest.h
    ${PATH_PREFIX}/SmsgSellItem.h
    ${PATH_PREFIX}/SmsgSendMailResult.h
    ${PATH_PREFIX}/SmsgSendUnlearnSpells.h

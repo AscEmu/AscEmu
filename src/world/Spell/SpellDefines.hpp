@@ -158,7 +158,7 @@ enum SpellAttributesExC
     ATTRIBUTESEXC_UNK3                              = 0x00000002,
     ATTRIBUTESEXC_UNK4                              = 0x00000004,
     ATTRIBUTESEXC_UNK5                              = 0x00000008,
-    ATTRIBUTESEXC_UNK6                              = 0x00000010,   // ignor resurrection
+    ATTRIBUTESEXC_IGNORE_RESURRECTION_TIMER         = 0x00000010,   // ignor resurrection
     ATTRIBUTESEXC_UNK7                              = 0x00000020,
     ATTRIBUTESEXC_UNK8                              = 0x00000040,
     ATTRIBUTESEXC_UNK9                              = 0x00000080,
