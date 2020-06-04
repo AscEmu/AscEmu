@@ -264,6 +264,19 @@ class SERVER_DECL WoWGuid
         bool operator !=(uint64_t someval) const { return (m_rawGuid != someval); }
         uint64_t operator &(uint64_t someval) const { return (m_rawGuid & someval); }
         uint64_t operator &(unsigned int someval) const { return (m_rawGuid & someval); }
+
+        uint8_t& operator[](uint32_t index)
+        {
+            ASSERT(index < sizeof(uint64_t))
+            return m_guidfields[index];
+        }
+
+        uint8_t const& operator[](uint32_t index) const
+        {
+            ASSERT(index < sizeof(uint64_t))
+            return m_guidfields[index];
+        }
+
         operator bool() { return (m_rawGuid > 0); }
         operator uint64_t() { return m_rawGuid; }
         void operator =(uint64_t someval) { Clear(); Init(static_cast<uint64_t>(someval)); }
