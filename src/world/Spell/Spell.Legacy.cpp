@@ -59,6 +59,7 @@
 #include "Server/Packets/SmsgSpellFailedOther.h"
 #include "Server/Packets/SmsgSpellHealLog.h"
 #include "Server/Packets/SmsgResurrectRequest.h"
+#include "Server/Packets/SmsgSpellDelayed.h"
 
 using namespace AscEmu::Packets;
 
@@ -1271,10 +1272,7 @@ void Spell::AddTime(uint32 type)
                     delay = 1;
             }
 
-            WorldPacket data(SMSG_SPELL_DELAYED, 13);
-            data << u_caster->GetNewGUID();
-            data << uint32(delay);
-            u_caster->SendMessageToSet(&data, true);
+            u_caster->SendMessageToSet(SmsgSpellDelayed(u_caster->GetNewGUID(), delay).serialise().get(), true);
 
             if (p_caster == nullptr)
             {
