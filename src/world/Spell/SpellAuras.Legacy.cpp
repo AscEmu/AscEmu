@@ -44,6 +44,9 @@
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Packets/SmsgSetExtraAuraInfo.h"
+#include "Server/Packets/MsgChannelUpdate.h"
+
+using namespace AscEmu::Packets;
 
 using AscEmu::World::Spell::Helpers::decimalToMask;
 using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
@@ -8826,11 +8829,7 @@ void Aura::SendInterrupted(uint8 result, Object* m_caster)
 
 void Aura::SendChannelUpdate(uint32 time, Object* m_caster)
 {
-    WorldPacket data(MSG_CHANNEL_UPDATE, 18);
-    data << m_caster->GetNewGUID();
-    data << time;
-
-    m_caster->SendMessageToSet(&data, true);
+    m_caster->SendMessageToSet(MsgChannelUpdate(m_caster->GetNewGUID(), time).serialise().get(), true);
 }
 
 void Aura::SpellAuraExpertise(bool /*apply*/)

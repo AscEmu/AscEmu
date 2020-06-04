@@ -44,6 +44,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Players/PlayerClasses.hpp"
 #include "Units/UnitDefines.hpp"
 #include "Util.hpp"
+#include "Server/Packets/MsgChannelUpdate.h"
+
+using namespace AscEmu::Packets;
 
 using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
 using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
@@ -3622,13 +3625,6 @@ void Spell::sendCastResult(SpellCastResult result, uint32_t parameter1 /*= 0*/, 
 
 void Spell::sendChannelUpdate(const uint32_t time)
 {
-    // Initialize packet size
-#if VERSION_STRING == Classic
-    const uint8_t packetSize = 4;
-#else
-    const uint8_t packetSize = 12;
-#endif
-
     if (time == 0)
     {
         if (u_caster != nullptr)
@@ -3655,12 +3651,7 @@ void Spell::sendChannelUpdate(const uint32_t time)
         }
     }
 
-    WorldPacket data(MSG_CHANNEL_UPDATE, packetSize);
-#if VERSION_STRING >= TBC
-    data << m_caster->GetNewGUID();
-#endif
-    data << uint32_t(time);
-    m_caster->SendMessageToSet(&data, true);
+    m_caster->SendMessageToSet(MsgChannelUpdate(m_caster->GetNewGUID(), time).serialise().get(), true);
 }
 
 void Spell::sendSpellStart()

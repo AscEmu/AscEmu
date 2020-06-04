@@ -238,6 +238,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MovementPacket.h
    ${PATH_PREFIX}/MsgAuctionHello.h
    ${PATH_PREFIX}/MsgBattlegroundPlayerPosition.h
+   ${PATH_PREFIX}/MsgChannelUpdate.h
    ${PATH_PREFIX}/MsgCorpseQuery.h
    ${PATH_PREFIX}/MsgGuildBankLogQuery.h
    ${PATH_PREFIX}/MsgGuildBankMoneyWithdrawn.h
