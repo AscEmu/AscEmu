@@ -57,6 +57,7 @@
 #include "Map/WorldCreatorDefines.hpp"
 #include "Server/Packets/SmsgSpellFailure.h"
 #include "Server/Packets/SmsgSpellFailedOther.h"
+#include "Server/Packets/SmsgSpellHealLog.h"
 
 using namespace AscEmu::Packets;
 
@@ -3788,16 +3789,7 @@ void Spell::SendHealSpellOnPlayer(Object* caster, Object* target, uint32 healed,
     if (caster == nullptr || target == nullptr || !target->isPlayer())
         return;
 
-    WorldPacket data(SMSG_SPELLHEALLOG, 33);
-    data << target->GetNewGUID();
-    data << caster->GetNewGUID();
-    data << spellid;
-    data << healed;
-    data << overhealed;
-    data << absorbed;
-    data << uint8(critical);
-
-    caster->SendMessageToSet(&data, true);
+    caster->SendMessageToSet(SmsgSpellHealLog(target->GetNewGUID(), caster->GetNewGUID(), spellid, healed, overhealed, absorbed, critical).serialise().get(), true);
 }
 
 void Spell::Heal(int32 amount, bool ForceCrit)

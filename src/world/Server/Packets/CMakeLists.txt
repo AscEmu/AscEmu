@@ -421,6 +421,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgSpellOrDamageImmune.h
    ${PATH_PREFIX}/SmsgSpellFailedOther.h
    ${PATH_PREFIX}/SmsgSpellFailure.h
+   ${PATH_PREFIX}/SmsgSpellHealLog.h
    ${PATH_PREFIX}/SmsgSpellStealLog.h
    ${PATH_PREFIX}/SmsgSpiritHealerConfirm.h
    ${PATH_PREFIX}/SmsgStableResult.h
