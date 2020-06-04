@@ -46,6 +46,7 @@
 #include "Server/Packets/SmsgSetExtraAuraInfo.h"
 #include "Server/Packets/MsgChannelUpdate.h"
 #include "Server/Packets/SmsgSpellOrDamageImmune.h"
+#include "Server/Packets/SmsgPlayerVehicleData.h"
 
 using namespace AscEmu::Packets;
 
@@ -5777,12 +5778,9 @@ void Aura::SpellAuraMounted(bool apply)
             p_target->addVehicleComponent(ci->Id, ci->vehicleid);
 
 #if VERSION_STRING > TBC
-            WorldPacket data(SMSG_PLAYER_VEHICLE_DATA, 12);
-            data << p_target->GetNewGUID();
-            data << uint32(p_target->mountvehicleid);
-            p_target->SendMessageToSet(&data, true);
+            p_target->SendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), p_target->mountvehicleid).serialise().get(), true);
 
-            data.Initialize(SMSG_CONTROL_VEHICLE);
+            WorldPacket data(SMSG_CONTROL_VEHICLE, 12);
             p_target->SendPacket(&data);
 #endif
 
@@ -5804,10 +5802,7 @@ void Aura::SpellAuraMounted(bool apply)
             p_target->getVehicleComponent()->EjectAllPassengers();
 
 #if VERSION_STRING > TBC
-            WorldPacket data(SMSG_PLAYER_VEHICLE_DATA, 12);
-            data << p_target->GetNewGUID();
-            data << uint32(0);
-            p_target->SendMessageToSet(&data, true);
+            p_target->SendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), 0).serialise().get(), true);
 #endif
 
             p_target->removeVehicleComponent();
