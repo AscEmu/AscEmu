@@ -28,6 +28,7 @@
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/PowerType.h"
 #include "Server/Packets/SmsgPlaySound.h"
+#include "Server/Packets/SmsgBattlegroundPlayerLeft.h"
 
 uint32 CBattleground::GetId()
 {
@@ -616,17 +617,11 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    WorldPacket data(SMSG_BATTLEGROUND_PLAYER_LEFT, 30);
-    data << plr->getGuid();
+    //Don't show invisible gm's leaving the game.
     if (plr->m_isGmInvisible == false)
-    {
-        //Don't show invisible gm's leaving the game.
-        DistributePacketToAll(&data);
-    }
+        DistributePacketToAll(AscEmu::Packets::SmsgBattlegroundPlayerLeft(plr->getGuid()).serialise().get());
     else
-    {
         --m_invisGMs;
-    }
 
     // Call subclassed virtual method
     OnRemovePlayer(plr);
