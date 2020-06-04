@@ -32,6 +32,7 @@
 #include "Data/WoWItem.h"
 #include "Server/Packets/SmsgEnchantmentLog.h"
 #include "Server/Packets/SmsgItemEnchantmentTimeUpdate.h"
+#include "Server/Packets/SmsgItemTimeUpdate.h"
 
 using namespace AscEmu::Packets;
 
@@ -1120,27 +1121,7 @@ void Item::EventRemoveItem()
 
 void Item::SendDurationUpdate()
 {
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  As of 3.1.3 the server sends this to set the actual durationtime (the time the item exists for)
-    //  of the item
-    //
-    //  {SERVER} Packet: (0x01EA) SMSG_ITEM_TIME_UPDATE PacketSize = 12 TimeStamp = 37339296
-    //  05 76 83 E7 01 00 00 42 10 0E 00 00
-    //
-    //  Structure:
-    //
-    //  uint64 GUID                      - the identifier of the item (not the itemid)
-    //  uint32 remainingtime             - remaining duration
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    WorldPacket durationupdate(SMSG_ITEM_TIME_UPDATE, 12);
-    durationupdate << uint64(getGuid());
-#if VERSION_STRING >= WotLK
-    durationupdate << uint32(GetItemExpireTime() - UNIXTIME);
-#else
-    durationupdate << getDuration();
-#endif
-    m_owner->SendPacket(&durationupdate);
+    m_owner->SendPacket(SmsgItemTimeUpdate(this->getGuid(), this->getDuration()).serialise().get());
 }
 
 // "Stackable items (such as Frozen Orbs and gems) and

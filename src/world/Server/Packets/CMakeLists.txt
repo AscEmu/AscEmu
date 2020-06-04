@@ -346,6 +346,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgItemEnchantmentTimeUpdate.h
    ${PATH_PREFIX}/SmsgItemNameQueryResponse.h
    ${PATH_PREFIX}/SmsgItemPushResult.h
+   ${PATH_PREFIX}/SmsgItemTimeUpdate.h
    ${PATH_PREFIX}/SmsgLearnedDanceMoves.h
    ${PATH_PREFIX}/SmsgLearnedSpell.h
    ${PATH_PREFIX}/SmsgLevelupInfo.h
