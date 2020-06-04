@@ -71,12 +71,11 @@ CBattleground::~CBattleground()
     sEventMgr.RemoveEvents(this);
     for (uint8 i = 0; i < 2; ++i)
     {
-        PlayerInfo* inf;
         for (uint32 j = 0; j < m_groups[i]->GetSubGroupCount(); ++j)
         {
             for (GroupMembersSet::iterator itr = m_groups[i]->GetSubGroup(j)->GetGroupMembersBegin(); itr != m_groups[i]->GetSubGroup(j)->GetGroupMembersEnd();)
             {
-                inf = (*itr);
+                PlayerInfo* inf = (*itr);
                 ++itr;
                 m_groups[i]->RemovePlayer(inf);
             }
@@ -729,9 +728,7 @@ void CBattleground::EventCountdown()
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
-                {
                     (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(46), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
-                }
         }
 
         // SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "One minute until the battle for %s begins!", GetName());
@@ -746,9 +743,7 @@ void CBattleground::EventCountdown()
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
-                {
                     (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(47), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
-                }
         }
 
         //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Thirty seconds until the battle for %s begins!", GetName());
@@ -763,9 +758,7 @@ void CBattleground::EventCountdown()
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
-                {
                     (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(48), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
-                }
         }
 
         //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Fifteen seconds until the battle for %s begins!", GetName());
@@ -779,9 +772,7 @@ void CBattleground::EventCountdown()
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
-                {
                     (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(49), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
-                }
         }
         //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The battle for %s has begun!", GetName());
         sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_COUNTDOWN);
@@ -853,9 +844,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
 
     CreatureProperties const* pInfo = sMySQLStore.getCreatureProperties(13116 + horde);
     if (pInfo == nullptr)
-    {
         return nullptr;
-    }
 
     Creature* pCreature = m_mapMgr->CreateCreature(pInfo->Id);
 
@@ -962,18 +951,14 @@ void CBattleground::EventResurrectPlayers()
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    Player* plr;
-    std::set<uint32>::iterator itr;
-    std::map<Creature*, std::set<uint32> >::iterator i;
-    WorldPacket data(50);
-    for (i = m_resurrectMap.begin(); i != m_resurrectMap.end(); ++i)
+    for (std::map<Creature*, std::set<uint32>>::iterator i = m_resurrectMap.begin(); i != m_resurrectMap.end(); ++i)
     {
-        for (itr = i->second.begin(); itr != i->second.end(); ++itr)
+        for (std::set<uint32>::iterator itr = i->second.begin(); itr != i->second.end(); ++itr)
         {
-            plr = m_mapMgr->GetPlayer(*itr);
+            Player* plr = m_mapMgr->GetPlayer(*itr);
             if (plr && plr->isDead())
             {
-                data.Initialize(SMSG_SPELL_START);
+                WorldPacket data(SMSG_SPELL_START, 50);
                 data << plr->GetNewGUID();
                 data << plr->GetNewGUID();
                 data << uint32(RESURRECT_SPELL);
@@ -1031,18 +1016,16 @@ bool CBattleground::HookQuickLockOpen(GameObject* /*go*/, Player* /*player*/, Sp
 
 void CBattleground::QueueAtNearestSpiritGuide(Player* plr, Creature* old)
 {
-    float dd;
     float dist = 999999.0f;
     Creature* cl = nullptr;
     std::set<uint32> *closest = nullptr;
     m_lock.Acquire();
-    std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.begin();
-    for (; itr != m_resurrectMap.end(); ++itr)
+    for (std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.begin(); itr != m_resurrectMap.end(); ++itr)
     {
         if (itr->first == old)
             continue;
 
-        dd = plr->GetDistance2dSq(itr->first) < dist;
+        float dd = plr->GetDistance2dSq(itr->first) < dist;
         if (dd < dist)
         {
             cl = itr->first;

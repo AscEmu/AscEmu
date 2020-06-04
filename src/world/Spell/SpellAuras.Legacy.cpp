@@ -6465,7 +6465,6 @@ void Aura::SpellAuraWaterWalk(bool apply)
 {
     if (p_target != nullptr)
     {
-        WorldPacket data(12);
         if (apply)
         {
             SetPositive();
