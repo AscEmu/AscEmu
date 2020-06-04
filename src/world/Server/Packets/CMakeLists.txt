@@ -418,6 +418,8 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgShowTaxiNodes.h
    ${PATH_PREFIX}/SmsgSpellDamageShield.h
    ${PATH_PREFIX}/SmsgSpellDispellLog.h
+   ${PATH_PREFIX}/SmsgSpellFailedOther.h
+   ${PATH_PREFIX}/SmsgSpellFailure.h
    ${PATH_PREFIX}/SmsgSpellStealLog.h
    ${PATH_PREFIX}/SmsgSpiritHealerConfirm.h
    ${PATH_PREFIX}/SmsgStableResult.h

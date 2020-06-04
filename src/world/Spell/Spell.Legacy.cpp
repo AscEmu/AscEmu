@@ -55,7 +55,10 @@
 #include "SpellMgr.h"
 #include "SpellAuras.h"
 #include "Map/WorldCreatorDefines.hpp"
+#include "Server/Packets/SmsgSpellFailure.h"
+#include "Server/Packets/SmsgSpellFailedOther.h"
 
+using namespace AscEmu::Packets;
 
 using AscEmu::World::Spell::Helpers::decimalToMask;
 using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
@@ -1702,8 +1705,6 @@ void Spell::SendInterrupted(uint8 result)
     if (m_caster == nullptr || !m_caster->IsInWorld())
         return;
 
-    WorldPacket data(SMSG_SPELL_FAILURE, 20);
-
     // send the failure to pet owner if we're a pet
     Player* plr = p_caster;
     if (plr == nullptr && m_caster->isPet())
@@ -1716,24 +1717,10 @@ void Spell::SendInterrupted(uint8 result)
             plr = u_caster->m_redirectSpellPackets;
 
         if (plr != nullptr && plr->isPlayer())
-        {
-            data << m_caster->GetNewGUID();
-            data << uint8(extra_cast_number);
-            data << uint32(m_spellInfo->getId());
-            data << uint8(result);
-
-            plr->GetSession()->SendPacket(&data);
-        }
+            plr->GetSession()->SendPacket(SmsgSpellFailure(m_caster->GetNewGUID(), extra_cast_number, m_spellInfo->getId(), result).serialise().get());
     }
 
-    data.Initialize(SMSG_SPELL_FAILED_OTHER);
-
-    data << m_caster->GetNewGUID();
-    data << uint8(extra_cast_number);
-    data << uint32(getSpellInfo()->getId());
-    data << uint8(result);
-
-    m_caster->SendMessageToSet(&data, false);
+    m_caster->SendMessageToSet(SmsgSpellFailedOther(m_caster->GetNewGUID(), extra_cast_number, m_spellInfo->getId(), result).serialise().get(), false);
 }
 
 void Spell::SendResurrectRequest(Player* target)

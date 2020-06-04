@@ -499,7 +499,6 @@ class SERVER_DECL Aura : public EventableObject
         Modifier m_modList[3];
         Modifier* mod;
 
-        void SendInterrupted(uint8 result, Object* m_caster);
         void SendChannelUpdate(uint32 time, Object* m_caster);
         void SendTickImmune(Unit* target, Unit* caster);
 

@@ -8805,28 +8805,6 @@ void Aura::SpellAuraModBlockValue(bool apply)
     }
 }
 
-void Aura::SendInterrupted(uint8 result, Object* m_caster)
-{
-    if (!m_caster->IsInWorld())
-        return;
-
-    WorldPacket data(SMSG_SPELL_FAILURE, 20);
-    if (m_caster->isPlayer())
-    {
-        data << m_caster->GetNewGUID();
-        data << m_spellInfo->getId();
-        data << uint8(result);
-        static_cast< Player* >(m_caster)->GetSession()->SendPacket(&data);
-    }
-
-    data.Initialize(SMSG_SPELL_FAILED_OTHER);
-    data << m_caster->GetNewGUID();
-    data << m_spellInfo->getId();
-    m_caster->SendMessageToSet(&data, false);
-
-    m_interrupted = (int16)result;
-}
-
 void Aura::SendChannelUpdate(uint32 time, Object* m_caster)
 {
     m_caster->SendMessageToSet(MsgChannelUpdate(m_caster->GetNewGUID(), time).serialise().get(), true);
