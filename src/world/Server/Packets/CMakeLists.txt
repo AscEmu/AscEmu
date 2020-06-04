@@ -315,6 +315,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgDuelRequested.h
    ${PATH_PREFIX}/SmsgDuelWinner.h
    ${PATH_PREFIX}/SmsgEmote.h
+   ${PATH_PREFIX}/SmsgEnchantmentLog.h
    ${PATH_PREFIX}/SmsgEnvironmentalDamageLog.h
    ${PATH_PREFIX}/SmsgEquipmentSetUseResult.h
    ${PATH_PREFIX}/SmsgExplorationExperience.h

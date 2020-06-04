@@ -30,6 +30,9 @@
 #include "Spell/SpellMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
 #include "Data/WoWItem.h"
+#include "Server/Packets/SmsgEnchantmentLog.h"
+
+using namespace AscEmu::Packets;
 
 #if VERSION_STRING < Cata
 #include "Management/Guild.h"
@@ -566,13 +569,7 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
 
     if (apply)
     {
-        WorldPacket EnchantLog(SMSG_ENCHANTMENTLOG, 25);
-        EnchantLog << m_owner->getGuid();
-        EnchantLog << m_owner->getGuid();
-        EnchantLog << getEntry();
-        EnchantLog << Enchantment->Id;
-        EnchantLog << uint8(0);
-        m_owner->SendPacket(&EnchantLog);
+        m_owner->SendPacket(SmsgEnchantmentLog(m_owner->getGuid(), m_owner->getGuid(), getEntry(), Enchantment->Id).serialise().get());
 
         /* Only apply the enchantment bonus if we're equipped */
         int16 slot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());
