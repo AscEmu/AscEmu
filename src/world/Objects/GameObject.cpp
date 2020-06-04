@@ -34,6 +34,7 @@
 #include "Server/Packets/SmsgStandstateUpdate.h"
 #include "Management/Battleground/Battleground.h"
 #include "Server/Packets/SmsgGameobjectCustomAnim.h"
+#include "Server/Packets/SmsgGameobjectPagetext.h"
 
 // MIT
 
@@ -1123,11 +1124,7 @@ void GameObject_Goober::onUse(Player* player)
         player->castSpell(getGuid(), gameobject_properties->goober.spell_id, false);
 
         if (gameobject_properties->goober.page_id)
-        {
-            WorldPacket data(SMSG_GAMEOBJECT_PAGETEXT, 8);
-            data << getGuid();
-            player->SendPacket(&data);
-        }
+            player->SendPacket(SmsgGameobjectPagetext(getGuid()).serialise().get());
     }
     else
     {
