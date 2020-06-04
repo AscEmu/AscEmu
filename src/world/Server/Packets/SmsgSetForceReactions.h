@@ -18,11 +18,11 @@ namespace AscEmu::Packets
         uint32_t mapSize;
         std::map<uint32_t, uint32_t> reactionMap;
 
-        SmsgSetForceReactions() : SmsgSetForceReactions({0,0})
+        SmsgSetForceReactions() : SmsgSetForceReactions({{}})
         {
         }
 
-        SmsgSetForceReactions(std::map<uint32_t, uint32_t> reactionMap) :
+        SmsgSetForceReactions(const std::map<uint32_t, uint32_t>& reactionMap) :
             ManagedPacket(SMSG_SET_FORCED_REACTIONS, 4 + reactionMap.size() * 2 * 4),
             mapSize(reactionMap.size()),
             reactionMap(reactionMap)
@@ -33,7 +33,7 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << mapSize;
-            for (const auto reactions : reactionMap)
+            for (const auto& reactions : reactionMap)
                 packet << reactions.first << reactions.second;
 
             return true;
