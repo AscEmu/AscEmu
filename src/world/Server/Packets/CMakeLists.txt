@@ -414,6 +414,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgServerFirstAchievement.h
    ${PATH_PREFIX}/SmsgSetExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgSetFlatSpellModifier.h
+   ${PATH_PREFIX}/SmsgSetForceReactions.h
    ${PATH_PREFIX}/SmsgSetPctSpellModifier.h
    ${PATH_PREFIX}/SmsgSetPlayerDeclinedNamesResult.h
    ${PATH_PREFIX}/SmsgSetProficiency.h
