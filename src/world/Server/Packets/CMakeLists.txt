@@ -343,6 +343,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgInstanceDifficulty.h
    ${PATH_PREFIX}/SmsgInstanceReset.h
    ${PATH_PREFIX}/SmsgInventoryChangeFailure.h
+   ${PATH_PREFIX}/SmsgItemEnchantmentTimeUpdate.h
    ${PATH_PREFIX}/SmsgItemNameQueryResponse.h
    ${PATH_PREFIX}/SmsgItemPushResult.h
    ${PATH_PREFIX}/SmsgLearnedDanceMoves.h

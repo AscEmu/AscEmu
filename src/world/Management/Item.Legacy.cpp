@@ -31,6 +31,7 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include "Data/WoWItem.h"
 #include "Server/Packets/SmsgEnchantmentLog.h"
+#include "Server/Packets/SmsgItemEnchantmentTimeUpdate.h"
 
 using namespace AscEmu::Packets;
 
@@ -879,27 +880,7 @@ void Item::ModifyEnchantmentTime(uint32 Slot, uint32 Duration)
 
 void Item::SendEnchantTimeUpdate(uint32 Slot, uint32 Duration)
 {
-    /*
-    {SERVER} Packet: (0x01EB) SMSG_ITEM_ENCHANT_TIME_UPDATE Size = 24
-    |------------------------------------------------|----------------|
-    |00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|
-    |------------------------------------------------|----------------|
-    |69 32 F0 35 00 00 00 40 01 00 00 00 08 07 00 00 |i2.5...@........|
-    |51 46 35 00 00 00 00 00                         |QF5.....        |
-    -------------------------------------------------------------------
-
-    uint64 item_guid
-    uint32 slot
-    uint32 time_in_seconds
-    uint64 player_guid
-    */
-
-    WorldPacket* data = new WorldPacket(SMSG_ITEM_ENCHANT_TIME_UPDATE, 24);
-    *data << getGuid();
-    *data << Slot;
-    *data << Duration;
-    *data << m_owner->getGuid();
-    m_owner->getUpdateMgr().queueDelayedPacket(data);
+    m_owner->SendPacket(SmsgItemEnchantmentTimeUpdate(getGuid(), Slot, Duration, m_owner->getGuid()).serialise().get());
 }
 
 void Item::RemoveAllEnchantments(bool OnlyTemporary)
