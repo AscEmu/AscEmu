@@ -50,6 +50,7 @@
 #include "Server/Packets/SmsgDestoyObject.h"
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgGameobjectDespawnAnim.h"
+#include "Server/Packets/SmsgSpellLogMiss.h"
 
 // MIT Start
 
@@ -2915,17 +2916,7 @@ void Object::SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 
     if (Caster == nullptr || Target == nullptr || Ability == 0)
         return;
 
-
-    WorldPacket data(SMSG_SPELLLOGMISS, 26);
-
-    data << uint32(Ability);            // spellid
-    data << Caster->getGuid();          // caster / player
-    data << uint8(1);                   // unknown but I think they are const
-    data << uint32(1);                  // unknown but I think they are const
-    data << Target->getGuid();          // target
-    data << uint8(SpellLogType);        // spelllogtype
-
-    Caster->SendMessageToSet(&data, true);
+    Caster->SendMessageToSet(SmsgSpellLogMiss(Ability, Caster->getGuid(), Target->getGuid(), SpellLogType).serialise().get(), true);
 }
 
 void Object::SendSpellNonMeleeDamageLog(Object* Caster, Object* Target, uint32 SpellID, uint32 Damage, uint8 School, uint32 AbsorbedDamage, uint32 ResistedDamage, bool PhysicalDamage, uint32 BlockedDamage, bool CriticalHit, bool bToset)
