@@ -31,6 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/GuildMgr.h"
 #include "Packets/SmsgPlaySound.h"
 #include "Packets/SmsgAreaTriggerMessage.h"
+#include "Packets/SmsgZoneUnderAttack.h"
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"
@@ -669,9 +670,6 @@ void World::sendInstanceMessage(WorldPacket* worldPacket, uint32_t instanceId, W
 
 void World::sendZoneUnderAttackMessage(uint32_t areaId, uint8_t teamId)
 {
-    WorldPacket data(SMSG_ZONE_UNDER_ATTACK, 4);
-    data << uint32_t(areaId);
-
     mSessionLock.AcquireReadLock();
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
@@ -680,7 +678,7 @@ void World::sendZoneUnderAttackMessage(uint32_t areaId, uint8_t teamId)
         if (player != nullptr && player->IsInWorld())
         {
             if (player->getTeam() == teamId)
-                activeSessions->second->SendPacket(&data);
+                activeSessions->second->SendPacket(AscEmu::Packets::SmsgZoneUnderAttack(areaId).serialise().get());
         }
     }
 

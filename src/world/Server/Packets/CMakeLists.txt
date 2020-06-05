@@ -463,6 +463,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgUpdateWorldState.h
    ${PATH_PREFIX}/SmsgWeather.h
    ${PATH_PREFIX}/SmsgWorldStateUiTimerUpdate.h
+   ${PATH_PREFIX}/SmsgZoneUnderAttack.h
 )
 
 source_group(Server\\Packets FILES ${SRC_PACKET_FILES})
