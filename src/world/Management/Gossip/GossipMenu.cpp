@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "GossipMenu.h"
 #include "Server/Packets/SmsgGossipMessage.h"
+#include "Server/Packets/SmsgGossipComplete.h"
 
 using namespace AscEmu::Packets;
 
@@ -59,5 +60,5 @@ void GossipMenu::sendQuickMenu(uint64_t guid, uint32_t textId, Player* player, u
 
 void GossipMenu::senGossipComplete(Player* player)
 {
-    player->GetSession()->OutPacket(SMSG_GOSSIP_COMPLETE, 0, nullptr);
+    player->SendPacket(SmsgGossipComplete().serialise().get());
 }

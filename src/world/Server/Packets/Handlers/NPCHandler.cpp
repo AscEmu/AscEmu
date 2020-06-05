@@ -34,6 +34,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.h"
 #include "Server/Packets/CmsgBuyBankSlot.h"
 #include "Server/Packets/SmsgBuyBankSlotResult.h"
+#include "Server/Packets/SmsgGossipComplete.h"
 
 using namespace AscEmu::Packets;
 
@@ -335,7 +336,7 @@ void WorldSession::sendInnkeeperBind(Creature* creature)
     const uint32_t currentZone = _player->GetZoneId();
     if (_player->m_bind_zoneid == currentZone)
     {
-        OutPacket(SMSG_GOSSIP_COMPLETE, 0, nullptr);
+        SendPacket(SmsgGossipComplete().serialise().get());
 
         WorldPacket data(SMSG_PLAYERBINDERROR, 1);
         data << uint32_t(1);
@@ -345,7 +346,7 @@ void WorldSession::sendInnkeeperBind(Creature* creature)
 
     if (!_player->bHasBindDialogOpen)
     {
-        OutPacket(SMSG_GOSSIP_COMPLETE, 0, nullptr);
+        SendPacket(SmsgGossipComplete().serialise().get());
 
         SendPacket(SmsgBinderConfirm(creature->getGuid(), _player->GetZoneId()).serialise().get());
 
@@ -354,7 +355,7 @@ void WorldSession::sendInnkeeperBind(Creature* creature)
     }
 
     _player->bHasBindDialogOpen = false;
-    OutPacket(SMSG_GOSSIP_COMPLETE, 0, nullptr);
+    SendPacket(SmsgGossipComplete().serialise().get());
     creature->castSpell(_player->getGuid(), 3286, true);
 }
 

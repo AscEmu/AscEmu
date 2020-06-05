@@ -339,6 +339,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgGmTicketStatusUpdate.h
    ${PATH_PREFIX}/SmsgGmTicketSystemstatus.h
    ${PATH_PREFIX}/SmsgGmTicketUpdateText.h
+   ${PATH_PREFIX}/SmsgGossipComplete.h
    ${PATH_PREFIX}/SmsgGossipMessage.h
    ${PATH_PREFIX}/SmsgGossipPoi.h
    ${PATH_PREFIX}/SmsgGroupDecline.h

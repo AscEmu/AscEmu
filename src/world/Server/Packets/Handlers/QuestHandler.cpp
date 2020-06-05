@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Management/ItemInterface.h"
+#include "Server/Packets/SmsgGossipComplete.h"
 
 using namespace AscEmu::Packets;
 
@@ -401,7 +402,7 @@ void WorldSession::handleQuestgiverCancelOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    OutPacket(SMSG_GOSSIP_COMPLETE, 0, nullptr);
+    SendPacket(SmsgGossipComplete().serialise().get());
 
     LogDebugFlag(LF_OPCODE, "Sent SMSG_GOSSIP_COMPLETE");
 }
