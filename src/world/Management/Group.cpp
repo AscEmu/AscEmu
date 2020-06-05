@@ -27,6 +27,7 @@
 #include "Objects/ObjectMgr.h"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgPartyCommandResult.h"
+#include "Server/Packets/SmsgGroupSetLeader.h"
 
 using namespace AscEmu::Packets;
 
@@ -192,12 +193,9 @@ void Group::SetLeader(Player* pPlayer, bool silent)
         m_dirty = true;
 
         if (silent == false)
-        {
-            WorldPacket data(SMSG_GROUP_SET_LEADER, pPlayer->getName().size() + 1);
-            data << pPlayer->getName().c_str();
-            SendPacketToAll(&data);
-        }
+            SendPacketToAll(SmsgGroupSetLeader(pPlayer->getName()).serialise().get());
     }
+
     Update();
 }
 
