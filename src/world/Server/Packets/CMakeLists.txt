@@ -414,6 +414,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgPetLearnedSpell.h
    ${PATH_PREFIX}/SmsgPetNameQuery.h
    ${PATH_PREFIX}/SmsgPetUnlearnConfirm.h
+   ${PATH_PREFIX}/SmsgPetUnlearnedSpell.h
    ${PATH_PREFIX}/SmsgPlayedTime.h
    ${PATH_PREFIX}/SmsgPlayerVehicleData.h
    ${PATH_PREFIX}/SmsgPlayObjectSound.h

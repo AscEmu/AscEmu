@@ -38,6 +38,7 @@
 #include "Pet.h"
 #include "Server/Packets/SmsgPetActionFeedback.h"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
+#include "Server/Packets/SmsgPetUnlearnedSpell.h"
 
 #define WATER_ELEMENTAL         510
 #define WATER_ELEMENTAL_NEW     37994
@@ -1648,10 +1649,7 @@ void Pet::RemoveSpell(SpellInfo const* sp, bool showUnlearnSpell)
 
 #if VERSION_STRING > TBC
     if (showUnlearnSpell && m_Owner && m_Owner->GetSession())
-    {
-        auto id = sp->getId();
-        m_Owner->GetSession()->OutPacket(SMSG_PET_UNLEARNED_SPELL, 4, &id);
-    }
+        m_Owner->SendPacket(AscEmu::Packets::SmsgPetUnlearnedSpell(sp->getId()).serialise().get());
 #endif
 }
 
