@@ -23,6 +23,7 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.h"
+#include "Server/Packets/SmsgControlVehicle.h"
 
 Vehicle::Vehicle()
 {
@@ -158,8 +159,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     // root passenger
     passenger->setMoveRoot(true);
 
-    WorldPacket ack(SMSG_CONTROL_VEHICLE);
-    passenger->SendPacket(&ack);
+    passenger->SendPacket(AscEmu::Packets::SmsgControlVehicle().serialise().get());
 
     passenger->sendHopOnVehicle(owner, seatid);
 
@@ -181,8 +181,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
 
     if (passenger->isPlayer())
     {
-        WorldPacket pack(SMSG_CONTROL_VEHICLE, 0);
-        passenger->SendPacket(&pack);
+        passenger->SendPacket(AscEmu::Packets::SmsgControlVehicle().serialise().get());
 
         passenger->addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 
@@ -190,7 +189,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
 
         if (seats[seatid]->Controller())
         {
-            pack.Initialize(SMSG_CLIENT_CONTROL_UPDATE);
+            WorldPacket pack(SMSG_CLIENT_CONTROL_UPDATE, 9);
             pack << owner->GetNewGUID() << uint8(1);
             static_cast<Player*>(passenger)->sendClientControlPacket(owner, 1);
 

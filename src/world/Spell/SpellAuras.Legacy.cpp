@@ -48,6 +48,7 @@
 #include "Server/Packets/SmsgSpellOrDamageImmune.h"
 #include "Server/Packets/SmsgPlayerVehicleData.h"
 #include "Server/Packets/SmsgSetForceReactions.h"
+#include "Server/Packets/SmsgControlVehicle.h"
 
 using namespace AscEmu::Packets;
 
@@ -5781,8 +5782,7 @@ void Aura::SpellAuraMounted(bool apply)
 #if VERSION_STRING > TBC
             p_target->SendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), p_target->mountvehicleid).serialise().get(), true);
 
-            WorldPacket data(SMSG_CONTROL_VEHICLE, 12);
-            p_target->SendPacket(&data);
+            p_target->SendPacket(SmsgControlVehicle().serialise().get());
 #endif
 
             p_target->addUnitFlags(UNIT_FLAG_MOUNT);
