@@ -1637,9 +1637,6 @@ void Player::smsg_InitialSpells()
     }
 
     GetSession()->SendPacket(smsgInitialSpells.serialise().get());
-
-    uint32 v = 0;
-    GetSession()->OutPacket(SMSG_SERVER_BUCK_DATA, 4, &v);
 }
 
 void PlayerSpec::AddTalent(uint32 talentid, uint8 rankid)
