@@ -307,6 +307,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgClientControlUpdate.h
    ${PATH_PREFIX}/SmsgComplainResult.h
    ${PATH_PREFIX}/SmsgControlVehicle.h
+   ${PATH_PREFIX}/SmsgConvertRune.h
    ${PATH_PREFIX}/SmsgCooldownEvent.h
    ${PATH_PREFIX}/SmsgCorpseReclaimDelay.h
    ${PATH_PREFIX}/SmsgCreatureQueryResponse.h

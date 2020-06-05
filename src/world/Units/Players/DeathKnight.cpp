@@ -22,14 +22,12 @@
 #include "StdAfx.h"
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/WorldSession.h"
+#include "Server/Packets/SmsgConvertRune.h"
 
 void DeathKnight::SendRuneUpdate(uint8 slot)
 {
 #if VERSION_STRING > TBC
-    WorldPacket data(SMSG_CONVERT_RUNE, 2);
-    data << uint8(slot);
-    data << uint8(m_runes[slot].type);
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(AscEmu::Packets::SmsgConvertRune(slot, m_runes[slot].type).serialise().get());
 #endif
 }
 
