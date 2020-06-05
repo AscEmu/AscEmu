@@ -55,6 +55,7 @@
 #include "Server/Packets/SmsgAuraUpdateAll.h"
 #include "Server/Packets/SmsgAuraUpdate.h"
 #include "Server/Packets/SmsgPeriodicAuraLog.h"
+#include "Server/Packets/SmsgAttackSwingBadFacing.h"
 
 using namespace AscEmu::Packets;
 
@@ -7166,7 +7167,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
     {
         if (isPlayer())
         {
-            static_cast<Player*>(this)->GetSession()->OutPacket(SMSG_ATTACKSWING_BADFACING);
+            static_cast<Player*>(this)->SendPacket(SmsgAttackSwingBadFacing().serialise().get());
             return;
         }
     }

@@ -275,6 +275,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgArenaTeamStats.h
    ${PATH_PREFIX}/SmsgAttackStart.h
    ${PATH_PREFIX}/SmsgAttackStop.h
+   ${PATH_PREFIX}/SmsgAttackSwingBadFacing.h
    ${PATH_PREFIX}/SmsgAuctionBidderListResult.h
    ${PATH_PREFIX}/SmsgAuctionBidderNotification.h
    ${PATH_PREFIX}/SmsgAuctionCommandResult.h

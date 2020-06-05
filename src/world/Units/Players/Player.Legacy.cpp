@@ -103,6 +103,7 @@
 #include "Server/Packets/SmsgStartMirrorTimer.h"
 #include "Server/Packets/SmsgSpellCooldown.h"
 #include "Server/Packets/SmsgCancelCombat.h"
+#include "Server/Packets/SmsgAttackSwingBadFacing.h"
 
 using namespace AscEmu::Packets;
 
@@ -1222,7 +1223,7 @@ void Player::_EventAttack(bool offhand)
         // We still have to do this one.
         if (m_AttackMsgTimer != 2)
         {
-            m_session->OutPacket(SMSG_ATTACKSWING_BADFACING);
+            SendPacket(SmsgAttackSwingBadFacing().serialise().get());
             m_AttackMsgTimer = 2;
         }
         setAttackTimer(offhand == true ? OFFHAND : MELEE, 300);
@@ -1306,7 +1307,7 @@ void Player::_EventCharmAttack()
         {
             if (m_AttackMsgTimer == 0)
             {
-                m_session->OutPacket(SMSG_ATTACKSWING_BADFACING);
+                SendPacket(SmsgAttackSwingBadFacing().serialise().get());
                 m_AttackMsgTimer = 2000;        // 2 sec till next msg.
             }
             // Shorten, so there isnt a delay when the client IS in the right position.
