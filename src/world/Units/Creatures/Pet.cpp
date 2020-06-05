@@ -37,6 +37,7 @@
 #include "Spell/Definitions/SpellEffectTarget.h"
 #include "Pet.h"
 #include "Server/Packets/SmsgPetActionFeedback.h"
+#include "Server/Packets/SmsgPetLearnedSpell.h"
 
 #define WATER_ELEMENTAL         510
 #define WATER_ELEMENTAL_NEW     37994
@@ -1515,11 +1516,9 @@ void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
 
 #if VERSION_STRING > TBC
     if (showLearnSpell && m_Owner && m_Owner->GetSession() && !(sp->getAttributes() & ATTRIBUTES_NO_CAST))
-    {
-        auto id = sp->getId();
-        m_Owner->GetSession()->OutPacket(SMSG_PET_LEARNED_SPELL, 2, &id);
-    }
+        m_Owner->SendPacket(AscEmu::Packets::SmsgPetLearnedSpell(sp->getId()).serialise().get());
 #endif
+
     if (IsInWorld())
         SendSpellsToOwner();
 }

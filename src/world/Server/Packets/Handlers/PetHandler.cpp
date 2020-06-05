@@ -25,6 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Creatures/Vehicle.h"
 #include "Objects/Faction.h"
 #include "Spell/Definitions/SpellFailure.h"
+#include "Server/Packets/SmsgPetLearnedSpell.h"
 
 using namespace AscEmu::Packets;
 
@@ -517,8 +518,8 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
     {
         pet->AddSpell(spellInfo, true);
         pet->setPetTalentPoints(pet->getPetTalentPoints() - 1);
-        auto id = spellInfo->getId();
-        OutPacket(SMSG_PET_LEARNED_SPELL, 4, &id);
+
+        SendPacket(SmsgPetLearnedSpell(spellInfo->getId()).serialise().get());
     }
 
     pet->SendTalentsToOwner();

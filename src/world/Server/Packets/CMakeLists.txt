@@ -411,6 +411,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgPetitionShowlist.h
    ${PATH_PREFIX}/SmsgPetitionShowSignatures.h
    ${PATH_PREFIX}/SmsgPetitionSignResult.h
+   ${PATH_PREFIX}/SmsgPetLearnedSpell.h
    ${PATH_PREFIX}/SmsgPetNameQuery.h
    ${PATH_PREFIX}/SmsgPetUnlearnConfirm.h
    ${PATH_PREFIX}/SmsgPlayedTime.h
