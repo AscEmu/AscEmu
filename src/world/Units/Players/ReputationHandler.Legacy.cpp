@@ -27,6 +27,7 @@
 #include "Management/Group.h"
 #include "Objects/ObjectMgr.h"
 #include "ReputationHandler.hpp"
+#include "Server/Packets/SmsgSetFactionVisible.h"
 
 Standing Player::GetReputationRankFromStanding(int32 Standing_)
 {
@@ -448,7 +449,7 @@ void Player::Reputation_OnTalk(DBC::Structures::FactionEntry const* dbc)
 
     if (SetFlagVisible(rep->flag, true) && IsInWorld())
     {
-        m_session->OutPacket(SMSG_SET_FACTION_VISIBLE, 4, &dbc->RepListId);
+        SendPacket(AscEmu::Packets::SmsgSetFactionVisible(dbc->RepListId).serialise().get());
     }
 }
 
@@ -486,7 +487,7 @@ void Player::OnModStanding(DBC::Structures::FactionEntry const* dbc, FactionRepu
 {
     if (SetFlagVisible(rep->flag, true) && IsInWorld())
     {
-        m_session->OutPacket(SMSG_SET_FACTION_VISIBLE, 4, &dbc->RepListId);
+        SendPacket(AscEmu::Packets::SmsgSetFactionVisible(dbc->RepListId).serialise().get());
     }
 
     SetFlagAtWar(rep->flag, (GetReputationRankFromStanding(rep->standing) <= STANDING_HOSTILE));

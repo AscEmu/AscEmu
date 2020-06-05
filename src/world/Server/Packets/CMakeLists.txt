@@ -439,6 +439,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgSendUnlearnSpells.h
    ${PATH_PREFIX}/SmsgServerFirstAchievement.h
    ${PATH_PREFIX}/SmsgSetExtraAuraInfo.h
+   ${PATH_PREFIX}/SmsgSetFactionVisible.h
    ${PATH_PREFIX}/SmsgSetFlatSpellModifier.h
    ${PATH_PREFIX}/SmsgSetForceReactions.h
    ${PATH_PREFIX}/SmsgSetPctSpellModifier.h
