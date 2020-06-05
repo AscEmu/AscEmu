@@ -32,6 +32,7 @@
 #include "Server/Packets/MsgQuestPushResult.h"
 #include "Server/Packets/SmsgQuestgiverQuestComplete.h"
 #include "Server/Packets/SmsgQuestLogFull.h"
+#include "Server/Packets/SmsgQuestgiverQuestInvalid.h"
 
 using namespace AscEmu::Packets;
 
@@ -2033,7 +2034,8 @@ void QuestMgr::SendQuestInvalid(INVALID_REASON reason, Player* plyr)
 {
     if (!plyr)
         return;
-    plyr->GetSession()->OutPacket(SMSG_QUESTGIVER_QUEST_INVALID, 4, &reason);
+
+    plyr->SendPacket(SmsgQuestgiverQuestInvalid(reason).serialise().get());
 
     LOG_DEBUG("WORLD:Sent SMSG_QUESTGIVER_QUEST_INVALID");
 }
