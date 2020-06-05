@@ -19,6 +19,7 @@
 #include "StdAfx.h"
 #include "Server/MainServerDefines.h"
 #include "Objects/ObjectMgr.h"
+#include "Server/Packets/SmsgReceivedMail.h"
 
 MailSystem& MailSystem::getInstance()
 {
@@ -40,10 +41,7 @@ MailError MailSystem::DeliverMessage(uint64 recipent, MailMessage* message)
     {
         plr->m_mailBox.AddMessage(message);
         if ((uint32)UNIXTIME >= message->delivery_time)
-        {
-            uint32 v = 0;
-            plr->GetSession()->OutPacket(SMSG_RECEIVED_MAIL, 4, &v);
-        }
+            plr->SendPacket(AscEmu::Packets::SmsgReceivedMail().serialise().get());
     }
 
     SaveMessageToSQL(message);
