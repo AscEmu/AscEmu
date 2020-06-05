@@ -28,6 +28,7 @@
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgPartyCommandResult.h"
 #include "Server/Packets/SmsgGroupSetLeader.h"
+#include "Server/Packets/SmsgGroupDestroyed.h"
 
 using namespace AscEmu::Packets;
 
@@ -386,8 +387,6 @@ void Group::Disband()
 
 void SubGroup::Disband()
 {
-    WorldPacket data(SMSG_GROUP_DESTROYED, 1);
-
     for (GroupMembersSet::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end();)
     {
         if ((*itr) != nullptr)
@@ -397,7 +396,7 @@ void SubGroup::Disband()
                 if ((*itr)->m_loggedInPlayer->GetSession() != nullptr)
                 {
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(SmsgPartyCommandResult(2, "", (*itr)->m_loggedInPlayer->iInstanceType).serialise().get());
-                    (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data);
+                    (*itr)->m_loggedInPlayer->GetSession()->SendPacket(SmsgGroupDestroyed().serialise().get());
 #if VERSION_STRING >= Cata
                     (*itr)->m_loggedInPlayer->GetSession()->sendEmptyGroupList((*itr)->m_loggedInPlayer);
 #else
@@ -450,7 +449,6 @@ void Group::RemovePlayer(PlayerInfo* info)
     if (info == nullptr)
         return;
 
-    WorldPacket data(50);
     Player* pPlayer = info->m_loggedInPlayer;
 
     m_groupLock.Acquire();
@@ -506,8 +504,7 @@ void Group::RemovePlayer(PlayerInfo* info)
             SendNullUpdate(pPlayer);
 #endif
 
-            data.SetOpcode(SMSG_GROUP_DESTROYED);
-            pPlayer->GetSession()->SendPacket(&data);
+            pPlayer->GetSession()->SendPacket(SmsgGroupDestroyed().serialise().get());
 
             pPlayer->GetSession()->SendPacket(SmsgPartyCommandResult(2, pPlayer->getName().c_str(), ERR_PARTY_NO_ERROR).serialise().get());
 #if VERSION_STRING >= Cata

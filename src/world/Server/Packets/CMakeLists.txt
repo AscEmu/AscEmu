@@ -339,6 +339,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgGossipMessage.h
    ${PATH_PREFIX}/SmsgGossipPoi.h
    ${PATH_PREFIX}/SmsgGroupDecline.h
+   ${PATH_PREFIX}/SmsgGroupDestroyed.h
    ${PATH_PREFIX}/SmsgGroupInvite.h
    ${PATH_PREFIX}/SmsgGroupSetLeader.h
    ${PATH_PREFIX}/SmsgGuildBankMoneyWithdrawn.h
