@@ -43,7 +43,7 @@ namespace AscEmu::Packets
             packet << error;
 
 #if VERSION_STRING >= Cata
-            packet << uint32_t(0) << uint32_t(0);
+            packet << uint64_t(0);
 #endif
             return true;
         }

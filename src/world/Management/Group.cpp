@@ -389,10 +389,6 @@ void Group::Disband()
 void SubGroup::Disband()
 {
     WorldPacket data(SMSG_GROUP_DESTROYED, 1);
-    WorldPacket data2(SMSG_PARTY_COMMAND_RESULT, 12);
-    data2 << uint32(2);
-    data2 << uint8(0);
-    data2 << uint32(m_Parent->m_difficulty);    // you leave the group
 
     for (GroupMembersSet::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end();)
     {
@@ -402,8 +398,7 @@ void SubGroup::Disband()
             {
                 if ((*itr)->m_loggedInPlayer->GetSession() != nullptr)
                 {
-                    data2.put(5, uint32((*itr)->m_loggedInPlayer->iInstanceType));
-                    (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data2);
+                    (*itr)->m_loggedInPlayer->GetSession()->SendPacket(SmsgPartyCommandResult(2, "", (*itr)->m_loggedInPlayer->iInstanceType).serialise().get());
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data);
 #if VERSION_STRING >= Cata
                     (*itr)->m_loggedInPlayer->GetSession()->sendEmptyGroupList((*itr)->m_loggedInPlayer);
@@ -516,15 +511,9 @@ void Group::RemovePlayer(PlayerInfo* info)
             data.SetOpcode(SMSG_GROUP_DESTROYED);
             pPlayer->GetSession()->SendPacket(&data);
 
-#if VERSION_STRING >= Cata
             pPlayer->GetSession()->SendPacket(SmsgPartyCommandResult(2, pPlayer->getName().c_str(), ERR_PARTY_NO_ERROR).serialise().get());
+#if VERSION_STRING >= Cata
             pPlayer->GetSession()->sendEmptyGroupList(pPlayer);
-#else
-            data.Initialize(SMSG_PARTY_COMMAND_RESULT);
-            data << uint32(2);
-            data << uint8(0);
-            data << uint32(0);  // you leave the group
-            pPlayer->GetSession()->SendPacket(&data);
 #endif
         }
 
