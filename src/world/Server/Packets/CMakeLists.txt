@@ -384,6 +384,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgNameQueryResponse.h
    ${PATH_PREFIX}/SmsgItemTextQueryResponse.h
    ${PATH_PREFIX}/SmsgNewWorld.h
+   ${PATH_PREFIX}/SmsgNotification.h
    ${PATH_PREFIX}/SmsgPageTextQueryResponse.h
    ${PATH_PREFIX}/SmsgPartyCommandResult.h
    ${PATH_PREFIX}/SmsgPartyKillLog.h

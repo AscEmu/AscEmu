@@ -34,6 +34,7 @@
 #include "CharacterErrors.h"
 #include "WorldSocket.h"
 #include "Auth/MD5.h"
+#include "Packets/SmsgNotification.h"
 
 using namespace AscEmu::Packets;
 
@@ -521,9 +522,7 @@ void WorldSession::SendNotification(const char* message, ...)
     vsnprintf(msg1, 1024, message, ap);
     va_end(ap);
 
-    WorldPacket data(SMSG_NOTIFICATION, strlen(msg1) + 1);
-    data << msg1;
-    SendPacket(&data);
+    SendPacket(SmsgNotification(msg1).serialise().get());
 }
 
 void WorldSession::InitPacketHandlerTable()
