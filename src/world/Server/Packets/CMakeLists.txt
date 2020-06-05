@@ -429,6 +429,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgQuestgiverStatus.h
    ${PATH_PREFIX}/SmsgQuestgiverStatusMultiple.h
    ${PATH_PREFIX}/SmsgQuestLogFull.h
+   ${PATH_PREFIX}/SmsgQuestupdateFailed.h
    ${PATH_PREFIX}/SmsgQuestupdateFailedTimer.h
    ${PATH_PREFIX}/SmsgRaidGroupOnly.h
    ${PATH_PREFIX}/SmsgRatedBgInfo.h

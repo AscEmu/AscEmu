@@ -34,6 +34,7 @@
 #include "Server/Packets/SmsgQuestLogFull.h"
 #include "Server/Packets/SmsgQuestgiverQuestInvalid.h"
 #include "Server/Packets/SmsgQuestupdateFailedTimer.h"
+#include "Server/Packets/SmsgQuestupdateFailed.h"
 
 using namespace AscEmu::Packets;
 
@@ -2069,7 +2070,8 @@ void QuestMgr::SendQuestUpdateFailed(QuestProperties const* pQuest, Player* plyr
     if (!plyr)
         return;
 
-    plyr->GetSession()->OutPacket(SMSG_QUESTUPDATE_FAILED, 4, &pQuest->id);
+    plyr->SendPacket(SmsgQuestupdateFailed(pQuest->id).serialise().get());
+
     LOG_DEBUG("WORLD:Sent SMSG_QUESTUPDATE_FAILED");
 }
 
