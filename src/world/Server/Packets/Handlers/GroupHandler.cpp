@@ -23,22 +23,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGroupAssistantLeader.h"
 #include "Server/Packets/MsgPartyAssign.h"
 #include "Server/Packets/MsgRaidReadyCheck.h"
+#include "Server/Packets/SmsgGroupList.h"
 
 using namespace AscEmu::Packets;
 
 #if VERSION_STRING >= Cata
 void WorldSession::sendEmptyGroupList(Player* player)
 {
-    WorldPacket data(SMSG_GROUP_LIST, 28);
-    data << uint8_t(0x10);
-    data << uint8_t(0);
-    data << uint8_t(0);
-    data << uint8_t(0);
-    data << uint64_t(0);
-    data << uint32_t(0);
-    data << uint32_t(0);
-    data << uint64_t(0);
-    player->GetSession()->SendPacket(&data);
+    player->SendPacket(SmsgGroupList().serialise().get());
 }
 
 void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)

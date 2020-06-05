@@ -353,6 +353,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgGroupDecline.h
    ${PATH_PREFIX}/SmsgGroupDestroyed.h
    ${PATH_PREFIX}/SmsgGroupInvite.h
+   ${PATH_PREFIX}/SmsgGroupList.h
    ${PATH_PREFIX}/SmsgGroupSetLeader.h
    ${PATH_PREFIX}/SmsgGuildBankMoneyWithdrawn.h
    ${PATH_PREFIX}/SmsgGuildBankQueryTextResult.h

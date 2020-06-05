@@ -29,6 +29,7 @@
 #include "Server/Packets/SmsgPartyCommandResult.h"
 #include "Server/Packets/SmsgGroupSetLeader.h"
 #include "Server/Packets/SmsgGroupDestroyed.h"
+#include "Server/Packets/SmsgGroupList.h"
 
 using namespace AscEmu::Packets;
 
@@ -729,10 +730,7 @@ void Group::MovePlayer(PlayerInfo* info, uint8 subgroup)
 
 void Group::SendNullUpdate(Player* pPlayer)
 {
-    // this packet is 28 bytes long.    // AS OF 3.3
-    uint8 buffer[28];
-    memset(buffer, 0, 28);
-    pPlayer->GetSession()->OutPacket(SMSG_GROUP_LIST, 28, buffer);
+    pPlayer->SendPacket(SmsgGroupList().serialise().get());
 }
 
 void Group::LoadFromDB(Field* fields)
