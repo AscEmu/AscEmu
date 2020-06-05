@@ -89,7 +89,11 @@ enum AccountDataType
     PER_CHARACTER_MACROS_CACHE      = 5,                    // 0x20 p
     PER_CHARACTER_LAYOUT_CACHE      = 6,                    // 0x40 p
     PER_CHARACTER_CHAT_CACHE        = 7,                    // 0x80 p
+#if VERSION_STRING > TBC
     NUM_ACCOUNT_DATA_TYPES          = 8
+#else
+    NUM_ACCOUNT_DATA_TYPES          = 32
+#endif
 };
 
 const uint8 GLOBAL_CACHE_MASK        = 0x15;

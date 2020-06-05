@@ -54,6 +54,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgAlterAppearance.h"
 #include "Server/Packets/CmsgGameobjUse.h"
 #include "Server/Packets/CmsgInspect.h"
+#include "Server/Packets/SmsgAccountDataTimes.h"
 
 using namespace AscEmu::Packets;
 
@@ -2176,34 +2177,7 @@ void WorldSession::sendClientCacheVersion(uint32 version)
 
 void WorldSession::sendAccountDataTimes(uint32 mask)
 {
-#if VERSION_STRING == TBC
-    StackWorldPacket<128> data(SMSG_ACCOUNT_DATA_TIMES);
-    for (auto i = 0; i < 32; ++i)
-        data << uint32_t(0);
-
-#elif VERSION_STRING <= Cata
-    WorldPacket data(SMSG_ACCOUNT_DATA_TIMES, 4 + 1 + 4 + 8 * 4);
-    data << uint32_t(UNIXTIME);
-    data << uint8_t(1);
-    data << uint32_t(mask);
-    for (uint8 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
-    {
-        if (mask & (1 << i))
-            data << uint32(0);
-    }
-#else
-    WorldPacket data(SMSG_ACCOUNT_DATA_TIMES, 4 + 1 + 4 + 8 * 4);
-    data.writeBit(1);
-    data.flushBits();
-    for (uint8_t i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
-    {
-        if (mask & (1 << i))
-            data << uint32_t(0);
-    }
-    data << uint32_t(mask);
-    data << uint32_t(UNIXTIME);
-#endif
-    SendPacket(&data);
+    SendPacket(SmsgAccountDataTimes(UNIXTIME, 1, mask, NUM_ACCOUNT_DATA_TYPES).serialise().get());
 }
 
 void WorldSession::sendMOTD()
