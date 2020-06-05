@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPowerUpdate.h"
 #include "Map/MapMgr.h"
 #include "Units/Creatures/Vehicle.h"
+#include "Server/Packets/SmsgSpellEnergizeLog.h"
 
 using namespace AscEmu::Packets;
 
@@ -2806,16 +2807,7 @@ void Unit::energize(Unit* target, uint32_t spellId, uint32_t amount, PowerType t
 
 void Unit::sendSpellEnergizeLog(Unit* target, uint32_t spellId, uint32_t amount, PowerType type)
 {
-    WorldPacket data(SMSG_SPELLENERGIZELOG, 30);
-
-    data << target->GetNewGUID();
-    data << GetNewGUID();
-    data << uint32_t(spellId);
-    // For some reason power type needs to be sent as uint32_t
-    data << uint32_t(type);
-    data << uint32_t(amount);
-
-    SendMessageToSet(&data, true);
+    SendMessageToSet(SmsgSpellEnergizeLog(target->GetNewGUID(), GetNewGUID(), spellId, type, amount).serialise().get(), true);
 }
 
 uint8_t Unit::getPowerPct(PowerType powerType) const

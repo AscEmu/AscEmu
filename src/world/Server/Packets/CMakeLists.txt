@@ -432,6 +432,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgSpellDamageShield.h
    ${PATH_PREFIX}/SmsgSpellDelayed.h
    ${PATH_PREFIX}/SmsgSpellDispellLog.h
+   ${PATH_PREFIX}/SmsgSpellEnergizeLog.h
    ${PATH_PREFIX}/SmsgSpellOrDamageImmune.h
    ${PATH_PREFIX}/SmsgSpellFailedOther.h
    ${PATH_PREFIX}/SmsgSpellFailure.h
