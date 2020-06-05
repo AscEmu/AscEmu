@@ -107,6 +107,7 @@
 #include "Server/Packets/SmsgAttackSwingNotInRange.h"
 #include "Server/Packets/SmsgDurabilityDamageDeath.h"
 #include "Server/Packets/SmsgDuelInbounds.h"
+#include "Server/Packets/SmsgDuelOutOfBounds.h"
 
 using namespace AscEmu::Packets;
 
@@ -6920,9 +6921,7 @@ void Player::DuelBoundaryTest()
             m_duelCountdownTimer = 10000;
 
             // let us know
-
-            m_session->OutPacket(SMSG_DUEL_OUTOFBOUNDS, 4, &m_duelCountdownTimer);
-
+            SendPacket(SmsgDuelOutOfBounds(m_duelCountdownTimer).serialise().get());
             m_duelStatus = DUEL_STATUS_OUTOFBOUNDS;
         }
     }

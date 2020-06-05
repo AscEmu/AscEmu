@@ -324,6 +324,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgDuelComplete.h
    ${PATH_PREFIX}/SmsgDuelCountdown.h
    ${PATH_PREFIX}/SmsgDuelInbounds.h
+   ${PATH_PREFIX}/SmsgDuelOutOfBounds.h
    ${PATH_PREFIX}/SmsgDuelRequested.h
    ${PATH_PREFIX}/SmsgDuelWinner.h
    ${PATH_PREFIX}/SmsgDurabilityDamageDeath.h
