@@ -33,6 +33,7 @@
 #include "Server/Packets/SmsgQuestgiverQuestComplete.h"
 #include "Server/Packets/SmsgQuestLogFull.h"
 #include "Server/Packets/SmsgQuestgiverQuestInvalid.h"
+#include "Server/Packets/SmsgQuestupdateFailedTimer.h"
 
 using namespace AscEmu::Packets;
 
@@ -2058,7 +2059,8 @@ void QuestMgr::SendQuestUpdateFailedTimer(QuestProperties const* pQuest, Player*
     if (!plyr)
         return;
 
-    plyr->GetSession()->OutPacket(SMSG_QUESTUPDATE_FAILEDTIMER, 4, &pQuest->id);
+    plyr->SendPacket(SmsgQuestupdateFailedTimer(pQuest->id).serialise().get());
+
     LOG_DEBUG("WORLD:Sent SMSG_QUESTUPDATE_FAILEDTIMER");
 }
 
@@ -2112,12 +2114,6 @@ void QuestMgr::SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry)
 
     if (QuestID == 0)
         LogDebugFlag(LF_DB_TABLES, "QuestMgr : No corresponding quest was found for loot_gameobjects entryid %u quest item %d", GO_Entry, Item_Entry);
-}
-
-void QuestMgr::BuildQuestFailed(WorldPacket* data, uint32 questid)
-{
-    data->Initialize(SMSG_QUESTUPDATE_FAILEDTIMER);
-    *data << questid;
 }
 
 bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)

@@ -125,7 +125,6 @@ class SERVER_DECL QuestMgr
         void SendQuestUpdateAddKill(Player* plr, uint32 questid, uint32 entry, uint32 count, uint32 tcount, uint64 guid);
         void BuildQuestUpdateAddItem(WorldPacket* data, uint32 itemid, uint32 count);
         void BuildQuestUpdateComplete(WorldPacket* data, QuestProperties const* qst);
-        void BuildQuestFailed(WorldPacket* data, uint32 questid);
         void BuildQuestPOIResponse(WorldPacket & data, uint32 questid);
         void SendPushToPartyResponse(Player* plr, Player* pTarget, uint8 response);
 
