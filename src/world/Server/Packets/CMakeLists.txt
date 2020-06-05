@@ -417,6 +417,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgPlayerVehicleData.h
    ${PATH_PREFIX}/SmsgPlayObjectSound.h
    ${PATH_PREFIX}/SmsgPlaySound.h
+   ${PATH_PREFIX}/SmsgPong.h
    ${PATH_PREFIX}/SmsgPowerUpdate.h
    ${PATH_PREFIX}/SmsgPreResurrect.h
    ${PATH_PREFIX}/SmsgPvpCredit.h

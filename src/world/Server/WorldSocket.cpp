@@ -29,6 +29,7 @@
 #include "Auth/Sha1.h"
 #include "World.h"
 #include "Management/AddonMgr.h"
+#include "Packets/SmsgPong.h"
 //#include "World.Legacy.h"
 
 #pragma pack(push, 1)
@@ -974,7 +975,7 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
         mSession->m_clientTimeDelay = 0;
     }
 
-    OutPacket(SMSG_PONG, 4, &ping);
+    SendPacket(AscEmu::Packets::SmsgPong(ping).serialise().get());
 
 #ifdef WIN32
     // Dynamically change nagle buffering status based on latency.
