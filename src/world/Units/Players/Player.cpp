@@ -65,6 +65,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/UnitDefines.hpp"
 #include "Server/Packets/SmsgTriggerMovie.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
+#include "Server/Packets/SmsgSpellCooldown.h"
 
 using namespace AscEmu::Packets;
 
@@ -2023,21 +2024,15 @@ void Player::addGlobalCooldown(SpellInfo const* spellInfo, const bool sendPacket
 
 void Player::sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t duration, const bool isGcd)
 {
-    // Initialize packet size
-#if VERSION_STRING == Classic
-    const uint8_t packetSize = 16;
-#else
-    const uint8_t packetSize = 17;
-#endif
+    std::vector<SmsgSpellCooldownMap> spellMap;
 
-    WorldPacket data(SMSG_SPELL_COOLDOWN, packetSize);
-    data << GetNewGUID();
-#if VERSION_STRING >= TBC
-    data << uint8_t(isGcd ? 1 : 0); // flags
-#endif
-    data << uint32_t(spellInfo->getId());
-    data << uint32_t(duration);
-    SendMessageToSet(&data, true);
+    SmsgSpellCooldownMap mapMembers;
+    mapMembers.spellId = spellInfo->getId();
+    mapMembers.duration = duration;
+
+    spellMap.push_back(mapMembers);
+
+    SendMessageToSet(SmsgSpellCooldown(GetNewGUID(), isGcd, spellMap).serialise().get(), true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

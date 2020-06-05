@@ -432,6 +432,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgSetProficiency.h
    ${PATH_PREFIX}/SmsgShowBank.h
    ${PATH_PREFIX}/SmsgShowTaxiNodes.h
+   ${PATH_PREFIX}/SmsgSpellCooldown.h
    ${PATH_PREFIX}/SmsgSpellDamageShield.h
    ${PATH_PREFIX}/SmsgSpellDelayed.h
    ${PATH_PREFIX}/SmsgSpellDispellLog.h

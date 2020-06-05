@@ -101,6 +101,7 @@
 #include "Server/Packets/SmsgTutorialFlags.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
 #include "Server/Packets/SmsgStartMirrorTimer.h"
+#include "Server/Packets/SmsgSpellCooldown.h"
 
 using namespace AscEmu::Packets;
 
@@ -10494,17 +10495,13 @@ uint8 Player::GetRaidDifficulty()
 
 void Player::SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs)
 {
-    WorldPacket data(SMSG_SPELL_COOLDOWN, 8 + 1 + mSpells.size() * 8);
-    data << getGuid();
-    data << uint8(0x0);
+    std::vector<SmsgSpellCooldownMap> spellMap;
 
-    SpellSet::iterator sitr;
-    for (sitr = mSpells.begin(); sitr != mSpells.end(); ++sitr)
+    for (SpellSet::iterator sitr = mSpells.begin(); sitr != mSpells.end(); ++sitr)
     {
         uint32 SpellId = (*sitr);
 
         const auto spellInfo = sSpellMgr.getSpellInfo(SpellId);
-
         if (!spellInfo)
         {
             ASSERT(spellInfo)
@@ -10517,11 +10514,14 @@ void Player::SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs)
 
         if (spellInfo->getFirstSchoolFromSchoolMask() == SpellSchool)
         {
-            data << uint32(SpellId);
-            data << uint32(unTimeMs);                       // in m.secs
+            SmsgSpellCooldownMap mapMembers;
+            mapMembers.spellId = SpellId;
+            mapMembers.duration = unTimeMs;
+
+            spellMap.push_back(mapMembers);
         }
     }
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(SmsgSpellCooldown(getGuid(), 0x0, spellMap).serialise().get());
 }
 
 void Player::ToggleXpGain()
