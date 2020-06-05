@@ -88,12 +88,13 @@ uint64_t Auction::getAuctionOutBid() const
 AuctionHouse::AuctionHouse(uint32_t id)
 {
     auctionHouseEntryDbc = sAuctionHouseStore.LookupEntry(id);
-    ARCEMU_ASSERT(auctionHouseEntryDbc != NULL);
-
-    cutPercent = auctionHouseEntryDbc->tax / 100.0f;
-    depositPercent = auctionHouseEntryDbc->fee / 100.0f;
-
-    isEnabled = true;
+    if (auctionHouseEntryDbc)
+    {
+        cutPercent = auctionHouseEntryDbc->tax / 100.0f;
+        depositPercent = auctionHouseEntryDbc->fee / 100.0f;
+        isEnabled = true;
+    }
+    isEnabled = false;
 }
 
 AuctionHouse::~AuctionHouse()
@@ -102,7 +103,7 @@ AuctionHouse::~AuctionHouse()
         delete itr->second;
 }
 
-uint32_t AuctionHouse::getId() const { return auctionHouseEntryDbc->id; }
+uint32_t AuctionHouse::getId() const { return auctionHouseEntryDbc ? auctionHouseEntryDbc->id : 0; }
 
 void AuctionHouse::loadAuctionsFromDB()
 {

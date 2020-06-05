@@ -30,7 +30,11 @@
 #include "World.h"
 #include "Management/AddonMgr.h"
 #include "Packets/SmsgPong.h"
+#include "Packets/SmsgAuthChallenge.h"
+#include "Packets/SmsgAuthResponse.h"
 //#include "World.Legacy.h"
+
+using namespace AscEmu::Packets;
 
 #pragma pack(push, 1)
 struct ClientPktHeader
@@ -368,20 +372,10 @@ void WorldSocket::OnConnect()
     sWorld.increaseAcceptedConnections();
     _latency = Util::getMSTime();
 
-#if VERSION_STRING < WotLK
-    OutPacket(SMSG_AUTH_CHALLENGE, 4, &mSeed);
-#elif VERSION_STRING == WotLK
-    WorldPacket wp(SMSG_AUTH_CHALLENGE, 24);
+#if VERSION_STRING <= WotLK
+    SendPacket(SmsgAuthChallenge(mSeed).serialise().get());
 
-    wp << uint32(1);
-    wp << uint32(mSeed);
-    wp << uint32(0xC0FFEEEE);
-    wp << uint32(0x00BABE00);
-    wp << uint32(0xDF1697E5);
-    wp << uint32(0x1234ABCD);
-
-    SendPacket(&wp);
-#elif VERSION_STRING >= Cata
+#else
     WorldPacket packet(MSG_WOW_CONNECTION, 46);
     packet << "RLD OF WARCRAFT CONNECTION - SERVER TO CLIENT";
     SendPacket(&packet);
@@ -391,24 +385,7 @@ void WorldSocket::OnConnect()
 #if VERSION_STRING >= Cata
 void WorldSocket::OnConnectTwo()
 {
-    WorldPacket packet(SMSG_AUTH_CHALLENGE, 37);
-#if VERSION_STRING == Mop
-    packet << uint16_t(0);
-
-    for (int i = 0; i < 8; ++i)
-        packet << uint32_t(0);
-
-    packet << uint8_t(1);
-    packet << mSeed;
-#else
-    for (int i = 0; i < 8; ++i)
-        packet << uint32(0);
-    
-    packet << mSeed;
-    packet << uint8(1);
-#endif
-
-    SendPacket(&packet);
+    SendPacket(SmsgAuthChallenge(mSeed).serialise().get());
 }
 #endif
 
@@ -575,7 +552,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     if (error != 0 || pAuthenticationPacket == nullptr)
     {
         // something happened wrong @ the logon server
-        OutPacket(SMSG_AUTH_RESPONSE, 1, "\x0D");
+        SendPacket(SmsgAuthResponse(AuthFailed, ARST_ONLY_ERROR).serialise().get());
         return;
     }
 
@@ -674,7 +651,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
         // we must send authentication failed here.
         // the stupid newb can relog his client.
         // otherwise accounts dupe up and disasters happen.
-        OutPacket(SMSG_AUTH_RESPONSE, 1, "\x15");
+        SendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
         return;
     }
 
@@ -712,7 +689,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 #endif
     {
         // AUTH_UNKNOWN_ACCOUNT = 21
-        OutPacket(SMSG_AUTH_RESPONSE, 1, "\x15");
+        SendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
         return;
     }
 
@@ -788,7 +765,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     }
     else
     {
-        OutPacket(SMSG_AUTH_RESPONSE, 1, "\x0E"); // AUTH_REJECT = 14
+        SendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
         Disconnect();
     }
 
@@ -804,96 +781,19 @@ void WorldSocket::Authenticate()
     if (mSession == nullptr)
         return;
 
+    SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
+
 #if VERSION_STRING < Cata
-    if (mSession->HasFlag(ACCOUNT_FLAG_XPACK_02))
-        OutPacket(SMSG_AUTH_RESPONSE, 11, "\x0C\x30\x78\x00\x00\x00\x00\x00\x00\x00\x02");
-    else if (mSession->HasFlag(ACCOUNT_FLAG_XPACK_01))
-        OutPacket(SMSG_AUTH_RESPONSE, 11, "\x0C\x30\x78\x00\x00\x00\x00\x00\x00\x00\x01");
-    else
-        OutPacket(SMSG_AUTH_RESPONSE, 11, "\x0C\x30\x78\x00\x00\x00\x00\x00\x00\x00\x00");
-
     sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast<uint32>(pAuthenticationPacket->rpos()), mSession);
+#if VERSION_STRING > TBC
+    mSession->sendClientCacheVersion(12340);
+#endif
 #elif VERSION_STRING == Cata
-    WorldPacket data(SMSG_AUTH_RESPONSE, 17);
-    data.writeBit(false);
-    data.writeBit(true);
-    data << uint32_t(0);                          // BillingTimeRemaining
-    data << uint8_t(3);                           // 0 - normal, 1 - TBC, 2 - WOTLK, 3 - CATA
-    data << uint32_t(0);
-    data << uint8_t(3);
-    data << uint32_t(0);                          // BillingTimeRested
-    data << uint8_t(0);                           // BillingPlanFlags
-    data << uint8_t(0x0C);                        // 0x0C = 12 (AUTH_OK)
-    SendPacket(&data);
-
     mSession->sendClientCacheVersion(15595);
-
-    // send addon info here
     mSession->sendAddonInfo();
 #elif VERSION_STRING == Mop
-    WorldPacket data(SMSG_AUTH_RESPONSE, 80);
-    data.writeBit(true);
-    data.writeBits(0, 21);
-
-    data.writeBits(11, 23); //classes
-    data.writeBits(0, 21);
-    data.writeBit(0);
-    data.writeBit(0);
-    data.writeBit(0);
-    data.writeBit(0);
-    data.writeBits(15, 23); //races
-    data.writeBit(0);
-
-    data.writeBit(false);
-
-    data.flushBits();
-
-    // add expansion-race combination
-    data << uint8_t(0) << uint8_t(1);
-    data << uint8_t(0) << uint8_t(2);
-    data << uint8_t(0) << uint8_t(3);
-    data << uint8_t(0) << uint8_t(4);
-    data << uint8_t(0) << uint8_t(5);
-    data << uint8_t(0) << uint8_t(6);
-    data << uint8_t(0) << uint8_t(7);
-    data << uint8_t(0) << uint8_t(8);
-    data << uint8_t(3) << uint8_t(9);
-    data << uint8_t(1) << uint8_t(10);
-    data << uint8_t(1) << uint8_t(11);
-    data << uint8_t(3) << uint8_t(22);
-    data << uint8_t(4) << uint8_t(24);
-    data << uint8_t(4) << uint8_t(25);
-    data << uint8_t(4) << uint8_t(26);
-
-    // add expansion-class combination
-    data << uint8_t(0) << uint8_t(1);
-    data << uint8_t(0) << uint8_t(2);
-    data << uint8_t(0) << uint8_t(3);
-    data << uint8_t(0) << uint8_t(4);
-    data << uint8_t(0) << uint8_t(5);
-    data << uint8_t(2) << uint8_t(6);
-    data << uint8_t(0) << uint8_t(7);
-    data << uint8_t(0) << uint8_t(8);
-    data << uint8_t(0) << uint8_t(9);
-    data << uint8_t(4) << uint8_t(10);
-    data << uint8_t(0) << uint8_t(11);
-
-    data << uint32_t(0);            // BillingTime
-    data << uint8_t(4);             // 0 - normal, 1 - TBC, 2 - WOTLK, 3 - CATA, 4 - MOP
-    data << uint32_t(4);
-    data << uint32_t(0);
-    data << uint8_t(4);
-    data << uint32_t(0);
-    data << uint32_t(0);
-    data << uint32_t(0);
-
-    data << uint8_t(0x0C);          // 0x0C = 12 (AUTH_OK)
-
-    SendPacket(&data);
-
     mSession->sendClientCacheVersion(18414);
 #endif
-
 
     mSession->_latency = _latency;
 
@@ -902,50 +802,11 @@ void WorldSocket::Authenticate()
 
     sWorld.addSession(mSession);
     sWorld.addGlobalSession(mSession);
-
-#if VERSION_STRING > TBC
-#if VERSION_STRING < Cata
-    mSession->sendClientCacheVersion(12340);
-#endif
-#endif
-
 }
 
 void WorldSocket::UpdateQueuePosition(uint32 Position)
 {
-#if VERSION_STRING < Cata
-    // cebernic: Displays re-correctly until 2.4.3,there will not be always 0
-    WorldPacket QueuePacket(SMSG_AUTH_RESPONSE, 16);
-    QueuePacket << uint8(0x1B) << uint8(0x2C) << uint8(0x73) << uint8(0) << uint8(0);
-    QueuePacket << uint32(0) << uint8(0);// << uint8(0);
-    QueuePacket << Position;
-    //    QueuePacket << uint8(1);
-#elif VERSION_STRING == Cata
-    WorldPacket QueuePacket(SMSG_AUTH_RESPONSE, 21);    // 17 + 4 if queued
-    QueuePacket.writeBit(true);                         // has queue
-    QueuePacket.writeBit(false);                        // unk queue-related
-    QueuePacket.writeBit(true);                         // has account data
-    QueuePacket << uint32_t(0);                         // Unknown - 4.3.2
-    QueuePacket << uint8_t(3);                          // 0 - normal, 1 - TBC, 2 - WotLK, 3 - CT. must be set in database manually for each account
-    QueuePacket << uint32_t(0);                         // BillingTimeRemaining
-    QueuePacket << uint8_t(3);                          // 0 - normal, 1 - TBC, 2 - WotLK, 3 - CT. Must be set in database manually for each account.
-    QueuePacket << uint32_t(0);                         // BillingTimeRested
-    QueuePacket << uint8_t(0);                          // BillingPlanFlags
-    QueuePacket << uint8_t(0x1B);                       // Waiting in queue (AUTH_WAIT_QUEUE I think)
-    QueuePacket << uint32_t(Position);                  // position in queue
-#elif VERSION_STRING == Mop
-    WorldPacket QueuePacket(SMSG_AUTH_RESPONSE, 80);
-    QueuePacket.writeBit(false);
-
-    QueuePacket.writeBit(true);
-    QueuePacket.writeBit(1);
-
-    QueuePacket.flushBits();
-    QueuePacket << uint32_t(0);
-
-    QueuePacket << uint8_t(0x1B);          // 0x1B = 27 AUTH_WAIT_QUEUE
-#endif
-    SendPacket(&QueuePacket);
+    SendPacket(SmsgAuthResponse(0, ARST_QUEUE, Position).serialise().get());
 }
 
 void WorldSocket::_HandlePing(WorldPacket* recvPacket)
@@ -975,7 +836,7 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
         mSession->m_clientTimeDelay = 0;
     }
 
-    SendPacket(AscEmu::Packets::SmsgPong(ping).serialise().get());
+    SendPacket(SmsgPong(ping).serialise().get());
 
 #ifdef WIN32
     // Dynamically change nagle buffering status based on latency.
@@ -1126,16 +987,6 @@ void WorldSocket::HandleWoWConnection(WorldPacket* recvPacket)
     *recvPacket >> ClientToServerMsg;
 
     OnConnectTwo();
-}
-
-void WorldSocket::SendAuthResponseError(uint8_t code)
-{
-    WorldPacket packet(SMSG_AUTH_RESPONSE, 1);
-    packet.writeBit(0);                         // has queue info
-    packet.writeBit(0);                         // has account info
-    packet << uint8_t(code);                    // the error code
-
-    SendPacket(&packet);
 }
 #endif
 

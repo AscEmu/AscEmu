@@ -7167,7 +7167,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
     {
         if (isPlayer())
         {
+#if VERSION_STRING < Mop
             static_cast<Player*>(this)->SendPacket(SmsgAttackSwingBadFacing().serialise().get());
+#endif
             return;
         }
     }

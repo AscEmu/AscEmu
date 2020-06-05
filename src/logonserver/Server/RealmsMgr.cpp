@@ -123,6 +123,7 @@ void RealmsMgr::checkRealmStatus(bool silent)
 
 void RealmsMgr::sendRealms(AuthSocket* Socket)
 {
+    LogDefault("RealmsMgr::sendRealms");
     realmLock.Acquire();
 
     ByteBuffer data(_realmStore.size() * 150 + 20);

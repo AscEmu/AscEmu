@@ -1217,7 +1217,9 @@ void Player::_EventAttack(bool offhand)
     {
         if (m_AttackMsgTimer != 1)
         {
+#if VERSION_STRING < Mop
             SendPacket(SmsgAttackSwingNotInRange().serialise().get());
+#endif
             m_AttackMsgTimer = 1;
         }
         setAttackTimer(offhand == true ? OFFHAND : MELEE, 300);
@@ -1227,7 +1229,9 @@ void Player::_EventAttack(bool offhand)
         // We still have to do this one.
         if (m_AttackMsgTimer != 2)
         {
+#if VERSION_STRING < Mop
             SendPacket(SmsgAttackSwingBadFacing().serialise().get());
+#endif
             m_AttackMsgTimer = 2;
         }
         setAttackTimer(offhand == true ? OFFHAND : MELEE, 300);
@@ -1311,7 +1315,9 @@ void Player::_EventCharmAttack()
         {
             if (m_AttackMsgTimer == 0)
             {
+#if VERSION_STRING < Mop
                 SendPacket(SmsgAttackSwingBadFacing().serialise().get());
+#endif
                 m_AttackMsgTimer = 2000;        // 2 sec till next msg.
             }
             // Shorten, so there isnt a delay when the client IS in the right position.

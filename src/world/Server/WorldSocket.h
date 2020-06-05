@@ -59,7 +59,6 @@ class SERVER_DECL WorldSocket : public Socket
 
     public:
         void HandleWoWConnection(WorldPacket* recvPacket);
-        void SendAuthResponseError(uint8_t code);
 
         void OnConnectTwo();
 
