@@ -100,6 +100,7 @@
 #include "Server/Packets/SmsgBindPointUpdate.h"
 #include "Server/Packets/SmsgTutorialFlags.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
+#include "Server/Packets/SmsgStartMirrorTimer.h"
 
 using namespace AscEmu::Packets;
 
@@ -7084,14 +7085,7 @@ void Player::SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, 
         return;
     }
 
-    WorldPacket data(SMSG_START_MIRROR_TIMER, 21);
-    data << uint32(Type);
-    data << uint32(current);
-    data << uint32(max);
-    data << int32(regen);
-    data << uint8(0);
-    data << uint32(0);                   // spell id
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(SmsgStartMirrorTimer(Type, current, max, regen).serialise().get());
 }
 
 void Player::EventTeleport(uint32 mapid, float x, float y, float z)

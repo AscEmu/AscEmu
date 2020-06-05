@@ -445,6 +445,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgSpiritHealerConfirm.h
    ${PATH_PREFIX}/SmsgStableResult.h
    ${PATH_PREFIX}/SmsgStandstateUpdate.h
+   ${PATH_PREFIX}/SmsgStartMirrorTimer.h
    ${PATH_PREFIX}/SmsgStopMirrorTimer.h
    ${PATH_PREFIX}/SmsgSummonRequest.h
    ${PATH_PREFIX}/SmsgSupercededSpell.h
