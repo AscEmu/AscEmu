@@ -102,6 +102,7 @@
 #include "Server/Packets/SmsgTriggerCinematic.h"
 #include "Server/Packets/SmsgStartMirrorTimer.h"
 #include "Server/Packets/SmsgSpellCooldown.h"
+#include "Server/Packets/SmsgCancelCombat.h"
 
 using namespace AscEmu::Packets;
 
@@ -4467,7 +4468,7 @@ void Player::KillPlayer()
 
     EventDeath();
 
-    m_session->OutPacket(SMSG_CANCEL_COMBAT);
+    m_session->SendPacket(SmsgCancelCombat().serialise().get());
     m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
 
     setMoveRoot(true);
@@ -7063,8 +7064,8 @@ void Player::EndDuel(uint8 WinCondition)
     }
 
     //Stop Players attacking so they don't kill the other player
-    m_session->OutPacket(SMSG_CANCEL_COMBAT);
-    DuelingWith->m_session->OutPacket(SMSG_CANCEL_COMBAT);
+    m_session->SendPacket(SmsgCancelCombat().serialise().get());
+    DuelingWith->m_session->SendPacket(SmsgCancelCombat().serialise().get());
 
     smsg_AttackStop(DuelingWith);
     DuelingWith->smsg_AttackStop(this);

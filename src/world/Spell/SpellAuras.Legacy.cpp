@@ -49,6 +49,7 @@
 #include "Server/Packets/SmsgPlayerVehicleData.h"
 #include "Server/Packets/SmsgSetForceReactions.h"
 #include "Server/Packets/SmsgControlVehicle.h"
+#include "Server/Packets/SmsgCancelCombat.h"
 
 using namespace AscEmu::Packets;
 
@@ -5458,7 +5459,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
             if (p_target->hasUnitStateFlag(UNIT_STATE_ATTACKING))
                 p_target->removeUnitStateFlag(UNIT_STATE_ATTACKING);
 
-            p_target->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
+            p_target->SendPacket(SmsgCancelCombat().serialise().get());
             p_target->GetSession()->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
         }
         else

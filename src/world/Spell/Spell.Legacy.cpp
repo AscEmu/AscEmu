@@ -60,6 +60,7 @@
 #include "Server/Packets/SmsgSpellHealLog.h"
 #include "Server/Packets/SmsgResurrectRequest.h"
 #include "Server/Packets/SmsgSpellDelayed.h"
+#include "Server/Packets/SmsgCancelCombat.h"
 
 using namespace AscEmu::Packets;
 
@@ -1352,7 +1353,7 @@ void Spell::finish(bool successful)
         {
             p_caster->EventAttackStop();
             p_caster->smsg_AttackStop(p_caster->GetMapMgr()->GetUnit(p_caster->GetSelection()));
-            p_caster->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
+            p_caster->SendPacket(SmsgCancelCombat().serialise().get());
         }
 
         if (m_requiresCP && !GetSpellFailed())
