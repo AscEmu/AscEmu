@@ -13,6 +13,7 @@ namespace AscEmu::Packets
 {
     class SmsgPetUnlearnedSpell : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
         uint32_t spellId;
 
@@ -37,5 +38,6 @@ namespace AscEmu::Packets
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
+#endif
     };
 }
