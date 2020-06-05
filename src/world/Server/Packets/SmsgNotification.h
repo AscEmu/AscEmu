@@ -36,12 +36,12 @@ namespace AscEmu::Packets
 #elif VERSION_STRING == Cata
             packet.writeBits(text.size(), 13);
             packet.flushBits();
-            packet.append(text, text.size());
+            packet.append(text.c_str(), text.size());
 
 #else
             packet.writeBits(text.size(), 12);
             packet.flushBits();
-            packet.append(text, text.size());
+            packet.append(text.c_str(), text.size());
 #endif
 
             return true;
