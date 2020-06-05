@@ -2493,7 +2493,7 @@ void Player::RemovePendingPlayer()
     if (m_session)
     {
         uint8 respons = E_CHAR_LOGIN_NO_CHARACTER;
-        m_session->OutPacket(SMSG_CHARACTER_LOGIN_FAILED, 1, &respons);
+        SendPacket(SmsgCharacterLoginFailed(respons).serialise().get());
         m_session->m_loggingInPlayer = nullptr;
     }
 

@@ -809,7 +809,7 @@ void Pet::SendActionFeedback(PetActionFeedback value)
     if (m_Owner == NULL || m_Owner->GetSession() == NULL)
         return;
 
-    m_Owner->SendPacket(AscEmu::Packets::SmsgPetActionFeedback().serialise().get());
+    m_Owner->SendPacket(AscEmu::Packets::SmsgPetActionFeedback(value).serialise().get());
 }
 
 void Pet::InitializeSpells()
