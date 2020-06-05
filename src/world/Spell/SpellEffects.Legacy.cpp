@@ -5586,7 +5586,6 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         // Send a message to the died player, telling him he has to resurrect at the graveyard.
         // Send an empty corpse location too, :P
 
-        playerTarget->GetSession()->OutPacket(SMSG_PLAYER_SKINNED, 1, "\x00");
         playerTarget->SendPacket(MsgCorspeQuery(0).serialise().get());
 
         // don't allow him to spawn a corpse
@@ -5605,9 +5604,9 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         Player* owner = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart());
         if (owner)
         {
-            if (!owner->m_bg) return;
+            if (!owner->m_bg)
+                return;
 
-            owner->GetSession()->OutPacket(SMSG_PLAYER_SKINNED, 1, "\x00");
             owner->SendPacket(MsgCorspeQuery(0).serialise().get());
         }
 
