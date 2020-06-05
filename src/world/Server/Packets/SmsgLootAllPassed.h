@@ -25,7 +25,7 @@ namespace AscEmu::Packets
         }
 
         SmsgLootAllPassed(uint64_t guid, uint32_t groupCount, uint32_t itemId, uint32_t randomSuffix, uint32_t randomPropertyId) :
-            ManagedPacket(SMSG_LOOT_ALL_PASSED, 4),
+            ManagedPacket(SMSG_LOOT_ALL_PASSED, 24),
             guid(guid),
             groupCount(groupCount),
             itemId(itemId),

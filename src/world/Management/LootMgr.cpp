@@ -29,6 +29,8 @@
 #include "Map/MapMgr.h"
 #include "Server/Packets/SmsgLootRemoved.h"
 #include "Server/Packets/SmsgLootAllPassed.h"
+#include "Server/Packets/SmsgLootRollWon.h"
+#include "Server/Packets/SmsgLootRoll.h"
 
 using namespace AscEmu::Packets;
 
@@ -655,22 +657,7 @@ void LootRoll::Finalize()
     int8 hightype = -1;
     uint64 player = 0;
     WorldPacket data(34);
-    /*
-    Player*  gplr = NULL;
-    for (std::map<uint64, uint32>::iterator itr = NeedRolls.begin(); itr != NeedRolls.end(); ++itr)
-    {
-    gplr = _mgr->GetPlayer((uint32)itr->first);
-    if (gplr) break;
-    }
-    if (!gplr)
-    {
-    for (std::map<uint64, uint32>::iterator itr = GreedRolls.begin(); itr != GreedRolls.end(); ++itr)
-    {
-    gplr = _mgr->GetPlayer((uint32)itr->first);
-    if (gplr) break;
-    }
-    }
-    */
+
     for (std::map<uint32, uint32>::iterator itr = m_NeedRolls.begin(); itr != m_NeedRolls.end(); ++itr)
     {
         if (itr->second > highest)
@@ -679,14 +666,6 @@ void LootRoll::Finalize()
             player = itr->first;
             hightype = NEED;
         }
-        /*
-        data.Initialize(SMSG_LOOT_ROLL);
-        data << _guid << _slotid << itr->first;
-        data << _itemid << _randomsuffixid << _randompropertyid;
-        data << uint8(itr->second) << uint8(NEED);
-        if (gplr && gplr->GetGroup())
-        gplr->GetGroup()->SendPacketToAll(&data);
-        */
     }
     if (!highest)
     {
@@ -698,14 +677,6 @@ void LootRoll::Finalize()
                 player = itr->first;
                 hightype = GREED;
             }
-            /*
-            data.Initialize(SMSG_LOOT_ROLL);
-            data << _guid << _slotid << itr->first;
-            data << _itemid << _randomsuffixid << _randompropertyid;
-            data << uint8(itr->second) << uint8(GREED);
-            if (gplr && gplr->GetGroup())
-            gplr->GetGroup()->SendPacketToAll(&data);
-            */
         }
     }
 
@@ -776,19 +747,11 @@ void LootRoll::Finalize()
         return;
     }
     pLoot->items.at(_slotid).roll = 0;
-    data.Initialize(SMSG_LOOT_ROLL_WON);
-    data << _guid;
-    data << _slotid;
-    data << _itemid;
-    data << _randomsuffixid;
-    data << _randompropertyid;
-    data << _player->getGuid();
-    data << uint8(highest);
-    data << uint8(hightype);
+
     if (_player->InGroup())
-        _player->GetGroup()->SendPacketToAll(&data);
+        _player->GetGroup()->SendPacketToAll(SmsgLootRollWon(_guid, _slotid, _itemid, _randomsuffixid, _randompropertyid, _player->getGuid(), highest, hightype).serialise().get());
     else
-        _player->GetSession()->SendPacket(&data);
+        _player->GetSession()->SendPacket(SmsgLootRollWon(_guid, _slotid, _itemid, _randomsuffixid, _randompropertyid, _player->getGuid(), highest, hightype).serialise().get());
 
     ItemProperties const* it = sMySQLStore.getItemProperties(itemid);
     int8 error;
@@ -860,39 +823,29 @@ void LootRoll::PlayerRolled(Player* player, uint8 choice)
 {
     if (m_NeedRolls.find(player->getGuidLow()) != m_NeedRolls.end() || m_GreedRolls.find(player->getGuidLow()) != m_GreedRolls.end())
         return; // don't allow cheaters
+
     int roll = Util::getRandomUInt(99) + 1;
-    // create packet
-    WorldPacket data(34);
-    data.SetOpcode(SMSG_LOOT_ROLL);
-    data << _guid;
-    data << _slotid;
-    data << player->getGuid();
-    data << _itemid;
-    data << _randomsuffixid;
-    data << _randompropertyid;
+    uint8_t rollType = choice;
+
     if (choice == NEED)
     {
         m_NeedRolls.insert(std::make_pair(player->getGuidLow(), roll));
-        data << uint8(roll);
-        data << uint8(NEED);
     }
     else if (choice == GREED)
     {
         m_GreedRolls.insert(std::make_pair(player->getGuidLow(), roll));
-        data << uint8(roll);
-        data << uint8(GREED);
     }
     else
     {
         m_passRolls.insert(player->getGuidLow());
-        data << uint8(128);
-        data << uint8(128);
+        roll = 128;
+        rollType = 128;
     }
-    data << uint8(0); // Requires research - possibly related to disenchanting of loot
+
     if (player->InGroup())
-        player->GetGroup()->SendPacketToAll(&data);
+        player->GetGroup()->SendPacketToAll(SmsgLootRoll(_guid, _slotid, player->getGuid(), _itemid, _randomsuffixid, _randompropertyid, roll, rollType).serialise().get());
     else
-        player->GetSession()->SendPacket(&data);
+        player->GetSession()->SendPacket(SmsgLootRoll(_guid, _slotid, player->getGuid(), _itemid, _randomsuffixid, _randompropertyid, roll, rollType).serialise().get());
     // check for early completion
     if (!--_remaining)
     {
