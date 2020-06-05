@@ -5586,7 +5586,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         // Send an empty corpse location too, :P
 
         playerTarget->GetSession()->OutPacket(SMSG_PLAYER_SKINNED, 1, "\x00");
-        playerTarget->GetSession()->OutPacket(MSG_CORPSE_QUERY, 1, "\x00");
+        playerTarget->SendPacket(MsgCorspeQuery(0).serialise().get());
 
         // don't allow him to spawn a corpse
         playerTarget->bCorpseCreateable = false;
@@ -5607,7 +5607,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
             if (!owner->m_bg) return;
 
             owner->GetSession()->OutPacket(SMSG_PLAYER_SKINNED, 1, "\x00");
-            owner->GetSession()->OutPacket(MSG_CORPSE_QUERY, 1, "\x00");
+            owner->SendPacket(MsgCorspeQuery(0).serialise().get());
         }
 
         if (corpse->getDynamicFlags() != 1)
