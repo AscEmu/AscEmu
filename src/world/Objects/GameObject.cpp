@@ -35,6 +35,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Server/Packets/SmsgGameobjectCustomAnim.h"
 #include "Server/Packets/SmsgGameobjectPagetext.h"
+#include "Server/Packets/SmsgTriggerCinematic.h"
 
 // MIT
 
@@ -1137,7 +1138,7 @@ void GameObject_Goober::onUse(Player* player)
 void GameObject_Camera::onUse(Player* player)
 {
     if (gameobject_properties->camera.cinematic_id != 0)
-        player->GetSession()->OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &gameobject_properties->camera.cinematic_id);
+        player->GetSession()->SendPacket(SmsgTriggerCinematic(gameobject_properties->camera.cinematic_id).serialise().get());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

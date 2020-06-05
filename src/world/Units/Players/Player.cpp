@@ -63,6 +63,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Units/UnitDefines.hpp"
+#include "Server/Packets/SmsgTriggerMovie.h"
+#include "Server/Packets/SmsgTriggerCinematic.h"
 
 using namespace AscEmu::Packets;
 
@@ -2812,9 +2814,7 @@ bool Player::isGMFlagSet()
 void Player::sendMovie(uint32_t movieId)
 {
 #if VERSION_STRING > TBC
-    WorldPacket data(SMSG_TRIGGER_MOVIE, 4);
-    data << uint32_t(movieId);
-    m_session->SendPacket(&data);
+    m_session->SendPacket(SmsgTriggerMovie(movieId).serialise().get());
 #endif
 }
 
@@ -3017,13 +3017,13 @@ void Player::sendCinematicOnFirstLogin()
         if (const auto charEntry = sChrClassesStore.LookupEntry(getClass()))
         {
             if (charEntry->cinematic_id != 0)
-                OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &charEntry->cinematic_id);
+                SendPacket(SmsgTriggerCinematic(charEntry->cinematic_id).serialise().get());
             else if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
-                OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &raceEntry->cinematic_id);
+                SendPacket(SmsgTriggerCinematic(raceEntry->cinematic_id).serialise().get());
         }
 #else
         if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
-            OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &raceEntry->cinematic_id);
+            SendPacket(SmsgTriggerCinematic(raceEntry->cinematic_id).serialise().get());
 #endif
     }
 }

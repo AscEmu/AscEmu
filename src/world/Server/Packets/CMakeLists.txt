@@ -456,6 +456,8 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgTrainerBuySucceeded.h
    ${PATH_PREFIX}/SmsgTransferAborted.h
    ${PATH_PREFIX}/SmsgTransferPending.h
+   ${PATH_PREFIX}/SmsgTriggerCinematic.h
+   ${PATH_PREFIX}/SmsgTriggerMovie.h
    ${PATH_PREFIX}/SmsgTutorialFlags.h
    ${PATH_PREFIX}/SmsgUpdateAccountDataComplete.h
    ${PATH_PREFIX}/SmsgUpdateAuraDuration.h

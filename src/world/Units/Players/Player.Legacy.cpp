@@ -99,6 +99,7 @@
 #include "Server/Packets/SmsgDuelComplete.h"
 #include "Server/Packets/SmsgBindPointUpdate.h"
 #include "Server/Packets/SmsgTutorialFlags.h"
+#include "Server/Packets/SmsgTriggerCinematic.h"
 
 using namespace AscEmu::Packets;
 
@@ -12110,7 +12111,7 @@ void Player::SendCinematicCamera(uint32 id)
 {
     GetMapMgr()->ChangeObjectLocation(this);
     SetPosition(float(GetPositionX() + 0.01), float(GetPositionY() + 0.01), float(GetPositionZ() + 0.01), GetOrientation());
-    GetSession()->OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &id);
+    GetSession()->SendPacket(SmsgTriggerCinematic(id).serialise().get());
 }
 
 bool Player::IsBanned()
