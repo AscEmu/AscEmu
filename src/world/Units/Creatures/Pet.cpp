@@ -36,6 +36,7 @@
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Definitions/SpellEffectTarget.h"
 #include "Pet.h"
+#include "Server/Packets/SmsgPetActionFeedback.h"
 
 #define WATER_ELEMENTAL         510
 #define WATER_ELEMENTAL_NEW     37994
@@ -808,7 +809,7 @@ void Pet::SendActionFeedback(PetActionFeedback value)
     if (m_Owner == NULL || m_Owner->GetSession() == NULL)
         return;
 
-    m_Owner->GetSession()->OutPacket(SMSG_PET_ACTION_FEEDBACK, 1, &value);
+    m_Owner->SendPacket(AscEmu::Packets::SmsgPetActionFeedback().serialise().get());
 }
 
 void Pet::InitializeSpells()

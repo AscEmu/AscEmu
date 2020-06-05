@@ -404,6 +404,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgPartyKillLog.h
    ${PATH_PREFIX}/SmsgPartyMemberStatsFull.h
    ${PATH_PREFIX}/SmsgPeriodicAuraLog.h
+   ${PATH_PREFIX}/SmsgPetActionFeedback.h
    ${PATH_PREFIX}/SmsgPetActionSound.h
    ${PATH_PREFIX}/SmsgPetitionQueryResponse.h
    ${PATH_PREFIX}/SmsgPetitionShowlist.h
