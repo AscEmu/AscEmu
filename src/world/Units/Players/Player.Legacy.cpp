@@ -104,6 +104,9 @@
 #include "Server/Packets/SmsgSpellCooldown.h"
 #include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Packets/SmsgAttackSwingBadFacing.h"
+#include "Server/Packets/SmsgAttackSwingNotInRange.h"
+#include "Server/Packets/SmsgDurabilityDamageDeath.h"
+#include "Server/Packets/SmsgDuelInbounds.h"
 
 using namespace AscEmu::Packets;
 
@@ -1213,7 +1216,7 @@ void Player::_EventAttack(bool offhand)
     {
         if (m_AttackMsgTimer != 1)
         {
-            m_session->OutPacket(SMSG_ATTACKSWING_NOTINRANGE);
+            SendPacket(SmsgAttackSwingNotInRange().serialise().get());
             m_AttackMsgTimer = 1;
         }
         setAttackTimer(offhand == true ? OFFHAND : MELEE, 300);
@@ -1296,7 +1299,7 @@ void Player::_EventCharmAttack()
         {
             if (m_AttackMsgTimer == 0)
             {
-                //m_session->OutPacket(SMSG_ATTACKSWING_NOTINRANGE);
+                //SendPacket(SmsgAttackSwingNotInRange().serialise().get());
                 // 2 sec till next msg.
                 m_AttackMsgTimer = 2000;
             }
@@ -4612,7 +4615,7 @@ void Player::SpawnCorpseBones()
 
 void Player::DeathDurabilityLoss(double percent)
 {
-    m_session->OutPacket(SMSG_DURABILITY_DAMAGE_DEATH);
+    SendPacket(SmsgDurabilityDamageDeath(percent).serialise().get());
 
     for (uint8 i = 0; i < EQUIPMENT_SLOT_END; i++)
     {
@@ -6929,7 +6932,7 @@ void Player::DuelBoundaryTest()
         if (m_duelStatus == DUEL_STATUS_OUTOFBOUNDS)
         {
             // just came back in range
-            m_session->OutPacket(SMSG_DUEL_INBOUNDS);
+            SendPacket(SmsgDuelInbounds().serialise().get());
             m_duelStatus = DUEL_STATUS_INBOUNDS;
         }
     }

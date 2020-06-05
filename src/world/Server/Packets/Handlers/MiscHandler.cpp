@@ -55,6 +55,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGameobjUse.h"
 #include "Server/Packets/CmsgInspect.h"
 #include "Server/Packets/SmsgAccountDataTimes.h"
+#include "Server/Packets/SmsgLogoutCancelAck.h"
 
 using namespace AscEmu::Packets;
 
@@ -1057,7 +1058,7 @@ void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
 
     SetLogoutTimer(0);
 
-    OutPacket(SMSG_LOGOUT_CANCEL_ACK);
+    SendPacket(SmsgLogoutCancelAck().serialise().get());
 
     _player->setMoveRoot(false);
 

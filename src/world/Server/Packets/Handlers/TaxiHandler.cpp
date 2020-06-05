@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgActivatetaxiexpress.h"
 #include "Server/Packets/CmsgActivatetaxi.h"
 #include "Map/MapMgr.h"
+#include "Server/Packets/SmsgNewTaxiPath.h"
 
 using namespace AscEmu::Packets;
 
@@ -33,7 +34,7 @@ void WorldSession::sendTaxiList(Creature* creature)
     {
         _player->SetTaximask(field, (subMask | _player->GetTaximask(field)));
 
-        OutPacket(SMSG_NEW_TAXI_PATH);
+        SendPacket(SmsgNewTaxiPath().serialise().get());
 
         SendPacket(SmsgTaxinodeStatus(creature->getGuid(), 1).serialise().get());
     }

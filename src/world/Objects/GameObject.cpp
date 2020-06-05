@@ -36,6 +36,8 @@
 #include "Server/Packets/SmsgGameobjectCustomAnim.h"
 #include "Server/Packets/SmsgGameobjectPagetext.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
+#include "Server/Packets/SmsgFishEscaped.h"
+#include "Server/Packets/SmsgFishNotHooked.h"
 
 // MIT
 
@@ -1224,13 +1226,13 @@ void GameObject_FishingNode::onUse(Player* player)
         }
         else
         {
-            player->GetSession()->OutPacket(SMSG_FISH_ESCAPED);
+            player->SendPacket(SmsgFishEscaped().serialise().get());
             EndFishing(true);
         }
     }
     else
     {
-        player->GetSession()->OutPacket(SMSG_FISH_NOT_HOOKED);
+        player->SendPacket(SmsgFishNotHooked().serialise().get());
     }
 
     // Fishing is channeled spell

@@ -276,6 +276,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgAttackStart.h
    ${PATH_PREFIX}/SmsgAttackStop.h
    ${PATH_PREFIX}/SmsgAttackSwingBadFacing.h
+   ${PATH_PREFIX}/SmsgAttackSwingNotInRange.h
    ${PATH_PREFIX}/SmsgAuctionBidderListResult.h
    ${PATH_PREFIX}/SmsgAuctionBidderNotification.h
    ${PATH_PREFIX}/SmsgAuctionCommandResult.h
@@ -322,14 +323,18 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgDismountResult.h
    ${PATH_PREFIX}/SmsgDuelComplete.h
    ${PATH_PREFIX}/SmsgDuelCountdown.h
+   ${PATH_PREFIX}/SmsgDuelInbounds.h
    ${PATH_PREFIX}/SmsgDuelRequested.h
    ${PATH_PREFIX}/SmsgDuelWinner.h
+   ${PATH_PREFIX}/SmsgDurabilityDamageDeath.h
    ${PATH_PREFIX}/SmsgEmote.h
    ${PATH_PREFIX}/SmsgEnchantmentLog.h
    ${PATH_PREFIX}/SmsgEnvironmentalDamageLog.h
    ${PATH_PREFIX}/SmsgEquipmentSetUseResult.h
    ${PATH_PREFIX}/SmsgExplorationExperience.h
    ${PATH_PREFIX}/SmsgFeatureSystemStatus.h
+   ${PATH_PREFIX}/SmsgFishEscaped.h
+   ${PATH_PREFIX}/SmsgFishNotHooked.h
    ${PATH_PREFIX}/SmsgFriendStatus.h
    ${PATH_PREFIX}/SmsgGameobjectCustomAnim.h
    ${PATH_PREFIX}/SmsgGameobjectDespawnAnim.h
@@ -371,6 +376,8 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgLfgUpdateSearch.h
    ${PATH_PREFIX}/SmsgLoginSetTimespeed.h
    ${PATH_PREFIX}/SmsgLoginVerifyWorld.h
+   ${PATH_PREFIX}/SmsgLogoutCancelAck.h
+   ${PATH_PREFIX}/SmsgLogoutComplete.h
    ${PATH_PREFIX}/SmsgLogoutResponse.h
    ${PATH_PREFIX}/SmsgLogXpGain.h
    ${PATH_PREFIX}/SmsgLootAllPassed.h
@@ -389,6 +396,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgMoveUnsetCanFly.h
    ${PATH_PREFIX}/SmsgNameQueryResponse.h
    ${PATH_PREFIX}/SmsgItemTextQueryResponse.h
+   ${PATH_PREFIX}/SmsgNewTaxiPath.h
    ${PATH_PREFIX}/SmsgNewWorld.h
    ${PATH_PREFIX}/SmsgNotification.h
    ${PATH_PREFIX}/SmsgPageTextQueryResponse.h
@@ -415,6 +423,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgQuestgiverQuestComplete.h
    ${PATH_PREFIX}/SmsgQuestgiverStatus.h
    ${PATH_PREFIX}/SmsgQuestgiverStatusMultiple.h
+   ${PATH_PREFIX}/SmsgQuestLogFull.h
    ${PATH_PREFIX}/SmsgRaidGroupOnly.h
    ${PATH_PREFIX}/SmsgRatedBgInfo.h
    ${PATH_PREFIX}/SmsgRatedBgStats.h

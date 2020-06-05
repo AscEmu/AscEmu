@@ -31,6 +31,7 @@
 #include "Spell/SpellMgr.h"
 #include "Server/Packets/MsgQuestPushResult.h"
 #include "Server/Packets/SmsgQuestgiverQuestComplete.h"
+#include "Server/Packets/SmsgQuestLogFull.h"
 
 using namespace AscEmu::Packets;
 
@@ -2073,7 +2074,7 @@ void QuestMgr::SendQuestLogFull(Player* plyr)
     if (!plyr)
         return;
 
-    plyr->GetSession()->OutPacket(SMSG_QUESTLOG_FULL);
+    plyr->SendPacket(SmsgQuestLogFull().serialise().get());
     LOG_DEBUG("WORLD:Sent QUEST_LOG_FULL_MESSAGE");
 }
 

@@ -66,6 +66,7 @@
 #include "Server/Packets/SmsgClearTarget.h"
 #include "Server/Packets/SmsgSpellStealLog.h"
 #include "Server/Packets/SmsgSpellDispellLog.h"
+#include "Server/Packets/SmsgNewTaxiPath.h"
 
 using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
 using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
@@ -6250,7 +6251,7 @@ void Spell::SpellEffectTeachTaxiPath(uint8_t effectIndex)
     {
         playerTarget->SetTaximask(field, (submask | playerTarget->GetTaximask(field)));
 
-        playerTarget->GetSession()->OutPacket(SMSG_NEW_TAXI_PATH);
+        playerTarget->SendPacket(SmsgNewTaxiPath().serialise().get());
 
         //Send packet
         playerTarget->GetSession()->SendPacket(SmsgTaxinodeStatus(0, 1).serialise().get());
