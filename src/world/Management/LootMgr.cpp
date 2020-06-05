@@ -28,6 +28,9 @@
 #include "Server/WorldConfig.h"
 #include "Map/MapMgr.h"
 #include "Server/Packets/SmsgLootRemoved.h"
+#include "Server/Packets/SmsgLootAllPassed.h"
+
+using namespace AscEmu::Packets;
 
 struct loot_tb
 {
@@ -763,9 +766,9 @@ void LootRoll::Finalize()
         if (_player != NULL)
         {
             if (_player->InGroup())
-                _player->GetGroup()->SendPacketToAll(&data);
+                _player->GetGroup()->SendPacketToAll(SmsgLootAllPassed(_guid, _groupcount, _itemid, _randomsuffixid, _randompropertyid).serialise().get());
             else
-                _player->GetSession()->SendPacket(&data);
+                _player->GetSession()->SendPacket(SmsgLootAllPassed(_guid, _groupcount, _itemid, _randomsuffixid, _randompropertyid).serialise().get());
         }
         /* item can now be looted by anyone :) */
         pLoot->items.at(_slotid).passed = true;
