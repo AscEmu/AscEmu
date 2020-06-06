@@ -62,8 +62,8 @@ namespace AscEmu::Packets
             packet << uint32_t(mEmblemInfo.getBackgroundColor());
             packet << uint32_t(mEmblemInfo.getColor());
 
-            ObjectGuid oldGuildGuid = MAKE_NEW_GUID(guildId, 0, guildId ? uint32_t(HIGHGUID_TYPE_GUILD) : 0);
-            ObjectGuid newGuildGuid = guildGuid;
+            WoWGuid oldGuildGuid(guildId, 0, guildId ? uint32_t(HIGHGUID_TYPE_GUILD) : 0);
+            WoWGuid newGuildGuid = guildGuid;
 
             packet.writeBit(newGuildGuid[3]);
             packet.writeBit(newGuildGuid[2]);

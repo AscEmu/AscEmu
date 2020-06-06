@@ -54,7 +54,12 @@ Group::Group(bool Assign)
     {
         m_Id = sObjectMgr.GenerateGroupId();
         sObjectMgr.AddGroup(this);
-        m_guid = MAKE_NEW_GUID(m_Id, 0, HIGHGUID_TYPE_GROUP);
+        m_guid = WoWGuid(m_Id, 0, HIGHGUID_TYPE_GROUP).getRawGuid();
+    }
+    else
+    {
+        m_Id = 0;
+        m_guid = 0;
     }
 
     m_dirty = false;
@@ -66,8 +71,6 @@ Group::Group(bool Assign)
     m_raiddifficulty = 0;
     m_assistantLeader = m_mainAssist = m_mainTank = NULL;
     updatecounter = 0;
-    m_Id = 0;
-    m_guid = 0;
 }
 
 Group::~Group()

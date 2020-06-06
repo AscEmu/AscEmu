@@ -49,7 +49,7 @@ public:
 
     uint32_t getId() const { return m_id; }
 
-    uint64_t getGUID() const { return MAKE_NEW_GUID(m_id, 0, HIGHGUID_TYPE_GUILD); }
+    uint64_t getGUID() const { return WoWGuid(m_id, 0, HIGHGUID_TYPE_GUILD).getRawGuid(); }
     uint64_t getLeaderGUID() const { return m_leaderGuid; }
     std::string const& getName() const { return m_name; }
     std::string const& getMOTD() const { return m_motd; }

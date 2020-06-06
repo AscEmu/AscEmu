@@ -1130,7 +1130,7 @@ bool Guild::loadGuildFromDB(Field* fields)
 {
     m_id = fields[0].GetUInt32();
     m_name = fields[1].GetString();
-    m_leaderGuid = MAKE_NEW_GUID(fields[2].GetUInt32(), 0, HIGHGUID_TYPE_PLAYER);
+    m_leaderGuid = WoWGuid(fields[2].GetUInt32(), 0, HIGHGUID_TYPE_PLAYER).getRawGuid();
 
     m_emblemInfo.loadEmblemInfoFromDB(fields);
 
@@ -1175,7 +1175,7 @@ void Guild::loadRankFromDB(Field* fields)
 bool Guild::loadMemberFromDB(Field* fields, Field* fields2)
 {
     uint32_t lowguid = fields[1].GetUInt32();
-    auto member = new GuildMember(m_id, MAKE_NEW_GUID(lowguid, 0, HIGHGUID_TYPE_PLAYER), fields[2].GetUInt8());
+    auto member = new GuildMember(m_id, WoWGuid(lowguid, 0, HIGHGUID_TYPE_PLAYER).getRawGuid(), fields[2].GetUInt8());
     if (!member->loadGuildMembersFromDB(fields, fields2))
     {
         CharacterDatabase.Execute("DELETE FROM guild_members WHERE guildId = %u", lowguid);

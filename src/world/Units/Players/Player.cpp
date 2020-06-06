@@ -280,7 +280,7 @@ void Player::setGuildId(uint32_t guildId)
 #if VERSION_STRING < Cata
     write(playerData()->guild_id, guildId);
 #else
-    write(objectData()->data, MAKE_NEW_GUID(guildId, 0, HIGHGUID_TYPE_GUILD));
+    write(objectData()->data, WoWGuid(guildId, 0, HIGHGUID_TYPE_GUILD).getRawGuid());
 
     if (guildId)
         addPlayerFlags(PLAYER_FLAGS_GUILD_LVL_ENABLED);

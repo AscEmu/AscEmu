@@ -32,7 +32,7 @@ GuildNews GuildNewsLogEntry::getType() const
 
 uint64_t GuildNewsLogEntry::getPlayerGuid() const
 {
-    return mPlayerGuid ? MAKE_NEW_GUID(mPlayerGuid, 0, HIGHGUID_TYPE_PLAYER) : 0;
+    return mPlayerGuid ? WoWGuid(mPlayerGuid, 0, HIGHGUID_TYPE_PLAYER).getRawGuid() : 0;
 }
 
 uint32_t GuildNewsLogEntry::getValue() const

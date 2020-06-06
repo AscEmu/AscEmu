@@ -1488,7 +1488,7 @@ void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
     for (std::vector<MembershipRequest>::const_iterator itr = recruitsList.begin(); itr != recruitsList.end(); ++itr)
     {
         MembershipRequest request = *itr;
-        ObjectGuid playerGuid(MAKE_NEW_GUID(request.getPlayerGUID(), 0, HIGHGUID_TYPE_PLAYER));
+        WoWGuid playerGuid(request.getPlayerGUID(), 0, HIGHGUID_TYPE_PLAYER);
 
         PlayerInfo* info = sObjectMgr.GetPlayerInfo(request.getPlayerGUID());
         std::string name = info->name;

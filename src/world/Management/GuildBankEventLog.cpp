@@ -45,7 +45,7 @@ void GuildBankEventLogEntry::saveGuildLogToDB() const
 #if VERSION_STRING >= Cata
 void GuildBankEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const
 {
-    ObjectGuid logGuid = MAKE_NEW_GUID(mPlayerGuid, 0, HIGHGUID_TYPE_PLAYER);
+    WoWGuid logGuid(mPlayerGuid, 0, HIGHGUID_TYPE_PLAYER);
 
     bool hasItem = mEventType == GB_LOG_DEPOSIT_ITEM || mEventType == GB_LOG_WITHDRAW_ITEM ||
         mEventType == GB_LOG_MOVE_ITEM || mEventType == GB_LOG_MOVE_ITEM2;
@@ -101,7 +101,7 @@ void GuildBankEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& 
 void GuildBankEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& /*content*/) const
 {
     data << uint8(mEventType);
-    data << MAKE_NEW_GUID(mPlayerGuid, 0, HIGHGUID_TYPE_PLAYER);
+    data << WoWGuid(mPlayerGuid, 0, HIGHGUID_TYPE_PLAYER);
 
     switch (mEventType)
     {

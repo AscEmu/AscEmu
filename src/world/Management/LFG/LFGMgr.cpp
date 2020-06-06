@@ -1461,7 +1461,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             if (player->groupLowGuid != lowgroupguid)
                 LOG_DEBUG("%u group mismatch: actual (%u) - queued (%u)", (*it)->getGuid(), lowgroupguid, player->groupLowGuid);
 
-            uint64 guid2 = player->groupLowGuid ? MAKE_NEW_GUID(player->groupLowGuid, 0, HIGHGUID_TYPE_GROUP) : (*it)->getGuid();
+            uint64 guid2 = player->groupLowGuid ? WoWGuid(player->groupLowGuid, 0, HIGHGUID_TYPE_GROUP).getRawGuid() : (*it)->getGuid();
             LfgQueueInfoMap::iterator itQueue = m_QueueInfoMap.find(guid2);
             if (itQueue == m_QueueInfoMap.end())
             {
@@ -1602,7 +1602,7 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
         if (it->second->accept == LFG_ANSWER_AGREE)
             continue;
 
-        uint64 guid = it->second->groupLowGuid ? MAKE_NEW_GUID(it->second->groupLowGuid, 0, HIGHGUID_TYPE_GROUP) : it->first;
+        uint64 guid = it->second->groupLowGuid ? WoWGuid(it->second->groupLowGuid, 0, HIGHGUID_TYPE_GROUP).getRawGuid() : it->first;
         // Player didn't accept or still pending when no secs left
         if (it->second->accept == LFG_ANSWER_DENY || type == LFG_UPDATETYPE_PROPOSAL_FAILED)
         {
@@ -1627,7 +1627,7 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
 
         Group* grp = player->GetGroup();
         uint64 guid = player->getGuid();
-        uint64 gguid = it->second->groupLowGuid ? MAKE_NEW_GUID(it->second->groupLowGuid, 0, HIGHGUID_TYPE_GROUP) : guid;
+        uint64 gguid = it->second->groupLowGuid ? WoWGuid(it->second->groupLowGuid, 0, HIGHGUID_TYPE_GROUP).getRawGuid() : guid;
 
         if (toRemove.find(gguid) != toRemove.end())         // Didn't accept or in same group that someone that didn't accept
         {

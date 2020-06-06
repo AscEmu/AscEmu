@@ -108,6 +108,4 @@ enum TimeConstants
 
 #define RACEMASK_HORDE RACEMASK_ALL_PLAYABLE & ~RACEMASK_ALLIANCE
 
-#define MAKE_NEW_GUID(l, e, h)   uint64(uint64(l) | (uint64(e) << 24) | (uint64(h) << 48))
-
 #define MAKE_PAIR32(l, h)  uint32(uint16(l) | (uint32(h) << 16))
