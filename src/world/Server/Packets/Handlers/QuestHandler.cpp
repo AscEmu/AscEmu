@@ -462,7 +462,7 @@ void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
     }
     else if (srlPacket.questGiverGuid.isItem())
     {
-        Item* quest_giver = _player->getItemInterface()->GetItemByGUID(srlPacket.questGiverGuid.GetOldGuid());
+        Item* quest_giver = _player->getItemInterface()->GetItemByGUID(srlPacket.questGiverGuid.getRawGuid());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -479,12 +479,12 @@ void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
 
     if (!qst_giver)
     {
-        LogDebugFlag(LF_OPCODE, "Invalid questgiver GUID " I64FMT ".", srlPacket.questGiverGuid.GetOldGuid());
+        LogDebugFlag(LF_OPCODE, "Invalid questgiver GUID " I64FMT ".", srlPacket.questGiverGuid.getRawGuid());
         return;
     }
 
     const uint32_t questStatus = sQuestMgr.CalcStatus(qst_giver, _player);
-    SendPacket(SmsgQuestgiverStatus(srlPacket.questGiverGuid.GetOldGuid(), questStatus).serialise().get());
+    SendPacket(SmsgQuestgiverStatus(srlPacket.questGiverGuid.getRawGuid(), questStatus).serialise().get());
 }
 
 void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
@@ -536,7 +536,7 @@ void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
     }
     else if (srlPacket.guid.isItem())
     {
-        Item* quest_giver = _player->getItemInterface()->GetItemByGUID(srlPacket.guid.GetOldGuid());
+        Item* quest_giver = _player->getItemInterface()->GetItemByGUID(srlPacket.guid.getRawGuid());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -881,7 +881,7 @@ void WorldSession::handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     {
         WorldPacket data(12);
         data.Initialize(CMSG_QUESTGIVER_QUERY_QUEST);
-        data << srlPacket.questgiverGuid.GetOldGuid();
+        data << srlPacket.questgiverGuid.getRawGuid();
         data << qst->next_quest_id;
         handleQuestGiverQueryQuestOpcode(data);
     }

@@ -1693,7 +1693,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
     // Check if item exists
     if (!srlPacket.itemGuid)
     {
-        sendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 1);
+        sendSellItem(srlPacket.vendorGuid.getRawGuid(), srlPacket.itemGuid, 1);
         return;
     }
 
@@ -1701,14 +1701,14 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
     // Check if Vendor exists
     if (unit == nullptr)
     {
-        sendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 3);
+        sendSellItem(srlPacket.vendorGuid.getRawGuid(), srlPacket.itemGuid, 3);
         return;
     }
 
     Item* item = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuid);
     if (!item)
     {
-        sendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 1);
+        sendSellItem(srlPacket.vendorGuid.getRawGuid(), srlPacket.itemGuid, 1);
         return; //our player doesn't have this item
     }
 
@@ -1716,14 +1716,14 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
 
     if (item->isContainer() && dynamic_cast<Container*>(item)->HasItems())
     {
-        sendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 6);
+        sendSellItem(srlPacket.vendorGuid.getRawGuid(), srlPacket.itemGuid, 6);
         return;
     }
 
     // Check if item can be sold
     if (it->SellPrice == 0 || item->wrapped_item_id != 0)
     {
-        sendSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid, 2);
+        sendSellItem(srlPacket.vendorGuid.getRawGuid(), srlPacket.itemGuid, 2);
         return;
     }
 
@@ -1769,7 +1769,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
         }
     }
 
-    SendPacket(SmsgSellItem(srlPacket.vendorGuid.GetOldGuid(), srlPacket.itemGuid).serialise().get());
+    SendPacket(SmsgSellItem(srlPacket.vendorGuid.getRawGuid(), srlPacket.itemGuid).serialise().get());
 }
 
 void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
@@ -1935,7 +1935,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
         pItem->getRandomPropertiesId(), pItem->getStackCount());
 
     WorldPacket data(SMSG_BUY_ITEM, 22);
-    data << uint64_t(srlPacket.srcGuid.GetOldGuid());
+    data << uint64_t(srlPacket.srcGuid.getRawGuid());
 #if VERSION_STRING < Cata
     data << Util::getMSTime();
     data << uint32_t(srlPacket.itemId);
@@ -2100,7 +2100,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
 
     _player->getItemInterface()->BuyItem(it, srlPacket.amount, creature);
 
-    SendPacket(SmsgBuyItem(srlPacket.sourceGuid.GetOldGuid(), Util::getMSTime(), srlPacket.itemEntry,
+    SendPacket(SmsgBuyItem(srlPacket.sourceGuid.getRawGuid(), Util::getMSTime(), srlPacket.itemEntry,
         srlPacket.amount * creature_item.amount).serialise().get());
 
     if (creature_item.max_amount)
@@ -2893,7 +2893,7 @@ void WorldSession::handleEquipmentSetUse(WorldPacket& data)
         data >> SrcBagID;
         data >> SrcSlotID;
 
-        const uint64_t ItemGUID = guid.GetOldGuid();
+        const uint64_t ItemGUID = guid.getRawGuid();
 
         const auto item = _player->getItemInterface()->GetItemByGUID(ItemGUID);
         if (item == nullptr)

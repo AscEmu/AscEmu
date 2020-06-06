@@ -47,7 +47,7 @@ Loot* WorldSession::getItemLootFromHighGuidType(WoWGuid wowGuid)
         }
         case HighGuid::Item:
         {
-            if (const auto item = _player->getItemInterface()->GetItemByGUID(wowGuid.GetOldGuid()))
+            if (const auto item = _player->getItemInterface()->GetItemByGUID(wowGuid.getRawGuid()))
                 return item->loot;
 
             return nullptr;
@@ -99,7 +99,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
     }
     else if (wowGuid.isItem())
     {
-        lootItem = _player->getItemInterface()->GetItemByGUID(wowGuid.GetOldGuid());
+        lootItem = _player->getItemInterface()->GetItemByGUID(wowGuid.getRawGuid());
         if (lootItem == nullptr)
             return;
     }
@@ -285,7 +285,7 @@ Loot* WorldSession::getMoneyLootFromHighGuidType(WoWGuid wowGuid)
         }
         case HighGuid::Item:
         {
-            if (const auto item = _player->getItemInterface()->GetItemByGUID(wowGuid.GetOldGuid()))
+            if (const auto item = _player->getItemInterface()->GetItemByGUID(wowGuid.getRawGuid()))
                 return item->loot;
 
             return nullptr;
@@ -479,7 +479,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    SendPacket(SmsgLootReleaseResponse(srlPacket.guid.GetOldGuid(), 1).serialise().get());
+    SendPacket(SmsgLootReleaseResponse(srlPacket.guid.getRawGuid(), 1).serialise().get());
 
     _player->SetLootGUID(0);
     _player->removeUnitFlags(UNIT_FLAG_LOOTING);
@@ -638,7 +638,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
     }
     else if (srlPacket.guid.isItem())
     {
-        if (auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.guid.GetOldGuid()))
+        if (auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.guid.getRawGuid()))
         {
             if (item->loot != nullptr)
             {
@@ -652,7 +652,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
             }
 
             if (item->loot == nullptr)
-                _player->getItemInterface()->RemoveItemAmtByGuid(srlPacket.guid.GetOldGuid(), 1);
+                _player->getItemInterface()->RemoveItemAmtByGuid(srlPacket.guid.getRawGuid(), 1);
         }
     }
     else
@@ -674,7 +674,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
     if (player == nullptr)
         return;
 
-    if (_player->GetLootGUID() != srlPacket.creatureGuid.GetOldGuid())
+    if (_player->GetLootGUID() != srlPacket.creatureGuid.getRawGuid())
         return;
 
     Creature* creature = nullptr;

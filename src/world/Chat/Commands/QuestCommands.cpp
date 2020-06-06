@@ -695,7 +695,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
     {
         WoWGuid wowGuid;
         wowGuid.Init(m_session->GetPlayer()->GetSelection());
-        if (wowGuid.GetOldGuid() == 0)
+        if (wowGuid.getRawGuid() == 0)
         {
             SystemMessage(m_session, "You must target an npc or specify an id.");
             return true;
@@ -876,7 +876,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
     WoWGuid wowGuid;
     wowGuid.Init(m_session->GetPlayer()->GetSelection());
 
-    if (wowGuid.GetOldGuid() == 0)
+    if (wowGuid.getRawGuid() == 0)
     {
         SystemMessage(m_session, "You must target an npc.");
         return false;
@@ -976,7 +976,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
     WoWGuid wowGuid;
     wowGuid.Init(m_session->GetPlayer()->GetSelection());
 
-    if (wowGuid.GetOldGuid() == 0)
+    if (wowGuid.getRawGuid() == 0)
     {
         SystemMessage(m_session, "You must target an npc.");
         return false;
@@ -1426,7 +1426,7 @@ bool ChatHandler::HandleQuestLoadCommand(const char* /*args*/, WorldSession* m_s
     WoWGuid wowGuid;
     wowGuid.Init(m_session->GetPlayer()->GetSelection());
 
-    if (wowGuid.GetOldGuid() == 0)
+    if (wowGuid.getRawGuid() == 0)
         return true;
 
     Creature* unit = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());

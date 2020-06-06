@@ -71,21 +71,21 @@ void SpellCastTargets::read(WorldPacket& data, uint64_t caster)
     {
         WoWGuid guid;
         data >> guid;
-        m_gameObjectTarget = guid.GetOldGuid();
+        m_gameObjectTarget = guid.getRawGuid();
     }
 
     if (m_targetMask & (TARGET_FLAG_UNIT | TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2 | TARGET_FLAG_UNK17))
     {
         WoWGuid guid;
         data >> guid;
-        m_unitTarget = guid.GetOldGuid();
+        m_unitTarget = guid.getRawGuid();
     }
 
     if (m_targetMask & (TARGET_FLAG_ITEM | TARGET_FLAG_TRADE_ITEM))
     {
         WoWGuid guid;
         data >> guid;
-        m_itemTarget = guid.GetOldGuid();
+        m_itemTarget = guid.getRawGuid();
     }
 
     if (m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
@@ -93,7 +93,7 @@ void SpellCastTargets::read(WorldPacket& data, uint64_t caster)
         WoWGuid sourceGuid;
 
         data >> sourceGuid;
-        unkuint64_1 = sourceGuid.GetOldGuid();
+        unkuint64_1 = sourceGuid.getRawGuid();
 
         LocationVector lv;
         data >> lv.x;
@@ -107,7 +107,7 @@ void SpellCastTargets::read(WorldPacket& data, uint64_t caster)
     {
         WoWGuid destinationGuid;
         data >> destinationGuid;
-        unkuint64_2 = destinationGuid.GetOldGuid();
+        unkuint64_2 = destinationGuid.getRawGuid();
 
         LocationVector lv;
         data >> lv.x;

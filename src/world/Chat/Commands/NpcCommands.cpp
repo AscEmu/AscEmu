@@ -865,7 +865,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
     WoWGuid wowGuid;
     wowGuid.Init(m_session->GetPlayer()->GetSelection());
 
-    if (wowGuid.GetOldGuid() == 0)
+    if (wowGuid.getRawGuid() == 0)
     {
         SystemMessage(m_session, "No selection.");
         return true;
@@ -945,7 +945,7 @@ bool ChatHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSessio
 
     WoWGuid wowGuid;
     wowGuid.Init(m_session->GetPlayer()->GetSelection());
-    if (wowGuid.GetOldGuid() == 0)
+    if (wowGuid.getRawGuid() == 0)
     {
         SystemMessage(m_session, "No selection.");
         return true;

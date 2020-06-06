@@ -36,7 +36,7 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << attackerGuid;
-            if (victimGuid.GetOldGuid() == 0)
+            if (victimGuid.getRawGuid() == 0)
                 packet << uint8_t(0);
             else
                 packet << victimGuid;

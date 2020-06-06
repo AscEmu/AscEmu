@@ -44,7 +44,7 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << guid.GetOldGuid() << listSize << slotCount;
+            packet << guid.getRawGuid() << listSize << slotCount;
             for (const auto& stablePet : stableList)
                 packet << stablePet.petNumber << stablePet.entry << stablePet.level << stablePet.name << stablePet.stableState;
 

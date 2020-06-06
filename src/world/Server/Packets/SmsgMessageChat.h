@@ -41,7 +41,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << type << language << guid.GetOldGuid() << uint32_t(0) << guid.GetOldGuid() << uint32_t(message.length() + 1) << message;
+            packet << type << language << guid.getRawGuid() << uint32_t(0) << guid.getRawGuid() << uint32_t(message.length() + 1) << message;
 
             packet << (show_gm_flag ? uint8_t(4) : uint8_t(0));
 

@@ -23,7 +23,7 @@ void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
     if (_player->IsFeared() || _player->IsStunned() || _player->IsPacified() || _player->isDead())
         return;
 
-    const auto unitTarget = _player->GetMapMgr()->GetUnit(srlPacket.guid.GetOldGuid());
+    const auto unitTarget = _player->GetMapMgr()->GetUnit(srlPacket.guid.getRawGuid());
     if (unitTarget == nullptr)
         return;
 

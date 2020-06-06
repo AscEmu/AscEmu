@@ -212,7 +212,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 #endif
     _player->_UpdateSkillFields();
 
-    SendPacket(SmsgTrainerBuySucceeded(srlPacket.guid.GetOldGuid(), srlPacket.spellId).serialise().get());
+    SendPacket(SmsgTrainerBuySucceeded(srlPacket.guid.getRawGuid(), srlPacket.spellId).serialise().get());
 }
 
 void WorldSession::handleCharterShowListOpcode(WorldPacket& recvPacket)

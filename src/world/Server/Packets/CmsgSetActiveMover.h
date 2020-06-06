@@ -34,7 +34,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << guid.GetOldGuid();
+            packet << guid.getRawGuid();
             return true;
         }
 

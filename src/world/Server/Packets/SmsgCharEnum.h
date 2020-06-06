@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #pragma once
+
 #include <cstdint>
 
 #include "ManagedPacket.h"
@@ -84,8 +85,8 @@ namespace AscEmu::Packets
             {
                 for (auto const& data : enum_data)
                 {
-                    ObjectGuid guid = MAKE_NEW_GUID(data.guid, 0, 0x000);
-                    ObjectGuid guildGuid = MAKE_NEW_GUID(data.guildId, 0, HIGHGUID_TYPE_GUILD);
+                    WoWGuid guid(data.guid, 0, HIGHGUID_TYPE_PLAYER);
+                    WoWGuid guildGuid(data.guildId, 0, HIGHGUID_TYPE_GUILD);
 
                     packet.writeBit(guid[3]);
                     packet.writeBit(guildGuid[1]);
@@ -186,8 +187,8 @@ namespace AscEmu::Packets
 
                 for (auto const& data : enum_data)
                 {
-                    ObjectGuid guid = MAKE_NEW_GUID(data.guid, 0, 0x000);
-                    ObjectGuid guildGuid = MAKE_NEW_GUID(data.guildId, 0, HIGHGUID_TYPE_GUILD);
+                    WoWGuid guid(data.guid, 0, HIGHGUID_TYPE_PLAYER);
+                    WoWGuid guildGuid(data.guildId, 0, HIGHGUID_TYPE_GUILD);
 
                     packet.writeBit(guildGuid[4]);
                     packet.writeBit(guid[0]);

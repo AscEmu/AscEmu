@@ -724,7 +724,7 @@ void WorldSession::handleResurrectResponse(WorldPacket& recvPacket)
     if (player == nullptr)
         return;
 
-    if (srlPacket.status != 1 || _player->m_resurrecter || _player->m_resurrecter != srlPacket.guid.GetOldGuid())
+    if (srlPacket.status != 1 || _player->m_resurrecter || _player->m_resurrecter != srlPacket.guid.getRawGuid())
     {
         _player->m_resurrectHealth = 0;
         _player->m_resurrectMana = 0;
@@ -1091,7 +1091,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_RECLAIM_CORPSE");
 
-    if (srlPacket.guid.GetOldGuid() == 0)
+    if (srlPacket.guid.getRawGuid() == 0)
         return;
 
     auto corpse = sObjectMgr.GetCorpse(srlPacket.guid.getGuidLow());

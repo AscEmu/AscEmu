@@ -1238,14 +1238,14 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target
                 const auto transport = this_player->GetTransport();
                 ARCEMU_ASSERT(transport != nullptr);
 
-                *data << transport->GetNewGUID().GetOldGuid();
+                *data << transport->GetNewGUID().getRawGuid();
                 *data << transport->GetPosition() << transport->GetPosition().o;
                 *data << transport->GetTransTime();
             }
             else if (this_creature && this_creature->GetTransport())
             {
                 const auto transport = this_creature->GetTransport();
-                *data << transport->GetNewGUID().GetOldGuid();
+                *data << transport->GetNewGUID().getRawGuid();
                 *data << transport->GetPosition() << transport->GetPosition().o;
                 *data << transport->GetTransTime();
                 *data << float(0.f); // unk

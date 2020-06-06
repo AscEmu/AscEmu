@@ -170,7 +170,7 @@ namespace luPacket
         if (packet != NULL)
         {
             (*packet) >> nGuid;
-            PUSH_GUID(L, nGuid.GetOldGuid());
+            PUSH_GUID(L, nGuid.getRawGuid());
         }
         else
             lua_pushnil(L);

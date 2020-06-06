@@ -56,13 +56,13 @@ void WorldSession::handleRequestVehicleSwitchSeat(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (srlPacket.guid.GetOldGuid() == _player->getCurrentVehicle()->GetOwner()->getGuid())
+    if (srlPacket.guid.getRawGuid() == _player->getCurrentVehicle()->GetOwner()->getGuid())
     {
         _player->getCurrentVehicle()->MovePassengerToSeat(_player, srlPacket.seat);
     }
     else
     {
-        const auto unit = _player->GetMapMgr()->GetUnit(srlPacket.guid.GetOldGuid());
+        const auto unit = _player->GetMapMgr()->GetUnit(srlPacket.guid.getRawGuid());
         if (unit == nullptr)
             return;
 
@@ -87,7 +87,7 @@ void WorldSession::handleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto sourceUnit = _player->GetMapMgr()->GetUnit(srlPacket.sourceGuid.GetOldGuid());
+    const auto sourceUnit = _player->GetMapMgr()->GetUnit(srlPacket.sourceGuid.getRawGuid());
     if (sourceUnit == nullptr)
         return;
 
@@ -97,7 +97,7 @@ void WorldSession::handleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket)
     if (sourceUnit->getGuid() != _player->getCurrentVehicle()->GetOwner()->getGuid())
         return;
 
-    const auto destinationUnit = _player->GetMapMgr()->GetUnit(srlPacket.destinationGuid.GetOldGuid());
+    const auto destinationUnit = _player->GetMapMgr()->GetUnit(srlPacket.destinationGuid.getRawGuid());
     if (destinationUnit == nullptr)
         return;
 

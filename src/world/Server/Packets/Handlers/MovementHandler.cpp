@@ -34,23 +34,23 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (srlPacket.guid == m_MoverWoWGuid.GetOldGuid())
+    if (srlPacket.guid == m_MoverWoWGuid.getRawGuid())
         return;
 
-    if (_player->m_CurrentCharm != srlPacket.guid.GetOldGuid() || _player->getGuid() != srlPacket.guid.GetOldGuid())
+    if (_player->m_CurrentCharm != srlPacket.guid.getRawGuid() || _player->getGuid() != srlPacket.guid.getRawGuid())
     {
         auto bad_packet = true;
 #if VERSION_STRING >= TBC
         if (const auto vehicle = _player->getCurrentVehicle())
             if (const auto owner = vehicle->GetOwner())
-                if (owner->getGuid() == srlPacket.guid.GetOldGuid())
+                if (owner->getGuid() == srlPacket.guid.getRawGuid())
                     bad_packet = false;
 #endif
         if (bad_packet)
             return;
     }
 
-    if (srlPacket.guid.GetOldGuid() == 0)
+    if (srlPacket.guid.getRawGuid() == 0)
         m_MoverWoWGuid.Init(_player->getGuid());
     else
         m_MoverWoWGuid = srlPacket.guid;
@@ -469,7 +469,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     /************************************************************************/
 
     // Player is the active mover
-    if (m_MoverWoWGuid.GetOldGuid() == _player->getGuid())
+    if (m_MoverWoWGuid.getRawGuid() == _player->getGuid())
     {
         if (!_player->GetTransport())
         {
@@ -965,7 +965,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     /************************************************************************/
 
     // Player is the active mover
-    if (m_MoverWoWGuid.GetOldGuid() == _player->getGuid())
+    if (m_MoverWoWGuid.getRawGuid() == _player->getGuid())
     {
 
         if (!_player->GetTransport())
@@ -1463,7 +1463,7 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received MSG_MOVE_TELEPORT_ACK.");
 
-    if (srlPacket.guid.GetOldGuid() == _player->getGuid())
+    if (srlPacket.guid.getRawGuid() == _player->getGuid())
     {
         if (worldConfig.antiHack.isTeleportHackCheckEnabled && !(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm))
         {

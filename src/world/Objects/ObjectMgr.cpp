@@ -2414,7 +2414,7 @@ Pet* ObjectMgr::CreatePet(uint32 entry)
 {
     uint32 guid;
     guid = ++m_hiPetGuid;
-    return new Pet(WoWGuid::createPetGuid(entry, guid));
+    return new Pet(WoWGuid(guid, entry, HIGHGUID_TYPE_PET));
 }
 
 Player* ObjectMgr::CreatePlayer(uint8 _class)

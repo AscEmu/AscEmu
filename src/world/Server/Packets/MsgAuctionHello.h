@@ -33,7 +33,7 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << guid.GetOldGuid() << auctionHouseId << isAuctionHouseEnabled;
+            packet << guid.getRawGuid() << auctionHouseId << isAuctionHouseEnabled;
             return true;
         }
 

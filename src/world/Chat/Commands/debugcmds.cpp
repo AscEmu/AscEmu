@@ -87,7 +87,7 @@ bool ChatHandler::HandleShowReactionCommand(const char* args, WorldSession* m_se
     WoWGuid wowGuid;
     wowGuid.Init(m_session->GetPlayer()->GetSelection());
 
-    if (wowGuid.GetOldGuid() != 0)
+    if (wowGuid.getRawGuid() != 0)
     {
         obj = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
     }
@@ -147,7 +147,7 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
 
     WoWGuid wowGuid;
     wowGuid.Init(m_session->GetPlayer()->GetSelection());
-    if (wowGuid.GetOldGuid() != 0)
+    if (wowGuid.getRawGuid() != 0)
     {
         creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
     }
@@ -260,7 +260,7 @@ bool ChatHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
     WoWGuid wowGuid;
     wowGuid.Init(m_session->GetPlayer()->GetSelection());
 
-    if (wowGuid.GetOldGuid() != 0)
+    if (wowGuid.getRawGuid() != 0)
     {
         obj = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
     }
