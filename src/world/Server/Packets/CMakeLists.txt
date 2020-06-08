@@ -325,6 +325,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgCriteriaUpdate.h
    ${PATH_PREFIX}/SmsgCrossedInebriationThreshold.h
    ${PATH_PREFIX}/SmsgDeathReleaseLoc.h
+   ${PATH_PREFIX}/SmsgDefenseMessage.h
    ${PATH_PREFIX}/SmsgDestoyObject.h
    ${PATH_PREFIX}/SmsgDestructibleBuildingDamage.h
    ${PATH_PREFIX}/SmsgDismountResult.h

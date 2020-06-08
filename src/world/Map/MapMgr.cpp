@@ -44,6 +44,7 @@
 #include "WorldCreator.h"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgUpdateWorldState.h"
+#include "Server/Packets/SmsgDefenseMessage.h"
 
 using namespace AscEmu::Packets;
 
@@ -2016,14 +2017,9 @@ void MapMgr::SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Me
     va_list ap;
     va_start(ap, Message);
 
-    WorldPacket data(SMSG_DEFENSE_MESSAGE, 208);
     char msgbuf[200];
     vsnprintf(msgbuf, 200, Message, ap);
     va_end(ap);
-
-    data << ZoneId;
-    data << uint32(strlen(msgbuf) + 1);
-    data << msgbuf;
 
     for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
     {
@@ -2033,7 +2029,7 @@ void MapMgr::SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Me
         if ((ZoneMask != ZONE_MASK_ALL && plr->GetZoneId() != (uint32)ZoneMask))
             continue;
 
-        plr->GetSession()->SendPacket(&data);
+        plr->GetSession()->SendPacket(SmsgDefenseMessage(ZoneId, msgbuf).serialise().get());
     }
 }
 
