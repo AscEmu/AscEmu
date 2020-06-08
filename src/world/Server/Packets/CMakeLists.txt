@@ -363,6 +363,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgGuildEvent.h
    ${PATH_PREFIX}/SmsgGuildInfo.h
    ${PATH_PREFIX}/SmsgGuildInvite.h
+   ${PATH_PREFIX}/SmsgGuildMemberDailyReset.h
    ${PATH_PREFIX}/SmsgInitialSpells.h
    ${PATH_PREFIX}/SmsgInstanceDifficulty.h
    ${PATH_PREFIX}/SmsgInstanceReset.h

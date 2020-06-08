@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgGuildBankMoneyWithdrawn.h"
 #include "Server/Packets/SmsgGuildInvite.h"
 #include "Server/Packets/SmsgGuildEvent.h"
+#include "Server/Packets/SmsgGuildMemberDailyReset.h"
 
 using namespace AscEmu::Packets;
 
@@ -1100,9 +1101,7 @@ void Guild::sendLoginInfo(WorldSession* session)
     sendGuildRankInfo(session);
     broadcastEvent(GE_SIGNED_ON, player->getGuid(), { player->getName() });
 
-    WorldPacket data;
-    data.Initialize(SMSG_GUILD_MEMBER_DAILY_RESET, 0);
-    session->SendPacket(&data);
+    session->SendPacket(SmsgGuildMemberDailyReset().serialise().get());
 
     if (worldConfig.guild.levelingEnabled == false)
         return;
@@ -2178,8 +2177,7 @@ void Guild::resetTimes(bool weekly)
         itr->second->resetValues(weekly);
         if (Player* player = itr->second->getPlayerByGuid(itr->second->getGUID()))
         {
-            WorldPacket data(SMSG_GUILD_MEMBER_DAILY_RESET, 0);
-            player->GetSession()->SendPacket(&data);
+            player->GetSession()->SendPacket(SmsgGuildMemberDailyReset().serialise().get());
         }
     }
 }
