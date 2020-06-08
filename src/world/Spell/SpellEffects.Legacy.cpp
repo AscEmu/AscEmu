@@ -67,6 +67,7 @@
 #include "Server/Packets/SmsgSpellStealLog.h"
 #include "Server/Packets/SmsgSpellDispellLog.h"
 #include "Server/Packets/SmsgNewTaxiPath.h"
+#include "Server/Packets/SmsgPlayerBound.h"
 
 using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
 using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
@@ -2323,10 +2324,7 @@ void Spell::SpellEffectBind(uint8_t effectIndex)
     playerTarget->GetSession()->SendPacket(SmsgBindPointUpdate(playerTarget->GetBindPositionX(), playerTarget->GetBindPositionY(), playerTarget->GetBindPositionZ(),
         playerTarget->GetBindMapId(), playerTarget->GetBindZoneId()).serialise().get());
 
-    data.Initialize(SMSG_PLAYERBOUND);
-    data << m_caster->getGuid();
-    data << playerTarget->GetBindZoneId();
-    playerTarget->GetSession()->SendPacket(&data);
+    playerTarget->GetSession()->SendPacket(SmsgPlayerBound(m_caster->getGuid(), playerTarget->GetBindZoneId()).serialise().get());
 }
 
 void Spell::SpellEffectQuestComplete(uint8_t effectIndex) // Quest Complete
