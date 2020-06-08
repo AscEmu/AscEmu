@@ -463,6 +463,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgSetFlatSpellModifier.h
    ${PATH_PREFIX}/SmsgSetForceReactions.h
    ${PATH_PREFIX}/SmsgSetPctSpellModifier.h
+   ${PATH_PREFIX}/SmsgSetPhaseShift.h
    ${PATH_PREFIX}/SmsgSetPlayerDeclinedNamesResult.h
    ${PATH_PREFIX}/SmsgSetProficiency.h
    ${PATH_PREFIX}/SmsgShowBank.h
