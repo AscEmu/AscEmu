@@ -37,6 +37,9 @@
 #include "Map/MapScriptInterface.h"
 #include "Objects/Faction.h"
 #include "Common.hpp"
+#include "Server/Packets/SmsgUpdateInstanceEncounterUnit.h"
+
+using namespace AscEmu::Packets;
 
 // APGL End
 // MIT Start
@@ -714,31 +717,8 @@ void InstanceScript::generateBossDataState()
 
 void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_a, uint8_t value_b)
 {
-    WorldPacket data(SMSG_UPDATE_INSTANCE_ENCOUNTER_UNIT, 16);
-    data << uint32(type);
-
-    if (type == 0 || type == 1 || type == 2)        // engage, disengage, priority upd.
-    {
-        if (unit)
-        {
-            data << unit->GetNewGUID();
-            data << uint8(value_a);
-        }
-    }
-    else if (type == 3 || type == 4 || type == 6)   // add timer, objectives on, objectives off
-    {
-        data << uint8(value_a);
-    }
-    else if (type == 5)                             // objectives upd.
-    {
-        data << uint8(value_a);
-        data << uint8(value_b);
-    }
-
-    // 7 sort encounters
-
     MapMgr* instance = GetInstance();
-    instance->SendPacketToAllPlayers(&data);
+    instance->SendPacketToAllPlayers(SmsgUpdateInstanceEncounterUnit(type, unit ? unit->GetNewGUID() : 0, value_a, value_b).serialise().get());
 }
 
 void InstanceScript::displayDataStateList(Player* player)

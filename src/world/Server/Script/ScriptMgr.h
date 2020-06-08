@@ -547,6 +547,25 @@ class SERVER_DECL QuestScript
 
 //#define UseNewMapScriptsProject
 
+enum EncounterFrameType
+{
+#if VERSION_STRING > WotLK
+    EncounterFrameSetCombatResLimit,
+    EncounterFrameResetCombatResLimit,
+#endif
+    EncounterFrameEngage,
+    EncounterFrameDisengaged,
+    EncounterFrameUpdatePriority,
+    EncounterFrameAddTimer,
+    EncounterFrameEnableObjective,
+    EncounterFrameUpdateObjective,
+    EncounterFrameDisableObjective,
+    EncounterFrameUnknown,
+#if VERSION_STRING > WotLK
+    EncounterFrameAddCombatResLimit,
+#endif
+};
+
 enum EncounterStates
 {
     NotStarted = 0,
