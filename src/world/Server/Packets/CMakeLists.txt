@@ -289,6 +289,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgAuthChallenge.h
    ${PATH_PREFIX}/SmsgAuthResponse.h
    ${PATH_PREFIX}/SmsgBarberShopResult.h
+   ${PATH_PREFIX}/SmsgBattlefieldStatus.h
    ${PATH_PREFIX}/SmsgBattlegroundPlayerJoined.h
    ${PATH_PREFIX}/SmsgBattlegroundPlayerLeft.h
    ${PATH_PREFIX}/SmsgBinderConfirm.h

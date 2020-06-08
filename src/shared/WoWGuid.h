@@ -133,7 +133,7 @@ class SERVER_DECL WoWGuid
 
         WoWGuid() { Clear(); }
         WoWGuid(uint64_t guid) { Init(guid); }
-        WoWGuid(WoWGuid const& guid) { Init(guid); }
+        WoWGuid(WoWGuid const& guid) { Init(guid.m_rawGuid); }
 
         WoWGuid(uint32_t id, uint32_t entry, uint32_t highType)
         {

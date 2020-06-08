@@ -31,6 +31,7 @@
 #include "Server/Packets/SmsgArenaError.h"
 #include "Server/Packets/CmsgBattlemasterJoin.h"
 #include "Server/Packets/SmsgGroupJoinedBattleground.h"
+#include "Server/Packets/SmsgBattlefieldStatus.h"
 
 using namespace AscEmu::Packets;
 
@@ -1282,87 +1283,7 @@ void CBattlegroundManager::DeleteBattleground(CBattleground* bg)
 
 void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus Status, uint32 Type, uint32 InstanceID, uint32 Time, uint32 MapId, uint8 RatedMatch)
 {
-    WorldPacket data(SMSG_BATTLEFIELD_STATUS, 30);
-    if (Status == BGSTATUS_NOFLAGS)
-    {
-        data << uint32(0);
-        data << uint64(0);
-    }
-    else
-    {
-        if (isArena(Type))
-        {
-            data << uint32(0);                // Queue Slot 0..2. Only the first slot is used in arcemu!
-            switch (Type)
-            {
-                case BATTLEGROUND_ARENA_2V2:
-                    data << uint8(2);
-                    break;
-
-                case BATTLEGROUND_ARENA_3V3:
-                    data << uint8(3);
-                    break;
-
-                case BATTLEGROUND_ARENA_5V5:
-                    data << uint8(5);
-                    break;
-            }
-            data << uint8(0xC);
-            data << uint32(6);
-            data << uint16(0x1F90);
-#if VERSION_STRING > TBC
-            data << uint8(0);                 // 3.3.0
-            data << uint8(0);                 // 3.3.0
-#endif
-            data << uint32(11);
-            data << uint8(RatedMatch);        // 1 = rated match
-        }
-        else
-        {
-            data << uint32(0);
-            data << uint8(0);
-            data << uint8(2);
-            data << Type;
-#if VERSION_STRING > TBC
-            data << uint8(0);                 // 3.3.0
-            data << uint8(0);                 // 3.3.0
-#endif
-            data << uint16(0x1F90);
-            data << InstanceID;
-            data << uint8(0);
-        }
-
-        data << uint32(Status);
-
-        switch (Status)
-        {
-            case BGSTATUS_INQUEUE:            // Waiting in queue
-                data << uint32(60);
-                data << uint32(0);            // Time / Elapsed time
-                break;
-            case BGSTATUS_READY:              // Ready to join!
-                data << MapId;
-#if VERSION_STRING > TBC
-                data << uint64(0);
-#endif
-                data << Time;
-                break;
-            case BGSTATUS_TIME:
-                data << MapId;
-#if VERSION_STRING > TBC
-                data << uint64(0);
-#endif
-                data << uint32(0);
-                data << Time;
-                if (isArena(Type))
-                    data << uint8(0);
-                else
-                    data << uint8(1);
-                break;
-        }
-    }
-
-    plr->GetSession()->SendPacket(&data);
+    plr->SendPacket(SmsgBattlefieldStatus(plr->GetNewGUID(), Status, Type, InstanceID, Time, MapId, RatedMatch, isArena(Type)).serialise().get());
 }
 
 void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 BattlegroundType, uint8 as_group, uint8 rated_match)
