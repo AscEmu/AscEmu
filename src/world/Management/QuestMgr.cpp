@@ -35,6 +35,7 @@
 #include "Server/Packets/SmsgQuestgiverQuestInvalid.h"
 #include "Server/Packets/SmsgQuestupdateFailedTimer.h"
 #include "Server/Packets/SmsgQuestupdateFailed.h"
+#include "Server/Packets/SmsgQuestgiverQuestFailed.h"
 
 using namespace AscEmu::Packets;
 
@@ -2047,11 +2048,8 @@ void QuestMgr::SendQuestFailed(FAILED_REASON failed, QuestProperties const* qst,
     if (!plyr)
         return;
 
-    WorldPacket data(8);
-    data.Initialize(SMSG_QUESTGIVER_QUEST_FAILED);
-    data << uint32(qst->id);
-    data << failed;
-    plyr->GetSession()->SendPacket(&data);
+    plyr->SendPacket(SmsgQuestgiverQuestFailed(qst->id, failed).serialise().get());
+
     LOG_DEBUG("WORLD:Sent SMSG_QUESTGIVER_QUEST_FAILED");
 }
 
