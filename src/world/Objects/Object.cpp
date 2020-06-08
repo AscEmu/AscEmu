@@ -521,7 +521,8 @@ void Object::interruptSpellWithSpellType(CurrentSpellType spellType)
             {
                 // Send server-side cancel message
                 auto spellId = curSpell->getSpellInfo()->getId();
-                static_cast<Player*>(this)->OutPacket(SMSG_CANCEL_AUTO_REPEAT, 4, &spellId);
+                //\Note: seems to be wrong format for this opcode - guess guid is required!
+                //static_cast<Player*>(this)->OutPacket(SMSG_CANCEL_AUTO_REPEAT, 4, &spellId);
             }
         }
 

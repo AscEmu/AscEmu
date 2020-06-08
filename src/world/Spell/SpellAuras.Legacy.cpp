@@ -5460,7 +5460,8 @@ void Aura::SpellAuraFeignDeath(bool apply)
                 p_target->removeUnitStateFlag(UNIT_STATE_ATTACKING);
 
             p_target->SendPacket(SmsgCancelCombat().serialise().get());
-            p_target->GetSession()->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
+            //\Note: seems to be wrong format for this opcode - guess guid is required!
+            //p_target->GetSession()->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
         }
         else
         {

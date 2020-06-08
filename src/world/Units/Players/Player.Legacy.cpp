@@ -4479,7 +4479,8 @@ void Player::KillPlayer()
     EventDeath();
 
     m_session->SendPacket(SmsgCancelCombat().serialise().get());
-    m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
+    //\Note: seems to be wrong format for this opcode - guess guid is required!
+    //m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
 
     setMoveRoot(true);
     sendStopMirrorTimerPacket(MIRROR_TYPE_FATIGUE);
