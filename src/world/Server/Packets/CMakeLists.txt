@@ -314,6 +314,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgClearTarget.h
    ${PATH_PREFIX}/SmsgClientControlUpdate.h
    ${PATH_PREFIX}/SmsgComplainResult.h
+   ${PATH_PREFIX}/SmsgContactList.h
    ${PATH_PREFIX}/SmsgControlVehicle.h
    ${PATH_PREFIX}/SmsgConvertRune.h
    ${PATH_PREFIX}/SmsgCooldownEvent.h

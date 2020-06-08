@@ -109,6 +109,7 @@
 #include "Server/Packets/SmsgDuelInbounds.h"
 #include "Server/Packets/SmsgDuelOutOfBounds.h"
 #include "Server/Packets/SmsgSetPhaseShift.h"
+#include "Server/Packets/SmsgContactList.h"
 
 using namespace AscEmu::Packets;
 
@@ -10052,73 +10053,64 @@ void Player::Social_TellFriendsOffline()
 
 void Player::Social_SendFriendList(uint32 flag)
 {
-    WorldPacket data(SMSG_CONTACT_LIST, 500);
-    data << flag;
-    data << uint32(m_cache->GetSize64(CACHE_SOCIAL_FRIENDLIST) + m_cache->GetSize64(CACHE_SOCIAL_IGNORELIST));
+    std::vector<SmsgContactListMember> contactMemberList;
     m_cache->AcquireLock64(CACHE_SOCIAL_FRIENDLIST);
 
-    for (PlayerCacheMap::iterator itr = m_cache->Begin64(CACHE_SOCIAL_FRIENDLIST); itr != m_cache->End64(CACHE_SOCIAL_FRIENDLIST); ++itr)
+    if (flag & 0x01)    // friend
     {
-        // guid
-        data << uint64(itr->first);
-
-#if VERSION_STRING == Mop
-        data << uint32(0);
-        data << uint32(0);
-#endif
-        // friend/ignore flag.
-        // 1 - friend
-        // 2 - ignore
-        // 3 - muted?
-        data << uint32(1);
-
-        // player note
-        if (itr->second != nullptr)
+        uint32_t maxCount = 0;
+        for (auto itr = m_cache->Begin64(CACHE_SOCIAL_FRIENDLIST); itr != m_cache->End64(CACHE_SOCIAL_FRIENDLIST); ++itr)
         {
-            char* note = (char*)itr->second;
-            data << note;
-        }
-        else
-            data << uint8(0);
+            SmsgContactListMember friendListMember;
+            friendListMember.guid = itr->first;
+            friendListMember.flag = 0x01;
+            friendListMember.note = static_cast<char*>(itr->second);
 
-        // online/offline flag
-        Player* plr = sObjectMgr.GetPlayer((uint32)itr->first);
-        PlayerCache* cache = sObjectMgr.GetPlayerCache((uint32)itr->first);
-        if (plr != nullptr)
-        {
-            data << uint8(1);
-            data << plr->GetZoneId();
-            data << plr->getLevel();
-            data << uint32(plr->getClass());
-        }
-        else
-            data << uint8(0);
+            if (Player* plr = sObjectMgr.GetPlayer(static_cast<uint32>(itr->first)))
+            {
+                friendListMember.isOnline = 1;
+                friendListMember.zoneId = plr->GetZoneId();
+                friendListMember.level = plr->getLevel();
+                friendListMember.playerClass = plr->getClass();
+            }
+            else
+            {
+                friendListMember.isOnline = 0;
+            }
 
-        if (cache != nullptr)
-            cache->DecRef();
+            contactMemberList.push_back(friendListMember);
+            ++maxCount;
+
+            if (PlayerCache* cache = sObjectMgr.GetPlayerCache((uint32)itr->first))
+                cache->DecRef();
+
+            if (maxCount >= 50)
+                break;
+        }
     }
     m_cache->ReleaseLock64(CACHE_SOCIAL_FRIENDLIST);
 
     m_cache->AcquireLock64(CACHE_SOCIAL_IGNORELIST);
-    PlayerCacheMap::iterator ignoreitr = m_cache->Begin64(CACHE_SOCIAL_IGNORELIST);
-    for (; ignoreitr != m_cache->End64(CACHE_SOCIAL_IGNORELIST); ++ignoreitr)
+    if (flag & 0x02)    // ignore
     {
-        // guid
-        data << uint64(ignoreitr->first);
+        uint32_t maxCount = 0;
+        for (auto ignoreitr = m_cache->Begin64(CACHE_SOCIAL_IGNORELIST); ignoreitr != m_cache->End64(CACHE_SOCIAL_IGNORELIST); ++ignoreitr)
+        {
+            SmsgContactListMember ignoreListMember;
+            ignoreListMember.guid = ignoreitr->first;
+            ignoreListMember.flag = 0x02;
+            ignoreListMember.note = static_cast<char*>(ignoreitr->second);
 
-#if VERSION_STRING == Mop
-        data << uint32(0);
-        data << uint32(0);
-#endif
+            contactMemberList.push_back(ignoreListMember);
+            ++maxCount;
 
-        // ignore flag - 2
-        data << uint32(2);
-        // no note
-        data << uint8(0);
+            if (maxCount >= 50)
+                break;
+        }
     }
-
     m_cache->ReleaseLock64(CACHE_SOCIAL_IGNORELIST);
-    m_session->SendPacket(&data);
+
+    SendPacket(SmsgContactList(flag, contactMemberList).serialise().get());
 }
 
 void Player::SpeedCheatDelay(uint32 ms_delay)
