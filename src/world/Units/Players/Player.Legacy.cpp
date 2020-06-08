@@ -7221,16 +7221,12 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     // Lookup map info
     if (mi && mi->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
     {
-        WorldPacket msg(SMSG_MOTD, 50); // Need to be replaced with correct one !
-        msg << uint32(3) << GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_BC) << uint8(0);
-        m_session->SendPacket(&msg);
+        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_BC));
         return false;
     }
     if (mi && mi->flags & WMI_INSTANCE_XPACK_02 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
     {
-        WorldPacket msg(SMSG_MOTD, 50); // Need to be replaced with correct one !
-        msg << uint32(3) << GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_WOTLK) << uint8(0);
-        m_session->SendPacket(&msg);
+        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_WOTLK));
         return false;
     }
 
@@ -7310,16 +7306,12 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     // Lookup map info
     if (mi && mi->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
     {
-        WorldPacket msg(SMSG_MOTD, 50); // Need to be replaced with correct one !
-        msg << uint32(3) << GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_BC) << uint8(0);
-        m_session->SendPacket(&msg);
+        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_BC));
         return false;
     }
     if (mi && mi->flags & WMI_INSTANCE_XPACK_02 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
     {
-        WorldPacket msg(SMSG_MOTD, 50); // Need to be replaced with correct one !
-        msg << uint32(3) << GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_WOTLK) << uint8(0);
-        m_session->SendPacket(&msg);
+        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_WOTLK));
         return false;
     }
 

@@ -56,6 +56,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgInspect.h"
 #include "Server/Packets/SmsgAccountDataTimes.h"
 #include "Server/Packets/SmsgLogoutCancelAck.h"
+#include "Server/Packets/SmsgMotd.h"
 
 using namespace AscEmu::Packets;
 
@@ -2183,9 +2184,7 @@ void WorldSession::sendAccountDataTimes(uint32 mask)
 
 void WorldSession::sendMOTD()
 {
-    WorldPacket data(SMSG_MOTD, 50);
-    data << uint32_t(0);
-    uint32_t linecount = 0;
+    std::vector<std::string> motdLines;
     std::string str_motd = worldConfig.getMessageOfTheDay();
     std::string::size_type nextpos;
 
@@ -2193,20 +2192,18 @@ void WorldSession::sendMOTD()
     while ((nextpos = str_motd.find('@', pos)) != std::string::npos)
     {
         if (nextpos != pos)
-        {
-            data << str_motd.substr(pos, nextpos - pos);
-            ++linecount;
-        }
+            motdLines.push_back(str_motd.substr(pos, nextpos - pos));
+
         pos = nextpos + 1;
     }
 
     if (pos < str_motd.length())
-    {
-        data << str_motd.substr(pos);
-        ++linecount;
-    }
+        motdLines.push_back(str_motd.substr(pos));
 
-    data.put(0, linecount);
-
-    SendPacket(&data);
+#if VERSION_STRING > Classic
+    SendPacket(SmsgMotd(motdLines).serialise().get());
+#else
+    for (const auto& line : motdLines)
+        GetPlayer()->SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, line.c_str());
+#endif
 }

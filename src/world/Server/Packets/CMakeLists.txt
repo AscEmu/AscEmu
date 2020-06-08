@@ -400,6 +400,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgMeetingstoneSetQueue.h
    ${PATH_PREFIX}/SmsgMessageChat.h
    ${PATH_PREFIX}/SmsgMonsterMoveTransport.h
+   ${PATH_PREFIX}/SmsgMotd.h
    ${PATH_PREFIX}/SmsgMountResult.h
    ${PATH_PREFIX}/SmsgMountspecialAnim.h
    ${PATH_PREFIX}/SmsgMoveKnockBack.h
