@@ -35,7 +35,7 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
 #if VERSION_STRING < Cata
-            packet << guid << visualId;
+            packet << rawGuid << visualId;
 #elif VERSION_STRING == Cata
             packet << uint32_t(0) << visualId << type;
 

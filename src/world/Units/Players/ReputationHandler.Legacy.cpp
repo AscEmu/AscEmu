@@ -28,6 +28,7 @@
 #include "Objects/ObjectMgr.h"
 #include "ReputationHandler.hpp"
 #include "Server/Packets/SmsgSetFactionVisible.h"
+#include "Server/Packets/SmsgSetFactionStanding.h"
 
 Standing Player::GetReputationRankFromStanding(int32 Standing_)
 {
@@ -494,13 +495,7 @@ void Player::OnModStanding(DBC::Structures::FactionEntry const* dbc, FactionRepu
 
     if (Visible(rep->flag) && IsInWorld())
     {
-        WorldPacket data(SMSG_SET_FACTION_STANDING, 17);
-        data << uint32(0);
-        data << uint8(1);   //count
-        data << uint32(rep->flag);
-        data << dbc->RepListId;
-        data << rep->CalcStanding();
-        m_session->SendPacket(&data);
+        SendPacket(AscEmu::Packets::SmsgSetFactionStanding(dbc->RepListId, rep->CalcStanding()).serialise().get());
     }
 }
 
