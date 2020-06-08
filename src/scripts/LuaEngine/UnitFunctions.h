@@ -3696,11 +3696,11 @@ public:
 
     static int PlaySpellVisual(lua_State* L, Unit* ptr)
     {
-        uint64_t guid = CHECK_GUID(L, 1);
-        uint32_t spell = static_cast<uint32_t>(luaL_checkinteger(L, 2));
-        if (ptr && guid && spell)
+        uint32_t visualId = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t type = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+        if (ptr && visualId)
         {
-            ptr->playSpellVisual(guid, spell);
+            ptr->playSpellVisual(visualId, type);
         }
         return 1;
     }

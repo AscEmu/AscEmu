@@ -13,6 +13,7 @@ namespace AscEmu::Packets
 {
     class SmsgEnableBarberShop : public ManagedPacket
     {
+#if VERSION_STRING > TBC
     public:
 
         SmsgEnableBarberShop() :
@@ -29,5 +30,6 @@ namespace AscEmu::Packets
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
+#endif
     };
 }

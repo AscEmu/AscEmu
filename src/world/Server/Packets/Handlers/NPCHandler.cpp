@@ -177,8 +177,8 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        _player->playSpellVisual(creature->getGuid(), 179);
-        _player->playSpellVisual(_player->getGuid(), 362);
+        creature->playSpellVisual(179, 0);
+        _player->playSpellVisual(362, 1);
 
         _player->addSpell(trainerSpell->spell);
     }
@@ -194,8 +194,8 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        _player->playSpellVisual(creature->getGuid(), 1459);
-        _player->playSpellVisual(_player->getGuid(), 362);
+        creature->playSpellVisual(179, 0);
+        _player->playSpellVisual(362, 1);
 
         _player->addSpell(trainerSpell->pLearnSpell->getId());
     }

@@ -612,7 +612,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
-    void playSpellVisual(uint64_t guid, uint32_t spell_id);
+    void playSpellVisual(uint32_t visual_id, uint32_t type);
     void applyDiminishingReturnTimer(uint32_t* duration, SpellInfo const* spell);
     void removeDiminishingReturnTimer(SpellInfo const* spell);
 
