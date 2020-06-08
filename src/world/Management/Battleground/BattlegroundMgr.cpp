@@ -30,6 +30,7 @@
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgArenaError.h"
 #include "Server/Packets/CmsgBattlemasterJoin.h"
+#include "Server/Packets/SmsgGroupJoinedBattleground.h"
 
 using namespace AscEmu::Packets;
 
@@ -1460,8 +1461,6 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
                     --maxplayers;
                 }
             }
-            WorldPacket data(SMSG_GROUP_JOINED_BATTLEGROUND, 4);
-            data << uint32(6);      // all arenas
 
             for (itx = pGroup->GetSubGroup(0)->GetGroupMembersBegin(); itx != pGroup->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
             {
@@ -1471,7 +1470,8 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
                     (*itx)->m_loggedInPlayer->m_bgIsQueued = true;
                     (*itx)->m_loggedInPlayer->m_bgQueueInstanceId = 0;
                     (*itx)->m_loggedInPlayer->m_bgQueueType = BattlegroundType;
-                    (*itx)->m_loggedInPlayer->GetSession()->SendPacket(&data);
+                    //\todo error/bgtype missing, always send all arenas (from legacy)
+                    (*itx)->m_loggedInPlayer->GetSession()->SendPacket(SmsgGroupJoinedBattleground(6).serialise().get());
                     (*itx)->m_loggedInPlayer->m_bgEntryPointX = (*itx)->m_loggedInPlayer->GetPositionX();
                     (*itx)->m_loggedInPlayer->m_bgEntryPointY = (*itx)->m_loggedInPlayer->GetPositionY();
                     (*itx)->m_loggedInPlayer->m_bgEntryPointZ = (*itx)->m_loggedInPlayer->GetPositionZ();
