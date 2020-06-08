@@ -298,6 +298,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgBuyItem.h
    ${PATH_PREFIX}/SmsgCancelCombat.h
    ${PATH_PREFIX}/SmsgCastFailed.h
+   ${PATH_PREFIX}/SmsgChannelList.h
    ${PATH_PREFIX}/SmsgChannelMemberCount.h
    ${PATH_PREFIX}/SmsgChannelNotify.h
    ${PATH_PREFIX}/SmsgCharacterLoginFailed.h

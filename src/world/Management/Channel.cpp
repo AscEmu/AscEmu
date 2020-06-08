@@ -29,6 +29,7 @@
 #include "WorldPacket.h"
 #include "Units/Players/Player.h"
 #include "Server/Packets/SmsgChannelNotify.h"
+#include "Server/Packets/SmsgChannelList.h"
 
 using namespace AscEmu::Packets;
 
@@ -659,7 +660,6 @@ void Channel::Password(Player* plr, const char* pass)
 void Channel::List(Player* plr)
 {
     Guard mGuard(m_lock);
-    WorldPacket data(SMSG_CHANNEL_LIST, 50 + (m_members.size() * 9));
 
     MemberMap::iterator itr = m_members.find(plr);
     if (itr == m_members.end())
@@ -668,15 +668,10 @@ void Channel::List(Player* plr)
         return;
     }
 
-    uint8 flags;
-    data << uint8(1);
-    data << m_name;
-    data << uint8(m_flags);
-    data << uint32(m_members.size());
+    std::vector<SmsgChannelListMembers> members;
     for (itr = m_members.begin(); itr != m_members.end(); ++itr)
     {
-        data << itr->first->getGuid();
-        flags = 0;
+        uint8 flags = 0;
         if (!(itr->second & CHANNEL_MEMBER_FLAG_MUTED))
             flags |= CHANNEL_MEMBER_FLAG_VOICED;
 
@@ -689,10 +684,10 @@ void Channel::List(Player* plr)
         if (!m_general)
             flags |= CHANNEL_MEMBER_FLAG_CUSTOM;
 
-        data << flags;
+        members.push_back({itr->first->getGuid(), flags});
     }
 
-    plr->SendPacket(&data);
+    plr->SendPacket(SmsgChannelList(m_name, members).serialise().get());
 }
 
 void Channel::GetOwner(Player* plr)
