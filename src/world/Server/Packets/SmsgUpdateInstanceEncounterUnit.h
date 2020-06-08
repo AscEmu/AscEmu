@@ -52,7 +52,9 @@ namespace AscEmu::Packets
                 case EncounterFrameAddTimer:
                 case EncounterFrameEnableObjective:
                 case EncounterFrameDisableObjective:
+#if VERSION_STRING > WotLK
                 case EncounterFrameSetCombatResLimit:
+#endif
                 {
                     packet << valueA;
                 } break;
