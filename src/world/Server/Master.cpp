@@ -35,6 +35,7 @@
 #include "Spell/SpellTarget.h"
 #include "Util.hpp"
 #include "Database/DatabaseUpdater.h"
+#include "Packets/SmsgServerMessage.h"
 
 std::string LogFileName;
 bool bLogChat;
@@ -774,12 +775,11 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
                 if ((time % 30 == 0) || time < 10)
                 {
                     // broadcast packet.
-                    WorldPacket data(20);
-                    data.SetOpcode(SMSG_SERVER_MESSAGE);
+                    uint32_t messageType;
                     if (m_restartEvent)
-                        data << uint32(SERVER_MSG_RESTART_TIME);
+                        messageType = SERVER_MSG_RESTART_TIME;
                     else
-                        data << uint32(SERVER_MSG_SHUTDOWN_TIME);
+                        messageType = SERVER_MSG_SHUTDOWN_TIME;
 
                     if (time > 0)
                     {
@@ -791,8 +791,8 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
                         secs = time;
                         char str[20];
                         snprintf(str, 20, "%02u:%02u", mins, secs);
-                        data << str;
-                        sWorld.sendGlobalMessage(&data);
+
+                        sWorld.sendGlobalMessage(AscEmu::Packets::SmsgServerMessage(messageType, str).serialise().get());
                     }
                 }
                 next_send = Util::getMSTime() + 1000;

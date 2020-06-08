@@ -460,6 +460,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgSendMailResult.h
    ${PATH_PREFIX}/SmsgSendUnlearnSpells.h
    ${PATH_PREFIX}/SmsgServerFirstAchievement.h
+   ${PATH_PREFIX}/SmsgServerMessage.h
    ${PATH_PREFIX}/SmsgSetExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgSetFactionStanding.h
    ${PATH_PREFIX}/SmsgSetFactionVisible.h

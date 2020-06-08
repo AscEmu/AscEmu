@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Server/Master.h"
+#include "Server/Packets/SmsgServerMessage.h"
 
 //.server info
 bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_session)
@@ -196,30 +197,32 @@ bool ChatHandler::HandleServerShutdownCommand(const char* args, WorldSession* m_
 //.server cancelshutdown
 bool ChatHandler::HandleServerCancelShutdownCommand(const char* /*args*/, WorldSession* m_session)
 {
-    if (sMaster.m_ShutdownEvent == false)
+    if (!sMaster.m_ShutdownEvent)
     {
         RedSystemMessage(m_session, "There is no Shutdown/Restart to cancel!");
         return true;
     }
+
+    std::stringstream teamAnnounce;
+    if (sMaster.m_restartEvent)
+    {
+        teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str();
+        teamAnnounce << "|h[" << m_session->GetPlayer()->getName().c_str() << "]|h:" << MSG_COLOR_YELLOW << " canceled server restart!";
+    }
     else
     {
-        std::stringstream teamAnnounce;
         teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str();
         teamAnnounce << "|h[" << m_session->GetPlayer()->getName().c_str() << "]|h:" << MSG_COLOR_YELLOW << " canceled server shutdown!";
-
-        sWorld.sendMessageToOnlineGms(teamAnnounce.str());
-        sGMLog.writefromsession(m_session, "canceled server shutdown");
-
-        std::stringstream worldAnnounce;
-        worldAnnounce << "Server " << (sMaster.m_restartEvent ? "Restart" : "Shutdown") << " cancelled.";
-
-        sWorld.sendMessageToAll(worldAnnounce.str());
-        sWorld.sendAreaTriggerMessage(worldAnnounce.str());
-
-        sMaster.m_ShutdownTimer = 5000;
-        sMaster.m_ShutdownEvent = false;
-        sMaster.m_restartEvent = false;
     }
+    
+    sWorld.sendMessageToOnlineGms(teamAnnounce.str());
+    sGMLog.writefromsession(m_session, "canceled server shutdown");
+
+    sWorld.sendGlobalMessage(AscEmu::Packets::SmsgServerMessage(sMaster.m_restartEvent ? SERVER_MSG_RESTART_CANCELLED : SERVER_MSG_SHUTDOWN_CANCELLED).serialise().get());
+
+    sMaster.m_ShutdownTimer = 5000;
+    sMaster.m_ShutdownEvent = false;
+    sMaster.m_restartEvent = false;
 
     return true;
 }
