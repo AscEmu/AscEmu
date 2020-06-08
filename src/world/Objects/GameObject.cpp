@@ -38,6 +38,7 @@
 #include "Server/Packets/SmsgTriggerCinematic.h"
 #include "Server/Packets/SmsgFishEscaped.h"
 #include "Server/Packets/SmsgFishNotHooked.h"
+#include "Server/Packets/SmsgEnableBarberShop.h"
 
 // MIT
 
@@ -1585,8 +1586,7 @@ void GameObject_BarberChair::onUse(Player* player)
     player->UpdateSpeed();
 
     //send barber shop menu to player
-    WorldPacket data(SMSG_ENABLE_BARBER_SHOP, 0);
-    player->SendPacket(&data);
+    player->SendPacket(SmsgEnableBarberShop().serialise().get());
 
     player->setStandState(STANDSTATE_SIT_HIGH_CHAIR);
 #endif
