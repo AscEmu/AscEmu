@@ -266,6 +266,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgAccountDataTimes.h
    ${PATH_PREFIX}/SmsgAchievementDeleted.h
    ${PATH_PREFIX}/SmsgActivatetaxireply.h
+   ${PATH_PREFIX}/SmsgAiReaction.h
    ${PATH_PREFIX}/SmsgAreaSpiritHealerTime.h
    ${PATH_PREFIX}/SmsgAreaTriggerMessage.h
    ${PATH_PREFIX}/SmsgArenaError.h

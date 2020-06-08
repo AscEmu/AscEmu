@@ -51,6 +51,7 @@
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgGameobjectDespawnAnim.h"
 #include "Server/Packets/SmsgSpellLogMiss.h"
+#include "Server/Packets/SmsgAiReaction.h"
 
 // MIT Start
 
@@ -3582,10 +3583,7 @@ void Object::SetMapCell(MapCell* cell)
 
 void Object::SendAIReaction(uint32 reaction)
 {
-    WorldPacket data(SMSG_AI_REACTION, 12);
-    data << uint64(getGuid());
-    data << uint32(reaction);
-    SendMessageToSet(&data, false);
+    SendMessageToSet(SmsgAiReaction(getGuid(), reaction).serialise().get(), false);
 }
 
 void Object::SendDestroyObject()
