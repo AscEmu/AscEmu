@@ -1442,10 +1442,10 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
         {
             if (moveinfo != nullptr)
             {
-                *data << moveinfo->redirect_velocity;
-                *data << moveinfo->redirect_sin;
-                *data << moveinfo->redirect_cos;
-                *data << moveinfo->redirect_2d_speed;
+                *data << moveinfo->jump_info.velocity;
+                *data << moveinfo->jump_info.sinAngle;
+                *data << moveinfo->jump_info.cosAngle;
+                *data << moveinfo->jump_info.xyspeed;
             }
             else
             {
@@ -1605,7 +1605,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
     if (IsType(TYPE_UNIT))
     {
         Unit* unit = (Unit*)this;
-        hasTransport = !unit->movement_info.getTransportGuid().IsEmpty();
+        hasTransport = unit->movement_info.transport_guid != 0;
         isSplineEnabled = false; // unit->IsSplineEnabled();
 
         if (getObjectTypeId() == TYPEID_PLAYER)
@@ -1652,7 +1652,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
 
         if (hasTransport)
         {
-            ObjectGuid tGuid = unit->movement_info.getTransportGuid();
+            ObjectGuid tGuid = unit->movement_info.transport_guid;
 
             data->writeBit(tGuid[1]);
             data->writeBit(hasTransportTime2);
@@ -1750,7 +1750,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
                 *data << float(unit->movement_info.getJumpInfo().sinAngle);
             }
 
-            *data << uint32_t(unit->movement_info.fetFallTime());
+            *data << uint32_t(unit->movement_info.getFallTime());
             *data << float(unit->movement_info.getJumpInfo().velocity);
         }
 
@@ -1769,30 +1769,30 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
 
         if (hasTransport)
         {
-            ObjectGuid tGuid = unit->movement_info.getTransportGuid();
+            ObjectGuid tGuid = unit->movement_info.transport_guid;
 
             data->WriteByteSeq(tGuid[5]);
             data->WriteByteSeq(tGuid[7]);
 
-            *data << uint32(unit->movement_info.getTransportTime());
-            *data << float(normalizeOrientation(unit->movement_info.getTransportPosition()->o));
+            *data << uint32(unit->movement_info.transport_guid);
+            *data << float(normalizeOrientation(unit->movement_info.transport_position.o));
 
             if (hasTransportTime2)
-                *data << uint32_t(unit->movement_info.getTransportTime2());
+                *data << uint32_t(unit->movement_info.transport_time2);
 
-            *data << float(unit->movement_info.getTransportPosition()->y);
-            *data << float(unit->movement_info.getTransportPosition()->x);
+            *data << float(unit->movement_info.transport_position.y);
+            *data << float(unit->movement_info.transport_position.x);
 
             data->WriteByteSeq(tGuid[3]);
 
-            *data << float(unit->movement_info.getTransportPosition()->z);
+            *data << float(unit->movement_info.transport_position.z);
 
             data->WriteByteSeq(tGuid[0]);
 
             if (hasTransportTime3)
-                *data << uint32_t(unit->movement_info.fetFallTime());
+                *data << uint32_t(unit->movement_info.getFallTime());
 
-            *data << int8_t(unit->movement_info.getTransportSeat());
+            *data << int8_t(unit->movement_info.transport_seat);
 
             data->WriteByteSeq(tGuid[1]);
             data->WriteByteSeq(tGuid[6]);

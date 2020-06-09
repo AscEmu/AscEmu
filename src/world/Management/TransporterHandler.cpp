@@ -627,11 +627,7 @@ void Transporter::Update()
             UpdatePlayerPositions(mCurrentWaypoint->second.x, mCurrentWaypoint->second.y, mCurrentWaypoint->second.z, std::atan2(mNextWaypoint->second.x, mNextWaypoint->second.y) + float(M_PI));
             // After a few tests (Durotar<->Northrend we need this, otherwise npc disappear on entering new map/zone/area DankoDJ
             // Update Creature Position with Movement Info from Gameobject too prevent coord changes from Transporter Waypoint and Gameobject Position Aaron02
-#if VERSION_STRING < Cata
             UpdateNPCPositions(obj_movement_info.transport_position.x, obj_movement_info.transport_position.y, obj_movement_info.transport_position.z, std::atan2(obj_movement_info.transport_position.x, obj_movement_info.transport_position.y) + float(M_PI));
-#else
-            UpdateNPCPositions(obj_movement_info.getTransportPosition()->x, obj_movement_info.getTransportPosition()->y, obj_movement_info.getTransportPosition()->z, std::atan2(obj_movement_info.getTransportPosition()->x, obj_movement_info.getTransportPosition()->y) + float(M_PI));
-#endif
         }
         if (mCurrentWaypoint->second.delayed)
         {
@@ -705,30 +701,16 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     if (creature_properties == nullptr || map == nullptr)
         return 0;
 
-#if VERSION_STRING < Cata
     float transporter_x = obj_movement_info.transport_position.x + x;
     float transporter_y = obj_movement_info.transport_position.y + y;
     float transporter_z = obj_movement_info.transport_position.z + z;
-#else
-    float transporter_x = obj_movement_info.getTransportPosition()->x + x;
-    float transporter_y = obj_movement_info.getTransportPosition()->y + y;
-    float transporter_z = obj_movement_info.getTransportPosition()->z + z;
-#endif
 
     Creature* pCreature = map->CreateCreature(entry);
     pCreature->Create(map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->Load(creature_properties, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->AddToWorld(map);
     pCreature->setUnitMovementFlags(MOVEFLAG_TRANSPORT);
-#if VERSION_STRING < Cata
-    pCreature->obj_movement_info.transport_position.x = x;
-    pCreature->obj_movement_info.transport_position.y = y;
-    pCreature->obj_movement_info.transport_position.z = z;
-    pCreature->obj_movement_info.transport_position.o = o;
-    pCreature->obj_movement_info.transport_guid = getGuid();
-#else
     pCreature->obj_movement_info.setTransportData(getGuid(), x, y, z, o, 0, 0);
-#endif
 
     pCreature->m_transportData.transportGuid = this->getGuid();
     pCreature->m_transportData.relativePosition.x = x;
@@ -764,30 +746,16 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
     if (creature_properties == nullptr || map == nullptr)
         return nullptr;
 
-#if VERSION_STRING < Cata
     float transporter_x = obj_movement_info.transport_position.x + x;
     float transporter_y = obj_movement_info.transport_position.y + y;
     float transporter_z = obj_movement_info.transport_position.z + z;
-#else
-    float transporter_x = obj_movement_info.getTransportPosition()->x + x;
-    float transporter_y = obj_movement_info.getTransportPosition()->y + y;
-    float transporter_z = obj_movement_info.getTransportPosition()->z + z;
-#endif
 
     Creature* pCreature = map->CreateCreature(entry);
     pCreature->Create(map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->Load(creature_properties, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->AddToWorld(map);
     pCreature->setUnitMovementFlags(MOVEFLAG_TRANSPORT);
-#if VERSION_STRING < Cata
-    pCreature->obj_movement_info.transport_position.x = x;
-    pCreature->obj_movement_info.transport_position.y = y;
-    pCreature->obj_movement_info.transport_position.z = z;
-    pCreature->obj_movement_info.transport_position.o = o;
-    pCreature->obj_movement_info.transport_guid = getGuid();
-#else
     pCreature->obj_movement_info.setTransportData(getGuid(), x, y, z, o, 0, 0);
-#endif
 
     pCreature->m_transportData.transportGuid = this->getGuid();
     pCreature->m_transportData.relativePosition.x = x;
@@ -806,11 +774,8 @@ void Transporter::UpdateNPCPositions(float x, float y, float z, float o)
     for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
     {
         Creature* npc = *itr;
-#if VERSION_STRING < Cata
-        npc->SetPosition(x + npc->obj_movement_info.transport_position.x, y + npc->obj_movement_info.transport_position.y, z + npc->obj_movement_info.transport_position.z, o + npc->obj_movement_info.transport_position.o, false);
-#else
-        npc->SetPosition(x + npc->obj_movement_info.getTransportPosition()->x, y + npc->obj_movement_info.getTransportPosition()->y, z + npc->obj_movement_info.getTransportPosition()->z, o + npc->obj_movement_info.getTransportPosition()->o, false);
-#endif
+        npc->SetPosition(x + npc->obj_movement_info.transport_position.x, y + npc->obj_movement_info.transport_position.y, 
+            z + npc->obj_movement_info.transport_position.z, o + npc->obj_movement_info.transport_position.o, false);
     }
     m_creatureSetMutex.Release();
 }
@@ -821,19 +786,11 @@ void Transporter::UpdatePlayerPositions(float x, float y, float z, float o)
     {
         if (auto player = sObjectMgr.GetPlayer(playerGuid))
         {
-#if VERSION_STRING < Cata
             player->SetPosition(
                 x + player->obj_movement_info.transport_position.x,
                 y + player->obj_movement_info.transport_position.y,
                 z + player->obj_movement_info.transport_position.z,
                 o + player->obj_movement_info.transport_position.o);
-#else
-            player->SetPosition(
-                x + player->obj_movement_info.getTransportPosition()->x,
-                y + player->obj_movement_info.getTransportPosition()->y,
-                z + player->obj_movement_info.getTransportPosition()->z,
-                o + player->obj_movement_info.getTransportPosition()->o);
-#endif
         }
     }
 }

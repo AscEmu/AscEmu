@@ -1446,11 +1446,7 @@ void WorldSession::handleRepopRequestOpcode(WorldPacket& /*recvPacket*/)
     if (_player->getDeathState() != JUST_DIED)
         return;
 
-#if VERSION_STRING < Cata
     if (_player->obj_movement_info.isOnTransport())
-#else
-    if (!_player->obj_movement_info.getTransportGuid().IsEmpty())
-#endif
     {
         auto transport = _player->GetTransport();
         if (transport != nullptr)

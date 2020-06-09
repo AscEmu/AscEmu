@@ -338,7 +338,6 @@ public:
         LocationVector & GetPositionNC() { return m_position; }
         LocationVector* GetPositionV() { return &m_position; }
 
-#if VERSION_STRING < Cata
         // TransporterInfo
         float GetTransPositionX() const { return obj_movement_info.transport_position.x; }
         float GetTransPositionY() const { return obj_movement_info.transport_position.y; }
@@ -348,14 +347,6 @@ public:
 #ifdef FT_VEHICLES
         // TODO check if this is in BC
         uint8 GetTransSeat() const { return obj_movement_info.transport_seat; }
-#endif
-#else
-        float GetTransPositionX() const { return obj_movement_info.getTransportPosition()->x; }
-        float GetTransPositionY() const { return obj_movement_info.getTransportPosition()->y; }
-        float GetTransPositionZ() const { return obj_movement_info.getTransportPosition()->z; }
-        float GetTransPositionO() const { return obj_movement_info.getTransportPosition()->o; }
-        uint32 GetTransTime() const { return obj_movement_info.getTransportTime(); }
-        uint8 GetTransSeat() const { return obj_movement_info.getTransportSeat(); }
 #endif
 
         // Distance Calculation

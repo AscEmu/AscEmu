@@ -13489,30 +13489,30 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
 
         // TODO what is this in BC?
         if (getExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
-            *data << uint32(getMovementInfo()->transport_time2);
+            *data << getMovementInfo()->transport_time2;
 #endif
     }
 
     // 0x02200000
     if ((getUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING))
         || (getExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
-        *data << (float)getMovementInfo()->pitch_rate;
+        *data << getMovementInfo()->pitch_rate;
 
-    *data << (uint32)getMovementInfo()->fall_time;
+    *data << getMovementInfo()->fall_time;
 #endif
     // 0x00001000
 #if VERSION_STRING < Cata
     if (getUnitMovementFlags() & MOVEFLAG_REDIRECTED)
     {
-        *data << (float)getMovementInfo()->redirect_velocity;
-        *data << (float)getMovementInfo()->redirect_sin;
-        *data << (float)getMovementInfo()->redirect_cos;
-        *data << (float)getMovementInfo()->redirect_2d_speed;
+        *data << getMovementInfo()->jump_info.velocity;
+        *data << getMovementInfo()->jump_info.sinAngle;
+        *data << getMovementInfo()->jump_info.cosAngle;
+        *data << getMovementInfo()->jump_info.xyspeed;
     }
 
     // 0x04000000
     if (getUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
-        *data << (float)getMovementInfo()->spline_elevation;
+        *data << getMovementInfo()->spline_elevation;
 #endif
 }
 
@@ -13547,30 +13547,30 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
         *data << GetTransSeat();
 
         if (getExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
-            *data << uint32(getMovementInfo()->transport_time2);
+            *data << getMovementInfo()->transport_time2;
 #endif
     }
 
     // 0x02200000
     if ((getUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING))
         || (getExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
-        *data << (float)getMovementInfo()->pitch_rate;
+        *data << getMovementInfo()->pitch_rate;
 
-    *data << (uint32)getMovementInfo()->fall_time;
+    *data << getMovementInfo()->fall_time;
 #endif
     // 0x00001000
 #if VERSION_STRING < Cata
     if (getUnitMovementFlags() & MOVEFLAG_REDIRECTED)
     {
-        *data << (float)getMovementInfo()->redirect_velocity;
-        *data << (float)getMovementInfo()->redirect_sin;
-        *data << (float)getMovementInfo()->redirect_cos;
-        *data << (float)getMovementInfo()->redirect_2d_speed;
+        *data << getMovementInfo()->jump_info.velocity;
+        *data << getMovementInfo()->jump_info.sinAngle;
+        *data << getMovementInfo()->jump_info.cosAngle;
+        *data << getMovementInfo()->jump_info.xyspeed;
     }
 
     // 0x04000000
     if (getUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
-        *data << (float)getMovementInfo()->spline_elevation;
+        *data << getMovementInfo()->spline_elevation;
 #endif
 }
 

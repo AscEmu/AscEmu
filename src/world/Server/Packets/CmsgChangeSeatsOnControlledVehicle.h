@@ -59,7 +59,7 @@ namespace AscEmu::Packets
             packet >> movementInfo.fall_time;
 
             if (movementInfo.isFallingOrRedirected())
-                packet >> movementInfo.redirect_velocity >> movementInfo.redirect_sin >> movementInfo.redirect_cos >> movementInfo.redirect_2d_speed;
+                packet >> movementInfo.jump_info.velocity >> movementInfo.jump_info.sinAngle >> movementInfo.jump_info.cosAngle >> movementInfo.jump_info.xyspeed;
 
             if (movementInfo.isSplineMover())
                 packet >> movementInfo.spline_elevation;

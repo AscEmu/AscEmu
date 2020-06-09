@@ -181,15 +181,10 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
     {
         Player* playerTarget = static_cast<Player*>(unitTarget);
 
-#if VERSION_STRING < Cata
         // Blizzard screwed this up, so we won't.
         // ^^^^^^^^^^^^ glass houses
         if (playerTarget->obj_movement_info.isOnTransport())
             return false;
-#else
-        if (!playerTarget->obj_movement_info.getTransportGuid().IsEmpty())
-            return false;
-#endif
 
         s->SpellEffectPlayerPull(effectIndex);
 

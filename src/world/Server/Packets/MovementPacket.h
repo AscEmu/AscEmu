@@ -42,7 +42,7 @@ namespace AscEmu::Packets
             packet >> info.fall_time;
 
             if (info.isFallingOrRedirected())
-                packet >> info.redirect_velocity >> info.redirect_sin >> info.redirect_cos >> info.redirect_2d_speed;
+                packet >> info.jump_info.velocity >> info.jump_info.sinAngle >> info.jump_info.cosAngle >> info.jump_info.xyspeed;
 
             if (info.isSplineMover())
                 packet >> info.spline_elevation;
@@ -62,7 +62,7 @@ namespace AscEmu::Packets
             packet << info.fall_time;
 
             if (info.isFallingOrRedirected())
-                packet << info.redirect_velocity << info.redirect_sin << info.redirect_cos << info.redirect_2d_speed;
+                packet << info.jump_info.velocity << info.jump_info.sinAngle << info.jump_info.cosAngle << info.jump_info.xyspeed;
 
             if (info.isSplineMover())
                 packet << info.spline_elevation;
@@ -85,7 +85,7 @@ namespace AscEmu::Packets
             packet >> info.fall_time;
 
             if (info.isFallingOrRedirected())
-                packet >> info.redirect_velocity >> info.redirect_sin >> info.redirect_cos >> info.redirect_2d_speed;
+                packet >> info.jump_info.velocity >> info.jump_info.sinAngle >> info.jump_info.cosAngle >> info.jump_info.xyspeed;
 
             if (info.isSplineMover())
                 packet >> info.spline_elevation;
@@ -109,7 +109,7 @@ namespace AscEmu::Packets
             packet << info.fall_time;
 
             if (info.isFallingOrRedirected())
-                packet << info.redirect_velocity << info.redirect_sin << info.redirect_cos << info.redirect_2d_speed;
+                packet << info.jump_info.velocity << info.jump_info.sinAngle << info.jump_info.cosAngle << info.jump_info.xyspeed;
 
             if (info.isSplineMover())
                 packet << info.spline_elevation;
@@ -138,7 +138,7 @@ namespace AscEmu::Packets
             packet >> info.fall_time;
 
             if (info.isFallingOrRedirected())
-                packet >> info.redirect_velocity >> info.redirect_sin >> info.redirect_cos >> info.redirect_2d_speed;
+                packet >> info.jump_info.velocity >> info.jump_info.sinAngle >> info.jump_info.cosAngle >> info.jump_info.xyspeed;
 
             if (info.isSplineMover())
                 packet >> info.spline_elevation;
@@ -167,7 +167,7 @@ namespace AscEmu::Packets
             packet << info.fall_time;
 
             if (info.isFallingOrRedirected())
-                packet << info.redirect_velocity << info.redirect_sin << info.redirect_cos << info.redirect_2d_speed;
+                packet << info.jump_info.velocity << info.jump_info.sinAngle << info.jump_info.cosAngle << info.jump_info.xyspeed;
 
             if (info.isSplineMover())
                 packet << info.spline_elevation;
