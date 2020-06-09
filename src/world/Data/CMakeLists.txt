@@ -13,7 +13,6 @@ set(SRC_DATA_FILES
    ${PATH_PREFIX}/WoWObject.h
    ${PATH_PREFIX}/WoWPlayer.h
    ${PATH_PREFIX}/WoWUnit.h
-   ${PATH_PREFIX}/MovementInfo.h
 )
 
 if("${ASCEMU_VERSION}" STREQUAL "Cata")
