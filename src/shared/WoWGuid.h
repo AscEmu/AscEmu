@@ -133,6 +133,15 @@ class SERVER_DECL WoWGuid
 
         WoWGuid() { Clear(); }
         WoWGuid(uint64_t guid) { Init(guid); }
+        WoWGuid(uint8_t mask)
+        {
+            Init(static_cast<uint8_t>(mask));
+        }
+
+        WoWGuid(uint8_t mask, uint8_t* fields)
+        {
+            Init(mask, fields);
+        }
         WoWGuid(WoWGuid const& guid) { Init(guid.m_rawGuid); }
 
         WoWGuid(uint32_t id, uint32_t entry, uint32_t highType)
@@ -169,6 +178,33 @@ class SERVER_DECL WoWGuid
             m_rawGuid = guid;
 
             _CompileByOld();
+        }
+
+        void Init(uint8_t mask)
+        {
+            Clear();
+
+            guidmask = mask;
+
+            if (!guidmask)
+                _CompileByNew();
+        }
+
+        void Init(uint8_t mask, const uint8_t* fields)
+        {
+            Clear();
+
+            guidmask = mask;
+
+            if (!BitCount8(guidmask))
+                return;
+
+            for (int i = 0; i < BitCount8(guidmask); i++)
+                m_guidfields[i] = (fields[i]);
+
+            m_fieldcount = BitCount8(guidmask);
+
+            _CompileByNew();
         }
 
         void Init(WoWGuid guid)

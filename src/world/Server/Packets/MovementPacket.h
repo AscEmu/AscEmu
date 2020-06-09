@@ -11,8 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #if VERSION_STRING < Cata
 #if VERSION_STRING != Mop
 
-#include "Data/MovementInfo.h"
-
 namespace AscEmu::Packets
 {
     class MovementPacket : public ManagedPacket
@@ -35,11 +33,11 @@ namespace AscEmu::Packets
 #if VERSION_STRING == Classic
         bool deserialiseClassic(WorldPacket& packet)
         {
-            packet >> info.flags >> info.flags2 >> info.time
+            packet >> info.flags >> info.flags2 >> info.update_time
                 >> info.position >> info.position.o;
 
             if (info.isSwimmingOrFlying())
-                packet >> info.pitch;
+                packet >> info.pitch_rate;
 
             packet >> info.fall_time;
 
@@ -55,11 +53,11 @@ namespace AscEmu::Packets
         bool serialiseClassic(WorldPacket& packet)
         {
             packet << guid;
-            packet << info.flags << info.flags2 << info.time
+            packet << info.flags << info.flags2 << info.update_time
                 << info.position << info.position.o;
 
             if (info.isSwimmingOrFlying())
-                packet << info.pitch;
+                packet << info.pitch_rate;
 
             packet << info.fall_time;
 
@@ -74,15 +72,15 @@ namespace AscEmu::Packets
 #elif VERSION_STRING == TBC
         bool deserialiseTbc(WorldPacket& packet)
         {
-            packet >> info.flags >> info.flags2 >> info.time
+            packet >> info.flags >> info.flags2 >> info.update_time
                     >> info.position >> info.position.o;
 
             if (info.isOnTransport())
-                packet >> info.transport_data.transportGuid >> info.transport_data.relativePosition
-                        >> info.transport_data.relativePosition.o >> info.transport_time;
+                packet >> info.transport_guid >> info.transport_position
+                        >> info.transport_position.o >> info.transport_time;
 
             if (info.isSwimmingOrFlying())
-                packet >> info.pitch;
+                packet >> info.pitch_rate;
 
             packet >> info.fall_time;
 
@@ -98,15 +96,15 @@ namespace AscEmu::Packets
         bool serialiseTbc(WorldPacket& packet)
         {
             packet << guid;
-            packet << info.flags << info.flags2 << info.time
+            packet << info.flags << info.flags2 << info.update_time
                     << info.position << info.position.o;
 
             if (info.isOnTransport())
-                packet << info.transport_data.transportGuid << info.transport_data.relativePosition
-                        << info.transport_data.relativePosition.o << info.transport_time;
+                packet << info.transport_guid << info.transport_position
+                        << info.transport_position.o << info.transport_time;
 
             if (info.isSwimmingOrFlying())
-                packet << info.pitch;
+                packet << info.pitch_rate;
 
             packet << info.fall_time;
 
@@ -122,20 +120,20 @@ namespace AscEmu::Packets
         bool deserialiseWotlk(WorldPacket& packet)
         {
             packet >> guid;
-            packet >> info.flags >> info.flags2 >> info.time
+            packet >> info.flags >> info.flags2 >> info.update_time
                 >> info.position >> info.position.o;
 
             if (info.isOnTransport())
             {
-                packet >> info.transport_data.transportGuid >> info.transport_data.relativePosition
-                    >> info.transport_data.relativePosition.o >> info.transport_time >> info.transport_seat;
+                packet >> info.transport_guid >> info.transport_position
+                    >> info.transport_position.o >> info.transport_time >> info.transport_seat;
 
                 if (info.isInterpolated())
                     packet >> info.transport_time2;
             }
 
             if (info.isSwimmingOrFlying())
-                packet >> info.pitch;
+                packet >> info.pitch_rate;
 
             packet >> info.fall_time;
 
@@ -151,20 +149,20 @@ namespace AscEmu::Packets
         bool serialiseWotlk(WorldPacket& packet)
         {
             packet << guid;
-            packet << info.flags << info.flags2 << info.time
+            packet << info.flags << info.flags2 << info.update_time
                 << info.position << info.position.o;
 
             if (info.isOnTransport())
             {
-                packet << info.transport_data.transportGuid << info.transport_data.relativePosition
-                << info.transport_data.relativePosition.o << info.transport_time << info.transport_seat;
+                packet << info.transport_guid << info.transport_position
+                << info.transport_position.o << info.transport_time << info.transport_seat;
 
                 if (info.isInterpolated())
                     packet << info.transport_time2;
             }
 
             if (info.isSwimmingOrFlying())
-                packet << info.pitch;
+                packet << info.pitch_rate;
 
             packet << info.fall_time;
 

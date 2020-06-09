@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 bool ChatHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m_session)
 {
 #if VERSION_STRING < Cata
-    auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_data.transportGuid));
+    auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
 #else
     auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));
 #endif
@@ -28,7 +28,7 @@ bool ChatHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m
 bool ChatHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m_session)
 {
 #if VERSION_STRING < Cata
-    auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_data.transportGuid));
+    auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
 #else
     auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));
 #endif
@@ -61,7 +61,7 @@ bool ChatHandler::HandleModPeriodCommand(const char* args, WorldSession* m_sessi
             return false;
 
 #if VERSION_STRING < Cata
-        Transporter* transport = sObjectMgr.GetTransportOrThrow(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_data.transportGuid));
+        Transporter* transport = sObjectMgr.GetTransportOrThrow(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
 #else
         Transporter* transport = sObjectMgr.GetTransportOrThrow(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));
 #endif
@@ -81,7 +81,7 @@ bool ChatHandler::HandleStopTransport(const char* /*args*/, WorldSession* m_sess
     try
     {
 #if VERSION_STRING < Cata
-        Transporter* transport = sObjectMgr.GetTransportOrThrow(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_data.transportGuid));
+        Transporter* transport = sObjectMgr.GetTransportOrThrow(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
 #else
         Transporter* transport = sObjectMgr.GetTransportOrThrow(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));
 #endif
@@ -105,7 +105,7 @@ bool ChatHandler::HandleStartTransport(const char* /*args*/, WorldSession* m_ses
     try
     {
 #if VERSION_STRING < Cata
-        Transporter* transport = sObjectMgr.GetTransportOrThrow(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_data.transportGuid));
+        Transporter* transport = sObjectMgr.GetTransportOrThrow(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
 #else
         Transporter* transport = sObjectMgr.GetTransportOrThrow(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));
 #endif
@@ -152,7 +152,7 @@ bool ChatHandler::HandleDespawnInstanceTransport(const char* /*args*/, WorldSess
     try
     {
 #if VERSION_STRING < Cata
-        Transporter* transport = sObjectMgr.GetTransportOrThrow(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_data.transportGuid));
+        Transporter* transport = sObjectMgr.GetTransportOrThrow(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
 #else
         Transporter* transport = sObjectMgr.GetTransportOrThrow(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.getTransportGuid()));
 #endif

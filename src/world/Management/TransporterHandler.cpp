@@ -628,7 +628,7 @@ void Transporter::Update()
             // After a few tests (Durotar<->Northrend we need this, otherwise npc disappear on entering new map/zone/area DankoDJ
             // Update Creature Position with Movement Info from Gameobject too prevent coord changes from Transporter Waypoint and Gameobject Position Aaron02
 #if VERSION_STRING < Cata
-            UpdateNPCPositions(obj_movement_info.transport_data.relativePosition.x, obj_movement_info.transport_data.relativePosition.y, obj_movement_info.transport_data.relativePosition.z, std::atan2(obj_movement_info.transport_data.relativePosition.x, obj_movement_info.transport_data.relativePosition.y) + float(M_PI));
+            UpdateNPCPositions(obj_movement_info.transport_position.x, obj_movement_info.transport_position.y, obj_movement_info.transport_position.z, std::atan2(obj_movement_info.transport_position.x, obj_movement_info.transport_position.y) + float(M_PI));
 #else
             UpdateNPCPositions(obj_movement_info.getTransportPosition()->x, obj_movement_info.getTransportPosition()->y, obj_movement_info.getTransportPosition()->z, std::atan2(obj_movement_info.getTransportPosition()->x, obj_movement_info.getTransportPosition()->y) + float(M_PI));
 #endif
@@ -706,9 +706,9 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
         return 0;
 
 #if VERSION_STRING < Cata
-    float transporter_x = obj_movement_info.transport_data.relativePosition.x + x;
-    float transporter_y = obj_movement_info.transport_data.relativePosition.y + y;
-    float transporter_z = obj_movement_info.transport_data.relativePosition.z + z;
+    float transporter_x = obj_movement_info.transport_position.x + x;
+    float transporter_y = obj_movement_info.transport_position.y + y;
+    float transporter_z = obj_movement_info.transport_position.z + z;
 #else
     float transporter_x = obj_movement_info.getTransportPosition()->x + x;
     float transporter_y = obj_movement_info.getTransportPosition()->y + y;
@@ -721,11 +721,11 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     pCreature->AddToWorld(map);
     pCreature->setUnitMovementFlags(MOVEFLAG_TRANSPORT);
 #if VERSION_STRING < Cata
-    pCreature->obj_movement_info.transport_data.relativePosition.x = x;
-    pCreature->obj_movement_info.transport_data.relativePosition.y = y;
-    pCreature->obj_movement_info.transport_data.relativePosition.z = z;
-    pCreature->obj_movement_info.transport_data.relativePosition.o = o;
-    pCreature->obj_movement_info.transport_data.transportGuid = getGuid();
+    pCreature->obj_movement_info.transport_position.x = x;
+    pCreature->obj_movement_info.transport_position.y = y;
+    pCreature->obj_movement_info.transport_position.z = z;
+    pCreature->obj_movement_info.transport_position.o = o;
+    pCreature->obj_movement_info.transport_guid = getGuid();
 #else
     pCreature->obj_movement_info.setTransportData(getGuid(), x, y, z, o, 0, 0);
 #endif
@@ -765,9 +765,9 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
         return nullptr;
 
 #if VERSION_STRING < Cata
-    float transporter_x = obj_movement_info.transport_data.relativePosition.x + x;
-    float transporter_y = obj_movement_info.transport_data.relativePosition.y + y;
-    float transporter_z = obj_movement_info.transport_data.relativePosition.z + z;
+    float transporter_x = obj_movement_info.transport_position.x + x;
+    float transporter_y = obj_movement_info.transport_position.y + y;
+    float transporter_z = obj_movement_info.transport_position.z + z;
 #else
     float transporter_x = obj_movement_info.getTransportPosition()->x + x;
     float transporter_y = obj_movement_info.getTransportPosition()->y + y;
@@ -780,11 +780,11 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
     pCreature->AddToWorld(map);
     pCreature->setUnitMovementFlags(MOVEFLAG_TRANSPORT);
 #if VERSION_STRING < Cata
-    pCreature->obj_movement_info.transport_data.relativePosition.x = x;
-    pCreature->obj_movement_info.transport_data.relativePosition.y = y;
-    pCreature->obj_movement_info.transport_data.relativePosition.z = z;
-    pCreature->obj_movement_info.transport_data.relativePosition.o = o;
-    pCreature->obj_movement_info.transport_data.transportGuid = getGuid();
+    pCreature->obj_movement_info.transport_position.x = x;
+    pCreature->obj_movement_info.transport_position.y = y;
+    pCreature->obj_movement_info.transport_position.z = z;
+    pCreature->obj_movement_info.transport_position.o = o;
+    pCreature->obj_movement_info.transport_guid = getGuid();
 #else
     pCreature->obj_movement_info.setTransportData(getGuid(), x, y, z, o, 0, 0);
 #endif
@@ -807,7 +807,7 @@ void Transporter::UpdateNPCPositions(float x, float y, float z, float o)
     {
         Creature* npc = *itr;
 #if VERSION_STRING < Cata
-        npc->SetPosition(x + npc->obj_movement_info.transport_data.relativePosition.x, y + npc->obj_movement_info.transport_data.relativePosition.y, z + npc->obj_movement_info.transport_data.relativePosition.z, o + npc->obj_movement_info.transport_data.relativePosition.o, false);
+        npc->SetPosition(x + npc->obj_movement_info.transport_position.x, y + npc->obj_movement_info.transport_position.y, z + npc->obj_movement_info.transport_position.z, o + npc->obj_movement_info.transport_position.o, false);
 #else
         npc->SetPosition(x + npc->obj_movement_info.getTransportPosition()->x, y + npc->obj_movement_info.getTransportPosition()->y, z + npc->obj_movement_info.getTransportPosition()->z, o + npc->obj_movement_info.getTransportPosition()->o, false);
 #endif
@@ -823,10 +823,10 @@ void Transporter::UpdatePlayerPositions(float x, float y, float z, float o)
         {
 #if VERSION_STRING < Cata
             player->SetPosition(
-                x + player->obj_movement_info.transport_data.relativePosition.x,
-                y + player->obj_movement_info.transport_data.relativePosition.y,
-                z + player->obj_movement_info.transport_data.relativePosition.z,
-                o + player->obj_movement_info.transport_data.relativePosition.o);
+                x + player->obj_movement_info.transport_position.x,
+                y + player->obj_movement_info.transport_position.y,
+                z + player->obj_movement_info.transport_position.z,
+                o + player->obj_movement_info.transport_position.o);
 #else
             player->SetPosition(
                 x + player->obj_movement_info.getTransportPosition()->x,

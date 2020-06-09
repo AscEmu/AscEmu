@@ -295,7 +295,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     // TODO Verify that timestamp can be replaced with AscEmu funcs
     const auto ms_time = Util::getMSTime();
     if (m_clientTimeDelay == 0)
-        m_clientTimeDelay = ms_time - movement_info.time;
+        m_clientTimeDelay = ms_time - movement_info.update_time;
 
     MovementPacket packet(recvData.GetOpcode(), 0);
     packet.guid = mover->getGuid();
@@ -303,11 +303,11 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     if (_player->getInRangePlayersCount())
     {
-        const auto move_time = packet.info.time - (ms_time - m_clientTimeDelay) + 500 + ms_time;
+        const auto move_time = packet.info.update_time - (ms_time - m_clientTimeDelay) + 500 + ms_time;
         for (const auto& obj : mover->getInRangePlayersSet())
         {
             ARCEMU_ASSERT(obj->isPlayer());
-            packet.info.time = move_time + obj->asPlayer()->GetSession()->m_moveDelayTime;
+            packet.info.update_time = move_time + obj->asPlayer()->GetSession()->m_moveDelayTime;
             obj->asPlayer()->SendPacket(packet.serialise().get());
         }
     }
@@ -389,53 +389,53 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     // End
 
-    if (mover->obj_movement_info.transport_data.transportGuid != 0 && movement_info.transport_data.transportGuid == 0)
+    if (mover->obj_movement_info.transport_guid != 0 && movement_info.transport_guid == 0)
     {
         // Leaving transport we were on
-        if (auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_data.transportGuid)))
+        if (auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid)))
             transporter->RemovePassenger(static_cast<Player*>(mover));
 
-        mover->obj_movement_info.transport_data.transportGuid = 0;
+        mover->obj_movement_info.transport_guid = 0;
         _player->SpeedCheatReset();
     }
     else
     {
-        if (movement_info.transport_data.transportGuid != 0)
+        if (movement_info.transport_guid != 0)
         {
 
-            if (mover->obj_movement_info.transport_data.transportGuid == 0)
+            if (mover->obj_movement_info.transport_guid == 0)
             {
-                Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_data.transportGuid));
+                Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_guid));
                 if (transporter != NULL)
                     transporter->AddPassenger(static_cast<Player*>(mover));
 
                 /* set variables */
-                mover->obj_movement_info.transport_data.transportGuid = movement_info.transport_data.transportGuid;
+                mover->obj_movement_info.transport_guid= movement_info.transport_guid;
                 mover->obj_movement_info.transport_time = movement_info.transport_time;
-                mover->obj_movement_info.transport_data.relativePosition.x = movement_info.transport_data.relativePosition.x;
-                mover->obj_movement_info.transport_data.relativePosition.y = movement_info.transport_data.relativePosition.y;
-                mover->obj_movement_info.transport_data.relativePosition.z = movement_info.transport_data.relativePosition.z;
-                mover->obj_movement_info.transport_data.relativePosition.o = movement_info.transport_data.relativePosition.o;
+                mover->obj_movement_info.transport_position.x = movement_info.transport_position.x;
+                mover->obj_movement_info.transport_position.y = movement_info.transport_position.y;
+                mover->obj_movement_info.transport_position.z = movement_info.transport_position.z;
+                mover->obj_movement_info.transport_position.o = movement_info.transport_position.o;
 
-                mover->m_transportData.transportGuid = movement_info.transport_data.transportGuid;
-                mover->m_transportData.relativePosition.x = movement_info.transport_data.relativePosition.x;
-                mover->m_transportData.relativePosition.y = movement_info.transport_data.relativePosition.y;
-                mover->m_transportData.relativePosition.z = movement_info.transport_data.relativePosition.z;
-                mover->m_transportData.relativePosition.o = movement_info.transport_data.relativePosition.o;
+                mover->m_transportData.transportGuid = movement_info.transport_guid;
+                mover->m_transportData.relativePosition.x = movement_info.transport_position.x;
+                mover->m_transportData.relativePosition.y = movement_info.transport_position.y;
+                mover->m_transportData.relativePosition.z = movement_info.transport_position.z;
+                mover->m_transportData.relativePosition.o = movement_info.transport_position.o;
             }
             else
             {
                 /* no changes */
                 mover->obj_movement_info.transport_time = movement_info.transport_time;
-                mover->obj_movement_info.transport_data.relativePosition.x = movement_info.transport_data.relativePosition.x;
-                mover->obj_movement_info.transport_data.relativePosition.y = movement_info.transport_data.relativePosition.y;
-                mover->obj_movement_info.transport_data.relativePosition.z = movement_info.transport_data.relativePosition.z;
-                mover->obj_movement_info.transport_data.relativePosition.o = movement_info.transport_data.relativePosition.o;
+                mover->obj_movement_info.transport_position.x = movement_info.transport_position.x;
+                mover->obj_movement_info.transport_position.y = movement_info.transport_position.y;
+                mover->obj_movement_info.transport_position.z = movement_info.transport_position.z;
+                mover->obj_movement_info.transport_position.o = movement_info.transport_position.o;
 
-                mover->m_transportData.relativePosition.x = movement_info.transport_data.relativePosition.x;
-                mover->m_transportData.relativePosition.y = movement_info.transport_data.relativePosition.y;
-                mover->m_transportData.relativePosition.z = movement_info.transport_data.relativePosition.z;
-                mover->m_transportData.relativePosition.o = movement_info.transport_data.relativePosition.o;
+                mover->m_transportData.relativePosition.x = movement_info.transport_position.x;
+                mover->m_transportData.relativePosition.y = movement_info.transport_position.y;
+                mover->m_transportData.relativePosition.z = movement_info.transport_position.z;
+                mover->m_transportData.relativePosition.o = movement_info.transport_position.o;
             }
         }
     }
@@ -706,7 +706,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         /* Anti-Teleport                                                        */
         /************************************************************************/
         if (worldConfig.antiHack.isTeleportHackCheckEnabled && _player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y }) > 3025.0f
-            && _player->getSpeedRate(TYPE_RUN, true) < 50.0f && !_player->obj_movement_info.transport_data.transportGuid)
+            && _player->getSpeedRate(TYPE_RUN, true) < 50.0f && !_player->obj_movement_info.transport_guid)
         {
             sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedRate(TYPE_RUN, true), sqrt(_player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y })));
             Disconnect();
@@ -715,7 +715,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     }
 
     //update the detector
-    if (worldConfig.antiHack.isSpeedHackCkeckEnabled && !_player->isOnTaxi() && _player->obj_movement_info.transport_data.transportGuid == 0 && !_player->GetSession()->GetPermissionCount())
+    if (worldConfig.antiHack.isSpeedHackCkeckEnabled && !_player->isOnTaxi() && _player->obj_movement_info.transport_guid == 0 && !_player->GetSession()->GetPermissionCount())
     {
         // simplified: just take the fastest speed. less chance of fuckups too
         float speed = (_player->flying_aura) ? _player->getSpeedRate(TYPE_FLY, true) : (_player->getSpeedRate(TYPE_SWIM, true) > _player->getSpeedRate(TYPE_RUN, true)) ? _player->getSpeedRate(TYPE_SWIM, true) : _player->getSpeedRate(TYPE_RUN, true);
@@ -774,14 +774,14 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     uint32 mstime = mTimeStamp();
     int32 move_time;
     if (m_clientTimeDelay == 0)
-        m_clientTimeDelay = mstime - movement_info.time;
+        m_clientTimeDelay = mstime - movement_info.update_time;
 
     /************************************************************************/
     /* Copy into the output buffer.                                         */
     /************************************************************************/
     if (_player->getInRangePlayersCount())
     {
-        move_time = (movement_info.time - (mstime - m_clientTimeDelay)) + MOVEMENT_PACKET_TIME_DELAY + mstime;
+        move_time = (movement_info.update_time - (mstime - m_clientTimeDelay)) + MOVEMENT_PACKET_TIME_DELAY + mstime;
         memcpy(&movement_packet[0], recvPacket.contents(), recvPacket.size());
         movement_packet[pos + 6] = 0;
 
@@ -801,7 +801,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     /************************************************************************/
     /* Hack Detection by Classic                                            */
     /************************************************************************/
-    if (!movement_info.transport_data.transportGuid && recvPacket.GetOpcode() != MSG_MOVE_JUMP && !_player->m_cheats.FlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
+    if (!movement_info.transport_guid && recvPacket.GetOpcode() != MSG_MOVE_JUMP && !_player->m_cheats.FlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
@@ -883,56 +883,56 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     /************************************************************************/
     /* Transporter Setup                                                    */
     /************************************************************************/
-    if ((mover->obj_movement_info.transport_data.transportGuid != 0) && (movement_info.transport_data.transportGuid == 0))
+    if ((mover->obj_movement_info.transport_guid != 0) && (movement_info.transport_guid == 0))
     {
         /* we left the transporter we were on */
 
-        Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_data.transportGuid));
+        Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
         if (transporter != NULL)
             transporter->RemovePassenger(static_cast<Player*>(mover));
 
-        mover->obj_movement_info.transport_data.transportGuid = 0;
+        mover->obj_movement_info.transport_guid = 0;
         _player->SpeedCheatReset();
 
     }
     else
     {
-        if (movement_info.transport_data.transportGuid != 0)
+        if (movement_info.transport_guid != 0)
         {
 
-            if (mover->obj_movement_info.transport_data.transportGuid == 0)
+            if (mover->obj_movement_info.transport_guid == 0)
             {
-                Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_data.transportGuid));
+                Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_guid));
                 if (transporter != NULL)
                     transporter->AddPassenger(static_cast<Player*>(mover));
 
                 /* set variables */
-                mover->obj_movement_info.transport_data.transportGuid = movement_info.transport_data.transportGuid;
+                mover->obj_movement_info.transport_guid = movement_info.transport_guid;
                 mover->obj_movement_info.transport_time = movement_info.transport_time;
-                mover->obj_movement_info.transport_data.relativePosition.x = movement_info.transport_data.relativePosition.x;
-                mover->obj_movement_info.transport_data.relativePosition.y = movement_info.transport_data.relativePosition.y;
-                mover->obj_movement_info.transport_data.relativePosition.z = movement_info.transport_data.relativePosition.z;
-                mover->obj_movement_info.transport_data.relativePosition.o = movement_info.transport_data.relativePosition.o;
+                mover->obj_movement_info.transport_position.x = movement_info.transport_position.x;
+                mover->obj_movement_info.transport_position.y = movement_info.transport_position.y;
+                mover->obj_movement_info.transport_position.z = movement_info.transport_position.z;
+                mover->obj_movement_info.transport_position.o = movement_info.transport_position.o;
 
-                mover->m_transportData.transportGuid = movement_info.transport_data.transportGuid;
-                mover->m_transportData.relativePosition.x = movement_info.transport_data.relativePosition.x;
-                mover->m_transportData.relativePosition.y = movement_info.transport_data.relativePosition.y;
-                mover->m_transportData.relativePosition.z = movement_info.transport_data.relativePosition.z;
-                mover->m_transportData.relativePosition.o = movement_info.transport_data.relativePosition.o;
+                mover->m_transportData.transportGuid = movement_info.transport_guid;
+                mover->m_transportData.relativePosition.x = movement_info.transport_position.x;
+                mover->m_transportData.relativePosition.y = movement_info.transport_position.y;
+                mover->m_transportData.relativePosition.z = movement_info.transport_position.z;
+                mover->m_transportData.relativePosition.o = movement_info.transport_position.o;
             }
             else
             {
                 /* no changes */
                 mover->obj_movement_info.transport_time = movement_info.transport_time;
-                mover->obj_movement_info.transport_data.relativePosition.x = movement_info.transport_data.relativePosition.x;
-                mover->obj_movement_info.transport_data.relativePosition.y = movement_info.transport_data.relativePosition.y;
-                mover->obj_movement_info.transport_data.relativePosition.z = movement_info.transport_data.relativePosition.z;
-                mover->obj_movement_info.transport_data.relativePosition.o = movement_info.transport_data.relativePosition.o;
+                mover->obj_movement_info.transport_position.x = movement_info.transport_position.x;
+                mover->obj_movement_info.transport_position.y = movement_info.transport_position.y;
+                mover->obj_movement_info.transport_position.z = movement_info.transport_position.z;
+                mover->obj_movement_info.transport_position.o = movement_info.transport_position.o;
 
-                mover->m_transportData.relativePosition.x = movement_info.transport_data.relativePosition.x;
-                mover->m_transportData.relativePosition.y = movement_info.transport_data.relativePosition.y;
-                mover->m_transportData.relativePosition.z = movement_info.transport_data.relativePosition.z;
-                mover->m_transportData.relativePosition.o = movement_info.transport_data.relativePosition.o;
+                mover->m_transportData.relativePosition.x = movement_info.transport_position.x;
+                mover->m_transportData.relativePosition.y = movement_info.transport_position.y;
+                mover->m_transportData.relativePosition.z = movement_info.transport_position.z;
+                mover->m_transportData.relativePosition.o = movement_info.transport_position.o;
             }
         }
     }

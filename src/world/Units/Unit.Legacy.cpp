@@ -13472,13 +13472,13 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
             auto plr = static_cast<Player*>(this);
             if (plr->obj_movement_info.isOnTransport())
             {
-                obj_movement_info.transport_data.transportGuid = plr->obj_movement_info.transport_data.transportGuid;
+                obj_movement_info.transport_guid = plr->obj_movement_info.transport_guid;
             }
         }
         if (Unit* u = getVehicleBase())
-            obj_movement_info.transport_data.transportGuid = u->getGuid();
-        *data << obj_movement_info.transport_data.transportGuid;
-        *data << obj_movement_info.transport_data.transportGuid;
+            obj_movement_info.transport_guid = u->getGuid();
+        *data << obj_movement_info.transport_guid;
+        *data << obj_movement_info.transport_guid;
         *data << GetTransPositionX();
         *data << GetTransPositionY();
         *data << GetTransPositionZ();
@@ -13496,7 +13496,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
     // 0x02200000
     if ((getUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING))
         || (getExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
-        *data << (float)getMovementInfo()->pitch;
+        *data << (float)getMovementInfo()->pitch_rate;
 
     *data << (uint32)getMovementInfo()->fall_time;
 #endif
@@ -13537,7 +13537,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
             obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_transport->getGuid();
         if (Unit* u = getVehicleBase())
             obj_movement_info.transporter_info.guid = u->getGuid();*/
-        *data << obj_movement_info.transport_data.transportGuid;
+        *data << obj_movement_info.transport_guid;
         *data << GetTransPositionX();
         *data << GetTransPositionY();
         *data << GetTransPositionZ();
@@ -13554,7 +13554,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     // 0x02200000
     if ((getUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING))
         || (getExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
-        *data << (float)getMovementInfo()->pitch;
+        *data << (float)getMovementInfo()->pitch_rate;
 
     *data << (uint32)getMovementInfo()->fall_time;
 #endif

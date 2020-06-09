@@ -718,7 +718,7 @@ void InstanceScript::generateBossDataState()
 void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_a, uint8_t value_b)
 {
     MapMgr* instance = GetInstance();
-    instance->SendPacketToAllPlayers(SmsgUpdateInstanceEncounterUnit(type, unit ? unit->GetNewGUID() : 0, value_a, value_b).serialise().get());
+    instance->SendPacketToAllPlayers(SmsgUpdateInstanceEncounterUnit(type, unit ? unit->GetNewGUID() : WoWGuid(), value_a, value_b).serialise().get());
 }
 
 void InstanceScript::displayDataStateList(Player* player)

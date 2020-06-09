@@ -340,10 +340,10 @@ public:
 
 #if VERSION_STRING < Cata
         // TransporterInfo
-        float GetTransPositionX() const { return obj_movement_info.transport_data.relativePosition.x; }
-        float GetTransPositionY() const { return obj_movement_info.transport_data.relativePosition.y; }
-        float GetTransPositionZ() const { return obj_movement_info.transport_data.relativePosition.z; }
-        float GetTransPositionO() const { return obj_movement_info.transport_data.relativePosition.o; }
+        float GetTransPositionX() const { return obj_movement_info.transport_position.x; }
+        float GetTransPositionY() const { return obj_movement_info.transport_position.y; }
+        float GetTransPositionZ() const { return obj_movement_info.transport_position.z; }
+        float GetTransPositionO() const { return obj_movement_info.transport_position.o; }
         uint32 GetTransTime() const { return obj_movement_info.transport_time; }
 #ifdef FT_VEHICLES
         // TODO check if this is in BC

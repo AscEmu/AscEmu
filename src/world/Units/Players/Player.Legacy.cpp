@@ -1492,7 +1492,7 @@ void Player::_EventExploration()
     }
 
 #if VERSION_STRING < Cata
-    if (!(currFields & val) && !isOnTaxi() && !obj_movement_info.transport_data.transportGuid) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
+    if (!(currFields & val) && !isOnTaxi() && !obj_movement_info.transport_guid) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
 #else
     if (!(currFields & val) && !isOnTaxi() && obj_movement_info.getTransportGuid().IsEmpty()) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
 #endif
@@ -2903,17 +2903,17 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
 
 #if VERSION_STRING < Cata
-    obj_movement_info.transport_data.transportGuid = field[62].GetUInt32();
-    if (obj_movement_info.transport_data.transportGuid)
+    obj_movement_info.transport_guid = field[62].GetUInt32();
+    if (obj_movement_info.transport_guid)
     {
-        Transporter* t = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
-        obj_movement_info.transport_data.transportGuid = t ? t->getGuid() : 0;
+        Transporter* t = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
+        obj_movement_info.transport_guid = t ? t->getGuid() : 0;
     }
 
-    obj_movement_info.transport_data.relativePosition.x = field[63].GetFloat();
-    obj_movement_info.transport_data.relativePosition.y = field[64].GetFloat();
-    obj_movement_info.transport_data.relativePosition.z = field[65].GetFloat();
-    obj_movement_info.transport_data.relativePosition.o = field[66].GetFloat();
+    obj_movement_info.transport_position.x = field[63].GetFloat();
+    obj_movement_info.transport_position.y = field[64].GetFloat();
+    obj_movement_info.transport_position.z = field[65].GetFloat();
+    obj_movement_info.transport_position.o = field[66].GetFloat();
 #else
     uint32_t transportGuid = field[62].GetUInt32();
     float transportX = field[63].GetFloat();
@@ -4351,7 +4351,7 @@ void Player::RepopRequestedPlayer()
     {
         transport->RemovePassenger(this);
 #if VERSION_STRING < Cata
-        this->obj_movement_info.transport_data.transportGuid = 0;
+        this->obj_movement_info.transport_guid = 0;
 #else
         this->obj_movement_info.clearTransportData();
 #endif
@@ -7183,13 +7183,13 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
     }
 
-    if (obj_movement_info.transport_data.transportGuid)
+    if (obj_movement_info.transport_guid)
     {
-        Transporter* pTrans = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
+        Transporter* pTrans = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
         if (pTrans)
         {
             pTrans->RemovePassenger(this);
-            obj_movement_info.transport_data.transportGuid = 0;
+            obj_movement_info.transport_guid = 0;
         }
     }
 

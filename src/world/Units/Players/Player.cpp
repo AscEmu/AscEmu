@@ -2887,13 +2887,13 @@ bool Player::logOntoTransport()
 {
     bool success = true;
 #if VERSION_STRING < Cata
-    if (obj_movement_info.transport_data.transportGuid != 0)
+    if (obj_movement_info.transport_guid != 0)
 #else
     if (!obj_movement_info.getTransportGuid().IsEmpty())
 #endif
     {
 #if VERSION_STRING < Cata
-        const auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
+        const auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
 #else
         const auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(static_cast<uint32>(obj_movement_info.getTransportGuid())));
 #endif

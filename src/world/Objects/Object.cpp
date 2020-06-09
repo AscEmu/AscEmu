@@ -1416,7 +1416,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
         if (flags2 & MOVEFLAG_TRANSPORT) //0x0200
         {
-            *data << WoWGuid(obj_movement_info.transport_data.transportGuid);
+            *data << WoWGuid(obj_movement_info.transport_guid);
             *data << float(GetTransPositionX());
             *data << float(GetTransPositionY());
             *data << float(GetTransPositionZ());
@@ -1428,7 +1428,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
         if ((flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING))   // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH
         {
             if (pThis && moveinfo)
-                *data << moveinfo->pitch;
+                *data << moveinfo->pitch_rate;
             else
                 *data << float(0); //pitch
         }
@@ -3194,7 +3194,7 @@ uint32 Object::GetTeam()
 Transporter* Object::GetTransport() const
 {
 #if VERSION_STRING < Cata
-    return sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_data.transportGuid));
+    return sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
 #else
     return nullptr;
 #endif

@@ -8,9 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "WorldPacket.h"
-#if VERSION_STRING == WotLK
-#include "Data/MovementInfo.h"
-#endif
 
 namespace AscEmu::Packets
 {
@@ -45,19 +42,19 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> sourceGuid;
-            packet >> movementInfo.flags >> movementInfo.flags2 >> movementInfo.time >> movementInfo.position >> movementInfo.position.o;
+            packet >> movementInfo.flags >> movementInfo.flags2 >> movementInfo.update_time >> movementInfo.position >> movementInfo.position.o;
 
             if (movementInfo.isOnTransport())
             {
-                packet >> movementInfo.transport_data.transportGuid >> movementInfo.transport_data.relativePosition
-                    >> movementInfo.transport_data.relativePosition.o >> movementInfo.transport_time >> movementInfo.transport_seat;
+                packet >> movementInfo.transport_guid >> movementInfo.transport_position
+                    >> movementInfo.transport_position.o >> movementInfo.transport_time >> movementInfo.transport_seat;
 
                 if (movementInfo.isInterpolated())
                     packet >> movementInfo.transport_time2;
             }
 
             if (movementInfo.isSwimmingOrFlying())
-                packet >> movementInfo.pitch;
+                packet >> movementInfo.pitch_rate;
 
             packet >> movementInfo.fall_time;
 
