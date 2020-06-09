@@ -13456,7 +13456,11 @@ void Unit::CastOnMeleeSpell()
 void Unit::BuildMovementPacket(ByteBuffer* data)
 {
     *data << uint32(getUnitMovementFlags());            // movement flags
+#if VERSION_STRING == TBC
+    *data << uint8(getExtraUnitMovementFlags());       // 2.3.0
+#elif VERSION_STRING >= WotLK
     *data << uint16(getExtraUnitMovementFlags());       // 2.3.0
+#endif
     *data << uint32(Util::getMSTime());                       // time / counter
     *data << GetPositionX();
     *data << GetPositionY();
@@ -13470,7 +13474,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
         if (isPlayer())
         {
             auto plr = static_cast<Player*>(this);
-            if (plr->obj_movement_info.isOnTransport())
+            if (plr->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
             {
                 obj_movement_info.transport_guid = plr->obj_movement_info.transport_guid;
             }
@@ -13502,7 +13506,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
 #endif
     // 0x00001000
 #if VERSION_STRING < Cata
-    if (getUnitMovementFlags() & MOVEFLAG_REDIRECTED)
+    if (getUnitMovementFlags() & MOVEFLAG_FALLING)
     {
         *data << getMovementInfo()->jump_info.velocity;
         *data << getMovementInfo()->jump_info.sinAngle;
@@ -13511,7 +13515,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
     }
 
     // 0x04000000
-    if (getUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
+    if (getUnitMovementFlags() & MOVEFLAG_SPLINE_ELEVATION)
         *data << getMovementInfo()->spline_elevation;
 #endif
 }
@@ -13520,7 +13524,11 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
 void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o)
 {
     *data << uint32(getUnitMovementFlags());            // movement flags
+#if VERSION_STRING == TBC
+    *data << uint8(getExtraUnitMovementFlags());       // 2.3.0
+#elif VERSION_STRING >= WotLK
     *data << uint16(getExtraUnitMovementFlags());       // 2.3.0
+#endif
     *data << uint32(Util::getMSTime());                       // time / counter
     *data << x;
     *data << y;
@@ -13560,7 +13568,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
 #endif
     // 0x00001000
 #if VERSION_STRING < Cata
-    if (getUnitMovementFlags() & MOVEFLAG_REDIRECTED)
+    if (getUnitMovementFlags() & MOVEFLAG_FALLING)
     {
         *data << getMovementInfo()->jump_info.velocity;
         *data << getMovementInfo()->jump_info.sinAngle;
@@ -13569,7 +13577,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     }
 
     // 0x04000000
-    if (getUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
+    if (getUnitMovementFlags() & MOVEFLAG_SPLINE_ELEVATION)
         *data << getMovementInfo()->spline_elevation;
 #endif
 }

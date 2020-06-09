@@ -2127,7 +2127,7 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
     MySQLStructure::VendorRestrictions const* vendor = sMySQLStore.getVendorRestriction(unit->GetCreatureProperties()->Id);
 
     //this is a blizzlike check
-    if (!_player->obj_movement_info.isOnTransport())
+    if (!_player->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
     {
         //avoid talking to anyone by guid hacking. Like sell farmed items anytime ? Low chance hack
         if (_player->getDistanceSq(unit) > 100)

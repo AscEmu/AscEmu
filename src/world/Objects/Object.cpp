@@ -1438,7 +1438,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
         else
             *data << uint32(0); //last fall time
 
-        if (flags2 & MOVEFLAG_REDIRECTED)   // 0x00001000
+        if (flags2 & MOVEFLAG_FALLING)   // 0x00001000
         {
             if (moveinfo != nullptr)
             {

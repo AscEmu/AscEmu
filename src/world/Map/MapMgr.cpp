@@ -877,7 +877,7 @@ float MapMgr::GetUpdateDistance(Object* curObj, Object* obj, Player* plObj)
     static float no_distance = 0.0f;
 
     // unlimited distance for people on same boat
-    if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && plObj->obj_movement_info.isOnTransport() && plObj->obj_movement_info.transport_guid == static_cast< Player* >(curObj)->obj_movement_info.transport_guid)
+    if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && plObj->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && plObj->obj_movement_info.transport_guid == static_cast< Player* >(curObj)->obj_movement_info.transport_guid)
         return no_distance;
     // unlimited distance for transporters (only up to 2 cells +/- anyway.)
     if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)

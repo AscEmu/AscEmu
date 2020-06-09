@@ -267,7 +267,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
             {
                 if (_player->m_position.Distance2DSq(movement_info.position) > 3025.f)
                 {
-                    if (_player->getSpeedRate(TYPE_RUN, true) < 50.f && !_player->obj_movement_info.isOnTransport())
+                    if (_player->getSpeedRate(TYPE_RUN, true) < 50.f && !_player->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
                     {
                         sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedRate(TYPE_RUN, true), sqrt(_player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y })));
                         Disconnect();
@@ -279,7 +279,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
         if (worldConfig.antiHack.isSpeedHackCkeckEnabled)
         {
-            if (!(_player->isOnTaxi() || _player->movement_info.isOnTransport()))
+            if (!(_player->isOnTaxi() || _player->movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT)))
             {
                 _player->SDetector->addSample(movement_info.position, Util::getMSTime(), _player->getSpeedRate(_player->getFastestSpeedType(), true));
 
@@ -314,12 +314,12 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     // Remove flying aura if needed
     // TODO: This seems like a daft check, verify it
-    if (!movement_info.isOnTransport() && recvData.GetOpcode() != MSG_MOVE_JUMP && !_player->m_cheats.FlyCheat && !_player->flying_aura)
-        if (!movement_info.isSwimming() && !movement_info.isFalling())
+    if (!movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && recvData.GetOpcode() != MSG_MOVE_JUMP && !_player->m_cheats.FlyCheat && !_player->flying_aura)
+        if (!movement_info.hasMovementFlag(MOVEFLAG_SWIMMING) && !movement_info.hasMovementFlag(MOVEFLAG_FALLING))
             if (movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
                 SendPacket(SmsgMoveUnsetCanFly(_player->getGuid()).serialise().get());
 
-    if (movement_info.isFlying() && !movement_info.isSwimming() && !(_player->flying_aura || _player->m_cheats.FlyCheat))
+    if (movement_info.hasMovementFlag(MOVEFLAG_FLYING) && !movement_info.hasMovementFlag(MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->m_cheats.FlyCheat))
         SendPacket(SmsgMoveUnsetCanFly(_player->getGuid()).serialise().get());
 
     if (_player->blinked)
@@ -333,7 +333,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         if (recvData.GetOpcode() != MSG_MOVE_FALL_LAND)
         {
             // Update Z while player is falling to calculate fall damage
-            if (!movement_info.isFalling())
+            if (!movement_info.hasMovementFlag(MOVEFLAG_FALLING))
             {
                 mover->z_axisposition = movement_info.position.z;
             }
@@ -459,7 +459,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         flags |= AURA_INTERRUPT_ON_ENTER_WATER;
     if ((movement_info.flags & MOVEFLAG_TURNING_MASK) || _player->isTurning)
         flags |= AURA_INTERRUPT_ON_TURNING;
-    if (movement_info.flags & MOVEFLAG_REDIRECTED)
+    if (movement_info.flags & MOVEFLAG_FALLING)
         flags |= AURA_INTERRUPT_ON_JUMP;
 
     _player->RemoveAurasByInterruptFlag(flags);
@@ -955,7 +955,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         flags |= AURA_INTERRUPT_ON_ENTER_WATER;
     if ((movement_info.flags & MOVEFLAG_TURNING_MASK) || _player->isTurning)
         flags |= AURA_INTERRUPT_ON_TURNING;
-    if (movement_info.flags & MOVEFLAG_REDIRECTED)
+    if (movement_info.flags & MOVEFLAG_FALLING)
         flags |= AURA_INTERRUPT_ON_JUMP;
 
     _player->RemoveAurasByInterruptFlag(flags);

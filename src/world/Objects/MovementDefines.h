@@ -8,55 +8,53 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 #include <cstdint>
 
-#if VERSION_STRING < Cata
+#if VERSION_STRING <= WotLK
 enum MovementFlags
 {
     // Byte 1 (Resets on Movement Key Press)
-    MOVEFLAG_MOVE_STOP                  = 0x00000000,   // verified
-    MOVEFLAG_MOVE_FORWARD               = 0x00000001,   // verified
-    MOVEFLAG_MOVE_BACKWARD              = 0x00000002,   // verified
-    MOVEFLAG_STRAFE_LEFT                = 0x00000004,   // verified
-    MOVEFLAG_STRAFE_RIGHT               = 0x00000008,   // verified
-    MOVEFLAG_TURN_LEFT                  = 0x00000010,   // verified
-    MOVEFLAG_TURN_RIGHT                 = 0x00000020,   // verified
-    MOVEFLAG_PITCH_DOWN                 = 0x00000040,   // Unconfirmed
-    MOVEFLAG_PITCH_UP                   = 0x00000080,   // Unconfirmed
+    MOVEFLAG_MOVE_STOP                  = 0x00000000,
+    MOVEFLAG_MOVE_FORWARD               = 0x00000001,
+    MOVEFLAG_MOVE_BACKWARD              = 0x00000002,
+    MOVEFLAG_STRAFE_LEFT                = 0x00000004,
+    MOVEFLAG_STRAFE_RIGHT               = 0x00000008,
+    MOVEFLAG_TURN_LEFT                  = 0x00000010,
+    MOVEFLAG_TURN_RIGHT                 = 0x00000020,
+    MOVEFLAG_PITCH_UP                   = 0x00000040,
+    MOVEFLAG_PITCH_DOWN                 = 0x00000080,
 
     // Byte 2 (Resets on Situation Change)
-    MOVEFLAG_WALK                       = 0x00000100,   // verified
+    MOVEFLAG_WALK                       = 0x00000100,
     MOVEFLAG_TRANSPORT                  = 0x00000200,
-    MOVEFLAG_DISABLEGRAVITY             = 0x00000400,   // Zyres: disable gravity
-    MOVEFLAG_ROOTED                     = 0x00000800,   // verified
-    MOVEFLAG_REDIRECTED                 = 0x00001000,   // Unconfirmed, should be MOVEFLAG_JUMPING
-    MOVEFLAG_FALLING                    = 0x00002000,   // verified
-    MOVEFLAG_FALLING_FAR                = 0x00004000,   // verified
-    MOVEFLAG_FREE_FALLING               = 0x00008000,   // half verified
+    MOVEFLAG_DISABLEGRAVITY             = 0x00000400,
+    MOVEFLAG_ROOTED                     = 0x00000800,
+    MOVEFLAG_FALLING                    = 0x00001000,
+    MOVEFLAG_FALLING_FAR                = 0x00002000,
+    MOVEFLAG_PENDING_STOP               = 0x00004000,
+    MOVEFLAG_PENDING_UNSTRAFE           = 0x00008000,
 
-    // Byte 3 (Set by server. TB = Third Byte. Completely unconfirmed.)
-    MOVEFLAG_TB_PENDING_STOP            = 0x00010000,   // (MOVEFLAG_PENDING_STOP)
-    MOVEFLAG_TB_PENDING_UNSTRAFE        = 0x00020000,   // (MOVEFLAG_PENDING_UNSTRAFE)
-    MOVEFLAG_TB_PENDING_FALL            = 0x00040000,   // (MOVEFLAG_PENDING_FALL)
-    MOVEFLAG_TB_PENDING_FORWARD         = 0x00080000,   // (MOVEFLAG_PENDING_FORWARD)
-    MOVEFLAG_TB_PENDING_BACKWARD        = 0x00100000,   // (MOVEFLAG_PENDING_BACKWARD)
-    MOVEFLAG_SWIMMING                   = 0x00200000,   //  verified
+    // Byte 3 
+    MOVEFLAG_PENDING_FORWARD            = 0x00010000,
+    MOVEFLAG_PENDING_BACKWARD           = 0x00020000,
+    MOVEFLAG_PENDING_STRAFE_LEFT        = 0x00040000,
+    MOVEFLAG_PENDING_STRAFE_RIGHT       = 0x00080000,
+    MOVEFLAG_PENDING_ROOT               = 0x00100000,
+    MOVEFLAG_SWIMMING                   = 0x00200000,
     MOVEFLAG_ASCENDING                  = 0x00400000,
     MOVEFLAG_DESCENDING                 = 0x00800000,
 
     // Byte 4 (Script Based Flags. Never reset, only turned on or off.)
-    MOVEFLAG_CAN_FLY                    = 0x01000000,   // Zyres: can_fly
-    MOVEFLAG_FLYING                     = 0x02000000,   // Zyres: flying
-    MOVEFLAG_SPLINE_MOVER               = 0x04000000,   // Zyres: spl elevation
+    MOVEFLAG_CAN_FLY                    = 0x01000000,
+    MOVEFLAG_FLYING                     = 0x02000000,
+    MOVEFLAG_SPLINE_ELEVATION           = 0x04000000,
     MOVEFLAG_SPLINE_ENABLED             = 0x08000000,
     MOVEFLAG_WATER_WALK                 = 0x10000000,
-    MOVEFLAG_FEATHER_FALL               = 0x20000000,   // Does not negate fall damage.
+    MOVEFLAG_FEATHER_FALL               = 0x20000000,
     MOVEFLAG_HOVER                      = 0x40000000,
-    //MOVEFLAG_LOCAL                    = 0x80000000,   // Zyres: commented unused 2015/12/20
 
     // Masks
     MOVEFLAG_MOVING_MASK =
     MOVEFLAG_MOVE_FORWARD | MOVEFLAG_MOVE_BACKWARD | MOVEFLAG_STRAFE_LEFT | MOVEFLAG_STRAFE_RIGHT |
-    MOVEFLAG_PITCH_UP | MOVEFLAG_PITCH_DOWN | MOVEFLAG_FALLING | MOVEFLAG_FALLING_FAR |
-    MOVEFLAG_ASCENDING | MOVEFLAG_DESCENDING | MOVEFLAG_FREE_FALLING | MOVEFLAG_FLYING,
+    MOVEFLAG_FALLING | MOVEFLAG_FALLING_FAR | MOVEFLAG_ASCENDING | MOVEFLAG_DESCENDING | MOVEFLAG_SPLINE_ELEVATION,
 
     MOVEFLAG_STRAFING_MASK              = 0x0C,
     MOVEFLAG_TURNING_MASK               = 0x30,         // MOVEFLAG_TURN_LEFT + MOVEFLAG_TURN_RIGHT

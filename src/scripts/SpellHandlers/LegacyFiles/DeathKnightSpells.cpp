@@ -183,7 +183,7 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
 
         // Blizzard screwed this up, so we won't.
         // ^^^^^^^^^^^^ glass houses
-        if (playerTarget->obj_movement_info.isOnTransport())
+        if (playerTarget->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
             return false;
 
         s->SpellEffectPlayerPull(effectIndex);

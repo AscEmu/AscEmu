@@ -20,7 +20,7 @@ struct MovementInfo
 #if VERSION_STRING == WotLK
         transport_seat(0), transport_time2(0.f),
 #endif
-        pitch_rate(0.f), fall_time(0), spline_elevation(0.f), unk_13(0) {}
+        pitch_rate(0.f), fall_time(0), spline_elevation(0.f) {}
 
 #if VERSION_STRING >= Cata
     ObjectGuid const& getGuid() const { return guid; }
@@ -142,8 +142,6 @@ struct MovementInfo
     uint32_t fall_time;
     float spline_elevation;
 
-    uint32_t unk_13;
-
     JumpInfo jump_info;
 
 #if VERSION_STRING >= Cata
@@ -166,28 +164,6 @@ struct MovementInfo
 
 #if VERSION_STRING >= Cata
     int8_t byte_parameter;
-#endif
-    
-    bool hasFlag(uint32_t flag) const { return flags & flag; }
-    bool isOnTransport() const { return hasFlag(MOVEFLAG_TRANSPORT); }
-    bool isSwimming() const { return hasFlag(MOVEFLAG_SWIMMING); }
-    bool isFlying() const { return hasFlag(MOVEFLAG_FLYING); }
-    bool isSwimmingOrFlying() const { return isSwimming() || isFlying(); }
-    bool isFalling() const { return hasFlag(MOVEFLAG_FALLING); }
-
-#if VERSION_STRING <= WotLK
-    bool isRedirected() const { return hasFlag(MOVEFLAG_REDIRECTED); }
-    bool isFallingOrRedirected() const { return isFalling() || isRedirected(); }
-#endif
-
-#if VERSION_STRING <= WotLK
-    bool isSplineMover() const { return hasFlag(MOVEFLAG_SPLINE_MOVER); }
-#endif
-
-    bool hasFlag2(uint32_t flag2) const { return (flags2 & flag2) != 0; }
-
-#if VERSION_STRING == WotLK
-    bool isInterpolated() const { return hasFlag2(MOVEFLAG2_INTERPOLATED_MOVE); }
 #endif
 };
 

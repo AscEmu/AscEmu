@@ -44,24 +44,24 @@ namespace AscEmu::Packets
             packet >> sourceGuid;
             packet >> movementInfo.flags >> movementInfo.flags2 >> movementInfo.update_time >> movementInfo.position >> movementInfo.position.o;
 
-            if (movementInfo.isOnTransport())
+            if (movementInfo.hasMovementFlag(MOVEFLAG_TRANSPORT))
             {
                 packet >> movementInfo.transport_guid >> movementInfo.transport_position
                     >> movementInfo.transport_position.o >> movementInfo.transport_time >> movementInfo.transport_seat;
 
-                if (movementInfo.isInterpolated())
+                if (movementInfo.hasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE))
                     packet >> movementInfo.transport_time2;
             }
 
-            if (movementInfo.isSwimmingOrFlying())
+            if (movementInfo.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || movementInfo.hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))
                 packet >> movementInfo.pitch_rate;
 
             packet >> movementInfo.fall_time;
 
-            if (movementInfo.isFallingOrRedirected())
+            if (movementInfo.hasMovementFlag(MOVEFLAG_FALLING))
                 packet >> movementInfo.jump_info.velocity >> movementInfo.jump_info.sinAngle >> movementInfo.jump_info.cosAngle >> movementInfo.jump_info.xyspeed;
 
-            if (movementInfo.isSplineMover())
+            if (movementInfo.hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION))
                 packet >> movementInfo.spline_elevation;
 
             packet >> destinationGuid;
