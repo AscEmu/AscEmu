@@ -3677,11 +3677,7 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
 }
 
 #if VERSION_STRING >= Cata
-#if VERSION_STRING == Cata
-    #include "GameCata/Movement/MovementStructures.h"
-#elif VERSION_STRING == Mop
-    #include "GameMop/Movement/MovementStructures.h"
-#endif
+
 
 void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
 {

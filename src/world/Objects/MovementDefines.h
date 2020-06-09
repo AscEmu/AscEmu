@@ -5,8 +5,163 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "../Network/Opcodes.h"
-#include "Objects/Object.h"
+#include "WorldConf.h"
+#include <cstdint>
+
+#if VERSION_STRING < Cata
+enum MovementFlags
+{
+    // Byte 1 (Resets on Movement Key Press)
+    MOVEFLAG_MOVE_STOP                  = 0x00000000,   // verified
+    MOVEFLAG_MOVE_FORWARD               = 0x00000001,   // verified
+    MOVEFLAG_MOVE_BACKWARD              = 0x00000002,   // verified
+    MOVEFLAG_STRAFE_LEFT                = 0x00000004,   // verified
+    MOVEFLAG_STRAFE_RIGHT               = 0x00000008,   // verified
+    MOVEFLAG_TURN_LEFT                  = 0x00000010,   // verified
+    MOVEFLAG_TURN_RIGHT                 = 0x00000020,   // verified
+    MOVEFLAG_PITCH_DOWN                 = 0x00000040,   // Unconfirmed
+    MOVEFLAG_PITCH_UP                   = 0x00000080,   // Unconfirmed
+
+    // Byte 2 (Resets on Situation Change)
+    MOVEFLAG_WALK                       = 0x00000100,   // verified
+    MOVEFLAG_TRANSPORT                  = 0x00000200,
+    MOVEFLAG_DISABLEGRAVITY             = 0x00000400,   // Zyres: disable gravity
+    MOVEFLAG_ROOTED                     = 0x00000800,   // verified
+    MOVEFLAG_REDIRECTED                 = 0x00001000,   // Unconfirmed, should be MOVEFLAG_JUMPING
+    MOVEFLAG_FALLING                    = 0x00002000,   // verified
+    MOVEFLAG_FALLING_FAR                = 0x00004000,   // verified
+    MOVEFLAG_FREE_FALLING               = 0x00008000,   // half verified
+
+    // Byte 3 (Set by server. TB = Third Byte. Completely unconfirmed.)
+    MOVEFLAG_TB_PENDING_STOP            = 0x00010000,   // (MOVEFLAG_PENDING_STOP)
+    MOVEFLAG_TB_PENDING_UNSTRAFE        = 0x00020000,   // (MOVEFLAG_PENDING_UNSTRAFE)
+    MOVEFLAG_TB_PENDING_FALL            = 0x00040000,   // (MOVEFLAG_PENDING_FALL)
+    MOVEFLAG_TB_PENDING_FORWARD         = 0x00080000,   // (MOVEFLAG_PENDING_FORWARD)
+    MOVEFLAG_TB_PENDING_BACKWARD        = 0x00100000,   // (MOVEFLAG_PENDING_BACKWARD)
+    MOVEFLAG_SWIMMING                   = 0x00200000,   //  verified
+    MOVEFLAG_ASCENDING                  = 0x00400000,
+    MOVEFLAG_DESCENDING                 = 0x00800000,
+
+    // Byte 4 (Script Based Flags. Never reset, only turned on or off.)
+    MOVEFLAG_CAN_FLY                    = 0x01000000,   // Zyres: can_fly
+    MOVEFLAG_FLYING                     = 0x02000000,   // Zyres: flying
+    MOVEFLAG_SPLINE_MOVER               = 0x04000000,   // Zyres: spl elevation
+    MOVEFLAG_SPLINE_ENABLED             = 0x08000000,
+    MOVEFLAG_WATER_WALK                 = 0x10000000,
+    MOVEFLAG_FEATHER_FALL               = 0x20000000,   // Does not negate fall damage.
+    MOVEFLAG_HOVER                      = 0x40000000,
+    //MOVEFLAG_LOCAL                    = 0x80000000,   // Zyres: commented unused 2015/12/20
+
+    // Masks
+    MOVEFLAG_MOVING_MASK =
+    MOVEFLAG_MOVE_FORWARD | MOVEFLAG_MOVE_BACKWARD | MOVEFLAG_STRAFE_LEFT | MOVEFLAG_STRAFE_RIGHT |
+    MOVEFLAG_PITCH_UP | MOVEFLAG_PITCH_DOWN | MOVEFLAG_FALLING | MOVEFLAG_FALLING_FAR |
+    MOVEFLAG_ASCENDING | MOVEFLAG_DESCENDING | MOVEFLAG_FREE_FALLING | MOVEFLAG_FLYING,
+
+    MOVEFLAG_STRAFING_MASK              = 0x0C,
+    MOVEFLAG_TURNING_MASK               = 0x30,         // MOVEFLAG_TURN_LEFT + MOVEFLAG_TURN_RIGHT
+    MOVEFLAG_FALLING_MASK               = 0x6000,
+    MOVEFLAG_MOTION_MASK                = 0xE00F,       // Forwards, Backwards, Strafing, Falling
+    MOVEFLAG_PENDING_MASK               = 0x7F0000,
+    MOVEFLAG_PENDING_STRAFE_MASK        = 0x600000,
+    MOVEFLAG_PENDING_MOVE_MASK          = 0x180000,
+    MOVEFLAG_FULL_FALLING_MASK          = 0xE000,
+};
+
+enum MovementFlags2
+{
+    MOVEFLAG2_NO_STRAFING               = 0x0001,
+    MOVEFLAG2_NO_JUMPING                = 0x0002,
+    MOVEFLAG2_UNK1                      = 0x0004,
+    MOVEFLAG2_FULLSPEED_TURNING         = 0x0008,
+    MOVEFLAG2_FULLSPEED_PITCHING        = 0x0010,
+    MOVEFLAG2_ALLOW_PITCHING            = 0x0020,
+    MOVEFLAG2_UNK2                      = 0x0040,
+    MOVEFLAG2_UNK3                      = 0x0080,
+    MOVEFLAG2_UNK4                      = 0x0100,
+    MOVEFLAG2_UNK5                      = 0x0200,
+    MOVEFLAG2_INTERPOLATED_MOVE         = 0x0400,
+    MOVEFLAG2_INTERPOLATED_TURN         = 0x0800,
+    MOVEFLAG2_INTERPOLATED_PITCH        = 0x1000
+};
+#else
+enum MovementFlags
+{
+    MOVEFLAG_NONE                   = 0x00000000,
+    MOVEFLAG_MOVE_FORWARD           = 0x00000001,
+    MOVEFLAG_MOVE_BACKWARD          = 0x00000002,
+    MOVEFLAG_STRAFE_LEFT            = 0x00000004,
+    MOVEFLAG_STRAFE_RIGHT           = 0x00000008,
+    MOVEFLAG_TURN_LEFT              = 0x00000010,
+    MOVEFLAG_TURN_RIGHT             = 0x00000020,
+    MOVEFLAG_PITCH_UP               = 0x00000040,
+    MOVEFLAG_PITCH_DOWN             = 0x00000080,
+    MOVEFLAG_WALK                   = 0x00000100,
+    MOVEFLAG_DISABLEGRAVITY         = 0x00000200,
+    MOVEFLAG_ROOTED                 = 0x00000400,
+    MOVEFLAG_FALLING                = 0x00000800,
+    MOVEFLAG_FALLING_FAR            = 0x00001000,
+    MOVEFLAG_PENDING_STOP           = 0x00002000,
+    MOVEFLAG_PENDING_STRAFE_STOP    = 0x00004000,
+    MOVEFLAG_PENDING_FORWARD        = 0x00008000,
+    MOVEFLAG_PENDING_BACKWARD       = 0x00010000,
+    MOVEFLAG_PENDING_STRAFE_LEFT    = 0x00020000,
+    MOVEFLAG_PENDING_STRAFE_RIGHT   = 0x00040000,
+    MOVEFLAG_PENDING_ROOT           = 0x00080000,
+    MOVEFLAG_SWIMMING               = 0x00100000,
+    MOVEFLAG_ASCENDING              = 0x00200000,
+    MOVEFLAG_DESCENDING             = 0x00400000,
+    MOVEFLAG_CAN_FLY                = 0x00800000,
+    MOVEFLAG_FLYING                 = 0x01000000,
+    MOVEFLAG_SPLINE_ELEVATION       = 0x02000000,
+    MOVEFLAG_WATER_WALK             = 0x04000000,
+    MOVEFLAG_FEATHER_FALL           = 0x08000000,
+    MOVEFLAG_HOVER                  = 0x10000000,
+    MOVEFLAG_NO_COLLISION           = 0x20000000,
+    MOVEFLAG_TRANSPORT              = 0x40000000,
+
+    // Masks
+    MOVEFLAG_MOVING_MASK =
+        MOVEFLAG_MOVE_FORWARD | MOVEFLAG_MOVE_BACKWARD | MOVEFLAG_STRAFE_LEFT | MOVEFLAG_STRAFE_RIGHT |
+        MOVEFLAG_PITCH_UP | MOVEFLAG_PITCH_DOWN | MOVEFLAG_FALLING | MOVEFLAG_FALLING_FAR | 
+        MOVEFLAG_ASCENDING | MOVEFLAG_DESCENDING | MOVEFLAG_SPLINE_ELEVATION,
+
+    MOVEFLAG_TURNING_MASK =
+        MOVEFLAG_TURN_LEFT | MOVEFLAG_TURN_RIGHT,
+
+    MOVEFLAG_FALLING_MASK           = 0x6000,
+    MOVEFLAG_MOTION_MASK            = 0xE00F,
+    MOVEFLAG_PENDING_MASK           = 0x7F0000,
+    MOVEFLAG_PENDING_STRAFE_MASK    = 0x600000,
+    MOVEFLAG_PENDING_MOVE_MASK      = 0x180000,
+    MOVEFLAG_FULL_FALLING_MASK      = 0xE000
+};
+
+enum MovementFlags2
+{
+    MOVEFLAG2_NONE                  = 0x0000,
+    MOVEFLAG2_NO_STRAFING           = 0x0001,
+    MOVEFLAG2_NO_JUMPING            = 0x0002,
+    MOVEFLAG2_FULLSPEED_TURNING     = 0x0004,
+    MOVEFLAG2_FULLSPEED_PITCHING    = 0x0008,
+    MOVEFLAG2_ALLOW_PITCHING        = 0x0010,
+    MOVEFLAG2_UNK4                  = 0x0020,
+    MOVEFLAG2_UNK5                  = 0x0040,
+    MOVEFLAG2_UNK6                  = 0x0080,
+    MOVEFLAG2_UNK7                  = 0x0100,
+    MOVEFLAG2_INTERPOLATED_MOVE     = 0x0200,
+    MOVEFLAG2_INTERPOLATED_TURN     = 0x0400,
+    MOVEFLAG2_INTERPOLATED_PITCH    = 0x0800,
+    MOVEFLAG2_INTERPOLATED_MASK =
+        MOVEFLAG2_INTERPOLATED_MOVE | MOVEFLAG2_INTERPOLATED_TURN | MOVEFLAG2_INTERPOLATED_PITCH
+};
+
+#if VERSION_STRING == Cata
+#include "../GameCata/Network/Opcodes.h"
+#elif VERSION_STRING == Mop
+#include "../GameMop/Network/Opcodes.h"
+#endif
+
 
 class ByteBuffer;
 class Unit;
@@ -103,7 +258,7 @@ enum MovementStatusElements
     MSE_COUNT
 };
 
-MovementStatusElements PlayerMoveSequence[] =
+static MovementStatusElements PlayerMoveSequence[] =
 {
     MSEHasFallData,
     MSEGuidBit3,
@@ -175,7 +330,7 @@ MovementStatusElements PlayerMoveSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementFallLandSequence[] =
+static MovementStatusElements MovementFallLandSequence[] =
 {
     MSEPositionX,
     MSEPositionY,
@@ -247,7 +402,7 @@ MovementStatusElements MovementFallLandSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementHeartBeatSequence[] =
+static MovementStatusElements MovementHeartBeatSequence[] =
 {
     MSEPositionZ,
     MSEPositionX,
@@ -319,7 +474,7 @@ MovementStatusElements MovementHeartBeatSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementJumpSequence[] =
+static MovementStatusElements MovementJumpSequence[] =
 {
     MSEPositionY,
     MSEPositionX,
@@ -391,7 +546,7 @@ MovementStatusElements MovementJumpSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementSetFacingSequence[] =
+static MovementStatusElements MovementSetFacingSequence[] =
 {
     MSEPositionX,
     MSEPositionY,
@@ -463,7 +618,7 @@ MovementStatusElements MovementSetFacingSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementSetPitchSequence[] =
+static MovementStatusElements MovementSetPitchSequence[] =
 {
     MSEPositionX,
     MSEPositionZ,
@@ -535,7 +690,7 @@ MovementStatusElements MovementSetPitchSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStartBackwardSequence[] =
+static MovementStatusElements MovementStartBackwardSequence[] =
 {
     MSEPositionX,
     MSEPositionZ,
@@ -607,7 +762,7 @@ MovementStatusElements MovementStartBackwardSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStartForwardSequence[] =
+static MovementStatusElements MovementStartForwardSequence[] =
 {
     MSEPositionY,
     MSEPositionZ,
@@ -679,7 +834,7 @@ MovementStatusElements MovementStartForwardSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStartStrafeLeftSequence[] =
+static MovementStatusElements MovementStartStrafeLeftSequence[] =
 {
     MSEPositionZ,
     MSEPositionX,
@@ -751,7 +906,7 @@ MovementStatusElements MovementStartStrafeLeftSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStartStrafeRightSequence[] =
+static MovementStatusElements MovementStartStrafeRightSequence[] =
 {
     MSEPositionY,
     MSEPositionX,
@@ -823,7 +978,7 @@ MovementStatusElements MovementStartStrafeRightSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStartTurnLeftSequence[] =
+static MovementStatusElements MovementStartTurnLeftSequence[] =
 {
     MSEPositionY,
     MSEPositionX,
@@ -895,7 +1050,7 @@ MovementStatusElements MovementStartTurnLeftSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStartTurnRightSequence[] =
+static MovementStatusElements MovementStartTurnRightSequence[] =
 {
     MSEPositionX,
     MSEPositionZ,
@@ -967,7 +1122,7 @@ MovementStatusElements MovementStartTurnRightSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStopSequence[] =
+static MovementStatusElements MovementStopSequence[] =
 {
     MSEPositionX,
     MSEPositionY,
@@ -1039,7 +1194,7 @@ MovementStatusElements MovementStopSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStopStrafeSequence[] =
+static MovementStatusElements MovementStopStrafeSequence[] =
 {
     MSEPositionY,
     MSEPositionZ,
@@ -1111,7 +1266,7 @@ MovementStatusElements MovementStopStrafeSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStopTurnSequence[] =
+static MovementStatusElements MovementStopTurnSequence[] =
 {
     MSEPositionX,
     MSEPositionZ,
@@ -1183,7 +1338,7 @@ MovementStatusElements MovementStopTurnSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStartAscendSequence[] =
+static MovementStatusElements MovementStartAscendSequence[] =
 {
     MSEPositionX,
     MSEPositionY,
@@ -1255,7 +1410,7 @@ MovementStatusElements MovementStartAscendSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStartDescendSequence[] =
+static MovementStatusElements MovementStartDescendSequence[] =
 {
     MSEPositionY,
     MSEPositionZ,
@@ -1327,7 +1482,7 @@ MovementStatusElements MovementStartDescendSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStartSwimSequence[] =
+static MovementStatusElements MovementStartSwimSequence[] =
 {
     MSEPositionZ,
     MSEPositionX,
@@ -1399,7 +1554,7 @@ MovementStatusElements MovementStartSwimSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStopSwimSequence[] =
+static MovementStatusElements MovementStopSwimSequence[] =
 {
     MSEPositionX,
     MSEPositionY,
@@ -1471,7 +1626,7 @@ MovementStatusElements MovementStopSwimSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStopAscendSequence[] =
+static MovementStatusElements MovementStopAscendSequence[] =
 {
     MSEPositionZ,
     MSEPositionY,
@@ -1543,7 +1698,7 @@ MovementStatusElements MovementStopAscendSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStopPitchSequence[] =
+static MovementStatusElements MovementStopPitchSequence[] =
 {
     MSEPositionX,
     MSEPositionZ,
@@ -1615,7 +1770,7 @@ MovementStatusElements MovementStopPitchSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStartPitchDownSequence[] =
+static MovementStatusElements MovementStartPitchDownSequence[] =
 {
     MSEPositionX,
     MSEPositionZ,
@@ -1687,7 +1842,7 @@ MovementStatusElements MovementStartPitchDownSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementStartPitchUpSequence[] =
+static MovementStatusElements MovementStartPitchUpSequence[] =
 {
     MSEPositionZ,
     MSEPositionY,
@@ -1759,7 +1914,7 @@ MovementStatusElements MovementStartPitchUpSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementChngTransportSequence[] =
+static MovementStatusElements MovementChngTransportSequence[] =
 {
     MSEPositionY,
     MSEPositionX,
@@ -1831,7 +1986,7 @@ MovementStatusElements MovementChngTransportSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementSetRunModeSequence[] =
+static MovementStatusElements MovementSetRunModeSequence[] =
 {
     MSEPositionY,
     MSEPositionX,
@@ -1903,7 +2058,7 @@ MovementStatusElements MovementSetRunModeSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementSetWalkModeSequence[] =
+static MovementStatusElements MovementSetWalkModeSequence[] =
 {
     MSEPositionY,
     MSEPositionX,
@@ -1975,7 +2130,7 @@ MovementStatusElements MovementSetWalkModeSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementFallResetSequence[] =
+static MovementStatusElements MovementFallResetSequence[] =
 {
     MSEPositionZ,
     MSEPositionX,
@@ -2046,7 +2201,7 @@ MovementStatusElements MovementFallResetSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementSetCanFlyAckSequence[] =
+static MovementStatusElements MovementSetCanFlyAckSequence[] =
 {
     MSEPositionY,
     MSEMovementCounter,
@@ -2119,7 +2274,7 @@ MovementStatusElements MovementSetCanFlyAckSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementCastSpellSequence[] =
+static MovementStatusElements MovementCastSpellSequence[] =
 {
     MSEPositionZ,
     MSEPositionY,
@@ -2191,7 +2346,7 @@ MovementStatusElements MovementCastSpellSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementSplineDoneSequence[] =
+static MovementStatusElements MovementSplineDoneSequence[] =
 {
     MSEMovementCounter,
     MSEPositionY,
@@ -2264,7 +2419,7 @@ MovementStatusElements MovementSplineDoneSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveKnockbackAckSequence[] =
+static MovementStatusElements MoveKnockbackAckSequence[] =
 {
     MSEPositionY,
     MSEPositionZ,
@@ -2343,7 +2498,7 @@ MovementStatusElements MoveKnockbackAckSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveUpdateKnockBackSequence[] =
+static MovementStatusElements MoveUpdateKnockBackSequence[] =
 {
     MSEHasUnknownBit,
     MSEGuidBit4,
@@ -2421,7 +2576,7 @@ MovementStatusElements MoveUpdateKnockBackSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveNotActiveMoverSequence[] =
+static MovementStatusElements MoveNotActiveMoverSequence[] =
 {
     MSEPositionZ,
     MSEPositionX,
@@ -2493,7 +2648,7 @@ MovementStatusElements MoveNotActiveMoverSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements DismissControlledVehicleSequence[] =
+static MovementStatusElements DismissControlledVehicleSequence[] =
 {
     MSEPositionY,
     MSEPositionZ,
@@ -2565,7 +2720,7 @@ MovementStatusElements DismissControlledVehicleSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements ChangeSeatsOnControlledVehicleSequence[] =
+static MovementStatusElements ChangeSeatsOnControlledVehicleSequence[] =
 {
     MSEPositionY,
     MSEPositionX,
@@ -2667,7 +2822,7 @@ MovementStatusElements ChangeSeatsOnControlledVehicleSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementUpdateWalkSpeedSequence[] =
+static MovementStatusElements MovementUpdateWalkSpeedSequence[] =
 {
     MSEHasOrientation,
     MSEHasUnknownBit,
@@ -2727,7 +2882,7 @@ MovementStatusElements MovementUpdateWalkSpeedSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementUpdateRunSpeedSequence[] =
+static MovementStatusElements MovementUpdateRunSpeedSequence[] =
 {
     MSEPositionZ,
     MSEPositionX,
@@ -2800,7 +2955,7 @@ MovementStatusElements MovementUpdateRunSpeedSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementUpdateRunBackSpeedSequence[] =
+static MovementStatusElements MovementUpdateRunBackSpeedSequence[] =
 {
     MSEGuidBit1,
     MSEGuidBit2,
@@ -2860,7 +3015,7 @@ MovementStatusElements MovementUpdateRunBackSpeedSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementUpdateSwimSpeedSequence[] =
+static MovementStatusElements MovementUpdateSwimSpeedSequence[] =
 {
     MSEHasMovementFlags,
     MSEGuidBit2,
@@ -2920,7 +3075,7 @@ MovementStatusElements MovementUpdateSwimSpeedSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveUpdateSwimBackSpeedSequence[] =
+static MovementStatusElements MoveUpdateSwimBackSpeedSequence[] =
 {
     MSEGuidBit7,
     MSEGuidBit2,
@@ -3003,7 +3158,7 @@ MovementStatusElements MoveUpdateSwimBackSpeedSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementUpdateFlightSpeedSequence[] =
+static MovementStatusElements MovementUpdateFlightSpeedSequence[] =
 {
     MSEPositionY,
     MSECustomSpeed,
@@ -3063,7 +3218,7 @@ MovementStatusElements MovementUpdateFlightSpeedSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSetWalkSpeedSequence[] =
+static MovementStatusElements MoveSetWalkSpeedSequence[] =
 {
     MSEGuidBit0,
     MSEGuidBit4,
@@ -3086,7 +3241,7 @@ MovementStatusElements MoveSetWalkSpeedSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSetRunSpeedSequence[] =
+static MovementStatusElements MoveSetRunSpeedSequence[] =
 {
     MSEGuidBit6,
     MSEGuidBit1,
@@ -3109,7 +3264,7 @@ MovementStatusElements MoveSetRunSpeedSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSetRunBackSpeedSequence[] =
+static MovementStatusElements MoveSetRunBackSpeedSequence[] =
 {
     MSEGuidBit0,
     MSEGuidBit6,
@@ -3132,7 +3287,7 @@ MovementStatusElements MoveSetRunBackSpeedSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSetSwimSpeedSequence[] =
+static MovementStatusElements MoveSetSwimSpeedSequence[] =
 {
     MSEGuidBit5,
     MSEGuidBit4,
@@ -3155,7 +3310,7 @@ MovementStatusElements MoveSetSwimSpeedSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSetSwimBackSpeedSequence[] =
+static MovementStatusElements MoveSetSwimBackSpeedSequence[] =
 {
     MSEGuidBit4,
     MSEGuidBit2,
@@ -3178,7 +3333,7 @@ MovementStatusElements MoveSetSwimBackSpeedSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSetTurnRateSequence[] =
+static MovementStatusElements MoveSetTurnRateSequence[] =
 {
     MSEGuidBit7,
     MSEGuidBit2,
@@ -3201,7 +3356,7 @@ MovementStatusElements MoveSetTurnRateSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSetFlightSpeedSequence[] =
+static MovementStatusElements MoveSetFlightSpeedSequence[] =
 {
     MSEGuidBit0,
     MSEGuidBit5,
@@ -3224,7 +3379,7 @@ MovementStatusElements MoveSetFlightSpeedSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSetFlightBackSpeedSequence[] =
+static MovementStatusElements MoveSetFlightBackSpeedSequence[] =
 {
     MSEGuidBit1,
     MSEGuidBit2,
@@ -3247,7 +3402,7 @@ MovementStatusElements MoveSetFlightBackSpeedSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSetPitchRateSequence[] =
+static MovementStatusElements MoveSetPitchRateSequence[] =
 {
     MSEGuidBit1,
     MSEGuidBit2,
@@ -3270,7 +3425,7 @@ MovementStatusElements MoveSetPitchRateSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MovementSetCanFlySequence[] =
+static MovementStatusElements MovementSetCanFlySequence[] =
 {
     MSEPositionZ,
     MSEPositionX,
@@ -3342,7 +3497,7 @@ MovementStatusElements MovementSetCanFlySequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSetCanFlySequence[] =
+static MovementStatusElements MoveSetCanFlySequence[] =
 {
     MSEGuidBit1,
     MSEGuidBit6,
@@ -3364,7 +3519,7 @@ MovementStatusElements MoveSetCanFlySequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveUnsetCanFlySequence[] =
+static MovementStatusElements MoveUnsetCanFlySequence[] =
 {
     MSEGuidBit1,
     MSEGuidBit4,
@@ -3386,7 +3541,7 @@ MovementStatusElements MoveUnsetCanFlySequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSetHoverSequence[] =
+static MovementStatusElements MoveSetHoverSequence[] =
 {
     MSEGuidBit1,
     MSEGuidBit4,
@@ -3408,7 +3563,7 @@ MovementStatusElements MoveSetHoverSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveUnsetHoverSequence[] =
+static MovementStatusElements MoveUnsetHoverSequence[] =
 {
     MSEGuidBit4,
     MSEGuidBit6,
@@ -3430,7 +3585,7 @@ MovementStatusElements MoveUnsetHoverSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveWaterWalkSequence[] =
+static MovementStatusElements MoveWaterWalkSequence[] =
 {
     MSEGuidBit4,
     MSEGuidBit7,
@@ -3452,7 +3607,7 @@ MovementStatusElements MoveWaterWalkSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveLandWalkSequence[] =
+static MovementStatusElements MoveLandWalkSequence[] =
 {
     MSEGuidBit5,
     MSEGuidBit1,
@@ -3474,7 +3629,7 @@ MovementStatusElements MoveLandWalkSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveFeatherFallSequence[] =
+static MovementStatusElements MoveFeatherFallSequence[] =
 {
     MSEGuidBit3,
     MSEGuidBit1,
@@ -3496,7 +3651,7 @@ MovementStatusElements MoveFeatherFallSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveNormalFallSequence[] =
+static MovementStatusElements MoveNormalFallSequence[] =
 {
     MSEMovementCounter,
     MSEGuidBit3,
@@ -3518,7 +3673,7 @@ MovementStatusElements MoveNormalFallSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveForceRootSequence[] =
+static MovementStatusElements MoveForceRootSequence[] =
 {
     MSEGuidBit2,
     MSEGuidBit7,
@@ -3540,7 +3695,7 @@ MovementStatusElements MoveForceRootSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveForceUnrootSequence[] =
+static MovementStatusElements MoveForceUnrootSequence[] =
 {
     MSEGuidBit0,
     MSEGuidBit1,
@@ -3562,7 +3717,7 @@ MovementStatusElements MoveForceUnrootSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveGravityDisableSequence[] =
+static MovementStatusElements MoveGravityDisableSequence[] =
 {
     MSEGuidBit1,
     MSEGuidBit4,
@@ -3584,7 +3739,7 @@ MovementStatusElements MoveGravityDisableSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveGravityEnableSequence[] =
+static MovementStatusElements MoveGravityEnableSequence[] =
 {
     MSEGuidBit0,
     MSEGuidBit1,
@@ -3606,7 +3761,7 @@ MovementStatusElements MoveGravityEnableSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineWaterWalkSequence[] =
+static MovementStatusElements MoveSplineWaterWalkSequence[] =
 {
     MSEGuidBit6,
     MSEGuidBit1,
@@ -3627,7 +3782,7 @@ MovementStatusElements MoveSplineWaterWalkSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineLandWalkSequence[] =
+static MovementStatusElements MoveSplineLandWalkSequence[] =
 {
     MSEGuidBit5,
     MSEGuidBit0,
@@ -3648,7 +3803,7 @@ MovementStatusElements MoveSplineLandWalkSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineFeatherFallSequence[] =
+static MovementStatusElements MoveSplineFeatherFallSequence[] =
 {
     MSEGuidBit3,
     MSEGuidBit2,
@@ -3669,7 +3824,7 @@ MovementStatusElements MoveSplineFeatherFallSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineNormalFallSequence[] =
+static MovementStatusElements MoveSplineNormalFallSequence[] =
 {
     MSEGuidBit3,
     MSEGuidBit5,
@@ -3690,7 +3845,7 @@ MovementStatusElements MoveSplineNormalFallSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineSetHoverSequence[] =
+static MovementStatusElements MoveSplineSetHoverSequence[] =
 {
     MSEGuidBit3,
     MSEGuidBit7,
@@ -3711,7 +3866,7 @@ MovementStatusElements MoveSplineSetHoverSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineUnsetHoverSequence[] =
+static MovementStatusElements MoveSplineUnsetHoverSequence[] =
 {
     MSEGuidBit6,
     MSEGuidBit7,
@@ -3732,7 +3887,7 @@ MovementStatusElements MoveSplineUnsetHoverSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineSetFlyingSequence[] =
+static MovementStatusElements MoveSplineSetFlyingSequence[] =
 {
     MSEGuidBit0,
     MSEGuidBit4,
@@ -3753,7 +3908,7 @@ MovementStatusElements MoveSplineSetFlyingSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineUnsetFlyingSequence[] =
+static MovementStatusElements MoveSplineUnsetFlyingSequence[] =
 {
     MSEGuidBit5,
     MSEGuidBit0,
@@ -3774,7 +3929,7 @@ MovementStatusElements MoveSplineUnsetFlyingSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineRootSequence[] =
+static MovementStatusElements MoveSplineRootSequence[] =
 {
     MSEGuidBit5,
     MSEGuidBit4,
@@ -3795,7 +3950,7 @@ MovementStatusElements MoveSplineRootSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineUnrootSequence[] =
+static MovementStatusElements MoveSplineUnrootSequence[] =
 {
     MSEGuidBit0,
     MSEGuidBit1,
@@ -3816,7 +3971,7 @@ MovementStatusElements MoveSplineUnrootSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineStartSwimSequence[] =
+static MovementStatusElements MoveSplineStartSwimSequence[] =
 {
     MSEGuidBit1,
     MSEGuidBit6,
@@ -3837,7 +3992,7 @@ MovementStatusElements MoveSplineStartSwimSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineStopSwimSequence[] =
+static MovementStatusElements MoveSplineStopSwimSequence[] =
 {
     MSEGuidBit4,
     MSEGuidBit1,
@@ -3858,7 +4013,7 @@ MovementStatusElements MoveSplineStopSwimSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineDisableGravitySequence[] =
+static MovementStatusElements MoveSplineDisableGravitySequence[] =
 {
     MSEGuidBit7,
     MSEGuidBit3,
@@ -3879,7 +4034,7 @@ MovementStatusElements MoveSplineDisableGravitySequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineEnableGravitySequence[] =
+static MovementStatusElements MoveSplineEnableGravitySequence[] =
 {
     MSEGuidBit5,
     MSEGuidBit4,
@@ -3900,7 +4055,7 @@ MovementStatusElements MoveSplineEnableGravitySequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineSetWalkModeSequence[] =
+static MovementStatusElements MoveSplineSetWalkModeSequence[] =
 {
     MSEGuidBit7,
     MSEGuidBit6,
@@ -3921,7 +4076,7 @@ MovementStatusElements MoveSplineSetWalkModeSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveSplineSetRunModeSequence[] =
+static MovementStatusElements MoveSplineSetRunModeSequence[] =
 {
     MSEGuidBit5,
     MSEGuidBit6,
@@ -3942,7 +4097,7 @@ MovementStatusElements MoveSplineSetRunModeSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements MoveUpdateTeleport[] =
+static MovementStatusElements MoveUpdateTeleport[] =
 {
     MSEPositionZ,
     MSEPositionY,
@@ -4024,7 +4179,7 @@ MovementStatusElements MoveUpdateTeleport[] =
     MSEEnd,
 };
 
-MovementStatusElements* GetMovementStatusElementsSequence(uint16_t opcode)
+static MovementStatusElements* GetMovementStatusElementsSequence(uint16_t opcode)
 {
     switch (opcode)
     {
@@ -4197,3 +4352,5 @@ MovementStatusElements* GetMovementStatusElementsSequence(uint16_t opcode)
             return nullptr;
     }
 }
+
+#endif

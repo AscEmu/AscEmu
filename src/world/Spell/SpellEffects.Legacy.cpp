@@ -68,6 +68,7 @@
 #include "Server/Packets/SmsgSpellDispellLog.h"
 #include "Server/Packets/SmsgNewTaxiPath.h"
 #include "Server/Packets/SmsgPlayerBound.h"
+#include "Server/Packets/MsgCorpseQuery.h"
 
 using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
 using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;

@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/Flags.h"
 #include "Units/UnitDefines.hpp"
 #include "WorldPacket.h"
+#include "MovementDefines.h"
+#include "LocationVector.h"
 
 #if VERSION_STRING == Classic
 struct MovementInfo
@@ -179,14 +181,8 @@ struct MovementInfo
 };
 #endif
 
-#if VERSION_STRING >= Cata
 
-#if VERSION_STRING == Cata
-#include "GameCata/Movement/MovementDefines.h"
-#elif VERSION_STRING == Mop
-#include "GameMop/Movement/MovementDefines.h"
-#endif
-#include "LocationVector.h"
+#if VERSION_STRING >= Cata
 
 class SERVER_DECL MovementInfo
 {

@@ -110,6 +110,7 @@
 #include "Server/Packets/SmsgDuelOutOfBounds.h"
 #include "Server/Packets/SmsgSetPhaseShift.h"
 #include "Server/Packets/SmsgContactList.h"
+#include "Server/Packets/SmsgCharacterLoginFailed.h"
 
 using namespace AscEmu::Packets;
 
