@@ -36,6 +36,7 @@
 #include "Util.hpp"
 #include "Database/DatabaseUpdater.h"
 #include "Packets/SmsgServerMessage.h"
+#include "OpcodeTable.hpp"
 
 std::string LogFileName;
 bool bLogChat;
@@ -229,7 +230,24 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
         return false;
     }
 
-    // Initialize Opcode Table
+    // Test Opcode Table
+    sOpcodeTables.initialize();
+
+    {
+        uint32_t internalId = sOpcodeTables.getInternalIdForHex(MSG_MOVE_START_FORWARD);
+        int currentVersionId = sOpcodeTables.getVersionIdForAEVersion();
+
+        LogNotice("Get name for MSG_MOVE_START_FORWARD = (0x%.4X) %s", MSG_MOVE_START_FORWARD, sOpcodeTables.getNameForOpcode(MSG_MOVE_START_FORWARD).c_str(), sOpcodeTables.getNameForAEVersion().c_str());
+        for (int versionId = 0; versionId < MAX_VERSION_INDEX; ++versionId)
+        {
+            //skip current version, show only variants
+            if (versionId == currentVersionId)
+                continue;
+
+            LogNotice("--- Variant (0x%.4X) [%s]", sOpcodeTables.getHexValueForVersionId(versionId, internalId), sOpcodeTables.getNameForVersionId(versionId).c_str());
+        }
+    }
+
     WorldSession::InitPacketHandlerTable();
 
     if (!sWorld.setInitialWorldSettings())

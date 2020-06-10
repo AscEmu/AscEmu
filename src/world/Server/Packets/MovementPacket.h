@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "ManagedPacket.h"
+#include "Objects/MovementInfo.h"
 
 #if VERSION_STRING < Cata
 #if VERSION_STRING != Mop

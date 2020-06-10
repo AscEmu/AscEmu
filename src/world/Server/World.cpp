@@ -32,6 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Packets/SmsgPlaySound.h"
 #include "Packets/SmsgAreaTriggerMessage.h"
 #include "Packets/SmsgZoneUnderAttack.h"
+#include "OpcodeTable.hpp"
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"
@@ -124,6 +125,9 @@ void World::finalize()
 
     LogNotice("MySQLDataStore : ~MySQLDataStore()");
     sMySQLStore.finalize();
+
+    LogNotice("OpcodeTables : finalize()");
+    sOpcodeTables.finalize();
 
     delete mEventableObjectHolder;
 

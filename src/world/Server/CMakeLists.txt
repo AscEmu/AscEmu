@@ -18,6 +18,9 @@ set(SRC_SERVER_FILES
    ${PATH_PREFIX}/MainServerDefines.h
    ${PATH_PREFIX}/Master.cpp
    ${PATH_PREFIX}/Master.h
+   ${PATH_PREFIX}/Opcodes.hpp
+   ${PATH_PREFIX}/OpcodeTable.cpp
+   ${PATH_PREFIX}/OpcodeTable.hpp
    ${PATH_PREFIX}/ServerState.cpp
    ${PATH_PREFIX}/ServerState.h
    ${PATH_PREFIX}/World.cpp
