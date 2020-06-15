@@ -3,8 +3,6 @@
 set(PATH_PREFIX GameClassic/Network)
 
 set(SRC_GAMECLASSIC_NETWORK_FILES
-    ${PATH_PREFIX}/Opcodes.cpp
-    ${PATH_PREFIX}/Opcodes.h
     ${PATH_PREFIX}/WorldPacketHandlers.cpp
 )
 

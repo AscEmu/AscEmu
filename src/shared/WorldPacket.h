@@ -30,7 +30,7 @@ class SERVER_DECL WorldPacket : public ByteBuffer
 {
 #if VERSION_STRING != Mop
     public:
-        __inline WorldPacket() : ByteBuffer(0), m_opcode(MSG_NULL_ACTION) { }
+        __inline WorldPacket() : ByteBuffer(0), m_opcode(0) { }
         __inline WorldPacket(uint16 opcode, size_t res) : ByteBuffer(res), m_opcode(opcode) {}
         __inline WorldPacket(size_t res) : ByteBuffer(res), m_opcode(0) { }
         __inline WorldPacket(const WorldPacket & packet) : ByteBuffer(packet), m_opcode(packet.m_opcode) {}

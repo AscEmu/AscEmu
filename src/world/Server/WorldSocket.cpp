@@ -32,6 +32,7 @@
 #include "Packets/SmsgPong.h"
 #include "Packets/SmsgAuthChallenge.h"
 #include "Packets/SmsgAuthResponse.h"
+#include "OpcodeTable.hpp"
 //#include "World.Legacy.h"
 
 using namespace AscEmu::Packets;
@@ -286,16 +287,15 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* 
     }
 
     // Packet logger :)
-    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), opcode, static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
+    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode), static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
 
 #if VERSION_STRING >= Cata
-    ServerPktHeader Header(uint32(len + 2), static_cast<uint16_t>(opcode));
+    ServerPktHeader Header(uint32(len + 2), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode));
 #else
     // Encrypt the packet
     // First, create the header.
     ServerPktHeader Header;
-
-    Header.cmd = opcode;
+    Header.cmd = sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode);
     Header.size = ntohs((uint16)len + 2);
 #endif
 
@@ -340,17 +340,17 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     }
 
     // Packet logger :)
-    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), opcode, static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
+    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode), static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
 
     if (_crypt.isInitialized())
     {
-        AuthPktHeader authPktHeader(static_cast<uint32_t>(len), opcode);
+        AuthPktHeader authPktHeader(static_cast<uint32_t>(len), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode));
         _crypt.encryptWotlkSend(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
         rv = BurstSend(reinterpret_cast<const uint8_t*>(&authPktHeader.raw), 4);
     }
     else
     {
-        ServerPktHeader serverPktHeader(static_cast<uint32_t>(len + 2), opcode);
+        ServerPktHeader serverPktHeader(static_cast<uint32_t>(len + 2), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode));
         rv = BurstSend(reinterpret_cast<const uint8_t*>(&serverPktHeader.header), serverPktHeader.headerLength);
     }
 
@@ -889,7 +889,7 @@ void WorldSocket::OnRead()
 #endif
 
             mRemaining = mSize = ntohs(Header.size) - 4;
-            mOpcode = Header.cmd;
+            mOpcode = sOpcodeTables.getInternalIdForHex(Header.cmd);
         }
 #else
         if (mRemaining == 0)
@@ -906,7 +906,7 @@ void WorldSocket::OnRead()
                 _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
 
                 mRemaining = mSize = authPktHeader.getSize();
-                mOpcode = authPktHeader.getOpcode();
+                mOpcode = sOpcodeTables.getInternalIdForHex(authPktHeader.getOpcode());
             }
             else
             {
@@ -920,7 +920,7 @@ void WorldSocket::OnRead()
                 _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&clientPktHeader), sizeof(ClientPktHeader));
 
                 mRemaining = mSize = clientPktHeader.size -= 4;
-                mOpcode = clientPktHeader.cmd;
+                mOpcode = sOpcodeTables.getInternalIdForHex(clientPktHeader.cmd);
             }
         }
 #endif
@@ -934,7 +934,7 @@ void WorldSocket::OnRead()
             }
         }
 
-        WorldPacket* packet = new WorldPacket(static_cast<uint16>(mOpcode), mSize);
+        WorldPacket* packet = new WorldPacket(sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), mOpcode), mSize);
         packet->resize(mSize);
 
         if (mRemaining > 0)
@@ -944,8 +944,8 @@ void WorldSocket::OnRead()
             readBuffer.Read(static_cast<uint8*>(packet->contents()), mRemaining);
         }
 
-        sWorldPacketLog.logPacket(mSize, static_cast<uint16>(mOpcode), mSize ? packet->contents() : nullptr, 0, (mSession ? mSession->GetAccountId() : 0));
-        mRemaining = mSize = mOpcode = 0;
+        sWorldPacketLog.logPacket(mSize, sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), mOpcode), mSize ? packet->contents() : nullptr, 0, (mSession ? mSession->GetAccountId() : 0));
+        mRemaining = mSize = /*mOpcode =*/ 0;
 
         // Check for packets that we handle
         switch (packet->GetOpcode())
@@ -1004,7 +1004,7 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
             default:
             {
                 LogDebugFlag(LF_OPCODE, "[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
-                    getOpcodeName(opcode).c_str(), opcode, len);
+                    sOpcodeTables.getNameForInternalId(opcode).c_str(), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode), len);
             } break;
         }
 }
@@ -1016,8 +1016,10 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
         unsigned int countpos = 0;
         uint16_t lenght = static_cast<uint16_t>(len);
 
-        fprintf(mPacketLogFile, "{%s} Packet: (0x%04X) %s PacketSize = %u stamp = %u accountid = %u\n", (direction ? "SERVER" : "CLIENT"), opcode,
-            getOpcodeName(opcode).c_str(), lenght, Util::getMSTime(), accountid);
+        fprintf(mPacketLogFile, "{%s} Packet: (0x%04X) %s PacketSize = %u stamp = %u accountid = %u\n", (direction ? "SERVER" : "CLIENT"), 
+            sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode),
+            sOpcodeTables.getNameForInternalId(opcode).c_str(), lenght, Util::getMSTime(), accountid);
+
         fprintf(mPacketLogFile, "|------------------------------------------------|----------------|\n");
         fprintf(mPacketLogFile, "|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|\n");
         fprintf(mPacketLogFile, "|------------------------------------------------|----------------|\n");

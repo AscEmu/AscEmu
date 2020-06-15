@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgMoveTeleportAck.h"
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Units/Creatures/Pet.h"
+#include "Server/OpcodeTable.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -1393,7 +1394,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)
 {
     LogDebugFlag(LF_OPCODE, "Opcode %s (%u) received. This opcode is not known/implemented right now!",
-        getOpcodeName(recvPacket.GetOpcode()).c_str(), recvPacket.GetOpcode());
+        sOpcodeTables.getNameForInternalId(recvPacket.GetOpcode()).c_str(), recvPacket.GetOpcode());
 
     recvPacket.rfinish();
 }

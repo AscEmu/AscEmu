@@ -122,7 +122,11 @@ class SERVER_DECL OpcodeTables
 
         std::string getNameForInternalId(uint32_t id)
         {
-            return getNameForInternalId(id);
+            auto multiversionTable = multiversionOpcodeStore.find(id);
+            if (multiversionTable != multiversionOpcodeStore.end())
+                return multiversionTable->second.name + " [" + getNameForAEVersion() + "]";
+
+            return "Unknown internal id!";
         }
 
         uint16_t getHexValueForVersionId(int versionId, uint32_t internalId)

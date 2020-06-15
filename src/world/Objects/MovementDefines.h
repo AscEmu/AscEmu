@@ -154,12 +154,6 @@ enum MovementFlags2
         MOVEFLAG2_INTERPOLATED_MOVE | MOVEFLAG2_INTERPOLATED_TURN | MOVEFLAG2_INTERPOLATED_PITCH
 };
 
-#if VERSION_STRING == Cata
-#include "../GameCata/Network/Opcodes.h"
-#elif VERSION_STRING == Mop
-#include "../GameMop/Network/Opcodes.h"
-#endif
-
 
 class ByteBuffer;
 class Unit;

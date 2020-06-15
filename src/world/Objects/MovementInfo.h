@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldPacket.h"
 #include "MovementDefines.h"
 #include "LocationVector.h"
+#include "CommonDefines.hpp"
 
 
 struct MovementInfo

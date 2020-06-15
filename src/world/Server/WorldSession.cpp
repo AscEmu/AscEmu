@@ -36,6 +36,7 @@
 #include "Auth/MD5.h"
 #include "Packets/SmsgNotification.h"
 #include "Packets/SmsgLogoutComplete.h"
+#include "OpcodeTable.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -158,23 +159,25 @@ uint8 WorldSession::Update(uint32 InstanceID)
     {
         ARCEMU_ASSERT(packet != NULL);
 
-        if (packet->GetOpcode() >= NUM_MSG_TYPES)
+        if (sOpcodeTables.getInternalIdForHex(packet->GetOpcode()) >= NUM_OPCODES)
         {
             LogDebugFlag(LF_OPCODE, "[Session] Received out of range packet with opcode 0x%.4X", packet->GetOpcode());
         }
         else
         {
-            OpcodeHandler* handler = &WorldPacketHandlers[packet->GetOpcode()];
+            OpcodeHandler* handler = &WorldPacketHandlers[sOpcodeTables.getInternalIdForHex(packet->GetOpcode())];
             if (handler->status == STATUS_LOGGEDIN && !_player && handler->handler != 0)
             {
-                LogDebugFlag(LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)", getOpcodeName(packet->GetOpcode()).c_str(), packet->GetOpcode());
+                LogDebugFlag(LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)", 
+                    sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
             }
             else
             {
                 // Valid Packet :>
                 if (handler->handler == 0)
                 {
-                    LogDebugFlag(LF_OPCODE, "[Session] Received unhandled packet with opcode %s (0x%.4X)", getOpcodeName(packet->GetOpcode()).c_str(), packet->GetOpcode());
+                    LogDebugFlag(LF_OPCODE, "[Session] Received unhandled packet with opcode %s (0x%.4X)",
+                        sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
                 }
                 else
                 {
@@ -700,8 +703,8 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
 {
     if (!recv_data.isEmpty())
     {
-        LogDebugFlag(LF_OPCODE, "Opcode %s (0x%.4X) received. Apply nothingToHandle handler but size is %lu!",
-            getOpcodeName(recv_data.GetOpcode()).c_str(), recv_data.GetOpcode(), recv_data.size());
+        LogDebugFlag(LF_OPCODE, "Opcode %s [%s] (0x%.4X) received. Apply nothingToHandle handler but size is %lu!",
+            sOpcodeTables.getNameForOpcode(recv_data.GetOpcode()).c_str(), sOpcodeTables.getNameForAEVersion().c_str(), recv_data.GetOpcode(), recv_data.size());
     }
 }
 
