@@ -1,6 +1,6 @@
-sudo: false
+os: linux
 dist: bionic
-language: c++
+language: cpp
 
 compiler:
   - gcc
@@ -8,7 +8,6 @@ compiler:
   
 git:
   depth: 1
-  submodules: false
 
 env:
   global:
@@ -21,7 +20,7 @@ before_install:
   - if [ "$COMPILER" = "g++-9" ]; then export CXX="g++-9" CC="gcc-9"; fi
   - if [ "$COMPILER" = "clang++-9" ]; then export CXX="clang++-9" CC="clang-9"; fi
     
-matrix:
+jobs:
   #allow_failures:
   #  - compiler: clang
   include:
