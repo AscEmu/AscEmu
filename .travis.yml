@@ -18,8 +18,8 @@ env:
     - TRAVIS_EMPTY_JOB_WORKAROUND=true    
 
 before_install:
-  - if [ "$COMPILER" = "g++-8" ]; then export CXX="g++-8" CC="gcc-8"; fi
-  - if [ "$COMPILER" = "clang++-8" ]; then export CXX="clang++-8" CC="clang-8"; fi
+  - if [ "$COMPILER" = "g++-9" ]; then export CXX="g++-9" CC="gcc-9"; fi
+  - if [ "$COMPILER" = "clang++-9" ]; then export CXX="clang++-9" CC="clang-9"; fi
     
 matrix:
   #allow_failures:
@@ -39,9 +39,9 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - gcc-8
-            - g++-8
-      env: ASC_VERSION=Classic COMPILER=g++-8
+            - gcc-9
+            - g++-9
+      env: ASC_VERSION=Classic COMPILER=g++-9
     - os: linux
       compiler: clang
       addons:
@@ -56,9 +56,9 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - clang-8
-            - g++-8
-      env: ASC_VERSION=Classic COMPILER=clang++-8
+            - clang-9
+            - g++-9
+      env: ASC_VERSION=Classic COMPILER=clang++-9
     # tbc
     - os: linux
       compiler: gcc
@@ -73,9 +73,9 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - gcc-8
-            - g++-8
-      env: ASC_VERSION=TBC COMPILER=g++-8
+            - gcc-9
+            - g++-9
+      env: ASC_VERSION=TBC COMPILER=g++-9
     - os: linux
       compiler: clang
       addons:
@@ -90,9 +90,9 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - clang-8
-            - g++-8
-      env: ASC_VERSION=TBC COMPILER=clang++-8
+            - clang-9
+            - g++-9
+      env: ASC_VERSION=TBC COMPILER=clang++-9
     # wotlk
     - os: linux
       compiler: gcc
@@ -107,9 +107,9 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - gcc-8
-            - g++-8
-      env: ASC_VERSION=WotLK COMPILER=g++-8
+            - gcc-9
+            - g++-9
+      env: ASC_VERSION=WotLK COMPILER=g++-9
     - os: linux
       compiler: clang
       addons:
@@ -124,9 +124,9 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - clang-8
-            - g++-8
-      env: ASC_VERSION=WotLK COMPILER=clang++-8
+            - clang-9
+            - g++-9
+      env: ASC_VERSION=WotLK COMPILER=clang++-9
     # Cata
     - os: linux
       compiler: gcc
@@ -141,9 +141,9 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - gcc-8
-            - g++-8
-      env: ASC_VERSION=Cata COMPILER=g++-8
+            - gcc-9
+            - g++-9
+      env: ASC_VERSION=Cata COMPILER=g++-9
     - os: linux
       compiler: clang
       addons:
@@ -158,9 +158,9 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - clang-8
-            - g++-8
-      env: ASC_VERSION=Cata COMPILER=clang++-8
+            - clang-9
+            - g++-9
+      env: ASC_VERSION=Cata COMPILER=clang++-9
     # MoP
     - os: linux
       compiler: gcc
@@ -175,9 +175,9 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - gcc-8
-            - g++-8
-      env: ASC_VERSION=Mop COMPILER=g++-8
+            - gcc-9
+            - g++-9
+      env: ASC_VERSION=Mop COMPILER=g++-9
     - os: linux
       compiler: clang
       addons:
@@ -192,16 +192,16 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - clang-8
-            - g++-8
-      env: ASC_VERSION=Mop COMPILER=clang++-8
+            - clang-9
+            - g++-9
+      env: ASC_VERSION=Mop COMPILER=clang++-9
   exclude:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
 
 install:
   - mkdir ascemu_build
   - cd ascemu_build
-  - cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=${ASC_VERSION}
+  - cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DUSE_PCH=1 -DASCEMU_VERSION=${ASC_VERSION}
 
 before_script:
   - ${CXX} --version
