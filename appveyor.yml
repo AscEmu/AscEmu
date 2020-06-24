@@ -6,6 +6,12 @@ branches:
 
 environment:
   matrix:
+  - ASC_VERSION: Classic
+    VS_VER: Visual Studio 16 2019
+    ARCH: Win32
+  - ASC_VERSION: Classic
+    VS_VER: Visual Studio 16 2019
+    ARCH: x64
   - ASC_VERSION: TBC
     VS_VER: Visual Studio 16 2019
     ARCH: Win32
@@ -22,6 +28,12 @@ environment:
     VS_VER: Visual Studio 16 2019
     ARCH: Win32
   - ASC_VERSION: Cata
+    VS_VER: Visual Studio 16 2019
+    ARCH: x64
+  - ASC_VERSION: Mop
+    VS_VER: Visual Studio 16 2019
+    ARCH: Win32
+  - ASC_VERSION: Mop
     VS_VER: Visual Studio 16 2019
     ARCH: x64
 
