@@ -21,8 +21,7 @@
 #define LOAD_LIB_H
 
 #include "StormLib.h"
-#include <map>
-#include <string>
+#include <cstdint>
 
 #ifdef _WIN32
 typedef __int64            int64;
@@ -74,26 +73,13 @@ struct file_MVER
     uint32 ver;
 };
 
-class FileChunk
+
+class FileLoader
 {
-public:
-    ~FileChunk();
-
-    uint8* data;
-    uint32 size;
-
-    template<class T>
-    T* As() { return (T*)data; }
-    void parseSubChunks();
-    std::multimap<std::string, FileChunk*> subchunks;
-    FileChunk* GetSubChunk(std::string const& name);
-};
-
-class ChunkedFile{
-public:
     uint8  *data;
     uint32  data_size;
-
+public:
+    virtual bool prepareLoadedData();
     uint8 *GetData() {
         return data;
     }
@@ -101,15 +87,11 @@ public:
         return data_size;
     }
 
-    ChunkedFile();
-    virtual ~ChunkedFile();
-    bool prepareLoadedData();
+    file_MVER *version;
+    FileLoader();
+    ~FileLoader();
     bool loadFile(HANDLE mpq, char *filename, bool log = true);
-    void free();
-
-    void parseChunks();
-    std::multimap<std::string, FileChunk*> chunks;
-    FileChunk* GetChunk(std::string const& name);
+    virtual void free();
 };
 
 #pragma pack(pop)
