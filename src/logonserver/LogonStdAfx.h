@@ -41,7 +41,7 @@
 #include "../shared/Auth/Sha1.h"
 #include "../shared/Auth/WowCrypt.h"
 
-#include "../world/Server/Packets/Opcode.h"
+#include "../world/Server/Opcodes.hpp"
 #include "LogonConf.h"
 #include "Server/AccountMgr.h"
 #include "Server/IpBanMgr.h"

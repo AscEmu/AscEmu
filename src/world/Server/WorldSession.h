@@ -22,7 +22,7 @@
 #define WORLDSESSION_H
 
 #include <Threading/Mutex.h>
-#include "Server/Packets/Opcode.h"
+#include "Server/Opcodes.hpp"
 #include "Management/Quest.h"
 #include "FastQueue.h"
 #include "Units/Unit.h"

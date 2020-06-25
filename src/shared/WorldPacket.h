@@ -24,7 +24,7 @@
 #include "CommonTypes.hpp"
 #include "ByteBuffer.h"
 #include "StackBuffer.h"
-#include "../world/Server/Packets/Opcode.h"
+#include "../world/Server/Opcodes.hpp"
 
 class SERVER_DECL WorldPacket : public ByteBuffer
 {

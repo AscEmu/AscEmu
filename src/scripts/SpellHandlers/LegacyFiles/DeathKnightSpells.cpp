@@ -21,7 +21,7 @@
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
-#include "Server/Packets/Opcode.h"
+#include "Server/Opcodes.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/DispelType.h>

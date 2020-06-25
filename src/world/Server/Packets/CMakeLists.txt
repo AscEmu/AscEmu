@@ -262,7 +262,6 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgSetRaidDifficulty.h
    ${PATH_PREFIX}/MsgTabardvendorActivate.h
    ${PATH_PREFIX}/MsgTalentWipeConfirm.h
-   ${PATH_PREFIX}/Opcode.h
    ${PATH_PREFIX}/SmsgAccountDataTimes.h
    ${PATH_PREFIX}/SmsgAchievementDeleted.h
    ${PATH_PREFIX}/SmsgActivatetaxireply.h

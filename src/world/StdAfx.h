@@ -375,7 +375,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgSetDungeonDifficulty.h"
 #include "Server/Packets/MsgSetRaidDifficulty.h"
 #include "Server/Packets/MsgTabardvendorActivate.h"
-#include "Server/Packets/Opcode.h"
+#include "Server/Opcodes.hpp"
 #include "Server/Packets/SmsgAreaSpiritHealerTime.h"
 #include "Server/Packets/SmsgAreaTriggerMessage.h"
 #include "Server/Packets/SmsgArenaError.h"

@@ -27,7 +27,7 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Item.h"
 #include "Management/Container.h"
-#include "Server/Packets/Opcode.h"
+#include "Server/Opcodes.hpp"
 #include "Objects/DynamicObject.h"
 #include "Server/CharacterErrors.h"
 #include "VMapFactory.h"

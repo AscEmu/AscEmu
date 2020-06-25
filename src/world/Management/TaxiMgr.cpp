@@ -21,7 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/TaxiMgr.h"
-#include "Server/Packets/Opcode.h"
+#include "Server/Opcodes.hpp"
 #include "Units/Players/Player.h"
 
 void TaxiPath::ComputeLen()
