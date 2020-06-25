@@ -13,7 +13,7 @@ env:
   global:
     - secure: "Zk3bAxnp4OHPMMZYOSoM2chuMZXomp7BFcT54/Ag6C8RCqtpqQ+E6yHRp861xdWSVo9uZ/uGmD1pwPiIUK8Vs80+OwhFVvtor2MGXyQKX1oFYBg0mo5Z3Xzy+OPa3e0YBbe6SSqdUzDE1hIa7OrU8GWciIMobWQS7XIBbWg3TFU="
   # Temp solution https://github.com/travis-ci/travis-ci/issues/4681
-  matrix:
+  jobs:
     - TRAVIS_EMPTY_JOB_WORKAROUND=true    
 
 before_install:
