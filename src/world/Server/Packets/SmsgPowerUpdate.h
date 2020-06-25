@@ -39,31 +39,29 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
 #if VERSION_STRING == Mop
-            ObjectGuid powerGuid = guid;
-
-            packet.writeBit(powerGuid[4]);
-            packet.writeBit(powerGuid[6]);
-            packet.writeBit(powerGuid[7]);
-            packet.writeBit(powerGuid[5]);
-            packet.writeBit(powerGuid[2]);
-            packet.writeBit(powerGuid[3]);
-            packet.writeBit(powerGuid[0]);
-            packet.writeBit(powerGuid[1]);
+            packet.writeBit(guid[4]);
+            packet.writeBit(guid[6]);
+            packet.writeBit(guid[7]);
+            packet.writeBit(guid[5]);
+            packet.writeBit(guid[2]);
+            packet.writeBit(guid[3]);
+            packet.writeBit(guid[0]);
+            packet.writeBit(guid[1]);
 
             packet.writeBits(1, 21);
 
-            packet.WriteByteSeq(powerGuid[7]);
-            packet.WriteByteSeq(powerGuid[0]);
-            packet.WriteByteSeq(powerGuid[5]);
-            packet.WriteByteSeq(powerGuid[3]);
-            packet.WriteByteSeq(powerGuid[1]);
-            packet.WriteByteSeq(powerGuid[2]);
-            packet.WriteByteSeq(powerGuid[4]);
+            packet.WriteByteSeq(guid[7]);
+            packet.WriteByteSeq(guid[0]);
+            packet.WriteByteSeq(guid[5]);
+            packet.WriteByteSeq(guid[3]);
+            packet.WriteByteSeq(guid[1]);
+            packet.WriteByteSeq(guid[2]);
+            packet.WriteByteSeq(guid[4]);
 
             packet << uint8_t(powerType);
             packet << uint32_t(power);
 
-            packet.WriteByteSeq(powerGuid[6]);
+            packet.WriteByteSeq(guid[6]);
 #elif VERSION_STRING != Mop
             packet << guid;
 
