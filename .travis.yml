@@ -209,7 +209,7 @@ before_script:
 
 script:
   - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then 
-    make CXX=$COMPILER -j $(ncpu);
+    make CXX=$COMPILER -j $(ncpus);
     fi
 
 #after_script:
