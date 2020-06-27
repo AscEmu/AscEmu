@@ -83,6 +83,8 @@ enum MovementFlags2
     MOVEFLAG2_INTERPOLATED_PITCH        = 0x1000
 };
 #else
+
+#include "Server/Opcodes.hpp"
 enum MovementFlags
 {
     MOVEFLAG_NONE                   = 0x00000000,

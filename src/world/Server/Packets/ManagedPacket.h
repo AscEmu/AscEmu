@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <memory>
 #include "WorldPacket.h"
+#include "Server/Opcodes.hpp"
 
 namespace AscEmu::Packets
 {
