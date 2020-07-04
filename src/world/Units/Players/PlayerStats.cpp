@@ -87,8 +87,8 @@ void Player::updateManaRegeneration()
 
     const auto intellect = getStat(STAT_INTELLECT);
 
-    // From wowwiki: MP5 = 5 * (0.001 + sqrt(Int) * Spirit * Base_Regen) * 0.60 rounded up
-    float_t regenerateValue = 0.001f + sqrt(static_cast<float_t>(intellect)) * spirit * baseRegen * PctPowerRegenModifier[POWER_TYPE_MANA];
+    // From wowwiki: MP5 = 5 * (0.001 + std::sqrt(Int) * Spirit * Base_Regen) * 0.60 rounded up
+    float_t regenerateValue = 0.001f + std::sqrt(static_cast<float_t>(intellect)) * spirit * baseRegen * PctPowerRegenModifier[POWER_TYPE_MANA];
 
     // This is per 5 seconds
     float_t mp5 = m_ModInterrMRegen / 5.0f;
@@ -126,8 +126,8 @@ void Player::updateManaRegeneration()
 
     const auto intellect = getStat(STAT_INTELLECT);
 
-    // From wowwiki: MP5 = 5 * (0.001 + sqrt(Int) * Spirit * Base_Regen) * 0.60 rounded up
-    float_t regenerateValue = 0.001f + sqrt(static_cast<float_t>(intellect)) * spirit * baseRegen * PctPowerRegenModifier[POWER_TYPE_MANA];
+    // From wowwiki: MP5 = 5 * (0.001 + std::sqrt(Int) * Spirit * Base_Regen) * 0.60 rounded up
+    float_t regenerateValue = 0.001f + std::sqrt(static_cast<float_t>(intellect)) * spirit * baseRegen * PctPowerRegenModifier[POWER_TYPE_MANA];
 
     // This is per 5 seconds
     float_t mp5 = m_ModInterrMRegen / 5.0f;
@@ -165,8 +165,8 @@ void Player::updateManaRegeneration()
 
     const auto intellect = getStat(STAT_INTELLECT);
 
-    // From wowwiki: MP5 = 5 * (0.001 + sqrt(Int) * Spirit * Base_Regen) * 0.60 rounded up
-    float_t regenerateValue = 0.001f + sqrt(static_cast<float_t>(intellect)) * spirit * baseRegen * PctPowerRegenModifier[POWER_TYPE_MANA];
+    // From wowwiki: MP5 = 5 * (0.001 + std::sqrt(Int) * Spirit * Base_Regen) * 0.60 rounded up
+    float_t regenerateValue = 0.001f + std::sqrt(static_cast<float_t>(intellect)) * spirit * baseRegen * PctPowerRegenModifier[POWER_TYPE_MANA];
 
     // In cata 5 second rule no longer exists
     // Instead you regen 5% of your base mana without modifiers while in combat

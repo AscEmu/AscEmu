@@ -1,6 +1,10 @@
 os: linux
 dist: bionic
+group: edge
 language: cpp
+
+cache:
+  timeout: 100000
 
 compiler:
   - gcc
@@ -209,7 +213,7 @@ before_script:
 
 script:
   - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then 
-    make CXX=$COMPILER -j 4;
+    make CXX=$COMPILER -j 12;
     fi
 
 #after_script:
