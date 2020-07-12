@@ -4,7 +4,7 @@ group: edge
 language: cpp
 
 cache:
-  timeout: 100000
+  timeout: 1000000
 
 compiler:
   - gcc
@@ -213,7 +213,7 @@ before_script:
 
 script:
   - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then 
-    make CXX=$COMPILER -j 12;
+    make CXX=$COMPILER -j 4 -k;
     fi
 
 #after_script:
