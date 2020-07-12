@@ -1,10 +1,7 @@
 os: linux
 dist: bionic
-group: edge
-language: cpp
 
-cache:
-  timeout: 1000000
+language: cpp
 
 compiler:
   - gcc
@@ -212,8 +209,9 @@ before_script:
   - cmake --version
 
 script:
+  - "travis_wait 30 sleep 1800 &"
   - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then 
-    make CXX=$COMPILER -j 4 -k;
+    make CXX=$COMPILER -j 4;
     fi
 
 #after_script:
