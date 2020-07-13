@@ -1,6 +1,5 @@
 os: linux
 dist: bionic
-
 language: cpp
 
 compiler:
@@ -19,7 +18,7 @@ env:
 
 before_install:
   - if [ "$COMPILER" = "g++-9" ]; then export CXX="g++-9" CC="gcc-9"; fi
-  - if [ "$COMPILER" = "clang++-9" ]; then export CXX="clang++-9" CC="clang-9"; fi
+  - if [ "$COMPILER" = "clang++-8" ]; then export CXX="clang++-8" CC="clang-8"; fi
     
 jobs:
   #allow_failures:
@@ -56,9 +55,9 @@ jobs:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - clang-9
+            - clang-8
             - g++-9
-      env: ASC_VERSION=Classic COMPILER=clang++-9
+      env: ASC_VERSION=Classic COMPILER=clang++-8
     # tbc
     - os: linux
       compiler: gcc
@@ -90,9 +89,9 @@ jobs:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - clang-9
+            - clang-8
             - g++-9
-      env: ASC_VERSION=TBC COMPILER=clang++-9
+      env: ASC_VERSION=TBC COMPILER=clang++-8
     # wotlk
     - os: linux
       compiler: gcc
@@ -124,9 +123,9 @@ jobs:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - clang-9
+            - clang-8
             - g++-9
-      env: ASC_VERSION=WotLK COMPILER=clang++-9
+      env: ASC_VERSION=WotLK COMPILER=clang++-8
     # Cata
     - os: linux
       compiler: gcc
@@ -158,9 +157,9 @@ jobs:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - clang-9
+            - clang-8
             - g++-9
-      env: ASC_VERSION=Cata COMPILER=clang++-9
+      env: ASC_VERSION=Cata COMPILER=clang++-8
     # MoP
     - os: linux
       compiler: gcc
@@ -192,9 +191,9 @@ jobs:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
-            - clang-9
+            - clang-8
             - g++-9
-      env: ASC_VERSION=Mop COMPILER=clang++-9
+      env: ASC_VERSION=Mop COMPILER=clang++-8
   exclude:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
 
