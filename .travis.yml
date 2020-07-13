@@ -48,7 +48,7 @@ jobs:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-7
+            - llvm-toolchain-trusty-8
           packages:
             - zlib1g-dev
             - libssl-dev
@@ -82,7 +82,7 @@ jobs:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-7
+            - llvm-toolchain-trusty-8
           packages:
             - zlib1g-dev
             - libssl-dev
@@ -116,7 +116,7 @@ jobs:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-7
+            - llvm-toolchain-trusty-8
           packages:
             - zlib1g-dev
             - libssl-dev
@@ -150,7 +150,7 @@ jobs:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-7
+            - llvm-toolchain-trusty-8
           packages:
             - zlib1g-dev
             - libssl-dev
@@ -184,7 +184,7 @@ jobs:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-7
+            - llvm-toolchain-trusty-8
           packages:
             - zlib1g-dev
             - libssl-dev
@@ -209,7 +209,6 @@ before_script:
   - cmake --version
 
 script:
-  - "travis_wait 60 sleep 3600 &"
   - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then 
     make CXX=$COMPILER -j 4;
     fi
