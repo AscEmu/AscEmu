@@ -9,10 +9,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 #include "Item.h"
 
-namespace AscEmu {
-    namespace Packets {
-        class CmsgAuctionListItems;
-    }
+namespace AscEmu::Packets
+{
+    class CmsgAuctionListItems;
 }
 
 enum AuctionRemoveType
@@ -139,43 +138,40 @@ struct Auction
 
 class AuctionHouse
 {
-    public:
+public:
+    AuctionHouse(uint32_t id);
+    ~AuctionHouse();
 
-        AuctionHouse(uint32_t id);
-        ~AuctionHouse();
+    uint32_t getId() const;
+    void loadAuctionsFromDB();
 
-        uint32_t getId() const;
-        void loadAuctionsFromDB();
+    void updateAuctions();
+    void updateDeletionQueue();
 
-        void updateAuctions();
-        void updateDeletionQueue();
+    void removeAuction(Auction* auction);
+    void addAuction(Auction* auction);
+    Auction* getAuction(uint32_t id);
+    void queueDeletion(Auction* auction, uint32_t reasonType);
 
-        void removeAuction(Auction* auction);
-        void addAuction(Auction* auction);
-        Auction* getAuction(uint32_t id);
-        void queueDeletion(Auction* auction, uint32_t reasonType);
+    void sendOwnerListPacket(Player* player, WorldPacket* packet);
+    void updateOwner(uint32_t oldGuid, uint32_t newGuid);
+    void sendBidListPacket(Player* player, WorldPacket* packet);
+    void sendAuctionBuyOutNotificationPacket(Auction* auction);
+    void sendAuctionOutBidNotificationPacket(Auction* auction, uint64_t newBidder, uint32_t newHighestBid);
+    void sendAuctionExpiredNotificationPacket(Auction* auction);
+    void sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionListItems srlPacket);
 
-        void sendOwnerListPacket(Player* player, WorldPacket* packet);
-        void updateOwner(uint32_t oldGuid, uint32_t newGuid);
-        void sendBidListPacket(Player* player, WorldPacket* packet);
-        void sendAuctionBuyOutNotificationPacket(Auction* auction);
-        void sendAuctionOutBidNotificationPacket(Auction* auction, uint64_t newBidder, uint32_t newHighestBid);
-        void sendAuctionExpiredNotificationPacket(Auction* auction);
-        void sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionListItems srlPacket);
+private:
+    RWLock auctionLock;
+    std::unordered_map<uint32_t, Auction*> auctions;
 
-    private:
+    Mutex removalLock;
+    std::list<Auction*> removalList;
 
-        RWLock auctionLock;
-        std::unordered_map<uint32_t, Auction*> auctions;
+    DBC::Structures::AuctionHouseEntry const* auctionHouseEntryDbc;
 
-        Mutex removalLock;
-        std::list<Auction*> removalList;
-
-        DBC::Structures::AuctionHouseEntry const* auctionHouseEntryDbc;
-
-    public:
-
-        float cutPercent;
-        float depositPercent;
-        bool isEnabled;
+public:
+    float cutPercent;
+    float depositPercent;
+    bool isEnabled;
 };
