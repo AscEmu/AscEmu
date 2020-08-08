@@ -195,7 +195,7 @@ public:
 
     MapScriptInterface* GetInterface();
 
-    virtual int32 event_GetInstanceID() override;
+    int32_t event_GetInstanceID() override;
 
     uint32 GetPlayerCount();
 
