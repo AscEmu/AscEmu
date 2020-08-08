@@ -276,7 +276,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             //Switch check
             float distx = getCreature()->GetSpawnX() - getCreature()->GetPositionX();
             float disty = getCreature()->GetSpawnY() - getCreature()->GetPositionY();
-            float dist = sqrt((distx * distx) + (disty * disty));
+            float dist = std::sqrt((distx * distx) + (disty * disty));
             if (dist > 25)
             {
                 //switch to poison form
@@ -360,7 +360,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             //Switch check
             float distx = getCreature()->GetSpawnX() - getCreature()->GetPositionX();
             float disty = getCreature()->GetSpawnY() - getCreature()->GetPositionY();
-            float dist = sqrt((distx * distx) + (disty * disty));
+            float dist = std::sqrt((distx * distx) + (disty * disty));
             if (dist < 25)
             {
                 //switch to water form

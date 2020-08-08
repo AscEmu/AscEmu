@@ -54,7 +54,7 @@ void TaxiPath::ComputeLen()
             curmap = itr->second->mapid;
         }
 
-        *curptr += sqrt((itr->second->x - x) * (itr->second->x - x) +
+        *curptr += std::sqrt((itr->second->x - x) * (itr->second->x - x) +
                         (itr->second->y - y) * (itr->second->y - y) +
                         (itr->second->z - z) * (itr->second->z - z));
 
@@ -111,7 +111,7 @@ void TaxiPath::SetPosForTime(float & x, float & y, float & z, uint32_t time, uin
             continue;
         }
 
-        auto len = static_cast<uint32_t>(sqrt((itr->second->x - nx) * (itr->second->x - nx) +
+        auto len = static_cast<uint32_t>(std::sqrt((itr->second->x - nx) * (itr->second->x - nx) +
             (itr->second->y - ny) * (itr->second->y - ny) +
             (itr->second->z - nz) * (itr->second->z - nz)));
 
@@ -191,7 +191,7 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32_t time)
             continue;
         }
 
-        auto len = static_cast<uint32_t>(sqrt((itr->second->x - nx) * (itr->second->x - nx) +
+        auto len = static_cast<uint32_t>(std::sqrt((itr->second->x - nx) * (itr->second->x - nx) +
             (itr->second->y - ny) * (itr->second->y - ny) +
             (itr->second->z - nz) * (itr->second->z - nz)));
 

@@ -75,7 +75,7 @@ void SpeedCheatDetector::AddSample(float x, float y, int stamp, float player_spe
         //get current speed
         float dif_x = x - last_x;
         float dif_y = y - last_y;
-        float dist = sqrt(dif_x * dif_x + dif_y * dif_y);
+        float dist = std::sqrt(dif_x * dif_x + dif_y * dif_y);
         float cur_speed = dist / (float)time_dif * 1000.0f;
 
         //check if we really got a cheater here

@@ -2937,7 +2937,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
                     float xchange = Util::getRandomFloat(10.0f);
                     float distance = 10.0f;
 
-                    float ychange = sqrt(distance * distance - xchange * xchange);
+                    float ychange = std::sqrt(distance * distance - xchange * xchange);
 
                     if (Util::getRandomUInt(1) == 1)
                         xchange *= -1;
@@ -3041,7 +3041,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
                     float xchange = Util::getRandomFloat(10.0f);
                     float distance = 10.0f;
 
-                    float ychange = sqrt(distance * distance - xchange * xchange);
+                    float ychange = std::sqrt(distance * distance - xchange * xchange);
 
                     if (Util::getRandomUInt(1) == 1)
                         xchange *= -1;
@@ -3134,7 +3134,7 @@ class SoulWeaverAI : public CreatureAIScript
                     float xchange = Util::getRandomFloat(10.0f);
                     float distance = 10.0f;
 
-                    float ychange = sqrt(distance * distance - xchange * xchange);
+                    float ychange = std::sqrt(distance * distance - xchange * xchange);
 
                     if (Util::getRandomUInt(1) == 1)
                         xchange *= -1;
@@ -3225,7 +3225,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
                     float xchange = Util::getRandomFloat(10.0f);
                     float distance = 10.0f;
 
-                    float ychange = sqrt(distance * distance - xchange * xchange);
+                    float ychange = std::sqrt(distance * distance - xchange * xchange);
 
                     if (Util::getRandomUInt(1) == 1)
                         xchange *= -1;
