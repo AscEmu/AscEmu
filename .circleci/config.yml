@@ -55,7 +55,6 @@ jobs:
       - run:
           name: Build Classic
           command: |
-            halt_build_on_fail: false
             cd ascemu_classic
             make -j 4
             cd ..
@@ -65,21 +64,25 @@ jobs:
             cd ascemu_bc
             make -j 4
             cd ..
+          when: always
       - run:
           name: Build WotLK
           command: |
             cd ascemu_wotlk
             make -j 4
             cd ..
+          when: always
       - run:
           name: Build Cata
           command: |
             cd ascemu_cata
             make -j 4
             cd ..
+          when: always
       - run:
           name: Build Mop
           command: |
             cd ascemu_mop
             make -j 4
             cd ..
+          when: always
