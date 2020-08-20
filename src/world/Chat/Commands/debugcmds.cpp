@@ -888,7 +888,6 @@ bool ChatHandler::HandleSimpleDistanceCommand(const char* args, WorldSession* m_
 
 bool ChatHandler::HandleRangeCheckCommand(const char* /*args*/, WorldSession* m_session)
 {
-    WorldPacket data;
     uint64 guid = m_session->GetPlayer()->GetSelection();
     m_session->SystemMessage("=== RANGE CHECK ===");
     if (guid == 0)

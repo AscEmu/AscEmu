@@ -1114,18 +1114,13 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
 
 void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
 {
-    WorldPacket data(150);
-    WorldPacket data2(150);
-
     if (m_SubGroupCount > 8)
         return;
 
     // tell the other players about us
+    WorldPacket data2(150);
     UpdateOutOfRangePlayer(pPlayer, true, &data2);
 
-    // tell us any other players we don't know about
-    Player* plr;
-    bool u1, u2;
     UpdateMask myMask;
     myMask.SetCount(getSizeOfStructure(WoWPlayer));
     UpdateMask hisMask;
@@ -1139,7 +1134,8 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
 
         for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
         {
-            plr = (*itr)->m_loggedInPlayer;
+            WorldPacket data(150);
+            Player* plr = (*itr)->m_loggedInPlayer;
             if (!plr || plr == pPlayer)
                 continue;
 
@@ -1155,7 +1151,9 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
                     // distribute quest fields to other players
                     hisMask.Clear();
                     myMask.Clear();
-                    u1 = u2 = false;
+
+                    bool u1 = false;
+                    bool u2 = false;
 
 #if VERSION_STRING == Classic
                     uint16_t questIdOffset = 3;

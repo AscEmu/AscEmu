@@ -2130,14 +2130,16 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
     }
 
     uint32 questCount = sQuestMgr.ActiveQuestsCount(qst_giver, plr);
-    WorldPacket data(1004);
 
     if (questCount == 0)
     {
         LOG_DEBUG("WORLD: Invalid NPC for CMSG_QUESTGIVER_HELLO.");
         return false;
     }
-    else if (questCount == 1)
+
+    WorldPacket data(1004);
+
+    if (questCount == 1)
     {
         std::list<QuestRelation*>::const_iterator itr;
         std::list<QuestRelation*>::const_iterator q_begin;
