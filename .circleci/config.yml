@@ -18,9 +18,10 @@ jobs:
           command: 'apt-get update && sudo apt-get install -y cmake'
       - run:
           name: Setup
-          command: 'mkdir ascemu_build'
-            'cd ascemu_build'
-            'cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Cata'
+          command: |
+            mkdir ascemu_build
+            cd ascemu_build
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Cata
       - run:
           name: Build
           command: 'make -j 4'
