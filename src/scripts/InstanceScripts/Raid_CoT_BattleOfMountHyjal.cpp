@@ -429,7 +429,7 @@ class DoomfireAI : public CreatureAIScript
                     float y = 0.0f;
 
                     float xchange = Util::getRandomFloat(movedist);
-                    float ychange = sqrt(movedist * movedist - xchange * xchange);
+                    float ychange = std::sqrt(movedist * movedist - xchange * xchange);
 
                     if (Util::getRandomUInt(2) == 1)
                         xchange *= -1;
