@@ -55,6 +55,7 @@ jobs:
       - run:
           name: Build Classic
           command: |
+            halt_build_on_fail: false
             cd ascemu_classic
             make -j 4
             cd ..
