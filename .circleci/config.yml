@@ -19,14 +19,12 @@ jobs:
       - run:
           name: Install deps
           command: |
-            apt-get install zlib1g-dev
-            apt-get install libssl-dev
-            apt-get install libpcre3-dev
-            apt-get install libbz2-dev
-            apt-get install libmysqlclient-dev
-            apt-get install libmysql++-dev
-            apt-get install gcc-8
-            apt-get install g++-8
+            apt-get update && apt-get install -y zlib1g-dev
+            apt-get update && apt-get install -y libssl-dev
+            apt-get update && apt-get install -y libpcre3-dev
+            apt-get update && apt-get install -y libbz2-dev
+            apt-get update && apt-get install -y libmysqlclient-dev
+            apt-get update && apt-get install -y libmysql++-dev
       - run:
           name: Check versions
           command: |
