@@ -40,6 +40,7 @@ jobs:
             - libmysql++-dev
             - gcc-9
             - g++-9
+            - mdm
       env: ASC_VERSION=Classic COMPILER=g++-9
     - os: linux
       compiler: clang
@@ -57,6 +58,7 @@ jobs:
             - libmysql++-dev
             - clang-9
             - g++-9
+            - mdm
       env: ASC_VERSION=Classic COMPILER=clang++-9
     # tbc
     - os: linux
@@ -74,6 +76,7 @@ jobs:
             - libmysql++-dev
             - gcc-9
             - g++-9
+            - mdm
       env: ASC_VERSION=TBC COMPILER=g++-9
     - os: linux
       compiler: clang
@@ -91,6 +94,7 @@ jobs:
             - libmysql++-dev
             - clang-9
             - g++-9
+            - mdm
       env: ASC_VERSION=TBC COMPILER=clang++-9
     # wotlk
     - os: linux
@@ -108,6 +112,7 @@ jobs:
             - libmysql++-dev
             - gcc-9
             - g++-9
+            - mdm
       env: ASC_VERSION=WotLK COMPILER=g++-9
     - os: linux
       compiler: clang
@@ -125,6 +130,7 @@ jobs:
             - libmysql++-dev
             - clang-9
             - g++-9
+            - mdm
       env: ASC_VERSION=WotLK COMPILER=clang++-9
     # Cata
     - os: linux
@@ -142,6 +148,7 @@ jobs:
             - libmysql++-dev
             - gcc-9
             - g++-9
+            - mdm
       env: ASC_VERSION=Cata COMPILER=g++-9
     - os: linux
       compiler: clang
@@ -159,6 +166,7 @@ jobs:
             - libmysql++-dev
             - clang-9
             - g++-9
+            - mdm
       env: ASC_VERSION=Cata COMPILER=clang++-9
     # MoP
     - os: linux
@@ -176,6 +184,7 @@ jobs:
             - libmysql++-dev
             - gcc-9
             - g++-9
+            - mdm
       env: ASC_VERSION=Mop COMPILER=g++-9
     - os: linux
       compiler: clang
@@ -193,6 +202,7 @@ jobs:
             - libmysql++-dev
             - clang-9
             - g++-9
+            - mdm
       env: ASC_VERSION=Mop COMPILER=clang++-9
   exclude:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
@@ -209,7 +219,7 @@ before_script:
 
 script:
   - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then 
-    make CXX=$COMPILER -j 4;
+    make CXX=$COMPILER -j $(ncpus);
     fi
 
 #after_script:
