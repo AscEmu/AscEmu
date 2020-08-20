@@ -17,8 +17,10 @@ jobs:
           name: Install CMAKE
           command: 'apt-get update && sudo apt-get install -y cmake'
       - run:
-          name: Creating Build Files
-          command: 'cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Cata'
+          name: Setup
+          command: 'mkdir ascemu_build'
+            'cd ascemu_build'
+            'cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Cata'
       - run:
-          name: Creating Binary Files
-          command: 'cmake --build build'
+          name: Build
+          command: 'make -j 4'
