@@ -32,11 +32,43 @@ jobs:
       - run:
           name: Setup
           command: |
-            mkdir ascemu_build
-            cd ascemu_build
+            mkdir ascemu_classic
+            cd ascemu_classic
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Classic
+            mkdir ascemu_bc
+            cd ascemu_bc
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=TBC
+            mkdir ascemu_wotlk
+            cd ascemu_wotlk
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=WotLK
+            mkdir ascemu_cata
+            cd ascemu_cata
             cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Cata
+            mkdir ascemu_mop
+            cd ascemu_mop
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Mop
       - run:
-          name: Build
+          name: Build Classic
           command: |
-            cd ascemu_build
+            cd ascemu_classic
+            make -j 4
+      - run:
+          name: Build TBC
+          command: |
+            cd ascemu_bc
+            make -j 4
+      - run:
+          name: Build WotLK
+          command: |
+            cd ascemu_wotlk
+            make -j 4
+      - run:
+          name: Build Cata
+          command: |
+            cd ascemu_cata
+            make -j 4
+      - run:
+          name: Build Mop
+          command: |
+            cd ascemu_mop
             make -j 4
