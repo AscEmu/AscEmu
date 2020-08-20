@@ -23,7 +23,7 @@ jobs:
             apt-get update && apt-get install -y libssl-dev
             apt-get update && apt-get install -y libpcre3-dev
             apt-get update && apt-get install -y libbz2-dev
-            apt-get update && apt-get install -y libmysqlclient-dev
+            apt-get update && apt-get install -y default-libmysqlclient-dev
             apt-get update && apt-get install -y libmysql++-dev
       - run:
           name: Check versions
