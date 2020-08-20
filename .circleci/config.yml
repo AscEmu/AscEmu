@@ -37,4 +37,6 @@ jobs:
             cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Cata
       - run:
           name: Build
-          command: 'make -j 4'
+          command: |
+            cd ascemu_build
+            make -j 4
