@@ -186,7 +186,7 @@ jobs:
             mkdir ascemu_mop
             cd ascemu_mop
             cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Mop
-            cd .
+            cd ..
             cd ascemu_mop
             make -j 4
             cd ..
