@@ -1,8 +1,7 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-# Use a package of configuration called an orb.
+
 jobs:
-  build:
+  "Classic":
     docker:
       - image: "debian:stretch"
     steps:
@@ -39,6 +38,34 @@ jobs:
             cd ascemu_classic
             make -j 4
             cd ..
+
+  "TBC":
+    docker:
+      - image: "debian:stretch"
+    steps:
+      - checkout
+      - run:
+          name: Installing SUDO
+          command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
+      - run:
+          name: Installing GCC
+          command: 'apt-get update && apt-get install -y gcc g++'
+      - run:
+          name: Install CMAKE
+          command: 'apt-get update && sudo apt-get install -y cmake'
+      - run:
+          name: Install deps
+          command: |
+            apt-get update && apt-get install -y zlib1g-dev
+            apt-get update && apt-get install -y libssl-dev
+            apt-get update && apt-get install -y libpcre3-dev
+            apt-get update && apt-get install -y libbz2-dev
+            apt-get update && apt-get install -y default-libmysqlclient-dev
+            apt-get update && apt-get install -y libmysql++-dev
+      - run:
+          name: Check versions
+          command: |
+            cmake --version
       - run:
           name: Build TBC
           command: |
@@ -49,7 +76,34 @@ jobs:
             cd ascemu_bc
             make -j 4
             cd ..
-          when: always
+            
+  "WotLK":
+    docker:
+      - image: "debian:stretch"
+    steps:
+      - checkout
+      - run:
+          name: Installing SUDO
+          command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
+      - run:
+          name: Installing GCC
+          command: 'apt-get update && apt-get install -y gcc g++'
+      - run:
+          name: Install CMAKE
+          command: 'apt-get update && sudo apt-get install -y cmake'
+      - run:
+          name: Install deps
+          command: |
+            apt-get update && apt-get install -y zlib1g-dev
+            apt-get update && apt-get install -y libssl-dev
+            apt-get update && apt-get install -y libpcre3-dev
+            apt-get update && apt-get install -y libbz2-dev
+            apt-get update && apt-get install -y default-libmysqlclient-dev
+            apt-get update && apt-get install -y libmysql++-dev
+      - run:
+          name: Check versions
+          command: |
+            cmake --version
       - run:
           name: Build WotLK
           command: |
@@ -60,7 +114,34 @@ jobs:
             cd ascemu_wotlk
             make -j 4
             cd ..
-          when: always
+            
+  "Cata":
+    docker:
+      - image: "debian:stretch"
+    steps:
+      - checkout
+      - run:
+          name: Installing SUDO
+          command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
+      - run:
+          name: Installing GCC
+          command: 'apt-get update && apt-get install -y gcc g++'
+      - run:
+          name: Install CMAKE
+          command: 'apt-get update && sudo apt-get install -y cmake'
+      - run:
+          name: Install deps
+          command: |
+            apt-get update && apt-get install -y zlib1g-dev
+            apt-get update && apt-get install -y libssl-dev
+            apt-get update && apt-get install -y libpcre3-dev
+            apt-get update && apt-get install -y libbz2-dev
+            apt-get update && apt-get install -y default-libmysqlclient-dev
+            apt-get update && apt-get install -y libmysql++-dev
+      - run:
+          name: Check versions
+          command: |
+            cmake --version
       - run:
           name: Build Cata
           command: |
@@ -71,7 +152,34 @@ jobs:
             cd ascemu_cata
             make -j 4
             cd ..
-          when: always
+            
+  "Mop":
+    docker:
+      - image: "debian:stretch"
+    steps:
+      - checkout
+      - run:
+          name: Installing SUDO
+          command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
+      - run:
+          name: Installing GCC
+          command: 'apt-get update && apt-get install -y gcc g++'
+      - run:
+          name: Install CMAKE
+          command: 'apt-get update && sudo apt-get install -y cmake'
+      - run:
+          name: Install deps
+          command: |
+            apt-get update && apt-get install -y zlib1g-dev
+            apt-get update && apt-get install -y libssl-dev
+            apt-get update && apt-get install -y libpcre3-dev
+            apt-get update && apt-get install -y libbz2-dev
+            apt-get update && apt-get install -y default-libmysqlclient-dev
+            apt-get update && apt-get install -y libmysql++-dev
+      - run:
+          name: Check versions
+          command: |
+            cmake --version
       - run:
           name: Build Mop
           command: |
@@ -82,4 +190,13 @@ jobs:
             cd ascemu_mop
             make -j 4
             cd ..
-          when: always
+            
+workflows:
+  version: 2.1
+  build:
+    jobs:
+      - "Classic"
+      - "TBC"
+      - "WotLK"
+      - "Cata"
+      - "Mop"
