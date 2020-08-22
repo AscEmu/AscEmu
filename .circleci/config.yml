@@ -30,37 +30,22 @@ jobs:
           command: |
             cmake --version
       - run:
-          name: Setup
+          name: Build Classic
           command: |
             mkdir ascemu_classic
             cd ascemu_classic
             cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Classic
             cd ..
-            mkdir ascemu_bc
-            cd ascemu_bc
-            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=TBC
-            cd ..
-            mkdir ascemu_wotlk
-            cd ascemu_wotlk
-            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=WotLK
-            cd ..
-            mkdir ascemu_cata
-            cd ascemu_cata
-            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Cata
-            cd ..
-            mkdir ascemu_mop
-            cd ascemu_mop
-            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Mop
-            cd ..
-      - run:
-          name: Build Classic
-          command: |
             cd ascemu_classic
             make -j 4
             cd ..
       - run:
           name: Build TBC
           command: |
+            mkdir ascemu_bc
+            cd ascemu_bc
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=TBC
+            cd ..
             cd ascemu_bc
             make -j 4
             cd ..
@@ -68,6 +53,10 @@ jobs:
       - run:
           name: Build WotLK
           command: |
+            mkdir ascemu_wotlk
+            cd ascemu_wotlk
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=WotLK
+            cd ..
             cd ascemu_wotlk
             make -j 4
             cd ..
@@ -75,6 +64,10 @@ jobs:
       - run:
           name: Build Cata
           command: |
+            mkdir ascemu_cata
+            cd ascemu_cata
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Cata
+            cd ..
             cd ascemu_cata
             make -j 4
             cd ..
@@ -82,6 +75,10 @@ jobs:
       - run:
           name: Build Mop
           command: |
+            mkdir ascemu_mop
+            cd ascemu_mop
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Mop
+            cd .
             cd ascemu_mop
             make -j 4
             cd ..
