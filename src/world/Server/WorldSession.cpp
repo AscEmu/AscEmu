@@ -785,5 +785,20 @@ void WorldSession::loadHandlers()
 
     WorldPacketHandlers[CMSG_REALM_SPLIT].handler = &WorldSession::handleRealmSplitOpcode;
     WorldPacketHandlers[CMSG_REALM_SPLIT].status = STATUS_AUTHED;
+
+    WorldPacketHandlers[CMSG_SET_PLAYER_DECLINED_NAMES].handler = &WorldSession::handleDeclinedPlayerNameOpcode;
+    WorldPacketHandlers[CMSG_SET_PLAYER_DECLINED_NAMES].status = STATUS_AUTHED;
+
+#if VERSION_STRING > TBC
+    WorldPacketHandlers[CMSG_CHAR_CUSTOMIZE].handler = &WorldSession::handleCharCustomizeLooksOpcode;
+    WorldPacketHandlers[CMSG_CHAR_CUSTOMIZE].status = STATUS_AUTHED;
+
+    WorldPacketHandlers[CMSG_CHAR_FACTION_CHANGE].handler = &WorldSession::handleCharFactionOrRaceChange;
+    WorldPacketHandlers[CMSG_CHAR_FACTION_CHANGE].status = STATUS_AUTHED;
+
+    WorldPacketHandlers[CMSG_CHAR_RACE_CHANGE].handler = &WorldSession::handleCharFactionOrRaceChange;
+    WorldPacketHandlers[CMSG_CHAR_RACE_CHANGE].status = STATUS_AUTHED;
+#endif
+
 }
 
