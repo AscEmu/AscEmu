@@ -534,7 +534,6 @@ void WorldSession::InitPacketHandlerTable()
         WorldPacketHandlers[i].handler = nullptr;
     }
     loadHandlers();
-    loadSpecificHandlers();
 }
 
 void SessionLog::writefromsession(WorldSession* session, const char* format, ...)
