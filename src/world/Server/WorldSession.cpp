@@ -1079,5 +1079,128 @@ void WorldSession::loadHandlers()
     WorldPacketHandlers[CMSG_SET_FACTION_ATWAR].handler = &WorldSession::handleSetFactionAtWarOpcode;
     WorldPacketHandlers[CMSG_SET_WATCHED_FACTION].handler = &WorldSession::handleSetWatchedFactionIndexOpcode;
     WorldPacketHandlers[CMSG_SET_FACTION_INACTIVE].handler = &WorldSession::handleSetFactionInactiveOpcode;
+
+    //\todo: check for classic, bc, cata, mop
+    WorldPacketHandlers[CMSG_AUCTION_LIST_ITEMS].handler = &WorldSession::handleAuctionListItems;
+    //\todo: check for classic, bc, cata, mop
+    WorldPacketHandlers[CMSG_AUCTION_LIST_BIDDER_ITEMS].handler = &WorldSession::handleAuctionListBidderItems;
+    //\todo: check for classic, bc, cata, mop
+    WorldPacketHandlers[CMSG_AUCTION_SELL_ITEM].handler = &WorldSession::handleAuctionSellItem;
+    //\todo: check for classic, bc, cata, mop
+    WorldPacketHandlers[CMSG_AUCTION_LIST_OWNER_ITEMS].handler = &WorldSession::handleAuctionListOwnerItems;
+    //\todo: check for classic, bc, cata, mop
+    WorldPacketHandlers[CMSG_AUCTION_PLACE_BID].handler = &WorldSession::handleAuctionPlaceBid;
+    //\todo: check for classic, bc, cata, mop
+    WorldPacketHandlers[CMSG_AUCTION_REMOVE_ITEM].handler = &WorldSession::handleCancelAuction;
+    //\todo: check for classic, bc, cata, mop
+    WorldPacketHandlers[CMSG_AUCTION_LIST_PENDING_SALES].handler = &WorldSession::handleAuctionListPendingSales;
+
+    WorldPacketHandlers[CMSG_GET_MAIL_LIST].handler = &WorldSession::handleGetMailOpcode;
+    WorldPacketHandlers[CMSG_ITEM_TEXT_QUERY].handler = &WorldSession::handleItemTextQueryOpcode;
+    WorldPacketHandlers[CMSG_SEND_MAIL].handler = &WorldSession::handleSendMailOpcode;
+    WorldPacketHandlers[CMSG_MAIL_TAKE_MONEY].handler = &WorldSession::handleTakeMoneyOpcode;
+    WorldPacketHandlers[CMSG_MAIL_TAKE_ITEM].handler = &WorldSession::handleTakeItemOpcode;
+    WorldPacketHandlers[CMSG_MAIL_MARK_AS_READ].handler = &WorldSession::handleMarkAsReadOpcode;
+    WorldPacketHandlers[CMSG_MAIL_RETURN_TO_SENDER].handler = &WorldSession::handleReturnToSenderOpcode;
+    WorldPacketHandlers[CMSG_MAIL_DELETE].handler = &WorldSession::handleMailDeleteOpcode;
+    WorldPacketHandlers[MSG_QUERY_NEXT_MAIL_TIME].handler = &WorldSession::handleMailTimeOpcode;
+    WorldPacketHandlers[CMSG_MAIL_CREATE_TEXT_ITEM].handler = &WorldSession::handleMailCreateTextItemOpcode;
+
+    //\todo: check for classic, bc
+    WorldPacketHandlers[CMSG_GUILD_QUERY].handler = &WorldSession::handleGuildQuery;
+    WorldPacketHandlers[CMSG_GUILD_QUERY].status = STATUS_AUTHED;
+
+    WorldPacketHandlers[CMSG_GUILD_INVITE].handler = &WorldSession::handleInviteToGuild;
+    WorldPacketHandlers[CMSG_GUILD_ACCEPT].handler = &WorldSession::handleGuildAccept;
+    WorldPacketHandlers[CMSG_GUILD_DECLINE].handler = &WorldSession::handleGuildDecline;
+    WorldPacketHandlers[CMSG_GUILD_ROSTER].handler = &WorldSession::handleGuildRoster;
+    WorldPacketHandlers[CMSG_GUILD_PROMOTE].handler = &WorldSession::handleGuildPromote;
+    WorldPacketHandlers[CMSG_GUILD_DEMOTE].handler = &WorldSession::handleGuildDemote;
+    WorldPacketHandlers[CMSG_GUILD_LEAVE].handler = &WorldSession::handleGuildLeave;
+    WorldPacketHandlers[CMSG_GUILD_REMOVE].handler = &WorldSession::handleGuildRemove;
+    WorldPacketHandlers[CMSG_GUILD_DISBAND].handler = &WorldSession::handleGuildDisband;
+    WorldPacketHandlers[CMSG_GUILD_LEADER].handler = &WorldSession::handleGuildLeader;
+    WorldPacketHandlers[CMSG_GUILD_MOTD].handler = &WorldSession::handleGuildMotd;
+    WorldPacketHandlers[CMSG_GUILD_ADD_RANK].handler = &WorldSession::handleGuildAddRank;
+    WorldPacketHandlers[CMSG_GUILD_DEL_RANK].handler = &WorldSession::handleGuildDelRank;
+    WorldPacketHandlers[CMSG_GUILD_SET_RANK].handler = &WorldSession::handleGuildSetRank;
+    WorldPacketHandlers[CMSG_PETITION_BUY].handler = &WorldSession::handleCharterBuy;
+    WorldPacketHandlers[CMSG_PETITION_SHOW_SIGNATURES].handler = &WorldSession::handleCharterShowSignatures;
+    WorldPacketHandlers[CMSG_TURN_IN_PETITION].handler = &WorldSession::handleCharterTurnInCharter;
+    WorldPacketHandlers[CMSG_PETITION_QUERY].handler = &WorldSession::handleCharterQuery;
+    WorldPacketHandlers[CMSG_OFFER_PETITION].handler = &WorldSession::handleCharterOffer;
+    WorldPacketHandlers[CMSG_PETITION_SIGN].handler = &WorldSession::handleCharterSign;
+    WorldPacketHandlers[MSG_PETITION_DECLINE].handler = &WorldSession::handleCharterDecline;
+    WorldPacketHandlers[MSG_PETITION_RENAME].handler = &WorldSession::handleCharterRename;
+    WorldPacketHandlers[MSG_SAVE_GUILD_EMBLEM].handler = &WorldSession::handleSaveGuildEmblem;
+    WorldPacketHandlers[CMSG_GUILD_INFO_TEXT].handler = &WorldSession::handleSetGuildInfo;
+    WorldPacketHandlers[CMSG_SET_GUILD_BANK_TEXT].handler = &WorldSession::handleSetGuildBankText;
+    WorldPacketHandlers[CMSG_GUILD_EVENT_LOG_QUERY].handler = &WorldSession::handleGuildLog;
+    WorldPacketHandlers[CMSG_GUILD_BANKER_ACTIVATE].handler = &WorldSession::handleGuildBankerActivate;
+    WorldPacketHandlers[CMSG_GUILD_BANK_BUY_TAB].handler = &WorldSession::handleGuildBankBuyTab;
+    WorldPacketHandlers[CMSG_GUILD_BANK_UPDATE_TAB].handler = &WorldSession::handleGuildBankUpdateTab;
+    WorldPacketHandlers[CMSG_GUILD_BANK_SWAP_ITEMS].handler = &WorldSession::handleGuildBankSwapItems;
+
+    //\todo: Naming check out MSG_GUILD_BANK_MONEY_WITHDRAWN/CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY
+    WorldPacketHandlers[CMSG_GUILD_BANK_WITHDRAW_MONEY].handler = &WorldSession::handleGuildBankWithdrawMoney;
+    WorldPacketHandlers[CMSG_GUILD_BANK_DEPOSIT_MONEY].handler = &WorldSession::handleGuildBankDepositMoney;
+    WorldPacketHandlers[CMSG_GUILD_BANK_QUERY_TAB].handler = &WorldSession::handleGuildBankQueryTab;
+    WorldPacketHandlers[MSG_GUILD_BANK_LOG_QUERY].handler = &WorldSession::handleGuildBankLogQuery;
+
+#if VERSION_STRING < Cata
+    WorldPacketHandlers[CMSG_GUILD_INFO].handler = &WorldSession::handleGuildInfo;
+    //\todo: same as CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY on > cata
+    WorldPacketHandlers[MSG_GUILD_BANK_MONEY_WITHDRAWN].handler = &WorldSession::handleGuildBankMoneyWithdrawn;
+    //\todo: same as CMSG_GUILD_PERMISSIONS on > cata
+    WorldPacketHandlers[MSG_GUILD_PERMISSIONS].handler = &WorldSession::handleGuildPermissions;
+
+    WorldPacketHandlers[CMSG_GUILD_SET_PUBLIC_NOTE].handler = &WorldSession::handleGuildSetPublicNote;
+    WorldPacketHandlers[CMSG_GUILD_SET_OFFICER_NOTE].handler = &WorldSession::handleGuildSetOfficerNote;
+    WorldPacketHandlers[MSG_QUERY_GUILD_BANK_TEXT].handler = &WorldSession::handleGuildBankQueryText;
+#else
+    WorldPacketHandlers[CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY].handler = &WorldSession::handleGuildBankMoneyWithdrawn;
+    WorldPacketHandlers[CMSG_GUILD_PERMISSIONS].handler = &WorldSession::handleGuildPermissions;
+    WorldPacketHandlers[CMSG_GUILD_BANK_QUERY_TEXT].handler = &WorldSession::handleQueryGuildBankTabText;
+    WorldPacketHandlers[CMSG_QUERY_GUILD_XP].handler = &WorldSession::handleGuildQueryXPOpcode;
+    WorldPacketHandlers[CMSG_GUILD_SET_NOTE].handler = &WorldSession::handleGuildSetNoteOpcode;
+    WorldPacketHandlers[CMSG_QUERY_GUILD_REWARDS].handler = &WorldSession::handleGuildRewardsQueryOpcode;
+    WorldPacketHandlers[CMSG_GUILD_QUERY_RANKS].handler = &WorldSession::handleGuildQueryRanksOpcode;
+    WorldPacketHandlers[CMSG_GUILD_ASSIGN_MEMBER_RANK].handler = &WorldSession::handleGuildAssignRankOpcode;
+    WorldPacketHandlers[CMSG_GUILD_REQUEST_CHALLENGE_UPDATE].handler = &WorldSession::handleGuildRequestChallengeUpdate;
+    WorldPacketHandlers[CMSG_GUILD_REQUEST_MAX_DAILY_XP].handler = &WorldSession::handleGuildRequestMaxDailyXP;
+    WorldPacketHandlers[CMSG_GUILD_QUERY_NEWS].handler = &WorldSession::handleGuildQueryNewsOpcode;
+    WorldPacketHandlers[CMSG_GUILD_NEWS_UPDATE_STICKY].handler = &WorldSession::handleGuildNewsUpdateStickyOpcode;
+#endif
+
+#if VERSION_STRING > WotLK
+    WorldPacketHandlers[CMSG_LF_GUILD_GET_RECRUITS].handler = &WorldSession::handleGuildFinderGetRecruits;
+    WorldPacketHandlers[CMSG_LF_GUILD_ADD_RECRUIT].handler = &WorldSession::handleGuildFinderAddRecruit;
+    WorldPacketHandlers[CMSG_LF_GUILD_BROWSE].handler = &WorldSession::handleGuildFinderBrowse;
+    WorldPacketHandlers[CMSG_LF_GUILD_DECLINE_RECRUIT].handler = &WorldSession::handleGuildFinderDeclineRecruit;
+    WorldPacketHandlers[CMSG_LF_GUILD_GET_APPLICATIONS].handler = &WorldSession::handleGuildFinderGetApplications;
+    WorldPacketHandlers[CMSG_LF_GUILD_POST_REQUEST].handler = &WorldSession::handleGuildFinderPostRequest;
+    WorldPacketHandlers[CMSG_LF_GUILD_REMOVE_RECRUIT].handler = &WorldSession::handleGuildFinderRemoveRecruit;
+    WorldPacketHandlers[CMSG_LF_GUILD_SET_GUILD_POST].handler = &WorldSession::handleGuildFinderSetGuildPost;
+#endif
+
+    WorldPacketHandlers[CMSG_PET_SPELL_AUTOCAST].handler = &WorldSession::handlePetSpellAutocast;
+    WorldPacketHandlers[CMSG_PET_LEARN_TALENT].handler = &WorldSession::handlePetLearnTalent;
+
+    //\todo: implement for classic, bc, cata, mop
+#if VERSION_STRING == WotLK
+    WorldPacketHandlers[MSG_LIST_STABLED_PETS].handler = &WorldSession::handleStabledPetList;
+    WorldPacketHandlers[CMSG_PET_ACTION].handler = &WorldSession::handlePetAction;
+    WorldPacketHandlers[CMSG_PET_NAME_QUERY].handler = &WorldSession::handlePetNameQuery;
+    WorldPacketHandlers[CMSG_BUY_STABLE_SLOT].handler = &WorldSession::handleBuyStableSlot;
+    WorldPacketHandlers[CMSG_STABLE_PET].handler = &WorldSession::handleStablePet;
+    WorldPacketHandlers[CMSG_UNSTABLE_PET].handler = &WorldSession::handleUnstablePet;
+    WorldPacketHandlers[CMSG_STABLE_SWAP_PET].handler = &WorldSession::handleStableSwapPet;
+    WorldPacketHandlers[CMSG_PET_SET_ACTION].handler = &WorldSession::handlePetSetActionOpcode;
+    WorldPacketHandlers[CMSG_PET_RENAME].handler = &WorldSession::handlePetRename;
+    WorldPacketHandlers[CMSG_PET_ABANDON].handler = &WorldSession::handlePetAbandon;
+    WorldPacketHandlers[CMSG_PET_UNLEARN].handler = &WorldSession::handlePetUnlearn;
+    WorldPacketHandlers[CMSG_PET_CANCEL_AURA].handler = &WorldSession::handlePetCancelAura;
+    WorldPacketHandlers[CMSG_DISMISS_CRITTER].handler = &WorldSession::handleDismissCritter;
+#endif
 }
 
