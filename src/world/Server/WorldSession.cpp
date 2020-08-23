@@ -533,7 +533,7 @@ void WorldSession::InitPacketHandlerTable()
         WorldPacketHandlers[i].status = STATUS_LOGGEDIN;
         WorldPacketHandlers[i].handler = nullptr;
     }
-
+    loadHandlers();
     loadSpecificHandlers();
 }
 
@@ -765,3 +765,25 @@ void WorldSession::Disconnect()
         _socket->Disconnect();
     }
 }
+
+void WorldSession::loadHandlers()
+{
+    WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::handleCharEnumOpcode;
+    WorldPacketHandlers[CMSG_CHAR_ENUM].status = STATUS_AUTHED;
+
+    WorldPacketHandlers[CMSG_CHAR_CREATE].handler = &WorldSession::handleCharCreateOpcode;
+    WorldPacketHandlers[CMSG_CHAR_CREATE].status = STATUS_AUTHED;
+
+    WorldPacketHandlers[CMSG_CHAR_DELETE].handler = &WorldSession::handleCharDeleteOpcode;
+    WorldPacketHandlers[CMSG_CHAR_DELETE].status = STATUS_AUTHED;
+
+    WorldPacketHandlers[CMSG_CHAR_RENAME].handler = &WorldSession::handleCharRenameOpcode;
+    WorldPacketHandlers[CMSG_CHAR_RENAME].status = STATUS_AUTHED;
+    
+    WorldPacketHandlers[CMSG_PLAYER_LOGIN].handler = &WorldSession::handlePlayerLoginOpcode;
+    WorldPacketHandlers[CMSG_PLAYER_LOGIN].status = STATUS_AUTHED;
+
+    WorldPacketHandlers[CMSG_REALM_SPLIT].handler = &WorldSession::handleRealmSplitOpcode;
+    WorldPacketHandlers[CMSG_REALM_SPLIT].status = STATUS_AUTHED;
+}
+

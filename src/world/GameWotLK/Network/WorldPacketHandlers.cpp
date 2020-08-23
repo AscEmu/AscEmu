@@ -7,19 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 void WorldSession::loadSpecificHandlers()
 {
-    // Login
-    WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::handleCharEnumOpcode;
-    WorldPacketHandlers[CMSG_CHAR_ENUM].status = STATUS_AUTHED;
-
-    WorldPacketHandlers[CMSG_CHAR_CREATE].handler = &WorldSession::handleCharCreateOpcode;
-    WorldPacketHandlers[CMSG_CHAR_CREATE].status = STATUS_AUTHED;
-
-    WorldPacketHandlers[CMSG_CHAR_DELETE].handler = &WorldSession::handleCharDeleteOpcode;
-    WorldPacketHandlers[CMSG_CHAR_DELETE].status = STATUS_AUTHED;
-
-    WorldPacketHandlers[CMSG_CHAR_RENAME].handler = &WorldSession::handleCharRenameOpcode;
-    WorldPacketHandlers[CMSG_CHAR_RENAME].status = STATUS_AUTHED;
-
     WorldPacketHandlers[CMSG_CHAR_CUSTOMIZE].handler = &WorldSession::handleCharCustomizeLooksOpcode;
     WorldPacketHandlers[CMSG_CHAR_CUSTOMIZE].status = STATUS_AUTHED;
 
@@ -32,12 +19,6 @@ void WorldSession::loadSpecificHandlers()
     // declined names (Cyrillic client)
     WorldPacketHandlers[CMSG_SET_PLAYER_DECLINED_NAMES].handler = &WorldSession::handleDeclinedPlayerNameOpcode;
     WorldPacketHandlers[CMSG_SET_PLAYER_DECLINED_NAMES].status = STATUS_AUTHED;
-
-    WorldPacketHandlers[CMSG_PLAYER_LOGIN].handler = &WorldSession::handlePlayerLoginOpcode;
-    WorldPacketHandlers[CMSG_PLAYER_LOGIN].status = STATUS_AUTHED;
-
-    WorldPacketHandlers[CMSG_REALM_SPLIT].handler = &WorldSession::handleRealmSplitOpcode;
-    WorldPacketHandlers[CMSG_REALM_SPLIT].status = STATUS_AUTHED;
 
     // Queries
     WorldPacketHandlers[MSG_CORPSE_QUERY].handler = &WorldSession::handleCorpseQueryOpcode;
