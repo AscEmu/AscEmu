@@ -287,7 +287,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* 
     }
 
     // Packet logger :)
-    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode), static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
+    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), opcode, static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
 
 #if VERSION_STRING >= Cata
     ServerPktHeader Header(uint32(len + 2), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode));
@@ -944,11 +944,11 @@ void WorldSocket::OnRead()
             readBuffer.Read(static_cast<uint8*>(packet->contents()), mRemaining);
         }
 
-        sWorldPacketLog.logPacket(mSize, sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), mOpcode), mSize ? packet->contents() : nullptr, 0, (mSession ? mSession->GetAccountId() : 0));
+        sWorldPacketLog.logPacket(mSize, mOpcode, mSize ? packet->contents() : nullptr, 0, (mSession ? mSession->GetAccountId() : 0));
         mRemaining = mSize = /*mOpcode =*/ 0;
 
         // Check for packets that we handle
-        switch (packet->GetOpcode())
+        switch (sOpcodeTables.getInternalIdForHex(packet->GetOpcode()))
         {
             case CMSG_PING:
             {
