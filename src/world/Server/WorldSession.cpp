@@ -1183,7 +1183,10 @@ void WorldSession::loadHandlers()
 #endif
 
     WorldPacketHandlers[CMSG_PET_SPELL_AUTOCAST].handler = &WorldSession::handlePetSpellAutocast;
+
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_PET_LEARN_TALENT].handler = &WorldSession::handlePetLearnTalent;
+#endif
 
     //\todo: implement for classic, bc, cata, mop
 #if VERSION_STRING == WotLK
