@@ -52,6 +52,7 @@
 #include "Server/Packets/SmsgGameobjectDespawnAnim.h"
 #include "Server/Packets/SmsgSpellLogMiss.h"
 #include "Server/Packets/SmsgAiReaction.h"
+#include "Server/OpcodeTable.hpp"
 
 // MIT Start
 
@@ -3685,7 +3686,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
         hasMovementFlags = false,
         hasMovementFlags2 = false;
 
-    MovementStatusElements* sequence = GetMovementStatusElementsSequence(opcode);
+    MovementStatusElements* sequence = GetMovementStatusElementsSequence(sOpcodeTables.getInternalIdForHex(opcode));
     if (!sequence)
     {
         LogError("Unsupported MovementInfo::Read for 0x%X (%s)!", opcode);

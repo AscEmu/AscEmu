@@ -27,6 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgChatIgnored.h"
 #include "Server/Packets/CmsgSetChannelWatch.h"
 #include "Management/GuildMgr.h"
+#include "Server/OpcodeTable.hpp"
 
 #if VERSION_STRING >= Cata
 #include "Spell/SpellAuras.h"
@@ -458,7 +459,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
     const char* pMisc = nullptr;
     const char* pMsg = nullptr;
 
-    const uint8_t type = getMessageTypeForOpcode(recvPacket.GetOpcode());
+    const uint8_t type = getMessageTypeForOpcode(sOpcodeTables.getInternalIdForHex(recvPacket.GetOpcode()));
     if (type == 0xFF)
     {
         LogError("HandleMessagechatOpcode : Unknown chat opcode (0x%X)", recvPacket.GetOpcode());

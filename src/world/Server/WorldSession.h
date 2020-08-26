@@ -120,7 +120,7 @@ struct CharCreate
     uint8_t outfitId;
 };
 
-extern OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
+extern OpcodeHandler WorldPacketHandlers[NUM_OPCODES];
 extern CharacterErrorCodes VerifyName(std::string name);
 
 class SERVER_DECL WorldSession

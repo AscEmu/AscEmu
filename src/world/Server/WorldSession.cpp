@@ -40,7 +40,7 @@
 
 using namespace AscEmu::Packets;
 
-OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
+OpcodeHandler WorldPacketHandlers[NUM_OPCODES];
 
 WorldSession::WorldSession(uint32 id, std::string name, WorldSocket* sock) :
     m_loggingInPlayer(nullptr),
@@ -528,7 +528,7 @@ void WorldSession::SendNotification(const char* message, ...)
 void WorldSession::InitPacketHandlerTable()
 {
     // Nullify Everything, default to STATUS_LOGGEDIN
-    for (uint32 i = 0; i < NUM_MSG_TYPES; ++i)
+    for (uint32 i = 0; i < NUM_OPCODES; ++i)
     {
         WorldPacketHandlers[i].status = STATUS_LOGGEDIN;
         WorldPacketHandlers[i].handler = nullptr;
