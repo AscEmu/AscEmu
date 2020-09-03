@@ -101,30 +101,30 @@ bool ImprovedSprint(uint8_t effectIndex, Spell* pSpell)
 
 bool CutToTheChase(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
-    Unit* target = pAura->GetTarget();
+    Unit* target = pAura->getOwner();
 
     if (apply)
     {
         static uint32_t classMask[3] = { 0x20000, 0x8, 0 };
-        target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
+        target->AddProcTriggerSpell(pAura->getSpellInfo(), pAura->getSpellInfo(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
     }
     else
-        target->RemoveProcTriggerSpell(pAura->GetSpellId(), pAura->m_casterGuid);
+        target->RemoveProcTriggerSpell(pAura->getSpellId(), pAura->getCasterGuid());
 
     return true;
 }
 
 bool DeadlyBrew(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
-    Unit* target = pAura->GetTarget();
+    Unit* target = pAura->getOwner();
 
     if (apply)
     {
         static uint32_t classMask[3] = { 0x1000A000, 0, 0 };
-        target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL, 0, NULL, classMask);
+        target->AddProcTriggerSpell(pAura->getSpellInfo(), pAura->getSpellInfo(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL, 0, NULL, classMask);
     }
     else
-        target->RemoveProcTriggerSpell(pAura->GetSpellId(), pAura->m_casterGuid);
+        target->RemoveProcTriggerSpell(pAura->getSpellId(), pAura->getCasterGuid());
 
     return true;
 }
@@ -141,11 +141,11 @@ bool CloakOfShadows(uint8_t /*effectIndex*/, Spell* s)
     {
         pAura = unitTarget->m_auras[j];
         if (pAura != NULL && !pAura->IsPassive()
-            && !pAura->IsPositive()
-            && !(pAura->GetSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY)
-            && pAura->GetSpellInfo()->getFirstSchoolFromSchoolMask() != 0
+            && pAura->isNegative()
+            && !(pAura->getSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY)
+            && pAura->getSpellInfo()->getFirstSchoolFromSchoolMask() != 0
             )
-            pAura->Remove();
+            pAura->removeAura();
     }
 
     return true;
@@ -153,7 +153,7 @@ bool CloakOfShadows(uint8_t /*effectIndex*/, Spell* s)
 
 bool CheatDeath(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Unit* u_target = a->GetTarget();
+    Unit* u_target = a->getOwner();
     Player* p_target = NULL;
 
     if (u_target->isPlayer())
@@ -169,8 +169,6 @@ bool CheatDeath(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
         if (apply)
         {
-            a->SetPositive();
-
             val = -m / 100.0f;
         }
         else
@@ -187,13 +185,13 @@ bool CheatDeath(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
 bool MasterOfSubtlety(uint8_t effectIndex, Aura* a, bool apply)
 {
-    Unit* u_target = a->GetTarget();
+    Unit* u_target = a->getOwner();
     if (!u_target->isPlayer())
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
 
-    int32_t amount = a->GetModAmount(effectIndex);
+    int32_t amount = a->getEffectDamage(effectIndex);
 
     if (apply)
     {
@@ -213,7 +211,7 @@ bool MasterOfSubtlety(uint8_t effectIndex, Aura* a, bool apply)
 
 bool PreyOnTheWeakPeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Unit* m_target = a->GetTarget();
+    Unit* m_target = a->getOwner();
     Player* p_target = NULL;
 
     if (!apply)
@@ -241,7 +239,7 @@ bool PreyOnTheWeakPeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
 bool KillingSpreePeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool /*apply*/)
 {
-    Unit* m_target = a->GetTarget();
+    Unit* m_target = a->getOwner();
     if (!m_target->isPlayer())
         return true;
 
@@ -254,7 +252,7 @@ bool KillingSpreePeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool /*apply*/)
         if (itr)
         {
             //Get the range of 10 yards from Effect 1
-            float r = static_cast<float>(a->m_spellInfo->getEffectRadiusIndex(1));
+            float r = static_cast<float>(a->getSpellInfo()->getEffectRadiusIndex(1));
 
             //Get initial position of aura target (caster)
             LocationVector source = p_target->GetPosition();

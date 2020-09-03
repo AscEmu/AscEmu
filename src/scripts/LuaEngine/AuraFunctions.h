@@ -36,7 +36,7 @@ namespace LuaAura
     {
         if (!aura)
             RET_NIL();
-        lua_pushnumber(L, aura->GetSpellId());
+        lua_pushnumber(L, aura->getSpellId());
         return 1;
     }
 
@@ -44,7 +44,7 @@ namespace LuaAura
     {
         if (!aura)
             RET_NIL();
-        Object* caster = aura->GetCaster();
+        Object* caster = aura->getCaster();
         if (caster->isCreatureOrPlayer())  //unit caster
         {
             PUSH_UNIT(L, caster);
@@ -70,7 +70,7 @@ namespace LuaAura
     {
         if (!aura)
             RET_NIL();
-        PUSH_UNIT(L, aura->GetTarget());
+        PUSH_UNIT(L, aura->getOwner());
         return 1;
     }
 
@@ -78,7 +78,7 @@ namespace LuaAura
     {
         if (!aura)
             RET_NIL();
-        RET_NUMBER(aura->GetDuration()); //in milliseconds
+        RET_NUMBER(aura->getMaxDuration()); //in milliseconds
     }
 
     int SetDuration(lua_State* L, Aura* aura)
@@ -87,8 +87,8 @@ namespace LuaAura
             return 0;
 
         uint32_t duration = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        aura->SetDuration(duration);
-        sEventMgr.ModifyEventTimeLeft(aura, EVENT_AURA_REMOVE, static_cast<time_t>(duration));
+        aura->setTimeLeft(duration);
+        aura->getOwner()->sendAuraUpdate(aura, false);
         return 0;
     }
 
@@ -96,32 +96,14 @@ namespace LuaAura
     {
         if (!aura)
             RET_NIL();
-        RET_NUMBER(aura->GetTimeLeft()); //in milliseconds
-    }
-
-    int SetNegative(lua_State* L, Aura* aura)
-    {
-        if (!aura)
-            RET_BOOL(false);
-        signed char negativery = static_cast<signed char>(luaL_optinteger(L, 1, 1));
-        aura->SetNegative(negativery);
-        RET_BOOL(true);
-    }
-
-    int SetPositive(lua_State* L, Aura* aura)
-    {
-        if (!aura)
-            RET_BOOL(false);
-        signed char positivery = static_cast<signed char>(luaL_optinteger(L, 1, 1));
-        aura->SetPositive(positivery);
-        RET_BOOL(true);
+        RET_NUMBER(aura->getTimeLeft()); //in milliseconds
     }
 
     int Remove(lua_State* /*L*/, Aura* aura)
     {
         if (!aura)
             return 0;
-        aura->Remove();
+        aura->removeAura();
         return 0;
     }
 
@@ -141,7 +123,7 @@ namespace LuaAura
         int valindex = 2;
         if (subindex)
             valindex++;
-        SpellInfo const* proto = aura->m_spellInfo;
+        SpellInfo const* proto = aura->getSpellInfo();
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
             RET_BOOL(false);
@@ -176,7 +158,7 @@ namespace LuaAura
             lua_pushnil(L);
             return 1;
         }
-        SpellInfo const* proto = aura->m_spellInfo;
+        SpellInfo const* proto = aura->getSpellInfo();
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
             RET_NIL();

@@ -521,9 +521,9 @@ void Group::RemovePlayer(PlayerInfo* info)
         {
             if (pPlayer->m_auras[i] && pPlayer->m_auras[i]->m_areaAura)
             {
-                Object* caster = pPlayer->m_auras[i]->GetCaster();
+                Object* caster = pPlayer->m_auras[i]->getCaster();
                 if ((caster != NULL) && (pPlayer->getGuid() != caster->getGuid()))
-                    pPlayer->m_auras[i]->Remove();
+                    pPlayer->m_auras[i]->removeAura();
             }
         }
     }
@@ -983,7 +983,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
             if (auramask & (uint64(1) << i))
             {
                 Aura * aurApp = pPlayer->GetAuraWithSlot(i);
-                *data << uint32(aurApp ? aurApp->GetSpellId() : 0);
+                *data << uint32(aurApp ? aurApp->getSpellId() : 0);
                 *data << uint8(1);
             }
         }
@@ -1075,7 +1075,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
                 if (auramask & (uint64(1) << i))
                 {
                     Aura * aurApp = pet->GetAuraWithSlot(i);
-                    *data << uint32(aurApp ? aurApp->GetSpellId() : 0);
+                    *data << uint32(aurApp ? aurApp->getSpellId() : 0);
                     *data << uint8(1);
                 }
             }

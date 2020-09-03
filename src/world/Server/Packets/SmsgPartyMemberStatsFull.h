@@ -69,7 +69,7 @@ namespace AscEmu::Packets
                     if (const auto aurApp = player->GetAuraWithSlot(i))
                     {
                         auramask |= (uint64_t(1) << i);
-                        packet << uint32_t(aurApp->GetSpellId());
+                        packet << uint32_t(aurApp->getSpellId());
                         packet << uint8_t(1);
                     }
                 }
@@ -95,7 +95,7 @@ namespace AscEmu::Packets
                         if (const auto auraApp = playerPet->GetAuraWithSlot(i))
                         {
                             petauramask |= (uint64_t(1) << i);
-                            packet << uint32_t(auraApp->GetSpellId());
+                            packet << uint32_t(auraApp->getSpellId());
                             packet << uint8_t(1);
                         }
                     }

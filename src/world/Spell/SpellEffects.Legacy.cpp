@@ -79,11 +79,11 @@ using namespace AscEmu::Packets;
 
 pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
 {
-    &Spell::SpellEffectNULL,                    //   0 SPELL_EFFECT_NULL_0
+    &Spell::spellEffectNotImplemented,          //   0 SPELL_EFFECT_NULL_0
     &Spell::SpellEffectInstantKill,             //   1 SPELL_EFFECT_INSTANT_KILL
     &Spell::SpellEffectSchoolDMG,               //   2 SPELL_EFFECT_SCHOOL_DMG
     &Spell::SpellEffectDummy,                   //   3 SPELL_EFFECT_DUMMY
-    &Spell::SpellEffectNULL,                    //   4 SPELL_EFFECT_NULL_4
+    &Spell::spellEffectNotImplemented,          //   4 SPELL_EFFECT_NULL_4
     &Spell::SpellEffectTeleportUnits,           //   5 SPELL_EFFECT_TELEPORT_UNITS
     &Spell::SpellEffectApplyAura,               //   6 SPELL_EFFECT_APPLY_AURA
     &Spell::SpellEffectEnvironmentalDamage,     //   7 SPELL_EFFECT_ENVIRONMENTAL_DAMAGE
@@ -91,16 +91,16 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectHealthLeech,             //   9 SPELL_EFFECT_HEALTH_LEECH
     &Spell::SpellEffectHeal,                    //  10 SPELL_EFFECT_NULL_10
     &Spell::SpellEffectBind,                    //  11 SPELL_EFFECT_NULL_11
-    &Spell::SpellEffectNULL,                    //  12 SPELL_EFFECT_NULL_12
-    &Spell::SpellEffectNULL,                    //  13 SPELL_EFFECT_NULL_13
-    &Spell::SpellEffectNULL,                    //  14 SPELL_EFFECT_NULL_14
-    &Spell::SpellEffectNULL,                    //  15 SPELL_EFFECT_NULL_15
+    &Spell::spellEffectNotImplemented,          //  12 SPELL_EFFECT_NULL_12
+    &Spell::spellEffectNotImplemented,          //  13 SPELL_EFFECT_NULL_13
+    &Spell::spellEffectNotImplemented,          //  14 SPELL_EFFECT_NULL_14
+    &Spell::spellEffectNotImplemented,          //  15 SPELL_EFFECT_NULL_15
     &Spell::SpellEffectQuestComplete,           //  16 SPELL_EFFECT_QUEST_COMPLETE
     &Spell::SpellEffectWeapondamageNoschool,    //  17 SPELL_EFFECT_WEAPONDAMAGE_NO_SCHOOL
     &Spell::SpellEffectResurrect,               //  18 SPELL_EFFECT_RESURRECT
     &Spell::SpellEffectAddExtraAttacks,         //  19 SPELL_EFFECT_ADD_EXTRA_ATTACKS
     &Spell::SpellEffectDodge,                   //  20 SPELL_EFFECT_DODGE
-    &Spell::SpellEffectNULL,                    //  21 SPELL_EFFECT_NULL_21
+    &Spell::spellEffectNotImplemented,          //  21 SPELL_EFFECT_NULL_21
     &Spell::SpellEffectParry,                   //  22 SPELL_EFFECT_PARRY
     &Spell::SpellEffectBlock,                   //  23 SPELL_EFFECT_BLOCK
     &Spell::SpellEffectCreateItem,              //  24 SPELL_EFFECT_CREATE_ITEM
@@ -118,20 +118,20 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectLearnSpell,              //  36 SPELL_EFFECT_LEARN_SPELL
     &Spell::SpellEffectSpellDefense,            //  37 SPELL_EFFECT_SPELL_DEFENSE
     &Spell::SpellEffectDispel,                  //  38 SPELL_EFFECT_DISPEL
-    &Spell::SpellEffectUnused,                  //  39 SPELL_EFFECT_UNUSED
+    &Spell::spellEffectNotUsed,                 //  39 SPELL_EFFECT_UNUSED
     &Spell::SpellEffectDualWield,               //  40 SPELL_EFFECT_DUAL_WIELD
     &Spell::SpellEffectJumpTarget,              //  41 SPELL_EFFECT_JUMP_TARGET
     &Spell::SpellEffectJumpBehindTarget,        //  42 SPELL_EFFECT_JUMP_BEHIND_TARGET
-    &Spell::SpellEffectNULL,                    //  43 SPELL_EFFECT_NULL_43
+    &Spell::spellEffectNotImplemented,          //  43 SPELL_EFFECT_NULL_43
     &Spell::SpellEffectSkillStep,               //  44 SPELL_EFFECT_SKILL_STEP
     &Spell::SpellEffectAddHonor,                //  45 SPELL_EFFECT_ADD_HONOR
     &Spell::SpellEffectSpawn,                   //  46 SPELL_EFFECT_SPAWN
-    &Spell::SpellEffectNULL,                    //  47 SPELL_EFFECT_NULL_47
-    &Spell::SpellEffectNULL,                    //  48 SPELL_EFFECT_NULL_48
-    &Spell::SpellEffectNULL,                    //  49 SPELL_EFFECT_NULL_49
+    &Spell::spellEffectNotImplemented,          //  47 SPELL_EFFECT_NULL_47
+    &Spell::spellEffectNotImplemented,          //  48 SPELL_EFFECT_NULL_48
+    &Spell::spellEffectNotImplemented,          //  49 SPELL_EFFECT_NULL_49
     &Spell::SpellEffectSummonObject,            //  50 SPELL_EFFECT_SUMMON_OBJECT
-    &Spell::SpellEffectNULL,                    //  51 SPELL_EFFECT_NULL_51
-    &Spell::SpellEffectNULL,                    //  52 SPELL_EFFECT_NULL_52
+    &Spell::spellEffectNotImplemented,          //  51 SPELL_EFFECT_NULL_51
+    &Spell::spellEffectNotImplemented,          //  52 SPELL_EFFECT_NULL_52
     &Spell::SpellEffectEnchantItem,             //  53 SPELL_EFFECT_ENCHANT_ITEM
     &Spell::SpellEffectEnchantItemTemporary,    //  54 SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
     &Spell::SpellEffectTameCreature,            //  55 SPELL_EFFECT_TAME_CREATURE
@@ -152,31 +152,31 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectPlayerPull,              //  70 SPELL_EFFECT_PLAYER_PULL
     &Spell::SpellEffectPickpocket,              //  71 SPELL_EFFECT_PICKPOCKET
     &Spell::SpellEffectAddFarsight,             //  72 SPELL_EFFECT_ADD_FARSIGHT
-    &Spell::SpellEffectNULL,                    //  73 SPELL_EFFECT_NULL_73
+    &Spell::spellEffectNotImplemented,          //  73 SPELL_EFFECT_NULL_73
     &Spell::SpellEffectUseGlyph,                //  74 SPELL_EFFECT_USE_GLYPH
     &Spell::SpellEffectHealMechanical,          //  75 SPELL_EFFECT_HEAL_MECHANICAL
     &Spell::SpellEffectSummonObjectWild,        //  76 SPELL_EFFECT_SUMMON_OBJECT_WILD
     &Spell::SpellEffectScriptEffect,            //  77 SPELL_EFFECT_SCRIPT_EFFECT
-    &Spell::SpellEffectNULL,                    //  78 SPELL_EFFECT_NULL_78
+    &Spell::spellEffectNotImplemented,          //  78 SPELL_EFFECT_NULL_78
     &Spell::SpellEffectSanctuary,               //  79 SPELL_EFFECT_SANCTUARY
     &Spell::SpellEffectAddComboPoints,          //  80 SPELL_EFFECT_ADD_COMBO_POINTS
     &Spell::SpellEffectCreateHouse,             //  81 SPELL_EFFECT_CREATE_HOUSE
-    &Spell::SpellEffectNULL,                    //  82 SPELL_EFFECT_NULL_82
+    &Spell::spellEffectNotImplemented,          //  82 SPELL_EFFECT_NULL_82
     &Spell::SpellEffectDuel,                    //  83 SPELL_EFFECT_DUEL
     &Spell::SpellEffectStuck,                   //  84 SPELL_EFFECT_STUCK
     &Spell::SpellEffectSummonPlayer,            //  85 SPELL_EFFECT_SUMMON_PLAYER
     &Spell::SpellEffectActivateObject,          //  86 SPELL_EFFECT_ACTIVATE_OBJECT
     &Spell::SpellEffectBuildingDamage,          //  87 SPELL_EFFECT_BUILDING_DAMAGE
-    &Spell::SpellEffectNULL,                    //  88 SPELL_EFFECT_NULL_88
-    &Spell::SpellEffectNULL,                    //  89 SPELL_EFFECT_NULL_89
-    &Spell::SpellEffectNULL,                    //  90 SPELL_EFFECT_NULL_90
-    &Spell::SpellEffectNULL,                    //  91 SPELL_EFFECT_NULL_91
+    &Spell::spellEffectNotImplemented,          //  88 SPELL_EFFECT_NULL_88
+    &Spell::spellEffectNotImplemented,          //  89 SPELL_EFFECT_NULL_89
+    &Spell::spellEffectNotImplemented,          //  90 SPELL_EFFECT_NULL_90
+    &Spell::spellEffectNotImplemented,          //  91 SPELL_EFFECT_NULL_91
     &Spell::SpellEffectEnchantHeldItem,         //  92 SPELL_EFFECT_ENCHANT_HELD_ITEM
     &Spell::SpellEffectForceDeselect,           //  93 SPELL_EFFECT_SET_MIRROR_NAME
     &Spell::SpellEffectSelfResurrect,           //  94 SPELL_EFFECT_SELF_RESURRECT
     &Spell::SpellEffectSkinning,                //  95 SPELL_EFFECT_SKINNING
     &Spell::SpellEffectCharge,                  //  96 SPELL_EFFECT_CHARGE
-    &Spell::SpellEffectNULL,                    //  97 SPELL_EFFECT_NULL_97
+    &Spell::spellEffectNotImplemented,          //  97 SPELL_EFFECT_NULL_97
     &Spell::SpellEffectKnockBack,               //  98 SPELL_EFFECT_KNOCK_BACK
     &Spell::SpellEffectDisenchant,              //  99 SPELL_EFFECT_DISENCHANT
     &Spell::SpellEffectInebriate,               // 100 SPELL_EFFECT_INEBRIATE
@@ -191,17 +191,17 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectSummonDeadPet,           // 109 SPELL_EFFECT_SUMMON_DEAD_PET
     &Spell::SpellEffectDestroyAllTotems,        // 110 SPELL_EFFECT_DESTROY_ALL_TOTEMS
     &Spell::SpellEffectDurabilityDamage,        // 111 SPELL_EFFECT_DURABILITY_DAMAGE
-    &Spell::SpellEffectNULL,                    // 112 SPELL_EFFECT_NULL_112
+    &Spell::spellEffectNotImplemented,          // 112 SPELL_EFFECT_NULL_112
     &Spell::SpellEffectResurrectNew,            // 113 SPELL_EFFECT_RESURRECT_NEW
     &Spell::SpellEffectAttackMe,                // 114 SPELL_EFFECT_ATTACK_ME
     &Spell::SpellEffectDurabilityDamagePCT,     // 115 SPELL_EFFECT_DURABILITY_DAMAGE_PCT
     &Spell::SpellEffectSkinPlayerCorpse,        // 116 SPELL_EFFECT_SKIN_PLAYER_CORPSE
-    &Spell::SpellEffectNULL,                    // 117 SPELL_EFFECT_NULL_117
+    &Spell::spellEffectNotImplemented,          // 117 SPELL_EFFECT_NULL_117
     &Spell::SpellEffectSkill,                   // 118 SPELL_EFFECT_SKILL
     &Spell::SpellEffectApplyPetAA,              // 119 SPELL_EFFECT_APPLY_PET_AA
-    &Spell::SpellEffectNULL,                    // 120 SPELL_EFFECT_NULL_120
+    &Spell::spellEffectNotImplemented,          // 120 SPELL_EFFECT_NULL_120
     &Spell::SpellEffectDummyMelee,              // 121 SPELL_EFFECT_DUMMY_MELEE
-    &Spell::SpellEffectNULL,                    // 122 SPELL_EFFECT_NULL_122
+    &Spell::spellEffectNotImplemented,          // 122 SPELL_EFFECT_NULL_122
     &Spell::SpellEffectStartTaxi,               // 123 SPELL_EFFECT_START_TAXI
     &Spell::SpellEffectPlayerPull,              // 124 SPELL_EFFECT_PLAYER_PULL
     &Spell::SpellEffectReduceThreatPercent,     // 125 SPELL_EFFECT_REDUCE_THREAT_PERCENT
@@ -210,28 +210,28 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectApplyFriendAA,           // 128 SPELL_EFFECT_APPLY_FRIEND_AA
     &Spell::SpellEffectApplyEnemyAA,            // 129 SPELL_EFFECT_APPLY_ENEMY_AA
     &Spell::SpellEffectRedirectThreat,          // 130 SPELL_EFFECT_REDIRECT_THREAT
-    &Spell::SpellEffectNULL,                    // 131 SPELL_EFFECT_NULL_131
+    &Spell::spellEffectNotImplemented,          // 131 SPELL_EFFECT_NULL_131
     &Spell::SpellEffectPlayMusic,               // 132 SPELL_EFFECT_PLAY_MUSIC
     &Spell::SpellEffectForgetSpecialization,    // 133 SPELL_EFFECT_FORGET_SPECIALIZATION
     &Spell::SpellEffectKillCredit,              // 134 SPELL_EFFECT_KILL_CREDIT
-    &Spell::SpellEffectNULL,                    // 135 SPELL_EFFECT_NULL_135
+    &Spell::spellEffectNotImplemented,          // 135 SPELL_EFFECT_NULL_135
     &Spell::SpellEffectRestoreHealthPct,        // 136 SPELL_EFFECT_RESTORE_HEALTH_PCT
     &Spell::SpellEffectRestorePowerPct,         // 137 SPELL_EFFECT_RESTORE_POWER_PCT
     &Spell::SpellEffectKnockBack2,              // 138 SPELL_EFFECT_KNOCK_BACK2
     &Spell::SpellEffectClearQuest,              // 139 SPELL_EFFECT_CLEAR_QUEST
     &Spell::SpellEffectTriggerSpell,            // 140 SPELL_EFFECT_TRIGGER_SPELL
-    &Spell::SpellEffectNULL,                    // 141 SPELL_EFFECT_NULL_141
+    &Spell::spellEffectNotImplemented,          // 141 SPELL_EFFECT_NULL_141
     &Spell::SpellEffectTriggerSpellWithValue,   // 142 SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE
     &Spell::SpellEffectApplyOwnerAA,            // 143 SPELL_EFFECT_APPLY_OWNER_AA
     &Spell::SpellEffectKnockBack,               // 144 SPELL_EFFECT_KNOCK_BACK
     &Spell::SpellEffectPlayerPull,              // 145 SPELL_EFFECT_PLAYER_PULL
     &Spell::SpellEffectActivateRunes,           // 146 SPELL_EFFECT_ACTIVATE_RUNES
-    &Spell::SpellEffectNULL,                    // 147 SPELL_EFFECT_NULL_147
-    &Spell::SpellEffectNULL,                    // 148 SPELL_EFFECT_NULL_148
-    &Spell::SpellEffectNULL,                    // 149 SPELL_EFFECT_NULL_149
-    &Spell::SpellEffectNULL,                    // 150 SPELL_EFFECT_NULL_150
+    &Spell::spellEffectNotImplemented,          // 147 SPELL_EFFECT_NULL_147
+    &Spell::spellEffectNotImplemented,          // 148 SPELL_EFFECT_NULL_148
+    &Spell::spellEffectNotImplemented,          // 149 SPELL_EFFECT_NULL_149
+    &Spell::spellEffectNotImplemented,          // 150 SPELL_EFFECT_NULL_150
     &Spell::SpellEffectTriggerSpell,            // 151 SPELL_EFFECT_TRIGGER_SPELL
-    &Spell::SpellEffectNULL,                    // 152 SPELL_EFFECT_NULL_152
+    &Spell::spellEffectNotImplemented,          // 152 SPELL_EFFECT_NULL_152
     &Spell::SpellEffectCreatePet,               // 153 SPELL_EFFECT_CREATE_PET
     &Spell::SpellEffectTeachTaxiPath,           // 154 SPELL_EFFECT_TEACH_TAXI_PATH
     &Spell::SpellEffectDualWield2H,             // 155 SPELL_EFFECT_DUAL_WIELD_2H
@@ -239,29 +239,29 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectCreateItem2,             // 157 SPELL_EFFECT_CREATE_ITEM2
     &Spell::SpellEffectMilling,                 // 158 SPELL_EFFECT_MILLING
     &Spell::SpellEffectRenamePet,               // 159 SPELL_EFFECT_RENAME_PET
-    &Spell::SpellEffectNULL,                    // 160 SPELL_EFFECT_NULL_160
+    &Spell::spellEffectNotImplemented,          // 160 SPELL_EFFECT_NULL_160
     &Spell::SpellEffectLearnSpec,               // 161 SPELL_EFFECT_LEARN_SPEC
     &Spell::SpellEffectActivateSpec,            // 162 SPELL_EFFECT_ACTIVATE_SPEC
-    &Spell::SpellEffectNULL,                    // 163 SPELL_EFFECT_NULL_163
-    &Spell::SpellEffectNULL,                    // 164 SPELL_EFFECT_NULL_154
-    &Spell::SpellEffectNULL,                    // 165 SPELL_EFFECT_NULL_165
-    &Spell::SpellEffectNULL,                    // 166 SPELL_EFFECT_NULL_166
-    &Spell::SpellEffectNULL,                    // 167 SPELL_EFFECT_NULL_167
-    &Spell::SpellEffectNULL,                    // 168 SPELL_EFFECT_NULL_168
-    &Spell::SpellEffectNULL,                    // 169 SPELL_EFFECT_NULL_169
-    &Spell::SpellEffectNULL,                    // 170 SPELL_EFFECT_NULL_170
-    &Spell::SpellEffectNULL,                    // 171 SPELL_EFFECT_NULL_171
-    &Spell::SpellEffectNULL,                    // 172 SPELL_EFFECT_NULL_172
-    &Spell::SpellEffectNULL,                    // 173 SPELL_EFFECT_NULL_173
-    &Spell::SpellEffectNULL,                    // 174 SPELL_EFFECT_NULL_174
-    &Spell::SpellEffectNULL,                    // 175 SPELL_EFFECT_NULL_175
-    &Spell::SpellEffectNULL,                    // 176 SPELL_EFFECT_NULL_176
-    &Spell::SpellEffectNULL,                    // 177 SPELL_EFFECT_NULL_177
-    &Spell::SpellEffectNULL,                    // 178 SPELL_EFFECT_NULL_178
-    &Spell::SpellEffectNULL,                    // 179 SPELL_EFFECT_NULL_179
-    &Spell::SpellEffectNULL,                    // 180 SPELL_EFFECT_NULL_180
-    &Spell::SpellEffectNULL,                    // 181 SPELL_EFFECT_NULL_181
-    &Spell::SpellEffectNULL                     // 182 SPELL_EFFECT_NULL_182
+    &Spell::spellEffectNotImplemented,          // 163 SPELL_EFFECT_NULL_163
+    &Spell::spellEffectNotImplemented,          // 164 SPELL_EFFECT_NULL_154
+    &Spell::spellEffectNotImplemented,          // 165 SPELL_EFFECT_NULL_165
+    &Spell::spellEffectNotImplemented,          // 166 SPELL_EFFECT_NULL_166
+    &Spell::spellEffectNotImplemented,          // 167 SPELL_EFFECT_NULL_167
+    &Spell::spellEffectNotImplemented,          // 168 SPELL_EFFECT_NULL_168
+    &Spell::spellEffectNotImplemented,          // 169 SPELL_EFFECT_NULL_169
+    &Spell::spellEffectNotImplemented,          // 170 SPELL_EFFECT_NULL_170
+    &Spell::spellEffectNotImplemented,          // 171 SPELL_EFFECT_NULL_171
+    &Spell::spellEffectNotImplemented,          // 172 SPELL_EFFECT_NULL_172
+    &Spell::spellEffectNotImplemented,          // 173 SPELL_EFFECT_NULL_173
+    &Spell::spellEffectNotImplemented,          // 174 SPELL_EFFECT_NULL_174
+    &Spell::spellEffectNotImplemented,          // 175 SPELL_EFFECT_NULL_175
+    &Spell::spellEffectNotImplemented,          // 176 SPELL_EFFECT_NULL_176
+    &Spell::spellEffectNotImplemented,          // 177 SPELL_EFFECT_NULL_177
+    &Spell::spellEffectNotImplemented,          // 178 SPELL_EFFECT_NULL_178
+    &Spell::spellEffectNotImplemented,          // 179 SPELL_EFFECT_NULL_179
+    &Spell::spellEffectNotImplemented,          // 180 SPELL_EFFECT_NULL_180
+    &Spell::spellEffectNotImplemented,          // 181 SPELL_EFFECT_NULL_181
+    &Spell::spellEffectNotImplemented           // 182 SPELL_EFFECT_NULL_182
 };
 
 const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
@@ -451,10 +451,21 @@ const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
     "SPELL_EFFECT_NULL_182"                     //    182
 };
 
-void Spell::SpellEffectUnused(uint8_t /*effectIndex*/)
+// APGL End
+// MIT Start
+
+void Spell::spellEffectNotImplemented(uint8_t effIndex)
 {
-    // To prevent debugging. Useless or implemented in a different way.
+    LogDebugFlag(LF_SPELL_EFF, "Spells: Unhandled spell effect %u in spell %u.", getSpellInfo()->getEffect(effIndex), getSpellInfo()->getId());
 }
+
+void Spell::spellEffectNotUsed(uint8_t /*effIndex*/)
+{
+    // Handled elsewhere or not used, so do nothing
+}
+
+// MIT End
+// APGL Start
 
 void Spell::ApplyAreaAura(uint8_t effectIndex)
 {
@@ -494,7 +505,7 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
         }
 
         if (!sEventMgr.HasEvent(pAura, eventtype))      /* only add it once */
-            sEventMgr.AddEvent(pAura, &Aura::EventUpdateAreaAura, r * r, eventtype, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(pAura, &Aura::EventUpdateAreaAura, effectIndex, r * r, eventtype, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         m_pendingAuras.insert(std::make_pair(unitTarget->getGuid(), pAura));
         AddRef();
@@ -505,13 +516,7 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
         pAura = itr->second;
     }
 
-    pAura->AddMod(getSpellInfo()->getEffectApplyAuraName(effectIndex), damage, getSpellInfo()->getEffectMiscValue(effectIndex), effectIndex);
-}
-
-
-void Spell::SpellEffectNULL(uint8_t effectIndex)
-{
-    LogDebugFlag(LF_SPELL_EFF, "Unhandled spell effect %u in spell %u.", getSpellInfo()->getEffect(effectIndex), getSpellInfo()->getId());
+    pAura->addAuraEffect(static_cast<AuraEffect>(getSpellInfo()->getEffectApplyAuraName(effectIndex)), damage, getSpellInfo()->getEffectMiscValue(effectIndex), effectIndex);
 }
 
 void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
@@ -1443,13 +1448,13 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
 
     if (getSpellInfo()->getSpeed() > 0 && m_triggeredSpell == false)
     {
-        m_caster->SpellNonMeleeDamageLog(unitTarget, getSpellInfo()->getId(), dmg, pSpellId == 0);
+        m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), dmg, effectIndex, pSpellId == 0, static_damage);
     }
     else
     {
         if (GetType() == SPELL_DMG_TYPE_MAGIC)
         {
-            m_caster->SpellNonMeleeDamageLog(unitTarget, getSpellInfo()->getId(), dmg, !m_triggeredSpell, static_damage);
+            m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), dmg, effectIndex, !m_triggeredSpell, static_damage);
         }
         else
         {
@@ -1858,10 +1863,10 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
             }
         }break;
     }
-    pAura->AddMod(getSpellInfo()->getEffectApplyAuraName(effectIndex), damage, getSpellInfo()->getEffectMiscValue(effectIndex), effectIndex);
+    pAura->addAuraEffect(static_cast<AuraEffect>(getSpellInfo()->getEffectApplyAuraName(effectIndex)), damage, getSpellInfo()->getEffectMiscValue(effectIndex), effectIndex);
 }
 
-void Spell::SpellEffectEnvironmentalDamage(uint8_t /*effectIndex*/)
+void Spell::SpellEffectEnvironmentalDamage(uint8_t effectIndex)
 {
     if (!playerTarget) return;
 
@@ -1871,7 +1876,7 @@ void Spell::SpellEffectEnvironmentalDamage(uint8_t /*effectIndex*/)
         return;
     }
     //this is GO, not unit
-    m_caster->SpellNonMeleeDamageLog(playerTarget, getSpellInfo()->getId(), damage, pSpellId == 0);
+    m_caster->doSpellDamage(playerTarget, getSpellInfo()->getId(), damage, effectIndex, pSpellId == 0, true);
     playerTarget->sendEnvironmentalDamageLogPacket(playerTarget->getGuid(), DAMAGE_FIRE, damage);
 }
 
@@ -2023,7 +2028,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
         if (!chaindamage)
         {
             chaindamage = damage;
-            Heal((int32)chaindamage);
+            m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), chaindamage);
         }
         else
         {
@@ -2033,7 +2038,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                 spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, getSpellInfo()->getSpellFamilyFlags());
             }
             chaindamage -= (reduce * chaindamage) / 100;
-            Heal((int32)chaindamage);
+            m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), chaindamage);
         }
     }
     else
@@ -2060,7 +2065,8 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                         else
                             value = basePoints + Util::getRandomUInt(randomPoints);
                         //the value is in percent. Until now it's a fixed 10%
-                        Heal(unitTarget->getMaxHealth()*value / 100);
+                        const auto amt = unitTarget->getMaxHealth()*value / 100;
+                        m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), amt);
                     }
                 }
             }
@@ -2070,7 +2076,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
             {
                 if (unitTarget)
                 {
-                    Heal(unitTarget->getMaxHealth() / 100);
+                    m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), unitTarget->getMaxHealth() / 100);
                 }
             }
             break;
@@ -2153,14 +2159,14 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                         0
                     };
                     Aura* taura = unitTarget->getAuraWithId(regrowth);    //Regrowth
-                    if (taura && taura->GetSpellInfo())
+                    if (taura && taura->getSpellInfo())
                     {
-                        uint32 amplitude = taura->GetSpellInfo()->getEffectAmplitude(1) / 1000;
+                        uint32 amplitude = taura->getSpellInfo()->getEffectAmplitude(1) / 1000;
                         if (!amplitude)
                             amplitude = 3;
 
                         //our hapiness is that we did not store the aura mod amount so we have to recalc it
-                        Spell* spell = sSpellMgr.newSpell(m_caster, taura->GetSpellInfo(), false, nullptr);
+                        Spell* spell = sSpellMgr.newSpell(m_caster, taura->getSpellInfo(), false, nullptr);
                         uint32 healamount = spell->CalculateEffect(1, unitTarget);
                         delete spell;
                         spell = nullptr;
@@ -2266,13 +2272,13 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                         };
 
                         taura = unitTarget->getAuraWithId(rejuvenation);  //Rejuvenation
-                        if (taura  && taura->GetSpellInfo())
+                        if (taura  && taura->getSpellInfo())
                         {
-                            uint32 amplitude = taura->GetSpellInfo()->getEffectAmplitude(0) / 1000;
+                            uint32 amplitude = taura->getSpellInfo()->getEffectAmplitude(0) / 1000;
                             if (!amplitude) amplitude = 3;
 
                             //our happiness is that we did not store the aura mod amount so we have to recalc it
-                            Spell* spell = sSpellMgr.newSpell(m_caster, taura->GetSpellInfo(), false, nullptr);
+                            Spell* spell = sSpellMgr.newSpell(m_caster, taura->getSpellInfo(), false, nullptr);
                             uint32 healamount = spell->CalculateEffect(0, unitTarget);
                             delete spell;
                             spell = nullptr;
@@ -2290,14 +2296,14 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                         const auto spellInfo = sSpellMgr.getSpellInfo(18562);
                         Spell* spell = sSpellMgr.newSpell(unitTarget, spellInfo, true, nullptr);
                         spell->SetUnitTarget(unitTarget);
-                        spell->Heal((int32)new_dmg);
+                        m_caster->doSpellHealing(unitTarget, spellInfo->getId(), new_dmg);
                         delete spell;
                     }
                 }
             }
             break;
             default:
-                Heal(damage);
+                m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), damage);
                 break;
         }
     }
@@ -3380,7 +3386,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
     if (GetType() == SPELL_DMG_TYPE_MAGIC)
     {
         uint32 dmg = CalculateDamage(u_caster, unitTarget, MELEE, nullptr, getSpellInfo()) * damage / 100;
-        u_caster->SpellNonMeleeDamageLog(unitTarget, getSpellInfo()->getId(), dmg, false, false, false);
+        u_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), dmg, effectIndex, false);
     }
     else
     {
@@ -3930,7 +3936,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
         {
             bool AuraRemoved = false;
             aur = unitTarget->m_auras[x];
-            aursp = aur->GetSpellInfo();
+            aursp = aur->getSpellInfo();
 
             //Nothing can dispel resurrection sickness;
             if (!aur->IsPassive() && !(aursp->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
@@ -3953,7 +3959,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
 
                     dispelledSpells.push_back(aursp->getId());
 
-                    unitTarget->removeAllAurasByIdForGuid(aursp->getId(), aur->GetCasterGUID());
+                    unitTarget->removeAllAurasByIdForGuid(aursp->getId(), aur->getCasterGuid());
                     AuraRemoved = true;
 
                     if (--damage <= 0)
@@ -4582,7 +4588,7 @@ void Spell::SpellEffectPowerBurn(uint8_t effectIndex) // power burn
 
     unitTarget->modPower(POWER_TYPE_MANA, -mana);
 
-    m_caster->SpellNonMeleeDamageLog(unitTarget, getSpellInfo()->getId(), (uint32)(mana * getSpellInfo()->getEffectMultipleValue(effectIndex)), pSpellId == 0, true);
+    m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), static_cast<uint32_t>(mana * getSpellInfo()->getEffectMultipleValue(effectIndex)), effectIndex, pSpellId == 0, true);
 }
 
 void Spell::SpellEffectThreat(uint8_t effectIndex) // Threat
@@ -4653,7 +4659,7 @@ void Spell::SpellEffectHealMaxHealth(uint8_t /*effectIndex*/)   // Heal Max Heal
         return;
     }
 
-    SendHealSpellOnPlayer(m_caster, unitTarget, dif, false, 0, pSpellId ? pSpellId : getSpellInfo()->getId());
+    unitTarget->sendSpellHealLog(m_caster, unitTarget, pSpellId ? pSpellId : getSpellInfo()->getId(), dif, false, 0, 0);
 
     unitTarget->modHealth(dif);
 
@@ -4867,7 +4873,7 @@ void Spell::SpellEffectHealMechanical(uint8_t /*effectIndex*/)
     if (!unitTarget || !unitTarget->isCreature() || static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Type != UNIT_TYPE_MECHANICAL)
         return;
 
-    Heal(damage);
+    m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), damage);
 }
 
 void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
@@ -5691,7 +5697,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
             {
                 if (unitTarget->m_auras[x])
                 {
-                    switch (unitTarget->m_auras[x]->GetSpellInfo()->getId())
+                    switch (unitTarget->m_auras[x]->getSpellInfo()->getId())
                     {
                         //SPELL_HASH_SUNDER_ARMOR
                         case 7386:
@@ -5725,7 +5731,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
                         case 71554:
                         {
                             sunder_count++;
-                            spellInfo = unitTarget->m_auras[x]->GetSpellInfo();
+                            spellInfo = unitTarget->m_auras[x]->getSpellInfo();
                         } break;
                         default:
                             spellInfo = sSpellMgr.getSpellInfo(7386);
@@ -6031,7 +6037,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
         if (unitTarget->m_auras[x] != nullptr)
         {
             aur = unitTarget->m_auras[x];
-            aursp = aur->GetSpellInfo();
+            aursp = aur->getSpellInfo();
 
             if (aursp->getId() != 15007 && !aur->IsPassive()
                 //              && aur->IsPositive()    // Zack : We are only checking positive auras. There is no meaning to check again
@@ -6041,36 +6047,36 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
                 {
                     stealedSpells.push_back(aursp->getId());
 
-                    uint32 aurdur = (aur->GetDuration() > 120000 ? 120000 : aur->GetDuration());
+                    uint32 aurdur = (aur->getTimeLeft() > 120000 ? 120000 : aur->getTimeLeft());
                     Aura* aura = sSpellMgr.newAura(aursp, aurdur, u_caster, u_caster);
                     uint32 aur_removed = unitTarget->removeAllAurasByIdReturnCount(aursp->getId());
                     for (uint8 j = 0; j < 3; j++)
                     {
-                        if (aura->GetSpellInfo()->getEffect(j))
+                        if (aura->getSpellInfo()->getEffect(j))
                         {
-                            aura->AddMod(aura->GetSpellInfo()->getEffectApplyAuraName(j), aura->GetSpellInfo()->getEffectBasePoints(j) + 1, aura->GetSpellInfo()->getEffectMiscValue(j), j);
+                            aura->addAuraEffect(static_cast<AuraEffect>(aura->getSpellInfo()->getEffectApplyAuraName(j)), aura->getSpellInfo()->getEffectBasePoints(j) + 1, aura->getSpellInfo()->getEffectMiscValue(j), j);
                         }
                     }
-                    if (aura->GetSpellInfo()->getProcChance() > 0)
+                    if (aura->getSpellInfo()->getProcChance() > 0)
                     {
                         Aura* aur2;
                         for (uint32 j = 0; j < aur_removed - 1; j++)
                         {
-                            aur2 = sSpellMgr.newAura(aura->GetSpellInfo(), aurdur, u_caster, u_caster);
-                            u_caster->AddAura(aur2);
+                            aur2 = sSpellMgr.newAura(aura->getSpellInfo(), aurdur, u_caster, u_caster);
+                            u_caster->addAura(aur2);
                         }
-                        if (!(aura->GetSpellInfo()->getProcFlags() & PROC_REMOVEONUSE))
+                        if (!(aura->getSpellInfo()->getProcFlags() & PROC_REMOVEONUSE))
                         {
                             SpellCharge charge;
                             charge.count = aur_removed;
-                            charge.spellId = aura->GetSpellId();
-                            charge.ProcFlag = aura->GetSpellInfo()->getProcFlags();
+                            charge.spellId = aura->getSpellId();
+                            charge.ProcFlag = aura->getSpellInfo()->getProcFlags();
                             charge.lastproc = 0;
                             charge.procdiff = 0;
-                            u_caster->m_chargeSpells.insert(std::make_pair(aura->GetSpellId(), charge));
+                            u_caster->m_chargeSpells.insert(std::make_pair(aura->getSpellId(), charge));
                         }
                     }
-                    u_caster->AddAura(aura);
+                    u_caster->addAura(aura);
                     break;
                 }
             }
@@ -6361,7 +6367,7 @@ void Spell::SpellEffectRestoreHealthPct(uint8_t /*effectIndex*/)
     else
         unitTarget->modHealth(modHealth);
 
-    SendHealSpellOnPlayer(m_caster, unitTarget, modHealth, false, overheal, pSpellId ? pSpellId : getSpellInfo()->getId());
+    unitTarget->sendSpellHealLog(m_caster, unitTarget, pSpellId ? pSpellId : getSpellInfo()->getId(), modHealth, false, 0, 0);
 }
 
 void Spell::SpellEffectLearnSpec(uint8_t /*effectIndex*/)

@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Definitions/AuraEffects.h"
 #include "Definitions/PowerType.h"
 #include "SpellDefines.hpp"
 #include "SpellScript.h"
@@ -42,7 +43,10 @@ public:
     bool hasHealingEffect() const;
 
     // Checks if spell (in most cases an aura) affects another spell, based on spell group mask
+    // Note; this can cause false positives if aura has multiple effects
+    // Use isAuraEffectAffectingSpell in that case to check individual effects
     bool isAffectingSpell(SpellInfo const* spellInfo) const;
+    bool isAuraEffectAffectingSpell(AuraEffect auraEffect, SpellInfo const* spellInfo) const;
 
     // Returns true if powertype is valid for current expansion
     bool hasValidPowerType() const;

@@ -20,7 +20,7 @@ namespace AscEmu::Packets
         uint32_t spellId;
         uint32_t auraType;
         uint32_t amount;
-        uint32_t overKill;
+        uint32_t overKillOrOverHeal;
         uint32_t schoolMask;
         uint32_t absorbAmount;
         uint32_t resistedAmount;
@@ -32,7 +32,7 @@ namespace AscEmu::Packets
         {
         }
 
-        SmsgPeriodicAuraLog(WoWGuid targetGuid, WoWGuid casterGuid, uint32_t spellId, uint32_t auraType, uint32_t amount, uint32_t overKill, 
+        SmsgPeriodicAuraLog(WoWGuid targetGuid, WoWGuid casterGuid, uint32_t spellId, uint32_t auraType, uint32_t amount, uint32_t overKillOrOverHeal,
             uint32_t schoolMask, uint32_t absorbAmount, uint32_t resistedAmount, uint8_t isCritical, uint32_t miscValue, float gainMultiplier) :
             ManagedPacket(SMSG_PERIODICAURALOG, 30),
             targetGuid(targetGuid),
@@ -40,7 +40,7 @@ namespace AscEmu::Packets
             spellId(spellId),
             auraType(auraType),
             amount(amount),
-            overKill(overKill),
+            overKillOrOverHeal(overKillOrOverHeal),
             schoolMask(schoolMask),
             absorbAmount(absorbAmount),
             resistedAmount(resistedAmount),
@@ -62,20 +62,20 @@ namespace AscEmu::Packets
             case 3:     //SPELL_AURA_PERIODIC_DAMAGE
             case 89:    //SPELL_AURA_PERIODIC_DAMAGE_PERCENT;
 #if VERSION_STRING > TBC
-                    packet << amount << overKill << schoolMask << absorbAmount << resistedAmount << isCritical;
+                    packet << amount << overKillOrOverHeal << schoolMask << absorbAmount << resistedAmount << isCritical;
 #else
                     packet << amount << schoolMask << absorbAmount << resistedAmount;
 #endif
                     break;
             case 8:     //SPELL_AURA_PERIODIC_HEAL
-            case 20:    //SPELL_AURA_MOD_TOTAL_HEALTH_REGEN_PCT
+            case 20:    //SPELL_AURA_PERIODIC_HEAL_PCT
 #if VERSION_STRING > TBC
-                    packet << amount << overKill << absorbAmount << isCritical;
+                    packet << amount << overKillOrOverHeal << absorbAmount << isCritical;
 #else
                     packet << amount;
 #endif
                     break;
-            case 21:    //SPELL_AURA_MOD_TOTAL_MANA_REGEN_PCT
+            case 21:    //SPELL_AURA_PERIODIC_POWER_PCT
             case 24:    //SPELL_AURA_PERIODIC_ENERGIZE
                     packet << miscValue << amount;
                     break;

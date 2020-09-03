@@ -255,8 +255,8 @@ enum SpellAttributesExE
     ATTRIBUTESEXE_UNK26                             = 0x01000000,
     ATTRIBUTESEXE_UNK27                             = 0x02000000,
     ATTRIBUTESEXE_SKIP_LINE_OF_SIGHT_CHECK          = 0x04000000,   // Used for spells which explode around target
-    ATTRIBUTESEXE_UNK29                             = 0x08000000,
-    ATTRIBUTESEXE_UNK30                             = 0x10000000,
+    ATTRIBUTESEXE_HIDE_AURA_ON_SELF_CAST            = 0x08000000,
+    ATTRIBUTESEXE_HIDE_AURA_ON_NON_SELF_CAST        = 0x10000000,
     ATTRIBUTESEXE_UNK31                             = 0x20000000,
     ATTRIBUTESEXE_UNK32                             = 0x40000000,
     ATTRIBUTESEXE_UNK33                             = 0x80000000
@@ -336,7 +336,6 @@ enum SpellAttributesExG
     ATTRIBUTESEXG_UNK32                             = 0x80000000
 };
 
-#if VERSION_STRING >= Cata
 enum SpellAttributesExH
 {
     ATTRIBUTESEXH_UNK0                              = 0x00000001,   // 0
@@ -351,7 +350,7 @@ enum SpellAttributesExH
     ATTRIBUTESEXH_UNK9                              = 0x00000200,   // 9 
     ATTRIBUTESEXH_UNK10                             = 0x00000400,   // 10 
     ATTRIBUTESEXH_UNK11                             = 0x00000800,   // 11 
-    ATTRIBUTESEXH_UNK12                             = 0x00001000,   // 12
+    ATTRIBUTESEXH_SEND_AURA_EFFECT_AMOUNT           = 0x00001000,   // 12 sends aura effect values in SMSG_SEND_AURA_UPDATE
     ATTRIBUTESEXH_UNK13                             = 0x00002000,   // 13
     ATTRIBUTESEXH_UNK14                             = 0x00004000,   // 14 
     ATTRIBUTESEXH_UNK15                             = 0x00008000,   // 15 
@@ -444,7 +443,6 @@ enum SpellAttributesExJ
     ATTRIBUTESEXJ_UNK30                             = 0x40000000,   // 30
     ATTRIBUTESEXJ_UNK31                             = 0x80000000    // 31
 };
-#endif
 
 enum SpellRangeTypeMask : uint8_t
 {

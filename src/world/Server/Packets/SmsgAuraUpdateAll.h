@@ -31,6 +31,7 @@ namespace AscEmu::Packets
             WoWGuid casterGuid;
             uint32_t duration;
             uint32_t timeLeft;
+            int32_t effAmount[5]; // 3 spell effects up till cata, 5 in mop
         };
 
         std::vector<AuraUpdate> aura_updates;
@@ -75,6 +76,18 @@ namespace AscEmu::Packets
                 {
                     packet << auras.duration;
                     packet << auras.timeLeft;
+                }
+
+                if (auras.flags & 0x40) // AFLAG_SEND_EFFECT_AMOUNT
+                {
+                    if (auras.flags & 0x01) // AFLAG_EFFECT_1
+                        packet << auras.effAmount[0];
+
+                    if (auras.flags & 0x02) // AFLAG_EFFECT_2
+                        packet << auras.effAmount[1];
+
+                    if (auras.flags & 0x04) // AFLAG_EFFECT_3
+                        packet << auras.effAmount[2];
                 }
             }
 

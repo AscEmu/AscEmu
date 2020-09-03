@@ -44,11 +44,14 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << casterGuid << targetGuid << spellId << healed;
+            packet << targetGuid << casterGuid << spellId << healed;
 #if VERSION_STRING > TBC
             packet << overHealed << absorb;
 #endif
-            packet << isCritical << unused;
+            packet << isCritical;
+#if VERSION_STRING > Classic
+            packet << unused;
+#endif
 
             return true;
         }

@@ -29,16 +29,16 @@
 // Spell Defs
 bool FlametongueWeaponPassive(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
-    Unit* target = pAura->GetTarget();
+    Unit* target = pAura->getOwner();
 
     if (apply)
     {
         // target is always a player
         Item* item = static_cast<Player*>(target)->getItemInterface()->GetItemByGUID(pAura->itemCasterGUID);
-        target->AddProcTriggerSpell(10444, pAura->GetSpellInfo()->getId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK, 0, NULL, NULL, item);
+        target->AddProcTriggerSpell(10444, pAura->getSpellInfo()->getId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK, 0, NULL, NULL, item);
     }
     else
-        target->RemoveProcTriggerSpell(10444, pAura->m_casterGuid, pAura->itemCasterGUID);
+        target->RemoveProcTriggerSpell(10444, pAura->getCasterGuid(), pAura->itemCasterGUID);
 
     return true;
 }
@@ -59,9 +59,9 @@ bool SkyShatterRegalia(uint8_t /*effectIndex*/, Spell* s)
         Aura* aur = sSpellMgr.newAura(sSpellMgr.getSpellInfo(38437), 5000, s->p_caster, s->p_caster, true);
 
         for (uint8_t j = 0; j < 3; j++)
-            aur->AddMod(aur->GetSpellInfo()->getEffectRadiusIndex(j), aur->GetSpellInfo()->getEffectBasePoints(j) + 1, aur->GetSpellInfo()->getEffectMiscValue(j), j);
+            aur->addAuraEffect(static_cast<AuraEffect>(aur->getSpellInfo()->getEffectRadiusIndex(j)), aur->getSpellInfo()->getEffectBasePoints(j) + 1, aur->getSpellInfo()->getEffectMiscValue(j), j);
 
-        s->p_caster->AddAura(aur);
+        s->p_caster->addAura(aur);
     }
 
     return true;
@@ -82,19 +82,19 @@ bool ManaTide(uint8_t /*effectIndex*/, Spell* s)
 
 bool EarthShieldDummyAura(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
-    Unit* m_target = pAura->GetTarget();
+    Unit* m_target = pAura->getOwner();
 
     if (apply)
-        m_target->AddProcTriggerSpell(379, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), pAura->GetSpellInfo()->getProcFlags() & ~PROC_ON_SPELL_LAND_VICTIM, pAura->GetSpellInfo()->getProcCharges(), NULL, NULL);
-    else if (m_target->GetAuraStackCount(pAura->GetSpellId()) == 1)
-        m_target->RemoveProcTriggerSpell(379, pAura->m_casterGuid);
+        m_target->AddProcTriggerSpell(379, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), pAura->getSpellInfo()->getProcFlags() & ~PROC_ON_SPELL_LAND_VICTIM, pAura->getSpellInfo()->getProcCharges(), NULL, NULL);
+    else if (m_target->GetAuraStackCount(pAura->getSpellId()) == 1)
+        m_target->RemoveProcTriggerSpell(379, pAura->getCasterGuid());
 
     return true;
 }
 
 bool Reincarnation(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Unit* u_target = a->GetTarget();
+    Unit* u_target = a->getOwner();
 
     if (!u_target->isPlayer())
         return true;

@@ -182,13 +182,13 @@ bool NetOMatic(uint8_t /*effectIndex*/, Spell* pSpell)
     return true;
 }
 
-bool BanishExile(uint8_t /*effectIndex*/, Spell* pSpell)
+bool BanishExile(uint8_t effectIndex, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
     if (!pSpell->p_caster || !target)
         return true;
 
-    pSpell->p_caster->SpellNonMeleeDamageLog(target, pSpell->m_spellInfo->getId(), target->getHealth(), true);
+    pSpell->p_caster->doSpellDamage(target, pSpell->m_spellInfo->getId(), target->getHealth(), effectIndex);
     return true;
 }
 
@@ -371,7 +371,7 @@ bool WarpRiftGenerator(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool OrbOfTheSindorei(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
-    Unit* target = pAura->GetTarget();
+    Unit* target = pAura->getOwner();
     if (!target->isPlayer())
         return true;
     if (apply)
@@ -392,7 +392,7 @@ bool OrbOfTheSindorei(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 bool ScalingMountDummyAura(uint32_t /*i*/, Aura* pAura, bool /*apply*/)
 {
     // Remove dummy aura on application, dummy effect will occur directly after
-    pAura->Remove();
+    pAura->removeAura();
     return true;
 }
 
@@ -589,9 +589,9 @@ bool BrittleArmor(uint8_t /*effectIndex*/, Spell* s)
     return true;
 }
 
-bool RequiresNoAmmo(uint8_t /*effectIndex*/, Aura* a, bool apply)
+bool RequiresNoAmmo(uint8_t effectIndex, Aura* a, bool apply)
 {
-    a->SpellAuraConsumeNoAmmo(apply);
+    a->SpellAuraConsumeNoAmmo(&a->getAuraEffect(effectIndex), apply);
 
     return true;
 }
@@ -751,7 +751,7 @@ bool ChampioningTabards(uint8_t /*effectIndex*/, Aura* a, bool apply)
     if (p_caster == NULL)
         return true;
 
-    uint32_t Faction = a->GetSpellInfo()->getEffectMiscValue(0);
+    uint32_t Faction = a->getSpellInfo()->getEffectMiscValue(0);
 
     if (apply)
         p_caster->SetChampioningFaction(Faction);
@@ -808,7 +808,7 @@ bool Spinning(uint8_t /*effectIndex*/, Spell* s)
 //////////////////////////////////////////////////////////////////////////////////////////
 bool ListeningToMusic(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Unit* m_target = a->GetTarget();
+    Unit* m_target = a->getOwner();
     Player* p_target = NULL;
 
     if (m_target->isPlayer())
@@ -846,7 +846,7 @@ bool DrinkDummyAura(uint8_t /*effectIndex*/, Aura* a, bool apply)
     if (!apply)
         return true;
 
-    float famount = 2.2f * (static_cast<float>(a->GetSpellInfo()->getEffectBasePoints(1)) / 5.0f);
+    float famount = 2.2f * (static_cast<float>(a->getSpellInfo()->getEffectBasePoints(1)) / 5.0f);
     int32_t amount = static_cast<int32_t>(std::round(famount));
 
     a->EventPeriodicDrink(amount);
@@ -856,16 +856,16 @@ bool DrinkDummyAura(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
 bool X53Mount(uint8_t /*effectIndex*/, Aura *a, bool apply)
 {
-    if (a->GetTarget() == NULL)
+    if (a->getOwner() == NULL)
         return true;
 
-    if (!a->GetTarget()->isPlayer())
+    if (!a->getOwner()->isPlayer())
         return true;
 
     if (apply)
     {
         uint32_t newspell = 0;
-        if (Player* p = dynamic_cast<Player*>(a->GetTarget()))
+        if (Player* p = dynamic_cast<Player*>(a->getOwner()))
         {
             if (auto area = p->GetArea())
             {
@@ -884,7 +884,7 @@ bool X53Mount(uint8_t /*effectIndex*/, Aura *a, bool apply)
                     else
                         newspell = 75957;
                 }
-                a->GetTarget()->castSpell(a->GetTarget(), newspell, true);
+                a->getOwner()->castSpell(a->getOwner(), newspell, true);
             }
         }
     }

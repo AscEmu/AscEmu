@@ -100,7 +100,7 @@ bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
 
         Aura* aur = pSpell->p_caster->getAuraWithId(improvedDeathStrike);
         if (aur != nullptr)
-            val += val * (aur->GetSpellInfo()->getEffectBasePoints(2) + 1) / 100;
+            val += val * (aur->getSpellInfo()->getEffectBasePoints(2) + 1) / 100;
 
         if (val > 0)
             pSpell->u_caster->Heal(pSpell->u_caster, pSpell->getSpellInfo()->getId(), val);
@@ -114,15 +114,15 @@ bool Strangulate(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (!apply)
         return true;
 
-    if (!pAura->GetTarget()->isPlayer())
+    if (!pAura->getOwner()->isPlayer())
         return true;
 
-    Unit* unitTarget = pAura->GetTarget();
+    Unit* unitTarget = pAura->getOwner();
 
     // Interrupt target's current casted spell (either channeled or generic spell with cast time)
     if (unitTarget->isCastingSpell(false, true))
     {
-        if (unitTarget->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && pAura->GetTarget()->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
+        if (unitTarget->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && pAura->getOwner()->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
         {
             unitTarget->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
         }
@@ -295,9 +295,9 @@ bool DeathAndDecay(uint8_t effectIndex, Aura* pAura, bool apply)
         if (caster == NULL)
             return true;
 
-        int32_t value = int32_t(pAura->GetModAmount(effectIndex) + (int32_t)caster->GetAP() * 0.064);
+        int32_t value = int32_t(pAura->getEffectDamage(effectIndex) + (int32_t)caster->GetAP() * 0.064);
 
-        caster->castSpell(pAura->GetTarget(), 52212, value, true);
+        caster->castSpell(pAura->getOwner(), 52212, value, true);
     }
 
     return true;
@@ -305,39 +305,39 @@ bool DeathAndDecay(uint8_t effectIndex, Aura* pAura, bool apply)
 
 bool Butchery(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
-    Unit* target = pAura->GetTarget();
+    Unit* target = pAura->getOwner();
 
     if (apply)
-        target->AddProcTriggerSpell(50163, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_GAIN_EXPIERIENCE | PROC_TARGET_SELF, 0, NULL, NULL);
+        target->AddProcTriggerSpell(50163, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_GAIN_EXPIERIENCE | PROC_TARGET_SELF, 0, NULL, NULL);
     else
-        target->RemoveProcTriggerSpell(50163, pAura->m_casterGuid);
+        target->RemoveProcTriggerSpell(50163, pAura->getCasterGuid());
 
     return true;
 }
 
 bool DeathRuneMastery(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
-    Unit* target = pAura->GetTarget();
+    Unit* target = pAura->getOwner();
 
     if (apply)
     {
         static uint32_t classMask[3] = { 0x10, 0x20000, 0 };
-        target->AddProcTriggerSpell(50806, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
+        target->AddProcTriggerSpell(50806, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
     }
     else
-        target->RemoveProcTriggerSpell(50806, pAura->m_casterGuid);
+        target->RemoveProcTriggerSpell(50806, pAura->getCasterGuid());
 
     return true;
 }
 
 bool MarkOfBlood(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
-    Unit* target = pAura->GetTarget();
+    Unit* target = pAura->getOwner();
 
     if (apply)
-        target->AddProcTriggerSpell(61607, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), pAura->GetSpellInfo()->getProcFlags(), pAura->GetSpellInfo()->getProcCharges(), NULL, NULL);
+        target->AddProcTriggerSpell(61607, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), pAura->getSpellInfo()->getProcFlags(), pAura->getSpellInfo()->getProcCharges(), NULL, NULL);
     else if (target->GetAuraStackCount(49005) <= 1)
-        target->RemoveProcTriggerSpell(61607, pAura->m_casterGuid);
+        target->RemoveProcTriggerSpell(61607, pAura->getCasterGuid());
 
     return true;
 }
@@ -347,9 +347,9 @@ bool Hysteria(uint8_t effectIndex, Aura* pAura, bool apply)
     if (!apply)
         return true;
 
-    Unit* target = pAura->GetTarget();
+    Unit* target = pAura->getOwner();
 
-    uint32_t dmg = (uint32_t)target->getMaxHealth() * (pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1) / 100;
+    uint32_t dmg = (uint32_t)target->getMaxHealth() * (pAura->getSpellInfo()->getEffectBasePoints(effectIndex) + 1) / 100;
     target->DealDamage(target, dmg, 0, 0, 0);
 
     return true;

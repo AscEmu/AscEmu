@@ -733,15 +733,9 @@ void Spell::Update(unsigned long timePassed)
     {
         case SPELL_STATE_PREPARING:
         {
-            if (m_timer > 0)
-            {
-                if (static_cast<int32_t>(timePassed) >= m_timer)
-                    m_timer = 0;
-                else
-                    m_timer -= timePassed;
-            }
+            m_timer -= timePassed;
 
-            if (m_timer == 0 && !getSpellInfo()->isOnNextMeleeAttack() && !getSpellInfo()->isRangedAutoRepeat())
+            if (m_timer <= 0 && !getSpellInfo()->isOnNextMeleeAttack() && !getSpellInfo()->isRangedAutoRepeat())
             {
                 // Skip checks for instant spells
                 castMe(m_castTime > 0);
@@ -759,15 +753,13 @@ void Spell::Update(unsigned long timePassed)
                         cancel();
                 }
 
-                if (static_cast<int32_t>(timePassed) >= m_timer)
-                    m_timer = 0;
-                else
-                    m_timer -= timePassed;
+                m_timer -= timePassed;
             }
 
+            // Channeling finishes
             if (m_timer <= 0)
             {
-                sendChannelUpdate(0);
+                sendChannelUpdate(0, timePassed);
                 finish();
             }
         } break;
@@ -882,9 +874,9 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             {
                 if (aura == nullptr)
                     continue;
-                if (!aura->GetSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
+                if (!aura->getSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
                     continue;
-                if (aura->GetSpellInfo()->isAffectingSpell(getSpellInfo()))
+                if (aura->getSpellInfo()->isAffectingSpell(getSpellInfo()))
                 {
                     // Warrior's Overpower uses "combo points" based on dbc data
                     // This allows usage of Overpower if we have an affecting aura (i.e. Taste for Blood)
@@ -892,7 +884,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
                     // All these aura effects use effect index 0
                     // Allow Warrior's Charge to be casted on combat if caster has Juggernaut or Warbringer talent
-                    if (aura->GetSpellInfo()->getEffectMiscValue(0) == 1)
+                    if (aura->getSpellInfo()->getEffectMiscValue(0) == 1)
                     {
                         // TODO: currently not working, serverside everything was OK but client still gives "You are in combat" error
                         requireCombat = false;
@@ -942,9 +934,9 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                         continue;
                     // If aura has ignore shapeshift type, you can use spells regardless of stance / form
                     // Auras with this type: Shadow Dance, Metamorphosis, Warbringer (in 3.3.5a)
-                    if (!aura->GetSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_SHAPESHIFT))
+                    if (!aura->getSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_SHAPESHIFT))
                         continue;
-                    if (aura->GetSpellInfo()->isAffectingSpell(getSpellInfo()))
+                    if (aura->getSpellInfo()->isAffectingSpell(getSpellInfo()))
                     {
                         hasIgnoreShapeshiftAura = true;
                         break;
@@ -3240,12 +3232,12 @@ SpellCastResult Spell::checkCasterState() const
             {
                 if (stunAura == nullptr)
                     continue;
-                if (!stunAura->GetSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_MOD_STUN))
+                if (!stunAura->getSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_MOD_STUN))
                     continue;
 
                 // Frozen mechanic acts like stunned mechanic
-                if (!hasSpellMechanic(stunAura->GetSpellInfo(), MECHANIC_STUNNED)
-                    && !hasSpellMechanic(stunAura->GetSpellInfo(), MECHANIC_FROZEN))
+                if (!hasSpellMechanic(stunAura->getSpellInfo(), MECHANIC_STUNNED)
+                    && !hasSpellMechanic(stunAura->getSpellInfo(), MECHANIC_FROZEN))
                 {
                     // The stun aura has a stun effect but has no stun or frozen mechanic
                     // This is not a normal stun aura
@@ -3287,31 +3279,31 @@ SpellCastResult Spell::checkCasterState() const
                     continue;
 
                 // Check if the spell, which is being casted, is unaffected by this aura due to school immunity
-                if (aur->GetSpellInfo()->getSchoolMask() & schoolImmunityMask && !(aur->GetSpellInfo()->getAttributesEx() & ATTRIBUTESEX_UNAFFECTED_BY_SCHOOL_IMMUNE))
+                if (aur->getSpellInfo()->getSchoolMask() & schoolImmunityMask && !(aur->getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_UNAFFECTED_BY_SCHOOL_IMMUNE))
                     continue;
 
                 // Check if the spell, which is being casted, is unaffected by this aura due to dispel immunity
-                if ((1 << aur->GetSpellInfo()->getDispelType()) & dispelImmunityMask)
+                if ((1 << aur->getSpellInfo()->getDispelType()) & dispelImmunityMask)
                     continue;
 
                 for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 {
-                    if (aur->GetSpellInfo()->getEffectApplyAuraName(i) == 0)
+                    if (aur->getSpellInfo()->getEffectApplyAuraName(i) == 0)
                         continue;
 
                     // Get aura's mechanics in one mask
                     uint32_t mechanicMask = 0;
-                    if (aur->GetSpellInfo()->getMechanicsType() > 0)
-                        mechanicMask |= 1 << (aur->GetSpellInfo()->getMechanicsType() - 1);
-                    if (aur->GetSpellInfo()->getEffectMechanic(i) > 0)
-                        mechanicMask |= 1 << (aur->GetSpellInfo()->getEffectMechanic(i) - 1);
+                    if (aur->getSpellInfo()->getMechanicsType() > 0)
+                        mechanicMask |= 1 << (aur->getSpellInfo()->getMechanicsType() - 1);
+                    if (aur->getSpellInfo()->getEffectMechanic(i) > 0)
+                        mechanicMask |= 1 << (aur->getSpellInfo()->getEffectMechanic(i) - 1);
 
                     // Check if the spell, which is being casted, is unaffected by this aura due to mechanic immunity
                     if (mechanicMask & mechanicImmunityMask)
                         continue;
 
                     // Spell cast is prevented by this aura and by this effect index, return correct error message
-                    switch (aur->GetSpellInfo()->getEffectApplyAuraName(i))
+                    switch (aur->getSpellInfo()->getEffectApplyAuraName(i))
                     {
                         case SPELL_AURA_MOD_STUN:
                             if (!(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_STUNNED) || !hasSpellMechanic(getSpellInfo(), MECHANIC_STUNNED))
@@ -3624,13 +3616,32 @@ void Spell::sendCastResult(SpellCastResult result, uint32_t parameter1 /*= 0*/, 
     sendCastResult(plr, 0, result, parameter1, parameter2);
 }
 
-void Spell::sendChannelUpdate(const uint32_t time)
+void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
 {
     if (time == 0)
     {
         if (u_caster != nullptr)
         {
             const auto channelGuid = u_caster->getChannelObjectGuid();
+
+            // Make sure last periodic tick happens
+            if (diff > 0)
+            {
+                const auto casterGuid = u_caster->getGuid();
+                const auto aur = u_caster->getAuraWithIdForGuid(getSpellInfo()->getId(), casterGuid);
+                const auto target = u_caster->GetMapMgrUnit(channelGuid);
+
+                if (aur != nullptr)
+                    aur->update(diff, true);
+
+                if (target != nullptr)
+                {
+                    const auto targetAur = target->getAuraWithIdForGuid(getSpellInfo()->getId(), casterGuid);
+                    if (targetAur != nullptr)
+                        targetAur->update(diff, true);
+                }
+            }
+
             const auto dynamicObject = u_caster->GetMapMgrDynamicObject(WoWGuid::getGuidLowPartFromUInt64(channelGuid));
             if (dynamicObject != nullptr)
                 dynamicObject->Remove();
@@ -4130,7 +4141,7 @@ void Spell::takePower()
     if (getSpellInfo()->getPowerType() == POWER_TYPE_HEALTH)
     {
         //\ todo: is this correct order?
-        u_caster->SendSpellNonMeleeDamageLog(u_caster, u_caster, getSpellInfo()->getId(), getPowerCost(), getSpellInfo()->getFirstSchoolFromSchoolMask(), 0, 0, false, 0, false, false);
+        u_caster->sendSpellNonMeleeDamageLog(u_caster, u_caster, getSpellInfo(), getPowerCost(), 0, 0, 0, false, false);
         u_caster->DealDamage(u_caster, getPowerCost(), 0, 0, getSpellInfo()->getId(), true);
         return;
     }

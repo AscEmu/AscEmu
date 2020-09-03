@@ -242,7 +242,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         {
                             // We apply Soul Transfer Aura to channeler who should be buffed
                             Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(SOUL_TRANSFER), (uint32_t) - 1, BuffedChanneler, BuffedChanneler);
-                            BuffedChanneler->AddAura(aura);
+                            BuffedChanneler->addAura(aura);
                         }
                     }
                     // We count channeler which died between last and this trigger as dead and count him as dead one
@@ -602,7 +602,7 @@ public:
 
             // We add channeling player aura that does not allow that go to be used again in 1.3 min
             Aura* auraT = sSpellMgr.newAura(sSpellMgr.getSpellInfo(MIND_EXHAUSTION), (int32_t)78000, Magtheridon, Channeler);
-            Channeler->AddAura(auraT);
+            Channeler->addAura(auraT);
 
             MagYell = true;
 
@@ -770,7 +770,7 @@ class MagtheridonAI : public CreatureAIScript
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
         Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(BANISHMENT), (uint32_t) - 1, getCreature(), getCreature());
-        getCreature()->AddAura(aura);
+        getCreature()->addAura(aura);
 
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(BANISH), true);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);

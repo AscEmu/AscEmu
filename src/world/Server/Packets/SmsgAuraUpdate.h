@@ -32,6 +32,7 @@ namespace AscEmu::Packets
             WoWGuid casterGuid;
             uint32_t duration;
             uint32_t timeLeft;
+            int32_t effAmount[5]; // 3 spell effects up till cata, 5 in mop
         };
 
         AuraUpdate aura_updates;
@@ -76,6 +77,18 @@ namespace AscEmu::Packets
                 {
                     packet << aura_updates.duration;
                     packet << aura_updates.timeLeft;
+                }
+
+                if (aura_updates.flags & 0x40) // AFLAG_SEND_EFFECT_AMOUNT
+                {
+                    if (aura_updates.flags & 0x01) // AFLAG_EFFECT_1
+                        packet << aura_updates.effAmount[0];
+
+                    if (aura_updates.flags & 0x02) // AFLAG_EFFECT_2
+                        packet << aura_updates.effAmount[1];
+
+                    if (aura_updates.flags & 0x04) // AFLAG_EFFECT_3
+                        packet << aura_updates.effAmount[2];
                 }
             }
 

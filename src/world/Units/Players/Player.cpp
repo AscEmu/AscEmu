@@ -705,8 +705,8 @@ void Player::modArenaCurrency(int32_t value) { setArenaCurrency(getArenaCurrency
 uint32_t Player::getNoReagentCost(uint8_t index) const { return playerData()->no_reagent_cost[index]; }
 void Player::setNoReagentCost(uint8_t index, uint32_t value) { write(playerData()->no_reagent_cost[index], value); }
 
-uint32_t Player::getGlyphSlot(uint16_t slot) const { return playerData()->field_glyphs[slot]; }
-void Player::setGlyphSlot(uint16_t slot, uint32_t glyph) { write(playerData()->field_glyphs[slot], glyph); }
+uint32_t Player::getGlyphSlot(uint16_t slot) const { return playerData()->field_glyph_slots[slot]; }
+void Player::setGlyphSlot(uint16_t slot, uint32_t glyph) { write(playerData()->field_glyph_slots[slot], glyph); }
 
 uint32_t Player::getGlyph(uint16_t slot) const { return playerData()->field_glyphs[slot]; }
 void Player::setGlyph(uint16_t slot, uint32_t glyph) { write(playerData()->field_glyphs[slot], glyph); }
@@ -1464,7 +1464,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
     m_playerInfo->lastLevel = previousLevel;
 
 #if VERSION_STRING >= WotLK
-    UpdateGlyphs();
+    updateGlyphs();
     GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
 #endif
 
@@ -2034,6 +2034,58 @@ void Player::sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t 
 
     SendMessageToSet(SmsgSpellCooldown(GetNewGUID(), isGcd, spellMap).serialise().get(), true);
 }
+
+#ifdef FT_GLYPHS
+void Player::updateGlyphs()
+{
+#if VERSION_STRING == WotLK
+    for (uint32_t i = 0; i < sGlyphSlotStore.GetNumRows(); ++i)
+    {
+        const auto glyphSlot = sGlyphSlotStore.LookupEntry(i);
+        if (glyphSlot == nullptr)
+            continue;
+
+        if (glyphSlot->Slot > 0)
+            setGlyphSlot(static_cast<uint16_t>(glyphSlot->Slot - 1), glyphSlot->Id);
+    }
+#else
+    uint32_t slot = 0;
+    for (uint32_t i = 0; i < sGlyphSlotStore.GetNumRows(); ++i)
+    {
+        const auto glyphSlot = sGlyphSlotStore.LookupEntry(i);
+        if (glyphSlot != nullptr)
+            setGlyphSlot(slot++, glyphSlot->Id);
+    }
+#endif
+
+    const auto level = getLevel();
+    uint32_t slotMask = 0;
+
+#if VERSION_STRING == WotLK
+    if (level >= 15)
+        slotMask |= (GS_MASK_1 | GS_MASK_2);
+    if (level >= 30)
+        slotMask |= GS_MASK_3;
+    if (level >= 50)
+        slotMask |= GS_MASK_4;
+    if (level >= 70)
+        slotMask |= GS_MASK_5;
+    if (level >= 80)
+        slotMask |= GS_MASK_6;
+#elif VERSION_STRING == Cata
+    if (level >= 25)
+        slotMask |= GS_MASK_LEVEL_25;
+    if (level >= 50)
+        slotMask |= GS_MASK_LEVEL_50;
+    if (level >= 75)
+        slotMask |= GS_MASK_LEVEL_75;
+#elif VERSION_STRING == Mop
+    // TODO
+#endif
+
+    setGlyphsEnabled(slotMask);
+}
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Talents
@@ -2850,7 +2902,7 @@ void Player::cancelDuel()
     for (auto i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
     {
         if (m_auras[i])
-            m_auras[i]->Remove();
+            m_auras[i]->removeAura();
     }
 
     // summons

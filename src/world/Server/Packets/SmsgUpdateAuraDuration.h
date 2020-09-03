@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 
-#ifdef AE_TBC
+#if VERSION_STRING < WotLK
 namespace AscEmu::Packets
 {
     class SmsgUpdateAuraDuration : public ManagedPacket

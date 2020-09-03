@@ -4,25 +4,44 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Unit.h"
+
+#include "Data/WoWUnit.h"
+#include "Map/MapMgr.h"
+#include "Players/Player.h"
+#include "Server/Packets/SmsgAuraUpdate.h"
+#include "Server/Packets/SmsgAuraUpdateAll.h"
+#include "Server/Packets/SmsgClearExtraAuraInfo.h"
+#include "Server/Packets/SmsgSetExtraAuraInfo.h"
+#include "Server/Packets/SmsgSpellEnergizeLog.h"
+#include "Server/Packets/SmsgEnvironmentalDamageLog.h"
+#include "Server/Packets/SmsgMonsterMoveTransport.h"
+#include "Server/Packets/SmsgPeriodicAuraLog.h"
+#include "Server/Packets/SmsgPlaySpellVisual.h"
+#include "Server/Packets/SmsgPowerUpdate.h"
+#include "Server/Packets/SmsgSpellHealLog.h"
+#include "Server/Packets/SmsgSpellOrDamageImmune.h"
+#include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Opcodes.hpp"
 #include "Server/WorldSession.h"
-#include "Players/Player.h"
-#include "Spell/SpellAuras.h"
+#include "Spell/Definitions/AuraInterruptFlags.h"
 #include "Spell/Definitions/DiminishingGroup.h"
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
+#include "Spell/Definitions/SpellDamageType.h"
+#include "Spell/Definitions/SpellIsFlags.h"
+#include "Spell/Definitions/SpellMechanics.h"
+#include "Spell/Definitions/SpellTypes.h"
+#include "Spell/SpellAuras.h"
+#include "Spell/SpellHelpers.h"
 #include "Spell/SpellMgr.h"
-#include "Data/WoWUnit.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Server/Packets/SmsgEnvironmentalDamageLog.h"
-#include "Server/Packets/SmsgMonsterMoveTransport.h"
-#include "Server/Packets/SmsgPowerUpdate.h"
-#include "Map/MapMgr.h"
 #include "Units/Creatures/Vehicle.h"
-#include "Server/Packets/SmsgSpellEnergizeLog.h"
-#include "Server/Packets/SmsgPlaySpellVisual.h"
 
 using namespace AscEmu::Packets;
+using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
+using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
+using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
+using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
@@ -549,6 +568,64 @@ void Unit::removeUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2()
 bool Unit::hasUnitFlags2(uint32_t unitFlags2) const { return (getUnitFlags2() & unitFlags2) != 0; }
 #endif
 
+#if VERSION_STRING < WotLK
+uint32_t Unit::getAura(uint8_t slot) const { return unitData()->aura[slot]; }
+void Unit::setAura(uint8_t slot, uint32_t spellId) { write(unitData()->aura[slot], spellId); }
+
+uint32_t Unit::getAuraFlags(uint8_t slot) const { return unitData()->aura_flags[slot]; }
+void Unit::setAuraFlags(uint8_t slot, uint32_t flags)
+{
+    if (slot >= MAX_NEGATIVE_VISUAL_AURAS_END)
+        return;
+
+    const uint8_t index = slot / 4;
+    const uint32_t byte = (slot % 4) * 8;
+
+    auto val = getAuraFlags(index);
+    val &= ~(static_cast<uint32_t>(AFLAG_MASK_ALL) << byte);
+
+    if (flags != 0)
+        val |= (flags << byte);
+
+    write(unitData()->aura_flags[index], val);
+}
+
+uint32_t Unit::getAuraLevel(uint8_t slot) const { return unitData()->aura_levels[slot]; }
+void Unit::setAuraLevel(uint8_t slot, uint32_t level)
+{
+    if (slot >= MAX_NEGATIVE_VISUAL_AURAS_END)
+        return;
+
+    const uint8_t index = slot / 4;
+    const uint32_t byte = (slot % 4) * 8;
+
+    auto val = getAuraLevel(index);
+    val &= ~(0xFF << byte);
+    val |= (level << byte);
+
+    write(unitData()->aura_levels[index], val);
+}
+
+uint32_t Unit::getAuraApplication(uint8_t slot) const { return unitData()->aura_applications[slot]; }
+void Unit::setAuraApplication(uint8_t slot, uint32_t count)
+{
+    if (slot >= MAX_NEGATIVE_VISUAL_AURAS_END)
+        return;
+
+    const uint8_t index = slot / 4;
+    const uint32_t byte = (slot % 4) * 8;
+
+    // Client expects count - 1
+    count = count <= 255 ? count - 1 : 255 - 1;
+
+    auto val = getAuraApplication(index);
+    val &= ~(0xFF << byte);
+    val |= (static_cast<uint8_t>(count) << byte);
+
+    write(unitData()->aura_applications[index], val);
+}
+#endif
+
 uint32_t Unit::getAuraState() const { return unitData()->aura_state; }
 void Unit::setAuraState(uint32_t state) { write(unitData()->aura_state, state); }
 void Unit::addAuraState(uint32_t state) { setAuraState(getAuraState() | state); }
@@ -923,72 +1000,6 @@ void Unit::setHoverHeight(float height) { write(unitData()->hover_height, height
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
-
-#if VERSION_STRING == TBC
-uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive)
-{
-    bool out;
-    return addAuraVisual(spell_id, count, positive, out);
-}
-
-uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool& skip_client_update)
-{
-    auto free = -1;
-    uint32_t start = positive ? MAX_POSITIVE_VISUAL_AURAS_START : MAX_POSITIVE_VISUAL_AURAS_END;
-    uint32_t end = positive ? MAX_NEGATIVE_VISUAL_AURAS_START : MAX_NEGATIVE_VISUAL_AURAS_END;
-
-    for (auto x = start; x < end; ++x)
-    {
-        if (free == -1 && m_uint32Values[getOffsetForStructuredField(WoWUnit, aura) + x] == 0)
-            free = x;
-
-        if (m_uint32Values[getOffsetForStructuredField(WoWUnit, aura)+ x] == spell_id)
-        {
-            const auto aura = m_auras[x];
-            ModVisualAuraStackCount(aura, count);
-            skip_client_update = true;
-            return free;
-        }
-    }
-
-    skip_client_update = false;
-
-    if (free == -1)
-        return 0xff;
-
-    const auto flag_slot = static_cast<uint8_t>((free / 4));
-    const uint16_t val_slot = getOffsetForStructuredField(WoWUnit, aura_flags) + flag_slot;
-    auto value = m_uint32Values[val_slot];
-    const auto aura_pos = free % 4 * 8;
-    value &= ~(0xff << aura_pos);
-    if (positive)
-        value |= 0x1f << aura_pos;
-    else
-        value |= 0x9 << aura_pos;
-
-    m_uint32Values[val_slot] = value;
-    m_uint32Values[getOffsetForStructuredField(WoWUnit, aura) + free] = spell_id;
-    const auto aura = m_auras[free];
-    ModVisualAuraStackCount(aura, 1);
-    setAuraSlotLevel(free, positive);
-
-    return free;
-}
-
-void Unit::setAuraSlotLevel(uint32_t slot, bool positive)
-{
-    const auto index = slot / 4;
-    auto value = m_uint32Values[getOffsetForStructuredField(WoWUnit, aura_levels) + index];
-    const auto bit = slot % 4 * 8;
-    value &= ~(0xff << bit);
-    if (positive)
-        value |= 0x46 << bit;
-    else
-        value |= 0x19 << bit;
-
-    m_uint32Values[getOffsetForStructuredField(WoWUnit, aura_levels) + index] = value;
-}
-#endif
 
 void Unit::setMoveWaterWalk()
 {
@@ -1631,7 +1642,7 @@ void Unit::removeDiminishingReturnTimer(SpellInfo const* spell)
     {
         if (m_auras[x])
         {
-            aura_group = sSpellMgr.getDiminishingGroup(m_auras[x]->GetSpellInfo()->getId());
+            aura_group = sSpellMgr.getDiminishingGroup(m_auras[x]->getSpellInfo()->getId());
             if (aura_group == status)
             {
                 m_diminishAuraCount[group]++;
@@ -1767,7 +1778,11 @@ void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, uint32_t f
         return;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    newSpell->forced_basepoints[0] = forcedBasepoints;
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        newSpell->forced_basepoints[i] = forcedBasepoints;
+    }
+
     SpellCastTargets targets(targetGuid);
 
     // Prepare the spell
@@ -1780,7 +1795,10 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBa
         return;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    newSpell->forced_basepoints[0] = forcedBasepoints;
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        newSpell->forced_basepoints[i] = forcedBasepoints;
+    }
 
     SpellCastTargets targets(0);
     if (target != nullptr)
@@ -1795,8 +1813,634 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBa
     newSpell->prepare(&targets);
 }
 
+float_t Unit::getSpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal, bool isPeriodic, Aura* aur/* = nullptr*/)
+{
+    if (spellInfo->getAttributesExC() & ATTRIBUTESEXC_NO_HEALING_BONUS)
+        return 0.0f;
+
+    // Check for correct class
+    if (isPlayer())
+    {
+        switch (static_cast<Player*>(this)->getClass())
+        {
+            case WARRIOR:
+#if VERSION_STRING != Classic
+            // Hunters in classic benefit from spell power
+            case HUNTER:
+#endif
+            case ROGUE:
+#if VERSION_STRING >= WotLK
+            case DEATHKNIGHT:
+#endif
+                return 0.0f;
+            default:
+                break;
+        }
+    }
+
+    float_t bonusHeal = 0.0f;
+    const auto school = spellInfo->getFirstSchoolFromSchoolMask();
+
+    if (aur != nullptr)
+        bonusHeal = static_cast<float_t>(aur->getHealPowerBonus());
+    else
+        bonusHeal = static_cast<float_t>(HealDoneMod[school]);
+
+    bonusHeal += static_cast<float_t>(baseHeal * HealDonePctMod[school]);
+
+    // Get spell coefficient value
+    if (bonusHeal > 0.0f)
+    {
+        if (!isPeriodic || spellInfo->isChanneled())
+        {
+            if (spellInfo->spell_coeff_direct > 0.0f)
+                bonusHeal *= spellInfo->spell_coeff_direct;
+            else
+                return 0.0f;
+        }
+        else
+        {
+            if (spellInfo->spell_coeff_overtime > 0.0f)
+                bonusHeal *= spellInfo->spell_coeff_overtime;
+            else
+                return 0.0f;
+        }
+
+        // Apply general downranking penalty
+        // Level 20 penalty is already applied in SpellMgr::setSpellCoefficient
+        // This method only existed in late TBC and WotLK, in Cata spells lost their ranks
+#if VERSION_STRING >= TBC
+#if VERSION_STRING <= WotLK
+        /*
+        If caster level is less than max caster level, then the penalty = 1.0.
+        If caster level is at or greater than max caster level, then the penalty = (22 + max level - caster level) / 20.
+        The penalty is capped at 0.
+        */
+        const auto maxLevel = spellInfo->getMaxLevel();
+        if (maxLevel != 0 && isPlayer())
+        {
+            float_t penalty = 1.0f;
+            if (maxLevel <= getLevel())
+                penalty = (22.0f + maxLevel - getLevel()) / 20.0f;
+
+            if (penalty > 1.0f)
+                penalty = 1.0f;
+            if (penalty < 0.0f)
+                penalty = 0.0f;
+
+            bonusHeal *= penalty;
+        }
+#endif
+#endif
+    }
+
+    int32_t bonus_penalty = 0;
+    spellModFlatIntValue(SM_FPenalty, &bonus_penalty, spellInfo->getSpellFamilyFlags());
+
+    int32_t bonus_penalty_pct = 0;
+    spellModFlatIntValue(SM_PPenalty, &bonus_penalty_pct, spellInfo->getSpellFamilyFlags());
+
+    bonusHeal += static_cast<float_t>((bonus_penalty + baseHeal) * bonus_penalty_pct / 100.0f);
+    return bonusHeal;
+}
+
+float_t Unit::getSpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, bool isPeriodic, Aura* aur/* = nullptr*/)
+{
+    if (spellInfo->getAttributesExC() & ATTRIBUTESEXC_NO_DONE_BONUS)
+        return 0.0f;
+
+    if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_NOT_USING_DMG_BONUS)
+        return 0.0f;
+
+    // Check for correct class
+    if (isPlayer())
+    {
+        switch (static_cast<Player*>(this)->getClass())
+        {
+            case WARRIOR:
+#if VERSION_STRING != Classic
+            // Hunters in classic benefit from spell power
+            case HUNTER:
+#endif
+            case ROGUE:
+#if VERSION_STRING >= WotLK
+            case DEATHKNIGHT:
+#endif
+                return 0.0f;
+            default:
+                break;
+        }
+    }
+
+    float_t bonusDmg = 0.0f;
+    const auto school = spellInfo->getFirstSchoolFromSchoolMask();
+
+    if (aur != nullptr)
+        bonusDmg = static_cast<float_t>(aur->getSpellPowerBonus());
+    else
+        bonusDmg = static_cast<float_t>(GetDamageDoneMod(school));
+
+    // Subtract 1 because value is initialized with 1
+    bonusDmg += static_cast<float_t>(baseDmg * (GetDamageDonePctMod(school) - 1));
+
+    // Get spell coefficient value
+    if (bonusDmg > 0.0f)
+    {
+        if (!isPeriodic || spellInfo->isChanneled())
+        {
+            if (spellInfo->spell_coeff_direct > 0.0f)
+                bonusDmg *= spellInfo->spell_coeff_direct;
+            else
+                return 0.0f;
+        }
+        else
+        {
+            if (spellInfo->spell_coeff_overtime > 0.0f)
+                bonusDmg *= spellInfo->spell_coeff_overtime;
+            else
+                return 0.0f;
+        }
+
+        // Apply general downranking penalty
+        // Level 20 penalty is already applied in SpellMgr::setSpellCoefficient
+        // This method only existed in late TBC and WotLK, in Cata spells lost their ranks
+#if VERSION_STRING >= TBC
+#if VERSION_STRING <= WotLK
+        /*
+        If caster level is less than max caster level, then the penalty = 1.0.
+        If caster level is at or greater than max caster level, then the penalty = (22 + max level - caster level) / 20.
+        The penalty is capped at 0.
+        */
+        const auto maxLevel = spellInfo->getMaxLevel();
+        if (maxLevel != 0 && isPlayer())
+        {
+            float_t penalty = 1.0f;
+            if (maxLevel <= getLevel())
+                penalty = (22.0f + maxLevel - getLevel()) / 20.0f;
+
+            if (penalty > 1.0f)
+                penalty = 1.0f;
+            if (penalty < 0.0f)
+                penalty = 0.0f;
+
+            bonusDmg *= penalty;
+        }
+#endif
+#endif
+    }
+
+    int32_t bonus_penalty = 0;
+    spellModFlatIntValue(SM_FPenalty, &bonus_penalty, spellInfo->getSpellFamilyFlags());
+
+    int32_t bonus_penalty_pct = 0;
+    spellModFlatIntValue(SM_PPenalty, &bonus_penalty_pct, spellInfo->getSpellFamilyFlags());
+
+    bonusDmg += static_cast<float_t>((bonus_penalty + baseDmg) * bonus_penalty_pct / 100.0f);
+    return bonusDmg;
+}
+
+float_t Unit::getCriticalChanceForDamageSpell(SpellInfo const* spellInfo, Unit* victim) const
+{
+    ///\ todo: this is mostly copied from legacy method, needs rewrite later
+    float_t critChance = 0.0f;
+    const auto school = spellInfo->getFirstSchoolFromSchoolMask();
+    PlayerCombatRating resilienceType = PCR_RANGED_SKILL;
+
+    if (spellInfo->getDmgClass() == SPELL_DMG_TYPE_RANGED)
+    {
+        if (isPlayer())
+        {
+            critChance = static_cast<Player const*>(this)->getRangedCritPercentage();
+            if (victim->isPlayer())
+                critChance += static_cast<Player*>(victim)->res_R_crit_get();
+
+            critChance += static_cast<float_t>(victim->AttackerCritChanceMod[school]);
+        }
+        else
+        {
+            // static value for mobs.. not blizzlike, but an unfinished formula is not fatal :)
+            critChance = 5.0f;
+        }
+
+        if (victim->isPlayer())
+            resilienceType = PCR_RANGED_CRIT_RESILIENCE;
+    }
+    else if (spellInfo->getDmgClass() == SPELL_DMG_TYPE_MELEE)
+    {
+        // Same shit with the melee spells, such as Judgment/Seal of Command
+        if (isPlayer())
+            critChance = static_cast<Player const*>(this)->getMeleeCritPercentage();
+
+        if (victim->isPlayer())
+        {
+            //this could be ability but in that case we overwrite the value
+            critChance += static_cast<Player*>(victim)->res_R_crit_get();
+            resilienceType = PCR_MELEE_CRIT_RESILIENCE;
+        }
+
+        // Victim's (!) crit chance mod for physical attacks?
+        critChance += static_cast<float_t>(victim->AttackerCritChanceMod[0]);
+    }
+    else
+    {
+        critChance = spellcritperc + SpellCritChanceSchool[school];
+
+        critChance += static_cast<float_t>(victim->AttackerCritChanceMod[school]);
+
+        //\todo Zyres: is tis relly the way this should work?
+        if (isPlayer() && (victim->m_rootCounter - victim->m_stunned))
+            critChance += static_cast<float_t>(static_cast<Player const*>(this)->m_RootedCritChanceBonus);
+
+        if (victim->isPlayer())
+            resilienceType = PCR_SPELL_CRIT_RESILIENCE;
+    }
+
+    spellModFlatFloatValue(SM_CriticalChance, &critChance, spellInfo->getSpellFamilyFlags());
+
+    if (resilienceType != PCR_RANGED_SKILL)
+        critChance -= static_cast<Player*>(victim)->CalcRating(resilienceType);
+
+    if (critChance < 0.0f)
+        critChance = 0.0f;
+    if (critChance > 95.0f)
+        critChance = 95.0f;
+
+    return critChance;
+}
+
+float_t Unit::getCriticalChanceForHealSpell(SpellInfo const* spellInfo) const
+{
+    const auto school = spellInfo->getFirstSchoolFromSchoolMask();
+    float_t critChance = spellcritperc + SpellCritChanceSchool[school];
+    spellModFlatFloatValue(SM_CriticalChance, &critChance, spellInfo->getSpellFamilyFlags());
+
+    if (critChance < 0.0f)
+        critChance = 0.0f;
+    if (critChance > 95.0f)
+        critChance = 95.0f;
+
+    return critChance;
+}
+
+void Unit::sendSpellNonMeleeDamageLog(Object* caster, Object* target, SpellInfo const* spellInfo, uint32_t damage, uint32_t absorbedDamage, uint32_t resistedDamage, uint32_t blockedDamage, bool isPeriodicDamage, bool isCriticalHit)
+{
+    if (caster == nullptr || target == nullptr || spellInfo == nullptr)
+        return;
+
+    // Classic does not use school mask
+    uint32_t school = 0;
+#if VERSION_STRING == Classic
+    school = spellInfo->getFirstSchoolFromSchoolMask();
+#else
+    school = spellInfo->getSchoolMask();
+#endif
+
+    uint32_t overKill = 0;
+    if (target->isCreatureOrPlayer() && damage > static_cast<Unit*>(target)->getHealth())
+        overKill = damage - static_cast<Unit*>(target)->getHealth();
+
+    WorldPacket data(SMSG_SPELLNONMELEEDAMAGELOG, 48);
+
+    data << target->GetNewGUID();
+    data << caster->GetNewGUID();
+    data << uint32_t(spellInfo->getId());
+    data << uint32_t(damage);
+#if VERSION_STRING >= WotLK
+    data << uint32_t(overKill);
+#endif
+    data << uint8_t(school);
+    data << uint32_t(absorbedDamage);
+    data << uint32_t(resistedDamage);
+    data << uint8_t(isPeriodicDamage);
+    data << uint8_t(0); // unk
+    data << uint32_t(blockedDamage);
+
+    // Some sort of hit info, other values need more research
+    if (isCriticalHit)
+        data << uint32_t(0x2);
+    else
+        data << uint32_t(0);
+
+    data << uint8_t(0); // debug mode boolean
+
+    target->SendMessageToSet(&data, true);
+}
+
+void Unit::sendSpellHealLog(Object* caster, Object* target, uint32_t spellId, uint32_t healAmount, bool isCritical, uint32_t overHeal, uint32_t absorbedHeal)
+{
+    if (caster == nullptr || target == nullptr)
+        return;
+
+    target->SendMessageToSet(SmsgSpellHealLog(target->GetNewGUID(), caster->GetNewGUID(), spellId, healAmount, overHeal, absorbedHeal, isCritical).serialise().get(), true);
+}
+
+void Unit::sendSpellOrDamageImmune(uint64_t casterGuid, Unit* target, uint32_t spellId)
+{
+    target->SendMessageToSet(SmsgSpellOrDamageImmune(casterGuid, target->getGuid(), spellId).serialise().get(), true);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Aura
+
+void Unit::addAura(Aura* aur)
+{
+    if (aur == nullptr)
+        return;
+
+    if (!isAlive() && !aur->getSpellInfo()->isDeathPersistent())
+    {
+        delete aur;
+        return;
+    }
+
+    // Check school immunity
+    const auto school = aur->getSpellInfo()->getFirstSchoolFromSchoolMask();
+    if (school != SCHOOL_NORMAL && SchoolImmunityList[school] && aur->getCasterGuid() != getGuid())
+    {
+        ///\ todo: notify client that aura did not apply
+        delete aur;
+        return;
+    }
+
+    // Check if aura has effects
+    if (aur->getAppliedEffectCount() == 0)
+    {
+        ///\ todo: notify client that aura did not apply
+        delete aur;
+        return;
+    }
+
+    // Check for flying mount
+    // This is already checked in Spell::canCast but this could happen on teleport or login
+    if (isPlayer() && aur->getSpellInfo()->getAttributesExD() & ATTRIBUTESEXD_ONLY_IN_OUTLANDS)
+    {
+        if (!static_cast<Player*>(this)->canUseFlyingMountHere())
+        {
+            if (GetMapId() != 571 || !(aur->getSpellInfo()->getAttributesExG() & ATTRIBUTESEXG_IGNORE_COLD_WEATHER_FLYING))
+            {
+                delete aur;
+                return;
+            }
+        }
+    }
+
+    // Check for single target aura
+    ///\ todo: this supports only single auras. Missing paladin seals, warlock curses etc
+    if (aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
+    {
+        uint64_t previousTargetGuid = 0;
+
+        const auto caster = aur->GetUnitCaster();
+        if (caster != nullptr)
+        {
+            previousTargetGuid = caster->getSingleTargetGuidForAura(aur->getSpellId());
+
+            // Check if aura is applied on different unit
+            if (previousTargetGuid != 0 && previousTargetGuid != aur->getOwner()->getGuid())
+            {
+                const auto previousTarget = GetMapMgrUnit(previousTargetGuid);
+                if (previousTarget != nullptr)
+                    previousTarget->removeAllAurasByIdForGuid(aur->getSpellId(), caster->getGuid());
+            }
+        }
+    }
+
+    const auto spellInfo = aur->getSpellInfo();
+
+    uint16_t auraSlot = 0xFFFF;
+    if (!aur->IsPassive())
+    {
+        uint16_t CheckLimit, StartCheck;
+        if (!aur->isNegative())
+        {
+            StartCheck = MAX_POSITIVE_AURAS_EXTEDED_START;
+            CheckLimit = MAX_POSITIVE_AURAS_EXTEDED_END;
+        }
+        else
+        {
+            StartCheck = MAX_NEGATIVE_AURAS_EXTEDED_START;
+            CheckLimit = MAX_NEGATIVE_AURAS_EXTEDED_END;
+        }
+
+        auto deleteAur = false;
+
+        // Loop through auras
+        for (auto i = StartCheck; i < CheckLimit; ++i)
+        {
+            Aura* _aura = m_auras[i];
+            if (_aura == nullptr)
+            {
+                // Found an empty slot
+                if (auraSlot == 0xFFFF)
+                    auraSlot = i;
+
+                // Do not break here, check if unit has any similiar aura
+                continue;
+            }
+
+            // Check if unit has same aura by same caster
+            if (_aura->getSpellId() == aur->getSpellId())
+            {
+                if (_aura->getCasterGuid() != aur->getCasterGuid())
+                    continue;
+
+                // The auras are casted by same unit, refresh duration and apply new stack if stackable
+                _aura->refresh(false, 1);
+
+                deleteAur = true;
+                break;
+            }
+            // If this is a proc spell, it should not remove its mother aura
+            else if (aur->pSpellId != _aura->getSpellId())
+            {
+                // Check for auras by specific type
+                if (aur->getSpellInfo()->getMaxstack() == 0 && spellInfo->custom_BGR_one_buff_on_target > 0 && aur->getSpellInfo()->custom_BGR_one_buff_on_target & spellInfo->custom_BGR_one_buff_on_target)
+                {
+                    deleteAur = HasAurasOfBuffType(spellInfo->getCustom_BGR_one_buff_on_target(), aur->getCasterGuid(), 0);
+                }
+                // Check for auras with the same name and a different rank
+                else
+                {
+                    AuraCheckResponse checkResponse = AuraCheck(spellInfo, _aura, aur->getCaster());
+                    if (checkResponse.Error == AURA_CHECK_RESULT_HIGHER_BUFF_PRESENT)
+                    {
+                        deleteAur = true;
+                    }
+                    else if (checkResponse.Error == AURA_CHECK_RESULT_LOWER_BUFF_PRESENT)
+                    {
+                        _aura->removeAura();
+                        continue;
+                    }
+                }
+            }
+        }
+
+        if (deleteAur)
+        {
+            delete aur;
+            return;
+        }
+    }
+    else
+    {
+        // Passive spells always apply
+        ///\ todo: probably should add check for passive aura stacking
+        for (uint16_t i = MAX_PASSIVE_AURAS_START; i < MAX_PASSIVE_AURAS_END; ++i)
+        {
+            if (m_auras[i] == nullptr)
+            {
+                auraSlot = i;
+                break;
+            }
+        }
+    }
+
+    // Could not find an empty slot, remove aura
+    if (auraSlot == 0xFFFF)
+    {
+        delete aur;
+        return;
+    }
+
+    // Find a visual slot for aura
+    uint8_t visualSlot = 0xFF;
+    if (!aur->IsPassive() || aur->getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO)
+        visualSlot = findVisualSlotForAura(aur->getSpellId(), !aur->isNegative());
+
+    aur->m_visualSlot = visualSlot;
+    aur->m_auraSlot = auraSlot;
+
+    m_auras[auraSlot] = aur;
+
+    if (visualSlot < MAX_NEGATIVE_VISUAL_AURAS_END)
+    {
+        m_auravisuals[visualSlot] = aur->getSpellId();
+
+#if VERSION_STRING < WotLK
+        setAura(visualSlot, aur->getSpellId());
+        setAuraFlags(visualSlot, aur->getAuraFlags());
+        setAuraLevel(visualSlot, aur->GetUnitCaster() != nullptr ? aur->GetUnitCaster()->getLevel() : worldConfig.player.playerLevelCap);
+        setAuraApplication(visualSlot, 1);
+#endif
+
+        // Send packet
+        sendAuraUpdate(aur, false);
+        UpdateAuraForGroup(visualSlot);
+    }
+
+    aur->applyModifiers(true);
+    aur->RelocateEvents();
+
+    // Possibly a hackfix from legacy method
+    // Reaction from enemy AI
+    if (aur->isNegative() && aur->IsCombatStateAffecting()) // Creature
+    {
+        const auto pCaster = aur->GetUnitCaster();
+        if (pCaster && pCaster->isAlive() && isAlive())
+        {
+            pCaster->CombatStatus.OnDamageDealt(this);
+
+            if (isCreature())
+                m_aiInterface->AttackReaction(pCaster, 1, aur->getSpellId());
+        }
+    }
+
+    // Hackfix from legacy method
+    if (aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_INVINCIBLE)
+    {
+        const auto pCaster = aur->GetUnitCaster();
+        if (pCaster != nullptr)
+        {
+            pCaster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
+            pCaster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_INVISIBILITY);
+
+            uint32_t iceBlock[] =
+            {
+                //SPELL_HASH_ICE_BLOCK
+                27619,
+                36911,
+                41590,
+                45438,
+                45776,
+                46604,
+                46882,
+                56124,
+                56644,
+                62766,
+                65802,
+                69924,
+                0
+            };
+            pCaster->removeAllAurasById(iceBlock);
+
+            uint32_t divineShield[] =
+            {
+                //SPELL_HASH_DIVINE_SHIELD
+                642,
+                13874,
+                29382,
+                33581,
+                40733,
+                41367,
+                54322,
+                63148,
+                66010,
+                67251,
+                71550,
+                0
+            };
+            pCaster->removeAllAurasById(divineShield);
+            //SPELL_HASH_BLESSING_OF_PROTECTION
+            pCaster->removeAllAurasById(41450);
+        }
+    }
+
+    // Store target's guid for single target auras
+    if (aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
+    {
+        const auto caster = aur->GetUnitCaster();
+        if (caster != nullptr)
+            caster->setSingleTargetGuidForAura(aur->getSpellId(), getGuid());
+    }
+
+    // Hackfix from legacy method
+    if (aur->getSpellInfo()->getMechanicsType() == MECHANIC_ENRAGED && !asc_enraged++)
+        addAuraStateAndAuras(AURASTATE_FLAG_ENRAGED);
+    else if (aur->getSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING && !asc_bleed++)
+        addAuraStateAndAuras(AURASTATE_FLAG_BLEED);
+    if (aur->getSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !asc_seal++)
+        addAuraStateAndAuras(AURASTATE_FLAG_JUDGEMENT);
+
+}
+
+uint8_t Unit::findVisualSlotForAura(uint32_t spellId, bool isPositive) const
+{
+    uint8_t start, end;
+    if (isPositive)
+    {
+        start = 0;
+        end = MAX_POSITIVE_VISUAL_AURAS_END;
+    }
+    else
+    {
+        start = MAX_NEGATIVE_VISUAL_AURAS_START;
+        end = MAX_NEGATIVE_VISUAL_AURAS_END;
+    }
+
+    uint8_t visualSlot = 0xFF;
+
+    // Find an empty slot
+    for (auto i = start; i < end; ++i)
+    {
+        if (m_auravisuals[i] == 0)
+        {
+            visualSlot = i;
+            break;
+        }
+    }
+
+    return visualSlot;
+}
 
 Aura* Unit::getAuraWithId(uint32_t spell_id)
 {
@@ -1805,7 +2449,7 @@ Aura* Unit::getAuraWithId(uint32_t spell_id)
         Aura* aura = m_auras[i];
         if (aura != nullptr)
         {
-            if (aura->GetSpellId() == spell_id)
+            if (aura->getSpellId() == spell_id)
                 return aura;
         }
     }
@@ -1819,7 +2463,7 @@ bool Unit::hasAurasWithId(uint32_t* auraId)
     {
         for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
         {
-            if (m_auras[x] && m_auras[x]->GetSpellInfo()->getId() == auraId[i])
+            if (m_auras[x] && m_auras[x]->getSpellInfo()->getId() == auraId[i])
                 return true;
         }
     }
@@ -1833,7 +2477,7 @@ bool Unit::hasAuraWithAuraEffect(AuraEffect type) const
     {
         if (m_auras[i] == nullptr)
             continue;
-        if (m_auras[i]->GetSpellInfo()->hasEffectApplyAuraName(type))
+        if (m_auras[i]->getSpellInfo()->hasEffectApplyAuraName(type))
             return true;
     }
     return false;
@@ -1847,9 +2491,9 @@ bool Unit::hasAuraState(AuraState state, SpellInfo const* spellInfo, Unit const*
         {
             if (caster->m_auras[i] == nullptr)
                 continue;
-            if (!caster->m_auras[i]->GetSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
+            if (!caster->m_auras[i]->getSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
                 continue;
-            if (caster->m_auras[i]->GetSpellInfo()->isAffectingSpell(spellInfo))
+            if (caster->m_auras[i]->getSpellInfo()->isAffectingSpell(spellInfo))
                 return true;
         }
     }
@@ -1892,11 +2536,11 @@ void Unit::removeAuraStateAndAuras(AuraState state)
         {
             if (m_auras[i] == nullptr)
                 continue;
-            if (m_auras[i]->GetCasterGUID() != getGuid())
+            if (m_auras[i]->getCasterGuid() != getGuid())
                 continue;
-            if (m_auras[i]->GetSpellInfo()->getCasterAuraState() != static_cast<uint32_t>(state))
+            if (m_auras[i]->getSpellInfo()->getCasterAuraState() != static_cast<uint32_t>(state))
                 continue;
-            if (m_auras[i]->GetSpellInfo()->isPassive() || state != AURASTATE_FLAG_ENRAGED)
+            if (m_auras[i]->getSpellInfo()->isPassive() || state != AURASTATE_FLAG_ENRAGED)
                 RemoveAura(m_auras[i]);
         }
     }
@@ -1909,7 +2553,7 @@ Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
         Aura* aura = m_auras[i];
         if (aura != nullptr)
         {
-            if (getAuraWithId(spell_id) && aura->m_casterGuid == target_guid)
+            if (aura->getSpellId() == spell_id && aura->getCasterGuid() == target_guid)
                 return aura;
         }
     }
@@ -1922,7 +2566,7 @@ Aura* Unit::getAuraWithAuraEffect(AuraEffect aura_effect)
     for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {
         Aura* aura = m_auras[i];
-        if (aura != nullptr && aura->GetSpellInfo()->hasEffectApplyAuraName(aura_effect))
+        if (aura != nullptr && aura->getSpellInfo()->hasEffectApplyAuraName(aura_effect))
             return aura;
     }
 
@@ -1933,7 +2577,7 @@ bool Unit::hasAurasWithId(uint32_t auraId)
 {
     for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
     {
-        if (m_auras[x] && m_auras[x]->GetSpellInfo()->getId() == auraId)
+        if (m_auras[x] && m_auras[x]->getSpellInfo()->getId() == auraId)
             return true;
     }
 
@@ -1946,7 +2590,7 @@ Aura* Unit::getAuraWithId(uint32_t* auraId)
     {
         for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
         {
-            if (m_auras[x] && m_auras[x]->GetSpellInfo()->getId() == auraId[i])
+            if (m_auras[x] && m_auras[x]->getSpellInfo()->getId() == auraId[i])
                 return m_auras[x];
         }
     }
@@ -1960,7 +2604,7 @@ uint32_t Unit::getAuraCountForId(uint32_t auraId)
 
     for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
     {
-        if (m_auras[x] && (m_auras[x]->GetSpellInfo()->getId() == auraId))
+        if (m_auras[x] && (m_auras[x]->getSpellInfo()->getId() == auraId))
         {
             ++auraCount;
         }
@@ -1976,7 +2620,7 @@ Aura* Unit::getAuraWithIdForGuid(uint32_t* auraId, uint64 guid)
         for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
         {
             Aura* aura = m_auras[x];
-            if (aura != nullptr && aura->GetSpellInfo()->getId() == auraId[i] && aura->m_casterGuid == guid)
+            if (aura != nullptr && aura->getSpellInfo()->getId() == auraId[i] && aura->getCasterGuid() == guid)
                 return aura;
         }
     }
@@ -1990,9 +2634,9 @@ void Unit::removeAllAurasById(uint32_t auraId)
     {
         if (m_auras[x])
         {
-            if (m_auras[x]->GetSpellInfo()->getId() == auraId)
+            if (m_auras[x]->getSpellInfo()->getId() == auraId)
             {
-                m_auras[x]->Remove();
+                m_auras[x]->removeAura();
             }
         }
     }
@@ -2006,9 +2650,9 @@ void Unit::removeAllAurasById(uint32_t* auraId)
         {
             if (m_auras[x])
             {
-                if (m_auras[x]->GetSpellInfo()->getId() == auraId[i])
+                if (m_auras[x]->getSpellInfo()->getId() == auraId[i])
                 {
-                    m_auras[x]->Remove();
+                    m_auras[x]->removeAura();
                 }
             }
         }
@@ -2021,11 +2665,11 @@ void Unit::removeAllAurasByIdForGuid(uint32_t spellId, uint64_t guid)
     {
         if (m_auras[x])
         {
-            if (m_auras[x]->GetSpellId() == spellId)
+            if (m_auras[x]->getSpellId() == spellId)
             {
-                if (!guid || m_auras[x]->m_casterGuid == guid)
+                if (!guid || m_auras[x]->getCasterGuid() == guid)
                 {
-                    m_auras[x]->Remove();
+                    m_auras[x]->removeAura();
                 }
             }
         }
@@ -2039,9 +2683,9 @@ uint32_t Unit::removeAllAurasByIdReturnCount(uint32_t auraId)
     {
         if (m_auras[x])
         {
-            if (m_auras[x]->GetSpellInfo()->getId() == auraId)
+            if (m_auras[x]->getSpellInfo()->getId() == auraId)
             {
-                m_auras[x]->Remove();
+                m_auras[x]->removeAura();
                 ++res;
             }
         }
@@ -2100,8 +2744,212 @@ void Unit::removeAllAurasByAuraEffect(AuraEffect effect)
     {
         if (m_auras[i] == nullptr)
             continue;
-        if (m_auras[i]->GetSpellInfo()->hasEffectApplyAuraName(effect))
+        if (m_auras[i]->getSpellInfo()->hasEffectApplyAuraName(effect))
             RemoveAura(m_auras[i]);
+    }
+}
+
+void Unit::sendAuraUpdate(Aura* aur, bool remove)
+{
+    if (aur->m_visualSlot >= MAX_NEGATIVE_VISUAL_AURAS_END)
+        return;
+
+    // Check if aura is hidden on self cast
+    if (aur->getCasterGuid() == getGuid() && aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_AURA_ON_SELF_CAST)
+        return;
+
+    // Check if aura is hidden when not self cast
+    if (aur->getCasterGuid() != getGuid() && aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_AURA_ON_NON_SELF_CAST)
+        return;
+
+#if VERSION_STRING < WotLK
+    if (!remove)
+    {
+#if VERSION_STRING == Classic
+        if (isPlayer() && !aur->IsPassive())
+            static_cast<Player*>(this)->SendMessageToSet(SmsgUpdateAuraDuration(aur->m_visualSlot, aur->getTimeLeft()).serialise().get(), true);
+#else
+        if (isPlayer() && !aur->IsPassive() && !(aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
+        {
+            static_cast<Player*>(this)->SendMessageToSet(SmsgUpdateAuraDuration(aur->m_visualSlot, aur->getTimeLeft()).serialise().get(), true);
+
+            auto guid = GetNewGUID();
+            static_cast<Player*>(this)->SendMessageToSet(SmsgSetExtraAuraInfo(&guid, aur->m_visualSlot, aur->getSpellId(), aur->getMaxDuration(), aur->getTimeLeft()).serialise().get(), true);
+        }
+
+        const auto caster = aur->GetUnitCaster();
+        if (caster != nullptr && caster->isPlayer() && caster->getGuid() != getGuid())
+        {
+            WorldPacket data(SMSG_SET_EXTRA_AURA_INFO_NEED_UPDATE, 21);
+            data << GetNewGUID();
+            data << uint8_t(aur->m_visualSlot);
+            data << uint32_t(aur->getSpellId());
+            data << uint32_t(aur->getMaxDuration());
+            data << uint32_t(aur->getTimeLeft());
+            caster->SendMessageToSet(&data, true);
+        }
+#endif
+    }
+#if VERSION_STRING == TBC
+    else
+    {
+        const auto caster = aur->GetUnitCaster();
+        if (caster != nullptr && caster->isPlayer())
+            static_cast<Player*>(caster)->SendMessageToSet(SmsgClearExtraAuraInfo(getGuid(), aur->getSpellId()).serialise().get(), true);
+    }
+#endif
+#else
+    SmsgAuraUpdate::AuraUpdate auraUpdate;
+
+    auraUpdate.visualSlot = aur->m_visualSlot;
+    auraUpdate.flags = aur->getAuraFlags();
+    auraUpdate.spellId = aur->getSpellId();
+
+    const auto casterUnit = aur->GetUnitCaster();
+    if (casterUnit != nullptr)
+        auraUpdate.level = static_cast<uint8_t>(casterUnit->getLevel());
+    else
+        auraUpdate.level = static_cast<uint8_t>(worldConfig.player.playerLevelCap);
+
+    ///\ todo: proc charges
+    ///\ also proc charges for classic and tbc in Unit::setAuraApplication
+    auraUpdate.stackCount = aur->getStackCount() > 255 ? 255 : aur->getStackCount();
+
+    if (!(auraUpdate.flags & AFLAG_IS_CASTER))
+        auraUpdate.casterGuid = aur->getCasterGuid();
+
+    if (auraUpdate.flags & AFLAG_DURATION)
+    {
+        auraUpdate.duration = aur->getMaxDuration();
+        auraUpdate.timeLeft = aur->getTimeLeft();
+    }
+
+#if VERSION_STRING >= Cata
+    if (auraUpdate.flags & AFLAG_SEND_EFFECT_AMOUNT)
+    {
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (aur->getAuraEffect(i).mAuraEffect != SPELL_AURA_NONE)
+            {
+                ///\ todo: we are sending base amount, should real amount be sent instead?
+                auraUpdate.effAmount[i] = aur->getAuraEffect(i).mDamage;
+            }
+            else
+            {
+                auraUpdate.effAmount[i] = 0;
+            }
+        }
+    }
+#endif
+
+    SendMessageToSet(SmsgAuraUpdate(getGuid(), auraUpdate, remove).serialise().get(), true);
+#endif
+}
+
+void Unit::sendFullAuraUpdate()
+{
+#if VERSION_STRING >= WotLK
+    auto packetData = SmsgAuraUpdateAll(getGuid(), {});
+    auto updates = 0u;
+
+    for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        Aura* aur = m_auras[i];
+        if (aur == nullptr)
+            continue;
+
+        // Update only auras with a visual slot
+        if (aur->m_visualSlot == 0xFF)
+            continue;
+
+        SmsgAuraUpdateAll::AuraUpdate auraUpdate;
+
+        auraUpdate.flags = aur->getAuraFlags();
+        auraUpdate.visualSlot = aur->m_visualSlot;
+        auraUpdate.spellId = aur->getSpellId();
+
+        const auto casterUnit = aur->GetUnitCaster();
+        if (casterUnit != nullptr)
+            auraUpdate.level = static_cast<uint8_t>(casterUnit->getLevel());
+        else
+            auraUpdate.level = static_cast<uint8_t>(worldConfig.player.playerLevelCap);
+
+        ///\ todo: proc charges
+        auraUpdate.stackCount = aur->getStackCount() > 255 ? 255 : aur->getStackCount();
+
+        if (!(auraUpdate.flags & AFLAG_IS_CASTER))
+            auraUpdate.casterGuid = aur->getCasterGuid();
+
+        if (auraUpdate.flags & AFLAG_DURATION)
+        {
+            auraUpdate.duration = aur->getMaxDuration();
+            auraUpdate.timeLeft = aur->getTimeLeft();
+        }
+
+#if VERSION_STRING >= Cata
+        if (auraUpdate.flags & AFLAG_SEND_EFFECT_AMOUNT)
+        {
+            for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; ++x)
+            {
+                if (aur->getAuraEffect(x).mAuraEffect != SPELL_AURA_NONE)
+                {
+                    ///\ todo: we are sending base amount, should real amount be sent instead?
+                    auraUpdate.effAmount[x] = aur->getAuraEffect(x).mDamage;
+                }
+                else
+                {
+                    auraUpdate.effAmount[x] = 0;
+                }
+            }
+        }
+#endif
+
+        packetData.addAuraUpdate(auraUpdate);
+        ++updates;
+    }
+
+    SendMessageToSet(packetData.serialise().get(), true);
+    LogDebugFlag(LF_AURA, "Unit::sendFullAuraUpdate : Updated %u auras for guid %u", updates, getGuid());
+#endif
+}
+
+bool Unit::sendPeriodicAuraLog(const WoWGuid& casterGuid, const WoWGuid& targetGuid, SpellInfo const* spellInfo, uint32_t amount, uint32_t overKillOrOverHeal, uint32_t absorbed, uint32_t resisted, AuraEffect auraEffect, bool isCritical, uint32_t miscValue/* = 0*/, float gainMultiplier/* = 0.0f*/)
+{
+    // Classic does not use school mask
+    uint32_t school = 0;
+#if VERSION_STRING == Classic
+    school = spellInfo->getFirstSchoolFromSchoolMask();
+#else
+    school = spellInfo->getSchoolMask();
+#endif
+
+    switch (auraEffect)
+    {
+        case SPELL_AURA_PERIODIC_DAMAGE:
+        case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
+        case SPELL_AURA_PERIODIC_HEAL:
+        case SPELL_AURA_PERIODIC_HEAL_PCT:
+        case SPELL_AURA_PERIODIC_POWER_PCT:
+        case SPELL_AURA_PERIODIC_ENERGIZE:
+        case SPELL_AURA_PERIODIC_MANA_LEECH:
+            break;
+        default:
+            return false;
+    }
+
+    SendMessageToSet(SmsgPeriodicAuraLog(targetGuid, casterGuid, spellInfo->getId(), auraEffect, amount, overKillOrOverHeal, school, absorbed, resisted, isCritical, miscValue, gainMultiplier).serialise().get(), true);
+    return true;
+}
+
+void Unit::_updateAuras(unsigned long diff)
+{
+    for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        const auto aur = m_auras[i];
+        if (aur == nullptr)
+            continue;
+
+        aur->update(diff);
     }
 }
 
@@ -2751,13 +3599,14 @@ bool Unit::isPowerRegenerationInterrupted() const
 }
 #endif
 
-void Unit::energize(Unit* target, uint32_t spellId, uint32_t amount, PowerType type)
+void Unit::energize(Unit* target, uint32_t spellId, uint32_t amount, PowerType type, bool sendPacket/* = true*/)
 {
     if (target == nullptr || spellId == 0 || amount == 0)
         return;
 
     // Send packet first
-    sendSpellEnergizeLog(target, spellId, amount, type);
+    if (sendPacket)
+        sendSpellEnergizeLog(target, spellId, amount, type);
 
     target->setPower(type, target->getPower(type) + amount);
 

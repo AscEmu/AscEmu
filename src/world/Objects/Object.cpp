@@ -27,6 +27,7 @@
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "TLSObject.h"
+#include "Management/Battleground/Battleground.h"
 #include "Management/ItemInterface.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -34,10 +35,10 @@
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
 #include "Faction.h"
-#include "Spell/SpellAuras.h"
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellDamageType.h"
+#include "Spell/Definitions/SpellMechanics.h"
 #include "Spell/Definitions/SpellState.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/SpellSchoolConversionTable.h"
@@ -567,6 +568,691 @@ Spell* Object::findCurrentCastedSpellBySpellId(uint32_t spellId)
             return m_currentSpell[i];
     }
     return nullptr;
+}
+
+int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8_t effIndex, bool allowProc/* = true*/, bool staticDamage/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
+{
+    if (victim == nullptr || !victim->isAlive())
+        return 0;
+
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    if (spellInfo == nullptr)
+        return 0;
+
+    float_t damage = static_cast<float_t>(dmg);
+    const auto school = spellInfo->getFirstSchoolFromSchoolMask();
+    auto isCritical = forceCrit;
+
+    // Check if victim is immune to this school
+    // or if victim has god mode cheat
+    if (victim->SchoolImmunityList[school] != 0 ||
+        (victim->isPlayer() && static_cast<Player*>(victim)->m_cheats.GodModeCheat))
+    {
+        if (isCreatureOrPlayer())
+            static_cast<Unit*>(this)->sendSpellOrDamageImmune(getGuid(), victim, spellId);
+
+        return 0;
+    }
+
+    // Setup proc flags
+    uint32_t casterProcFlags = PROC_ON_ANY_HOSTILE_ACTION;
+    uint32_t victimProcFlags = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM;
+
+    if (!isPeriodic)
+    {
+        switch (spellInfo->getDmgClass())
+        {
+            case SPELL_DMG_TYPE_MAGIC:
+                casterProcFlags |= PROC_ON_SPELL_HIT;
+                victimProcFlags |= PROC_ON_SPELL_HIT_VICTIM;
+                break;
+            case SPELL_DMG_TYPE_MELEE:
+                casterProcFlags |= PROC_ON_MELEE_ATTACK;
+                victimProcFlags |= PROC_ON_MELEE_ATTACK_VICTIM;
+                break;
+            case SPELL_DMG_TYPE_RANGED:
+                casterProcFlags |= PROC_ON_RANGED_ATTACK;
+                victimProcFlags |= PROC_ON_RANGED_ATTACK_VICTIM;
+                break;
+            default:
+                break;
+        }
+    }
+
+    // Get spell damage bonus
+    if (isCreatureOrPlayer() && !staticDamage)
+    {
+        const auto casterUnit = static_cast<Unit*>(this);
+        casterUnit->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
+
+        auto bonusDamage = casterUnit->getSpellDamageBonus(spellInfo, dmg, isPeriodic, aur);
+        if (isPeriodic && aur != nullptr)
+            bonusDamage *= aur->getStackCount();
+
+        damage += bonusDamage;
+        if (damage < 0.0f)
+            damage = 0.0f;
+    }
+
+    // Mage talent - Torment the Weak
+    if (isPlayer() && (victim->HasAuraWithMechanics(MECHANIC_ENSNARED) || victim->HasAuraWithMechanics(MECHANIC_DAZED)))
+    {
+        const auto pct = static_cast<float_t>(static_cast<Player*>(this)->m_IncreaseDmgSnaredSlowed);
+        damage = damage * (1.0f + (pct / 100.0f));
+    }
+
+    // Add creature type bonuses
+    if (isPlayer() && victim->isCreature())
+    {
+        const auto plr = static_cast<Player*>(this);
+        const auto cre = static_cast<Creature*>(victim);
+        const auto type = cre->GetCreatureProperties()->Type;
+
+        damage += damage * plr->IncreaseDamageByTypePCT[type];
+        if (isPeriodic)
+        {
+            if (aur != nullptr && aurEff != nullptr)
+                damage += static_cast<float_t>(plr->IncreaseDamageByType[type] / (aur->getMaxDuration() / aurEff->mAmplitude));
+        }
+        else
+        {
+            damage += static_cast<float_t>(plr->IncreaseDamageByType[type]);
+        }
+    }
+
+    // Check if spell can crit
+    if (damage > 0.0f)
+    {
+        // If the damage is forced to be crit, do not alter it
+        if (!isCritical && !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
+        {
+            if (isPeriodic)
+            {
+                // For periodic effects use aura's own crit chance
+                if (aur != nullptr && aur->getCritChance() > 0.0f)
+                    isCritical = Rand(aur->getCritChance());
+            }
+            else
+            {
+                isCritical = IsCriticalDamageForSpell(victim, spellInfo);
+            }
+        }
+
+        // Get critical spell damage bonus
+        if (isCritical)
+        {
+            damage = GetCriticalDamageBonusForSpell(victim, spellInfo, damage);
+
+            switch (spellInfo->getDmgClass())
+            {
+                case SPELL_DMG_TYPE_MAGIC:
+                    casterProcFlags |= PROC_ON_SPELL_CRIT_HIT;
+                    victimProcFlags |= PROC_ON_SPELL_CRIT_HIT_VICTIM;
+                    break;
+                case SPELL_DMG_TYPE_MELEE:
+                    casterProcFlags |= PROC_ON_CRIT_ATTACK;
+                    victimProcFlags |= PROC_ON_CRIT_HIT_VICTIM;
+                    break;
+                case SPELL_DMG_TYPE_RANGED:
+                    casterProcFlags |= PROC_ON_RANGED_CRIT_ATTACK;
+                    victimProcFlags |= PROC_ON_RANGED_CRIT_ATTACK_VICTIM;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    // Calculate damage reduction
+    damage += damage * victim->DamageTakenPctMod[school];
+    damage += damage * victim->ModDamageTakenByMechPCT[spellInfo->getMechanicsType()];
+    if (isPeriodic)
+    {
+        if (aur != nullptr && aurEff != nullptr)
+            damage += static_cast<float_t>(victim->DamageTakenMod[school] / (aur->getMaxDuration() / aurEff->mAmplitude));
+    }
+    else
+    {
+        damage += victim->DamageTakenMod[school];
+    }
+
+    // Resilience
+    ///\ todo: move this elsewhere and fix this
+    float_t damageReductionPct = 1.0f;
+    if (victim->isPlayer())
+    {
+        auto resilienceValue = static_cast<float_t>(static_cast<Player*>(victim)->CalcRating(PCR_SPELL_CRIT_RESILIENCE) / 100.0f);
+        if (resilienceValue > 1.0f)
+            resilienceValue = 1.0f;
+        damageReductionPct -= resilienceValue;
+    }
+    damage *= damageReductionPct;
+
+    if (damage < 0.0f)
+        damage = 0.0f;
+
+    uint32_t damage_int = 0;
+    // For periodic auras convert the float amount to integer and save the damage fraction for next tick
+    if (isPeriodic && aur != nullptr && aurEff != nullptr)
+    {
+        damage += aurEff->mDamageFraction;
+        if (aur->getTimeLeft() >= aurEff->mAmplitude)
+        {
+            damage_int = static_cast<uint32_t>(damage);
+            aurEff->mDamageFraction = damage - damage_int;
+        }
+        else
+        {
+            // In case this is the last tick, just round the value
+            damage_int = static_cast<uint32_t>(std::round(damage));
+        }
+    }
+    else
+    {
+        // If this is a direct damage spell just round the value
+        damage_int = static_cast<uint32_t>(std::round(damage));
+    }
+
+    // Check for absorb effects
+    auto absorbedDamage = victim->AbsorbDamage(school, &damage_int);
+    const auto manaShieldAbsorb = victim->ManaShieldAbsorb(damage_int);
+
+    if (manaShieldAbsorb > 0)
+    {
+        if (manaShieldAbsorb > damage_int)
+            damage_int = 0;
+        else
+            damage_int -= manaShieldAbsorb;
+
+        absorbedDamage += manaShieldAbsorb;
+    }
+
+    if (absorbedDamage > 0)
+        victimProcFlags |= PROC_ON_ABSORB;
+
+    // Hackfix from legacy method
+    // Incanter's Absorption
+    if (victim->isPlayer())
+    {
+        uint32 incanterSAbsorption[] =
+        {
+            //SPELL_HASH_INCANTER_S_ABSORPTION
+            44394,
+            44395,
+            44396,
+            44413,
+            0
+        };
+
+        if (victim->hasAurasWithId(incanterSAbsorption))
+        {
+            float_t pctmod = 0.0f;
+            const auto pl = static_cast<Player*>(victim);
+            if (pl->HasAura(44394))
+                pctmod = 0.05f;
+            else if (pl->HasAura(44395))
+                pctmod = 0.10f;
+            else if (pl->HasAura(44396))
+                pctmod = 0.15f;
+
+            const auto hp = static_cast<uint32_t>(0.05f * pl->getMaxHealth());
+            auto spellpower = static_cast<uint32_t>(pctmod * pl->getModDamageDonePositive(SCHOOL_NORMAL));
+
+            if (spellpower > hp)
+                spellpower = hp;
+
+            SpellInfo const* entry = sSpellMgr.getSpellInfo(44413);
+            if (entry != nullptr)
+                pl->castSpell(pl->getGuid(), entry, spellpower, true);
+        }
+    }
+
+    // Create damage info
+    dealdamage dmginfo;
+    dmginfo.school_type = school;
+    dmginfo.full_damage = damage_int;
+    dmginfo.resisted_damage = 0;
+
+    if (damage_int <= 0)
+        dmginfo.resisted_damage = dmginfo.full_damage;
+
+    // Calculate resistance reduction
+    if (damage_int > 0 && isCreatureOrPlayer() && !(isPeriodic && school == SCHOOL_NORMAL))
+    {
+        static_cast<Unit*>(this)->CalculateResistanceReduction(victim, &dmginfo, spellInfo, 0.0f);
+        if (dmginfo.resisted_damage > static_cast<uint32_t>(dmginfo.full_damage))
+            damage_int = 0;
+        else
+            damage_int = dmginfo.full_damage - dmginfo.resisted_damage;
+    }
+
+    // Check for damage split target
+    if (victim->m_damageSplitTarget != nullptr)
+        damage_int = victim->DoDamageSplitTarget(damage_int, school, false);
+
+    // Save victim's health before damage is dealt
+    const auto healthBefore = victim->getHealth();
+
+    // Send packet and deal damage to victim
+    if (isPeriodic && aurEff != nullptr && isCreatureOrPlayer())
+    {
+        const auto overKill = damage_int > healthBefore ? damage_int - healthBefore : 0;
+        const auto wasPacketSent = victim->sendPeriodicAuraLog(GetNewGUID(), victim->GetNewGUID(), spellInfo, damage_int, overKill, absorbedDamage, dmginfo.resisted_damage, aurEff->mAuraEffect, isCritical);
+
+        // In case periodic log couldn't be sent, send normal spell log
+        // Required for leech and mana burn auras
+        if (!wasPacketSent)
+            victim->sendSpellNonMeleeDamageLog(this, victim, spellInfo, damage_int, absorbedDamage, dmginfo.resisted_damage, 0, true, isCritical);
+    }
+    else
+    {
+        victim->sendSpellNonMeleeDamageLog(this, victim, spellInfo, damage_int, absorbedDamage, dmginfo.resisted_damage, 0, false, isCritical);
+    }
+
+    // Create heal effect for leech effects
+    // Must be done before damage is dealt to victim
+    if (isCreatureOrPlayer() && isLeech && this != victim)
+    {
+        // Leech damage can be more than victim's health but the heal should not exceed victim's remaining health
+        auto healAmount = std::min(damage_int, healthBefore);
+
+        const uint8_t index = aur != nullptr && aurEff->mAuraEffect != SPELL_AURA_NONE ? aurEff->effIndex : effIndex;
+        healAmount = static_cast<uint32_t>(healAmount * spellInfo->getEffectMultipleValue(index));
+        doSpellHealing(static_cast<Unit*>(this), spellId, healAmount, true, true, true, true, false, aur, aurEff);
+    }
+
+    DealDamage(victim, damage_int, 2, 0, spellId);
+
+    // Handle procs
+    if (isCreatureOrPlayer())
+    {
+        const auto casterUnit = static_cast<Unit*>(this);
+        victim->HandleProc(victimProcFlags, casterUnit, spellInfo, !allowProc, damage_int, absorbedDamage);
+        victim->m_procCounter = 0;
+        casterUnit->HandleProc(casterProcFlags, victim, spellInfo, !allowProc, damage_int, absorbedDamage);
+        casterUnit->m_procCounter = 0;
+    }
+
+    if (isPlayer())
+        static_cast<Player*>(this)->m_casted_amount[school] = damage_int;
+
+    // Cause push back to victim's spell casting if damage was not fully absorbed
+    if (!(dmginfo.full_damage == 0 && absorbedDamage > 0))
+    {
+        if (victim->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && victim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
+            victim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->AddTime(school);
+        else if (victim->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr && victim->getCurrentSpell(CURRENT_GENERIC_SPELL)->getCastTimeLeft() > 0)
+            victim->getCurrentSpell(CURRENT_GENERIC_SPELL)->AddTime(school);
+    }
+
+    if (dmginfo.resisted_damage == static_cast<uint32_t>(dmginfo.full_damage) && absorbedDamage == 0)
+    {
+        // Hackfix from legacy method
+        if (victim->isPlayer())
+        {
+            const auto pVictim = static_cast<Player*>(victim);
+            if (pVictim->m_RegenManaOnSpellResist > 0)
+            {
+                const auto maxMana = pVictim->getMaxPower(POWER_TYPE_MANA);
+                const auto amount = static_cast<uint32_t>(maxMana * pVictim->m_RegenManaOnSpellResist);
+
+                pVictim->energize(pVictim, 29442, amount, POWER_TYPE_MANA);
+            }
+
+            pVictim->CombatStatusHandler_ResetPvPTimeout();
+        }
+
+        if (isPlayer())
+            static_cast<Player*>(this)->CombatStatusHandler_ResetPvPTimeout();
+    }
+
+    // Hackfix from legacy method
+    if (spellInfo->getSchoolMask() & SCHOOL_MASK_SHADOW)
+    {
+        if (victim->isAlive() && isCreatureOrPlayer())
+        {
+            //Shadow Word:Death
+            if (spellId == 32379 || spellId == 32996 || spellId == 48157 || spellId == 48158)
+            {
+                auto backfireAmount = damage_int + absorbedDamage;
+                const auto absorbed = static_cast<Unit*>(this)->AbsorbDamage(school, &backfireAmount);
+                DealDamage(static_cast<Unit*>(this), backfireAmount, 2, 0, spellId);
+                static_cast<Unit*>(this)->sendSpellNonMeleeDamageLog(this, this, spellInfo, backfireAmount, absorbed, 0, 0, false, false);
+            }
+        }
+    }
+
+    ///\ todo: at the moment this returns the damage inflicted, but make it return DamageInfo structure
+    ///\ required for leech effects, leech should not heal caster if the damage was absorbed
+    ///\ but for some spells (i.e. Seed of Corruption) it is mandatory to return the full damage before absorption effects
+    return damage_int;
+}
+
+void Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool allowProc/* = true*/, bool staticDamage/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
+{
+    if (victim == nullptr || !victim->isAlive())
+        return;
+
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    if (spellInfo == nullptr)
+        return;
+
+    float_t heal = static_cast<float_t>(amt);
+    const auto school = spellInfo->getFirstSchoolFromSchoolMask();
+    auto isCritical = forceCrit;
+
+    // Setup proc flags
+    uint32_t casterProcFlags = PROC_ON_SPELL_HIT;
+    uint32_t victimProcFlags = PROC_ON_SPELL_HIT_VICTIM;
+
+    // Get spell healing bonus
+    if (isCreatureOrPlayer() && !staticDamage)
+    {
+        const auto casterUnit = static_cast<Unit*>(this);
+
+        auto bonusHeal = casterUnit->getSpellHealingBonus(spellInfo, amt, isPeriodic, aur);
+        if (isPeriodic && aur != nullptr)
+            bonusHeal *= aur->getStackCount();
+
+        heal += bonusHeal;
+        if (heal < 0.0f)
+            heal = 0.0f;
+    }
+
+    // Hackfixes from legacy method
+    if (isCreatureOrPlayer())
+    {
+        const auto casterUnit = static_cast<Unit*>(this);
+        switch (spellInfo->getId())
+        {
+            //SPELL_HASH_LESSER_HEALING_WAVE
+            case 8004:
+            case 8008:
+            case 8010:
+            case 10466:
+            case 10467:
+            case 10468:
+            case 25420:
+            case 27624:
+            case 28849:
+            case 28850:
+            case 44256:
+            case 46181:
+            case 49275:
+            case 49276:
+            case 49309:
+            case 66055:
+            case 68115:
+            case 68116:
+            case 68117:
+            case 75366:
+            //SPELL_HASH_HEALING_WAVE
+            case 331:
+            case 332:
+            case 547:
+            case 913:
+            case 939:
+            case 959:
+            case 8005:
+            case 10395:
+            case 10396:
+            case 11986:
+            case 12491:
+            case 12492:
+            case 15982:
+            case 25357:
+            case 25391:
+            case 25396:
+            case 26097:
+            case 38330:
+            case 43548:
+            case 48700:
+            case 49272:
+            case 49273:
+            case 51586:
+            case 52868:
+            case 55597:
+            case 57785:
+            case 58980:
+            case 59083:
+            case 60012:
+            case 61569:
+            case 67528:
+            case 68318:
+            case 69958:
+            case 71133:
+            case 75382:
+            {
+                //Tidal Waves
+                casterUnit->RemoveAura(53390, casterUnit->getGuid());
+            }
+            //SPELL_HASH_CHAIN_HEAL
+            case 1064:
+            case 10622:
+            case 10623:
+            case 14900:
+            case 15799:
+            case 16367:
+            case 25422:
+            case 25423:
+            case 33642:
+            case 41114:
+            case 42027:
+            case 42477:
+            case 43527:
+            case 48894:
+            case 54481:
+            case 55458:
+            case 55459:
+            case 59473:
+            case 69923:
+            case 70425:
+            case 71120:
+            case 75370:
+            {
+                //Maelstrom Weapon
+                casterUnit->removeAllAurasByIdForGuid(53817, casterUnit->getGuid());
+            } break;
+            case 54172: //Paladin - Divine Storm heal effect
+            {
+                int dmg = (int)CalculateDamage(casterUnit, victim, MELEE, nullptr, sSpellMgr.getSpellInfo(53385));    //1 hit
+                int target = 0;
+
+                for (const auto& itr : casterUnit->getInRangeObjectsSet())
+                {
+                    if (itr)
+                    {
+                        auto obj = itr;
+                        if (itr->isCreatureOrPlayer() && static_cast<Unit*>(itr)->isAlive() && obj->isInRange(casterUnit, 8) && (casterUnit->GetPhase() & itr->GetPhase()))
+                        {
+                            // TODO: fix me!
+
+                            //did_hit_result = Spell::DidHit(sSpellMgr.getSpellInfo(53385)->getEffect(0), static_cast<Unit*>(itr));
+                            //if (did_hit_result == SPELL_DID_HIT_SUCCESS)
+                                target++;
+                        }
+                    }
+                }
+                if (target > 4)
+                    target = 4;
+
+                heal = static_cast<float_t>((dmg * target) >> 2);   // 25%
+            } break;
+            default:
+                break;
+        }
+    }
+
+    // Check if heal can crit
+    if (heal > 0.0f)
+    {
+        // If the heal is forced to be crit, do not alter it
+        if (!isCritical && !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
+        {
+            if (isPeriodic)
+            {
+                // For periodic effects use aura's own crit chance
+                if (aur != nullptr && aur->getCritChance() > 0.0f)
+                    isCritical = Rand(aur->getCritChance());
+            }
+            else
+            {
+                isCritical = IsCriticalHealForSpell(victim, spellInfo);
+            }
+        }
+
+        // Get critical spell heal bonus
+        if (isCritical)
+        {
+            heal = GetCriticalHealBonusForSpell(victim, spellInfo, heal);
+
+            casterProcFlags |= PROC_ON_SPELL_CRIT_HIT;
+            victimProcFlags |= PROC_ON_SPELL_CRIT_HIT_VICTIM;
+        }
+    }
+
+    // Get target's heal taken mod
+    heal += static_cast<float_t>(heal * victim->HealTakenPctMod[school]);
+    if (isPeriodic)
+    {
+        if (aur != nullptr && aurEff != nullptr && aurEff->mAmplitude != 0)
+            heal += static_cast<float_t>(victim->HealTakenMod[school] / (aur->getMaxDuration() / aurEff->mAmplitude));
+    }
+    else
+    {
+        heal += static_cast<float_t>(victim->HealTakenMod[school]);
+    }
+
+    if (heal < 0.0f)
+        heal = 0.0f;
+
+    uint32_t heal_int = 0;
+    // For periodic auras convert the float amount to integer and save the heal fraction for next tick
+    // but skip leech effects because the damage part only uses fractions
+    if (isPeriodic && !isLeech && aur != nullptr && aurEff != nullptr)
+    {
+        heal += aurEff->mDamageFraction;
+        if (aur->getTimeLeft() >= aurEff->mAmplitude)
+        {
+            heal_int = static_cast<uint32_t>(heal);
+            aurEff->mDamageFraction = heal - heal_int;
+        }
+        else
+        {
+            // In case this is the last tick, just round the value
+            heal_int = static_cast<uint32_t>(std::round(heal));
+        }
+    }
+    else
+    {
+        // If this is a direct heal spell just round the value
+        heal_int = static_cast<uint32_t>(std::round(heal));
+    }
+
+    uint32_t overHeal = 0;
+    const auto curHealth = victim->getHealth();
+    const auto maxHealth = victim->getMaxHealth();
+
+    if ((curHealth + heal_int) >= maxHealth)
+    {
+        victim->setHealth(maxHealth);
+        overHeal = curHealth + heal_int - maxHealth;
+    }
+    else
+    {
+        victim->modHealth(heal_int);
+    }
+
+    ///\ todo: implement (aura effect 301)
+    const uint32_t absorbedHeal = 0;
+
+    if (isPeriodic && aurEff != nullptr && isCreatureOrPlayer())
+    {
+        const auto wasPacketSent = victim->sendPeriodicAuraLog(GetNewGUID(), victim->GetNewGUID(), spellInfo, heal_int, overHeal, absorbedHeal, 0, aurEff->mAuraEffect, isCritical);
+
+        // In case periodic log couldn't be sent, send normal spell log
+        // Required for leech auras
+        if (!wasPacketSent)
+            victim->sendSpellHealLog(this, victim, spellId, heal_int, isCritical, overHeal, absorbedHeal);
+    }
+    else
+    {
+        victim->sendSpellHealLog(this, victim, spellId, heal_int, isCritical, overHeal, absorbedHeal);
+    }
+
+    // Handle procs
+    if (isCreatureOrPlayer())
+    {
+        const auto casterUnit = static_cast<Unit*>(this);
+        victim->HandleProc(victimProcFlags, casterUnit, spellInfo, !allowProc, heal_int);
+        victim->m_procCounter = 0;
+        casterUnit->HandleProc(casterProcFlags, victim, spellInfo, !allowProc, heal_int);
+        casterUnit->m_procCounter = 0;
+    }
+
+    if (isPlayer())
+    {
+        const auto plr = static_cast<Player*>(this);
+
+        // Check for pvp flag (healing a flagged target will flag caster)
+        if (victim->isPlayer() && plr != victim)
+        {
+            const auto playerTarget = static_cast<Player*>(victim);
+            if (playerTarget->isPvpFlagSet())
+            {
+                if (!plr->isPvpFlagSet())
+                    plr->PvPToggle();
+                else
+                    plr->setPvpFlag();
+            }
+        }
+
+        // Update battleground score
+        plr->m_bgScore.HealingDone += heal_int;
+        if (plr->m_bg != nullptr)
+            plr->m_bg->UpdatePvPData();
+
+        plr->last_heal_spell = spellInfo;
+        plr->m_casted_amount[school] = heal_int;
+    }
+
+    victim->RemoveAurasByHeal();
+
+    // Add threat
+    if (isCreatureOrPlayer())
+    {
+        const auto casterUnit = static_cast<Unit*>(this);
+        std::vector<Unit*> target_threat;
+        int count = 0;
+        for (const auto& itr : casterUnit->getInRangeObjectsSet())
+        {
+            if (!itr || !itr->isCreature())
+                continue;
+
+            auto tmp_creature = static_cast<Creature*>(itr);
+
+            if (!tmp_creature->CombatStatus.IsInCombat() || (tmp_creature->GetAIInterface()->getThreatByPtr(casterUnit) == 0 && tmp_creature->GetAIInterface()->getThreatByPtr(victim) == 0))
+                continue;
+
+            if (!(casterUnit->GetPhase() & itr->GetPhase()))     //Can't see, can't be a threat
+                continue;
+
+            target_threat.push_back(tmp_creature);
+            count++;
+        }
+        if (count == 0)
+            return;
+
+        auto heal_threat = heal_int / count;
+
+        for (const auto& itr : target_threat)
+        {
+            itr->GetAIInterface()->HealReaction(casterUnit, victim, spellInfo, heal_threat);
+        }
+
+        if (victim->IsInWorld() && casterUnit->IsInWorld())
+            casterUnit->CombatStatus.WeHealed(victim);
+    }
 }
 
 void Object::_UpdateSpells(uint32_t time)
@@ -2655,262 +3341,6 @@ uint32 Object::getServersideFaction()
 void Object::DealDamage(Unit* /*pVictim*/, uint32 /*damage*/, uint32 /*targetEvent*/, uint32 /*unitEvent*/, uint32 /*spellId*/, bool /*no_remove_auras*/)
 {}
 
-void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage, bool allowProc, bool static_damage, bool /*no_remove_auras*/)
-{
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //Unacceptable Cases Processing
-    if (pVictim == nullptr || !pVictim->isAlive())
-        return;
-
-    const auto spellInfo = sSpellMgr.getSpellInfo(spellID);
-    if (spellInfo == nullptr)
-        return;
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //Variables Initialization
-    float res = static_cast<float>(damage);
-    bool critical = false;
-
-    uint32 aproc = PROC_ON_ANY_HOSTILE_ACTION; /*| PROC_ON_SPELL_HIT;*/
-    uint32 vproc = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM; /*| PROC_ON_SPELL_HIT_VICTIM;*/
-
-    //A school damage is not necessarily magic
-    switch (spellInfo->getDmgClass())
-    {
-    case SPELL_DMG_TYPE_RANGED:
-    {
-        aproc |= PROC_ON_RANGED_ATTACK;
-        vproc |= PROC_ON_RANGED_ATTACK_VICTIM;
-    }
-    break;
-
-    case SPELL_DMG_TYPE_MELEE:
-    {
-        aproc |= PROC_ON_MELEE_ATTACK;
-        vproc |= PROC_ON_MELEE_ATTACK_VICTIM;
-    }
-    break;
-
-    case SPELL_DMG_TYPE_MAGIC:
-    {
-        aproc |= PROC_ON_SPELL_HIT;
-        vproc |= PROC_ON_SPELL_HIT_VICTIM;
-    }
-    break;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //Spell Damage Bonus Calculations
-    //by stats
-    if (isCreatureOrPlayer() && !static_damage)
-    {
-        Unit* caster = static_cast<Unit*>(this);
-
-        caster->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
-
-        res += static_cast<float>(caster->GetSpellDmgBonus(pVictim, spellInfo, damage, false));
-
-        if (res < 0.0f)
-            res = 0.0f;
-    }
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //Post +SpellDamage Bonus Modifications
-    if (res > 0.0f && !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
-    {
-        critical = this->IsCriticalDamageForSpell(pVictim, spellInfo);
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        //Spell Critical Hit
-        if (critical)
-        {
-            res = this->GetCriticalDamageBonusForSpell(pVictim, spellInfo, res);
-
-            switch (spellInfo->getDmgClass())
-            {
-            case SPELL_DMG_TYPE_RANGED:
-            {
-                aproc |= PROC_ON_RANGED_CRIT_ATTACK;
-                vproc |= PROC_ON_RANGED_CRIT_ATTACK_VICTIM;
-            }
-            break;
-
-            case SPELL_DMG_TYPE_MELEE:
-            {
-                aproc |= PROC_ON_CRIT_ATTACK;
-                vproc |= PROC_ON_CRIT_HIT_VICTIM;
-            }
-            break;
-
-            case SPELL_DMG_TYPE_MAGIC:
-            {
-                aproc |= PROC_ON_SPELL_CRIT_HIT;
-                vproc |= PROC_ON_SPELL_CRIT_HIT_VICTIM;
-            }
-            break;
-            }
-        }
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //Post Roll Calculations
-
-    //damage reduction
-    if (this->isCreatureOrPlayer())
-        res += static_cast<Unit*>(this)->CalcSpellDamageReduction(pVictim, spellInfo, res);
-
-    //absorption
-    uint32 ress = static_cast<uint32>(res);
-    uint32 abs_dmg = pVictim->AbsorbDamage(spellInfo->getFirstSchoolFromSchoolMask(), &ress);
-    uint32 ms_abs_dmg = pVictim->ManaShieldAbsorb(ress);
-    if (ms_abs_dmg)
-    {
-        if (ms_abs_dmg > ress)
-            ress = 0;
-        else
-            ress -= ms_abs_dmg;
-
-        abs_dmg += ms_abs_dmg;
-    }
-
-    if (abs_dmg)
-        vproc |= PROC_ON_ABSORB;
-
-    // Incanter's Absorption
-    if (pVictim->isPlayer())
-    {
-        uint32 incanterSAbsorption[] =
-        {
-            //SPELL_HASH_INCANTER_S_ABSORPTION
-            44394,
-            44395,
-            44396,
-            44413,
-            0
-        };
-
-        if (pVictim->hasAurasWithId(incanterSAbsorption))
-        {
-            float pctmod = 0.0f;
-            Player* pl = static_cast<Player*>(pVictim);
-            if (pl->HasAura(44394))
-                pctmod = 0.05f;
-            else if (pl->HasAura(44395))
-                pctmod = 0.10f;
-            else if (pl->HasAura(44396))
-                pctmod = 0.15f;
-
-            uint32 hp = static_cast<uint32>(0.05f * pl->getMaxHealth());
-            uint32 spellpower = static_cast<uint32>(pctmod * pl->getModDamageDonePositive(SCHOOL_NORMAL));
-
-            if (spellpower > hp)
-                spellpower = hp;
-
-            SpellInfo const* entry = sSpellMgr.getSpellInfo(44413);
-            if (!entry)
-                return;
-
-            pl->castSpell(pl->getGuid(), entry, spellpower, true);
-        }
-    }
-
-    res = static_cast<float>(ress);
-    dealdamage dmg;
-    dmg.school_type = spellInfo->getFirstSchoolFromSchoolMask();
-    dmg.full_damage = ress;
-    dmg.resisted_damage = 0;
-
-    if (res <= 0)
-        dmg.resisted_damage = dmg.full_damage;
-
-    //resistance reducing
-    if (res > 0 && this->isCreatureOrPlayer())
-    {
-        static_cast<Unit*>(this)->CalculateResistanceReduction(pVictim, &dmg, spellInfo, 0);
-        if ((int32)dmg.resisted_damage > dmg.full_damage)
-            res = 0;
-        else
-            res = static_cast<float>(dmg.full_damage - dmg.resisted_damage);
-    }
-
-    //special states
-    if (pVictim->isPlayer() && static_cast<Player*>(pVictim)->m_cheats.GodModeCheat == true)
-    {
-        res = static_cast<float>(dmg.full_damage);
-        dmg.resisted_damage = dmg.full_damage;
-    }
-
-    // Paladin: Blessing of Sacrifice, and Warlock: Soul Link
-    if (pVictim->m_damageSplitTarget)
-    {
-        res = (float)pVictim->DoDamageSplitTarget((uint32)res, spellInfo->getFirstSchoolFromSchoolMask(), false);
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //Data Sending ProcHandling
-    SendSpellNonMeleeDamageLog(this, pVictim, spellID, static_cast<int32>(res), spellInfo->getFirstSchoolFromSchoolMask(), abs_dmg, dmg.resisted_damage, false, 0, critical, isPlayer());
-    DealDamage(pVictim, static_cast<int32>(res), 2, 0, spellID);
-
-    if (isCreatureOrPlayer())
-    {
-        int32 dmg2 = static_cast<int32>(res);
-
-        pVictim->HandleProc(vproc, static_cast<Unit*>(this), spellInfo, !allowProc, dmg2, abs_dmg);
-        pVictim->m_procCounter = 0;
-        static_cast<Unit*>(this)->HandleProc(aproc, pVictim, spellInfo, !allowProc, dmg2, abs_dmg);
-        static_cast<Unit*>(this)->m_procCounter = 0;
-    }
-    if (this->isPlayer())
-    {
-        static_cast<Player*>(this)->m_casted_amount[spellInfo->getFirstSchoolFromSchoolMask()] = (uint32)res;
-    }
-
-    if (!(dmg.full_damage == 0 && abs_dmg))
-    {
-        //Only pushback the victim current spell if it's not fully absorbed
-        if (pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
-            pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->AddTime(spellInfo->getFirstSchoolFromSchoolMask());
-        else if (pVictim->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr && pVictim->getCurrentSpell(CURRENT_GENERIC_SPELL)->getCastTimeLeft() > 0)
-            pVictim->getCurrentSpell(CURRENT_GENERIC_SPELL)->AddTime(spellInfo->getFirstSchoolFromSchoolMask());
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //Post Damage Processing
-    if ((int32)dmg.resisted_damage == dmg.full_damage && !abs_dmg)
-    {
-        //Magic Absorption
-        if (pVictim->isPlayer())
-        {
-            if (static_cast<Player*>(pVictim)->m_RegenManaOnSpellResist)
-            {
-                Player* pl = static_cast<Player*>(pVictim);
-
-                uint32 maxmana = pl->getMaxPower(POWER_TYPE_MANA);
-                uint32 amount = static_cast<uint32>(maxmana * pl->m_RegenManaOnSpellResist);
-
-                pVictim->energize(pVictim, 29442, amount, POWER_TYPE_MANA);
-            }
-            // we still stay in combat dude
-            static_cast<Player*>(pVictim)->CombatStatusHandler_ResetPvPTimeout();
-        }
-        if (isPlayer())
-            static_cast<Player*>(this)->CombatStatusHandler_ResetPvPTimeout();
-    }
-    if (spellInfo->getSchoolMask() & SCHOOL_MASK_SHADOW)
-    {
-        if (pVictim->isAlive() && this->isCreatureOrPlayer())
-        {
-            //Shadow Word:Death
-            if (spellID == 32379 || spellID == 32996 || spellID == 48157 || spellID == 48158)
-            {
-                uint32 damage2 = static_cast<uint32>(res + abs_dmg);
-                uint32 absorbed = static_cast<Unit*>(this)->AbsorbDamage(spellInfo->getFirstSchoolFromSchoolMask(), &damage2);
-                DealDamage(static_cast<Unit*>(this), damage2, 2, 0, spellID);
-                SendSpellNonMeleeDamageLog(this, this, spellID, damage2, spellInfo->getFirstSchoolFromSchoolMask(), absorbed, 0, false, 0, false, isPlayer());
-            }
-        }
-    }
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 /// SpellLog packets just to keep the code cleaner and better to read
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2920,41 +3350,6 @@ void Object::SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 
         return;
 
     Caster->SendMessageToSet(SmsgSpellLogMiss(Ability, Caster->getGuid(), Target->getGuid(), SpellLogType).serialise().get(), true);
-}
-
-void Object::SendSpellNonMeleeDamageLog(Object* Caster, Object* Target, uint32 SpellID, uint32 Damage, uint8 School, uint32 AbsorbedDamage, uint32 ResistedDamage, bool PhysicalDamage, uint32 BlockedDamage, bool CriticalHit, bool bToset)
-{
-    if (!Caster || !Target || !SpellID)
-        return;
-
-    uint32 Overkill = 0;
-
-    if (Target->isCreatureOrPlayer() && Damage > static_cast<Unit*>(Target)->getHealth())
-        Overkill = Damage - static_cast<Unit*>(Target)->getHealth();
-
-    WorldPacket data(SMSG_SPELLNONMELEEDAMAGELOG, 48);
-
-    data << Target->GetNewGUID();
-    data << Caster->GetNewGUID();
-    data << uint32(SpellID);                        // SpellID / AbilityID
-    data << uint32(Damage);                         // All Damage
-    data << uint32(Overkill);                       // Overkill
-    data << uint8(g_spellSchoolConversionTable[School]);        // School
-    data << uint32(AbsorbedDamage);                 // Absorbed Damage
-    data << uint32(ResistedDamage);                 // Resisted Damage
-    data << uint8(PhysicalDamage);                  // Physical Damage (true/false)
-    data << uint8(0);                               // unknown or it binds with Physical Damage
-    data << uint32(BlockedDamage);                  // Physical Damage (true/false)
-
-    // unknown const
-    if (CriticalHit)
-        data << uint8(7);
-    else
-        data << uint8(5);
-
-    data << uint32(0);
-
-    Caster->SendMessageToSet(&data, bToset);
 }
 
 #if VERSION_STRING <= TBC
@@ -3054,18 +3449,6 @@ int32 Object::event_GetInstanceID()
     // \return -1 for non-inworld.. so we get our shit moved to the right thread
     // \return default value is -1, if it's something else then we are/will be soon InWorld.
     return m_instanceId;
-}
-
-void Object::EventSpellDamage(uint64 Victim, uint32 SpellID, uint32 Damage)
-{
-    if (!IsInWorld())
-        return;
-
-    Unit* pUnit = GetMapMgr()->GetUnit(Victim);
-    if (pUnit == nullptr)
-        return;
-
-    SpellNonMeleeDamageLog(pUnit, SpellID, Damage, true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
