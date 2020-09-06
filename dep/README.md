@@ -40,8 +40,8 @@
 
 ## Folder: bzip2
 - Web: http://www.bzip.org
-- Version: 1.0.6 (2010/09/20)
+- Version: 1.0.8 (2019/07/13)
 
 ## Folder: cotire
 - Web: https://github.com/sakra/cotire
-- Version: 1.8.0 (2018/03/18)
+- Version: 1.8.1 (2019/12/23)
