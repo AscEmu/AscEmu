@@ -52,7 +52,7 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const ch
     MYSQL* temp = NULL;
     MYSQL* temp2 = NULL;
     MySQLDatabaseConnection** conns;
-    my_bool my_true = true;
+    bool my_true = true;
 
     mHostname = std::string(Hostname);
     mConnectionCount = ConnectionCount;
