@@ -5,7 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum AuraEffect
+#include <cstdint>
+
+enum AuraEffect : uint32_t
 {
     SPELL_AURA_NONE = 0,                                                // None
     SPELL_AURA_BIND_SIGHT = 1,                                          // Bind Sight
@@ -27,8 +29,8 @@ enum AuraEffect
     SPELL_AURA_MOD_STEALTH_DETECTION = 17,                              // Mod Stealth Detection
     SPELL_AURA_MOD_INVISIBILITY = 18,                                   // Mod Invisibility
     SPELL_AURA_MOD_INVISIBILITY_DETECTION = 19,                         // Mod Invisibility Detection
-    SPELL_AURA_MOD_TOTAL_HEALTH_REGEN_PCT = 20,
-    SPELL_AURA_MOD_TOTAL_MANA_REGEN_PCT = 21,
+    SPELL_AURA_PERIODIC_HEAL_PCT = 20,
+    SPELL_AURA_PERIODIC_POWER_PCT = 21,
     SPELL_AURA_MOD_RESISTANCE = 22,                                     // Mod Resistance
     SPELL_AURA_PERIODIC_TRIGGER_SPELL = 23,                             // Periodic Trigger
     SPELL_AURA_PERIODIC_ENERGIZE = 24,                                  // Periodic Energize
@@ -169,7 +171,7 @@ enum AuraEffect
     SPELL_AURA_NO_PVP_CREDIT = 159,                                     // No PVP Credit
     SPELL_AURA_MOD_SIDE_REAR_PDAE_DAMAGE_TAKEN = 160,                   // Mod Side/Rear PBAE Damage Taken
     SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT = 161,                        // Mod Health Regen In Combat
-    SPELL_AURA_POWER_BURN = 162,                                        // Power Burn
+    SPELL_AURA_PERIODIC_POWER_BURN = 162,                               // Power Burn
     SPELL_AURA_MOD_CRIT_DAMAGE_BONUS_MELEE = 163,                       // Mod Critical Damage Bonus (Physical)
     SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS = 165,                 // Melee AP Attacker Bonus
     SPELL_AURA_MOD_ATTACK_POWER_PCT = 166,                              // Mod Attack Power
@@ -298,7 +300,7 @@ enum AuraEffect
     SPELL_AURA_313 = 313,
     SPELL_AURA_PREVENT_RESURRECTION = 314,
     SPELL_AURA_315 = 315,
-    SPELL_AURA_316 = 316,
+    SPELL_AURA_ALLOW_HASTE_AFFECT_DURATION = 316,
     SPELL_AURA_317 = 317,
     SPELL_AURA_318 = 318,
     SPELL_AURA_319 = 319,

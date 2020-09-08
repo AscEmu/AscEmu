@@ -259,31 +259,8 @@ void WorldSession::handleCancelAuraOpcode(WorldPacket& recvPacket)
     if (spellAura == nullptr)
         return;
 
-    // You can't cancel non-positive auras
-    // TODO: find better solution for this, currently in SpellAuras some auras are forced to be positive or negative, regardless of what their SpellInfo says
-    // maybe new function under SpellInfo class, somewhat like this:
-    /*{
-        int const NEGATIVE = 1;
-        int const POSITIVE = 0;
-        int val = spellInfo->getAttributes() & ATTRIBUTES_NEGATIVE;
-        // custom fixes to set spell/aura either positive or negative
-        switch (spellInfo->getId())
-        {
-            case 5: // Instakill
-                val = NEGATIVE;
-                break;
-            case 1784: // Stealth
-                val = POSITIVE;
-                break;
-            ...
-        }
-        return val;
-    }*/
-
-    if (!spellAura->IsPositive())
-        return;
-
-    if (spellInfo->getAttributes() & ATTRIBUTES_NEGATIVE)
+    // You can't cancel negative auras
+    if (spellAura->isNegative())
         return;
 
     _player->removeAllAurasById(spellId);

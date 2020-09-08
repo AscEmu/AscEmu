@@ -416,7 +416,7 @@ void NaxxramasWorshipperAI::OnDied(Unit* /*pKiller*/)
             //ApplyAura(NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE);
             // I don't like the way we apply it
             Aura* WidowEmbrace = sSpellMgr.newAura(sSpellMgr.getSpellInfo(NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE), 30000, getCreature(), mGrandWidow->getCreature());
-            getCreature()->AddAura(WidowEmbrace);
+            getCreature()->addAura(WidowEmbrace);
 
             // Not sure about new Frenzy Timer
             mGrandWidow->_resetTimer(mGrandWidow->mFrenzyTimer, 60000 + Util::getRandomUInt(20) * 1000);

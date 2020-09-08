@@ -339,7 +339,7 @@ bool ChatHandler::HandleCharRemoveAurasCommand(const char* /*args*/, WorldSessio
     for (uint32 i = MAX_REMOVABLE_AURAS_START; i < MAX_REMOVABLE_AURAS_END; ++i)
     {
         if (player_target->m_auras[i] != 0)
-            player_target->m_auras[i]->Remove();
+            player_target->m_auras[i]->removeAura();
     }
 
     if (player_target != m_session->GetPlayer())

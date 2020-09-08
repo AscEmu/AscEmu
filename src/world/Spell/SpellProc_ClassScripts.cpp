@@ -429,13 +429,13 @@ public:
             // Duration of 5 combo maximum
             int32 dur = 21 * TimeVarsMs::Second;
 
-            spellModFlatIntValue(mTarget->SM_FDur, &dur, aura->GetSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageIntValue(mTarget->SM_PDur, &dur, aura->GetSpellInfo()->getSpellFamilyFlags());
+            spellModFlatIntValue(mTarget->SM_FDur, &dur, aura->getSpellInfo()->getSpellFamilyFlags());
+            spellModPercentageIntValue(mTarget->SM_PDur, &dur, aura->getSpellInfo()->getSpellFamilyFlags());
 
             // Set new aura's duration, reset event timer and set client visual aura
-            aura->SetDuration(dur);
-            sEventMgr.ModifyEventTimeLeft(aura, EVENT_AURA_REMOVE, aura->GetDuration());
-            mTarget->ModVisualAuraStackCount(aura, 0);
+            aura->setTimeLeft(dur);
+            sEventMgr.ModifyEventTimeLeft(aura, EVENT_AURA_REMOVE, aura->getTimeLeft());
+            mTarget->sendAuraUpdate(aura, false);
         }
 
         return true;
@@ -895,14 +895,14 @@ public:
         if (aura == nullptr)
             return true;
 
-        Unit* caster = static_cast<Player*>(aura->GetCaster());
+        Unit* caster = static_cast<Player*>(aura->getCaster());
         if (caster == nullptr)
         {
             mTarget->removeAllAurasById(mSpell->getId());
             return true;
         }
 
-        int32 value = aura->GetModAmount(0);
+        int32 value = aura->getEffectDamage(0);
 
         caster->castSpell(mTarget, 33110, value, true);
 

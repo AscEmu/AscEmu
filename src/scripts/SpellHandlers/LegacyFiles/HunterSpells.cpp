@@ -79,7 +79,7 @@ bool MastersCall(uint8_t effectIndex, Spell* pSpell)
 
 bool TheBeastWithin(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Unit* m_target = a->GetTarget();
+    Unit* m_target = a->getOwner();
 
     uint32_t mechanics[15] = { MECHANIC_CHARMED, MECHANIC_DISORIENTED,    MECHANIC_DISTRACED, MECHANIC_FLEEING,
                              MECHANIC_ROOTED, MECHANIC_ASLEEP, MECHANIC_ENSNARED, MECHANIC_STUNNED,
@@ -104,7 +104,7 @@ bool TheBeastWithin(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
 bool BestialWrath(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Unit* m_target = a->GetTarget();
+    Unit* m_target = a->getOwner();
 
     uint32_t mechanics[15] = { MECHANIC_CHARMED, MECHANIC_DISORIENTED,    MECHANIC_DISTRACED, MECHANIC_FLEEING,
                              MECHANIC_ROOTED, MECHANIC_ASLEEP, MECHANIC_ENSNARED, MECHANIC_STUNNED,
@@ -143,13 +143,13 @@ bool ExplosiveShot(uint8_t effectIndex, Aura* a, bool apply)
     if (!apply)
         return true;
 
-    Unit* m_target = a->GetTarget();
+    Unit* m_target = a->getOwner();
 
-    a->SetNegative();
-    int32_t dmg = a->GetModAmount(effectIndex);
+    int32_t dmg = a->getEffectDamage(effectIndex);
     dmg += float2int32(m_target->getRangedAttackPower() * 0.16f);
 
-    a->EventPeriodicDamage(dmg);
+    //\ todo: fix me
+    //a->EventPeriodicDamage(&a->getAuraEffect(effectIndex), dmg);
 
     return true;
 }
@@ -159,7 +159,7 @@ class HasNameHash : public AuraCondition
 public:
     bool operator()(Aura *aura)
     {
-        uint32_t spellId = aura->GetSpellInfo()->getId();
+        uint32_t spellId = aura->getSpellInfo()->getId();
 
         if (std::find(spellIds.begin(), spellIds.end(), spellId) != spellIds.end())
             return true;
@@ -180,15 +180,15 @@ class ChimeraShotAction : public AuraAction
 {
 public:
     void operator()(Aura *a) {
-        uint32_t spellId = a->GetSpellInfo()->getId();
+        uint32_t spellId = a->getSpellInfo()->getId();
 
         Unit *caster = a->GetUnitCaster();
-        Unit *target = a->GetTarget();
+        Unit *target = a->getOwner();
 
         if (caster == NULL)
             return;
 
-        a->Refresh();
+        a->refresh();
 
         switch (spellId)
         {

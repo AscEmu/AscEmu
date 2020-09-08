@@ -76,12 +76,12 @@ bool Vigilance(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool DamageShield(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
-    Unit* target = pAura->GetTarget();
+    Unit* target = pAura->getOwner();
 
     if (apply)
-        target->AddProcTriggerSpell(59653, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_BLOCK_VICTIM, 0, NULL, NULL);
+        target->AddProcTriggerSpell(59653, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_BLOCK_VICTIM, 0, NULL, NULL);
     else
-        target->RemoveProcTriggerSpell(59653, pAura->m_casterGuid);
+        target->RemoveProcTriggerSpell(59653, pAura->getCasterGuid());
 
     return true;
 }
@@ -106,11 +106,11 @@ bool HeroicFury(uint8_t /*effectIndex*/, Spell* s)
         {
             for (uint8_t y = 0; y < 3; ++y)
             {
-                switch (p_caster->m_auras[x]->GetSpellInfo()->getEffectApplyAuraName(y))
+                switch (p_caster->m_auras[x]->getSpellInfo()->getEffectApplyAuraName(y))
                 {
                     case SPELL_AURA_MOD_ROOT:
                     case SPELL_AURA_MOD_DECREASE_SPEED:
-                        p_caster->m_auras[x]->Remove();
+                        p_caster->m_auras[x]->removeAura();
                         break;
                 }
             }
@@ -170,7 +170,7 @@ bool LastStand(uint8_t /*effectIndex*/, Spell* s)
 
 bool BerserkerRage(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Unit* u = a->GetTarget();
+    Unit* u = a->getOwner();
     Player* p_target = NULL;
 
     if (u->isPlayer())
@@ -196,12 +196,12 @@ bool BerserkerRage(uint8_t /*effectIndex*/, Aura* a, bool apply)
     {
         if (apply)
         {
-            p_target->MechanicsDispels[a->GetSpellInfo()->getEffectMiscValue(i)]++;
-            p_target->RemoveAllAurasByMechanic(a->GetSpellInfo()->getEffectMiscValue(i), 0, false);
+            p_target->MechanicsDispels[a->getSpellInfo()->getEffectMiscValue(i)]++;
+            p_target->RemoveAllAurasByMechanic(a->getSpellInfo()->getEffectMiscValue(i), 0, false);
         }
         else
         {
-            p_target->MechanicsDispels[a->GetSpellInfo()->getEffectMiscValue(i)]--;
+            p_target->MechanicsDispels[a->getSpellInfo()->getEffectMiscValue(i)]--;
         }
     }
 
@@ -210,19 +210,19 @@ bool BerserkerRage(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
 bool SweepingStrikes(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Unit* m_target = a->GetTarget();
+    Unit* m_target = a->getOwner();
 
     if (apply)
-        m_target->AddExtraStrikeTarget(a->GetSpellInfo(), 10);
+        m_target->AddExtraStrikeTarget(a->getSpellInfo(), 10);
     else
-        m_target->RemoveExtraStrikeTarget(a->GetSpellInfo());
+        m_target->RemoveExtraStrikeTarget(a->getSpellInfo());
 
     return true;
 }
 
 bool TacticalAndStanceMastery(uint8_t effectIndex, Aura* a, bool apply)
 {
-    Unit* u_target = a->GetTarget();
+    Unit* u_target = a->getOwner();
 
     if (!u_target->isPlayer())
         return true;
@@ -233,9 +233,9 @@ bool TacticalAndStanceMastery(uint8_t effectIndex, Aura* a, bool apply)
         return true;
 
     if (apply)
-        p_target->m_retainedrage += (a->GetModAmount(effectIndex) * 10);     //don't really know if value is all value or needs to be multiplied with 10
+        p_target->m_retainedrage += (a->getEffectDamage(effectIndex) * 10);     //don't really know if value is all value or needs to be multiplied with 10
     else
-        p_target->m_retainedrage -= (a->GetModAmount(effectIndex) * 10);
+        p_target->m_retainedrage -= (a->getEffectDamage(effectIndex) * 10);
 
     return true;
 }

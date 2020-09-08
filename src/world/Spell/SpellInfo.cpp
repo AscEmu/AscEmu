@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellAuras.h"
 
 #include "Management/Skill.h"
+#include "Units/Creatures/AIInterface.h"
 
 SpellInfo::SpellInfo()
 {
@@ -233,7 +234,7 @@ bool SpellInfo::isDamagingSpell() const
     if (hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE)         ||
         hasEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_DAMAGE)     ||
         hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE_PERCENT) ||
-        hasEffectApplyAuraName(SPELL_AURA_POWER_BURN))
+        hasEffectApplyAuraName(SPELL_AURA_PERIODIC_POWER_BURN))
         return true;
 
     return false;
@@ -374,15 +375,41 @@ bool SpellInfo::isAffectingSpell(SpellInfo const* spellInfo) const
 
     // If any of the effect indexes contain same mask, the spells affect each other
     // TODO: this always returns false on classic and TBC since EffectSpellClassMask field does not exist there
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        for (auto u = 0; u < MAX_SPELL_EFFECTS; ++u)
+        for (uint8_t u = 0; u < MAX_SPELL_EFFECTS; ++u)
         {
-            // todo: test on Cata
             if (EffectSpellClassMask[u][i] && (EffectSpellClassMask[u][i] & spellInfo->SpellFamilyFlags[i]))
                 return true;
         }
     }
+    return false;
+}
+
+bool SpellInfo::isAuraEffectAffectingSpell(AuraEffect auraEffect, SpellInfo const* spellInfo) const
+{
+    uint8_t effIndex = 255;
+
+    // Find effect index for the aura effect
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (getEffectApplyAuraName(i) == auraEffect)
+        {
+            effIndex = i;
+            break;
+        }
+    }
+
+    // Aura did not have this aura effect
+    if (effIndex == 255)
+        return false;
+
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (EffectSpellClassMask[i][effIndex] && EffectSpellClassMask[i][effIndex] & spellInfo->SpellFamilyFlags[effIndex])
+            return true;
+    }
+
     return false;
 }
 

@@ -250,7 +250,7 @@ bool DeadlyThrowInterrupt(uint8_t /*effectIndex*/, Aura* a, bool apply)
     if (!apply)
         return true;
 
-    Unit* m_target = a->GetTarget();
+    Unit* m_target = a->getOwner();
 
     // Interrupt target's current casted spell (either channeled or generic spell with cast time)
     if (m_target->isCastingSpell(false, true))
@@ -277,7 +277,7 @@ bool DeadlyThrowInterrupt(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
 bool WaitingToResurrect(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Unit* u_target = a->GetTarget();
+    Unit* u_target = a->getOwner();
 
     if (!u_target->isPlayer())
         return true;
@@ -305,16 +305,16 @@ bool WaitingToResurrect(uint8_t /*effectIndex*/, Aura* a, bool apply)
 bool NegativeCrap(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     if (apply)
-        a->SetNegative();
+        a->setNegative(true);
 
     return true;
 }
 
 bool DecayFlash(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
-    if (apply && pAura->GetTarget()->isPlayer())
+    if (apply && pAura->getOwner()->isPlayer())
     {
-        Player* p_target = static_cast<Player*>(pAura->GetTarget());
+        Player* p_target = static_cast<Player*>(pAura->getOwner());
         p_target->SetShapeShift(FORM_SKELETON);  //Tharon'ja Skeleton
         p_target->setDisplayId(9784);
     }
@@ -323,9 +323,9 @@ bool DecayFlash(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
 bool ReturnFlash(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
-    if (apply && pAura->GetTarget()->isPlayer())
+    if (apply && pAura->getOwner()->isPlayer())
     {
-        Player* p_target = static_cast<Player*>(pAura->GetTarget());
+        Player* p_target = static_cast<Player*>(pAura->getOwner());
         p_target->setDisplayId(p_target->getNativeDisplayId());
         p_target->m_ShapeShifted = 0;
         p_target->SetShapeShift(0);

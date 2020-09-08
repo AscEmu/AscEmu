@@ -3485,12 +3485,13 @@ public:
         Unit* pVictim = CHECK_UNIT(L, 1);
         uint32_t spellid = CHECK_ULONG(L, 2);
         uint32_t damage = CHECK_ULONG(L, 3);
-        bool allowproc = CHECK_BOOL(L, 4);
-        bool static_dmg = CHECK_BOOL(L, 5);
-        bool no_remove_auras = CHECK_BOOL(L, 6);
+        uint8_t effIndex = CHECK_ULONG(L, 4);
+        bool allowproc = CHECK_BOOL(L, 5);
+        bool static_dmg = CHECK_BOOL(L, 6);
+        bool no_remove_auras = CHECK_BOOL(L, 7);
         if (pVictim && spellid && damage)
         {
-            ptr->SpellNonMeleeDamageLog(pVictim, spellid, damage, allowproc, static_dmg, no_remove_auras);
+            ptr->doSpellDamage(pVictim, spellid, damage, effIndex, allowproc, static_dmg);
         }
         return 0;
     }
@@ -3806,7 +3807,7 @@ public:
         if (ptr && spellid)
         {
             Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(spellid), duration, ptr, ptr, temp);
-            ptr->AddAura(aura);
+            ptr->addAura(aura);
             lua_pushboolean(L, 1);
         }
         else
@@ -5547,27 +5548,6 @@ public:
         return 1;
     }
 
-    static int GetAura(lua_State* L, Unit* ptr)
-    {
-        TEST_UNITPLAYER_RET()
-        uint32_t slot = CHECK_ULONG(L, 1);
-        if (slot > MAX_TOTAL_AURAS_START && slot < MAX_TOTAL_AURAS_END)
-            RET_NUMBER(ptr->m_auras[slot]->GetSpellId());
-        RET_NIL()
-    }
-
-    static int GetAuraObject(lua_State* L, Unit* ptr)
-    {
-        TEST_UNITPLAYER_RET()
-        uint32_t slot = CHECK_ULONG(L, 1);
-        if (slot > MAX_TOTAL_AURAS_START && slot < MAX_TOTAL_AURAS_END)
-        {
-            PUSH_AURA(L, ptr->m_auras[slot]);
-            return 1;
-        }
-        RET_NIL()
-    }
-
     static int IsRooted(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET()
@@ -5590,7 +5570,7 @@ public:
         TEST_UNITPLAYER_RET()
         for (uint32_t x = MAX_NEGATIVE_VISUAL_AURAS_START; x < MAX_NEGATIVE_VISUAL_AURAS_END; ++x)
         {
-            if (ptr->m_auras[x] && ptr->m_auras[x]->m_spellInfo)
+            if (ptr->m_auras[x])
                 RET_BOOL(true)
         }
         RET_BOOL(false)
@@ -5601,7 +5581,7 @@ public:
         TEST_UNITPLAYER()
         for (uint32_t x = MAX_POSITIVE_VISUAL_AURAS_START; x < MAX_POSITIVE_VISUAL_AURAS_END; ++x)
         {
-            if (ptr->m_auras[x] && ptr->m_auras[x]->m_spellInfo)
+            if (ptr->m_auras[x])
                 RET_BOOL(true)
         }
         RET_BOOL(false)
@@ -5914,7 +5894,7 @@ public:
         Aura* aura = CHECK_AURA(L, 1);
         if (!aura)
             return 0;
-        ptr->AddAura(aura);
+        ptr->addAura(aura);
         return 0;
     }
 

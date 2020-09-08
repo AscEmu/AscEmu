@@ -151,19 +151,19 @@ public:
     uint32 AbsorbDamage(uint32 /*School*/, uint32* dmg)
     {
         // Checking for 1 min cooldown
-        if (dSpell == NULL || p_target->hasSpellOnCooldown(dSpell))
+        if (dSpell == NULL || getPlayerOwner()->hasSpellOnCooldown(dSpell))
             return 0;
 
         // Check for proc chance
-        if (Util::getRandomFloat(100.0f) > GetSpellInfo()->getEffectBasePoints(0) + 1)
+        if (Util::getRandomFloat(100.0f) > getSpellInfo()->getEffectBasePoints(0) + 1)
             return 0;
 
         // Check if damage will kill player.
-        uint32 cur_hlth = p_target->getHealth();
+        uint32 cur_hlth = getPlayerOwner()->getHealth();
         if ((*dmg) < cur_hlth)
             return 0;
 
-        uint32 max_hlth = p_target->getMaxHealth();
+        uint32 max_hlth = getPlayerOwner()->getMaxHealth();
         uint32 min_hlth = max_hlth / 10;
 
         /*
@@ -173,15 +173,15 @@ public:
         as long as proceeding cheat death is not so height (how many rogue at the same time_
         gonna get to this point?) so it's better to use it because we wont lose anything!!
         */
-        p_target->castSpell(p_target->getGuid(), dSpell, true);
+        getPlayerOwner()->castSpell(getPlayerOwner()->getGuid(), dSpell, true);
 
         // set dummy effect,
         // this spell is used to procced the post effect of cheat death later.
         // Move next line to SPELL::SpellEffectDummy ?!! well it's better in case of dbc changing!!
-        p_target->castSpell(p_target->getGuid(), 45182, true);
+        getPlayerOwner()->castSpell(getPlayerOwner()->getGuid(), 45182, true);
 
         // Better to add custom cooldown procedure then fucking with entry, or not!!
-        p_target->addSpellCooldown(dSpell, nullptr, 60000);
+        getPlayerOwner()->addSpellCooldown(dSpell, nullptr, 60000);
 
         // Calc abs and applying it
         uint32 real_dmg = (cur_hlth > min_hlth ? cur_hlth - min_hlth : 0);
@@ -353,7 +353,7 @@ public:
         if (aur == NULL)
             return;
 
-        if (!Rand(aur->GetSpellInfo()->getProcChance()))
+        if (!Rand(aur->getSpellInfo()->getProcChance()))
             return;
 
         p_caster->castSpell(target, 47632, false);
@@ -416,18 +416,18 @@ public:
         return new AntiMagicShellAura(proto, duration, caster, target, temporary, i_caster);
     }
 
-    int32 CalcAbsorbAmount()
+    int32 CalcAbsorbAmount(AuraEffectModifier* aurEff)
     {
         Player* caster = GetPlayerCaster();
         if (caster != NULL)
-            return caster->getMaxHealth() * (GetSpellInfo()->getEffectBasePoints(1) + 1) / 100;
+            return caster->getMaxHealth() * (getSpellInfo()->getEffectBasePoints(1) + 1) / 100;
         else
-            return mod->m_amount;
+            return aurEff->mDamage;
     }
 
     int32 CalcPctDamage()
     {
-        return GetSpellInfo()->getEffectBasePoints(0) + 1;
+        return getSpellInfo()->getEffectBasePoints(0) + 1;
     }
 };
 
@@ -456,7 +456,7 @@ public:
         if (!Rand(caster->GetParryChance()))
             return 0;
 
-        uint32 dmg_absorbed = *dmg * GetModAmount(0) / 100;
+        uint32 dmg_absorbed = *dmg * getEffectDamage(0) / 100;
         *dmg -= dmg_absorbed;
 
         return dmg_absorbed;
@@ -503,7 +503,7 @@ public:
         // "Damage that would take you below $s1% health or taken while you are at $s1% health is reduced by $52284s1%."
         if ((health_pct > 35 && new_health_pct < 35) || health_pct == 35)
         {
-            uint32 dmg_absorbed = *dmg * (GetSpellInfo()->getEffectBasePoints(0) + 1) / 100;
+            uint32 dmg_absorbed = *dmg * (getSpellInfo()->getEffectBasePoints(0) + 1) / 100;
             *dmg -= dmg_absorbed;
 
             return dmg_absorbed;
@@ -556,7 +556,7 @@ public:
         if (aur == NULL)
             return;
 
-        if (!Rand(aur->GetSpellInfo()->getProcChance()))
+        if (!Rand(aur->getSpellInfo()->getProcChance()))
             return;
 
         p_caster->castSpell(target, 47632, false);

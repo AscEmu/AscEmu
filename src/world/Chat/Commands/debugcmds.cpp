@@ -818,7 +818,7 @@ bool ChatHandler::HandleAuraUpdateRemove(const char* args, WorldSession* m_sessi
         return true;
     }
     SystemMessage(m_session, "SMSG_AURA_UPDATE (remove): VisualSlot %u - SpellID 0", VisualSlot);
-    AuraPtr->Remove();
+    AuraPtr->removeAura();
     return true;
 }
 
@@ -837,7 +837,7 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
     if (Aura* AuraPtr = Pl->getAuraWithId(SpellID))
     {
         uint8 VisualSlot = AuraPtr->m_visualSlot;
-        Pl->SendAuraUpdate(AuraPtr->m_auraSlot, false);
+        Pl->sendAuraUpdate(AuraPtr, false);
         SystemMessage(m_session, "SMSG_AURA_UPDATE (update): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", VisualSlot, SpellID, Flags, Flags, StackCount);
     }
     else
@@ -851,7 +851,7 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
         Spell* SpellPtr = sSpellMgr.newSpell(Pl, Sp, false, NULL);
         AuraPtr = sSpellMgr.newAura(Sp, SpellPtr->GetDuration(), Pl, Pl);
         SystemMessage(m_session, "SMSG_AURA_UPDATE (add): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", AuraPtr->m_visualSlot, SpellID, Flags, Flags, StackCount);
-        Pl->AddAura(AuraPtr);       // Serves purpose to just add the aura to our auraslots
+        Pl->addAura(AuraPtr);       // Serves purpose to just add the aura to our auraslots
 
         delete SpellPtr;
     }

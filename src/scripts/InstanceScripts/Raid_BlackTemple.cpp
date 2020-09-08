@@ -350,7 +350,7 @@ class MutantWarHoundAI : public CreatureAIScript
     void OnDied(Unit* /*pKiller*/) override
     {
         Aura* pAura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(MUTANT_WAR_HOUND_CLOUD_OF_DISEASE), (uint32_t)20000, getCreature(), getCreature());
-        getCreature()->AddAura(pAura);
+        getCreature()->addAura(pAura);
     }
 };
 
@@ -2101,7 +2101,7 @@ class ShahrazAI : public CreatureAIScript
 
             //_unit->castSpell(_unit, SpellId, true);
             Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(SpellId), (uint32_t)15000, getCreature(), getCreature());
-            getCreature()->AddAura(aura);
+            getCreature()->addAura(aura);
 
             AuraChange = t + 15;
         }

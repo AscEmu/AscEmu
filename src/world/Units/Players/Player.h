@@ -405,6 +405,34 @@ struct PlayerCheat
     bool TriggerpassCheat;
 };
 
+enum GlyphSlotMask
+{
+#if VERSION_STRING < Cata
+    GS_MASK_1 = 0x001,
+    GS_MASK_2 = 0x002,
+    GS_MASK_3 = 0x008,
+    GS_MASK_4 = 0x004,
+    GS_MASK_5 = 0x010,
+    GS_MASK_6 = 0x020
+#else
+    GS_MASK_1 = 0x001,
+    GS_MASK_2 = 0x002,
+    GS_MASK_3 = 0x040,
+
+    GS_MASK_4 = 0x004,
+    GS_MASK_5 = 0x008,
+    GS_MASK_6 = 0x080,
+
+    GS_MASK_7 = 0x010,
+    GS_MASK_8 = 0x020,
+    GS_MASK_9 = 0x100,
+
+    GS_MASK_LEVEL_25 = GS_MASK_1 | GS_MASK_2 | GS_MASK_3,
+    GS_MASK_LEVEL_50 = GS_MASK_4 | GS_MASK_5 | GS_MASK_6,
+    GS_MASK_LEVEL_75 = GS_MASK_7 | GS_MASK_8 | GS_MASK_9
+#endif
+};
+
 struct WoWPlayer;
 class SERVER_DECL Player : public Unit
 {
@@ -890,6 +918,12 @@ public:
     void addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster, int32_t cooldownTime = 0);
     void addGlobalCooldown(SpellInfo const* spellInfo, const bool sendPacket = false);
     void sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t duration, const bool isGcd);
+
+#if VERSION_STRING >= WotLK
+    // Glyphs
+    // Initializes glyph slots or updates them on levelup
+    void updateGlyphs();
+#endif
 
     bool m_FirstCastAutoRepeat;
 
@@ -1767,7 +1801,6 @@ public:
         float m_resist_critical[2];             // when we are a victim we can have talents to decrease chance for critical hit. This is a negative value and it's added to critchances
         float m_resist_hit[2];                  // 0 = melee; 1= ranged;
         int32 m_resist_hit_spell[TOTAL_SPELL_SCHOOLS]; // spell resist per school
-        float SpellHealDoneByAttribute[5][TOTAL_SPELL_SCHOOLS];
         uint32 m_modphyscritdmgPCT;
         uint32 m_RootedCritChanceBonus;         // Class Script Override: Shatter
         uint32 m_IncreaseDmgSnaredSlowed;
@@ -2327,9 +2360,6 @@ public:
         PlayerInfo* getPlayerInfo() const { return m_playerInfo; }
 
         void LoadFieldsFromString(const char* string, uint16 firstField, uint32 fieldsNum);
-#if VERSION_STRING > TBC
-        void UpdateGlyphs();
-#endif
 
         // Avenging Wrath
         bool mAvengingWrath;

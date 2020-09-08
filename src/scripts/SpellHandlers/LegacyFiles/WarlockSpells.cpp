@@ -557,7 +557,7 @@ bool SummonFelHunterQuest(uint8_t /*effectIndex*/, Spell* s)
 
 bool DemonicKnowledge(uint8_t effectIndex, Aura* a, bool apply)
 {
-    Unit* m_target = a->GetTarget();
+    Unit* m_target = a->getOwner();
 
     if (m_target->isPet())
     {
@@ -567,7 +567,7 @@ bool DemonicKnowledge(uint8_t effectIndex, Aura* a, bool apply)
             uint32_t val1 = m_target->getStat(STAT_STAMINA);
             uint32_t val2 = m_target->getStat(STAT_INTELLECT);
             uint32_t val0 = val1 + val2;
-            float dmginc = (float)(val0 * a->GetModAmount(effectIndex)) / 100;
+            float dmginc = (float)(val0 * a->getEffectDamage(effectIndex)) / 100;
 
             int32_t val;
 
@@ -588,12 +588,12 @@ bool DemonicKnowledge(uint8_t effectIndex, Aura* a, bool apply)
 
 bool ImprovedLifeTap(uint8_t effectIndex, Aura* a, bool apply)
 {
-    Unit* u_target = a->GetTarget();
+    Unit* u_target = a->getOwner();
     if (!u_target->isPlayer())
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
-    int32_t amount = a->GetModAmount(effectIndex);
+    int32_t amount = a->getEffectDamage(effectIndex);
 
 
     if (apply)
@@ -607,7 +607,7 @@ bool ImprovedLifeTap(uint8_t effectIndex, Aura* a, bool apply)
 bool SoulSiphon(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* caster = a->GetUnitCaster();
-    int32_t amount = a->GetModAmount(effectIndex);
+    int32_t amount = a->getEffectDamage(effectIndex);
 
     if (caster)
     {
@@ -622,17 +622,17 @@ bool SoulSiphon(uint8_t effectIndex, Aura* a, bool apply)
 
 bool SoulStoneResurrection(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Unit* u_target = a->GetTarget();
+    Unit* u_target = a->getOwner();
     if (!u_target->isPlayer())
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
-    uint32_t soulstone = a->GetSpellInfo()->getEffectMiscValue(0);
+    uint32_t soulstone = a->getSpellInfo()->getEffectMiscValue(0);
 
     if (apply)
     {
         p_target->SetSoulStone(soulstone);
-        p_target->SetSoulStoneReceiver((uint32_t)a->m_casterGuid);
+        p_target->SetSoulStoneReceiver((uint32_t)a->getCasterGuid());
     }
     else if (p_target->isAlive())
     {
@@ -644,7 +644,7 @@ bool SoulStoneResurrection(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
 bool DemonicCircleSummon(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Unit* m_target = a->GetTarget();
+    Unit* m_target = a->getOwner();
 
     if (m_target->GetMapMgr() == nullptr)
         return true;
@@ -652,7 +652,7 @@ bool DemonicCircleSummon(uint8_t /*effectIndex*/, Aura* a, bool apply)
     if (apply)
     {
 
-        GameObject* circle = m_target->GetMapMgr()->GetGameObject(a->GetTarget()->m_ObjectSlots[0]);
+        GameObject* circle = m_target->GetMapMgr()->GetGameObject(a->getOwner()->m_ObjectSlots[0]);
         SpellInfo const* sp = sSpellMgr.getSpellInfo(48020);
 
         if (circle != NULL && sp != NULL && m_target->CalcDistance(circle) <= GetMaxRange(sSpellRangeStore.LookupEntry(sp->getRangeIndex())))

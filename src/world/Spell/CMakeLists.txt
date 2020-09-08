@@ -8,7 +8,9 @@ set(SRC_SPELL_FILES
    ${PATH_PREFIX}/Spell.Legacy.cpp
    ${PATH_PREFIX}/Spell.Legacy.h
    ${PATH_PREFIX}/Spell_ClassScripts.cpp
+   ${PATH_PREFIX}/SpellAuras.cpp
    ${PATH_PREFIX}/SpellAuras.Legacy.cpp
+   ${PATH_PREFIX}/SpellAuraEffects.cpp
    ${PATH_PREFIX}/SpellAuras.h
    ${PATH_PREFIX}/SpellCastTargets.h
    ${PATH_PREFIX}/SpellCastTargets.cpp

@@ -247,10 +247,10 @@ bool BalanceMustBePreserved(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (apply == false)
         return true;
 
-    if (pAura->GetCaster()->isPlayer() == false)
+    if (pAura->getCaster()->isPlayer() == false)
         return true;
 
-    Player* pPlayer = static_cast<Player*>(pAura->GetCaster());
+    Player* pPlayer = static_cast<Player*>(pAura->getCaster());
     if (pPlayer == nullptr)
         return true;
 
@@ -329,11 +329,11 @@ bool BlessingofIncineratus(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool TagMurloc(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
-    Object* Caster = pAura->GetCaster();
+    Object* Caster = pAura->getCaster();
     if (Caster->isPlayer() == false)
         return false;
 
-    if (pAura->GetTarget()->isCreature() == false)
+    if (pAura->getOwner()->isCreature() == false)
         return false;
 
     if (apply == false)
@@ -345,7 +345,7 @@ bool TagMurloc(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (qle == nullptr)
         return true;
 
-    Creature* murloc = static_cast<Creature*>(pAura->GetTarget());
+    Creature* murloc = static_cast<Creature*>(pAura->getOwner());
     if (murloc == nullptr)
         return true;
 
@@ -710,11 +710,11 @@ bool TheCleansingMustBeStopped(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool AdministreringtheSalve(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
-    Object* m_caster = pAura->GetCaster();
+    Object* m_caster = pAura->getCaster();
     if (m_caster->isPlayer() == false)
         return true;
 
-    if (pAura->GetTarget()->isCreature() == false)
+    if (pAura->getOwner()->isCreature() == false)
         return true;
 
     if (apply)
@@ -725,7 +725,7 @@ bool AdministreringtheSalve(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
         if (qle == nullptr)
             return true;
 
-        Creature* sick = static_cast<Creature*>(pAura->GetTarget());
+        Creature* sick = static_cast<Creature*>(pAura->getOwner());
         if (sick == nullptr)
             return true;
 
@@ -873,14 +873,14 @@ bool AnUnusualPatron(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool MagnetoCollector(uint8_t /*effectIndex*/, Aura* pAura, bool /*apply*/)
 {
-    if (pAura->GetCaster()->isPlayer() == false)
+    if (pAura->getCaster()->isPlayer() == false)
         return true;
 
-    Player* pPlayer = static_cast<Player*>(pAura->GetCaster());
+    Player* pPlayer = static_cast<Player*>(pAura->getCaster());
     if (pPlayer->HasQuest(10584) == false)
         return true;
 
-    Creature* magneto = static_cast<Creature*>(pAura->GetTarget());
+    Creature* magneto = static_cast<Creature*>(pAura->getOwner());
     if (magneto == nullptr)
         return true;
 
@@ -1346,7 +1346,7 @@ bool CleansingVialDND(uint32_t /*i*/, Spell* s)
 
 bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Unit* m_target = a->GetTarget();
+    Unit* m_target = a->getOwner();
     Player* p_caster = a->GetPlayerCaster();
 
     if (p_caster == nullptr)
@@ -1358,19 +1358,19 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
     }
     else
     {
-        uint32_t TamingSpellid = a->GetSpellInfo()->getEffectMiscValue(1);
+        uint32_t TamingSpellid = a->getSpellInfo()->getEffectMiscValue(1);
 
         SpellInfo const* triggerspell = sSpellMgr.getSpellInfo(TamingSpellid);
         if (triggerspell == NULL)
         {
-            DLLLogDetail("An Aura with spellid %u is calling HunterTamingQuest() with an invalid TamingSpellid: %u", a->GetSpellId(), TamingSpellid);
+            DLLLogDetail("An Aura with spellid %u is calling HunterTamingQuest() with an invalid TamingSpellid: %u", a->getSpellId(), TamingSpellid);
             return true;
         }
 
         QuestProperties const* tamequest = sMySQLStore.getQuestProperties(triggerspell->getEffectMiscValue(1));
         if (tamequest == NULL)
         {
-            DLLLogDetail("An Aura with spellid %u is calling HunterTamingQuest() with an invalid tamequest id: %u", a->GetSpellId(), triggerspell->getEffectMiscValue(1));
+            DLLLogDetail("An Aura with spellid %u is calling HunterTamingQuest() with an invalid tamequest id: %u", a->getSpellId(), triggerspell->getEffectMiscValue(1));
             return true;
         }
 
@@ -1378,7 +1378,7 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
         {
             p_caster->sendCastFailedPacket(triggerspell->getId(), SPELL_FAILED_BAD_TARGETS, 0, 0);
         }
-        else if (!a->GetTimeLeft())
+        else if (!a->getTimeLeft())
         {
             // Creates a 15 minute pet, if player has the quest that goes with the spell and if target corresponds to quest
             //\todo you can't do that here. SpellHandler load will fail on *nix systemy

@@ -52,6 +52,7 @@ struct WoWObject;
 class SpellInfo;
 
 struct FactionDBC;
+struct AuraEffectModifier;
 
 class Unit;
 class Group;
@@ -68,6 +69,7 @@ class Creature;
 class GameObject;
 class Pet;
 class Spell;
+class Aura;
 class UpdateMask;
 class EventableObject;
 
@@ -206,7 +208,13 @@ public:
     bool isCastingSpell(bool skipChanneled = false, bool skipAutorepeat = false, bool isAutoshoot = false) const;
     Spell* findCurrentCastedSpellBySpellId(uint32_t spellId);
 
-    void _UpdateSpells(uint32_t time); // moved here from Unit class since GameObject can be caster as well
+    // Deals magic damage to target with proper logging, used with periodic damage effects and direct damage effects
+    // Returns the damage inflicted to target
+    int32_t doSpellDamage(Unit* victim, uint32_t spellId, int32_t damage, uint8_t effIndex, bool allowProc = true, bool staticDamage = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
+    // Heals target with proper logging, used with periodic heal effects and direct healing
+    void doSpellHealing(Unit* victim, uint32_t spellId, int32_t heal, bool allowProc = true, bool staticDamage = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
+
+    void _UpdateSpells(uint32_t time);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // InRange sets
@@ -505,8 +513,6 @@ public:
     uint32 GetPhase() { return m_phase; }
         virtual void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
 
-        void EventSpellDamage(uint64 Victim, uint32 SpellID, uint32 Damage);
-        void SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage, bool allowProc, bool static_damage = false, bool no_remove_auras = false);
         virtual bool IsCriticalDamageForSpell(Object* /*victim*/, SpellInfo const* /*spell*/) { return false; }
         virtual float GetCriticalDamageBonusForSpell(Object* /*victim*/, SpellInfo const* /*spell*/, float /*amount*/) { return 0; }
         virtual bool IsCriticalHealForSpell(Object* /*victim*/, SpellInfo const* /*spell*/) { return false; }
@@ -515,7 +521,6 @@ public:
         // SpellLog packets just to keep the code cleaner and better to read
         void SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 SpellLogType);
 
-        void SendSpellNonMeleeDamageLog(Object* Caster, Object* Target, uint32 SpellID, uint32 Damage, uint8 School, uint32 AbsorbedDamage, uint32 ResistedDamage, bool PhysicalDamage, uint32 BlockedDamage, bool CriticalHit, bool bToSet);
         void SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage* Dmg, uint32 Damage, uint32 Abs, uint32 BlockedDamage, uint32 HitStatus, uint32 VState);
 
         // object faction

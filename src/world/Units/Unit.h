@@ -381,6 +381,20 @@ public:
     bool hasUnitFlags2(uint32_t unitFlags2) const;
 #endif
 
+#if VERSION_STRING < WotLK
+    uint32_t getAura(uint8_t slot) const;
+    void setAura(uint8_t slot, uint32_t spellId);
+
+    uint32_t getAuraFlags(uint8_t slot) const;
+    void setAuraFlags(uint8_t slot, uint32_t flags);
+
+    uint32_t getAuraLevel(uint8_t slot) const;
+    void setAuraLevel(uint8_t slot, uint32_t level);
+
+    uint32_t getAuraApplication(uint8_t slot) const;
+    void setAuraApplication(uint8_t slot, uint32_t count);
+#endif
+
     uint32_t getAuraState() const;
     void setAuraState(uint32_t state);
     void addAuraState(uint32_t state);
@@ -629,12 +643,26 @@ public:
     void castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, uint32_t forcedBasepoints, bool triggered);
     void castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBasepoints, bool triggered);
 
+    float_t getSpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, bool isPeriodic, Aura* aur = nullptr);
+    float_t getSpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal, bool isPeriodic, Aura* aur = nullptr);
+
+    float_t getCriticalChanceForDamageSpell(SpellInfo const* spellInfo, Unit* victim) const;
+    float_t getCriticalChanceForHealSpell(SpellInfo const* spellInfo) const;
+
+    void sendSpellNonMeleeDamageLog(Object* caster, Object* target, SpellInfo const* spellInfo, uint32_t damage, uint32_t absorbedDamage, uint32_t resistedDamage, uint32_t blockedDamage, bool isPeriodicDamage, bool isCriticalHit);
+    void sendSpellHealLog(Object* caster, Object* target, uint32_t spellId, uint32_t healAmount, bool isCritical, uint32_t overHeal, uint32_t absorbedHeal);
+    // Sends packet for damage immune
+    void sendSpellOrDamageImmune(uint64_t casterGuid, Unit* target, uint32_t spellId);
+
 private:
     bool m_canDualWield;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Aura
+    void addAura(Aura* aur);
+    uint8_t findVisualSlotForAura(uint32_t spellId, bool isPositive) const;
+
     Aura* getAuraWithId(uint32_t spell_id);
     Aura* getAuraWithId(uint32_t* auraId);
     Aura* getAuraWithIdForGuid(uint32_t* auraId, uint64 guid);
@@ -664,12 +692,17 @@ public:
 
     void removeAllAurasByAuraEffect(AuraEffect effect);
 
-#ifdef AE_TBC
-    uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive);
-    uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool &skip_client_update);
-    void setAuraSlotLevel(uint32_t slot, bool positive);
-#endif
+    // Sends packet for new or removed aura
+    void sendAuraUpdate(Aura* aur, bool remove);
+    void sendFullAuraUpdate();
+    // Sends packet for periodic aura log
+    // Returns true if packet could be sent
+    bool sendPeriodicAuraLog(const WoWGuid& casterGuid, const WoWGuid& targetGuid, SpellInfo const* spellInfo, uint32_t amount, uint32_t overKillOrOverHeal, uint32_t absorbed, uint32_t resisted, AuraEffect auraEffect, bool isCritical, uint32_t miscValue = 0, float gainMultiplier = 0.0f);
 
+private:
+    void _updateAuras(unsigned long diff);
+
+public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Visibility system
     bool canSee(Object* const obj);
@@ -708,7 +741,7 @@ public:
     bool isPowerRegenerationInterrupted() const;
 #endif
 
-    void energize(Unit* target, uint32_t spellId, uint32_t amount, PowerType type);
+    void energize(Unit* target, uint32_t spellId, uint32_t amount, PowerType type, bool sendPacket = true);
     void sendSpellEnergizeLog(Unit* target, uint32_t spellId, uint32_t amount, PowerType type);
 
     uint8_t getPowerPct(PowerType powerType) const;
@@ -896,7 +929,6 @@ public:
     uint32 GetAuraCountWithName(uint32 name);
     uint32 GetAuraCountWithDispelType(uint32 dispel_type, uint64 guid);
     Aura * GetAuraWithSlot(uint32 slot);
-    void AddAura(Aura* aur);
     bool RemoveAura(Aura* aur);
     bool RemoveAura(uint32 spellId);
     bool RemoveAura(uint32 spellId, uint64 guid);
@@ -960,11 +992,6 @@ public:
     void GiveGroupXP(Unit* pVictim, Player* PlayerInGroup);
 
     void OnDamageTaken();
-
-    //caller is the caster
-    int32 GetSpellDmgBonus(Unit* pVictim, SpellInfo const* spellInfo, int32 base_dmg, bool isdot);
-
-    float CalcSpellDamageReduction(Unit* victim, SpellInfo const* spell, float res);
 
     uint32 m_addDmgOnce;
     uint32 m_ObjectSlots[4];
@@ -1321,8 +1348,6 @@ public:
     //! returns: aura stack count
     uint8 m_auraStackCount[MAX_NEGATIVE_VISUAL_AURAS_END];
 
-    void SendFullAuraUpdate();
-    void SendAuraUpdate(uint32 AuraSlot, bool remove);
     void ModVisualAuraStackCount(Aura* aur, int32 count);
     uint8 FindVisualSlot(uint32 SpellId, bool IsPos);
     uint32 m_auravisuals[MAX_NEGATIVE_VISUAL_AURAS_END];
@@ -1348,8 +1373,6 @@ public:
 
     void EventStrikeWithAbility(uint64 guid, SpellInfo const* sp, uint32 damage);
     void DispelAll(bool positive);
-
-    void SendPeriodicAuraLog(const WoWGuid & CasterGUID, const WoWGuid & casterGUID, uint32 SpellID, uint32 School, uint32 Amount, uint32 abs_dmg, uint32 resisted_damage, bool is_critical, uint32_t mod, int32_t misc, uint32 over_healed = 0);
 
     void EventModelChange();
     inline float GetModelHalfSize() { return m_modelhalfsize * getScale(); }
