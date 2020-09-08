@@ -1,0 +1,89 @@
+name: AscEmu CI
+
+on:
+  push:
+    branches: [ master, develop, coverity_scan ]
+  pull_request:
+    branches: [ develop ]
+jobs:
+
+  Classic:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: AscEmu Install Classic
+      run: |
+        sudo apt-get update && sudo apt-get install -y zlib1g-dev
+        sudo apt-get update && sudo apt-get install -y libssl-dev
+        sudo apt-get update && sudo apt-get install -y libpcre3-dev
+        sudo apt-get update && sudo apt-get install -y libbz2-dev
+        sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev
+        sudo apt-get update && sudo apt-get install -y libmysql++-dev
+        cmake --version
+        mkdir ascemu_build_сlassic
+        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DASCEMU_VERSION=Classic
+        make -j 4 && make install
+  TBC:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: AscEmu Install TBC
+      run: |
+        sudo apt-get update && sudo apt-get install -y zlib1g-dev
+        sudo apt-get update && sudo apt-get install -y libssl-dev
+        sudo apt-get update && sudo apt-get install -y libpcre3-dev
+        sudo apt-get update && sudo apt-get install -y libbz2-dev
+        sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev
+        sudo apt-get update && sudo apt-get install -y libmysql++-dev
+        cmake --version
+        mkdir ascemu_build_tbc
+        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DASCEMU_VERSION=TBC
+        make -j 4 && make install
+  WotLK:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: AscEmu Install WotLK
+      run: |
+        sudo apt-get update && sudo apt-get install -y zlib1g-dev
+        sudo apt-get update && sudo apt-get install -y libssl-dev
+        sudo apt-get update && sudo apt-get install -y libpcre3-dev
+        sudo apt-get update && sudo apt-get install -y libbz2-dev
+        sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev
+        sudo apt-get update && sudo apt-get install -y libmysql++-dev
+        cmake --version
+        mkdir ascemu_build_wotlk
+        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DASCEMU_VERSION=WotLK
+        make -j 4 && make install
+  Cata:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: AscEmu Install Cata
+      run: |
+        sudo apt-get update && sudo apt-get install -y zlib1g-dev
+        sudo apt-get update && sudo apt-get install -y libssl-dev
+        sudo apt-get update && sudo apt-get install -y libpcre3-dev
+        sudo apt-get update && sudo apt-get install -y libbz2-dev
+        sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev
+        sudo apt-get update && sudo apt-get install -y libmysql++-dev
+        cmake --version
+        mkdir ascemu_build_cata
+        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DASCEMU_VERSION=Cata
+        make -j 4 && make install
+  Mop:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: AscEmu Install Mop
+      run: |
+        sudo apt-get update && sudo apt-get install -y zlib1g-dev
+        sudo apt-get update && sudo apt-get install -y libssl-dev
+        sudo apt-get update && sudo apt-get install -y libpcre3-dev
+        sudo apt-get update && sudo apt-get install -y libbz2-dev
+        sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev
+        sudo apt-get update && sudo apt-get install -y libmysql++-dev
+        cmake --version
+        mkdir ascemu_build_mop
+        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DASCEMU_VERSION=Mop
+        make -j 4 && make install
