@@ -591,7 +591,8 @@ bool BrittleArmor(uint8_t /*effectIndex*/, Spell* s)
 
 bool RequiresNoAmmo(uint8_t effectIndex, Aura* a, bool apply)
 {
-    a->SpellAuraConsumeNoAmmo(&a->getAuraEffect(effectIndex), apply);
+    auto aurEff = a->getAuraEffect(effectIndex);
+    a->SpellAuraConsumeNoAmmo(&aurEff, apply);
 
     return true;
 }
