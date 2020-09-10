@@ -25,7 +25,7 @@
 
 bool Starfall(uint8_t effectIndex, Spell* pSpell)
 {
-    Unit* m_caster = pSpell->u_caster;
+    Unit* m_caster = pSpell->getUnitCaster();
     if (m_caster == NULL)
         return true;
 
@@ -49,10 +49,10 @@ bool Starfall(uint8_t effectIndex, Spell* pSpell)
 
 bool ImprovedLeaderOfThePack(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == NULL)
+    if (s->getPlayerCaster() == NULL)
         return false;
 
-    s->p_caster->AddProcTriggerSpell(34299, 34299, s->p_caster->getGuid(), 100, PROC_ON_CRIT_ATTACK | static_cast<uint32_t>(PROC_TARGET_SELF), 0, NULL, NULL);
+    s->getPlayerCaster()->AddProcTriggerSpell(34299, 34299, s->getPlayerCaster()->getGuid(), 100, PROC_ON_CRIT_ATTACK | static_cast<uint32_t>(PROC_TARGET_SELF), 0, NULL, NULL);
 
     return true;
 }

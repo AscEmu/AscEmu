@@ -33,7 +33,7 @@ namespace AscEmu::Packets
             targetGuid(targetGuid),
             spellId(spellId),
             unk1(0),
-            stealedCount(stealedSpells.size()),
+            stealedCount(static_cast<uint32_t>(stealedSpells.size())),
             stealedSpells(std::move(stealedSpells))
         {
         }

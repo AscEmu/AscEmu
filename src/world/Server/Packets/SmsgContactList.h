@@ -36,7 +36,7 @@ namespace AscEmu::Packets
         SmsgContactList(uint32_t socialFlag, const std::vector<SmsgContactListMember> contactMemberList) :
             ManagedPacket(SMSG_CONTACT_LIST, 500),
             socialFlag(socialFlag),
-            listCount(contactMemberList.size()),
+            listCount(static_cast<uint32_t>(contactMemberList.size())),
             contactMemberList(contactMemberList)
         {
         }

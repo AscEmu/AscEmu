@@ -52,6 +52,7 @@ void Aura::addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValu
 
     m_auraEffects[effIndex].mAuraEffect = auraEffect;
     m_auraEffects[effIndex].mDamage = damage;
+    m_auraEffects[effIndex].mBaseDamage = damage;
     m_auraEffects[effIndex].miscValue = miscValue;
     m_auraEffects[effIndex].effIndex = effIndex;
     ++m_auraEffectCount;
@@ -70,6 +71,7 @@ void Aura::removeAuraEffect(uint8_t effIndex)
 
     m_auraEffects[effIndex].mAuraEffect = SPELL_AURA_NONE;
     m_auraEffects[effIndex].mDamage = 0;
+    m_auraEffects[effIndex].mBaseDamage = 0;
     m_auraEffects[effIndex].mFixedDamage = 0;
     m_auraEffects[effIndex].miscValue = 0;
     m_auraEffects[effIndex].mAmplitude = 0;
@@ -105,7 +107,7 @@ int32_t Aura::getEffectDamageByEffect(AuraEffect auraEffect) const
     return 0;
 }
 
-void Aura::removeAura()
+void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
 {
     sEventMgr.RemoveEvents(this);
 
@@ -113,6 +115,7 @@ void Aura::removeAura()
     if (m_isGarbage)
         return;
 
+    sScriptMgr.callScriptedAuraOnRemove(this, mode);
     sHookInterface.OnAuraRemove(this);
 
     LogDebugFlag(LF_AURA, "Removing aura %u from unit %u", getSpellId(), getOwner()->getGuid());
@@ -404,12 +407,14 @@ void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStac
 
         // Recalculate aura modifiers on reapply or when stack count increases
 #if VERSION_STRING < Cata
-        // Before cata, aura's crit chance and damage bonuses (NYI) were saved on aura refresh
+        // Before cata, aura's crit chance, attack power bonus and damage bonuses (NYI) were saved on aura refresh
         if (!saveMods)
         {
+            _calculateAttackPowerBonus();
             _calculateCritChance();
         }
 #else
+        _calculateAttackPowerBonus();
         _calculateCritChance();
 #endif
         _calculateSpellPowerBonus();
@@ -440,12 +445,7 @@ void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStac
             (*this.*SpellAuraHandler[m_auraEffects[i].mAuraEffect])(&m_auraEffects[i], false);
 
             if (curStackCount != newStackCount)
-            {
-                // Divide damage by old stack amount to get amount per stack
-                m_auraEffects[i].mDamage /= curStackCount;
-                // And multiply it with new stack amount
-                m_auraEffects[i].mDamage *= m_stackCount;
-            }
+                m_auraEffects[i].mDamage = m_auraEffects[i].mBaseDamage * m_stackCount;
 
             (*this.*SpellAuraHandler[m_auraEffects[i].mAuraEffect])(&m_auraEffects[i], true);
         }
@@ -517,6 +517,11 @@ int32_t Aura::getSpellPowerBonus() const
 int32_t Aura::getHealPowerBonus() const
 {
     return m_healPowerBonus;
+}
+
+uint32_t Aura::getAttackPowerBonus() const
+{
+    return m_attackPowerBonus;
 }
 
 Unit* Aura::getOwner() const
@@ -595,7 +600,7 @@ void Aura::update(unsigned long diff, bool skipDurationCheck/* = false*/)
         if (m_duration < 0)
         {
             m_duration = 0;
-            removeAura();
+            removeAura(AURA_REMOVE_ON_EXPIRE);
         }
     }
 }
@@ -666,6 +671,19 @@ void Aura::_calculateSpellPowerBonus()
     // Get snapshot of caster's current spell power
     m_spellPowerBonus = casterUnit->GetDamageDoneMod(getSpellInfo()->getFirstSchoolFromSchoolMask());
     m_healPowerBonus = casterUnit->HealDoneMod[getSpellInfo()->getFirstSchoolFromSchoolMask()];
+}
+
+void Aura::_calculateAttackPowerBonus()
+{
+    const auto casterUnit = GetUnitCaster();
+    if (casterUnit == nullptr)
+    {
+        m_attackPowerBonus = 0;
+        return;
+    }
+
+    // Get snapshot of caster's current attack power
+    m_attackPowerBonus = casterUnit->getAttackPower();
 }
 
 void Aura::_calculateSpellHaste()
@@ -755,6 +773,11 @@ bool Aura::_checkNegative() const
 
 void Aura::periodicTick(AuraEffectModifier* aurEff)
 {
+    const auto scriptResult = sScriptMgr.callScriptedAuraOnPeriodicTick(this, aurEff, &aurEff->mDamage);
+    // If script prevents default action, do not continue
+    if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
+        return;
+
     switch (aurEff->mAuraEffect)
     {
         case SPELL_AURA_PERIODIC_DAMAGE:
@@ -769,9 +792,6 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
         } break;
         case SPELL_AURA_PERIODIC_HEAL:
         {
-            if (!getOwner()->isAlive())
-                return;
-
             const auto staticDamage = false;
             const auto casterUnit = GetUnitCaster();
 
@@ -821,17 +841,13 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
         } break;
         case SPELL_AURA_PERIODIC_HEAL_PCT:
         {
-            if (!getOwner()->isAlive())
-                return;
-
             const auto staticDamage = true;
             const auto casterUnit = GetUnitCaster();
-            const auto healAmt = static_cast<int32_t>(getOwner()->getMaxHealth() * (aurEff->mDamage / 100.0f));
 
             if (casterUnit != nullptr)
-                casterUnit->doSpellHealing(getOwner(), getSpellId(), healAmt, true, staticDamage, true, false, false, this, aurEff);
+                casterUnit->doSpellHealing(getOwner(), getSpellId(), aurEff->mDamage, true, staticDamage, true, false, false, this, aurEff);
             else
-                getOwner()->doSpellHealing(getOwner(), getSpellId(), healAmt, true, staticDamage, true, false, false, this, aurEff);
+                getOwner()->doSpellHealing(getOwner(), getSpellId(), aurEff->mDamage, true, staticDamage, true, false, false, this, aurEff);
 
             if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
                 getOwner()->Emote(EMOTE_ONESHOT_EAT);
@@ -846,14 +862,14 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
 
             const auto casterUnit = GetUnitCaster();
             const auto powerType = static_cast<PowerType>(aurEff->miscValue);
-            const auto powerAmt = static_cast<int32_t>(getOwner()->getMaxPower(powerType) * (aurEff->mDamage / 100.0f));
+
+            // Send packet first
+            getOwner()->sendPeriodicAuraLog(m_casterGuid, getOwner()->GetNewGUID(), getSpellInfo(), aurEff->mDamage, 0, 0, 0, aurEff->mAuraEffect, false, powerType);
 
             if (casterUnit != nullptr)
-                casterUnit->energize(getOwner(), spellId, powerAmt, powerType);
+                casterUnit->energize(getOwner(), spellId, aurEff->mDamage, powerType, false);
             else
-                getOwner()->energize(getOwner(), spellId, powerAmt, powerType);
-
-            getOwner()->sendPeriodicAuraLog(m_casterGuid, getOwner()->GetNewGUID(), getSpellInfo(), powerAmt, 0, 0, 0, aurEff->mAuraEffect, false, powerType);
+                getOwner()->energize(getOwner(), spellId, aurEff->mDamage, powerType, false);
 
             if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && aurEff->miscValue == POWER_TYPE_MANA)
                 getOwner()->Emote(EMOTE_ONESHOT_EAT);
@@ -900,9 +916,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
         } break;
         case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
         {
-            if (!getOwner()->isAlive())
-                return;
-
+            ///\ todo: investigate this effect more
             const auto staticDamage = true;
             const auto casterUnit = GetUnitCaster();
 
@@ -963,12 +977,10 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             const auto staticDamage = true;
             const auto casterUnit = GetUnitCaster();
 
-            const auto dmg = static_cast<int32_t>(aurEff->mDamage / 100.0f * getOwner()->getMaxHealth());
-
             if (casterUnit != nullptr)
-                casterUnit->doSpellDamage(getOwner(), getSpellId(), dmg, aurEff->effIndex, pSpellId == 0, staticDamage, true, false, false, this, aurEff);
+                casterUnit->doSpellDamage(getOwner(), getSpellId(), aurEff->mDamage, aurEff->effIndex, pSpellId == 0, staticDamage, true, false, false, this, aurEff);
             else
-                getOwner()->doSpellDamage(getOwner(), getSpellId(), dmg, aurEff->effIndex, pSpellId == 0, staticDamage, true, false, false, this, aurEff);
+                getOwner()->doSpellDamage(getOwner(), getSpellId(), aurEff->mDamage, aurEff->effIndex, pSpellId == 0, staticDamage, true, false, false, this, aurEff);
         } break;
         case SPELL_AURA_PERIODIC_POWER_BURN:
         {
@@ -987,8 +999,6 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             }
 
             const auto powerType = static_cast<PowerType>(aurEff->miscValue);
-            if (getOwner()->getMaxPower(powerType) == 0)
-                return;
 
             // Calculate power amount
             const auto powerAmount = std::min(static_cast<uint32_t>(aurEff->mDamage), getOwner()->getPower(powerType));

@@ -851,45 +851,6 @@ void SpellMgr::setSpellEffectAmplitude(SpellInfo* sp)
     }
 }
 
-void SpellMgr::setSpellMeleeSpellBool(SpellInfo* sp)
-{
-    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        if (sp->getEffect(i) == SPELL_EFFECT_SCHOOL_DAMAGE && sp->getDmgClass() == SPELL_DMG_TYPE_MELEE)
-        {
-            sp->custom_is_melee_spell = true;
-            continue;
-        }
-
-        switch (sp->getEffect(i))
-        {
-        case SPELL_EFFECT_WEAPON_DAMAGE:
-        case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
-        case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
-        case SPELL_EFFECT_DUMMYMELEE:
-            sp->custom_is_melee_spell = true;
-            break;
-        default:
-            continue;
-        }
-    }
-
-    if (sp->custom_is_melee_spell)
-        LogDebugFlag(LF_DB_TABLES, "SpellMgr::setSpellMeleeSpellBool : custom_is_melee_spell is true for spell %s (%u)", sp->getName().c_str(), sp->getId());
-}
-
-void SpellMgr::setSpellRangedSpellBool(SpellInfo* sp)
-{
-    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        if (sp->getEffect(i) == SPELL_EFFECT_SCHOOL_DAMAGE && sp->getDmgClass() == SPELL_DMG_TYPE_RANGED)
-            sp->custom_is_ranged_spell = true;
-    }
-
-    if (sp->custom_is_ranged_spell)
-        LogDebugFlag(LF_DB_TABLES, "SpellMgr::setSpellRangedSpellBool : custom_is_ranged_spell is true for spell %s (%u)", sp->getName().c_str(), sp->getId());
-}
-
 void SpellMgr::setSpellMissingCIsFlags(SpellInfo* sp)
 {
     // Zyres: Special cases, not handled in spell_custom_assign!

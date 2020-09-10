@@ -24,7 +24,7 @@ namespace AscEmu::Packets
         SmsgMotd(std::vector<std::string> motdLines) :
             ManagedPacket(SMSG_MOTD, 50),
             motdLines(motdLines),
-            lineCount(motdLines.size())
+            lineCount(static_cast<uint32_t>(motdLines.size()))
         {
         }
 

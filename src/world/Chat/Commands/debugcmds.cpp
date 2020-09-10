@@ -281,7 +281,7 @@ bool ChatHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
 
 }
 
-bool ChatHandler::HandleSetBytesCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleSetBytesCommand(const char* /*args*/, WorldSession* m_session)
 {
     SystemMessage(m_session, "This command is no longer availabe!");
     /*Object* obj;
@@ -343,7 +343,7 @@ bool ChatHandler::HandleSetBytesCommand(const char* args, WorldSession* m_sessio
     return true;
 }
 
-bool ChatHandler::HandleGetBytesCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleGetBytesCommand(const char* /*args*/, WorldSession* m_session)
 {
     SystemMessage(m_session, "This command is no longer availabe!");
 
@@ -545,7 +545,7 @@ bool ChatHandler::HandleSendItemPushResult(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleModifyBitCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleModifyBitCommand(const char* /*args*/, WorldSession* m_session)
 {
     SystemMessage(m_session, "This command is no longer availabe!");
 
@@ -605,7 +605,7 @@ bool ChatHandler::HandleModifyBitCommand(const char* args, WorldSession* m_sessi
     return true;
 }
 
-bool ChatHandler::HandleModifyValueCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleModifyValueCommand(const char* /*args*/, WorldSession* m_session)
 {
     SystemMessage(m_session, "This command is no longer availabe!");
 

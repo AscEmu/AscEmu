@@ -1294,15 +1294,16 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             if (areaEntry == nullptr)
                 return SPELL_FAILED_NOT_HERE;
 
+            const auto requireAreaId = static_cast<uint32_t>(getSpellInfo()->getRequiresAreaId());
 #if VERSION_STRING == TBC
-            if (getSpellInfo()->getRequiresAreaId() != areaEntry->id && getSpellInfo()->getRequiresAreaId() != areaEntry->zone)
+            if (requireAreaId != areaEntry->id && requireAreaId != areaEntry->zone)
             {
                 *parameter1 = getSpellInfo()->getRequiresAreaId();
                 return SPELL_FAILED_REQUIRES_AREA;
             }
 #elif VERSION_STRING >= WotLK
             auto found = false;
-            auto areaGroup = sAreaGroupStore.LookupEntry(getSpellInfo()->getRequiresAreaId());
+            auto areaGroup = sAreaGroupStore.LookupEntry(requireAreaId);
             while (areaGroup != nullptr)
             {
                 for (const auto& i : areaGroup->AreaId)
@@ -4248,12 +4249,53 @@ uint32_t Spell::calculatePowerCost() const
 
     return static_cast<uint32_t>(powerCost);
 }
+//////////////////////////////////////////////////////////////////////////////////////////
+// Caster
+Object* Spell::getCaster() const
+{
+    return m_caster;
+}
+
+Unit* Spell::getUnitCaster() const
+{
+    return u_caster;
+}
+
+Player* Spell::getPlayerCaster() const
+{
+    return p_caster;
+}
+
+GameObject* Spell::getGameObjectCaster() const
+{
+    return g_caster;
+}
+
+Item* Spell::getItemCaster() const
+{
+    return i_caster;
+}
+
+void Spell::setItemCaster(Item* itemCaster)
+{
+    i_caster = itemCaster;
+}
+
+bool Spell::wasCastedinDuel() const
+{
+    return duelSpell;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 SpellInfo const* Spell::getSpellInfo() const
 {
     return m_spellInfo_override != nullptr ? m_spellInfo_override : m_spellInfo;
+}
+
+Aura* Spell::getTriggeredByAura() const
+{
+    return m_triggeredByAura;
 }
 
 bool Spell::canAttackCreatureType(Creature* target) const

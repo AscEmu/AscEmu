@@ -2735,7 +2735,8 @@ void QuestMgr::OnPlayerEmote(Player* plr, uint32 emoteid, uint64 & victimguid)
 
     Unit* victim = plr->GetMapMgr() ? plr->GetMapMgr()->GetUnit(victimguid) : NULL;
 
-    uint32 i, j;
+    uint32 i;
+    uint8_t j;
     uint32 entry = (victim) ? victim->getEntry() : 0;
     QuestLogEntry* qle;
     for (i = 0; i < 25; ++i)

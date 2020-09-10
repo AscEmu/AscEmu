@@ -1683,7 +1683,7 @@ bool ChatHandler::HandleCharSetTalentpointsCommand(const char* args, WorldSessio
         return true;
 
     uint32 primary_amount = 0;
-    uint32 secondary_amount = 0;
+    [[maybe_unused]]uint32 secondary_amount = 0;
 
     std::stringstream ss(args);
     ss >> primary_amount;

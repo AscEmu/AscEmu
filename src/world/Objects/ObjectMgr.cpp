@@ -1600,7 +1600,7 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
                 {
                     if (itr->second.onChooseData != 0)
                     {
-                        if (player->GetStanding(itr->second.onChooseData) >= itr->second.onChooseData2)
+                        if (player->GetStanding(itr->second.onChooseData) >= static_cast<int32_t>(itr->second.onChooseData2))
                             player->castSpell(player, sSpellMgr.getSpellInfo(itr->second.onChooseData3), true);
                         else
                             player->BroadcastMessage(player->GetSession()->LocalizedWorldSrv(itr->second.onChooseData4));

@@ -940,6 +940,8 @@ void Aura::spellAuraEffectPeriodicHealPct(AuraEffectModifier* aurEff, bool apply
 {
     if (apply)
     {
+        aurEff->mDamage = static_cast<int32_t>(std::ceil(getOwner()->getMaxHealth() * (aurEff->mBaseDamage / 100.0f))) * getStackCount();
+
         // Set periodic timer only if timer was resetted
         if (m_periodicTimer[aurEff->effIndex] == 0)
             m_periodicTimer[aurEff->effIndex] = aurEff->mAmplitude;
@@ -960,6 +962,9 @@ void Aura::spellAuraEffectPeriodicPowerPct(AuraEffectModifier* aurEff, bool appl
 
     if (apply)
     {
+        const auto powerType = static_cast<PowerType>(aurEff->miscValue);
+        aurEff->mDamage = static_cast<int32_t>(std::ceil(getOwner()->getMaxPower(powerType) * (aurEff->mBaseDamage / 100.0f))) * getStackCount();
+
         // Set periodic timer only if timer was resetted
         if (m_periodicTimer[aurEff->effIndex] == 0)
             m_periodicTimer[aurEff->effIndex] = aurEff->mAmplitude;
@@ -1165,6 +1170,8 @@ void Aura::spellAuraEffectPeriodicDamagePercent(AuraEffectModifier* aurEff, bool
 {
     if (apply)
     {
+        aurEff->mDamage = static_cast<int32_t>(std::ceil(aurEff->mBaseDamage / 100.0f * getOwner()->getMaxHealth())) * getStackCount();
+
         // Set periodic timer only if timer was resetted
         if (m_periodicTimer[aurEff->effIndex] == 0)
             m_periodicTimer[aurEff->effIndex] = aurEff->mAmplitude;
@@ -1181,6 +1188,10 @@ void Aura::spellAuraEffectPeriodicDamagePercent(AuraEffectModifier* aurEff, bool
 void Aura::spellAuraEffectPeriodicPowerBurn(AuraEffectModifier* aurEff, bool apply)
 {
     if (aurEff->miscValue < POWER_TYPE_MANA || aurEff->miscValue >= TOTAL_PLAYER_POWER_TYPES)
+        return;
+
+    const auto powerType = static_cast<PowerType>(aurEff->miscValue);
+    if (getOwner()->getMaxPower(powerType) == 0)
         return;
 
     if (apply)

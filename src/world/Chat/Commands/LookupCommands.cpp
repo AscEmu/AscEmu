@@ -18,7 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 //.lookup achievement criteria string : searches for "string" in achievement criteria name
 //.lookup achievement all string : searches for "string" in achievement name, description, reward, and critiera
 //////////////////////////////////////////////////////////////////////////////////////////
-bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* args, [[maybe_unused]]WorldSession* m_session)
 {
 #if VERSION_STRING > TBC
     if (!*args)

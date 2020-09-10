@@ -337,7 +337,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
         playerSpellTargets.addTargetMask(TARGET_FLAG_TRADE_ITEM);
         // Create spell
         playerSpell = sSpellMgr.newSpell(_player, spellInfo, true, nullptr);
-        playerSpell->i_caster = castedFromItem;
+        playerSpell->setItemCaster(castedFromItem);
         playerSpell->m_targets = playerSpellTargets;
 
         // Check if player is able to cast the spell
@@ -371,7 +371,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
         traderSpellTargets.addTargetMask(TARGET_FLAG_TRADE_ITEM);
         // Create spell
         traderSpell = sSpellMgr.newSpell(tradeData->getTradeTarget(), spellInfo, true, nullptr);
-        traderSpell->i_caster = castedFromItem;
+        traderSpell->setItemCaster(castedFromItem);
         traderSpell->m_targets = traderSpellTargets;
 
         // Check if trader is able to cast the spell

@@ -20,14 +20,16 @@
 
 #pragma once
 
-#include "SpellCastTargets.h"
-#include "Definitions/SpellTargetMod.h"
-#include "Spell/SpellInfo.hpp"
 #include "Definitions/SpellFailure.h"
+#include "Definitions/SpellState.h"
+#include "Definitions/SpellTargetMod.h"
+#include "SpellCastTargets.h"
+#include "SpellInfo.hpp"
+#include "SpellTargetConstraint.h"
+
 #include "Units/Creatures/Creature.h"
 #include "Units/Players/Player.h"
 #include "Units/Unit.h"
-#include "SpellTargetConstraint.h"
 
 class WorldSession;
 class Unit;
@@ -42,7 +44,6 @@ typedef void(Spell::*pSpellEffect)(uint8_t effectIndex);
 typedef void(Spell::*pSpellTarget)(uint32 i, uint32 j);
 
 #define GO_FISHING_BOBBER 35591
-#define SPELL_SPELL_CHANNEL_UPDATE_INTERVAL 1000
 
 class SERVER_DECL Spell : public EventableObject
 {
@@ -121,15 +122,35 @@ class SERVER_DECL Spell : public EventableObject
 
         uint32_t m_powerCost = 0;
 
+        bool m_usesMana = false;
+
     public:
         //////////////////////////////////////////////////////////////////////////////////////////
         // Caster
 
-    private:
-        float m_castPositionX = 0.0f;
-        float m_castPositionY = 0.0f;
-        float m_castPositionZ = 0.0f;
-        float m_castPositionO = 0.0f;
+        Object* getCaster() const;
+        Unit* getUnitCaster() const;
+        Player* getPlayerCaster() const;
+        GameObject* getGameObjectCaster() const;
+        Item* getItemCaster() const;
+
+        void setItemCaster(Item* itemCaster);
+
+        bool wasCastedinDuel() const;
+
+    protected:
+        float_t m_castPositionX = 0.0f;
+        float_t m_castPositionY = 0.0f;
+        float_t m_castPositionZ = 0.0f;
+        float_t m_castPositionO = 0.0f;
+
+        bool duelSpell = false;
+
+        Object* m_caster = nullptr;
+        Unit* u_caster = nullptr;
+        Player* p_caster = nullptr;
+        GameObject* g_caster = nullptr;
+        Item* i_caster = nullptr;
 
     public:
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -143,6 +164,12 @@ class SERVER_DECL Spell : public EventableObject
         // Stores hitted targets for each spell effect
         std::vector<uint64_t> m_effectTargets[MAX_SPELL_EFFECTS];
 
+        Unit* unitTarget = nullptr;
+        Item* itemTarget = nullptr;
+        GameObject* gameObjTarget = nullptr;
+        Player* playerTarget = nullptr;
+        Corpse* corpseTarget = nullptr;
+
     public:
         //////////////////////////////////////////////////////////////////////////////////////////
         // Misc
@@ -150,6 +177,12 @@ class SERVER_DECL Spell : public EventableObject
 
         // Some spells inherit base points from the mother spell
         uint32_t forced_basepoints[MAX_SPELL_EFFECTS];
+
+        Aura* getTriggeredByAura() const;
+
+        // used by spells that should have dynamic variables in spellentry
+        // seems to be used only by LuaEngine -Appled
+        SpellInfo const* m_spellInfo_override = nullptr;
 
     private:
         bool canAttackCreatureType(Creature* target) const;
@@ -161,6 +194,18 @@ class SERVER_DECL Spell : public EventableObject
 
         // Spell reflect stuff
         bool m_canBeReflected = false;
+
+        std::map<uint64_t, Aura*> m_pendingAuras;
+
+        bool isEffectDamageStatic[MAX_SPELL_EFFECTS];
+
+        SpellState m_spellState = SPELL_STATE_NULL;
+        SpellCastResult cancastresult = SPELL_CAST_SUCCESS;
+
+        bool m_triggeredSpell = false;
+        Aura* m_triggeredByAura = nullptr;
+
+        SpellInfo const* m_spellInfo = nullptr;
 
     public:
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -527,19 +572,9 @@ class SERVER_DECL Spell : public EventableObject
         void SpellEffectJumpTarget(uint8_t effectIndex);
         void SpellEffectJumpBehindTarget(uint8_t effectIndex);
 
-        GameObject*     g_caster;
-        Unit*           u_caster;
-        Item*           i_caster;
-        Player*         p_caster;
-        Object*         m_caster;
-
-        // 15007 = resurrection sickness
-
         // This returns SPELL_ENTRY_Spell_Dmg_Type where 0 = SPELL_DMG_TYPE_NONE, 1 = SPELL_DMG_TYPE_MAGIC, 2 = SPELL_DMG_TYPE_MELEE, 3 = SPELL_DMG_TYPE_RANGED
         // It should NOT be used for weapon_damage_type which needs: 0 = MELEE, 1 = OFFHAND, 2 = RANGED
         uint32 GetType();
-
-        std::map<uint64, Aura*> m_pendingAuras;
 
         Item* GetItemTarget() const;
         Unit* GetUnitTarget() const;
@@ -567,12 +602,7 @@ class SERVER_DECL Spell : public EventableObject
         bool IsInvisibilitySpell();
 
         int32 damage;
-        Aura* m_triggeredByAura;
-
-        bool m_triggeredSpell;
         bool m_AreaAura;
-        //uint32 TriggerSpellId;  // used to set next spell to use
-        //uint64 TriggerSpellTarget; // used to set next spell target
         bool m_requiresCP;
         int32 m_charges;
 
@@ -580,8 +610,6 @@ class SERVER_DECL Spell : public EventableObject
         uint32 castedItemId;
         uint8 extra_cast_number;
         uint32 m_glyphslot;
-
-        bool duelSpell;
 
         ////////////////////////////////////////////////////////////////////////////////
         ///bool DuelSpellNoMoreValid()
@@ -602,7 +630,6 @@ class SERVER_DECL Spell : public EventableObject
     protected:
 
         /// Spell state's
-        bool m_usesMana;
         bool m_Spell_Failed;         //for 5sr
         bool m_Delayed;
         uint8 m_DelayStep;            //3.0.2 - spells can only be delayed twice.
@@ -611,20 +638,13 @@ class SERVER_DECL Spell : public EventableObject
 
         bool hadEffect;
 
-        uint32 m_spellState;
         int64 m_magnetTarget;
 
         // Current Targets to be used in effect handler
-        Unit* unitTarget;
-        Item* itemTarget;
-        GameObject* gameObjTarget;
-        Player* playerTarget;
-        Corpse* corpseTarget;
         Creature* targetConstraintCreature;
         GameObject* targetConstraintGameObject;
         uint32 add_damage;
 
-        SpellCastResult cancastresult;
         uint32 Dur;
         bool bDurSet;
         float Rad[3];
@@ -663,10 +683,5 @@ class SERVER_DECL Spell : public EventableObject
         void AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets);
         void AddConeTargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets);
         void AddScriptedOrSpellFocusTargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets);
-
-    public:
-
-        SpellInfo const* m_spellInfo;
-        SpellInfo const* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
 };
 

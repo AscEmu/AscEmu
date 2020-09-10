@@ -698,7 +698,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                                 continue;
 
                             Spell* spell = sSpellMgr.newSpell(m_owner, sp, true, 0);
-                            spell->i_caster = this;
+                            spell->setItemCaster(this);
                             spell->prepare(&targets);
                         }
                     }
@@ -1091,8 +1091,10 @@ int32 GetStatScalingStatValueColumn(ItemProperties const* proto, uint32 type)
         }
 
         default:
-            return 1;
+            break;
     }
+
+    return 1;
 }
 
 uint32 Item::CountGemsWithLimitId(uint32 LimitId)

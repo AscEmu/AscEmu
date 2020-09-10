@@ -1461,7 +1461,7 @@ public:
 #if VERSION_STRING > Classic
             const uint8_t index = title / 32;
 
-            return (getKnownTitles(index) & 1 << (title % 32)) != 0;
+            return (getKnownTitles(index) & 1ULL << static_cast<uint64_t>((title % 32))) != 0;
 #else
             return false;
 #endif

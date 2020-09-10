@@ -714,7 +714,6 @@ Unit::Unit() :
     memset(m_diminishAuraCount, 0, DIMINISHING_GROUP_COUNT);
     memset(m_diminishCount, 0, DIMINISHING_GROUP_COUNT * 2);
     memset(m_diminishTimer, 0, DIMINISHING_GROUP_COUNT * 2);
-    memset(m_auraStackCount, 0, MAX_NEGATIVE_VISUAL_AURAS_END);
     memset(m_auravisuals, 0, MAX_NEGATIVE_VISUAL_AURAS_END * sizeof(uint32));
 
     m_diminishActive = false;
@@ -8384,44 +8383,6 @@ void Unit::smsg_AttackStart(Unit* pVictim)
     }
 }
 
-uint8 Unit::FindVisualSlot(uint32 SpellId, bool IsPos)
-{
-    uint32 from, to;
-    uint8 visualslot = 0xFF;
-    if (IsPos)
-    {
-        from = 0;
-        to = MAX_POSITIVE_VISUAL_AURAS_END;
-    }
-    else
-    {
-        from = MAX_NEGATIVE_VISUAL_AURAS_START;
-        to = MAX_NEGATIVE_VISUAL_AURAS_END;
-    }
-    //check for already visual same aura
-    for (uint32 i = from; i < to; i++)
-    {
-        if (m_auravisuals[i] == SpellId)
-        {
-            visualslot = static_cast<uint8>(i);
-            break;
-        }
-    }
-
-    if (visualslot == 0xFF)
-    {
-        for (uint32 i = from; i < to; i++)
-        {
-            if (m_auravisuals[i] == 0)
-            {
-                visualslot = static_cast<uint8>(i);
-                break;
-            }
-        }
-    }
-    return visualslot;
-}
-
 bool Unit::RemoveAura(Aura* aur)
 {
     if (aur == NULL)
@@ -10221,36 +10182,6 @@ bool Unit::IsPoisoned()
             return true;
 
     return false;
-}
-
-void Unit::ModVisualAuraStackCount(Aura* aur, int32 count)
-{
-#if VERSION_STRING == TBC
-    return;
-#endif
-    if (!aur)
-        return;
-
-    uint8 slot = aur->m_visualSlot;
-    if (slot >= MAX_NEGATIVE_VISUAL_AURAS_END)
-        return;
-
-    if (count < 0 && m_auraStackCount[slot] <= -count)
-    {
-        m_auraStackCount[slot] = 0;
-        m_auravisuals[slot] = 0;
-
-        sendAuraUpdate(aur, true);
-    }
-    else
-    {
-        m_auraStackCount[slot] += static_cast<uint8>(count);
-        m_auravisuals[slot] = aur->getSpellId();
-
-        sendAuraUpdate(aur, false);
-    }
-
-    //return m_auraStackCount[slot];
 }
 
 void Unit::RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune)

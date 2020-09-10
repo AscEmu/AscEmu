@@ -46,7 +46,7 @@ static const uint32 IdToTeamCount[6] =
     0,
 };
 
-ArenaTeam::ArenaTeam(uint16 Type, uint32 Id)
+ArenaTeam::ArenaTeam(uint8_t Type, uint32 Id)
 {
     m_id = Id;
     m_type = Type;
@@ -61,7 +61,7 @@ ArenaTeam::ArenaTeam(Field* f)
     uint32 z = 0;
 
     m_id = f[z++].GetUInt32();
-    m_type = f[z++].GetUInt16();
+    m_type = f[z++].GetUInt8();
     m_leader = f[z++].GetUInt32();
     m_name = f[z++].GetString();
     m_emblem.emblemStyle = f[z++].GetUInt32();

@@ -25,12 +25,12 @@
 
 bool Penance(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster || !pSpell->p_caster->isAlive() ||
+    if (!pSpell->getPlayerCaster() || !pSpell->getPlayerCaster()->isAlive() ||
         !pSpell->GetUnitTarget() || !pSpell->GetUnitTarget()->isAlive())
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
-    Player* player = pSpell->p_caster;
+    Player* player = pSpell->getPlayerCaster();
 
     // index 0 contains the spell for the first tick, index 1 is the peroidic cast spell.
     uint32_t hostileSpell[] = { 0, 0 };
@@ -192,7 +192,7 @@ bool PainAndSufferingAura(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
 bool PainAndSufferingProc(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* caster = pSpell->p_caster;
+    Player* caster = pSpell->getPlayerCaster();
     if (caster == NULL)
         return true;
 
@@ -249,9 +249,7 @@ bool PainAndSufferingProc(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     // Set new aura's duration, reset event timer and set client visual aura
-    aura->setTimeLeft(aura->getTimeLeft());
-    sEventMgr.ModifyEventTimeLeft(aura, EVENT_AURA_REMOVE, aura->getTimeLeft());
-    target->sendAuraUpdate(aura, false);
+    aura->refresh(true);
 
     return true;
 }

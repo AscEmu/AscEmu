@@ -46,7 +46,7 @@ bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    Player* caster = pSpell->p_caster;
+    Player* caster = pSpell->getPlayerCaster();
     if (caster == nullptr)
     {
         return true;
@@ -191,7 +191,7 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    Player* caster = pSpell->p_caster;
+    Player* caster = pSpell->getPlayerCaster();
     if (caster == nullptr)
     {
         return true;
@@ -347,7 +347,7 @@ bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
 
     Unit* unitTarget = s->GetUnitTarget();
 
-    if (!unitTarget || !s->u_caster)
+    if (!unitTarget || !s->getUnitCaster())
         return false;
 
     Unit* targets[3];
@@ -374,13 +374,13 @@ bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
     {
         //set threat to this target so we are the msot hated
         uint32_t threat_to_him = targets[j]->GetAIInterface()->getThreatByPtr(unitTarget);
-        uint32_t threat_to_us = targets[j]->GetAIInterface()->getThreatByPtr(s->u_caster);
+        uint32_t threat_to_us = targets[j]->GetAIInterface()->getThreatByPtr(s->getUnitCaster());
         int threat_dif = threat_to_him - threat_to_us;
         if (threat_dif > 0) //should nto happen
-            targets[j]->GetAIInterface()->modThreatByPtr(s->u_caster, threat_dif);
+            targets[j]->GetAIInterface()->modThreatByPtr(s->getUnitCaster(), threat_dif);
 
-        targets[j]->GetAIInterface()->AttackReaction(s->u_caster, 1, 0);
-        targets[j]->GetAIInterface()->setNextTarget(s->u_caster);
+        targets[j]->GetAIInterface()->AttackReaction(s->getUnitCaster(), 1, 0);
+        targets[j]->GetAIInterface()->setNextTarget(s->getUnitCaster());
     }
 
     return true;
@@ -388,7 +388,7 @@ bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
 
 bool Illumination(uint8_t /*effectIndex*/, Spell* s)
 {
-    switch (s->m_triggeredByAura == NULL ? s->getSpellInfo()->getId() : s->m_triggeredByAura->getSpellId())
+    switch (s->getTriggeredByAura() == NULL ? s->getSpellInfo()->getId() : s->getTriggeredByAura()->getSpellId())
     {
         case 20210:
         case 20212:
@@ -396,10 +396,10 @@ bool Illumination(uint8_t /*effectIndex*/, Spell* s)
         case 20214:
         case 20215:
         {
-            if (s->p_caster == NULL)
+            if (s->getPlayerCaster() == NULL)
                 return false;
-            SpellInfo const* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->getSpellInfo();
-            s->p_caster->energize(s->p_caster, 20272, 60 * s->u_caster->getBaseMana() * sp->getManaCostPercentage() / 10000, POWER_TYPE_MANA);
+            SpellInfo const* sp = s->getPlayerCaster()->last_heal_spell ? s->getPlayerCaster()->last_heal_spell : s->getSpellInfo();
+            s->getPlayerCaster()->energize(s->getPlayerCaster(), 20272, 60 * s->getPlayerCaster()->getBaseMana() * sp->getManaCostPercentage() / 10000, POWER_TYPE_MANA);
         }
         break;
 
@@ -410,21 +410,21 @@ bool Illumination(uint8_t /*effectIndex*/, Spell* s)
 
 bool JudgementOfTheWise(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (!s->p_caster)
+    if (!s->getPlayerCaster())
         return false;
 
-    s->p_caster->energize(s->p_caster, 31930, uint32_t(0.15f * s->p_caster->getBaseMana()), POWER_TYPE_MANA);
-    s->p_caster->castSpell(s->p_caster, 57669, false);
+    s->getPlayerCaster()->energize(s->getPlayerCaster(), 31930, uint32_t(0.15f * s->getPlayerCaster()->getBaseMana()), POWER_TYPE_MANA);
+    s->getPlayerCaster()->castSpell(s->getPlayerCaster(), 57669, false);
 
     return true;
 }
 
 bool GuardedByTheLight(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (!s->p_caster)
+    if (!s->getPlayerCaster())
         return false;
 
-    if (Aura* aura = s->p_caster->getAuraWithId(54428))
+    if (Aura* aura = s->getPlayerCaster()->getAuraWithId(54428))
         aura->refresh();
 
     return true;

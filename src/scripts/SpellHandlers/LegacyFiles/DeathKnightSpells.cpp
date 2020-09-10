@@ -36,10 +36,10 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
 {
     if (effectIndex == 1) // Script Effect that has been identified to handle the spread of diseases.
     {
-        if (!pSpell->u_caster || !pSpell->u_caster->getTargetGuid() || !pSpell->u_caster->IsInWorld())
+        if (!pSpell->getUnitCaster() || !pSpell->getUnitCaster()->getTargetGuid() || !pSpell->getUnitCaster()->IsInWorld())
             return true;
 
-        Unit* u_caster = pSpell->u_caster;
+        Unit* u_caster = pSpell->getUnitCaster();
         Unit* Main = u_caster->GetMapMgr()->GetUnit(u_caster->getTargetGuid());
         if (Main == NULL)
             return true;
@@ -70,13 +70,13 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
 
 bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == NULL || pSpell->GetUnitTarget() == NULL)
+    if (pSpell->getPlayerCaster() == NULL || pSpell->GetUnitTarget() == NULL)
         return true;
 
     Unit* Target = pSpell->GetUnitTarget();
 
     // Get count of diseases on target which were casted by caster
-    uint32_t count = Target->GetAuraCountWithDispelType(DISPEL_DISEASE, pSpell->p_caster->getGuid());
+    uint32_t count = Target->GetAuraCountWithDispelType(DISPEL_DISEASE, pSpell->getPlayerCaster()->getGuid());
 
     // Not a logical error, Death Strike should heal only when diseases are presented on its target
     if (count)
@@ -85,7 +85,7 @@ bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
         // A deadly attack that deals $s2% weapon damage plus ${$m1*$m2/100}
         // and heals the Death Knight for $F% of $Ghis:her; maximum health for each of $Ghis:her; diseases on the target.
         // $F is dmg_multiplier.
-        float amt = static_cast<float>(pSpell->p_caster->getMaxHealth()) * pSpell->getSpellInfo()->getEffectDamageMultiplier(0) / 100.0f;
+        float amt = static_cast<float>(pSpell->getPlayerCaster()->getMaxHealth()) * pSpell->getSpellInfo()->getEffectDamageMultiplier(0) / 100.0f;
 
         // Calculate heal amount with diseases on target
         uint32_t val = static_cast<uint32_t>(amt * count);
@@ -98,12 +98,12 @@ bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
             0
         };
 
-        Aura* aur = pSpell->p_caster->getAuraWithId(improvedDeathStrike);
+        Aura* aur = pSpell->getPlayerCaster()->getAuraWithId(improvedDeathStrike);
         if (aur != nullptr)
             val += val * (aur->getSpellInfo()->getEffectBasePoints(2) + 1) / 100;
 
         if (val > 0)
-            pSpell->u_caster->Heal(pSpell->u_caster, pSpell->getSpellInfo()->getId(), val);
+            pSpell->getPlayerCaster()->Heal(pSpell->getPlayerCaster(), pSpell->getSpellInfo()->getId(), val);
     }
 
     return true;
@@ -138,19 +138,19 @@ bool Strangulate(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
 bool RaiseDead(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == nullptr)
+    if (s->getPlayerCaster() == nullptr)
     {
         return false;
     }
 
-    float x = s->p_caster->GetPositionX();
-    float y = s->p_caster->GetPositionY() - 1;
-    float z = s->p_caster->GetPositionZ();
+    float x = s->getPlayerCaster()->GetPositionX();
+    float y = s->getPlayerCaster()->GetPositionY() - 1;
+    float z = s->getPlayerCaster()->GetPositionZ();
 
     SpellInfo const* sp = nullptr;
 
     // Master of Ghouls
-    if (s->p_caster->HasAura(52143) == false)
+    if (s->getPlayerCaster()->HasAura(52143) == false)
     {
         // Minion version, 1 min duration
         sp = sSpellMgr.getSpellInfo(46585);
@@ -161,7 +161,7 @@ bool RaiseDead(uint8_t /*effectIndex*/, Spell* s)
         sp = sSpellMgr.getSpellInfo(52150);
     }
 
-    s->p_caster->castSpellLoc(LocationVector(x, y, z), sp, true);
+    s->getPlayerCaster()->castSpellLoc(LocationVector(x, y, z), sp, true);
 
     return true;
 }
@@ -170,7 +170,7 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
-    if (!s->u_caster || !s->u_caster->isAlive() || !unitTarget || !unitTarget->isAlive())
+    if (!s->getUnitCaster() || !s->getUnitCaster()->isAlive() || !unitTarget || !unitTarget->isAlive())
         return false;
 
     // rooted units can't be death gripped
@@ -196,16 +196,16 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
         float posX, posY, posZ;
         float deltaX, deltaY;
 
-        if (s->u_caster->GetPositionX() == 0.0f || s->u_caster->GetPositionY() == 0.0f)
+        if (s->getUnitCaster()->GetPositionX() == 0.0f || s->getUnitCaster()->GetPositionY() == 0.0f)
             return false;
 
-        deltaX = s->u_caster->GetPositionX() - unitTarget->GetPositionX();
-        deltaY = s->u_caster->GetPositionY() - unitTarget->GetPositionY();
+        deltaX = s->getUnitCaster()->GetPositionX() - unitTarget->GetPositionX();
+        deltaY = s->getUnitCaster()->GetPositionY() - unitTarget->GetPositionY();
 
         if (deltaX == 0.0f || deltaY == 0.0f)
             return false;
 
-        float d = std::sqrt(deltaX * deltaX + deltaY * deltaY) - s->u_caster->getBoundingRadius() - unitTarget->getBoundingRadius();
+        float d = std::sqrt(deltaX * deltaX + deltaY * deltaY) - s->getUnitCaster()->getBoundingRadius() - unitTarget->getBoundingRadius();
 
         float alpha = atanf(deltaY / deltaX);
 
@@ -214,9 +214,9 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
 
         posX = d * cosf(alpha) + unitTarget->GetPositionX();
         posY = d * sinf(alpha) + unitTarget->GetPositionY();
-        posZ = s->u_caster->GetPositionZ();
+        posZ = s->getUnitCaster()->GetPositionZ();
 
-        uint32_t time = uint32_t((unitTarget->CalcDistance(s->m_caster) / ((unitTarget->getSpeedRate(TYPE_RUN, true) * 3.5f) * 0.001f)) + 0.5f);
+        uint32_t time = uint32_t((unitTarget->CalcDistance(s->getCaster()) / ((unitTarget->getSpeedRate(TYPE_RUN, true) * 3.5f) * 0.001f)) + 0.5f);
 
         WorldPacket data(SMSG_MONSTER_MOVE, 60);
         data << unitTarget->GetNewGUID();
@@ -242,7 +242,7 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
         unitTarget->smsg_AttackStart(unitTarget);
         unitTarget->setAttackTimer(MELEE, time);
         unitTarget->setAttackTimer(OFFHAND, time);
-        unitTarget->GetAIInterface()->taunt(s->u_caster, true);
+        unitTarget->GetAIInterface()->taunt(s->getUnitCaster(), true);
     }
 
     return true;
@@ -252,20 +252,20 @@ bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
-    if (s->p_caster == NULL || unitTarget == NULL)
+    if (s->getPlayerCaster() == NULL || unitTarget == NULL)
         return false;
 
     int32_t dmg = s->damage;
 
-    if (isAttackable(s->p_caster, unitTarget, false))
+    if (isAttackable(s->getPlayerCaster(), unitTarget, false))
     {
-        s->p_caster->castSpell(unitTarget, 47632, dmg, true);
+        s->getPlayerCaster()->castSpell(unitTarget, 47632, dmg, true);
     }
     else if (unitTarget->isPlayer() && unitTarget->getRace() == RACE_UNDEAD)
     {
         float multiplier = 1.5f;
         dmg = static_cast<int32_t>((dmg * multiplier));
-        s->p_caster->castSpell(unitTarget, 47633, dmg, true);
+        s->getPlayerCaster()->castSpell(unitTarget, 47633, dmg, true);
     }
 
     return true;
@@ -360,7 +360,7 @@ bool WillOfTheNecropolis(uint8_t effectIndex, Spell* spell)
     if (effectIndex != 0)
         return true;
 
-    Player* plr = spell->p_caster;
+    Player* plr = spell->getPlayerCaster();
 
     if (plr == NULL)
         return true;

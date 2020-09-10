@@ -31,23 +31,23 @@
 
 bool Preparation(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster) return true;
+    if (!pSpell->getPlayerCaster()) return true;
 
-    pSpell->p_caster->ClearCooldownForSpell(5277);          // Evasion Rank 1
-    pSpell->p_caster->ClearCooldownForSpell(26669);         // Evasion Rank 2
-    pSpell->p_caster->ClearCooldownForSpell(2983);          // Sprint Rank 1
-    pSpell->p_caster->ClearCooldownForSpell(8696);          // Sprint Rank 2
-    pSpell->p_caster->ClearCooldownForSpell(11305);         // Sprint Rank 3
-    pSpell->p_caster->ClearCooldownForSpell(1856);          // Vanish Rank 1
-    pSpell->p_caster->ClearCooldownForSpell(1857);          // Vanish Rank 2
-    pSpell->p_caster->ClearCooldownForSpell(26889);         // Vanish Rank 3
-    pSpell->p_caster->ClearCooldownForSpell(14177);         // Cold Blood
-    pSpell->p_caster->ClearCooldownForSpell(36554);         // Shadowstep
-    if (pSpell->p_caster->HasAura(56819))                   // Glyph of Preparation item = 42968 casts 57127 that apply aura 56819.
+    pSpell->getPlayerCaster()->ClearCooldownForSpell(5277);          // Evasion Rank 1
+    pSpell->getPlayerCaster()->ClearCooldownForSpell(26669);         // Evasion Rank 2
+    pSpell->getPlayerCaster()->ClearCooldownForSpell(2983);          // Sprint Rank 1
+    pSpell->getPlayerCaster()->ClearCooldownForSpell(8696);          // Sprint Rank 2
+    pSpell->getPlayerCaster()->ClearCooldownForSpell(11305);         // Sprint Rank 3
+    pSpell->getPlayerCaster()->ClearCooldownForSpell(1856);          // Vanish Rank 1
+    pSpell->getPlayerCaster()->ClearCooldownForSpell(1857);          // Vanish Rank 2
+    pSpell->getPlayerCaster()->ClearCooldownForSpell(26889);         // Vanish Rank 3
+    pSpell->getPlayerCaster()->ClearCooldownForSpell(14177);         // Cold Blood
+    pSpell->getPlayerCaster()->ClearCooldownForSpell(36554);         // Shadowstep
+    if (pSpell->getPlayerCaster()->HasAura(56819))                   // Glyph of Preparation item = 42968 casts 57127 that apply aura 56819.
     {
-        pSpell->p_caster->ClearCooldownForSpell(13877);     // Blade Flurry
-        pSpell->p_caster->ClearCooldownForSpell(51722);     // Dismantle
-        pSpell->p_caster->ClearCooldownForSpell(1766);      // Kick
+        pSpell->getPlayerCaster()->ClearCooldownForSpell(13877);     // Blade Flurry
+        pSpell->getPlayerCaster()->ClearCooldownForSpell(51722);     // Dismantle
+        pSpell->getPlayerCaster()->ClearCooldownForSpell(1766);      // Kick
     }
     return true;
 }
@@ -55,11 +55,11 @@ bool Preparation(uint8_t /*effectIndex*/, Spell* pSpell)
 bool Shiv(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* pTarget = pSpell->GetUnitTarget();
-    if (!pSpell->p_caster || !pTarget) return true;
+    if (!pSpell->getPlayerCaster() || !pTarget) return true;
 
-    pSpell->p_caster->castSpell(pTarget->getGuid(), 5940, true);
+    pSpell->getPlayerCaster()->castSpell(pTarget->getGuid(), 5940, true);
 
-    Item* it = pSpell->p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    Item* it = pSpell->getPlayerCaster()->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (!it)
         return true;
 
@@ -76,7 +76,7 @@ bool Shiv(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 if (sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                 {
-                    pSpell->p_caster->castSpell(pTarget->getGuid(), Entry->spell[c], true);
+                    pSpell->getPlayerCaster()->castSpell(pTarget->getGuid(), Entry->spell[c], true);
                 }
             }
         }
@@ -281,7 +281,7 @@ bool KillingSpreePeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool /*apply*/)
 
 bool KillingSpreeEffectDummy(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* p_caster = s->p_caster;
+    Player* p_caster = s->getPlayerCaster();
 
     if (p_caster == NULL)
         return true;

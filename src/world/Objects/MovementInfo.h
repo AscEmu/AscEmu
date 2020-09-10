@@ -19,7 +19,7 @@ struct MovementInfo
         position(0.f, 0.f, 0.f, 0.f),
         transport_guid(0), transport_position(0.f, 0.f, 0.f, 0.f), transport_time(0),
 #if VERSION_STRING == WotLK
-        transport_seat(0), transport_time2(0.f),
+        transport_seat(0), transport_time2(0),
 #endif
         pitch_rate(0.f), fall_time(0), spline_elevation(0.f) {}
 
@@ -86,7 +86,7 @@ struct MovementInfo
 #endif
 
     // transport
-    void setTransportData(ObjectGuid _guid, float x, float y, float z, float o, uint32_t time, int8_t seat)
+    void setTransportData(ObjectGuid _guid, float x, float y, float z, float o, uint32_t time, [[maybe_unused]]int8_t seat)
     {
         transport_guid = _guid;
         transport_position.x = x;

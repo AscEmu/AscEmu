@@ -33,6 +33,7 @@ namespace AscEmu::Packets
         {
         }
 
+#if VERSION_STRING >= Cata
         CmsgAuctionSellItem(uint64_t auctioneerGuid, uint64_t bidMoney, uint64_t buyoutPrice, uint32_t itemsCount, uint32_t expireTime) :
             ManagedPacket(CMSG_AUCTION_SELL_ITEM, 0),
             auctioneerGuid(auctioneerGuid),
@@ -40,6 +41,15 @@ namespace AscEmu::Packets
             buyoutPrice(buyoutPrice),
             itemsCount(itemsCount),
             expireTime(expireTime)
+#else
+        CmsgAuctionSellItem(uint64_t auctioneerGuid, uint32_t bidMoney, uint32_t buyoutPrice, uint32_t itemsCount, uint32_t expireTime) :
+            ManagedPacket(CMSG_AUCTION_SELL_ITEM, 0),
+            auctioneerGuid(auctioneerGuid),
+            bidMoney(bidMoney),
+            buyoutPrice(buyoutPrice),
+            itemsCount(itemsCount),
+            expireTime(expireTime)
+#endif
         {
         }
 

@@ -21,6 +21,7 @@
 #pragma once
 
 #include "Definitions/AuraEffects.h"
+#include "Definitions/AuraRemoveMode.h"
 #include "Definitions/SpellEffects.h"
 #include "Management/Item.h"
 #include "Objects/Object.h"
@@ -100,7 +101,8 @@ enum AuraUpdateFlags : uint8_t
 struct AuraEffectModifier
 {
     AuraEffect mAuraEffect;     // Effect type
-    int32_t mDamage;            // Effect amount
+    int32_t mDamage;            // Effect calculated amount
+    int32_t mBaseDamage;        // Effect base amount
     int32_t mFixedDamage;       // For example used with auras that increase your spell power by % of some stat
     int32_t miscValue;          // Misc Value
     int32_t mAmplitude;         // Effect amplitude
@@ -123,7 +125,7 @@ class SERVER_DECL Aura : public EventableObject
         int32_t getEffectDamage(uint8_t effIndex) const;
         int32_t getEffectDamageByEffect(AuraEffect auraEffect) const;
 
-        void removeAura();
+        void removeAura(AuraRemoveMode mode = AURA_REMOVE_BY_SERVER);
 
         bool canPeriodicEffectCrit();
 
@@ -147,6 +149,7 @@ class SERVER_DECL Aura : public EventableObject
         float_t getCritChance() const;
         int32_t getSpellPowerBonus() const;
         int32_t getHealPowerBonus() const;
+        uint32_t getAttackPowerBonus() const;
 
         Unit* getOwner() const;
         Player* getPlayerOwner() const;
@@ -400,12 +403,14 @@ class SERVER_DECL Aura : public EventableObject
         // Following values are calculated only on aura apply, not on every tick
         void _calculateCritChance();
         void _calculateSpellPowerBonus();
+        void _calculateAttackPowerBonus();
         void _calculateSpellHaste();
         void _calculateEffectAmplitude(uint8_t effIndex);
         bool _canHasteAffectDuration();
         float_t m_critChance = 0.0f;
         int32_t m_spellPowerBonus = 0;
         int32_t m_healPowerBonus = 0;
+        uint32_t m_attackPowerBonus = 0;
         float_t m_spellHaste = 0.0f;
 
         // Computes if aura is positive or negative at aura constructor based on SpellInfo

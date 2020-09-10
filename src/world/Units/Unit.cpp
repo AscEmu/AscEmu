@@ -100,7 +100,7 @@ uint8_t Unit::getBytes0ByOffset(uint32_t offset) const
         case 2:
             return getGender();
         case 3:
-            return getPowerType();
+            return static_cast<uint8_t>(getPowerType());
         default:
             LogError("Offset %u is not a valid offset value for byte_0 data (max 3). Returning 0", offset);
             return 0;
@@ -2305,7 +2305,7 @@ void Unit::addAura(Aura* aur)
     // Find a visual slot for aura
     uint8_t visualSlot = 0xFF;
     if (!aur->IsPassive() || aur->getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO)
-        visualSlot = findVisualSlotForAura(aur->getSpellId(), !aur->isNegative());
+        visualSlot = findVisualSlotForAura(!aur->isNegative());
 
     aur->m_visualSlot = visualSlot;
     aur->m_auraSlot = auraSlot;
@@ -2413,7 +2413,7 @@ void Unit::addAura(Aura* aur)
 
 }
 
-uint8_t Unit::findVisualSlotForAura(uint32_t spellId, bool isPositive) const
+uint8_t Unit::findVisualSlotForAura(bool isPositive) const
 {
     uint8_t start, end;
     if (isPositive)
@@ -3636,7 +3636,7 @@ uint8_t Unit::getPowerPct(PowerType powerType) const
     return static_cast<uint8_t>(getPower(powerType) * 100 / getMaxPower(powerType));
 }
 
-void Unit::sendPowerUpdate(bool self)
+void Unit::sendPowerUpdate([[maybe_unused]]bool self)
 {
     // Save current power so the same amount is sent to player and everyone else
     const auto powerAmount = getPower(getPowerType());

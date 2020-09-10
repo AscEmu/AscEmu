@@ -24,7 +24,7 @@ namespace AscEmu::Packets
 
         SmsgDefenseMessage(uint32_t zoneId, const std::string message) :
             ManagedPacket(SMSG_DEFENSE_MESSAGE, 4 + 4 + message.size()),
-            zoneId(zoneId), message(message), messageSize(message.size())
+            zoneId(zoneId), message(message), messageSize(static_cast<uint32_t>(message.size()))
         {
         }
 

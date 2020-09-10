@@ -73,7 +73,7 @@ class SERVER_DECL ArenaTeam
 {
     public:
 
-        ArenaTeam(uint16 Type, uint32 Id);
+        ArenaTeam(uint8_t Type, uint32 Id);
         ArenaTeam(Field* f);
         ~ArenaTeam()
         {
@@ -119,7 +119,7 @@ class SERVER_DECL ArenaTeam
         std::vector<ArenaTeamPacketList> getRoosterMembers() const;
 
         uint32 m_id;
-        uint16_t m_type;
+        uint8_t m_type;
         uint32 m_leader;
         uint32 m_slots;
         std::string m_name;

@@ -101,8 +101,6 @@ private:
 
     // Custom setters (defined in SpellCustomizations.cpp)
     void setSpellEffectAmplitude(SpellInfo* sp);
-    void setSpellMeleeSpellBool(SpellInfo* sp);
-    void setSpellRangedSpellBool(SpellInfo* sp);
     void setSpellMissingCIsFlags(SpellInfo* sp);
     void setSpellOnShapeshiftChange(SpellInfo* sp);
     // Hacky methods (defined in Hackfixes.cpp)

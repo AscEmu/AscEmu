@@ -27,6 +27,7 @@
 #include "Units/Unit.h"
 #include "Management/ArenaTeam.h"
 #include "Server/ServerState.h"
+#include "Spell/SpellAuras.h"
 #include "Spell/SpellScript.h"
 
 #define ADD_CREATURE_FACTORY_FUNCTION(cl) public:\
@@ -158,7 +159,8 @@ typedef std::set<GossipScript*> CustomGossipScripts;
 typedef std::unordered_map<uint32, GossipScript*> GossipMap;
 typedef std::set<EventScript*> EventScripts;
 typedef std::set<QuestScript*> QuestScripts;
-typedef std::set<SpellScript*> SpellScripts;
+typedef std::map<uint32_t, SpellScript*> SpellScripts;
+typedef std::map<uint32_t, AuraScript*> AuraScripts;
 typedef std::set<void*> ServerHookList;
 typedef std::list< Arcemu::DynLib* > DynamicLibraryMap;
 
@@ -179,14 +181,25 @@ class SERVER_DECL ScriptMgr
         ScriptMgr& operator=(ScriptMgr&&) = delete;
         ScriptMgr& operator=(ScriptMgr const&) = delete;
 
+        // Spell script hooks
         SpellCastResult callScriptedSpellCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) const;
         void callScriptedSpellAtStartCasting(Spell* spell);
         void callScriptedSpellFilterTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets);
         void callScriptedSpellBeforeHit(Spell* spell, uint8_t effectIndex);
         void callScriptedSpellAfterMiss(Spell* spell, Unit* unitTarget);
-        SpellScriptExecuteState callScriptedSpellBeforeSpellEffect(Spell* /*spell*/, uint32_t /*effectType*/, uint8_t /*effectId*/) const;
-        void callScriptedSpellAfterSpellEffect(Spell* /*spell*/, uint32_t /*effectType*/, uint8_t /*effectId*/);
+        SpellScriptEffectDamage callScriptedSpellDoCalculateEffect(Spell* spell, uint8_t effectIndex, int32_t* damage) const;
+        SpellScriptExecuteState callScriptedSpellBeforeSpellEffect(Spell* spell, uint32_t effectType, uint8_t effectId) const;
+        void callScriptedSpellAfterSpellEffect(Spell* spell, uint32_t effectType, uint8_t effectId);
+
+        // Aura script hooks
+        void callScriptedAuraOnCreate(Aura* aur);
+        void callScriptedAuraOnRemove(Aura* aur, AuraRemoveMode mode);
+        SpellScriptExecuteState callScriptedAuraOnPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, int32_t* damage) const;
+
+        SpellScript* getSpellScript(uint32_t spellId) const;
+        AuraScript* getAuraScript(uint32_t spellId) const;
         void register_spell_script(uint32_t spellId, SpellScript* ss);
+        void register_aura_script(uint32_t spellId, AuraScript* as);
 
         // MIT End
         // APGL Start
@@ -328,6 +341,7 @@ class SERVER_DECL ScriptMgr
         EventScripts _eventscripts;
         QuestScripts _questscripts;
         SpellScripts _spellscripts;
+        AuraScripts _auraScripts;
         GossipMap creaturegossip_, gogossip_, itemgossip_;
 };
 

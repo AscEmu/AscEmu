@@ -629,7 +629,32 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
         if (isPeriodic && aur != nullptr)
             bonusDamage *= aur->getStackCount();
 
+        // Get attack power bonus
+        float_t attackPowerBonus = 0.0f;
+        if (isPeriodic && aur != nullptr)
+        {
+            if (spellInfo->spell_ap_coeff_overtime > 0.0f)
+            {
+                attackPowerBonus = aur->getAttackPowerBonus() * spellInfo->spell_ap_coeff_overtime;
+                attackPowerBonus *= aur->getStackCount();
+            }
+        }
+        else
+        {
+            if (isPeriodic)
+            {
+                if (spellInfo->spell_ap_coeff_overtime > 0.0f)
+                    attackPowerBonus = casterUnit->getAttackPower() * spellInfo->spell_ap_coeff_overtime;
+            }
+            else
+            {
+                if (spellInfo->spell_ap_coeff_direct > 0.0f)
+                    attackPowerBonus = casterUnit->getAttackPower() * spellInfo->spell_ap_coeff_direct;
+            }
+        }
+
         damage += bonusDamage;
+        damage += attackPowerBonus;
         if (damage < 0.0f)
             damage = 0.0f;
     }
@@ -954,7 +979,32 @@ void Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool al
         if (isPeriodic && aur != nullptr)
             bonusHeal *= aur->getStackCount();
 
+        // Get attack power bonus
+        float_t attackPowerBonus = 0.0f;
+        if (isPeriodic && aur != nullptr)
+        {
+            if (spellInfo->spell_ap_coeff_overtime > 0.0f)
+            {
+                attackPowerBonus = aur->getAttackPowerBonus() * spellInfo->spell_ap_coeff_overtime;
+                attackPowerBonus *= aur->getStackCount();
+            }
+        }
+        else
+        {
+            if (isPeriodic)
+            {
+                if (spellInfo->spell_ap_coeff_overtime > 0.0f)
+                    attackPowerBonus = casterUnit->getAttackPower() * spellInfo->spell_ap_coeff_overtime;
+            }
+            else
+            {
+                if (spellInfo->spell_ap_coeff_direct > 0.0f)
+                    attackPowerBonus = casterUnit->getAttackPower() * spellInfo->spell_ap_coeff_direct;
+            }
+        }
+
         heal += bonusHeal;
+        heal += attackPowerBonus;
         if (heal < 0.0f)
             heal = 0.0f;
     }
@@ -1564,7 +1614,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     if (!target)
         return 0;
 
-    uint8_t flags = 0, flags2 = 0, update_type = UPDATETYPE_CREATE_OBJECT;
+    uint8_t flags = 0, update_type = UPDATETYPE_CREATE_OBJECT;
     if (m_objectTypeId == TYPEID_CORPSE)
         if (static_cast<Corpse*>(this)->getDisplayId() == 0)
             return 0;
@@ -2805,7 +2855,7 @@ void Unit::BuildHeartBeatMsg(WorldPacket* data)
     BuildMovementPacket(data);
 }
 
-bool Object::SetPosition(const LocationVector & v, bool allowPorting /* = false */)
+bool Object::SetPosition(const LocationVector & v, [[maybe_unused]]bool allowPorting /* = false */)
 {
     bool updateMap = false, result = true;
 
@@ -2832,7 +2882,7 @@ bool Object::SetPosition(const LocationVector & v, bool allowPorting /* = false 
     return result;
 }
 
-bool Object::SetPosition(float newX, float newY, float newZ, float newOrientation, bool allowPorting)
+bool Object::SetPosition(float newX, float newY, float newZ, float newOrientation, [[maybe_unused]]bool allowPorting)
 {
     bool updateMap = false, result = true;
 

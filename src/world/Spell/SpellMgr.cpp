@@ -93,8 +93,6 @@ void SpellMgr::startSpellMgr()
         // Custom values
         // todo: if possible, get rid of these
         setSpellEffectAmplitude(spellInfo);
-        setSpellMeleeSpellBool(spellInfo);
-        setSpellRangedSpellBool(spellInfo);
         setSpellMissingCIsFlags(spellInfo);
         setSpellOnShapeshiftChange(spellInfo);
     }
@@ -222,12 +220,13 @@ bool SpellMgr::checkLocation(SpellInfo const* spellInfo, uint32_t zone_id, uint3
     // Normal case
     if (spellInfo->getRequiresAreaId() > 0)
     {
+        const auto requireAreaId = static_cast<uint32_t>(spellInfo->getRequiresAreaId());
 #if VERSION_STRING == TBC
-        if (spellInfo->getRequiresAreaId() != zone_id && spellInfo->getRequiresAreaId() != area_id)
+        if (requireAreaId != zone_id && requireAreaId != area_id)
             return false;
 #elif VERSION_STRING >= WotLK
         auto found = false;
-        auto areaGroup = sAreaGroupStore.LookupEntry(spellInfo->getRequiresAreaId());
+        auto areaGroup = sAreaGroupStore.LookupEntry(requireAreaId);
         while (areaGroup != nullptr)
         {
             for (uint8_t i = 0; i < 6; ++i)
@@ -298,13 +297,13 @@ SpellInfo const* SpellMgr::getSpellInfoByDifficulty(const uint32_t spellDifficul
 
 void SpellMgr::loadSpellInfoData()
 {
-    for (auto i = 0; i < MAX_SPELL_ID; ++i)
+    for (uint32_t i = 0; i < MAX_SPELL_ID; ++i)
     {
-        auto dbcSpellEntry = sSpellStore.LookupEntry(i);
+        const auto dbcSpellEntry = sSpellStore.LookupEntry(i);
         if (dbcSpellEntry == nullptr)
             continue;
 
-        uint32_t spell_id = dbcSpellEntry->Id;
+        auto spell_id = dbcSpellEntry->Id;
         SpellInfo& spellInfo = mSpellInfoMapStore[spell_id];
 
         spellInfo.setId(spell_id);
@@ -673,10 +672,10 @@ void SpellMgr::loadSpellCoefficientOverride()
 
 void SpellMgr::loadSpellCustomOverride()
 {
-    //                                                 0        1          2                       3                     4              5             6                7            8
-    const auto result = WorldDatabase.Query("SELECT spell_id, rank, assign_on_target_flag, assign_self_cast_only, assign_c_is_flag, proc_flags, proc_target_selfs, proc_chance, proc_charges, "
-    //                                      9                       10                           11                         12
-                                      "proc_interval, proc_effect_trigger_spell_0, proc_effect_trigger_spell_1, proc_effect_trigger_spell_2 FROM spell_custom_override");
+    //                                                   0        1               2                       3                        4               5                6                  7              8
+    const auto result = WorldDatabase.Query("SELECT `spell_id`, `rank`, `assign_on_target_flag`, `assign_self_cast_only`, `assign_c_is_flag`, `proc_flags`, `proc_target_selfs`, `proc_chance`, `proc_charges`, "
+    //                                       9                       10                            11                             12
+                                      "`proc_interval`, `proc_effect_trigger_spell_0`, `proc_effect_trigger_spell_1`, `proc_effect_trigger_spell_2` FROM spell_custom_override");
     
     if (result == nullptr)
     {

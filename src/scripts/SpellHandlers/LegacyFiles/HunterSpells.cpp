@@ -45,17 +45,17 @@ bool Refocus(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool Readiness(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
-    pSpell->p_caster->ClearCooldownsOnLine(50, pSpell->getSpellInfo()->getId());//Beast Mastery
-    pSpell->p_caster->ClearCooldownsOnLine(163, pSpell->getSpellInfo()->getId());//Marksmanship
-    pSpell->p_caster->ClearCooldownsOnLine(51, pSpell->getSpellInfo()->getId());//Survival
+    pSpell->getPlayerCaster()->ClearCooldownsOnLine(50, pSpell->getSpellInfo()->getId());//Beast Mastery
+    pSpell->getPlayerCaster()->ClearCooldownsOnLine(163, pSpell->getSpellInfo()->getId());//Marksmanship
+    pSpell->getPlayerCaster()->ClearCooldownsOnLine(51, pSpell->getSpellInfo()->getId());//Survival
     return true;
 }
 
 bool MastersCall(uint8_t effectIndex, Spell* pSpell)
 {
-    Player* caster = pSpell->p_caster;
+    Player* caster = pSpell->getPlayerCaster();
 
     if (caster == NULL)
         return true;

@@ -30,7 +30,7 @@ namespace AscEmu::Packets
         SmsgResurrectRequest(uint64_t casterGuid, std::string casterName, uint8_t isSicknessAffected, uint8_t overrideTimer = 0, uint32_t spellId = 0) :
             ManagedPacket(SMSG_RESURRECT_REQUEST, 8 + 4 + casterName.size() + 1 + 1 + 1),
             casterGuid(casterGuid),
-            stringSize(casterName.size() + 1),
+            stringSize(static_cast<uint32_t>(casterName.size() + 1)),
             casterName(casterName),
             isSicknessAffected(isSicknessAffected),
             overrideTimer(overrideTimer),

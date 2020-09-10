@@ -824,7 +824,7 @@ void LootRoll::PlayerRolled(Player* player, uint8 choice)
     if (m_NeedRolls.find(player->getGuidLow()) != m_NeedRolls.end() || m_GreedRolls.find(player->getGuidLow()) != m_GreedRolls.end())
         return; // don't allow cheaters
 
-    int roll = Util::getRandomUInt(99) + 1;
+    uint8_t roll = Util::getRandomUInt(99) + 1;
     uint8_t rollType = choice;
 
     if (choice == NEED)

@@ -48,20 +48,20 @@ bool SkyShatterRegalia(uint8_t /*effectIndex*/, Spell* s)
     // Shaman - Skyshatter Regalia - Two Piece Bonus
     // it checks for earth, air, water, fire totems and triggers Totemic Mastery spell 38437.
 
-    if (!s->p_caster)
+    if (!s->getPlayerCaster())
         return false;
 
-    if (s->p_caster->summonhandler.HasSummonInSlot(0) &&
-        s->p_caster->summonhandler.HasSummonInSlot(1) &&
-        s->p_caster->summonhandler.HasSummonInSlot(2) &&
-        s->p_caster->summonhandler.HasSummonInSlot(3))
+    if (s->getPlayerCaster()->summonhandler.HasSummonInSlot(0) &&
+        s->getPlayerCaster()->summonhandler.HasSummonInSlot(1) &&
+        s->getPlayerCaster()->summonhandler.HasSummonInSlot(2) &&
+        s->getPlayerCaster()->summonhandler.HasSummonInSlot(3))
     {
-        Aura* aur = sSpellMgr.newAura(sSpellMgr.getSpellInfo(38437), 5000, s->p_caster, s->p_caster, true);
+        Aura* aur = sSpellMgr.newAura(sSpellMgr.getSpellInfo(38437), 5000, s->getPlayerCaster(), s->getPlayerCaster(), true);
 
         for (uint8_t j = 0; j < 3; j++)
             aur->addAuraEffect(static_cast<AuraEffect>(aur->getSpellInfo()->getEffectRadiusIndex(j)), aur->getSpellInfo()->getEffectBasePoints(j) + 1, aur->getSpellInfo()->getEffectMiscValue(j), j);
 
-        s->p_caster->addAura(aur);
+        s->getPlayerCaster()->addAura(aur);
     }
 
     return true;

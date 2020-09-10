@@ -2484,7 +2484,7 @@ void Player::setTalentPointsFromQuests(uint32_t talentPoints)
     m_talentPointsFromQuests = talentPoints;
 }
 
-void Player::smsg_TalentsInfo(bool SendPetTalents)
+void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
 {
     // TODO: classic and tbc
 #if VERSION_STRING >= WotLK
@@ -2525,7 +2525,7 @@ void Player::smsg_TalentsInfo(bool SendPetTalents)
 
             // What kind of glyphs player has
             data << uint8_t(GLYPHS_COUNT);
-            for (auto i = 0; i < GLYPHS_COUNT; ++i)
+            for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
             {
                 data << uint16_t(GetGlyph(specId, i));
             }
@@ -2535,7 +2535,7 @@ void Player::smsg_TalentsInfo(bool SendPetTalents)
 #endif
 }
 
-void Player::activateTalentSpec(uint8_t specId)
+void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
 {
 #ifndef FT_DUAL_SPEC
     return;
@@ -2613,7 +2613,7 @@ void Player::setActionButton(uint8_t button, uint32_t action, uint8_t type, uint
     getActiveSpec().mActions[button].Type = type;
 }
 
-void Player::sendActionBars(bool clearBars)
+void Player::sendActionBars([[maybe_unused]]bool clearBars)
 {
 #if VERSION_STRING < Mop
     WorldPacket data(SMSG_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
@@ -2858,7 +2858,7 @@ bool Player::isGMFlagSet()
     return hasPlayerFlags(PLAYER_FLAG_GM);
 }
 
-void Player::sendMovie(uint32_t movieId)
+void Player::sendMovie([[maybe_unused]]uint32_t movieId)
 {
 #if VERSION_STRING > TBC
     m_session->SendPacket(SmsgTriggerMovie(movieId).serialise().get());

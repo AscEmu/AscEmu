@@ -24,10 +24,10 @@
 
 bool Cold_Snap(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
-    pSpell->p_caster->ClearCooldownsOnLine(6, pSpell->getSpellInfo()->getId());
+    pSpell->getPlayerCaster()->ClearCooldownsOnLine(6, pSpell->getSpellInfo()->getId());
     return true;
 }
 
@@ -61,7 +61,7 @@ bool HotStreak(uint8_t effectIndex, Aura* pAura, bool apply)
 
 bool SummonWaterElemental(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Unit* caster = pSpell->u_caster;
+    Unit* caster = pSpell->getUnitCaster();
     if (caster == NULL)
         return true;
 

@@ -61,7 +61,7 @@ enum PetCommands
     PET_ACTION_CASTING  = 4
 };
 
-enum PetActionFeedback
+enum PetActionFeedback : uint8_t
 {
     PET_FEEDBACK_NONE,
     PET_FEEDBACK_PET_DEAD,
