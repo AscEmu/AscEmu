@@ -48,7 +48,7 @@ class SERVER_DECL OpcodeTables
                 case Mop:
                     return 4;
                 default:
-                    break;
+                    return 0;
             }
         }
 
