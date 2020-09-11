@@ -167,6 +167,7 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
     {
         m_auraEffects[i].mAuraEffect = SPELL_AURA_NONE;
         m_auraEffects[i].mDamage = 0;
+        m_auraEffects[i].mBaseDamage = 0;
         m_auraEffects[i].mFixedDamage = 0;
         m_auraEffects[i].miscValue = 0;
         m_auraEffects[i].mAmplitude = 0;
@@ -181,12 +182,16 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
         m_originalDuration = duration;
 
     _calculateSpellPowerBonus();
+    _calculateAttackPowerBonus();
     _calculateSpellHaste();
     _calculateCritChance();
 
     // Set duration after haste calculation
     setMaxDuration(static_cast<int32_t>(m_originalDuration * m_spellHaste));
     setTimeLeft(getMaxDuration());
+
+    // Call aura script hook
+    sScriptMgr.callScriptedAuraOnCreate(this);
 
     // MIT End
     // APGL Start
@@ -1388,8 +1393,8 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
             if (buff)
             {
                 // Spell Overkill - in stealth and 20 seconds after stealth +30% energy regeneration - -1 duration => hacky infinity
-                m_target->SetAurDuration(58427, static_cast<uint32_t>(-1));
-                m_target->ModVisualAuraStackCount(buff, 0);
+                buff->setMaxDuration(-1);
+                buff->refresh();
             }
             else
                 m_target->castSpell(m_target, 58427, true);
@@ -1639,10 +1644,10 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                         if (tmp_duration != 0)
                         {
                             m_target->m_auras[x]->setTimeLeft(tmp_duration);
+                            m_target->m_auras[x]->refresh();
 
                             sEventMgr.ModifyEventTimeLeft(m_target->m_auras[x], EVENT_AURA_REMOVE, tmp_duration);
-                            m_target->ModVisualAuraStackCount(m_target->m_auras[x], 0);
-                            sEventMgr.AddEvent(m_target->m_auras[x], &Aura::removeAura, EVENT_AURA_REMOVE, tmp_duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
+                            sEventMgr.AddEvent(m_target->m_auras[x], &Aura::removeAura, AURA_REMOVE_ON_EXPIRE, EVENT_AURA_REMOVE, tmp_duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
                         }
                     }
                 }
@@ -3449,7 +3454,7 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
                     Unit* u = static_cast<Unit*>(itr);
                     if (isFeignDeathResisted(p_target->getLevel(), u->getLevel()))
                     {
-                        sEventMgr.AddEvent(this, &Aura::removeAura, EVENT_AURA_REMOVE, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
+                        removeAura();
                         return;
                     }
 

@@ -119,7 +119,7 @@ public:
 
 bool PreparationForBattleEffect(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pCaster = pSpell->p_caster;
+    Player* pCaster = pSpell->getPlayerCaster();
     if (pCaster == nullptr)
         return false;
 

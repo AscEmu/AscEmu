@@ -197,9 +197,11 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32_t time)
 
         if (len >= traveledLen)
         {
-            float x = (itr->second->x - nx) * (traveledLen / len) + nx;
-            float y = (itr->second->y - ny) * (traveledLen / len) + ny;
-            float z = (itr->second->z - nz) * (traveledLen / len) + nz;
+            // todo: variables are initialized but not referenced -Appled
+
+            //float x = (itr->second->x - nx) * (traveledLen / len) + nx;
+            //float y = (itr->second->y - ny) * (traveledLen / len) + ny;
+            //float z = (itr->second->z - nz) * (traveledLen / len) + nz;
             break;
         }
 

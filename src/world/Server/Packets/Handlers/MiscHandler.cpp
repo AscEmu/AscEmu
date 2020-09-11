@@ -2175,7 +2175,7 @@ void WorldSession::sendClientCacheVersion(uint32 version)
 
 void WorldSession::sendAccountDataTimes(uint32 mask)
 {
-    SendPacket(SmsgAccountDataTimes(UNIXTIME, 1, mask, NUM_ACCOUNT_DATA_TYPES).serialise().get());
+    SendPacket(SmsgAccountDataTimes(static_cast<uint32_t>(UNIXTIME), 1, mask, NUM_ACCOUNT_DATA_TYPES).serialise().get());
 }
 
 void WorldSession::sendMOTD()

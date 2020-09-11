@@ -1595,7 +1595,7 @@ void Pet::WipeTalents()
     SendSpellsToOwner();
 }
 
-void Pet::RemoveSpell(SpellInfo const* sp, bool showUnlearnSpell)
+void Pet::RemoveSpell(SpellInfo const* sp, [[maybe_unused]]bool showUnlearnSpell)
 {
     mSpells.erase(sp);
     std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(sp->getId());

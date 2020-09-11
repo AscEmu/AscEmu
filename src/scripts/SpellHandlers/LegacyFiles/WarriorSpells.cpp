@@ -25,12 +25,12 @@
 
 bool Execute(uint8_t effectIndex, Spell* pSpell)
 {
-    if (pSpell->p_caster == NULL || pSpell->GetUnitTarget() == NULL)
+    if (pSpell->getPlayerCaster() == NULL || pSpell->GetUnitTarget() == NULL)
     {
         return true;
     }
 
-    Player* Caster = pSpell->p_caster;
+    Player* Caster = pSpell->getPlayerCaster();
     Unit* Target = pSpell->GetUnitTarget();
 
     uint32_t rage = Caster->getPower(POWER_TYPE_RAGE);
@@ -64,12 +64,12 @@ bool Execute(uint8_t effectIndex, Spell* pSpell)
 
 bool Vigilance(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
     {
         return true;
     }
 
-    pSpell->p_caster->ClearCooldownForSpell(355);   // Taunt
+    pSpell->getPlayerCaster()->ClearCooldownForSpell(355);   // Taunt
 
     return true;
 }
@@ -88,7 +88,7 @@ bool DamageShield(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
 bool HeroicFury(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* p_caster = s->p_caster;
+    Player* p_caster = s->getPlayerCaster();
 
     if (!p_caster)
     {
@@ -122,15 +122,15 @@ bool HeroicFury(uint8_t /*effectIndex*/, Spell* s)
 
 bool Charge(uint8_t effectIndex, Spell* s)
 {
-    if (!s->u_caster)
+    if (!s->getUnitCaster())
     {
         return false;
     }
 
     uint32_t rage_to_gen = s->getSpellInfo()->getEffectBasePoints(effectIndex) + 1;
-    if (s->p_caster)
+    if (s->getPlayerCaster())
     {
-        for (std::set<uint32_t>::iterator itr = s->p_caster->mSpells.begin(); itr != s->p_caster->mSpells.end(); ++itr)
+        for (std::set<uint32_t>::iterator itr = s->getPlayerCaster()->mSpells.begin(); itr != s->getPlayerCaster()->mSpells.end(); ++itr)
         {
             if (*itr == 12697)
             {
@@ -145,7 +145,7 @@ bool Charge(uint8_t effectIndex, Spell* s)
     }
 
     // Add the rage to the caster
-    s->u_caster->modPower(POWER_TYPE_RAGE, rage_to_gen);
+    s->getUnitCaster()->modPower(POWER_TYPE_RAGE, rage_to_gen);
 
     return true;
 }
@@ -162,7 +162,7 @@ bool LastStand(uint8_t /*effectIndex*/, Spell* s)
     SpellCastTargets tgt(playerTarget->getGuid());
 
     SpellInfo const* inf = sSpellMgr.getSpellInfo(12976);
-    Spell* spe = sSpellMgr.newSpell(s->u_caster, inf, true, NULL);
+    Spell* spe = sSpellMgr.newSpell(s->getUnitCaster(), inf, true, NULL);
     spe->prepare(&tgt);
 
     return true;

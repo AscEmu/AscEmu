@@ -661,7 +661,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Aura
     void addAura(Aura* aur);
-    uint8_t findVisualSlotForAura(uint32_t spellId, bool isPositive) const;
+    uint8_t findVisualSlotForAura(bool isPositive) const;
 
     Aura* getAuraWithId(uint32_t spell_id);
     Aura* getAuraWithId(uint32_t* auraId);
@@ -1345,11 +1345,6 @@ public:
 
     DynamicObject* dynObj;
 
-    //! returns: aura stack count
-    uint8 m_auraStackCount[MAX_NEGATIVE_VISUAL_AURAS_END];
-
-    void ModVisualAuraStackCount(Aura* aur, int32 count);
-    uint8 FindVisualSlot(uint32 SpellId, bool IsPos);
     uint32 m_auravisuals[MAX_NEGATIVE_VISUAL_AURAS_END];
 
     bool bProcInUse;

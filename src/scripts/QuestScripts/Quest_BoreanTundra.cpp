@@ -616,7 +616,7 @@ public:
 
 bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 

@@ -296,7 +296,7 @@ Player::Player(uint32 guid)
     m_cache = new PlayerCache;
     m_cache->SetUInt32Value(CACHE_PLAYER_LOWGUID, guid);
     sObjectMgr.AddPlayerCache(guid, m_cache);
-    int i, j;
+    int i;
 
     m_H_regenTimer = 0;
     //////////////////////////////////////////////////////////////////////////
@@ -2844,7 +2844,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     for (uint32 z = 0; z < NUM_CHARTER_TYPES; ++z)
         m_charters[z] = sObjectMgr.GetCharterByGuid(getGuid(), (CharterTypes)z);
 
-    for (uint16 z = 0; z < NUM_ARENA_TEAM_TYPES; ++z)
+    for (uint8_t z = 0; z < NUM_ARENA_TEAM_TYPES; ++z)
     {
         m_arenaTeams[z] = sObjectMgr.GetArenaTeamByGuid(getGuidLow(), z);
         if (m_arenaTeams[z] != nullptr)
@@ -3590,7 +3590,6 @@ void Player::OnPushToWorld()
 
     if (m_FirstLogin)
     {
-        uint8 my_class = getClass();
         uint8 start_level = 1;
 
         start_level = static_cast<uint8>(worldConfig.player.playerStartingLevel);
@@ -4585,7 +4584,7 @@ void Player::SpawnCorpseBones()
 
 void Player::DeathDurabilityLoss(double percent)
 {
-    SendPacket(SmsgDurabilityDamageDeath(percent).serialise().get());
+    SendPacket(SmsgDurabilityDamageDeath(static_cast<uint32_t>(percent)).serialise().get());
 
     for (uint8 i = 0; i < EQUIPMENT_SLOT_END; i++)
     {
@@ -5449,7 +5448,7 @@ void Player::SetDrunkValue(uint16 newDrunkenValue, uint32 itemId)
     uint32 oldDrunkenState = GetDrunkenstateByValue(m_drunk);
 
     m_drunk = newDrunkenValue;
-    setDrunkValue(m_drunk);
+    setDrunkValue(static_cast<uint8_t>(m_drunk));
 
     uint32 newDrunkenState = GetDrunkenstateByValue(m_drunk);
 
@@ -10221,7 +10220,7 @@ void Player::SetKnownTitle(RankTitles title, bool set)
     const uint64_t current = getKnownTitles(index);
 
     if (set)
-        setKnownTitles(index, current | 1 << (title % 32));
+        setKnownTitles(index, current | 1ULL << static_cast<uint64_t>((title % 32)));
     else
         setKnownTitles(index, current & ~1 << (title % 32));
 

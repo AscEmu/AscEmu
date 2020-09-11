@@ -20,7 +20,7 @@ namespace AscEmu::Packets
 
         SmsgSetForceReactions(const std::map<uint32_t, uint32_t>& reactionMap) :
             ManagedPacket(SMSG_SET_FORCED_REACTIONS, 4 + reactionMap.size() * 2 * 4),
-            mapSize(reactionMap.size()),
+            mapSize(static_cast<uint32_t>(reactionMap.size())),
             reactionMap(reactionMap)
         {
         }

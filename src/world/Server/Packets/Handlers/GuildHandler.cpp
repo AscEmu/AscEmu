@@ -658,7 +658,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
     }
     else
     {
-        uint16_t type;
+        uint8_t type;
 
         switch (charter->CharterType)
         {

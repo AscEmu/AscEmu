@@ -33,7 +33,7 @@ namespace AscEmu::Packets
             unknown(1),
             channelName(channelName),
             members(members),
-            membersCount(members.size())
+            membersCount(static_cast<uint32_t>(members.size()))
         {
         }
 

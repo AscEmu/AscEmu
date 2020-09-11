@@ -368,7 +368,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
                 uint32 count = item->buildCreateUpdateBlockForPlayer(&buf, m_pOwner);
                 m_pOwner->getUpdateMgr().pushCreationData(&buf, count);
             }
-            m_pOwner->setInventorySlotItemGuid(slot, item->getGuid());
+            m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(slot), item->getGuid());
         }
         else
         {
@@ -486,7 +486,7 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
         {
             pItem->m_isDirty = true;
 
-            m_pOwner->setInventorySlotItemGuid(slot, 0);
+            m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(slot), 0);
 
             if (slot < EQUIPMENT_SLOT_END)
             {
@@ -646,7 +646,7 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
         {
             pItem->m_isDirty = true;
 
-            m_pOwner->setInventorySlotItemGuid(slot, 0);
+            m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(slot), 0);
 
             if (slot < EQUIPMENT_SLOT_END)
             {
@@ -2817,7 +2817,7 @@ Item* ItemInterface::GetItemByGUID(uint64 Guid)
 
 void ItemInterface::EmptyBuyBack()
 {
-    for (uint32 j = 0; j < MAX_BUYBACK_SLOT; ++j)
+    for (uint8_t j = 0; j < MAX_BUYBACK_SLOT; ++j)
     {
         if (m_pBuyBack[j] != nullptr)
         {
@@ -2909,7 +2909,7 @@ void ItemInterface::AddBuyBackItem(Item* it, uint32 price)
 
 void ItemInterface::RemoveBuyBackItem(uint32 index)
 {
-    uint32_t j = 0;
+    uint8_t j = 0;
     for (j = index; j < MAX_BUYBACK_SLOT - 1; ++j)
     {
         if (m_pOwner->getVendorBuybackSlot(j) != 0)

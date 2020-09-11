@@ -63,7 +63,7 @@ AuctionPacketList Auction::getListMember()
     auctionList.outBid = (highestBid ? getAuctionOutBid() : 0);
     auctionList.buyoutPrice = buyoutPrice;
 
-    auctionList.expireTime = ((expireTime - UNIXTIME) * 1000);
+    auctionList.expireTime = static_cast<uint32_t>(((expireTime - UNIXTIME) * 1000));
     auctionList.highestBidderGuid = highestBidderGuid;
     auctionList.highestBid = highestBid;
 
@@ -327,7 +327,7 @@ void AuctionHouse::sendOwnerListPacket(Player* player, WorldPacket* /*packet*/)
     }
     auctionLock.ReleaseReadLock();
 
-    player->SendPacket(SmsgAuctionOwnerListResult(auctionPacketList.size(), auctionPacketList, auctionPacketList.size()).serialise().get());
+    player->SendPacket(SmsgAuctionOwnerListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size())).serialise().get());
 }
 
 void AuctionHouse::updateOwner(uint32_t oldGuid, uint32_t newGuid)
@@ -366,7 +366,7 @@ void AuctionHouse::sendBidListPacket(Player* player, WorldPacket* /*packet*/)
     }
     auctionLock.ReleaseReadLock();
 
-    player->SendPacket(SmsgAuctionBidderListResult(auctionPacketList.size(), auctionPacketList, auctionPacketList.size(), 300).serialise().get());
+    player->SendPacket(SmsgAuctionBidderListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size()), 300).serialise().get());
 }
 
 void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
@@ -507,5 +507,5 @@ void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionL
     }
     auctionLock.ReleaseReadLock();
 
-    player->SendPacket(SmsgAuctionListResult(auctionPacketList.size(), auctionPacketList, auctionPacketList.size(), 300).serialise().get());
+    player->SendPacket(SmsgAuctionListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size()), 300).serialise().get());
 }

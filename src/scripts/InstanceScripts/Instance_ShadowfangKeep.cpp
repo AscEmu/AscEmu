@@ -1451,7 +1451,7 @@ class WorlfguardWorgAI : public CreatureAIScript
 // Spell entry: 6421
 bool ashrombeUnlockDummySpell(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Unit* target = pSpell->u_caster;
+    Unit* target = pSpell->getUnitCaster();
     if (!target)
     {
         return false;

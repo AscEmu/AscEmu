@@ -13,7 +13,7 @@ namespace Packets::Movement
     void SendMoveToPacket(Unit* pUnit)
     {
         auto spline = pUnit->m_movementManager.m_spline;
-        auto splineFlags = spline.GetSplineFlags();
+        [[maybe_unused]]auto splineFlags = spline.GetSplineFlags();
         auto midpoints = pUnit->m_movementManager.m_spline.GetMidPoints();
 
         WorldPacket data(SMSG_MONSTER_MOVE, 60);

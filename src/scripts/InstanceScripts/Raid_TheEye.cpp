@@ -321,7 +321,7 @@ class HighAstromancerSolarianAI : public CreatureAIScript
 
 bool Dummy_Solarian_WrathOfTheAstromancer(uint32_t /*pEffectIndex*/, Spell* pSpell)
 {
-    Unit* Caster = pSpell->u_caster;
+    Unit* Caster = pSpell->getUnitCaster();
     if (!Caster) return true;
 
     Unit* Target = Caster->GetAIInterface()->getNextTarget();

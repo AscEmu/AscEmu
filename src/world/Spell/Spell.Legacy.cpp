@@ -97,110 +97,17 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     chaindamage = 0;
     bDurSet = 0;
     damage = 0;
-    m_spellInfo_override = nullptr;
     bRadSet[0] = 0;
     bRadSet[1] = 0;
     bRadSet[2] = 0;
 
-    if ((info->getSpellDifficultyID() != 0) && (Caster->getObjectTypeId() != TYPEID_PLAYER) && (Caster->GetMapMgr() != nullptr) && (Caster->GetMapMgr()->pInstance != nullptr))
-    {
-        SpellInfo const* SpellDiffEntry = sSpellMgr.getSpellInfoByDifficulty(info->getSpellDifficultyID(), Caster->GetMapMgr()->iInstanceMode);
-        if (SpellDiffEntry != nullptr)
-            m_spellInfo = SpellDiffEntry;
-        else
-            m_spellInfo = info;
-    }
-    else
-        m_spellInfo = info;
-
-    m_spellInfo_override = nullptr;
-    m_caster = Caster;
-    duelSpell = false;
     m_DelayStep = 0;
 
-    switch (Caster->getObjectTypeId())
-    {
-        case TYPEID_PLAYER:
-        {
-            g_caster = nullptr;
-            i_caster = nullptr;
-            u_caster = static_cast<Unit*>(Caster);
-            p_caster = static_cast<Player*>(Caster);
-            if (p_caster->GetDuelState() == DUEL_STATE_STARTED)
-                duelSpell = true;
-
-#ifdef GM_Z_DEBUG_DIRECTLY
-            // cebernic added it
-            if (p_caster->GetSession() && p_caster->GetSession()->CanUseCommand('z') && p_caster->IsInWorld())
-                sChatHandler.BlueSystemMessage(p_caster->GetSession(), "[%sSystem%s] |rSpell::Spell: %s ID:%u,Category%u,CD:%u,DisType%u,Field4:%u,etA0=%u,etA1=%u,etA2=%u,etB0=%u,etB1=%u,etB2=%u", MSG_COLOR_WHITE, MSG_COLOR_LIGHTBLUE, MSG_COLOR_SUBWHITE,
-                info->getId(), info->Category, info->RecoveryTime, info->DispelType, info->castUI, info->EffectImplicitTargetA[0], info->EffectImplicitTargetA[1], info->EffectImplicitTargetA[2], info->EffectImplicitTargetB[0], info->EffectImplicitTargetB[1], info->EffectImplicitTargetB[2]);
-#endif
-
-        }
-        break;
-
-        case TYPEID_UNIT:
-        {
-            g_caster = nullptr;
-            i_caster = nullptr;
-            p_caster = nullptr;
-            u_caster = static_cast<Unit*>(Caster);
-            if (u_caster->isPet() && static_cast<Pet*>(u_caster)->getPlayerOwner() != nullptr && static_cast<Pet*>(u_caster)->getPlayerOwner()->GetDuelState() == DUEL_STATE_STARTED)
-                duelSpell = true;
-        }
-        break;
-
-        case TYPEID_ITEM:
-        case TYPEID_CONTAINER:
-        {
-            g_caster = nullptr;
-            u_caster = nullptr;
-            p_caster = nullptr;
-            i_caster = static_cast<Item*>(Caster);
-            if (i_caster->getOwner() && i_caster->getOwner()->GetDuelState() == DUEL_STATE_STARTED)
-                duelSpell = true;
-        }
-        break;
-
-        case TYPEID_GAMEOBJECT:
-        {
-            u_caster = nullptr;
-            p_caster = nullptr;
-            i_caster = nullptr;
-            g_caster = static_cast<GameObject*>(Caster);
-        }
-        break;
-
-        default:
-            LogDebugFlag(LF_SPELL, "[DEBUG][SPELL] Incompatible object type, please report this to the dev's");
-            break;
-    }
-    if (u_caster && getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_CAST_BY_CHARMER)
-    {
-        Unit* u = u_caster->GetMapMgrUnit(u_caster->getCharmedByGuid());
-        if (u)
-        {
-            u_caster = u;
-            if (u->isPlayer())
-                p_caster = static_cast<Player*>(u);
-        }
-    }
-
-    m_spellState = SPELL_STATE_NULL;
-
-    //TriggerSpellId = 0;
-    //TriggerSpellTarget = 0;
-    if (getSpellInfo()->getAttributesExD() & ATTRIBUTESEXD_TRIGGERED)
-        triggered = true;
-    m_triggeredSpell = triggered;
     m_AreaAura = false;
-
-    m_triggeredByAura = aur;
 
     damageToHit = 0;
     castedItemId = 0;
 
-    m_usesMana = false;
     m_Spell_Failed = false;
     hadEffect = false;
     bDurSet = false;
@@ -208,14 +115,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     bRadSet[1] = false;
     bRadSet[2] = false;
 
-    cancastresult = SPELL_CAST_SUCCESS;
-
     m_requiresCP = false;
-    unitTarget = nullptr;
-    itemTarget = nullptr;
-    gameObjTarget = nullptr;
-    playerTarget = nullptr;
-    corpseTarget = nullptr;
     targetConstraintCreature = nullptr;
     targetConstraintGameObject = nullptr;
     add_damage = 0;
@@ -223,18 +123,10 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     pSpellId = 0;
     m_cancelled = false;
     ProcedOnSpell = nullptr;
-    forced_basepoints[0] = forced_basepoints[1] = forced_basepoints[2] = 0;
     extra_cast_number = 0;
     m_isCasting = false;
     m_glyphslot = 0;
     m_charges = info->getProcCharges();
-
-    uniqueHittedTargets.clear();
-    missedTargets.clear();
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        m_effectTargets[i].clear();
-    }
 
     //create rune avail snapshot
     if (p_caster && p_caster->isClassDeathKnight())
@@ -252,6 +144,71 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
 
     // APGL End
     // MIT Start
+
+    m_spellInfo = info;
+
+    // Get spell difficulty
+    if (info->getSpellDifficultyID() != 0 && Caster->getObjectTypeId() != TYPEID_PLAYER && Caster->GetMapMgr() != nullptr && Caster->GetMapMgr()->pInstance != nullptr)
+    {
+        auto SpellDiffEntry = sSpellMgr.getSpellInfoByDifficulty(info->getSpellDifficultyID(), Caster->GetMapMgr()->iInstanceMode);
+        if (SpellDiffEntry != nullptr)
+            m_spellInfo = SpellDiffEntry;
+    }
+
+    // Initialize caster
+    m_caster = Caster;
+    switch (Caster->getObjectTypeId())
+    {
+        case TYPEID_PLAYER:
+            p_caster = dynamic_cast<Player*>(Caster);
+        // no break here
+        case TYPEID_UNIT:
+            u_caster = dynamic_cast<Unit*>(Caster);
+            if (u_caster->getPlayerOwner() != nullptr && u_caster->getPlayerOwner()->GetDuelState() == DUEL_STATE_STARTED)
+                duelSpell = true;
+            break;
+        case TYPEID_ITEM:
+        case TYPEID_CONTAINER:
+            i_caster = dynamic_cast<Item*>(Caster);
+            if (i_caster->getOwner() != nullptr && i_caster->getOwner()->GetDuelState() == DUEL_STATE_STARTED)
+                duelSpell = true;
+            break;
+        case TYPEID_GAMEOBJECT:
+            g_caster = dynamic_cast<GameObject*>(Caster);
+            if (g_caster->getPlayerOwner() != nullptr && g_caster->getPlayerOwner()->GetDuelState() == DUEL_STATE_STARTED)
+                duelSpell = true;
+            break;
+        default:
+            LogDebugFlag(LF_SPELL, "Spell constructor : Incompatible object type (type %u) for spell caster", Caster->getObjectTypeId());
+            break;
+    }
+
+    if (u_caster != nullptr && getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_CAST_BY_CHARMER)
+    {
+        auto unitCharmer = u_caster->GetMapMgrUnit(u_caster->getCharmedByGuid());
+        if (unitCharmer != nullptr)
+        {
+            u_caster = unitCharmer;
+            if (unitCharmer->isPlayer())
+                p_caster = dynamic_cast<Player*>(unitCharmer);
+        }
+    }
+
+    m_triggeredSpell = triggered;
+    m_triggeredByAura = aur;
+    if (getSpellInfo()->getAttributesExD() & ATTRIBUTESEXD_TRIGGERED)
+        m_triggeredSpell = true;
+
+    uniqueHittedTargets.clear();
+    missedTargets.clear();
+
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        forced_basepoints[i] = 0;
+        isEffectDamageStatic[i] = false;
+
+        m_effectTargets[i].clear();
+    }
 
     // Check if spell is reflectable
     if (getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_MAGIC && !getSpellInfo()->isPassive() &&
@@ -1855,6 +1812,11 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
     uint32 id = getSpellInfo()->getEffect(static_cast<uint8_t>(i));
 
     damage = CalculateEffect(i, unitTarget);
+    const auto scriptResult = sScriptMgr.callScriptedSpellDoCalculateEffect(this, static_cast<uint8_t>(i), &damage);
+
+    // If effect damage was recalculated in script, send static damage in effect handlers
+    // so for example spell power bonus won't get calculated twice
+    isEffectDamageStatic[i] = scriptResult == SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
 
 #ifdef GM_Z_DEBUG_DIRECTLY
     if (playerTarget && playerTarget->isPlayer() && playerTarget->IsInWorld())

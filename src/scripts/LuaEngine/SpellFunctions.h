@@ -162,8 +162,6 @@ LuaSpellEntry luaSpellVars[] =
     { "ai_target_type", 0, offsetof(SpellInfo, ai_target_type) },
     { "self_cast_only", 2, offsetof(SpellInfo, custom_self_cast_only) },
     { "apply_on_shapeshift_change", 2, offsetof(SpellInfo, custom_apply_on_shapeshift_change) },
-    { "is_melee_spell", 2, offsetof(SpellInfo, custom_is_melee_spell) },
-    { "is_ranged_spell", 2, offsetof(SpellInfo, custom_is_ranged_spell) },
     { NULL, 0, 0 },
 };
 
@@ -186,19 +184,19 @@ namespace LuaSpell
         if (!sp)
             return 0;
 
-        if (sp->u_caster)  //unit caster
+        if (sp->getUnitCaster())  //unit caster
         {
-            PUSH_UNIT(L, sp->u_caster);
+            PUSH_UNIT(L, sp->getUnitCaster());
             return 1;
         }
-        else if (sp->g_caster)  //gameobject
+        else if (sp->getGameObjectCaster())  //gameobject
         {
-            PUSH_GO(L, sp->g_caster);
+            PUSH_GO(L, sp->getGameObjectCaster());
             return 1;
         }
-        else if (sp->i_caster)  //item
+        else if (sp->getItemCaster())  //item
         {
-            PUSH_ITEM(L, sp->i_caster);
+            PUSH_ITEM(L, sp->getItemCaster());
             return 1;
         }
         else
@@ -220,7 +218,7 @@ namespace LuaSpell
     {
         if (!sp)
             return 0;
-        lua_pushboolean(L, sp->duelSpell ? 1 : 0);
+        lua_pushboolean(L, sp->wasCastedinDuel() ? 1 : 0);
         return 1;
     }
 
@@ -249,9 +247,9 @@ namespace LuaSpell
 
     int Cancel(lua_State* /*L*/, Spell* sp)
     {
-        if (!sp || !sp->m_caster->IsInWorld())
+        if (!sp || !sp->getCaster()->IsInWorld())
             return 0;
-        sp->m_caster->interruptSpell(sp->getSpellInfo()->getId());
+        sp->getCaster()->interruptSpell(sp->getSpellInfo()->getId());
         return 0;
     }
 
@@ -282,19 +280,19 @@ namespace LuaSpell
 
     int GetTarget(lua_State* L, Spell* sp)
     {
-        if (!sp || !sp->m_caster->IsInWorld())
+        if (!sp || !sp->getCaster()->IsInWorld())
             RET_NIL()
 
             if (sp->m_targets.getUnitTarget())
             {
-                PUSH_UNIT(L, sp->m_caster->GetMapMgr()->GetUnit(sp->m_targets.getUnitTarget()));
+                PUSH_UNIT(L, sp->getCaster()->GetMapMgr()->GetUnit(sp->m_targets.getUnitTarget()));
                 return 1;
             }
             else if (sp->m_targets.getItemTarget())
             {
-                if (!sp->p_caster)
+                if (!sp->getPlayerCaster())
                     RET_NIL()
-                    PUSH_ITEM(L, sp->p_caster->getItemInterface()->GetItemByGUID(sp->m_targets.getItemTarget()));
+                    PUSH_ITEM(L, sp->getPlayerCaster()->getItemInterface()->GetItemByGUID(sp->m_targets.getItemTarget()));
                 return 1;
             }
             else
@@ -451,19 +449,19 @@ namespace LuaSpell
         switch (l.typeId)  //0: int, 1: char*, 2: bool, 3: float
         {
             case 0:
-                GET_SPELLVAR_INT(sp->getSpellInfo(), l.offset, subindex) = GET_SPELLVAR_INT(sp->m_spellInfo, l.offset, subindex);
+                GET_SPELLVAR_INT(sp->getSpellInfo(), l.offset, subindex) = GET_SPELLVAR_INT(sp->getSpellInfo(), l.offset, subindex);
                 lua_pushboolean(L, 1);
                 break;
             case 1:
-                GET_SPELLVAR_CHAR(sp->getSpellInfo(), l.offset, subindex) = GET_SPELLVAR_CHAR(sp->m_spellInfo, l.offset, subindex);
+                GET_SPELLVAR_CHAR(sp->getSpellInfo(), l.offset, subindex) = GET_SPELLVAR_CHAR(sp->getSpellInfo(), l.offset, subindex);
                 lua_pushboolean(L, 1);
                 break;
             case 2:
-                GET_SPELLVAR_BOOL(sp->getSpellInfo(), l.offset, subindex) = GET_SPELLVAR_BOOL(sp->m_spellInfo, l.offset, subindex);
+                GET_SPELLVAR_BOOL(sp->getSpellInfo(), l.offset, subindex) = GET_SPELLVAR_BOOL(sp->getSpellInfo(), l.offset, subindex);
                 lua_pushboolean(L, 1);
                 break;
             case 3:
-                GET_SPELLVAR_FLOAT(sp->getSpellInfo(), l.offset, subindex) = GET_SPELLVAR_FLOAT(sp->m_spellInfo, l.offset, subindex);
+                GET_SPELLVAR_FLOAT(sp->getSpellInfo(), l.offset, subindex) = GET_SPELLVAR_FLOAT(sp->getSpellInfo(), l.offset, subindex);
                 lua_pushboolean(L, 1);
                 break;
         }

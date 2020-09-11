@@ -52,58 +52,123 @@ ScriptMgr& ScriptMgr::getInstance()
 
 SpellCastResult ScriptMgr::callScriptedSpellCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) const
 {
-    if (spell->getSpellInfo()->spellScript == nullptr)
+    const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
+    if (spellScript == nullptr)
         return SPELL_CAST_SUCCESS;
 
-    return spell->getSpellInfo()->spellScript->onCanCast(spell, parameter1, parameter2);
+    return spellScript->onCanCast(spell, parameter1, parameter2);
 }
 
 void ScriptMgr::callScriptedSpellAtStartCasting(Spell* spell)
 {
-    if (spell->getSpellInfo()->spellScript == nullptr)
+    const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
+    if (spellScript == nullptr)
         return;
 
-    spell->getSpellInfo()->spellScript->doAtStartCasting(spell);
+    spellScript->doAtStartCasting(spell);
 }
 
 void ScriptMgr::callScriptedSpellFilterTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets)
 {
-    if (spell->getSpellInfo()->spellScript == nullptr)
+    const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
+    if (spellScript == nullptr)
         return;
 
-    spell->getSpellInfo()->spellScript->filterEffectTargets(spell, effectIndex, effectTargets);
+    spellScript->filterEffectTargets(spell, effectIndex, effectTargets);
 }
 
 void ScriptMgr::callScriptedSpellBeforeHit(Spell* spell, uint8_t effectIndex)
 {
-    if (spell->getSpellInfo()->spellScript == nullptr)
+    const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
+    if (spellScript == nullptr)
         return;
 
-    spell->getSpellInfo()->spellScript->doBeforeEffectHit(spell, effectIndex);
+    spellScript->doBeforeEffectHit(spell, effectIndex);
 }
 
 void ScriptMgr::callScriptedSpellAfterMiss(Spell* spell, Unit* unitTarget)
 {
-    if (spell->getSpellInfo()->spellScript == nullptr)
+    const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
+    if (spellScript == nullptr)
         return;
 
-    spell->getSpellInfo()->spellScript->doAfterSpellMissed(spell, unitTarget);
+    spellScript->doAfterSpellMissed(spell, unitTarget);
+}
+
+SpellScriptEffectDamage ScriptMgr::callScriptedSpellDoCalculateEffect(Spell* spell, uint8_t effectIndex, int32_t* damage) const
+{
+    const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
+    if (spellScript == nullptr)
+        return SpellScriptEffectDamage::DAMAGE_DEFAULT;
+
+    return spellScript->doCalculateEffect(spell, effectIndex, damage);
 }
 
 SpellScriptExecuteState ScriptMgr::callScriptedSpellBeforeSpellEffect(Spell* spell, uint32_t effectType, uint8_t effectId) const
 {
-    if (!spell->getSpellInfo()->spellScript)
+    const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
+    if (spellScript == nullptr)
         return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 
-    return spell->getSpellInfo()->spellScript->beforeSpellEffect(spell, effectType, effectId);
+    return spellScript->beforeSpellEffect(spell, effectType, effectId);
 }
 
 void ScriptMgr::callScriptedSpellAfterSpellEffect(Spell* spell, uint32_t effectType, uint8_t effectId)
 {
-    if (!spell->getSpellInfo()->spellScript)
+    const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
+    if (spellScript == nullptr)
         return;
 
-    spell->getSpellInfo()->spellScript->afterSpellEffect(spell, effectType, effectId);
+    spellScript->afterSpellEffect(spell, effectType, effectId);
+}
+
+void ScriptMgr::callScriptedAuraOnCreate(Aura* aur)
+{
+    const auto auraScript = getAuraScript(aur->getSpellId());
+    if (auraScript == nullptr)
+        return;
+
+    auraScript->onAuraCreate(aur);
+}
+
+void ScriptMgr::callScriptedAuraOnRemove(Aura* aur, AuraRemoveMode mode)
+{
+    const auto auraScript = getAuraScript(aur->getSpellId());
+    if (auraScript == nullptr)
+        return;
+
+    auraScript->onAuraRemove(aur, mode);
+}
+
+SpellScriptExecuteState ScriptMgr::callScriptedAuraOnPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, int32_t* damage) const
+{
+    const auto auraScript = getAuraScript(aur->getSpellId());
+    if (auraScript == nullptr)
+        return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
+
+    return auraScript->onAuraPeriodicTick(aur, aurEff, damage);
+}
+
+SpellScript* ScriptMgr::getSpellScript(uint32_t spellId) const
+{
+    for (const auto& itr : _spellscripts)
+    {
+        if (itr.first == spellId)
+            return itr.second;
+    }
+
+    return nullptr;
+}
+
+AuraScript* ScriptMgr::getAuraScript(uint32_t spellId) const
+{
+    for (const auto& itr : _auraScripts)
+    {
+        if (itr.first == spellId)
+            return itr.second;
+    }
+
+    return nullptr;
 }
 
 void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss)
@@ -115,14 +180,31 @@ void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss)
         return;
     }
 
-    if (spellInfo->spellScript != nullptr)
+    if (_spellscripts.find(spellId) != _spellscripts.end())
     {
         LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for spell id %u but this spell has already one.", spellId);
         return;
     }
 
-    const_cast<SpellInfo*>(spellInfo)->spellScript = ss;
-    _spellscripts.insert(ss);
+    _spellscripts[spellId] = ss;
+}
+
+void ScriptMgr::register_aura_script(uint32_t spellId, AuraScript* as)
+{
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    if (spellInfo == nullptr)
+    {
+        LogError("ScriptMgr tried to register a script for aura id %u but aura does not exist!", spellId);
+        return;
+    }
+
+    if (_auraScripts.find(spellId) != _auraScripts.end())
+    {
+        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for aura id %u but this aura has already one.", spellId);
+        return;
+    }
+
+    _auraScripts[spellId] = as;
 }
 
 // MIT End
@@ -259,9 +341,13 @@ void ScriptMgr::UnloadScripts()
         delete *itr;
     _questscripts.clear();
 
-    for (auto itr : _spellscripts)
-        delete itr;
+    for (auto& itr : _spellscripts)
+        delete itr.second;
     _spellscripts.clear();
+
+    for (auto& itr : _auraScripts)
+        delete itr.second;
+    _auraScripts.clear();
 
     UnloadScriptEngines();
 

@@ -84,14 +84,14 @@ bool MoltenShields(uint8_t /*effectIndex*/, Spell* s)
 
 bool Cannibalize(uint8_t effectIndex, Spell* s)
 {
-    if (!s->p_caster)
+    if (!s->getPlayerCaster())
         return false;
 
     bool check = false;
     float rad = s->GetRadius(effectIndex);
     rad *= rad;
 
-    for (const auto& itr : s->p_caster->getInRangeObjectsSet())
+    for (const auto& itr : s->getPlayerCaster()->getInRangeObjectsSet())
     {
         if (itr && itr->isCreature())
         {
@@ -100,7 +100,7 @@ bool Cannibalize(uint8_t effectIndex, Spell* s)
                 CreatureProperties const* cn = static_cast<Creature*>(itr)->GetCreatureProperties();
                 if (cn->Type == UNIT_TYPE_HUMANOID || cn->Type == UNIT_TYPE_UNDEAD)
                 {
-                    if (s->p_caster->GetDistance2dSq(itr) < rad)
+                    if (s->getPlayerCaster()->GetDistance2dSq(itr) < rad)
                     {
                         check = true;
                         break;
@@ -112,10 +112,10 @@ bool Cannibalize(uint8_t effectIndex, Spell* s)
 
     if (check)
     {
-        s->p_caster->cannibalize = true;
-        s->p_caster->cannibalizeCount = 0;
-        sEventMgr.AddEvent(s->p_caster, &Player::EventCannibalize, uint32_t(7), EVENT_CANNIBALIZE, 2000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        s->p_caster->setEmoteState(EMOTE_STATE_CANNIBALIZE);
+        s->getPlayerCaster()->cannibalize = true;
+        s->getPlayerCaster()->cannibalizeCount = 0;
+        sEventMgr.AddEvent(s->getPlayerCaster(), &Player::EventCannibalize, uint32_t(7), EVENT_CANNIBALIZE, 2000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        s->getPlayerCaster()->setEmoteState(EMOTE_STATE_CANNIBALIZE);
     }
 
     return true;
@@ -123,25 +123,25 @@ bool Cannibalize(uint8_t effectIndex, Spell* s)
 
 bool ArcaniteDragonLing(uint8_t /*effectIndex*/, Spell* s)
 {
-    s->u_caster->castSpell(s->u_caster, 19804, true);
+    s->getUnitCaster()->castSpell(s->getUnitCaster(), 19804, true);
     return true;
 }
 
 bool MithrilMechanicalDragonLing(uint8_t /*effectIndex*/, Spell* s)
 {
-    s->u_caster->castSpell(s->u_caster, 12749, true);
+    s->getUnitCaster()->castSpell(s->getUnitCaster(), 12749, true);
     return true;
 }
 
 bool MechanicalDragonLing(uint8_t /*effectIndex*/, Spell* s)
 {
-    s->u_caster->castSpell(s->u_caster, 4073, true);
+    s->getUnitCaster()->castSpell(s->getUnitCaster(), 4073, true);
     return true;
 }
 
 bool GnomishBattleChicken(uint8_t /*effectIndex*/, Spell* s)
 {
-    s->u_caster->castSpell(s->u_caster, 13166, true);
+    s->getUnitCaster()->castSpell(s->getUnitCaster(), 13166, true);
     return true;
 }
 
@@ -154,7 +154,7 @@ bool GiftOfLife(uint8_t /*effectIndex*/, Spell* s)
 
     SpellCastTargets tgt(playerTarget->getGuid());
     SpellInfo const* inf = sSpellMgr.getSpellInfo(23782);
-    Spell* spe = sSpellMgr.newSpell(s->u_caster, inf, true, NULL);
+    Spell* spe = sSpellMgr.newSpell(s->getUnitCaster(), inf, true, NULL);
     spe->prepare(&tgt);
 
     return true;
@@ -221,7 +221,7 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
                             {
                                 if (glyph_properties->Type == glyphType)
                                 {
-                                    if (!s->p_caster->HasSpell(skill_line_ability->spell))
+                                    if (!s->getPlayerCaster()->HasSpell(skill_line_ability->spell))
                                     {
                                         discoverableGlyphs.push_back(skill_line_ability->spell);
                                     }
@@ -237,7 +237,7 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
         if (discoverableGlyphs.size() > 0)
         {
             uint32_t newGlyph = discoverableGlyphs.at(Util::getRandomUInt(static_cast<uint32_t>(discoverableGlyphs.size() - 1)));
-            s->p_caster->addSpell(newGlyph);
+            s->getPlayerCaster()->addSpell(newGlyph);
         }
     }
 
@@ -360,12 +360,12 @@ bool EatenRecently(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
 bool Temper(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->u_caster == NULL)
+    if (pSpell->getUnitCaster() == NULL)
         return true;
 
-    Unit* pHated = pSpell->u_caster->GetAIInterface()->GetMostHated();
+    Unit* pHated = pSpell->getUnitCaster()->GetAIInterface()->GetMostHated();
 
-    MapScriptInterface* pMap = pSpell->u_caster->GetMapMgr()->GetInterface();
+    MapScriptInterface* pMap = pSpell->getUnitCaster()->GetMapMgr()->GetInterface();
     Creature* pCreature1 = pMap->SpawnCreature(28695, 1335.296265f, -89.237503f, 56.717800f, 1.994538f, true, true, 0, 0, 1);
     if (pCreature1)
         pCreature1->GetAIInterface()->AttackReaction(pHated, 1);
@@ -381,16 +381,16 @@ bool Temper(uint8_t /*effectIndex*/, Spell* pSpell)
 //Chaos blast dummy effect
 bool ChaosBlast(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->u_caster == NULL)
+    if (pSpell->getUnitCaster() == NULL)
         return true;
 
-    pSpell->u_caster->castSpell(pSpell->GetUnitTarget(), 37675, true);
+    pSpell->getUnitCaster()->castSpell(pSpell->GetUnitTarget(), 37675, true);
     return true;
 }
 
 bool Dummy_Solarian_WrathOfTheAstromancer(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Unit* Caster = pSpell->u_caster;
+    Unit* Caster = pSpell->getUnitCaster();
     if (!Caster)
         return true;
 
@@ -409,10 +409,10 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint8_t /*effectIndex*/, Spell* pSpell
 
 bool PreparationForBattle(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == NULL)
+    if (pSpell->getPlayerCaster() == NULL)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(12842, 0, 0);
 
@@ -421,10 +421,10 @@ bool PreparationForBattle(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool CrystalSpikes(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->u_caster == NULL)
+    if (pSpell->getUnitCaster() == NULL)
         return true;
 
-    Unit* pCaster = pSpell->u_caster;
+    Unit* pCaster = pSpell->getUnitCaster();
 
     for (uint8_t i = 1; i < 6; ++i)
     {
@@ -459,10 +459,10 @@ bool CrystalSpikes(uint8_t /*effectIndex*/, Spell* pSpell)
 ////////////////////////////////////////////////////////////////
 bool ListeningToMusicParent(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == NULL)
+    if (s->getPlayerCaster() == NULL)
         return true;
 
-    s->p_caster->castSpell(s->p_caster, 50493, true);
+    s->getPlayerCaster()->castSpell(s->getPlayerCaster(), 50493, true);
 
     return true;
 }
@@ -484,7 +484,7 @@ bool ListeningToMusicParent(uint8_t /*effectIndex*/, Spell* s)
 ////////////////////////////////////////////////////////////////
 bool TeleportToCoordinates(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == nullptr)
+    if (s->getPlayerCaster() == nullptr)
         return true;
 
     TeleportCoords const* teleport_coord = sMySQLStore.getTeleportCoord(s->getSpellInfo()->getId());
@@ -494,7 +494,7 @@ bool TeleportToCoordinates(uint8_t /*effectIndex*/, Spell* s)
         return true;
     }
 
-    s->HandleTeleport(teleport_coord->x, teleport_coord->y, teleport_coord->z, teleport_coord->mapId, s->p_caster);
+    s->HandleTeleport(teleport_coord->x, teleport_coord->y, teleport_coord->z, teleport_coord->mapId, s->getPlayerCaster());
     return true;
 }
 

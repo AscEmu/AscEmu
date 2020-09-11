@@ -1448,13 +1448,13 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
 
     if (getSpellInfo()->getSpeed() > 0 && m_triggeredSpell == false)
     {
-        m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), dmg, effectIndex, pSpellId == 0, static_damage);
+        m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), dmg, effectIndex, pSpellId == 0, isEffectDamageStatic[effectIndex]);
     }
     else
     {
         if (GetType() == SPELL_DMG_TYPE_MAGIC)
         {
-            m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), dmg, effectIndex, !m_triggeredSpell, static_damage);
+            m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), dmg, effectIndex, !m_triggeredSpell, isEffectDamageStatic[effectIndex]);
         }
         else
         {
@@ -3947,7 +3947,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
 
                     dispelledSpells.push_back(aursp->getId());
 
-                    unitTarget->RemoveAura(aur);
+                    aur->removeAura(AURA_REMOVE_ON_DISPEL);
                     AuraRemoved = true;
 
                     if (--damage <= 0)
@@ -3959,7 +3959,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
 
                     dispelledSpells.push_back(aursp->getId());
 
-                    unitTarget->removeAllAurasByIdForGuid(aursp->getId(), aur->getCasterGuid());
+                    aur->removeAura(AURA_REMOVE_ON_DISPEL);
                     AuraRemoved = true;
 
                     if (--damage <= 0)

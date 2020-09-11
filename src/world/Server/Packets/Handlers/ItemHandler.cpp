@@ -366,8 +366,8 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
 
                 Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
                 spell->extra_cast_number = srlPacket.castCount;
-                spell->i_caster = tmpItem;
-                uint8 result = spell->prepare(&targets);
+                spell->setItemCaster(tmpItem);
+                spell->prepare(&targets);
             }
         }
     }
@@ -412,7 +412,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
 
     Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
     spell->extra_cast_number = srlPacket.castCount;
-    spell->i_caster = tmpItem;
+    spell->setItemCaster(tmpItem);
     spell->m_glyphslot = srlPacket.glyphIndex;
 
     // Some spell cast packets include more data
@@ -1043,9 +1043,9 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
         for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
         {
             if (_player->getCurrentSpell(CurrentSpellType(i)) != nullptr
-                && _player->getCurrentSpell(CurrentSpellType(i))->i_caster == pItem)
+                && _player->getCurrentSpell(CurrentSpellType(i))->getItemCaster() == pItem)
             {
-                _player->getCurrentSpell(CurrentSpellType(i))->i_caster = nullptr;
+                _player->getCurrentSpell(CurrentSpellType(i))->setItemCaster(nullptr);
                 _player->interruptSpellWithSpellType(CurrentSpellType(i));
             }
         }

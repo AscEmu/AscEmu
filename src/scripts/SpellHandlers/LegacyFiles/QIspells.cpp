@@ -36,10 +36,10 @@ enum
 
 bool CleansingVial(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     if (pPlayer->HasQuest(9427) == false)
         return true;
@@ -53,10 +53,10 @@ bool CleansingVial(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool SummonCyclonian(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->u_caster == nullptr)
+    if (pSpell->getUnitCaster() == nullptr)
         return true;
 
-    Unit* pUnit = pSpell->u_caster;
+    Unit* pUnit = pSpell->getUnitCaster();
 
     LocationVector unitPos = pUnit->GetPosition();
 
@@ -71,10 +71,10 @@ bool SummonCyclonian(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool ElementalPowerExtractor(uint32_t /*i*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     Unit* pUnit = pSpell->GetUnitTarget();
     if (pUnit == nullptr || pUnit->isCreature() == false)
         return true;
@@ -90,10 +90,10 @@ bool ElementalPowerExtractor(uint32_t /*i*/, Spell* pSpell)
 
 bool SummonEkkorash(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
 
     LocationVector pos = plr->GetPosition();
 
@@ -103,10 +103,10 @@ bool SummonEkkorash(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool CallRexxar(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     LocationVector pos = pPlayer->GetPosition();
 
@@ -126,10 +126,10 @@ bool CallRexxar(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool LayWreath(uint8_t /*effectIndex*/, Spell* pSpell)  //Peace at Last quest
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     LocationVector pos = pPlayer->GetPosition();
 
@@ -147,10 +147,10 @@ bool LayWreath(uint8_t /*effectIndex*/, Spell* pSpell)  //Peace at Last quest
 
 bool ScrapReaver(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     LocationVector pos = pPlayer->GetPosition();
 
@@ -165,36 +165,36 @@ bool ScrapReaver(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool RuuanokClaw(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(21767, 3210.960693f, 5348.308594f, 144.537476f, 5.450696f, true, false, 0, 0);
+    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(21767, 3210.960693f, 5348.308594f, 144.537476f, 5.450696f, true, false, 0, 0);
     return true;
 }
 
 bool KarangsBanner(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     // Banner Aura
     pPlayer->castSpell(pPlayer, sSpellMgr.getSpellInfo(20746), true);
 
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(12921, 2231.710205f, -1543.603027f, 90.694946f, 4.700579f, true, false, 0, 0);
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(12921, 2232.534912f, -1556.983276f, 89.744415f, 1.527570f, true, false, 0, 0);
+    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(12921, 2231.710205f, -1543.603027f, 90.694946f, 4.700579f, true, false, 0, 0);
+    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(12921, 2232.534912f, -1556.983276f, 89.744415f, 1.527570f, true, false, 0, 0);
 
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(12757, 2239.357178f, -1546.649536f, 89.671097f, 3.530336f, true, false, 0, 0);
+    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(12757, 2239.357178f, -1546.649536f, 89.671097f, 3.530336f, true, false, 0, 0);
 
     return true;
 }
 
 bool ADireSituation(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster != nullptr)
+    if (pSpell->getPlayerCaster() != nullptr)
     {
-        pSpell->p_caster->AddQuestKill(10506, 0);
+        pSpell->getPlayerCaster()->AddQuestKill(10506, 0);
     }
 
     return true;
@@ -202,7 +202,7 @@ bool ADireSituation(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool FuryoftheDreghoodElders(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -228,7 +228,7 @@ bool FuryoftheDreghoodElders(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool ASpiritAlly(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -280,7 +280,7 @@ bool BalanceMustBePreserved(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
 bool BlessingofIncineratus(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -364,7 +364,7 @@ bool TagMurloc(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
 bool CookingPot(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -381,7 +381,7 @@ bool CookingPot(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool EvilDrawsNear(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -398,10 +398,10 @@ bool EvilDrawsNear(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool UnyieldingBattleHorn(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Creature* creat = pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(19862, -1190.856079f, 2261.246582f, 46.625797f, 1.705882f, true, false, 0, 0);
+    Creature* creat = pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(19862, -1190.856079f, 2261.246582f, 46.625797f, 1.705882f, true, false, 0, 0);
     creat->Despawn(300000, 0); // 5 mins delay
 
     return true;
@@ -409,7 +409,7 @@ bool UnyieldingBattleHorn(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool MeasuringWarpEnergies(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -459,7 +459,7 @@ bool MeasuringWarpEnergies(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool YennikuRelease(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -480,7 +480,7 @@ bool YennikuRelease(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool ScrollOfMyzrael(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -505,7 +505,7 @@ bool ScrollOfMyzrael(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool Showdown(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* p_caster = pSpell->p_caster;
+    Player* p_caster = pSpell->getPlayerCaster();
     if (p_caster == nullptr)
     {
         return true;
@@ -524,7 +524,7 @@ bool Showdown(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool TheBaitforLarkorwi1(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -543,7 +543,7 @@ bool TheBaitforLarkorwi1(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool TheBaitforLarkorwi2(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -560,7 +560,7 @@ bool TheBaitforLarkorwi2(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool Fumping(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -593,7 +593,7 @@ bool Fumping(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool TheBigBoneWorm(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -610,7 +610,7 @@ bool TheBigBoneWorm(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool Torgos(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -629,7 +629,7 @@ bool Torgos(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool WelcomingtheWolfSpirit(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -645,7 +645,7 @@ bool WelcomingtheWolfSpirit(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool NaturalRemedies(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -663,10 +663,10 @@ bool NaturalRemedies(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool FloraoftheEcoDomes(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr || pSpell->GetUnitTarget() == nullptr || pSpell->GetUnitTarget()->isCreature() == false)
+    if (pSpell->getPlayerCaster() == nullptr || pSpell->GetUnitTarget() == nullptr || pSpell->GetUnitTarget()->isCreature() == false)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     Creature* normal = static_cast<Creature*>(pSpell->GetUnitTarget());
 
@@ -687,7 +687,7 @@ bool FloraoftheEcoDomes(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool TheCleansingMustBeStopped(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -743,7 +743,7 @@ bool AdministreringtheSalve(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
 bool ZappedGiants(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -800,10 +800,10 @@ bool ZappedGiants(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool BuildingAPerimeter(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     GameObject* pEast = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2257.0f, 2465.0f, 101.0f, 183947);
     if (pEast != nullptr && pPlayer->CalcDistance(pPlayer, pEast) < 30)
@@ -831,7 +831,7 @@ bool BuildingAPerimeter(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool RodofPurification(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -853,7 +853,7 @@ bool RodofPurification(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool AnUnusualPatron(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -897,7 +897,7 @@ bool MagnetoCollector(uint8_t /*effectIndex*/, Aura* pAura, bool /*apply*/)
 
 bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -982,12 +982,12 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool EmblazonRuneblade(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
     {
         return true;
     }
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     pPlayer->SendChatMessageToPlayer(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, "Player check", pPlayer);
 
     QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(12619);
@@ -1003,10 +1003,10 @@ bool EmblazonRuneblade(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool WyrmcallersHorn(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
 
     LocationVector pos = plr->GetPosition();
 
@@ -1022,10 +1022,10 @@ bool WyrmcallersHorn(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool RaeloraszSpark(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
     if (plr == nullptr)
         return true;
 
@@ -1044,7 +1044,7 @@ bool RaeloraszSpark(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool RuneOfDistortion(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
     if (plr == nullptr)
         return true;
 
@@ -1061,7 +1061,7 @@ bool RuneOfDistortion(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool GoreBladder(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
     {
         return true;
     }
@@ -1072,7 +1072,7 @@ bool GoreBladder(uint8_t /*effectIndex*/, Spell* pSpell)
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     pPlayer->AddQuestKill(12810, 0, 0);
 
     return true;
@@ -1080,7 +1080,7 @@ bool GoreBladder(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool PlagueSpray(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
@@ -1089,7 +1089,7 @@ bool PlagueSpray(uint8_t /*effectIndex*/, Spell* pSpell)
     else if (!target || target->getEntry() != 23652 || !target->HasAura(40467))
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(11307, 0, 0);
 
@@ -1098,25 +1098,25 @@ bool PlagueSpray(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool GoblinWeatherMachine(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
     uint32_t Weather = 46736 + Util::getRandomUInt(4);
 
-    pSpell->p_caster->castSpell(pSpell->p_caster, sSpellMgr.getSpellInfo(Weather), true);
+    pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), sSpellMgr.getSpellInfo(Weather), true);
     return true;
 }
 
 bool PurifiedAshes(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
     if (!target || target->getEntry() != 26633 || !target->isDead())
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     int entry;
 
     if (pPlayer->isTeamHorde())
@@ -1131,7 +1131,7 @@ bool PurifiedAshes(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool DISMEMBER(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
@@ -1140,7 +1140,7 @@ bool DISMEMBER(uint8_t /*effectIndex*/, Spell* pSpell)
 
     static_cast<Creature*>(target)->Despawn(500, 300000);
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     int entry;
 
     if (pPlayer->isTeamHorde())
@@ -1159,7 +1159,7 @@ bool DISMEMBER(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool CraftyBlaster(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
     {
         return true;
     }
@@ -1170,7 +1170,7 @@ bool CraftyBlaster(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(11653, 0, 0);
 
@@ -1179,7 +1179,7 @@ bool CraftyBlaster(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool RagefistTorch(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
     {
         return true;
     }
@@ -1192,7 +1192,7 @@ bool RagefistTorch(uint8_t /*effectIndex*/, Spell* pSpell)
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(11593, 0, 0);
 
@@ -1201,29 +1201,29 @@ bool RagefistTorch(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool SummonShadra(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    LocationVector pos = pSpell->p_caster->GetPosition();
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(2707, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+    LocationVector pos = pSpell->getPlayerCaster()->GetPosition();
+    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(2707, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
 
     return true;
 }
 
 bool SummonEcheyakee(uint8_t effectIndex, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr || effectIndex != 1)  //Effect_1 = SEND_EVENT,Effect_2 = DUMMY
+    if (pSpell->getPlayerCaster() == nullptr || effectIndex != 1)  //Effect_1 = SEND_EVENT,Effect_2 = DUMMY
         return true;
 
-    LocationVector pos = pSpell->p_caster->GetPosition();
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(3475, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+    LocationVector pos = pSpell->getPlayerCaster()->GetPosition();
+    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(3475, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
 
     return true;
 }
 
 bool HodirsHorn(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
@@ -1232,7 +1232,7 @@ bool HodirsHorn(uint8_t /*effectIndex*/, Spell* pSpell)
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(12977, 0, 0);
 
@@ -1241,7 +1241,7 @@ bool HodirsHorn(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool TelluricPoultice(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
     {
         return true;
     }
@@ -1254,7 +1254,7 @@ bool TelluricPoultice(uint8_t /*effectIndex*/, Spell* pSpell)
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(12937, 0, 0);
 
@@ -1263,7 +1263,7 @@ bool TelluricPoultice(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool Screwdriver(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
     {
         return true;
     }
@@ -1276,7 +1276,7 @@ bool Screwdriver(uint8_t /*effectIndex*/, Spell* pSpell)
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(11730, 0, 0);
 
@@ -1285,7 +1285,7 @@ bool Screwdriver(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool IncineratingOil(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
     {
         return true;
     }
@@ -1298,7 +1298,7 @@ bool IncineratingOil(uint8_t /*effectIndex*/, Spell* pSpell)
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(12568, 0, 0);
 
@@ -1307,26 +1307,26 @@ bool IncineratingOil(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool SummonAquementas(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    LocationVector pos = pSpell->p_caster->GetPosition();
+    LocationVector pos = pSpell->getPlayerCaster()->GetPosition();
 
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(9453, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(9453, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
 
     return true;
 }
 
 bool PrayerBeads(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
     Unit* target = pSpell->GetUnitTarget();
     if (!target || target->getEntry() != 22431)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(10935, 0, 0);
 
@@ -1335,7 +1335,7 @@ bool PrayerBeads(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool CleansingVialDND(uint32_t /*i*/, Spell* s)
 {
-    QuestLogEntry* en = s->p_caster->GetQuestLogForEntry(9427);
+    QuestLogEntry* en = s->getPlayerCaster()->GetQuestLogForEntry(9427);
     if (en == nullptr)
         return true;
 
@@ -1388,10 +1388,10 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
                 if (m_target->isCreature())
                 {
                     Creature* tamed = static_cast<Creature*>(m_target);
-                    tamed->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
+                    tamed->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getPlayerCaster(), 0);
 
                     Pet* pPet = sObjectMgr.CreatePet(tamed->getEntry());
-                    if (!pPet->CreateAsSummon(tamed->getEntry(), tamed->GetCreatureProperties(), tamed, p_caster, triggerspell, 2, 900000))
+                    if (!pPet->CreateAsSummon(tamed->getEntry(), tamed->GetCreatureProperties(), tamed, getPlayerCaster(), triggerspell, 2, 900000))
                     {
                         pPet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
                         pPet = NULL;
@@ -1399,7 +1399,7 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
                     tamed->Despawn(1, 0); //we despawn the tamed creature once we are out of Aura::Remove()
 
-                    QuestLogEntry* qle = p_caster->GetQuestLogForEntry(tamequest->id);
+                    QuestLogEntry* qle = getPlayerCaster()->GetQuestLogForEntry(tamequest->id);
                     if (qle != nullptr)
                     {
                         qle->SetMobCount(0, 1);
@@ -1411,7 +1411,7 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
             }
             else
             {
-                p_caster->sendCastFailedPacket(triggerspell->getId(), SPELL_FAILED_TRY_AGAIN, 0, 0);
+                getPlayerCaster()->sendCastFailedPacket(triggerspell->getId(), SPELL_FAILED_TRY_AGAIN, 0, 0);
             }*/
         }
     }
@@ -1517,14 +1517,14 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
 bool CenarionMoondust(uint8_t /*effectIndex*/, Spell* pSpell) // Body And Heart (Alliance)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
-    if (!pSpell->p_caster->IsInWorld())
+    if (!pSpell->getPlayerCaster()->IsInWorld())
         return true;
 
     const float pos[] = { 6335.2329f, 144.0811f, 24.0068f, 5.701f }; // x, y, z, o
-    Player* p_caster = pSpell->p_caster;
+    Player* p_caster = pSpell->getPlayerCaster();
 
     //Moonkin Stone aura
     p_caster->GetMapMgr()->CreateAndSpawnGameObject(177644, 6331.01f, 88.245f, 22.6522f, 2.01455f, 1.0);
@@ -1564,14 +1564,14 @@ bool CenarionMoondust(uint8_t /*effectIndex*/, Spell* pSpell) // Body And Heart 
 
 bool CenarionLunardust(uint8_t /*effectIndex*/, Spell* pSpell)  // Body And Heart (Horde)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
-    if (!pSpell->p_caster->IsInWorld())
+    if (!pSpell->getPlayerCaster()->IsInWorld())
         return true;
 
     const float pos[] = { -2443.9711f, -1642.8002f, 92.5129f, 1.71f }; // x, y, z, o
-    Player* p_caster = pSpell->p_caster;
+    Player* p_caster = pSpell->getPlayerCaster();
 
     //Moonkin Stone aura
     p_caster->GetMapMgr()->CreateAndSpawnGameObject(177644, -2499.54f, -1633.03f, 91.8121f, 0.262894f, 1.0);
@@ -1609,7 +1609,7 @@ bool CenarionLunardust(uint8_t /*effectIndex*/, Spell* pSpell)  // Body And Hear
 
 bool CurativeAnimalSalve(uint8_t /*effectIndex*/, Spell* pSpell) // Curing the Sick
 {
-    Player* caster = pSpell->p_caster;
+    Player* caster = pSpell->getPlayerCaster();
     if (caster == NULL)
         return true;
 
@@ -1650,10 +1650,10 @@ bool CurativeAnimalSalve(uint8_t /*effectIndex*/, Spell* pSpell) // Curing the S
 // Trial Of The Lake
 bool TrialOfTheLake(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == NULL)
+    if (pSpell->getPlayerCaster() == NULL)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(28, 0, 0);
     pPlayer->AddQuestKill(29, 0, 0);
@@ -1663,7 +1663,7 @@ bool TrialOfTheLake(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool SymbolOfLife(uint8_t /*effectIndex*/, Spell* pSpell) // Alliance ress. quests
 {
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
     if (plr == nullptr)
         return true;
 
@@ -1724,10 +1724,10 @@ bool SymbolOfLife(uint8_t /*effectIndex*/, Spell* pSpell) // Alliance ress. ques
 
 bool FilledShimmeringVessel(uint8_t /*effectIndex*/, Spell* pSpell) // Blood Elf ress. quest
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
 
     WoWGuid wowGuid;
     wowGuid.Init(plr->GetSelection());
@@ -1757,10 +1757,10 @@ bool FilledShimmeringVessel(uint8_t /*effectIndex*/, Spell* pSpell) // Blood Elf
 
 bool DouseEternalFlame(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
 
     QuestLogEntry* qle = plr->GetQuestLogForEntry(9737);
     if (qle == nullptr)
@@ -1787,22 +1787,22 @@ bool DouseEternalFlame(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool Triage(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster || pSpell->GetUnitTarget() == nullptr)
+    if (!pSpell->getPlayerCaster() || pSpell->GetUnitTarget() == nullptr)
         return true;
 
-    pSpell->p_caster->castSpell(pSpell->GetUnitTarget(), sSpellMgr.getSpellInfo(746), true);
+    pSpell->getPlayerCaster()->castSpell(pSpell->GetUnitTarget(), sSpellMgr.getSpellInfo(746), true);
 
-    pSpell->p_caster->AddQuestKill(6624, 0, 0);
+    pSpell->getPlayerCaster()->AddQuestKill(6624, 0, 0);
 
     return true;
 }
 
 bool NeutralizingTheCauldrons(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr || !pSpell->p_caster->IsInWorld())
+    if (pSpell->getPlayerCaster() == nullptr || !pSpell->getPlayerCaster()->IsInWorld())
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     LocationVector pos = pPlayer->GetPosition();
 
@@ -1818,17 +1818,17 @@ bool NeutralizingTheCauldrons(uint8_t /*effectIndex*/, Spell* pSpell)
 
     if (posX == 3747.07f)
     {
-        pSpell->p_caster->AddQuestKill(11647, 0, 0);
+        pSpell->getPlayerCaster()->AddQuestKill(11647, 0, 0);
     }
 
     if (posX == 4023.5f)
     {
-        pSpell->p_caster->AddQuestKill(11647, 1, 0);
+        pSpell->getPlayerCaster()->AddQuestKill(11647, 1, 0);
     }
 
     if (posX == 4126.12f)
     {
-        pSpell->p_caster->AddQuestKill(11647, 2, 0);
+        pSpell->getPlayerCaster()->AddQuestKill(11647, 2, 0);
     }
 
     return true;
@@ -1838,10 +1838,10 @@ bool NeutralizingTheCauldrons(uint8_t /*effectIndex*/, Spell* pSpell)
 // Stop the Plague
 bool HighmessasCleansingSeeds(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr || !pSpell->p_caster->IsInWorld())
+    if (pSpell->getPlayerCaster() == nullptr || !pSpell->getPlayerCaster()->IsInWorld())
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(11677, 0, 0);
 
@@ -1852,10 +1852,10 @@ bool HighmessasCleansingSeeds(uint8_t /*effectIndex*/, Spell* pSpell)
 // There's Something Going On In Those Caves
 bool BixiesInhibitingPowder(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr || !pSpell->p_caster->IsInWorld())
+    if (pSpell->getPlayerCaster() == nullptr || !pSpell->getPlayerCaster()->IsInWorld())
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(11694, 0, 0);
 
@@ -1866,10 +1866,10 @@ bool BixiesInhibitingPowder(uint8_t /*effectIndex*/, Spell* pSpell)
 // Leading the Ancestors Home
 bool CompleteAncestorRitual(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr || !pSpell->p_caster->IsInWorld())
+    if (pSpell->getPlayerCaster() == nullptr || !pSpell->getPlayerCaster()->IsInWorld())
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11610);
     if (!pQuest)
         return true;
@@ -1899,10 +1899,10 @@ bool CompleteAncestorRitual(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool PoweringOurDefenses(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
 
     plr->AddQuestKill(8490, 0, 0);
 
@@ -1928,7 +1928,7 @@ bool TestingTheAntidote(uint8_t /*effectIndex*/, Spell* pSpell)
 
     target->Despawn(0, 300000);
 
-    spawned->GetAIInterface()->setNextTarget(pSpell->u_caster);
+    spawned->GetAIInterface()->setNextTarget(pSpell->getUnitCaster());
 
     return true;
 }
@@ -1937,7 +1937,7 @@ bool TestingTheAntidote(uint8_t /*effectIndex*/, Spell* pSpell)
 // Zeth'Gor Must Burn!
 bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -2040,7 +2040,7 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
 // Laying Waste to the Unwanted
 bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -2124,10 +2124,10 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
 // Burn It Up... For the Horde!
 bool BurnItUp(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10087);
     if (pQuest == nullptr)
@@ -2176,10 +2176,10 @@ bool BurnItUp(uint8_t /*effectIndex*/, Spell* pSpell)
 // The Seer's Relic
 bool TheSeersRelic(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(9545);
     if (qle == nullptr || qle->getMobCountByIndex(0) >= qle->getQuestProperties()->required_mob_or_go_count[0])
         return true;
@@ -2208,10 +2208,10 @@ bool TheSeersRelic(uint8_t /*effectIndex*/, Spell* pSpell)
 // Disrupt Their Reinforcements
 bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     QuestLogEntry* pQuestA = pPlayer->GetQuestLogForEntry(10144);
     QuestLogEntry* pQuestH = pPlayer->GetQuestLogForEntry(10208);
 
@@ -2295,10 +2295,10 @@ bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
 //Arzeth's Demise
 bool FuryOfTheDreghoodElders(uint32_t /*i*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     Unit* pUnit = pSpell->GetUnitTarget();
     if (pUnit == nullptr || !pUnit->isCreature() || pUnit->getEntry() != 19354)
@@ -2318,10 +2318,10 @@ bool FuryOfTheDreghoodElders(uint32_t /*i*/, Spell* pSpell)
 // War is Hell
 bool WarIsHell(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
 
     LocationVector pos = plr->GetPosition();
 
@@ -2351,10 +2351,10 @@ bool WarIsHell(uint8_t /*effectIndex*/, Spell* pSpell)
 // A Lesson in Fear
 bool PlantForsakenBanner(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11282);
     if (pQuest == nullptr)
@@ -2393,7 +2393,7 @@ bool PlantForsakenBanner(uint8_t /*effectIndex*/, Spell* pSpell)
 // Erratic Behavior
 bool ConvertingSentry(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pCaster = pSpell->p_caster;
+    Player* pCaster = pSpell->getPlayerCaster();
     if (pCaster == nullptr)
         return true;
 
@@ -2422,10 +2422,10 @@ bool ConvertingSentry(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool OrbOfMurlocControl(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11541);
     if (pQuest == nullptr)
@@ -2433,14 +2433,14 @@ bool OrbOfMurlocControl(uint8_t /*effectIndex*/, Spell* pSpell)
 
     Creature* pTarget;
 
-    for (const auto& itr : pSpell->m_caster->getInRangeObjectsSet())
+    for (const auto& itr : pSpell->getCaster()->getInRangeObjectsSet())
     {
         if (itr && itr->isCreatureOrPlayer() && static_cast<Unit*>(itr)->isCreature())
             pTarget = static_cast<Creature*>(itr);
         else
             continue;
 
-        if (pSpell->m_caster->CalcDistance(pTarget) > 5)
+        if (pSpell->getCaster()->CalcDistance(pTarget) > 5)
             continue;
 
         if (pTarget->getEntry() == 25084)
@@ -2465,7 +2465,7 @@ bool OrbOfMurlocControl(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool ShipBombing(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -2549,10 +2549,10 @@ bool ShipBombing(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool ImpaleEmissary(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     LocationVector pos = pPlayer->GetPosition();
 
@@ -2580,10 +2580,10 @@ bool ImpaleEmissary(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool LeyLine(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     LocationVector pos = pPlayer->GetPosition();
 
@@ -2609,7 +2609,7 @@ bool LeyLine(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool ManaRemnants(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return false;
 
@@ -2639,10 +2639,10 @@ bool ManaRemnants(uint8_t /*effectIndex*/, Spell* pSpell)
 // Stopping the Spread
 bool StoppingTheSpread(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
 
     LocationVector pos = plr->GetPosition();
 
@@ -2676,10 +2676,10 @@ bool StoppingTheSpread(uint8_t /*effectIndex*/, Spell* pSpell)
 //Ruthless Cunning
 bool RuthlessCunning(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
 
     LocationVector pos = plr->GetPosition();
 
@@ -2699,10 +2699,10 @@ bool RuthlessCunning(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool FindingTheKeymaster(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
 
     plr->AddQuestKill(10256, 0, 0);
 
@@ -2711,10 +2711,10 @@ bool FindingTheKeymaster(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool TheFleshLies(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
 
     LocationVector pos = plr->GetPosition();
 
@@ -2744,10 +2744,10 @@ bool TheFleshLies(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool SurveyingtheRuins(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10335);
     if (pQuest == nullptr)
@@ -2800,10 +2800,10 @@ bool SurveyingtheRuins(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool CrystalOfDeepShadows(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Tailor
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
     QuestLogEntry* qle = plr->GetQuestLogForEntry(10833);
 
     if (qle == nullptr)
@@ -2818,10 +2818,10 @@ bool CrystalOfDeepShadows(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a 
 
 bool Carcass(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Tailor
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     LocationVector pos = pPlayer->GetPosition();
 
@@ -2853,10 +2853,10 @@ bool Carcass(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Ta
 
 bool ForceofNeltharakuSpell(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Tailor
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     WoWGuid wowGuid;
     wowGuid.Init(pPlayer->GetSelection());
@@ -2885,10 +2885,10 @@ bool ForceofNeltharakuSpell(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming 
 
 bool UnlockKarynakuChains(uint32_t /*i*/, Spell* pSpell) // Becoming a Shadoweave Tailor
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(10872, 0, 0);
 
@@ -2898,10 +2898,10 @@ bool UnlockKarynakuChains(uint32_t /*i*/, Spell* pSpell) // Becoming a Shadoweav
 
 bool ShatariTorch(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
     WoWGuid wowGuid;
     wowGuid.Init(plr->GetSelection());
     Creature* target = plr->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
@@ -2956,10 +2956,10 @@ bool ShatariTorch(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool SpragglesCanteen(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
     WoWGuid wowGuid;
     wowGuid.Init(plr->GetSelection());
 
@@ -2990,7 +2990,7 @@ bool SpragglesCanteen(uint8_t /*effectIndex*/, Spell* pSpell)
 // Finding the Source
 bool FindingTheSource(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 
@@ -3040,10 +3040,10 @@ bool FindingTheSource(uint8_t /*effectIndex*/, Spell* pSpell)
 // quest 5163 - Are We There, Yeti?
 bool ReleaseUmisYeti(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr || pSpell->GetUnitTarget() == nullptr || !pSpell->GetUnitTarget()->isCreature())
+    if (pSpell->getPlayerCaster() == nullptr || pSpell->GetUnitTarget() == nullptr || !pSpell->GetUnitTarget()->isCreature())
         return true;
 
-    QuestLogEntry* qLogEntry = pSpell->p_caster->GetQuestLogForEntry(5163);
+    QuestLogEntry* qLogEntry = pSpell->getPlayerCaster()->GetQuestLogForEntry(5163);
     if (qLogEntry == nullptr)
         return true;
 
@@ -3053,7 +3053,7 @@ bool ReleaseUmisYeti(uint8_t /*effectIndex*/, Spell* pSpell)
     {
         if (target->getEntry() == friends[j] && qLogEntry->getMobCountByIndex(j) < qLogEntry->getQuestProperties()->required_mob_or_go_count[j])
         {
-            pSpell->p_caster->AddQuestKill(5163, j, 0);
+            pSpell->getPlayerCaster()->AddQuestKill(5163, j, 0);
             return true;
         }
     }
@@ -3065,10 +3065,10 @@ bool ReleaseUmisYeti(uint8_t /*effectIndex*/, Spell* pSpell)
 // Healing The Lake
 bool HealingTheLake(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
 
     pPlayer->AddQuestKill(9294, 0, 0);
 
@@ -3078,10 +3078,10 @@ bool HealingTheLake(uint8_t /*effectIndex*/, Spell* pSpell)
 // Protecting Our Own
 bool ProtectingOurOwn(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->p_caster;
+    Player* plr = pSpell->getPlayerCaster();
 
     plr->AddQuestKill(10488, 0, 0);
 
@@ -3104,10 +3104,10 @@ bool ProtectingOurOwn(uint8_t /*effectIndex*/, Spell* pSpell)
 /////////////////////////////////////////////////////////////////
 bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr || pSpell->GetGameObjectTarget() == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr || pSpell->GetGameObjectTarget() == nullptr)
         return true;
 
-    Player* pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->getPlayerCaster();
     QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(9452); //Red Snapper - Very Tasty
     if (pQuest == nullptr)
         return true;
@@ -3135,10 +3135,10 @@ bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool InducingVision(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* mTarget = pSpell->p_caster;
+    Player* mTarget = pSpell->getPlayerCaster();
     if (mTarget == nullptr || mTarget->GetMapMgr() == nullptr || mTarget->GetMapMgr()->GetInterface() == nullptr)
         return true;
 

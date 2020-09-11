@@ -649,7 +649,7 @@ void SpellMgr::applyHackFixes()
 
     SpellInfo* sp = nullptr;
 
-    for (const auto it : mSpellInfoMapStore)
+    for (const auto& it : mSpellInfoMapStore)
     {
         // Read every SpellEntry row
         sp = sSpellMgr.getMutableSpellInfo(it.first);
@@ -1336,11 +1336,6 @@ void SpellMgr::applyHackFixes()
 
     // Insert paladin spell fixes here
 
-    //Paladin - Seal of Command - Holy damage, but melee mechanics (crit damage, chance, etc)
-    sp = getMutableSpellInfo(20424);
-    if (sp != nullptr)
-        sp->custom_is_melee_spell = true;
-
     //Paladin - Hammer of the Righteous
     sp = getMutableSpellInfo(53595);
     if (sp != nullptr)
@@ -1742,14 +1737,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(18461);
     if (sp != nullptr)
         sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
-
-    // rogue - Blind (Make it able to miss!)
-    sp = getMutableSpellInfo(2094);
-    if (sp != nullptr)
-    {
-        sp->setDmgClass(SPELL_DMG_TYPE_RANGED);
-        sp->custom_is_ranged_spell = true;
-    }
 
     //rogue - Shadowstep
     sp = getMutableSpellInfo(36563);
@@ -3116,13 +3103,11 @@ void SpellMgr::applyHackFixes()
     if (sp != nullptr)
     {
         sp->setAuraInterruptFlags(AURA_INTERRUPT_ON_UNUSED2);
-        sp->custom_is_melee_spell = true;
     }
     sp = getMutableSpellInfo(49802);
     if (sp != nullptr)
     {
         sp->setAuraInterruptFlags(AURA_INTERRUPT_ON_UNUSED2);
-        sp->custom_is_melee_spell = true;
     }
 
     sp = getMutableSpellInfo(20719); //feline grace

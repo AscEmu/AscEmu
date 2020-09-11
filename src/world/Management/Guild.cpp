@@ -1404,7 +1404,7 @@ void Guild::broadcastPacket(WorldPacket* packet) const
     }
 }
 
-void Guild::massInviteToEvent(WorldSession* session, uint32_t minLevel, uint32_t maxLevel, uint32_t minRank)
+void Guild::massInviteToEvent([[maybe_unused]]WorldSession* session, [[maybe_unused]]uint32_t minLevel, [[maybe_unused]]uint32_t maxLevel, [[maybe_unused]]uint32_t minRank)
 {
 #if VERSION_STRING > TBC
     uint32_t count = 0;

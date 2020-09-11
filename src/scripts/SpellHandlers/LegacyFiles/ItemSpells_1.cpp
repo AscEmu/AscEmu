@@ -45,17 +45,17 @@ bool BreathOfFire(uint8_t /*effectIndex*/, Spell* /*pSpell*/)
 
 bool GnomishTransporter(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
-    pSpell->p_caster->EventAttackStop();
-    pSpell->p_caster->SafeTeleport(1, 0, LocationVector(-7169.41f, -3838.63f, 8.72f));
+    pSpell->getPlayerCaster()->EventAttackStop();
+    pSpell->getPlayerCaster()->SafeTeleport(1, 0, LocationVector(-7169.41f, -3838.63f, 8.72f));
     return true;
 }
 
 bool NoggenFoggerElixr(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
     uint32_t chance = Util::getRandomUInt(2);
@@ -63,13 +63,13 @@ bool NoggenFoggerElixr(uint8_t /*effectIndex*/, Spell* pSpell)
     switch (chance)
     {
         case 0:
-            pSpell->p_caster->castSpell(pSpell->p_caster, sSpellMgr.getSpellInfo(16591), true);
+            pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), sSpellMgr.getSpellInfo(16591), true);
             break;
         case 1:
-            pSpell->p_caster->castSpell(pSpell->p_caster, sSpellMgr.getSpellInfo(16593), true);
+            pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), sSpellMgr.getSpellInfo(16593), true);
             break;
         case 2:
-            pSpell->p_caster->castSpell(pSpell->p_caster, sSpellMgr.getSpellInfo(16595), true);
+            pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), sSpellMgr.getSpellInfo(16595), true);
             break;
     }
     return true;
@@ -77,7 +77,7 @@ bool NoggenFoggerElixr(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool HallowsEndCandy(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
     int newspell = 24924 + Util::getRandomUInt(3);
@@ -85,13 +85,13 @@ bool HallowsEndCandy(uint8_t /*effectIndex*/, Spell* pSpell)
     SpellInfo const* spInfo = sSpellMgr.getSpellInfo(newspell);
     if (!spInfo) return true;
 
-    pSpell->p_caster->castSpell(pSpell->p_caster, spInfo, true);
+    pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), spInfo, true);
     return true;
 }
 
 bool DeviateFish(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
     int newspell = 8064 + Util::getRandomUInt(4);
@@ -99,13 +99,13 @@ bool DeviateFish(uint8_t /*effectIndex*/, Spell* pSpell)
     SpellInfo const* spInfo = sSpellMgr.getSpellInfo(newspell);
     if (!spInfo) return true;
 
-    pSpell->p_caster->castSpell(pSpell->p_caster, spInfo, true);
+    pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), spInfo, true);
     return true;
 }
 
 bool CookedDeviateFish(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
     int chance = 0;
@@ -128,27 +128,27 @@ bool CookedDeviateFish(uint8_t /*effectIndex*/, Spell* pSpell)
         SpellInfo const* spInfo = sSpellMgr.getSpellInfo(newspell);
         if (!spInfo) return true;
 
-        pSpell->p_caster->castSpell(pSpell->p_caster, spInfo, true);
+        pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), spInfo, true);
     }
     return true;
 }
 
 bool HolidayCheer(uint8_t effectIndex, Spell* pSpell)
 {
-    if (!pSpell->m_caster)
+    if (!pSpell->getCaster())
         return true;
 
     Unit* target;
     float dist = pSpell->GetRadius(effectIndex);
 
-    for (const auto& itr : pSpell->m_caster->getInRangeObjectsSet())
+    for (const auto& itr : pSpell->getCaster()->getInRangeObjectsSet())
     {
         if (itr && itr->isCreatureOrPlayer())
             target = static_cast<Unit*>(itr);
         else
             continue;
 
-        if (pSpell->m_caster->CalcDistance(target) > dist || isAttackable(pSpell->m_caster, target))
+        if (pSpell->getCaster()->CalcDistance(target) > dist || isAttackable(pSpell->getCaster(), target))
             continue;
 
         target->Emote(EMOTE_ONESHOT_LAUGH);
@@ -159,7 +159,7 @@ bool HolidayCheer(uint8_t effectIndex, Spell* pSpell)
 bool NetOMatic(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
-    if (!pSpell->p_caster || !target)
+    if (!pSpell->getPlayerCaster() || !target)
         return true;
 
     SpellInfo const* spInfo = sSpellMgr.getSpellInfo(13099);
@@ -169,15 +169,15 @@ bool NetOMatic(uint8_t /*effectIndex*/, Spell* pSpell)
     int chance = Util::getRandomUInt(99) + 1;
 
     if (chance < 51) // nets target: 50%
-        pSpell->p_caster->castSpell(target, spInfo, true);
+        pSpell->getPlayerCaster()->castSpell(target, spInfo, true);
 
     else if (chance < 76) // nets you instead: 25%
-        pSpell->p_caster->castSpell(pSpell->p_caster, spInfo, true);
+        pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), spInfo, true);
 
     else // nets you and target: 25%
     {
-        pSpell->p_caster->castSpell(pSpell->p_caster, spInfo, true);
-        pSpell->p_caster->castSpell(target, spInfo, true);
+        pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), spInfo, true);
+        pSpell->getPlayerCaster()->castSpell(target, spInfo, true);
     }
     return true;
 }
@@ -185,17 +185,17 @@ bool NetOMatic(uint8_t /*effectIndex*/, Spell* pSpell)
 bool BanishExile(uint8_t effectIndex, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
-    if (!pSpell->p_caster || !target)
+    if (!pSpell->getPlayerCaster() || !target)
         return true;
 
-    pSpell->p_caster->doSpellDamage(target, pSpell->m_spellInfo->getId(), target->getHealth(), effectIndex);
+    pSpell->getPlayerCaster()->doSpellDamage(target, pSpell->getSpellInfo()->getId(), target->getHealth(), effectIndex);
     return true;
 }
 
 bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
-    if (!pSpell->p_caster || !target || !target->isCreature())
+    if (!pSpell->getPlayerCaster() || !target || !target->isCreature())
         return true;
 
     // check to see that we have the correct creature
@@ -210,11 +210,11 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
     // Remove Zzz aura
     c_target->RemoveAllAuras();
 
-    pSpell->p_caster->sendPlayObjectSoundPacket(c_target->getGuid(), 6197);
+    pSpell->getPlayerCaster()->sendPlayObjectSoundPacket(c_target->getGuid(), 6197);
 
     // send chat message
     char msg[100];
-    sprintf(msg, "Ow! Ok, I'll get back to work, %s", pSpell->p_caster->getName().c_str());
+    sprintf(msg, "Ow! Ok, I'll get back to work, %s", pSpell->getPlayerCaster()->getName().c_str());
     target->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
 
     c_target->Emote(EMOTE_STATE_WORK_CHOPWOOD);
@@ -228,45 +228,45 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool NetherWraithBeacon(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
-    float SSX = pSpell->p_caster->GetPositionX();
-    float SSY = pSpell->p_caster->GetPositionY();
-    float SSZ = pSpell->p_caster->GetPositionZ();
-    float SSO = pSpell->p_caster->GetOrientation();
+    float SSX = pSpell->getPlayerCaster()->GetPositionX();
+    float SSY = pSpell->getPlayerCaster()->GetPositionY();
+    float SSZ = pSpell->getPlayerCaster()->GetPositionZ();
+    float SSO = pSpell->getPlayerCaster()->GetOrientation();
 
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(22408, SSX, SSY, SSZ, SSO, true, false, 0, 0);
+    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(22408, SSX, SSY, SSZ, SSO, true, false, 0, 0);
     return true;
 }
 
 bool NighInvulnBelt(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
     int chance = Util::getRandomUInt(99) + 1;
 
     if (chance > 10)    // Buff - Nigh-Invulnerability - 30456
-        pSpell->p_caster->castSpell(pSpell->p_caster, sSpellMgr.getSpellInfo(30456), true);
+        pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), sSpellMgr.getSpellInfo(30456), true);
     else                // Malfunction - Complete Vulnerability - 30457
-        pSpell->p_caster->castSpell(pSpell->p_caster, sSpellMgr.getSpellInfo(30457), true);
+        pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), sSpellMgr.getSpellInfo(30457), true);
 
     return true;
 }
 
 bool ReindeerTransformation(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
-    if (pSpell->p_caster->getMountDisplayId() != 0)
+    if (pSpell->getPlayerCaster()->getMountDisplayId() != 0)
     {
         /*Zyres: This is not correct!
-        if (pSpell->p_caster->m_setflycheat)
-            pSpell->p_caster->setMountDisplayId(22724);
+        if (pSpell->getPlayerCaster()->m_setflycheat)
+            pSpell->getPlayerCaster()->setMountDisplayId(22724);
         else*/
-        pSpell->p_caster->setMountDisplayId(15902);
+        pSpell->getPlayerCaster()->setMountDisplayId(15902);
     }
     return true;
 }
@@ -303,7 +303,7 @@ bool WinterWondervolt(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool ScryingCrystal(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* player = pSpell->p_caster;
+    Player* player = pSpell->getPlayerCaster();
     LocationVector pos = player->GetPosition();
     if (player->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 300078))
     {
@@ -321,7 +321,7 @@ bool ScryingCrystal(uint8_t /*effectIndex*/, Spell* pSpell)
 bool MinionsOfGurok(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
-    if (!pSpell->p_caster || !target || !target->isCreature() || target->getEntry() != 17157)
+    if (!pSpell->getPlayerCaster() || !target || !target->isCreature() || target->getEntry() != 17157)
         return true;
 
     static_cast<Creature*>(target)->Despawn(500, 360000);
@@ -331,9 +331,9 @@ bool MinionsOfGurok(uint8_t /*effectIndex*/, Spell* pSpell)
     float SSZ = target->GetPositionZ();
     float SSO = target->GetOrientation();
 
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
+    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
+    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
+    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
 
     return true;
 }
@@ -344,10 +344,10 @@ bool PurifyBoarMeat(uint8_t /*effectIndex*/, Spell* pSpell)
     switch (bormeat)
     {
         case 0:
-            pSpell->p_caster->castSpell(pSpell->p_caster, 29277, true);
+            pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), 29277, true);
             break;
         case 1:
-            pSpell->p_caster->castSpell(pSpell->p_caster, 29278, true);
+            pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), 29278, true);
             break;
     }
 
@@ -356,15 +356,15 @@ bool PurifyBoarMeat(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool WarpRiftGenerator(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->p_caster)
+    if (!pSpell->getPlayerCaster())
         return true;
 
-    float SSX = pSpell->p_caster->GetPositionX();
-    float SSY = pSpell->p_caster->GetPositionY();
-    float SSZ = pSpell->p_caster->GetPositionZ();
-    float SSO = pSpell->p_caster->GetOrientation();
+    float SSX = pSpell->getPlayerCaster()->GetPositionX();
+    float SSY = pSpell->getPlayerCaster()->GetPositionY();
+    float SSZ = pSpell->getPlayerCaster()->GetPositionZ();
+    float SSO = pSpell->getPlayerCaster()->GetOrientation();
 
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(16939, SSX, SSY, SSZ, SSO, true, false, 0, 0);
+    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(16939, SSX, SSY, SSZ, SSO, true, false, 0, 0);
 
     return true;
 }
@@ -506,7 +506,7 @@ bool Poultryizer(uint8_t /*effectIndex*/, Spell* s)
     if (!unitTarget || !unitTarget->isAlive())
         return false;
 
-    s->u_caster->castSpell(unitTarget->getGuid(), 30501, true);
+    s->getUnitCaster()->castSpell(unitTarget->getGuid(), 30501, true);
 
     return true;
 }
@@ -522,7 +522,7 @@ bool SixDemonBag(uint8_t /*effectIndex*/, Spell* s)
     uint32_t randid = Util::getRandomUInt(5);
     uint32_t spelltocast = ClearSpellId[randid];
 
-    s->u_caster->castSpell(unitTarget, spelltocast, true);
+    s->getUnitCaster()->castSpell(unitTarget, spelltocast, true);
 
     return true;
 }
@@ -533,10 +533,10 @@ bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
     uint32_t cloudtype = 0;
     Creature* creature = nullptr;
 
-    if (!s->p_caster)
+    if (!s->getPlayerCaster())
         return false;
 
-    for (const auto& itr : s->p_caster->getInRangeObjectsSet())
+    for (const auto& itr : s->getPlayerCaster()->getInRangeObjectsSet())
     {
         if (itr && itr->isCreature())
         {
@@ -545,9 +545,9 @@ bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
 
             if (cloudtype == 24222 || cloudtype == 17408 || cloudtype == 17407 || cloudtype == 17378)
             {
-                if (s->p_caster->GetDistance2dSq(itr) < 400)
+                if (s->getPlayerCaster()->GetDistance2dSq(itr) < 400)
                 {
-                    s->p_caster->SetSelection(creature->getGuid());
+                    s->getPlayerCaster()->SetSelection(creature->getGuid());
                     check = true;
                     break;
                 }
@@ -572,7 +572,7 @@ bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
     if (cloudtype == 17378)
         item = 22578; //-water
 
-    s->p_caster->getItemInterface()->AddItemById(item, count, 0);
+    s->getPlayerCaster()->getItemInterface()->AddItemById(item, count, 0);
     creature->Despawn(3500, creature->GetCreatureProperties()->RespawnTime);
 
     return true;
@@ -580,11 +580,11 @@ bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
 
 bool BrittleArmor(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->u_caster == NULL)
+    if (s->getUnitCaster() == NULL)
         return false;
 
     for (uint8_t j = 0; j < 20; j++)
-        s->u_caster->castSpell(s->u_caster, 24575, true);
+        s->getUnitCaster()->castSpell(s->getUnitCaster(), 24575, true);
 
     return true;
 }
@@ -610,13 +610,13 @@ bool RequiresNoAmmo(uint8_t effectIndex, Aura* a, bool apply)
 //////////////////////////////////////////////////////////////////////////////////////////
 bool NitroBoosts(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == NULL)
+    if (s->getPlayerCaster() == NULL)
         return true;
 
-    uint32_t engineeringskill = s->p_caster->_GetSkillLineCurrent(SKILL_ENGINEERING);
+    uint32_t engineeringskill = s->getPlayerCaster()->_GetSkillLineCurrent(SKILL_ENGINEERING);
 
     if (engineeringskill >= 400)
-        s->p_caster->castSpell(s->p_caster, 54861, true);
+        s->getPlayerCaster()->castSpell(s->getPlayerCaster(), 54861, true);
 
     return true;
 }
@@ -639,7 +639,7 @@ bool NitroBoosts(uint8_t /*effectIndex*/, Spell* s)
 //////////////////////////////////////////////////////////////////////////////////////////
 bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == NULL)
+    if (s->getPlayerCaster() == NULL)
         return true;
 
     uint32_t spellids[] =
@@ -657,7 +657,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
     if (!malfunction)
     {
 
-        s->p_caster->castSpell(s->GetUnitTarget(), spellids[1], true);
+        s->getPlayerCaster()->castSpell(s->GetUnitTarget(), spellids[1], true);
 
     }
     else
@@ -670,46 +670,46 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 
             case 0:  // us
             {
-                s->p_caster->castSpell(s->p_caster, spellids[spellindex], true);
+                s->getPlayerCaster()->castSpell(s->getPlayerCaster(), spellids[spellindex], true);
             }
             break;
 
             case 1:  // them
             {
                 // if it's a malfunction it will only grow the target, since shrinking is normal
-                s->p_caster->castSpell(s->GetUnitTarget(), spellids[0], true);
+                s->getPlayerCaster()->castSpell(s->GetUnitTarget(), spellids[0], true);
             }
             break;
 
             case 2:  // our party
             {
-                for (const auto& itr : s->p_caster->getInRangePlayersSet())
+                for (const auto& itr : s->getPlayerCaster()->getInRangePlayersSet())
                 {
                     if (!itr)
                         continue;
 
                     Player* p = static_cast<Player*>(itr);
-                    if ((p->GetPhase() & s->p_caster->GetPhase()) == 0)
+                    if ((p->GetPhase() & s->getPlayerCaster()->GetPhase()) == 0)
                         continue;
 
-                    if (p->GetGroup()->GetID() != s->p_caster->GetGroup()->GetID())
+                    if (p->GetGroup()->GetID() != s->getPlayerCaster()->GetGroup()->GetID())
                         continue;
 
-                    s->p_caster->castSpell(p, spellids[spellindex], true);
+                    s->getPlayerCaster()->castSpell(p, spellids[spellindex], true);
                 }
             }
             break;
 
             case 3:  // every attacking enemy
             {
-                for (const auto& itr : s->p_caster->getInRangeOppositeFactionSet())
+                for (const auto& itr : s->getPlayerCaster()->getInRangeOppositeFactionSet())
                 {
                     if(!itr)
                         continue;
 
                     Object* o = itr;
 
-                    if ((o->GetPhase() & s->p_caster->GetPhase()) == 0)
+                    if ((o->GetPhase() & s->getPlayerCaster()->GetPhase()) == 0)
                         continue;
 
                     if (!o->isCreature())
@@ -717,13 +717,13 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 
                     Unit* u = static_cast<Unit*>(o);
 
-                    if (u->getTargetGuid() != s->p_caster->getGuid())
+                    if (u->getTargetGuid() != s->getPlayerCaster()->getGuid())
                         continue;
 
-                    if (!isAttackable(s->p_caster, u))
+                    if (!isAttackable(s->getPlayerCaster(), u))
                         continue;
 
-                    s->p_caster->castSpell(u, spellids[spellindex], true);
+                    s->getPlayerCaster()->castSpell(u, spellids[spellindex], true);
                 }
             }
             break;
@@ -776,7 +776,7 @@ bool ChampioningTabards(uint8_t /*effectIndex*/, Aura* a, bool apply)
 //////////////////////////////////////////////////////////////////////////////////////////
 bool Spinning(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* p_caster = s->p_caster;
+    Player* p_caster = s->getPlayerCaster();
 
     if (p_caster == NULL)
         return true;

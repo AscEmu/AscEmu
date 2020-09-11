@@ -3,7 +3,6 @@ Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Definitions/PowerType.h"
 #include "Definitions/School.h"
 #include "Definitions/SpellEffects.h"
 #include "Definitions/SpellEffectTarget.h"
@@ -14,71 +13,20 @@ This file is released under the MIT license. See README-MIT for more information
 
 SpellInfo::SpellInfo()
 {
-    Id = 0;
-    Category = 0;
-    DispelType = 0;
-    MechanicsType = 0;
-    Attributes = 0;
-    AttributesEx = 0;
-    AttributesExB = 0;
-    AttributesExC = 0;
-    AttributesExD = 0;
-    AttributesExE = 0;
-    AttributesExF = 0;
-    AttributesExG = 0;
-    AttributesExH = 0;
-    AttributesExI = 0;
-    AttributesExJ = 0;
-    Shapeshifts = 0;
-    ShapeshiftsExcluded = 0;
-    Targets = 0;
-    TargetCreatureType = 0;
-    RequiresSpellFocus = 0;
-    FacingCasterFlags = 0;
-    CasterAuraState = 0;
-    TargetAuraState = 0;
-    CasterAuraStateNot = 0;
-    TargetAuraStateNot = 0;
-    casterAuraSpell = 0;
-    targetAuraSpell = 0;
-    casterAuraSpellNot = 0;
-    targetAuraSpellNot = 0;
-    CastingTimeIndex = 0;
-    RecoveryTime = 0;
-    CategoryRecoveryTime = 0;
-    InterruptFlags = 0;
-    AuraInterruptFlags = 0;
-    ChannelInterruptFlags = 0;
-    procFlags = 0;
-    procChance = 0;
-    procCharges = 0;
-    maxLevel = 0;
-    baseLevel = 0;
-    spellLevel = 0;
-    DurationIndex = 0;
-    powerType = POWER_TYPE_MANA;
-    manaCost = 0;
-    manaCostPerlevel = 0;
-    manaPerSecond = 0;
-    manaPerSecondPerLevel = 0;
-    rangeIndex = 0;
-    speed = 0;
-    MaxStackAmount = 0;
-    for (auto i = 0; i < MAX_SPELL_TOTEMS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_TOTEMS; ++i)
         Totem[i] = 0;
-    for (auto i = 0; i < MAX_SPELL_REAGENTS; ++i)
+
+    for (uint8_t i = 0; i < MAX_SPELL_REAGENTS; ++i)
     {
         Reagent[i] = 0;
         ReagentCount[i] = 0;
     }
-    EquippedItemClass = -1;
-    EquippedItemSubClass = 0;
-    EquippedItemInventoryTypeMask = 0;
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         Effect[i] = 0;
         EffectDieSides[i] = 0;
-        EffectRealPointsPerLevel[i] = 0;
+        EffectRealPointsPerLevel[i] = 0.0f;
         EffectBasePoints[i] = 0;
         EffectMechanic[i] = 0;
         EffectImplicitTargetA[i] = 0;
@@ -86,14 +34,14 @@ SpellInfo::SpellInfo()
         EffectRadiusIndex[i] = 0;
         EffectApplyAuraName[i] = 0;
         EffectAmplitude[i] = 0;
-        EffectMultipleValue[i] = 0;
+        EffectMultipleValue[i] = 0.0f;
         EffectChainTarget[i] = 0;
         EffectItemType[i] = 0;
         EffectMiscValue[i] = 0;
         EffectMiscValueB[i] = 0;
         EffectTriggerSpell[i] = 0;
-        EffectPointsPerComboPoint[i] = 0;
-        for (auto u = 0; u < MAX_SPELL_EFFECTS; ++u)
+        EffectPointsPerComboPoint[i] = 0.0f;
+        for (uint8_t u = 0; u < MAX_SPELL_EFFECTS; ++u)
             EffectSpellClassMask[i][u] = 0;
 #if VERSION_STRING >= Cata
         EffectRadiusMaxIndex[i] = 0;
@@ -101,91 +49,26 @@ SpellInfo::SpellInfo()
         EffectIndex[i] = 0;
 #endif
         SpellFamilyFlags[i] = 0;
-        EffectDamageMultiplier[i] = 0;
-        EffectBonusMultiplier[i] = 0;
+        EffectDamageMultiplier[i] = 0.0f;
+        EffectBonusMultiplier[i] = 0.0f;
     }
+
     for (uint8_t i = 0; i < 2; ++i)
         SpellVisual[i] = 0;
-    spellIconID = 0;
-    activeIconID = 0;
-    spellPriority = 0;
-    Name = "";
-    Rank = "";
-    ManaCostPercentage = 0;
-    StartRecoveryCategory = 0;
-    StartRecoveryTime = 0;
-    MaxTargetLevel = 0;
-    SpellFamilyName = 0;
-    MaxTargets = 0;
-    DmgClass = 0;
-    PreventionType = 0;
+
 #if VERSION_STRING > Classic
-    for (auto i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
         TotemCategory[i] = 0;
 #endif
-    AreaGroupId = 0;
-    SchoolMask = 0;
-    RuneCostID = 0;
-    SpellDifficultyId = 0;
     
-#if VERSION_STRING >= Cata
-    // DBC links
-    SpellScalingId = 0;
-    SpellAuraOptionsId = 0;
-    SpellAuraRestrictionsId = 0;
-    SpellCastingRequirementsId = 0;
-    SpellCategoriesId = 0;
-    SpellClassOptionsId = 0;
-    SpellCooldownsId = 0;
-    SpellEquippedItemsId = 0;
-    SpellInterruptsId = 0;
-    SpellLevelsId = 0;
-    SpellPowerId = 0;
-    SpellReagentsId = 0;
-    SpellShapeshiftId = 0;
-    SpellTargetRestrictionsId = 0;
-    SpellTotemsId = 0;
-#endif
-    // Coefficient values
-    spell_coeff_direct = -1;
-    spell_coeff_overtime = -1;
-    spell_coeff_direct_override = -1;
-    spell_coeff_overtime_override = -1;
-
     // Custom values
-    custom_proc_interval = 0;
-    custom_BGR_one_buff_on_target = 0;
-    custom_c_is_flags = 0;
-    custom_RankNumber = 0;
-    custom_NameHash = 0;
-    custom_ThreatForSpell = 0;
-    custom_ThreatForSpellCoef = 0;
-    custom_base_range_or_radius_sqr = 0;
-    cone_width = 0;
-    ai_target_type = 0;
-
-    custom_self_cast_only = false;
-    custom_apply_on_shapeshift_change = false;
-    custom_is_melee_spell = false;
-    custom_is_ranged_spell = false;
-
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         EffectCustomFlag[i] = 0;
-
-    // Script linkers
-    spellScriptLink = nullptr;
-    auraScriptLink = nullptr;
-
-    // New script system
-    spellScript = nullptr;
 }
-
-SpellInfo::~SpellInfo() {}
-
 
 bool SpellInfo::hasEffect(uint32_t effect) const
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] == effect)
             return true;
@@ -196,7 +79,7 @@ bool SpellInfo::hasEffect(uint32_t effect) const
 
 bool SpellInfo::hasEffectApplyAuraName(uint32_t auraType) const
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] != SPELL_EFFECT_APPLY_AURA && Effect[i] != SPELL_EFFECT_PERSISTENT_AREA_AURA && Effect[i] != SPELL_EFFECT_APPLY_ENEMY_AREA_AURA &&
             Effect[i] != SPELL_EFFECT_APPLY_FRIEND_AREA_AURA && Effect[i] != SPELL_EFFECT_APPLY_GROUP_AREA_AURA && Effect[i] != SPELL_EFFECT_APPLY_OWNER_AREA_AURA &&
@@ -253,7 +136,7 @@ bool SpellInfo::isHealingSpell() const
 
 int SpellInfo::firstBeneficialEffect() const
 {
-    for (auto i = 0; i < 3; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         switch (Effect[i])
         {
@@ -436,7 +319,7 @@ uint32_t SpellInfo::getSpellDefaultDuration(Unit const* caster) const
 
 bool SpellInfo::hasTargetType(uint32_t type) const
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (EffectImplicitTargetA[i] == type ||
             EffectImplicitTargetB[i] == type)
@@ -546,11 +429,11 @@ bool SpellInfo::isPassive() const
 
 bool SpellInfo::isProfession() const
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] == SPELL_EFFECT_SKILL)
         {
-            auto skill = EffectMiscValue[i];
+            const auto skill = EffectMiscValue[i];
 
             //Profession skill
             if (skill == SKILL_FISHING || skill == SKILL_COOKING || skill == SKILL_FIRST_AID)
@@ -565,11 +448,11 @@ bool SpellInfo::isProfession() const
 
 bool SpellInfo::isPrimaryProfession() const
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] == SPELL_EFFECT_SKILL)
         {
-            auto skill = EffectMiscValue[i];
+            const auto skill = EffectMiscValue[i];
             if (isPrimaryProfessionSkill(skill))
                 return true;
         }
@@ -579,7 +462,7 @@ bool SpellInfo::isPrimaryProfession() const
 
 bool SpellInfo::isPrimaryProfessionSkill(uint32_t skill_id) const
 {
-    if (auto skill_line = sSkillLineStore.LookupEntry(skill_id))
+    if (const auto skill_line = sSkillLineStore.LookupEntry(skill_id))
     {
         if (skill_line && skill_line->type == SKILL_TYPE_PROFESSION)
             return true;
@@ -610,7 +493,7 @@ bool SpellInfo::isOnNextMeleeAttack() const
 
 bool SpellInfo::appliesAreaAura(uint32_t auraType) const
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         switch (Effect[i])
         {
@@ -634,7 +517,7 @@ bool SpellInfo::appliesAreaAura(uint32_t auraType) const
 
 uint32_t SpellInfo::getAreaAuraEffect() const
 {
-    for (auto i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA ||
             Effect[i] == SPELL_EFFECT_APPLY_RAID_AREA_AURA ||

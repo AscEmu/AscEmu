@@ -434,7 +434,6 @@ public:
 
             // Set new aura's duration, reset event timer and set client visual aura
             aura->setTimeLeft(dur);
-            sEventMgr.ModifyEventTimeLeft(aura, EVENT_AURA_REMOVE, aura->getTimeLeft());
             mTarget->sendAuraUpdate(aura, false);
         }
 

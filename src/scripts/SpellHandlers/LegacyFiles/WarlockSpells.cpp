@@ -40,7 +40,7 @@
  /////////////////////////////////////////////////////////////
 bool SoulLinkParent(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == nullptr)
+    if (s->getPlayerCaster() == nullptr)
     {
         return true;
     }
@@ -60,7 +60,7 @@ bool LifeTap(uint8_t effectIndex, Spell* s)
 {
     Player* playerTarget = s->GetPlayerTarget();
 
-    if (!s->p_caster || !playerTarget)
+    if (!s->getPlayerCaster() || !playerTarget)
     {
         return false;
     }
@@ -82,9 +82,9 @@ bool LifeTap(uint8_t effectIndex, Spell* s)
     if (damage >= playerTarget->getHealth())
         return false;
 
-    s->p_caster->DealDamage(playerTarget, damage, 0, 0, s->getSpellInfo()->getId());
+    s->getPlayerCaster()->DealDamage(playerTarget, damage, 0, 0, s->getSpellInfo()->getId());
     damage = damage * (100 + playerTarget->m_lifetapbonus) / 100;    // Apply improved life tap
-    s->p_caster->energize(playerTarget, s->getSpellInfo()->getId(), damage, POWER_TYPE_MANA);
+    s->getPlayerCaster()->energize(playerTarget, s->getSpellInfo()->getId(), damage, POWER_TYPE_MANA);
 
     return true;
 }
@@ -93,22 +93,22 @@ bool SoulShatter(uint8_t /*effectIndex*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
-    if (!s->u_caster || !s->u_caster->isAlive() || !unitTarget || !unitTarget->isAlive())
+    if (!s->getPlayerCaster() || !s->getPlayerCaster()->isAlive() || !unitTarget || !unitTarget->isAlive())
         return false;
 
-    s->u_caster->castSpell(unitTarget, 32835, false);
+    s->getPlayerCaster()->castSpell(unitTarget, 32835, false);
 
     return true;
 }
 
 bool MinorHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == nullptr)
+    if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->p_caster->HasSpell(18692))
+    if (s->getPlayerCaster()->HasSpell(18692))
         s->CreateItem(19004);
-    else if (s->p_caster->HasSpell(18693))
+    else if (s->getPlayerCaster()->HasSpell(18693))
         s->CreateItem(19005);
     else
         s->CreateItem(5512);
@@ -118,26 +118,26 @@ bool MinorHealthStone(uint8_t /*effectIndex*/, Spell* s)
 
 bool LesserHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == nullptr)
+    if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(19007);
-    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(19006);
     else
-        s->p_caster->getItemInterface()->AddItemById(5511, 1, 0);
+        s->getPlayerCaster()->getItemInterface()->AddItemById(5511, 1, 0);
     return true;
 }
 
 bool HealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == nullptr)
+    if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(19009);
-    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(19008);
     else
         s->CreateItem(5509);
@@ -147,12 +147,12 @@ bool HealthStone(uint8_t /*effectIndex*/, Spell* s)
 
 bool GreaterHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == nullptr)
+    if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(19011);
-    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(19010);
     else
         s->CreateItem(5510);
@@ -162,12 +162,12 @@ bool GreaterHealthStone(uint8_t /*effectIndex*/, Spell* s)
 
 bool MajorHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == nullptr)
+    if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(19013);
-    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(19012);
     else
         s->CreateItem(9421);
@@ -177,12 +177,12 @@ bool MajorHealthStone(uint8_t /*effectIndex*/, Spell* s)
 
 bool MasterHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == nullptr)
+    if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(22105);
-    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(22104);
     else
         s->CreateItem(22103);
@@ -192,12 +192,12 @@ bool MasterHealthStone(uint8_t /*effectIndex*/, Spell* s)
 
 bool DemonicHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == nullptr)
+    if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(36891);
-    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(36890);
     else
         s->CreateItem(36889);
@@ -207,12 +207,12 @@ bool DemonicHealthStone(uint8_t /*effectIndex*/, Spell* s)
 
 bool FelHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->p_caster == nullptr)
+    if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(36894);
-    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(36893);
     else
         s->CreateItem(36892);
@@ -224,7 +224,7 @@ bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
-    if (!s->p_caster || !unitTarget)
+    if (!s->getPlayerCaster() || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
     uint32_t casted_spell_id = 0;
@@ -252,8 +252,8 @@ bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
     if (casted_spell_id)
     {
         //for self
-        Spell* sp = sSpellMgr.newSpell(s->p_caster, sSpellMgr.getSpellInfo(casted_spell_id), true, NULL);
-        SpellCastTargets tgt(s->p_caster->getGuid());
+        Spell* sp = sSpellMgr.newSpell(s->getPlayerCaster(), sSpellMgr.getSpellInfo(casted_spell_id), true, NULL);
+        SpellCastTargets tgt(s->getPlayerCaster()->getGuid());
         sp->prepare(&tgt);
 
         //for pet
@@ -265,8 +265,8 @@ bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
     if (inc_resist_by_level_spell)
     {
         //for self
-        Spell* sp = sSpellMgr.newSpell(s->p_caster, sSpellMgr.getSpellInfo(inc_resist_by_level_spell), true, NULL);
-        SpellCastTargets tgt(s->p_caster->getGuid());
+        Spell* sp = sSpellMgr.newSpell(s->getPlayerCaster(), sSpellMgr.getSpellInfo(inc_resist_by_level_spell), true, NULL);
+        SpellCastTargets tgt(s->getPlayerCaster()->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellMgr.newSpell(unitTarget, sSpellMgr.getSpellInfo(inc_resist_by_level_spell), true, NULL);
@@ -279,7 +279,7 @@ bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
 
 bool MasterDemonologist2(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* p_caster = s->p_caster;
+    Player* p_caster = s->getPlayerCaster();
     Unit* unitTarget = s->GetUnitTarget();
 
     if (!p_caster || !unitTarget)
@@ -336,7 +336,7 @@ bool MasterDemonologist2(uint8_t /*effectIndex*/, Spell* s)
 
 bool MasterDemonologist3(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* p_caster = s->p_caster;
+    Player* p_caster = s->getPlayerCaster();
     Unit* unitTarget = s->GetUnitTarget();
 
     if (!p_caster || !unitTarget)
@@ -392,7 +392,7 @@ bool MasterDemonologist3(uint8_t /*effectIndex*/, Spell* s)
 
 bool MasterDemonologist4(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* p_caster = s->p_caster;
+    Player* p_caster = s->getPlayerCaster();
     Unit* unitTarget = s->GetUnitTarget();
 
     if (!p_caster || !unitTarget)
@@ -448,7 +448,7 @@ bool MasterDemonologist4(uint8_t /*effectIndex*/, Spell* s)
 
 bool MasterDemonologist5(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* p_caster = s->p_caster;
+    Player* p_caster = s->getPlayerCaster();
     Unit* unitTarget = s->GetUnitTarget();
 
     if (!p_caster || !unitTarget)
@@ -509,11 +509,11 @@ bool SummonSuccubusQuest(uint8_t /*effectIndex*/, Spell* s)
     if (cp == nullptr)
         return false;
 
-    Creature* pCreature = s->p_caster->GetMapMgr()->CreateCreature(cp->Id);
-    pCreature->Load(cp, s->p_caster->GetPositionX(), s->p_caster->GetPositionY(), s->p_caster->GetPositionZ());
+    Creature* pCreature = s->getPlayerCaster()->GetMapMgr()->CreateCreature(cp->Id);
+    pCreature->Load(cp, s->getPlayerCaster()->GetPositionX(), s->getPlayerCaster()->GetPositionY(), s->getPlayerCaster()->GetPositionZ());
     pCreature->GetAIInterface()->Init(pCreature, AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
-    pCreature->GetAIInterface()->taunt(s->p_caster, true);
-    pCreature->PushToWorld(s->p_caster->GetMapMgr());
+    pCreature->GetAIInterface()->taunt(s->getPlayerCaster(), true);
+    pCreature->PushToWorld(s->getPlayerCaster()->GetMapMgr());
     pCreature->Despawn(60000, 0);
 
     return true;
@@ -521,7 +521,7 @@ bool SummonSuccubusQuest(uint8_t /*effectIndex*/, Spell* s)
 
 bool SummonVoidWalkerQuest(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* p_caster = s->p_caster;
+    Player* p_caster = s->getPlayerCaster();
 
     CreatureProperties const* cp = sMySQLStore.getCreatureProperties(5676);
     if (cp == nullptr)
@@ -539,7 +539,7 @@ bool SummonVoidWalkerQuest(uint8_t /*effectIndex*/, Spell* s)
 
 bool SummonFelHunterQuest(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* p_caster = s->p_caster;
+    Player* p_caster = s->getPlayerCaster();
 
     CreatureProperties const* cp = sMySQLStore.getCreatureProperties(6268);
     if (cp == nullptr)
