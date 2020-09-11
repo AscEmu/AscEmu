@@ -1075,7 +1075,7 @@ void Player::handleFall(MovementInfo const& movementInfo)
         falldistance = 1;
     }
 
-    if (isAlive() && !bInvincible && (falldistance > 12) && !m_noFallDamage && ((!m_cheats.GodModeCheat && (UNIXTIME >= m_fallDisabledUntil))))
+    if (isAlive() && !bInvincible && (falldistance > 12) && !m_noFallDamage && ((!m_cheats.hasGodModeCheat && (UNIXTIME >= m_fallDisabledUntil))))
     {
         auto health_loss = static_cast<uint32_t>(getHealth() * (falldistance - 12) * 0.017f);
 
@@ -1114,7 +1114,7 @@ bool Player::isPlayerJumping(MovementInfo const& movementInfo, uint16_t opcode)
 
 void Player::handleBreathing(MovementInfo const& movementInfo, WorldSession* session)
 {
-    if (!worldConfig.server.enableBreathing || m_cheats.FlyCheat || m_bUnlimitedBreath || !isAlive() || m_cheats.GodModeCheat)
+    if (!worldConfig.server.enableBreathing || m_cheats.hasFlyCheat || m_bUnlimitedBreath || !isAlive() || m_cheats.hasGodModeCheat)
     {
         if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING)
             m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
@@ -1947,7 +1947,7 @@ bool Player::hasSpellGlobalCooldown(SpellInfo const* spellInfo)
     const auto curTime = Util::getMSTime();
 
     // Check for cooldown cheat as well
-    if (spellInfo->getStartRecoveryTime() > 0 && m_globalCooldown > 0 && !m_cheats.CooldownCheat)
+    if (spellInfo->getStartRecoveryTime() > 0 && m_globalCooldown > 0 && !m_cheats.hasCooldownCheat)
     {
         if (curTime < m_globalCooldown)
             return true;

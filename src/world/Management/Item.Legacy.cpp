@@ -123,7 +123,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     setCreatorGuid(fields[5].GetUInt32());
 
     uint32 count = fields[6].GetUInt32();
-    if (count > m_itemProperties->MaxCount && (m_owner && !m_owner->m_cheats.ItemStackCheat))
+    if (count > m_itemProperties->MaxCount && (m_owner && !m_owner->m_cheats.hasItemStackCheat))
         count = m_itemProperties->MaxCount;
     setStackCount(count);
 

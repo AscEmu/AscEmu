@@ -30,7 +30,7 @@ void WorldSession::sendTaxiList(Creature* creature)
     const auto field = static_cast<uint8_t>((nearestNode - 1) / 32);
     const uint32_t subMask = 1 << ((nearestNode - 1) % 32);
 
-    if (!(_player->GetTaximask(field) & subMask) && !_player->m_cheats.TaxiCheat)
+    if (!(_player->GetTaximask(field) & subMask) && !_player->m_cheats.hasTaxiCheat)
     {
         _player->SetTaximask(field, (subMask | _player->GetTaximask(field)));
 
@@ -43,7 +43,7 @@ void WorldSession::sendTaxiList(Creature* creature)
     sTaxiMgr.GetGlobalTaxiNodeMask(nearestNode, tmpTaxiNodeMask);
     tmpTaxiNodeMask[field] |= 1 << ((nearestNode - 1) % 32);
 
-    if (!_player->m_cheats.TaxiCheat)
+    if (!_player->m_cheats.hasTaxiCheat)
     {
         for (uint32_t i = 0; i < DBC_TAXI_MASK_SIZE; ++i)
             tmpTaxiNodeMask[i] &= _player->GetTaximask(i);

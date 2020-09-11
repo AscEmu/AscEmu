@@ -715,8 +715,8 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
 
     auto inventoryItem2 = _player->getItemInterface()->GetInventoryItem(srlPacket.destInventorySlot, srlPacket.destSlot);
 
-    const uint32_t itemMaxStack1 = inventoryItem1->getOwner()->m_cheats.ItemStackCheat ? 0x7fffffff : inventoryItem1->getItemProperties()->MaxCount;
-    const uint32_t itemMaxStack2 = inventoryItem2 ? (inventoryItem2->getOwner()->m_cheats.ItemStackCheat
+    const uint32_t itemMaxStack1 = inventoryItem1->getOwner()->m_cheats.hasItemStackCheat ? 0x7fffffff : inventoryItem1->getItemProperties()->MaxCount;
+    const uint32_t itemMaxStack2 = inventoryItem2 ? (inventoryItem2->getOwner()->m_cheats.hasItemStackCheat
         ? 0x7fffffff : inventoryItem2->getItemProperties()->MaxCount) : 0;
     if (inventoryItem1->wrapped_item_id || inventoryItem2 && inventoryItem2->wrapped_item_id || count > itemMaxStack1)
     {
@@ -1811,7 +1811,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
     if (it == nullptr)
         return;
 
-    uint32_t itemMaxStack = _player->m_cheats.ItemStackCheat ? 0x7fffffff : it->MaxCount;
+    uint32_t itemMaxStack = _player->m_cheats.hasItemStackCheat ? 0x7fffffff : it->MaxCount;
     if (itemMaxStack > 0 && ci.amount * amount > itemMaxStack)
     {
         _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_CANT_CARRY_MORE_OF_THIS);
@@ -2002,7 +2002,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    uint32_t itemMaxStack = _player->m_cheats.ItemStackCheat ? 0x7fffffff : it->MaxCount;
+    uint32_t itemMaxStack = _player->m_cheats.hasItemStackCheat ? 0x7fffffff : it->MaxCount;
     if (itemMaxStack > 0 && srlPacket.amount * creature_item.amount > itemMaxStack)
     {
         _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_CANT_STACK);
@@ -2768,7 +2768,7 @@ void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    uint32_t dstItemMaxStack = dst->getOwner()->m_cheats.ItemStackCheat ? 0x7fffffff : dst->getItemProperties()->MaxCount;
+    uint32_t dstItemMaxStack = dst->getOwner()->m_cheats.hasItemStackCheat ? 0x7fffffff : dst->getItemProperties()->MaxCount;
     if (dstItemMaxStack > 1)
     {
         _player->getItemInterface()->buildInventoryChangeError(src, dst, INV_ERR_STACKABLE_CANT_BE_WRAPPED);

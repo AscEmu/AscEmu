@@ -152,7 +152,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     }
 
     // Check for cast time cheat
-    if (m_castTime < 0 || (p_caster != nullptr && p_caster->m_cheats.CastTimeCheat))
+    if (m_castTime < 0 || (p_caster != nullptr && p_caster->m_cheats.hasCastTimeCheat))
         m_castTime = 0;
 
     // Initialize power cost
@@ -210,7 +210,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
         sendSpellStart();
 
         // Send global cooldown
-        if (p_caster != nullptr && !p_caster->m_cheats.CastTimeCheat)
+        if (p_caster != nullptr && !p_caster->m_cheats.hasCastTimeCheat)
             p_caster->addGlobalCooldown(getSpellInfo());
 
         // Handle instant and non-channeled spells instantly. Other spells will be handled in ::update on next tick.
@@ -2331,7 +2331,7 @@ SpellCastResult Spell::checkPower() const
     if (m_powerCost == 0)
         return SPELL_CAST_SUCCESS;
 
-    if (p_caster != nullptr && p_caster->m_cheats.PowerCheat)
+    if (p_caster != nullptr && p_caster->m_cheats.hasPowerCheat)
         return SPELL_CAST_SUCCESS;
 
     // Check if caster has enough health points if health is used for power
@@ -4136,7 +4136,7 @@ void Spell::takePower()
     if (i_caster != nullptr || u_caster == nullptr || m_triggeredByAura != nullptr)
         return;
 
-    if (p_caster != nullptr && p_caster->m_cheats.PowerCheat)
+    if (p_caster != nullptr && p_caster->m_cheats.hasPowerCheat)
         return;
 
     if (getSpellInfo()->getPowerType() == POWER_TYPE_HEALTH)

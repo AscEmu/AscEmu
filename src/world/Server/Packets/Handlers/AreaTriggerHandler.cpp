@@ -53,7 +53,7 @@ uint32_t checkTriggerPrerequisites(MySQLStructure::AreaTrigger const* areaTrigge
         return AreaTriggerResult::NoWotLK;
 
     // These can be overridden by cheats/GM
-    if (player->m_cheats.TriggerpassCheat)
+    if (player->m_cheats.hasTriggerpassCheat)
         return AreaTriggerResult::Success;
 
     if (areaTrigger->requiredLevel && player->getLevel() < areaTrigger->requiredLevel)

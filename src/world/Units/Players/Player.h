@@ -394,15 +394,15 @@ private:
 
 struct PlayerCheat
 {
-    bool TaxiCheat;
-    bool CooldownCheat;
-    bool CastTimeCheat;
-    bool GodModeCheat;
-    bool PowerCheat;
-    bool FlyCheat;
-    bool AuraStackCheat;
-    bool ItemStackCheat;
-    bool TriggerpassCheat;
+    bool hasTaxiCheat;
+    bool hasCooldownCheat;
+    bool hasCastTimeCheat;
+    bool hasGodModeCheat;
+    bool hasPowerCheat;
+    bool hasFlyCheat;
+    bool hasAuraStackCheat;
+    bool hasItemStackCheat;
+    bool hasTriggerpassCheat;
 };
 
 enum GlyphSlotMask

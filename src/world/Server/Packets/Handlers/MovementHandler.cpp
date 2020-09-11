@@ -66,7 +66,7 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
 void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSession* pSession)
 {
     // no water breathing is required
-    if (!worldConfig.server.enableBreathing || _player->m_cheats.FlyCheat || _player->m_bUnlimitedBreath || !_player->isAlive() || _player->m_cheats.GodModeCheat)
+    if (!worldConfig.server.enableBreathing || _player->m_cheats.hasFlyCheat || _player->m_bUnlimitedBreath || !_player->isAlive() || _player->m_cheats.hasGodModeCheat)
     {
         // player is flagged as in water
         if (_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING)
@@ -315,12 +315,12 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     // Remove flying aura if needed
     // TODO: This seems like a daft check, verify it
-    if (!movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && recvData.GetOpcode() != MSG_MOVE_JUMP && !_player->m_cheats.FlyCheat && !_player->flying_aura)
+    if (!movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && recvData.GetOpcode() != MSG_MOVE_JUMP && !_player->m_cheats.hasFlyCheat && !_player->flying_aura)
         if (!movement_info.hasMovementFlag(MOVEFLAG_SWIMMING) && !movement_info.hasMovementFlag(MOVEFLAG_FALLING))
             if (movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
                 SendPacket(SmsgMoveUnsetCanFly(_player->getGuid()).serialise().get());
 
-    if (movement_info.hasMovementFlag(MOVEFLAG_FLYING) && !movement_info.hasMovementFlag(MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->m_cheats.FlyCheat))
+    if (movement_info.hasMovementFlag(MOVEFLAG_FLYING) && !movement_info.hasMovementFlag(MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->m_cheats.hasFlyCheat))
         SendPacket(SmsgMoveUnsetCanFly(_player->getGuid()).serialise().get());
 
     if (_player->blinked)
@@ -367,7 +367,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
                 fall_distance = 1;
 
             if (mover->isAlive() && !mover->bInvincible && fall_distance > 12 && !mover->m_noFallDamage && (mover->
-                getGuid() != _player->getGuid() || !_player->m_cheats.GodModeCheat && UNIXTIME >= _player->m_fallDisabledUntil))
+                getGuid() != _player->getGuid() || !_player->m_cheats.hasGodModeCheat && UNIXTIME >= _player->m_fallDisabledUntil))
             {
                 auto health_lost = static_cast<uint32_t>(mover->getHealth() * (fall_distance - 12) * 0.017f);
                 if (health_lost >= mover->getHealth())
@@ -802,7 +802,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     /************************************************************************/
     /* Hack Detection by Classic                                            */
     /************************************************************************/
-    if (!movement_info.transport_guid && recvPacket.GetOpcode() != MSG_MOVE_JUMP && !_player->m_cheats.FlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
+    if (!movement_info.transport_guid && recvPacket.GetOpcode() != MSG_MOVE_JUMP && !_player->m_cheats.hasFlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
@@ -810,7 +810,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         SendPacket(&data);
     }
 
-    if ((movement_info.flags & MOVEFLAG_FLYING) && !(movement_info.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->m_cheats.FlyCheat))
+    if ((movement_info.flags & MOVEFLAG_FLYING) && !(movement_info.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->m_cheats.hasFlyCheat))
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
@@ -850,7 +850,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
             //checks that player has fallen more than 12 units, otherwise no damage will be dealt
             //falltime check is also needed here, otherwise sudden changes in Z axis position, such as using !recall, may result in death
             if (mover->isAlive() && !mover->bInvincible && (falldistance > 12) && !mover->m_noFallDamage &&
-                ((mover->getGuid() != _player->getGuid()) || (!_player->m_cheats.GodModeCheat && (UNIXTIME >= _player->m_fallDisabledUntil))))
+                ((mover->getGuid() != _player->getGuid()) || (!_player->m_cheats.hasGodModeCheat && (UNIXTIME >= _player->m_fallDisabledUntil))))
             {
                 // 1.7% damage for each unit fallen on Z axis over 13
                 uint32 health_loss = static_cast<uint32>(mover->getHealth() * (falldistance - 12) * 0.017f);
@@ -1187,7 +1187,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         ///************************************************************************/
         ///* Hack Detection by Classic                                            */
         ///************************************************************************/
-        //if (!movement_info.transporter_info.guid && recvPacket.GetOpcode() != MSG_MOVE_JUMP && !_player->FlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
+        //if (!movement_info.transporter_info.guid && recvPacket.GetOpcode() != MSG_MOVE_JUMP && !_player->hasFlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
         //{
         //    WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         //    data << _player->GetNewGUID();
@@ -1195,7 +1195,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //    SendPacket(&data);
         //}
 
-        //if ((movement_info.flags & MOVEFLAG_FLYING) && !(movement_info.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->FlyCheat))
+        //if ((movement_info.flags & MOVEFLAG_FLYING) && !(movement_info.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->hasFlyCheat))
         //{
         //    WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         //    data << _player->GetNewGUID();
@@ -1235,7 +1235,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //        //checks that player has fallen more than 12 units, otherwise no damage will be dealt
         //        //falltime check is also needed here, otherwise sudden changes in Z axis position, such as using !recall, may result in death
         //        if (mover->isAlive() && !mover->bInvincible && (falldistance > 12) && !mover->m_noFallDamage &&
-        //            ((mover->GetGUID() != _player->GetGUID()) || (!_player->GodModeCheat && (UNIXTIME >= _player->m_fallDisabledUntil))))
+        //            ((mover->GetGUID() != _player->GetGUID()) || (!_player->hasGodModeCheat && (UNIXTIME >= _player->m_fallDisabledUntil))))
         //        {
         //            // 1.7% damage for each unit fallen on Z axis over 13
         //            uint32 health_loss = static_cast<uint32>(mover->GetHealth() * (falldistance - 12) * 0.017f);

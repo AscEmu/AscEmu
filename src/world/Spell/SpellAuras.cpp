@@ -385,7 +385,7 @@ void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStac
 
     // Check for aura stack cheat
     const auto plrHolder = getPlayerOwner();
-    if (plrHolder != nullptr && plrHolder->m_cheats.AuraStackCheat)
+    if (plrHolder != nullptr && plrHolder->m_cheats.hasAuraStackCheat)
         maxStacks = 255;
 
     const auto curStackCount = getStackCount();

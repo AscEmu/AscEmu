@@ -586,7 +586,7 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
     // Check if victim is immune to this school
     // or if victim has god mode cheat
     if (victim->SchoolImmunityList[school] != 0 ||
-        (victim->isPlayer() && static_cast<Player*>(victim)->m_cheats.GodModeCheat))
+        (victim->isPlayer() && static_cast<Player*>(victim)->m_cheats.hasGodModeCheat))
     {
         if (isCreatureOrPlayer())
             static_cast<Unit*>(this)->sendSpellOrDamageImmune(getGuid(), victim, spellId);

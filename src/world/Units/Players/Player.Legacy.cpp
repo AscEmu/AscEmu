@@ -2150,23 +2150,23 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     // active cheats
     uint32 active_cheats = PLAYER_CHEAT_NONE;
-    if (m_cheats.CooldownCheat)
+    if (m_cheats.hasCooldownCheat)
         active_cheats |= PLAYER_CHEAT_COOLDOWN;
-    if (m_cheats.CastTimeCheat)
+    if (m_cheats.hasCastTimeCheat)
         active_cheats |= PLAYER_CHEAT_CAST_TIME;
-    if (m_cheats.GodModeCheat)
+    if (m_cheats.hasGodModeCheat)
         active_cheats |= PLAYER_CHEAT_GOD_MODE;
-    if (m_cheats.PowerCheat)
+    if (m_cheats.hasPowerCheat)
         active_cheats |= PLAYER_CHEAT_POWER;
-    if (m_cheats.FlyCheat)
+    if (m_cheats.hasFlyCheat)
         active_cheats |= PLAYER_CHEAT_FLY;
-    if (m_cheats.AuraStackCheat)
+    if (m_cheats.hasAuraStackCheat)
         active_cheats |= PLAYER_CHEAT_AURA_STACK;
-    if (m_cheats.ItemStackCheat)
+    if (m_cheats.hasItemStackCheat)
         active_cheats |= PLAYER_CHEAT_ITEM_STACK;
-    if (m_cheats.TriggerpassCheat)
+    if (m_cheats.hasTriggerpassCheat)
         active_cheats |= PLAYER_CHEAT_TRIGGERPASS;
-    if (m_cheats.TaxiCheat)
+    if (m_cheats.hasTaxiCheat)
         active_cheats |= PLAYER_CHEAT_TAXI;
 
     std::stringstream ss;
@@ -2659,23 +2659,23 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     // Load active cheats
     uint32 active_cheats = field[9].GetUInt32();
     if (active_cheats & PLAYER_CHEAT_COOLDOWN)
-        m_cheats.CooldownCheat = true;
+        m_cheats.hasCooldownCheat = true;
     if (active_cheats & PLAYER_CHEAT_CAST_TIME)
-        m_cheats.CastTimeCheat = true;
+        m_cheats.hasCastTimeCheat = true;
     if (active_cheats & PLAYER_CHEAT_GOD_MODE)
-        m_cheats.GodModeCheat = true;
+        m_cheats.hasGodModeCheat = true;
     if (active_cheats & PLAYER_CHEAT_POWER)
-        m_cheats.PowerCheat = true;
+        m_cheats.hasPowerCheat = true;
     if (active_cheats & PLAYER_CHEAT_FLY)
-        m_cheats.FlyCheat = true;
+        m_cheats.hasFlyCheat = true;
     if (active_cheats & PLAYER_CHEAT_AURA_STACK)
-        m_cheats.AuraStackCheat = true;
+        m_cheats.hasAuraStackCheat = true;
     if (active_cheats & PLAYER_CHEAT_ITEM_STACK)
-        m_cheats.ItemStackCheat = true;
+        m_cheats.hasItemStackCheat = true;
     if (active_cheats & PLAYER_CHEAT_TRIGGERPASS)
-        m_cheats.TriggerpassCheat = true;
+        m_cheats.hasTriggerpassCheat = true;
     if (active_cheats & PLAYER_CHEAT_TAXI)
-        m_cheats.TaxiCheat = true;
+        m_cheats.hasTaxiCheat = true;
 
     // Process exploration data.
     LoadFieldsFromString(field[10].GetString(), getOffsetForStructuredField(WoWPlayer, explored_zones), WOWPLAYER_EXPLORED_ZONES_COUNT); //10
@@ -3572,7 +3572,7 @@ void Player::OnPushToWorld()
     // set fly if cheat is active
     // TODO Validate that this isn't breaking logon by messaging player without delay
 #ifndef AE_TBC
-    setMoveCanFly(m_cheats.FlyCheat);
+    setMoveCanFly(m_cheats.hasFlyCheat);
 #endif
 
     // Update PVP Situation
@@ -3680,7 +3680,7 @@ void Player::OnPushToWorld()
     AddItemsToWorld();
 
     // set fly if cheat is active
-    setMoveCanFly(m_cheats.FlyCheat);
+    setMoveCanFly(m_cheats.hasFlyCheat);
 
     // Update PVP Situation
     LoginPvPSetup();
@@ -10596,7 +10596,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
 {
     if (!pVictim || !pVictim->isAlive() || !pVictim->IsInWorld() || !IsInWorld())
         return;
-    if (pVictim->isPlayer() && static_cast< Player* >(pVictim)->m_cheats.GodModeCheat == true)
+    if (pVictim->isPlayer() && static_cast< Player* >(pVictim)->m_cheats.hasGodModeCheat == true)
         return;
     if (pVictim->bInvincible)
         return;

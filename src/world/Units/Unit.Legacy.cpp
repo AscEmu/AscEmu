@@ -8013,7 +8013,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
             dmg.resisted_damage = 0;
         }
     }
-    if (pVictim->isPlayer() && static_cast<Player*>(pVictim)->m_cheats.GodModeCheat == true)
+    if (pVictim->isPlayer() && static_cast<Player*>(pVictim)->m_cheats.hasGodModeCheat == true)
     {
         dmg.resisted_damage = dmg.full_damage; //godmode
     }
@@ -8842,7 +8842,7 @@ uint32 Unit::AbsorbDamage(uint32 School, uint32* dmg)
         dmg_absorbed += aur->AbsorbDamage(School, dmg);
     }
 
-    if (isPlayer() && static_cast<Player*>(this)->m_cheats.GodModeCheat)
+    if (isPlayer() && static_cast<Player*>(this)->m_cheats.hasGodModeCheat)
     {
         dmg_absorbed += *dmg;
         *dmg = 0;

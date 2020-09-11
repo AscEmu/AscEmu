@@ -726,7 +726,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
         return SPELL_DID_HIT_IMMUNE;
 
     /* Check if player target has god mode */
-    if (p_victim && p_victim->m_cheats.GodModeCheat)
+    if (p_victim && p_victim->m_cheats.hasGodModeCheat)
     {
         return SPELL_DID_HIT_IMMUNE;
     }
@@ -1564,7 +1564,7 @@ void Spell::finish(bool successful)
     // moved this from ::prepare()
     // With preparing got ClearCooldownForspell, it makes too early for player client.
     // Now .cheat cooldown works perfectly.
-    if (!m_triggeredSpell && p_caster != nullptr && p_caster->m_cheats.CooldownCheat)
+    if (!m_triggeredSpell && p_caster != nullptr && p_caster->m_cheats.hasCooldownCheat)
         p_caster->ClearCooldownForSpell(getSpellInfo()->getId());
 
     // Send Spell cast info to QuestMgr
