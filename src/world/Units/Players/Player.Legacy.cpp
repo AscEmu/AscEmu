@@ -2431,7 +2431,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     _SaveQuestLogEntry(buf);
 
     // Tutorials
-    _SaveTutorials(buf);
+    saveTutorials();
 
     // GM Ticket
     //\todo Is this really necessary? Tickets will always be saved on creation, update and so on...
@@ -3238,7 +3238,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         setGuildTimestamp(static_cast<uint32_t>(UNIXTIME));
 
     // load properties
-    _LoadTutorials(results[PlayerQuery::Tutorials].result);
+    loadTutorials();
     _LoadPlayerCooldowns(results[PlayerQuery::Cooldowns].result);
     _LoadQuestLogEntry(results[PlayerQuery::Questlog].result);
     getItemInterface()->mLoadItemsFromDatabase(results[PlayerQuery::Items].result);
@@ -4734,52 +4734,6 @@ void Player::ClearQuest(uint32 id)
 bool Player::GetQuestRewardStatus(uint32 quest_id)
 {
     return HasFinishedQuest(quest_id);
-}
-
-void Player::_LoadTutorials(QueryResult* result)
-{
-    if (result)
-    {
-        Field* fields = result->Fetch();
-        for (uint8 iI = 0; iI < 8; iI++)
-            m_Tutorials[iI] = fields[iI + 1].GetUInt32();
-    }
-    tutorialsDirty = false;
-}
-
-void Player::_SaveTutorials(QueryBuffer* buf)
-{
-    if (tutorialsDirty)
-    {
-        if (buf == nullptr)
-        {
-            CharacterDatabase.Execute("DELETE FROM tutorials WHERE playerid = %u;", getGuidLow());
-            CharacterDatabase.Execute("INSERT INTO tutorials VALUES('%u','%u','%u','%u','%u','%u','%u','%u','%u');", getGuidLow(), m_Tutorials[0], m_Tutorials[1], m_Tutorials[2], m_Tutorials[3], m_Tutorials[4], m_Tutorials[5], m_Tutorials[6], m_Tutorials[7]);
-        }
-        else
-        {
-            buf->AddQuery("DELETE FROM tutorials WHERE playerid = %u;", getGuidLow());
-            buf->AddQuery("INSERT INTO tutorials VALUES('%u','%u','%u','%u','%u','%u','%u','%u','%u');", getGuidLow(), m_Tutorials[0], m_Tutorials[1], m_Tutorials[2], m_Tutorials[3], m_Tutorials[4], m_Tutorials[5], m_Tutorials[6], m_Tutorials[7]);
-        }
-
-        tutorialsDirty = false;
-    }
-}
-
-uint32 Player::GetTutorialInt(uint32 intId)
-{
-    ARCEMU_ASSERT(intId < 8)
-    return m_Tutorials[intId];
-}
-
-void Player::SetTutorialInt(uint32 intId, uint32 value)
-{
-    if (intId >= 8)
-        return;
-
-    ARCEMU_ASSERT(intId < 8)
-    m_Tutorials[intId] = value;
-    tutorialsDirty = true;
 }
 
 float Player::GetDefenseChance(uint32 opLevel)

@@ -955,6 +955,18 @@ private:
 
 public:
     /////////////////////////////////////////////////////////////////////////////////////////
+    // Tutorials
+    uint32_t getTutorialValueById(uint8_t id);
+    void setTutorialValueForId(uint8_t id, uint32_t value);
+
+    void loadTutorials();
+    void saveTutorials();
+
+protected:
+    uint32_t m_Tutorials[8];
+
+public:
+    /////////////////////////////////////////////////////////////////////////////////////////
     // Actionbar
     void setActionButton(uint8_t button, uint32_t action, uint8_t type, uint8_t misc);
     void sendActionBars(bool clearBars);
@@ -1719,9 +1731,6 @@ public:
         AIInterface* waypointunit;
 
         uint32 m_nextSave;
-        // Tutorials
-        uint32 GetTutorialInt(uint32 intId);
-        void SetTutorialInt(uint32 intId, uint32 value);
 
         // Rest
         uint32 SubtractRestXP(uint32 amount);
@@ -2180,8 +2189,6 @@ public:
         void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
         void _SetUpdateBits(UpdateMask* updateMask, Player* target) const;
 
-        void _LoadTutorials(QueryResult* result);
-        void _SaveTutorials(QueryBuffer* buf);
         void _SaveQuestLogEntry(QueryBuffer* buf);
         void _LoadQuestLogEntry(QueryResult* result);
 
@@ -2204,8 +2211,6 @@ public:
         uint32 m_AttackMsgTimer;        // "too far away" and "wrong facing" timer
         bool m_attacking;
         
-        uint32 m_Tutorials[8];
-
         // Character Ban
         uint32 m_banned;
         std::string m_banreason;

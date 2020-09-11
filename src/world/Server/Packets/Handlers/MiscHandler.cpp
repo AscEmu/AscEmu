@@ -241,9 +241,9 @@ void WorldSession::handleTutorialFlag(WorldPacket& recvPacket)
         return;
     }
 
-    uint32_t tutorial_flag = _player->GetTutorialInt(tutorial_index);
+    uint32_t tutorial_flag = _player->getTutorialValueById(tutorial_index);
     tutorial_flag |= (1 << tutorial_status);
-    _player->SetTutorialInt(tutorial_index, tutorial_flag);
+    _player->setTutorialValueForId(tutorial_index, tutorial_flag);
 
     LogDebugFlag(LF_OPCODE, "Received Tutorial flag: (%u).", srlPacket.flag);
 }
@@ -251,13 +251,13 @@ void WorldSession::handleTutorialFlag(WorldPacket& recvPacket)
 void WorldSession::handleTutorialClear(WorldPacket& /*recvPacket*/)
 {
     for (uint32_t id = 0; id < 8; ++id)
-        _player->SetTutorialInt(id, 0xFFFFFFFF);
+        _player->setTutorialValueForId(id, 0xFFFFFFFF);
 }
 
 void WorldSession::handleTutorialReset(WorldPacket& /*recvPacket*/)
 {
     for (uint32_t id = 0; id < 8; ++id)
-        _player->SetTutorialInt(id, 0x00000000);
+        _player->setTutorialValueForId(id, 0x00000000);
 }
 
 void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)

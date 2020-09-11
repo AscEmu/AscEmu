@@ -2602,6 +2602,43 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
+// Tutorials
+uint32_t Player::getTutorialValueById(uint8_t id)
+{
+    ARCEMU_ASSERT(id < 8)
+    return m_Tutorials[id];
+}
+
+void Player::setTutorialValueForId(uint8_t id, uint32_t value)
+{
+    ARCEMU_ASSERT(id < 8)
+    m_Tutorials[id] = value;
+    tutorialsDirty = true;
+}
+
+void Player::loadTutorials()
+{
+    if (auto result = WorldDatabase.Query("SELECT * FROM tutorials WHERE playerId = %u", getGuidLow()))
+    {
+        auto* const fields = result->Fetch();
+        for (uint8_t id = 0; id < 8; ++id)
+            m_Tutorials[id] = fields[id + 1].GetUInt32();
+    }
+    tutorialsDirty = false;
+}
+
+void Player::saveTutorials()
+{
+    if (tutorialsDirty)
+    {
+        CharacterDatabase.Execute("DELETE FROM tutorials WHERE playerid = %u;", getGuidLow());
+        CharacterDatabase.Execute("INSERT INTO tutorials VALUES('%u','%u','%u','%u','%u','%u','%u','%u','%u');", getGuidLow(), m_Tutorials[0], m_Tutorials[1], m_Tutorials[2], m_Tutorials[3], m_Tutorials[4], m_Tutorials[5], m_Tutorials[6], m_Tutorials[7]);
+
+        tutorialsDirty = false;
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
 // Actionbar
 void Player::setActionButton(uint8_t button, uint32_t action, uint8_t type, uint8_t misc)
 {
