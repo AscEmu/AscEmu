@@ -711,7 +711,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                         case 1721: // Heroic: Archavon the Stone Watcher
                         case 1817: // The Culling of Time
                         case 1865: // Lockdown!
-                            if (GetPlayer()->iInstanceType >= MODE_HEROIC)
+                            if (GetPlayer()->getDungeonDifficulty() >= MODE_HEROIC)
                             {
                                 UpdateCriteriaProgress(achievementCriteria, 1);
                             }
@@ -829,7 +829,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                             // Defeat Ley-Guardian Eregos in The Oculus on Heroic Difficulty without anyone in your party using an Amber Drake.
                             break;
                         default:
-                            if (!IS_INSTANCE(GetPlayer()->GetMapId()) || (GetPlayer()->iInstanceType == MODE_NORMAL))
+                            if (!IS_INSTANCE(GetPlayer()->GetMapId()) || (GetPlayer()->getDungeonDifficulty() == MODE_NORMAL))
                             {
                                 // already tested heroic achievements above, the rest should be normal or non-dungeon
                                 UpdateCriteriaProgress(achievementCriteria, 1);

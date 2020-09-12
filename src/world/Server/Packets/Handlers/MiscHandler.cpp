@@ -468,7 +468,7 @@ void WorldSession::handleDungeonDifficultyOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received MSG_SET_DUNGEON_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
 
-    _player->SetDungeonDifficulty(srlPacket.difficulty);
+    _player->setDungeonDifficulty(srlPacket.difficulty);
     sInstanceMgr.ResetSavedInstances(_player);
 
     const auto group = _player->GetGroup();
@@ -485,7 +485,7 @@ void WorldSession::handleRaidDifficultyOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Received MSG_SET_RAID_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
 
-    _player->SetRaidDifficulty(srlPacket.difficulty);
+    _player->setRaidDifficulty(srlPacket.difficulty);
     sInstanceMgr.ResetSavedInstances(_player);
 
     const auto group = _player->GetGroup();

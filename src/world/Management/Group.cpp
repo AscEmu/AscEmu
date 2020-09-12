@@ -399,7 +399,7 @@ void SubGroup::Disband()
             {
                 if ((*itr)->m_loggedInPlayer->GetSession() != nullptr)
                 {
-                    (*itr)->m_loggedInPlayer->GetSession()->SendPacket(SmsgPartyCommandResult(2, "", (*itr)->m_loggedInPlayer->iInstanceType).serialise().get());
+                    (*itr)->m_loggedInPlayer->GetSession()->SendPacket(SmsgPartyCommandResult(2, "", (*itr)->m_loggedInPlayer->getDungeonDifficulty()).serialise().get());
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(SmsgGroupDestroyed().serialise().get());
 #if VERSION_STRING >= Cata
                     (*itr)->m_loggedInPlayer->GetSession()->sendEmptyGroupList((*itr)->m_loggedInPlayer);
@@ -1255,7 +1255,7 @@ void Group::SetDungeonDifficulty(uint8 diff)
         {
             if ((*itr)->m_loggedInPlayer)
             {
-                (*itr)->m_loggedInPlayer->SetDungeonDifficulty(diff);
+                (*itr)->m_loggedInPlayer->setDungeonDifficulty(diff);
                 (*itr)->m_loggedInPlayer->sendDungeonDifficultyPacket();
             }
         }
@@ -1275,7 +1275,7 @@ void Group::SetRaidDifficulty(uint8 diff)
         {
             if ((*itr)->m_loggedInPlayer)
             {
-                (*itr)->m_loggedInPlayer->SetRaidDifficulty(diff);
+                (*itr)->m_loggedInPlayer->setRaidDifficulty(diff);
                 (*itr)->m_loggedInPlayer->sendRaidDifficultyPacket();
             }
         }

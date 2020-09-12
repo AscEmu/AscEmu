@@ -412,8 +412,8 @@ Player::Player(uint32 guid)
     resend_speed = false;
     login_flags = LOGIN_NO_FLAG;
     m_canDualWield2H = false;
-    iInstanceType = 0;
-    m_RaidDifficulty = 0;
+    m_dungeonDifficulty = 0;
+    m_raidDifficulty = 0;
     m_XpGain = true;
     resettalents = false;
     memset(reputationByListId, 0, sizeof(FactionReputation*) * 128);
@@ -2412,7 +2412,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     ss << ", ";
 
-    ss << uint32(this->HasWonRbgToday()) << ", " << uint32(iInstanceType) << ", " << uint32(m_RaidDifficulty);
+    ss << uint32(this->HasWonRbgToday()) << ", " << uint32(m_dungeonDifficulty) << ", " << uint32(m_raidDifficulty);
     ss << ")";
 
     if (bNewCharacter)
@@ -3191,8 +3191,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     else
         m_bgIsRbgWon = false;
 
-    iInstanceType = field[93].GetUInt8();
-    m_RaidDifficulty = field[94].GetUInt8();
+    m_dungeonDifficulty = field[93].GetUInt8();
+    m_raidDifficulty = field[94].GetUInt8();
 
     HonorHandler::RecalculateHonorFields(this);
 
@@ -7901,7 +7901,7 @@ void Player::OnWorldPortAck()
             welcome_msg = std::string(GetSession()->LocalizedWorldSrv(ServerString::SS_INSTANCE_WELCOME)) + " ";
             welcome_msg += std::string(GetSession()->LocalizedMapName(pMapinfo->mapid));
             welcome_msg += ". ";
-            if (pMapinfo->type != INSTANCE_NONRAID && !(pMapinfo->type == INSTANCE_MULTIMODE && iInstanceType >= MODE_HEROIC) && m_mapMgr->pInstance)
+            if (pMapinfo->type != INSTANCE_NONRAID && !(pMapinfo->type == INSTANCE_MULTIMODE && m_dungeonDifficulty >= MODE_HEROIC) && m_mapMgr->pInstance)
             {
                 /*welcome_msg += "This instance is scheduled to reset on ";
                 welcome_msg += asctime(localtime(&m_mapMgr->pInstance->m_expiration));*/
@@ -10309,26 +10309,6 @@ void Player::HandleSpellLoot(uint32 itemid)
 
         getItemInterface()->AddItemById(looteditemid, count, 0);
     }
-}
-
-void Player::SetDungeonDifficulty(uint8 diff)
-{
-    iInstanceType = diff;
-}
-
-uint8 Player::GetDungeonDifficulty()
-{
-    return iInstanceType;
-}
-
-void Player::SetRaidDifficulty(uint8 diff)
-{
-    m_RaidDifficulty = diff;
-}
-
-uint8 Player::GetRaidDifficulty()
-{
-    return m_RaidDifficulty;
 }
 
 void Player::SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs)

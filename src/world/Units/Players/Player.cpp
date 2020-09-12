@@ -2889,6 +2889,28 @@ ItemInterface* Player::getItemInterface() const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Difficulty
+void Player::setDungeonDifficulty(uint8_t diff)
+{
+    m_dungeonDifficulty = diff;
+}
+
+uint8_t Player::getDungeonDifficulty()
+{
+    return m_dungeonDifficulty;
+}
+
+void Player::setRaidDifficulty(uint8_t diff)
+{
+    m_raidDifficulty = diff;
+}
+
+uint8_t Player::getRaidDifficulty()
+{
+    return m_raidDifficulty;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 bool Player::isGMFlagSet()
 {
@@ -3124,13 +3146,13 @@ void Player::sendPetUnlearnConfirmPacket()
 
 void Player::sendDungeonDifficultyPacket()
 {
-    m_session->SendPacket(MsgSetDungeonDifficulty(m_RaidDifficulty, 1, InGroup()).serialise().get());
+    m_session->SendPacket(MsgSetDungeonDifficulty(m_raidDifficulty, 1, InGroup()).serialise().get());
 }
 
 void Player::sendRaidDifficultyPacket()
 {
 #if VERSION_STRING > TBC
-    m_session->SendPacket(MsgSetRaidDifficulty(m_RaidDifficulty, 1, InGroup()).serialise().get());
+    m_session->SendPacket(MsgSetRaidDifficulty(m_raidDifficulty, 1, InGroup()).serialise().get());
 #endif
 }
 

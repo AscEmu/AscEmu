@@ -162,7 +162,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
         return INSTANCE_ABORT_NOT_IN_RAID_GROUP;
 
     if (pGroup == nullptr &&
-        (mapInfo->type == INSTANCE_NONRAID && plr->iInstanceType == MODE_HEROIC) &&
+        (mapInfo->type == INSTANCE_NONRAID && plr->getDungeonDifficulty() == MODE_HEROIC) &&
         !plr->m_cheats.hasTriggerpassCheat)
         return INSTANCE_ABORT_NOT_IN_RAID_GROUP;
 
@@ -173,9 +173,9 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
 
     // We deny transfer if we requested a heroic instance of a map that has no heroic mode
     // We are trying to enter into a non-multi instance with a heroic group, downscaling
-    if (mapInfo->type == INSTANCE_NONRAID && plr->GetDungeonDifficulty() == MODE_HEROIC)
+    if (mapInfo->type == INSTANCE_NONRAID && plr->getDungeonDifficulty() == MODE_HEROIC)
     {
-        plr->SetDungeonDifficulty(MODE_NORMAL);
+        plr->setDungeonDifficulty(MODE_NORMAL);
         plr->sendDungeonDifficultyPacket();
 
         if (pGroup != nullptr)
@@ -183,18 +183,18 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
     }
 
     // if it's not a normal / 10men normal then check if we even have this mode
-    if (mapInfo->type == INSTANCE_RAID && plr->GetRaidDifficulty() != MODE_NORMAL_10MEN)
+    if (mapInfo->type == INSTANCE_RAID && plr->getRaidDifficulty() != MODE_NORMAL_10MEN)
     {
         uint8_t newtype = 0;
 
-        if (!mapInfo->hasDifficulty(plr->GetRaidDifficulty()))
+        if (!mapInfo->hasDifficulty(plr->getRaidDifficulty()))
         {
             // no it doesn't so we will downscale it
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // This part is totally speculative, if you know how this is done actually then do change it
             //
-            switch (plr->GetRaidDifficulty())
+            switch (plr->getRaidDifficulty())
             {
                 case MODE_NORMAL_25MEN:
                 case MODE_HEROIC_10MEN:
@@ -219,9 +219,9 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
             }
 
             // Setting the new mode on us and our group
-            if (plr->GetRaidDifficulty() != newtype)
+            if (plr->getRaidDifficulty() != newtype)
             {
-                plr->SetRaidDifficulty(newtype);
+                plr->setRaidDifficulty(newtype);
                 plr->sendRaidDifficultyPacket();
 
                 if (pGroup != nullptr)
@@ -350,9 +350,9 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
                 uint32_t diff;
 
                 if (mapInfo->type == INSTANCE_RAID)
-                    diff = plr->GetRaidDifficulty();
+                    diff = plr->getRaidDifficulty();
                 else
-                    diff = plr->GetDungeonDifficulty();
+                    diff = plr->getDungeonDifficulty();
 
                 for (auto itr = instancemap->begin(); itr != instancemap->end();)
                 {
@@ -411,10 +411,10 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
     {
         case INSTANCE_NONRAID:
         case INSTANCE_MULTIMODE:
-            in->m_difficulty = plr->GetDungeonDifficulty();
+            in->m_difficulty = plr->getDungeonDifficulty();
             break;
         case INSTANCE_RAID:
-            in->m_difficulty = plr->GetRaidDifficulty();
+            in->m_difficulty = plr->getRaidDifficulty();
             break;
     }
 
@@ -565,9 +565,9 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
                     uint32_t difficulty;
 
                     if (in->m_mapInfo->type == INSTANCE_RAID)
-                        difficulty = player->GetRaidDifficulty();
+                        difficulty = player->getRaidDifficulty();
                     else
-                        difficulty = player->GetDungeonDifficulty();
+                        difficulty = player->getDungeonDifficulty();
 
                     if (in->m_difficulty == difficulty && PlayerOwnsInstance(in, player))
                     {

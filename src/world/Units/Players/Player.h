@@ -1020,6 +1020,20 @@ private:
     ItemInterface* m_itemInterface;
 
 public:
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Difficulty
+    void setDungeonDifficulty(uint8_t diff);
+    uint8_t getDungeonDifficulty();
+
+    void setRaidDifficulty(uint8_t diff);
+    uint8_t getRaidDifficulty();
+
+private:
+    uint8_t m_dungeonDifficulty;
+    uint8_t m_raidDifficulty;
+
+public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     bool isGMFlagSet();
@@ -2015,12 +2029,6 @@ public:
         void EjectFromInstance();
         bool raidgrouponlysent;
 
-        void SetDungeonDifficulty(uint8 diff);
-        uint8 GetDungeonDifficulty();
-
-        void SetRaidDifficulty(uint8 diff);
-        uint8 GetRaidDifficulty();
-
         void EventSafeTeleport(uint32 MapID, uint32 InstanceID, LocationVector vec)
         {
             SafeTeleport(MapID, InstanceID, vec);
@@ -2115,7 +2123,6 @@ public:
         uint32 flying_aura;
         bool resend_speed;
         uint32 login_flags;
-        uint8 iInstanceType;
 
         FactionReputation* reputationByListId[128];
 
@@ -2342,7 +2349,7 @@ public:
     private:
 
         PlayerInfo* m_playerInfo;
-        uint8 m_RaidDifficulty;
+        
         bool m_XpGain;
         bool resettalents;
         std::list< Item* > m_GarbageItems;
