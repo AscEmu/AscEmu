@@ -2100,10 +2100,10 @@ public:
         //////////////////////////////////////////////////////////////////////////////////////////
         void HandleSpellLoot(uint32 itemid);
 
-        void DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras = false);
-        void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false);
-        void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
-        void HandleKnockback(Object* caster, float horizontal, float vertical);
+        void DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras = false) override;
+        void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false) override;
+        void Die(Unit* pAttacker, uint32 damage, uint32 spellid) override;
+        void HandleKnockback(Object* caster, float horizontal, float vertical) override;
 
         uint32 LastHonorResetTime() const { return m_lastHonorResetTime; }
         void LastHonorResetTime(uint32 val) { m_lastHonorResetTime = val; }
@@ -2113,8 +2113,8 @@ public:
         uint32 load_health;
         uint32 load_mana;
         void CompleteLoading();
-        void OnPushToWorld();
-        void OnPrePushToWorld();
+        void OnPushToWorld() override;
+        void OnPrePushToWorld() override;
         void OnWorldPortAck();
         uint32 m_TeleportState;
         bool m_beingPushed;
