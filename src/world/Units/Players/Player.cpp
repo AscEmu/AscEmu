@@ -2911,6 +2911,34 @@ uint8_t Player::getRaidDifficulty()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Corpse
+void Player::setCorpseData(LocationVector position, int32_t instanceId)
+{
+    m_corpseData.location = position;
+    m_corpseData.instanceId = instanceId;
+}
+
+LocationVector Player::getCorpseLocation() const
+{
+    return m_corpseData.location;
+}
+
+int32_t Player::getCorpseInstanceId() const
+{
+    return m_corpseData.instanceId;
+}
+
+void Player::setAllowedToCreateCorpse(bool allowed)
+{
+    isCorpseCreationAllowed = allowed;
+}
+
+bool Player::isAllowedToCreateCorpse() const
+{
+    return isCorpseCreationAllowed;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 bool Player::isGMFlagSet()
 {
@@ -3124,11 +3152,6 @@ void Player::sendCinematicOnFirstLogin()
             SendPacket(SmsgTriggerCinematic(raceEntry->cinematic_id).serialise().get());
 #endif
     }
-}
-
-int32_t Player::getMyCorpseInstanceId() const
-{
-    return myCorpseInstanceId;
 }
 
 void Player::sendTalentResetConfirmPacket()

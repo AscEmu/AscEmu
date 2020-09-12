@@ -896,7 +896,7 @@ void AnubRekhanAI::Destroy()
 //                if (myCorpse == NULL || myCorpse->GetCorpseState() != CORPSE_STATE_BODY)
 //                    continue;
 //
-//                spawnLocation = PlayerPtr->getMyCorpseLocation();
+//                spawnLocation = PlayerPtr->getCorpseLocation();
 //            }
 //            else
 //                continue;

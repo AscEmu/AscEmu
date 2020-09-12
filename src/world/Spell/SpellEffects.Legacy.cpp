@@ -5586,7 +5586,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         playerTarget->SendPacket(MsgCorspeQuery(0).serialise().get());
 
         // don't allow him to spawn a corpse
-        playerTarget->bCorpseCreateable = false;
+        playerTarget->setAllowedToCreateCorpse(false);
 
         // and.. force him to the graveyard and repop him.
         playerTarget->RepopRequestedPlayer();

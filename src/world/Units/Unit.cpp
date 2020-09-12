@@ -3014,8 +3014,8 @@ bool Unit::canSee(Object* const obj)
 
             // Player can see all friendly and unfriendly players within 40 yards from his/her corpse
             const auto playerObj = static_cast<Player*>(obj);
-            if (playerMe->getMyCorpseInstanceId() == playerMe->GetInstanceID() &&
-                playerObj->isInRange(playerMe->getMyCorpseLocation(), corpseViewDistance))
+            if (playerMe->getCorpseInstanceId() == playerMe->GetInstanceID() &&
+                playerObj->isInRange(playerMe->getCorpseLocation(), corpseViewDistance))
                 return true;
 
             // Otherwise player can only see other players who have released their spirits as well
@@ -3026,14 +3026,14 @@ bool Unit::canSee(Object* const obj)
         if (playerMe->m_deathVision)
             return true;
 
-        if (playerMe->getMyCorpseInstanceId() == GetInstanceID())
+        if (playerMe->getCorpseInstanceId() == GetInstanceID())
         {
             // Player can see his/her own corpse
             if (obj->isCorpse() && static_cast<Corpse*>(obj)->getOwnerGuid() == getGuid())
                 return true;
 
             // Player can see all objects within 40 yards from his/her own corpse
-            if (obj->isInRange(playerMe->getMyCorpseLocation(), corpseViewDistance))
+            if (obj->isInRange(playerMe->getCorpseLocation(), corpseViewDistance))
                 return true;
         }
 

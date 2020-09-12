@@ -284,7 +284,6 @@ Player::Player(uint32 guid)
     m_session(nullptr),
     m_GroupInviter(0),
     m_SummonedObject(nullptr),
-    myCorpseLocation(),
     max_level(60),
     m_updateMgr(this, (size_t)worldConfig.server.compressionThreshold, 40000, 30000, 1000),
     m_splineMgr()
@@ -313,7 +312,6 @@ Player::Player(uint32 guid)
 
     setObjectType(TYPEID_PLAYER);
     setGuidLow(guid);
-
 
 #if VERSION_STRING >= WotLK
     setRuneRegen(0, 0.100000f);
@@ -390,8 +388,6 @@ Player::Player(uint32 guid)
     m_lastSeenWeather = 0;
     m_attacking = false;
 
-    myCorpseInstanceId = 0;
-    bCorpseCreateable = true;
     blinked = false;
     m_explorationTimer = Util::getMSTime();
     linkTarget = nullptr;
@@ -3301,11 +3297,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     if (!isAlive())
     {
-        Corpse* myCorpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
-        if (myCorpse != nullptr)
+        if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
         {
-            myCorpseLocation = myCorpse->GetPosition();
-            myCorpseInstanceId = myCorpse->GetInstanceID();
+            setCorpseData(corpse->GetPosition(), corpse->GetInstanceID());
         }
     }
 
@@ -4300,12 +4294,12 @@ void Player::RepopRequestedPlayer()
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_CHECKFORCHEATS); // cebernic:-> Remove this first
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_FORCED_RESURRECT);   //in case somebody resurrected us before this event happened
 
-    if (myCorpseInstanceId != 0)
+    if (m_corpseData.instanceId != 0)
     {
         // Cebernic: wOOo dead+dead = undead ? :D just resurrect player
-        Corpse* myCorpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
-        if (myCorpse != nullptr)
-            myCorpse->ResetDeathClock();
+        if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
+            corpse->ResetDeathClock();
+
         ResurrectPlayer();
         RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
         return;
@@ -4333,8 +4327,8 @@ void Player::RepopRequestedPlayer()
     // If we're in battleground, remove the skinnable flag.. has bad effects heheh
     removeUnitFlags(UNIT_FLAG_SKINNABLE);
 
-    bool corpse = (m_bg != nullptr) ? m_bg->CreateCorpse(this) : true;
-    if (corpse)
+    bool hasCorpse = (m_bg != nullptr) ? m_bg->CreateCorpse(this) : true;
+    if (hasCorpse)
         CreateCorpse();
 
     BuildPlayerRepop();
@@ -4367,15 +4361,14 @@ void Player::RepopRequestedPlayer()
         }
     }
 
-    if (corpse)
+    if (hasCorpse)
     {
         SpawnCorpseBody();
 
-        if (myCorpseInstanceId != 0)
+        if (m_corpseData.instanceId != 0)
         {
-            Corpse* myCorpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
-            if (myCorpse != nullptr)
-                myCorpse->ResetDeathClock();
+            if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
+                corpse->ResetDeathClock();
         }
 
         // Send Spirit Healer Location
@@ -4473,9 +4466,9 @@ void Player::KillPlayer()
 void Player::CreateCorpse()
 {
     sObjectMgr.DelinkPlayerCorpses(this);
-    if (!bCorpseCreateable)
+    if (!isAllowedToCreateCorpse())
     {
-        bCorpseCreateable = true;   // For next time
+        setAllowedToCreateCorpse(true);   // For next time
         return; // No corpse allowed!
     }
 
@@ -4538,35 +4531,32 @@ void Player::CreateCorpse()
 
 void Player::SpawnCorpseBody()
 {
-    Corpse* pCorpse = sObjectMgr.GetCorpseByOwner(this->getGuidLow());
-    if (pCorpse)
+    if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(this->getGuidLow()))
     {
-        if (!pCorpse->IsInWorld())
+        if (!corpse->IsInWorld())
         {
-            if (bShouldHaveLootableOnCorpse && pCorpse->getDynamicFlags() != 1)
-                pCorpse->setDynamicFlags(1); // sets it so you can loot the plyr
+            if (bShouldHaveLootableOnCorpse && corpse->getDynamicFlags() != 1)
+                corpse->setDynamicFlags(1); // sets it so you can loot the plyr
 
             if (m_mapMgr == nullptr)
-                pCorpse->AddToWorld();
+                corpse->AddToWorld();
             else
-                pCorpse->PushToWorld(m_mapMgr);
+                corpse->PushToWorld(m_mapMgr);
         }
-        myCorpseLocation = pCorpse->GetPosition();
-        myCorpseInstanceId = pCorpse->GetInstanceID();
+
+        setCorpseData(corpse->GetPosition(), corpse->GetInstanceID());
     }
     else
     {
-        myCorpseLocation.ChangeCoords({ 0, 0, 0, 0 });
-        myCorpseInstanceId = 0;
+        setCorpseData({ 0, 0, 0, 0 }, 0);
     }
 }
 
 void Player::SpawnCorpseBones()
 {
-    Corpse* pCorpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
-    myCorpseLocation.ChangeCoords({ 0, 0, 0, 0 });
-    myCorpseInstanceId = 0;
-    if (pCorpse)
+    setCorpseData({ 0, 0, 0, 0 }, 0);
+
+    if (Corpse* pCorpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
     {
         if (pCorpse->IsInWorld() && pCorpse->GetCorpseState() == CORPSE_STATE_BODY)
         {
@@ -7826,13 +7816,12 @@ void Player::CompleteLoading()
 
     if (isDead())
     {
-        if (myCorpseInstanceId != 0)
+        if (getCorpseInstanceId() != 0)
         {
             // cebernic: tempfix. This send a counter for player with just logging in.
             //\todo counter will be follow with death time.
-            Corpse* myCorpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
-            if (myCorpse != nullptr)
-                myCorpse->ResetDeathClock();
+            if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
+                corpse->ResetDeathClock();
 
             GetSession()->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());
         }

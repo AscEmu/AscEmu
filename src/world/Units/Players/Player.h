@@ -1035,6 +1035,26 @@ private:
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Corpse
+    void setCorpseData(LocationVector position, int32_t instanceId);
+    LocationVector getCorpseLocation() const;
+    int32_t getCorpseInstanceId() const;
+
+    void setAllowedToCreateCorpse(bool allowed);
+    bool isAllowedToCreateCorpse() const;
+
+private:
+    struct CorpseData
+    {
+        LocationVector location = {0,0,0,0};
+        int32_t instanceId = 0;
+    };
+    CorpseData m_corpseData;
+
+    bool isCorpseCreationAllowed = true;
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     bool isGMFlagSet();
 
@@ -1046,8 +1066,6 @@ public:
     void setPlayerInfoIfNeeded();
     void setGuildAndGroupInfo();
     void sendCinematicOnFirstLogin();
-
-    int32_t getMyCorpseInstanceId() const;
 
     void sendTalentResetConfirmPacket();
     void sendPetUnlearnConfirmPacket();
@@ -2011,8 +2029,8 @@ public:
         std::set<uint32>* GetSummonSpells(uint32 Entry);
         uint32 m_UnderwaterMaxTime;
         uint32 m_UnderwaterLastDmg;
-        LocationVector getMyCorpseLocation() const { return myCorpseLocation; }
-        bool bCorpseCreateable;
+        
+        
         uint32 m_resurrectHealth, m_resurrectMana;
         uint32 m_resurrectInstanceID, m_resurrectMapId;
         LocationVector m_resurrectPosition;
@@ -2288,10 +2306,6 @@ public:
 
         // Fishing related
         Object* m_SummonedObject;
-
-        // other system
-        LocationVector myCorpseLocation;
-        int32 myCorpseInstanceId;
 
         uint32 m_lastHonorResetTime;
         uint32 _fields[getSizeOfStructure(WoWPlayer)];
