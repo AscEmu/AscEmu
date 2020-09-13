@@ -51,7 +51,7 @@ public:
         char *token;
 
         token = strtok( buffer, seps );
-        uint32 counter = 0;
+        uint32_t counter = 0;
         while ((token != NULL) && (counter < size)) {
             //cout << token << endl;
             token[strlen(token) - 1] = 0;
