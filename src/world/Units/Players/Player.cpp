@@ -2952,6 +2952,19 @@ uint32_t Player::getBindMapId() const { return m_bindData.mapId; }
 uint32_t Player::getBindZoneId() const { return m_bindData.zoneId; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Battleground Entry
+void Player::setBGEntryPoint(float x, float y, float z, float o, uint32_t mapId, int32_t instanceId)
+{
+    m_bgEntryData.location = { x, y, z, o };
+    m_bgEntryData.mapId = mapId;
+    m_bgEntryData.instanceId = instanceId;
+}
+
+LocationVector Player::getBGEntryPosition() const { return m_bindData.location; }
+uint32_t Player::getBGEntryMapId() const { return m_bindData.mapId; }
+int32_t Player::getBGEntryInstanceId() const { return m_bindData.zoneId; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 bool Player::isGMFlagSet()
 {
@@ -3021,10 +3034,10 @@ void Player::logIntoBattleground()
         const auto battleground = mapMgr->m_battleground;
         if (battleground->HasEnded() && battleground->HasFreeSlots(getInitialTeam(), battleground->GetType()))
         {
-            if (!IS_INSTANCE(m_bgEntryPointMap))
+            if (!IS_INSTANCE(getBGEntryMapId()))
             {
-                m_position.ChangeCoords({ m_bgEntryPointX, m_bgEntryPointY, m_bgEntryPointZ, m_bgEntryPointO });
-                m_mapId = m_bgEntryPointMap;
+                m_position.ChangeCoords(getBGEntryPosition());
+                m_mapId = getBGEntryMapId();
             }
             else
             {

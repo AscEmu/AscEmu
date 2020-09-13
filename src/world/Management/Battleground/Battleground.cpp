@@ -660,15 +660,10 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
                 plr->castSpell(plr, BG_DESERTER, true);
         }
 
-        if (!IS_INSTANCE(plr->m_bgEntryPointMap))
-        {
-            LocationVector vec(plr->m_bgEntryPointX, plr->m_bgEntryPointY, plr->m_bgEntryPointZ, plr->m_bgEntryPointO);
-            plr->SafeTeleport(plr->m_bgEntryPointMap, plr->m_bgEntryPointInstance, vec);
-        }
+        if (!IS_INSTANCE(plr->getBGEntryMapId()))
+            plr->SafeTeleport(plr->getBGEntryMapId(), plr->getBGEntryInstanceId(), plr->getBGEntryPosition());
         else
-        {
             plr->SafeTeleport(plr->getBindMapId(), 0, plr->getBindPosition());
-        }
 
         sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
     }

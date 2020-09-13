@@ -1814,7 +1814,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
     if (out)
     {
         player->RemoveAura(LFG_SPELL_LUCK_OF_THE_DRAW);
-        player->SafeTeleport(player->m_bgEntryPointMap, player->m_bgEntryPointInstance, player->m_bgEntryPointX, player->m_bgEntryPointY, player->m_bgEntryPointZ, player->m_bgEntryPointO);
+        player->SafeTeleport(player->getBGEntryMapId(), player->getBGEntryInstanceId(), player->getBGEntryPosition());
         return;
     }
 
@@ -1880,7 +1880,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
 
             if (error == LFG_TELEPORTERROR_OK)
             {
-                player->SetBattlegroundEntryPoint();
+                player->setBGEntryPoint(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation(), player->GetMapId(), player->GetInstanceID());
                 player->Dismount();
                 if (!player->SafeTeleport(mapid, 0, x, y, z, orientation))
                     error = LFG_TELEPORTERROR_INVALID_LOCATION;

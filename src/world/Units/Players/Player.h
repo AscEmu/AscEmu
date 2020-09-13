@@ -1073,6 +1073,23 @@ private:
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Battleground Entry
+    void setBGEntryPoint(float x, float y, float z, float o, uint32_t mapId, int32_t instanceId);
+
+    LocationVector getBGEntryPosition() const;
+    uint32_t getBGEntryMapId() const;
+    int32_t getBGEntryInstanceId() const;
+private:
+    struct BGEntryData
+    {
+        LocationVector location = { 0, 0, 0, 0 };
+        uint32_t mapId;
+        int32_t instanceId;
+    };
+    BGEntryData m_bgEntryData;
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     bool isGMFlagSet();
 
@@ -1808,12 +1825,7 @@ public:
         // Battlegrounds xD
         CBattleground* m_bg;
         CBattleground* m_pendingBattleground;
-        uint32 m_bgEntryPointMap;
-        float m_bgEntryPointX;
-        float m_bgEntryPointY;
-        float m_bgEntryPointZ;
-        float m_bgEntryPointO;
-        int32 m_bgEntryPointInstance;
+        
         bool m_bgHasFlag;
         bool m_bgIsQueued;
         uint32 m_bgQueueType;
@@ -2433,7 +2445,6 @@ public:
 
         void SetRoles(uint8 role) { m_roles = role; }
         uint8 GetRoles() { return m_roles; }
-        void SetBattlegroundEntryPoint();
 
         uint32 GetGroupUpdateFlags() { return GroupUpdateFlags; }
         void SetGroupUpdateFlags(uint32 flags);

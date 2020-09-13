@@ -291,12 +291,7 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
     plr->m_bgQueueInstanceId = srlPacket.instanceId;
     plr->m_bgQueueType = srlPacket.bgType;
 
-    // Set battleground entry point
-    plr->m_bgEntryPointX = plr->GetPositionX();
-    plr->m_bgEntryPointY = plr->GetPositionY();
-    plr->m_bgEntryPointZ = plr->GetPositionZ();
-    plr->m_bgEntryPointMap = plr->GetMapId();
-    plr->m_bgEntryPointInstance = plr->GetInstanceID();
+    plr->setBGEntryPoint(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetOrientation(), plr->GetMapId(), plr->GetInstanceID());
 
     SendBattlefieldStatus(plr, BGSTATUS_INQUEUE, srlPacket.bgType, srlPacket.instanceId, 0, bgMaps[srlPacket.bgType], 0);
 
@@ -1393,10 +1388,8 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
                     (*itx)->m_loggedInPlayer->m_bgQueueType = BattlegroundType;
                     //\todo error/bgtype missing, always send all arenas (from legacy)
                     (*itx)->m_loggedInPlayer->GetSession()->SendPacket(SmsgGroupJoinedBattleground(6).serialise().get());
-                    (*itx)->m_loggedInPlayer->m_bgEntryPointX = (*itx)->m_loggedInPlayer->GetPositionX();
-                    (*itx)->m_loggedInPlayer->m_bgEntryPointY = (*itx)->m_loggedInPlayer->GetPositionY();
-                    (*itx)->m_loggedInPlayer->m_bgEntryPointZ = (*itx)->m_loggedInPlayer->GetPositionZ();
-                    (*itx)->m_loggedInPlayer->m_bgEntryPointMap = (*itx)->m_loggedInPlayer->GetMapId();
+                    (*itx)->m_loggedInPlayer->setBGEntryPoint((*itx)->m_loggedInPlayer->GetPositionX(), (*itx)->m_loggedInPlayer->GetPositionY(), (*itx)->m_loggedInPlayer->GetPositionZ(), 
+                        (*itx)->m_loggedInPlayer->GetOrientation(), (*itx)->m_loggedInPlayer->GetMapId(), (*itx)->m_loggedInPlayer->GetInstanceID());
                 }
             }
 
@@ -1425,12 +1418,8 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
     m_session->GetPlayer()->m_bgQueueInstanceId = 0;
     m_session->GetPlayer()->m_bgQueueType = BattlegroundType;
 
-    // Set battleground entry point
-    m_session->GetPlayer()->m_bgEntryPointX = m_session->GetPlayer()->GetPositionX();
-    m_session->GetPlayer()->m_bgEntryPointY = m_session->GetPlayer()->GetPositionY();
-    m_session->GetPlayer()->m_bgEntryPointZ = m_session->GetPlayer()->GetPositionZ();
-    m_session->GetPlayer()->m_bgEntryPointMap = m_session->GetPlayer()->GetMapId();
-    m_session->GetPlayer()->m_bgEntryPointInstance = m_session->GetPlayer()->GetInstanceID();
+    m_session->GetPlayer()->setBGEntryPoint(m_session->GetPlayer()->GetPositionX(), m_session->GetPlayer()->GetPositionY(), m_session->GetPlayer()->GetPositionZ(), m_session->GetPlayer()->GetOrientation(),
+        m_session->GetPlayer()->GetMapId(), m_session->GetPlayer()->GetInstanceID());
 
     m_queueLock.Release();
 }
