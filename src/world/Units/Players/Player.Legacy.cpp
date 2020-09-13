@@ -245,7 +245,7 @@ Player::Player(uint32 guid)
     m_duelCountdownTimer(0),
     m_duelStatus(0),
     m_duelState(DUEL_STATE_FINISHED),        // finished
-    m_GuildIdInvited(0),
+    m_invitedByGuildId(0),
     // Rest
     m_timeLogoff(0),
     m_isResting(0),
@@ -7273,40 +7273,6 @@ void Player::SafeTeleport(MapMgr* mgr, const LocationVector & vec)
     ForceZoneUpdate();
 }
 
-Guild* Player::GetGuild()
-{
-    return getGuildId() ? sGuildMgr.getGuildById(getGuildId()) : nullptr;
-}
-
-uint32 Player::GetGuildIdFromDB(uint64 guid)
-{
-    QueryResult* result = CharacterDatabase.Query("SELECT guildId, playerGuid FROM guild_members WHERE playerid = %u", WoWGuid::getGuidLowPartFromUInt64(guid));
-    if (result)
-    {
-        Field* fields = result->Fetch();
-        return fields[0].GetUInt32();
-    }
-
-    return 0;
-}
-
-int8 Player::GetRankFromDB(uint64 guid)
-{
-    QueryResult* result = CharacterDatabase.Query("SELECT playerid, guildRank FROM guild_members WHERE playerid = %u", WoWGuid::getGuidLowPartFromUInt64(guid));
-    if (result)
-    {
-        Field* fields = result->Fetch();
-        return fields[1].GetUInt8();
-    }
-
-    return -1;
-}
-
-std::string Player::GetGuildName()
-{
-    return getGuildId() ? sGuildMgr.getGuildById(getGuildId())->getName() : "";
-}
-
 void Player::UpdatePvPArea()
 {
     auto at = this->GetArea();
@@ -8114,10 +8080,10 @@ bool Player::CanSignCharter(Charter* charter, Player* requester)
         return false;
 
 #if VERSION_STRING < Cata
-    if (charter->CharterType == CHARTER_TYPE_GUILD && IsInGuild())
+    if (charter->CharterType == CHARTER_TYPE_GUILD && isInGuild())
         return false;
 #else
-    if (charter->CharterType == CHARTER_TYPE_GUILD && requester->GetGuild())
+    if (charter->CharterType == CHARTER_TYPE_GUILD && requester->getGuild())
         return false;
 #endif
 

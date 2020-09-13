@@ -2965,6 +2965,24 @@ uint32_t Player::getBGEntryMapId() const { return m_bindData.mapId; }
 int32_t Player::getBGEntryInstanceId() const { return m_bindData.zoneId; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Guild
+void Player::setInvitedByGuildId(uint32_t GuildId) { m_invitedByGuildId = GuildId; }
+uint32_t Player::getInvitedByGuildId() const { return m_invitedByGuildId; }
+Guild* Player::getGuild() { return getGuildId() ? sGuildMgr.getGuildById(getGuildId()) : nullptr; }
+bool Player::isInGuild() { return getGuild() != nullptr; }
+
+uint32_t Player::getGuildRankFromDB()
+{
+    if (auto result = CharacterDatabase.Query("SELECT playerid, guildRank FROM guild_members WHERE playerid = %u", WoWGuid::getGuidLowPartFromUInt64(getGuid())))
+    {
+        Field* fields = result->Fetch();
+        return fields[1].GetUInt32();
+    }
+
+    return 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 bool Player::isGMFlagSet()
 {
@@ -3339,10 +3357,10 @@ void Player::sendClientControlPacket(Unit* target, uint8_t allowMove)
 
 void Player::sendGuildMotd()
 {
-    if (!GetGuild())
+    if (!getGuild())
         return;
 
-    SendPacket(SmsgGuildEvent(GE_MOTD, { GetGuild()->getMOTD() }, 0).serialise().get());
+    SendPacket(SmsgGuildEvent(GE_MOTD, { getGuild()->getMOTD() }, 0).serialise().get());
 }
 
 bool Player::isPvpFlagSet()

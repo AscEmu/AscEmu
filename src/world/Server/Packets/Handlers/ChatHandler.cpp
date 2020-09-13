@@ -264,14 +264,14 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (is_gm_command)
                 break;
 
-            if (const auto guild = _player->GetGuild())
+            if (const auto guild = _player->getGuild())
                 guild->broadcastToGuild(this, false, srlPacket.message, messageLanguage);
             break;
         case CHAT_MSG_OFFICER:
             if (is_gm_command)
                 break;
 
-            if (const auto guild = _player->GetGuild())
+            if (const auto guild = _player->getGuild())
                 guild->broadcastToGuild(this, true, srlPacket.message, messageLanguage);
             break;
         case CHAT_MSG_YELL:

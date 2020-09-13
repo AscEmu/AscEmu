@@ -51,7 +51,7 @@ void Guild::sendGuildCommandResult(WorldSession* session, uint32_t guildCommand,
 void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName)
 {
     const auto invitedPlayer = sObjectMgr.GetPlayer(invitedName.c_str(), false);
-    const auto guild = session->GetPlayer()->GetGuild();
+    const auto guild = session->GetPlayer()->getGuild();
 
     if (invitedPlayer == nullptr)
     {
@@ -71,13 +71,13 @@ void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName
         return;
     }
 
-    if (invitedPlayer->GetGuildIdInvited())
+    if (invitedPlayer->getInvitedByGuildId())
     {
         session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedPlayer->getName(), GC_ERROR_ALREADY_INVITED_TO_GUILD).serialise().get());
         return;
     }
 
-    if (!session->GetPlayer()->GetGuild()->_hasRankRight(session->GetPlayer()->getGuid(), GR_RIGHT_INVITE))
+    if (!session->GetPlayer()->getGuild()->_hasRankRight(session->GetPlayer()->getGuid(), GR_RIGHT_INVITE))
     {
         session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PERMISSIONS).serialise().get());
         return;
@@ -99,7 +99,7 @@ void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName
     session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedName, GC_ERROR_SUCCESS).serialise().get());
 
     guild->logEvent(GE_LOG_INVITE_PLAYER, session->GetPlayer()->getGuidLow(), invitedPlayer->getGuidLow());
-    invitedPlayer->SetGuildIdInvited(guild->getId());
+    invitedPlayer->setInvitedByGuildId(guild->getId());
 
 #if VERSION_STRING < Cata
     invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(session->GetPlayer()->getName(), guild->getName()).serialise().get());
@@ -1442,9 +1442,14 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
         if (player->getGuildId() != 0)
             return false;
     }
-    else if (Player::GetGuildIdFromDB(guid) != 0)
+    else
     {
-        return false;
+        if (auto result = CharacterDatabase.Query("SELECT guildId, playerGuid FROM guild_members WHERE playerid = %u", WoWGuid::getGuidLowPartFromUInt64(guid)))
+        {
+            Field* fields = result->Fetch();
+            if (fields[0].GetUInt32() != 0)
+                return false;
+        }
     }
 
     uint32_t lowguid = wGuid.getGuidLow();
@@ -1458,7 +1463,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
     {
         _guildMembersStore[lowguid] = member;
         player->setGuildId(m_id);
-        player->SetGuildIdInvited(0);
+        player->setInvitedByGuildId(0);
         player->setGuildRank(rankId);
 #if VERSION_STRING >= Cata
         player->setGuildLevel(getLevel());

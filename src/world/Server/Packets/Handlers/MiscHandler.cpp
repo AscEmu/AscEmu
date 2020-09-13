@@ -128,7 +128,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         // Guild name
         if (gname)
         {
-            if (!plr->GetGuild() || srlPacket.guild_name.compare(plr->GetGuild()->getName()) != 0)
+            if (!plr->getGuild() || srlPacket.guild_name.compare(plr->getGuild()->getName()) != 0)
                 continue;
         }
 
@@ -2111,7 +2111,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
             data << uint8_t(pcaster->getHairColor());
             data << uint8_t(pcaster->getFacialFeatures());
 
-            if (pcaster->IsInGuild())
+            if (pcaster->isInGuild())
                 data << uint32_t(pcaster->getGuildId());
             else
                 data << uint32_t(0);

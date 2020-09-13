@@ -1090,6 +1090,20 @@ private:
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Guild
+    void setInvitedByGuildId(uint32_t GuildId);
+    uint32_t getInvitedByGuildId() const;
+
+    Guild* getGuild();
+    bool isInGuild();
+
+    uint32_t getGuildRankFromDB();
+
+private:
+    uint32_t m_invitedByGuildId;
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     bool isGMFlagSet();
 
@@ -1567,26 +1581,6 @@ public:
         void SetBanned(uint32 timestamp, std::string & Reason) { m_banned = timestamp; m_banreason = Reason; }
         void UnSetBanned() { m_banned = 0; }
         std::string GetBanReason() {return m_banreason;}
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Guilds
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        uint32 m_GuildIdInvited;
-
-        void SetGuildIdInvited(uint32 GuildId) { m_GuildIdInvited = GuildId; }
-        uint32 GetGuildIdInvited() { return m_GuildIdInvited; }
-
-
-        static uint32 GetGuildIdFromDB(uint64 guid);
-        Guild* GetGuild();
-        bool IsInGuild() { return GetGuild() != nullptr; }
-
-
-        static int8 GetRankFromDB(uint64 guid);
-        uint32 GetGuildRank() { return (uint32)GetRankFromDB(getGuid()); }
-
-        std::string GetGuildName();
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Duel

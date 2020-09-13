@@ -4868,7 +4868,7 @@ public:
         }
         else
         {
-            guild = plr->GetGuild();
+            guild = plr->getGuild();
         }
         if (data != nullptr && guild != nullptr)
             guild->sendPacket(data);
@@ -4879,7 +4879,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        if (plr->GetGuild() != nullptr)
+        if (plr->isInGuild())
             lua_pushinteger(L, plr->getGuildId());
         else
             lua_pushnil(L);
@@ -4890,8 +4890,8 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        if (plr->GetGuild() != nullptr)
-            lua_pushinteger(L, plr->GetGuildRank());
+        if (plr->isInGuild())
+            lua_pushinteger(L, plr->getGuildRankFromDB());
         else
             lua_pushnil(L);
         return 1;
@@ -4902,7 +4902,7 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         uint32_t rank = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        if (plr->IsInGuild())
+        if (plr->isInGuild())
             plr->setGuildRank(rank);
         return 0;
     }
@@ -4911,7 +4911,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        if (plr->IsInGuild())
+        if (plr->isInGuild())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -4924,7 +4924,7 @@ public:
         const auto sender = static_cast<Player*>(ptr);
         const auto invitedPlayer = CHECK_PLAYER(L, 1);
         if (invitedPlayer != nullptr && sender)
-            sender->GetGuild()->sendGuildInvitePacket(sender->GetSession(), invitedPlayer->getName());
+            sender->getGuild()->sendGuildInvitePacket(sender->GetSession(), invitedPlayer->getName());
 
         return 0;
     }
@@ -4934,8 +4934,8 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
-        if (target && plr->GetGuild())
-            plr->GetGuild()->handleUpdateMemberRank(plr->GetSession(), target->getGuid(), true);
+        if (target && plr->getGuild())
+            plr->getGuild()->handleUpdateMemberRank(plr->GetSession(), target->getGuid(), true);
 
         return 0;
     }
@@ -4945,8 +4945,8 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
-        if (target && plr->GetGuild())
-            plr->GetGuild()->handleUpdateMemberRank(plr->GetSession(), target->getGuid(), false);
+        if (target && plr->getGuild())
+            plr->getGuild()->handleUpdateMemberRank(plr->GetSession(), target->getGuid(), false);
 
         return 0;
     }
@@ -4956,8 +4956,8 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         const char* szNewMotd = luaL_checkstring(L, 1);
-        if (plr->GetGuild() && szNewMotd != nullptr)
-            plr->GetGuild()->handleSetMOTD(plr->GetSession(), szNewMotd);
+        if (plr->getGuild() && szNewMotd != nullptr)
+            plr->getGuild()->handleSetMOTD(plr->GetSession(), szNewMotd);
         return 0;
     }
 
@@ -4969,7 +4969,7 @@ public:
         if (luaL_optinteger(L, 1, -1) >= 0)
             guild = sGuildMgr.getGuildById(static_cast<uint32_t>(luaL_optinteger(L, 1, -1)));
         else
-            guild = plr->GetGuild();
+            guild = plr->getGuild();
 
         if (guild != nullptr)
             lua_pushstring(L, guild->getMOTDChar());
@@ -4983,8 +4983,8 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         const char* gi = luaL_checkstring(L, 1);
-        if (gi && plr->GetGuild())
-            plr->GetGuild()->handleSetInfo(plr->GetSession(), gi);
+        if (gi && plr->getGuild())
+            plr->getGuild()->handleSetInfo(plr->GetSession(), gi);
         return 0;
     }
 
@@ -5005,8 +5005,8 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
-        if (target && plr->GetGuild())
-            plr->GetGuild()->deleteMember(target->getGuid(), false);
+        if (target && plr->getGuild())
+            plr->getGuild()->deleteMember(target->getGuid(), false);
 
         return 0;
     }
@@ -5017,8 +5017,8 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         const char* note = luaL_checkstring(L, 2);
-        if (target && note && plr->GetGuild())
-            plr->GetGuild()->handleSetMemberNote(plr->GetSession(), note, target->getGuid(), true);
+        if (target && note && plr->getGuild())
+            plr->getGuild()->handleSetMemberNote(plr->GetSession(), note, target->getGuid(), true);
 
         return 0;
     }
@@ -5029,8 +5029,8 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         const char* note = luaL_checkstring(L, 2);
-        if (target && note && plr->GetGuild())
-            plr->GetGuild()->handleSetMemberNote(plr->GetSession(), note, target->getGuid(), false);
+        if (target && note && plr->getGuild())
+            plr->getGuild()->handleSetMemberNote(plr->GetSession(), note, target->getGuid(), false);
 
         return 0;
     }
@@ -5043,7 +5043,7 @@ public:
         if (luaL_optinteger(L, 1, -1) >= 0)
             guild = sGuildMgr.getGuildById(static_cast<uint32_t>(luaL_optinteger(L, 1, -1)));
         else
-            guild = plr->GetGuild();
+            guild = plr->getGuild();
         if (guild != nullptr)
             guild->disband();
 
@@ -5056,7 +5056,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         if (target)
-            plr->GetGuild()->handleSetNewGuildMaster(plr->GetSession(), target->getName());
+            plr->getGuild()->handleSetNewGuildMaster(plr->GetSession(), target->getName());
         return 0;
     }
 
@@ -5066,8 +5066,8 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         const char* message = luaL_checkstring(L, 1);
         bool officer = CHECK_BOOL(L, 2);
-        if (plr->GetGuild() != nullptr && message != nullptr)
-            plr->GetGuild()->broadcastToGuild(plr->GetSession(), officer, message, 0);
+        if (plr->getGuild() != nullptr && message != nullptr)
+            plr->getGuild()->broadcastToGuild(plr->GetSession(), officer, message, 0);
 
         return 0;
     }
@@ -5076,8 +5076,8 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        if (plr->GetGuild() != nullptr)
-            plr->GetGuild()->sendLoginInfo(plr->GetSession());
+        if (plr->getGuild() != nullptr)
+            plr->getGuild()->sendLoginInfo(plr->GetSession());
 
         return 0;
     }
@@ -5087,8 +5087,8 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         uint32_t amount = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        if (plr->GetGuild() != nullptr)
-            plr->GetGuild()->handleMemberDepositMoney(plr->GetSession(), amount, true);
+        if (plr->getGuild() != nullptr)
+            plr->getGuild()->handleMemberDepositMoney(plr->GetSession(), amount, true);
 
         return 0;
     }
@@ -5098,8 +5098,8 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         uint32_t amount = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        if (plr->GetGuild() != nullptr)
-            plr->GetGuild()->handleMemberWithdrawMoney(plr->GetSession(), amount, false);
+        if (plr->getGuild() != nullptr)
+            plr->getGuild()->handleMemberWithdrawMoney(plr->GetSession(), amount, false);
 
         return 0;
     }
@@ -5144,7 +5144,7 @@ public:
     static int GetGuildLeader(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        Guild* pGuild = static_cast<Player*>(ptr)->GetGuild();
+        Guild* pGuild = static_cast<Player*>(ptr)->getGuild();
         if (pGuild != nullptr)
         {
             Player* plr = sObjectMgr.GetPlayer(uint32_t(pGuild->getLeaderGUID()));
@@ -5162,7 +5162,7 @@ public:
     static int GetGuildMemberCount(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        Guild* pGuild = static_cast<Player*>(ptr)->GetGuild();
+        Guild* pGuild = static_cast<Player*>(ptr)->getGuild();
         (pGuild != nullptr) ? lua_pushinteger(L, pGuild->getMembersCount()) : lua_pushnil(L);
 
         return 1;
@@ -5464,7 +5464,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        Guild* pGuild = plr->GetGuild();
+        Guild* pGuild = plr->getGuild();
         uint32_t count = 0;
         lua_newtable(L);
         if (pGuild != nullptr)
