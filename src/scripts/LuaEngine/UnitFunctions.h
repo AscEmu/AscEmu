@@ -3414,7 +3414,7 @@ public:
         uint32_t zone = CHECK_ULONG(L, 5);
         if (!x || !y || !z || !zone)
             return 0;
-        plr->SetBindPoint(x, y, z, map, zone);
+        plr->setBindPoint(x, y, z, map, zone);
         return 0;
     }
 

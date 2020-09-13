@@ -2939,6 +2939,19 @@ bool Player::isAllowedToCreateCorpse() const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Bind
+void Player::setBindPoint(float x, float y, float z, uint32_t mapId, uint32_t zoneId)
+{
+    m_bindData.location = { x, y, z };
+    m_bindData.mapId = mapId;
+    m_bindData.zoneId = zoneId;
+}
+
+LocationVector Player::getBindPosition() const { return m_bindData.location; }
+uint32_t Player::getBindMapId() const { return m_bindData.mapId; }
+uint32_t Player::getBindZoneId() const { return m_bindData.zoneId; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 bool Player::isGMFlagSet()
 {
@@ -3015,8 +3028,8 @@ void Player::logIntoBattleground()
             }
             else
             {
-                m_position.ChangeCoords({ GetBindPositionX(), GetBindPositionY(), GetBindPositionZ() });
-                m_mapId = GetBindMapId();
+                m_position.ChangeCoords(getBindPosition());
+                m_mapId = getBindMapId();
             }
         }
     }
@@ -3076,7 +3089,7 @@ void Player::setLoginPosition()
         m_position.ChangeCoords({ position_x, position_y, position_z, orientation });
         m_mapId = mapId;
 
-        SetBindPoint(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), GetZoneId());
+        setBindPoint(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), GetZoneId());
     }
     else
     {

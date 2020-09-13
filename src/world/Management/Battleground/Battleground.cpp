@@ -667,8 +667,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
         }
         else
         {
-            LocationVector vec(plr->GetBindPositionX(), plr->GetBindPositionY(), plr->GetBindPositionZ());
-            plr->SafeTeleport(plr->GetBindMapId(), 0, vec);
+            plr->SafeTeleport(plr->getBindMapId(), 0, plr->getBindPosition());
         }
 
         sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);

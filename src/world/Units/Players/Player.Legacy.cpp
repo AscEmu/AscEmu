@@ -247,12 +247,6 @@ Player::Player(uint32 guid)
     m_PetNumberMax(0),
     //DK
     m_invitersGuid(0),
-    //Bind position
-    m_bind_pos_x(0),
-    m_bind_pos_y(0),
-    m_bind_pos_z(0),
-    m_bind_mapid(0),
-    m_bind_zoneid(0),
     //Duel
     m_duelCountdownTimer(0),
     m_duelStatus(0),
@@ -804,11 +798,8 @@ bool Player::Create(CharCreate& charCreateContent)
     m_mapId = info->mapId;
     SetZoneId(info->zoneId);
     m_position.ChangeCoords({ info->positionX, info->positionY, info->positionZ, info->orientation });
-    m_bind_pos_x = info->positionX;
-    m_bind_pos_y = info->positionY;
-    m_bind_pos_z = info->positionZ;
-    m_bind_mapid = info->mapId;
-    m_bind_zoneid = info->zoneId;
+
+    setBindPoint(info->positionX, info->positionY, info->positionZ, info->mapId, info->zoneId);
     m_isResting = 0;
     m_restAmount = 0;
     m_restState = 0;
@@ -2256,7 +2247,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     else
         ss << "1, ";
 
-    ss << m_bind_pos_x << ", " << m_bind_pos_y << ", " << m_bind_pos_z << ", " << m_bind_mapid << ", " << m_bind_zoneid << ", ";
+    ss << getBindPosition().x << ", " << getBindPosition().y << ", " << getBindPosition().z << ", " << getBindMapId() << ", " << getBindZoneId() << ", ";
 
     ss << uint32(m_isResting) << ", " << uint32(m_restState) << ", " << uint32(m_restAmount) << ", ";
 
@@ -2802,11 +2793,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     m_timeLogoff = field[35].GetUInt32();
     //field[36].GetUInt32();    online
 
-    m_bind_pos_x = field[37].GetFloat();
-    m_bind_pos_y = field[38].GetFloat();
-    m_bind_pos_z = field[39].GetFloat();
-    m_bind_mapid = field[40].GetUInt32();
-    m_bind_zoneid = field[41].GetUInt32();
+    setBindPoint(field[37].GetFloat(), field[38].GetFloat(), field[39].GetFloat(), field[40].GetUInt32(), field[41].GetUInt32());
 
     m_isResting = field[42].GetUInt8();
     m_restState = field[43].GetUInt8();
@@ -4357,7 +4344,7 @@ void Player::RepopRequestedPlayer()
         }
         else
         {
-            RepopAtGraveyard(GetBindPositionX(), GetBindPositionY(), GetBindPositionZ(), GetBindMapId());
+            RepopAtGraveyard(getBindPosition().x, getBindPosition().y, getBindPosition().z, getBindMapId());
         }
     }
 
@@ -9390,7 +9377,7 @@ void Player::EjectFromInstance()
             return;
     }
 
-    SafeTeleport(m_bind_mapid, 0, m_bind_pos_x, m_bind_pos_y, m_bind_pos_z, 0);
+    SafeTeleport(getBindMapId(), 0, getBindPosition().x, getBindPosition().y, getBindPosition().z, 0);
 }
 
 bool Player::HasQuestSpell(uint32 spellid) //Only for Cast Quests
@@ -12255,7 +12242,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 
 void Player::SendInitialLogonPackets()
 {
-    m_session->SendPacket(SmsgBindPointUpdate(m_bind_pos_x, m_bind_pos_y, m_bind_pos_z, m_bind_mapid, m_bind_zoneid).serialise().get());
+    m_session->SendPacket(SmsgBindPointUpdate(getBindPosition(), getBindMapId(), getBindZoneId()).serialise().get());
 
     sendSetProficiencyPacket(4, armor_proficiency);
     sendSetProficiencyPacket(2, weapon_proficiency);

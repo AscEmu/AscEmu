@@ -14,21 +14,17 @@ namespace AscEmu::Packets
     {
         static const size_t PACKET_SIZE = sizeof(float) * 3 + sizeof(uint32_t) * 2;
     public:
-        float x;
-        float y;
-        float z;
+        LocationVector pos;
         uint32_t map_id;
         uint32_t zone_id;
 
-        SmsgBindPointUpdate() : SmsgBindPointUpdate(0, 0, 0, 0, 0)
+        SmsgBindPointUpdate() : SmsgBindPointUpdate({0, 0, 0}, 0, 0)
         {
         }
 
-        SmsgBindPointUpdate(float x, float y, float z, uint32_t map_id, uint32_t zone_id) :
+        SmsgBindPointUpdate(LocationVector pos, uint32_t map_id, uint32_t zone_id) :
             ManagedPacket(SMSG_BINDPOINTUPDATE, PACKET_SIZE),
-            x(x),
-            y(y),
-            z(z),
+            pos(pos),
             map_id(map_id),
             zone_id(zone_id)
         {
@@ -38,16 +34,16 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
 #if VERSION_STRING != Mop
-            packet << x << y << z << map_id << zone_id;
+            packet << pos.x << pos.y << pos.z << map_id << zone_id;
 #else
-            packet << x << z << y << map_id << zone_id;
+            packet << pos.x << pos.z << pos.y << map_id << zone_id;
 #endif
             return true;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> x >> y >> z >> map_id >> zone_id;
+            packet >> pos.x >> pos.y >> pos.z >> map_id >> zone_id;
             return true;
         }
     };

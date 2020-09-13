@@ -1055,6 +1055,24 @@ private:
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Bind
+    void setBindPoint(float x, float y, float z, uint32_t mapId, uint32_t zoneId);
+
+    LocationVector getBindPosition() const;
+    uint32_t getBindMapId() const;
+    uint32_t getBindZoneId() const;
+
+private:
+    struct BindData
+    {
+        LocationVector location = { 0, 0, 0 };
+        uint32_t mapId = 0;
+        uint32_t zoneId = 0;
+    };
+    BindData m_bindData;
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     bool isGMFlagSet();
 
@@ -1629,7 +1647,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         WorldSession* GetSession() const { return m_session; }
         void SetSession(WorldSession* s) { m_session = s; }
-        void SetBindPoint(float x, float y, float z, uint32 m, uint32 v) { m_bind_pos_x = x; m_bind_pos_y = y; m_bind_pos_z = z; m_bind_mapid = m; m_bind_zoneid = v;}
 
         void SendDelayedPacket(WorldPacket* data, bool bDeleteOnSend);
         float offhand_dmg_mod;
@@ -1747,13 +1764,6 @@ public:
 
         void SetPlayerStatus(uint8 pStatus) { m_status = pStatus; }
     uint8 GetPlayerStatus() const;
-
-        const float & GetBindPositionX() const { return m_bind_pos_x; }
-        const float & GetBindPositionY() const { return m_bind_pos_y; }
-        const float & GetBindPositionZ() const { return m_bind_pos_z; }
-
-        const uint32 & GetBindMapId() const { return m_bind_mapid; }
-        const uint32 & GetBindZoneId() const { return m_bind_zoneid; }
 
         void SetShapeShift(uint8 ss);
 
@@ -2246,12 +2256,6 @@ public:
 
         uint32 m_invitersGuid;      // It is guild inviters guid ,0 when its not used
 
-        // bind
-        float m_bind_pos_x;
-        float m_bind_pos_y;
-        float m_bind_pos_z;
-        uint32 m_bind_mapid;
-        uint32 m_bind_zoneid;
         std::list<ItemSet> m_itemsets;
         //Duel
         uint32 m_duelCountdownTimer;

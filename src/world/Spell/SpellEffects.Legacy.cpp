@@ -1516,7 +1516,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
         {
             Player* p = static_cast<Player*>(unitTarget);
 
-            HandleTeleport(p->GetBindPositionX(), p->GetBindPositionY(), p->GetBindPositionZ(), p->GetBindMapId(), p);
+            HandleTeleport(p->getBindPosition().x, p->getBindPosition().y, p->getBindPosition().z, p->getBindMapId(), p);
         }
         return;
     }
@@ -2326,12 +2326,11 @@ void Spell::SpellEffectBind(uint8_t effectIndex)
         mapid = at->map_id;
     }
 
-    playerTarget->SetBindPoint(playerTarget->GetPositionX(), playerTarget->GetPositionY(), playerTarget->GetPositionZ(), mapid, areaid);
+    playerTarget->setBindPoint(playerTarget->GetPositionX(), playerTarget->GetPositionY(), playerTarget->GetPositionZ(), mapid, areaid);
 
-    playerTarget->GetSession()->SendPacket(SmsgBindPointUpdate(playerTarget->GetBindPositionX(), playerTarget->GetBindPositionY(), playerTarget->GetBindPositionZ(),
-        playerTarget->GetBindMapId(), playerTarget->GetBindZoneId()).serialise().get());
+    playerTarget->GetSession()->SendPacket(SmsgBindPointUpdate(playerTarget->getBindPosition(), playerTarget->getBindMapId(), playerTarget->getBindZoneId()).serialise().get());
 
-    playerTarget->GetSession()->SendPacket(SmsgPlayerBound(m_caster->getGuid(), playerTarget->GetBindZoneId()).serialise().get());
+    playerTarget->GetSession()->SendPacket(SmsgPlayerBound(m_caster->getGuid(), playerTarget->getBindZoneId()).serialise().get());
 }
 
 void Spell::SpellEffectQuestComplete(uint8_t effectIndex) // Quest Complete
@@ -4998,10 +4997,10 @@ void Spell::SpellEffectStuck(uint8_t /*effectIndex*/)
     if (!playerTarget || playerTarget != p_caster)
         return;
 
-    sEventMgr.AddEvent(playerTarget, &Player::EventTeleport, playerTarget->GetBindMapId(), playerTarget->GetBindPositionX(), playerTarget->GetBindPositionY(),
-                       playerTarget->GetBindPositionZ(), EVENT_PLAYER_TELEPORT, 50, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(playerTarget, &Player::EventTeleport, playerTarget->getBindMapId(), playerTarget->getBindPosition().x, playerTarget->getBindPosition().y,
+                       playerTarget->getBindPosition().z, EVENT_PLAYER_TELEPORT, 50, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     /*
-    playerTarget->SafeTeleport(playerTarget->GetBindMapId(), 0, playerTarget->GetBindPositionX(), playerTarget->GetBindPositionY(), playerTarget->GetBindPositionZ(), 3.14f);*/
+    playerTarget->SafeTeleport(playerTarget->getBindMapId(), 0, playerTarget->GetBindPositionX(), playerTarget->GetBindPositionY(), playerTarget->GetBindPositionZ(), 3.14f);*/
 }
 
 void Spell::SpellEffectSummonPlayer(uint8_t /*effectIndex*/)

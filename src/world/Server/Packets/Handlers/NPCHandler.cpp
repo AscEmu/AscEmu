@@ -334,7 +334,7 @@ void WorldSession::handleBinderActivateOpcode(WorldPacket& recvPacket)
 void WorldSession::sendInnkeeperBind(Creature* creature)
 {
     const uint32_t currentZone = _player->GetZoneId();
-    if (_player->m_bind_zoneid == currentZone)
+    if (_player->getBindZoneId() == currentZone)
     {
         SendPacket(SmsgGossipComplete().serialise().get());
 
