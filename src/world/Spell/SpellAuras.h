@@ -136,6 +136,9 @@ class SERVER_DECL Aura : public EventableObject
         void setTimeLeft(int32_t dur);
         int32_t getMaxDuration() const;
         void setMaxDuration(int32_t dur);
+        // Does not return 0 to avoid division by zero
+        // Returns 1 with permanent auras or with invalid effindex
+        uint16_t getPeriodicTickCountForEffect(uint8_t effIndex) const;
         void refresh([[maybe_unused]]bool saveMods = false, int16_t modifyStacks = 0);
 
         uint8_t getStackCount() const;

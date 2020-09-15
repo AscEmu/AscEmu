@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <cstdint>
+
 enum School : uint8_t
 {
     SCHOOL_NORMAL = 0,  // Physical

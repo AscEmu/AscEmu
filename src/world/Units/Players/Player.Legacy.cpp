@@ -971,8 +971,6 @@ void Player::Update(unsigned long time_passed)
     Unit::Update(time_passed);
     uint32 mstime = Util::getMSTime();
 
-    RemoveGarbageItems();
-
     if (m_attacking)
     {
         // Check attack timer.
@@ -1051,7 +1049,15 @@ void Player::Update(unsigned long time_passed)
     }
 
     //Autocast Spells in Area
-    CastSpellArea();
+    if (time_passed >= m_spellAreaUpdateTimer)
+    {
+        CastSpellArea();
+        m_spellAreaUpdateTimer = 1000;
+    }
+    else
+    {
+        m_spellAreaUpdateTimer -= static_cast<uint16_t>(time_passed);
+    }
 
     if (m_pvpTimer)
     {
@@ -1092,12 +1098,21 @@ void Player::Update(unsigned long time_passed)
             HandleSobering();
     }
 
-    WorldPacket* pending_packet = m_cache->m_pendingPackets.pop();
-    while (pending_packet != nullptr)
+    if (time_passed >= m_pendingPacketTimer)
     {
-        SendPacket(pending_packet);
-        delete pending_packet;
-        pending_packet = m_cache->m_pendingPackets.pop();
+        WorldPacket* pending_packet = m_cache->m_pendingPackets.pop();
+        while (pending_packet != nullptr)
+        {
+            SendPacket(pending_packet);
+            delete pending_packet;
+            pending_packet = m_cache->m_pendingPackets.pop();
+        }
+
+        m_pendingPacketTimer = 100;
+    }
+    else
+    {
+        m_pendingPacketTimer -= static_cast<uint16_t>(time_passed);
     }
 
     if (m_timeSyncTimer > 0)
@@ -1108,7 +1123,19 @@ void Player::Update(unsigned long time_passed)
             m_timeSyncTimer -= time_passed;
     }
 
-    SendUpdateToOutOfRangeGroupMembers();
+    if (time_passed >= m_partyUpdateTimer)
+    {
+        SendUpdateToOutOfRangeGroupMembers();
+
+        // Remove also garbage items
+        RemoveGarbageItems();
+
+        m_partyUpdateTimer = 1000;
+    }
+    else
+    {
+        m_partyUpdateTimer -= static_cast<uint16_t>(time_passed);
+    }
 }
 
 void Player::EventDismount(uint32 money, float x, float y, float z)
@@ -4411,8 +4438,10 @@ void Player::KillPlayer()
     EventDeath();
 
     m_session->SendPacket(SmsgCancelCombat().serialise().get());
-    //\Note: seems to be wrong format for this opcode - guess guid is required!
-    //m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
+    // Send server-side cancel message
+    WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
+    data << GetNewGUID();
+    SendMessageToSet(&data, false);
 
     setMoveRoot(true);
     sendStopMirrorTimerPacket(MIRROR_TYPE_FATIGUE);

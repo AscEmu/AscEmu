@@ -1151,6 +1151,11 @@ public:
 
     void setVisibleItemFields(uint32_t slot, Item* item);
 
+private:
+    uint16_t m_spellAreaUpdateTimer = 1000;
+    uint16_t m_pendingPacketTimer = 100;
+    uint16_t m_partyUpdateTimer = 1000;
+
 public:
     //MIT End
     //AGPL Start

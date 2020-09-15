@@ -339,7 +339,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
                 {
                     did_hit_result = static_cast<SpellDidHitResult>(DidHit(i, static_cast<Unit*>(itr)));
                     if (did_hit_result != SPELL_DID_HIT_SUCCESS)
-                        missedTargets.push_back(SpellTargetMod(itr->getGuid(), did_hit_result, SPELL_DID_HIT_SUCCESS));
+                        safeAddMissedTarget(itr->getGuid(), did_hit_result, SPELL_DID_HIT_SUCCESS);
                     else
                         SafeAddTarget(tmpMap, itr->getGuid());
                 }
@@ -424,7 +424,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
                         if (did_hit_result == SPELL_DID_HIT_SUCCESS)
                             SafeAddTarget(tmpMap, itr->getGuid());
                         else
-                            missedTargets.push_back(SpellTargetMod(itr->getGuid(), did_hit_result, SPELL_DID_HIT_SUCCESS));
+                            safeAddMissedTarget(itr->getGuid(), did_hit_result, SPELL_DID_HIT_SUCCESS);
                     }
                 }
                 else //cast from GO
@@ -491,7 +491,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
                         if (did_hit_result == SPELL_DID_HIT_SUCCESS)
                             SafeAddTarget(tmpMap, itr->getGuid());
                         else
-                            missedTargets.push_back(SpellTargetMod(itr->getGuid(), did_hit_result, SPELL_DID_HIT_SUCCESS));
+                            safeAddMissedTarget(itr->getGuid(), did_hit_result, SPELL_DID_HIT_SUCCESS);
                     }
                 }
                 else //cast from GO
@@ -3950,38 +3950,6 @@ void Spell::SafeAddTarget(std::vector<uint64_t>* tgt, uint64 guid)
     }
 
     tgt->push_back(guid);
-}
-
-void Spell::SafeAddMissedTarget(uint64 guid)
-{
-    for (auto target: missedTargets)
-    {
-        if (target.targetGuid == guid)
-        {
-            //LOG_DEBUG("[SPELL] Something goes wrong in spell target system");
-            // this isn't actually wrong, since we only have one missed target map,
-            // whereas hit targets have multiple maps per effect.
-            return;
-        }
-    }
-
-    missedTargets.push_back(SpellTargetMod(guid, SPELL_DID_HIT_RESIST, SPELL_DID_HIT_SUCCESS));
-}
-
-void Spell::SafeAddModeratedTarget(uint64 guid, uint16 type)
-{
-    for (auto target: missedTargets)
-    {
-        if (target.targetGuid == guid)
-        {
-            //LOG_DEBUG("[SPELL] Something goes wrong in spell target system");
-            // this isn't actually wrong, since we only have one missed target map,
-            // whereas hit targets have multiple maps per effect.
-            return;
-        }
-    }
-
-    missedTargets.push_back(SpellTargetMod(guid, (SpellDidHitResult)type, SPELL_DID_HIT_SUCCESS));
 }
 
 uint32 Spell::getState() const

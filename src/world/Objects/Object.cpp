@@ -522,9 +522,9 @@ void Object::interruptSpellWithSpellType(CurrentSpellType spellType)
             if (isPlayer() && IsInWorld())
             {
                 // Send server-side cancel message
-                auto spellId = curSpell->getSpellInfo()->getId();
-                //\Note: seems to be wrong format for this opcode - guess guid is required!
-                //static_cast<Player*>(this)->OutPacket(SMSG_CANCEL_AUTO_REPEAT, 4, &spellId);
+                WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
+                data << GetNewGUID();
+                SendMessageToSet(&data, false);
             }
         }
 
@@ -677,7 +677,7 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
         if (isPeriodic)
         {
             if (aur != nullptr && aurEff != nullptr)
-                damage += static_cast<float_t>(plr->IncreaseDamageByType[type] / (aur->getMaxDuration() / aurEff->mAmplitude));
+                damage += static_cast<float_t>(plr->IncreaseDamageByType[type] / aur->getPeriodicTickCountForEffect(aurEff->effIndex));
         }
         else
         {
@@ -734,7 +734,7 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
     if (isPeriodic)
     {
         if (aur != nullptr && aurEff != nullptr)
-            damage += static_cast<float_t>(victim->DamageTakenMod[school] / (aur->getMaxDuration() / aurEff->mAmplitude));
+            damage += static_cast<float_t>(victim->DamageTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->effIndex));
     }
     else
     {
@@ -902,7 +902,7 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
         static_cast<Player*>(this)->m_casted_amount[school] = damage_int;
 
     // Cause push back to victim's spell casting if damage was not fully absorbed
-    if (!(dmginfo.full_damage == 0 && absorbedDamage > 0))
+    if (!(dmginfo.full_damage == 0 && absorbedDamage > 0) && !isPeriodic)
     {
         if (victim->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && victim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
             victim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->AddTime(school);
@@ -1165,8 +1165,8 @@ void Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool al
     heal += static_cast<float_t>(heal * victim->HealTakenPctMod[school]);
     if (isPeriodic)
     {
-        if (aur != nullptr && aurEff != nullptr && aurEff->mAmplitude != 0)
-            heal += static_cast<float_t>(victim->HealTakenMod[school] / (aur->getMaxDuration() / aurEff->mAmplitude));
+        if (aur != nullptr && aurEff != nullptr)
+            heal += static_cast<float_t>(victim->HealTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->effIndex));
     }
     else
     {

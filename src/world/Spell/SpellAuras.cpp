@@ -363,6 +363,18 @@ void Aura::setMaxDuration(int32_t dur)
     m_maxDuration = dur;
 }
 
+uint16_t Aura::getPeriodicTickCountForEffect(uint8_t effIndex) const
+{
+    if (m_auraEffects[effIndex].mAuraEffect == SPELL_AURA_NONE)
+        return 1;
+
+    // Never return 0 to avoid division by zero later
+    if (m_auraEffects[effIndex].mAmplitude == 0 || getMaxDuration() == -1)
+        return 1;
+
+    return static_cast<uint16_t>(getMaxDuration() / m_auraEffects[effIndex].mAmplitude);
+}
+
 void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStacks/* = 0*/)
 {
     int32_t maxStacks = getSpellInfo()->getMaxstack() == 0 ? 1 : getSpellInfo()->getMaxstack();
@@ -878,11 +890,19 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
         {
             const auto triggerSpell = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(aurEff->effIndex));
             const auto casterUnit = GetUnitCaster();
-            // This is bad, we are using GenerateTargets to get correct target for periodic target
-            // but it is very very inaccurate and should never be used
-            // This should be fixed soon
             if (casterUnit != nullptr)
-                casterUnit->castSpell(nullptr, triggerSpell, true);
+            {
+                Unit* target = nullptr;
+                // If spell is channeled, periodic target should be the channel object
+                if (getSpellInfo()->isChanneled())
+                    target = casterUnit->GetMapMgrUnit(casterUnit->getChannelObjectGuid());
+
+                // Note; target is nullptr here if spell is not channeled
+                // In that case we are using GenerateTargets to get correct target for periodic target
+                // but it is very very inaccurate and should never be used
+                // There is no other way to fix it than use SpellScript to set correct target for each periodic spell which have no target
+                casterUnit->castSpell(target, triggerSpell, true);
+            }
         } break;
         case SPELL_AURA_PERIODIC_ENERGIZE:
         {
@@ -1023,11 +1043,19 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
         {
             const auto triggeredInfo = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(aurEff->effIndex));
             const auto casterUnit = GetUnitCaster();
-            // This is bad, we are using GenerateTargets to get correct target for periodic target
-            // but it is very very inaccurate and should never be used
-            // This should be fixed soon
             if (casterUnit != nullptr)
-                casterUnit->castSpell(nullptr, triggeredInfo, aurEff->mDamage, true);
+            {
+                Unit* target = nullptr;
+                // If spell is channeled, periodic target should be the channel object
+                if (getSpellInfo()->isChanneled())
+                    target = casterUnit->GetMapMgrUnit(casterUnit->getChannelObjectGuid());
+
+                // Note; target is nullptr here if spell is not channeled
+                // In that case we are using GenerateTargets to get correct target for periodic target
+                // but it is very very inaccurate and should never be used
+                // There is no other way to fix it than use SpellScript to set correct target for each periodic spell which have no target
+                casterUnit->castSpell(target, triggeredInfo, aurEff->mDamage, true);
+            }
         } break;
         default:
             break;

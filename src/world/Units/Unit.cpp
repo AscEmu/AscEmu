@@ -189,10 +189,34 @@ void Unit::modHealth(int32_t health)
     setHealth(newHealth);
 }
 
-uint32_t Unit::getPower(PowerType type) const
+uint32_t Unit::getPower(PowerType type, [[maybe_unused]]bool inRealTime/* = true*/) const
 {
     if (type == POWER_TYPE_HEALTH)
         return getHealth();
+
+#if VERSION_STRING >= WotLK
+    if (inRealTime)
+    {
+        // Following power types update in real time since wotlk
+        // We cannot update WoWData values in real time, otherwise SMSG_UPDATE_OBJECT is sent every 100ms per player
+        // Therefore private variables are updated in real time and WoWData values are updated every 2 sec (blizzlike)
+        switch (type)
+        {
+            case POWER_TYPE_MANA:
+                return m_manaAmount;
+            case POWER_TYPE_RAGE:
+                return m_rageAmount;
+            case POWER_TYPE_FOCUS:
+                return m_focusAmount;
+            case POWER_TYPE_ENERGY:
+                return m_energyAmount;
+            case POWER_TYPE_RUNIC_POWER:
+                return m_runicPowerAmount;
+            default:
+                break;
+        }
+    }
+#endif
 
     // Since cata power fields work differently
     // Get matching power index by power type
@@ -232,8 +256,35 @@ void Unit::setPower(PowerType type, uint32_t value, bool sendPacket/* = true*/)
     if (value > maxPower)
         value = maxPower;
 
-    if (getPower(type) == value)
+    if (getPower(type, false) == value)
         return;
+
+#if VERSION_STRING >= WotLK
+    // Sync realtime values with WoWData values
+    switch (type)
+    {
+        case POWER_TYPE_MANA:
+            m_manaAmount = value;
+            break;
+        case POWER_TYPE_RAGE:
+            m_rageAmount = value;
+            break;
+        case POWER_TYPE_FOCUS:
+            m_focusAmount = value;
+            break;
+        case POWER_TYPE_ENERGY:
+            m_energyAmount = value;
+            break;
+        case POWER_TYPE_RUNIC_POWER:
+            m_runicPowerAmount = value;
+            break;
+        default:
+            break;
+    }
+
+    // Reset update timer
+    m_powerUpdatePacketTime = REGENERATION_PACKET_UPDATE_INTERVAL;
+#endif
 
     // Since cata power fields work differently
     // Get matching power index by power type
@@ -3548,9 +3599,9 @@ void Unit::regeneratePower(PowerType type)
     amount += m_powerFractions[type];
 
     // Convert the float amount to integer and save the fraction for next power update
-    // This fixes regen like 0.98
+    // This fixes regen values like 0.98
     auto powerResult = currentPower;
-    auto integerAmount = static_cast<uint32_t>(std::fabs(amount));
+    const auto integerAmount = static_cast<uint32_t>(std::fabs(amount));
 
     if (amount < 0.0f)
     {
@@ -3579,7 +3630,33 @@ void Unit::regeneratePower(PowerType type)
         }
     }
 
+#if VERSION_STRING < WotLK
     setPower(type, powerResult, sendUpdatePacket);
+#else
+    // In wotlk+ most of the powers regen in real time but we cannot update WoWData values in realtime,
+    // so we use private member variables to store power in real time
+    switch (type)
+    {
+        case POWER_TYPE_MANA:
+            m_manaAmount = powerResult;
+            break;
+        case POWER_TYPE_RAGE:
+            m_rageAmount = powerResult;
+            break;
+        case POWER_TYPE_FOCUS:
+            m_focusAmount = powerResult;
+            break;
+        case POWER_TYPE_ENERGY:
+            m_energyAmount = powerResult;
+            break;
+        case POWER_TYPE_RUNIC_POWER:
+            m_runicPowerAmount = powerResult;
+            break;
+        default:
+            setPower(type, powerResult, sendUpdatePacket);
+            break;
+    }
+#endif
 }
 
 #if VERSION_STRING < Cata

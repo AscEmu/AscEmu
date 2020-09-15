@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "SpellDidHitResult.h"
 
+#include <cstdint>
+
 struct SpellTargetMod
 {
     SpellTargetMod(uint64_t targetGuid, SpellDidHitResult hitResult, SpellDidHitResult extendedHitResult)

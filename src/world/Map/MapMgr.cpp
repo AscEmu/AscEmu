@@ -72,6 +72,7 @@ MapMgr::MapMgr(Map* map, uint32 mapId, uint32 instanceid) : CellHandler<MapCell>
     m_DynamicObjectHighGuid = 0;
     lastUnitUpdate = Util::getMSTime();
     lastGameobjectUpdate = Util::getMSTime();
+    lastDynamicObjectUpdate = Util::getMSTime();
     m_battleground = nullptr;
 
     m_holder = &eventHolder;
@@ -1337,8 +1338,8 @@ bool MapMgr::Do()
 
         last_exec = Util::getMSTime();
         uint32 exec_time = last_exec - exec_start;
-        if (exec_time < 100)  //mapmgr update period 100
-            Arcemu::Sleep(100 - exec_time);
+        if (exec_time < 20)  //mapmgr update period 20
+            Arcemu::Sleep(20 - exec_time);
 
         // Check if we have to die :P
         if (InactiveMoveTime && UNIXTIME >= InactiveMoveTime)
@@ -1514,9 +1515,11 @@ void MapMgr::_PerformObjectDuties()
         lastUnitUpdate = mstime;
     }
 
-    // Dynamic objects
+    // Dynamic objects are updated every 100ms
     // We take the pointer, increment, and update in this order because during the update the DynamicObject might get deleted,
     // rendering the iterator unincrementable. Which causes a crash!
+    difftime = mstime - lastDynamicObjectUpdate;
+    if (difftime >= 100)
     {
         for (auto itr = m_DynamicObjectStorage.begin(); itr != m_DynamicObjectStorage.end();)
         {
@@ -1525,13 +1528,14 @@ void MapMgr::_PerformObjectDuties()
 
             o->UpdateTargets();
         }
+
+        lastDynamicObjectUpdate = mstime;
     }
 
-    // Update gameobjects (not on every loop, however)
-    if (mLoopCounter % 2)
+    // Update gameobjects only every 200ms
+    difftime = mstime - lastGameobjectUpdate;
+    if (difftime >= 200)
     {
-        difftime = mstime - lastGameobjectUpdate;
-
         for (auto itr = GOStorage.begin(); itr != GOStorage.end(); )
         {
             GameObject* gameobject = *itr;
@@ -1543,7 +1547,8 @@ void MapMgr::_PerformObjectDuties()
         lastGameobjectUpdate = mstime;
     }
 
-    // Sessions are updated every loop.
+    // Sessions are updated on every second loop
+    if (mLoopCounter % 2)
     {
         for (auto itr = Sessions.begin(); itr != Sessions.end();)
         {

@@ -328,7 +328,7 @@ public:
     void setHealth(uint32_t health);
     void modHealth(int32_t health);
 
-    uint32_t getPower(PowerType type) const;
+    uint32_t getPower(PowerType type, bool inRealTime = true) const;
     void setPower(PowerType type, uint32_t value, bool sendPacket = true);
     void modPower(PowerType type, int32_t value);
 
@@ -760,6 +760,17 @@ private:
     // The leftover power from power regeneration which will be added to new value on next power update
     float_t m_powerFractions[TOTAL_PLAYER_POWER_TYPES];
 
+#if VERSION_STRING >= WotLK
+    // Powers in real time
+    uint32_t m_manaAmount = 0;
+    uint32_t m_rageAmount = 0;
+    uint32_t m_focusAmount = 0;
+    uint32_t m_energyAmount = 0;
+    uint32_t m_runicPowerAmount = 0;
+
+    uint32_t m_powerUpdatePacketTime = REGENERATION_PACKET_UPDATE_INTERVAL;
+#endif
+
 protected:
     // Mana and Energy
     uint16_t m_manaEnergyRegenerateTimer = 0;
@@ -800,6 +811,8 @@ private:
     uint32_t m_attackTimer[TOTAL_WEAPON_DAMAGE_TYPES];
     //\ todo: there seems to be new haste update fields in playerdata in cata, and moved to unitdata in mop
     float m_attackSpeed[TOTAL_WEAPON_DAMAGE_TYPES];
+
+    uint32_t m_lastSpellUpdateTime = 0;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////

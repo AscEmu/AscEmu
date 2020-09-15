@@ -164,6 +164,8 @@ class SERVER_DECL Spell : public EventableObject
         // Stores hitted targets for each spell effect
         std::vector<uint64_t> m_effectTargets[MAX_SPELL_EFFECTS];
 
+        void safeAddMissedTarget(uint64_t targetGuid, SpellDidHitResult hitResult, SpellDidHitResult extendedHitResult);
+
         Unit* unitTarget = nullptr;
         Item* itemTarget = nullptr;
         GameObject* gameObjTarget = nullptr;
@@ -667,9 +669,6 @@ class SERVER_DECL Spell : public EventableObject
         uint32 m_missileTravelTime;
 
         void SafeAddTarget(std::vector<uint64_t>* tgt, uint64 guid);
-
-        void SafeAddMissedTarget(uint64 guid);
-        void SafeAddModeratedTarget(uint64 guid, uint16 type);
 
         friend class DynamicObject;
         void DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multiplicator = 1);
