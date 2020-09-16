@@ -1110,10 +1110,30 @@ Unit::~Unit()
 void Unit::Update(unsigned long time_passed)
 {
     m_movementAI.updateMovement(time_passed);
-    _UpdateSpells(time_passed);
-    _updateAuras(time_passed);
 
-    RemoveGarbage();
+    const auto msTime = Util::getMSTime();
+    const auto diff = msTime - m_lastSpellUpdateTime;
+    if (diff >= 100)
+    {
+        // Spells and auras are updated every 100ms
+        _UpdateSpells(diff);
+        _updateAuras(diff);
+
+        // Update spell school lockout timer
+        // TODO: Moved here from Spell::CanCast, figure out a better way to handle this... -Appled
+        for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
+        {
+            if (SchoolCastPrevent[i] == 0)
+                continue;
+
+            if (msTime >= SchoolCastPrevent[i])
+                SchoolCastPrevent[i] = 0;
+        }
+
+        RemoveGarbage();
+
+        m_lastSpellUpdateTime = msTime;
+    }
 
     if (!isDead())
     {
@@ -1128,6 +1148,39 @@ void Unit::Update(unsigned long time_passed)
             m_H_regenTimer -= static_cast<uint16>(time_passed);
 
         regeneratePowers(static_cast<uint16_t>(time_passed));
+
+#if VERSION_STRING >= WotLK
+        // Send power amount to nearby players
+        if (time_passed >= m_powerUpdatePacketTime)
+        {
+            m_powerUpdatePacketTime = REGENERATION_PACKET_UPDATE_INTERVAL;
+
+            switch (getPowerType())
+            {
+                case POWER_TYPE_MANA:
+                    setPower(POWER_TYPE_MANA, m_manaAmount);
+                    break;
+                case POWER_TYPE_RAGE:
+                    setPower(POWER_TYPE_RAGE, m_rageAmount);
+                    break;
+                case POWER_TYPE_FOCUS:
+                    setPower(POWER_TYPE_FOCUS, m_focusAmount);
+                    break;
+                case POWER_TYPE_ENERGY:
+                    setPower(POWER_TYPE_ENERGY, m_energyAmount);
+                    break;
+                case POWER_TYPE_RUNIC_POWER:
+                    setPower(POWER_TYPE_RUNIC_POWER, m_runicPowerAmount);
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            m_powerUpdatePacketTime -= static_cast<uint16_t>(time_passed);
+        }
+#endif
 
 #if VERSION_STRING < Cata
         if (time_passed >= m_powerRegenerationInterruptTime)
@@ -1177,17 +1230,6 @@ void Unit::Update(unsigned long time_passed)
             }
             if (!count)
                 m_diminishActive = false;
-        }
-
-        // Update spell school lockout timer
-        // TODO: Moved here from Spell::CanCast, figure out a better way to handle this... -Appled
-        for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
-        {
-            if (SchoolCastPrevent[i] == 0)
-                continue;
-
-            if (Util::getMSTime() >= SchoolCastPrevent[i])
-                SchoolCastPrevent[i] = 0;
         }
 
         // if health changed since last time. Would be perfect if it would work for creatures too :)
@@ -8972,16 +9014,15 @@ void Unit::UpdateSpeed()
 {
     if (getMountDisplayId() == 0)
     {
-        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true) * (1.0f + static_cast<float>(m_speedModifier) / 100.0f), true);
-        resetCurrentSpeeds();
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, false) * (1.0f + static_cast<float>(m_speedModifier) / 100.0f), true);
     }
     else
     {
-        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true) * (1.0f + static_cast<float>(m_mountedspeedModifier) / 100.0f), true);
-        setSpeedRate(TYPE_RUN, (getSpeedRate(TYPE_RUN, true) + (m_speedModifier < 0) ? (getSpeedRate(TYPE_RUN, true) * static_cast<float>(m_speedModifier) / 100.0f) : 0), true);
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, false) * (1.0f + static_cast<float>(m_mountedspeedModifier) / 100.0f), true);
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true) + (m_speedModifier < 0 ? (getSpeedRate(TYPE_RUN, false) * static_cast<float>(m_speedModifier) / 100.0f) : 0), true);
     }
 
-    setSpeedRate(TYPE_FLY, getSpeedRate(TYPE_FLY, true) * (1.0f + ((float)m_flyspeedModifier) / 100.0f), true);
+    setSpeedRate(TYPE_FLY, getSpeedRate(TYPE_FLY, false) * (1.0f + ((float)m_flyspeedModifier) / 100.0f), true);
 
     // Limit speed due to effects such as http://www.wowhead.com/?spell=31896 [Judgement of Justice]
     if (m_maxSpeed && getSpeedRate(TYPE_RUN, true) > m_maxSpeed)

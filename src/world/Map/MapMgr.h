@@ -201,6 +201,7 @@ public:
     void _PerformObjectDuties();
     uint32 mLoopCounter;
     uint32 lastGameobjectUpdate;
+    uint32_t lastDynamicObjectUpdate = 0;
     uint32 lastUnitUpdate;
     void EventCorpseDespawn(uint64 guid);
 

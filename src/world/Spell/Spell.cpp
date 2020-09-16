@@ -428,6 +428,23 @@ void Spell::castMe(const bool doReCheck)
         }
     }
 
+    // Cleanup missed targets; spell either hits or misses target, not both
+    // Current spell target system is bullshit
+    if (!missedTargets.empty())
+    {
+        for (const auto& targetGuid : uniqueHittedTargets)
+        {
+            auto missedTarget = missedTargets.begin();
+            while (missedTarget != missedTargets.end())
+            {
+                if (missedTarget->targetGuid == targetGuid)
+                    missedTarget = missedTargets.erase(missedTarget);
+                else
+                    ++missedTarget;
+            }
+        }
+    }
+
     // Send spell missile/visual effect
     sendSpellGo();
 
@@ -4153,7 +4170,10 @@ void Spell::takePower()
         return;
     }
 #endif
-    else if (getSpellInfo()->getPowerType() == POWER_TYPE_MANA)
+    // Check also that the caster's power type is mana
+    // otherwise spell procs, which use no power but have default power type (= mana), will set this to true
+    // and that will show for example rage inaccurately later
+    else if (getSpellInfo()->getPowerType() == POWER_TYPE_MANA && u_caster->getPowerType() == POWER_TYPE_MANA)
     {
         // Start five second timer later at spell cast
         m_usesMana = true;
@@ -4166,8 +4186,6 @@ void Spell::takePower()
     }
 
     const auto powerType = getSpellInfo()->getPowerType();
-    const auto curPower = u_caster->getPower(powerType);
-
     u_caster->modPower(powerType, -static_cast<int32_t>(getPowerCost()));
 }
 

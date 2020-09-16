@@ -3480,8 +3480,11 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
                 p_target->removeUnitStateFlag(UNIT_STATE_ATTACKING);
 
             p_target->SendPacket(SmsgCancelCombat().serialise().get());
-            //\Note: seems to be wrong format for this opcode - guess guid is required!
-            //p_target->GetSession()->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
+
+            // Send server-side cancel message
+            WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
+            data << p_target->GetNewGUID();
+            p_target->SendMessageToSet(&data, false);
         }
         else
         {
