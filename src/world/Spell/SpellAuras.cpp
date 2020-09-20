@@ -368,11 +368,11 @@ uint16_t Aura::getPeriodicTickCountForEffect(uint8_t effIndex) const
     if (m_auraEffects[effIndex].mAuraEffect == SPELL_AURA_NONE)
         return 1;
 
-    // Never return 0 to avoid division by zero later
     if (m_auraEffects[effIndex].mAmplitude == 0 || getMaxDuration() == -1)
         return 1;
 
-    return static_cast<uint16_t>(getMaxDuration() / m_auraEffects[effIndex].mAmplitude);
+    // Never return 0 to avoid division by zero later
+    return std::max(static_cast<uint16_t>(1), static_cast<uint16_t>(getMaxDuration() / m_auraEffects[effIndex].mAmplitude));
 }
 
 void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStacks/* = 0*/)

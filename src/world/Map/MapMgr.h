@@ -93,7 +93,7 @@ public:
     uint32 m_CreatureHighGuid;
     std::vector<Creature*> CreatureStorage;
     CreatureSet::iterator creature_iterator;        /// required by owners despawning creatures and deleting *(++itr)
-    uint64 GenerateCreatureGUID(uint32 entry);
+    uint64 GenerateCreatureGUID(uint32 entry, bool canUseOldGuid = true);
     Creature* CreateCreature(uint32 entry);
     Creature* CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO);
 
@@ -104,13 +104,14 @@ public:
     /// Summon* CreateSummon(uint32 entry, SummonType type)
     /// Summon factory function, creates and returns the appropriate summon subclass.
     ///
-    /// \param uint32 entry     -  entry of the summon (NPC id)
-    /// \param SummonType type  -  Type of the summon
+    /// \param uint32 entry      -  entry of the summon (NPC id)
+    /// \param SummonType type   -  Type of the summon
+    /// \param uint32_t duration -  Duration of the summon
     ///
     /// \return pointer to a summon
     ///
     //////////////////////////////////////////////////////////////////////////////////////////
-    Summon* CreateSummon(uint32 entry, SummonType type);
+    Summon* CreateSummon(uint32 entry, SummonType type, uint32_t duration);
 
 
     // Local (mapmgr) storage/generation of DynamicObjects

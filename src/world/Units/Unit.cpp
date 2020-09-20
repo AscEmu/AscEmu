@@ -3867,6 +3867,22 @@ void Unit::addExtraUnitMovementFlag(uint16_t f2) { movement_info.flags2 |= f2; }
 bool Unit::hasExtraUnitMovementFlag(uint16_t f2) const { return (movement_info.flags2 & f2) != 0; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Summons
+
+TotemSummon* Unit::getTotem(TotemSlots slot) const
+{
+    if (slot >= MAX_TOTEM_SLOT)
+        return nullptr;
+
+    return getSummonInterface()->getTotemInSlot(slot);
+}
+
+SummonHandler* Unit::getSummonInterface() const
+{
+    return m_summonInterface;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Vehicle
 
 Vehicle* Unit::getCurrentVehicle() const { return m_currentVehicle; }

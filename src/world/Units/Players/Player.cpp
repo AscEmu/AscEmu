@@ -3383,7 +3383,7 @@ void Player::setPvpFlag()
 
     addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
-    summonhandler.SetPvPFlags();
+    getSummonInterface()->setPvPFlags(true);
     for (auto& summon : GetSummons())
         summon->setPvpFlag();
 
@@ -3402,7 +3402,7 @@ void Player::removePvpFlag()
 
     removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
-    summonhandler.RemovePvPFlags();
+    getSummonInterface()->setPvPFlags(false);
     for (auto& summon : GetSummons())
         summon->removePvpFlag();
 }
@@ -3418,7 +3418,7 @@ void Player::setFfaPvpFlag()
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_FFA_PVP);
     addPlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
-    summonhandler.SetFFAPvPFlags();
+    getSummonInterface()->setFFAPvPFlags(true);
     for (auto& summon : GetSummons())
         summon->setFfaPvpFlag();
 }
@@ -3429,7 +3429,7 @@ void Player::removeFfaPvpFlag()
     setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_FFA_PVP);
     removePlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
-    summonhandler.RemoveFFAPvPFlags();
+    getSummonInterface()->setFFAPvPFlags(false);
     for (auto& summon : GetSummons())
         summon->removeFfaPvpFlag();
 }
@@ -3442,8 +3442,9 @@ bool Player::isSanctuaryFlagSet()
 void Player::setSanctuaryFlag()
 {
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_SANCTUARY);
+    addPlayerFlags(PLAYER_FLAG_SANCTUARY);
 
-    summonhandler.SetSanctuaryFlags();
+    getSummonInterface()->setSanctuaryFlags(true);
     for (auto& summon : GetSummons())
         summon->setSanctuaryFlag();
 }
@@ -3451,8 +3452,9 @@ void Player::setSanctuaryFlag()
 void Player::removeSanctuaryFlag()
 {
     setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_SANCTUARY);
+    removePlayerFlags(PLAYER_FLAG_SANCTUARY);
 
-    summonhandler.RemoveSanctuaryFlags();
+    getSummonInterface()->setSanctuaryFlags(false);
     for (auto& summon : GetSummons())
         summon->removeSanctuaryFlag();
 }

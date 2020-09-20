@@ -155,31 +155,27 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
             m_spellInfo = SpellDiffEntry;
     }
 
-    // Initialize caster
-    m_caster = Caster;
+    // Initialize caster pointers
+    _updateCasterPointers(Caster);
+
+    // Check if spell is casted in a duel
     switch (Caster->getObjectTypeId())
     {
         case TYPEID_PLAYER:
-            p_caster = dynamic_cast<Player*>(Caster);
-        // no break here
         case TYPEID_UNIT:
-            u_caster = dynamic_cast<Unit*>(Caster);
             if (u_caster->getPlayerOwner() != nullptr && u_caster->getPlayerOwner()->GetDuelState() == DUEL_STATE_STARTED)
                 duelSpell = true;
             break;
         case TYPEID_ITEM:
         case TYPEID_CONTAINER:
-            i_caster = dynamic_cast<Item*>(Caster);
             if (i_caster->getOwner() != nullptr && i_caster->getOwner()->GetDuelState() == DUEL_STATE_STARTED)
                 duelSpell = true;
             break;
         case TYPEID_GAMEOBJECT:
-            g_caster = dynamic_cast<GameObject*>(Caster);
             if (g_caster->getPlayerOwner() != nullptr && g_caster->getPlayerOwner()->GetDuelState() == DUEL_STATE_STARTED)
                 duelSpell = true;
             break;
         default:
-            LogDebugFlag(LF_SPELL, "Spell constructor : Incompatible object type (type %u) for spell caster", Caster->getObjectTypeId());
             break;
     }
 
@@ -271,11 +267,11 @@ Spell::~Spell()
     uniqueHittedTargets.clear();
     missedTargets.clear();
 
-    std::map<uint64, Aura*>::iterator itr;
+    std::map<uint64, std::pair<uint32_t, Aura*>>::iterator itr;
     for (itr = m_pendingAuras.begin(); itr != m_pendingAuras.end(); ++itr)
     {
-        if (itr->second != nullptr)
-            delete itr->second;
+        if (itr->second.second != nullptr)
+            delete itr->second.second;
     }
 }
 
@@ -1711,7 +1707,7 @@ void Spell::SendTameFailure(uint8 result)
     }
 }
 
-void Spell::HandleEffects(uint64 guid, uint32 i)
+void Spell::HandleEffects(uint64 guid, uint8_t i)
 {
     if (event_GetInstanceID() == WORLD_INSTANCE ||
         DuelSpellNoMoreValid())
@@ -1862,17 +1858,17 @@ void Spell::HandleAddAura(uint64 guid)
 {
     Unit* Target = nullptr;
 
-    std::map<uint64, Aura*>::iterator itr = m_pendingAuras.find(guid);
+    auto itr = m_pendingAuras.find(guid);
 
-    if (itr == m_pendingAuras.end() || itr->second == nullptr)
+    if (itr == m_pendingAuras.end() || itr->second.second == nullptr)
     {
         DecRef();
         return;
     }
 
     //If this aura isn't added correctly it MUST be deleted
-    Aura* aur = itr->second;
-    itr->second = nullptr;
+    Aura* aur = itr->second.second;
+    itr->second.second = nullptr;
 
     if (event_GetInstanceID() == WORLD_INSTANCE)
     {
@@ -4019,77 +4015,6 @@ uint32 Spell::GetTargetType(uint32 value, uint32 i)
         type |= SPELL_TARGET_AREA_CHAIN;
 
     return type;
-}
-
-void Spell::HandleCastEffects(uint64 guid, uint32 i)
-{
-    if (getSpellInfo()->getSpeed() == 0)  //instant
-    {
-        AddRef();
-        HandleEffects(guid, i);
-    }
-    else
-    {
-        float destx, desty, destz, dist = 0;
-
-        if (m_targets.hasDestination())
-        {
-            auto destination = m_targets.getDestination();
-            destx = destination.x;
-            desty = destination.y;
-            destz = destination.z;
-
-            dist = m_caster->CalcDistance(destx, desty, destz);
-        }
-        else if (guid == 0)
-        {
-            return;
-        }
-        else
-        {
-            if (!m_caster->IsInWorld())
-                return;
-
-            if (m_caster->getGuid() != guid)
-            {
-                Object* obj = m_caster->GetMapMgr()->_GetObject(guid);
-                if (obj == nullptr)
-                    return;
-
-                destx = obj->GetPositionX();
-                desty = obj->GetPositionY();
-                //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->getScale())
-                if (obj->isCreatureOrPlayer())
-                    destz = obj->GetPositionZ() + static_cast<Unit*>(obj)->GetModelHalfSize();
-                else
-                    destz = obj->GetPositionZ();
-
-                dist = m_caster->CalcDistance(destx, desty, destz);
-            }
-        }
-
-        if (dist == 0.0f)
-        {
-            AddRef();
-            HandleEffects(guid, i);
-        }
-        else
-        {
-            float time;
-
-            if (m_missileTravelTime != 0)
-                time = static_cast<float>(m_missileTravelTime);
-            else
-                time = dist * 1000.0f / getSpellInfo()->getSpeed();
-
-            ///\todo arcemu doesn't support reflected spells
-            //if (reflected)
-            //  time *= 1.25; //reflected projectiles move back 4x faster
-
-            sEventMgr.AddEvent(this, &Spell::HandleEffects, guid, i, EVENT_SPELL_HIT, float2int32(time), 1, 0);
-            AddRef();
-        }
-    }
 }
 
 void Spell::SpellEffectJumpTarget(uint8_t effectIndex)

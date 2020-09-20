@@ -6,130 +6,53 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "CommonTypes.hpp"
-#include <array>
+#include "Units/UnitDefines.hpp"
+
 #include <vector>
 #include <set>
 
-#define SUMMON_SLOTS 6
+class Summon;
+class TotemSummon;
 
-class Unit;
+// There are 3 types of summons
+// - Combat pet : this is a controllable pet. Hunter pets and warlock minions for example.
+// - Guardian pet : this pet cannot be controlled and they act like combat pet would with aggressive react state. Totem is a subtype of guardian.
+// - Non-Combat pet : this is known as vanity pet, companion pet or critter. Cannot be attacked or attack.
+
+// There can be only one combat pet and one non-combat pet. Guardian pets have no limits.
+// Technically Death Knight can have 17 summons at time; 10 ghouls from Army of the Dead, 1 permanent risen ghoul,
+// 4 bloodworms, 1 dancing rune weapon and a companion pet.
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Manages the summons for Units.
+// Manages all summons for Unit class
 class SERVER_DECL SummonHandler
 {
 public:
     SummonHandler();
     ~SummonHandler();
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Adds a summon that doesn't have a summon slot
-    /// \param Unit* summon  -  pointer to the summon to add    \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void AddSummon(Unit* summon);
+    void addGuardian(Summon* summon);
+    void removeGuardian(Summon* summon, bool deleteObject);
 
+    void addTotem(TotemSummon* totem, TotemSlots slot);
+    void removeTotem(TotemSummon* totem, bool deleteObject);
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Adds a summon to a summon slot. If something is already there, it's despawned.
-    /// \param   Unit* summon  -  pointer to the summon to add
-    /// \param   uint8_t slot    -  slot number where we want to add the summon to
-    /// \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void AddSummonToSlot(Unit* summon, uint8_t slot);
+    // Removes all guardians and totems, but not permanent pet
+    void removeAllSummons(bool totemsOnly = false);
 
+    void setPvPFlags(bool set);
+    void setFFAPvPFlags(bool set);
+    void setSanctuaryFlags(bool set);
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Removes a summon that was not summoned to a slot
-    /// \param   Unit* summon  -  summon to remove
-    /// \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void RemoveSummon(Unit* summon);
+    bool hasTotemInSlot(TotemSlots slot) const;
+    TotemSummon* getTotemInSlot(TotemSlots slot) const;
+    Summon* getSummonWithEntry(uint32_t entry) const;
 
+    void getTotemSpellIds(std::vector<uint32_t> &spellIds);
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Removes a summon that was summoned to a slot
-    /// \param   uint8_t slot  -  the slot to remove a summon from
-    /// \param   bool del    -  decides if the summon should also be deleted
-    /// \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void RemoveSummonFromSlot(uint8_t slot, bool del = true);
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Expires all summons that were summoned to a slot
-    /// \param none
-    /// \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void ExpireSummonsInSlot();
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Removes and despawns all summons both from slots or otherwise
-    /// \param none        \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void RemoveAllSummons();
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the spellids the summons in slots were created by
-    /// \param std::vector<uint32_t> &spellids - reference to a vector where the spellids will be put
-    /// \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void GetSummonSlotSpellIDs(std::vector< uint32_t > &spellids);
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Tells if there is a summon in the specified slot
-    /// \param   uint8_t slot  -  the slot we are querying
-    /// \return Returns true if there is a summon in that slot false otherwise
-    //////////////////////////////////////////////////////////////////////////////////////////
-    bool HasSummonInSlot(uint8_t slot);
-
-    Unit* GetSummonInSlot(uint8_t slot);
-    Unit* GetSummonWithEntry(uint32_t entry);
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Flags all summons for PvP
-    /// \param none         \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void SetPvPFlags();
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Flags all summons for FFA PvP
-    /// \param none         \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void SetFFAPvPFlags();
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Sets the sanctuary flag on all summons
-    /// \param none         \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void SetSanctuaryFlags();
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Removes the PvP flag from all summons
-    /// \param none         \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void RemovePvPFlags();
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Removes the FFA PvP flag from all summons
-    /// \param none         \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void RemoveFFAPvPFlags();
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Removes the sanctuary flag from all summons
-    /// \param none         \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void RemoveSanctuaryFlags();
+    void update(uint16_t diff);
 
 private:
-    std::array<Unit* , SUMMON_SLOTS> summonslots;
-    std::set<Unit*> guardians;
+    std::set<Summon*> _guardianPets;
+    TotemSummon* _totems[MAX_TOTEM_SLOT];
 };

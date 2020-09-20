@@ -47,6 +47,7 @@ class Object;
 class Pet;
 class Spell;
 class SpellProc;
+class TotemSummon;
 class Vehicle;
 
 struct FactionDBC;
@@ -813,6 +814,7 @@ private:
     float m_attackSpeed[TOTAL_WEAPON_DAMAGE_TYPES];
 
     uint32_t m_lastSpellUpdateTime = 0;
+    uint32_t m_lastSummonUpdateTime = 0;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -844,6 +846,16 @@ public:
     uint16_t getExtraUnitMovementFlags() const;
     void addExtraUnitMovementFlag(uint16_t f2);
     bool hasExtraUnitMovementFlag(uint16_t f2) const;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Summons
+
+    TotemSummon* getTotem(TotemSlots slot) const;
+
+    SummonHandler* getSummonInterface() const;
+
+private:
+    SummonHandler* m_summonInterface = nullptr;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Vehicle
@@ -1013,7 +1025,6 @@ public:
     uint32 m_canMove;
     void Possess(Unit* pTarget, uint32 delay = 0);
     void UnPossess();
-    SummonHandler summonhandler;
 
     // Spell Effect Variables
     int32 m_silenced;

@@ -20,6 +20,7 @@
 
 #include "StdAfx.h"
 #include "Units/Unit.h"
+#include "Units/Summons/Summon.h"
 #include "Storage/DBC/DBCStores.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Server/EventableObject.h"
@@ -349,6 +350,117 @@ void Object::updateObject()
         m_mapMgr->ObjectUpdated(this);
         m_objectUpdated = true;
     }
+}
+
+uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+{
+    if (target == nullptr)
+        return 0;
+
+    uint8_t updateType = UPDATETYPE_CREATE_OBJECT;
+#if VERSION_STRING >= WotLK
+    uint16_t updateFlags = m_updateFlag;
+#else
+    uint8_t updateFlags = static_cast<uint8_t>(m_updateFlag);
+#endif
+
+    if (target == this)
+        updateFlags |= UPDATEFLAG_SELF;
+
+    switch (m_objectTypeId)
+    {
+        case TYPEID_PLAYER:
+        case TYPEID_DYNAMICOBJECT:
+        case TYPEID_CORPSE:
+        {
+            updateType = UPDATETYPE_CREATE_OBJECT2;
+        } break;
+        case TYPEID_UNIT:
+        {
+            ///\ todo: vehicles?
+            if (isPet())
+            {
+                updateType = UPDATETYPE_CREATE_OBJECT2;
+            }
+            else if (isSummon())
+            {
+                // Only player summons
+                const auto summoner = GetMapMgrPlayer(static_cast<Summon*>(this)->getSummonedByGuid());
+                if (summoner != nullptr)
+                    updateType = UPDATETYPE_CREATE_OBJECT2;
+            }
+        } break;
+        case TYPEID_GAMEOBJECT:
+        {
+            // Only player gameobjects
+            if (static_cast<GameObject*>(this)->getPlayerOwner() != nullptr)
+                updateType = UPDATETYPE_CREATE_OBJECT2;
+        } break;
+        default:
+            break;
+    }
+
+    if (!(updateFlags & UPDATEFLAG_LIVING))
+    {
+        if (obj_movement_info.transport_guid != 0)
+            updateFlags |= UPDATEFLAG_HAS_POSITION;
+    }
+
+    if (updateFlags & UPDATEFLAG_HAS_POSITION)
+    {
+        if (isGameObject())
+        {
+            switch (static_cast<GameObject*>(this)->getGoType())
+            {
+                case GAMEOBJECT_TYPE_TRAP:
+                case GAMEOBJECT_TYPE_DUEL_ARBITER:
+                case GAMEOBJECT_TYPE_FLAGSTAND:
+                case GAMEOBJECT_TYPE_FLAGDROP:
+                    updateType = UPDATETYPE_CREATE_OBJECT2;
+                    break;
+                case GAMEOBJECT_TYPE_TRANSPORT:
+                    updateFlags |= UPDATEFLAG_TRANSPORT;
+                    break;
+                default:
+                    // Set update type for other gameobjects only if it's created by a player
+                    if (static_cast<GameObject*>(this)->getPlayerOwner() != nullptr)
+                        updateType = UPDATETYPE_CREATE_OBJECT2;
+                    break;
+            }
+        }
+    }
+
+#ifdef FT_VEHICLES
+    if (isVehicle())
+        updateFlags |= UPDATEFLAG_VEHICLE;
+#endif
+
+    if (isCreatureOrPlayer())
+    {
+        if (static_cast<Unit*>(this)->getTargetGuid() != 0)
+            updateFlags |= UPDATEFLAG_HAS_TARGET;
+    }
+
+    // we shouldn't be here, under any circumstances, unless we have a wowguid..
+    ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
+
+    // build our actual update
+    *data << uint8_t(updateType);
+    *data << m_wowGuid;
+    *data << uint8_t(m_objectTypeId);
+
+    buildMovementUpdate(data, updateFlags, target);
+
+    // we have dirty data, or are creating for ourself.
+    UpdateMask updateMask;
+    updateMask.SetCount(m_valuesCount);
+    _SetCreateBits(&updateMask, target);
+
+    // this will cache automatically if needed
+    buildValuesUpdate(data, &updateMask, target);
+
+    // Update count
+    return 1;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1607,192 +1719,6 @@ void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
     m_spawnLocation.ChangeCoords({ x, y, z, ang });
     m_lastMapUpdatePosition.ChangeCoords({ x, y, z, ang });
 }
-
-#if VERSION_STRING <= TBC
-uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
-{
-    if (!target)
-        return 0;
-
-    uint8_t flags = 0, update_type = UPDATETYPE_CREATE_OBJECT;
-    if (m_objectTypeId == TYPEID_CORPSE)
-        if (static_cast<Corpse*>(this)->getDisplayId() == 0)
-            return 0;
-
-    switch (m_objectTypeId)
-    {
-    case TYPEID_ITEM:
-    case TYPEID_CONTAINER:
-        flags = 0x18;
-        break;
-    case TYPEID_UNIT:
-    case TYPEID_PLAYER:
-        flags = 0x70;
-        break;
-    case TYPEID_GAMEOBJECT:
-    case TYPEID_DYNAMICOBJECT:
-    case TYPEID_CORPSE:
-        flags = 0x58;
-        break;
-    }
-
-    if (target == this)
-    {
-        flags |= UPDATEFLAG_SELF;
-        update_type = UPDATETYPE_CREATE_YOURSELF;
-    }
-
-    if (m_objectTypeId == TYPEID_GAMEOBJECT)
-    {
-        switch (((GameObject*)this)->getGoType())
-        {
-        case GAMEOBJECT_TYPE_MO_TRANSPORT:
-            if (GetTypeFromGUID() != HIGHGUID_TYPE_TRANSPORTER)
-                return 0;
-
-            flags = 0x5a;
-            break;
-        case GAMEOBJECT_TYPE_TRANSPORT:
-            flags = 0x5a;
-            break;
-        case GAMEOBJECT_TYPE_DUEL_ARBITER:
-            update_type = UPDATETYPE_CREATE_YOURSELF;
-            break;
-        }
-    }
-
-    // we shouldn't be here, under any circumstances, unless we have a wowguid..
-    ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
-    // build our actual update
-    *data << update_type;
-    *data << m_wowGuid;
-    *data << m_objectTypeId;
-
-    //\todo remove flags (0) from function call.
-    buildMovementUpdate(data, flags, target);
-
-
-    // we have dirty data, or are creating for ourself.
-    UpdateMask update_mask;
-    update_mask.SetCount(m_valuesCount);
-    _SetCreateBits(&update_mask, target);
-
-    // this will cache automatically if needed
-    buildValuesUpdate(data, &update_mask, target);
-
-    // update count: 1 ;)
-    return 1;
-}
-#endif
-
-#if VERSION_STRING > TBC
-uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
-{
-    if (!target)
-        return 0;
-
-    uint8 updatetype = UPDATETYPE_CREATE_OBJECT;
-    uint16 updateflags = m_updateFlag;
-
-#if VERSION_STRING < Cata
-    if (target == this)
-    {
-        updateflags |= UPDATEFLAG_SELF;
-    }
-
-    if (updateflags & UPDATEFLAG_HAS_POSITION)
-    {
-        if (IsType(TYPE_DYNAMICOBJECT) || IsType(TYPE_CORPSE) || IsType(TYPE_PLAYER))
-            updatetype = UPDATETYPE_CREATE_YOURSELF;
-
-        if (target->isPet() && updateflags & UPDATEFLAG_SELF)
-            updatetype = UPDATETYPE_CREATE_YOURSELF;
-
-        if (IsType(TYPE_GAMEOBJECT))
-        {
-            switch (((GameObject*)this)->getGoType())
-            {
-            case GAMEOBJECT_TYPE_TRAP:
-            case GAMEOBJECT_TYPE_DUEL_ARBITER:
-            case GAMEOBJECT_TYPE_FLAGSTAND:
-            case GAMEOBJECT_TYPE_FLAGDROP:
-                updatetype = UPDATETYPE_CREATE_YOURSELF;
-                break;
-            case GAMEOBJECT_TYPE_TRANSPORT:
-                updateflags |= UPDATEFLAG_TRANSPORT;
-                break;
-            default:
-                break;
-            }
-        }
-
-        if (IsType(TYPE_UNIT))
-        {
-            if (((Unit*)this)->getTargetGuid() != 0)
-                updateflags |= UPDATEFLAG_HAS_TARGET;
-        }
-    }
-
-    if (isVehicle())
-        updateflags |= UPDATEFLAG_VEHICLE;
-#else
-    switch (m_objectTypeId)
-    {
-    case TYPEID_CORPSE:
-    case TYPEID_DYNAMICOBJECT:
-        updateflags = UPDATEFLAG_HAS_POSITION; // UPDATEFLAG_HAS_STATIONARY_POSITION
-        updatetype = 2;
-        break;
-
-    case TYPEID_GAMEOBJECT:
-        updateflags = UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION;
-        //flags = 0x0040 | 0x0200; // UPDATEFLAG_HAS_STATIONARY_POSITION | UPDATEFLAG_ROTATION
-        updatetype = 2;
-        break;
-
-    case TYPEID_UNIT:
-    case TYPEID_PLAYER:
-        updateflags = UPDATEFLAG_LIVING;
-        updatetype = 2;
-        break;
-    }
-
-    if (target == this)
-    {
-        // player creating self
-        updateflags |= UPDATEFLAG_SELF;  // UPDATEFLAG_SELF
-        updatetype = 2; // UPDATEFLAG_CREATE_OBJECT_SELF
-    }
-
-    if (isCreatureOrPlayer())
-    {
-        if (static_cast<Unit*>(this)->getTargetGuid())
-            updateflags |= UPDATEFLAG_HAS_TARGET; // UPDATEFLAG_HAS_ATTACKING_TARGET
-    }
-#endif
-
-    // we shouldn't be here, under any circumstances, unless we have a wowguid..
-    ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
-    // build our actual update
-    *data << uint8(updatetype);
-    *data << m_wowGuid;
-    *data << uint8(m_objectTypeId);
-
-    buildMovementUpdate(data, updateflags, target);
-
-    // we have dirty data, or are creating for ourself.
-    UpdateMask updateMask;
-    updateMask.SetCount(m_valuesCount);
-    _SetCreateBits(&updateMask, target);
-
-    // this will cache automatically if needed
-    buildValuesUpdate(data, &updateMask, target);
-
-    // update count: 1 ;)
-    return 1;
-}
-#endif
-
 
 //That is dirty fix it actually creates update of 1 field with
 //the given value ignoring existing changes in fields and so on

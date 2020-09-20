@@ -51,10 +51,10 @@ bool SkyShatterRegalia(uint8_t /*effectIndex*/, Spell* s)
     if (!s->getPlayerCaster())
         return false;
 
-    if (s->getPlayerCaster()->summonhandler.HasSummonInSlot(0) &&
-        s->getPlayerCaster()->summonhandler.HasSummonInSlot(1) &&
-        s->getPlayerCaster()->summonhandler.HasSummonInSlot(2) &&
-        s->getPlayerCaster()->summonhandler.HasSummonInSlot(3))
+    if (s->getPlayerCaster()->getSummonInterface()->hasTotemInSlot(TotemSlots(0)) &&
+        s->getPlayerCaster()->getSummonInterface()->hasTotemInSlot(TotemSlots(1)) &&
+        s->getPlayerCaster()->getSummonInterface()->hasTotemInSlot(TotemSlots(2)) &&
+        s->getPlayerCaster()->getSummonInterface()->hasTotemInSlot(TotemSlots(3)))
     {
         Aura* aur = sSpellMgr.newAura(sSpellMgr.getSpellInfo(38437), 5000, s->getPlayerCaster(), s->getPlayerCaster(), true);
 

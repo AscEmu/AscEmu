@@ -15,7 +15,7 @@ class WildSummon : public Summon
 {
 public:
 
-    WildSummon(uint64_t GUID);
+    WildSummon(uint64_t GUID, uint32_t duration);
     ~WildSummon();
 
     void Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32_t spellid, int32_t summonslot);

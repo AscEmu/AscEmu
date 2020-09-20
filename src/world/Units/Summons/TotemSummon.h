@@ -11,10 +11,12 @@ This file is released under the MIT license. See README-MIT for more information
 class TotemSummon : public Summon
 {
 public:
-    TotemSummon(uint64_t guid);
+    TotemSummon(uint64_t guid, uint32_t duration);
     ~TotemSummon();
 
     void Load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t spellId, int32_t summonSlot) override;
+
+    void unSummon() override;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Override Object functions

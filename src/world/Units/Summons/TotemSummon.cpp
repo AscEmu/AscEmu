@@ -3,43 +3,42 @@ Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "../../StdAfx.h"
-#include "Units/Summons/TotemSummon.h"
+#include "TotemSummon.h"
+
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/SpellMgr.h"
+#include "Units/Players/PlayerDefines.hpp"
 
-TotemSummon::TotemSummon(uint64_t guid) : Summon(guid) {}
+TotemSummon::TotemSummon(uint64_t guid, uint32_t duration) : Summon(guid, duration) {}
 
 TotemSummon::~TotemSummon() {}
 
 void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t spellId, int32_t summonSlot)
 {
     Summon::Load(creatureProperties, unitOwner, position, spellId, summonSlot);
-    uint32_t displayId;
 
+    uint32_t displayId;
     const auto displayIds = sMySQLStore.getTotemDisplayId(unitOwner->getRace(), creature_properties->Male_DisplayID);
     if (displayIds != nullptr)
         displayId = displayIds->race_specific_id;
     else
         displayId = creature_properties->Male_DisplayID;
 
-    setMaxPower(POWER_TYPE_FOCUS, unitOwner->getLevel() * 30);
-    setPower(POWER_TYPE_FOCUS, unitOwner->getLevel() * 30);
     setLevel(unitOwner->getLevel());
     setRace(0);
-    setClass(1);
-    setGender(2);
-    setPowerType(1);
+    setClass(1); // Creature class warrior
+    setGender(GENDER_NONE);
+    setPowerType(POWER_TYPE_MANA);
     setBaseAttackTime(MELEE, 2000);
     setBaseAttackTime(OFFHAND, 2000);
     setBoundingRadius(1.0f);
     setCombatReach(1.0f);
     setDisplayId(displayId);
-    setNativeDisplayId(creature_properties->Male_DisplayID);
+    setNativeDisplayId(displayId);
     setModCastSpeed(1.0f);
     setDynamicFlags(0);
 
@@ -53,12 +52,28 @@ void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitO
 
     m_aiInterface->Init(this, AI_SCRIPT_TOTEM, Movement::WP_MOVEMENT_SCRIPT_NONE, unitOwner);
     DisableAI();
+
+    if (getPlayerOwner() != nullptr)
+        getPlayerOwner()->sendTotemCreatedPacket(static_cast<uint8_t>(m_summonSlot), getGuid(), getTimeLeft(), getCreatedBySpellId());
+}
+
+void TotemSummon::unSummon()
+{
+    ///\ todo: death animation for totems, should happen on unsummon
+    /*if (isAlive())
+        setDeathState(DEAD);*/
+
+    interruptSpell();
+    RemoveAllAuras();
+
+    Summon::unSummon();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Override Object functions
 void TotemSummon::OnPushToWorld()
 {
+    getUnitOwner()->getSummonInterface()->addTotem(this, TotemSlots(m_summonSlot));
     Summon::OnPushToWorld();
 
     SetupSpells();
@@ -66,6 +81,7 @@ void TotemSummon::OnPushToWorld()
 
 void TotemSummon::OnPreRemoveFromWorld()
 {
+    getUnitOwner()->getSummonInterface()->removeTotem(this, false);
     Summon::OnPreRemoveFromWorld();
 }
 
@@ -75,7 +91,7 @@ bool TotemSummon::isTotem() const { return true; }
 // Override Unit functions
 void TotemSummon::Die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spellid*/)
 {
-    Despawn(1, 0);
+    unSummon();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

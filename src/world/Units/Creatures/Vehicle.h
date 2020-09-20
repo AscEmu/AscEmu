@@ -38,6 +38,7 @@ enum VehicleFlags
     VEHICLE_FLAG_ADJUST_AIM_POWER                = 0x00000800,           // Lua_IsVehicleAimPowerAdjustable
 };
 
+class Unit;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Implements the seat functionality for Vehicles

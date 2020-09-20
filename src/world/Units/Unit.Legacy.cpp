@@ -785,6 +785,14 @@ Unit::Unit() :
     m_manaShieldId = 0;
     m_charmtemp = 0;
     m_auraRaidUpdateMask = 0;
+
+    // APGL End
+    // MIT Start
+
+    m_summonInterface = new SummonHandler;
+
+    // MIT End
+    // APGL Start
 }
 
 Unit::~Unit()
@@ -1104,6 +1112,8 @@ Unit::~Unit()
 
     m_singleTargetAura.clear();
 
+    delete m_summonInterface;
+
     RemoveGarbage();
 }
 
@@ -1112,7 +1122,8 @@ void Unit::Update(unsigned long time_passed)
     m_movementAI.updateMovement(time_passed);
 
     const auto msTime = Util::getMSTime();
-    const auto diff = msTime - m_lastSpellUpdateTime;
+    
+    auto diff = msTime - m_lastSpellUpdateTime;
     if (diff >= 100)
     {
         // Spells and auras are updated every 100ms
@@ -1133,6 +1144,14 @@ void Unit::Update(unsigned long time_passed)
         RemoveGarbage();
 
         m_lastSpellUpdateTime = msTime;
+    }
+
+    // Update summon interface every 100ms to check summon durations
+    diff = msTime - m_lastSummonUpdateTime;
+    if (diff >= 100)
+    {
+        getSummonInterface()->update(static_cast<uint16_t>(diff));
+        m_lastSummonUpdateTime = msTime;
     }
 
     if (!isDead())

@@ -2952,7 +2952,7 @@ public:
         v.x += (3 * (cosf(angle + v.o)));
         v.y += (3 * (sinf(angle + v.o)));
 
-        Summon* guardian = ptr->GetMapMgr()->CreateSummon(entry, SUMMONTYPE_GUARDIAN);
+        Summon* guardian = ptr->GetMapMgr()->CreateSummon(entry, SUMMONTYPE_GUARDIAN, 0);
 
         guardian->Load(cp, ptr, v, 0, -1);
         guardian->GetAIInterface()->SetUnitToFollowAngle(angle);
