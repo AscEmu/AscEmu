@@ -1246,7 +1246,6 @@ Movement::WayPoint* Creature::CreateWaypointStruct()
 {
     return new Movement::WayPoint();
 }
-//#define SAFE_FACTIONS
 
 bool Creature::isattackable(MySQLStructure::CreatureSpawn* spawn)
 {

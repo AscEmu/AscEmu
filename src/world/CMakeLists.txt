@@ -15,6 +15,7 @@ include(Management/Gossip/CMakeLists.txt)
 include(Management/Guild/CMakeLists.txt)
 include(Management/LFG/CMakeLists.txt)
 include(Management/ObjectUpdates/CMakeLists.txt)
+include(Macros/CMakeLists.txt)
 include(Map/CMakeLists.txt)
 include(Map/Area/CMakeLists.txt)
 include(Movement/CMakeLists.txt)
@@ -74,6 +75,7 @@ set(sources
    ${SRC_GAMEMOP_STORAGE_FILES}
 
    ${SRC_AI_FILES}
+   ${SRC_MACROS_FILES}
    ${SRC_CHAT_FILES}
    ${SRC_COMMAND_FILES}
    ${SRC_DATA_FILES}

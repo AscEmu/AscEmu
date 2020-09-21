@@ -70,8 +70,6 @@ using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
 using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
 using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
 
-#define SPELL_CHANNEL_UPDATE_INTERVAL 1000
-
  /// externals for spell system
 extern pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS];
 extern pSpellTarget SpellTargetHandler[EFF_TARGET_LIST_LENGTH_MARKER];

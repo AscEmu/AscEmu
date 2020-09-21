@@ -76,7 +76,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
     else
     {
         status = QuestStatus::Repeatable;
-        if (qst->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY && plr->HasFinishedDaily(qst->id))
+        if (qst->is_repeatable == DEFINE_QUEST_REPEATABLE_DAILY && plr->HasFinishedDaily(qst->id))
             return QuestStatus::NotAvailable;
     }
 
@@ -1625,7 +1625,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         plr->modCoinage(GenerateRewardMoney(plr, qst));
 
         // if daily then append to finished dailies
-        if (qst->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
+        if (qst->is_repeatable == DEFINE_QUEST_REPEATABLE_DAILY)
             plr->PushToFinishedDailies(qst->id);
     }
     else

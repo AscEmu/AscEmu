@@ -5,45 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#if VERSION_STRING == Classic
-    #define IS_INSTANCE(a) ((a > 1))                                                         // Classic WoW
-#elif VERSION_STRING == TBC
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530))                                           // The Burning Crusade
-#elif VERSION_STRING == WotLK
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571))                             // Wrath of the Lich King
-#elif VERSION_STRING == Cata
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637))               // Cataclysm
-#elif VERSION_STRING == Mop
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860)) //  Mists of Pandaria (untested)
-#endif
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// MAX_NUM_MAPS
-//
-// \param Max maps 
-//
-// Vanilla = 600 - untested
-// The Burning Crusade = 600 - untested
-// Wrath of the Lich King = 800
-// Cataclysm = 975
-// Mists of Pandaria = 975 - untested
-// Warlords of Draenor = untested
-// Legion = untested
-//
-//////////////////////////////////////////////////////////////////////////////////////////
-
-#if VERSION_STRING == Classic
-    #define MAX_NUM_MAPS 600
-#elif VERSION_STRING == TBC
-    #define MAX_NUM_MAPS 600
-#elif VERSION_STRING == WotLK
-    #define MAX_NUM_MAPS 800
-#elif VERSION_STRING == Cata
-    #define MAX_NUM_MAPS 975
-#elif VERSION_STRING == Mop
-    #define MAX_NUM_MAPS 975
-#endif
-
 const unsigned NUM_INSTANCE_MODES = 4;
 
 /// Sorry...need this enumeration in Player.*
@@ -105,7 +66,3 @@ enum TimeConstants
     ((1<<(RACE_HUMAN-1))    |(1<<(RACE_DWARF-1))    |(1<<(RACE_NIGHTELF-1)) | \
     (1<<(RACE_GNOME-1)))
 #endif
-
-#define RACEMASK_HORDE RACEMASK_ALL_PLAYABLE & ~RACEMASK_ALLIANCE
-
-#define MAKE_PAIR32(l, h)  uint32(uint16(l) | (uint32(h) << 16))

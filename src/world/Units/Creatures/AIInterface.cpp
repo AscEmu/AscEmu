@@ -29,6 +29,7 @@
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "Spell/SpellMgr.h"
+#include "Macros/AIInterfaceMacros.hpp"
 #include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
@@ -1172,7 +1173,7 @@ void AIInterface::generateSplinePathToTarget(Unit* targetUnit, float distance)
 
     LocationVector targetPos = targetUnit->GetPosition();
 
-    if (abs(m_last_target_x - targetPos.x) < minWalkDistance && abs(m_last_target_y - targetPos.y) < minWalkDistance && isCreatureState(MOVING))
+    if (abs(m_last_target_x - targetPos.x) < MIN_WALK_DISTANCE && abs(m_last_target_y - targetPos.y) < MIN_WALK_DISTANCE && isCreatureState(MOVING))
         return;
 
     m_last_target_x = targetPos.x;
@@ -1757,7 +1758,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                 combatReach[0] = getNextTarget()->GetModelHalfSize();
                 combatReach[1] = _CalcCombatRange(getNextTarget(), false);
 
-                if (distance <= combatReach[1] + minWalkDistance) // Target is in Range -> Attack
+                if (distance <= combatReach[1] + MIN_WALK_DISTANCE) // Target is in Range -> Attack
                 {
                     //FIX ME: offhand shit
                     if (m_Unit->isAttackReady(MELEE) && !m_fleeTimer)
@@ -1948,9 +1949,9 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                     setSplineRun();
                     float close_to_enemy = 0.0f;
                     if (distance > m_nextSpell->maxrange)
-                        close_to_enemy = m_nextSpell->maxrange - minWalkDistance;
+                        close_to_enemy = m_nextSpell->maxrange - MIN_WALK_DISTANCE;
                     else if (distance < m_nextSpell->minrange)
-                        close_to_enemy = m_nextSpell->minrange + minWalkDistance;
+                        close_to_enemy = m_nextSpell->minrange + MIN_WALK_DISTANCE;
 
                     if (close_to_enemy < 0)
                         close_to_enemy = 0;
@@ -2718,8 +2719,8 @@ void AIInterface::_CalcDestinationAndMove(Unit* target, float dist)
 
         //avoid eating bandwidth with useless movement packets when target did not move since last position
         //this will work since it turned into a common myth that when you pull mob you should not move :D
-        if (abs(m_last_target_x - newx) < minWalkDistance
-            && abs(m_last_target_y - newy) < minWalkDistance && isCreatureState(MOVING))
+        if (abs(m_last_target_x - newx) < MIN_WALK_DISTANCE
+            && abs(m_last_target_y - newy) < MIN_WALK_DISTANCE && isCreatureState(MOVING))
             return;
 
         m_last_target_x = newx;

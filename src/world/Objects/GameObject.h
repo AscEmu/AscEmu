@@ -23,8 +23,9 @@
 
 #include "Management/CRitual.h"
 #include "Management/QuestMgr.h"
-#include "Map/Map.h"
+#include "Macros/ScriptMacros.hpp"
 #include "Data/WoWGameObject.h"
+#include "Map/Map.h"
 
 enum GameObject_State : uint8_t
 {
@@ -373,8 +374,6 @@ enum GameObjectTypes
     GAMEOBJECT_TYPE_GUILD_BANK              = 34,
     GAMEOBJECT_TYPE_TRAPDOOR                = 35
 };
-
-#define CALL_GO_SCRIPT_EVENT(obj, func) if (obj->isGameObject() && static_cast< GameObject* >(obj)->GetScript() != NULL) static_cast< GameObject* >(obj)->GetScript()->func
 
 struct WoWGameObject;
 class SERVER_DECL GameObject : public Object

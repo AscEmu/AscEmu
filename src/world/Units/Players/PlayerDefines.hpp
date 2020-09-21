@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "CommonTypes.hpp"
+#include "Macros/ItemMacros.hpp"
 
 #include <ctime>
 #include <string>
@@ -16,142 +17,6 @@ enum PlayerTeam : uint8_t
     TEAM_HORDE    = 1,
     MAX_PLAYER_TEAMS
 };
-
-#define PLAYER_HONORLESS_TARGET_SPELL 2479
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// DBC_PLAYER_LEVEL_CAP
-//
-// \param level cap
-//
-// Vanilla = 60
-// The Burning Crusade = 70
-// Wrath of the Lich King = 80
-// Cataclysm = 85
-// Mists of Pandaria = 90
-// Warlords of Draenor = 100
-// Legion = 110
-//
-//////////////////////////////////////////////////////////////////////////////////////////
-
-#if VERSION_STRING == Classic
-    #define DBC_PLAYER_LEVEL_CAP 60
-#elif VERSION_STRING == TBC
-    #define DBC_PLAYER_LEVEL_CAP 70
-#elif VERSION_STRING == WotLK
-    #define DBC_PLAYER_LEVEL_CAP 80
-#elif VERSION_STRING == Cata
-    #define DBC_PLAYER_LEVEL_CAP 85
-#elif VERSION_STRING == Mop
-    #define DBC_PLAYER_LEVEL_CAP 90
-#endif
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// DBC_STAT_LEVEL_CAP
-//
-// \param level cap for pre-generated player stats in gt*.dbc files
-//
-// Vanilla = 100
-// The Burning Crusade = 100
-// Wrath of the Lich King = 100
-// Cataclysm = 100
-// Mists of Pandaria = ??
-// Warlords of Draenor = ??
-// Legion = ??
-//
-//////////////////////////////////////////////////////////////////////////////////////////
-
-#define DBC_STAT_LEVEL_CAP 100
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// DBC_TAXI_MASK_SIZE
-//
-// \param max taxi mask
-//
-// Vanilla = ??
-// The Burning Crusade = ??
-// Wrath of the Lich King = 12
-// Cataclysm = 114
-// Mists of Pandaria = ??
-// Warlords of Draenor = ??
-// Legion = ??
-//
-//////////////////////////////////////////////////////////////////////////////////////////
-
-#if VERSION_STRING == Classic
-    #define DBC_TAXI_MASK_SIZE 12
-#elif VERSION_STRING == TBC
-    #define DBC_TAXI_MASK_SIZE 12
-#elif VERSION_STRING == WotLK
-    #define DBC_TAXI_MASK_SIZE 12
-#elif VERSION_STRING == Cata
-    #define DBC_TAXI_MASK_SIZE 114
-#elif VERSION_STRING == Mop
-    #define DBC_TAXI_MASK_SIZE 255
-#endif
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// PLAYER_ACTION_BUTTON_COUNT
-//
-// \param button defines
-//
-// Vanilla = 120
-// The Burning Crusade = 120
-// Wrath of the Lich King = 144
-// Cataclysm = ??
-// Mists of Pandaria = ??
-// Warlords of Draenor = ??
-// Legion = ??
-//
-//////////////////////////////////////////////////////////////////////////////////////////
-
-#if VERSION_STRING == Classic
-    #define PLAYER_ACTION_BUTTON_COUNT 120
-#elif VERSION_STRING == TBC
-    #define PLAYER_ACTION_BUTTON_COUNT 120
-#elif VERSION_STRING == WotLK
-    #define PLAYER_ACTION_BUTTON_COUNT 144
-#elif VERSION_STRING == Cata
-    #define PLAYER_ACTION_BUTTON_COUNT 255
-#elif VERSION_STRING == Mop
-    #define PLAYER_ACTION_BUTTON_COUNT 255
-#endif
-
-#define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// DBC_PLAYER_SKILL_MAX
-//
-// \param skill max
-//
-// Vanilla = 300
-// The Burning Crusade = 375
-// Wrath of the Lich King = 450
-// Cataclysm = 525
-// Mists of Pandaria = 600
-// Warlords of Draenor = 700
-// Legion = 800
-//
-//////////////////////////////////////////////////////////////////////////////////////////
-
-#if VERSION_STRING == Classic
-    #define DBC_PLAYER_SKILL_MAX 300
-#elif VERSION_STRING == TBC
-    #define DBC_PLAYER_SKILL_MAX 375
-#elif VERSION_STRING == WotLK
-    #define DBC_PLAYER_SKILL_MAX 450
-#elif VERSION_STRING == Cata
-    #define DBC_PLAYER_SKILL_MAX 525
-#elif VERSION_STRING == Mop
-    #define DBC_PLAYER_SKILL_MAX 525
-#endif
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Minimum level required arena
-#define PLAYER_ARENA_MIN_LEVEL 70
-
-#define ACHIEVEMENT_SEND_DELAY 1000 // we have this delay of sending auras to other players so client will have time to create object first
-#define LOGIN_CIENT_SEND_DELAY 1000 // we have this delay of sending auras to other players so client will have time to create object first
 
 enum Gender
 {
@@ -430,8 +295,8 @@ enum CustomizeFlags
 {
     CHAR_CUSTOMIZE_FLAG_NONE        = 0x00000000,   // Implemented          * Allows normal login no customization needed
     CHAR_CUSTOMIZE_FLAG_CUSTOMIZE   = 0x00000001,   // Implemented          * Allows name, gender, and looks to be customized
-    CHAR_CUSTOMIZE_FLAG_FACTION     = 0x00010000,   //\todo Implement      * Allows name, gender, race, faction, and looks to be customized
-    CHAR_CUSTOMIZE_FLAG_RACE        = 0x00100000    //\todo Implement      * Allows name, gender, race, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_FACTION     = 0x00010000,   //\todo Implement       * Allows name, gender, race, faction, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_RACE        = 0x00100000    //\todo Implement       * Allows name, gender, race, and looks to be customized
 };
 
 enum LoginFlags
@@ -717,7 +582,7 @@ enum DuelWinner
 };
 
 const time_t attackTimeoutInterval = 5000;
-const time_t forcedResurrectInterval = 360000;  // 1000*60*6= 6 minutes
+const time_t forcedResurrectInterval = 360000;  // 1000*60*6=6 minutes
 
 enum PlayerCombatRating : uint8_t
 {
@@ -811,15 +676,8 @@ struct CharEnumData
     uint32_t customization_flag;
 
     CharEnum_Pet pet_data;
-
-    //\todo verfify this!
-#if VERSION_STRING <= TBC
-    PlayerItem player_items[20];
-#else
-    PlayerItem player_items[23];
-#endif
+    PlayerItem player_items[DBC_PLAYER_ITEMS];
 };
-
 
 // table taken from https://wow.gamepedia.com/Class
 static const uint32_t ClassRaceCombinations[91][3] =
@@ -973,21 +831,3 @@ static uint8_t getSideByRace(uint8_t race)
             return TEAM_HORDE;
     }
 }
-
-#ifdef FT_DUAL_SPEC
-#define MAX_SPEC_COUNT 2
-#else
-#define MAX_SPEC_COUNT 1
-#endif
-
-#if VERSION_STRING >= Cata
-#define GLYPHS_COUNT 9
-#elif VERSION_STRING == WotLK
-#define GLYPHS_COUNT 6
-#endif
-
-#if VERSION_STRING == Classic
-#define MAX_QUEST_SLOT 20
-#else
-#define MAX_QUEST_SLOT 25
-#endif

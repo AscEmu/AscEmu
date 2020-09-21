@@ -32,6 +32,8 @@
 #include "Units/Unit.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/MySQLStructures.h"
+#include "Macros/MapsMacros.hpp"
+#include "Macros/PlayerMacros.hpp"
 #include "Units/Creatures/AIInterface.h" //?? what?
 #include "WorldConf.h"
 #include "Management/AuctionHouse.h"

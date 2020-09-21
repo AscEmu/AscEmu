@@ -24,8 +24,7 @@
 #include "Creature.h"
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.h"
-
-#define PET_SPELL_SPAM_COOLDOWN 2000        /// applied only to spells that have no cooldown
+#include "Macros/PetMacros.hpp"
 
 /* Taken from ItemPetFood.dbc
  * Each value is equal to a flag
@@ -107,15 +106,6 @@ enum AutoCastEvents
     AUTOCAST_EVENT_LEAVE_COMBAT         = 4,
     AUTOCAST_EVENT_COUNT                = 5
 };
-
-#define PET_TALENT_TREE_START 409           /// Tenacity
-#define PET_TALENT_TREE_END 411             /// Cunning
-
-#define PET_DELAYED_REMOVAL_TIME 60000      /// 1 min
-
-#define DEFAULT_SPELL_STATE 0x8100
-#define AUTOCAST_SPELL_STATE 0xC100
-
 
 enum PetType
 {
@@ -306,16 +296,5 @@ public:
 
     std::list<AI_Spell*> m_autoCastSpells[AUTOCAST_EVENT_COUNT];
 };
-
-#define PET_HAPPINESS_UPDATE_VALUE 333000
-#define PET_HAPPINESS_UPDATE_TIMER 7500
-
-#define PET_ACTION_ACTION   0x700       //1792
-#define PET_ACTION_STATE    0x600       //1536
-
-///\todo grep see the way pet spells contain the same flag?
-#define PET_ACTION_SPELL    0xC100      //49408
-#define PET_ACTION_SPELL_1  0x8100      //33024
-#define PET_ACTION_SPELL_2  0x0100      //256
 
 #endif // _PET_H

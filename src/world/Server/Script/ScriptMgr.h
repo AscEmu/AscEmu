@@ -22,6 +22,7 @@
 #pragma once
 
 #include <mutex>
+#include "Macros/ScriptMacros.hpp"
 #include "Management/Gossip/GossipScript.h"
 #include "Management/GameEventMgr.h"
 #include "Units/Unit.h"
@@ -29,11 +30,6 @@
 #include "Server/ServerState.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellScript.h"
-
-#define ADD_CREATURE_FACTORY_FUNCTION(cl) public:\
-static CreatureAIScript* Create(Creature* c) { return new cl(c); }
-
-//#define ADD_INSTANCE_FACTORY_FUNCTION(ClassName) static InstanceScript* Create(MapMgr* pMapMgr) { return new ClassName(pMapMgr); };
 
 class Channel;
 class Guild;
@@ -436,34 +432,7 @@ public:
                                     // 1: Defines max. number of creature on hatelist (0 - any, HateList.size + 1 - the least hated etc.)
 };
 
-// Pre-made TargetTypes
-#define Target_Self TargetType()
-#define Target_Current TargetType(TargetGen_Current)
-#define Target_SecondMostHated TargetType(TargetGen_SecondMostHated)
-#define Target_Destination TargetType(TargetGen_Destination)
-#define Target_Predefined TargetType(TargetGen_Predefined)
-#define Target_RandomPlayer TargetType(TargetGen_RandomPlayer)
-#define Target_RandomPlayerNotCurrent TargetType(TargetGen_RandomPlayer, TargetFilter_NotCurrent)
-#define Target_RandomPlayerDestination TargetType(TargetGen_RandomPlayerDestination)
-#define Target_RandomPlayerApplyAura TargetType(TargetGen_RandomPlayerApplyAura)
-#define Target_RandomUnit TargetType(TargetGen_RandomUnit)
-#define Target_RandomUnitNotCurrent TargetType(TargetGen_RandomUnit, TargetFilter_NotCurrent)
-#define Target_RandomDestination TargetType(TargetGen_RandomUnitDestination)
-#define Target_RandomUnitApplyAura TargetType(TargetGen_RandomUnitApplyAura)
-#define Target_RandomFriendly TargetType(TargetGen_RandomUnit, TargetFilter_Friendly)
-#define Target_WoundedPlayer TargetType(TargetGen_RandomPlayer, TargetFilter_Wounded)
-#define Target_WoundedUnit TargetType(TargetGen_RandomUnit, TargetFilter_Wounded)
-#define Target_WoundedFriendly TargetType(TargetGen_RandomUnit, TargetFilter_WoundedFriendly)
-#define Target_ClosestPlayer TargetType(TargetGen_RandomPlayer, TargetFilter_Closest)
-#define Target_ClosestPlayerNotCurrent TargetType(TargetGen_RandomPlayer, TargetFilter_ClosestNotCurrent)
-#define Target_ClosestUnit TargetType(TargetGen_RandomUnit, TargetFilter_Closest)
-#define Target_ClosestUnitNotCurrent TargetType(TargetGen_RandomUnit, TargetFilter_ClosestNotCurrent)
-#define Target_ClosestFriendly TargetType(TargetGen_RandomUnit, TargetFilter_ClosestFriendly)
-#define Target_ClosestCorpse TargetType(TargetGen_RandomUnit, TargetFilter_ClosestFriendlyCorpse)
-#define Target_RandomCorpse TargetType(TargetGen_RandomUnit, TargetFilter_FriendlyCorpse)
-
 #include "CreatureAIScript.h"
-
 
 class GameEvent;
 class SERVER_DECL EventScript
