@@ -11,10 +11,15 @@ This file is released under the MIT license. See README-MIT for more information
 class Summon : public Creature
 {
 public:
-    Summon(uint64_t guid);
+    Summon(uint64_t guid, uint32_t duration);
     ~Summon();
 
     virtual void Load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t spellId, int32_t summonSlot);
+
+    virtual void unSummon();
+
+    uint32_t getTimeLeft() const;
+    void setTimeLeft(uint32_t time);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Override Object functions
@@ -29,9 +34,11 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
-private:
-    int32_t m_summonSlot;
-    Unit* m_unitOwner;
+protected:
+    int32_t m_summonSlot = -1;
+    Unit* m_unitOwner = nullptr;
+
+    uint32_t m_duration = 0;
 
 public:
     bool isSummonedToSlot() const;

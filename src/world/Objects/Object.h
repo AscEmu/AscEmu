@@ -156,6 +156,9 @@ public:
     // Object update
     void updateObject();
 
+    //! This includes any nested objects we have, inventory for example.
+    virtual uint32_t buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Object Type Id
 protected:
@@ -314,8 +317,6 @@ public:
         // typeFlags
         bool IsType(TYPE type_mask) const { return (type_mask & m_objectType) != 0; }
 
-        //! This includes any nested objects we have, inventory for example.
-        virtual uint32 buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
         uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, Player* target);
         uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask);
 

@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 class CompanionSummon : public Summon
 {
 public:
-    CompanionSummon(uint64_t GUID);
+    CompanionSummon(uint64_t GUID, uint32_t duration);
     ~CompanionSummon();
 
     virtual void Load(CreatureProperties const* properties_, Unit* owner, LocationVector& position, uint32_t spellid, int32_t summonslot);

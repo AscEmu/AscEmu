@@ -90,6 +90,17 @@ enum PowerFieldIndexes : uint8_t
 #endif
 };
 
+enum TotemSlots : uint8_t
+{
+    TOTEM_SLOT_FIRE     = 0,
+    TOTEM_SLOT_EARTH    = 1,
+    TOTEM_SLOT_WATER    = 2,
+    TOTEM_SLOT_AIR      = 3,
+    MAX_TOTEM_SLOT,
+
+    TOTEM_SLOT_NONE     = 255 // custom value for invalid slot
+};
+
 // MIT End
 // APGL Start
 

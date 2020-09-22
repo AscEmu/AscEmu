@@ -1,207 +1,235 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#include "StdAfx.h"
 #include "SummonHandler.h"
-#include "Units/Unit.h"
+
+#include "Units/Summons/Summon.h"
+#include "Units/Summons/TotemSummon.h"
 
 SummonHandler::SummonHandler()
 {
-    std::fill(summonslots.begin(), summonslots.end(), reinterpret_cast<Unit*>(NULL));
+    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
+        _totems[i] = nullptr;
+
+    _guardianPets.clear();
 }
 
 SummonHandler::~SummonHandler()
 {
-    RemoveAllSummons();
+    removeAllSummons();
 }
 
-void SummonHandler::AddSummon(Unit* summon)
+void SummonHandler::addGuardian(Summon* summon)
 {
-    guardians.insert(summon);
+    _guardianPets.insert(summon);
 }
 
-void SummonHandler::AddSummonToSlot(Unit* summon, uint8_t slot)
+void SummonHandler::removeGuardian(Summon* summon, bool deleteObject)
 {
-    if (summonslots[slot] != nullptr)
-        summonslots[slot]->Delete();
+    auto itr = _guardianPets.find(summon);
+    if (itr == _guardianPets.end())
+        return;
 
-    summonslots[slot] = summon;
+    if (deleteObject)
+        (*itr)->Delete();
+
+    _guardianPets.erase(itr);
 }
 
-void SummonHandler::RemoveSummon(Unit* summon)
+void SummonHandler::addTotem(TotemSummon* totem, TotemSlots slot)
 {
-    std::set< Unit* >::iterator itr = guardians.find(summon);
-    if (itr != guardians.end())
-        guardians.erase(itr);
+    if (slot >= MAX_TOTEM_SLOT)
+        return;
+
+    _totems[slot] = totem;
 }
 
-void SummonHandler::RemoveSummonFromSlot(uint8_t slot, bool del)
+void SummonHandler::removeTotem(TotemSummon* totem, bool deleteObject)
 {
-    if (summonslots[slot] != nullptr)
+    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
     {
-        if (del)
-            summonslots[slot]->Delete();
+        if (_totems[i] == totem)
+        {
+            if (deleteObject)
+                totem->Delete();
 
-        summonslots[slot] = nullptr;
+            _totems[i] = nullptr;
+            break;
+        }
     }
 }
 
-void SummonHandler::ExpireSummonsInSlot()
+void SummonHandler::removeAllSummons(bool totemsOnly/* = false*/)
 {
-    for (std::array< Unit*, SUMMON_SLOTS >::iterator itr = summonslots.begin(); itr != summonslots.end(); ++itr)
+    if (!totemsOnly)
     {
-        Unit* u = *itr;
+        for (auto itr = _guardianPets.begin(); itr != _guardianPets.end();)
+        {
+            auto guardian = *itr;
+            ++itr;
+            guardian->Delete();
+        }
 
-        if (u != nullptr)
-            u->Delete();
+        _guardianPets.clear();
     }
-    std::fill(summonslots.begin(), summonslots.end(), reinterpret_cast<Unit*>(NULL));
-}
 
-void SummonHandler::RemoveAllSummons()
-{
-    for (std::set< Unit* >::iterator itr = guardians.begin(); itr != guardians.end();)
+    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
     {
-        Unit* g = *itr;
-        ++itr;
-        g->Delete();
-    }
-    guardians.clear();
+        if (_totems[i] == nullptr)
+            continue;
 
-    ExpireSummonsInSlot();
-}
-
-void SummonHandler::GetSummonSlotSpellIDs(std::vector< uint32_t > &spellids)
-{
-    for (std::array< Unit*, SUMMON_SLOTS >::iterator itr = summonslots.begin(); itr != summonslots.end(); ++itr)
-    {
-        Unit* u = (*itr);
-
-        if (u != nullptr)
-            if (u->getCreatedBySpellId() != 0)
-                spellids.push_back(u->getCreatedBySpellId());
+        _totems[i]->Delete();
+        _totems[i] = nullptr;
     }
 }
 
-bool SummonHandler::HasSummonInSlot(uint8_t slot)
+void SummonHandler::setPvPFlags(bool set)
 {
-    if (summonslots[slot] != 0)
-        return true;
-    else
+    for (const auto& guardian : _guardianPets)
+    {
+        if (set)
+            guardian->setPvpFlag();
+        else
+            guardian->removePvpFlag();
+    }
+        
+    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
+    {
+        if (_totems[i] == nullptr)
+            continue;
+
+        if (set)
+            _totems[i]->setPvpFlag();
+        else
+            _totems[i]->removePvpFlag();
+    }
+}
+
+void SummonHandler::setFFAPvPFlags(bool set)
+{
+    for (const auto& guardian : _guardianPets)
+    {
+        if (set)
+            guardian->setFfaPvpFlag();
+        else
+            guardian->removeFfaPvpFlag();
+    }
+
+    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
+    {
+        if (_totems[i] == nullptr)
+            continue;
+
+        if (set)
+            _totems[i]->setFfaPvpFlag();
+        else
+            _totems[i]->removeFfaPvpFlag();
+    }
+}
+
+void SummonHandler::setSanctuaryFlags(bool set)
+{
+    for (const auto& guardian : _guardianPets)
+    {
+        if (set)
+            guardian->setSanctuaryFlag();
+        else
+            guardian->removeSanctuaryFlag();
+    }
+
+    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
+    {
+        if (_totems[i] == nullptr)
+            continue;
+
+        if (set)
+            _totems[i]->setSanctuaryFlag();
+        else
+            _totems[i]->removeSanctuaryFlag();
+    }
+}
+
+bool SummonHandler::hasTotemInSlot(TotemSlots slot) const
+{
+    if (slot >= MAX_TOTEM_SLOT)
         return false;
+
+    return _totems[slot] != nullptr ? true : false;
 }
 
-Unit* SummonHandler::GetSummonInSlot(uint8_t slot)
+TotemSummon* SummonHandler::getTotemInSlot(TotemSlots slot) const
 {
-    return summonslots[slot];
+    if (slot >= MAX_TOTEM_SLOT)
+        return nullptr;
+
+    return _totems[slot];
 }
 
-Unit* SummonHandler::GetSummonWithEntry(uint32_t entry)
+Summon* SummonHandler::getSummonWithEntry(uint32_t entry) const
 {
-    for (std::set< Unit* >::iterator itr = guardians.begin(); itr != guardians.end(); ++itr)
-        if ((*itr) != nullptr && (*itr)->getEntry() == entry)
-            return (*itr);
-
-    for (std::array< Unit*, SUMMON_SLOTS >::iterator itr = summonslots.begin(); itr != summonslots.end(); ++itr)
+    for (const auto& guardian : _guardianPets)
     {
-        if ((*itr) != nullptr && (*itr)->getEntry() == entry)
-            return (*itr);
+        if (guardian->getEntry() == entry)
+            return guardian;
     }
+
+    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
+    {
+        const auto totem = _totems[i];
+        if (totem == nullptr)
+            continue;
+
+        if (totem->getEntry() == entry)
+            return totem;
+    }
+
     return nullptr;
 }
 
-void SummonHandler::SetPvPFlags()
+void SummonHandler::getTotemSpellIds(std::vector<uint32_t>& spellIds)
 {
-    for (std::set< Unit* >::iterator itr = guardians.begin(); itr != guardians.end(); ++itr)
-        (*itr)->setPvpFlag();
-
-    for (std::array< Unit*, SUMMON_SLOTS >::iterator itr = summonslots.begin(); itr != summonslots.end(); ++itr)
+    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
     {
-        Unit* u = (*itr);
-        if (u != nullptr)
-            u->setPvpFlag();
+        const auto totem = _totems[i];
+        if (totem == nullptr)
+            continue;
+        if (totem->getCreatedBySpellId() == 0)
+            continue;
+
+        spellIds.push_back(totem->getCreatedBySpellId());
     }
 }
 
-void SummonHandler::SetFFAPvPFlags()
+void SummonHandler::update(uint16_t diff)
 {
-    for (std::set< Unit* >::iterator itr = guardians.begin(); itr != guardians.end(); ++itr)
-        (*itr)->setFfaPvpFlag();
-
-    for (std::array< Unit*, SUMMON_SLOTS >::iterator itr = summonslots.begin(); itr != summonslots.end(); ++itr)
+    // Update the duration of summons
+    for (const auto& guardian : _guardianPets)
     {
-        Unit* u = (*itr);
-        if (u != nullptr)
-            u->setFfaPvpFlag();
+        const auto timeLeft = guardian->getTimeLeft();
+        if (timeLeft == 0)
+            continue;
+
+        if (diff >= timeLeft)
+            guardian->unSummon();
+        else
+            guardian->setTimeLeft(timeLeft - diff);
     }
-}
 
-void SummonHandler::SetSanctuaryFlags()
-{
-    for (std::set< Unit* >::iterator itr = guardians.begin(); itr != guardians.end(); ++itr)
-        (*itr)->setSanctuaryFlag();
-
-    for (std::array< Unit*, SUMMON_SLOTS >::iterator itr = summonslots.begin(); itr != summonslots.end(); ++itr)
+    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
     {
-        Unit* u = (*itr);
-        if (u != nullptr)
-            u->setSanctuaryFlag();
-    }
-}
+        const auto totem = _totems[i];
+        if (totem == nullptr)
+            continue;
 
-void SummonHandler::RemovePvPFlags()
-{
-    for (std::set< Unit* >::iterator itr = guardians.begin(); itr != guardians.end(); ++itr)
-        (*itr)->removePvpFlag();
+        const auto timeLeft = totem->getTimeLeft();
+        if (timeLeft == 0)
+            continue;
 
-    for (std::array< Unit*, SUMMON_SLOTS >::iterator itr = summonslots.begin(); itr != summonslots.end(); ++itr)
-    {
-        Unit* u = (*itr);
-        if (u != nullptr)
-            u->removePvpFlag();
-    }
-}
-
-void SummonHandler::RemoveFFAPvPFlags()
-{
-    for (std::set< Unit* >::iterator itr = guardians.begin(); itr != guardians.end(); ++itr)
-        (*itr)->removeFfaPvpFlag();
-
-    for (std::array< Unit*, SUMMON_SLOTS >::iterator itr = summonslots.begin(); itr != summonslots.end(); ++itr)
-    {
-        Unit* u = (*itr);
-        if (u != nullptr)
-            u->removeFfaPvpFlag();
-    }
-}
-
-void SummonHandler::RemoveSanctuaryFlags()
-{
-    for (std::set< Unit* >::iterator itr = guardians.begin(); itr != guardians.end(); ++itr)
-        (*itr)->removeSanctuaryFlag();
-
-    for (std::array< Unit*, SUMMON_SLOTS >::iterator itr = summonslots.begin(); itr != summonslots.end(); ++itr)
-    {
-        Unit* u = (*itr);
-        if (u != nullptr)
-            u->removeSanctuaryFlag();
+        if (diff >= timeLeft)
+            totem->unSummon();
+        else
+            totem->setTimeLeft(timeLeft - diff);
     }
 }

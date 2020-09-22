@@ -80,13 +80,13 @@ bool Creature::isPvpFlagSet()
 void Creature::setPvpFlag()
 {
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
-    summonhandler.SetPvPFlags();
+    getSummonInterface()->setPvPFlags(true);
 }
 
 void Creature::removePvpFlag()
 {
     setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_PVP);
-    summonhandler.RemovePvPFlags();
+    getSummonInterface()->setPvPFlags(false);
 }
 
 bool Creature::isFfaPvpFlagSet()
@@ -97,13 +97,13 @@ bool Creature::isFfaPvpFlagSet()
 void Creature::setFfaPvpFlag()
 {
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_FFA_PVP);
-    summonhandler.SetFFAPvPFlags();
+    getSummonInterface()->setFFAPvPFlags(true);
 }
 
 void Creature::removeFfaPvpFlag()
 {
     setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_FFA_PVP);
-    summonhandler.RemoveFFAPvPFlags();
+    getSummonInterface()->setFFAPvPFlags(false);
 }
 
 bool Creature::isSanctuaryFlagSet()
@@ -114,13 +114,13 @@ bool Creature::isSanctuaryFlagSet()
 void Creature::setSanctuaryFlag()
 {
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_SANCTUARY);
-    summonhandler.SetSanctuaryFlags();
+    getSummonInterface()->setSanctuaryFlags(true);
 }
 
 void Creature::removeSanctuaryFlag()
 {
     setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_SANCTUARY);
-    summonhandler.RemoveSanctuaryFlags();
+    getSummonInterface()->setSanctuaryFlags(false);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2181,7 +2181,7 @@ void Creature::PrepareForRemove()
 {
     RemoveAllAuras();
 
-    summonhandler.RemoveAllSummons();
+    getSummonInterface()->removeAllSummons();
 
     if (!IsInWorld())
         return;

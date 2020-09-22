@@ -3815,7 +3815,7 @@ void Player::RemoveFromWorld()
 
     getSplineMgr().clearSplinePackets();
 
-    summonhandler.RemoveAllSummons();
+    getSummonInterface()->removeAllSummons();
     DismissActivePets();
     RemoveFieldSummon();
 
@@ -4459,7 +4459,7 @@ void Player::KillPlayer()
         setPower(POWER_TYPE_RUNIC_POWER, 0);
 #endif
 
-    summonhandler.RemoveAllSummons();
+    getSummonInterface()->removeAllSummons();
     DismissActivePets();
 
     // Player falls off vehicle on death
@@ -10913,7 +10913,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     m_UnderwaterTime = 0;
     m_UnderwaterState = 0;
 
-    summonhandler.RemoveAllSummons();
+    getSummonInterface()->removeAllSummons();
     DismissActivePets();
 
     setHealth(0);

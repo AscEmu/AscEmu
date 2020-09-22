@@ -1729,7 +1729,7 @@ GameObject* MapMgr::GetSqlIdGameObject(uint32 sqlid)
     return itr == _sqlids_gameobjects.end() ? nullptr : itr->second;
 }
 
-uint64 MapMgr::GenerateCreatureGUID(uint32 entry)
+uint64 MapMgr::GenerateCreatureGUID(uint32 entry, bool canUseOldGuid/* = true*/)
 {
     uint64 newguid = 0;
 
@@ -1749,7 +1749,7 @@ uint64 MapMgr::GenerateCreatureGUID(uint32 entry)
 
     uint32 guid = 0;
 
-    if (!_reusable_guids_creature.empty())
+    if (!_reusable_guids_creature.empty() && canUseOldGuid)
     {
         guid = _reusable_guids_creature.front();
         _reusable_guids_creature.pop_front();
@@ -1799,27 +1799,27 @@ Creature* MapMgr::GetCreature(uint32 guid)
     return CreatureStorage[guid];
 }
 
-Summon* MapMgr::CreateSummon(uint32 entry, SummonType type)
+Summon* MapMgr::CreateSummon(uint32 entry, SummonType type, uint32_t duration)
 {
-    uint64 guid = GenerateCreatureGUID(entry);
+    // Generate always a new guid for totems, otherwise the totem timer bar will get messed up
+    uint64 guid = GenerateCreatureGUID(entry, type != SUMMONTYPE_TOTEM);
 
     switch (type)
     {
         case SUMMONTYPE_GUARDIAN:
-            return new GuardianSummon(guid);
+            return new GuardianSummon(guid, duration);
         case SUMMONTYPE_WILD:
-            return new WildSummon(guid);
+            return new WildSummon(guid, duration);
         case SUMMONTYPE_TOTEM:
-            return new TotemSummon(guid);
+            return new TotemSummon(guid, duration);
         case SUMMONTYPE_COMPANION:
-            return new CompanionSummon(guid);
+            return new CompanionSummon(guid, duration);
         case SUMMONTYPE_POSSESSED:
-            return new PossessedSummon(guid);
+            return new PossessedSummon(guid, duration);
     }
 
-    return new Summon(guid);
+    return new Summon(guid, duration);
 }
-
 
 // Spawns the object too, without which you can not interact with the object
 GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, float z, float o, float scale)

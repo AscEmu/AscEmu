@@ -501,12 +501,31 @@ void Spell::castMe(const bool doReCheck)
         {
             for (const auto& targetGuid : m_effectTargets[i])
             {
-                HandleCastEffects(targetGuid, i);
+                handleEffectTarget(targetGuid, i);
             }
         }
         else
         {
-            HandleCastEffects(0, i);
+            handleEffectTarget(0, i);
+        }
+    }
+
+    // If spell applies an aura, handle it to targets after all effects have been processed
+    if (!m_pendingAuras.empty())
+    {
+        for (const auto& pendingAur : m_pendingAuras)
+        {
+            // Check if aura has travel time
+            if (pendingAur.second.first == 0)
+            {
+                AddRef();
+                HandleAddAura(pendingAur.first);
+            }
+            else
+            {
+                sEventMgr.AddEvent(this, &Spell::HandleAddAura, pendingAur.first, EVENT_SPELL_HIT, pendingAur.second.first, 1, 0);
+                AddRef();
+            }
         }
     }
 
@@ -583,12 +602,48 @@ void Spell::castMe(const bool doReCheck)
         finish();
 }
 
+void Spell::handleEffectTarget(const uint64_t targetGuid, uint8_t effIndex)
+{
+    const auto travelTime = _getSpellTravelTimeForTarget(targetGuid);
+    if (travelTime < 0)
+        return;
+
+    // If effect applies an aura, create it instantly but add it later to target
+    if (getSpellInfo()->doesEffectApplyAura(effIndex))
+    {
+        AddRef();
+        HandleEffects(targetGuid, effIndex);
+
+        // Add travel time to aura
+        auto itr = m_pendingAuras.find(targetGuid);
+        if (itr != m_pendingAuras.end())
+            itr->second.first = float2int32(travelTime);
+
+        return;
+    }
+
+    if (travelTime == 0.0f)
+    {
+        AddRef();
+        HandleEffects(targetGuid, effIndex);
+    }
+    else
+    {
+        sEventMgr.AddEvent(this, &Spell::HandleEffects, targetGuid, effIndex, EVENT_SPELL_HIT, float2int32(travelTime), 1, 0);
+        AddRef();
+    }
+}
+
 void Spell::handleMissedTarget(SpellTargetMod const missedTarget)
 {
     const auto didReflect = missedTarget.hitResult == SPELL_DID_HIT_REFLECT && missedTarget.extendedHitResult == SPELL_DID_HIT_SUCCESS;
 
-    // Handle instant spells instantly
-    if (getSpellInfo()->getSpeed() == 0)
+    auto travelTime = _getSpellTravelTimeForTarget(missedTarget.targetGuid);
+    if (travelTime < 0)
+        return;
+
+    // If there is no distance between caster and target, handle effect instantly
+    if (travelTime == 0.0f)
     {
         AddRef();
         if (didReflect)
@@ -608,84 +663,24 @@ void Spell::handleMissedTarget(SpellTargetMod const missedTarget)
     }
     else
     {
-        float_t destX = 0.0f, destY = 0.0f, destZ = 0.0f, dist = 0.0f;
-        if (m_targets.hasDestination())
+        if (didReflect)
         {
-            const auto destination = m_targets.getDestination();
-            destX = destination.x;
-            destY = destination.y;
-            destZ = destination.z;
-            dist = m_caster->CalcDistance(destX, destY, destZ);
-        }
-        else if (missedTarget.targetGuid == 0)
-        {
-            return;
-        }
-        else
-        {
-            if (!m_caster->IsInWorld())
-                return;
+            // Reflected projectiles move back 4x faster
+            travelTime *= 1.25f;
 
-            if (m_caster->getGuid() != missedTarget.targetGuid)
+            // Process each effect from the spell on the original caster
+            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
-                const auto obj = m_caster->GetMapMgrObject(missedTarget.targetGuid);
-                if (obj == nullptr)
-                    return;
-
-                destX = obj->GetPositionX();
-                destY = obj->GetPositionY();
-                //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->getScale())
-                if (obj->isCreatureOrPlayer())
-                    destZ = obj->GetPositionZ() + static_cast<Unit*>(obj)->GetModelHalfSize();
-                else
-                    destZ = obj->GetPositionZ();
-                dist = m_caster->CalcDistance(destX, destY, destZ);
-            }
-        }
-
-        // If there is no distance between caster and target, handle effect instantly
-        if (dist == 0.0f)
-        {
-            AddRef();
-            if (didReflect)
-            {
-                // Process each effect from the spell on the original caster
-                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                {
-                    if (getSpellInfo()->getEffect(i) != 0)
-                        HandleEffects(m_caster->getGuid(), i);
-                }
-            }
-            else
-            {
-                // Spell was not reflected and it did not hit target
-                handleMissedEffect(missedTarget.targetGuid);
+                if (getSpellInfo()->getEffect(i) != 0)
+                    sEventMgr.AddEvent(this, &Spell::HandleEffects, m_caster->getGuid(), i, EVENT_SPELL_HIT, float2int32(travelTime), 1, 0);
             }
         }
         else
         {
-            // Calculate time it takes for spell to hit target
-            float_t time = (dist * 1000.0f) / getSpellInfo()->getSpeed();
-
-            if (didReflect)
-            {
-                // Reflected projectiles move back 4x faster
-                time *= 1.25f;
-
-                // Process each effect from the spell on the original caster
-                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                {
-                    if (getSpellInfo()->getEffect(i) != 0)
-                        sEventMgr.AddEvent(this, &Spell::HandleEffects, m_caster->getGuid(), static_cast<uint32_t>(i), EVENT_SPELL_HIT, float2int32(time), 1, 0);
-                }
-            }
-            else
-            {
-                // Spell was not reflected and it did not hit target
-                sEventMgr.AddEvent(this, &Spell::handleMissedEffect, missedTarget.targetGuid, EVENT_SPELL_HIT, float2int32(time), 1, 0);
-            }
-            AddRef();
+            // Spell was not reflected and it did not hit target
+            sEventMgr.AddEvent(this, &Spell::handleMissedEffect, missedTarget.targetGuid, EVENT_SPELL_HIT, float2int32(travelTime), 1, 0);
         }
+        AddRef();
     }
 }
 
@@ -4383,3 +4378,80 @@ void Spell::removeAmmo()
     }
 }
 #endif
+
+void Spell::_updateCasterPointers(Object* caster)
+{
+    m_caster = caster;
+    switch (caster->getObjectTypeId())
+    {
+        case TYPEID_PLAYER:
+            p_caster = dynamic_cast<Player*>(caster);
+        // no break here
+        case TYPEID_UNIT:
+            u_caster = dynamic_cast<Unit*>(caster);
+            break;
+        case TYPEID_ITEM:
+        case TYPEID_CONTAINER:
+            i_caster = dynamic_cast<Item*>(caster);
+            break;
+        case TYPEID_GAMEOBJECT:
+            g_caster = dynamic_cast<GameObject*>(caster);
+            break;
+        default:
+            LogDebugFlag(LF_SPELL, "Spell::_updateCasterPointers : Incompatible object type (type %u) for spell caster", caster->getObjectTypeId());
+            break;
+    }
+}
+
+float_t Spell::_getSpellTravelTimeForTarget(uint64_t guid) const
+{
+    // Handle instant spells instantly
+    if (getSpellInfo()->getSpeed() == 0)
+        return 0.0f;
+
+    float_t destX = 0.0f, destY = 0.0f, destZ = 0.0f, distance = 0.0f;
+    if (m_targets.hasDestination())
+    {
+        const auto dest = m_targets.getDestination();
+        destX = dest.x;
+        destY = dest.y;
+        destZ = dest.z;
+
+        distance = m_caster->CalcDistance(destX, destY, destZ);
+    }
+    else if (guid == 0)
+    {
+        return -1.0f;
+    }
+    else
+    {
+        if (!m_caster->IsInWorld())
+            return -1.0f;
+
+        if (m_caster->getGuid() != guid)
+        {
+            const auto obj = m_caster->GetMapMgrObject(guid);
+            if (obj == nullptr)
+                return -1.0f;
+
+            destX = obj->GetPositionX();
+            destY = obj->GetPositionY();
+            //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->getScale())
+            if (obj->isCreatureOrPlayer())
+                destZ = obj->GetPositionZ() + static_cast<Unit*>(obj)->GetModelHalfSize();
+            else
+                destZ = obj->GetPositionZ();
+
+            distance = m_caster->CalcDistance(destX, destY, destZ);
+        }
+    }
+
+    if (distance == 0.0f)
+        return 0.0f;
+
+    if (m_missileTravelTime != 0)
+        return static_cast<float_t>(m_missileTravelTime);
+
+    // Calculate time it takes for spell to hit target
+    return static_cast<float_t>((distance * 1000.0f) / getSpellInfo()->getSpeed());
+}

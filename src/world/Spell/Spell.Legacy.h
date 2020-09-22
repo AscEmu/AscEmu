@@ -58,6 +58,7 @@ class SERVER_DECL Spell : public EventableObject
         SpellCastResult prepare(SpellCastTargets* targets);
         // Casts the spell
         void castMe(const bool doReCheck);
+        void handleEffectTarget(const uint64_t targetGuid, uint8_t effIndex);
         // Handles missed targets and effects
         void handleMissedTarget(SpellTargetMod const missedTarget);
         void handleMissedEffect(const uint64_t targetGuid);
@@ -194,10 +195,14 @@ class SERVER_DECL Spell : public EventableObject
         void removeAmmo();
 #endif
 
+        void _updateCasterPointers(Object* caster);
+        float_t _getSpellTravelTimeForTarget(uint64_t guid) const;
+
         // Spell reflect stuff
         bool m_canBeReflected = false;
 
-        std::map<uint64_t, Aura*> m_pendingAuras;
+        // <targetGuid, <travelTime, Aura>>
+        std::map<uint64_t, std::pair<uint32_t, Aura*>> m_pendingAuras;
 
         bool isEffectDamageStatic[MAX_SPELL_EFFECTS];
 
@@ -241,12 +246,12 @@ class SERVER_DECL Spell : public EventableObject
         void spellEffectPersistentAA(uint8_t effectIndex);
         void spellEffectSummon(uint8_t effectIndex);
         void spellEffectSummonWild(uint8_t effectIndex);
-        void spellEffectSummonGuardian(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector &v);
-        void spellEffectSummonTemporaryPet(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector &v);
-        void spellEffectSummonTotem(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector &v);
-        void spellEffectSummonPossessed(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector &v);
-        void spellEffectSummonCompanion(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector &v);
-        void spellEffectSummonVehicle(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector &v);
+        void spellEffectSummonGuardian(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+        void spellEffectSummonTemporaryPet(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+        void spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const* properties, LocationVector& v);
+        void spellEffectSummonPossessed(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+        void spellEffectSummonCompanion(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+        void spellEffectSummonVehicle(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
         void spellEffectLeap(uint8_t effectIndex);
         void spellEffectEnergize(uint8_t effectIndex);
         void spellEffectWeaponDmgPerc(uint8_t effectIndex);
@@ -391,8 +396,7 @@ class SERVER_DECL Spell : public EventableObject
         // Finishes the casted spell
         void finish(bool successful = true);
         // Handle the Effects of the Spell
-        virtual void HandleEffects(uint64 guid, uint32 i);
-        void HandleCastEffects(uint64 guid, uint32 i);
+        virtual void HandleEffects(uint64 guid, uint8_t i);
 
         // Trigger Spell function that triggers triggered spells
         //void TriggerSpell();
@@ -470,7 +474,6 @@ class SERVER_DECL Spell : public EventableObject
         void SpellEffectSummonWild(uint8_t effectIndex);
         void SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
         void SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
-        void SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
         void SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
         void SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
         void SpellEffectSummonVehicle(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);

@@ -491,6 +491,29 @@ bool SpellInfo::isOnNextMeleeAttack() const
     return (Attributes & (ATTRIBUTES_ON_NEXT_ATTACK | ATTRIBUTES_ON_NEXT_SWING_2)) != 0;
 }
 
+bool SpellInfo::doesEffectApplyAura(uint8_t effIndex) const
+{
+    if (effIndex >= MAX_SPELL_EFFECTS)
+        return false;
+
+    switch (Effect[effIndex])
+    {
+        case SPELL_EFFECT_APPLY_AURA:
+        case SPELL_EFFECT_PERSISTENT_AREA_AURA:
+        case SPELL_EFFECT_APPLY_GROUP_AREA_AURA:
+        case SPELL_EFFECT_APPLY_RAID_AREA_AURA:
+        case SPELL_EFFECT_APPLY_PET_AREA_AURA:
+        case SPELL_EFFECT_APPLY_FRIEND_AREA_AURA:
+        case SPELL_EFFECT_APPLY_ENEMY_AREA_AURA:
+        case SPELL_EFFECT_APPLY_OWNER_AREA_AURA:
+            return true;
+        default:
+            break;
+    }
+
+    return false;
+}
+
 bool SpellInfo::appliesAreaAura(uint32_t auraType) const
 {
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)

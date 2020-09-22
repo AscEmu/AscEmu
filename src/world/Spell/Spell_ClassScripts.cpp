@@ -26,6 +26,7 @@
 #include "SpellAuras.h"
 #include "Definitions/SpellSchoolConversionTable.h"
 #include "Definitions/DispelType.h"
+#include "Units/Summons/TotemSummon.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
  // Mage Scripts
@@ -105,7 +106,7 @@ public:
                 Unit* totem;
                 for (uint8 i = 0; i < 32; i++)
                 {
-                    totem = u_caster->summonhandler.GetSummonWithEntry(totem_ids[i]);   // Get possible firetotem
+                    totem = u_caster->getSummonInterface()->getSummonWithEntry(totem_ids[i]);   // Get possible firetotem
                     if (totem != NULL)
                     {
                         HasFireTotem = true;
@@ -395,7 +396,7 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new RuneStrileSpell(Caster, info, triggered, aur); }
 
-    void HandleEffects(uint64 guid, uint32 i)
+    void HandleEffects(uint64 guid, uint8 i)
     {
         Spell::HandleEffects(guid, i);
 

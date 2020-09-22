@@ -24,6 +24,7 @@
 #include "MMapFactory.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
+#include "Units/Summons/TotemSummon.h"
 #include "Objects/DynamicObject.h"
 #include "Management/HonorHandler.h"
 #include "Management/Item.h"
@@ -464,6 +465,48 @@ void Spell::spellEffectNotUsed(uint8_t /*effIndex*/)
     // Handled elsewhere or not used, so do nothing
 }
 
+void Spell::spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const* properties, LocationVector& v)
+{
+    if (u_caster == nullptr)
+        return;
+
+    const auto totemSlot = summonSlot > 0 ? static_cast<TotemSlots>(summonSlot - 1) : TOTEM_SLOT_NONE;
+
+    // Generate spawn point
+    const float_t angle = totemSlot < MAX_TOTEM_SLOT ? M_PI_FLOAT / MAX_TOTEM_SLOT - (totemSlot * 2 * M_PI_FLOAT / MAX_TOTEM_SLOT) : 0.0f;
+    u_caster->GetPoint(u_caster->GetOrientation() + angle, 3.5f, v.x, v.y, v.z, false);
+
+    // Correct Z position
+    //\ todo: this probably should be inside Object::GetPoint()
+    const auto landHeight = u_caster->GetMapMgr()->GetLandHeight(v.x, v.y, v.z + 2);
+    const auto landDiff = landHeight - v.z;
+    if (fabs(landDiff) <= 15)
+        v.z = landHeight;
+
+    auto summonDuration = GetDuration();
+    if (summonDuration == 0)
+        summonDuration = 10 * 60 * 1000; // 10 min if duration does not exist
+
+    // Create totem
+    const auto totem = u_caster->GetMapMgr()->CreateSummon(properties->Id, SUMMONTYPE_TOTEM, summonDuration);
+    if (totem == nullptr)
+        return;
+
+    // Remove current totem from slot if one exists
+    if (totemSlot < MAX_TOTEM_SLOT)
+    {
+        const auto curTotem = u_caster->getTotem(totemSlot);
+        if (curTotem != nullptr)
+            curTotem->unSummon();
+    }
+
+    totem->Load(properties, u_caster, v, m_spellInfo->getId(), totemSlot);
+    totem->setMaxHealth(damage);
+    totem->setHealth(damage);
+
+    totem->PushToWorld(u_caster->GetMapMgr());
+}
+
 // MIT End
 // APGL Start
 
@@ -473,7 +516,7 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
     if (u_caster != unitTarget) return;
 
     Aura* pAura = nullptr;
-    std::map<uint64, Aura*>::iterator itr = m_pendingAuras.find(unitTarget->getGuid());
+    auto itr = m_pendingAuras.find(unitTarget->getGuid());
     if (itr == m_pendingAuras.end())
     {
         pAura = sSpellMgr.newAura(getSpellInfo(), GetDuration(), m_caster, unitTarget);
@@ -507,13 +550,11 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
         if (!sEventMgr.HasEvent(pAura, eventtype))      /* only add it once */
             sEventMgr.AddEvent(pAura, &Aura::EventUpdateAreaAura, effectIndex, r * r, eventtype, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-        m_pendingAuras.insert(std::make_pair(unitTarget->getGuid(), pAura));
-        AddRef();
-        sEventMgr.AddEvent(this, &Spell::HandleAddAura, unitTarget->getGuid(), EVENT_SPELL_HIT, 100, 1, 0);
+        m_pendingAuras.insert(std::make_pair(unitTarget->getGuid(), std::make_pair(0, pAura)));
     }
     else
     {
-        pAura = itr->second;
+        pAura = itr->second.second;
     }
 
     pAura->addAuraEffect(static_cast<AuraEffect>(getSpellInfo()->getEffectApplyAuraName(effectIndex)), damage, getSpellInfo()->getEffectMiscValue(effectIndex), effectIndex);
@@ -1753,7 +1794,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
     //check if we already have stronger aura
     Aura* pAura;
 
-    std::map<uint64, Aura*>::iterator itr = m_pendingAuras.find(unitTarget->getGuid());
+    auto itr = m_pendingAuras.find(unitTarget->getGuid());
     //if we do not make a check to see if the aura owner is the same as the caster then we will stack the 2 auras and they will not be visible client sided
     if (itr == m_pendingAuras.end())
     {
@@ -1804,13 +1845,11 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
 
         pAura->pSpellId = pSpellId; //this is required for triggered spells
 
-        m_pendingAuras.insert(std::make_pair(unitTarget->getGuid(), pAura));
-        AddRef();
-        sEventMgr.AddEvent(this, &Spell::HandleAddAura, unitTarget->getGuid(), EVENT_SPELL_HIT, 100, 1, 0);
+        m_pendingAuras.insert(std::make_pair(unitTarget->getGuid(), std::make_pair(0, pAura)));
     }
     else
     {
-        pAura = itr->second;
+        pAura = itr->second.second;
     }
     switch (m_spellInfo->getId())
     {
@@ -2950,7 +2989,7 @@ void Spell::SpellEffectSummon(uint8_t effectIndex)
         case SUMMON_CONTROL_TYPE_GUARDIAN:
             if (summon_properties->ID == 121)
             {
-                SpellEffectSummonTotem(effectIndex, summon_properties, cp, v);
+                spellEffectSummonTotem(static_cast<uint8_t>(summon_properties->Slot), cp, v);
                 return;
             }
             break;
@@ -2992,7 +3031,7 @@ void Spell::SpellEffectSummon(uint8_t effectIndex)
             return;
 
         case SUMMON_TYPE_TOTEM:
-            SpellEffectSummonTotem(effectIndex, summon_properties, cp, v);
+            spellEffectSummonTotem(static_cast<uint8_t>(summon_properties->Slot), cp, v);
             return;
 
         case SUMMON_TYPE_COMPANION:
@@ -3100,7 +3139,7 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
         v.x += x;
         v.y += y;
 
-        Summon* s = u_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_GUARDIAN);
+        Summon* s = u_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_GUARDIAN, GetDuration());
         if (s == nullptr)
             return;
 
@@ -3117,11 +3156,6 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
             s->setMoveRoot(true);
             s->addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         }
-
-        int32 duration = static_cast<int32>(GetDuration());
-        if (duration > 0)
-            sEventMgr.AddEvent(static_cast< Object* >(s), &Object::Delete, EVENT_SUMMON_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-
     }
 }
 
@@ -3169,39 +3203,6 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, DBC::Structures::SummonP
     }
 }
 
-void Spell::SpellEffectSummonTotem(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
-{
-    if (u_caster == nullptr)
-        return;
-
-    int slot = spe->Slot;
-    v.x += (slot < 3) ? -1.5f : 1.5f;
-    v.y += (slot % 2) ? -1.5f : 1.5f;
-
-    float landh = u_caster->GetMapMgr()->GetLandHeight(v.x, v.y, v.z + 2);
-    float landdiff = landh - v.z;
-
-    if (fabs(landdiff) <= 15)
-        v.z = landh;
-
-    Summon* s = u_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_TOTEM);
-    if (s == nullptr)
-        return;
-    s->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
-    s->setMaxHealth(damage);
-    s->setHealth(damage);
-    s->PushToWorld(u_caster->GetMapMgr());
-
-    if (p_caster != nullptr)
-        p_caster->sendTotemCreatedPacket(static_cast<uint8_t>(spe->Slot - 1), s->getGuid(), GetDuration(), m_spellInfo->getId());
-
-    int32 duration = static_cast<int32>(GetDuration());
-    if (duration > 0)
-        sEventMgr.AddEvent(static_cast< Object* >(s), &Object::Delete, EVENT_SUMMON_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    else
-        sEventMgr.AddEvent(static_cast< Object* >(s), &Object::Delete, EVENT_SUMMON_EXPIRE, 60 * 60 * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-}
-
 void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (p_caster == nullptr)
@@ -3210,7 +3211,7 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
     p_caster->DismissActivePets();
     p_caster->RemoveFieldSummon();
 
-    Summon* s = p_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_POSSESSED);
+    Summon* s = p_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_POSSESSED, GetDuration());
     if (s == nullptr)
         return;
 
@@ -3249,7 +3250,7 @@ void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonProperti
             return;
     }
 
-    auto summon = u_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_COMPANION);
+    auto summon = u_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_COMPANION, GetDuration());
     if (summon == nullptr)
         return;
 
@@ -4220,6 +4221,8 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         go->SetFaction(u_caster->getFactionTemplate());
         go->Phase(PHASE_SET, u_caster->GetPhase());
 
+        go->SetSummoned(u_caster);
+
         go->PushToWorld(m_caster->GetMapMgr());
 
         u_caster->setChannelObjectGuid(go->getGuid());
@@ -4241,6 +4244,9 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         go->CreateFromProto(entry, mapid, posx, posy, pz, orient);
         go->setCreatedByGuid(m_caster->getGuid());
         go->Phase(PHASE_SET, u_caster->GetPhase());
+
+        go->SetSummoned(u_caster);
+
         go->PushToWorld(m_caster->GetMapMgr());
         sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
@@ -5390,12 +5396,12 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     GoSummon->setCreatedByGuid(m_caster->getGuid());
     GoSummon->Phase(PHASE_SET, u_caster->GetPhase());
 
+    GoSummon->SetSummoned(u_caster);
+    u_caster->m_ObjectSlots[slot] = GoSummon->GetUIdFromGUID();
+
     GoSummon->PushToWorld(m_caster->GetMapMgr());
 
     sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-
-    GoSummon->SetSummoned(u_caster);
-    u_caster->m_ObjectSlots[slot] = GoSummon->GetUIdFromGUID();
 }
 
 void Spell::SpellEffectDispelMechanic(uint8_t effectIndex)
@@ -5458,7 +5464,7 @@ void Spell::SpellEffectDestroyAllTotems(uint8_t effectIndex)
 
     std::vector< uint32 > spellids;
 
-    p_caster->summonhandler.GetSummonSlotSpellIDs(spellids);
+    p_caster->getSummonInterface()->getTotemSpellIds(spellids);
 
     for (std::vector< uint32 >::iterator itr = spellids.begin(); itr != spellids.end(); ++itr)
     {
@@ -5478,7 +5484,7 @@ void Spell::SpellEffectDestroyAllTotems(uint8_t effectIndex)
         }
     }
 
-    p_caster->summonhandler.ExpireSummonsInSlot();
+    p_caster->getSummonInterface()->removeAllSummons(true);
     p_caster->energize(p_caster, getSpellInfo()->getId(), RetreivedMana, POWER_TYPE_MANA);
 }
 

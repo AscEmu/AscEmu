@@ -6,8 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "../../StdAfx.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
+#include "Units/Summons/TotemSummon.h"
 
-Summon::Summon(uint64_t guid) : Creature(guid), m_unitOwner(nullptr), m_summonSlot(-1) {}
+Summon::Summon(uint64_t guid, uint32_t duration) : Creature(guid), m_unitOwner(nullptr), m_summonSlot(-1), m_duration(duration) {}
 
 Summon::~Summon() {}
 
@@ -51,14 +52,31 @@ void Summon::Load(CreatureProperties const* creatureProperties, Unit* unitOwner,
         addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 }
 
+void Summon::unSummon()
+{
+    // If this summon is summoned by a totem, unsummon the totem also
+    if (m_unitOwner->isTotem())
+        static_cast<TotemSummon*>(m_unitOwner)->unSummon();
+
+    Despawn(10, 0);
+}
+
+uint32_t Summon::getTimeLeft() const
+{
+    return m_duration;
+}
+
+void Summon::setTimeLeft(uint32_t time)
+{
+    m_duration = time;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Override Object functions
 void Summon::OnPushToWorld()
 {
-    if (m_summonSlot != -1)
-        m_unitOwner->summonhandler.AddSummonToSlot(this, static_cast<uint8_t>(m_summonSlot));
-    else
-        m_unitOwner->summonhandler.AddSummon(this);
+    if (!isTotem())
+        m_unitOwner->getSummonInterface()->addGuardian(this);
 
     Creature::OnPushToWorld();
 }
@@ -71,15 +89,14 @@ void Summon::OnPreRemoveFromWorld()
     if (getCreatedBySpellId() != 0)
         m_unitOwner->RemoveAura(getCreatedBySpellId());
 
-    if (m_summonSlot != -1)
-        m_unitOwner->summonhandler.RemoveSummonFromSlot(static_cast<uint8_t>(m_summonSlot), false);
-    else
-        m_unitOwner->summonhandler.RemoveSummon(this);
+    if (!isTotem())
+        m_unitOwner->getSummonInterface()->removeGuardian(this, false);
+
+    if (getPlayerOwner() != nullptr)
+        getPlayerOwner()->sendDestroyObjectPacket(getGuid());
 
     m_summonSlot = -1;
     m_unitOwner = nullptr;
-
-    SendDestroyObject();
 }
 
 bool Summon::isSummon() const { return true; }
@@ -87,7 +104,7 @@ bool Summon::isSummon() const { return true; }
 void Summon::onRemoveInRangeObject(Object* object)
 {
     if (m_unitOwner != nullptr && object->getGuid() == m_unitOwner->getGuid())
-        Despawn(1, 0);
+        unSummon();
 
     Creature::onRemoveInRangeObject(object);
 }
@@ -96,15 +113,13 @@ void Summon::onRemoveInRangeObject(Object* object)
 // Override Unit functions
 void Summon::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 {
+    // If this summon is summoned by a totem, unsummon the totem on death
     if (m_unitOwner->isTotem())
-        m_unitOwner->Die(pAttacker, damage, spellid);
+        static_cast<TotemSummon*>(m_unitOwner)->unSummon();
 
     Creature::Die(pAttacker, damage, spellid);
 
-    if (m_summonSlot != -1)
-        m_unitOwner->summonhandler.RemoveSummonFromSlot(static_cast<uint8_t>(m_summonSlot), false);
-    else
-        m_unitOwner->summonhandler.RemoveSummon(this);
+    m_unitOwner->getSummonInterface()->removeGuardian(this, false);
 
     m_summonSlot = -1;
     m_unitOwner = nullptr;

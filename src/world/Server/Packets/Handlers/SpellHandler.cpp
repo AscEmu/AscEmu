@@ -17,6 +17,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAuras.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
+#include "Units/Summons/TotemSummon.h"
+#include "Units/UnitDefines.hpp"
 #include "Objects/Faction.h"
 #include "Data/WoWItem.h"
 #include "Server/Packets/CmsgCastSpell.h"
@@ -413,13 +415,15 @@ void WorldSession::handleCancelTotem(WorldPacket& recvPacket)
     uint8_t totemSlot;
     recvPacket >> totemSlot;
 
-    if (totemSlot >= UNIT_SUMMON_SLOTS)
+    if (totemSlot >= MAX_TOTEM_SLOT)
     {
-        LogError("Player %u tried to cancel summon from out of range slot %u, ignored.", _player->getGuidLow(), totemSlot);
+        LogError("Player %u tried to cancel totem from out of range slot %u, ignored.", _player->getGuidLow(), totemSlot);
         return;
     }
 
-    _player->summonhandler.RemoveSummonFromSlot(totemSlot);
+    const auto totem = _player->getTotem(TotemSlots(totemSlot));
+    if (totem != nullptr)
+        totem->unSummon();
 }
 
 void WorldSession::handleUpdateProjectilePosition(WorldPacket& recvPacket)
