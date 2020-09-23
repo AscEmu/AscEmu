@@ -2618,7 +2618,7 @@ void Player::setTutorialValueForId(uint8_t id, uint32_t value)
 
 void Player::loadTutorials()
 {
-    if (auto result = WorldDatabase.Query("SELECT * FROM tutorials WHERE playerId = %u", getGuidLow()))
+    if (auto result = CharacterDatabase.Query("SELECT * FROM tutorials WHERE playerId = %u", getGuidLow()))
     {
         auto* const fields = result->Fetch();
         for (uint8_t id = 0; id < 8; ++id)
