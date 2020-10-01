@@ -2154,12 +2154,12 @@ class GathiosAI : public CreatureAIScript
         {
             if (*itr && (*itr)->isAlive() && (*itr)->getEntry() != pCreatureEntry)
             {
-                (*itr)->DealDamage(*itr, val, 0, 0, 0);
+                (*itr)->dealDamage(*itr, val, 0);
             }
         }
 
         if (isAlive() && getCreature()->getEntry() != pCreatureEntry)
-            getCreature()->DealDamage(getCreature(), val, 0, 0, 0);
+            getCreature()->dealDamage(getCreature(), val, 0);
     }
 
     void Destroy() override

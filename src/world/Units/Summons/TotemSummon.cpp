@@ -91,6 +91,9 @@ bool TotemSummon::isTotem() const { return true; }
 // Override Unit functions
 void TotemSummon::Die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spellid*/)
 {
+    // Clear health batch on death
+    clearHealthBatch();
+
     unSummon();
 }
 

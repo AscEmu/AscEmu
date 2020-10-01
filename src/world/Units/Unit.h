@@ -37,7 +37,6 @@
 #include "Spell/Definitions/School.h"
 #include "Storage/MySQLStructures.h"
 
-
 class AIInterface;
 class Aura;
 class DynamicObject;
@@ -52,7 +51,7 @@ class Vehicle;
 
 struct FactionDBC;
 
-enum UnitSpeedType : uint8
+enum UnitSpeedType : uint8_t
 {
     TYPE_WALK           = 0,
     TYPE_RUN            = 1,
@@ -106,6 +105,24 @@ struct UnitSpeedInfo
 
     float m_currentSpeedRate[MAX_SPEED_TYPE];
     float m_basicSpeedRate[MAX_SPEED_TYPE];
+};
+
+struct HealthBatchEvent
+{
+    Unit* caster = nullptr;                 // the unit who created this damage or healing event
+    uint32_t damage = 0;
+    uint32_t absorbedDamageOrHeal = 0;
+
+    bool isPeriodic = false;
+    bool isHeal = false;
+
+    bool isEnvironmentalDamage = false;
+    EnviromentalDamage environmentType = DAMAGE_EXHAUSTED;
+
+    bool isLeech = false;
+    float_t leechMultipleValue = 0.0f;
+
+    SpellInfo const* spellInfo = nullptr;
 };
 
 // MIT End
@@ -650,10 +667,11 @@ public:
     float_t getCriticalChanceForDamageSpell(SpellInfo const* spellInfo, Unit* victim) const;
     float_t getCriticalChanceForHealSpell(SpellInfo const* spellInfo) const;
 
-    void sendSpellNonMeleeDamageLog(Object* caster, Object* target, SpellInfo const* spellInfo, uint32_t damage, uint32_t absorbedDamage, uint32_t resistedDamage, uint32_t blockedDamage, bool isPeriodicDamage, bool isCriticalHit);
+    void sendSpellNonMeleeDamageLog(Object* caster, Object* target, SpellInfo const* spellInfo, uint32_t damage, uint32_t absorbedDamage, uint32_t resistedDamage, uint32_t blockedDamage, uint32_t overKill, bool isPeriodicDamage, bool isCriticalHit);
     void sendSpellHealLog(Object* caster, Object* target, uint32_t spellId, uint32_t healAmount, bool isCritical, uint32_t overHeal, uint32_t absorbedHeal);
     // Sends packet for damage immune
     void sendSpellOrDamageImmune(uint64_t casterGuid, Unit* target, uint32_t spellId);
+    void sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, uint32_t overKill, dealdamage damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, uint32_t rageGain);
 
 private:
     bool m_canDualWield;
@@ -805,6 +823,22 @@ public:
 
     uint8_t getHealthPct() const;
 
+    void dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool removeAuras = true);
+    void takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId);
+    // Quick method to create a simple damaging health batch event
+    void addSimpleDamageBatchEvent(uint32_t damage, Unit* attacker = nullptr, SpellInfo const* spellInfo = nullptr);
+    // Quick method to create a simple environmental damage health batch event
+    void addSimpleEnvironmentalDamageBatchEvent(EnviromentalDamage type, uint32_t damage, uint32_t absorbedDamage = 0);
+    // Quick method to create a simple healing health batch event
+    void addSimpleHealingBatchEvent(uint32_t heal, Unit* healer = nullptr, SpellInfo const* spellInfo = nullptr);
+    void addHealthBatchEvent(HealthBatchEvent* batch);
+    uint32_t calculateEstimatedOverKillForCombatLog(uint32_t damage) const;
+    uint32_t calculateEstimatedOverHealForCombatLog(uint32_t heal) const;
+    void clearHealthBatch();
+
+    // Modifies dmg and returns absorbed amount
+    uint32_t absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly = true);
+
     //\ todo: should this and other tag related variables be under Creature class?
     bool isTaggedByPlayerOrItsGroup(Player* tagger);
 
@@ -812,6 +846,14 @@ private:
     uint32_t m_attackTimer[TOTAL_WEAPON_DAMAGE_TYPES];
     //\ todo: there seems to be new haste update fields in playerdata in cata, and moved to unitdata in mop
     float m_attackSpeed[TOTAL_WEAPON_DAMAGE_TYPES];
+
+    void _updateHealth();
+    // Handles some things on each damage event in the batch
+    uint32_t _handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageGenerated);
+    // Handles some things on each healing event in the batch
+    uint32_t _handleBatchHealing(Unit* healer, uint32_t heal, uint32_t* absorbedHeal, SpellInfo const* spellInfo);
+    std::vector<HealthBatchEvent*> m_healthBatch;
+    uint16_t m_healthBatchTime = HEALTH_BATCH_INTERVAL;
 
     uint32_t m_lastSpellUpdateTime = 0;
     uint32_t m_lastSummonUpdateTime = 0;
@@ -1080,7 +1122,6 @@ public:
     bool setDetectRangeMod(uint64 guid, int32 amount);
     void unsetDetectRangeMod(uint64 guid);
     int32 getDetectRangeMod(uint64 guid);
-    void Heal(Unit* target, uint32 SpellId, uint32 amount);
 
     Loot loot;
     uint32 SchoolCastPrevent[TOTAL_SPELL_SCHOOLS];
@@ -1099,7 +1140,6 @@ public:
     float BaseDamage[2];
     float BaseOffhandDamage[2];
     float BaseRangedDamage[2];
-    uint32 AbsorbDamage(uint32 School, uint32* dmg);  //returns amt of absorbed dmg, decreases dmg by absorbed value
     int32 RAPvModifier;
     int32 APvModifier;
     uint64 stalkedby;
@@ -1192,7 +1232,6 @@ public:
     void EventAddEmote(EmoteType emote, uint32 time);
     void EmoteExpire();
     uint32 GetOldEmote() { return m_oldEmote; }
-    void EventHealthChangeSinceLastUpdate();
 
     // Stun Immobilize
     uint32 trigger_on_stun;        //bah, warrior talent but this will not get triggered on triggered spells if used on proc so I'm forced to used a special variable
@@ -1409,7 +1448,6 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false);
     virtual void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
     virtual bool isCritter() { return false; }
 

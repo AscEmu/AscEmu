@@ -951,10 +951,6 @@ void MapMgr::_UpdateObjects()
                     }
                 }
 
-                //what?
-                if (pObj->isCreatureOrPlayer() && pObj->HasUpdateField(getOffsetForStructuredField(WoWUnit, health)))
-                    static_cast<Unit*>(pObj)->EventHealthChangeSinceLastUpdate();
-
                 // build the update
                 count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(NULL));
 

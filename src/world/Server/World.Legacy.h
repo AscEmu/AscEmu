@@ -44,17 +44,7 @@ class MapMgr;
 class Battleground;
 struct DatabaseConnection;
 
-enum EnviromentalDamage
-{
-    DAMAGE_EXHAUSTED = 0,
-    DAMAGE_DROWNING = 1,
-    DAMAGE_FALL = 2,
-    DAMAGE_LAVA = 3,
-    DAMAGE_SLIME = 4,
-    DAMAGE_FIRE = 5
-};
-
-//MIT start 
+//MIT start
 // Values based on ServerMessages.dbc
 enum ServerMessageType
 {

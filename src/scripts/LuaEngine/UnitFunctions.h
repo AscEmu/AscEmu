@@ -2554,7 +2554,7 @@ public:
         uint32_t amount = CHECK_ULONG(L, 3);
         if (!target || !spellid || !amount || !ptr)
             return 0;
-        ptr->Heal(target, spellid, amount);
+        target->addSimpleHealingBatchEvent(amount, ptr, sSpellMgr.getSpellInfo(spellid));
         return 0;
     }
 
@@ -2789,7 +2789,7 @@ public:
         Unit* target = CHECK_UNIT(L, 1);
         if (!ptr || !target)
             return 0;
-        ptr->DealDamage(target, target->getHealth(), 0, 0, 0, true);
+        ptr->dealDamage(target, target->getHealth(), 0);
         return 0;
     }
 
@@ -2800,7 +2800,7 @@ public:
         uint32_t spellid = CHECK_ULONG(L, 3);
         if (!ptr || !target)
             return 0;
-        ptr->DealDamage(target, damage, 0, 0, spellid, true);
+        ptr->dealDamage(target, damage, spellid, false);
         return 0;
     }
 

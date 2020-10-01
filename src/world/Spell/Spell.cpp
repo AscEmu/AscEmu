@@ -4154,8 +4154,8 @@ void Spell::takePower()
     if (getSpellInfo()->getPowerType() == POWER_TYPE_HEALTH)
     {
         //\ todo: is this correct order?
-        u_caster->sendSpellNonMeleeDamageLog(u_caster, u_caster, getSpellInfo(), getPowerCost(), 0, 0, 0, false, false);
-        u_caster->DealDamage(u_caster, getPowerCost(), 0, 0, getSpellInfo()->getId(), true);
+        u_caster->sendSpellNonMeleeDamageLog(u_caster, u_caster, getSpellInfo(), getPowerCost(), 0, 0, 0, 0, false, false);
+        u_caster->dealDamage(u_caster, getPowerCost(), getSpellInfo()->getId(), false);
         return;
     }
 #if VERSION_STRING >= WotLK

@@ -609,12 +609,17 @@ void Aura::update(unsigned long diff, bool skipDurationCheck/* = false*/)
     if (m_duration > 0 && !skipDurationCheck)
     {
         m_duration -= diff;
-        if (m_duration < 0)
+        if (m_duration <= 0)
         {
             m_duration = 0;
             removeAura(AURA_REMOVE_ON_EXPIRE);
         }
     }
+}
+
+bool Aura::isAbsorbAura() const
+{
+    return false;
 }
 
 SpellInfo* Aura::getSpellInfo() const
@@ -842,8 +847,8 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                             sdmg.full_damage = aurEff->mDamage;
                             sdmg.resisted_damage = 0;
                             sdmg.school_type = 0;
-                            casterUnit->DealDamage(casterUnit, aurEff->mDamage, 0, 0, 0);
-                            casterUnit->SendAttackerStateUpdate(casterUnit, casterUnit, &sdmg, aurEff->mDamage, 0, 0, 0, ATTACK);
+                            casterUnit->dealDamage(casterUnit, aurEff->mDamage, 0);
+                            casterUnit->sendAttackerStateUpdate(casterUnit->GetNewGUID(), casterUnit->GetNewGUID(), HITSTATUS_NORMALSWING, aurEff->mDamage, 0, sdmg, 0, VisualState::ATTACK, 0, 0);
                         } break;
                         default:
                             break;
@@ -924,6 +929,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 getOwner()->Emote(EMOTE_ONESHOT_EAT);
         } break;
         case SPELL_AURA_PERIODIC_LEECH:
+        case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
         {
             const auto staticDamage = false;
             const auto casterUnit = GetUnitCaster();
@@ -933,27 +939,6 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 casterUnit->doSpellDamage(getOwner(), getSpellId(), aurEff->mDamage, aurEff->effIndex, true, staticDamage, true, true, false, this, aurEff);
             else
                 getOwner()->doSpellDamage(getOwner(), getSpellId(), aurEff->mDamage, aurEff->effIndex, true, staticDamage, true, true, false, this, aurEff);
-        } break;
-        case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
-        {
-            ///\ todo: investigate this effect more
-            const auto staticDamage = true;
-            const auto casterUnit = GetUnitCaster();
-
-            // Deal damage
-            int32_t damageInflicted = 0;
-            if (casterUnit != nullptr)
-                damageInflicted = casterUnit->doSpellDamage(getOwner(), getSpellId(), aurEff->mDamage, aurEff->effIndex, true, staticDamage, true, false, false, this, aurEff);
-            else
-                damageInflicted = getOwner()->doSpellDamage(getOwner(), getSpellId(), aurEff->mDamage, aurEff->effIndex, true, staticDamage, true, false, false, this, aurEff);
-
-            // If caster does not exist or is not alive, health cannot be leeched
-            if (casterUnit == nullptr || !casterUnit->isAlive())
-                return;
-
-            // Heal caster
-            const auto healAmount = static_cast<uint32_t>(damageInflicted * getSpellInfo()->getEffectMultipleValue(aurEff->effIndex));
-            casterUnit->doSpellHealing(casterUnit, getSpellId(), healAmount, true, false, true, false, false, this, aurEff);
         } break;
         case SPELL_AURA_PERIODIC_MANA_LEECH:
         {
@@ -1061,3 +1046,106 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             break;
     }
 }
+
+// Absorb aura
+
+AbsorbAura::AbsorbAura(SpellInfo* spellInfo, int32_t duration, Object* caster, Unit* target, bool temporary/* = false*/, Item* i_caster/* = nullptr*/) :
+    Aura(spellInfo, duration, caster, target, temporary, i_caster) {}
+
+Aura* AbsorbAura::Create(SpellInfo* spellInfo, int32_t duration, Object* caster, Unit* target, bool temporary/* = false*/, Item* i_caster/* = nullptr*/)
+{
+    return new AbsorbAura(spellInfo, duration, caster, target, temporary, i_caster);
+}
+
+uint32_t AbsorbAura::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly)
+{
+    // Check if aura can absorb this school
+    if (!(m_absorbSchoolMask & schoolMask))
+        return 0;
+
+    // Absorb damage is checked before packets are sent but real absorption happens on health update
+    if (checkOnly)
+    {
+        uint32_t absorbedDamage = 0;
+        uint32_t damageToAbsorb = *dmg;
+
+        // Check if aura absorbs only percantage of the damage
+        if (m_pctAbsorbValue < 100)
+            damageToAbsorb = damageToAbsorb * m_pctAbsorbValue / 100;
+
+        auto absorbValue = getRemainingAbsorbAmount();
+        if (damageToAbsorb >= absorbValue)
+        {
+            *dmg -= absorbValue;
+            absorbedDamage = absorbValue;
+
+            m_absorbDamageBatch = m_absorbValue;
+        }
+        else
+        {
+            *dmg -= damageToAbsorb;
+            absorbedDamage = damageToAbsorb;
+
+            m_absorbDamageBatch += damageToAbsorb;
+        }
+
+        return absorbedDamage;
+    }
+    else
+    {
+        m_absorbValue -= m_absorbDamageBatch;
+        m_absorbDamageBatch = 0;
+
+        if (m_absorbValue <= 0)
+            removeAura();
+    }
+
+    return 0;
+}
+
+uint32_t AbsorbAura::getRemainingAbsorbAmount() const
+{
+    if (m_absorbValue < 0 || m_absorbDamageBatch > static_cast<uint32_t>(m_absorbValue))
+        return 0;
+    else
+        return m_absorbValue - m_absorbDamageBatch;
+}
+
+int32_t AbsorbAura::getTotalAbsorbAmount() const
+{
+    return m_totalAbsorbValue;
+}
+
+void AbsorbAura::spellAuraEffectSchoolAbsorb(AuraEffectModifier* aurEff, bool apply)
+{
+    if (!apply)
+        return;
+
+    auto absorbValue = calcAbsorbAmount(aurEff);
+
+    m_totalAbsorbValue = absorbValue;
+    m_absorbValue = absorbValue;
+    m_pctAbsorbValue = CalcPctDamage();
+    m_absorbSchoolMask = SchoolMask(aurEff->miscValue);
+}
+
+bool AbsorbAura::isAbsorbAura() const
+{
+    return true;
+}
+
+int32_t AbsorbAura::calcAbsorbAmount(AuraEffectModifier* aurEff)
+{
+    // Call for legacy script hook
+    auto val = CalcAbsorbAmount(aurEff);
+
+    const auto unitCaster = GetUnitCaster();
+    if (unitCaster != nullptr)
+    {
+        // Apply spell power coefficient
+        val += static_cast<int32_t>((unitCaster->getSpellDamageBonus(getSpellInfo(), val, false)));
+    }
+
+    return val;
+}
+

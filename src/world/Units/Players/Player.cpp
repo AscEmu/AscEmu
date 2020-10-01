@@ -1089,7 +1089,7 @@ void Player::handleFall(MovementInfo const& movementInfo)
         }
 
         sendEnvironmentalDamageLogPacket(getGuid(), DAMAGE_FALL, health_loss);
-        DealDamage(this, health_loss, 0, 0, 0);
+        addSimpleEnvironmentalDamageBatchEvent(DAMAGE_FALL, health_loss);
     }
 
     z_axisposition = 0.0f;
@@ -1778,6 +1778,15 @@ void Player::resetHolyPowerTimer()
 // Database stuff
 bool Player::loadSpells(QueryResult* result)
 {
+    // Add initial spells on first login
+    if (m_FirstLogin)
+    {
+        for (const auto& spellId : info->spell_list)
+            mSpells.insert(spellId);
+
+        return true;
+    }
+
     if (result == nullptr)
         return false;
 
@@ -1793,12 +1802,45 @@ bool Player::loadSpells(QueryResult* result)
         mSpells.insert(spellId);
     } while (result->NextRow());
 
-    // Add initial spells on first login
+    return true;
+}
+
+bool Player::loadReputations(QueryResult* result)
+{
+    // Add initial reputations on first login
     if (m_FirstLogin)
     {
-        for (const auto& spellId : info->spell_list)
-            mSpells.insert(spellId);
+        _InitialReputation();
+        return true;
     }
+
+    if (result == nullptr)
+        return false;
+
+    do
+    {
+        const auto field = result->Fetch();
+
+        const auto id = field[0].GetUInt32();
+        const auto flag = field[1].GetUInt8();
+        const auto basestanding = field[2].GetInt32();
+        const auto standing = field[3].GetInt32();
+
+        const auto faction = sFactionStore.LookupEntry(id);
+        if (faction == nullptr || faction->RepListId < 0)
+            continue;
+
+        auto itr = m_reputation.find(id);
+        if (itr != m_reputation.end())
+            delete itr->second;
+
+        FactionReputation* reputation = new FactionReputation;
+        reputation->baseStanding = basestanding;
+        reputation->standing = standing;
+        reputation->flag = flag;
+        m_reputation[id] = reputation;
+        reputationByListId[faction->RepListId] = reputation;
+    } while (result->NextRow());
 
     return true;
 }

@@ -103,7 +103,7 @@ bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
             val += val * (aur->getSpellInfo()->getEffectBasePoints(2) + 1) / 100;
 
         if (val > 0)
-            pSpell->getPlayerCaster()->Heal(pSpell->getPlayerCaster(), pSpell->getSpellInfo()->getId(), val);
+            pSpell->getPlayerCaster()->addSimpleHealingBatchEvent(val, pSpell->getPlayerCaster(), pSpell->getSpellInfo());
     }
 
     return true;
@@ -350,7 +350,7 @@ bool Hysteria(uint8_t effectIndex, Aura* pAura, bool apply)
     Unit* target = pAura->getOwner();
 
     uint32_t dmg = (uint32_t)target->getMaxHealth() * (pAura->getSpellInfo()->getEffectBasePoints(effectIndex) + 1) / 100;
-    target->DealDamage(target, dmg, 0, 0, 0);
+    target->addSimpleDamageBatchEvent(dmg, target, pAura->getSpellInfo());
 
     return true;
 }

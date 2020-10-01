@@ -2227,87 +2227,6 @@ bool Creature::isCritter()
         return false;
 }
 
-void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint32 /*unitEvent*/, uint32 spellId, bool no_remove_auras)
-{
-    if (!pVictim || !pVictim->isAlive() || !pVictim->IsInWorld() || !IsInWorld())
-        return;
-    if (pVictim->isPlayer() && static_cast< Player* >(pVictim)->m_cheats.hasGodModeCheat == true)
-        return;
-    if (pVictim->bInvincible)
-        return;
-    if (pVictim->isCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
-        return;
-
-    if (pVictim != this)
-        CombatStatus.OnDamageDealt(pVictim);
-
-    pVictim->setStandState(STANDSTATE_STAND);
-
-    if (pVictim->isPvpFlagSet())
-    {
-        if (auto p = getPlayerOwner())
-        {
-            if (!p->isPvpFlagSet())
-                p->PvPToggle();
-
-            p->AggroPvPGuards();
-        }
-    }
-
-    // Bg dmg counter
-    if (pVictim != this)
-    {
-        Player* p = getPlayerOwner();
-        if (p != NULL)
-        {
-            if (p->m_bg != NULL && GetMapMgr() == pVictim->GetMapMgr())
-            {
-                p->m_bgScore.DamageDone += damage;
-                p->m_bg->UpdatePvPData();
-            }
-        }
-    }
-
-    if (pVictim->getHealth() <= damage)
-    {
-        if (pVictim->isTrainingDummy())
-        {
-            pVictim->setHealth(1);
-            return;
-        }
-
-        pVictim->Die(this, damage, spellId);
-    }
-    else
-    {
-        pVictim->TakeDamage(this, damage, spellId, no_remove_auras);
-    }
-}
-
-void Creature::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras)
-{
-    if (!no_remove_auras)
-    {
-        //zack 2007 04 24 : root should not remove self (and also other unknown spells)
-        if (spellid)
-        {
-            RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN, spellid);
-            if (Rand(35.0f))
-                RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_UNUSED2, spellid);
-        }
-        else
-        {
-            RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
-            if (Rand(35.0f))
-                RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_UNUSED2);
-        }
-    }
-
-    GetAIInterface()->AttackReaction(pAttacker, damage, spellid);
-
-    modHealth(-1 * static_cast<int32>(damage));
-}
-
 void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
     if (getVehicleComponent() != NULL)
@@ -2436,6 +2355,9 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         if (charmer != NULL)
             charmer->UnPossess();
     }
+
+    // Clear health batch on death
+    clearHealthBatch();
 
     if (m_mapMgr->m_battleground != NULL)
         m_mapMgr->m_battleground->HookOnUnitDied(this);

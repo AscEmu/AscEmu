@@ -25,8 +25,7 @@ bool ChatHandler::HandleDoPercentDamageCommand(const char* args, WorldSession* s
 
     uint32_t calculatedDamage = static_cast<uint32_t>((health / 100) * percentDamage);
 
-
-    selected_unit->TakeDamage(session->GetPlayer(), calculatedDamage, 0, false);
+    selected_unit->takeDamage(session->GetPlayer(), calculatedDamage, 0);
 
     SystemMessage(session, "Send damage percent: %u (%u hp) for Creature %s", percentDamage, calculatedDamage, selected_unit->GetCreatureProperties()->Name.c_str());
 

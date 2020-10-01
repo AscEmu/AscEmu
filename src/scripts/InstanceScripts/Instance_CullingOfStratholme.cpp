@@ -194,7 +194,7 @@ class MalganisAI : public CreatureAIScript
     {
         if (getCreature()->HasAura(52723))    //handling a dummy :)
         {
-            getCreature()->Heal(getCreature(), 52723, fAmount / 2);
+            getCreature()->addSimpleHealingBatchEvent(fAmount / 2, getCreature(), sSpellMgr.getSpellInfo(52723));
         }
 
         if (getCreature()->getHealthPct() < 2)
@@ -449,13 +449,13 @@ class ArthasAI : public CreatureAIScript
                 if (citizen)
                 {
                     getCreature()->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
-                    getCreature()->DealDamage(citizen, citizen->getHealth(), 0, 0, 0);
+                    getCreature()->dealDamage(citizen, citizen->getHealth(), 0);
                 }
                 citizen = getNearestCreature(28169);
                 if (citizen)
                 {
                     getCreature()->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
-                    getCreature()->DealDamage(citizen, citizen->getHealth(), 0, 0, 0);
+                    getCreature()->dealDamage(citizen, citizen->getHealth(), 0);
                 }
                 getCreature()->SendTimedScriptTextChatMessage(SAY_ARTHAS_13, 1000);
                 phase++;

@@ -161,6 +161,8 @@ class SERVER_DECL Aura : public EventableObject
 
         void update(unsigned long diff, bool skipDurationCheck = false);
 
+        virtual bool isAbsorbAura() const;
+
         SpellInfo* getSpellInfo() const;
         uint32_t getSpellId() const;
 
@@ -695,8 +697,6 @@ class SERVER_DECL Aura : public EventableObject
 
         uint32 GetAuraFlags() { return m_flags; }
 
-        virtual bool IsAbsorb() { return false; }
-
         AreaAuraList targets; // This is only used for AA
         uint16 m_auraSlot;
         uint32 m_castedItemId;
@@ -741,45 +741,38 @@ class SERVER_DECL Aura : public EventableObject
         inline bool IsInterrupted() { return (m_interrupted >= 0); }
 };
 
+// APGL End
+// MIT Start
+
 class AbsorbAura : public Aura
 {
     public:
+        AbsorbAura(SpellInfo* spellInfo, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr);
+        static Aura* Create(SpellInfo* spellInfo, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr);
 
-        AbsorbAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr) :
-            Aura(proto, duration, caster, target, temporary, i_caster), m_total_amount(0), m_amount(0), m_pct_damage(0) {}
-
-        static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
-        {
-            return new AbsorbAura(proto, duration, caster, target, temporary, i_caster);
-        }
-
-        virtual uint32 AbsorbDamage(uint32 School, uint32* dmg);
+        virtual uint32_t absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly);
+        uint32_t getRemainingAbsorbAmount() const;
+        int32_t getTotalAbsorbAmount() const;
 
         void spellAuraEffectSchoolAbsorb(AuraEffectModifier* aurEff, bool apply);
 
-        bool IsAbsorb() { return true; }
+        bool isAbsorbAura() const override;
 
     protected:
+        int32_t calcAbsorbAmount(AuraEffectModifier* aurEff);
 
-        uint32 GetSchoolMask()
-        {
-            for (uint8 x = 0; x < 3; ++x)
-                if (getSpellInfo()->getEffect(x) == SPELL_EFFECT_APPLY_AURA && getSpellInfo()->getEffectApplyAuraName(x) == SPELL_AURA_SCHOOL_ABSORB)
-                    return m_auraEffects[x].miscValue;
-            return 0;
-        }
+        int32_t m_totalAbsorbValue = 0;
+        // Remaining absorb value
+        int32_t m_absorbValue = 0;
+        // How many percentages of the damage is absorbed
+        uint8_t m_pctAbsorbValue = 100;
+        SchoolMask m_absorbSchoolMask = SCHOOL_MASK_NONE;
 
-        virtual int32 CalcAbsorbAmount(AuraEffectModifier* aurEff) { return aurEff->mDamage; }
-        virtual int32 CalcPctDamage() { return 100; }
+        uint32_t m_absorbDamageBatch = 0;
 
-        // Total amount to be absorbed
-        int32 m_total_amount;
-
-        // Amount left to be absorbed
-        int32 m_amount;
-
-        // Pct of damage to absorb
-        int32 m_pct_damage;
+        // Legacy script hooks
+        virtual int32_t CalcAbsorbAmount(AuraEffectModifier* aurEff) { return aurEff->mDamage; }
+        virtual uint8_t CalcPctDamage() { return 100; }
 };
 
 typedef void(Aura::*pSpellAura)(AuraEffectModifier* aurEff, bool apply);
