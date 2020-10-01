@@ -772,6 +772,7 @@ Unit::Unit() :
     TaggerGuid = 0;
 
     m_singleTargetAura.clear();
+    m_healthBatch.clear();
 
     m_vehicle = NULL;
     m_currentVehicle = NULL;
@@ -1114,6 +1115,8 @@ Unit::~Unit()
 
     delete m_summonInterface;
 
+    clearHealthBatch();
+
     RemoveGarbage();
 }
 
@@ -1154,8 +1157,19 @@ void Unit::Update(unsigned long time_passed)
         m_lastSummonUpdateTime = msTime;
     }
 
-    if (!isDead())
+    if (isAlive())
     {
+        // Update health batch
+        if (time_passed >= m_healthBatchTime)
+        {
+            _updateHealth();
+            m_healthBatchTime = HEALTH_BATCH_INTERVAL;
+        }
+        else
+        {
+            m_healthBatchTime -= static_cast<uint16_t>(time_passed);
+        }
+
         //////////////////////////////////////////////////////////////////////////////////////////
         //POWER & HP REGENERATION
         if (this->getNpcFlags() & UNIT_NPC_FLAG_DISABLE_REGEN)
@@ -1250,10 +1264,6 @@ void Unit::Update(unsigned long time_passed)
             if (!count)
                 m_diminishActive = false;
         }
-
-        // if health changed since last time. Would be perfect if it would work for creatures too :)
-        // if (m_updateMask.GetBit(UNIT_FIELD_HEALTH))
-        // EventHealthChangeSinceLastUpdate();
     }
 }
 
@@ -6885,8 +6895,7 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
                 if (const auto spellInfo = sSpellMgr.getSpellInfo((*i2).m_spellId))
                 {
                     SendMessageToSet(SmsgSpellDamageShield(this->getGuid(), attacker->getGuid(), spellInfo->getId(), (*i2).m_damage, spellInfo->getSchoolMask()).serialise().get(), true);
-
-                    this->DealDamage(attacker, (*i2).m_damage, 0, 0, (*i2).m_spellId);
+                    addSimpleDamageBatchEvent((*i2).m_damage, this);
                 }
             }
             else
@@ -7251,12 +7260,12 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
     float crush = 0.0f;
 
     uint32 targetEvent = 0;
-    uint32 hit_status = 0;
+    uint32_t hit_status = HITSTATUS_NORMALSWING;
 
     uint32 blocked_damage = 0;
     int32  realdamage = 0;
 
-    uint32 vstate = 1;
+    VisualState vstate = VisualState::ATTACK;
     uint32 aproc = 0;
     uint32 vproc = 0;
 
@@ -7675,7 +7684,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
             CALL_SCRIPT_EVENT(pVictim, OnTargetDodged)(this);
             CALL_SCRIPT_EVENT(this, OnDodged)(this);
             targetEvent = 1;
-            vstate = DODGE;
+            vstate = VisualState::DODGE;
             vproc |= PROC_ON_DODGE_VICTIM;
             pVictim->Emote(EMOTE_ONESHOT_PARRYUNARMED); // Animation
 
@@ -7708,7 +7717,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
             CALL_SCRIPT_EVENT(pVictim, OnTargetParried)(this);
             CALL_SCRIPT_EVENT(this, OnParried)(this);
             targetEvent = 3;
-            vstate = PARRY;
+            vstate = VisualState::PARRY;
             pVictim->Emote(EMOTE_ONESHOT_PARRYUNARMED); // Animation
 
             if (pVictim->isPlayer())
@@ -7739,7 +7748,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
         default:
             hit_status |= HITSTATUS_HITANIMATION;//hit animation on victim
             if (pVictim->SchoolImmunityList[0])
-                vstate = IMMUNE;
+                vstate = VisualState::IMMUNE;
             else
             {
                 //////////////////////////////////////////////////////////////////////////////////////////
@@ -7915,7 +7924,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
                             }
 
                             if (dmg.full_damage <= (int32)blocked_damage)
-                                vstate = BLOCK;
+                                vstate = VisualState::BLOCK;
                             if (blocked_damage)
                             {
                                 CALL_SCRIPT_EVENT(pVictim, OnTargetBlocked)(this, blocked_damage);
@@ -8008,7 +8017,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
                 //////////////////////////////////////////////////////////////////////////////////////////
                 //absorption
                 uint32 dm = dmg.full_damage;
-                abs = pVictim->AbsorbDamage(dmg.school_type, (uint32*)&dm);
+                abs = pVictim->absorbDamage(SchoolMask(g_spellSchoolConversionTable[dmg.school_type]), (uint32_t*)&dm);
 
                 if (dmg.full_damage > (int32)blocked_damage)
                 {
@@ -8040,7 +8049,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
                 if (realdamage < 0)
                 {
                     realdamage = 0;
-                    vstate = IMMUNE;
+                    vstate = VisualState::IMMUNE;
                     if (!(hit_status & HITSTATUS_BLOCK))
                         hit_status |= HITSTATUS_ABSORBED;
                     else
@@ -8068,7 +8077,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
         if (pVictim->GetAIInterface() && (pVictim->GetAIInterface()->isAiState(AI_STATE_EVADE) ||
             (pVictim->GetAIInterface()->GetIsSoulLinked() && pVictim->GetAIInterface()->getSoullinkedWith() != this)))
         {
-            vstate = EVADE;
+            vstate = VisualState::EVADE;
             realdamage = 0;
             dmg.full_damage = 0;
             dmg.resisted_damage = 0;
@@ -8170,7 +8179,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
         {
             Player* owner = GetMapMgr()->GetPlayer((uint32)getSummonedByGuid());
             if (owner != NULL)
-                Heal(owner, 50452, float2int32(1.5f * realdamage));
+                owner->addSimpleHealingBatchEvent(float2int32(1.5f * realdamage), owner, sSpellMgr.getSpellInfo(50452));
         }
     }
 
@@ -8195,16 +8204,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
 
         if (realdamage < 0)
             realdamage = 0;
-
-        SendAttackerStateUpdate(this, pVictim, &dmg, realdamage, abs, blocked_damage, hit_status, vstate);
     }
     else
     {
-        if (realdamage > 0)  //\todo FIX ME: add log for miss,block etc for ability and ranged
-        {
-            // here we send "dmg.resisted_damage" for "AbsorbedDamage", "0" for "ResistedDamage", and "false" for "PhysicalDamage" even though "School" is "SCHOOL_NORMAL"   o_O
-            pVictim->sendSpellNonMeleeDamageLog(this, pVictim, ability, realdamage, dmg.resisted_damage, 0, 0, false, hit_status & HITSTATUS_CRICTICAL);
-        }
         //FIX ME: add log for miss,block etc for ability and ranged
         //example how it works
         //SendSpellLog(this,pVictim,ability->getId(),SPELL_LOG_MISS);
@@ -8220,12 +8222,77 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
     if (this->isPlayer() && ability)
         static_cast<Player*>(this)->m_casted_amount[dmg.school_type] = (uint32)(realdamage + abs);
 
+    // Generate rage on damage done
+    ///\ todo: this is inaccurate and almost directly copied here from few lines below
+    uint32_t rageGenerated = 0;
+    if (dmg.full_damage > 0 && isPlayer() && getPowerType() == POWER_TYPE_RAGE && ability == nullptr)
+    {
+        float_t val = 0.0f;
+        uint32_t level = getLevel();
+        float_t conv = 0.0f;
+        if (level <= DBC_PLAYER_LEVEL_CAP)
+            conv = AttackToRageConversionTable[level];
+        else
+            conv = 3.75f / (0.0091107836f * level * level + 3.225598133f * level + 4.2652911f);
+
+        // Hit Factor
+        float_t f = (weapon_damage_type == OFFHAND) ? 1.75f : 3.5f;
+
+        if (hit_status & HITSTATUS_CRICTICAL)
+            f *= 2.0f;
+
+        float_t s = 1.0f;
+
+        // Weapon speed (normal)
+        const auto weapon = (static_cast<Player*>(this)->getItemInterface())->GetInventoryItem(INVENTORY_SLOT_NOT_SET, (weapon_damage_type == OFFHAND ? EQUIPMENT_SLOT_OFFHAND : EQUIPMENT_SLOT_MAINHAND));
+        if (weapon == nullptr)
+        {
+            if (weapon_damage_type == OFFHAND)
+                s = getBaseAttackTime(OFFHAND) / 1000.0f;
+            else
+                s = getBaseAttackTime(MELEE) / 1000.0f;
+        }
+        else
+        {
+            const auto entry = weapon->getEntry();
+            const auto pProto = sMySQLStore.getItemProperties(entry);
+            if (pProto != nullptr)
+            {
+                s = pProto->Delay / 1000.0f;
+            }
+        }
+
+        val = conv * dmg.full_damage + f * s / 2.0f;
+        val *= (1 + (static_cast<Player*>(this)->rageFromDamageDealt / 100.0f));
+        const auto ragerate = worldConfig.getFloatRate(RATE_POWER2);
+        val *= 10 * ragerate;
+
+        if (val > 0)
+        {
+            rageGenerated = static_cast<uint32_t>(std::ceil(val));
+            hit_status |= HITSTATUS_RAGE_GAIN;
+        }
+    }
+
+    // Calculate estimated overkill based on current health and current health events in health batch
+    const auto overKill = pVictim->calculateEstimatedOverKillForCombatLog(realdamage);
+    if (ability == nullptr)
+        sendAttackerStateUpdate(GetNewGUID(), pVictim->GetNewGUID(), HitStatus(hit_status), realdamage, overKill, dmg, abs, vstate, blocked_damage, rageGenerated);
+    else if (realdamage > 0)
+        pVictim->sendSpellNonMeleeDamageLog(this, pVictim, ability, realdamage, abs, dmg.resisted_damage, blocked_damage, overKill, false, hit_status & HITSTATUS_CRICTICAL);
+
     // invincible people don't take damage
     if (pVictim->bInvincible == false)
     {
         if (realdamage)
         {
-            DealDamage(pVictim, realdamage, 0, targetEvent, 0);
+            auto batch = new HealthBatchEvent;
+            batch->caster = this;
+            batch->damage = realdamage;
+            batch->absorbedDamageOrHeal = abs;
+            batch->spellInfo = ability;
+
+            pVictim->addHealthBatchEvent(batch);
             //pVictim->HandleProcDmgShield(PROC_ON_MELEE_ATTACK_VICTIM,this);
             // HandleProcDmgShield(PROC_ON_MELEE_ATTACK_VICTIM,pVictim);
 
@@ -8283,56 +8350,11 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* abi
     //rage processing
     //http://www.wowwiki.com/Formulas:Rage_generation
 
-    if (dmg.full_damage && isPlayer() && getPowerType() == POWER_TYPE_RAGE && !ability)
+    if (rageGenerated > 0)
     {
-        float val;
-        uint32 level = getLevel();
-        float conv;
-        if (level <= DBC_PLAYER_LEVEL_CAP)
-            conv = AttackToRageConversionTable[level];
-        else
-            conv = 3.75f / (0.0091107836f * level * level + 3.225598133f * level + 4.2652911f);
-
-        // Hit Factor
-        float f = (weapon_damage_type == OFFHAND) ? 1.75f : 3.5f;
-
-        if (hit_status & HITSTATUS_CRICTICAL)
-            f *= 2.0f;
-
-        float s = 1.0f;
-
-        // Weapon speed (normal)
-        Item* weapon = (static_cast<Player*>(this)->getItemInterface())->GetInventoryItem(INVENTORY_SLOT_NOT_SET, (weapon_damage_type == OFFHAND ? EQUIPMENT_SLOT_OFFHAND : EQUIPMENT_SLOT_MAINHAND));
-        if (weapon == nullptr)
-        {
-            if (weapon_damage_type == OFFHAND)
-                s = getBaseAttackTime(OFFHAND) / 1000.0f;
-            else
-                s = getBaseAttackTime(MELEE) / 1000.0f;
-        }
-        else
-        {
-            uint32 entry = weapon->getEntry();
-            ItemProperties const* pProto = sMySQLStore.getItemProperties(entry);
-            if (pProto != nullptr)
-            {
-                s = pProto->Delay / 1000.0f;
-            }
-        }
-
-        val = conv * dmg.full_damage + f * s / 2.0f;
-        val *= (1 + (static_cast<Player*>(this)->rageFromDamageDealt / 100.0f));
-        float ragerate = worldConfig.getFloatRate(RATE_POWER2);
-        val *= 10 * ragerate;
-
-        //float r = (7.5f * dmg.full_damage / c + f * s) / 2.0f;
-        //float p = (1 + (TO<Player*>(this)->rageFromDamageDealt / 100.0f));
-        //LOG_DEBUG("Rd(%i) d(%i) c(%f) f(%f) s(%f) p(%f) r(%f) rage = %f", realdamage, dmg.full_damage, c, f, s, p, r, val);
-
-        modPower(POWER_TYPE_RAGE, (int32)val);
+        modPower(POWER_TYPE_RAGE, static_cast<int32_t>(rageGenerated));
         if (getPower(POWER_TYPE_RAGE) > 1000)
             modPower(POWER_TYPE_RAGE, 1000 - getPower(POWER_TYPE_RAGE));
-
     }
 
     RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
@@ -8882,34 +8904,6 @@ uint32 Unit::ManaShieldAbsorb(uint32 dmg)
     if (!m_manashieldamt)
         RemoveAura(m_manaShieldId);
     return potential;
-}
-
-uint32 Unit::AbsorbDamage(uint32 School, uint32* dmg)
-{
-    if (dmg == NULL)
-        return 0;
-
-    if (School > 6)
-        return 0;
-
-    uint32 dmg_absorbed = 0;
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x] == NULL || !m_auras[x]->IsAbsorb())
-            continue;
-
-        AbsorbAura* aur = static_cast<AbsorbAura*>(m_auras[x]);
-
-        dmg_absorbed += aur->AbsorbDamage(School, dmg);
-    }
-
-    if (isPlayer() && static_cast<Player*>(this)->m_cheats.hasGodModeCheat)
-    {
-        dmg_absorbed += *dmg;
-        *dmg = 0;
-    }
-
-    return dmg_absorbed;
 }
 
 bool Unit::setDetectRangeMod(uint64 guid, int32 amount)
@@ -10373,27 +10367,6 @@ void Unit::UpdateVisibility()
     }
 }
 
-void Unit::EventHealthChangeSinceLastUpdate()
-{
-    int pct = getHealthPct();
-    if (pct < 35)
-        addAuraStateAndAuras(AURASTATE_FLAG_HEALTH35);
-    else
-        removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH35);
-
-    if (pct < 20)
-        addAuraStateAndAuras(AURASTATE_FLAG_HEALTH20);
-    else
-        removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH20);
-
-#if VERSION_STRING >= WotLK
-    if (pct > 75)
-        addAuraStateAndAuras(AURASTATE_FLAG_HEALTH75);
-    else
-        removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH75);
-#endif
-}
-
 int32 Unit::GetAP()
 {
     int32 baseap = getAttackPower() + getAttackPowerMods();
@@ -10871,35 +10844,6 @@ void CombatStatusHandler::OnRemoveFromWorld()
 {
     ClearAttackers();
     ClearHealers();
-}
-
-void Unit::Heal(Unit* target, uint32 SpellId, uint32 amount)
-{
-    if (!target || !SpellId || !amount)
-        return;
-
-    uint32 ch = target->getHealth();
-    uint32 mh = target->getMaxHealth();
-    if (mh != ch)
-    {
-        ch += amount;
-        uint32 overheal = 0;
-
-        if (ch > mh)
-        {
-            target->setHealth(mh);
-            overheal = amount - mh;
-            amount += (mh - ch);
-        }
-        else
-        {
-            target->setHealth(ch);
-        }
-
-        target->sendSpellHealLog(this, target, SpellId, amount, false, overheal, 0);
-
-        target->RemoveAurasByHeal();
-    }
 }
 
 void Unit::InheritSMMods(Unit* inherit_from)
@@ -11465,7 +11409,7 @@ uint32 Unit::DoDamageSplitTarget(uint32 res, uint32 school_type, bool melee_dmg)
 
         if (splitdamage)
         {
-            splittarget->DealDamage(splittarget, splitdamage, 0, 0, 0);
+            splittarget->dealDamage(splittarget, splitdamage, 0);
 
             // Send damage log
             if (melee_dmg)
@@ -11474,11 +11418,15 @@ uint32 Unit::DoDamageSplitTarget(uint32 res, uint32 school_type, bool melee_dmg)
                 sdmg.full_damage = splitdamage;
                 sdmg.resisted_damage = 0;
                 sdmg.school_type = school_type;
-                SendAttackerStateUpdate(this, splittarget, &sdmg, splitdamage, 0, 0, 0, ATTACK);
+                sendAttackerStateUpdate(GetNewGUID(), splittarget->GetNewGUID(), HITSTATUS_NORMALSWING, splitdamage, 0, sdmg, 0, VisualState::ATTACK, 0, 0);
             }
             else
             {
-                splittarget->sendSpellNonMeleeDamageLog(this, splittarget, sSpellMgr.getSpellInfo(ds->m_spellId), splitdamage, 0, 0, 0, false, false);
+                uint32_t overKill = 0;
+                if (splitdamage > splittarget->getHealth())
+                    overKill = splitdamage - splittarget->getHealth();
+
+                splittarget->sendSpellNonMeleeDamageLog(this, splittarget, sSpellMgr.getSpellInfo(ds->m_spellId), splitdamage, 0, 0, 0, overKill, false, false);
             }
         }
     }
@@ -11717,9 +11665,6 @@ void Unit::RemoveProcTriggerSpell(uint32 spellId, uint64 casterGuid, uint64 misc
         }
     }
 }
-
-void Unit::TakeDamage(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/, bool /*no_remove_auras*/)
-{}
 
 void Unit::Die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/)
 {}

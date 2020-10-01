@@ -75,6 +75,11 @@ enum RegenerationIntervals : uint16_t
     CREATURE_REGENERATION_INTERVAL_MANA_ENERGY  = 2000
 };
 
+enum HealthIntervals : uint16_t
+{
+    HEALTH_BATCH_INTERVAL                       = 400 // guessed
+};
+
 enum PowerFieldIndexes : uint8_t
 {
     POWER_FIELD_INDEX_1 = 1,
@@ -99,6 +104,61 @@ enum TotemSlots : uint8_t
     MAX_TOTEM_SLOT,
 
     TOTEM_SLOT_NONE     = 255 // custom value for invalid slot
+};
+
+enum class VisualState : uint8_t
+{
+    ATTACK              = 1,
+    DODGE,
+    PARRY,
+    INTERRUPT,
+    BLOCK,
+    EVADE,
+    IMMUNE,
+    DEFLECT
+};
+
+enum HitStatus : uint32_t
+{
+    HITSTATUS_NORMALSWING       = 0x00000000,
+    HITSTATUS_UNK_00            = 0x00000001,
+    HITSTATUS_HITANIMATION      = 0x00000002,
+    HITSTATUS_DUALWIELD         = 0x00000004,
+    HITSTATUS_UNK_01            = 0x00000008,
+    HITSTATUS_MISS              = 0x00000010,
+    HITSTATUS_ABSORB_FULL       = 0x00000020,
+    HITSTATUS_ABSORB_PARTIAL    = 0x00000040,
+    HITSTATUS_RESIST_FULL       = 0x00000080,
+    HITSTATUS_RESIST_PARTIAL    = 0x00000100,
+    HITSTATUS_CRICTICAL         = 0x00000200,
+    HITSTATUS_UNK_02            = 0x00000400,
+    HITSTATUS_UNK_03            = 0x00000800,
+    HITSTATUS_UNK_04            = 0x00001000,
+    HITSTATUS_BLOCK             = 0x00002000,
+    HITSTATUS_UNK_05            = 0x00004000,
+    HITSTATUS_CRUSHINGBLOW      = 0x00008000,
+    HITSTATUS_GLANCING          = 0x00010000,
+    HITSTATUS_Crushing          = 0x00020000,
+    HITSTATUS_NOACTION          = 0x00040000,
+    HITSTATUS_UNK_06            = 0x00080000,
+    HITSTATUS_UNK_07            = 0x00100000,
+    HITSTATUS_SWINGNOHITSOUND   = 0x00200000,
+    HITSTATUS_UNK_08            = 0x00400000,
+    HITSTATUS_RAGE_GAIN         = 0x00800000,
+    HITSTATUS_UNK_09            = 0x01000000,
+
+    HITSTATUS_ABSORBED          = HITSTATUS_ABSORB_FULL | HITSTATUS_ABSORB_PARTIAL,
+    HITSTATUS_RESIST            = HITSTATUS_RESIST_FULL | HITSTATUS_RESIST_PARTIAL
+};
+
+enum EnviromentalDamage : uint8_t
+{
+    DAMAGE_EXHAUSTED    = 0,
+    DAMAGE_DROWNING     = 1,
+    DAMAGE_FALL         = 2,
+    DAMAGE_LAVA         = 3,
+    DAMAGE_SLIME        = 4,
+    DAMAGE_FIRE         = 5
 };
 
 // MIT End
@@ -847,56 +907,6 @@ enum WeaponDamageType : uint8_t
     OFFHAND = 1,
     RANGED  = 2,
     TOTAL_WEAPON_DAMAGE_TYPES
-};
-
-enum VisualState
-{
-    ATTACK = 1,
-    DODGE,
-    PARRY,
-    INTERRUPT,
-    BLOCK,
-    EVADE,
-    IMMUNE,
-    DEFLECT
-};
-
-enum HitStatus
-{
-    HITSTATUS_NORMALSWING       = 0x00000000,
-    HITSTATUS_UNK_00            = 0x00000001,
-    HITSTATUS_HITANIMATION      = 0x00000002,
-    HITSTATUS_DUALWIELD         = 0x00000004,
-    HITSTATUS_UNK_01            = 0x00000008,
-    HITSTATUS_MISS              = 0x00000010,
-    HITSTATUS_ABSORB_FULL       = 0x00000020,
-    HITSTATUS_ABSORB_PARTIAL    = 0x00000040,
-    HITSTATUS_RESIST_FULL       = 0x00000080,
-    HITSTATUS_RESIST_PARTIAL    = 0x00000100,
-    HITSTATUS_CRICTICAL         = 0x00000200,
-    HITSTATUS_UNK_02            = 0x00000400,
-    HITSTATUS_UNK_03            = 0x00000800,
-    HITSTATUS_UNK_04            = 0x00001000,
-    HITSTATUS_BLOCK             = 0x00002000,
-    HITSTATUS_UNK_05            = 0x00004000,
-    HITSTATUS_CRUSHINGBLOW      = 0x00008000,
-    HITSTATUS_GLANCING          = 0x00010000,
-    HITSTATUS_Crushing          = 0x00020000,
-    HITSTATUS_NOACTION          = 0x00040000,
-    HITSTATUS_UNK_06            = 0x00080000,
-    HITSTATUS_UNK_07            = 0x00100000,
-    HITSTATUS_SWINGNOHITSOUND   = 0x00200000,
-    HITSTATUS_UNK_08            = 0x00400000,
-    HITSTATUS_RAGE_GAIN         = 0x00800000,
-    HITSTATUS_UNK_09            = 0x01000000,
-
-    HITSTATUS_ABSORBED          = HITSTATUS_ABSORB_FULL | HITSTATUS_ABSORB_PARTIAL,
-    HITSTATUS_RESIST            = HITSTATUS_RESIST_FULL | HITSTATUS_RESIST_PARTIAL
-};
-
-enum FIELD_PADDING//Since this field isn't used you can expand it for you needs
-{
-    PADDING_NONE
 };
 
 enum AURA_CHECK_RESULT

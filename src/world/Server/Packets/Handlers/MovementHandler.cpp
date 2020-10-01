@@ -381,7 +381,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
                 }
 #endif
                 mover->sendEnvironmentalDamageLogPacket(mover->getGuid(), DAMAGE_FALL, health_lost);
-                mover->DealDamage(mover, health_lost, 0, 0, 0);
+                mover->addSimpleEnvironmentalDamageBatchEvent(DAMAGE_FALL, health_lost);
             }
 
             mover->z_axisposition = 0.f;
@@ -868,7 +868,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 #endif
 
                 mover->sendEnvironmentalDamageLogPacket(mover->getGuid(), DAMAGE_FALL, health_loss);
-                mover->DealDamage(mover, health_loss, 0, 0, 0);
+                mover->addSimpleEnvironmentalDamageBatchEvent(DAMAGE_FALL, health_loss);
 
                 //_player->RemoveStealth(); // cebernic : why again? lost stealth by AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN already.
             }

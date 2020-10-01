@@ -706,7 +706,10 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
     //instant kill effects don't have a log
     //m_caster->SpellNonMeleeDamageLog(unitTarget, GetProto()->getId(), unitTarget->getHealth(), true);
     // cebernic: the value of instant kill must be higher than normal health,cuz anti health regenerated.
-    m_caster->DealDamage(unitTarget, unitTarget->getHealth() << 1, 0, 0, 0);
+    if (u_caster != nullptr)
+        u_caster->dealDamage(unitTarget, unitTarget->getHealth() << 1, 0);
+    else
+        unitTarget->dealDamage(unitTarget, unitTarget->getHealth() << 1, 0);
 }
 
 void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
@@ -1953,10 +1956,12 @@ void Spell::SpellEffectHealthLeech(uint8_t /*effectIndex*/) // Health Leech
     {
         amt = curHealth;
     }
-    m_caster->DealDamage(unitTarget, damage, 0, 0, getSpellInfo()->getId());
 
     if (!u_caster)
         return;
+
+    u_caster->dealDamage(unitTarget, damage, getSpellInfo()->getId());
+
     uint32 playerCurHealth = u_caster->getHealth();
     uint32 playerMaxHealth = u_caster->getMaxHealth();
 
@@ -2134,7 +2139,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                 uint32 max = mPlayer->getMaxHealth();
                 uint32 val = float2int32(((mPlayer->getAuraWithId(34300)) ? 0.04f : 0.02f) * max);
                 if (val)
-                    mPlayer->Heal(mPlayer, 34299, (uint32)(val));
+                    mPlayer->addSimpleHealingBatchEvent(val, mPlayer, sSpellMgr.getSpellInfo(34299));
             }
             break;
             case 22845: // Druid: Frenzied Regeneration
@@ -2155,7 +2160,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                 mPlayer->modPower(POWER_TYPE_RAGE, -1 * val);
 
                 if (val)
-                    mPlayer->Heal(mPlayer, 22845, heal);
+                    mPlayer->addSimpleHealingBatchEvent(heal, mPlayer, sSpellMgr.getSpellInfo(22845));
             }
             break;
             case 18562: //druid - swiftmend
@@ -4664,9 +4669,7 @@ void Spell::SpellEffectHealMaxHealth(uint8_t /*effectIndex*/)   // Heal Max Heal
         return;
     }
 
-    unitTarget->sendSpellHealLog(m_caster, unitTarget, pSpellId ? pSpellId : getSpellInfo()->getId(), dif, false, 0, 0);
-
-    unitTarget->modHealth(dif);
+    unitTarget->addSimpleHealingBatchEvent(dif, u_caster, pSpellId != 0 ? sSpellMgr.getSpellInfo(pSpellId) : getSpellInfo());
 
     if (u_caster != nullptr)
     {
@@ -6358,21 +6361,7 @@ void Spell::SpellEffectRestoreHealthPct(uint8_t /*effectIndex*/)
     if (unitTarget == nullptr || !unitTarget->isAlive())
         return;
 
-    uint32 currentHealth = unitTarget->getHealth();
-    uint32 maxHealth = unitTarget->getMaxHealth();
-    uint32 modHealth = damage * maxHealth / 100;
-    uint32 newHealth = modHealth + currentHealth;
-
-    uint32 overheal = 0;
-    if (newHealth >= maxHealth)
-    {
-        unitTarget->setHealth(maxHealth);
-        overheal = newHealth - maxHealth;
-    }
-    else
-        unitTarget->modHealth(modHealth);
-
-    unitTarget->sendSpellHealLog(m_caster, unitTarget, pSpellId ? pSpellId : getSpellInfo()->getId(), modHealth, false, 0, 0);
+    unitTarget->addSimpleHealingBatchEvent(float2int32(damage * unitTarget->getMaxHealth() / 100.0f), u_caster, pSpellId != 0 ? sSpellMgr.getSpellInfo(pSpellId) : getSpellInfo());
 }
 
 void Spell::SpellEffectLearnSpec(uint8_t /*effectIndex*/)

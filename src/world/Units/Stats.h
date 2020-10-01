@@ -36,6 +36,14 @@ enum Stats
     STAT_COUNT
 };
 
+// APGL End
+// MIT Start
+
+SERVER_DECL bool isGrayLevel(uint32_t attackerLevel, uint32_t victimLevel);
+
+// MIT End
+// APGL Start
+
 SERVER_DECL uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl);
 SERVER_DECL uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker);
 SERVER_DECL uint32 CalculateStat(uint16 level, double a3, double a2, double a1, double a0);

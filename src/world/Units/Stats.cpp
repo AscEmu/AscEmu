@@ -30,6 +30,40 @@
 #include "WorldConf.h"
 #include "Spell/Definitions/SpellEffects.h"
 
+// APGL End
+// MIT Start
+
+bool isGrayLevel(uint32_t attackerLevel, uint32_t victimLevel)
+{
+    if (victimLevel >= attackerLevel)
+        return false;
+
+    // https://wow.gamepedia.com/Experience_point#Mob_gray_level
+    const uint8_t grayLevelForLevel[59] =
+    {
+        0, 0, 0, 0, 0, 1, 2, 3, 4, 4,               // 1-10
+        5, 6, 7, 8, 9, 10, 11, 12, 13, 13,          // 11-20
+        14, 15, 16, 17, 18, 19, 20, 21, 22, 22,     // 21-30
+        23, 24, 25, 26, 27, 28, 29, 30, 31, 31,     // 31-40
+        32, 33, 34, 35, 35, 36, 37, 38, 39, 39,     // 41-50
+        40, 41, 42, 43, 43, 44, 45, 46, 47          // 51-59
+    };
+
+    if (attackerLevel <= 59)
+    {
+        const auto grayLevel = grayLevelForLevel[attackerLevel - 1];
+        return victimLevel <= grayLevel;
+    }
+    else
+    {
+        // At level 60 and higher the gray level is simply 9 levels below
+        return (attackerLevel - victimLevel) >= 9;
+    }
+}
+
+// MIT End
+// APGL Start
+
 uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
 {
 #if VERSION_STRING == Classic

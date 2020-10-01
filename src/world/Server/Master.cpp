@@ -127,17 +127,36 @@ void createExtendedLogDir()
         fs::create_directories(logDir);
 }
 
-bool checkRequiredDirs()
+void checkRequiredDirs()
 {
     std::vector<std::string> requiredDirs;
     requiredDirs.emplace_back(CONFDIR);
     requiredDirs.emplace_back("dbc");
     requiredDirs.emplace_back("maps");
 
+    if (worldConfig.terrainCollision.isCollisionEnabled)
+        requiredDirs.emplace_back("vmaps");
+
+    if (worldConfig.terrainCollision.isPathfindingEnabled)
+    {
+        // Check that vertical maps are also enabled
+        if (!worldConfig.terrainCollision.isCollisionEnabled)
+        {
+            LogError("Pathfinding is enabled but collision is disabled. Disabling pathfinding.");
+            worldConfig.terrainCollision.isPathfindingEnabled = false;
+
+            // Give user a chance to read the error message
+            Arcemu::Sleep(2000);
+        }
+        else
+        {
+            requiredDirs.emplace_back("mmaps");
+        }
+    }
+
     std::string dataDir = worldConfig.server.dataDir;
     dataDir.erase(0, 2); //remove ./ from string
 
-    bool requiredDirsExist = true;
     for (const auto& dir : requiredDirs)
     {
         fs::path requiredPath = fs::current_path();
@@ -154,16 +173,40 @@ bool checkRequiredDirs()
 
         if (fs::exists(requiredPath))
         {
-            std::cout << "Required dir " << requiredPath << " found!" << std::endl;
+            LogDefault("Required dir %s found!", requiredPath.u8string().c_str());
         }
         else
         {
-            std::cout << "Required dir " << requiredPath << " not found!" << std::endl;
-            requiredDirsExist = false;
+            if (dir == "mmaps")
+            {
+                LogError("Movement maps in %s not found. Disabling pathfinding.", requiredPath.u8string().c_str());
+                worldConfig.terrainCollision.isPathfindingEnabled = false;
+            }
+            else if (dir == "vmaps")
+            {
+                LogError("Vertical maps in %s not found. Disabling collision.", requiredPath.u8string().c_str());
+                worldConfig.terrainCollision.isCollisionEnabled = false;
+            }
+            else
+            {
+                LogError("Required dir %s not found!", requiredPath.u8string().c_str());
+            }
+
+            // Give user a chance to read the error message
+            Arcemu::Sleep(2000);
         }
     }
 
-    return requiredDirsExist;
+    // Check again that collision is also enabled if pathfinding is enabled
+    // could happen if mmaps directory was found but vmaps directory wasn't found
+    if (worldConfig.terrainCollision.isPathfindingEnabled && !worldConfig.terrainCollision.isCollisionEnabled)
+    {
+        LogError("Movement maps were found but collision was disabled. Disabling pathfinding.");
+        worldConfig.terrainCollision.isPathfindingEnabled = false;
+
+        // Give user a chance to read the error message
+        Arcemu::Sleep(2000);
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////

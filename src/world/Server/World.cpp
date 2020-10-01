@@ -738,9 +738,12 @@ bool World::setInitialWorldSettings()
     LogNotice("World : Loading SpellInfo data...");
     sSpellMgr.startSpellMgr();
 
-    LogNotice("GameObjectModel : Loading GameObject models...");
-    std::string vmapPath = worldConfig.server.dataDir + "vmaps";
-    LoadGameObjectModelList(vmapPath);
+    if (worldConfig.terrainCollision.isCollisionEnabled)
+    {
+        LogNotice("GameObjectModel : Loading GameObject models...");
+        std::string vmapPath = worldConfig.server.dataDir + "vmaps";
+        LoadGameObjectModelList(vmapPath);
+    }
 
     loadMySQLStores();
     loadMySQLTablesByTask();
