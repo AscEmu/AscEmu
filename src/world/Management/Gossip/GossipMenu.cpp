@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "GossipMenu.h"
+#include "Management/QuestDefines.hpp"
 #include "Server/Packets/SmsgGossipMessage.h"
 #include "Server/Packets/SmsgGossipComplete.h"
 
@@ -28,7 +29,8 @@ void GossipMenu::removeItem(uint32_t id)
 
 void GossipMenu::addQuest(QuestProperties const* questProperties, uint8_t icon)
 {
-    const GossipQuestItem questItem(icon, questProperties->min_level, questProperties->quest_flags);
+    const auto isRepeatable = questProperties->is_repeatable > 0 && !questProperties->HasFlag(QUEST_FLAGS_DAILY) && !questProperties->HasFlag(QUEST_FLAGS_WEEKLY);
+    const GossipQuestItem questItem(icon, questProperties->questlevel, questProperties->quest_flags, isRepeatable);
     this->_gossipQuestMap.insert(std::make_pair(questProperties->id, questItem));
 }
 

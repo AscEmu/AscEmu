@@ -23,6 +23,7 @@
 #include "Management/Item.h"
 #include "QuestLogEntry.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/QuestDefines.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
@@ -80,9 +81,6 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
             return QuestStatus::NotAvailable;
     }
 
-    if (plr->getLevel() < qst->min_level && !skiplevelcheck)
-        return QuestStatus::AvailableButLevelTooLow;
-
     if (qst->required_class)
         if (!(qst->required_class & plr->getClassMask()))
             return QuestStatus::NotAvailable;
@@ -137,6 +135,10 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
             return QuestStatus::NotAvailable;
         }
     }
+
+    // Check level requirement last so gray question mark isn't sent for quests which player isn't even eligible for
+    if (plr->getLevel() < qst->min_level && !skiplevelcheck)
+        return QuestStatus::AvailableButLevelTooLow;
 
     // check quest level
     if (static_cast<int32>(plr->getLevel()) >= (qst->questlevel + 5) && (status != QuestStatus::Repeatable))
@@ -1023,7 +1025,13 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
     data->Initialize(SMSG_QUESTGIVER_QUEST_LIST);
 
     *data << qst_giver->getGuid();
-    *data << plr->GetSession()->LocalizedWorldSrv(70); // "How can I help you?"; // Hello line
+
+    // Do not send hello line for gameobjects
+    //\ todo: some gameobjects may have gossip line, I'm not 100% sure, but majority definitely shouldn't have one -Appled
+    if (qst_giver->isGameObject())
+        *data << std::string("");
+    else
+        *data << plr->GetSession()->LocalizedWorldSrv(70); // "How can I help you?"; // Hello line
     *data << uint32(1); // Emote Delay
     *data << uint32(1); // Emote
 
@@ -1076,26 +1084,28 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
                 /**data << sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
                 *data << uint32(0);*/
 
+                const auto questProp = (*it)->qst;
                 switch (status)
                 {
                     case QuestStatus::NotFinished:
-                        *data << uint32(4);
-                        break;
-
                     case QuestStatus::Finished:
-                        *data << uint32(4);
+                        *data << uint32_t(4);
                         break;
-
-                    case QuestStatus::AvailableChat:
-                        *data << uint32(QuestStatus::Available);
-                        break;
-
                     default:
-                        *data << status;
+                        if (questProp->HasFlag(QUEST_FLAGS_AUTOCOMPLETE) && (questProp->HasFlag(QUEST_FLAGS_DAILY) || questProp->HasFlag(QUEST_FLAGS_WEEKLY)))
+                            *data << uint32_t(0);
+                        else if (questProp->HasFlag(QUEST_FLAGS_AUTOCOMPLETE))
+                            *data << uint32_t(4);
+                        else
+                            *data << uint32_t(2);
+                        break;
                 }
                 *data << int32((*it)->qst->questlevel);
+#if VERSION_STRING >= WotLK
                 *data << uint32((*it)->qst->quest_flags);
-                *data << uint8(0);   // According to MANGOS: "changes icon: blue question or yellow exclamation"
+                const auto isRepeatable = questProp->is_repeatable > 0 && !questProp->HasFlag(QUEST_FLAGS_DAILY) && !questProp->HasFlag(QUEST_FLAGS_WEEKLY);
+                *data << uint8(isRepeatable);   // According to MANGOS: "changes icon: blue question or yellow exclamation"
+#endif
 
                 if (lq != nullptr)
                 {
@@ -2846,32 +2856,23 @@ void QuestMgr::FillQuestMenu(Creature* giver, Player* plr, GossipMenu & menu)
             status = sQuestMgr.CalcQuestStatus(giver, plr, *itr);
             if (status >= QuestStatus::AvailableChat)
             {
+                const auto questProp = (*itr)->qst;
                 switch (status)
                 {
                     case QuestStatus::NotFinished:
-#if VERSION_STRING < WotLK
-                        icon = QuestStatus::RepeatableFinished;
-#else
-                        icon = QuestStatus::RepeatableLowLevel;
-#endif
-                        break;
-
                     case QuestStatus::Finished:
-#if VERSION_STRING < WotLK
-                        icon = QuestStatus::RepeatableFinished;
-#else
-                        icon = QuestStatus::RepeatableLowLevel;
-#endif
+                        icon = 4;
                         break;
-
-                    case QuestStatus::AvailableChat:
-                        icon = QuestStatus::Available;
-                        break;
-
                     default:
-                        icon = (uint8)status;
+                        if (questProp->HasFlag(QUEST_FLAGS_AUTOCOMPLETE) && (questProp->HasFlag(QUEST_FLAGS_DAILY) || questProp->HasFlag(QUEST_FLAGS_WEEKLY)))
+                            icon = 0;
+                        else if (questProp->HasFlag(QUEST_FLAGS_AUTOCOMPLETE))
+                            icon = 4;
+                        else
+                            icon = 2;
                         break;
                 }
+
                 menu.addQuest((*itr)->qst, icon);
             }
         }

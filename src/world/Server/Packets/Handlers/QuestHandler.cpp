@@ -40,19 +40,18 @@ WorldPacket* WorldSession::buildQuestQueryResponse(QuestProperties const* qst)
 
 #if VERSION_STRING > TBC
     *data << int32_t(qst->questlevel);                                // Quest level
-    *data << uint32_t(qst->min_level);                                // Quest required level
 #endif
 
     *data << uint32_t(qst->min_level);                                // Quest required level
 
 
     if (qst->quest_sort > 0)
-        *data << int32_t(-(int32_t)qst->quest_sort);                    // Negative if pointing to a sort.
+        *data << int32_t(-(int32_t)qst->quest_sort);                  // Negative if pointing to a sort.
     else
         *data << uint32_t(qst->zone_id);                              // Positive if pointing to a zone.
 
     *data << uint32_t(qst->type);                                     // Info ID / Type
-    *data << qst->suggestedplayers;                                 // suggested players
+    *data << qst->suggestedplayers;                                   // suggested players
 
     *data << uint32_t(qst->required_rep_faction);                     // Faction ID
     *data << uint32_t(qst->required_rep_value);                       // Faction Amount
@@ -71,10 +70,10 @@ WorldPacket* WorldSession::buildQuestQueryResponse(QuestProperties const* qst)
     *data << uint32_t(qst->effect_on_player);                         // Spell casted on player upon completion
 
     *data << uint32_t(qst->bonushonor);                               // 2.3.0 - bonus honor
-    *data << float(0);                                              // 3.3.0 - some multiplier for honor
+    *data << float(0);                                                // 3.3.0 - some multiplier for honor
     *data << uint32_t(qst->srcitem);                                  // Item given at the start of a quest (srcitem)
     *data << uint32_t(qst->quest_flags);                              // Quest Flags
-    *data << qst->rewardtitleid;                                    // 2.4.0 unk
+    *data << qst->rewardtitleid;                                      // 2.4.0 unk
     *data << uint32_t(0);                                             // playerkillcount
     *data << qst->rewardtalents;
     *data << uint32_t(0);                                             // 3.3.0 Unknown
@@ -90,7 +89,7 @@ WorldPacket* WorldSession::buildQuestQueryResponse(QuestProperties const* qst)
 
     *data << uint32_t(qst->srcitem);                                  // Item given at the start of a quest (srcitem)
     *data << uint32_t(qst->quest_flags);                              // Quest Flags
-    *data << qst->rewardtitleid;                                    // 2.4.0 unk
+    *data << qst->rewardtitleid;                                      // 2.4.0 unk
 #endif
 
     // (loop 4 times)
@@ -758,7 +757,6 @@ void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
         else
             return;
 
-        bValid = false;
         if (quest_giver->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
@@ -769,6 +767,7 @@ void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, _player, qst, static_cast<uint8_t>(go_quest_giver->GetQuestRelation(qst->id)), false);
+            bValid = true;
         }
     }
 

@@ -67,23 +67,9 @@ namespace AscEmu::Packets
             packet << uint32_t(gossipQuestList.size());
             for (const auto& questListItem : gossipQuestList)
             {
-                packet << questListItem.first << uint32_t(questListItem.second.icon);
-#if VERSION_STRING < WotLK
-                switch (questListItem.second.icon)
-                {
-                    case QuestStatus::NotFinished:
-                    case QuestStatus::AvailableChat:
-                        packet << uint32_t(0);
-                        break;
-                    case QuestStatus::Finished:
-                        packet << uint32_t(1);
-                        break;
-                    default:
-                        packet << uint32_t(0);
-                        break;
-                }
-#else
-                packet << questListItem.second.level << questListItem.second.flags << uint8_t(0);
+                packet << questListItem.first << uint32_t(questListItem.second.icon) << questListItem.second.level;
+#if VERSION_STRING >= WotLK
+                packet << questListItem.second.flags << questListItem.second.repeatable;
 #endif
                 packet << sMySQLStore.getLocaleGossipTitleOrElse(questListItem.first, locale);
             }
