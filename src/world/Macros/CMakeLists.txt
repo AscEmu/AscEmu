@@ -12,7 +12,6 @@ set(SRC_MACROS_FILES
    ${PATH_PREFIX}/PetMacros.hpp
    ${PATH_PREFIX}/PlayerMacros.hpp
    ${PATH_PREFIX}/ScriptMacros.hpp
-   ${PATH_PREFIX}/SummonMacros.hpp
    ${PATH_PREFIX}/LootMacros.hpp
    ${PATH_PREFIX}/MapsMacros.hpp
    ${PATH_PREFIX}/UnitMacros.hpp

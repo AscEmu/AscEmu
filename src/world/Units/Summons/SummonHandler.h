@@ -10,8 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <vector>
 #include <set>
 
-#define SUMMON_SLOTS 6
-
 class Unit;
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -130,6 +128,6 @@ public:
     void RemoveSanctuaryFlags();
 
 private:
-    std::array<Unit* , SUMMON_SLOTS> summonslots;
+    std::array<Unit* , UNIT_SUMMON_SLOTS> summonslots;
     std::set<Unit*> guardians;
 };
