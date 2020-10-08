@@ -20,6 +20,7 @@
 
 #include "StdAfx.h"
 #include "Units/Unit.h"
+#include "Units/Summons/Summon.h"
 #include "Storage/DBC/DBCStores.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Server/EventableObject.h"
@@ -351,6 +352,117 @@ void Object::updateObject()
     }
 }
 
+uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+{
+    if (target == nullptr)
+        return 0;
+
+    uint8_t updateType = UPDATETYPE_CREATE_OBJECT;
+#if VERSION_STRING >= WotLK
+    uint16_t updateFlags = m_updateFlag;
+#else
+    uint8_t updateFlags = static_cast<uint8_t>(m_updateFlag);
+#endif
+
+    if (target == this)
+        updateFlags |= UPDATEFLAG_SELF;
+
+    switch (m_objectTypeId)
+    {
+        case TYPEID_PLAYER:
+        case TYPEID_DYNAMICOBJECT:
+        case TYPEID_CORPSE:
+        {
+            updateType = UPDATETYPE_CREATE_OBJECT2;
+        } break;
+        case TYPEID_UNIT:
+        {
+            ///\ todo: vehicles?
+            if (isPet())
+            {
+                updateType = UPDATETYPE_CREATE_OBJECT2;
+            }
+            else if (isSummon())
+            {
+                // Only player summons
+                const auto summoner = GetMapMgrPlayer(static_cast<Summon*>(this)->getSummonedByGuid());
+                if (summoner != nullptr)
+                    updateType = UPDATETYPE_CREATE_OBJECT2;
+            }
+        } break;
+        case TYPEID_GAMEOBJECT:
+        {
+            // Only player gameobjects
+            if (static_cast<GameObject*>(this)->getPlayerOwner() != nullptr)
+                updateType = UPDATETYPE_CREATE_OBJECT2;
+        } break;
+        default:
+            break;
+    }
+
+    if (!(updateFlags & UPDATEFLAG_LIVING))
+    {
+        if (obj_movement_info.transport_guid != 0)
+            updateFlags |= UPDATEFLAG_HAS_POSITION;
+    }
+
+    if (updateFlags & UPDATEFLAG_HAS_POSITION)
+    {
+        if (isGameObject())
+        {
+            switch (static_cast<GameObject*>(this)->getGoType())
+            {
+                case GAMEOBJECT_TYPE_TRAP:
+                case GAMEOBJECT_TYPE_DUEL_ARBITER:
+                case GAMEOBJECT_TYPE_FLAGSTAND:
+                case GAMEOBJECT_TYPE_FLAGDROP:
+                    updateType = UPDATETYPE_CREATE_OBJECT2;
+                    break;
+                case GAMEOBJECT_TYPE_TRANSPORT:
+                    updateFlags |= UPDATEFLAG_TRANSPORT;
+                    break;
+                default:
+                    // Set update type for other gameobjects only if it's created by a player
+                    if (static_cast<GameObject*>(this)->getPlayerOwner() != nullptr)
+                        updateType = UPDATETYPE_CREATE_OBJECT2;
+                    break;
+            }
+        }
+    }
+
+#ifdef FT_VEHICLES
+    if (isVehicle())
+        updateFlags |= UPDATEFLAG_VEHICLE;
+#endif
+
+    if (isCreatureOrPlayer())
+    {
+        if (static_cast<Unit*>(this)->getTargetGuid() != 0)
+            updateFlags |= UPDATEFLAG_HAS_TARGET;
+    }
+
+    // we shouldn't be here, under any circumstances, unless we have a wowguid..
+    ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
+
+    // build our actual update
+    *data << uint8_t(updateType);
+    *data << m_wowGuid;
+    *data << uint8_t(m_objectTypeId);
+
+    buildMovementUpdate(data, updateFlags, target);
+
+    // we have dirty data, or are creating for ourself.
+    UpdateMask updateMask;
+    updateMask.SetCount(m_valuesCount);
+    _SetCreateBits(&updateMask, target);
+
+    // this will cache automatically if needed
+    buildValuesUpdate(data, &updateMask, target);
+
+    // Update count
+    return 1;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Object Type Id
 uint8_t Object::getObjectTypeId() const { return m_objectTypeId; }
@@ -522,9 +634,9 @@ void Object::interruptSpellWithSpellType(CurrentSpellType spellType)
             if (isPlayer() && IsInWorld())
             {
                 // Send server-side cancel message
-                auto spellId = curSpell->getSpellInfo()->getId();
-                //\Note: seems to be wrong format for this opcode - guess guid is required!
-                //static_cast<Player*>(this)->OutPacket(SMSG_CANCEL_AUTO_REPEAT, 4, &spellId);
+                WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
+                data << GetNewGUID();
+                SendMessageToSet(&data, false);
             }
         }
 
@@ -677,7 +789,7 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
         if (isPeriodic)
         {
             if (aur != nullptr && aurEff != nullptr)
-                damage += static_cast<float_t>(plr->IncreaseDamageByType[type] / (aur->getMaxDuration() / aurEff->mAmplitude));
+                damage += static_cast<float_t>(plr->IncreaseDamageByType[type] / aur->getPeriodicTickCountForEffect(aurEff->effIndex));
         }
         else
         {
@@ -734,7 +846,7 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
     if (isPeriodic)
     {
         if (aur != nullptr && aurEff != nullptr)
-            damage += static_cast<float_t>(victim->DamageTakenMod[school] / (aur->getMaxDuration() / aurEff->mAmplitude));
+            damage += static_cast<float_t>(victim->DamageTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->effIndex));
     }
     else
     {
@@ -779,7 +891,7 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
     }
 
     // Check for absorb effects
-    auto absorbedDamage = victim->AbsorbDamage(school, &damage_int);
+    auto absorbedDamage = victim->absorbDamage(SchoolMask(spellInfo->getSchoolMask()), &damage_int);
     const auto manaShieldAbsorb = victim->ManaShieldAbsorb(damage_int);
 
     if (manaShieldAbsorb > 0)
@@ -855,38 +967,40 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
     if (victim->m_damageSplitTarget != nullptr)
         damage_int = victim->DoDamageSplitTarget(damage_int, school, false);
 
-    // Save victim's health before damage is dealt
-    const auto healthBefore = victim->getHealth();
+    // Get estimated overkill amount
+    const auto overKill = victim->calculateEstimatedOverKillForCombatLog(damage_int);
 
-    // Send packet and deal damage to victim
+    // Send packet
     if (isPeriodic && aurEff != nullptr && isCreatureOrPlayer())
     {
-        const auto overKill = damage_int > healthBefore ? damage_int - healthBefore : 0;
         const auto wasPacketSent = victim->sendPeriodicAuraLog(GetNewGUID(), victim->GetNewGUID(), spellInfo, damage_int, overKill, absorbedDamage, dmginfo.resisted_damage, aurEff->mAuraEffect, isCritical);
 
         // In case periodic log couldn't be sent, send normal spell log
         // Required for leech and mana burn auras
         if (!wasPacketSent)
-            victim->sendSpellNonMeleeDamageLog(this, victim, spellInfo, damage_int, absorbedDamage, dmginfo.resisted_damage, 0, true, isCritical);
+            victim->sendSpellNonMeleeDamageLog(this, victim, spellInfo, damage_int, absorbedDamage, dmginfo.resisted_damage, 0, overKill, true, isCritical);
     }
     else
     {
-        victim->sendSpellNonMeleeDamageLog(this, victim, spellInfo, damage_int, absorbedDamage, dmginfo.resisted_damage, 0, false, isCritical);
+        victim->sendSpellNonMeleeDamageLog(this, victim, spellInfo, damage_int, absorbedDamage, dmginfo.resisted_damage, 0, overKill, false, isCritical);
     }
 
-    // Create heal effect for leech effects
-    // Must be done before damage is dealt to victim
-    if (isCreatureOrPlayer() && isLeech && this != victim)
+    // Create damaging health batch event
+    auto healthBatch = new HealthBatchEvent;
+    healthBatch->caster = dynamic_cast<Unit*>(this); // can be nullptr
+    healthBatch->damage = damage_int;
+    healthBatch->absorbedDamageOrHeal = absorbedDamage;
+    healthBatch->isPeriodic = isPeriodic;
+    healthBatch->spellInfo = spellInfo;
+
+    if (isLeech)
     {
-        // Leech damage can be more than victim's health but the heal should not exceed victim's remaining health
-        auto healAmount = std::min(damage_int, healthBefore);
-
         const uint8_t index = aur != nullptr && aurEff->mAuraEffect != SPELL_AURA_NONE ? aurEff->effIndex : effIndex;
-        healAmount = static_cast<uint32_t>(healAmount * spellInfo->getEffectMultipleValue(index));
-        doSpellHealing(static_cast<Unit*>(this), spellId, healAmount, true, true, true, true, false, aur, aurEff);
+        healthBatch->isLeech = true;
+        healthBatch->leechMultipleValue = spellInfo->getEffectMultipleValue(index);
     }
 
-    DealDamage(victim, damage_int, 2, 0, spellId);
+    victim->addHealthBatchEvent(healthBatch);
 
     // Handle procs
     if (isCreatureOrPlayer())
@@ -902,7 +1016,7 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
         static_cast<Player*>(this)->m_casted_amount[school] = damage_int;
 
     // Cause push back to victim's spell casting if damage was not fully absorbed
-    if (!(dmginfo.full_damage == 0 && absorbedDamage > 0))
+    if (!(dmginfo.full_damage == 0 && absorbedDamage > 0) && !isPeriodic)
     {
         if (victim->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && victim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
             victim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->AddTime(school);
@@ -940,9 +1054,7 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
             if (spellId == 32379 || spellId == 32996 || spellId == 48157 || spellId == 48158)
             {
                 auto backfireAmount = damage_int + absorbedDamage;
-                const auto absorbed = static_cast<Unit*>(this)->AbsorbDamage(school, &backfireAmount);
-                DealDamage(static_cast<Unit*>(this), backfireAmount, 2, 0, spellId);
-                static_cast<Unit*>(this)->sendSpellNonMeleeDamageLog(this, this, spellInfo, backfireAmount, absorbed, 0, 0, false, false);
+                static_cast<Unit*>(this)->addSimpleDamageBatchEvent(backfireAmount, static_cast<Unit*>(this), spellInfo);
             }
         }
     }
@@ -1165,8 +1277,8 @@ void Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool al
     heal += static_cast<float_t>(heal * victim->HealTakenPctMod[school]);
     if (isPeriodic)
     {
-        if (aur != nullptr && aurEff != nullptr && aurEff->mAmplitude != 0)
-            heal += static_cast<float_t>(victim->HealTakenMod[school] / (aur->getMaxDuration() / aurEff->mAmplitude));
+        if (aur != nullptr && aurEff != nullptr)
+            heal += static_cast<float_t>(victim->HealTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->effIndex));
     }
     else
     {
@@ -1199,23 +1311,13 @@ void Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool al
         heal_int = static_cast<uint32_t>(std::round(heal));
     }
 
-    uint32_t overHeal = 0;
-    const auto curHealth = victim->getHealth();
-    const auto maxHealth = victim->getMaxHealth();
-
-    if ((curHealth + heal_int) >= maxHealth)
-    {
-        victim->setHealth(maxHealth);
-        overHeal = curHealth + heal_int - maxHealth;
-    }
-    else
-    {
-        victim->modHealth(heal_int);
-    }
-
     ///\ todo: implement (aura effect 301)
     const uint32_t absorbedHeal = 0;
 
+    // Calculate estimated overheal amount
+    const auto overHeal = victim->calculateEstimatedOverHealForCombatLog(heal_int);
+
+    // Send packet
     if (isPeriodic && aurEff != nullptr && isCreatureOrPlayer())
     {
         const auto wasPacketSent = victim->sendPeriodicAuraLog(GetNewGUID(), victim->GetNewGUID(), spellInfo, heal_int, overHeal, absorbedHeal, 0, aurEff->mAuraEffect, isCritical);
@@ -1229,6 +1331,16 @@ void Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool al
     {
         victim->sendSpellHealLog(this, victim, spellId, heal_int, isCritical, overHeal, absorbedHeal);
     }
+
+    // Create healing health batch
+    auto healthBatch = new HealthBatchEvent;
+    healthBatch->caster = dynamic_cast<Unit*>(this); // can be nullptr
+    healthBatch->damage = heal_int;
+    healthBatch->isPeriodic = isPeriodic;
+    healthBatch->isHeal = true;
+    healthBatch->spellInfo = spellInfo;
+
+    victim->addHealthBatchEvent(healthBatch);
 
     // Handle procs
     if (isCreatureOrPlayer())
@@ -1244,65 +1356,11 @@ void Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool al
     {
         const auto plr = static_cast<Player*>(this);
 
-        // Check for pvp flag (healing a flagged target will flag caster)
-        if (victim->isPlayer() && plr != victim)
-        {
-            const auto playerTarget = static_cast<Player*>(victim);
-            if (playerTarget->isPvpFlagSet())
-            {
-                if (!plr->isPvpFlagSet())
-                    plr->PvPToggle();
-                else
-                    plr->setPvpFlag();
-            }
-        }
-
-        // Update battleground score
-        plr->m_bgScore.HealingDone += heal_int;
-        if (plr->m_bg != nullptr)
-            plr->m_bg->UpdatePvPData();
-
         plr->last_heal_spell = spellInfo;
         plr->m_casted_amount[school] = heal_int;
     }
 
     victim->RemoveAurasByHeal();
-
-    // Add threat
-    if (isCreatureOrPlayer())
-    {
-        const auto casterUnit = static_cast<Unit*>(this);
-        std::vector<Unit*> target_threat;
-        int count = 0;
-        for (const auto& itr : casterUnit->getInRangeObjectsSet())
-        {
-            if (!itr || !itr->isCreature())
-                continue;
-
-            auto tmp_creature = static_cast<Creature*>(itr);
-
-            if (!tmp_creature->CombatStatus.IsInCombat() || (tmp_creature->GetAIInterface()->getThreatByPtr(casterUnit) == 0 && tmp_creature->GetAIInterface()->getThreatByPtr(victim) == 0))
-                continue;
-
-            if (!(casterUnit->GetPhase() & itr->GetPhase()))     //Can't see, can't be a threat
-                continue;
-
-            target_threat.push_back(tmp_creature);
-            count++;
-        }
-        if (count == 0)
-            return;
-
-        auto heal_threat = heal_int / count;
-
-        for (const auto& itr : target_threat)
-        {
-            itr->GetAIInterface()->HealReaction(casterUnit, victim, spellInfo, heal_threat);
-        }
-
-        if (victim->IsInWorld() && casterUnit->IsInWorld())
-            casterUnit->CombatStatus.WeHealed(victim);
-    }
 }
 
 void Object::_UpdateSpells(uint32_t time)
@@ -1607,192 +1665,6 @@ void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
     m_spawnLocation.ChangeCoords({ x, y, z, ang });
     m_lastMapUpdatePosition.ChangeCoords({ x, y, z, ang });
 }
-
-#if VERSION_STRING <= TBC
-uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
-{
-    if (!target)
-        return 0;
-
-    uint8_t flags = 0, update_type = UPDATETYPE_CREATE_OBJECT;
-    if (m_objectTypeId == TYPEID_CORPSE)
-        if (static_cast<Corpse*>(this)->getDisplayId() == 0)
-            return 0;
-
-    switch (m_objectTypeId)
-    {
-    case TYPEID_ITEM:
-    case TYPEID_CONTAINER:
-        flags = 0x18;
-        break;
-    case TYPEID_UNIT:
-    case TYPEID_PLAYER:
-        flags = 0x70;
-        break;
-    case TYPEID_GAMEOBJECT:
-    case TYPEID_DYNAMICOBJECT:
-    case TYPEID_CORPSE:
-        flags = 0x58;
-        break;
-    }
-
-    if (target == this)
-    {
-        flags |= UPDATEFLAG_SELF;
-        update_type = UPDATETYPE_CREATE_YOURSELF;
-    }
-
-    if (m_objectTypeId == TYPEID_GAMEOBJECT)
-    {
-        switch (((GameObject*)this)->getGoType())
-        {
-        case GAMEOBJECT_TYPE_MO_TRANSPORT:
-            if (GetTypeFromGUID() != HIGHGUID_TYPE_TRANSPORTER)
-                return 0;
-
-            flags = 0x5a;
-            break;
-        case GAMEOBJECT_TYPE_TRANSPORT:
-            flags = 0x5a;
-            break;
-        case GAMEOBJECT_TYPE_DUEL_ARBITER:
-            update_type = UPDATETYPE_CREATE_YOURSELF;
-            break;
-        }
-    }
-
-    // we shouldn't be here, under any circumstances, unless we have a wowguid..
-    ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
-    // build our actual update
-    *data << update_type;
-    *data << m_wowGuid;
-    *data << m_objectTypeId;
-
-    //\todo remove flags (0) from function call.
-    buildMovementUpdate(data, flags, target);
-
-
-    // we have dirty data, or are creating for ourself.
-    UpdateMask update_mask;
-    update_mask.SetCount(m_valuesCount);
-    _SetCreateBits(&update_mask, target);
-
-    // this will cache automatically if needed
-    buildValuesUpdate(data, &update_mask, target);
-
-    // update count: 1 ;)
-    return 1;
-}
-#endif
-
-#if VERSION_STRING > TBC
-uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
-{
-    if (!target)
-        return 0;
-
-    uint8 updatetype = UPDATETYPE_CREATE_OBJECT;
-    uint16 updateflags = m_updateFlag;
-
-#if VERSION_STRING < Cata
-    if (target == this)
-    {
-        updateflags |= UPDATEFLAG_SELF;
-    }
-
-    if (updateflags & UPDATEFLAG_HAS_POSITION)
-    {
-        if (IsType(TYPE_DYNAMICOBJECT) || IsType(TYPE_CORPSE) || IsType(TYPE_PLAYER))
-            updatetype = UPDATETYPE_CREATE_YOURSELF;
-
-        if (target->isPet() && updateflags & UPDATEFLAG_SELF)
-            updatetype = UPDATETYPE_CREATE_YOURSELF;
-
-        if (IsType(TYPE_GAMEOBJECT))
-        {
-            switch (((GameObject*)this)->getGoType())
-            {
-            case GAMEOBJECT_TYPE_TRAP:
-            case GAMEOBJECT_TYPE_DUEL_ARBITER:
-            case GAMEOBJECT_TYPE_FLAGSTAND:
-            case GAMEOBJECT_TYPE_FLAGDROP:
-                updatetype = UPDATETYPE_CREATE_YOURSELF;
-                break;
-            case GAMEOBJECT_TYPE_TRANSPORT:
-                updateflags |= UPDATEFLAG_TRANSPORT;
-                break;
-            default:
-                break;
-            }
-        }
-
-        if (IsType(TYPE_UNIT))
-        {
-            if (((Unit*)this)->getTargetGuid() != 0)
-                updateflags |= UPDATEFLAG_HAS_TARGET;
-        }
-    }
-
-    if (isVehicle())
-        updateflags |= UPDATEFLAG_VEHICLE;
-#else
-    switch (m_objectTypeId)
-    {
-    case TYPEID_CORPSE:
-    case TYPEID_DYNAMICOBJECT:
-        updateflags = UPDATEFLAG_HAS_POSITION; // UPDATEFLAG_HAS_STATIONARY_POSITION
-        updatetype = 2;
-        break;
-
-    case TYPEID_GAMEOBJECT:
-        updateflags = UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION;
-        //flags = 0x0040 | 0x0200; // UPDATEFLAG_HAS_STATIONARY_POSITION | UPDATEFLAG_ROTATION
-        updatetype = 2;
-        break;
-
-    case TYPEID_UNIT:
-    case TYPEID_PLAYER:
-        updateflags = UPDATEFLAG_LIVING;
-        updatetype = 2;
-        break;
-    }
-
-    if (target == this)
-    {
-        // player creating self
-        updateflags |= UPDATEFLAG_SELF;  // UPDATEFLAG_SELF
-        updatetype = 2; // UPDATEFLAG_CREATE_OBJECT_SELF
-    }
-
-    if (isCreatureOrPlayer())
-    {
-        if (static_cast<Unit*>(this)->getTargetGuid())
-            updateflags |= UPDATEFLAG_HAS_TARGET; // UPDATEFLAG_HAS_ATTACKING_TARGET
-    }
-#endif
-
-    // we shouldn't be here, under any circumstances, unless we have a wowguid..
-    ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
-    // build our actual update
-    *data << uint8(updatetype);
-    *data << m_wowGuid;
-    *data << uint8(m_objectTypeId);
-
-    buildMovementUpdate(data, updateflags, target);
-
-    // we have dirty data, or are creating for ourself.
-    UpdateMask updateMask;
-    updateMask.SetCount(m_valuesCount);
-    _SetCreateBits(&updateMask, target);
-
-    // this will cache automatically if needed
-    buildValuesUpdate(data, &updateMask, target);
-
-    // update count: 1 ;)
-    return 1;
-}
-#endif
-
 
 //That is dirty fix it actually creates update of 1 field with
 //the given value ignoring existing changes in fields and so on
@@ -3388,9 +3260,6 @@ uint32 Object::getServersideFaction()
     return m_factionTemplate->Faction;
 }
 
-void Object::DealDamage(Unit* /*pVictim*/, uint32 /*damage*/, uint32 /*targetEvent*/, uint32 /*unitEvent*/, uint32 /*spellId*/, bool /*no_remove_auras*/)
-{}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 /// SpellLog packets just to keep the code cleaner and better to read
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -3401,98 +3270,6 @@ void Object::SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 
 
     Caster->SendMessageToSet(SmsgSpellLogMiss(Ability, Caster->getGuid(), Target->getGuid(), SpellLogType).serialise().get(), true);
 }
-
-#if VERSION_STRING <= TBC
-void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage* Dmg, uint32 Damage, uint32 Abs, uint32 BlockedDamage, uint32 HitStatus, uint32 VState)
-{
-    if (!Caster || !Target || !Dmg)
-        return;
-
-    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 70); //guessed size
-
-    data << uint32(HitStatus);
-    data << Caster->GetNewGUID();
-    data << Target->GetNewGUID();
-
-    data << uint32(Damage);                 // Realdamage
-    data << uint8(1);                       // Damage type counter / swing type
-
-    data << uint32(g_spellSchoolConversionTable[Dmg->school_type]);         // Damage school
-    data << float(Dmg->full_damage);        // Damage float
-    data << uint32(Dmg->full_damage);       // Damage amount
-    data << uint32(Abs);                    // Damage absorbed
-    data << uint32(Dmg->resisted_damage);
-
-    data << uint8(VState);
-    data << uint32(0x03E8);          // can be 0,1000 or -1
-    data << uint32(0);
-    data << uint32(BlockedDamage);  // Damage amount blocked
-
-
-    SendMessageToSet(&data, Caster->isPlayer());
-}
-#else
-void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage* Dmg, uint32 Damage, uint32 Abs, uint32 BlockedDamage, uint32 HitStatus, uint32 VState)
-{
-    if (!Caster || !Target || !Dmg)
-        return;
-
-    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 108);
-
-    uint32 Overkill = 0;
-
-    if (Target->isCreatureOrPlayer() && Damage > static_cast<Unit*>(Target)->getHealth())
-        Overkill = Damage - static_cast<Unit*>(Target)->getHealth();
-
-    data << uint32(HitStatus);
-    data << Caster->GetNewGUID();
-    data << Target->GetNewGUID();
-
-    data << uint32(Damage);                 // Realdamage
-    data << uint32(Overkill);               // Overkill
-    data << uint8(1);                       // Damage type counter / swing type
-
-    data << uint32(g_spellSchoolConversionTable[Dmg->school_type]);         // Damage school
-    data << float(Dmg->full_damage);        // Damage float
-    data << uint32(Dmg->full_damage);       // Damage amount
-
-    if (HitStatus & HITSTATUS_ABSORBED)
-        data << uint32(Abs);                // Damage absorbed
-
-    if (HitStatus & HITSTATUS_RESIST)
-        data << uint32(Dmg->resisted_damage);   // Damage resisted
-
-    data << uint8(VState);
-    data << uint32(0);          // can be 0,1000 or -1
-    data << uint32(0);
-
-    if (HitStatus & HITSTATUS_BLOCK)
-        data << uint32(BlockedDamage);  // Damage amount blocked
-
-
-    if (HitStatus & HITSTATUS_RAGE_GAIN)
-        data << uint32(0);              // unknown
-
-    if (HitStatus & HITSTATUS_UNK_00)
-    {
-        data << uint32(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-
-        data << float(0);       // Found in loop
-        data << float(0);       // Found in loop
-        data << uint32(0);
-    }
-
-    SendMessageToSet(&data, Caster->isPlayer());
-}
-#endif
 
 int32 Object::event_GetInstanceID()
 {

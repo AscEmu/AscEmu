@@ -72,6 +72,7 @@ MapMgr::MapMgr(Map* map, uint32 mapId, uint32 instanceid) : CellHandler<MapCell>
     m_DynamicObjectHighGuid = 0;
     lastUnitUpdate = Util::getMSTime();
     lastGameobjectUpdate = Util::getMSTime();
+    lastDynamicObjectUpdate = Util::getMSTime();
     m_battleground = nullptr;
 
     m_holder = &eventHolder;
@@ -950,10 +951,6 @@ void MapMgr::_UpdateObjects()
                     }
                 }
 
-                //what?
-                if (pObj->isCreatureOrPlayer() && pObj->HasUpdateField(getOffsetForStructuredField(WoWUnit, health)))
-                    static_cast<Unit*>(pObj)->EventHealthChangeSinceLastUpdate();
-
                 // build the update
                 count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(NULL));
 
@@ -1337,8 +1334,8 @@ bool MapMgr::Do()
 
         last_exec = Util::getMSTime();
         uint32 exec_time = last_exec - exec_start;
-        if (exec_time < 100)  //mapmgr update period 100
-            Arcemu::Sleep(100 - exec_time);
+        if (exec_time < 20)  //mapmgr update period 20
+            Arcemu::Sleep(20 - exec_time);
 
         // Check if we have to die :P
         if (InactiveMoveTime && UNIXTIME >= InactiveMoveTime)
@@ -1514,9 +1511,11 @@ void MapMgr::_PerformObjectDuties()
         lastUnitUpdate = mstime;
     }
 
-    // Dynamic objects
+    // Dynamic objects are updated every 100ms
     // We take the pointer, increment, and update in this order because during the update the DynamicObject might get deleted,
     // rendering the iterator unincrementable. Which causes a crash!
+    difftime = mstime - lastDynamicObjectUpdate;
+    if (difftime >= 100)
     {
         for (auto itr = m_DynamicObjectStorage.begin(); itr != m_DynamicObjectStorage.end();)
         {
@@ -1525,13 +1524,14 @@ void MapMgr::_PerformObjectDuties()
 
             o->UpdateTargets();
         }
+
+        lastDynamicObjectUpdate = mstime;
     }
 
-    // Update gameobjects (not on every loop, however)
-    if (mLoopCounter % 2)
+    // Update gameobjects only every 200ms
+    difftime = mstime - lastGameobjectUpdate;
+    if (difftime >= 200)
     {
-        difftime = mstime - lastGameobjectUpdate;
-
         for (auto itr = GOStorage.begin(); itr != GOStorage.end(); )
         {
             GameObject* gameobject = *itr;
@@ -1543,7 +1543,8 @@ void MapMgr::_PerformObjectDuties()
         lastGameobjectUpdate = mstime;
     }
 
-    // Sessions are updated every loop.
+    // Sessions are updated on every second loop
+    if (mLoopCounter % 2)
     {
         for (auto itr = Sessions.begin(); itr != Sessions.end();)
         {
@@ -1724,7 +1725,7 @@ GameObject* MapMgr::GetSqlIdGameObject(uint32 sqlid)
     return itr == _sqlids_gameobjects.end() ? nullptr : itr->second;
 }
 
-uint64 MapMgr::GenerateCreatureGUID(uint32 entry)
+uint64 MapMgr::GenerateCreatureGUID(uint32 entry, bool canUseOldGuid/* = true*/)
 {
     uint64 newguid = 0;
 
@@ -1744,7 +1745,7 @@ uint64 MapMgr::GenerateCreatureGUID(uint32 entry)
 
     uint32 guid = 0;
 
-    if (!_reusable_guids_creature.empty())
+    if (!_reusable_guids_creature.empty() && canUseOldGuid)
     {
         guid = _reusable_guids_creature.front();
         _reusable_guids_creature.pop_front();
@@ -1794,27 +1795,27 @@ Creature* MapMgr::GetCreature(uint32 guid)
     return CreatureStorage[guid];
 }
 
-Summon* MapMgr::CreateSummon(uint32 entry, SummonType type)
+Summon* MapMgr::CreateSummon(uint32 entry, SummonType type, uint32_t duration)
 {
-    uint64 guid = GenerateCreatureGUID(entry);
+    // Generate always a new guid for totems, otherwise the totem timer bar will get messed up
+    uint64 guid = GenerateCreatureGUID(entry, type != SUMMONTYPE_TOTEM);
 
     switch (type)
     {
         case SUMMONTYPE_GUARDIAN:
-            return new GuardianSummon(guid);
+            return new GuardianSummon(guid, duration);
         case SUMMONTYPE_WILD:
-            return new WildSummon(guid);
+            return new WildSummon(guid, duration);
         case SUMMONTYPE_TOTEM:
-            return new TotemSummon(guid);
+            return new TotemSummon(guid, duration);
         case SUMMONTYPE_COMPANION:
-            return new CompanionSummon(guid);
+            return new CompanionSummon(guid, duration);
         case SUMMONTYPE_POSSESSED:
-            return new PossessedSummon(guid);
+            return new PossessedSummon(guid, duration);
     }
 
-    return new Summon(guid);
+    return new Summon(guid, duration);
 }
-
 
 // Spawns the object too, without which you can not interact with the object
 GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, float z, float o, float scale)

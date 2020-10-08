@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 class PossessedSummon : public Summon
 {
 public:
-    PossessedSummon(uint64_t GUID);
+    PossessedSummon(uint64_t GUID, uint32_t duration);
     ~PossessedSummon();
 
     void Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32_t spellid, int32_t summonslot);

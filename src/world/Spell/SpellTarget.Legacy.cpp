@@ -107,6 +107,24 @@ void InitImplicitTargetFlags()
 #undef SET_TARGET_TYPE
 }
 
+// APGL End
+// MIT Start
+
+void Spell::safeAddMissedTarget(uint64_t targetGuid, SpellDidHitResult hitResult, SpellDidHitResult extendedHitResult)
+{
+    for (const auto& targetMod : missedTargets)
+    {
+        // Check if target is already in the vector
+        if (targetMod.targetGuid == targetGuid)
+            return;
+    }
+
+    missedTargets.push_back(SpellTargetMod(targetGuid, hitResult, extendedHitResult));
+}
+
+// MIT End
+// APGL Start
+
 void Spell::FillTargetMap(uint32 i)
 {
     //Spell::prepare() has already a m_caster->IsInWorld() check so if now the caster is no more in world something bad happened.
@@ -447,7 +465,7 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
             extended = static_cast<SpellDidHitResult>(DidHit(i, tmp));
             u_caster = tmp;
         }
-        missedTargets.push_back(SpellTargetMod(obj->getGuid(), hitresult, extended));
+        safeAddMissedTarget(obj->getGuid(), hitresult, extended);
         return false;
     }
     else

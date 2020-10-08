@@ -156,6 +156,9 @@ public:
     // Object update
     void updateObject();
 
+    //! This includes any nested objects we have, inventory for example.
+    virtual uint32_t buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Object Type Id
 protected:
@@ -314,16 +317,12 @@ public:
         // typeFlags
         bool IsType(TYPE type_mask) const { return (type_mask & m_objectType) != 0; }
 
-        //! This includes any nested objects we have, inventory for example.
-        virtual uint32 buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
         uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, Player* target);
         uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask);
 
         WorldPacket* BuildFieldUpdatePacket(uint32 index, uint32 value);
         void BuildFieldUpdatePacket(Player* Target, uint32 Index, uint32 Value);
         void BuildFieldUpdatePacket(ByteBuffer* buf, uint32 Index, uint32 Value);
-
-        virtual void DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras = false);
 
         bool SetPosition(float newX, float newY, float newZ, float newOrientation, bool allowPorting = false);
         bool SetPosition(const LocationVector & v, bool allowPorting = false);
@@ -520,8 +519,6 @@ public:
 
         // SpellLog packets just to keep the code cleaner and better to read
         void SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 SpellLogType);
-
-        void SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage* Dmg, uint32 Damage, uint32 Abs, uint32 BlockedDamage, uint32 HitStatus, uint32 VState);
 
         // object faction
         void setServersideFaction();

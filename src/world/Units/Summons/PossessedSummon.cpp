@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "../../StdAfx.h"
 #include "Units/Summons/PossessedSummon.h"
 
-PossessedSummon::PossessedSummon(uint64_t GUID) : Summon(GUID) {}
+PossessedSummon::PossessedSummon(uint64_t GUID, uint32_t duration) : Summon(GUID, duration) {}
 
 PossessedSummon::~PossessedSummon() {}
 

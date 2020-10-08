@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Summons/GuardianSummon.h"
 #include "Spell/Definitions/PowerType.h"
 
-GuardianSummon::GuardianSummon(uint64_t GUID) : Summon(GUID)
+GuardianSummon::GuardianSummon(uint64_t GUID, uint32_t duration) : Summon(GUID, duration)
 {}
 
 GuardianSummon::~GuardianSummon()

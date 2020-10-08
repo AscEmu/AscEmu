@@ -263,8 +263,6 @@ public:
 
         virtual Group* GetGroup();
 
-        void DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras = false) override;
-        void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false) override;
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
 
     protected:

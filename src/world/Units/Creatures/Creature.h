@@ -321,9 +321,7 @@ public:
         float GetBaseParry();
         bool isattackable(MySQLStructure::CreatureSpawn* spawn);
 
-        void DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras = false);
-        void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false);
-        void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
+        void Die(Unit* pAttacker, uint32 damage, uint32 spellid) override;
 
         void HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event);
 

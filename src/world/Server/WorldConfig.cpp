@@ -461,8 +461,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     // world.conf - Terrain & Collision Settings
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Terrain", "Collision", &terrainCollision.isCollisionEnabled));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Terrain", "Pathfinding", &terrainCollision.isPathfindingEnabled));
-    if (terrainCollision.isPathfindingEnabled && !terrainCollision.isCollisionEnabled)
-        terrainCollision.isPathfindingEnabled = false;
 
     // world.conf - Mail Settings
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Mail", "DisablePostageCostsForGM", &mail.isCostsForGmDisabled));

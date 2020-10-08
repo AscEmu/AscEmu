@@ -3480,8 +3480,11 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
                 p_target->removeUnitStateFlag(UNIT_STATE_ATTACKING);
 
             p_target->SendPacket(SmsgCancelCombat().serialise().get());
-            //\Note: seems to be wrong format for this opcode - guess guid is required!
-            //p_target->GetSession()->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
+
+            // Send server-side cancel message
+            WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
+            data << p_target->GetNewGUID();
+            p_target->SendMessageToSet(&data, false);
         }
         else
         {
@@ -7133,68 +7136,6 @@ bool Aura::IsAreaAura()
         return true;
 
     return false;
-}
-
-void AbsorbAura::spellAuraEffectSchoolAbsorb(AuraEffectModifier* aurEff, bool apply)
-{
-    if (!apply)
-        return;
-
-    mPositive = true;
-
-    int32 val = CalcAbsorbAmount(aurEff);
-
-    Unit* caster = GetUnitCaster();
-    if (caster != nullptr)
-    {
-        spellModFlatIntValue(caster->SM_FMiscEffect, &val, getSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageIntValue(caster->SM_PMiscEffect, &val, getSpellInfo()->getSpellFamilyFlags());
-
-        //This will fix talents that affects damage absorbed.
-        int flat = 0;
-        spellModFlatIntValue(caster->SM_FMiscEffect, &flat, getSpellInfo()->getSpellFamilyFlags());
-        val += val * flat / 100;
-
-        //For spells Affected by Bonus Healing we use spell_coeff_direct.
-        if (getSpellInfo()->spell_coeff_direct > 0)
-            val += float2int32(caster->HealDoneMod[getSpellInfo()->getFirstSchoolFromSchoolMask()] * getSpellInfo()->spell_coeff_direct);
-        //For spells Affected by Bonus Damage we use spell_coeff_overtime.
-        else if (getSpellInfo()->spell_coeff_overtime > 0)
-            val += float2int32(caster->GetDamageDoneMod(getSpellInfo()->getFirstSchoolFromSchoolMask()) * getSpellInfo()->spell_coeff_overtime);
-    }
-
-    m_total_amount = val;
-    m_amount = val;
-    m_pct_damage = CalcPctDamage();
-}
-
-uint32 AbsorbAura::AbsorbDamage(uint32 School, uint32* dmg)
-{
-    uint32 mask = GetSchoolMask();
-    if (!(mask & g_spellSchoolConversionTable[School]))
-        return 0;
-
-    uint32 dmg_absorbed = 0;
-    int32 dmg_to_absorb = *dmg;
-
-    if (m_pct_damage < 100)
-        dmg_to_absorb = dmg_to_absorb * m_pct_damage / 100;
-
-    if (dmg_to_absorb >= m_amount)
-    {
-        *dmg -= m_amount;
-        dmg_absorbed += m_amount;
-
-        m_target->RemoveAura(getSpellId());
-    }
-    else
-    {
-        dmg_absorbed += dmg_to_absorb;
-        m_amount -= dmg_to_absorb;
-        *dmg -= dmg_to_absorb;
-    }
-
-    return dmg_absorbed;
 }
 
 void Aura::SpellAuraConvertRune(AuraEffectModifier* aurEff, bool apply)

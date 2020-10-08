@@ -68,6 +68,8 @@ public:
     bool isRangedAutoRepeat() const;
     bool isOnNextMeleeAttack() const;
 
+    bool doesEffectApplyAura(uint8_t effIndex) const;
+
     bool appliesAreaAura(uint32_t auraType) const;
     uint32_t getAreaAuraEffect() const;
 

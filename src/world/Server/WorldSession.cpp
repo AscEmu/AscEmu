@@ -365,7 +365,7 @@ void WorldSession::LogoutPlayer(bool Save)
         _player->load_mana = _player->getPower(POWER_TYPE_MANA);
 
 
-        _player->summonhandler.RemoveAllSummons();
+        _player->getSummonInterface()->removeAllSummons();
 
         _player->DismissActivePets();
 

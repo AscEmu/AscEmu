@@ -6,8 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Unit.h"
 
 #include "Data/WoWUnit.h"
+#include "Management/Battleground/Battleground.h"
+#include "Management/HonorHandler.h"
 #include "Map/MapMgr.h"
-#include "Players/Player.h"
 #include "Server/Packets/SmsgAuraUpdate.h"
 #include "Server/Packets/SmsgAuraUpdateAll.h"
 #include "Server/Packets/SmsgClearExtraAuraInfo.h"
@@ -26,16 +27,20 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/AuraInterruptFlags.h"
 #include "Spell/Definitions/DiminishingGroup.h"
 #include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include "Spell/Definitions/SpellDamageType.h"
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Spell/Definitions/SpellMechanics.h"
+#include "Spell/Definitions/SpellSchoolConversionTable.h"
 #include "Spell/Definitions/SpellTypes.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellHelpers.h"
 #include "Spell/SpellMgr.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Units/Creatures/Pet.h"
 #include "Units/Creatures/Vehicle.h"
+#include "Units/Players/Player.h"
 
 using namespace AscEmu::Packets;
 using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
@@ -189,10 +194,34 @@ void Unit::modHealth(int32_t health)
     setHealth(newHealth);
 }
 
-uint32_t Unit::getPower(PowerType type) const
+uint32_t Unit::getPower(PowerType type, [[maybe_unused]]bool inRealTime/* = true*/) const
 {
     if (type == POWER_TYPE_HEALTH)
         return getHealth();
+
+#if VERSION_STRING >= WotLK
+    if (inRealTime)
+    {
+        // Following power types update in real time since wotlk
+        // We cannot update WoWData values in real time, otherwise SMSG_UPDATE_OBJECT is sent every 100ms per player
+        // Therefore private variables are updated in real time and WoWData values are updated every 2 sec (blizzlike)
+        switch (type)
+        {
+            case POWER_TYPE_MANA:
+                return m_manaAmount;
+            case POWER_TYPE_RAGE:
+                return m_rageAmount;
+            case POWER_TYPE_FOCUS:
+                return m_focusAmount;
+            case POWER_TYPE_ENERGY:
+                return m_energyAmount;
+            case POWER_TYPE_RUNIC_POWER:
+                return m_runicPowerAmount;
+            default:
+                break;
+        }
+    }
+#endif
 
     // Since cata power fields work differently
     // Get matching power index by power type
@@ -232,8 +261,35 @@ void Unit::setPower(PowerType type, uint32_t value, bool sendPacket/* = true*/)
     if (value > maxPower)
         value = maxPower;
 
-    if (getPower(type) == value)
+    if (getPower(type, false) == value)
         return;
+
+#if VERSION_STRING >= WotLK
+    // Sync realtime values with WoWData values
+    switch (type)
+    {
+        case POWER_TYPE_MANA:
+            m_manaAmount = value;
+            break;
+        case POWER_TYPE_RAGE:
+            m_rageAmount = value;
+            break;
+        case POWER_TYPE_FOCUS:
+            m_focusAmount = value;
+            break;
+        case POWER_TYPE_ENERGY:
+            m_energyAmount = value;
+            break;
+        case POWER_TYPE_RUNIC_POWER:
+            m_runicPowerAmount = value;
+            break;
+        default:
+            break;
+    }
+
+    // Reset update timer
+    m_powerUpdatePacketTime = REGENERATION_PACKET_UPDATE_INTERVAL;
+#endif
 
     // Since cata power fields work differently
     // Get matching power index by power type
@@ -2082,7 +2138,7 @@ float_t Unit::getCriticalChanceForHealSpell(SpellInfo const* spellInfo) const
     return critChance;
 }
 
-void Unit::sendSpellNonMeleeDamageLog(Object* caster, Object* target, SpellInfo const* spellInfo, uint32_t damage, uint32_t absorbedDamage, uint32_t resistedDamage, uint32_t blockedDamage, bool isPeriodicDamage, bool isCriticalHit)
+void Unit::sendSpellNonMeleeDamageLog(Object* caster, Object* target, SpellInfo const* spellInfo, uint32_t damage, uint32_t absorbedDamage, uint32_t resistedDamage, uint32_t blockedDamage, [[maybe_unused]]uint32_t overKill, bool isPeriodicDamage, bool isCriticalHit)
 {
     if (caster == nullptr || target == nullptr || spellInfo == nullptr)
         return;
@@ -2094,10 +2150,6 @@ void Unit::sendSpellNonMeleeDamageLog(Object* caster, Object* target, SpellInfo 
 #else
     school = spellInfo->getSchoolMask();
 #endif
-
-    uint32_t overKill = 0;
-    if (target->isCreatureOrPlayer() && damage > static_cast<Unit*>(target)->getHealth())
-        overKill = damage - static_cast<Unit*>(target)->getHealth();
 
     WorldPacket data(SMSG_SPELLNONMELEEDAMAGELOG, 48);
 
@@ -2137,6 +2189,75 @@ void Unit::sendSpellHealLog(Object* caster, Object* target, uint32_t spellId, ui
 void Unit::sendSpellOrDamageImmune(uint64_t casterGuid, Unit* target, uint32_t spellId)
 {
     target->SendMessageToSet(SmsgSpellOrDamageImmune(casterGuid, target->getGuid(), spellId).serialise().get(), true);
+}
+
+void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, uint32_t overKill, dealdamage damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, uint32_t rageGain)
+{
+#if VERSION_STRING < WotLK
+    const size_t size = 106;
+#else
+    const size_t size = 114;
+#endif
+    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, size);
+
+    // School type in classic, school mask in tbc+
+    uint32_t school = 0;
+#if VERSION_STRING == Classic
+    school = damageInfo.school_type;
+#else
+    school = g_spellSchoolConversionTable[damageInfo.school_type];
+#endif
+
+    data << uint32_t(hitStatus);
+    data << attackerGuid;
+    data << victimGuid;
+
+    data << uint32_t(damage);                                   // real damage
+#if VERSION_STRING >= WotLK
+    data << uint32_t(overKill);
+#endif
+    data << uint8_t(1);                                         // damage counter
+
+    data << uint32_t(school);                                   // damage school
+    data << float(damageInfo.full_damage) / float(damage);      // some sort of damage coefficient
+    data << uint32_t(damageInfo.full_damage);                   // full damage in int
+
+    if (hitStatus & HITSTATUS_ABSORBED)
+        data << uint32_t(absorbedDamage);
+
+    if (hitStatus & HITSTATUS_RESIST)
+        data << uint32_t(damageInfo.resisted_damage);
+
+    data << uint8_t(visualState);
+    data << uint32_t(0);                                        // unk, can be 0, 1000 or -1
+    data << uint32_t(0);                                        // unk, probably GetMeleeSpell
+
+    if (hitStatus & HITSTATUS_BLOCK)
+        data << uint32_t(blockedDamage);
+
+#if VERSION_STRING >= WotLK
+    if (hitStatus & HITSTATUS_RAGE_GAIN)
+        data << uint32_t(rageGain);
+#endif
+
+    if (hitStatus & HITSTATUS_UNK_00)                           // debug information
+    {
+        data << uint32_t(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+
+        data << float(0);                                       // Found in loop
+        data << float(0);                                       // Found in loop
+        data << uint32_t(0);
+    }
+
+    SendMessageToSet(&data, true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2915,6 +3036,9 @@ void Unit::sendFullAuraUpdate()
 
 bool Unit::sendPeriodicAuraLog(const WoWGuid& casterGuid, const WoWGuid& targetGuid, SpellInfo const* spellInfo, uint32_t amount, uint32_t overKillOrOverHeal, uint32_t absorbed, uint32_t resisted, AuraEffect auraEffect, bool isCritical, uint32_t miscValue/* = 0*/, float gainMultiplier/* = 0.0f*/)
 {
+    if (spellInfo == nullptr)
+        return false;
+
     // Classic does not use school mask
     uint32_t school = 0;
 #if VERSION_STRING == Classic
@@ -3548,9 +3672,9 @@ void Unit::regeneratePower(PowerType type)
     amount += m_powerFractions[type];
 
     // Convert the float amount to integer and save the fraction for next power update
-    // This fixes regen like 0.98
+    // This fixes regen values like 0.98
     auto powerResult = currentPower;
-    auto integerAmount = static_cast<uint32_t>(std::fabs(amount));
+    const auto integerAmount = static_cast<uint32_t>(std::fabs(amount));
 
     if (amount < 0.0f)
     {
@@ -3579,7 +3703,33 @@ void Unit::regeneratePower(PowerType type)
         }
     }
 
+#if VERSION_STRING < WotLK
     setPower(type, powerResult, sendUpdatePacket);
+#else
+    // In wotlk+ most of the powers regen in real time but we cannot update WoWData values in realtime,
+    // so we use private member variables to store power in real time
+    switch (type)
+    {
+        case POWER_TYPE_MANA:
+            m_manaAmount = powerResult;
+            break;
+        case POWER_TYPE_RAGE:
+            m_rageAmount = powerResult;
+            break;
+        case POWER_TYPE_FOCUS:
+            m_focusAmount = powerResult;
+            break;
+        case POWER_TYPE_ENERGY:
+            m_energyAmount = powerResult;
+            break;
+        case POWER_TYPE_RUNIC_POWER:
+            m_runicPowerAmount = powerResult;
+            break;
+        default:
+            setPower(type, powerResult, sendUpdatePacket);
+            break;
+    }
+#endif
 }
 
 #if VERSION_STRING < Cata
@@ -3740,6 +3890,470 @@ uint8_t Unit::getHealthPct() const
     return static_cast<uint8_t>(getHealth() * 100 / getMaxHealth());
 }
 
+void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool removeAuras/* = true*/)
+{
+    // Not accepted cases
+    if (victim == nullptr || !victim->isAlive() || !victim->IsInWorld() || !IsInWorld())
+        return;
+    if (victim->isPlayer() && static_cast<Player*>(victim)->m_cheats.hasGodModeCheat)
+        return;
+    if (victim->bInvincible)
+        return;
+    if (victim->isCreature() && static_cast<Creature*>(victim)->isSpiritHealer())
+        return;
+
+    if (this != victim)
+    {
+        if (isPlayer())
+        {
+            const auto plr = static_cast<Player*>(this);
+            if (!plr->GetSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
+                damage = plr->CheckDamageLimits(damage, spellId);
+
+            if (plr->CombatStatus.IsInCombat())
+                sHookInterface.OnEnterCombat(plr, victim);
+        }
+
+        CombatStatus.OnDamageDealt(victim);
+
+        const auto plrOwner = getPlayerOwner();
+        if (plrOwner != nullptr)
+        {
+            if (victim->isCreature() && victim->IsTaggable())
+            {
+                victim->Tag(plrOwner->getGuid());
+                plrOwner->TagUnit(victim);
+            }
+
+            // Battleground damage score
+            if (plrOwner->m_bg != nullptr && GetMapMgr() == victim->GetMapMgr())
+            {
+                plrOwner->m_bgScore.DamageDone += damage;
+                plrOwner->m_bg->UpdatePvPData();
+            }
+        }
+
+        if (victim->isPlayer())
+        {
+            // Make victim's pet react to attacker
+            ///\ todo: what about other summons?
+            const auto summons = static_cast<Player*>(victim)->GetSummons();
+            for (const auto& pet : summons)
+            {
+                if (pet->GetPetState() != PET_STATE_PASSIVE)
+                {
+                    pet->GetAIInterface()->AttackReaction(this, 1, 0);
+                    pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
+                }
+            }
+        }
+        else
+        {
+            // Generate threat
+            victim->GetAIInterface()->AttackReaction(this, damage, spellId);
+        }
+    }
+
+    victim->setStandState(STANDSTATE_STAND);
+
+    if (victim->isPvpFlagSet())
+    {
+        const auto plrOwner = getPlayerOwner();
+        if (isPet())
+        {
+            if (!isPvpFlagSet())
+                plrOwner->PvPToggle();
+
+            plrOwner->AggroPvPGuards();
+        }
+        else if (plrOwner != nullptr)
+        {
+            if (!plrOwner->isPvpFlagSet())
+                plrOwner->PvPToggle();
+
+            plrOwner->AggroPvPGuards();
+        }
+    }
+
+    // Hackfix - Ardent Defender
+    if (victim->DamageTakenPctModOnHP35 && victim->hasAuraState(AURASTATE_FLAG_HEALTH35))
+        damage = damage - float2int32(damage * victim->DamageTakenPctModOnHP35) / 100;
+
+    if (removeAuras)
+    {
+        // Check for auras which are interrupted on damage taken
+        // But do not remove the aura created by this spell
+        if (spellId != 0)
+        {
+            victim->RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN, spellId);
+            ///\ todo: fix this, currently used for root and fear auras
+            if (Rand(35.0f))
+                victim->RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_UNUSED2, spellId);
+        }
+        else
+        {
+            victim->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
+            ///\ todo: fix this, currently used for root and fear auras
+            if (Rand(35.0f))
+                victim->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_UNUSED2);
+        }
+    }
+
+    victim->takeDamage(this, damage, spellId);
+}
+
+void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
+{
+    if (damage >= getHealth())
+    {
+        if (isTrainingDummy())
+        {
+            setHealth(1);
+            return;
+        }
+
+        // Duel check
+        if (isPlayer() && static_cast<Player*>(this)->DuelingWith != nullptr)
+        {
+            setHealth(5);
+            static_cast<Player*>(this)->DuelingWith->EndDuel(DUEL_WINNER_KNOCKOUT);
+            Emote(EMOTE_ONESHOT_BEG);
+            return;
+        }
+
+        // The attacker must exist here and if it doesn't exist, victim won't die
+        if (attacker == nullptr)
+            return;
+
+        if (attacker->getPlayerOwner() != nullptr)
+        {
+            if (attacker->getPlayerOwner()->m_bg != nullptr)
+            {
+                attacker->getPlayerOwner()->m_bg->HookOnUnitKill(attacker->getPlayerOwner(), this);
+
+                if (isPlayer())
+                    attacker->getPlayerOwner()->m_bg->HookOnPlayerKill(attacker->getPlayerOwner(), dynamic_cast<Player*>(this));
+            }
+
+            if (isPlayer())
+            {
+                sHookInterface.OnKillPlayer(attacker->getPlayerOwner(), dynamic_cast<Player*>(this));
+            }
+            else if (isCreature())
+            {
+                attacker->getPlayerOwner()->Reputation_OnKilledUnit(this, false);
+#ifdef FT_ACHIEVEMENTS
+                attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, attacker->GetMapId(), 0, 0);
+#endif
+            }
+
+            // Check is the unit gray level for attacker
+            if (!isGrayLevel(attacker->getPlayerOwner()->getLevel(), getLevel()) && (getGuid() != attacker->getGuid()))
+            {
+                if (isPlayer())
+                {
+#ifdef FT_ACHIEVEMENTS
+                    attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, attacker->getPlayerOwner()->GetAreaID(), 1, 0);
+                    attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL, 1, 0, 0);
+#endif
+                    HonorHandler::OnPlayerKilled(attacker->getPlayerOwner(), dynamic_cast<Player*>(this));
+                }
+
+                attacker->getPlayerOwner()->addAuraStateAndAuras(AURASTATE_FLAG_LASTKILLWITHHONOR);
+
+                if (!sEventMgr.HasEvent(attacker->getPlayerOwner(), EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
+                    sEventMgr.AddEvent(dynamic_cast<Unit*>(attacker->getPlayerOwner()), &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, 0);
+                else
+                    sEventMgr.ModifyEventTimeLeft(attacker->getPlayerOwner(), EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
+
+                attacker->getPlayerOwner()->HandleProc(PROC_ON_GAIN_EXPIERIENCE, this, nullptr);
+                attacker->getPlayerOwner()->m_procCounter = 0;
+            }
+
+            // Send zone under attack message
+            if (isPvpFlagSet())
+            {
+                auto team = attacker->getPlayerOwner()->getTeam();
+                if (team == TEAM_ALLIANCE)
+                    team = TEAM_HORDE;
+                else
+                    team = TEAM_ALLIANCE;
+
+                const auto area = GetArea();
+                sWorld.sendZoneUnderAttackMessage(area != nullptr ? area->id : attacker->GetZoneId(), team);
+            }
+        }
+
+        if (attacker->isPlayer())
+        {
+            const auto plr = static_cast<Player*>(attacker);
+
+            plr->EventAttackStop();
+
+            plr->sendPartyKillLogPacket(getGuid());
+        }
+
+        Die(attacker, damage, spellId);
+
+        // Loot
+        if (isLootable())
+        {
+            const auto tagger = GetMapMgrPlayer(GetTaggerGUID());
+            if (tagger != nullptr)
+            {
+                if (tagger->InGroup())
+                    tagger->GetGroup()->SendLootUpdates(this);
+                else
+                    tagger->SendLootUpdate(this);
+            }
+        }
+
+        // Experience points
+        if (!isPet() && getCreatedByGuid() == 0 && IsTagged())
+        {
+            const auto taggerUnit = GetMapMgrUnit(GetTaggerGUID());
+            const auto tagger = taggerUnit != nullptr ? taggerUnit->getPlayerOwner() : nullptr;
+            if (tagger != nullptr)
+            {
+                if (tagger->InGroup())
+                {
+                    tagger->GiveGroupXP(this, tagger);
+                }
+                else
+                {
+                    auto xp = CalculateXpToGive(this, tagger);
+                    if (xp > 0)
+                    {
+                        tagger->GiveXP(xp, getGuid(), true);
+
+                        // Give XP to pets also
+                        if (tagger->GetSummon() != nullptr && tagger->GetSummon()->CanGainXP())
+                        {
+                            xp = CalculateXpToGive(this, tagger->GetSummon());
+                            if (xp > 0)
+                                tagger->GetSummon()->giveXp(xp);
+                        }
+                    }
+                }
+
+                if (isCreature())
+                {
+                    sQuestMgr.OnPlayerKill(tagger, dynamic_cast<Creature*>(this), true);
+
+#ifdef FT_ACHIEVEMENTS
+                    if (tagger->InGroup())
+                    {
+                        tagger->GetGroup()->UpdateAchievementCriteriaForInrange(this, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
+                        tagger->GetGroup()->UpdateAchievementCriteriaForInrange(this, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, attacker->getPlayerOwner()->getGuidHigh(), attacker->getPlayerOwner()->getGuidLow(), 0);
+                    }
+                    else
+                    {
+                        tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
+                        tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, attacker->getPlayerOwner()->getGuidHigh(), attacker->getPlayerOwner()->getGuidLow(), 0);
+                    }
+#endif
+                }
+            }
+        }
+
+#ifdef FT_ACHIEVEMENTS
+        if (attacker->getPlayerOwner() != nullptr && isCritter())
+        {
+            attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
+            attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, attacker->getPlayerOwner()->getGuidHigh(), attacker->getPlayerOwner()->getGuidLow(), 0);
+        }
+#endif
+
+        // The unit has died so no need to proceed any further
+        return;
+    }
+
+    if (isPlayer())
+    {
+        const auto plr = static_cast<Player*>(this);
+
+        // todo: this should be moved to combat handler...
+        // atm its called every time player takes damage -Appled
+        if (CombatStatus.IsInCombat())
+            sHookInterface.OnEnterCombat(dynamic_cast<Player*>(this), attacker);
+
+        // todo: remove this hackfix...
+        if (plr->cannibalize)
+        {
+            sEventMgr.RemoveEvents(plr, EVENT_CANNIBALIZE);
+            setEmoteState(EMOTE_ONESHOT_NONE);
+            plr->cannibalize = false;
+        }
+    }
+
+    // Modify health
+    modHealth(-1 * static_cast<int32_t>(damage));
+}
+
+void Unit::addSimpleDamageBatchEvent(uint32_t damage, Unit* attacker/* = nullptr*/, SpellInfo const* spellInfo/* = nullptr*/)
+{
+    auto batch = new HealthBatchEvent;
+    batch->caster = attacker;
+    batch->damage = damage;
+    batch->spellInfo = spellInfo;
+    
+    addHealthBatchEvent(batch);
+}
+
+void Unit::addSimpleEnvironmentalDamageBatchEvent(EnviromentalDamage type, uint32_t damage, uint32_t absorbedDamage/* = 0*/)
+{
+    auto batch = new HealthBatchEvent;
+    batch->damage = damage;
+    batch->isEnvironmentalDamage = true;
+    batch->environmentType = type;
+
+    // Only fire and lava environmental damage types can be absorbed
+    if (type == DAMAGE_FIRE || type == DAMAGE_LAVA)
+        batch->absorbedDamageOrHeal = absorbedDamage;
+
+    addHealthBatchEvent(batch);
+}
+
+void Unit::addSimpleHealingBatchEvent(uint32_t heal, Unit* healer/* = nullptr*/, SpellInfo const* spellInfo/* = nullptr*/)
+{
+    auto batch = new HealthBatchEvent;
+    batch->caster = healer;
+    batch->damage = heal;
+    batch->spellInfo = spellInfo;
+    batch->isHeal = true;
+
+    addHealthBatchEvent(batch);
+}
+
+void Unit::addHealthBatchEvent(HealthBatchEvent* batch)
+{
+    ARCEMU_ASSERT(batch != nullptr);
+
+    // Do some checks before adding the health event into batch list
+    if (!isAlive() || !IsInWorld() || bInvincible)
+    {
+        delete batch;
+        return;
+    }
+
+    if (isPlayer())
+    {
+        const auto plr = static_cast<Player*>(this);
+        if (!batch->isHeal && plr->m_cheats.hasGodModeCheat)
+        {
+            delete batch;
+            return;
+        }
+    }
+    else if (isCreature())
+    {
+        if (static_cast<Creature*>(this)->isSpiritHealer())
+        {
+            delete batch;
+            return;
+        }
+    }
+
+    m_healthBatch.push_back(batch);
+}
+
+uint32_t Unit::calculateEstimatedOverKillForCombatLog(uint32_t damage) const
+{
+    if (damage == 0 || !isAlive())
+        return 0;
+
+    const auto curHealth = getHealth();
+    int32_t totalDamage = 0;
+
+    for (const auto& batch : m_healthBatch)
+    {
+        if (batch->isHeal)
+            totalDamage += batch->damage;
+        else
+            totalDamage -= batch->damage;
+    }
+
+    const int32_t healthValue = curHealth + totalDamage;
+    if (healthValue <= 0)
+        return damage;
+    
+    if (damage > static_cast<uint32_t>(healthValue))
+        return damage - healthValue;
+
+    return 0;
+}
+
+uint32_t Unit::calculateEstimatedOverHealForCombatLog(uint32_t heal) const
+{
+    if (heal == 0 || !isAlive())
+        return 0;
+
+    const auto curHealth = getHealth();
+    const auto maxHealth = getMaxHealth();
+    int32_t totalHeal = 0;
+
+    for (const auto& batch : m_healthBatch)
+    {
+        if (batch->isHeal)
+            totalHeal += batch->damage;
+        else
+            totalHeal -= batch->damage;
+    }
+
+    const int32_t healthValue = curHealth + totalHeal;
+    if (healthValue < 0)
+        return 0;
+
+    const auto healthVal = static_cast<uint32_t>(healthValue);
+    if (healthVal >= maxHealth)
+        return heal;
+
+    const auto healthDiff = maxHealth - healthVal;
+    if (heal > healthDiff)
+        return heal - healthDiff;
+
+    return 0;
+}
+
+void Unit::clearHealthBatch()
+{
+    for (auto& itr : m_healthBatch)
+        delete itr;
+
+    m_healthBatch.clear();
+
+    // This function is also called on unit death so make sure to remove health based aurastates
+    removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH35);
+    removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH20);
+#if VERSION_STRING >= WotLK
+    removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH75);
+#endif
+}
+
+uint32_t Unit::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly/* = true*/)
+{
+    if (dmg == nullptr)
+        return 0;
+
+    uint32_t totalAbsorbedDamage = 0;
+    for (auto& aur : m_auras)
+    {
+        if (aur == nullptr || !aur->isAbsorbAura())
+            continue;
+
+        AbsorbAura* abs = static_cast<AbsorbAura*>(aur);
+        totalAbsorbedDamage += abs->absorbDamage(schoolMask, dmg, checkOnly);
+    }
+
+    if (isPlayer() && static_cast<Player*>(this)->m_cheats.hasGodModeCheat)
+    {
+        totalAbsorbedDamage += *dmg;
+        *dmg = 0;
+    }
+
+    return totalAbsorbedDamage;
+}
+
 bool Unit::isTaggedByPlayerOrItsGroup(Player* tagger)
 {
     if (!IsTagged() || tagger == nullptr)
@@ -3756,6 +4370,309 @@ bool Unit::isTaggedByPlayerOrItsGroup(Player* tagger)
     }
 
     return false;
+}
+
+void Unit::_updateHealth()
+{
+    const auto curHealth = getHealth();
+    int32_t healthVal = 0;
+    uint32_t totalAbsorbDamage = 0;
+    // Victim's rage generation on damage taken
+    int32_t totalRageGenerated = 0;
+
+    Unit* killer = nullptr;
+
+    // Process through health batch
+    auto batchItr = m_healthBatch.begin();
+    while (batchItr != m_healthBatch.end())
+    {
+        auto batch = *batchItr;
+
+        if (batch->isHeal)
+        {
+            uint32_t absorbedHeal = 0;
+            const auto heal = _handleBatchHealing(batch->caster, batch->damage, &absorbedHeal, batch->spellInfo);
+            healthVal += heal;
+
+            const int32_t diff = curHealth + healthVal;
+            // Check if unit got healed in the same batch where it received a fataling blow
+            if (diff > 0)
+            {
+                // Reset killer
+                killer = nullptr;
+            }
+        }
+        else
+        {
+            uint32_t rageGenerated = 0;
+            const auto damage = _handleBatchDamage(batch, &rageGenerated);
+            healthVal -= damage;
+
+            totalAbsorbDamage += batch->absorbedDamageOrHeal;
+            totalRageGenerated += rageGenerated;
+
+            const int32_t diff = curHealth + healthVal;
+            if (diff <= 0)
+            {
+                // Set killer if health event has overkill and killer does not exist yet
+                if (killer == nullptr)
+                    killer = batch->caster;
+            }
+        }
+
+        delete *batchItr;
+        batchItr = m_healthBatch.erase(batchItr);
+    }
+
+    // Do the real absorb damage
+    absorbDamage(SCHOOL_MASK_ALL, &totalAbsorbDamage, false);
+
+    // If the value is negative, then damage in the batch exceeds healing and unit takes damage
+    if (healthVal < 0)
+        takeDamage(killer, static_cast<uint32_t>(std::abs(healthVal)), 0);
+    else
+        setHealth(curHealth + healthVal);
+
+    // Generate rage on damage taken
+    if (totalRageGenerated > 0)
+        modPower(POWER_TYPE_RAGE, totalRageGenerated);
+
+    // Update health based aurastates
+    const auto healthPct = getHealthPct();
+
+    // This is for some reason called after death so make sure unit has health
+    // This prevents Execute/Hammer of Wrath/Kill Shot showing on dead units
+    if (healthPct == 0)
+        return;
+
+    // Health below 35%
+    if (healthPct < 35)
+        addAuraStateAndAuras(AURASTATE_FLAG_HEALTH35);
+    else
+        removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH35);
+
+    // Health below 20%
+    if (healthPct < 20)
+        addAuraStateAndAuras(AURASTATE_FLAG_HEALTH20);
+    else
+        removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH20);
+
+#if VERSION_STRING >= WotLK
+    // Health above 75%
+    if (healthPct > 75)
+        addAuraStateAndAuras(AURASTATE_FLAG_HEALTH75);
+    else
+        removeAuraStateAndAuras(AURASTATE_FLAG_HEALTH75);
+#endif
+}
+
+uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageGenerated)
+{
+    const auto spellId = batch->spellInfo != nullptr ? batch->spellInfo->getId() : 0;
+    const uint8_t absSchool = batch->spellInfo != nullptr ? batch->spellInfo->getFirstSchoolFromSchoolMask() : 0;
+    auto damage = batch->damage;
+
+    const auto attacker = batch->caster;
+    if (attacker != nullptr && attacker != this)
+    {
+        if (attacker->isPlayer())
+        {
+            const auto plr = static_cast<Player*>(attacker);
+            if (!plr->GetSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
+                damage = plr->CheckDamageLimits(damage, spellId);
+
+            //\ todo: this hook is called here and in takeDamage... sort this out
+            if (plr->CombatStatus.IsInCombat())
+                sHookInterface.OnEnterCombat(plr, this);
+        }
+
+        // Rage generation for victim
+        ///\ todo: this is inaccurate
+        if (getPowerType() == POWER_TYPE_RAGE)
+        {
+            const auto level = static_cast<float_t>(getLevel());
+            const float_t c = 0.0091107836f * level * level + 3.225598133f * level + 4.2652911f;
+
+            float_t val = 2.5f * damage / c;
+            const auto rage = getPower(POWER_TYPE_RAGE);
+
+            if (rage + float2int32(val) > 1000)
+                val = 1000.0f - static_cast<float>(getPower(POWER_TYPE_RAGE));
+
+            val *= 10.0;
+            *rageGenerated = float2int32(val);
+        }
+
+        attacker->CombatStatus.OnDamageDealt(this);
+
+        const auto plrOwner = attacker->getPlayerOwner();
+        if (plrOwner != nullptr)
+        {
+            if (isCreature() && IsTaggable())
+            {
+                Tag(plrOwner->getGuid());
+                plrOwner->TagUnit(this);
+            }
+
+            // Battleground damage score
+            if (plrOwner->m_bg != nullptr && GetMapMgr() == attacker->GetMapMgr())
+            {
+                plrOwner->m_bgScore.DamageDone += damage;
+                plrOwner->m_bg->UpdatePvPData();
+            }
+        }
+
+        if (isPvpFlagSet())
+        {
+            if (attacker->isPet())
+            {
+                if (!attacker->isPvpFlagSet())
+                    plrOwner->PvPToggle();
+
+                plrOwner->AggroPvPGuards();
+            }
+            else if (plrOwner != nullptr)
+            {
+                if (!plrOwner->isPvpFlagSet())
+                    plrOwner->PvPToggle();
+
+                plrOwner->AggroPvPGuards();
+            }
+        }
+
+        if (isPlayer())
+        {
+            // Make victim's pet react to attacker
+            ///\ todo: what about other summons?
+            const auto summons = static_cast<Player*>(this)->GetSummons();
+            for (const auto& pet : summons)
+            {
+                if (pet->GetPetState() != PET_STATE_PASSIVE)
+                {
+                    pet->GetAIInterface()->AttackReaction(attacker, 1, 0);
+                    pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
+                }
+            }
+        }
+        else
+        {
+            // Generate threat
+            GetAIInterface()->AttackReaction(attacker, damage, spellId);
+        }
+
+        // Hackfix - Ardent Defender
+        if (DamageTakenPctModOnHP35 && hasAuraState(AURASTATE_FLAG_HEALTH35))
+            damage = damage - float2int32(damage * DamageTakenPctModOnHP35) / 100;
+    }
+
+    // Create heal effect for leech effects
+    if (batch->isLeech && attacker != nullptr && attacker != this)
+    {
+        // Leech damage can be more than victim's health but the heal should not exceed victim's remaining health
+        auto healAmount = std::min(damage, getHealth());
+        if (batch->spellInfo != nullptr && batch->spellInfo->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_HEALTH_FUNNEL))
+        {
+            // but health funnel periodic effects can heal more than victim's health
+            healAmount = damage;
+        }
+
+        healAmount = static_cast<uint32_t>(std::ceil(healAmount * batch->leechMultipleValue));
+        attacker->doSpellHealing(attacker, spellId, healAmount, true, true, batch->isPeriodic, true, false);
+    }
+
+    setStandState(STANDSTATE_STAND);
+
+    // Check for auras which are interrupted on damage taken
+    // But do not remove the aura created by this spell
+    if (spellId != 0)
+    {
+        RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN, spellId);
+        ///\ todo: fix this, currently used for root and fear auras
+        if (Rand(35.0f))
+            RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_UNUSED2, spellId);
+    }
+    else
+    {
+        RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
+        ///\ todo: fix this, currently used for root and fear auras
+        if (Rand(35.0f))
+            RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_UNUSED2);
+    }
+
+    return damage;
+}
+
+uint32_t Unit::_handleBatchHealing(Unit* healer, uint32_t heal, uint32_t* absorbedHeal, SpellInfo const* spellInfo)
+{
+    auto healing = heal;
+
+    // Handle heal absorb
+    ///\ todo: implement (aura effect 301)
+    *absorbedHeal = 0;
+
+    if (healer != nullptr)
+    {
+        const auto plrOwner = healer->getPlayerOwner();
+
+        // Healing a flagged unit will flag the caster
+        if (isPvpFlagSet())
+        {
+            if (healer->isPet())
+            {
+                if (!healer->isPvpFlagSet())
+                    plrOwner->PvPToggle();
+            }
+            else if (plrOwner != nullptr)
+            {
+                if (!plrOwner->isPvpFlagSet())
+                    plrOwner->PvPToggle();
+            }
+        }
+
+        // Update battleground score
+        if (plrOwner != nullptr && plrOwner->m_bg != nullptr && plrOwner->GetMapMgr() == GetMapMgr())
+        {
+            plrOwner->m_bgScore.HealingDone += heal;
+            plrOwner->m_bg->UpdatePvPData();
+        }
+
+        // Handle threat
+        std::vector<Unit*> target_threat;
+        int count = 0;
+        for (const auto& itr : healer->getInRangeObjectsSet())
+        {
+            if (!itr || !itr->isCreature())
+                continue;
+
+            const auto tmp_creature = static_cast<Creature*>(itr);
+
+            if (!tmp_creature->CombatStatus.IsInCombat() || (tmp_creature->GetAIInterface()->getThreatByPtr(healer) == 0 && tmp_creature->GetAIInterface()->getThreatByPtr(this) == 0))
+                continue;
+
+            if (!(healer->GetPhase() & itr->GetPhase()))     //Can't see, can't be a threat
+                continue;
+
+            target_threat.push_back(tmp_creature);
+            count++;
+        }
+        
+        if (count != 0)
+        {
+            auto heal_threat = heal / count;
+
+            for (const auto& itr : target_threat)
+            {
+                itr->GetAIInterface()->HealReaction(healer, this, spellInfo, heal_threat);
+            }
+        }
+
+        if (IsInWorld() && healer->IsInWorld())
+            healer->CombatStatus.WeHealed(this);
+    }
+
+    RemoveAurasByHeal();
+
+    return healing;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -3788,6 +4705,22 @@ bool Unit::hasUnitMovementFlag(uint32_t f) const { return (movement_info.flags &
 uint16_t Unit::getExtraUnitMovementFlags() const { return movement_info.flags2; }
 void Unit::addExtraUnitMovementFlag(uint16_t f2) { movement_info.flags2 |= f2; }
 bool Unit::hasExtraUnitMovementFlag(uint16_t f2) const { return (movement_info.flags2 & f2) != 0; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Summons
+
+TotemSummon* Unit::getTotem(TotemSlots slot) const
+{
+    if (slot >= MAX_TOTEM_SLOT)
+        return nullptr;
+
+    return getSummonInterface()->getTotemInSlot(slot);
+}
+
+SummonHandler* Unit::getSummonInterface() const
+{
+    return m_summonInterface;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Vehicle

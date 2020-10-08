@@ -970,8 +970,6 @@ void Player::Update(unsigned long time_passed)
     Unit::Update(time_passed);
     uint32 mstime = Util::getMSTime();
 
-    RemoveGarbageItems();
-
     if (m_attacking)
     {
         // Check attack timer.
@@ -1002,8 +1000,8 @@ void Player::Update(unsigned long time_passed)
             {
                 uint32 damage = getMaxHealth() / 10;
 
-                sendEnvironmentalDamageLogPacket(getGuid(), uint8(DAMAGE_DROWNING), damage);
-                DealDamage(this, damage, 0, 0, 0);
+                sendEnvironmentalDamageLogPacket(getGuid(), DAMAGE_DROWNING, damage);
+                addSimpleEnvironmentalDamageBatchEvent(DAMAGE_DROWNING, damage);
                 m_UnderwaterLastDmg = mstime + 1000;
             }
         }
@@ -1032,8 +1030,8 @@ void Player::Update(unsigned long time_passed)
         {
             uint32 damage = getMaxHealth() / 5;
 
-            sendEnvironmentalDamageLogPacket(getGuid(), uint8(DAMAGE_LAVA), damage);
-            DealDamage(this, damage, 0, 0, 0);
+            sendEnvironmentalDamageLogPacket(getGuid(), DAMAGE_LAVA, damage);
+            addSimpleEnvironmentalDamageBatchEvent(DAMAGE_LAVA, damage);
             m_UnderwaterLastDmg = mstime + 1000;
         }
     }
@@ -1050,7 +1048,15 @@ void Player::Update(unsigned long time_passed)
     }
 
     //Autocast Spells in Area
-    CastSpellArea();
+    if (time_passed >= m_spellAreaUpdateTimer)
+    {
+        CastSpellArea();
+        m_spellAreaUpdateTimer = 1000;
+    }
+    else
+    {
+        m_spellAreaUpdateTimer -= static_cast<uint16_t>(time_passed);
+    }
 
     if (m_pvpTimer)
     {
@@ -1091,12 +1097,21 @@ void Player::Update(unsigned long time_passed)
             HandleSobering();
     }
 
-    WorldPacket* pending_packet = m_cache->m_pendingPackets.pop();
-    while (pending_packet != nullptr)
+    if (time_passed >= m_pendingPacketTimer)
     {
-        SendPacket(pending_packet);
-        delete pending_packet;
-        pending_packet = m_cache->m_pendingPackets.pop();
+        WorldPacket* pending_packet = m_cache->m_pendingPackets.pop();
+        while (pending_packet != nullptr)
+        {
+            SendPacket(pending_packet);
+            delete pending_packet;
+            pending_packet = m_cache->m_pendingPackets.pop();
+        }
+
+        m_pendingPacketTimer = 100;
+    }
+    else
+    {
+        m_pendingPacketTimer -= static_cast<uint16_t>(time_passed);
     }
 
     if (m_timeSyncTimer > 0)
@@ -1107,7 +1122,19 @@ void Player::Update(unsigned long time_passed)
             m_timeSyncTimer -= time_passed;
     }
 
-    SendUpdateToOutOfRangeGroupMembers();
+    if (time_passed >= m_partyUpdateTimer)
+    {
+        SendUpdateToOutOfRangeGroupMembers();
+
+        // Remove also garbage items
+        RemoveGarbageItems();
+
+        m_partyUpdateTimer = 1000;
+    }
+    else
+    {
+        m_partyUpdateTimer -= static_cast<uint16_t>(time_passed);
+    }
 }
 
 void Player::EventDismount(uint32 money, float x, float y, float z)
@@ -2870,7 +2897,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     LoadDeletedSpells(results[PlayerQuery::DeletedSpells].result);
 
-    LoadReputations(results[PlayerQuery::Reputation].result);
+    loadReputations(results[PlayerQuery::Reputation].result);
 
     // Load saved actionbars
     uint32 Counter = 0;
@@ -3787,7 +3814,7 @@ void Player::RemoveFromWorld()
 
     getSplineMgr().clearSplinePackets();
 
-    summonhandler.RemoveAllSummons();
+    getSummonInterface()->removeAllSummons();
     DismissActivePets();
     RemoveFieldSummon();
 
@@ -4410,8 +4437,10 @@ void Player::KillPlayer()
     EventDeath();
 
     m_session->SendPacket(SmsgCancelCombat().serialise().get());
-    //\Note: seems to be wrong format for this opcode - guess guid is required!
-    //m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
+    // Send server-side cancel message
+    WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
+    data << GetNewGUID();
+    SendMessageToSet(&data, false);
 
     setMoveRoot(true);
     sendStopMirrorTimerPacket(MIRROR_TYPE_FATIGUE);
@@ -4429,7 +4458,7 @@ void Player::KillPlayer()
         setPower(POWER_TYPE_RUNIC_POWER, 0);
 #endif
 
-    summonhandler.RemoveAllSummons();
+    getSummonInterface()->removeAllSummons();
     DismissActivePets();
 
     // Player falls off vehicle on death
@@ -6079,7 +6108,7 @@ void Player::RegenerateHealth(bool inCombat)
             setHealth((cur >= mh) ? mh : cur);
         }
         else
-            DealDamage(this, float2int32(-amt), 0, 0, 0);
+            dealDamage(this, float2int32(-amt), 0);
     }
 }
 
@@ -10437,325 +10466,6 @@ uint32 Player::CheckDamageLimits(uint32 dmg, uint32 spellid)
     return dmg;
 }
 
-void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint32 /*unitEvent*/, uint32 spellId, bool no_remove_auras)
-{
-    if (!pVictim || !pVictim->isAlive() || !pVictim->IsInWorld() || !IsInWorld())
-        return;
-    if (pVictim->isPlayer() && static_cast< Player* >(pVictim)->m_cheats.hasGodModeCheat == true)
-        return;
-    if (pVictim->bInvincible)
-        return;
-    if (pVictim->isCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
-        return;
-
-    if (this != pVictim)
-    {
-        if (!GetSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
-            damage = CheckDamageLimits(damage, spellId);
-
-        CombatStatus.OnDamageDealt(pVictim);
-
-        if (pVictim->isPvpFlagSet())
-        {
-            if (!isPvpFlagSet())
-                PvPToggle();
-
-            AggroPvPGuards();
-        }
-    }
-
-    pVictim->setStandState(STANDSTATE_STAND);
-
-    if (CombatStatus.IsInCombat())
-        sHookInterface.OnEnterCombat(this, this);
-
-    ///////////////////////////////////////////////////// Hackatlon ///////////////////////////////////////////////////////////
-
-    //the black sheep , no actually it is paladin : Ardent Defender
-    if (DamageTakenPctModOnHP35 && hasAuraState(AURASTATE_FLAG_HEALTH35))
-        damage = damage - float2int32(damage * DamageTakenPctModOnHP35) / 100;
-
-    if (pVictim->isCreature() && pVictim->IsTaggable())
-    {
-        pVictim->Tag(getGuid());
-        TagUnit(pVictim);
-    }
-
-    // Bg dmg counter
-    if (pVictim != this)
-    {
-        if (m_bg != nullptr && GetMapMgr() == pVictim->GetMapMgr())
-        {
-            m_bgScore.DamageDone += damage;
-            m_bg->UpdatePvPData();
-        }
-    }
-
-    // Duel
-    if (pVictim->isPlayer() && DuelingWith != nullptr && DuelingWith->getGuid() == pVictim->getGuid())
-    {
-        if (pVictim->getHealth() <= damage)
-        {
-            uint32 NewHP = pVictim->getMaxHealth() / 100;
-            if (NewHP < 5)
-                NewHP = 5;
-
-            pVictim->setHealth(NewHP);
-            EndDuel(DUEL_WINNER_KNOCKOUT);
-            pVictim->Emote(EMOTE_ONESHOT_BEG);
-            return;
-        }
-    }
-
-    if (pVictim->getHealth() <= damage)
-    {
-        if (pVictim->isTrainingDummy())
-        {
-            pVictim->setHealth(1);
-            return;
-        }
-
-        if (m_bg != nullptr)
-        {
-            m_bg->HookOnUnitKill(this, pVictim);
-
-            if (pVictim->isPlayer())
-                m_bg->HookOnPlayerKill(this, static_cast< Player* >(pVictim));
-        }
-
-        if (pVictim->isPlayer())
-        {
-            Player* playerVictim = static_cast<Player*>(pVictim);
-            sHookInterface.OnKillPlayer(this, playerVictim);
-
-            bool setAurastateFlag = false;
-
-            if (getLevel() >= (pVictim->getLevel() - 8) && (getGuid() != pVictim->getGuid()))
-            {
-#if VERSION_STRING > TBC
-                GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, GetAreaID(), 1, 0);
-                GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL, 1, 0, 0);
-#endif
-                HonorHandler::OnPlayerKilled(this, playerVictim);
-                setAurastateFlag = true;
-            }
-
-            if (setAurastateFlag)
-            {
-                addAuraStateAndAuras(AURASTATE_FLAG_LASTKILLWITHHONOR);
-
-                if (!sEventMgr.HasEvent(this, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
-                    sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, 0);
-                else
-                    sEventMgr.ModifyEventTimeLeft(this, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
-            }
-        }
-        else
-        {
-            if (pVictim->isCreature())
-            {
-                Reputation_OnKilledUnit(pVictim, false);
-
-#if VERSION_STRING > TBC
-                GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, GetMapId(), 0, 0);
-#endif
-
-                if (pVictim->getLevel() >= (getLevel() - 8) && (getGuid() != pVictim->getGuid()))
-                {
-                    HandleProc(PROC_ON_GAIN_EXPIERIENCE, this, nullptr);
-                    m_procCounter = 0;
-                }
-            }
-        }
-
-        EventAttackStop();
-
-        sendPartyKillLogPacket(pVictim->getGuid());
-
-        if (pVictim->isPvpFlagSet())
-        {
-            uint32 team = getTeam();
-            if (team == TEAM_ALLIANCE)
-                team = TEAM_HORDE;
-            else
-                team = TEAM_ALLIANCE;
-
-            auto area = pVictim->GetArea();
-            sWorld.sendZoneUnderAttackMessage(area ? area->id : GetZoneId(), static_cast<uint8>(team));
-        }
-
-        pVictim->Die(this, damage, spellId);
-
-        ///////////////////////////////////////////////////////////// Loot  //////////////////////////////////////////////////////////////////////////////////////////////
-
-        if (pVictim->isLootable())
-        {
-            Player* tagger = GetMapMgr()->GetPlayer(WoWGuid::getGuidLowPartFromUInt64(pVictim->GetTaggerGUID()));
-
-            // Tagger might have left the map so we need to check
-            if (tagger != nullptr)
-            {
-                if (tagger->InGroup())
-                    tagger->GetGroup()->SendLootUpdates(pVictim);
-                else
-                    tagger->SendLootUpdate(pVictim);
-            }
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////// Experience /////////////////////////////////////////////////////////////////////////////////////////////
-
-        if (pVictim->getCreatedByGuid() == 0 && !pVictim->isPet() && pVictim->IsTagged())
-        {
-            auto unit_tagger = pVictim->GetMapMgr()->GetUnit(pVictim->GetTaggerGUID());
-
-            if (unit_tagger != nullptr)
-            {
-                Player* player_tagger = nullptr;
-
-                if (unit_tagger->isPlayer())
-                    player_tagger = static_cast<Player*>(unit_tagger);
-
-                if ((unit_tagger->isPet() || unit_tagger->isSummon()) && unit_tagger->getPlayerOwner())
-                    player_tagger = unit_tagger->getPlayerOwner();
-
-                if (player_tagger != nullptr)
-                {
-                    if (player_tagger->InGroup())
-                    {
-                        player_tagger->GiveGroupXP(pVictim, player_tagger);
-                    }
-                    else if (isCreatureOrPlayer())
-                    {
-                        uint32 xp = CalculateXpToGive(pVictim, unit_tagger);
-
-                        if (xp > 0)
-                        {
-                            player_tagger->GiveXP(xp, pVictim->getGuid(), true);
-
-                            addAuraStateAndAuras(AURASTATE_FLAG_LASTKILLWITHHONOR);
-
-                            if (!sEventMgr.HasEvent(this, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
-                                sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                            else
-                                sEventMgr.ModifyEventTimeLeft(this, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
-
-                            // let's give the pet some experience too
-                            if (player_tagger->GetSummon() && player_tagger->GetSummon()->CanGainXP())
-                            {
-                                xp = CalculateXpToGive(pVictim, player_tagger->GetSummon());
-
-                                if (xp > 0)
-                                    player_tagger->GetSummon()->giveXp(xp);
-                            }
-                        }
-                    }
-
-                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                    if (pVictim->isCreature())
-                    {
-                        sQuestMgr.OnPlayerKill(player_tagger, static_cast<Creature*>(pVictim), true);
-#if VERSION_STRING > TBC
-                        ///////////////////////////////////////////////// Kill creature/creature type Achievements /////////////////////////////////////////////////////////////////////
-                        if (player_tagger->InGroup())
-                        {
-                            auto player_group = player_tagger->GetGroup();
-
-                            player_group->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->getEntry(), 1, 0);
-                            player_group->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
-                        }
-                        else
-                        {
-                            player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->getEntry(), 1, 0);
-                            player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
-                        }
-#endif
-                    }
-                }
-            }
-        }
-
-#if VERSION_STRING > TBC
-        if (pVictim->isCritter())
-        {
-            GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->getEntry(), 1, 0);
-            GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
-        }
-#endif
-    }
-    else
-    {
-        pVictim->TakeDamage(this, damage, spellId, no_remove_auras);
-    }
-}
-
-void Player::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras)
-{
-    if (!no_remove_auras)
-    {
-        //zack 2007 04 24 : root should not remove self (and also other unknown spells)
-        if (spellid)
-        {
-            RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN, spellid);
-            if (Rand(35.0f))
-                RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_UNUSED2, spellid);
-        }
-        else
-        {
-            RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
-            if (Rand(35.0f))
-                RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_UNUSED2);
-        }
-    }
-
-    if (CombatStatus.IsInCombat())
-        sHookInterface.OnEnterCombat(this, pAttacker);
-
-    // Rage generation on damage
-    if (getPowerType() == POWER_TYPE_RAGE && pAttacker != this)
-    {
-        float level = static_cast<float>(getLevel());
-        float c = 0.0091107836f * level * level + 3.225598133f * level + 4.2652911f;
-
-        float val = 2.5f * damage / c;
-        uint32 rage = getPower(POWER_TYPE_RAGE);
-
-        if (rage + float2int32(val) > 1000)
-            val = 1000.0f - static_cast<float>(getPower(POWER_TYPE_RAGE));
-
-        val *= 10.0;
-        modPower(POWER_TYPE_RAGE, static_cast<int32>(val));
-    }
-
-    // Cannibalize, when we are hit we need to stop munching that nice fresh corpse
-    {
-        if (cannibalize)
-        {
-            sEventMgr.RemoveEvents(this, EVENT_CANNIBALIZE);
-            setEmoteState(EMOTE_ONESHOT_NONE);
-            cannibalize = false;
-        }
-    }
-
-    if (pAttacker != this)
-    {
-        // Defensive pet
-        std::list<Pet*> summons = GetSummons();
-        for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-        {
-            Pet* pPet = *itr;
-            if (pPet->GetPetState() != PET_STATE_PASSIVE)
-            {
-                pPet->GetAIInterface()->AttackReaction(pAttacker, 1, 0);
-                pPet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
-            }
-        }
-    }
-
-    modHealth(-1 * static_cast<int32>(damage));
-}
-
 void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
     if (getVehicleComponent() != nullptr)
@@ -10878,7 +10588,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     m_UnderwaterTime = 0;
     m_UnderwaterState = 0;
 
-    summonhandler.RemoveAllSummons();
+    getSummonInterface()->removeAllSummons();
     DismissActivePets();
 
     setHealth(0);
@@ -10896,6 +10606,10 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     }
 
     KillPlayer();
+
+    // Clear health batch on death
+    clearHealthBatch();
+
     if (m_mapMgr->m_battleground != nullptr)
         m_mapMgr->m_battleground->HookOnUnitDied(this);
 }
@@ -11207,42 +10921,6 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
 
     LOG_DEBUG("WORLD: Added new QLE.");
     sHookInterface.OnQuestAccept(this, questProperties, qst_giver);
-}
-
-bool Player::LoadReputations(QueryResult *result)
-{
-    if (result == nullptr)
-        return false;
-
-    do {
-        Field* field = result->Fetch();
-
-        uint32 id = field[0].GetUInt32();
-        uint32 flag = field[1].GetUInt32();
-        int32 basestanding = field[2].GetInt32();
-        int32 standing = field[3].GetInt32();
-
-        DBC::Structures::FactionEntry const* faction = sFactionStore.LookupEntry(id);
-        if (faction == nullptr || faction->RepListId < 0)
-            continue;
-
-        ReputationMap::iterator itr = m_reputation.find(id);
-        if (itr != m_reputation.end())
-            delete itr->second;
-
-        FactionReputation* reputation = new FactionReputation;
-        reputation->baseStanding = basestanding;
-        reputation->standing = standing;
-        reputation->flag = static_cast<uint8>(flag);
-        m_reputation[id] = reputation;
-        reputationByListId[faction->RepListId] = reputation;
-
-    } while (result->NextRow());
-
-    if (m_reputation.empty())
-        _InitialReputation();
-
-    return true;
 }
 
 bool Player::SaveReputations(bool NewCharacter, QueryBuffer *buf)

@@ -5,6 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "../world/WorldConf.h"
+
+#include <cstdint>
+
 enum SpellCastResult : uint8_t
 {
 #if VERSION_STRING == Classic

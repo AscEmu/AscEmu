@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "../../StdAfx.h"
 #include "Units/Summons/WildSummon.h"
 
-WildSummon::WildSummon(uint64_t GUID) : Summon(GUID) {}
+WildSummon::WildSummon(uint64_t GUID, uint32_t duration) : Summon(GUID, duration) {}
 
 WildSummon::~WildSummon() {}
 

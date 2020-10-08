@@ -271,7 +271,7 @@ enum PlayerFlags
     PLAYER_FLAG_UNK1                    = 0x00004000,
     // TBC flags begin (needs verification)
     PLAYER_FLAG_DEVELOPER               = 0x00008000, // <Dev> tag ingame
-    PLAYER_FLAG_SANCTUARY               = 0x00010000, // (TODO: not implemented?) Makes player unattackable, added in sanctuary areas
+    PLAYER_FLAG_SANCTUARY               = 0x00010000, // Makes player unattackable, added in sanctuary areas
     PLAYER_FLAG_UNK2                    = 0x00020000, // Toggles 'Taxi Time Test' and FPS counter, unused
     // WoTLK flags begin
     PLAYER_FLAG_PVP_TIMER               = 0x00040000, // PvP timer after toggling manually PvP combat state off

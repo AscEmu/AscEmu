@@ -26,6 +26,7 @@
 #include "SpellAuras.h"
 #include "Definitions/SpellSchoolConversionTable.h"
 #include "Definitions/DispelType.h"
+#include "Units/Summons/TotemSummon.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
  // Mage Scripts
@@ -105,7 +106,7 @@ public:
                 Unit* totem;
                 for (uint8 i = 0; i < 32; i++)
                 {
-                    totem = u_caster->summonhandler.GetSummonWithEntry(totem_ids[i]);   // Get possible firetotem
+                    totem = u_caster->getSummonInterface()->getSummonWithEntry(totem_ids[i]);   // Get possible firetotem
                     if (totem != NULL)
                     {
                         HasFireTotem = true;
@@ -148,7 +149,7 @@ public:
         return new CheatDeathAura(proto, duration, caster, target, temporary, i_caster);
     }
 
-    uint32 AbsorbDamage(uint32 /*School*/, uint32* dmg)
+    uint32_t absorbDamage(SchoolMask /*School*/, uint32_t* dmg, bool checkOnly) override
     {
         // Checking for 1 min cooldown
         if (dSpell == NULL || getPlayerOwner()->hasSpellOnCooldown(dSpell))
@@ -161,6 +162,9 @@ public:
         // Check if damage will kill player.
         uint32 cur_hlth = getPlayerOwner()->getHealth();
         if ((*dmg) < cur_hlth)
+            return 0;
+
+        if (checkOnly)
             return 0;
 
         uint32 max_hlth = getPlayerOwner()->getMaxHealth();
@@ -395,7 +399,7 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new RuneStrileSpell(Caster, info, triggered, aur); }
 
-    void HandleEffects(uint64 guid, uint32 i)
+    void HandleEffects(uint64 guid, uint8 i)
     {
         Spell::HandleEffects(guid, i);
 
@@ -425,9 +429,9 @@ public:
             return aurEff->mDamage;
     }
 
-    int32 CalcPctDamage()
+    uint8_t CalcPctDamage()
     {
-        return getSpellInfo()->getEffectBasePoints(0) + 1;
+        return static_cast<uint8_t>(getSpellInfo()->getEffectBasePoints(0) + 1);
     }
 };
 
@@ -443,10 +447,10 @@ public:
         return new SpellDeflectionAura(proto, duration, caster, target, temporary, i_caster);
     }
 
-    uint32 AbsorbDamage(uint32 School, uint32* dmg)
+    uint32_t absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool /*checkOnly*/) override
     {
-        uint32 mask = GetSchoolMask();
-        if (!(mask & g_spellSchoolConversionTable[School]))
+        // Check if aura can absorb this school
+        if (!(m_absorbSchoolMask & schoolMask))
             return 0;
 
         Player* caster = GetPlayerCaster();
@@ -489,7 +493,7 @@ public:
         return new WillOfTheNecropolisAura(proto, duration, caster, target, temporary, i_caster);
     }
 
-    uint32 AbsorbDamage(uint32 /*School*/, uint32* dmg) override
+    uint32_t absorbDamage(SchoolMask /*School*/, uint32_t* dmg, bool /*checkOnly*/) override
     {
         Unit* caster = GetUnitCaster();
         if (caster == NULL)

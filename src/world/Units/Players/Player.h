@@ -903,6 +903,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Database stuff
     bool loadSpells(QueryResult* result);
+    bool loadReputations(QueryResult* result);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
@@ -1166,6 +1167,11 @@ public:
     void sendRaidGroupOnly(uint32_t timeInMs, uint32_t type);
 
     void setVisibleItemFields(uint32_t slot, Item* item);
+
+private:
+    uint16_t m_spellAreaUpdateTimer = 1000;
+    uint16_t m_pendingPacketTimer = 100;
+    uint16_t m_partyUpdateTimer = 1000;
 
 public:
     //MIT End
@@ -1685,7 +1691,6 @@ public:
         bool LoadDeletedSpells(QueryResult* result);
         bool SaveDeletedSpells(bool NewCharacter, QueryBuffer* buf);
 
-        bool LoadReputations(QueryResult* result);
         bool SaveReputations(bool NewCharacter, QueryBuffer *buf);
 
         bool LoadSkills(QueryResult* result);
@@ -2136,8 +2141,6 @@ public:
         //////////////////////////////////////////////////////////////////////////////////////////
         void HandleSpellLoot(uint32 itemid);
 
-        void DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras = false) override;
-        void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false) override;
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid) override;
         void HandleKnockback(Object* caster, float horizontal, float vertical) override;
 

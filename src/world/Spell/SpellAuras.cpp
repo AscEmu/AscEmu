@@ -363,6 +363,18 @@ void Aura::setMaxDuration(int32_t dur)
     m_maxDuration = dur;
 }
 
+uint16_t Aura::getPeriodicTickCountForEffect(uint8_t effIndex) const
+{
+    if (m_auraEffects[effIndex].mAuraEffect == SPELL_AURA_NONE)
+        return 1;
+
+    if (m_auraEffects[effIndex].mAmplitude == 0 || getMaxDuration() == -1)
+        return 1;
+
+    // Never return 0 to avoid division by zero later
+    return std::max(static_cast<uint16_t>(1), static_cast<uint16_t>(getMaxDuration() / m_auraEffects[effIndex].mAmplitude));
+}
+
 void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStacks/* = 0*/)
 {
     int32_t maxStacks = getSpellInfo()->getMaxstack() == 0 ? 1 : getSpellInfo()->getMaxstack();
@@ -597,12 +609,17 @@ void Aura::update(unsigned long diff, bool skipDurationCheck/* = false*/)
     if (m_duration > 0 && !skipDurationCheck)
     {
         m_duration -= diff;
-        if (m_duration < 0)
+        if (m_duration <= 0)
         {
             m_duration = 0;
             removeAura(AURA_REMOVE_ON_EXPIRE);
         }
     }
+}
+
+bool Aura::isAbsorbAura() const
+{
+    return false;
 }
 
 SpellInfo* Aura::getSpellInfo() const
@@ -830,8 +847,8 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                             sdmg.full_damage = aurEff->mDamage;
                             sdmg.resisted_damage = 0;
                             sdmg.school_type = 0;
-                            casterUnit->DealDamage(casterUnit, aurEff->mDamage, 0, 0, 0);
-                            casterUnit->SendAttackerStateUpdate(casterUnit, casterUnit, &sdmg, aurEff->mDamage, 0, 0, 0, ATTACK);
+                            casterUnit->dealDamage(casterUnit, aurEff->mDamage, 0);
+                            casterUnit->sendAttackerStateUpdate(casterUnit->GetNewGUID(), casterUnit->GetNewGUID(), HITSTATUS_NORMALSWING, aurEff->mDamage, 0, sdmg, 0, VisualState::ATTACK, 0, 0);
                         } break;
                         default:
                             break;
@@ -878,11 +895,19 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
         {
             const auto triggerSpell = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(aurEff->effIndex));
             const auto casterUnit = GetUnitCaster();
-            // This is bad, we are using GenerateTargets to get correct target for periodic target
-            // but it is very very inaccurate and should never be used
-            // This should be fixed soon
             if (casterUnit != nullptr)
-                casterUnit->castSpell(nullptr, triggerSpell, true);
+            {
+                Unit* target = nullptr;
+                // If spell is channeled, periodic target should be the channel object
+                if (getSpellInfo()->isChanneled())
+                    target = casterUnit->GetMapMgrUnit(casterUnit->getChannelObjectGuid());
+
+                // Note; target is nullptr here if spell is not channeled
+                // In that case we are using GenerateTargets to get correct target for periodic target
+                // but it is very very inaccurate and should never be used
+                // There is no other way to fix it than use SpellScript to set correct target for each periodic spell which have no target
+                casterUnit->castSpell(target, triggerSpell, true);
+            }
         } break;
         case SPELL_AURA_PERIODIC_ENERGIZE:
         {
@@ -904,6 +929,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 getOwner()->Emote(EMOTE_ONESHOT_EAT);
         } break;
         case SPELL_AURA_PERIODIC_LEECH:
+        case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
         {
             const auto staticDamage = false;
             const auto casterUnit = GetUnitCaster();
@@ -913,27 +939,6 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 casterUnit->doSpellDamage(getOwner(), getSpellId(), aurEff->mDamage, aurEff->effIndex, true, staticDamage, true, true, false, this, aurEff);
             else
                 getOwner()->doSpellDamage(getOwner(), getSpellId(), aurEff->mDamage, aurEff->effIndex, true, staticDamage, true, true, false, this, aurEff);
-        } break;
-        case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
-        {
-            ///\ todo: investigate this effect more
-            const auto staticDamage = true;
-            const auto casterUnit = GetUnitCaster();
-
-            // Deal damage
-            int32_t damageInflicted = 0;
-            if (casterUnit != nullptr)
-                damageInflicted = casterUnit->doSpellDamage(getOwner(), getSpellId(), aurEff->mDamage, aurEff->effIndex, true, staticDamage, true, false, false, this, aurEff);
-            else
-                damageInflicted = getOwner()->doSpellDamage(getOwner(), getSpellId(), aurEff->mDamage, aurEff->effIndex, true, staticDamage, true, false, false, this, aurEff);
-
-            // If caster does not exist or is not alive, health cannot be leeched
-            if (casterUnit == nullptr || !casterUnit->isAlive())
-                return;
-
-            // Heal caster
-            const auto healAmount = static_cast<uint32_t>(damageInflicted * getSpellInfo()->getEffectMultipleValue(aurEff->effIndex));
-            casterUnit->doSpellHealing(casterUnit, getSpellId(), healAmount, true, false, true, false, false, this, aurEff);
         } break;
         case SPELL_AURA_PERIODIC_MANA_LEECH:
         {
@@ -1023,13 +1028,124 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
         {
             const auto triggeredInfo = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(aurEff->effIndex));
             const auto casterUnit = GetUnitCaster();
-            // This is bad, we are using GenerateTargets to get correct target for periodic target
-            // but it is very very inaccurate and should never be used
-            // This should be fixed soon
             if (casterUnit != nullptr)
-                casterUnit->castSpell(nullptr, triggeredInfo, aurEff->mDamage, true);
+            {
+                Unit* target = nullptr;
+                // If spell is channeled, periodic target should be the channel object
+                if (getSpellInfo()->isChanneled())
+                    target = casterUnit->GetMapMgrUnit(casterUnit->getChannelObjectGuid());
+
+                // Note; target is nullptr here if spell is not channeled
+                // In that case we are using GenerateTargets to get correct target for periodic target
+                // but it is very very inaccurate and should never be used
+                // There is no other way to fix it than use SpellScript to set correct target for each periodic spell which have no target
+                casterUnit->castSpell(target, triggeredInfo, aurEff->mDamage, true);
+            }
         } break;
         default:
             break;
     }
 }
+
+// Absorb aura
+
+AbsorbAura::AbsorbAura(SpellInfo* spellInfo, int32_t duration, Object* caster, Unit* target, bool temporary/* = false*/, Item* i_caster/* = nullptr*/) :
+    Aura(spellInfo, duration, caster, target, temporary, i_caster) {}
+
+Aura* AbsorbAura::Create(SpellInfo* spellInfo, int32_t duration, Object* caster, Unit* target, bool temporary/* = false*/, Item* i_caster/* = nullptr*/)
+{
+    return new AbsorbAura(spellInfo, duration, caster, target, temporary, i_caster);
+}
+
+uint32_t AbsorbAura::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly)
+{
+    // Check if aura can absorb this school
+    if (!(m_absorbSchoolMask & schoolMask))
+        return 0;
+
+    // Absorb damage is checked before packets are sent but real absorption happens on health update
+    if (checkOnly)
+    {
+        uint32_t absorbedDamage = 0;
+        uint32_t damageToAbsorb = *dmg;
+
+        // Check if aura absorbs only percantage of the damage
+        if (m_pctAbsorbValue < 100)
+            damageToAbsorb = damageToAbsorb * m_pctAbsorbValue / 100;
+
+        auto absorbValue = getRemainingAbsorbAmount();
+        if (damageToAbsorb >= absorbValue)
+        {
+            *dmg -= absorbValue;
+            absorbedDamage = absorbValue;
+
+            m_absorbDamageBatch = m_absorbValue;
+        }
+        else
+        {
+            *dmg -= damageToAbsorb;
+            absorbedDamage = damageToAbsorb;
+
+            m_absorbDamageBatch += damageToAbsorb;
+        }
+
+        return absorbedDamage;
+    }
+    else
+    {
+        m_absorbValue -= m_absorbDamageBatch;
+        m_absorbDamageBatch = 0;
+
+        if (m_absorbValue <= 0)
+            removeAura();
+    }
+
+    return 0;
+}
+
+uint32_t AbsorbAura::getRemainingAbsorbAmount() const
+{
+    if (m_absorbValue < 0 || m_absorbDamageBatch > static_cast<uint32_t>(m_absorbValue))
+        return 0;
+    else
+        return m_absorbValue - m_absorbDamageBatch;
+}
+
+int32_t AbsorbAura::getTotalAbsorbAmount() const
+{
+    return m_totalAbsorbValue;
+}
+
+void AbsorbAura::spellAuraEffectSchoolAbsorb(AuraEffectModifier* aurEff, bool apply)
+{
+    if (!apply)
+        return;
+
+    auto absorbValue = calcAbsorbAmount(aurEff);
+
+    m_totalAbsorbValue = absorbValue;
+    m_absorbValue = absorbValue;
+    m_pctAbsorbValue = CalcPctDamage();
+    m_absorbSchoolMask = SchoolMask(aurEff->miscValue);
+}
+
+bool AbsorbAura::isAbsorbAura() const
+{
+    return true;
+}
+
+int32_t AbsorbAura::calcAbsorbAmount(AuraEffectModifier* aurEff)
+{
+    // Call for legacy script hook
+    auto val = CalcAbsorbAmount(aurEff);
+
+    const auto unitCaster = GetUnitCaster();
+    if (unitCaster != nullptr)
+    {
+        // Apply spell power coefficient
+        val += static_cast<int32_t>((unitCaster->getSpellDamageBonus(getSpellInfo(), val, false)));
+    }
+
+    return val;
+}
+
