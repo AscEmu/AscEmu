@@ -4108,61 +4108,63 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
             }
         }
 
-        // Experience points
-        if (!isPet() && getCreatedByGuid() == 0 && IsTagged())
+        if (!isPet() && getCreatedByGuid() == 0)
         {
-            const auto taggerUnit = GetMapMgrUnit(GetTaggerGUID());
-            const auto tagger = taggerUnit != nullptr ? taggerUnit->getPlayerOwner() : nullptr;
-            if (tagger != nullptr)
+            // Experience points
+            if (IsTagged())
             {
-                if (tagger->InGroup())
+                const auto taggerUnit = GetMapMgrUnit(GetTaggerGUID());
+                const auto tagger = taggerUnit != nullptr ? taggerUnit->getPlayerOwner() : nullptr;
+                if (tagger != nullptr)
                 {
-                    tagger->GiveGroupXP(this, tagger);
-                }
-                else
-                {
-                    auto xp = CalculateXpToGive(this, tagger);
-                    if (xp > 0)
-                    {
-                        tagger->GiveXP(xp, getGuid(), true);
-
-                        // Give XP to pets also
-                        if (tagger->GetSummon() != nullptr && tagger->GetSummon()->CanGainXP())
-                        {
-                            xp = CalculateXpToGive(this, tagger->GetSummon());
-                            if (xp > 0)
-                                tagger->GetSummon()->giveXp(xp);
-                        }
-                    }
-                }
-
-                if (isCreature())
-                {
-                    sQuestMgr.OnPlayerKill(tagger, dynamic_cast<Creature*>(this), true);
-
-#ifdef FT_ACHIEVEMENTS
                     if (tagger->InGroup())
                     {
-                        tagger->GetGroup()->UpdateAchievementCriteriaForInrange(this, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
-                        tagger->GetGroup()->UpdateAchievementCriteriaForInrange(this, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, attacker->getPlayerOwner()->getGuidHigh(), attacker->getPlayerOwner()->getGuidLow(), 0);
+                        tagger->GiveGroupXP(this, tagger);
                     }
                     else
                     {
-                        tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
-                        tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, attacker->getPlayerOwner()->getGuidHigh(), attacker->getPlayerOwner()->getGuidLow(), 0);
+                        auto xp = CalculateXpToGive(this, tagger);
+                        if (xp > 0)
+                        {
+                            tagger->GiveXP(xp, getGuid(), true);
+
+                            // Give XP to pets also
+                            if (tagger->GetSummon() != nullptr && tagger->GetSummon()->CanGainXP())
+                            {
+                                xp = CalculateXpToGive(this, tagger->GetSummon());
+                                if (xp > 0)
+                                    tagger->GetSummon()->giveXp(xp);
+                            }
+                        }
                     }
-#endif
-                }
-            }
-        }
+
+                    if (isCreature())
+                    {
+                        sQuestMgr.OnPlayerKill(tagger, dynamic_cast<Creature*>(this), true);
 
 #ifdef FT_ACHIEVEMENTS
-        if (attacker->getPlayerOwner() != nullptr && isCritter())
-        {
-            attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
-            attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, attacker->getPlayerOwner()->getGuidHigh(), attacker->getPlayerOwner()->getGuidLow(), 0);
-        }
+                        if (tagger->InGroup())
+                        {
+                            tagger->GetGroup()->UpdateAchievementCriteriaForInrange(this, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
+                            tagger->GetGroup()->UpdateAchievementCriteriaForInrange(this, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
+                        }
+                        else
+                        {
+                            tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
+                            tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
+                        }
 #endif
+                    }
+                }
+            }
+#ifdef FT_ACHIEVEMENTS
+            else if (attacker->getPlayerOwner() != nullptr && isCritter())
+            {
+                attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
+                attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
+            }
+#endif
+        }
 
         // The unit has died so no need to proceed any further
         return;

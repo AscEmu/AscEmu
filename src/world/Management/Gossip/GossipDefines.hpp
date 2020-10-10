@@ -23,13 +23,14 @@ struct GossipItem
 
 struct GossipQuestItem
 {
-    GossipQuestItem(uint8_t icon, uint32_t level = 0, uint32_t flags = 0) :
-        icon(icon), level(level), flags(flags) {}
+    GossipQuestItem(uint8_t icon, int32_t level = 0, uint32_t flags = 0, uint8_t repeatable = 0) :
+        icon(icon), level(level), flags(flags), repeatable(repeatable) {}
 
     uint8_t icon;
+    int32_t level;
     // used for clients > tbc
-    uint32_t level;
     uint32_t flags;
+    uint8_t repeatable; // 0 yellow exclamation mark, 1 blue question mark
 };
 
 // used for db loading
