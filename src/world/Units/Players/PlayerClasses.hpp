@@ -7,12 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Player.h"
 
-#define TOTAL_NORMAL_RUNE_TYPES 3
-#define TOTAL_USED_RUNES (TOTAL_NORMAL_RUNE_TYPES * 2)
-#define MAX_RUNES 6
-#define TOTAL_RUNE_TYPES 4
-#define MAX_RUNE_VALUE 1
-
 enum SPELL_RUNE_TYPES
 {
     RUNE_BLOOD = 0,

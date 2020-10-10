@@ -19,17 +19,18 @@
 #ifndef GAMEEVENT_H
 #define GAMEEVENT_H
 
-#include "GameEventMgr.h"
 #include <vector>
 #include <string>
+
+#include "GameEventMgr.h"
 #include "Units/Creatures/Creature.h"
+#include "Macros/ScriptMacros.hpp"
 
 struct EventNamesQueryResult;
 struct EventCreatureSpawnsQueryResult;
 struct EventGameObjectSpawnsQueryResult;
 
 class EventScript;
-#define CALL_EVENTSCRIPT_EVENT(obj, func) if (TO< GameEvent* >(obj)->mEventScript != nullptr) TO< GameEvent* >(obj)->mEventScript->func
 
 class GameEvent
 {

@@ -172,7 +172,6 @@ enum DeathState
     DEAD        // Unit is dead and his corpse is gone from the world
 };
 
-#define HIGHEST_FACTION = 46
 enum Factions
 {
     FACTION_BLOODSAIL_BUCCANEERS,
@@ -755,9 +754,9 @@ enum UnitBytes1_Flags
 // byte value (UNIT_FIELD_BYTES_2,0)
 enum UnitBytes2_SheathState
 {
-    SHEATH_STATE_UNARMED  = 0,                              // non prepared weapon
-    SHEATH_STATE_MELEE    = 1,                              // prepared melee weapon
-    SHEATH_STATE_RANGED   = 2                               // prepared ranged weapon
+    SHEATH_STATE_UNARMED  = 0,              // non prepared weapon
+    SHEATH_STATE_MELEE    = 1,              // prepared melee weapon
+    SHEATH_STATE_RANGED   = 2               // prepared ranged weapon
 };
 
 // UNIT_FIELD_BYTES_2, 1

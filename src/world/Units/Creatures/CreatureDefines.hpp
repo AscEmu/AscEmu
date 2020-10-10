@@ -32,11 +32,9 @@
 
 #include "Util.hpp"
 #include "Server/Master.h"
+#include "Macros/CreatureMacros.hpp"
 
 struct AI_Spell;
-
-// #define MAX_CREATURE_LOOT 8 Zyres 2015/12/30 unused
-// #define MAX_PET_SPELL 4 Zyres 2015/12/30 unused
 
 const uint8 creatureMaxProtoSpells = 8;
 const uint32 creatureMaxInventoryItems = 150;
@@ -414,7 +412,6 @@ enum TrainerServiceType
     TRAINER_SERVICE_NEVER = 0x4,
     TRAINER_SERVICE_NO_PET = 0x5
 };
-#define NUM_TRAINER_SERVICE_TYPES 0x6
 
 enum TrainerType
 {
@@ -423,7 +420,6 @@ enum TrainerType
     TRAINER_TYPE_TRADESKILLS = 0x2,
     TRAINER_TYPE_PET = 0x3
 };
-#define NUM_TRAINER_TYPES 0x4
 
 struct GossipOptions
 {
@@ -457,11 +453,6 @@ struct trainertype
     const char* partialname;
     uint32 type;
 };
-
-#define TRAINER_TYPE_MAX 16
-#define TRAINER_STATUS_LEARNABLE 0
-#define TRAINER_STATUS_NOT_LEARNABLE 1
-#define TRAINER_STATUS_ALREADY_HAVE 2
 
 static trainertype trainer_types[TRAINER_TYPE_MAX] =
 {

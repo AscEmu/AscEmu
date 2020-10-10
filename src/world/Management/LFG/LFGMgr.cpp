@@ -17,6 +17,7 @@
  */
 
 #include "StdAfx.h"
+#include "Macros/LFGMacros.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Management/Item.h"
@@ -2020,7 +2021,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         }
 
         // if daily then append to finished dailies
-        if (qReward->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
+        if (qReward->is_repeatable == DEFINE_QUEST_REPEATABLE_DAILY)
             player->PushToFinishedDailies(qReward->id);
 #if VERSION_STRING > TBC
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
@@ -2114,7 +2115,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         }
 
         // if daily then append to finished dailies
-        if (qReward->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
+        if (qReward->is_repeatable == DEFINE_QUEST_REPEATABLE_DAILY)
             player->PushToFinishedDailies(qReward->id);
 
 #if VERSION_STRING > TBC

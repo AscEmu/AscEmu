@@ -19,6 +19,9 @@
 #ifndef MAILMGR_H
 #define MAILMGR_H
 
+#define MAIL_MAX_ITEM_SLOT 12
+#define MAIL_DEFAULT_EXPIRATION_TIME 30
+
 /// \todo refactoring
 struct AuctionEntry;
 struct CalendarEvent;
@@ -95,8 +98,6 @@ enum MailCheckMask
     MAIL_CHECK_MASK_COD_PAYMENT         = 0x08,
     MAIL_CHECK_MASK_HAS_BODY            = 0x10,
 };
-
-#define MAIL_MAX_ITEM_SLOT 12
 
 struct MailMessage
 {
@@ -185,7 +186,5 @@ class SERVER_DECL MailSystem : public EventableObject
 };
 
 #define sMailSystem MailSystem::getInstance()
-
-#define MAIL_DEFAULT_EXPIRATION_TIME 30
 
 #endif // MAILMGR_H

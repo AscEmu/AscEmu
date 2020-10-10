@@ -22,8 +22,6 @@
 #include <map>
 #include <string>
 
-#define EQUIPMENTSET_SLOTS 10
-
 class WorldPacket;
 class QueryBuffer;
 class QueryResult;

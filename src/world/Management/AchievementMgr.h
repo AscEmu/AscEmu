@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "../world/WorldConf.h"
+#include "Macros/AIInterfaceMacros.hpp"
 #include "Units/Unit.h"
 
 #if VERSION_STRING > TBC
@@ -39,19 +40,6 @@ inline uint32_t secsToTimeBitFields(time_t secs)
     tm* lt = localtime(&secs);
     return (lt->tm_year - 100) << 24 | lt->tm_mon << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min;
 }
-
-/// All criteria must be completed for the achievement to be complete.
-#define ACHIEVEMENT_CRITERIA_COMPLETE_FLAG_ALL 2
-/// Some of the criteria must be completed for the achievement to be complete.
-#define ACHIEVEMENT_CRITERIA_COMPLETE_FLAG_SOME 4
-
-/// You must not be in a group to complete the achievement.
-#define ACHIEVEMENT_CRITERIA_GROUP_NOT_IN_GROUP 2
-
-/// Alliance-only achievement
-#define ACHIEVEMENT_FACTION_FLAG_ALLIANCE 0
-/// Horde-only achievement
-#define ACHIEVEMENT_FACTION_FLAG_HORDE 1
 
 struct CriteriaProgress
 {

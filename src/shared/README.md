@@ -157,4 +157,4 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2017 | Util.hpp
 * 2017 | Auth/WowCrypt.cpp
 * 2017 | Auth/WowCrypt.h
-* 2020 | Field.hpp
+* 2020 | Database/Field.hpp

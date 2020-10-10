@@ -22,6 +22,7 @@
 #define WOWSERVER_ITEM_H
 
 #include "Skill.h"
+#include "Macros/ItemMacros.hpp"
 #include "Management/ItemPrototype.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Objects/Object.h"
@@ -206,8 +207,6 @@ enum RandomEnchantmentTypes
     RANDOMPROPERTY = 1,
     RANDOMSUFFIX   = 2
 };
-
-#define RANDOM_SUFFIX_MAGIC_CALCULATION(__suffix, __scale) float2int32(float(__suffix) * float(__scale) / 10000.0f);
 
 struct WoWItem;
 class SERVER_DECL Item : public Object

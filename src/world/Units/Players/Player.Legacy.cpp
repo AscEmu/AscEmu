@@ -31,6 +31,7 @@
 #include "Objects/DynamicObject.h"
 #include "Server/CharacterErrors.h"
 #include "VMapFactory.h"
+#include "Macros/CorpseMacros.hpp"
 #include "Management/HonorHandler.h"
 #include "Storage/WorldStrings.h"
 #include "Management/TaxiMgr.h"
@@ -120,8 +121,6 @@ using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
 using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
 
 UpdateMask Player::m_visibleUpdateMask;
-
-#define COLLISION_INDOOR_CHECK_INTERVAL 1000
 
 static const float crit_to_dodge[MAX_PLAYER_CLASSES] =
 {
@@ -4740,9 +4739,6 @@ float Player::GetDefenseChance(uint32 opLevel)
 
     return chance;
 }
-
-#define BASE_BLOCK_CHANCE 5.0f
-#define BASE_PARRY_CHANCE 5.0f
 
 // Gets dodge chances before defense skill is applied
 float Player::GetDodgeChance()
@@ -9622,8 +9618,6 @@ bool Player::Cooldown_CanCast(ItemProperties const* pProto, uint32 x)
 
     return true;
 }
-
-#define COOLDOWN_SKIP_SAVE_IF_MS_LESS_THAN 10000
 
 void Player::_SavePlayerCooldowns(QueryBuffer* buf)
 {

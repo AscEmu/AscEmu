@@ -25,6 +25,25 @@
 #include "WorldPacket.h"
 #include "Server/EventableObject.h"
 
+#define MAX_LEVEL_GROUP 9
+#define MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG 1
+#define MAXIMUM_BATTLEGROUNDS_PER_LEVEL_GROUP 50
+#define LEVEL_GROUP_70 8
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Values based on BattlemasterList.dbc (BATTLEGROUND_NUM_TYPES = Max entry's +1)
+#if VERSION_STRING != Classic
+    #define BATTLEGROUND_NUM_TYPES 8
+#elif VERSION_STRING != TBC
+    #define BATTLEGROUND_NUM_TYPES 8
+#elif VERSION_STRING != WotLK
+    #define BATTLEGROUND_NUM_TYPES 33
+#elif VERSION_STRING != Cata
+    #define BATTLEGROUND_NUM_TYPES 657
+#elif VERSION_STRING != Mop
+    #define BATTLEGROUND_NUM_TYPES 758
+#endif
+
 #define ANTI_CHEAT
 
 const uint32 BG_SCORE_AB_BASES_ASSAULTED        = 0;
@@ -65,7 +84,6 @@ class Group;
 /// AV - Corpse
 class Corpse;
 
-
 enum BattlegroundDbcIndex
 {
     BGDBC_ALTERAC_VALLEY = 1,
@@ -82,21 +100,6 @@ enum BattlegroundDbcIndex
     BGDBC_ISLE_OF_CONQUEST = 30,
     BGDBC_ROWS = 30,
 };
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Values based on BattlemasterList.dbc (BATTLEGROUND_NUM_TYPES = Max entry's +1)
-
-#if VERSION_STRING != Classic
-    #define BATTLEGROUND_NUM_TYPES 8
-#elif VERSION_STRING != TBC
-    #define BATTLEGROUND_NUM_TYPES 8
-#elif VERSION_STRING != WotLK
-    #define BATTLEGROUND_NUM_TYPES 33
-#elif VERSION_STRING != Cata
-    #define BATTLEGROUND_NUM_TYPES 657
-#elif VERSION_STRING != Mop
-    #define BATTLEGROUND_NUM_TYPES 758
-#endif
 
 enum BattleGroundTypes
 {
@@ -210,11 +213,6 @@ static inline uint32 GetFieldCount(uint32 BGType)
             return 0;
     }
 }
-
-#define MAX_LEVEL_GROUP 9
-#define MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG 1
-#define MAXIMUM_BATTLEGROUNDS_PER_LEVEL_GROUP 50
-#define LEVEL_GROUP_70 8
 
 class Arena;
 

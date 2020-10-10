@@ -40,17 +40,6 @@
 #include "Server/Packets/SmsgPetLearnedSpell.h"
 #include "Server/Packets/SmsgPetUnlearnedSpell.h"
 
-#define WATER_ELEMENTAL         510
-#define WATER_ELEMENTAL_NEW     37994
-#define PET_IMP                 416
-#define PET_VOIDWALKER          1860
-#define PET_SUCCUBUS            1863
-#define PET_FELHUNTER           417
-#define PET_FELGUARD            17252
-#define SHADOWFIEND             19668
-#define SPIRITWOLF              29264
-#define DANCINGRUNEWEAPON       27893
-
 //MIT START
 //////////////////////////////////////////////////////////////////////////////////////////
 // Owner
@@ -1065,7 +1054,7 @@ void Pet::InitializeMe(bool first)
     if (Summon)         // Summons - always
     {
         // Adds parent +frost spell damage
-        if (getEntry() == WATER_ELEMENTAL || getEntry() == WATER_ELEMENTAL_NEW)
+        if (getEntry() == PET_WATER_ELEMENTAL || getEntry() == PET_WATER_ELEMENTAL_NEW)
         {
             // According to WoWWiki and ElitistJerks, Water Elemental should inherit 33% of owner's frost spell power.
             // And don't freak out about Waterbolt damage, it is supposed to do 601-673 base damage.
@@ -1696,26 +1685,26 @@ void Pet::ApplySummonLevelAbilities()
         case PET_FELHUNTER:
             stat_index = 3;
             break;
-        case 11859:         // Doomguard
-        case 89:            // Infernal
+        case 11859: // Doomguard
+        case 89:    // Infernal
         case PET_FELGUARD:
             stat_index = 4;
             break;
-        case WATER_ELEMENTAL:
-        case WATER_ELEMENTAL_NEW:
+        case PET_WATER_ELEMENTAL:
+        case PET_WATER_ELEMENTAL_NEW:
             stat_index = 5;
             m_aiInterface->setMeleeDisabled(true);
             break;
         case SHADOWFIEND:
             stat_index = 5;
             break;
-        case 26125:
+        case 26125: // Risen Ally
             stat_index = 4;
             break;
-        case 29264:
+        case 29264: // Spirit Wolf
             stat_index = 5;
             break;
-        case 27893:
+        case 27893: // Rune Weapon
             stat_index = 4;
             break;
     }
@@ -1912,7 +1901,7 @@ void Pet::LoadPetAuras(int32 id)
        Serpent's Swiftness        34675
        */
 
-    static uint32 mod_auras[9] = { 8875, 19580, 19581, 19582, 19589, 19591, 34666, 34667, 34675 };      //Beastmastery Talent's auras.
+    static uint32 mod_auras[9] = { 8875, 19580, 19581, 19582, 19589, 19591, 34666, 34667, 34675 }; // Beastmastery Talent's auras.
     InheritSMMods(m_Owner);
 
     if (id == -1)           //unload all

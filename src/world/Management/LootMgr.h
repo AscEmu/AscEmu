@@ -21,6 +21,16 @@
 #ifndef LOOTMGR_H
 #define LOOTMGR_H
 
+#define NEED 1
+#define GREED 2
+
+#define PARTY_LOOT_FFA 0
+#define PARTY_LOOT_MASTER 2
+#define PARTY_LOOT_RR 1
+#define PARTY_LOOT_NBG 4
+#define PARTY_LOOT_GROUP 3
+
+
 #include "Server/EventableObject.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #if VERSION_STRING >= Cata
@@ -189,13 +199,6 @@ struct tempy
 };
 
 typedef std::map<uint32, StoreLootList> LootStore;
-
-#define PARTY_LOOT_FFA 0
-#define PARTY_LOOT_MASTER 2
-#define PARTY_LOOT_RR 1
-#define PARTY_LOOT_NBG 4
-#define PARTY_LOOT_GROUP 3
-
 
 class SERVER_DECL LootMgr
 {
