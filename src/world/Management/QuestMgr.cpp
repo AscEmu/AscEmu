@@ -1031,7 +1031,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
     if (qst_giver->isGameObject())
         *data << std::string("");
     else
-        *data << plr->GetSession()->LocalizedWorldSrv(70); // "How can I help you?"; // Hello line
+        *data << plr->GetSession()->LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU); // "Hey there, $N. How can I help you?" // Hello line
     *data << uint32(1); // Emote Delay
     *data << uint32(1); // Emote
 

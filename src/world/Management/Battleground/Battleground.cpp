@@ -305,7 +305,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
 
     if (m_ended)
     {
-        sChatHandler.SystemMessage(plr->GetSession(), plr->GetSession()->LocalizedWorldSrv(53));
+        sChatHandler.SystemMessage(plr->GetSession(), plr->GetSession()->LocalizedWorldSrv(ServerString::SS_YOU_CANNOT_JOIN_BG_AS_IT_HAS_ALREADY_ENDED));
         sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
         plr->m_pendingBattleground = nullptr;
         return;
@@ -714,7 +714,7 @@ void CBattleground::EventCountdown()
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
-                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(46), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
+                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(ServerString::SS_BATTLE_BEGIN_ONE_MINUTE), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
         }
 
         // SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "One minute until the battle for %s begins!", GetName());
@@ -729,7 +729,7 @@ void CBattleground::EventCountdown()
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
-                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(47), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
+                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(ServerString::SS_THIRTY_SECONDS_UNTIL_THE_BATTLE), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
         }
 
         //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Thirty seconds until the battle for %s begins!", GetName());
@@ -744,7 +744,7 @@ void CBattleground::EventCountdown()
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
-                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(48), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
+                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(ServerString::SS_FIFTEEN_SECONDS_UNTIL_THE_BATTLE), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
         }
 
         //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Fifteen seconds until the battle for %s begins!", GetName());
@@ -758,7 +758,7 @@ void CBattleground::EventCountdown()
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
-                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(49), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
+                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(ServerString::SS_THE_BATTLE_FOR_HAS_BEGUN), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
         }
         //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The battle for %s has begun!", GetName());
         sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_COUNTDOWN);

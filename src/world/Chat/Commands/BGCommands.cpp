@@ -160,7 +160,7 @@ bool ChatHandler::HandleBGStartCommand(const char* /*args*/, WorldSession* m_ses
         return true;
     }
 
-    m_session->GetPlayer()->m_bg->SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, m_session->LocalizedWorldSrv(49), m_session->LocalizedWorldSrv(m_session->GetPlayer()->m_bg->GetNameID()));
+    m_session->GetPlayer()->m_bg->SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, m_session->LocalizedWorldSrv(ServerString::SS_THE_BATTLE_FOR_HAS_BEGUN), m_session->LocalizedWorldSrv(m_session->GetPlayer()->m_bg->GetNameID()));
 
     sEventMgr.RemoveEvents(m_session->GetPlayer()->m_bg, EVENT_BATTLEGROUND_COUNTDOWN);
 

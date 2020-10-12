@@ -144,31 +144,31 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
                     {
                         case AreaTriggerResult::Level:
                         {
-                            snprintf(buffer, 200, session->LocalizedWorldSrv(SS_MUST_BE_LEVEL_X), areaTrigger->requiredLevel);
+                            snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), areaTrigger->requiredLevel);
                         } break;
                         case AreaTriggerResult::NoAttuneI:
                         {
                             const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->required_item);
-                            snprintf(buffer, 200, session->LocalizedWorldSrv(SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
+                            snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
                         } break;
                         case AreaTriggerResult::NoAttuneQA:
                         {
                             const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_A);
-                            snprintf(buffer, 200, session->LocalizedWorldSrv(SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
+                            snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
                         } break;
                         case AreaTriggerResult::NoAttuneQH:
                         {
                             const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_H);
-                            snprintf(buffer, 200, session->LocalizedWorldSrv(SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
+                            snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
                         } break;
                         case AreaTriggerResult::NoKey:
                         {
                             const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->heroic_key_1);
-                            snprintf(buffer, 200, session->LocalizedWorldSrv(SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
+                            snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
                         } break;
                         case AreaTriggerResult::LevelHeroic:
                         {
-                            snprintf(buffer, 200, session->LocalizedWorldSrv(SS_MUST_BE_LEVEL_X), mapInfo->minlevel_heroic);
+                            snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), mapInfo->minlevel_heroic);
                         } break;
                         default:
                             break;

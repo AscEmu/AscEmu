@@ -274,7 +274,7 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
         const auto itr = m_instances[srlPacket.bgType].find(srlPacket.instanceId);
         if (itr == m_instances[srlPacket.bgType].end())
         {
-            sChatHandler.SystemMessage(m_session, m_session->LocalizedWorldSrv(51));
+            sChatHandler.SystemMessage(m_session, m_session->LocalizedWorldSrv(ServerString::SS_JOIN_INVALID_INSTANCE));
             m_instanceLock.Release();
             return;
         }
@@ -632,7 +632,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                     if (iitr == m_instances[i].end())
                     {
                         // queue no longer valid, since instance has closed since queuing
-                        plr->GetSession()->SystemMessage(plr->GetSession()->LocalizedWorldSrv(52), plr->m_bgQueueInstanceId);
+                        plr->GetSession()->SystemMessage(plr->GetSession()->LocalizedWorldSrv(ServerString::SS_QUEUE_BG_INSTANCE_ID_NO_VALID_DELETED), plr->m_bgQueueInstanceId);
                         plr->m_bgIsQueued = false;
                         plr->m_bgQueueType = 0;
                         plr->m_bgQueueInstanceId = 0;
@@ -1254,7 +1254,7 @@ void CBattlegroundManager::DeleteBattleground(CBattleground* bg)
 
             if (plr && plr->m_bgQueueInstanceId == bg->GetId())
             {
-                sChatHandler.SystemMessage(plr->GetSession(), plr->GetSession()->LocalizedWorldSrv(54), bg->GetId());
+                sChatHandler.SystemMessage(plr->GetSession(), plr->GetSession()->LocalizedWorldSrv(ServerString::SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS), bg->GetId());
                 SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
                 plr->m_bgIsQueued = false;
                 m_queuedPlayers[i][j].erase(it2);
@@ -1293,12 +1293,12 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
     {
         if (pGroup->GetSubGroupCount() != 1)
         {
-            m_session->SystemMessage(m_session->LocalizedWorldSrv(55));
+            m_session->SystemMessage(m_session->LocalizedWorldSrv(ServerString::SS_SORRY_RAID_GROUPS_JOINING_BG_ARE_UNSUPPORTED));
             return;
         }
         if (pGroup->GetLeader() != m_session->GetPlayer()->getPlayerInfo())
         {
-            m_session->SystemMessage(m_session->LocalizedWorldSrv(56));
+            m_session->SystemMessage(m_session->LocalizedWorldSrv(ServerString::SS_MUST_BE_PARTY_LEADER_TO_ADD_GROUP_AN_ARENA));
             return;
         }
 
@@ -1347,14 +1347,14 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
             {
                 if (maxplayers == 0)
                 {
-                    m_session->SystemMessage(m_session->LocalizedWorldSrv(58));
+                    m_session->SystemMessage(m_session->LocalizedWorldSrv(ServerString::SS_TOO_MANY_PLAYERS_PARTY_TO_JOIN_OF_ARENA));
                     pGroup->Unlock();
                     return;
                 }
 
                 if ((*itx)->lastLevel < PLAYER_ARENA_MIN_LEVEL)
                 {
-                    m_session->SystemMessage(m_session->LocalizedWorldSrv(59));
+                    m_session->SystemMessage(m_session->LocalizedWorldSrv(ServerString::SS_SORRY_SOME_OF_PARTY_MEMBERS_ARE_NOT_LVL_70));
                     pGroup->Unlock();
                     return;
                 }
@@ -1363,13 +1363,13 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
                 {
                     if ((*itx)->m_loggedInPlayer->m_bg || (*itx)->m_loggedInPlayer->m_bgIsQueued)
                     {
-                        m_session->SystemMessage(m_session->LocalizedWorldSrv(60));
+                        m_session->SystemMessage(m_session->LocalizedWorldSrv(ServerString::SS_ONE_OR_MORE_OF_PARTY_MEMBERS_ARE_ALREADY_QUEUED_OR_INSIDE_BG));
                         pGroup->Unlock();
                         return;
                     };
                     if ((*itx)->m_loggedInPlayer->m_arenaTeams[type] != pGroup->GetLeader()->m_loggedInPlayer->m_arenaTeams[type])
                     {
-                        m_session->SystemMessage(m_session->LocalizedWorldSrv(61));
+                        m_session->SystemMessage(m_session->LocalizedWorldSrv(ServerString::SS_ONE_OR_MORE_OF_YOUR_PARTY_MEMBERS_ARE_NOT_MEMBERS_OF_YOUR_TEAM));
                         pGroup->Unlock();
                         return;
                     }

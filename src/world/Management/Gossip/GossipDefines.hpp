@@ -316,7 +316,7 @@ enum MenuItemOptions
     GI_BOXMSG_ENABLE_XP_GAIN,           // "Are you certain you wish to start gaining experience again?"
 };
 
-enum ws
+enum ws // fix and remove
 {
     SURE_TO_PURCHASE_DTS,               // ""
     PURCHASE_DTS,                       // ""

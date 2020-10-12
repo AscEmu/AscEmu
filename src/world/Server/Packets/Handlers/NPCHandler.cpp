@@ -461,7 +461,7 @@ void WorldSession::sendTrainerList(Creature* creature)
         data.put<uint32_t>(count_p, count);
 
         if (stricmp(trainer->UIMessage, "DMSG") == 0)
-            data << _player->GetSession()->LocalizedWorldSrv(37);
+            data << _player->GetSession()->LocalizedWorldSrv(ServerString::SS_WHAT_CAN_I_TEACH_YOU);
         else
             data << trainer->UIMessage;
         SendPacket(&data);
@@ -593,7 +593,7 @@ void WorldSession::sendTrainerList(Creature* creature)
         }
 
         if (stricmp(trainer->UIMessage, "DMSG") == 0)
-            data << _player->GetSession()->LocalizedWorldSrv(37);
+            data << _player->GetSession()->LocalizedWorldSrv(ServerString::SS_WHAT_CAN_I_TEACH_YOU);
         else
             data << trainer->UIMessage;
 
@@ -741,8 +741,8 @@ void WorldSession::handleNpcTextQueryOpcode(WorldPacket& recvPacket)
         for (uint8_t i = 0; i < 8; ++i)
         {
             data << float(1.0f);              // Prob
-            data << _player->GetSession()->LocalizedWorldSrv(70);
-            data << _player->GetSession()->LocalizedWorldSrv(70);
+            data << _player->GetSession()->LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
+            data << _player->GetSession()->LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
             data << uint32_t(0x00);           // Language
 
             for (uint8_t e = 0; e < GOSSIP_EMOTE_COUNT; e++)

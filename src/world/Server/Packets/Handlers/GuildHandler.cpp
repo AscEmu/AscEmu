@@ -517,19 +517,19 @@ void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
     Charter* pCharter = sObjectMgr.GetCharterByItemGuid(srlPacket.itemGuid);
     if (pCharter != nullptr)
     {
-        SendNotification(_player->GetSession()->LocalizedWorldSrv(76));
+        SendNotification(_player->GetSession()->LocalizedWorldSrv(ServerString::SS_ITEM_NOT_FOUND));
         return;
     }
 
     if (pTarget == nullptr || pTarget->getTeam() != _player->getTeam() || (pTarget == _player && !worldConfig.player.isInterfactionGuildEnabled))
     {
-        SendNotification(_player->GetSession()->LocalizedWorldSrv(77));
+        SendNotification(_player->GetSession()->LocalizedWorldSrv(ServerString::SS_TARGET_WRONG_FACTION));
         return;
     }
 
     if (!pTarget->CanSignCharter(pCharter, _player))
     {
-        SendNotification(_player->GetSession()->LocalizedWorldSrv(78));
+        SendNotification(_player->GetSession()->LocalizedWorldSrv(ServerString::SS_CANNOT_SIGN_MORE_REASONS));
         return;
     }
 
@@ -558,7 +558,7 @@ void WorldSession::handleCharterSign(WorldPacket& recvPacket)
         {
             if (charter->Signatures[i] == _player->getGuid())
             {
-                SendNotification(_player->GetSession()->LocalizedWorldSrv(79));
+                SendNotification(_player->GetSession()->LocalizedWorldSrv(ServerString::SS_ALREADY_SIGNED_CHARTER));
                 SendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, _player->getGuid(), PetitionSignResult::AlreadySigned).serialise().get());
                 return;
             }
@@ -681,7 +681,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
 
         if (_player->m_arenaTeams[charter->CharterType - 1] != nullptr)
         {
-            sChatHandler.SystemMessage(this, LocalizedWorldSrv(SS_ALREADY_ARENA_TEAM));
+            sChatHandler.SystemMessage(this, LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
             return;
         }
 
@@ -750,26 +750,26 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 
         if (_player->m_arenaTeams[arena_type])
         {
-            SendNotification(_player->GetSession()->LocalizedWorldSrv(SS_ALREADY_ARENA_TEAM));
+            SendNotification(_player->GetSession()->LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
             return;
         }
 
         ArenaTeam* arenaTeam = sObjectMgr.GetArenaTeamByName(srlPacket.name, arena_type);
         if (arenaTeam != nullptr)
         {
-            sChatHandler.SystemMessage(this, _player->GetSession()->LocalizedWorldSrv(SS_PETITION_NAME_ALREADY_USED));
+            sChatHandler.SystemMessage(this, _player->GetSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
             return;
         }
 
         if (sObjectMgr.GetCharterByName(srlPacket.name, static_cast<CharterTypes>(srlPacket.arenaIndex)))
         {
-            sChatHandler.SystemMessage(this, _player->GetSession()->LocalizedWorldSrv(SS_PETITION_NAME_ALREADY_USED));
+            sChatHandler.SystemMessage(this, _player->GetSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
             return;
         }
 
         if (_player->m_charters[srlPacket.arenaIndex])
         {
-            SendNotification(_player->GetSession()->LocalizedWorldSrv(SS_ALREADY_ARENA_CHARTER));
+            SendNotification(_player->GetSession()->LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_CHARTER));
             return;
         }
 
@@ -850,13 +850,13 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         Charter* charter = sObjectMgr.GetCharterByName(srlPacket.name, CHARTER_TYPE_GUILD);
         if (guild != nullptr || charter != nullptr)
         {
-            SendNotification(_player->GetSession()->LocalizedWorldSrv(SS_GUILD_NAME_ALREADY_IN_USE));
+            SendNotification(_player->GetSession()->LocalizedWorldSrv(ServerString::SS_GUILD_NAME_ALREADY_IN_USE));
             return;
         }
 
         if (_player->m_charters[CHARTER_TYPE_GUILD])
         {
-            SendNotification(_player->GetSession()->LocalizedWorldSrv(SS_ALREADY_GUILD_CHARTER));
+            SendNotification(_player->GetSession()->LocalizedWorldSrv(ServerString::SS_ALREADY_GUILD_CHARTER));
             return;
         }
 
