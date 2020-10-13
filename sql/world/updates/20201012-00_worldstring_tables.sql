@@ -1,0 +1,1 @@
+UPDATE `worldstring_tables` SET `text`='This character is not allowed to play.' WHERE  `entry`=501;

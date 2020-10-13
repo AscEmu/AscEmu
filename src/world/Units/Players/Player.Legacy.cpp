@@ -7124,12 +7124,12 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     // Lookup map info
     if (mi && mi->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
     {
-        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_BC));
+        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_BC));
         return false;
     }
     if (mi && mi->flags & WMI_INSTANCE_XPACK_02 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
     {
-        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_WOTLK));
+        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_WOTLK));
         return false;
     }
 
@@ -7209,12 +7209,12 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     // Lookup map info
     if (mi && mi->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
     {
-        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_BC));
+        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_BC));
         return false;
     }
     if (mi && mi->flags & WMI_INSTANCE_XPACK_02 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
     {
-        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_WOTLK));
+        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_WOTLK));
         return false;
     }
 
