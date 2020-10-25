@@ -146,9 +146,9 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                     contributors.insert(plr);
                 }
 
-                if (added && plr->GetGroup())
+                if (added && plr->getGroup())
                 {
-                    Group* pGroup = plr->GetGroup();
+                    Group* pGroup = plr->getGroup();
                     uint32 groups = pGroup->GetSubGroupCount();
                     for (uint32 i = 0; i < groups; i++)
                     {

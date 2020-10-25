@@ -1485,8 +1485,6 @@ protected:
     uint64 m_auraRaidUpdateMask;
 
 public:
-
-    virtual Group* GetGroup() { return nullptr; }
     
     const CombatStatusHandler* getcombatstatus() const { return &CombatStatus; }
 

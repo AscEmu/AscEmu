@@ -1107,6 +1107,23 @@ private:
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Group
+    void setGroupInviterId(uint32_t inviterId);
+    uint32_t getGroupInviterId() const;
+    bool isAlreadyInvitedToGroup() const;
+
+    bool isInGroup() const;
+
+    Group* getGroup();
+    bool isGroupLeader() const;
+
+    int8_t getSubGroupSlot() const;
+
+private:
+    uint32_t m_GroupInviter;
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     bool isGMFlagSet();
 
@@ -1570,18 +1587,6 @@ public:
         void SetKnownTitle(RankTitles title, bool set);
         void SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshift_form, bool active);
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Groups
-        /////////////////////////////////////////////////////////////////////////////////////////
-        void SetInviter(uint32 pInviter) { m_GroupInviter = pInviter; }
-        uint32 GetInviter() { return m_GroupInviter; }
-        bool InGroup() { return m_playerInfo && (m_playerInfo->m_Group != NULL && !m_GroupInviter); }
-
-        bool IsGroupLeader();
-        int HasBeenInvited() { return m_GroupInviter != 0; }
-        Group* GetGroup() { return m_playerInfo ? m_playerInfo->m_Group : NULL; }
-        int8 GetSubGroup() { return m_playerInfo->subGroup; }
-        bool IsGroupMember(Player* plyr);
 
         bool IsBanned();
         void SetBanned() { m_banned = 4;}
@@ -2316,7 +2321,6 @@ public:
         // Visible objects
         std::set<uint64> m_visibleObjects;
         // Groups/Raids
-        uint32 m_GroupInviter;
         uint8 m_StableSlotCount;
 
         // Fishing related

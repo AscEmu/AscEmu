@@ -175,7 +175,7 @@ SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
             return false;
 
         //players in same group should not attack each other. Required for arenas with mixed groups
-        if ((a->GetGroup() != NULL) && (a->GetGroup() == b->GetGroup()))
+        if (a->getGroup() && a->getGroup() == b->getGroup())
             return false;
 
         if (a->isFfaPvpFlagSet() && b->isFfaPvpFlagSet())

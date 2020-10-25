@@ -692,7 +692,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
                     if ((p->GetPhase() & s->getPlayerCaster()->GetPhase()) == 0)
                         continue;
 
-                    if (p->GetGroup()->GetID() != s->getPlayerCaster()->GetGroup()->GetID())
+                    if (p->getGroup()->GetID() != s->getPlayerCaster()->getGroup()->GetID())
                         continue;
 
                     s->getPlayerCaster()->castSpell(p, spellids[spellindex], true);

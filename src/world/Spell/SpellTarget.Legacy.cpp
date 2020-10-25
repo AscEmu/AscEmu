@@ -276,7 +276,7 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
     //is this party only?
     Player* casterFrom = u_caster->getPlayerOwner();
     Player* pfirstTargetFrom = firstTarget->getPlayerOwner();
-    if (casterFrom != nullptr && pfirstTargetFrom != nullptr && casterFrom->GetGroup() == pfirstTargetFrom->GetGroup())
+    if (casterFrom != nullptr && pfirstTargetFrom != nullptr && casterFrom->getGroup() == pfirstTargetFrom->getGroup())
         RaidOnly = true;
 
     uint32 jumps = m_spellInfo->getEffectChainTarget(static_cast<uint8_t>(i));

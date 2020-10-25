@@ -408,7 +408,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         cdata << uint32_t(achievement->ID);
         bool alreadySent;
         // Send Achievement message to group members
-        Group* grp = GetPlayer()->GetGroup();
+        Group* grp = GetPlayer()->getGroup();
 
         if (grp)
         {
@@ -552,7 +552,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
             continue;
         }
 
-        if ((achievementCriteria->groupFlag & ACHIEVEMENT_CRITERIA_GROUP_NOT_IN_GROUP) && GetPlayer()->GetGroup())
+        if ((achievementCriteria->groupFlag & ACHIEVEMENT_CRITERIA_GROUP_NOT_IN_GROUP) && GetPlayer()->getGroup())
         {
             // criteria requires that the player not be in a group, but they are in a group, so don't update it
             continue;

@@ -575,9 +575,9 @@ Player::~Player()
     if (m_TradeData != nullptr)
         cancelTrade(false);
 
-    Player* pTarget = sObjectMgr.GetPlayer(GetInviter());
+    Player* pTarget = sObjectMgr.GetPlayer(getGroupInviterId());
     if (pTarget)
-        pTarget->SetInviter(0);
+        pTarget->setGroupInviterId(0);
 
     DismissActivePets();
 
@@ -1430,8 +1430,8 @@ void Player::_EventExploration()
 
         AddGroupUpdateFlag(GROUP_UPDATE_FULL);
 
-        if (GetGroup())
-            GetGroup()->UpdateOutOfRangePlayer(this, true, nullptr);
+        if (getGroup())
+            getGroup()->UpdateOutOfRangePlayer(this, true, nullptr);
     }
 
     // Zone update, this really should update to a parent zone if one exists.
@@ -4680,15 +4680,6 @@ void Player::CleanupChannels()
     }
 }
 
-// Groupcheck
-bool Player::IsGroupMember(Player* plyr)
-{
-    if (m_playerInfo->m_Group != nullptr)
-        return m_playerInfo->m_Group->HasMember(plyr->m_playerInfo);
-
-    return false;
-}
-
 uint8_t Player::GetOpenQuestSlot()
 {
     for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
@@ -7430,8 +7421,8 @@ void Player::BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag)
             Object* curObj = iter;
             if (curObj->isPlayer())
             {
-                Group* pGroup = static_cast<Player*>(curObj)->GetGroup();
-                if (!pGroup && pGroup != GetGroup())
+                Group* pGroup = static_cast<Player*>(curObj)->getGroup();
+                if (!pGroup && pGroup != getGroup())
                 {
                     BuildFieldUpdatePacket(static_cast<Player*>(curObj), index, flag);
                 }
@@ -11403,14 +11394,14 @@ void Player::CastSpellArea()
 
 void Player::SetGroupUpdateFlags(uint32 flags)
 {
-    if (GetGroup() == nullptr)
+    if (getGroup() == nullptr)
         return;
     GroupUpdateFlags = flags;
 }
 
 void Player::AddGroupUpdateFlag(uint32 flag)
 {
-    if (GetGroup() == nullptr)
+    if (getGroup() == nullptr)
         return;
     GroupUpdateFlags |= flag;
 }
@@ -11439,7 +11430,7 @@ void Player::SendUpdateToOutOfRangeGroupMembers()
     if (GroupUpdateFlags == GROUP_UPDATE_FLAG_NONE)
         return;
 
-    if (Group* group = GetGroup())
+    if (Group* group = getGroup())
         group->UpdateOutOfRangePlayer(this, true, nullptr);
 
     GroupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
@@ -11459,16 +11450,6 @@ bool Player::IsBanned()
     if (m_banned)
     {
         if (m_banned < 100 || (uint32)UNIXTIME < m_banned)
-            return true;
-    }
-    return false;
-}
-
-bool Player::IsGroupLeader()
-{
-    if (m_playerInfo->m_Group != nullptr)
-    {
-        if (m_playerInfo->m_Group->GetLeader() == m_playerInfo)
             return true;
     }
     return false;
@@ -11911,7 +11892,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
         {
             Player* p = static_cast<Player*>(itr);
 
-            if (p->GetGroup() != nullptr && GetGroup() != nullptr && p->GetGroup()->GetID() == GetGroup()->GetID())
+            if (p->getGroup() != nullptr && getGroup() != nullptr && p->getGroup()->GetID() == getGroup()->GetID())
                 p->getUpdateMgr().pushUpdateData(groupbuf, 1);
             else
                 p->getUpdateMgr().pushUpdateData(nongroupbuf, 1);
@@ -11926,7 +11907,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
             for (const auto& itr : getInRangePlayersSet())
             {
                 Player* p = static_cast<Player*>(itr);
-                if (p && p->GetGroup() != nullptr && GetGroup() != nullptr && p->GetGroup()->GetID() == GetGroup()->GetID())
+                if (p && p->getGroup() != nullptr && getGroup() != nullptr && p->getGroup()->GetID() == getGroup()->GetID())
                     p->getUpdateMgr().pushUpdateData(groupbuf, 1);
             }
         }
@@ -11941,7 +11922,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
                     if (itr)
                     {
                         Player* p = static_cast<Player*>(itr);
-                        if (p->GetGroup() == nullptr || p->GetGroup()->GetID() != GetGroup()->GetID())
+                        if (p->getGroup() == nullptr || p->getGroup()->GetID() != getGroup()->GetID())
                             p->getUpdateMgr().pushUpdateData(nongroupbuf, 1);
                     }
                 }

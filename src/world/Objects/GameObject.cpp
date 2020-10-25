@@ -1455,10 +1455,10 @@ void GameObject_SpellCaster::onUse(Player* player)
             Player* summoner = static_cast<Player*>(m_summoner);
             if (summoner->getGuid() != player->getGuid())
             {
-                if (!player->InGroup())
+                if (!player->isInGroup())
                     return;
 
-                if (player->GetGroup() != summoner->GetGroup())
+                if (player->getGroup() != summoner->getGroup())
                     return;
             }
         }
@@ -1483,11 +1483,11 @@ void GameObject_Meetingstone::onUse(Player* player)
         return;
 
     // If we are not in a group we can't summon anyone
-    if (!player->InGroup())
+    if (!player->isInGroup())
         return;
 
     // We can only summon someone if they are in our raid/group
-    if (player->GetGroup() != pPlayer->GetGroup())
+    if (player->getGroup() != pPlayer->getGroup())
         return;
 
     // We can't summon ourselves!

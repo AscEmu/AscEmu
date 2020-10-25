@@ -1914,7 +1914,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
                 const auto targetPlayer = dynamic_cast<Player*>(target);
                 // Check if target is in same group/raid with the caster
-                if (targetPlayer == p_caster || p_caster->GetGroup() == nullptr || !p_caster->GetGroup()->HasMember(targetPlayer))
+                if (targetPlayer == p_caster || p_caster->getGroup() == nullptr || !p_caster->getGroup()->HasMember(targetPlayer))
                     return SPELL_FAILED_TARGET_NOT_IN_RAID;
 
                 // Check if caster is in an instance map

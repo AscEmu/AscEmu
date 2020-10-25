@@ -559,7 +559,7 @@ public:
         // What's their faction? Horde/Ally.
         uint32 GetTeam();
         // Objects directly cannot be in a group.
-        virtual Group* GetGroup() { return NULL; }
+        //virtual Group* getGroup() { return NULL; }
 
     protected:
 

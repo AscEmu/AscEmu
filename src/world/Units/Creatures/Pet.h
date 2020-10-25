@@ -261,7 +261,7 @@ public:
         float GetHappinessDmgMod() { return 0.25f * GetHappinessState() + 0.5f; };
         bool IsBeingDeleted() { return ScheduledForDeletion; }
 
-        virtual Group* GetGroup();
+        Group* getGroup();
 
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
 

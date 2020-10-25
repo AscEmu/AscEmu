@@ -283,7 +283,7 @@ void LfgMgr::Update(uint32 diff)
 
                     if (Player* player = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart()))
                     {
-                        Group* grp = player->GetGroup();
+                        Group* grp = player->getGroup();
                         if (grp)
                         {
                             uint64 gguid = grp->GetGUID();
@@ -478,7 +478,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
         return;
     }
 
-    Group* grp = player->GetGroup();
+    Group* grp = player->getGroup();
     uint64 guid = player->getGuid();
     uint64 gguid = grp ? grp->GetGUID() : guid;
     LfgJoinResultData joinData;
@@ -1135,7 +1135,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     {
         uint64 guid = (*itPlayers)->getGuid();
         LfgProposalPlayer* ppPlayer = new LfgProposalPlayer();
-        if (Group* grp = (*itPlayers)->GetGroup())
+        if (Group* grp = (*itPlayers)->getGroup())
         {
             ppPlayer->groupLowGuid = grp->GetID();
             if (grp->isLFGGroup()) // Player from existing group, autoaccept
@@ -1430,7 +1430,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
                 players.push_back(player);
 
             // Only teleport new players
-            Group* grp = player->GetGroup();
+            Group* grp = player->getGroup();
             uint64 gguid = grp ? grp->GetGUID() : 0;
             if (!gguid || !grp->isLFGGroup() || GetState(gguid) == LFG_STATE_FINISHED_DUNGEON)
                 playersToTeleport.push_back(player);
@@ -1457,8 +1457,8 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             LfgProposalPlayer* player = pProposal->players[(*it)->getGuid()];
 
             WoWGuid wowGuid;
-            wowGuid.Init((*it)->GetGroup()->GetGUID());
-            uint32 lowgroupguid = (*it)->GetGroup() ? wowGuid.getGuidLowPart() : 0;
+            wowGuid.Init((*it)->getGroup()->GetGUID());
+            uint32 lowgroupguid = (*it)->getGroup() ? wowGuid.getGuidLowPart() : 0;
             if (player->groupLowGuid != lowgroupguid)
                 LOG_DEBUG("%u group mismatch: actual (%u) - queued (%u)", (*it)->getGuid(), lowgroupguid, player->groupLowGuid);
 
@@ -1480,14 +1480,14 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
         {
             Player* player = (*it);
             uint64 pguid = player->getGuid();
-            Group* group = player->GetGroup();
+            Group* group = player->getGroup();
             if (sendUpdate)
                 player->GetSession()->sendLfgUpdateProposal(proposalId, pProposal);
             if (group)
             {
                 player->GetSession()->sendLfgUpdateParty(updateData);
                 if (group != grp)
-                    player->GetGroup()->Disband();
+                    player->getGroup()->Disband();
             }
             else
                 player->GetSession()->sendLfgUpdatePlayer(updateData);
@@ -1626,7 +1626,7 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
         team = uint8(player->getTeam());
         player->GetSession()->sendLfgUpdateProposal(itProposal->first, pProposal);
 
-        Group* grp = player->GetGroup();
+        Group* grp = player->getGroup();
         uint64 guid = player->getGuid();
         uint64 gguid = it->second->groupLowGuid ? WoWGuid(it->second->groupLowGuid, 0, HIGHGUID_TYPE_GROUP).getRawGuid() : guid;
 
@@ -1732,7 +1732,7 @@ void LfgMgr::InitBoot(Group* grp, uint64 kicker, uint64 victim, std::string reas
 
 void LfgMgr::UpdateBoot(Player* player, bool accept)
 {
-    Group* grp = player ? player->GetGroup() : NULL;
+    Group* grp = player ? player->getGroup() : NULL;
     if (!grp)
         return;
 
@@ -1821,7 +1821,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
 
     // TODO Add support for LFG_TELEPORTERROR_FATIGUE
     LfgTeleportError error = LFG_TELEPORTERROR_OK;
-    Group* grp = player->GetGroup();
+    Group* grp = player->getGroup();
 
     if (!grp || !grp->isLFGGroup())                        // should never happen, but just in case...
         error = LFG_TELEPORTERROR_INVALID_LOCATION;
@@ -1899,7 +1899,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
 void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
 {
 #if VERSION_STRING < Cata
-    Group* group = player->GetGroup();
+    Group* group = player->getGroup();
     if (!group || !group->isLFGGroup())
     {
         LOG_DEBUG("%u is not in a group or not a LFGGroup. Ignoring", player->getGuid());
@@ -1907,7 +1907,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
     }
 
     uint64 guid = player->getGuid();
-    uint64 gguid = player->GetGroup()->GetGUID();
+    uint64 gguid = player->getGroup()->GetGUID();
     uint32 gDungeonId = GetDungeon(gguid, true);
     if (gDungeonId != dungeonId)
     {

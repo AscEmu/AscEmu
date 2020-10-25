@@ -383,7 +383,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
     if (!pUnit->isCreature() || pUnit->isPet() || pUnit->isCritter())
         return;
 
-    Group* m_Group = GetGroup();
+    Group* m_Group = getGroup();
 
     // Why would this be accessed if the group didn't exist?
     if (!InnerLoop && m_Group != NULL)

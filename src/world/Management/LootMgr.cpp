@@ -730,8 +730,8 @@ void LootRoll::Finalize()
             _player = _mgr->GetPlayer((*(pitr++)));
         if (_player != nullptr)
         {
-            if (_player->InGroup())
-                _player->GetGroup()->SendPacketToAll(SmsgLootAllPassed(_guid, _groupcount, _itemid, _randomsuffixid, _randompropertyid).serialise().get());
+            if (_player->isInGroup())
+                _player->getGroup()->SendPacketToAll(SmsgLootAllPassed(_guid, _groupcount, _itemid, _randomsuffixid, _randompropertyid).serialise().get());
             else
                 _player->GetSession()->SendPacket(SmsgLootAllPassed(_guid, _groupcount, _itemid, _randomsuffixid, _randompropertyid).serialise().get());
         }
@@ -744,8 +744,8 @@ void LootRoll::Finalize()
 
     pLoot->items.at(_slotid).roll = nullptr;
 
-    if (_player->InGroup())
-        _player->GetGroup()->SendPacketToAll(SmsgLootRollWon(_guid, _slotid, _itemid, _randomsuffixid, _randompropertyid, _player->getGuid(), highest, hightype).serialise().get());
+    if (_player->isInGroup())
+        _player->getGroup()->SendPacketToAll(SmsgLootRollWon(_guid, _slotid, _itemid, _randomsuffixid, _randompropertyid, _player->getGuid(), highest, hightype).serialise().get());
     else
         _player->GetSession()->SendPacket(SmsgLootRollWon(_guid, _slotid, _itemid, _randomsuffixid, _randompropertyid, _player->getGuid(), highest, hightype).serialise().get());
 
@@ -839,8 +839,8 @@ void LootRoll::PlayerRolled(Player* player, uint8 choice)
         rollType = 128;
     }
 
-    if (player->InGroup())
-        player->GetGroup()->SendPacketToAll(SmsgLootRoll(_guid, _slotid, player->getGuid(), _itemid, _randomsuffixid, _randompropertyid, roll, rollType).serialise().get());
+    if (player->isInGroup())
+        player->getGroup()->SendPacketToAll(SmsgLootRoll(_guid, _slotid, player->getGuid(), _itemid, _randomsuffixid, _randompropertyid, roll, rollType).serialise().get());
     else
         player->GetSession()->SendPacket(SmsgLootRoll(_guid, _slotid, player->getGuid(), _itemid, _randomsuffixid, _randompropertyid, roll, rollType).serialise().get());
     // check for early completion

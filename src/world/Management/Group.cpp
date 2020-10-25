@@ -1146,7 +1146,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
             }
             else
             {
-                if (pPlayer->GetSubGroup() == plr->GetSubGroup())
+                if (pPlayer->getSubGroupSlot() == plr->getSubGroupSlot())
                 {
                     // distribute quest fields to other players
                     hisMask.Clear();

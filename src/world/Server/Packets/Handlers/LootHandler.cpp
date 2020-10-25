@@ -356,7 +356,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
         }
     }
 
-    if (!_player->InGroup())
+    if (!_player->isInGroup())
     {
         if (money)
         {
@@ -376,7 +376,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
     }
     else
     {
-        if (Group* party = _player->GetGroup())
+        if (Group* party = _player->getGroup())
         {
             std::vector<Player*> groupMembers;
 
@@ -444,9 +444,9 @@ void WorldSession::handleLootOpcode(WorldPacket& recvPacket)
 
     std::vector<uint64_t> onlineGroupMembers;
 
-    if (_player->InGroup() && !_player->m_bg)
+    if (_player->isInGroup() && !_player->m_bg)
     {
-        if (auto group = _player->GetGroup())
+        if (auto group = _player->getGroup())
         {
             if (group->GetMethod() == PARTY_LOOT_MASTER)
             {
@@ -667,7 +667,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (_player->GetGroup() == nullptr || _player->GetGroup()->GetLooter() != _player->getPlayerInfo())
+    if (_player->getGroup() == nullptr || _player->getGroup()->GetLooter() != _player->getPlayerInfo())
         return;
 
     auto player = _player->GetMapMgr()->GetPlayer(srlPacket.playerGuid.getGuidLow());

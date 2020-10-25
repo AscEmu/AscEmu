@@ -155,7 +155,7 @@ void Unit::setPowerType(uint8_t powerType)
 
     // Update power type also to group
     const auto plr = getPlayerOwner();
-    if (plr == nullptr || !plr->IsInWorld() || plr->GetGroup() == nullptr)
+    if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
         return;
 
     plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_POWER_TYPE : GROUP_UPDATE_FLAG_PET_POWER_TYPE);
@@ -178,7 +178,7 @@ void Unit::setHealth(uint32_t health)
 
     // Update health also to group
     const auto plr = getPlayerOwner();
-    if (plr == nullptr || !plr->IsInWorld() || plr->GetGroup() == nullptr)
+    if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
         return;
 
     plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_CUR_HP : GROUP_UPDATE_FLAG_PET_CUR_HP);
@@ -334,7 +334,7 @@ void Unit::setPower(PowerType type, uint32_t value, bool sendPacket/* = true*/)
 
     // Update power also to group
     const auto plr = getPlayerOwner();
-    if (plr == nullptr || !plr->IsInWorld() || plr->GetGroup() == nullptr)
+    if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
         return;
 
     plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_CUR_POWER : GROUP_UPDATE_FLAG_PET_CUR_POWER);
@@ -363,7 +363,7 @@ void Unit::setMaxHealth(uint32_t maxHealth)
 
     // Update health also to group
     const auto plr = getPlayerOwner();
-    if (plr != nullptr && plr->IsInWorld() && plr->GetGroup() != nullptr)
+    if (plr != nullptr && plr->IsInWorld() && plr->getGroup() != nullptr)
         plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_MAX_HP : GROUP_UPDATE_FLAG_PET_MAX_HP);
 
     if (maxHealth < getHealth())
@@ -458,7 +458,7 @@ void Unit::setMaxPower(PowerType type, uint32_t value)
 
     // Update power also to group
     const auto plr = getPlayerOwner();
-    if (plr != nullptr && plr->IsInWorld() && plr->GetGroup() != nullptr)
+    if (plr != nullptr && plr->IsInWorld() && plr->getGroup() != nullptr)
         plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_MAX_POWER : GROUP_UPDATE_FLAG_PET_MAX_POWER);
 
     if (value < getPower(type))
@@ -592,7 +592,7 @@ void Unit::setLevel(uint32_t level)
 
     // Update level also to group
     const auto plr = getPlayerOwner();
-    if (plr == nullptr || !plr->IsInWorld() || plr->GetGroup() == nullptr)
+    if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
         return;
 
     //\ todo: missing update flag for pet level
@@ -718,7 +718,7 @@ void Unit::setDisplayId(uint32_t id)
 
     // Update display id also to group
     const auto plr = getPlayerOwner();
-    if (plr == nullptr || !plr->IsInWorld() || plr->GetGroup() == nullptr)
+    if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
         return;
 
     //\ todo: missing update flag for player display id
@@ -924,7 +924,7 @@ void Unit::setPvpFlags(uint8_t pvpFlags)
 
     // Update pvp flags also to group
     const auto plr = getPlayerOwner();
-    if (plr == nullptr || !plr->IsInWorld() || plr->GetGroup() == nullptr)
+    if (plr == nullptr || !plr->IsInWorld() || !plr->getGroup())
         return;
 
     plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_STATUS : 0);
@@ -3181,7 +3181,7 @@ bool Unit::canSee(Object* const obj)
                 {
                     // If players are from same group, they can see each other normally
                     const auto playerMe = static_cast<Player*>(this);
-                    if (playerMe->GetGroup() != nullptr && playerMe->GetGroup() == playerObj->GetGroup())
+                    if (playerMe->getGroup() && playerMe->getGroup() == playerObj->getGroup())
                         return true;
 
                     // Game Masters can see all dead players
@@ -3219,7 +3219,7 @@ bool Unit::canSee(Object* const obj)
                 const auto objectOwner = GetMapMgrPlayer(ownerGuid);
                 if (objectOwner != nullptr)
                 {
-                    if (objectOwner->GetGroup() != nullptr && objectOwner->GetGroup()->HasMember(static_cast<Player*>(this)))
+                    if (objectOwner->getGroup() && objectOwner->getGroup()->HasMember(static_cast<Player*>(this)))
                     {
                         if (objectOwner->DuelingWith != static_cast<Player*>(this))
                             return true;
@@ -3249,7 +3249,7 @@ bool Unit::canSee(Object* const obj)
                 const auto objectOwner = GetMapMgrPlayer(ownerGuid);
                 if (objectOwner != nullptr && isPlayer())
                 {
-                    if (objectOwner->GetGroup() != nullptr && objectOwner->GetGroup()->HasMember(static_cast<Player*>(this)))
+                    if (objectOwner->getGroup() && objectOwner->getGroup()->HasMember(static_cast<Player*>(this)))
                     {
                         if (objectOwner->DuelingWith != static_cast<Player*>(this))
                             return true;
@@ -4101,8 +4101,8 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
             const auto tagger = GetMapMgrPlayer(GetTaggerGUID());
             if (tagger != nullptr)
             {
-                if (tagger->InGroup())
-                    tagger->GetGroup()->SendLootUpdates(this);
+                if (tagger->isInGroup())
+                    tagger->getGroup()->SendLootUpdates(this);
                 else
                     tagger->SendLootUpdate(this);
             }
@@ -4117,7 +4117,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                 const auto tagger = taggerUnit != nullptr ? taggerUnit->getPlayerOwner() : nullptr;
                 if (tagger != nullptr)
                 {
-                    if (tagger->InGroup())
+                    if (tagger->isInGroup())
                     {
                         tagger->GiveGroupXP(this, tagger);
                     }
@@ -4143,10 +4143,10 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                         sQuestMgr.OnPlayerKill(tagger, dynamic_cast<Creature*>(this), true);
 
 #ifdef FT_ACHIEVEMENTS
-                        if (tagger->InGroup())
+                        if (tagger->isInGroup())
                         {
-                            tagger->GetGroup()->UpdateAchievementCriteriaForInrange(this, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
-                            tagger->GetGroup()->UpdateAchievementCriteriaForInrange(this, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
+                            tagger->getGroup()->UpdateAchievementCriteriaForInrange(this, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
+                            tagger->getGroup()->UpdateAchievementCriteriaForInrange(this, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
                         }
                         else
                         {
@@ -4364,10 +4364,10 @@ bool Unit::isTaggedByPlayerOrItsGroup(Player* tagger)
     if (GetTaggerGUID() == tagger->getGuid())
         return true;
 
-    if (tagger->InGroup())
+    if (tagger->isInGroup())
     {
         const auto playerTagger = GetMapMgrPlayer(GetTaggerGUID());
-        if (playerTagger != nullptr && tagger->GetGroup()->HasMember(playerTagger))
+        if (playerTagger != nullptr && tagger->getGroup()->HasMember(playerTagger))
             return true;
     }
 
@@ -4812,10 +4812,10 @@ bool Unit::isUnitOwnerInParty(Unit* unit)
         if (playOwner == playerOwnerFromUnit)
             return true;
 
-        if (playOwner->GetGroup() != nullptr
-            && playerOwnerFromUnit->GetGroup() != nullptr
-            && playOwner->GetGroup() == playerOwnerFromUnit->GetGroup()
-            && playOwner->GetSubGroup() == playerOwnerFromUnit->GetSubGroup())
+        if (playOwner->getGroup()
+            && playerOwnerFromUnit->getGroup()
+            && playOwner->getGroup() == playerOwnerFromUnit->getGroup()
+            && playOwner->getSubGroupSlot() == playerOwnerFromUnit->getSubGroupSlot())
             return true;
     }
 
@@ -4834,9 +4834,9 @@ bool Unit::isUnitOwnerInRaid(Unit* unit)
         if (playerOwner == playerOwnerFromUnit)
             return true;
 
-        if (playerOwner->GetGroup() != nullptr
-            && playerOwnerFromUnit->GetGroup() != nullptr
-            && playerOwner->GetGroup() == playerOwnerFromUnit->GetGroup())
+        if (playerOwner->getGroup()
+            && playerOwnerFromUnit->getGroup()
+            && playerOwner->getGroup() == playerOwnerFromUnit->getGroup())
             return true;
     }
 

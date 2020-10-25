@@ -407,8 +407,8 @@ void WorldSession::handleRandomRollOpcode(WorldPacket& recvPacket)
 
     uint32_t randomRoll = Util::getRandomUInt(maxValue - minValue) + minValue;
 
-    if (_player->InGroup())
-        _player->GetGroup()->SendPacketToAll(MsgRandomRoll(minValue, maxValue, randomRoll, _player->getGuid()).serialise().get());
+    if (_player->isInGroup())
+        _player->getGroup()->SendPacketToAll(MsgRandomRoll(minValue, maxValue, randomRoll, _player->getGuid()).serialise().get());
     else
         SendPacket(MsgRandomRoll(minValue, maxValue, randomRoll, _player->getGuid()).serialise().get());
 }
@@ -472,8 +472,8 @@ void WorldSession::handleDungeonDifficultyOpcode(WorldPacket& recvPacket)
     _player->setDungeonDifficulty(srlPacket.difficulty);
     sInstanceMgr.ResetSavedInstances(_player);
 
-    const auto group = _player->GetGroup();
-    if (group && _player->IsGroupLeader())
+    const auto group = _player->getGroup();
+    if (group && _player->isGroupLeader())
         group->SetDungeonDifficulty(srlPacket.difficulty);
 }
 
@@ -489,8 +489,8 @@ void WorldSession::handleRaidDifficultyOpcode(WorldPacket& recvPacket)
     _player->setRaidDifficulty(srlPacket.difficulty);
     sInstanceMgr.ResetSavedInstances(_player);
 
-    const auto group = _player->GetGroup();
-    if (group && _player->IsGroupLeader())
+    const auto group = _player->getGroup();
+    if (group && _player->isGroupLeader())
         group->SetRaidDifficulty(srlPacket.difficulty);
 #endif
 }

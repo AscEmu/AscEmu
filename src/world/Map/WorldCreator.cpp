@@ -152,7 +152,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
     if (mapInfo->type == INSTANCE_BATTLEGROUND)
         return INSTANCE_ABORT_NOT_FOUND;
 
-    Group* pGroup = plr->GetGroup();
+    Group* pGroup = plr->getGroup();
 
     // players without groups cannot enter raids and heroic instances
 
@@ -702,7 +702,7 @@ void InstanceMgr::ResetSavedInstances(Player* plr)
                 auto instance = itr->second;
                 ++itr;
 
-                if (instance->isResetable() && (checkInstanceGroup(instance, plr->GetGroup()) || plr->getGuidLow() == instance->m_creatorGuid))
+                if (instance->isResetable() && (checkInstanceGroup(instance, plr->getGroup()) || plr->getGuidLow() == instance->m_creatorGuid))
                 {
                     if (instance->m_mapMgr && instance->m_mapMgr->HasPlayers())
                     {
@@ -979,7 +979,7 @@ bool InstanceMgr::PlayerOwnsInstance(Instance* pInstance, Player* pPlayer)
     }
 
     // Default instance handling
-    if ((pPlayer->GetGroup() && pInstance->m_creatorGroup == pPlayer->GetGroup()->GetID()) || pPlayer->getGuidLow() == pInstance->m_creatorGuid)
+    if ((pPlayer->getGroup() && pInstance->m_creatorGroup == pPlayer->getGroup()->GetID()) || pPlayer->getGuidLow() == pInstance->m_creatorGuid)
     {
         return true;
     }

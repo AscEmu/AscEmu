@@ -6142,7 +6142,7 @@ void Spell::SpellEffectRedirectThreat(uint8_t /*effectIndex*/)
     if (!p_caster || !unitTarget)
         return;
 
-    if ((unitTarget->isPlayer() && p_caster->GetGroup() != static_cast< Player* >(unitTarget)->GetGroup()) || (unitTarget->isCreature() && !unitTarget->isPet()))
+    if ((unitTarget->isPlayer() && p_caster->getGroup() != static_cast< Player* >(unitTarget)->getGroup()) || (unitTarget->isCreature() && !unitTarget->isPet()))
         return;
 
     p_caster->SetMisdirectionTarget(unitTarget->getGuid());

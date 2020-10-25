@@ -2174,7 +2174,7 @@ void AIInterface::HealReaction(Unit* caster, Unit* victim, SpellInfo const* sp, 
         // both are players so they might be in the same group
         if (caster->isPlayer() && victim->isPlayer())
         {
-            if (static_cast< Player* >(caster)->GetGroup() == static_cast< Player* >(victim)->GetGroup())
+            if (static_cast< Player* >(caster)->getGroup() == static_cast< Player* >(victim)->getGroup())
             {
                 // get victim into combat since they are both
                 // in the same party
@@ -4407,10 +4407,10 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
         }
     }
 
-    if (pUnit->isPlayer() && static_cast< Player* >(pUnit)->InGroup())
+    if (pUnit->isPlayer() && static_cast< Player* >(pUnit)->isInGroup())
     {
         m_Unit->GetAIInterface()->modThreatByPtr(pUnit, 1);
-        Group* pGroup = static_cast< Player* >(pUnit)->GetGroup();
+        Group* pGroup = static_cast< Player* >(pUnit)->getGroup();
 
         Player* pGroupGuy;
         GroupMembersSet::iterator itr;

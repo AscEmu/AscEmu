@@ -282,12 +282,12 @@ void CBattleground::RemovePendingPlayer(Player* plr)
 
 void CBattleground::OnPlayerPushed(Player* plr)
 {
-    if (plr->GetGroup() && !Rated())
-        plr->GetGroup()->RemovePlayer(plr->getPlayerInfo());
+    if (plr->getGroup() && !Rated())
+        plr->getGroup()->RemovePlayer(plr->getPlayerInfo());
 
     plr->ProcessPendingUpdates();
 
-    if (plr->GetGroup() == nullptr)
+    if (plr->getGroup() == nullptr)
     {
         if (plr->m_isGmInvisible == false)    //do not join invisible gm's into bg groups.
             m_groups[plr->getBgTeam()]->AddMember(plr->getPlayerInfo());
@@ -352,10 +352,10 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
     UpdatePvPData();
 
     /* add the player to the group */
-    if (plr->GetGroup() && !Rated())
+    if (plr->getGroup() && !Rated())
     {
         // remove them from their group
-        plr->GetGroup()->RemovePlayer(plr->getPlayerInfo());
+        plr->getGroup()->RemovePlayer(plr->getPlayerInfo());
     }
 
     if (!m_countdownStage)
@@ -630,8 +630,8 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     memset(&plr->m_bgScore, 0, sizeof(BGScore));
 
     /* are we in the group? */
-    if (plr->GetGroup() == m_groups[plr->getBgTeam()])
-        plr->GetGroup()->RemovePlayer(plr->getPlayerInfo());
+    if (plr->getGroup() == m_groups[plr->getBgTeam()])
+        plr->getGroup()->RemovePlayer(plr->getPlayerInfo());
 
     // reset team
     plr->resetTeam();

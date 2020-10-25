@@ -94,7 +94,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->HasFinishedQuest(7761) && player->getLevel() >= 58 && player->InGroup() == true)
+        if (player->HasFinishedQuest(7761) && player->getLevel() >= 58 && player->isInGroup())
         {
             player->SafeTeleport(469, 0, -7672.939941f, -1107.307617f, 396.649994f, 0.616532f);
         }
@@ -102,7 +102,7 @@ public:
         {
             player->BroadcastMessage("You need to be level 58 and have completed the quest : Blackhand's Command");
         }
-        else if (player->HasFinishedQuest(7761) == true && player->getLevel() >= 58 && player->InGroup() == false)
+        else if (player->HasFinishedQuest(7761) == true && player->getLevel() >= 58 && !player->isInGroup())
         {
             player->BroadcastMessage("You need to be in a raid group to be able to enter this instance");
         }

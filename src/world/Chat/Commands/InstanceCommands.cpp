@@ -253,7 +253,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
 
     if (instance->m_creatorGroup)
     {
-        Group* group = plr->GetGroup();
+        Group* group = plr->getGroup();
         if (group == nullptr || instance->m_creatorGroup != group->GetID())
         {
             RedSystemMessage(m_session, "Player %s is not a member of the group assigned to the non-persistent instance with id %u.", plr->getName().c_str(), instanceId);

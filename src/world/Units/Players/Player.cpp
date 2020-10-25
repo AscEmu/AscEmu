@@ -258,7 +258,7 @@ void Player::setPlayerFlags(uint32_t flags)
     m_cache->SetUInt32Value(CACHE_PLAYER_FLAGS, getPlayerFlags());
 
     // Update player flags also to group
-    if (!IsInWorld() || GetGroup() == nullptr)
+    if (!IsInWorld() || getGroup() == nullptr)
         return;
 
     AddGroupUpdateFlag(GROUP_UPDATE_FLAG_STATUS);
@@ -3025,6 +3025,27 @@ uint32_t Player::getGuildRankFromDB()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Group
+void Player::setGroupInviterId(uint32_t inviterId) { m_GroupInviter = inviterId; }
+uint32_t Player::getGroupInviterId() const { return m_GroupInviter; }
+bool Player::isAlreadyInvitedToGroup() const { return m_GroupInviter != 0; }
+
+bool Player::isInGroup() const { return m_playerInfo && m_playerInfo->m_Group; }
+
+Group* Player::getGroup() { return m_playerInfo ? m_playerInfo->m_Group : nullptr; }
+bool Player::isGroupLeader() const
+{
+    if (m_playerInfo->m_Group != nullptr)
+    {
+        if (m_playerInfo->m_Group->GetLeader() == m_playerInfo)
+            return true;
+    }
+    return false;
+}
+
+int8_t Player::getSubGroupSlot() const { return m_playerInfo->subGroup; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 bool Player::isGMFlagSet()
 {
@@ -3255,13 +3276,13 @@ void Player::sendPetUnlearnConfirmPacket()
 
 void Player::sendDungeonDifficultyPacket()
 {
-    m_session->SendPacket(MsgSetDungeonDifficulty(m_raidDifficulty, 1, InGroup()).serialise().get());
+    m_session->SendPacket(MsgSetDungeonDifficulty(m_raidDifficulty, 1, isInGroup()).serialise().get());
 }
 
 void Player::sendRaidDifficultyPacket()
 {
 #if VERSION_STRING > TBC
-    m_session->SendPacket(MsgSetRaidDifficulty(m_raidDifficulty, 1, InGroup()).serialise().get());
+    m_session->SendPacket(MsgSetRaidDifficulty(m_raidDifficulty, 1, isInGroup()).serialise().get());
 #endif
 }
 
@@ -3383,8 +3404,8 @@ void Player::sendLevelupInfoPacket(uint32_t level, uint32_t hp, uint32_t mana, u
 
 void Player::sendItemPushResultPacket(bool created, bool recieved, bool sendtoset, uint8_t destbagslot, uint32_t destslot, uint32_t count, uint32_t entry, uint32_t suffix, uint32_t randomprop, uint32_t stack)
 {
-    if (sendtoset && InGroup())
-        GetGroup()->SendPacketToAll(SmsgItemPushResult(getGuid(), recieved, created, destbagslot, destslot, entry, suffix, randomprop, count, stack).serialise().get());
+    if (sendtoset && isInGroup())
+        getGroup()->SendPacketToAll(SmsgItemPushResult(getGuid(), recieved, created, destbagslot, destslot, entry, suffix, randomprop, count, stack).serialise().get());
     else
         m_session->SendPacket(SmsgItemPushResult(getGuid(), recieved, created, destbagslot, destslot, entry, suffix, randomprop, count, stack).serialise().get());
 }

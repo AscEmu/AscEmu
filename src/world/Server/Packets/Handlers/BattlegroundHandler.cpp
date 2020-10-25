@@ -72,7 +72,7 @@ void WorldSession::handleInspectHonorStatsOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)
 {
-    if (_player->GetGroup() && _player->GetGroup()->m_isqueued)
+    if (_player->getGroup() && _player->getGroup()->m_isqueued)
     {
         SystemMessage("You are already in a queud group for battlegrounds.");
         return;
@@ -244,7 +244,7 @@ void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (_player->GetGroup() && _player->GetGroup()->m_isqueued)
+    if (_player->getGroup() && _player->getGroup()->m_isqueued)
     {
         SystemMessage("You are already in a group and queued for a battleground or inside a battleground. Leave this first.");
         return;

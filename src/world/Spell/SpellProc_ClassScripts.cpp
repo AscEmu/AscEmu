@@ -911,7 +911,7 @@ public:
             return true;
 
         Player* plr = static_cast<Player*>(mTarget);
-        Group* grp = plr->GetGroup();
+        Group* grp = plr->getGroup();
 
         if (grp == nullptr)
             return true;

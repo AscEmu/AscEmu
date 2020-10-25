@@ -2109,10 +2109,10 @@ uint32 Pet::GetUntrainCost()
     return reset_cost;
 }
 
-Group* Pet::GetGroup()
+Group* Pet::getGroup()
 {
     if (m_Owner)
-        return m_Owner->GetGroup();
+        return m_Owner->getGroup();
 
     return nullptr;
 }

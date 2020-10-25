@@ -228,12 +228,12 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 
             const auto send_packet = SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, _player->getGuid(), srlPacket.message, _player->isGMFlagSet()).serialise();
 
-            if (const auto group = _player->GetGroup())
+            if (const auto group = _player->getGroup())
             {
                 if (srlPacket.type == CHAT_MSG_PARTY || srlPacket.type == CHAT_MSG_PARTY_LEADER
                     && group->isRaid())
                 {
-                    if (const auto subgroup = group->GetSubGroup(_player->GetSubGroup()))
+                    if (const auto subgroup = group->GetSubGroup(_player->getSubGroupSlot()))
                     {
                         group->Lock();
                         for (auto group_member : subgroup->getGroupMembers())
@@ -641,7 +641,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         case CHAT_MSG_RAID_LEADER:
         case CHAT_MSG_RAID_WARNING:
         {
-            Group* pGroup = _player->GetGroup();
+            Group* pGroup = _player->getGroup();
             if (pGroup == nullptr) break;
 
             if (_player->m_modlanguage >= LANG_UNIVERSAL)
@@ -652,31 +652,31 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                 data = sChatHandler.FillMessageData(type, (CanUseCommand('c') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), chatTag);
             if (type == CHAT_MSG_PARTY && pGroup->getGroupType() == GROUP_TYPE_RAID)
             {
-                SubGroup* sgr = _player->GetGroup() ? _player->GetGroup()->GetSubGroup(_player->GetSubGroup()) : 0;
+                SubGroup* sgr = _player->getGroup() ? _player->getGroup()->GetSubGroup(_player->getSubGroupSlot()) : 0;
                 if (sgr)
                 {
-                    _player->GetGroup()->Lock();
+                    _player->getGroup()->Lock();
                     for (auto itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
                     {
                         if ((*itr)->m_loggedInPlayer)
                             (*itr)->m_loggedInPlayer->GetSession()->SendChatPacket(data, 1, lang, this);
                     }
-                    _player->GetGroup()->Unlock();
+                    _player->getGroup()->Unlock();
                 }
             }
             else
             {
                 SubGroup* sgr;
-                for (uint32_t i = 0; i < _player->GetGroup()->GetSubGroupCount(); ++i)
+                for (uint32_t i = 0; i < _player->getGroup()->GetSubGroupCount(); ++i)
                 {
-                    sgr = _player->GetGroup()->GetSubGroup(i);
-                    _player->GetGroup()->Lock();
+                    sgr = _player->getGroup()->GetSubGroup(i);
+                    _player->getGroup()->Lock();
                     for (auto itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
                     {
                         if ((*itr)->m_loggedInPlayer)
                             (*itr)->m_loggedInPlayer->GetSession()->SendChatPacket(data, 1, lang, this);
                     }
-                    _player->GetGroup()->Unlock();
+                    _player->getGroup()->Unlock();
 
                 }
             }

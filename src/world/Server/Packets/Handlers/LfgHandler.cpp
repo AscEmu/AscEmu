@@ -405,7 +405,7 @@ void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal*
     {
         uint64_t gguid = grp->GetGUID();
         isContinue = grp->isLFGGroup() && sLfgMgr.GetState(gguid) != LFG_STATE_FINISHED_DUNGEON;
-        isSameDungeon = _player->GetGroup() == grp && isContinue;
+        isSameDungeon = _player->getGroup() == grp && isContinue;
     }
 
     LogDebugFlag(LF_OPCODE, "SMSG_LFG_PROPOSAL_UPDATE %u state: %u", _player->getGuid(), pProp->state);
@@ -499,8 +499,8 @@ void WorldSession::handleLfgJoinOpcode(WorldPacket& recvPacket)
 {
     LogDebugFlag(LF_OPCODE, "CMSG_LFG_JOIN");
 
-    if (_player->GetGroup() && _player->GetGroup()->GetLeader()->guid != _player->getGuid() 
-        && (_player->GetGroup()->MemberCount() == 5 || !_player->GetGroup()->isLFGGroup()))
+    if (_player->getGroup() && _player->getGroup()->GetLeader()->guid != _player->getGuid() 
+        && (_player->getGroup()->MemberCount() == 5 || !_player->getGroup()->isLFGGroup()))
     {
         LogDebug("handleLfgJoinOpcode : Unable to JoinQueue");
 
@@ -540,7 +540,7 @@ void WorldSession::handleLfgJoinOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleLfgLeaveOpcode(WorldPacket& /*recvPacket*/)
 {
-    Group* grp = _player->GetGroup();
+    Group* grp = _player->getGroup();
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_LFG_LEAVE %lld in group: %u", _player->getGuid(), grp ? 1 : 0);
 
@@ -587,7 +587,7 @@ void WorldSession::handleLfgSetRolesOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Group* grp = _player->GetGroup())
+    if (Group* grp = _player->getGroup())
     {
         LogDebugFlag(LF_OPCODE, "Received CMSG_LFG_SET_ROLES: Group %lld, Player %lld, Roles: %u",
             grp->GetGUID(), _player->getGuid(), srlPacket.roles);
@@ -705,7 +705,7 @@ void WorldSession::handleLfgPartyLockInfoRequestOpcode(WorldPacket& /*recvPacket
 
     LogDebugFlag(LF_OPCODE, "Received CMSG_LFD_PARTY_LOCK_INFO_REQUEST guid %lld", guid);
 
-    Group* grp = _player->GetGroup();
+    Group* grp = _player->getGroup();
     if (!grp)
         return;
 

@@ -428,9 +428,9 @@ void Creature::generateLoot()
     if (worldConfig.player.deactivateMasterLootNinja)
     {
         Player* looter = sObjectMgr.GetPlayer((uint32)this->TaggerGuid);
-        if (looter && looter->GetGroup() && looter->GetGroup()->GetMethod() == PARTY_LOOT_MASTER)
+        if (looter && looter->getGroup() && looter->getGroup()->GetMethod() == PARTY_LOOT_MASTER)
         {
-            uint16 lootThreshold = looter->GetGroup()->GetThreshold();
+            uint16 lootThreshold = looter->getGroup()->GetThreshold();
 
             for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
             {
@@ -2003,11 +2003,6 @@ float Creature::GetBaseParry()
 
     // for now return a base of 5%, later get from dbase?
     return 5.0f;
-}
-
-Group* Creature::GetGroup()
-{
-    return NULL;
 }
 
 int32 Creature::GetDamageDoneMod(uint16_t school)

@@ -2786,7 +2786,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
         m_lastMapUpdatePosition.ChangeCoords({ newX, newY, newZ, newOrientation });
         m_mapMgr->ChangeObjectLocation(this);
 
-        if (isPlayer() && static_cast<Player*>(this)->GetGroup() && static_cast<Player*>(this)->m_last_group_position.Distance2DSq(m_position) > 25.0f)       // distance of 5.0
+        if (isPlayer() && static_cast<Player*>(this)->getGroup() && static_cast<Player*>(this)->m_last_group_position.Distance2DSq(m_position) > 25.0f)       // distance of 5.0
         {
             static_cast<Player*>(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
         }
@@ -2831,7 +2831,7 @@ void Object::AddToWorld()
             // Player limit?
             if (mapMgr->GetMapInfo()->playerlimit && mapMgr->GetPlayerCount() >= mapMgr->GetMapInfo()->playerlimit)
                 return;
-            Group* group = plr->GetGroup();
+            Group* group = plr->getGroup();
             // Player in group?
             if (group == nullptr && mapMgr->pInstance->m_creatorGuid == 0)
                 return;
@@ -3347,7 +3347,7 @@ void Object::SetZoneId(uint32 newZone)
     if (isPlayer())
     {
         static_cast<Player*>(this)->m_cache->SetUInt32Value(CACHE_PLAYER_ZONEID, newZone);
-        if (static_cast<Player*>(this)->GetGroup() != nullptr)
+        if (static_cast<Player*>(this)->getGroup())
             static_cast<Player*>(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_ZONE);
     }
 }

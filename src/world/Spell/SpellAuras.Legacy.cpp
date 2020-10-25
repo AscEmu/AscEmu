@@ -211,7 +211,7 @@ void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
         return;
     }
 
-    if (!owner->InGroup())
+    if (!owner->isInGroup())
     {
         if (m_target->getGuid() != owner->getGuid())
         {
@@ -232,9 +232,9 @@ void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
     }
     else
     {
-        owner->GetGroup()->Lock();
+        owner->getGroup()->Lock();
 
-        SubGroup* sg = owner->GetGroup()->GetSubGroup(owner->GetSubGroup());
+        SubGroup* sg = owner->getGroup()->GetSubGroup(owner->getSubGroupSlot());
         for (GroupMembersSet::iterator itr = sg->GetGroupMembersBegin(); itr != sg->GetGroupMembersEnd(); ++itr)
         {
             Player* op = (*itr)->m_loggedInPlayer;
@@ -260,7 +260,7 @@ void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
             targets.insert(op->getGuid());
         }
 
-        owner->GetGroup()->Unlock();
+        owner->getGroup()->Unlock();
     }
 
     for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end();)
@@ -283,16 +283,16 @@ void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
         if ((m_target->GetPhase() & tp->GetPhase()) == 0)
             removable = true;
 
-        if ((tp->getGuid() != owner->getGuid()) && !tp->InGroup())
+        if ((tp->getGuid() != owner->getGuid()) && !tp->isInGroup())
             removable = true;
         else
         {
-            if (owner->InGroup())
+            if (owner->isInGroup())
             {
-                if (owner->GetGroup()->GetID() != tp->GetGroup()->GetID())
+                if (owner->getGroup()->GetID() != tp->getGroup()->GetID())
                     removable = true;
 
-                if (owner->GetSubGroup() != tp->GetSubGroup())
+                if (owner->getSubGroupSlot() != tp->getSubGroupSlot())
                     removable = true;
             }
         }
@@ -314,7 +314,7 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
         return;
     }
 
-    if (!owner->InGroup())
+    if (!owner->isInGroup())
     {
         if (m_target->getGuid() != owner->getGuid())
         {
@@ -336,7 +336,7 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
     }
     else
     {
-        Group* g = owner->GetGroup();
+        Group* g = owner->getGroup();
 
         g->Lock();
         uint32 subgroups = g->GetSubGroupCount();
@@ -396,7 +396,7 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
         if ((m_target->GetPhase() & tp->GetPhase()) == 0)
             removable = true;
 
-        if ((tp->getGuid() != owner->getGuid()) && !tp->InGroup())
+        if ((tp->getGuid() != owner->getGuid()) && !tp->isInGroup())
             removable = true;
 
         if (removable)

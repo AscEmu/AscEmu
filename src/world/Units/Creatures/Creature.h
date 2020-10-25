@@ -249,8 +249,6 @@ public:
         void SetEnslaveSpell(uint32 spellId);
         bool RemoveEnslave();
 
-        Group* GetGroup() override;
-
         int32 GetDamageDoneMod(uint16_t school) override;
 
         float GetDamageDonePctMod(uint16_t school) override;

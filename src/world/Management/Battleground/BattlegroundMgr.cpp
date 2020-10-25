@@ -999,7 +999,7 @@ void CBattlegroundManager::RemovePlayerFromQueues(Player* plr)
     m_queueLock.Release();
 
     Group* group;
-    group = plr->GetGroup();
+    group = plr->getGroup();
     if (group)
     {
         LOG_DEBUG("Player %u removed whilst in a group. Removing players group %u from queue", plr->getGuidLow(), group->GetID());
@@ -1285,10 +1285,10 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
 {
     uint32 pguid = m_session->GetPlayer()->getGuidLow();
     uint32 lgroup = GetLevelGrouping(m_session->GetPlayer()->getLevel());
-    if (as_group && m_session->GetPlayer()->GetGroup() == NULL)
+    if (as_group && m_session->GetPlayer()->getGroup() == NULL)
         return;
 
-    Group* pGroup = m_session->GetPlayer()->GetGroup();
+    Group* pGroup = m_session->GetPlayer()->getGroup();
     if (as_group)
     {
         if (pGroup->GetSubGroupCount() != 1)

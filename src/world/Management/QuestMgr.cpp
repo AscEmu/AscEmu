@@ -1250,9 +1250,9 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
         // Shared kills
         Player* gplr = NULL;
 
-        if (plr->InGroup())
+        if (plr->isInGroup())
         {
-            if (Group* pGroup = plr->GetGroup())
+            if (Group* pGroup = plr->getGroup())
             {
                 GroupMembersSet::iterator gitr;
                 pGroup->Lock();

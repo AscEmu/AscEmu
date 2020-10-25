@@ -1337,10 +1337,10 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
     if (!pVictim)
         return;
 
-    if (!PlayerInGroup->InGroup())
+    if (!PlayerInGroup->isInGroup())
         return;
 
-    Group* pGroup = PlayerInGroup->GetGroup();
+    Group* pGroup = PlayerInGroup->getGroup();
     uint32 xp;
     if (!pGroup)
         return;
@@ -11468,7 +11468,7 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
         if (hasAurasWithId(improvedSpellReflection))
         {
             Player* pPlayer = static_cast<Player*>(this);
-            Group* pGroup = pPlayer->GetGroup();
+            Group* pGroup = pPlayer->getGroup();
             if (pGroup != NULL)
             {
                 int32 targets = 0;
@@ -11501,7 +11501,7 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
     if (!apply && spellid == 59725 && isPlayer())
     {
         Player* pPlayer = static_cast<Player*>(this);
-        Group* pGroup = pPlayer->GetGroup();
+        Group* pGroup = pPlayer->getGroup();
         if (pGroup != NULL)
         {
             pGroup->Lock();
@@ -12050,7 +12050,7 @@ void Unit::UpdateAuraForGroup(uint8 slot)
     if (isPlayer())
     {
         Player* player = static_cast<Player*>(this);
-        if (player->GetGroup())
+        if (player->getGroup())
         {
             player->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_AURAS);
             player->SetAuraUpdateMaskForRaid(slot);
@@ -12061,7 +12061,7 @@ void Unit::UpdateAuraForGroup(uint8 slot)
         if (getPlayerOwner())
         {
             Player* owner = getPlayerOwner();
-            if (owner->GetGroup())
+            if (owner->getGroup())
             {
                 owner->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_AURAS);
                 SetAuraUpdateMaskForRaid(slot);

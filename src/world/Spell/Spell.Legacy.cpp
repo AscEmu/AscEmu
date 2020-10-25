@@ -385,7 +385,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
             if (!itr->isCreatureOrPlayer() || !static_cast<Unit*>(itr)->isAlive())      //|| (TO< Creature* >(*itr)->isTotem() && !TO< Unit* >(*itr)->isPlayer())) why shouldn't we fill totems?
                 continue;
 
-            if (p_caster && (itr)->isPlayer() && p_caster->GetGroup() && static_cast<Player*>(itr)->GetGroup() && static_cast<Player*>(itr)->GetGroup() == p_caster->GetGroup())      //Don't attack party members!!
+            if (p_caster && (itr)->isPlayer() && p_caster->getGroup() && static_cast<Player*>(itr)->getGroup() && static_cast<Player*>(itr)->getGroup() == p_caster->getGroup())      //Don't attack party members!!
             {
                 //Dueling - AoE's should still hit the target party member if you're dueling with him
                 if (!p_caster->DuelingWith || p_caster->DuelingWith != static_cast<Player*>(itr))

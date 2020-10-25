@@ -897,16 +897,16 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
     QuestProperties const* pQuest = sMySQLStore.getQuestProperties(srlPacket.questId);
     if (pQuest)
     {
-        Group* pGroup = _player->GetGroup();
+        Group* pGroup = _player->getGroup();
         if (pGroup)
         {
             uint32_t pguid = _player->getGuidLow();
-            SubGroup* sgr = _player->GetGroup() ?
-                _player->GetGroup()->GetSubGroup(_player->GetSubGroup()) : 0;
+            SubGroup* sgr = _player->getGroup() ?
+                _player->getGroup()->GetSubGroup(_player->getSubGroupSlot()) : 0;
 
             if (sgr)
             {
-                _player->GetGroup()->Lock();
+                _player->getGroup()->Lock();
                 for (GroupMembersSet::iterator itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
                 {
                     Player* pPlayer = (*itr)->m_loggedInPlayer;
@@ -955,7 +955,7 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
                         pPlayer->GetSession()->SendPacket(&data);
                     }
                 }
-                _player->GetGroup()->Unlock();
+                _player->getGroup()->Unlock();
             }
         }
     }

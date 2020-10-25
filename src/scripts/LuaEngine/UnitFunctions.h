@@ -2435,7 +2435,9 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         if (!data)
             return 0;
-        plr->GetGroup()->SendPacketToAll(data);
+
+        if (plr->getGroup())
+            plr->getGroup()->SendPacketToAll(data);
         return 0;
     }
 
@@ -3058,7 +3060,7 @@ public:
     {
         TEST_PLAYER()
         Player* _player = static_cast<Player*>(ptr);
-        Group* party = _player->GetGroup();
+        Group* party = _player->getGroup();
         uint32_t count = 0;
         lua_newtable(L);
         if (party)
@@ -3096,12 +3098,12 @@ public:
         if (ptr->isPlayer())
         {
             Player* plr = static_cast<Player*>(ptr);
-            if (plr->GetGroup())
+            if (plr->getGroup())
             {
-                if (plr->GetGroup()->getGroupType() == GROUP_TYPE_PARTY)
-                    lua_pushnumber(L, plr->GetGroup()->m_difficulty);
+                if (plr->getGroup()->getGroupType() == GROUP_TYPE_PARTY)
+                    lua_pushnumber(L, plr->getGroup()->m_difficulty);
                 else
-                    lua_pushnumber(L, plr->GetGroup()->m_raiddifficulty);
+                    lua_pushnumber(L, plr->getGroup()->m_raiddifficulty);
             }
             else
             {
@@ -3160,7 +3162,8 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        lua_pushboolean(L, plr->GetGroup()->IsFull() ? 1 : 0);
+        if (plr->getGroup())
+            lua_pushboolean(L, plr->getGroup()->IsFull() ? 1 : 0);
         return 1;
     }
 
@@ -3168,7 +3171,8 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        PUSH_UNIT(L, plr->GetGroup()->GetLeader()->m_loggedInPlayer);
+        if (plr->getGroup())
+            PUSH_UNIT(L, plr->getGroup()->GetLeader()->m_loggedInPlayer);
         return 1;
     }
 
@@ -3178,7 +3182,8 @@ public:
         Player* _plr = CHECK_PLAYER(L, 1);
         bool silent = CHECK_BOOL(L, 2);
         Player* plr = static_cast<Player*>(ptr);
-        plr->GetGroup()->SetLeader(_plr, silent);
+        if (plr->getGroup())
+            plr->getGroup()->SetLeader(_plr, silent);
         return 0;
     }
 
@@ -3188,7 +3193,8 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Player* _plr = CHECK_PLAYER(L, 1);
         int32_t subgroup = static_cast<int32_t>(luaL_optinteger(L, 2, -1));
-        plr->GetGroup()->AddMember(_plr->getPlayerInfo(), subgroup);
+        if (plr->getGroup())
+            plr->getGroup()->AddMember(_plr->getPlayerInfo(), subgroup);
         return 0;
     }
 
@@ -3208,8 +3214,8 @@ public:
             if (ptr->isPlayer())
             {
                 Player* plr = static_cast<Player*>(ptr);
-                if (plr->GetGroup())
-                    (difficulty > 1 ? plr->GetGroup()->m_difficulty : plr->GetGroup()->m_raiddifficulty) = difficulty;
+                if (plr->getGroup())
+                    (difficulty > 1 ? plr->getGroup()->m_difficulty : plr->getGroup()->m_raiddifficulty) = difficulty;
                 else
                 {
                     Instance* pInstance = sInstanceMgr.GetInstanceByIds(plr->GetMapId(), plr->GetInstanceID());
@@ -3229,7 +3235,8 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        plr->GetGroup()->ExpandToRaid();
+        if (plr->getGroup())
+            plr->getGroup()->ExpandToRaid();
         return 0;
     }
 
@@ -4752,7 +4759,8 @@ public:
     {
         TEST_PLAYER()
         Player* target = CHECK_PLAYER(L, 1);
-        if (ptr->GetGroup()->HasMember(target))
+        Player* plr = static_cast<Player*>(ptr);
+        if (plr->getGroup() && plr->getGroup()->HasMember(target))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -4763,8 +4771,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        Group* group = plr->GetGroup();
-        if (group != nullptr)
+        if (Group* group = plr->getGroup())
             lua_pushinteger(L, group->getGroupType());
         else
             lua_pushnil(L);
@@ -5707,7 +5714,7 @@ public:
     static int IsInGroup(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER_RET()
-        if (static_cast<Player*>(ptr)->InGroup())
+        if (static_cast<Player*>(ptr)->isInGroup())
             RET_BOOL(true)
             RET_BOOL(false)
     }
