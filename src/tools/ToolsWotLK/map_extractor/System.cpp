@@ -96,16 +96,16 @@ float CONF_float_to_int16_limit = 2048.0f;   // Max accuracy = val/65536
 float CONF_flat_height_delta_limit = 0.005f; // If max - min less this value - surface is flat
 float CONF_flat_liquid_delta_limit = 0.001f; // If max - min less this value - liquid surface is flat
 
-// List MPQ for extract from / Version 12340
+// List MPQ for extract
 char const* CONF_mpq_list[] =
 {
-    "common.MPQ",
-    "common-2.MPQ",
-    "lichking.MPQ",
-    "expansion.MPQ",
-    "patch.MPQ",
-    "patch-2.MPQ",
-    "patch-3.MPQ",
+    "common.MPQ",    // Version 8606, 12340
+    "common-2.MPQ",  // Version 12340
+    "lichking.MPQ",  // Version 12340
+    "expansion.MPQ", // Version 8606, 12340
+    "patch.MPQ",     // Version 8606, 12340
+    "patch-2.MPQ",   // Version 8606, 12340
+    "patch-3.MPQ",   // Version 12340
 };
 
 #define LOCALES_COUNT 12
