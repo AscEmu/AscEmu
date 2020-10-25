@@ -20,6 +20,7 @@
 #ifndef GLOBALFUNCTIONS_H
 #define GLOBALFUNCTIONS_H
 
+#include "WorldConf.h"
 #include "LUAEngine.h"
 #include "git_version.h"
 #include "Management/TaxiMgr.h"
@@ -31,13 +32,7 @@
 #include "Management/Guild.h"
 #endif
 
-#define ENGINE_NAME "ALE" //You should check in your scripts that GetLuaEngine() == "ALE"
-#ifdef LUA_SVN_REVISION_H
-#define ENGINE_VERSION LUA_REVISION //If you need a specific version for your script to work, check GetLuaEngineVersion() >= number
-#else
-#define ENGINE_VERSION 0 //linux people
-#endif
-//now the ArcScripts revision
+#define ENGINE_NAME "ALE" // You should check in your scripts that GetLuaEngine() == "ALE"
 
 namespace luaGlobalFunctions
 {
@@ -141,12 +136,6 @@ namespace luaGlobalFunctions
     static int GetLUAEngine(lua_State* L)  //also mapped to GetLuaEngine()
     {
         lua_pushstring(L, ENGINE_NAME);
-        return 1;
-    }
-
-    static int GetLuaEngineVersion(lua_State* L)
-    {
-        lua_pushnumber(L, ENGINE_VERSION);
         return 1;
     }
 
@@ -292,6 +281,12 @@ namespace luaGlobalFunctions
     {
         sWorld.loadWorldConfigValues(true);
         return 0;
+    }
+
+    static int GetClientVersion(lua_State* L)
+    {
+        lua_pushinteger(L, VERSION_STRING);
+        return 1;
     }
 
     static int GetAERevision(lua_State* L)
@@ -729,7 +724,7 @@ void RegisterGlobalFunctions(lua_State* L)
     lua_register(L, "GetPlayer", &luaGlobalFunctions::GetPlayer);
     lua_register(L, "GetLUAEngine", &luaGlobalFunctions::GetLUAEngine);
     lua_register(L, "GetLuaEngine", &luaGlobalFunctions::GetLUAEngine);
-    lua_register(L, "GetLuaEngineVersion", &luaGlobalFunctions::GetLuaEngineVersion);
+    lua_register(L, "GetClientVersion", &luaGlobalFunctions::GetClientVersion);
     lua_register(L, "GetGameTime", &luaGlobalFunctions::GetGameTime);
     lua_register(L, "WorldDBQuery", &luaGlobalFunctions::WorldDBQuery);
     lua_register(L, "CharDBQuery", &luaGlobalFunctions::CharDBQuery);
