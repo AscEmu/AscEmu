@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Config/Config.h"
 #include "Map/MapCell.h"
 //#include "Server/WorldSocket.h"
-#include "Units/Players/PlayerDefines.hpp"
+#include "Macros/PlayerMacros.hpp"
 #include "shared/Log.hpp"
 
 

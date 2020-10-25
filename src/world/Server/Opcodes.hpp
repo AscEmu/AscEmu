@@ -31,7 +31,7 @@ struct MultiversionOpcodeTable
     uint16_t hexValues[MAX_VERSION_INDEX];
 };
 
-enum OpcodesNew
+enum Opcodes
 {
 MSG_NULL_ACTION,
 CMSG_BOOTME,
@@ -1725,12 +1725,11 @@ SMSG_WEEKLY_SPELL_USAGE,
 SMSG_WEEKLY_SPELL_USAGE_UPDATE,
 SMSG_WORLD_SERVER_INFO,
 SMSG_XP_GAIN_ABORTED,
-
-
-    NUM_OPCODES
+NUM_OPCODES
 };
 
-static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore = {
+static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
+{
 {MSG_NULL_ACTION, {0x1F, "MSG_NULL_ACTION", OpcodeDevelopmentState::Unchecked, {0x000,/*Classic*/ 0x000,/*BC*/ 0x000,/*WotLK*/ 0x1001,/*Cata*/ 0x1001/*Mop*/}}},
 {CMSG_BOOTME, {0x1F, "CMSG_BOOTME", OpcodeDevelopmentState::Unchecked, {0x001,/*Classic*/ 0x001,/*BC*/ 0x001,/*WotLK*/ 0x001,/*Cata*/ 0x001/*Mop*/}}},
 {CMSG_DBLOOKUP, {0x1F, "CMSG_DBLOOKUP", OpcodeDevelopmentState::Unchecked, {0x002,/*Classic*/ 0x002,/*BC*/ 0x002,/*WotLK*/ 0x002,/*Cata*/ 0x002/*Mop*/}}},
@@ -3423,6 +3422,4 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore = {
 {SMSG_WEEKLY_SPELL_USAGE_UPDATE, {0x18, "SMSG_WEEKLY_SPELL_USAGE_UPDATE", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x11B5,/*Cata*/ 0x11B5/*Mop*/}}},
 {SMSG_WORLD_SERVER_INFO, {0x18, "SMSG_WORLD_SERVER_INFO", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x31A2,/*Cata*/ 0x31A2/*Mop*/}}},
 {SMSG_XP_GAIN_ABORTED, {0x18, "SMSG_XP_GAIN_ABORTED", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x50B4,/*Cata*/ 0x50B4/*Mop*/}}},
-
-
 };
