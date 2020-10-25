@@ -843,9 +843,6 @@ void SpellMgr::applyHackFixes()
                 break;
         }
 
-        if (sp->custom_proc_interval > 0)      // if (sp->custom_proc_interval != 0)
-            sp->addProcFlags(PROC_REMOVEONUSE);
-
         //shaman - shock, has no spellgroup.very dangerous move !
 
         //mage - fireball. Only some of the spell has the flags
@@ -1351,7 +1348,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(31893);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_PHYSICAL_ATTACK);
         sp->setDmgClass(SPELL_DMG_TYPE_MAGIC);
     }
 
@@ -1363,7 +1359,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectRadiusIndex(43, 0); //16 yards
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(54172, 1);
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setProcChance(100);
         sp->setMaxTargets(4);
     }
@@ -1543,7 +1538,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setEffectTriggerSpell(34456, 0);
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF)); //maybe target master ?
         sp->setEffect(SPELL_EFFECT_NULL, 1); //remove this
     }
     sp = getMutableSpellInfo(34459);
@@ -1552,7 +1546,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setEffectTriggerSpell(34456, 0);
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF));
         sp->setEffect(SPELL_EFFECT_NULL, 1); //remove this
     }
     sp = getMutableSpellInfo(34460);
@@ -1561,7 +1554,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setEffectTriggerSpell(34456, 0);
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF));
         sp->setEffect(SPELL_EFFECT_NULL, 1); //remove this
     }
 
@@ -1583,7 +1575,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(34497);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF));
         sp->setProcChance(sp->getEffectBasePoints(0) + 1);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(34720, 0);
@@ -1591,7 +1582,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(34498);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF));
         sp->setProcChance(sp->getEffectBasePoints(0) + 1);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(34720, 0);
@@ -1599,7 +1589,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(34499);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF));
         sp->setProcChance(sp->getEffectBasePoints(0) + 1);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(34720, 0);
@@ -1613,7 +1602,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectTriggerSpell(19615, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setProcChance(sp->getEffectBasePoints(0));
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
     }
     sp = getMutableSpellInfo(19622);
     if (sp != nullptr)
@@ -1622,7 +1610,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectTriggerSpell(19615, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setProcChance(sp->getEffectBasePoints(0));
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
     }
     sp = getMutableSpellInfo(19623);
     if (sp != nullptr)
@@ -1631,7 +1618,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectTriggerSpell(19615, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setProcChance(sp->getEffectBasePoints(0));
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
     }
     sp = getMutableSpellInfo(19624);
     if (sp != nullptr)
@@ -1640,7 +1626,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectTriggerSpell(19615, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setProcChance(sp->getEffectBasePoints(0));
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
     }
     sp = getMutableSpellInfo(19625);
     if (sp != nullptr)
@@ -1649,7 +1634,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectTriggerSpell(19615, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
         sp->setProcChance(sp->getEffectBasePoints(0));
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF));        //Zyres: moved from custom_c_is_flag
     }
 
     //Hunter : Pathfinding
@@ -1664,43 +1648,12 @@ void SpellMgr::applyHackFixes()
         sp->setEffectMiscValue(SMT_MISC_EFFECT, 0);
     }
 
-    //Hunter : Rapid Killing - might need to add honor trigger too here. I'm guessing you receive Xp too so I'm avoiding double proc
-    sp = getMutableSpellInfo(34948);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_GAIN_EXPIERIENCE | static_cast<uint32>(PROC_TARGET_SELF));
-    }
-    sp = getMutableSpellInfo(34949);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_GAIN_EXPIERIENCE | static_cast<uint32>(PROC_TARGET_SELF));
-    }
-
     // Feed pet
     sp = getMutableSpellInfo(6991);
     if (sp != nullptr)
     {
         sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 0);
     }
-
-    //\todo 16/03/08 Zyres: sql
-    // MesoX: Serendipity http://www.wowhead.com/?spell=63730
-    sp = getMutableSpellInfo(63730);   // Rank 1
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
-    }
-    sp = getMutableSpellInfo(63733);   // Rank 2
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
-    }
-    sp = getMutableSpellInfo(63737);   // Rank 3
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
-    }
-
 
     //////////////////////////////////////////
     // ROGUE                                //
@@ -1945,14 +1898,12 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(33201);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_ABSORB);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(33619, 0); //!! WRONG spell, we will make direct dmg here
     }
     sp = getMutableSpellInfo(33202);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_ABSORB);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(33619, 0); //!! WRONG spell, we will make direct dmg here
     }
@@ -2023,25 +1974,6 @@ void SpellMgr::applyHackFixes()
     //////////////////////////////////////////
 
     // Insert shaman spell fixes here
-    //shaman - Healing Way
-    sp = getMutableSpellInfo(29202);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);     // DankoDJ: No triggered Spell! We override SPELL_AURA_ADD_PCT_MODIFIER with this crap?
-    }
-    sp = getMutableSpellInfo(29205);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);     // DankoDJ: No triggered Spell! We override SPELL_AURA_ADD_PCT_MODIFIER with this crap?
-    }
-    sp = getMutableSpellInfo(29206);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);     // DankoDJ: No triggered Spell! We override SPELL_AURA_ADD_PCT_MODIFIER with this crap?
-    }
 
     // Elemental Mastery
     sp = getMutableSpellInfo(16166);
@@ -2194,19 +2126,16 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(30802);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK);
         sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
     }
     sp = getMutableSpellInfo(30808);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK);
         sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
     }
     sp = getMutableSpellInfo(30809);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_CRIT_ATTACK);
         sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
     }
 
@@ -2326,7 +2255,6 @@ void SpellMgr::applyHackFixes()
     if (sp != nullptr)
     {
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-        sp->setProcFlags(PROC_ON_CAST_SPECIFIC_SPELL);
     }
 
     // Arcane Blast
@@ -2334,21 +2262,18 @@ void SpellMgr::applyHackFixes()
     if (sp != nullptr)
     {
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-        sp->setProcFlags(PROC_ON_CAST_SPECIFIC_SPELL);
     }
 
     sp = getMutableSpellInfo(42896);
     if (sp != nullptr)
     {
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-        sp->setProcFlags(PROC_ON_CAST_SPECIFIC_SPELL);
     }
 
     sp = getMutableSpellInfo(42897);
     if (sp != nullptr)
     {
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-        sp->setProcFlags(PROC_ON_CAST_SPECIFIC_SPELL);
     }
 
     //mage : Empowered Arcane Missiles
@@ -2375,7 +2300,6 @@ void SpellMgr::applyHackFixes()
     if (sp != nullptr)
     {
         // passive rank: 11103, 12357, 12358 ,12359,12360 :D
-        sp->setProcFlags(PROC_ON_ANY_DAMAGE_VICTIM | PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_HIT);
         sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 0);
         sp->setEffectImplicitTargetB(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 1);
@@ -2436,7 +2360,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(28682, 1);
-        sp->setProcFlags(PROC_ON_SPELL_HIT | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF));
         sp->setProcChance(0);
     }
 
@@ -2473,19 +2396,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectMiscValue(SMT_MISC_EFFECT, 1);
     }
 
-    //Improved Counterspell rank 1
-    sp = getMutableSpellInfo(11255);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPECIFIC_SPELL);
-    }
-
-    //Improved Counterspell rank 2
-    sp = getMutableSpellInfo(12598);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPECIFIC_SPELL);
-    }
     //////////////////////////////////////////
     // WARLOCK                                //
     //////////////////////////////////////////
@@ -2521,7 +2431,6 @@ void SpellMgr::applyHackFixes()
     {
         sp->setEffectSpellClassMask(0x111, 1, 0);
         sp->setEffectSpellClassMask(0, 1, 1);
-        sp->setProcFlags(PROC_ON_ANY_HOSTILE_ACTION);
     }
 
     sp = getMutableSpellInfo(47204);
@@ -2529,7 +2438,6 @@ void SpellMgr::applyHackFixes()
     {
         sp->setEffectSpellClassMask(0x111, 1, 0);
         sp->setEffectSpellClassMask(0, 1, 1);
-        sp->setProcFlags(PROC_ON_ANY_HOSTILE_ACTION);
     }
 
     sp = getMutableSpellInfo(47203);
@@ -2537,7 +2445,6 @@ void SpellMgr::applyHackFixes()
     {
         sp->setEffectSpellClassMask(0x111, 1, 0);
         sp->setEffectSpellClassMask(0, 1, 1);
-        sp->setProcFlags(PROC_ON_ANY_HOSTILE_ACTION);
     }
 
     sp = getMutableSpellInfo(47202);
@@ -2545,7 +2452,6 @@ void SpellMgr::applyHackFixes()
     {
         sp->setEffectSpellClassMask(0x111, 1, 0);
         sp->setEffectSpellClassMask(0, 1, 1);
-        sp->setProcFlags(PROC_ON_ANY_HOSTILE_ACTION);
     }
 
     sp = getMutableSpellInfo(47201);
@@ -2966,7 +2872,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(18213);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_TARGET_DIE | static_cast<uint32>(PROC_TARGET_SELF));
         sp->setProcChance(100);
         sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
@@ -2977,7 +2882,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(18372);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_TARGET_DIE | static_cast<uint32>(PROC_TARGET_SELF));
         sp->setProcChance(100);
         sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
@@ -3044,25 +2948,6 @@ void SpellMgr::applyHackFixes()
     ////////////////////////////////////////////////////////////
     //    Feral Combat
     ////////////////////////////////////////////////////////////
-
-    // Druid - Infected Wounds
-    sp = getMutableSpellInfo(48483);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPECIFIC_SPELL);
-    }
-
-    sp = getMutableSpellInfo(48484);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPECIFIC_SPELL);
-    }
-
-    sp = getMutableSpellInfo(48485);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPECIFIC_SPELL);
-    }
 
     // Druid - Bash - Interrupt effect
     sp = getMutableSpellInfo(5211);
@@ -3204,7 +3089,6 @@ void SpellMgr::applyHackFixes()
     {
         sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
         sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
     }
     sp = getMutableSpellInfo(43860); // Totem of Survival
@@ -3212,7 +3096,6 @@ void SpellMgr::applyHackFixes()
     {
         sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
         sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
     }
     sp = getMutableSpellInfo(43861); // Merciless Totem of Survival
@@ -3220,7 +3103,6 @@ void SpellMgr::applyHackFixes()
     {
         sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
         sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
     }
     sp = getMutableSpellInfo(43862); // Vengeful Totem of Survival
@@ -3228,7 +3110,6 @@ void SpellMgr::applyHackFixes()
     {
         sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
         sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
     }
     sp = getMutableSpellInfo(60564); // Savage Gladiator's Totem of Survival
@@ -3236,7 +3117,6 @@ void SpellMgr::applyHackFixes()
     {
         sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
         sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(60565, 1); // Savage Magic
@@ -3246,7 +3126,6 @@ void SpellMgr::applyHackFixes()
     {
         sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
         sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(60566, 1); // Hateful Magic
@@ -3256,7 +3135,6 @@ void SpellMgr::applyHackFixes()
     {
         sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
         sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(60567, 1); // Deadly Magic
@@ -3267,7 +3145,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(46098); // Brutal Totem of Third WInd
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectSpellClassMask(0x00000080, 0, 0);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(46099, 1); // Brutal Gladiator's Totem of the Third Wind
@@ -3275,7 +3152,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(34138); // Totem of the Third Wind
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectSpellClassMask(0x00000080, 0, 0);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(34132, 1); // Gladiator's Totem of the Third Wind
@@ -3283,7 +3159,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(42370); // Merciless Totem of the Third WInd
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectSpellClassMask(0x00000080, 0, 0);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(42371, 1); // Merciless Gladiator's Totem of the Third Wind
@@ -3291,7 +3166,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(43728); // Vengeful Totem of Third WInd
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectSpellClassMask(0x00000080, 0, 0);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(43729, 1); // Vengeful Gladiator's Totem of the Third Wind
@@ -3324,13 +3198,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffect(SPELL_EFFECT_DUMMY, 0);
     }
 
-    //Relic - Idol of the Unseen Moon
-    sp = getMutableSpellInfo(43739);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
-    }
-
     //Primal Instinct - Idol of Terror proc
     sp = getMutableSpellInfo(43738);
     if (sp != nullptr)
@@ -3345,13 +3212,13 @@ void SpellMgr::applyHackFixes()
         sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 2); // cebernic: for enemies not self
     }
 
+    // todo: write spell script for this
     // Sigil of the Unfaltering Knight
-    sp = getMutableSpellInfo(62147);
+    /*sp = getMutableSpellInfo(62147);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_CAST_SPECIFIC_SPELL);
         sp->custom_proc_interval = 45000;
-    }
+    }*/
 
     // Deadly Aggression - triggered by Deadly Gladiator's Relic/Idol/Libram/Totem
     sp = getMutableSpellInfo(60549);
@@ -3385,13 +3252,13 @@ void SpellMgr::applyHackFixes()
         sp->setEffect(SPELL_EFFECT_NULL, 1);
     }
 
+    // todo: write spell script for this
     // Sigil of Haunted Dreams
-    sp = getMutableSpellInfo(60826);
+    /*sp = getMutableSpellInfo(60826);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_CAST_SPECIFIC_SPELL);
         sp->custom_proc_interval = 45000;
-    }
+    }*/
 
     //Totem of the Third Wind - bad range
     sp = getMutableSpellInfo(34132);
@@ -3435,7 +3302,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffect(SPELL_EFFECT_APPLY_AURA, 2);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 2);
         sp->setProcChance(25);
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectTriggerSpell(40446, 2);
         sp->setMaxstack(1);
     }
@@ -3448,7 +3314,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setProcChance(10);
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectTriggerSpell(40441, 0);
         sp->setMaxstack(1);
         sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
@@ -3699,7 +3564,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(5246);    // why self?
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(20511, 0); // cebernic: this just real spell
@@ -3797,7 +3661,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(93099);
     if (sp != nullptr)
     {
-        sp->setProcFlags(PROC_ON_ANY_DAMAGE_VICTIM);
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(76691, 0);
     }
@@ -3986,7 +3849,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectTriggerSpell(26470, 0);
         sp->addAttributes(ATTRIBUTES_NO_VISUAL_AURA | ATTRIBUTES_PASSIVE);
         sp->setDurationIndex(0);
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
     }
     //Gravity Bomb
     sp = getMutableSpellInfo(63024);
@@ -4022,19 +3884,5 @@ void SpellMgr::applyHackFixes()
         sp->setEffectMechanic(MECHANIC_SHACKLED, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMY_IN_AREA, 0);
         sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
-    }
-
-    //Mage - firestarter talent ranks 1 & 2
-    // overwrite procs, should only proc on these 2 spellgroups.
-    sp = getMutableSpellInfo(44442);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
-        sp->setProcChance(50);
-    }
-    sp = getMutableSpellInfo(44443);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(PROC_ON_CAST_SPELL);
     }
 }

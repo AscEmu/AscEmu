@@ -1095,17 +1095,32 @@ void Creature::RegenerateHealth()
     uint32 mh = getMaxHealth();
     if (cur >= mh)return;
 
-    //though creatures have their stats we use some weird formula for amt
-    uint32 lvl = getLevel();
+    float amt = 0.0f;
 
-    float amt = lvl * 2.0f;
-    if (PctRegenModifier)
-        amt += (amt * PctRegenModifier) / 100;
+    // While polymorphed health is regenerated rapidly
+    // Exact value is yet unknown but it's roughly 10% of health per sec
+    if (hasUnitStateFlag(UNIT_STATE_POLYMORPHED))
+    {
+        amt = getMaxHealth() * 0.10f;
+    }
+    else if (!CombatStatus.IsInCombat())
+    {
+        //though creatures have their stats we use some weird formula for amt
+        uint32 lvl = getLevel();
 
-    if (GetCreatureProperties()->Rank == 3)
-        amt *= 10000.0f;
-    //Apply shit from conf file
-    amt *= worldConfig.getFloatRate(RATE_HEALTH);
+        amt = lvl * 2.0f;
+        if (PctRegenModifier)
+            amt += (amt * PctRegenModifier) / 100;
+
+        if (GetCreatureProperties()->Rank == 3)
+            amt *= 10000.0f;
+        //Apply shit from conf file
+        amt *= worldConfig.getFloatRate(RATE_HEALTH);
+    }
+    else
+    {
+        return;
+    }
 
     if (amt <= 1.0f) //this fixes regen like 0.98
         cur++;
@@ -2246,11 +2261,6 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         if (spellid)
             killerspell = sSpellMgr.getSpellInfo(spellid);
         else killerspell = NULL;
-
-        HandleProc(PROC_ON_DIE, this, killerspell);
-        m_procCounter = 0;
-        pAttacker->HandleProc(PROC_ON_TARGET_DIE, this, killerspell);
-        pAttacker->m_procCounter = 0;
     }
 
     setDeathState(JUST_DIED);

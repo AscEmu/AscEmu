@@ -33,21 +33,21 @@ bool Preparation(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->getPlayerCaster()) return true;
 
-    pSpell->getPlayerCaster()->ClearCooldownForSpell(5277);          // Evasion Rank 1
-    pSpell->getPlayerCaster()->ClearCooldownForSpell(26669);         // Evasion Rank 2
-    pSpell->getPlayerCaster()->ClearCooldownForSpell(2983);          // Sprint Rank 1
-    pSpell->getPlayerCaster()->ClearCooldownForSpell(8696);          // Sprint Rank 2
-    pSpell->getPlayerCaster()->ClearCooldownForSpell(11305);         // Sprint Rank 3
-    pSpell->getPlayerCaster()->ClearCooldownForSpell(1856);          // Vanish Rank 1
-    pSpell->getPlayerCaster()->ClearCooldownForSpell(1857);          // Vanish Rank 2
-    pSpell->getPlayerCaster()->ClearCooldownForSpell(26889);         // Vanish Rank 3
-    pSpell->getPlayerCaster()->ClearCooldownForSpell(14177);         // Cold Blood
-    pSpell->getPlayerCaster()->ClearCooldownForSpell(36554);         // Shadowstep
+    pSpell->getPlayerCaster()->clearCooldownForSpell(5277);          // Evasion Rank 1
+    pSpell->getPlayerCaster()->clearCooldownForSpell(26669);         // Evasion Rank 2
+    pSpell->getPlayerCaster()->clearCooldownForSpell(2983);          // Sprint Rank 1
+    pSpell->getPlayerCaster()->clearCooldownForSpell(8696);          // Sprint Rank 2
+    pSpell->getPlayerCaster()->clearCooldownForSpell(11305);         // Sprint Rank 3
+    pSpell->getPlayerCaster()->clearCooldownForSpell(1856);          // Vanish Rank 1
+    pSpell->getPlayerCaster()->clearCooldownForSpell(1857);          // Vanish Rank 2
+    pSpell->getPlayerCaster()->clearCooldownForSpell(26889);         // Vanish Rank 3
+    pSpell->getPlayerCaster()->clearCooldownForSpell(14177);         // Cold Blood
+    pSpell->getPlayerCaster()->clearCooldownForSpell(36554);         // Shadowstep
     if (pSpell->getPlayerCaster()->HasAura(56819))                   // Glyph of Preparation item = 42968 casts 57127 that apply aura 56819.
     {
-        pSpell->getPlayerCaster()->ClearCooldownForSpell(13877);     // Blade Flurry
-        pSpell->getPlayerCaster()->ClearCooldownForSpell(51722);     // Dismantle
-        pSpell->getPlayerCaster()->ClearCooldownForSpell(1766);      // Kick
+        pSpell->getPlayerCaster()->clearCooldownForSpell(13877);     // Blade Flurry
+        pSpell->getPlayerCaster()->clearCooldownForSpell(51722);     // Dismantle
+        pSpell->getPlayerCaster()->clearCooldownForSpell(1766);      // Kick
     }
     return true;
 }
@@ -95,36 +95,6 @@ bool ImprovedSprint(uint8_t effectIndex, Spell* pSpell)
         target->RemoveAllAurasByMechanic(MECHANIC_ENSNARED, 0, true);
         target->RemoveAllAurasByMechanic(MECHANIC_ROOTED, 0, true);
     }
-
-    return true;
-}
-
-bool CutToTheChase(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-    {
-        static uint32_t classMask[3] = { 0x20000, 0x8, 0 };
-        target->AddProcTriggerSpell(pAura->getSpellInfo(), pAura->getSpellInfo(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
-    }
-    else
-        target->RemoveProcTriggerSpell(pAura->getSpellId(), pAura->getCasterGuid());
-
-    return true;
-}
-
-bool DeadlyBrew(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-    {
-        static uint32_t classMask[3] = { 0x1000A000, 0, 0 };
-        target->AddProcTriggerSpell(pAura->getSpellInfo(), pAura->getSpellInfo(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL, 0, NULL, classMask);
-    }
-    else
-        target->RemoveProcTriggerSpell(pAura->getSpellId(), pAura->getCasterGuid());
 
     return true;
 }
@@ -298,12 +268,6 @@ void SetupLegacyRogueSpells(ScriptMgr* mgr)
     mgr->register_dummy_spell(5938, &Shiv);
     mgr->register_dummy_spell(14185, &Preparation);
     mgr->register_dummy_spell(30918, &ImprovedSprint);
-
-    uint32_t CutToTheChaseIds[] = { 51664, 51665, 51667, 51668, 51669, 0 };
-    mgr->register_dummy_aura(CutToTheChaseIds, &CutToTheChase);
-
-    mgr->register_dummy_aura(51625, &DeadlyBrew);
-    mgr->register_dummy_aura(51626, &DeadlyBrew);
 
     mgr->register_dummy_spell(35729, &CloakOfShadows);
 

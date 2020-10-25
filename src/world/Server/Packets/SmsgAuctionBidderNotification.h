@@ -32,6 +32,16 @@ namespace AscEmu::Packets
         {
         }
 
+#if VERSION_STRING >= Cata
+        SmsgAuctionBidderNotification(uint32_t houseId, uint32_t auctionId, uint64_t newBidderGuid, uint64_t newHighestBid, uint64_t outBid, uint32_t itemEntry) :
+            ManagedPacket(SMSG_AUCTION_BIDDER_NOTIFICATION, 36),
+            houseId(houseId),
+            auctionId(auctionId),
+            newBidderGuid(newBidderGuid),
+            newHighestBid(newHighestBid),
+            outBid(outBid),
+            itemEntry(itemEntry)
+#else
         SmsgAuctionBidderNotification(uint32_t houseId, uint32_t auctionId, uint64_t newBidderGuid, uint32_t newHighestBid, uint32_t outBid, uint32_t itemEntry) :
             ManagedPacket(SMSG_AUCTION_BIDDER_NOTIFICATION, 28),
             houseId(houseId),
@@ -40,6 +50,7 @@ namespace AscEmu::Packets
             newHighestBid(newHighestBid),
             outBid(outBid),
             itemEntry(itemEntry)
+#endif
         {
         }
 

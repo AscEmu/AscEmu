@@ -288,6 +288,7 @@ public:
 
     bool isSoulbound() const { return hasFlags(ITEM_FLAG_SOULBOUND); }
     bool isAccountbound() const { return hasFlags(ITEM_FLAG_ACCOUNTBOUND); }
+    bool isWeapon() const { return getItemProperties()->Class == ITEM_CLASS_WEAPON; }
 
     void setDurabilityToMax() { setDurability(getMaxDurability()); }
 

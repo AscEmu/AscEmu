@@ -148,7 +148,7 @@ LuaSpellEntry luaSpellVars[] =
     //{ "RequiresAreaId", 0, offsetof(SpellInfo, RequiresAreaId) },
     //{ "School", 0, offsetof(SpellInfo, School) },
     //{ "RuneCostID", 0, offsetof(SpellInfo, RuneCostID) },
-    { "proc_interval", 0, offsetof(SpellInfo, custom_proc_interval) },
+    //{ "proc_interval", 0, offsetof(SpellInfo, custom_proc_interval) },
     { "BGR_one_buff_on_target", 0, offsetof(SpellInfo, custom_BGR_one_buff_on_target) },
     { "c_is_flags", 0, offsetof(SpellInfo, custom_c_is_flags) },
     { "RankNumber", 0, offsetof(SpellInfo, custom_RankNumber) },

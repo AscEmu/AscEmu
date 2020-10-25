@@ -158,7 +158,7 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
     if (m_target->isPlayer())
         p_target = static_cast<Player*>(m_target);
 
-    mPositive = !_checkNegative();
+    mPositive = !getSpellInfo()->isNegativeAura();
 
     m_updatingModifiers = true;
 
@@ -838,14 +838,6 @@ void Aura::SpellAuraModPossess(AuraEffectModifier* /*aurEff*/, bool apply)
     }
 }
 
-void Aura::SpellAuraDummy(AuraEffectModifier* aurEff, bool apply)
-{
-    if (sScriptMgr.CallScriptedDummyAura(getSpellId(), aurEff->effIndex, this, apply))
-        return;
-
-    LogDebugFlag(LF_AURA_EFF, "Aura::SpellAuraDummy : Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellInfo->getId(), m_spellInfo->getName().c_str());
-}
-
 void Aura::SpellAuraModConfuse(AuraEffectModifier* aurEff, bool apply)
 {
     Unit* u_caster = GetUnitCaster();
@@ -869,6 +861,8 @@ void Aura::SpellAuraModConfuse(AuraEffectModifier* aurEff, bool apply)
 
         m_target->addUnitStateFlag(UNIT_STATE_CONFUSE);
         m_target->addUnitFlags(UNIT_FLAG_CONFUSED);
+
+        m_target->interruptSpell();
 
         m_target->setAItoUse(true);
         m_target->GetAIInterface()->HandleEvent(EVENT_WANDER, u_caster, 0);
@@ -1365,7 +1359,7 @@ void Aura::SpellAuraDamageShield(AuraEffectModifier* aurEff, bool apply)
         ds.m_damage = aurEff->mDamage;
         ds.m_spellId = getSpellInfo()->getId();
         ds.m_school = getSpellInfo()->getFirstSchoolFromSchoolMask();
-        ds.m_flags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_MISC; //maybe later we might want to add other flags too here
+        ds.m_flags = PROC_ON_TAKEN_MELEE_HIT | PROC_ON_TAKEN_MELEE_SPELL_HIT; //maybe later we might want to add other flags too here
         ds.owner = (void*)this;
         m_target->m_damageShields.push_back(ds);
     }
@@ -2263,352 +2257,6 @@ void Aura::SpellAuraModIncreaseEnergy(AuraEffectModifier* aurEff, bool apply)
     }
 }
 
-void Aura::SpellAuraModShapeshift(AuraEffectModifier* aurEff, bool apply)
-{
-    if (p_target != nullptr)
-    {
-        if (p_target->m_MountSpellId != 0 && p_target->m_MountSpellId != m_spellInfo->getId())
-        {
-            switch (aurEff->miscValue)
-            {
-                case FORM_BATTLESTANCE:
-                case FORM_DEFENSIVESTANCE:
-                case FORM_BERSERKERSTANCE:
-                case FORM_UNDEAD:
-                    break;
-                default:
-                    p_target->Dismount();
-            }
-        }
-    }
-
-    auto shapeshift_form = sSpellShapeshiftFormStore.LookupEntry(aurEff->miscValue);
-    if (!shapeshift_form)
-        return;
-
-    uint32 spellId = 0;
-    // uint32 spellId2 = 0;
-    uint32 modelId = (uint32)(apply ? shapeshift_form->modelId : 0);
-
-    bool freeMovements = false;
-
-    switch (shapeshift_form->id)
-    {
-        case FORM_CAT:
-        {
-            //druid
-            freeMovements = true;
-            spellId = 3025;
-            if (apply)
-            {
-                m_target->setPowerType(POWER_TYPE_ENERGY);
-                m_target->setMaxPower(POWER_TYPE_ENERGY, 100);  //100 Energy
-                m_target->setPower(POWER_TYPE_ENERGY, 0);  //0 Energy
-                if (m_target->getRace() != RACE_NIGHTELF)//TAUREN
-                    modelId = 8571;
-
-            }
-            else
-            {
-                //turn back to mana
-                //m_target->setBaseAttackTime(MELEE,oldap);
-                m_target->setPowerType(POWER_TYPE_MANA);
-                if (m_target->isStealthed())
-                {
-                    m_target->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH); //prowl
-                }
-            }
-        }
-        break;
-        case FORM_TREE:
-        {
-            freeMovements = true;
-            spellId = 34123; // this is area aura
-            //spellId2 = 5420;
-        }
-        break;
-        case FORM_TRAVEL:
-        {
-            //druid
-            freeMovements = true;
-            spellId = 5419;
-        }
-        break;
-        case FORM_AQUA:
-        {
-            //druid aqua
-            freeMovements = true;
-            spellId = 5421;
-        }
-        break;
-        case FORM_BEAR:
-        {
-            //druid only
-            freeMovements = true;
-            spellId = 1178;
-            if (apply)
-            {
-                m_target->setPowerType(POWER_TYPE_RAGE);
-                m_target->setMaxPower(POWER_TYPE_RAGE, 1000);
-                m_target->setPower(POWER_TYPE_RAGE, 0); //0 rage
-
-                if (m_target->getRace() != RACE_NIGHTELF)   //TAUREN
-                    modelId = 2289;
-
-                //some say there is a second effect
-                const auto spellInfo = sSpellMgr.getSpellInfo(21178);
-
-                Spell* sp = sSpellMgr.newSpell(m_target, spellInfo, true, nullptr);
-                SpellCastTargets tgt(m_target->getGuid());
-                sp->prepare(&tgt);
-            }
-            else
-            {
-                //reset back to mana
-                m_target->setPowerType(POWER_TYPE_MANA);
-                m_target->RemoveAura(21178);   // remove Bear Form (Passive2)
-            }
-        }
-        break;
-        case FORM_DIREBEAR:
-        {
-            //druid only
-            freeMovements = true;
-            spellId = 9635;
-            if (apply)
-            {
-                m_target->setPowerType(POWER_TYPE_RAGE);
-                m_target->setMaxPower(POWER_TYPE_RAGE, 1000);
-                m_target->setPower(POWER_TYPE_RAGE, 0); //0 rage
-                if (m_target->getRace() != RACE_NIGHTELF)   //TAUREN
-                    modelId = 2289;
-            }
-            else //reset back to mana
-                m_target->setPowerType(POWER_TYPE_MANA);
-        }
-        break;
-        case FORM_BATTLESTANCE:
-        {
-            spellId = 21156;
-        }
-        break;
-        case FORM_DEFENSIVESTANCE:
-        {
-            spellId = 7376;
-        }
-        break;
-        case FORM_BERSERKERSTANCE:
-        {
-            spellId = 7381;
-        }
-        break;
-        case FORM_SHADOW:
-        {
-            if (apply)
-            {
-                static_cast< Player* >(m_target)->sendSpellCooldownEventPacket(m_spellInfo->getId());
-            }
-            spellId = 49868;
-        }
-        break;
-        case FORM_FLIGHT:
-        {
-            // druid
-            freeMovements = true;
-            spellId = 33948;
-            if (apply)
-            {
-                if (m_target->getRace() != RACE_NIGHTELF)
-                    modelId = 20872;
-            }
-        }
-        break;
-        case FORM_STEALTH:
-        {
-            // rogue
-            if (!m_target->m_can_stealth)
-                return;
-            //m_target->UpdateVisibility();
-        }
-        break;
-        case FORM_MOONKIN:
-        {
-            //druid
-            freeMovements = true;
-            spellId = 24905;
-            if (apply)
-            {
-                if (m_target->getRace() != RACE_NIGHTELF)
-                    modelId = shapeshift_form->modelId2; // Lol, why is this the only one that has it in ShapeShift DBC? =/ lameeee...
-            }
-        }
-        break;
-        case FORM_SWIFT: //not tested yet, right now going on trust
-        {
-            // druid
-            freeMovements = true;
-            spellId = 40121; //Swift Form Passive
-            if (apply)
-            {
-                if (m_target->getRace() != RACE_NIGHTELF)//TAUREN
-                    modelId = 21244;
-            }
-        }
-        break;
-        case FORM_SPIRITOFREDEMPTION:
-        {
-            spellId = 27795;
-            modelId = 12824; // Smaller spirit healer, heehee :3
-        }
-        break;
-        case FORM_GHOUL:
-        case FORM_SKELETON:
-        case FORM_ZOMBIE:
-        {
-            if (p_target != nullptr)
-                p_target->SendAvailSpells(shapeshift_form, apply);
-        }
-        break;
-        case FORM_METAMORPHOSIS:
-        {
-            spellId = 59673;
-        }
-        break;
-    }
-
-    if (apply)
-    {
-        if (p_target != nullptr)
-        {
-            if (p_target->getClass() == WARRIOR && p_target->getPower(POWER_TYPE_RAGE) > p_target->m_retainedrage)
-                p_target->setPower(POWER_TYPE_RAGE, p_target->m_retainedrage);
-
-            if (m_target->getClass() == DRUID)
-            {
-                if (Rand(p_target->m_furorChance))
-                {
-                    uint32 furorSpell;
-                    if (aurEff->miscValue == FORM_CAT)
-                        furorSpell = 17099;
-                    else if (aurEff->miscValue == FORM_BEAR || aurEff->miscValue == FORM_DIREBEAR)
-                        furorSpell = 17057;
-                    else
-                        furorSpell = 0;
-
-                    if (furorSpell != 0)
-                    {
-                        const auto spellInfo = sSpellMgr.getSpellInfo(furorSpell);
-
-                        Spell* sp = sSpellMgr.newSpell(m_target, spellInfo, true, nullptr);
-                        SpellCastTargets tgt(m_target->getGuid());
-                        sp->prepare(&tgt);
-                    }
-                }
-            }
-
-            if (spellId != getSpellId())
-            {
-                if (p_target->m_ShapeShifted)
-                    p_target->RemoveAura(p_target->m_ShapeShifted);
-
-                p_target->m_ShapeShifted = getSpellId();
-            }
-        }
-
-        if (modelId != 0)
-        {
-            m_target->setDisplayId(modelId);
-            m_target->EventModelChange();
-        }
-
-        m_target->setShapeShiftForm(static_cast<uint8_t>(aurEff->miscValue));
-
-        // check for spell id
-        if (spellId == 0)
-            return;
-
-        const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
-
-        Spell* sp = sSpellMgr.newSpell(m_target, spellInfo, true, nullptr);
-        SpellCastTargets tgt(m_target->getGuid());
-        sp->prepare(&tgt);
-
-        /*if (spellId2 != 0) This cannot be true CID 52824
-        {
-            spellInfo = sSpellMgr.getSpellInfo(spellId2);
-            sp = sSpellMgr.newSpell(m_target, spellInfo, true, NULL);
-            sp->prepare(&tgt);
-        }*/
-
-        // remove the caster from impairing movements
-        if (freeMovements)
-        {
-            for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
-            {
-                if (m_target->m_auras[x] != nullptr)
-                {
-                    if (m_target->m_auras[x]->getSpellInfo()->getMechanicsType() == MECHANIC_ROOTED || m_target->m_auras[x]->getSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED)   // Remove roots and slow spells
-                    {
-                        m_target->m_auras[x]->removeAura();
-                    }
-                    else // if got immunity for slow, remove some that are not in the mechanics
-                    {
-                        for (uint8 i = 0; i < 3; i++)
-                        {
-                            if (m_target->m_auras[x]->getSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MOD_DECREASE_SPEED || m_target->m_auras[x]->getSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MOD_ROOT)
-                            {
-                                m_target->m_auras[x]->removeAura();
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        //execute after we changed shape
-        if (p_target != nullptr)
-            p_target->EventTalentHearthOfWildChange(true);
-    }
-    else
-    {
-        if (shapeshift_form->id != FORM_STEALTH)
-            m_target->RemoveAllAurasByRequiredShapeShift(AscEmu::World::Spell::Helpers::decimalToMask(aurEff->miscValue));
-
-        if (m_target->isCastingSpell())
-        {
-            for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
-            {
-                Spell* curSpell = m_target->getCurrentSpell(CurrentSpellType(i));
-                if (curSpell != nullptr && (curSpell->getSpellInfo()->getRequiredShapeShift() & decimalToMask(aurEff->miscValue)))
-                    m_target->interruptSpellWithSpellType(CurrentSpellType(i));
-            }
-        }
-
-        //execute before changing shape back
-        if (p_target != nullptr)
-        {
-            p_target->EventTalentHearthOfWildChange(false);
-            p_target->m_ShapeShifted = 0;
-        }
-        m_target->setDisplayId(m_target->getNativeDisplayId());
-        m_target->EventModelChange();
-        if (spellId != getSpellId())
-        {
-            if (spellId)
-                m_target->RemoveAura(spellId);
-        }
-
-        m_target->setShapeShiftForm(FORM_NORMAL);
-    }
-
-    if (p_target != nullptr)
-    {
-        p_target->UpdateStats();
-        p_target->UpdateAttackSpeed();
-    }
-}
-
 void Aura::SpellAuraModEffectImmunity(AuraEffectModifier* /*aurEff*/, bool apply)
 {
     if (m_spellInfo->getId() == 24937)
@@ -2812,9 +2460,9 @@ void Aura::SpellAuraProcTriggerSpell(AuraEffectModifier* aurEff, bool apply)
             spellModPercentageIntValue(ucaster->SM_PCharges, &charges, getSpellInfo()->getSpellFamilyFlags());
         }
 
-        m_target->AddProcTriggerSpell(spellId, getSpellInfo()->getId(), m_casterGuid, getSpellInfo()->getProcChance(), getSpellInfo()->getProcFlags(), charges, groupRelation, nullptr);
+        m_target->addProcTriggerSpell(spellId, getSpellInfo()->getId(), m_casterGuid, getSpellInfo()->getProcChance(), SpellProcFlags(getSpellInfo()->getProcFlags()), EXTRA_PROC_NULL, charges, groupRelation, nullptr);
 
-        LogDebugFlag(LF_AURA, "%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", getSpellInfo()->getId(), spellId, getSpellInfo()->getProcChance(), getSpellInfo()->getProcFlags() & ~PROC_TARGET_SELF, charges, getSpellInfo()->getProcFlags() & PROC_TARGET_SELF, getSpellInfo()->custom_proc_interval);
+        LogDebugFlag(LF_AURA, "%u is registering %u chance %u flags %u charges %u", getSpellInfo()->getId(), spellId, getSpellInfo()->getProcChance(), getSpellInfo()->getProcFlags(), charges);
     }
     else
     {
@@ -2826,7 +2474,7 @@ void Aura::SpellAuraProcTriggerSpell(AuraEffectModifier* aurEff, bool apply)
             return;
         }
 
-        m_target->RemoveProcTriggerSpell(spellId, m_casterGuid);
+        m_target->removeProcTriggerSpell(spellId, m_casterGuid);
     }
 }
 
@@ -3051,238 +2699,6 @@ void Aura::SpellAuraModSpellHitChance(AuraEffectModifier* aurEff, bool apply)
             }
         }
     }
-}
-
-void Aura::SpellAuraTransform(AuraEffectModifier* aurEff, bool apply)
-{
-    // Try a dummy SpellHandler
-    if (sScriptMgr.CallScriptedDummyAura(getSpellId(), aurEff->effIndex, this, apply))
-        return;
-
-    uint32 displayId = 0;
-    CreatureProperties const* ci = sMySQLStore.getCreatureProperties(aurEff->miscValue);
-
-    if (ci)
-        displayId = ci->Male_DisplayID;
-
-    if (p_target != nullptr)
-        p_target->Dismount();
-
-    // mPositive = true;
-    switch (getSpellInfo()->getId())
-    {
-        case 20584://wisp
-            m_target->setDisplayId(apply ? 10045 : m_target->getNativeDisplayId());
-            break;
-
-        case 30167: // Red Ogre Costume
-        {
-            if (apply)
-                m_target->setDisplayId(11549);
-            else
-                m_target->setDisplayId(m_target->getNativeDisplayId());
-        }
-        break;
-
-        case 41301: // Time-Lost Figurine
-        {
-            if (apply)
-                m_target->setDisplayId(18628);
-            else
-                m_target->setDisplayId(m_target->getNativeDisplayId());
-        }
-        break;
-
-        case 16739: // Orb of Deception
-        {
-            if (apply)
-            {
-                if (m_target->getRace() == RACE_ORC)
-                {
-                    if (m_target->getGender() == 0)
-                        m_target->setDisplayId(10139);
-                    else
-                        m_target->setDisplayId(10140);
-                }
-                if (m_target->getRace() == RACE_TAUREN)
-                {
-                    if (m_target->getGender() == 0)
-                        m_target->setDisplayId(10136);
-                    else
-                        m_target->setDisplayId(10147);
-                }
-                if (m_target->getRace() == RACE_TROLL)
-                {
-                    if (m_target->getGender() == 0)
-                        m_target->setDisplayId(10135);
-                    else
-                        m_target->setDisplayId(10134);
-                }
-                if (m_target->getRace() == RACE_UNDEAD)
-                {
-                    if (m_target->getGender() == 0)
-                        m_target->setDisplayId(10146);
-                    else
-                        m_target->setDisplayId(10145);
-                }
-#if VERSION_STRING > Classic
-                if (m_target->getRace() == RACE_BLOODELF)
-                {
-                    if (m_target->getGender() == 0)
-                        m_target->setDisplayId(17829);
-                    else
-                        m_target->setDisplayId(17830);
-                }
-#endif
-                if (m_target->getRace() == RACE_GNOME)
-                {
-                    if (m_target->getGender() == 0)
-                        m_target->setDisplayId(10148);
-                    else
-                        m_target->setDisplayId(10149);
-                }
-                if (m_target->getRace() == RACE_DWARF)
-                {
-                    if (m_target->getGender() == 0)
-                        m_target->setDisplayId(10141);
-                    else
-                        m_target->setDisplayId(10142);
-                }
-                if (m_target->getRace() == RACE_HUMAN)
-                {
-                    if (m_target->getGender() == 0)
-                        m_target->setDisplayId(10137);
-                    else
-                        m_target->setDisplayId(10138);
-                }
-                if (m_target->getRace() == RACE_NIGHTELF)
-                {
-                    if (m_target->getGender() == 0)
-                        m_target->setDisplayId(10143);
-                    else
-                        m_target->setDisplayId(10144);
-                }
-#if VERSION_STRING > Classic
-                if (m_target->getRace() == RACE_DRAENEI)
-                {
-                    if (m_target->getGender() == 0)
-                        m_target->setDisplayId(17827);
-                    else
-                        m_target->setDisplayId(17828);
-                }
-#endif
-            }
-            else
-                m_target->setDisplayId(m_target->getNativeDisplayId());
-        }
-        break;
-
-        case 42365: // murloc costume
-            m_target->setDisplayId(apply ? 21723 : m_target->getNativeDisplayId());
-            break;
-
-        case 118:   // polymorph
-        case 851:
-        case 5254:
-        case 12824:
-        case 12825:
-        case 12826:
-        case 13323:
-        case 15534:
-        case 22274:
-        case 23603:
-        case 28270: // Polymorph: Cow
-        case 28271: // Polymorph: Turtle
-        case 28272: // Polymorph: Pig
-        case 61025: // Polymorph: Serpent
-        case 61305: // Polymorph: Black Cat
-        case 61721: // Polymorph: Rabbit
-        case 61780: // Polymorph: Turkey
-        {
-            if (!displayId)
-            {
-                switch (getSpellInfo()->getId())
-                {
-                    case 28270: // Cow
-                        displayId = 1060;
-                        break;
-
-                    case 28272: // Pig
-                        displayId = 16356 + Util::getRandomUInt(2);
-                        break;
-
-                    case 28271: // Turtle
-                        displayId = 16359 + Util::getRandomUInt(2);
-                        break;
-
-                    default:
-                        displayId = 856;
-                        break;
-
-                }
-            }
-
-            if (apply)
-            {
-                Unit* caster = GetUnitCaster();
-                if (caster != nullptr && m_target->isCreature())
-                    m_target->GetAIInterface()->AttackReaction(caster, 1, getSpellId());
-
-                m_target->setDisplayId(displayId);
-
-                // remove the current spell
-                if (m_target->isCastingSpell())
-                {
-                    m_target->interruptSpell();
-                }
-
-                sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal1, (uint32)1000, EVENT_AURA_PERIODIC_HEAL, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                m_target->polySpell = getSpellInfo()->getId();
-            }
-            else
-            {
-                m_target->setDisplayId(m_target->getNativeDisplayId());
-                m_target->polySpell = 0;
-            }
-        }
-        break;
-
-        case 19937:
-        {
-            if (apply)
-            {
-                ///\todo Sniff the spell / item, we need to know the real displayID
-                // guessed this may not be correct
-                // human = 7820
-                // dwarf = 7819
-                // Halfling = 7818
-                // maybe 7842 as its from a lesser npc
-                m_target->setDisplayId(7842);
-            }
-            else
-            {
-                m_target->setDisplayId(m_target->getNativeDisplayId());
-            }
-        }
-        break;
-
-        default:
-        {
-            if (!displayId) return;
-
-            if (apply)
-            {
-                m_target->setDisplayId(displayId);
-            }
-            else
-            {
-                m_target->setDisplayId(m_target->getNativeDisplayId());
-            }
-        }
-        break;
-    };
-
-    m_target->EventModelChange();
 }
 
 void Aura::SpellAuraModSpellCritChance(AuraEffectModifier* aurEff, bool apply)
@@ -3788,8 +3204,8 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
         m_target->setMountDisplayId(displayId);
         //m_target->addUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
 
-        if (p_target->getShapeShiftForm() && !(p_target->getShapeShiftForm() & (FORM_BATTLESTANCE | FORM_DEFENSIVESTANCE | FORM_BERSERKERSTANCE)) && p_target->m_ShapeShifted != m_spellInfo->getId())
-            p_target->RemoveAura(p_target->m_ShapeShifted);
+        if (p_target->getShapeShiftForm() && !(p_target->getShapeShiftForm() & (FORM_BATTLESTANCE | FORM_DEFENSIVESTANCE | FORM_BERSERKERSTANCE)))
+            p_target->removeAllAurasByAuraEffect(SPELL_AURA_MOD_SHAPESHIFT);
 
         p_target->DismissActivePets();
 
@@ -4683,9 +4099,9 @@ void Aura::SpellAuraAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply
             spellModPercentageIntValue(ucaster->SM_PCharges, &charges, getSpellInfo()->getSpellFamilyFlags());
         }
 
-        m_target->AddProcTriggerSpell(sp->getId(), getSpellInfo()->getId(), m_casterGuid, getSpellInfo()->getEffectBasePoints(aurEff->effIndex) + 1, PROC_ON_CAST_SPELL, charges, groupRelation, procClassMask);
+        m_target->addProcTriggerSpell(sp->getId(), getSpellInfo()->getId(), m_casterGuid, getSpellInfo()->getEffectBasePoints(aurEff->effIndex) + 1, SpellProcFlags(getSpellInfo()->getProcFlags()), EXTRA_PROC_NULL, charges, groupRelation, procClassMask);
 
-        LogDebugFlag(LF_AURA, "%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", getSpellInfo()->getId(), sp->getId(), getSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL, charges, getSpellInfo()->getProcFlags() & PROC_TARGET_SELF, getSpellInfo()->custom_proc_interval);
+        LogDebugFlag(LF_AURA, "%u is registering %u chance %u flags %u charges %u", getSpellInfo()->getId(), sp->getId(), getSpellInfo()->getProcChance(), getSpellInfo()->getProcFlags(), charges);
     }
     else
     {
@@ -4697,7 +4113,7 @@ void Aura::SpellAuraAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply
             return;
         }
 
-        m_target->RemoveProcTriggerSpell(spellId, m_casterGuid);
+        m_target->removeProcTriggerSpell(spellId, m_casterGuid);
     }
 }
 

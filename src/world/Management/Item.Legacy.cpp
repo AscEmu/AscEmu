@@ -661,11 +661,34 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                     if (Apply)
                     {
                         if (Entry->spell[c] != 0)
-                            m_owner->AddProcTriggerSpell(Entry->spell[c], 0, m_owner->getGuid(), Entry->min[c], PROC_ON_MELEE_ATTACK, 0, nullptr, nullptr, this);
+                        {
+                            // Calculate proc chance equivalent of 1 PPM if proc chance does not exist in DBC (chance or PPM can be modified later in spellscript)
+                            const auto procChance = Entry->min[c] == 0 ? float2int32((getItemProperties()->Delay * 0.001f / 60.0f) * 100.0f) : Entry->min[c];
+                            switch (m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()))
+                            {
+                                // 'Chance on hit' enchantments in main hand should only proc from main hand hits
+                                case EQUIPMENT_SLOT_MAINHAND:
+                                    m_owner->addProcTriggerSpell(Entry->spell[c], 0, m_owner->getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT), EXTRA_PROC_ON_MAIN_HAND_HIT_ONLY, 0, nullptr, nullptr, this);
+                                    break;
+                                // 'Chance on hit' enchantments in off hand should only proc from off hand hits
+                                case EQUIPMENT_SLOT_OFFHAND:
+                                    m_owner->addProcTriggerSpell(Entry->spell[c], 0, m_owner->getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT | PROC_ON_DONE_OFFHAND_ATTACK), EXTRA_PROC_ON_OFF_HAND_HIT_ONLY, 0, nullptr, nullptr, this);
+                                    break;
+                                // 'Chance on hit' enchantments in ranged slot should only proc from ranged attacks
+                                ///\ todo: does this enchantment type even have ranged spells?
+                                case EQUIPMENT_SLOT_RANGED:
+                                    m_owner->addProcTriggerSpell(Entry->spell[c], 0, m_owner->getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_RANGED_HIT | PROC_ON_DONE_RANGED_SPELL_HIT), EXTRA_PROC_NULL, 0, nullptr, nullptr, this);
+                                    break;
+                                // In any other slot, proc on any melee hit
+                                default:
+                                    m_owner->addProcTriggerSpell(Entry->spell[c], 0, m_owner->getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT), EXTRA_PROC_NULL, 0, nullptr, nullptr, this);
+                                    break;
+                            }
+                        }
                     }
                     else
                     {
-                        m_owner->RemoveProcTriggerSpell(Entry->spell[c], m_owner->getGuid(), getGuid());
+                        m_owner->removeProcTriggerSpell(Entry->spell[c], m_owner->getGuid(), getGuid());
                     }
                 }
                 break;

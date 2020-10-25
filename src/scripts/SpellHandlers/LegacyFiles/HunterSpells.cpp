@@ -38,7 +38,7 @@ bool Refocus(uint8_t /*effectIndex*/, Spell* pSpell)
             || (*itr) == 2643 || (*itr) == 14288 || (*itr) == 14289 || (*itr) == 14290 || (*itr) == 25294 || (*itr) == 14443 || (*itr) == 18651 || (*itr) == 20735 || (*itr) == 21390
             || (*itr) == 1510 || (*itr) == 14294 || (*itr) == 14295 || (*itr) == 1540 || (*itr) == 22908
             || (*itr) == 3044 || (*itr) == 14281 || (*itr) == 14282 || (*itr) == 14283 || (*itr) == 14284 || (*itr) == 14285 || (*itr) == 14286 || (*itr) == 14287)
-            playerTarget->ClearCooldownForSpell((*itr));
+            playerTarget->clearCooldownForSpell((*itr));
     }
     return true;
 }

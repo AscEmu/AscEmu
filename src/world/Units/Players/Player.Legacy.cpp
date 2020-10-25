@@ -185,7 +185,6 @@ Player::Player(uint32 guid)
     jumping(false),
     m_isGmInvisible(false),
     SpellHasteRatingBonus(1.0f),
-    m_furorChance(0),
     //WayPoint
     waypointunit(nullptr),
     m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
@@ -210,7 +209,6 @@ Player::Player(uint32 guid)
     misdirectionTarget(0),
     bReincarnation(false),
     m_GM_SelectedGO(0),
-    m_ShapeShifted(0),
     m_MountSpellId(0),
     bHasBindDialogOpen(false),
     TrackingSpell(0),
@@ -2767,9 +2765,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setHoverHeight(1.0f);
 #endif
 
-    if (getClass() == WARRIOR)
-        SetShapeShift(FORM_BATTLESTANCE);
-
     setPvpFlags(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY);
     setBoundingRadius(0.388999998569489f);
     setCombatReach(1.5f);
@@ -4213,7 +4208,28 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
             }
             else if (item->getItemProperties()->Spells[k].Trigger == CHANCE_ON_HIT)
             {
-                this->AddProcTriggerSpell(spells, nullptr, this->getGuid(), 5, PROC_ON_MELEE_ATTACK, 0, nullptr, nullptr);
+                // Calculate proc chance equivalent of 1 PPM
+                // On average 'chance on hit' effects on items seem to have 1 proc-per-minute
+                const auto procChance = float2int32((item->getItemProperties()->Delay * 0.001f / 60.0f) * 100.0f);
+                switch (slot)
+                {
+                    // 'Chance on hit' in main hand should only proc from main hand hits
+                    case EQUIPMENT_SLOT_MAINHAND:
+                        addProcTriggerSpell(spells, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT), EXTRA_PROC_ON_MAIN_HAND_HIT_ONLY, 0, nullptr, nullptr, this);
+                        break;
+                    // 'Chance on hit' in off hand should only proc from off hand hits
+                    case EQUIPMENT_SLOT_OFFHAND:
+                        addProcTriggerSpell(spells, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT | PROC_ON_DONE_OFFHAND_ATTACK), EXTRA_PROC_ON_OFF_HAND_HIT_ONLY, 0, nullptr, nullptr, this);
+                        break;
+                    // 'Chance on hit' in ranged slot should only proc from ranged attacks
+                    case EQUIPMENT_SLOT_RANGED:
+                        addProcTriggerSpell(spells, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_RANGED_HIT | PROC_ON_DONE_RANGED_SPELL_HIT), EXTRA_PROC_NULL, 0, nullptr, nullptr, this);
+                        break;
+                    // In any other slot, proc on any melee or ranged hit
+                    default:
+                        addProcTriggerSpell(spells, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT | PROC_ON_DONE_RANGED_HIT | PROC_ON_DONE_RANGED_SPELL_HIT), EXTRA_PROC_NULL, 0, nullptr, nullptr, this);
+                        break;
+                }
             }
         }
     }
@@ -4236,7 +4252,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
             }
             else if (item->getItemProperties()->Spells[k].Trigger == CHANCE_ON_HIT)
             {
-                this->RemoveProcTriggerSpell(item->getItemProperties()->Spells[k].Id);
+                this->removeProcTriggerSpell(item->getItemProperties()->Spells[k].Id);
             }
         }
     }
@@ -6087,6 +6103,11 @@ void Player::RegenerateHealth(bool inCombat)
     if (inCombat)
         amt *= PctIgnoreRegenModifier;
 
+    // While polymorphed health is regenerated rapidly
+    // Exact value is yet unknown but it's roughly 10% of health per sec
+    if (hasUnitStateFlag(UNIT_STATE_POLYMORPHED))
+        amt += getMaxHealth() * 0.10f;
+
     if (amt != 0)
     {
         if (amt > 0)
@@ -6305,27 +6326,6 @@ void Player::_Kick()
     }
 }
 
-void Player::ClearCooldownForSpell(uint32 spell_id)
-{
-    GetSession()->SendPacket(SmsgClearCooldown(spell_id, getGuid()).serialise().get());
-
-    if (const auto spellInfo = sSpellMgr.getSpellInfo(spell_id))
-    {
-        for (int i = 0; i < NUM_COOLDOWN_TYPES; ++i)
-        {
-            for (PlayerCooldownMap::iterator itr = m_cooldownMap[i].begin(); itr != m_cooldownMap[i].end();)
-            {
-                PlayerCooldownMap::iterator itr2 = itr++;
-                if ((i == COOLDOWN_TYPE_CATEGORY && itr2->first == spellInfo->getCategory()) ||
-                    (i == COOLDOWN_TYPE_SPELL && itr2->first == spellInfo->getId()))
-                {
-                    m_cooldownMap[i].erase(itr2);
-                }
-            }
-        }
-    }
-}
-
 void Player::ClearCooldownsOnLine(uint32 skill_line, uint32 called_from)
 {
     // found an easier way.. loop spells, check skill line
@@ -6336,90 +6336,7 @@ void Player::ClearCooldownsOnLine(uint32 skill_line, uint32 called_from)
 
         auto skill_line_ability = sObjectMgr.GetSpellSkill((*itr));
         if (skill_line_ability && skill_line_ability->skilline == skill_line)
-            ClearCooldownForSpell((*itr));
-    }
-}
-
-void Player::ResetAllCooldowns()
-{
-    uint32 guid = (uint32)GetSelection();
-
-    switch (getClass())
-    {
-        case WARRIOR:
-        {
-            ClearCooldownsOnLine(26, guid);
-            ClearCooldownsOnLine(256, guid);
-            ClearCooldownsOnLine(257, guid);
-        }
-        break;
-        case PALADIN:
-        {
-            ClearCooldownsOnLine(594, guid);
-            ClearCooldownsOnLine(267, guid);
-            ClearCooldownsOnLine(184, guid);
-        }
-        break;
-        case HUNTER:
-        {
-            ClearCooldownsOnLine(50, guid);
-            ClearCooldownsOnLine(51, guid);
-            ClearCooldownsOnLine(163, guid);
-        }
-        break;
-        case ROGUE:
-        {
-            ClearCooldownsOnLine(253, guid);
-            ClearCooldownsOnLine(38, guid);
-            ClearCooldownsOnLine(39, guid);
-        }
-        break;
-        case PRIEST:
-        {
-            ClearCooldownsOnLine(56, guid);
-            ClearCooldownsOnLine(78, guid);
-            ClearCooldownsOnLine(613, guid);
-        }
-        break;
-#if VERSION_STRING > TBC
-        case DEATHKNIGHT:
-        {
-            ClearCooldownsOnLine(770, guid);
-            ClearCooldownsOnLine(771, guid);
-            ClearCooldownsOnLine(772, guid);
-        }
-        break;
-#endif
-        case SHAMAN:
-        {
-            ClearCooldownsOnLine(373, guid);
-            ClearCooldownsOnLine(374, guid);
-            ClearCooldownsOnLine(375, guid);
-        }
-        break;
-        case MAGE:
-        {
-            ClearCooldownsOnLine(6, guid);
-            ClearCooldownsOnLine(8, guid);
-            ClearCooldownsOnLine(237, guid);
-        }
-        break;
-        case WARLOCK:
-        {
-            ClearCooldownsOnLine(355, guid);
-            ClearCooldownsOnLine(354, guid);
-            ClearCooldownsOnLine(593, guid);
-        }
-        break;
-        case DRUID:
-        {
-            ClearCooldownsOnLine(573, guid);
-            ClearCooldownsOnLine(574, guid);
-            ClearCooldownsOnLine(134, guid);
-        }
-        break;
-        default:
-            break;
+            clearCooldownForSpell((*itr));
     }
 }
 
@@ -7596,9 +7513,6 @@ void Player::PvPToggle()
  *  \todo Remove map check (func does not work on map 559, 562, 572) */
 void Player::AddHonor(uint32 honorPoints, bool sendUpdate)
 {
-    this->HandleProc(PROC_ON_GAIN_EXPIERIENCE, this, nullptr);
-    this->m_procCounter = 0;
-
     if (this->GetMapId() == 559 || this->GetMapId() == 562 || this->GetMapId() == 572)
         return;
 
@@ -7719,14 +7633,10 @@ void Player::CompleteLoading()
                 Aura* a = sSpellMgr.newAura(sp, (*i).dur, this, this, false);
                 this->addAura(a);
             }
-            if (m_chargeSpells.find(sp->getId()) == m_chargeSpells.end() && !(sp->getProcFlags() & PROC_REMOVEONUSE))
+            if (m_chargeSpells.find(sp->getId()) == m_chargeSpells.end())
             {
                 SpellCharge charge;
-                if (sp->custom_proc_interval == 0)
-                    charge.count = (*i).charges;
-                else
-                    charge.count = sp->getProcCharges();
-
+                charge.count = (*i).charges;
                 charge.spellId = sp->getId();
                 charge.ProcFlag = sp->getProcFlags();
                 charge.lastproc = 0;
@@ -8158,97 +8068,6 @@ void Player::SaveAuras(std::stringstream & ss)
     }
 
     ss << "'";
-}
-
-void Player::SetShapeShift(uint8 ss)
-{
-    uint8 old_ss = getShapeShiftForm();
-    setShapeShiftForm(ss);
-
-    //remove auras that we should not have
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x] != nullptr)
-        {
-            uint32 reqss = m_auras[x]->getSpellInfo()->getRequiredShapeShift();
-            if (reqss != 0 && !m_auras[x]->isNegative())
-            {
-                if (old_ss > 0
-                    && old_ss != FORM_SHADOW
-                    && old_ss != FORM_STEALTH)
-                {
-                    if ((((uint32)1 << (old_ss - 1)) & reqss) &&        // we were in the form that required it
-                        !(((uint32)1 << (ss - 1) & reqss)))            // new form doesn't have the right form
-                    {
-                        m_auras[x]->removeAura();
-                        continue;
-                    }
-                }
-            }
-
-            if (this->getClass() == DRUID)
-            {
-                switch (m_auras[x]->getSpellInfo()->getMechanicsType())
-                {
-                    case MECHANIC_ROOTED: //Rooted
-                    case MECHANIC_ENSNARED: //Movement speed
-                    case MECHANIC_POLYMORPHED:  //Polymorphed
-                    {
-                        m_auras[x]->removeAura();
-                    }
-                    break;
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-
-    // apply any talents/spells we have that apply only in this form.
-    SpellCastTargets t(getGuid());
-
-    for (std::set<uint32>::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
-    {
-        SpellInfo const* sp = sSpellMgr.getSpellInfo(*itr);
-        if (sp == nullptr)
-            continue;
-
-        if (sp->custom_apply_on_shapeshift_change || sp->getAttributes() & ATTRIBUTES_PASSIVE)        // passive/talent
-        {
-            if (sp->getRequiredShapeShift() && ((uint32)1 << (ss - 1)) & sp->getRequiredShapeShift())
-            {
-                Spell* spe = sSpellMgr.newSpell(this, sp, true, nullptr);
-                spe->prepare(&t);
-            }
-        }
-    }
-
-    //feral attack power
-    if (this->getClass() == DRUID)
-    {
-        // Changed from normal to feral form
-        if (!(old_ss == FORM_MOONKIN || old_ss == FORM_CAT || old_ss == FORM_BEAR || old_ss == FORM_DIREBEAR) &&
-            (ss == FORM_MOONKIN || ss == FORM_CAT || ss == FORM_BEAR || ss == FORM_DIREBEAR))
-            this->ApplyFeralAttackPower(true);
-        // Changed from feral to normal form
-        else if ((old_ss == FORM_MOONKIN || old_ss == FORM_CAT || old_ss == FORM_BEAR || old_ss == FORM_DIREBEAR) &&
-                 !(ss == FORM_MOONKIN || ss == FORM_CAT || ss == FORM_BEAR || ss == FORM_DIREBEAR))
-                 this->ApplyFeralAttackPower(false);
-    }
-
-    // now dummy-handler stupid hacky fixed shapeshift spells (leader of the pack, etc)
-    for (std::set<uint32>::iterator itr = mShapeShiftSpells.begin(); itr != mShapeShiftSpells.end(); ++itr)
-    {
-        SpellInfo const* sp = sSpellMgr.getSpellInfo(*itr);
-        if (sp->getRequiredShapeShift() && ((uint32)1 << (ss - 1)) & sp->getRequiredShapeShift())
-        {
-            Spell* spe = sSpellMgr.newSpell(this, sp, true, nullptr);
-            spe->prepare(&t);
-        }
-    }
-
-    UpdateStats();
-    UpdateChances();
 }
 
 void Player::CalcDamage()
@@ -9563,6 +9382,10 @@ void Player::Cooldown_AddItem(ItemProperties const* pProto, uint32 x)
     if (pProto->Spells[x].CategoryCooldown <= 0 && pProto->Spells[x].Cooldown <= 0)
         return;
 
+    // Check for cooldown cheat
+    if (m_cheats.hasCooldownCheat)
+        return;
+
     ItemSpell const* isp = &pProto->Spells[x];
     uint32 mstime = Util::getMSTime();
 
@@ -10101,7 +9924,7 @@ void Player::SetKnownTitle(RankTitles title, bool set)
     if (!set && !HasTitle(title))
         return;
 
-    const uint8_t index = title / 32;
+    const auto index = static_cast<uint8_t>(title / 32);
     const uint64_t current = getKnownTitles(index);
 
     if (set)
@@ -10491,11 +10314,6 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             killerspell = sSpellMgr.getSpellInfo(spellid);
         else
             killerspell = nullptr;
-
-        HandleProc(PROC_ON_DIE, this, killerspell);
-        m_procCounter = 0;
-        pAttacker->HandleProc(PROC_ON_TARGET_DIE, this, killerspell);
-        pAttacker->m_procCounter = 0;
     }
 
     if (!pAttacker->isPlayer())

@@ -49,6 +49,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPvpCredit.h"
 #include "Server/Packets/SmsgRaidGroupOnly.h"
 #include "Server/Packets/SmsgAuctionCommandResult.h"
+#include "Server/Packets/SmsgClearCooldown.h"
 #include "Server/World.h"
 #include "Spell/Definitions/AuraInterruptFlags.h"
 #include "Spell/Definitions/PowerType.h"
@@ -2077,6 +2078,54 @@ void Player::sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t 
     SendMessageToSet(SmsgSpellCooldown(GetNewGUID(), isGcd, spellMap).serialise().get(), true);
 }
 
+void Player::clearCooldownForSpell(uint32_t spellId)
+{
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    if (spellInfo == nullptr)
+        return;
+
+    // Send cooldown clear packet
+    GetSession()->SendPacket(SmsgClearCooldown(spellId, getGuid()).serialise().get());
+
+    for (uint8_t i = 0; i < NUM_COOLDOWN_TYPES; ++i)
+    {
+        for (auto itr = m_cooldownMap[i].begin(); itr != m_cooldownMap[i].end();)
+        {
+            auto cooldown = (*itr);
+            if ((i == COOLDOWN_TYPE_CATEGORY && cooldown.first == spellInfo->getCategory()) ||
+                (i == COOLDOWN_TYPE_SPELL && cooldown.first == spellInfo->getId()))
+            {
+                itr = m_cooldownMap[i].erase(itr);
+            }
+            else
+            {
+                ++itr;
+            }
+        }
+    }
+}
+
+void Player::resetAllCooldowns()
+{
+    // Clear spell cooldowns
+    for (const auto& spell : mSpells)
+        clearCooldownForSpell(spell);
+
+    // Clear other cooldowns, like items
+    for (uint8_t i = 0; i < NUM_COOLDOWN_TYPES; ++i)
+    {
+        for (auto itr = m_cooldownMap[i].begin(); itr != m_cooldownMap[i].end();)
+        {
+            auto spellId = (*itr).second.SpellId;
+            GetSession()->SendPacket(SmsgClearCooldown(spellId, getGuid()).serialise().get());
+            itr = m_cooldownMap[i].erase(itr);
+        }
+    }
+
+    // Clear proc cooldowns
+    clearProcCooldowns();
+}
+
 #ifdef FT_GLYPHS
 void Player::updateGlyphs()
 {
@@ -2091,7 +2140,7 @@ void Player::updateGlyphs()
             setGlyphSlot(static_cast<uint16_t>(glyphSlot->Slot - 1), glyphSlot->Id);
     }
 #else
-    uint32_t slot = 0;
+    uint16_t slot = 0;
     for (uint32_t i = 0; i < sGlyphSlotStore.GetNumRows(); ++i)
     {
         const auto glyphSlot = sGlyphSlotStore.LookupEntry(i);
@@ -2790,8 +2839,13 @@ void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_
 {
     const auto auctionId = auction ? auction->Id : 0;
 
+#if VERSION_STRING >= Cata
+    uint64_t outBid = 0;
+    uint64_t highestBid = 0;
+#else
     uint32_t outBid = 0;
     uint32_t highestBid = 0;
+#endif
     uint64_t highestBidderGuid = 0;
 
     if (auction)
@@ -2866,7 +2920,9 @@ void Player::unEquipOffHandIfRequired()
     auto needToRemove = true;
     // Check if player has a two-handed weapon in offhand
     if (offHandWeapon->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
+    {
         needToRemove = !canDualWield2H();
+    }
     else
     {
         // Player has something in offhand, check if main hand is a two-handed weapon
@@ -2876,11 +2932,10 @@ void Player::unEquipOffHandIfRequired()
         else
         {
             // Main hand nor offhand is a two-handed weapon, check if player can dual wield one-handed weapons
-            if (offHandWeapon->getItemProperties()->Class == ITEM_CLASS_WEAPON)
+            if (offHandWeapon->isWeapon())
                 needToRemove = !canDualWield();
             else
-                // Offhand is not a weapon
-                needToRemove = false;
+                needToRemove = false; // Offhand is not a weapon
         }
     }
 
@@ -2917,7 +2972,7 @@ bool Player::hasOffHandWeapon() const
     if (offHandItem == nullptr)
         return false;
 
-    return offHandItem->getItemProperties()->Class == ITEM_CLASS_WEAPON;
+    return offHandItem->isWeapon();
 }
 
 bool Player::hasItem(uint32_t itemId, uint32_t amount /*= 1*/, bool checkBankAlso /*= false*/) const

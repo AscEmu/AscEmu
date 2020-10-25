@@ -39,26 +39,6 @@ bool Living_Bomb(uint8_t effectIndex, Aura* pAura, bool apply)
     return true;
 }
 
-bool HotStreak(uint8_t effectIndex, Aura* pAura, bool apply)
-{
-    if (effectIndex == 0)
-    {
-        auto caster = pAura->GetUnitCaster();
-        if (caster == nullptr)
-            return true;
-
-        if (apply)
-        {
-            static uint32_t classMask[3] = { 0x13, 0x21000, 0 };
-            caster->AddProcTriggerSpell(48108, pAura->getSpellInfo()->getId(), caster->getGuid(), pAura->getSpellInfo()->getEffectBasePoints(effectIndex) + 1, PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_HIT, 0, pAura->getSpellInfo()->getEffectSpellClassMask(effectIndex), classMask);
-        }
-        else
-            caster->RemoveProcTriggerSpell(48108);
-    }
-
-    return true;
-}
-
 bool SummonWaterElemental(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* caster = pSpell->getUnitCaster();
@@ -148,9 +128,6 @@ void SetupLegacyMageSpells(ScriptMgr* mgr)
     mgr->register_dummy_aura(44457, &Living_Bomb);
     mgr->register_dummy_aura(55359, &Living_Bomb);
     mgr->register_dummy_aura(55360, &Living_Bomb);
-
-    uint32_t HotStreakIds[] = { 44445, 44446, 44448, 0 };
-    mgr->register_dummy_aura(HotStreakIds, &HotStreak);
 
     mgr->register_dummy_spell(31687, &SummonWaterElemental);
 

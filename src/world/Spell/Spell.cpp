@@ -287,13 +287,8 @@ void Spell::castMe(const bool doReCheck)
     // Initialize targets
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        auto targetType = GetTargetType(getSpellInfo()->getEffectImplicitTargetA(i), i);
-
-        // Get target info from B only if its not null
-        if (getSpellInfo()->getEffectImplicitTargetB(i) != EFF_TARGET_NONE)
-            targetType |= GetTargetType(getSpellInfo()->getEffectImplicitTargetB(i), i);
-
-        if (targetType & SPELL_TARGET_AREA_CURTARGET)
+        const auto requiredTargetMask = getSpellInfo()->getRequiredTargetMaskForEffect(i);
+        if (requiredTargetMask & SPELL_TARGET_AREA_CURTARGET)
         {
             // If target type is area around target, set destination correctly
             const auto targetObj = m_caster->GetMapMgrObject(m_targets.getUnitTarget());
@@ -416,7 +411,7 @@ void Spell::castMe(const bool doReCheck)
             auto add = true;
             for (const auto& uniqueTarget : uniqueHittedTargets)
             {
-                if (uniqueTarget == targetGuid)
+                if (uniqueTarget.first == targetGuid)
                 {
                     add = false;
                     break;
@@ -424,7 +419,7 @@ void Spell::castMe(const bool doReCheck)
             }
 
             if (add)
-                uniqueHittedTargets.push_back(targetGuid);
+                uniqueHittedTargets.push_back(std::make_pair(targetGuid, DamageInfo()));
         }
     }
 
@@ -437,7 +432,7 @@ void Spell::castMe(const bool doReCheck)
             auto missedTarget = missedTargets.begin();
             while (missedTarget != missedTargets.end())
             {
-                if (missedTarget->targetGuid == targetGuid)
+                if (missedTarget->targetGuid == targetGuid.first)
                     missedTarget = missedTargets.erase(missedTarget);
                 else
                     ++missedTarget;
@@ -486,6 +481,10 @@ void Spell::castMe(const bool doReCheck)
         u_caster->RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_CAST_SPELL, getSpellInfo()->getId());
         u_caster->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_CAST);
     }
+
+    // Prepare proc flags for caster and targets
+    _prepareProcFlags();
+    m_casterDamageInfo.schoolMask = SchoolMask(getSpellInfo()->getSchoolMask());
 
     // Loop through spell effects and process the spell effect on each target
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -572,26 +571,9 @@ void Spell::castMe(const bool doReCheck)
                 p_caster->modPower(POWER_TYPE_RAGE, refundCost);
             }
 
-            // Handle spell procing after targets have been processed
-            if (p_caster->IsInWorld())
-            {
-                for (const auto& targetGuid : uniqueHittedTargets)
-                {
-                    const auto targetUnit = p_caster->GetMapMgrUnit(targetGuid);
-                    if (targetUnit == nullptr)
-                        continue;
-
-                    p_caster->HandleProc(PROC_ON_CAST_SPECIFIC_SPELL | PROC_ON_CAST_SPELL, targetUnit, getSpellInfo(), m_triggeredSpell);
-                    targetUnit->HandleProc(PROC_ON_SPELL_LAND_VICTIM, p_caster, getSpellInfo(), m_triggeredSpell);
-
-                    //this is required for to be able to count the depth of procs (though i have no idea where/why we use proc on proc)
-                    p_caster->m_procCounter = 0;
-
-                    // This is wrong but leaving this here commented out for now -Appled
-                    // This needs to be handled somewhere
-                    //Target->removeAuraStateAndAuras(static_cast<AuraState>(getSpellInfo()->getTargetAuraState()));
-                }
-            }
+            // This is wrong but leaving this here commented out for now -Appled
+            // This needs to be handled somewhere
+            //Target->removeAuraStateAndAuras(static_cast<AuraState>(getSpellInfo()->getTargetAuraState()));
         }
     }
 
@@ -888,7 +870,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     continue;
                 if (!aura->getSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
                     continue;
-                if (aura->getSpellInfo()->isAffectingSpell(getSpellInfo()))
+                if (aura->getSpellInfo()->isAuraEffectAffectingSpell(SPELL_AURA_IGNORE_TARGET_AURA_STATE, getSpellInfo()))
                 {
                     // Warrior's Overpower uses "combo points" based on dbc data
                     // This allows usage of Overpower if we have an affecting aura (i.e. Taste for Blood)
@@ -948,7 +930,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     // Auras with this type: Shadow Dance, Metamorphosis, Warbringer (in 3.3.5a)
                     if (!aura->getSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_SHAPESHIFT))
                         continue;
-                    if (aura->getSpellInfo()->isAffectingSpell(getSpellInfo()))
+                    if (aura->getSpellInfo()->isAuraEffectAffectingSpell(SPELL_AURA_IGNORE_SHAPESHIFT, getSpellInfo()))
                     {
                         hasIgnoreShapeshiftAura = true;
                         break;
@@ -2196,7 +2178,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 {
                     // Check if player is even wielding a weapon
                     const auto mainHandWeapon = dynamic_cast<Player*>(target)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    if (mainHandWeapon == nullptr || mainHandWeapon->getItemProperties()->Class != ITEM_CLASS_WEAPON)
+                    if (mainHandWeapon == nullptr || !mainHandWeapon->isWeapon())
                         return SPELL_FAILED_TARGET_NO_WEAPONS;
                 }
                 else
@@ -3092,7 +3074,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     break;
 
                 const auto rangedWeapon = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                if (rangedWeapon == nullptr || rangedWeapon->getItemProperties()->Class != ITEM_CLASS_WEAPON)
+                if (rangedWeapon == nullptr || !rangedWeapon->isWeapon())
                     return SPELL_FAILED_EQUIPPED_ITEM;
                 // Check if the item has any durability left
                 if (rangedWeapon->getMaxDurability() > 0 && rangedWeapon->getDurability() == 0)
@@ -3182,7 +3164,7 @@ SpellCastResult Spell::checkCasterState() const
     // Includes tons of quest and achievement credit spells, and some battleground spells (flag drops, marks, honor spells)
     if (getSpellInfo()->getAttributes() & ATTRIBUTES_DEAD_CASTABLE &&
         getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT &&
-        getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_UNK30)
+        getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_HIGH_PRIORITY)
         return SPELL_CAST_SUCCESS;
 
     uint16_t schoolImmunityMask = 0, dispelImmunityMask = 0;
@@ -3821,7 +3803,10 @@ void Spell::sendSpellGo()
 
     // Add hitted targets
     data << uint8_t(uniqueHittedTargets.size());
-    writeSpellGoTargets(&data);
+    for (const auto& uniqueTarget : uniqueHittedTargets)
+    {
+        data << uint64_t(uniqueTarget.first);
+    }
 
     // Add missed targets
     if (castFlags & SPELL_PACKET_FLAGS_EXTRA_MESSAGE)
@@ -3885,20 +3870,19 @@ void Spell::sendChannelStart(const uint32_t duration)
         // brief: the channel target is properly set in SpellEffects.cpp for persistent dynamic objects
         for (const auto& targetGuid : uniqueHittedTargets)
         {
-            const auto targetUnit = m_caster->GetMapMgrUnit(targetGuid);
+            const auto targetUnit = m_caster->GetMapMgrUnit(targetGuid.first);
             if (targetUnit != nullptr)
             {
                 channelTarget = targetUnit;
                 break;
             }
 
-            const auto objTarget = m_caster->GetMapMgrGameObject(targetGuid);
+            const auto objTarget = m_caster->GetMapMgrGameObject(targetGuid.first);
             if (objTarget != nullptr)
             {
                 channelTarget = objTarget;
                 break;
             }
-
         }
     }
 
@@ -4102,12 +4086,9 @@ void Spell::writeSpellMissedTargets(WorldPacket *data)
             if (target.hitResult == SPELL_DID_HIT_REFLECT)
                 *data << uint8_t(target.extendedHitResult);
 
-            // Handle proc on resist spell
             const auto targetUnit = u_caster->GetMapMgrUnit(target.targetGuid);
             if (targetUnit != nullptr && targetUnit->isAlive())
             {
-                //\ todo: damage is uninitialized here
-                u_caster->HandleProc(PROC_ON_RESIST_VICTIM, targetUnit, getSpellInfo()/*,damage*/);
                 targetUnit->CombatStatusHandler_ResetPvPTimeout(); // aaa
                 u_caster->CombatStatusHandler_ResetPvPTimeout(); // bbb
             }
@@ -4190,52 +4171,7 @@ uint32_t Spell::calculatePowerCost() const
     if (u_caster == nullptr)
         return 0;
 
-    int32_t powerCost = 0;
-    if (getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DRAIN_WHOLE_POWER)
-    {
-        if (!getSpellInfo()->hasValidPowerType())
-        {
-            LogError("Spell::calculatePowerCost : Unknown power type %u for spell id %u", getSpellInfo()->getPowerType(), getSpellInfo()->getId());
-            return 0;
-        }
-
-        if (getSpellInfo()->getPowerType() == POWER_TYPE_HEALTH)
-            powerCost = static_cast<int32_t>(u_caster->getHealth());
-        else
-            powerCost = static_cast<int32_t>(u_caster->getPower(getSpellInfo()->getPowerType()));
-    }
-    else
-    {
-        powerCost = getSpellInfo()->getManaCost();
-        // Check if spell costs percentage of caster's power
-        if (getSpellInfo()->getManaCostPercentage() > 0)
-        {
-            switch (getSpellInfo()->getPowerType())
-            {
-                case POWER_TYPE_HEALTH:
-                    powerCost += static_cast<int32_t>(u_caster->getBaseHealth() * getSpellInfo()->getManaCostPercentage() / 100);
-                    break;
-                case POWER_TYPE_MANA:
-                    powerCost += static_cast<int32_t>(u_caster->getBaseMana() * getSpellInfo()->getManaCostPercentage() / 100);
-                    break;
-                case POWER_TYPE_RAGE:
-                case POWER_TYPE_FOCUS:
-                case POWER_TYPE_ENERGY:
-                case POWER_TYPE_HAPPINESS:
-                    powerCost += static_cast<int32_t>(u_caster->getMaxPower(getSpellInfo()->getPowerType()) * getSpellInfo()->getManaCostPercentage() / 100);
-                    break;
-#if VERSION_STRING >= WotLK
-                case POWER_TYPE_RUNES:
-                case POWER_TYPE_RUNIC_POWER:
-                    // In 3.3.5a only obsolete spells use these and have a non-null getManaCostPercentage
-                    break;
-#endif
-                default:
-                    LogError("Spell::calculatePowerCost : Unknown power type %u for spell id %u", getSpellInfo()->getPowerType(), getSpellInfo()->getId());
-                    return 0;
-            }
-        }
-    }
+    auto powerCost = getSpellInfo()->getBasePowerCost(u_caster);
 
     // Use first school found from mask
     const auto spellSchool = getSpellInfo()->getFirstSchoolFromSchoolMask();
@@ -4410,7 +4346,9 @@ float_t Spell::_getSpellTravelTimeForTarget(uint64_t guid) const
         return 0.0f;
 
     float_t destX = 0.0f, destY = 0.0f, destZ = 0.0f, distance = 0.0f;
-    if (m_targets.hasDestination())
+
+    // Use destination only if the spell has no unit target mask set
+    if (m_targets.hasDestination() && !(m_targets.getTargetMask() & TARGET_FLAG_UNIT))
     {
         const auto dest = m_targets.getDestination();
         destX = dest.x;
@@ -4454,4 +4392,61 @@ float_t Spell::_getSpellTravelTimeForTarget(uint64_t guid) const
 
     // Calculate time it takes for spell to hit target
     return static_cast<float_t>((distance * 1000.0f) / getSpellInfo()->getSpeed());
+}
+
+void Spell::_prepareProcFlags()
+{
+    // Skip melee spells
+    if (getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_MELEE || getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_RANGED)
+        return;
+
+    // Setup spell target mask
+    uint32_t spellTargetMask = 0;
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (getSpellInfo()->getEffect(i) == 0)
+            continue;
+
+        // Skip targets on following effects
+        // Procs for these effects are handled when the real spell is casted
+        if (getSpellInfo()->getEffect(i) == SPELL_EFFECT_DUMMY ||
+            getSpellInfo()->getEffect(i) == SPELL_EFFECT_SCRIPT_EFFECT ||
+            getSpellInfo()->getEffect(i) == SPELL_EFFECT_TRIGGER_SPELL ||
+            getSpellInfo()->getEffect(i) == SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE)
+            continue;
+
+        spellTargetMask |= getSpellInfo()->getRequiredTargetMaskForEffect(i);
+    }
+
+    if (spellTargetMask == 0)
+        return;
+
+    // Consider the spell negative if it requires an attackable target
+    const auto spellDamageType = getSpellInfo()->getDmgClass();
+    if (spellTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE)
+    {
+        if (spellDamageType == SPELL_DMG_TYPE_NONE)
+        {
+            m_casterProcFlags = PROC_ON_DONE_NEGATIVE_SPELL_DAMAGE_CLASS_NONE;
+            m_targetProcFlags = PROC_ON_TAKEN_NEGATIVE_SPELL_DAMAGE_CLASS_NONE;
+        }
+        else if (spellDamageType == SPELL_DMG_TYPE_MAGIC)
+        {
+            m_casterProcFlags = PROC_ON_DONE_NEGATIVE_SPELL_DAMAGE_CLASS_MAGIC;
+            m_targetProcFlags = PROC_ON_TAKEN_NEGATIVE_SPELL_DAMAGE_CLASS_MAGIC;
+        }
+    }
+    else
+    {
+        if (spellDamageType == SPELL_DMG_TYPE_NONE)
+        {
+            m_casterProcFlags = PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE;
+            m_targetProcFlags = PROC_ON_TAKEN_POSITIVE_SPELL_DAMAGE_CLASS_NONE;
+        }
+        else if (spellDamageType == SPELL_DMG_TYPE_MAGIC)
+        {
+            m_casterProcFlags = PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_MAGIC;
+            m_targetProcFlags = PROC_ON_TAKEN_POSITIVE_SPELL_DAMAGE_CLASS_MAGIC;
+        }
+    }
 }

@@ -45,12 +45,13 @@ typedef void(Spell::*pSpellTarget)(uint32 i, uint32 j);
 
 #define GO_FISHING_BOBBER 35591
 
+// APGL Ends
+// MIT Starts
+typedef std::pair<uint64_t, DamageInfo> SpellUniqueTarget;
+
 class SERVER_DECL Spell : public EventableObject
 {
     public:
-        // APGL Ends
-        // MIT Starts
-
         //////////////////////////////////////////////////////////////////////////////////////////
         // Main control flow
 
@@ -158,8 +159,8 @@ class SERVER_DECL Spell : public EventableObject
         // Targets
 
     private:
-        // Stores unique hitted targets
-        std::vector<uint64_t> uniqueHittedTargets;
+        // Stores unique hitted targets with DamageInfo for proc system
+        std::vector<SpellUniqueTarget> uniqueHittedTargets;
         // Stores targets with hit result != SPELL_DID_HIT_SUCCESS
         std::vector<SpellTargetMod> missedTargets;
         // Stores hitted targets for each spell effect
@@ -200,6 +201,14 @@ class SERVER_DECL Spell : public EventableObject
 
         // Spell reflect stuff
         bool m_canBeReflected = false;
+
+        // Spell proc
+        DamageInfo m_casterDamageInfo = DamageInfo();
+        DamageInfo m_targetDamageInfo = DamageInfo();
+        bool isTargetDamageInfoSet = false;
+        uint32_t m_casterProcFlags = 0;
+        uint32_t m_targetProcFlags = 0;
+        void _prepareProcFlags();
 
         // <targetGuid, <travelTime, Aura>>
         std::map<uint64_t, std::pair<uint32_t, Aura*>> m_pendingAuras;
@@ -438,7 +447,6 @@ class SERVER_DECL Spell : public EventableObject
         void SendTameFailure(uint8 failure);
 
         void HandleAddAura(uint64 guid);
-        void writeSpellGoTargets(WorldPacket* data);
         uint32 pSpellId;
         SpellInfo const* ProcedOnSpell;
         SpellCastTargets m_targets;
@@ -677,7 +685,6 @@ class SERVER_DECL Spell : public EventableObject
         void DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multiplicator = 1);
         void DetermineSkillUp(uint32 skillid);
 
-        uint32 GetTargetType(uint32 value, uint32 i);
         bool AddTarget(uint32 i, uint32 TargetType, Object* obj);
         void AddAOETargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets);
         void AddPartyTargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets);

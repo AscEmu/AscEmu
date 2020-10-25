@@ -82,114 +82,6 @@ bool Penance(uint8_t /*effectIndex*/, Spell* pSpell)
     return true;
 }
 
-bool DivineAegis(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-        target->AddProcTriggerSpell(47753, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_SPELL_CRIT_HIT, 0, NULL, NULL);
-    else
-        target->RemoveProcTriggerSpell(47753, pAura->getCasterGuid());
-
-    return true;
-}
-
-bool ImprovedDevouringPlague(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-    {
-        static uint32_t classMask[3] = { 0x2000000, 0, 0 };
-        target->AddProcTriggerSpell(63675, pAura->getSpellInfo()->getId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL, 0, NULL, classMask);
-    }
-    else
-        target->RemoveProcTriggerSpell(63675, pAura->getCasterGuid());
-
-    return true;
-}
-
-bool VampiricEmbrace(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-        target->AddProcTriggerSpell(15290, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_ANY_HOSTILE_ACTION | PROC_TARGET_SELF, 0, NULL, NULL);
-    else
-        target->RemoveProcTriggerSpell(15290, pAura->getCasterGuid());
-
-    return true;
-}
-
-bool VampiricTouch(uint8_t effectIndex, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    switch (effectIndex)
-    {
-        case 0:
-            if (apply)
-                target->AddProcTriggerSpell(64085, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_PRE_DISPELL_AURA_VICTIM | PROC_TARGET_SELF, 0, NULL, NULL);
-            else
-                target->RemoveProcTriggerSpell(64085, pAura->getCasterGuid());
-            break;
-
-        case 2:
-            if (apply)
-                target->AddProcTriggerSpell(34919, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_SPELL_HIT_VICTIM, 0, NULL, NULL);
-            else
-                target->RemoveProcTriggerSpell(34919, pAura->getCasterGuid());
-            break;
-    }
-
-    return true;
-}
-
-bool EmpoweredRenew(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-    {
-        static uint32_t classMask[3] = { 0x40, 0, 0 };
-        target->AddProcTriggerSpell(63544, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL, 0, NULL, classMask);
-    }
-    else
-        target->RemoveProcTriggerSpell(63544, pAura->getCasterGuid());
-
-    return true;
-}
-
-bool ImprovedMindBlast(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-    {
-        static uint32_t classMask[3] = { 0x2000, 0, 0 };
-        target->AddProcTriggerSpell(48301, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_SPELL_HIT, 0, NULL, classMask);
-    }
-    else
-        target->RemoveProcTriggerSpell(48301, pAura->getCasterGuid());
-
-    return true;
-}
-
-bool PainAndSufferingAura(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-    {
-        static uint32_t classMask[3] = { 0, 0, 0x40 };
-        target->AddProcTriggerSpell(47948, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL, 0, NULL, classMask);
-    }
-    else
-        target->RemoveProcTriggerSpell(47948, pAura->getCasterGuid());
-
-    return true;
-}
-
 bool PainAndSufferingProc(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* caster = pSpell->getPlayerCaster();
@@ -254,37 +146,6 @@ bool PainAndSufferingProc(uint8_t /*effectIndex*/, Spell* pSpell)
     return true;
 }
 
-bool BodyAndSoul(uint8_t effectIndex, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-    {
-        static uint32_t classMask[3] = { 0, 1, 0 };
-        target->AddProcTriggerSpell(64134, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getEffectDamage(effectIndex), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
-    }
-    else
-        target->RemoveProcTriggerSpell(64134, pAura->getCasterGuid());
-
-    return true;
-}
-
-bool PrayerOfMendingAura(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-        target->AddProcTriggerSpell(pAura->getSpellInfo(), pAura->getSpellInfo(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_ANY_DAMAGE_VICTIM, pAura->getSpellInfo()->getProcCharges(), NULL, NULL);
-    else
-    {
-        int32_t count = target->GetAuraStackCount(pAura->getSpellId());
-        if (count == 1)
-            target->RemoveProcTriggerSpell(pAura->getSpellId(), pAura->getCasterGuid());
-    }
-
-    return true;
-}
-
 void SetupLegacyPriestSpells(ScriptMgr* mgr)
 {
     uint32_t PenanceIds[] =
@@ -297,31 +158,5 @@ void SetupLegacyPriestSpells(ScriptMgr* mgr)
     };
     mgr->register_dummy_spell(PenanceIds, &Penance);
 
-    uint32_t DivineAegisIds[] = { 47509, 47511, 47515, 0 };
-    mgr->register_dummy_aura(DivineAegisIds, &DivineAegis);
-
-    uint32_t ImprovedDevouringPlagueIds[] = { 63625, 63626, 63627, 0 };
-    mgr->register_dummy_aura(ImprovedDevouringPlagueIds, &ImprovedDevouringPlague);
-
-    mgr->register_dummy_aura(15286, &VampiricEmbrace);
-
-    uint32_t VampiricTouchIds[] = { 34914, 34916, 34917, 48159, 48160, 0 };
-    mgr->register_dummy_aura(VampiricTouchIds, &VampiricTouch);
-
-    uint32_t EmpoweredRenewIds[] = { 63534, 63542, 63543, 0 };
-    mgr->register_dummy_aura(EmpoweredRenewIds, &EmpoweredRenew);
-
-    uint32_t ImprovedMindBlastIds[] = { 15273, 15312, 15313, 15314, 15316, 0 };
-    mgr->register_dummy_aura(ImprovedMindBlastIds, &ImprovedMindBlast);
-
-    uint32_t PainAndSufferingAuraIds[] = { 47580, 47581, 47582, 0 };
-    mgr->register_dummy_aura(PainAndSufferingAuraIds, &PainAndSufferingAura);
-
     mgr->register_script_effect(47948, &PainAndSufferingProc);
-
-    mgr->register_dummy_aura(64127, &BodyAndSoul);
-    mgr->register_dummy_aura(64129, &BodyAndSoul);
-
-    uint32_t PrayerOfMendingAuraIds[] = { 41635, 48110, 48111, 0 };
-    mgr->register_dummy_aura(PrayerOfMendingAuraIds, &PrayerOfMendingAura);
 }

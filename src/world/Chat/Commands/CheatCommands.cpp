@@ -109,8 +109,7 @@ bool ChatHandler::HandleCheatCooldownCommand(const char* /*args*/, WorldSession*
 
     if (!player_target->m_cheats.hasCooldownCheat)
     {
-        for (SpellSet::const_iterator itr = player_target->mSpells.begin(); itr != player_target->mSpells.end(); ++itr)
-            player_target->ClearCooldownForSpell((*itr));
+        player_target->resetAllCooldowns();
 
         if (player_target == m_session->GetPlayer())
         {

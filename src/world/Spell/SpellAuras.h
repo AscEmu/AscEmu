@@ -126,6 +126,7 @@ class SERVER_DECL Aura : public EventableObject
         int32_t getEffectDamageByEffect(AuraEffect auraEffect) const;
 
         void removeAura(AuraRemoveMode mode = AURA_REMOVE_BY_SERVER);
+        bool isDeleted() const;
 
         bool canPeriodicEffectCrit();
 
@@ -136,6 +137,10 @@ class SERVER_DECL Aura : public EventableObject
         void setTimeLeft(int32_t dur);
         int32_t getMaxDuration() const;
         void setMaxDuration(int32_t dur);
+        int32_t getOriginalDuration() const;
+        // Overrides original duration
+        void setOriginalDuration(int32_t dur);
+
         // Does not return 0 to avoid division by zero
         // Returns 1 with permanent auras or with invalid effindex
         uint16_t getPeriodicTickCountForEffect(uint8_t effIndex) const;
@@ -418,8 +423,6 @@ class SERVER_DECL Aura : public EventableObject
         uint32_t m_attackPowerBonus = 0;
         float_t m_spellHaste = 0.0f;
 
-        // Computes if aura is positive or negative at aura constructor based on SpellInfo
-        bool _checkNegative() const;
         bool mPositive = true;
 
         // Aura could have effects with different amplitude
@@ -505,7 +508,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraModDecreaseSpeed(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModIncreaseHealth(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModIncreaseEnergy(AuraEffectModifier* aurEff, bool apply);
-        void SpellAuraModShapeshift(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModEffectImmunity(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModStateImmunity(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModSchoolImmunity(AuraEffectModifier* aurEff, bool apply);
@@ -521,7 +523,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraModCritPerc(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModHitChance(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModSpellHitChance(AuraEffectModifier* aurEff, bool apply);
-        void SpellAuraTransform(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModSpellCritChance(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraIncreaseSwimSpeed(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModCratureDmgDone(AuraEffectModifier* aurEff, bool apply);

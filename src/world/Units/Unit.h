@@ -23,11 +23,9 @@
 // MIT Start
 #include "AI/MovementAI.h"
 #include "Objects/Object.h"
-#include "Spell/SpellDefines.hpp"
 
 #include "UnitDefines.hpp"
 #include "Management/LootMgr.h"
-#include "Spell/SpellProc.h"
 #include "Objects/Object.h"
 #include "Macros/UnitMacros.hpp"
 #include "Units/Summons/SummonHandler.h"
@@ -35,7 +33,10 @@
 #include "Spell/Definitions/AuraEffects.h"
 #include "Spell/Definitions/AuraStates.h"
 #include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/School.h"
+#include "Spell/SpellDefines.hpp"
+#include "Spell/SpellProc.h"
 #include "Storage/MySQLStructures.h"
 
 class AIInterface;
@@ -111,8 +112,7 @@ struct UnitSpeedInfo
 struct HealthBatchEvent
 {
     Unit* caster = nullptr;                 // the unit who created this damage or healing event
-    uint32_t damage = 0;
-    uint32_t absorbedDamageOrHeal = 0;
+    DamageInfo damageInfo = DamageInfo();
 
     bool isPeriodic = false;
     bool isHeal = false;
@@ -517,7 +517,7 @@ public:
 
     uint8_t getShapeShiftForm() const;
     void setShapeShiftForm(uint8_t shapeShiftForm);
-    uint32_t getShapeShiftMask() { return 1 << (getShapeShiftForm() - 1); }
+    uint32_t getShapeShiftMask() const { return 1 << (getShapeShiftForm() - 1); }
     //bytes_2 end
 
     uint32_t getAttackPower() const;
@@ -625,11 +625,24 @@ public:
     void castSpell(uint64_t targetGuid, uint32_t spellId, uint32_t forcedBasepoints, bool triggered);
     void castSpell(Unit* target, uint32_t spellId, uint32_t forcedBasePoints, bool triggered);
     void castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBasePoints, int32_t spellCharges, bool triggered);
+    void castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered);
     void castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered);
     void eventCastSpell(Unit* target, SpellInfo const* spellInfo);
 
     void castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, uint32_t forcedBasepoints, bool triggered);
     void castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBasepoints, bool triggered);
+
+    SpellProc* addProcTriggerSpell(uint32_t spellId, uint32_t originalSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t procCharges, uint32_t const* spellFamilyMask, uint32_t const* procClassMask = nullptr, Object* obj = nullptr);
+    // Gets proc chance, proc flags and proc charges from spellInfo
+    SpellProc* addProcTriggerSpell(SpellInfo const* spellInfo, uint64_t casterGuid, uint32_t const* spellFamilyMask, uint32_t const* procClassMask = nullptr, Object* obj = nullptr);
+    // Gets proc chance, proc flags and proc charges from originalSpellInfo
+    SpellProc* addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const* originalSpellInfo, uint64_t casterGuid, uint32_t const* spellFamilyMask, uint32_t const* procClassMask = nullptr, Object* obj = nullptr);
+    // Uses entered proc chance, proc flags and proc charges
+    SpellProc* addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const* originalSpellInfo, uint64_t casterGuid, uint32_t procChance, uint32_t procFlags, uint32_t procCharges, uint32_t const* spellFamilyMask, uint32_t const* procClassMask = nullptr, Object* obj = nullptr);
+    SpellProc* addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const* originalSpellInfo, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t procCharges, uint32_t const* spellFamilyMask, uint32_t const* procClassMask = nullptr, Object* obj = nullptr);
+    SpellProc* getProcTriggerSpell(uint32_t spellId, uint64_t casterGuid) const;
+    void removeProcTriggerSpell(uint32_t spellId, uint64_t casterGuid = 0, uint64_t misc = 0);
+    void clearProcCooldowns();
 
     float_t getSpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, bool isPeriodic, Aura* aur = nullptr);
     float_t getSpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal, bool isPeriodic, Aura* aur = nullptr);
@@ -641,10 +654,12 @@ public:
     void sendSpellHealLog(Object* caster, Object* target, uint32_t spellId, uint32_t healAmount, bool isCritical, uint32_t overHeal, uint32_t absorbedHeal);
     // Sends packet for damage immune
     void sendSpellOrDamageImmune(uint64_t casterGuid, Unit* target, uint32_t spellId);
-    void sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, uint32_t overKill, dealdamage damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, uint32_t rageGain);
+    void sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, uint32_t overKill, DamageInfo damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, uint32_t rageGain);
 
 private:
     bool m_canDualWield;
+
+    std::list<SpellProc*> m_procSpells;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -672,6 +687,8 @@ public:
     void removeAllAurasById(uint32_t* auraId);
     void removeAllAurasByIdForGuid(uint32_t auraId, uint64_t guid);
     uint32_t removeAllAurasByIdReturnCount(uint32_t auraId);
+    // Can remove only the effect from aura, or (by default) entire aura
+    void removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell = 0, bool removeOnlyEffect = false);
 
     uint64_t getSingleTargetGuidForAura(uint32_t spellId);
     uint64_t getSingleTargetGuidForAura(uint32_t* spellIds, uint32_t* index);
@@ -679,7 +696,8 @@ public:
     void setSingleTargetGuidForAura(uint32_t spellId, uint64_t guid);
     void removeSingleTargetGuidForAura(uint32_t spellId);
 
-    void removeAllAurasByAuraEffect(AuraEffect effect);
+    uint32_t getTransformAura() const;
+    void setTransformAura(uint32_t auraId);
 
     // Sends packet for new or removed aura
     void sendAuraUpdate(Aura* aur, bool remove);
@@ -690,6 +708,8 @@ public:
 
 private:
     void _updateAuras(unsigned long diff);
+
+    uint32_t m_transformAura = 0;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -789,6 +809,8 @@ public:
     virtual void setSanctuaryFlag();
     virtual void removeSanctuaryFlag();
 
+    void restoreDisplayId();
+
     bool isSitting() const;
 
     uint8_t getHealthPct() const;
@@ -821,7 +843,7 @@ private:
     // Handles some things on each damage event in the batch
     uint32_t _handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageGenerated);
     // Handles some things on each healing event in the batch
-    uint32_t _handleBatchHealing(Unit* healer, uint32_t heal, uint32_t* absorbedHeal, SpellInfo const* spellInfo);
+    uint32_t _handleBatchHealing(HealthBatchEvent const* batch, uint32_t* absorbedHeal);
     std::vector<HealthBatchEvent*> m_healthBatch;
     uint16_t m_healthBatchTime = HEALTH_BATCH_INTERVAL;
 
@@ -923,9 +945,10 @@ public:
 
     //// Combat
     uint32 GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* ability);
-    void Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage, bool disable_proc, bool skip_hit_check, bool force_crit = false);
+    DamageInfo Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo const* ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage, bool disable_proc, bool skip_hit_check, bool force_crit = false);
     uint32 m_procCounter;
-    uint32 HandleProc(uint32 flag, Unit* Victim, SpellInfo const* CastingSpell, bool is_triggered = false, uint32 dmg = -1, uint32 abs = 0, uint32 weapon_damage_type = 0);
+    // triggeredFromAura is set if castingSpell has been triggered from aura, not if the proc is triggered from aura
+    uint32 HandleProc(uint32 flag, Unit* Victim, SpellInfo const* CastingSpell, DamageInfo damageInfo, bool isSpellTriggered, ProcEvents procEvent = PROC_EVENT_DO_ALL, Aura* triggeredFromAura = nullptr);
     void HandleProcDmgShield(uint32 flag, Unit* attacker);//almost the same as handleproc :P
     bool IsCriticalDamageForSpell(Object* victim, SpellInfo const* spell);
     float GetCriticalDamageBonusForSpell(Object* victim, SpellInfo const* spell, float amount);
@@ -939,7 +962,7 @@ public:
     int32 GetRAP();
 
     bool IsInInstance();
-    void CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInfo const* ability, float ArmorPctReduce);
+    void CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInfo const* ability, float ArmorPctReduce);
     void RegenerateHealth();
     void setHRegenTimer(uint32 time) { m_H_regenTimer = static_cast<uint16>(time); }
     void DeMorph();
@@ -1007,7 +1030,6 @@ public:
     void RemoveAllAuraType(uint32 auratype);                    //ex:to remove morph spells
     bool RemoveAllAurasByMechanic(uint32 MechanicType, uint32 MaxDispel, bool HostileOnly);       // Removes all (de)buffs on unit of a specific mechanic type.
     void RemoveAllMovementImpairing();
-    void RemoveAllAurasByRequiredShapeShift(uint32 mask);
 
     void RemoveNegativeAuras();
     // Temporary remove all auras
@@ -1015,14 +1037,6 @@ public:
     bool SetAurDuration(uint32 spellId, Unit* caster, uint32 duration);
     bool SetAurDuration(uint32 spellId, uint32 duration);
     void DropAurasOnDeath();
-
-    // ProcTrigger
-    std::list<SpellProc*> m_procSpells;
-    SpellProc* AddProcTriggerSpell(uint32 spell_id, uint32 orig_spell_id, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask = nullptr, Object* obj = nullptr);
-    SpellProc* AddProcTriggerSpell(SpellInfo const* spell, SpellInfo const* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask = nullptr, Object* obj = nullptr);
-    SpellProc* AddProcTriggerSpell(SpellInfo const* sp, uint64 caster, uint32* groupRelation, uint32* procClassMask = nullptr, Object* obj = nullptr);
-    SpellProc* GetProcTriggerSpell(uint32 spellId, uint64 casterGuid = 0);
-    void RemoveProcTriggerSpell(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0);
 
     bool IsPoisoned();
 
@@ -1059,7 +1073,7 @@ public:
     uint8 GetOnMeleeSpellEcn() { return m_meleespell_ecn; }
     void CastOnMeleeSpell();
 
-    uint32 DoDamageSplitTarget(uint32 res, uint32 school_type, bool melee_dmg);
+    uint32 DoDamageSplitTarget(uint32 res, SchoolMask schoolMask, bool melee_dmg);
 
     // Spell Crit
     float spellcritperc;
@@ -1384,9 +1398,6 @@ public:
     bool bInvincible;
     Player* m_redirectSpellPackets;
     void UpdateVisibility();
-
-    //solo target auras
-    uint32 polySpell;
 
     struct
     {

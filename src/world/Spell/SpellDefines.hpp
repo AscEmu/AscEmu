@@ -182,7 +182,7 @@ enum SpellAttributesExC
     ATTRIBUTESEXC_NO_HEALING_BONUS                  = 0x02000000,
     ATTRIBUTESEXC_CAN_PROC_ON_TRIGGERED             = 0x04000000,
     ATTRIBUTESEXC_DRAIN_SOUL                        = 0x08000000,   // just drain soul has this flag
-    ATTRIBUTESEXC_UNK30                             = 0x10000000,
+    ATTRIBUTESEXC_HIGH_PRIORITY                     = 0x10000000,   // Takes highest priority to cast/do effect
     ATTRIBUTESEXC_NO_DONE_BONUS                     = 0x20000000,   ///\todo used for checking spellpower/damage mods
     ATTRIBUTESEXC_NO_DISPLAY_RANGE                  = 0x40000000,   // tooltip dont show range
     ATTRIBUTESEXC_UNK33                             = 0x80000000
@@ -448,6 +448,13 @@ enum SpellRangeTypeMask : uint8_t
 {
     SPELL_RANGE_TYPE_MASK_MELEE                     = 1,
     SPELL_RANGE_TYPE_MASK_RANGED                    = 2
+};
+
+enum ProcEvents : uint8_t
+{
+    PROC_EVENT_DO_CASTER_PROCS_ONLY                 = 0, // Handles only procs which proc on self
+    PROC_EVENT_DO_TARGET_PROCS_ONLY                 = 1, // Handles only procs which proc on target
+    PROC_EVENT_DO_ALL                               = 2  // Handles all procs
 };
 
 // todo: move this to each dbc structure file
