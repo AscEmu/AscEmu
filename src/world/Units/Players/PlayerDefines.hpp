@@ -221,14 +221,6 @@ enum RankTitles : uint16_t
     PVPTITLE_END                            = 143
 };
 
-enum PvPAreaStatus
-{
-    AREA_ALLIANCE       = 1,
-    AREA_HORDE          = 2,
-    AREA_CONTESTED      = 3,
-    AREA_PVPARENA       = 4
-};
-
 /*
 Exalted             1,000     Access to racial mounts. Capped at 999.7
 Revered             21,000     Heroic mode keys for Outland dungeons

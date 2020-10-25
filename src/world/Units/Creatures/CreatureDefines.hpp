@@ -377,41 +377,7 @@ enum CREATURE_TYPE
     CREATURE_TYPE_GUARDIAN  = 1
 };
 
-//\Todo not used?
-//struct PetSpellCooldown
-//{
-//    uint32 spellId;
-//    int32 cooldown;
-//};
-
 #include <string>
-
-enum GOSSIP_SPECIAL
-{
-    GOSSIP_NO_SPECIAL = 0x00,
-    GOSSIP_POI = 0x01,
-    GOSSIP_SPIRIT_HEALER_ACTIVE = 0x02,
-    GOSSIP_VENDOR = 0x03,
-    GOSSIP_TRAINER = 0x04,
-    GOSSIP_TABARD_VENDOR = 0x05,
-    GOSSIP_INNKEEPER = 0x06,
-    GOSSIP_PETITIONER = 0x07,
-    GOSSIP_TAXI = 0x08,
-    GOSSIP_TEXT = 0x09,
-    GOSSIP_MENU = 0x0A,
-    GOSSIP_BATTLEMASTER = 0x0B,
-    GOSSIP_BANKER = 0x0C
-};
-
-enum TrainerServiceType
-{
-    TRAINER_SERVICE_AVAILABLE = 0x0,
-    TRAINER_SERVICE_UNAVAILABLE = 0x1,
-    TRAINER_SERVICE_USED = 0x2,
-    TRAINER_SERVICE_NOT_SHOWN = 0x3,
-    TRAINER_SERVICE_NEVER = 0x4,
-    TRAINER_SERVICE_NO_PET = 0x5
-};
 
 enum TrainerType
 {

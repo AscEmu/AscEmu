@@ -138,9 +138,6 @@ struct PlayerCreateInfo
     std::list<CreateInfo_SkillStruct> skills;
     std::list<CreateInfo_ActionBarStruct> actionbars;
     std::set<uint32> spell_list;
-    //uint32 item[10];
-    //uint8 item_slot[10];
-    //uint16 spell[10];
 };
 
 struct DamageSplit
@@ -225,33 +222,11 @@ struct PlayerPet
     uint32 type;
 };
 
-enum MeetingStoneQueueStatus
-{
-    MEETINGSTONE_STATUS_NONE                                = 0,
-    MEETINGSTONE_STATUS_JOINED_MEETINGSTONE_QUEUE_FOR       = 1,
-    MEETINGSTONE_STATUS_PARTY_MEMBER_LEFT_LFG               = 2,
-    MEETINGSTONE_STATUS_PARTY_MEMBER_REMOVED_PARTY_REMOVED  = 3,
-    MEETINGSTONE_STATUS_LOOKING_FOR_NEW_PARTY_IN_QUEUE      = 4,
-    MEETINGSTONE_STATUS_NONE_UNK                            = 5
-};
-
-enum ItemPushResultTypes
-{
-    ITEM_PUSH_TYPE_LOOT     = 0x00000000,
-    ITEM_PUSH_TYPE_RECEIVE  = 0x00000001,
-    ITEM_PUSH_TYPE_CREATE   = 0x00000002
-};
-
 struct WeaponModifier
 {
     uint32 wclass;
     uint32 subclass;
     float value;
-};
-
-struct PetActionBar
-{
-    uint32 spell[10];
 };
 
 struct classScriptOverride
@@ -280,12 +255,6 @@ struct PlayerSkill
     uint32 BonusValue;
     float GetSkillUpChance();
     void Reset(uint32 Id);
-};
-
-enum SPELL_INDEX2
-{
-    SPELL_TYPE2_PALADIN_AURA        = 1,
-    SPELL_TYPE3_DEATH_KNIGHT_AURA   = 1
 };
 
 class ArenaTeam;
@@ -345,15 +314,11 @@ class PlayerSpec
 
 typedef std::set<uint32>                            SpellSet;
 typedef std::list<classScriptOverride*>             ScriptOverrideList;
-typedef std::set<uint32>                            SaveSet;
 typedef std::map<uint32, ScriptOverrideList* >      SpellOverrideMap;
-typedef std::map<uint32, uint32>                    SpellOverrideExtraAuraMap;
 typedef std::map<uint32, FactionReputation*>        ReputationMap;
-typedef std::map<uint32, uint64>                    SoloSpells;
 typedef std::map<SpellInfo const*, std::pair<uint32, uint32> >StrikeSpellMap;
 typedef std::map<uint32, OnHitSpell >               StrikeSpellDmgMap;
 typedef std::map<uint32, PlayerSkill>               SkillMap;
-typedef std::set<Player**>                          ReferenceSet;
 typedef std::map<uint32, PlayerCooldown>            PlayerCooldownMap;
 
 // AGPL End

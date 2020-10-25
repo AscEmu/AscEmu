@@ -129,8 +129,6 @@ struct HealthBatchEvent
 // MIT End
 // AGPL Start
 
-bool SERVER_DECL Rand(float);
-
 typedef std::unordered_map<uint32, uint64> UniqueAuraTargetMap;
 
 //////////////////////////////////////////////////////////////////////////////////////////
