@@ -644,8 +644,8 @@ public:
     void removeProcTriggerSpell(uint32_t spellId, uint64_t casterGuid = 0, uint64_t misc = 0);
     void clearProcCooldowns();
 
-    float_t getSpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, bool isPeriodic, Aura* aur = nullptr);
-    float_t getSpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal, bool isPeriodic, Aura* aur = nullptr);
+    float_t applySpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, float_t effectPctModifier = 1.0f, bool isPeriodic = false, Aura* aur = nullptr);
+    float_t applySpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal, float_t effectPctModifier = 1.0f, bool isPeriodic = false, Aura* aur = nullptr);
 
     float_t getCriticalChanceForDamageSpell(SpellInfo const* spellInfo, Unit* victim) const;
     float_t getCriticalChanceForHealSpell(SpellInfo const* spellInfo) const;
@@ -742,9 +742,11 @@ public:
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Power related
-    void regeneratePowers(uint16_t timePassed);
+    // Health and power
+    void regenerateHealthAndPowers(uint16_t timePassed);
     void regeneratePower(PowerType type);
+    void interruptHealthRegeneration(uint32_t timeInMS);
+    bool isHealthRegenerationInterrupted() const;
 #if VERSION_STRING < Cata
     void interruptPowerRegeneration(uint32_t timeInMS);
     bool isPowerRegenerationInterrupted() const;
@@ -753,6 +755,7 @@ public:
     void energize(Unit* target, uint32_t spellId, uint32_t amount, PowerType type, bool sendPacket = true);
     void sendSpellEnergizeLog(Unit* target, uint32_t spellId, uint32_t amount, PowerType type);
 
+    uint8_t getHealthPct() const;
     uint8_t getPowerPct(PowerType powerType) const;
 
     void sendPowerUpdate(bool self);
@@ -761,6 +764,7 @@ private:
     // Converts power type to power index
     uint8_t getPowerIndexFromDBC(PowerType type) const;
 
+    uint32_t m_healthRegenerationInterruptTime = 0;
 #if VERSION_STRING < Cata
     // Five second mana regeneration interrupt timer
     uint32_t m_powerRegenerationInterruptTime = 0;
@@ -781,6 +785,7 @@ private:
 #endif
 
 protected:
+    uint16_t m_healthRegenerateTimer = 0;
     // Mana and Energy
     uint16_t m_manaEnergyRegenerateTimer = 0;
     uint16_t m_focusRegenerateTimer = 0;
@@ -812,8 +817,6 @@ public:
     void restoreDisplayId();
 
     bool isSitting() const;
-
-    uint8_t getHealthPct() const;
 
     void dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool removeAuras = true);
     void takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId);
@@ -963,8 +966,6 @@ public:
 
     bool IsInInstance();
     void CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInfo const* ability, float ArmorPctReduce);
-    void RegenerateHealth();
-    void setHRegenTimer(uint32 time) { m_H_regenTimer = static_cast<uint16>(time); }
     void DeMorph();
     uint32 ManaShieldAbsorb(uint32 dmg);
     void smsg_AttackStart(Unit* pVictim);
@@ -1453,8 +1454,6 @@ protected:
 
     uint32 m_meleespell;
     uint8 m_meleespell_ecn;         // extra_cast_number
-
-    uint16 m_H_regenTimer;
 
     std::list<Aura*> m_GarbageAuras;
     std::list<Spell*> m_GarbageSpells;

@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPowerUpdate.h"
 #include "Server/Packets/SmsgSpellHealLog.h"
 #include "Server/Packets/SmsgSpellOrDamageImmune.h"
+#include "Server/Packets/SmsgStandstateUpdate.h"
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Opcodes.hpp"
 #include "Server/WorldSession.h"
@@ -788,7 +789,16 @@ void Unit::setBytes1ForOffset(uint32_t offset, uint8_t value)
 }
 
 uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }
-void Unit::setStandState(uint8_t standState) { write(unitData()->field_bytes_1.s.stand_state, standState); }
+void Unit::setStandState(uint8_t standState)
+{
+    write(unitData()->field_bytes_1.s.stand_state, standState);
+
+    if (isPlayer())
+        static_cast<Player*>(this)->SendPacket(SmsgStandstateUpdate(standState).serialise().get());
+
+    if (standState != STANDSTATE_SIT)
+        RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_STAND_UP);
+}
 
 uint8_t Unit::getPetTalentPoints() const { return unitData()->field_bytes_1.s.pet_talent_points; }
 void Unit::setPetTalentPoints(uint8_t talentPoints) { write(unitData()->field_bytes_1.s.pet_talent_points, talentPoints); }
@@ -1956,10 +1966,11 @@ void Unit::clearProcCooldowns()
     }
 }
 
-float_t Unit::getSpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal, bool isPeriodic, Aura* aur/* = nullptr*/)
+float_t Unit::applySpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal, float_t effectPctModifier/* = 1.0f*/, bool isPeriodic/* = false*/, Aura* aur/* = nullptr*/)
 {
+    const auto floatHeal = static_cast<float_t>(baseHeal);
     if (spellInfo->getAttributesExC() & ATTRIBUTESEXC_NO_HEALING_BONUS)
-        return 0.0f;
+        return floatHeal;
 
     // Check for correct class
     if (isPlayer())
@@ -1975,21 +1986,25 @@ float_t Unit::getSpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal,
 #if VERSION_STRING >= WotLK
             case DEATHKNIGHT:
 #endif
-                return 0.0f;
+                return floatHeal;
             default:
                 break;
         }
     }
 
-    float_t bonusHeal = 0.0f;
+    float_t bonusHeal = 0.0f, bonusAp = 0.0f;
     const auto school = spellInfo->getFirstSchoolFromSchoolMask();
 
     if (aur != nullptr)
+    {
         bonusHeal = static_cast<float_t>(aur->getHealPowerBonus());
+        bonusAp = static_cast<float_t>(aur->getAttackPowerBonus());
+    }
     else
+    {
         bonusHeal = static_cast<float_t>(HealDoneMod[school]);
-
-    bonusHeal += static_cast<float_t>(baseHeal * HealDonePctMod[school]);
+        bonusAp = static_cast<float_t>(getAttackPower());
+    }
 
     // Get spell coefficient value
     if (bonusHeal > 0.0f)
@@ -1997,16 +2012,16 @@ float_t Unit::getSpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal,
         if (!isPeriodic || spellInfo->isChanneled())
         {
             if (spellInfo->spell_coeff_direct > 0.0f)
-                bonusHeal *= spellInfo->spell_coeff_direct;
+                bonusHeal *= spellInfo->spell_coeff_direct * effectPctModifier;
             else
-                return 0.0f;
+                bonusHeal = 0.0f;
         }
         else
         {
             if (spellInfo->spell_coeff_overtime > 0.0f)
-                bonusHeal *= spellInfo->spell_coeff_overtime;
+                bonusHeal *= spellInfo->spell_coeff_overtime * effectPctModifier;
             else
-                return 0.0f;
+                bonusHeal = 0.0f;
         }
 
         // Apply general downranking penalty
@@ -2037,6 +2052,15 @@ float_t Unit::getSpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal,
 #endif
     }
 
+    if (bonusAp > 0.0f)
+    {
+        // Get attack power bonus
+        if (isPeriodic || aur != nullptr)
+            bonusAp *= spellInfo->spell_ap_coeff_overtime * effectPctModifier;
+        else
+            bonusAp *= spellInfo->spell_ap_coeff_direct * effectPctModifier;
+    }
+
     int32_t bonus_penalty = 0;
     spellModFlatIntValue(SM_FPenalty, &bonus_penalty, spellInfo->getSpellFamilyFlags());
 
@@ -2044,16 +2068,27 @@ float_t Unit::getSpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal,
     spellModFlatIntValue(SM_PPenalty, &bonus_penalty_pct, spellInfo->getSpellFamilyFlags());
 
     bonusHeal += static_cast<float_t>((bonus_penalty + baseHeal) * bonus_penalty_pct / 100.0f);
-    return bonusHeal;
+    bonusHeal += bonusAp;
+
+    if (isPeriodic && aur != nullptr)
+        bonusHeal *= aur->getStackCount();
+
+    float_t heal = floatHeal + std::max(0.0f, bonusHeal);
+
+    // Apply pct healing modifiers
+    heal += heal * HealDonePctMod[school];
+
+    return heal;
 }
 
-float_t Unit::getSpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, bool isPeriodic, Aura* aur/* = nullptr*/)
+float_t Unit::applySpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, float_t effectPctModifier/* = 1.0f*/, bool isPeriodic/* = false*/, Aura* aur/* = nullptr*/)
 {
+    const auto floatDmg = static_cast<float_t>(baseDmg);
     if (spellInfo->getAttributesExC() & ATTRIBUTESEXC_NO_DONE_BONUS)
-        return 0.0f;
+        return floatDmg;
 
     if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_NOT_USING_DMG_BONUS)
-        return 0.0f;
+        return floatDmg;
 
     // Check for correct class
     if (isPlayer())
@@ -2069,22 +2104,25 @@ float_t Unit::getSpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, b
 #if VERSION_STRING >= WotLK
             case DEATHKNIGHT:
 #endif
-                return 0.0f;
+                return floatDmg;
             default:
                 break;
         }
     }
 
-    float_t bonusDmg = 0.0f;
+    float_t bonusDmg = 0.0f, bonusAp = 0.0f;
     const auto school = spellInfo->getFirstSchoolFromSchoolMask();
 
     if (aur != nullptr)
+    {
         bonusDmg = static_cast<float_t>(aur->getSpellPowerBonus());
+        bonusAp = static_cast<float_t>(aur->getAttackPowerBonus());
+    }
     else
+    {
         bonusDmg = static_cast<float_t>(GetDamageDoneMod(school));
-
-    // Subtract 1 because value is initialized with 1
-    bonusDmg += static_cast<float_t>(baseDmg * (GetDamageDonePctMod(school) - 1));
+        bonusAp = static_cast<float_t>(getAttackPower());
+    }
 
     // Get spell coefficient value
     if (bonusDmg > 0.0f)
@@ -2092,16 +2130,16 @@ float_t Unit::getSpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, b
         if (!isPeriodic || spellInfo->isChanneled())
         {
             if (spellInfo->spell_coeff_direct > 0.0f)
-                bonusDmg *= spellInfo->spell_coeff_direct;
+                bonusDmg *= spellInfo->spell_coeff_direct * effectPctModifier;
             else
-                return 0.0f;
+                bonusDmg = 0.0f;
         }
         else
         {
             if (spellInfo->spell_coeff_overtime > 0.0f)
-                bonusDmg *= spellInfo->spell_coeff_overtime;
+                bonusDmg *= spellInfo->spell_coeff_overtime * effectPctModifier;
             else
-                return 0.0f;
+                bonusDmg = 0.0f;
         }
 
         // Apply general downranking penalty
@@ -2132,6 +2170,15 @@ float_t Unit::getSpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, b
 #endif
     }
 
+    if (bonusAp > 0.0f)
+    {
+        // Get attack power bonus
+        if (isPeriodic || aur != nullptr)
+            bonusAp *= spellInfo->spell_ap_coeff_overtime * effectPctModifier;
+        else
+            bonusAp *= spellInfo->spell_ap_coeff_direct * effectPctModifier;
+    }
+
     int32_t bonus_penalty = 0;
     spellModFlatIntValue(SM_FPenalty, &bonus_penalty, spellInfo->getSpellFamilyFlags());
 
@@ -2139,7 +2186,17 @@ float_t Unit::getSpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, b
     spellModFlatIntValue(SM_PPenalty, &bonus_penalty_pct, spellInfo->getSpellFamilyFlags());
 
     bonusDmg += static_cast<float_t>((bonus_penalty + baseDmg) * bonus_penalty_pct / 100.0f);
-    return bonusDmg;
+    bonusDmg += bonusAp;
+
+    if (isPeriodic && aur != nullptr)
+        bonusDmg *= aur->getStackCount();
+
+    float_t dmg = floatDmg + std::max(0.0f, bonusDmg);
+
+    // Apply pct damage modifiers
+    dmg *= GetDamageDonePctMod(school);
+
+    return dmg;
 }
 
 float_t Unit::getCriticalChanceForDamageSpell(SpellInfo const* spellInfo, Unit* victim) const
@@ -2542,6 +2599,11 @@ void Unit::addAura(Aura* aur)
     // Call scripted aura apply hook
     sScriptMgr.callScriptedAuraOnApply(aur);
 
+    // Sit down if aura is removed on stand up
+    //\ todo: move this and aurastates to spellauras.cpp
+    if (aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && !isSitting())
+        setStandState(STANDSTATE_SIT);
+
     // Possibly a hackfix from legacy method
     // Reaction from enemy AI
     if (aur->isNegative() && aur->IsCombatStateAffecting()) // Creature
@@ -2914,13 +2976,13 @@ void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 
         const auto aur = m_auras[i];
         for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; ++x)
         {
-            if (aur->getAuraEffect(x).mAuraEffect == SPELL_AURA_NONE)
+            if (aur->getAuraEffect(x).getAuraEffectType() == SPELL_AURA_NONE)
                 continue;
 
             if (skipSpell == aur->getSpellId())
                 continue;
 
-            if (aur->getAuraEffect(x).mAuraEffect == effect)
+            if (aur->getAuraEffect(x).getAuraEffectType() == effect)
             {
                 if (removeOnlyEffect)
                 {
@@ -3071,15 +3133,10 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
     {
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (aur->getAuraEffect(i).mAuraEffect != SPELL_AURA_NONE)
-            {
-                ///\ todo: we are sending base amount, should real amount be sent instead?
-                auraUpdate.effAmount[i] = aur->getAuraEffect(i).mDamage;
-            }
+            if (aur->getAuraEffect(i).getAuraEffectType() != SPELL_AURA_NONE)
+                auraUpdate.effAmount[i] = aur->getAuraEffect(i).getEffectDamage();
             else
-            {
                 auraUpdate.effAmount[i] = 0;
-            }
         }
     }
 #endif
@@ -3133,15 +3190,10 @@ void Unit::sendFullAuraUpdate()
         {
             for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; ++x)
             {
-                if (aur->getAuraEffect(x).mAuraEffect != SPELL_AURA_NONE)
-                {
-                    ///\ todo: we are sending base amount, should real amount be sent instead?
-                    auraUpdate.effAmount[x] = aur->getAuraEffect(x).mDamage;
-                }
+                if (aur->getAuraEffect(x).getAuraEffectType() != SPELL_AURA_NONE)
+                    auraUpdate.effAmount[x] = aur->getAuraEffect(x).getEffectDamage();
                 else
-                {
                     auraUpdate.effAmount[x] = 0;
-                }
             }
         }
 #endif
@@ -3573,10 +3625,26 @@ void Unit::setVisible(const bool visible)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Power related
-void Unit::regeneratePowers(uint16_t timePassed)
+void Unit::regenerateHealthAndPowers(uint16_t timePassed)
 {
     if (!isAlive())
         return;
+
+    if (isCreature() && getNpcFlags() & UNIT_NPC_FLAG_DISABLE_REGEN)
+        return;
+
+    // Health
+    m_healthRegenerateTimer += timePassed;
+    if ((hasUnitStateFlag(UNIT_STATE_POLYMORPHED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH_POLYMORPHED) ||
+        (!hasUnitStateFlag(UNIT_STATE_POLYMORPHED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH))
+    {
+        if (isPlayer())
+            static_cast<Player*>(this)->RegenerateHealth(CombatStatus.IsInCombat());
+        else
+            static_cast<Creature*>(this)->RegenerateHealth();
+
+        m_healthRegenerateTimer = 0;
+    }
 
     // Mana and Energy
     m_manaEnergyRegenerateTimer += timePassed;
@@ -3853,6 +3921,16 @@ void Unit::regeneratePower(PowerType type)
 #endif
 }
 
+void Unit::interruptHealthRegeneration(uint32_t timeInMS)
+{
+    m_healthRegenerationInterruptTime = timeInMS;
+}
+
+bool Unit::isHealthRegenerationInterrupted() const
+{
+    return m_healthRegenerateTimer != 0;
+}
+
 #if VERSION_STRING < Cata
 void Unit::interruptPowerRegeneration(uint32_t timeInMS)
 {
@@ -3891,6 +3969,17 @@ void Unit::energize(Unit* target, uint32_t spellId, uint32_t amount, PowerType t
 void Unit::sendSpellEnergizeLog(Unit* target, uint32_t spellId, uint32_t amount, PowerType type)
 {
     SendMessageToSet(SmsgSpellEnergizeLog(target->GetNewGUID(), GetNewGUID(), spellId, type, amount).serialise().get(), true);
+}
+
+uint8_t Unit::getHealthPct() const
+{
+    if (getHealth() <= 0 || getMaxHealth() <= 0)
+        return 0;
+
+    if (getHealth() >= getMaxHealth())
+        return 100;
+
+    return static_cast<uint8_t>(getHealth() * 100 / getMaxHealth());
 }
 
 uint8_t Unit::getPowerPct(PowerType powerType) const
@@ -4040,10 +4129,10 @@ void Unit::restoreDisplayId()
         // Get display id from aura
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (forcedTransform->getAuraEffect(i).mAuraEffect != SPELL_AURA_TRANSFORM)
+            if (forcedTransform->getAuraEffect(i).getAuraEffectType() != SPELL_AURA_TRANSFORM)
                 continue;
 
-            const auto displayId = forcedTransform->getAuraEffect(i).mFixedDamage;
+            const auto displayId = forcedTransform->getAuraEffect(i).getEffectFixedDamage();
             if (displayId != 0)
             {
                 setDisplayId(displayId);
@@ -4061,10 +4150,10 @@ void Unit::restoreDisplayId()
         // Get display id from aura
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (shapeshift->getAuraEffect(i).mAuraEffect != SPELL_AURA_MOD_SHAPESHIFT)
+            if (shapeshift->getAuraEffect(i).getAuraEffectType() != SPELL_AURA_MOD_SHAPESHIFT)
                 continue;
 
-            const auto displayId = shapeshift->getAuraEffect(i).mFixedDamage;
+            const auto displayId = shapeshift->getAuraEffect(i).getEffectFixedDamage();
             if (displayId != 0)
             {
                 setDisplayId(displayId);
@@ -4079,10 +4168,10 @@ void Unit::restoreDisplayId()
         // Get display id from aura
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (transform->getAuraEffect(i).mAuraEffect != SPELL_AURA_TRANSFORM)
+            if (transform->getAuraEffect(i).getAuraEffectType() != SPELL_AURA_TRANSFORM)
                 continue;
 
-            const auto displayId = transform->getAuraEffect(i).mFixedDamage;
+            const auto displayId = transform->getAuraEffect(i).getEffectFixedDamage();
             if (displayId != 0)
             {
                 setDisplayId(displayId);
@@ -4105,17 +4194,6 @@ bool Unit::isSitting() const
         standState == STANDSTATE_SIT_CHAIR || standState == STANDSTATE_SIT_LOW_CHAIR ||
         standState == STANDSTATE_SIT_MEDIUM_CHAIR || standState == STANDSTATE_SIT_HIGH_CHAIR ||
         standState == STANDSTATE_SIT;
-}
-
-uint8_t Unit::getHealthPct() const
-{
-    if (getHealth() <= 0 || getMaxHealth() <= 0)
-        return 0;
-
-    if (getHealth() >= getMaxHealth())
-        return 100;
-
-    return static_cast<uint8_t>(getHealth() * 100 / getMaxHealth());
 }
 
 void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool removeAuras/* = true*/)
@@ -4806,8 +4884,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             healAmount = damage;
         }
 
-        healAmount = static_cast<uint32_t>(std::ceil(healAmount * batch->leechMultipleValue));
-        attacker->doSpellHealing(attacker, spellId, healAmount, false, true, batch->isPeriodic, true, false);
+        attacker->doSpellHealing(attacker, spellId, healAmount * batch->leechMultipleValue, false, batch->isPeriodic, true, false);
     }
 
     setStandState(STANDSTATE_STAND);

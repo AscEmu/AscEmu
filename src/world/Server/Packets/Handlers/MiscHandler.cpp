@@ -40,7 +40,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgOpenItem.h"
 #include "Server/Packets/CmsgSetTitle.h"
 #include "Management/Guild/GuildMgr.hpp"
-#include "Server/Packets/SmsgStandstateUpdate.h"
 #include "Server/Packets/CmsgZoneupdate.h"
 #include "Server/Packets/CmsgResurrectResponse.h"
 #include "Server/Packets/CmsgBug.h"
@@ -306,8 +305,6 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
         player->addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
         player->setStandState(STANDSTATE_SIT);
-
-        player->SendPacket(SmsgStandstateUpdate(STANDSTATE_SIT).serialise().get());
 
         SetLogoutTimer(PLAYER_LOGOUT_DELAY);
     }
@@ -1065,7 +1062,6 @@ void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
     _player->setMoveRoot(false);
 
     _player->setStandState(STANDSTATE_STAND);
-    _player->SendPacket(SmsgStandstateUpdate(STANDSTATE_STAND).serialise().get());
 
     _player->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 

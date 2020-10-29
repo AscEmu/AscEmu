@@ -200,6 +200,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     {
         forced_basepoints[i] = 0;
         isEffectDamageStatic[i] = false;
+        effectPctModifier[i] = 1.0f;
 
         m_effectTargets[i].clear();
     }
@@ -2956,7 +2957,10 @@ exit:
 
     // If effect damage was recalculated in script, send static damage in effect handlers
     // so for example spell power bonus won't get calculated twice
-    isEffectDamageStatic[i] = scriptResult == SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
+    isEffectDamageStatic[i] = scriptResult != SpellScriptEffectDamage::DAMAGE_DEFAULT;
+
+    if (scriptResult == SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION)
+        return value;
 
     if (p_caster != nullptr)
     {
@@ -3003,7 +3007,8 @@ exit:
                 break;
         }
 
-        value = float2int32(value * (float)(spell_pct_modifers / 100.0f)) + spell_flat_modifers;
+        effectPctModifier[i] = static_cast<float_t>(spell_pct_modifers / 100.0f);
+        value = float2int32(value * effectPctModifier[i]) + spell_flat_modifers;
     }
     else if (i_caster != nullptr && target != nullptr)
     {

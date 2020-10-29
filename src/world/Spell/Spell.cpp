@@ -2417,6 +2417,19 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
             return SPELL_FAILED_INCORRECT_AREA;
 #endif
 
+        if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
+        {
+            if (p_caster->CombatStatus.IsInCombat())
+            {
+                p_caster->getItemInterface()->buildInventoryChangeError(i_caster, nullptr, INV_ERR_CANT_DO_IN_COMBAT);
+                return SPELL_FAILED_DONT_REPORT;
+            }
+            else if (p_caster->IsMounted())
+            {
+                return SPELL_FAILED_NOT_MOUNTED;
+            }
+        }
+
         // Check health and power for consumables (potions, healthstones, mana items etc)
         if (itemProperties->Class == ITEM_CLASS_CONSUMABLE)
         {

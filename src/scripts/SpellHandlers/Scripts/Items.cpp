@@ -186,7 +186,7 @@ public:
             return SpellScriptExecuteState::EXECUTE_OK;
 
         // Spell is missing the misc value
-        aurEff->miscValue = CREATURE_MURLOC_COSTUME;
+        aurEff->setEffectMiscValue(CREATURE_MURLOC_COSTUME);
         return SpellScriptExecuteState::EXECUTE_OK;
     }
 };
@@ -238,7 +238,7 @@ public:
                 return SpellScriptExecuteState::EXECUTE_PREVENT;
         }
 
-        aurEff->mFixedDamage = displayId;
+        aurEff->setEffectFixedDamage(displayId);
 
         // Let restoreDisplayId check if form can be applied
         aur->getOwner()->restoreDisplayId();

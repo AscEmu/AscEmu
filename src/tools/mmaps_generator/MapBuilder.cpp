@@ -179,7 +179,7 @@ namespace MMAP
     {
         printf("Using %u theads for mmaps", threads);
 
-        for (int i = 0; i < threads; ++i)
+        for (unsigned int i = 0; i < threads; ++i)
         {
             _workerThreads.push_back(std::thread(&MapBuilder::WorkerThread, this));
         }

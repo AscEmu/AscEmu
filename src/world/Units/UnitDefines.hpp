@@ -54,8 +54,12 @@ enum InvisibilityFlag : uint8_t
 };
 
 // In milliseconds
-enum RegenerationIntervals : uint16_t
+enum HealthAndPowerIntervals : uint16_t
 {
+    HEALTH_BATCH_INTERVAL                       = 400,  // guessed
+    REGENERATION_INTERVAL_HEALTH                = 2000,
+    REGENERATION_INTERVAL_HEALTH_POLYMORPHED    = 1000, // while polymorphed health is regenerated faster
+
 #if VERSION_STRING < WotLK
     REGENERATION_INTERVAL_MANA_ENERGY           = 2000,
     REGENERATION_INTERVAL_RAGE_RUNIC_POWER      = 3000,
@@ -73,11 +77,6 @@ enum RegenerationIntervals : uint16_t
     // Creature timers
     //\ todo: this actually is 4000 in retail classic, maybe same for tbc, but needs more research
     CREATURE_REGENERATION_INTERVAL_MANA_ENERGY  = 2000
-};
-
-enum HealthIntervals : uint16_t
-{
-    HEALTH_BATCH_INTERVAL                       = 400 // guessed
 };
 
 enum PowerFieldIndexes : uint8_t

@@ -457,5 +457,11 @@ enum ProcEvents : uint8_t
     PROC_EVENT_DO_ALL                               = 2  // Handles all procs
 };
 
+enum SpellVisualIds : uint32_t
+{
+    SPELL_VISUAL_FOOD                               = 406,
+    SPELL_VISUAL_DRINK                              = 438,
+};
+
 // todo: move this to each dbc structure file
 #define MAX_SPELL_ID 121820

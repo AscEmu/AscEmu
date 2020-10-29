@@ -30,7 +30,7 @@ public:
 
         auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_BUTCHERY_ENERGIZE), aur->getSpellInfo(), aur->getCasterGuid(), 0);
         if (spellProc != nullptr)
-            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->mDamage);
+            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
 
         return SpellScriptCheckDummy::DUMMY_OK;
     }

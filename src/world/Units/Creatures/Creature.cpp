@@ -155,7 +155,6 @@ Creature::Creature(uint64 guid)
     creature_properties = nullptr;
     spawnid = 0;
 
-    m_H_regenTimer = 0;
     m_useAI = true;
     mTaxiNode = 0;
 

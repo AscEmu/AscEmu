@@ -37,14 +37,14 @@ class HotStreakDummy : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (aurEff->effIndex != EFF_INDEX_0 || !apply)
+        if (aurEff->getEffectIndex() != EFF_INDEX_0 || !apply)
             return SpellScriptCheckDummy::DUMMY_OK;
 
         // should proc on Living Bomb (direct damage only), Fireball, Fire Blast, Scorch and Frostfire bolt
         uint32_t procFamilyMask[3] = { 0x13, 0x11000, 0x8 };
         auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_HOT_STREAK_BUFF), aur->getSpellInfo(), aur->getCasterGuid(), 0, procFamilyMask);
         if (spellProc != nullptr)
-            spellProc->setProcChance(aurEff->mDamage);
+            spellProc->setProcChance(aurEff->getEffectDamage());
 
         return SpellScriptCheckDummy::DUMMY_OK;
     }
@@ -89,7 +89,7 @@ public:
         auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_MASTER_OF_ELEMENTS), aur->getSpellInfo(), aur->getCasterGuid(), 0);
         if (spellProc != nullptr)
         {
-            spellProc->setOverrideEffectDamage(EFF_INDEX_1, aurEff->mDamage);
+            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
             spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
         }
 
@@ -137,7 +137,6 @@ public:
 
     SpellScriptExecuteState onDoProcEffect(SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* castingSpell, DamageInfo /*damageInfo*/) override
     {
-        int32_t manaReturn = 0;
         if (originalAura != nullptr && !originalAura->isDeleted() && originalAura->getSpellInfo()->isChanneled())
         {
             // "For channeled spells that deal damage in ticks such as Arcane Missiles and Blizzard, the mana returned is based on the tick that critically hit, and not the entire spell."
@@ -149,13 +148,13 @@ public:
             for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
                 const auto aurEff = originalAura->getAuraEffect(i);
-                if (aurEff.mAuraEffect == SPELL_AURA_NONE)
+                if (aurEff.getAuraEffectType() == SPELL_AURA_NONE)
                     continue;
 
-                if (aurEff.mAuraEffect == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
-                    aurEff.mAuraEffect == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
+                if (aurEff.getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
+                    aurEff.getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
                 {
-                    ticks = originalAura->getPeriodicTickCountForEffect(aurEff.effIndex);
+                    ticks = originalAura->getPeriodicTickCountForEffect(aurEff.getEffectIndex());
                     break;
                 }
             }
@@ -172,13 +171,19 @@ public:
         if (manaReturn <= 0)
             return SpellScriptExecuteState::EXECUTE_PREVENT;
 
-        manaReturn = static_cast<int32_t>(std::round(manaReturn * spellProc->getOverrideEffectDamage(EFF_INDEX_1) / 100.0f));
-        spellProc->setOverrideEffectDamage(EFF_INDEX_0, manaReturn);
+        manaReturn = static_cast<int32_t>(std::round(manaReturn * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100.0f));
         return SpellScriptExecuteState::EXECUTE_OK;
+    }
+
+    void onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
+    {
+        spell->forced_basepoints[EFF_INDEX_0] = manaReturn;
+        manaReturn = 0;
     }
 
 private:
     Aura* originalAura = nullptr;
+    int32_t manaReturn = 0;
 };
 #endif
 
@@ -187,7 +192,7 @@ class Polymorph : public SpellScript
 public:
     SpellScriptExecuteState beforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (aurEff->mAuraEffect != SPELL_AURA_TRANSFORM)
+        if (aurEff->getAuraEffectType() != SPELL_AURA_TRANSFORM)
             return SpellScriptExecuteState::EXECUTE_OK;
 
         if (apply)
@@ -199,16 +204,14 @@ public:
 
             // Add this unitstate only for player polymorph spells
             // Mostly polymorphs casted by creatures won't regenerate health
-            // Also, reset health regenerate timer
             aur->getOwner()->addUnitStateFlag(UNIT_STATE_POLYMORPHED);
-            aur->getOwner()->setHRegenTimer(1000);
 
             // Glyph of the Penguin
             const auto caster = aur->GetUnitCaster();
             if (caster != nullptr && caster->HasAura(SPELL_GLYPH_OF_THE_PENGUIN) && aur->getSpellInfo()->getSpellIconID() == ICON_POLYMORPH_SHEEP)
             {
                 // Override misc value (Sheep) with Penguin npc
-                aurEff->miscValue = CREATURE_CHILLY;
+                aurEff->setEffectMiscValue(CREATURE_CHILLY);
             }
         }
         else

@@ -1693,7 +1693,7 @@ bool SymbolOfLife(uint8_t /*effectIndex*/, Spell* pSpell) // Alliance ress. ques
     if (!targetOk)
         return true;
 
-    QuestLogEntry* quest_entry;
+    QuestLogEntry* quest_entry = nullptr;
 
     for (uint8_t j = 0; j < 3; j++)
     {

@@ -277,7 +277,6 @@ Player::Player(uint32 guid)
     sObjectMgr.AddPlayerCache(guid, m_cache);
     int i;
 
-    m_H_regenTimer = 0;
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_PLAYER;
     m_objectTypeId = TYPEID_PLAYER;
@@ -1164,11 +1163,8 @@ void Player::_EventAttack(bool offhand)
 {
     if (isCastingSpell())
     {
-        if (getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr) // this is a channeled spell - ignore the attack event
-            return;
-
-        interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
-        setAttackTimer(offhand == true ? OFFHAND : MELEE, 500);
+        // try again in 100ms
+        setAttackTimer(offhand == true ? OFFHAND : MELEE, 100);
         return;
     }
 
@@ -1183,14 +1179,14 @@ void Player::_EventAttack(bool offhand)
     if (!pVictim)
     {
         LOG_DETAIL("Player::Update:  No valid current selection to attack, stopping attack");
-        setHRegenTimer(5000); //prevent clicking off creature for a quick heal
+        interruptHealthRegeneration(5000); //prevent clicking off creature for a quick heal
         EventAttackStop();
         return;
     }
 
     if (!isAttackable(this, pVictim))
     {
-        setHRegenTimer(5000);
+        interruptHealthRegeneration(5000);
         EventAttackStop();
         return;
     }
@@ -1272,7 +1268,7 @@ void Player::_EventCharmAttack()
     {
         LOG_ERROR("WORLD: " I64FMT " doesn't exist.", m_curSelection);
         LOG_DETAIL("Player::Update:  No valid current selection to attack, stopping attack");
-        this->setHRegenTimer(5000); //prevent clicking off creature for a quick heal
+        this->interruptHealthRegeneration(5000); //prevent clicking off creature for a quick heal
         removeUnitStateFlag(UNIT_STATE_ATTACKING);
         EventAttackStop();
     }
@@ -5644,7 +5640,7 @@ void Player::CalcResistance(uint8_t type)
             for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
                 auto aurEff = m_auras[x]->getAuraEffect(i);
-                if (aurEff.mAuraEffect == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
+                if (aurEff.getAuraEffectType() == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
                     m_auras[x]->SpellAuraModAttackPowerOfArmor(&aurEff, false);
             }
         }
@@ -5671,7 +5667,7 @@ void Player::CalcResistance(uint8_t type)
             for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
                 auto aurEff = m_auras[x]->getAuraEffect(i);
-                if (aurEff.mAuraEffect == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
+                if (aurEff.getAuraEffectType() == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
                     m_auras[x]->SpellAuraModAttackPowerOfArmor(&aurEff, true);
             }
         }
@@ -6079,6 +6075,23 @@ void Player::RegenerateHealth(bool inCombat)
 #else
     float amt = static_cast<float>(basespirit * 200 + extraspirit * 200);
 #endif
+
+    // Food buffs
+    for (const auto& aur : m_auras)
+    {
+        if (aur == nullptr)
+            continue;
+
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            const auto aurEff = aur->getAuraEffect(i);
+            if (aurEff.getAuraEffectType() != SPELL_AURA_MOD_REGEN)
+                continue;
+
+            // The value is stored as per 5 seconds
+            amt += aurEff.getEffectDamage() * (static_cast<float_t>(m_healthRegenerateTimer / 1000) / 5.0f);
+        }
+    }
 
     if (PctRegenModifier)
         amt += (amt * PctRegenModifier) / 100;
@@ -7611,7 +7624,7 @@ void Player::CompleteLoading()
         {
             if (sp->getEffect(x) == SPELL_EFFECT_APPLY_AURA)
             {
-                aura->addAuraEffect(static_cast<AuraEffect>(sp->getEffectApplyAuraName(x)), sp->getEffectBasePoints(x) + 1, sp->getEffectMiscValue(x), x);
+                aura->addAuraEffect(static_cast<AuraEffect>(sp->getEffectApplyAuraName(x)), sp->getEffectBasePoints(x) + 1, sp->getEffectMiscValue(x), 1.0f, false, x);
             }
         }
 

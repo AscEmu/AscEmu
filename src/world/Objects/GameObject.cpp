@@ -31,7 +31,6 @@
 #include "Spell/Definitions/SpellEffectTarget.h"
 #include "Spell/SpellMgr.h"
 #include "Data/WoWGameObject.h"
-#include "Server/Packets/SmsgStandstateUpdate.h"
 #include "Management/Battleground/Battleground.h"
 #include "Server/Packets/SmsgGameobjectCustomAnim.h"
 #include "Server/Packets/SmsgGameobjectPagetext.h"
@@ -1037,7 +1036,6 @@ void GameObject_Chair::onUse(Player* player)
     // todo: parameter_1 defines the height!
     player->SafeTeleport(player->GetMapId(), player->GetInstanceID(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
     player->setStandState(STANDSTATE_SIT_MEDIUM_CHAIR);
-    player->SendPacket(AscEmu::Packets::SmsgStandstateUpdate(STANDSTATE_SIT_MEDIUM_CHAIR).serialise().get());
 
     player->UpdateSpeed();
 }

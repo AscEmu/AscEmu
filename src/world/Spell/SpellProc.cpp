@@ -116,6 +116,9 @@ void SpellProc::castSpell(Unit* victim, SpellInfo const* castingSpell)
     if (mOrigSpell != nullptr)
         spell->pSpellId = mOrigSpell->getId();
 
+    // Final script hook before casting the spell
+    sScriptMgr.callScriptedSpellProcCastSpell(this, caster, victim, spell);
+
     spell->prepare(&targets);
 }
 

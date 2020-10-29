@@ -176,7 +176,7 @@ SpellScriptCheckDummy ScriptMgr::callScriptedAuraOnDummyEffect(Aura* aur, AuraEf
     return spellScript->onAuraDummyEffect(aur, aurEff, apply);
 }
 
-SpellScriptExecuteState ScriptMgr::callScriptedAuraOnPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, int32_t* damage) const
+SpellScriptExecuteState ScriptMgr::callScriptedAuraOnPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage) const
 {
     const auto spellScript = getSpellScript(aur->getSpellId());
     if (spellScript == nullptr)
@@ -258,16 +258,13 @@ bool ScriptMgr::callScriptedSpellCanProcOnTriggered(SpellProc* spellProc, Unit* 
     return spellScript->canProcOnTriggered(spellProc, victim, castingSpell, triggeredFromAura);
 }
 
-void ScriptMgr::callScriptedSpellProcCastSpell(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell)
+void ScriptMgr::callScriptedSpellProcCastSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spellToProc)
 {
     const auto spellScript = getSpellScript(spellProc->getSpell()->getId());
     if (spellScript == nullptr)
-    {
-        spellProc->castSpell(victim, castingSpell);
         return;
-    }
 
-    spellScript->onCastProcSpell(spellProc, victim, castingSpell);
+    spellScript->onCastProcSpell(spellProc, caster, victim, spellToProc);
 }
 
 SpellScript* ScriptMgr::getSpellScript(uint32_t spellId) const

@@ -59,6 +59,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Spell/Spell.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/SpellDefines.hpp"
 #include "Spell/SpellHelpers.h"
 #include "Spell/SpellMgr.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -1798,6 +1799,43 @@ void Player::regeneratePlayerPowers(uint16_t diff)
         }
     }
 #endif
+
+    // Food/Drink visual effect
+    // Confirmed from sniffs that the timer keeps going on even when there is no food/drink aura
+    if (diff >= m_foodDrinkSpellVisualTimer)
+    {
+        // Find food/drink aura
+        auto foundFood = false, foundDrink = false;
+        for (const auto& aur : m_auras)
+        {
+            if (aur == nullptr)
+                continue;
+
+            if (aur->hasAuraEffect(SPELL_AURA_MOD_REGEN) && aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
+            {
+                // Food takes priority over drink
+                foundFood = true;
+                break;
+            }
+
+            if (aur->hasAuraEffect(SPELL_AURA_MOD_POWER_REGEN) && aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
+            {
+                // Don't break here, try find a food aura
+                foundDrink = true;
+            }
+        }
+
+        if (foundFood)
+            playSpellVisual(SPELL_VISUAL_FOOD, 0);
+        else if (foundDrink)
+            playSpellVisual(SPELL_VISUAL_DRINK, 0);
+
+        m_foodDrinkSpellVisualTimer = 5000;
+    }
+    else
+    {
+        m_foodDrinkSpellVisualTimer -= diff;
+    }
 }
 
 #if VERSION_STRING >= Cata

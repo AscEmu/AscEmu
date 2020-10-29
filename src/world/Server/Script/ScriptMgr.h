@@ -194,7 +194,7 @@ class SERVER_DECL ScriptMgr
         void callScriptedAuraOnRefreshOrGainNewStack(Aura* aur, uint32_t newStackCount, uint32_t oldStackCount);
         SpellScriptExecuteState callScriptedAuraBeforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) const;
         SpellScriptCheckDummy callScriptedAuraOnDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) const;
-        SpellScriptExecuteState callScriptedAuraOnPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, int32_t* damage) const;
+        SpellScriptExecuteState callScriptedAuraOnPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage) const;
 
         // Spell proc script hooks
         void callScriptedSpellProcCreate(SpellProc* spellProc, Object* obj);
@@ -204,7 +204,7 @@ class SERVER_DECL ScriptMgr
         SpellScriptExecuteState callScriptedSpellProcDoEffect(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) const;
         uint32_t callScriptedSpellCalcProcChance(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell) const;
         bool callScriptedSpellCanProcOnTriggered(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, Aura* triggeredFromAura) const;
-        void callScriptedSpellProcCastSpell(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell);
+        void callScriptedSpellProcCastSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spellToProc);
 
         SpellScript* getSpellScript(uint32_t spellId) const;
         void register_spell_script(uint32_t spellId, SpellScript* ss);

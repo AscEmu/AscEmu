@@ -214,6 +214,7 @@ class SERVER_DECL Spell : public EventableObject
         std::map<uint64_t, std::pair<uint32_t, Aura*>> m_pendingAuras;
 
         bool isEffectDamageStatic[MAX_SPELL_EFFECTS];
+        float_t effectPctModifier[MAX_SPELL_EFFECTS];
 
         SpellState m_spellState = SPELL_STATE_NULL;
         SpellCastResult cancastresult = SPELL_CAST_SUCCESS;

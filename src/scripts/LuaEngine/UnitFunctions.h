@@ -3498,7 +3498,7 @@ public:
         bool no_remove_auras = CHECK_BOOL(L, 7);
         if (pVictim && spellid && damage)
         {
-            ptr->doSpellDamage(pVictim, spellid, damage, effIndex, isTriggered, static_dmg);
+            ptr->doSpellDamage(pVictim, spellid, static_cast<float_t>(damage), effIndex, isTriggered);
         }
         return 0;
     }

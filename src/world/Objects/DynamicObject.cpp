@@ -246,7 +246,7 @@ void DynamicObject::UpdateTargets()
                     if (m_spellProto->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                     {
                         pAura->addAuraEffect(static_cast<AuraEffect>(m_spellProto->getEffectApplyAuraName(i)),
-                                      m_spellProto->getEffectBasePoints(i) + 1, m_spellProto->getEffectMiscValue(i), i);
+                                      m_spellProto->getEffectBasePoints(i) + 1, m_spellProto->getEffectMiscValue(i), 1.0f, false, i);
                     }
                 }
                 target->addAura(pAura);

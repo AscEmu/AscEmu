@@ -18,18 +18,36 @@ namespace AscEmu::Packets
         uint8_t containerIndex;
         uint8_t inventorySlot;
         uint8_t castCount;
-        uint32_t spellId;
         uint64_t itemGuid;
+#if VERSION_STRING == TBC
+        uint8_t spellIndex;
+#else
+        uint32_t spellId;
         uint32_t glyphIndex;
         uint8_t castFlags;
+#endif
 
-        CmsgUseItem() : CmsgUseItem(0, 0, 0, 0, 0, 0, 0)
+        CmsgUseItem() : CmsgUseItem
+#if VERSION_STRING == TBC
+        (0, 0, 0, 0, 0)
+#else
+        (0, 0, 0, 0, 0, 0, 0)
+#endif
         {
         }
 
-        CmsgUseItem(uint8_t containerIndex, uint8_t inventorySlot, uint8_t castCount, uint32_t spellId,
-            uint64_t itemGuid, uint32_t glyphIndex, uint8_t castFlags) :
+        CmsgUseItem(uint8_t containerIndex, uint8_t inventorySlot,
+#if VERSION_STRING == TBC
+            uint8_t spellIndex, uint8_t castCount, uint64_t itemGuid) :
             ManagedPacket(CMSG_USE_ITEM, 12),
+            containerIndex(containerIndex),
+            inventorySlot(inventorySlot),
+            spellIndex(spellIndex),
+            castCount(castCount),
+            itemGuid(itemGuid)
+#else
+            uint8_t castCount, uint32_t spellId, uint64_t itemGuid, uint32_t glyphIndex, uint8_t castFlags) :
+            ManagedPacket(CMSG_USE_ITEM, 20),
             containerIndex(containerIndex),
             inventorySlot(inventorySlot),
             castCount(castCount),
@@ -37,6 +55,7 @@ namespace AscEmu::Packets
             itemGuid(itemGuid),
             glyphIndex(glyphIndex),
             castFlags(castFlags)
+#endif
         {
         }
 
@@ -49,13 +68,11 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
 #if VERSION_STRING == TBC
-            uint8_t temp;
-            packet >> containerIndex >> inventorySlot >> temp >> castCount >> itemGuid;
-            return true;
+            packet >> containerIndex >> inventorySlot >> spellIndex >> castCount >> itemGuid;
 #else
             packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuid >> glyphIndex >> castFlags;
-            return true;
 #endif
+            return true;
         }
     };
 }
