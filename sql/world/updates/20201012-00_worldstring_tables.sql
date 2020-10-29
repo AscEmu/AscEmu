@@ -1,6 +1,3 @@
--- sure to delete the line
-DELETE FROM `worldstring_tables` WHERE  `entry`=501;
-
 -- update
 UPDATE `worldstring_tables` SET `text`='This character is not allowed to play.' WHERE  `entry`=501;
 
