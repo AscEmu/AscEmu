@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellMgr.h"
 
 #include "Objects/ObjectMgr.h"
+#include "Storage/MySQLDataStore.hpp"
 
 using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
 using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
@@ -24,7 +25,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraBindSight,                                              //   1 SPELL_AURA_BIND_SIGHT
     &Aura::SpellAuraModPossess,                                             //   2 SPELL_AURA_MOD_POSSESS
     &Aura::spellAuraEffectPeriodicDamage,                                   //   3 SPELL_AURA_PERIODIC_DAMAGE
-    &Aura::SpellAuraDummy,                                                  //   4 SPELL_AURA_DUMMY
+    &Aura::spellAuraEffectDummy,                                            //   4 SPELL_AURA_DUMMY
     &Aura::SpellAuraModConfuse,                                             //   5 SPELL_AURA_MOD_CONFUSE
     &Aura::SpellAuraModCharm,                                               //   6 SPELL_AURA_MOD_CHARM
     &Aura::SpellAuraModFear,                                                //   7 SPELL_AURA_MOD_FEAR
@@ -56,7 +57,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraModDecreaseSpeed,                                       //  33 SPELL_AURA_MOD_DECREASE_SPEED
     &Aura::SpellAuraModIncreaseHealth,                                      //  34 SPELL_AURA_MOD_INCREASE_HEALTH
     &Aura::SpellAuraModIncreaseEnergy,                                      //  35 SPELL_AURA_MOD_INCREASE_ENERGY
-    &Aura::SpellAuraModShapeshift,                                          //  36 SPELL_AURA_MOD_SHAPESHIFT
+    &Aura::spellAuraEffectModShapeshift,                                    //  36 SPELL_AURA_MOD_SHAPESHIFT
     &Aura::SpellAuraModEffectImmunity,                                      //  37 SPELL_AURA_MOD_EFFECT_IMMUNITY
     &Aura::SpellAuraModStateImmunity,                                       //  38 SPELL_AURA_MOD_STATE_IMMUNITY
     &Aura::SpellAuraModSchoolImmunity,                                      //  39 SPELL_AURA_MOD_SCHOOL_IMMUNITY
@@ -76,7 +77,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::spellAuraEffectPeriodicLeech,                                    //  53 SPELL_AURA_PERIODIC_LEECH
     &Aura::SpellAuraModHitChance,                                           //  54 SPELL_AURA_MOD_HIT_CHANCE
     &Aura::SpellAuraModSpellHitChance,                                      //  55 SPELL_AURA_MOD_SPELL_HIT_CHANCE
-    &Aura::SpellAuraTransform,                                              //  56 SPELL_AURA_TRANSFORM
+    &Aura::spellAuraEffectTransform,                                        //  56 SPELL_AURA_TRANSFORM
     &Aura::SpellAuraModSpellCritChance,                                     //  57 SPELL_AURA_MOD_SPELL_CRIT_CHANCE
     &Aura::SpellAuraIncreaseSwimSpeed,                                      //  58 SPELL_AURA_INCREASE_SWIM_SPEED
     &Aura::SpellAuraModCratureDmgDone,                                      //  59 SPELL_AURA_MOD_CRATURE_DMG_DONE
@@ -891,6 +892,20 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
     }
 }
 
+void Aura::spellAuraEffectDummy(AuraEffectModifier* aurEff, bool apply)
+{
+    // Check that the dummy effect is handled properly in spell script
+    // In case it's not, generate warning to debug log
+    const auto scriptResult = sScriptMgr.callScriptedAuraOnDummyEffect(this, aurEff, apply);
+    if (scriptResult == SpellScriptCheckDummy::DUMMY_OK)
+        return;
+
+    if (sScriptMgr.CallScriptedDummyAura(getSpellId(), aurEff->effIndex, this, apply))
+        return;
+
+    LogDebugFlag(LF_AURA_EFF, "Aura::spellAuraEffectDummy : Spell %u (%s) has a dummy aura effect, but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str());
+}
+
 void Aura::spellAuraEffectPeriodicHeal(AuraEffectModifier* aurEff, bool apply)
 {
     if (apply)
@@ -1045,6 +1060,354 @@ void Aura::spellAuraEffectPeriodicEnergize(AuraEffectModifier* aurEff, bool appl
     }
 }
 
+void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
+{
+    // Dismount
+    if (p_target != nullptr)
+    {
+        switch (aurEff->miscValue)
+        {
+            case FORM_BATTLESTANCE:
+            case FORM_DEFENSIVESTANCE:
+            case FORM_BERSERKERSTANCE:
+                break;
+            default:
+                p_target->Dismount();
+                break;
+        }
+    }
+
+    const auto shapeshiftForm = sSpellShapeshiftFormStore.LookupEntry(aurEff->miscValue);
+    if (shapeshiftForm == nullptr)
+        return;
+
+    const auto oldForm = getOwner()->getShapeShiftForm();
+    const uint8_t newForm = apply ? static_cast<uint8_t>(aurEff->miscValue) : FORM_NORMAL;
+
+    // Remove previous shapeshift aura
+    getOwner()->removeAllAurasByAuraEffect(SPELL_AURA_MOD_SHAPESHIFT, getSpellId());
+
+    // Some forms have two additional hidden passive aura
+    uint32_t passiveSpellId = 0, secondaryPassiveSpell = 0;
+    auto modelId = shapeshiftForm->modelId;
+    auto freeMovements = false, removePolymorph = false;
+
+    switch (shapeshiftForm->id)
+    {
+        case FORM_CAT:
+        {
+            freeMovements = true;
+            removePolymorph = true;
+            passiveSpellId = 3025;
+
+            // todo: there should be other model ids as well
+            if (getOwner()->getRace() == RACE_TAUREN)
+                modelId = 8571;
+
+            if (apply)
+            {
+                getOwner()->setPowerType(POWER_TYPE_ENERGY);
+                getOwner()->setMaxPower(POWER_TYPE_ENERGY, 100);
+                getOwner()->setPower(POWER_TYPE_ENERGY, 0);
+            }
+            else
+            {
+                getOwner()->setPowerType(POWER_TYPE_MANA);
+                // Remove Prowl
+                getOwner()->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
+            }
+        } break;
+        case FORM_TREE:
+        {
+            freeMovements = true;
+            removePolymorph = true;
+            passiveSpellId = 5420;
+            secondaryPassiveSpell = 34123;
+        } break;
+        case FORM_TRAVEL:
+        {
+            freeMovements = true;
+            removePolymorph = true;
+            passiveSpellId = 5419;
+        } break;
+        case FORM_AQUA:
+        {
+            freeMovements = true;
+            removePolymorph = true;
+            passiveSpellId = 5421;
+        } break;
+        case FORM_BEAR:
+        {
+            freeMovements = true;
+            removePolymorph = true;
+            passiveSpellId = 1178;
+            secondaryPassiveSpell = 21178;
+
+            // todo: there should be other model ids as well
+            if (getOwner()->getRace() == RACE_TAUREN)
+                modelId = 2289;
+
+            if (apply)
+            {
+                getOwner()->setPowerType(POWER_TYPE_RAGE);
+                getOwner()->setMaxPower(POWER_TYPE_RAGE, 1000);
+                getOwner()->setPower(POWER_TYPE_RAGE, 0);
+            }
+            else
+            {
+                getOwner()->setPowerType(POWER_TYPE_MANA);
+            }
+        } break;
+        case FORM_GHOUL:
+        case FORM_SKELETON:
+        case FORM_ZOMBIE:
+        {
+            if (getPlayerOwner() != nullptr)
+                getPlayerOwner()->SendAvailSpells(shapeshiftForm, apply);
+        } break;
+        case FORM_DIREBEAR:
+        {
+            freeMovements = true;
+            removePolymorph = true;
+            passiveSpellId = 9635;
+            // Same spell as in Bear Form, increases threat generate
+            secondaryPassiveSpell = 21178;
+
+            // todo: there should be other model ids as well
+            if (getOwner()->getRace() == RACE_TAUREN)
+                modelId = 2289;
+
+            if (apply)
+            {
+                getOwner()->setPowerType(POWER_TYPE_RAGE);
+                getOwner()->setMaxPower(POWER_TYPE_RAGE, 1000);
+                getOwner()->setPower(POWER_TYPE_RAGE, 0);
+            }
+            else
+            {
+                getOwner()->setPowerType(POWER_TYPE_MANA);
+            }
+        } break;
+        case FORM_BATTLESTANCE:
+        case FORM_DEFENSIVESTANCE:
+        case FORM_BERSERKERSTANCE:
+        {
+            if (shapeshiftForm->id == FORM_BATTLESTANCE)
+                passiveSpellId = 21156;
+            else if (shapeshiftForm->id == FORM_DEFENSIVESTANCE)
+                passiveSpellId = 7376;
+            else if (shapeshiftForm->id == FORM_BERSERKERSTANCE)
+                passiveSpellId = 7381;
+
+            // Check retained rage
+            if (apply && getPlayerOwner() != nullptr && getPlayerOwner()->isClassWarrior())
+            {
+                if (getPlayerOwner()->getPower(POWER_TYPE_RAGE) > getPlayerOwner()->m_retainedrage)
+                    getPlayerOwner()->setPower(POWER_TYPE_RAGE, getPlayerOwner()->m_retainedrage);
+            }
+        } break;
+#if VERSION_STRING >= WotLK
+        case FORM_METAMORPHOSIS:
+        {
+            // This form has a lot of passive auras
+            if (apply)
+            {
+                // Stun and slow reduction
+                getOwner()->castSpell(getOwner(), 54817, true);
+                // Demonic language
+                getOwner()->castSpell(getOwner(), 54879, true);
+                // Demonic spells
+                getOwner()->castSpell(getOwner(), 59673, true);
+                // Enslave immunity
+                getOwner()->castSpell(getOwner(), 61610, true);
+            }
+            else
+            {
+                getOwner()->RemoveAura(54817);
+                getOwner()->RemoveAura(54879);
+                getOwner()->RemoveAura(61610);
+            }
+        } break;
+#endif
+        // Druid's epic flying form
+        case FORM_SWIFT:
+        {
+            freeMovements = true;
+            removePolymorph = true;
+            passiveSpellId = 40121;
+            secondaryPassiveSpell = 40122;
+
+            // todo: there should be other model ids as well
+            if (getOwner()->getRace() == RACE_TAUREN)
+                modelId = 21244;
+        } break;
+        case FORM_SHADOW:
+        {
+#if VERSION_STRING >= WotLK
+            passiveSpellId = 49868;
+#endif
+            // todo: is this needed?
+            if (apply && getPlayerOwner() != nullptr)
+                getPlayerOwner()->sendSpellCooldownEventPacket(getSpellId());
+        } break;
+        case FORM_FLIGHT:
+        {
+            freeMovements = true;
+            removePolymorph = true;
+            passiveSpellId = 33948;
+            secondaryPassiveSpell = 34764;
+
+            // todo: there should be other model ids as well
+            if (getOwner()->getRace() == RACE_TAUREN)
+                modelId = 20872;
+        } break;
+        case FORM_MOONKIN:
+        {
+            freeMovements = true;
+            removePolymorph = true;
+            passiveSpellId = 24905;
+
+            // todo: there should be other model ids as well
+            if (getOwner()->getRace() == RACE_TAUREN)
+                modelId = 15375;
+        } break;
+        case FORM_SPIRITOFREDEMPTION:
+        {
+            passiveSpellId = 27795;
+        } break;
+    }
+
+    if (freeMovements)
+    {
+        getOwner()->removeAllAurasByAuraEffect(SPELL_AURA_MOD_DECREASE_SPEED, true);
+        getOwner()->removeAllAurasByAuraEffect(SPELL_AURA_MOD_ROOT);
+    }
+
+    if (apply)
+    {
+        if (removePolymorph && getOwner()->hasUnitStateFlag(UNIT_STATE_POLYMORPHED))
+            getOwner()->RemoveAura(getOwner()->getTransformAura());
+
+        if (modelId != 0)
+        {
+            // By default shapeshifting overwrites transforms
+            auto overWriteDisplay = true;
+
+            const auto transformSpell = sSpellMgr.getSpellInfo(getOwner()->getTransformAura());
+            if (transformSpell != nullptr)
+            {
+                // Check if the transform spell has higher priority
+                // Also, check for skeleton transforms (i.e. Noggenfogger Elixir) which overwrite shapeshifting in Classic
+                const auto takePriority = (transformSpell->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY && transformSpell->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO) || transformSpell->getAttributesExC() & ATTRIBUTESEXC_HIGH_PRIORITY;
+                if (takePriority || transformSpell->isNegativeAura()
+#if VERSION_STRING == Classic
+                    || transformSpell->getAttributes() == 0x28000000
+#endif
+                    )
+                    overWriteDisplay = false;
+            }
+
+            if (overWriteDisplay)
+            {
+                getOwner()->setDisplayId(modelId);
+                getOwner()->EventModelChange();
+            }
+
+            // Save model id for later use
+            aurEff->mFixedDamage = modelId;
+        }
+
+        getOwner()->setShapeShiftForm(newForm);
+
+        if (passiveSpellId != 0)
+            getOwner()->castSpell(getOwner(), passiveSpellId, true);
+        if (secondaryPassiveSpell != 0)
+            getOwner()->castSpell(getOwner(), secondaryPassiveSpell, true);
+    }
+    else
+    {
+        getOwner()->setShapeShiftForm(newForm);
+        getOwner()->restoreDisplayId();
+
+        if (passiveSpellId != 0)
+            getOwner()->RemoveAura(passiveSpellId);
+        if (secondaryPassiveSpell != 0)
+            getOwner()->RemoveAura(secondaryPassiveSpell);
+    }
+
+    // Remove auras which unit should not have anymore
+    for (auto& aur : getOwner()->m_auras)
+    {
+        if (aur == nullptr || aur->isNegative())
+            continue;
+
+        const auto requiredForm = aur->getSpellInfo()->getRequiredShapeShift();
+        if (requiredForm != 0)
+        {
+            if (oldForm != FORM_NORMAL && oldForm != FORM_SHADOW && oldForm != FORM_STEALTH)
+            {
+                const uint32_t oldFormMask = 1 << (oldForm - 1);
+                const uint32_t newFormMask = 1 << (newForm - 1);
+                // Check if the aura is usable in new form
+                if (oldFormMask & requiredForm && !(newFormMask & requiredForm))
+                {
+                    aur->removeAura();
+                    continue;
+                }
+            }
+        }
+    }
+
+    if (getPlayerOwner() != nullptr)
+    {
+        // Apply talents and spells that require this form
+        for (const auto& spell : getPlayerOwner()->mSpells)
+        {
+            const auto spellInfo = sSpellMgr.getSpellInfo(spell);
+            if (spellInfo == nullptr)
+                continue;
+
+            if (spellInfo->isPassive() && spellInfo->getRequiredShapeShift() > 0)
+            {
+                const uint32_t newFormMask = 1 << (newForm - 1);
+                if (newFormMask & spellInfo->getRequiredShapeShift())
+                    getPlayerOwner()->castSpell(getPlayerOwner(), spellInfo, true);
+            }
+        }
+
+        // Feral attack power
+        if (getPlayerOwner()->isClassDruid())
+        {
+            // Change from normal form to feral form
+            if (!(oldForm == FORM_MOONKIN || oldForm == FORM_CAT || oldForm == FORM_BEAR || oldForm == FORM_DIREBEAR) &&
+                (newForm == FORM_MOONKIN || newForm == FORM_CAT || newForm == FORM_BEAR || newForm == FORM_DIREBEAR))
+                getPlayerOwner()->ApplyFeralAttackPower(true);
+            // Change from feral form to normal form
+            else if ((oldForm == FORM_MOONKIN || oldForm == FORM_CAT || oldForm == FORM_BEAR || oldForm == FORM_DIREBEAR) &&
+                !(newForm == FORM_MOONKIN || newForm == FORM_CAT || newForm == FORM_BEAR || newForm == FORM_DIREBEAR))
+                getPlayerOwner()->ApplyFeralAttackPower(false);
+        }
+
+        // Apply dummy shapeshift spells
+        for (const auto& spell : getPlayerOwner()->mShapeShiftSpells)
+        {
+            const auto spellInfo = sSpellMgr.getSpellInfo(spell);
+            if (spellInfo == nullptr)
+                continue;
+
+            const uint32_t newFormMask = 1 << (newForm - 1);
+            if (spellInfo->getRequiredShapeShift() > 0 && (newFormMask & spellInfo->getRequiredShapeShift()))
+                getPlayerOwner()->castSpell(getPlayerOwner(), spellInfo, true);
+        }
+
+        // Hackfix - Heart of the Wild talent
+        getPlayerOwner()->EventTalentHearthOfWildChange(apply);
+
+        getPlayerOwner()->UpdateStats();
+        getPlayerOwner()->UpdateAttackSpeed();
+    }
+}
+
 void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
 {
     if (apply)
@@ -1124,6 +1487,64 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
         // Prior to cata periodic timer was resetted on refresh
         m_periodicTimer[aurEff->effIndex] = 0;
 #endif
+    }
+}
+
+void Aura::spellAuraEffectTransform(AuraEffectModifier* aurEff, bool apply)
+{
+    if (apply)
+    {
+        uint32_t displayId = 0;
+        std::vector<uint32_t> displayIds;
+        const auto properties = sMySQLStore.getCreatureProperties(aurEff->miscValue);
+        if (properties == nullptr)
+        {
+            LogDebugFlag(LF_AURA_EFF, "Aura::spellAuraEffectTransform : Unknown creature entry %u in misc value for spell %u", aurEff->miscValue, getSpellId());
+            return;
+        }
+
+        // Take all possible display ids from creature properties
+        if (properties->Male_DisplayID != 0)
+            displayIds.push_back(properties->Male_DisplayID);
+        if (properties->Female_DisplayID != 0)
+            displayIds.push_back(properties->Female_DisplayID);
+        if (properties->Male_DisplayID2 != 0)
+            displayIds.push_back(properties->Male_DisplayID2);
+        if (properties->Female_DisplayID2 != 0)
+            displayIds.push_back(properties->Female_DisplayID2);
+
+        if (displayIds.size() > 0)
+            displayId = displayIds[Util::getRandomUInt(static_cast<uint32_t>(displayIds.size() - 1))];
+
+        if (displayId == 0)
+        {
+            LogDebugFlag(LF_AURA_EFF, "Aura::spellAuraEffectTransform : Creature entry %u has no display id for spell %u", properties->Id, getSpellId());
+            return;
+        }
+
+        const auto transformAura = sSpellMgr.getSpellInfo(getOwner()->getTransformAura());
+        if (transformAura == nullptr || !transformAura->isNegativeAura())
+        {
+            // Check if there is an existing transform with higher priority
+            const auto takePriority = transformAura != nullptr && ((transformAura->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY && transformAura->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO) || transformAura->getAttributesExC() & ATTRIBUTESEXC_HIGH_PRIORITY);
+            if (getSpellInfo()->isNegativeAura() || !(transformAura != nullptr && takePriority))
+            {
+                getOwner()->setDisplayId(displayId);
+                getOwner()->EventModelChange();
+
+                getOwner()->setTransformAura(getSpellId());
+            }
+        }
+
+        // Save model id for later use
+        aurEff->mFixedDamage = displayId;
+    }
+    else
+    {
+        if (getOwner()->getTransformAura() == getSpellId())
+            getOwner()->setTransformAura(0);
+
+        getOwner()->restoreDisplayId();
     }
 }
 

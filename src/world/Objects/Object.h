@@ -45,7 +45,7 @@
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Data/WoWObject.h"
 #include "MovementInfo.h"
-
+#include "Spell/Definitions/School.h"
 
 struct WoWObject;
 
@@ -73,6 +73,9 @@ class Aura;
 class UpdateMask;
 class EventableObject;
 
+#define MAX_INTERACTION_RANGE 5.0f
+
+// MIT Start
 enum CurrentSpellType : uint8_t
 {
     CURRENT_MELEE_SPELL         = 0,
@@ -82,18 +85,34 @@ enum CurrentSpellType : uint8_t
     CURRENT_SPELL_MAX
 };
 
-#define MAX_INTERACTION_RANGE 5.0f
-
-typedef struct
+struct DamageInfo
 {
-    uint32 school_type;
-    int32 full_damage;
-    uint32 resisted_damage;
-} dealdamage;
+    SchoolMask schoolMask = SCHOOL_MASK_NORMAL;
 
+    uint32_t realDamage = 0; // the damage after resist, absorb etc
+    int32_t fullDamage = 0; // the damage before resist, absorb etc
+    uint32_t absorbedDamage = 0;
+    uint32_t resistedDamage = 0;
+    uint32_t blockedDamage = 0;
 
+    WeaponDamageType weaponType = MELEE;
+    bool isHeal = false;
+    bool isCritical = false;
+    bool isPeriodic = false;
 
-// MIT Start
+    uint8_t getSchoolTypeFromMask() const
+    {
+        for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
+        {
+            if (schoolMask & (1 << i))
+                return i;
+        }
+
+        // shouldn't happen
+        return SCHOOL_NORMAL;
+    }
+};
+
 class SERVER_DECL Object : public EventableObject, public IUpdatable
 {
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -212,10 +231,10 @@ public:
     Spell* findCurrentCastedSpellBySpellId(uint32_t spellId);
 
     // Deals magic damage to target with proper logging, used with periodic damage effects and direct damage effects
-    // Returns the damage inflicted to target
-    int32_t doSpellDamage(Unit* victim, uint32_t spellId, int32_t damage, uint8_t effIndex, bool allowProc = true, bool staticDamage = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
+    // Returns damage info structure
+    DamageInfo doSpellDamage(Unit* victim, uint32_t spellId, int32_t damage, uint8_t effIndex, bool isTriggered = false, bool staticDamage = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
     // Heals target with proper logging, used with periodic heal effects and direct healing
-    void doSpellHealing(Unit* victim, uint32_t spellId, int32_t heal, bool allowProc = true, bool staticDamage = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
+    DamageInfo doSpellHealing(Unit* victim, uint32_t spellId, int32_t heal, bool isTriggered = false, bool staticDamage = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
 
     void _UpdateSpells(uint32_t time);
 

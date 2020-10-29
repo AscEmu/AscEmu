@@ -886,6 +886,8 @@ public:
     void addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster, int32_t cooldownTime = 0);
     void addGlobalCooldown(SpellInfo const* spellInfo, const bool sendPacket = false);
     void sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t duration, const bool isGcd);
+    void clearCooldownForSpell(uint32_t spellId);
+    void resetAllCooldowns();
 
 #if VERSION_STRING >= WotLK
     // Glyphs
@@ -1542,7 +1544,7 @@ public:
         bool HasTitle(RankTitles title)
         {
 #if VERSION_STRING > Classic
-            const uint8_t index = title / 32;
+            const auto index = static_cast<uint8_t>(title / 32);
 
             return (getKnownTitles(index) & 1ULL << static_cast<uint64_t>((title % 32))) != 0;
 #else
@@ -1753,10 +1755,6 @@ public:
         void SetPlayerStatus(uint8 pStatus) { m_status = pStatus; }
     uint8 GetPlayerStatus() const;
 
-        void SetShapeShift(uint8 ss);
-
-        uint32 m_furorChance;
-
         // Showing Units WayPoints
         AIInterface* waypointunit;
 
@@ -1899,7 +1897,6 @@ public:
         void RemoveItemsFromWorld();
         void UpdateKnownCurrencies(uint32 itemId, bool apply);
 
-        uint32 m_ShapeShifted;
         uint32 m_MountSpellId;
         uint32 mountvehicleid;
 
@@ -1940,8 +1937,6 @@ public:
         void SetSummonedObject(Object* t_SummonedObject) { m_SummonedObject = t_SummonedObject; };
 
         void ClearCooldownsOnLine(uint32 skill_line, uint32 called_from);
-        void ResetAllCooldowns();
-        void ClearCooldownForSpell(uint32 spell_id);
 
         void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
 

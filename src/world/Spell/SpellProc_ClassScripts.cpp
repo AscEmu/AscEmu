@@ -42,19 +42,19 @@ public:
 
     static SpellProc* Create() { return new DamageShieldSpellProc(); }
 
-    bool CanProc(Unit* /*victim*/, SpellInfo const* /*castingSpell*/)
+    bool canProc(Unit* /*victim*/, SpellInfo const* /*castingSpell*/) override
     {
         // Allow only proc for player unit
-        if (!mTarget->isPlayer())
+        if (!getProcOwner()->isPlayer())
             return false;
         return true;
     }
 
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/)
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/) override
     {
-        Player* plr = static_cast<Player*>(mTarget);
+        Player* plr = static_cast<Player*>(getProcOwner());
 
-        dmgOverwrite[0] = plr->GetBlockDamageReduction() * (mOrigSpell->getEffectBasePoints(0) + 1) / 100;
+        dmgOverwrite[0] = plr->GetBlockDamageReduction() * (getOriginalSpell()->getEffectBasePoints(0) + 1) / 100;
 
         // plr->GetBlockDamageReduction() returns ZERO if player has no shield equipped
         if (dmgOverwrite[0] == 0)
@@ -70,7 +70,7 @@ public:
 
     static SpellProc* Create() { return new JuggernautSpellProc(); }
 
-    bool CanProc(Unit* /*victim*/, SpellInfo const* castingSpell)
+    bool canProc(Unit* /*victim*/, SpellInfo const* castingSpell) override
     {
         if (castingSpell == nullptr)
             return false;
@@ -184,43 +184,16 @@ public:
 
     static SpellProc* Create() { return new FrostBrandAttackSpellProc(); }
 
-    void Init(Object* obj)
+    void init(Object* obj) override
     {
         if (obj == nullptr)
         {
-            mDeleted = true;
+            deleteProc();
             return;
         }
 
-        mProcChance = static_cast< Item* >(obj)->getItemProperties()->Delay * 9 / 600;
+        setProcChance(static_cast< Item* >(obj)->getItemProperties()->Delay * 9 / 600);
     }
-};
-
-class EarthShieldSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new EarthShieldSpellProc(); }
-
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/)
-    {
-        int32 value = mOrigSpell->getEffectBasePoints(0);
-        dmgOverwrite[0] = value;
-
-        return false;
-    }
-
-    void CastSpell(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, int* /*dmgOverwrite*/)
-    {
-        Unit* caster = mTarget->GetMapMgr()->GetUnit(mCaster);
-        if (caster == nullptr)
-            return;
-
-        Spell* spell = sSpellMgr.newSpell(caster, mSpell, true, nullptr);
-        SpellCastTargets targets(mTarget->getGuid());
-        spell->prepare(&targets);
-    }
-
 };
 
 class FlametongueWeaponSpellProc : public SpellProc
@@ -229,11 +202,11 @@ public:
 
     static SpellProc* Create() { return new FlametongueWeaponSpellProc(); }
 
-    void Init(Object* obj)
+    void init(Object* obj) override
     {
         if (obj == nullptr)
         {
-            mDeleted = true;
+            deleteProc();
             //initializing anyway all fields.
             mItemGUID = 0;
             damage = 0;
@@ -272,29 +245,29 @@ public:
         }
     }
 
-    bool CanDelete(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0)//in this case misc is the item guid.
+    bool canDeleteProc(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0) override //in this case misc is the item guid.
     {
-        if (mSpell->getId() == spellId && mCaster == casterGuid && misc == mItemGUID && !mDeleted)
+        if (getSpell()->getId() == spellId && getCasterGuid() == casterGuid && misc == mItemGUID && !isDeleted())
             return true;
 
         return false;
     }
 
-    bool CanProc(Unit* /*victim*/, SpellInfo const* /*castingSpell*/)
+    bool canProc(Unit* /*victim*/, SpellInfo const* /*castingSpell*/) override
     {
-        if (mTarget->isPlayer())
+        if (getProcOwner()->isPlayer())
             return true;
         return false;
     }
 
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* /*CastingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* dmgOverwrite, uint32 weaponDamageType)
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*CastingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* dmgOverwrite, uint32 weaponDamageType) override
     {
         Item* item;
 
         if (weaponDamageType == OFFHAND)
-            item = static_cast< Player* >(mTarget)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+            item = static_cast< Player* >(getProcOwner())->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
         else
-            item = static_cast< Player* >(mTarget)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+            item = static_cast< Player* >(getProcOwner())->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
         if (item != nullptr && item->getGuid() == mItemGUID)
         {
@@ -324,29 +297,29 @@ public:
         mProcPerMinute = 0;
     }
 
-    void Init(Object* obj)
+    void init(Object* obj) override
     {
         if (obj == nullptr)
         {
-            mDeleted = true;
+            deleteProc();
             return;
         }
 
         mItemGUID = static_cast<Item*>(obj)->getGuid();
         if (mProcPerMinute)
-            mProcChance = static_cast<Item*>(obj)->getItemProperties()->Delay * mProcPerMinute / 600;
+            setProcChance(static_cast<Item*>(obj)->getItemProperties()->Delay * mProcPerMinute / 600);
     }
 
-    bool CanDelete(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0)//in this case misc is the item guid.
+    bool canDeleteProc(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0) override//in this case misc is the item guid.
     {
-        if (mSpell->getId() == spellId && mCaster == casterGuid && misc == mItemGUID && !mDeleted)
+        if (getSpell()->getId() == spellId && getCasterGuid() == casterGuid && misc == mItemGUID && !isDeleted())
             return true;
 
         return false;
     }
 
     // Allow proc on ability cast (like eviscerate, envenom, fan of knives, rupture)
-    bool CanProcOnTriggered(Unit* /*victim*/, SpellInfo const* castingSpell)
+    bool canProcOnTriggered(Unit* /*victim*/, SpellInfo const* castingSpell)
     {
         if (castingSpell != nullptr && (castingSpell->getSpellFamilyFlags(0) & 0x120000 || castingSpell->getSpellFamilyFlags(1) & 0x240008))
             return true;
@@ -355,14 +328,14 @@ public:
     }
 
     // Allow proc only if proccing hand is the one where poison was applied
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 weaponDamageType)
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 weaponDamageType) override
     {
         Item* item;
 
         if (weaponDamageType == OFFHAND)
-            item = static_cast<Player*>(mTarget)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+            item = static_cast<Player*>(getProcOwner())->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
         else
-            item = static_cast<Player*>(mTarget)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+            item = static_cast<Player*>(getProcOwner())->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
         if (item != nullptr && item->getGuid() == mItemGUID)
             return false;
@@ -381,11 +354,11 @@ public:
 
     static SpellProc* Create() { return new WoundPoisonSpellProc(); }
 
-    void Init(Object* obj)
+    void init(Object* obj) override
     {
         mProcPerMinute = 21;
 
-        PoisonSpellProc::Init(obj);
+        PoisonSpellProc::init(obj);
     }
 };
 
@@ -395,63 +368,11 @@ public:
 
     static SpellProc* Create() { return new InstantPoisonSpellProc(); }
 
-    void Init(Object* obj)
+    void init(Object* obj) override
     {
         mProcPerMinute = 8;
 
-        PoisonSpellProc::Init(obj);
-    }
-};
-
-class CutToTheChaseSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new CutToTheChaseSpellProc(); }
-
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
-    {
-        uint32 sliceAndDice[] =
-        {
-            //SPELL_HASH_SLICE_AND_DICE
-            5171,
-            6434,
-            6774,
-            30470,
-            43547,
-            60847,
-            0
-        };
-
-        Aura* aura = mTarget->getAuraWithId(sliceAndDice);
-        if (aura)
-        {
-            // Duration of 5 combo maximum
-            int32 dur = 21 * TimeVarsMs::Second;
-
-            spellModFlatIntValue(mTarget->SM_FDur, &dur, aura->getSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageIntValue(mTarget->SM_PDur, &dur, aura->getSpellInfo()->getSpellFamilyFlags());
-
-            // Set new aura's duration, reset event timer and set client visual aura
-            aura->setTimeLeft(dur);
-            mTarget->sendAuraUpdate(aura, false);
-        }
-
-        return true;
-    }
-};
-
-class DeadlyBrewSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new DeadlyBrewSpellProc(); }
-
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
-    {
-        mTarget->castSpell(static_cast<Unit*>(nullptr), 3409, true);    //Spell Id 3409: Crippling Poison
-
-        return true;
+        PoisonSpellProc::init(obj);
     }
 };
 
@@ -461,171 +382,24 @@ public:
 
     static SpellProc* Create() { return new WaylaySpellProc(); }
 
-    void Init(Object* /*obj*/)
+    void init(Object* /*obj*/) override
     {
-        mProcFlags = PROC_ON_CAST_SPELL;
-        mProcClassMask[0] = 0x204;
+        setProcFlags(PROC_ON_DONE_MELEE_SPELL_HIT);
+        setProcClassMask(0, 0x204);
     }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Priest ProcScripts
-class ImprovedSpiritTapSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new ImprovedSpiritTapSpellProc(); }
-
-    void Init(Object* /*obj*/)
-    {
-        mProcFlags = PROC_ON_SPELL_CRIT_HIT;
-    }
-
-    uint32 CalcProcChance(Unit* /*victim*/, SpellInfo const* castingSpell)
-    {
-        if (castingSpell == nullptr)
-            return 0;
-
-        switch (castingSpell->getId())
-        {
-            //SPELL_HASH_MIND_FLAY
-            case 15407:
-            case 16568:
-            case 17165:
-            case 17311:
-            case 17312:
-            case 17313:
-            case 17314:
-            case 18807:
-            case 22919:
-            case 23953:
-            case 25387:
-            case 26044:
-            case 26143:
-            case 28310:
-            case 29407:
-            case 29570:
-            case 32417:
-            case 35507:
-            case 37276:
-            case 37330:
-            case 37621:
-            case 38243:
-            case 40842:
-            case 42396:
-            case 43512:
-            case 46562:
-            case 48155:
-            case 48156:
-            case 52586:
-            case 54339:
-            case 54805:
-            case 57779:
-            case 57941:
-            case 58381:
-            case 59367:
-            case 59974:
-            case 60006:
-            case 60472:
-            case 65488:
-            case 68042:
-            case 68043:
-            case 68044:
-                return 50;
-            //SPELL_HASH_MIND_BLAST
-            case 8092:
-            case 8102:
-            case 8103:
-            case 8104:
-            case 8105:
-            case 8106:
-            case 10945:
-            case 10946:
-            case 10947:
-            case 13860:
-            case 15587:
-            case 17194:
-            case 17287:
-            case 20830:
-            case 25372:
-            case 25375:
-            case 26048:
-            case 31516:
-            case 37531:
-            case 38259:
-            case 41374:
-            case 48126:
-            case 48127:
-            case 52722:
-            case 58850:
-            case 60447:
-            case 60453:
-            case 60500:
-            case 65492:
-            case 68038:
-            case 68039:
-            case 68040:
-            //SPELL_HASH_SHADOW_WORD__DEATH
-            case 32379:
-            case 32409:
-            case 32996:
-            case 41375:
-            case 47697:
-            case 48157:
-            case 48158:
-            case 51818:
-            case 56920:
-                return 100;
-            default:
-                return 0;
-        }
-    }
-};
-
 class SpiritTapSpellProc : public SpellProc
 {
 public:
 
     static SpellProc* Create() { return new SpiritTapSpellProc(); }
 
-    void Init(Object* /*obj*/)
+    void init(Object* /*obj*/) override
     {
-        mProcFlags = PROC_ON_GAIN_EXPIERIENCE;
-    }
-};
-
-class HolyConcentrationSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new HolyConcentrationSpellProc(); }
-
-    void Init(Object* /*obj*/)
-    {
-        mProcFlags = PROC_ON_SPELL_CRIT_HIT;
-        mProcClassMask[0] = 0x1800;
-        mProcClassMask[1] = 0x4;
-        mProcClassMask[2] = 0x1000;
-    }
-};
-
-class DivineAegisSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new DivineAegisSpellProc(); }
-
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 dmg, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/)
-    {
-        if (castingSpell == nullptr)
-            return true;
-
-        if (!castingSpell->hasEffect(SPELL_EFFECT_HEAL))
-            return true;
-
-        dmgOverwrite[0] = dmg * (mOrigSpell->getEffectBasePoints(0) + 1) / 100;
-
-        return false;
+        setProcFlags(PROC_ON_KILL);
     }
 };
 
@@ -635,158 +409,19 @@ public:
 
     static SpellProc* Create() { return new ImprovedDevouringPlagueSpellProc(); }
 
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 dmg, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/)
+    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 dmg, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/) override
     {
         // Get dmg amt for 1 tick
         dmg = castingSpell->getEffectBasePoints(0) + 1;
 
         // Get total ticks
-        int ticks = GetDuration(sSpellDurationStore.LookupEntry(castingSpell->getDurationIndex())) / castingSpell->getEffectAmplitude(0);
+        auto amplitude = castingSpell->getEffectAmplitude(0) == 0 ? 1 : castingSpell->getEffectAmplitude(0);
+        int ticks = GetDuration(sSpellDurationStore.LookupEntry(castingSpell->getDurationIndex())) / amplitude;
 
-        dmgOverwrite[0] = dmg * ticks * (mOrigSpell->getEffectBasePoints(0) + 1) / 100;
-
-        return false;
-    }
-};
-
-class VampiricEmbraceSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new VampiricEmbraceSpellProc(); }
-
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 dmg, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/)
-    {
-        // Only proc for damaging shadow spells
-        if (castingSpell->getSchoolMask() & SCHOOL_MASK_SHADOW || !castingSpell->isDamagingSpell())
-            return true;
-
-        // Only proc for single target spells
-        if (!(castingSpell->hasTargetType(EFF_TARGET_SINGLE_ENEMY) || castingSpell->hasTargetType(EFF_TARGET_SELECTED_ENEMY_CHANNELED)))
-            return true;
-
-        dmgOverwrite[0] = dmg;
-        dmgOverwrite[1] = dmg;
+        dmgOverwrite[0] = dmg * ticks * (getOriginalSpell()->getEffectBasePoints(0) + 1) / 100;
 
         return false;
     }
-};
-
-class VampiricTouchEnergizeSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new VampiricTouchEnergizeSpellProc(); }
-
-    void Init(Object* /*obj*/)
-    {
-        mReplenishmentSpell = sSpellMgr.getSpellInfo(57669);
-    }
-
-    bool DoEffect(Unit* victim, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
-    {
-        // Check for Mind Blast hit from this proc caster
-        if (castingSpell == nullptr || mCaster != victim->getGuid())
-            return true;
-
-        switch (castingSpell->getId())
-        {
-            //SPELL_HASH_MIND_BLAST
-            case 8092:
-            case 8102:
-            case 8103:
-            case 8104:
-            case 8105:
-            case 8106:
-            case 10945:
-            case 10946:
-            case 10947:
-            case 13860:
-            case 15587:
-            case 17194:
-            case 17287:
-            case 20830:
-            case 25372:
-            case 25375:
-            case 26048:
-            case 31516:
-            case 37531:
-            case 38259:
-            case 41374:
-            case 48126:
-            case 48127:
-            case 52722:
-            case 58850:
-            case 60447:
-            case 60453:
-            case 60500:
-            case 65492:
-            case 68038:
-            case 68039:
-            case 68040:
-                break;
-            default:
-                return true;
-        }
-
-        // Cast Replenishment
-        victim->castSpell(victim, mReplenishmentSpell, true);
-
-        return true;
-    }
-
-private:
-    SpellInfo const* mReplenishmentSpell;
-};
-
-class VampiricTouchDispelDamageSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new VampiricTouchDispelDamageSpellProc(); }
-
-    void Init(Object* /*obj*/)
-    {
-        mDispelDmg = 8 * (mOrigSpell->getEffectBasePoints(1) + 1);
-    }
-
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 dmg, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/)
-    {
-        // For PROC_ON_PRE_DISPELL_AURA_VICTIM, parameter dmg has aur->GetSpellId()
-        SpellInfo const* sp = sSpellMgr.getSpellInfo(dmg);
-
-        if (castingSpell == nullptr || sp == nullptr)
-            return true;
-
-        switch (sp->getId())
-        {
-            //SPELL_HASH_VAMPIRIC_TOUCH
-            case 34914:
-            case 34916:
-            case 34917:
-            case 34919:
-            case 48159:
-            case 48160:
-            case 52723:
-            case 52724:
-            case 60501:
-            case 64085:
-            case 65490:
-            case 68091:
-            case 68092:
-            case 68093:
-                break;
-            default:
-                return true;
-        }
-
-        dmgOverwrite[0] = mDispelDmg;
-
-        return false;
-    }
-
-private:
-    int32 mDispelDmg;
 };
 
 class EmpoweredRenewSpellProc : public SpellProc
@@ -795,7 +430,7 @@ public:
 
     static SpellProc* Create() { return new EmpoweredRenewSpellProc(); }
 
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 dmg, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weapon_damage_type*/)
+    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 dmg, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weapon_damage_type*/) override
     {
         // Get heal amt for 1 tick
         dmg = castingSpell->getEffectBasePoints(0) + 1;
@@ -804,66 +439,22 @@ public:
         int ticks = GetDuration(sSpellDurationStore.LookupEntry(castingSpell->getDurationIndex())) / castingSpell->getEffectAmplitude(0);
 
         // Total periodic effect is a single tick amount multiplied by number of ticks
-        dmgOverwrite[0] = dmg * ticks * (mOrigSpell->getEffectBasePoints(0) + 1) / 100;
+        dmgOverwrite[0] = dmg * ticks * (getOriginalSpell()->getEffectBasePoints(0) + 1) / 100;
 
         return false;
     }
 
-    void CastSpell(Unit* victim, SpellInfo const* CastingSpell, int* dmg_overwrite)
+    void castSpell(Unit* victim, SpellInfo const* CastingSpell) override
     {
         SpellCastTargets targets(victim->getGuid());
 
-        Spell* spell = sSpellMgr.newSpell(mTarget, mSpell, true, nullptr);
-        spell->forced_basepoints[0] = dmg_overwrite[0];
-        spell->forced_basepoints[1] = dmg_overwrite[1];
-        spell->forced_basepoints[2] = dmg_overwrite[2];
+        Spell* spell = sSpellMgr.newSpell(getProcOwner(), getSpell(), true, nullptr);
+        spell->forced_basepoints[0] = getOverrideEffectDamage(0);
+        spell->forced_basepoints[1] = getOverrideEffectDamage(1);
+        spell->forced_basepoints[2] = getOverrideEffectDamage(2);
         spell->ProcedOnSpell = CastingSpell;
 
         spell->prepare(&targets);
-    }
-};
-
-class ImprovedMindBlastSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new ImprovedMindBlastSpellProc(); }
-
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
-    {
-        // If spell is not Mind Blast (by SpellGroupType) or player is not on shadowform, don't proc
-        if (!(castingSpell->getSpellFamilyFlags(0) & mProcClassMask[0] && mTarget->isPlayer() && static_cast<Player*>(mTarget)->getShapeShiftForm() == FORM_SHADOW))
-            return true;
-
-        return false;
-    }
-};
-
-class BodyAndSoulDummySpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new BodyAndSoulDummySpellProc(); }
-
-    bool CanProc(Unit* victim, SpellInfo const* /*castingSpell*/)
-    {
-        if (victim != nullptr && mTarget->getGuid() == victim->getGuid())
-            return true;
-
-        return false;
-    }
-};
-
-class BodyAndSoulSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new BodyAndSoulSpellProc(); }
-
-    void Init(Object* /*obj*/)
-    {
-        mProcFlags = PROC_ON_CAST_SPELL;
-        mProcClassMask[0] = 1;
     }
 };
 
@@ -873,12 +464,12 @@ public:
 
     static SpellProc* Create() { return new MiserySpellProc(); }
 
-    void Init(Object* /*obj*/)
+    void init(Object* /*obj*/) override
     {
-        mProcFlags = PROC_ON_CAST_SPELL;
-        mProcClassMask[0] = 0x8000;
-        mProcClassMask[1] = 0x400;
-        mProcClassMask[2] = 0x40;
+        setProcFlags(PROC_ON_DONE_NEGATIVE_SPELL_DAMAGE_CLASS_MAGIC);
+        setProcClassMask(0, 0x8000);
+        setProcClassMask(1, 0x400);
+        setProcClassMask(2, 0x40);
     }
 };
 
@@ -888,29 +479,29 @@ public:
 
     static SpellProc* Create() { return new PrayerOfMendingProc(); }
 
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/) override
     {
-        Aura* aura = mTarget->getAuraWithId(mSpell->getId());
+        Aura* aura = getProcOwner()->getAuraWithId(getSpell()->getId());
         if (aura == nullptr)
             return true;
 
         Unit* caster = static_cast<Player*>(aura->getCaster());
         if (caster == nullptr)
         {
-            mTarget->removeAllAurasById(mSpell->getId());
+            getProcOwner()->removeAllAurasById(getSpell()->getId());
             return true;
         }
 
         int32 value = aura->getEffectDamage(0);
 
-        caster->castSpell(mTarget, 33110, value, true);
+        caster->castSpell(getProcOwner(), 33110, value, true);
 
-        int32 count = mTarget->GetAuraStackCount(mSpell->getId());
+        int32 count = getProcOwner()->GetAuraStackCount(getSpell()->getId());
 
         if (count <= 1)
             return true;
 
-        Player* plr = static_cast<Player*>(mTarget);
+        Player* plr = static_cast<Player*>(getProcOwner());
         Group* grp = plr->getGroup();
 
         if (grp == nullptr)
@@ -918,10 +509,10 @@ public:
 
         Player* new_plr = grp->GetRandomPlayerInRangeButSkip(plr, 40.0f, plr);
 
-        mTarget->removeAllAurasById(mSpell->getId());
+        getProcOwner()->removeAllAurasById(getSpell()->getId());
 
         if (new_plr != nullptr)
-            caster->castSpell(new_plr, mSpell, value, count - 1, true);
+            caster->castSpell(new_plr, getSpell(), value, count - 1, true);
 
         return true;
     }
@@ -935,53 +526,26 @@ public:
 
     static SpellProc* Create() { return new SealOfCommandSpellProc(); }
 
-    void Init(Object* /*obj*/)
+    void init(Object* /*obj*/) override
     {
         // default chance of proc
-        mProcChance = 25;
+        setProcChance(25);
 
-        mProcFlags = PROC_ON_MELEE_ATTACK;
+        setProcFlags(PROC_ON_DONE_MELEE_HIT);
 
         /* The formula for SoC proc rate is: [ 7 / (60 / Weapon Speed) - from wowwiki */
-        if (!mTarget->isPlayer())
+        if (!getProcOwner()->isPlayer())
             return;
 
         uint32 weapspeed = 1;
 
-        auto item = static_cast<Player*>(mTarget)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+        auto item = static_cast<Player*>(getProcOwner())->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
         if (item != nullptr)
             weapspeed = item->getItemProperties()->Delay;
 
-        mProcChance = 7 * weapspeed / 600;
-        if (mProcChance >= 50)
-            mProcChance = 50;
-    }
-};
-
-class EyeForAnEyeSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new EyeForAnEyeSpellProc(); }
-
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 dmg, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weapon_damage_type*/)
-    {
-        // If this player died by crit damage, don't do dmg back
-        if (!mTarget->isAlive())
-            return true;
-
-        // Prevent proc on healing criticals
-        if (castingSpell != nullptr && !(castingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
-            return true;
-
-        dmgOverwrite[0] = dmg * (mOrigSpell->getEffectBasePoints(0) + 1) / 100;
-
-        int max_dmg = mTarget->getMaxHealth() / 2;
-
-        if (dmgOverwrite[0] > max_dmg)
-            dmgOverwrite[0] = max_dmg;
-
-        return false;
+        setProcChance(7 * weapspeed / 600);
+        if (getProcChance() >= 50)
+            setProcChance(50);
     }
 };
 
@@ -991,9 +555,9 @@ public:
 
     static SpellProc* Create() { return new GraceOfTheNaaruSpellProc(); }
 
-    void Init(Object* /*obj*/)
+    void init(Object* /*obj*/) override
     {
-        this->mProcClassMask[0] = 0x80000000;
+        this->setProcClassMask(0, 0x80000000);
     }
 };
 
@@ -1003,7 +567,7 @@ public:
 
     static SpellProc* Create() { return new SpiritualAttunementSpellProc(); }
 
-    bool CanProc(Unit* /*victim*/, SpellInfo const* castingSpell)
+    bool canProc(Unit* /*victim*/, SpellInfo const* castingSpell) override
     {
         if (castingSpell == nullptr || !castingSpell->isHealingSpell())
             return false;
@@ -1018,113 +582,32 @@ public:
 
     static SpellProc* Create() { return new PaladinSealsSpellProc(); }
 
-    void Init(Object* /*obj*/)
+    void init(Object* /*obj*/) override
     {
-        this->mProcFlags = PROC_ON_MELEE_ATTACK;
+        this->setProcFlags(PROC_ON_DONE_MELEE_HIT);
     }
-};
-
-class SealOfCorruptionSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new SealOfCorruptionSpellProc(); }
-
-    bool CanProc(Unit* victim, SpellInfo const* /*castingSpell*/)
-    {
-        if (victim == nullptr || victim->getAuraCountForId(53742) < 5)
-            return false;
-
-        return true;
-    }
-};
-
-class SealOfVengeanceSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new SealOfVengeanceSpellProc(); }
-
-    bool CanProc(Unit* victim, SpellInfo const* /*castingSpell*/)
-    {
-        if (victim == nullptr || victim->getAuraCountForId(31803) < 5)
-            return false;
-
-        return true;
-    }
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Mage ProcScripts
-class HotStreakSpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new HotStreakSpellProc(); }
-
-    void Init(Object* /*obj*/)
-    {
-        mCritsInARow = 0;
-    }
-
-    bool DoEffect(Unit* victim, SpellInfo const* castingSpell, uint32 flag, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
-    {
-        // Check for classmask. Should proc only if CastingSpell is one listed in http://www.wowhead.com/spell=44448
-        if (!CheckClassMask(victim, castingSpell))
-            return true;
-
-        // If was not a crit, reset counter and don't proc
-        if (!(flag & PROC_ON_SPELL_CRIT_HIT))
-        {
-            mCritsInARow = 0;
-            return true;
-        }
-
-        // If was not at least 2nd crit in a row, don't proc
-        if (++mCritsInARow < 2)
-            return true;
-
-        return false;
-    }
-
-private:
-    int mCritsInARow;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // DeathKnight ProcScripts
-class ButcherySpellProc : public SpellProc
-{
-public:
-
-    static SpellProc* Create() { return new ButcherySpellProc(); }
-
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/)
-    {
-        dmgOverwrite[0] = mOrigSpell->getEffectBasePoints(0) + 1;
-
-        return false;
-    }
-};
-
 class BladeBarrierSpellProc : public SpellProc
 {
 public:
 
     static SpellProc* Create() { return new BladeBarrierSpellProc(); }
 
-    void Init(Object* /*obj*/)
+    void init(Object* /*obj*/) override
     {
-        mProcFlags = PROC_ON_CAST_SPELL;
+        setProcFlags(PROC_ON_DONE_MELEE_SPELL_HIT);
 
-        mProcClassMask[0] = mOrigSpell->getEffectSpellClassMask(0, 0);
-        mProcClassMask[1] = mOrigSpell->getEffectSpellClassMask(0, 1);
-        mProcClassMask[2] = mOrigSpell->getEffectSpellClassMask(0, 2);
+        setProcClassMask(0, getOriginalSpell()->getEffectSpellClassMask(0, 0));
+        setProcClassMask(1, getOriginalSpell()->getEffectSpellClassMask(0, 1));
+        setProcClassMask(2, getOriginalSpell()->getEffectSpellClassMask(0, 2));
 
-        dk = static_cast<DeathKnight*>(mTarget);
+        dk = static_cast<DeathKnight*>(getProcOwner());
     }
 
-    bool CanProc(Unit* /*victim*/, SpellInfo const* /*castingSpell*/)
+    bool canProc(Unit* /*victim*/, SpellInfo const* /*castingSpell*/) override
     {
         if (dk->IsAllRunesOfTypeInUse(RUNE_BLOOD))
             return true;
@@ -1141,9 +624,9 @@ public:
 
     static SpellProc* Create() { return new DeathRuneMasterySpellProc(); }
 
-    bool DoEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/) override
     {
-        DeathKnight* dk = static_cast<DeathKnight*>(mTarget);
+        DeathKnight* dk = static_cast<DeathKnight*>(getProcOwner());
 
         if (dk->GetRuneType(dk->GetLastUsedUnitSlot()) == RUNE_DEATH)
             return true;
@@ -1165,10 +648,10 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     //////////////////////////////////////////////////////////////////////////////////////////
     // Warrior
     // Add where spellIconID = 3214
-    AddById(58872, &DamageShieldSpellProc::Create);     // Rank 1
-    AddById(58874, &DamageShieldSpellProc::Create);     // Rank 2
+    addById(58872, &DamageShieldSpellProc::Create);     // Rank 1
+    addById(58874, &DamageShieldSpellProc::Create);     // Rank 2
 
-    AddById(65156, &JuggernautSpellProc::Create);
+    addById(65156, &JuggernautSpellProc::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Warlock
@@ -1193,10 +676,9 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         0
     };
 
-    AddById(frostbrandAttack, &FrostBrandAttackSpellProc::Create);
+    addByIds(frostbrandAttack, &FrostBrandAttackSpellProc::Create);
 
-    AddById(10444, &FlametongueWeaponSpellProc::Create);
-    AddById(379, &EarthShieldSpellProc::Create);
+    addById(10444, &FlametongueWeaponSpellProc::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Rogue
@@ -1231,7 +713,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         65962,
         0
     };
-    AddById(woundPoison, &WoundPoisonSpellProc::Create);
+    addByIds(woundPoison, &WoundPoisonSpellProc::Create);
 
     uint32 instantPoison[] =
     {
@@ -1267,7 +749,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         59242,
         0
     };
-    AddById(instantPoison, &InstantPoisonSpellProc::Create);
+    addByIds(instantPoison, &InstantPoisonSpellProc::Create);
 
     uint32 deadlyPoison[] =
     {
@@ -1329,7 +811,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         72330,
         0
     };
-    AddById(deadlyPoison, &PoisonSpellProc::Create);
+    addByIds(deadlyPoison, &PoisonSpellProc::Create);
 
     uint32 cripplingPoison[] =
     {
@@ -1341,7 +823,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         44289,
         0
     };
-    AddById(cripplingPoison, &PoisonSpellProc::Create);
+    addByIds(cripplingPoison, &PoisonSpellProc::Create);
 
     uint32 mindNumbingPoison[] =
     {
@@ -1353,28 +835,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         41190,
         0
     };
-    AddById(mindNumbingPoison, &PoisonSpellProc::Create);
-
-    uint32 cutToTheChase[] =
-    {
-        //SPELL_HASH_CUT_TO_THE_CHASE
-        51664,
-        51665,
-        51667,
-        51668,
-        51669,
-        0
-    };
-    AddById(cutToTheChase, &CutToTheChaseSpellProc::Create);
-
-    uint32 deadlyBrew[] =
-    {
-        //SPELL_HASH_DEADLY_BREW
-        51625,
-        51626,
-        0
-    };
-    AddById(deadlyBrew, &DeadlyBrewSpellProc::Create);
+    addByIds(mindNumbingPoison, &PoisonSpellProc::Create);
 
     uint32 waylay[] =
     {
@@ -1384,46 +845,10 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         51696,
         0
     };
-    AddById(waylay, &WaylaySpellProc::Create);
+    addByIds(waylay, &WaylaySpellProc::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Priest
-    uint32 improvedSpiritTap[] =
-    {
-        //SPELL_HASH_IMPROVED_SPIRIT_TAP
-        15337,
-        15338,
-        49694,
-        59000,
-        0
-    };
-    AddById(improvedSpiritTap, &ImprovedSpiritTapSpellProc::Create);
-
-    uint32 holyConcentration[] =
-    {
-        //SPELL_HASH_HOLY_CONCENTRATION
-        34753,
-        34754,
-        34859,
-        34860,
-        63724,
-        63725,
-        0
-    };
-    AddById(holyConcentration, &HolyConcentrationSpellProc::Create);
-
-    uint32 divineAegis[] =
-    {
-        //SPELL_HASH_DIVINE_AEGIS
-        47509,
-        47511,
-        47515,
-        47753,
-        54704,
-        0
-    };
-    AddById(divineAegis, &DivineAegisSpellProc::Create);
-
     uint32 improvedDevouringPlague[] =
     {
         //SPELL_HASH_IMPROVED_DEVOURING_PLAGUE
@@ -1434,17 +859,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         75999,
         0
     };
-    AddById(improvedDevouringPlague, &ImprovedDevouringPlagueSpellProc::Create);
-
-    uint32 vampiricEmbrace[] =
-    {
-        //SPELL_HASH_VAMPIRIC_EMBRACE
-        15286,
-        15290,
-        71269,
-        0
-    };
-    AddById(vampiricEmbrace, &VampiricEmbraceSpellProc::Create);
+    addByIds(improvedDevouringPlague, &ImprovedDevouringPlagueSpellProc::Create);
 
     uint32 empoweredRenew[] =
     {
@@ -1455,7 +870,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         63544,
         0
     };
-    AddById(empoweredRenew, &EmpoweredRenewSpellProc::Create);
+    addByIds(empoweredRenew, &EmpoweredRenewSpellProc::Create);
 
     uint32 misery[] =
     {
@@ -1468,7 +883,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         33198,
         0
     };
-    AddById(misery, &MiserySpellProc::Create);
+    addByIds(misery, &MiserySpellProc::Create);
 
     uint32 prayerOfMending[] =
     {
@@ -1486,7 +901,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         48113,
         0
     };
-    AddById(prayerOfMending, &PrayerOfMendingProc::Create);
+    addByIds(prayerOfMending, &PrayerOfMendingProc::Create);
 
     uint32 spiritTap[] =
     {
@@ -1497,15 +912,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         15336,
         0
     };
-    AddById(spiritTap, &SpiritTapSpellProc::Create);
-
-    AddById(34919, &VampiricTouchEnergizeSpellProc::Create);
-    AddById(64085, &VampiricTouchDispelDamageSpellProc::Create);
-    AddById(48301, &ImprovedMindBlastSpellProc::Create);
-
-    AddById(64128, &BodyAndSoulSpellProc::Create);
-    AddById(65081, &BodyAndSoulSpellProc::Create);
-    AddById(64134, &BodyAndSoulDummySpellProc::Create);
+    addByIds(spiritTap, &SpiritTapSpellProc::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Paladin
@@ -1527,19 +934,9 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         69403,
         0
     };
-    AddById(sealOfCommand, &SealOfCommandSpellProc::Create);
+    addByIds(sealOfCommand, &SealOfCommandSpellProc::Create);
 
-    uint32 eyeForAnEye[] =
-    {
-        //SPELL_HASH_EYE_FOR_AN_EYE
-        9799,
-        25988,
-        25997,
-        0
-    };
-    AddById(eyeForAnEye, &EyeForAnEyeSpellProc::Create);
-
-    AddById(43742, &GraceOfTheNaaruSpellProc::Create);
+    addById(43742, &GraceOfTheNaaruSpellProc::Create);
 
     uint32 spiritualAttunement[] =
     {
@@ -1549,22 +946,15 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         33776,
         0
     };
-    AddById(spiritualAttunement, &SpiritualAttunementSpellProc::Create);
+    addByIds(spiritualAttunement, &SpiritualAttunementSpellProc::Create);
 
-    AddById(20167, &PaladinSealsSpellProc::Create);
-    AddById(20168, &PaladinSealsSpellProc::Create);
-    AddById(20170, &PaladinSealsSpellProc::Create);
-    AddById(53739, &SealOfCorruptionSpellProc::Create);
-    AddById(42463, &SealOfVengeanceSpellProc::Create);
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Mage
-    AddById(48108, &HotStreakSpellProc::Create);
+    addById(20167, &PaladinSealsSpellProc::Create);
+    addById(20168, &PaladinSealsSpellProc::Create);
+    addById(20170, &PaladinSealsSpellProc::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // DeathKnight
-    AddById(50163, &ButcherySpellProc::Create);
-    AddById(50806, &DeathRuneMasterySpellProc::Create);
+    addById(50806, &DeathRuneMasterySpellProc::Create);
 
     uint32 bladeBarrier[] =
     {
@@ -1581,5 +971,5 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         64859,
         0
     };
-    AddById(bladeBarrier, &BladeBarrierSpellProc::Create);
+    addByIds(bladeBarrier, &BladeBarrierSpellProc::Create);
 }

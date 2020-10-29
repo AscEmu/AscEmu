@@ -315,8 +315,7 @@ bool DecayFlash(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (apply && pAura->getOwner()->isPlayer())
     {
         Player* p_target = static_cast<Player*>(pAura->getOwner());
-        p_target->SetShapeShift(FORM_SKELETON);  //Tharon'ja Skeleton
-        p_target->setDisplayId(9784);
+        p_target->setDisplayId(9784); //Tharon'ja Skeleton
     }
     return true;
 }
@@ -327,8 +326,6 @@ bool ReturnFlash(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     {
         Player* p_target = static_cast<Player*>(pAura->getOwner());
         p_target->setDisplayId(p_target->getNativeDisplayId());
-        p_target->m_ShapeShifted = 0;
-        p_target->SetShapeShift(0);
     }
     return true;
 }

@@ -6,7 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/School.h"
 #include "Definitions/SpellEffects.h"
 #include "Definitions/SpellEffectTarget.h"
+#include "Definitions/SpellIsFlags.h"
 #include "SpellAuras.h"
+#include "SpellTarget.h"
 
 #include "Management/Skill.h"
 #include "Units/Creatures/AIInterface.h"
@@ -256,21 +258,34 @@ bool SpellInfo::isAffectingSpell(SpellInfo const* spellInfo) const
     if (spellInfo->SpellFamilyName != SpellFamilyName)
         return false;
 
-    // If any of the effect indexes contain same mask, the spells affect each other
     // TODO: this always returns false on classic and TBC since EffectSpellClassMask field does not exist there
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        for (uint8_t u = 0; u < MAX_SPELL_EFFECTS; ++u)
-        {
-            if (EffectSpellClassMask[u][i] && (EffectSpellClassMask[u][i] & spellInfo->SpellFamilyFlags[i]))
-                return true;
-        }
+        if (isEffectIndexAffectingSpell(i, spellInfo))
+            return true;
     }
+
+    return false;
+}
+
+bool SpellInfo::isEffectIndexAffectingSpell(uint8_t effIndex, SpellInfo const* spellInfo) const
+{
+    // It's not spell effect count, it's spell mask field count
+    for (uint8_t i = 0; i < 3; ++i)
+    {
+        // If any of the indexes contain same mask, the spells affect each other
+        if (EffectSpellClassMask[effIndex][i] > 0 && (EffectSpellClassMask[effIndex][i] & spellInfo->SpellFamilyFlags[i]))
+            return true;
+    }
+
     return false;
 }
 
 bool SpellInfo::isAuraEffectAffectingSpell(AuraEffect auraEffect, SpellInfo const* spellInfo) const
 {
+    if (spellInfo->SpellFamilyName != SpellFamilyName)
+        return false;
+
     uint8_t effIndex = 255;
 
     // Find effect index for the aura effect
@@ -287,18 +302,103 @@ bool SpellInfo::isAuraEffectAffectingSpell(AuraEffect auraEffect, SpellInfo cons
     if (effIndex == 255)
         return false;
 
-    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        if (EffectSpellClassMask[i][effIndex] && EffectSpellClassMask[i][effIndex] & spellInfo->SpellFamilyFlags[effIndex])
-            return true;
-    }
-
-    return false;
+    return isEffectIndexAffectingSpell(effIndex, spellInfo);
 }
 
 bool SpellInfo::hasValidPowerType() const
 {
     return getPowerType() < TOTAL_PLAYER_POWER_TYPES;
+}
+
+int32_t SpellInfo::getBasePowerCost(Unit* caster) const
+{
+    if (caster == nullptr)
+        return 0;
+
+    int32_t powerCost = 0;
+    if (getAttributesEx() & ATTRIBUTESEX_DRAIN_WHOLE_POWER)
+    {
+        if (!hasValidPowerType())
+        {
+            LogError("SpellInfo::getBasePowerCost : Unknown power type %u for spell id %u", getPowerType(), getId());
+            return 0;
+        }
+
+        if (getPowerType() == POWER_TYPE_HEALTH)
+            powerCost = static_cast<int32_t>(caster->getHealth());
+        else
+            powerCost = static_cast<int32_t>(caster->getPower(getPowerType()));
+    }
+    else
+    {
+        powerCost = getManaCost();
+        // Check if spell costs percentage of caster's power
+        if (getManaCostPercentage() > 0)
+        {
+            switch (getPowerType())
+            {
+                case POWER_TYPE_HEALTH:
+                    powerCost += static_cast<int32_t>(caster->getBaseHealth() * getManaCostPercentage() / 100);
+                    break;
+                case POWER_TYPE_MANA:
+                    powerCost += static_cast<int32_t>(caster->getBaseMana() * getManaCostPercentage() / 100);
+                    break;
+                case POWER_TYPE_RAGE:
+                case POWER_TYPE_FOCUS:
+                case POWER_TYPE_ENERGY:
+                case POWER_TYPE_HAPPINESS:
+                    powerCost += static_cast<int32_t>(caster->getMaxPower(getPowerType()) * getManaCostPercentage() / 100);
+                    break;
+#if VERSION_STRING >= WotLK
+                case POWER_TYPE_RUNES:
+                case POWER_TYPE_RUNIC_POWER:
+                    // In 3.3.5a only obsolete spells use these and have a non-null getManaCostPercentage
+                    break;
+#endif
+                default:
+                    LogError("SpellInfo::getBasePowerCost() : Unknown power type %u for spell id %u", getPowerType(), getId());
+                    return 0;
+            }
+        }
+    }
+
+    return powerCost;
+}
+
+bool SpellInfo::isNegativeAura() const
+{
+    if (custom_c_is_flags & SPELL_FLAG_IS_FORCEDDEBUFF)
+        return true;
+
+    if (custom_c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
+        return false;
+
+    if (getAttributes() & ATTRIBUTES_NEGATIVE)
+        return true;
+
+    // Check each effect
+    // If any effect contain one of the following aura effects, the aura is negative
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (getEffectApplyAuraName(i) == SPELL_AURA_NONE)
+            continue;
+
+        switch (getEffectApplyAuraName(i))
+        {
+            //\ todo: add more checks later
+            case SPELL_AURA_PERIODIC_DAMAGE:
+            case SPELL_AURA_PERIODIC_LEECH:
+            case SPELL_AURA_PERIODIC_MANA_LEECH:
+            case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
+            case SPELL_AURA_PERIODIC_POWER_BURN:
+                // No need to do other checks, definitely negative
+                return true;
+            default:
+                break;
+        }
+    }
+
+    return false;
 }
 
 uint32_t SpellInfo::getSpellDefaultDuration(Unit const* caster) const
@@ -327,6 +427,221 @@ bool SpellInfo::hasTargetType(uint32_t type) const
     }
 
     return false;
+}
+
+uint32_t SpellInfo::getRequiredTargetMaskForEffectTarget(uint32_t implicitTarget, uint8_t effectIndex) const
+{
+    uint32_t targetMask = 0;
+    switch (implicitTarget)
+    {
+        case EFF_TARGET_NONE:
+            targetMask = SPELL_TARGET_REQUIRE_ITEM | SPELL_TARGET_REQUIRE_GAMEOBJECT;
+            break;
+        case EFF_TARGET_SELF:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS:
+            targetMask = SPELL_TARGET_REQUIRE_FRIENDLY;
+            break;
+        case 4:
+            targetMask = SPELL_TARGET_AREA_SELF | SPELL_TARGET_REQUIRE_FRIENDLY;
+            break;
+        case EFF_TARGET_PET:
+            targetMask = SPELL_TARGET_OBJECT_CURPET;
+            break;
+        case EFF_TARGET_SINGLE_ENEMY:
+            targetMask = SPELL_TARGET_REQUIRE_ATTACKABLE;
+            break;
+        case EFF_TARGET_SCRIPTED_TARGET:
+            targetMask = SPELL_TARGET_OBJECT_SCRIPTED;
+            break;
+        case EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS:
+            targetMask = SPELL_TARGET_AREA | SPELL_TARGET_REQUIRE_ATTACKABLE;
+            break;
+        case EFF_TARGET_ALL_ENEMY_IN_AREA:
+            targetMask = SPELL_TARGET_AREA_SELF | SPELL_TARGET_REQUIRE_ATTACKABLE;
+            break;
+        case EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT:
+            targetMask = SPELL_TARGET_AREA | SPELL_TARGET_REQUIRE_ATTACKABLE;
+            break;
+        // todo: confirm this
+        /*case EFF_TARGET_TELEPORT_LOCATION:
+            targetMask = SPELL_TARGET_AREA;
+            break;*/
+        case EFF_TARGET_LOCATION_TO_SUMMON:
+            targetMask = SPELL_TARGET_AREA_SELF | SPELL_TARGET_NO_OBJECT;
+            break;
+        case EFF_TARGET_ALL_PARTY_AROUND_CASTER:
+            targetMask = SPELL_TARGET_AREA_PARTY;
+            break;
+        case EFF_TARGET_SINGLE_FRIEND:
+            targetMask = SPELL_TARGET_REQUIRE_FRIENDLY;
+            break;
+        case EFF_TARGET_ALL_ENEMIES_AROUND_CASTER:
+            targetMask = SPELL_TARGET_AREA_SELF;
+            break;
+        case EFF_TARGET_GAMEOBJECT:
+            targetMask = SPELL_TARGET_REQUIRE_GAMEOBJECT;
+            break;
+        case EFF_TARGET_IN_FRONT_OF_CASTER:
+            targetMask = SPELL_TARGET_AREA_CONE | SPELL_TARGET_REQUIRE_ATTACKABLE;
+            break;
+        case EFF_TARGET_DUEL:
+            targetMask = SPELL_TARGET_ANY_OBJECT;
+            break;
+        case EFF_TARGET_GAMEOBJECT_ITEM:
+            targetMask = SPELL_TARGET_REQUIRE_GAMEOBJECT | SPELL_TARGET_REQUIRE_ITEM;
+            break;
+        case EFF_TARGET_PET_MASTER:
+            targetMask = SPELL_TARGET_OBJECT_PETOWNER;
+            break;
+        case EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED:
+            targetMask = SPELL_TARGET_AREA | SPELL_TARGET_REQUIRE_ATTACKABLE;
+            break;
+        case EFF_TARGET_ALL_PARTY_IN_AREA_CHANNELED:
+            targetMask = SPELL_TARGET_OBJECT_SELF | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_SELF;
+            break;
+        case EFF_TARGET_ALL_FRIENDLY_IN_AREA:
+            targetMask = SPELL_TARGET_REQUIRE_FRIENDLY;
+            break;
+        case EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS_OVER_TIME:
+            targetMask = SPELL_TARGET_REQUIRE_FRIENDLY | SPELL_TARGET_AREA;
+            break;
+        // todo: confirm this
+        /*case EFF_TARGET_MINION:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;*/
+        case EFF_TARGET_ALL_PARTY_IN_AREA:
+            targetMask = SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_PARTY;
+            break;
+        case EFF_TARGET_SINGLE_PARTY:
+            targetMask = SPELL_TARGET_AREA_PARTY;
+            break;
+        case EFF_TARGET_PET_SUMMON_LOCATION:
+            targetMask = SPELL_TARGET_OBJECT_SCRIPTED;
+            break;
+        case EFF_TARGET_ALL_PARTY:
+            targetMask = SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID;
+            break;
+        case EFF_TARGET_SELF_FISHING:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case EFF_TARGET_SCRIPTED_GAMEOBJECT:
+            targetMask = SPELL_TARGET_OBJECT_SCRIPTED;
+            break;
+        case EFF_TARGET_TOTEM_EARTH:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case EFF_TARGET_TOTEM_WATER:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case EFF_TARGET_TOTEM_AIR:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case EFF_TARGET_TOTEM_FIRE:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case EFF_TARGET_CHAIN:
+            targetMask = SPELL_TARGET_AREA_CHAIN | SPELL_TARGET_REQUIRE_FRIENDLY;
+            break;
+        case EFF_TARGET_SCIPTED_OBJECT_LOCATION:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case EFF_TARGET_DYNAMIC_OBJECT:
+            targetMask = SPELL_TARGET_AREA_SELF | SPELL_TARGET_NO_OBJECT; //dont fill target map for this (fucks up some spell visuals)
+            break;
+        case EFF_TARGET_MULTIPLE_SUMMON_LOCATION:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case EFF_TARGET_MULTIPLE_SUMMON_PET_LOCATION:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case EFF_TARGET_SUMMON_LOCATION:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case EFF_TARGET_LOCATION_NEAR_CASTER:
+            targetMask = SPELL_TARGET_AREA | SPELL_TARGET_REQUIRE_GAMEOBJECT | SPELL_TARGET_REQUIRE_ATTACKABLE;
+            break;
+        case 34:
+            targetMask = SPELL_TARGET_NOT_IMPLEMENTED; //seige stuff
+            break;
+        case EFF_TARGET_CURRENT_SELECTION:
+            targetMask = SPELL_TARGET_AREA_CURTARGET | SPELL_TARGET_REQUIRE_ATTACKABLE;
+            break;
+        case EFF_TARGET_TARGET_AT_ORIENTATION_TO_CASTER:
+            targetMask = SPELL_TARGET_AREA_CONE | SPELL_TARGET_REQUIRE_ATTACKABLE;
+            break;
+        case EFF_TARGET_ALL_RAID:
+            targetMask = SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_RAID; //used by commanding shout, targets raid now
+            break;
+        case EFF_TARGET_PARTY_MEMBER:
+            targetMask = SPELL_TARGET_REQUIRE_FRIENDLY | SPELL_TARGET_AREA_PARTY;
+            break;
+        case EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS:
+            targetMask = SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_RAID | SPELL_TARGET_OBJECT_TARCLASS | SPELL_TARGET_REQUIRE_FRIENDLY;
+            break;
+        case EFF_TARGET_NATURE_SUMMON_LOCATION:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case 64:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case EFF_TARGET_BEHIND_TARGET_LOCATION:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case 66:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case 67:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case 69:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case EFF_TARGET_MULTIPLE_GUARDIAN_SUMMON_LOCATION:
+            targetMask = SPELL_TARGET_AREA_RANDOM;
+            break;
+        case EFF_TARGET_NETHETDRAKE_SUMMON_LOCATION:
+            targetMask = SPELL_TARGET_OBJECT_SELF;
+            break;
+        case EFF_TARGET_ENEMIES_IN_AREA_CHANNELED_WITH_EXCEPTIONS:
+            targetMask = SPELL_TARGET_REQUIRE_ATTACKABLE;
+            break;
+        case EFF_TARGET_SELECTED_ENEMY_CHANNELED:
+            targetMask = SPELL_TARGET_REQUIRE_ATTACKABLE;
+            break;
+        case EFF_TARGET_SELECTED_ENEMY_DEADLY_POISON:
+            targetMask = SPELL_TARGET_AREA_RANDOM;
+            break;
+        case 87:
+            targetMask = SPELL_TARGET_AREA;
+            break;
+        case EFF_TARGET_NON_COMBAT_PET:
+            targetMask = SPELL_TARGET_OBJECT_CURCRITTER;
+            break;
+        case EFF_TARGET_CONE_IN_FRONT:
+            targetMask = SPELL_TARGET_REQUIRE_ATTACKABLE | SPELL_TARGET_AREA_CONE;
+            break;
+        default:
+            break;
+    }
+
+    // Check if spell chains
+    if (getEffectChainTarget(effectIndex) > 0)
+        targetMask |= SPELL_TARGET_AREA_CHAIN;
+
+    return targetMask;
+}
+
+uint32_t SpellInfo::getRequiredTargetMaskForEffect(uint8_t effectIndex) const
+{
+    auto targetMask = getRequiredTargetMaskForEffectTarget(getEffectImplicitTargetA(effectIndex), effectIndex);
+
+    // Do not get target mask from B if it's not set
+    if (getEffectImplicitTargetB(effectIndex) != EFF_TARGET_NONE)
+        targetMask |= getRequiredTargetMaskForEffectTarget(getEffectImplicitTargetB(effectIndex), effectIndex);
+
+    return targetMask;
 }
 
 int SpellInfo::aiTargetType() const

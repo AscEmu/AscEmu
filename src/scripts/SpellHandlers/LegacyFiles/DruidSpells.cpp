@@ -47,16 +47,6 @@ bool Starfall(uint8_t effectIndex, Spell* pSpell)
     return true;
 }
 
-bool ImprovedLeaderOfThePack(uint8_t /*effectIndex*/, Spell* s)
-{
-    if (s->getPlayerCaster() == NULL)
-        return false;
-
-    s->getPlayerCaster()->AddProcTriggerSpell(34299, 34299, s->getPlayerCaster()->getGuid(), 100, PROC_ON_CRIT_ATTACK | static_cast<uint32_t>(PROC_TARGET_SELF), 0, NULL, NULL);
-
-    return true;
-}
-
 bool PredatoryStrikes(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* m_target = a->getOwner();
@@ -76,25 +66,6 @@ bool PredatoryStrikes(uint8_t effectIndex, Aura* a, bool apply)
     return true;
 }
 
-bool Furor(uint8_t effectIndex, Aura* a, bool apply)
-{
-    Unit* u_target = a->getOwner();
-
-    if (!u_target->isPlayer())
-        return true;
-    Player* p_target = static_cast<Player*>(u_target);
-
-    if (p_target == NULL)
-        return true;
-
-    if (apply)
-        p_target->m_furorChance += a->getEffectDamage(effectIndex);
-    else
-        p_target->m_furorChance -= a->getEffectDamage(effectIndex);
-
-    return true;
-}
-
 bool Tranquility(uint8_t effectIndex, Aura* a, bool apply)
 {
     if (apply)
@@ -105,7 +76,7 @@ bool Tranquility(uint8_t effectIndex, Aura* a, bool apply)
     return true;
 }
 
-bool LifeBloom(uint8_t effectIndex, Aura* a, bool apply)
+bool LifeBloom(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* m_target = a->getOwner();
 
@@ -149,23 +120,6 @@ bool LifeBloom(uint8_t effectIndex, Aura* a, bool apply)
     return true;
 }
 
-bool LeaderOfThePack(uint8_t /*effectIndex*/, Aura* a, bool apply)
-{
-    Unit* u_target = a->getOwner();
-
-    if (!u_target->isPlayer())
-        return true;
-
-    Player* p_target = static_cast<Player*>(u_target);
-
-    if (apply)
-        p_target->AddShapeShiftSpell(24932);
-    else
-        p_target->RemoveShapeShiftSpell(24932);
-
-    return true;
-}
-
 void SetupLegacyDruidSpells(ScriptMgr* mgr)
 {
     uint32_t StarfallIds[] =
@@ -178,9 +132,6 @@ void SetupLegacyDruidSpells(ScriptMgr* mgr)
     };
     mgr->register_dummy_spell(StarfallIds, &Starfall);
 
-    mgr->register_dummy_spell(34297, &ImprovedLeaderOfThePack);
-    mgr->register_dummy_spell(34300, &ImprovedLeaderOfThePack);
-
     uint32_t predatorystrikesids[] =
     {
         16972,
@@ -189,17 +140,6 @@ void SetupLegacyDruidSpells(ScriptMgr* mgr)
         0
     };
     mgr->register_dummy_aura(predatorystrikesids, &PredatoryStrikes);
-
-    uint32_t furorids[] =
-    {
-        17056,
-        17058,
-        17059,
-        17060,
-        17061,
-        0
-    };
-    mgr->register_dummy_aura(furorids, &Furor);
 
     uint32_t tranquilityids[] =
     {
@@ -222,6 +162,4 @@ void SetupLegacyDruidSpells(ScriptMgr* mgr)
         0
     };
     mgr->register_dummy_aura(lifebloomids, &LifeBloom);
-
-    mgr->register_dummy_aura(17007, &LeaderOfThePack);
 }

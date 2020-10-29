@@ -2761,7 +2761,7 @@ public:
     {
         TEST_UNIT_RET()
         Unit* target = CHECK_UNIT(L, 1);
-        uint32_t weapon_damage_type = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+        WeaponDamageType weapon_damage_type = static_cast<WeaponDamageType>(luaL_checkinteger(L, 2));
         uint32_t sp = CHECK_ULONG(L, 3);
         int32_t adddmg = static_cast<int32_t>(luaL_checkinteger(L, 4));
         uint32_t exclusive_damage = CHECK_ULONG(L, 5);
@@ -3493,12 +3493,12 @@ public:
         uint32_t spellid = CHECK_ULONG(L, 2);
         uint32_t damage = CHECK_ULONG(L, 3);
         uint8_t effIndex = CHECK_ULONG(L, 4);
-        bool allowproc = CHECK_BOOL(L, 5);
+        bool isTriggered = CHECK_BOOL(L, 5);
         bool static_dmg = CHECK_BOOL(L, 6);
         bool no_remove_auras = CHECK_BOOL(L, 7);
         if (pVictim && spellid && damage)
         {
-            ptr->doSpellDamage(pVictim, spellid, damage, effIndex, allowproc, static_dmg);
+            ptr->doSpellDamage(pVictim, spellid, damage, effIndex, isTriggered, static_dmg);
         }
         return 0;
     }
@@ -4211,7 +4211,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        plr->ClearCooldownForSpell(static_cast<uint32_t>(luaL_checkinteger(L, 1)));
+        plr->clearCooldownForSpell(static_cast<uint32_t>(luaL_checkinteger(L, 1)));
         return 0;
     }
 
@@ -4226,7 +4226,7 @@ public:
     static int ClearAllCooldowns(lua_State* /*L*/, Unit* ptr)
     {
         TEST_PLAYER()
-        static_cast<Player*>(ptr)->ResetAllCooldowns();
+        static_cast<Player*>(ptr)->resetAllCooldowns();
         return 0;
     }
 

@@ -21,10 +21,11 @@ set(SRC_SPELL_FILES
    ${PATH_PREFIX}/SpellInfo.hpp
    ${PATH_PREFIX}/SpellMgr.cpp
    ${PATH_PREFIX}/SpellMgr.h
-   ${PATH_PREFIX}/SpellProc.Legacy.cpp
+   ${PATH_PREFIX}/SpellProc.cpp
    ${PATH_PREFIX}/SpellProc.h
    ${PATH_PREFIX}/SpellProc_ClassScripts.cpp
    ${PATH_PREFIX}/SpellProc_Items.cpp
+   ${PATH_PREFIX}/SpellScript.cpp
    ${PATH_PREFIX}/SpellScript.h
    ${PATH_PREFIX}/SpellTarget.Legacy.cpp
    ${PATH_PREFIX}/SpellTarget.h

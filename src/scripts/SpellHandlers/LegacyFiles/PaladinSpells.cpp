@@ -25,18 +25,6 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/PowerType.h>
 
-bool EyeForAnEye(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-        target->AddProcTriggerSpell(25997, pAura->getSpellInfo()->getId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM, 0, NULL, NULL);
-    else
-        target->RemoveProcTriggerSpell(25997, pAura->getCasterGuid());
-
-    return true;
-}
-
 bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     ///\todo This function returns true on failures (invalid target, invalid spell). Verify this is the correct return value
@@ -122,63 +110,6 @@ bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
     }
 
     caster->castSpell(target, spell_id, false);
-
-    return true;
-}
-
-bool SealOfRighteousness(uint8_t effectIndex, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (effectIndex == 0)
-    {
-        if (apply)
-            target->AddProcTriggerSpell(25742, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
-        else
-            target->RemoveProcTriggerSpell(25742, pAura->getCasterGuid());
-    }
-
-    return true;
-}
-
-bool SealOfCorruption(uint8_t effectIndex, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (effectIndex == 0)
-    {
-        if (apply)
-        {
-            target->AddProcTriggerSpell(53742, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
-            target->AddProcTriggerSpell(53739, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
-        }
-        else
-        {
-            target->RemoveProcTriggerSpell(53742, pAura->getCasterGuid());
-            target->RemoveProcTriggerSpell(53739, pAura->getCasterGuid());
-        }
-    }
-
-    return true;
-}
-
-bool SealOfVengeance(uint8_t effectIndex, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (effectIndex == 0)
-    {
-        if (apply)
-        {
-            target->AddProcTriggerSpell(31803, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
-            target->AddProcTriggerSpell(42463, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
-        }
-        else
-        {
-            target->RemoveProcTriggerSpell(31803, pAura->getCasterGuid());
-            target->RemoveProcTriggerSpell(42463, pAura->getCasterGuid());
-        }
-    }
 
     return true;
 }
@@ -313,34 +244,6 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
     return true;
 }
 
-bool JudgementOfLight(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* caster = pAura->GetUnitCaster();
-    if (caster == nullptr)
-        return true;
-
-    if (apply)
-        caster->AddProcTriggerSpell(20267, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK | PROC_TARGET_SELF, 0, NULL, NULL);
-    else
-        caster->RemoveProcTriggerSpell(20267, pAura->getCasterGuid());
-
-    return true;
-}
-
-bool JudgementOfWisdom(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* caster = pAura->GetUnitCaster();
-    if (caster == nullptr)
-        return true;
-
-    if (apply)
-        caster->AddProcTriggerSpell(20268, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK | PROC_TARGET_SELF, 0, NULL, NULL);
-    else
-        caster->RemoveProcTriggerSpell(20268, pAura->getCasterGuid());
-
-    return true;
-}
-
 bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
 {
     //we will try to lure 3 enemies from our target
@@ -432,24 +335,14 @@ bool GuardedByTheLight(uint8_t /*effectIndex*/, Spell* s)
 
 void SetupLegacyPaladinSpells(ScriptMgr* mgr)
 {
-    mgr->register_dummy_aura(9799, &EyeForAnEye);
-    mgr->register_dummy_aura(25988, &EyeForAnEye);
-
     uint32_t HolyShockIds[] = { 20473, 20929, 20930, 27174, 33072, 48824, 48825, 0 };
     mgr->register_dummy_spell(HolyShockIds, &HolyShock);
-
-    mgr->register_dummy_aura(21084, &SealOfRighteousness);
-    mgr->register_dummy_aura(53736, &SealOfCorruption);
-    mgr->register_dummy_aura(31801, &SealOfVengeance);
 
     mgr->register_script_effect(20271, &JudgementLightWisdomJustice); //light
     mgr->register_script_effect(53408, &JudgementLightWisdomJustice);
     mgr->register_script_effect(53407, &JudgementLightWisdomJustice);
 
     mgr->register_script_effect(63521, &GuardedByTheLight);
-
-    mgr->register_dummy_aura(20185, &JudgementOfLight);
-    mgr->register_dummy_aura(20186, &JudgementOfWisdom);
 
     mgr->register_dummy_spell(31789, &RighteousDefense);
     mgr->register_dummy_spell(18350, &Illumination);

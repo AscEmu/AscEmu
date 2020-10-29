@@ -183,7 +183,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
             if (plr != NULL)
             {
                 sHookInterface.OnArenaFinish(plr, plr->m_arenaTeams[m_arenateamtype], victorious, rated_match);
-                plr->ResetAllCooldowns();
+                plr->resetAllCooldowns();
             }
         }
     }
@@ -219,7 +219,7 @@ void Arena::OnAddPlayer(Player* plr)
 
     // Before the arena starts all your cooldowns are reset
     if (!m_started  && plr->IsInWorld())
-        plr->ResetAllCooldowns();
+        plr->resetAllCooldowns();
 
     // if (plr->m_isGmInvisible == false)
     // Make sure the player isn't a GM an isn't invisible (monitoring?)
@@ -258,7 +258,7 @@ void Arena::OnRemovePlayer(Player* plr)
     plr->removeFfaPvpFlag();
 
     // Reset all their cooldowns and restore their HP/Mana/Energy to max
-    plr->ResetAllCooldowns();
+    plr->resetAllCooldowns();
     plr->FullHPMP();
 }
 

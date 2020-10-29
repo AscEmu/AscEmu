@@ -303,45 +303,6 @@ bool DeathAndDecay(uint8_t effectIndex, Aura* pAura, bool apply)
     return true;
 }
 
-bool Butchery(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-        target->AddProcTriggerSpell(50163, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_GAIN_EXPIERIENCE | PROC_TARGET_SELF, 0, NULL, NULL);
-    else
-        target->RemoveProcTriggerSpell(50163, pAura->getCasterGuid());
-
-    return true;
-}
-
-bool DeathRuneMastery(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-    {
-        static uint32_t classMask[3] = { 0x10, 0x20000, 0 };
-        target->AddProcTriggerSpell(50806, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
-    }
-    else
-        target->RemoveProcTriggerSpell(50806, pAura->getCasterGuid());
-
-    return true;
-}
-
-bool MarkOfBlood(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* target = pAura->getOwner();
-
-    if (apply)
-        target->AddProcTriggerSpell(61607, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), pAura->getSpellInfo()->getProcFlags(), pAura->getSpellInfo()->getProcCharges(), NULL, NULL);
-    else if (target->GetAuraStackCount(49005) <= 1)
-        target->RemoveProcTriggerSpell(61607, pAura->getCasterGuid());
-
-    return true;
-}
-
 bool Hysteria(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     if (!apply)
@@ -431,15 +392,6 @@ void SetupLegacyDeathKnightSpells(ScriptMgr* mgr)
     mgr->register_dummy_aura(49936, &DeathAndDecay);
     mgr->register_dummy_aura(49937, &DeathAndDecay);
     mgr->register_dummy_aura(49938, &DeathAndDecay);
-
-    mgr->register_dummy_aura(48979, &Butchery);   // Rank 1
-    mgr->register_dummy_aura(49483, &Butchery);   // Rank 2
-
-    mgr->register_dummy_aura(49467, &DeathRuneMastery);   // Rank 1
-    mgr->register_dummy_aura(50033, &DeathRuneMastery);   // Rank 2
-    mgr->register_dummy_aura(50034, &DeathRuneMastery);   // Rank 3
-
-    mgr->register_dummy_aura(49005, &MarkOfBlood);
 
     mgr->register_dummy_aura(49016, &Hysteria);
 

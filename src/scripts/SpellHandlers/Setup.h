@@ -18,9 +18,20 @@
 #pragma once
 
 #include "Server/Script/ScriptMgr.h"
+#include "Storage/MySQLDataStore.hpp"
 #include "WorldConf.h"
 
+#include <cstdint>
+
 class ScriptMgr;
+
+// Shared enum
+enum SpellEffects : uint8_t
+{
+    EFF_INDEX_0 = 0,
+    EFF_INDEX_1,
+    EFF_INDEX_2
+};
 
 // Class spell handlers
 #if VERSION_STRING >= WotLK

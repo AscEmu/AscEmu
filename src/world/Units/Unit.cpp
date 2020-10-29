@@ -1807,6 +1807,12 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBa
     newSpell->prepare(&targets);
 }
 
+void Unit::castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered)
+{
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    castSpellLoc(location, spellInfo, triggered);
+}
+
 void Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered)
 {
     if (spellInfo == nullptr)
@@ -1867,6 +1873,87 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBa
 
     // Prepare the spell
     newSpell->prepare(&targets);
+}
+
+SpellProc* Unit::addProcTriggerSpell(uint32_t spellId, uint32_t originalSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t procCharges, uint32_t const* spellFamilyMask, uint32_t const* procClassMask/* = nullptr*/, Object* obj/* = nullptr*/)
+{
+    return addProcTriggerSpell(sSpellMgr.getSpellInfo(spellId), sSpellMgr.getSpellInfo(originalSpellId), casterGuid, procChance, procFlags, exProcFlags, procCharges, spellFamilyMask, procClassMask, obj);
+}
+
+SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, uint64_t casterGuid, uint32_t const* spellFamilyMask, uint32_t const* procClassMask/* = nullptr*/, Object* obj/* = nullptr*/)
+{
+    return addProcTriggerSpell(spellInfo, spellInfo, casterGuid, spellInfo->getProcChance(), static_cast<SpellProcFlags>(spellInfo->getProcFlags()), EXTRA_PROC_NULL, spellInfo->getProcCharges(), spellFamilyMask, procClassMask, obj);
+}
+
+SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const* originalSpellInfo, uint64_t casterGuid, uint32_t const* spellFamilyMask, uint32_t const* procClassMask/* = nullptr*/, Object* obj/* = nullptr*/)
+{
+    return addProcTriggerSpell(spellInfo, originalSpellInfo, casterGuid, originalSpellInfo->getProcChance(), static_cast<SpellProcFlags>(originalSpellInfo->getProcFlags()), EXTRA_PROC_NULL, originalSpellInfo->getProcCharges(), spellFamilyMask, procClassMask, obj);
+}
+
+SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const* originalSpellInfo, uint64_t casterGuid, uint32_t procChance, uint32_t procFlags, uint32_t procCharges, uint32_t const* spellFamilyMask, uint32_t const* procClassMask/* = nullptr*/, Object* obj/* = nullptr*/)
+{
+    return addProcTriggerSpell(spellInfo, originalSpellInfo, casterGuid, procChance, static_cast<SpellProcFlags>(procFlags), EXTRA_PROC_NULL, procCharges, spellFamilyMask, procClassMask, obj);
+}
+
+SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const* originalSpellInfo, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t procCharges, uint32_t const* spellFamilyMask, uint32_t const* procClassMask/* = nullptr*/, Object* obj/* = nullptr*/)
+{
+    SpellProc* spellProc = nullptr;
+    if (spellInfo != nullptr)
+        spellProc = getProcTriggerSpell(spellInfo->getId(), casterGuid);
+
+    if (spellProc != nullptr && !spellProc->isDeleted())
+        return spellProc;
+
+    // Create new proc since one did not exist
+    spellProc = sSpellProcMgr.newSpellProc(this, spellInfo, originalSpellInfo, casterGuid, procChance, procFlags, exProcFlags, procCharges, spellFamilyMask, procClassMask, obj);
+    if (spellProc == nullptr)
+    {
+        if (originalSpellInfo != nullptr)
+            LogError("Unit::addProcTriggerSpell : Spell id %u tried to add a non-existent spell to Unit %p as SpellProc", originalSpellInfo->getId(), this);
+        else
+            LogError("Unit::addProcTriggerSpell : Something tried to add a non-existent spell to Unit %p as SpellProc", this);
+        return nullptr;
+    }
+
+    m_procSpells.push_back(spellProc);
+    return spellProc;
+}
+
+SpellProc* Unit::getProcTriggerSpell(uint32_t spellId, uint64_t casterGuid) const
+{
+    for (const auto& spellProc : m_procSpells)
+    {
+        if (spellProc->getSpell()->getId() == spellId && (casterGuid == 0 || spellProc->getCasterGuid() == casterGuid))
+            return spellProc;
+    }
+
+    return nullptr;
+}
+
+void Unit::removeProcTriggerSpell(uint32_t spellId, uint64_t casterGuid/* = 0*/, uint64_t misc/* = 0*/)
+{
+    for (auto& spellProc : m_procSpells)
+    {
+        if (sScriptMgr.callScriptedSpellProcCanDelete(spellProc, spellId, casterGuid, misc))
+        {
+            spellProc->deleteProc();
+            return;
+        }
+
+        if (spellProc->canDeleteProc(spellId, casterGuid, misc))
+        {
+            spellProc->deleteProc();
+            return;
+        }
+    }
+}
+
+void Unit::clearProcCooldowns()
+{
+    for (auto& proc : m_procSpells)
+    {
+        proc->setLastTriggerTime(0);
+    }
 }
 
 float_t Unit::getSpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal, bool isPeriodic, Aura* aur/* = nullptr*/)
@@ -2191,7 +2278,7 @@ void Unit::sendSpellOrDamageImmune(uint64_t casterGuid, Unit* target, uint32_t s
     target->SendMessageToSet(SmsgSpellOrDamageImmune(casterGuid, target->getGuid(), spellId).serialise().get(), true);
 }
 
-void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, uint32_t overKill, dealdamage damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, uint32_t rageGain)
+void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, [[maybe_unused]]uint32_t overKill, DamageInfo damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, [[maybe_unused]]uint32_t rageGain)
 {
 #if VERSION_STRING < WotLK
     const size_t size = 106;
@@ -2203,9 +2290,9 @@ void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& v
     // School type in classic, school mask in tbc+
     uint32_t school = 0;
 #if VERSION_STRING == Classic
-    school = damageInfo.school_type;
+    school = damageInfo.getSchoolTypeFromMask();
 #else
-    school = g_spellSchoolConversionTable[damageInfo.school_type];
+    school = damageInfo.schoolMask;
 #endif
 
     data << uint32_t(hitStatus);
@@ -2219,14 +2306,14 @@ void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& v
     data << uint8_t(1);                                         // damage counter
 
     data << uint32_t(school);                                   // damage school
-    data << float(damageInfo.full_damage) / float(damage);      // some sort of damage coefficient
-    data << uint32_t(damageInfo.full_damage);                   // full damage in int
+    data << float(1.0f);                                        // some sort of damage coefficient
+    data << uint32_t(damage);                                   // full damage in int
 
     if (hitStatus & HITSTATUS_ABSORBED)
         data << uint32_t(absorbedDamage);
 
     if (hitStatus & HITSTATUS_RESIST)
-        data << uint32_t(damageInfo.resisted_damage);
+        data << uint32_t(damageInfo.resistedDamage);
 
     data << uint8_t(visualState);
     data << uint32_t(0);                                        // unk, can be 0, 1000 or -1
@@ -2452,6 +2539,9 @@ void Unit::addAura(Aura* aur)
     aur->applyModifiers(true);
     aur->RelocateEvents();
 
+    // Call scripted aura apply hook
+    sScriptMgr.callScriptedAuraOnApply(aur);
+
     // Possibly a hackfix from legacy method
     // Reaction from enemy AI
     if (aur->isNegative() && aur->IsCombatStateAffecting()) // Creature
@@ -2614,7 +2704,7 @@ bool Unit::hasAuraState(AuraState state, SpellInfo const* spellInfo, Unit const*
                 continue;
             if (!caster->m_auras[i]->getSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
                 continue;
-            if (caster->m_auras[i]->getSpellInfo()->isAffectingSpell(spellInfo))
+            if (caster->m_auras[i]->getSpellInfo()->isAuraEffectAffectingSpell(SPELL_AURA_IGNORE_TARGET_AURA_STATE, spellInfo))
                 return true;
         }
     }
@@ -2814,6 +2904,38 @@ uint32_t Unit::removeAllAurasByIdReturnCount(uint32_t auraId)
     return res;
 }
 
+void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 0*/, bool removeOnlyEffect/* = false*/)
+{
+    for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        if (m_auras[i] == nullptr)
+            continue;
+
+        const auto aur = m_auras[i];
+        for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; ++x)
+        {
+            if (aur->getAuraEffect(x).mAuraEffect == SPELL_AURA_NONE)
+                continue;
+
+            if (skipSpell == aur->getSpellId())
+                continue;
+
+            if (aur->getAuraEffect(x).mAuraEffect == effect)
+            {
+                if (removeOnlyEffect)
+                {
+                    aur->removeAuraEffect(x);
+                }
+                else
+                {
+                    RemoveAura(aur);
+                    break;
+                }
+            }
+        }
+    }
+}
+
 uint64_t Unit::getSingleTargetGuidForAura(uint32_t spell)
 {
     auto itr = m_singleTargetAura.find(spell);
@@ -2859,15 +2981,14 @@ void Unit::removeSingleTargetGuidForAura(uint32_t spellId)
         m_singleTargetAura.erase(itr);
 }
 
-void Unit::removeAllAurasByAuraEffect(AuraEffect effect)
+uint32_t Unit::getTransformAura() const
 {
-    for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
-    {
-        if (m_auras[i] == nullptr)
-            continue;
-        if (m_auras[i]->getSpellInfo()->hasEffectApplyAuraName(effect))
-            RemoveAura(m_auras[i]);
-    }
+    return m_transformAura;
+}
+
+void Unit::setTransformAura(uint32_t auraId)
+{
+    m_transformAura = auraId;
 }
 
 void Unit::sendAuraUpdate(Aura* aur, bool remove)
@@ -3870,6 +3991,113 @@ bool Unit::isSanctuaryFlagSet() { return false; }
 void Unit::setSanctuaryFlag() {}
 void Unit::removeSanctuaryFlag() {}
 
+void Unit::restoreDisplayId()
+{
+    // Standard transform aura
+    Aura* transform = nullptr;
+    // Mostly a negative transform
+    Aura* forcedTransform = nullptr;
+
+    for (auto i = MAX_TOTAL_AURAS_END - 1; i >= MAX_TOTAL_AURAS_START; --i)
+    {
+        const auto aur = m_auras[i];
+        if (aur == nullptr)
+            continue;
+
+        if (!aur->hasAuraEffect(SPELL_AURA_TRANSFORM))
+            continue;
+
+        if (transform == nullptr)
+            transform = aur;
+
+        // Forced transform takes priority over other transforms
+        const auto isForcedTransform = (aur->getSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY && aur->getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO) || aur->getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_HIGH_PRIORITY;
+        if (isForcedTransform && forcedTransform == nullptr)
+            forcedTransform = aur;
+
+#if VERSION_STRING == Classic
+        // In Classic skeleton transforms (i.e. Noggenfogger Elixir) are considered forced transforms and they take priority over shapeshifting
+        if (aur->getSpellInfo()->getAttributes() == 0x28000000)
+            forcedTransform = aur;
+#endif
+
+        // Negative aura has highest priority
+        if (aur->isNegative())
+        {
+            forcedTransform = aur;
+            break;
+        }
+    }
+
+    // Priority:
+    // 1. negative transform
+    // 2. forced transform (and skeleton transforms in Classic)
+    // 3. shapeshift
+    // 4. other transform
+    // 5. native display id
+    if (forcedTransform != nullptr)
+    {
+        // Get display id from aura
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (forcedTransform->getAuraEffect(i).mAuraEffect != SPELL_AURA_TRANSFORM)
+                continue;
+
+            const auto displayId = forcedTransform->getAuraEffect(i).mFixedDamage;
+            if (displayId != 0)
+            {
+                setDisplayId(displayId);
+                EventModelChange();
+                setTransformAura(forcedTransform->getSpellId());
+                return;
+            }
+        }
+    }
+
+    // There can be only one shapeshift aura
+    const auto shapeshift = getAuraWithAuraEffect(SPELL_AURA_MOD_SHAPESHIFT);
+    if (shapeshift != nullptr)
+    {
+        // Get display id from aura
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (shapeshift->getAuraEffect(i).mAuraEffect != SPELL_AURA_MOD_SHAPESHIFT)
+                continue;
+
+            const auto displayId = shapeshift->getAuraEffect(i).mFixedDamage;
+            if (displayId != 0)
+            {
+                setDisplayId(displayId);
+                EventModelChange();
+                return;
+            }
+        }
+    }
+
+    if (transform != nullptr)
+    {
+        // Get display id from aura
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (transform->getAuraEffect(i).mAuraEffect != SPELL_AURA_TRANSFORM)
+                continue;
+
+            const auto displayId = transform->getAuraEffect(i).mFixedDamage;
+            if (displayId != 0)
+            {
+                setDisplayId(displayId);
+                EventModelChange();
+                setTransformAura(transform->getSpellId());
+                return;
+            }
+        }
+    }
+
+    // No transform aura, no shapeshift aura => use native display id
+    setDisplayId(getNativeDisplayId());
+    EventModelChange();
+}
+
 bool Unit::isSitting() const
 {
     const auto standState = getStandState();
@@ -4066,7 +4294,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                 else
                     sEventMgr.ModifyEventTimeLeft(attacker->getPlayerOwner(), EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
 
-                attacker->getPlayerOwner()->HandleProc(PROC_ON_GAIN_EXPIERIENCE, this, nullptr);
+                attacker->getPlayerOwner()->HandleProc(PROC_ON_KILL, this, nullptr, DamageInfo(), false);
                 attacker->getPlayerOwner()->m_procCounter = 0;
             }
 
@@ -4196,7 +4424,7 @@ void Unit::addSimpleDamageBatchEvent(uint32_t damage, Unit* attacker/* = nullptr
 {
     auto batch = new HealthBatchEvent;
     batch->caster = attacker;
-    batch->damage = damage;
+    batch->damageInfo.realDamage = damage;
     batch->spellInfo = spellInfo;
     
     addHealthBatchEvent(batch);
@@ -4205,13 +4433,13 @@ void Unit::addSimpleDamageBatchEvent(uint32_t damage, Unit* attacker/* = nullptr
 void Unit::addSimpleEnvironmentalDamageBatchEvent(EnviromentalDamage type, uint32_t damage, uint32_t absorbedDamage/* = 0*/)
 {
     auto batch = new HealthBatchEvent;
-    batch->damage = damage;
+    batch->damageInfo.realDamage = damage;
     batch->isEnvironmentalDamage = true;
     batch->environmentType = type;
 
     // Only fire and lava environmental damage types can be absorbed
     if (type == DAMAGE_FIRE || type == DAMAGE_LAVA)
-        batch->absorbedDamageOrHeal = absorbedDamage;
+        batch->damageInfo.absorbedDamage = absorbedDamage;
 
     addHealthBatchEvent(batch);
 }
@@ -4220,7 +4448,7 @@ void Unit::addSimpleHealingBatchEvent(uint32_t heal, Unit* healer/* = nullptr*/,
 {
     auto batch = new HealthBatchEvent;
     batch->caster = healer;
-    batch->damage = heal;
+    batch->damageInfo.realDamage = heal;
     batch->spellInfo = spellInfo;
     batch->isHeal = true;
 
@@ -4270,9 +4498,9 @@ uint32_t Unit::calculateEstimatedOverKillForCombatLog(uint32_t damage) const
     for (const auto& batch : m_healthBatch)
     {
         if (batch->isHeal)
-            totalDamage += batch->damage;
+            totalDamage += batch->damageInfo.realDamage;
         else
-            totalDamage -= batch->damage;
+            totalDamage -= batch->damageInfo.realDamage;
     }
 
     const int32_t healthValue = curHealth + totalDamage;
@@ -4297,9 +4525,9 @@ uint32_t Unit::calculateEstimatedOverHealForCombatLog(uint32_t heal) const
     for (const auto& batch : m_healthBatch)
     {
         if (batch->isHeal)
-            totalHeal += batch->damage;
+            totalHeal += batch->damageInfo.realDamage;
         else
-            totalHeal -= batch->damage;
+            totalHeal -= batch->damageInfo.realDamage;
     }
 
     const int32_t healthValue = curHealth + totalHeal;
@@ -4393,7 +4621,7 @@ void Unit::_updateHealth()
         if (batch->isHeal)
         {
             uint32_t absorbedHeal = 0;
-            const auto heal = _handleBatchHealing(batch->caster, batch->damage, &absorbedHeal, batch->spellInfo);
+            const auto heal = _handleBatchHealing(batch, &absorbedHeal);
             healthVal += heal;
 
             const int32_t diff = curHealth + healthVal;
@@ -4410,7 +4638,7 @@ void Unit::_updateHealth()
             const auto damage = _handleBatchDamage(batch, &rageGenerated);
             healthVal -= damage;
 
-            totalAbsorbDamage += batch->absorbedDamageOrHeal;
+            totalAbsorbDamage += batch->damageInfo.absorbedDamage;
             totalRageGenerated += rageGenerated;
 
             const int32_t diff = curHealth + healthVal;
@@ -4472,7 +4700,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
 {
     const auto spellId = batch->spellInfo != nullptr ? batch->spellInfo->getId() : 0;
     const uint8_t absSchool = batch->spellInfo != nullptr ? batch->spellInfo->getFirstSchoolFromSchoolMask() : 0;
-    auto damage = batch->damage;
+    auto damage = batch->damageInfo.realDamage;
 
     const auto attacker = batch->caster;
     if (attacker != nullptr && attacker != this)
@@ -4579,7 +4807,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
         }
 
         healAmount = static_cast<uint32_t>(std::ceil(healAmount * batch->leechMultipleValue));
-        attacker->doSpellHealing(attacker, spellId, healAmount, true, true, batch->isPeriodic, true, false);
+        attacker->doSpellHealing(attacker, spellId, healAmount, false, true, batch->isPeriodic, true, false);
     }
 
     setStandState(STANDSTATE_STAND);
@@ -4604,14 +4832,15 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
     return damage;
 }
 
-uint32_t Unit::_handleBatchHealing(Unit* healer, uint32_t heal, uint32_t* absorbedHeal, SpellInfo const* spellInfo)
+uint32_t Unit::_handleBatchHealing(HealthBatchEvent const* batch, uint32_t* absorbedHeal)
 {
-    auto healing = heal;
+    auto healing = batch->damageInfo.realDamage;
 
     // Handle heal absorb
     ///\ todo: implement (aura effect 301)
     *absorbedHeal = 0;
 
+    const auto healer = batch->caster;
     if (healer != nullptr)
     {
         const auto plrOwner = healer->getPlayerOwner();
@@ -4634,7 +4863,7 @@ uint32_t Unit::_handleBatchHealing(Unit* healer, uint32_t heal, uint32_t* absorb
         // Update battleground score
         if (plrOwner != nullptr && plrOwner->m_bg != nullptr && plrOwner->GetMapMgr() == GetMapMgr())
         {
-            plrOwner->m_bgScore.HealingDone += heal;
+            plrOwner->m_bgScore.HealingDone += healing;
             plrOwner->m_bg->UpdatePvPData();
         }
 
@@ -4660,11 +4889,11 @@ uint32_t Unit::_handleBatchHealing(Unit* healer, uint32_t heal, uint32_t* absorb
         
         if (count != 0)
         {
-            auto heal_threat = heal / count;
+            auto heal_threat = healing / count;
 
             for (const auto& itr : target_threat)
             {
-                itr->GetAIInterface()->HealReaction(healer, this, spellInfo, heal_threat);
+                itr->GetAIInterface()->HealReaction(healer, this, batch->spellInfo, heal_threat);
             }
         }
 

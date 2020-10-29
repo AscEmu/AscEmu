@@ -270,7 +270,7 @@ SpellInfo const* SpellMgr::getSpellInfo(const uint32_t spellId) const
     return nullptr;
 }
 
-SpellInfo const* SpellMgr::getSpellInfoByDifficulty(const uint32_t spellDifficultyId, const uint8_t difficulty) const
+SpellInfo const* SpellMgr::getSpellInfoByDifficulty([[maybe_unused]]const uint32_t spellDifficultyId, [[maybe_unused]] const uint8_t difficulty) const
 {
     // Future request: create a new sql table to contain missing spell difficulties
     // it will also be useful for tbc since the dbc file does not exist there
@@ -660,9 +660,9 @@ void SpellMgr::loadSpellCoefficientOverride()
         const auto overtime_override = fields[2].GetFloat();
         // Coeff can be overridden to 0 when it won't receive any bonus from spell power (default value is -1)
         if (direct_override >= 0)
-            spellInfo->spell_coeff_direct_override = direct_override;
+            spellInfo->spell_coeff_direct = direct_override;
         if (overtime_override >= 0)
-            spellInfo->spell_coeff_overtime_override = overtime_override;
+            spellInfo->spell_coeff_overtime = overtime_override;
         ++overridenCoeffs;
     } while (result->NextRow());
     delete result;
@@ -711,49 +711,57 @@ void SpellMgr::loadSpellCustomOverride()
         if (fields[4].isSet())
             spellInfo->custom_c_is_flags = fields[4].GetUInt32();
 
+        //\ todo: remove this field
         //proc_flags
-        if (fields[5].isSet())
-            spellInfo->setProcFlags(fields[5].GetUInt32());
+        //if (fields[5].isSet())
+            //spellInfo->setProcFlags(fields[5].GetUInt32());
 
+        //\ todo: remove this field
         //proc_target_selfs
-        if (fields[6].isSet() && fields[6].GetBool())
-            spellInfo->addProcFlags(PROC_TARGET_SELF);
+        //if (fields[6].isSet() && fields[6].GetBool())
+            //spellInfo->addProcFlags(PROC_TARGET_SELF);
 
+        //\ todo: remove this field
         //proc_chance
-        if (fields[7].isSet())
-            spellInfo->setProcChance(fields[7].GetUInt32());
+        //if (fields[7].isSet())
+            //spellInfo->setProcChance(fields[7].GetUInt32());
 
+        //\ todo: remove this field
         //proc_charges
-        if (fields[8].isSet())
-            spellInfo->setProcCharges(fields[8].GetUInt32());
+        //if (fields[8].isSet())
+            //spellInfo->setProcCharges(fields[8].GetUInt32());
 
+        //\ todo: remove this field
         //proc_interval
-        if (fields[9].isSet())
-            spellInfo->custom_proc_interval = fields[9].GetUInt32();
+        //if (fields[9].isSet())
+            //spellInfo->custom_proc_interval = fields[9].GetUInt32();
 
+        //\ todo: remove this field
         //proc_effect_trigger_spell_0
-        if (fields[10].isSet())
+        /*if (fields[10].isSet())
         {
             spellInfo->setEffectTriggerSpell(fields[10].GetUInt32(), 0);
             if (spellInfo->getEffectTriggerSpell(0) > 0)
                 spellInfo->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        }
+        }*/
 
+        //\ todo: remove this field
         //proc_effect_trigger_spell_1
-        if (fields[11].isSet())
+        /*if (fields[11].isSet())
         {
             spellInfo->setEffectTriggerSpell(fields[11].GetUInt32(), 1);
             if (spellInfo->getEffectTriggerSpell(1) > 0)
                 spellInfo->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-        }
+        }*/
 
+        //\ todo: remove this field
         //proc_effect_trigger_spell_2
-        if (fields[12].isSet())
+        /*if (fields[12].isSet())
         {
             spellInfo->setEffectTriggerSpell(fields[12].GetUInt32(), 2);
             if (spellInfo->getEffectTriggerSpell(2) > 0)
                 spellInfo->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 2);
-        }
+        }*/
 
         ++overridenSpells;
     } while (result->NextRow());
@@ -1063,11 +1071,9 @@ void SpellMgr::setSpellCoefficient(SpellInfo* sp)
     const auto baseDuration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->getDurationIndex())));
     const auto isOverTimeSpell = sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE) || sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_HEAL);
 
-    // Get coefficient override from database if any is set
-    if (sp->spell_coeff_direct_override != -1)
+    // Check if coefficient is overriden from database
+    if (sp->spell_coeff_direct != -1)
     {
-        sp->spell_coeff_direct = sp->spell_coeff_direct_override;
-
         // Store coeff value as per missile for channeled spells
         if (sp->isChanneled())
         {
@@ -1080,25 +1086,6 @@ void SpellMgr::setSpellCoefficient(SpellInfo* sp)
                     sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_LEECH)
                 {
                     sp->spell_coeff_direct /= baseDuration / sp->getEffectAmplitude(i);
-                    break;
-                }
-            }
-        }
-    }
-    if (sp->spell_coeff_overtime_override != -1)
-    {
-        sp->spell_coeff_overtime = sp->spell_coeff_overtime_override;
-
-        // Store coeff value as per tick for over-time spells
-        if (isOverTimeSpell)
-        {
-            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            {
-                if (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_DAMAGE ||
-                    sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_HEAL ||
-                    sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_LEECH)
-                {
-                    sp->spell_coeff_overtime /= baseDuration / sp->getEffectAmplitude(i);
                     break;
                 }
             }
@@ -1311,7 +1298,7 @@ void SpellMgr::setSpellCoefficient(SpellInfo* sp)
                 {
                     auto triggeredSpell = sSpellMgr.getMutableSpellInfo(sp->getEffectTriggerSpell(i));
                     // But do not alter its coefficient if it's already overridden in database
-                    if (triggeredSpell != nullptr && triggeredSpell->spell_coeff_direct_override == -1)
+                    if (triggeredSpell != nullptr && triggeredSpell->spell_coeff_direct == -1)
                         triggeredSpell->spell_coeff_direct = sp->spell_coeff_direct;
                 }
                 break;

@@ -104,65 +104,175 @@ SpellScriptEffectDamage ScriptMgr::callScriptedSpellDoCalculateEffect(Spell* spe
     return spellScript->doCalculateEffect(spell, effectIndex, damage);
 }
 
-SpellScriptExecuteState ScriptMgr::callScriptedSpellBeforeSpellEffect(Spell* spell, uint32_t effectType, uint8_t effectId) const
+SpellScriptExecuteState ScriptMgr::callScriptedSpellBeforeSpellEffect(Spell* spell, uint8_t effectIndex) const
 {
     const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
     if (spellScript == nullptr)
         return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 
-    return spellScript->beforeSpellEffect(spell, effectType, effectId);
+    return spellScript->beforeSpellEffect(spell, effectIndex);
 }
 
-void ScriptMgr::callScriptedSpellAfterSpellEffect(Spell* spell, uint32_t effectType, uint8_t effectId)
+void ScriptMgr::callScriptedSpellAfterSpellEffect(Spell* spell, uint8_t effectIndex)
 {
     const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
     if (spellScript == nullptr)
         return;
 
-    spellScript->afterSpellEffect(spell, effectType, effectId);
+    spellScript->afterSpellEffect(spell, effectIndex);
 }
 
 void ScriptMgr::callScriptedAuraOnCreate(Aura* aur)
 {
-    const auto auraScript = getAuraScript(aur->getSpellId());
-    if (auraScript == nullptr)
+    const auto spellScript = getSpellScript(aur->getSpellId());
+    if (spellScript == nullptr)
         return;
 
-    auraScript->onAuraCreate(aur);
+    spellScript->onAuraCreate(aur);
+}
+
+void ScriptMgr::callScriptedAuraOnApply(Aura* aur)
+{
+    const auto spellScript = getSpellScript(aur->getSpellId());
+    if (spellScript == nullptr)
+        return;
+
+    spellScript->onAuraApply(aur);
 }
 
 void ScriptMgr::callScriptedAuraOnRemove(Aura* aur, AuraRemoveMode mode)
 {
-    const auto auraScript = getAuraScript(aur->getSpellId());
-    if (auraScript == nullptr)
+    const auto spellScript = getSpellScript(aur->getSpellId());
+    if (spellScript == nullptr)
         return;
 
-    auraScript->onAuraRemove(aur, mode);
+    spellScript->onAuraRemove(aur, mode);
+}
+
+void ScriptMgr::callScriptedAuraOnRefreshOrGainNewStack(Aura* aur, uint32_t newStackCount, uint32_t oldStackCount)
+{
+    const auto spellScript = getSpellScript(aur->getSpellId());
+    if (spellScript == nullptr)
+        return;
+
+    spellScript->onAuraRefreshOrGainNewStack(aur, newStackCount, oldStackCount);
+}
+
+SpellScriptExecuteState ScriptMgr::callScriptedAuraBeforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) const
+{
+    const auto spellScript = getSpellScript(aur->getSpellId());
+    if (spellScript == nullptr)
+        return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
+
+    return spellScript->beforeAuraEffect(aur, aurEff, apply);
+}
+
+SpellScriptCheckDummy ScriptMgr::callScriptedAuraOnDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) const
+{
+    const auto spellScript = getSpellScript(aur->getSpellId());
+    if (spellScript == nullptr)
+        return SpellScriptCheckDummy::DUMMY_NOT_HANDLED;
+
+    return spellScript->onAuraDummyEffect(aur, aurEff, apply);
 }
 
 SpellScriptExecuteState ScriptMgr::callScriptedAuraOnPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, int32_t* damage) const
 {
-    const auto auraScript = getAuraScript(aur->getSpellId());
-    if (auraScript == nullptr)
+    const auto spellScript = getSpellScript(aur->getSpellId());
+    if (spellScript == nullptr)
         return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 
-    return auraScript->onAuraPeriodicTick(aur, aurEff, damage);
+    return spellScript->onAuraPeriodicTick(aur, aurEff, damage);
+}
+
+void ScriptMgr::callScriptedSpellProcCreate(SpellProc* spellProc, Object* obj)
+{
+    const auto spellScript = getSpellScript(spellProc->getSpell()->getId());
+    if (spellScript == nullptr)
+        return;
+
+    spellScript->onCreateSpellProc(spellProc, obj);
+}
+
+bool ScriptMgr::callScriptedSpellCanProc(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) const
+{
+    const auto spellScript = getSpellScript(spellProc->getSpell()->getId());
+    if (spellScript == nullptr)
+        return true;
+
+    return spellScript->canProc(spellProc, victim, castingSpell, damageInfo);
+}
+
+bool ScriptMgr::callScriptedSpellCheckProcFlags(SpellProc* spellProc, SpellProcFlags procFlags) const
+{
+    const auto spellScript = getSpellScript(spellProc->getSpell()->getId());
+    if (spellScript == nullptr)
+        return spellProc->getProcFlags() & procFlags;
+
+    return spellScript->onCheckProcFlags(spellProc, procFlags);
+}
+
+bool ScriptMgr::callScriptedSpellProcCanDelete(SpellProc* spellProc, uint32_t spellId, uint64_t casterGuid, uint64_t misc) const
+{
+    const auto spellScript = getSpellScript(spellProc->getSpell()->getId());
+    if (spellScript == nullptr)
+    {
+        if (spellProc->getSpell()->getId() == spellId && (casterGuid == 0 || spellProc->getCasterGuid() == casterGuid) && !spellProc->isDeleted())
+            return true;
+
+        return false;
+    }
+
+    return spellScript->canDeleteProc(spellProc, spellId, casterGuid, misc);
+}
+
+SpellScriptExecuteState ScriptMgr::callScriptedSpellProcDoEffect(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) const
+{
+    const auto spellScript = getSpellScript(spellProc->getSpell()->getId());
+    if (spellScript == nullptr)
+        return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
+
+    return spellScript->onDoProcEffect(spellProc, victim, castingSpell, damageInfo);
+}
+
+uint32_t ScriptMgr::callScriptedSpellCalcProcChance(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell) const
+{
+    const auto spellScript = getSpellScript(spellProc->getSpell()->getId());
+    if (spellScript == nullptr)
+        return spellProc->calcProcChance(victim, castingSpell);
+
+    return spellScript->calcProcChance(spellProc, victim, castingSpell);
+}
+
+bool ScriptMgr::callScriptedSpellCanProcOnTriggered(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, Aura* triggeredFromAura) const
+{
+    const auto spellScript = getSpellScript(spellProc->getSpell()->getId());
+    if (spellScript == nullptr)
+    {
+        if (spellProc->getOriginalSpell() != nullptr && spellProc->getOriginalSpell()->getAttributesExC() & ATTRIBUTESEXC_CAN_PROC_ON_TRIGGERED)
+            return true;
+
+        return false;
+    }
+
+    return spellScript->canProcOnTriggered(spellProc, victim, castingSpell, triggeredFromAura);
+}
+
+void ScriptMgr::callScriptedSpellProcCastSpell(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell)
+{
+    const auto spellScript = getSpellScript(spellProc->getSpell()->getId());
+    if (spellScript == nullptr)
+    {
+        spellProc->castSpell(victim, castingSpell);
+        return;
+    }
+
+    spellScript->onCastProcSpell(spellProc, victim, castingSpell);
 }
 
 SpellScript* ScriptMgr::getSpellScript(uint32_t spellId) const
 {
     for (const auto& itr : _spellscripts)
-    {
-        if (itr.first == spellId)
-            return itr.second;
-    }
-
-    return nullptr;
-}
-
-AuraScript* ScriptMgr::getAuraScript(uint32_t spellId) const
-{
-    for (const auto& itr : _auraScripts)
     {
         if (itr.first == spellId)
             return itr.second;
@@ -189,22 +299,12 @@ void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss)
     _spellscripts[spellId] = ss;
 }
 
-void ScriptMgr::register_aura_script(uint32_t spellId, AuraScript* as)
+void ScriptMgr::register_spell_script(uint32_t* spellIds, SpellScript* ss)
 {
-    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
-    if (spellInfo == nullptr)
+    for (uint32_t i = 0; spellIds[i] != 0; ++i)
     {
-        LogError("ScriptMgr tried to register a script for aura id %u but aura does not exist!", spellId);
-        return;
+        register_spell_script(spellIds[i], ss);
     }
-
-    if (_auraScripts.find(spellId) != _auraScripts.end())
-    {
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for aura id %u but this aura has already one.", spellId);
-        return;
-    }
-
-    _auraScripts[spellId] = as;
 }
 
 // MIT End
@@ -344,10 +444,6 @@ void ScriptMgr::UnloadScripts()
     for (auto& itr : _spellscripts)
         delete itr.second;
     _spellscripts.clear();
-
-    for (auto& itr : _auraScripts)
-        delete itr.second;
-    _auraScripts.clear();
 
     UnloadScriptEngines();
 

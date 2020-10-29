@@ -46,18 +46,24 @@ public:
     // Note; this can cause false positives if aura has multiple effects
     // Use isAuraEffectAffectingSpell in that case to check individual effects
     bool isAffectingSpell(SpellInfo const* spellInfo) const;
+    bool isEffectIndexAffectingSpell(uint8_t effIndex, SpellInfo const* spellInfo) const;
     bool isAuraEffectAffectingSpell(AuraEffect auraEffect, SpellInfo const* spellInfo) const;
 
     // Returns true if powertype is valid for current expansion
     bool hasValidPowerType() const;
+    int32_t getBasePowerCost(Unit* caster) const;
+
+    bool isNegativeAura() const;
 
     uint32_t getSpellDefaultDuration(Unit const* caster) const;
 
     bool hasTargetType(uint32_t type) const;
+    uint32_t getRequiredTargetMaskForEffectTarget(uint32_t implicitTarget, uint8_t effectIndex) const;
+    uint32_t getRequiredTargetMaskForEffect(uint8_t effectIndex) const;
     int aiTargetType() const;
     bool isTargetingStealthed() const;
-    bool isRequireCooldownSpell() const;
 
+    bool isRequireCooldownSpell() const;
     bool isPassive() const;
     bool isProfession() const;
     bool isPrimaryProfession() const;
@@ -448,7 +454,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     //custom values
-    uint32_t getCustom_proc_interval() const { return custom_proc_interval; }
     uint32_t getCustom_BGR_one_buff_on_target() const { return custom_BGR_one_buff_on_target; }
     uint32_t getCustom_c_is_flags() const { return custom_c_is_flags; }
     uint32_t getCustom_RankNumber() const { return custom_RankNumber; }
@@ -1049,7 +1054,7 @@ public:
     // Direct damage or direct heal coefficient
     float_t spell_coeff_direct = -1.0f;
 
-    // Damage or healing over-time coefficient (NOTE: This is per tick, not for full duration, unlike the SQL override variable)
+    // Damage or healing over-time coefficient (NOTE: This is per tick)
     float_t spell_coeff_overtime = -1.0f;
 
     // Attack power coefficient (only set in SQL table spell_coefficient_override)
@@ -1057,15 +1062,8 @@ public:
     // This is per tick
     float_t spell_ap_coeff_overtime = 0.0f;
 
-    // SQL override coefficients (table spell_coefficient_override)
-    float_t spell_coeff_direct_override = -1.0f;
-    float_t spell_coeff_overtime_override = -1.0f;
-
     //////////////////////////////////////////////////////////////////////////////////////////
     //custom values
-
-    // from MySQL table spell_proc - 1887 spells
-    uint32_t custom_proc_interval = 0;
 
     // from MySQL table spell_custom_assign - 1970 spells
     uint32_t custom_BGR_one_buff_on_target = 0;

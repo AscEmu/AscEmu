@@ -33,82 +33,8 @@
 #include "SpellHelpers.h"
 #include "Units/Creatures/Pet.h"
 
-uint32_t g_spellImplicitTargetFlags[MAX_IMPLICIT_TARGET_VALUE];
-
-void InitImplicitTargetFlags()
-{
-    memset(g_spellImplicitTargetFlags, 0, sizeof(uint32) * MAX_IMPLICIT_TARGET_VALUE);
-
-#define SET_TARGET_TYPE(ind, val) g_spellImplicitTargetFlags[ind] = val;
-
-    SET_TARGET_TYPE(0, SPELL_TARGET_REQUIRE_ITEM | SPELL_TARGET_REQUIRE_GAMEOBJECT);
-    SET_TARGET_TYPE(1, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(3, SPELL_TARGET_REQUIRE_FRIENDLY);
-    SET_TARGET_TYPE(4, SPELL_TARGET_AREA_SELF | SPELL_TARGET_REQUIRE_FRIENDLY);
-    SET_TARGET_TYPE(5, SPELL_TARGET_OBJECT_CURPET);
-    SET_TARGET_TYPE(6, SPELL_TARGET_REQUIRE_ATTACKABLE);
-    SET_TARGET_TYPE(7, SPELL_TARGET_OBJECT_SCRIPTED);
-    SET_TARGET_TYPE(8, SPELL_TARGET_AREA | SPELL_TARGET_REQUIRE_ATTACKABLE);
-    SET_TARGET_TYPE(15, SPELL_TARGET_AREA_SELF | SPELL_TARGET_REQUIRE_ATTACKABLE);
-    SET_TARGET_TYPE(16, SPELL_TARGET_AREA | SPELL_TARGET_REQUIRE_ATTACKABLE);
-    //SET_TARGET_TYPE(17, SPELL_TARGET_AREA);
-    SET_TARGET_TYPE(18, SPELL_TARGET_AREA_SELF | SPELL_TARGET_NO_OBJECT);
-    SET_TARGET_TYPE(20, SPELL_TARGET_AREA_PARTY);
-    SET_TARGET_TYPE(21, SPELL_TARGET_REQUIRE_FRIENDLY);
-    SET_TARGET_TYPE(22, SPELL_TARGET_AREA_SELF);
-    SET_TARGET_TYPE(23, SPELL_TARGET_REQUIRE_GAMEOBJECT);
-    SET_TARGET_TYPE(24, SPELL_TARGET_AREA_CONE | SPELL_TARGET_REQUIRE_ATTACKABLE);
-    SET_TARGET_TYPE(25, SPELL_TARGET_ANY_OBJECT);
-    SET_TARGET_TYPE(26, SPELL_TARGET_REQUIRE_GAMEOBJECT | SPELL_TARGET_REQUIRE_ITEM);
-    SET_TARGET_TYPE(27, SPELL_TARGET_OBJECT_PETOWNER);
-    SET_TARGET_TYPE(28, SPELL_TARGET_AREA | SPELL_TARGET_REQUIRE_ATTACKABLE);
-    SET_TARGET_TYPE(29, SPELL_TARGET_OBJECT_SELF | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_SELF);
-    SET_TARGET_TYPE(30, SPELL_TARGET_REQUIRE_FRIENDLY);
-    SET_TARGET_TYPE(31, SPELL_TARGET_REQUIRE_FRIENDLY | SPELL_TARGET_AREA);
-    //SET_TARGET_TYPE(32, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(33, SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_PARTY);
-    SET_TARGET_TYPE(35, SPELL_TARGET_AREA_PARTY);
-    SET_TARGET_TYPE(36, SPELL_TARGET_OBJECT_SCRIPTED);
-    SET_TARGET_TYPE(37, SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID);
-    SET_TARGET_TYPE(39, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(40, SPELL_TARGET_OBJECT_SCRIPTED);
-    SET_TARGET_TYPE(41, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(42, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(43, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(44, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(45, SPELL_TARGET_AREA_CHAIN | SPELL_TARGET_REQUIRE_FRIENDLY);
-    SET_TARGET_TYPE(46, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(47, SPELL_TARGET_AREA_SELF | SPELL_TARGET_NO_OBJECT); //dont fill target map for this (fucks up some spell visuals)
-    SET_TARGET_TYPE(48, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(49, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(50, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(52, SPELL_TARGET_AREA | SPELL_TARGET_REQUIRE_GAMEOBJECT | SPELL_TARGET_REQUIRE_ATTACKABLE);
-    SET_TARGET_TYPE(34, SPELL_TARGET_NOT_IMPLEMENTED); //seige stuff
-    SET_TARGET_TYPE(53, SPELL_TARGET_AREA_CURTARGET | SPELL_TARGET_REQUIRE_ATTACKABLE);
-    SET_TARGET_TYPE(54, SPELL_TARGET_AREA_CONE | SPELL_TARGET_REQUIRE_ATTACKABLE);
-    SET_TARGET_TYPE(56, SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_RAID); //used by commanding shout, targets raid now
-    SET_TARGET_TYPE(57, SPELL_TARGET_REQUIRE_FRIENDLY | SPELL_TARGET_AREA_PARTY);
-    SET_TARGET_TYPE(61, SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_RAID | SPELL_TARGET_OBJECT_TARCLASS | SPELL_TARGET_REQUIRE_FRIENDLY);
-    SET_TARGET_TYPE(63, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(64, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(65, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(66, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(67, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(69, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(72, SPELL_TARGET_AREA_RANDOM);
-    SET_TARGET_TYPE(73, SPELL_TARGET_OBJECT_SELF);
-    SET_TARGET_TYPE(76, SPELL_TARGET_REQUIRE_ATTACKABLE);
-    SET_TARGET_TYPE(77, SPELL_TARGET_REQUIRE_ATTACKABLE);
-    SET_TARGET_TYPE(86, SPELL_TARGET_AREA_RANDOM);
-    SET_TARGET_TYPE(87, SPELL_TARGET_AREA);
-    SET_TARGET_TYPE(90, SPELL_TARGET_OBJECT_CURCRITTER);
-    SET_TARGET_TYPE(104, SPELL_TARGET_REQUIRE_ATTACKABLE | SPELL_TARGET_AREA_CONE);
-
-#undef SET_TARGET_TYPE
-}
-
-// APGL End
-// MIT Start
+ // APGL End
+ // MIT Start
 
 void Spell::safeAddMissedTarget(uint64_t targetGuid, SpellDidHitResult hitResult, SpellDidHitResult extendedHitResult)
 {
@@ -131,11 +57,7 @@ void Spell::FillTargetMap(uint32 i)
     ARCEMU_ASSERT(m_caster->IsInWorld());
 
     uint32 TargetType = 0;
-    TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetA(static_cast<uint8_t>(i)), i);
-
-    //never get info from B if it is 0 :P
-    if (m_spellInfo->getEffectImplicitTargetB(static_cast<uint8_t>(i)) != EFF_TARGET_NONE)
-        TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetB(static_cast<uint8_t>(i)), i);
+    TargetType |= getSpellInfo()->getRequiredTargetMaskForEffect(static_cast<uint8_t>(i));
 
     if (TargetType & SPELL_TARGET_NOT_IMPLEMENTED)
         return;
@@ -153,7 +75,9 @@ void Spell::FillTargetMap(uint32 i)
             target = m_caster->GetMapMgrObject(m_targets.getGameObjectTarget());
         else if (TargetType & SPELL_TARGET_REQUIRE_ITEM)
             target = m_caster->GetMapMgrObject(m_targets.getItemTarget());
-        else
+
+        // If target was not found, try unit
+        if (target == nullptr)
             target = m_caster->GetMapMgrObject(m_targets.getUnitTarget());
 
         AddTarget(i, TargetType, target);
@@ -392,7 +316,24 @@ void Spell::AddAOETargets(uint32 i, uint32 targetType, float r, uint32 maxtarget
         source = tarobj->GetPosition();
     else
     {
-        m_targets.addTargetMask(TARGET_FLAG_DEST_LOCATION);
+        if (!m_targets.getDestination().isSet())
+        {
+            // If position is not set, try unit target's position
+            if (m_targets.getUnitTarget() != 0)
+            {
+                const auto targetUnit = m_caster->GetMapMgrUnit(m_targets.getUnitTarget());
+                if (targetUnit != nullptr)
+                    m_targets.setDestination(targetUnit->GetPosition());
+            }
+
+            // Check again if position was set
+            if (!m_targets.getDestination().isSet())
+            {
+                // No unit target => use caster's position
+                m_targets.setDestination(m_caster->GetPosition());
+            }
+        }
+
         source = m_targets.getDestination();
     }
 
@@ -534,11 +475,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
         if (m_spellInfo->getEffect(i) == 0)
             continue;
         uint32 TargetType = 0;
-        TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetA(i), i);
-
-        //never get info from B if it is 0 :P
-        if (m_spellInfo->getEffectImplicitTargetB(i) != EFF_TARGET_NONE)
-            TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetB(i), i);
+        TargetType |= getSpellInfo()->getRequiredTargetMaskForEffect(i);
 
         if (TargetType & (SPELL_TARGET_OBJECT_SELF | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID))
         {

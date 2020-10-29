@@ -57,7 +57,7 @@ bool Execute(uint8_t effectIndex, Spell* pSpell)
     dmg += Caster->getAttackPower() / 5;
     dmg += toadd;
 
-    Caster->Strike(Target, 0, pSpell->getSpellInfo(), 0, 0, dmg, false, false);
+    Caster->Strike(Target, MELEE, pSpell->getSpellInfo(), 0, 0, dmg, false, false);
 
     return true;
 }
@@ -69,20 +69,20 @@ bool Vigilance(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    pSpell->getPlayerCaster()->ClearCooldownForSpell(355);   // Taunt
+    pSpell->getPlayerCaster()->clearCooldownForSpell(355);   // Taunt
 
     return true;
 }
 
-bool DamageShield(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
+bool DamageShield(uint8_t /*effectIndex*/, Aura* /*pAura*/, bool /*apply*/)
 {
-    Unit* target = pAura->getOwner();
+    /*Unit* target = pAura->getOwner();
 
     if (apply)
-        target->AddProcTriggerSpell(59653, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_BLOCK_VICTIM, 0, NULL, NULL);
+        target->addProcTriggerSpell(59653, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), SpellProcFlags(PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_BLOCK_VICTIM), EXTRA_PROC_NULL, 0, NULL, NULL);
     else
-        target->RemoveProcTriggerSpell(59653, pAura->getCasterGuid());
-
+        target->removeProcTriggerSpell(59653, pAura->getCasterGuid());
+        */
     return true;
 }
 
@@ -97,7 +97,7 @@ bool HeroicFury(uint8_t /*effectIndex*/, Spell* s)
 
     if (p_caster->HasSpell(20252))
     {
-        p_caster->ClearCooldownForSpell(20252);
+        p_caster->clearCooldownForSpell(20252);
     }
 
     for (uint32_t x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)

@@ -32,20 +32,20 @@ public:
 
     static SpellProc* Create() { return new TwinBladesOfAzzinothSpellProc(); }
 
-    void Init(Object* /*obj*/)
+    void init(Object* /*obj*/) override
     {
-        if (!mTarget->isPlayer())
+        if (!getProcOwner()->isPlayer())
             return;
 
         /* The Twin Blades of Azzinoth.
             * According to comments on wowhead, this proc has ~0.75ppm (procs-per-minute). */
-        Item* mh = static_cast<Player*>(mTarget)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-        Item* of = static_cast<Player*>(mTarget)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+        Item* mh = static_cast<Player*>(getProcOwner())->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+        Item* of = static_cast<Player*>(getProcOwner())->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
         if (mh != nullptr && of != nullptr)
         {
             uint32 mhs = mh->getItemProperties()->Delay;
             uint32 ohs = of->getItemProperties()->Delay;
-            mProcChance = mhs * ohs / (800 * (mhs + ohs));     // 0.75 ppm
+            setProcChance(mhs * ohs / (800 * (mhs + ohs)));     // 0.75 ppm
         }
     }
 };
@@ -59,5 +59,5 @@ void SpellProcMgr::SetupItems()
         41435,
         0
     };
-    AddById(mindNumbingPoison, &TwinBladesOfAzzinothSpellProc::Create);
+    addByIds(mindNumbingPoison, &TwinBladesOfAzzinothSpellProc::Create);
 }

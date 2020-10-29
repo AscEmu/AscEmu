@@ -220,7 +220,7 @@ void AuctionHouse::removeAuction(Auction* auction)
 
             // Send a mail to the owner with his cut of the price.
             const uint32_t auction_cut = float2int32(cutPercent * auction->highestBid);
-            int32 amount = auction->highestBid - auction_cut + auction->depositAmount;
+            auto amount = auction->highestBid - auction_cut + auction->depositAmount;
             if (amount < 0)
                 amount = 0;
 

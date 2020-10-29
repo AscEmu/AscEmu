@@ -1004,7 +1004,10 @@ void GameObject_Trap::Update(unsigned long time_passed)
                 CastSpell(o->getGuid(), spell);
 
                 if (m_summoner != NULL)
-                    m_summoner->HandleProc(PROC_ON_TRAP_TRIGGER, reinterpret_cast<Unit*>(o), spell);
+                {
+                    m_summoner->HandleProc(PROC_ON_TRAP_ACTIVATION, reinterpret_cast<Unit*>(o), spell, DamageInfo(), false);
+                    m_summoner->m_procCounter = 0;
+                }
 
                 if (charges != 0)
                     charges--;

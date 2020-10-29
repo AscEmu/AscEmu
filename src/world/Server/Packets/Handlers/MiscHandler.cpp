@@ -251,13 +251,13 @@ void WorldSession::handleTutorialFlag(WorldPacket& recvPacket)
 
 void WorldSession::handleTutorialClear(WorldPacket& /*recvPacket*/)
 {
-    for (uint32_t id = 0; id < 8; ++id)
+    for (uint8_t id = 0; id < 8; ++id)
         _player->setTutorialValueForId(id, 0xFFFFFFFF);
 }
 
 void WorldSession::handleTutorialReset(WorldPacket& /*recvPacket*/)
 {
-    for (uint32_t id = 0; id < 8; ++id)
+    for (uint8_t id = 0; id < 8; ++id)
         _player->setTutorialValueForId(id, 0x00000000);
 }
 

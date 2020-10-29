@@ -229,8 +229,6 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
         AscLog.ConsoleLogMajorError("You are running AscEmu as root.", "This is not needed, and may be a possible security risk.", "It is advised to hit CTRL+C now and", "start as a non-privileged user.");
 #endif
 
-    InitImplicitTargetFlags();
-
     ThreadPool.Startup();
     auto startTime = Util::TimeNow();
 

@@ -243,6 +243,47 @@ Spell::~Spell()
         sendSpellGo();
 #endif
 
+    // Handle procs for each target
+    //\ todo: this is ugly to send proc events from destructor but at the moment it's required -Appled
+    Unit* targetUnit = nullptr;
+    if (m_targetProcFlags != 0)
+    {
+        // Handle each target's procs
+        for (const auto& uniqueTarget : uniqueHittedTargets)
+        {
+            targetUnit = m_caster->GetMapMgrUnit(uniqueTarget.first);
+            if (targetUnit == nullptr)
+                continue;
+
+            targetUnit->HandleProc(m_targetProcFlags, getUnitCaster(), getSpellInfo(), uniqueTarget.second, m_triggeredSpell, PROC_EVENT_DO_ALL, m_triggeredByAura);
+            targetUnit->m_procCounter = 0;
+        }
+    }
+
+    // Handle caster procs
+    //\ todo: this is ugly to send proc events from destructor but at the moment it's required -Appled
+    if (u_caster != nullptr && m_casterProcFlags != 0)
+    {
+        // Handle caster's procs to each target
+        for (const auto& uniqueTarget : uniqueHittedTargets)
+        {
+            targetUnit = m_caster->GetMapMgrUnit(uniqueTarget.first);
+            if (targetUnit == nullptr)
+                continue;
+
+            u_caster->HandleProc(m_casterProcFlags, targetUnit, getSpellInfo(), uniqueTarget.second, m_triggeredSpell, PROC_EVENT_DO_TARGET_PROCS_ONLY, m_triggeredByAura);
+            u_caster->m_procCounter = 0;
+        }
+
+        // Use victim only if there was one target
+        if (uniqueHittedTargets.size() > 1)
+            targetUnit = nullptr;
+
+        // Handle caster's self procs
+        u_caster->HandleProc(m_casterProcFlags, targetUnit, getSpellInfo(), m_casterDamageInfo, m_triggeredSpell, PROC_EVENT_DO_CASTER_PROCS_ONLY, m_triggeredByAura);
+        u_caster->m_procCounter = 0;
+    }
+
     m_caster->m_pendingSpells.erase(this);
 
     ///////////////////////////// This is from the virtual_destructor shit ///////////////
@@ -1559,7 +1600,7 @@ void Spell::finish(bool successful)
     // With preparing got ClearCooldownForspell, it makes too early for player client.
     // Now .cheat cooldown works perfectly.
     if (!m_triggeredSpell && p_caster != nullptr && p_caster->m_cheats.hasCooldownCheat)
-        p_caster->ClearCooldownForSpell(getSpellInfo()->getId());
+        p_caster->clearCooldownForSpell(getSpellInfo()->getId());
 
     // Send Spell cast info to QuestMgr
     if (successful && p_caster != nullptr && p_caster->IsInWorld())
@@ -1582,15 +1623,15 @@ void Spell::finish(bool successful)
         if (!(hasAttribute(ATTRIBUTES_ON_NEXT_ATTACK) && !m_triggeredSpell) && !isTamingQuestSpell)
         {
             uint32 numTargets = 0;
-            std::vector<uint64_t>::iterator itr = uniqueHittedTargets.begin();
+            auto itr = uniqueHittedTargets.begin();
             for (; itr != uniqueHittedTargets.end(); ++itr)
             {
                 WoWGuid wowGuid;
-                wowGuid.Init(*itr);
+                wowGuid.Init((*itr).first);
                 if (wowGuid.isUnit())
                 {
                     ++numTargets;
-                    sQuestMgr.OnPlayerCast(p_caster, getSpellInfo()->getId(), *itr);
+                    sQuestMgr.OnPlayerCast(p_caster, getSpellInfo()->getId(), (*itr).first);
                 }
             }
             if (numTargets == 0)
@@ -1608,30 +1649,6 @@ void Spell::finish(bool successful)
     }
 
     DecRef();
-}
-
-void Spell::writeSpellGoTargets(WorldPacket* data)
-{
-    std::vector<uint64_t>::iterator i;
-    for (i = uniqueHittedTargets.begin(); i != uniqueHittedTargets.end(); ++i)
-    {
-
-#if VERSION_STRING <= TBC
-        auto plr = p_caster;
-        if (!plr && u_caster)
-            plr = u_caster->m_redirectSpellPackets;
-
-        if (plr && plr->isPlayer())
-        {
-            AscEmu::Packets::SmsgClearExtraAuraInfo aura_packet;
-            aura_packet.guid = *i;
-            aura_packet.spell_id = getSpellInfo()->getId();
-            plr->SendPacket(aura_packet.serialise().get());
-        }
-#endif
-
-        *data << *i;
-    }
 }
 
 //\todo: Not called, should be send after targetting
@@ -1806,11 +1823,6 @@ void Spell::HandleEffects(uint64 guid, uint8_t i)
     uint32 id = getSpellInfo()->getEffect(static_cast<uint8_t>(i));
 
     damage = CalculateEffect(i, unitTarget);
-    const auto scriptResult = sScriptMgr.callScriptedSpellDoCalculateEffect(this, static_cast<uint8_t>(i), &damage);
-
-    // If effect damage was recalculated in script, send static damage in effect handlers
-    // so for example spell power bonus won't get calculated twice
-    isEffectDamageStatic[i] = scriptResult == SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
 
 #ifdef GM_Z_DEBUG_DIRECTLY
     if (playerTarget && playerTarget->isPlayer() && playerTarget->IsInWorld())
@@ -1822,11 +1834,7 @@ void Spell::HandleEffects(uint64 guid, uint8_t i)
 #endif
 
     uint32 TargetType = 0;
-    TargetType |= GetTargetType(getSpellInfo()->getEffectImplicitTargetA(static_cast<uint8_t>(i)), i);
-
-    //never get info from B if it is 0 :P
-    if (getSpellInfo()->getEffectImplicitTargetB(static_cast<uint8_t>(i)) != EFF_TARGET_NONE)
-        TargetType |= GetTargetType(getSpellInfo()->getEffectImplicitTargetB(static_cast<uint8_t>(i)), i);
+    TargetType |= getSpellInfo()->getRequiredTargetMaskForEffect(i);
 
     if (u_caster != nullptr && unitTarget != nullptr && unitTarget->isCreature() && TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
     {
@@ -1834,19 +1842,47 @@ void Spell::HandleEffects(uint64 guid, uint8_t i)
         unitTarget->GetAIInterface()->HandleEvent(EVENT_HOSTILEACTION, u_caster, 0);
     }
 
+    // Clear DamageInfo before effect
+    m_targetDamageInfo = DamageInfo();
+    m_targetDamageInfo.schoolMask = SchoolMask(getSpellInfo()->getSchoolMask());
+    isTargetDamageInfoSet = false;
 
     if (id < TOTAL_SPELL_EFFECTS)
     {
         LogDebugFlag(LF_SPELL, "WORLD: Spell effect id = %u (%s), damage = %d", id, SpellEffectNames[id], damage);
-        SpellScriptExecuteState scriptExecuteState = sScriptMgr.callScriptedSpellBeforeSpellEffect(this, id, static_cast<uint8_t>(i));
+        SpellScriptExecuteState scriptExecuteState = sScriptMgr.callScriptedSpellBeforeSpellEffect(this, static_cast<uint8_t>(i));
 
         if (scriptExecuteState != SpellScriptExecuteState::EXECUTE_PREVENT)
             (*this.*SpellEffectsHandler[id])(static_cast<uint8_t>(i));
 
-        sScriptMgr.callScriptedSpellAfterSpellEffect(this, id, static_cast<uint8_t>(i));
+        sScriptMgr.callScriptedSpellAfterSpellEffect(this, static_cast<uint8_t>(i));
     }
     else
         LOG_ERROR("SPELL: unknown effect %u spellid %u", id, getSpellInfo()->getId());
+
+    // Create proc events
+    if (isTargetDamageInfoSet)
+    {
+        // Add the DamageInfo to target vector if it was set
+        for (auto& uniqueTarget : uniqueHittedTargets)
+        {
+            if (uniqueTarget.first == guid)
+                uniqueTarget.second = m_targetDamageInfo;
+        }
+    }
+
+    if (uniqueHittedTargets.size() == 1)
+    {
+        // If spell has only this target, use full DamageInfo for caster's DamageInfo
+        if (isTargetDamageInfoSet)
+            m_casterDamageInfo = m_targetDamageInfo;
+    }
+    else
+    {
+        // If spell has multiple targets, just check if the spell critted for this target
+        if (m_targetDamageInfo.isCritical)
+            m_casterDamageInfo.isCritical = true;
+    }
 
     DoAfterHandleEffect(unitTarget, i);
     DecRef();
@@ -2181,7 +2217,7 @@ void Spell::HandleAddAura(uint64 guid)
             Aura* staur = sSpellMgr.newAura(aur->getSpellInfo(), aur->getMaxDuration(), aur->getCaster(), aur->getOwner(), m_triggeredSpell, i_caster);
             Target->addAura(staur);
         }
-        if (!(aur->getSpellInfo()->getProcFlags() & PROC_REMOVEONUSE))
+
         {
             SpellCharge charge;
             charge.count = charges;
@@ -2916,6 +2952,12 @@ exit:
 
     value = DoCalculateEffect(i, target, value);
 
+    const auto scriptResult = sScriptMgr.callScriptedSpellDoCalculateEffect(this, static_cast<uint8_t>(i), &value);
+
+    // If effect damage was recalculated in script, send static damage in effect handlers
+    // so for example spell power bonus won't get calculated twice
+    isEffectDamageStatic[i] = scriptResult == SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
+
     if (p_caster != nullptr)
     {
         SpellOverrideMap::iterator itr = p_caster->mSpellOverrideMap.find(getSpellInfo()->getId());
@@ -3397,19 +3439,6 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             }
         } break;
 
-        // SPELL_HASH_VAMPIRIC_EMBRACE:
-        case 15286:
-        case 15290:
-        case 71269:
-        {
-            value = value * (getSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i)) + 1) / 100;
-            if (p_caster != nullptr)
-            {
-                spellModFlatIntValue(p_caster->SM_FMiscEffect, &value, getSpellInfo()->getSpellFamilyFlags());
-                spellModPercentageIntValue(p_caster->SM_PMiscEffect, &value, getSpellInfo()->getSpellFamilyFlags());
-            }
-        } break;
-
         // SPELL_HASH_SEAL_OF_RIGHTEOUSNESS:
         case 20154:
         case 21084:
@@ -3430,26 +3459,6 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             if (p_caster != nullptr)
                 value = (p_caster->GetAP() * 25 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 13) / 1000;
-        } break;
-
-        // SPELL_HASH_JUDGEMENT_OF_LIGHT:
-        case 20185:
-        case 20267:
-        case 20271:
-        case 28775:
-        case 57774:
-        {
-            if (u_caster != nullptr)
-                value = u_caster->getMaxHealth() * 2 / 100;
-        } break;
-
-        // SPELL_HASH_JUDGEMENT_OF_WISDOM:
-        case 20186:
-        case 20268:
-        case 53408:
-        {
-            if (u_caster != nullptr)
-                value = u_caster->getBaseMana() * 2 / 100;
         } break;
 
         // SPELL_HASH_JUDGEMENT:
@@ -3999,20 +4008,6 @@ bool Spell::GetSpellFailed() const
 void Spell::SetSpellFailed(bool failed)
 {
     m_Spell_Failed = failed;
-}
-
-uint32 Spell::GetTargetType(uint32 value, uint32 i)
-{
-    uint32 type = g_spellImplicitTargetFlags[value];
-
-    //CHAIN SPELLS ALWAYS CHAIN!
-    uint32 jumps = getSpellInfo()->getEffectChainTarget(static_cast<uint8_t>(i));
-    if (u_caster != nullptr)
-        spellModFlatIntValue(u_caster->SM_FAdditionalTargets, (int32*)&jumps, getSpellInfo()->getSpellFamilyFlags());
-    if (jumps != 0)
-        type |= SPELL_TARGET_AREA_CHAIN;
-
-    return type;
 }
 
 void Spell::SpellEffectJumpTarget(uint8_t effectIndex)

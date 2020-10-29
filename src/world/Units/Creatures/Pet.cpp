@@ -2129,11 +2129,6 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         if (spellid)
             killerspell = sSpellMgr.getSpellInfo(spellid);
         else killerspell = NULL;
-
-        HandleProc(PROC_ON_DIE, this, killerspell);
-        m_procCounter = 0;
-        pAttacker->HandleProc(PROC_ON_TARGET_DIE, this, killerspell);
-        pAttacker->m_procCounter = 0;
     }
 
     setDeathState(JUST_DIED);

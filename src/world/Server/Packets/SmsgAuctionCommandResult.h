@@ -31,6 +31,17 @@ namespace AscEmu::Packets
         {
         }
 
+#if VERSION_STRING >= Cata
+        SmsgAuctionCommandResult(uint32_t auctionId, uint32_t command, uint32_t error, uint64_t outBid = 0, uint64_t highestBid = 0, uint32_t bidError = 0, uint64_t highestBidderGuid = 0) :
+            ManagedPacket(SMSG_AUCTION_COMMAND_RESULT, 20),
+            auctionId(auctionId),
+            command(command),
+            error(error),
+            outBid(outBid),
+            highestBid(highestBid),
+            bidError(bidError),
+            highestBidderGuid(highestBidderGuid)
+#else
         SmsgAuctionCommandResult(uint32_t auctionId, uint32_t command, uint32_t error, uint32_t outBid = 0, uint32_t highestBid = 0, uint32_t bidError = 0, uint64_t highestBidderGuid = 0) :
             ManagedPacket(SMSG_AUCTION_COMMAND_RESULT, 12),
             auctionId(auctionId),
@@ -40,6 +51,7 @@ namespace AscEmu::Packets
             highestBid(highestBid),
             bidError(bidError),
             highestBidderGuid(highestBidderGuid)
+#endif
         {
         }
 

@@ -30,16 +30,14 @@
 bool FlametongueWeaponPassive(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->getOwner();
-
     if (apply)
     {
         // target is always a player
         Item* item = static_cast<Player*>(target)->getItemInterface()->GetItemByGUID(pAura->itemCasterGUID);
-        target->AddProcTriggerSpell(10444, pAura->getSpellInfo()->getId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK, 0, NULL, NULL, item);
+        target->addProcTriggerSpell(10444, pAura->getSpellInfo()->getId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_DONE_MELEE_HIT, EXTRA_PROC_NULL, 0, NULL, NULL, item);
     }
     else
-        target->RemoveProcTriggerSpell(10444, pAura->getCasterGuid(), pAura->itemCasterGUID);
-
+        target->removeProcTriggerSpell(10444, pAura->getCasterGuid(), pAura->itemCasterGUID);
     return true;
 }
 
@@ -80,18 +78,6 @@ bool ManaTide(uint8_t /*effectIndex*/, Spell* s)
     return true;
 }
 
-bool EarthShieldDummyAura(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
-{
-    Unit* m_target = pAura->getOwner();
-
-    if (apply)
-        m_target->AddProcTriggerSpell(379, pAura->getSpellId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), pAura->getSpellInfo()->getProcFlags() & ~PROC_ON_SPELL_LAND_VICTIM, pAura->getSpellInfo()->getProcCharges(), NULL, NULL);
-    else if (m_target->GetAuraStackCount(pAura->getSpellId()) == 1)
-        m_target->RemoveProcTriggerSpell(379, pAura->getCasterGuid());
-
-    return true;
-}
-
 bool Reincarnation(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* u_target = a->getOwner();
@@ -117,17 +103,6 @@ void SetupLegacyShamanSpells(ScriptMgr* mgr)
     mgr->register_dummy_spell(38443, &SkyShatterRegalia);
 
     mgr->register_dummy_spell(39610, &ManaTide);
-
-    uint32_t earthshielddummyauraids[] =
-    {
-        974,
-        32593,
-        32594,
-        49283,
-        49284,
-        0
-    };
-    mgr->register_dummy_aura(earthshielddummyauraids, &EarthShieldDummyAura);
 
     mgr->register_dummy_aura(20608, &Reincarnation);
 }

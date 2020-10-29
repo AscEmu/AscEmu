@@ -682,18 +682,23 @@ Spell* Object::findCurrentCastedSpellBySpellId(uint32_t spellId)
     return nullptr;
 }
 
-int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8_t effIndex, bool allowProc/* = true*/, bool staticDamage/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
+DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8_t effIndex, bool isTriggered/* = false*/, bool staticDamage/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
 {
     if (victim == nullptr || !victim->isAlive())
-        return 0;
+        return DamageInfo();
 
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
-        return 0;
+        return DamageInfo();
 
     float_t damage = static_cast<float_t>(dmg);
     const auto school = spellInfo->getFirstSchoolFromSchoolMask();
-    auto isCritical = forceCrit;
+
+    // Create damage info
+    DamageInfo dmgInfo;
+    dmgInfo.schoolMask = SchoolMask(spellInfo->getSchoolMask());
+    dmgInfo.isCritical = forceCrit;
+    dmgInfo.isPeriodic = isPeriodic;
 
     // Check if victim is immune to this school
     // or if victim has god mode cheat
@@ -703,32 +708,33 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
         if (isCreatureOrPlayer())
             static_cast<Unit*>(this)->sendSpellOrDamageImmune(getGuid(), victim, spellId);
 
-        return 0;
+        return DamageInfo();
     }
 
     // Setup proc flags
-    uint32_t casterProcFlags = PROC_ON_ANY_HOSTILE_ACTION;
-    uint32_t victimProcFlags = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM;
+    uint32_t casterProcFlags = 0;
+    uint32_t victimProcFlags = PROC_ON_TAKEN_ANY_DAMAGE;
 
     if (!isPeriodic)
     {
         switch (spellInfo->getDmgClass())
         {
-            case SPELL_DMG_TYPE_MAGIC:
-                casterProcFlags |= PROC_ON_SPELL_HIT;
-                victimProcFlags |= PROC_ON_SPELL_HIT_VICTIM;
-                break;
             case SPELL_DMG_TYPE_MELEE:
-                casterProcFlags |= PROC_ON_MELEE_ATTACK;
-                victimProcFlags |= PROC_ON_MELEE_ATTACK_VICTIM;
+                casterProcFlags |= PROC_ON_DONE_MELEE_SPELL_HIT;
+                victimProcFlags |= PROC_ON_TAKEN_MELEE_SPELL_HIT;
                 break;
             case SPELL_DMG_TYPE_RANGED:
-                casterProcFlags |= PROC_ON_RANGED_ATTACK;
-                victimProcFlags |= PROC_ON_RANGED_ATTACK_VICTIM;
+                casterProcFlags |= PROC_ON_DONE_RANGED_SPELL_HIT;
+                victimProcFlags |= PROC_ON_TAKEN_RANGED_SPELL_HIT;
                 break;
             default:
                 break;
         }
+    }
+    else
+    {
+        casterProcFlags |= PROC_ON_DONE_PERIODIC;
+        victimProcFlags |= PROC_ON_TAKEN_PERIODIC;
     }
 
     // Get spell damage bonus
@@ -801,43 +807,23 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
     if (damage > 0.0f)
     {
         // If the damage is forced to be crit, do not alter it
-        if (!isCritical && !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
+        if (!dmgInfo.isCritical && !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
         {
             if (isPeriodic)
             {
                 // For periodic effects use aura's own crit chance
                 if (aur != nullptr && aur->getCritChance() > 0.0f)
-                    isCritical = Rand(aur->getCritChance());
+                    dmgInfo.isCritical = Rand(aur->getCritChance());
             }
             else
             {
-                isCritical = IsCriticalDamageForSpell(victim, spellInfo);
+                dmgInfo.isCritical = IsCriticalDamageForSpell(victim, spellInfo);
             }
         }
 
         // Get critical spell damage bonus
-        if (isCritical)
-        {
+        if (dmgInfo.isCritical)
             damage = GetCriticalDamageBonusForSpell(victim, spellInfo, damage);
-
-            switch (spellInfo->getDmgClass())
-            {
-                case SPELL_DMG_TYPE_MAGIC:
-                    casterProcFlags |= PROC_ON_SPELL_CRIT_HIT;
-                    victimProcFlags |= PROC_ON_SPELL_CRIT_HIT_VICTIM;
-                    break;
-                case SPELL_DMG_TYPE_MELEE:
-                    casterProcFlags |= PROC_ON_CRIT_ATTACK;
-                    victimProcFlags |= PROC_ON_CRIT_HIT_VICTIM;
-                    break;
-                case SPELL_DMG_TYPE_RANGED:
-                    casterProcFlags |= PROC_ON_RANGED_CRIT_ATTACK;
-                    victimProcFlags |= PROC_ON_RANGED_CRIT_ATTACK_VICTIM;
-                    break;
-                default:
-                    break;
-            }
-        }
     }
 
     // Calculate damage reduction
@@ -868,44 +854,51 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
     if (damage < 0.0f)
         damage = 0.0f;
 
-    uint32_t damage_int = 0;
     // For periodic auras convert the float amount to integer and save the damage fraction for next tick
     if (isPeriodic && aur != nullptr && aurEff != nullptr)
     {
         damage += aurEff->mDamageFraction;
         if (aur->getTimeLeft() >= aurEff->mAmplitude)
         {
-            damage_int = static_cast<uint32_t>(damage);
-            aurEff->mDamageFraction = damage - damage_int;
+            dmgInfo.fullDamage = static_cast<uint32_t>(damage);
+            aurEff->mDamageFraction = damage - dmgInfo.fullDamage;
         }
         else
         {
             // In case this is the last tick, just round the value
-            damage_int = static_cast<uint32_t>(std::round(damage));
+            dmgInfo.fullDamage = static_cast<uint32_t>(std::round(damage));
         }
     }
     else
     {
         // If this is a direct damage spell just round the value
-        damage_int = static_cast<uint32_t>(std::round(damage));
+        dmgInfo.fullDamage = static_cast<uint32_t>(std::round(damage));
+    }
+
+    dmgInfo.realDamage = dmgInfo.fullDamage;
+
+    // Calculate resistance reduction
+    if (dmgInfo.realDamage > 0 && isCreatureOrPlayer() && !(isPeriodic && school == SCHOOL_NORMAL))
+    {
+        static_cast<Unit*>(this)->CalculateResistanceReduction(victim, &dmgInfo, spellInfo, 0.0f);
+        if (dmgInfo.resistedDamage > static_cast<uint32_t>(dmgInfo.fullDamage))
+            dmgInfo.realDamage = 0;
+        else
+            dmgInfo.realDamage = dmgInfo.fullDamage - dmgInfo.resistedDamage;
     }
 
     // Check for absorb effects
-    auto absorbedDamage = victim->absorbDamage(SchoolMask(spellInfo->getSchoolMask()), &damage_int);
-    const auto manaShieldAbsorb = victim->ManaShieldAbsorb(damage_int);
-
+    dmgInfo.absorbedDamage = victim->absorbDamage(SchoolMask(spellInfo->getSchoolMask()), &dmgInfo.realDamage);
+    const auto manaShieldAbsorb = victim->ManaShieldAbsorb(dmgInfo.realDamage);
     if (manaShieldAbsorb > 0)
     {
-        if (manaShieldAbsorb > damage_int)
-            damage_int = 0;
+        if (manaShieldAbsorb > dmgInfo.realDamage)
+            dmgInfo.realDamage = 0;
         else
-            damage_int -= manaShieldAbsorb;
+            dmgInfo.realDamage -= manaShieldAbsorb;
 
-        absorbedDamage += manaShieldAbsorb;
+        dmgInfo.absorbedDamage += manaShieldAbsorb;
     }
-
-    if (absorbedDamage > 0)
-        victimProcFlags |= PROC_ON_ABSORB;
 
     // Hackfix from legacy method
     // Incanter's Absorption
@@ -944,52 +937,32 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
         }
     }
 
-    // Create damage info
-    dealdamage dmginfo;
-    dmginfo.school_type = school;
-    dmginfo.full_damage = damage_int;
-    dmginfo.resisted_damage = 0;
-
-    if (damage_int <= 0)
-        dmginfo.resisted_damage = dmginfo.full_damage;
-
-    // Calculate resistance reduction
-    if (damage_int > 0 && isCreatureOrPlayer() && !(isPeriodic && school == SCHOOL_NORMAL))
-    {
-        static_cast<Unit*>(this)->CalculateResistanceReduction(victim, &dmginfo, spellInfo, 0.0f);
-        if (dmginfo.resisted_damage > static_cast<uint32_t>(dmginfo.full_damage))
-            damage_int = 0;
-        else
-            damage_int = dmginfo.full_damage - dmginfo.resisted_damage;
-    }
-
     // Check for damage split target
     if (victim->m_damageSplitTarget != nullptr)
-        damage_int = victim->DoDamageSplitTarget(damage_int, school, false);
+        dmgInfo.realDamage = victim->DoDamageSplitTarget(dmgInfo.realDamage, dmgInfo.schoolMask, false);
 
     // Get estimated overkill amount
-    const auto overKill = victim->calculateEstimatedOverKillForCombatLog(damage_int);
+    const auto overKill = victim->calculateEstimatedOverKillForCombatLog(dmgInfo.realDamage);
 
     // Send packet
     if (isPeriodic && aurEff != nullptr && isCreatureOrPlayer())
     {
-        const auto wasPacketSent = victim->sendPeriodicAuraLog(GetNewGUID(), victim->GetNewGUID(), spellInfo, damage_int, overKill, absorbedDamage, dmginfo.resisted_damage, aurEff->mAuraEffect, isCritical);
+        const auto wasPacketSent = victim->sendPeriodicAuraLog(GetNewGUID(), victim->GetNewGUID(), spellInfo, dmgInfo.realDamage, overKill, dmgInfo.absorbedDamage, dmgInfo.resistedDamage, aurEff->mAuraEffect, dmgInfo.isCritical);
 
         // In case periodic log couldn't be sent, send normal spell log
         // Required for leech and mana burn auras
         if (!wasPacketSent)
-            victim->sendSpellNonMeleeDamageLog(this, victim, spellInfo, damage_int, absorbedDamage, dmginfo.resisted_damage, 0, overKill, true, isCritical);
+            victim->sendSpellNonMeleeDamageLog(this, victim, spellInfo, dmgInfo.realDamage, dmgInfo.absorbedDamage, dmgInfo.resistedDamage, 0, overKill, true, dmgInfo.isCritical);
     }
     else
     {
-        victim->sendSpellNonMeleeDamageLog(this, victim, spellInfo, damage_int, absorbedDamage, dmginfo.resisted_damage, 0, overKill, false, isCritical);
+        victim->sendSpellNonMeleeDamageLog(this, victim, spellInfo, dmgInfo.realDamage, dmgInfo.absorbedDamage, dmgInfo.resistedDamage, 0, overKill, false, dmgInfo.isCritical);
     }
 
     // Create damaging health batch event
     auto healthBatch = new HealthBatchEvent;
     healthBatch->caster = dynamic_cast<Unit*>(this); // can be nullptr
-    healthBatch->damage = damage_int;
-    healthBatch->absorbedDamageOrHeal = absorbedDamage;
+    healthBatch->damageInfo = dmgInfo;
     healthBatch->isPeriodic = isPeriodic;
     healthBatch->spellInfo = spellInfo;
 
@@ -1006,17 +979,17 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
     if (isCreatureOrPlayer())
     {
         const auto casterUnit = static_cast<Unit*>(this);
-        victim->HandleProc(victimProcFlags, casterUnit, spellInfo, !allowProc, damage_int, absorbedDamage);
+        victim->HandleProc(victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
         victim->m_procCounter = 0;
-        casterUnit->HandleProc(casterProcFlags, victim, spellInfo, !allowProc, damage_int, absorbedDamage);
+        casterUnit->HandleProc(casterProcFlags, victim, spellInfo, dmgInfo, isTriggered);
         casterUnit->m_procCounter = 0;
     }
 
     if (isPlayer())
-        static_cast<Player*>(this)->m_casted_amount[school] = damage_int;
+        static_cast<Player*>(this)->m_casted_amount[school] = dmgInfo.realDamage;
 
     // Cause push back to victim's spell casting if damage was not fully absorbed
-    if (!(dmginfo.full_damage == 0 && absorbedDamage > 0) && !isPeriodic)
+    if (!(dmgInfo.realDamage == 0 && dmgInfo.absorbedDamage > 0) && !isPeriodic)
     {
         if (victim->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && victim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
             victim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->AddTime(school);
@@ -1024,7 +997,7 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
             victim->getCurrentSpell(CURRENT_GENERIC_SPELL)->AddTime(school);
     }
 
-    if (dmginfo.resisted_damage == static_cast<uint32_t>(dmginfo.full_damage) && absorbedDamage == 0)
+    if (dmgInfo.resistedDamage == dmgInfo.realDamage && dmgInfo.absorbedDamage == 0)
     {
         // Hackfix from legacy method
         if (victim->isPlayer())
@@ -1053,34 +1026,43 @@ int32_t Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8
             //Shadow Word:Death
             if (spellId == 32379 || spellId == 32996 || spellId == 48157 || spellId == 48158)
             {
-                auto backfireAmount = damage_int + absorbedDamage;
+                auto backfireAmount = dmgInfo.realDamage + dmgInfo.absorbedDamage;
                 static_cast<Unit*>(this)->addSimpleDamageBatchEvent(backfireAmount, static_cast<Unit*>(this), spellInfo);
             }
         }
     }
 
-    ///\ todo: at the moment this returns the damage inflicted, but make it return DamageInfo structure
-    ///\ required for leech effects, leech should not heal caster if the damage was absorbed
-    ///\ but for some spells (i.e. Seed of Corruption) it is mandatory to return the full damage before absorption effects
-    return damage_int;
+    return dmgInfo;
 }
 
-void Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool allowProc/* = true*/, bool staticDamage/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
+DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool isTriggered/* = false*/, bool staticDamage/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
 {
     if (victim == nullptr || !victim->isAlive())
-        return;
+        return DamageInfo();
 
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
-        return;
+        return DamageInfo();
 
     float_t heal = static_cast<float_t>(amt);
     const auto school = spellInfo->getFirstSchoolFromSchoolMask();
-    auto isCritical = forceCrit;
+
+    // Create damage info
+    DamageInfo dmgInfo;
+    dmgInfo.schoolMask = SchoolMask(spellInfo->getSchoolMask());
+    dmgInfo.isHeal = true;
+    dmgInfo.isCritical = forceCrit;
+    dmgInfo.isPeriodic = isPeriodic;
 
     // Setup proc flags
-    uint32_t casterProcFlags = PROC_ON_SPELL_HIT;
-    uint32_t victimProcFlags = PROC_ON_SPELL_HIT_VICTIM;
+    uint32_t casterProcFlags = 0;
+    uint32_t victimProcFlags = 0;
+
+    if (isPeriodic)
+    {
+        casterProcFlags |= PROC_ON_DONE_PERIODIC;
+        victimProcFlags |= PROC_ON_TAKEN_PERIODIC;
+    }
 
     // Get spell healing bonus
     if (isCreatureOrPlayer() && !staticDamage)
@@ -1249,28 +1231,23 @@ void Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool al
     if (heal > 0.0f)
     {
         // If the heal is forced to be crit, do not alter it
-        if (!isCritical && !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
+        if (!dmgInfo.isCritical && !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
         {
             if (isPeriodic)
             {
                 // For periodic effects use aura's own crit chance
                 if (aur != nullptr && aur->getCritChance() > 0.0f)
-                    isCritical = Rand(aur->getCritChance());
+                    dmgInfo.isCritical = Rand(aur->getCritChance());
             }
             else
             {
-                isCritical = IsCriticalHealForSpell(victim, spellInfo);
+                dmgInfo.isCritical = IsCriticalHealForSpell(victim, spellInfo);
             }
         }
 
         // Get critical spell heal bonus
-        if (isCritical)
-        {
+        if (dmgInfo.isCritical)
             heal = GetCriticalHealBonusForSpell(victim, spellInfo, heal);
-
-            casterProcFlags |= PROC_ON_SPELL_CRIT_HIT;
-            victimProcFlags |= PROC_ON_SPELL_CRIT_HIT_VICTIM;
-        }
     }
 
     // Get target's heal taken mod
@@ -1288,7 +1265,6 @@ void Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool al
     if (heal < 0.0f)
         heal = 0.0f;
 
-    uint32_t heal_int = 0;
     // For periodic auras convert the float amount to integer and save the heal fraction for next tick
     // but skip leech effects because the damage part only uses fractions
     if (isPeriodic && !isLeech && aur != nullptr && aurEff != nullptr)
@@ -1296,46 +1272,46 @@ void Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool al
         heal += aurEff->mDamageFraction;
         if (aur->getTimeLeft() >= aurEff->mAmplitude)
         {
-            heal_int = static_cast<uint32_t>(heal);
-            aurEff->mDamageFraction = heal - heal_int;
+            dmgInfo.realDamage = static_cast<uint32_t>(heal);
+            aurEff->mDamageFraction = heal - dmgInfo.realDamage;
         }
         else
         {
             // In case this is the last tick, just round the value
-            heal_int = static_cast<uint32_t>(std::round(heal));
+            dmgInfo.realDamage = static_cast<uint32_t>(std::round(heal));
         }
     }
     else
     {
         // If this is a direct heal spell just round the value
-        heal_int = static_cast<uint32_t>(std::round(heal));
+        dmgInfo.realDamage = static_cast<uint32_t>(std::round(heal));
     }
 
-    ///\ todo: implement (aura effect 301)
-    const uint32_t absorbedHeal = 0;
+    ///\ todo: implement absorbed heal (aura effect 301)
+    dmgInfo.absorbedDamage = 0;
 
     // Calculate estimated overheal amount
-    const auto overHeal = victim->calculateEstimatedOverHealForCombatLog(heal_int);
+    const auto overHeal = victim->calculateEstimatedOverHealForCombatLog(dmgInfo.realDamage);
 
     // Send packet
     if (isPeriodic && aurEff != nullptr && isCreatureOrPlayer())
     {
-        const auto wasPacketSent = victim->sendPeriodicAuraLog(GetNewGUID(), victim->GetNewGUID(), spellInfo, heal_int, overHeal, absorbedHeal, 0, aurEff->mAuraEffect, isCritical);
+        const auto wasPacketSent = victim->sendPeriodicAuraLog(GetNewGUID(), victim->GetNewGUID(), spellInfo, dmgInfo.realDamage, overHeal, dmgInfo.absorbedDamage, 0, aurEff->mAuraEffect, dmgInfo.isCritical);
 
         // In case periodic log couldn't be sent, send normal spell log
         // Required for leech auras
         if (!wasPacketSent)
-            victim->sendSpellHealLog(this, victim, spellId, heal_int, isCritical, overHeal, absorbedHeal);
+            victim->sendSpellHealLog(this, victim, spellId, dmgInfo.realDamage, dmgInfo.isCritical, overHeal, dmgInfo.absorbedDamage);
     }
     else
     {
-        victim->sendSpellHealLog(this, victim, spellId, heal_int, isCritical, overHeal, absorbedHeal);
+        victim->sendSpellHealLog(this, victim, spellId, dmgInfo.realDamage, dmgInfo.isCritical, overHeal, dmgInfo.absorbedDamage);
     }
 
     // Create healing health batch
     auto healthBatch = new HealthBatchEvent;
     healthBatch->caster = dynamic_cast<Unit*>(this); // can be nullptr
-    healthBatch->damage = heal_int;
+    healthBatch->damageInfo = dmgInfo;
     healthBatch->isPeriodic = isPeriodic;
     healthBatch->isHeal = true;
     healthBatch->spellInfo = spellInfo;
@@ -1346,9 +1322,9 @@ void Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool al
     if (isCreatureOrPlayer())
     {
         const auto casterUnit = static_cast<Unit*>(this);
-        victim->HandleProc(victimProcFlags, casterUnit, spellInfo, !allowProc, heal_int);
+        victim->HandleProc(victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
         victim->m_procCounter = 0;
-        casterUnit->HandleProc(casterProcFlags, victim, spellInfo, !allowProc, heal_int);
+        casterUnit->HandleProc(casterProcFlags, victim, spellInfo, dmgInfo, isTriggered);
         casterUnit->m_procCounter = 0;
     }
 
@@ -1357,10 +1333,11 @@ void Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool al
         const auto plr = static_cast<Player*>(this);
 
         plr->last_heal_spell = spellInfo;
-        plr->m_casted_amount[school] = heal_int;
+        plr->m_casted_amount[school] = dmgInfo.realDamage;
     }
 
     victim->RemoveAurasByHeal();
+    return dmgInfo;
 }
 
 void Object::_UpdateSpells(uint32_t time)
@@ -2630,7 +2607,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
                                         if (quest->count_required_mob == 0)
                                             continue;
 
-                                        for (auto i = 0; i < 4; ++i)
+                                        for (uint8_t i = 0; i < 4; ++i)
                                         {
                                             if (quest->required_mob_or_go[i] == static_cast<int32_t>(this_go->getEntry()))
                                             {
