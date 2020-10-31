@@ -432,15 +432,15 @@ bool ChatHandler::HandleUnrootCommand(const char* /*args*/, WorldSession* m_sess
 //.autosavechanges
 bool ChatHandler::HandleAutoSaveChangesCommand(const char* /*args*/, WorldSession* m_session)
 {
-    if (m_session->GetPlayer()->SaveAllChangesCommand == false)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand == false)
     {
         GreenSystemMessage(m_session, "SaveAllChanges activated! All commands will be executed as 'save to db = true");
-        m_session->GetPlayer()->SaveAllChangesCommand = true;
+        m_session->GetPlayer()->m_saveAllChangesCommand = true;
     }
     else
     {
         GreenSystemMessage(m_session, "SaveAllChanges deactivated! All commands will be executed as 'save to db = false");
-        m_session->GetPlayer()->SaveAllChangesCommand = false;
+        m_session->GetPlayer()->m_saveAllChangesCommand = false;
     }
 
     return true;
@@ -825,7 +825,7 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
     Player* chr = sObjectMgr.GetPlayer(args, false);
     if (chr)
     {
-        if (!m_session->CanUseCommand('z') && chr->IsAppearDisabled())
+        if (!m_session->CanUseCommand('z') && chr->isAppearingDisabled())
         {
             SystemMessage(m_session, "%s has blocked other GMs from appearing to them.", chr->getName().c_str());
             return true;
@@ -866,21 +866,21 @@ bool ChatHandler::HandleBlockAppearCommand(const char* args, WorldSession* m_ses
 
     if (!stricmp(args, "on"))
     {
-        if (m_session->GetPlayer()->IsAppearDisabled())
+        if (m_session->GetPlayer()->isAppearingDisabled())
         {
             BlueSystemMessage(m_session, "Appear blocking is already enabled");
         }
         else
         {
-            m_session->GetPlayer()->DisableAppear(true);
+            m_session->GetPlayer()->disableAppearing(true);
             GreenSystemMessage(m_session, "Appear blocking is now enabled");
         }
     }
     else if (!stricmp(args, "off"))
     {
-        if (m_session->GetPlayer()->IsAppearDisabled())
+        if (m_session->GetPlayer()->isAppearingDisabled())
         {
-            m_session->GetPlayer()->DisableAppear(false);
+            m_session->GetPlayer()->disableAppearing(false);
             GreenSystemMessage(m_session, "Appear blocking is now disabled");
         }
         else
@@ -903,7 +903,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
     {
 
         char buf[256];
-        if (!m_session->CanUseCommand('z') && chr->IsSummonDisabled())
+        if (!m_session->CanUseCommand('z') && chr->isSummoningDisabled())
         {
             snprintf((char*)buf, 256, "%s has blocked other GMs from summoning them.", chr->getName().c_str());
             SystemMessage(m_session, buf);
@@ -964,21 +964,21 @@ bool ChatHandler::HandleBlockSummonCommand(const char* args, WorldSession* m_ses
 
     if (!stricmp(args, "on"))
     {
-        if (m_session->GetPlayer()->IsSummonDisabled())
+        if (m_session->GetPlayer()->isSummoningDisabled())
         {
             BlueSystemMessage(m_session, "Summon blocking is already enabled");
         }
         else
         {
-            m_session->GetPlayer()->DisableSummon(true);
+            m_session->GetPlayer()->disableSummoning(true);
             GreenSystemMessage(m_session, "Summon blocking is now enabled");
         }
     }
     else if (!stricmp(args, "off"))
     {
-        if (m_session->GetPlayer()->IsSummonDisabled())
+        if (m_session->GetPlayer()->isSummoningDisabled())
         {
-            m_session->GetPlayer()->DisableSummon(false);
+            m_session->GetPlayer()->disableSummoning(false);
             GreenSystemMessage(m_session, "Summon blocking is now disabled");
         }
         else
@@ -1152,7 +1152,7 @@ bool ChatHandler::HandleUnBanCharacterCommand(const char* args, WorldSession* m_
     if (pPlayer != nullptr)
     {
         GreenSystemMessage(m_session, "Unbanned player %s ingame.", pPlayer->getName().c_str());
-        pPlayer->UnSetBanned();
+        pPlayer->unsetBanned();
     }
     else
     {
@@ -1284,7 +1284,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
         SystemMessage(m_session, "Banning player '%s' ingame for '%s'.", pCharacter, (pReason == NULL) ? "No reason." : pReason);
         std::string sReason = (pReason == NULL) ? "No Reason." : std::string(pReason);
         uint32 uBanTime = BanTime ? BanTime + (uint32)UNIXTIME : 1;
-        pPlayer->SetBanned(uBanTime, sReason);
+        pPlayer->setBanned(uBanTime, sReason);
         pInfo = pPlayer->getPlayerInfo();
     }
     SystemMessage(m_session, "This ban is due to expire %s%s.", BanTime ? "on " : "", BanTime ? Util::GetDateTimeStringFromTimeStamp(BanTime + (uint32)UNIXTIME).c_str() : "Never");

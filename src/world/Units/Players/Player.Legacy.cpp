@@ -163,8 +163,6 @@ bool Player::Teleport(const LocationVector& vec, MapMgr* map)
 
 Player::Player(uint32 guid)
     :
-    disableAppear(false),
-    disableSummon(false),
     taxi_model_id(0),
     lastNode(0),
     m_taxi_ride_time(0),
@@ -208,7 +206,6 @@ Player::Player(uint32 guid)
     SoulStoneReceiver(0),
     misdirectionTarget(0),
     bReincarnation(false),
-    m_GM_SelectedGO(0),
     m_MountSpellId(0),
     bHasBindDialogOpen(false),
     TrackingSpell(0),
@@ -216,7 +213,6 @@ Player::Player(uint32 guid)
     // gm stuff
     //m_invincible(false),
     m_cheats { false },
-    SaveAllChangesCommand(false),
     m_Autojoin(false),
     m_AutoAddMem(false),
     m_UnderwaterMaxTime(180000),
@@ -233,7 +229,6 @@ Player::Player(uint32 guid)
     m_AttackMsgTimer(0),
     //PVP
     //PvPTimeoutEnabled(false),
-    m_banned(false),
     m_Summons(),
     m_PetNumberMax(0),
     //DK
@@ -395,7 +390,6 @@ Player::Player(uint32 guid)
     m_canDualWield2H = false;
     m_dungeonDifficulty = 0;
     m_raidDifficulty = 0;
-    m_XpGain = true;
     resettalents = false;
     memset(reputationByListId, 0, sizeof(FactionReputation*) * 128);
 
@@ -480,7 +474,6 @@ Player::Player(uint32 guid)
     m_passOnLoot = false;
     m_changingMaps = true;
     m_outStealthDamageBonusPct = m_outStealthDamageBonusPeriod = m_outStealthDamageBonusTimer = 0;
-    m_flyhackCheckTimer = 0;
 
     m_skills.clear();
     m_wratings.clear();
@@ -538,10 +531,6 @@ Player::Player(uint32 guid)
     m_roles = 0;
     GroupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
     m_FirstLogin = false;
-
-    // command
-    go_last_x_rotation = 0.0f;
-    go_last_y_rotation = 0.0f;
 
     m_FirstCastAutoRepeat = false;
 }
@@ -1543,7 +1532,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 #endif
 
     // Obviously if Xp gaining is disabled we don't want to gain XP
-    if (!m_XpGain)
+    if (!m_XpGainAllowed)
         return;
 
     if (getLevel() >= getMaxLevel())
@@ -2392,7 +2381,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     uint32 xpfield = 0;
 
-    if (m_XpGain)
+    if (m_XpGainAllowed)
         xpfield = 1;
 
     ss << "'" << xpfield << "'" << ", ";
@@ -3168,9 +3157,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     uint32 xpfield = field[89].GetUInt32();
 
     if (xpfield == 0)
-        m_XpGain = false;
+        m_XpGainAllowed = false;
     else
-        m_XpGain = true;
+        m_XpGainAllowed = true;
 
     //field[87].GetString();    //skipping data
 
@@ -7692,11 +7681,11 @@ void Player::CompleteLoading()
     logonspell->prepare(&targets);
 #endif
 
-    if (IsBanned())
+    if (isBanned())
     {
         Kick(10000);
         BroadcastMessage(GetSession()->LocalizedWorldSrv(ServerString::SS_NOT_ALLOWED_TO_PLAY));
-        BroadcastMessage(GetSession()->LocalizedWorldSrv(ServerString::SS_BANNED_FOR_TIME), GetBanReason().c_str());
+        BroadcastMessage(GetSession()->LocalizedWorldSrv(ServerString::SS_BANNED_FOR_TIME), getBanReason().c_str());
     }
 
     if (m_playerInfo->m_Group)
@@ -10098,15 +10087,15 @@ void Player::SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs)
 
 void Player::ToggleXpGain()
 {
-    if (m_XpGain)
-        m_XpGain = false;
+    if (m_XpGainAllowed)
+        m_XpGainAllowed = false;
     else
-        m_XpGain = true;
+        m_XpGainAllowed = true;
 }
 
 bool Player::CanGainXp()
 {
-    return m_XpGain;
+    return m_XpGainAllowed;
 }
 
 void Player::RemoveGarbageItems()
@@ -11263,16 +11252,6 @@ void Player::SendCinematicCamera(uint32 id)
     GetSession()->SendPacket(SmsgTriggerCinematic(id).serialise().get());
 }
 
-bool Player::IsBanned()
-{
-    if (m_banned)
-    {
-        if (m_banned < 100 || (uint32)UNIXTIME < m_banned)
-            return true;
-    }
-    return false;
-}
-
 void Player::RemoveSummon(Pet* pet)
 {
     for (std::list<Pet*>::iterator itr = m_Summons.begin(); itr != m_Summons.end(); ++itr)
@@ -11307,14 +11286,6 @@ void Player::SendDelayedPacket(WorldPacket* data, bool bDeleteOnSend)
 
     if (bDeleteOnSend)
         delete data;
-}
-
-GameObject* Player::GetSelectedGo()
-{
-    if (m_GM_SelectedGO)
-        return GetMapMgr()->GetGameObject((uint32)m_GM_SelectedGO);
-
-    return nullptr;
 }
 
 bool Player::IsMounted()

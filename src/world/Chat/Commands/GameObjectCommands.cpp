@@ -23,7 +23,7 @@ bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
         }
     }
 
-    auto gameobject = session->GetPlayer()->GetSelectedGo();
+    auto gameobject = session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
     {
         RedSystemMessage(session, "You need to select a GO first!");
@@ -58,7 +58,7 @@ bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
 //.gobject delete
 bool ChatHandler::HandleGODeleteCommand(const char* /*args*/, WorldSession* m_session)
 {
-    GameObject* selected_gobject = m_session->GetPlayer()->GetSelectedGo();
+    GameObject* selected_gobject = m_session->GetPlayer()->getSelectedGo();
     if (selected_gobject == nullptr)
     {
         RedSystemMessage(m_session, "No selected GameObject...");
@@ -102,7 +102,7 @@ bool ChatHandler::HandleGODeleteCommand(const char* /*args*/, WorldSession* m_se
         sMySQLStore.getGameObjectProperties(selected_gobject->getEntry())->name.c_str());
     selected_gobject->Despawn(0, 0);
 
-    m_session->GetPlayer()->m_GM_SelectedGO = 0;
+    m_session->GetPlayer()->setSelectedGo(0);
 
     return true;
 }
@@ -110,7 +110,7 @@ bool ChatHandler::HandleGODeleteCommand(const char* /*args*/, WorldSession* m_se
 //.gobject enable
 bool ChatHandler::HandleGOEnableCommand(const char* /*args*/, WorldSession* m_session)
 {
-    GameObject* gameobject = m_session->GetPlayer()->GetSelectedGo();
+    GameObject* gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
     {
         RedSystemMessage(m_session, "No selected GameObject...");
@@ -138,10 +138,10 @@ bool ChatHandler::HandleGOEnableCommand(const char* /*args*/, WorldSession* m_se
 //.gobject export
 bool ChatHandler::HandleGOExportCommand(const char* args, WorldSession* m_session)
 {
-    if (!m_session->GetPlayer()->m_GM_SelectedGO)
+    if (!m_session->GetPlayer()->getSelectedGo())
         return false;
 
-    GameObject* gameobject = m_session->GetPlayer()->GetMapMgrGameObject(m_session->GetPlayer()->m_GM_SelectedGO);
+    GameObject* gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
         return false;
 
@@ -166,7 +166,7 @@ bool ChatHandler::HandleGOExportCommand(const char* args, WorldSession* m_sessio
 bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
     GameObjectProperties const* gameobject_info = nullptr;
-    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
+    auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (!gameobject)
     {
         RedSystemMessage(m_session, "No selected GameObject...");
@@ -318,7 +318,7 @@ bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_sess
     uint32 save = 0;
     sscanf(args, "%u", &save);
 
-    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
+    auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
     {
         RedSystemMessage(m_session, "No selected GameObject!");
@@ -333,7 +333,7 @@ bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_sess
     gameobject->SetPosition(position_x, position_y, position_z, position_o);
     auto go_spawn = gameobject->m_spawn;
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
     {
         save = 1;
     }
@@ -362,7 +362,7 @@ bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_sess
     gameobject->SetNewGuid(new_go_guid);
     gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
 
-    m_session->GetPlayer()->m_GM_SelectedGO = new_go_guid;
+    m_session->GetPlayer()->setSelectedGo(new_go_guid);
 
     return true;
 }
@@ -370,7 +370,7 @@ bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_sess
 //.gobject open
 bool ChatHandler::HandleGOOpenCommand(const char* /*args*/, WorldSession* m_session)
 {
-    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
+    auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
     {
         RedSystemMessage(m_session, "No selected GameObject!");
@@ -394,7 +394,7 @@ bool ChatHandler::HandleGOOpenCommand(const char* /*args*/, WorldSession* m_sess
 //.gobject rebuild
 bool ChatHandler::HandleGORebuildCommand(const char* /*args*/, WorldSession* session)
 {
-    auto gameobject = session->GetPlayer()->GetSelectedGo();
+    auto gameobject = session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
     {
         RedSystemMessage(session, "You need to select a GO first!");
@@ -427,26 +427,26 @@ bool ChatHandler::HandleGORotateCommand(const char* args, WorldSession* m_sessio
     if (sscanf(args, "%c %f", &Axis, &deg) < 1)
         return false;
 
-    GameObject* go = m_session->GetPlayer()->GetSelectedGo();
+    GameObject* go = m_session->GetPlayer()->getSelectedGo();
     if (!go)
     {
         RedSystemMessage(m_session, "No selected GameObject...");
         return true;
     }
 
-    float rotation_x = m_session->GetPlayer()->go_last_x_rotation;
-    float rotation_y = m_session->GetPlayer()->go_last_y_rotation;
+    float rotation_x = m_session->GetPlayer()->m_goLastXRotation;
+    float rotation_y = m_session->GetPlayer()->m_goLastYRotation;
     float orientation = go->GetOrientation();
 
     switch (tolower(Axis))
     {
         case 'x':
             go->SetRotationAngles(orientation, rotation_y, deg);
-            m_session->GetPlayer()->go_last_x_rotation = deg;
+            m_session->GetPlayer()->m_goLastXRotation = deg;
             break;
         case 'y':
             go->SetRotationAngles(orientation, deg, rotation_x);
-            m_session->GetPlayer()->go_last_y_rotation = deg;
+            m_session->GetPlayer()->m_goLastYRotation = deg;
             break;
         case 'o':
             go->SetOrientation(m_session->GetPlayer()->GetOrientation());
@@ -465,7 +465,7 @@ bool ChatHandler::HandleGORotateCommand(const char* args, WorldSession* m_sessio
     go->PushToWorld(m_session->GetPlayer()->GetMapMgr());
     go->SaveToDB();
 
-    m_session->GetPlayer()->m_GM_SelectedGO = NewGuid;
+    m_session->GetPlayer()->setSelectedGo(NewGuid);
     return true;
 }
 
@@ -473,7 +473,7 @@ bool ChatHandler::HandleGORotateCommand(const char* args, WorldSession* m_sessio
 bool ChatHandler::HandleGOSelectCommand(const char* args, WorldSession* m_session)
 {
     GameObject* GObj = nullptr;
-    GameObject* GObjs = m_session->GetPlayer()->GetSelectedGo();
+    GameObject* GObjs = m_session->GetPlayer()->getSelectedGo();
 
     float cDist = 9999.0f;
     float nDist = 0.0f;
@@ -532,11 +532,11 @@ bool ChatHandler::HandleGOSelectCommand(const char* args, WorldSession* m_sessio
         return true;
     }
 
-    m_session->GetPlayer()->m_GM_SelectedGO = GObj->getGuid();
+    m_session->GetPlayer()->setSelectedGo(GObj->getGuid());
 
     //reset last rotation values on selecting a new go.
-    m_session->GetPlayer()->go_last_x_rotation = 0.0f;
-    m_session->GetPlayer()->go_last_y_rotation = 0.0f;
+    m_session->GetPlayer()->m_goLastXRotation = 0.0f;
+    m_session->GetPlayer()->m_goLastYRotation = 0.0f;
 
     GreenSystemMessage(m_session, "Selected GameObject [ %s ] which is %.3f meters away from you.",
         sMySQLStore.getGameObjectProperties(GObj->getEntry())->name.c_str(), m_session->GetPlayer()->CalcDistance(GObj));
@@ -561,7 +561,7 @@ bool ChatHandler::HandleGOSelectGuidCommand(const char* args, WorldSession* m_se
         return true;
     }
 
-    m_session->GetPlayer()->m_GM_SelectedGO = gameobject->getGuid();
+    m_session->GetPlayer()->setSelectedGo(gameobject->getGuid());
     GreenSystemMessage(m_session, "GameObject [ %s ] with distance %.3f to your position selected.", gameobject->GetGameObjectProperties()->name.c_str(), m_session->GetPlayer()->CalcDistance(gameobject));
     return true;
 }
@@ -629,7 +629,7 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
         mCell->SetLoaded();
 
     bool save_to_db = false;
-    if (m_session->GetPlayer()->SaveAllChangesCommand || save > 0)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand || save > 0)
         save_to_db = true;
 
     if (save_to_db)
@@ -643,7 +643,7 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
         GreenSystemMessage(m_session, "Spawning temporarily GameObject with entry '%u'", go_spawn->entry);
     }
 
-    m_session->GetPlayer()->m_GM_SelectedGO = gameobject->getGuid();
+    m_session->GetPlayer()->setSelectedGo(gameobject->getGuid());
 
     return true;
 }
@@ -662,7 +662,7 @@ bool ChatHandler::HandleGOSetAnimProgressCommand(const char* args, WorldSession*
         return true;
     }
 
-    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
+    auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
     {
         RedSystemMessage(m_session, "No selected GameObject!");
@@ -686,7 +686,7 @@ bool ChatHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_se
         return true;
     }
 
-    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
+    auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
     {
         RedSystemMessage(m_session, "No GameObject is selected.");
@@ -704,7 +704,7 @@ bool ChatHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_se
 
     auto go_spawn = gameobject->m_spawn;
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;
 
     if (save == 1)
@@ -741,7 +741,7 @@ bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_sess
         return true;
     }
 
-    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
+    auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
     {
         RedSystemMessage(m_session, "No GameObject selected!");
@@ -752,7 +752,7 @@ bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_sess
 
     auto go_spawn = gameobject->m_spawn;
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;
 
     if (save == 1)
@@ -788,7 +788,7 @@ bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_
         return true;
     }
 
-    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
+    auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
     {
         RedSystemMessage(m_session, "No selected GameObject!");
@@ -798,7 +798,7 @@ bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_
     gameobject->SetOverrides(go_override);
     auto go_spawn = gameobject->m_spawn;
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;
 
     if (save == 1)
@@ -825,7 +825,7 @@ bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_
     gameobject->SetNewGuid(new_go_guid);
     gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
 
-    m_session->GetPlayer()->m_GM_SelectedGO = new_go_guid;
+    m_session->GetPlayer()->setSelectedGo(new_go_guid);
 
     return true;
 }
@@ -844,7 +844,7 @@ bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_sess
         return true;
     }
 
-    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
+    auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
     {
         RedSystemMessage(m_session, "No selected GameObject!");
@@ -854,7 +854,7 @@ bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_sess
     auto go_spawn = gameobject->m_spawn;
     gameobject->Phase(PHASE_SET, phase);
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;
 
     if (save == 1)
@@ -881,7 +881,7 @@ bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_sess
     gameobject->SetNewGuid(new_go_guid);
     gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
 
-    m_session->GetPlayer()->m_GM_SelectedGO = new_go_guid;
+    m_session->GetPlayer()->setSelectedGo(new_go_guid);
 
     return true;
 }
@@ -897,7 +897,7 @@ bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_sess
         return true;
     }
 
-    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
+    auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
     {
         RedSystemMessage(m_session, "No selected GameObject!");
@@ -907,7 +907,7 @@ bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_sess
     gameobject->setScale(scale);
     auto go_spawn = gameobject->m_spawn;
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;
 
     if (save == 1)
@@ -934,7 +934,7 @@ bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_sess
     gameobject->SetNewGuid(new_go_guid);
     gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
 
-    m_session->GetPlayer()->m_GM_SelectedGO = new_go_guid;
+    m_session->GetPlayer()->setSelectedGo(new_go_guid);
 
     return true;
 }
@@ -951,7 +951,7 @@ bool ChatHandler::HandleGOSetStateCommand(const char* args, WorldSession* m_sess
         return true;
     }
 
-    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
+    auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
     {
         RedSystemMessage(m_session, "No GameObject selected!");
@@ -962,7 +962,7 @@ bool ChatHandler::HandleGOSetStateCommand(const char* args, WorldSession* m_sess
 
     auto go_spawn = gameobject->m_spawn;
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;
 
     if (save == 1)

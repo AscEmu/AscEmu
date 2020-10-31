@@ -503,7 +503,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     }
 #endif
 
-    newPlayer->UnSetBanned();
+    newPlayer->unsetBanned();
     newPlayer->addSpell(22027);
 
     if (newPlayer->getClass() == WARLOCK)

@@ -254,7 +254,7 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_sessi
 
         uint32 spawn_id = creature_target->spawnid;
 
-        if (m_session->GetPlayer()->SaveAllChangesCommand)
+        if (m_session->GetPlayer()->m_saveAllChangesCommand)
             save_to_db = true;
 
         if (save_to_db && spawn_id != 0)
@@ -1039,7 +1039,7 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_se
 
     bool save_to_db = atoi(args) == 1 ? true : false;
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save_to_db = true;
 
     if (creature_target->GetAIInterface()->isFlying())
@@ -1157,7 +1157,7 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
     uint32 old_emote = creature_target->getEmoteState();
     creature_target->setEmoteState(emote);
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;
 
     if (save == 1)
@@ -1224,7 +1224,7 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
 
     BlueSystemMessage(m_session, "%s linked to %s with a distance of %f at %f radians.", creature_slave->GetCreatureProperties()->Name.c_str(), m_session->GetPlayer()->linkTarget->GetCreatureProperties()->Name.c_str(), distance, angle);
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;
 
     if (save == 1)
@@ -1256,7 +1256,7 @@ bool ChatHandler::HandleNpcSetFormationClearCommand(const char* args, WorldSessi
     creature_target->GetAIInterface()->m_formationFollowDistance = 0.0f;
     creature_target->GetAIInterface()->ResetUnitToFollow();
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;
 
     if (save == 1)
@@ -1293,7 +1293,7 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
     uint32 old_npc_flags = creature_target->getNpcFlags();
     creature_target->addNpcFlags(npc_flags);
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;
 
     if (save == 1)
@@ -1324,7 +1324,7 @@ bool ChatHandler::HandleNpcSetOnGOCommand(const char* args, WorldSession* m_sess
 
     bool save = (atoi(args) == 1 ? true : false);
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = true;
 
     if (save)
@@ -1362,7 +1362,7 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
     uint32 old_npc_phase = creature_target->m_spawn->phase;
     creature_target->Phase(PHASE_SET, npc_phase);
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;
 
     if (save == 1)
@@ -1399,7 +1399,7 @@ bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* 
     uint8 old_standstate = creature_target->getStandState();
     creature_target->setStandState(standstate);
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
+    if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;
 
     if (save == 1)

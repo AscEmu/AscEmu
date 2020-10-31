@@ -478,7 +478,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (_player->IsBanned())
+    if (_player->isBanned())
     {
         _player->BroadcastMessage("You cannot do that when banned.");
         return;

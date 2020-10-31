@@ -4049,7 +4049,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        PUSH_GO(L, plr->GetSelectedGo());
+        PUSH_GO(L, plr->getSelectedGo());
         return 1;
     }
 
@@ -4060,7 +4060,7 @@ public:
         GameObject* newsel = CHECK_GO(L, 1);
         if (!newsel)
             return 0;
-        plr->m_GM_SelectedGO = newsel->getGuid();
+        plr->setSelectedGo(newsel->getGuid());
         return 0;
     }
 

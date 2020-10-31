@@ -974,9 +974,39 @@ public:
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Cheats
-    PlayerCheat m_cheats;
+    // Commands
+public:
+    void disableSummoning(bool disable);
+    bool isSummoningDisabled() const;
+    void disableAppearing(bool disable);
+    bool isAppearingDisabled() const;
 
+    bool isBanned() const;
+    void setBanned(uint32_t timestamp = 4, std::string Reason = "");
+    void unsetBanned();
+    std::string getBanReason() const;
+
+    GameObject* getSelectedGo() const;
+    void setSelectedGo(uint64_t guid);
+
+    PlayerCheat m_cheats;
+    float m_goLastXRotation = 0.0f;
+    float m_goLastYRotation = 0.0f;
+
+    bool m_saveAllChangesCommand = false;
+
+    bool m_XpGainAllowed = true;
+
+private:
+    bool m_disableAppearing = false;
+    bool m_disableSummoning = false;
+
+    uint64_t m_GMSelectedGO = 0;
+
+    uint32_t m_banned = 0;
+    std::string m_banreason;
+
+public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Items
     void unEquipOffHandIfRequired();
@@ -1091,6 +1121,20 @@ private:
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Hackdetection
+
+    //Speed
+    //Fly
+    //Teleport
+    //NoClip
+    //Waterwalk
+    //Size
+    //Wallclimb
+    //Itemstacking (spell/attack power stacking)
+private:
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     bool isGMFlagSet();
 
@@ -1199,12 +1243,6 @@ public:
         LfgMatch* m_lfgMatch;
         uint32 m_lfgInviterGuid;
 
-        // Summon and Appear Blocking
-        void DisableSummon(bool disable) { disableSummon = disable; }
-        bool IsSummonDisabled() { return disableSummon; }
-        void DisableAppear(bool disable) { disableAppear = disable; }
-        bool IsAppearDisabled() { return disableAppear; }
-
         // Scripting
         void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0) override;
         void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr) override;
@@ -1213,10 +1251,6 @@ public:
         void _UpdateSkillFields();
 
         SkillMap m_skills;
-
-        // Summon and Appear Blocking
-        bool disableAppear;
-        bool disableSummon;
 
         // COOLDOWNS
         uint32 m_lastPotionId;
@@ -1554,14 +1588,6 @@ public:
         void SetKnownTitle(RankTitles title, bool set);
         void SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshift_form, bool active);
 
-
-        bool IsBanned();
-        void SetBanned() { m_banned = 4;}
-        void SetBanned(std::string Reason) { m_banned = 4; m_banreason = Reason;}
-        void SetBanned(uint32 timestamp, std::string & Reason) { m_banned = timestamp; m_banreason = Reason; }
-        void UnSetBanned() { m_banned = 0; }
-        std::string GetBanReason() {return m_banreason;}
-
         /////////////////////////////////////////////////////////////////////////////////////////
         // Duel
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -1886,10 +1912,7 @@ public:
         uint8 cannibalizeCount;
         int32 rageFromDamageDealt;
         int32 rageFromDamageTaken;
-        // GameObject commands
-        GameObject * GetSelectedGo();
 
-        uint64 m_GM_SelectedGO;
 
         void _Relocate(uint32 mapid, const LocationVector & v, bool sendpending, bool force_new_world, uint32 instance_id);
 
@@ -1952,8 +1975,6 @@ public:
         // Cheat section
         void SpeedCheatDelay(uint32 ms_delay);
         void SpeedCheatReset();
-
-        bool SaveAllChangesCommand;
 
         void ZoneUpdate(uint32 ZoneId);
         void UpdateChannels(uint16 AreaID);
@@ -2222,9 +2243,6 @@ public:
         uint32 m_AttackMsgTimer;        // "too far away" and "wrong facing" timer
         bool m_attacking;
         
-        // Character Ban
-        uint32 m_banned;
-        std::string m_banreason;
         uint32 m_AreaID;
         std::list<Pet*>  m_Summons;
         uint32 m_PetNumberMax;
@@ -2299,9 +2317,6 @@ public:
 
         std::map<uint32, uint32> m_forcedReactions;
 
-        uint32 m_flyhackCheckTimer;
-        //void _FlyhackCheck(); disabled not working not used. Zyres.
-
         bool m_passOnLoot;
         uint32 m_tradeSequence;
         bool m_changingMaps;
@@ -2342,8 +2357,7 @@ public:
     private:
 
         PlayerInfo* m_playerInfo;
-        
-        bool m_XpGain;
+
         bool resettalents;
         std::list< Item* > m_GarbageItems;
 
@@ -2421,10 +2435,6 @@ public:
         void SendCinematicCamera(uint32 id);
 
         void SetMover(Unit* target);
-
-        // command
-        float go_last_x_rotation;
-        float go_last_y_rotation;
 
         // AGPL End
 };
