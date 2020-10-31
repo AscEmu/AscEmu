@@ -122,7 +122,7 @@ namespace MMAP
             getDirContents(files, "vmaps", filter);
             for (uint32 i = 0; i < files.size(); ++i)
             {
-                tileX = uint32(atoi(files[i].substr(8, 2).c_str()));
+                tileX = uint32(atoi(files[i].substr(7,2).c_str()));
                 tileY = uint32(atoi(files[i].substr(5, 2).c_str()));
                 tileID = StaticMapTree::packTileID(tileY, tileX);
 
@@ -217,10 +217,10 @@ namespace MMAP
     /**************************************************************************/
     void MapBuilder::getGridBounds(uint32 mapID, uint32 &minX, uint32 &minY, uint32 &maxX, uint32 &maxY) const
     {
-        maxX = std::numeric_limits<uint32>::max();
-        maxY = std::numeric_limits<uint32>::max();
-        minX = std::numeric_limits<uint32>::min();
-        minY = std::numeric_limits<uint32>::min();
+        maxX = 0;
+        maxY = 0;
+        minX = std::numeric_limits<uint32>::max();
+        minY = std::numeric_limits<uint32>::max();
 
         float bmin[3] = { 0, 0, 0 };
         float bmax[3] = { 0, 0, 0 };
@@ -251,10 +251,10 @@ namespace MMAP
             rcCalcBounds(meshData.liquidVerts.getCArray(), meshData.liquidVerts.size() / 3, lmin, lmax);
 
         // convert coord bounds to grid bounds
-        maxX = static_cast<uint32_t>(32 - bmin[0] / GRID_SIZE);
-        maxY = static_cast<uint32_t>(32 - bmin[2] / GRID_SIZE);
-        minX = static_cast<uint32_t>(32 - bmax[0] / GRID_SIZE);
-        minY = static_cast<uint32_t>(32 - bmax[2] / GRID_SIZE);
+        maxX = 32 - bmin[0] / GRID_SIZE;
+        maxY = 32 - bmin[2] / GRID_SIZE;
+        minX = 32 - bmax[0] / GRID_SIZE;
+        minY = 32 - bmax[2] / GRID_SIZE;
     }
 
     void MapBuilder::buildMeshFromFile(char* name)
@@ -463,7 +463,7 @@ namespace MMAP
 
         int polyBits = DT_POLY_BITS;
 
-        int maxTiles = static_cast<int>(tiles->size());
+        int maxTiles = tiles->size();
         int maxPolysPerTile = 1 << polyBits;
 
         /***          calculate bounds of map         ***/
@@ -503,11 +503,11 @@ namespace MMAP
         printf("[Map %04i] Creating navMesh...\n", mapID);
         if (!navMesh->init(&navMeshParams))
         {
-            printf("[Map %04i] Failed creating navmesh!\n", mapID);
+            printf("[Map %04i] Failed creating navmesh! \n", mapID);
             return;
         }
 
-        char fileName[1024];
+        char fileName[25];
         sprintf(fileName, "mmaps/%04u.mmap", mapID);
 
         FILE* file = fopen(fileName, "wb");
@@ -755,8 +755,8 @@ namespace MMAP
         params.walkableHeight = BASE_UNIT_DIM*config.walkableHeight;    // agent height
         params.walkableRadius = BASE_UNIT_DIM*config.walkableRadius;    // agent radius
         params.walkableClimb = BASE_UNIT_DIM*config.walkableClimb;      // keep less that walkableHeight (aka agent height)!
-        params.tileX = static_cast<int>(((bmin[0] + bmax[0]) / 2 - navMesh->getParams()->orig[0]) / GRID_SIZE);
-        params.tileY = static_cast<int>(((bmin[2] + bmax[2]) / 2 - navMesh->getParams()->orig[2]) / GRID_SIZE);
+        params.tileX = (((bmin[0] + bmax[0]) / 2) - navMesh->getParams()->orig[0]) / GRID_SIZE;
+        params.tileY = (((bmin[2] + bmax[2]) / 2) - navMesh->getParams()->orig[2]) / GRID_SIZE;
         rcVcopy(params.bmin, bmin);
         rcVcopy(params.bmax, bmax);
         params.cs = config.cs;
@@ -797,7 +797,7 @@ namespace MMAP
                 // we have flat tiles with no actual geometry - don't build those, its useless
                 // keep in mind that we do output those into debug info
                 // drop tiles with only exact count - some tiles may have geometry while having less tiles
-                printf("%s No polygons to build on tile!\n", tileString);
+                printf("%s No polygons to build on tile!              \n", tileString);
                 break;
             }
             if (!params.detailMeshes || !params.detailVerts || !params.detailTris)
@@ -1031,7 +1031,7 @@ namespace MMAP
             return false;
 
         MmapTileHeader header;
-        int count = static_cast<int>(fread(&header, sizeof(MmapTileHeader), 1, file));
+        int count = fread(&header, sizeof(MmapTileHeader), 1, file);
         fclose(file);
         if (count != 1)
             return false;
@@ -1044,4 +1044,5 @@ namespace MMAP
 
         return true;
     }
+
 }

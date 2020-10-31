@@ -17,20 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "adtfile.h"
-#include "wdtfile.h"
-#include "dbcfile.h"
-#include "wmo.h"
-#include "mpqfile.h"
-#include "vmapexport.h"
-#include <sys/stat.h>
+#define _CRT_SECURE_NO_DEPRECATE
+#include <cstdio>
+#include <iostream>
+#include <vector>
+#include <list>
+#include <errno.h>
 
-#ifdef _WIN32
-#include <direct.h>
-#define mkdir _mkdir
+#ifdef WIN32
+    #include <Windows.h>
+    #include <sys/stat.h>
+    #include <direct.h>
+    #define mkdir _mkdir
 #else
-#include <unistd.h>
-#define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
+    #include <sys/stat.h>
+    #define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
 #endif
 
 #undef min
@@ -40,6 +41,15 @@
 //#pragma comment(lib, "Winmm.lib")
 
 #include <map>
+
+//From Extractor
+#include "adtfile.h"
+#include "wdtfile.h"
+#include "dbcfile.h"
+#include "wmo.h"
+#include "mpqfile.h"
+
+#include "vmapexport.h"
 
 //------------------------------------------------------------------------------
 // Defines
@@ -102,7 +112,7 @@ typedef struct
 
 map_id * map_ids;
 uint16 *LiqType = 0;
-uint32_t map_count;
+uint32 map_count;
 char output_path[128]=".";
 char input_path[1024]=".";
 bool preciseVectorData = false;
@@ -560,7 +570,7 @@ int main(int argc, char ** argv)
             printf("FATAL ERROR: Map.dbc not found in data file.\n");
             return 1;
         }
-        map_count = static_cast<uint32_t>(dbc->getRecordCount());
+        map_count=dbc->getRecordCount ();
         map_ids=new map_id[map_count];
         for (unsigned int x=0;x<map_count;++x)
         {

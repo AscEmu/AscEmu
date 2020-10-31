@@ -17,10 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _CRT_SECURE_NO_DEPRECATE
+
 #include <stdio.h>
 #include <deque>
 #include <list>
-#include <vector>
 #include <cstdlib>
 #include <cstring>
 
@@ -40,7 +41,7 @@
 #include <fcntl.h>
 
 #if defined( __GNUC__ )
-    #define _open open
+    #define _open   open
     #define _close close
     #ifndef O_BINARY
         #define O_BINARY 0
@@ -50,9 +51,9 @@
 #endif
 
 #ifdef O_LARGEFILE
-    #define OPEN_FLAGS (O_RDONLY | O_BINARY | O_LARGEFILE)
+#define OPEN_FLAGS (O_RDONLY | O_BINARY | O_LARGEFILE)
 #else
-    #define OPEN_FLAGS (O_RDONLY | O_BINARY)
+#define OPEN_FLAGS (O_RDONLY | O_BINARY)
 #endif
 
 HANDLE WorldMpq = NULL;
@@ -67,10 +68,8 @@ typedef struct
 map_id *map_ids;
 uint16 *areas;
 uint16 *LiqType;
-
-#define MAX_PATH_LENGTH 128
-char output_path[MAX_PATH_LENGTH] = ".";
-char input_path[MAX_PATH_LENGTH] = ".";
+char output_path[128] = ".";
+char input_path[128] = ".";
 uint32 maxAreaId = 0;
 
 // **************************************************
@@ -98,7 +97,7 @@ float CONF_flat_liquid_delta_limit = 0.001f; // If max - min less this value - l
 
 uint32 CONF_TargetBuild = 15595;              // 4.3.4.15595
 
-// List MPQ for extract from / Version 15595
+                                              // List MPQ for extract maps from
 char const* CONF_mpq_list[] =
 {
     "world.MPQ",
@@ -141,6 +140,12 @@ TCHAR const* LocalesT[LOCALES_COUNT] =
 
 void CreateDir(std::string const& path)
 {
+    if (chdir(path.c_str()) == 0)
+    {
+        chdir("../");
+        return;
+    }
+
 #ifdef _WIN32
     _mkdir(path.c_str());
 #else
@@ -303,7 +308,7 @@ uint32 ReadMapDBC()
 
     SFileCloseFile(dbcFile);
     printf("Done! (%u maps loaded)\n", uint32(map_count));
-    return static_cast<uint32_t>(map_count);
+    return map_count;
 }
 
 void ReadAreaTableDBC()
@@ -324,7 +329,7 @@ void ReadAreaTableDBC()
     }
 
     size_t area_count = dbc.getRecordCount();
-    maxAreaId = static_cast<uint32_t>(dbc.getMaxId());
+    maxAreaId = dbc.getMaxId();
     areas = new uint16[maxAreaId + 1];
 
     for (uint32 x = 0; x < area_count; ++x)
@@ -1252,6 +1257,7 @@ void LoadCommonMPQFiles(uint32 build)
         }
         else
             _tprintf(_T("Loaded %s\n"), filename);
+
     }
 
     char const* prefix = NULL;

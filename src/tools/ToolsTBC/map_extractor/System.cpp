@@ -17,8 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
-
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "../../src/world/WorldConf.h"
@@ -43,7 +41,7 @@
 #include <fcntl.h>
 
 #if defined( __GNUC__ )
-    #define _open open
+    #define _open   open
     #define _close close
     #ifndef O_BINARY
         #define O_BINARY 0
@@ -68,7 +66,6 @@ typedef struct
 map_id *map_ids;
 uint16 *areas;
 uint16 *LiqType;
-
 #define MAX_PATH_LENGTH 128
 char output_path[MAX_PATH_LENGTH] = ".";
 char input_path[MAX_PATH_LENGTH] = ".";
@@ -96,37 +93,36 @@ float CONF_float_to_int16_limit = 2048.0f;   // Max accuracy = val/65536
 float CONF_flat_height_delta_limit = 0.005f; // If max - min less this value - surface is flat
 float CONF_flat_liquid_delta_limit = 0.001f; // If max - min less this value - liquid surface is flat
 
-// List MPQ for extract
-char const* CONF_mpq_list[] =
-{
-    "common.MPQ",    // Version 8606, 12340
-    "common-2.MPQ",  // Version 12340
-    "lichking.MPQ",  // Version 12340
-    "expansion.MPQ", // Version 8606, 12340
-    "patch.MPQ",     // Version 8606, 12340
-    "patch-2.MPQ",   // Version 8606, 12340
-    "patch-3.MPQ",   // Version 12340
+// List MPQ for extract from / Version 8606
+const char* CONF_mpq_list[] = {
+    "common.MPQ",
+    "expansion.MPQ",
+    "patch.MPQ",
+    "patch-2.MPQ",
 };
 
-#define LOCALES_COUNT 12
+static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU" };
+#define LANG_COUNT 12
 
-char const* Locales[LOCALES_COUNT] =
+void CreateDir( const std::string& Path )
 {
-    "enGB", "enUS",
-    "deDE", "esES",
-    "frFR", "koKR",
-    "zhCN", "zhTW",
-    "enCN", "enTW",
-    "esMX", "ruRU"
-};
+    if(chdir(Path.c_str()) == 0)
+    {
+            chdir("../");
+            return;
+    }
 
-void CreateDir(std::string const& path)
-{
-#ifdef _WIN32
-    _mkdir(path.c_str());
-#else
-    mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO); // 0777
-#endif
+    int ret;
+    #ifdef _WIN32
+    ret = _mkdir( Path.c_str());
+    #else
+    ret = mkdir( Path.c_str(), 0777 );
+    #endif
+    if (ret != 0)
+    {
+        printf("Fatal Error: Could not create directory %s check your permissions", Path.c_str());
+        exit(1);
+    }
 }
 
 bool FileExists( const char* FileName )
@@ -209,7 +205,7 @@ void HandleArgs(int argc, char * arg[])
 uint32 ReadBuild(int locale)
 {
     // include build info file also
-    std::string filename  = std::string("component.wow-")+Locales[locale]+".txt";
+    std::string filename  = std::string("component.wow-")+langs[locale]+".txt";
     //printf("Read %s file... ", filename.c_str());
 
     MPQFile m(filename.c_str());
@@ -272,7 +268,7 @@ uint32 ReadMapDBC()
         map_ids[x].name[max_map_name_length - 1] = '\0';
     }
     printf("Done! (%u maps loaded)\n", (uint32)map_count);
-    return static_cast<uint32_t>(map_count);
+    return map_count;
 }
 
 void ReadAreaTableDBC()
@@ -294,7 +290,7 @@ void ReadAreaTableDBC()
     for(uint32 x = 0; x < area_count; ++x)
         areas[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
 
-    maxAreaId = static_cast<uint32_t>(dbc.getMaxId());
+    maxAreaId = dbc.getMaxId();
 
     printf("Done! (%u areas loaded)\n", (uint32)area_count);
 }
@@ -1052,14 +1048,14 @@ void ExtractDBCFiles(int locale, bool basicLocale)
     CreateDir(path);
     if(!basicLocale)
     {
-        path += Locales[locale];
+        path += langs[locale];
         path += "/";
         CreateDir(path);
     }
 
     // extract Build info file
     {
-        std::string mpq_name = std::string("component.wow-") + Locales[locale] + ".txt";
+        std::string mpq_name = std::string("component.wow-") + langs[locale] + ".txt";
         std::string filename = path + mpq_name;
 
         ExtractFile(mpq_name.c_str(), filename);
@@ -1085,7 +1081,7 @@ void LoadLocaleMPQFiles(int const locale)
 {
     char filename[512];
 
-    sprintf(filename,"%s/Data/%s/locale-%s.MPQ", input_path, Locales[locale], Locales[locale]);
+    sprintf(filename,"%s/Data/%s/locale-%s.MPQ", input_path, langs[locale], langs[locale]);
     new MPQArchive(filename);
 
     for(int i = 1; i < 5; ++i)
@@ -1094,7 +1090,7 @@ void LoadLocaleMPQFiles(int const locale)
         if(i > 1)
             sprintf(ext, "-%i", i);
 
-        sprintf(filename,"%s/Data/%s/patch-%s%s.MPQ", input_path, Locales[locale], Locales[locale], ext);
+        sprintf(filename,"%s/Data/%s/patch-%s%s.MPQ", input_path, langs[locale], langs[locale], ext);
         if(FileExists(filename))
             new MPQArchive(filename);
     }
@@ -1128,13 +1124,13 @@ int main(int argc, char * arg[])
     int FirstLocale = -1;
     uint32 build = 0;
 
-    for (int i = 0; i < LOCALES_COUNT; i++)
+    for (int i = 0; i < LANG_COUNT; i++)
     {
         char tmp1[512];
-        sprintf(tmp1, "%s/Data/%s/locale-%s.MPQ", input_path, Locales[i], Locales[i]);
+        sprintf(tmp1, "%s/Data/%s/locale-%s.MPQ", input_path, langs[i], langs[i]);
         if (FileExists(tmp1))
         {
-            printf("Detected locale: %s\n", Locales[i]);
+            printf("Detected locale: %s\n", langs[i]);
 
             //Open MPQs
             LoadLocaleMPQFiles(i);
@@ -1171,7 +1167,7 @@ int main(int argc, char * arg[])
 
     if (CONF_extract & EXTRACT_MAP)
     {
-        printf("Using locale: %s\n", Locales[FirstLocale]);
+        printf("Using locale: %s\n", langs[FirstLocale]);
 
         // Open MPQs
         LoadLocaleMPQFiles(FirstLocale);

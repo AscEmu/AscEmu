@@ -23,6 +23,10 @@
 #include <algorithm>
 #include <cstdio>
 
+#ifdef WIN32
+#define snprintf _snprintf
+#endif
+
 char const* GetPlainName(char const* FileName)
 {
     const char * szTemp;
@@ -210,7 +214,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
         }
 
         //======================
-        ADT.seek(static_cast<int>(nextpos));
+        ADT.seek(nextpos);
     }
 
     ADT.close();
