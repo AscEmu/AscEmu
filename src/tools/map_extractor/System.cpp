@@ -39,6 +39,7 @@
 #include "adt.h"
 #include "wdt.h"
 #include <fcntl.h>
+#include <iostream>
 
 #if defined( __GNUC__ )
     #define _open   open
@@ -56,6 +57,9 @@
     #define OPEN_FLAGS (O_RDONLY | O_BINARY)
 #endif
 extern ArchiveSet gOpenArchives;
+
+#include <filesystem>
+namespace fs = std::filesystem;
 
 typedef struct
 {
@@ -93,7 +97,7 @@ float CONF_float_to_int16_limit = 2048.0f;   // Max accuracy = val/65536
 float CONF_flat_height_delta_limit = 0.005f; // If max - min less this value - surface is flat
 float CONF_flat_liquid_delta_limit = 0.001f; // If max - min less this value - liquid surface is flat
 
-// List MPQ for extract from / Version 12340
+// List MPQ for extract from / Version 5875
 const char* CONF_mpq_list_classic[] =
 {
     "dbc.MPQ",
@@ -114,37 +118,24 @@ const char* CONF_mpq_list[] = {
 static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU" };
 #define LANG_COUNT 12
 
-void CreateDir( const std::string& Path )
+void CreateDir(const std::string& Path)
 {
-    if(_chdir(Path.c_str()) == 0)
+    if (fs::exists(Path))
     {
-            _chdir("../");
-            return;
+        std::cout << "NOTE: Directory " << Path << " already exists and gets now deleted" << std::endl;
+        fs::remove_all(Path);
     }
 
-    int ret;
-    #ifdef _WIN32
-    ret = _mkdir( Path.c_str());
-    #else
-    ret = mkdir( Path.c_str(), 0777 );
-    #endif
-    if (ret != 0)
+    if (!fs::create_directory(Path))
     {
-        printf("Fatal Error: Could not create directory %s check your permissions", Path.c_str());
+        std::cout << "Fatal Error: Could not create directory " << Path << " check your permissions" << std::endl;
         exit(1);
     }
 }
 
-bool FileExists( const char* FileName )
+bool FileExists(const char* FileName)
 {
-    int fp = _open(FileName, OPEN_FLAGS);
-    if(fp != -1)
-    {
-        _close(fp);
-        return true;
-    }
-
-    return false;
+    return fs::exists(FileName);
 }
 
 void Usage(char* prg)
@@ -1111,7 +1102,7 @@ void ExtractDBCFiles(int locale, bool basicLocale)
         std::string filename = path;
         filename += (iter->c_str() + strlen("DBFilesClient\\"));
 
-        if(FileExists(filename.c_str()))
+        if (FileExists(filename.c_str()))
             continue;
 
         if (ExtractFile(iter->c_str(), filename))
@@ -1134,7 +1125,7 @@ void LoadLocaleMPQFiles(int const locale)
             sprintf(ext, "-%i", i);
 
         sprintf(filename,"%s/Data/%s/patch-%s%s.MPQ", input_path, langs[locale], langs[locale], ext);
-        if(FileExists(filename))
+        if (FileExists(filename))
             new MPQArchive(filename);
     }
 }
@@ -1189,7 +1180,7 @@ int main(int argc, char * arg[])
             //Open MPQs
             LoadLocaleMPQFiles(i);
 
-            if((CONF_extract & EXTRACT_DBC) == 0)
+            if ((CONF_extract & EXTRACT_DBC) == 0)
             {
                 FirstLocale = i;
                 build = ReadBuild(FirstLocale);
@@ -1198,7 +1189,7 @@ int main(int argc, char * arg[])
             }
 
             //Extract DBC files
-            if(FirstLocale < 0)
+            if (FirstLocale < 0)
             {
                 FirstLocale = i;
                 build = ReadBuild(FirstLocale);
@@ -1213,18 +1204,10 @@ int main(int argc, char * arg[])
         }
     }
 
-    bool tryClassic = false;
-
-    if (FirstLocale < 0)
-    {
-        tryClassic = true;
-        //return 0;
-    }
-
     if (CONF_extract & EXTRACT_MAP)
     {
-        // Open MPQs
-        if (!tryClassic)
+        // version > classic
+        if (FirstLocale >= 0)
         {
             printf("Using locale: %s\n", langs[FirstLocale]);
             LoadLocaleMPQFiles(FirstLocale);
@@ -1233,6 +1216,7 @@ int main(int argc, char * arg[])
         else
         {
             build = 5875;
+            printf("Try client build: %u\n", build);
             LoadCommonClassicMPQFiles();
 
             if (CONF_extract & EXTRACT_DBC)
@@ -1246,5 +1230,6 @@ int main(int argc, char * arg[])
         CloseMPQFiles();
     }
 
+    std::cin.get();
     return 0;
 }
