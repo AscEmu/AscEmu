@@ -32,6 +32,7 @@
 #include "Server/Packets/CmsgBattlemasterJoin.h"
 #include "Server/Packets/SmsgGroupJoinedBattleground.h"
 #include "Server/Packets/SmsgBattlefieldStatus.h"
+#include "Storage/WorldStrings.h"
 
 using namespace AscEmu::Packets;
 

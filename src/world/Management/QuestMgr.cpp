@@ -37,6 +37,7 @@
 #include "Server/Packets/SmsgQuestupdateFailedTimer.h"
 #include "Server/Packets/SmsgQuestupdateFailed.h"
 #include "Server/Packets/SmsgQuestgiverQuestFailed.h"
+#include "Storage/WorldStrings.h"
 
 using namespace AscEmu::Packets;
 

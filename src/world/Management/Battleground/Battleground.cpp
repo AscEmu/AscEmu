@@ -30,6 +30,7 @@
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgBattlegroundPlayerLeft.h"
 #include "Server/Packets/SmsgBattlegroundPlayerJoined.h"
+#include "Storage/WorldStrings.h"
 
 uint32 CBattleground::GetId()
 {

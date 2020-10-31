@@ -1323,37 +1323,6 @@ void Player::sendChatPacket(uint32_t type, uint32_t language, const char* messag
     this->SendPacket(&selfData);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// Commands
-void Player::disableSummoning(bool disable) { m_disableSummoning = disable; }
-bool Player::isSummoningDisabled() const { return m_disableSummoning; }
-void Player::disableAppearing(bool disable) { m_disableAppearing = disable; }
-bool Player::isAppearingDisabled() const { return m_disableAppearing; }
-
-bool Player::isBanned() const
-{
-    if (m_banned)
-    {
-        if (m_banned < 100 || static_cast<uint32_t>(UNIXTIME) < m_banned)
-            return true;
-    }
-    return false;
-}
-
-void Player::setBanned(uint32_t timestamp /*= 4*/, std::string Reason /*= ""*/) { m_banned = timestamp; m_banreason = Reason; }
-void Player::unsetBanned() { m_banned = 0; }
-std::string Player::getBanReason() const { return m_banreason; }
-
-GameObject* Player::getSelectedGo() const
-{
-    if (m_GMSelectedGO)
-        return GetMapMgr()->GetGameObject(static_cast<uint32_t>(m_GMSelectedGO));
-
-    return nullptr;
-}
-
-void Player::setSelectedGo(uint64_t guid) { m_GMSelectedGO = guid; }
-
 bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
 {
     auto racemask = getRaceMask();
@@ -1384,7 +1353,39 @@ bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
 
     return false;
 }
+
 #endif
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Commands
+void Player::disableSummoning(bool disable) { m_disableSummoning = disable; }
+bool Player::isSummoningDisabled() const { return m_disableSummoning; }
+void Player::disableAppearing(bool disable) { m_disableAppearing = disable; }
+bool Player::isAppearingDisabled() const { return m_disableAppearing; }
+
+bool Player::isBanned() const
+{
+    if (m_banned)
+    {
+        if (m_banned < 100 || static_cast<uint32_t>(UNIXTIME) < m_banned)
+            return true;
+    }
+    return false;
+}
+
+void Player::setBanned(uint32_t timestamp /*= 4*/, std::string Reason /*= ""*/) { m_banned = timestamp; m_banreason = Reason; }
+void Player::unsetBanned() { m_banned = 0; }
+std::string Player::getBanReason() const { return m_banreason; }
+
+GameObject* Player::getSelectedGo() const
+{
+    if (m_GMSelectedGO)
+        return GetMapMgr()->GetGameObject(static_cast<uint32_t>(m_GMSelectedGO));
+
+    return nullptr;
+}
+
+void Player::setSelectedGo(uint64_t guid) { m_GMSelectedGO = guid; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Basic
