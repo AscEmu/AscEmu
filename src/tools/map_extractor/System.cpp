@@ -94,6 +94,13 @@ float CONF_flat_height_delta_limit = 0.005f; // If max - min less this value - s
 float CONF_flat_liquid_delta_limit = 0.001f; // If max - min less this value - liquid surface is flat
 
 // List MPQ for extract from / Version 12340
+const char* CONF_mpq_list_classic[] =
+{
+    "dbc.MPQ",
+    "terrain.MPQ",
+    "patch.MPQ",
+    "patch-2.MPQ",
+};
 const char* CONF_mpq_list[] = {
     "common.MPQ",
     "common-2.MPQ",
@@ -1030,6 +1037,39 @@ bool ExtractFile( char const* mpq_name, std::string const& filename )
     return true;
 }
 
+void ExtractClassicDBCFiles()
+{
+    printf("Extracting dbc files...\n");
+
+    std::set<std::string> dbcfiles;
+
+    // get DBC file list
+    for (ArchiveSet::iterator i = gOpenArchives.begin(); i != gOpenArchives.end(); ++i)
+    {
+        std::vector<std::string> files;
+        (*i)->GetFileListTo(files);
+        for (std::vector<std::string>::iterator iter = files.begin(); iter != files.end(); ++iter)
+            if (iter->rfind(".dbc") == iter->length() - strlen(".dbc"))
+                dbcfiles.insert(*iter);
+    }
+
+    std::string path = output_path;
+    path += "/dbc/";
+    CreateDir(path);
+
+    // extract DBCs
+    int count = 0;
+    for (std::set<std::string>::iterator iter = dbcfiles.begin(); iter != dbcfiles.end(); ++iter)
+    {
+        std::string filename = path;
+        filename += (iter->c_str() + strlen("DBFilesClient\\"));
+
+        if (ExtractFile(iter->c_str(), filename))
+            ++count;
+    }
+    printf("Extracted %u DBC files\n\n", count);
+}
+
 void ExtractDBCFiles(int locale, bool basicLocale)
 {
     printf("Extracting dbc files...\n");
@@ -1099,14 +1139,25 @@ void LoadLocaleMPQFiles(int const locale)
     }
 }
 
+void LoadCommonClassicMPQFiles()
+{
+    char filename[512];
+    int count = sizeof(CONF_mpq_list_classic) / sizeof(char*);
+    for (int i = 0; i < count; ++i)
+    {
+        sprintf(filename, "%s/Data/%s", input_path, CONF_mpq_list_classic[i]);
+        if (FileExists(filename))
+            new MPQArchive(filename);
+    }
+}
 void LoadCommonMPQFiles()
 {
     char filename[512];
-    int count = sizeof(CONF_mpq_list)/sizeof(char*);
-    for(int i = 0; i < count; ++i)
+    int count = sizeof(CONF_mpq_list) / sizeof(char*);
+    for (int i = 0; i < count; ++i)
     {
         sprintf(filename, "%s/Data/%s", input_path, CONF_mpq_list[i]);
-        if(FileExists(filename))
+        if (FileExists(filename))
             new MPQArchive(filename);
     }
 }
@@ -1162,19 +1213,31 @@ int main(int argc, char * arg[])
         }
     }
 
-    if(FirstLocale < 0)
+    bool tryClassic = false;
+
+    if (FirstLocale < 0)
     {
-        printf("No locales detected\n");
-        return 0;
+        tryClassic = true;
+        //return 0;
     }
 
     if (CONF_extract & EXTRACT_MAP)
     {
-        printf("Using locale: %s\n", langs[FirstLocale]);
-
         // Open MPQs
-        LoadLocaleMPQFiles(FirstLocale);
-        LoadCommonMPQFiles();
+        if (!tryClassic)
+        {
+            printf("Using locale: %s\n", langs[FirstLocale]);
+            LoadLocaleMPQFiles(FirstLocale);
+            LoadCommonMPQFiles();
+        }
+        else
+        {
+            build = 5875;
+            LoadCommonClassicMPQFiles();
+
+            if (CONF_extract & EXTRACT_DBC)
+                ExtractClassicDBCFiles();
+        }
 
         // Extract maps
         ExtractMapsFromMpq(build);

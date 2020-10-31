@@ -2,7 +2,7 @@
 
 #check which tools are set
 if(BUILD_TOOLS)
-   if("${ASCEMU_VERSION}" STREQUAL "WotLK" OR "${ASCEMU_VERSION}" STREQUAL "TBC")
+   if("${ASCEMU_VERSION}" STREQUAL "WotLK" OR "${ASCEMU_VERSION}" STREQUAL "TBC" OR "${ASCEMU_VERSION}" STREQUAL "Classic")
       add_subdirectory(map_extractor)
    else()
       add_subdirectory(Tools${ASCEMU_VERSION}/map_extractor)
