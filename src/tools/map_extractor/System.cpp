@@ -169,6 +169,8 @@ char output_path[MAX_PATH_LENGTH] = ".";
 char input_path[MAX_PATH_LENGTH] = ".";
 uint32 maxAreaId = 0;
 
+uint32_t versionBuild = 0;
+
 // **************************************************
 // Extractor options
 // **************************************************
@@ -191,22 +193,48 @@ float CONF_float_to_int16_limit = 2048.0f;   // Max accuracy = val/65536
 float CONF_flat_height_delta_limit = 0.005f; // If max - min less this value - surface is flat
 float CONF_flat_liquid_delta_limit = 0.001f; // If max - min less this value - liquid surface is flat
 
-// List MPQ for extract from / Version 5875
-const char* CONF_mpq_list_classic[] =
+enum VersionMask : uint8_t
 {
-    "dbc.MPQ",
-    "terrain.MPQ",
-    "patch.MPQ",
-    "patch-2.MPQ",
+    MaskNone = 0x0,
+    MaskClassic = 0x01,
+    MaskBC = 0x02,
+    MaskWotLK = 0x04,
+    MaskCata = 0x08,
+    MaskMop = 0x10,
+
+    MaskBCWotLK = MaskBC | MaskWotLK,
+    MaskClassicBCWotLK = MaskClassic | MaskBCWotLK
 };
-const char* CONF_mpq_list[] = {
-    "common.MPQ",
-    "common-2.MPQ",
-    "lichking.MPQ",
-    "expansion.MPQ",
-    "patch.MPQ",
-    "patch-2.MPQ",
-    "patch-3.MPQ",
+
+VersionMask getVersionMask()
+{
+    switch (versionBuild)
+    {
+        case 5875: return MaskClassic;
+        case 8606: return MaskBC;
+        case 12340: return MaskWotLK;
+        case 15595: return MaskCata;
+        case 18414: return MaskMop;
+        default: return MaskNone;
+    }
+}
+
+struct MpqList
+{
+    uint32_t versionMask;
+    std::string fileName;
+};
+
+std::vector<MpqList> mpqList{
+    {MaskClassic, "dbc.MPQ"},
+    {MaskClassic, "terrain.MPQ"},
+    {MaskClassicBCWotLK, "patch.MPQ"},
+    {MaskClassicBCWotLK, "patch-2.MPQ"},
+    {MaskBCWotLK, "common.MPQ"},
+    {MaskWotLK, "common-2.MPQ"},
+    {MaskWotLK, "lichking.MPQ"},
+    {MaskBCWotLK, "expansion.MPQ"},
+    {MaskWotLK, "patch-3.MPQ"}
 };
 
 static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU" };
@@ -227,7 +255,7 @@ void CreateDir(const std::string& Path)
     }
 }
 
-bool FileExists(const char* FileName)
+bool FileExists(const std::string& FileName)
 {
     return fs::exists(FileName);
 }
@@ -1224,26 +1252,16 @@ void LoadLocaleMPQFiles(int const locale)
     }
 }
 
-void LoadCommonClassicMPQFiles()
-{
-    char filename[512];
-    int count = sizeof(CONF_mpq_list_classic) / sizeof(char*);
-    for (int i = 0; i < count; ++i)
-    {
-        sprintf(filename, "%s/Data/%s", input_path, CONF_mpq_list_classic[i]);
-        if (FileExists(filename))
-            new MPQArchive(filename);
-    }
-}
 void LoadCommonMPQFiles()
 {
-    char filename[512];
-    int count = sizeof(CONF_mpq_list) / sizeof(char*);
-    for (int i = 0; i < count; ++i)
+    for (auto mpq : mpqList)
     {
-        sprintf(filename, "%s/Data/%s", input_path, CONF_mpq_list[i]);
-        if (FileExists(filename))
-            new MPQArchive(filename);
+        if (mpq.versionMask & getVersionMask())
+        {
+            std::string fileName (std::string(input_path) + "/Data/" + mpq.fileName);
+            if (FileExists(fileName))
+                new MPQArchive(fileName.c_str());
+        }
     }
 }
 
@@ -1269,8 +1287,8 @@ int main(int argc, char * arg[])
         return 0;
     }
 
-    const auto buildVersion = getBuildNumber();
-    std::cout << "== WoWExe build Version: " << buildVersion << std::endl;
+    versionBuild = getBuildNumber();
+    std::cout << "== WoWExe build Version: " << versionBuild << std::endl;
 
     HandleArgs(argc, arg);
 
@@ -1327,7 +1345,7 @@ int main(int argc, char * arg[])
         {
             build = 5875;
             printf("Try client build: %u\n", build);
-            LoadCommonClassicMPQFiles();
+            LoadCommonMPQFiles();
 
             if (CONF_extract & EXTRACT_DBC)
                 ExtractClassicDBCFiles();
