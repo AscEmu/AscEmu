@@ -71,7 +71,7 @@ std::string getWowExeName()
     {
         if (files.path().extension() == extension)
         {
-            auto name = files.path().stem().string().substr(0, 3);
+            auto name = files.path().stem().string().substr(0, 6);
             std::transform(name.begin(), name.end(), name.begin(), [](unsigned char chars) { return std::tolower(chars); });
             if (name + extension == "wow.exe")
                 return files.path().stem().string() + extension;
@@ -203,7 +203,8 @@ enum VersionMask : uint8_t
     MaskMop = 0x10,
 
     MaskBCWotLK = MaskBC | MaskWotLK,
-    MaskClassicBCWotLK = MaskClassic | MaskBCWotLK
+    MaskClassicBCWotLK = MaskClassic | MaskBCWotLK,
+    MaskCataMop = MaskCata | MaskMop
 };
 
 VersionMask getVersionMask()
@@ -228,17 +229,28 @@ struct MpqList
 std::vector<MpqList> mpqList{
     {MaskClassic, "dbc.MPQ"},
     {MaskClassic, "terrain.MPQ"},
+
     {MaskClassicBCWotLK, "patch.MPQ"},
     {MaskClassicBCWotLK, "patch-2.MPQ"},
+
     {MaskBCWotLK, "common.MPQ"},
     {MaskWotLK, "common-2.MPQ"},
     {MaskWotLK, "lichking.MPQ"},
     {MaskBCWotLK, "expansion.MPQ"},
-    {MaskWotLK, "patch-3.MPQ"}
+    {MaskWotLK, "patch-3.MPQ"},
+
+    {MaskCataMop, "world.MPQ"},
+    {MaskCata, "art.MPQ"},
+    {MaskCata, "world2.MPQ"},
+    {MaskMop, "misc.MPQ"},
+    {MaskCataMop, "expansion1.MPQ"},
+    {MaskCataMop, "expansion2.MPQ"},
+    {MaskCataMop, "expansion3.MPQ"},
+    {MaskMop, "expansion4.MPQ"},
 };
 
-static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU" };
-#define LANG_COUNT 12
+static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU", "ptBR", "ptPT", "itIT" };
+#define LANG_COUNT 15
 
 void CreateDir(const std::string& Path)
 {
@@ -327,9 +339,10 @@ void HandleArgs(int argc, char* arg[])
 
 uint32 ReadBuild(int locale)
 {
-    // include build info file also
+    // include build info file also if available
+
     std::string filename = std::string("component.wow-") + langs[locale] + ".txt";
-    //printf("Read %s file... ", filename.c_str());
+    printf("Read %s file... ", filename.c_str());
 
     MPQFile m(filename.c_str());
     if (m.isEof())
@@ -358,6 +371,8 @@ uint32 ReadBuild(int locale)
         printf("Fatal error: Invalid  %s file format!\n", filename.c_str());
         exit(1);
     }
+
+    std::cout << "Detected file build: " << build << std::endl;
 
     return build;
 }
@@ -1157,13 +1172,19 @@ void ExtractDBCFiles(int locale, bool basicLocale)
     std::set<std::string> dbcfiles;
 
     // get DBC file list
+    // this can be solved better with std::filesystem
     for (ArchiveSet::iterator i = gOpenArchives.begin(); i != gOpenArchives.end(); ++i)
     {
         std::vector<std::string> files;
         (*i)->GetFileListTo(files);
         for (std::vector<std::string>::iterator iter = files.begin(); iter != files.end(); ++iter)
+        {
             if (iter->rfind(".dbc") == iter->length() - strlen(".dbc"))
                 dbcfiles.insert(*iter);
+
+            if (iter->rfind(".db2") == iter->length() - strlen(".db2"))
+                dbcfiles.insert(*iter);
+        }
     }
 
     std::string path = output_path;
@@ -1191,9 +1212,6 @@ void ExtractDBCFiles(int locale, bool basicLocale)
     {
         std::string filename = path;
         filename += (iter->c_str() + strlen("DBFilesClient\\"));
-
-        if (FileExists(filename.c_str()))
-            continue;
 
         if (ExtractFile(iter->c_str(), filename))
             ++count;
@@ -1240,6 +1258,32 @@ inline void CloseMPQFiles()
     gOpenArchives.clear();
 }
 
+int getFindLanguageIndex()
+{
+    int langIndex = -1;
+    bool foundLanguage = false;
+
+    const std::string path(std::string(input_path) + "/Data/");
+    for (const auto* lang : langs)
+    {
+        langIndex++;
+        if (FileExists(path + lang + "/locale-" + lang + ".MPQ"))
+        {
+            foundLanguage = true;
+            break;
+        }
+    }
+
+    if (foundLanguage)
+    {
+        std::cout << "Detected locale: " << langs[langIndex] << std::endl;
+        return langIndex;
+    }
+
+    std::cout << "No locale found!"<< std::endl;
+    return -1;
+}
+
 int main(int argc, char * arg[])
 {
     std::cout << "Map & DBC Extractor" << std::endl;
@@ -1261,43 +1305,32 @@ int main(int argc, char * arg[])
 
     HandleArgs(argc, arg);
 
-    //\ todo: add different functions based on build.
-
-    int FirstLocale = -1;
-    uint32 build = 0;
-
-    for (int i = 0; i < LANG_COUNT; i++)
+    const auto langIndex = getFindLanguageIndex();
+    if (versionBuild > 5875 && langIndex < 0)
     {
-        char tmp1[512];
-        sprintf(tmp1, "%s/Data/%s/locale-%s.MPQ", input_path, langs[i], langs[i]);
-        if (FileExists(tmp1))
+        std::cout << "Fatal Error: no langIndex found for client: " << versionBuild << std::endl;
+        std::cin.get();
+        return 0;
+    }
+
+    uint32_t build = 5875;
+
+    if (CONF_extract & EXTRACT_DBC)
+    {
+        // version > classic
+        if (versionBuild > 5875)
         {
-            printf("Detected locale: %s\n", langs[i]);
+            LoadLocaleMPQFiles(langIndex);
 
-            //Open MPQs
-            LoadLocaleMPQFiles(i);
+            build = ReadBuild(langIndex);
 
-            if ((CONF_extract & EXTRACT_DBC) == 0)
-            {
-                FirstLocale = i;
-                build = ReadBuild(FirstLocale);
-                printf("Detected client build: %u\n", build);
-                break;
-            }
+            ExtractDBCFiles(langIndex, langIndex < 0 ? true : false);
 
-            //Extract DBC files
-            if (FirstLocale < 0)
-            {
-                FirstLocale = i;
-                build = ReadBuild(FirstLocale);
-                printf("Detected client build: %u\n", build);
-                ExtractDBCFiles(i, true);
-            }
-            else
-                ExtractDBCFiles(i, false);
-
-            //Close MPQs
             CloseMPQFiles();
+        }
+        else
+        {
+            ExtractDBCFiles(langIndex, true);
         }
     }
 
@@ -1306,18 +1339,12 @@ int main(int argc, char * arg[])
         // version > classic
         if (versionBuild > 5875)
         {
-            printf("Using locale: %s\n", langs[FirstLocale]);
-            LoadLocaleMPQFiles(FirstLocale);
+            LoadLocaleMPQFiles(langIndex);
             LoadCommonMPQFiles();
         }
         else
         {
-            build = 5875;
-            printf("Try client build: %u\n", build);
             LoadCommonMPQFiles();
-
-            if (CONF_extract & EXTRACT_DBC)
-                ExtractDBCFiles(0, true);
         }
 
         // Extract maps
