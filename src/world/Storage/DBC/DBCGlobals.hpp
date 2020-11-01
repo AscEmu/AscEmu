@@ -15,15 +15,21 @@ namespace DBC
 {
     enum LocaleConstant
     {
-        LOCALE_enUS = 0,
-        LOCALE_koKR = 1,
-        LOCALE_frFR = 2,
-        LOCALE_deDE = 3,
-        LOCALE_zhCN = 4,
-        LOCALE_zhTW = 5,
-        LOCALE_esES = 6,
-        LOCALE_esMX = 7,
-        LOCALE_ruRU = 8
+        LOCALE_enGB = 0,
+        LOCALE_enUS = 1,
+        LOCALE_deDE = 2,
+        LOCALE_esES = 3,
+        LOCALE_frFR = 4,
+        LOCALE_koKR = 5,
+        LOCALE_zhCN = 6,
+        LOCALE_zhTW = 7,
+        LOCALE_enCN = 8,
+        LOCALE_enTW = 9,
+        LOCALE_esMX = 10,
+        LOCALE_ruRU = 11,
+        LOCALE_ptBR = 12,
+        LOCALE_ptPT = 13,
+        LOCALE_itIT = 14,
     };
 
     struct LocaleNameStr
@@ -34,33 +40,43 @@ namespace DBC
 
     LocaleNameStr const fullLocaleNameList[] =
     {
-        { "enUS", LOCALE_enUS },
-        { "enGB", LOCALE_enUS },
-        { "koKR", LOCALE_koKR },
-        { "frFR", LOCALE_frFR },
-        { "deDE", LOCALE_deDE },
-        { "zhCN", LOCALE_zhCN },
-        { "zhTW", LOCALE_zhTW },
-        { "esES", LOCALE_esES },
-        { "esMX", LOCALE_esMX },
-        { "ruRU", LOCALE_ruRU },
-        { nullptr, LOCALE_enUS }
+           { "enGB", LOCALE_enGB },
+           { "enUS", LOCALE_enUS },
+           { "deDE", LOCALE_deDE },
+           { "esES", LOCALE_esES },
+           { "frFR", LOCALE_frFR },
+           { "koKR", LOCALE_koKR },
+           { "zhCN", LOCALE_zhCN },
+           { "zhTW", LOCALE_zhTW },
+           { "enCN", LOCALE_enCN },
+           { "enTW", LOCALE_enTW },
+           { "esMX", LOCALE_esMX },
+           { "ruRU", LOCALE_ruRU },
+           { "ptBR", LOCALE_ptBR },
+           { "ptPT", LOCALE_ptPT },
+           { "itIT", LOCALE_itIT },
     };
 
     namespace
     {
-        const uint8 C_TOTAL_LOCALES = 9;
+        const uint8 C_TOTAL_LOCALES = 15;
         char const* C_LOCALE_NAMES[C_TOTAL_LOCALES] =
         {
+            "enGB",
             "enUS",
-            "koKR",
-            "frFR",
             "deDE",
+            "esES",
+            "frFR",
+            "koKR",
             "zhCN",
             "zhTW",
-            "esES",
+            "enCN",
+            "enTW",
             "esMX",
-            "ruRU"
+            "ruRU",
+            "ptBR",
+            "ptPT",
+            "itIT"
         };
 
         uint32 g_dbc_file_count = 0;
@@ -74,36 +90,26 @@ namespace DBC
     {
         ASSERT(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T));
 
-        ++g_dbc_file_count;
         std::string dbc_file_path = dbc_path + dbc_filename;
+
+        // find first available locale
+        for (auto locales : fullLocaleNameList)
+        {
+            if (fs::is_directory(dbc_path + locales.name + "/"))
+            {
+                dbc_file_path = dbc_path + locales.name + "/" + dbc_filename;
+                break;
+            }
+        }
+
+        ++g_dbc_file_count;
         DBC::SQL::SqlDbc* sql = NULL;
         if (custom_format)
         {
             assert(false && "SqlDbc not yet implemented");
         }
 
-        if (storage.Load(dbc_file_path.c_str(), sql))
-        {
-            for (uint8 i = 0; i < DBC::C_TOTAL_LOCALES; ++i)
-            {
-                if (!(available_dbc_locales & (1 << i)))
-                {
-                    continue;
-                }
-
-                std::string localised_name(dbc_path);
-                localised_name.append(DBC::C_LOCALE_NAMES[i]);
-                localised_name.push_back('/');
-                localised_name.append(dbc_filename);
-
-                if (!storage.LoadStringsFrom(localised_name.c_str()))
-                {
-                    // Mark as not available to speed up next checks
-                    available_dbc_locales &= ~(1 << i);
-                }
-            }
-        }
-        else
+        if (!storage.Load(dbc_file_path.c_str(), sql))
         {
             // We failed to load the dbc, so work out if it's incompatible or just doesn't exist
             if (auto file = fopen(dbc_file_path.c_str(), "rb"))

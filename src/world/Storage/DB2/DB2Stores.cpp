@@ -42,25 +42,20 @@ inline void LoadDB2(LocalDB2Data& localeData, StoreProblemList1& errors, DB2Stor
 {
     ARCEMU_ASSERT(DB2::DB2FileLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T) || LoadDB2_assert_print(DB2::DB2FileLoader::GetFormatRecordSize(storage.GetFormat()), sizeof(T), filename));
 
-    ++DB2_Count;
     std::string db2Filename = db2Path + filename;
-    if (storage.Load(db2Filename.c_str(), localeData.defaultLocale))
+
+    // find first available locale
+    for (auto locales : DBC::fullLocaleNameList)
     {
-        for (uint8_t i = 0; DBC::fullLocaleNameList[i].name; ++i)
+        if (fs::is_directory(db2Path + locales.name + "/"))
         {
-            if (!(localeData.availableDb2Locales & (1 << i)))
-                continue;
-
-            DBC::LocaleNameStr const* localStr = &DBC::fullLocaleNameList[i];
-
-            std::string db2_dir_loc = db2Path + localStr->name + "/";
-
-            std::string localizedName = db2Path + localStr->name + "/" + filename;
-            if (!storage.LoadStringsFrom(localizedName.c_str(), localStr->locale))
-                localeData.availableDb2Locales &= ~(1 << i);
+            db2Filename = db2Path + locales.name + "/" + filename;
+            break;
         }
     }
-    else
+
+    ++DB2_Count;
+    if (!storage.Load(db2Filename.c_str(), localeData.defaultLocale))
     {
         if (FILE* f = fopen(db2Filename.c_str(), "rb"))
         {

@@ -1317,6 +1317,8 @@ int main(int argc, char * arg[])
 
     if (CONF_extract & EXTRACT_DBC)
     {
+        LoadCommonMPQFiles();
+
         // version > classic
         if (versionBuild > 5875)
         {
@@ -1332,27 +1334,23 @@ int main(int argc, char * arg[])
         {
             ExtractDBCFiles(langIndex, true);
         }
+
+        CloseMPQFiles();
     }
 
     if (CONF_extract & EXTRACT_MAP)
     {
+        LoadCommonMPQFiles();
+
         // version > classic
         if (versionBuild > 5875)
-        {
             LoadLocaleMPQFiles(langIndex);
-            LoadCommonMPQFiles();
-        }
-        else
-        {
-            LoadCommonMPQFiles();
-        }
 
-        // Extract maps
         ExtractMapsFromMpq(build);
 
-        // Close MPQs
         CloseMPQFiles();
     }
+
     std::cout << "Finished - Press any key to close map_extractor.exe" << std::endl;
     std::cin.get();
     return 0;
