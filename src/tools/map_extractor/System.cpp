@@ -39,7 +39,9 @@
 #include "adt.h"
 #include "wdt.h"
 #include <fcntl.h>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 
 #if defined( __GNUC__ )
     #define _open   open
@@ -60,6 +62,98 @@ extern ArchiveSet gOpenArchives;
 
 #include <filesystem>
 namespace fs = std::filesystem;
+
+std::string getWowExeName()
+{
+    const std::string path("./");
+    const std::string extension(".exe");
+    for (const auto& files : fs::recursive_directory_iterator(path))
+    {
+        if (files.path().extension() == extension)
+        {
+            auto name = files.path().stem().string().substr(0, 3);
+            std::transform(name.begin(), name.end(), name.begin(), [](unsigned char chars) { return std::tolower(chars); });
+            if (name + extension == "wow.exe")
+                return files.path().stem().string() + extension;
+        }
+    }
+
+    return "";
+}
+
+//\ thanks to mangos for this function, cheers - Zyres
+uint32_t getBuildNumber()
+{
+    // buffers used for working on the file's bytes
+    unsigned char byteSearchBuffer[1];      // used for reading in a single character, ready to be
+                                            // tested for the required text we are searching for: 1, 5, 6, or 8
+    unsigned char jumpBytesBuffer[128];     // used for skipping past the bytes from the file's start
+                                            // to the base # area, before we start searching for the base #, for faster processing
+                                        
+    unsigned char preWOTLKbuildNumber[3];   // will hold the last 3 digits of the build number
+    unsigned char postTBCbuildNumber[4];    // will hold the last 4 digits of the build number
+
+    // These do not include the first digit
+    // as the first digit is used to locate the possible location of the build number
+    // then the following bytes are grabbed, 3 for pre WOTLK, 4 for WOTLK and later.
+    // Those grabbed bytes are then compared with the below variables in order to idenity the exe's build
+    unsigned char vanillaBuild1[3] = { 0x38, 0x37, 0x35 };      // (5)875
+    unsigned char vanillaBuild2[3] = { 0x30, 0x30, 0x35 };      // (6)005
+    unsigned char vanillaBuild3[3] = { 0x31, 0x34, 0x31 };      // (6)141
+    unsigned char tbcBuild[3] = { 0x36, 0x30, 0x36 };           // (8)606
+    unsigned char wotlkBuild[4] = { 0x32, 0x33, 0x34, 0x30 };   // (1)2340
+    unsigned char cataBuild[4] = { 0x35, 0x35, 0x39, 0x35 };    // (1)5595
+    unsigned char mopBuild[4] = { 0x38, 0x34, 0x31, 0x34 };     // (1)8414
+
+    const auto wowExeFile = fopen(getWowExeName().c_str(), "rb");
+
+    /// jump over as much of the file as possible, before we start searching for the base #
+    for (auto i = 0; i < 3300; ++i)
+        fread(jumpBytesBuffer, sizeof(jumpBytesBuffer), 1, wowExeFile);
+
+    // Search for the build #
+    while (fread(byteSearchBuffer, 1, 1, wowExeFile))
+    {
+        // we are looking for 1, 5, 6, or 8
+        // these values are the first digit of the build versions we are interested in
+        // Vanilla and TBC
+        if (byteSearchBuffer[0] == 0x35 || byteSearchBuffer[0] == 0x36 || byteSearchBuffer[0] == 0x38)
+        {
+            // grab the next 4 bytes
+            fread(preWOTLKbuildNumber, sizeof(preWOTLKbuildNumber), 1, wowExeFile);
+
+            if (!memcmp(preWOTLKbuildNumber, vanillaBuild1, sizeof(preWOTLKbuildNumber))) // build is Vanilla?
+                return 5875;
+
+            if (!memcmp(preWOTLKbuildNumber, vanillaBuild2, sizeof(preWOTLKbuildNumber))) // build is Vanilla?
+                return 6005;
+
+            if (!memcmp(preWOTLKbuildNumber, vanillaBuild3, sizeof(preWOTLKbuildNumber))) // build is Vanilla?
+                return 6141;
+
+            if (!memcmp(preWOTLKbuildNumber, tbcBuild, sizeof(preWOTLKbuildNumber))) // build is TBC?
+                return 8606;
+        }
+
+        // WOTLK, CATA, MoP
+        if (byteSearchBuffer[0] == 0x31)
+        {
+            // grab the next 4 bytes
+            fread(postTBCbuildNumber, sizeof(postTBCbuildNumber), 1, wowExeFile);
+
+            if (!memcmp(postTBCbuildNumber, wotlkBuild, sizeof(postTBCbuildNumber))) /// build is WOTLK?
+                return 12340;
+
+            if (!memcmp(postTBCbuildNumber, cataBuild, sizeof(postTBCbuildNumber))) /// build is CATA?
+                return 15595;
+
+            if (!memcmp(postTBCbuildNumber, mopBuild, sizeof(postTBCbuildNumber))) /// build is MoP?
+                return 18414;
+        }
+    }
+
+    return 0;
+}
 
 typedef struct
 {
@@ -1161,10 +1255,26 @@ inline void CloseMPQFiles()
 
 int main(int argc, char * arg[])
 {
-    printf("Map & DBC Extractor\n");
-    printf("===================\n\n");
+    std::cout << "Map & DBC Extractor" << std::endl;
+    std::cout << "===================" << std::endl;
+
+    if (!getWowExeName().empty())
+    {
+        std::cout << "Found " << getWowExeName() << " file." << std::endl;
+    }
+    else
+    {
+        std::cout << "Fatal Error: No wow.exe found!" << std::endl;
+        std::cin.get();
+        return 0;
+    }
+
+    const auto buildVersion = getBuildNumber();
+    std::cout << "== WoWExe build Version: " << buildVersion << std::endl;
 
     HandleArgs(argc, arg);
+
+    //\ todo: add different functions based on build.
 
     int FirstLocale = -1;
     uint32 build = 0;
