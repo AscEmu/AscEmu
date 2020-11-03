@@ -319,9 +319,10 @@ void Creature::OnRespawn(MapMgr* m)
     if (m_noRespawn)
         return;
 
-    InstanceBossInfoMap* bossInfoMap = sObjectMgr.m_InstanceBossInfoMap[m->GetMapId()];
+    auto encounters = sObjectMgr.GetDungeonEncounterList(m->GetMapId(), m->pInstance->m_difficulty);
+
     Instance* pInstance = m->pInstance;
-    if (bossInfoMap != NULL && pInstance != NULL)
+    if (encounters != NULL && pInstance != NULL)
     {
         bool skip = false;
         for (std::set<uint32>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
@@ -332,14 +333,21 @@ void Creature::OnRespawn(MapMgr* m)
                 skip = true;
                 break;
             }
+
             // Is add from killed boss?
-            InstanceBossInfoMap::const_iterator bossInfo = bossInfoMap->find((*killedNpc));
-            if (bossInfo != bossInfoMap->end() && bossInfo->second->trash.find(this->spawnid) != bossInfo->second->trash.end())
+            for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
             {
-                skip = true;
-                break;
+                DungeonEncounter const* encounter = *itr;
+                if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == (*killedNpc))
+                {
+                    skip = true;
+                    break;
+                }
+
             }
+
         }
+
         if (skip)
         {
             m_noRespawn = true;

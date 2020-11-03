@@ -645,6 +645,10 @@ class SERVER_DECL InstanceScript
         void generateBossDataState();
         void sendUnitEncounter(uint32_t type, Unit* unit = nullptr, uint8_t value_a = 0, uint8_t value_b = 0);
 
+        // Checks encounter state
+        void UpdateEncountersStateForCreature(uint32_t creditEntry, uint8_t difficulty);
+        void UpdateEncountersStateForSpell(uint32_t creditEntry, uint8_t difficulty);
+
         //used for debug
         void displayDataStateList(Player* player);
 
@@ -660,6 +664,7 @@ class SERVER_DECL InstanceScript
 
         uint32_t addTimer(uint32_t durationInMs);
         uint32_t getTimeForTimer(uint32_t timerId);
+        uint32_t completedEncounters; // completed encounter mask, bit indexes are DungeonEncounter.dbc boss numbers, used for packets // todo for further use save these in db
         void removeTimer(uint32_t& timerId);
         void resetTimer(uint32_t timerId, uint32_t durationInMs);
         bool isTimerFinished(uint32_t timerId);

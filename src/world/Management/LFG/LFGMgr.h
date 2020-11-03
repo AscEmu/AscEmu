@@ -308,6 +308,7 @@ class LfgMgr : EventableObject
         bool IsTeleported(uint64 pguid);
         void SetRoles(uint64 guid, uint8 roles);
         void SetSelectedDungeons(uint64 guid, const LfgDungeonSet& dungeons);
+        uint32_t GetLFGDungeon(uint32_t id);
 
     private:
         uint8 GetRoles(uint64 guid);

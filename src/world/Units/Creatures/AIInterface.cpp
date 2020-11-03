@@ -4365,7 +4365,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
         if (m_Unit->isCreature())
         {
             // set encounter state = InProgress
-            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), 1);
+            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), InProgress);
         }
 
         if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
@@ -4565,7 +4565,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 /*misc1*/)
         if (m_Unit->isCreature())
         {
             // set encounter state back to NotStarted
-            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), 0);
+            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), NotStarted);
         }
     }
 
@@ -4742,7 +4742,8 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
         CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), OnCreatureDeath)(static_cast<Creature*>(m_Unit), pUnit);
 
         // set encounter state to finished
-        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), 2);    //2 = Finished
+        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), Finished);
+        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), UpdateEncountersStateForCreature)(static_cast<Creature*>(m_Unit)->getEntry(), m_Unit->GetMapMgr()->pInstance->m_difficulty);
     }
 
     setAiState(AI_STATE_IDLE);
@@ -4778,34 +4779,34 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
         || pInstance->m_mapInfo->type == INSTANCE_NONRAID
         || pInstance->m_mapInfo->type == INSTANCE_MULTIMODE))
     {
-        InstanceBossInfoMap* bossInfoMap = sObjectMgr.m_InstanceBossInfoMap[m_Unit->GetMapMgr()->GetMapId()];
+
+        auto encounters = sObjectMgr.GetDungeonEncounterList(m_Unit->GetMapMgr()->GetMapId(), pInstance->m_difficulty);
+
         Creature* pCreature = static_cast< Creature* >(m_Unit);
         bool found = false;
 
-        if (pInstance->isPersistent() && bossInfoMap != NULL)
+        if (pInstance->isPersistent() && encounters != NULL)
         {
             uint32 npcGuid = pCreature->GetCreatureProperties()->Id;
-            InstanceBossInfoMap::const_iterator bossInfo = bossInfoMap->find(npcGuid);
-            if (bossInfo != bossInfoMap->end())
+
+            for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
             {
-                found = true;
-                m_Unit->GetMapMgr()->pInstance->m_killedNpcs.insert(npcGuid);
-
-                sInstanceMgr.SaveInstanceToDB(m_Unit->GetMapMgr()->pInstance);
-
-                for (InstanceBossTrashList::iterator trash = bossInfo->second->trash.begin(); trash != bossInfo->second->trash.end(); ++trash)
+                DungeonEncounter const* encounter = *itr;
+                if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == npcGuid)
                 {
-                    Creature* c = m_Unit->GetMapMgr()->GetSqlIdCreature((*trash));
-                    if (c != nullptr)
-                        c->m_noRespawn = true;
-                }
-                if (!pInstance->m_persistent)
-                {
-                    pInstance->m_persistent = true;
-                    sInstanceMgr.SaveInstanceToDB(pInstance);
-                    for (PlayerStorageMap::iterator itr = m_Unit->GetMapMgr()->m_PlayerStorage.begin(); itr != m_Unit->GetMapMgr()->m_PlayerStorage.end(); ++itr)
+                    found = true;
+                    m_Unit->GetMapMgr()->pInstance->m_killedNpcs.insert(npcGuid);
+
+                    sInstanceMgr.SaveInstanceToDB(m_Unit->GetMapMgr()->pInstance);
+
+                    if (!pInstance->m_persistent)
                     {
-                        (*itr).second->SetPersistentInstanceId(pInstance);
+                        pInstance->m_persistent = true;
+                        sInstanceMgr.SaveInstanceToDB(pInstance);
+                        for (PlayerStorageMap::iterator itr = m_Unit->GetMapMgr()->m_PlayerStorage.begin(); itr != m_Unit->GetMapMgr()->m_PlayerStorage.end(); ++itr)
+                        {
+                            (*itr).second->SetPersistentInstanceId(pInstance);
+                        }
                     }
                 }
             }

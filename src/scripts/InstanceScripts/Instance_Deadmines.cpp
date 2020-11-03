@@ -38,113 +38,131 @@ static Movement::Location Guards[] =
     { -89.6744f, -694.063f, 8.43202f, 0 }  //Parrot
 };
 
-//class DeadminesInstanceScript : public InstanceScript
-//{
-//    public:
-//
-//        explicit DeadminesInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-//        {
-//            mFactoryDoor_GUID = 0;
-//            mDefiasCannon_GUID = 0;
-//            mDoorLever_GUID = 0;
-//            mMrSmiteChest_GUID = 0;
-//            mIronCladDoor_GUID = 0;
-//            InstanceEncounter = 0;
-//        }
-//
-//        static InstanceScript* Create(MapMgr* pMapMgr) { return new DeadminesInstanceScript(pMapMgr); }
-//
-//        void OnGameObjectPushToWorld(GameObject* pGameObject)
-//        {
-//            switch (pGameObject->getEntry())
-//            {
-//                case GO_FACTORY_DOOR:
-//                    mFactoryDoor_GUID = static_cast<uint32_t>(pGameObject->getGuid());
-//                    break;
-//                case GO_FACTORY_DOOR_LEVER:
-//                    mDoorLever_GUID = static_cast<uint32_t>(pGameObject->getGuid());
-//                    break;
-//                case GO_IRONCLAD_DOOR:
-//                    mIronCladDoor_GUID = static_cast<uint32_t>(pGameObject->getGuid());
-//                    break;
-//            }
-//        }
-//
-//        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
-//        {
-//            switch (pGameObject->getEntry())
-//            {
-//                case GO_DEFIAS_CANNON:
-//                {
-//                    GameObject* pDoor4 = GetGameObjectByGuid(mIronCladDoor_GUID);
-//                    if (pDoor4 != NULL && pDoor4->getState() != 2)
-//                        pDoor4->setState(2);
-//                }break;
-//                case GO_FACTORY_DOOR_LEVER:
-//                {
-//                    GameObject* pDoor5 = GetGameObjectByGuid(mFactoryDoor_GUID);
-//                    if (pDoor5 != NULL)
-//                        pDoor5->setState(pDoor5->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
-//                }break;
-//                case GO_IRONCLAD_LEVER:
-//                {
-//                    GameObject* pDoor6 = GetGameObjectByGuid(mFactoryDoor_GUID);
-//                    //Door can be opened by lever if state isn't 2
-//                    if (pDoor6 != NULL && pDoor6->getState() != 2)
-//                        pDoor6->setState(pDoor6->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
-//                }break;
-//                case GO_SNEED_DOOR_LEVER:
-//                {
-//                    GameObject* pDoor7 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[1].x, Doors[1].y, Doors[1].z);
-//                    if (pDoor7 != NULL)
-//                        pDoor7->setState(pDoor7->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
-//                }break;
-//                case GO_GILNID_DOOR_LEVER:
-//                {
-//                    GameObject* pDoor8 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[0].x, Doors[0].y, Doors[0].z);
-//                    if (pDoor8 != NULL)
-//                        pDoor8->setState(pDoor8->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
-//                }break;
-//            }
-//        }
-//
-//        void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
-//        {
-//            switch (pCreature->getEntry())
-//            {
-//                case NPC_RHAHK_ZOR:
-//                {
-//                    GameObject* pDoor1 = GetGameObjectByGuid(mFactoryDoor_GUID);
-//                    if (pDoor1 != NULL)
-//                        pDoor1->setState(GO_STATE_OPEN );
-//                }break;
-//                case NPC_SNEEDS_SHREDDER:
-//                    SpawnCreature(NPC_SNEED, pCreature->GetPositionX(), pCreature->GetPositionY(), pCreature->GetPositionZ(), pCreature->GetOrientation());
-//                    break;
-//                case NPC_GILNID:
-//                {
-//                    GameObject* pDoor2 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[0].x, Doors[0].y, Doors[0].z);
-//                    if (pDoor2 != NULL)
-//                        pDoor2->setState(GO_STATE_OPEN );
-//                }break;
-//                case NPC_SNEED:
-//                {
-//                    GameObject* pDoor3 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[1].x, Doors[1].y, Doors[1].z);
-//                    if (pDoor3 != NULL)
-//                        pDoor3->setState(GO_STATE_OPEN );
-//                }break;
-//            }
-//        }
-//
-//    protected:
-//
-//        uint32_t mFactoryDoor_GUID;
-//        uint32_t mDefiasCannon_GUID;
-//        uint32_t mDoorLever_GUID;
-//        uint32_t mMrSmiteChest_GUID;
-//        uint32_t mIronCladDoor_GUID;
-//        uint32_t InstanceEncounter;
-//};
+
+class DeadminesInstanceScript : public InstanceScript
+{
+public:
+
+    explicit DeadminesInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    {
+        mFactoryDoor_GUID = 0;
+        mDefiasCannon_GUID = 0;
+        mDoorLever_GUID = 0;
+        mMrSmiteChest_GUID = 0;
+        mIronCladDoor_GUID = 0;
+        InstanceEncounter = 0;
+
+        if (getData(NPC_RHAHK_ZOR) == Finished)
+        {
+            setGameObjectStateForEntry(GO_FACTORY_DOOR, GO_STATE_OPEN);
+        }
+
+        if (getData(NPC_MR_SMITE) == Finished)
+        {
+            setGameObjectStateForEntry(GO_IRONCLAD_DOOR, GO_STATE_OPEN);
+        }
+
+    }
+
+    static InstanceScript* Create(MapMgr* pMapMgr) { return new DeadminesInstanceScript(pMapMgr); }
+
+    void OnGameObjectPushToWorld(GameObject* pGameObject)
+    {
+        switch (pGameObject->getEntry())
+        {
+        case GO_FACTORY_DOOR:
+            mFactoryDoor_GUID = static_cast<uint32_t>(pGameObject->getGuid());
+            break;
+
+        case GO_FACTORY_DOOR_LEVER:
+            mDoorLever_GUID = static_cast<uint32_t>(pGameObject->getGuid());
+            break;
+
+        case GO_IRONCLAD_DOOR:
+            mIronCladDoor_GUID = static_cast<uint32_t>(pGameObject->getGuid());
+            break;
+        }
+    }
+
+    void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
+    {
+        switch (pCreature->getEntry())
+        {
+            case NPC_RHAHK_ZOR:
+            {
+                GameObject* pDoor1 = GetGameObjectByGuid(mFactoryDoor_GUID);
+                if (pDoor1 != NULL)
+                    pDoor1->setState(GO_STATE_OPEN);
+            }break;
+            case NPC_SNEEDS_SHREDDER:
+                spawnCreature(NPC_SNEED, pCreature->GetPositionX(), pCreature->GetPositionY(), pCreature->GetPositionZ(), pCreature->GetOrientation());
+                break;
+            case NPC_GILNID:
+            {
+                GameObject* pDoor2 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[0].x, Doors[0].y, Doors[0].z);
+                if (pDoor2 != NULL)
+                    pDoor2->setState(GO_STATE_OPEN);
+            }break;
+            case NPC_SNEED:
+            {
+                GameObject* pDoor3 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[1].x, Doors[1].y, Doors[1].z);
+                if (pDoor3 != NULL)
+                    pDoor3->setState(GO_STATE_OPEN);
+            }break;
+        }
+    }
+
+    void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
+    {
+        switch (pGameObject->getEntry())
+        {
+            case GO_DEFIAS_CANNON:
+            {
+                GameObject* pDoor4 = GetGameObjectByGuid(mIronCladDoor_GUID);
+                if (pDoor4 != NULL && pDoor4->getState() != GO_STATE_ALTERNATIVE_OPEN)
+                    pDoor4->setState(GO_STATE_ALTERNATIVE_OPEN);
+            }break;
+
+            case GO_FACTORY_DOOR_LEVER:
+            {
+                GameObject* pDoor5 = GetGameObjectByGuid(mFactoryDoor_GUID);
+                if (pDoor5 != NULL)
+                    pDoor5->setState(pDoor5->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
+            }break;
+
+            case GO_IRONCLAD_LEVER:
+            {
+                GameObject* pDoor6 = GetGameObjectByGuid(mFactoryDoor_GUID);
+                //Door can be opened by lever if state isn't 2
+                if (pDoor6 != NULL && pDoor6->getState() != GO_STATE_ALTERNATIVE_OPEN)
+                    pDoor6->setState(pDoor6->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
+            }break;
+
+            case GO_SNEED_DOOR_LEVER:
+            {
+                GameObject* pDoor7 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[1].x, Doors[1].y, Doors[1].z);
+                if (pDoor7 != NULL)
+                    pDoor7->setState(pDoor7->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
+            }break;
+
+            case GO_GILNID_DOOR_LEVER:
+            {
+                GameObject* pDoor8 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[0].x, Doors[0].y, Doors[0].z);
+                if (pDoor8 != NULL)
+                    pDoor8->setState(pDoor8->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
+            }break;
+        }
+    }
+
+protected:
+
+    uint32_t mFactoryDoor_GUID;
+    uint32_t mDefiasCannon_GUID;
+    uint32_t mDoorLever_GUID;
+    uint32_t mMrSmiteChest_GUID;
+    uint32_t mIronCladDoor_GUID;
+    uint32_t InstanceEncounter;
+};
 
 class RhahkZorAI : public CreatureAIScript
 {
@@ -347,6 +365,7 @@ class VanCleefAI : public CreatureAIScript
 
 void SetupDeadmines(ScriptMgr* mgr)
 {
+    mgr->register_instance_script(36, &DeadminesInstanceScript::Create);
     //mgr->register_creature_script(NPC_RHAHK_ZOR, &RhahkZorAI::Create);
     mgr->register_creature_script(NPC_MR_SMITE, &MrSmiteAI::Create);
     mgr->register_creature_script(NPC_EDWIN_VANCLEEF, &VanCleefAI::Create);

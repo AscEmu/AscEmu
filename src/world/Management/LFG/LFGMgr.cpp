@@ -1457,7 +1457,11 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             LfgProposalPlayer* player = pProposal->players[(*it)->getGuid()];
 
             WoWGuid wowGuid;
-            wowGuid.Init((*it)->getGroup()->GetGUID());
+            if ((*it)->getGroup())
+                wowGuid.Init((*it)->getGroup()->GetGUID());
+            else
+                wowGuid.Init(uint64_t(0));
+
             uint32 lowgroupguid = (*it)->getGroup() ? wowGuid.getGuidLowPart() : 0;
             if (player->groupLowGuid != lowgroupguid)
                 LOG_DEBUG("%u group mismatch: actual (%u) - queued (%u)", (*it)->getGuid(), lowgroupguid, player->groupLowGuid);
@@ -2158,6 +2162,15 @@ const LfgDungeonSet& LfgMgr::GetDungeonsByRandom(uint32 randomdungeon)
     if (randomdungeon == 0) { return m_CachedDungeonMap[0]; }
     return m_CachedDungeonMap[0];
 #endif
+}
+
+uint32_t LfgMgr::GetLFGDungeon(uint32_t id)
+{
+    DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(id);
+    if (dungeon->ID)
+        return dungeon->ID;
+
+    return NULL;
 }
 
 LfgReward const* LfgMgr::GetRandomDungeonReward(uint32 dungeon, uint8 level)

@@ -63,8 +63,6 @@ void ObjectMgr::initialize()
     m_hiArenaTeamId = 0;
     TransportersCount = 0;
     m_hiPlayerGuid = 1;
-
-    memset(m_InstanceBossInfoMap, 0, sizeof(InstanceBossInfoMap*) * MAX_NUM_MAPS);
 }
 
 void ObjectMgr::finalize()
@@ -185,19 +183,9 @@ void ObjectMgr::finalize()
     }
 
     LogNotice("ObjectMgr : Deleting Boss Information...");
-    for (uint32 i = 0; i < MAX_NUM_MAPS; i++)
-    {
-        if (this->m_InstanceBossInfoMap[i] != nullptr)
-        {
-            for (InstanceBossInfoMap::iterator itr = this->m_InstanceBossInfoMap[i]->begin(); itr != m_InstanceBossInfoMap[i]->end(); ++itr)
-            {
-                delete(*itr).second;
-            }
-
-            delete this->m_InstanceBossInfoMap[i];
-            this->m_InstanceBossInfoMap[i] = nullptr;
-        }
-    }
+    for (DungeonEncounterContainer::iterator itr = _dungeonEncounterStore.begin(); itr != _dungeonEncounterStore.end(); ++itr)
+        for (DungeonEncounterList::iterator encounterItr = itr->second.begin(); encounterItr != itr->second.end(); ++encounterItr)
+            delete *encounterItr;
 
     LogNotice("ObjectMgr : Deleting Arena Teams...");
     for (std::unordered_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeams.begin(); itr != m_arenaTeams.end(); ++itr)
@@ -583,6 +571,7 @@ void ObjectMgr::DelinkPlayerCorpses(Player* pOwner)
     CorpseAddEventDespawn(c);
 }
 
+
 void ObjectMgr::LoadInstanceBossInfos()
 {
     char* p, *q, *trash;
@@ -636,6 +625,84 @@ void ObjectMgr::LoadInstanceBossInfos()
 
     delete result;
     LogDetail("ObjectMgr : %u boss information loaded.", cnt);
+}
+
+void ObjectMgr::LoadGMTickets()
+{
+    QueryResult* result = CharacterDatabase.Query("SELECT ticketid, playerGuid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment FROM gm_tickets");
+    if (result == nullptr)
+    {
+        LogDetail("ObjectMgr : 0 active GM Tickets loaded.");
+        return;
+    }
+
+    do
+    {
+        Field* fields = result->Fetch();
+
+        GM_Ticket* ticket = new GM_Ticket;
+        ticket->guid = fields[0].GetUInt64();
+        ticket->playerGuid = fields[1].GetUInt64();
+        ticket->name = fields[2].GetString();
+        ticket->level = fields[3].GetUInt32();
+        ticket->map = fields[4].GetUInt32();
+        ticket->posX = fields[5].GetFloat();
+        ticket->posY = fields[6].GetFloat();
+        ticket->posZ = fields[7].GetFloat();
+        ticket->message = fields[8].GetString();
+        ticket->timestamp = fields[9].GetUInt32();
+        ticket->deleted = fields[10].GetUInt32() == 1;
+        ticket->assignedToPlayer = fields[11].GetUInt64();
+        ticket->comment = fields[12].GetString();
+
+        AddGMTicket(ticket, true);
+    }
+    while (result->NextRow());
+
+    LogDetail("ObjectMgr : %u active GM Tickets loaded.", result->GetRowCount());
+    delete result;
+}
+
+void ObjectMgr::SaveGMTicket(GM_Ticket* ticket, QueryBuffer* buf)
+{
+    std::stringstream ss;
+
+    ss << "DELETE FROM gm_tickets WHERE ticketid = ";
+    ss << ticket->guid;
+    ss << ";";
+
+    if (buf == nullptr)
+        CharacterDatabase.ExecuteNA(ss.str().c_str());
+    else
+        buf->AddQueryStr(ss.str());
+
+    ss.rdbuf()->str("");
+
+    ss << "INSERT INTO gm_tickets (ticketid, playerguid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment) VALUES(";
+    ss << ticket->guid << ", ";
+    ss << ticket->playerGuid << ", '";
+    ss << CharacterDatabase.EscapeString(ticket->name) << "', ";
+    ss << ticket->level << ", ";
+    ss << ticket->map << ", ";
+    ss << ticket->posX << ", ";
+    ss << ticket->posY << ", ";
+    ss << ticket->posZ << ", '";
+    ss << CharacterDatabase.EscapeString(ticket->message) << "', ";
+    ss << ticket->timestamp << ", ";
+
+    if (ticket->deleted)
+        ss << uint32(1);
+    else
+        ss << uint32(0);
+    ss << ",";
+
+    ss << ticket->assignedToPlayer << ", '";
+    ss << CharacterDatabase.EscapeString(ticket->comment) << "');";
+
+    if (buf == nullptr)
+        CharacterDatabase.ExecuteNA(ss.str().c_str());
+    else
+        buf->AddQueryStr(ss.str());
 }
 
 #if VERSION_STRING > TBC
@@ -3543,3 +3610,85 @@ void ObjectMgr::LoadCreatureAIAgents()
         delete result;
     }
 }
+
+
+#if VERSION_STRING >= WotLK
+void ObjectMgr::LoadInstanceEncounters()
+{
+    auto startTime = Util::TimeNow();
+
+    //                                                 0         1            2                3
+    QueryResult* result = WorldDatabase.Query("SELECT entry, creditType, creditEntry, lastEncounterDungeon FROM instance_encounters");
+    if (!result)
+    {
+        LogDebugFlag(LF_DB_TABLES, ">> Loaded 0 instance encounters, table is empty!");
+        return;
+    }
+
+    uint32_t count = 0;
+    std::map<uint32_t, DBC::Structures::DungeonEncounterEntry const*> dungeonLastBosses;
+    do
+    {
+        Field* fields = result->Fetch();
+        uint32_t entry = fields[0].GetUInt32();
+        uint8_t creditType = fields[1].GetUInt8();
+        uint32_t creditEntry = fields[2].GetUInt32();
+        uint32_t lastEncounterDungeon = fields[3].GetUInt16();
+        DBC::Structures::DungeonEncounterEntry const* dungeonEncounter = sDungeonEncounterStore.LookupEntry(entry);
+        if (!dungeonEncounter)
+        {
+            LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid encounter id %u, skipped!", entry);
+            continue;
+        }
+
+        if (lastEncounterDungeon && !sLfgMgr.GetLFGDungeon(lastEncounterDungeon))
+        {
+            LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an encounter %u (%s) marked as final for invalid dungeon id %u, skipped!", entry, dungeonEncounter->encounterName[0], lastEncounterDungeon);
+            continue;
+        }
+
+        std::map<uint32, DBC::Structures::DungeonEncounterEntry const*>::const_iterator itr = dungeonLastBosses.find(lastEncounterDungeon);
+        if (lastEncounterDungeon)
+        {
+            if (itr != dungeonLastBosses.end())
+            {
+                LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` specified encounter %u (%s) as last encounter but %u (%s) is already marked as one, skipped!", entry, dungeonEncounter->encounterName[0], itr->second->id, itr->second->encounterName[0]);
+                continue;
+            }
+
+            dungeonLastBosses[lastEncounterDungeon] = dungeonEncounter;
+        }
+
+        switch (creditType)
+        {
+        case ENCOUNTER_CREDIT_KILL_CREATURE:
+        {
+            CreatureProperties const* creatureprop = sMySQLStore.getCreatureProperties(creditEntry);
+            if (!creatureprop)
+            {
+                LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid creature (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounter->encounterName[0]);
+                continue;
+            }
+            const_cast<CreatureProperties*>(creatureprop)->extra_a9_flags |= 0x10000000; // Flagged Dungeon Boss
+            break;
+        }
+        case ENCOUNTER_CREDIT_CAST_SPELL:
+            if (!sSpellMgr.getSpellInfo(creditEntry))
+            {
+                LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid spell (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounter->encounterName[0]);
+                continue;
+            }
+            break;
+        default:
+            LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid credit type (%u) for encounter %u (%s), skipped!", creditType, entry, dungeonEncounter->encounterName[0]);
+            continue;
+        }
+
+        DungeonEncounterList& encounters = _dungeonEncounterStore[int32(uint16(dungeonEncounter->mapId) | (uint32(dungeonEncounter->difficulty) << 16))];
+        encounters.push_back(new DungeonEncounter(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
+        ++count;
+    } while (result->NextRow());
+
+    LogDetail("ObjectMgr : Loaded %u instance encounters in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+#endif

@@ -212,8 +212,6 @@ void MapCell::LoadObjects(CellSpawns* sp)
 
     _loaded = true;
     Instance* pInstance = _mapmgr->pInstance;
-    InstanceBossInfoMap* bossInfoMap = sObjectMgr.m_InstanceBossInfoMap[_mapmgr->GetMapId()];
-
     if (sp->CreatureSpawns.size())      //got creatures
     {
         for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
@@ -221,7 +219,9 @@ void MapCell::LoadObjects(CellSpawns* sp)
             uint32 respawnTimeOverride = 0;
             if (pInstance)
             {
-                if (bossInfoMap != NULL && pInstance->isPersistent())
+                auto encounters = sObjectMgr.GetDungeonEncounterList(_mapmgr->GetMapId(), pInstance->m_difficulty);
+
+                if (encounters != NULL && pInstance->isPersistent())
                 {
                     bool skip = false;
                     for (std::set<uint32>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
@@ -232,24 +232,22 @@ void MapCell::LoadObjects(CellSpawns* sp)
                             skip = true;
                             break;
                         }
+
                         // Do not spawn the killed boss' trash.
-                        InstanceBossInfoMap::const_iterator bossInfo = bossInfoMap->find((*killedNpc));
-                        if (bossInfo != bossInfoMap->end() && bossInfo->second->trash.find((*i)->id) != bossInfo->second->trash.end())
+                        for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
                         {
-                            skip = true;
-                            break;
+                            DungeonEncounter const* encounter = *itr;
+                            if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == (*killedNpc))
+                            {
+                                skip = true;
+                                break;
+                            }
+
                         }
                     }
                     if (skip)
                         continue;
 
-                    for (InstanceBossInfoMap::iterator bossInfo = bossInfoMap->begin(); bossInfo != bossInfoMap->end(); ++bossInfo)
-                    {
-                        if (pInstance->m_killedNpcs.find(bossInfo->second->creatureid) == pInstance->m_killedNpcs.end() && bossInfo->second->trash.find((*i)->id) != bossInfo->second->trash.end())
-                        {
-                            respawnTimeOverride = bossInfo->second->trashRespawnOverride;
-                        }
-                    }
                 }
                 else
                 {

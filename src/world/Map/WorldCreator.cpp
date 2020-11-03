@@ -423,7 +423,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
     in->m_mapInfo = mapInfo;
     in->m_mapMgr = nullptr;        // always start off without a map manager, it is created in GetInstance()
     in->m_isBattleground = false;
-    in->m_persistent = in->isPersistent() && sObjectMgr.m_InstanceBossInfoMap[mapid] == nullptr;
+    in->m_persistent = in->isPersistent() && sObjectMgr.GetDungeonEncounterList(mapid, plr->getDungeonDifficulty()) == nullptr;
     in->m_creatorGuid = pGroup ? 0 : plr->getGuidLow();        // creator guid is 0 if its owned by a group.
     in->m_creatorGroup = pGroup ? pGroup->GetID() : 0;
 
@@ -916,7 +916,7 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
                         data << uint32_t(0);
 #endif
 #if VERSION_STRING >= Cata
-                    data << uint32_t(0);
+                    data << uint32_t(0); // completed encounter mask
 #endif
 
                     ++counter;
