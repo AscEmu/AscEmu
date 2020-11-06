@@ -3941,12 +3941,12 @@ void MySQLDataStore::loadTransportCreaturesTable()
             MySQLStructure::TransportCreatures& transportCreature = _transportCreaturesStore[load_count];
             transportCreature.guid = fields[0].GetUInt32();
             transportCreature.entry = fields[1].GetUInt32();
-            transportCreature.transportEntry = fields[2].GetUInt32();
-            transportCreature.transportOffsetX = fields[3].GetFloat();
-            transportCreature.transportOffsetY = fields[4].GetFloat();
-            transportCreature.transportOffsetZ = fields[5].GetFloat();
-            transportCreature.transportOffsetO = fields[6].GetFloat();
-            transportCreature.animation = fields[7].GetUInt32();
+            transportCreature.transportEntry = fields[3].GetUInt32();
+            transportCreature.transportOffsetX = fields[4].GetFloat();
+            transportCreature.transportOffsetY = fields[5].GetFloat();
+            transportCreature.transportOffsetZ = fields[6].GetFloat();
+            transportCreature.transportOffsetO = fields[7].GetFloat();
+            transportCreature.animation = fields[8].GetUInt32();
 
             ++load_count;
 
@@ -3994,8 +3994,8 @@ void MySQLDataStore::loadTransportDataTable()
 
             MySQLStructure::TransportData& transportData = _transportDataStore[entry];
             transportData.entry = entry;
-            transportData.name = fields[1].GetString();
-            transportData.period = fields[2].GetUInt32();
+            transportData.name = fields[2].GetString();
+            transportData.period = fields[3].GetUInt32();
 
             ++load_count;
 
