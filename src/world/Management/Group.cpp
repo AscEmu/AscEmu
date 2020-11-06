@@ -832,7 +832,7 @@ void Group::SaveToDB()
 
     ss.rdbuf()->str("");
 
-    ss << "INSERT INTO groups (group_id, group_type, subgroup_count, loot_method, loot_threshold, difficulty, raiddifficulty, assistant_leader, main_tank, main_assist,\
+    ss << "INSERT INTO `groups` (group_id, group_type, subgroup_count, loot_method, loot_threshold, difficulty, raiddifficulty, assistant_leader, main_tank, main_assist,\
           group1member1, group1member2, group1member3, group1member4, group1member5,\
           group2member1, group2member2, group2member3, group2member4, group2member5,\
           group3member1, group3member2, group3member3, group3member4, group3member5,\
