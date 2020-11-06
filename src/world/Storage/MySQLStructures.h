@@ -107,6 +107,7 @@ namespace MySQLStructure
         //min_build
         //max_build
         uint32_t entry;
+        uint32_t mapId;
         float x;
         float y;
         float z;

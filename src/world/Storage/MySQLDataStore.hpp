@@ -110,6 +110,9 @@ public:
     typedef std::unordered_map<uint32_t, MySQLStructure::GossipMenuInit> GossipMenuInitMap;
     typedef std::multimap<uint32_t, MySQLStructure::GossipMenuItems> GossipMenuItemsContainer;
 
+    typedef std::vector<MySQLStructure::CreatureSpawn*> CreatureSpawnsMap;
+    typedef std::vector<MySQLStructure::GameobjectSpawn*> GameobjectSpawnsMap;
+
     //helper
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
     ItemPageContainer const* getItemPagesStore() { return &_itemPagesStore; }
@@ -309,6 +312,9 @@ public:
 
     void checkCreatureEquipment();
 
+    void loadCreatureSpawns();
+    void loadGameobjectSpawns();
+
 
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
@@ -380,6 +386,9 @@ public:
 
     GossipMenuInitMap _gossipMenuInitStore;
     GossipMenuItemsContainer _gossipMenuItemsStores;
+
+    CreatureSpawnsMap _creatureSpawnsStore[900];
+    GameobjectSpawnsMap _gameobjectSpawnsStore[900];
 };
 
 #define sMySQLStore MySQLDataStore::getInstance()

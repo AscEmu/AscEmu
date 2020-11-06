@@ -4130,3 +4130,188 @@ void MySQLDataStore::checkCreatureEquipment()
     }
     LogDebugFlag(LF_DB_TABLES, "===================== End check for creature_spawns ================================");
 }
+
+void MySQLDataStore::loadCreatureSpawns()
+{
+    auto startTime = Util::TimeNow();
+    uint32_t count = 0;
+    for (std::set<std::string>::iterator tableiterator = CreatureSpawnsTables.begin(); tableiterator != CreatureSpawnsTables.end(); ++tableiterator)
+    {
+        QueryResult* creature_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", (*tableiterator).c_str(), getAEVersion(), getAEVersion());
+        if (creature_spawn_result)
+        {
+            uint32 creature_spawn_fields = creature_spawn_result->GetFieldCount();
+            if (creature_spawn_fields != CREATURESPAWNSFIELDCOUNT + 2 + 2)
+            {
+                LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), creature_spawn_fields, CREATURESPAWNSFIELDCOUNT);
+                continue;
+            }
+            else
+            {
+                do
+                {
+                    Field* fields = creature_spawn_result->Fetch();
+                    MySQLStructure::CreatureSpawn* cspawn = new MySQLStructure::CreatureSpawn;
+                    cspawn->id = fields[0].GetUInt32();
+                    cspawn->form = sMySQLStore.getCreatureFormationBySpawnId(cspawn->id);
+
+                    uint32 creature_entry = fields[3].GetUInt32();
+                    auto creature_properties = sMySQLStore.getCreatureProperties(creature_entry);
+                    if (creature_properties == nullptr)
+                    {
+                        LOG_ERROR("Creature spawn ID: %u has invalid entry: %u which is not in creature_properties table! Skipped loading.", cspawn->id, creature_entry);
+                        continue;
+                    }
+
+                    cspawn->entry = creature_entry;
+                    cspawn->mapId = fields[4].GetUInt32();
+                    cspawn->x = fields[5].GetFloat();
+                    cspawn->y = fields[6].GetFloat();
+                    cspawn->z = fields[7].GetFloat();
+                    cspawn->o = fields[8].GetFloat();
+                    cspawn->movetype = fields[9].GetUInt8();
+                    cspawn->displayid = fields[10].GetUInt32();
+                    if (cspawn->displayid != 0)
+                    {
+                        DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(cspawn->displayid);
+                        if (!creature_display)
+                        {
+                            LogError("Table %s includes invalid displayid %u for npc entry: %u, spawn_id: %u. Set to a random modelid!", (*tableiterator).c_str(), cspawn->displayid, cspawn->entry, cspawn->id);
+                            cspawn->displayid = creature_properties->GetRandomModelId();
+                        }
+                    }
+                    else
+                    {
+                        cspawn->displayid = creature_properties->GetRandomModelId();
+                    }
+
+                    cspawn->factionid = fields[11].GetUInt32();
+                    cspawn->flags = fields[12].GetUInt32();
+                    cspawn->bytes0 = fields[13].GetUInt32();
+                    cspawn->bytes1 = fields[14].GetUInt32();
+                    cspawn->bytes2 = fields[15].GetUInt32();
+                    cspawn->emote_state = fields[16].GetUInt32();
+                    //cspawn->respawnNpcLink = fields[17].GetUInt32();
+                    cspawn->channel_spell = fields[18].GetUInt16();
+                    cspawn->channel_target_go = fields[19].GetUInt32();
+                    cspawn->channel_target_creature = fields[20].GetUInt32();
+                    cspawn->stand_state = fields[21].GetUInt16();
+                    cspawn->death_state = fields[22].GetUInt32();
+                    cspawn->MountedDisplayID = fields[23].GetUInt32();
+
+                    cspawn->Item1SlotEntry = fields[24].GetUInt32();
+                    cspawn->Item2SlotEntry = fields[25].GetUInt32();
+                    cspawn->Item3SlotEntry = fields[26].GetUInt32();
+
+                    cspawn->Item1SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(cspawn->Item1SlotEntry);
+                    cspawn->Item2SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(cspawn->Item2SlotEntry);
+                    cspawn->Item3SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(cspawn->Item3SlotEntry);
+
+                    cspawn->CanFly = fields[27].GetUInt32();
+
+                    cspawn->phase = fields[28].GetUInt32();
+                    if (cspawn->phase == 0)
+                        cspawn->phase = 0xFFFFFFFF;
+
+                    cspawn->table = *tableiterator;
+
+                    //\todo add flag to declare a spawn as static. E.g. gameobject_spawns
+                    /*if (!stricmp((*tableiterator).c_str(), "creature_staticspawns"))
+                    {
+                        staticSpawns.CreatureSpawns.push_back(cspawn);
+                        ++CreatureSpawnCount;
+                    }*/
+
+                    _creatureSpawnsStore[cspawn->mapId].push_back(cspawn);
+                    ++count;
+
+                } while (creature_spawn_result->NextRow());
+            }
+
+            delete creature_spawn_result;
+        }
+    }
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `creature_spawns` table in %u ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+void MySQLDataStore::loadGameobjectSpawns()
+{
+    auto startTime = Util::TimeNow();
+    uint32_t count = 0;
+
+    for (std::set<std::string>::iterator tableiterator = GameObjectSpawnsTables.begin(); tableiterator != GameObjectSpawnsTables.end(); ++tableiterator)
+    {
+        QueryResult* gobject_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", (*tableiterator).c_str(), VERSION_STRING, VERSION_STRING);
+        if (gobject_spawn_result)
+        {
+            uint32 gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
+            if (gobject_spawn_fields != GOSPAWNSFIELDCOUNT + 1 + 2)
+            {
+                LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), gobject_spawn_fields, GOSPAWNSFIELDCOUNT);
+                continue;
+            }
+            else
+            {
+                do
+                {
+                    Field* fields = gobject_spawn_result->Fetch();
+                    MySQLStructure::GameobjectSpawn* go_spawn = new MySQLStructure::GameobjectSpawn;
+                    go_spawn->id = fields[0].GetUInt32();
+
+                    uint32 gameobject_entry = fields[3].GetUInt32();
+                    auto gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_entry);
+                    if (gameobject_info == nullptr)
+                    {
+                        LOG_ERROR("Gameobject spawn ID: %u has invalid entry: %u which is not in gameobject_properties table! Skipped loading.", go_spawn->id, gameobject_entry);
+                        continue;
+                    }
+
+#if VERSION_STRING == TBC
+                    //\ brief: the following 3 go types crashing tbc
+                    switch (gameobject_info->type)
+                    {
+                        //case GAMEOBJECT_TYPE_TRANSPORT:
+                    case GAMEOBJECT_TYPE_MAP_OBJECT:
+                    case GAMEOBJECT_TYPE_MO_TRANSPORT:
+                    {
+                        delete go_spawn;
+                        continue;
+                    }
+                    }
+#endif
+
+                    go_spawn->entry = gameobject_entry;
+                    go_spawn->map = fields[4].GetUInt32();
+                    go_spawn->position_x = fields[5].GetFloat();
+                    go_spawn->position_y = fields[6].GetFloat();
+                    go_spawn->position_z = fields[7].GetFloat();
+                    go_spawn->orientation = fields[8].GetFloat();
+                    go_spawn->rotation_0 = fields[9].GetFloat();
+                    go_spawn->rotation_1 = fields[10].GetFloat();
+                    go_spawn->rotation_2 = fields[11].GetFloat();
+                    go_spawn->rotation_3 = fields[12].GetFloat();
+                    go_spawn->state = fields[13].GetUInt32();
+                    go_spawn->flags = fields[14].GetUInt32();
+                    go_spawn->faction = fields[15].GetUInt32();
+                    go_spawn->scale = fields[16].GetFloat();
+                    //gspawn->stateNpcLink = fields[17].GetUInt32();
+                    go_spawn->phase = fields[18].GetUInt32();
+
+                    if (go_spawn->phase == 0)
+                        go_spawn->phase = 0xFFFFFFFF;
+
+                    go_spawn->overrides = fields[19].GetUInt32();
+
+                    go_spawn->table = *tableiterator;
+
+                    _gameobjectSpawnsStore[go_spawn->map].push_back(go_spawn);
+                    ++count;
+                } while (gobject_spawn_result->NextRow());
+            }
+
+            delete gobject_spawn_result;
+        }
+    }
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `gameobject_spawns` table in %u ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
