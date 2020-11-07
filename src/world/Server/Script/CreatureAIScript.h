@@ -469,6 +469,29 @@ public:
 
     bool _isHeroic();
 
+    template<class T> inline
+        const T& RAID_MODE(const T& normal10, const T& normal25, const T& heroic10, const T& heroic25) const
+    {
+        if (_creature->GetMapMgr()->pInstance)
+        {
+            switch (_creature->GetMapMgr()->pInstance->m_difficulty)
+            {
+            case MODE_NORMAL_10MEN:
+                return normal10;
+            case MODE_NORMAL_25MEN:
+                return normal25;
+            case MODE_HEROIC_10MEN:
+                return heroic10;
+            case MODE_HEROIC_25MEN:
+                return heroic25;
+            default:
+                break;
+            }
+        }
+
+        return normal10;
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // linked creature AI scripts
 private:

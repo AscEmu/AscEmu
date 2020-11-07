@@ -618,6 +618,7 @@ class SERVER_DECL InstanceScript
 
         // Something to return Instance's MapMgr
         MapMgr* GetInstance() { return mInstance; }
+        uint8_t GetDifficulty() { return Difficulty; }
 
         // MIT start
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -634,6 +635,7 @@ class SERVER_DECL InstanceScript
         virtual void setLocalData64(uint32_t /*type*/, uint64_t /*data*/) {}
         virtual uint32_t getLocalData(uint32_t /*type*/) const { return 0; }
         virtual uint64_t getLocalData64(uint32_t /*type*/) const { return 0; }
+        uint8_t Difficulty;
         
         //used for debug
         std::string getDataStateString(uint32_t bossEntry);

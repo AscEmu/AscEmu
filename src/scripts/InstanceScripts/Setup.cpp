@@ -31,71 +31,89 @@ extern "C" SCRIPT_DECL uint32_t _exp_get_script_type()
 
 extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment any script to disable it
 {
-    //Instances
-    SetupArcatraz(mgr);
-    SetupAuchenaiCrypts(mgr);
-    SetupAzjolNerub(mgr);
-    SetupTheBlackMorass(mgr);
+    //Classic
     SetupBlackfathomDeeps(mgr);
-    SetupBlackrockDepths(mgr);
     SetupBlackrockSpire(mgr);
-    SetupBloodFurnace(mgr);
-    SetupBotanica(mgr);
-    SetupCullingOfStratholme(mgr);
-    SetupDrakTharonKeep(mgr);
+    SetupBlackrockDepths(mgr);
     SetupDeadmines(mgr);
     SetupDireMaul(mgr);
-    SetupForgeOfSouls(mgr);
-    SetupGundrak(mgr);
-    SetupHellfireRamparts(mgr);
-    SetupHallsOfStone(mgr);
-    SetupHallsOfReflection(mgr);
-    SetupHallsOfLightning(mgr);
-    SetupManaTombs(mgr);
+    SetupGnomeregan(mgr);
     SetupMaraudon(mgr);
-    SetupNexus(mgr);
-    SetupOldHillsbradFoothills(mgr);
-    SetupPitOfSaron(mgr);
     SetupRagefireChasm(mgr);
     SetupRazorfenDowns(mgr);
+    SetupRazorfenKraul(mgr);
     SetupScarletMonastery(mgr);
     SetupScholomance(mgr);
-    SetupSethekkHalls(mgr);
     SetupShadowfangKeep(mgr);
+    SetupStratholme(mgr);
+    SetupTheTempleOfAtalHakkar(mgr);
+    SetupUldaman(mgr);
+    SetupWailingCaverns(mgr);
+    SetupZulFarrak(mgr);
+
+    //TBC
+    SetupArcatraz(mgr);
+    SetupAuchenaiCrypts(mgr);
+    SetupTheBlackMorass(mgr);
+    SetupBloodFurnace(mgr);
+    SetupBotanica(mgr);
+    SetupHellfireRamparts(mgr);
+    SetupMagistersTerrace(mgr);
+    SetupManaTombs(mgr);
+    SetupOldHillsbradFoothills(mgr);
+    SetupSethekkHalls(mgr);
     SetupShadowLabyrinth(mgr);
     SetupTheMechanar(mgr);
     SetupTheShatteredHalls(mgr);
     SetupTheSlavePens(mgr);
     SetupTheSteamvault(mgr);
+    SetupTheStockade(mgr);
     SetupTheUnderbog(mgr);
-    SetupUldaman(mgr);
+
+    //Wotlk
+    SetupAhnKahetTheOldKingdom(mgr);
+    SetupAzjolNerub(mgr);
+    SetupCullingOfStratholme(mgr);
+    SetupDrakTharonKeep(mgr);
+    SetupEyeOfEternity(mgr);
+    SetupForgeOfSouls(mgr);
+    SetupGundrak(mgr);
+    SetupHallsOfLightning(mgr);
+    SetupHallsOfReflection(mgr);
+    SetupHallsOfStone(mgr);
+    SetupNexus(mgr);
+    SetupPitOfSaron(mgr);
+    SetupTheOculus(mgr);
+    SetupTheVioletHold(mgr);
+    SetupTrialOfTheChampion(mgr);
     SetupUtgardeKeep(mgr);
     SetupUtgardePinnacle(mgr);
-    SetupTheStockade(mgr);
-    SetupTheVioletHold(mgr);
-    SetupWailingCaverns(mgr);
-    SetupMagistersTerrace(mgr);
+    SetupVaultOfArchavon(mgr);
 
-    //Raids
-    SetupBlackTemple(mgr);
+    //Classic
     SetupBlackwingLair(mgr);
-    SetupBattleOfMountHyjal(mgr);
-    SetupGruulsLair(mgr);
-    SetupICC(mgr);
-    SetupKarazhan(mgr);
-    SetupMoltenCore(mgr);
-    SetupNaxxramas(mgr);
     SetupOnyxiasLair(mgr);
-    SetupTheEye(mgr);
-    SetupTheObsidianSanctum(mgr);
-    SetupUlduar(mgr);
-    SetupZulFarrak(mgr);
+    SetupMoltenCore(mgr);
     SetupZulGurub(mgr);
+    SetupWorldBosses(mgr);
+
+    //Tbc
+    SetupBlackTemple(mgr);
+    SetupKarazhan(mgr);
+    SetupBattleOfMountHyjal(mgr);
+    SetupZulAman(mgr);
+    SetupSunwellPlateau(mgr);
     SetupSerpentshrineCavern(mgr);
     SetupMagtheridonsLair(mgr);
-    SetupSunwellPlateau(mgr);
-    SetupWorldBosses(mgr);
-    SetupZulAman(mgr);
+    SetupTheEye(mgr);
+    SetupGruulsLair(mgr);
+
+    //Wotlk
+    SetupICC(mgr);
+    SetupTheObsidianSanctum(mgr);
+    SetupNaxxramas(mgr);
+    SetupUlduar(mgr);
+    SetupTrialOfTheCrusader(mgr);
 }
 
 #ifdef WIN32

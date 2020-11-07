@@ -801,6 +801,8 @@ void GameObjectAIScript::RegisterAIUpdateEvent(uint32_t frequency)
 
 InstanceScript::InstanceScript(MapMgr* pMapMgr) : mInstance(pMapMgr), mSpawnsCreated(false), mTimerCount(0), mUpdateFrequency(defaultUpdateFrequency)
 {
+    Difficulty = pMapMgr->pInstance->m_difficulty;
+
     generateBossDataState();
     registerUpdateEvent();
 }
