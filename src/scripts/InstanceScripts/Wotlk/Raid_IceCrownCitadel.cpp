@@ -108,7 +108,7 @@ public:
                 AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_BATTLE_MAGE, 47.34621f, 4.032004f, 37.70952f, 3.05033f);
                 AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_BATTLE_MAGE, 15.03016f, 0.00016f, 37.70952f, 1.55138f);
 
-                /*AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -13.19547f, -27.160213f, 35.47252f, 3.10672f);
+                AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -13.19547f, -27.160213f, 35.47252f, 3.10672f);
                 AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -18.33902f, -25.230491f, 33.04052f, 3.00672f);
                 AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -60.1251f, -1.27014f, 42.8335f, 5.16073f);
                 AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -48.2651f, 16.78034f, 34.2515f, 0.04292f);
@@ -119,18 +119,30 @@ public:
                 AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 27.4456f, -13.397498f, 36.34746f, 1.6f);
                 AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 18.16184f, 1.37897f, 35.31705f, 1.6f);
                 AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -18.11516f, -0.196236f, 45.15709f, 2.9f);
-                AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -18.11844f, -0.19624f, 49.18192f, 1.6f);*/
+                AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -18.11844f, -0.19624f, 49.18192f, 1.6f);
 
-                AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, -3.170555f, 28.30652f, 34.21082f, 1.66527f);
-                AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, -12.0928f, 27.65942f, 33.58557f, 1.66527f);
-                AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, 14.92804f, 26.18018f, 35.47803f, 1.66527f);
-                AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, 24.70331f, 25.36584f, 35.97845f, 1.66527f);
-                AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, 19.92804f, 27.18018f, 35.47803f, 1.66527f);
-                AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, -7.70331f, 28.36584f, 33.88557f, 1.66527f);
-                AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, -11.44849f, -25.71838f, 33.64343f, 1.49248f);
-                AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, 12.30336f, -25.69653f, 35.32373f, 1.49248f);
-                AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, -3.44849f, -25.71838f, 34.21082f, 1.49248f);
-                AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, 3.30336f, -25.69653f, 35.32373f, 1.49248f);
+                if (GetDifficulty() == MODE_NORMAL_10MEN || GetDifficulty() == MODE_HEROIC_10MEN)
+                {
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, -3.170555f, 28.30652f, 34.21082f, 1.66527f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, -12.0928f, 27.65942f, 33.58557f, 1.66527f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, 14.92804f, 26.18018f, 35.47803f, 1.66527f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, 24.70331f, 25.36584f, 35.97845f, 1.66527f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, -11.44849f, -25.71838f, 33.64343f, 1.49248f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, 12.30336f, -25.69653f, 35.32373f, 1.49248f);
+                }
+                else
+                {
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, -3.170555f, 28.30652f, 34.21082f, 1.66527f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, -12.0928f, 27.65942f, 33.58557f, 1.66527f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, 14.92804f, 26.18018f, 35.47803f, 1.66527f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, 24.70331f, 25.36584f, 35.97845f, 1.66527f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, 19.92804f, 27.18018f, 35.47803f, 1.66527f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, -7.70331f, 28.36584f, 33.88557f, 1.66527f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, -11.44849f, -25.71838f, 33.64343f, 1.49248f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, 12.30336f, -25.69653f, 35.32373f, 1.49248f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, -3.44849f, -25.71838f, 34.21082f, 1.49248f);
+                    AllianceTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, 3.30336f, -25.69653f, 35.32373f, 1.49248f);
+                }
             }
 
             if (AllianceTransporterAllianceShip = sObjectMgr.LoadTransportInInstance(pMapMgr, GO_THE_SKYBREAKER_ALLIANCE_ICC, 108000))
@@ -146,7 +158,7 @@ public:
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_DECKHAND, -36.23974f, -2.75767f, 20.4506f, 4.69496f);
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_DECKHAND, 41.94677f, 44.08411f, 24.66587f, 1.62032f);
 
-                /*AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 13.51547f, -0.160213f, 20.87252f, 3.10672f);
+                AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 13.51547f, -0.160213f, 20.87252f, 3.10672f);
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 42.78902f, -0.010491f, 25.24052f, 3.00672f);
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 14.0551f, 3.65014f, 20.7935f, 3.16073f);
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 14.0551f, -4.65034f, 20.7915f, 3.04292f);
@@ -164,17 +176,110 @@ public:
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 38.94339f, -33.808f, 25.39618f, 1.6f);
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 58.15474f, 0.748094f, 41.87663f, 1.6f);
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 5.607554f, -6.350654f, 34.00357f, 1.6f);
-                AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 4.780305f, -29.05227f, 35.09634f, 1.6f);*/
+                AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 4.780305f, -29.05227f, 35.09634f, 1.6f);
 
-                AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -5.15231f, -22.9462f, 21.659f, 4.72416f);
-                AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -14.9806f, -22.9462f, 21.659f, 4.72416f);
-                AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -21.7406f, -22.9462f, 21.659f, 4.72416f);
-                AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -28.0876f, -22.9462f, 21.659f, 4.72416f);
+                if (GetDifficulty() == MODE_NORMAL_10MEN || GetDifficulty() == MODE_HEROIC_10MEN)
+                {
+                    AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -5.15231f, -22.9462f, 21.659f, 4.72416f);
+                    AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -28.0876f, -22.9462f, 21.659f, 4.72416f);
+                }
+                else
+                {
+                    AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -5.15231f, -22.9462f, 21.659f, 4.72416f);
+                    AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -14.9806f, -22.9462f, 21.659f, 4.72416f);
+                    AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -21.7406f, -22.9462f, 21.659f, 4.72416f);
+                    AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -28.0876f, -22.9462f, 21.659f, 4.72416f);
+                }
             }
         }
-        else
+        else if(TeamInInstance == TEAM_HORDE)
         {
+            if (HordeTransporterAllianceShip = sObjectMgr.LoadTransportInInstance(pMapMgr, GO_THE_SKYBREAKER_HORDE_ICC, 77800))
+            {
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER, -17.156807f, -1.633260f, 20.81273f, 4.52672f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_MURADIN_BRONZEBEARD, 13.51547f, -0.160213f, 20.87252f, 3.10672f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_HIHG_CAPTAIN_JUSTIN_BARTLETT, 42.78902f, -0.010491f, 25.24052f, 3.00672f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_SORCERERS, 14.0551f, 3.65014f, 20.7935f, 3.16073f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_SORCERERS, 14.0551f, -4.65034f, 20.7915f, 3.04292f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_SORCERERS, -17.8356f, 0.031688f, 20.823f, 4.73231f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 13.51547f, -0.160213f, 20.87252f, 3.10672f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 42.78902f, -0.010491f, 25.24052f, 3.00672f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 14.0551f, 3.65014f, 20.7935f, 3.16073f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 14.0551f, -4.65034f, 20.7915f, 3.04292f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -17.8356f, 0.031688f, 20.823f, 4.73231f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -34.2702f, -26.18966f, 21.37483f, 1.6f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -11.64459f, -19.85176f, 20.88428f, 1.6f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -19.88223f, -6.578763f, 20.57444f, 1.6f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -41.4456f, -7.647498f, 20.49746f, 1.6f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 0.554884f, -1.232897f, 20.53705f, 1.6f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -50.16516f, 9.716236f, 23.58709f, 1.6f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 11.45844f, 16.36624f, 20.54192f, 1.6f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 19.72286f, -2.193787f, 33.06982f, 1.6f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 19.72286f, -2.193787f, 33.06982f, 1.6f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 8.599396f, -28.55855f, 24.79919f, 1.6f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 38.94339f, -33.808f, 25.39618f, 1.6f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 58.15474f, 0.748094f, 41.87663f, 1.6f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 5.607554f, -6.350654f, 34.00357f, 1.6f);
+                HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 4.780305f, -29.05227f, 35.09634f, 1.6f);
 
+                if (GetDifficulty() == MODE_NORMAL_10MEN || GetDifficulty() == MODE_HEROIC_10MEN)
+                {
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -5.15231f, -22.9462f, 21.659f, 4.72416f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -14.9806f, -22.9462f, 21.659f, 4.72416f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -21.7406f, -22.9462f, 21.659f, 4.72416f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -28.0876f, -22.9462f, 21.659f, 4.72416f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_MORTAR_SOLDIER, -8.61003f, 15.483f, 20.4158f, 4.69854f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_MORTAR_SOLDIER, -27.9583f, 14.8875f, 20.4428f, 4.77865f);
+                }
+                else
+                {
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, 0.15231f, -22.9462f, 21.659f, 4.72416f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -5.15231f, -22.9462f, 21.659f, 4.72416f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -14.9806f, -22.9462f, 21.659f, 4.72416f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -21.7406f, -22.9462f, 21.659f, 4.72416f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -28.0876f, -22.9462f, 21.659f, 4.72416f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -33.0876f, -22.9462f, 21.659f, 4.72416f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_MORTAR_SOLDIER, -8.61003f, 15.483f, 20.4158f, 4.69854f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_MORTAR_SOLDIER, -27.9583f, 14.8875f, 20.4428f, 4.77865f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_MORTAR_SOLDIER, -15.61003f, 15.483f, 20.4158f, 4.69854f);
+                    HordeTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_MORTAR_SOLDIER, -20.9583f, 14.8875f, 20.4428f, 4.77865f);
+                }
+
+            }
+
+            if (HordeTransporterHordeShip = sObjectMgr.LoadTransportInInstance(pMapMgr, GO_ORGRIM_S_HAMMER_HORDE_ICC, 77800))
+            {
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_ORGRIMS_HAMMER, 1.845810f, 1.268872f, 34.526218f, 1.5890f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_HIGH_OVERLORD_SAURFANG, 37.18615f, 0.00016f, 36.78849f, 3.13683f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_MURADIN_BRONZEBEARD_NOT_VISUAL, -7.09684f, 30.582f, 34.5013f, 1.53591f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_INVISIBLE_STALKER, 37.30764f, -0.143823f, 36.7936f, 3.13683f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_ZAFOD_BOOMBOX, 35.18615f, 15.30652f, 37.64343f, 3.05033f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -13.19547f, -27.160213f, 35.47252f, 3.10672f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -18.33902f, -25.230491f, 33.04052f, 3.00672f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -60.1251f, -1.27014f, 42.8335f, 5.16073f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -48.2651f, 16.78034f, 34.2515f, 0.04292f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -14.8356f, 27.931688f, 33.363f, 1.73231f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 10.2702f, 20.62966f, 35.37483f, 1.6f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 39.32459f, 14.50176f, 36.88428f, 1.6f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 46.17223f, -6.638763f, 37.35444f, 1.32f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 27.4456f, -13.397498f, 36.34746f, 1.6f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 18.16184f, 1.37897f, 35.31705f, 1.6f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -18.11516f, -0.196236f, 45.15709f, 2.9f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -18.11844f, -0.19624f, 49.18192f, 1.6f);
+
+                if (GetDifficulty() == MODE_NORMAL_10MEN || GetDifficulty() == MODE_HEROIC_10MEN)
+                {
+                    HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_HORDE_CANON, 22.6225f, 28.9309f, 36.3929f, 1.53591f);
+                    HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_HORDE_CANON, -21.7509f, 29.4207f, 34.2588f, 1.53591f);
+                }
+                else
+                {
+                    HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_HORDE_CANON, 22.6225f, 28.9309f, 36.3929f, 1.53591f);
+                    HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_HORDE_CANON, 9.87745f, 30.5047f, 35.7147f, 1.53591f);
+                    HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_HORDE_CANON, -7.09684f, 30.582f, 34.5013f, 1.53591f);
+                    HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_HORDE_CANON, -21.7509f, 29.4207f, 34.2588f, 1.53591f);
+                }
+            }
         }
     }
 
@@ -225,6 +330,9 @@ public:
 public:
         Transporter* AllianceTransporterAllianceShip;
         Transporter* AllianceTransporterHordeShip;
+
+        Transporter* HordeTransporterAllianceShip;
+        Transporter* HordeTransporterHordeShip;
 
 protected:
     uint8_t TeamInInstance;
@@ -327,14 +435,12 @@ class LordMarrowgarAI : public CreatureAIScript
         _introDone = false;
         _boneSlice = false;
 
-        //Timers
-        boneSliceTimerId = 0;
-
         // Scripted Spells not autocastet
         boneSliceSpell = addAISpell(SPELL_BONE_SLICE, 0.0f, TARGET_ATTACKING);
-
-        //Autocasted Spells
-        //boneSliceSpell = addAISpell(SPELL_BONE_SLICE, 10.0f, TARGET_ATTACKING);
+        boneStormSpell = addAISpell(SPELL_BONE_STORM, 0.0f, TARGET_SELF);
+        boneSpikeGraveyardSpell = addAISpell(SPELL_BONE_SPIKE_GRAVEYARD, 0.0f, TARGET_SELF);
+        coldflameNormalSpell = addAISpell(SPELL_COLDFLAME_NORMAL, 0.0f, TARGET_DESTINATION);
+        coldflameBoneStormSpell = addAISpell(SPELL_COLDFLAME_BONE_STORM, 0.0f, TARGET_SELF);
 
         addEmoteForEvent(Event_OnCombatStart, 923);     // The Scourge will wash over this world as a swarm of death and destruction!
         addEmoteForEvent(Event_OnTargetDied, 928);      // More bones for the offering!
@@ -353,8 +459,39 @@ class LordMarrowgarAI : public CreatureAIScript
         if (getCreature()->GetAIInterface()->getAiState() == AI_STATE_CASTING)
             return;
 
-        if (_isTimerFinished(boneSliceTimerId) && !getCreature()->isCastingSpell())
-            _boneSlice = true;
+        scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
+
+        while (uint32_t eventId = scriptEvents.getFinishedEvent())
+        {
+            switch (eventId)
+            {
+            case EVENT_BONE_SPIKE_GRAVEYARD:
+                printf("%u \n", eventId);
+                break;
+            case EVENT_COLDFLAME:
+                printf("%u \n", eventId);
+                break;
+            case EVENT_WARN_BONE_STORM:
+                printf("%u \n", eventId);
+                break;
+            case EVENT_BONE_STORM_BEGIN:
+                printf("%u \n", eventId);
+                break;
+            case EVENT_BONE_STORM_MOVE:
+                printf("%u \n", eventId);
+                break;
+            case EVENT_BONE_STORM_END:
+                printf("%u \n", eventId);
+                break;
+            case EVENT_ENABLE_BONE_SLICE:
+                printf("%u \n", eventId);
+                _boneSlice = true;
+                break;
+            case EVENT_ENRAGE:
+                printf("%u \n", eventId);
+                break;
+            }
+        }
      
         // We should not melee attack when storming
         if (getCreature()->HasAura(SPELL_BONE_STORM))
@@ -379,7 +516,20 @@ class LordMarrowgarAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        boneSliceTimerId = _addTimer(10000);
+        scriptEvents.addEvent(EVENT_ENABLE_BONE_SLICE, 10000);
+        scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(10000, 15000));
+        scriptEvents.addEvent(EVENT_COLDFLAME, 5000);
+        scriptEvents.addEvent(EVENT_WARN_BONE_STORM, Util::getRandomInt(45000, 50000));
+        scriptEvents.addEvent(EVENT_ENRAGE, 600000);
+    }
+
+    void OnCombatStop(Unit* /*_target*/) override
+    {
+        getCreature()->setSpeedRate(TYPE_RUN, _baseSpeed, true);
+        getCreature()->RemoveAura(SPELL_BONE_STORM);
+        getCreature()->RemoveAura(SPELL_BERSERK);
+
+        _boneSlice = false;
     }
 
     void OnTargetDied(Unit* /*pTarget*/) override
@@ -393,16 +543,18 @@ class LordMarrowgarAI : public CreatureAIScript
 protected:
     // Common
     InstanceScript* mInstance;
-    uint32_t _boneStormDuration;
     float _baseSpeed;
     bool _introDone;
     bool _boneSlice;
 
     // Spells
     CreatureAISpells* boneSliceSpell;
+    CreatureAISpells* boneStormSpell;
+    CreatureAISpells* boneSpikeGraveyardSpell;
+    CreatureAISpells* coldflameNormalSpell;
+    CreatureAISpells* coldflameBoneStormSpell;
 
-    // Timers
-    uint32_t boneSliceTimerId;
+    uint32_t _boneStormDuration;
 };
 
 const uint32_t IMPALED = 69065;

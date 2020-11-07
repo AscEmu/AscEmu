@@ -203,6 +203,23 @@ enum IceCrownCitadelCNentry
    CN_VALITHRIA_DREAMWALKER = 36789,
 };
 
+enum EventsMarrowgar
+{
+    EVENT_BONE_SPIKE_GRAVEYARD = 1,
+    EVENT_COLDFLAME = 2,
+    EVENT_BONE_STORM_BEGIN = 3,
+    EVENT_BONE_STORM_MOVE = 4,
+    EVENT_BONE_STORM_END = 5,
+    EVENT_ENABLE_BONE_SLICE = 6,
+    EVENT_ENRAGE = 7,
+    EVENT_WARN_BONE_STORM = 8,
+
+    EVENT_COLDFLAME_TRIGGER = 9,
+    EVENT_FAIL_BONED = 10,
+
+    EVENT_GROUP_SPECIAL = 1,
+};
+
 static Movement::Location Doors[] =
 {
     { -407.35f, 2147.88f, 42.85f, 0 },       //IceWall1
@@ -225,6 +242,8 @@ enum Spells
 {
     SPELL_ALLIANCE_PHASE = 55774,
     SPELL_HORDE_PHASE = 55773,
+    SPELL_BERSERK = 26662,
+    SPELL_BERSERK2 = 47008,
 
     // Lord Marrowgar
     SPELL_BONE_SLICE = 69055,
