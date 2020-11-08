@@ -824,7 +824,10 @@ void InstanceScript::setData(uint32_t data, uint32_t state)
 {
     auto Iter = mInstanceData.find(data);
     if (Iter != mInstanceData.end())
+    {
         Iter->second = state;
+        OnEncounterStateChange(data, state);
+    }
     else
         LogDebugFlag(LF_SCRIPT_MGR, "InstanceScript::setData - tried to set state for entry %u on map %u. The entry is not defined in table instance_bosses or manually to handle states!", data, mInstance->GetMapId());
 }

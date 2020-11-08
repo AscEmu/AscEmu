@@ -46,6 +46,7 @@ public:
         MarrowgarIcewall2GUID = 0;
         MarrowgarEntranceDoorGUID = 0;
         LadyDeathwisperElevatorGUID = 0;
+        LadyDeathwisperEntranceDoorGUID = 0;
 
         SpawnTransports(pMapMgr);
     }
@@ -68,6 +69,9 @@ public:
         case GO_MARROWGAR_DOOR:
             MarrowgarEntranceDoorGUID = static_cast<uint32_t>(pGameObject->getGuid());
             break;
+        case GO_ORATORY_OF_THE_DAMNED_ENTRANCE:
+            LadyDeathwisperEntranceDoorGUID = static_cast<uint32_t>(pGameObject->getGuid());
+            break;
         case GO_LADY_DEATHWHISPER_ELEVATOR:
             LadyDeathwisperElevatorGUID = static_cast<uint32_t>(pGameObject->getGuid());
             break;
@@ -80,18 +84,44 @@ public:
             break;
         }
 
+        // State also must changes for Objects out of range so change state on spawning them :)
+        SetGameobjectStates(pGameObject);
+    }
 
+    void SetGameobjectStates(GameObject* pGameObject)
+    {
         // Gos which are not visible by killing a boss needs a second check...
         if (getData(CN_LORD_MARROWGAR) == Finished)
         {
-            if(MarrowgarIcewall1GUID)
+            if (MarrowgarIcewall1GUID)
                 GetGameObjectByGuid(MarrowgarIcewall1GUID)->setState(GO_STATE_OPEN);        // Icewall 1
 
-            if(MarrowgarIcewall2GUID)
+            if (MarrowgarIcewall2GUID)
                 GetGameObjectByGuid(MarrowgarIcewall2GUID)->setState(GO_STATE_OPEN);        // Icewall 2
 
-            if(MarrowgarEntranceDoorGUID)
+            if (MarrowgarEntranceDoorGUID)
                 GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);    // Door  
+        }
+
+        if (getData(CN_LADY_DEATHWHISPER) == Finished)
+        {
+            if (LadyDeathwisperEntranceDoorGUID)
+                GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
+
+            if (LadyDeathwisperElevatorGUID)
+                GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
+        }
+
+        if (getData(CN_LADY_DEATHWHISPER) == NotStarted)
+        {
+            if (LadyDeathwisperElevatorGUID)
+                GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
+
+            if (LadyDeathwisperElevatorGUID)
+            {
+                GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_CLOSED);
+                GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setLevel(0);
+            }
         }
     }
 
@@ -283,26 +313,6 @@ public:
         }
     }
 
-    void OnCreatureDeath(Creature* pCreature, Unit* /*pUnit*/) override
-    {
-        switch (pCreature->getEntry())
-        {
-            case CN_LORD_MARROWGAR:
-            {
-                if (MarrowgarIcewall1GUID)
-                    GetGameObjectByGuid(MarrowgarIcewall1GUID)->setState(GO_STATE_OPEN);        // Icewall 1
-
-                if (MarrowgarIcewall2GUID)
-                    GetGameObjectByGuid(MarrowgarIcewall2GUID)->setState(GO_STATE_OPEN);        // Icewall 2
-
-                if (MarrowgarEntranceDoorGUID)
-                    GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);    // Door  
-            }break;
-            default:
-            break;
-        }
-    }
-
     void OnPlayerEnter(Player* player) override
     {
         if(TeamInInstance == 3)
@@ -327,6 +337,62 @@ public:
         }
     }
 
+    void OnEncounterStateChange(uint32_t entry, uint32_t state) override
+    {
+        switch (entry)
+        {
+        case CN_LORD_MARROWGAR:
+            if (state == InProgress)
+            {
+                if (MarrowgarEntranceDoorGUID)
+                    GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_CLOSED);
+            }
+                
+            if (state == NotStarted)
+            {
+                if (MarrowgarEntranceDoorGUID)
+                    GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);
+            }
+                
+            if (state == Finished)
+            {
+                if (MarrowgarIcewall1GUID)
+                    GetGameObjectByGuid(MarrowgarIcewall1GUID)->setState(GO_STATE_OPEN);        // Icewall 1
+
+                if (MarrowgarIcewall2GUID)
+                    GetGameObjectByGuid(MarrowgarIcewall2GUID)->setState(GO_STATE_OPEN);        // Icewall 2
+
+                if (MarrowgarEntranceDoorGUID)
+                    GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);    // Door  
+            }
+            break;
+        case CN_LADY_DEATHWHISPER:
+            if (state == InProgress)
+            {
+                if (LadyDeathwisperEntranceDoorGUID)
+                    GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
+            }        
+
+            if (state == NotStarted)
+            {
+                if (LadyDeathwisperElevatorGUID)
+                    GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
+
+                if (LadyDeathwisperElevatorGUID)
+                    GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
+            }
+            if (state == Finished)
+            {
+                if (LadyDeathwisperEntranceDoorGUID)
+                    GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
+
+                if (LadyDeathwisperElevatorGUID)
+                    GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
+            }
+            break;
+        }
+    }
+
 public:
         Transporter* AllianceTransporterAllianceShip;
         Transporter* AllianceTransporterHordeShip;
@@ -340,6 +406,7 @@ protected:
     uint32_t MarrowgarIcewall2GUID;
     uint32_t MarrowgarEntranceDoorGUID;
     uint32_t LadyDeathwisperElevatorGUID;
+    uint32_t LadyDeathwisperEntranceDoorGUID;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

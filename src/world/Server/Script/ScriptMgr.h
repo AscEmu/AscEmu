@@ -614,6 +614,8 @@ class SERVER_DECL InstanceScript
         virtual void OnLoad() {}
         virtual void UpdateEvent() {}
 
+        virtual void OnEncounterStateChange(uint32_t /*entry*/, uint32_t /*state*/) {}
+
         virtual void Destroy() {}
 
         // Something to return Instance's MapMgr
