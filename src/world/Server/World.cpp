@@ -721,6 +721,8 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
 // General Functions
 bool World::setInitialWorldSettings()
 {
+    auto startTime = Util::TimeNow();
+
     Player::InitVisibleUpdateBits();
 
     resetCharacterLoginBannState();
@@ -746,6 +748,11 @@ bool World::setInitialWorldSettings()
     }
 
     loadMySQLStores();
+
+    LogNotice("World : Loading loot data...");
+    sLootMgr.initialize();
+    sLootMgr.LoadLoot();
+
     loadMySQLTablesByTask();
     logEntitySize();
 
@@ -781,10 +788,6 @@ bool World::setInitialWorldSettings()
 
     mQueueUpdateTimer = settings.server.queueUpdateInterval;
 
-    LogNotice("World : Loading loot data...");
-    sLootMgr.initialize();
-    sLootMgr.LoadLoot();
-
     sChannelMgr.loadConfigSettings();
 
     LogDetail("World : Starting BattlegroundManager...");
@@ -797,6 +800,9 @@ bool World::setInitialWorldSettings()
     ThreadPool.ExecuteTask(new CharacterLoaderThread());
 
     sEventMgr.AddEvent(this, &World::checkForExpiredInstances, EVENT_WORLD_UPDATEAUCTIONS, 120000, 0, 0);
+
+    LogDetail("World: init in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+
     return true;
 }
 
@@ -906,6 +912,7 @@ void World::loadMySQLTablesByTask()
     sGameEventMgr.initialize();
 
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(&sp::getInstance(), &sp::ptr)))
+#define MAKE_TASK2(sp, ptr, value) tl.AddTask(new Task(new CallbackP1<sp, uint8_t>(&sp::getInstance(), &sp::ptr, value)))
     // Fill the task list with jobs to do.
     TaskList tl;
 
@@ -950,6 +957,13 @@ void World::loadMySQLTablesByTask()
 
     tl.wait();
 
+    MAKE_TASK2(LootMgr, loadAndGenerateLoot, 0);
+    MAKE_TASK2(LootMgr, loadAndGenerateLoot, 1);
+    MAKE_TASK2(LootMgr, loadAndGenerateLoot, 2);
+    MAKE_TASK2(LootMgr, loadAndGenerateLoot, 3);
+    MAKE_TASK2(LootMgr, loadAndGenerateLoot, 4);
+    MAKE_TASK2(LootMgr, loadAndGenerateLoot, 5);
+
     MAKE_TASK(QuestMgr, LoadExtraQuestStuff);
     MAKE_TASK(ObjectMgr, LoadEventScripts);
     MAKE_TASK(WeatherMgr, LoadFromDB);
@@ -958,6 +972,7 @@ void World::loadMySQLTablesByTask()
     MAKE_TASK(CalendarMgr, LoadFromDB);
 
 #undef MAKE_TASK
+#undef MAKE_TASK2
 
     // wait for tasks above
     tl.wait();

@@ -245,6 +245,7 @@ class SERVER_DECL LootMgr
 
         void LoadLoot();
         void LoadLootProp();
+        void loadAndGenerateLoot(uint8_t type);
 
         LootStore CreatureLoot;
         LootStore FishingLoot;

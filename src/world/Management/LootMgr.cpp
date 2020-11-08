@@ -128,15 +128,32 @@ void LootMgr::LoadLoot()
     //THIS MUST BE CALLED AFTER LOADING OF ITEMS
     is_loading = true;
     LoadLootProp();
-    LoadLootTables("loot_creatures", &CreatureLoot);
-    LoadLootTables("loot_gameobjects", &GOLoot);
-    LoadLootTables("loot_skinning", &SkinningLoot);
-    LoadLootTables("loot_fishing", &FishingLoot);
-    LoadLootTables("loot_items", &ItemLoot);
-    LoadLootTables("loot_pickpocketing", &PickpocketingLoot);
     is_loading = false;
+}
 
-    LOG_DEBUG("Loaded loot tables in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+void LootMgr::loadAndGenerateLoot(uint8_t type)
+{
+    switch (type)
+    {
+        case 0:
+            LoadLootTables("loot_creatures", &CreatureLoot);
+            break;
+        case 1:
+            LoadLootTables("loot_gameobjects", &GOLoot);
+            break;
+        case 2:
+            LoadLootTables("loot_skinning", &SkinningLoot);
+            break;
+        case 3:
+            LoadLootTables("loot_fishing", &FishingLoot);
+            break;
+        case 4:
+            LoadLootTables("loot_items", &ItemLoot);
+            break;
+        case 5:
+            LoadLootTables("loot_pickpocketing", &PickpocketingLoot);
+            break;
+    }
 }
 
 DBC::Structures::ItemRandomPropertiesEntry const* LootMgr::GetRandomProperties(ItemProperties const* proto)
