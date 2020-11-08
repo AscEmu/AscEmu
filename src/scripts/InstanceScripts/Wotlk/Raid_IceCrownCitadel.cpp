@@ -430,17 +430,23 @@ class LordMarrowgarAI : public CreatureAIScript
         // Instance Script
         mInstance = getInstanceScript();
 
-        _boneStormDuration = RAID_MODE<uint32_t>(20000, 30000, 20000, 30000);
-        _baseSpeed = pCreature->getSpeedRate(TYPE_RUN, false);
-        _introDone = false;
-        _boneSlice = false;
+        boneStormDuration = RAID_MODE<uint32_t>(20000, 30000, 20000, 30000);
+        baseSpeed = pCreature->getSpeedRate(TYPE_RUN, false);
+        introDone = false;
+        boneSlice = false;
+        boneStormtarget = nullptr;
 
         // Scripted Spells not autocastet
         boneSliceSpell = addAISpell(SPELL_BONE_SLICE, 0.0f, TARGET_ATTACKING);
         boneStormSpell = addAISpell(SPELL_BONE_STORM, 0.0f, TARGET_SELF);
+
         boneSpikeGraveyardSpell = addAISpell(SPELL_BONE_SPIKE_GRAVEYARD, 0.0f, TARGET_SELF);
         coldflameNormalSpell = addAISpell(SPELL_COLDFLAME_NORMAL, 0.0f, TARGET_DESTINATION);
         coldflameBoneStormSpell = addAISpell(SPELL_COLDFLAME_BONE_STORM, 0.0f, TARGET_SELF);
+
+        berserkSpell = addAISpell(SPELL_BERSERK, 0.0f, TARGET_SELF);
+        berserkSpell->addDBEmote(931);                  // THE MASTER'S RAGE COURSES THROUGH ME!
+        berserkSpell->mIsTriggered = true;
 
         addEmoteForEvent(Event_OnCombatStart, 923);     // The Scourge will wash over this world as a swarm of death and destruction!
         addEmoteForEvent(Event_OnTargetDied, 928);      // More bones for the offering!
@@ -451,44 +457,83 @@ class LordMarrowgarAI : public CreatureAIScript
     void OnLoad()
     {
         sendDBChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
-        _introDone = true;
+        introDone = true;
     }
 
     void AIUpdate() override
     {
-        if (getCreature()->GetAIInterface()->getAiState() == AI_STATE_CASTING)
+        if (!_isInCombat())
             return;
 
         scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
+
+        //if (getCreature()->isCastingSpell())
+        //    return;
 
         while (uint32_t eventId = scriptEvents.getFinishedEvent())
         {
             switch (eventId)
             {
             case EVENT_BONE_SPIKE_GRAVEYARD:
-                printf("%u \n", eventId);
+                if (_isHeroic() || !getCreature()->HasAura(SPELL_BONE_STORM))
+                    _castAISpell(boneSpikeGraveyardSpell);
+
+                scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
                 break;
             case EVENT_COLDFLAME:
-                printf("%u \n", eventId);
+                if (!getCreature()->HasAura(SPELL_BONE_STORM))
+                    _castAISpell(coldflameNormalSpell);
+                else
+                    _castAISpell(coldflameBoneStormSpell);
+
+                scriptEvents.addEvent(EVENT_COLDFLAME, 5000);
                 break;
             case EVENT_WARN_BONE_STORM:
-                printf("%u \n", eventId);
-                break;
+                boneSlice = false;
+                sendDBChatMessage(932); // %s creates a whirling storm of bone!
+                _castAISpell(boneStormSpell);
+
+                scriptEvents.delayEvent(EVENT_BONE_SPIKE_GRAVEYARD, 3000);
+                scriptEvents.delayEvent(EVENT_COLDFLAME, 3000);
+
+                scriptEvents.addEvent(EVENT_BONE_STORM_BEGIN, 3050);
+                scriptEvents.addEvent(EVENT_WARN_BONE_STORM, Util::getRandomInt(90000, 95000));
             case EVENT_BONE_STORM_BEGIN:
-                printf("%u \n", eventId);
-                break;
+                if (Aura* pBoneStorm = getCreature()->getAuraWithId(SPELL_BONE_STORM))
+                {
+                    pBoneStorm->setOriginalDuration(int32(boneStormDuration));
+                    pBoneStorm->refresh();
+                }
+
+                getCreature()->setSpeedRate(TYPE_RUN, baseSpeed*3.0f, true);
+                sendDBChatMessage(924); // BONE STORM!
+                
+                scriptEvents.addEvent(EVENT_BONE_STORM_END, boneStormDuration + 1);
             case EVENT_BONE_STORM_MOVE:
-                printf("%u \n", eventId);
+            {
+                scriptEvents.addEvent(EVENT_BONE_STORM_MOVE, boneStormDuration / 3);
+                boneStormtarget = GetRandomTargetNotMainTank();
+                if (!boneStormtarget)
+                    boneStormtarget = GetRandomTarget();
+
+                if (boneStormtarget)
+                    getCreature()->GetAIInterface()->MoveTo(boneStormtarget->GetPositionX(), boneStormtarget->GetPositionY(), boneStormtarget->GetPositionZ());
+
                 break;
-            case EVENT_BONE_STORM_END:
-                printf("%u \n", eventId);
+            }
+            case EVENT_BONE_STORM_END:  
+                getCreature()->setSpeedRate(TYPE_RUN, baseSpeed, true);
+                scriptEvents.removeEvent(EVENT_BONE_STORM_MOVE);
+                scriptEvents.addEvent(EVENT_ENABLE_BONE_SLICE, 10000);
+
+                if (!_isHeroic())
+                    scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
                 break;
             case EVENT_ENABLE_BONE_SLICE:
-                printf("%u \n", eventId);
-                _boneSlice = true;
+                boneSlice = true;
                 break;
             case EVENT_ENRAGE:
-                printf("%u \n", eventId);
+                _castAISpell(berserkSpell);
                 break;
             }
         }
@@ -498,15 +543,59 @@ class LordMarrowgarAI : public CreatureAIScript
             return;
 
         // 10 seconds since encounter start Bone Slice replaces melee attacks
-        if (_boneSlice)
+        if (boneSlice)
         {
             _castAISpell(boneSliceSpell);
         }
 
     }
 
+    Unit* GetRandomTargetNotMainTank()
+    {
+        Unit* target = nullptr;
+        std::vector<Player*> players;
+
+        Unit* mt = getCreature()->GetAIInterface()->GetMostHated();
+        if (mt == nullptr || !mt->isPlayer())
+            return 0;
+
+        for (const auto& itr : getCreature()->getInRangePlayersSet())
+        {
+            Player* obj = static_cast<Player*>(itr);
+            if (obj != mt)
+                players.push_back(obj);
+        }
+
+        if (players.size())
+            target = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
+
+        return target;
+    }
+
+    Unit* GetRandomTarget()
+    {
+        Unit* target = nullptr;
+        std::vector<Player*> players;
+
+        uint32_t count = static_cast<uint32_t>(getCreature()->getInRangePlayersCount());
+        uint32_t r = Util::getRandomUInt(count - 1);
+        count = 0;
+        for (const auto& itr : getCreature()->getInRangePlayersSet())
+        {
+            if (count == r)
+            {
+                target = static_cast<Player*>(itr);
+                break;
+            }
+            ++count;
+        }
+
+        return target;
+    }
+
     void OnCastSpell(uint32_t /*spellId*/) override
     {
+
     }
 
     void OnHitBySpell(uint32_t pSpellId, Unit* pUnitCaster) override
@@ -525,11 +614,18 @@ class LordMarrowgarAI : public CreatureAIScript
 
     void OnCombatStop(Unit* /*_target*/) override
     {
-        getCreature()->setSpeedRate(TYPE_RUN, _baseSpeed, true);
+        Reset();
+    }
+
+    void Reset()
+    {
+        getCreature()->setSpeedRate(TYPE_RUN, baseSpeed, true);
         getCreature()->RemoveAura(SPELL_BONE_STORM);
         getCreature()->RemoveAura(SPELL_BERSERK);
 
-        _boneSlice = false;
+        scriptEvents.resetEvents();
+
+        boneSlice = false;
     }
 
     void OnTargetDied(Unit* /*pTarget*/) override
@@ -543,9 +639,11 @@ class LordMarrowgarAI : public CreatureAIScript
 protected:
     // Common
     InstanceScript* mInstance;
-    float _baseSpeed;
-    bool _introDone;
-    bool _boneSlice;
+    float baseSpeed;
+    bool introDone;
+    bool boneSlice;
+
+    Unit* boneStormtarget;
 
     // Spells
     CreatureAISpells* boneSliceSpell;
@@ -553,8 +651,9 @@ protected:
     CreatureAISpells* boneSpikeGraveyardSpell;
     CreatureAISpells* coldflameNormalSpell;
     CreatureAISpells* coldflameBoneStormSpell;
+    CreatureAISpells* berserkSpell;
 
-    uint32_t _boneStormDuration;
+    uint32_t boneStormDuration;
 };
 
 const uint32_t IMPALED = 69065;
@@ -650,6 +749,11 @@ public:
     }
 };
 
+bool spellColdflameNormalEffect(uint8_t effectIndex, Spell* pSpell)
+{   
+    return true;
+}
+
 void SetupICC(ScriptMgr* mgr)
 {
     //Instance
@@ -676,6 +780,9 @@ void SetupICC(ScriptMgr* mgr)
     //mgr->register_creature_script(CN_LADY_DEATHWHISPER, &LadyDeathwhisperAI::Create);
     //mgr->register_creature_script(CN_VALITHRIA_DREAMWALKER, &ValithriaDreamwalkerAI::Create);
     //mgr->register_creature_script(CN_COLDFLAME, &ColdFlameAI::Create);
+
+    //Spells
+    mgr->register_script_effect(SPELL_COLDFLAME_NORMAL, &spellColdflameNormalEffect);
 
     //Gossips
     GossipScript* MuradinGossipScript = new MuradinGossip();

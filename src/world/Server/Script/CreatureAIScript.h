@@ -167,36 +167,47 @@ public:
     void updateEvents(int32_t diff, uint32_t phase)
     {
         bossPhase = phase;
-        
+
         if (!eventMapStore.empty())
         {
             for (eventMap::iterator itr = eventMapStore.begin(); itr != eventMapStore.end();)
             {
-                if (itr->second.bossPhase == bossPhase)
+                if (itr->second.bossPhase == bossPhase)   
                     itr->second.timer = itr->second.timer - diff;
                 else if (itr->second.bossPhase == 0)
                     itr->second.timer = itr->second.timer - diff;
+
                 ++itr;
             }
         }
     }
 
-    void addEvent(uint32_t Id, int32_t time, uint32_t phase = 0)
+    void addEvent(uint32_t eventId, int32_t time, uint32_t phase = 0)
     {
         scriptEventData.timer = time;
         scriptEventData.bossPhase = phase;
 
-        // If event already exists remove and override it
-        removeEvent(Id);
+        removeEvent(eventId);
             
-        eventMapStore.insert(eventMap::value_type(Id, scriptEventData));
+        eventMapStore.insert(eventMap::value_type(eventId, scriptEventData));
     }
 
-    void removeEvent(uint32_t Id)
+    void removeEvent(uint32_t eventId)
     {
-        auto itr = eventMapStore.find(Id);
-        if (itr != eventMapStore.end())
-            eventMapStore.erase(itr);
+        if (!eventMapStore.empty())
+        {
+            for (eventMap::const_iterator itr = eventMapStore.begin(); itr != eventMapStore.end();)
+            {
+                if (itr->first == eventId)
+                {
+                    eventMapStore.erase(itr);
+                    itr = eventMapStore.begin();
+                    break;
+                }
+                else
+                    ++itr;
+            }
+        }
     }
 
     // Return the first finished event
@@ -207,7 +218,7 @@ public:
 
         if (!eventMapStore.empty())
         {
-            for (eventMap::iterator itr = eventMapStore.begin(); itr != eventMapStore.end();)
+            for (eventMap::const_iterator itr = eventMapStore.begin(); itr != eventMapStore.end();)
             {
                 if (itr->second.bossPhase == bossPhase && itr->second.timer <= 0)
                 {
@@ -230,15 +241,18 @@ public:
 
     void delayEvent(uint32_t eventId, int32_t delay)
     {
-        for (auto itr = eventMapStore.begin(); itr != eventMapStore.end();)
+        if (!eventMapStore.empty())
         {
-            if (eventId == itr->first)
+            for (auto itr = eventMapStore.begin(); itr != eventMapStore.end();)
             {
-                eventMapStore.erase(itr);
-                itr = eventMapStore.begin();
-            }
-            else
+                // Only Delay Timers that are not Finished
+                if (itr->second.timer > 0 && itr->first == eventId)
+                {
+                    itr->second.timer = itr->second.timer + delay;
+                    break;
+                }
                 ++itr;
+            }
         }
     }
 
