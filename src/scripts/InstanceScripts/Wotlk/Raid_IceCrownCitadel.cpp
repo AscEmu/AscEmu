@@ -114,14 +114,14 @@ public:
 
         if (getData(CN_LADY_DEATHWHISPER) == NotStarted)
         {
-            if (LadyDeathwisperElevatorGUID)
+            /*if (LadyDeathwisperElevatorGUID)
                 GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
 
             if (LadyDeathwisperElevatorGUID)
             {
                 GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_CLOSED);
                 GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setLevel(0);
-            }
+            }*/
         }
     }
 
@@ -821,6 +821,22 @@ bool spellColdflameNormalEffect(uint8_t effectIndex, Spell* pSpell)
     return true;
 }
 
+bool spellBoneStormEffect(uint8_t effectIndex, Spell* pSpell)
+{
+    return true;
+}
+
+bool spellBoneSpikeGraveyardEffect(uint8_t effectIndex, Spell* pSpell)
+{
+    return true;
+}
+
+
+bool spellColdflameBoneStormEffect(uint8_t effectIndex, Spell* pSpell)
+{
+    return true;
+}
+
 void SetupICC(ScriptMgr* mgr)
 {
     //Instance
@@ -850,6 +866,9 @@ void SetupICC(ScriptMgr* mgr)
 
     //Spells
     mgr->register_script_effect(SPELL_COLDFLAME_NORMAL, &spellColdflameNormalEffect);
+    mgr->register_script_effect(SPELL_BONE_STORM_EFFECT, &spellBoneStormEffect);
+    mgr->register_script_effect(SPELL_BONE_SPIKE_GRAVEYARD, &spellBoneSpikeGraveyardEffect);
+    mgr->register_script_effect(SPELL_COLDFLAME_BONE_STORM, &spellColdflameBoneStormEffect);
 
     //Gossips
     GossipScript* MuradinGossipScript = new MuradinGossip();

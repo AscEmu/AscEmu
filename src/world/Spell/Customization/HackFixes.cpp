@@ -1127,6 +1127,16 @@ void SpellMgr::applyHackFixes()
                 // mask for FORM_CAT(1) = 1 << (1 - 1), which is 1
                 sp->setRequiredShapeShift(1);
             } break;
+            case 69075: // Bone Storm (Lord Marrowgar)
+            case 70834: // Bone Storm (Lord Marrowgar)
+            case 70835: // Bone Storm (Lord Marrowgar)
+            case 70836: // Bone Storm (Lord Marrowgar)
+            case 72864: // Death Plague (Rotting Frost Giant)
+            case 71160: // Plague Stench (Stinky)
+            case 71161: // Plague Stench (Stinky)
+            case 71123: // Decimate (Stinky & Precious)
+                sp->setEffectRadiusIndex(sSpellRadiusStore.LookupEntry(12)->ID, 0); // 100yd
+                break;
             default:
                 break;
         }
@@ -1149,6 +1159,15 @@ void SpellMgr::applyHackFixes()
     //////////////////////////////////////////////////////
 
     // Note: when applying spell hackfixes, please follow a template
+
+    //////////////////////////////////////////
+    // Lord Marrowgar                      //
+    ////////////////////////////////////////
+
+    sp = getMutableSpellInfo(69075); // Bone Storm (Lord Marrowgar)
+    if (sp != nullptr)
+        sp->setEffectImplicitTargetA(SPELL_TARGET_AREA, 0);
+
 
     //////////////////////////////////////////
     // WARRIOR                                //
