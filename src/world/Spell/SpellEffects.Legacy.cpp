@@ -1453,7 +1453,13 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 }
             }
             break;
-
+            case 69075: // Bone Storm (Lord Marrowgar)
+            {
+                // Damage reduction over distance
+                float reduction = std::max(unitTarget->GetDistance2dSq(u_caster), 1.0f);
+                dmg = float2int32(dmg / reduction);
+            }
+                break;
             default:
                 break;
         };

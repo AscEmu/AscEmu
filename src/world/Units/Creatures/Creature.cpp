@@ -319,40 +319,43 @@ void Creature::OnRespawn(MapMgr* m)
     if (m_noRespawn)
         return;
 
-    auto encounters = sObjectMgr.GetDungeonEncounterList(m->GetMapId(), m->pInstance->m_difficulty);
-
-    Instance* pInstance = m->pInstance;
-    if (encounters != NULL && pInstance != NULL)
+    if (m->pInstance)
     {
-        bool skip = false;
-        for (std::set<uint32>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
-        {
-            // Is killed boss?
-            if ((*killedNpc) == creature_properties->Id)
-            {
-                skip = true;
-                break;
-            }
+        auto encounters = sObjectMgr.GetDungeonEncounterList(m->GetMapId(), m->pInstance->m_difficulty);
 
-            // Is add from killed boss?
-            for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+        Instance* pInstance = m->pInstance;
+        if (encounters != NULL && pInstance != NULL)
+        {
+            bool skip = false;
+            for (std::set<uint32>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
             {
-                DungeonEncounter const* encounter = *itr;
-                if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == (*killedNpc))
+                // Is killed boss?
+                if ((*killedNpc) == creature_properties->Id)
                 {
                     skip = true;
                     break;
                 }
 
+                // Is add from killed boss?
+                for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+                {
+                    DungeonEncounter const* encounter = *itr;
+                    if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == (*killedNpc))
+                    {
+                        skip = true;
+                        break;
+                    }
+
+                }
+
             }
 
-        }
-
-        if (skip)
-        {
-            m_noRespawn = true;
-            DeleteMe();
-            return;
+            if (skip)
+            {
+                m_noRespawn = true;
+                DeleteMe();
+                return;
+            }
         }
     }
 
