@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Units/Players/PlayerDefines.hpp"
-#include "Management/Guild.h"
+#include "Management/Guild/Guild.hpp"
 #include <string>
 #include <map>
 #include <vector>
