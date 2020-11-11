@@ -27,7 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Spell/Definitions/PowerType.h>
 #include <Map/MapScriptInterface.h>
 #include <Units/Creatures/Pet.h>
-#include "Management/GuildMgr.h"
+#include "Management/Guild/GuildMgr.h"
 #include "Management/WeatherMgr.h"
 
 class LuaUnit

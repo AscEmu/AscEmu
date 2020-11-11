@@ -26,7 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgComplainResult.h"
 #include "Server/Packets/CmsgChatIgnored.h"
 #include "Server/Packets/CmsgSetChannelWatch.h"
-#include "Management/GuildMgr.h"
+#include "Management/Guild/GuildMgr.h"
 #include "Server/OpcodeTable.hpp"
 
 #if VERSION_STRING >= Cata

@@ -8,8 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
 
-#include "Management/GuildMgr.h"
-#include "Management/Guild.h"
+#include "Management/Guild/GuildMgr.h"
+#include "Management/Guild/Guild.h"
 
 //.guild create
 bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_session)

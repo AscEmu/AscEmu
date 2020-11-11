@@ -10,16 +10,13 @@ This file is released under the MIT license. See README-MIT for more information
 #endif
 
 #include "../../world/Objects/GameObject.h"
-#include "../../world/Management/Guild.h"
+#include "../../world/Management/Guild/Guild.h"
 #include "../../world/Spell/Spell.h"
 #include "../../world/Units/Creatures/Creature.h"
 #include "LUAEngine.h"
 #include "Map/MapMgr.h"
 #include "Server/Script/ScriptSetup.h"
 #include "../../world/WorldConf.h"
-#if VERSION_STRING >= Cata
-#include "../../world/Management/Guild.h"
-#endif
 
 #ifndef _WIN32
 #include <dirent.h>

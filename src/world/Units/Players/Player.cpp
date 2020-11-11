@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 #include "Data/WoWPlayer.h"
 #include "Management/Battleground/Battleground.h"
-#include "Management/GuildMgr.h"
+#include "Management/Guild/GuildMgr.h"
 #include "Management/ItemInterface.h"
 #include "Map/MapMgr.h"
 #include "Objects/GameObject.h"

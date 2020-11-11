@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.h"
 #include "Spell/Definitions/SpellEffects.h"
 #include "Server/Definitions.h"
-#include "Guild.h"
+#include "Guild/Guild.h"
 #include "Server/Packets/SmsgServerFirstAchievement.h"
 #include "Server/Packets/SmsgAchievementDeleted.h"
 #include "Server/Packets/SmsgCriteriaDeleted.h"

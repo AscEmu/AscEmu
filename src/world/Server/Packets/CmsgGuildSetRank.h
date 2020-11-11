@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "ManagedPacket.h"
-#include "Management/Guild.h"
+#include "Management/Guild/Guild.h"
 
 namespace AscEmu::Packets
 {

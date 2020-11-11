@@ -28,7 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "BroadcastMgr.h"
 #include "World.Legacy.h"
 #include "Spell/SpellMgr.h"
-#include "Management/GuildMgr.h"
+#include "Management/Guild/GuildMgr.h"
 #include "Packets/SmsgPlaySound.h"
 #include "Packets/SmsgAreaTriggerMessage.h"
 #include "Packets/SmsgZoneUnderAttack.h"

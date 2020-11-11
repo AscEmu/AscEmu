@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 
 #include "Guild.h"
-#include "Management/GuildMgr.h"
+#include "GuildMgr.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"
 #elif VERSION_STRING == Mop

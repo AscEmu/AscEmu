@@ -73,7 +73,7 @@
 #include <limits>
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Server/Packets/SmsgFriendStatus.h"
-#include "Management/GuildMgr.h"
+#include "Management/Guild/GuildMgr.h"
 #include "Server/Packets/SmsgDeathReleaseLoc.h"
 #include "Server/Packets/SmsgCorpseReclaimDelay.h"
 #include "Server/Packets/SmsgDuelWinner.h"
