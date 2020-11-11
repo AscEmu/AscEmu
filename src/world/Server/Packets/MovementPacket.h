@@ -132,13 +132,21 @@ namespace AscEmu::Packets
             packet >> info.flags >> info.flags2 >> info.update_time
                 >> info.position >> info.position.o;
 
+            LOG_DEBUG("guid: %u, flags: %u, flags2: %u, updatetime: %u, position: (%f, %f, %f, %f)", guid.getGuidLow(), info.flags, info.flags2, info.update_time,
+                info.position.x, info.position.y, info.position.z, info.position.o);
+
             if (info.hasMovementFlag(MOVEFLAG_TRANSPORT))
             {
-                packet >> info.transport_guid >> info.transport_position
-                    >> info.transport_position.o >> info.transport_time >> info.transport_seat;
+                WoWGuid tguid;
+                packet >> tguid;
+                packet >> info.transport_position >> info.transport_position.o >> info.transport_time >> info.transport_seat;
+
+                info.transport_guid = tguid.getGuidLow();
 
                 if (info.hasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE))
                     packet >> info.transport_time2;
+
+                LOG_DEBUG("tguid: %u, tposition: (%f, %f, %f, %f)", info.transport_guid, info.transport_position.x, info.transport_position.y, info.transport_position.z, info.transport_position.o);
             }
 
             if (info.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || info.hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))

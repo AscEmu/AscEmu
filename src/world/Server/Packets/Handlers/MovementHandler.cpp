@@ -887,6 +887,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     if ((mover->obj_movement_info.transport_guid != 0) && (movement_info.transport_guid == 0))
     {
         /* we left the transporter we were on */
+        LOG_DEBUG("Left Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
 
         Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
         if (transporter != NULL)
@@ -903,6 +904,8 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 
             if (mover->obj_movement_info.transport_guid == 0)
             {
+                LOG_DEBUG("Entered Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_guid));
+
                 Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_guid));
                 if (transporter != NULL)
                     transporter->AddPassenger(static_cast<Player*>(mover));
