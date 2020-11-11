@@ -15,6 +15,7 @@ TicketMgr& TicketMgr::getInstance()
 
 void TicketMgr::initialize()
 {
+    m_nextTicketId = 0;
     auto result = CharacterDatabase.Query("SELECT MAX(ticketid) FROM gm_tickets");
     if (result)
     {
