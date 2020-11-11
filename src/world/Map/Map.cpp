@@ -161,18 +161,25 @@ void Map::LoadSpawns(bool reload)
         }
         else
         {
-            uint32 cellx = CellHandler<MapMgr>::GetPosX(go_spawn->position_x);
-            uint32 celly = CellHandler<MapMgr>::GetPosY(go_spawn->position_y);
-            if (spawns[cellx] == NULL)
+            // Zyres: transporter stuff
+            if (sMySQLStore.getGameObjectProperties(go_spawn->entry)->type == 11 || sMySQLStore.getGameObjectProperties(go_spawn->entry)->type == 15)
             {
-                spawns[cellx] = new CellSpawns * [_sizeY];
-                memset(spawns[cellx], 0, sizeof(CellSpawns*) * _sizeY);
+                staticSpawns.GameobjectSpawns.push_back(go_spawn);
+            }
+            else
+            {
+                uint32 cellx = CellHandler<MapMgr>::GetPosX(go_spawn->position_x);
+                uint32 celly = CellHandler<MapMgr>::GetPosY(go_spawn->position_y);
+                if (spawns[cellx] == NULL)
+                {
+                    spawns[cellx] = new CellSpawns * [_sizeY];
+                    memset(spawns[cellx], 0, sizeof(CellSpawns*) * _sizeY);
+                }
+
+                if (!spawns[cellx][celly])
+                    spawns[cellx][celly] = new CellSpawns;
             }
 
-            if (!spawns[cellx][celly])
-                spawns[cellx][celly] = new CellSpawns;
-
-            spawns[cellx][celly]->GameobjectSpawns.push_back(go_spawn);
             ++GameObjectSpawnCount;
         }
     }

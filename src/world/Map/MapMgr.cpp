@@ -257,6 +257,18 @@ void MapMgr::PushObject(Object* obj)
         plObj->getUpdateMgr().pushCreationData(&pbuf, count);
     }
 
+    // Zyres: transporter test stuff
+    if (obj->isGameObject() && dynamic_cast<GameObject*>(obj)->getGoType() == GAMEOBJECT_TYPE_TRANSPORT ||
+        obj->isGameObject() && dynamic_cast<GameObject*>(obj)->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT)
+    {
+        for (auto player : m_PlayerStorage)
+        {
+            ByteBuffer pbuf(10000);
+            count = player.second->buildCreateUpdateBlockForPlayer(&pbuf, player.second);
+            player.second->getUpdateMgr().pushCreationData(&pbuf, count);
+        }
+    }
+
     // Build in-range data
     uint8 cellNumber = worldConfig.server.mapCellNumber;
 
@@ -690,6 +702,16 @@ void MapMgr::ChangeObjectLocation(Object* obj)
         endY = cellY + 5 <= _sizeY ? cellY + 6 : (_sizeY - 1);
         startX = cellX > 5 ? cellX - 6 : 0;
         startY = cellY > 5 ? cellY - 6 : 0;
+    }
+
+    // Zyres: transporter test stuff
+    if ((obj->isGameObject() && (static_cast<GameObject*>(obj)->getGoType() & GAMEOBJECT_TYPE_TRANSPORT))  ||
+        (obj->isGameObject() && (static_cast<GameObject*>(obj)->getGoType() & GAMEOBJECT_TYPE_MO_TRANSPORT)))
+    {
+        endX = _sizeX - 1;
+        endY = _sizeY - 1;
+        startX = _minX;
+        startY = _minY;
     }
 
     for (uint32 posX = startX; posX <= endX; ++posX)

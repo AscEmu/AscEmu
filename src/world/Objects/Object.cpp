@@ -419,6 +419,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
                     updateType = UPDATETYPE_CREATE_OBJECT2;
                     break;
                 case GAMEOBJECT_TYPE_TRANSPORT:
+                case GAMEOBJECT_TYPE_MO_TRANSPORT:
                     updateFlags |= UPDATEFLAG_TRANSPORT;
                     break;
                 default:
