@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #if VERSION_STRING == Mop
 #include "GuildFinderMgr.h"
 #include "Management/Guild/GuildMgr.hpp"
-#include "ManagementGuild//Guild.hpp"
+#include "Management/Guild/Guild.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
 
