@@ -2429,9 +2429,9 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     // GM Ticket
     //\todo Is this really necessary? Tickets will always be saved on creation, update and so on...
-    GM_Ticket* ticket = sObjectMgr.GetGMTicketByPlayer(getGuid());
+    GM_Ticket* ticket = sTicketMgr.getGMTicketByPlayer(getGuid());
     if (ticket != nullptr)
-        sObjectMgr.SaveGMTicket(ticket, buf);
+        sTicketMgr.saveGMTicket(ticket, buf);
 
     // Cooldown Items
     _SavePlayerCooldowns(buf);

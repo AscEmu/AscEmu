@@ -96,7 +96,7 @@ void WorldSession::handleGMTicketUpdateOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    GM_Ticket* ticket = sObjectMgr.GetGMTicketByPlayer(_player->getGuid());
+    GM_Ticket* ticket = sTicketMgr.getGMTicketByPlayer(_player->getGuid());
     if (ticket == nullptr)
     {
         SendPacket(SmsgGmTicketUpdateText(GMTNoTicketFound).serialise().get());
@@ -105,7 +105,7 @@ void WorldSession::handleGMTicketUpdateOpcode(WorldPacket& recvPacket)
     {
         ticket->message = srlPacket.message;
         ticket->timestamp = static_cast<uint32_t>(UNIXTIME);
-        sObjectMgr.UpdateGMTicket(ticket);
+        sTicketMgr.updateGMTicket(ticket);
 
         SendPacket(SmsgGmTicketUpdateText(GMTNoErrors).serialise().get());
     }
@@ -126,9 +126,9 @@ void WorldSession::handleGMTicketUpdateOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleGMTicketDeleteOpcode(WorldPacket& /*recvPacket*/)
 {
-    GM_Ticket* ticket = sObjectMgr.GetGMTicketByPlayer(_player->getGuid());
+    GM_Ticket* ticket = sTicketMgr.getGMTicketByPlayer(_player->getGuid());
 
-    sObjectMgr.RemoveGMTicketByPlayer(_player->getGuid());
+    sTicketMgr.removeGMTicketByPlayer(_player->getGuid());
 
     SendPacket(SmsgGmTicketDeleteTicket(GMTTicketRemoved).serialise().get());
 
@@ -182,10 +182,10 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
 #endif  
 
     // Remove pending tickets
-    sObjectMgr.RemoveGMTicketByPlayer(_player->getGuid());
+    sTicketMgr.removeGMTicketByPlayer(_player->getGuid());
 
     auto ticket = new GM_Ticket;
-    ticket->guid = uint64_t(sObjectMgr.GenerateTicketID());
+    ticket->guid = uint64_t(sTicketMgr.generateNextTicketId());
     ticket->playerGuid = _player->getGuid();
     ticket->map = srlPacket.map;
     ticket->posX = srlPacket.location.x;
@@ -199,7 +199,7 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
     ticket->assignedToPlayer = 0;
     ticket->comment = "";
 
-    sObjectMgr.AddGMTicket(ticket, false);
+    sTicketMgr.addGMTicket(ticket, false);
 
     SendPacket(SmsgGmTicketCreate(GMTNoErrors).serialise().get());
 
@@ -225,7 +225,7 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/)
 {
-    if (const auto ticket = sObjectMgr.GetGMTicketByPlayer(_player->getGuid()))
+    if (const auto ticket = sTicketMgr.getGMTicketByPlayer(_player->getGuid()))
     {
         if (!ticket->deleted)
         {

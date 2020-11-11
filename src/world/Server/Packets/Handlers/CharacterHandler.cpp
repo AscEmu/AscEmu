@@ -591,7 +591,7 @@ void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
 void WorldSession::initGMMyMaster()
 {
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
-    GM_Ticket* ticket = sObjectMgr.GetGMTicketByPlayer(_player->getGuid());
+    GM_Ticket* ticket = sTicketMgr.getGMTicketByPlayer(_player->getGuid());
     if (ticket)
     {
         //Send status change to gm_sync_channel

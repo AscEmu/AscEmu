@@ -139,14 +139,14 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
     Field* fields = result->Fetch();
     uint32 playerGuid = fields[1].GetUInt32();
 
-    GM_Ticket* gm_ticket = sObjectMgr.GetGMTicketByPlayer(playerGuid);
+    GM_Ticket* gm_ticket = sTicketMgr.getGMTicketByPlayer(playerGuid);
     if (gm_ticket == nullptr)
     {
         RedSystemMessage(m_session, "Ticket not found.");
         return true;
     }
 
-    sObjectMgr.CloseTicket(gm_ticket->guid);
+    sTicketMgr.closeTicket(gm_ticket->guid);
 
     Player* ticketOwner = sObjectMgr.GetPlayer(playerGuid);
 

@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Objects/MovementInfo.h"
+#include "Log.hpp"
 
 #if VERSION_STRING < Cata
 #if VERSION_STRING != Mop

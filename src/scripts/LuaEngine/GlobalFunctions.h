@@ -29,7 +29,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #if VERSION_STRING >= Cata
-#include "Management/Guild.h"
+#include "Management/Guild/Guild.hpp"
 #endif
 
 #define ENGINE_NAME "ALE" // You should check in your scripts that GetLuaEngine() == "ALE"

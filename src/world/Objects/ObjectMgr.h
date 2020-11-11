@@ -44,7 +44,7 @@
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 #include "Spell/SpellTargetConstraint.h"
-
+#include "Management/Tickets/TicketMgr.hpp"
 
 struct WorldState
 {
@@ -65,38 +65,6 @@ struct InstanceBossInfo
     uint32 creatureid;
     InstanceBossTrashList trash;
     uint32 trashRespawnOverride;
-};
-
-struct GM_Ticket
-{
-    uint64 guid;
-    uint64 playerGuid;
-    std::string name;
-    uint32 level;
-    uint32 map;
-    float posX;
-    float posY;
-    float posZ;
-    std::string message;
-    uint32 timestamp;
-    bool deleted;
-    uint64 assignedToPlayer;
-    std::string comment;
-};
-
-enum
-{
-    GM_TICKET_CHAT_OPCODE_NEWTICKET     = 1,
-    GM_TICKET_CHAT_OPCODE_LISTSTART     = 2,
-    GM_TICKET_CHAT_OPCODE_LISTENTRY     = 3,
-    GM_TICKET_CHAT_OPCODE_CONTENT       = 4,
-    GM_TICKET_CHAT_OPCODE_APPENDCONTENT = 5,
-    GM_TICKET_CHAT_OPCODE_REMOVED       = 6,
-    GM_TICKET_CHAT_OPCODE_UPDATED       = 7,
-    GM_TICKET_CHAT_OPCODE_ASSIGNED      = 8,
-    GM_TICKET_CHAT_OPCODE_RELEASED      = 9,
-    GM_TICKET_CHAT_OPCODE_COMMENT       = 10,
-    GM_TICKET_CHAT_OPCODE_ONLINESTATE   = 11
 };
 
 struct SpellReplacement
@@ -345,7 +313,7 @@ class Charter
 };
 
 typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
-typedef std::list<GM_Ticket*> GmTicketList;
+
 typedef std::map<uint32, InstanceBossInfo*> InstanceBossInfoMap;
 
 #if VERSION_STRING > TBC
@@ -426,7 +394,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         typedef std::map<uint32, TransporterSet>                        TransporterMap;
 
         // object holders
-        GmTicketList GM_TicketList;
         InstanceBossInfoMap* m_InstanceBossInfoMap[MAX_NUM_MAPS];
         PlayerCacheMap m_playerCache;
         FastMutex m_playerCacheLock;
@@ -487,17 +454,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         void RemoveCorpse(Corpse*);
         Corpse* GetCorpse(uint32 corpseguid);
 
-        // Gm Tickets
-        void AddGMTicket(GM_Ticket* ticket, bool startup = false);
-        void UpdateGMTicket(GM_Ticket* ticket);
-        void RemoveGMTicketByPlayer(uint64 playerGuid);
-        void RemoveGMTicket(uint64 ticketGuid);
-        void CloseTicket(uint64 ticketGuid);
-        void DeleteGMTicketPermanently(uint64 ticketGuid);
-        void DeleteAllRemovedGMTickets();
-        GM_Ticket* GetGMTicket(uint64 ticketGuid);
-        GM_Ticket* GetGMTicketByPlayer(uint64 playerGuid);
-
         DBC::Structures::SkillLineAbilityEntry const* GetSpellSkill(uint32 id);
         SpellInfo const* GetNextSpellRank(SpellInfo const* sp, uint32 level);
 
@@ -538,8 +494,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         Corpse* LoadCorpse(uint32 guid);
         void LoadCorpses(MapMgr* mgr);
-        void LoadGMTickets();
-        void SaveGMTicket(GM_Ticket* ticket, QueryBuffer* buf);
         void LoadInstanceBossInfos();
         void LoadSpellSkills();
         void LoadVendors();
@@ -692,7 +646,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         std::atomic<unsigned long> m_hiGameObjectSpawnId;
         std::atomic<unsigned long> m_mailid;
         std::atomic<unsigned long> m_reportID;
-        std::atomic<unsigned long> m_ticketid;
         std::atomic<unsigned long> m_setGUID;
         std::atomic<unsigned long> m_hiCorpseGuid;
         std::atomic<unsigned long> m_hiGuildId;

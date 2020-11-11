@@ -96,6 +96,9 @@ void World::finalize()
     LogNotice("ObjectMgr : ~ObjectMgr()");
     sObjectMgr.finalize();
 
+    LogNotice("TicketMgr : ~TicketMgr()");
+    sTicketMgr.finalize();
+
     LogNotice("LfgMgr : ~LfgMgr()");
     sLfgMgr.finalize();
 
@@ -909,6 +912,7 @@ void World::loadMySQLTablesByTask()
 
     sObjectMgr.initialize();
     sAddonMgr.initialize();
+    sTicketMgr.initialize();
     sGameEventMgr.initialize();
 
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(&sp::getInstance(), &sp::ptr)))
@@ -942,7 +946,7 @@ void World::loadMySQLTablesByTask()
 #endif
     MAKE_TASK(ObjectMgr, LoadPetSpellCooldowns);
     MAKE_TASK(ObjectMgr, LoadGuildCharters);
-    MAKE_TASK(ObjectMgr, LoadGMTickets);
+    MAKE_TASK(TicketMgr, loadGMTickets);
     MAKE_TASK(ObjectMgr, SetHighestGuids);
     MAKE_TASK(ObjectMgr, LoadReputationModifiers);
     MAKE_TASK(ObjectMgr, LoadGroups);

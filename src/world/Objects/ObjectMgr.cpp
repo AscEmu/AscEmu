@@ -56,7 +56,6 @@ void ObjectMgr::initialize()
     m_hiGroupId = 0;
     m_mailid = 0;
     m_reportID = 0;
-    m_ticketid = 0;
     m_setGUID = 0;
     m_hiCorpseGuid = 0;
     m_hiGuildId = 0;
@@ -184,10 +183,6 @@ void ObjectMgr::finalize()
         free(itr->second->name);
         delete itr->second;
     }
-
-    LogNotice("ObjectMgr : Deleting GM Tickets...");
-    for (GmTicketList::iterator itr = GM_TicketList.begin(); itr != GM_TicketList.end(); ++itr)
-        delete(*itr);
 
     LogNotice("ObjectMgr : Deleting Boss Information...");
     for (uint32 i = 0; i < MAX_NUM_MAPS; i++)
@@ -588,42 +583,6 @@ void ObjectMgr::DelinkPlayerCorpses(Player* pOwner)
     CorpseAddEventDespawn(c);
 }
 
-void ObjectMgr::LoadGMTickets()
-{
-    QueryResult* result = CharacterDatabase.Query("SELECT ticketid, playerGuid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment FROM gm_tickets");
-    if (result == nullptr)
-    {
-        LogDetail("ObjectMgr : 0 active GM Tickets loaded.");
-        return;
-    }
-
-    do
-    {
-        Field* fields = result->Fetch();
-
-        GM_Ticket* ticket = new GM_Ticket;
-        ticket->guid = fields[0].GetUInt64();
-        ticket->playerGuid = fields[1].GetUInt64();
-        ticket->name = fields[2].GetString();
-        ticket->level = fields[3].GetUInt32();
-        ticket->map = fields[4].GetUInt32();
-        ticket->posX = fields[5].GetFloat();
-        ticket->posY = fields[6].GetFloat();
-        ticket->posZ = fields[7].GetFloat();
-        ticket->message = fields[8].GetString();
-        ticket->timestamp = fields[9].GetUInt32();
-        ticket->deleted = fields[10].GetUInt32() == 1;
-        ticket->assignedToPlayer = fields[11].GetUInt64();
-        ticket->comment = fields[12].GetString();
-
-        AddGMTicket(ticket, true);
-    }
-    while (result->NextRow());
-
-    LogDetail("ObjectMgr : %u active GM Tickets loaded.", result->GetRowCount());
-    delete result;
-}
-
 void ObjectMgr::LoadInstanceBossInfos()
 {
     char* p, *q, *trash;
@@ -677,48 +636,6 @@ void ObjectMgr::LoadInstanceBossInfos()
 
     delete result;
     LogDetail("ObjectMgr : %u boss information loaded.", cnt);
-}
-
-void ObjectMgr::SaveGMTicket(GM_Ticket* ticket, QueryBuffer* buf)
-{
-    std::stringstream ss;
-
-    ss << "DELETE FROM gm_tickets WHERE ticketid = ";
-    ss << ticket->guid;
-    ss << ";";
-
-    if (buf == nullptr)
-        CharacterDatabase.ExecuteNA(ss.str().c_str());
-    else
-        buf->AddQueryStr(ss.str());
-
-    ss.rdbuf()->str("");
-
-    ss << "INSERT INTO gm_tickets (ticketid, playerguid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment) VALUES(";
-    ss << ticket->guid << ", ";
-    ss << ticket->playerGuid << ", '";
-    ss << CharacterDatabase.EscapeString(ticket->name) << "', ";
-    ss << ticket->level << ", ";
-    ss << ticket->map << ", ";
-    ss << ticket->posX << ", ";
-    ss << ticket->posY << ", ";
-    ss << ticket->posZ << ", '";
-    ss << CharacterDatabase.EscapeString(ticket->message) << "', ";
-    ss << ticket->timestamp << ", ";
-
-    if (ticket->deleted)
-        ss << uint32(1);
-    else
-        ss << uint32(0);
-    ss << ",";
-
-    ss << ticket->assignedToPlayer << ", '";
-    ss << CharacterDatabase.EscapeString(ticket->comment) << "');";
-
-    if (buf == nullptr)
-        CharacterDatabase.ExecuteNA(ss.str().c_str());
-    else
-        buf->AddQueryStr(ss.str());
 }
 
 #if VERSION_STRING > TBC
@@ -907,14 +824,6 @@ void ObjectMgr::SetHighestGuids()
         delete result;
     }
 
-    result = CharacterDatabase.Query("SELECT MAX(ticketid) FROM gm_tickets");
-    if (result)
-    {
-        m_ticketid = uint32(result->Fetch()[0].GetUInt64() + 1);
-        delete result;
-    }
-
-
     result = CharacterDatabase.Query("SELECT MAX(message_id) FROM mailbox");
     if (result)
     {
@@ -941,7 +850,6 @@ void ObjectMgr::SetHighestGuids()
     LogNotice("ObjectMgr : HighGuid(CHARTER) = %lu", m_hiCharterId.load());
     LogNotice("ObjectMgr : HighGuid(GUILD) = %lu", m_hiGuildId.load());
     LogNotice("ObjectMgr : HighGuid(BUGREPORT) = %u", uint32(m_reportID.load() - 1));
-    LogNotice("ObjectMgr : HighGuid(TICKET) = %u", uint32(m_ticketid.load() - 1));
     LogNotice("ObjectMgr : HighGuid(MAIL) = %u", uint32(m_mailid.load()));
     LogNotice("ObjectMgr : HighGuid(EQUIPMENTSET) = %u", uint32(m_setGUID.load() - 1));
 }
@@ -950,12 +858,6 @@ uint32 ObjectMgr::GenerateReportID()
 {
     return ++m_reportID;
 }
-
-uint32 ObjectMgr::GenerateTicketID()
-{
-    return ++m_ticketid;
-}
-
 
 uint32 ObjectMgr::GenerateEquipmentSetID()
 {
@@ -1037,116 +939,6 @@ Player* ObjectMgr::GetPlayer(uint32 guid)
     _playerslock.ReleaseReadLock();
 
     return rv;
-}
-
-void ObjectMgr::AddGMTicket(GM_Ticket* ticket, bool startup)
-{
-    ARCEMU_ASSERT(ticket != NULL);
-    GM_TicketList.push_back(ticket);
-
-    if (!startup)
-        SaveGMTicket(ticket, nullptr);
-}
-
-void ObjectMgr::UpdateGMTicket(GM_Ticket* ticket)
-{
-    SaveGMTicket(ticket, nullptr);
-}
-
-void ObjectMgr::DeleteGMTicketPermanently(uint64 ticketGuid)
-{
-    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end();)
-    {
-        if ((*i)->guid == ticketGuid)
-        {
-            i = GM_TicketList.erase(i);
-        }
-        else
-        {
-            ++i;
-        }
-    }
-
-    CharacterDatabase.Execute("DELETE FROM gm_tickets WHERE guid=%u", ticketGuid);      // kill from db
-}
-
-void ObjectMgr::DeleteAllRemovedGMTickets()
-{
-    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end(); ++i)
-    {
-        if ((*i)->deleted)
-        {
-            i = GM_TicketList.erase(i);
-        }
-        else
-        {
-            ++i;
-        }
-    }
-
-    CharacterDatabase.Execute("DELETE FROM gm_tickets WHERE deleted=1");
-}
-
-void ObjectMgr::RemoveGMTicketByPlayer(uint64 playerGuid)
-{
-    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end(); ++i)
-    {
-        if ((*i)->playerGuid == playerGuid && !(*i)->deleted)
-        {
-            (*i)->deleted = true;
-            SaveGMTicket((*i), nullptr);
-            break;
-        }
-    }
-}
-
-void ObjectMgr::RemoveGMTicket(uint64 ticketGuid)
-{
-    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end(); ++i)
-    {
-        if ((*i)->guid == ticketGuid && !(*i)->deleted)
-        {
-            (*i)->deleted = true;
-            SaveGMTicket((*i), nullptr);
-            break;
-        }
-    }
-}
-
-void ObjectMgr::CloseTicket(uint64 ticketGuid)
-{
-    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end(); ++i)
-    {
-        if ((*i)->guid == ticketGuid && !(*i)->deleted)
-        {
-            (*i)->deleted = true;
-            break;
-        }
-    }
-}
-
-GM_Ticket* ObjectMgr::GetGMTicketByPlayer(uint64 playerGuid)
-{
-    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end(); ++i)
-    {
-        if ((*i)->playerGuid == playerGuid && !(*i)->deleted)
-        {
-            return (*i);
-        }
-    }
-    return nullptr;
-}
-
-GM_Ticket* ObjectMgr::GetGMTicket(uint64 ticketGuid)
-{
-    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end(); ++i)
-    {
-        if ((*i)->guid == ticketGuid)
-        {
-            return (*i);
-        }
-    }
-    return nullptr;
 }
 
 void ObjectMgr::LoadVendors()
