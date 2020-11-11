@@ -15,6 +15,7 @@ include(Management/Gossip/CMakeLists.txt)
 include(Management/Guild/CMakeLists.txt)
 include(Management/LFG/CMakeLists.txt)
 include(Management/ObjectUpdates/CMakeLists.txt)
+include(Management/Tickets/CMakeLists.txt)
 include(Macros/CMakeLists.txt)
 include(Map/CMakeLists.txt)
 include(Map/Area/CMakeLists.txt)
@@ -85,6 +86,7 @@ set(sources
    ${SRC_MANAGEMENT_GUILD_FILES}
    ${SRC_MANAGEMENT_LFG_FILES}
    ${SRC_MANAGEMENT_OBJECTUPDATES_FILES}
+   ${SRC_MANAGEMENT_TICKETS_FILES}
    ${SRC_MAP_FILES}
    ${SRC_MAP_AREA_FILES}
    ${SRC_MOVEMENT_FILES}
