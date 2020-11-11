@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/Guild/GuildDefinitions.h"
+#include "Management/Guild/GuildDefinitions.hpp"
 #include "Database/Field.hpp"
 #include "WorldPacket.h"
 #include "Management/Item.h"

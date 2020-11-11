@@ -39,7 +39,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgLootRoll.h"
 #include "Server/Packets/CmsgOpenItem.h"
 #include "Server/Packets/CmsgSetTitle.h"
-#include "Management/Guild/GuildMgr.h"
+#include "Management/Guild/GuildMgr.hpp"
 #include "Server/Packets/SmsgStandstateUpdate.h"
 #include "Server/Packets/CmsgZoneupdate.h"
 #include "Server/Packets/CmsgResurrectResponse.h"

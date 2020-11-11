@@ -8,16 +8,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 #include "Server/WorldSession.h"
 
-#include "Management/Guild/GuildDefinitions.h"
-#include "GuildEmblemInfo.h"
-#include "GuildBankRightsAndSlots.h"
-#include "GuildLog.h"
-#include "GuildEventLog.h"
-#include "GuildNewsLog.h"
-#include "GuildBankEventLog.h"
-#include "GuildLogHolder.h"
-#include "GuildRankInfo.h"
-#include "GuildBankTab.h"
+#include "Management/Guild/GuildDefinitions.hpp"
+#include "GuildEmblemInfo.hpp"
+#include "GuildBankRightsAndSlots.hpp"
+#include "GuildLog.hpp"
+#include "GuildEventLog.hpp"
+#include "GuildNewsLog.hpp"
+#include "GuildBankEventLog.hpp"
+#include "GuildLogHolder.hpp"
+#include "GuildRankInfo.hpp"
+#include "GuildBankTab.hpp"
 
 #include <string>
 

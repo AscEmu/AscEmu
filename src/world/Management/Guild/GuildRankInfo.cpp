@@ -3,8 +3,8 @@ Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "GuildRankInfo.h"
-#include "GuildBankRightsAndSlots.h"
+#include "GuildRankInfo.hpp"
+#include "GuildBankRightsAndSlots.hpp"
 #include "Log.hpp"
 #include "Database/Database.h"
 #include "Server/MainServerDefines.h"

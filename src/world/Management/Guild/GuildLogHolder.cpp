@@ -3,9 +3,9 @@ Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "GuildLog.h"
-#include "GuildLogHolder.h"
-#include "Management/Guild/GuildDefinitions.h"
+#include "GuildLog.hpp"
+#include "GuildLogHolder.hpp"
+#include "Management/Guild/GuildDefinitions.hpp"
 
 GuildLogHolder::GuildLogHolder(uint32_t guildId, uint32_t maxRecords) : mGuildId(guildId), mMaxRecords(maxRecords), mNextGUID(uint32_t(UNK_EVENT_LOG_GUID))
 {

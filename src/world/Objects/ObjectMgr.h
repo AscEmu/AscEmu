@@ -25,7 +25,7 @@
 #include "Units/Creatures/Corpse.h"
 #include "Units/Players/Player.h"
 #include "Units/Creatures/Vehicle.h"
-#include "Management/Guild/Guild.h"
+#include "Management/Guild/Guild.hpp"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DBC/DBCStores.h"
 #include "Storage/MySQLStructures.h"

@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <utility>
 
 #include "ManagedPacket.h"
-#include "Management/Guild/GuildDefinitions.h"
+#include "Management/Guild/GuildDefinitions.hpp"
 #include "Server/World.h"
 
 namespace AscEmu::Packets

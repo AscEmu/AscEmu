@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 
-#include "GuildMgr.h"
-#include "Guild.h"
+#include "GuildMgr.hpp"
+#include "Guild.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
 

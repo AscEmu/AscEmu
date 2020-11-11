@@ -37,7 +37,7 @@
 using namespace AscEmu::Packets;
 
 #if VERSION_STRING < Cata
-#include "Management/Guild/Guild.h"
+#include "Management/Guild/Guild.hpp"
 #endif
 
 Item::Item()

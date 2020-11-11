@@ -36,10 +36,10 @@
 #include "Spell/SpellMgr.h"
 #include "Units/Creatures/Pet.h"
 #include "Spell/Definitions/SpellEffects.h"
-#include "Management/Guild/GuildMgr.h"
+#include "Management/Guild/GuildMgr.hpp"
 #include "Management/TaxiMgr.h"
 #if VERSION_STRING < Cata
-#include "Management/Guild/Guild.h"
+#include "Management/Guild/Guild.hpp"
 #endif
 
 const char* NormalTalkMessage = "DMSG";

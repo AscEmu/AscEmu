@@ -37,7 +37,7 @@
 #include "Units/Creatures/AIInterface.h" //?? what?
 #include "WorldConf.h"
 #include "Management/AuctionHouse.h"
-#include "Management/Guild/Guild.h"
+#include "Management/Guild/Guild.hpp"
 #include "Management/ObjectUpdates/SplineManager.h"
 #include "Management/ObjectUpdates/UpdateManager.h"
 #include "Data/WoWPlayer.h"

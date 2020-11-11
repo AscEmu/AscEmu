@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #endif
 
 #include "../../world/Objects/GameObject.h"
-#include "../../world/Management/Guild/Guild.h"
+#include "../../world/Management/Guild/Guild.hpp"
 #include "../../world/Spell/Spell.h"
 #include "../../world/Units/Creatures/Creature.h"
 #include "LUAEngine.h"
