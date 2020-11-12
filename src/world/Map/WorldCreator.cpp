@@ -423,7 +423,14 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
     in->m_mapInfo = mapInfo;
     in->m_mapMgr = nullptr;        // always start off without a map manager, it is created in GetInstance()
     in->m_isBattleground = false;
+#if VERSION_STRING >= WotLK
     in->m_persistent = in->isPersistent() && sObjectMgr.GetDungeonEncounterList(mapid, plr->getDungeonDifficulty()) == nullptr;
+#endif
+
+#if VERSION_STRING <= TBC
+    in->m_persistent = in->isPersistent() && sObjectMgr.GetDungeonEncounterList(mapid) == nullptr;
+#endif
+
     in->m_creatorGuid = pGroup ? 0 : plr->getGuidLow();        // creator guid is 0 if its owned by a group.
     in->m_creatorGroup = pGroup ? pGroup->GetID() : 0;
 

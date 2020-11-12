@@ -874,6 +874,7 @@ std::string InstanceScript::getDataStateString(uint32_t bossEntry)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // encounters
+#if VERSION_STRING >= WotLK
 void InstanceScript::generateBossDataState()
 {
     auto encounters = sObjectMgr.GetDungeonEncounterList(mInstance->GetMapId(), mInstance->pInstance->m_difficulty);
@@ -909,13 +910,6 @@ void InstanceScript::generateBossDataState()
     LogDebugFlag(LF_SCRIPT_MGR, "InstanceScript::generateBossDataState() - Boss State generated for map %u.", mInstance->GetMapId());
 }
 
-void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_a, uint8_t value_b)
-{
-    MapMgr* instance = GetInstance();
-    instance->SendPacketToAllPlayers(SmsgUpdateInstanceEncounterUnit(type, unit ? unit->GetNewGUID() : WoWGuid(), value_a, value_b).serialise().get());
-}
-
-
 void InstanceScript::UpdateEncountersStateForCreature(uint32_t creditEntry, uint8_t difficulty)
 {
     DungeonEncounterList const* encounters = sObjectMgr.GetDungeonEncounterList(mInstance->GetMapId(), difficulty);
@@ -937,7 +931,7 @@ void InstanceScript::UpdateEncountersStateForCreature(uint32_t creditEntry, uint
             }
         }
     }
-    
+
     if (dungeonId)
     {
         for (const auto& itr : mInstance->m_PlayerStorage)
@@ -978,6 +972,50 @@ void InstanceScript::UpdateEncountersStateForSpell(uint32_t creditEntry, uint8_t
             sLfgMgr.RewardDungeonDoneFor(dungeonId, p);
         }
     }
+}
+#endif
+
+#if VERSION_STRING <= TBC
+void InstanceScript::generateBossDataState()
+{
+    auto encounters = sObjectMgr.GetDungeonEncounterList(mInstance->GetMapId());
+
+    if (encounters != nullptr)
+    {
+        completedEncounters = 0;
+
+        for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+        {
+            DungeonEncounter const* encounter = *itr;
+            if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE)
+            {
+                CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter->creditEntry);
+                if (creature == nullptr)
+                    LOG_ERROR("Your instance_encounters table includes invalid data for boss entry %u!", encounter->creditEntry);
+                else
+                    mInstanceData.insert(std::pair<uint32_t, uint32_t>(encounter->creditEntry, NotStarted));
+            }
+        }
+
+        for (const auto& killedNpc : mInstance->pInstance->m_killedNpcs)
+        {
+            for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+            {
+                DungeonEncounter const* encounter = *itr;
+                if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == killedNpc)
+                    setData(encounter->creditEntry, Finished);
+            }
+        }
+    }
+
+    LogDebugFlag(LF_SCRIPT_MGR, "InstanceScript::generateBossDataState() - Boss State generated for map %u.", mInstance->GetMapId());
+}
+#endif
+
+void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_a, uint8_t value_b)
+{
+    MapMgr* instance = GetInstance();
+    instance->SendPacketToAllPlayers(SmsgUpdateInstanceEncounterUnit(type, unit ? unit->GetNewGUID() : WoWGuid(), value_a, value_b).serialise().get());
 }
 
 void InstanceScript::displayDataStateList(Player* player)

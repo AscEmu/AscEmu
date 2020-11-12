@@ -4743,7 +4743,10 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
 
         // set encounter state to finished
         CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), Finished);
+
+#if VERSION_STRING >= WotLK
         CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), UpdateEncountersStateForCreature)(static_cast<Creature*>(m_Unit)->getEntry(), m_Unit->GetMapMgr()->pInstance->m_difficulty);
+#endif
     }
 
     setAiState(AI_STATE_IDLE);

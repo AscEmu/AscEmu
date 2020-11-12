@@ -58,13 +58,11 @@ struct WorldState
     }
 };
 
-#if VERSION_STRING >= WotLK
 enum EncounterCreditType
 {
     ENCOUNTER_CREDIT_KILL_CREATURE  = 0,
     ENCOUNTER_CREDIT_CAST_SPELL     = 1
 };
-#endif
 
 #if VERSION_STRING >= WotLK
 struct DungeonEncounter
@@ -77,10 +75,21 @@ struct DungeonEncounter
     uint32_t creditEntry;
     uint32_t lastEncounterDungeon;
 };
+#endif
+
+#if VERSION_STRING <= TBC
+struct DungeonEncounter
+{
+    DungeonEncounter(EncounterCreditType _creditType, uint32_t _creditEntry)
+        :  creditType(_creditType), creditEntry(_creditEntry) { }
+
+    uint32_t creditEntry;
+    EncounterCreditType creditType;
+};
+#endif
 
 typedef std::list<DungeonEncounter const*> DungeonEncounterList;
 typedef std::unordered_map<uint32_t, DungeonEncounterList> DungeonEncounterContainer;
-#endif
 
 struct SpellReplacement
 {
@@ -612,7 +621,16 @@ class SERVER_DECL ObjectMgr : public EventableObject
                 return &itr->second;
             return NULL;
         }
+#endif
 
+#if VERSION_STRING <= TBC
+        DungeonEncounterList const* GetDungeonEncounterList(uint32_t mapId, uint8 difficulty = 0)
+        {
+            std::unordered_map<uint32_t, DungeonEncounterList>::const_iterator itr = _dungeonEncounterStore.find(mapId);
+            if (itr != _dungeonEncounterStore.end())
+                return &itr->second;
+            return NULL;
+        }
 #endif
 
         inline bool IsSpellDisabled(uint32 spellid)
@@ -651,10 +669,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         EventScriptMaps mEventScriptMaps;
         SpellEffectMaps mSpellEffectMaps;
-
-#if VERSION_STRING >= WotLK
         DungeonEncounterContainer _dungeonEncounterStore;
-#endif
 
 #if VERSION_STRING >= Cata
         SpellsRequiringSpellMap mSpellsReqSpell;
