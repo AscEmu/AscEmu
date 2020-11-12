@@ -328,9 +328,6 @@ class Charter
 };
 
 typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
-typedef std::map<uint32, InstanceBossInfo*> InstanceBossInfoMap;
-typedef std::list<GM_Ticket*> GmTicketList;
-
 
 #if VERSION_STRING > TBC
 typedef std::list<DBC::Structures::AchievementCriteriaEntry const*> AchievementCriteriaEntryList;
@@ -410,9 +407,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         typedef std::map<uint32, TransporterSet>                        TransporterMap;
 
         // object holders
-        InstanceBossInfoMap* m_InstanceBossInfoMap[MAX_NUM_MAPS];
-
-        GmTicketList GM_TicketList;
         PlayerCacheMap m_playerCache;
         FastMutex m_playerCacheLock;
 
@@ -512,9 +506,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         Corpse* LoadCorpse(uint32 guid);
         void LoadCorpses(MapMgr* mgr);
-        void LoadInstanceBossInfos();
-        void LoadGMTickets();
-        void SaveGMTicket(GM_Ticket* ticket, QueryBuffer* buf);
         void LoadSpellSkills();
         void LoadVendors();
         void ReloadVendors();
@@ -527,7 +518,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         uint32 GenerateLowGuid(uint32 guidhigh);
         uint32 GenerateMailID();
         uint32 GenerateReportID();
-        uint32 GenerateTicketID();
         uint32 GenerateEquipmentSetID();
 
         /////////////////////////////////////////////////////////////////////////////////////////////
