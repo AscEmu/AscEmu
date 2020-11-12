@@ -47,8 +47,6 @@ public:
         MarrowgarEntranceDoorGUID = 0;
         LadyDeathwisperElevatorGUID = 0;
         LadyDeathwisperEntranceDoorGUID = 0;
-
-        SpawnTransports(pMapMgr);
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new IceCrownCitadelScript(pMapMgr); }
@@ -321,7 +319,7 @@ public:
         if (!spawnsCreated())
         {
             // setup only the npcs with the correct team...
-            switch (player->getTeam())
+            switch (TeamInInstance)
             {
                 case TEAM_ALLIANCE:
                     for (uint8_t i = 0; i < 13; i++)
@@ -332,6 +330,8 @@ public:
                         spawnCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
                     break;
             }
+            
+            SpawnTransports(GetInstance());
 
             setSpawnsCreated();
         }
@@ -566,12 +566,6 @@ class LordMarrowgarAI : public CreatureAIScript
                 scriptEvents.addEvent(EVENT_BONE_STORM_BEGIN, 3050);
                 scriptEvents.addEvent(EVENT_WARN_BONE_STORM, Util::getRandomInt(90000, 95000));
             case EVENT_BONE_STORM_BEGIN:
-                if (Aura* pBoneStorm = getCreature()->getAuraWithId(SPELL_BONE_STORM))
-                {
-                    pBoneStorm->setOriginalDuration(int32(boneStormDuration));
-                    pBoneStorm->refresh();
-                }
-
                 getCreature()->setSpeedRate(TYPE_RUN, baseSpeed*3.0f, true);
                 sendDBChatMessage(924); // BONE STORM!
                 
@@ -816,13 +810,42 @@ public:
     }
 };
 
+class BoneStorm : public SpellScript
+{
+public:
+    void onAuraCreate(Aura* aur) override
+    {
+        // set duration here
+        int32_t duration = 20000;
+        if(aur->GetUnitCaster()->isCreature())
+            duration = static_cast<Creature*>(aur->GetUnitCaster())->GetScript()->RAID_MODE<uint32_t>(20000, 30000, 20000, 30000);
+
+        aur->setOriginalDuration(duration);
+        aur->setMaxDuration(duration);
+        aur->setTimeLeft(duration);
+    }
+};
+
+class BoneStormDamage : public SpellScript
+{
+public:
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override
+    {
+        if (effIndex != EFF_INDEX_0 || spell->GetUnitTarget() == nullptr)
+            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
+
+        auto distance = spell->GetUnitTarget()->GetDistance2dSq(spell->getCaster());
+        // If target is closer than 5 yards, do full damage
+        if (distance <= 5.0f)
+            distance = 1.0f;
+
+        *dmg = float2int32(*dmg / distance);
+        return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
+    }
+};
+
 bool spellColdflameNormalEffect(uint8_t effectIndex, Spell* pSpell)
 {   
-    return true;
-}
-
-bool spellBoneStormEffect(uint8_t effectIndex, Spell* pSpell)
-{
     return true;
 }
 
@@ -865,8 +888,18 @@ void SetupICC(ScriptMgr* mgr)
     //mgr->register_creature_script(CN_COLDFLAME, &ColdFlameAI::Create);
 
     //Spells
+    uint32_t boneStormIds[] =
+    {
+        SPELL_BONE_STORM_EFFECT,
+        SPELL_BONE_STORM_25,
+        SPELL_BONE_STORM_Heroic,
+        SPELL_BONE_STORM_Heroic_25,
+        0
+    };
+    mgr->register_spell_script(boneStormIds, new BoneStormDamage);
+    mgr->register_spell_script(SPELL_BONE_STORM, new BoneStorm);
+
     mgr->register_script_effect(SPELL_COLDFLAME_NORMAL, &spellColdflameNormalEffect);
-    mgr->register_script_effect(SPELL_BONE_STORM_EFFECT, &spellBoneStormEffect);
     mgr->register_script_effect(SPELL_BONE_SPIKE_GRAVEYARD, &spellBoneSpikeGraveyardEffect);
     mgr->register_script_effect(SPELL_COLDFLAME_BONE_STORM, &spellColdflameBoneStormEffect);
 
