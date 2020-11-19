@@ -18,4 +18,8 @@ public:
     ~WorldRunnable();
 
     void threadShutdown();
+
+private:
+    uint32_t m_lastWorldUpdate = 0;
+    uint32_t m_lastSessionsUpdate = 0;
 };

@@ -32,29 +32,26 @@ void WorldRunnable::threadShutdown()
 
 void WorldRunnable::threadRunner(AEThread& /*thread*/)
 {
-    uint32_t lastWorldUpdate = Util::getMSTime();
-    uint32_t lastSessionsUpdate = Util::getMSTime();
-
     ServerState::instance()->update();
-
     uint32_t diff;
-    uint32_t now = Util::getMSTime();
 
-    if (now < lastWorldUpdate)
+    auto now = Util::getMSTime();
+    if (now < m_lastWorldUpdate)
         diff = 50;
     else
-        diff = now - lastWorldUpdate;
+        diff = now - m_lastWorldUpdate;
 
     sWorld.Update(diff);
+    m_lastWorldUpdate = now;
 
     now = Util::getMSTime();
-
-    if (now < lastSessionsUpdate)
+    if (now < m_lastSessionsUpdate)
         diff = 50;
     else
-        diff = now - lastSessionsUpdate;
+        diff = now - m_lastSessionsUpdate;
 
     sWorld.updateGlobalSession(diff);
+    m_lastSessionsUpdate = now;
 }
 
 void WorldRunnable::threadInit()
