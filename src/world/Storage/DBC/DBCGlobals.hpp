@@ -85,7 +85,7 @@ namespace DBC
     typedef std::list<std::string> StoreProblemList;
 
     template <class T>
-    void LoadDBC(uint32& available_dbc_locales, StoreProblemList& errors, DBC::DBCStorage<T>& storage, std::string const& dbc_path,
+    void LoadDBC(uint32& /*available_dbc_locales*/, StoreProblemList& errors, DBC::DBCStorage<T>& storage, std::string const& dbc_path,
       std::string const& dbc_filename,std::string const* custom_format = NULL, std::string const* /*custom_index_name*/ = NULL)
     {
         ASSERT(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T));

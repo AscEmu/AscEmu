@@ -334,11 +334,12 @@ void WorldSession::handleBinderActivateOpcode(WorldPacket& recvPacket)
 
 void WorldSession::sendInnkeeperBind(Creature* creature)
 {
-    const uint32_t currentZone = _player->GetZoneId();
-    if (_player->getBindZoneId() == currentZone)
+    // Check if the bind position is same as old bind position
+    if (_player->isInRange(_player->getBindPosition(), 10.0f * 10.0f))
     {
         SendPacket(SmsgGossipComplete().serialise().get());
 
+        // Send "already bound here" packet
         WorldPacket data(SMSG_PLAYERBINDERROR, 1);
         data << uint32_t(1);
         SendPacket(&data);

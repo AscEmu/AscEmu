@@ -188,7 +188,7 @@ bool BanishExile(uint8_t effectIndex, Spell* pSpell)
     if (!pSpell->getPlayerCaster() || !target)
         return true;
 
-    pSpell->getPlayerCaster()->doSpellDamage(target, pSpell->getSpellInfo()->getId(), target->getHealth(), effectIndex);
+    pSpell->getPlayerCaster()->doSpellDamage(target, pSpell->getSpellInfo()->getId(), static_cast<float_t>(target->getHealth()), effectIndex);
     return true;
 }
 

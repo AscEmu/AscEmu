@@ -658,8 +658,6 @@ Unit::Unit() :
     for (i = 0; i < 5; i++)
         BaseStats[i] = 0;
 
-    m_H_regenTimer = 2000;
-
     //  if (getObjectTypeId() == TYPEID_PLAYER) // only player for now
     //      CalculateActualArmor();
 
@@ -1171,15 +1169,7 @@ void Unit::Update(unsigned long time_passed)
 
         //////////////////////////////////////////////////////////////////////////////////////////
         //POWER & HP REGENERATION
-        if (this->getNpcFlags() & UNIT_NPC_FLAG_DISABLE_REGEN)
-            return;
-
-        if (time_passed >= m_H_regenTimer)
-            RegenerateHealth();
-        else
-            m_H_regenTimer -= static_cast<uint16>(time_passed);
-
-        regeneratePowers(static_cast<uint16_t>(time_passed));
+        regenerateHealthAndPowers(static_cast<uint16_t>(time_passed));
 
 #if VERSION_STRING >= WotLK
         // Send power amount to nearby players
@@ -1214,19 +1204,30 @@ void Unit::Update(unsigned long time_passed)
         }
 #endif
 
-#if VERSION_STRING < Cata
-        if (time_passed >= m_powerRegenerationInterruptTime)
+        if (m_healthRegenerationInterruptTime > 0)
         {
-            m_powerRegenerationInterruptTime = 0;
+            if (time_passed >= m_healthRegenerationInterruptTime)
+                m_healthRegenerationInterruptTime = 0;
+            else
+                m_healthRegenerationInterruptTime -= time_passed;
+        }
+
+#if VERSION_STRING < Cata
+        if (m_powerRegenerationInterruptTime > 0)
+        {
+            if (time_passed >= m_powerRegenerationInterruptTime)
+            {
+                m_powerRegenerationInterruptTime = 0;
 
 #if VERSION_STRING != Classic
-            if (isPlayer())
-                setUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
+                if (isPlayer())
+                    setUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
 #endif
-        }
-        else
-        {
-            m_powerRegenerationInterruptTime -= time_passed;
+            }
+            else
+            {
+                m_powerRegenerationInterruptTime -= time_passed;
+            }
         }
 #endif
 
@@ -3179,7 +3180,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, NULL);
                     spell->SetUnitTarget(this);
                     if (ospinfo)
-                        doSpellHealing(this, spellId, amount * (ospinfo->getEffectBasePoints(0) + 1) / 100, true);
+                        doSpellHealing(this, spellId, amount * (ospinfo->getEffectBasePoints(0) + 1) / 100.0f, true);
                     delete spell;
                     spell = NULL;
                     continue;
@@ -4697,9 +4698,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     //make a direct strike then exit rest of handler
                     if (ospinfo)
                     {
-                        int tdmg = damageInfo.absorbedDamage * (ospinfo->getEffectBasePoints(0) + 1) / 100;
+                        auto tdmg = damageInfo.absorbedDamage * (ospinfo->getEffectBasePoints(0) + 1) / 100.0f;
                         //somehow we should make this not caused any threat (to be done)
-                        doSpellDamage(victim, power_word_id, tdmg, 0, true, true);
+                        doSpellDamage(victim, power_word_id, tdmg, 0, true);
                     }
                     continue;
                 }
@@ -6555,7 +6556,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
         if (spellId == 22858 && isInBack(victim))       //retatliation needs target to be not in front. Can be cast by creatures too
             continue;
 
-        sScriptMgr.callScriptedSpellProcCastSpell(spell_proc, victim, CastingSpell);
+        spell_proc->castSpell(victim, CastingSpell);
 
         if (origId == 39805)
         {
@@ -6914,31 +6915,6 @@ bool Unit::IsInInstance()
         return (pMapinfo->type != INSTANCE_NULL);
 
     return false;
-}
-
-void Unit::RegenerateHealth()
-{
-    m_H_regenTimer = 2000;      //set next regen time
-
-    if (!isAlive())
-        return;
-
-    if (hasUnitStateFlag(UNIT_STATE_POLYMORPHED))
-        m_H_regenTimer = 1000;
-
-    // player regen
-    if (this->isPlayer())
-    {
-        // These only NOT in combat
-        if (!CombatStatus.IsInCombat())
-            static_cast<Player*>(this)->RegenerateHealth(false);
-        else
-            static_cast<Player*>(this)->RegenerateHealth(true);
-    }
-    else
-    {
-        static_cast<Creature*>(this)->RegenerateHealth();
-    }
 }
 
 void Unit::CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInfo const* ability, float ArmorPctReduce)
@@ -8157,7 +8133,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 if (range != 0)
                     dmg2 += Util::getRandomUInt(range);
 
-                doSpellDamage(pVictim, itr->second.spellid, dmg2, 0);
+                doSpellDamage(pVictim, itr->second.spellid, static_cast<float_t>(dmg2), 0);
             }
         }
 

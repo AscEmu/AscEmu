@@ -36,7 +36,7 @@ public:
         if (spellProc != nullptr)
         {
             spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
-            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->mDamage);
+            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
         }
 
         return SpellScriptCheckDummy::DUMMY_OK;
@@ -68,7 +68,7 @@ public:
         if (*damage > maxDmg)
             *damage = maxDmg;
 
-        return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
+        return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 };
 
@@ -84,7 +84,7 @@ public:
 
         auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_JUDGEMENT_OF_LIGHT_HEAL), aur->getSpellInfo(), aur->getCasterGuid(), 0);
         if (spellProc != nullptr)
-            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->mDamage);
+            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
 
         return SpellScriptCheckDummy::DUMMY_OK;
     }
@@ -119,7 +119,7 @@ public:
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         *damage = spell->GetUnitTarget()->getMaxHealth() * (*damage) / 100;
-        return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
+        return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 #endif
 };
@@ -176,7 +176,7 @@ public:
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         *damage = spell->GetUnitTarget()->getBaseMana() * (*damage) / 100;
-        return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
+        return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 #endif
 };
@@ -187,7 +187,7 @@ class SealOfCorruptionDummy : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (aurEff->effIndex != EFF_INDEX_0 || !apply)
+        if (aurEff->getEffectIndex() != EFF_INDEX_0 || !apply)
             return SpellScriptCheckDummy::DUMMY_OK;
 
         aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_BLOOD_CORRUPTION), aur->getSpellInfo(), aur->getCasterGuid(), 0);
@@ -209,7 +209,7 @@ class SealOfRighteousnessDummy : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (aurEff->effIndex != EFF_INDEX_0 || !apply)
+        if (aurEff->getEffectIndex() != EFF_INDEX_0 || !apply)
             return SpellScriptCheckDummy::DUMMY_OK;
 
         aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_SEAL_OF_RIGHTEOUSNESS), aur->getSpellInfo(), aur->getCasterGuid(), 0);
@@ -271,7 +271,7 @@ public:
             dmgPercent *= aur->getStackCount();
 
         *damage = static_cast<uint32_t>(std::round(dmgPercent));
-        return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
+        return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 #endif
 };
@@ -308,7 +308,7 @@ class SealOfVengeanceDummy : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (aurEff->effIndex != EFF_INDEX_0 || !apply)
+        if (aurEff->getEffectIndex() != EFF_INDEX_0 || !apply)
             return SpellScriptCheckDummy::DUMMY_OK;
 
 #if VERSION_STRING == TBC

@@ -210,7 +210,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
          }
     }
 
-    if (recvData.GetOpcode() == MSG_MOVE_START_FORWARD)
+    if (_player->getStandState() != STANDSTATE_STAND && recvData.GetOpcode() == MSG_MOVE_START_FORWARD)
         _player->setStandState(STANDSTATE_STAND);
 
     auto moved = true;
@@ -602,7 +602,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     /************************************************************************/
     /* Clear standing state to stand.                                       */
     /************************************************************************/
-    if (recvPacket.GetOpcode() == MSG_MOVE_START_FORWARD)
+    if (_player->getStandState() != STANDSTATE_STAND && recvPacket.GetOpcode() == MSG_MOVE_START_FORWARD)
         _player->setStandState(STANDSTATE_STAND);
 
     /************************************************************************/
@@ -1027,7 +1027,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     /************************************************************************/
     /* Clear standing state to stand.                                       */
     /************************************************************************/
-    if (opcode == MSG_MOVE_START_FORWARD)
+    if (mover->getStandState() != STANDSTATE_STAND && opcode == MSG_MOVE_START_FORWARD)
         mover->setStandState(STANDSTATE_STAND);
 
     //extract packet

@@ -426,7 +426,7 @@ public:
         if (caster != NULL)
             return caster->getMaxHealth() * (getSpellInfo()->getEffectBasePoints(1) + 1) / 100;
         else
-            return aurEff->mDamage;
+            return aurEff->getEffectDamage();
     }
 
     uint8_t CalcPctDamage()

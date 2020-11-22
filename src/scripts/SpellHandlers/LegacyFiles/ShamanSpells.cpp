@@ -57,7 +57,7 @@ bool SkyShatterRegalia(uint8_t /*effectIndex*/, Spell* s)
         Aura* aur = sSpellMgr.newAura(sSpellMgr.getSpellInfo(38437), 5000, s->getPlayerCaster(), s->getPlayerCaster(), true);
 
         for (uint8_t j = 0; j < 3; j++)
-            aur->addAuraEffect(static_cast<AuraEffect>(aur->getSpellInfo()->getEffectRadiusIndex(j)), aur->getSpellInfo()->getEffectBasePoints(j) + 1, aur->getSpellInfo()->getEffectMiscValue(j), j);
+            aur->addAuraEffect(static_cast<AuraEffect>(aur->getSpellInfo()->getEffectRadiusIndex(j)), aur->getSpellInfo()->getEffectBasePoints(j) + 1, aur->getSpellInfo()->getEffectMiscValue(j), 1.0f, false, j);
 
         s->getPlayerCaster()->addAura(aur);
     }

@@ -31,7 +31,7 @@ public:
         if (!apply)
             return SpellScriptCheckDummy::DUMMY_OK;
 
-        const auto procChance = aurEff->mDamage;
+        const auto procChance = aurEff->getEffectDamage();
 
         // Make Furor rage proc on Bear Form passive aura
         uint32_t rageProcMask[3] = { 0, 0, 0x2 };
@@ -92,15 +92,15 @@ class LeaderOfThePack : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (aurEff->effIndex != EFF_INDEX_1 || !apply)
+        if (aurEff->getEffectIndex() != EFF_INDEX_1 || !apply)
             return SpellScriptCheckDummy::DUMMY_OK;
 
         // Check if caster has Improved Leader of the Pack
-        if (aurEff->mDamage > 0)
+        if (aurEff->getEffectDamage() > 0)
         {
             auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_LEADER_OF_THE_PACK_HEAL), aur->getSpellInfo(), aur->getCasterGuid(), 0);
             if (spellProc != nullptr)
-                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->mDamage);
+                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
         }
 
         return SpellScriptCheckDummy::DUMMY_OK;
@@ -153,7 +153,7 @@ public:
             *damage = static_cast<int32_t>(std::round(spell->GetUnitTarget()->getMaxHealth() * static_cast<float_t>(*damage / 100.0f)));
 
         // no healing bonuses
-        return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
+        return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 };
 

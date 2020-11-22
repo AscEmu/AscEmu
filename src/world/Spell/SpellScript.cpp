@@ -52,7 +52,7 @@ SpellScriptCheckDummy SpellScript::onAuraDummyEffect(Aura* /*aur*/, AuraEffectMo
     return SpellScriptCheckDummy::DUMMY_NOT_HANDLED;
 }
 
-SpellScriptExecuteState SpellScript::onAuraPeriodicTick(Aura* /*aur*/, AuraEffectModifier* /*aurEff*/, int32_t* /*damage*/)
+SpellScriptExecuteState SpellScript::onAuraPeriodicTick(Aura* /*aur*/, AuraEffectModifier* /*aurEff*/, float_t* /*damage*/)
 {
     return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 }
@@ -97,7 +97,4 @@ bool SpellScript::canProcOnTriggered(SpellProc* spellProc, Unit* /*victim*/, Spe
     return false;
 }
 
-void SpellScript::onCastProcSpell(SpellProc* spellProc, Unit* victim, SpellInfo const* CastingSpell)
-{
-    spellProc->castSpell(victim, CastingSpell);
-}
+void SpellScript::onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* /*spellToProc*/) {}

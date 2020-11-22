@@ -232,9 +232,9 @@ public:
 
     // Deals magic damage to target with proper logging, used with periodic damage effects and direct damage effects
     // Returns damage info structure
-    DamageInfo doSpellDamage(Unit* victim, uint32_t spellId, int32_t damage, uint8_t effIndex, bool isTriggered = false, bool staticDamage = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
+    DamageInfo doSpellDamage(Unit* victim, uint32_t spellId, float_t damage, uint8_t effIndex, bool isTriggered = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
     // Heals target with proper logging, used with periodic heal effects and direct healing
-    DamageInfo doSpellHealing(Unit* victim, uint32_t spellId, int32_t heal, bool isTriggered = false, bool staticDamage = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
+    DamageInfo doSpellHealing(Unit* victim, uint32_t spellId, float_t heal, bool isTriggered = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
 
     void _UpdateSpells(uint32_t time);
 

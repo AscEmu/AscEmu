@@ -86,7 +86,7 @@ class BodyAndSoulDummy : public SpellScript
         auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(spellId), aur->getSpellInfo(), aur->getCasterGuid(), 0, procMask);
         if (spellProc != nullptr)
         {
-            const auto procChance = aurEff->mDamage;
+            const auto procChance = aurEff->getEffectDamage();
             spellProc->setProcChance(procChance);
         }
         return SpellScriptCheckDummy::DUMMY_OK;
@@ -142,7 +142,7 @@ public:
         if (spellProc != nullptr)
         {
             spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
-            spellProc->setOverrideEffectDamage(EFF_INDEX_2, aurEff->mDamage);
+            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
         }
 
         return SpellScriptCheckDummy::DUMMY_OK;
@@ -170,14 +170,22 @@ public:
         if (victim == nullptr)
             return SpellScriptExecuteState::EXECUTE_PREVENT;
 
-        auto absorb = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_2) / 100.0f));
+        absorbAmount = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100.0f));
         // Patch 3.1.0: Divine Aegis effects will now stack, however the amount absorbed cannot exceed 125 * level(of the target).
-        if (absorb > (victim->getLevel() * 125))
-            absorb = victim->getLevel() * 125;
+        if (absorbAmount > (victim->getLevel() * 125))
+            absorbAmount = victim->getLevel() * 125;
 
-        spellProc->setOverrideEffectDamage(EFF_INDEX_0, absorb);
         return SpellScriptExecuteState::EXECUTE_OK;
     }
+
+    void onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
+    {
+        spell->forced_basepoints[EFF_INDEX_0] = absorbAmount;
+        absorbAmount = 0;
+    }
+
+private:
+    uint32_t absorbAmount = 0;
 };
 
 #if VERSION_STRING == WotLK
@@ -320,7 +328,7 @@ public:
 #else
         auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_EMBRACE_HEAL), aur->getSpellInfo(), aur->getCasterGuid(), 0);
         if (spellProc != nullptr)
-            spellProc->setOverrideEffectDamage(EFF_INDEX_2, aurEff->mDamage);
+            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
 #endif
         return SpellScriptCheckDummy::DUMMY_OK;
     }
@@ -385,31 +393,36 @@ public:
 
     SpellScriptExecuteState onDoProcEffect(SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
     {
-        const auto healPct = spellProc->getOverrideEffectDamage(EFF_INDEX_2);
-        const auto heal = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * healPct / 100.0f));
+        const auto healPct = spellProc->getOverrideEffectDamage(EFF_INDEX_0);
+        selfHeal = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * healPct / 100.0f));
 
 #if VERSION_STRING >= Mop
         // TODO: Mop
-#else
-#if VERSION_STRING >= WotLK
-#if VERSION_STRING == Cata
+#elif VERSION_STRING == Cata
         const auto partyHealPct = std::round(healPct / 2.0f);
+        partyHeal = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * partyHealPct / 100.0f));
 #elif VERSION_STRING == WotLK
         const auto partyHealPct = std::round(healPct / 5.0f);
+        partyHeal = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * partyHealPct / 100.0f));
 #endif
-        const auto partyHeal = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * partyHealPct / 100.0f));
 
-        spellProc->setOverrideEffectDamage(EFF_INDEX_0, partyHeal);
-        spellProc->setOverrideEffectDamage(EFF_INDEX_1, heal);
-#else
-        // Same amount for party and self in Classic and TBC
-        spellProc->setOverrideEffectDamage(EFF_INDEX_0, heal);
-#endif
-#endif
-        if (heal == 0)
+        if (selfHeal == 0)
             return SpellScriptExecuteState::EXECUTE_PREVENT;
 
         return SpellScriptExecuteState::EXECUTE_OK;
+    }
+
+    void onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
+    {
+#if VERSION_STRING < WotLK
+        // Same amount for party and self in Classic and TBC
+        spell->forced_basepoints[EFF_INDEX_0] = selfHeal;
+#else
+        spell->forced_basepoints[EFF_INDEX_0] = partyHeal;
+        spell->forced_basepoints[EFF_INDEX_1] = selfHeal;
+#endif
+        selfHeal = 0;
+        partyHeal = 0;
     }
 
 #if VERSION_STRING >= WotLK
@@ -424,6 +437,10 @@ public:
     }
 #endif
 #endif
+
+private:
+    uint32_t selfHeal = 0;
+    uint32_t partyHeal = 0;
 };
 
 #if VERSION_STRING >= TBC
@@ -432,13 +449,13 @@ class VampiricTouch : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (!apply || aurEff->effIndex != EFF_INDEX_0)
+        if (!apply || aurEff->getEffectIndex() != EFF_INDEX_0)
             return SpellScriptCheckDummy::DUMMY_OK;
 
 #if VERSION_STRING == TBC
         auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur->getSpellInfo(), aur->getCasterGuid(), 0);
         if (spellProc != nullptr)
-            spellProc->setOverrideEffectDamage(EFF_INDEX_2, aurEff->mDamage);
+            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
 #elif VERSION_STRING == Mop
         // Should proc only when this aura deals damage
         auto procMask = aur->getSpellInfo()->getSpellFamilyFlags();
@@ -461,7 +478,7 @@ public:
 
         // Create backfire damage on dispel
         const auto caster = aur->GetUnitCaster();
-        const auto backfireDmg = aur->getAuraEffect(EFF_INDEX_1).mDamage * 8;
+        const auto backfireDmg = aur->getAuraEffect(EFF_INDEX_1).getEffectDamage() * 8;
         if (caster != nullptr)
             caster->castSpell(aur->getOwner(), SPELL_VAMPIRIC_TOUCH_DISPEL, backfireDmg, true);
 #endif
@@ -493,8 +510,7 @@ public:
     SpellScriptExecuteState onDoProcEffect(SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, [[maybe_unused]]DamageInfo damageInfo) override
     {
 #if VERSION_STRING == TBC
-        auto mana = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_2) / 100.0f));
-        spellProc->setOverrideEffectDamage(EFF_INDEX_0, mana);
+        manaReturn = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100.0f));
         return SpellScriptExecuteState::EXECUTE_OK;
 #elif VERSION_STRING < Mop
         const auto caster = spellProc->getProcOwner()->GetMapMgrUnit(spellProc->getCasterGuid());
@@ -507,6 +523,17 @@ public:
         return SpellScriptExecuteState::EXECUTE_OK;
 #endif
     }
+
+#if VERSION_STRING == TBC
+    void onCastProcSpell(SpellProc* /*spellProc*/, Unit* caster, Unit* victim, Spell* spell) override
+    {
+        spell->forced_basepoints[EFF_INDEX_0] = manaReturn;
+        manaReturn = 0;
+    }
+
+private:
+    uint32_t manaReturn = 0;
+#endif
 };
 #endif
 

@@ -858,6 +858,9 @@ private:
     uint16_t m_holyPowerRegenerateTimer = 0;
 #endif
 
+    // This timer ticks even if the player is not eating or drinking
+    uint16_t m_foodDrinkSpellVisualTimer = 5000;
+
 #if VERSION_STRING == Classic
     // Classic doesn't have these in unit or playerdata
     float m_manaRegeneration = 0.0f;

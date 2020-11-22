@@ -19,7 +19,7 @@ public:
 
     SpellScriptExecuteState beforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (aurEff->mAuraEffect != SPELL_AURA_TRANSFORM)
+        if (aurEff->getAuraEffectType() != SPELL_AURA_TRANSFORM)
             return SpellScriptExecuteState::EXECUTE_OK;
 
         if (apply)
@@ -32,10 +32,7 @@ public:
             }
 
             if (_health)
-            {
                 aur->getOwner()->addUnitStateFlag(UNIT_STATE_POLYMORPHED);
-                aur->getOwner()->setHRegenTimer(1000);
-            }
         }
         else
         {

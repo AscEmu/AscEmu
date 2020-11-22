@@ -67,7 +67,7 @@ void Player::updateManaRegeneration()
     if (isAlive())
     {
         m_manaEnergyRegenerateTimer = REGENERATION_INTERVAL_MANA_ENERGY;
-        regeneratePowers(0);
+        regenerateHealthAndPowers(0);
     }
 
     auto playerLevel = getLevel();

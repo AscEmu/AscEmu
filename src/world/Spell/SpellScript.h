@@ -27,7 +27,8 @@ enum class SpellScriptExecuteState : uint8_t
 enum class SpellScriptEffectDamage : uint8_t
 {
     DAMAGE_DEFAULT = 0,         // Effect damage is using default calculations
-    DAMAGE_FULL_RECALCULATION   // Effect damage is completely recalculated, do not add caster damage modifiers anymore
+    DAMAGE_NO_BONUSES,          // Effect damage gains no bonuses from spell power or attack power but will use effect modifiers
+    DAMAGE_FULL_RECALCULATION   // Effect damage is completely recalculated, do not add any modifiers to damage
 };
 
 enum class SpellScriptCheckDummy : uint8_t
@@ -76,7 +77,7 @@ public:
     // Called on a dummy aura effect, non-periodic and periodic
     virtual SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply);
     // Called when periodic tick happens
-    virtual SpellScriptExecuteState onAuraPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, int32_t* damage);
+    virtual SpellScriptExecuteState onAuraPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage);
 
     // Spell proc
 
@@ -99,6 +100,7 @@ public:
     // Called when trying to proc on a triggered spell
     // Return true allow proc, false otherwise
     virtual bool canProcOnTriggered(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, Aura* triggeredFromAura);
-    // Called when proc spell is cast
-    virtual void onCastProcSpell(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell);
+    // Called right before the proc spell is cast
+    // Caster is not necessarily the unit who owns this spell proc
+    virtual void onCastProcSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spellToProc);
 };

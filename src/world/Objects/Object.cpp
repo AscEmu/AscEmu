@@ -683,7 +683,7 @@ Spell* Object::findCurrentCastedSpellBySpellId(uint32_t spellId)
     return nullptr;
 }
 
-DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, uint8_t effIndex, bool isTriggered/* = false*/, bool staticDamage/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
+DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, uint8_t effIndex, bool isTriggered/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
 {
     if (victim == nullptr || !victim->isAlive())
         return DamageInfo();
@@ -692,7 +692,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, ui
     if (spellInfo == nullptr)
         return DamageInfo();
 
-    float_t damage = static_cast<float_t>(dmg);
+    float_t damage = dmg;
     const auto school = spellInfo->getFirstSchoolFromSchoolMask();
 
     // Create damage info
@@ -738,44 +738,10 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, ui
         victimProcFlags |= PROC_ON_TAKEN_PERIODIC;
     }
 
-    // Get spell damage bonus
-    if (isCreatureOrPlayer() && !staticDamage)
+    if (isCreatureOrPlayer())
     {
         const auto casterUnit = static_cast<Unit*>(this);
         casterUnit->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
-
-        auto bonusDamage = casterUnit->getSpellDamageBonus(spellInfo, dmg, isPeriodic, aur);
-        if (isPeriodic && aur != nullptr)
-            bonusDamage *= aur->getStackCount();
-
-        // Get attack power bonus
-        float_t attackPowerBonus = 0.0f;
-        if (isPeriodic && aur != nullptr)
-        {
-            if (spellInfo->spell_ap_coeff_overtime > 0.0f)
-            {
-                attackPowerBonus = aur->getAttackPowerBonus() * spellInfo->spell_ap_coeff_overtime;
-                attackPowerBonus *= aur->getStackCount();
-            }
-        }
-        else
-        {
-            if (isPeriodic)
-            {
-                if (spellInfo->spell_ap_coeff_overtime > 0.0f)
-                    attackPowerBonus = casterUnit->getAttackPower() * spellInfo->spell_ap_coeff_overtime;
-            }
-            else
-            {
-                if (spellInfo->spell_ap_coeff_direct > 0.0f)
-                    attackPowerBonus = casterUnit->getAttackPower() * spellInfo->spell_ap_coeff_direct;
-            }
-        }
-
-        damage += bonusDamage;
-        damage += attackPowerBonus;
-        if (damage < 0.0f)
-            damage = 0.0f;
     }
 
     // Mage talent - Torment the Weak
@@ -796,7 +762,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, ui
         if (isPeriodic)
         {
             if (aur != nullptr && aurEff != nullptr)
-                damage += static_cast<float_t>(plr->IncreaseDamageByType[type] / aur->getPeriodicTickCountForEffect(aurEff->effIndex));
+                damage += static_cast<float_t>(plr->IncreaseDamageByType[type] / aur->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
         }
         else
         {
@@ -833,7 +799,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, ui
     if (isPeriodic)
     {
         if (aur != nullptr && aurEff != nullptr)
-            damage += static_cast<float_t>(victim->DamageTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->effIndex));
+            damage += static_cast<float_t>(victim->DamageTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
     }
     else
     {
@@ -858,11 +824,11 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, ui
     // For periodic auras convert the float amount to integer and save the damage fraction for next tick
     if (isPeriodic && aur != nullptr && aurEff != nullptr)
     {
-        damage += aurEff->mDamageFraction;
-        if (aur->getTimeLeft() >= aurEff->mAmplitude)
+        damage += aurEff->getEffectDamageFraction();
+        if (aur->getTimeLeft() >= aurEff->getEffectAmplitude())
         {
             dmgInfo.fullDamage = static_cast<uint32_t>(damage);
-            aurEff->mDamageFraction = damage - dmgInfo.fullDamage;
+            aurEff->setEffectDamageFraction(damage - dmgInfo.fullDamage);
         }
         else
         {
@@ -948,7 +914,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, ui
     // Send packet
     if (isPeriodic && aurEff != nullptr && isCreatureOrPlayer())
     {
-        const auto wasPacketSent = victim->sendPeriodicAuraLog(GetNewGUID(), victim->GetNewGUID(), spellInfo, dmgInfo.realDamage, overKill, dmgInfo.absorbedDamage, dmgInfo.resistedDamage, aurEff->mAuraEffect, dmgInfo.isCritical);
+        const auto wasPacketSent = victim->sendPeriodicAuraLog(GetNewGUID(), victim->GetNewGUID(), spellInfo, dmgInfo.realDamage, overKill, dmgInfo.absorbedDamage, dmgInfo.resistedDamage, aurEff->getAuraEffectType(), dmgInfo.isCritical);
 
         // In case periodic log couldn't be sent, send normal spell log
         // Required for leech and mana burn auras
@@ -969,7 +935,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, ui
 
     if (isLeech)
     {
-        const uint8_t index = aur != nullptr && aurEff->mAuraEffect != SPELL_AURA_NONE ? aurEff->effIndex : effIndex;
+        const uint8_t index = aur != nullptr && aurEff->getAuraEffectType() != SPELL_AURA_NONE ? aurEff->getEffectIndex() : effIndex;
         healthBatch->isLeech = true;
         healthBatch->leechMultipleValue = spellInfo->getEffectMultipleValue(index);
     }
@@ -1036,7 +1002,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, int32_t dmg, ui
     return dmgInfo;
 }
 
-DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, bool isTriggered/* = false*/, bool staticDamage/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
+DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, bool isTriggered/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
 {
     if (victim == nullptr || !victim->isAlive())
         return DamageInfo();
@@ -1045,7 +1011,7 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, b
     if (spellInfo == nullptr)
         return DamageInfo();
 
-    float_t heal = static_cast<float_t>(amt);
+    float_t heal = amt;
     const auto school = spellInfo->getFirstSchoolFromSchoolMask();
 
     // Create damage info
@@ -1063,45 +1029,6 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, b
     {
         casterProcFlags |= PROC_ON_DONE_PERIODIC;
         victimProcFlags |= PROC_ON_TAKEN_PERIODIC;
-    }
-
-    // Get spell healing bonus
-    if (isCreatureOrPlayer() && !staticDamage)
-    {
-        const auto casterUnit = static_cast<Unit*>(this);
-
-        auto bonusHeal = casterUnit->getSpellHealingBonus(spellInfo, amt, isPeriodic, aur);
-        if (isPeriodic && aur != nullptr)
-            bonusHeal *= aur->getStackCount();
-
-        // Get attack power bonus
-        float_t attackPowerBonus = 0.0f;
-        if (isPeriodic && aur != nullptr)
-        {
-            if (spellInfo->spell_ap_coeff_overtime > 0.0f)
-            {
-                attackPowerBonus = aur->getAttackPowerBonus() * spellInfo->spell_ap_coeff_overtime;
-                attackPowerBonus *= aur->getStackCount();
-            }
-        }
-        else
-        {
-            if (isPeriodic)
-            {
-                if (spellInfo->spell_ap_coeff_overtime > 0.0f)
-                    attackPowerBonus = casterUnit->getAttackPower() * spellInfo->spell_ap_coeff_overtime;
-            }
-            else
-            {
-                if (spellInfo->spell_ap_coeff_direct > 0.0f)
-                    attackPowerBonus = casterUnit->getAttackPower() * spellInfo->spell_ap_coeff_direct;
-            }
-        }
-
-        heal += bonusHeal;
-        heal += attackPowerBonus;
-        if (heal < 0.0f)
-            heal = 0.0f;
     }
 
     // Hackfixes from legacy method
@@ -1256,7 +1183,7 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, b
     if (isPeriodic)
     {
         if (aur != nullptr && aurEff != nullptr)
-            heal += static_cast<float_t>(victim->HealTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->effIndex));
+            heal += static_cast<float_t>(victim->HealTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
     }
     else
     {
@@ -1270,23 +1197,25 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, b
     // but skip leech effects because the damage part only uses fractions
     if (isPeriodic && !isLeech && aur != nullptr && aurEff != nullptr)
     {
-        heal += aurEff->mDamageFraction;
-        if (aur->getTimeLeft() >= aurEff->mAmplitude)
+        heal += aurEff->getEffectDamageFraction();
+        if (aur->getTimeLeft() >= aurEff->getEffectAmplitude())
         {
-            dmgInfo.realDamage = static_cast<uint32_t>(heal);
-            aurEff->mDamageFraction = heal - dmgInfo.realDamage;
+            dmgInfo.fullDamage = static_cast<uint32_t>(heal);
+            aurEff->setEffectDamageFraction(heal - dmgInfo.fullDamage);
         }
         else
         {
             // In case this is the last tick, just round the value
-            dmgInfo.realDamage = static_cast<uint32_t>(std::round(heal));
+            dmgInfo.fullDamage = static_cast<uint32_t>(std::round(heal));
         }
     }
     else
     {
         // If this is a direct heal spell just round the value
-        dmgInfo.realDamage = static_cast<uint32_t>(std::round(heal));
+        dmgInfo.fullDamage = static_cast<uint32_t>(std::round(heal));
     }
+
+    dmgInfo.realDamage = dmgInfo.fullDamage;
 
     ///\ todo: implement absorbed heal (aura effect 301)
     dmgInfo.absorbedDamage = 0;
@@ -1297,7 +1226,7 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, int32_t amt, b
     // Send packet
     if (isPeriodic && aurEff != nullptr && isCreatureOrPlayer())
     {
-        const auto wasPacketSent = victim->sendPeriodicAuraLog(GetNewGUID(), victim->GetNewGUID(), spellInfo, dmgInfo.realDamage, overHeal, dmgInfo.absorbedDamage, 0, aurEff->mAuraEffect, dmgInfo.isCritical);
+        const auto wasPacketSent = victim->sendPeriodicAuraLog(GetNewGUID(), victim->GetNewGUID(), spellInfo, dmgInfo.realDamage, overHeal, dmgInfo.absorbedDamage, 0, aurEff->getAuraEffectType(), dmgInfo.isCritical);
 
         // In case periodic log couldn't be sent, send normal spell log
         // Required for leech auras
