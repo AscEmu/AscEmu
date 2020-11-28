@@ -505,13 +505,14 @@ class LordMarrowgarAI : public CreatureAIScript
         introDone = false;
         boneSlice = false;
         boneStormtarget = nullptr;
+        coldflameLastPos = getCreature()->GetPosition();
 
         // Scripted Spells not autocastet
         boneSliceSpell = addAISpell(SPELL_BONE_SLICE, 0.0f, TARGET_ATTACKING);
         boneStormSpell = addAISpell(SPELL_BONE_STORM, 0.0f, TARGET_SELF);
 
         boneSpikeGraveyardSpell = addAISpell(SPELL_BONE_SPIKE_GRAVEYARD, 0.0f, TARGET_SELF);
-        coldflameNormalSpell = addAISpell(SPELL_COLDFLAME_NORMAL, 0.0f, TARGET_DESTINATION);
+        coldflameNormalSpell = addAISpell(SPELL_COLDFLAME_NORMAL, 0.0f, TARGET_SELF);
         coldflameBoneStormSpell = addAISpell(SPELL_COLDFLAME_BONE_STORM, 0.0f, TARGET_SELF);
 
         berserkSpell = addAISpell(SPELL_BERSERK, 0.0f, TARGET_SELF);
@@ -551,11 +552,13 @@ class LordMarrowgarAI : public CreatureAIScript
                 scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
                 break;
             case EVENT_COLDFLAME:
+                coldflameLastPos = getCreature()->GetPosition();
+
                 if (!getCreature()->HasAura(SPELL_BONE_STORM))
                     _castAISpell(coldflameNormalSpell);
                 else
                     _castAISpell(coldflameBoneStormSpell);
-
+                
                 scriptEvents.addEvent(EVENT_COLDFLAME, 5000);
                 break;
             case EVENT_WARN_BONE_STORM:
@@ -612,6 +615,11 @@ class LordMarrowgarAI : public CreatureAIScript
             _castAISpell(boneSliceSpell);
         }
 
+    }
+
+    LocationVector const* GetLastColdflamePosition() const
+    {
+        return &coldflameLastPos;
     }
 
     Unit* GetRandomTargetNotMainTank()
@@ -693,9 +701,22 @@ class LordMarrowgarAI : public CreatureAIScript
         boneSpikeImmune.clear();
     }
 
-    uint64_t GetData(int32_t type /*= 0 */) const
+    virtual void SetCreatureData64(uint32 Type, uint64 Data)
     {
-        switch (type)
+        switch (Type)
+        {
+        case DATA_COLDFLAME_GUID:
+            coldflameTarget = Data;
+            break;
+        case DATA_SPIKE_IMMUNE:
+            boneSpikeImmune.push_back(Data);
+            break;
+        }
+    }
+
+    virtual uint64 GetCreatureData64(uint32 Type) const
+    { 
+        switch (Type)
         {
         case DATA_COLDFLAME_GUID:
             return coldflameTarget;
@@ -703,7 +724,7 @@ class LordMarrowgarAI : public CreatureAIScript
         case DATA_SPIKE_IMMUNE + 1:
         case DATA_SPIKE_IMMUNE + 2:
         {
-            int32_t index = type - DATA_SPIKE_IMMUNE;
+            int32_t index = Type - DATA_SPIKE_IMMUNE;
             if (index < boneSpikeImmune.size())
                 return boneSpikeImmune[index];
 
@@ -711,20 +732,7 @@ class LordMarrowgarAI : public CreatureAIScript
         }
         }
 
-        return 0LL;
-    }
-
-    void SetData(uint64_t guid, int32_t type /*= 0 */)
-    {
-        switch (type)
-        {
-        case DATA_COLDFLAME_GUID:
-            coldflameTarget = guid;
-            break;
-        case DATA_SPIKE_IMMUNE:
-            boneSpikeImmune.push_back(guid);
-            break;
-        }
+        return 0;
     }
 
     void OnTargetDied(Unit* /*pTarget*/) override
@@ -744,7 +752,7 @@ protected:
 
     Unit* boneStormtarget;
     LocationVector coldflameLastPos;
-    uint64 coldflameTarget;
+    uint64_t coldflameTarget;
     std::vector<uint64_t> boneSpikeImmune;
 
     // Spells
@@ -765,26 +773,49 @@ protected:
 class ColdflameAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ColdflameAI)
-        explicit ColdflameAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit ColdflameAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
-        mInstance = getInstanceScript();
-
+        mInstance = getInstanceScript();     
         coldflameTriggerSpell = addAISpell(SPELL_COLDFLAME_SUMMON, 0.0f, TARGET_SELF);
     }
 
-    void OnLoad()
+    void OnLoad() override
     {
-        if (getCreature()->isSummon() && mInstance)
+        // Override Default (When its Summoned it get same Faction as Caster)
+        getCreature()->SetFaction(35);
+        scriptEvents.addEvent(EVENT_COLDFLAME_TRIGGER, 500);
+    }
+
+    void OnSummon(Unit* summoner) override
+    {
+        if (!mInstance || !summoner->isCreature())
+            return;
+
+        // random target case
+        if (summoner->HasAura(SPELL_BONE_STORM))
         {
-            summoner = mInstance->GetInstance()->GetUnit(getCreature()->getSummonedByGuid());
-
-            if (!summoner->isCreature())
-                return;
-
-            // random target case
-            printf("coldflamme summoner is %u \n",summoner->getEntry());
+            if (LordMarrowgarAI* marrowgarAI = static_cast<LordMarrowgarAI*>(static_cast<Creature*>(summoner)->GetScript()))
+            {
+                LocationVector const* ownerPos = marrowgarAI->GetLastColdflamePosition();
+                float ang = getCreature()->calcAngle(ownerPos->x, ownerPos->y, getCreature()->GetPositionX(), getCreature()->GetPositionY()) - static_cast<float>(M_PI);
+                getCreature()->SetOrientation(ang);
+            }
         }
+        else
+        {
+            Unit* target = mInstance->GetInstance()->GetUnit(static_cast<Creature*>(summoner)->GetScript()->GetCreatureData64(DATA_COLDFLAME_GUID));
+            if (!target)
+            {
+                getCreature()->Despawn(100, 0);
+                return;
+            }
+
+            getCreature()->SetOrientation(getCreature()->calcAngle(target->GetPositionX(), target->GetPositionY(), getCreature()->GetPositionX(), getCreature()->GetPositionY()));
+        }
+
+        getCreature()->SetPosition(summoner->GetPosition()); 
+        scriptEvents.addEvent(EVENT_COLDFLAME_TRIGGER, 500);
     }
 
     void AIUpdate() override
@@ -793,8 +824,21 @@ class ColdflameAI : public CreatureAIScript
 
         if (scriptEvents.getFinishedEvent() == EVENT_COLDFLAME_TRIGGER)
         {
-            _castAISpell(coldflameTriggerSpell);
+            LocationVector newPos;
+            newPos = getCreature()->GetPosition();
 
+            float angle = newPos.o;
+            float destx, desty, destz;
+            destx = newPos.x + 1.0f * std::cos(angle);
+            desty = newPos.y + 1.0f * std::sin(angle);
+            destz = newPos.z;
+
+            newPos.x = destx;
+            newPos.y = desty;
+            newPos.z = destz;
+
+            getCreature()->SetPosition(newPos);
+            _castAISpell(coldflameTriggerSpell);
             scriptEvents.addEvent(EVENT_COLDFLAME_TRIGGER, 500);
         }
     }
@@ -1006,7 +1050,6 @@ class BoneSpikeGraveyard : public SpellScript
                 for (std::list<Unit*>::const_iterator itr = targets.begin(); itr != targets.end(); ++itr, ++i)
                 {
                     Unit* target = *itr;
-                    printf("BoneSpikeGraveyard Target %s \n", static_cast<Player*>(target)->getName().c_str());
                     target->castSpell(target, BoneSpikeSummonId[i], true);
                 }
 
@@ -1039,11 +1082,111 @@ class BoneSpikeGraveyard : public SpellScript
 
             // Check if it is one of the tanks soaking Bone Slice
             for (uint32 i = 0; i < MAX_BONE_SPIKE_IMMUNE; ++i)
-                if (target->getGuid() == static_cast<LordMarrowgarAI*>(creatureAI)->GetData(DATA_SPIKE_IMMUNE + i))
+                if (target->getGuid() == creatureAI->GetCreatureData64(DATA_SPIKE_IMMUNE + i))
                     return false;
 
             return true;
         }
+};
+
+class Coldflame : public SpellScript
+{
+public:
+    virtual void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets)
+    {
+        if (effectIndex != EFF_INDEX_0)
+            return;
+
+        effectTargets->clear();
+
+        Unit* coldflametarget = nullptr;
+        Creature* pCreature = nullptr;
+
+        if(spell->getUnitCaster()->isCreature())
+            pCreature = static_cast<Creature*>(spell->getUnitCaster());
+
+        // select any unit but not the tank 
+        if (pCreature)
+        {
+            coldflametarget = GetRandomTargetNotMainTank(pCreature);
+            if (!coldflametarget)
+                coldflametarget = GetRandomTarget(pCreature);
+
+            if (coldflametarget)
+            {
+                pCreature->GetScript()->SetCreatureData64(DATA_COLDFLAME_GUID, coldflametarget->getGuid());
+                effectTargets->push_back(coldflametarget->getGuid());
+            }
+        }
+    }
+
+    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex)
+    {
+        if (effectIndex != EFF_INDEX_0)
+            return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
+
+        spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), spell->damage, true);
+
+        return SpellScriptExecuteState::EXECUTE_PREVENT;
+    }
+
+    Unit* GetRandomTargetNotMainTank(Creature* caster)
+    {
+        Unit* target = nullptr;
+        std::vector<Player*> players;
+
+        Unit* mt = caster->GetAIInterface()->GetMostHated();
+        if (mt == nullptr || !mt->isPlayer())
+            return 0;
+
+        for (const auto& itr : caster->getInRangePlayersSet())
+        {
+            Player* obj = static_cast<Player*>(itr);
+            if (obj != mt)
+                players.push_back(obj);
+        }
+
+        if (players.size())
+            target = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
+
+        return target;
+    }
+
+    Unit* GetRandomTarget(Creature* caster)
+    {
+        Unit* target = nullptr;
+        std::vector<Player*> players;
+
+        uint32_t count = static_cast<uint32_t>(caster->getInRangePlayersCount());
+        uint32_t r = Util::getRandomUInt(count - 1);
+        count = 0;
+        for (const auto& itr : caster->getInRangePlayersSet())
+        {
+            if (count == r)
+            {
+                target = static_cast<Player*>(itr);
+                break;
+            }
+            ++count;
+        }
+
+        return target;
+    }
+};
+
+class ColdflameBonestorm : public SpellScript
+{
+public:
+    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex)
+    {
+        if (effectIndex != EFF_INDEX_0)
+            return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
+
+        for (uint8 i = 0; i < 4; ++i)
+            spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), (spell->damage + i), true);
+
+        return SpellScriptExecuteState::EXECUTE_PREVENT;
+    }
 };
 
 void SetupICC(ScriptMgr* mgr)
@@ -1086,6 +1229,10 @@ void SetupICC(ScriptMgr* mgr)
 
     // Spell Bone Spike Graveyard
     mgr->register_spell_script(SPELL_BONE_SPIKE_GRAVEYARD, new BoneSpikeGraveyard);
+
+    // Spell Coldflame
+    mgr->register_spell_script(SPELL_COLDFLAME_NORMAL, new Coldflame);
+    mgr->register_spell_script(SPELL_COLDFLAME_BONE_STORM, new ColdflameBonestorm);
 
     //Gossips
     GossipScript* MuradinGossipScript = new MuradinGossip();
