@@ -824,31 +824,37 @@ class BoneSpikeAI : public CreatureAIScript
 
         // Common
         hasTrappedUnit = false;
-
-        // Spells
-        impaledSpell = addAISpell(SPELL_IMPALED, 0.0f, TARGET_CUSTOM);
+        summon = nullptr;
     }
 
     void OnSummon(Unit* summoner) override
     {
+        summon = summoner;
+        getCreature()->GetAIInterface()->modThreatByPtr(summon, 1);
         getCreature()->castSpell(summoner, SPELL_IMPALED, false);
-        getCreature()->castSpell(summoner, SPELL_RIDE_VEHICLE, true);
+        summoner->castSpell(getCreature(), SPELL_RIDE_VEHICLE, true);
         scriptEvents.addEvent(EVENT_FAIL_BONED, 8000);
         hasTrappedUnit = true;
     }
 
     void OnTargetDied(Unit* pTarget) override
     {
-        getCreature()->Despawn(0, 0);
+        getCreature()->Despawn(100, 0);
         pTarget->RemoveAura(SPELL_IMPALED);
     }
 
     void OnDied(Unit* pTarget) override
     {       
-        if(getCreature()->getPlayerOwner())
-            getCreature()->getPlayerOwner()->RemoveAura(SPELL_IMPALED);
+        printf("OnDied \n");
+        if (summon)
+            summon->RemoveAura(SPELL_IMPALED);
+         
+        getCreature()->Despawn(100, 0);
+    }
 
-        getCreature()->Despawn(0, 0);
+    void OnCombatStart(Unit* /*pTarget*/) override
+    {
+        printf("OnCombatStart \n");
     }
 
     void AIUpdate() override
@@ -867,8 +873,8 @@ protected:
     // Common
     InstanceScript* mInstance;
 
-    //Spells
-    CreatureAISpells* impaledSpell;
+    // Summon
+    Unit* summon;
 
     bool hasTrappedUnit;
 };
@@ -985,7 +991,6 @@ class BoneSpikeGraveyard : public SpellScript
     public:
         virtual void onAuraApply(Aura* aur)
         {
-            printf("BoneSpikeGraveyard \n");
             aur->removeAuraEffect(EFF_INDEX_1);
 
             if (Creature* marrowgar = static_cast<Creature*>(aur->GetUnitCaster()))
@@ -998,7 +1003,7 @@ class BoneSpikeGraveyard : public SpellScript
                 std::list<Unit*> targets;
 
                 SelectTarget(targets, marrowgarAI, boneSpikeCount);
-                printf("BoneSpikeGraveyard SelectedTarget \n");
+
                 uint32 i = 0;
                 for (std::list<Unit*>::const_iterator itr = targets.begin(); itr != targets.end(); ++itr, ++i)
                 {
