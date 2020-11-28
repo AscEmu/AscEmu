@@ -312,6 +312,7 @@ public:
     virtual void AIUpdate() {}
     virtual void OnEmote(Player* /*_player*/, EmoteType /*_emote*/) {}
     virtual void StringFunctionCall(int) {}
+    virtual void OnSummon(Unit* /*summoner*/) {}
 
     virtual void OnEnterVehicle() {}
     virtual void OnExitVehicle() {}

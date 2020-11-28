@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Raid_IceCrownCitadel.h"
 #include "Objects/Faction.h"
+#include "Units/Summons/Summon.h"
 #include "../world/Objects/ObjectMgr.h"
 #include "../world/Management/TransporterHandler.h"
 
@@ -47,6 +48,8 @@ public:
         MarrowgarEntranceDoorGUID = 0;
         LadyDeathwisperElevatorGUID = 0;
         LadyDeathwisperEntranceDoorGUID = 0;
+        
+        addData(DATA_BONED_ACHIEVEMENT, uint32_t(true));
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new IceCrownCitadelScript(pMapMgr); }
@@ -534,8 +537,8 @@ class LordMarrowgarAI : public CreatureAIScript
 
         scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
 
-        //if (getCreature()->isCastingSpell())
-        //    return;
+        if (getCreature()->isCastingSpell())
+            return;
 
         while (uint32_t eventId = scriptEvents.getFinishedEvent())
         {
@@ -687,6 +690,41 @@ class LordMarrowgarAI : public CreatureAIScript
         scriptEvents.resetEvents();
 
         boneSlice = false;
+        boneSpikeImmune.clear();
+    }
+
+    uint64_t GetData(int32_t type /*= 0 */) const
+    {
+        switch (type)
+        {
+        case DATA_COLDFLAME_GUID:
+            return coldflameTarget;
+        case DATA_SPIKE_IMMUNE + 0:
+        case DATA_SPIKE_IMMUNE + 1:
+        case DATA_SPIKE_IMMUNE + 2:
+        {
+            int32_t index = type - DATA_SPIKE_IMMUNE;
+            if (index < boneSpikeImmune.size())
+                return boneSpikeImmune[index];
+
+            break;
+        }
+        }
+
+        return 0LL;
+    }
+
+    void SetData(uint64_t guid, int32_t type /*= 0 */)
+    {
+        switch (type)
+        {
+        case DATA_COLDFLAME_GUID:
+            coldflameTarget = guid;
+            break;
+        case DATA_SPIKE_IMMUNE:
+            boneSpikeImmune.push_back(guid);
+            break;
+        }
     }
 
     void OnTargetDied(Unit* /*pTarget*/) override
@@ -705,6 +743,9 @@ protected:
     bool boneSlice;
 
     Unit* boneStormtarget;
+    LocationVector coldflameLastPos;
+    uint64 coldflameTarget;
+    std::vector<uint64_t> boneSpikeImmune;
 
     // Spells
     CreatureAISpells* boneSliceSpell;
@@ -717,16 +758,119 @@ protected:
     uint32_t boneStormDuration;
 };
 
-const uint32_t IMPALED = 69065;
+//////////////////////////////////////////////////////////////////////////////////////////
+// Misc: Cold Flame
+//////////////////////////////////////////////////////////////////////////////////////////
+
+class ColdflameAI : public CreatureAIScript
+{
+    ADD_CREATURE_FACTORY_FUNCTION(ColdflameAI)
+        explicit ColdflameAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Instance Script
+        mInstance = getInstanceScript();
+
+        coldflameTriggerSpell = addAISpell(SPELL_COLDFLAME_SUMMON, 0.0f, TARGET_SELF);
+    }
+
+    void OnLoad()
+    {
+        if (getCreature()->isSummon() && mInstance)
+        {
+            summoner = mInstance->GetInstance()->GetUnit(getCreature()->getSummonedByGuid());
+
+            if (!summoner->isCreature())
+                return;
+
+            // random target case
+            printf("coldflamme summoner is %u \n",summoner->getEntry());
+        }
+    }
+
+    void AIUpdate() override
+    {
+        scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
+
+        if (scriptEvents.getFinishedEvent() == EVENT_COLDFLAME_TRIGGER)
+        {
+            _castAISpell(coldflameTriggerSpell);
+
+            scriptEvents.addEvent(EVENT_COLDFLAME_TRIGGER, 500);
+        }
+    }
+
+protected:
+    // Common
+    InstanceScript* mInstance;
+
+    // Unit
+    Unit* summoner;
+
+    //Spells
+    CreatureAISpells* coldflameTriggerSpell;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Misc: Bone Spike
+//////////////////////////////////////////////////////////////////////////////////////////
 
 class BoneSpikeAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI)
     explicit BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);  // On wowhead they said "kill them not just looking at them".
-        getCreature()->Despawn(8000, 0);
+        // Instance Script
+        mInstance = getInstanceScript();
+
+        // Common
+        hasTrappedUnit = false;
+
+        // Spells
+        impaledSpell = addAISpell(SPELL_IMPALED, 0.0f, TARGET_CUSTOM);
     }
+
+    void OnSummon(Unit* summoner) override
+    {
+        getCreature()->castSpell(summoner, SPELL_IMPALED, false);
+        getCreature()->castSpell(summoner, SPELL_RIDE_VEHICLE, true);
+        scriptEvents.addEvent(EVENT_FAIL_BONED, 8000);
+        hasTrappedUnit = true;
+    }
+
+    void OnTargetDied(Unit* pTarget) override
+    {
+        getCreature()->Despawn(0, 0);
+        pTarget->RemoveAura(SPELL_IMPALED);
+    }
+
+    void OnDied(Unit* pTarget) override
+    {       
+        if(getCreature()->getPlayerOwner())
+            getCreature()->getPlayerOwner()->RemoveAura(SPELL_IMPALED);
+
+        getCreature()->Despawn(0, 0);
+    }
+
+    void AIUpdate() override
+    {
+        if (!hasTrappedUnit)
+            return;
+
+        scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
+
+        if (scriptEvents.getFinishedEvent() == EVENT_FAIL_BONED)
+            if (mInstance)
+                mInstance->setData(DATA_BONED_ACHIEVEMENT, uint32_t(false));
+    }
+
+protected:
+    // Common
+    InstanceScript* mInstance;
+
+    //Spells
+    CreatureAISpells* impaledSpell;
+
+    bool hasTrappedUnit;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -743,14 +887,6 @@ class BoneSpikeAI : public CreatureAIScript
 
 ///////////////////////////////////////////////////////
 // Boss: Valithria Dreamwalker
-// ...
-//
-//
-//
-//
-
-///////////////////////////////////////////////////////
-// Boss: Cold Flame
 // ...
 //
 //
@@ -844,21 +980,68 @@ public:
     }
 };
 
-bool spellColdflameNormalEffect(uint8_t effectIndex, Spell* pSpell)
-{   
-    return true;
-}
-
-bool spellBoneSpikeGraveyardEffect(uint8_t effectIndex, Spell* pSpell)
+class BoneSpikeGraveyard : public SpellScript
 {
-    return true;
-}
+    public:
+        virtual void onAuraApply(Aura* aur)
+        {
+            printf("BoneSpikeGraveyard \n");
+            aur->removeAuraEffect(EFF_INDEX_1);
 
+            if (Creature* marrowgar = static_cast<Creature*>(aur->GetUnitCaster()))
+            {
+                CreatureAIScript* marrowgarAI = marrowgar->GetScript();
+                if (!marrowgarAI)
+                    return;
 
-bool spellColdflameBoneStormEffect(uint8_t effectIndex, Spell* pSpell)
-{
-    return true;
-}
+                uint8_t boneSpikeCount = uint8_t(aur->GetUnitCaster()->GetMapMgr()->pInstance->m_difficulty & 1 ? 3 : 1);
+                std::list<Unit*> targets;
+
+                SelectTarget(targets, marrowgarAI, boneSpikeCount);
+                printf("BoneSpikeGraveyard SelectedTarget \n");
+                uint32 i = 0;
+                for (std::list<Unit*>::const_iterator itr = targets.begin(); itr != targets.end(); ++itr, ++i)
+                {
+                    Unit* target = *itr;
+                    printf("BoneSpikeGraveyard Target %s \n", static_cast<Player*>(target)->getName().c_str());
+                    target->castSpell(target, BoneSpikeSummonId[i], true);
+                }
+
+                marrowgarAI->sendDBChatMessage(926); // Stick Around
+
+               if (targets.empty())
+                return;
+            }
+        }
+        
+        void SelectTarget(std::list<Unit*>& targetList, CreatureAIScript* creatureAI, uint32_t maxTargets)
+        {
+            for (const auto& itr : creatureAI->getCreature()->getInRangePlayersSet())
+                if (CheckTarget(static_cast<Unit*>(itr), creatureAI))
+                    targetList.push_back(static_cast<Unit*>(itr));
+
+            if (targetList.size() < maxTargets)
+                return;
+
+            targetList.resize(maxTargets);
+        }
+
+        bool CheckTarget(Unit* target, CreatureAIScript* creatureAI)
+        {
+            if (target->getObjectTypeId() != TYPEID_PLAYER)
+                return false;
+
+            if (target->HasAura(SPELL_IMPALED))
+                return false;
+
+            // Check if it is one of the tanks soaking Bone Slice
+            for (uint32 i = 0; i < MAX_BONE_SPIKE_IMMUNE; ++i)
+                if (target->getGuid() == static_cast<LordMarrowgarAI*>(creatureAI)->GetData(DATA_SPIKE_IMMUNE + i))
+                    return false;
+
+            return true;
+        }
+};
 
 void SetupICC(ScriptMgr* mgr)
 {
@@ -885,9 +1068,8 @@ void SetupICC(ScriptMgr* mgr)
     mgr->register_creature_script(CN_LORD_MARROWGAR, &LordMarrowgarAI::Create);
     //mgr->register_creature_script(CN_LADY_DEATHWHISPER, &LadyDeathwhisperAI::Create);
     //mgr->register_creature_script(CN_VALITHRIA_DREAMWALKER, &ValithriaDreamwalkerAI::Create);
-    //mgr->register_creature_script(CN_COLDFLAME, &ColdFlameAI::Create);
 
-    //Spells
+    //Spell Bone Storm
     uint32_t boneStormIds[] =
     {
         SPELL_BONE_STORM_EFFECT,
@@ -899,14 +1081,14 @@ void SetupICC(ScriptMgr* mgr)
     mgr->register_spell_script(boneStormIds, new BoneStormDamage);
     mgr->register_spell_script(SPELL_BONE_STORM, new BoneStorm);
 
-    mgr->register_script_effect(SPELL_COLDFLAME_NORMAL, &spellColdflameNormalEffect);
-    mgr->register_script_effect(SPELL_BONE_SPIKE_GRAVEYARD, &spellBoneSpikeGraveyardEffect);
-    mgr->register_script_effect(SPELL_COLDFLAME_BONE_STORM, &spellColdflameBoneStormEffect);
+    // Spell Bone Spike Graveyard
+    mgr->register_spell_script(SPELL_BONE_SPIKE_GRAVEYARD, new BoneSpikeGraveyard);
 
     //Gossips
     GossipScript* MuradinGossipScript = new MuradinGossip();
     mgr->register_creature_gossip(NPC_GB_MURADIN_BRONZEBEARD, MuradinGossipScript);
 
     //Misc
+    mgr->register_creature_script(CN_COLDFLAME, &ColdflameAI::Create);
     mgr->register_creature_script(CN_BONE_SPIKE, &BoneSpikeAI::Create);
 }

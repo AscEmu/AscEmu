@@ -220,6 +220,20 @@ enum EventsMarrowgar
     EVENT_GROUP_SPECIAL = 1,
 };
 
+enum AdditionalData
+{
+    DATA_BONED_ACHIEVEMENT = 1
+};
+
+enum MiscInfo
+{
+    DATA_COLDFLAME_GUID = 0,
+    DATA_SPIKE_IMMUNE = 1,
+    MAX_BONE_SPIKE_IMMUNE = 3,
+};
+
+uint32 const BoneSpikeSummonId[3] = { 69062, 72669, 72670 };
+
 static Movement::Location Doors[] =
 {
     { -407.35f, 2147.88f, 42.85f, 0 },       //IceWall1
