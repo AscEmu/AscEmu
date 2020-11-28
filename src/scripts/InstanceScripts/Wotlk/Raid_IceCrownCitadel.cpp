@@ -825,12 +825,16 @@ class BoneSpikeAI : public CreatureAIScript
         // Common
         hasTrappedUnit = false;
         summon = nullptr;
+
+        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
     }
 
     void OnSummon(Unit* summoner) override
     {
         summon = summoner;
-        getCreature()->GetAIInterface()->modThreatByPtr(summon, 1);
+        // Make our Creature in Combat otherwise on Died Script wont trigger
+        getCreature()->GetAIInterface()->setAiScriptType(AI_SCRIPT_AGRO);
+
         getCreature()->castSpell(summoner, SPELL_IMPALED, false);
         summoner->castSpell(getCreature(), SPELL_RIDE_VEHICLE, true);
         scriptEvents.addEvent(EVENT_FAIL_BONED, 8000);
@@ -845,16 +849,10 @@ class BoneSpikeAI : public CreatureAIScript
 
     void OnDied(Unit* pTarget) override
     {       
-        printf("OnDied \n");
         if (summon)
             summon->RemoveAura(SPELL_IMPALED);
          
         getCreature()->Despawn(100, 0);
-    }
-
-    void OnCombatStart(Unit* /*pTarget*/) override
-    {
-        printf("OnCombatStart \n");
     }
 
     void AIUpdate() override
