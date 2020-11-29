@@ -328,6 +328,7 @@ public:
     virtual void SetCreatureData64(uint32_t /*type*/, uint64_t /*data*/) {}
     virtual uint32_t GetCreatureData(uint32_t /*type*/) const { return 0; }
     virtual uint64_t GetCreatureData64(uint32_t /*type*/) const { return 0; }
+    virtual void DoAction(int32_t /*action*/) {}
 
     virtual void Destroy() { delete this; }
 

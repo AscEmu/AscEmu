@@ -227,8 +227,14 @@ enum AdditionalData
 
 enum MiscInfo
 {
+    // Data Shares
     DATA_COLDFLAME_GUID = 0,
     DATA_SPIKE_IMMUNE = 1,
+
+    // Actions
+    ACTION_CLEAR_SPIKE_IMMUNITIES = 1,
+
+    //Definitions
     MAX_BONE_SPIKE_IMMUNE = 3,
 };
 
@@ -268,6 +274,7 @@ enum Spells
     SPELL_BONE_STORM_EFFECT = 69075,
     SPELL_BONE_SPIKE_GRAVEYARD = 69057,
     SPELL_COLDFLAME_NORMAL = 69140,
+    SPELL_COLDFLAME_DAMAGE = 69147,
     SPELL_COLDFLAME_BONE_STORM = 72705,
 
     // Bone Spike

@@ -1137,6 +1137,10 @@ void SpellMgr::applyHackFixes()
             case 71123: // Decimate (Stinky & Precious)
                 sp->setEffectRadiusIndex(sSpellRadiusStore.LookupEntry(12)->ID, 0); // 100yd
                 break;
+            case 69055: // Saber Lash (Lord Marrowgar)
+            case 70814: // Saber Lash (Lord Marrowgar)
+                sp->setEffectRadiusIndex(sSpellRadiusStore.LookupEntry(14)->ID, 0); // 8yd
+                break;
             default:
                 break;
         }
