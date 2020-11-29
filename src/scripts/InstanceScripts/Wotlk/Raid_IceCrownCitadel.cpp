@@ -509,24 +509,25 @@ class LordMarrowgarAI : public CreatureAIScript
         // Scripted Spells not autocastet
         boneSliceSpell = addAISpell(SPELL_BONE_SLICE, 0.0f, TARGET_ATTACKING);
         boneStormSpell = addAISpell(SPELL_BONE_STORM, 0.0f, TARGET_SELF);
+        boneStormSpell->addDBEmote(SAY_MARR_BONE_STORM_EMOTE);
 
         boneSpikeGraveyardSpell = addAISpell(SPELL_BONE_SPIKE_GRAVEYARD, 0.0f, TARGET_SELF);
         coldflameNormalSpell = addAISpell(SPELL_COLDFLAME_NORMAL, 0.0f, TARGET_SELF);
         coldflameBoneStormSpell = addAISpell(SPELL_COLDFLAME_BONE_STORM, 0.0f, TARGET_SELF);
 
         berserkSpell = addAISpell(SPELL_BERSERK, 0.0f, TARGET_SELF);
-        berserkSpell->addDBEmote(931);                  // THE MASTER'S RAGE COURSES THROUGH ME!
+        berserkSpell->addDBEmote(SAY_MARR_BERSERK);                  // THE MASTER'S RAGE COURSES THROUGH ME!
         berserkSpell->mIsTriggered = true;
 
-        addEmoteForEvent(Event_OnCombatStart, 923);     // The Scourge will wash over this world as a swarm of death and destruction!
-        addEmoteForEvent(Event_OnTargetDied, 928);      // More bones for the offering!
-        addEmoteForEvent(Event_OnTargetDied, 929);      // Languish in damnation!
-        addEmoteForEvent(Event_OnDied, 930);            // I see... Only darkness.
+        addEmoteForEvent(Event_OnCombatStart, SAY_MARR_AGGRO);     // The Scourge will wash over this world as a swarm of death and destruction!
+        addEmoteForEvent(Event_OnTargetDied, SAY_MARR_KILL_1);      // More bones for the offering!
+        addEmoteForEvent(Event_OnTargetDied, SAY_MARR_KILL_2);      // Languish in damnation!
+        addEmoteForEvent(Event_OnDied, SAY_MARR_DEATH);            // I see... Only darkness.
     }
 
     void OnLoad()
     {
-        sendDBChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
+        sendDBChatMessage(SAY_MARR_ENTER_ZONE);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
         introDone = true;
     }
 
@@ -562,7 +563,6 @@ class LordMarrowgarAI : public CreatureAIScript
                 break;
             case EVENT_WARN_BONE_STORM:
                 boneSlice = false;
-                sendDBChatMessage(932); // %s creates a whirling storm of bone!
                 _castAISpell(boneStormSpell);
 
                 scriptEvents.delayEvent(EVENT_BONE_SPIKE_GRAVEYARD, 3000);
@@ -572,7 +572,7 @@ class LordMarrowgarAI : public CreatureAIScript
                 scriptEvents.addEvent(EVENT_WARN_BONE_STORM, Util::getRandomInt(90000, 95000));
             case EVENT_BONE_STORM_BEGIN:
                 getCreature()->setSpeedRate(TYPE_RUN, baseSpeed*3.0f, true);
-                sendDBChatMessage(924); // BONE STORM!
+                sendDBChatMessage(SAY_MARR_BONE_STORM); // BONE STORM!
                 
                 scriptEvents.addEvent(EVENT_BONE_STORM_END, boneStormDuration + 1);
             case EVENT_BONE_STORM_MOVE:
@@ -882,16 +882,305 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Spell: Bone Storm
+//////////////////////////////////////////////////////////////////////////////////////////
+
+class BoneStorm : public SpellScript
+{
+public:
+    void onAuraCreate(Aura* aur) override
+    {
+        // set duration here
+        int32_t duration = 20000;
+        if(aur->GetUnitCaster()->isCreature())
+            duration = static_cast<Creature*>(aur->GetUnitCaster())->GetScript()->RAID_MODE<uint32_t>(20000, 30000, 20000, 30000);
+
+        aur->setOriginalDuration(duration);
+        aur->setMaxDuration(duration);
+        aur->setTimeLeft(duration);
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Spell: Bone Storm Damage
+//////////////////////////////////////////////////////////////////////////////////////////
+
+class BoneStormDamage : public SpellScript
+{
+public:
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override
+    {
+        if (effIndex != EFF_INDEX_0 || spell->GetUnitTarget() == nullptr)
+            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
+
+        auto distance = spell->GetUnitTarget()->GetDistance2dSq(spell->getCaster());
+        // If target is closer than 5 yards, do full damage
+        if (distance <= 5.0f)
+            distance = 1.0f;
+
+        *dmg = float2int32(*dmg / distance);
+        return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Spell: Bone Spike Graveyard
+//////////////////////////////////////////////////////////////////////////////////////////
+
+class BoneSpikeGraveyard : public SpellScript
+{
+    public:
+        virtual void onAuraApply(Aura* aur)
+        {
+            aur->removeAuraEffect(EFF_INDEX_1);
+
+            if (Creature* marrowgar = static_cast<Creature*>(aur->GetUnitCaster()))
+            {
+                CreatureAIScript* marrowgarAI = marrowgar->GetScript();
+                if (!marrowgarAI)
+                    return;
+
+                uint8_t boneSpikeCount = uint8_t(aur->GetUnitCaster()->GetMapMgr()->pInstance->m_difficulty & 1 ? 3 : 1);
+                std::list<Unit*> targets;
+
+                targets.clear();
+
+                uint8_t target = 0;
+                for (target; target < boneSpikeCount; ++target)
+                    targets.push_back(GetRandomTargetNotMainTank(marrowgar));
+
+                if (targets.empty())
+                    return;
+
+                uint32 i = 0;
+                for (std::list<Unit*>::const_iterator itr = targets.begin(); itr != targets.end(); ++itr, ++i)
+                {
+                    Unit* target = *itr;
+                    target->castSpell(target, BoneSpikeSummonId[i], true);
+                }
+
+
+                std::vector<uint32_t> emoteVector;
+                emoteVector.clear();
+                emoteVector.push_back(SAY_MARR_BONESPIKE_1);// Stick Around
+                emoteVector.push_back(SAY_MARR_BONESPIKE_2);// The only Escape is Darkness 
+                emoteVector.push_back(SAY_MARR_BONESPIKE_3);// More Bones for the offering
+
+                marrowgarAI->sendRandomDBChatMessage(emoteVector);  
+            }
+        }
+
+        virtual SpellCastResult onCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2)
+        {          
+            if (Creature* marrowgar = static_cast<Creature*>(spell->getUnitCaster()))
+
+                if(GetRandomTargetNotMainTank(marrowgar))
+                    return SpellCastResult::SPELL_CAST_SUCCESS;
+
+            return SpellCastResult::SPELL_FAILED_SUCCESS;
+        }
+
+        Unit* GetRandomTargetNotMainTank(Creature* caster)
+        {
+            Unit* target = nullptr;
+            std::vector<Player*> players;
+
+            Unit* mt = caster->GetAIInterface()->GetMostHated();
+            if (mt == nullptr || !mt->isPlayer())
+                return 0;
+
+            for (const auto& itr : caster->getInRangePlayersSet())
+            {
+                Player* obj = static_cast<Player*>(itr);
+                if (obj != mt && CheckTarget(obj, caster->GetScript()))
+                    players.push_back(obj);
+            }
+
+            if (players.size())
+                target = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
+
+            return target;
+        }
+
+        bool CheckTarget(Unit* target, CreatureAIScript* creatureAI)
+        {
+            if (target->getObjectTypeId() != TYPEID_PLAYER)
+                return false;
+
+            if (target->HasAura(SPELL_IMPALED))
+                return false;
+
+            // Check if it is one of the tanks soaking Bone Slice
+            for (uint32 i = 0; i < MAX_BONE_SPIKE_IMMUNE; ++i)
+                if (target->getGuid() == creatureAI->GetCreatureData64(DATA_SPIKE_IMMUNE + i))
+                    return false;
+
+            return true;
+        }        
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Spell: Coldflame
+//////////////////////////////////////////////////////////////////////////////////////////
+
+class Coldflame : public SpellScript
+{
+public:
+    virtual void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets)
+    {
+        if (effectIndex != EFF_INDEX_0)
+            return;
+
+        effectTargets->clear();
+
+        Unit* coldflametarget = nullptr;
+        Creature* pCreature = nullptr;
+
+        if(spell->getUnitCaster()->isCreature())
+            pCreature = static_cast<Creature*>(spell->getUnitCaster());
+
+        // select any unit but not the tank 
+        if (pCreature)
+        {
+            coldflametarget = pCreature->GetScript()->getBestPlayerTarget(TargetFilter_NotCurrent);
+            if (!coldflametarget)
+                coldflametarget = pCreature->GetScript()->getBestPlayerTarget(TargetFilter_Aggroed);
+
+            if (coldflametarget)
+            {
+                pCreature->GetScript()->SetCreatureData64(DATA_COLDFLAME_GUID, coldflametarget->getGuid());
+                effectTargets->push_back(coldflametarget->getGuid());
+            }
+        }
+    }
+
+    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex)
+    {
+        if (effectIndex != EFF_INDEX_0)
+            return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
+
+        spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), spell->damage, true);
+
+        return SpellScriptExecuteState::EXECUTE_PREVENT;
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Spell: Coldflame Bone Storm
+//////////////////////////////////////////////////////////////////////////////////////////
+
+class ColdflameBonestorm : public SpellScript
+{
+public:
+    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex)
+    {
+        if (effectIndex != EFF_INDEX_0)
+            return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
+
+        for (uint8 i = 0; i < 4; ++i)
+            spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), (spell->damage + i), true);
+
+        return SpellScriptExecuteState::EXECUTE_PREVENT;
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Spell: Coldflame Damage
+//////////////////////////////////////////////////////////////////////////////////////////
+
+class ColdflameDamage: public SpellScript
+{
+public:
+    virtual void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets)
+    {
+        if (effectIndex != EFF_INDEX_0)
+            return;
+
+        effectTargets->clear();
+
+        Unit* target = nullptr;
+        std::vector<Player*> players;
+        for (const auto& itr : spell->getUnitCaster()->getInRangePlayersSet())
+        {
+            auto target = static_cast<Player*>(itr);
+
+            if(CanBeAppliedOn(target, spell))
+                effectTargets->push_back(target->getGuid());
+        }
+    }
+
+    bool CanBeAppliedOn(Unit* target, Spell* spell)
+    {
+        if (target->HasAura(SPELL_IMPALED))
+            return false;
+
+        if (target->GetDistance2dSq(spell->getUnitCaster()) > static_cast<float>(spell->getSpellInfo()->getEffectRadiusIndex(EFF_INDEX_0)) )
+            return false;
+
+        return true;
+    }
+
+    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex)
+    {
+        if (effectIndex == EFF_INDEX_2)
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+
+        return SpellScriptExecuteState::EXECUTE_OK;
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Spell: Bone Slice
+//////////////////////////////////////////////////////////////////////////////////////////
+
+class BoneSlice : public SpellScript
+{
+public:
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override
+    {
+        if (effIndex != EFF_INDEX_0 || spell->GetUnitTarget() == nullptr)
+            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
+
+        if (!targetCount)
+            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
+
+        *dmg = float2int32(*dmg / targetCount);
+        return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
+    }
+
+    virtual SpellCastResult onCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2)
+    {
+        targetCount = 0;
+        static_cast<Creature*>(spell->getUnitCaster())->GetScript()->DoAction(ACTION_CLEAR_SPIKE_IMMUNITIES);
+
+        return SpellCastResult::SPELL_CAST_SUCCESS;
+    }
+
+    virtual void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets)
+    {
+        if (effectIndex != EFF_INDEX_0)
+            return;
+
+        targetCount = effectTargets->size();        
+    }
+
+    virtual void afterSpellEffect(Spell* spell, uint8_t effIndex)
+    {
+        if (effIndex != EFF_INDEX_0)
+            return;
+
+        if (spell->GetUnitTarget())
+        {
+            static_cast<Creature*>(spell->getUnitCaster())->GetScript()->SetCreatureData64(DATA_SPIKE_IMMUNE, spell->GetUnitTarget()->getGuid());
+        }
+    }
+
+    uint32_t targetCount;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Boss: Lady Deathwhisper
-// MANA_BARRIER = 70842
-// DEATH_AND_DECAY = 71001
-// TOUCH_OF_INSIGNIFICANCE = 71204
-// SHADOW_BOLT = 71254
-// DOMINATE_MIND_H = 71289
-// SUMMON_SHADE = 71363
-// FROSTBOLT = 71420
-// FROSTBOLT_VOLLEY = 72905
-// ...
+//////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////
 // Boss: Valithria Dreamwalker
@@ -952,268 +1241,6 @@ public:
         }
         GossipMenu::senGossipComplete(pPlayer);
     }
-};
-
-class BoneStorm : public SpellScript
-{
-public:
-    void onAuraCreate(Aura* aur) override
-    {
-        // set duration here
-        int32_t duration = 20000;
-        if(aur->GetUnitCaster()->isCreature())
-            duration = static_cast<Creature*>(aur->GetUnitCaster())->GetScript()->RAID_MODE<uint32_t>(20000, 30000, 20000, 30000);
-
-        aur->setOriginalDuration(duration);
-        aur->setMaxDuration(duration);
-        aur->setTimeLeft(duration);
-    }
-};
-
-class BoneStormDamage : public SpellScript
-{
-public:
-    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override
-    {
-        if (effIndex != EFF_INDEX_0 || spell->GetUnitTarget() == nullptr)
-            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
-
-        auto distance = spell->GetUnitTarget()->GetDistance2dSq(spell->getCaster());
-        // If target is closer than 5 yards, do full damage
-        if (distance <= 5.0f)
-            distance = 1.0f;
-
-        *dmg = float2int32(*dmg / distance);
-        return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
-    }
-};
-
-class BoneSpikeGraveyard : public SpellScript
-{
-    public:
-        virtual void onAuraApply(Aura* aur)
-        {
-            aur->removeAuraEffect(EFF_INDEX_1);
-
-            if (Creature* marrowgar = static_cast<Creature*>(aur->GetUnitCaster()))
-            {
-                CreatureAIScript* marrowgarAI = marrowgar->GetScript();
-                if (!marrowgarAI)
-                    return;
-
-                uint8_t boneSpikeCount = uint8_t(aur->GetUnitCaster()->GetMapMgr()->pInstance->m_difficulty & 1 ? 3 : 1);
-                std::list<Unit*> targets;
-
-                targets.clear();
-
-                uint8_t target = 0;
-                for (target; target < boneSpikeCount; ++target)
-                    targets.push_back(GetRandomTargetNotMainTank(marrowgar));
-
-                if (targets.empty())
-                    return;
-
-                uint32 i = 0;
-                for (std::list<Unit*>::const_iterator itr = targets.begin(); itr != targets.end(); ++itr, ++i)
-                {
-                    Unit* target = *itr;
-                    target->castSpell(target, BoneSpikeSummonId[i], true);
-                }
-
-                marrowgarAI->sendDBChatMessage(926); // Stick Around               
-            }
-        }
-
-        virtual SpellCastResult onCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2)
-        {          
-            if (Creature* marrowgar = static_cast<Creature*>(spell->getUnitCaster()))
-
-                if(GetRandomTargetNotMainTank(marrowgar))
-                    return SpellCastResult::SPELL_CAST_SUCCESS;
-
-            return SpellCastResult::SPELL_FAILED_SUCCESS;
-        }
-
-        Unit* GetRandomTargetNotMainTank(Creature* caster)
-        {
-            Unit* target = nullptr;
-            std::vector<Player*> players;
-
-            Unit* mt = caster->GetAIInterface()->GetMostHated();
-            if (mt == nullptr || !mt->isPlayer())
-                return 0;
-
-            for (const auto& itr : caster->getInRangePlayersSet())
-            {
-                Player* obj = static_cast<Player*>(itr);
-                if (obj != mt && CheckTarget(obj, caster->GetScript()))
-                    players.push_back(obj);
-            }
-
-            if (players.size())
-                target = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
-
-            return target;
-        }
-
-        bool CheckTarget(Unit* target, CreatureAIScript* creatureAI)
-        {
-            if (target->getObjectTypeId() != TYPEID_PLAYER)
-                return false;
-
-            if (target->HasAura(SPELL_IMPALED))
-                return false;
-
-            // Check if it is one of the tanks soaking Bone Slice
-            for (uint32 i = 0; i < MAX_BONE_SPIKE_IMMUNE; ++i)
-                if (target->getGuid() == creatureAI->GetCreatureData64(DATA_SPIKE_IMMUNE + i))
-                    return false;
-
-            return true;
-        }        
-};
-
-class Coldflame : public SpellScript
-{
-public:
-    virtual void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets)
-    {
-        if (effectIndex != EFF_INDEX_0)
-            return;
-
-        effectTargets->clear();
-
-        Unit* coldflametarget = nullptr;
-        Creature* pCreature = nullptr;
-
-        if(spell->getUnitCaster()->isCreature())
-            pCreature = static_cast<Creature*>(spell->getUnitCaster());
-
-        // select any unit but not the tank 
-        if (pCreature)
-        {
-            coldflametarget = pCreature->GetScript()->getBestPlayerTarget(TargetFilter_NotCurrent);
-            if (!coldflametarget)
-                coldflametarget = pCreature->GetScript()->getBestPlayerTarget(TargetFilter_Aggroed);
-
-            if (coldflametarget)
-            {
-                pCreature->GetScript()->SetCreatureData64(DATA_COLDFLAME_GUID, coldflametarget->getGuid());
-                effectTargets->push_back(coldflametarget->getGuid());
-            }
-        }
-    }
-
-    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex)
-    {
-        if (effectIndex != EFF_INDEX_0)
-            return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
-
-        spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), spell->damage, true);
-
-        return SpellScriptExecuteState::EXECUTE_PREVENT;
-    }
-};
-
-class ColdflameBonestorm : public SpellScript
-{
-public:
-    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex)
-    {
-        if (effectIndex != EFF_INDEX_0)
-            return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
-
-        for (uint8 i = 0; i < 4; ++i)
-            spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), (spell->damage + i), true);
-
-        return SpellScriptExecuteState::EXECUTE_PREVENT;
-    }
-};
-
-class ColdflameDamage: public SpellScript
-{
-public:
-    virtual void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets)
-    {
-        if (effectIndex != EFF_INDEX_0)
-            return;
-
-        effectTargets->clear();
-
-        Unit* target = nullptr;
-        std::vector<Player*> players;
-        for (const auto& itr : spell->getUnitCaster()->getInRangePlayersSet())
-        {
-            auto target = static_cast<Player*>(itr);
-
-            if(CanBeAppliedOn(target, spell))
-                effectTargets->push_back(target->getGuid());
-        }
-    }
-
-    bool CanBeAppliedOn(Unit* target, Spell* spell)
-    {
-        if (target->HasAura(SPELL_IMPALED))
-            return false;
-
-        if (target->GetDistance2dSq(spell->getUnitCaster()) > static_cast<float>(spell->getSpellInfo()->getEffectRadiusIndex(EFF_INDEX_0)) )
-            return false;
-
-        return true;
-    }
-
-    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex)
-    {
-        if (effectIndex == EFF_INDEX_2)
-            return SpellScriptExecuteState::EXECUTE_PREVENT;
-
-        return SpellScriptExecuteState::EXECUTE_OK;
-    }
-};
-
-class BoneSlice : public SpellScript
-{
-public:
-    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override
-    {
-        if (effIndex != EFF_INDEX_0 || spell->GetUnitTarget() == nullptr)
-            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
-
-        if (!targetCount)
-            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
-
-        *dmg = float2int32(*dmg / targetCount);
-        return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
-    }
-
-    virtual SpellCastResult onCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2)
-    {
-        targetCount = 0;
-        static_cast<Creature*>(spell->getUnitCaster())->GetScript()->DoAction(ACTION_CLEAR_SPIKE_IMMUNITIES);
-
-        return SpellCastResult::SPELL_CAST_SUCCESS;
-    }
-
-    virtual void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets)
-    {
-        if (effectIndex != EFF_INDEX_0)
-            return;
-
-        targetCount = effectTargets->size();        
-    }
-
-    virtual void afterSpellEffect(Spell* spell, uint8_t effIndex)
-    {
-        if (effIndex != EFF_INDEX_0)
-            return;
-
-        if (spell->GetUnitTarget())
-        {
-            static_cast<Creature*>(spell->getUnitCaster())->GetScript()->SetCreatureData64(DATA_SPIKE_IMMUNE, spell->GetUnitTarget()->getGuid());
-        }
-    }
-
-    uint32_t targetCount;
 };
 
 void SetupICC(ScriptMgr* mgr)
