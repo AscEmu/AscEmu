@@ -570,6 +570,8 @@ class SERVER_DECL AIInterface : public IUpdatable
     public:
         
         bool MoveTo(float x, float y, float z, float o = 0.0f);
+        bool MoveTeleport(float x, float y, float z, float o = 0.0f);
+        bool MoveTeleport(LocationVector loc);
         bool MoveDone() const;
 
         void SendCurrentMove(Player* plyr/*uint64 guid*/);

@@ -2872,6 +2872,52 @@ bool AIInterface::MoveTo(float x, float y, float z, float o /*= 0.0f*/)
     return true;
 }
 
+bool AIInterface::MoveTeleport(float x, float y, float z, float o /*= 0.0f*/)
+{
+    GetUnit()->SetPosition(x, y, z, o, false);
+
+    WorldPacket data(SMSG_MONSTER_MOVE, 50);
+    data << GetUnit()->GetNewGUID();
+    data << uint8_t(0);
+    data << GetUnit()->GetPositionX();
+    data << GetUnit()->GetPositionY();
+    data << GetUnit()->GetPositionZ();
+    data << Util::getMSTime();
+    data << uint8_t(0x0);
+    data << uint32_t(0x100);
+    data << uint32_t(1);
+    data << uint32_t(1);
+    data << x;
+    data << y;
+    data << z;
+    GetUnit()->SendMessageToSet(&data, false);
+
+    return true;
+}
+
+bool AIInterface::MoveTeleport(LocationVector loc)
+{
+    GetUnit()->SetPosition(loc, false);
+
+    WorldPacket data(SMSG_MONSTER_MOVE, 50);
+    data << GetUnit()->GetNewGUID();
+    data << uint8_t(0);
+    data << GetUnit()->GetPositionX();
+    data << GetUnit()->GetPositionY();
+    data << GetUnit()->GetPositionZ();
+    data << Util::getMSTime();
+    data << uint8_t(0x0);
+    data << uint32_t(0x100);
+    data << uint32_t(1);
+    data << uint32_t(1);
+    data << loc.x;
+    data << loc.y;
+    data << loc.z;
+    GetUnit()->SendMessageToSet(&data, false);
+
+    return true;
+}
+
 void AIInterface::UpdateSpeeds()
 {
     if (hasWalkMode(WALKMODE_SPRINT))

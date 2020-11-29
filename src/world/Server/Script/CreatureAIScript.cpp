@@ -388,6 +388,16 @@ void CreatureAIScript::moveTo(float posX, float posY, float posZ, bool setRun /*
     _creature->GetAIInterface()->MoveTo(posX, posY, posZ);
 }
 
+void CreatureAIScript::MoveTeleport(float posX, float posY, float posZ, float posO /*= 0.0f*/)
+{
+    _creature->GetAIInterface()->MoveTeleport(posX, posY, posZ, posO);
+}
+
+void CreatureAIScript::MoveTeleport(LocationVector loc)
+{
+    _creature->GetAIInterface()->MoveTeleport(loc);
+}
+
 void CreatureAIScript::moveToUnit(Unit* unit)
 {
     if (unit != nullptr)
@@ -963,6 +973,10 @@ void CreatureAIScript::_castAISpell(CreatureAISpells* aiSpell)
             mCurrentSpellTarget = target;
             mLastCastedSpell = aiSpell;
         } break;
+        case TARGET_SOURCE:
+            getCreature()->castSpellLoc(getCreature()->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            mLastCastedSpell = aiSpell;
+            break;
         case TARGET_DESTINATION:
         {
             getCreature()->castSpellLoc(target->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);

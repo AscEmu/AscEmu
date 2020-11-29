@@ -772,14 +772,13 @@ class ColdflameAI : public CreatureAIScript
     {
         // Instance Script
         mInstance = getInstanceScript();     
-        coldflameTriggerSpell = addAISpell(SPELL_COLDFLAME_SUMMON, 0.0f, TARGET_SELF);
+        coldflameTriggerSpell = addAISpell(SPELL_COLDFLAME_SUMMON, 0.0f, TARGET_SOURCE);
+        coldflameTriggerSpell->mIsTriggered = true;
     }
 
     void OnLoad() override
     {
-        // Override Default (When its Summoned it get same Faction as Caster)
-        getCreature()->SetFaction(35);
-        scriptEvents.addEvent(EVENT_COLDFLAME_TRIGGER, 500);
+        getCreature()->setVisible(false);
     }
 
     void OnSummon(Unit* summoner) override
@@ -793,15 +792,15 @@ class ColdflameAI : public CreatureAIScript
             if (LordMarrowgarAI* marrowgarAI = static_cast<LordMarrowgarAI*>(static_cast<Creature*>(summoner)->GetScript()))
             {
                 LocationVector const* ownerPos = marrowgarAI->GetLastColdflamePosition();
-                float ang = getCreature()->calcAngle(ownerPos->x, ownerPos->y, getCreature()->GetPositionX(), getCreature()->GetPositionY());
-                getCreature()->SetOrientation(ang);
 
+                float angle = ownerPos->o / M_PI_FLOAT * 180.0f;
+                getCreature()->SetOrientation(ownerPos->o);
                 // Store last Coldflame Position and add 90 degree to create x pattern
                 LocationVector nextPos;
                 nextPos.x = ownerPos->x;
                 nextPos.y = ownerPos->y;
                 nextPos.z = ownerPos->z;
-                nextPos.o = ownerPos->o * M_PI_FLOAT / 90.0f;
+                nextPos.o = angle + 90 * M_PI_FLOAT / 180.0f;
                 marrowgarAI->SetLastColdflamePosition(nextPos);
             }
         }
@@ -813,12 +812,12 @@ class ColdflameAI : public CreatureAIScript
             {
                 getCreature()->Despawn(100, 0);
                 return;
-            }
+            }        
+            MoveTeleport(summoner->GetPosition());
 
-            getCreature()->SetOrientation(getCreature()->calcAngle(target->GetPositionX(), target->GetPositionY(), getCreature()->GetPositionX(), getCreature()->GetPositionY()));
-        }
-
-        getCreature()->SetPosition(summoner->GetPosition()); 
+            getCreature()->SetOrientation(getCreature()->calcAngle(summoner->GetPositionX(), summoner->GetPositionY(), target->GetPositionX(), target->GetPositionY()) * M_PI_FLOAT / 180.0f);
+        }        
+        MoveTeleport(summoner->GetPositionX(), summoner->GetPositionY(),summoner->GetPositionZ(), getCreature()->GetOrientation());
         scriptEvents.addEvent(EVENT_COLDFLAME_TRIGGER, 500);
     }
 
@@ -833,16 +832,16 @@ class ColdflameAI : public CreatureAIScript
 
             float angle = newPos.o;
             float destx, desty, destz;
-            destx = newPos.x + 1.0f * std::cos(angle);
-            desty = newPos.y + 1.0f * std::sin(angle);
+            destx = newPos.x + 5.0f * std::cos(angle);
+            desty = newPos.y + 5.0f * std::sin(angle);
             destz = newPos.z;
 
             newPos.x = destx;
             newPos.y = desty;
             newPos.z = destz;
 
-            getCreature()->SetPosition(newPos);
-            _castAISpell(coldflameTriggerSpell);
+            MoveTeleport(newPos.x, newPos.y, newPos.z, newPos.o);
+            _castAISpell(coldflameTriggerSpell);         
             scriptEvents.addEvent(EVENT_COLDFLAME_TRIGGER, 500);
         }
     }
