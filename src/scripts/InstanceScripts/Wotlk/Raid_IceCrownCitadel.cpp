@@ -1216,6 +1216,45 @@ public:
     }
 };
 
+class ColdflameDamage: public SpellScript
+{
+public:
+    virtual void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets)
+    {
+        if (effectIndex != EFF_INDEX_0)
+            return;
+
+        effectTargets->clear();
+
+        Unit* target = nullptr;
+        std::vector<Player*> players;
+        for (const auto& itr : spell->getUnitCaster()->getInRangePlayersSet())
+        {
+            auto target = static_cast<Player*>(itr);
+
+            if(CanBeAppliedOn(target, spell))
+                effectTargets->push_back(target->getGuid());
+        }
+    }
+
+    bool CanBeAppliedOn(Unit* target, Spell* spell)
+    {
+        if (target->HasAura(SPELL_IMPALED))
+            return false;
+
+        if (target->GetDistance2dSq(spell->getUnitCaster()) > static_cast<float>(spell->getSpellInfo()->getEffectRadiusIndex(EFF_INDEX_0)) )
+            return false;
+
+        return true;
+    }
+
+    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex)
+    {
+        if (effectIndex == EFF_INDEX_2)
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+    }
+};
+
 class BoneSlice : public SpellScript
 {
 public:
@@ -1304,6 +1343,7 @@ void SetupICC(ScriptMgr* mgr)
 
     // Spell Coldflame
     mgr->register_spell_script(SPELL_COLDFLAME_NORMAL, new Coldflame);
+    mgr->register_spell_script(SPELL_COLDFLAME_DAMAGE, new ColdflameDamage);
     mgr->register_spell_script(SPELL_COLDFLAME_BONE_STORM, new ColdflameBonestorm);
 
     // Spell Bone Slice
