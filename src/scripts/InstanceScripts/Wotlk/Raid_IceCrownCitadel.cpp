@@ -578,10 +578,11 @@ class LordMarrowgarAI : public CreatureAIScript
             case EVENT_BONE_STORM_MOVE:
             {
                 scriptEvents.addEvent(EVENT_BONE_STORM_MOVE, boneStormDuration / 3);
-                boneStormtarget = GetRandomTargetNotMainTank();
-                if (!boneStormtarget)
-                    boneStormtarget = GetRandomTarget();
 
+                boneStormtarget= getBestPlayerTarget(TargetFilter_NotCurrent);
+                if (!boneStormtarget)
+                    boneStormtarget = getBestPlayerTarget(TargetFilter_Aggroed);
+                
                 if (boneStormtarget)
                     getCreature()->GetAIInterface()->MoveTo(boneStormtarget->GetPositionX(), boneStormtarget->GetPositionY(), boneStormtarget->GetPositionZ());
 
@@ -624,49 +625,6 @@ class LordMarrowgarAI : public CreatureAIScript
     void SetLastColdflamePosition(LocationVector pos)
     {
         coldflameLastPos = pos;
-    }
-
-    Unit* GetRandomTargetNotMainTank()
-    {
-        Unit* target = nullptr;
-        std::vector<Player*> players;
-
-        Unit* mt = getCreature()->GetAIInterface()->GetMostHated();
-        if (mt == nullptr || !mt->isPlayer())
-            return 0;
-
-        for (const auto& itr : getCreature()->getInRangePlayersSet())
-        {
-            Player* obj = static_cast<Player*>(itr);
-            if (obj != mt)
-                players.push_back(obj);
-        }
-
-        if (players.size())
-            target = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
-
-        return target;
-    }
-
-    Unit* GetRandomTarget()
-    {
-        Unit* target = nullptr;
-        std::vector<Player*> players;
-
-        uint32_t count = static_cast<uint32_t>(getCreature()->getInRangePlayersCount());
-        uint32_t r = Util::getRandomUInt(count - 1);
-        count = 0;
-        for (const auto& itr : getCreature()->getInRangePlayersSet())
-        {
-            if (count == r)
-            {
-                target = static_cast<Player*>(itr);
-                break;
-            }
-            ++count;
-        }
-
-        return target;
     }
 
     void OnCombatStart(Unit* /*pTarget*/) override
@@ -791,15 +749,15 @@ class ColdflameAI : public CreatureAIScript
             if (LordMarrowgarAI* marrowgarAI = static_cast<LordMarrowgarAI*>(static_cast<Creature*>(summoner)->GetScript()))
             {
                 LocationVector const* ownerPos = marrowgarAI->GetLastColdflamePosition();
-
                 float angle = ownerPos->o / M_PI_FLOAT * 180.0f;
-                getCreature()->SetOrientation(ownerPos->o);
+                MoveTeleport(ownerPos->x , ownerPos->y, ownerPos->z, ownerPos->o);
                 // Store last Coldflame Position and add 90 degree to create x pattern
                 LocationVector nextPos;
                 nextPos.x = ownerPos->x;
                 nextPos.y = ownerPos->y;
                 nextPos.z = ownerPos->z;
                 nextPos.o = angle + 90 * M_PI_FLOAT / 180.0f;
+
                 marrowgarAI->SetLastColdflamePosition(nextPos);
             }
         }
@@ -1088,7 +1046,7 @@ class BoneSpikeGraveyard : public SpellScript
             for (const auto& itr : caster->getInRangePlayersSet())
             {
                 Player* obj = static_cast<Player*>(itr);
-                if (obj != mt)
+                if (obj != mt && CheckTarget(obj, caster->GetScript()))
                     players.push_back(obj);
             }
 
@@ -1134,9 +1092,9 @@ public:
         // select any unit but not the tank 
         if (pCreature)
         {
-            coldflametarget = GetRandomTargetNotMainTank(pCreature);
+            coldflametarget = pCreature->GetScript()->getBestPlayerTarget(TargetFilter_NotCurrent);
             if (!coldflametarget)
-                coldflametarget = GetRandomTarget(pCreature);
+                coldflametarget = pCreature->GetScript()->getBestPlayerTarget(TargetFilter_Aggroed);
 
             if (coldflametarget)
             {
@@ -1154,49 +1112,6 @@ public:
         spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), spell->damage, true);
 
         return SpellScriptExecuteState::EXECUTE_PREVENT;
-    }
-
-    Unit* GetRandomTargetNotMainTank(Creature* caster)
-    {
-        Unit* target = nullptr;
-        std::vector<Player*> players;
-
-        Unit* mt = caster->GetAIInterface()->GetMostHated();
-        if (mt == nullptr || !mt->isPlayer())
-            return 0;
-
-        for (const auto& itr : caster->getInRangePlayersSet())
-        {
-            Player* obj = static_cast<Player*>(itr);
-            if (obj != mt)
-                players.push_back(obj);
-        }
-
-        if (players.size())
-            target = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
-
-        return target;
-    }
-
-    Unit* GetRandomTarget(Creature* caster)
-    {
-        Unit* target = nullptr;
-        std::vector<Player*> players;
-
-        uint32_t count = static_cast<uint32_t>(caster->getInRangePlayersCount());
-        uint32_t r = Util::getRandomUInt(count - 1);
-        count = 0;
-        for (const auto& itr : caster->getInRangePlayersSet())
-        {
-            if (count == r)
-            {
-                target = static_cast<Player*>(itr);
-                break;
-            }
-            ++count;
-        }
-
-        return target;
     }
 };
 
