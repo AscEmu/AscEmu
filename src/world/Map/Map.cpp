@@ -105,12 +105,9 @@ CellSpawns* Map::GetSpawnsListAndCreate(uint32 cellx, uint32 celly)
     return spawns[cellx][celly];
 }
 
-#define CREATURESPAWNSFIELDCOUNT 27
-#define GOSPAWNSFIELDCOUNT 18
-
 void Map::LoadSpawns(bool reload)
 {
-    if (reload)   //perform cleanup
+    if (reload) // perform cleanup
     { 
         for (uint32 x = 0; x < _sizeX; x++)
         {
@@ -144,7 +141,6 @@ void Map::LoadSpawns(bool reload)
 
         if (!spawns[cellx][celly])
             spawns[cellx][celly] = new CellSpawns;
-
 
         spawns[cellx][celly]->CreatureSpawns.push_back(cspawn);
         ++CreatureSpawnCount;
@@ -185,6 +181,5 @@ void Map::LoadSpawns(bool reload)
             ++GameObjectSpawnCount;
         }
     }
-
     LogDetail("MapMgr : %u creatures / %u gobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
 }
