@@ -56,7 +56,6 @@ public:
 
     void OnGameObjectPushToWorld(GameObject* pGameObject) override
     {
-
         switch (pGameObject->getEntry())
         {
         case GO_MARROWGAR_ICEWALL_1:
@@ -1252,6 +1251,8 @@ public:
     {
         if (effectIndex == EFF_INDEX_2)
             return SpellScriptExecuteState::EXECUTE_PREVENT;
+
+        return SpellScriptExecuteState::EXECUTE_OK;
     }
 };
 
