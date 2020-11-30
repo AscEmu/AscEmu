@@ -4257,6 +4257,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
         {
             // Generate threat
             victim->GetAIInterface()->AttackReaction(this, damage, spellId);
+            sScriptMgr.DamageTaken(static_cast<Creature*>(victim), this, &damage);
         }
     }
 
@@ -4866,6 +4867,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
         {
             // Generate threat
             GetAIInterface()->AttackReaction(attacker, damage, spellId);
+            sScriptMgr.DamageTaken(static_cast<Creature*>(this), attacker, &damage);
         }
 
         // Hackfix - Ardent Defender

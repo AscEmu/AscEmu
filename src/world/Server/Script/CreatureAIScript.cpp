@@ -139,12 +139,12 @@ void CreatureAISpells::sendAnnouncement(CreatureAIScript* creatureAI)
     }
 }
 
-void CreatureAISpells::setCustomTarget(Creature* targetCreature)
+void CreatureAISpells::setCustomTarget(Unit* targetCreature)
 {
     mCustomTargetCreature = targetCreature;
 }
 
-Creature* CreatureAISpells::getCustomTarget()
+Unit* CreatureAISpells::getCustomTarget()
 {
     return mCustomTargetCreature;
 }

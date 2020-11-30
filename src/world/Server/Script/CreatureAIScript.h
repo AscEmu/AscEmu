@@ -140,9 +140,9 @@ public:
     void setAnnouncement(std::string announcement);
     void sendAnnouncement(CreatureAIScript* creatureAI);
 
-    Creature* mCustomTargetCreature;
-    void setCustomTarget(Creature* targetCreature);
-    Creature* getCustomTarget();
+    Unit* mCustomTargetCreature;
+    void setCustomTarget(Unit* targetCreature);
+    Unit* getCustomTarget();
 };
 
 struct scriptEvent
@@ -289,6 +289,7 @@ public:
     virtual void OnCombatStart(Unit* /*_target*/) {}
     virtual void OnCombatStop(Unit* /*_target*/) {}
     virtual void OnDamageTaken(Unit* /*_attacker*/, uint32_t /*_amount*/) {}
+    virtual void DamageTaken(Unit* _attacker, uint32_t* damage) {} // Warning triggers before dmg applied, you can modify the damage done here
     virtual void OnCastSpell(uint32_t /*_spellId*/) {}
     virtual void OnTargetParried(Unit* /*_target*/) {}
     virtual void OnTargetDodged(Unit* /*_target*/) {}

@@ -523,6 +523,29 @@ void ScriptMgr::DumpUnimplementedSpells()
     LOG_BASIC("Dumped %u IDs.", count);
 }
 
+void ScriptMgr::DamageTaken(Creature* pCreature, Unit* attacker, uint32_t* damage) const
+{
+    const auto AIScript = getCreatureAIScript(pCreature);
+    if (AIScript == nullptr)
+        return;
+
+    return AIScript->DamageTaken(attacker, damage);
+}
+
+CreatureAIScript* ScriptMgr::getCreatureAIScript(Creature* pCreature) const
+{
+    for (const auto& itr : _creatures)
+    {
+        if (itr.first == pCreature->getEntry())
+        {
+            exp_create_creature_ai function_ptr = itr.second;
+            return (function_ptr)(pCreature);
+        }
+    }
+
+    return nullptr;
+}
+
 void ScriptMgr::register_creature_script(uint32 entry, exp_create_creature_ai callback)
 {
     m_creaturesMutex.Acquire();

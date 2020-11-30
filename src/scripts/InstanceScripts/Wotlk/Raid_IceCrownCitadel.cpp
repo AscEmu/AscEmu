@@ -412,7 +412,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// IceCrown Teleporter
+/// IceCrown Teleporter
 class ICCTeleporterGossip : public GossipScript
 {
 public:
@@ -489,8 +489,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Boss: Lord Marrowgar
-//////////////////////////////////////////////////////////////////////////////////////////
+/// Boss: Lord Marrowgar
 class LordMarrowgarAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LordMarrowgarAI)
@@ -519,6 +518,7 @@ class LordMarrowgarAI : public CreatureAIScript
         berserkSpell->addDBEmote(SAY_MARR_BERSERK);                  // THE MASTER'S RAGE COURSES THROUGH ME!
         berserkSpell->mIsTriggered = true;
 
+        // Messages
         addEmoteForEvent(Event_OnCombatStart, SAY_MARR_AGGRO);     // The Scourge will wash over this world as a swarm of death and destruction!
         addEmoteForEvent(Event_OnTargetDied, SAY_MARR_KILL_1);      // More bones for the offering!
         addEmoteForEvent(Event_OnTargetDied, SAY_MARR_KILL_2);      // Languish in damnation!
@@ -531,6 +531,33 @@ class LordMarrowgarAI : public CreatureAIScript
         introDone = true;
     }
 
+    void OnCombatStart(Unit* /*pTarget*/) override
+    {
+        // common events
+        scriptEvents.addEvent(EVENT_ENABLE_BONE_SLICE, 10000);
+        scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(10000, 15000));
+        scriptEvents.addEvent(EVENT_COLDFLAME, 5000);
+        scriptEvents.addEvent(EVENT_WARN_BONE_STORM, Util::getRandomInt(45000, 50000));
+        scriptEvents.addEvent(EVENT_ENRAGE, 600000);
+    }
+
+    void OnCombatStop(Unit* /*_target*/) override
+    {
+        Reset();
+    }
+
+    void Reset()
+    {
+        scriptEvents.resetEvents();
+
+        getCreature()->setSpeedRate(TYPE_RUN, baseSpeed, true);
+        getCreature()->RemoveAura(SPELL_BONE_STORM);
+        getCreature()->RemoveAura(SPELL_BERSERK);
+
+        boneSlice = false;
+        boneSpikeImmune.clear();
+    }
+
     void AIUpdate() override
     {
         if (!_isInCombat())
@@ -538,7 +565,7 @@ class LordMarrowgarAI : public CreatureAIScript
 
         scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
 
-        if (getCreature()->isCastingSpell())
+        if (_isCasting())
             return;
 
         while (uint32_t eventId = scriptEvents.getFinishedEvent())
@@ -607,7 +634,12 @@ class LordMarrowgarAI : public CreatureAIScript
      
         // We should not melee attack when storming
         if (getCreature()->HasAura(SPELL_BONE_STORM))
+        {
+            _setMeleeDisabled(true);
             return;
+        }
+
+        _setMeleeDisabled(false);
 
         // 10 seconds since encounter start Bone Slice replaces melee attacks
         if (boneSlice)
@@ -625,32 +657,6 @@ class LordMarrowgarAI : public CreatureAIScript
     void SetLastColdflamePosition(LocationVector pos)
     {
         coldflameLastPos = pos;
-    }
-
-    void OnCombatStart(Unit* /*pTarget*/) override
-    {
-        scriptEvents.addEvent(EVENT_ENABLE_BONE_SLICE, 10000);
-        scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(10000, 15000));
-        scriptEvents.addEvent(EVENT_COLDFLAME, 5000);
-        scriptEvents.addEvent(EVENT_WARN_BONE_STORM, Util::getRandomInt(45000, 50000));
-        scriptEvents.addEvent(EVENT_ENRAGE, 600000);
-    }
-
-    void OnCombatStop(Unit* /*_target*/) override
-    {
-        Reset();
-    }
-
-    void Reset()
-    {
-        getCreature()->setSpeedRate(TYPE_RUN, baseSpeed, true);
-        getCreature()->RemoveAura(SPELL_BONE_STORM);
-        getCreature()->RemoveAura(SPELL_BERSERK);
-
-        scriptEvents.resetEvents();
-
-        boneSlice = false;
-        boneSpikeImmune.clear();
     }
 
     virtual void SetCreatureData64(uint32 Type, uint64 Data)
@@ -719,9 +725,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Misc: Cold Flame
-//////////////////////////////////////////////////////////////////////////////////////////
-
+/// Misc: Cold Flame
 class ColdflameAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ColdflameAI)
@@ -815,9 +819,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Misc: Bone Spike
-//////////////////////////////////////////////////////////////////////////////////////////
-
+/// Misc: Bone Spike
 class BoneSpikeAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI)
@@ -882,9 +884,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Spell: Bone Storm
-//////////////////////////////////////////////////////////////////////////////////////////
-
+/// Spell: Bone Storm
 class BoneStorm : public SpellScript
 {
 public:
@@ -902,9 +902,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Spell: Bone Storm Damage
-//////////////////////////////////////////////////////////////////////////////////////////
-
+/// Spell: Bone Storm Damage
 class BoneStormDamage : public SpellScript
 {
 public:
@@ -924,9 +922,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Spell: Bone Spike Graveyard
-//////////////////////////////////////////////////////////////////////////////////////////
-
+/// Spell: Bone Spike Graveyard
 class BoneSpikeGraveyard : public SpellScript
 {
     public:
@@ -1020,9 +1016,7 @@ class BoneSpikeGraveyard : public SpellScript
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Spell: Coldflame
-//////////////////////////////////////////////////////////////////////////////////////////
-
+/// Spell: Coldflame
 class Coldflame : public SpellScript
 {
 public:
@@ -1066,9 +1060,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Spell: Coldflame Bone Storm
-//////////////////////////////////////////////////////////////////////////////////////////
-
+/// Spell: Coldflame Bone Storm
 class ColdflameBonestorm : public SpellScript
 {
 public:
@@ -1085,9 +1077,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Spell: Coldflame Damage
-//////////////////////////////////////////////////////////////////////////////////////////
-
+/// Spell: Coldflame Damage
 class ColdflameDamage: public SpellScript
 {
 public:
@@ -1130,9 +1120,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Spell: Bone Slice
-//////////////////////////////////////////////////////////////////////////////////////////
-
+/// Spell: Bone Slice
 class BoneSlice : public SpellScript
 {
 public:
@@ -1179,10 +1167,300 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Boss: Lady Deathwhisper
-//////////////////////////////////////////////////////////////////////////////////////////
+/// Boss: Lady Deathwhisper
+class LadyDeathwhisperAI : public CreatureAIScript
+{
+    ADD_CREATURE_FACTORY_FUNCTION(LadyDeathwhisperAI)
+        explicit LadyDeathwhisperAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Instance Script
+        mInstance = getInstanceScript();
+       
+        dominateMindCount = RAID_MODE<uint8_t>(0, 1, 1, 3);
+        introDone = false;
 
-///////////////////////////////////////////////////////
+        // Scripted Spells not autocastet
+        shadowChannelingSpell = addAISpell(SPELL_SHADOW_CHANNELING, 0.0f, TARGET_SELF);
+        manaBarrierSpell = addAISpell(SPELL_MANA_BARRIER, 0.0f, TARGET_SELF);
+        manaBarrierSpell->mIsTriggered = true;
+
+        deathAndDecaySpell = addAISpell(SPELL_DEATH_AND_DECAY, 0.0f, TARGET_CUSTOM);
+        dominateMindHeroSpell = addAISpell(SPELL_DOMINATE_MIND_H, 0.0f, TARGET_CUSTOM);
+        shadowBoltSpell = addAISpell(SPELL_SHADOW_BOLT, 0.0f, TARGET_CUSTOM);
+        frostBoltSpell = addAISpell(SPELL_FROSTBOLT, 0.0f, TARGET_RANDOM_SINGLE);
+        frostBoltVolleySpell = addAISpell(SPELL_FROSTBOLT_VOLLEY, 0.0f, TARGET_ATTACKING);
+        touchOfInsignifcanceSpell = addAISpell(SPELL_TOUCH_OF_INSIGNIFICANCE, 0.0f, TARGET_ATTACKING);
+        summonShadeSpell = addAISpell(SPELL_SUMMON_SHADE, 0.0f, TARGET_CUSTOM);
+        berserkSpell = addAISpell(SPELL_BERSERK, 0.0f, TARGET_SELF);
+
+        // Messages
+        addEmoteForEvent(Event_OnCombatStart, SAY_LADY_AGGRO);     
+        addEmoteForEvent(Event_OnTargetDied, SAY_LADY_DEAD);            
+        addEmoteForEvent(Event_OnDied, SAY_LADY_DEATH);            
+    }
+
+    void OnLoad()
+    {
+        ///\todo Add SpellImmunities
+        sendDBChatMessage(SAY_LADY_INTRO_1);
+        setScriptPhase(PHASE_INTRO);
+        scriptEvents.addEvent(EVENT_INTRO_2, 11000, PHASE_INTRO);
+        scriptEvents.addEvent(EVENT_INTRO_3, 21000, PHASE_INTRO);
+        scriptEvents.addEvent(EVENT_INTRO_4, 31500, PHASE_INTRO);
+        scriptEvents.addEvent(EVENT_INTRO_5, 39500, PHASE_INTRO);
+        scriptEvents.addEvent(EVENT_INTRO_6, 48500, PHASE_INTRO);
+        scriptEvents.addEvent(EVENT_INTRO_7, 58000, PHASE_INTRO);
+        _castAISpell(shadowChannelingSpell);
+        introDone = true;
+    }
+
+    void OnCombatStart(Unit* /*pTarget*/) override
+    {
+        scriptEvents.resetEvents();       
+        setScriptPhase(PHASE_ONE);
+
+        // common events
+        scriptEvents.addEvent(EVENT_BERSERK, 600000);
+        scriptEvents.addEvent(EVENT_DEATH_AND_DECAY, 10000);
+
+        // phase one events
+        scriptEvents.addEvent(EVENT_P1_SUMMON_WAVE, 5000, PHASE_ONE);
+        scriptEvents.addEvent(EVENT_P1_SHADOW_BOLT, Util::getRandomUInt(5500, 6000), PHASE_ONE);
+        scriptEvents.addEvent(EVENT_P1_EMPOWER_CULTIST, Util::getRandomUInt(20000, 30000), PHASE_ONE);
+
+        if (mInstance->GetDifficulty() != MODE_NORMAL_10MEN)
+            scriptEvents.addEvent(EVENT_DOMINATE_MIND_H, 27000);
+
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        _setMeleeDisabled(true);
+        setRooted(true);
+
+        getCreature()->RemoveAura(SPELL_SHADOW_CHANNELING);
+        _castAISpell(manaBarrierSpell);
+    }
+
+    void OnCombatStop(Unit* /*_target*/) override
+    {
+        Reset();
+    }
+
+    void DamageTaken(Unit* _attacker, uint32* damage) override
+    {
+        // When Lady Deathwhsiper has her mana Barrier dont deal damage to her instead reduce her mana.
+        // todo Health Decreases visualy
+        if (getCreature()->HasAura(SPELL_MANA_BARRIER))
+        {
+            getCreature()->setPower(POWER_TYPE_MANA,(getCreature()->getPower(POWER_TYPE_MANA) - *damage));
+            *damage = 0;
+        }
+
+        // phase transition
+        if (getScriptPhase() == PHASE_ONE && *damage > uint32(getCreature()->getPower(POWER_TYPE_MANA)))
+        {
+            sendDBChatMessage(SAY_LADY_PHASE_2);
+            sendDBChatMessage(SAY_LADY_PHASE_2_EMOTE);
+            setRooted(false);
+            *damage -= getCreature()->getPower(POWER_TYPE_MANA);
+            getCreature()->setPower(POWER_TYPE_MANA, 0);
+            getCreature()->RemoveAura(SPELL_MANA_BARRIER);
+            setScriptPhase(PHASE_TWO);
+            scriptEvents.addEvent(EVENT_P2_FROSTBOLT, Util::getRandomUInt(10000, 12000), PHASE_TWO);
+            scriptEvents.addEvent(EVENT_P2_FROSTBOLT_VOLLEY, Util::getRandomUInt(19000, 21000), PHASE_TWO);
+            scriptEvents.addEvent(EVENT_P2_TOUCH_OF_INSIGNIFICANCE, Util::getRandomUInt(6000, 9000), PHASE_TWO);
+            scriptEvents.addEvent(EVENT_P2_SUMMON_SHADE, Util::getRandomUInt(12000, 15000), PHASE_TWO);
+            // on heroic mode Lady Deathwhisper is immune to taunt effects in phase 2 and continues summoning adds
+            if (_isHeroic())
+            {
+                ///\todo Add SpellImmunities
+                scriptEvents.addEvent(EVENT_P2_SUMMON_WAVE, 45000, PHASE_TWO);
+            }
+        }
+    }
+
+    void Reset()
+    {
+        getCreature()->setPower(POWER_TYPE_MANA, getCreature()->getMaxPower(POWER_TYPE_MANA));
+
+        ///\todo Add SpellImmunities
+        setScriptPhase(PHASE_ONE);
+        scriptEvents.resetEvents();
+
+        waveCounter = 0;
+        nextVengefulShadeTargetGUID = 0;
+        darnavanGUID = 0;
+
+        _castAISpell(shadowChannelingSpell);
+        getCreature()->RemoveAllAuras();
+    }
+
+    void AIUpdate() override
+    {
+        if (!_isInCombat() && !getScriptPhase() == PHASE_INTRO)
+            return;
+
+        scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
+
+        if (getCreature()->GetAIInterface()->getAiState() == AI_STATE_CASTING)
+            return;
+
+        while (uint32_t eventId = scriptEvents.getFinishedEvent())
+        {
+            switch (eventId)
+            {
+            case EVENT_INTRO_2:
+                sendDBChatMessage(SAY_LADY_INTRO_2);
+                break;
+            case EVENT_INTRO_3:
+                sendDBChatMessage(SAY_LADY_INTRO_3);
+                break;
+            case EVENT_INTRO_4:
+                sendDBChatMessage(SAY_LADY_INTRO_4);
+                break;
+            case EVENT_INTRO_5:
+                sendDBChatMessage(SAY_LADY_INTRO_5);
+                break;
+            case EVENT_INTRO_6:
+                sendDBChatMessage(SAY_LADY_INTRO_6);
+                break;
+            case EVENT_INTRO_7:
+                sendDBChatMessage(SAY_LADY_INTRO_7);
+                setScriptPhase(PHASE_ONE);
+                break;
+            case EVENT_DEATH_AND_DECAY:
+                if (Unit* target = getBestPlayerTarget())
+                {
+                    deathAndDecaySpell->setCustomTarget(target);
+                    _castAISpell(deathAndDecaySpell);
+                }
+                scriptEvents.addEvent(EVENT_DEATH_AND_DECAY, Util::getRandomUInt(22000, 30000));
+                break;
+            case EVENT_DOMINATE_MIND_H:
+                printf("EVENT_DEATH_AND_DECAY \n");
+                sendDBChatMessage(SAY_LADY_DOMINATE_MIND);
+                for (uint8 i = 0; i < dominateMindCount; i++)
+                    if (Unit* target = getBestPlayerTarget(TargetFilter_NotCurrent))
+                    {
+                        dominateMindHeroSpell->setCustomTarget(target);
+                        _castAISpell(dominateMindHeroSpell);
+                    }
+                scriptEvents.addEvent(EVENT_DOMINATE_MIND_H, Util::getRandomUInt(40000, 45000));
+                break;
+            case EVENT_P1_SUMMON_WAVE:
+                printf("EVENT_P1_SUMMON_WAVE \n");
+                SummonWavePhaseOne();
+                scriptEvents.addEvent(EVENT_P1_SUMMON_WAVE, _isHeroic() ? 45000 : 60000, PHASE_ONE);
+                break;
+            case EVENT_P1_SHADOW_BOLT:
+                if (Unit* target = getBestPlayerTarget())
+                {
+                    shadowBoltSpell->setCustomTarget(target);
+                    _castAISpell(shadowBoltSpell);
+                }
+                scriptEvents.addEvent(EVENT_P1_SHADOW_BOLT, Util::getRandomUInt(5000, 8000), PHASE_ONE);
+                break;
+            case EVENT_P1_REANIMATE_CULTIST:
+                printf("EVENT_P1_REANIMATE_CULTIST \n");
+                ReanimateCultist();
+                break;
+            case EVENT_P1_EMPOWER_CULTIST:
+                printf("EVENT_P1_EMPOWER_CULTIST \n");
+                EmpowerCultist();
+                scriptEvents.addEvent(EVENT_P1_EMPOWER_CULTIST, Util::getRandomUInt(18000, 25000));
+                break;
+            case EVENT_P2_FROSTBOLT:
+                printf("EVENT_P2_FROSTBOLT \n");
+                _castAISpell(frostBoltSpell);
+                scriptEvents.addEvent(EVENT_P2_FROSTBOLT, Util::getRandomUInt(10000, 11000), PHASE_TWO);
+                break;
+            case EVENT_P2_FROSTBOLT_VOLLEY:
+                printf("EVENT_P2_FROSTBOLT_VOLLEY \n");
+                _castAISpell(frostBoltVolleySpell);
+                scriptEvents.addEvent(EVENT_P2_FROSTBOLT_VOLLEY, Util::getRandomUInt(13000, 15000), PHASE_TWO);
+                break;
+            case EVENT_P2_TOUCH_OF_INSIGNIFICANCE:
+                printf("EVENT_P2_TOUCH_OF_INSIGNIFICANCE \n");
+                _castAISpell(touchOfInsignifcanceSpell);
+                scriptEvents.addEvent(EVENT_P2_TOUCH_OF_INSIGNIFICANCE, Util::getRandomUInt(9000, 13000), PHASE_TWO);
+                break;
+            case EVENT_P2_SUMMON_SHADE:
+                printf("EVENT_P2_SUMMON_SHADE \n");
+                if (Unit* shadeTarget = getBestPlayerTarget(TargetFilter_NotCurrent))
+                {
+                    summonShadeSpell->setCustomTarget(shadeTarget);
+                    nextVengefulShadeTargetGUID = shadeTarget->getGuid();
+                    _castAISpell(summonShadeSpell);
+                }
+                scriptEvents.addEvent(EVENT_P2_SUMMON_SHADE, Util::getRandomUInt(18000, 23000), PHASE_TWO);
+                break;
+            case EVENT_P2_SUMMON_WAVE:
+                printf("EVENT_P2_SUMMON_WAVE \n");
+                SummonWavePhaseTwo();
+                scriptEvents.addEvent(EVENT_P2_SUMMON_WAVE, 45000, PHASE_TWO);
+                break;
+            case EVENT_BERSERK:
+                _castAISpell(berserkSpell);
+                sendDBChatMessage(SAY_LADY_BERSERK);
+                break;
+            }
+        }
+
+        // We should not melee attack when barrier is up
+        if (getCreature()->HasAura(SPELL_MANA_BARRIER))
+        {
+            _setMeleeDisabled(true);
+            return;
+        }
+
+        _setMeleeDisabled(false);
+    }
+
+
+    // summoning function for first phase
+    void SummonWavePhaseOne()
+    {    
+        ++waveCounter;
+    }
+
+    // summoning function for second phase
+    void SummonWavePhaseTwo()
+    {       
+        ++waveCounter;
+    }
+
+    void ReanimateCultist()
+    {
+
+    }
+
+    void EmpowerCultist()
+    {
+        
+    }
+
+protected:
+    // Common
+    InstanceScript* mInstance;
+    uint64_t nextVengefulShadeTargetGUID;
+    uint64_t darnavanGUID;
+    std::deque<uint64_t> reanimationQueue;
+    uint32_t waveCounter;
+    uint8_t dominateMindCount;
+    bool introDone;
+
+    // Spells
+    CreatureAISpells* shadowChannelingSpell;
+    CreatureAISpells* manaBarrierSpell;
+    CreatureAISpells* deathAndDecaySpell;
+    CreatureAISpells* dominateMindHeroSpell;
+    CreatureAISpells* shadowBoltSpell;
+    CreatureAISpells* frostBoltSpell;
+    CreatureAISpells* frostBoltVolleySpell;
+    CreatureAISpells* touchOfInsignifcanceSpell;
+    CreatureAISpells* summonShadeSpell;
+    CreatureAISpells* berserkSpell;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Boss: Valithria Dreamwalker
 // ...
 //
@@ -1190,13 +1468,8 @@ public:
 //
 //
 
-///////////////////////////////////////////////////////
-// Boss: Gunship Battle Alliance
-// ...
-//
-//
-//
-//
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Boss: Gunship Battle Alliance
 class MuradinGossip : public GossipScript
 {
 public:
@@ -1266,7 +1539,7 @@ void SetupICC(ScriptMgr* mgr)
 
     //Bosses
     mgr->register_creature_script(CN_LORD_MARROWGAR, &LordMarrowgarAI::Create);
-    //mgr->register_creature_script(CN_LADY_DEATHWHISPER, &LadyDeathwhisperAI::Create);
+    mgr->register_creature_script(CN_LADY_DEATHWHISPER, &LadyDeathwhisperAI::Create);
     //mgr->register_creature_script(CN_VALITHRIA_DREAMWALKER, &ValithriaDreamwalkerAI::Create);
 
     //Spell Bone Storm

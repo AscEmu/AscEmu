@@ -210,6 +210,10 @@ class SERVER_DECL ScriptMgr
         void register_spell_script(uint32_t spellId, SpellScript* ss);
         void register_spell_script(uint32_t* spellIds, SpellScript* ss);
 
+        // Creature AI script hooks
+        void DamageTaken(Creature* pCreature, Unit* attacker, uint32_t* damage) const;
+        CreatureAIScript* getCreatureAIScript(Creature* pCreature) const;
+
         // MIT End
         // APGL Start
 
