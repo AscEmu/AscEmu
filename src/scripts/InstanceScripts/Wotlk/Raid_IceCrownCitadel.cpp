@@ -682,7 +682,7 @@ class LordMarrowgarAI : public CreatureAIScript
         case DATA_SPIKE_IMMUNE + 1:
         case DATA_SPIKE_IMMUNE + 2:
         {
-            int32_t index = Type - DATA_SPIKE_IMMUNE;
+            uint32_t index = Type - DATA_SPIKE_IMMUNE;
             if (index < boneSpikeImmune.size())
                 return boneSpikeImmune[index];
 
@@ -1131,8 +1131,8 @@ public:
 
         if (!targetCount)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
-
-        *dmg = float2int32(*dmg / targetCount);
+        
+        *dmg = float2int32(*dmg / (float)targetCount);
         return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
     }
 
@@ -1201,6 +1201,9 @@ class LadyDeathwhisperAI : public CreatureAIScript
 
     void OnLoad()
     {
+        if (!_isInCombat() && !getScriptPhase() == PHASE_INTRO)
+            return;
+
         ///\todo Add SpellImmunities
         sendDBChatMessage(SAY_LADY_INTRO_1);
         setScriptPhase(PHASE_INTRO);
@@ -1328,13 +1331,14 @@ class LadyDeathwhisperAI : public CreatureAIScript
             case EVENT_DEATH_AND_DECAY:
                 if (Unit* target = getBestPlayerTarget())
                 {
+                    printf("EVENT_DEATH_AND_DECAY \n");
                     deathAndDecaySpell->setCustomTarget(target);
                     _castAISpell(deathAndDecaySpell);
                 }
                 scriptEvents.addEvent(EVENT_DEATH_AND_DECAY, Util::getRandomUInt(22000, 30000));
                 break;
             case EVENT_DOMINATE_MIND_H:
-                printf("EVENT_DEATH_AND_DECAY \n");
+                printf("EVENT_DOMINATE_MIND_H \n");
                 sendDBChatMessage(SAY_LADY_DOMINATE_MIND);
                 for (uint8 i = 0; i < dominateMindCount; i++)
                     if (Unit* target = getBestPlayerTarget(TargetFilter_NotCurrent))
