@@ -1244,16 +1244,10 @@ class LadyDeathwhisperAI : public CreatureAIScript
         Reset();
     }
 
+    ///\ todo Health Decreases visualy
     void DamageTaken(Unit* _attacker, uint32* damage) override
     {
         // When Lady Deathwhsiper has her mana Barrier dont deal damage to her instead reduce her mana.
-        // todo Health Decreases visualy
-        if (getCreature()->HasAura(SPELL_MANA_BARRIER))
-        {
-            getCreature()->setPower(POWER_TYPE_MANA,(getCreature()->getPower(POWER_TYPE_MANA) - *damage));
-            *damage = 0;
-        }
-
         // phase transition
         if (getScriptPhase() == PHASE_ONE && *damage > uint32(getCreature()->getPower(POWER_TYPE_MANA)))
         {
@@ -1274,6 +1268,11 @@ class LadyDeathwhisperAI : public CreatureAIScript
                 ///\todo Add SpellImmunities
                 scriptEvents.addEvent(EVENT_P2_SUMMON_WAVE, 45000, PHASE_TWO);
             }
+        }
+        else
+        {
+            getCreature()->setPower(POWER_TYPE_MANA,(getCreature()->getPower(POWER_TYPE_MANA) - *damage));
+            *damage = 0;
         }
     }
 
