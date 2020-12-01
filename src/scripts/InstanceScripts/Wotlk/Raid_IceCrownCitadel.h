@@ -616,7 +616,17 @@ enum MiscInfo
 };
 
 uint32 const SummonEntries[2] = { NPC_CULT_FANATIC, NPC_CULT_ADHERENT };
+
 uint32 const BoneSpikeSummonId[3] = { 69062, 72669, 72670 };
+
+uint32_t boneStormIds[] =
+{
+    SPELL_BONE_STORM_EFFECT,
+    SPELL_BONE_STORM_25,
+    SPELL_BONE_STORM_Heroic,
+    SPELL_BONE_STORM_Heroic_25,
+    0
+};
 
 LocationVector const LadyDeathwhisperSummonPositions[7] =
 {

@@ -1180,18 +1180,18 @@ class LadyDeathwhisperAI : public CreatureAIScript
         introDone = false;
 
         // Scripted Spells not autocastet
-        shadowChannelingSpell = addAISpell(SPELL_SHADOW_CHANNELING, 0.0f, TARGET_SELF);
-        manaBarrierSpell = addAISpell(SPELL_MANA_BARRIER, 0.0f, TARGET_SELF);
+        shadowChannelingSpell           = addAISpell(SPELL_SHADOW_CHANNELING, 0.0f, TARGET_SELF);
+        manaBarrierSpell                = addAISpell(SPELL_MANA_BARRIER, 0.0f, TARGET_SELF);
         manaBarrierSpell->mIsTriggered = true;
 
-        deathAndDecaySpell = addAISpell(SPELL_DEATH_AND_DECAY, 0.0f, TARGET_CUSTOM);
-        dominateMindHeroSpell = addAISpell(SPELL_DOMINATE_MIND_H, 0.0f, TARGET_CUSTOM);
-        shadowBoltSpell = addAISpell(SPELL_SHADOW_BOLT, 0.0f, TARGET_CUSTOM);
-        frostBoltSpell = addAISpell(SPELL_FROSTBOLT, 0.0f, TARGET_RANDOM_SINGLE);
-        frostBoltVolleySpell = addAISpell(SPELL_FROSTBOLT_VOLLEY, 0.0f, TARGET_ATTACKING);
-        touchOfInsignifcanceSpell = addAISpell(SPELL_TOUCH_OF_INSIGNIFICANCE, 0.0f, TARGET_ATTACKING);
-        summonShadeSpell = addAISpell(SPELL_SUMMON_SHADE, 0.0f, TARGET_CUSTOM);
-        berserkSpell = addAISpell(SPELL_BERSERK, 0.0f, TARGET_SELF);
+        deathAndDecaySpell              = addAISpell(SPELL_DEATH_AND_DECAY, 0.0f, TARGET_CUSTOM);
+        dominateMindHeroSpell           = addAISpell(SPELL_DOMINATE_MIND_H, 0.0f, TARGET_CUSTOM);
+        shadowBoltSpell                 = addAISpell(SPELL_SHADOW_BOLT, 0.0f, TARGET_CUSTOM);
+        frostBoltSpell                  = addAISpell(SPELL_FROSTBOLT, 0.0f, TARGET_RANDOM_SINGLE);
+        frostBoltVolleySpell            = addAISpell(SPELL_FROSTBOLT_VOLLEY, 0.0f, TARGET_ATTACKING);
+        touchOfInsignifcanceSpell       = addAISpell(SPELL_TOUCH_OF_INSIGNIFICANCE, 0.0f, TARGET_ATTACKING);
+        summonShadeSpell                = addAISpell(SPELL_SUMMON_SHADE, 0.0f, TARGET_CUSTOM);
+        berserkSpell                    = addAISpell(SPELL_BERSERK, 0.0f, TARGET_SELF);
 
         // Messages
         addEmoteForEvent(Event_OnCombatStart, SAY_LADY_AGGRO);     
@@ -1514,12 +1514,12 @@ class CultAdherentAI : public CreatureAIScript
         // Instance Script
         mInstance = getInstanceScript();
 
-        temporalVisualSpell = addAISpell(SPELL_TELEPORT_VISUAL, 0.0f, TARGET_SELF);
-        frostFeverSpell = addAISpell(EVENT_ADHERENT_FROST_FEVER, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(10000, 12000));
-        deathchillSpell = addAISpell(EVENT_ADHERENT_DEATHCHILL, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(14000, 16000));
-        curseOfTorporSpell = addAISpell(EVENT_ADHERENT_CURSE_OF_TORPOR, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(14000, 16000));
-        shroudOfTheOccultSpell = addAISpell(EVENT_ADHERENT_SHORUD_OF_THE_OCCULT, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(32000, 39000));
-        cultistDarkMartyrdomSpell = addAISpell(EVENT_CULTIST_DARK_MARTYRDOM, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(18000, 32000));
+        temporalVisualSpell         = addAISpell(SPELL_TELEPORT_VISUAL, 0.0f, TARGET_SELF);
+        frostFeverSpell             = addAISpell(SPELL_FROST_FEVER, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(10000, 12000));
+        deathchillSpell             = addAISpell(SPELL_DEATHCHILL_BLAST, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(14000, 16000));
+        curseOfTorporSpell          = addAISpell(SPELL_CURSE_OF_TORPOR, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(14000, 16000));
+        shroudOfTheOccultSpell      = addAISpell(SPELL_SHORUD_OF_THE_OCCULT, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(32000, 39000));
+        cultistDarkMartyrdomSpell   = addAISpell(SPELL_DARK_MARTYRDOM_ADHERENT, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(18000, 32000));
     }
 
     void OnLoad()
@@ -1565,11 +1565,11 @@ class CultFanaticAI : public CreatureAIScript
         // Instance Script
         mInstance = getInstanceScript();
 
-        temporalVisualSpell = addAISpell(SPELL_TELEPORT_VISUAL, 0.0f, TARGET_SELF);
-        necroticStrikeSpell = addAISpell(EVENT_FANATIC_NECROTIC_STRIKE, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(10000, 12000));
-        shadowCleaveSpell = addAISpell(EVENT_FANATIC_SHADOW_CLEAVE, 100.0f, TARGET_ATTACKING, 0 , Util::getRandomUInt(14000, 16000));
-        vampireMightSpell = addAISpell(EVENT_FANATIC_VAMPIRIC_MIGHT, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(20000, 27000));
-        darkMartyrdomSpell = addAISpell(EVENT_CULTIST_DARK_MARTYRDOM, 100.0f, TARGET_SELF, 0 , Util::getRandomUInt(18000, 32000));
+        temporalVisualSpell         = addAISpell(SPELL_TELEPORT_VISUAL, 0.0f, TARGET_SELF);
+        necroticStrikeSpell         = addAISpell(SPELL_NECROTIC_STRIKE, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(10000, 12000));
+        shadowCleaveSpell           = addAISpell(SPELL_SHADOW_CLEAVE, 100.0f, TARGET_ATTACKING, 0 , Util::getRandomUInt(14000, 16000));
+        vampireMightSpell           = addAISpell(SPELL_VAMPIRIC_MIGHT, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(20000, 27000));
+        darkMartyrdomSpell          = addAISpell(SPELL_DARK_MARTYRDOM_ADHERENT, 100.0f, TARGET_SELF, 0 , Util::getRandomUInt(18000, 32000));
     }
 
     void OnLoad()
@@ -1687,14 +1687,6 @@ void SetupICC(ScriptMgr* mgr)
     //mgr->register_creature_script(CN_VALITHRIA_DREAMWALKER, &ValithriaDreamwalkerAI::Create);
 
     //Spell Bone Storm
-    uint32_t boneStormIds[] =
-    {
-        SPELL_BONE_STORM_EFFECT,
-        SPELL_BONE_STORM_25,
-        SPELL_BONE_STORM_Heroic,
-        SPELL_BONE_STORM_Heroic_25,
-        0
-    };
     mgr->register_spell_script(boneStormIds, new BoneStormDamage);
     mgr->register_spell_script(SPELL_BONE_STORM, new BoneStorm);
 
