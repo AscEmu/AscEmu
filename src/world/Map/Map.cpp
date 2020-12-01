@@ -178,6 +178,8 @@ void Map::LoadSpawns(bool reload)
 
                 if (!spawns[cellx][celly])
                     spawns[cellx][celly] = new CellSpawns;
+
+                spawns[cellx][celly]->GameobjectSpawns.push_back(go_spawn);
             }
 
             ++GameObjectSpawnCount;
