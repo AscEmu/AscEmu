@@ -180,7 +180,7 @@ public:
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER, -17.156807f, -1.633260f, 20.81273f, 4.52672f);
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_MURADIN_BRONZEBEARD, 13.51547f, -0.160213f, 20.87252f, 3.10672f);
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_HIHG_CAPTAIN_JUSTIN_BARTLETT, 42.78902f, -0.010491f, 25.24052f, 3.00672f);
-                AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_HIGH_OVERLORD_SAURFANG_NOT_VISUAL, -12.9806f, -22.9462f, 21.659f, 4.72416f);
+                AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_HIGH_OVERLORD_SAURFANG_NV, -12.9806f, -22.9462f, 21.659f, 4.72416f);
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_ZAFOD_BOOMBOX, 18.8042f, 9.907914f, 20.33559f, 3.10672f);
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_DECKHAND, -64.8423f, 4.4658f, 23.4352f, 2.698897f);
                 AllianceTransporterAllianceShip->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_DECKHAND, 35.54972f, 19.93269f, 25.0333f, 4.71242f);
@@ -281,7 +281,7 @@ public:
             {
                 HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_ORGRIMS_HAMMER, 1.845810f, 1.268872f, 34.526218f, 1.5890f);
                 HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_HIGH_OVERLORD_SAURFANG, 37.18615f, 0.00016f, 36.78849f, 3.13683f);
-                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_MURADIN_BRONZEBEARD_NOT_VISUAL, -7.09684f, 30.582f, 34.5013f, 1.53591f);
+                HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_MURADIN_BRONZEBEARD_NV, -7.09684f, 30.582f, 34.5013f, 1.53591f);
                 HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_INVISIBLE_STALKER, 37.30764f, -0.143823f, 36.7936f, 3.13683f);
                 HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_ZAFOD_BOOMBOX, 35.18615f, 15.30652f, 37.64343f, 3.05033f);
                 HordeTransporterHordeShip->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -13.19547f, -27.160213f, 35.47252f, 3.10672f);
@@ -438,7 +438,7 @@ public:
         if (pInstance->getData(CN_VALITHRIA_DREAMWALKER) == Finished)
             menu.addItem(GOSSIP_ICON_CHAT, 519, 4);      // Teleport to the Upper Spire.
 
-        if (pInstance->getData(CN_COLDFLAME) == Finished)
+        if (pInstance->getData(NPC_COLDFLAME) == Finished)
             menu.addItem(GOSSIP_ICON_CHAT, 520, 5);      // Teleport to Sindragosa's Lair.
 
         menu.sendGossipPacket(player);
@@ -1272,7 +1272,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
                 scriptEvents.addEvent(EVENT_P2_SUMMON_WAVE, 45000, PHASE_TWO);
             }
         }
-        else
+        else if (getCreature()->HasAura(SPELL_MANA_BARRIER))
         {
             getCreature()->setPower(POWER_TYPE_MANA,(getCreature()->getPower(POWER_TYPE_MANA) - *damage));
             *damage = 0;
@@ -1289,7 +1289,8 @@ class LadyDeathwhisperAI : public CreatureAIScript
 
         waveCounter = 0;
         nextVengefulShadeTargetGUID = 0;
-        darnavanGUID = 0;
+
+        DeleteSummons();
 
         _castAISpell(shadowChannelingSpell);
         getCreature()->RemoveAllAuras();
@@ -1417,17 +1418,57 @@ class LadyDeathwhisperAI : public CreatureAIScript
         _setMeleeDisabled(false);
     }
 
-
     // summoning function for first phase
     void SummonWavePhaseOne()
     {    
+        uint8 addIndex1 = waveCounter & 1;
+        uint8 addIndex2 = uint8(addIndex1 ^ 1);
+
+        // Todo summon Darnavan when weekly quest is active
+        if (waveCounter)
+            Summon(SummonEntries[addIndex1], LadyDeathwhisperSummonPositions[addIndex1 * 3]);
+
+        Summon(SummonEntries[addIndex2], LadyDeathwhisperSummonPositions[addIndex1 * 3 + 1]);
+        Summon(SummonEntries[addIndex1], LadyDeathwhisperSummonPositions[addIndex1 * 3 + 2]);
+
+        if (mInstance->GetDifficulty() == MODE_NORMAL_25MEN || mInstance->GetDifficulty() == MODE_HEROIC_25MEN)
+        {
+            Summon(SummonEntries[addIndex2], LadyDeathwhisperSummonPositions[addIndex2 * 3]);
+            Summon(SummonEntries[addIndex1], LadyDeathwhisperSummonPositions[addIndex2 * 3 + 1]);
+            Summon(SummonEntries[addIndex2], LadyDeathwhisperSummonPositions[addIndex2 * 3 + 2]);
+            Summon(SummonEntries[Util::getRandomUInt(0, 1)], LadyDeathwhisperSummonPositions[6]);
+        }
         ++waveCounter;
     }
 
     // summoning function for second phase
     void SummonWavePhaseTwo()
     {       
+        if (mInstance->GetDifficulty() == MODE_NORMAL_25MEN || mInstance->GetDifficulty() == MODE_HEROIC_25MEN)
+        {
+            uint8 addIndex1 = waveCounter & 1;
+            Summon(SummonEntries[addIndex1], LadyDeathwhisperSummonPositions[addIndex1 * 3]);
+            Summon(SummonEntries[addIndex1 ^ 1], LadyDeathwhisperSummonPositions[addIndex1 * 3 + 1]);
+            Summon(SummonEntries[addIndex1], LadyDeathwhisperSummonPositions[addIndex1 * 3 + 2]);
+        }
+        else
+            Summon(SummonEntries[Util::getRandomUInt(0, 1)], LadyDeathwhisperSummonPositions[6]);
         ++waveCounter;
+    }
+
+    void Summon(uint32 entry, const LocationVector& pos)
+    {
+        Creature* summon = spawnCreature(entry, pos);
+
+        if (summon)
+            summons.push_back(summon);
+    }
+
+    void DeleteSummons()
+    {
+        if (summons.size())
+            for (auto itr = summons.begin(); itr != summons.end();)
+                (*itr)->Despawn(0, 0);
     }
 
     void ReanimateCultist()
@@ -1444,11 +1485,11 @@ protected:
     // Common
     InstanceScript* mInstance;
     uint64_t nextVengefulShadeTargetGUID;
-    uint64_t darnavanGUID;
     std::deque<uint64_t> reanimationQueue;
     uint32_t waveCounter;
     uint8_t dominateMindCount;
     bool introDone;
+    std::list<Creature*> summons;
 
     // Spells
     CreatureAISpells* shadowChannelingSpell;
@@ -1461,6 +1502,106 @@ protected:
     CreatureAISpells* touchOfInsignifcanceSpell;
     CreatureAISpells* summonShadeSpell;
     CreatureAISpells* berserkSpell;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Misc: Cult Adherent
+class CultAdherentAI : public CreatureAIScript
+{
+    ADD_CREATURE_FACTORY_FUNCTION(CultAdherentAI)
+        explicit CultAdherentAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Instance Script
+        mInstance = getInstanceScript();
+
+        temporalVisualSpell = addAISpell(SPELL_TELEPORT_VISUAL, 0.0f, TARGET_SELF);
+        frostFeverSpell = addAISpell(EVENT_ADHERENT_FROST_FEVER, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(10000, 12000));
+        deathchillSpell = addAISpell(EVENT_ADHERENT_DEATHCHILL, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(14000, 16000));
+        curseOfTorporSpell = addAISpell(EVENT_ADHERENT_CURSE_OF_TORPOR, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(14000, 16000));
+        shroudOfTheOccultSpell = addAISpell(EVENT_ADHERENT_SHORUD_OF_THE_OCCULT, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(32000, 39000));
+        cultistDarkMartyrdomSpell = addAISpell(EVENT_CULTIST_DARK_MARTYRDOM, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(18000, 32000));
+    }
+
+    void OnLoad()
+    {
+        _castAISpell(temporalVisualSpell);
+    }
+
+    void OnCombatStart(Unit* /*pTarget*/) override
+    {
+
+    }
+
+    void OnCombatStop(Unit* /*_target*/) override
+    {
+    
+    }
+
+    void AIUpdate() override
+    {
+
+    }
+
+protected:
+    // Common
+    InstanceScript* mInstance;
+
+    // Spells
+    CreatureAISpells* temporalVisualSpell;
+    CreatureAISpells* frostFeverSpell;
+    CreatureAISpells* deathchillSpell;
+    CreatureAISpells* curseOfTorporSpell;
+    CreatureAISpells* shroudOfTheOccultSpell;
+    CreatureAISpells* cultistDarkMartyrdomSpell;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Misc: Cult Fanatic
+class CultFanaticAI : public CreatureAIScript
+{
+    ADD_CREATURE_FACTORY_FUNCTION(CultFanaticAI)
+        explicit CultFanaticAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Instance Script
+        mInstance = getInstanceScript();
+
+        temporalVisualSpell = addAISpell(SPELL_TELEPORT_VISUAL, 0.0f, TARGET_SELF);
+        necroticStrikeSpell = addAISpell(EVENT_FANATIC_NECROTIC_STRIKE, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(10000, 12000));
+        shadowCleaveSpell = addAISpell(EVENT_FANATIC_SHADOW_CLEAVE, 100.0f, TARGET_ATTACKING, 0 , Util::getRandomUInt(14000, 16000));
+        vampireMightSpell = addAISpell(EVENT_FANATIC_VAMPIRIC_MIGHT, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(20000, 27000));
+        darkMartyrdomSpell = addAISpell(EVENT_CULTIST_DARK_MARTYRDOM, 100.0f, TARGET_SELF, 0 , Util::getRandomUInt(18000, 32000));
+    }
+
+    void OnLoad()
+    {
+        _castAISpell(temporalVisualSpell);
+    }
+
+    void OnCombatStart(Unit* /*pTarget*/) override
+    {
+
+    }
+
+    void OnCombatStop(Unit* /*_target*/) override
+    {
+     
+    }
+
+    void AIUpdate() override
+    {
+
+    }
+
+protected:
+    // Common
+    InstanceScript* mInstance;
+
+    // Spells
+    CreatureAISpells* temporalVisualSpell;
+    CreatureAISpells* necroticStrikeSpell;
+    CreatureAISpells* shadowCleaveSpell;
+    CreatureAISpells* vampireMightSpell;
+    CreatureAISpells* darkMartyrdomSpell;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1573,6 +1714,9 @@ void SetupICC(ScriptMgr* mgr)
     mgr->register_creature_gossip(NPC_GB_MURADIN_BRONZEBEARD, MuradinGossipScript);
 
     //Misc
-    mgr->register_creature_script(CN_COLDFLAME, &ColdflameAI::Create);
-    mgr->register_creature_script(CN_BONE_SPIKE, &BoneSpikeAI::Create);
+    mgr->register_creature_script(NPC_COLDFLAME, &ColdflameAI::Create);
+    mgr->register_creature_script(NPC_BONE_SPIKE, &BoneSpikeAI::Create);
+
+    mgr->register_creature_script(NPC_CULT_FANATIC, CultFanaticAI::Create);
+    mgr->register_creature_script(NPC_CULT_ADHERENT, CultAdherentAI::Create);
 }
