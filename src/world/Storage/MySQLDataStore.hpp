@@ -387,8 +387,8 @@ public:
     GossipMenuInitMap _gossipMenuInitStore;
     GossipMenuItemsContainer _gossipMenuItemsStores;
 
-    CreatureSpawnsMap _creatureSpawnsStore[900];
-    GameobjectSpawnsMap _gameobjectSpawnsStore[900];
+    CreatureSpawnsMap _creatureSpawnsStore[MAX_NUM_MAPS + 1];
+    GameobjectSpawnsMap _gameobjectSpawnsStore[MAX_NUM_MAPS + 1];
 };
 
 #define sMySQLStore MySQLDataStore::getInstance()
