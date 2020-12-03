@@ -144,12 +144,22 @@ public:
 
     // Update NPC Position
     void UpdateNPCPositions(float x, float y, float z, float o);
+    void UpdateNPCPositions();
+
+    /// This method transforms supplied transport offsets into global coordinates
+    void CalculatePassengerPosition(float& x, float& y, float& z, float& o);
+
+    /// This method transforms supplied global coordinates into local offsets
+    void CalculatePassengerOffset(float& x, float& y, float& z, float& o);
 
     // Update Player POsition
     void UpdatePlayerPositions(float x, float y, float z, float o);
 
     // Builds Start Move Packet
     void BuildStartMovePacket(MapMgr* targetMap);
+
+    // Builds Wait Move Packet
+    void BuildWaitMovePacket(MapMgr* targetMap);
 
     // Builds Stop Move Packet
     void BuildStopMovePacket(MapMgr* targetMap);
@@ -180,6 +190,7 @@ public:
 
 private:
 
+    void UpdateForMap(MapMgr* map);
     void TeleportTransport(uint32 newMapid, uint32 oldmap, float x, float y, float z);
     void GetNextWaypoint();
     int32 m_period;

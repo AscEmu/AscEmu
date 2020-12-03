@@ -538,6 +538,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         // Load Transport in Instance
         Transporter*LoadTransportInInstance(MapMgr *instance, uint32 goEntry, uint32 period);
+        void LoadTransportForPlayers(Player* player);
 
         // Unloads Transporter from MapMgr
         void UnloadTransportFromInstance(Transporter *t);

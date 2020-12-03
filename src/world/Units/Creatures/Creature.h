@@ -206,6 +206,11 @@ public:
 
         // Misc
         uint32 GetSQL_id();
+        void SetTransportHomePosition(float x, float y, float z, float o) { m_transportHomePosition.x = x, m_transportHomePosition.y = y, m_transportHomePosition.z = z, m_transportHomePosition.o = o; }
+        void SetTransportHomePosition(const LocationVector &pos) { m_transportHomePosition = pos; }
+        void GetTransportHomePosition(float &x, float &y, float &z, float &ori) { x = m_transportHomePosition.x, y = m_transportHomePosition.y, z = m_transportHomePosition.z, ori = m_transportHomePosition.o; }
+        LocationVector GetTransportHomePosition() { return m_transportHomePosition; }
+        LocationVector m_transportHomePosition;
 
         virtual void setDeathState(DeathState s);
 

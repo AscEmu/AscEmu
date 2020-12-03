@@ -50,6 +50,7 @@ public:
         LadyDeathwisperEntranceDoorGUID = 0;
         
         addData(DATA_BONED_ACHIEVEMENT, uint32_t(true));
+        addData(DATA_GUNSHIP_EVENT, NotStarted);
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new IceCrownCitadelScript(pMapMgr); }
@@ -337,6 +338,8 @@ public:
 
             setSpawnsCreated();
         }
+        else
+            sObjectMgr.LoadTransportForPlayers(player);
     }
 
     void OnEncounterStateChange(uint32_t entry, uint32_t state) override
@@ -393,6 +396,60 @@ public:
             }
             break;
         }
+    }
+
+    //Function start motion of the ship
+    void StartFlyShip(Transporter* t)
+    {
+        t->BuildStartMovePacket(mInstance);
+        t->setDynamic(0x10830010); // Seen in sniffs
+        t->setParentRotation(3, 1.0f);
+
+        GameObjectProperties const* goinfo = t->GetGameObjectProperties();
+        t->GenerateWaypoints(goinfo->raw.parameter_0);      
+    }
+
+    //Function stop motion of the ship
+    void StopFlyShip(Transporter* t)
+    {
+        t->BuildStopMovePacket(mInstance);
+        RelocateTransport(t);    
+    }
+
+    void RelocateTransport(Transporter* t)
+    {
+        InstanceScript* instance = t->GetMapMgr()->GetScript();
+
+        if (!t || !instance)
+            return;
+
+        // Transoprt movemend on server-side is ugly hack, so we do sincronize positions
+        switch (t->getEntry())
+        {
+        case GO_THE_SKYBREAKER_ALLIANCE_ICC:
+            if (instance->getData(DATA_GUNSHIP_EVENT) != Performed)
+                static_cast<Object*>(t)->SetPosition(-377.184021f, 2073.548584f, 445.753387f, t->GetOrientation());
+            else if (instance->getData(DATA_GUNSHIP_EVENT) == Performed)
+                static_cast<Object*>(t)->SetPosition(-583.942627f, 2212.364990f, 534.673889f, t->GetOrientation());
+            break;
+        case GO_ORGRIM_S_HAMMER_ALLIANCE_ICC:
+            if (instance->getData(DATA_GUNSHIP_EVENT) != Performed)
+                static_cast<Object*>(t)->SetPosition(-384.878479f, 1989.831665f, 431.549438f, t->GetOrientation());
+            break;
+        case GO_ORGRIM_S_HAMMER_HORDE_ICC:
+            if (instance->getData(DATA_GUNSHIP_EVENT) != Performed)
+                static_cast<Object*>(t)->SetPosition(-438.142365f, 2395.725830f, 436.781647f, t->GetOrientation());
+            else if (instance->getData(DATA_GUNSHIP_EVENT) == Performed)
+                static_cast<Object*>(t)->SetPosition(-583.942627f, 2212.364990f, 534.673889f, t->GetOrientation());
+            break;
+        case GO_THE_SKYBREAKER_HORDE_ICC:
+            if (instance->getData(DATA_GUNSHIP_EVENT) != Performed)
+                static_cast<Object*>(t)->SetPosition(-435.854156f, 2475.328125f, 449.364105f, t->GetOrientation());
+            break;
+        }
+
+        t->m_timer = 0;
+        t->UpdateNPCPositions();
     }
 
 public:
@@ -1637,25 +1694,14 @@ public:
 
         Creature* muradin = static_cast<Creature*>(pObject);
 
-        if (muradin->GetTransport())
+        if (muradin->m_transportData.transportGuid)
             printf("On Transport \n");
         else
             printf("Not on Transport \n");
 
         if (pInstance->AllianceTransporterAllianceShip)
-        {
-            if (pInstance->AllianceTransporterAllianceShip->getState() == GO_STATE_CLOSED)
-            {
-                pInstance->AllianceTransporterAllianceShip->setFlags(GO_FLAG_NONSELECTABLE);
-                pInstance->AllianceTransporterAllianceShip->setState(GO_STATE_OPEN);
-                pInstance->AllianceTransporterAllianceShip->setDynamic(0x10830010); //\todo When people see things in sniffs... probably wrong
-                pInstance->AllianceTransporterAllianceShip->setParentRotation(3, 1.0f);
-                std::set<uint32> mapsUsed;
-                GameObjectProperties const* goinfo = pInstance->AllianceTransporterAllianceShip->GetGameObjectProperties();
+            pInstance->StartFlyShip(pInstance->AllianceTransporterAllianceShip);
 
-                pInstance->AllianceTransporterAllianceShip->GenerateWaypoints(goinfo->raw.parameter_0);
-            }
-        }
         GossipMenu::senGossipComplete(pPlayer);
     }
 };

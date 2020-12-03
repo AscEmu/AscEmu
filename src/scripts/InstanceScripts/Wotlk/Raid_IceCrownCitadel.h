@@ -599,7 +599,8 @@ enum DeprogrammingData
 
 enum AdditionalData
 {
-    DATA_BONED_ACHIEVEMENT = 1
+    DATA_BONED_ACHIEVEMENT = 1,
+    DATA_GUNSHIP_EVENT = 2
 };
 
 enum MiscInfo
