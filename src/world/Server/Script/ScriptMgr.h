@@ -641,6 +641,7 @@ class SERVER_DECL InstanceScript
         virtual void setLocalData64(uint32_t /*type*/, uint64_t /*data*/) {}
         virtual uint32_t getLocalData(uint32_t /*type*/) const { return 0; }
         virtual uint64_t getLocalData64(uint32_t /*type*/) const { return 0; }
+        virtual void DoAction(int32_t /*action*/) {}
         uint8_t Difficulty;
         
         //used for debug
@@ -701,7 +702,14 @@ class SERVER_DECL InstanceScript
         void removeUpdateEvent();
 
         //////////////////////////////////////////////////////////////////////////////////////////
+        // script events
+    protected:
+        scriptEventMap scriptEvents;
+
+        //////////////////////////////////////////////////////////////////////////////////////////
         // misc
+
+    public:
 
         void setCellForcedStates(float xMin, float xMax, float yMin, float yMax, bool forceActive = true);
 

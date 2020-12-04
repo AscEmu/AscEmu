@@ -641,6 +641,8 @@ void Transporter::UpdateForMap(MapMgr* targetMap)
 uint32 TimeStamp();
 void Transporter::Update()
 {
+    UpdateNPCPositions();
+
     if (m_WayPoints.size() <= 1)
         return;
 
@@ -859,8 +861,10 @@ void Transporter::UpdateNPCPositions()
         y = npc->obj_movement_info.transport_position.y;
         z = npc->obj_movement_info.transport_position.z;
         o = npc->obj_movement_info.transport_position.o;
+
         CalculatePassengerPosition(x, y, z, o);
         npc->SetPosition(x, y, z, o, false);
+
         npc->GetTransportHomePosition(x, y, z, o);
         CalculatePassengerPosition(x, y, z, o);
         npc->SetPosition(x, y, z, o, false);
