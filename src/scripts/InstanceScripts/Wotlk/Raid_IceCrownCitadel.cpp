@@ -1894,7 +1894,7 @@ public:
         if (effIndex != EFF_INDEX_0)
             return;
 
-        if(Creature* owner = spell->getCaster()->GetMapMgrCreature(spell->getUnitCaster()->getSummonedByGuid()))
+        if (Creature* owner = spell->getCaster()->GetMapMgrCreature(spell->getUnitCaster()->getSummonedByGuid()))
             owner->GetScript()->SetCreatureData64(DATA_CULTIST_GUID, spell->getUnitCaster()->getGuidLow());
     }
 };
@@ -1916,7 +1916,7 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 14500);
-        if(!plr->isGroupLeader())
+        if (!plr->isGroupLeader())
             menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_NOT_LEADER, 1);
 
         menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_ALLIANCE_RDY, 2);
