@@ -627,10 +627,12 @@ public:
     }
 
 public:
+
         Transporter* skybreaker;
         Transporter* orgrimmar;
 
 protected:
+
     IceCrownCitadelScript* Instance;
     uint8_t TeamInInstance;
     uint32_t MarrowgarIcewall1GUID;
@@ -942,6 +944,7 @@ class LordMarrowgarAI : public CreatureAIScript
     }
 
 protected:
+
     // Common
     InstanceScript* mInstance;
     float baseSpeed;
@@ -1048,6 +1051,7 @@ class ColdflameAI : public CreatureAIScript
     }
 
 protected:
+
     // Common
     InstanceScript* mInstance;
 
@@ -1114,6 +1118,7 @@ class BoneSpikeAI : public CreatureAIScript
     }
 
 protected:
+
     // Common
     InstanceScript* mInstance;
 
@@ -1128,6 +1133,7 @@ protected:
 class BoneStorm : public SpellScript
 {
 public:
+
     void onAuraCreate(Aura* aur) override
     {
         // set duration here
@@ -1146,6 +1152,7 @@ public:
 class BoneStormDamage : public SpellScript
 {
 public:
+
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override
     {
         if (effIndex != EFF_INDEX_0 || spell->GetUnitTarget() == nullptr)
@@ -1166,6 +1173,7 @@ public:
 class BoneSpikeGraveyard : public SpellScript
 {
     public:
+
         void onAuraApply(Aura* aur) override
         {
             aur->removeAuraEffect(EFF_INDEX_1);
@@ -1259,6 +1267,7 @@ class BoneSpikeGraveyard : public SpellScript
 class Coldflame : public SpellScript
 {
 public:
+
     void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override
     {
         if (effectIndex != EFF_INDEX_0)
@@ -1303,6 +1312,7 @@ public:
 class ColdflameBonestorm : public SpellScript
 {
 public:
+
     SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex) override
     {
         if (effectIndex != EFF_INDEX_0)
@@ -1320,6 +1330,7 @@ public:
 class ColdflameDamage: public SpellScript
 {
 public:
+
     void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override
     {
         if (effectIndex != EFF_INDEX_0)
@@ -1363,6 +1374,7 @@ public:
 class BoneSlice : public SpellScript
 {
 public:
+
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override
     {
         if (effIndex != EFF_INDEX_0 || spell->GetUnitTarget() == nullptr)
@@ -1410,7 +1422,7 @@ public:
 class LadyDeathwhisperAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LadyDeathwhisperAI)
-        explicit LadyDeathwhisperAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit LadyDeathwhisperAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
         mInstance = getInstanceScript();
@@ -1783,6 +1795,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
     }
 
 protected:
+
     // Common
     InstanceScript* mInstance;
     uint64_t nextVengefulShadeTargetGUID;
@@ -1835,6 +1848,7 @@ class CultAdherentAI : public CreatureAIScript
     }
 
 protected:
+
     // Common
     InstanceScript* mInstance;
 
@@ -1873,6 +1887,7 @@ class CultFanaticAI : public CreatureAIScript
     }
 
 protected:
+
     // Common
     InstanceScript* mInstance;
 
@@ -1889,6 +1904,7 @@ protected:
 class DarkMartyrdom : public SpellScript
 {
 public:
+
     void afterSpellEffect(Spell* spell, uint8_t effIndex) override
     {
         if (effIndex != EFF_INDEX_0)
@@ -2021,6 +2037,7 @@ class MuradinAI : public CreatureAIScript
     }
 
 protected:
+
     // Common
     IceCrownCitadelScript* mInstance;
 };
