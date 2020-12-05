@@ -1209,7 +1209,7 @@ class BoneSpikeGraveyard : public SpellScript
         {          
             if (Creature* marrowgar = static_cast<Creature*>(spell->getUnitCaster()))
 
-                if(GetRandomTargetNotMainTank(marrowgar))
+                if (GetRandomTargetNotMainTank(marrowgar))
                     return SpellCastResult::SPELL_CAST_SUCCESS;
 
             return SpellCastResult::SPELL_FAILED_DONT_REPORT;
@@ -1269,7 +1269,7 @@ public:
         Unit* coldflametarget = nullptr;
         Creature* pCreature = nullptr;
 
-        if(spell->getUnitCaster()->isCreature())
+        if (spell->getUnitCaster()->isCreature())
             pCreature = static_cast<Creature*>(spell->getUnitCaster());
 
         // select any unit but not the tank 
@@ -1333,7 +1333,7 @@ public:
         {
             auto target = static_cast<Player*>(itr);
 
-            if(CanBeAppliedOn(target, spell))
+            if (CanBeAppliedOn(target, spell))
                 effectTargets->push_back(target->getGuid());
         }
     }
@@ -1506,7 +1506,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
 
             getCreature()->setHealth(maxHealth);
 
-            if(*damage < currentMana)
+            if (*damage < currentMana)
                 manareduction = (currentMana - *damage);
 
             getCreature()->setPower(POWER_TYPE_MANA, manareduction);
