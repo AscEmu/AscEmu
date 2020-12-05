@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// MAX_NUM_MAPS
+// IS_INSTANCE
 //
 // \param
 //
@@ -64,8 +64,8 @@ This file is released under the MIT license. See README-MIT for more information
 #define TERRAIN_NUM_TILES 64
 #define TERRAIN_MAP_RESOLUTION 128
 
-#define CREATURESPAWNSFIELDCOUNT 27
-#define GOSPAWNSFIELDCOUNT 18
+#define CREATURE_SPAWNS_FIELDCOUNT 27
+#define GO_SPAWNS_FIELDCOUNT 18
 
 #define MAP_CELL_DEFAULT_UNLOAD_TIME 300
 #define MAKE_CELL_EVENT(x, y) (((x) * 1000) + 200 + y)
@@ -81,7 +81,6 @@ This file is released under the MIT license. See README-MIT for more information
 /// Instance Id 0 doesn't exist (-1 is World Instance)
 #define INSTANCEID_NOT_IN_WORLD 0
 
-#define MAX_TRANSPORTERS_PER_MAP 25
 #define RESERVE_EXPAND_SIZE 1024
 
 #define MAP_AREA_NO_AREA      0x0001

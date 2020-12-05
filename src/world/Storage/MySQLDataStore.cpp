@@ -4141,9 +4141,9 @@ void MySQLDataStore::loadCreatureSpawns()
         if (creature_spawn_result)
         {
             uint32 creature_spawn_fields = creature_spawn_result->GetFieldCount();
-            if (creature_spawn_fields != CREATURESPAWNSFIELDCOUNT + 2 + 2)
+            if (creature_spawn_fields != CREATURE_SPAWNS_FIELDCOUNT + 2 + 2)
             {
-                LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), creature_spawn_fields, CREATURESPAWNSFIELDCOUNT);
+                LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), creature_spawn_fields, CREATURE_SPAWNS_FIELDCOUNT);
                 continue;
             }
             else
@@ -4245,9 +4245,9 @@ void MySQLDataStore::loadGameobjectSpawns()
         if (gobject_spawn_result)
         {
             uint32 gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
-            if (gobject_spawn_fields != GOSPAWNSFIELDCOUNT + 1 + 2)
+            if (gobject_spawn_fields != GO_SPAWNS_FIELDCOUNT + 1 + 2)
             {
-                LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), gobject_spawn_fields, GOSPAWNSFIELDCOUNT);
+                LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), gobject_spawn_fields, GO_SPAWNS_FIELDCOUNT);
                 continue;
             }
             else

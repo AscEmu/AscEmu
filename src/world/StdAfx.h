@@ -45,14 +45,14 @@ This file is released under the MIT license. See README-MIT for more information
 #endif
 //////////////////////////////////////////////////////////////////////////////////////////
 
-//Movement
+// Movement
 #include "Movement/UnitMovementManager.hpp"
 #include "Movement/Spline/MovementSpline.hpp"
 #include "Movement/Spline/MovementSplineDefines.hpp"
 #include "Movement/Spline/SplineFlags.hpp"
 #include "Movement/MovementCommon.hpp"
 
-//VMAP
+// VMAP
 #include "Models/ModelInstance.h"
 #include "Models/WorldModel.h"
 #include "BoundingIntervalHierarchy.h"
