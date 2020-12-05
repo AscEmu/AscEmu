@@ -102,10 +102,10 @@ public:
             OrgrimmarBossGUID = pCreature->getGuid();
             break;
         case NPC_GB_HIGH_OVERLORD_SAURFANG:
-            DeathbringerSaurfangGbGUID = pCreature->getGuid();
+            DeathbringerSaurfangGbGUID = pCreature->getGuidLow();
             break;
         case NPC_GB_MURADIN_BRONZEBEARD:
-            MuradinBronzebeardGbGUID = pCreature->getGuid();
+            MuradinBronzebeardGbGUID = pCreature->getGuidLow();
             break;
         case NPC_GB_HIGH_OVERLORD_SAURFANG_NV:
             DeathbringerSaurfangNotVisualGUID = pCreature->getGuid();
@@ -390,6 +390,8 @@ public:
 
     void OnPlayerEnter(Player* player) override
     {
+        mInstance->UpdateAllCells(true);
+
         if (TeamInInstance == 3)
         {
             TeamInInstance = player->getTeam();
@@ -606,7 +608,7 @@ public:
             break;
         }
 
-        t->UpdateNPCPositions();
+        //t->UpdateNPCPositions();
     }
 
     //Wipe check
@@ -1906,7 +1908,11 @@ public:
             
             break;
         case 2:
+            // Instance Start Gunship
             pInstance->DoAction(ACTION_INTRO_START);
+            // Muradin Intro
+            static_cast<Creature*>(pObject)->GetScript()->DoAction(ACTION_INTRO_START);
+            // Clear NPC FLAGS
             static_cast<Creature*>(pObject)->removeUnitFlags(UNIT_NPC_FLAG_GOSSIP);
             break;
         }
