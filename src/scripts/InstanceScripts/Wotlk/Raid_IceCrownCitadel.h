@@ -879,6 +879,7 @@ enum MiscInfo
     // Data Shares
     DATA_COLDFLAME_GUID = 0,
     DATA_SPIKE_IMMUNE = 1,
+    DATA_CULTIST_GUID = 2,
 
     // Actions
     ACTION_CLEAR_SPIKE_IMMUNITIES = 1,

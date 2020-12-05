@@ -67,7 +67,7 @@ public:
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new IceCrownCitadelScript(pMapMgr); }
 
-    virtual uint64_t getLocalData64(uint32_t type) const
+    uint64_t getLocalData64(uint32_t type) const
     { 
         switch (type)
         {
@@ -96,10 +96,10 @@ public:
         {
             // Gunship
         case NPC_GB_SKYBREAKER:
-            SkybreakerBossGUID = pCreature->getGuid();
+            SkybreakerBossGUID = pCreature->getGuidLow();
             break;
         case NPC_GB_ORGRIMS_HAMMER:
-            OrgrimmarBossGUID = pCreature->getGuid();
+            OrgrimmarBossGUID = pCreature->getGuidLow();
             break;
         case NPC_GB_HIGH_OVERLORD_SAURFANG:
             DeathbringerSaurfangGbGUID = pCreature->getGuidLow();
@@ -108,14 +108,14 @@ public:
             MuradinBronzebeardGbGUID = pCreature->getGuidLow();
             break;
         case NPC_GB_HIGH_OVERLORD_SAURFANG_NV:
-            DeathbringerSaurfangNotVisualGUID = pCreature->getGuid();
+            DeathbringerSaurfangNotVisualGUID = pCreature->getGuidLow();
             break;
         case NPC_GB_MURADIN_BRONZEBEARD_NV:
-            MuradinBronzebeardNotVisualGUID = pCreature->getGuid();
+            MuradinBronzebeardNotVisualGUID = pCreature->getGuidLow();
             break;
         case NPC_GB_SKYBREAKER_SORCERERS:
         case NPC_GB_KORKRON_BATTLE_MAGE:
-            GbBattleMageGUID = pCreature->getGuid();
+            GbBattleMageGUID = pCreature->getGuidLow();
             break;
         }
     }
@@ -180,14 +180,70 @@ public:
 
         if (getData(CN_LADY_DEATHWHISPER) == NotStarted)
         {
-            /*if (LadyDeathwisperElevatorGUID)
+            if (LadyDeathwisperEntranceDoorGUID)
                 GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
 
             if (LadyDeathwisperElevatorGUID)
             {
                 GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_CLOSED);
                 GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setLevel(0);
-            }*/
+            }
+        }
+    }
+
+    void OnEncounterStateChange(uint32_t entry, uint32_t state) override
+    {
+        switch (entry)
+        {
+        case CN_LORD_MARROWGAR:
+            if (state == InProgress)
+            {
+                if (MarrowgarEntranceDoorGUID)
+                    GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_CLOSED);
+            }
+
+            if (state == NotStarted)
+            {
+                if (MarrowgarEntranceDoorGUID)
+                    GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);
+            }
+
+            if (state == Finished)
+            {
+                if (MarrowgarIcewall1GUID)
+                    GetGameObjectByGuid(MarrowgarIcewall1GUID)->setState(GO_STATE_OPEN);        // Icewall 1
+
+                if (MarrowgarIcewall2GUID)
+                    GetGameObjectByGuid(MarrowgarIcewall2GUID)->setState(GO_STATE_OPEN);        // Icewall 2
+
+                if (MarrowgarEntranceDoorGUID)
+                    GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);    // Door  
+            }
+            break;
+        case CN_LADY_DEATHWHISPER:
+            if (state == InProgress)
+            {
+                if (LadyDeathwisperEntranceDoorGUID)
+                    GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
+            }
+
+            if (state == NotStarted)
+            {
+                if (LadyDeathwisperElevatorGUID)
+                    GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
+
+                if (LadyDeathwisperElevatorGUID)
+                    GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
+            }
+            if (state == Finished)
+            {
+                if (LadyDeathwisperEntranceDoorGUID)
+                    GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
+
+                if (LadyDeathwisperElevatorGUID)
+                    GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
+            }
+            break;
         }
     }
 
@@ -390,8 +446,6 @@ public:
 
     void OnPlayerEnter(Player* player) override
     {
-        mInstance->UpdateAllCells(true);
-
         if (TeamInInstance == 3)
         {
             TeamInInstance = player->getTeam();
@@ -415,65 +469,9 @@ public:
             setSpawnsCreated();
         }
         PrepareGunshipEvent(player); // Spawn Gunship Event
-    }
+    }    
 
-    void OnEncounterStateChange(uint32_t entry, uint32_t state) override
-    {
-        switch (entry)
-        {
-        case CN_LORD_MARROWGAR:
-            if (state == InProgress)
-            {
-                if (MarrowgarEntranceDoorGUID)
-                    GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_CLOSED);
-            }
-                
-            if (state == NotStarted)
-            {
-                if (MarrowgarEntranceDoorGUID)
-                    GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);
-            }
-                
-            if (state == Finished)
-            {
-                if (MarrowgarIcewall1GUID)
-                    GetGameObjectByGuid(MarrowgarIcewall1GUID)->setState(GO_STATE_OPEN);        // Icewall 1
-
-                if (MarrowgarIcewall2GUID)
-                    GetGameObjectByGuid(MarrowgarIcewall2GUID)->setState(GO_STATE_OPEN);        // Icewall 2
-
-                if (MarrowgarEntranceDoorGUID)
-                    GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);    // Door  
-            }
-            break;
-        case CN_LADY_DEATHWHISPER:
-            if (state == InProgress)
-            {
-                if (LadyDeathwisperEntranceDoorGUID)
-                    GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
-            }        
-
-            if (state == NotStarted)
-            {
-                if (LadyDeathwisperElevatorGUID)
-                    GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
-
-                if (LadyDeathwisperElevatorGUID)
-                    GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
-            }
-            if (state == Finished)
-            {
-                if (LadyDeathwisperEntranceDoorGUID)
-                    GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
-
-                if (LadyDeathwisperElevatorGUID)
-                    GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
-            }
-            break;
-        }
-    }
-
-    virtual void UpdateEvent() 
+    void UpdateEvent() override
     {
         scriptEvents.updateEvents(getUpdateFrequency(), 0);
 
@@ -484,9 +482,7 @@ public:
             case EVENT_WIPE_CHECK:
                 if (TeamInInstance = TEAM_ALLIANCE)
                 {
-                    WoWGuid wowGuid;
-                    wowGuid.Init(getLocalData64(DATA_GB_MURADIN_BRONZEBEARD));
-                    DoCheckFallingPlayer(mInstance->GetCreature(wowGuid.getGuidLowPart()));
+                    DoCheckFallingPlayer(mInstance->GetCreature(getLocalData64(DATA_GB_MURADIN_BRONZEBEARD)));
                     if (DoWipeCheck(skybreaker))
                         scriptEvents.addEvent(EVENT_WIPE_CHECK, 3000);
                     else
@@ -494,9 +490,7 @@ public:
                 }
                 else
                 {
-                    WoWGuid wowGuid;
-                    wowGuid.Init(getLocalData64(DATA_GB_HIGH_OVERLORD_SAURFANG));
-                    DoCheckFallingPlayer(mInstance->GetCreature(wowGuid.getGuidLowPart()));
+                    DoCheckFallingPlayer(mInstance->GetCreature(getLocalData64(DATA_GB_HIGH_OVERLORD_SAURFANG)));
                     if (DoWipeCheck(orgrimmar))
                         scriptEvents.addEvent(EVENT_WIPE_CHECK, 3000);
                     else
@@ -608,12 +602,13 @@ public:
             break;
         }
 
-        //t->UpdateNPCPositions();
+        t->UpdateNPCPositions();
     }
 
     //Wipe check
     bool DoWipeCheck(Transporter* t)
     {
+        // todo
         return true;
     }
 
@@ -624,16 +619,10 @@ public:
         {
             auto const Players = mInstance->m_PlayerStorage;
             if (Players.size())
-            {
                 for (auto itr = Players.begin(); itr != Players.end(); ++itr)
-                {
                     if (Player* pPlayer = itr->second)
-                    {
                         if (pPlayer->GetPositionZ() < 420.0f && pPlayer->IsWithinDistInMap(pCreature, 300.0f))
                             pPlayer->Teleport(pCreature->GetPosition(), mInstance);
-                    }
-                }
-            }
         }
     }
 
@@ -683,7 +672,8 @@ public:
             menu.addItem(GOSSIP_ICON_CHAT, 517, 2);      // Teleport to Rampart of Skulls.
 
         // GunshipBattle has to be finished...
-        //menu.addItem(GOSSIP_ICON_CHAT, (518), 3);        // Teleport to Deathbringer's Rise.
+        if (pInstance->getData(DATA_GUNSHIP_EVENT) == Finished)
+        menu.addItem(GOSSIP_ICON_CHAT, (518), 3);        // Teleport to Deathbringer's Rise.
 
         if (pInstance->getData(CN_VALITHRIA_DREAMWALKER) == Finished)
             menu.addItem(GOSSIP_ICON_CHAT, 519, 4);      // Teleport to the Upper Spire.
@@ -775,7 +765,7 @@ class LordMarrowgarAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, SAY_MARR_DEATH);            // I see... Only darkness.
     }
 
-    void OnLoad()
+    void OnLoad() override
     {
         sendDBChatMessage(SAY_MARR_ENTER_ZONE);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
         introDone = true;
@@ -909,7 +899,7 @@ class LordMarrowgarAI : public CreatureAIScript
         coldflameLastPos = pos;
     }
 
-    virtual void SetCreatureData64(uint32 Type, uint64 Data)
+    void SetCreatureData64(uint32 Type, uint64 Data) override
     {
         switch (Type)
         {
@@ -922,7 +912,7 @@ class LordMarrowgarAI : public CreatureAIScript
         }
     }
 
-    virtual uint64 GetCreatureData64(uint32 Type) const
+    uint64 GetCreatureData64(uint32 Type) const
     { 
         switch (Type)
         {
@@ -943,7 +933,7 @@ class LordMarrowgarAI : public CreatureAIScript
         return 0;
     }
 
-    virtual void DoAction(int32 const action)
+    void DoAction(int32 const action) override
     {
         if (action != ACTION_CLEAR_SPIKE_IMMUNITIES)
             return;
@@ -1432,7 +1422,6 @@ class LadyDeathwhisperAI : public CreatureAIScript
         shadowChannelingSpell           = addAISpell(SPELL_SHADOW_CHANNELING, 0.0f, TARGET_SELF);
         manaBarrierSpell                = addAISpell(SPELL_MANA_BARRIER, 0.0f, TARGET_SELF);
         manaBarrierSpell->mIsTriggered = true;
-
         deathAndDecaySpell              = addAISpell(SPELL_DEATH_AND_DECAY, 0.0f, TARGET_CUSTOM);
         dominateMindHeroSpell           = addAISpell(SPELL_DOMINATE_MIND_H, 0.0f, TARGET_CUSTOM);
         shadowBoltSpell                 = addAISpell(SPELL_SHADOW_BOLT, 0.0f, TARGET_CUSTOM);
@@ -1441,6 +1430,15 @@ class LadyDeathwhisperAI : public CreatureAIScript
         touchOfInsignifcanceSpell       = addAISpell(SPELL_TOUCH_OF_INSIGNIFICANCE, 0.0f, TARGET_ATTACKING);
         summonShadeSpell                = addAISpell(SPELL_SUMMON_SHADE, 0.0f, TARGET_CUSTOM);
         berserkSpell                    = addAISpell(SPELL_BERSERK, 0.0f, TARGET_SELF);
+        darkMartydromSpell              = addAISpell(SPELL_DARK_MARTYRDOM_T, 0.0f, TARGET_CUSTOM);
+        darkMartydromSpell->addDBEmote(SAY_LADY_DEAD);
+        darkTransformationSpell         = addAISpell(SPELL_DARK_TRANSFORMATION_T, 0.0f, TARGET_CUSTOM);
+        darkTransformationSpell->mIsTriggered = true;
+        darkTransformationSpell->addDBEmote(SAY_LADY_TRANSFORMATION);
+        darkEmpowermentSpell            = addAISpell(SPELL_DARK_EMPOWERMENT_T, 0.0f, TARGET_CUSTOM);
+        darkEmpowermentSpell->mIsTriggered = true;
+        darkEmpowermentSpell->addDBEmote(SAY_LADY_EMPOWERMENT);
+              
 
         // Messages
         addEmoteForEvent(Event_OnCombatStart, SAY_LADY_AGGRO);     
@@ -1448,7 +1446,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, SAY_LADY_DEATH);            
     }
 
-    void OnLoad()
+    void OnLoad() override
     {
         if (!_isInCombat() && !getScriptPhase() == PHASE_INTRO)
             return;
@@ -1499,14 +1497,33 @@ class LadyDeathwhisperAI : public CreatureAIScript
     ///\ todo Health Decreases visualy
     void DamageTaken(Unit* _attacker, uint32* damage) override
     {
+        uint32_t currentMana = getCreature()->getPower(POWER_TYPE_MANA);
+        // When Lady Deathwhsiper has her mana Barrier dont deal damage to her instead reduce her mana.      
+        if (getCreature()->HasAura(SPELL_MANA_BARRIER) && *damage < currentMana)
+        {
+            uint32_t manareduction = 0;
+            uint32_t maxHealth = getCreature()->getMaxHealth();
+
+            getCreature()->setHealth(maxHealth);
+
+            if(*damage < currentMana)
+                manareduction = (currentMana - *damage);
+
+            getCreature()->setPower(POWER_TYPE_MANA, manareduction);
+            *damage = 1; // Hackfix health reduces visualy and by setting maxhealth when it has maxhealth dont updates healthbar
+        }
+    }
+
+    void OnDamageTaken(Unit* _attacker, uint32_t damage) override
+    {
+        uint32_t currentMana = getCreature()->getPower(POWER_TYPE_MANA);
         // When Lady Deathwhsiper has her mana Barrier dont deal damage to her instead reduce her mana.
         // phase transition
-        if (getScriptPhase() == PHASE_ONE && *damage > uint32(getCreature()->getPower(POWER_TYPE_MANA)))
+        if (getScriptPhase() == PHASE_ONE && damage > currentMana)
         {
             sendDBChatMessage(SAY_LADY_PHASE_2);
             sendDBChatMessage(SAY_LADY_PHASE_2_EMOTE);
             setRooted(false);
-            *damage -= getCreature()->getPower(POWER_TYPE_MANA);
             getCreature()->setPower(POWER_TYPE_MANA, 0);
             getCreature()->RemoveAura(SPELL_MANA_BARRIER);
             setScriptPhase(PHASE_TWO);
@@ -1520,11 +1537,6 @@ class LadyDeathwhisperAI : public CreatureAIScript
                 ///\todo Add SpellImmunities
                 scriptEvents.addEvent(EVENT_P2_SUMMON_WAVE, 45000, PHASE_TWO);
             }
-        }
-        else if (getCreature()->HasAura(SPELL_MANA_BARRIER))
-        {
-            getCreature()->setPower(POWER_TYPE_MANA,(getCreature()->getPower(POWER_TYPE_MANA) - *damage));
-            *damage = 0;
         }
     }
 
@@ -1581,14 +1593,12 @@ class LadyDeathwhisperAI : public CreatureAIScript
             case EVENT_DEATH_AND_DECAY:
                 if (Unit* target = getBestPlayerTarget())
                 {
-                    printf("EVENT_DEATH_AND_DECAY \n");
                     deathAndDecaySpell->setCustomTarget(target);
                     _castAISpell(deathAndDecaySpell);
                 }
                 scriptEvents.addEvent(EVENT_DEATH_AND_DECAY, Util::getRandomUInt(22000, 30000));
                 break;
             case EVENT_DOMINATE_MIND_H:
-                printf("EVENT_DOMINATE_MIND_H \n");
                 sendDBChatMessage(SAY_LADY_DOMINATE_MIND);
                 for (uint8 i = 0; i < dominateMindCount; i++)
                     if (Unit* target = getBestPlayerTarget(TargetFilter_NotCurrent))
@@ -1599,7 +1609,6 @@ class LadyDeathwhisperAI : public CreatureAIScript
                 scriptEvents.addEvent(EVENT_DOMINATE_MIND_H, Util::getRandomUInt(40000, 45000));
                 break;
             case EVENT_P1_SUMMON_WAVE:
-                printf("EVENT_P1_SUMMON_WAVE \n");
                 SummonWavePhaseOne();
                 scriptEvents.addEvent(EVENT_P1_SUMMON_WAVE, _isHeroic() ? 45000 : 60000, PHASE_ONE);
                 break;
@@ -1612,31 +1621,25 @@ class LadyDeathwhisperAI : public CreatureAIScript
                 scriptEvents.addEvent(EVENT_P1_SHADOW_BOLT, Util::getRandomUInt(5000, 8000), PHASE_ONE);
                 break;
             case EVENT_P1_REANIMATE_CULTIST:
-                printf("EVENT_P1_REANIMATE_CULTIST \n");
                 ReanimateCultist();
                 break;
             case EVENT_P1_EMPOWER_CULTIST:
-                printf("EVENT_P1_EMPOWER_CULTIST \n");
                 EmpowerCultist();
                 scriptEvents.addEvent(EVENT_P1_EMPOWER_CULTIST, Util::getRandomUInt(18000, 25000));
                 break;
             case EVENT_P2_FROSTBOLT:
-                printf("EVENT_P2_FROSTBOLT \n");
                 _castAISpell(frostBoltSpell);
                 scriptEvents.addEvent(EVENT_P2_FROSTBOLT, Util::getRandomUInt(10000, 11000), PHASE_TWO);
                 break;
             case EVENT_P2_FROSTBOLT_VOLLEY:
-                printf("EVENT_P2_FROSTBOLT_VOLLEY \n");
                 _castAISpell(frostBoltVolleySpell);
                 scriptEvents.addEvent(EVENT_P2_FROSTBOLT_VOLLEY, Util::getRandomUInt(13000, 15000), PHASE_TWO);
                 break;
             case EVENT_P2_TOUCH_OF_INSIGNIFICANCE:
-                printf("EVENT_P2_TOUCH_OF_INSIGNIFICANCE \n");
                 _castAISpell(touchOfInsignifcanceSpell);
                 scriptEvents.addEvent(EVENT_P2_TOUCH_OF_INSIGNIFICANCE, Util::getRandomUInt(9000, 13000), PHASE_TWO);
                 break;
             case EVENT_P2_SUMMON_SHADE:
-                printf("EVENT_P2_SUMMON_SHADE \n");
                 if (Unit* shadeTarget = getBestPlayerTarget(TargetFilter_NotCurrent))
                 {
                     summonShadeSpell->setCustomTarget(shadeTarget);
@@ -1646,7 +1649,6 @@ class LadyDeathwhisperAI : public CreatureAIScript
                 scriptEvents.addEvent(EVENT_P2_SUMMON_SHADE, Util::getRandomUInt(18000, 23000), PHASE_TWO);
                 break;
             case EVENT_P2_SUMMON_WAVE:
-                printf("EVENT_P2_SUMMON_WAVE \n");
                 SummonWavePhaseTwo();
                 scriptEvents.addEvent(EVENT_P2_SUMMON_WAVE, 45000, PHASE_TWO);
                 break;
@@ -1710,7 +1712,10 @@ class LadyDeathwhisperAI : public CreatureAIScript
         Creature* summon = spawnCreature(entry, pos);
 
         if (summon)
+        {
+            summon->setSummonedByGuid(getCreature()->getGuid());
             summons.push_back(summon);
+        }           
     }
 
     void DeleteSummons()
@@ -1722,7 +1727,17 @@ class LadyDeathwhisperAI : public CreatureAIScript
 
     void ReanimateCultist()
     {
+        if (reanimationQueue.empty())
+            return;
 
+        uint64 cultistGUID = reanimationQueue.front();
+        Creature* cultist = mInstance->GetCreatureByGuid(cultistGUID);
+        reanimationQueue.pop_front();
+        if (!cultist)
+            return;
+
+        darkMartydromSpell->setCustomTarget(cultist);
+        _castAISpell(darkMartydromSpell);
     }
 
     void EmpowerCultist()
@@ -1744,8 +1759,27 @@ class LadyDeathwhisperAI : public CreatureAIScript
         std::advance(it, i);
 
         Creature* cultist = (*it);
-        getCreature()->castSpell(cultist, cultist->getEntry() == NPC_CULT_FANATIC ? SPELL_DARK_TRANSFORMATION_T : SPELL_DARK_EMPOWERMENT_T, true);
-        sendDBChatMessage(uint8(cultist->getEntry() == NPC_CULT_FANATIC ? SAY_LADY_TRANSFORMATION : SAY_LADY_EMPOWERMENT));
+        if (cultist->getEntry() == NPC_CULT_FANATIC)
+        {
+            darkTransformationSpell->setCustomTarget(cultist);
+            _castAISpell(darkTransformationSpell);
+        }
+        else
+        {
+            darkEmpowermentSpell->setCustomTarget(cultist);
+            _castAISpell(darkEmpowermentSpell);
+        }
+    }
+
+    void SetCreatureData64(uint32 Type, uint64 Data) override
+    {
+        switch (Type)
+        {
+        case DATA_CULTIST_GUID:
+            reanimationQueue.push_back(Data);
+            scriptEvents.addEvent(EVENT_P1_REANIMATE_CULTIST, 3000, PHASE_ONE);
+            break;
+        }
     }
 
 protected:
@@ -1769,6 +1803,9 @@ protected:
     CreatureAISpells* touchOfInsignifcanceSpell;
     CreatureAISpells* summonShadeSpell;
     CreatureAISpells* berserkSpell;
+    CreatureAISpells* darkMartydromSpell;
+    CreatureAISpells* darkTransformationSpell;
+    CreatureAISpells* darkEmpowermentSpell;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1792,21 +1829,9 @@ class CultAdherentAI : public CreatureAIScript
     void OnLoad()
     {
         _castAISpell(temporalVisualSpell);
-    }
-
-    void OnCombatStart(Unit* /*pTarget*/) override
-    {
-
-    }
-
-    void OnCombatStop(Unit* /*_target*/) override
-    {
-    
-    }
-
-    void AIUpdate() override
-    {
-
+        auto NewTarget = getBestPlayerTarget(TargetFilter_Closest);
+        getCreature()->GetAIInterface()->setNextTarget(NewTarget);
+        getCreature()->GetAIInterface()->AttackReaction(NewTarget, 200);
     }
 
 protected:
@@ -1842,21 +1867,9 @@ class CultFanaticAI : public CreatureAIScript
     void OnLoad()
     {
         _castAISpell(temporalVisualSpell);
-    }
-
-    void OnCombatStart(Unit* /*pTarget*/) override
-    {
-
-    }
-
-    void OnCombatStop(Unit* /*_target*/) override
-    {
-     
-    }
-
-    void AIUpdate() override
-    {
-
+        auto NewTarget = getBestPlayerTarget(TargetFilter_Closest);
+        getCreature()->GetAIInterface()->setNextTarget(NewTarget);
+        getCreature()->GetAIInterface()->AttackReaction(NewTarget, 200);
     }
 
 protected:
@@ -1869,6 +1882,21 @@ protected:
     CreatureAISpells* shadowCleaveSpell;
     CreatureAISpells* vampireMightSpell;
     CreatureAISpells* darkMartyrdomSpell;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Spell: Cultist Dark Martyrdom
+class DarkMartyrdom : public SpellScript
+{
+public:
+    void afterSpellEffect(Spell* spell, uint8_t effIndex) override
+    {
+        if (effIndex != EFF_INDEX_0)
+            return;
+
+        if(Creature* owner = spell->getCaster()->GetMapMgrCreature(spell->getUnitCaster()->getSummonedByGuid()))
+            owner->GetScript()->SetCreatureData64(DATA_CULTIST_GUID, spell->getUnitCaster()->getGuidLow());
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2038,6 +2066,9 @@ void SetupICC(ScriptMgr* mgr)
 
     // Spell Bone Slice
     mgr->register_spell_script(SPELL_BONE_SLICE, new BoneSlice);
+
+    // Spell Cultist Dark Martyrdom
+    mgr->register_spell_script(SPELL_DARK_MARTYRDOM_ADHERENT, new DarkMartyrdom);
 
     //Gossips
     GossipScript* MuradinGossipScript = new MuradinGossip();
