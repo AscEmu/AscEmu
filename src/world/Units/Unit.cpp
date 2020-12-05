@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.h"
 #include "Management/HonorHandler.h"
 #include "Map/MapMgr.h"
+#include "Objects/GameObject.h"
 #include "Server/Packets/SmsgAuraUpdate.h"
 #include "Server/Packets/SmsgAuraUpdateAll.h"
 #include "Server/Packets/SmsgClearExtraAuraInfo.h"
@@ -3260,27 +3261,45 @@ bool Unit::canSee(Object* const obj)
     if (this == obj)
         return true;
 
-    if (!obj->IsInWorld() || GetMapId() != obj->GetMapId())
+    if (!IsInWorld() || !obj->IsInWorld() || GetMapId() != obj->GetMapId())
         return false;
 
     // Unit cannot see objects from different phases
     if ((GetPhase() & obj->GetPhase()) == 0)
         return false;
 
-    // Unit cannot see objects which are further than 100 yards away (visibility range)
-    //\ todo: should this be in MapMgr? also there are some objects which should be visibile even further and some objects which should always be visible
-    if (!isInRange(obj->GetPosition(), 100.0f * 100.0f))
+    // Get map view distance (WIP: usually 100 yards for open world and 500 yards for instanced maps)
+    //\ todo: there are some objects which should be visible even further and some objects which should always be visible
+    const auto viewDistance = GetMapMgr()->m_UpdateDistance;
+    if (obj->isGameObject())
     {
-        // Battlegrounds have an increased visibility range
-        if (getPlayerOwner() != nullptr && getPlayerOwner()->m_bg != nullptr)
+        // TODO: for now, all maps have 500 yard view distance
+        // problem is that objects on active map cells are updated only if player can see it, iirc
+
+        // Transports should always be visible
+        const auto gobj = static_cast<GameObject*>(obj);
+        if (gobj->getGoType() == GAMEOBJECT_TYPE_TRANSPORT || gobj->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT)
         {
-            if (!isInRange(obj->GetPosition(), 300.0f * 300.0f))
-                return false;
+            return true;
+        }
+        // Gameobjects on transport should always be visible
+        else if (gobj->GetTransport() != nullptr)
+        {
+            return true;
         }
         else
         {
-            return false;
+            if (!isInRange(gobj->GetPosition(), viewDistance))
+                return false;
         }
+    }
+    else
+    {
+        // Creatures on transports should always be visible
+        if (obj->isCreature() && dynamic_cast<Creature*>(obj)->hasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+            return true;
+        else if (!isInRange(obj->GetPosition(), viewDistance))
+            return false;
     }
 
     // Unit cannot see invisible Game Masters unless he/she has Game Master flag on
