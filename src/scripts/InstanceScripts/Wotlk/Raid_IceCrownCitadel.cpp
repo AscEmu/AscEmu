@@ -39,7 +39,6 @@ This file is released under the MIT license. See README-MIT for more information
 class IceCrownCitadelScript : public InstanceScript
 {
 public:
-
     explicit IceCrownCitadelScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         Instance = (IceCrownCitadelScript*)pMapMgr->GetScript();
@@ -627,12 +626,10 @@ public:
     }
 
 public:
-
-        Transporter* skybreaker;
-        Transporter* orgrimmar;
+    Transporter* skybreaker;
+    Transporter* orgrimmar;
 
 protected:
-
     IceCrownCitadelScript* Instance;
     uint8_t TeamInInstance;
     uint32_t MarrowgarIcewall1GUID;
@@ -657,7 +654,6 @@ protected:
 class ICCTeleporterGossip : public GossipScript
 {
 public:
-
     void onHello(Object* object, Player* player) override
     {
         InstanceScript* pInstance = player->GetMapMgr()->GetScript();
@@ -716,7 +712,6 @@ public:
 class ICCTeleporterAI : public GameObjectAIScript
 {
 public:
-
     explicit ICCTeleporterAI(GameObject* go) : GameObjectAIScript(go) {}
 
     ~ICCTeleporterAI() {}
@@ -944,7 +939,6 @@ class LordMarrowgarAI : public CreatureAIScript
     }
 
 protected:
-
     // Common
     InstanceScript* mInstance;
     float baseSpeed;
@@ -1051,7 +1045,6 @@ class ColdflameAI : public CreatureAIScript
     }
 
 protected:
-
     // Common
     InstanceScript* mInstance;
 
@@ -1118,7 +1111,6 @@ class BoneSpikeAI : public CreatureAIScript
     }
 
 protected:
-
     // Common
     InstanceScript* mInstance;
 
@@ -1133,7 +1125,6 @@ protected:
 class BoneStorm : public SpellScript
 {
 public:
-
     void onAuraCreate(Aura* aur) override
     {
         // set duration here
@@ -1152,7 +1143,6 @@ public:
 class BoneStormDamage : public SpellScript
 {
 public:
-
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override
     {
         if (effIndex != EFF_INDEX_0 || spell->GetUnitTarget() == nullptr)
@@ -1172,94 +1162,93 @@ public:
 /// Spell: Bone Spike Graveyard
 class BoneSpikeGraveyard : public SpellScript
 {
-    public:
+public:
+    void onAuraApply(Aura* aur) override
+    {
+        aur->removeAuraEffect(EFF_INDEX_1);
 
-        void onAuraApply(Aura* aur) override
+        if (Creature* marrowgar = static_cast<Creature*>(aur->GetUnitCaster()))
         {
-            aur->removeAuraEffect(EFF_INDEX_1);
+            CreatureAIScript* marrowgarAI = marrowgar->GetScript();
+            if (!marrowgarAI)
+                return;
 
-            if (Creature* marrowgar = static_cast<Creature*>(aur->GetUnitCaster()))
+            uint8_t boneSpikeCount = uint8_t(aur->GetUnitCaster()->GetMapMgr()->pInstance->m_difficulty & 1 ? 3 : 1);
+            std::list<Unit*> targets;
+
+            targets.clear();
+
+            for (uint8_t target = 0; target < boneSpikeCount; ++target)
+                targets.push_back(GetRandomTargetNotMainTank(marrowgar));
+
+            if (targets.empty())
+                return;
+
+            uint32 i = 0;
+            for (std::list<Unit*>::const_iterator itr = targets.begin(); itr != targets.end(); ++itr, ++i)
             {
-                CreatureAIScript* marrowgarAI = marrowgar->GetScript();
-                if (!marrowgarAI)
-                    return;
-
-                uint8_t boneSpikeCount = uint8_t(aur->GetUnitCaster()->GetMapMgr()->pInstance->m_difficulty & 1 ? 3 : 1);
-                std::list<Unit*> targets;
-
-                targets.clear();
-
-                for (uint8_t target = 0; target < boneSpikeCount; ++target)
-                    targets.push_back(GetRandomTargetNotMainTank(marrowgar));
-
-                if (targets.empty())
-                    return;
-
-                uint32 i = 0;
-                for (std::list<Unit*>::const_iterator itr = targets.begin(); itr != targets.end(); ++itr, ++i)
-                {
-                    Unit* target = *itr;
-                    target->castSpell(target, BoneSpikeSummonId[i], true);
-                }
-
-
-                std::vector<uint32_t> emoteVector;
-                emoteVector.clear();
-                emoteVector.push_back(SAY_MARR_BONESPIKE_1);// Stick Around
-                emoteVector.push_back(SAY_MARR_BONESPIKE_2);// The only Escape is Darkness 
-                emoteVector.push_back(SAY_MARR_BONESPIKE_3);// More Bones for the offering
-
-                marrowgarAI->sendRandomDBChatMessage(emoteVector);  
-            }
-        }
-
-        SpellCastResult onCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) override
-        {          
-            if (Creature* marrowgar = static_cast<Creature*>(spell->getUnitCaster()))
-
-                if (GetRandomTargetNotMainTank(marrowgar))
-                    return SpellCastResult::SPELL_CAST_SUCCESS;
-
-            return SpellCastResult::SPELL_FAILED_DONT_REPORT;
-        }
-
-        Unit* GetRandomTargetNotMainTank(Creature* caster)
-        {
-            Unit* target = nullptr;
-            std::vector<Player*> players;
-
-            Unit* mt = caster->GetAIInterface()->GetMostHated();
-            if (mt == nullptr || !mt->isPlayer())
-                return 0;
-
-            for (const auto& itr : caster->getInRangePlayersSet())
-            {
-                Player* obj = static_cast<Player*>(itr);
-                if (obj != mt && CheckTarget(obj, caster->GetScript()))
-                    players.push_back(obj);
+                Unit* target = *itr;
+                target->castSpell(target, BoneSpikeSummonId[i], true);
             }
 
-            if (players.size())
-                target = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
 
-            return target;
+            std::vector<uint32_t> emoteVector;
+            emoteVector.clear();
+            emoteVector.push_back(SAY_MARR_BONESPIKE_1);// Stick Around
+            emoteVector.push_back(SAY_MARR_BONESPIKE_2);// The only Escape is Darkness 
+            emoteVector.push_back(SAY_MARR_BONESPIKE_3);// More Bones for the offering
+
+            marrowgarAI->sendRandomDBChatMessage(emoteVector);  
+        }
+    }
+
+    SpellCastResult onCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) override
+    {          
+        if (Creature* marrowgar = static_cast<Creature*>(spell->getUnitCaster()))
+
+            if (GetRandomTargetNotMainTank(marrowgar))
+                return SpellCastResult::SPELL_CAST_SUCCESS;
+
+        return SpellCastResult::SPELL_FAILED_DONT_REPORT;
+    }
+
+    Unit* GetRandomTargetNotMainTank(Creature* caster)
+    {
+        Unit* target = nullptr;
+        std::vector<Player*> players;
+
+        Unit* mt = caster->GetAIInterface()->GetMostHated();
+        if (mt == nullptr || !mt->isPlayer())
+            return 0;
+
+        for (const auto& itr : caster->getInRangePlayersSet())
+        {
+            Player* obj = static_cast<Player*>(itr);
+            if (obj != mt && CheckTarget(obj, caster->GetScript()))
+                players.push_back(obj);
         }
 
-        bool CheckTarget(Unit* target, CreatureAIScript* creatureAI)
-        {
-            if (target->getObjectTypeId() != TYPEID_PLAYER)
+        if (players.size())
+            target = players[Util::getRandomUInt(static_cast<uint32_t>(players.size() - 1))];
+
+        return target;
+    }
+
+    bool CheckTarget(Unit* target, CreatureAIScript* creatureAI)
+    {
+        if (target->getObjectTypeId() != TYPEID_PLAYER)
+            return false;
+
+        if (target->HasAura(SPELL_IMPALED))
+            return false;
+
+        // Check if it is one of the tanks soaking Bone Slice
+        for (uint32 i = 0; i < MAX_BONE_SPIKE_IMMUNE; ++i)
+            if (target->getGuid() == creatureAI->GetCreatureData64(DATA_SPIKE_IMMUNE + i))
                 return false;
 
-            if (target->HasAura(SPELL_IMPALED))
-                return false;
-
-            // Check if it is one of the tanks soaking Bone Slice
-            for (uint32 i = 0; i < MAX_BONE_SPIKE_IMMUNE; ++i)
-                if (target->getGuid() == creatureAI->GetCreatureData64(DATA_SPIKE_IMMUNE + i))
-                    return false;
-
-            return true;
-        }        
+        return true;
+    }        
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1267,7 +1256,6 @@ class BoneSpikeGraveyard : public SpellScript
 class Coldflame : public SpellScript
 {
 public:
-
     void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override
     {
         if (effectIndex != EFF_INDEX_0)
@@ -1312,7 +1300,6 @@ public:
 class ColdflameBonestorm : public SpellScript
 {
 public:
-
     SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex) override
     {
         if (effectIndex != EFF_INDEX_0)
@@ -1330,7 +1317,6 @@ public:
 class ColdflameDamage: public SpellScript
 {
 public:
-
     void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override
     {
         if (effectIndex != EFF_INDEX_0)
@@ -1374,7 +1360,6 @@ public:
 class BoneSlice : public SpellScript
 {
 public:
-
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override
     {
         if (effIndex != EFF_INDEX_0 || spell->GetUnitTarget() == nullptr)
@@ -1795,7 +1780,6 @@ class LadyDeathwhisperAI : public CreatureAIScript
     }
 
 protected:
-
     // Common
     InstanceScript* mInstance;
     uint64_t nextVengefulShadeTargetGUID;
@@ -1848,7 +1832,6 @@ class CultAdherentAI : public CreatureAIScript
     }
 
 protected:
-
     // Common
     InstanceScript* mInstance;
 
@@ -1887,7 +1870,6 @@ class CultFanaticAI : public CreatureAIScript
     }
 
 protected:
-
     // Common
     InstanceScript* mInstance;
 
@@ -1904,7 +1886,6 @@ protected:
 class DarkMartyrdom : public SpellScript
 {
 public:
-
     void afterSpellEffect(Spell* spell, uint8_t effIndex) override
     {
         if (effIndex != EFF_INDEX_0)
@@ -1928,7 +1909,6 @@ public:
 class MuradinGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 14500);
@@ -2037,7 +2017,6 @@ class MuradinAI : public CreatureAIScript
     }
 
 protected:
-
     // Common
     IceCrownCitadelScript* mInstance;
 };
