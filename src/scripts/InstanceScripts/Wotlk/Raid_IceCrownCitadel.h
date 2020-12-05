@@ -849,7 +849,7 @@ enum GunshipBattleTextIds
     SAY_INTRO_HORDE_1                           = 8362,
     SAY_INTRO_HORDE_2                           = 8363,
     SAY_INTRO_HORDE_4                           = 8364,
-    SAY_BOARDING_SKYBREAKER_0                   = 8368,
+    SAY_BOARDING_SKYBREAKER_0                   = 8366,
     SAY_BOARDING_ORGRIMS_HAMMER_1               = 8367,
     SAY_NEW_AXETHROWER_SPAWNED                  = 8369,
     SAY_NEW_ROCKETEERS_SPAWNED                  = 8370,

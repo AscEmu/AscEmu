@@ -501,36 +501,19 @@ public:
                         DoAction(ACTION_FAIL);
                 }
                 break;
-            case EVENT_INTRO_ALLIANCE_1:
-                
-                break;
             case EVENT_START_FLY:
                 StartFlyShip(skybreaker);
                 break;
-            case EVENT_INTRO_ALLIANCE_2:
-                
-                break;
-            case EVENT_INTRO_ALLIANCE_3:
-                
+            case EVENT_INTRO_ALLIANCE_3:           
                 StartFlyShip(orgrimmar);
-                break;
-            case EVENT_INTRO_ALLIANCE_4:
-                
                 break;
             case EVENT_INTRO_ALLIANCE_5:
                 StopFlyShip(skybreaker);
-                StopFlyShip(orgrimmar);
-                
+                StopFlyShip(orgrimmar);               
                 break;
-            case EVENT_INTRO_ALLIANCE_6:                
+            case EVENT_INTRO_ALLIANCE_6:  
                 SendMusicToPlayers(17289);
                 DoAction(ACTION_BATTLE_EVENT);
-                break;
-            case EVENT_INTRO_ALLIANCE_7:
-
-                break;
-            case EVENT_INTRO_ALLIANCE_8:
-                
                 break;
             }
         }
@@ -558,23 +541,16 @@ public:
         switch (action)
         {
         case ACTION_INTRO_START:
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_1, 1000);
             scriptEvents.addEvent(EVENT_START_FLY, 2500);
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_2, 7000);
             scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_3, 28000);
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_4, 35000);
             scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_5, 40000);
             scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_6, 47000);
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_7, 53000);
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_8, 58900);
             break;
         case ACTION_BATTLE_EVENT:
-            if (getData(DATA_TEAM_IN_INSTANCE) == TEAM_ALLIANCE)
-                scriptEvents.addEvent(EVENT_WIPE_CHECK, 5000);
-
+            scriptEvents.addEvent(EVENT_WIPE_CHECK, 5000);
             setData(DATA_GUNSHIP_EVENT, InProgress);
-
             RelocateTransport(skybreaker);
+            RelocateTransport(orgrimmar);
             break;
         }
     }
@@ -585,7 +561,7 @@ public:
         t->setFlags(GO_FLAG_NONSELECTABLE);
         t->setState(GO_STATE_OPEN);
         t->setDynamic(0x10830010); // Seen in sniffs
-        //t->setParentRotation(3, 1.0f);
+        t->setParentRotation(3, 1.0f);
 
         GameObjectProperties const* goinfo = t->GetGameObjectProperties();
         t->GenerateWaypoints(goinfo->raw.parameter_0);  
@@ -597,7 +573,6 @@ public:
     void StopFlyShip(Transporter* t)
     {
         t->m_WayPoints.clear();
-        RelocateTransport(t);
         t->BuildStopMovePacket(mInstance);
     }
 
@@ -1199,7 +1174,7 @@ public:
 class BoneSpikeGraveyard : public SpellScript
 {
     public:
-        virtual void onAuraApply(Aura* aur)
+        void onAuraApply(Aura* aur) override
         {
             aur->removeAuraEffect(EFF_INDEX_1);
 
@@ -1214,8 +1189,7 @@ class BoneSpikeGraveyard : public SpellScript
 
                 targets.clear();
 
-                uint8_t target = 0;
-                for (target; target < boneSpikeCount; ++target)
+                for (uint8_t target = 0; target < boneSpikeCount; ++target)
                     targets.push_back(GetRandomTargetNotMainTank(marrowgar));
 
                 if (targets.empty())
@@ -1239,14 +1213,14 @@ class BoneSpikeGraveyard : public SpellScript
             }
         }
 
-        virtual SpellCastResult onCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2)
+        SpellCastResult onCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) override
         {          
             if (Creature* marrowgar = static_cast<Creature*>(spell->getUnitCaster()))
 
                 if(GetRandomTargetNotMainTank(marrowgar))
                     return SpellCastResult::SPELL_CAST_SUCCESS;
 
-            return SpellCastResult::SPELL_FAILED_SUCCESS;
+            return SpellCastResult::SPELL_FAILED_DONT_REPORT;
         }
 
         Unit* GetRandomTargetNotMainTank(Creature* caster)
@@ -1293,7 +1267,7 @@ class BoneSpikeGraveyard : public SpellScript
 class Coldflame : public SpellScript
 {
 public:
-    virtual void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets)
+    void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override
     {
         if (effectIndex != EFF_INDEX_0)
             return;
@@ -1321,7 +1295,7 @@ public:
         }
     }
 
-    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex)
+    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex) override
     {
         if (effectIndex != EFF_INDEX_0)
             return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
@@ -1337,7 +1311,7 @@ public:
 class ColdflameBonestorm : public SpellScript
 {
 public:
-    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex)
+    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex) override
     {
         if (effectIndex != EFF_INDEX_0)
             return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
@@ -1354,7 +1328,7 @@ public:
 class ColdflameDamage: public SpellScript
 {
 public:
-    virtual void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets)
+    void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override
     {
         if (effectIndex != EFF_INDEX_0)
             return;
@@ -1383,7 +1357,7 @@ public:
         return true;
     }
 
-    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex)
+    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex) override
     {
         if (effectIndex == EFF_INDEX_2)
             return SpellScriptExecuteState::EXECUTE_PREVENT;
@@ -1409,7 +1383,7 @@ public:
         return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
     }
 
-    virtual SpellCastResult onCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2)
+    SpellCastResult onCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) override
     {
         targetCount = 0;
         static_cast<Creature*>(spell->getUnitCaster())->GetScript()->DoAction(ACTION_CLEAR_SPIKE_IMMUNITIES);
@@ -1417,7 +1391,7 @@ public:
         return SpellCastResult::SPELL_CAST_SUCCESS;
     }
 
-    virtual void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets)
+    void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override
     {
         if (effectIndex != EFF_INDEX_0)
             return;
@@ -1425,7 +1399,7 @@ public:
         targetCount = effectTargets->size();        
     }
 
-    virtual void afterSpellEffect(Spell* spell, uint8_t effIndex)
+    void afterSpellEffect(Spell* spell, uint8_t effIndex) override
     {
         if (effIndex != EFF_INDEX_0)
             return;
@@ -1741,7 +1715,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
     {
         if (summons.size())
             for (auto itr = summons.begin(); itr != summons.end();)
-                (*itr)->Despawn(0, 0);
+                (*itr)->Despawn(100, 0);
     }
 
     void ReanimateCultist()
@@ -1963,38 +1937,33 @@ class MuradinAI : public CreatureAIScript
         {
             switch (eventId)
             {
-            case EVENT_WIPE_CHECK:
-                
                 break;
             case EVENT_INTRO_ALLIANCE_1:
-
-                break;
-            case EVENT_START_FLY:
-
+                sendDBChatMessage(SAY_INTRO_ALLIANCE_0);
                 break;
             case EVENT_INTRO_ALLIANCE_2:
-
+                sendDBChatMessage(SAY_INTRO_ALLIANCE_1);
                 break;
             case EVENT_INTRO_ALLIANCE_3:
-
-
+                sendDBChatMessage(SAY_INTRO_ALLIANCE_2);
                 break;
             case EVENT_INTRO_ALLIANCE_4:
-
+                sendDBChatMessage(SAY_INTRO_ALLIANCE_3);
                 break;
             case EVENT_INTRO_ALLIANCE_5:
-
-
+                sendDBChatMessage(SAY_INTRO_ALLIANCE_4);
                 break;
             case EVENT_INTRO_ALLIANCE_6:
-
-
+                sendDBChatMessage(SAY_INTRO_ALLIANCE_5);
                 break;
             case EVENT_INTRO_ALLIANCE_7:
-
+                if (Creature* pSaurfang = mInstance->GetInstance()->GetCreature(mInstance->getLocalData64(DATA_HIGH_OVERLORD_SAURFANG_NOT_VISUAL)))
+                {
+                    pSaurfang->GetScript()->sendDBChatMessage(SAY_BOARDING_SKYBREAKER_0);
+                }
                 break;
             case EVENT_INTRO_ALLIANCE_8:
-
+                sendDBChatMessage(SAY_INTRO_ALLIANCE_7);
                 break;
             }
         }
