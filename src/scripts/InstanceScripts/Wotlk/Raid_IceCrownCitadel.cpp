@@ -1751,7 +1751,25 @@ class LadyDeathwhisperAI : public CreatureAIScript
 
     void EmpowerCultist()
     {
+        if (summons.empty())
+            return;
+
+        std::list<Creature*> temp;
+        for (auto itr = summons.begin(); itr != summons.end(); ++itr)
+            if ((*itr)->isAlive() && ((*itr)->getEntry() == NPC_CULT_FANATIC || (*itr)->getEntry() == NPC_CULT_ADHERENT))
+                temp.push_back((*itr));
         
+        if (temp.empty())
+            return;
+
+        // select random cultist
+        uint8_t i = Util::getRandomUInt(0, temp.size() - 1);
+        auto it = temp.begin();
+        std::advance(it, i);
+
+        Creature* cultist = (*it);
+        getCreature()->castSpell(cultist, cultist->getEntry() == NPC_CULT_FANATIC ? SPELL_DARK_TRANSFORMATION_T : SPELL_DARK_EMPOWERMENT_T, true);
+        sendDBChatMessage(uint8(cultist->getEntry() == NPC_CULT_FANATIC ? SAY_LADY_TRANSFORMATION : SAY_LADY_EMPOWERMENT));
     }
 
 protected:

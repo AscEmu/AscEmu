@@ -692,43 +692,40 @@ enum DeprogrammingData
 
 enum AdditionalData
 {
-    DATA_BONED_ACHIEVEMENT = 1,
-    DATA_GUNSHIP_EVENT = 2,
-    DATA_TEAM_IN_INSTANCE = 3,
+    DATA_BONED_ACHIEVEMENT                      = 1,
+    DATA_GUNSHIP_EVENT                          = 2,
+    DATA_TEAM_IN_INSTANCE                       = 3,
 
     // Gunship
-    DATA_BEEN_WAITING_ACHIEVEMENT = 49,
-    DATA_NECK_DEEP_ACHIEVEMENT = 50,
-    DATA_FIRST_SQUAD_STATE = 100,
-    DATA_SECOND_SQUAD_STATE = 101,
-    DATA_SPIRE_FROSTWYRM_STATE = 102,  
-    DATA_GB_BATTLE_MAGE = 106,
-
-    DATA_SKYBREAKER_BOSS = 107,
-    DATA_ORGRIMMAR_HAMMER_BOSS = 108,
-
-    DATA_GB_HIGH_OVERLORD_SAURFANG = 103,
-    DATA_GB_MURADIN_BRONZEBEARD = 104,
-
-    DATA_HIGH_OVERLORD_SAURFANG_NOT_VISUAL = 105,
-    DATA_MURADIN_BRONZEBEARD_NOT_VISUAL = 109,
+    DATA_BEEN_WAITING_ACHIEVEMENT               = 4,
+    DATA_NECK_DEEP_ACHIEVEMENT                  = 5,
+    DATA_FIRST_SQUAD_STATE                      = 6,
+    DATA_SECOND_SQUAD_STATE                     = 7,
+    DATA_SPIRE_FROSTWYRM_STATE                  = 8,  
+    DATA_GB_BATTLE_MAGE                         = 9,
+    DATA_SKYBREAKER_BOSS                        = 10,
+    DATA_ORGRIMMAR_HAMMER_BOSS                  = 11,
+    DATA_GB_HIGH_OVERLORD_SAURFANG              = 12,
+    DATA_GB_MURADIN_BRONZEBEARD                 = 13,
+    DATA_HIGH_OVERLORD_SAURFANG_NOT_VISUAL      = 14,
+    DATA_MURADIN_BRONZEBEARD_NOT_VISUAL         = 15,
 };
 
 enum Achievements
 {
-    IM_ON_A_BOAT_10 = 4536,
-    IM_ON_A_BOAT_25 = 4612
+    IM_ON_A_BOAT_10                             = 4536,
+    IM_ON_A_BOAT_25                             = 4612
 };
 
 enum GunshipBattleActions
 {
-    ACTION_INTRO_START = 1,
-    ACTION_BATTLE_EVENT = 2,
-    ACTION_MAGE_DIE = 3,
-    ACTION_ROCK_DIE = 4,
-    ACTION_AXES_RIFL_DIE = 5,
-    ACTION_DONE = 6,
-    ACTION_FAIL = 7,
+    ACTION_INTRO_START                          = 1,
+    ACTION_BATTLE_EVENT                         = 2,
+    ACTION_MAGE_DIE                             = 3,
+    ACTION_ROCK_DIE                             = 4,
+    ACTION_AXES_RIFL_DIE                        = 5,
+    ACTION_DONE                                 = 6,
+    ACTION_FAIL                                 = 7,
 };
 
 enum EventsGunshipBattle
@@ -829,79 +826,43 @@ enum EventsGunshipBattle
 
 enum GunshipBattleTextIds
 {
-    // Kor'kron Primalist
-    SAY_FIRST_SQUAD_RESCUED_HORDE_0 = 0,
-
-    // Kor'kron Invoker
-    SAY_FIRST_SQUAD_RESCUED_HORDE_1 = 0,
-
-    // Kor'kron Defender
-    SAY_SECOND_SQUAD_RESCUED_HORDE_0 = 0,
-    SAY_SECOND_SQUAD_RESCUED_HORDE_1 = 1,
-    SAY_FROSTWYRM_SUMMON_0 = 2,
-    SAY_FROSTWYRM_SUMMON_1 = 3,
-
-    // Skybreaker Vindicator
-    SAY_FIRST_SQUAD_RESCUED_ALLIANCE_0 = 0,
-
-    // Skybreaker Sorcerer
-    SAY_FIRST_SQUAD_RESCUED_ALLIANCE_1 = 0,
-
-    // Skybreaker Protector
-    SAY_SECOND_SQUAD_RESCUED_ALLIANCE_0 = 0,
-    SAY_SECOND_SQUAD_RESCUED_ALLIANCE_1 = 1,
-    SAY_SECOND_SQUAD_RESCUED_ALLIANCE_2 = 2,
-
-    // Kor'kron Invoker & Skybreaker Sorcerer
-    SAY_SUMMON_BATTLE_STANDARD = 1,
-
-    // Froswyrm
-    SAY_FROSTWYRM_LAND_H_0 = 0,
-    SAY_FROSTWYRM_LAND_A_1 = 1,
-
     // Muradin Bronzebeard
-    SAY_INTRO_ALLIANCE_0 = 0,
-    SAY_INTRO_ALLIANCE_1 = 1,
-    SAY_INTRO_ALLIANCE_2 = 2,
-    SAY_INTRO_ALLIANCE_3 = 3,
-    SAY_INTRO_ALLIANCE_4 = 4,
-    SAY_INTRO_ALLIANCE_5 = 5,
-    SAY_INTRO_ALLIANCE_7 = 6,
-    SAY_INTRO_HORDE_3 = 7,
-    SAY_BOARDING_SKYBREAKER_1 = 8,
-    SAY_BOARDING_ORGRIMS_HAMMER_0 = 9,
-    SAY_NEW_RIFLEMEN_SPAWNED = 10,
-    SAY_NEW_MORTAR_TEAM_SPAWNED = 11,
-    SAY_NEW_MAGE_SPAWNED = 12,
-    SAY_ALLIANCE_VICTORY = 13,
-    SAY_ALLIANCE_DEFEAT = 14, // How will we handle that case ? Ie. the player loses
+    SAY_INTRO_ALLIANCE_0                        = 8374,
+    SAY_INTRO_ALLIANCE_1                        = 8375,
+    SAY_INTRO_ALLIANCE_2                        = 8376,
+    SAY_INTRO_ALLIANCE_3                        = 8377,
+    SAY_INTRO_ALLIANCE_4                        = 8378,
+    SAY_INTRO_ALLIANCE_5                        = 8379,
+    SAY_INTRO_ALLIANCE_7                        = 8380,
+    SAY_INTRO_HORDE_3                           = 8381,
+    SAY_BOARDING_SKYBREAKER_1                   = 8382,
+    SAY_BOARDING_ORGRIMS_HAMMER_0               = 8383,
+    SAY_NEW_RIFLEMEN_SPAWNED                    = 8384,
+    SAY_NEW_MORTAR_TEAM_SPAWNED                 = 8385,
+    SAY_NEW_MAGE_SPAWNED                        = 8386,
+    SAY_ALLIANCE_VICTORY                        = 8387,
+    SAY_ALLIANCE_DEFEAT                         = 8388, // How will we handle that case ? Ie. the player loses
 
     // High Overlord Saurfang
-    SAY_INTRO_HORDE_0 = 0,
-    SAY_INTRO_HORDE_0_1 = 1,
-    SAY_INTRO_HORDE_1 = 2,
-    SAY_INTRO_HORDE_2 = 3,
-    SAY_INTRO_HORDE_4 = 4,
-    SAY_BOARDING_SKYBREAKER_0 = 5,
-    SAY_BOARDING_ORGRIMS_HAMMER_1 = 6,
-    SAY_NEW_AXETHROWER_SPAWNED = 7,
-    SAY_NEW_ROCKETEERS_SPAWNED = 8,
-    SAY_NEW_BATTLE_MAGE_SPAWNED = 9,
-    SAY_HORDE_VICTORY = 10,
-    SAY_HORDE_DEFEAT = 11, // How will we handle that case ? Ie. the player loses
+    SAY_INTRO_HORDE_0                           = 8360,
+    SAY_INTRO_HORDE_0_1                         = 8361,
+    SAY_INTRO_HORDE_1                           = 8362,
+    SAY_INTRO_HORDE_2                           = 8363,
+    SAY_INTRO_HORDE_4                           = 8364,
+    SAY_BOARDING_SKYBREAKER_0                   = 8368,
+    SAY_BOARDING_ORGRIMS_HAMMER_1               = 8367,
+    SAY_NEW_AXETHROWER_SPAWNED                  = 8369,
+    SAY_NEW_ROCKETEERS_SPAWNED                  = 8370,
+    SAY_NEW_BATTLE_MAGE_SPAWNED                 = 8371,
+    SAY_HORDE_VICTORY                           = 8372,
+    SAY_HORDE_DEFEAT                            = 8373, // How will we handle that case ? Ie. the player loses
 
-    SAY_HIGH_OVERLORD_SAURFANG_NOT_VISUAL = 0,
-    SAY_BOARDING_SKYBREAKER_SAURFANG = 1,
-    SAY_MURADIN_BRONZEBEARD_NOT_VISUAL = 0,
-    SAY_BOARDING_SKYBREAKER_MURADIN = 1,
-
-
-    GOSSIP_OPTION_NOT_LEADER = 607,  // I'm not the raid leader...
-    GOSSIP_OPTION_ALLIANCE_RDY = 608,  // My companions are all accounted for, Muradin. Let's go!
-    GOSSIP_OPTION_WAIT_LEADER = 609,  // I'll wait for the raid leader
-    GOSSIP_OPTION_HORDE_RDY = 610,  // My companions are all accounted for, Saurfang. Let's go!
-    GOSSIP_OPTION_JETPACK = 611,    // Yeah, I'm sure that safety is your top priority. Give me a jetpack.
-    GOSSIP_OPTION_JETPACK2 = 612,   // You already have my jetpack!
+    GOSSIP_OPTION_NOT_LEADER                    = 607,  // I'm not the raid leader...
+    GOSSIP_OPTION_ALLIANCE_RDY                  = 608,  // My companions are all accounted for, Muradin. Let's go!
+    GOSSIP_OPTION_WAIT_LEADER                   = 609,  // I'll wait for the raid leader
+    GOSSIP_OPTION_HORDE_RDY                     = 610,  // My companions are all accounted for, Saurfang. Let's go!
+    GOSSIP_OPTION_JETPACK                       = 611,    // Yeah, I'm sure that safety is your top priority. Give me a jetpack.
+    GOSSIP_OPTION_JETPACK2                      = 612,   // You already have my jetpack!
 };
 
 LocationVector const FrostWyrmPosH = { -435.429f, 2077.556f, 219.1148f, 4.767166f };
