@@ -15,8 +15,6 @@ public:
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new BloodFurnaceInstanceScript(pMapMgr); }
-
-
 };
 
 class KelidanTheBreakerAI : public CreatureAIScript

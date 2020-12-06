@@ -16,8 +16,6 @@ public:
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ArcatrazInstanceScript(pMapMgr); }
-
-
 };
 
 // VOID_ZONE 36119    // DBC: 36119; it's not fully functionl without additional core support (for dmg and random place targeting).

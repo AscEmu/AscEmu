@@ -1,23 +1,7 @@
 /*
- * Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
- * Copyright (c) 2008-2015 Sun++ Team <http://www.sunplusplus.info>
- * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Setup.h"
 #include "Instance_Deadmines.h"
@@ -77,7 +61,8 @@ public:
                 GameObject* pDoor1 = GetGameObjectByGuid(mFactoryDoor_GUID);
                 if (pDoor1 != NULL)
                     pDoor1->setState(GO_STATE_OPEN);
-            }break;
+            }
+            break;
             case NPC_SNEEDS_SHREDDER:
                 spawnCreature(NPC_SNEED, pCreature->GetPositionX(), pCreature->GetPositionY(), pCreature->GetPositionZ(), pCreature->GetOrientation());
                 break;
@@ -86,13 +71,15 @@ public:
                 GameObject* pDoor2 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[0].x, Doors[0].y, Doors[0].z);
                 if (pDoor2 != NULL)
                     pDoor2->setState(GO_STATE_OPEN);
-            }break;
+            }
+            break;
             case NPC_SNEED:
             {
                 GameObject* pDoor3 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[1].x, Doors[1].y, Doors[1].z);
                 if (pDoor3 != NULL)
                     pDoor3->setState(GO_STATE_OPEN);
-            }break;
+            }
+            break;
         }
     }
 
@@ -105,36 +92,37 @@ public:
                 GameObject* pDoor4 = GetGameObjectByGuid(mIronCladDoor_GUID);
                 if (pDoor4 != NULL && pDoor4->getState() != GO_STATE_ALTERNATIVE_OPEN)
                     pDoor4->setState(GO_STATE_ALTERNATIVE_OPEN);
-            }break;
-
+            }
+            break;
             case GO_FACTORY_DOOR_LEVER:
             {
                 GameObject* pDoor5 = GetGameObjectByGuid(mFactoryDoor_GUID);
                 if (pDoor5 != NULL)
                     pDoor5->setState(pDoor5->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
-            }break;
-
+            }
+            break;
             case GO_IRONCLAD_LEVER:
             {
                 GameObject* pDoor6 = GetGameObjectByGuid(mFactoryDoor_GUID);
                 //Door can be opened by lever if state isn't 2
                 if (pDoor6 != NULL && pDoor6->getState() != GO_STATE_ALTERNATIVE_OPEN)
                     pDoor6->setState(pDoor6->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
-            }break;
-
+            }
+            break;
             case GO_SNEED_DOOR_LEVER:
             {
                 GameObject* pDoor7 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[1].x, Doors[1].y, Doors[1].z);
                 if (pDoor7 != NULL)
                     pDoor7->setState(pDoor7->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
-            }break;
-
+            }
+            break;
             case GO_GILNID_DOOR_LEVER:
             {
                 GameObject* pDoor8 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[0].x, Doors[0].y, Doors[0].z);
                 if (pDoor8 != NULL)
                     pDoor8->setState(pDoor8->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
-            }break;
+            }
+            break;
         }
     }
 

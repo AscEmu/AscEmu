@@ -3,7 +3,6 @@ Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Raid_Naxxramas.h"
 

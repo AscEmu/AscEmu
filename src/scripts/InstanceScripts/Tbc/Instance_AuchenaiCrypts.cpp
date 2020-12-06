@@ -16,8 +16,6 @@ public:
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new AuchenaiCryptsInstanceScript(pMapMgr); }
-
-
 };
 
 // Shirrak the Dead WatcherAI

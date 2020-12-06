@@ -3,7 +3,6 @@ Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Objects/Faction.h"
 #include "Raid_Magtheridons_Lair.h"
@@ -17,8 +16,6 @@ public:
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new MagtheridonsLairInstanceScript(pMapMgr); }
-
-
 };
 
 class MagtheridonTriggerAI : public CreatureAIScript

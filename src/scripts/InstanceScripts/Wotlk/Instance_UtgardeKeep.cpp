@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 // \todo Ingvar the Plunderer - Ressurection Event, Fix despawn(i think all bosses), Add sound ID's
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_UtgardeKeep.h"
 
