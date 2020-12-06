@@ -2276,10 +2276,8 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     setDeathState(JUST_DIED);
     GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, this, 0);
 
-
     if (getChannelObjectGuid() != 0)
     {
-
         Spell* spl = getCurrentSpell(CURRENT_CHANNELED_SPELL);
 
         if (spl != NULL)

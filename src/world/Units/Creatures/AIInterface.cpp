@@ -4828,7 +4828,6 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
         || pInstance->m_mapInfo->type == INSTANCE_NONRAID
         || pInstance->m_mapInfo->type == INSTANCE_MULTIMODE))
     {
-
         auto encounters = sObjectMgr.GetDungeonEncounterList(m_Unit->GetMapMgr()->GetMapId(), pInstance->m_difficulty);
 
         Creature* pCreature = static_cast< Creature* >(m_Unit);
