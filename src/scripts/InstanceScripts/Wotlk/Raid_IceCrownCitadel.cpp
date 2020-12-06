@@ -126,11 +126,9 @@ public:
         case GO_MARROWGAR_ICEWALL_1:
             MarrowgarIcewall1GUID = static_cast<uint32_t>(pGameObject->getGuid());
             break;
-
         case GO_MARROWGAR_ICEWALL_2:
             MarrowgarIcewall2GUID = static_cast<uint32_t>(pGameObject->getGuid());
             break;
-
         case GO_MARROWGAR_DOOR:
             MarrowgarEntranceDoorGUID = static_cast<uint32_t>(pGameObject->getGuid());
             break;
@@ -200,13 +198,11 @@ public:
                 if (MarrowgarEntranceDoorGUID)
                     GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_CLOSED);
             }
-
             if (state == NotStarted)
             {
                 if (MarrowgarEntranceDoorGUID)
                     GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);
             }
-
             if (state == Finished)
             {
                 if (MarrowgarIcewall1GUID)
@@ -225,7 +221,6 @@ public:
                 if (LadyDeathwisperEntranceDoorGUID)
                     GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
             }
-
             if (state == NotStarted)
             {
                 if (LadyDeathwisperElevatorGUID)

@@ -41,11 +41,9 @@ public:
         case GO_FACTORY_DOOR:
             mFactoryDoor_GUID = static_cast<uint32_t>(pGameObject->getGuid());
             break;
-
         case GO_FACTORY_DOOR_LEVER:
             mDoorLever_GUID = static_cast<uint32_t>(pGameObject->getGuid());
             break;
-
         case GO_IRONCLAD_DOOR:
             mIronCladDoor_GUID = static_cast<uint32_t>(pGameObject->getGuid());
             break;
