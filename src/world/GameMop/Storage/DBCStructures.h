@@ -1238,6 +1238,7 @@ namespace DBC
             char* encounterName;                                    // 5        encounter name
             //uint32 nameFlags;                                     // 21
             //uint32 u
+        };
 
         struct LiquidTypeEntry
         {
