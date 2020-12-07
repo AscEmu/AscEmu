@@ -56,7 +56,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20200221-00_utf8mb4_unicode_ci";
-static const char* REQUIRED_WORLD_DB_VERSION = "20201012-00_worldstring_tables";
+static const char* REQUIRED_WORLD_DB_VERSION = "20201611-00_instance_encounters";
 
 void Master::_OnSignal(int s)
 {

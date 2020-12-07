@@ -523,6 +523,29 @@ void ScriptMgr::DumpUnimplementedSpells()
     LOG_BASIC("Dumped %u IDs.", count);
 }
 
+void ScriptMgr::DamageTaken(Creature* pCreature, Unit* attacker, uint32_t* damage) const
+{
+    const auto AIScript = getCreatureAIScript(pCreature);
+    if (AIScript == nullptr)
+        return;
+
+    return AIScript->DamageTaken(attacker, damage);
+}
+
+CreatureAIScript* ScriptMgr::getCreatureAIScript(Creature* pCreature) const
+{
+    for (const auto& itr : _creatures)
+    {
+        if (itr.first == pCreature->getEntry())
+        {
+            exp_create_creature_ai function_ptr = itr.second;
+            return (function_ptr)(pCreature);
+        }
+    }
+
+    return nullptr;
+}
+
 void ScriptMgr::register_creature_script(uint32 entry, exp_create_creature_ai callback)
 {
     m_creaturesMutex.Acquire();
@@ -801,6 +824,8 @@ void GameObjectAIScript::RegisterAIUpdateEvent(uint32_t frequency)
 
 InstanceScript::InstanceScript(MapMgr* pMapMgr) : mInstance(pMapMgr), mSpawnsCreated(false), mTimerCount(0), mUpdateFrequency(defaultUpdateFrequency)
 {
+    Difficulty = pMapMgr->pInstance->m_difficulty;
+
     generateBossDataState();
     registerUpdateEvent();
 }
@@ -822,7 +847,10 @@ void InstanceScript::setData(uint32_t data, uint32_t state)
 {
     auto Iter = mInstanceData.find(data);
     if (Iter != mInstanceData.end())
+    {
         Iter->second = state;
+        OnEncounterStateChange(data, state);
+    }
     else
         LogDebugFlag(LF_SCRIPT_MGR, "InstanceScript::setData - tried to set state for entry %u on map %u. The entry is not defined in table instance_bosses or manually to handle states!", data, mInstance->GetMapId());
 }
@@ -869,30 +897,143 @@ std::string InstanceScript::getDataStateString(uint32_t bossEntry)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // encounters
+#if VERSION_STRING >= WotLK
 void InstanceScript::generateBossDataState()
 {
-    InstanceBossInfoMap* bossInfoMap = sObjectMgr.m_InstanceBossInfoMap[mInstance->GetMapId()];
-    if (bossInfoMap != nullptr)
+    auto encounters = sObjectMgr.GetDungeonEncounterList(mInstance->GetMapId(), mInstance->pInstance->m_difficulty);
+
+    if (encounters != nullptr)
     {
-        for (const auto& encounter : *bossInfoMap)
+        completedEncounters = 0;
+
+        for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
         {
-            CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter.second->creatureid);
-            if (creature == nullptr)
-                LOG_ERROR("Your instance_boss table includes invalid data for boss entry %u!", encounter.second->creatureid);
-            else
-                mInstanceData.insert(std::pair<uint32_t, uint32_t>(encounter.second->creatureid, NotStarted));
+            DungeonEncounter const* encounter = *itr;
+            if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE)
+            {
+                CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter->creditEntry);
+                if (creature == nullptr)
+                    LOG_ERROR("Your instance_encounters table includes invalid data for boss entry %u!", encounter->creditEntry);
+                else
+                    mInstanceData.insert(std::pair<uint32_t, uint32_t>(encounter->creditEntry, NotStarted));
+            }           
         }
 
         for (const auto& killedNpc : mInstance->pInstance->m_killedNpcs)
         {
-            InstanceBossInfoMap::const_iterator bossInfo = bossInfoMap->find((killedNpc));
-            if (bossInfo != bossInfoMap->end())
-                setData(bossInfo->first, Finished);
+            for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+            {
+                DungeonEncounter const* encounter = *itr;
+                if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == killedNpc)
+                    setData(encounter->creditEntry, Finished);
+            }
         }
     }
 
     LogDebugFlag(LF_SCRIPT_MGR, "InstanceScript::generateBossDataState() - Boss State generated for map %u.", mInstance->GetMapId());
 }
+
+void InstanceScript::UpdateEncountersStateForCreature(uint32_t creditEntry, uint8_t difficulty)
+{
+    DungeonEncounterList const* encounters = sObjectMgr.GetDungeonEncounterList(mInstance->GetMapId(), difficulty);
+    if (!encounters)
+        return;
+
+    uint32 dungeonId = 0;
+
+    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+    {
+        DungeonEncounter const* encounter = *itr;
+        if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == creditEntry)
+        {
+            completedEncounters |= 1 << encounter->dbcEntry->encounterIndex;
+            if (encounter->lastEncounterDungeon)
+            {
+                dungeonId = encounter->lastEncounterDungeon;
+                break;
+            }
+        }
+    }
+
+    if (dungeonId)
+    {
+        for (const auto& itr : mInstance->m_PlayerStorage)
+        {
+            Player* p = itr.second;
+            sLfgMgr.RewardDungeonDoneFor(dungeonId, p);
+        }
+    }
+}
+
+void InstanceScript::UpdateEncountersStateForSpell(uint32_t creditEntry, uint8_t difficulty)
+{
+    DungeonEncounterList const* encounters = sObjectMgr.GetDungeonEncounterList(mInstance->GetMapId(), difficulty);
+    if (!encounters)
+        return;
+
+    uint32 dungeonId = 0;
+
+    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+    {
+        DungeonEncounter const* encounter = *itr;
+        if (encounter->creditType == ENCOUNTER_CREDIT_CAST_SPELL && encounter->creditEntry == creditEntry)
+        {
+            completedEncounters |= 1 << encounter->dbcEntry->encounterIndex;
+            if (encounter->lastEncounterDungeon)
+            {
+                dungeonId = encounter->lastEncounterDungeon;
+                break;
+            }
+        }
+    }
+
+    if (dungeonId)
+    {
+        for (const auto& itr : mInstance->m_PlayerStorage)
+        {
+            Player* p = itr.second;
+            sLfgMgr.RewardDungeonDoneFor(dungeonId, p);
+        }
+    }
+}
+#endif
+
+#if VERSION_STRING <= TBC
+void InstanceScript::generateBossDataState()
+{
+    auto encounters = sObjectMgr.GetDungeonEncounterList(mInstance->GetMapId());
+
+    if (encounters != nullptr)
+    {
+        completedEncounters = 0;
+
+        for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+        {
+            DungeonEncounter const* encounter = *itr;
+            if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE)
+            {
+                CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter->creditEntry);
+                if (creature == nullptr)
+                    LOG_ERROR("Your instance_encounters table includes invalid data for boss entry %u!", encounter->creditEntry);
+                else
+                    mInstanceData.insert(std::pair<uint32_t, uint32_t>(encounter->creditEntry, NotStarted));
+            }
+        }
+
+        for (const auto& killedNpc : mInstance->pInstance->m_killedNpcs)
+        {
+            for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+            {
+                DungeonEncounter const* encounter = *itr;
+                if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == killedNpc)
+                    setData(encounter->creditEntry, Finished);
+            }
+        }
+    }
+
+    LogDebugFlag(LF_SCRIPT_MGR, "InstanceScript::generateBossDataState() - Boss State generated for map %u.", mInstance->GetMapId());
+}
+#endif
 
 void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_a, uint8_t value_b)
 {

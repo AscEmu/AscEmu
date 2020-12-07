@@ -8,141 +8,25 @@ endif()
 # set up our project name
 project(InstanceScripts CXX)
 
+include(Classic/CMakeLists.txt)
+include(Tbc/CMakeLists.txt)
+include(Wotlk/CMakeLists.txt)
+
+set(SRC_BASIC
+   Setup.cpp
+   Setup.h
+   # Required for linker
+   ../../world/Server/ServerState.cpp
+   ../../shared/Util.cpp
+)
+
 #sources -contains source files for our library.
 set(sources
-    Instance_Arcatraz.cpp 
-    Instance_AuchenaiCrypts.cpp 
-    Instance_AzjolNerub.cpp 
-    Instance_BlackfathomDeeps.cpp 
-    Instance_BlackMorass.cpp 
-    Instance_BlackrockDepths.cpp 
-    Instance_BlackrockSpire.cpp 
-    Instance_BloodFurnace.cpp 
-    Instance_Botanica.cpp 
-    Instance_CullingOfStratholme.cpp 
-    Instance_Deadmines.cpp 
-    Instance_DireMaul.cpp 
-    Instance_DrakTharonKeep.cpp 
-    Instance_ForgeOfSouls.cpp 
-    Instance_Gundrak.cpp 
-    Instance_HallsOfLightning.cpp 
-    Instance_HallsOfReflection.cpp 
-    Instance_HallsOfStone.cpp 
-    Instance_HellfireRamparts.cpp 
-    Instance_MagistersTerrace.cpp 
-    Instance_ManaTombs.cpp 
-    Instance_Maraudon.cpp 
-    Instance_Nexus.cpp 
-    Instance_OldHillsbradFoothills.cpp 
-    Instance_PitOfSaron.cpp
-    Instance_RagefireChasm.cpp 
-    Instance_RazorfenDowns.cpp 
-    Instance_ScarletMonastery.cpp 
-    Instance_Scholomance.cpp 
-    Instance_SethekkHalls.cpp 
-    Instance_ShadowLabyrinth.cpp 
-    Instance_ShadowfangKeep.cpp 
-    Instance_TheMechanar.cpp 
-    Instance_TheShatteredHalls.cpp 
-    Instance_TheSlavePens.cpp 
-    Instance_TheSteamvault.cpp 
-    Instance_TheUnderbog.cpp 
-    Instance_TheVioletHold.cpp 
-    Instance_Uldaman.cpp 
-    Instance_UtgardeKeep.cpp
-    Instance_UtgardePinnacle.cpp
-    Instance_WailingCaverns.cpp 
-    Instance_TheStockade.cpp 
-    Instance_ZulFarrak.cpp 
-    Raid_BlackTemple.cpp 
-    Raid_BlackwingLair.cpp 
-    Raid_CoT_BattleOfMountHyjal.cpp 
-    Raid_GruulsLair.cpp
-    Raid_IceCrownCitadel.cpp
-    Raid_Karazhan.cpp 
-    Raid_Magtheridons_Lair.cpp 
-    Raid_MoltenCore.cpp 
-    Raid_Naxxramas.cpp 
-    Raid_OnyxiasLair.cpp 
-    Raid_SerpentshrineCavern.cpp
-    Raid_SunwellPlateau.cpp  
-    Raid_TheEye.cpp 
-    Raid_TheObsidianSanctum.cpp 
-    Raid_Ulduar.cpp 
-    Raid_ZulGurub.cpp 
-    Raid_WorldBosses.cpp 
-    Raid_ZulAman.cpp 
-    Setup.cpp
-    # Required for linker
-    ../../world/Server/ServerState.cpp
-    ../../shared/Util.cpp
+    ${SRC_BASIC}
+    ${SRC_CLASSIC_SCRIPTS_FILES}
+    ${SRC_TBC_SCRIPTS_FILES}
+    ${SRC_WOTLK_SCRIPTS_FILES}	
     )
-
-set(headers
-    Instance_Arcatraz.h 
-    Instance_AuchenaiCrypts.h 
-    Instance_AzjolNerub.h 
-    Instance_BlackfathomDeeps.h 
-    Instance_BlackMorass.h 
-    Instance_BlackrockDepths.h 
-    Instance_BlackrockSpire.h 
-    Instance_BloodFurnace.h 
-    Instance_Botanica.h 
-    Instance_CullingOfStratholme.h 
-    Instance_Deadmines.h 
-    Instance_DireMaul.h 
-    Instance_DrakTharonKeep.h 
-    Instance_ForgeOfSouls.h
-    Instance_Gundrak.h 
-    Instance_HallsOfLightning.h 
-    Instance_HallsOfReflection.h 
-    Instance_HallsOfStone.h 
-    Instance_HellfireRamparts.h 
-    Instance_MagistersTerrace.h 
-    Instance_ManaTombs.h 
-    Instance_Maraudon.h 
-    Instance_Nexus.h 
-    Instance_OldHillsbradFoothills.h 
-    Instance_PitOfSaron.h
-    Instance_RagefireChasm.h 
-    Instance_RazorfenDowns.h 
-    Instance_ScarletMonastery.h 
-    Instance_Scholomance.h 
-    Instance_SethekkHalls.h 
-    Instance_ShadowLabyrinth.h 
-    Instance_ShadowfangKeep.h 
-    Instance_TheMechanar.h 
-    Instance_TheShatteredHalls.h 
-    Instance_TheSlavePens.h 
-    Instance_TheSteamvault.h 
-    Instance_TheUnderbog.h 
-    Instance_TheVioletHold.h 
-    Instance_Uldaman.h 
-    Instance_UtgardeKeep.h
-    Instance_UtgardePinnacle.h
-    Instance_WailingCaverns.h 
-    Instance_TheStockade.h 
-    Instance_ZulFarrak.h
-    Raid_BlackTemple.h 
-    Raid_BlackwingLair.h 
-    Raid_CoT_BattleOfMountHyjal.h 
-    Raid_GruulsLair.h
-    Raid_IceCrownCitadel.h
-    Raid_Karazhan.h 
-    Raid_Magtheridons_Lair.h 
-    Raid_MoltenCore.h 
-    Raid_Naxxramas.h 
-    Raid_OnyxiasLair.h 
-    Raid_SerpentshrineCavern.h
-    Raid_SunwellPlateau.h
-    Raid_TheEye.h
-    Raid_TheObsidianSanctum.h
-    Raid_Ulduar.h
-    Raid_ZulGurub.h 
-    Raid_WorldBosses.h 
-    Raid_ZulAman.h
-    Setup.h
-)
 
 include_directories(
    ${OPENSSL_INCLUDE_DIR}

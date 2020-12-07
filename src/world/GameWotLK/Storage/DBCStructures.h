@@ -72,6 +72,7 @@ namespace DBC
             char const item_random_suffix_format[] = "nssssssssssssssssxxiiixxiiixx";
             char const item_set_format[] = "nssssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
+            char const dungeon_encounter_format[] = "niixissssssssssssssssxx";
             char const liquid_type_entry_format[] = "nxxixixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             char const lock_format[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
             char const mail_template_format[] = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
@@ -994,6 +995,18 @@ namespace DBC
 
             // Helpers
             uint32_t Entry() const { return ID + (type << 24); }
+        };
+
+        struct DungeonEncounterEntry
+        {
+            uint32 id;                                              // 0        unique id
+            uint32 mapId;                                           // 1        map id
+            uint32 difficulty;                                      // 2        instance mode
+            //uint32 unk0;                                          // 3
+            uint32 encounterIndex;                                  // 4        encounter index for creating completed mask
+            char* encounterName[16];                                // 5        encounter name
+            //uint32 nameFlags;                                     // 21
+            //uint32 unk1;                                          // 22
         };
 
         struct LiquidTypeEntry

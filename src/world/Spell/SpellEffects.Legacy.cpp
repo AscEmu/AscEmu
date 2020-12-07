@@ -1453,7 +1453,6 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 }
             }
             break;
-
             default:
                 break;
         };
@@ -3000,6 +2999,12 @@ void Spell::SpellEffectSummon(uint8_t effectIndex)
         case SUMMON_CONTROL_TYPE_VEHICLE:
             SpellEffectSummonVehicle(effectIndex, summon_properties, cp, v);
             return;
+        case SUMMON_CATEGORY_UNK:
+            if (summon_properties->Flags & 512)
+            {
+                SpellEffectSummonGuardian(effectIndex, summon_properties, cp, v);
+                return;
+            }
     }
 
     switch (summon_properties->Type)
@@ -3108,6 +3113,8 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
             p->SetFaction(properties->Faction);
         }
         p->PushToWorld(m_caster->GetMapMgr());
+
+        p->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
         //make sure they will be desummoned (roxor)
         sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
@@ -3140,6 +3147,7 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
 
         s->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
         s->GetAIInterface()->SetUnitToFollowAngle(followangle);
+        s->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
         s->PushToWorld(u_caster->GetMapMgr());
 
         if ((p_caster != nullptr) && (spe->Slot != 0))
@@ -3195,6 +3203,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, DBC::Structures::SummonP
         }
 
         pet->GetAIInterface()->SetUnitToFollowAngle(followangle);
+        pet->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     }
 }
 
@@ -3215,6 +3224,7 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
 
     s->Load(properties_, p_caster, v, m_spellInfo->getId(), spe->Slot - 1);
     s->setCreatedBySpellId(m_spellInfo->getId());
+    s->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     s->PushToWorld(p_caster->GetMapMgr());
 
     p_caster->Possess(s, 1000);
@@ -3252,6 +3262,7 @@ void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonProperti
     summon->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
     summon->setCreatedBySpellId(m_spellInfo->getId());
     summon->GetAIInterface()->SetFollowDistance(GetRadius(i));
+    summon->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     summon->PushToWorld(u_caster->GetMapMgr());
     u_caster->setCritterGuid(summon->getGuid());
 #endif
@@ -3272,6 +3283,7 @@ void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonProper
     c->setCreatedBySpellId(m_spellInfo->getId());
     c->setCreatedByGuid(u_caster->getGuid());
     c->setSummonedByGuid(u_caster->getGuid());
+    c->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
     c->PushToWorld(u_caster->GetMapMgr());
 

@@ -183,7 +183,7 @@ namespace DBC
             //char const creature_type_format[]="nxx"; new
             char const currency_types_format[] = "nisxxxxiiix";
             //char const destructible_model_data_format[] = "nixxxixxxxixxxxixxxxixxx"; new
-            //char const dungeon_encounter_format[]="niiiisxx"; new
+            char const dungeon_encounter_format[] = "niixisxx";
             char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             char const durability_quality_format[] = "nf";
             char const emotes_entry_format[] = "nxxiiixx";
@@ -1227,6 +1227,17 @@ namespace DBC
             // Helpers
             uint32_t Entry() const { return ID + (type << 24); }
         };
+
+        struct DungeonEncounterEntry
+        {
+            uint32 id;                                              // 0        unique id
+            uint32 mapId;                                           // 1        map id
+            uint32 difficulty;                                      // 2        instance mode
+            //uint32 unk0;                                          // 3
+            uint32 encounterIndex;                                  // 4        encounter index for creating completed mask
+            char* encounterName;                                    // 5        encounter name
+            //uint32 nameFlags;                                     // 21
+            //uint32 u
 
         struct LiquidTypeEntry
         {

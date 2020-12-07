@@ -210,6 +210,10 @@ class SERVER_DECL ScriptMgr
         void register_spell_script(uint32_t spellId, SpellScript* ss);
         void register_spell_script(uint32_t* spellIds, SpellScript* ss);
 
+        // Creature AI script hooks
+        void DamageTaken(Creature* pCreature, Unit* attacker, uint32_t* damage) const;
+        CreatureAIScript* getCreatureAIScript(Creature* pCreature) const;
+
         // MIT End
         // APGL Start
 
@@ -614,10 +618,13 @@ class SERVER_DECL InstanceScript
         virtual void OnLoad() {}
         virtual void UpdateEvent() {}
 
+        virtual void OnEncounterStateChange(uint32_t /*entry*/, uint32_t /*state*/) {}
+
         virtual void Destroy() {}
 
         // Something to return Instance's MapMgr
         MapMgr* GetInstance() { return mInstance; }
+        uint8_t GetDifficulty() { return Difficulty; }
 
         // MIT start
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -634,6 +641,8 @@ class SERVER_DECL InstanceScript
         virtual void setLocalData64(uint32_t /*type*/, uint64_t /*data*/) {}
         virtual uint32_t getLocalData(uint32_t /*type*/) const { return 0; }
         virtual uint64_t getLocalData64(uint32_t /*type*/) const { return 0; }
+        virtual void DoAction(int32_t /*action*/) {}
+        uint8_t Difficulty;
         
         //used for debug
         std::string getDataStateString(uint32_t bossEntry);
@@ -644,6 +653,10 @@ class SERVER_DECL InstanceScript
         // called for all initialized instancescripts!
         void generateBossDataState();
         void sendUnitEncounter(uint32_t type, Unit* unit = nullptr, uint8_t value_a = 0, uint8_t value_b = 0);
+
+        // Checks encounter state
+        void UpdateEncountersStateForCreature(uint32_t creditEntry, uint8_t difficulty);
+        void UpdateEncountersStateForSpell(uint32_t creditEntry, uint8_t difficulty);
 
         //used for debug
         void displayDataStateList(Player* player);
@@ -660,6 +673,7 @@ class SERVER_DECL InstanceScript
 
         uint32_t addTimer(uint32_t durationInMs);
         uint32_t getTimeForTimer(uint32_t timerId);
+        uint32_t completedEncounters; // completed encounter mask, bit indexes are DungeonEncounter.dbc boss numbers, used for packets // todo for further use save these in db
         void removeTimer(uint32_t& timerId);
         void resetTimer(uint32_t timerId, uint32_t durationInMs);
         bool isTimerFinished(uint32_t timerId);
@@ -688,7 +702,14 @@ class SERVER_DECL InstanceScript
         void removeUpdateEvent();
 
         //////////////////////////////////////////////////////////////////////////////////////////
+        // script events
+    protected:
+        scriptEventMap scriptEvents;
+
+        //////////////////////////////////////////////////////////////////////////////////////////
         // misc
+
+    public:
 
         void setCellForcedStates(float xMin, float xMax, float yMin, float yMax, bool forceActive = true);
 

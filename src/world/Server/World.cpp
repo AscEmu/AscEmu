@@ -933,7 +933,8 @@ void World::loadMySQLTablesByTask()
     MAKE_TASK(MySQLDataStore, loadCreatureSpawns);
     MAKE_TASK(MySQLDataStore, loadGameobjectSpawns);
 
-    MAKE_TASK(ObjectMgr, LoadInstanceBossInfos);
+    MAKE_TASK(ObjectMgr, LoadInstanceEncounters);
+
     MAKE_TASK(ObjectMgr, LoadCreatureWaypoints);
     MAKE_TASK(ObjectMgr, LoadCreatureTimedEmotes);
     MAKE_TASK(ObjectMgr, LoadTrainers);

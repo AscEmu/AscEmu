@@ -319,32 +319,43 @@ void Creature::OnRespawn(MapMgr* m)
     if (m_noRespawn)
         return;
 
-    InstanceBossInfoMap* bossInfoMap = sObjectMgr.m_InstanceBossInfoMap[m->GetMapId()];
-    Instance* pInstance = m->pInstance;
-    if (bossInfoMap != NULL && pInstance != NULL)
+    if (m->pInstance)
     {
-        bool skip = false;
-        for (std::set<uint32>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
+        auto encounters = sObjectMgr.GetDungeonEncounterList(m->GetMapId(), m->pInstance->m_difficulty);
+
+        Instance* pInstance = m->pInstance;
+        if (encounters != NULL && pInstance != NULL)
         {
-            // Is killed boss?
-            if ((*killedNpc) == creature_properties->Id)
+            bool skip = false;
+            for (std::set<uint32>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
             {
-                skip = true;
-                break;
+                // Is killed boss?
+                if ((*killedNpc) == creature_properties->Id)
+                {
+                    skip = true;
+                    break;
+                }
+
+                // Is add from killed boss?
+                for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+                {
+                    DungeonEncounter const* encounter = *itr;
+                    if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == (*killedNpc))
+                    {
+                        skip = true;
+                        break;
+                    }
+
+                }
+
             }
-            // Is add from killed boss?
-            InstanceBossInfoMap::const_iterator bossInfo = bossInfoMap->find((*killedNpc));
-            if (bossInfo != bossInfoMap->end() && bossInfo->second->trash.find(this->spawnid) != bossInfo->second->trash.end())
+
+            if (skip)
             {
-                skip = true;
-                break;
+                m_noRespawn = true;
+                DeleteMe();
+                return;
             }
-        }
-        if (skip)
-        {
-            m_noRespawn = true;
-            DeleteMe();
-            return;
         }
     }
 
@@ -2265,10 +2276,8 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     setDeathState(JUST_DIED);
     GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, this, 0);
 
-
     if (getChannelObjectGuid() != 0)
     {
-
         Spell* spl = getCurrentSpell(CURRENT_CHANNELED_SPELL);
 
         if (spl != NULL)

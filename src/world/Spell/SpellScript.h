@@ -37,6 +37,14 @@ enum class SpellScriptCheckDummy : uint8_t
     DUMMY_OK                    // Dummy effect handled, no warning to debug log
 };
 
+// Helpers for spell script
+enum SpellEffects : uint8_t
+{
+    EFF_INDEX_0 = 0,
+    EFF_INDEX_1,
+    EFF_INDEX_2
+};
+
 class SERVER_DECL SpellScript
 {
 public:

@@ -140,9 +140,143 @@ public:
     void setAnnouncement(std::string announcement);
     void sendAnnouncement(CreatureAIScript* creatureAI);
 
-    Creature* mCustomTargetCreature;
-    void setCustomTarget(Creature* targetCreature);
-    Creature* getCustomTarget();
+    Unit* mCustomTargetCreature;
+    void setCustomTarget(Unit* targetCreature);
+    Unit* getCustomTarget();
+};
+
+struct scriptEvent
+{
+    int32_t timer;
+    uint32_t bossPhase;
+};
+
+class scriptEventMap
+{
+    typedef std::multimap < uint32_t, scriptEvent> eventMap;
+
+public:
+    scriptEventMap() : bossPhase(0) {}
+
+    void resetEvents()
+    {
+        eventMapStore.clear();
+        bossPhase = 0;
+    }
+
+    void updateEvents(int32_t diff, uint32_t phase)
+    {
+        bossPhase = phase;
+
+        if (!eventMapStore.empty())
+        {
+            for (eventMap::iterator itr = eventMapStore.begin(); itr != eventMapStore.end();)
+            {
+                if (itr->second.bossPhase == bossPhase)   
+                    itr->second.timer = itr->second.timer - diff;
+                else if (itr->second.bossPhase == 0)
+                    itr->second.timer = itr->second.timer - diff;
+
+                ++itr;
+            }
+        }
+    }
+
+    void addEvent(uint32_t eventId, int32_t time, uint32_t phase = 0)
+    {
+        scriptEventData.timer = time;
+        scriptEventData.bossPhase = phase;
+
+        removeEvent(eventId);
+            
+        eventMapStore.insert(eventMap::value_type(eventId, scriptEventData));
+    }
+
+    void removeEvent(uint32_t eventId)
+    {
+        if (!eventMapStore.empty())
+        {
+            for (eventMap::const_iterator itr = eventMapStore.begin(); itr != eventMapStore.end();)
+            {
+                if (itr->first == eventId)
+                {
+                    eventMapStore.erase(itr);
+                    itr = eventMapStore.begin();
+                    break;
+                }
+                else
+                    ++itr;
+            }
+        }
+    }
+
+    // Return the first finished event
+    // In order for example if you have multiple event with 10 seconds timer they get executed in event id order --> 1 .... 2 .... 3
+    uint32_t getFinishedEvent()
+    {
+        uint32_t scriptEventId = 0;
+
+        if (!eventMapStore.empty())
+        {
+            for (eventMap::const_iterator itr = eventMapStore.begin(); itr != eventMapStore.end();)
+            {
+                if (itr->second.bossPhase == bossPhase && itr->second.timer <= 0)
+                {
+                    scriptEventId = itr->first;
+                    eventMapStore.erase(itr);
+                    return scriptEventId;
+                }
+                else if (itr->second.bossPhase == 0 && itr->second.timer <= 0)
+                {
+                    scriptEventId = itr->first;
+                    eventMapStore.erase(itr);                   
+                    return scriptEventId;
+                }
+                else
+                    ++itr;
+            }
+        }
+        return scriptEventId;
+    }
+
+    void delayEvent(uint32_t eventId, int32_t delay)
+    {
+        if (!eventMapStore.empty())
+        {
+            for (auto itr = eventMapStore.begin(); itr != eventMapStore.end();)
+            {
+                // Only Delay Timers that are not Finished
+                if (itr->second.timer > 0 && itr->first == eventId)
+                {
+                    itr->second.timer = itr->second.timer + delay;
+                    break;
+                }
+                ++itr;
+            }
+        }
+    }
+
+    void delayAllEvents(int32_t delay, uint32_t phase = 0)
+    {
+        if (!eventMapStore.empty())
+        {
+            for (auto itr = eventMapStore.begin(); itr != eventMapStore.end();)
+            {
+                // Only Delay Timers that are not Finished and in our Current Phase
+                if (itr->second.timer > 0 && itr->second.bossPhase == phase)
+                    itr->second.timer = itr->second.timer + delay;
+                else if (itr->second.timer > 0 && itr->second.bossPhase == 0)
+                    itr->second.timer = itr->second.timer + delay;
+
+                ++itr;
+            }
+        }
+    }
+
+private:
+    uint32_t bossPhase;
+    scriptEvent scriptEventData;
+    eventMap eventMapStore;
 };
 
 class SERVER_DECL CreatureAIScript
@@ -155,6 +289,7 @@ public:
     virtual void OnCombatStart(Unit* /*_target*/) {}
     virtual void OnCombatStop(Unit* /*_target*/) {}
     virtual void OnDamageTaken(Unit* /*_attacker*/, uint32_t /*_amount*/) {}
+    virtual void DamageTaken(Unit* _attacker, uint32_t* damage) {} // Warning triggers before dmg applied, you can modify the damage done here
     virtual void OnCastSpell(uint32_t /*_spellId*/) {}
     virtual void OnTargetParried(Unit* /*_target*/) {}
     virtual void OnTargetDodged(Unit* /*_target*/) {}
@@ -178,6 +313,7 @@ public:
     virtual void AIUpdate() {}
     virtual void OnEmote(Player* /*_player*/, EmoteType /*_emote*/) {}
     virtual void StringFunctionCall(int) {}
+    virtual void OnSummon(Unit* /*summoner*/) {}
 
     virtual void OnEnterVehicle() {}
     virtual void OnExitVehicle() {}
@@ -193,6 +329,7 @@ public:
     virtual void SetCreatureData64(uint32_t /*type*/, uint64_t /*data*/) {}
     virtual uint32_t GetCreatureData(uint32_t /*type*/) const { return 0; }
     virtual uint64_t GetCreatureData64(uint32_t /*type*/) const { return 0; }
+    virtual void DoAction(int32_t /*action*/) {}
 
     virtual void Destroy() { delete this; }
 
@@ -241,6 +378,8 @@ public:
 
     // single point movement
     void moveTo(float posX, float posY, float posZ, bool setRun = true);
+    void MoveTeleport(float posX, float posY, float posZ, float posO);
+    void MoveTeleport(LocationVector loc);
     void moveToUnit(Unit* unit);
     void moveToSpawn();
     void stopMovement();
@@ -294,6 +433,12 @@ public:
     void setScriptPhase(uint32_t scriptPhase);
     void resetScriptPhase();
     bool isScriptPhase(uint32_t scriptPhase);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+     // script events
+     // \brief: 
+protected:
+    scriptEventMap scriptEvents;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // timers
@@ -468,6 +613,29 @@ public:
     InstanceScript* getInstanceScript();
 
     bool _isHeroic();
+
+    template<class T> inline
+        const T& RAID_MODE(const T& normal10, const T& normal25, const T& heroic10, const T& heroic25) const
+    {
+        if (_creature->GetMapMgr()->pInstance)
+        {
+            switch (_creature->GetMapMgr()->pInstance->m_difficulty)
+            {
+            case MODE_NORMAL_10MEN:
+                return normal10;
+            case MODE_NORMAL_25MEN:
+                return normal25;
+            case MODE_HEROIC_10MEN:
+                return heroic10;
+            case MODE_HEROIC_25MEN:
+                return heroic25;
+            default:
+                break;
+            }
+        }
+
+        return normal10;
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // linked creature AI scripts
