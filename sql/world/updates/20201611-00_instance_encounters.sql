@@ -14,7 +14,7 @@ CREATE TABLE `instance_encounters` (
   `comment` varchar(255) NOT NULL DEFAULT '',
   `mapid` int NOT NULL,
   PRIMARY KEY (`entry`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of instance_encounters
