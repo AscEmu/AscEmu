@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ScriptMgr.h"
 #include "ScriptEvent.hpp"
 #include "Map/MapMgr.h"
+#include "Map/Instance.h"
 
 class Creature;
 class CreatureAIScript;
