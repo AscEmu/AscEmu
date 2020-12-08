@@ -31,6 +31,7 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellScript.h"
+#include "ScriptEvent.hpp"
 
 class Channel;
 class Guild;
@@ -587,6 +588,8 @@ const int32 INVALIDATE_TIMER = -1;
 const uint32 DEFAULT_DESPAWN_TIMER = 2000;      //milliseconds
 
 const uint32_t defaultUpdateFrequency = 1000;
+
+class scriptEventMap;
 
 class SERVER_DECL InstanceScript
 {

@@ -38,6 +38,7 @@
 #include "Spell/Definitions/SpellEffects.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/TaxiMgr.h"
+#include "Management/LFG/LFGMgr.h"
 #if VERSION_STRING < Cata
 #include "Management/Guild/Guild.hpp"
 #endif

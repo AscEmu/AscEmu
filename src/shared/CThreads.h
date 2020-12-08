@@ -30,7 +30,6 @@ class Player;
 class WorldSession;
 class Creature;
 class GameObject;
-class MapMgr;
 
 #define MAPMGR_UPDATEOBJECT_LOOP_DELAY 100
 #define MAPMGR_SESSION_UPDATE_DELAY    50
