@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 #include "Macros/ItemMacros.hpp"
+#include "../../WorldConf.h"
 
 #include <ctime>
 #include <string>
@@ -28,43 +29,37 @@ enum Gender
 //\note defined for all versions!
 enum Classes
 {
-    WARRIOR         = 1,
-    PALADIN         = 2,
-    HUNTER          = 3,
-    ROGUE           = 4,
-    PRIEST          = 5,
-    DEATHKNIGHT     = 6,
-    SHAMAN          = 7,
-    MAGE            = 8,
-    WARLOCK         = 9,
-    MONK            = 10,
-    DRUID           = 11,
+    WARRIOR = 1,
+    PALADIN = 2,
+    HUNTER = 3,
+    ROGUE = 4,
+    PRIEST = 5,
+    DEATHKNIGHT = 6,
+    SHAMAN = 7,
+    MAGE = 8,
+    WARLOCK = 9,
+    MONK = 10,
+    DRUID = 11,
     MAX_PLAYER_CLASSES
 };
 
 enum Races
 {
-    RACE_HUMAN      = 1,
-    RACE_ORC        = 2,
-    RACE_DWARF      = 3,
-    RACE_NIGHTELF   = 4,
-    RACE_UNDEAD     = 5,
-    RACE_TAUREN     = 6,
-    RACE_GNOME      = 7,
-    RACE_TROLL      = 8,
-#if VERSION_STRING >= Cata
-    RACE_GOBLIN     = 9,
-#endif
-#if VERSION_STRING > Classic
-    RACE_BLOODELF   = 10,
-    RACE_DRAENEI    = 11,
-#endif
-#if VERSION_STRING < Cata
-    NUM_RACES
-#else
-    RACE_WORGEN     = 22,
-    NUM_RACES
-#endif
+    RACE_HUMAN = 1,
+    RACE_ORC = 2,
+    RACE_DWARF = 3,
+    RACE_NIGHTELF = 4,
+    RACE_UNDEAD = 5,
+    RACE_TAUREN = 6,
+    RACE_GNOME = 7,
+    RACE_TROLL = 8,
+    RACE_GOBLIN = 9,
+    RACE_BLOODELF = 10,
+    RACE_DRAENEI = 11,
+    RACE_WORGEN = 22,
+    RACE_PANDAREN_NEUTRAL = 24,
+    RACE_PANDAREN_ALLIANCE = 25,
+    RACE_PANDAREN_HORDE = 26
 };
 
 enum PlayerStatus
@@ -223,8 +218,8 @@ enum RankTitles : uint16_t
 
 /*
 Exalted             1,000     Access to racial mounts. Capped at 999.7
-Revered             21,000     Heroic mode keys for Outland dungeons
-Honored             12,000     10% discount from faction vendors
+Revered             21,000    Heroic mode keys for Outland dungeons
+Honored             12,000    10% discount from faction vendors
 Friendly            6,000
 Neutral             3,000
 Unfriendly          3,000     Cannot buy, sell or interact.
@@ -779,15 +774,7 @@ static const uint32_t ClassRaceCombinations[91][3] =
 
 inline uint32_t getAEVersion()
 {
-#if VERSION_STRING == Classic
-    return 5875;
-#elif VERSION_STRING == TBC
-    return 8606;
-#elif VERSION_STRING == WotLK
-    return 12340;
-#else
-    return 15595;
-#endif
+    return BUILD_VERSION;
 }
 
 inline bool isClassRaceCombinationPossible(uint8_t _class, uint8_t _race)

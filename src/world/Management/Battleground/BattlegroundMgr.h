@@ -59,30 +59,29 @@ const uint32 BG_SCORE_WSG_FLAGS_RETURNED        = 1;
 const uint32 BG_SCORE_IOC_BASES_ASSAULTED       = 0;
 const uint32 BG_SCORE_IOC_BASES_DEFENDED        = 1;
 
-const uint32 SOUND_BATTLEGROUND_BEGIN   = 3439;
-const uint32 SOUND_FLAG_RESPAWN         = 8232;
-const uint32 SOUND_HORDE_SCORES         = 8213;
-const uint32 SOUND_ALLIANCE_SCORES      = 8173;
-const uint32 SOUND_ALLIANCE_CAPTURE     = 8174;
-const uint32 SOUND_HORDE_CAPTURE        = 8212;
-const uint32 SOUND_FLAG_RETURNED        = 8192;
-const uint32 SOUND_HORDEWINS            = 8454;
-const uint32 SOUND_ALLIANCEWINS         = 8455;
-const uint32 SOUND_HORDE_BGALMOSTEND    = 8456;
-const uint32 SOUND_ALLIANCE_BGALMOSTEND = 8457;
+const uint32 SOUND_BATTLEGROUND_BEGIN           = 3439;
+const uint32 SOUND_FLAG_RESPAWN                 = 8232;
+const uint32 SOUND_HORDE_SCORES                 = 8213;
+const uint32 SOUND_ALLIANCE_SCORES              = 8173;
+const uint32 SOUND_ALLIANCE_CAPTURE             = 8174;
+const uint32 SOUND_HORDE_CAPTURE                = 8212;
+const uint32 SOUND_FLAG_RETURNED                = 8192;
+const uint32 SOUND_HORDEWINS                    = 8454;
+const uint32 SOUND_ALLIANCEWINS                 = 8455;
+const uint32 SOUND_HORDE_BGALMOSTEND            = 8456;
+const uint32 SOUND_ALLIANCE_BGALMOSTEND         = 8457;
 
-const uint32 BG_PREPARATION             = 44521;
-const uint32 BG_REVIVE_PREPARATION      = 44535;
-const uint32 RESURRECT_SPELL            = 21074; // Spirit Healer Res
-const uint32 BG_DESERTER                = 26013;
+const uint32 BG_PREPARATION                     = 44521;
+const uint32 BG_REVIVE_PREPARATION              = 44535;
+const uint32 RESURRECT_SPELL                    = 21074; // Spirit Healer Res
+const uint32 BG_DESERTER                        = 26013;
 
 class CBattleground;
 class MapMgr;
 class Player;
 class Map;
 class Group;
-/// AV - Corpse
-class Corpse;
+class Corpse; // AV
 
 enum BattlegroundDbcIndex
 {
@@ -110,10 +109,10 @@ enum BattleGroundTypes
     BATTLEGROUND_ARENA_3V3 = 5,
     BATTLEGROUND_ARENA_5V5 = 6,
     BATTLEGROUND_EYE_OF_THE_STORM = 7,
-	// WOTLK
+    // WOTLK
     BATTLEGROUND_STRAND_OF_THE_ANCIENT = 9,
     BATTLEGROUND_ISLE_OF_CONQUEST = 30,
-	BATTLEGROUND_RANDOM = 32,
+    BATTLEGROUND_RANDOM = 32,
     // Cataclysm
     BATTLEGROUND_RATED_10 = 100,
     BATTLEGROUND_RATED_15 = 101,

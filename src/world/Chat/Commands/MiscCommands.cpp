@@ -1026,7 +1026,7 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
     static const char* races[11 + 1] =
     { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei" };
 #else
-    static const char* races[NUM_RACES] =
+    static const char* races[DBC_NUM_RACES] =
     { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "Goblin", "Blood Elf", "Draenei", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "Worgen" };
 #endif
 

@@ -2916,38 +2916,37 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         }
     }
 #else
-	
-    {	
-        auto& spec = m_spec;	
+    {
+        auto& spec = m_spec;
 
         start = (char*)field[67].GetString();
-        Counter = 0;	
-        while (Counter < PLAYER_ACTION_BUTTON_COUNT)	
-        {	
-            if (start == nullptr)	
-                break;	
+        Counter = 0;
+        while (Counter < PLAYER_ACTION_BUTTON_COUNT)
+        {
+            if (start == nullptr)
+                break;
 
-            end = strchr(start, ',');	
-            if (!end)	
-                break;	
-            *end = 0;	
-            spec.mActions[Counter].Action = (uint32_t)atol(start);	
-            start = end + 1;	
-            end = strchr(start, ',');	
-            if (!end)	
-                break;	
-            *end = 0;	
-            spec.mActions[Counter].Type = (uint8)atol(start);	
-            start = end + 1;	
-            end = strchr(start, ',');	
-            if (!end)	
-                break;	
-            *end = 0;	
-            spec.mActions[Counter].Misc = (uint8)atol(start);	
-            start = end + 1;	
+            end = strchr(start, ',');
+            if (!end)
+                break;
+            *end = 0;
+            spec.mActions[Counter].Action = (uint32_t)atol(start);
+            start = end + 1;
+            end = strchr(start, ',');
+            if (!end)
+                break;
+            *end = 0;
+            spec.mActions[Counter].Type = (uint8)atol(start);
+            start = end + 1;
+            end = strchr(start, ',');
+            if (!end)
+                break;
+            *end = 0;
+            spec.mActions[Counter].Misc = (uint8)atol(start);
+            start = end + 1;
 
-            Counter++;	
-        }	
+            Counter++;
+        }
     }
 #endif
 

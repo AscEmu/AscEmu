@@ -53,8 +53,8 @@ enum TYPEID
     TYPEID_GAMEOBJECT = 5,
     TYPEID_DYNAMICOBJECT = 6,
     TYPEID_CORPSE = 7,
-    //TYPEID_AIGROUP = 8,       not used
-    //TYPEID_AREATRIGGER = 9    not used (WoWTrigger is a thing on Cata)
+    // TYPEID_AIGROUP = 8,      // Not used
+    TYPEID_AREATRIGGER = 9      // WoWTrigger is a thing on Cata
 };
 
 #ifdef AE_CATA

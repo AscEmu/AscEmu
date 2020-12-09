@@ -349,7 +349,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         }
 
 #if VERSION_STRING < Cata
-        static uint32 paladinspellarray[NUM_RACES][5] =
+        static uint32 paladinspellarray[DBC_NUM_RACES][5] =
         {
             { 0 },                                  // RACE 0
             { 23214, 13819, 31801, 53720, 0 },      // HUMAN  Charger, Warhorse, Seal of Vengeance, Seal of Martyr
@@ -366,7 +366,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
 #endif
         };
 #else
-        static uint32 paladinspellarray[NUM_RACES][3] =
+        static uint32 paladinspellarray[DBC_NUM_RACES][3] =
         {
             { 0 },                  // RACE 0
             { 13819, 23214, 0 },    // HUMAN  Summon Warhorse, Summon Charger
@@ -394,7 +394,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         };
 #endif
 
-        static uint32 shamanspellarray[NUM_RACES][2] =
+        static uint32 shamanspellarray[DBC_NUM_RACES][2] =
         {
 #if VERSION_STRING < Cata
             { 0 },                                  // RACE 0
@@ -437,7 +437,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         };
 
 #if VERSION_STRING < Cata
-        static uint32 magespellarray[NUM_RACES][13] =
+        static uint32 magespellarray[DBC_NUM_RACES][13] =
         {
             { 0 },                                                                                  // RACE 0
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // HUMAN
@@ -454,7 +454,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
 #endif
         };
 #else
-        static uint32 magespellarray[NUM_RACES][17] =
+        static uint32 magespellarray[DBC_NUM_RACES][17] =
         {
             { 0 },      // RACE 0
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 53142, 33690, 33691, 49360, 49359, 53140, 88342, 88345, 0 },       // HUMAN

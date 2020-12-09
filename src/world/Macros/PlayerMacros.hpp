@@ -6,6 +6,33 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// DBC_NUM_RACES
+//
+// \param max num races + 1
+//
+// Vanilla = 10
+// The Burning Crusade = 19
+// Wrath of the Lich King = 22
+// Cataclysm = 24
+// Mists of Pandaria = 27
+// Warlords of Draenor = ??
+// Legion = ??
+//
+//////////////////////////////////////////////////////////////////////////////////////////
+
+#if VERSION_STRING == Classic
+    #define DBC_NUM_RACES 10
+#elif VERSION_STRING == TBC
+    #define DBC_NUM_RACES 19
+#elif VERSION_STRING == WotLK
+    #define DBC_NUM_RACES 22
+#elif VERSION_STRING == Cata
+    #define DBC_NUM_RACES 24
+#elif VERSION_STRING == Mop
+    #define DBC_NUM_RACES 27
+#endif
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // DBC_TAXI_MASK_SIZE
 //
 // \param max taxi mask

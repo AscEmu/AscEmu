@@ -270,7 +270,6 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
     }
 
     Field* fields = result->Fetch();
-
     const uint64_t playerGuid = fields[0].GetUInt64();
     const uint8_t _class = fields[1].GetUInt8();
 
@@ -306,6 +305,11 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
         case WARLOCK:
             player = new Warlock(static_cast<uint32_t>(playerGuid));
             break;
+#if VERSION_STRING > Cata
+        case MONK:
+            player = new Monk(static_cast<uint32_t>(playerGuid));
+            break;
+#endif
         case DRUID:
             player = new Druid(static_cast<uint32_t>(playerGuid));
             break;
@@ -319,7 +323,6 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
     }
 
     player->SetSession(this);
-
     m_bIsWLevelSet = false;
 
     LOG_DEBUG("Async loading player %u", static_cast<uint32_t>(playerGuid));

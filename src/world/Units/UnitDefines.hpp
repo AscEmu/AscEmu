@@ -1040,7 +1040,7 @@ static const char* CLASS[] =
     "shaman",
     "mage",
     "warlock",
-    "invalid 10",
+    "monk",
     "druid"
 };
 

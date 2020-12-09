@@ -1541,6 +1541,7 @@ bool Player::isClassHunter() { return false; }
 bool Player::isClassWarlock() { return false; }
 bool Player::isClassWarrior() { return false; }
 bool Player::isClassPaladin() { return false; }
+bool Player::isClassMonk() { return false; }
 bool Player::isClassDruid() { return false; }
 
 Player* Player::getPlayerOwner()

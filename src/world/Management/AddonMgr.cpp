@@ -100,31 +100,20 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
     WorldPacket returnpacket;
     returnpacket.Initialize(SMSG_ADDON_INFO);    // SMSG_ADDON_INFO
 
-    uint32 realsize;
+    source->ResetRead();
+    source->read_skip(52);
+
+    uint32 addonSize;
+    *source >> addonSize;
+
+    uint32 realsize = 0;
     uLongf rsize;
 
-    try
-    {
-        *source >> realsize;
-    }
-    catch(ByteBuffer::error &)
-    {
-        LOG_DEBUG("Warning: Incomplete auth session sent.");
-        return;
-    }
-
-    rsize = realsize;
+    rsize = addonSize;
     size_t position = source->rpos();
 
     ByteBuffer unpacked;
-    unpacked.resize(realsize);
-
-    if ((source->size() - position) < 4 || realsize == 0)
-    {
-        // we shouldn't get here.. but just in case this will stop any crash here.
-        LOG_DEBUG("Warning: Incomplete auth session sent.");
-        return;
-    }
+    unpacked.resize(rsize);
 
     int32 result = uncompress((uint8*)unpacked.contents(), &rsize, (uint8*)(*source).contents() + position, (uLong)((*source).size() - position));
 
@@ -136,20 +125,20 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
 
     LOG_DETAIL("Decompression of addon section of CMSG_AUTH_SESSION succeeded.");
 
-    uint8 Enable; // based on the parsed files from retool
-    uint32 crc;
-    uint32 unknown;
-
-    std::string name;
-
     uint32 addoncount;
     unpacked >> addoncount;
 
+    if (addoncount > 100)
+        return;
+
+    uint8 Enable;
+    uint32 crc;
+    uint32 unknown;
+    bool new_addons = false;
+
+    std::string name;
     for (uint32 i = 0; i < addoncount; ++i)
     {
-        if (unpacked.rpos() >= unpacked.size())
-            break;
-
         unpacked >> name;
         unpacked >> Enable;
         unpacked >> crc;
@@ -158,45 +147,19 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
         if (crc != STANDARD_ADDON_CRC)
         {
             returnpacket.append(PublicKey, 264);
+            new_addons = true;
         }
         else
-        {
-            returnpacket << uint8(2) << uint8_t(1) << uint8_t(0) << uint32_t(0) << uint8_t(0);
-        }
+            returnpacket << uint8(0x02) << uint8(0x01) << uint8(0x00) << uint32(0) << uint8(0);
 
-#if VERSION_STRING >= WotLK
-        uint8 unk;
-        uint8 unk1;
-        uint8 unk2;
-
-        unk = (Enable ? 2 : 1);
-        returnpacket << unk;
-        unk1 = (Enable ? 1 : 0);
-        returnpacket << unk1;
-        if (unk1)
-        {
-            if (crc != STANDARD_ADDON_CRC)
-            {
-                returnpacket << uint8(1);
-                returnpacket.append(PublicKey, 264);
-            }
-            else
-                returnpacket << uint8(0);
-
-            returnpacket << uint32(0);
-        }
-
-        unk2 = (Enable ? 0 : 1);
-        returnpacket << unk2;
-        if (unk2)
-            returnpacket << uint8(0);
-#endif
+        if (unpacked.rpos() >= unpacked.wpos())
+            break;
     }
 
-    //unknown 4 bytes at the end of the packet. Stays 0 for me. Tried custom addons, deleting, faulty etc. It stays 0.
-#ifndef AE_TBC
-    returnpacket << uint32(0);  //Some additional count for additional records, but we won't send them.
-#endif
+    if (new_addons == false)
+    {
+        returnpacket << uint32(0); // Some additional count for additional records, but we won't send them.
+    }
 
     m_session->SendPacket(&returnpacket);
 }

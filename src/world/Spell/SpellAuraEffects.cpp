@@ -391,7 +391,74 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::spellAuraEffectNotImplemented,                                   // 367 SPELL_AURA_367
     &Aura::spellAuraEffectNotImplemented,                                   // 368 SPELL_AURA_368
     &Aura::spellAuraEffectNotImplemented,                                   // 369 SPELL_AURA_369
-    &Aura::spellAuraEffectNotImplemented                                    // 370 SPELL_AURA_370
+    &Aura::spellAuraEffectNotImplemented,                                   // 370 SPELL_AURA_370
+    &Aura::spellAuraEffectNotImplemented,                                   // 371 SPELL_AURA_371
+    &Aura::spellAuraEffectNotImplemented,                                   // 372 SPELL_AURA_372
+    &Aura::spellAuraEffectNotImplemented,                                   // 373 SPELL_AURA_373
+    &Aura::spellAuraEffectNotImplemented,                                   // 374 SPELL_AURA_374
+    &Aura::spellAuraEffectNotImplemented,                                   // 375 SPELL_AURA_375
+    &Aura::spellAuraEffectNotImplemented,                                   // 376 SPELL_AURA_376
+    &Aura::spellAuraEffectNotImplemented,                                   // 377 SPELL_AURA_377
+    &Aura::spellAuraEffectNotImplemented,                                   // 378 SPELL_AURA_378
+    &Aura::spellAuraEffectNotImplemented,                                   // 379 SPELL_AURA_379
+    &Aura::spellAuraEffectNotImplemented,                                   // 380 SPELL_AURA_380
+    &Aura::spellAuraEffectNotImplemented,                                   // 381 SPELL_AURA_381
+    &Aura::spellAuraEffectNotImplemented,                                   // 382 SPELL_AURA_382
+    &Aura::spellAuraEffectNotImplemented,                                   // 383 SPELL_AURA_383
+    &Aura::spellAuraEffectNotImplemented,                                   // 384 SPELL_AURA_384
+    &Aura::spellAuraEffectNotImplemented,                                   // 385 SPELL_AURA_385
+    &Aura::spellAuraEffectNotImplemented,                                   // 386 SPELL_AURA_386
+    &Aura::spellAuraEffectNotImplemented,                                   // 387 SPELL_AURA_387
+    &Aura::spellAuraEffectNotImplemented,                                   // 388 SPELL_AURA_388
+    &Aura::spellAuraEffectNotImplemented,                                   // 389 SPELL_AURA_389
+    &Aura::spellAuraEffectNotImplemented,                                   // 390 SPELL_AURA_390
+    &Aura::spellAuraEffectNotImplemented,                                   // 391 SPELL_AURA_391
+    &Aura::spellAuraEffectNotImplemented,                                   // 392 SPELL_AURA_392
+    &Aura::spellAuraEffectNotImplemented,                                   // 393 SPELL_AURA_393
+    &Aura::spellAuraEffectNotImplemented,                                   // 394 SPELL_AURA_394
+    &Aura::spellAuraEffectNotImplemented,                                   // 395 SPELL_AURA_395
+    &Aura::spellAuraEffectNotImplemented,                                   // 396 SPELL_AURA_396
+    &Aura::spellAuraEffectNotImplemented,                                   // 397 SPELL_AURA_397
+    &Aura::spellAuraEffectNotImplemented,                                   // 398 SPELL_AURA_398
+    &Aura::spellAuraEffectNotImplemented,                                   // 399 SPELL_AURA_399
+    &Aura::spellAuraEffectNotImplemented,                                   // 400 SPELL_AURA_400
+    &Aura::spellAuraEffectNotImplemented,                                   // 401 SPELL_AURA_401
+    &Aura::spellAuraEffectNotImplemented,                                   // 402 SPELL_AURA_402
+    &Aura::spellAuraEffectNotImplemented,                                   // 403 SPELL_AURA_403
+    &Aura::spellAuraEffectNotImplemented,                                   // 404 SPELL_AURA_404
+    &Aura::spellAuraEffectNotImplemented,                                   // 405 SPELL_AURA_405
+    &Aura::spellAuraEffectNotImplemented,                                   // 406 SPELL_AURA_406
+    &Aura::spellAuraEffectNotImplemented,                                   // 407 SPELL_AURA_407
+    &Aura::spellAuraEffectNotImplemented,                                   // 408 SPELL_AURA_408
+    &Aura::spellAuraEffectNotImplemented,                                   // 409 SPELL_AURA_409
+    &Aura::spellAuraEffectNotImplemented,                                   // 410 SPELL_AURA_410
+    &Aura::spellAuraEffectNotImplemented,                                   // 411 SPELL_AURA_411
+    &Aura::spellAuraEffectNotImplemented,                                   // 412 SPELL_AURA_412
+    &Aura::spellAuraEffectNotImplemented,                                   // 413 SPELL_AURA_413
+    &Aura::spellAuraEffectNotImplemented,                                   // 414 SPELL_AURA_414
+    &Aura::spellAuraEffectNotImplemented,                                   // 415 SPELL_AURA_415
+    &Aura::spellAuraEffectNotImplemented,                                   // 416 SPELL_AURA_416
+    &Aura::spellAuraEffectNotImplemented,                                   // 417 SPELL_AURA_417
+    &Aura::spellAuraEffectNotImplemented,                                   // 418 SPELL_AURA_418
+    &Aura::spellAuraEffectNotImplemented,                                   // 419 SPELL_AURA_419
+    &Aura::spellAuraEffectNotImplemented,                                   // 420 SPELL_AURA_420
+    &Aura::spellAuraEffectNotImplemented,                                   // 421 SPELL_AURA_421
+    &Aura::spellAuraEffectNotImplemented,                                   // 422 SPELL_AURA_422
+    &Aura::spellAuraEffectNotImplemented,                                   // 423 SPELL_AURA_423
+    &Aura::spellAuraEffectNotImplemented,                                   // 424 SPELL_AURA_424
+    &Aura::spellAuraEffectNotImplemented,                                   // 425 SPELL_AURA_425
+    &Aura::spellAuraEffectNotImplemented,                                   // 426 SPELL_AURA_426
+    &Aura::spellAuraEffectNotImplemented,                                   // 427 SPELL_AURA_427
+    &Aura::spellAuraEffectNotImplemented,                                   // 428 SPELL_AURA_428
+    &Aura::spellAuraEffectNotImplemented,                                   // 429 SPELL_AURA_429
+    &Aura::spellAuraEffectNotImplemented,                                   // 430 SPELL_AURA_430
+    &Aura::spellAuraEffectNotImplemented,                                   // 431 SPELL_AURA_431
+    &Aura::spellAuraEffectNotImplemented,                                   // 432 SPELL_AURA_432
+    &Aura::spellAuraEffectNotImplemented,                                   // 433 SPELL_AURA_433
+    &Aura::spellAuraEffectNotImplemented,                                   // 434 SPELL_AURA_434
+    &Aura::spellAuraEffectNotImplemented,                                   // 435 SPELL_AURA_435
+    &Aura::spellAuraEffectNotImplemented,                                   // 436 SPELL_AURA_436
+    &Aura::spellAuraEffectNotImplemented,                                   // 437 SPELL_AURA_437
 };
 
 const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
@@ -767,6 +834,73 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_368",                                                       // 368
     "SPELL_AURA_369",                                                       // 369
     "SPELL_AURA_370",                                                       // 370
+    "SPELL_AURA_371",                                                       // 371
+    "SPELL_AURA_372",                                                       // 372
+    "SPELL_AURA_373",                                                       // 373
+    "SPELL_AURA_374",                                                       // 374 SPELL_AURA_MODIFY_FALL_DAMAGE_PCT
+    "SPELL_AURA_375",                                                       // 375
+    "SPELL_AURA_376",                                                       // 376 SPELL_AURA_MOD_CURRENCY_GAIN2
+    "SPELL_AURA_377",                                                       // 377 SPELL_AURA_CAST_WHILE_WALKING2
+    "SPELL_AURA_378",                                                       // 378
+    "SPELL_AURA_379",                                                       // 379
+    "SPELL_AURA_380",                                                       // 380
+    "SPELL_AURA_381",                                                       // 381
+    "SPELL_AURA_382",                                                       // 382
+    "SPELL_AURA_383",                                                       // 383
+    "SPELL_AURA_384",                                                       // 384
+    "SPELL_AURA_385",                                                       // 385
+    "SPELL_AURA_386",                                                       // 386
+    "SPELL_AURA_387",                                                       // 387
+    "SPELL_AURA_388",                                                       // 388
+    "SPELL_AURA_389",                                                       // 389
+    "SPELL_AURA_390",                                                       // 390
+    "SPELL_AURA_391",                                                       // 391
+    "SPELL_AURA_392",                                                       // 392
+    "SPELL_AURA_393",                                                       // 393
+    "SPELL_AURA_394",                                                       // 394
+    "SPELL_AURA_395",                                                       // 395
+    "SPELL_AURA_396",                                                       // 396
+    "SPELL_AURA_397",                                                       // 397
+    "SPELL_AURA_398",                                                       // 398
+    "SPELL_AURA_399",                                                       // 399
+    "SPELL_AURA_400",                                                       // 400
+    "SPELL_AURA_401",                                                       // 401
+    "SPELL_AURA_402",                                                       // 402
+    "SPELL_AURA_403",                                                       // 403
+    "SPELL_AURA_404",                                                       // 404
+    "SPELL_AURA_405",                                                       // 405
+    "SPELL_AURA_406",                                                       // 406
+    "SPELL_AURA_407",                                                       // 407
+    "SPELL_AURA_408",                                                       // 408
+    "SPELL_AURA_409",                                                       // 409
+    "SPELL_AURA_410",                                                       // 410
+    "SPELL_AURA_411",                                                       // 411
+    "SPELL_AURA_412",                                                       // 412
+    "SPELL_AURA_413",                                                       // 413
+    "SPELL_AURA_414",                                                       // 414
+    "SPELL_AURA_415",                                                       // 415
+    "SPELL_AURA_416",                                                       // 416
+    "SPELL_AURA_417",                                                       // 417
+    "SPELL_AURA_418",                                                       // 418
+    "SPELL_AURA_419",                                                       // 419
+    "SPELL_AURA_420",                                                       // 420
+    "SPELL_AURA_421",                                                       // 421
+    "SPELL_AURA_422",                                                       // 422
+    "SPELL_AURA_423",                                                       // 423
+    "SPELL_AURA_424",                                                       // 424
+    "SPELL_AURA_425",                                                       // 425
+    "SPELL_AURA_426",                                                       // 426
+    "SPELL_AURA_427",                                                       // 427
+    "SPELL_AURA_428",                                                       // 428
+    "SPELL_AURA_429",                                                       // 429
+    "SPELL_AURA_430",                                                       // 430
+    "SPELL_AURA_431",                                                       // 431
+    "SPELL_AURA_432",                                                       // 432
+    "SPELL_AURA_433",                                                       // 433
+    "SPELL_AURA_434",                                                       // 434
+    "SPELL_AURA_435",                                                       // 435
+    "SPELL_AURA_436",                                                       // 436
+    "SPELL_AURA_437",                                                       // 437
 };
 
 void Aura::spellAuraEffectNotImplemented(AuraEffectModifier* aurEff, bool /*apply*/)

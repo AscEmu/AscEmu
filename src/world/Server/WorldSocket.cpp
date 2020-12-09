@@ -593,9 +593,9 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     delete[] key;
 #elif VERSION_STRING == Classic
     static constexpr uint8_t classicAuthKey[16] = { 0x38, 0xA7, 0x83, 0x15, 
-                                         0xF8, 0x92, 0x25, 0x30, 
-                                         0x71, 0x98, 0x67, 0xB1, 
-                                         0x8C, 0x04, 0xE2, 0xAA };
+                                                    0xF8, 0x92, 0x25, 0x30, 
+                                                    0x71, 0x98, 0x67, 0xB1, 
+                                                    0x8C, 0x04, 0xE2, 0xAA };
     uint8_t abuf[64], bbuf[64];
     memset(abuf, 0x36, 64);
     memset(bbuf, 0x5C, 64);
@@ -782,19 +782,12 @@ void WorldSocket::Authenticate()
         return;
 
     SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
-
 #if VERSION_STRING < Cata
     sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast<uint32>(pAuthenticationPacket->rpos()), mSession);
+#endif
 #if VERSION_STRING > TBC
-    mSession->sendClientCacheVersion(12340);
+    mSession->sendClientCacheVersion(BUILD_VERSION);
 #endif
-#elif VERSION_STRING == Cata
-    mSession->sendClientCacheVersion(15595);
-    mSession->sendAddonInfo();
-#elif VERSION_STRING == Mop
-    mSession->sendClientCacheVersion(18414);
-#endif
-
     mSession->_latency = _latency;
 
     delete pAuthenticationPacket;
