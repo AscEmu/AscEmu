@@ -2166,11 +2166,11 @@ const LfgDungeonSet& LfgMgr::GetDungeonsByRandom(uint32 randomdungeon)
 
 uint32_t LfgMgr::GetLFGDungeon(uint32_t id)
 {
-    DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(id);
-    if (dungeon->ID)
-        return dungeon->ID;
+    if (DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(id))
+        if (dungeon->ID)
+            return dungeon->ID;
 
-    return NULL;
+    return 0;
 }
 
 LfgReward const* LfgMgr::GetRandomDungeonReward(uint32 dungeon, uint8 level)
