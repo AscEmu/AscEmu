@@ -14,7 +14,7 @@ CREATE TABLE `instance_encounters` (
   `comment` varchar(255) NOT NULL DEFAULT '',
   `mapid` int NOT NULL,
   PRIMARY KEY (`entry`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of instance_encounters
@@ -634,4 +634,4 @@ INSERT INTO `instance_encounters` VALUES ('894', '0', '39746', '0', 'General Zar
 
 -- update world_db_version
 
-INSERT INTO `world_db_version` VALUES ('61', '20201611-00_instance_encounters');
+INSERT INTO `world_db_version` VALUES ('61', '20201116-00_instance_encounters');
