@@ -3478,148 +3478,112 @@ void ObjectMgr::LoadCreatureAIAgents()
     }
 }
 
-
-#if VERSION_STRING >= WotLK
 void ObjectMgr::LoadInstanceEncounters()
 {
-    auto startTime = Util::TimeNow();
+    const auto startTime = Util::TimeNow();
 
-    //                                                 0         1            2                3
-    QueryResult* result = WorldDatabase.Query("SELECT entry, creditType, creditEntry, lastEncounterDungeon FROM instance_encounters");
-    if (!result)
+    //                                                 0         1            2                3               4       5
+    QueryResult* result = WorldDatabase.Query("SELECT entry, creditType, creditEntry, lastEncounterDungeon, comment, mapid FROM instance_encounters");
+    if (result == nullptr)
     {
         LogDebugFlag(LF_DB_TABLES, ">> Loaded 0 instance encounters, table is empty!");
         return;
     }
 
-    uint32_t count = 0;
+#if VERSION_STRING >= WotLK
     std::map<uint32_t, DBC::Structures::DungeonEncounterEntry const*> dungeonLastBosses;
+#endif
+
+    uint32_t count = 0;
     do
     {
         Field* fields = result->Fetch();
-        uint32_t entry = fields[0].GetUInt32();
-        uint8_t creditType = fields[1].GetUInt8();
-        uint32_t creditEntry = fields[2].GetUInt32();
-        uint32_t lastEncounterDungeon = fields[3].GetUInt16();
-        DBC::Structures::DungeonEncounterEntry const* dungeonEncounter = sDungeonEncounterStore.LookupEntry(entry);
-        if (!dungeonEncounter)
+        auto entry = fields[0].GetUInt32();
+        auto creditType = fields[1].GetUInt8();
+        auto creditEntry = fields[2].GetUInt32();
+        auto lastEncounterDungeon = fields[3].GetUInt16();
+        auto dungeonEncounterName = fields[4].GetString();
+
+#if VERSION_STRING <= TBC
+        auto mapId = fields[5].GetUInt32();
+#else
+        const auto dungeonEncounter = sDungeonEncounterStore.LookupEntry(entry);
+        if (dungeonEncounter == nullptr)
         {
             LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid encounter id %u, skipped!", entry);
             continue;
         }
 
-        if (lastEncounterDungeon && !sLfgMgr.GetLFGDungeon(lastEncounterDungeon))
+#if VERSION_STRING == WotLK
+        dungeonEncounterName = dungeonEncounter->encounterName[0];
+#else
+        dungeonEncounterName = dungeonEncounter->encounterName;
+#endif
+#endif
+
+        if (lastEncounterDungeon && sLfgMgr.GetLFGDungeon(lastEncounterDungeon) == 0)
         {
-            LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an encounter %u (%s) marked as final for invalid dungeon id %u, skipped!", entry, dungeonEncounter->encounterName[0], lastEncounterDungeon);
+            LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an encounter %u (%s) marked as final for invalid dungeon id %u, skipped!", entry, dungeonEncounterName, lastEncounterDungeon);
             continue;
         }
 
-        std::map<uint32, DBC::Structures::DungeonEncounterEntry const*>::const_iterator itr = dungeonLastBosses.find(lastEncounterDungeon);
+#if VERSION_STRING >= WotLK
         if (lastEncounterDungeon)
         {
+            const auto itr = dungeonLastBosses.find(lastEncounterDungeon);
             if (itr != dungeonLastBosses.end())
             {
-                LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` specified encounter %u (%s) as last encounter but %u (%s) is already marked as one, skipped!", entry, dungeonEncounter->encounterName[0], itr->second->id, itr->second->encounterName[0]);
+#if VERSION_STRING == WotLK
+                const auto itrEncounterName = itr->second->encounterName[0];
+#else
+                const auto itrEncounterName = itr->second->encounterName;
+#endif
+                LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` specified encounter %u (%s) as last encounter but %u (%s) is already marked as one, skipped!", entry, dungeonEncounterName, itr->second->id, itrEncounterName);
                 continue;
             }
 
             dungeonLastBosses[lastEncounterDungeon] = dungeonEncounter;
         }
+#endif
 
         switch (creditType)
         {
-        case ENCOUNTER_CREDIT_KILL_CREATURE:
-        {
-            CreatureProperties const* creatureprop = sMySQLStore.getCreatureProperties(creditEntry);
-            if (!creatureprop)
+            case ENCOUNTER_CREDIT_KILL_CREATURE:
             {
-                LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid creature (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounter->encounterName[0]);
+                auto creatureprop = sMySQLStore.getCreatureProperties(creditEntry);
+                if (creatureprop == nullptr)
+                {
+                    LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid creature (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounterName);
+                    continue;
+                }
+                const_cast<CreatureProperties*>(creatureprop)->extra_a9_flags |= 0x10000000; // Flagged Dungeon Boss
+                break;
+            }
+            case ENCOUNTER_CREDIT_CAST_SPELL:
+            {
+                if (sSpellMgr.getSpellInfo(creditEntry) == nullptr)
+                {
+                    LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid spell (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounterName);
+                    continue;
+                }
+                break;
+            }
+            default:
+            {
+                LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid credit type (%u) for encounter %u (%s), skipped!", creditType, entry, dungeonEncounterName);
                 continue;
             }
-            const_cast<CreatureProperties*>(creatureprop)->extra_a9_flags |= 0x10000000; // Flagged Dungeon Boss
-            break;
         }
-        case ENCOUNTER_CREDIT_CAST_SPELL:
-            if (!sSpellMgr.getSpellInfo(creditEntry))
-            {
-                LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid spell (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounter->encounterName[0]);
-                continue;
-            }
-            break;
-        default:
-            LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid credit type (%u) for encounter %u (%s), skipped!", creditType, entry, dungeonEncounter->encounterName[0]);
-            continue;
-        }
-
-        DungeonEncounterList& encounters = _dungeonEncounterStore[int32(uint16(dungeonEncounter->mapId) | (uint32(dungeonEncounter->difficulty) << 16))];
-        encounters.push_back(new DungeonEncounter(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
-        ++count;
-    } while (result->NextRow());
-
-    LogDetail("ObjectMgr : Loaded %u instance encounters in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-}
-#endif
 
 #if VERSION_STRING <= TBC
-void ObjectMgr::LoadInstanceEncounters()
-{
-    auto startTime = Util::TimeNow();
-
-    //                                                 0         1            2                3               4       5
-    QueryResult* result = WorldDatabase.Query("SELECT entry, creditType, creditEntry, lastEncounterDungeon, comment, mapid FROM instance_encounters");
-    if (!result)
-    {
-        LogDebugFlag(LF_DB_TABLES, ">> Loaded 0 instance encounters, table is empty!");
-        return;
-    }
-
-    uint32_t count = 0;
-    do
-    {
-        Field* fields = result->Fetch();
-        uint32_t entry = fields[0].GetUInt32();
-        uint8_t creditType = fields[1].GetUInt8();
-        uint32_t creditEntry = fields[2].GetUInt32();
-        uint32_t lastEncounterDungeon = fields[3].GetUInt16();
-        std::string dungeonEncounterName = fields[4].GetString();
-        uint32_t mapid = fields[5].GetUInt32();
-
-        if (lastEncounterDungeon && !sLfgMgr.GetLFGDungeon(lastEncounterDungeon))
-        {
-            LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an encounter %u (%s) marked as final for invalid dungeon id %u, skipped!", entry, dungeonEncounterName.c_str(), lastEncounterDungeon);
-            continue;
-        }
-
-        switch (creditType)
-        {
-        case ENCOUNTER_CREDIT_KILL_CREATURE:
-        {
-            CreatureProperties const* creatureprop = sMySQLStore.getCreatureProperties(creditEntry);
-            if (!creatureprop)
-            {
-                LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid creature (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounterName.c_str());
-                continue;
-            }
-            const_cast<CreatureProperties*>(creatureprop)->extra_a9_flags |= 0x10000000; // Flagged Dungeon Boss
-            break;
-        }
-        case ENCOUNTER_CREDIT_CAST_SPELL:
-            if (!sSpellMgr.getSpellInfo(creditEntry))
-            {
-                LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid spell (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounterName.c_str());
-                continue;
-            }
-            break;
-        default:
-            LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid credit type (%u) for encounter %u (%s), skipped!", creditType, entry, dungeonEncounterName.c_str());
-            continue;
-        }
-        
-        DungeonEncounterList& encounters = _dungeonEncounterStore[mapid];
+        DungeonEncounterList& encounters = _dungeonEncounterStore[mapId];
         encounters.push_back(new DungeonEncounter(EncounterCreditType(creditType), creditEntry));
+#else
+        DungeonEncounterList& encounters = _dungeonEncounterStore[static_cast<int32_t>(static_cast<uint16_t>(dungeonEncounter->mapId) | (static_cast<uint32_t>(dungeonEncounter->difficulty) << 16))];
+        encounters.push_back(new DungeonEncounter(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
+#endif
         ++count;
     } while (result->NextRow());
 
     LogDetail("ObjectMgr : Loaded %u instance encounters in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
-#endif
