@@ -88,8 +88,10 @@ enum Languages
     LANG_GOBLIN         = 0x28,
     NUM_LANGUAGES       = 0x29
 #endif
+    //LANG_PANDAREN_NEUTRAL ,
+    //LANG_PANDAREN_ALLIANCE ,
+    //LANG_PANDAREN_HORDE
 };
-
 
 #define MSG_COLOR_LIGHTRED          "|cffff6060"
 #define MSG_COLOR_LIGHTBLUE         "|cff00ccff"

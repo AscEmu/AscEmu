@@ -1399,7 +1399,7 @@ namespace DBC
         //};
 
         //\ todo: confirm effect count
-        #define MAX_SPELL_EFFECTS 5
+        #define MAX_SPELL_EFFECTS 3
         #define MAX_SPELL_REAGENTS 8
         #define MAX_SPELL_TOTEMS 2
         #define MAX_SPELL_TOTEM_CATEGORIES 2
