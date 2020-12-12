@@ -183,7 +183,7 @@ namespace DBC
             //char const creature_type_format[]="nxx"; new
             char const currency_types_format[] = "nisxxxxiiix";
             //char const destructible_model_data_format[] = "nixxxixxxxixxxxixxxxixxx"; new
-            char const dungeon_encounter_format[] = "iiixisxx";
+            char const dungeon_encounter_format[] = "niixisxx";
             char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             char const durability_quality_format[] = "nf";
             char const emotes_entry_format[] = "nxxiiixx";
