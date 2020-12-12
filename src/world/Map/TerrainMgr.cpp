@@ -18,12 +18,12 @@
  *
  */
 
+#include "../WorldConf.h"
 #include "VMapFactory.h"
 #include "IVMapManager.h"
 #include "StdAfx.h"
 #include "TerrainMgr.h"
 #include "Log.hpp"
-#include "Map/MapManagementGlobals.hpp"
 
 TerrainHolder::TerrainHolder(uint32 mapid)
 {
@@ -406,7 +406,7 @@ void TileMap::Load(char* filename)
         return;
     }
 
-    if (header.buildMagic != BUILD_VERSION)  //wow version
+    if (header.buildMagic != BUILD_VERSION)  // wow version
     {
         LOG_ERROR("%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, BUILD_VERSION);
         fclose(f);

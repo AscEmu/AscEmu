@@ -22,10 +22,21 @@ namespace AscEmu::Packets
         }
 
         SmsgFeatureSystemStatus(uint8_t unknown1, uint8_t unknown2) :
-            ManagedPacket(SMSG_FEATURE_SYSTEM_STATUS, 35),
+            ManagedPacket(SMSG_FEATURE_SYSTEM_STATUS, 0),
             unknown1(unknown1),
             unknown2(unknown2)
         {
+        }
+
+    protected:
+        size_t expectedSize() const override
+        {
+#if VERSION_STRING > WotLK
+            return 1 + 4 + 4 + 4 + 4 + 2 + 4 + 4 + 4 + 4 + 4 + 4 + 4;
+#endif
+#if VERSION_STRING > CATA
+            return 4 + 4 + 4 + 1 + 4 + 2 + 4 + 4 + 4 + 4 + 4 + 4 + 4;
+#endif
         }
 
     protected:
@@ -49,9 +60,9 @@ namespace AscEmu::Packets
             bool isExcessiveWarningEnabled = false;
 
             packet << uint32_t(0) << uint32_t(0) << uint32_t(0) << uint8_t(2) << uint32_t(0);
-            packet.writeBit(0);
             packet.writeBit(1);
-            packet.writeBit(0);
+            packet.writeBit(1);
+            packet.writeBit(1);
             packet.writeBit(0);
             packet.writeBit(0);
             packet.writeBit(1);

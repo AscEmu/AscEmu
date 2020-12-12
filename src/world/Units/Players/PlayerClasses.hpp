@@ -32,11 +32,9 @@ class DeathKnight : public Player
     uint8 m_last_used_rune_slot;
 
 protected:
-
     void SendRuneUpdate(uint8 slot);
 
 public:
-
     explicit DeathKnight(uint32 guid) : Player(guid)
     {
         m_last_used_rune_slot = 0;
@@ -67,7 +65,6 @@ public:
 class Druid : public Player
 {
 public:
-
     explicit Druid(uint32_t guid) : Player(guid) {}
 
     bool isClassDruid() override { return true; }
@@ -76,7 +73,6 @@ public:
 class Rogue : public Player
 {
 public:
-
     explicit Rogue(uint32_t guid) : Player(guid) {}
 
     bool isClassRogue() override { return true; }
@@ -85,7 +81,6 @@ public:
 class Priest : public Player
 {
 public:
-
     explicit Priest(uint32_t guid) : Player(guid) {}
 
     bool isClassPriest() override { return true; }
@@ -94,7 +89,6 @@ public:
 class Paladin : public Player
 {
 public:
-
     explicit Paladin(uint32_t guid) : Player(guid) {}
 
     bool isClassPaladin() override { return true; }
@@ -103,7 +97,6 @@ public:
 class Warrior : public Player
 {
 public:
-
     explicit Warrior(uint32_t guid) : Player(guid) {}
 
     bool isClassWarrior() override { return true; }
@@ -112,7 +105,6 @@ public:
 class Warlock : public Player
 {
 public:
-
     explicit Warlock(uint32_t guid) : Player(guid) {}
 
     bool isClassWarlock() override { return true; }
@@ -121,16 +113,22 @@ public:
 class Mage : public Player
 {
 public:
-
     explicit Mage(uint32_t guid) : Player(guid) {}
 
     bool isClassMage() override { return true; }
 };
 
+class Monk : public Player
+{
+public:
+    explicit Monk(uint32_t guid) : Player(guid) {}
+
+    bool isClassMonk() override { return true; }
+};
+
 class Hunter : public Player
 {
 public:
-
     explicit Hunter(uint32_t guid) : Player(guid) {}
 
     bool isClassHunter() override { return true; }
@@ -139,7 +137,6 @@ public:
 class Shaman : public Player
 {
 public:
-
     explicit Shaman(uint32_t guid) : Player(guid) {}
 
     bool isClassShaman() override { return true; }

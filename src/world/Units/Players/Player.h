@@ -818,6 +818,7 @@ public:
     virtual bool isClassWarlock();
     virtual bool isClassWarrior();
     virtual bool isClassPaladin();
+    virtual bool isClassMonk();
     virtual bool isClassDruid();
 
     PlayerTeam getTeam() const;

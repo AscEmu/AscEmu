@@ -1685,7 +1685,7 @@ void ObjectMgr::GenerateLevelUpInfo()
             continue;
 
         // Search for a playercreateinfo.
-        for (uint8 Race = RACE_HUMAN; Race <= NUM_RACES - 1; ++Race)
+        for (uint8 Race = RACE_HUMAN; Race <= DBC_NUM_RACES - 1; ++Race)
         {
             PlayerCreateInfo const* PCI = sMySQLStore.getPlayerCreateInfo(static_cast<uint8>(Race), static_cast<uint8>(Class));
 
@@ -2180,6 +2180,11 @@ Player* ObjectMgr::CreatePlayer(uint8 _class)
         case WARLOCK:
             result = new Warlock(guid);
             break;
+#if VERSION_STRING > CATA
+        case MONK:
+            result = new Monk(guid);
+            break;
+#endif
         case DRUID:
             result = new Druid(guid);
             break;

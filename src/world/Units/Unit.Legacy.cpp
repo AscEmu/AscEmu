@@ -11818,11 +11818,11 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
 {
     *data << uint32(getUnitMovementFlags());            // movement flags
 #if VERSION_STRING == TBC
-    *data << uint8(getExtraUnitMovementFlags());       // 2.3.0
+    *data << uint8(getExtraUnitMovementFlags());        // 2.3.0
 #elif VERSION_STRING >= WotLK
-    *data << uint16(getExtraUnitMovementFlags());       // 2.3.0
+    *data << uint16(getExtraUnitMovementFlags());       // 3.x.x
 #endif
-    *data << uint32(Util::getMSTime());                       // time / counter
+    *data << uint32(Util::getMSTime());                 // time / counter
     *data << GetPositionX();
     *data << GetPositionY();
     *data << GetPositionZ();
@@ -11886,11 +11886,11 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
 {
     *data << uint32(getUnitMovementFlags());            // movement flags
 #if VERSION_STRING == TBC
-    *data << uint8(getExtraUnitMovementFlags());       // 2.3.0
+    *data << uint8(getExtraUnitMovementFlags());        // 2.3.0
 #elif VERSION_STRING >= WotLK
-    *data << uint16(getExtraUnitMovementFlags());       // 2.3.0
+    *data << uint16(getExtraUnitMovementFlags());       // 3.x.x
 #endif
-    *data << uint32(Util::getMSTime());                       // time / counter
+    *data << uint32(Util::getMSTime());                 // time / counter
     *data << x;
     *data << y;
     *data << z;
