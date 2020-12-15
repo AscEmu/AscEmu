@@ -141,7 +141,7 @@ class Beka2 : public CreatureAIScript
 
         Creature* doctor = mKiller->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 1449);
         if (doctor)
-            doctor->Emote(EMOTE_ONESHOT_CHEER);
+            doctor->emote(EMOTE_ONESHOT_CHEER);
     }
 };
 

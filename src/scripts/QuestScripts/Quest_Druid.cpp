@@ -82,7 +82,7 @@ public:
                 qle->sendQuestComplete();
                 qle->updatePlayerFields();
 
-                pCreature->Emote(EMOTE_ONESHOT_WAVE);
+                pCreature->emote(EMOTE_ONESHOT_WAVE);
                 pCreature->Despawn(240000, 0);
             }
             break;
@@ -102,7 +102,7 @@ public:
                 qle->sendQuestComplete();
                 qle->updatePlayerFields();
 
-                pCreature->Emote(EMOTE_ONESHOT_WAVE);
+                pCreature->emote(EMOTE_ONESHOT_WAVE);
                 pCreature->Despawn(240000, 0);
             }
             break;

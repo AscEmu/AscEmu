@@ -15,7 +15,7 @@ void GuardsOnSalute(Player* pPlayer, Unit* pUnit)
     {
         uint32_t EmoteChance = Util::getRandomUInt(100);
         if (EmoteChance < 33) // 1/3 chance to get Salute from Guard
-            pUnit->Emote(EMOTE_ONESHOT_SALUTE);
+            pUnit->emote(EMOTE_ONESHOT_SALUTE);
     }
 }
 
@@ -29,7 +29,7 @@ void GaurdsOnKiss(Player* pPlayer, Unit* pUnit)
     {
         uint32_t EmoteChance = Util::getRandomUInt(100);
         if (EmoteChance < 33) // 1/3 chance to get Bow from Guard
-            pUnit->Emote(EMOTE_ONESHOT_BOW);
+            pUnit->emote(EMOTE_ONESHOT_BOW);
     }
 }
 
@@ -43,7 +43,7 @@ void GuardsOnWave(Player* pPlayer, Unit* pUnit)
     {
         uint32_t EmoteChance = Util::getRandomUInt(100);
         if (EmoteChance < 33) // 1/3 chance to get Bow from Guard
-            pUnit->Emote(EMOTE_ONESHOT_WAVE);
+            pUnit->emote(EMOTE_ONESHOT_WAVE);
     }
 }
 

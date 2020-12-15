@@ -979,7 +979,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
             break;
         default:
         {
-            _player->Emote(static_cast<EmoteType>(emoteTextEntry->textid));
+            _player->emote(static_cast<EmoteType>(emoteTextEntry->textid));
         } break;
     }
 
@@ -1000,7 +1000,7 @@ void WorldSession::handleEmoteOpcode(WorldPacket& recvPacket)
     if (!_player->isAlive())
         return;
 
-    _player->Emote(static_cast<EmoteType>(srlPacket.emote));
+    _player->emote(static_cast<EmoteType>(srlPacket.emote));
 
 #if VERSION_STRING > TBC
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.emote, 0, 0);

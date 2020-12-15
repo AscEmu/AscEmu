@@ -216,9 +216,9 @@ public:
         if (emote_id == 0)
             return 0;
         if (time > 0)
-            ptr->EventAddEmote((EmoteType)emote_id, time);
+            ptr->eventAddEmote((EmoteType)emote_id, time);
         else
-            ptr->Emote((EmoteType)emote_id);
+            ptr->emote((EmoteType)emote_id);
         return 1;
     }
 
@@ -1867,7 +1867,7 @@ public:
         ptr->setMoveHover(true);
         ptr->GetAIInterface()->setMeleeDisabled(true);
         ptr->GetAIInterface()->setSplineFlying();
-        ptr->Emote(EMOTE_ONESHOT_LIFTOFF);
+        ptr->emote(EMOTE_ONESHOT_LIFTOFF);
         return 0;
     }
 
@@ -1879,7 +1879,7 @@ public:
         ptr->setMoveHover(false);
         ptr->GetAIInterface()->unsetSplineFlying();
         ptr->GetAIInterface()->setMeleeDisabled(false);
-        ptr->Emote(EMOTE_ONESHOT_LAND);
+        ptr->emote(EMOTE_ONESHOT_LAND);
         return 0;
     }
 

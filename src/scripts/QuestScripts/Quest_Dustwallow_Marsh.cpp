@@ -188,7 +188,7 @@ class PrivateHendel : public CreatureAIScript
 
     void AIUpdate() override
     {
-        getCreature()->Emote(EMOTE_STATE_KNEEL);
+        getCreature()->emote(EMOTE_STATE_KNEEL);
         getCreature()->RemoveNegativeAuras();
         getCreature()->SetFaction(12);
         getCreature()->SetHealthPct(100);

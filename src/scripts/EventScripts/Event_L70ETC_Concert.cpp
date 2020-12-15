@@ -81,19 +81,19 @@ class SamAI : public CreatureAIScript
         {
             case 1:  getCreature()->PlaySoundToSet(11803); break;
             case 2:  getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true); break;
-            case 19:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL05); break;
-            case 30:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 65:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 70:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 84:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
+            case 19:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL05); break;
+            case 30:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 65:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 70:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 84:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
             case 112: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SINGERSLIGHT), true); break;
-            case 123: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 137: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
-            case 142: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-            case 180: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-            case 229: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
-            case 239: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
-            case 259: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
+            case 123: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 137: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
+            case 142: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+            case 180: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+            case 229: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
+            case 239: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
+            case 259: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
             case 279: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true); break;
             case 280: getCreature()->Despawn(1000, 300000); break;
         }
@@ -139,17 +139,17 @@ class BerAI : public CreatureAIScript
         switch (timer)
         {
             case 0: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true); break;
-            case 10:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 30:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 34:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 38:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 104: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-            case 123: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+            case 10:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 30:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 34:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 38:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 104: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+            case 123: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
             case 140: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPOTLIGHT), true); break;
-            case 145: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 168: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-            case 229: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
-            case 230: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
+            case 145: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 168: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+            case 229: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
+            case 230: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
             case 279: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true); break;
             case 280: getCreature()->Despawn(1000, 300050); break;
         }
@@ -194,21 +194,21 @@ class SigAI : public CreatureAIScript
         switch (timer)
         {
             case 0: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true); break;
-            case 10:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 30:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 34:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 38:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 70:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-            case 85:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-            case 123: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-            case 140: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+            case 10:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 30:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 34:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 38:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 70:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+            case 85:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+            case 123: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+            case 140: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
             case 165: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPOTLIGHT), true); break;
-            case 166: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
-            case 168: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 180: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 193: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 229: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
-            case 259: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 166: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
+            case 168: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 180: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 193: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 229: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
+            case 259: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 279: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true); break;
             case 280: getCreature()->Despawn(1000, 300050); break;
         }
@@ -253,19 +253,19 @@ class MaiAI : public CreatureAIScript
         switch (timer)
         {
             case 0: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true); break;
-            case 10:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 30:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 45:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 70:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 85:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-            case 95:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-            case 102: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-            case 115: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-            case 123: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
+            case 10:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 30:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 45:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 70:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 85:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+            case 95:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+            case 102: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+            case 115: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+            case 123: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
             case 165: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPOTLIGHT), true); break;
-            case 192: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 203: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 229: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 192: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 203: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 229: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 279: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true); break;
             case 280: getCreature()->Despawn(1000, 300050); break;
         }
@@ -312,28 +312,28 @@ class ThuAI : public CreatureAIScript
         switch (timer)
         {
             case 2: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true); break;
-            case 3:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 3:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 14:  getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "ARE YOU READY TO ROCK?!?!"); break;
-            case 17:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 42:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 55:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-            case 62:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 63:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 64:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 75:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 76:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 77:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 88:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 99:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 110: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 137: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
-            case 140: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 17:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 42:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 55:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+            case 62:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 63:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 64:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 75:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 76:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 77:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 88:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 99:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 110: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 137: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
+            case 140: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 142: getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "WERE GANA ROCK YOU CRAAAAAAZY!!!"); break;
-            case 313: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 194: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 313: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+            case 194: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 200:
             {
-                getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01);
+                getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL01);
                 getCreature()->setEmoteState(401);
                 break;
             }
@@ -382,7 +382,7 @@ class UndeadAI : public CreatureAIScript
         switch (timer)
         {
             case 2:  getCreature()->setEmoteState(EMOTE_STATE_DANCE); break;
-            case 280: getCreature()->Emote(EMOTE_ONESHOT_APPLAUD); break;
+            case 280: getCreature()->emote(EMOTE_ONESHOT_APPLAUD); break;
             case 281: getCreature()->Despawn(1000, 301000); break;
         }
         timer++;
@@ -428,7 +428,7 @@ class Undead2AI : public CreatureAIScript
         switch (timer)
         {
             case 2:  getCreature()->setEmoteState(EMOTE_STATE_DANCE); break;
-            case 280: getCreature()->Emote(EMOTE_ONESHOT_CHEER); break;
+            case 280: getCreature()->emote(EMOTE_ONESHOT_CHEER); break;
             case 281: getCreature()->Despawn(1000, 301000); break;
         }
         timer++;
@@ -467,7 +467,7 @@ class Undead3AI : public CreatureAIScript
         switch (timer)
         {
             case 2:  getCreature()->setEmoteState(EMOTE_STATE_DANCE); break;
-            case 279: getCreature()->Emote(EMOTE_ONESHOT_CHEER); break;
+            case 279: getCreature()->emote(EMOTE_ONESHOT_CHEER); break;
             case 280: getCreature()->Despawn(1000, 301000); break;
         }
         timer++;

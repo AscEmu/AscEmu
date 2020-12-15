@@ -261,7 +261,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         }
 
                         Magtheridon->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
-                        Magtheridon->Emote(EMOTE_ONESHOT_CREATURE_SPECIAL);
+                        Magtheridon->emote(EMOTE_ONESHOT_CREATURE_SPECIAL);
                         Magtheridon->RemoveAura(BANISHMENT);
                     }
                 }

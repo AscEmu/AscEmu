@@ -344,7 +344,7 @@ bool EatenRecently(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (apply)
     {
         NetherDrake->GetAIInterface()->SetAllowedToEnterCombat(false);
-        NetherDrake->Emote(EMOTE_ONESHOT_EAT);
+        NetherDrake->emote(EMOTE_ONESHOT_EAT);
     }
     else
     {

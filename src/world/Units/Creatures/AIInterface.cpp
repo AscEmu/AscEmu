@@ -1420,7 +1420,7 @@ void AIInterface::Update(unsigned long time_passed)
             {
                 m_Unit->setEmoteState(0);
                 m_Unit->setStandState(STANDSTATE_STAND);
-                m_Unit->Emote((EmoteType)(*next_timed_emote)->value);           // Animation
+                m_Unit->emote((EmoteType)(*next_timed_emote)->value);           // Animation
             }
 
             if ((*next_timed_emote)->msg)

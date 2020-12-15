@@ -2215,7 +2215,7 @@ class SapphironAI : public CreatureAIScript
                 }
 
                 getCreature()->GetAIInterface()->unsetSplineFlying();
-                getCreature()->Emote(EMOTE_ONESHOT_LAND);
+                getCreature()->emote(EMOTE_ONESHOT_LAND);
 
                 getCreature()->setMoveHover(false);
 
@@ -2252,7 +2252,7 @@ class SapphironAI : public CreatureAIScript
         {
             spawnCreature(CN_FROST_BREATH_TRIGGER3, PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, getCreature()->GetOrientation());
             getCreature()->GetAIInterface()->setSplineFlying();
-            getCreature()->Emote(EMOTE_ONESHOT_LIFTOFF);
+            getCreature()->emote(EMOTE_ONESHOT_LIFTOFF);
 
             getCreature()->setMoveHover(true);
 

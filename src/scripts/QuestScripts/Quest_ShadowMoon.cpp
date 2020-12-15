@@ -110,7 +110,7 @@ class DeathbringerJovaanAI : public CreatureAIScript
                         pRazuunAI->setRooted(true);
                     }
                     getCreature()->setStandState(STANDSTATE_KNEEL);
-                    getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                    getCreature()->emote(EMOTE_ONESHOT_TALK);
                     getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Everything is in readiness, warbringer.");
                     mJovaanPhase = 1;
                     _resetTimer(mJovaanTimer, 6000);
@@ -118,7 +118,7 @@ class DeathbringerJovaanAI : public CreatureAIScript
                 break;
                 case 1:
                 {
-                    getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                    getCreature()->emote(EMOTE_ONESHOT_TALK);
                     getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Warbringer, that will require the use of all the hold's infernals. It may leave us vulnerable to a counterattack.");
                     mJovaanPhase = 2;
                     _resetTimer(mJovaanTimer, 11000);
@@ -133,7 +133,7 @@ class DeathbringerJovaanAI : public CreatureAIScript
                 break;
                 case 3:
                 {
-                    getCreature()->Emote(EMOTE_ONESHOT_SALUTE);
+                    getCreature()->emote(EMOTE_ONESHOT_SALUTE);
                     getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "It shall be as you say, warbringer. One last question, if I may...");
                     mJovaanPhase = 4;
                     _resetTimer(mJovaanTimer, 10000);
@@ -141,7 +141,7 @@ class DeathbringerJovaanAI : public CreatureAIScript
                 break;
                 case 4:
                 {
-                    getCreature()->Emote(EMOTE_ONESHOT_QUESTION);
+                    getCreature()->emote(EMOTE_ONESHOT_QUESTION);
                     getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "What's in the crate?");
                     mJovaanPhase = 5;
                     _resetTimer(mJovaanTimer, 10000);
@@ -149,7 +149,7 @@ class DeathbringerJovaanAI : public CreatureAIScript
                 break;
                 case 5:
                 {
-                    getCreature()->Emote(EMOTE_ONESHOT_SALUTE);
+                    getCreature()->emote(EMOTE_ONESHOT_SALUTE);
                     mJovaanPhase = -1;
                     _removeTimer(mJovaanTimer);
                 }
@@ -166,7 +166,7 @@ class DeathbringerJovaanAI : public CreatureAIScript
             case 3:
             {
                 RegisterAIUpdateEvent(1000);
-                getCreature()->Emote(EMOTE_ONESHOT_POINT);
+                getCreature()->emote(EMOTE_ONESHOT_POINT);
                 mJovaanPhase = 0;
                 mJovaanTimer = _addTimer(1500);
             }
@@ -201,7 +201,7 @@ class WarbringerRazuunAI : public CreatureAIScript
             {
                 case 0:
                 {
-                    getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                    getCreature()->emote(EMOTE_ONESHOT_TALK);
                     getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Doom Lord Kazzak will be pleased. You are to increase the pace of your attacks. Destroy the orcish and dwarven strongholds with all haste.");
                     mRazuunPhase = 1;
                     _resetTimer(mRazuunTimer, 9000);
@@ -209,7 +209,7 @@ class WarbringerRazuunAI : public CreatureAIScript
                 break;
                 case 1:
                 {
-                    getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                    getCreature()->emote(EMOTE_ONESHOT_TALK);
                     getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Don't worry about that. I've increased production at the Deathforge. You'll have all the infernals you need to carry out your orders. Don't fail, Jovaan.");
                     mRazuunPhase = 2;
                     _resetTimer(mRazuunTimer, 15000);
@@ -217,7 +217,7 @@ class WarbringerRazuunAI : public CreatureAIScript
                 break;
                 case 2:
                 {
-                    getCreature()->Emote(EMOTE_ONESHOT_QUESTION);
+                    getCreature()->emote(EMOTE_ONESHOT_QUESTION);
                     getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Yes?");
                     mRazuunPhase = 3;
                     _resetTimer(mRazuunTimer, 8000);
@@ -225,7 +225,7 @@ class WarbringerRazuunAI : public CreatureAIScript
                 break;
                 case 3:
                 {
-                    getCreature()->Emote(EMOTE_ONESHOT_QUESTION);
+                    getCreature()->emote(EMOTE_ONESHOT_QUESTION);
                     getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Crate? I didn't send you a crate, Jovaan. Don't you have more important things to worry about? Go see to them!");
                     mRazuunPhase = 4;
                     _resetTimer(mRazuunTimer, 5000);

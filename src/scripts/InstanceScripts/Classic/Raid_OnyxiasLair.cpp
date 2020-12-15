@@ -341,7 +341,7 @@ class OnyxiaAI : public CreatureAIScript
 
     void Fly()
     {
-        getCreature()->Emote(EMOTE_ONESHOT_LIFTOFF);
+        getCreature()->emote(EMOTE_ONESHOT_LIFTOFF);
         //Do we need hover really? Check it :D
         //_unit->SetHover(true);
         getCreature()->GetAIInterface()->setSplineFlying();
@@ -349,7 +349,7 @@ class OnyxiaAI : public CreatureAIScript
 
     void Land()
     {
-        getCreature()->Emote(EMOTE_ONESHOT_LAND);
+        getCreature()->emote(EMOTE_ONESHOT_LAND);
         //Do we need hover really? Check it :D
         //_unit->SetHover(false);
         getCreature()->GetAIInterface()->unsetSplineFlying();

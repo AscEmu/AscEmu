@@ -67,7 +67,7 @@ public:
         msg += mTarget->getName().c_str();
         msg += ", you make quite a partner!";
         creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
-        creat->Emote(EMOTE_ONESHOT_LAUGH);
+        creat->emote(EMOTE_ONESHOT_LAUGH);
     }
 };
 

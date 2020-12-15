@@ -2424,7 +2424,7 @@ void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
     }
 
     if (ct->emote != 0)
-        this->EventAddEmote((EmoteType)ct->emote, ct->duration);
+        this->eventAddEmote((EmoteType)ct->emote, ct->duration);
 
     const char* name = GetCreatureProperties()->Name.c_str();
     size_t CreatureNameLength = strlen((char*)name) + 1;

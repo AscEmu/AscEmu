@@ -3419,7 +3419,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
 
                 if (npcScriptText->emote != 0)
                 {
-                    creature->EventAddEmote((EmoteType)npcScriptText->emote, npcScriptText->duration);
+                    creature->eventAddEmote((EmoteType)npcScriptText->emote, npcScriptText->duration);
                 }
 
                 if (npcScriptText->sound != 0)

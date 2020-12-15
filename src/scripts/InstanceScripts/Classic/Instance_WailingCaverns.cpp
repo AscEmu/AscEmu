@@ -267,7 +267,7 @@ public:
             {
                 pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Take this! It will be useful for you. I'll be waiting here when you have slain the 4 Fanglords to awake Naralex!");
                 pCreature->castSpell(Plr, 5232, true);
-                pCreature->Emote(EMOTE_ONESHOT_CHEER);
+                pCreature->emote(EMOTE_ONESHOT_CHEER);
             } break;
             case 2: // Start Event
             {
@@ -317,7 +317,7 @@ class DofNaralexAI : public CreatureAIScript
         switch (phaseId)
         {
             case 2:
-                getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                getCreature()->emote(EMOTE_ONESHOT_TALK);
                 _castAISpell(Awakening);
                 SpawnTimer = _addTimer(100000);
                 break;

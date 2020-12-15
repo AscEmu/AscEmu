@@ -414,7 +414,7 @@ class ArugalAI : public CreatureAIScript
                 }break;
                 case 2:
                 {
-                    getCreature()->Emote(EMOTE_ONESHOT_POINT);
+                    getCreature()->emote(EMOTE_ONESHOT_POINT);
                 }break;
                 case 3:
                 {
@@ -422,7 +422,7 @@ class ArugalAI : public CreatureAIScript
                 }break;
                 case 4:
                 {
-                    getCreature()->Emote(EMOTE_ONESHOT_EXCLAMATION);
+                    getCreature()->emote(EMOTE_ONESHOT_EXCLAMATION);
                 }break;
                 case 5:
                 {
@@ -430,7 +430,7 @@ class ArugalAI : public CreatureAIScript
                 }break;
                 case 6:
                 {
-                    getCreature()->Emote(EMOTE_ONESHOT_LAUGH);
+                    getCreature()->emote(EMOTE_ONESHOT_LAUGH);
                 }break;
                 case 7:
                 {
@@ -552,7 +552,7 @@ class AdamantAI : public CreatureAIScript
                     case 2:
                     {
                         getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_OPENING);
-                        getCreature()->EventAddEmote(EMOTE_ONESHOT_USESTANDING, 8000);
+                        getCreature()->eventAddEmote(EMOTE_ONESHOT_USESTANDING, 8000);
                         ModifyAIUpdateEvent(8000);
                     }break;
                     case 3:
@@ -620,7 +620,7 @@ public:
                 pPrisoner->RegisterAIUpdateEvent(5000);
                 pPrisoner->getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 pPrisoner->getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-                pPrisoner->getCreature()->EventAddEmote(EMOTE_ONESHOT_CHEER, 4000);
+                pPrisoner->getCreature()->eventAddEmote(EMOTE_ONESHOT_CHEER, 4000);
                 pPrisoner->eventStarted = true;
                 if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
                     pInstance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, InProgress);
@@ -787,7 +787,7 @@ public:
                 pPrisoner->RegisterAIUpdateEvent(4000);
                 pPrisoner->getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 pPrisoner->getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-                pPrisoner->getCreature()->Emote(EMOTE_ONESHOT_POINT);
+                pPrisoner->getCreature()->emote(EMOTE_ONESHOT_POINT);
                 pPrisoner->eventStarted = true;
                 if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
                     pInstance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, InProgress);

@@ -151,7 +151,7 @@ bool HolidayCheer(uint8_t effectIndex, Spell* pSpell)
         if (pSpell->getCaster()->CalcDistance(target) > dist || isAttackable(pSpell->getCaster(), target))
             continue;
 
-        target->Emote(EMOTE_ONESHOT_LAUGH);
+        target->emote(EMOTE_ONESHOT_LAUGH);
     }
     return true;
 }
@@ -217,7 +217,7 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
     sprintf(msg, "Ow! Ok, I'll get back to work, %s", pSpell->getPlayerCaster()->getName().c_str());
     target->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
 
-    c_target->Emote(EMOTE_STATE_WORK_CHOPWOOD);
+    c_target->emote(EMOTE_STATE_WORK_CHOPWOOD);
 
     // Add timed event to return lazy peon to Zzz after 5-10 minutes (spell 17743)
     SpellInfo const* pSpellEntry = sSpellMgr.getSpellInfo(17743);

@@ -817,6 +817,10 @@ public:
     void restoreDisplayId();
 
     bool isSitting() const;
+    void emote(EmoteType emote);
+    void eventAddEmote(EmoteType emote, uint32 time);
+    void emoteExpire();
+    uint32_t getOldEmote() const;
 
     void dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool removeAuras = true);
     void takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId);
@@ -852,6 +856,8 @@ private:
 
     uint32_t m_lastSpellUpdateTime = 0;
     uint32_t m_lastSummonUpdateTime = 0;
+
+    uint32_t m_oldEmote;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1212,11 +1218,6 @@ public:
 
     void InheritSMMods(Unit* inherit_from);
 
-    //Events
-    void Emote(EmoteType emote);
-    void EventAddEmote(EmoteType emote, uint32 time);
-    void EmoteExpire();
-    uint32 GetOldEmote() { return m_oldEmote; }
 
     // Stun Immobilize
     uint32 trigger_on_stun;        //bah, warrior talent but this will not get triggered on triggered spells if used on proc so I'm forced to used a special variable
@@ -1470,9 +1471,6 @@ protected:
 
     int32 m_manashieldamt;
     uint32 m_manaShieldId;
-
-    // Quest emote
-    uint32 m_oldEmote;
 
     // Some auras can only be cast on one target at a time
     // This will map aura spell id to target guid

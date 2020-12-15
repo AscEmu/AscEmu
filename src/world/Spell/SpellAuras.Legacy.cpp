@@ -3467,7 +3467,7 @@ void Aura::EventPeriodicHeal1(uint32 amount)
 
     if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
     {
-        m_target->Emote(EMOTE_ONESHOT_EAT);
+        m_target->emote(EMOTE_ONESHOT_EAT);
     }
     else
     {

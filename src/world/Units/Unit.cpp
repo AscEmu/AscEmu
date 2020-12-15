@@ -4215,6 +4215,32 @@ bool Unit::isSitting() const
         standState == STANDSTATE_SIT;
 }
 
+void Unit::emote(EmoteType emote)
+{
+
+#if VERSION_STRING < Cata
+    if (emote == 0)
+        return;
+#endif
+
+    SendMessageToSet(SmsgEmote(emote, this->getGuid()).serialise().get(), true);
+}
+
+void Unit::eventAddEmote(EmoteType emote, uint32 time)
+{
+    m_oldEmote = getEmoteState();
+    setEmoteState(emote);
+    sEventMgr.AddEvent(this, &Creature::emoteExpire, EVENT_UNIT_EMOTE, time, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+}
+
+void Unit::emoteExpire()
+{
+    setEmoteState(m_oldEmote);
+    sEventMgr.RemoveEvents(this, EVENT_UNIT_EMOTE);
+}
+
+uint32_t Unit::getOldEmote() const { return m_oldEmote; }
+
 void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool removeAuras/* = true*/)
 {
     // Not accepted cases
@@ -4343,7 +4369,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
         {
             setHealth(5);
             static_cast<Player*>(this)->DuelingWith->EndDuel(DUEL_WINNER_KNOCKOUT);
-            Emote(EMOTE_ONESHOT_BEG);
+            emote(EMOTE_ONESHOT_BEG);
             return;
         }
 

@@ -7657,7 +7657,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             CALL_SCRIPT_EVENT(this, OnDodged)(this);
             targetEvent = 1;
             vstate = VisualState::DODGE;
-            pVictim->Emote(EMOTE_ONESHOT_PARRYUNARMED); // Animation
+            pVictim->emote(EMOTE_ONESHOT_PARRYUNARMED); // Animation
 
             if (this->isPlayer() && this->getClass() == WARRIOR)
             {
@@ -7689,7 +7689,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             CALL_SCRIPT_EVENT(this, OnParried)(this);
             targetEvent = 3;
             vstate = VisualState::PARRY;
-            pVictim->Emote(EMOTE_ONESHOT_PARRYUNARMED); // Animation
+            pVictim->emote(EMOTE_ONESHOT_PARRYUNARMED); // Animation
 
             if (pVictim->isPlayer())
             {
@@ -7897,7 +7897,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                         if (shield != nullptr)
                         {
                             targetEvent = 2;
-                            pVictim->Emote(EMOTE_ONESHOT_PARRYSHIELD);// Animation
+                            pVictim->emote(EMOTE_ONESHOT_PARRYSHIELD);// Animation
 
                             if (shield->getItemProperties()->InventoryType == INVTYPE_SHIELD)
                             {
@@ -7976,7 +7976,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                         }
 
                         if (pVictim->isCreature() && static_cast<Creature*>(pVictim)->GetCreatureProperties()->Rank != ELITE_WORLDBOSS)
-                            pVictim->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);
+                            pVictim->emote(EMOTE_ONESHOT_WOUNDCRITICAL);
 
                         CALL_SCRIPT_EVENT(pVictim, OnTargetCritHit)(this, dmg.fullDamage);
                         CALL_SCRIPT_EVENT(this, OnCritHit)(pVictim, dmg.fullDamage);
@@ -8698,21 +8698,6 @@ void Unit::DeMorph()
     EventModelChange();
 }
 
-#if VERSION_STRING < Cata
-void Unit::Emote(EmoteType emote)
-{
-    if (emote == 0)
-        return;
-
-    SendMessageToSet(AscEmu::Packets::SmsgEmote(emote, this->getGuid()).serialise().get(), true);
-}
-#else
-void Unit::Emote(EmoteType emote)
-{
-    SendMessageToSet(AscEmu::Packets::SmsgEmote(emote, getGuid()).serialise().get(), true);
-}
-#endif
-
 void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char* msg)
 {
     size_t UnitNameLength = 0, MessageLength = 0;
@@ -8784,20 +8769,6 @@ void Unit::onRemoveInRangeObject(Object* pObj)
 void Unit::clearInRangeSets()
 {
     Object::clearInRangeSets();
-}
-
-//Events
-void Unit::EventAddEmote(EmoteType emote, uint32 time)
-{
-    m_oldEmote = getEmoteState();
-    setEmoteState(emote);
-    sEventMgr.AddEvent(this, &Creature::EmoteExpire, EVENT_UNIT_EMOTE, time, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-}
-
-void Unit::EmoteExpire()
-{
-    setEmoteState(m_oldEmote);
-    sEventMgr.RemoveEvents(this, EVENT_UNIT_EMOTE);
 }
 
 void Unit::MoveToWaypoint(uint32 wp_id)
@@ -11694,7 +11665,7 @@ float Unit::GetCriticalDamageBonusForSpell(Object* victim, SpellInfo const* spel
     }
 
     if (victim->isCreature() && static_cast<Creature*>(victim)->GetCreatureProperties()->Rank != ELITE_WORLDBOSS)
-        static_cast<Creature*>(victim)->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);
+        static_cast<Creature*>(victim)->emote(EMOTE_ONESHOT_WOUNDCRITICAL);
 
     return amount;
 }
@@ -11773,12 +11744,12 @@ uint32 Unit::GetAuraCountWithDispelType(uint32 dispel_type, uint64 guid)
 {
     uint32 result = 0;
 
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    for (auto& m_aura : m_auras)
     {
-        if (m_auras[x] == NULL)
+        if (m_aura == nullptr)
             continue;
 
-        if (m_auras[x]->getSpellInfo()->getDispelType() == dispel_type && (guid == 0 || m_auras[x]->getCasterGuid() == guid))
+        if (m_aura->getSpellInfo()->getDispelType() == dispel_type && (guid == 0 || m_aura->getCasterGuid() == guid))
             result++;
     }
 
@@ -11834,7 +11805,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
     {
         if (isPlayer())
         {
-            auto plr = static_cast<Player*>(this);
+            const auto plr = dynamic_cast<Player*>(this);
             if (plr->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
             {
                 obj_movement_info.transport_guid = plr->obj_movement_info.transport_guid;
@@ -11950,34 +11921,31 @@ void Unit::UpdateAuraForGroup(uint8 slot)
 
     if (isPlayer())
     {
-        Player* player = static_cast<Player*>(this);
+        auto player = dynamic_cast<Player*>(this);
         if (player->getGroup())
         {
             player->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_AURAS);
             player->SetAuraUpdateMaskForRaid(slot);
         }
     }
-    else if (getPlayerOwner())
+    else if (Player* owner = getPlayerOwner())
     {
-        if (getPlayerOwner())
+        if (owner->getGroup())
         {
-            Player* owner = getPlayerOwner();
-            if (owner->getGroup())
-            {
-                owner->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_AURAS);
-                SetAuraUpdateMaskForRaid(slot);
-            }
+            owner->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_AURAS);
+            SetAuraUpdateMaskForRaid(slot);
         }
     }
 }
 
 void Unit::Possess(Unit* pTarget, uint32 delay)
 {
-    Player* pThis = NULL;
+    Player* pThis = nullptr;
     if (isPlayer())
-        pThis = static_cast<Player*>(this);
+        pThis = dynamic_cast<Player*>(this);
     else // do not support creatures just yet
         return;
+
     if (!pThis)
         return;
     if (getCharmGuid())
@@ -12023,7 +11991,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     // update target faction set
     pTarget->updateInRangeOppositeFactionSet();
 
-    if (!(pTarget->isPet() && static_cast< Pet* >(pTarget) == pThis->GetSummon()))
+    if (!(pTarget->isPet() && dynamic_cast< Pet* >(pTarget) == pThis->GetSummon()))
     {
         WorldPacket data(SMSG_PET_SPELLS, 4 * 4 + 20);
         pTarget->BuildPetSpellList(data);
@@ -12033,13 +12001,15 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
 
 void Unit::UnPossess()
 {
-    Player* pThis = NULL;
+    Player* pThis = nullptr;
     if (isPlayer())
-        pThis = static_cast<Player*>(this);
+        pThis = dynamic_cast<Player*>(this);
     else // creatures no support yet
         return;
+
     if (!pThis)
         return;
+
     if (!getCharmGuid())
         return;
 
@@ -12074,7 +12044,7 @@ void Unit::UnPossess()
     // send "switch mover" packet
     pThis->sendClientControlPacket(pTarget, 0);
 
-    if (!(pTarget->isPet() && static_cast< Pet* >(pTarget) == pThis->GetSummon()))
+    if (!(pTarget->isPet() && dynamic_cast< Pet* >(pTarget) == pThis->GetSummon()))
         pThis->SendEmptyPetSpellList();
 
     setMoveRoot(false);

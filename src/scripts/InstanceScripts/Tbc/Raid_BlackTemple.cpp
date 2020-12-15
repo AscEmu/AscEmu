@@ -1862,7 +1862,7 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
 
         if (Phase == 0)
         {
-            getCreature()->Emote(EMOTE_ONESHOT_SUBMERGE);
+            getCreature()->emote(EMOTE_ONESHOT_SUBMERGE);
             _castAISpell(mSummonSuffering);
             Phase = 1;
         }
@@ -1875,16 +1875,16 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
         {
             case 1:
                 {
-                    getCreature()->Emote(EMOTE_STATE_SUBMERGED_NEW);
+                    getCreature()->emote(EMOTE_STATE_SUBMERGED_NEW);
                     mEoS = getNearestCreatureAI(CN_ESSENCEOFSUFFERING);
                     if (mEoS && mEoS->getCreature() && mEoS->isAlive())
                     {
                         Creature* pEoS = mEoS->getCreature();
                         if (pEoS->getHealthPct() <= 1 && pEoS->CalcDistance(getCreature()) <= 3)
                         {
-                            getCreature()->Emote(EMOTE_STATE_STAND);
+                            getCreature()->emote(EMOTE_STATE_STAND);
                             mEoS->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11414, "Now what do I do?!");
-                            pEoS->Emote(EMOTE_ONESHOT_SUBMERGE);
+                            pEoS->emote(EMOTE_ONESHOT_SUBMERGE);
                             pEoS->Despawn(100, 0);
                             Phase = 2;
                             mEnslavedSoulTimer = _addTimer(5000);
@@ -1897,7 +1897,7 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
                     mEoD = getNearestCreatureAI(CN_ESSENCEOFDESIRE);
                     if (!mEoD || !mEoD->getCreature())
                     {
-                        getCreature()->Emote(EMOTE_ONESHOT_SUBMERGE);
+                        getCreature()->emote(EMOTE_ONESHOT_SUBMERGE);
                         _castAISpell(mSummonDesire);
                         Phase = 4;
                     }
@@ -1911,16 +1911,16 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
                         Creature* pEoD = mEoD->getCreature();
                         if (pEoD->getHealthPct() <= 1 && pEoD->CalcDistance(getCreature()) <= 3)
                         {
-                            getCreature()->Emote(EMOTE_STATE_STAND);
+                            getCreature()->emote(EMOTE_STATE_STAND);
                             mEoD->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11413, "I'll be waiting.");
-                            pEoD->Emote(EMOTE_ONESHOT_SUBMERGE);
+                            pEoD->emote(EMOTE_ONESHOT_SUBMERGE);
                             pEoD->Despawn(100, 0);
                             Phase = 5;
                             mEnslavedSoulTimer = _addTimer(5000);
                         }
                         else
                         {
-                            getCreature()->Emote(EMOTE_STATE_SUBMERGED_NEW);
+                            getCreature()->emote(EMOTE_STATE_SUBMERGED_NEW);
                         }
                     }
                 }
@@ -1931,14 +1931,14 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
                     if (!mEoA || !mEoA->getCreature())
                     {
                         _castAISpell(mSummonAnger);
-                        getCreature()->Emote(EMOTE_ONESHOT_SUBMERGE);
+                        getCreature()->emote(EMOTE_ONESHOT_SUBMERGE);
                         Phase = 7;
                     }
                 }
                 break;
             case 7:
                 {
-                    getCreature()->Emote(EMOTE_STATE_SUBMERGED_NEW);
+                    getCreature()->emote(EMOTE_STATE_SUBMERGED_NEW);
                     mEoA = getNearestCreatureAI(CN_ESSENCEOFANGER);
                     if (mEoA && mEoA->getCreature() && !mEoA->getCreature()->isAlive())
                     {
@@ -1950,7 +1950,7 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
             case 2:
             case 5:
                 {
-                    getCreature()->Emote(EMOTE_STATE_STAND);
+                    getCreature()->emote(EMOTE_STATE_STAND);
                     if (_isTimerFinished(mEnslavedSoulTimer) && !SpawnedEnsalvedSoul)
                     {
                         _removeTimer(mEnslavedSoulTimer);
@@ -3009,7 +3009,7 @@ class AkamaAI : public CreatureAIScript
                 break;
             case 2:
                 sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "The door is all that stands between us and the Betrayer. Stand aside, friends.");
-                getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                getCreature()->emote(EMOTE_ONESHOT_TALK);
                 break;
             case 3:
                 if (pDoorTrigger != NULL)
@@ -3023,7 +3023,7 @@ class AkamaAI : public CreatureAIScript
                 break;
             case 5:
                 sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "I cannot do this alone...");
-                getCreature()->Emote(EMOTE_ONESHOT_NO);
+                getCreature()->emote(EMOTE_ONESHOT_NO);
                 break;
             case 6:        // summoning two spirits to help Akama with breaking doors
                 mUdaloAI = spawnCreatureAndGetAIScript(23410, 751.884705f, 311.270050f, 312.121185f, 0.047113f);
@@ -3070,11 +3070,11 @@ class AkamaAI : public CreatureAIScript
                 break;
             case 13:
                 sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "I thank you for your aid, my brothers. Our people will be redeemed!");
-                getCreature()->Emote(EMOTE_ONESHOT_SALUTE);
+                getCreature()->emote(EMOTE_ONESHOT_SALUTE);
                 break;
             case 14:
-                mUdaloAI->getCreature()->Emote(EMOTE_ONESHOT_SALUTE);
-                mOlumAI->getCreature()->Emote(EMOTE_ONESHOT_SALUTE);
+                mUdaloAI->getCreature()->emote(EMOTE_ONESHOT_SALUTE);
+                mOlumAI->getCreature()->emote(EMOTE_ONESHOT_SALUTE);
 
                 mUdaloAI = NULL;
                 mOlumAI = NULL;
@@ -3134,39 +3134,39 @@ class AkamaAI : public CreatureAIScript
                 mIllidanAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11463, "Akama... your duplicity is hardly surprising. I should have slaughtered you and your malformed brethren long ago.");
                 break;
             case 4:
-                mIllidanAI->getCreature()->Emote(EMOTE_ONESHOT_QUESTION);
+                mIllidanAI->getCreature()->emote(EMOTE_ONESHOT_QUESTION);
                 break;
             case 5:
-                mIllidanAI->getCreature()->Emote(EMOTE_ONESHOT_QUESTION);
+                mIllidanAI->getCreature()->emote(EMOTE_ONESHOT_QUESTION);
                 break;
             case 6:
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 11389, "We've come to end your reign, Illidan. My people and all of Outland shall be free!");
-                getCreature()->Emote(EMOTE_ONESHOT_POINT);
+                getCreature()->emote(EMOTE_ONESHOT_POINT);
                 break;
             case 7:
-                getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                getCreature()->emote(EMOTE_ONESHOT_TALK);
                 break;
             case 8:
-                getCreature()->Emote(EMOTE_ONESHOT_SALUTE);
+                getCreature()->emote(EMOTE_ONESHOT_SALUTE);
                 break;
             case 9:
                 mIllidanAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11464, "Boldly said. But I remain unconvinced.");
-                mIllidanAI->getCreature()->Emote(EMOTE_ONESHOT_QUESTION);
+                mIllidanAI->getCreature()->emote(EMOTE_ONESHOT_QUESTION);
                 break;
             case 10:
-                mIllidanAI->getCreature()->Emote(EMOTE_ONESHOT_QUESTION);
+                mIllidanAI->getCreature()->emote(EMOTE_ONESHOT_QUESTION);
                 break;
             case 11:
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 11380, "The time has come! The moment is at hand!");
-                getCreature()->Emote(EMOTE_ONESHOT_SHOUT);
+                getCreature()->emote(EMOTE_ONESHOT_SHOUT);
                 break;
             case 12:
                 _setWieldWeapon(true);
-                getCreature()->Emote(EMOTE_ONESHOT_ROAR);
+                getCreature()->emote(EMOTE_ONESHOT_ROAR);
                 break;
             case 13:
                 mIllidanAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11466, "You are not prepared!");
-                mIllidanAI->getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL05);
+                mIllidanAI->getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL05);
 
                 getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                 break;
@@ -3318,7 +3318,7 @@ class AkamaAI : public CreatureAIScript
                     break;
                 case 6:
                     _setWieldWeapon(false);
-                    getCreature()->Emote(EMOTE_ONESHOT_EXCLAMATION);
+                    getCreature()->emote(EMOTE_ONESHOT_EXCLAMATION);
                     break;
                 case 7:
                     getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
@@ -3358,11 +3358,11 @@ class AkamaAI : public CreatureAIScript
                         getCreature()->GetAIInterface()->setNextTarget(pIllidan);
                     }
 
-                    getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                    getCreature()->emote(EMOTE_ONESHOT_TALK);
                 }
                 break;
             case 2:
-                getCreature()->Emote(EMOTE_ONESHOT_SALUTE);
+                getCreature()->emote(EMOTE_ONESHOT_SALUTE);
                 break;
             case 3:
                 RemoveAIUpdateEvent();
@@ -3679,7 +3679,7 @@ class MaievAI : public CreatureAIScript
                 case 1:
                     sendChatMessage(CHAT_MSG_MONSTER_YELL, 11496, "Ah, it is finished. You are beaten.");
 
-                    mIllidanAI->getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06);
+                    mIllidanAI->getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL06);
                     if (mIllidanAI->getCreature()->isCastingSpell())
                         mIllidanAI->getCreature()->interruptSpell();
                     break;
@@ -4128,7 +4128,7 @@ class IllidanStormrageAI : public CreatureAIScript
             setFlyMode(true);
 
             getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
-            getCreature()->Emote(EMOTE_ONESHOT_LIFTOFF);
+            getCreature()->emote(EMOTE_ONESHOT_LIFTOFF);
 
             mFireWallTimer = 30000;
             mMovementTimer = 40000;
@@ -4233,7 +4233,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     break;
                 case 7:
                     setFlyMode(false);
-                    getCreature()->Emote(EMOTE_ONESHOT_LAND);
+                    getCreature()->emote(EMOTE_ONESHOT_LAND);
                     break;
                 case 8:
                     {
@@ -4406,7 +4406,7 @@ class IllidanStormrageAI : public CreatureAIScript
 
         // Ugly ass code
         if (pTransformation[mMiscEventPart - 1].mEmoteType == 0)
-            getCreature()->Emote((EmoteType)pTransformation[mMiscEventPart - 1].mEmote);
+            getCreature()->emote((EmoteType)pTransformation[mMiscEventPart - 1].mEmote);
         else
             getCreature()->setEmoteState(pTransformation[mMiscEventPart - 1].mEmote);
         sendChatMessage(CHAT_MSG_MONSTER_YELL, pTransformation[mMiscEventPart - 1].mSoundId, pTransformation[mMiscEventPart - 1].mText);
@@ -4572,7 +4572,7 @@ class IllidanStormrageAI : public CreatureAIScript
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 11476, "Is this it, mortals? Is this all the fury you can muster?");
                 break;
             case 2:
-                getCreature()->Emote(EMOTE_ONESHOT_QUESTION);
+                getCreature()->emote(EMOTE_ONESHOT_QUESTION);
                 break;
             case 3:
                 if (!SpawnMaiev())
@@ -4589,7 +4589,7 @@ class IllidanStormrageAI : public CreatureAIScript
                 pMaievAI->_setWieldWeapon(true);
                 break;
             case 7:
-                pMaievAI->getCreature()->Emote(EMOTE_ONESHOT_EXCLAMATION);
+                pMaievAI->getCreature()->emote(EMOTE_ONESHOT_EXCLAMATION);
                 pMaievAI->_setDisplayWeapon(false, false);
                 break;
             case 8:
@@ -4607,15 +4607,15 @@ class IllidanStormrageAI : public CreatureAIScript
                 break;
             case 10:
                 pMaievAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11492, "Ah, my long hunt is finally over. Today, Justice will be done!");
-                pMaievAI->getCreature()->Emote(EMOTE_ONESHOT_EXCLAMATION);
+                pMaievAI->getCreature()->emote(EMOTE_ONESHOT_EXCLAMATION);
                 pMaievAI->_setDisplayWeapon(false, false);
                 break;
             case 11:
-                pMaievAI->getCreature()->Emote(EMOTE_ONESHOT_YES);
+                pMaievAI->getCreature()->emote(EMOTE_ONESHOT_YES);
                 pMaievAI->_setDisplayWeapon(true, true);
                 break;
             case 12:
-                pMaievAI->getCreature()->Emote(EMOTE_ONESHOT_ROAR);
+                pMaievAI->getCreature()->emote(EMOTE_ONESHOT_ROAR);
                 break;
             case 13:
                 setCanEnterCombat(true);

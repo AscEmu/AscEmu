@@ -39,13 +39,13 @@ void AHumbleTask(Player* /*pPlayer*/, Object* pObject)
 
 void Yorus_Barleybrew(Player* pPlayer, Object* pObject)
 {
-    (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_POINT);
+    (static_cast<Creature*>(pObject))->emote(EMOTE_ONESHOT_POINT);
     pPlayer->castSpell(pPlayer, sSpellMgr.getSpellInfo(8554), true);
 }
 
 void Menara_Voidrender(Player* /*pPlayer*/, Object* pObject)
 {
-    (static_cast<Creature*>(pObject))->EventAddEmote(EMOTE_STATE_USESTANDING, 3000);
+    (static_cast<Creature*>(pObject))->eventAddEmote(EMOTE_STATE_USESTANDING, 3000);
 }
 
 void Hanazua_III(Player* /*pPlayer*/, Object* pObject)
@@ -61,13 +61,13 @@ void TheFamilyAndTheFishingPole(Player* /*pPlayer*/, Object* pObject)
 void MillysHarvest(Player* /*pPlayer*/, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I hope for you!");
-    (static_cast<Creature*>(pObject))->EventAddEmote(EMOTE_ONESHOT_CRY, 2000);
+    (static_cast<Creature*>(pObject))->eventAddEmote(EMOTE_ONESHOT_CRY, 2000);
 }
 
 void Rest_n_Relaxation(Player* /*pPlayer*/, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Think of small pumpkins, my friend!!");
-    (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_CHEER);
+    (static_cast<Creature*>(pObject))->emote(EMOTE_ONESHOT_CHEER);
 }
 
 void OntoGoldshireComplete(Player* pPlayer, Object* pObject)
@@ -75,7 +75,7 @@ void OntoGoldshireComplete(Player* pPlayer, Object* pObject)
     char msg[256];
     snprintf((char*)msg, 256, "You are dismissed %s . ", pPlayer->getName().c_str());
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-    (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_BOW);
+    (static_cast<Creature*>(pObject))->emote(EMOTE_ONESHOT_BOW);
 }
 
 void ZuluhedtheWhacked(Player* pPlayer, Object* /*pObject*/)
@@ -141,7 +141,7 @@ void Hanazua_II(Player* /*pPlayer*/, Object* pObject)
 void Wishock(Player* pPlayer, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->setStandState(STANDSTATE_DEAD);
-    pPlayer->Emote(EMOTE_STATE_LAUGH);
+    pPlayer->emote(EMOTE_STATE_LAUGH);
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Arrgh...");
 }
 
@@ -166,7 +166,7 @@ void DeeprunRatRoundup(Player* /*pPlayer*/, Object* pObject)
 void MaybellComplete(Player* /*pPlayer*/, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Here goes nothing...");
-    (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_CRY);
+    (static_cast<Creature*>(pObject))->emote(EMOTE_ONESHOT_CRY);
     (static_cast<Creature*>(pObject))->Despawn(5000, 30000);
 }
 

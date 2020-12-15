@@ -854,7 +854,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 getOwner()->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, this, aurEff);
 
             if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
-                getOwner()->Emote(EMOTE_ONESHOT_EAT);
+                getOwner()->emote(EMOTE_ONESHOT_EAT);
 
             // Hackfixes from legacy method
             if (casterUnit != nullptr)
@@ -902,7 +902,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 getOwner()->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, this, aurEff);
 
             if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
-                getOwner()->Emote(EMOTE_ONESHOT_EAT);
+                getOwner()->emote(EMOTE_ONESHOT_EAT);
         } break;
         case SPELL_AURA_PERIODIC_POWER_PCT:
         {
@@ -924,7 +924,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 getOwner()->energize(getOwner(), spellId, effectIntValue, powerType, false);
 
             if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && aurEff->getEffectMiscValue() == POWER_TYPE_MANA)
-                getOwner()->Emote(EMOTE_ONESHOT_EAT);
+                getOwner()->emote(EMOTE_ONESHOT_EAT);
         } break;
         case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
         {
@@ -983,7 +983,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 getOwner()->energize(getOwner(), getSpellId(), effectIntValue, powerType, false);
 
             if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && aurEff->getEffectMiscValue() == POWER_TYPE_MANA)
-                getOwner()->Emote(EMOTE_ONESHOT_EAT);
+                getOwner()->emote(EMOTE_ONESHOT_EAT);
         } break;
         case SPELL_AURA_PERIODIC_LEECH:
         case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
