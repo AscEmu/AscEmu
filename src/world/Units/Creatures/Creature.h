@@ -214,8 +214,6 @@ public:
 
         virtual void setDeathState(DeathState s);
 
-        uint32 GetOldEmote();
-
         void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
         void SendScriptTextChatMessage(uint32 textid);
         void SendTimedScriptTextChatMessage(uint32 textid, uint32 delay = 0);

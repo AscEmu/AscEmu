@@ -797,11 +797,6 @@ void Creature::setDeathState(DeathState s)
     else m_deathState = s;
 }
 
-uint32 Creature::GetOldEmote()
-{
-    return m_oldEmote;
-}
-
 void Creature::AddToWorld()
 {
     // force set faction
