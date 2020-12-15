@@ -2626,14 +2626,6 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
 }
 // MIT End
 
-// This is not called!
-void Unit::BuildHeartBeatMsg(WorldPacket* data)
-{
-    data->Initialize(MSG_MOVE_HEARTBEAT, 32);
-    *data << getGuid();
-    BuildMovementPacket(data);
-}
-
 bool Object::SetPosition(const LocationVector & v, [[maybe_unused]]bool allowPorting /* = false */)
 {
     bool updateMap = false, result = true;

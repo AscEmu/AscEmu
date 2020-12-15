@@ -1498,8 +1498,6 @@ public:
     float z_axisposition;
     int32 m_safeFall;
 
-    void BuildHeartBeatMsg(WorldPacket* data);
-
     void BuildMovementPacket(ByteBuffer* data);
     void BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o);
 
