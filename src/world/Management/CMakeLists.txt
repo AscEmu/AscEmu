@@ -21,6 +21,8 @@ set(SRC_MANAGEMENT_FILES
    ${PATH_PREFIX}/Channel.h
    ${PATH_PREFIX}/ChannelMgr.cpp
    ${PATH_PREFIX}/ChannelMgr.h
+   ${PATH_PREFIX}/Charter.cpp
+   ${PATH_PREFIX}/Charter.hpp
    ${PATH_PREFIX}/Container.cpp
    ${PATH_PREFIX}/Container.h
    ${PATH_PREFIX}/CRitual.cpp

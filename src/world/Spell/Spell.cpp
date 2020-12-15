@@ -1209,8 +1209,8 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 // but allow spell casting in duels
                 if (m_caster->getPlayerOwner() != nullptr && targetPlayer->DuelingWith != m_caster->getPlayerOwner() && !isFriendly(m_caster->getPlayerOwner(), targetPlayer))
                 {
-                    if ((m_caster->GetArea() != nullptr && m_caster->GetArea()->flags & AREA_SANCTUARY) ||
-                        (targetPlayer->GetArea() != nullptr && targetPlayer->GetArea()->flags & AREA_SANCTUARY))
+                    if ((m_caster->GetArea() != nullptr && m_caster->GetArea()->flags & MapManagement::AreaManagement::AREA_SANCTUARY) ||
+                        (targetPlayer->GetArea() != nullptr && targetPlayer->GetArea()->flags & MapManagement::AreaManagement::AREA_SANCTUARY))
                         return SPELL_FAILED_BAD_TARGETS;
                 }
 
@@ -1869,7 +1869,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster == nullptr)
                     break;
 
-                if (p_caster->GetArea() != nullptr && p_caster->GetArea()->flags & AREA_CITY_AREA)
+                if (p_caster->GetArea() != nullptr && p_caster->GetArea()->flags & MapManagement::AreaManagement::AREA_CITY_AREA)
                     return SPELL_FAILED_NO_DUELING;
 
                 if (p_caster->isStealthed())

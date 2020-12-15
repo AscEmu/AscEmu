@@ -197,26 +197,6 @@ struct InstanceReputationModifier
     std::vector<InstanceReputationMod> mods;
 };
 
-//map/area management
-enum AREATABLE_FLAGS
-{
-    AREA_CITY_AREA          = 0x0020,
-    AREA_NEUTRAL_AREA       = 0x0040,
-    AREA_PVP_ARENA          = 0x0080,
-    AREA_CITY               = 0x0200,
-    AREA_SANCTUARY          = 0x0800,
-    AREA_ISLAND             = 0x1000,
-    AREA_PVP_OBJECTIVE_AREA = 0x8000
-};
-//map/area management
-enum AREATABLE_CATEGORY
-{
-    AREAC_CONTESTED          = 0,
-    AREAC_ALLIANCE_TERRITORY = 2,
-    AREAC_HORDE_TERRITORY    = 4,
-    AREAC_SANCTUARY          = 6
-};
-
 // scripting isn't it ;)
 struct SimpleEventScript
 {
@@ -280,73 +260,7 @@ typedef std::multimap<uint32, SimpleEventScript const*> SpellEffectMaps;
 typedef std::pair<EventScriptMaps::const_iterator, EventScriptMaps::const_iterator> EventScriptBounds;
 typedef std::pair<SpellEffectMaps::const_iterator, SpellEffectMaps::const_iterator> SpellEffectMapBounds;
 
-//\TODO move it to seperated file! <- oh yea this will happen soon!
-class Charter
-{
-    public:
-
-        uint32 GetNumberOfSlotsByType()
-        {
-            switch(CharterType)
-            {
-                case CHARTER_TYPE_GUILD:
-                    return 9;
-
-                case CHARTER_TYPE_ARENA_2V2:
-                    return 1;
-
-                case CHARTER_TYPE_ARENA_3V3:
-                    return 2;
-
-                case CHARTER_TYPE_ARENA_5V5:
-                    return 4;
-
-                default:
-                    return 9;
-            }
-        }
-
-        uint32 SignatureCount;
-        uint32* Signatures;
-        uint32 CharterType;
-        uint32 Slots;
-        uint32 LeaderGuid;
-        uint64 ItemGuid;
-        uint32 CharterId;
-        std::string GuildName;
-
-        /************************************************************************/
-        /* Developer Fields                                                     */
-        /************************************************************************/
-        uint32 PetitionSignerCount;
-
-        Charter(Field* fields);
-        Charter(uint32 id, uint32 leader, uint32 type) : CharterType(type), LeaderGuid(leader), CharterId(id)
-        {
-            SignatureCount = 0;
-            ItemGuid = 0;
-            Slots = GetNumberOfSlotsByType();
-            Signatures = new uint32[Slots];
-            memset(Signatures, 0, sizeof(uint32)*Slots);
-            PetitionSignerCount = 0;
-        }
-
-        ~Charter()
-        {
-            delete [] Signatures;
-        }
-
-        void SaveToDB();
-        void Destroy();         // When item is deleted.
-
-        void AddSignature(uint32 PlayerGuid);
-        void RemoveSignature(uint32 PlayerGuid);
-
-        inline uint32 GetLeader() { return LeaderGuid; }
-        inline uint32 GetID() { return CharterId; }
-
-        inline bool IsFull() { return (SignatureCount == Slots); }
-};
+#include "Management/Charter.hpp"
 
 typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
 

@@ -114,6 +114,7 @@
 #include "Server/Packets/SmsgCharacterLoginFailed.h"
 
 using namespace AscEmu::Packets;
+using namespace MapManagement::AreaManagement;
 
 using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
 using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
