@@ -58,6 +58,7 @@ struct WorldState
     }
 };
 
+// this has nothing to do with object management ;)
 enum EncounterCreditType
 {
     ENCOUNTER_CREDIT_KILL_CREATURE  = 0,
@@ -75,13 +76,11 @@ struct DungeonEncounter
     uint32_t creditEntry;
     uint32_t lastEncounterDungeon;
 };
-#endif
-
-#if VERSION_STRING <= TBC
+#else
 struct DungeonEncounter
 {
     DungeonEncounter(EncounterCreditType _creditType, uint32_t _creditEntry)
-        :  creditType(_creditType), creditEntry(_creditEntry) { }
+        : creditEntry(_creditEntry), creditType(_creditType) { }
 
     uint32_t creditEntry;
     EncounterCreditType creditType;
@@ -91,6 +90,7 @@ struct DungeonEncounter
 typedef std::list<DungeonEncounter const*> DungeonEncounterList;
 typedef std::unordered_map<uint32_t, DungeonEncounterList> DungeonEncounterContainer;
 
+// why is this here?
 struct SpellReplacement
 {
     uint32 count;
@@ -99,6 +99,8 @@ struct SpellReplacement
 
 class Group;
 class SpellInfo;
+
+//it seems trainerspells should be part of trainer files ;)
 #if VERSION_STRING >= Cata
 struct TrainerSpell
 {
@@ -137,6 +139,7 @@ struct TrainerSpell
 };
 #endif
 
+// oh a trainer look it is here and not in Unit/Creature/whatever file ;)
 struct Trainer
 {
     uint32 SpellCount;
@@ -153,6 +156,7 @@ struct Trainer
     uint32 Cannot_Train_GossipTextId;
 };
 
+// isn't it part of player info? hmmmmm....
 struct LevelInfo
 {
     uint32 HP;
@@ -160,6 +164,7 @@ struct LevelInfo
     uint32 Stat[5];
 };
 
+//player too?!?
 struct ReputationMod
 {
     uint32 faction[2];
@@ -167,6 +172,7 @@ struct ReputationMod
     uint32 replimit;
 };
 
+// reputation/instance
 struct InstanceReputationMod
 {
     uint32 mapid;
@@ -177,18 +183,21 @@ struct InstanceReputationMod
     uint32 faction[2];
 };
 
+// reputation/instance
 struct ReputationModifier
 {
     uint32 entry;
     std::vector<ReputationMod> mods;
 };
 
+// reputation/instance
 struct InstanceReputationModifier
 {
     uint32 mapid;
     std::vector<InstanceReputationMod> mods;
 };
 
+//map/area management
 enum AREATABLE_FLAGS
 {
     AREA_CITY_AREA          = 0x0020,
@@ -199,7 +208,7 @@ enum AREATABLE_FLAGS
     AREA_ISLAND             = 0x1000,
     AREA_PVP_OBJECTIVE_AREA = 0x8000
 };
-
+//map/area management
 enum AREATABLE_CATEGORY
 {
     AREAC_CONTESTED          = 0,
@@ -208,6 +217,7 @@ enum AREATABLE_CATEGORY
     AREAC_SANCTUARY          = 6
 };
 
+// scripting isn't it ;)
 struct SimpleEventScript
 {
     uint32 eventId;
@@ -226,6 +236,7 @@ struct SimpleEventScript
     uint32 nextevent;
 };
 
+// scripting isn't it ;)
 enum class ScriptCommands : uint8
 {
     SCRIPT_COMMAND_TALK                 = 0,
@@ -254,6 +265,7 @@ enum class ScriptCommands : uint8
     SCRIPT_COMMAND_PLAYMOVIE            = 23
 };
 
+// whatever - I've seen a lot of "easy", "simple"... names around this core.... spoiler it isn't
 enum class EasyScriptTypes : uint8
 {
     SCRIPT_TYPE_SPELL_EFFECT            = 1,
@@ -268,7 +280,7 @@ typedef std::multimap<uint32, SimpleEventScript const*> SpellEffectMaps;
 typedef std::pair<EventScriptMaps::const_iterator, EventScriptMaps::const_iterator> EventScriptBounds;
 typedef std::pair<SpellEffectMaps::const_iterator, SpellEffectMaps::const_iterator> SpellEffectMapBounds;
 
-//\TODO move it to seperated file!
+//\TODO move it to seperated file! <- oh yea this will happen soon!
 class Charter
 {
     public:
@@ -364,7 +376,7 @@ typedef std::multimap<uint32_t, DBC::Structures::SkillLineAbilityEntry const*> S
 typedef std::pair<SkillLineAbilityMap::const_iterator, SkillLineAbilityMap::const_iterator> SkillLineAbilityMapBounds;
 #endif
 
-
+// finally we are here, the base class of this file ;)
 class PlayerCache;
 class SERVER_DECL ObjectMgr : public EventableObject
 {
