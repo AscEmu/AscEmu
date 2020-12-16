@@ -783,7 +783,9 @@ void WorldSocket::Authenticate()
 
     SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
 #if VERSION_STRING < Cata
-    sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast<uint32>(pAuthenticationPacket->rpos()), mSession);
+    sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast<uint32>(pAuthenticationPacket->rpos()), mSession);f
+#else
+    mSession->sendAddonInfo();
 #endif
 #if VERSION_STRING > TBC
     mSession->sendClientCacheVersion(BUILD_VERSION);
