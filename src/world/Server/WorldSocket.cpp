@@ -783,7 +783,7 @@ void WorldSocket::Authenticate()
 
     SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
 #if VERSION_STRING < Cata
-    sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast<uint32>(pAuthenticationPacket->rpos()), mSession);f
+    sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast<uint32>(pAuthenticationPacket->rpos()), mSession);
 #else
     mSession->sendAddonInfo();
 #endif
