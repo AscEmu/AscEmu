@@ -125,7 +125,7 @@ uint32 CBattleground::GetType()
 
 void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
 {
-    ARCEMU_ASSERT(data != NULL);
+    ARCEMU_ASSERT(data != nullptr);
 
     data->Initialize(MSG_PVP_LOG_DATA);
     data->reserve(10 * (m_players[0].size() + m_players[1].size()) + 50);
@@ -227,7 +227,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             {
-                ARCEMU_ASSERT(*itr != NULL);
+                ARCEMU_ASSERT(*itr != nullptr);
                 if ((*itr)->m_isGmInvisible)
                     continue;
                 *data << (*itr)->getGuid();
