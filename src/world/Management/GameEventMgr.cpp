@@ -54,20 +54,20 @@ void GameEventMgr::StartArenaEvents()
 void GameEventMgr::LoadFromDB()
 {
     // Clean event_saves from CharacterDB
-    LogNotice("GameEventMgr : Start cleaning event_save");
+    LogNotice("GameEventMgr : Start cleaning gameevent_save");
     {
-        const char* cleanEventSaveQuery = "DELETE FROM event_save WHERE state<>4";
+        const char* cleanEventSaveQuery = "DELETE FROM gameevent_save WHERE state<>4";
         CharacterDatabase.Execute(cleanEventSaveQuery);
     }
     // Loading event_properties
     {
         QueryResult* result = WorldDatabase.Query("SELECT entry, UNIX_TIMESTAMP(start_time), UNIX_TIMESTAMP(end_time), occurence, "
                                           "length, holiday, description, world_event, announce "
-                                          "FROM event_properties WHERE entry > 0 AND min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
+                                          "FROM gameevent_properties WHERE entry > 0 AND min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
         if (!result)
         {
             //mGameEvent.clear();
-            LogError("GameEventMgr : event_properties can not be read or does not include any version specific events!");
+            LogError("GameEventMgr : gameevent_properties can not be read or does not include any version specific events!");
             return;
         }
 
@@ -104,9 +104,9 @@ void GameEventMgr::LoadFromDB()
         LogDetail("GameEventMgr : %u events loaded from table event_properties", pCount);
     }
     // Loading event_saves from CharacterDB
-    LogNotice("GameEventMgr : Start loading event_save");
+    LogNotice("GameEventMgr : Start loading gameevent_save");
     {
-        const char* loadEventSaveQuery = "SELECT event_entry, state, next_start FROM event_save";
+        const char* loadEventSaveQuery = "SELECT event_entry, state, next_start FROM gameevent_save";
         bool success = false;
         QueryResult* result = CharacterDatabase.Query(&success, loadEventSaveQuery);
 
@@ -127,8 +127,8 @@ void GameEventMgr::LoadFromDB()
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    CharacterDatabase.Query("DELETE FROM event_save WHERE event_entry=%u", event_id);
-                    LogDetail("Deleted invalid event_save with entry %u", event_id);
+                    CharacterDatabase.Query("DELETE FROM gameevent_save WHERE event_entry=%u", event_id);
+                    LogDetail("Deleted invalid gameevent_save with entry %u", event_id);
                     continue;
                 }
 
@@ -141,7 +141,7 @@ void GameEventMgr::LoadFromDB()
             delete result;
         }
 
-        LogDetail("GameEventMgr : Loaded %u saved events loaded from table event_saves", pCount);
+        LogDetail("GameEventMgr : Loaded %u saved events loaded from table gameevent_saves", pCount);
     }
     // Loading event_creature from WorldDB
     LogNotice("GameEventMgr : Start loading game event creature spawns");

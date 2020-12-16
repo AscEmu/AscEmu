@@ -55,8 +55,8 @@ SERVER_DECL SessionLog* Player_Log;
 ConfigMgr Config;
 
 // DB version
-static const char* REQUIRED_CHAR_DB_VERSION = "20200221-00_utf8mb4_unicode_ci";
-static const char* REQUIRED_WORLD_DB_VERSION = "20201209-00_remove_duplicate_spawns";
+static const char* REQUIRED_CHAR_DB_VERSION = "20201216-00_rename_event_properties";
+static const char* REQUIRED_WORLD_DB_VERSION = "20201216-00_rename_event_properties";
 
 void Master::_OnSignal(int s)
 {
