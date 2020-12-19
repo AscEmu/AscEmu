@@ -36,6 +36,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
+#include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "SpellMgr.h"

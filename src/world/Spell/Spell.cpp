@@ -28,6 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/Flags.h"
 #include "Management/Battleground/Battleground.h"
 #include "Management/ItemInterface.h"
+#include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
@@ -580,7 +581,7 @@ void Spell::castMe(const bool doReCheck)
     }
 
     // If spell is not channeled, the spell cast has finished successfully and the spell is traveling
-    // Spells with travel time are also finished on next update tick
+    // Spells without travel time are also finished on next update tick
     if (m_spellState != SPELL_STATE_CHANNELING)
     {
         m_spellState = SPELL_STATE_TRAVELING;

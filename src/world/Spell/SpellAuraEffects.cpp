@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Objects/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Units/Creatures/Pet.h"
 
 pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
 {

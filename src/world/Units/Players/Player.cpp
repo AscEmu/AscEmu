@@ -12,6 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
+#include "Map/Area/AreaManagementGlobals.hpp"
+#include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
 #include "Objects/GameObject.h"
 #include "Objects/ObjectMgr.h"

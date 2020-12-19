@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellDefines.hpp"
 #include "SpellInfo.hpp"
 
+class Aura;
 class Object;
 class SpellInfo;
 class SpellProc;

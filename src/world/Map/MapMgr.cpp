@@ -27,6 +27,7 @@
 #include "CThreads.h"
 #include "Management/WorldStatesHandler.h"
 #include "Management/Item.h"
+#include "Map/Area/AreaStorage.hpp"
 #include "CrashHandler.h"
 #include "Units/Summons/Summon.h"
 #include "Units/Summons/GuardianSummon.h"
@@ -45,6 +46,8 @@
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgUpdateWorldState.h"
 #include "Server/Packets/SmsgDefenseMessage.h"
+
+#include "shared/WoWGuid.h"
 
 using namespace AscEmu::Packets;
 

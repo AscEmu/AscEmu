@@ -168,23 +168,6 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
 
     m_isGarbage = true;
 
-    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        if (getSpellInfo()->getEffect(i) == 0)
-            continue;
-
-        ///\ todo: verify this
-        if (getSpellInfo()->getEffect(i) == SPELL_EFFECT_TRIGGER_SPELL)
-        {
-            const auto triggerSpell = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(i));
-            if (triggerSpell != nullptr)
-            {
-                if (triggerSpell->getDurationIndex() < getSpellInfo()->getDurationIndex())
-                    getOwner()->RemoveAura(getSpellInfo()->getEffectTriggerSpell(i));
-            }
-        }
-    }
-
     // Reset diminishing return timer
     getOwner()->removeDiminishingReturnTimer(getSpellInfo());
 
@@ -641,15 +624,14 @@ void Aura::takeUsedSpellModifiers()
     {
         auto aurEff = (*itr).first;
         // Check for faulty entry
-        /*if (aurEff->getAura() == nullptr || (*itr).second)
+        if (aurEff->getAura() == nullptr || (*itr).second)
         {
             itr = m_usedModifiers.erase(itr);
             continue;
-        }*/
+        }
 
         aurEff->getAura()->removeCharge();
-        //itr = m_usedModifiers.erase(itr);
-        ++itr;
+        itr = m_usedModifiers.erase(itr);
     }
 }
 

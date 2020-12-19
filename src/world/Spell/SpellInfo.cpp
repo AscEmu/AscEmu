@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/Skill.h"
 #include "Units/Creatures/AIInterface.h"
+#include "Units/Players/Player.h"
 
 SpellInfo::SpellInfo()
 {
