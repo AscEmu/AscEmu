@@ -1281,7 +1281,7 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
     {
         if (loot_ptr->Faction == -1 || loot_ptr->Faction == static_cast<int8_t>(plr->getTeam()))
         {
-            if (Rand(loot_ptr->Chance * worldConfig.getFloatRate(RATE_DROP0)))
+            if (Util::checkChance(loot_ptr->Chance * worldConfig.getFloatRate(RATE_DROP0)))
             {
                 __LootItem li;
                 ItemProperties const* pProto = sMySQLStore.getItemProperties(loot_ptr->ItemId);

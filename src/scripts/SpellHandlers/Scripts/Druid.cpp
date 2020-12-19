@@ -28,37 +28,36 @@ class FurorDummy : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
+        if (apply)
+        {
+            const auto procChance = aurEff->getEffectDamage();
 
-        const auto procChance = aurEff->getEffectDamage();
+            // Make Furor rage proc on Bear Form passive aura
+            const uint32_t rageProcMask[3] = { 0, 0, 0x2 };
+            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_FUROR_RAGE), aur->getSpellInfo(), aur->getCasterGuid(), procChance, PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE, rageProcMask, aur);
 
-        // Make Furor rage proc on Bear Form passive aura
-        uint32_t rageProcMask[3] = { 0, 0, 0x2 };
-        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_FUROR_RAGE), aur->getSpellInfo(), aur->getCasterGuid(), procChance, PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE, 0, 0, rageProcMask);
-
-        // Make Furor energy proc on Cat Form passive aura
-        uint32_t energyProcMask[3] = { 0x8000000, 0, 0 };
+            // Make Furor energy proc on Cat Form passive aura
+            const uint32_t energyProcMask[3] = { 0x8000000, 0, 0 };
 #if VERSION_STRING < WotLK
-        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_FUROR_ENERGY), aur->getSpellInfo(), aur->getCasterGuid(), procChance, PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE, 0, 0, energyProcMask);
+            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_FUROR_ENERGY), aur->getSpellInfo(), aur->getCasterGuid(), procChance, PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE, energyProcMask, aur);
 #else
-        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_FUROR_ENERGY), aur->getSpellInfo(), aur->getCasterGuid(), 100, PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE, 0, 0, energyProcMask);
-        // Energy amount equals proc chance
-        if (spellProc != nullptr)
-            spellProc->setOverrideEffectDamage(EFF_INDEX_0, procChance);
+            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_FUROR_ENERGY), aur->getSpellInfo(), aur->getCasterGuid(), 100, PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE, energyProcMask, aur);
+            // Energy amount equals proc chance
+            if (spellProc != nullptr)
+                spellProc->setOverrideEffectDamage(EFF_INDEX_0, procChance);
 #endif
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_FUROR_RAGE, aur->getCasterGuid());
+            aur->getOwner()->removeProcTriggerSpell(SPELL_FUROR_ENERGY, aur->getCasterGuid());
+        }
 
         return SpellScriptCheckDummy::DUMMY_OK;
     }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_FUROR_RAGE, aur->getCasterGuid());
-        aur->getOwner()->removeProcTriggerSpell(SPELL_FUROR_ENERGY, aur->getCasterGuid());
-    }
 };
 
-class FurorProcs : public SpellScript
+class Furor : public SpellScript
 {
 public:
     bool canProcOnTriggered(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, Aura* /*triggeredFromAura*/) override
@@ -75,9 +74,9 @@ public:
 #if VERSION_STRING == WotLK
     void onAuraApply(Aura* aur) override
     {
-        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_LEADER_OF_THE_PACK_MANA), sSpellMgr.getSpellInfo(SPELL_LEADER_OF_THE_PACK_AURA), aur->getCasterGuid(), 100, PROC_ON_TAKEN_POSITIVE_SPELL_DAMAGE_CLASS_NONE, 0, 0);
+        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_LEADER_OF_THE_PACK_MANA), sSpellMgr.getSpellInfo(SPELL_LEADER_OF_THE_PACK_AURA), aur->getCasterGuid(), 100, PROC_ON_TAKEN_POSITIVE_SPELL_DAMAGE_CLASS_NONE, nullptr, aur);
         if (spellProc != nullptr)
-            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aur->getSpellInfo()->getEffectBasePoints(EFF_INDEX_1) + 1);
+            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aur->getSpellInfo()->calculateEffectValue(EFF_INDEX_1));
     }
 
     void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
@@ -92,23 +91,25 @@ class LeaderOfThePack : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (aurEff->getEffectIndex() != EFF_INDEX_1 || !apply)
+        if (aurEff->getEffectIndex() != EFF_INDEX_1)
             return SpellScriptCheckDummy::DUMMY_OK;
 
-        // Check if caster has Improved Leader of the Pack
-        if (aurEff->getEffectDamage() > 0)
+        if (apply)
         {
-            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_LEADER_OF_THE_PACK_HEAL), aur->getSpellInfo(), aur->getCasterGuid(), 0);
-            if (spellProc != nullptr)
-                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+            // Check if caster has Improved Leader of the Pack
+            if (aurEff->getEffectDamage() > 0)
+            {
+                auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_LEADER_OF_THE_PACK_HEAL), aur, aur->getCasterGuid());
+                if (spellProc != nullptr)
+                    spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+            }
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_LEADER_OF_THE_PACK_HEAL, aur->getCasterGuid());
         }
 
         return SpellScriptCheckDummy::DUMMY_OK;
-    }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_LEADER_OF_THE_PACK_HEAL, aur->getCasterGuid());
     }
 };
 
@@ -117,19 +118,18 @@ class LeaderOfThePackDummy : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
-
-        if (aur->getPlayerOwner() != nullptr)
-            aur->getPlayerOwner()->AddShapeShiftSpell(SPELL_LEADER_OF_THE_PACK_AURA);
+        if (apply)
+        {
+            if (aur->getPlayerOwner() != nullptr)
+                aur->getPlayerOwner()->AddShapeShiftSpell(SPELL_LEADER_OF_THE_PACK_AURA);
+        }
+        else
+        {
+            if (aur->getPlayerOwner() != nullptr)
+                aur->getPlayerOwner()->RemoveShapeShiftSpell(SPELL_LEADER_OF_THE_PACK_AURA);
+        }
 
         return SpellScriptCheckDummy::DUMMY_OK;
-    }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        if (aur->getPlayerOwner() != nullptr)
-            aur->getPlayerOwner()->RemoveShapeShiftSpell(SPELL_LEADER_OF_THE_PACK_AURA);
     }
 };
 
@@ -196,8 +196,8 @@ void setupDruidSpells(ScriptMgr* mgr)
     };
     mgr->register_spell_script(furorIds, new FurorDummy);
 
-    mgr->register_spell_script(SPELL_FUROR_RAGE, new FurorProcs);
-    mgr->register_spell_script(SPELL_FUROR_ENERGY, new FurorProcs);
+    mgr->register_spell_script(SPELL_FUROR_RAGE, new Furor);
+    mgr->register_spell_script(SPELL_FUROR_ENERGY, new Furor);
 #endif
 
     uint32_t improvedLeaderOfThePackIds[] =

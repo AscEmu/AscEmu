@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <string>
 #include "Log.hpp"
 
+class Item;
 class Player;
 class Unit;
 
@@ -73,6 +74,8 @@ public:
     bool isChanneled() const;
     bool isRangedAutoRepeat() const;
     bool isOnNextMeleeAttack() const;
+
+    int32_t calculateEffectValue(uint8_t effIndex, Unit* unitCaster = nullptr, Item* itemCaster = nullptr, uint32_t forcedBasePoints = 0) const;
 
     bool doesEffectApplyAura(uint8_t effIndex) const;
 
@@ -463,8 +466,6 @@ public:
     float getCustom_base_range_or_radius_sqr() const { return custom_base_range_or_radius_sqr; }
     float getCone_width() const { return cone_width; }
     int getAi_target_type() const { return ai_target_type; }
-    bool getCustom_self_cast_only() const { return custom_self_cast_only; }
-    bool getCustom_apply_on_shapeshift_change() const { return custom_apply_on_shapeshift_change; }
 
     uint32_t getEffectCustomFlag(uint8_t idx) const
     {
@@ -1097,9 +1098,6 @@ public:
     // set in Hackfixes.cpp - 5 spells
     // from MySQL table spell_custom_assign - 6 spells
     bool custom_self_cast_only = false;
-
-    // SpellCustomizations::SetOnShapeshiftChange - 2 spells
-    bool custom_apply_on_shapeshift_change = false;
 
     // from MySQL table spell_effects_override - 374 spells
     uint32_t EffectCustomFlag[MAX_SPELL_EFFECTS];

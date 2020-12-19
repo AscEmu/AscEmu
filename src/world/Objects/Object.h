@@ -131,7 +131,6 @@ protected:
     const WoWObject* objectData() const { return wow_data; }
 
 public:
-
     bool write(const uint8_t& member, uint8_t val);
     bool write(const uint16_t& member, uint16_t val);
     bool write(const float& member, float val);
@@ -181,11 +180,9 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Object Type Id
 protected:
-
     uint8_t m_objectTypeId;
 
 public:
-
     uint8_t getObjectTypeId() const;
 
     bool isCreatureOrPlayer() const;
@@ -213,11 +210,12 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spell functions
 private:
-
     Spell* m_currentSpell[CURRENT_SPELL_MAX];
 
-public:
+    std::map<Spell*, bool> m_travelingSpells;
+    std::list<Spell*> m_garbageSpells;
 
+public:
     Spell* getCurrentSpell(CurrentSpellType spellType) const;
     Spell* getCurrentSpellById(uint32_t spellId) const;
     void setCurrentSpell(Spell* curSpell);
@@ -232,23 +230,28 @@ public:
 
     // Deals magic damage to target with proper logging, used with periodic damage effects and direct damage effects
     // Returns damage info structure
-    DamageInfo doSpellDamage(Unit* victim, uint32_t spellId, float_t damage, uint8_t effIndex, bool isTriggered = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
+    DamageInfo doSpellDamage(Unit* victim, uint32_t spellId, float_t damage, uint8_t effIndex, bool isTriggered = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Spell* spell = nullptr, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
     // Heals target with proper logging, used with periodic heal effects and direct healing
-    DamageInfo doSpellHealing(Unit* victim, uint32_t spellId, float_t heal, bool isTriggered = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
+    DamageInfo doSpellHealing(Unit* victim, uint32_t spellId, float_t heal, bool isTriggered = false, bool isPeriodic = false, bool isLeech = false, bool forceCrit = false, Spell* spell = nullptr, Aura* aur = nullptr, AuraEffectModifier* aurEff = nullptr);
 
     void _UpdateSpells(uint32_t time);
+
+    void addTravelingSpell(Spell* spell);
+    void removeTravelingSpell(Spell* spell);
+    void addGarbageSpell(Spell* spell);
+    void removeGarbageSpells();
+
+    void removeSpellModifierFromCurrentSpells(AuraEffectModifier const* aur);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // InRange sets
 private:
-
     std::vector<Object*> mInRangeObjectsSet;
     std::vector<Object*> mInRangePlayersSet;
     std::vector<Object*> mInRangeOppositeFactionSet;
     std::vector<Object*> mInRangeSameFactionSet;
 
 public:
-
     // general
     virtual void clearInRangeSets();
     virtual void addToInRangeObjects(Object* pObj);
@@ -530,11 +533,6 @@ public:
 
     uint32 GetPhase() { return m_phase; }
         virtual void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
-
-        virtual bool IsCriticalDamageForSpell(Object* /*victim*/, SpellInfo const* /*spell*/) { return false; }
-        virtual float GetCriticalDamageBonusForSpell(Object* /*victim*/, SpellInfo const* /*spell*/, float /*amount*/) { return 0; }
-        virtual bool IsCriticalHealForSpell(Object* /*victim*/, SpellInfo const* /*spell*/) { return false; }
-        virtual float GetCriticalHealBonusForSpell(Object* /*victim*/, SpellInfo const* /*spell*/, float /*amount*/) { return 0; }
 
         // SpellLog packets just to keep the code cleaner and better to read
         void SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 SpellLogType);

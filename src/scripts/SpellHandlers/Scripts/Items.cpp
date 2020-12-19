@@ -114,17 +114,13 @@ public:
 
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
-
         // On dummy aura apply make it proc self
-        aur->getOwner()->addProcTriggerSpell(aur->getSpellInfo(), aur->getCasterGuid(), 0);
-        return SpellScriptCheckDummy::DUMMY_OK;
-    }
+        if (apply)
+            aur->getOwner()->addProcTriggerSpell(aur->getSpellInfo(), aur->getCasterGuid(), aur);
+        else
+            aur->getOwner()->removeProcTriggerSpell(aur->getSpellId(), aur->getCasterGuid());
 
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(aur->getSpellId(), aur->getCasterGuid());
+        return SpellScriptCheckDummy::DUMMY_OK;
     }
 
     void onCreateSpellProc(SpellProc* spellProc, Object* obj) override
@@ -252,18 +248,17 @@ class Shadowmourne : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
-
         // On dummy aura apply make it proc self
-        aur->getOwner()->addProcTriggerSpell(aur->getSpellInfo(), aur->getCasterGuid(), 0);
+        if (apply)
+            aur->getOwner()->addProcTriggerSpell(aur->getSpellInfo(), aur->getCasterGuid(), aur);
+        else
+            aur->getOwner()->removeProcTriggerSpell(aur->getSpellId(), aur->getCasterGuid());
+
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 
     void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
     {
-        aur->getOwner()->removeProcTriggerSpell(aur->getSpellId(), aur->getCasterGuid());
-
         // Also remove Soul Fragments
         aur->getOwner()->removeAllAurasById(SPELL_SOUL_FRAGMENT);
     }

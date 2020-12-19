@@ -53,7 +53,7 @@ bool Execute(uint8_t effectIndex, Spell* pSpell)
         toadd = (multiple[pSpell->getSpellInfo()->custom_RankNumber] * rage);
     }
 
-    dmg = pSpell->CalculateEffect(effectIndex, pSpell->GetUnitTarget());
+    dmg = pSpell->calculateEffect(effectIndex);
     dmg += Caster->getAttackPower() / 5;
     dmg += toadd;
 

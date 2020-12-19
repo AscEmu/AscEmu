@@ -42,8 +42,6 @@ void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitO
     setModCastSpeed(1.0f);
     setDynamicFlags(0);
 
-    InheritSMMods(unitOwner);
-
     for (uint8_t school = 0; school < TOTAL_SPELL_SCHOOLS; school++)
     {
         ModDamageDone[school] = unitOwner->GetDamageDoneMod(school);

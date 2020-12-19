@@ -29,10 +29,6 @@
 #include "Objects/Object.h"
 #include "Management/Group.h"
 
-SERVER_DECL bool Rand(float chance);
-SERVER_DECL bool Rand(uint32 chance);
-SERVER_DECL bool Rand(int32 chance);
-
 class CreatureAIScript;
 class GossipScript;
 class AuctionHouse;

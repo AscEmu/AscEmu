@@ -1183,28 +1183,6 @@ void SpellMgr::applyHackFixes()
     ////////////////////////////////////////////////////////////
     // Arms
 
-    // Juggernaut
-    sp = getMutableSpellInfo(65156);
-    if (sp != nullptr)
-        sp->setAuraInterruptFlags(AURA_INTERRUPT_ON_CAST_SPELL);
-
-    // Warrior - Overpower Rank 1
-    sp = getMutableSpellInfo(7384);
-    if (sp != nullptr)
-        sp->addAttributes(ATTRIBUTES_CANT_BE_DPB);
-    // Warrior - Overpower Rank 2
-    sp = getMutableSpellInfo(7887);
-    if (sp != nullptr)
-        sp->addAttributes(ATTRIBUTES_CANT_BE_DPB);
-    // Warrior - Overpower Rank 3
-    sp = getMutableSpellInfo(11584);
-    if (sp != nullptr)
-        sp->addAttributes(ATTRIBUTES_CANT_BE_DPB);
-    // Warrior - Overpower Rank 4
-    sp = getMutableSpellInfo(11585);
-    if (sp != nullptr)
-        sp->addAttributes(ATTRIBUTES_CANT_BE_DPB);
-
     // Warrior - Tactical Mastery Rank 1
     sp = getMutableSpellInfo(12295);
     if (sp != nullptr)
@@ -1217,13 +1195,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(12677);
     if (sp != nullptr)
         sp->setRequiredShapeShift(0x00070000);
-
-    // Warrior - Heroic Throw
-    sp = getMutableSpellInfo(57755);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 0);
-    }
 
     // Warrior - Rend
     sp = getMutableSpellInfo(772);
@@ -1364,17 +1335,6 @@ void SpellMgr::applyHackFixes()
         sp->setSpeed(0);    //without, no damage is done
     }
 
-    sp = getMutableSpellInfo(53719);
-    if (sp != nullptr)
-    {
-        sp->setDmgClass(SPELL_DMG_TYPE_MAGIC);
-    }
-    sp = getMutableSpellInfo(31893);
-    if (sp != nullptr)
-    {
-        sp->setDmgClass(SPELL_DMG_TYPE_MAGIC);
-    }
-
     //Paladin - Divine Storm
     sp = getMutableSpellInfo(53385);
     if (sp != nullptr)
@@ -1445,25 +1405,6 @@ void SpellMgr::applyHackFixes()
     if (sp != nullptr)
         sp->setTargetAuraSpellNot(25771);
 
-    //Paladin - Art of War
-    sp = getMutableSpellInfo(53486);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_DONE, 0);
-    }
-    sp = getMutableSpellInfo(53489);
-    if (sp != nullptr)
-        sp->setAuraInterruptFlags(AURA_INTERRUPT_ON_CAST_SPELL);
-
-    sp = getMutableSpellInfo(53488);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_DONE, 0);
-    }
-    sp = getMutableSpellInfo(59578);
-    if (sp != nullptr)
-        sp->setAuraInterruptFlags(AURA_INTERRUPT_ON_CAST_SPELL);
-
     //Paladin - Hammer of Justice - Interrupt effect
     sp = getMutableSpellInfo(853);
     if (sp != nullptr)
@@ -1495,24 +1436,6 @@ void SpellMgr::applyHackFixes()
     //////////////////////////////////////////
 
     // Insert hunter spell fixes here
-
-    //Hunter - Bestial Wrath
-    sp = getMutableSpellInfo(19574);
-    if (sp != nullptr)
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 2);
-
-    //Hunter - The Beast Within
-    sp = getMutableSpellInfo(34471);
-    if (sp != nullptr)
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 2);
-
-    //Hunter - Go for the Throat
-    sp = getMutableSpellInfo(34952);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    sp = getMutableSpellInfo(34953);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
 
     // Hunter - Spirit Bond
     sp = getMutableSpellInfo(19578);
@@ -1546,13 +1469,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
         sp->setEffectAmplitude(sp->getEffectAmplitude(0), 1);
         sp->setEffectDieSides(sp->getEffectDieSides(0), 1);
-    }
-
-    //Hunter Silencing Shot
-    sp = getMutableSpellInfo(34490);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_SILENCE, 1);
     }
 
     // Hunter - Ferocious Inspiration
@@ -1599,21 +1515,21 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(34497);
     if (sp != nullptr)
     {
-        sp->setProcChance(sp->getEffectBasePoints(0) + 1);
+        sp->setProcChance(sp->calculateEffectValue(0));
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(34720, 0);
     }
     sp = getMutableSpellInfo(34498);
     if (sp != nullptr)
     {
-        sp->setProcChance(sp->getEffectBasePoints(0) + 1);
+        sp->setProcChance(sp->calculateEffectValue(0));
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(34720, 0);
     }
     sp = getMutableSpellInfo(34499);
     if (sp != nullptr)
     {
-        sp->setProcChance(sp->getEffectBasePoints(0) + 1);
+        sp->setProcChance(sp->calculateEffectValue(0));
         sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(34720, 0);
     }
@@ -1660,18 +1576,6 @@ void SpellMgr::applyHackFixes()
         sp->setProcChance(sp->getEffectBasePoints(0));
     }
 
-    //Hunter : Pathfinding
-    sp = getMutableSpellInfo(19559);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 0);
-    }
-    sp = getMutableSpellInfo(19560);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 0);
-    }
-
     // Feed pet
     sp = getMutableSpellInfo(6991);
     if (sp != nullptr)
@@ -1693,23 +1597,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_ENEMY, 1);
     }
 
-    //rogue - Camouflage.
-    sp = getMutableSpellInfo(13975);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 0);
-    }
-    sp = getMutableSpellInfo(14062);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 0);
-    }
-    sp = getMutableSpellInfo(14063);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 0);
-    }
-
     //rogue - Vanish : Second Trigger Spell
     sp = getMutableSpellInfo(18461);
     if (sp != nullptr)
@@ -1719,7 +1606,7 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(36563);
     if (sp != nullptr)
     {
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 2);
+        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 2);
     }
     // Still related to shadowstep - prevent the trigger spells from breaking stealth.
     sp = getMutableSpellInfo(44373);
@@ -1816,46 +1703,6 @@ void SpellMgr::applyHackFixes()
     if (sp != nullptr)
         sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
 
-    // Vampiric Embrace heal spell
-    sp = getMutableSpellInfo(15290);
-    if (sp != nullptr)
-    {
-        sp->setEffectBasePoints(2, 0);
-        sp->setEffectBasePoints(14, 1);
-    }
-
-    // Improved Mind Blast
-    sp = getMutableSpellInfo(15273);   //rank 1
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 1);
-    }
-    sp = getMutableSpellInfo(15312);   //rank 2
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 1);
-    }
-    sp = getMutableSpellInfo(15313);   //rank 3
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 1);
-    }
-    sp = getMutableSpellInfo(15314);   //rank 4
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 1);
-    }
-    sp = getMutableSpellInfo(15316);   //rank 5
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 1);
-    }
-
     // Body and soul - fix duration of cleanse poison
     sp = getMutableSpellInfo(64134);
     if (sp != nullptr)
@@ -1874,31 +1721,31 @@ void SpellMgr::applyHackFixes()
     if (sp != nullptr)
     {
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 0);
+        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
     }
     sp = getMutableSpellInfo(14525);
     if (sp != nullptr)
     {
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 0);
+        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
     }
     sp = getMutableSpellInfo(14526);
     if (sp != nullptr)
     {
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 0);
+        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
     }
     sp = getMutableSpellInfo(14527);
     if (sp != nullptr)
     {
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 0);
+        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
     }
     sp = getMutableSpellInfo(14528);
     if (sp != nullptr)
     {
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 0);
+        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
     }
 
     //Priest - Inspiration proc spell
@@ -1912,12 +1759,6 @@ void SpellMgr::applyHackFixes()
     if (sp != nullptr)
         sp->setRangeIndex(4);
 
-    //priest - surge of light
-    sp = getMutableSpellInfo(33151);
-    if (sp != nullptr)
-    {
-        sp->setAuraInterruptFlags(AURA_INTERRUPT_ON_CAST_SPELL);
-    }
     // priest - Reflective Shield
     sp = getMutableSpellInfo(33201);
     if (sp != nullptr)
@@ -1999,15 +1840,6 @@ void SpellMgr::applyHackFixes()
 
     // Insert shaman spell fixes here
 
-    // Elemental Mastery
-    sp = getMutableSpellInfo(16166);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SMT_CRITICAL, 0);
-        sp->setEffectMiscValue(SMT_COST, 0);
-        // sp->AuraInterruptFlags = AURA_INTERRUPT_ON_AFTER_CAST_SPELL;
-    }
-
     ////////////////////////////////////////////////////////////
     // Shamanistic Rage
     SpellInfo const*  parentsp = getMutableSpellInfo(30823);
@@ -2080,7 +1912,7 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(43339);
     if (sp != nullptr)
     {
-        sp->setEffectMiscValue(SMT_COST, 0);
+        sp->setEffectMiscValue(SPELLMOD_COST, 0);
     }
 
     //shaman - Improved Chain Heal
@@ -2101,48 +1933,48 @@ void SpellMgr::applyHackFixes()
     {
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 1);
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 0);
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 1);
+        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
+        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 1);
     }
     sp = getMutableSpellInfo(29192);
     if (sp != nullptr)
     {
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 1);
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 0);
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 1);
+        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
+        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 1);
     }
 
     // Shaman - Improved Fire Totems
     sp = getMutableSpellInfo(16544);
     if (sp != nullptr)
     {
-        sp->setEffectMiscValue(SMT_DURATION, 0);
+        sp->setEffectMiscValue(SPELLMOD_DURATION, 0);
     }
     sp = getMutableSpellInfo(16086);
     if (sp != nullptr)
     {
-        sp->setEffectMiscValue(SMT_DURATION, 0);
+        sp->setEffectMiscValue(SPELLMOD_DURATION, 0);
     }
 
     //shaman - Elemental Weapons
     sp = getMutableSpellInfo(29080);
     if (sp != nullptr)
     {
-        sp->setEffectMiscValue(SMT_DAMAGE_DONE, 1);
-        sp->setEffectMiscValue(SMT_DAMAGE_DONE, 2);
+        sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 1);
+        sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 2);
     }
     sp = getMutableSpellInfo(29079);
     if (sp != nullptr)
     {
-        sp->setEffectMiscValue(SMT_DAMAGE_DONE, 1);
-        sp->setEffectMiscValue(SMT_DAMAGE_DONE, 2);
+        sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 1);
+        sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 2);
     }
     sp = getMutableSpellInfo(16266);
     if (sp != nullptr)
     {
-        sp->setEffectMiscValue(SMT_DAMAGE_DONE, 1);
-        sp->setEffectMiscValue(SMT_DAMAGE_DONE, 2);
+        sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 1);
+        sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 2);
     }
 
     ////////////////////////////////////////////////////////////
@@ -2244,13 +2076,13 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(35578);
     if (sp != nullptr)
     {
-        sp->setEffectMiscValue(SMT_CRITICAL_DAMAGE, 0);
+        sp->setEffectMiscValue(SPELLMOD_CRITICAL_DAMAGE, 0);
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
     }
     sp = getMutableSpellInfo(35581);
     if (sp != nullptr)
     {
-        sp->setEffectMiscValue(SMT_CRITICAL_DAMAGE, 0);
+        sp->setEffectMiscValue(SPELLMOD_CRITICAL_DAMAGE, 0);
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
     }
 
@@ -2259,19 +2091,19 @@ void SpellMgr::applyHackFixes()
     if (sp != nullptr)
     {
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SMT_COST, 0);
+        sp->setEffectMiscValue(SPELLMOD_COST, 0);
     }
     sp = getMutableSpellInfo(29439);
     if (sp != nullptr)
     {
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SMT_COST, 0);
+        sp->setEffectMiscValue(SPELLMOD_COST, 0);
     }
     sp = getMutableSpellInfo(29440);
     if (sp != nullptr)
     {
         sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SMT_COST, 0);
+        sp->setEffectMiscValue(SPELLMOD_COST, 0);
     }
 
     //Mage - Arcane Blast
@@ -2305,17 +2137,17 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(31579);
     if (sp != nullptr)
     {
-        sp->setEffectBasePoints(5 * (sp->getEffectBasePoints(0) + 1), 0);
+        sp->setEffectBasePoints(5 * (sp->calculateEffectValue(0)), 0);
     }
     sp = getMutableSpellInfo(31582);
     if (sp != nullptr)
     {
-        sp->setEffectBasePoints(5 * (sp->getEffectBasePoints(0) + 1), 0);
+        sp->setEffectBasePoints(5 * (sp->calculateEffectValue(0)), 0);
     }
     sp = getMutableSpellInfo(31583);
     if (sp != nullptr)
     {
-        sp->setEffectBasePoints(5 * (sp->getEffectBasePoints(0) + 1), 0);
+        sp->setEffectBasePoints(5 * (sp->calculateEffectValue(0)), 0);
     }
 
     // cebernic: not for self?
@@ -2336,7 +2168,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(66);
     if (sp != nullptr)
     {
-        sp->addAuraInterruptFlags(AURA_INTERRUPT_ON_CAST_SPELL);
         sp->setEffect(SPELL_EFFECT_NULL, 1);
         sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_SPELL, 2);
         sp->setEffect(SPELL_EFFECT_APPLY_AURA, 2);
@@ -2345,13 +2176,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectDieSides(1, 2);
         sp->setEffectTriggerSpell(32612, 2);
         sp->setEffectBasePoints(-1, 2);
-    }
-
-    //Invisibility triggered spell, should be removed on cast
-    sp = getMutableSpellInfo(32612);
-    if (sp != nullptr)
-    {
-        sp->addAuraInterruptFlags(AURA_INTERRUPT_ON_CAST_SPELL);
     }
 
     //Arcane Potency procs
@@ -2367,13 +2191,6 @@ void SpellMgr::applyHackFixes()
     {
         sp->setProcFlags(0);
         sp->setAuraInterruptFlags(0);
-    }
-
-    //Hot Streak proc
-    sp = getMutableSpellInfo(48108);
-    if (sp != nullptr)
-    {
-        sp->addAuraInterruptFlags(AURA_INTERRUPT_ON_CAST_SPELL);
     }
 
     //mage - Combustion
@@ -2403,21 +2220,21 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(11175);
     if (sp != nullptr)
     {
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 1);
+        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 1);
     }
 
     // Mage - Permafrost Rank 2
     sp = getMutableSpellInfo(12569);
     if (sp != nullptr)
     {
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 1);
+        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 1);
     }
 
     // Mage - Permafrost Rank 3
     sp = getMutableSpellInfo(12571);
     if (sp != nullptr)
     {
-        sp->setEffectMiscValue(SMT_MISC_EFFECT, 1);
+        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 1);
     }
 
     //////////////////////////////////////////
@@ -2487,14 +2304,6 @@ void SpellMgr::applyHackFixes()
 #endif
 
     ////////////////////////////////////////////////////////////
-    // Backlash
-    sp = getMutableSpellInfo(34936);
-    if (sp != nullptr)
-    {
-        sp->setAuraInterruptFlags(AURA_INTERRUPT_ON_CAST_SPELL);
-    }
-
-    ////////////////////////////////////////////////////////////
     // Demonic Knowledge
     sp = getMutableSpellInfo(35691);
     if (sp != nullptr)
@@ -2541,13 +2350,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0); //making this only for the visible effect
         sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0); //no effect here
         sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    }
-
-    //Shadow Trance should be removed on the first SB
-    sp = getMutableSpellInfo(17941);
-    if (sp != nullptr)
-    {
-        sp->setAuraInterruptFlags(AURA_INTERRUPT_ON_CAST_SPELL);
     }
 
     //warlock: Empowered Corruption

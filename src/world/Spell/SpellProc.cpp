@@ -117,7 +117,13 @@ void SpellProc::castSpell(Unit* victim, SpellInfo const* castingSpell)
         spell->pSpellId = mOrigSpell->getId();
 
     // Final script hook before casting the spell
-    sScriptMgr.callScriptedSpellProcCastSpell(this, caster, victim, spell);
+    const auto scriptResult = sScriptMgr.callScriptedSpellProcCastSpell(this, caster, victim, spell);
+    if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
+    {
+        // Script prevents this spell cast => delete spell and do nothing
+        caster->addGarbageSpell(spell);
+        return;
+    }
 
     spell->prepare(&targets);
 }
@@ -138,8 +144,6 @@ SpellProcFlags SpellProc::getProcFlags() const { return mProcFlags; }
 
 SpellExtraProcFlags SpellProc::getExtraProcFlags() const { return mExtraProcFlags; }
 
-uint32_t SpellProc::getProcCharges() const { return mProcCharges; }
-
 uint32_t SpellProc::getProcClassMask(uint8_t i) const { return mProcClassMask[i]; }
 
 void SpellProc::setProcClassMask(uint8_t i, uint32_t mask) { mProcClassMask[i] = mask; }
@@ -151,8 +155,6 @@ void SpellProc::setExtraProcFlags(SpellExtraProcFlags extraProcFlags) { mExtraPr
 void SpellProc::setProcChance(uint32_t procChance) { mProcChance = procChance; }
 
 void SpellProc::setProcsPerMinute(float_t ppm) { mProcsPerMinute = ppm; }
-
-void SpellProc::setProcCharges(uint32_t charges) { mProcCharges = charges; }
 
 uint32_t SpellProc::getProcInterval() const { return mProcInterval; }
 
@@ -186,8 +188,13 @@ void SpellProc::setOverrideEffectDamage(uint8_t effIndex, int32_t damage)
     mOverrideEffectDamage[effIndex] = damage;
 }
 
-void SpellProc::deleteProc() { mDeleted = true; }
+Aura* SpellProc::getCreatedByAura() const { return m_createdByAura; }
+void SpellProc::setCreatedByAura(Aura* aur) { m_createdByAura = aur; }
 
+void SpellProc::skipOnNextHandleProc(bool skip) { mSkipNextProcUpdate = skip; }
+bool SpellProc::isSkippingHandleProc() const { return mSkipNextProcUpdate; }
+
+void SpellProc::deleteProc() { mDeleted = true; }
 bool SpellProc::isDeleted() const { return mDeleted; }
 
 SpellProcMgr& SpellProcMgr::getInstance()
@@ -216,12 +223,12 @@ void SpellProcMgr::addByIds(uint32_t* spellIds, spell_proc_factory_function spel
     }
 }
 
-SpellProc* SpellProcMgr::newSpellProc(Unit* owner, uint32_t spellId, uint32_t origSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t procCharges, uint32_t const* spellFamilyMask, uint32_t const* procClassMask, Object* obj)
+SpellProc* SpellProcMgr::newSpellProc(Unit* owner, uint32_t spellId, uint32_t origSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask, Aura* createdByAura, Object* obj)
 {
-    return newSpellProc(owner, sSpellMgr.getSpellInfo(spellId), sSpellMgr.getSpellInfo(origSpellId), casterGuid, procChance, procFlags, exProcFlags, procCharges, spellFamilyMask, procClassMask, obj);
+    return newSpellProc(owner, sSpellMgr.getSpellInfo(spellId), sSpellMgr.getSpellInfo(origSpellId), casterGuid, procChance, procFlags, exProcFlags, spellFamilyMask, procClassMask, createdByAura, obj);
 }
 
-SpellProc* SpellProcMgr::newSpellProc(Unit* owner, SpellInfo const* spellInfo, SpellInfo const* origSpellInfo, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t procCharges, uint32_t const* spellFamilyMask, uint32_t const* procClassMask, Object* obj)
+SpellProc* SpellProcMgr::newSpellProc(Unit* owner, SpellInfo const* spellInfo, SpellInfo const* origSpellInfo, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask, Aura* createdByAura, Object* obj)
 {
     if (spellInfo == nullptr)
         return nullptr;
@@ -246,8 +253,8 @@ SpellProc* SpellProcMgr::newSpellProc(Unit* owner, SpellInfo const* spellInfo, S
     result->mProcChance = procChance;
     result->mProcFlags = procFlags;
     result->mExtraProcFlags = exProcFlags;
-    result->mProcCharges = procCharges;
     result->mLastTrigger = 0;
+    result->m_createdByAura = createdByAura;
     result->mDeleted = false;
 
     if (spellFamilyMask != nullptr)
@@ -285,5 +292,6 @@ SpellProc* SpellProcMgr::newSpellProc(Unit* owner, SpellInfo const* spellInfo, S
         sScriptMgr.callScriptedSpellProcCreate(result, obj);
     else
         result->init(obj);
+
     return result;
 }

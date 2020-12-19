@@ -87,14 +87,10 @@ void SpellMgr::startSpellMgr()
     {
         auto spellInfo = &itr.second;
 
-        // Calculate spell coefficient
-        setSpellCoefficient(spellInfo);
-
         // Custom values
         // todo: if possible, get rid of these
         setSpellEffectAmplitude(spellInfo);
         setSpellMissingCIsFlags(spellInfo);
-        setSpellOnShapeshiftChange(spellInfo);
     }
 
     // Hackfixes
@@ -111,39 +107,40 @@ void SpellMgr::loadSpellDataFromDatabase()
     loadSpellAreas();
 }
 
+void SpellMgr::calculateSpellCoefficients()
+{
+    for (auto& itr : mSpellInfoMapStore)
+    {
+        auto spellInfo = &itr.second;
+        setSpellCoefficient(spellInfo);
+    }
+}
+
 void SpellMgr::loadSpellScripts()
 {
-    // Setup scripts
+    // Setup legacy scripts
     setupSpellScripts();
 }
 
 Spell* SpellMgr::newSpell(Object* caster, SpellInfo const* info, bool triggered, Aura* aur)
 {
-    // For now we send non-const spellinfo to Spell class
-    // This will of course be changed later
-    auto spellInfo = info != nullptr ? getMutableSpellInfo(info->getId()) : nullptr;
-
-    if (spellInfo == nullptr)
+    if (info == nullptr)
     {
         LogError("You tried to create a Spell without SpellInfo. This is not possible!");
         return nullptr;
     }
 
-    // Spells with a script
+    // Spells with legacy script
     if (info->spellScriptLink != nullptr)
-        return (*SpellScriptLinker(info->spellScriptLink))(caster, spellInfo, triggered, aur);
+        return (*SpellScriptLinker(info->spellScriptLink))(caster, getMutableSpellInfo(info->getId()), triggered, aur);
 
     // Standard spells without a script
-    return new Spell(caster, spellInfo, triggered, aur);
+    return new Spell(caster, info, triggered, aur);
 }
 
-Aura* SpellMgr::newAura(SpellInfo const* proto, int32_t duration, Object* caster, Unit* target, bool temporary /*= false*/, Item* i_caster /*= nullptr*/)
+Aura* SpellMgr::newAura(SpellInfo const* spellInfo, int32_t duration, Object* caster, Unit* target, bool temporary /*= false*/, Item* i_caster /*= nullptr*/)
 {
     //\brief... nullptr when downgrading ae from wotlk to tbc (active auras from newer client versions should be removed before entering tbc)
-
-    // For now we send non-const spellinfo to Aura class
-    // This will of course be changed later
-    auto spellInfo = proto != nullptr ? getMutableSpellInfo(proto->getId()) : nullptr;
 
     if (spellInfo == nullptr)
     {
@@ -152,11 +149,11 @@ Aura* SpellMgr::newAura(SpellInfo const* proto, int32_t duration, Object* caster
     }
 
     // Auras with a script
-    if (proto->auraScriptLink != nullptr)
-        return (*AuraScriptLinker(proto->auraScriptLink))(spellInfo, duration, caster, target, temporary, i_caster);
+    if (spellInfo->auraScriptLink != nullptr)
+        return (*AuraScriptLinker(spellInfo->auraScriptLink))(getMutableSpellInfo(spellInfo->getId()), duration, caster, target, temporary, i_caster);
     // Auras with absorb effect
-    else if (proto->hasEffectApplyAuraName(SPELL_AURA_SCHOOL_ABSORB))
-        return (*AuraScriptLinker(&AbsorbAura::Create))(spellInfo, duration, caster, target, temporary, i_caster);
+    else if (spellInfo->hasEffectApplyAuraName(SPELL_AURA_SCHOOL_ABSORB))
+        return (*AuraScriptLinker(&AbsorbAura::Create))(getMutableSpellInfo(spellInfo->getId()), duration, caster, target, temporary, i_caster);
     
     // Standard auras without a script
     return new Aura(spellInfo, duration, caster, target, temporary, i_caster);

@@ -396,6 +396,35 @@ namespace Util
         return dist(mt);
     }
 
+    bool checkChance(uint32_t val)
+    {
+        if (val >= 100)
+            return true;
+        if (val == 0)
+            return false;
+
+        return val >= getRandomUInt(100);
+    }
+
+    bool checkChance(int32_t val)
+    {
+        if (val >= 100)
+            return true;
+        if (val <= 0)
+            return false;
+
+        return val >= getRandomInt(100);
+    }
+
+    bool checkChance(float_t val)
+    {
+        if (val >= 100.0f)
+            return true;
+        if (val <= 0.0f)
+            return false;
+
+        return static_cast<uint32_t>(val * 100) >= getRandomUInt(100 * 100);
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // C++17 filesystem dependent functions

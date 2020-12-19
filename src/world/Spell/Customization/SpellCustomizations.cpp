@@ -13,46 +13,6 @@ This file is released under the MIT license. See README-MIT for more information
 //\brief: This file includes all old setted custom values or spell.dbc overwrite values
 // If possible, these should be get rid of or moved under appropriate class (like that diminishing group)
 
-bool SpellMgr::isAlwaysApply(SpellInfo const* spellInfo) const
-{
-    switch (spellInfo->getId())
-    {
-        // SPELL_HASH_BLOOD_FURY
-        case 20572:
-        case 23230:
-        case 24571:
-        case 33697:
-        case 33702:
-        // SPELL_HASH_SHADOWSTEP
-        case 36554:
-        case 36563:
-        case 41176:
-        case 44373:
-        case 45273:
-        case 46463:
-        case 55965:
-        case 55966:
-        case 63790:
-        case 63793:
-        case 66178:
-        case 68759:
-        case 68760:
-        case 68761:
-        case 69087:
-        case 70431:
-        case 72326:
-        case 72327:
-        // SPELL_HASH_PSYCHIC_HORROR
-        case 34984:
-        case 65545:
-        {
-            return true;
-        }
-        default:
-            return false;
-    }
-}
-
 // Calculate the Diminishing Group. This is based on id.
 // this off course is very hacky, but as its made done in a proper way
 // I leave it here.
@@ -862,11 +822,4 @@ void SpellMgr::setSpellMissingCIsFlags(SpellInfo* sp)
         sp->custom_c_is_flags |= SPELL_FLAG_IS_TARGETINGSTEALTHED;
     if (sp->isRequireCooldownSpell())
         sp->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
-}
-
-void SpellMgr::setSpellOnShapeshiftChange(SpellInfo* sp)
-{
-    // Currently only for spell Track Humanoids
-    if (sp->getId() == 5225 || sp->getId() == 19883)
-        sp->custom_apply_on_shapeshift_change = true;
 }

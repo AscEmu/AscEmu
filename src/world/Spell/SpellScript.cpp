@@ -97,4 +97,7 @@ bool SpellScript::canProcOnTriggered(SpellProc* spellProc, Unit* /*victim*/, Spe
     return false;
 }
 
-void SpellScript::onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* /*spellToProc*/) {}
+SpellScriptExecuteState SpellScript::onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* /*spellToProc*/)
+{
+    return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
+}

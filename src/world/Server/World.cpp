@@ -760,6 +760,7 @@ bool World::setInitialWorldSettings()
     logEntitySize();
 
     sSpellMgr.loadSpellDataFromDatabase();
+    sSpellMgr.calculateSpellCoefficients();
 
 #if VERSION_STRING > TBC
     LogDetail("World : Starting Achievement System...");

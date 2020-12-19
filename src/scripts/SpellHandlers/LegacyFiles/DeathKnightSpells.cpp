@@ -100,7 +100,7 @@ bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
 
         Aura* aur = pSpell->getPlayerCaster()->getAuraWithId(improvedDeathStrike);
         if (aur != nullptr)
-            val += val * (aur->getSpellInfo()->getEffectBasePoints(2) + 1) / 100;
+            val += val * (aur->getSpellInfo()->calculateEffectValue(2)) / 100;
 
         if (val > 0)
             pSpell->getPlayerCaster()->addSimpleHealingBatchEvent(val, pSpell->getPlayerCaster(), pSpell->getSpellInfo());

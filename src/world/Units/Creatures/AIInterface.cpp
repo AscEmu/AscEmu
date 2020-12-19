@@ -37,7 +37,6 @@
 #include "Spell/Definitions/LockTypes.h"
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Spell/Definitions/PowerType.h"
-#include "Spell/SpellHelpers.h"
 #include "Pet.h"
 #include "Spell/Definitions/SpellEffects.h"
 #include "Objects/ObjectMgr.h"
@@ -1799,7 +1798,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                             if (getNextTarget() && m_Unit->m_factionEntry &&
                                 !(m_Unit->m_factionEntry->RepListId == -1 && m_Unit->m_factionTemplate->FriendlyMask == 0 && m_Unit->m_factionTemplate->HostileMask == 0) /* neutral creature */
                                 && getNextTarget()->isPlayer() && !m_Unit->isPet() && health_before_strike > getNextTarget()->getHealth()
-                                && Rand(m_Unit->get_chance_to_daze(getNextTarget())))
+                                && Util::checkChance(m_Unit->get_chance_to_daze(getNextTarget())))
                             {
                                 float our_facing = m_Unit->calcRadAngle(m_Unit->GetPositionX(), m_Unit->GetPositionY(), getNextTarget()->GetPositionX(), getNextTarget()->GetPositionY());
                                 float his_facing = getNextTarget()->GetOrientation();
@@ -3191,7 +3190,7 @@ AI_Spell* AIInterface::getSpell()
                 if (sp->spellType == STYPE_BUFF)
                 {
                     // cast the buff at requested percent only if we don't have it already
-                    if (sp->procChance >= 100 || Rand(sp->procChance))
+                    if (Util::checkChance(sp->procChance))
                     {
                         if (!m_Unit->HasBuff(sp->spell->getId()))
                         {
@@ -3202,7 +3201,7 @@ AI_Spell* AIInterface::getSpell()
                 else
                 {
                     // cast the spell at requested percent.
-                    if (sp->procChance >= 100 || Rand(sp->procChance))
+                    if (Util::checkChance(sp->procChance))
                     {
                         //focus/mana requirement
                         switch (sp->spell->getPowerType())
@@ -3736,8 +3735,8 @@ uint32 AIInterface::_CalcThreat(uint32 damage, SpellInfo const* sp, Unit* Attack
 
     if (sp != nullptr)
     {
-        AscEmu::World::Spell::Helpers::spellModFlatIntValue(Attacker->SM_FThreat, &mod, sp->getSpellFamilyFlags());
-        AscEmu::World::Spell::Helpers::spellModPercentageIntValue(Attacker->SM_PThreat, &mod, sp->getSpellFamilyFlags());
+        // todo: this will not use spell charges
+        Attacker->applySpellModifiers(SPELLMOD_THREAT_REDUCED, &mod, sp);
     }
 
     if (Attacker->getClass() == ROGUE)
@@ -4851,9 +4850,9 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 /*misc1*/)
                     {
                         pInstance->m_persistent = true;
                         sInstanceMgr.SaveInstanceToDB(pInstance);
-                        for (PlayerStorageMap::iterator itr = m_Unit->GetMapMgr()->m_PlayerStorage.begin(); itr != m_Unit->GetMapMgr()->m_PlayerStorage.end(); ++itr)
+                        for (PlayerStorageMap::iterator pItr = m_Unit->GetMapMgr()->m_PlayerStorage.begin(); pItr != m_Unit->GetMapMgr()->m_PlayerStorage.end(); ++pItr)
                         {
-                            (*itr).second->SetPersistentInstanceId(pInstance);
+                            (*pItr).second->SetPersistentInstanceId(pInstance);
                         }
                     }
                 }

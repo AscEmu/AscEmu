@@ -11,15 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellIsFlags.h"
 #include "Definitions/SpellMechanics.h"
 #include "Definitions/SpellTypes.h"
-#include "SpellHelpers.h"
 #include "SpellMgr.h"
 
 #include "Server/Script/ScriptMgr.h"
-
-using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
-using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
 
 extern pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS];
 extern const char* SpellAuraNames[TOTAL_SPELL_AURAS];
@@ -64,6 +58,9 @@ bool AuraEffectModifier::isEffectDamageStatic() const { return mEffectDamageStat
 void AuraEffectModifier::setEffectIndex(uint8_t _effIndex) { effIndex = _effIndex; }
 uint8_t AuraEffectModifier::getEffectIndex() const { return effIndex; }
 
+void AuraEffectModifier::setAura(Aura* aur) { mAura = aur; }
+Aura* AuraEffectModifier::getAura() const { return mAura; }
+
 AuraEffectModifier Aura::getAuraEffect(uint8_t effIndex) const
 {
     return m_auraEffects[effIndex];
@@ -98,6 +95,7 @@ void Aura::addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValu
     m_auraEffects[effIndex].setEffectPercentModifier(effectPctModifier);
     m_auraEffects[effIndex].setEffectDamageStatic(isStaticDamage);
     m_auraEffects[effIndex].setEffectIndex(effIndex);
+    m_auraEffects[effIndex].setAura(this);
     ++m_auraEffectCount;
 
     // Calculate effect amplitude
@@ -124,6 +122,7 @@ void Aura::removeAuraEffect(uint8_t effIndex)
     m_auraEffects[effIndex].setEffectPercentModifier(1.0f);
     m_auraEffects[effIndex].setEffectDamageStatic(false);
     m_auraEffects[effIndex].setEffectIndex(0);
+    m_auraEffects[effIndex].setAura(nullptr);
     --m_auraEffectCount;
 
     // Check aura effects on next update
@@ -182,25 +181,6 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
             {
                 if (triggerSpell->getDurationIndex() < getSpellInfo()->getDurationIndex())
                     getOwner()->RemoveAura(getSpellInfo()->getEffectTriggerSpell(i));
-            }
-        }
-    }
-
-    if (getSpellInfo()->getProcCharges() > 0)
-    {
-        if (getOwner()->m_chargeSpellsInUse)
-        {
-            getOwner()->m_chargeSpellRemoveQueue.push_back(getSpellId());
-        }
-        else
-        {
-            auto iter = getOwner()->m_chargeSpells.find(getSpellId());
-            if (iter != getOwner()->m_chargeSpells.end())
-            {
-                if (iter->second.count > 1)
-                    --iter->second.count;
-                else
-                    getOwner()->m_chargeSpells.erase(iter);
             }
         }
     }
@@ -290,10 +270,10 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
     if (m_visualSlot < MAX_NEGATIVE_VISUAL_AURAS_END)
     {
 #if VERSION_STRING < WotLK
-        getOwner()->setAura(m_visualSlot, 0);
-        getOwner()->setAuraFlags(m_visualSlot, 0);
-        getOwner()->setAuraLevel(m_visualSlot, GetUnitCaster() != nullptr ? GetUnitCaster()->getLevel() : worldConfig.player.playerLevelCap);
-        getOwner()->setAuraApplication(m_visualSlot, 1);
+        getOwner()->setAura(this, false);
+        getOwner()->setAuraFlags(this, false);
+        getOwner()->setAuraLevel(this);
+        getOwner()->setAuraApplication(this);
 #endif
 
         getOwner()->m_auravisuals[m_visualSlot] = 0;
@@ -449,22 +429,6 @@ void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStac
 {
     int32_t maxStacks = getSpellInfo()->getMaxstack() == 0 ? 1 : getSpellInfo()->getMaxstack();
 
-    // If aura uses charges, use charges instead
-    if (getSpellInfo()->getProcCharges() > 0)
-    {
-        auto spellCharges = static_cast<int32_t>(getSpellInfo()->getProcCharges());
-
-        // Apply modifiers to charge count
-        const auto caster = GetUnitCaster();
-        if (caster != nullptr)
-        {
-            spellModFlatIntValue(caster->SM_FCharges, &spellCharges, getSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageIntValue(caster->SM_PCharges, &spellCharges, getSpellInfo()->getSpellFamilyFlags());
-        }
-
-        maxStacks = spellCharges;
-    }
-
     // Check for aura stack cheat
     const auto plrHolder = getPlayerOwner();
     if (plrHolder != nullptr && plrHolder->m_cheats.hasAuraStackCheat)
@@ -512,6 +476,10 @@ void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStac
             _calculateEffectAmplitude(i);
         }
 
+        // Reset charges to max count
+        if (m_originalCharges > 0)
+            setCharges(m_originalCharges, false);
+
         // Reset duration to max
         setTimeLeft(getMaxDuration());
     }
@@ -531,13 +499,13 @@ void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStac
     }
 
     m_updatingModifiers = false;
+    takeUsedSpellModifiers();
 
     // Call script hook
     sScriptMgr.callScriptedAuraOnRefreshOrGainNewStack(this, newStackCount, curStackCount);
 
 #if VERSION_STRING < WotLK
-    if (curStackCount != newStackCount)
-        getOwner()->setAuraApplication(m_visualSlot, getStackCount());
+    getOwner()->setAuraApplication(this);
 #endif
 
     // Send aura update
@@ -548,6 +516,43 @@ void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStac
 uint8_t Aura::getStackCount() const
 {
     return m_stackCount;
+}
+
+uint16_t Aura::getCharges() const
+{
+    return m_charges;
+}
+
+void Aura::setCharges(uint16_t count, bool sendUpdatePacket/* = true*/)
+{
+    if (m_charges == count)
+        return;
+
+    m_charges = count;
+    if (sendUpdatePacket)
+    {
+#if VERSION_STRING < WotLK
+        getOwner()->setAuraApplication(this);
+#else
+        getOwner()->sendAuraUpdate(this, false);
+#endif
+    }
+}
+
+void Aura::removeCharge()
+{
+    auto charges = getCharges();
+    if (charges == 0)
+        return;
+
+    --charges;
+    if (charges == 0)
+    {
+        removeAura();
+        return;
+    }
+
+    setCharges(charges);
 }
 
 uint8_t Aura::getAuraFlags() const
@@ -604,6 +609,48 @@ int32_t Aura::getHealPowerBonus() const
 uint32_t Aura::getAttackPowerBonus() const
 {
     return m_attackPowerBonus;
+}
+
+void Aura::addUsedSpellModifier(AuraEffectModifier const* aurEff)
+{
+    m_usedModifiers.insert(std::make_pair(aurEff, false));
+}
+
+void Aura::removeUsedSpellModifier(AuraEffectModifier const* aurEff)
+{
+    if (m_usedModifiers.empty())
+        return;
+
+    // Mark the spell modifier as removed to prevent memory corruption
+    for (auto& usedMod : m_usedModifiers)
+    {
+        if (usedMod.first == aurEff)
+        {
+            usedMod.second = true;
+            break;
+        }
+    }
+}
+
+void Aura::takeUsedSpellModifiers()
+{
+    if (m_usedModifiers.empty())
+        return;
+
+    for (auto itr = m_usedModifiers.begin(); itr != m_usedModifiers.end();)
+    {
+        auto aurEff = (*itr).first;
+        // Check for faulty entry
+        /*if (aurEff->getAura() == nullptr || (*itr).second)
+        {
+            itr = m_usedModifiers.erase(itr);
+            continue;
+        }*/
+
+        aurEff->getAura()->removeCharge();
+        //itr = m_usedModifiers.erase(itr);
+        ++itr;
+    }
 }
 
 Unit* Aura::getOwner() const
@@ -692,7 +739,7 @@ bool Aura::isAbsorbAura() const
     return false;
 }
 
-SpellInfo* Aura::getSpellInfo() const
+SpellInfo const* Aura::getSpellInfo() const
 {
     return m_spellInfo;
 }
@@ -740,9 +787,9 @@ void Aura::_calculateCritChance()
 
     // Get snapshot of caster's current crit chance
     if (usesHealing)
-        m_critChance = casterUnit->getCriticalChanceForHealSpell(getSpellInfo());
+        m_critChance = casterUnit->getCriticalChanceForHealSpell(nullptr, this, getOwner());
     else
-        m_critChance = casterUnit->getCriticalChanceForDamageSpell(getSpellInfo(), getOwner());
+        m_critChance = casterUnit->getCriticalChanceForDamageSpell(nullptr, this, getOwner());
 }
 
 void Aura::_calculateSpellPowerBonus()
@@ -792,8 +839,7 @@ void Aura::_calculateEffectAmplitude(uint8_t effIndex)
     if (caster != nullptr)
     {
         // Apply modifiers
-        spellModFlatIntValue(caster->SM_FAmptitude, &amplitude, getSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageIntValue(caster->SM_PAmptitude, &amplitude, getSpellInfo()->getSpellFamilyFlags());
+        caster->applySpellModifiers(SPELLMOD_AMPTITUDE, &amplitude, getSpellInfo(), nullptr, this);
     }
 
     m_auraEffects[effIndex].setEffectAmplitude(static_cast<int32_t>(amplitude * m_spellHaste));
@@ -840,18 +886,18 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             const auto casterUnit = GetUnitCaster();
 
             if (casterUnit != nullptr)
-                casterUnit->doSpellDamage(getOwner(), getSpellId(), effectFloatValue, aurEff->getEffectIndex(), pSpellId != 0, true, false, false, this, aurEff);
+                casterUnit->doSpellDamage(getOwner(), getSpellId(), effectFloatValue, aurEff->getEffectIndex(), pSpellId != 0, true, false, false, nullptr, this, aurEff);
             else
-                getOwner()->doSpellDamage(getOwner(), getSpellId(), effectFloatValue, aurEff->getEffectIndex(), pSpellId != 0, true, false, false, this, aurEff);
+                getOwner()->doSpellDamage(getOwner(), getSpellId(), effectFloatValue, aurEff->getEffectIndex(), pSpellId != 0, true, false, false, nullptr, this, aurEff);
         } break;
         case SPELL_AURA_PERIODIC_HEAL:
         {
             const auto casterUnit = GetUnitCaster();
 
             if (casterUnit != nullptr)
-                casterUnit->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, this, aurEff);
+                casterUnit->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, nullptr, this, aurEff);
             else
-                getOwner()->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, this, aurEff);
+                getOwner()->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, nullptr, this, aurEff);
 
             if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
                 getOwner()->emote(EMOTE_ONESHOT_EAT);
@@ -897,9 +943,9 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             const auto casterUnit = GetUnitCaster();
 
             if (casterUnit != nullptr)
-                casterUnit->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, this, aurEff);
+                casterUnit->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, nullptr, this, aurEff);
             else
-                getOwner()->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, this, aurEff);
+                getOwner()->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, nullptr, this, aurEff);
 
             if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
                 getOwner()->emote(EMOTE_ONESHOT_EAT);
@@ -992,9 +1038,9 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
 
             // Deal damage (heal part is called in doSpellDamage)
             if (casterUnit != nullptr)
-                casterUnit->doSpellDamage(getOwner(), getSpellId(), effectFloatValue, aurEff->getEffectIndex(), pSpellId != 0, true, true, false, this, aurEff);
+                casterUnit->doSpellDamage(getOwner(), getSpellId(), effectFloatValue, aurEff->getEffectIndex(), pSpellId != 0, true, true, false, nullptr, this, aurEff);
             else
-                getOwner()->doSpellDamage(getOwner(), getSpellId(), effectFloatValue, aurEff->getEffectIndex(), pSpellId != 0, true, true, false, this, aurEff);
+                getOwner()->doSpellDamage(getOwner(), getSpellId(), effectFloatValue, aurEff->getEffectIndex(), pSpellId != 0, true, true, false, nullptr, this, aurEff);
         } break;
         case SPELL_AURA_PERIODIC_MANA_LEECH:
         {
@@ -1038,9 +1084,9 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             const auto casterUnit = GetUnitCaster();
 
             if (casterUnit != nullptr)
-                casterUnit->doSpellDamage(getOwner(), getSpellId(), effectFloatValue, aurEff->getEffectIndex(), pSpellId != 0, true, false, false, this, aurEff);
+                casterUnit->doSpellDamage(getOwner(), getSpellId(), effectFloatValue, aurEff->getEffectIndex(), pSpellId != 0, true, false, false, nullptr, this, aurEff);
             else
-                getOwner()->doSpellDamage(getOwner(), getSpellId(), effectFloatValue, aurEff->getEffectIndex(), pSpellId != 0, true, false, false, this, aurEff);
+                getOwner()->doSpellDamage(getOwner(), getSpellId(), effectFloatValue, aurEff->getEffectIndex(), pSpellId != 0, true, false, false, nullptr, this, aurEff);
         } break;
         case SPELL_AURA_PERIODIC_POWER_BURN:
         {
@@ -1069,9 +1115,9 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             damage = std::max(1.0f, damage);
 
             if (casterUnit != nullptr)
-                casterUnit->doSpellDamage(getOwner(), getSpellId(), damage, aurEff->getEffectIndex(), pSpellId != 0, true, false, false, this, aurEff);
+                casterUnit->doSpellDamage(getOwner(), getSpellId(), damage, aurEff->getEffectIndex(), pSpellId != 0, true, false, false, nullptr, this, aurEff);
             else
-                getOwner()->doSpellDamage(getOwner(), getSpellId(), damage, aurEff->getEffectIndex(), pSpellId != 0, true, false, false, this, aurEff);
+                getOwner()->doSpellDamage(getOwner(), getSpellId(), damage, aurEff->getEffectIndex(), pSpellId != 0, true, false, false, nullptr, this, aurEff);
         } break;
         case SPELL_AURA_PERIODIC_TRIGGER_DUMMY:
         {
@@ -1207,7 +1253,7 @@ int32_t AbsorbAura::calcAbsorbAmount(AuraEffectModifier* aurEff)
     if (unitCaster != nullptr && !aurEff->isEffectDamageStatic())
     {
         // Apply spell power coefficient
-        val = static_cast<int32_t>(std::ceil(unitCaster->applySpellDamageBonus(getSpellInfo(), val, false)));
+        val = static_cast<int32_t>(std::ceil(unitCaster->applySpellDamageBonus(getSpellInfo(), val, aurEff->getEffectPercentModifier(), false, nullptr, aurEff->getAura())));
     }
 
     return val;

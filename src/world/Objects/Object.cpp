@@ -372,6 +372,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
         case TYPEID_PLAYER:
         case TYPEID_DYNAMICOBJECT:
         case TYPEID_CORPSE:
+        case TYPEID_AREATRIGGER:
         {
             updateType = UPDATETYPE_CREATE_OBJECT2;
         } break;
@@ -410,7 +411,8 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
     {
         if (isGameObject())
         {
-            switch (static_cast<GameObject*>(this)->getGoType())
+            const auto gameObj = static_cast<GameObject*>(this);
+            switch (gameObj->getGoType())
             {
                 case GAMEOBJECT_TYPE_TRAP:
                 case GAMEOBJECT_TYPE_DUEL_ARBITER:
@@ -424,7 +426,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
                     break;
                 default:
                     // Set update type for other gameobjects only if it's created by a player
-                    if (static_cast<GameObject*>(this)->getPlayerOwner() != nullptr)
+                    if (gameObj->getPlayerOwner() != nullptr)
                         updateType = UPDATETYPE_CREATE_OBJECT2;
                     break;
             }
@@ -565,8 +567,7 @@ void Object::setCurrentSpell(Spell* curSpell)
                 if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL]->getSpellInfo()->getId() != 75)
                     interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
             }
-            break;
-        }
+        } break;
         case CURRENT_CHANNELED_SPELL:
         {
             // Channeled spells break generic spells
@@ -576,11 +577,8 @@ void Object::setCurrentSpell(Spell* curSpell)
 
             // Also break autorepeat spells, unless it's Auto Shot
             if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr && m_currentSpell[CURRENT_AUTOREPEAT_SPELL]->getSpellInfo()->getId() != 75)
-            {
                 interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
-            }
-            break;
-        }
+        } break;
         case CURRENT_AUTOREPEAT_SPELL:
         {
             // Other autorepeats than Auto Shot break non-delayed generic and channeled spells
@@ -591,20 +589,15 @@ void Object::setCurrentSpell(Spell* curSpell)
             }
 
             if (isPlayer())
-            {
                 static_cast<Player*>(this)->m_FirstCastAutoRepeat = true;
-            }
-            break;
-        }
+        } break;
         default:
             break;
     }
 
     // If spell is not yet cancelled, force it
     if (m_currentSpell[spellType] != nullptr)
-    {
         m_currentSpell[spellType]->finish(false);
-    }
 
     // Set new current spell
     m_currentSpell[spellType] = curSpell;
@@ -617,11 +610,8 @@ void Object::interruptSpell(uint32_t spellId, bool checkMeleeSpell)
         if (!checkMeleeSpell && i == CURRENT_MELEE_SPELL)
             continue;
 
-        if (m_currentSpell[i] != nullptr &&
-            (spellId == 0 || m_currentSpell[i]->getSpellInfo()->getId() == spellId))
-        {
+        if (m_currentSpell[i] != nullptr && (spellId == 0 || m_currentSpell[i]->getSpellInfo()->getId() == spellId))
             interruptSpellWithSpellType(CurrentSpellType(i));
-        }
     }
 }
 
@@ -683,7 +673,7 @@ Spell* Object::findCurrentCastedSpellBySpellId(uint32_t spellId)
     return nullptr;
 }
 
-DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, uint8_t effIndex, bool isTriggered/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
+DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, uint8_t effIndex, bool isTriggered/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Spell* spell/* = nullptr*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
 {
     if (victim == nullptr || !victim->isAlive())
         return DamageInfo();
@@ -771,7 +761,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     }
 
     // Check if spell can crit
-    if (damage > 0.0f)
+    if (damage > 0.0f && isCreatureOrPlayer())
     {
         // If the damage is forced to be crit, do not alter it
         if (!dmgInfo.isCritical && !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
@@ -779,18 +769,18 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
             if (isPeriodic)
             {
                 // For periodic effects use aura's own crit chance
-                if (aur != nullptr && aur->getCritChance() > 0.0f)
-                    dmgInfo.isCritical = Rand(aur->getCritChance());
+                if (aur != nullptr)
+                    dmgInfo.isCritical = Util::checkChance(aur->getCritChance());
             }
-            else
+            else if (spell != nullptr)
             {
-                dmgInfo.isCritical = IsCriticalDamageForSpell(victim, spellInfo);
+                dmgInfo.isCritical = static_cast<Unit*>(this)->isCriticalDamageForSpell(victim, spell);
             }
         }
 
         // Get critical spell damage bonus
         if (dmgInfo.isCritical)
-            damage = GetCriticalDamageBonusForSpell(victim, spellInfo, damage);
+            damage = static_cast<Unit*>(this)->getCriticalDamageBonusForSpell(damage, victim, spell, aur);
     }
 
     // Calculate damage reduction
@@ -947,9 +937,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     {
         const auto casterUnit = static_cast<Unit*>(this);
         victim->HandleProc(victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
-        victim->m_procCounter = 0;
         casterUnit->HandleProc(casterProcFlags, victim, spellInfo, dmgInfo, isTriggered);
-        casterUnit->m_procCounter = 0;
     }
 
     if (isPlayer())
@@ -962,6 +950,14 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
             victim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->AddTime(school);
         else if (victim->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr && victim->getCurrentSpell(CURRENT_GENERIC_SPELL)->getCastTimeLeft() > 0)
             victim->getCurrentSpell(CURRENT_GENERIC_SPELL)->AddTime(school);
+    }
+
+    // Creature emote on critical spell damage
+    if (victim->isCreature() && !isPeriodic && dmgInfo.isCritical && dmgInfo.realDamage > 0)
+    {
+        const auto creatureTarget = static_cast<Creature*>(victim);
+        if (creatureTarget->GetCreatureProperties()->Rank != ELITE_WORLDBOSS)
+            creatureTarget->emote(EMOTE_ONESHOT_WOUNDCRITICAL);
     }
 
     if (dmgInfo.resistedDamage == dmgInfo.realDamage && dmgInfo.absorbedDamage == 0)
@@ -1002,7 +998,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     return dmgInfo;
 }
 
-DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, bool isTriggered/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
+DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, bool isTriggered/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Spell* spell/* = nullptr*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
 {
     if (victim == nullptr || !victim->isAlive())
         return DamageInfo();
@@ -1156,7 +1152,7 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
     }
 
     // Check if heal can crit
-    if (heal > 0.0f)
+    if (heal > 0.0f && isCreatureOrPlayer())
     {
         // If the heal is forced to be crit, do not alter it
         if (!dmgInfo.isCritical && !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
@@ -1164,18 +1160,18 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
             if (isPeriodic)
             {
                 // For periodic effects use aura's own crit chance
-                if (aur != nullptr && aur->getCritChance() > 0.0f)
-                    dmgInfo.isCritical = Rand(aur->getCritChance());
+                if (aur != nullptr)
+                    dmgInfo.isCritical = Util::checkChance(aur->getCritChance());
             }
-            else
+            else if (spell != nullptr)
             {
-                dmgInfo.isCritical = IsCriticalHealForSpell(victim, spellInfo);
+                dmgInfo.isCritical = static_cast<Unit*>(this)->isCriticalHealForSpell(victim, spell);
             }
         }
 
         // Get critical spell heal bonus
         if (dmgInfo.isCritical)
-            heal = GetCriticalHealBonusForSpell(victim, spellInfo, heal);
+            heal = static_cast<Unit*>(this)->getCriticalHealBonusForSpell(heal, spell, aur);
     }
 
     // Get target's heal taken mod
@@ -1253,9 +1249,7 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
     {
         const auto casterUnit = static_cast<Unit*>(this);
         victim->HandleProc(victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
-        victim->m_procCounter = 0;
         casterUnit->HandleProc(casterProcFlags, victim, spellInfo, dmgInfo, isTriggered);
-        casterUnit->m_procCounter = 0;
     }
 
     if (isPlayer())
@@ -1272,26 +1266,98 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
 
 void Object::_UpdateSpells(uint32_t time)
 {
+    // Remove garbage
+    removeGarbageSpells();
+
+    // Update autorepeat spells
     if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr && isPlayer())
-    {
         static_cast<Player*>(this)->updateAutoRepeatSpell();
+
+    // Update traveling spells
+    for (auto travelingSpellItr = m_travelingSpells.begin(); travelingSpellItr != m_travelingSpells.end();)
+    {
+        auto spellItr = *travelingSpellItr;
+
+        // Remove finished spells from list
+        // They will be deleted on next update tick
+        if (spellItr.first == nullptr || spellItr.second)
+        {
+            addGarbageSpell(spellItr.first);
+            travelingSpellItr = m_travelingSpells.erase(travelingSpellItr);
+            continue;
+        }
+
+        spellItr.first->update(time);
+        ++travelingSpellItr;
     }
 
+    // Update current spells
     for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
     {
         if (m_currentSpell[i] != nullptr)
         {
             // Remove finished spells from object's current spell array
+            // If the spell is in finished state, it's already in garbage collector
             if (m_currentSpell[i]->getState() == SPELL_STATE_FINISHED)
             {
+                m_currentSpell[i] = nullptr;
+            }
+            // Move traveling spells out from current spells
+            else if (m_currentSpell[i]->getState() == SPELL_STATE_TRAVELING)
+            {
+                addTravelingSpell(m_currentSpell[i]);
                 m_currentSpell[i] = nullptr;
             }
             // Update spells with other state
             else
             {
-                m_currentSpell[i]->Update(time);
+                m_currentSpell[i]->update(time);
             }
         }
+    }
+}
+
+void Object::addTravelingSpell(Spell* spell)
+{
+    m_travelingSpells.insert(std::make_pair(spell, false));
+}
+
+void Object::removeTravelingSpell(Spell* spell)
+{
+    auto itr = m_travelingSpells.find(spell);
+    if (itr != m_travelingSpells.end())
+        (*itr).second = true;
+    else
+        addGarbageSpell(spell);
+}
+
+void Object::addGarbageSpell(Spell* spell)
+{
+    m_garbageSpells.push_back(spell);
+}
+
+void Object::removeGarbageSpells()
+{
+    for (auto itr = m_garbageSpells.begin(); itr != m_garbageSpells.end();)
+    {
+        delete *itr;
+        itr = m_garbageSpells.erase(itr);
+    }
+}
+
+void Object::removeSpellModifierFromCurrentSpells(AuraEffectModifier const* aura)
+{
+    for (auto& curSpell : m_currentSpell)
+    {
+        if (curSpell == nullptr)
+            continue;
+
+        curSpell->removeUsedSpellModifier(aura);
+    }
+
+    for (auto& travelSpell : m_travelingSpells)
+    {
+        travelSpell.first->removeUsedSpellModifier(aura);
     }
 }
 
@@ -1544,6 +1610,20 @@ Object::~Object()
         {
             interruptSpellWithSpellType(CurrentSpellType(i));
         }
+    }
+
+    for (auto travelingSpellItr = m_travelingSpells.begin(); travelingSpellItr != m_travelingSpells.end();)
+    {
+        delete (*travelingSpellItr).first;
+        travelingSpellItr = m_travelingSpells.erase(travelingSpellItr);
+    }
+
+    removeGarbageSpells();
+
+    for (auto pendingSpellItr = m_pendingSpells.begin(); pendingSpellItr != m_pendingSpells.end();)
+    {
+        delete (*pendingSpellItr);
+        pendingSpellItr = m_pendingSpells.erase(pendingSpellItr);
     }
 
     //avoid leaving traces in eventmanager. Have to work on the speed. Not all objects ever had events so list iteration can be skipped
@@ -2834,27 +2914,6 @@ void Object::RemoveFromWorld(bool free_guid)
 
     OnRemoveFromWorld();
 
-    std::set<Spell*>::iterator itr, itr2;
-    Spell* sp;
-    for (itr = m_pendingSpells.begin(); itr != m_pendingSpells.end();)
-    {
-        itr2 = itr++;
-        sp = *itr2;
-        //if the spell being deleted is the same being casted, Spell::cancel will take care of deleting the spell
-        //if it's not the same removing us from world. Otherwise finish() will delete the spell once all SpellEffects are handled.
-        bool foundSpell = false;
-        for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
-        {
-            if (sp == m_currentSpell[i])
-            {
-                interruptSpellWithSpellType(CurrentSpellType(i));
-                foundSpell = true;
-                break;
-            }
-        }
-        if (!foundSpell)
-            delete sp;
-    }
     //shouldnt need to clear, spell destructor will erase
     //m_pendingSpells.clear();
 

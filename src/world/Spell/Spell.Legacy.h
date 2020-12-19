@@ -49,9 +49,12 @@ typedef void(Spell::*pSpellTarget)(uint32 i, uint32 j);
 // MIT Starts
 typedef std::pair<uint64_t, DamageInfo> SpellUniqueTarget;
 
-class SERVER_DECL Spell : public EventableObject
+class SERVER_DECL Spell
 {
     public:
+        Spell(Object* caster, SpellInfo const* spellInfo, bool triggered, Aura* aur);
+        ~Spell();
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // Main control flow
 
@@ -59,27 +62,34 @@ class SERVER_DECL Spell : public EventableObject
         SpellCastResult prepare(SpellCastTargets* targets);
         // Casts the spell
         void castMe(const bool doReCheck);
-        void handleEffectTarget(const uint64_t targetGuid, uint8_t effIndex);
+        void handleHittedTarget(const uint64_t targetGuid, uint8_t effIndex);
+        void handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int32_t effDamage, bool reCheckTarget = false);
         // Handles missed targets and effects
         void handleMissedTarget(SpellTargetMod const missedTarget);
         void handleMissedEffect(const uint64_t targetGuid);
+        // Finishes the casted spell
+        void finish(bool successful = true);
 
         // Update spell state based on time difference
-        void Update(unsigned long timePassed);
+        void update(unsigned long timePassed);
+
+        void cancel();
+
+        int32_t calculateEffect(uint8_t effIndex);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Spell cast checks
 
         // Second check in ::cast() should not be as strict as initial check
         virtual SpellCastResult canCast(const bool secondCheck, uint32_t* parameter1, uint32_t* parameter2);
-        SpellCastResult checkPower() const;
+        SpellCastResult checkPower();
 
     private:
         SpellCastResult checkItems(uint32_t* parameter1, uint32_t* parameter2) const;
         SpellCastResult checkCasterState() const;
-        SpellCastResult checkRange(const bool secondCheck) const;
+        SpellCastResult checkRange(const bool secondCheck);
 #if VERSION_STRING >= WotLK
-        SpellCastResult checkRunes(bool takeRunes) const;
+        SpellCastResult checkRunes(bool takeRunes);
 #endif
         SpellCastResult checkShapeshift(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const;
 
@@ -120,7 +130,7 @@ class SERVER_DECL Spell : public EventableObject
 
     private:
         void takePower();
-        uint32_t calculatePowerCost() const;
+        uint32_t calculatePowerCost();
 
         uint32_t m_powerCost = 0;
 
@@ -184,11 +194,32 @@ class SERVER_DECL Spell : public EventableObject
 
         Aura* getTriggeredByAura() const;
 
+        void addUsedSpellModifier(AuraEffectModifier const* aurEff);
+        void removeUsedSpellModifier(AuraEffectModifier const* aurEff);
+        void takeUsedSpellModifiers();
+
+        // If called from spell scripts, this needs to be called either in
+        // doBeforeEffectHit, doCalculateEffect or beforeSpellEffect script hooks to have any effect
+        void setForceCritOnTarget(Unit const* target);
+
         // used by spells that should have dynamic variables in spellentry
         // seems to be used only by LuaEngine -Appled
         SpellInfo const* m_spellInfo_override = nullptr;
 
     private:
+        struct HitSpellEffect
+        {
+            uint32_t travelTime = 0;
+            uint8_t effIndex = 0;
+            int32_t damage = 0;
+        };
+
+        struct HitAuraEffect
+        {
+            uint32_t travelTime = 0;
+            Aura* aur = nullptr;
+        };
+
         bool canAttackCreatureType(Creature* target) const;
 
         void removeReagents();
@@ -197,6 +228,7 @@ class SERVER_DECL Spell : public EventableObject
 #endif
 
         void _updateCasterPointers(Object* caster);
+        void _updateTargetPointers(const uint64_t targetGuid);
         float_t _getSpellTravelTimeForTarget(uint64_t guid) const;
 
         // Spell reflect stuff
@@ -210,11 +242,17 @@ class SERVER_DECL Spell : public EventableObject
         uint32_t m_targetProcFlags = 0;
         void _prepareProcFlags();
 
-        // <targetGuid, <travelTime, Aura>>
-        std::map<uint64_t, std::pair<uint32_t, Aura*>> m_pendingAuras;
+        std::map<uint64_t, HitAuraEffect> m_pendingAuras;
+        std::map<uint64_t, HitSpellEffect> m_hitEffects;
+        // <targetGuid, travelTime>
+        std::map<uint64_t, uint32_t> m_missEffects;
+        std::vector<uint64_t> m_critTargets;
 
+        bool isForcedCrit = false;
         bool isEffectDamageStatic[MAX_SPELL_EFFECTS];
         float_t effectPctModifier[MAX_SPELL_EFFECTS];
+
+        std::map<AuraEffectModifier const*, bool> m_usedModifiers;
 
         SpellState m_spellState = SPELL_STATE_NULL;
         SpellCastResult cancastresult = SPELL_CAST_SUCCESS;
@@ -366,13 +404,6 @@ class SERVER_DECL Spell : public EventableObject
         // MIT Ends
         // APGL Starts
         friend class DummySpellHandler;
-        Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
-        ~Spell();
-
-        int32 event_GetInstanceID() override;
-
-        bool m_overrideBasePoints;
-        uint32 m_overridenBasePoints[3];
 
         // Fills specified targets at the area of effect
         void FillSpecifiedTargetsInArea(float srcx, float srcy, float srcz, uint32 ind, uint32 specification);
@@ -399,14 +430,8 @@ class SERVER_DECL Spell : public EventableObject
 
         // See if we hit the target or can it resist (evade/immune/resist on spellgo) (0=success)
         uint8 DidHit(uint32 effindex, Unit* target);
-        // Cancels the current spell
-        void cancel();
         // Casts the spell
         void castMeOld();
-        // Finishes the casted spell
-        void finish(bool successful = true);
-        // Handle the Effects of the Spell
-        virtual void HandleEffects(uint64 guid, uint8_t i);
 
         // Trigger Spell function that triggers triggered spells
         //void TriggerSpell();
@@ -425,8 +450,6 @@ class SERVER_DECL Spell : public EventableObject
 
         // Removes reagents, ammo, and items/charges
         void RemoveItems();
-        // Calculates the i'th effect value
-        int32 CalculateEffect(uint32, Unit* target);
         // Handles Teleport function
         void HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target);
         // Determines how much skill caster going to gain
@@ -610,7 +633,7 @@ class SERVER_DECL Spell : public EventableObject
 
         static uint32 GetBaseThreat(uint32 dmg);
 
-        static uint32 GetMechanic(SpellInfo* sp);
+        static uint32 GetMechanic(SpellInfo const* sp);
 
         bool IsStealthSpell();
         bool IsInvisibilitySpell();
@@ -634,8 +657,6 @@ class SERVER_DECL Spell : public EventableObject
         ///////////////////////////////////////////////////////////////////////////////
         bool DuelSpellNoMoreValid() const;
 
-        void safe_cancel();
-
         /// Spell state's
         /// Spell failed
         bool GetSpellFailed() const;
@@ -650,8 +671,6 @@ class SERVER_DECL Spell : public EventableObject
 
         bool m_IsCastedOnSelf;
 
-        bool hadEffect;
-
         int64 m_magnetTarget;
 
         // Current Targets to be used in effect handler
@@ -663,7 +682,6 @@ class SERVER_DECL Spell : public EventableObject
         bool bDurSet;
         float Rad[3];
         bool bRadSet[3];
-        bool m_cancelled;
         bool m_isCasting;
         uint8 m_rune_avail_before;
         //void _DamageRangeUpdate();

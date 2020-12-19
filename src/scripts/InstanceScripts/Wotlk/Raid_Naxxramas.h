@@ -1460,7 +1460,7 @@ class RazuviousAI : public CreatureAIScript
 
     void OnTargetDied(Unit* /*mTarget*/) override
     {
-        if (Rand(50.0f))
+        if (Util::checkChance(50.0f))
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You should've stayed home!");
             getCreature()->PlaySoundToSet(8862);

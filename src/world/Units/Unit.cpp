@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAuraUpdate.h"
 #include "Server/Packets/SmsgAuraUpdateAll.h"
 #include "Server/Packets/SmsgClearExtraAuraInfo.h"
+#include "Server/Packets/SmsgEmote.h"
 #include "Server/Packets/SmsgSetExtraAuraInfo.h"
 #include "Server/Packets/SmsgSpellEnergizeLog.h"
 #include "Server/Packets/SmsgEnvironmentalDamageLog.h"
@@ -37,7 +38,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellSchoolConversionTable.h"
 #include "Spell/Definitions/SpellTypes.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/SpellHelpers.h"
 #include "Spell/SpellMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
@@ -45,10 +45,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Players/Player.h"
 
 using namespace AscEmu::Packets;
-using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
-using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
@@ -628,16 +624,33 @@ bool Unit::hasUnitFlags2(uint32_t unitFlags2) const { return (getUnitFlags2() & 
 
 #if VERSION_STRING < WotLK
 uint32_t Unit::getAura(uint8_t slot) const { return unitData()->aura[slot]; }
-void Unit::setAura(uint8_t slot, uint32_t spellId) { write(unitData()->aura[slot], spellId); }
+void Unit::setAura(Aura const* aur, bool apply)
+{
+    if (aur == nullptr)
+        return;
+
+    const auto slot = aur->m_visualSlot;
+    if (slot >= MAX_NEGATIVE_VISUAL_AURAS_END)
+        return;
+
+    const auto spellId = apply ? aur->getSpellId() : 0;
+    write(unitData()->aura[slot], spellId);
+}
 
 uint32_t Unit::getAuraFlags(uint8_t slot) const { return unitData()->aura_flags[slot]; }
-void Unit::setAuraFlags(uint8_t slot, uint32_t flags)
+void Unit::setAuraFlags(Aura const* aur, bool apply)
 {
+    if (aur == nullptr)
+        return;
+
+    const auto slot = aur->m_visualSlot;
     if (slot >= MAX_NEGATIVE_VISUAL_AURAS_END)
         return;
 
     const uint8_t index = slot / 4;
     const uint32_t byte = (slot % 4) * 8;
+
+    const uint32_t flags = apply ? aur->getAuraFlags() : 0;
 
     auto val = getAuraFlags(index);
     val &= ~(static_cast<uint32_t>(AFLAG_MASK_ALL) << byte);
@@ -649,13 +662,19 @@ void Unit::setAuraFlags(uint8_t slot, uint32_t flags)
 }
 
 uint32_t Unit::getAuraLevel(uint8_t slot) const { return unitData()->aura_levels[slot]; }
-void Unit::setAuraLevel(uint8_t slot, uint32_t level)
+void Unit::setAuraLevel(Aura* aur)
 {
+    if (aur == nullptr)
+        return;
+
+    const auto slot = aur->m_visualSlot;
     if (slot >= MAX_NEGATIVE_VISUAL_AURAS_END)
         return;
 
     const uint8_t index = slot / 4;
     const uint32_t byte = (slot % 4) * 8;
+
+    const uint32_t level = aur->GetUnitCaster() != nullptr ? aur->GetUnitCaster()->getLevel() : worldConfig.player.playerLevelCap;
 
     auto val = getAuraLevel(index);
     val &= ~(0xFF << byte);
@@ -665,20 +684,25 @@ void Unit::setAuraLevel(uint8_t slot, uint32_t level)
 }
 
 uint32_t Unit::getAuraApplication(uint8_t slot) const { return unitData()->aura_applications[slot]; }
-void Unit::setAuraApplication(uint8_t slot, uint32_t count)
+void Unit::setAuraApplication(Aura const* aur)
 {
+    if (aur == nullptr)
+        return;
+
+    const auto slot = aur->m_visualSlot;
     if (slot >= MAX_NEGATIVE_VISUAL_AURAS_END)
         return;
 
     const uint8_t index = slot / 4;
     const uint32_t byte = (slot % 4) * 8;
 
+    const uint32_t stackAmount = aur->getSpellInfo()->getMaxstack() > 0 ? aur->getStackCount() : aur->getCharges();
     // Client expects count - 1
-    count = count <= 255 ? count - 1 : 255 - 1;
+    const uint8_t count = stackAmount <= 255 ? stackAmount - 1 : 255 - 1;
 
     auto val = getAuraApplication(index);
     val &= ~(0xFF << byte);
-    val |= (static_cast<uint8_t>(count) << byte);
+    val |= (count << byte);
 
     write(unitData()->aura_applications[index], val);
 }
@@ -1886,27 +1910,31 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBa
     newSpell->prepare(&targets);
 }
 
-SpellProc* Unit::addProcTriggerSpell(uint32_t spellId, uint32_t originalSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t procCharges, uint32_t const* spellFamilyMask, uint32_t const* procClassMask/* = nullptr*/, Object* obj/* = nullptr*/)
+SpellProc* Unit::addProcTriggerSpell(uint32_t spellId, uint32_t originalSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask/* = nullptr*/, Aura* createdByAura/* = nullptr*/, Object* obj/* = nullptr*/)
 {
-    return addProcTriggerSpell(sSpellMgr.getSpellInfo(spellId), sSpellMgr.getSpellInfo(originalSpellId), casterGuid, procChance, procFlags, exProcFlags, procCharges, spellFamilyMask, procClassMask, obj);
+    return addProcTriggerSpell(sSpellMgr.getSpellInfo(spellId), sSpellMgr.getSpellInfo(originalSpellId), casterGuid, procChance, procFlags, exProcFlags, spellFamilyMask, procClassMask, createdByAura, obj);
 }
 
-SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, uint64_t casterGuid, uint32_t const* spellFamilyMask, uint32_t const* procClassMask/* = nullptr*/, Object* obj/* = nullptr*/)
+SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, uint64_t casterGuid, Aura* createdByAura/* = nullptr*/, uint32_t const* procClassMask/* = nullptr*/, Object* obj/* = nullptr*/)
 {
-    return addProcTriggerSpell(spellInfo, spellInfo, casterGuid, spellInfo->getProcChance(), static_cast<SpellProcFlags>(spellInfo->getProcFlags()), EXTRA_PROC_NULL, spellInfo->getProcCharges(), spellFamilyMask, procClassMask, obj);
+    return addProcTriggerSpell(spellInfo, spellInfo, casterGuid, spellInfo->getProcChance(), static_cast<SpellProcFlags>(spellInfo->getProcFlags()), EXTRA_PROC_NULL, nullptr, procClassMask, createdByAura, obj);
 }
 
-SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const* originalSpellInfo, uint64_t casterGuid, uint32_t const* spellFamilyMask, uint32_t const* procClassMask/* = nullptr*/, Object* obj/* = nullptr*/)
+SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, Aura* createdByAura, uint64_t casterGuid, uint32_t const* procClassMask/* = nullptr*/, Object* obj/* = nullptr*/)
 {
-    return addProcTriggerSpell(spellInfo, originalSpellInfo, casterGuid, originalSpellInfo->getProcChance(), static_cast<SpellProcFlags>(originalSpellInfo->getProcFlags()), EXTRA_PROC_NULL, originalSpellInfo->getProcCharges(), spellFamilyMask, procClassMask, obj);
+    if (createdByAura == nullptr)
+        return nullptr;
+
+    const auto aurSpellInfo = createdByAura->getSpellInfo();
+    return addProcTriggerSpell(spellInfo, aurSpellInfo, casterGuid, aurSpellInfo->getProcChance(), static_cast<SpellProcFlags>(aurSpellInfo->getProcFlags()), EXTRA_PROC_NULL, nullptr, procClassMask, createdByAura, obj);
 }
 
-SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const* originalSpellInfo, uint64_t casterGuid, uint32_t procChance, uint32_t procFlags, uint32_t procCharges, uint32_t const* spellFamilyMask, uint32_t const* procClassMask/* = nullptr*/, Object* obj/* = nullptr*/)
+SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const* originalSpellInfo, uint64_t casterGuid, uint32_t procChance, uint32_t procFlags, uint32_t const* procClassMask/* = nullptr*/, Aura* createdByAura/* = nullptr*/, Object* obj/* = nullptr*/)
 {
-    return addProcTriggerSpell(spellInfo, originalSpellInfo, casterGuid, procChance, static_cast<SpellProcFlags>(procFlags), EXTRA_PROC_NULL, procCharges, spellFamilyMask, procClassMask, obj);
+    return addProcTriggerSpell(spellInfo, originalSpellInfo, casterGuid, procChance, static_cast<SpellProcFlags>(procFlags), EXTRA_PROC_NULL, nullptr, procClassMask, createdByAura, obj);
 }
 
-SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const* originalSpellInfo, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t procCharges, uint32_t const* spellFamilyMask, uint32_t const* procClassMask/* = nullptr*/, Object* obj/* = nullptr*/)
+SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const* originalSpellInfo, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask/* = nullptr*/, Aura* createdByAura/* = nullptr*/, Object* obj/* = nullptr*/)
 {
     SpellProc* spellProc = nullptr;
     if (spellInfo != nullptr)
@@ -1916,7 +1944,7 @@ SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const
         return spellProc;
 
     // Create new proc since one did not exist
-    spellProc = sSpellProcMgr.newSpellProc(this, spellInfo, originalSpellInfo, casterGuid, procChance, procFlags, exProcFlags, procCharges, spellFamilyMask, procClassMask, obj);
+    spellProc = sSpellProcMgr.newSpellProc(this, spellInfo, originalSpellInfo, casterGuid, procChance, procFlags, exProcFlags, spellFamilyMask, procClassMask, createdByAura, obj);
     if (spellProc == nullptr)
     {
         if (originalSpellInfo != nullptr)
@@ -1967,7 +1995,7 @@ void Unit::clearProcCooldowns()
     }
 }
 
-float_t Unit::applySpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal, float_t effectPctModifier/* = 1.0f*/, bool isPeriodic/* = false*/, Aura* aur/* = nullptr*/)
+float_t Unit::applySpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal, float_t effectPctModifier/* = 1.0f*/, bool isPeriodic/* = false*/, Spell* castingSpell/* = nullptr*/, Aura* aur/* = nullptr*/)
 {
     const auto floatHeal = static_cast<float_t>(baseHeal);
     if (spellInfo->getAttributesExC() & ATTRIBUTESEXC_NO_HEALING_BONUS)
@@ -2062,13 +2090,7 @@ float_t Unit::applySpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHea
             bonusAp *= spellInfo->spell_ap_coeff_direct * effectPctModifier;
     }
 
-    int32_t bonus_penalty = 0;
-    spellModFlatIntValue(SM_FPenalty, &bonus_penalty, spellInfo->getSpellFamilyFlags());
-
-    int32_t bonus_penalty_pct = 0;
-    spellModFlatIntValue(SM_PPenalty, &bonus_penalty_pct, spellInfo->getSpellFamilyFlags());
-
-    bonusHeal += static_cast<float_t>((bonus_penalty + baseHeal) * bonus_penalty_pct / 100.0f);
+    applySpellModifiers(SPELLMOD_PENALTY, &bonusHeal, spellInfo, castingSpell, aur);
     bonusHeal += bonusAp;
 
     if (isPeriodic && aur != nullptr)
@@ -2076,13 +2098,18 @@ float_t Unit::applySpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHea
 
     float_t heal = floatHeal + std::max(0.0f, bonusHeal);
 
+    if (isPeriodic && aur != nullptr)
+        applySpellModifiers(SPELLMOD_PERIODIC_DAMAGE, &heal, spellInfo, nullptr, aur);
+    else if (castingSpell != nullptr)
+        applySpellModifiers(SPELLMOD_DAMAGE_DONE, &heal, spellInfo, castingSpell, nullptr);
+
     // Apply pct healing modifiers
     heal += heal * HealDonePctMod[school];
 
     return heal;
 }
 
-float_t Unit::applySpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, float_t effectPctModifier/* = 1.0f*/, bool isPeriodic/* = false*/, Aura* aur/* = nullptr*/)
+float_t Unit::applySpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, float_t effectPctModifier/* = 1.0f*/, bool isPeriodic/* = false*/, Spell* castingSpell/* = nullptr*/, Aura* aur/* = nullptr*/)
 {
     const auto floatDmg = static_cast<float_t>(baseDmg);
     if (spellInfo->getAttributesExC() & ATTRIBUTESEXC_NO_DONE_BONUS)
@@ -2180,13 +2207,8 @@ float_t Unit::applySpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg,
             bonusAp *= spellInfo->spell_ap_coeff_direct * effectPctModifier;
     }
 
-    int32_t bonus_penalty = 0;
-    spellModFlatIntValue(SM_FPenalty, &bonus_penalty, spellInfo->getSpellFamilyFlags());
 
-    int32_t bonus_penalty_pct = 0;
-    spellModFlatIntValue(SM_PPenalty, &bonus_penalty_pct, spellInfo->getSpellFamilyFlags());
-
-    bonusDmg += static_cast<float_t>((bonus_penalty + baseDmg) * bonus_penalty_pct / 100.0f);
+    applySpellModifiers(SPELLMOD_PENALTY, &bonusDmg, spellInfo, castingSpell, aur);
     bonusDmg += bonusAp;
 
     if (isPeriodic && aur != nullptr)
@@ -2194,14 +2216,28 @@ float_t Unit::applySpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg,
 
     float_t dmg = floatDmg + std::max(0.0f, bonusDmg);
 
+    if (isPeriodic && aur != nullptr)
+        applySpellModifiers(SPELLMOD_PERIODIC_DAMAGE, &dmg, spellInfo, nullptr, aur);
+    else if (castingSpell != nullptr)
+        applySpellModifiers(SPELLMOD_DAMAGE_DONE, &dmg, spellInfo, castingSpell, nullptr);
+
     // Apply pct damage modifiers
     dmg *= GetDamageDonePctMod(school);
 
     return dmg;
 }
 
-float_t Unit::getCriticalChanceForDamageSpell(SpellInfo const* spellInfo, Unit* victim) const
+float_t Unit::getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* target)
 {
+    if (spell == nullptr && aura == nullptr)
+        return 0.0f;
+
+    SpellInfo const* spellInfo = nullptr;
+    if (spell != nullptr)
+        spellInfo = spell->getSpellInfo();
+    else
+        spellInfo = aura->getSpellInfo();
+
     ///\ todo: this is mostly copied from legacy method, needs rewrite later
     float_t critChance = 0.0f;
     const auto school = spellInfo->getFirstSchoolFromSchoolMask();
@@ -2212,10 +2248,10 @@ float_t Unit::getCriticalChanceForDamageSpell(SpellInfo const* spellInfo, Unit* 
         if (isPlayer())
         {
             critChance = static_cast<Player const*>(this)->getRangedCritPercentage();
-            if (victim->isPlayer())
-                critChance += static_cast<Player*>(victim)->res_R_crit_get();
+            if (target->isPlayer())
+                critChance += static_cast<Player*>(target)->res_R_crit_get();
 
-            critChance += static_cast<float_t>(victim->AttackerCritChanceMod[school]);
+            critChance += static_cast<float_t>(target->AttackerCritChanceMod[school]);
         }
         else
         {
@@ -2223,7 +2259,7 @@ float_t Unit::getCriticalChanceForDamageSpell(SpellInfo const* spellInfo, Unit* 
             critChance = 5.0f;
         }
 
-        if (victim->isPlayer())
+        if (target->isPlayer())
             resilienceType = PCR_RANGED_CRIT_RESILIENCE;
     }
     else if (spellInfo->getDmgClass() == SPELL_DMG_TYPE_MELEE)
@@ -2232,34 +2268,34 @@ float_t Unit::getCriticalChanceForDamageSpell(SpellInfo const* spellInfo, Unit* 
         if (isPlayer())
             critChance = static_cast<Player const*>(this)->getMeleeCritPercentage();
 
-        if (victim->isPlayer())
+        if (target->isPlayer())
         {
             //this could be ability but in that case we overwrite the value
-            critChance += static_cast<Player*>(victim)->res_R_crit_get();
+            critChance += static_cast<Player*>(target)->res_M_crit_get();
             resilienceType = PCR_MELEE_CRIT_RESILIENCE;
         }
 
         // Victim's (!) crit chance mod for physical attacks?
-        critChance += static_cast<float_t>(victim->AttackerCritChanceMod[0]);
+        critChance += static_cast<float_t>(target->AttackerCritChanceMod[0]);
     }
     else
     {
         critChance = spellcritperc + SpellCritChanceSchool[school];
 
-        critChance += static_cast<float_t>(victim->AttackerCritChanceMod[school]);
+        critChance += static_cast<float_t>(target->AttackerCritChanceMod[school]);
 
         //\todo Zyres: is tis relly the way this should work?
-        if (isPlayer() && (victim->m_rootCounter - victim->m_stunned))
+        if (isPlayer() && (target->m_rootCounter - target->m_stunned))
             critChance += static_cast<float_t>(static_cast<Player const*>(this)->m_RootedCritChanceBonus);
 
-        if (victim->isPlayer())
+        if (target->isPlayer())
             resilienceType = PCR_SPELL_CRIT_RESILIENCE;
     }
 
-    spellModFlatFloatValue(SM_CriticalChance, &critChance, spellInfo->getSpellFamilyFlags());
+    applySpellModifiers(SPELLMOD_CRITICAL, &critChance, spellInfo, spell, aura);
 
     if (resilienceType != PCR_RANGED_SKILL)
-        critChance -= static_cast<Player*>(victim)->CalcRating(resilienceType);
+        critChance -= static_cast<Player*>(target)->CalcRating(resilienceType);
 
     if (critChance < 0.0f)
         critChance = 0.0f;
@@ -2269,11 +2305,21 @@ float_t Unit::getCriticalChanceForDamageSpell(SpellInfo const* spellInfo, Unit* 
     return critChance;
 }
 
-float_t Unit::getCriticalChanceForHealSpell(SpellInfo const* spellInfo) const
+float_t Unit::getCriticalChanceForHealSpell(Spell* spell, Aura* aura, Unit* /*target*/)
 {
+    if (spell == nullptr && aura == nullptr)
+        return 0.0f;
+
+    SpellInfo const* spellInfo = nullptr;
+    if (spell != nullptr)
+        spellInfo = spell->getSpellInfo();
+    else
+        spellInfo = aura->getSpellInfo();
+
     const auto school = spellInfo->getFirstSchoolFromSchoolMask();
+
     float_t critChance = spellcritperc + SpellCritChanceSchool[school];
-    spellModFlatFloatValue(SM_CriticalChance, &critChance, spellInfo->getSpellFamilyFlags());
+    applySpellModifiers(SPELLMOD_CRITICAL, &critChance, spellInfo, spell, aura);
 
     if (critChance < 0.0f)
         critChance = 0.0f;
@@ -2281,6 +2327,79 @@ float_t Unit::getCriticalChanceForHealSpell(SpellInfo const* spellInfo) const
         critChance = 95.0f;
 
     return critChance;
+}
+
+bool Unit::isCriticalDamageForSpell(Object* target, Spell* spell)
+{
+    // Spell cannot crit against gameobjects or items
+    if (!target->isCreatureOrPlayer())
+        return false;
+
+    return Util::checkChance(getCriticalChanceForDamageSpell(spell, nullptr, static_cast<Unit*>(target)));
+}
+
+bool Unit::isCriticalHealForSpell(Object* target, Spell* spell)
+{
+    // Spell cannot crit against gameobjects or items
+    if (!target->isCreatureOrPlayer())
+        return false;
+
+    return Util::checkChance(getCriticalChanceForHealSpell(spell, nullptr, static_cast<Unit*>(target)));
+}
+
+float_t Unit::getCriticalDamageBonusForSpell(float_t damage, Unit* target, Spell* spell, Aura* aura)
+{
+    SpellInfo const* spellInfo = nullptr;
+    if (spell != nullptr)
+        spellInfo = spell->getSpellInfo();
+    else if (aura != nullptr)
+        spellInfo = aura->getSpellInfo();
+
+    int32_t criticalBonus = 100;
+    applySpellModifiers(SPELLMOD_CRITICAL_DAMAGE, &criticalBonus, spellInfo, spell, aura);
+    if (criticalBonus > 0)
+    {
+        // The bonuses are halved by 50%
+        // todo: verify
+        if (spellInfo != nullptr && (spellInfo->getFirstSchoolFromSchoolMask() == SCHOOL_NORMAL || spellInfo->getDmgClass() == SPELL_DMG_TYPE_MELEE || spellInfo->getDmgClass() == SPELL_DMG_TYPE_RANGED))
+            damage *= criticalBonus / 100.0f + 1.0f;
+        else
+            damage *= criticalBonus / 200.0f + 1.0f;
+    }
+
+    // Resilience
+    // todo: move this elsewhere and correct it to work on all versions
+    if (target != nullptr && target->isPlayer())
+    {
+        float_t dmgReductionPct = 2.0f * static_cast<Player*>(target)->CalcRating(PCR_MELEE_CRIT_RESILIENCE) / 100.0f;
+        if (dmgReductionPct > 1.0f)
+            dmgReductionPct = 1.0f;
+
+        damage -= damage * dmgReductionPct;
+    }
+
+    return damage;
+}
+
+float_t Unit::getCriticalHealBonusForSpell(float_t heal, Spell* spell, Aura* aura)
+{
+    SpellInfo const* spellInfo = nullptr;
+    if (spell != nullptr)
+        spellInfo = spell->getSpellInfo();
+    else if (aura != nullptr)
+        spellInfo = aura->getSpellInfo();
+
+    int32_t criticalBonus = 100;
+    applySpellModifiers(SPELLMOD_CRITICAL_DAMAGE, &criticalBonus, spellInfo, spell, aura);
+
+    if (criticalBonus > 0)
+    {
+        // The bonuses are halved by 50%
+        // todo: verify
+        heal += heal * (criticalBonus / 200.0f);
+    }
+
+    return heal;
 }
 
 void Unit::sendSpellNonMeleeDamageLog(Object* caster, Object* target, SpellInfo const* spellInfo, uint32_t damage, uint32_t absorbedDamage, uint32_t resistedDamage, uint32_t blockedDamage, [[maybe_unused]]uint32_t overKill, bool isPeriodicDamage, bool isCriticalHit)
@@ -2404,6 +2523,100 @@ void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& v
 
     SendMessageToSet(&data, true);
 }
+
+void Unit::addSpellModifier(AuraEffectModifier const* aurEff, bool apply)
+{
+    if (aurEff == nullptr)
+        return;
+
+    const auto aur = aurEff->getAura();
+    if (isPlayer())
+    {
+        uint8_t groupNum = 0, intBit = 0;
+        for (uint8_t bit = 0; bit < SPELL_GROUPS; ++bit, ++intBit)
+        {
+            if (intBit == 32)
+            {
+                ++groupNum;
+                intBit = 0;
+            }
+
+            const uint32_t bitMask = 1 << intBit;
+            if (bitMask & aur->getSpellInfo()->getEffectSpellClassMask(aurEff->getEffectIndex(), groupNum))
+            {
+                int32_t totalMod = 0;
+                for (const auto& mod : m_spellModifiers[aurEff->getEffectMiscValue()])
+                {
+                    if (mod->getAuraEffectType() != aurEff->getAuraEffectType())
+                        continue;
+                    if (bitMask & mod->getAura()->getSpellInfo()->getEffectSpellClassMask(mod->getEffectIndex(), groupNum))
+                        totalMod += mod->getEffectDamage();
+                }
+                totalMod += apply ? aurEff->getEffectDamage() : -aurEff->getEffectDamage();
+
+                const auto isPct = aurEff->getAuraEffectType() == SPELL_AURA_ADD_PCT_MODIFIER;
+                static_cast<Player*>(this)->sendSpellModifierPacket(bit, static_cast<uint8_t>(aurEff->getEffectMiscValue()), totalMod, isPct);
+            }
+        }
+    }
+
+    if (apply)
+        m_spellModifiers[aurEff->getEffectMiscValue()].push_back(aurEff);
+    else
+        m_spellModifiers[aurEff->getEffectMiscValue()].remove(aurEff);
+}
+
+template <typename T> void Unit::applySpellModifiers(SpellModifierType modType, T* value, SpellInfo const* spellInfo, Spell* castingSpell/* = nullptr*/, Aura* castingAura/* = nullptr*/)
+{
+    if (spellInfo == nullptr)
+        return;
+
+    int32_t totalPct = 100, totalFlat = 0;
+    getTotalSpellModifiers(modType, value, &totalFlat, &totalPct, spellInfo, castingSpell, castingAura);
+
+    if (totalPct != 100 || totalFlat != 0)
+        *value = static_cast<T>((*value + totalFlat) * std::max(0, totalPct) / 100);
+}
+template void Unit::applySpellModifiers<int32_t>(SpellModifierType modType, int32_t* value, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura);
+template void Unit::applySpellModifiers<uint32_t>(SpellModifierType modType, uint32_t* value, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura);
+template void Unit::applySpellModifiers<float_t>(SpellModifierType modType, float_t* value, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura);
+
+template <typename T> void Unit::getTotalSpellModifiers(SpellModifierType modType, T baseValue, int32_t* flatMod, int32_t* pctMod, SpellInfo const* spellInfo, Spell* castingSpell/* = nullptr*/, Aura* castingAura/* = nullptr*/, bool checkOnly/* = false*/)
+{
+    for (const auto& spellMod : m_spellModifiers[modType])
+    {
+        const auto modSpellInfo = spellMod->getAura()->getSpellInfo();
+        if (modSpellInfo->getSpellFamilyName() != spellInfo->getSpellFamilyName())
+            continue;
+        if (!modSpellInfo->isEffectIndexAffectingSpell(spellMod->getEffectIndex(), spellInfo))
+            continue;
+
+        if (spellMod->getAuraEffectType() == SPELL_AURA_ADD_FLAT_MODIFIER)
+        {
+            *flatMod += spellMod->getEffectDamage();
+        }
+        else
+        {
+            // Skip null values for pct mods
+            if (baseValue == 0)
+                continue;
+
+            *pctMod += spellMod->getEffectDamage();
+        }
+
+        // Add the modifier
+        if (!checkOnly)
+        {
+            if (castingSpell != nullptr)
+                castingSpell->addUsedSpellModifier(spellMod);
+            else if (castingAura != nullptr)
+                castingAura->addUsedSpellModifier(spellMod);
+        }
+    }
+}
+template void Unit::getTotalSpellModifiers<int32_t>(SpellModifierType modType, int32_t baseValue, int32_t* flatMod, int32_t* pctMod, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura, bool checkOnly);
+template void Unit::getTotalSpellModifiers<uint32_t>(SpellModifierType modType, uint32_t baseValue, int32_t* flatMod, int32_t* pctMod, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura, bool checkOnly);
+template void Unit::getTotalSpellModifiers<float_t>(SpellModifierType modType, float_t baseValue, int32_t* flatMod, int32_t* pctMod, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura, bool checkOnly);
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Aura
@@ -2583,10 +2796,10 @@ void Unit::addAura(Aura* aur)
         m_auravisuals[visualSlot] = aur->getSpellId();
 
 #if VERSION_STRING < WotLK
-        setAura(visualSlot, aur->getSpellId());
-        setAuraFlags(visualSlot, aur->getAuraFlags());
-        setAuraLevel(visualSlot, aur->GetUnitCaster() != nullptr ? aur->GetUnitCaster()->getLevel() : worldConfig.player.playerLevelCap);
-        setAuraApplication(visualSlot, 1);
+        setAura(aur, true);
+        setAuraFlags(aur, true);
+        setAuraLevel(aur);
+        setAuraApplication(aur);
 #endif
 
         // Send packet
@@ -2596,6 +2809,7 @@ void Unit::addAura(Aura* aur)
 
     aur->applyModifiers(true);
     aur->RelocateEvents();
+    aur->takeUsedSpellModifiers();
 
     // Call scripted aura apply hook
     sScriptMgr.callScriptedAuraOnApply(aur);
@@ -3116,9 +3330,8 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
     else
         auraUpdate.level = static_cast<uint8_t>(worldConfig.player.playerLevelCap);
 
-    ///\ todo: proc charges
-    ///\ also proc charges for classic and tbc in Unit::setAuraApplication
-    auraUpdate.stackCount = aur->getStackCount() > 255 ? 255 : aur->getStackCount();
+    const uint32_t stackAmount = aur->getSpellInfo()->getMaxstack() > 0 ? aur->getStackCount() : aur->getCharges();
+    auraUpdate.stackCount = static_cast<uint8_t>(stackAmount <= 255 ? stackAmount : 255);
 
     if (!(auraUpdate.flags & AFLAG_IS_CASTER))
         auraUpdate.casterGuid = aur->getCasterGuid();
@@ -3174,8 +3387,8 @@ void Unit::sendFullAuraUpdate()
         else
             auraUpdate.level = static_cast<uint8_t>(worldConfig.player.playerLevelCap);
 
-        ///\ todo: proc charges
-        auraUpdate.stackCount = aur->getStackCount() > 255 ? 255 : aur->getStackCount();
+        const uint32_t stackAmount = aur->getSpellInfo()->getMaxstack() > 0 ? aur->getStackCount() : aur->getCharges();
+        auraUpdate.stackCount = static_cast<uint8_t>(stackAmount <= 255 ? stackAmount : 255);
 
         if (!(auraUpdate.flags & AFLAG_IS_CASTER))
             auraUpdate.casterGuid = aur->getCasterGuid();
@@ -4339,14 +4552,14 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
         {
             victim->RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN, spellId);
             ///\ todo: fix this, currently used for root and fear auras
-            if (Rand(35.0f))
+            if (Util::checkChance(35.0f))
                 victim->RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_UNUSED2, spellId);
         }
         else
         {
             victim->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
             ///\ todo: fix this, currently used for root and fear auras
-            if (Rand(35.0f))
+            if (Util::checkChance(35.0f))
                 victim->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_UNUSED2);
         }
     }
@@ -4419,7 +4632,6 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                     sEventMgr.ModifyEventTimeLeft(attacker->getPlayerOwner(), EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
 
                 attacker->getPlayerOwner()->HandleProc(PROC_ON_KILL, this, nullptr, DamageInfo(), false);
-                attacker->getPlayerOwner()->m_procCounter = 0;
             }
 
             // Send zone under attack message
@@ -4684,6 +4896,15 @@ void Unit::clearHealthBatch()
 #endif
 }
 
+void Unit::clearCasterFromHealthBatch(Unit const* caster)
+{
+    for (auto& itr : m_healthBatch)
+    {
+        if (itr->caster == caster)
+            itr->caster = nullptr;
+    }
+}
+
 uint32_t Unit::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly/* = true*/)
 {
     if (dmg == nullptr)
@@ -4942,14 +5163,14 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
     {
         RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN, spellId);
         ///\ todo: fix this, currently used for root and fear auras
-        if (Rand(35.0f))
+        if (Util::checkChance(35.0f))
             RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_UNUSED2, spellId);
     }
     else
     {
         RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
         ///\ todo: fix this, currently used for root and fear auras
-        if (Rand(35.0f))
+        if (Util::checkChance(35.0f))
             RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_UNUSED2);
     }
 

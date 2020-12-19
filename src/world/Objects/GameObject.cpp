@@ -1005,7 +1005,6 @@ void GameObject_Trap::Update(unsigned long time_passed)
                 if (m_summoner != NULL)
                 {
                     m_summoner->HandleProc(PROC_ON_TRAP_ACTIVATION, reinterpret_cast<Unit*>(o), spell, DamageInfo(), false);
-                    m_summoner->m_procCounter = 0;
                 }
 
                 if (charges != 0)
@@ -1221,7 +1220,7 @@ void GameObject_FishingNode::onUse(Player* player)
             school->CatchFish();
 
         }
-        else if (maxskill != 0 && Rand(((player->_GetSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
+        else if (maxskill != 0 && Util::checkChance(((player->_GetSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
         {
             sLootMgr.FillFishingLoot(&this->loot, zone);
             player->SendLoot(getGuid(), LOOT_FISHING, GetMapId());

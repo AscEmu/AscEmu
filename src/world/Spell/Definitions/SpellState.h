@@ -5,11 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum SpellState
+#include <cstdint>
+
+enum SpellState : uint8_t
 {
-    SPELL_STATE_NULL      = 0,
-    SPELL_STATE_PREPARING = 1,
-    SPELL_STATE_CASTING   = 2,
-    SPELL_STATE_FINISHED  = 3,
-    SPELL_STATE_IDLE      = 4
+    SPELL_STATE_NULL = 0,
+    SPELL_STATE_PREPARING,
+    SPELL_STATE_CHANNELING,
+    SPELL_STATE_TRAVELING,
+    SPELL_STATE_FINISHED
 };

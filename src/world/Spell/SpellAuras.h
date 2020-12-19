@@ -133,6 +133,9 @@ public:
     void setEffectIndex(uint8_t effIndex);
     uint8_t getEffectIndex() const;
 
+    void setAura(Aura* aur);
+    Aura* getAura() const;
+
 private:
     AuraEffect mAuraEffect = SPELL_AURA_NONE;   // Effect type
     int32_t mDamage = 0;                        // Effect calculated amount
@@ -145,6 +148,8 @@ private:
     float_t mEffectPctModifier = 1.0f;          // Effect percent modifier
     bool mEffectDamageStatic = false;           // If effect damage is set to static, effect will not gain spell power bonuses
     uint8_t effIndex = 0;
+
+    Aura* mAura = nullptr;
 };
 
 class SERVER_DECL Aura : public EventableObject
@@ -184,6 +189,9 @@ class SERVER_DECL Aura : public EventableObject
         void refresh([[maybe_unused]]bool saveMods = false, int16_t modifyStacks = 0);
 
         uint8_t getStackCount() const;
+        uint16_t getCharges() const;
+        void setCharges(uint16_t count, bool sendUpdatePacket = true);
+        void removeCharge();
 
         uint8_t getAuraFlags() const;
 
@@ -196,6 +204,10 @@ class SERVER_DECL Aura : public EventableObject
         int32_t getHealPowerBonus() const;
         uint32_t getAttackPowerBonus() const;
 
+        void addUsedSpellModifier(AuraEffectModifier const* aurEff);
+        void removeUsedSpellModifier(AuraEffectModifier const* aurEff);
+        void takeUsedSpellModifiers();
+
         Unit* getOwner() const;
         Player* getPlayerOwner() const;
         Object* getCaster() const;
@@ -205,7 +217,7 @@ class SERVER_DECL Aura : public EventableObject
 
         virtual bool isAbsorbAura() const;
 
-        SpellInfo* getSpellInfo() const;
+        SpellInfo const* getSpellInfo() const;
         uint32_t getSpellId() const;
 
         // Aura effect handlers
@@ -314,8 +326,7 @@ class SERVER_DECL Aura : public EventableObject
         void spellAuraEffectWaterWalk(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectFeatherFall(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectHover(AuraEffectModifier* aurEff, bool apply);
-        void spellAuraEffectAddFlatModifier(AuraEffectModifier* aurEff, bool apply);
-        void spellAuraEffectAddPctMod(AuraEffectModifier* aurEff, bool apply);
+        void spellAuraEffectAddModifier(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectModPowerRegPerc(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectOverrideClassScripts(AuraEffectModifier* aurEff, bool apply);
@@ -445,6 +456,8 @@ class SERVER_DECL Aura : public EventableObject
         int32_t m_originalDuration = 0;
         //\ todo: verify maximum possible stack count but it is likely 255 -Appled
         uint8_t m_stackCount = 1;
+        uint16_t m_charges = 0;
+        uint16_t m_originalCharges = 0;
 
         // Following values are calculated only on aura apply, not on every tick
         void _calculateCritChance();
@@ -459,6 +472,8 @@ class SERVER_DECL Aura : public EventableObject
         uint32_t m_attackPowerBonus = 0;
         float_t m_spellHaste = 0.0f;
 
+        std::map<AuraEffectModifier const*, bool> m_usedModifiers;
+
         bool mPositive = true;
 
         // Aura could have effects with different amplitude
@@ -471,13 +486,13 @@ class SERVER_DECL Aura : public EventableObject
         Unit* m_target = nullptr;
         Player* p_target = nullptr;
 
-        SpellInfo* m_spellInfo = nullptr;
+        SpellInfo const* m_spellInfo = nullptr;
 
     // MIT End
     // APGL Start
     public:
 
-        Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
+        Aura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
         ~Aura();
 
         inline bool IsPassive() { if (!m_spellInfo) return false; return (m_spellInfo->isPassive() && !m_areaAura); }
@@ -601,8 +616,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraWaterWalk(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraFeatherFall(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraHover(AuraEffectModifier* aurEff, bool apply);
-        void SpellAuraAddFlatModifier(AuraEffectModifier* aurEff, bool apply);
-        void SpellAuraAddPctMod(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModPowerRegPerc(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply);
@@ -717,7 +730,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraConvertRune(AuraEffectModifier* aurEff, bool apply);
         void UpdateAuraModDecreaseSpeed(AuraEffectModifier* aurEff);
 
-        void SendModifierLog(int32** m, int32 v, uint32* mask, uint8 type, bool pct = false);
         void SendDummyModifierLog(std::map<SpellInfo*, uint32> * m, SpellInfo* spellInfo, uint32 i, bool apply, bool pct = false);
 
         // Events

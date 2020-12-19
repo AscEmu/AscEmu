@@ -58,7 +58,6 @@
 #include "Definitions/SpellMechanics.h"
 #include "Definitions/PowerType.h"
 #include "Definitions/Spec.h"
-#include "SpellHelpers.h"
 #include "Spell.h"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
@@ -70,11 +69,6 @@
 #include "Server/Packets/SmsgNewTaxiPath.h"
 #include "Server/Packets/SmsgPlayerBound.h"
 #include "Server/Packets/MsgCorpseQuery.h"
-
-using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
-using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
 
 using namespace AscEmu::Packets;
 
@@ -552,11 +546,14 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
         if (!sEventMgr.HasEvent(pAura, eventtype))      /* only add it once */
             sEventMgr.AddEvent(pAura, &Aura::EventUpdateAreaAura, effectIndex, r * r, eventtype, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-        m_pendingAuras.insert(std::make_pair(unitTarget->getGuid(), std::make_pair(0, pAura)));
+        HitAuraEffect hitAura;
+        hitAura.aur = pAura;
+        hitAura.travelTime = 0;
+        m_pendingAuras.insert(std::make_pair(unitTarget->getGuid(), hitAura));
     }
     else
     {
-        pAura = itr->second.second;
+        pAura = itr->second.aur;
     }
 
     pAura->addAuraEffect(static_cast<AuraEffect>(getSpellInfo()->getEffectApplyAuraName(effectIndex)), damage, getSpellInfo()->getEffectMiscValue(effectIndex), effectPctModifier[effectIndex], isEffectDamageStatic[effectIndex], effectIndex);
@@ -729,10 +726,6 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
     bool static_damage = false;
     bool force_crit = false;
 
-    // Get bonus damage from spell power and attack power
-    if (getUnitCaster() != nullptr && !isEffectDamageStatic[effectIndex])
-        dmg = static_cast<int32_t>(std::ceil(getUnitCaster()->applySpellDamageBonus(getSpellInfo(), dmg, effectPctModifier[effectIndex])));
-
     if (getSpellInfo()->getEffectChainTarget(effectIndex))    //chain
     {
         if (getSpellInfo()->getId() == 32445 || getSpellInfo()->getId() == 28883)
@@ -744,7 +737,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             {
                 if (u_caster != nullptr)
                 {
-                    spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, getSpellInfo()->getSpellFamilyFlags());
+                    u_caster->applySpellModifiers(SPELLMOD_JUMP_REDUCE, &reduce, getSpellInfo(), this);
                 }
                 chaindamage += ((getSpellInfo()->getEffectBasePoints(effectIndex) + 51) * reduce / 100);
             }
@@ -762,7 +755,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             {
                 if (u_caster != nullptr)
                 {
-                    spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, getSpellInfo()->getSpellFamilyFlags());
+                    u_caster->applySpellModifiers(SPELLMOD_JUMP_REDUCE, &reduce, getSpellInfo(), this);
                 }
                 chaindamage = chaindamage * reduce / 100;
             }
@@ -888,7 +881,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 51751:
             case 59264:
             {
-                dmg *= Rand(50) ? 2 : 1;
+                dmg *= Util::checkChance(50) ? 2 : 1;
             } break;
 
             // SPELL_HASH_THUNDER_CLAP: // Thunderclap
@@ -906,7 +899,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 60019:
             {
                 if (u_caster)
-                    dmg = (getSpellInfo()->getEffectBasePoints(0) + 1) + float2int32(u_caster->GetAP() * 0.12f);
+                    dmg = (getSpellInfo()->calculateEffectValue(0)) + float2int32(u_caster->GetAP() * 0.12f);
             } break;
 
             // SPELL_HASH_SHOCKWAVE:      // Shockwave
@@ -931,7 +924,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 75418:
             {
                 if (u_caster)
-                    dmg = u_caster->GetAP() * (getSpellInfo()->getEffectBasePoints(2) + 1) / 100;
+                    dmg = u_caster->GetAP() * (getSpellInfo()->calculateEffectValue(2)) / 100;
             } break;
 
             // SPELL_HASH_JUDGEMENT_OF_COMMAND:
@@ -1161,7 +1154,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 60017:
             case 71938:
             {
-                dmg = u_caster->GetAP() * (getSpellInfo()->getEffectBasePoints(0) + 1) / 100;
+                dmg = u_caster->GetAP() * (getSpellInfo()->calculateEffectValue(0)) / 100;
             } break;
 
             //SPELL_HASH_CONCUSSION_BLOW
@@ -1174,7 +1167,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 //3.2.2
                 //[Concussion Blow]: The damage done by this ability has been reduced by 50%,
                 //but its threat generation will remain approximately the same.
-                dmg = u_caster->GetAP() * (getSpellInfo()->getEffectBasePoints(2) + 1) / 100;
+                dmg = u_caster->GetAP() * (getSpellInfo()->calculateEffectValue(2)) / 100;
             } break;
 
             // SPELL_HASH_INTERCEPT
@@ -1232,7 +1225,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 47471:
             {
                 if (p_caster != nullptr)
-                    dmg = p_caster->GetAP() * ((m_spellInfo->getEffectBasePoints(0) + 1) / 100);
+                    dmg = p_caster->GetAP() * ((m_spellInfo->calculateEffectValue(0)) / 100);
             }break;
 
             //SPELL_HASH_SHIELD_SLAM
@@ -1485,14 +1478,14 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
 
     if (getSpellInfo()->getSpeed() > 0 && m_triggeredSpell == false)
     {
-        m_targetDamageInfo = m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), static_cast<float_t>(dmg), effectIndex, pSpellId != 0);
+        m_targetDamageInfo = m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), static_cast<float_t>(dmg), effectIndex, pSpellId != 0, false, false, isForcedCrit, this);
         isTargetDamageInfoSet = true;
     }
     else
     {
         if (GetType() == SPELL_DMG_TYPE_MAGIC)
         {
-            m_targetDamageInfo = m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), static_cast<float_t>(dmg), effectIndex, m_triggeredSpell);
+            m_targetDamageInfo = m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), static_cast<float_t>(dmg), effectIndex, m_triggeredSpell, false, false, isForcedCrit, this);
             isTargetDamageInfoSet = true;
         }
         else
@@ -1510,7 +1503,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                         _type = MELEE;
                 }
 
-                m_targetDamageInfo = u_caster->Strike(unitTarget, _type, getSpellInfo(), 0, 0, dmg, m_triggeredSpell, true, force_crit);
+                m_targetDamageInfo = u_caster->Strike(unitTarget, _type, getSpellInfo(), 0, 0, dmg, m_triggeredSpell, true, (force_crit || isForcedCrit), this);
                 isTargetDamageInfoSet = true;
             }
         }
@@ -1845,11 +1838,14 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
         pAura->pSpellId = pSpellId; //this is required for triggered spells
         pAura->m_castedItemId = castedItemId;
 
-        m_pendingAuras.insert(std::make_pair(unitTarget->getGuid(), std::make_pair(0, pAura)));
+        HitAuraEffect hitAura;
+        hitAura.aur = pAura;
+        hitAura.travelTime = 0;
+        m_pendingAuras.insert(std::make_pair(unitTarget->getGuid(), hitAura));
     }
     else
     {
-        pAura = itr->second.second;
+        pAura = itr->second.aur;
     }
     switch (m_spellInfo->getId())
     {
@@ -1915,7 +1911,7 @@ void Spell::SpellEffectEnvironmentalDamage(uint8_t effectIndex)
         return;
     }
     //this is GO, not unit
-    m_targetDamageInfo = m_caster->doSpellDamage(playerTarget, getSpellInfo()->getId(), static_cast<float_t>(damage), effectIndex, m_triggeredSpell);
+    m_targetDamageInfo = m_caster->doSpellDamage(playerTarget, getSpellInfo()->getId(), static_cast<float_t>(damage), effectIndex, m_triggeredSpell, false, false, isForcedCrit, this);
     isTargetDamageInfoSet = true;
 
     playerTarget->sendEnvironmentalDamageLogPacket(playerTarget->getGuid(), DAMAGE_FIRE, damage);
@@ -2066,17 +2062,14 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
             damage = (int32)(damage * 1.05);
     }
 
-    // Get bonus healing from spell power and attack power
     auto heal = damage;
-    if (getUnitCaster() != nullptr && !isEffectDamageStatic[effectIndex])
-        heal = static_cast<int32_t>(std::ceil(getUnitCaster()->applySpellHealingBonus(getSpellInfo(), damage, effectPctModifier[effectIndex])));
 
     if (getSpellInfo()->getEffectChainTarget(effectIndex))    //chain
     {
         if (!chaindamage)
         {
             chaindamage = heal;
-            m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), static_cast<float_t>(chaindamage), m_triggeredSpell);
+            m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), static_cast<float_t>(chaindamage), m_triggeredSpell, false, false, isForcedCrit, this);
             isTargetDamageInfoSet = true;
         }
         else
@@ -2084,10 +2077,10 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
             int32 reduce = getSpellInfo()->getEffectDieSides(effectIndex) + 1;
             if (u_caster != nullptr)
             {
-                spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, getSpellInfo()->getSpellFamilyFlags());
+                u_caster->applySpellModifiers(SPELLMOD_JUMP_REDUCE, &reduce, getSpellInfo(), this);
             }
             chaindamage -= (reduce * chaindamage) / 100;
-            m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), static_cast<float_t>(chaindamage), m_triggeredSpell);
+            m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), static_cast<float_t>(chaindamage), m_triggeredSpell, false, false, isForcedCrit, this);
             isTargetDamageInfoSet = true;
         }
     }
@@ -2116,7 +2109,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                             value = basePoints + Util::getRandomUInt(randomPoints);
                         //the value is in percent. Until now it's a fixed 10%
                         const auto amt = unitTarget->getMaxHealth()*value / 100.0f;
-                        m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), amt, m_triggeredSpell);
+                        m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), amt, m_triggeredSpell, false, false, isForcedCrit, this);
                         isTargetDamageInfoSet = true;
                     }
                 }
@@ -2127,7 +2120,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
             {
                 if (unitTarget)
                 {
-                    m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), unitTarget->getMaxHealth() / 100.0f, m_triggeredSpell);
+                    m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), unitTarget->getMaxHealth() / 100.0f, m_triggeredSpell, false, false, isForcedCrit, this);
                     isTargetDamageInfoSet = true;
                 }
             }
@@ -2201,7 +2194,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
 
                         //our hapiness is that we did not store the aura mod amount so we have to recalc it
                         Spell* spell = sSpellMgr.newSpell(m_caster, taura->getSpellInfo(), false, nullptr);
-                        uint32 healamount = spell->CalculateEffect(1, unitTarget);
+                        uint32 healamount = spell->calculateEffect(1);
                         delete spell;
                         spell = nullptr;
                         new_dmg = healamount * 18.0f / amplitude;
@@ -2313,7 +2306,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
 
                             //our happiness is that we did not store the aura mod amount so we have to recalc it
                             Spell* spell = sSpellMgr.newSpell(m_caster, taura->getSpellInfo(), false, nullptr);
-                            uint32 healamount = spell->CalculateEffect(0, unitTarget);
+                            uint32 healamount = spell->calculateEffect(0);
                             delete spell;
                             spell = nullptr;
                             new_dmg = healamount * 12.0f / amplitude;
@@ -2330,7 +2323,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                         const auto spellInfo = sSpellMgr.getSpellInfo(18562);
                         Spell* spell = sSpellMgr.newSpell(unitTarget, spellInfo, true, nullptr);
                         spell->SetUnitTarget(unitTarget);
-                        m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, spellInfo->getId(), new_dmg, m_triggeredSpell);
+                        m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, spellInfo->getId(), new_dmg, m_triggeredSpell, false, false, isForcedCrit, this);
                         isTargetDamageInfoSet = true;
                         delete spell;
                     }
@@ -2338,7 +2331,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
             }
             break;
             default:
-                m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), static_cast<float_t>(heal), m_triggeredSpell);
+                m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), static_cast<float_t>(heal), m_triggeredSpell, false, false, isForcedCrit, this);
                 isTargetDamageInfoSet = true;
                 break;
         }
@@ -2387,7 +2380,7 @@ void Spell::SpellEffectWeapondamageNoschool(uint8_t /*effectIndex*/) // Weapon d
     if (!unitTarget || !u_caster)
         return;
 
-    m_targetDamageInfo = u_caster->Strike(unitTarget, (GetType() == SPELL_DMG_TYPE_RANGED ? RANGED : MELEE), getSpellInfo(), damage, 0, 0, m_triggeredSpell, true);
+    m_targetDamageInfo = u_caster->Strike(unitTarget, (GetType() == SPELL_DMG_TYPE_RANGED ? RANGED : MELEE), getSpellInfo(), damage, 0, 0, m_triggeredSpell, true, isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 
@@ -2568,7 +2561,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
             if (m_itemProto->Name.compare("Potion"))
             {
                 if (p_caster->HasSpell(28675))
-                    while (Rand(20) && (count < 5))
+                    while (Util::checkChance(20) && (count < 5))
                         count++;
 
                 // Super Rejuvenation Potion
@@ -2580,7 +2573,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
             if (m_itemProto->Name.compare("Elixir") || m_itemProto->Name.compare("Flask"))
             {
                 if (p_caster->HasSpell(28677))
-                    while (Rand(20) && (count < 5))
+                    while (Util::checkChance(20) && (count < 5))
                         count++;
 
                 uint32 spList[] = { 28590, 28587, 28588, 28591, 28589 };
@@ -2596,13 +2589,13 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
                 if (m_spellInfo->getId() == 29688)
                 {
                     if (p_caster->HasSpell(28672))
-                        while (Rand(40) && (count < 5))
+                        while (Util::checkChance(40) && (count < 5))
                             count++;
                 }
                 else
                 {
                     if (p_caster->HasSpell(28672))
-                        while (Rand(20) && (count < 5))
+                        while (Util::checkChance(20) && (count < 5))
                             count++;
                 }
 
@@ -2655,7 +2648,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
                     break;
             }
 
-            if ((learn_spell != 0) && (p_caster->getLevel() > 60) && !p_caster->HasSpell(learn_spell) && Rand(cast_chance))
+            if ((learn_spell != 0) && (p_caster->getLevel() > 60) && !p_caster->HasSpell(learn_spell) && Util::checkChance(cast_chance))
             {
                 SpellInfo const* dspellproto = sSpellMgr.getSpellInfo(learn_spell);
 
@@ -2680,7 +2673,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
             for (std::set<MySQLStructure::ProfessionDiscovery*>::iterator itr = sMySQLStore._professionDiscoveryStore.begin(); itr != sMySQLStore._professionDiscoveryStore.end(); ++itr)
             {
                 MySQLStructure::ProfessionDiscovery* pf = *itr;
-                if (spellid == pf->SpellId && p_caster->_GetSkillLineCurrent(skill_line_ability->skilline) >= pf->SkillValue && !p_caster->HasSpell(pf->SpellToDiscover) && Rand(pf->Chance))
+                if (spellid == pf->SpellId && p_caster->_GetSkillLineCurrent(skill_line_ability->skilline) >= pf->SkillValue && !p_caster->HasSpell(pf->SpellToDiscover) && Util::checkChance(pf->Chance))
                 {
                     discovered_recipe = pf->SpellToDiscover;
                     break;
@@ -3114,7 +3107,8 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
         }
         p->PushToWorld(m_caster->GetMapMgr());
 
-        p->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
+        if (p->GetScript() != nullptr)
+            p->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
         //make sure they will be desummoned (roxor)
         sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
@@ -3147,7 +3141,8 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
 
         s->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
         s->GetAIInterface()->SetUnitToFollowAngle(followangle);
-        s->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
+        if (s->GetScript() != nullptr)
+            s->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
         s->PushToWorld(u_caster->GetMapMgr());
 
         if ((p_caster != nullptr) && (spe->Slot != 0))
@@ -3203,7 +3198,8 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, DBC::Structures::SummonP
         }
 
         pet->GetAIInterface()->SetUnitToFollowAngle(followangle);
-        pet->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
+        if (pet->GetScript() != nullptr)
+            pet->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     }
 }
 
@@ -3224,7 +3220,8 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
 
     s->Load(properties_, p_caster, v, m_spellInfo->getId(), spe->Slot - 1);
     s->setCreatedBySpellId(m_spellInfo->getId());
-    s->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
+    if (s->GetScript() != nullptr)
+        s->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     s->PushToWorld(p_caster->GetMapMgr());
 
     p_caster->Possess(s, 1000);
@@ -3262,7 +3259,8 @@ void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonProperti
     summon->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
     summon->setCreatedBySpellId(m_spellInfo->getId());
     summon->GetAIInterface()->SetFollowDistance(GetRadius(i));
-    summon->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
+    if (summon->GetScript() != nullptr)
+        summon->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     summon->PushToWorld(u_caster->GetMapMgr());
     u_caster->setCritterGuid(summon->getGuid());
 #endif
@@ -3283,7 +3281,8 @@ void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonProper
     c->setCreatedBySpellId(m_spellInfo->getId());
     c->setCreatedByGuid(u_caster->getGuid());
     c->setSummonedByGuid(u_caster->getGuid());
-    c->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
+    if (c->GetScript() != nullptr)
+        c->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
     c->PushToWorld(u_caster->GetMapMgr());
 
@@ -3342,12 +3341,12 @@ void Spell::SpellEffectEnergize(uint8_t effectIndex) // Energize
                     //heal amount from procspell (we only proceed on a heal spell)
                     uint32 healamt = 0;
                     if (ProcedOnSpell->getEffect(0) == SPELL_EFFECT_HEAL || ProcedOnSpell->getEffect(0) == SPELL_EFFECT_SCRIPT_EFFECT)
-                        healamt = ProcedOnSpell->getEffectBasePoints(0) + 1;
+                        healamt = ProcedOnSpell->calculateEffectValue(0);
                     else if (ProcedOnSpell->getEffect(1) == SPELL_EFFECT_HEAL || ProcedOnSpell->getEffect(1) == SPELL_EFFECT_SCRIPT_EFFECT)
-                        healamt = ProcedOnSpell->getEffectBasePoints(1) + 1;
+                        healamt = ProcedOnSpell->calculateEffectValue(1);
                     else if (ProcedOnSpell->getEffect(2) == SPELL_EFFECT_HEAL || ProcedOnSpell->getEffect(2) == SPELL_EFFECT_SCRIPT_EFFECT)
-                        healamt = ProcedOnSpell->getEffectBasePoints(2) + 1;
-                    modEnergy = (motherspell->getEffectBasePoints(0) + 1) * (healamt) / 100;
+                        healamt = ProcedOnSpell->calculateEffectValue(2);
+                    modEnergy = (motherspell->calculateEffectValue(0)) * (healamt) / 100;
                 }
             }
             break;
@@ -3396,9 +3395,9 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
 
         // Get bonus damage from spell power and attack power
         if (!isEffectDamageStatic[effectIndex])
-            dmg = getUnitCaster()->applySpellDamageBonus(getSpellInfo(), static_cast<int32_t>(dmg), effectPctModifier[effectIndex]);
+            dmg = getUnitCaster()->applySpellDamageBonus(getSpellInfo(), static_cast<int32_t>(dmg), effectPctModifier[effectIndex], false, this);
 
-        m_targetDamageInfo = u_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), dmg, effectIndex, m_triggeredSpell);
+        m_targetDamageInfo = u_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), dmg, effectIndex, m_triggeredSpell, false, false, isForcedCrit, this);
         isTargetDamageInfoSet = true;
     }
     else
@@ -3414,7 +3413,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
                 _type = MELEE;
         }
 
-        m_targetDamageInfo = u_caster->Strike(unitTarget, _type, getSpellInfo(), add_damage, damage, 0, m_triggeredSpell, true);
+        m_targetDamageInfo = u_caster->Strike(unitTarget, _type, getSpellInfo(), add_damage, damage, 0, m_triggeredSpell, true, isForcedCrit, this);
         isTargetDamageInfoSet = true;
 
         if (p_caster != nullptr)   // rogue - fan of knives
@@ -3451,7 +3450,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
                             else
                                 damage = getSpellInfo()->getEffectBasePoints(effectIndex) + 1;// and 70% weapon damage with all other weapons.
 
-                            u_caster->Strike(unitTarget, OFFHAND, getSpellInfo(), add_damage, damage, 0, m_triggeredSpell, true);
+                            u_caster->Strike(unitTarget, OFFHAND, getSpellInfo(), add_damage, damage, 0, m_triggeredSpell, true, isForcedCrit, this);
                         }
                     }
                 } break;
@@ -4003,7 +4002,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
                         {
                             const auto spellInfo = sSpellMgr.getSpellInfo(31117);
                             Spell* spell = sSpellMgr.newSpell(u_caster, spellInfo, true, nullptr);
-                            spell->forced_basepoints[0] = (aursp->getEffectBasePoints(0) + 1) * 9;   //damage effect
+                            spell->forced_basepoints[0] = (aursp->calculateEffectValue(0)) * 9;   //damage effect
                             spell->ProcedOnSpell = getSpellInfo();
                             spell->pSpellId = aursp->getId();
                             SpellCastTargets targets(u_caster->getGuid());
@@ -4518,7 +4517,7 @@ void Spell::SpellEffectWeapondamage(uint8_t /*effectIndex*/)   // Weapon damage 
         else
             _type = MELEE;
     }
-    m_targetDamageInfo = u_caster->Strike(unitTarget, _type, getSpellInfo(), damage, 0, 0, m_triggeredSpell, true);
+    m_targetDamageInfo = u_caster->Strike(unitTarget, _type, getSpellInfo(), damage, 0, 0, m_triggeredSpell, true, isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 
@@ -4604,7 +4603,7 @@ void Spell::SpellEffectPowerBurn(uint8_t effectIndex) // power burn
 
     unitTarget->modPower(POWER_TYPE_MANA, -mana);
 
-    m_targetDamageInfo = m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), mana * getSpellInfo()->getEffectMultipleValue(effectIndex), effectIndex, m_triggeredSpell);
+    m_targetDamageInfo = m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), mana * getSpellInfo()->getEffectMultipleValue(effectIndex), effectIndex, m_triggeredSpell, false, false, isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 
@@ -4614,10 +4613,6 @@ void Spell::SpellEffectThreat(uint8_t effectIndex) // Threat
         return;
 
     int32 amount = getSpellInfo()->getEffectBasePoints(effectIndex);
-
-    spellModFlatIntValue(u_caster->SM_FMiscEffect, &amount, getSpellInfo()->getSpellFamilyFlags());
-    spellModPercentageIntValue(u_caster->SM_PMiscEffect, &amount, getSpellInfo()->getSpellFamilyFlags());
-
 
     bool chck = unitTarget->GetAIInterface()->modThreatByPtr(u_caster, amount);
     if (!chck)
@@ -4742,7 +4737,7 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
             // Check for CastingTime (to prevent interrupting instant casts), PreventionType
             // and InterruptFlags of target's casting spell
             if (school
-                && (TargetSpell->getState() == SPELL_STATE_CASTING
+                && (TargetSpell->getState() == SPELL_STATE_CHANNELING
                 || (TargetSpell->getState() == SPELL_STATE_PREPARING && TargetSpell->getSpellInfo()->getCastingTimeIndex() > 0))
                 && TargetSpell->getSpellInfo()->getPreventionType() == PREVENTION_TYPE_SILENCE
                 && ((TargetSpell->getSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_ON_AUTOATTACK)
@@ -4883,16 +4878,12 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
 #endif
 }
 
-void Spell::SpellEffectHealMechanical(uint8_t effectIndex)
+void Spell::SpellEffectHealMechanical(uint8_t /*effectIndex*/)
 {
     if (!unitTarget || !unitTarget->isCreature() || static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Type != UNIT_TYPE_MECHANICAL)
         return;
 
-    auto dmg = static_cast<float_t>(damage);
-    if (getUnitCaster() != nullptr && !isEffectDamageStatic[effectIndex])
-        dmg += getUnitCaster()->applySpellHealingBonus(getSpellInfo(), damage, effectPctModifier[effectIndex]);
-
-    m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), dmg, m_triggeredSpell);
+    m_targetDamageInfo = m_caster->doSpellHealing(unitTarget, getSpellInfo()->getId(), static_cast<float_t>(damage), m_triggeredSpell, false, false, isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 
@@ -5161,9 +5152,7 @@ void Spell::SpellEffectSelfResurrect(uint8_t effectIndex)
         break;
         case 21169: //Reincarnation. Resurrect with 20% health and mana
         {
-            int32 amt = 20;
-            spellModFlatIntValue(unitTarget->SM_FMiscEffect, &amt, getSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageIntValue(unitTarget->SM_PMiscEffect, &amt, getSpellInfo()->getSpellFamilyFlags());
+            int32 amt = damage;
             health = uint32((unitTarget->getMaxHealth() * amt) / 100);
             mana = uint32((unitTarget->getMaxPower(POWER_TYPE_MANA) * amt) / 100);
         }
@@ -5189,7 +5178,7 @@ void Spell::SpellEffectSelfResurrect(uint8_t effectIndex)
     playerTarget->setSelfResurrectSpell(0);
 
     if (getSpellInfo()->getId() == 21169)
-        p_caster->addSpellCooldown(getSpellInfo(), i_caster);
+        p_caster->addSpellCooldown(getSpellInfo(), i_caster, this);
 }
 
 void Spell::SpellEffectSkinning(uint8_t /*effectIndex*/)
@@ -5274,7 +5263,7 @@ void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)
     uint32 skill = p_caster->_GetSkillLineCurrent(SKILL_ENCHANTING);
     if (skill && skill < 60)
     {
-        if (Rand(100.0f - skill * 0.75f))
+        if (Util::checkChance(100.0f - skill * 0.75f))
         {
             uint32 SkillUp = float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE));
             if (skill + SkillUp > 60)
@@ -5435,9 +5424,6 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
     Pet* pPet = p_caster->GetSummon();
     if (pPet)
     {
-        spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, getSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, getSpellInfo()->getSpellFamilyFlags());
-
         //\note remove all dynamic flags
         pPet->setDynamicFlags(0);
         pPet->setHealth((uint32)((pPet->getMaxHealth() * damage) / 100));
@@ -5453,9 +5439,6 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
         pPet = p_caster->GetSummon();
         if (pPet == nullptr)//no pets to Revive
             return;
-
-        spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, getSpellInfo()->getSpellFamilyFlags());
-        spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, getSpellInfo()->getSpellFamilyFlags());
 
         pPet->setHealth((uint32)((pPet->getMaxHealth() * damage) / 100));
     }
@@ -5939,7 +5922,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
         else
             _type = MELEE;
     }
-    m_targetDamageInfo = u_caster->Strike(unitTarget, _type, getSpellInfo(), damage, pct_dmg_mod, 0, m_triggeredSpell, true);
+    m_targetDamageInfo = u_caster->Strike(unitTarget, _type, getSpellInfo(), damage, pct_dmg_mod, 0, m_triggeredSpell, true, isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 
@@ -6070,31 +6053,12 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
 
                     uint32 aurdur = (aur->getTimeLeft() > 120000 ? 120000 : aur->getTimeLeft());
                     Aura* aura = sSpellMgr.newAura(aursp, aurdur, u_caster, u_caster);
-                    uint32 aur_removed = unitTarget->removeAllAurasByIdReturnCount(aursp->getId());
+                    unitTarget->removeAllAurasByIdReturnCount(aursp->getId());
                     for (uint8 j = 0; j < 3; j++)
                     {
                         if (aura->getSpellInfo()->getEffect(j))
                         {
                             aura->addAuraEffect(static_cast<AuraEffect>(aura->getSpellInfo()->getEffectApplyAuraName(j)), aura->getSpellInfo()->getEffectBasePoints(j) + 1, aura->getSpellInfo()->getEffectMiscValue(j), aur->getAuraEffect(j).getEffectPercentModifier(), true, j);
-                        }
-                    }
-                    if (aura->getSpellInfo()->getProcChance() > 0)
-                    {
-                        Aura* aur2;
-                        for (uint32 j = 0; j < aur_removed - 1; j++)
-                        {
-                            aur2 = sSpellMgr.newAura(aura->getSpellInfo(), aurdur, u_caster, u_caster);
-                            u_caster->addAura(aur2);
-                        }
-
-                        {
-                            SpellCharge charge;
-                            charge.count = aur_removed;
-                            charge.spellId = aura->getSpellId();
-                            charge.ProcFlag = aura->getSpellInfo()->getProcFlags();
-                            charge.lastproc = 0;
-                            charge.procdiff = 0;
-                            u_caster->m_chargeSpells.insert(std::make_pair(aura->getSpellId(), charge));
                         }
                     }
                     u_caster->addAura(aura);

@@ -43,7 +43,6 @@
 #include "Spell/Definitions/SpellDidHitResult.h"
 #include "Spell/Definitions/SpellEffectTarget.h"
 #include "Spell/Definitions/SpellDamageType.h"
-#include "Spell/SpellHelpers.h"
 #include "Creatures/Pet.h"
 #include "Data/WoWUnit.h"
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
@@ -59,11 +58,6 @@
 #include "Server/Packets/SmsgAttackSwingBadFacing.h"
 
 using namespace AscEmu::Packets;
-
-using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
-using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
 
 #ifdef AE_CLASSIC
 static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
@@ -483,7 +477,7 @@ Unit::Unit() :
     mControledUnit = this;
     mPlayerControler = nullptr;
 
-    int i;
+    uint8_t i;
 
     m_canDualWield = false;
     for (i = 0; i < TOTAL_WEAPON_DAMAGE_TYPES; ++i)
@@ -535,78 +529,6 @@ Unit::Unit() :
         ModDamageTakenByMechPCT[i] = 0;
     }
 
-    //SM
-    SM_FDamageBonus = 0;
-    SM_PDamageBonus = 0;
-
-    SM_FDur = 0;
-    SM_PDur = 0;
-
-    SM_FThreat = 0;
-    SM_PThreat = 0;
-
-    SM_FEffect1_Bonus = 0;
-    SM_PEffect1_Bonus = 0;
-
-    SM_FCharges = 0;
-    SM_PCharges = 0;
-
-    SM_FRange = 0;
-    SM_PRange = 0;
-
-    SM_FRadius = 0;
-    SM_PRadius = 0;
-
-    SM_CriticalChance = 0;
-
-    SM_FMiscEffect = 0;
-    SM_PMiscEffect = 0;
-
-    SM_PNonInterrupt = 0;
-
-    SM_FCastTime = 0;
-    SM_PCastTime = 0;
-
-    SM_FCooldownTime = 0;
-    SM_PCooldownTime = 0;
-
-    SM_FEffect2_Bonus = 0;
-    SM_PEffect2_Bonus = 0;
-
-    SM_FCost = 0;
-    SM_PCost = 0;
-
-    SM_PCriticalDamage = 0;
-
-    SM_FHitchance = 0;
-
-    SM_FAdditionalTargets = 0;
-
-    SM_FChanceOfSuccess = 0;
-
-    SM_FAmptitude = 0;
-    SM_PAmptitude = 0;
-
-    SM_PJumpReduce = 0;
-
-    SM_FGlobalCooldown = 0;
-    SM_PGlobalCooldown = 0;
-
-    SM_FDOT = 0;
-    SM_PDOT = 0;
-
-    SM_FEffect3_Bonus = 0;
-    SM_PEffect3_Bonus = 0;
-
-    SM_FPenalty = 0;
-    SM_PPenalty = 0;
-
-    SM_FEffectBonus = 0;
-    SM_PEffectBonus = 0;
-
-    SM_FRezist_dispell = 0;
-    SM_PRezist_dispell = 0;
-
     m_pacified = 0;
     m_interruptRegen = 0;
     m_resistChance = 0;
@@ -642,17 +564,6 @@ Unit::Unit() :
     CreatureAttackPowerMod[11] = 0;
     CreatureRangedAttackPowerMod[11] = 0;
 
-    for (i = 0; i < INVIS_FLAG_TOTAL; i++)
-    {
-        m_invisibilityLevel[i] = 0;
-        m_invisibilityDetection[i] = 0;
-    }
-
-    for (i = 0; i < STEALTH_FLAG_TOTAL; ++i)
-    {
-        m_stealthLevel[i] = 0;
-        m_stealthDetection[i] = 0;
-    }
     m_can_stealth = true;
 
     for (i = 0; i < 5; i++)
@@ -724,13 +635,10 @@ Unit::Unit() :
     spellcritperc = 0;
 
     RangedDamageTaken = 0;
-    m_procCounter = 0;
     m_damgeShieldsInUse = false;
     // fearSpell = 0;
     m_extraAttackCounter = false;
     CombatStatus.SetUnit(this);
-    m_chargeSpellsInUse = false;
-    // m_spellsbusy=false;
     m_hitfrommeleespell = 0;
     m_damageSplitTarget = NULL;
     m_extrastriketarget = false;
@@ -755,8 +663,6 @@ Unit::Unit() :
     m_damageShields.clear();
     m_reflectSpellSchool.clear();
     m_procSpells.clear();
-    m_chargeSpells.clear();
-    m_chargeSpellRemoveQueue.clear();
     tmpAura.clear();
     m_extraStrikeTargets.clear();
 
@@ -769,7 +675,6 @@ Unit::Unit() :
     TaggerGuid = 0;
 
     m_singleTargetAura.clear();
-    m_healthBatch.clear();
 
     m_vehicle = NULL;
     m_currentVehicle = NULL;
@@ -789,6 +694,25 @@ Unit::Unit() :
 
     m_summonInterface = new SummonHandler;
 
+    m_healthBatch.clear();
+
+    for (i = 0; i < INVIS_FLAG_TOTAL; i++)
+    {
+        m_invisibilityLevel[i] = 0;
+        m_invisibilityDetection[i] = 0;
+    }
+
+    for (i = 0; i < STEALTH_FLAG_TOTAL; ++i)
+    {
+        m_stealthLevel[i] = 0;
+        m_stealthDetection[i] = 0;
+    }
+
+    for (i = 0; i < MAX_SPELLMOD_TYPE; ++i)
+    {
+        m_spellModifiers[i].clear();
+    }
+
     // MIT End
     // APGL Start
 }
@@ -798,276 +722,6 @@ Unit::~Unit()
     //start to remove badptrs, if you delete from the heap null the ptr's damn!
     RemoveAllAuras();
 
-    if (SM_CriticalChance != NULL)
-    {
-        delete[] SM_CriticalChance;
-        SM_CriticalChance = NULL;
-    }
-
-    if (SM_FDur != NULL)
-    {
-        delete[] SM_FDur;
-        SM_FDur = NULL;
-    }
-
-    if (SM_PDur != NULL)
-    {
-        delete[] SM_PDur;
-        SM_PDur = NULL;
-    }
-
-    if (SM_FRadius != NULL)
-    {
-        delete[] SM_FRadius;
-        SM_FRadius = NULL;
-    }
-
-    if (SM_FRange != NULL)
-    {
-        delete[] SM_FRange;
-        SM_FRange = NULL;
-    }
-
-    if (SM_PCastTime != NULL)
-    {
-        delete[] SM_PCastTime;
-        SM_PCastTime = NULL;
-    }
-
-    if (SM_FCastTime != NULL)
-    {
-        delete[] SM_FCastTime;
-        SM_FCastTime = NULL;
-    }
-
-    if (SM_PCriticalDamage != NULL)
-    {
-        delete[] SM_PCriticalDamage;
-        SM_PCriticalDamage = NULL;
-    }
-
-    if (SM_FDOT != NULL)
-    {
-        delete[] SM_FDOT;
-        SM_FDOT = NULL;
-    }
-
-    if (SM_PDOT != NULL)
-    {
-        delete[] SM_PDOT;
-        SM_PDOT = NULL;
-    }
-
-    if (SM_FEffect1_Bonus != NULL)
-    {
-        delete[] SM_FEffect1_Bonus;
-        SM_FEffect1_Bonus = NULL;
-    }
-
-    if (SM_PEffect1_Bonus != NULL)
-    {
-        delete[] SM_PEffect1_Bonus;
-        SM_PEffect1_Bonus = NULL;
-    }
-
-    if (SM_FEffect2_Bonus != NULL)
-    {
-        delete[] SM_FEffect2_Bonus;
-        SM_FEffect2_Bonus = NULL;
-    }
-
-    if (SM_PEffect2_Bonus != NULL)
-    {
-        delete[] SM_PEffect2_Bonus;
-        SM_PEffect2_Bonus = NULL;
-    }
-
-    if (SM_FEffect3_Bonus != NULL)
-    {
-        delete[] SM_FEffect3_Bonus;
-        SM_FEffect3_Bonus = NULL;
-    }
-
-    if (SM_PEffect3_Bonus != NULL)
-    {
-        delete[] SM_PEffect3_Bonus;
-        SM_PEffect3_Bonus = NULL;
-    }
-
-    if (SM_PEffectBonus != NULL)
-    {
-        delete[] SM_PEffectBonus;
-        SM_PEffectBonus = NULL;
-    }
-
-    if (SM_FEffectBonus != NULL)
-    {
-        delete[] SM_FEffectBonus;
-        SM_FEffectBonus = NULL;
-    }
-
-    if (SM_FDamageBonus != NULL)
-    {
-        delete[] SM_FDamageBonus;
-        SM_FDamageBonus = NULL;
-    }
-
-    if (SM_PDamageBonus != NULL)
-    {
-        delete[] SM_PDamageBonus;
-        SM_PDamageBonus = NULL;
-    }
-
-    if (SM_PMiscEffect != NULL)
-    {
-        delete[] SM_PMiscEffect;
-        SM_PMiscEffect = NULL;
-    }
-
-    if (SM_FMiscEffect != NULL)
-    {
-        delete[] SM_FMiscEffect;
-        SM_FMiscEffect = NULL;
-    }
-
-    if (SM_FHitchance != NULL)
-    {
-        delete[] SM_FHitchance;
-        SM_FHitchance = NULL;
-    }
-
-    if (SM_PRange != NULL)
-    {
-        delete[] SM_PRange;
-        SM_PRange = NULL;
-    }
-
-    if (SM_PRadius != NULL)
-    {
-        delete[] SM_PRadius;
-        SM_PRadius = NULL;
-    }
-
-    if (SM_PCost != NULL)
-    {
-        delete[] SM_PCost;
-        SM_PCost = NULL;
-    }
-
-    if (SM_FCost != NULL)
-    {
-        delete[] SM_FCost;
-        SM_FCost = NULL;
-    }
-
-    if (SM_FAdditionalTargets != NULL)
-    {
-        delete[] SM_FAdditionalTargets;
-        SM_FAdditionalTargets = NULL;
-    }
-
-    if (SM_PJumpReduce != NULL)
-    {
-        delete[] SM_PJumpReduce;
-        SM_PJumpReduce = NULL;
-    }
-
-    if (SM_FGlobalCooldown != NULL)
-    {
-        delete[] SM_FGlobalCooldown;
-        SM_FGlobalCooldown = NULL;
-    }
-
-    if (SM_PGlobalCooldown != NULL)
-    {
-        delete[] SM_PGlobalCooldown;
-        SM_PGlobalCooldown = NULL;
-    }
-
-    if (SM_PNonInterrupt != NULL)
-    {
-        delete[] SM_PNonInterrupt;
-        SM_PNonInterrupt = NULL;
-    }
-
-    if (SM_FPenalty != NULL)
-    {
-        delete[] SM_FPenalty;
-        SM_FPenalty = NULL;
-    }
-
-    if (SM_PPenalty != NULL)
-    {
-        delete[] SM_PPenalty;
-        SM_PPenalty = NULL;
-    }
-
-    if (SM_FCooldownTime != NULL)
-    {
-        delete[] SM_FCooldownTime;
-        SM_FCooldownTime = NULL;
-    }
-
-    if (SM_PCooldownTime != NULL)
-    {
-        delete[] SM_PCooldownTime;
-        SM_PCooldownTime = NULL;
-    }
-
-    if (SM_FChanceOfSuccess != NULL)
-    {
-        delete[] SM_FChanceOfSuccess;
-        SM_FChanceOfSuccess = NULL;
-    }
-
-    if (SM_FAmptitude != NULL)
-    {
-        delete[] SM_FAmptitude;
-        SM_FAmptitude = NULL;
-    }
-
-    if (SM_PAmptitude != NULL)
-    {
-        delete[] SM_PAmptitude;
-        SM_PAmptitude = NULL;
-    }
-
-    if (SM_FRezist_dispell != NULL)
-    {
-        delete[] SM_FRezist_dispell;
-        SM_FRezist_dispell = NULL;
-    }
-
-    if (SM_PRezist_dispell != NULL)
-    {
-        delete[] SM_PRezist_dispell;
-        SM_PRezist_dispell = NULL;
-    }
-
-    if (SM_FCharges != NULL)
-    {
-        delete[] SM_FCharges;
-        SM_FCharges = NULL;
-    }
-
-    if (SM_PCharges != NULL)
-    {
-        delete[] SM_PCharges;
-        SM_PCharges = NULL;
-    }
-
-    if (SM_FThreat != NULL)
-    {
-        delete[] SM_FThreat;
-        SM_FThreat = NULL;
-    }
-
-    if (SM_PThreat != NULL)
-    {
-        delete[] SM_PThreat;
-        SM_PThreat = NULL;
-    }
-
     delete m_aiInterface;
     m_aiInterface = NULL;
 
@@ -1075,6 +729,11 @@ Unit::~Unit()
     {
         if (getCurrentSpell(CurrentSpellType(i)) != nullptr)
             interruptSpellWithSpellType(CurrentSpellType(i));
+    }
+
+    for (uint8_t i = 0; i < MAX_SPELLMOD_TYPE; ++i)
+    {
+        m_spellModifiers[i].clear();
     }
 
     if (m_damageSplitTarget)
@@ -1445,18 +1104,10 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
 uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell, DamageInfo damageInfo, bool isSpellTriggered, ProcEvents procEvent/* = PROC_EVENT_DO_ALL*/, Aura* triggeredFromAura/* = nullptr*/)
 {
     uint32 resisted_dmg = 0;
-    ++m_procCounter;
     bool can_delete = !bProcInUse; //if this is a nested proc then we should have this set to TRUE by the father proc
     bProcInUse = true; //locking the proc list
 
-    // Commenting this out for now, probably not needed anymore -Appled
-    /*if (m_procCounter > 40)
-    {
-        // something has proceed over 10 times in a loop :/ dump the spellids to the crashlog, as the crashdump will most likely be useless.
-        // BURLEX FIX ME!
-        //OutputCrashLogLine("HandleProc %u SpellId %u (%s) %u", flag, spellId, sSpellStore.LookupString(sSpellStore.LookupEntry(spellId)->Name), m_procCounter);
-        return 0;
-    }*/
+    std::list<SpellProc*> happenedProcs;
 
     for (std::list<SpellProc*>::iterator itr = m_procSpells.begin(); itr != m_procSpells.end();)    // Proc Trigger Spells for Victim
     {
@@ -1478,6 +1129,13 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
 
         // APGL End
         // MIT Start
+
+        // Check if spell proc is marked to skip this call
+        if (spell_proc->isSkippingHandleProc())
+        {
+            spell_proc->skipOnNextHandleProc(false);
+            continue;
+        }
 
         if (CastingSpell != nullptr)
         {
@@ -1623,9 +1281,10 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
         }
 
         // Apply modifiers to proc chance
-        spellModFlatIntValue(SM_FChanceOfSuccess, (int32*)&proc_Chance, ospinfo->getSpellFamilyFlags());
+        // todo: this will not use spell charges
+        applySpellModifiers(SPELLMOD_TRIGGER, &proc_Chance, ospinfo);
 
-        if (proc_Chance < 100 && !Rand(proc_Chance))
+        if (!Util::checkChance(proc_Chance))
             continue;
 
         // Check if proc has interval
@@ -2659,9 +2318,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         }
 
                         //this spell builds up n time
-                        spell_proc->setProcCharges(spell_proc->getProcCharges() + damageInfo.realDamage);
-                        if (ospinfo && (int32)spell_proc->getProcCharges() >= ospinfo->getEffectBasePoints(1) &&  //if charge built up
-                            damageInfo.realDamage < this->getHealth())    //if this is not a killer blow
+                        if (ospinfo && damageInfo.realDamage < this->getHealth())    //if this is not a killer blow
                             can_proc_now = true;
                     }
                     else can_proc_now = true; //target died
@@ -2707,7 +2364,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
 
                     //null check was made before like 2 times already :P
                     if (ospinfo)
-                        spell_proc->setOverrideEffectDamage(0, (ospinfo->getEffectBasePoints(2) + 1) * getMaxPower(POWER_TYPE_MANA) / 100);
+                        spell_proc->setOverrideEffectDamage(0, (ospinfo->calculateEffectValue(2)) * getMaxPower(POWER_TYPE_MANA) / 100);
                 }
                 break;
                 // warlock - Unstable Affliction
@@ -2715,7 +2372,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 {
                     //null check was made before like 2 times already :P
                     if (ospinfo)
-                        spell_proc->setOverrideEffectDamage(0, (ospinfo->getEffectBasePoints(0) + 1) * 9);
+                        spell_proc->setOverrideEffectDamage(0, (ospinfo->calculateEffectValue(0)) * 9);
                 }
                 break;
 
@@ -3150,7 +2807,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         case 69576:
                         case 71108:
                         {
-                            amount = CastingSpell->getEffectBasePoints(0) + 1;
+                            amount = CastingSpell->calculateEffectValue(0);
                         } break;
 
                         //SPELL_HASH_SHADOWBURN
@@ -3166,7 +2823,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         case 47826:
                         case 47827:
                         {
-                            amount = CastingSpell->getEffectBasePoints(1) + 1;
+                            amount = CastingSpell->calculateEffectValue(1);
                         } break;
                         default:
                             amount = 0;
@@ -3180,7 +2837,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, NULL);
                     spell->SetUnitTarget(this);
                     if (ospinfo)
-                        doSpellHealing(this, spellId, amount * (ospinfo->getEffectBasePoints(0) + 1) / 100.0f, true);
+                        doSpellHealing(this, spellId, amount * (ospinfo->calculateEffectValue(0)) / 100.0f, true);
                     delete spell;
                     spell = NULL;
                     continue;
@@ -3684,10 +3341,11 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     //only trigger effect for specified spells
                     if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING) || !(CastingSpell->getSchoolMask() & SCHOOL_MASK_FIRE))
                         continue;
-                    if (damageInfo.isCritical)
+                    if (damageInfo.isCritical && spell_proc->getCreatedByAura() != nullptr)
                     {
-                        spell_proc->setProcCharges(spell_proc->getProcCharges() + 1);
-                        if (spell_proc->getProcCharges() >= 3)   //whatch that number cause it depends on original stack count !
+                        auto procAura = spell_proc->getCreatedByAura();
+                        procAura->setCharges(procAura->getCharges() + 1);
+                        if (procAura->getCharges() >= 3)   //whatch that number cause it depends on original stack count !
                         {
                             uint32 combastion[] =
                             {
@@ -3802,7 +3460,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
                     if (!parentproc || !spellInfo)
                         continue;
-                    int32 val = parentproc->getEffectBasePoints(0) + 1;
+                    int32 val = parentproc->calculateEffectValue(0);
                     Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, NULL);
                     spell->forced_basepoints[0] = (val * damageInfo.realDamage) / 300; //per tick
                     SpellCastTargets targets(getGuid());
@@ -4484,7 +4142,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     //!! The weird thing is that we need the spell that triggered this enchant spell in order to output logs ..we are using oldspell info too
                     //we have to recalc the value of this spell
                     const auto spellInfo = sSpellMgr.getSpellInfo(origId);
-                    uint32 AP_owerride = spellInfo->getEffectBasePoints(0) + 1;
+                    uint32 AP_owerride = spellInfo->calculateEffectValue(0);
                     uint32 dmg2 = static_cast<Player*>(this)->GetMainMeleeDamage(AP_owerride);
                     SpellInfo const* sp_for_the_logs = sSpellMgr.getSpellInfo(spellId);
                     Strike(victim, MELEE, sp_for_the_logs, dmg2, 0, 0, true, false);
@@ -4698,7 +4356,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     //make a direct strike then exit rest of handler
                     if (ospinfo)
                     {
-                        auto tdmg = damageInfo.absorbedDamage * (ospinfo->getEffectBasePoints(0) + 1) / 100.0f;
+                        auto tdmg = damageInfo.absorbedDamage * (ospinfo->calculateEffectValue(0)) / 100.0f;
                         //somehow we should make this not caused any threat (to be done)
                         doSpellDamage(victim, power_word_id, tdmg, 0, true);
                     }
@@ -4915,40 +4573,6 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         spell_proc->setOverrideEffectDamage(0, ospinfo->getEffectBasePoints(0) * damageInfo.realDamage / (100 * tickcount));
                 }
                 break;
-                case 59578: //Paladin - Art of War
-                case 53489:
-                {
-                    if (CastingSpell == NULL)
-                        continue;
-
-                    switch (CastingSpell->getId())
-                    {
-                        case 53408:
-                        case 53407:
-                        case 20271:
-                        //SPELL_HASH_CRUSADER_STRIKE
-                        case 14517:
-                        case 14518:
-                        case 17281:
-                        case 35395:
-                        case 35509:
-                        case 36647:
-                        case 50773:
-                        case 65166:
-                        case 66003:
-                        case 71549:
-                        //SPELL_HASH_DIVINE_STORM
-                        case 53385:
-                        case 54171:
-                        case 54172:
-                        case 58127:
-                        case 66006:
-                            break;
-                        default:
-                            continue;
-                    }
-                }
-                break;
 
                 //////////////////////////////////////////////////////////////////////////////////////////
                 // WARRIOR
@@ -4993,7 +4617,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     if (idx != 1)
                     {
                         if (ospinfo)
-                            spell_proc->setOverrideEffectDamage(0, ((CastingSpell->getEffectBasePoints(static_cast<uint8_t>(idx)) + 1) * (ospinfo->getEffectBasePoints(0) + 1) / 100));
+                            spell_proc->setOverrideEffectDamage(0, ((CastingSpell->getEffectBasePoints(static_cast<uint8_t>(idx)) + 1) * (ospinfo->calculateEffectValue(0)) / 100));
                     }
                 }
                 break;
@@ -6562,318 +6186,273 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
         {
             RemoveAura(39805);          // Remove lightning overload aura after procing
         }
+
+        if (spell_proc->getCreatedByAura() != nullptr)
+            happenedProcs.push_back(spell_proc);
     }
 
-    m_chargeSpellsInUse = true;
-    std::map<uint32, struct SpellCharge>::iterator iter, iter2;
-    iter = m_chargeSpells.begin();
-
-    while (iter != m_chargeSpells.end())
+    if (!happenedProcs.empty())
     {
-        iter2 = iter++;
-
-        if (iter2->second.count)
+        for (auto procItr = happenedProcs.begin(); procItr != happenedProcs.end();)
         {
-            if ((iter2->second.ProcFlag & flag))
+            auto proc = *procItr;
+            if (proc->getCreatedByAura() != nullptr)
+                proc->getCreatedByAura()->removeCharge();
+
+            procItr = happenedProcs.erase(procItr);
+        }
+    }
+
+    // Leaving old hackfixes commented here -Appled
+    /*switch (iter2->second.spellId)
+    {
+        case 43339: // Shaman - Shamanist Focus
+        {
+            switch (CastingSpell->getId())
             {
-                //Fixes for spells that don't lose charges when dmg is absorbed
-                if (iter2->second.ProcFlag == 680 && damageInfo.realDamage == 0)
-                    continue;
-
-                if (CastingSpell)
-                {
-                    auto spell_cast_time = sSpellCastTimesStore.LookupEntry(CastingSpell->getCastingTimeIndex());
-                    if (!spell_cast_time)
-                        continue;
-
-                    //if we did not proc these then we should not remove them
-                    if (CastingSpell->getId() == iter2->second.spellId)
-                        continue;
-
-                    switch (iter2->second.spellId)
-                    {
-                        case 43339: // Shaman - Shamanist Focus
-                        {
-                            switch (CastingSpell->getId())
-                            {
-                                //SPELL_HASH_EARTH_SHOCK
-                                case 8042:
-                                case 8044:
-                                case 8045:
-                                case 8046:
-                                case 10412:
-                                case 10413:
-                                case 10414:
-                                case 13281:
-                                case 13728:
-                                case 15501:
-                                case 22885:
-                                case 23114:
-                                case 24685:
-                                case 25025:
-                                case 25454:
-                                case 26194:
-                                case 43305:
-                                case 47071:
-                                case 49230:
-                                case 49231:
-                                case 54511:
-                                case 56506:
-                                case 57783:
-                                case 60011:
-                                case 61668:
-                                case 65973:
-                                case 68100:
-                                case 68101:
-                                case 68102:
-                                //SPELL_HASH_FLAME_SHOCK
-                                case 8050:
-                                case 8052:
-                                case 8053:
-                                case 10447:
-                                case 10448:
-                                case 13729:
-                                case 15039:
-                                case 15096:
-                                case 15616:
-                                case 16804:
-                                case 22423:
-                                case 23038:
-                                case 25457:
-                                case 29228:
-                                case 32967:
-                                case 34354:
-                                case 39529:
-                                case 39590:
-                                case 41115:
-                                case 43303:
-                                case 49232:
-                                case 49233:
-                                case 51588:
-                                case 55613:
-                                case 58940:
-                                case 58971:
-                                case 59684:
-                                //SPELL_HASH_FROST_SHOCK
-                                case 8056:
-                                case 8058:
-                                case 10472:
-                                case 10473:
-                                case 12548:
-                                case 15089:
-                                case 15499:
-                                case 19133:
-                                case 21030:
-                                case 21401:
-                                case 22582:
-                                case 23115:
-                                case 25464:
-                                case 29666:
-                                case 34353:
-                                case 37332:
-                                case 37865:
-                                case 38234:
-                                case 39062:
-                                case 41116:
-                                case 43524:
-                                case 46180:
-                                case 49235:
-                                case 49236:
-                                    break;
-                                default:
-                                    continue;
-                            }
-                        }
-                        break;
-                        case 12043: // Mage - Presence of Mind
-                        {
-                            //if (!sd->CastTime||sd->CastTime>10000) continue;
-                            if (spell_cast_time->CastTime == 0)
-                                continue;
-                        }
-                        break;
-                        case 17116: // Shaman - Nature's Swiftness
-                        case 16188: // Druid - Nature's Swiftness
-                        {
-                            //if (CastingSpell->School!=SCHOOL_NATURE||(!sd->CastTime||sd->CastTime>10000)) continue;
-                            if (!(CastingSpell->getSchoolMask() & SCHOOL_MASK_NATURE) || spell_cast_time->CastTime == 0)
-                                continue;
-                        }
-                        break;
-                        case 16166:
-                        {
-                            if (!(CastingSpell->getSchoolMask() & SCHOOL_MASK_FIRE || CastingSpell->getSchoolMask() & SCHOOL_MASK_FROST || CastingSpell->getSchoolMask() & SCHOOL_MASK_NATURE))
-                                continue;
-                        }
-                        break;
-                        case 14177: // Cold blood will get removed on offensive spell
-                        {
-                            if (!(CastingSpell->getSpellFamilyFlags(0) & 0x6820206 || CastingSpell->getSpellFamilyFlags(1) & 0x240009))
-                                continue;
-                        }
-                        break;
-                        case 46916: // Bloodsurge - Slam! effect should dissapear after casting Slam only
-                        {
-                            switch (CastingSpell->getId())
-                            {
-                                //SPELL_HASH_SLAM
-                                case 1464:
-                                case 8820:
-                                case 11430:
-                                case 11604:
-                                case 11605:
-                                case 25241:
-                                case 25242:
-                                case 34620:
-                                case 47474:
-                                case 47475:
-                                case 50782:
-                                case 50783:
-                                case 52026:
-                                case 67028:
-                                    break;
-                                default:
-                                    continue;
-                            }
-
-                        }
-                        break;
-                        case 60503: // Taste for Blood should dissapear after casting Overpower
-                        {
-                            switch (CastingSpell->getId())
-                            {
-                                //SPELL_HASH_OVERPOWER
-                                case 7384:
-                                case 7887:
-                                case 11584:
-                                case 11585:
-                                case 14895:
-                                case 17198:
-                                case 24407:
-                                case 32154:
-                                case 37321:
-                                case 37529:
-                                case 43456:
-                                case 58516:
-                                case 65924:
-                                    break;
-                                default:
-                                    continue;
-                            }
-                        }
-                        break;
-                        case 23694: // Imp. Hamstring
-                        {
-                            switch (CastingSpell->getId())
-                            {
-                                //SPELL_HASH_IMPROVED_HAMSTRING
-                                case 12289:
-                                case 12668:
-                                case 23694:
-                                case 23695:
-                                case 24428:
-                                    break;
-                                default:
-                                    continue;
-                            }
-                        }
-                        break;
-                        case 65156: // Juggernaut
-                        {
-                            switch (CastingSpell->getId())
-                            {
-                                //SPELL_HASH_MORTAL_STRIKE
-                                case 9347:
-                                case 12294:
-                                case 13737:
-                                case 15708:
-                                case 16856:
-                                case 17547:
-                                case 19643:
-                                case 21551:
-                                case 21552:
-                                case 21553:
-                                case 24573:
-                                case 25248:
-                                case 27580:
-                                case 29572:
-                                case 30330:
-                                case 31911:
-                                case 32736:
-                                case 35054:
-                                case 37335:
-                                case 39171:
-                                case 40220:
-                                case 43441:
-                                case 43529:
-                                case 44268:
-                                case 47485:
-                                case 47486:
-                                case 57789:
-                                case 65926:
-                                case 67542:
-                                case 68782:
-                                case 68783:
-                                case 68784:
-                                case 71552:
-                                //SPELL_HASH_SLAM
-                                case 1464:
-                                case 8820:
-                                case 11430:
-                                case 11604:
-                                case 11605:
-                                case 25241:
-                                case 25242:
-                                case 34620:
-                                case 47474:
-                                case 47475:
-                                case 50782:
-                                case 50783:
-                                case 52026:
-                                case 67028:
-                                    break;
-                                default:
-                                    continue;
-                            }
-                        }
-                        break;
-                    }
-                }
-                if (iter2->second.lastproc != 0)
-                {
-                    if (iter2->second.procdiff > 3000)
-                    {
-                        //--(iter2->second.count);
-                        RemoveAura(iter2->second.spellId);
-                    }
-                }
-                else
-                {
-                    //--(iter2->second.count); // done in Aura::Remove
-                    this->RemoveAura(iter2->second.spellId);
-                }
+                //SPELL_HASH_EARTH_SHOCK
+            case 8042:
+            case 8044:
+            case 8045:
+            case 8046:
+            case 10412:
+            case 10413:
+            case 10414:
+            case 13281:
+            case 13728:
+            case 15501:
+            case 22885:
+            case 23114:
+            case 24685:
+            case 25025:
+            case 25454:
+            case 26194:
+            case 43305:
+            case 47071:
+            case 49230:
+            case 49231:
+            case 54511:
+            case 56506:
+            case 57783:
+            case 60011:
+            case 61668:
+            case 65973:
+            case 68100:
+            case 68101:
+            case 68102:
+                //SPELL_HASH_FLAME_SHOCK
+            case 8050:
+            case 8052:
+            case 8053:
+            case 10447:
+            case 10448:
+            case 13729:
+            case 15039:
+            case 15096:
+            case 15616:
+            case 16804:
+            case 22423:
+            case 23038:
+            case 25457:
+            case 29228:
+            case 32967:
+            case 34354:
+            case 39529:
+            case 39590:
+            case 41115:
+            case 43303:
+            case 49232:
+            case 49233:
+            case 51588:
+            case 55613:
+            case 58940:
+            case 58971:
+            case 59684:
+                //SPELL_HASH_FROST_SHOCK
+            case 8056:
+            case 8058:
+            case 10472:
+            case 10473:
+            case 12548:
+            case 15089:
+            case 15499:
+            case 19133:
+            case 21030:
+            case 21401:
+            case 22582:
+            case 23115:
+            case 25464:
+            case 29666:
+            case 34353:
+            case 37332:
+            case 37865:
+            case 38234:
+            case 39062:
+            case 41116:
+            case 43524:
+            case 46180:
+            case 49235:
+            case 49236:
+                break;
+            default:
+                continue;
             }
         }
-        if (!iter2->second.count)
+        break;
+        case 12043: // Mage - Presence of Mind
         {
-            m_chargeSpells.erase(iter2);
+            //if (!sd->CastTime||sd->CastTime>10000) continue;
+            if (spell_cast_time->CastTime == 0)
+                continue;
         }
-    }
-
-    for (; !m_chargeSpellRemoveQueue.empty();)
-    {
-        iter = m_chargeSpells.find(m_chargeSpellRemoveQueue.front());
-        if (iter != m_chargeSpells.end())
+        break;
+        case 17116: // Shaman - Nature's Swiftness
+        case 16188: // Druid - Nature's Swiftness
         {
-            if (iter->second.count > 1)
-                --iter->second.count;
-            else
-                m_chargeSpells.erase(iter);
+            //if (CastingSpell->School!=SCHOOL_NATURE||(!sd->CastTime||sd->CastTime>10000)) continue;
+            if (!(CastingSpell->getSchoolMask() & SCHOOL_MASK_NATURE) || spell_cast_time->CastTime == 0)
+                continue;
         }
-        m_chargeSpellRemoveQueue.pop_front();
-    }
+        break;
+        case 16166:
+        {
+            if (!(CastingSpell->getSchoolMask() & SCHOOL_MASK_FIRE || CastingSpell->getSchoolMask() & SCHOOL_MASK_FROST || CastingSpell->getSchoolMask() & SCHOOL_MASK_NATURE))
+                continue;
+        }
+        break;
+        case 14177: // Cold blood will get removed on offensive spell
+        {
+            if (!(CastingSpell->getSpellFamilyFlags(0) & 0x6820206 || CastingSpell->getSpellFamilyFlags(1) & 0x240009))
+                continue;
+        }
+        break;
+        case 46916: // Bloodsurge - Slam! effect should dissapear after casting Slam only
+        {
+            switch (CastingSpell->getId())
+            {
+                //SPELL_HASH_SLAM
+            case 1464:
+            case 8820:
+            case 11430:
+            case 11604:
+            case 11605:
+            case 25241:
+            case 25242:
+            case 34620:
+            case 47474:
+            case 47475:
+            case 50782:
+            case 50783:
+            case 52026:
+            case 67028:
+                break;
+            default:
+                continue;
+            }
 
-    m_chargeSpellsInUse = false;
+        }
+        break;
+        case 60503: // Taste for Blood should dissapear after casting Overpower
+        {
+            switch (CastingSpell->getId())
+            {
+                //SPELL_HASH_OVERPOWER
+            case 7384:
+            case 7887:
+            case 11584:
+            case 11585:
+            case 14895:
+            case 17198:
+            case 24407:
+            case 32154:
+            case 37321:
+            case 37529:
+            case 43456:
+            case 58516:
+            case 65924:
+                break;
+            default:
+                continue;
+            }
+        }
+        break;
+        case 23694: // Imp. Hamstring
+        {
+            switch (CastingSpell->getId())
+            {
+                //SPELL_HASH_IMPROVED_HAMSTRING
+            case 12289:
+            case 12668:
+            case 23694:
+            case 23695:
+            case 24428:
+                break;
+            default:
+                continue;
+            }
+        }
+        break;
+        case 65156: // Juggernaut
+        {
+            switch (CastingSpell->getId())
+            {
+                //SPELL_HASH_MORTAL_STRIKE
+            case 9347:
+            case 12294:
+            case 13737:
+            case 15708:
+            case 16856:
+            case 17547:
+            case 19643:
+            case 21551:
+            case 21552:
+            case 21553:
+            case 24573:
+            case 25248:
+            case 27580:
+            case 29572:
+            case 30330:
+            case 31911:
+            case 32736:
+            case 35054:
+            case 37335:
+            case 39171:
+            case 40220:
+            case 43441:
+            case 43529:
+            case 44268:
+            case 47485:
+            case 47486:
+            case 57789:
+            case 65926:
+            case 67542:
+            case 68782:
+            case 68783:
+            case 68784:
+            case 71552:
+                //SPELL_HASH_SLAM
+            case 1464:
+            case 8820:
+            case 11430:
+            case 11604:
+            case 11605:
+            case 25241:
+            case 25242:
+            case 34620:
+            case 47474:
+            case 47475:
+            case 50782:
+            case 50783:
+            case 52026:
+            case 67028:
+                break;
+            default:
+                continue;
+            }
+        }
+        break;
+    }*/
+
     if (can_delete)   //are we the upper level of nested procs ? If yes then we can remove the lock
         bProcInUse = false;
 
@@ -6966,7 +6545,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInf
         {
             float Resistchance = (float)pVictim->getResistance((*dmg).getSchoolTypeFromMask()) / (float)pVictim->getLevel();
             Resistchance *= Resistchance;
-            if (Rand(Resistchance))
+            if (Util::checkChance(Resistchance))
                 AverageResistance = 1.0f;
         }
 
@@ -6977,7 +6556,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInf
     }
 }
 
-uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* ability)
+uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spell* castingSpell)
 {
     Item* it = NULL;
     float hitchance = 0.0f;
@@ -6989,6 +6568,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
     int32 self_skill;
     int32 victim_skill;
     uint32 SubClassSkill = SKILL_UNARMED;
+    const auto ability = castingSpell->getSpellInfo();
 
     bool backAttack = !pVictim->isInFront(this);   // isInBack is bugged!
     uint32 vskill = 0;
@@ -7168,9 +6748,9 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
             hitchance = std::max(hitchance, 100.0f + vsk * 0.6f + hitmodifier);     //not wowwiki but more balanced
     }
 
-    if (ability != nullptr)
+    if (ability != nullptr && castingSpell != nullptr)
     {
-        spellModFlatFloatValue(SM_FHitchance, &hitchance, ability->getSpellFamilyFlags());
+        applySpellModifiers(SPELLMOD_HITCHANCE, &hitchance, ability, castingSpell);
     }
 
     if (ability && ability->getAttributes() & ATTRIBUTES_CANT_BE_DPB)
@@ -7203,7 +6783,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
     return roll_results[r];
 }
 
-DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo const* ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage, bool isSpellTriggered, bool skip_hit_check, bool force_crit)
+DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo const* ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage, bool isSpellTriggered, bool skip_hit_check, bool force_crit, Spell* castingSpell)
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     //Unacceptable Cases Processing
@@ -7493,10 +7073,11 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     }
     hitchance = 100.0f - misschance;            // base miss chances are worked out further down
 
-    if (ability != nullptr)
+    if (ability != nullptr && castingSpell != nullptr)
     {
-        spellModFlatFloatValue(SM_CriticalChance, &crit, ability->getSpellFamilyFlags());
-        spellModFlatFloatValue(SM_FHitchance, &hitchance, ability->getSpellFamilyFlags());
+        applySpellModifiers(SPELLMOD_CRITICAL, &crit, ability, castingSpell);
+        if (!skip_hit_check)
+            applySpellModifiers(SPELLMOD_HITCHANCE, &hitchance, ability, castingSpell);
     }
 
     // by ratings
@@ -7906,7 +7487,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
                                 dmg.blockedDamage = float2int32((shield->getItemProperties()->Block + ((static_cast<Player*>(pVictim)->m_modblockvaluefromspells + static_cast<Player*>(pVictim)->getCombatRating(PCR_BLOCK))) + ((pVictim->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
 
-                                if (Rand(m_BlockModPct))
+                                if (Util::checkChance(m_BlockModPct))
                                     dmg.blockedDamage *= 2;
                             }
                             else
@@ -7937,13 +7518,10 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                     case 5:
                     {
                         hit_status |= HITSTATUS_CRICTICAL;
-                        int32 dmgbonus = dmg.fullDamage;
                         //LogDebug("DEBUG: Critical Strike! Full_damage: %u" , dmg.full_damage);
-                        if (ability != nullptr)
+                        if (ability != nullptr && castingSpell != nullptr)
                         {
-                            int32 dmg_bonus_pct = 100;
-                            spellModFlatIntValue(SM_PCriticalDamage, &dmg_bonus_pct, ability->getSpellFamilyFlags());
-                            dmgbonus = dmgbonus * dmg_bonus_pct / 100;
+                            applySpellModifiers(SPELLMOD_CRITICAL_DAMAGE, &dmg.fullDamage, ability, castingSpell);
                         }
 
                         //LogDebug("DEBUG: After CritMeleeDamageTakenPctMod: %u" , dmg.full_damage);
@@ -7957,8 +7535,6 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                                 dmg.fullDamage += float2int32(dmg.fullDamage * static_cast<Player*>(this)->IncreaseCricticalByTypePCT[static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type]);
                             //LogDebug("DEBUG: After IncreaseCricticalByTypePCT: %u" , dmg.full_damage);
                         }
-
-                        dmg.fullDamage += dmgbonus;
 
                         if (dmg.weaponType == RANGED)
                             dmg.fullDamage = dmg.fullDamage - float2int32(dmg.fullDamage * CritRangedDamageTakenPctMod[dmg.getSchoolTypeFromMask()]);
@@ -8285,10 +7861,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     //////////////////////////////////////////////////////////////////////////////////////////
     // proc handling
     HandleProc(aproc, pVictim, ability, dmg, isSpellTriggered);
-    m_procCounter = 0;
-
     pVictim->HandleProc(vproc, this, ability, dmg, isSpellTriggered);
-    pVictim->m_procCounter = 0;
 
     //durability processing
     if (pVictim->isPlayer())
@@ -8297,7 +7870,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         if (!this->isPlayer())
         {
             Player* pr = static_cast<Player*>(pVictim);
-            if (Rand(pr->GetSkillUpChance(SKILL_DEFENSE) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
+            if (Util::checkChance(pr->GetSkillUpChance(SKILL_DEFENSE) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
             {
                 pr->_AdvanceSkillLine(SKILL_DEFENSE, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
                 pr->UpdateChances();
@@ -8314,7 +7887,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         {
             static_cast<Player*>(this)->getItemInterface()->ReduceItemDurability();
             Player* pr = static_cast<Player*>(this);
-            if (Rand(pr->GetSkillUpChance(SubClassSkill) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
+            if (Util::checkChance(pr->GetSkillUpChance(SubClassSkill) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
             {
                 pr->_AdvanceSkillLine(SubClassSkill, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
                 //pr->UpdateChances();
@@ -8823,16 +8396,15 @@ uint32 Unit::ManaShieldAbsorb(uint32 dmg)
     //mana shield group->16. the only
 
     uint32 mana = getPower(POWER_TYPE_MANA);
-    int32 effectbonus = SM_PEffectBonus ? SM_PEffectBonus[16] : 0;
 
-    int32 potential = (mana * 50) / ((100 + effectbonus));
+    int32 potential = (mana * 50) / 100;
     if (potential > m_manashieldamt)
         potential = m_manashieldamt;
 
     if ((int32)dmg < potential)
         potential = dmg;
 
-    uint32 cost = (potential * (100 + effectbonus)) / 50;
+    uint32 cost = (potential * 100) / 50;
 
     setPower(POWER_TYPE_MANA, mana - cost);
     m_manashieldamt -= potential;
@@ -9187,6 +8759,15 @@ void Unit::RemoveFromWorld(bool free_guid)
     ClearAllAreaAuraTargets();
     RemoveAllAreaAuraByOther();
 
+    // Attempt to prevent memory corruption
+    for (auto& obj : getInRangeObjectsSet())
+    {
+        if (!obj->isCreatureOrPlayer())
+            continue;
+
+        static_cast<Unit*>(obj)->clearCasterFromHealthBatch(this);
+    }
+
     Object::RemoveFromWorld(free_guid);
 
     //zack: should relocate new events to new eventmanager and not to -1
@@ -9223,911 +8804,6 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
         //some spells do not get removed all the time only at specific intervals
         if ((a->getSpellInfo()->getAuraInterruptFlags() & flag) && (a->getSpellInfo()->getId() != skip))
         {
-            //the black sheep's of society
-            if (a->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_CAST_SPELL)
-            {
-                switch (a->getSpellInfo()->getId())
-                {
-                    //priest - surge of light
-                    case 33151:
-                    {
-                        switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->getSpellInfo()->getId())
-                        {
-                            //SPELL_HASH_SMITE
-                            case 585:
-                            case 591:
-                            case 598:
-                            case 984:
-                            case 1004:
-                            case 6060:
-                            case 10933:
-                            case 10934:
-                            case 25363:
-                            case 25364:
-                            case 35155:
-                            case 48122:
-                            case 48123:
-                            case 61923:
-                            case 69967:
-                            case 71146:
-                            case 71546:
-                            case 71547:
-                            case 71778:
-                            case 71779:
-                            case 71841:
-                            case 71842:
-                            {
-                                //our luck. it got triggered on smite..we do not remove it just yet
-                                if (getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
-                                    continue;
-                            }
-                        }
-
-                        //this spell gets removed only when casting smite
-                        SpellInfo const* spi = sSpellMgr.getSpellInfo(skip);
-
-                        if (spi)
-                        {
-                            switch (spi->getId())
-                            {
-                                //SPELL_HASH_SMITE
-                                case 585:
-                                case 591:
-                                case 598:
-                                case 984:
-                                case 1004:
-                                case 6060:
-                                case 10933:
-                                case 10934:
-                                case 25363:
-                                case 25364:
-                                case 35155:
-                                case 48122:
-                                case 48123:
-                                case 61923:
-                                case 69967:
-                                case 71146:
-                                case 71546:
-                                case 71547:
-                                case 71778:
-                                case 71779:
-                                case 71841:
-                                case 71842:
-                                    continue;
-                            }
-                        }
-                    }
-                    break;
-                    case 34936: // Backlash
-                    {
-                        if (getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
-                        {
-                            switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->getSpellInfo()->getId())
-                            {
-                                //SPELL_HASH_SHADOW_BOLT
-                                case 686:
-                                case 695:
-                                case 705:
-                                case 1088:
-                                case 1106:
-                                case 7617:
-                                case 7619:
-                                case 7641:
-                                case 9613:
-                                case 11659:
-                                case 11660:
-                                case 11661:
-                                case 12471:
-                                case 12739:
-                                case 13440:
-                                case 13480:
-                                case 14106:
-                                case 14122:
-                                case 15232:
-                                case 15472:
-                                case 15537:
-                                case 16408:
-                                case 16409:
-                                case 16410:
-                                case 16783:
-                                case 16784:
-                                case 17393:
-                                case 17434:
-                                case 17435:
-                                case 17483:
-                                case 17509:
-                                case 18111:
-                                case 18138:
-                                case 18164:
-                                case 18205:
-                                case 18211:
-                                case 18214:
-                                case 18217:
-                                case 19728:
-                                case 19729:
-                                case 20298:
-                                case 20791:
-                                case 20807:
-                                case 20816:
-                                case 20825:
-                                case 21077:
-                                case 21141:
-                                case 22336:
-                                case 22677:
-                                case 24668:
-                                case 25307:
-                                case 26006:
-                                case 27209:
-                                case 29317:
-                                case 29487:
-                                case 29626:
-                                case 29640:
-                                case 29927:
-                                case 30055:
-                                case 30505:
-                                case 30686:
-                                case 31618:
-                                case 31627:
-                                case 32666:
-                                case 32860:
-                                case 33335:
-                                case 34344:
-                                case 36714:
-                                case 36868:
-                                case 36972:
-                                case 36986:
-                                case 36987:
-                                case 38378:
-                                case 38386:
-                                case 38628:
-                                case 38825:
-                                case 38892:
-                                case 39025:
-                                case 39026:
-                                case 39297:
-                                case 39309:
-                                case 40185:
-                                case 41069:
-                                case 41280:
-                                case 41957:
-                                case 43330:
-                                case 43649:
-                                case 43667:
-                                case 45055:
-                                case 45679:
-                                case 45680:
-                                case 47076:
-                                case 47248:
-                                case 47808:
-                                case 47809:
-                                case 49084:
-                                case 50455:
-                                case 51363:
-                                case 51432:
-                                case 51608:
-                                case 52257:
-                                case 52534:
-                                case 53086:
-                                case 53333:
-                                case 54113:
-                                case 55984:
-                                case 56405:
-                                case 57374:
-                                case 57464:
-                                case 57644:
-                                case 57725:
-                                case 58827:
-                                case 59016:
-                                case 59246:
-                                case 59254:
-                                case 59351:
-                                case 59357:
-                                case 59389:
-                                case 59575:
-                                case 60015:
-                                case 61558:
-                                case 61562:
-                                case 65821:
-                                case 68151:
-                                case 68152:
-                                case 68153:
-                                case 69028:
-                                case 69068:
-                                case 69211:
-                                case 69212:
-                                case 69387:
-                                case 69577:
-                                case 69972:
-                                case 70043:
-                                case 70080:
-                                case 70182:
-                                case 70208:
-                                case 70270:
-                                case 70386:
-                                case 70387:
-                                case 71143:
-                                case 71254:
-                                case 71296:
-                                case 71297:
-                                case 71936:
-                                case 72008:
-                                case 72503:
-                                case 72504:
-                                case 72901:
-                                case 72960:
-                                case 72961:
-                                case 75330:
-                                case 75331:
-                                case 75384:
-                                //SPELL_HASH_INCINERATE
-                                case 19397:
-                                case 23308:
-                                case 23309:
-                                case 29722:
-                                case 32231:
-                                case 32707:
-                                case 36832:
-                                case 38401:
-                                case 38918:
-                                case 39083:
-                                case 40239:
-                                case 41960:
-                                case 43971:
-                                case 44519:
-                                case 46043:
-                                case 47837:
-                                case 47838:
-                                case 53493:
-                                case 69973:
-                                case 71135:
-                                    continue;
-                                default:
-                                    break;
-                            }
-                        }
-
-                        SpellInfo const* spi = sSpellMgr.getSpellInfo(skip);
-                        if (spi)
-                        {
-                            switch (spi->getId())
-                            {
-                                //SPELL_HASH_SHADOW_BOLT
-                                case 686:
-                                case 695:
-                                case 705:
-                                case 1088:
-                                case 1106:
-                                case 7617:
-                                case 7619:
-                                case 7641:
-                                case 9613:
-                                case 11659:
-                                case 11660:
-                                case 11661:
-                                case 12471:
-                                case 12739:
-                                case 13440:
-                                case 13480:
-                                case 14106:
-                                case 14122:
-                                case 15232:
-                                case 15472:
-                                case 15537:
-                                case 16408:
-                                case 16409:
-                                case 16410:
-                                case 16783:
-                                case 16784:
-                                case 17393:
-                                case 17434:
-                                case 17435:
-                                case 17483:
-                                case 17509:
-                                case 18111:
-                                case 18138:
-                                case 18164:
-                                case 18205:
-                                case 18211:
-                                case 18214:
-                                case 18217:
-                                case 19728:
-                                case 19729:
-                                case 20298:
-                                case 20791:
-                                case 20807:
-                                case 20816:
-                                case 20825:
-                                case 21077:
-                                case 21141:
-                                case 22336:
-                                case 22677:
-                                case 24668:
-                                case 25307:
-                                case 26006:
-                                case 27209:
-                                case 29317:
-                                case 29487:
-                                case 29626:
-                                case 29640:
-                                case 29927:
-                                case 30055:
-                                case 30505:
-                                case 30686:
-                                case 31618:
-                                case 31627:
-                                case 32666:
-                                case 32860:
-                                case 33335:
-                                case 34344:
-                                case 36714:
-                                case 36868:
-                                case 36972:
-                                case 36986:
-                                case 36987:
-                                case 38378:
-                                case 38386:
-                                case 38628:
-                                case 38825:
-                                case 38892:
-                                case 39025:
-                                case 39026:
-                                case 39297:
-                                case 39309:
-                                case 40185:
-                                case 41069:
-                                case 41280:
-                                case 41957:
-                                case 43330:
-                                case 43649:
-                                case 43667:
-                                case 45055:
-                                case 45679:
-                                case 45680:
-                                case 47076:
-                                case 47248:
-                                case 47808:
-                                case 47809:
-                                case 49084:
-                                case 50455:
-                                case 51363:
-                                case 51432:
-                                case 51608:
-                                case 52257:
-                                case 52534:
-                                case 53086:
-                                case 53333:
-                                case 54113:
-                                case 55984:
-                                case 56405:
-                                case 57374:
-                                case 57464:
-                                case 57644:
-                                case 57725:
-                                case 58827:
-                                case 59016:
-                                case 59246:
-                                case 59254:
-                                case 59351:
-                                case 59357:
-                                case 59389:
-                                case 59575:
-                                case 60015:
-                                case 61558:
-                                case 61562:
-                                case 65821:
-                                case 68151:
-                                case 68152:
-                                case 68153:
-                                case 69028:
-                                case 69068:
-                                case 69211:
-                                case 69212:
-                                case 69387:
-                                case 69577:
-                                case 69972:
-                                case 70043:
-                                case 70080:
-                                case 70182:
-                                case 70208:
-                                case 70270:
-                                case 70386:
-                                case 70387:
-                                case 71143:
-                                case 71254:
-                                case 71296:
-                                case 71297:
-                                case 71936:
-                                case 72008:
-                                case 72503:
-                                case 72504:
-                                case 72901:
-                                case 72960:
-                                case 72961:
-                                case 75330:
-                                case 75331:
-                                case 75384:
-                                //SPELL_HASH_INCINERATE
-                                case 19397:
-                                case 23308:
-                                case 23309:
-                                case 29722:
-                                case 32231:
-                                case 32707:
-                                case 36832:
-                                case 38401:
-                                case 38918:
-                                case 39083:
-                                case 40239:
-                                case 41960:
-                                case 43971:
-                                case 44519:
-                                case 46043:
-                                case 47837:
-                                case 47838:
-                                case 53493:
-                                case 69973:
-                                case 71135:
-                                    break;
-                                default:
-                                    continue;
-                            }
-                        }
-                    }
-                    break;
-                    case 59578: // Art of War
-                    case 53489:
-                    {
-                        if (getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
-                        {
-                            switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->getSpellInfo()->getId())
-                            {
-                                //SPELL_HASH_FLASH_OF_LIGHT
-                                case 19750:
-                                case 19939:
-                                case 19940:
-                                case 19941:
-                                case 19942:
-                                case 19943:
-                                case 25514:
-                                case 27137:
-                                case 33641:
-                                case 37249:
-                                case 37254:
-                                case 37257:
-                                case 48784:
-                                case 48785:
-                                case 57766:
-                                case 59997:
-                                case 66113:
-                                case 66922:
-                                case 68008:
-                                case 68009:
-                                case 68010:
-                                case 71930:
-                                    continue;
-                                default:
-                                    break;
-                            }
-                        }
-
-                        SpellInfo const* spi = sSpellMgr.getSpellInfo(skip);
-                        if (spi)
-                        {
-                            switch (spi->getId())
-                            {
-                                //SPELL_HASH_FLASH_OF_LIGHT
-                                case 19750:
-                                case 19939:
-                                case 19940:
-                                case 19941:
-                                case 19942:
-                                case 19943:
-                                case 25514:
-                                case 27137:
-                                case 33641:
-                                case 37249:
-                                case 37254:
-                                case 37257:
-                                case 48784:
-                                case 48785:
-                                case 57766:
-                                case 59997:
-                                case 66113:
-                                case 66922:
-                                case 68008:
-                                case 68009:
-                                case 68010:
-                                case 71930:
-                                    break;
-                                default:
-                                    continue;
-                            }
-                        }
-                    }
-                    break;
-                    case 17941: //Shadow Trance
-                    {
-                        if (getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
-                        {
-                            switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->getSpellInfo()->getId())
-                            {
-                                //SPELL_HASH_SHADOW_BOLT
-                                case 686:
-                                case 695:
-                                case 705:
-                                case 1088:
-                                case 1106:
-                                case 7617:
-                                case 7619:
-                                case 7641:
-                                case 9613:
-                                case 11659:
-                                case 11660:
-                                case 11661:
-                                case 12471:
-                                case 12739:
-                                case 13440:
-                                case 13480:
-                                case 14106:
-                                case 14122:
-                                case 15232:
-                                case 15472:
-                                case 15537:
-                                case 16408:
-                                case 16409:
-                                case 16410:
-                                case 16783:
-                                case 16784:
-                                case 17393:
-                                case 17434:
-                                case 17435:
-                                case 17483:
-                                case 17509:
-                                case 18111:
-                                case 18138:
-                                case 18164:
-                                case 18205:
-                                case 18211:
-                                case 18214:
-                                case 18217:
-                                case 19728:
-                                case 19729:
-                                case 20298:
-                                case 20791:
-                                case 20807:
-                                case 20816:
-                                case 20825:
-                                case 21077:
-                                case 21141:
-                                case 22336:
-                                case 22677:
-                                case 24668:
-                                case 25307:
-                                case 26006:
-                                case 27209:
-                                case 29317:
-                                case 29487:
-                                case 29626:
-                                case 29640:
-                                case 29927:
-                                case 30055:
-                                case 30505:
-                                case 30686:
-                                case 31618:
-                                case 31627:
-                                case 32666:
-                                case 32860:
-                                case 33335:
-                                case 34344:
-                                case 36714:
-                                case 36868:
-                                case 36972:
-                                case 36986:
-                                case 36987:
-                                case 38378:
-                                case 38386:
-                                case 38628:
-                                case 38825:
-                                case 38892:
-                                case 39025:
-                                case 39026:
-                                case 39297:
-                                case 39309:
-                                case 40185:
-                                case 41069:
-                                case 41280:
-                                case 41957:
-                                case 43330:
-                                case 43649:
-                                case 43667:
-                                case 45055:
-                                case 45679:
-                                case 45680:
-                                case 47076:
-                                case 47248:
-                                case 47808:
-                                case 47809:
-                                case 49084:
-                                case 50455:
-                                case 51363:
-                                case 51432:
-                                case 51608:
-                                case 52257:
-                                case 52534:
-                                case 53086:
-                                case 53333:
-                                case 54113:
-                                case 55984:
-                                case 56405:
-                                case 57374:
-                                case 57464:
-                                case 57644:
-                                case 57725:
-                                case 58827:
-                                case 59016:
-                                case 59246:
-                                case 59254:
-                                case 59351:
-                                case 59357:
-                                case 59389:
-                                case 59575:
-                                case 60015:
-                                case 61558:
-                                case 61562:
-                                case 65821:
-                                case 68151:
-                                case 68152:
-                                case 68153:
-                                case 69028:
-                                case 69068:
-                                case 69211:
-                                case 69212:
-                                case 69387:
-                                case 69577:
-                                case 69972:
-                                case 70043:
-                                case 70080:
-                                case 70182:
-                                case 70208:
-                                case 70270:
-                                case 70386:
-                                case 70387:
-                                case 71143:
-                                case 71254:
-                                case 71296:
-                                case 71297:
-                                case 71936:
-                                case 72008:
-                                case 72503:
-                                case 72504:
-                                case 72901:
-                                case 72960:
-                                case 72961:
-                                case 75330:
-                                case 75331:
-                                case 75384:
-                                    continue;
-                                default:
-                                    break;
-                            }
-                        }
-
-                        SpellInfo const* spi = sSpellMgr.getSpellInfo(skip);
-                        if (spi)
-                        {
-                            switch (spi->getId())
-                            {
-                                //SPELL_HASH_SHADOW_BOLT
-                                case 686:
-                                case 695:
-                                case 705:
-                                case 1088:
-                                case 1106:
-                                case 7617:
-                                case 7619:
-                                case 7641:
-                                case 9613:
-                                case 11659:
-                                case 11660:
-                                case 11661:
-                                case 12471:
-                                case 12739:
-                                case 13440:
-                                case 13480:
-                                case 14106:
-                                case 14122:
-                                case 15232:
-                                case 15472:
-                                case 15537:
-                                case 16408:
-                                case 16409:
-                                case 16410:
-                                case 16783:
-                                case 16784:
-                                case 17393:
-                                case 17434:
-                                case 17435:
-                                case 17483:
-                                case 17509:
-                                case 18111:
-                                case 18138:
-                                case 18164:
-                                case 18205:
-                                case 18211:
-                                case 18214:
-                                case 18217:
-                                case 19728:
-                                case 19729:
-                                case 20298:
-                                case 20791:
-                                case 20807:
-                                case 20816:
-                                case 20825:
-                                case 21077:
-                                case 21141:
-                                case 22336:
-                                case 22677:
-                                case 24668:
-                                case 25307:
-                                case 26006:
-                                case 27209:
-                                case 29317:
-                                case 29487:
-                                case 29626:
-                                case 29640:
-                                case 29927:
-                                case 30055:
-                                case 30505:
-                                case 30686:
-                                case 31618:
-                                case 31627:
-                                case 32666:
-                                case 32860:
-                                case 33335:
-                                case 34344:
-                                case 36714:
-                                case 36868:
-                                case 36972:
-                                case 36986:
-                                case 36987:
-                                case 38378:
-                                case 38386:
-                                case 38628:
-                                case 38825:
-                                case 38892:
-                                case 39025:
-                                case 39026:
-                                case 39297:
-                                case 39309:
-                                case 40185:
-                                case 41069:
-                                case 41280:
-                                case 41957:
-                                case 43330:
-                                case 43649:
-                                case 43667:
-                                case 45055:
-                                case 45679:
-                                case 45680:
-                                case 47076:
-                                case 47248:
-                                case 47808:
-                                case 47809:
-                                case 49084:
-                                case 50455:
-                                case 51363:
-                                case 51432:
-                                case 51608:
-                                case 52257:
-                                case 52534:
-                                case 53086:
-                                case 53333:
-                                case 54113:
-                                case 55984:
-                                case 56405:
-                                case 57374:
-                                case 57464:
-                                case 57644:
-                                case 57725:
-                                case 58827:
-                                case 59016:
-                                case 59246:
-                                case 59254:
-                                case 59351:
-                                case 59357:
-                                case 59389:
-                                case 59575:
-                                case 60015:
-                                case 61558:
-                                case 61562:
-                                case 65821:
-                                case 68151:
-                                case 68152:
-                                case 68153:
-                                case 69028:
-                                case 69068:
-                                case 69211:
-                                case 69212:
-                                case 69387:
-                                case 69577:
-                                case 69972:
-                                case 70043:
-                                case 70080:
-                                case 70182:
-                                case 70208:
-                                case 70270:
-                                case 70386:
-                                case 70387:
-                                case 71143:
-                                case 71254:
-                                case 71296:
-                                case 71297:
-                                case 71936:
-                                case 72008:
-                                case 72503:
-                                case 72504:
-                                case 72901:
-                                case 72960:
-                                case 72961:
-                                case 75330:
-                                case 75331:
-                                case 75384:
-                                    break;
-                                default:
-                                    continue;
-                            }
-                        }
-                    }
-                    break;
-                    case 16166: // [Shaman] Elemental Mastery
-                    {
-                        SpellInfo const* spi = sSpellMgr.getSpellInfo(skip);
-                        if (spi && !(spi->getSchoolMask() & SCHOOL_MASK_FIRE || spi->getSchoolMask() & SCHOOL_MASK_FROST || spi->getSchoolMask() & SCHOOL_MASK_NATURE))
-                            continue;
-                    }
-                    break;
-                    case 48108: // Hot Streak
-                    {
-                        if (getCurrentSpell(CURRENT_GENERIC_SPELL) == nullptr)
-                            continue;
-
-                        switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->getSpellInfo()->getId())
-                        {
-                            //SPELL_HASH_PYROBLAST
-                            case 11366:
-                            case 12505:
-                            case 12522:
-                            case 12523:
-                            case 12524:
-                            case 12525:
-                            case 12526:
-                            case 17273:
-                            case 17274:
-                            case 18809:
-                            case 20228:
-                            case 24995:
-                            case 27132:
-                            case 29459:
-                            case 29978:
-                            case 31263:
-                            case 33938:
-                            case 33975:
-                            case 36277:
-                            case 36819:
-                            case 38535:
-                            case 41578:
-                            case 42890:
-                            case 42891:
-                            case 64698:
-                            case 70516:
-                                break;
-                            default:
-                                continue;
-                        }
-                    }
-                    break;
-                }
-            }
             a->removeAura();
         }
     }
@@ -10781,296 +9457,6 @@ void CombatStatusHandler::OnRemoveFromWorld()
     ClearHealers();
 }
 
-void Unit::InheritSMMods(Unit* inherit_from)
-{
-    if (inherit_from == NULL)
-        return;
-
-    if (inherit_from->SM_CriticalChance)
-    {
-        if (SM_CriticalChance == 0)
-            SM_CriticalChance = new int32[SPELL_GROUPS];
-        memcpy(SM_CriticalChance, inherit_from->SM_CriticalChance, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FDur)
-    {
-        if (SM_FDur == 0)
-            SM_FDur = new int32[SPELL_GROUPS];
-        memcpy(SM_FDur, inherit_from->SM_FDur, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PDur)
-    {
-        if (SM_PDur == 0)
-            SM_PDur = new int32[SPELL_GROUPS];
-        memcpy(SM_PDur, inherit_from->SM_PDur, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PRadius)
-    {
-        if (SM_PRadius == 0)
-            SM_PRadius = new int32[SPELL_GROUPS];
-        memcpy(SM_PRadius, inherit_from->SM_PRadius, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FRadius)
-    {
-        if (SM_FRadius == 0)
-            SM_FRadius = new int32[SPELL_GROUPS];
-        memcpy(SM_FRadius, inherit_from->SM_FRadius, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FRange)
-    {
-        if (SM_FRange == 0)
-            SM_FRange = new int32[SPELL_GROUPS];
-        memcpy(SM_FRange, inherit_from->SM_FRange, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PCastTime)
-    {
-        if (SM_PCastTime == 0)
-            SM_PCastTime = new int32[SPELL_GROUPS];
-        memcpy(SM_PCastTime, inherit_from->SM_PCastTime, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FCastTime)
-    {
-        if (SM_FCastTime == 0)
-            SM_FCastTime = new int32[SPELL_GROUPS];
-        memcpy(SM_FCastTime, inherit_from->SM_FCastTime, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PCriticalDamage)
-    {
-        if (SM_PCriticalDamage == 0)
-            SM_PCriticalDamage = new int32[SPELL_GROUPS];
-        memcpy(SM_PCriticalDamage, inherit_from->SM_PCriticalDamage, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FDOT)
-    {
-        if (SM_FDOT == 0)
-            SM_FDOT = new int32[SPELL_GROUPS];
-        memcpy(SM_FDOT, inherit_from->SM_FDOT, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PDOT)
-    {
-        if (SM_PDOT == 0)
-            SM_PDOT = new int32[SPELL_GROUPS];
-        memcpy(SM_PDOT, inherit_from->SM_PDOT, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FEffect1_Bonus)
-    {
-        if (SM_FEffect1_Bonus == 0)
-            SM_FEffect1_Bonus = new int32[SPELL_GROUPS];
-        memcpy(SM_FEffect1_Bonus, inherit_from->SM_FEffect1_Bonus, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PEffect1_Bonus)
-    {
-        if (SM_PEffect1_Bonus == 0)
-            SM_PEffect1_Bonus = new int32[SPELL_GROUPS];
-        memcpy(SM_PEffect1_Bonus, inherit_from->SM_PEffect1_Bonus, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FEffect2_Bonus)
-    {
-        if (SM_FEffect2_Bonus == 0)
-            SM_FEffect2_Bonus = new int32[SPELL_GROUPS];
-        memcpy(SM_FEffect2_Bonus, inherit_from->SM_FEffect2_Bonus, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PEffect2_Bonus)
-    {
-        if (SM_PEffect2_Bonus == 0)
-            SM_PEffect2_Bonus = new int32[SPELL_GROUPS];
-        memcpy(SM_PEffect2_Bonus, inherit_from->SM_PEffect2_Bonus, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FEffect3_Bonus)
-    {
-        if (SM_FEffect3_Bonus == 0)
-            SM_FEffect3_Bonus = new int32[SPELL_GROUPS];
-        memcpy(SM_FEffect3_Bonus, inherit_from->SM_FEffect3_Bonus, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PEffect3_Bonus)
-    {
-        if (SM_PEffect3_Bonus == 0)
-            SM_PEffect3_Bonus = new int32[SPELL_GROUPS];
-        memcpy(SM_PEffect3_Bonus, inherit_from->SM_PEffect3_Bonus, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FEffectBonus)
-    {
-        if (SM_FEffectBonus == 0)
-            SM_FEffectBonus = new int32[SPELL_GROUPS];
-        memcpy(SM_FEffectBonus, inherit_from->SM_FEffectBonus, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PEffectBonus)
-    {
-        if (SM_PEffectBonus == 0)
-            SM_PEffectBonus = new int32[SPELL_GROUPS];
-        memcpy(SM_PEffectBonus, inherit_from->SM_PEffectBonus, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FDamageBonus)
-    {
-        if (SM_FDamageBonus == 0)
-            SM_FDamageBonus = new int32[SPELL_GROUPS];
-        memcpy(SM_FDamageBonus, inherit_from->SM_FDamageBonus, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PDamageBonus)
-    {
-        if (SM_PDamageBonus == 0)
-            SM_PDamageBonus = new int32[SPELL_GROUPS];
-        memcpy(SM_PDamageBonus, inherit_from->SM_PDamageBonus, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PMiscEffect)
-    {
-        if (SM_PMiscEffect == 0)
-            SM_PMiscEffect = new int32[SPELL_GROUPS];
-        memcpy(SM_PMiscEffect, inherit_from->SM_PMiscEffect, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FMiscEffect)
-    {
-        if (SM_FMiscEffect == 0)
-            SM_FMiscEffect = new int32[SPELL_GROUPS];
-        memcpy(SM_FMiscEffect, inherit_from->SM_FMiscEffect, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FHitchance)
-    {
-        if (SM_FHitchance == 0)
-            SM_FHitchance = new int32[SPELL_GROUPS];
-        memcpy(SM_FHitchance, inherit_from->SM_FHitchance, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PRange)
-    {
-        if (SM_PRange == 0)
-            SM_PRange = new int32[SPELL_GROUPS];
-        memcpy(SM_PRange, inherit_from->SM_PRange, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PRadius)
-    {
-        if (SM_PRadius == 0)
-            SM_PRadius = new int32[SPELL_GROUPS];
-        memcpy(SM_PRadius, inherit_from->SM_PRadius, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PCost)
-    {
-        if (SM_PCost == 0)
-            SM_PCost = new int32[SPELL_GROUPS];
-        memcpy(SM_PCost, inherit_from->SM_PCost, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FCost)
-    {
-        if (SM_FCost == 0)
-            SM_FCost = new int32[SPELL_GROUPS];
-        memcpy(SM_FCost, inherit_from->SM_FCost, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FAdditionalTargets)
-    {
-        if (SM_FAdditionalTargets == 0)
-            SM_FAdditionalTargets = new int32[SPELL_GROUPS];
-        memcpy(SM_FAdditionalTargets, inherit_from->SM_FAdditionalTargets, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PJumpReduce)
-    {
-        if (SM_PJumpReduce == 0)
-            SM_PJumpReduce = new int32[SPELL_GROUPS];
-        memcpy(SM_PJumpReduce, inherit_from->SM_PJumpReduce, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FGlobalCooldown)
-    {
-        if (SM_FGlobalCooldown == 0)
-            SM_FGlobalCooldown = new int32[SPELL_GROUPS];
-        memcpy(SM_FGlobalCooldown, inherit_from->SM_FGlobalCooldown, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PGlobalCooldown)
-    {
-        if (SM_PGlobalCooldown == 0)
-            SM_PGlobalCooldown = new int32[SPELL_GROUPS];
-        memcpy(SM_PGlobalCooldown, inherit_from->SM_PGlobalCooldown, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PNonInterrupt)
-    {
-        if (SM_PNonInterrupt == 0)
-            SM_PNonInterrupt = new int32[SPELL_GROUPS];
-        memcpy(SM_PNonInterrupt, inherit_from->SM_PNonInterrupt, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FPenalty)
-    {
-        if (SM_FPenalty == 0)
-            SM_FPenalty = new int32[SPELL_GROUPS];
-        memcpy(SM_FPenalty, inherit_from->SM_FPenalty, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PPenalty)
-    {
-        if (SM_PPenalty == 0)
-            SM_PPenalty = new int32[SPELL_GROUPS];
-        memcpy(SM_PPenalty, inherit_from->SM_PPenalty, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FCooldownTime)
-    {
-        if (SM_FCooldownTime == 0)
-            SM_FCooldownTime = new int32[SPELL_GROUPS];
-        memcpy(SM_FCooldownTime, inherit_from->SM_FCooldownTime, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PCooldownTime)
-    {
-        if (SM_PCooldownTime == 0)
-            SM_PCooldownTime = new int32[SPELL_GROUPS];
-        memcpy(SM_PCooldownTime, inherit_from->SM_PCooldownTime, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FChanceOfSuccess)
-    {
-        if (SM_FChanceOfSuccess == 0)
-            SM_FChanceOfSuccess = new int32[SPELL_GROUPS];
-        memcpy(SM_FChanceOfSuccess, inherit_from->SM_FChanceOfSuccess, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FAmptitude)
-    {
-        if (SM_FAmptitude == 0)
-            SM_FAmptitude = new int32[SPELL_GROUPS];
-        memcpy(SM_FAmptitude, inherit_from->SM_FAmptitude, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PAmptitude)
-    {
-        if (SM_PAmptitude == 0)
-            SM_PAmptitude = new int32[SPELL_GROUPS];
-        memcpy(SM_PAmptitude, inherit_from->SM_PAmptitude, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FRezist_dispell)
-    {
-        if (SM_FRezist_dispell == 0)
-            SM_FRezist_dispell = new int32[SPELL_GROUPS];
-        memcpy(SM_FRezist_dispell, inherit_from->SM_FRezist_dispell, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PRezist_dispell)
-    {
-        if (SM_PRezist_dispell == 0)
-            SM_PRezist_dispell = new int32[SPELL_GROUPS];
-        memcpy(SM_PRezist_dispell, inherit_from->SM_PRezist_dispell, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FCharges)
-    {
-        if (SM_FCharges == 0)
-            SM_FCharges = new int32[SPELL_GROUPS];
-        memcpy(SM_FCharges, inherit_from->SM_FCharges, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PCharges)
-    {
-        if (SM_PCharges == 0)
-            SM_PCharges = new int32[SPELL_GROUPS];
-        memcpy(SM_PCharges, inherit_from->SM_PCharges, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_FThreat)
-    {
-        if (SM_FThreat == 0)
-            SM_FThreat = new int32[SPELL_GROUPS];
-        memcpy(SM_FThreat, inherit_from->SM_FThreat, sizeof(int)*SPELL_GROUPS);
-    }
-    if (inherit_from->SM_PThreat)
-    {
-        if (SM_PThreat == 0)
-            SM_PThreat = new int32[SPELL_GROUPS];
-        memcpy(SM_PThreat, inherit_from->SM_PThreat, sizeof(int)*SPELL_GROUPS);
-    }
-}
-
-void Unit::EventStrikeWithAbility(uint64 guid, SpellInfo const* sp, uint32 /*damage*/)
-{
-    Unit* victim = m_mapMgr ? m_mapMgr->GetUnit(guid) : NULL;
-    if (victim)
-        Strike(victim, RANGED, sp, 0, 0, 0, false, true);
-}
-
 void Unit::DispelAll(bool positive)
 {
     for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
@@ -11224,7 +9610,7 @@ void Unit::EventStunOrImmobilize(Unit* proc_target, bool is_victim)
 
     if (t_trigger_on_stun)
     {
-        if (t_trigger_on_stun_chance < 100 && !Rand(t_trigger_on_stun_chance))
+        if (t_trigger_on_stun_chance < 100 && !Util::checkChance(t_trigger_on_stun_chance))
             return;
 
         const auto spellInfo = sSpellMgr.getSpellInfo(t_trigger_on_stun);
@@ -11264,7 +9650,7 @@ void Unit::EventChill(Unit* proc_target, bool is_victim)
 
     if (t_trigger_on_chill)
     {
-        if (t_trigger_on_chill_chance < 100 && !Rand(t_trigger_on_chill_chance))
+        if (t_trigger_on_chill_chance < 100 && !Util::checkChance(t_trigger_on_chill_chance))
             return;
 
         const auto spellInfo = sSpellMgr.getSpellInfo(t_trigger_on_chill);
@@ -11456,11 +9842,6 @@ void Unit::AddGarbageAura(Aura* aur)
     m_GarbageAuras.push_back(aur);
 }
 
-void Unit::AddGarbageSpell(Spell* sp)
-{
-    m_GarbageSpells.push_back(sp);
-}
-
 void Unit::AddGarbagePet(Pet* pet)
 {
     ARCEMU_ASSERT(pet->getPlayerOwner()->getGuid() == getGuid() && !pet->IsInWorld());
@@ -11475,12 +9856,6 @@ void Unit::RemoveGarbage()
         delete aur;
     }
 
-    for (std::list<Spell*>::iterator itr2 = m_GarbageSpells.begin(); itr2 != m_GarbageSpells.end(); ++itr2)
-    {
-        Spell* sp = *itr2;
-        delete sp;
-    }
-
     for (std::list<Pet*>::iterator itr3 = m_GarbagePets.begin(); itr3 != m_GarbagePets.end(); ++itr3)
     {
         Pet* pet = *itr3;
@@ -11488,7 +9863,6 @@ void Unit::RemoveGarbage()
     }
 
     m_GarbageAuras.clear();
-    m_GarbageSpells.clear();
     m_GarbagePets.clear();
 }
 
@@ -11552,192 +9926,6 @@ void Unit::Phase(uint8 command, uint32 newphase)
     }
 
     UpdateVisibility();
-}
-
-bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo const* spell)
-{
-    if (!victim->isCreatureOrPlayer())
-        return false;
-
-    bool result = Rand(getCriticalChanceForDamageSpell(spell, static_cast<Unit*>(victim)));
-
-    // HACK!!!
-    Aura* fs = NULL;
-
-    uint32 flameShock[] =
-    {
-        //SPELL_HASH_FLAME_SHOCK
-        8050,
-        8052,
-        8053,
-        10447,
-        10448,
-        13729,
-        15039,
-        15096,
-        15616,
-        16804,
-        22423,
-        23038,
-        25457,
-        29228,
-        32967,
-        34354,
-        39529,
-        39590,
-        41115,
-        43303,
-        49232,
-        49233,
-        51588,
-        55613,
-        58940,
-        58971,
-        59684,
-        0
-    };
-
-    if (victim->isCreatureOrPlayer()
-        && (fs = static_cast<Unit*>(victim)->getAuraWithId(flameShock)) != NULL)
-    {
-        switch (spell->getId())
-        {
-            //SPELL_HASH_LAVA_BURST
-            case 21158:
-            case 51505:
-            case 53788:
-            case 55659:
-            case 55704:
-            case 56491:
-            case 58972:
-            case 59182:
-            case 59519:
-            case 60043:
-            case 61924:
-            case 64870:
-            case 64991:
-            case 66813:
-            case 67330:
-            case 71824:
-            {
-                result = true;
-                if (!HasAura(55447))            // Glyph of Flame Shock
-                    fs->removeAura();
-            } break;
-        }
-    }
-
-    return result;
-}
-
-float Unit::GetCriticalDamageBonusForSpell(Object* victim, SpellInfo const* spell, float amount)
-{
-    int32 critical_bonus = 100;
-    spellModFlatIntValue(SM_PCriticalDamage, &critical_bonus, spell->getSpellFamilyFlags());
-
-    if (critical_bonus > 0)
-    {
-        // the bonuses are halved by 50% (funky blizzard math :S)
-        float b;
-        if (spell->getFirstSchoolFromSchoolMask() == 0 || spell->getDmgClass() == SPELL_DMG_TYPE_MELEE || spell->getDmgClass() == SPELL_DMG_TYPE_RANGED) // physical || hackfix SoCommand/JoCommand
-            b = critical_bonus / 100.0f + 1.0f;
-        else
-            b = critical_bonus / 200.0f + 1.0f;
-
-        amount *= b;
-    }
-
-    if (victim->isPlayer())
-    {
-        //res = res*(1.0f-2.0f*TO<Player*>(pVictim)->CalcRating(PLAYER_RATING_MODIFIER_MELEE_CRIT_RESISTANCE));
-        //Resilience is a special new rating which was created to reduce the effects of critical hits against your character.
-        //It has two components; it reduces the chance you will be critically hit by x%,
-        //and it reduces the damage dealt to you by critical hits by 2x%. x is the percentage resilience granted by a given resilience rating.
-        //It is believed that resilience also functions against spell crits,
-        //though it's worth noting that NPC mobs cannot get critical hits with spells.
-
-        float dmg_reduction_pct = 2 * static_cast<Player*>(victim)->CalcRating(PCR_MELEE_CRIT_RESILIENCE) / 100.0f;
-
-        if (dmg_reduction_pct > 1.0f)
-            dmg_reduction_pct = 1.0f; //we cannot resist more then he is criticalling us, there is no point of the critical then :P
-
-        amount -= amount * dmg_reduction_pct;
-    }
-
-    if (victim->isCreature() && static_cast<Creature*>(victim)->GetCreatureProperties()->Rank != ELITE_WORLDBOSS)
-        static_cast<Creature*>(victim)->emote(EMOTE_ONESHOT_WOUNDCRITICAL);
-
-    return amount;
-}
-
-bool Unit::IsCriticalHealForSpell(Object* victim, SpellInfo const* spell)
-{
-    int32 crit_chance = float2int32(getCriticalChanceForHealSpell(spell));
-
-    //Sacred Shield
-    if (victim->isCreatureOrPlayer())
-    {
-        uint32 sacredShield[] =
-        {
-            //SPELL_HASH_SACRED_SHIELD
-            53601,
-            58597,
-            0
-        };
-
-        if (static_cast<Unit*>(victim)->hasAurasWithId(sacredShield))
-        {
-            switch (spell->getId())
-            {
-                //SPELL_HASH_FLASH_OF_LIGHT
-                case 19750:
-                case 19939:
-                case 19940:
-                case 19941:
-                case 19942:
-                case 19943:
-                case 25514:
-                case 27137:
-                case 33641:
-                case 37249:
-                case 37254:
-                case 37257:
-                case 48784:
-                case 48785:
-                case 57766:
-                case 59997:
-                case 66113:
-                case 66922:
-                case 68008:
-                case 68009:
-                case 68010:
-                case 71930:
-                    crit_chance += 50;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    spellModFlatIntValue(this->SM_CriticalChance, &crit_chance, spell->getSpellFamilyFlags());
-
-    return Rand(crit_chance);
-}
-
-float Unit::GetCriticalHealBonusForSpell(Object* /*victim*/, SpellInfo const* spell, float amount)
-{
-    int32 critical_bonus = 100;
-    spellModFlatIntValue(this->SM_PCriticalDamage, &critical_bonus, spell->getSpellFamilyFlags());
-
-    if (critical_bonus > 0)
-    {
-        // the bonuses are halved by 50% (funky blizzard math :S)
-        float b = critical_bonus / 200.0f;
-        amount += float2int32(amount * b);
-    }
-
-    return amount;
 }
 
 uint32 Unit::GetAuraCountWithDispelType(uint32 dispel_type, uint64 guid)

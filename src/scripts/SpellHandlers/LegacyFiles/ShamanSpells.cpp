@@ -34,7 +34,7 @@ bool FlametongueWeaponPassive(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     {
         // target is always a player
         Item* item = static_cast<Player*>(target)->getItemInterface()->GetItemByGUID(pAura->itemCasterGUID);
-        target->addProcTriggerSpell(10444, pAura->getSpellInfo()->getId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_DONE_MELEE_HIT, EXTRA_PROC_NULL, 0, NULL, NULL, item);
+        target->addProcTriggerSpell(10444, pAura->getSpellInfo()->getId(), pAura->getCasterGuid(), pAura->getSpellInfo()->getProcChance(), PROC_ON_DONE_MELEE_HIT, EXTRA_PROC_NULL, NULL, NULL, pAura, item);
     }
     else
         target->removeProcTriggerSpell(10444, pAura->getCasterGuid(), pAura->itemCasterGUID);

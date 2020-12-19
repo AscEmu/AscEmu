@@ -190,7 +190,7 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
 
     // What is a "very high chance" ?  90% ?
     float chance = 90.0f;
-    if (Rand(chance))
+    if (Util::checkChance(chance))
     {
         // Type 0 = Major, 1 = Minor
         uint32_t glyphType = (s->getSpellInfo()->getId() == 61177) ? 0 : 1;

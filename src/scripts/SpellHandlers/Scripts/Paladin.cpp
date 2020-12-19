@@ -5,8 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 
+#include "Spell/Definitions/SpellDamageType.h"
+
 enum PaladinSpells
 {
+    SPELL_ART_OF_WAR_PROC_R1            = 53489,
+    SPELL_ART_OF_WAR_PROC_R2            = 59578,
     SPELL_BLOOD_CORRUPTION              = 53742,
     SPELL_EYE_FOR_AN_EYE_DAMAGE         = 25997,
     SPELL_EYE_FOR_AN_EYE_DUMMY_R1       = 9799,
@@ -22,29 +26,53 @@ enum PaladinSpells
     SPELL_SEAL_OF_RIGHTOUESNESS_DUMMY   = 21084,
     SPELL_SEAL_OF_VENGEANCE_DIRECT      = 42463,
     SPELL_SEAL_OF_VENGEANCE_DUMMY       = 31801,
+    SPELL_VENGEANCE_PROC_R1             = 20050,
+    SPELL_VENGEANCE_PROC_R2             = 20052,
+    SPELL_VENGEANCE_PROC_R3             = 20053,
+    SPELL_VENGEANCE_PROC_R4             = 20054,
+    SPELL_VENGEANCE_PROC_R5             = 20055,
 };
+
+#if VERSION_STRING == WotLK
+class ArtOfWar : public SpellScript
+{
+public:
+    void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
+    {
+        spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
+    }
+
+    bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* castingspell, DamageInfo /*damageInfo*/) override
+    {
+        // Should proc only from melee attacks or melee spells
+        if (castingspell != nullptr && castingspell->getDmgClass() != SPELL_DMG_TYPE_MELEE)
+            return false;
+
+        return true;
+    }
+};
+#endif
 
 class EyeForAnEyeDummy : public SpellScript
 {
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
-
-        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_EYE_FOR_AN_EYE_DAMAGE), aur->getSpellInfo(), aur->getCasterGuid(), 0);
-        if (spellProc != nullptr)
+        if (apply)
         {
-            spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
-            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_EYE_FOR_AN_EYE_DAMAGE), aur, aur->getCasterGuid());
+            if (spellProc != nullptr)
+            {
+                spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
+                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+            }
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_EYE_FOR_AN_EYE_DAMAGE, aur->getCasterGuid());
         }
 
         return SpellScriptCheckDummy::DUMMY_OK;
-    }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_EYE_FOR_AN_EYE_DAMAGE, aur->getCasterGuid());
     }
 };
 
@@ -72,31 +100,30 @@ public:
     }
 };
 
-class JudgementOfLightDebuff : public SpellScript
+class JudgementOfLightDummy : public SpellScript
 {
 public:
     // todo: TBC and classic
 #if VERSION_STRING == WotLK
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
-
-        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_JUDGEMENT_OF_LIGHT_HEAL), aur->getSpellInfo(), aur->getCasterGuid(), 0);
-        if (spellProc != nullptr)
-            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+        if (apply)
+        {
+            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_JUDGEMENT_OF_LIGHT_HEAL), aur, aur->getCasterGuid());
+            if (spellProc != nullptr)
+                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_JUDGEMENT_OF_LIGHT_HEAL, aur->getCasterGuid());
+        }
 
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 #endif
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_JUDGEMENT_OF_LIGHT_HEAL, aur->getCasterGuid());
-    }
 };
 
-class JudgementOfLightHeal : public SpellScript
+class JudgementOfLight : public SpellScript
 {
 public:
     void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
@@ -124,28 +151,24 @@ public:
 #endif
 };
 
-class JudgementOfWisdomDebuff : public SpellScript
+class JudgementOfWisdomDummy : public SpellScript
 {
 public:
     // todo: TBC and classic
 #if VERSION_STRING == WotLK
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
+        if (apply)
+            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_JUDGEMENT_OF_WISDOM_MANA), aur, aur->getCasterGuid());
+        else
+            aur->getOwner()->removeProcTriggerSpell(SPELL_JUDGEMENT_OF_WISDOM_MANA, aur->getCasterGuid());
 
-        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_JUDGEMENT_OF_WISDOM_MANA), aur->getSpellInfo(), aur->getCasterGuid(), 0);
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 #endif
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_JUDGEMENT_OF_WISDOM_MANA, aur->getCasterGuid());
-    }
 };
 
-class JudgementOfWisdomMana : public SpellScript
+class JudgementOfWisdom : public SpellScript
 {
 public:
     void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
@@ -187,19 +210,21 @@ class SealOfCorruptionDummy : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (aurEff->getEffectIndex() != EFF_INDEX_0 || !apply)
+        if (aurEff->getEffectIndex() != EFF_INDEX_0)
             return SpellScriptCheckDummy::DUMMY_OK;
 
-        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_BLOOD_CORRUPTION), aur->getSpellInfo(), aur->getCasterGuid(), 0);
-        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_SEAL_OF_CORRUPTION_DIRECT), aur->getSpellInfo(), aur->getCasterGuid(), 0);
+        if (apply)
+        {
+            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_BLOOD_CORRUPTION), aur, aur->getCasterGuid());
+            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_SEAL_OF_CORRUPTION_DIRECT), aur, aur->getCasterGuid());
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_BLOOD_CORRUPTION, aur->getCasterGuid());
+            aur->getOwner()->removeProcTriggerSpell(SPELL_SEAL_OF_CORRUPTION_DIRECT, aur->getCasterGuid());
+        }
 
         return SpellScriptCheckDummy::DUMMY_OK;
-    }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_BLOOD_CORRUPTION, aur->getCasterGuid());
-        aur->getOwner()->removeProcTriggerSpell(SPELL_SEAL_OF_CORRUPTION_DIRECT, aur->getCasterGuid());
     }
 };
 #endif
@@ -209,16 +234,15 @@ class SealOfRighteousnessDummy : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (aurEff->getEffectIndex() != EFF_INDEX_0 || !apply)
+        if (aurEff->getEffectIndex() != EFF_INDEX_0)
             return SpellScriptCheckDummy::DUMMY_OK;
 
-        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_SEAL_OF_RIGHTEOUSNESS), aur->getSpellInfo(), aur->getCasterGuid(), 0);
-        return SpellScriptCheckDummy::DUMMY_OK;
-    }
+        if (apply)
+            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_SEAL_OF_RIGHTEOUSNESS), aur, aur->getCasterGuid());
+        else
+            aur->getOwner()->removeProcTriggerSpell(SPELL_SEAL_OF_RIGHTEOUSNESS, aur->getCasterGuid());
 
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_SEAL_OF_RIGHTEOUSNESS, aur->getCasterGuid());
+        return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
 
@@ -308,26 +332,40 @@ class SealOfVengeanceDummy : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (aurEff->getEffectIndex() != EFF_INDEX_0 || !apply)
+        if (aurEff->getEffectIndex() != EFF_INDEX_0)
             return SpellScriptCheckDummy::DUMMY_OK;
 
+        if (apply)
+        {
 #if VERSION_STRING == TBC
-        // 20 procs per minute in TBC
-        auto dotProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_HOLY_VENGEANCE), aur->getSpellInfo(), aur->getCasterGuid(), 0);
-        if (dotProc != nullptr)
-            dotProc->setProcsPerMinute(20);
+            // 20 procs per minute in TBC
+            auto dotProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_HOLY_VENGEANCE), aur, aur->getCasterGuid());
+            if (dotProc != nullptr)
+                dotProc->setProcsPerMinute(20);
 #else
-        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_HOLY_VENGEANCE), aur->getSpellInfo(), aur->getCasterGuid(), 0);
+            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_HOLY_VENGEANCE), aur, aur->getCasterGuid());
 #endif
 
-        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_SEAL_OF_VENGEANCE_DIRECT), aur->getSpellInfo(), aur->getCasterGuid(), 0);
+            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_SEAL_OF_VENGEANCE_DIRECT), aur, aur->getCasterGuid());
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_HOLY_VENGEANCE, aur->getCasterGuid());
+            aur->getOwner()->removeProcTriggerSpell(SPELL_SEAL_OF_VENGEANCE_DIRECT, aur->getCasterGuid());
+        }
+
         return SpellScriptCheckDummy::DUMMY_OK;
     }
+};
+#endif
 
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
+#if VERSION_STRING < Cata
+class Vengeance : public SpellScript
+{
+public:
+    void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
     {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_HOLY_VENGEANCE, aur->getCasterGuid());
-        aur->getOwner()->removeProcTriggerSpell(SPELL_SEAL_OF_VENGEANCE_DIRECT, aur->getCasterGuid());
+        spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
     }
 };
 #endif
@@ -336,6 +374,16 @@ void setupPaladinSpells(ScriptMgr* mgr)
 {
     // Call legacy script setup
     SetupLegacyPaladinSpells(mgr);
+
+#if VERSION_STRING == WotLK
+    uint32_t artOfWarIds[] =
+    {
+        SPELL_ART_OF_WAR_PROC_R1,
+        SPELL_ART_OF_WAR_PROC_R2,
+        0
+    };
+    mgr->register_spell_script(artOfWarIds, new ArtOfWar);
+#endif
 
     uint32_t eyeForEyeIds[] =
     {
@@ -346,10 +394,10 @@ void setupPaladinSpells(ScriptMgr* mgr)
     mgr->register_spell_script(eyeForEyeIds, new EyeForAnEyeDummy);
     mgr->register_spell_script(SPELL_EYE_FOR_AN_EYE_DAMAGE, new EyeForAnEye);
 
-    mgr->register_spell_script(SPELL_JUDGEMENT_OF_LIGHT_DEBUFF, new JudgementOfLightDebuff);
-    mgr->register_spell_script(SPELL_JUDGEMENT_OF_LIGHT_HEAL, new JudgementOfLightHeal);
-    mgr->register_spell_script(SPELL_JUDGEMENT_OF_WISDOM_DEBUFF, new JudgementOfWisdomDebuff);
-    mgr->register_spell_script(SPELL_JUDGEMENT_OF_WISDOM_MANA, new JudgementOfWisdomMana);
+    mgr->register_spell_script(SPELL_JUDGEMENT_OF_LIGHT_DEBUFF, new JudgementOfLightDummy);
+    mgr->register_spell_script(SPELL_JUDGEMENT_OF_LIGHT_HEAL, new JudgementOfLight);
+    mgr->register_spell_script(SPELL_JUDGEMENT_OF_WISDOM_DEBUFF, new JudgementOfWisdomDummy);
+    mgr->register_spell_script(SPELL_JUDGEMENT_OF_WISDOM_MANA, new JudgementOfWisdom);
 
 #if VERSION_STRING == WotLK
     mgr->register_spell_script(SPELL_SEAL_OF_CORRUPTION_DIRECT, new SealOfVengeanceAndCorruptionDirect);
@@ -363,5 +411,20 @@ void setupPaladinSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_SEAL_OF_VENGEANCE_DIRECT, new SealOfVengeanceAndCorruptionDirect);
     mgr->register_spell_script(SPELL_SEAL_OF_VENGEANCE_DUMMY, new SealOfVengeanceDummy);
     mgr->register_spell_script(SPELL_HOLY_VENGEANCE, new SealOfVengeanceAndCorruptionDot);
+#endif
+
+#if VERSION_STRING < Cata
+    uint32_t vengeanceProcIds[] =
+    {
+        SPELL_VENGEANCE_PROC_R1,
+        SPELL_VENGEANCE_PROC_R2,
+        SPELL_VENGEANCE_PROC_R3,
+#if VERSION_STRING < WotLK
+        SPELL_VENGEANCE_PROC_R4,
+        SPELL_VENGEANCE_PROC_R5,
+#endif
+        0
+    };
+    mgr->register_spell_script(vengeanceProcIds, new Vengeance);
 #endif
 }

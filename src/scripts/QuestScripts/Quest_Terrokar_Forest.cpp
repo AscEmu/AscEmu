@@ -52,7 +52,7 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
             Player * plr = static_cast<Player*>(mKiller);
             if (plr->HasQuest(10896))
             {
-                if (Rand(90))
+                if (Util::checkChance(90))
                 {
                     switch (getCreature()->getEntry())
                     {

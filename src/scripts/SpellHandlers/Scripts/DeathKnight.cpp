@@ -25,19 +25,18 @@ class Butchery : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
-
-        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_BUTCHERY_ENERGIZE), aur->getSpellInfo(), aur->getCasterGuid(), 0);
-        if (spellProc != nullptr)
-            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+        if (apply)
+        {
+            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_BUTCHERY_ENERGIZE), aur, aur->getCasterGuid());
+            if (spellProc != nullptr)
+                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_BUTCHERY_ENERGIZE, aur->getCasterGuid());
+        }
 
         return SpellScriptCheckDummy::DUMMY_OK;
-    }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_BUTCHERY_ENERGIZE, aur->getCasterGuid());
     }
 };
 #endif
@@ -49,8 +48,8 @@ class DeathRuneMastery : public SpellScript
      void onAuraApply(Aura* aur) override
      {
          // Should proc only on Obliterate and Death Strike
-         uint32_t procFamilyMask[3] = { 0x10, 0x20000, 0 };
-         aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_DEATH_RUNE_MASTERY_BLOOD), aur->getSpellInfo(), aur->getCasterGuid(), 0, procFamilyMask);
+         const uint32_t procFamilyMask[3] = { 0x10, 0x20000, 0 };
+         aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_DEATH_RUNE_MASTERY_BLOOD), aur, aur->getCasterGuid(), procFamilyMask);
      }
 
      void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
@@ -64,16 +63,12 @@ class MarkOfBlood : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
+        if (apply)
+            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_MARK_OF_BLOOD_HEAL), aur, aur->getCasterGuid());
+        else
+            aur->getOwner()->removeProcTriggerSpell(SPELL_MARK_OF_BLOOD_HEAL, aur->getCasterGuid());
 
-        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_MARK_OF_BLOOD_HEAL), aur->getSpellInfo(), aur->getCasterGuid(), 0);
         return SpellScriptCheckDummy::DUMMY_OK;
-    }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_MARK_OF_BLOOD_HEAL, aur->getCasterGuid());
     }
 };
 #endif

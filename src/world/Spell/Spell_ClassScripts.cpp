@@ -156,7 +156,7 @@ public:
             return 0;
 
         // Check for proc chance
-        if (Util::getRandomFloat(100.0f) > getSpellInfo()->getEffectBasePoints(0) + 1)
+        if (Util::getRandomFloat(100.0f) > getSpellInfo()->calculateEffectValue(0))
             return 0;
 
         // Check if damage will kill player.
@@ -185,7 +185,7 @@ public:
         getPlayerOwner()->castSpell(getPlayerOwner()->getGuid(), 45182, true);
 
         // Better to add custom cooldown procedure then fucking with entry, or not!!
-        getPlayerOwner()->addSpellCooldown(dSpell, nullptr, 60000);
+        getPlayerOwner()->addSpellCooldown(dSpell, nullptr, nullptr, 60000);
 
         // Calc abs and applying it
         uint32 real_dmg = (cur_hlth > min_hlth ? cur_hlth - min_hlth : 0);
@@ -333,7 +333,7 @@ public:
         {
             uint32 count = target->GetAuraCountWithDispelType(DISPEL_DISEASE, m_caster->getGuid());
             if (count)
-                value += value * count * (getSpellInfo()->getEffectBasePoints(2) + 1) / 200;
+                value += value * count * (getSpellInfo()->calculateEffectValue(2)) / 200;
         }
 
         return value;
@@ -357,7 +357,7 @@ public:
         if (aur == NULL)
             return;
 
-        if (!Rand(aur->getSpellInfo()->getProcChance()))
+        if (!Util::checkChance(aur->getSpellInfo()->getProcChance()))
             return;
 
         p_caster->castSpell(target, 47632, false);
@@ -399,10 +399,8 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new RuneStrileSpell(Caster, info, triggered, aur); }
 
-    void HandleEffects(uint64 guid, uint8 i)
+    void DoAfterHandleEffect(Unit* /*target*/, uint32 /*i*/)
     {
-        Spell::HandleEffects(guid, i);
-
         if (u_caster != NULL)
             u_caster->RemoveAura(56817);
     }
@@ -424,14 +422,14 @@ public:
     {
         Player* caster = GetPlayerCaster();
         if (caster != NULL)
-            return caster->getMaxHealth() * (getSpellInfo()->getEffectBasePoints(1) + 1) / 100;
+            return caster->getMaxHealth() * (getSpellInfo()->calculateEffectValue(1)) / 100;
         else
             return aurEff->getEffectDamage();
     }
 
     uint8_t CalcPctDamage()
     {
-        return static_cast<uint8_t>(getSpellInfo()->getEffectBasePoints(0) + 1);
+        return static_cast<uint8_t>(getSpellInfo()->calculateEffectValue(0));
     }
 };
 
@@ -457,7 +455,7 @@ public:
         if (caster == NULL)
             return 0;
 
-        if (!Rand(caster->GetParryChance()))
+        if (!Util::checkChance(caster->GetParryChance()))
             return 0;
 
         uint32 dmg_absorbed = *dmg * getEffectDamage(0) / 100;
@@ -507,7 +505,7 @@ public:
         // "Damage that would take you below $s1% health or taken while you are at $s1% health is reduced by $52284s1%."
         if ((health_pct > 35 && new_health_pct < 35) || health_pct == 35)
         {
-            uint32 dmg_absorbed = *dmg * (getSpellInfo()->getEffectBasePoints(0) + 1) / 100;
+            uint32 dmg_absorbed = *dmg * (getSpellInfo()->calculateEffectValue(0)) / 100;
             *dmg -= dmg_absorbed;
 
             return dmg_absorbed;
@@ -560,7 +558,7 @@ public:
         if (aur == NULL)
             return;
 
-        if (!Rand(aur->getSpellInfo()->getProcChance()))
+        if (!Util::checkChance(aur->getSpellInfo()->getProcChance()))
             return;
 
         p_caster->castSpell(target, 47632, false);
