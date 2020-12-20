@@ -56,35 +56,36 @@ public:
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         // Calculate healing done here so correct percent modifiers are applied
-        *dmg = static_cast<int32_t>(std::ceil(spell->getUnitCaster()->applySpellHealingBonus(spell->getSpellInfo(), *dmg)));
+        *dmg = static_cast<int32_t>(std::ceil(spell->getUnitCaster()->applySpellHealingBonus(spell->getSpellInfo(), *dmg, 1.0f, false, spell)));
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
-
-        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_EARTH_SHIELD_HEAL), aur->getSpellInfo(), aur->getCasterGuid(), 0);
-        if (spellProc != nullptr)
-            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+        if (apply)
+        {
+            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_EARTH_SHIELD_HEAL), aur, aur->getCasterGuid());
+            if (spellProc != nullptr)
+                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_EARTH_SHIELD_HEAL, aur->getCasterGuid());
+        }
 
         return SpellScriptCheckDummy::DUMMY_OK;
     }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_EARTH_SHIELD_HEAL, aur->getCasterGuid());
-    }
 };
 
-class EarthShieldHeal : public ElementalShield
+class EarthShield : public ElementalShield
 {
 public:
-    void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
+    void onCreateSpellProc(SpellProc* spellProc, Object* obj) override
     {
         spellProc->setCastedByProcCreator(true);
         spellProc->setCastedOnProcOwner(true);
+
+        ElementalShield::onCreateSpellProc(spellProc, obj);
     }
 
     bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* castingSpell, DamageInfo damageInfo) override
@@ -148,7 +149,7 @@ public:
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         // Calculate damage done here so correct percent modifiers are applied
-        *dmg = static_cast<int32_t>(std::ceil(spell->getUnitCaster()->applySpellDamageBonus(spell->getSpellInfo(), *dmg)));
+        *dmg = static_cast<int32_t>(std::ceil(spell->getUnitCaster()->applySpellDamageBonus(spell->getSpellInfo(), *dmg, 1.0f, false, spell)));
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 
@@ -158,7 +159,7 @@ public:
             return SpellScriptExecuteState::EXECUTE_OK;
 
         // Override effect with real proc effect
-        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(getDamageSpellForDummyRank(aur->getSpellId())), aur->getSpellInfo(), aur->getCasterGuid(), 0);
+        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(getDamageSpellForDummyRank(aur->getSpellId())), aur, aur->getCasterGuid());
         if (spellProc != nullptr)
             spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
 
@@ -171,7 +172,7 @@ public:
     }
 };
 
-class LightningShieldDamage : public ElementalShield
+class LightningShield : public ElementalShield
 {
 public:
     bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
@@ -205,7 +206,7 @@ void setupShamanSpells(ScriptMgr* mgr)
         0
     };
     mgr->register_spell_script(earthShieldIds, new EarthShieldDummy);
-    mgr->register_spell_script(SPELL_EARTH_SHIELD_HEAL, new EarthShieldHeal);
+    mgr->register_spell_script(SPELL_EARTH_SHIELD_HEAL, new EarthShield);
 
     uint32_t lightningShieldDummyIds[] =
     {
@@ -238,5 +239,5 @@ void setupShamanSpells(ScriptMgr* mgr)
         SPELL_LIGHTNING_SHIELD_DMG_R11,
         0
     };
-    mgr->register_spell_script(lightningShieldDmgIds, new LightningShieldDamage);
+    mgr->register_spell_script(lightningShieldDmgIds, new LightningShield);
 }

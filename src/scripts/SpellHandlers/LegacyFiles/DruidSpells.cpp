@@ -38,7 +38,7 @@ bool Starfall(uint8_t effectIndex, Spell* pSpell)
         Unit* Target = static_cast<Unit*>(itr);
         if (isAttackable(Target, m_caster) && m_caster->CalcDistance(itr) <= pSpell->GetRadius(effectIndex))
         {
-            m_caster->castSpell(Target, pSpell->CalculateEffect(effectIndex, Target), true);
+            m_caster->castSpell(Target, pSpell->getSpellInfo()->calculateEffectValue(effectIndex, m_caster), true);
             ++am;
             if (am >= 2)
                 return true;

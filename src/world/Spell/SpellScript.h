@@ -110,5 +110,5 @@ public:
     virtual bool canProcOnTriggered(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, Aura* triggeredFromAura);
     // Called right before the proc spell is cast
     // Caster is not necessarily the unit who owns this spell proc
-    virtual void onCastProcSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spellToProc);
+    virtual SpellScriptExecuteState onCastProcSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spellToProc);
 };

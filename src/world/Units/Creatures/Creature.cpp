@@ -2324,6 +2324,8 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     pAttacker->smsg_AttackStop(this);
 
+    getSummonInterface()->removeAllSummons();
+
     GetAIInterface()->OnDeath(pAttacker);
 
     // Add Kills if Player is in Vehicle
@@ -2473,7 +2475,7 @@ void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
     else
     {
         int choice = 0;
-        if (Rand(npcMonsterSay->chance))
+        if (Util::checkChance(npcMonsterSay->chance))
         {
             choice = (npcMonsterSay->textCount == 1) ? 0 : Util::getRandomUInt(npcMonsterSay->textCount - 1);
         }

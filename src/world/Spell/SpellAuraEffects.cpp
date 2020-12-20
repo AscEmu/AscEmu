@@ -8,16 +8,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellFamily.h"
 #include "Definitions/SpellIsFlags.h"
 #include "Definitions/SpellTypes.h"
-#include "SpellHelpers.h"
 #include "SpellMgr.h"
 
 #include "Objects/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
-
-using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
-using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
+#include "Units/Creatures/Pet.h"
 
 pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
 {
@@ -128,8 +123,8 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraWaterWalk,                                              // 104 SPELL_AURA_WATER_WALK
     &Aura::SpellAuraFeatherFall,                                            // 105 SPELL_AURA_FEATHER_FALL
     &Aura::SpellAuraHover,                                                  // 106 SPELL_AURA_HOVER
-    &Aura::SpellAuraAddFlatModifier,                                        // 107 SPELL_AURA_ADD_FLAT_MODIFIER
-    &Aura::SpellAuraAddPctMod,                                              // 108 SPELL_AURA_ADD_PCT_MOD
+    &Aura::spellAuraEffectAddModifier,                                      // 107 SPELL_AURA_ADD_FLAT_MODIFIER
+    &Aura::spellAuraEffectAddModifier,                                      // 108 SPELL_AURA_ADD_PCT_MOD
     &Aura::SpellAuraAddClassTargetTrigger,                                  // 109 SPELL_AURA_ADD_CLASS_TARGET_TRIGGER
     &Aura::SpellAuraModPowerRegPerc,                                        // 110 SPELL_AURA_MOD_POWER_REG_PERC
     &Aura::spellAuraEffectNotImplemented,                                   // 111 SPELL_AURA_111
@@ -947,7 +942,7 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
                     for (uint8 i = 0; i < 3; ++i)
                     {
                         const auto curVal = aurEff->getEffectDamage();
-                        aurEff->setEffectDamage(curVal + (spell->CalculateEffect(i, m_target) * parentsp->getEffectBasePoints(0) / 100));
+                        aurEff->setEffectDamage(curVal + (spell->calculateEffect(i) * parentsp->getEffectBasePoints(0) / 100));
                     }
                     delete spell;
                     spell = nullptr;
@@ -994,14 +989,7 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
 
         // Get bonus damage from spell power and attack power
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
-            damage = casterUnit->applySpellDamageBonus(getSpellInfo(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, this);
-
-        // Apply damage over time modifiers
-        if (casterUnit != nullptr)
-        {
-            spellModFlatFloatValue(casterUnit->SM_FDOT, &damage, getSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageFloatValue(casterUnit->SM_PDOT, &damage, getSpellInfo()->getSpellFamilyFlags());
-        }
+            damage = casterUnit->applySpellDamageBonus(getSpellInfo(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, nullptr, this);
 
         if (damage <= 0.0f)
             return;
@@ -1059,15 +1047,7 @@ void Aura::spellAuraEffectPeriodicHeal(AuraEffectModifier* aurEff, bool apply)
         {
             // Get bonus healing from spell power and attack power
             if (!aurEff->isEffectDamageStatic())
-                heal = casterUnit->applySpellHealingBonus(getSpellInfo(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, this);
-
-            // Apply modifiers
-            spellModFlatFloatValue(casterUnit->SM_FDOT, &heal, getSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageFloatValue(casterUnit->SM_PDOT, &heal, getSpellInfo()->getSpellFamilyFlags());
-
-            //\ todo: these are already applied in Spell::CalculateEffect
-            spellModFlatFloatValue(casterUnit->SM_FMiscEffect, &heal, getSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageFloatValue(casterUnit->SM_PMiscEffect, &heal, getSpellInfo()->getSpellFamilyFlags());
+                heal = casterUnit->applySpellHealingBonus(getSpellInfo(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, nullptr, this);
         }
 
         if (heal <= 0)
@@ -1108,7 +1088,7 @@ void Aura::spellAuraEffectPeriodicHealPct(AuraEffectModifier* aurEff, bool apply
         // Get bonus healing from spell power and attack power
         const auto casterUnit = GetUnitCaster();
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
-            aurEff->setEffectDamage(casterUnit->applySpellHealingBonus(getSpellInfo(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, this));
+            aurEff->setEffectDamage(casterUnit->applySpellHealingBonus(getSpellInfo(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, nullptr, this));
 
         // Set periodic timer only if timer was resetted
         if (m_periodicTimer[aurEff->getEffectIndex()] == 0)
@@ -1237,8 +1217,9 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
     const auto oldForm = getOwner()->getShapeShiftForm();
     const uint8_t newForm = apply ? static_cast<uint8_t>(aurEff->getEffectMiscValue()) : FORM_NORMAL;
 
-    // Remove previous shapeshift aura
-    getOwner()->removeAllAurasByAuraEffect(SPELL_AURA_MOD_SHAPESHIFT, getSpellId());
+    // Remove previous shapeshift aura on apply
+    if (apply)
+        getOwner()->removeAllAurasByAuraEffect(SPELL_AURA_MOD_SHAPESHIFT, getSpellId());
 
     // Some forms have two additional hidden passive aura
     uint32_t passiveSpellId = 0, secondaryPassiveSpell = 0;
@@ -1570,14 +1551,10 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
 
         // Get bonus damage from spell power and attack power
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
-            damage = casterUnit->applySpellDamageBonus(getSpellInfo(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, this);
+            damage = casterUnit->applySpellDamageBonus(getSpellInfo(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, nullptr, this);
 
-        // Apply modifiers
         if (casterUnit != nullptr)
         {
-            spellModFlatFloatValue(casterUnit->SM_FDOT, &damage, getSpellInfo()->getSpellFamilyFlags());
-            spellModPercentageFloatValue(casterUnit->SM_PDOT, &damage, getSpellInfo()->getSpellFamilyFlags());
-
             // Hackfix from legacy method
             // Apply bonus from [Warlock] Soul Siphon
             if (casterUnit->m_soulSiphon.amt)
@@ -1715,7 +1692,7 @@ void Aura::spellAuraEffectPeriodicHealthFunnel(AuraEffectModifier* aurEff, bool 
         // Get bonus damage from spell power and attack power
         const auto casterUnit = GetUnitCaster();
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
-            aurEff->setEffectDamage(casterUnit->applySpellDamageBonus(getSpellInfo(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, this));
+            aurEff->setEffectDamage(casterUnit->applySpellDamageBonus(getSpellInfo(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, nullptr, this));
 
         // Set periodic timer only if timer was resetted
         if (m_periodicTimer[aurEff->getEffectIndex()] == 0)
@@ -1775,7 +1752,7 @@ void Aura::spellAuraEffectPeriodicDamagePercent(AuraEffectModifier* aurEff, bool
         // Get bonus damage from spell power and attack power
         const auto casterUnit = GetUnitCaster();
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
-            aurEff->setEffectDamage(casterUnit->applySpellDamageBonus(getSpellInfo(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, this));
+            aurEff->setEffectDamage(casterUnit->applySpellDamageBonus(getSpellInfo(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, nullptr, this));
 
         // Set periodic timer only if timer was resetted
         if (m_periodicTimer[aurEff->getEffectIndex()] == 0)
@@ -1787,6 +1764,119 @@ void Aura::spellAuraEffectPeriodicDamagePercent(AuraEffectModifier* aurEff, bool
         // Prior to cata periodic timer was resetted on refresh
         m_periodicTimer[aurEff->getEffectIndex()] = 0;
 #endif
+    }
+}
+
+void Aura::spellAuraEffectAddModifier(AuraEffectModifier* aurEff, bool apply)
+{
+    if (aurEff->getEffectMiscValue() >= MAX_SPELLMOD_TYPE)
+    {
+        LogError("Aura::spellAuraEffectAddModifier : Unknown spell modifier type %u in spell %u, skipping", aurEff->getEffectMiscValue(), getSpellId());
+        return;
+    }
+
+    getOwner()->addSpellModifier(aurEff, apply);
+
+    // Attempt to prevent possible memory corruption
+    // Multiple spells could use this same spell modifier, and when the first spell removes this modifier
+    // the second spell has a modifier at invalid memory address
+    // Anyhow, the chance for this to happen is rather low
+    if (!apply)
+    {
+        getOwner()->removeSpellModifierFromCurrentSpells(aurEff);
+        if (getCasterGuid() != getOwner()->getGuid())
+        {
+            const auto casterObj = getCaster();
+            if (casterObj != nullptr)
+                casterObj->removeSpellModifierFromCurrentSpells(aurEff);
+        }
+    }
+
+    if (!getOwner()->isPlayer())
+        return;
+
+    // todo: hackfix (?) from the old effect, handle this in pet system
+    // Hunter's beastmastery talents
+    if (aurEff->getAuraEffectType() == SPELL_AURA_ADD_FLAT_MODIFIER)
+    {
+        const auto pet = getPlayerOwner()->GetSummon();
+        if (pet != nullptr)
+        {
+            switch (getSpellInfo()->getId())
+            {
+                // SPELL_HASH_UNLEASHED_FURY:
+                case 19616:
+                case 19617:
+                case 19618:
+                case 19619:
+                case 19620:
+                    pet->LoadPetAuras(0);
+                    break;
+                // SPELL_HASH_THICK_HIDE:
+                case 16929:
+                case 16930:
+                case 16931:
+                case 19609:
+                case 19610:
+                case 19612:
+                case 50502:
+                    pet->LoadPetAuras(1);
+                    break;
+                // SPELL_HASH_ENDURANCE_TRAINING:
+                case 19583:
+                case 19584:
+                case 19585:
+                case 19586:
+                case 19587:
+                    pet->LoadPetAuras(2);
+                    break;
+                // SPELL_HASH_FERAL_SWIFTNESS:
+                case 17002:
+                case 24866:
+                    pet->LoadPetAuras(3);
+                    break;
+                // SPELL_HASH_BESTIAL_DISCIPLINE:
+                case 19590:
+                case 19592:
+                    pet->LoadPetAuras(4);
+                    break;
+                // SPELL_HASH_FEROCITY:
+                case 4154:
+                case 16934:
+                case 16935:
+                case 16936:
+                case 16937:
+                case 16938:
+                case 19598:
+                case 19599:
+                case 19600:
+                case 19601:
+                case 19602:
+                case 33667:
+                    pet->LoadPetAuras(5);
+                    break;
+                // SPELL_HASH_ANIMAL_HANDLER:
+                case 34453:
+                case 34454:
+                case 68361:
+                    pet->LoadPetAuras(6);
+                    break;
+                // SPELL_HASH_CATLIKE_REFLEXES:
+                case 34462:
+                case 34464:
+                case 34465:
+                    pet->LoadPetAuras(7);
+                    break;
+                // SPELL_HASH_SERPENT_S_SWIFTNESS:
+                case 34466:
+                case 34467:
+                case 34468:
+                case 34469:
+                case 34470:
+                    pet->LoadPetAuras(8);
+                    break;
+            }
+        }
     }
 }
 

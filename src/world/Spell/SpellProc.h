@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellDefines.hpp"
 #include "SpellInfo.hpp"
 
+class Aura;
 class Object;
 class SpellInfo;
 class SpellProc;
@@ -73,7 +74,6 @@ class SERVER_DECL SpellProc
         float_t getProcsPerMinute() const;
         SpellProcFlags getProcFlags() const;
         SpellExtraProcFlags getExtraProcFlags() const;
-        uint32_t getProcCharges() const;
 
         uint32_t getProcClassMask(uint8_t i) const;
         void setProcClassMask(uint8_t i, uint32_t mask);
@@ -83,8 +83,6 @@ class SERVER_DECL SpellProc
 
         void setProcChance(uint32_t procChance);
         void setProcsPerMinute(float_t ppm);
-
-        void setProcCharges(uint32_t charges);
 
         uint32_t getProcInterval() const;
         void setProcInterval(uint32_t time);
@@ -101,6 +99,13 @@ class SERVER_DECL SpellProc
         int32_t getOverrideEffectDamage(uint8_t effIndex) const;
         int32_t* getOverrideEffectDamages();
         void setOverrideEffectDamage(uint8_t effIndex, int32_t damage);
+
+        Aura* getCreatedByAura() const;
+        void setCreatedByAura(Aura* aur);
+
+        // Indicates that this proc will be skipped on next ::handleProc call
+        void skipOnNextHandleProc(bool);
+        bool isSkippingHandleProc() const;
 
         // Indicates that this object is deleted and should be removed on next iteration
         void deleteProc();
@@ -123,7 +128,6 @@ class SERVER_DECL SpellProc
         float_t mProcsPerMinute = 0.0f;
         SpellProcFlags mProcFlags = PROC_NULL;
         SpellExtraProcFlags mExtraProcFlags = EXTRA_PROC_NULL;
-        uint32_t mProcCharges = 0;
         // In milliseconds
         uint32_t mProcInterval = 0;
 
@@ -148,8 +152,14 @@ class SERVER_DECL SpellProc
 
         int32_t mOverrideEffectDamage[MAX_SPELL_EFFECTS];
 
+        // Indicates that this proc will be skipped on next ::handleProc call
+        // used to avoid some spell procs from procing themselves
+        bool mSkipNextProcUpdate = false;
+
         // Indicate that this object is deleted, and should be remove on next iteration
         bool mDeleted = false;
+
+        Aura* m_createdByAura = nullptr;
 };
 
 class SpellProcMgr
@@ -172,8 +182,8 @@ class SpellProcMgr
         // Registers multiple spell ids to same spell proc script
         void addByIds(uint32_t* spellIds, spell_proc_factory_function spellProc);
 
-        SpellProc* newSpellProc(Unit* owner, uint32_t spellId, uint32_t origSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t procCharges, uint32_t const* spellFamilyMask, uint32_t const* procClassMask, Object* obj);
-        SpellProc* newSpellProc(Unit* owner, SpellInfo const* spellInfo, SpellInfo const* origSpellInfo, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t procCharges, uint32_t const* spellFamilyMask, uint32_t const* procClassMask, Object* obj);
+        SpellProc* newSpellProc(Unit* owner, uint32_t spellId, uint32_t origSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask, Aura* createdByAura, Object* obj);
+        SpellProc* newSpellProc(Unit* owner, SpellInfo const* spellInfo, SpellInfo const* origSpellInfo, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask, Aura* createdByAura, Object* obj);
 
     private:
         SpellProcMap mSpellProc;

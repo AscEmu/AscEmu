@@ -40,27 +40,6 @@ struct loot_tb
     float chance;
 };
 
-bool Rand(float chance)
-{
-    int32 val = Util::getRandomUInt(10000);
-    int32 p = int32(chance * 100.0f);
-    return p >= val;
-}
-
-bool Rand(uint32 chance)
-{
-    int32 val = Util::getRandomUInt(10000);
-    int32 p = int32(chance * 100);
-    return p >= val;
-}
-
-bool Rand(int32 chance)
-{
-    int32 val = Util::getRandomUInt(10000);
-    int32 p = chance * 100;
-    return p >= val;
-}
-
 template <class T> // works for anything that has the field 'chance' and is stored in plain array
 const T & RandomChoice(const T* variant, int count)
 {
@@ -397,7 +376,7 @@ void LootMgr::PushLoot(StoreLootList* list, Loot* loot, uint8 type)
                 continue;
 
             ItemProperties const* itemproto = list->items[x].item.itemproto;
-            if (Rand(chance * worldConfig.getFloatRate((WorldConfigRates)(RATE_DROP0 + itemproto->Quality)))) //|| itemproto->Class == ITEM_CLASS_QUEST)
+            if (Util::checkChance(chance * worldConfig.getFloatRate((WorldConfigRates)(RATE_DROP0 + itemproto->Quality)))) //|| itemproto->Class == ITEM_CLASS_QUEST)
             {
                 if (list->items[x].mincount == list->items[x].maxcount)
                     count = list->items[x].maxcount;

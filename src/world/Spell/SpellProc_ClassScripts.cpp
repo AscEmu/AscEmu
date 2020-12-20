@@ -29,10 +29,6 @@
 #include "Definitions/ProcFlags.h"
 #include "Definitions/SpellIsFlags.h"
 #include "Definitions/SpellEffectTarget.h"
-#include "SpellHelpers.h"
-
-using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Warrior ProcScripts
@@ -54,7 +50,7 @@ public:
     {
         Player* plr = static_cast<Player*>(getProcOwner());
 
-        dmgOverwrite[0] = plr->GetBlockDamageReduction() * (getOriginalSpell()->getEffectBasePoints(0) + 1) / 100;
+        dmgOverwrite[0] = plr->GetBlockDamageReduction() * (getOriginalSpell()->calculateEffectValue(0)) / 100;
 
         // plr->GetBlockDamageReduction() returns ZERO if player has no shield equipped
         if (dmgOverwrite[0] == 0)
@@ -238,7 +234,7 @@ public:
                     case 58792:
                     {
                         wp_speed = item->getItemProperties()->Delay;
-                        damage = (sp->getEffectBasePoints(0) + 1) * wp_speed / 100000;
+                        damage = (sp->calculateEffectValue(0)) * wp_speed / 100000;
                     } break;
                 }
             }
@@ -412,13 +408,13 @@ public:
     bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 dmg, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/) override
     {
         // Get dmg amt for 1 tick
-        dmg = castingSpell->getEffectBasePoints(0) + 1;
+        dmg = castingSpell->calculateEffectValue(0);
 
         // Get total ticks
         auto amplitude = castingSpell->getEffectAmplitude(0) == 0 ? 1 : castingSpell->getEffectAmplitude(0);
         int ticks = GetDuration(sSpellDurationStore.LookupEntry(castingSpell->getDurationIndex())) / amplitude;
 
-        dmgOverwrite[0] = dmg * ticks * (getOriginalSpell()->getEffectBasePoints(0) + 1) / 100;
+        dmgOverwrite[0] = dmg * ticks * (getOriginalSpell()->calculateEffectValue(0)) / 100;
 
         return false;
     }
@@ -433,13 +429,13 @@ public:
     bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 dmg, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weapon_damage_type*/) override
     {
         // Get heal amt for 1 tick
-        dmg = castingSpell->getEffectBasePoints(0) + 1;
+        dmg = castingSpell->calculateEffectValue(0);
 
         // Get total ticks
         int ticks = GetDuration(sSpellDurationStore.LookupEntry(castingSpell->getDurationIndex())) / castingSpell->getEffectAmplitude(0);
 
         // Total periodic effect is a single tick amount multiplied by number of ticks
-        dmgOverwrite[0] = dmg * ticks * (getOriginalSpell()->getEffectBasePoints(0) + 1) / 100;
+        dmgOverwrite[0] = dmg * ticks * (getOriginalSpell()->calculateEffectValue(0)) / 100;
 
         return false;
     }

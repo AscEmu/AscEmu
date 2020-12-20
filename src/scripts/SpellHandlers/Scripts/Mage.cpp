@@ -37,27 +37,35 @@ class HotStreakDummy : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (aurEff->getEffectIndex() != EFF_INDEX_0 || !apply)
+        if (aurEff->getEffectIndex() != EFF_INDEX_0)
             return SpellScriptCheckDummy::DUMMY_OK;
 
-        // should proc on Living Bomb (direct damage only), Fireball, Fire Blast, Scorch and Frostfire bolt
-        uint32_t procFamilyMask[3] = { 0x13, 0x11000, 0x8 };
-        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_HOT_STREAK_BUFF), aur->getSpellInfo(), aur->getCasterGuid(), 0, procFamilyMask);
-        if (spellProc != nullptr)
-            spellProc->setProcChance(aurEff->getEffectDamage());
+        if (apply)
+        {
+            // should proc on Living Bomb (direct damage only), Fireball, Fire Blast, Scorch and Frostfire bolt
+            const uint32_t procFamilyMask[3] = { 0x13, 0x11000, 0x8 };
+            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_HOT_STREAK_BUFF), aur, aur->getCasterGuid(), procFamilyMask);
+            if (spellProc != nullptr)
+                spellProc->setProcChance(aurEff->getEffectDamage());
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_HOT_STREAK_BUFF, aur->getCasterGuid());
+        }
 
         return SpellScriptCheckDummy::DUMMY_OK;
-    }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_HOT_STREAK_BUFF, aur->getCasterGuid());
     }
 };
 
 class HotStreak : public SpellScript
 {
 public:
+    void onAuraCreate(Aura* aur) override
+    {
+        // SpellInfo is missing charge count
+        aur->setCharges(1, false);
+    }
+
     bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
     {
         if (damageInfo.isCritical)
@@ -83,22 +91,21 @@ class MasterOfElementsDummy : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
-
-        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_MASTER_OF_ELEMENTS), aur->getSpellInfo(), aur->getCasterGuid(), 0);
-        if (spellProc != nullptr)
+        if (apply)
         {
-            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
-            spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
+            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_MASTER_OF_ELEMENTS), aur, aur->getCasterGuid());
+            if (spellProc != nullptr)
+            {
+                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+                spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
+            }
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_MASTER_OF_ELEMENTS, aur->getCasterGuid());
         }
 
         return SpellScriptCheckDummy::DUMMY_OK;
-    }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_MASTER_OF_ELEMENTS, aur->getCasterGuid());
     }
 };
 
@@ -175,10 +182,11 @@ public:
         return SpellScriptExecuteState::EXECUTE_OK;
     }
 
-    void onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
+    SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
     {
         spell->forced_basepoints[EFF_INDEX_0] = manaReturn;
         manaReturn = 0;
+        return SpellScriptExecuteState::EXECUTE_OK;
     }
 
 private:

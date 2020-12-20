@@ -148,6 +148,12 @@ namespace Util
     float getRandomFloat(float end);
     float getRandomFloat(float start, float end);
 
+    // Gets random number from 1-100 and returns true if val is greater than the number
+    bool checkChance(uint32_t val);
+    // Gets random number from 1-100 and returns true if val is greater than the number
+    bool checkChance(int32_t val);
+    // Gets random number from 1-100 and returns true if val is greater than the number
+    bool checkChance(float_t val);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // C++17 filesystem dependent functions

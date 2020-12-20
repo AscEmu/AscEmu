@@ -259,13 +259,13 @@ bool ScriptMgr::callScriptedSpellCanProcOnTriggered(SpellProc* spellProc, Unit* 
     return spellScript->canProcOnTriggered(spellProc, victim, castingSpell, triggeredFromAura);
 }
 
-void ScriptMgr::callScriptedSpellProcCastSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spellToProc)
+SpellScriptExecuteState ScriptMgr::callScriptedSpellProcCastSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spellToProc)
 {
     const auto spellScript = getSpellScript(spellProc->getSpell()->getId());
     if (spellScript == nullptr)
-        return;
+        return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 
-    spellScript->onCastProcSpell(spellProc, caster, victim, spellToProc);
+    return spellScript->onCastProcSpell(spellProc, caster, victim, spellToProc);
 }
 
 SpellScript* ScriptMgr::getSpellScript(uint32_t spellId) const

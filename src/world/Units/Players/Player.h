@@ -887,10 +887,11 @@ public:
     bool hasSpellOnCooldown(SpellInfo const* spellInfo);
     bool hasSpellGlobalCooldown(SpellInfo const* spellInfo);
     // Do NOT add cooldownTime if you don't know what you're doing (it's required for spells with dynamic cooldown)
-    void addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster, int32_t cooldownTime = 0);
-    void addGlobalCooldown(SpellInfo const* spellInfo, const bool sendPacket = false);
+    void addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster, Spell* castingSpell = nullptr, int32_t cooldownTime = 0);
+    void addGlobalCooldown(SpellInfo const* spellInfo, Spell* castingSpell, const bool sendPacket = false);
     void sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t duration, const bool isGcd);
     void clearCooldownForSpell(uint32_t spellId);
+    void clearGlobalCooldown();
     void resetAllCooldowns();
 
 #if VERSION_STRING >= WotLK

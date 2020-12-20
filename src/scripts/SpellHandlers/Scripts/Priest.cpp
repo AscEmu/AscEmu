@@ -40,6 +40,7 @@ enum PriestSpells
     SPELL_IMPROVED_SPIRIT_TAP_R1            = 49694,
     SPELL_IMPROVED_SPIRIT_TAP_R2            = 59000,
     SPELL_MIND_TRAUMA                       = 48301,
+    SPELL_SURGE_OF_LIGHT_PROC               = 33151,
     SPELL_VAMPIRIC_EMBRACE_DUMMY            = 15286,
     SPELL_VAMPIRIC_EMBRACE_HEAL             = 15290,
     SPELL_VAMPIRIC_TOUCH_R1                 = 34914,
@@ -54,7 +55,6 @@ enum PriestSpells
     SPELL_ICON_ABOLISH_DISEASE              = 264,
 };
 
-#if VERSION_STRING >= WotLK
 #if VERSION_STRING == WotLK
 class AbolishDisease : public SpellScript
 {
@@ -67,38 +67,39 @@ public:
 };
 #endif
 
+#if VERSION_STRING >= WotLK
 #if VERSION_STRING < Mop
 // Handles only the poison dispel proc (speed buff is handled by spellAuraEffectProcTriggerSpell)
 class BodyAndSoulDummy : public SpellScript
 {
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
-
-        // Dispel poison proc on Abolish Disease in wotlk and on Cure Disease in cata
-        uint32_t procMask[3] = { 0, 0x1, 0x400 };
-#if VERSION_STRING == WotLK
-        uint32_t spellId = SPELL_BODY_AND_SOUL_POISON;
-#elif VERSION_STRING == Cata
-        uint32_t spellId = SPELL_BODY_AND_SOUL_POISON_SINGLE;
-#endif
-        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(spellId), aur->getSpellInfo(), aur->getCasterGuid(), 0, procMask);
-        if (spellProc != nullptr)
+        if (apply)
         {
-            const auto procChance = aurEff->getEffectDamage();
-            spellProc->setProcChance(procChance);
-        }
-        return SpellScriptCheckDummy::DUMMY_OK;
-    }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-#if VERSION_STRING == Cata
-        aur->getOwner()->removeProcTriggerSpell(SPELL_BODY_AND_SOUL_POISON_SINGLE, aur->getCasterGuid());
-#elif VERSION_STRING == WotLK
-        aur->getOwner()->removeProcTriggerSpell(SPELL_BODY_AND_SOUL_POISON, aur->getCasterGuid());
+            // Dispel poison proc on Abolish Disease in wotlk and on Cure Disease in cata
+            const uint32_t procMask[3] = { 0, 0x1, 0x400 };
+#if VERSION_STRING == WotLK
+            uint32_t spellId = SPELL_BODY_AND_SOUL_POISON;
+#elif VERSION_STRING == Cata
+            uint32_t spellId = SPELL_BODY_AND_SOUL_POISON_SINGLE;
 #endif
+            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(spellId), aur, aur->getCasterGuid(), procMask);
+            if (spellProc != nullptr)
+            {
+                const auto procChance = aurEff->getEffectDamage();
+                spellProc->setProcChance(procChance);
+            }
+        }
+        else
+        {
+#if VERSION_STRING == Cata
+            aur->getOwner()->removeProcTriggerSpell(SPELL_BODY_AND_SOUL_POISON_SINGLE, aur->getCasterGuid());
+#elif VERSION_STRING == WotLK
+            aur->getOwner()->removeProcTriggerSpell(SPELL_BODY_AND_SOUL_POISON, aur->getCasterGuid());
+#endif
+        }
+
+        return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
 
@@ -129,28 +130,29 @@ public:
         spellProc->setProcClassMask(2, 0x400);
     }
 };
+#endif
 
+#if VERSION_STRING >= WotLK
 class DivineAegisDummy : public SpellScript
 {
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
-
-        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_DIVINE_AEGIS), aur->getSpellInfo(), aur->getCasterGuid(), 0);
-        if (spellProc != nullptr)
+        if (apply)
         {
-            spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
-            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_DIVINE_AEGIS), aur, aur->getCasterGuid());
+            if (spellProc != nullptr)
+            {
+                spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
+                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+            }
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_DIVINE_AEGIS, aur->getCasterGuid());
         }
 
         return SpellScriptCheckDummy::DUMMY_OK;
-    }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_DIVINE_AEGIS, aur->getCasterGuid());
     }
 };
 
@@ -178,15 +180,17 @@ public:
         return SpellScriptExecuteState::EXECUTE_OK;
     }
 
-    void onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
+    SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
     {
         spell->forced_basepoints[EFF_INDEX_0] = absorbAmount;
         absorbAmount = 0;
+        return SpellScriptExecuteState::EXECUTE_OK;
     }
 
 private:
     uint32_t absorbAmount = 0;
 };
+#endif
 
 #if VERSION_STRING == WotLK
 class EmpoweredRenewDummy : public SpellScript
@@ -198,7 +202,6 @@ public:
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
-#endif
 #endif
 
 #if VERSION_STRING >= TBC
@@ -234,30 +237,34 @@ class ImprovedDevouringPlagueDummy : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
+        if (apply)
+        {
+            // Cast on devouring plague
+            // TODO: missing damage calculations and the heal spell
+            const uint32_t procMask[3] = { 0x2000000, 0x1000, 0x400 };
+            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_IMPROVED_DEVOURING_PLAGUE_DMG), aur->getSpellInfo(), aur->getCasterGuid(), 100, PROC_ON_DONE_NEGATIVE_SPELL_DAMAGE_CLASS_MAGIC, EXTRA_PROC_NULL, 0, procMask, aur);
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_IMPROVED_DEVOURING_PLAGUE_DMG, aur->getCasterGuid());
+        }
 
-        // Cast on devouring plague
-        // TODO: missing damage calculations and the heal spell
-        uint32_t procMask[3] = { 0x2000000, 0x1000, 0x400 };
-        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_IMPROVED_DEVOURING_PLAGUE_DMG), aur->getSpellInfo(), aur->getCasterGuid(), 100, PROC_ON_DONE_NEGATIVE_SPELL_DAMAGE_CLASS_MAGIC, EXTRA_PROC_NULL, 0, 0, procMask);
         return SpellScriptCheckDummy::DUMMY_OK;
     }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_IMPROVED_DEVOURING_PLAGUE_DMG, aur->getCasterGuid());
-    }
 };
+#endif
+#endif
 
+#if VERSION_STRING >= WotLK
+#if VERSION_STRING < Mop
 class ImprovedMindBlastDummy : public SpellScript
 {
 public:
     void onAuraApply(Aura* aur) override
     {
-        const auto procChance = aur->getSpellInfo()->getEffectBasePoints(EFF_INDEX_1) + 1;
+        const auto procChance = aur->getSpellInfo()->calculateEffectValue(EFF_INDEX_1);
         const uint32_t procMask[3] = { 0x2000, 0, 0 };
-        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_MIND_TRAUMA), aur->getSpellInfo(), aur->getCasterGuid(), procChance, PROC_ON_DONE_NEGATIVE_SPELL_DAMAGE_CLASS_MAGIC, 0, 0, procMask);
+        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_MIND_TRAUMA), aur->getSpellInfo(), aur->getCasterGuid(), procChance, PROC_ON_DONE_NEGATIVE_SPELL_DAMAGE_CLASS_MAGIC, procMask, aur);
     }
 
     void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
@@ -278,6 +285,37 @@ public:
         return true;
     }
 };
+#endif
+#endif
+
+#if VERSION_STRING < Mop
+#if VERSION_STRING >= TBC
+class SurgeOfLight : public SpellScript
+{
+public:
+    void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
+    {
+#if VERSION_STRING == Cata
+        // Should proc on Smite, Heal, Flash Heal, Binding Heal and Greater Heal
+        spellProc->setProcClassMask(EFF_INDEX_0, 0x41880);
+        spellProc->setProcClassMask(EFF_INDEX_1, 0x4);
+        spellProc->setProcClassMask(EFF_INDEX_2, 0);
+#endif
+        spellProc->setCastedOnProcOwner(true);
+    }
+
+#if VERSION_STRING < Cata
+    bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* castingSpell, DamageInfo damageInfo) override
+    {
+        // Should proc from critical spells only
+        if (castingSpell == nullptr || damageInfo.weaponType == RANGED)
+            return false;
+
+        return damageInfo.isCritical;
+    }
+#endif
+};
+#endif
 #endif
 
 #if VERSION_STRING == WotLK
@@ -313,33 +351,32 @@ public:
     }
 };
 #endif
-#endif
 
 class VampiricEmbraceDummy : public SpellScript
 {
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
-
+        if (apply)
+        {
 #if VERSION_STRING >= Mop
-        // TODO: Mop
+            // TODO: Mop
 #else
-        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_EMBRACE_HEAL), aur->getSpellInfo(), aur->getCasterGuid(), 0);
-        if (spellProc != nullptr)
-            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_EMBRACE_HEAL), aur, aur->getCasterGuid());
+            if (spellProc != nullptr)
+                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
 #endif
-        return SpellScriptCheckDummy::DUMMY_OK;
-    }
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_VAMPIRIC_EMBRACE_HEAL, aur->getCasterGuid());
+        }
 
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_VAMPIRIC_EMBRACE_HEAL, aur->getCasterGuid());
+        return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
 
-class VampiricEmbraceHeal : public SpellScript
+class VampiricEmbrace : public SpellScript
 {
 public:
     void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
@@ -412,7 +449,7 @@ public:
         return SpellScriptExecuteState::EXECUTE_OK;
     }
 
-    void onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
+    SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
     {
 #if VERSION_STRING < WotLK
         // Same amount for party and self in Classic and TBC
@@ -423,6 +460,7 @@ public:
 #endif
         selfHeal = 0;
         partyHeal = 0;
+        return SpellScriptExecuteState::EXECUTE_OK;
     }
 
 #if VERSION_STRING >= WotLK
@@ -444,35 +482,41 @@ private:
 };
 
 #if VERSION_STRING >= TBC
-class VampiricTouch : public SpellScript
+class VampiricTouchDummy : public SpellScript
 {
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        if (!apply || aurEff->getEffectIndex() != EFF_INDEX_0)
+        if (aurEff->getEffectIndex() != EFF_INDEX_0)
             return SpellScriptCheckDummy::DUMMY_OK;
 
+        if (apply)
+        {
 #if VERSION_STRING == TBC
-        auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur->getSpellInfo(), aur->getCasterGuid(), 0);
-        if (spellProc != nullptr)
-            spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur, aur->getCasterGuid());
+            if (spellProc != nullptr)
+                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
 #elif VERSION_STRING == Mop
-        // Should proc only when this aura deals damage
-        auto procMask = aur->getSpellInfo()->getSpellFamilyFlags();
-        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur->getSpellInfo(), aur->getCasterGuid(), 0, procMask);
+            // Should proc only when this aura deals damage
+            auto procMask = aur->getSpellInfo()->getSpellFamilyFlags();
+            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur, aur->getCasterGuid(), procMask);
 #else
-        // Should proc only on Mind Blast
-        uint32_t procMask[3] = { 0x2000, 0, 0 };
-        aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur->getSpellInfo(), aur->getCasterGuid(), 0, procMask);
+            // Should proc only on Mind Blast
+            uint32_t procMask[3] = { 0x2000, 0, 0 };
+            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur, aur->getCasterGuid(), procMask);
 #endif
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_VAMPIRIC_TOUCH_MANA, aur->getCasterGuid());
+        }
+
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 
+#if VERSION_STRING == WotLK
     void onAuraRemove(Aura* aur, [[maybe_unused]]AuraRemoveMode mode) override
     {
-        aur->getOwner()->removeProcTriggerSpell(SPELL_VAMPIRIC_TOUCH_MANA, aur->getCasterGuid());
-
-#if VERSION_STRING == WotLK
         if (mode != AURA_REMOVE_ON_DISPEL)
             return;
 
@@ -481,11 +525,11 @@ public:
         const auto backfireDmg = aur->getAuraEffect(EFF_INDEX_1).getEffectDamage() * 8;
         if (caster != nullptr)
             caster->castSpell(aur->getOwner(), SPELL_VAMPIRIC_TOUCH_DISPEL, backfireDmg, true);
-#endif
     }
+#endif
 };
 
-class VampiricTouchMana : public SpellScript
+class VampiricTouch : public SpellScript
 {
 public:
     void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
@@ -525,10 +569,11 @@ public:
     }
 
 #if VERSION_STRING == TBC
-    void onCastProcSpell(SpellProc* /*spellProc*/, Unit* caster, Unit* victim, Spell* spell) override
+    SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
     {
         spell->forced_basepoints[EFF_INDEX_0] = manaReturn;
         manaReturn = 0;
+        return SpellScriptExecuteState::EXECUTE_OK;
     }
 
 private:
@@ -552,10 +597,12 @@ void setupPriestSpells(ScriptMgr* mgr)
     };
     mgr->register_spell_script(bodyAndSoulIds, new BodyAndSoulDummy);
 #endif
+
 #if VERSION_STRING == WotLK
     mgr->register_spell_script(SPELL_ABOLISH_DISEASE, new AbolishDisease);
     mgr->register_spell_script(SPELL_BODY_AND_SOUL_POISON, new BodyAndSoulPoison);
 #endif
+
     uint32_t bodyAndSoulSpeedIds[] =
     {
         SPELL_BODY_AND_SOUL_SPEED_R1,
@@ -563,7 +610,9 @@ void setupPriestSpells(ScriptMgr* mgr)
         0
     };
     mgr->register_spell_script(bodyAndSoulSpeedIds, new BodyAndSoulSpeed);
+#endif
 
+#if VERSION_STRING >= WotLK
     uint32_t divineAegisIds[] =
     {
         SPELL_DIVINE_AEGIS_R1,
@@ -573,6 +622,7 @@ void setupPriestSpells(ScriptMgr* mgr)
     };
     mgr->register_spell_script(divineAegisIds, new DivineAegisDummy);
     mgr->register_spell_script(SPELL_DIVINE_AEGIS, new DivineAegis);
+#endif
 
 #if VERSION_STRING == WotLK
     uint32_t empoweredRenewIds[] =
@@ -601,6 +651,7 @@ void setupPriestSpells(ScriptMgr* mgr)
 #endif
 
 #if VERSION_STRING < Mop
+#if VERSION_STRING >= WotLK
     uint32_t improvedDevouringPlagueIds[] =
     {
         SPELL_IMPROVED_DEVOURING_PLAGUE_R1,
@@ -609,7 +660,11 @@ void setupPriestSpells(ScriptMgr* mgr)
         0
     };
     mgr->register_spell_script(improvedDevouringPlagueIds, new ImprovedDevouringPlagueDummy);
+#endif
+#endif
 
+#if VERSION_STRING < Mop
+#if VERSION_STRING >= WotLK
     uint32_t improvedMindBlastIds[] =
     {
         SPELL_IMPROVED_MIND_BLAST_R1,
@@ -622,6 +677,7 @@ void setupPriestSpells(ScriptMgr* mgr)
     mgr->register_spell_script(improvedMindBlastIds, new ImprovedMindBlastDummy);
     mgr->register_spell_script(SPELL_MIND_TRAUMA, new MindTrauma);
 #endif
+#endif
 
 #if VERSION_STRING == WotLK
     uint32_t improvedSpiritTapIds[] =
@@ -632,10 +688,15 @@ void setupPriestSpells(ScriptMgr* mgr)
     };
     mgr->register_spell_script(improvedSpiritTapIds, new ImprovedSpiritTap);
 #endif
+
+#if VERSION_STRING < Mop
+#if VERSION_STRING >= TBC
+    mgr->register_spell_script(SPELL_SURGE_OF_LIGHT_PROC, new SurgeOfLight);
+#endif
 #endif
 
     mgr->register_spell_script(SPELL_VAMPIRIC_EMBRACE_DUMMY, new VampiricEmbraceDummy);
-    mgr->register_spell_script(SPELL_VAMPIRIC_EMBRACE_HEAL, new VampiricEmbraceHeal);
+    mgr->register_spell_script(SPELL_VAMPIRIC_EMBRACE_HEAL, new VampiricEmbrace);
 
 #if VERSION_STRING >= TBC
     uint32_t vampiricTouchIds[] =
@@ -647,7 +708,7 @@ void setupPriestSpells(ScriptMgr* mgr)
         SPELL_VAMPIRIC_TOUCH_R5,
         0
     };
-    mgr->register_spell_script(vampiricTouchIds, new VampiricTouch);
-    mgr->register_spell_script(SPELL_VAMPIRIC_TOUCH_MANA, new VampiricTouchMana);
+    mgr->register_spell_script(vampiricTouchIds, new VampiricTouchDummy);
+    mgr->register_spell_script(SPELL_VAMPIRIC_TOUCH_MANA, new VampiricTouch);
 #endif
 }

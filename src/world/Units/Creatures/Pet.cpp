@@ -1902,7 +1902,6 @@ void Pet::LoadPetAuras(int32 id)
        */
 
     static uint32 mod_auras[9] = { 8875, 19580, 19581, 19582, 19589, 19591, 34666, 34667, 34675 }; // Beastmastery Talent's auras.
-    InheritSMMods(m_Owner);
 
     if (id == -1)           //unload all
     {
@@ -1971,7 +1970,7 @@ AI_Spell* Pet::HandleAutoCastEvent()
         ++itr2;
         uint32 size = (uint32)m_autoCastSpells[AUTOCAST_EVENT_ATTACK].size();
         if (size > 1)
-            chance = Rand(100.0f / size);
+            chance = Util::checkChance(100.0f / size);
 
         if ((*itr)->autocast_type == AUTOCAST_EVENT_ATTACK)
         {

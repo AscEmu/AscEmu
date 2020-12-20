@@ -161,7 +161,7 @@ LuaSpellEntry luaSpellVars[] =
     { "spell_coeff_overtime", 3, offsetof(SpellInfo, spell_coeff_overtime) },
     { "ai_target_type", 0, offsetof(SpellInfo, ai_target_type) },
     { "self_cast_only", 2, offsetof(SpellInfo, custom_self_cast_only) },
-    { "apply_on_shapeshift_change", 2, offsetof(SpellInfo, custom_apply_on_shapeshift_change) },
+    //{ "apply_on_shapeshift_change", 2, offsetof(SpellInfo, custom_apply_on_shapeshift_change) },
     { NULL, 0, 0 },
 };
 
@@ -235,7 +235,7 @@ namespace LuaSpell
         /*
         SPELL_STATE_NULL      = 0,
         SPELL_STATE_PREPARING = 1,
-        SPELL_STATE_CASTING   = 2,
+        SPELL_STATE_CHANNELING   = 2,
         SPELL_STATE_FINISHED  = 3,
         SPELL_STATE_IDLE      = 4
         */

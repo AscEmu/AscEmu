@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 
 #include "Spell/Definitions/SpellFamily.h"
-#include "Spell/SpellHelpers.h"
 
 enum RogueSpells
 {
@@ -26,18 +25,18 @@ class CutToTheChase : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
+        if (apply)
+        {
+            // Make it proc self on Eviscerate and Envenom
+            const uint32_t procFlags[3] = { 0x800000, 0x8, 0 };
+            aur->getOwner()->addProcTriggerSpell(aur->getSpellInfo(), aur->getCasterGuid(), aur, procFlags);
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(aur->getSpellId(), aur->getCasterGuid());
+        }
 
-        // Make it proc self on Eviscerate and Envenom
-        uint32_t procFlags[3] = { 0x800000, 0x8, 0 };
-        aur->getOwner()->addProcTriggerSpell(aur->getSpellInfo(), aur->getCasterGuid(), 0, procFlags);
         return SpellScriptCheckDummy::DUMMY_OK;
-    }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(aur->getSpellId(), aur->getCasterGuid());
     }
 
     bool canProc(SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo /*damageInfo*/) override
@@ -68,22 +67,16 @@ public:
         return true;
     }
 
-    SpellScriptExecuteState onDoProcEffect(SpellProc* spellProc, Unit* victim, SpellInfo const* /*castingSpell*/, DamageInfo /*damageInfo*/) override
+    SpellScriptExecuteState onDoProcEffect(SpellProc* /*spellProc*/, Unit* victim, SpellInfo const* /*castingSpell*/, DamageInfo /*damageInfo*/) override
     {
         if (victim == nullptr)
             return SpellScriptExecuteState::EXECUTE_PREVENT;
 
         // Recalculate duration for aura per 5 combo points
-        int32_t maxDuration = 0;
+        uint32_t maxDuration = 0;
         const auto durEntry = sSpellDurationStore.LookupEntry(sliceAura->getSpellInfo()->getDurationIndex());
         if (durEntry != nullptr)
-        {
             maxDuration = durEntry->Duration3;
-
-            // Apply duration mods
-            AscEmu::World::Spell::Helpers::spellModFlatIntValue(spellProc->getProcOwner()->SM_FDur, &maxDuration, sliceAura->getSpellInfo()->getSpellFamilyFlags());
-            AscEmu::World::Spell::Helpers::spellModPercentageIntValue(spellProc->getProcOwner()->SM_PDur, &maxDuration, sliceAura->getSpellInfo()->getSpellFamilyFlags());
-        }
 
         // Override the original duration and refresh aura
         sliceAura->setOriginalDuration(maxDuration);
@@ -103,18 +96,18 @@ class DeadlyBrew : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool apply) override
     {
-        if (!apply)
-            return SpellScriptCheckDummy::DUMMY_OK;
+        if (apply)
+        {
+            // Make it proc self on Instant Poison, Wound Poison or Mind Numbing Poison
+            const uint32_t procFlags[3] = { 0x1000A000, 0x80000, 0 };
+            aur->getOwner()->addProcTriggerSpell(aur->getSpellInfo(), aur->getCasterGuid(), aur, procFlags);
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(aur->getSpellId(), aur->getCasterGuid());
+        }
 
-        // Make it proc self on Instant Poison, Wound Poison or Mind Numbing Poison
-        uint32_t procFlags[3] = { 0x1000A000, 0x80000, 0 };
-        aur->getOwner()->addProcTriggerSpell(aur->getSpellInfo(), aur->getCasterGuid(), 0, procFlags);
         return SpellScriptCheckDummy::DUMMY_OK;
-    }
-
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
-    {
-        aur->getOwner()->removeProcTriggerSpell(aur->getSpellId(), aur->getCasterGuid());
     }
 
     SpellScriptExecuteState onDoProcEffect(SpellProc* spellProc, Unit* victim, SpellInfo const* /*castingSpell*/, DamageInfo /*damageInfo*/) override

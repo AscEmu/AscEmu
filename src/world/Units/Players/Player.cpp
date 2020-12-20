@@ -12,6 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
+#include "Map/Area/AreaManagementGlobals.hpp"
+#include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
 #include "Objects/GameObject.h"
 #include "Objects/ObjectMgr.h"
@@ -60,7 +62,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Spell.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellDefines.hpp"
-#include "Spell/SpellHelpers.h"
 #include "Spell/SpellMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
@@ -70,11 +71,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSpellCooldown.h"
 
 using namespace AscEmu::Packets;
-
-using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
-using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
 
 TradeData::TradeData(Player* player, Player* trader)
 {
@@ -2073,7 +2069,7 @@ bool Player::hasSpellGlobalCooldown(SpellInfo const* spellInfo)
     return false;
 }
 
-void Player::addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster, int32_t cooldownTime/* = 0*/)
+void Player::addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster, Spell* castingSpell/* = nullptr*/, int32_t cooldownTime/* = 0*/)
 {
     const auto curTime = Util::getMSTime();
     const auto spellId = spellInfo->getId();
@@ -2083,8 +2079,8 @@ void Player::addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster
     if (spellCategoryCooldown > 0 && spellInfo->getCategory() > 0)
     {
         // Add cooldown modifiers
-        spellModFlatIntValue(SM_FCooldownTime, &spellCategoryCooldown, spellInfo->getSpellFamilyFlags());
-        spellModPercentageIntValue(SM_PCooldownTime, &spellCategoryCooldown, spellInfo->getSpellFamilyFlags());
+        if (castingSpell != nullptr)
+            applySpellModifiers(SPELLMOD_COOLDOWN_DECREASE, &spellCategoryCooldown, spellInfo, castingSpell);
 
         AddCategoryCooldown(spellInfo->getCategory(), spellCategoryCooldown + curTime, spellId, itemCaster != nullptr ? itemCaster->getEntry() : 0);
     }
@@ -2094,8 +2090,8 @@ void Player::addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster
     if (spellCooldown > 0)
     {
         // Add cooldown modifers
-        spellModFlatIntValue(SM_FCooldownTime, &spellCooldown, spellInfo->getSpellFamilyFlags());
-        spellModPercentageIntValue(SM_PCooldownTime, &spellCooldown, spellInfo->getSpellFamilyFlags());
+        if (castingSpell != nullptr)
+            applySpellModifiers(SPELLMOD_COOLDOWN_DECREASE, &spellCooldown, spellInfo, castingSpell);
 
         _Cooldown_Add(COOLDOWN_TYPE_SPELL, spellId, spellCooldown + curTime, spellId, itemCaster != nullptr ? itemCaster->getEntry() : 0);
     }
@@ -2104,7 +2100,7 @@ void Player::addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster
     sendSpellCooldownPacket(spellInfo, spellCooldown > spellCategoryCooldown ? spellCooldown : spellCategoryCooldown, false);
 }
 
-void Player::addGlobalCooldown(SpellInfo const* spellInfo, const bool sendPacket/* = false*/)
+void Player::addGlobalCooldown(SpellInfo const* spellInfo, Spell* castingSpell, const bool sendPacket/* = false*/)
 {
     if (spellInfo->getStartRecoveryTime() == 0 && spellInfo->getStartRecoveryCategory() == 0)
         return;
@@ -2113,8 +2109,7 @@ void Player::addGlobalCooldown(SpellInfo const* spellInfo, const bool sendPacket
     auto gcdDuration = static_cast<int32_t>(spellInfo->getStartRecoveryTime());
 
     // Apply global cooldown modifiers
-    spellModFlatIntValue(SM_FGlobalCooldown, &gcdDuration, spellInfo->getSpellFamilyFlags());
-    spellModPercentageIntValue(SM_PGlobalCooldown, &gcdDuration, spellInfo->getSpellFamilyFlags());
+    applySpellModifiers(SPELLMOD_GLOBAL_COOLDOWN, &gcdDuration, spellInfo, castingSpell);
 
     // Apply haste modifier only to magic spells
     if (spellInfo->getStartRecoveryCategory() == 133 && spellInfo->getDmgClass() == SPELL_DMG_TYPE_MAGIC &&
@@ -2176,11 +2171,19 @@ void Player::clearCooldownForSpell(uint32_t spellId)
     }
 }
 
+void Player::clearGlobalCooldown()
+{
+    m_globalCooldown = Util::getMSTime();
+}
+
 void Player::resetAllCooldowns()
 {
     // Clear spell cooldowns
     for (const auto& spell : mSpells)
         clearCooldownForSpell(spell);
+
+    // Clear global cooldown
+    clearGlobalCooldown();
 
     // Clear other cooldowns, like items
     for (uint8_t i = 0; i < NUM_COOLDOWN_TYPES; ++i)

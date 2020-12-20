@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/Skill.h"
 #include "Units/Creatures/AIInterface.h"
+#include "Units/Players/Player.h"
 
 SpellInfo::SpellInfo()
 {
@@ -804,6 +805,103 @@ bool SpellInfo::isRangedAutoRepeat() const
 bool SpellInfo::isOnNextMeleeAttack() const
 {
     return (Attributes & (ATTRIBUTES_ON_NEXT_ATTACK | ATTRIBUTES_ON_NEXT_SWING_2)) != 0;
+}
+
+int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = nullptr*/, Item* itemCaster/* = nullptr*/, uint32_t forcedBasePoints/* = 0*/) const
+{
+    if (effIndex >= MAX_SPELL_EFFECTS)
+        return 0;
+
+    const float_t basePointsPerLevel = getEffectRealPointsPerLevel(effIndex);
+    const auto randomPoints = getEffectDieSides(effIndex);
+    int32_t basePoints = 0;
+
+    // Random suffix value calculation
+    if (itemCaster != nullptr && static_cast<int32_t>(itemCaster->getRandomPropertiesId()) < 0)
+    {
+        const auto randomSuffix = sItemRandomSuffixStore.LookupEntry(std::abs(static_cast<int32_t>(itemCaster->getRandomPropertiesId())));
+        if (randomSuffix != nullptr)
+        {
+            auto faulty = false;
+            for (uint8_t i = 0; i < 3; ++i)
+            {
+                if (randomSuffix->enchantments[i] == 0)
+                    continue;
+
+                const auto spellItemEnchant = sSpellItemEnchantmentStore.LookupEntry(randomSuffix->enchantments[i]);
+                if (spellItemEnchant == nullptr)
+                    continue;
+
+                for (uint8_t j = 0; j < 3; ++j)
+                {
+                    if (spellItemEnchant->spell[j] != getId())
+                        continue;
+
+                    if (randomSuffix->prefixes[j] == 0)
+                    {
+                        faulty = true;
+                        break;
+                    }
+
+                    basePoints = RANDOM_SUFFIX_MAGIC_CALCULATION(randomSuffix->prefixes[i], itemCaster->getPropertySeed());
+                    if (basePoints == 0)
+                    {
+                        faulty = true;
+                        break;
+                    }
+
+                    // Value OK
+                    return basePoints;
+                }
+
+                if (faulty)
+                    break;
+            }
+        }
+    }
+
+    if (forcedBasePoints > 0)
+    {
+        basePoints = forcedBasePoints;
+    }
+    else
+    {
+#if VERSION_STRING >= Cata
+        basePoints = getEffectBasePoints(effIndex);
+#else
+        basePoints = getEffectBasePoints(effIndex) + 1;
+#endif
+    }
+
+    // Check if value increases with level
+    if (unitCaster != nullptr)
+    {
+        auto diff = -static_cast<int32_t>(getBaseLevel());
+        if (getMaxLevel() != 0 && unitCaster->getLevel() > getMaxLevel())
+            diff += getMaxLevel();
+        else
+            diff += unitCaster->getLevel();
+
+        basePoints += float2int32(diff * basePointsPerLevel);
+    }
+
+    if (randomPoints > 1)
+        basePoints += Util::getRandomUInt(randomPoints);
+
+    // Check if value increases with combo points
+    const auto comboDamage = getEffectPointsPerComboPoint(effIndex);
+    if (comboDamage > 0.0f && unitCaster != nullptr && unitCaster->isPlayer())
+    {
+        const auto plrCaster = static_cast<Player*>(unitCaster);
+        basePoints += static_cast<int32_t>(std::round(comboDamage * plrCaster->m_comboPoints));
+        // TODO: rewrite combo points, here's an old comment from legacy method:
+        //this is ugly so i will explain the case maybe someone ha a better idea :
+        // while casting a spell talent will trigger upon the spell prepare faze
+        // the effect of the talent is to add 1 combo point but when triggering spell finishes it will clear the extra combo point
+        plrCaster->m_spellcomboPoints = 0;
+    }
+
+    return basePoints;
 }
 
 bool SpellInfo::doesEffectApplyAura(uint8_t effIndex) const

@@ -31,15 +31,6 @@ struct DamageProc
     void* owner;                //mark the owner of this proc to know which one to delete
 };
 
-struct SpellCharge
-{
-    uint32_t spellId;
-    uint32_t count;
-    uint32_t ProcFlag;
-    uint32_t lastproc;
-    uint32_t procdiff;
-};
-
 enum SpellAttributes
 {
     ATTRIBUTES_NULL                                 = 0x00000000,

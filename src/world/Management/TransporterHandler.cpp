@@ -610,7 +610,7 @@ void ObjectMgr::LoadTransportForPlayers(Player* player)
 {
     auto tset = m_TransportersByMap[player->GetInstanceID()];
     ByteBuffer transData(10000);
-    uint32 count;
+    uint32 count = 0;
 
     if (tset.size() == 0)
         return;

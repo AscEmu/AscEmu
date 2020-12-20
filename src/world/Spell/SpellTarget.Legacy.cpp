@@ -30,7 +30,6 @@
 #include "Definitions/SpellCastTargetFlags.h"
 #include "Definitions/SpellDidHitResult.h"
 #include "Definitions/SpellEffectTarget.h"
-#include "SpellHelpers.h"
 #include "Units/Creatures/Pet.h"
 
  // APGL End
@@ -208,7 +207,7 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
     //range
     range /= jumps; //hacky, needs better implementation!
 
-    AscEmu::World::Spell::Helpers::spellModFlatIntValue(u_caster->SM_FAdditionalTargets, (int32*)&jumps, m_spellInfo->getSpellFamilyFlags());
+    u_caster->applySpellModifiers(SPELLMOD_ADDITIONAL_TARGET, &jumps, getSpellInfo(), this);
 
     AddTarget(i, targetType, firstTarget);
 

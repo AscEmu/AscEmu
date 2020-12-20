@@ -41,7 +41,6 @@ typedef std::pair<SpellAreaForAuraMap::const_iterator, SpellAreaForAuraMap::cons
 typedef std::pair<SpellAreaForAreaMap::const_iterator, SpellAreaForAreaMap::const_iterator> SpellAreaForAreaMapBounds;
 
 // This class loads spells from Spell.dbc and stores them as SpellInfo objects
-// Also, this class registers spell scripts to spells and aura scripts to auras
 class SERVER_DECL SpellMgr
 {
 private:
@@ -59,14 +58,16 @@ public:
     // todo: Appled should implement a finalize method here
     void startSpellMgr();
     void loadSpellDataFromDatabase();
+    void calculateSpellCoefficients();
+    // Legacy scripts
     void loadSpellScripts();
 
     Spell* newSpell(Object* caster, SpellInfo const* info, bool triggered, Aura* aur);
     Aura* newAura(SpellInfo const* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr);
 
-    // Registering spell scripts
+    // Registering legacy spell scripts (DO NOT USE, use ScriptMgr and SpellScript instead!)
     void addSpellById(uint32_t spellId, SpellScriptLinker spellScript);
-    // Registering aura scripts
+    // Registering legacy aura scripts (DO NOT USE, use ScriptMgr and SpellScript instead!)
     void addAuraById(uint32_t spellId, AuraScriptLinker auraScript);
     
     // Spell area maps
@@ -78,7 +79,6 @@ public:
     bool checkLocation(SpellInfo const* spellInfo, uint32_t zone_id, uint32_t area_id, Player* player) const;
 
     // Custom methods (defined in SpellCustomizations.cpp)
-    bool isAlwaysApply(SpellInfo const* spellInfo) const;
     uint32_t getDiminishingGroup(uint32_t id) const;
 
     SpellInfo const* getSpellInfo(const uint32_t spellId) const;
@@ -102,7 +102,6 @@ private:
     // Custom setters (defined in SpellCustomizations.cpp)
     void setSpellEffectAmplitude(SpellInfo* sp);
     void setSpellMissingCIsFlags(SpellInfo* sp);
-    void setSpellOnShapeshiftChange(SpellInfo* sp);
     // Hacky methods (defined in Hackfixes.cpp)
     void createDummySpell(uint32_t id);
     void modifyEffectBasePoints(SpellInfo* sp);
@@ -124,7 +123,7 @@ private:
 
     SpellInfo* getMutableSpellInfo(const uint32_t spellId);
 
-    // Script registerers
+    // Legacy script registerers
     void addSpellBySpellInfo(SpellInfo* info, SpellScriptLinker spellScript);
     void addAuraBySpellInfo(SpellInfo* info, AuraScriptLinker auraScript);
     void setupSpellScripts();

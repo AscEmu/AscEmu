@@ -48,6 +48,8 @@
 #include "Server/Warden/SpeedDetector.h"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
+#include "Map/Area/AreaManagementGlobals.hpp"
+#include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
@@ -60,7 +62,6 @@
 #include "Spell/Definitions/SpellMechanics.h"
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Definitions/Spec.h"
-#include "Spell/SpellHelpers.h"
 #include "Spell/SpellMgr.h"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgInitialSpells.h"
@@ -115,11 +116,6 @@
 
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;
-
-using AscEmu::World::Spell::Helpers::spellModFlatIntValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageIntValue;
-using AscEmu::World::Spell::Helpers::spellModFlatFloatValue;
-using AscEmu::World::Spell::Helpers::spellModPercentageFloatValue;
 
 UpdateMask Player::m_visibleUpdateMask;
 
@@ -4200,19 +4196,19 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
                 {
                     // 'Chance on hit' in main hand should only proc from main hand hits
                     case EQUIPMENT_SLOT_MAINHAND:
-                        addProcTriggerSpell(spells, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT), EXTRA_PROC_ON_MAIN_HAND_HIT_ONLY, 0, nullptr, nullptr, this);
+                        addProcTriggerSpell(spells, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT), EXTRA_PROC_ON_MAIN_HAND_HIT_ONLY, nullptr, nullptr, nullptr, this);
                         break;
                     // 'Chance on hit' in off hand should only proc from off hand hits
                     case EQUIPMENT_SLOT_OFFHAND:
-                        addProcTriggerSpell(spells, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT | PROC_ON_DONE_OFFHAND_ATTACK), EXTRA_PROC_ON_OFF_HAND_HIT_ONLY, 0, nullptr, nullptr, this);
+                        addProcTriggerSpell(spells, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT | PROC_ON_DONE_OFFHAND_ATTACK), EXTRA_PROC_ON_OFF_HAND_HIT_ONLY, nullptr, nullptr, nullptr, this);
                         break;
                     // 'Chance on hit' in ranged slot should only proc from ranged attacks
                     case EQUIPMENT_SLOT_RANGED:
-                        addProcTriggerSpell(spells, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_RANGED_HIT | PROC_ON_DONE_RANGED_SPELL_HIT), EXTRA_PROC_NULL, 0, nullptr, nullptr, this);
+                        addProcTriggerSpell(spells, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_RANGED_HIT | PROC_ON_DONE_RANGED_SPELL_HIT), EXTRA_PROC_NULL, nullptr, nullptr, nullptr, this);
                         break;
                     // In any other slot, proc on any melee or ranged hit
                     default:
-                        addProcTriggerSpell(spells, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT | PROC_ON_DONE_RANGED_HIT | PROC_ON_DONE_RANGED_SPELL_HIT), EXTRA_PROC_NULL, 0, nullptr, nullptr, this);
+                        addProcTriggerSpell(spells, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT | PROC_ON_DONE_RANGED_HIT | PROC_ON_DONE_RANGED_SPELL_HIT), EXTRA_PROC_NULL, nullptr, nullptr, nullptr, this);
                         break;
                 }
             }
@@ -7629,23 +7625,8 @@ void Player::CompleteLoading()
         }
 
         if (sp->getProcCharges() > 0 && (*i).charges > 0)
-        {
-            for (uint32 x = 0; x < (*i).charges - 1; x++)
-            {
-                Aura* a = sSpellMgr.newAura(sp, (*i).dur, this, this, false);
-                this->addAura(a);
-            }
-            if (m_chargeSpells.find(sp->getId()) == m_chargeSpells.end())
-            {
-                SpellCharge charge;
-                charge.count = (*i).charges;
-                charge.spellId = sp->getId();
-                charge.ProcFlag = sp->getProcFlags();
-                charge.lastproc = 0;
-                charge.procdiff = 0;
-                m_chargeSpells.insert(std::make_pair(sp->getId(), charge));
-            }
-        }
+            aura->setCharges(static_cast<uint16_t>((*i).charges), false);
+
         this->addAura(aura);
     }
 
@@ -9853,6 +9834,7 @@ void Player::FullHPMP()
     setHealth(getMaxHealth());
     setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
     setPower(POWER_TYPE_ENERGY, getMaxPower(POWER_TYPE_ENERGY));
+    setPower(POWER_TYPE_FOCUS, getMaxPower(POWER_TYPE_FOCUS));
 }
 
 /**********************************************
@@ -11315,7 +11297,7 @@ void Player::RemoteRevive()
     setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, false), true);
     setSpeedRate(TYPE_SWIM, getSpeedRate(TYPE_SWIM, false), true);
     setMoveLandWalk();
-    setHealth(getMaxHealth());
+    FullHPMP();
 }
 
 void Player::SetMover(Unit* target)

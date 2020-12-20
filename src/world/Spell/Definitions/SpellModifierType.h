@@ -5,35 +5,38 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum SPELL_MODIFIER_TYPE
+#include <cstdint>
+
+enum SpellModifierType : uint8_t
 {
-    SMT_DAMAGE_DONE       = 0,
-    SMT_DURATION          = 1,
-    SMT_THREAT_REDUCED    = 2,
-    SMT_EFFECT_1          = 3,
-    SMT_CHARGES           = 4,
-    SMT_RANGE             = 5,
-    SMT_RADIUS            = 6,
-    SMT_CRITICAL          = 7,
-    SMT_MISC_EFFECT       = 8,
-    SMT_NONINTERRUPT      = 9,
-    SMT_CAST_TIME         = 10,
-    SMT_COOLDOWN_DECREASE = 11,
-    SMT_EFFECT_2          = 12,
+    SPELLMOD_DAMAGE_DONE       = 0,
+    SPELLMOD_DURATION          = 1,
+    SPELLMOD_THREAT_REDUCED    = 2,
+    SPELLMOD_EFFECT_1          = 3,
+    SPELLMOD_CHARGES           = 4,
+    SPELLMOD_RANGE             = 5,
+    SPELLMOD_RADIUS            = 6,
+    SPELLMOD_CRITICAL          = 7,
+    SPELLMOD_ALL_EFFECTS       = 8,
+    SPELLMOD_NONINTERRUPT      = 9,
+    SPELLMOD_CAST_TIME         = 10,
+    SPELLMOD_COOLDOWN_DECREASE = 11,
+    SPELLMOD_EFFECT_2          = 12,
     // UNUSED_13
-    SMT_COST              = 14,
-    SMT_CRITICAL_DAMAGE   = 15,
-    SMT_HITCHANCE         = 16,
-    SMT_ADDITIONAL_TARGET = 17,
-    SMT_TRIGGER           = 18,
-    SMT_AMPTITUDE         = 19,
-    SMT_JUMP_REDUCE       = 20,
-    SMT_GLOBAL_COOLDOWN   = 21,
-    SMT_SPELL_VALUE_PCT   = 22,
-    SMT_EFFECT_3          = 23,
-    SMT_PENALTY           = 24,
+    SPELLMOD_COST              = 14,
+    SPELLMOD_CRITICAL_DAMAGE   = 15,
+    SPELLMOD_HITCHANCE         = 16,
+    SPELLMOD_ADDITIONAL_TARGET = 17,
+    SPELLMOD_TRIGGER           = 18,
+    SPELLMOD_AMPTITUDE         = 19,
+    SPELLMOD_JUMP_REDUCE       = 20,
+    SPELLMOD_GLOBAL_COOLDOWN   = 21,
+    SPELLMOD_PERIODIC_DAMAGE   = 22,
+    SPELLMOD_EFFECT_3          = 23,
+    SPELLMOD_PENALTY           = 24,
     // UNUSED_25
     // UNUSED_26
-    SMT_EFFECT_BONUS      = 27,
-    SMT_RESIST_DISPEL     = 28,
+    SPELLMOD_EFFECT_BONUS      = 27,
+    SPELLMOD_RESIST_DISPEL     = 28,
+    MAX_SPELLMOD_TYPE
 };

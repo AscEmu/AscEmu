@@ -223,7 +223,7 @@ class NovosTheSummonerAI : public CreatureAIScript
         }
         if (possible_targets.size() > 0)
         {
-            uint32_t random_player = possible_targets[Rand(uint32_t(possible_targets.size() - 1))];
+            uint32_t random_player = possible_targets[Util::checkChance(uint32_t(possible_targets.size() - 1))];
             return getCreature()->GetMapMgr()->GetPlayer(random_player);
         }
         return nullptr;
@@ -265,7 +265,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             for (uint8_t i = 0; i < INVADERS_COUNT; i++)
             {
                 mob_entry = 0;
-                if (Rand(ELITE_CHANCE))
+                if (Util::checkChance(ELITE_CHANCE))
                     mob_entry = 27597;
                 else
                 {
