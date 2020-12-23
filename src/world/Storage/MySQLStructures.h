@@ -520,8 +520,13 @@ namespace MySQLStructure
     //quest_poi_points
     //quest_properties
 
-    //\TODO table recall called by execute recall commands. Load it on startup.
     //recall
+    struct RecallStruct
+    {
+        std::string name;
+        uint32_t mapId;
+        LocationVector location;
+    };
 
     //reputation_creature_onkill
     //reputation_faction_onkill

@@ -9,45 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Objects/ObjectMgr.h"
 
-bool GetRecallLocation(const char* location, uint32_t& mapId, LocationVector& position)
-{
-    QueryResult* result = WorldDatabase.Query("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM recall "
-        "WHERE min_build <= %u AND max_build >= %u ORDER BY name", getAEVersion(), getAEVersion());
-
-    if (!result)
-        return false;
-
-    do
-    {
-        Field* fields = result->Fetch();
-        std::string locname = fields[1].GetString();
-        uint32_t locMap = fields[2].GetUInt32();
-        float x = fields[3].GetFloat();
-        float y = fields[4].GetFloat();
-        float z = fields[5].GetFloat();
-        float o = fields[6].GetFloat();
-
-        std::string searchLocation(location);
-
-        Util::StringToLowerCase(locname);
-        Util::StringToLowerCase(searchLocation);
-
-        if (locname == searchLocation)
-        {
-            mapId = locMap;
-            position.x = x;
-            position.y = y;
-            position.z = z;
-            position.o = o;
-
-            delete result;
-            return true;
-        }
-    } while (result->NextRow());
-
-    delete result;
-    return false;
-}
 
 //.recall port
 bool ChatHandler::HandleRecallGoCommand(const char* args, WorldSession* m_session)
@@ -55,13 +16,11 @@ bool ChatHandler::HandleRecallGoCommand(const char* args, WorldSession* m_sessio
     if (!*args)
         return false;
 
-    uint32_t mapId;
-    LocationVector position;
-    if (GetRecallLocation(args, mapId, position))
+    if (const auto recall = sMySQLStore.getRecallByName(args))
     {
         if (m_session->GetPlayer() != nullptr)
         {
-            m_session->GetPlayer()->SafeTeleport(mapId, 0, position);
+            m_session->GetPlayer()->SafeTeleport(recall->mapId, 0, recall->location);
             return true;
         }
     }
@@ -75,18 +34,15 @@ bool ChatHandler::HandleRecallPortUsCommand(const char* args, WorldSession* m_se
     if (!*args)
         return false;
 
-    uint32_t mapId;
-    LocationVector position;
-
     Player* player = m_session->GetPlayer();
-    if (GetRecallLocation(args, mapId, position))
+    if (const auto recall = sMySQLStore.getRecallByName(args))
     {
         Player* target = GetSelectedPlayer(m_session, true, false);
         if (!target)
             return true;
 
-        player->SafeTeleport(mapId, 0, position);
-        target->SafeTeleport(mapId, 0, position);
+        player->SafeTeleport(recall->mapId, 0, recall->location);
+        target->SafeTeleport(recall->mapId, 0, recall->location);
         return true;
     }
 
@@ -99,27 +55,11 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession* m_sessi
     if (!*args)
         return false;
 
-    QueryResult* result = WorldDatabase.Query("SELECT name FROM recall WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
-    if (!result)
-        return false;
-    do
+    if (const auto recall = sMySQLStore.getRecallByName(args))
     {
-        Field* fields = result->Fetch();
-        std::string locname = fields[0].GetString();
-
-        std::string searchLocation(args);
-
-        Util::StringToLowerCase(locname);
-        Util::StringToLowerCase(searchLocation);
-
-        if (locname == searchLocation)
-        {
-            RedSystemMessage(m_session, "Name in use, please use another name for your location.");
-            delete result;
-            return true;
-        }
-    } while (result->NextRow());
-    delete result;
+        RedSystemMessage(m_session, "Name in use, please use another name for your location.");
+        return true;
+    }
 
     Player* player = m_session->GetPlayer();
     std::stringstream ss;
@@ -134,6 +74,8 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession* m_sessi
         << player->GetPositionZ() << ", "
         << player->GetOrientation() << ");";
     WorldDatabase.Execute(ss.str().c_str());
+
+    sMySQLStore.loadRecallTable();
 
     char buf[256];
     snprintf((char*)buf, 256, "Added location to DB with MapID: %u, X: %f, Y: %f, Z: %f, O: %f",
@@ -151,69 +93,53 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession* m_sessi
     if (!*args)
         return false;
 
-    QueryResult* result = WorldDatabase.Query("SELECT id, name FROM recall WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
-    if (!result)
-        return false;
-
-    do
+    if (const auto recall = sMySQLStore.getRecallByName(args))
     {
-        Field* fields = result->Fetch();
-        uint32_t id = fields[0].GetUInt32();
-        std::string locName = fields[1].GetString();
+        WorldDatabase.Execute("DELETE FROM recall WHERE name = %s;", recall->name.c_str());
 
-        std::string searchLocation(args);
+        GreenSystemMessage(m_session, "Recall location removed.");
+        sGMLog.writefromsession(m_session, "used recall delete, removed \'%s\' location from database.", args);
 
-        Util::StringToLowerCase(locName);
-        Util::StringToLowerCase(searchLocation);
+        sMySQLStore.loadRecallTable();
 
-        if (locName == searchLocation)
-        {
-            WorldDatabase.Execute("DELETE FROM recall WHERE id = %u;", id);
+        return true;
+    }
 
-            GreenSystemMessage(m_session, "Recall location removed.");
-            sGMLog.writefromsession(m_session, "used recall delete, removed \'%s\' location from database.", args);
-
-            delete result;
-            return true;
-        }
-    } while (result->NextRow());
-
-    delete result;
     return false;
 }
 
 //.recall list
 bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession* m_session)
 {
-    QueryResult* result = WorldDatabase.Query("SELECT name FROM recall WHERE name LIKE '%s%c' AND min_build <= %u AND max_build >= %u ORDER BY name", args, '%', getAEVersion(), getAEVersion());
-    if (!result)
-        return false;
-
     uint32_t count = 0;
 
     std::string recout = MSG_COLOR_GREEN;
     recout += "Recall locations|r:\n\n";
 
-    do
+    std::string search(args);
+    Util::StringToLowerCase(search);
+
+    for (auto* recall : sMySQLStore.getRecallStore())
     {
-        Field* fields = result->Fetch();
-        std::string locName = fields[0].GetString();
-
-        recout += MSG_COLOR_LIGHTBLUE;
-        recout += locName;
-        recout += "|r, ";
-        count++;
-
-        if (count == 5)
+        std::string recallName(recall->name);
+        Util::StringToLowerCase(recallName);
+        if (recallName.find(search) == 0)
         {
-            recout += "\n";
-            count = 0;
+            recout += MSG_COLOR_LIGHTBLUE;
+            recout += recall->name;
+            recout += "|r, ";
+            count++;
+
+            if (count == 5)
+            {
+                recout += "\n";
+                count = 0;
+            }
         }
-    } while (result->NextRow());
+    }
 
     SendMultilineMessage(m_session, recout.c_str());
 
-    delete result;
     return true;
 }
 
@@ -229,42 +155,19 @@ bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* 
     if (!player)
         return false;
 
-    QueryResult* result = WorldDatabase.Query("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM recall WHERE min_build <= %u AND max_build >= %u ORDER BY name", getAEVersion(), getAEVersion());
-    if (!result)
-        return false;
-
-    do
+    if (const auto recall = sMySQLStore.getRecallByName(args))
     {
-        Field* fields = result->Fetch();
-        std::string locName = fields[1].GetString();
-        uint32_t locMap = fields[2].GetUInt32();
-        float x = fields[3].GetFloat();
-        float y = fields[4].GetFloat();
-        float z = fields[5].GetFloat();
-        float o = fields[6].GetFloat();
+        sGMLog.writefromsession(m_session, "ported %s to %s ( map: %u, x: %f, y: %f, z: %f, 0: %f )", player->getName().c_str(), recall->name.c_str(), recall->mapId, recall->location.x, recall->location.y, recall->location.z, recall->location.o);
+        if (player->GetSession() && (player->GetSession()->CanUseCommand('a') || !m_session->GetPlayer()->m_isGmInvisible))
+            player->GetSession()->SystemMessage("%s teleported you to location %s!", m_session->GetPlayer()->getName().c_str(), recall->name.c_str());
 
-        std::string searchLocation(location);
+        if (player->GetInstanceID() != m_session->GetPlayer()->GetInstanceID())
+            sEventMgr.AddEvent(player, &Player::EventSafeTeleport, recall->mapId, uint32_t(0), recall->location, EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        else
+            player->SafeTeleport(recall->mapId, 0, recall->location);
 
-        Util::StringToLowerCase(locName);
-        Util::StringToLowerCase(searchLocation);
+        return true;
+    }
 
-        if (locName == searchLocation)
-        {
-            sGMLog.writefromsession(m_session, "ported %s to %s ( map: %u, x: %f, y: %f, z: %f, 0: %f )", player->getName().c_str(), locName.c_str(), locMap, x, y, z, o);
-            if (player->GetSession() && (player->GetSession()->CanUseCommand('a') || !m_session->GetPlayer()->m_isGmInvisible))
-                player->GetSession()->SystemMessage("%s teleported you to location %s!", m_session->GetPlayer()->getName().c_str(), locName.c_str());
-
-            if (player->GetInstanceID() != m_session->GetPlayer()->GetInstanceID())
-                sEventMgr.AddEvent(player, &Player::EventSafeTeleport, locMap, uint32_t(0), LocationVector(x, y, z, o), EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            else
-                player->SafeTeleport(locMap, 0, LocationVector(x, y, z, o));
-
-            delete result;
-            return true;
-        }
-
-    } while (result->NextRow());
-
-    delete result;
     return false;
 }

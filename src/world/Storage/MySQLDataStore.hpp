@@ -20,6 +20,7 @@ extern SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
 extern SERVER_DECL std::set<std::string> ItemPropertiesTables;
 extern SERVER_DECL std::set<std::string> QuestPropertiesTables;
+extern SERVER_DECL std::set<std::string> RecallTables;
 
 
 class SERVER_DECL MySQLDataStore
@@ -112,6 +113,8 @@ public:
 
     typedef std::vector<MySQLStructure::CreatureSpawn*> CreatureSpawnsMap;
     typedef std::vector<MySQLStructure::GameobjectSpawn*> GameobjectSpawnsMap;
+
+    typedef std::vector<MySQLStructure::RecallStruct*> RecallMap;
 
     //helper
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
@@ -223,6 +226,9 @@ public:
     
     GossipMenuInitMap const* getGossipMenuInitTextId() { return &_gossipMenuInitStore; }
 
+    RecallMap getRecallStore() const { return _recallStore; }
+    MySQLStructure::RecallStruct const* getRecallByName(std::string name);
+
     bool isCharacterNameAllowed(std::string charName);
 
     //Config
@@ -315,6 +321,7 @@ public:
     void loadCreatureSpawns();
     void loadGameobjectSpawns();
 
+    void loadRecallTable();
 
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
@@ -389,6 +396,8 @@ public:
 
     CreatureSpawnsMap _creatureSpawnsStore[MAX_NUM_MAPS + 1];
     GameobjectSpawnsMap _gameobjectSpawnsStore[MAX_NUM_MAPS + 1];
+
+    RecallMap _recallStore;
 };
 
 #define sMySQLStore MySQLDataStore::getInstance()

@@ -19,6 +19,7 @@ SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
 SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
 SERVER_DECL std::set<std::string> ItemPropertiesTables;
 SERVER_DECL std::set<std::string> QuestPropertiesTables;
+SERVER_DECL std::set<std::string> RecallTables;
 
 MySQLDataStore& MySQLDataStore::getInstance()
 {
@@ -66,6 +67,7 @@ void MySQLDataStore::loadAdditionalTableConfig()
     GameObjectPropertiesTables.insert(std::string("gameobject_properties"));
     ItemPropertiesTables.insert(std::string("item_properties"));
     QuestPropertiesTables.insert(std::string("quest_properties"));
+    RecallTables.insert(std::string("recall"));
 
     // get config
     std::string strData = worldConfig.startup.additionalTableLoads;
@@ -117,6 +119,9 @@ void MySQLDataStore::loadAdditionalTableConfig()
 
         if (target_table.compare("quest_properties") == 0)
             QuestPropertiesTables.insert(additional_table);
+
+        if (target_table.compare("recall") == 0)
+            RecallTables.insert(additional_table);
     }
 }
 
@@ -3249,6 +3254,22 @@ MySQLStructure::LocalesItem const* MySQLDataStore::getLocalizedItem(uint32_t ent
     return nullptr;
 }
 
+MySQLStructure::RecallStruct const* MySQLDataStore::getRecallByName(const std::string name)
+{
+    std::string searchName(name);
+    Util::StringToLowerCase(searchName);
+
+    for (auto itr : _recallStore)
+    {
+        std::string recallName(itr->name);
+        Util::StringToLowerCase(recallName);
+        if (recallName == searchName)
+            return itr;
+    }
+
+    return nullptr;
+}
+
 void MySQLDataStore::loadLocalesItemPages()
 {
     auto startTime = Util::TimeNow();
@@ -4314,4 +4335,40 @@ void MySQLDataStore::loadGameobjectSpawns()
     }
 
     LogDetail("MySQLDataLoads : Loaded %u rows from `gameobject_spawns` table in %u ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+void MySQLDataStore::loadRecallTable()
+{
+    auto startTime = Util::TimeNow();
+    uint32_t count = 0;
+
+    _recallStore.clear();
+
+    for (std::set<std::string>::iterator tableiterator = RecallTables.begin(); tableiterator != RecallTables.end(); ++tableiterator)
+    {
+        QueryResult* recall_result = WorldDatabase.Query("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM %s WHERE min_build <= %u AND max_build >= %u", (*tableiterator).c_str(), VERSION_STRING, VERSION_STRING);
+        if (recall_result)
+        {
+            do
+            {
+                Field* fields = recall_result->Fetch();
+                MySQLStructure::RecallStruct* teleCoords = new MySQLStructure::RecallStruct;
+
+                teleCoords->name = fields[1].GetString();
+                teleCoords->mapId = fields[2].GetUInt32();
+                teleCoords->location.x = fields[3].GetFloat();
+                teleCoords->location.y = fields[4].GetFloat();
+                teleCoords->location.z= fields[5].GetFloat();
+                teleCoords->location.o = fields[6].GetFloat();
+
+                _recallStore.push_back(teleCoords);
+
+                ++count;
+            } while (recall_result->NextRow());
+
+            delete recall_result;
+        }
+    }
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `recall` table in %u ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
