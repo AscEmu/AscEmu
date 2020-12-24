@@ -10003,10 +10003,10 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
             obj_movement_info.transport_guid = u->getGuid();
         *data << obj_movement_info.transport_guid;
         *data << obj_movement_info.transport_guid;
-        *data << GetTransPositionX();
-        *data << GetTransPositionY();
-        *data << GetTransPositionZ();
-        *data << GetTransPositionO();
+        *data << GetTransOffsetX();
+        *data << GetTransOffsetY();
+        *data << GetTransOffsetZ();
+        *data << GetTransOffsetO();
         *data << GetTransTime();
 #ifdef FT_VEHICLES
         *data << GetTransSeat();
@@ -10066,10 +10066,10 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
         if (Unit* u = getVehicleBase())
             obj_movement_info.transporter_info.guid = u->getGuid();*/
         *data << obj_movement_info.transport_guid;
-        *data << GetTransPositionX();
-        *data << GetTransPositionY();
-        *data << GetTransPositionZ();
-        *data << GetTransPositionO();
+        *data << GetTransOffsetX();
+        *data << GetTransOffsetY();
+        *data << GetTransOffsetZ();
+        *data << GetTransOffsetO();
         *data << GetTransTime();
 #ifdef FT_VEHICLES
         *data << GetTransSeat();

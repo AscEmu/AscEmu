@@ -768,7 +768,8 @@ bool World::setInitialWorldSettings()
 #endif
 
     LogDetail("World : Starting Transport System...");
-    sObjectMgr.LoadTransports();
+    sTransportHandler.LoadTransportTemplates();
+    sTransportHandler.SpawnContinentTransports();
 
     LogDetail("World : Starting Mail System...");
     sMailSystem.StartMailSystem();
@@ -899,8 +900,8 @@ void World::loadMySQLStores()
     //sMySQLStore.loadDefaultPetSpellsTable();      Zyres 2017/07/16 not used
     sMySQLStore.loadProfessionDiscoveriesTable();
 
-    sMySQLStore.loadTransportCreaturesTable();
     sMySQLStore.loadTransportDataTable();
+    sMySQLStore.loadTransportEntrys();
     sMySQLStore.loadGossipMenuItemsTable();
     sMySQLStore.loadRecallTable();
 

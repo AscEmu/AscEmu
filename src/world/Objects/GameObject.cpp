@@ -160,6 +160,9 @@ GameObject::GameObject(uint64 guid)
     m_objectType |= TYPE_GAMEOBJECT;
     m_objectTypeId = TYPEID_GAMEOBJECT;
 
+    CurrentSeg = 0;
+    PathProgress = 0;
+
 #if VERSION_STRING <= TBC
     m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_LOWGUID);
 #elif VERSION_STRING == WotLK
@@ -244,15 +247,36 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
 
     Object::_Create(mapid, x, y, z, ang);
     setEntry(entry);
-
-    m_overrides = overrides;
     SetRotationQuat(r0, r1, r2, r3);
     SetPosition(x, y, z, ang);
-    //UpdateRotation();
-    setAnimationProgress(0);
-    setState(1);
     setDisplayId(gameobject_properties->display_id);
     setGoType(static_cast<uint8>(gameobject_properties->type));
+
+    switch (gameobject_properties->type)
+    {
+    case GAMEOBJECT_TYPE_TRANSPORT:
+        m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
+        m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
+
+        setLevel(gameobject_properties->transport.pause);
+        setState(gameobject_properties->transport.startOpen ? GO_STATE_OPEN : GO_STATE_CLOSED);
+        PathProgress = 0;
+        CurrentSeg = 0;
+        break;
+    case GAMEOBJECT_TYPE_MO_TRANSPORT:
+        m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
+
+        setFlags(GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN);
+
+        setState(gameobject_properties->mo_transport.can_be_stopped ? GO_STATE_CLOSED : GO_STATE_OPEN);
+        PathProgress = 0;
+        break;
+    default:
+        m_overrides = overrides;
+        setAnimationProgress(0);
+        setState(GO_STATE_CLOSED);
+    }
+
     InitAI();
 
     return true;
@@ -1675,5 +1699,15 @@ void GameObject_Destructible::Rebuild()
     setDisplayId(gameobject_properties->display_id);
     maxhitpoints = gameobject_properties->destructible_building.intact_num_hits + gameobject_properties->destructible_building.damaged_num_hits;
     hitpoints = maxhitpoints;
+}
+
+uint32 GameObject::GetTransportPeriod() const
+{
+    if (getGoType() != GAMEOBJECT_TYPE_TRANSPORT)
+        return 0;
+
+    //Todo get values from dbc files
+
+    return 0;
 }
 

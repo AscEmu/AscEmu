@@ -3263,7 +3263,7 @@ bool Player::logOntoTransport()
     bool success = true;
     if (obj_movement_info.transport_guid != 0)
     {
-        const auto transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
+        const auto transporter = sTransportHandler.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
         if (transporter)
         {
             if (isDead())
@@ -3273,9 +3273,9 @@ bool Player::logOntoTransport()
                 setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
             }
 
-            const float c_tposx = transporter->GetPositionX() + GetTransPositionX();
-            const float c_tposy = transporter->GetPositionY() + GetTransPositionY();
-            const float c_tposz = transporter->GetPositionZ() + GetTransPositionZ();
+            const float c_tposx = transporter->GetPositionX() + GetTransOffsetX();
+            const float c_tposy = transporter->GetPositionY() + GetTransOffsetY();
+            const float c_tposz = transporter->GetPositionZ() + GetTransOffsetZ();
 
             const LocationVector positionOnTransport = LocationVector(c_tposx, c_tposy, c_tposz, GetOrientation());
 

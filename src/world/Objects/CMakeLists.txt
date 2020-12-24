@@ -17,6 +17,8 @@ set(SRC_OBJECTS_FILES
    ${PATH_PREFIX}/Object.h
    ${PATH_PREFIX}/ObjectMgr.cpp
    ${PATH_PREFIX}/ObjectMgr.h
+   ${PATH_PREFIX}/Transporter.cpp
+   ${PATH_PREFIX}/Transporter.h
    
    # MIT
    ${PATH_PREFIX}/ObjectDefines.h

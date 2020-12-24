@@ -190,6 +190,15 @@ struct GameObjectProperties
             uint32 world_state_sets_state;      // parameter_20
         }goober;
         // 11 GAMEOBJECT_TYPE_TRANSPORT
+        struct
+        {
+            uint32 pause;                       //parameter_0
+            uint32 startOpen;                   //parameter_1
+            uint32 autoCloseTime;               //parameter_2 secs till autoclose = autoCloseTime / 0x10000
+            uint32 pause1EventID;               //parameter_3
+            uint32 pause2EventID;               //parameter_4
+            uint32 mapID;                       //parameter_5
+        } transport;
         // 12 GAMEOBJECT_TYPE_AREADAMAGE
         // 13 GAMEOBJECT_TYPE_CAMERA
         struct
@@ -423,6 +432,8 @@ public:
     uint8_t getAnimationProgress() const;
     void setAnimationProgress(uint8_t progress);
 
+    virtual uint32 GetTransportPeriod() const;
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Type helper
     bool isQuestGiver() const;
@@ -512,6 +523,13 @@ public:
         }
 
         GameObjectModel* m_model;
+
+        Transporter* ToTransport() { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter*>(this); else return nullptr; }
+        Transporter const* ToTransport() const { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter const*>(this); else return nullptr; }
+
+        // Transport Infos
+        uint32 PathProgress;
+        uint32 CurrentSeg;
 
     protected:
 

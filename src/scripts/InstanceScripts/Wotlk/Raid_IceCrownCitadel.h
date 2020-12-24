@@ -726,6 +726,13 @@ enum GunshipBattleActions
     ACTION_AXES_RIFL_DIE                        = 5,
     ACTION_DONE                                 = 6,
     ACTION_FAIL                                 = 7,
+
+    // Transporter Actions
+    EVENT_PLAYERS_GUNSHIP_SPAWN                 = 22663,
+    EVENT_PLAYERS_GUNSHIP_COMBAT                = 22664,
+    EVENT_PLAYERS_GUNSHIP_SAURFANG              = 22665,
+    EVENT_ENEMY_GUNSHIP_COMBAT                  = 22860,
+    EVENT_ENEMY_GUNSHIP_DESPAWN                 = 22861,
 };
 
 enum EventsGunshipBattle

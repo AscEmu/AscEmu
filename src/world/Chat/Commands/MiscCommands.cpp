@@ -580,7 +580,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     if (obj->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
     {
         SystemMessage(m_session, "Position on Transport:");
-        SystemMessage(m_session, "  tX: %f  tY: %f  tZ: %f  tO: %f", obj->GetTransPositionX(), obj->GetTransPositionY(), obj->GetTransPositionZ(), obj->GetTransPositionO());
+        SystemMessage(m_session, "  tX: %f  tY: %f  tZ: %f  tO: %f", obj->GetTransOffsetX(), obj->GetTransOffsetY(), obj->GetTransOffsetZ(), obj->GetTransOffsetO());
     }
 
     // ".gps 1" will save gps info to file logs/gps.log - This probably isn't very multithread safe so don't have many gms spamming it!

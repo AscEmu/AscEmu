@@ -3939,46 +3939,6 @@ void MySQLDataStore::loadProfessionDiscoveriesTable()
     }
 }
 
-void MySQLDataStore::loadTransportCreaturesTable()
-{
-    auto startTime = Util::TimeNow();
-    //                                                  0       1        2            3             4              5            6              7         8
-    QueryResult* result = WorldDatabase.Query("SELECT guid, npc_entry, build, transport_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote FROM transport_creatures "
-                                              "WHERE build = %u", VERSION_STRING);
-    if (result == nullptr)
-    {
-        LogNotice("MySQLDataLoads : Table `transport_creatures` is empty!");
-        return;
-    }
-
-    LogNotice("MySQLDataLoads : Table `transport_creatures` has %u columns", result->GetFieldCount());
-
-    if (result != nullptr)
-    {
-        uint32_t load_count = 0;
-        do
-        {
-            Field* fields = result->Fetch();
-            MySQLStructure::TransportCreatures& transportCreature = _transportCreaturesStore[load_count];
-            transportCreature.guid = fields[0].GetUInt32();
-            transportCreature.entry = fields[1].GetUInt32();
-            transportCreature.transportEntry = fields[3].GetUInt32();
-            transportCreature.transportOffsetX = fields[4].GetFloat();
-            transportCreature.transportOffsetY = fields[5].GetFloat();
-            transportCreature.transportOffsetZ = fields[6].GetFloat();
-            transportCreature.transportOffsetO = fields[7].GetFloat();
-            transportCreature.animation = fields[8].GetUInt32();
-
-            ++load_count;
-
-        } while (result->NextRow());
-
-        delete result;
-
-        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_creatures` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-    }
-}
-
 void MySQLDataStore::loadTransportDataTable()
 {
     auto startTime = Util::TimeNow();
@@ -4025,6 +3985,38 @@ void MySQLDataStore::loadTransportDataTable()
         delete result;
 
         LogDetail("MySQLDataLoads : Loaded %u rows from `transport_data` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    }
+}
+
+void MySQLDataStore::loadTransportEntrys()
+{
+    auto startTime = Util::TimeNow();
+    //                                                  
+    QueryResult* result = WorldDatabase.Query("SELECT entry FROM gameobject_properties WHERE type = 15 AND  build <= %u ORDER BY entry ASC", VERSION_STRING);
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Loaded 0 transport templates. DB table `gameobject_properties` has no transports!");
+        return;
+    }
+
+    if (result != nullptr)
+    {
+        uint32_t load_count = 0;
+        do
+        {
+            Field* fields = result->Fetch();
+            uint32_t entry = fields[0].GetUInt32();
+
+            MySQLStructure::TransportEntrys& transportEntrys = _transportEntryStore[entry];
+            transportEntrys.entry = entry;
+
+            ++load_count;
+
+        } while (result->NextRow());
+
+        delete result;
+
+        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_entrys` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }
 }
 

@@ -2273,7 +2273,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     if (!transport)
         ss << uint32_t(0) << ",'0','0','0','0'" << ", ";
     else
-        ss << transport->getEntry() << ",'" << GetTransPositionX()  << "','" << GetTransPositionY()  << "','" << GetTransPositionZ() << "','" << GetTransPositionO() << "'" << ", ";
+        ss << transport->getEntry() << ",'" << GetTransOffsetX()  << "','" << GetTransOffsetY()  << "','" << GetTransOffsetZ() << "','" << GetTransOffsetO() << "'" << ", ";
 
     SaveSpells(bNewCharacter, buf);
 
@@ -3455,9 +3455,9 @@ void Player::AddToWorld()
     auto transport = this->GetTransport();
     if (transport)
     {
-        this->SetPosition(transport->GetPositionX() + GetTransPositionX(),
-            transport->GetPositionY() + GetTransPositionY(),
-            transport->GetPositionZ() + GetTransPositionZ(),
+        this->SetPosition(transport->GetPositionX() + GetTransOffsetX(),
+            transport->GetPositionY() + GetTransOffsetY(),
+            transport->GetPositionZ() + GetTransOffsetZ(),
             GetOrientation(), false);
     }
 
@@ -3492,9 +3492,9 @@ void Player::AddToWorld(MapMgr* pMapMgr)
     if (transport != nullptr)
     {
         auto t_loc = transport->GetPosition();
-        this->SetPosition(t_loc.x + this->GetTransPositionX(),
-            t_loc.y + this->GetTransPositionY(),
-            t_loc.z + this->GetTransPositionZ(),
+        this->SetPosition(t_loc.x + this->GetTransOffsetX(),
+            t_loc.y + this->GetTransOffsetY(),
+            t_loc.z + this->GetTransOffsetZ(),
             this->GetOrientation(), false);
     }
 
@@ -6991,7 +6991,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
 
     if (obj_movement_info.transport_guid)
     {
-        Transporter* pTrans = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
+        Transporter* pTrans = sTransportHandler.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
         if (pTrans)
         {
             pTrans->RemovePassenger(this);

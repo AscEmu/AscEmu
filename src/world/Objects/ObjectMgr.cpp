@@ -62,7 +62,6 @@ void ObjectMgr::initialize()
     m_hiGuildId = 0;
     m_hiPetGuid = 0;
     m_hiArenaTeamId = 0;
-    TransportersCount = 0;
     m_hiPlayerGuid = 1;
 }
 
@@ -2237,42 +2236,6 @@ Corpse* ObjectMgr::GetCorpse(uint32 corpseguid)
     rv = (itr != m_corpses.end()) ? itr->second : 0;
     _corpseslock.Release();
     return rv;
-}
-
-Transporter* ObjectMgr::GetTransporter(uint32 guid)
-{
-    Transporter* rv = nullptr;
-    _TransportLock.Acquire();
-    std::unordered_map<uint32, Transporter*>::const_iterator itr = m_Transports.find(guid);
-    rv = (itr != m_Transports.end()) ? itr->second : nullptr;
-    _TransportLock.Release();
-    return rv;
-}
-
-Transporter* ObjectMgr::GetTransportOrThrow(uint32 guid)
-{
-    Transporter* transport = this->GetTransporter(guid);
-    if (transport == nullptr)
-        throw AscEmu::Exception::AscemuException("Transport not found");
-    return transport;
-}
-
-void ObjectMgr::AddTransport(Transporter*transport)
-{
-    _TransportLock.Acquire();
-    m_Transports[transport->GetUIdFromGUID()] = transport;
-    _TransportLock.Release();
-}
-
-Transporter* ObjectMgr::GetTransporterByEntry(uint32 entry)
-{
-    Transporter* ret = nullptr;
-    _TransportLock.Acquire();
-    auto transporter = m_Transports.find(entry);
-    if (transporter != m_Transports.end())
-        ret = transporter->second;
-    _TransportLock.Release();
-    return ret;
 }
 
 void ObjectMgr::LoadGuildCharters()

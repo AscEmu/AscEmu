@@ -355,6 +355,8 @@ public:
         const float & GetOrientation() const { return m_position.o; }
         void SetOrientation(float o) { m_position.o = o; }
 
+        void SetSpawnLocation(float newX, float newY, float newZ, float newOrientation) { m_spawnLocation.ChangeCoords(newX, newY, newZ, newOrientation); }
+        void SetSpawnLocation(LocationVector loc) { m_spawnLocation.ChangeCoords(loc); }
         const float & GetSpawnX() const { return m_spawnLocation.x; }
         const float & GetSpawnY() const { return m_spawnLocation.y; }
         const float & GetSpawnZ() const { return m_spawnLocation.z; }
@@ -368,10 +370,13 @@ public:
         LocationVector* GetPositionV() { return &m_position; }
 
         // TransporterInfo
-        float GetTransPositionX() const { return obj_movement_info.transport_position.x; }
-        float GetTransPositionY() const { return obj_movement_info.transport_position.y; }
-        float GetTransPositionZ() const { return obj_movement_info.transport_position.z; }
-        float GetTransPositionO() const { return obj_movement_info.transport_position.o; }
+        void SetTransport(Transporter* t) { m_transport = t; }
+        Transporter* GetTransport() const { return m_transport; }
+
+        float GetTransOffsetX() const { return obj_movement_info.transport_position.x; }
+        float GetTransOffsetY() const { return obj_movement_info.transport_position.y; }
+        float GetTransOffsetZ() const { return obj_movement_info.transport_position.z; }
+        float GetTransOffsetO() const { return obj_movement_info.transport_position.o; }
         uint32 GetTransTime() const { return obj_movement_info.transport_time; }
 #ifdef FT_VEHICLES
         // TODO check if this is in BC
@@ -527,7 +532,6 @@ public:
         uint16 GetValuesCount() const { return m_valuesCount; }
 
         MovementInfo obj_movement_info;
-        Transporter* GetTransport() const;
 
         uint32 m_phase;         // This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 
@@ -632,6 +636,9 @@ public:
         bool m_objectUpdated;
 
         int32 m_instanceId;
+
+        // Transporters
+        Transporter* m_transport;
 
     public:
 

@@ -71,6 +71,8 @@ MapMgr::MapMgr(Map* map, uint32 mapId, uint32 instanceid) : CellHandler<MapCell>
     CreatureStorage.resize(map->CreatureSpawnCount, nullptr);
     GOStorage.resize(map->GameObjectSpawnCount, nullptr);
 
+    m_TransportStorage.clear();
+
     m_GOHighGuid = m_CreatureHighGuid = 0;
     m_DynamicObjectHighGuid = 0;
     lastUnitUpdate = Util::getMSTime();
@@ -153,6 +155,7 @@ MapMgr::~MapMgr()
 
     GOStorage.clear();
     CreatureStorage.clear();
+    m_TransportStorage.clear();
 
     for (auto itr = m_corpses.begin(); itr != m_corpses.end();)
     {
@@ -1487,7 +1490,7 @@ Object* MapMgr::_GetObject(const uint64 & guid)
         case HighGuid::DynamicObject:
             return GetDynamicObject(wowGuid.getGuidLowPart());
         case HighGuid::Transporter:
-            return sObjectMgr.GetTransporter(wowGuid.getGuidLowPart());
+            return sTransportHandler.GetTransporter(wowGuid.getGuidLowPart());
         default:
             return GetUnit(guid);
     }
@@ -1506,6 +1509,22 @@ void MapMgr::_PerformObjectDuties()
     // Update any events.
     // we make update of events before objects so in case there are 0 timediff events they do not get deleted after update but on next server update loop
     eventHolder.Update(difftime);
+
+    // Update Transporters
+    {
+        difftime = mstime - lastTransportUpdate;
+        for (auto itr = m_TransportStorage.begin(); itr != m_TransportStorage.end();)
+        {
+            Transporter* trans = *itr;
+            ++itr;
+
+            if (!trans->IsInWorld())
+                continue;
+
+            trans->Update(difftime);
+        }
+        lastTransportUpdate = mstime;
+    }
 
     // Update creatures.
     {
@@ -2115,4 +2134,54 @@ WorldStatesHandler& MapMgr::GetWorldStatesHandler()
 void MapMgr::onWorldStateUpdate(uint32 zone, uint32 field, uint32 value)
 {
     SendPacketToPlayersInZone(zone, SmsgUpdateWorldState(field, value).serialise().get());
+}
+
+bool MapMgr::AddToMapMgr(Transporter* obj)
+{
+    //if (obj->IsInWorld())
+    //    return true;
+
+    m_TransportStorage.insert(obj);
+
+    // Broadcast creation to players
+    if (HasPlayers())
+    {
+        for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
+        {
+            if (static_cast<Object*>(itr->second)->GetTransport() != obj)
+            {
+                ByteBuffer buf(500);
+                uint32 cnt = obj->Object::buildCreateUpdateBlockForPlayer(&buf, itr->second);
+                itr->second->getUpdateMgr().pushUpdateData(&buf, cnt);
+            }
+        }
+    }
+
+    return true;
+}
+
+void MapMgr::RemoveFromMapMgr(Transporter* obj, bool remove)
+{
+    RemoveObject(obj, true);
+
+    if (HasPlayers())
+    {
+        for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
+        {
+            if (static_cast<Object*>(itr->second)->GetTransport() != obj)
+            {
+                ByteBuffer buf(500);
+                uint32 cnt = obj->Object::buildCreateUpdateBlockForPlayer(&buf, itr->second);
+                itr->second->getUpdateMgr().pushUpdateData(&buf, cnt);
+            }
+        }
+    }
+
+    m_TransportStorage.erase(obj);
+
+    if (remove)
+    {
+        obj->RemoveFromWorld(true);
+        obj->ExpireAndDelete();
+    }
 }

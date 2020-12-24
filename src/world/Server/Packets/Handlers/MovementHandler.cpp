@@ -889,7 +889,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         /* we left the transporter we were on */
         LOG_DEBUG("Left Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
 
-        Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
+        Transporter *transporter = sTransportHandler.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
         if (transporter != NULL)
             transporter->RemovePassenger(static_cast<Player*>(mover));
 
@@ -906,7 +906,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
             {
                 LOG_DEBUG("Entered Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_guid));
 
-                Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_guid));
+                Transporter *transporter = sTransportHandler.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_guid));
                 if (transporter != NULL)
                     transporter->AddPassenger(static_cast<Player*>(mover));
 
@@ -1438,9 +1438,9 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
     {
         const auto transporter = _player->GetTransport();
 
-        const float transportPositionX = transporter->GetPositionX() + _player->GetTransPositionX();
-        const float transportPositionY = transporter->GetPositionY() + _player->GetTransPositionY();
-        const float transportPositionZ = transporter->GetPositionZ() + _player->GetTransPositionZ();
+        const float transportPositionX = transporter->GetPositionX() + _player->GetTransOffsetX();
+        const float transportPositionY = transporter->GetPositionY() + _player->GetTransOffsetY();
+        const float transportPositionZ = transporter->GetPositionZ() + _player->GetTransOffsetZ();
 
         const auto positionOnTransport = LocationVector(transportPositionX, transportPositionY, transportPositionZ, _player->GetOrientation());
 

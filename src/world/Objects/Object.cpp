@@ -1569,6 +1569,8 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     }
     m_valuesCount = 0;
 
+    m_transport = nullptr;
+
     m_phase = 1;                //Set the default phase: 00000000 00000000 00000000 00000001
 
     m_mapMgr = nullptr;
@@ -2013,10 +2015,10 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
         if (flags2 & MOVEFLAG_TRANSPORT) //0x0200
         {
             *data << WoWGuid(obj_movement_info.transport_guid);
-            *data << float(GetTransPositionX());
-            *data << float(GetTransPositionY());
-            *data << float(GetTransPositionZ());
-            *data << float(GetTransPositionO());
+            *data << float(GetTransOffsetX());
+            *data << float(GetTransOffsetY());
+            *data << float(GetTransOffsetZ());
+            *data << float(GetTransOffsetO());
             *data << uint32(GetTransTime());
             *data << uint8(GetTransSeat());
         }
@@ -2092,13 +2094,30 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
     {
         if (flags & UPDATEFLAG_POSITION)        //0x0100
         {
-            *data << uint8(0);                  //some say it is like parent guid ?
+            Transporter* transport = GetTransport();
+
+            if (transport)
+                *data << WoWGuid(transport->getGuid());
+            else
+                *data << uint8(0);
+
             *data << float(m_position.x);
             *data << float(m_position.y);
             *data << float(m_position.z);
-            *data << float(m_position.x);
-            *data << float(m_position.y);
-            *data << float(m_position.z);
+
+            if (transport)
+            {
+                *data << float(GetTransOffsetX());
+                *data << float(GetTransOffsetY());
+                *data << float(GetTransOffsetZ());
+            }
+            else
+            {
+                *data << float(m_position.x);
+                *data << float(m_position.y);
+                *data << float(m_position.z);
+            }
+
             *data << float(m_position.o);
 
             if (isCorpse())
@@ -2141,7 +2160,11 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
     if (flags & UPDATEFLAG_TRANSPORT)   //0x2
     {
-        *data << Util::getMSTime();
+        GameObject const* go = static_cast<GameObject*>(this);
+        if (go && go->ToTransport())
+            *data << uint32_t(go->PathProgress);
+        else
+            *data << Util::getMSTime();
     }
 
     if (flags & UPDATEFLAG_VEHICLE)
@@ -3358,15 +3381,6 @@ uint32 Object::GetTeam()
     }
 
     return static_cast<uint32>(-1);
-}
-
-Transporter* Object::GetTransport() const
-{
-#if VERSION_STRING < Cata
-    return sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
-#else
-    return nullptr;
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

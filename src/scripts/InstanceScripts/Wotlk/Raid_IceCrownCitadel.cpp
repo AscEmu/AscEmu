@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Summons/Summon.h"
 #include "../world/Objects/ObjectMgr.h"
 #include "../world/Management/TransporterHandler.h"
+#include "../world/Objects/Transporter.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //ICC zone: 4812
@@ -250,191 +251,16 @@ public:
         {
             if (TeamInInstance == TEAM_ALLIANCE)
             {
-                if (orgrimmar = sObjectMgr.LoadTransportInInstance(mInstance, GO_ORGRIM_S_HAMMER_ALLIANCE_ICC, 108000))
-                {
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_ORGRIMS_HAMMER, 1.845810f, 1.268872f, 34.526218f, 1.5890f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_HIGH_OVERLORD_SAURFANG, 37.18615f, 0.00016f, 36.78849f, 3.13683f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_INVISIBLE_STALKER, 37.18615f, 0.00016f, 36.78849f, 3.13683f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_BATTLE_MAGE, 47.2929f, -4.308941f, 37.5555f, 3.05033f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_BATTLE_MAGE, 47.34621f, 4.032004f, 37.70952f, 3.05033f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_BATTLE_MAGE, 15.03016f, 0.00016f, 37.70952f, 1.55138f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -13.19547f, -27.160213f, 35.47252f, 3.10672f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -18.33902f, -25.230491f, 33.04052f, 3.00672f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -60.1251f, -1.27014f, 42.8335f, 5.16073f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -48.2651f, 16.78034f, 34.2515f, 0.04292f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -14.8356f, 27.931688f, 33.363f, 1.73231f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 10.2702f, 20.62966f, 35.37483f, 1.6f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 39.32459f, 14.50176f, 36.88428f, 1.6f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 46.17223f, -6.638763f, 37.35444f, 1.32f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 27.4456f, -13.397498f, 36.34746f, 1.6f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 18.16184f, 1.37897f, 35.31705f, 1.6f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -18.11516f, -0.196236f, 45.15709f, 2.9f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -18.11844f, -0.19624f, 49.18192f, 1.6f);
-
-                    if (GetDifficulty() == MODE_NORMAL_10MEN || GetDifficulty() == MODE_HEROIC_10MEN)
-                    {
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, -3.170555f, 28.30652f, 34.21082f, 1.66527f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, -12.0928f, 27.65942f, 33.58557f, 1.66527f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, 14.92804f, 26.18018f, 35.47803f, 1.66527f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, 24.70331f, 25.36584f, 35.97845f, 1.66527f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, -11.44849f, -25.71838f, 33.64343f, 1.49248f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, 12.30336f, -25.69653f, 35.32373f, 1.49248f);
-                    }
-                    else
-                    {
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, -3.170555f, 28.30652f, 34.21082f, 1.66527f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, -12.0928f, 27.65942f, 33.58557f, 1.66527f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, 14.92804f, 26.18018f, 35.47803f, 1.66527f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, 24.70331f, 25.36584f, 35.97845f, 1.66527f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, 19.92804f, 27.18018f, 35.47803f, 1.66527f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_AXETHROWER, -7.70331f, 28.36584f, 33.88557f, 1.66527f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, -11.44849f, -25.71838f, 33.64343f, 1.49248f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, 12.30336f, -25.69653f, 35.32373f, 1.49248f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, -3.44849f, -25.71838f, 34.21082f, 1.49248f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_KORKRON_ROCKETEER, 3.30336f, -25.69653f, 35.32373f, 1.49248f);
-                    }
-                }
-
-                if (skybreaker = sObjectMgr.LoadTransportInInstance(mInstance, GO_THE_SKYBREAKER_ALLIANCE_ICC, 108000))
-                {
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER, -17.156807f, -1.633260f, 20.81273f, 4.52672f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_MURADIN_BRONZEBEARD, 13.51547f, -0.160213f, 20.87252f, 3.10672f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_HIHG_CAPTAIN_JUSTIN_BARTLETT, 42.78902f, -0.010491f, 25.24052f, 3.00672f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_HIGH_OVERLORD_SAURFANG_NV, -12.9806f, -22.9462f, 21.659f, 4.72416f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_ZAFOD_BOOMBOX, 18.8042f, 9.907914f, 20.33559f, 3.10672f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_DECKHAND, -64.8423f, 4.4658f, 23.4352f, 2.698897f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_DECKHAND, 35.54972f, 19.93269f, 25.0333f, 4.71242f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_DECKHAND, -36.39837f, 3.13127f, 20.4496f, 1.5708f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_DECKHAND, -36.23974f, -2.75767f, 20.4506f, 4.69496f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_DECKHAND, 41.94677f, 44.08411f, 24.66587f, 1.62032f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 13.51547f, -0.160213f, 20.87252f, 3.10672f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 42.78902f, -0.010491f, 25.24052f, 3.00672f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 14.0551f, 3.65014f, 20.7935f, 3.16073f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 14.0551f, -4.65034f, 20.7915f, 3.04292f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -17.8356f, 0.031688f, 20.823f, 4.73231f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -34.2702f, -26.18966f, 21.37483f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -11.64459f, -19.85176f, 20.88428f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -19.88223f, -6.578763f, 20.57444f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -41.4456f, -7.647498f, 20.49746f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 0.554884f, -1.232897f, 20.53705f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -50.16516f, 9.716236f, 23.58709f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 11.45844f, 16.36624f, 20.54192f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 19.72286f, -2.193787f, 33.06982f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 19.72286f, -2.193787f, 33.06982f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 8.599396f, -28.55855f, 24.79919f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 38.94339f, -33.808f, 25.39618f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 58.15474f, 0.748094f, 41.87663f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 5.607554f, -6.350654f, 34.00357f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 4.780305f, -29.05227f, 35.09634f, 1.6f);
-
-                    if (GetDifficulty() == MODE_NORMAL_10MEN || GetDifficulty() == MODE_HEROIC_10MEN)
-                    {
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -5.15231f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -28.0876f, -22.9462f, 21.659f, 4.72416f);
-                    }
-                    else
-                    {
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -5.15231f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -14.9806f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -21.7406f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_ALLIANCE_CANON, -28.0876f, -22.9462f, 21.659f, 4.72416f);
-                    }
-                }
+                orgrimmar = sTransportHandler.CreateTransport(GO_ORGRIM_S_HAMMER_ALLIANCE_ICC, mInstance);
+                skybreaker = sTransportHandler.CreateTransport(GO_THE_SKYBREAKER_ALLIANCE_ICC, mInstance);
             }
 
             if (TeamInInstance == TEAM_HORDE)
             {
-                if (skybreaker = sObjectMgr.LoadTransportInInstance(mInstance, GO_THE_SKYBREAKER_HORDE_ICC, 77800))
-                {
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER, -17.156807f, -1.633260f, 20.81273f, 4.52672f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_MURADIN_BRONZEBEARD, 13.51547f, -0.160213f, 20.87252f, 3.10672f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_HIHG_CAPTAIN_JUSTIN_BARTLETT, 42.78902f, -0.010491f, 25.24052f, 3.00672f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_SORCERERS, 14.0551f, 3.65014f, 20.7935f, 3.16073f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_SORCERERS, 14.0551f, -4.65034f, 20.7915f, 3.04292f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_SORCERERS, -17.8356f, 0.031688f, 20.823f, 4.73231f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 13.51547f, -0.160213f, 20.87252f, 3.10672f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 42.78902f, -0.010491f, 25.24052f, 3.00672f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 14.0551f, 3.65014f, 20.7935f, 3.16073f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 14.0551f, -4.65034f, 20.7915f, 3.04292f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -17.8356f, 0.031688f, 20.823f, 4.73231f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -34.2702f, -26.18966f, 21.37483f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -11.64459f, -19.85176f, 20.88428f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -19.88223f, -6.578763f, 20.57444f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -41.4456f, -7.647498f, 20.49746f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 0.554884f, -1.232897f, 20.53705f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -50.16516f, 9.716236f, 23.58709f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 11.45844f, 16.36624f, 20.54192f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 19.72286f, -2.193787f, 33.06982f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 19.72286f, -2.193787f, 33.06982f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 8.599396f, -28.55855f, 24.79919f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 38.94339f, -33.808f, 25.39618f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 58.15474f, 0.748094f, 41.87663f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 5.607554f, -6.350654f, 34.00357f, 1.6f);
-                    skybreaker->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 4.780305f, -29.05227f, 35.09634f, 1.6f);
-
-                    if (GetDifficulty() == MODE_NORMAL_10MEN || GetDifficulty() == MODE_HEROIC_10MEN)
-                    {
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -5.15231f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -14.9806f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -21.7406f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -28.0876f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_MORTAR_SOLDIER, -8.61003f, 15.483f, 20.4158f, 4.69854f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_MORTAR_SOLDIER, -27.9583f, 14.8875f, 20.4428f, 4.77865f);
-                    }
-                    else
-                    {
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, 0.15231f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -5.15231f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -14.9806f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -21.7406f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -28.0876f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_RIFLEMAN, -33.0876f, -22.9462f, 21.659f, 4.72416f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_MORTAR_SOLDIER, -8.61003f, 15.483f, 20.4158f, 4.69854f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_MORTAR_SOLDIER, -27.9583f, 14.8875f, 20.4428f, 4.77865f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_MORTAR_SOLDIER, -15.61003f, 15.483f, 20.4158f, 4.69854f);
-                        skybreaker->AddNPCPassengerInInstance(NPC_GB_SKYBREAKER_MORTAR_SOLDIER, -20.9583f, 14.8875f, 20.4428f, 4.77865f);
-                    }
-                }
-
-                if (orgrimmar = sObjectMgr.LoadTransportInInstance(mInstance, GO_ORGRIM_S_HAMMER_HORDE_ICC, 77800))
-                {
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_ORGRIMS_HAMMER, 1.845810f, 1.268872f, 34.526218f, 1.5890f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_HIGH_OVERLORD_SAURFANG, 37.18615f, 0.00016f, 36.78849f, 3.13683f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_MURADIN_BRONZEBEARD_NV, -7.09684f, 30.582f, 34.5013f, 1.53591f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_INVISIBLE_STALKER, 37.30764f, -0.143823f, 36.7936f, 3.13683f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_ZAFOD_BOOMBOX, 35.18615f, 15.30652f, 37.64343f, 3.05033f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -13.19547f, -27.160213f, 35.47252f, 3.10672f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -18.33902f, -25.230491f, 33.04052f, 3.00672f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -60.1251f, -1.27014f, 42.8335f, 5.16073f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -48.2651f, 16.78034f, 34.2515f, 0.04292f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -14.8356f, 27.931688f, 33.363f, 1.73231f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 10.2702f, 20.62966f, 35.37483f, 1.6f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 39.32459f, 14.50176f, 36.88428f, 1.6f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 46.17223f, -6.638763f, 37.35444f, 1.32f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 27.4456f, -13.397498f, 36.34746f, 1.6f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, 18.16184f, 1.37897f, 35.31705f, 1.6f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -18.11516f, -0.196236f, 45.15709f, 2.9f);
-                    orgrimmar->AddNPCPassengerInInstance(NPC_GB_GUNSHIP_HULL, -18.11844f, -0.19624f, 49.18192f, 1.6f);
-
-                    if (GetDifficulty() == MODE_NORMAL_10MEN || GetDifficulty() == MODE_HEROIC_10MEN)
-                    {
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_HORDE_CANON, 22.6225f, 28.9309f, 36.3929f, 1.53591f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_HORDE_CANON, -21.7509f, 29.4207f, 34.2588f, 1.53591f);
-                    }
-                    else
-                    {
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_HORDE_CANON, 22.6225f, 28.9309f, 36.3929f, 1.53591f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_HORDE_CANON, 9.87745f, 30.5047f, 35.7147f, 1.53591f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_HORDE_CANON, -7.09684f, 30.582f, 34.5013f, 1.53591f);
-                        orgrimmar->AddNPCPassengerInInstance(NPC_GB_HORDE_CANON, -21.7509f, 29.4207f, 34.2588f, 1.53591f);
-                    }
-                }
+                skybreaker = sTransportHandler.CreateTransport(GO_THE_SKYBREAKER_HORDE_ICC, mInstance);
+                orgrimmar = sTransportHandler.CreateTransport(GO_ORGRIM_S_HAMMER_HORDE_ICC, mInstance);  
             }
             isPrepared = true;
-        }
-        else
-        {
-        sObjectMgr.LoadTransportForPlayers(player);
         }
     }
 
@@ -492,14 +318,10 @@ public:
                 }
                 break;
             case EVENT_START_FLY:
-                StartFlyShip(skybreaker);
+                skybreaker->EnableMovement(true);
                 break;
             case EVENT_INTRO_ALLIANCE_3:           
-                StartFlyShip(orgrimmar);
-                break;
-            case EVENT_INTRO_ALLIANCE_5:
-                StopFlyShip(skybreaker);
-                StopFlyShip(orgrimmar);               
+                orgrimmar->EnableMovement(true);
                 break;
             case EVENT_INTRO_ALLIANCE_6:  
                 SendMusicToPlayers(17289);
@@ -533,70 +355,34 @@ public:
         case ACTION_INTRO_START:
             scriptEvents.addEvent(EVENT_START_FLY, 2500);
             scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_3, 28000);
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_5, 40000);
             scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_6, 47000);
             break;
         case ACTION_BATTLE_EVENT:
             scriptEvents.addEvent(EVENT_WIPE_CHECK, 5000);
             setData(DATA_GUNSHIP_EVENT, InProgress);
-            RelocateTransport(skybreaker);
-            RelocateTransport(orgrimmar);
             break;
         }
     }
 
-    //Function start motion of the ship
-    void StartFlyShip(Transporter* t)
+    void TransporterEvents(Transporter* transport, uint32_t eventId) override
     {
-        t->setFlags(GO_FLAG_NONSELECTABLE);
-        t->setState(GO_STATE_OPEN);
-        t->setDynamic(0x10830010); // Seen in sniffs
-        t->setParentRotation(3, 1.0f);
-
-        GameObjectProperties const* goinfo = t->GetGameObjectProperties();
-        t->GenerateWaypoints(goinfo->raw.parameter_0);  
-
-        t->BuildStartMovePacket(mInstance);
-    }
-
-    //Function stop motion of the ship
-    void StopFlyShip(Transporter* t)
-    {
-        t->m_WayPoints.clear();
-        t->BuildStopMovePacket(mInstance);
-    }
-
-    void RelocateTransport(Transporter* t)
-    {
-        if (!t)
-            return;
-
-        // Transoprt movemend on server-side is ugly hack, so we do sincronize positions
-        switch (t->getEntry())
+        switch (eventId)
         {
-        case GO_THE_SKYBREAKER_ALLIANCE_ICC:
-            if (getData(DATA_GUNSHIP_EVENT) != Performed)
-                static_cast<Object*>(t)->SetPosition(-377.184021f, 2073.548584f, 445.753387f, t->GetOrientation());
-            else if (getData(DATA_GUNSHIP_EVENT) == Performed)
-                static_cast<Object*>(t)->SetPosition(-583.942627f, 2212.364990f, 534.673889f, t->GetOrientation());
+        case EVENT_ENEMY_GUNSHIP_DESPAWN:
+            if (getData(DATA_GUNSHIP_EVENT) == Finished)
+                transport->GetMapMgr()->RemoveFromMapMgr(transport, true);
             break;
-        case GO_ORGRIM_S_HAMMER_ALLIANCE_ICC:
-            if (getData(DATA_GUNSHIP_EVENT) != Performed)
-                static_cast<Object*>(t)->SetPosition(-384.878479f, 1989.831665f, 431.549438f, t->GetOrientation());
+        case EVENT_ENEMY_GUNSHIP_COMBAT:
+            if (Creature* captain = TeamInInstance == TEAM_HORDE ? mInstance->GetCreature(getLocalData64(DATA_GB_HIGH_OVERLORD_SAURFANG)) : mInstance->GetCreature(getLocalData64(DATA_GB_MURADIN_BRONZEBEARD)))
+                captain->GetScript()->DoAction(ACTION_BATTLE_EVENT);
+        case EVENT_PLAYERS_GUNSHIP_SPAWN:
+        case EVENT_PLAYERS_GUNSHIP_COMBAT:
+            transport->EnableMovement(false);
             break;
-        case GO_ORGRIM_S_HAMMER_HORDE_ICC:
-            if (getData(DATA_GUNSHIP_EVENT) != Performed)
-                static_cast<Object*>(t)->SetPosition(-438.142365f, 2395.725830f, 436.781647f, t->GetOrientation());
-            else if (getData(DATA_GUNSHIP_EVENT) == Performed)
-                static_cast<Object*>(t)->SetPosition(-583.942627f, 2212.364990f, 534.673889f, t->GetOrientation());
-            break;
-        case GO_THE_SKYBREAKER_HORDE_ICC:
-            if (getData(DATA_GUNSHIP_EVENT) != Performed)
-                static_cast<Object*>(t)->SetPosition(-435.854156f, 2475.328125f, 449.364105f, t->GetOrientation());
+        case EVENT_PLAYERS_GUNSHIP_SAURFANG:
+            transport->EnableMovement(false);
             break;
         }
-
-        t->UpdateNPCPositions();
     }
 
     //Wipe check

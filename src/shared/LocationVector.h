@@ -96,6 +96,30 @@ class SERVER_DECL LocationVector
             o = src.o;
         }
 
+        void ChangeCoords(float newX, float newY, float newZ, float newO)
+        {
+            x = newX;
+            y = newY;
+            z = newZ;
+            o = newO;
+        }
+
+        void GetPosition(float &rx, float &ry) const
+        {
+            rx = x;
+            ry = y;
+        }
+
+        void GetPosition(float &rx, float &ry, float &rz) const
+        {
+            GetPosition(rx, ry); rz = z;
+        }
+
+        void GetPosition(float &rx, float &ry, float &rz, float &ro) const
+        {
+            GetPosition(rx, ry, rz); ro = o;
+        }
+
         // add/subtract/equality vectors
         LocationVector & operator += (const LocationVector & add)
         {
