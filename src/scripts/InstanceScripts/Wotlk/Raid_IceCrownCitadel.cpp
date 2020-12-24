@@ -180,12 +180,6 @@ public:
         {
             if (LadyDeathwisperEntranceDoorGUID)
                 GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
-
-            if (LadyDeathwisperElevatorGUID)
-            {
-                GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_CLOSED);
-                GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setLevel(0);
-            }
         }
     }
 
@@ -224,11 +218,8 @@ public:
             }
             if (state == NotStarted)
             {
-                if (LadyDeathwisperElevatorGUID)
+                if (LadyDeathwisperEntranceDoorGUID)
                     GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
-
-                if (LadyDeathwisperElevatorGUID)
-                    GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
             }
             if (state == Finished)
             {

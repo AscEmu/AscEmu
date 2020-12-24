@@ -97,7 +97,7 @@ public:
 
     uint32 GetTransportPeriod() const override { return getLevel(); }
     void SetPeriod(uint32 period) { setLevel(period); }
-    uint32 GetTimer() const { return PathProgress; }
+    uint32 GetTimer() const { return mTransValues.PathProgress; }
 
     KeyFrameVec const& GetKeyFrames() const { return _transportInfo->keyFrames; }
 

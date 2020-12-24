@@ -276,3 +276,42 @@ void TransportHandler::AddTransport(Transporter* transport)
     _Transporters[transport->GetUIdFromGUID()] = transport;
     _TransportLock.Release();
 }
+
+void TransportHandler::LoadTransportAnimationAndRotation()
+{
+    for (uint32 i = 0; i < sTransportAnimationStore.GetNumRows(); ++i)
+        if (DBC::Structures::TransportAnimationEntry const* anim = sTransportAnimationStore.LookupEntry(i))
+            AddPathNodeToTransport(anim->TransportID, anim->TimeIndex, anim);
+
+    for (uint32 i = 0; i < sTransportRotationStore.GetNumRows(); ++i)
+        if (DBC::Structures::TransportRotationEntry const* rot = sTransportRotationStore.LookupEntry(i))
+            AddPathRotationToTransport(rot->GameObjectsID, rot->TimeIndex, rot);
+}
+
+void TransportHandler::AddPathNodeToTransport(uint32 transportEntry, uint32 timeSeg, DBC::Structures::TransportAnimationEntry const* node)
+{
+    TransportAnimation& animNode = _transportAnimations[transportEntry];
+    if (animNode.TotalTime < timeSeg)
+        animNode.TotalTime = timeSeg;
+
+    animNode.Path[timeSeg] = node;
+}
+
+
+DBC::Structures::TransportAnimationEntry const* TransportAnimation::GetAnimNode(uint32 time) const
+{
+    auto itr = Path.lower_bound(time);
+    if (itr != Path.end())
+        return itr->second;
+
+    return nullptr;
+}
+
+DBC::Structures::TransportRotationEntry const* TransportAnimation::GetAnimRotation(uint32 time) const
+{
+    auto itr = Rotations.lower_bound(time);
+    if (itr != Rotations.end())
+        return itr->second;
+
+    return nullptr;
+}

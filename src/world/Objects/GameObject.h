@@ -50,6 +50,13 @@ enum GameObject_Flags
     GO_FLAG_DESTROYED           = 0x400
 };
 
+struct TransportInfoData
+{
+    uint32 PathProgress;
+    TransportAnimation const* AnimationInfo;
+    uint32 CurrentSeg;
+};
+
 class Player;
 class GameObjectAIScript;
 class GameObjectModel;
@@ -524,12 +531,9 @@ public:
 
         GameObjectModel* m_model;
 
+        TransportInfoData const* GetTransValues() const { return &mTransValues; }
         Transporter* ToTransport() { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter*>(this); else return nullptr; }
         Transporter const* ToTransport() const { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter const*>(this); else return nullptr; }
-
-        // Transport Infos
-        uint32 PathProgress;
-        uint32 CurrentSeg;
 
     protected:
 
@@ -538,6 +542,9 @@ public:
         GameObjectProperties const* gameobject_properties;
         GameObjectAIScript* myScript;
         uint32 _fields[getSizeOfStructure(WoWGameObject)];
+
+        // Transport Infos
+        TransportInfoData mTransValues;
 
         uint32 m_overrides;             //See enum GAMEOBJECT_OVERRIDES!
 

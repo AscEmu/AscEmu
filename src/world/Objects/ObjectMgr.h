@@ -34,6 +34,7 @@
     #include "Storage/DB2/DB2Structures.h"
 #endif
 #include "Units/Creatures/CreatureDefines.hpp"
+#include "Management/TransporterHandler.h"
 #include "Management/Gossip/GossipDefines.hpp"
 #include "Objects/GameObject.h"
 #include "Spell/Spell.h"

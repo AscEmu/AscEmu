@@ -105,6 +105,23 @@ struct TransportTemplate
     uint32 entry;
 };
 
+typedef std::map<uint32, DBC::Structures::TransportAnimationEntry const*> TransportPathContainer;
+typedef std::map<uint32, DBC::Structures::TransportRotationEntry const*> TransportPathRotationContainer;
+
+struct SERVER_DECL TransportAnimation
+{
+    TransportAnimation() : TotalTime(0) { }
+
+    TransportPathContainer Path;
+    TransportPathRotationContainer Rotations;
+    uint32 TotalTime;
+
+    DBC::Structures::TransportAnimationEntry const* GetAnimNode(uint32 time) const;
+    DBC::Structures::TransportRotationEntry const* GetAnimRotation(uint32 time) const;
+};
+
+typedef std::map<uint32, TransportAnimation> TransportAnimationContainer;
+
 bool FillTransporterPathVector(uint32 PathID, TransportPath & Path);
 
 class SERVER_DECL TransportHandler
@@ -116,11 +133,19 @@ public:
 
     void LoadTransportTemplates();
 
+    void LoadTransportAnimationAndRotation();
+
     // Creates a transport using given GameObject template entry
     Transporter* CreateTransport(uint32 entry, MapMgr* map = nullptr);
 
     // Spawns all continent transports, used at startup
     void SpawnContinentTransports();
+
+    // constrain arbitrary radian orientation to interval [0,2*PI)
+    static float NormalizeOrientation(float o);
+
+    void AddTransport(Transporter* transport);
+    Transporter* GetTransporter(uint32 guid);
 
     TransportTemplate const* GetTransportTemplate(uint32 entry) const
     {
@@ -130,11 +155,14 @@ public:
         return nullptr;
     }
 
-    // constrain arbitrary radian orientation to interval [0,2*PI)
-    static float NormalizeOrientation(float o);
+    TransportAnimation const* GetTransportAnimInfo(uint32 entry) const
+    {
+        TransportAnimationContainer::const_iterator itr = _transportAnimations.find(entry);
+        if (itr != _transportAnimations.end())
+            return &itr->second;
 
-    void AddTransport(Transporter* transport);
-    Transporter* GetTransporter(uint32 guid);
+        return nullptr;
+    }
 
     Mutex _TransportLock;
 
@@ -143,6 +171,16 @@ private:
     ~TransportHandler();
     TransportHandler(TransportHandler const&) = delete;
     TransportHandler& operator=(TransportHandler const&) = delete;
+
+    void AddPathNodeToTransport(uint32 transportEntry, uint32 timeSeg, DBC::Structures::TransportAnimationEntry const* node);
+
+    void AddPathRotationToTransport(uint32 transportEntry, uint32 timeSeg, DBC::Structures::TransportRotationEntry const* node)
+    {
+        _transportAnimations[transportEntry].Rotations[timeSeg] = node;
+    }
+
+    // Container storing transport animations
+    TransportAnimationContainer _transportAnimations;
 
     // Generates and precaches a path for transport
     void GeneratePath(GameObjectProperties const* goInfo, TransportTemplate* transport);

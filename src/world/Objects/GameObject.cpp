@@ -160,8 +160,9 @@ GameObject::GameObject(uint64 guid)
     m_objectType |= TYPE_GAMEOBJECT;
     m_objectTypeId = TYPEID_GAMEOBJECT;
 
-    CurrentSeg = 0;
-    PathProgress = 0;
+    mTransValues.CurrentSeg = 0;
+    mTransValues.AnimationInfo = 0;
+    mTransValues.PathProgress = 0;
 
 #if VERSION_STRING <= TBC
     m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_LOWGUID);
@@ -260,8 +261,9 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
 
         setLevel(gameobject_properties->transport.pause);
         setState(gameobject_properties->transport.startOpen ? GO_STATE_OPEN : GO_STATE_CLOSED);
-        PathProgress = 0;
-        CurrentSeg = 0;
+        mTransValues.CurrentSeg = 0;
+        mTransValues.AnimationInfo = sTransportHandler.GetTransportAnimInfo(entry);
+        mTransValues.PathProgress = 0;
         break;
     case GAMEOBJECT_TYPE_MO_TRANSPORT:
         m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
@@ -269,7 +271,7 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
         setFlags(GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN);
 
         setState(gameobject_properties->mo_transport.can_be_stopped ? GO_STATE_CLOSED : GO_STATE_OPEN);
-        PathProgress = 0;
+        mTransValues.PathProgress = 0;
         break;
     default:
         m_overrides = overrides;
@@ -1706,7 +1708,8 @@ uint32 GameObject::GetTransportPeriod() const
     if (getGoType() != GAMEOBJECT_TYPE_TRANSPORT)
         return 0;
 
-    //Todo get values from dbc files
+    if (GetTransValues()->AnimationInfo)
+        return GetTransValues()->AnimationInfo->TotalTime;
 
     return 0;
 }

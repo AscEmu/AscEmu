@@ -76,9 +76,9 @@ void Transporter::Update(unsigned long time_passed)
         return;
 
     if (IsMoving() || !_pendingStop)
-        PathProgress += time_passed;
+        mTransValues.PathProgress += time_passed;
 
-    uint32 timer = PathProgress % GetTransportPeriod();
+    uint32 timer = GetTimer() % GetTransportPeriod();
     bool justStopped = false;
 
     // Set position
