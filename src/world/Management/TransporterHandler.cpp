@@ -239,13 +239,133 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     }
 
     // find the rest of the distances between key points
-    size_t start = 0;
     for (size_t i = 1; i < keyFrames.size(); ++i)
     {
-       
+        if ((keyFrames[i].IsTeleportFrame()) || (keyFrames[i].Node.mapid != keyFrames[i - 1].Node.mapid))
+        {
+            keyFrames[i].Index = i + 1;
+            keyFrames[i].DistFromPrev = 0;
+        }
+        else
+        {
+            keyFrames[i].Index = i + 1;
+            keyFrames[i].DistFromPrev =
+                std::sqrt(pow(keyFrames[i].Node.x - keyFrames[i - 1].Node.x, 2) +
+                    pow(keyFrames[i].Node.y - keyFrames[i - 1].Node.y, 2) +
+                    pow(keyFrames[i].Node.z - keyFrames[i - 1].Node.z, 2));
+            if (i > 0)
+                keyFrames[i - 1].NextDistFromPrev = keyFrames[i].DistFromPrev;
+        }
+
+        if (keyFrames[i].IsStopFrame())
+        {
+            // remember first stop frame
+            if (firstStop == -1)
+                firstStop = i;
+
+            lastStop = i;
+        }
     }
 
+    keyFrames.back().NextDistFromPrev = keyFrames.front().DistFromPrev;
+
+    if (firstStop == -1 || lastStop == -1)
+        firstStop = lastStop = 0;
+
+    // at stopping keyframes, we define distSinceStop == 0,
+    // and distUntilStop is to the next stopping keyframe.
+    // this is required to properly handle cases of two stopping frames in a row (yes they do exist)
+    float tmpDist = 0.0f;
+    for (size_t i = 0; i < keyFrames.size(); ++i)
+    {
+        int32 j = (i + lastStop) % keyFrames.size();
+        if (keyFrames[j].IsStopFrame() || j == lastStop)
+            tmpDist = 0.0f;
+        else
+            tmpDist += keyFrames[j].DistFromPrev;
+        keyFrames[j].DistSinceStop = tmpDist;
+    }
+
+    tmpDist = 0.0f;
+    for (int32 i = int32(keyFrames.size()) - 1; i >= 0; i--)
+    {
+        int32 j = (i + firstStop) % keyFrames.size();
+        tmpDist += keyFrames[(j + 1) % keyFrames.size()].DistFromPrev;
+        keyFrames[j].DistUntilStop = tmpDist;
+        if (keyFrames[j].IsStopFrame() || j == firstStop)
+            tmpDist = 0.0f;
+    }
+
+    for (size_t i = 0; i < keyFrames.size(); ++i)
+    {
+        float total_dist = keyFrames[i].DistSinceStop + keyFrames[i].DistUntilStop;
+        if (total_dist < 2 * accel_dist) // won't reach full speed
+        {
+            if (keyFrames[i].DistSinceStop < keyFrames[i].DistUntilStop) // is still accelerating
+            {
+                // calculate accel+brake time for this short segment
+                float segment_time = 2.0f * std::sqrt((keyFrames[i].DistUntilStop + keyFrames[i].DistSinceStop) / accel);
+                // substract acceleration time
+                keyFrames[i].TimeTo = segment_time - std::sqrt(2 * keyFrames[i].DistSinceStop / accel);
+            }
+            else // slowing down
+                keyFrames[i].TimeTo = std::sqrt(2 * keyFrames[i].DistUntilStop / accel);
+        }
+        else if (keyFrames[i].DistSinceStop < accel_dist) // still accelerating (but will reach full speed)
+        {
+            // calculate accel + cruise + brake time for this long segment
+            float segment_time = (keyFrames[i].DistUntilStop + keyFrames[i].DistSinceStop) / speed + (speed / accel);
+            // substract acceleration time
+            keyFrames[i].TimeTo = segment_time - std::sqrt(2 * keyFrames[i].DistSinceStop / accel);
+        }
+        else if (keyFrames[i].DistUntilStop < accel_dist) // already slowing down (but reached full speed)
+            keyFrames[i].TimeTo = std::sqrt(2 * keyFrames[i].DistUntilStop / accel);
+        else // at full speed
+            keyFrames[i].TimeTo = (keyFrames[i].DistUntilStop / speed) + (0.5f * speed / accel);
+    }
+
+    // calculate tFrom times from tTo times
+    float segmentTime = 0.0f;
+    for (size_t i = 0; i < keyFrames.size(); ++i)
+    {
+        int32 j = (i + lastStop) % keyFrames.size();
+        if (keyFrames[j].IsStopFrame() || j == lastStop)
+            segmentTime = keyFrames[j].TimeTo;
+        keyFrames[j].TimeFrom = segmentTime - keyFrames[j].TimeTo;
+    }
+
+    // calculate path times
+    keyFrames[0].ArriveTime = 0;
+    float curPathTime = 0.0f;
+    if (keyFrames[0].IsStopFrame())
+    {
+        curPathTime = float(keyFrames[0].Node.delay);
+        keyFrames[0].DepartureTime = uint32(curPathTime * IN_MILLISECONDS);
+    }
+
+    for (size_t i = 1; i < keyFrames.size(); ++i)
+    {
+        curPathTime += keyFrames[i - 1].TimeTo;
+        if (keyFrames[i].IsStopFrame())
+        {
+            keyFrames[i].ArriveTime = uint32(curPathTime * IN_MILLISECONDS);
+            keyFrames[i - 1].NextArriveTime = keyFrames[i].ArriveTime;
+            curPathTime += float(keyFrames[i].Node.delay);
+            keyFrames[i].DepartureTime = uint32(curPathTime * IN_MILLISECONDS);
+        }
+        else
+        {
+            curPathTime -= keyFrames[i].TimeTo;
+            keyFrames[i].ArriveTime = uint32(curPathTime * IN_MILLISECONDS);
+            keyFrames[i - 1].NextArriveTime = keyFrames[i].ArriveTime;
+            keyFrames[i].DepartureTime = keyFrames[i].ArriveTime;
+        }
+    }
+
+    keyFrames.back().NextArriveTime = keyFrames.back().DepartureTime;
+
     transport->pathTime = keyFrames.back().DepartureTime;
+    LogDebug("TransportHandler", "total time %u at transport %u \n", transport->pathTime, transport->entry);
 }
 
 float TransportHandler::NormalizeOrientation(float o)
@@ -296,7 +416,6 @@ void TransportHandler::AddPathNodeToTransport(uint32 transportEntry, uint32 time
 
     animNode.Path[timeSeg] = node;
 }
-
 
 DBC::Structures::TransportAnimationEntry const* TransportAnimation::GetAnimNode(uint32 time) const
 {

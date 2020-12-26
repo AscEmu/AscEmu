@@ -3976,7 +3976,6 @@ void MySQLDataStore::loadTransportDataTable()
             MySQLStructure::TransportData& transportData = _transportDataStore[entry];
             transportData.entry = entry;
             transportData.name = fields[2].GetString();
-            transportData.period = fields[3].GetUInt32();
 
             ++load_count;
 

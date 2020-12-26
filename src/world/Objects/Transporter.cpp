@@ -54,8 +54,7 @@ bool Transporter::Create(uint32 entry, uint32 mapid, float x, float y, float z, 
         return false;
 
     // Set Pathtime
-    setLevel(1);
-    //setLevel(tInfo->pathTime);
+    setLevel(tInfo->pathTime);
     setAnimationProgress(animprogress);
 
     _transportInfo = tInfo;
@@ -81,12 +80,68 @@ void Transporter::Update(unsigned long time_passed)
     uint32 timer = GetTimer() % GetTransportPeriod();
     bool justStopped = false;
 
+    for (;;)
+    {
+        if (timer >= _currentFrame->ArriveTime)
+        {
+            if (!_triggeredArrivalEvent)
+            {
+                DoEventIfAny(*_currentFrame, false);
+                _triggeredArrivalEvent = true;
+            }
+
+            if (timer < _currentFrame->DepartureTime)
+            {
+                justStopped = IsMoving();
+                SetMoving(false);
+                if (_pendingStop && getState() != GO_STATE_CLOSED)
+                {
+                    setState(GO_STATE_CLOSED);
+                    mTransValues.PathProgress = (GetTimer() / GetTransportPeriod());
+                    mTransValues.PathProgress *= GetTransportPeriod();
+                    mTransValues.PathProgress += _currentFrame->ArriveTime;
+                }
+                break;  // its a stop frame and we are waiting
+            }
+        }
+
+        if (timer >= _currentFrame->DepartureTime && !_triggeredDepartureEvent)
+        {
+            DoEventIfAny(*_currentFrame, true); // departure event
+            _triggeredDepartureEvent = true;
+        }
+
+        // not waiting anymore
+        SetMoving(true);
+
+        // Enable movement
+        if (GetGameObjectProperties()->mo_transport.can_be_stopped)
+            setState(GO_STATE_OPEN);
+
+        if (timer >= _currentFrame->DepartureTime && timer < _currentFrame->NextArriveTime)
+            break;  // found current waypoint
+
+        MoveToNextWaypoint();
+
+        // Departure event
+        if (_currentFrame->IsTeleportFrame())
+            if (TeleportTransport(_nextFrame->Node.mapid, _nextFrame->Node.x, _nextFrame->Node.y, _nextFrame->Node.z, _nextFrame->InitialOrientation))
+                return; // Update more in new map thread
+    }
+
     // Set position
     _positionChangeTimer -= time_passed;
     if (_positionChangeTimer <= 0)
     {
         _positionChangeTimer = positionUpdateDelay;
-        UpdatePosition(_currentFrame->Node.x, _currentFrame->Node.y, _currentFrame->Node.z, _currentFrame->InitialOrientation);
+        if (IsMoving())
+        {
+            // Return a Value between 0 and 1 which represents the time from 0 to 1 between current and next node. (for Spline use if we support it sometime)
+            float t = !justStopped ? CalculateSegmentPos(float(timer) * 0.001f) : 1.0f;
+            UpdatePosition(_currentFrame->Node.x, _currentFrame->Node.y, _currentFrame->Node.z, _currentFrame->InitialOrientation);
+        }
+        else if (justStopped)
+            UpdatePosition(_currentFrame->Node.x, _currentFrame->Node.y, _currentFrame->Node.z, _currentFrame->InitialOrientation);
     }
 }
 
@@ -233,11 +288,12 @@ void Transporter::LoadStaticPassengers()
                 LOG_ERROR("Failed to add npc entry: %u to transport: %u", creature_spawn->entry, getGuid());
         }
 
-        for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
+        // ToDo Crashes Server at Gameobject Update maybe a single go which causes the issue
+        /*for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
         {
             if (CreateGOPassenger(getGuid(), go_spawn) == 0)
                 LOG_ERROR("Failed to add go entry: %u to transport: %u", go_spawn->entry, getGuid());
-        }
+        }*/
     }
 }
 
@@ -432,7 +488,7 @@ void Transporter::UpdateForMap(MapMgr* targetMap)
     if (!targetMap->HasPlayers())
         return;
 
-    /*for (auto itr = targetMap->m_PlayerStorage.begin(); itr != targetMap->m_PlayerStorage.end(); ++itr)
+    for (auto itr = targetMap->m_PlayerStorage.begin(); itr != targetMap->m_PlayerStorage.end(); ++itr)
     {
         ByteBuffer transData(500);
         uint32 count = 0;
@@ -458,7 +514,7 @@ void Transporter::UpdateForMap(MapMgr* targetMap)
             itr->second->getUpdateMgr().pushUpdateData(&update, count);
             update.clear();
         }
-    }*/
+    }
 }
 
 uint32 Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)

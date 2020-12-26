@@ -564,7 +564,6 @@ namespace MySQLStructure
     {
         uint32_t entry;
         std::string name;
-        uint32_t period;
     };
 
     //transportEntrys
