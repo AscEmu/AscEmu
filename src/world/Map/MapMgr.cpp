@@ -75,6 +75,7 @@ MapMgr::MapMgr(Map* map, uint32 mapId, uint32 instanceid) : CellHandler<MapCell>
 
     m_GOHighGuid = m_CreatureHighGuid = 0;
     m_DynamicObjectHighGuid = 0;
+    lastTransportUpdate = Util::getMSTime();
     lastUnitUpdate = Util::getMSTime();
     lastGameobjectUpdate = Util::getMSTime();
     lastDynamicObjectUpdate = Util::getMSTime();
