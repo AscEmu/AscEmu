@@ -55,15 +55,10 @@ namespace MovementNew
             real_position = move_spline.ComputePosition();
         else
         {
-            LocationVector const* pos;
-            if (!transport)
-                pos = &unit->GetPosition();
-            else
-                pos = &unit->movement_info.transport_position;
-
-            real_position.x = pos->getPositionX();
-            real_position.y = pos->getPositionY();
-            real_position.z = pos->getPositionZ();
+            LocationVector const pos = transport ? unit->movement_info.transport_position : unit->GetPosition();
+            real_position.x = pos.getPositionX();
+            real_position.y = pos.getPositionY();
+            real_position.z = pos.getPositionZ();
             real_position.orientation = unit->GetOrientation();
         }
 
