@@ -578,7 +578,7 @@ void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
             case 15314:
                 PlaySoundToSet(5154);   // ShipDocked         LightHouseFogHorn.wav
                 break;
-            case 2:
+            case 16401:
                 PlaySoundToSet(11804);  // ZeppelinDocked     ZeppelinHorn.wav
                 break;
             }
