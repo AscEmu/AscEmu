@@ -1411,8 +1411,16 @@ size_t Object::getInRangeObjectsCount()
 
 bool Object::isObjectInInRangeObjectsSet(Object* pObj)
 {
-    auto it = std::find(mInRangeObjectsSet.begin(), mInRangeObjectsSet.end(), pObj);
-    return it != mInRangeObjectsSet.end();
+    // Do not use std::find here - if something is added to or removed from the in range vector at the same time
+    // the std::find causes a crash because vector iterator is out of range.
+    // Tested with transports and gameobjects -Appled
+    for (const auto& inRangeObj : mInRangeObjectsSet)
+    {
+        if (inRangeObj == pObj)
+            return true;
+    }
+
+    return false;
 }
 
 void Object::removeObjectFromInRangeObjectsSet(Object* pObj)
