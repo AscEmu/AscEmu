@@ -78,8 +78,10 @@ void Transporter::Update(unsigned long time_passed)
     if (IsMoving() || !_pendingStop)
         mTransValues.PathProgress += time_passed;
 
-    uint32 timer = GetTimer() % GetTransportPeriod();
+    uint32 timer = mTransValues.PathProgress % GetTransportPeriod();
     bool justStopped = false;
+
+    LogDebug("Transporter: current node %u and pathprogress %u \n", _currentFrame->Index, GetTimer());
 
     for (;;)
     {
@@ -98,7 +100,7 @@ void Transporter::Update(unsigned long time_passed)
                 if (_pendingStop && getState() != GO_STATE_CLOSED)
                 {
                     setState(GO_STATE_CLOSED);
-                    mTransValues.PathProgress = (GetTimer() / GetTransportPeriod());
+                    mTransValues.PathProgress = (mTransValues.PathProgress / GetTransportPeriod());
                     mTransValues.PathProgress *= GetTransportPeriod();
                     mTransValues.PathProgress += _currentFrame->ArriveTime;
                 }
@@ -256,7 +258,6 @@ GameObject* Transporter::CreateGOPassenger(uint32 guid, MySQLStructure::Gameobje
 
     CalculatePassengerPosition(x, y, z, &o);
     pGameobject->SetPosition(x, y, z, o);
-    //pGameobject->RelocateStationaryPosition(x, y, z, o);
 
     pGameobject->setAnimationProgress(255);
 
@@ -289,11 +290,11 @@ void Transporter::LoadStaticPassengers()
                 LOG_ERROR("Failed to add npc entry: %u to transport: %u", creature_spawn->entry, getGuid());
         }
 
-        /*for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
+        for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
         {
             if (CreateGOPassenger(getGuid(), go_spawn) == 0)
                 LOG_ERROR("Failed to add go entry: %u to transport: %u", go_spawn->entry, getGuid());
-        }*/
+        }
     }
 }
 

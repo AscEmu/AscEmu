@@ -384,7 +384,7 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     keyFrames.back().NextArriveTime = keyFrames.back().DepartureTime;
 
     transport->pathTime = keyFrames.back().DepartureTime;
-    LogDebug("TransportHandler", "total time %u at transport %u \n", transport->pathTime, transport->entry);
+    LogDebug("TransportHandler: total time %u at transport %u \n", transport->pathTime, transport->entry);
 }
 
 float TransportHandler::NormalizeOrientation(float o)
