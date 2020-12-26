@@ -30,6 +30,7 @@ _passengerTeleportItr(_passengers.begin())
 
 Transporter::~Transporter()
 {
+    sEventMgr.RemoveEvents(this, EVENT_TRANSPORTER_DELAYED_TELEPORT);
     ASSERT(_passengers.empty());
     _passengers.clear();
 }
@@ -344,7 +345,6 @@ void Transporter::UpdatePassengerPositions(PassengerSet& passengers)
         {
             GameObject* gameobject = static_cast<GameObject*>(passenger);
             gameobject->SetPosition(x, y, z, o, false);
-            //gameobject->RelocateStationaryPosition(x, y, z, o);
             break;
         }
         }
@@ -412,7 +412,7 @@ bool Transporter::TeleportTransport(uint32_t newMapid, float x, float y, float z
         _delayedTeleport = true;
         UnloadStaticPassengers();
         // Wait a bit before we Procced in new MapMgr
-        sEventMgr.AddEvent(this, &Transporter::DelayedTeleportTransport, (oldMap), EVENT_TRANSPORTER_NEXT_WAYPOINT, 500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(this, &Transporter::DelayedTeleportTransport, (oldMap), EVENT_TRANSPORTER_DELAYED_TELEPORT, 500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         return true;
     }
     else // Same Map Case
