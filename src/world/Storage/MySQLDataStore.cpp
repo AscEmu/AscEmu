@@ -3942,8 +3942,8 @@ void MySQLDataStore::loadProfessionDiscoveriesTable()
 void MySQLDataStore::loadTransportDataTable()
 {
     auto startTime = Util::TimeNow();
-    //                                                  0      1     2       3
-    QueryResult* result = WorldDatabase.Query("SELECT entry, build, name, period FROM transport_data WHERE build = %u", VERSION_STRING);
+    //                                                  0      1     2
+    QueryResult* result = WorldDatabase.Query("SELECT entry, build, name FROM transport_data WHERE build = %u", VERSION_STRING);
     if (result == nullptr)
     {
         LogNotice("MySQLDataLoads : Table `transport_data` is empty!");
