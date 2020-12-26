@@ -14,6 +14,7 @@ typedef std::vector<KeyFrame>                               KeyFrameVec;
 typedef std::unordered_map<uint32, TransportTemplate>       TransportTemplates;
 typedef std::set<Transporter*>                              TransporterSet;
 typedef std::unordered_map<uint32, Transporter*>            TransporterMap;
+typedef std::unordered_map<uint32, TransporterSet>          TransporterInstancedMap;
 typedef std::unordered_map<uint32, std::set<uint32> >       TransportInstanceMap;
 
 typedef std::vector<DBC::Structures::TaxiPathNodeEntry const*> TaxiPathNodeList;
@@ -135,6 +136,8 @@ public:
 
     void LoadTransportAnimationAndRotation();
 
+    void LoadTransportForPlayers(Player* player);
+
     // Creates a transport using given GameObject template entry
     Transporter* CreateTransport(uint32 entry, MapMgr* map = nullptr);
 
@@ -145,6 +148,7 @@ public:
     static float NormalizeOrientation(float o);
 
     void AddTransport(Transporter* transport);
+
     Transporter* GetTransporter(uint32 guid);
 
     TransportTemplate const* GetTransportTemplate(uint32 entry) const
@@ -196,6 +200,9 @@ private:
 
     // Container storing transport entries
     TransporterMap _Transporters;
+
+    // Container storing transport entries in instances
+    TransporterInstancedMap _TransportersByInstanceIdMap;
 };
 
 #define sTransportHandler TransportHandler::getInstance()

@@ -249,10 +249,12 @@ public:
             if (TeamInInstance == TEAM_HORDE)
             {
                 skybreaker = sTransportHandler.CreateTransport(GO_THE_SKYBREAKER_HORDE_ICC, mInstance);
-                orgrimmar = sTransportHandler.CreateTransport(GO_ORGRIM_S_HAMMER_HORDE_ICC, mInstance);  
+                orgrimmar = sTransportHandler.CreateTransport(GO_ORGRIM_S_HAMMER_HORDE_ICC, mInstance);
             }
             isPrepared = true;
         }
+        else
+            sTransportHandler.LoadTransportForPlayers(player);
     }
 
     void OnPlayerEnter(Player* player) override

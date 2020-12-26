@@ -116,6 +116,11 @@ Transporter* TransportHandler::CreateTransport(uint32 entry, MapMgr* map /*= nul
 
     // Storage
     _Transports.insert(trans);
+    if (map)
+        _TransportersByInstanceIdMap[map->GetInstanceID()].insert(trans);
+    else
+        _TransportersByInstanceIdMap[trans->GetInstanceID()].insert(trans);
+
     AddTransport(trans);
 
     if (DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(mapId))
@@ -140,6 +145,21 @@ Transporter* TransportHandler::CreateTransport(uint32 entry, MapMgr* map /*= nul
     trans->LoadStaticPassengers();
 
     return trans;
+}
+
+void TransportHandler::LoadTransportForPlayers(Player* player)
+{
+    auto tset = _TransportersByInstanceIdMap[player->GetInstanceID()];
+    ByteBuffer transData(500);
+    uint32 count = 0;
+
+    if (tset.size() == 0)
+        return;
+
+    for (auto i = tset.begin(); i != tset.end(); ++i)
+        count = (*i)->buildCreateUpdateBlockForPlayer(&transData, player);
+
+    player->getUpdateMgr().pushCreationData(&transData, count);
 }
 
 bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
@@ -193,8 +213,7 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
             else
             {
                 KeyFrame k(node_i);
-                G3D::Vector3 h;
-                k.InitialOrientation = NormalizeOrientation(std::atan2(h.y, h.x) + float(M_PI));
+                k.InitialOrientation = NormalizeOrientation(std::atan2(node_i.y, node_i.x) + float(M_PI));
 
                 keyFrames.push_back(k);
                 transport->mapsUsed.insert(k.Node.mapid);
@@ -384,8 +403,8 @@ Transporter* TransportHandler::GetTransporter(uint32 guid)
 {
     Transporter* rv = nullptr;
     _TransportLock.Acquire();
-    std::unordered_map<uint32, Transporter*>::const_iterator itr = _Transporters.find(guid);
-    rv = (itr != _Transporters.end()) ? itr->second : nullptr;
+    auto itr = _Transporters.find(guid);
+    rv = (itr != _Transporters.end()) ? itr->second : 0;
     _TransportLock.Release();
     return rv;
 }

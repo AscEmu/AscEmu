@@ -141,7 +141,7 @@ void Transporter::Update(unsigned long time_passed)
             float t = !justStopped ? CalculateSegmentPos(float(timer) * 0.001f) : 1.0f;
             UpdatePosition(_currentFrame->Node.x, _currentFrame->Node.y, _currentFrame->Node.z, _currentFrame->InitialOrientation);
         }
-        else if (justStopped)
+        else
             UpdatePosition(_currentFrame->Node.x, _currentFrame->Node.y, _currentFrame->Node.z, _currentFrame->InitialOrientation);
     }
 }
@@ -289,7 +289,6 @@ void Transporter::LoadStaticPassengers()
                 LOG_ERROR("Failed to add npc entry: %u to transport: %u", creature_spawn->entry, getGuid());
         }
 
-        // ToDo Crashes Server at Gameobject Update maybe a single go which causes the issue
         /*for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
         {
             if (CreateGOPassenger(getGuid(), go_spawn) == 0)
@@ -304,7 +303,7 @@ void Transporter::UnloadStaticPassengers()
     {
         Object* obj = *_staticPassengers.begin();
         if (obj->IsInWorld())
-            obj->RemoveFromWorld(true);
+            obj->Delete();
 
         RemovePassenger(obj);
     }
@@ -543,7 +542,6 @@ uint32 Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* ta
         {
             GameObject* gameobject = static_cast<GameObject*>(passenger);
             gameobject->SetPosition(x, y, z, o, false);
-            //gameobject->RelocateStationaryPosition(x, y, z, o);
             break;
         }
         }
