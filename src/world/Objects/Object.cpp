@@ -1606,6 +1606,9 @@ Object::~Object()
     // for linux
     m_instanceId = INSTANCEID_NOT_IN_WORLD;
 
+    if (GetTransport() != nullptr)
+        GetTransport()->RemovePassenger(this);
+
     for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
     {
         if (m_currentSpell[i] != nullptr)
