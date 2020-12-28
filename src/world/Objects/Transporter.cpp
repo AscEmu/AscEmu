@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Server/Packets/SmsgTransferPending.h"
+#include "../Movement/Spline/New/Spline.h"
 
 using namespace AscEmu::Packets;
 
@@ -141,9 +142,12 @@ void Transporter::Update(unsigned long time_passed)
         {
             // Return a Value between 0 and 1 which represents the time from 0 to 1 between current and next node. (for Spline use if we support it sometime)
             float t = !justStopped ? CalculateSegmentPos(float(timer) * 0.001f) : 1.0f;
-            UpdatePosition(_currentFrame->Node.x, _currentFrame->Node.y, _currentFrame->Node.z, _currentFrame->InitialOrientation);
+            G3D::Vector3 pos, dir;
+            _currentFrame->Spline->evaluate_percent(_currentFrame->Index, t, pos);
+            _currentFrame->Spline->evaluate_derivative(_currentFrame->Index, t, dir);
+            UpdatePosition(pos.x, pos.y, pos.z, std::atan2(dir.y, dir.x) + float(M_PI));
         }
-        else
+        else if (justStopped)
             UpdatePosition(_currentFrame->Node.x, _currentFrame->Node.y, _currentFrame->Node.z, _currentFrame->InitialOrientation);
     }
 }

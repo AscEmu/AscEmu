@@ -104,6 +104,11 @@ class SERVER_DECL LocationVector
             o = newO;
         }
 
+        float GetPositionX() const { return x; }
+        float GetPositionY() const { return y; }
+        float GetPositionZ() const { return z; }
+        float GetOrientation() const { return o; }
+
         void GetPosition(float &rx, float &ry) const
         {
             rx = x;

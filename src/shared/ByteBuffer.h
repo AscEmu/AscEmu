@@ -522,6 +522,11 @@ public:
             return append(reinterpret_cast<const uint8_t*>(src), cnt);
         }
 
+        template<class T> void append(const T *src, size_t cnt)
+        {
+            return append((const uint8 *)src, cnt * sizeof(T));
+        }
+
         void append(const uint8_t* src, size_t cnt)
         {
             if (!cnt)

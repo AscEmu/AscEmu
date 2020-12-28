@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Server/Packets/SmsgTransferPending.h"
+#include "../Movement/Spline/New/Spline.h"
+#include "../Movement/Spline/New/MoveSplineInitArgs.h"
 
 using namespace AscEmu::Packets;
 
@@ -192,13 +194,43 @@ bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
     return (i > 0 ? true : false);
 }
 
+class SplineRawInitializer
+{
+public:
+    SplineRawInitializer(MovementNew::PointsArray& points) : _points(points) { }
+
+    void operator()(uint8& mode, bool& cyclic, MovementNew::PointsArray& points, int& lo, int& hi) const
+    {
+        mode = MovementNew::SplineBase::ModeCatmullrom;
+        cyclic = false;
+        points.assign(_points.begin(), _points.end());
+        lo = 1;
+        hi = points.size() - 2;
+    }
+
+    MovementNew::PointsArray& _points;
+};
+
 void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, TransportTemplate* transport)
 {
     uint32 pathId = goInfo->mo_transport.taxi_path_id;
     TransportPath path;
     FillTransporterPathVector(pathId, path);
     std::vector<KeyFrame>& keyFrames = transport->keyFrames;
+    MovementNew::PointsArray splinePath, allPoints;
     bool mapChange = false;
+    for (size_t i = 0; i < path.Size(); ++i)
+        allPoints.push_back(G3D::Vector3(path[i].x, path[i].y, path[i].z));
+
+    // Add extra points to allow derivative calculations for all path nodes
+    allPoints.insert(allPoints.begin(), allPoints.front().lerp(allPoints[1], -0.2f));
+    allPoints.push_back(allPoints.back().lerp(allPoints[allPoints.size() - 2], -0.2f));
+    allPoints.push_back(allPoints.back().lerp(allPoints[allPoints.size() - 2], -1.0f));
+
+    SplineRawInitializer initer(allPoints);
+    TransportSpline orientationSpline;
+    orientationSpline.init_spline_custom(initer);
+    orientationSpline.initLengths();
 
     for (size_t i = 0; i < path.Size(); ++i)
     {
@@ -213,14 +245,32 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
             else
             {
                 KeyFrame k(node_i);
-                k.InitialOrientation = NormalizeOrientation(std::atan2(node_i.y, node_i.x) + float(M_PI));
+                G3D::Vector3 h;
+                orientationSpline.evaluate_derivative(i + 1, 0.0f, h);
+                k.InitialOrientation = NormalizeOrientation(std::atan2(h.y, h.x) + float(M_PI));
 
                 keyFrames.push_back(k);
+                splinePath.push_back(G3D::Vector3(node_i.x, node_i.y, node_i.z));
                 transport->mapsUsed.insert(k.Node.mapid);
             }
         }
         else
             mapChange = false;
+    }
+
+    if (splinePath.size() >= 2)
+    {
+        // Remove special catmull-rom spline points
+        if (!keyFrames.front().IsStopFrame() && !keyFrames.front().Node.ArrivalEventID && !keyFrames.front().Node.DepartureEventID)
+        {
+            splinePath.erase(splinePath.begin());
+            keyFrames.erase(keyFrames.begin());
+        }
+        if (!keyFrames.back().IsStopFrame() && !keyFrames.back().Node.ArrivalEventID && !keyFrames.back().Node.DepartureEventID)
+        {
+            splinePath.pop_back();
+            keyFrames.pop_back();
+        }
     }
 
     ASSERT(!keyFrames.empty());
@@ -258,22 +308,34 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     }
 
     // find the rest of the distances between key points
+    // Every path segment has its own spline
+    size_t start = 0;
     for (size_t i = 1; i < keyFrames.size(); ++i)
     {
-        if ((keyFrames[i].IsTeleportFrame()) || (keyFrames[i].Node.mapid != keyFrames[i - 1].Node.mapid))
+        if (keyFrames[i - 1].Teleport || i + 1 == keyFrames.size())
         {
-            keyFrames[i].Index = i + 1;
-            keyFrames[i].DistFromPrev = 0;
-        }
-        else
-        {
-            keyFrames[i].Index = i + 1;
-            keyFrames[i].DistFromPrev =
-                std::sqrt(pow(keyFrames[i].Node.x - keyFrames[i - 1].Node.x, 2) +
-                    pow(keyFrames[i].Node.y - keyFrames[i - 1].Node.y, 2) +
-                    pow(keyFrames[i].Node.z - keyFrames[i - 1].Node.z, 2));
-            if (i > 0)
-                keyFrames[i - 1].NextDistFromPrev = keyFrames[i].DistFromPrev;
+            size_t extra = !keyFrames[i - 1].Teleport ? 1 : 0;
+            std::shared_ptr<TransportSpline> spline = std::make_shared<TransportSpline>();
+            spline->init_spline(&splinePath[start], i - start + extra, MovementNew::SplineBase::ModeCatmullrom);
+            spline->initLengths();
+            for (size_t j = start; j < i + extra; ++j)
+            {
+                keyFrames[j].Index = j - start + 1;
+                keyFrames[j].DistFromPrev = float(spline->length(j - start, j + 1 - start));
+                if (j > 0)
+                    keyFrames[j - 1].NextDistFromPrev = keyFrames[j].DistFromPrev;
+                keyFrames[j].Spline = spline;
+            }
+
+            if (keyFrames[i - 1].Teleport)
+            {
+                keyFrames[i].Index = i - start + 1;
+                keyFrames[i].DistFromPrev = 0.0f;
+                keyFrames[i - 1].NextDistFromPrev = 0.0f;
+                keyFrames[i].Spline = spline;
+            }
+
+            start = i;
         }
 
         if (keyFrames[i].IsStopFrame())
@@ -281,7 +343,6 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
             // remember first stop frame
             if (firstStop == -1)
                 firstStop = i;
-
             lastStop = i;
         }
     }
