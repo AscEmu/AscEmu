@@ -219,6 +219,7 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     std::vector<KeyFrame>& keyFrames = transport->keyFrames;
     MovementNew::PointsArray splinePath, allPoints;
     bool mapChange = false;
+
     for (size_t i = 0; i < path.Size(); ++i)
         allPoints.push_back(G3D::Vector3(path[i].x, path[i].y, path[i].z));
 
@@ -258,6 +259,7 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
             mapChange = false;
     }
 
+    // to calculate proper splines we need at least 4 spline points
     if (splinePath.size() >= 2)
     {
         // Remove special catmull-rom spline points

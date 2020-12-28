@@ -31,7 +31,6 @@ _passengerTeleportItr(_passengers.begin())
 
 Transporter::~Transporter()
 {
-    sEventMgr.RemoveEvents(this, EVENT_TRANSPORTER_DELAYED_TELEPORT);
     ASSERT(_passengers.empty());
     _passengers.clear();
 }
@@ -140,7 +139,7 @@ void Transporter::Update(unsigned long time_passed)
         _positionChangeTimer = positionUpdateDelay;
         if (IsMoving())
         {
-            // Return a Value between 0 and 1 which represents the time from 0 to 1 between current and next node. (for Spline use if we support it sometime)
+            // Return a Value between 0 and 1 which represents the time from 0 to 1 between current and next node.
             float t = !justStopped ? CalculateSegmentPos(float(timer) * 0.001f) : 1.0f;
             G3D::Vector3 pos, dir;
             _currentFrame->Spline->evaluate_percent(_currentFrame->Index, t, pos);
@@ -294,11 +293,11 @@ void Transporter::LoadStaticPassengers()
                 LOG_ERROR("Failed to add npc entry: %u to transport: %u", creature_spawn->entry, getGuid());
         }
 
-        for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
+        /*for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
         {
             if (CreateGOPassenger(getGuid(), go_spawn) == 0)
                 LOG_ERROR("Failed to add go entry: %u to transport: %u", go_spawn->entry, getGuid());
-        }
+        }*/
     }
 }
 
@@ -526,7 +525,7 @@ uint32 Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* ta
     uint32 cnt = Object::buildCreateUpdateBlockForPlayer(data, target);
 
     // add all the npcs and gos to the packet
-    for (auto itr = _staticPassengers.begin(); itr != _staticPassengers.end(); ++itr)
+    /*for (auto itr = _staticPassengers.begin(); itr != _staticPassengers.end(); ++itr)
     {
         Object* passenger = *itr;
         float x, y, z, o;
@@ -551,7 +550,7 @@ uint32 Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* ta
         }
         }
         cnt += passenger->buildCreateUpdateBlockForPlayer(data, target);
-    }
+    }*/
     return cnt;
 }
 
