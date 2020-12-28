@@ -64,7 +64,7 @@ namespace AscEmu::Packets
 
             packet << uint32_t(0);              // unknown
 
-            packet << uint32_t(1);              // size phaseIds
+            packet << uint32_t(1 * 2);          // size phaseIds
             packet << uint16_t(phaseId);
 
             packet.WriteByteSeq(guid[3]);
