@@ -203,6 +203,10 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     uint32_t pathId = goInfo->mo_transport.taxi_path_id;
     TransportPath path;
     FillTransporterPathVector(pathId, path);
+
+    if (path.size() == 0)
+        return;
+
     std::vector<KeyFrame>& keyFrames = transport->keyFrames;
     MovementNew::PointsArray splinePath, allPoints;
     bool mapChange = false;
@@ -268,14 +272,18 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
 
     if (transport->mapsUsed.size() > 1)
     {
-        for (std::set<uint32>::const_iterator itr = transport->mapsUsed.begin(); itr != transport->mapsUsed.end(); ++itr)
-            ASSERT(!sMapStore.LookupEntry(*itr)->instanceable());
+        for (std::set<uint32_t>::const_iterator itr = transport->mapsUsed.begin(); itr != transport->mapsUsed.end(); ++itr)
+        {
+            if (const auto map = sMapStore.LookupEntry(*itr))
+                ASSERT(!map->instanceable());
+        }
 
         transport->inInstance = false;
     }
     else
     {
-        transport->inInstance = sMapStore.LookupEntry(*transport->mapsUsed.begin())->instanceable();
+        if (const auto map = sMapStore.LookupEntry(*transport->mapsUsed.begin()))
+            transport->inInstance = map->instanceable();
     }
 
     // last to first is always "teleport", even for closed paths
