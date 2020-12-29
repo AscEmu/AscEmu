@@ -7076,7 +7076,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
 
     if (obj_movement_info.transport_guid)
     {
-        Transporter* pTrans = sTransportHandler.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
+        Transporter* pTrans = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
         if (pTrans)
         {
             pTrans->RemovePassenger(this);
