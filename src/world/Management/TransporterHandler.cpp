@@ -34,11 +34,6 @@ void TransportHandler::loadTransportTemplates()
     {
         uint32_t entry = it.first;
 
-        // Do not load transport if it has no data set
-        const auto findData = sMySQLStore._transportDataStore.find(entry);
-        if (findData == sMySQLStore._transportDataStore.end())
-            continue;
-
         GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(entry);
         if (gameobject_info == nullptr)
         {
