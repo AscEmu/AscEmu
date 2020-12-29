@@ -17,14 +17,6 @@ TransportTemplate::~TransportTemplate()
 {
 }
 
-TransportHandler::TransportHandler()
-{
-}
-
-TransportHandler::~TransportHandler()
-{
-}
-
 TransportHandler& TransportHandler::getInstance()
 {
     static TransportHandler mInstance;
@@ -45,6 +37,12 @@ void TransportHandler::LoadTransportTemplates()
         for (auto it : sMySQLStore._transportEntryStore)
         {
             uint32 entry = it.first;
+
+            // Do not load transport if it has no data set
+            const auto findData = sMySQLStore._transportDataStore.find(entry);
+            if (findData == sMySQLStore._transportDataStore.end())
+                continue;
+
             GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(entry);
             if (gameobject_info == nullptr)
             {
@@ -127,7 +125,7 @@ Transporter* TransportHandler::CreateTransport(uint32 entry, MapMgr* map /*= nul
 
     if (DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(mapId))
     {
-        if (mapEntry->Instanceable() != tInfo->inInstance)
+        if (mapEntry->instanceable() != tInfo->inInstance)
         {
             LogError("Transport %u attempted creation in instance map (id: %u) but it is not an instanced transport!", entry, mapId);
             delete trans;
@@ -280,12 +278,12 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     if (transport->mapsUsed.size() > 1)
     {
         for (std::set<uint32>::const_iterator itr = transport->mapsUsed.begin(); itr != transport->mapsUsed.end(); ++itr)
-            ASSERT(!sMapStore.LookupEntry(*itr)->Instanceable());
+            ASSERT(!sMapStore.LookupEntry(*itr)->instanceable());
 
         transport->inInstance = false;
     }
     else
-        transport->inInstance = sMapStore.LookupEntry(*transport->mapsUsed.begin())->Instanceable();
+        transport->inInstance = sMapStore.LookupEntry(*transport->mapsUsed.begin())->instanceable();
 
     // last to first is always "teleport", even for closed paths
     keyFrames.back().Teleport = true;
@@ -485,9 +483,11 @@ void TransportHandler::LoadTransportAnimationAndRotation()
         if (DBC::Structures::TransportAnimationEntry const* anim = sTransportAnimationStore.LookupEntry(i))
             AddPathNodeToTransport(anim->TransportID, anim->TimeIndex, anim);
 
+#if VERSION_STRING >= WotLK
     for (uint32 i = 0; i < sTransportRotationStore.GetNumRows(); ++i)
         if (DBC::Structures::TransportRotationEntry const* rot = sTransportRotationStore.LookupEntry(i))
             AddPathRotationToTransport(rot->GameObjectsID, rot->TimeIndex, rot);
+#endif
 }
 
 void TransportHandler::AddPathNodeToTransport(uint32 transportEntry, uint32 timeSeg, DBC::Structures::TransportAnimationEntry const* node)
@@ -508,6 +508,7 @@ DBC::Structures::TransportAnimationEntry const* TransportAnimation::GetAnimNode(
     return nullptr;
 }
 
+#if VERSION_STRING >= WotLK
 DBC::Structures::TransportRotationEntry const* TransportAnimation::GetAnimRotation(uint32 time) const
 {
     auto itr = Rotations.lower_bound(time);
@@ -516,3 +517,4 @@ DBC::Structures::TransportRotationEntry const* TransportAnimation::GetAnimRotati
 
     return nullptr;
 }
+#endif

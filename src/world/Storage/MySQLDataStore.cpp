@@ -3942,8 +3942,8 @@ void MySQLDataStore::loadProfessionDiscoveriesTable()
 void MySQLDataStore::loadTransportDataTable()
 {
     auto startTime = Util::TimeNow();
-    //                                                  0      1     2
-    QueryResult* result = WorldDatabase.Query("SELECT entry, build, name FROM transport_data WHERE build = %u", VERSION_STRING);
+    //                                                  0      1
+    QueryResult* result = WorldDatabase.Query("SELECT entry, name FROM transport_data WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
     if (result == nullptr)
     {
         LogNotice("MySQLDataLoads : Table `transport_data` is empty!");
@@ -3975,7 +3975,7 @@ void MySQLDataStore::loadTransportDataTable()
 
             MySQLStructure::TransportData& transportData = _transportDataStore[entry];
             transportData.entry = entry;
-            transportData.name = fields[2].GetString();
+            transportData.name = fields[1].GetString();
 
             ++load_count;
 
@@ -3991,7 +3991,7 @@ void MySQLDataStore::loadTransportEntrys()
 {
     auto startTime = Util::TimeNow();
     //                                                  
-    QueryResult* result = WorldDatabase.Query("SELECT entry FROM gameobject_properties WHERE type = 15 AND  build <= %u ORDER BY entry ASC", VERSION_STRING);
+    QueryResult* result = WorldDatabase.Query("SELECT entry FROM gameobject_properties WHERE type = 15 AND  build <= %u ORDER BY entry ASC", getAEVersion());
     if (result == nullptr)
     {
         LogNotice("MySQLDataLoads : Loaded 0 transport templates. DB table `gameobject_properties` has no transports!");

@@ -257,7 +257,11 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
     {
     case GAMEOBJECT_TYPE_TRANSPORT:
         m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
+#if VERSION_STRING >= WotLK
         m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
+#else
+        m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT);
+#endif
 
         setLevel(gameobject_properties->transport.pause);
         setState(gameobject_properties->transport.startOpen ? GO_STATE_OPEN : GO_STATE_CLOSED);

@@ -114,18 +114,24 @@ struct TransportTemplate
 };
 
 typedef std::map<uint32, DBC::Structures::TransportAnimationEntry const*> TransportPathContainer;
+#if VERSION_STRING >= WotLK
 typedef std::map<uint32, DBC::Structures::TransportRotationEntry const*> TransportPathRotationContainer;
+#endif
 
 struct SERVER_DECL TransportAnimation
 {
     TransportAnimation() : TotalTime(0) { }
 
     TransportPathContainer Path;
+#if VERSION_STRING >= WotLK
     TransportPathRotationContainer Rotations;
+#endif
     uint32 TotalTime;
 
     DBC::Structures::TransportAnimationEntry const* GetAnimNode(uint32 time) const;
+#if VERSION_STRING >= WotLK
     DBC::Structures::TransportRotationEntry const* GetAnimRotation(uint32 time) const;
+#endif
 };
 
 typedef std::map<uint32, TransportAnimation> TransportAnimationContainer;
@@ -178,17 +184,19 @@ public:
     Mutex _TransportLock;
 
 private:
-    TransportHandler();
-    ~TransportHandler();
+    TransportHandler() = default;
+    ~TransportHandler() = default;
     TransportHandler(TransportHandler const&) = delete;
     TransportHandler& operator=(TransportHandler const&) = delete;
 
     void AddPathNodeToTransport(uint32 transportEntry, uint32 timeSeg, DBC::Structures::TransportAnimationEntry const* node);
 
+#if VERSION_STRING >= WotLK
     void AddPathRotationToTransport(uint32 transportEntry, uint32 timeSeg, DBC::Structures::TransportRotationEntry const* node)
     {
         _transportAnimations[transportEntry].Rotations[timeSeg] = node;
     }
+#endif
 
     // Container storing transport animations
     TransportAnimationContainer _transportAnimations;
