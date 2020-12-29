@@ -456,11 +456,9 @@ class SERVER_DECL ChatHandler
         bool HandleTicketDeleteCommand(const char* args, WorldSession* m_session);
 
         // Transport
-        bool HandleModPeriodCommand(const char* args, WorldSession* m_session);
         bool HandleGetTransporterTime(const char* args, WorldSession* m_session);
         bool HandleGetTransporterInfo(const char* args, WorldSession* m_session);
         bool HandleSpawnInstanceTransport(const char* args, WorldSession* m_session);
-        bool HandleDespawnInstanceTransport(const char* args, WorldSession* m_session);
         bool HandleStartTransport(const char* args, WorldSession* m_session);
         bool HandleStopTransport(const char* args, WorldSession* m_session);
 

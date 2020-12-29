@@ -107,6 +107,8 @@ public:
 
     TransportTemplate const* GetTransportTemplate() const { return _transportInfo; }
 
+    uint32_t getCurrentFrame() { return _currentFrame->Index; }
+
 
 private:
     void MoveToNextWaypoint();

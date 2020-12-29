@@ -178,8 +178,6 @@ private:
     // Container storing transport animations
     TransportAnimationContainer _transportAnimations;
 
-    bool fillTransporterPathVector(uint32_t PathID, TransportPath& Path);
-
     // Generates and precaches a path for transport
     void generatePath(GameObjectProperties const* goInfo, TransportTemplate* transport);
 

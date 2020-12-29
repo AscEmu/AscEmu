@@ -393,7 +393,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     if (mover->obj_movement_info.transport_guid != 0 && movement_info.transport_guid == 0)
     {
         // Leaving transport we were on
-        if (auto transporter = sTransportHandler.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid)))
+        if (auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid)))
             transporter->RemovePassenger(static_cast<Player*>(mover));
 
         mover->obj_movement_info.transport_guid = 0;
@@ -406,7 +406,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
             if (mover->obj_movement_info.transport_guid == 0)
             {
-                Transporter *transporter = sTransportHandler.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_guid));
+                Transporter *transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_guid));
                 if (transporter != NULL)
                     transporter->AddPassenger(static_cast<Player*>(mover));
 
