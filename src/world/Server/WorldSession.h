@@ -702,6 +702,8 @@ class SERVER_DECL WorldSession
         void handleObjectUpdateFailedOpcode(WorldPacket& recvPacket);
         void handleRequestHotfix(WorldPacket& recvPacket);
         void handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/);
+        void sendItemDb2Reply(uint32_t entry);
+        void sendItemSparseDb2Reply(uint32_t entry);
 #endif
 #if VERSION_STRING > TBC
         void handleRemoveGlyph(WorldPacket& recvPacket);

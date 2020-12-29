@@ -1201,6 +1201,178 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
     //_player->UpdateVisibility();
 }
 
+#if VERSION_STRING >= Cata
+
+#define DB2_REPLY_SPARSE 2442913102
+#define DB2_REPLY_ITEM   1344507586
+
+void WorldSession::sendItemDb2Reply(uint32_t entry)
+{
+    WorldPacket data(SMSG_DB_REPLY, 44);
+    ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
+    if (!proto)
+    {
+        data << uint32_t(-1);         // entry
+        data << uint32_t(DB2_REPLY_ITEM);
+        data << uint32_t(1322512289); // hotfix date
+        data << uint32_t(0);          // size of next block
+        return;
+    }
+
+    data << uint32_t(entry);
+    data << uint32_t(DB2_REPLY_ITEM);
+    data << uint32_t(1322512290);     // hotfix date
+
+    ByteBuffer buff;
+    buff << uint32_t(entry);
+    buff << uint32_t(proto->Class);
+    buff << uint32_t(proto->SubClass);
+    buff << int32_t(0);// unk?
+    buff << uint32_t(proto->LockMaterial);
+    buff << uint32_t(proto->DisplayInfoID);
+    buff << uint32_t(proto->InventoryType);
+    buff << uint32_t(proto->SheathID);
+
+    data << uint32_t(buff.size());
+    data.append(buff);
+
+    SendPacket(&data);
+}
+
+void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
+{
+    WorldPacket data(SMSG_DB_REPLY, 526);
+    ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
+    if (!proto)
+    {
+        data << uint32_t(-1);         // entry
+        data << uint32_t(DB2_REPLY_SPARSE);
+        data << uint32_t(1322512289); // hotfix date
+        data << uint32_t(0);          // size of next block
+        return;
+    }
+
+    data << uint32_t(entry);
+    data << uint32_t(DB2_REPLY_SPARSE);
+    data << uint32_t(1322512290);     // hotfix date
+
+    ByteBuffer buff;
+    buff << uint32_t(entry);
+    buff << uint32_t(proto->Quality);
+    buff << uint32_t(proto->Flags);
+    buff << uint32_t(proto->Flags2);
+    buff << float(1.0f);
+    buff << float(1.0f);
+    buff << uint32_t(proto->MaxCount);
+    buff << int32_t(proto->BuyPrice);
+    buff << uint32_t(proto->SellPrice);
+    buff << uint32_t(proto->InventoryType);
+    buff << int32_t(proto->AllowableClass);
+    buff << int32_t(proto->AllowableRace);
+    buff << uint32_t(proto->ItemLevel);
+    buff << uint32_t(proto->RequiredLevel);
+    buff << uint32_t(proto->RequiredSkill);
+    buff << uint32_t(proto->RequiredSkillRank);
+    buff << uint32_t(0);// req spell
+    buff << uint32_t(proto->RequiredPlayerRank1);
+    buff << uint32_t(proto->RequiredPlayerRank2);
+    buff << uint32_t(proto->RequiredFactionStanding);
+    buff << uint32_t(proto->RequiredFaction);
+    buff << int32_t(proto->MaxCount);
+    buff << int32_t(0);//stackable
+    buff << uint32_t(proto->ContainerSlots);
+
+    for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
+        buff << uint32_t(proto->Stats[x].Type);
+
+    for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
+        buff << int32_t(proto->Stats[x].Value);
+
+    for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
+        buff << int32_t(0);//unk
+
+    for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
+        buff << int32_t(0);//unk
+
+    buff << uint32_t(proto->ScalingStatsEntry);
+    buff << uint32_t(0);// damage type
+    buff << uint32_t(proto->Delay);
+    buff << float(40);// ranged range
+
+    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+        buff << int32_t(0);
+
+    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+        buff << uint32_t(0);
+
+    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+        buff << int32_t(0);
+
+    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+        buff << int32_t(0);
+
+    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+        buff << uint32_t(0);
+
+    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+        buff << int32_t(0);
+
+    buff << uint32_t(proto->Bonding);
+
+    // item name
+    std::string name = proto->Name;
+    buff << uint16_t(name.length());
+    if (name.length())
+        buff << name;
+
+    for (uint32_t i = 0; i < 3; ++i) // other 3 names
+        buff << uint16_t(0);
+
+    std::string desc = proto->Description;
+    buff << uint16_t(desc.length());
+    if (desc.length())
+        buff << desc;
+
+    buff << uint32_t(proto->PageId);
+    buff << uint32_t(proto->PageLanguage);
+    buff << uint32_t(proto->PageMaterial);
+    buff << uint32_t(proto->QuestId);
+    buff << uint32_t(proto->LockId);
+    buff << int32_t(proto->LockMaterial);
+    buff << uint32_t(proto->SheathID);
+    buff << int32_t(proto->RandomPropId);
+    buff << int32_t(proto->RandomSuffixId);
+    buff << uint32_t(proto->ItemSet);
+
+    buff << uint32_t(0);// area
+    buff << uint32_t(proto->MapID);
+    buff << uint32_t(proto->BagFamily);
+    buff << uint32_t(proto->TotemCategory);
+
+    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SOCKETS; ++x)
+        buff << uint32_t(proto->Sockets[x].SocketColor);
+
+    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SOCKETS; ++x)
+        buff << uint32_t(proto->Sockets[x].Unk);
+
+    buff << uint32_t(proto->SocketBonus);
+    buff << uint32_t(proto->GemProperties);
+    buff << float(proto->ArmorDamageModifier);
+    buff << int32_t(proto->ExistingDuration);
+    buff << uint32_t(proto->ItemLimitCategory);
+    buff << uint32_t(proto->HolidayId);
+    buff << float(proto->ScalingStatsFlag);                  // StatScalingFactor
+    buff << uint32_t(0);            // archaeology unk
+    buff << uint32_t(0);         // archaeology findinds count
+
+    data << uint32_t(buff.size());
+    data.append(buff);
+
+    SendPacket(&data);
+}
+
+#endif
+
 void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 {
 #if VERSION_STRING == Cata
@@ -1235,19 +1407,19 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
         recvPacket >> entry;
         recvPacket.ReadByteSeq(guids[i][2]);
 
-        /*switch (type)
+        switch (type)
         {
             case DB2_REPLY_ITEM:
-                SendItemDb2Reply(entry);
+                sendItemDb2Reply(entry);
                 break;
             case DB2_REPLY_SPARSE:
-                SendItemSparseDb2Reply(entry);
+                sendItemSparseDb2Reply(entry);
                 break;
             default:
                 LogDebugFlag(LF_OPCODE, "Received unknown hotfix type %u", type);
                 recvPacket.clear();
                 break;
-        }*/
+        }
     }
 #elif VERSION_STRING == Mop
     uint32_t type;

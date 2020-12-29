@@ -347,9 +347,9 @@ bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_sess
         }
         else
         {
-            GreenSystemMessage(m_session, "Position changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
-            WorldDatabase.Execute("UPDATE gameobject_spawns SET position_x = %f, position_y = %f, position_z = %f WHERE id = %u AND min_build <= %u AND max_build >= %u", position_x, position_y, position_z, go_spawn->id, VERSION_STRING, VERSION_STRING);
-            sGMLog.writefromsession(m_session, "changed gameobject position of gameobject_spawns ID: %u.", go_spawn->id);
+            GreenSystemMessage(m_session, "Position changed in gameobject_spawns table for spawn ID: %u.", go_spawn->table.c_str(), go_spawn->id);
+            WorldDatabase.Execute("UPDATE %s SET position_x = %f, position_y = %f, position_z = %f WHERE id = %u AND min_build <= %u AND max_build >= %u", go_spawn->table.c_str(), position_x, position_y, position_z, go_spawn->id, VERSION_STRING, VERSION_STRING);
+            sGMLog.writefromsession(m_session, "changed gameobject position of %s ID: %u.", go_spawn->table.c_str(), go_spawn->id);
         }
     }
     else
@@ -488,7 +488,7 @@ bool ChatHandler::HandleGOSelectCommand(const char* args, WorldSession* m_sessio
 
             for (const auto& Itr : m_session->GetPlayer()->getInRangeObjectsSet())
             {
-                if (Itr && Itr->isGameObject())
+                if (Itr && Itr->isGameObject() && Itr->GetPhase() == m_session->GetPlayer()->GetPhase())
                 {
                     // Find the current go, move to the next one
                     if (bUseNext)
@@ -513,7 +513,7 @@ bool ChatHandler::HandleGOSelectCommand(const char* args, WorldSession* m_sessio
     {
         for (const auto& Itr : m_session->GetPlayer()->getInRangeObjectsSet())
         {
-            if (Itr && Itr->isGameObject())
+            if (Itr && Itr->isGameObject() && Itr->GetPhase() == m_session->GetPlayer()->GetPhase())
             {
                 if ((nDist = m_session->GetPlayer()->CalcDistance(Itr)) < cDist)
                 {

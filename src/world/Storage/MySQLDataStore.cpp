@@ -1041,21 +1041,6 @@ void MySQLDataStore::loadQuestPropertiesTable()
         }
 
         uint32_t row_count = 0;
-        if (table_name.compare("quest_properties") == 0)
-        {
-            basic_field_count = quest_result->GetFieldCount();
-        }
-        else
-        {
-            row_count = static_cast<uint32_t>(_questPropertiesStore.size());
-        }
-
-        if (basic_field_count != quest_result->GetFieldCount())
-        {
-            LOG_ERROR("Additional quest_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), quest_result->GetFieldCount());
-            delete quest_result;
-            continue;
-        }
 
         LogNotice("MySQLDataLoads : Table `%s` has %u columns", table_name.c_str(), quest_result->GetFieldCount());
 
