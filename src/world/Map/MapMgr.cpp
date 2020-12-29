@@ -1469,7 +1469,7 @@ Object* MapMgr::_GetObject(const uint64 & guid)
         case HighGuid::DynamicObject:
             return GetDynamicObject(wowGuid.getGuidLowPart());
         case HighGuid::Transporter:
-            return sTransportHandler.GetTransporter(wowGuid.getGuidLowPart());
+            return sTransportHandler.getTransporter(wowGuid.getGuidLowPart());
         default:
             return GetUnit(guid);
     }

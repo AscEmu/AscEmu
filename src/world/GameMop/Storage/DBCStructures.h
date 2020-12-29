@@ -23,6 +23,22 @@ struct WMOAreaTableTripple
     int32_t adtId;
 };
 
+struct DBCPosition3D
+{
+    float X;
+    float Y;
+    float Z;
+};
+
+enum MapTypes
+{
+    MAP_COMMON          = 0, // none
+    MAP_INSTANCE        = 1, // party
+    MAP_RAID            = 2, // raid
+    MAP_BATTLEGROUND    = 3, // pvp
+    MAP_ARENA           = 4  // arena
+};
+
 ///\ These will be verified and ported to Spell/Definitions/SpellEffectTarget.h when spell targeting is being rewritten -Appled
 enum Targets
 {
@@ -282,7 +298,8 @@ namespace DBC
             char const taxi_path_format[] = "niii";
             char const taxi_path_node_format[] = "diiifffiiii";
             char const totem_category_entry_format[] = "nxii";
-            //char const transport_animation_entry_format[] = "diixxxx"; new
+            char const transport_animation_format[] = "diifffx";
+            char const transport_rotation_format[] = "diiffff";
             char const vehicle_format[] = "niffffiiiiiiiifffffffffffffffssssfifiixx";
             char const vehicle_seat_format[] = "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxxxxxxxxxx";
             char const wmo_area_table_format[] = "niiixxxxxiixxxx";
@@ -1303,6 +1320,20 @@ namespace DBC
             uint32_t unk_time;                  // 17
             uint32_t max_players;               // 18
             uint32_t next_phase_map;            // 19
+
+            bool isDungeon() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID; }
+            bool isNonRaidDungeon() const { return map_type == MAP_INSTANCE; }
+            bool instanceable() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID || map_type == MAP_BATTLEGROUND || map_type == MAP_ARENA; }
+            bool isRaid() const { return map_type == MAP_RAID; }
+            bool isBattleground() const { return map_type == MAP_BATTLEGROUND; }
+            bool isBattleArena() const { return map_type == MAP_ARENA; }
+            bool isBattlegroundOrArena() const { return map_type == MAP_BATTLEGROUND || map_type == MAP_ARENA; }
+            bool isWorldMap() const { return map_type == MAP_COMMON; }
+
+            bool isContinent() const
+            {
+                return id == 0 || id == 1 || id == 530 || id == 571;
+            }
         };
 
         struct NameGenEntry
@@ -1927,6 +1958,26 @@ namespace DBC
             //char* name;           // 1
             uint32_t categoryType;  // 2
             uint32_t categoryMask;  // 3
+        };
+
+        struct TransportAnimationEntry
+        {
+            //uint32_t Id;          // 0
+            uint32_t TransportID;   // 1
+            uint32_t TimeIndex;     // 2
+            DBCPosition3D Pos;      // 3
+            //uint32_t SequenceID;  // 4
+        };
+
+        struct TransportRotationEntry
+        {
+            //uint32_t ID;          // 0
+            uint32_t GameObjectsID; // 1
+            uint32_t TimeIndex;     // 2
+            float X;                // 3
+            float Y;                // 4
+            float Z;                // 5
+            float W;                // 6
         };
 
         #define MAX_VEHICLE_SEATS 8

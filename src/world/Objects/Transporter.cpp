@@ -44,7 +44,7 @@ bool Transporter::Create(uint32 entry, uint32 mapid, float x, float y, float z, 
         return false;
     }
 
-    TransportTemplate const* tInfo = sTransportHandler.GetTransportTemplate(entry);
+    TransportTemplate const* tInfo = sTransportHandler.getTransportTemplate(entry);
     if (!tInfo)
     {
         LOG_ERROR("Transport %u will not be created, missing `transport_template` entry.", entry);
@@ -127,7 +127,7 @@ void Transporter::Update(unsigned long time_passed)
         MoveToNextWaypoint();
 
         // Departure event
-        if (_currentFrame->IsTeleportFrame())
+        if (_currentFrame->isTeleportFrame())
             if (TeleportTransport(_nextFrame->Node.mapid, _nextFrame->Node.x, _nextFrame->Node.y, _nextFrame->Node.z, _nextFrame->InitialOrientation))
                 return; // Update more in new map thread
     }
@@ -323,7 +323,7 @@ void Transporter::UpdatePassengerPositions(PassengerSet& passengers)
             continue;
 
         float x, y, z, o;
-        passenger->obj_movement_info.transport_position.GetPosition(x, y, z, o);
+        passenger->obj_movement_info.transport_position.getPosition(x, y, z, o);
         CalculatePassengerPosition(x, y, z, &o);
         switch (passenger->getObjectTypeId())
         {
@@ -471,7 +471,7 @@ void Transporter::TeleportPlayers(float x, float y, float z, float o, uint32_t n
 
             float destX, destY, destZ, destO;
             LocationVector transPos = (*itr)->obj_movement_info.transport_position;
-            transPos.GetPosition(destX, destY, destZ, destO);
+            transPos.getPosition(destX, destY, destZ, destO);
             TransportBase::CalculatePassengerPosition(destX, destY, destZ, &destO, x, y, z, o);
 
             if (newMap)

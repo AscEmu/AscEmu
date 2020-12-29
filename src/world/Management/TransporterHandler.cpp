@@ -13,86 +13,78 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-TransportTemplate::~TransportTemplate()
-{
-}
-
-TransportHandler::TransportHandler()
-{
-}
-
-TransportHandler::~TransportHandler()
-{
-}
-
 TransportHandler& TransportHandler::getInstance()
 {
     static TransportHandler mInstance;
     return mInstance;
 }
 
-void TransportHandler::Unload()
+void TransportHandler::unload()
 {
     _transportTemplates.clear();
 }
 
-void TransportHandler::LoadTransportTemplates()
+void TransportHandler::loadTransportTemplates()
 {
     LogNotice("TransportHandler : Start Loading TransportTemplates...");
+
+    uint32_t createCount = 0;
+
+    for (auto& it : sMySQLStore._transportEntryStore)
     {
-        uint32_t createCount = 0;
+        uint32_t entry = it.first;
 
-        for (auto it : sMySQLStore._transportEntryStore)
+        // Do not load transport if it has no data set
+        const auto findData = sMySQLStore._transportDataStore.find(entry);
+        if (findData == sMySQLStore._transportDataStore.end())
+            continue;
+
+        GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(entry);
+        if (gameobject_info == nullptr)
         {
-            uint32 entry = it.first;
-            GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(entry);
-            if (gameobject_info == nullptr)
-            {
-                LOG_ERROR("Transport %u has no associated GameObjectProperties from `gameobject_properities` , skipped.", entry);
-                continue;
-            }
-
-            // paths are generated per template, saves us from generating it again in case of instanced transports
-            TransportTemplate& transport = _transportTemplates[entry];
-            transport.entry = entry;
-            GeneratePath(gameobject_info, &transport);
-
-            // transports in instance are only on one map
-            if (transport.inInstance)
-                _instanceTransports[*transport.mapsUsed.begin()].insert(entry);
-
-            ++createCount;
+            LOG_ERROR("Transport %u has no associated GameObjectProperties from `gameobject_properities` , skipped.", entry);
+            continue;
         }
 
-        LogDetail("Transporter Handler : Loaded %u transport templates", createCount);
+        // paths are generated per template, saves us from generating it again in case of instanced transports
+        TransportTemplate& transport = _transportTemplates[entry];
+        transport.entry = entry;
+        generatePath(gameobject_info, &transport);
+
+        // transports in instance are only on one map
+        if (transport.inInstance)
+            _instanceTransports[*transport.mapsUsed.begin()].insert(entry);
+
+        ++createCount;
     }
+
+    LogDetail("Transporter Handler : Loaded %u transport templates", createCount);
 }
 
-void TransportHandler::SpawnContinentTransports()
+void TransportHandler::spawnContinentTransports()
 {
     if (_transportTemplates.empty())
         return;
 
     LogNotice("TransportHandler : Start Spawning Continent Transports...");
+
+    uint32_t createCount = 0;
+
+    for (auto& it : sMySQLStore._transportDataStore)
     {
-        uint32_t createCount = 0;
-
-        for (auto it : sMySQLStore._transportDataStore)
-        {
-            uint32 entry = it.first;
-            if (TransportTemplate const* tInfo = GetTransportTemplate(entry))
-                if (!tInfo->inInstance)
-                    if (auto trans = CreateTransport(entry))
-                        ++createCount;
-        }
-
-        LogDetail("Transporter Handler : Spawned %u Continent Transports", createCount);
+        uint32_t entry = it.first;
+        if (TransportTemplate const* tInfo = getTransportTemplate(entry))
+            if (!tInfo->inInstance)
+                if (const auto trans = createTransport(entry))
+                    ++createCount;
     }
+
+    LogDetail("Transporter Handler : Spawned %u Continent Transports", createCount);
 }
 
-Transporter* TransportHandler::CreateTransport(uint32 entry, MapMgr* map /*= nullptr*/)
+Transporter* TransportHandler::createTransport(uint32_t entry, MapMgr* map /*= nullptr*/)
 {
-    TransportTemplate const* tInfo = GetTransportTemplate(entry);
+    TransportTemplate const* tInfo = getTransportTemplate(entry);
     if (!tInfo)
     {
         LogError("Transport %u will not be loaded, `transport_template` missing", entry);
@@ -104,7 +96,7 @@ Transporter* TransportHandler::CreateTransport(uint32 entry, MapMgr* map /*= nul
 
     // ...at first waypoint
     PathNode startNode = tInfo->keyFrames.begin()->Node;
-    uint32 mapId = startNode.mapid;
+    uint32_t mapId = startNode.mapid;
     float x = startNode.x;
     float y = startNode.y;
     float z = startNode.z;
@@ -123,11 +115,11 @@ Transporter* TransportHandler::CreateTransport(uint32 entry, MapMgr* map /*= nul
     else
         _TransportersByInstanceIdMap[trans->GetInstanceID()].insert(trans);
 
-    AddTransport(trans);
+    addTransport(trans);
 
-    if (DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(mapId))
+    if (const auto mapEntry = sMapStore.LookupEntry(mapId))
     {
-        if (mapEntry->Instanceable() != tInfo->inInstance)
+        if (mapEntry->instanceable() != tInfo->inInstance)
         {
             LogError("Transport %u attempted creation in instance map (id: %u) but it is not an instanced transport!", entry, mapId);
             delete trans;
@@ -149,11 +141,11 @@ Transporter* TransportHandler::CreateTransport(uint32 entry, MapMgr* map /*= nul
     return trans;
 }
 
-void TransportHandler::LoadTransportForPlayers(Player* player)
+void TransportHandler::loadTransportForPlayers(Player* player)
 {
-    auto tset = _TransportersByInstanceIdMap[player->GetInstanceID()];
+    auto& tset = _TransportersByInstanceIdMap[player->GetInstanceID()];
     ByteBuffer transData(500);
-    uint32 count = 0;
+    uint32_t count = 0;
 
     if (tset.size() == 0)
         return;
@@ -164,13 +156,13 @@ void TransportHandler::LoadTransportForPlayers(Player* player)
     player->getUpdateMgr().pushCreationData(&transData, count);
 }
 
-bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
+bool FillTransporterPathVector(uint32_t PathID, TransportPath & Path)
 {
     // Store dbc values into current Path array
-    Path.Resize(sTaxiPathNodeStore.GetNumRows());
+    Path.resize(sTaxiPathNodeStore.GetNumRows());
 
-    uint32 i = 0;
-    for (uint32 j = 0; j < sTaxiPathNodeStore.GetNumRows(); ++j)
+    uint32_t i = 0;
+    for (uint32_t j = 0; j < sTaxiPathNodeStore.GetNumRows(); ++j)
     {
         auto pathnode = sTaxiPathNodeStore.LookupEntry(j);
         if (pathnode == nullptr)
@@ -190,7 +182,7 @@ bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
         }
     }
 
-    Path.Resize(i);
+    Path.resize(i);
     return (i > 0 ? true : false);
 }
 
@@ -199,7 +191,7 @@ class SplineRawInitializer
 public:
     SplineRawInitializer(MovementNew::PointsArray& points) : _points(points) { }
 
-    void operator()(uint8& mode, bool& cyclic, MovementNew::PointsArray& points, int& lo, int& hi) const
+    void operator()(uint8_t& mode, bool& cyclic, MovementNew::PointsArray& points, int& lo, int& hi) const
     {
         mode = MovementNew::SplineBase::ModeCatmullrom;
         cyclic = false;
@@ -211,16 +203,16 @@ public:
     MovementNew::PointsArray& _points;
 };
 
-void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, TransportTemplate* transport)
+void TransportHandler::generatePath(GameObjectProperties const* goInfo, TransportTemplate* transport)
 {
-    uint32 pathId = goInfo->mo_transport.taxi_path_id;
+    uint32_t pathId = goInfo->mo_transport.taxi_path_id;
     TransportPath path;
     FillTransporterPathVector(pathId, path);
     std::vector<KeyFrame>& keyFrames = transport->keyFrames;
     MovementNew::PointsArray splinePath, allPoints;
     bool mapChange = false;
 
-    for (size_t i = 0; i < path.Size(); ++i)
+    for (size_t i = 0; i < path.size(); ++i)
         allPoints.push_back(G3D::Vector3(path[i].x, path[i].y, path[i].z));
 
     // Add extra points to allow derivative calculations for all path nodes
@@ -233,12 +225,12 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     orientationSpline.init_spline_custom(initer);
     orientationSpline.initLengths();
 
-    for (size_t i = 0; i < path.Size(); ++i)
+    for (size_t i = 0; i < path.size(); ++i)
     {
         if (!mapChange)
         {
             PathNode node_i = path[i];
-            if (i != path.Size() - 1 && (node_i.flags & 1 || node_i.mapid != path[i + 1].mapid))
+            if (i != path.size() - 1 && (node_i.flags & 1 || node_i.mapid != path[i + 1].mapid))
             {
                 keyFrames.back().Teleport = true;
                 mapChange = true;
@@ -248,7 +240,7 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
                 KeyFrame k(node_i);
                 G3D::Vector3 h;
                 orientationSpline.evaluate_derivative(i + 1, 0.0f, h);
-                k.InitialOrientation = NormalizeOrientation(std::atan2(h.y, h.x) + float(M_PI));
+                k.InitialOrientation = normalizeOrientation(std::atan2(h.y, h.x) + float(M_PI));
 
                 keyFrames.push_back(k);
                 splinePath.push_back(G3D::Vector3(node_i.x, node_i.y, node_i.z));
@@ -256,19 +248,21 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
             }
         }
         else
+        {
             mapChange = false;
+        }
     }
 
     // to calculate proper splines we need at least 4 spline points
     if (splinePath.size() >= 2)
     {
         // Remove special catmull-rom spline points
-        if (!keyFrames.front().IsStopFrame() && !keyFrames.front().Node.ArrivalEventID && !keyFrames.front().Node.DepartureEventID)
+        if (!keyFrames.front().isStopFrame() && !keyFrames.front().Node.ArrivalEventID && !keyFrames.front().Node.DepartureEventID)
         {
             splinePath.erase(splinePath.begin());
             keyFrames.erase(keyFrames.begin());
         }
-        if (!keyFrames.back().IsStopFrame() && !keyFrames.back().Node.ArrivalEventID && !keyFrames.back().Node.DepartureEventID)
+        if (!keyFrames.back().isStopFrame() && !keyFrames.back().Node.ArrivalEventID && !keyFrames.back().Node.DepartureEventID)
         {
             splinePath.pop_back();
             keyFrames.pop_back();
@@ -280,12 +274,14 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     if (transport->mapsUsed.size() > 1)
     {
         for (std::set<uint32>::const_iterator itr = transport->mapsUsed.begin(); itr != transport->mapsUsed.end(); ++itr)
-            ASSERT(!sMapStore.LookupEntry(*itr)->Instanceable());
+            ASSERT(!sMapStore.LookupEntry(*itr)->instanceable());
 
         transport->inInstance = false;
     }
     else
-        transport->inInstance = sMapStore.LookupEntry(*transport->mapsUsed.begin())->Instanceable();
+    {
+        transport->inInstance = sMapStore.LookupEntry(*transport->mapsUsed.begin())->instanceable();
+    }
 
     // last to first is always "teleport", even for closed paths
     keyFrames.back().Teleport = true;
@@ -297,13 +293,13 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     transport->accelTime = speed / accel;
     transport->accelDist = accel_dist;
 
-    int32 firstStop = -1;
-    int32 lastStop = -1;
+    int32_t firstStop = -1;
+    int32_t lastStop = -1;
 
     // first cell is arrived at by teleportation :S
     keyFrames[0].DistFromPrev = 0;
     keyFrames[0].Index = 1;
-    if (keyFrames[0].IsStopFrame())
+    if (keyFrames[0].isStopFrame())
     {
         lastStop = 0;
         firstStop = 0;
@@ -340,7 +336,7 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
             start = i;
         }
 
-        if (keyFrames[i].IsStopFrame())
+        if (keyFrames[i].isStopFrame())
         {
             // remember first stop frame
             if (firstStop == -1)
@@ -361,7 +357,7 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     for (size_t i = 0; i < keyFrames.size(); ++i)
     {
         int32 j = (i + lastStop) % keyFrames.size();
-        if (keyFrames[j].IsStopFrame() || j == lastStop)
+        if (keyFrames[j].isStopFrame() || j == lastStop)
             tmpDist = 0.0f;
         else
             tmpDist += keyFrames[j].DistFromPrev;
@@ -369,12 +365,12 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     }
 
     tmpDist = 0.0f;
-    for (int32 i = int32(keyFrames.size()) - 1; i >= 0; i--)
+    for (int32_t i = static_cast<int32_t>(keyFrames.size()) - 1; i >= 0; i--)
     {
         int32 j = (i + firstStop) % keyFrames.size();
         tmpDist += keyFrames[(j + 1) % keyFrames.size()].DistFromPrev;
         keyFrames[j].DistUntilStop = tmpDist;
-        if (keyFrames[j].IsStopFrame() || j == firstStop)
+        if (keyFrames[j].isStopFrame() || j == firstStop)
             tmpDist = 0.0f;
     }
 
@@ -391,7 +387,9 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
                 keyFrames[i].TimeTo = segment_time - std::sqrt(2 * keyFrames[i].DistSinceStop / accel);
             }
             else // slowing down
+            {
                 keyFrames[i].TimeTo = std::sqrt(2 * keyFrames[i].DistUntilStop / accel);
+            }
         }
         else if (keyFrames[i].DistSinceStop < accel_dist) // still accelerating (but will reach full speed)
         {
@@ -401,9 +399,13 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
             keyFrames[i].TimeTo = segment_time - std::sqrt(2 * keyFrames[i].DistSinceStop / accel);
         }
         else if (keyFrames[i].DistUntilStop < accel_dist) // already slowing down (but reached full speed)
+        {
             keyFrames[i].TimeTo = std::sqrt(2 * keyFrames[i].DistUntilStop / accel);
+        }
         else // at full speed
+        {
             keyFrames[i].TimeTo = (keyFrames[i].DistUntilStop / speed) + (0.5f * speed / accel);
+        }
     }
 
     // calculate tFrom times from tTo times
@@ -411,7 +413,7 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     for (size_t i = 0; i < keyFrames.size(); ++i)
     {
         int32 j = (i + lastStop) % keyFrames.size();
-        if (keyFrames[j].IsStopFrame() || j == lastStop)
+        if (keyFrames[j].isStopFrame() || j == lastStop)
             segmentTime = keyFrames[j].TimeTo;
         keyFrames[j].TimeFrom = segmentTime - keyFrames[j].TimeTo;
     }
@@ -419,7 +421,7 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     // calculate path times
     keyFrames[0].ArriveTime = 0;
     float curPathTime = 0.0f;
-    if (keyFrames[0].IsStopFrame())
+    if (keyFrames[0].isStopFrame())
     {
         curPathTime = float(keyFrames[0].Node.delay);
         keyFrames[0].DepartureTime = uint32(curPathTime * IN_MILLISECONDS);
@@ -428,7 +430,7 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     for (size_t i = 1; i < keyFrames.size(); ++i)
     {
         curPathTime += keyFrames[i - 1].TimeTo;
-        if (keyFrames[i].IsStopFrame())
+        if (keyFrames[i].isStopFrame())
         {
             keyFrames[i].ArriveTime = uint32(curPathTime * IN_MILLISECONDS);
             keyFrames[i - 1].NextArriveTime = keyFrames[i].ArriveTime;
@@ -450,7 +452,7 @@ void TransportHandler::GeneratePath(GameObjectProperties const* goInfo, Transpor
     LogDebug("TransportHandler: total time %u at transport %u \n", transport->pathTime, transport->entry);
 }
 
-float TransportHandler::NormalizeOrientation(float o)
+float TransportHandler::normalizeOrientation(float o)
 {
     if (o < 0)
     {
@@ -462,7 +464,7 @@ float TransportHandler::NormalizeOrientation(float o)
     return std::fmod(o, 2.0f * static_cast<float>(M_PI));
 }
 
-Transporter* TransportHandler::GetTransporter(uint32 guid)
+Transporter* TransportHandler::getTransporter(uint32_t guid)
 {
     Transporter* rv = nullptr;
     _TransportLock.Acquire();
@@ -472,25 +474,45 @@ Transporter* TransportHandler::GetTransporter(uint32 guid)
     return rv;
 }
 
-void TransportHandler::AddTransport(Transporter* transport)
+TransportTemplate const* TransportHandler::getTransportTemplate(uint32_t entry) const
+{
+    TransportTemplates::const_iterator itr = _transportTemplates.find(entry);
+    if (itr != _transportTemplates.end())
+        return &itr->second;
+
+    return nullptr;
+}
+
+TransportAnimation const* TransportHandler::getTransportAnimInfo(uint32_t entry) const
+{
+    TransportAnimationContainer::const_iterator itr = _transportAnimations.find(entry);
+    if (itr != _transportAnimations.end())
+        return &itr->second;
+
+    return nullptr;
+}
+
+void TransportHandler::addTransport(Transporter* transport)
 {
     _TransportLock.Acquire();
     _Transporters[transport->GetUIdFromGUID()] = transport;
     _TransportLock.Release();
 }
 
-void TransportHandler::LoadTransportAnimationAndRotation()
+void TransportHandler::loadTransportAnimationAndRotation()
 {
-    for (uint32 i = 0; i < sTransportAnimationStore.GetNumRows(); ++i)
-        if (DBC::Structures::TransportAnimationEntry const* anim = sTransportAnimationStore.LookupEntry(i))
-            AddPathNodeToTransport(anim->TransportID, anim->TimeIndex, anim);
+    for (uint32_t i = 0; i < sTransportAnimationStore.GetNumRows(); ++i)
+        if (const auto anim = sTransportAnimationStore.LookupEntry(i))
+            addPathNodeToTransport(anim->TransportID, anim->TimeIndex, anim);
 
-    for (uint32 i = 0; i < sTransportRotationStore.GetNumRows(); ++i)
-        if (DBC::Structures::TransportRotationEntry const* rot = sTransportRotationStore.LookupEntry(i))
-            AddPathRotationToTransport(rot->GameObjectsID, rot->TimeIndex, rot);
+#if VERSION_STRING >= WotLK
+    for (uint32_t i = 0; i < sTransportRotationStore.GetNumRows(); ++i)
+        if (const auto rot = sTransportRotationStore.LookupEntry(i))
+            addPathRotationToTransport(rot->GameObjectsID, rot->TimeIndex, rot);
+#endif
 }
 
-void TransportHandler::AddPathNodeToTransport(uint32 transportEntry, uint32 timeSeg, DBC::Structures::TransportAnimationEntry const* node)
+void TransportHandler::addPathNodeToTransport(uint32_t transportEntry, uint32_t timeSeg, DBC::Structures::TransportAnimationEntry const* node)
 {
     TransportAnimation& animNode = _transportAnimations[transportEntry];
     if (animNode.TotalTime < timeSeg)
@@ -499,7 +521,14 @@ void TransportHandler::AddPathNodeToTransport(uint32 transportEntry, uint32 time
     animNode.Path[timeSeg] = node;
 }
 
-DBC::Structures::TransportAnimationEntry const* TransportAnimation::GetAnimNode(uint32 time) const
+#if VERSION_STRING >= WotLK
+void TransportHandler::addPathRotationToTransport(uint32_t transportEntry, uint32_t timeSeg, DBC::Structures::TransportRotationEntry const* node)
+{
+    _transportAnimations[transportEntry].Rotations[timeSeg] = node;
+}
+#endif
+
+DBC::Structures::TransportAnimationEntry const* TransportAnimation::getAnimNode(uint32_t time) const
 {
     auto itr = Path.lower_bound(time);
     if (itr != Path.end())
@@ -508,7 +537,8 @@ DBC::Structures::TransportAnimationEntry const* TransportAnimation::GetAnimNode(
     return nullptr;
 }
 
-DBC::Structures::TransportRotationEntry const* TransportAnimation::GetAnimRotation(uint32 time) const
+#if VERSION_STRING >= WotLK
+DBC::Structures::TransportRotationEntry const* TransportAnimation::getAnimRotation(uint32_t time) const
 {
     auto itr = Rotations.lower_bound(time);
     if (itr != Rotations.end())
@@ -516,3 +546,4 @@ DBC::Structures::TransportRotationEntry const* TransportAnimation::GetAnimRotati
 
     return nullptr;
 }
+#endif

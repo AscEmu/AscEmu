@@ -26,7 +26,7 @@ protected:
     {
         float inx = x, iny = y, inz = z;
         if (o)
-            *o = sTransportHandler.NormalizeOrientation(transO + *o);
+            *o = sTransportHandler.normalizeOrientation(transO + *o);
 
         x = transX + inx * std::cos(transO) - iny * std::sin(transO);
         y = transY + iny * std::cos(transO) + inx * std::sin(transO);
@@ -36,7 +36,7 @@ protected:
     static void CalculatePassengerOffset(float& x, float& y, float& z, float* o, float transX, float transY, float transZ, float transO)
     {
         if (o)
-            *o = sTransportHandler.NormalizeOrientation(*o - transO);
+            *o = sTransportHandler.normalizeOrientation(*o - transO);
 
         z -= transZ;
         y -= transY;
@@ -49,7 +49,7 @@ protected:
 
 class SERVER_DECL Transporter : public GameObject, public TransportBase
 {
-    friend Transporter* TransportHandler::CreateTransport(uint32, MapMgr*);
+    friend Transporter* TransportHandler::createTransport(uint32, MapMgr*);
     Transporter(uint64 guid);
 
 public:

@@ -1096,16 +1096,16 @@ namespace DBC
             uint32_t unk_time;                // 64
             uint32_t max_players;             // 65
 
-            bool IsDungeon() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID; }
-            bool IsNonRaidDungeon() const { return map_type == MAP_INSTANCE; }
-            bool Instanceable() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID || map_type == MAP_BATTLEGROUND || map_type == MAP_ARENA; }
-            bool IsRaid() const { return map_type == MAP_RAID; }
-            bool IsBattleground() const { return map_type == MAP_BATTLEGROUND; }
-            bool IsBattleArena() const { return map_type == MAP_ARENA; }
-            bool IsBattlegroundOrArena() const { return map_type == MAP_BATTLEGROUND || map_type == MAP_ARENA; }
-            bool IsWorldMap() const { return map_type == MAP_COMMON; }
+            bool isDungeon() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID; }
+            bool isNonRaidDungeon() const { return map_type == MAP_INSTANCE; }
+            bool instanceable() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID || map_type == MAP_BATTLEGROUND || map_type == MAP_ARENA; }
+            bool isRaid() const { return map_type == MAP_RAID; }
+            bool isBattleground() const { return map_type == MAP_BATTLEGROUND; }
+            bool isBattleArena() const { return map_type == MAP_ARENA; }
+            bool isBattlegroundOrArena() const { return map_type == MAP_BATTLEGROUND || map_type == MAP_ARENA; }
+            bool isWorldMap() const { return map_type == MAP_COMMON; }
 
-            bool IsContinent() const
+            bool isContinent() const
             {
                 return id == 0 || id == 1 || id == 530 || id == 571;
             }
@@ -1476,22 +1476,22 @@ namespace DBC
 
         struct TransportAnimationEntry
         {
-            //uint32 ID;                                            // 0
-            uint32 TransportID;                                     // 1
-            uint32 TimeIndex;                                       // 2
-            DBCPosition3D Pos;                                      // 3
-            //uint32 SequenceID;                                    // 4
+            //uint32_t ID;          // 0
+            uint32_t TransportID;   // 1
+            uint32_t TimeIndex;     // 2
+            DBCPosition3D Pos;      // 3
+            //uint32_t SequenceID;  // 4
         };
 
         struct TransportRotationEntry
         {
-            //uint32 ID;                                            // 0
-            uint32 GameObjectsID;                                   // 1
-            uint32 TimeIndex;                                       // 2
-            float X;                                                // 3
-            float Y;                                                // 4
-            float Z;                                                // 5
-            float W;                                                // 6
+            //uint32_t ID;          // 0
+            uint32_t GameObjectsID; // 1
+            uint32_t TimeIndex;     // 2
+            float X;                // 3
+            float Y;                // 4
+            float Z;                // 5
+            float W;                // 6
         };
 
         #define MAX_VEHICLE_SEATS 8

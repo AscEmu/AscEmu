@@ -7,36 +7,36 @@ DROP TABLE IF EXISTS `transport_data`;
 DROP TABLE IF EXISTS `transport_creatures`;
 CREATE TABLE `transport_data` (
   `entry` mediumint unsigned NOT NULL DEFAULT '0',
-  `build` smallint NOT NULL DEFAULT '12340',
+  `min_build` smallint NOT NULL DEFAULT '12340',
+  `max_build` smallint NOT NULL DEFAULT '12340',
   `name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  PRIMARY KEY (`entry`,`build`),
-  UNIQUE KEY `unique_index` (`entry`,`build`) USING BTREE
+  PRIMARY KEY (`entry`,`min_build`),
+  UNIQUE KEY `unique_index` (`entry`,`min_build`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=FIXED COMMENT='Transports';
 
 -- ----------------------------
 -- Records of transport_data
 -- ----------------------------
-INSERT INTO `transport_data` VALUES ('176310', '12340', 'Stormwind Harbor and Auberdine, Darkshore (\"Ship (The Bravery)\")');
-INSERT INTO `transport_data` VALUES ('176244', '12340', 'Rut\'theran Village, Teldrassil and Auberdine, Darkshore (\"The Moonspray\")');
-INSERT INTO `transport_data` VALUES ('176231', '12340', 'Menethil Harbor, Wetlands and Theramore Isle, Dustwallow Marsh (\"The Lady Mehley\")');
-INSERT INTO `transport_data` VALUES ('175080', '12340', 'Orgrimmar, Durotar and Grom\'gol Base Camp, Stranglethorn Vale (\"The Iron Eagle\")');
-INSERT INTO `transport_data` VALUES ('164871', '12340', 'Orgrimmar, Durotar and Undercity, Tirisfal Glades (\"The Thundercaller\")');
-INSERT INTO `transport_data` VALUES ('20808', '12340', 'Steamwheedle Cartel ports, Ratchet and Booty Bay (\"The Maiden\'s Fancy\")');
-INSERT INTO `transport_data` VALUES ('190536', '12340', 'Stormwing Harbor and Valiance Keep, Borean Tundra (\"The Kraken\")');
-INSERT INTO `transport_data` VALUES ('176495', '12340', 'Undercity, Tirisfal Glades and Grom\'gol Base Camp, Stranglethorn Vale (\"The Purple Princess\")');
-INSERT INTO `transport_data` VALUES ('177233', '12340', 'The Forgotten Coast, Feralas and Feathermoon Stronghold, Sardor Isle, Feralas (\"Feathermoon Ferry\")');
-INSERT INTO `transport_data` VALUES ('181646', '12340', 'Valaar\'s Berth, Azuremyst Isle and Auberdine, Darkshore (\"Elune\'s Blessing\")');
-INSERT INTO `transport_data` VALUES ('181688', '12340', 'Menethil Harbor, Wetlands and Valgarde, Howling Fjord (\"Northspear\")');
-INSERT INTO `transport_data` VALUES ('181689', '12340', 'Undercity, Tirisfal Glades and Vengeance Landing, Howling Fjord (\"Zeppelin, Horde (Cloudkisser)\")');
-INSERT INTO `transport_data` VALUES ('186238', '12340', 'Orgrimmar, Durotar and Warsong Hold, Borean Tundra (\"Zeppelin, Horde (The Mighty Wind)\")');
-INSERT INTO `transport_data` VALUES ('186371', '12340', 'Westguard Keep in Howling Fjord to bombard pirate (\"Zeppelin\")');
-INSERT INTO `transport_data` VALUES ('187038', '12340', 'Not Boardable - Cyrcling in Howling Fjord (\"Sister Mercy\")');
-INSERT INTO `transport_data` VALUES ('187568', '12340', 'Unu\'pe, Borean Tundra and Moa\'ki Harbor, Dragonblight (\"Turtle (Walker of Waves)\")');
-INSERT INTO `transport_data` VALUES ('188511', '12340', 'Moa\'ki Harbor and Kamagua (\"Turtle (Green Island)\")');
-INSERT INTO `transport_data` VALUES ('192241', '12340', 'Horde gunship patrolling above Icecrown (\"Orgrim\'s Hammer\")');
-INSERT INTO `transport_data` VALUES ('192242', '12340', 'Alliance gunship patrolling above Icecrown (\"The Skybreaker\")');
-INSERT INTO `transport_data` VALUES ('190549', '12340', 'Orgrimmar and Thunder Bluff');
-
+INSERT INTO `transport_data` VALUES ('176310', '12340', '18414', 'Stormwind Harbor and Auberdine, Darkshore (\"Ship (The Bravery)\")');
+INSERT INTO `transport_data` VALUES ('176244', '5875', '12340', 'Rut\'theran Village, Teldrassil and Auberdine, Darkshore (\"The Moonspray\")');
+INSERT INTO `transport_data` VALUES ('176231', '5875', '18414', 'Menethil Harbor, Wetlands and Theramore Isle, Dustwallow Marsh (\"The Lady Mehley\")');
+INSERT INTO `transport_data` VALUES ('175080', '5875', '18414', 'Orgrimmar, Durotar and Grom\'gol Base Camp, Stranglethorn Vale (\"The Iron Eagle\")');
+INSERT INTO `transport_data` VALUES ('164871', '5875', '18414', 'Orgrimmar, Durotar and Undercity, Tirisfal Glades (\"The Thundercaller\")');
+INSERT INTO `transport_data` VALUES ('20808', '5875', '18414', 'Steamwheedle Cartel ports, Ratchet and Booty Bay (\"The Maiden\'s Fancy\")');
+INSERT INTO `transport_data` VALUES ('190536', '12340', '18414', 'Stormwing Harbor and Valiance Keep, Borean Tundra (\"The Kraken\")');
+INSERT INTO `transport_data` VALUES ('176495', '5875', '18414', 'Undercity, Tirisfal Glades and Grom\'gol Base Camp, Stranglethorn Vale (\"The Purple Princess\")');
+INSERT INTO `transport_data` VALUES ('177233', '5875', '12340', 'The Forgotten Coast, Feralas and Feathermoon Stronghold, Sardor Isle, Feralas (\"Feathermoon Ferry\")');
+INSERT INTO `transport_data` VALUES ('181646', '8606', '18414', 'Valaar\'s Berth, Azuremyst Isle and Auberdine, Darkshore (\"Elune\'s Blessing\")');
+INSERT INTO `transport_data` VALUES ('181688', '12340', '18414', 'Menethil Harbor, Wetlands and Valgarde, Howling Fjord (\"Northspear\")');
+INSERT INTO `transport_data` VALUES ('181689', '12340', '18414', 'Undercity, Tirisfal Glades and Vengeance Landing, Howling Fjord (\"Zeppelin, Horde (Cloudkisser)\")');
+INSERT INTO `transport_data` VALUES ('186238', '12340', '18414', 'Orgrimmar, Durotar and Warsong Hold, Borean Tundra (\"Zeppelin, Horde (The Mighty Wind)\")');
+INSERT INTO `transport_data` VALUES ('186371', '12340', '18414', 'Westguard Keep in Howling Fjord to bombard pirate (\"Zeppelin\")');
+INSERT INTO `transport_data` VALUES ('187038', '12340', '18414', 'Not Boardable - Cyrcling in Howling Fjord (\"Sister Mercy\")');
+INSERT INTO `transport_data` VALUES ('187568', '12340', '18414', 'Unu\'pe, Borean Tundra and Moa\'ki Harbor, Dragonblight (\"Turtle (Walker of Waves)\")');
+INSERT INTO `transport_data` VALUES ('188511', '12340', '18414', 'Moa\'ki Harbor and Kamagua (\"Turtle (Green Island)\")');
+INSERT INTO `transport_data` VALUES ('192241', '12340', '18414', 'Horde gunship patrolling above Icecrown (\"Orgrim\'s Hammer\")');
+INSERT INTO `transport_data` VALUES ('192242', '12340', '18414', 'Alliance gunship patrolling above Icecrown (\"The Skybreaker\")');
+INSERT INTO `transport_data` VALUES ('190549', '12340', '18414', 'Orgrimmar and Thunder Bluff (\"The Zephyr\")');
 
 
 
