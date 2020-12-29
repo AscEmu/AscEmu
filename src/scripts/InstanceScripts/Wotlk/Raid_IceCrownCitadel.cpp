@@ -242,19 +242,19 @@ public:
         {
             if (TeamInInstance == TEAM_ALLIANCE)
             {
-                orgrimmar = sTransportHandler.CreateTransport(GO_ORGRIM_S_HAMMER_ALLIANCE_ICC, mInstance);
-                skybreaker = sTransportHandler.CreateTransport(GO_THE_SKYBREAKER_ALLIANCE_ICC, mInstance);
+                orgrimmar = sTransportHandler.createTransport(GO_ORGRIM_S_HAMMER_ALLIANCE_ICC, mInstance);
+                skybreaker = sTransportHandler.createTransport(GO_THE_SKYBREAKER_ALLIANCE_ICC, mInstance);
             }
 
             if (TeamInInstance == TEAM_HORDE)
             {
-                skybreaker = sTransportHandler.CreateTransport(GO_THE_SKYBREAKER_HORDE_ICC, mInstance);
-                orgrimmar = sTransportHandler.CreateTransport(GO_ORGRIM_S_HAMMER_HORDE_ICC, mInstance);
+                skybreaker = sTransportHandler.createTransport(GO_THE_SKYBREAKER_HORDE_ICC, mInstance);
+                orgrimmar = sTransportHandler.createTransport(GO_ORGRIM_S_HAMMER_HORDE_ICC, mInstance);
             }
             isPrepared = true;
         }
         else
-            sTransportHandler.LoadTransportForPlayers(player);
+            sTransportHandler.loadTransportForPlayers(player);
     }
 
     void OnPlayerEnter(Player* player) override

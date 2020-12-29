@@ -3263,7 +3263,7 @@ bool Player::logOntoTransport()
     bool success = true;
     if (obj_movement_info.transport_guid != 0)
     {
-        const auto transporter = sTransportHandler.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
+        const auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
         if (transporter)
         {
             if (isDead())

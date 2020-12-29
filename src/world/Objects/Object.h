@@ -355,7 +355,7 @@ public:
         const float & GetOrientation() const { return m_position.o; }
         void SetOrientation(float o) { m_position.o = o; }
 
-        void SetSpawnLocation(float newX, float newY, float newZ, float newOrientation) { m_spawnLocation.ChangeCoords(newX, newY, newZ, newOrientation); }
+        void SetSpawnLocation(float newX, float newY, float newZ, float newOrientation) { m_spawnLocation.changeCoords(newX, newY, newZ, newOrientation); }
         void SetSpawnLocation(LocationVector loc) { m_spawnLocation.ChangeCoords(loc); }
         const float & GetSpawnX() const { return m_spawnLocation.x; }
         const float & GetSpawnY() const { return m_spawnLocation.y; }

@@ -266,7 +266,7 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
         setLevel(gameobject_properties->transport.pause);
         setState(gameobject_properties->transport.startOpen ? GO_STATE_OPEN : GO_STATE_CLOSED);
         mTransValues.CurrentSeg = 0;
-        mTransValues.AnimationInfo = sTransportHandler.GetTransportAnimInfo(entry);
+        mTransValues.AnimationInfo = sTransportHandler.getTransportAnimInfo(entry);
         mTransValues.PathProgress = 0;
         break;
     case GAMEOBJECT_TYPE_MO_TRANSPORT:

@@ -768,8 +768,8 @@ bool World::setInitialWorldSettings()
 #endif
 
     LogDetail("World : Starting Transport System...");
-    sTransportHandler.LoadTransportTemplates();
-    sTransportHandler.SpawnContinentTransports();
+    sTransportHandler.loadTransportTemplates();
+    sTransportHandler.spawnContinentTransports();
 
     LogDetail("World : Starting Mail System...");
     sMailSystem.StartMailSystem();

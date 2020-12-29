@@ -35,8 +35,19 @@ class SERVER_DECL LocationVector
         LocationVector() {}
 
     // MIT Start
-    float distanceSquare(const LocationVector& comp) const;
-    bool isSet() const;
+        float getPositionX() const;
+        float getPositionY() const;
+        float getPositionZ() const;
+        float getOrientation() const;
+
+        void getPosition(float& rx, float& ry) const;
+        void getPosition(float& rx, float& ry, float& rz) const;
+        void getPosition(float& rx, float& ry, float& rz, float& ro) const;
+
+        float distanceSquare(const LocationVector& comp) const;
+        bool isSet() const;
+
+        void changeCoords(float newX, float newY, float newZ, float newO);
     // MIT End
 
         // std::sqrt(dx * dx + dy * dy + dz * dz)
@@ -94,35 +105,6 @@ class SERVER_DECL LocationVector
             y = src.y;
             z = src.z;
             o = src.o;
-        }
-
-        void ChangeCoords(float newX, float newY, float newZ, float newO)
-        {
-            x = newX;
-            y = newY;
-            z = newZ;
-            o = newO;
-        }
-
-        float GetPositionX() const { return x; }
-        float GetPositionY() const { return y; }
-        float GetPositionZ() const { return z; }
-        float GetOrientation() const { return o; }
-
-        void GetPosition(float &rx, float &ry) const
-        {
-            rx = x;
-            ry = y;
-        }
-
-        void GetPosition(float &rx, float &ry, float &rz) const
-        {
-            GetPosition(rx, ry); rz = z;
-        }
-
-        void GetPosition(float &rx, float &ry, float &rz, float &ro) const
-        {
-            GetPosition(rx, ry, rz); ro = o;
         }
 
         // add/subtract/equality vectors
