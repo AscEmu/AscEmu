@@ -78,22 +78,19 @@ bool ChatHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m
         return true;
     }
 
-    QueryResult* query_result = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u", spawn_id, VERSION_STRING, VERSION_STRING);
-    if (!query_result)
+    for (const auto creatureSpawnMap : sMySQLStore._creatureSpawnsStore)
     {
-        RedSystemMessage(m_session, "No creature found in creature_spawns table with id %u.", spawn_id);
-        return true;
+        for (const auto creatureSpawn : creatureSpawnMap)
+        {
+            if (creatureSpawn->id == spawn_id)
+            {
+                m_session->GetPlayer()->SafeTeleport(creatureSpawn->mapId, 0, LocationVector(creatureSpawn->x, creatureSpawn->y, creatureSpawn->z));
+                return true;
+            }
+        }
     }
 
-    uint32 spawn_map = query_result->Fetch()[2].GetUInt32();
-    float spawn_x = query_result->Fetch()[3].GetFloat();
-    float spawn_y = query_result->Fetch()[4].GetFloat();
-    float spawn_z = query_result->Fetch()[5].GetFloat();
-
-    LocationVector vec(spawn_x, spawn_y, spawn_z, 0);
-    m_session->GetPlayer()->SafeTeleport(spawn_map, 0, vec);
-
-    delete query_result;
+    RedSystemMessage(m_session, "No creature found in creature_spawns table with id %u.", spawn_id);
     return true;
 }
 
@@ -103,26 +100,23 @@ bool ChatHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldSession*
     uint32 spawn_id;
     if (sscanf(args, "%u", (unsigned int*)&spawn_id) != 1)
     {
-        RedSystemMessage(m_session, "Command must be in format: .gocreature <creature_spawnid>.");
+        RedSystemMessage(m_session, "Command must be in format: .gogameobject <gameobject_spawnid>.");
         return true;
     }
 
-    QueryResult* query_result = WorldDatabase.Query("SELECT * FROM gameobject_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u", spawn_id, VERSION_STRING, VERSION_STRING);
-    if (!query_result)
+    for (const auto goSpawnMap : sMySQLStore._gameobjectSpawnsStore)
     {
-        RedSystemMessage(m_session, "No gameobject found in gameobject_spawns table with id %u.", spawn_id);
-        return true;
+        for (const auto goSpawn : goSpawnMap)
+        {
+            if (goSpawn->id == spawn_id)
+            {
+                m_session->GetPlayer()->SafeTeleport(goSpawn->map, 0, LocationVector(goSpawn->position_x, goSpawn->position_y, goSpawn->position_z));
+                return true;
+            }
+        }
     }
 
-    uint32 spawn_map = query_result->Fetch()[2].GetUInt32();
-    float spawn_x = query_result->Fetch()[3].GetFloat();
-    float spawn_y = query_result->Fetch()[4].GetFloat();
-    float spawn_z = query_result->Fetch()[5].GetFloat();
-
-    LocationVector vec(spawn_x, spawn_y, spawn_z, 0);
-    m_session->GetPlayer()->SafeTeleport(spawn_map, 0, vec);
-
-    delete query_result;
+    RedSystemMessage(m_session, "No gameobject found in gameobject_spawns table with id %u.", spawn_id);
     return true;
 }
 
