@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MoveSplineInitArgs.h"
 #include <G3D/Vector3.h>
 
-enum class AnimationTier : uint8;
+enum class AnimationTier : uint8_t;
 
 namespace MovementNew
 {
@@ -30,7 +30,7 @@ namespace MovementNew
     class SERVER_DECL MoveSpline
     {
     public:
-        typedef Spline<int32> MySpline;
+        typedef Spline<int32_t> MySpline;
         enum UpdateResult
         {
             Result_None         = 0x01,
@@ -45,19 +45,19 @@ namespace MovementNew
 
         FacingInfo      facing;
 
-        uint32          m_Id;
+        uint32_t        m_Id;
 
         MoveSplineFlag  splineflags;
 
-        int32           time_passed;
+        int32_t         time_passed;
         // currently duration mods are unused, but its _currently_
         //float           duration_mod;
         //float           duration_mod_next;
         float           vertical_acceleration;
         float           initialOrientation;
-        int32           effect_start_time;
-        int32           point_Idx;
-        int32           point_Idx_offset;
+        int32_t         effect_start_time;
+        int32_t         point_Idx;
+        int32_t         point_Idx_offset;
         float           velocity;
 
         void init_spline(MoveSplineInitArgs const& args);
@@ -67,16 +67,16 @@ namespace MovementNew
         void computeParabolicElevation(float& el) const;
         void computeFallElevation(float& el) const;
 
-        UpdateResult _updateState(int32& ms_time_diff);
-        int32 next_timestamp() const { return spline.length(point_Idx + 1); }
-        int32 segment_time_elapsed() const { return next_timestamp() - time_passed; }
-        int32 timeElapsed() const { return Duration() - time_passed; }
-        int32 timePassed() const { return time_passed; }
+        UpdateResult _updateState(int32_t& ms_time_diff);
+        int32_t next_timestamp() const { return spline.length(point_Idx + 1); }
+        int32_t segment_time_elapsed() const { return next_timestamp() - time_passed; }
+        int32_t timeElapsed() const { return Duration() - time_passed; }
+        int32_t timePassed() const { return time_passed; }
 
     public:
-        int32 Duration() const { return spline.length(); }
+        int32_t Duration() const { return spline.length(); }
         MySpline const& _Spline() const { return spline; }
-        int32 _currentSplineIdx() const { return point_Idx; }
+        int32_t _currentSplineIdx() const { return point_Idx; }
         float Velocity() const { return velocity; }
         void _Finalize();
         void _Interrupt() { splineflags.done = true; }
@@ -88,7 +88,7 @@ namespace MovementNew
         MoveSpline();
 
         template<class UpdateHandler>
-        void updateState(int32 difftime, UpdateHandler& handler)
+        void updateState(int32_t difftime, UpdateHandler& handler)
         {
             ASSERT(Initialized());
             do
@@ -96,7 +96,7 @@ namespace MovementNew
             while (difftime > 0);
         }
 
-        void updateState(int32 difftime)
+        void updateState(int32_t difftime)
         {
             ASSERT(Initialized());
             do _updateState(difftime);
@@ -105,13 +105,13 @@ namespace MovementNew
 
         Location ComputePosition() const;
 
-        uint32 GetId() const { return m_Id; }
+        uint32_t GetId() const { return m_Id; }
         bool Finalized() const { return splineflags.done; }
         bool isCyclic() const { return splineflags.cyclic; }
         bool isFalling() const { return splineflags.falling; }
         Vector3 FinalDestination() const { return Initialized() ? spline.getPoint(spline.last()) : Vector3(); }
         Vector3 CurrentDestination() const { return Initialized() ? spline.getPoint(point_Idx + 1) : Vector3(); }
-        int32 currentPathIdx() const;
+        int32_t currentPathIdx() const;
 
         bool HasAnimation() const { return splineflags.animation; }
         AnimationTier GetAnimationTier() const { return static_cast<AnimationTier>(splineflags.animTier); }

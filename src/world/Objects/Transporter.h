@@ -76,8 +76,8 @@ public:
     void RemovePassenger(Object* passenger);
 
     PassengerSet const& GetPassengers() const { return _passengers; }
-    Creature* CreateNPCPassenger(uint32 guid, MySQLStructure::CreatureSpawn* data);
-    GameObject* CreateGOPassenger(uint32 guid, MySQLStructure::GameobjectSpawn* data);
+    Creature* createNPCPassenger(MySQLStructure::CreatureSpawn* data);
+    GameObject* createGOPassenger(MySQLStructure::GameobjectSpawn* data);
 
     // Build Update for Player
     uint32  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
@@ -95,7 +95,7 @@ public:
         TransportBase::CalculatePassengerOffset(x, y, z, o, GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
     }
 
-    uint32 GetTransportPeriod() const override { return getLevel(); }
+    uint32_t getTransportPeriod() const override { return getLevel(); }
     void SetPeriod(uint32 period) { setLevel(period); }
     uint32 GetTimer() const { return mTransValues.PathProgress; }
 

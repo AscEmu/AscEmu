@@ -78,7 +78,7 @@ void Transporter::Update(unsigned long time_passed)
     if (IsMoving() || !_pendingStop)
         mTransValues.PathProgress += time_passed;
 
-    uint32 timer = mTransValues.PathProgress % GetTransportPeriod();
+    uint32 timer = mTransValues.PathProgress % getTransportPeriod();
     bool justStopped = false;
 
     LogDebug("Transporter: current node %u and pathprogress %u \n", _currentFrame->Index, GetTimer());
@@ -100,8 +100,8 @@ void Transporter::Update(unsigned long time_passed)
                 if (_pendingStop && getState() != GO_STATE_CLOSED)
                 {
                     setState(GO_STATE_CLOSED);
-                    mTransValues.PathProgress = (mTransValues.PathProgress / GetTransportPeriod());
-                    mTransValues.PathProgress *= GetTransportPeriod();
+                    mTransValues.PathProgress = (mTransValues.PathProgress / getTransportPeriod());
+                    mTransValues.PathProgress *= getTransportPeriod();
                     mTransValues.PathProgress += _currentFrame->ArriveTime;
                 }
                 break;  // its a stop frame and we are waiting
@@ -189,7 +189,7 @@ void Transporter::RemovePassenger(Object* passenger)
     }
 }
 
-Creature* Transporter::CreateNPCPassenger(uint32 guid, MySQLStructure::CreatureSpawn* data)
+Creature* Transporter::createNPCPassenger(MySQLStructure::CreatureSpawn* data)
 {
     MapMgr* map = GetMapMgr();
 
@@ -236,12 +236,12 @@ Creature* Transporter::CreateNPCPassenger(uint32 guid, MySQLStructure::CreatureS
     return pCreature;
 }
 
-GameObject* Transporter::CreateGOPassenger(uint32 guid, MySQLStructure::GameobjectSpawn* data)
+GameObject* Transporter::createGOPassenger(MySQLStructure::GameobjectSpawn* data)
 {
     MapMgr* map = GetMapMgr();
 
-    GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(data->entry);
-    if (gameobject_properties == nullptr || map == nullptr)
+    const auto properties = sMySQLStore.getGameObjectProperties(data->entry);
+    if (properties == nullptr || map == nullptr)
         return 0;
 
     float x, y, z, o;
@@ -289,13 +289,13 @@ void Transporter::LoadStaticPassengers()
     {
         for (auto creature_spawn : sMySQLStore._creatureSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
         {
-            if (CreateNPCPassenger(getGuid(), creature_spawn) == 0)
+            if (createNPCPassenger(creature_spawn) == 0)
                 LOG_ERROR("Failed to add npc entry: %u to transport: %u", creature_spawn->entry, getGuid());
         }
 
         /*for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
         {
-            if (CreateGOPassenger(getGuid(), go_spawn) == 0)
+            if (createGOPassenger(go_spawn) == 0)
                 LOG_ERROR("Failed to add go entry: %u to transport: %u", go_spawn->entry, getGuid());
         }*/
     }

@@ -192,7 +192,7 @@ public:
         cyclic = false;
         points.assign(_points.begin(), _points.end());
         lo = 1;
-        hi = points.size() - 2;
+        hi = static_cast<int32_t>(points.size() - 2);
     }
 
     MovementNew::PointsArray& _points;
@@ -211,7 +211,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     MovementNew::PointsArray splinePath, allPoints;
     bool mapChange = false;
 
-    for (size_t i = 0; i < path.size(); ++i)
+    for (uint16_t i = 0; i < path.size(); ++i)
         allPoints.push_back(G3D::Vector3(path[i].x, path[i].y, path[i].z));
 
     // Add extra points to allow derivative calculations for all path nodes
@@ -224,7 +224,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     orientationSpline.init_spline_custom(initer);
     orientationSpline.initLengths();
 
-    for (size_t i = 0; i < path.size(); ++i)
+    for (uint16_t i = 0; i < path.size(); ++i)
     {
         if (!mapChange)
         {
@@ -310,16 +310,16 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
 
     // find the rest of the distances between key points
     // Every path segment has its own spline
-    size_t start = 0;
-    for (size_t i = 1; i < keyFrames.size(); ++i)
+    uint16_t start = 0;
+    for (uint16_t i = 1; i < keyFrames.size(); ++i)
     {
         if (keyFrames[i - 1].Teleport || i + 1 == keyFrames.size())
         {
-            size_t extra = !keyFrames[i - 1].Teleport ? 1 : 0;
+            auto extra = !keyFrames[i - 1].Teleport ? 1 : 0;
             std::shared_ptr<TransportSpline> spline = std::make_shared<TransportSpline>();
             spline->init_spline(&splinePath[start], i - start + extra, MovementNew::SplineBase::ModeCatmullrom);
             spline->initLengths();
-            for (size_t j = start; j < i + extra; ++j)
+            for (auto j = start; j < i + extra; ++j)
             {
                 keyFrames[j].Index = j - start + 1;
                 keyFrames[j].DistFromPrev = float(spline->length(j - start, j + 1 - start));
@@ -359,7 +359,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     float tmpDist = 0.0f;
     for (size_t i = 0; i < keyFrames.size(); ++i)
     {
-        int32 j = (i + lastStop) % keyFrames.size();
+        auto j = (i + lastStop) % keyFrames.size();
         if (keyFrames[j].isStopFrame() || j == lastStop)
             tmpDist = 0.0f;
         else
@@ -415,7 +415,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     float segmentTime = 0.0f;
     for (size_t i = 0; i < keyFrames.size(); ++i)
     {
-        int32 j = (i + lastStop) % keyFrames.size();
+        auto j = (i + lastStop) % keyFrames.size();
         if (keyFrames[j].isStopFrame() || j == lastStop)
             segmentTime = keyFrames[j].TimeTo;
         keyFrames[j].TimeFrom = segmentTime - keyFrames[j].TimeTo;

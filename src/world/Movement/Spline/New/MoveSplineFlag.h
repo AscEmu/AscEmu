@@ -56,11 +56,11 @@ namespace MovementNew
             Mask_Unused         = No_Spline|Enter_Cycle|Frozen|Unknown7|Unknown8|Unknown10|Unknown11|Unknown12|Unknown13
         };
 
-        inline uint32& raw() { return (uint32&)*this; }
-        inline uint32 const& raw() const { return (uint32 const&)*this; }
+        inline uint32_t& raw() { return (uint32_t&)*this; }
+        inline uint32_t const& raw() const { return (uint32_t const&)*this; }
 
         MoveSplineFlag() { raw() = 0; }
-        MoveSplineFlag(uint32 f) { raw() = f; }
+        MoveSplineFlag(uint32_t f) { raw() = f; }
 
         // Constant interface
 
@@ -68,16 +68,16 @@ namespace MovementNew
         bool isLinear() const { return !isSmooth(); }
         bool isFacing() const { return (raw() & Mask_Final_Facing) != 0; }
 
-        bool hasAllFlags(uint32 f) const { return (raw() & f) == f; }
-        bool hasFlag(uint32 f) const { return (raw() & f) != 0; }
-        uint32 operator & (uint32 f) const { return (raw() & f); }
-        uint32 operator | (uint32 f) const { return (raw() | f); }
+        bool hasAllFlags(uint32_t f) const { return (raw() & f) == f; }
+        bool hasFlag(uint32_t f) const { return (raw() & f) != 0; }
+        uint32_t operator & (uint32_t f) const { return (raw() & f); }
+        uint32_t operator | (uint32_t f) const { return (raw() | f); }
         std::string ToString() const;
 
         // Not constant interface
 
-        void operator &= (uint32 f) { raw() &= f; }
-        void operator |= (uint32 f) { raw() |= f; }
+        void operator &= (uint32_t f) { raw() &= f; }
+        void operator |= (uint32_t f) { raw() |= f; }
 
         void EnableAnimation(uint8 anim) { raw() = (raw() & ~(Mask_Animations | Falling | Parabolic)) | Animation | anim; }
         void EnableParabolic() { raw() = (raw() & ~(Mask_Animations | Falling | Animation)) | Parabolic; }

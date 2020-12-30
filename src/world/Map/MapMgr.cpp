@@ -2130,7 +2130,7 @@ bool MapMgr::AddToMapMgr(Transporter* obj)
             if (static_cast<Object*>(itr->second)->GetTransport() != obj)
             {
                 ByteBuffer buf(500);
-                uint32 cnt = obj->Object::buildCreateUpdateBlockForPlayer(&buf, itr->second);
+                uint32_t cnt = obj->Object::buildCreateUpdateBlockForPlayer(&buf, itr->second);
                 itr->second->getUpdateMgr().pushUpdateData(&buf, cnt);
             }
         }
@@ -2150,7 +2150,7 @@ void MapMgr::RemoveFromMapMgr(Transporter* obj, bool remove)
             if (static_cast<Object*>(itr->second)->GetTransport() != obj)
             {
                 ByteBuffer buf(500);
-                uint32 cnt = obj->Object::buildCreateUpdateBlockForPlayer(&buf, itr->second);
+                uint32_t cnt = obj->Object::buildCreateUpdateBlockForPlayer(&buf, itr->second);
                 itr->second->getUpdateMgr().pushUpdateData(&buf, cnt);
             }
         }
