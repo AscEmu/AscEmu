@@ -170,6 +170,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Object.h"
 #include "Objects/ObjectMgr.h"
 #include "Objects/ObjectDefines.h"
+#include "Objects/Transporter.h"
 
 // Server
 #include "Server/CharacterErrors.h"

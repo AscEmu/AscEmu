@@ -342,10 +342,8 @@ void CommandTableStorage::Init()
     {
         { "info",               'm', &ChatHandler::HandleGetTransporterInfo,        "Displays the current transport info",                      nullptr },
         { "spawn",              'm', &ChatHandler::HandleSpawnInstanceTransport,    "Spawns transport with entry/period in current instance",   nullptr },
-        { "despawn",            'm', &ChatHandler::HandleDespawnInstanceTransport,  "Despawns the transport you are currently on",              nullptr },
         { "start",              'm', &ChatHandler::HandleStartTransport,            "Force starts the current transport",                       nullptr },
         { "stop",               'm', &ChatHandler::HandleStopTransport,             "Force stops the current transport",                        nullptr },
-        { "modperiod",          'm', &ChatHandler::HandleModPeriodCommand,          "Changes the period of the current transport",              nullptr },
         { "getperiod",          'm', &ChatHandler::HandleGetTransporterTime,        "Displays the current transport period in ms",              nullptr },
         { nullptr,              '0', nullptr,                                       "",                                                         nullptr }
     };

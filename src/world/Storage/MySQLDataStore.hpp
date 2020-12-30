@@ -105,8 +105,8 @@ public:
 
     typedef std::set<MySQLStructure::ProfessionDiscovery*> ProfessionDiscoverySet;
 
-    typedef std::unordered_map<uint32_t, MySQLStructure::TransportCreatures> TransportCreaturesContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::TransportData> TransportDataContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::TransportEntrys> TransportEntryContrainer;
 
     typedef std::unordered_map<uint32_t, MySQLStructure::GossipMenuInit> GossipMenuInitMap;
     typedef std::multimap<uint32_t, MySQLStructure::GossipMenuItems> GossipMenuItemsContainer;
@@ -221,8 +221,6 @@ public:
 
     MySQLStructure::NpcMonsterSay* getMonstersayEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS Event);
     //std::set<SpellInfo const*>* getDefaultPetSpellsByEntry(uint32_t entry);     Zyres 2017/07/16 not used
-
-    TransportCreaturesContainer* getTransportCreaturesStore() { return &_transportCreaturesStore; }
     
     GossipMenuInitMap const* getGossipMenuInitTextId() { return &_gossipMenuInitStore; }
 
@@ -311,8 +309,8 @@ public:
 
     void loadProfessionDiscoveriesTable();
 
-    void loadTransportCreaturesTable();
     void loadTransportDataTable();
+    void loadTransportEntrys();
 
     void loadGossipMenuItemsTable();
 
@@ -388,8 +386,8 @@ public:
 
     ProfessionDiscoverySet _professionDiscoveryStore;
 
-    TransportCreaturesContainer _transportCreaturesStore;
     TransportDataContainer _transportDataStore;
+    TransportEntryContrainer _transportEntryStore;
 
     GossipMenuInitMap _gossipMenuInitStore;
     GossipMenuItemsContainer _gossipMenuItemsStores;

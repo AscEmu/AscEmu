@@ -50,6 +50,13 @@ enum GameObject_Flags
     GO_FLAG_DESTROYED           = 0x400
 };
 
+struct TransportInfoData
+{
+    uint32_t PathProgress;
+    TransportAnimation const* AnimationInfo;
+    uint32_t CurrentSeg;
+};
+
 class Player;
 class GameObjectAIScript;
 class GameObjectModel;
@@ -190,6 +197,15 @@ struct GameObjectProperties
             uint32 world_state_sets_state;      // parameter_20
         }goober;
         // 11 GAMEOBJECT_TYPE_TRANSPORT
+        struct
+        {
+            uint32_t pause;                     //parameter_0
+            uint32_t startOpen;                 //parameter_1
+            uint32_t autoCloseTime;             //parameter_2 secs till autoclose = autoCloseTime / 0x10000
+            uint32_t pause1EventID;             //parameter_3
+            uint32_t pause2EventID;             //parameter_4
+            uint32_t mapID;                     //parameter_5
+        } transport;
         // 12 GAMEOBJECT_TYPE_AREADAMAGE
         // 13 GAMEOBJECT_TYPE_CAMERA
         struct
@@ -423,6 +439,8 @@ public:
     uint8_t getAnimationProgress() const;
     void setAnimationProgress(uint8_t progress);
 
+    virtual uint32_t getTransportPeriod() const;
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Type helper
     bool isQuestGiver() const;
@@ -513,6 +531,10 @@ public:
 
         GameObjectModel* m_model;
 
+        TransportInfoData const* GetTransValues() const { return &mTransValues; }
+        Transporter* ToTransport() { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter*>(this); else return nullptr; }
+        Transporter const* ToTransport() const { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter const*>(this); else return nullptr; }
+
     protected:
 
         bool m_summonedGo;
@@ -520,6 +542,9 @@ public:
         GameObjectProperties const* gameobject_properties;
         GameObjectAIScript* myScript;
         uint32 _fields[getSizeOfStructure(WoWGameObject)];
+
+        // Transport Infos
+        TransportInfoData mTransValues;
 
         uint32 m_overrides;             //See enum GAMEOBJECT_OVERRIDES!
 

@@ -645,6 +645,7 @@ class SERVER_DECL InstanceScript
         virtual uint32_t getLocalData(uint32_t /*type*/) const { return 0; }
         virtual uint64_t getLocalData64(uint32_t /*type*/) const { return 0; }
         virtual void DoAction(int32_t /*action*/) {}
+        virtual void TransporterEvents(Transporter* /*transport*/, uint32_t /*eventId*/) {}
         uint8_t Difficulty;
         
         //used for debug

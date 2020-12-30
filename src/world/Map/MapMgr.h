@@ -89,6 +89,10 @@ public:
 
     GameObject* GetGameObject(uint32 guid);
 
+    // Local (mapmgr) storage/generation of Transporters
+    bool AddToMapMgr(Transporter* obj);
+    void RemoveFromMapMgr(Transporter* obj, bool remove);
+
     // Local (mapmgr) storage/generation of Creatures
     uint32 m_CreatureHighGuid;
     std::vector<Creature*> CreatureStorage;
@@ -202,6 +206,7 @@ public:
     void _PerformObjectDuties();
     uint32 mLoopCounter;
     uint32 lastGameobjectUpdate;
+    uint32 lastTransportUpdate;
     uint32_t lastDynamicObjectUpdate = 0;
     uint32 lastUnitUpdate;
     void EventCorpseDespawn(uint64 guid);
@@ -240,6 +245,9 @@ protected:
 
     /// Collect and send updates to clients
     void _UpdateObjects();
+
+    typedef std::set<Transporter*> TransportsContainer;
+    TransportsContainer m_TransportStorage;
 
 private:
 

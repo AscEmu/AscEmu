@@ -276,10 +276,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         typedef std::multimap <uint32, uint32>                          BCEntryStorage;
         typedef std::map<uint32, SpellTargetConstraint*>                SpellTargetConstraintMap;
 
-        typedef std::unordered_map<uint32, Transporter*>                TransportMap;
-        typedef std::set<Transporter*>                                  TransporterSet;
-        typedef std::map<uint32, TransporterSet>                        TransporterMap;
-
         // object holders
         PlayerCacheMap m_playerCache;
         FastMutex m_playerCacheLock;
@@ -294,7 +290,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         CorpseMap m_corpses;
         Mutex _corpseslock;
-        Mutex _TransportLock;
         Mutex m_creatureSetMutex;
 
         Item* CreateItem(uint32 entry, Player* owner);
@@ -358,7 +353,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         void AddPlayer(Player* p); //add it to global storage
         void RemovePlayer(Player* p);
 
-
         // Serialization
 #if VERSION_STRING > TBC
         void LoadCompletedAchievements();
@@ -394,29 +388,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         uint32 GenerateReportID();
         uint32 GenerateEquipmentSetID();
 
-        /////////////////////////////////////////////////////////////////////////////////////////////
-        /// Transport Handler                                                                     ///
-        /////////////////////////////////////////////////////////////////////////////////////////////
-
-        // Loads Transporters on Continents
-        void LoadTransports();
-
-        // Load Transport in Instance
-        Transporter*LoadTransportInInstance(MapMgr *instance, uint32 goEntry, uint32 period);
-        void LoadTransportForPlayers(Player* player);
-
-        // Unloads Transporter from MapMgr
-        void UnloadTransportFromInstance(Transporter *t);
-
-        // Add Transporter
-        void AddTransport(Transporter* transport);
-
-        TransportMap m_Transports;
-
-        TransporterSet m_Transporters;
-        TransporterMap m_TransportersByMap;
-        TransporterMap m_TransportersByInstanceIdMap;
-
 #if VERSION_STRING >= Cata
         // Spell Required table
         SpellRequiredMapBounds GetSpellsRequiredForSpellBounds(uint32_t spell_id) const;
@@ -446,10 +417,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         uint32 GenerateCreatureSpawnID();
         uint32 GenerateGameObjectSpawnID();
-
-        Transporter* GetTransporter(uint32 guid);
-        Transporter* GetTransportOrThrow(uint32 guid);
-        Transporter* GetTransporterByEntry(uint32 entry);
 
         Charter* CreateCharter(uint32 LeaderGuid, CharterTypes Type);
         Charter* GetCharter(uint32 CharterId, CharterTypes Type);
@@ -572,13 +539,11 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         std::set<uint32> m_disabled_spells;
 
-        uint64 TransportersCount;
         std::unordered_map<uint32, PlayerInfo*> m_playersinfo;
         PlayerNameStringIndexMap m_playersInfoByName;
 
         std::unordered_map<uint32, Movement::WayPointMap*> mWayPointMap;           /// stored by spawnid
         std::unordered_map<uint32, TimedEmoteList*> m_timedemotes;      /// stored by spawnid
-
 
         // Group List
         RWLock m_groupLock;
