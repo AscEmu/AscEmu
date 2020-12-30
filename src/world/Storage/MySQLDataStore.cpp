@@ -3937,39 +3937,36 @@ void MySQLDataStore::loadTransportDataTable()
 
     LogNotice("MySQLDataLoads : Table `transport_data` has %u columns", result->GetFieldCount());
 
-    if (result != nullptr)
+    uint32_t load_count = 0;
+    do
     {
-        uint32_t load_count = 0;
-        do
+        Field* fields = result->Fetch();
+        uint32_t entry = fields[0].GetUInt32();
+
+        GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(entry);
+        if (gameobject_info == nullptr)
         {
-            Field* fields = result->Fetch();
-            uint32_t entry = fields[0].GetUInt32();
+            LOG_ERROR("Transport entry: %u, will not be loaded, gameobject_properties missing", entry);
+            continue;
+        }
 
-            GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(entry);
-            if (gameobject_info == nullptr)
-            {
-                LOG_ERROR("Transport entry: %u, will not be loaded, gameobject_properties missing", entry);
-                continue;
-            }
+        if (gameobject_info->type != GAMEOBJECT_TYPE_MO_TRANSPORT)
+        {
+            LOG_ERROR("Transport entry: %u, will not be loaded, gameobject_properties type wrong", entry);
+            continue;
+        }
 
-            if (gameobject_info->type != GAMEOBJECT_TYPE_MO_TRANSPORT)
-            {
-                LOG_ERROR("Transport entry: %u, will not be loaded, gameobject_properties type wrong", entry);
-                continue;
-            }
+        MySQLStructure::TransportData& transportData = _transportDataStore[entry];
+        transportData.entry = entry;
+        transportData.name = fields[1].GetString();
 
-            MySQLStructure::TransportData& transportData = _transportDataStore[entry];
-            transportData.entry = entry;
-            transportData.name = fields[1].GetString();
+        ++load_count;
 
-            ++load_count;
+    } while (result->NextRow());
 
-        } while (result->NextRow());
+    delete result;
 
-        delete result;
-
-        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_data` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-    }
+    LogDetail("MySQLDataLoads : Loaded %u rows from `transport_data` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void MySQLDataStore::loadTransportEntrys()
@@ -3983,25 +3980,22 @@ void MySQLDataStore::loadTransportEntrys()
         return;
     }
 
-    if (result != nullptr)
+    uint32_t load_count = 0;
+    do
     {
-        uint32_t load_count = 0;
-        do
-        {
-            Field* fields = result->Fetch();
-            uint32_t entry = fields[0].GetUInt32();
+        Field* fields = result->Fetch();
+        uint32_t entry = fields[0].GetUInt32();
 
-            MySQLStructure::TransportEntrys& transportEntrys = _transportEntryStore[entry];
-            transportEntrys.entry = entry;
+        MySQLStructure::TransportEntrys& transportEntrys = _transportEntryStore[entry];
+        transportEntrys.entry = entry;
 
-            ++load_count;
+        ++load_count;
 
-        } while (result->NextRow());
+    } while (result->NextRow());
 
-        delete result;
+    delete result;
 
-        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_entrys` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-    }
+    LogDetail("MySQLDataLoads : Loaded %u rows from `transport_entrys` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void MySQLDataStore::loadGossipMenuItemsTable()

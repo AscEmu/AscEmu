@@ -529,6 +529,17 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     GreenSystemMessage(m_session, "-- Offhand: %u (displayid)", creature_target->getVirtualItemSlotId(OFFHAND));
     GreenSystemMessage(m_session, "-- Ranged: %u (displayid)", creature_target->getVirtualItemSlotId(RANGED));
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // transport
+    if (auto transporter = creature_target->GetTransport())
+    {
+        SystemMessage(m_session, "Creature is on Transporter!");
+        if (creature_target->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
+            SystemMessage(m_session, "Creature has MovementFlag MOVEFLAG_TRANSPORT");
+        else
+            SystemMessage(m_session, "!!!!!!!!! NO MovementFlag MOVEFLAG_TRANSPORT !!!!!!!!!!!!");
+    }
+
     if (sScriptMgr.has_creature_script(creature_target->getEntry()))
         SystemMessage(m_session, "Creature has C++/LUA script");
     else
