@@ -14,7 +14,7 @@ Location MoveSpline::ComputePosition() const
     ASSERT(Initialized());
 
     float u = 1.f;
-    int32 seg_time = spline.length(point_Idx, point_Idx+1);
+    int32_t seg_time = spline.length(point_Idx, point_Idx+1);
     if (seg_time > 0)
         u = (time_passed - spline.length(point_Idx)) / (float)seg_time;
     Location c;
@@ -71,7 +71,7 @@ void MoveSpline::computeFallElevation(float& el) const
     el = std::max(z_now, final_z);
 }
 
-inline uint32 computeDuration(float length, float velocity)
+inline uint32_t computeDuration(float length, float velocity)
 {
     return SecToMS(length / velocity);
 }
@@ -80,9 +80,9 @@ struct FallInitializer
 {
     FallInitializer(float _start_elevation) : start_elevation(_start_elevation) { }
     float start_elevation;
-    inline int32 operator()(Spline<int32>& s, int32 i)
+    inline int32_t operator()(Spline<int32>& s, int32_t i)
     {
-        return MovementNew::computeFallTime(start_elevation - s.getPoint(i+1).z, false) * 1000.f;
+        return static_cast<int32_t>(MovementNew::computeFallTime(start_elevation - s.getPoint(i + 1).z, false) * 1000.f);
     }
 };
 
@@ -94,10 +94,10 @@ struct CommonInitializer
 {
     CommonInitializer(float _velocity) : velocityInv(1000.f/_velocity), time(minimal_duration) { }
     float velocityInv;
-    int32 time;
-    inline int32 operator()(Spline<int32>& s, int32 i)
+    int32_t time;
+    inline int32_t operator()(Spline<int32>& s, int32_t i)
     {
-        time += (s.SegLength(i) * velocityInv);
+        time += static_cast<int32_t>(s.SegLength(i) * velocityInv);
         return time;
     }
 };
@@ -107,13 +107,15 @@ void MoveSpline::init_spline(MoveSplineInitArgs const& args)
     static SplineBase::EvaluationMode const modes[2] = { SplineBase::ModeLinear, SplineBase::ModeCatmullrom };
     if (args.flags.cyclic)
     {
-        uint32 cyclic_point = 0;
+        uint32_t cyclic_point = 0;
         if (splineflags.enter_cycle)
             cyclic_point = 1;   // shouldn't be modified, came from client
-        spline.init_cyclic_spline(&args.path[0], args.path.size(), modes[args.flags.isSmooth()], cyclic_point, args.initialOrientation);
+        spline.init_cyclic_spline(&args.path[0], static_cast<int32_t>(args.path.size()), modes[args.flags.isSmooth()], cyclic_point, args.initialOrientation);
     }
     else
-        spline.init_spline(&args.path[0], args.path.size(), modes[args.flags.isSmooth()], args.initialOrientation);
+    {
+        spline.init_spline(&args.path[0], static_cast<int32_t>(args.path.size()), modes[args.flags.isSmooth()], args.initialOrientation);
+    }
 
     // init spline timestamps
     if (splineflags.falling)
@@ -163,7 +165,7 @@ void MoveSpline::Initialize(MoveSplineInitArgs const& args)
     // spline initialized, duration known and i able to compute parabolic acceleration
     if (args.flags & (MoveSplineFlag::Parabolic | MoveSplineFlag::Animation))
     {
-        effect_start_time = Duration() * args.time_perc;
+        effect_start_time = static_cast<int32_t>(Duration() * args.time_perc);
         if (args.flags.parabolic && effect_start_time < Duration())
         {
             float f_duration = MSToSec(Duration() - effect_start_time);
@@ -211,7 +213,7 @@ bool MoveSplineInitArgs::_checkPathBounds() const
         };
         Vector3 middle = (path.front()+path.back()) / 2;
         Vector3 offset;
-        for (uint32 i = 1; i < path.size()-1; ++i)
+        for (uint32_t i = 1; i < path.size()-1; ++i)
         {
             offset = path[i] - middle;
             if (std::fabs(offset.x) >= MAX_OFFSET || std::fabs(offset.y) >= MAX_OFFSET || std::fabs(offset.z) >= MAX_OFFSET)
@@ -237,7 +239,7 @@ MoveSplineInitArgs::~MoveSplineInitArgs() = default;
 
 /// ============================================================================================
 
-MoveSpline::UpdateResult MoveSpline::_updateState(int32& ms_time_diff)
+MoveSpline::UpdateResult MoveSpline::_updateState(int32_t& ms_time_diff)
 {
     if (Finalized())
     {
@@ -247,7 +249,7 @@ MoveSpline::UpdateResult MoveSpline::_updateState(int32& ms_time_diff)
 
     UpdateResult result = Result_None;
 
-    int32 minimal_diff = std::min(ms_time_diff, segment_time_elapsed());
+    int32_t minimal_diff = std::min(ms_time_diff, segment_time_elapsed());
     ASSERT(minimal_diff >= 0);
     time_passed += minimal_diff;
     ms_time_diff -= minimal_diff;
@@ -273,7 +275,7 @@ MoveSpline::UpdateResult MoveSpline::_updateState(int32& ms_time_diff)
                 {
                     splineflags.enter_cycle = false;
 
-                    MoveSplineInitArgs args{ (size_t)spline.getPointCount() };
+                    MoveSplineInitArgs args{spline.getPointCount()};
                     args.path.assign(spline.getPoints().begin() + spline.first() + 1, spline.getPoints().begin() + spline.last());
                     args.facing = facing;
                     args.flags = splineflags;
@@ -342,9 +344,9 @@ void MoveSpline::_Finalize()
     time_passed = Duration();
 }
 
-int32 MoveSpline::currentPathIdx() const
+int32_t MoveSpline::currentPathIdx() const
 {
-    int32 point = point_Idx_offset + point_Idx - spline.first() + (int)Finalized();
+    int32_t point = point_Idx_offset + point_Idx - spline.first() + (int)Finalized();
     if (isCyclic())
         point = point % (spline.last()-spline.first());
     return point;

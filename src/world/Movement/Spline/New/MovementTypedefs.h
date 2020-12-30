@@ -19,12 +19,12 @@ namespace MovementNew
     using G3D::Vector3;
     using G3D::Vector4;
 
-    inline uint32 SecToMS(float sec)
+    inline uint32_t SecToMS(float sec)
     {
-        return static_cast<uint32>(sec * 1000.f);
+        return static_cast<uint32_t>(sec * 1000.f);
     }
 
-    inline float MSToSec(uint32 ms)
+    inline float MSToSec(uint32_t ms)
     {
         return ms / 1000.f;
     }
@@ -54,7 +54,7 @@ namespace MovementNew
         T m_counter;
     };
 
-    typedef counter<uint32, 0xFFFFFFFF> UInt32Counter;
+    typedef counter<uint32_t, 0xFFFFFFFF> UInt32Counter;
 
     SERVER_DECL extern float gravity;
     SERVER_DECL extern UInt32Counter splineIdGen;

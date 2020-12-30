@@ -52,9 +52,9 @@ enum GameObject_Flags
 
 struct TransportInfoData
 {
-    uint32 PathProgress;
+    uint32_t PathProgress;
     TransportAnimation const* AnimationInfo;
-    uint32 CurrentSeg;
+    uint32_t CurrentSeg;
 };
 
 class Player;
@@ -199,12 +199,12 @@ struct GameObjectProperties
         // 11 GAMEOBJECT_TYPE_TRANSPORT
         struct
         {
-            uint32 pause;                       //parameter_0
-            uint32 startOpen;                   //parameter_1
-            uint32 autoCloseTime;               //parameter_2 secs till autoclose = autoCloseTime / 0x10000
-            uint32 pause1EventID;               //parameter_3
-            uint32 pause2EventID;               //parameter_4
-            uint32 mapID;                       //parameter_5
+            uint32_t pause;                     //parameter_0
+            uint32_t startOpen;                 //parameter_1
+            uint32_t autoCloseTime;             //parameter_2 secs till autoclose = autoCloseTime / 0x10000
+            uint32_t pause1EventID;             //parameter_3
+            uint32_t pause2EventID;             //parameter_4
+            uint32_t mapID;                     //parameter_5
         } transport;
         // 12 GAMEOBJECT_TYPE_AREADAMAGE
         // 13 GAMEOBJECT_TYPE_CAMERA
@@ -439,7 +439,7 @@ public:
     uint8_t getAnimationProgress() const;
     void setAnimationProgress(uint8_t progress);
 
-    virtual uint32 GetTransportPeriod() const;
+    virtual uint32_t getTransportPeriod() const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Type helper

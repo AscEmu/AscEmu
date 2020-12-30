@@ -255,32 +255,32 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
 
     switch (gameobject_properties->type)
     {
-    case GAMEOBJECT_TYPE_TRANSPORT:
-        m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
+        case GAMEOBJECT_TYPE_TRANSPORT:
+            m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
 #if VERSION_STRING >= WotLK
-        m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
+            m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
 #else
-        m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT);
+            m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT);
 #endif
 
-        setLevel(gameobject_properties->transport.pause);
-        setState(gameobject_properties->transport.startOpen ? GO_STATE_OPEN : GO_STATE_CLOSED);
-        mTransValues.CurrentSeg = 0;
-        mTransValues.AnimationInfo = sTransportHandler.getTransportAnimInfo(entry);
-        mTransValues.PathProgress = 0;
-        break;
-    case GAMEOBJECT_TYPE_MO_TRANSPORT:
-        m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
+            setLevel(gameobject_properties->transport.pause);
+            setState(gameobject_properties->transport.startOpen ? GO_STATE_OPEN : GO_STATE_CLOSED);
+            mTransValues.CurrentSeg = 0;
+            mTransValues.AnimationInfo = sTransportHandler.getTransportAnimInfo(entry);
+            mTransValues.PathProgress = 0;
+            break;
+        case GAMEOBJECT_TYPE_MO_TRANSPORT:
+            m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
 
-        setFlags(GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN);
+            setFlags(GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN);
 
-        setState(gameobject_properties->mo_transport.can_be_stopped ? GO_STATE_CLOSED : GO_STATE_OPEN);
-        mTransValues.PathProgress = 0;
-        break;
-    default:
-        m_overrides = overrides;
-        setAnimationProgress(0);
-        setState(GO_STATE_CLOSED);
+            setState(gameobject_properties->mo_transport.can_be_stopped ? GO_STATE_CLOSED : GO_STATE_OPEN);
+            mTransValues.PathProgress = 0;
+            break;
+        default:
+            m_overrides = overrides;
+            setAnimationProgress(0);
+            setState(GO_STATE_CLOSED);
     }
 
     InitAI();
@@ -1707,7 +1707,7 @@ void GameObject_Destructible::Rebuild()
     hitpoints = maxhitpoints;
 }
 
-uint32 GameObject::GetTransportPeriod() const
+uint32_t GameObject::getTransportPeriod() const
 {
     if (getGoType() != GAMEOBJECT_TYPE_TRANSPORT)
         return 0;
@@ -1717,4 +1717,3 @@ uint32 GameObject::GetTransportPeriod() const
 
     return 0;
 }
-

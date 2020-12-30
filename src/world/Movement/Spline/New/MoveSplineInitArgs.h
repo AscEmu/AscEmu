@@ -20,11 +20,11 @@ namespace MovementNew
         struct {
             float x, y, z;
         } f;
-        uint64 target;
+        uint64_t target;
         float angle;
 
         FacingInfo(float o) : angle(o) { }
-        FacingInfo(uint64 t) : target(t) { }
+        FacingInfo(uint64_t t) : target(t) { }
         FacingInfo() { }
     };
 
@@ -41,7 +41,7 @@ namespace MovementNew
         float velocity;
         float parabolic_amplitude;
         float time_perc;
-        uint32 splineId;
+        uint32_t splineId;
         float initialOrientation;
         bool walk;
         bool HasVelocity;

@@ -48,7 +48,6 @@ bool ChatHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m
 
 bool ChatHandler::HandleStopTransport(const char* /*args*/, WorldSession* m_session)
 {
-
     auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
     if (transporter)
         transporter->EnableMovement(false);
