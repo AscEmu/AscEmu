@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -33,7 +33,6 @@ namespace MovementNew
     class SERVER_DECL MoveSplineInit
     {
     public:
-
         explicit MoveSplineInit(Unit* m);
         MoveSplineInit(MoveSplineInit&& init) = default;
 
@@ -125,8 +124,8 @@ namespace MovementNew
         /* Disables transport coordinate transformations for cases where raw offsets are available
         */
         void DisableTransportPathTransformations();
-    protected:
 
+    protected:
         MoveSplineInitArgs args;
         Unit*  unit;
     };
