@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace MovementNew
 {
-    UnitSpeedType SelectSpeedType(uint32 moveFlags)
+    UnitSpeedType SelectSpeedType(uint32_t moveFlags)
     {
         if (moveFlags & MOVEFLAG_FLYING)
         {
@@ -34,14 +34,16 @@ namespace MovementNew
             return TYPE_WALK;
         }
         else if (moveFlags & MOVEFLAG_MOVE_BACKWARD)
+        {
             return TYPE_RUN_BACK;
+        }
 
         // Flying creatures use MOVEFLAG_CAN_FLY or MOVEFLAG_DISABLE_GRAVITY
         // Run speed is their default flight speed.
         return TYPE_RUN;
     }
 
-    int32 MoveSplineInit::Launch()
+    int32_t MoveSplineInit::Launch()
     {
         MoveSpline& move_spline = *unit->movespline;
 
@@ -52,18 +54,15 @@ namespace MovementNew
         // this also allows CalculatePath spline position and update map position in much greater intervals
         // Don't compute for transport movement if the unit is in a motion between two transports
         if (!move_spline.Finalized() && move_spline.onTransport == transport)
+        {
             real_position = move_spline.ComputePosition();
+        }
         else
         {
-            LocationVector const* pos;
-            if (!transport)
-                pos = &unit->GetPosition();
-            else
-                pos = &unit->movement_info.transport_position;
-
-            real_position.x = pos->getPositionX();
-            real_position.y = pos->getPositionY();
-            real_position.z = pos->getPositionZ();
+            LocationVector const pos = transport ? unit->movement_info.transport_position : unit->GetPosition();
+            real_position.x = pos.getPositionX();
+            real_position.y = pos.getPositionY();
+            real_position.z = pos.getPositionZ();
             real_position.orientation = unit->GetOrientation();
         }
 
@@ -77,7 +76,7 @@ namespace MovementNew
         args.flags.enter_cycle = args.flags.cyclic;
         move_spline.onTransport = transport;
 
-        uint32 moveFlags = unit->obj_movement_info.getMovementFlags();
+        uint32_t moveFlags = unit->obj_movement_info.getMovementFlags();
 
 #if VERSION_STRING <= WotLK
         moveFlags |= MOVEFLAG_SPLINE_ENABLED;
@@ -95,15 +94,15 @@ namespace MovementNew
         {
             // If spline is initialized with SetWalk method it only means we need to select
             // walk move speed for it but not add walk flag to unit
-            uint32 moveFlagsForSpeed = moveFlags;
+            uint32_t moveFlagsForSpeed = moveFlags;
             if (args.walk)
                 moveFlagsForSpeed |= MOVEFLAG_WALK;
             else
                 moveFlagsForSpeed &= ~MOVEFLAG_WALK;
 
             args.velocity = unit->getSpeedRate(SelectSpeedType(moveFlagsForSpeed), true);
-            if (Creature* creature = static_cast<Creature*>(unit))
-                if (creature->GetAIInterface()->hasCalledForHelp())
+            if (unit->isCreature())
+                if (static_cast<Creature*>(unit)->GetAIInterface()->hasCalledForHelp())
                     args.velocity *= 0.66f;
         }
 
@@ -123,7 +122,7 @@ namespace MovementNew
             data.SetOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
             data << WoWGuid(unit->getTransGuid());
 #if VERSION_STRING >= WotLK
-            data << int8(unit->GetTransSeat());
+            data << int8_t(unit->GetTransSeat());
 #endif
         }
 
@@ -144,18 +143,15 @@ namespace MovementNew
         bool transport = unit->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && unit->getTransGuid();
         Location loc;
         if (move_spline.onTransport == transport)
+        {
             loc = move_spline.ComputePosition();
+        }
         else
         {
-            LocationVector const* pos;
-            if (!transport)
-                pos = &unit->GetPosition();
-            else
-                pos = &unit->obj_movement_info.transport_position;
-
-            loc.x = pos->getPositionX();
-            loc.y = pos->getPositionY();
-            loc.z = pos->getPositionZ();
+            LocationVector const pos = transport ? unit->obj_movement_info.transport_position : unit->GetPosition();
+            loc.x = pos.getPositionX();
+            loc.y = pos.getPositionY();
+            loc.z = pos.getPositionZ();
             loc.orientation = unit->GetOrientation();
         }
 
@@ -163,9 +159,7 @@ namespace MovementNew
 
 #if VERSION_STRING <= WotLK
         unit->obj_movement_info.removeMovementFlag(MOVEFLAG_SPLINE_FORWARD_ENABLED);
-#endif
-
-#if VERSION_STRING >= Cata
+#else
         unit->obj_movement_info.removeMovementFlag(MOVEFLAG_MOVE_FORWARD);
 #endif
 
@@ -179,7 +173,7 @@ namespace MovementNew
             data.SetOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
             data << WoWGuid(unit->getTransGuid());
 #if VERSION_STRING >= WotLK
-            data << int8(unit->GetTransSeat());
+            data << int8_t(unit->GetTransSeat());
 #endif
         }
 

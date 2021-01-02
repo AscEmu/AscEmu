@@ -498,7 +498,7 @@ void Transporter::UpdateForMap(MapMgr* targetMap)
         for (auto itr = targetMap->m_PlayerStorage.begin(); itr != targetMap->m_PlayerStorage.end(); ++itr)
         {
             ByteBuffer transData(500);
-            uint32 count = 0;
+            uint32_t count = 0;
             count = Object::buildCreateUpdateBlockForPlayer(&transData, itr->second);
             itr->second->getUpdateMgr().pushUpdateData(&transData, count);
         }

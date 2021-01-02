@@ -32,30 +32,30 @@ namespace MovementNew
     {
         MoveSplineFlag splineflags = move_spline.splineflags;
 
-        data << uint8(0);
+        data << uint8_t(0);
         data << move_spline.spline.getPoint(move_spline.spline.first());
         data << move_spline.GetId();
 
         switch (splineflags & MoveSplineFlag::Mask_Final_Facing)
         {
             case MoveSplineFlag::Final_Target:
-                data << uint8(MonsterMoveFacingTarget);
+                data << uint8_t(MonsterMoveFacingTarget);
                 data << move_spline.facing.target;
                 break;
             case MoveSplineFlag::Final_Angle:
-                data << uint8(MonsterMoveFacingAngle);
+                data << uint8_t(MonsterMoveFacingAngle);
                 data << move_spline.facing.angle;
                 break;
             case MoveSplineFlag::Final_Point:
-                data << uint8(MonsterMoveFacingSpot);
+                data << uint8_t(MonsterMoveFacingSpot);
                 data << move_spline.facing.f.x << move_spline.facing.f.y << move_spline.facing.f.z;
                 break;
             default:
-                data << uint8(MonsterMoveNormal);
+                data << uint8_t(MonsterMoveNormal);
                 break;
         }
 
-        data << uint32(splineflags & uint32(~MoveSplineFlag::Mask_No_Monster_Move));
+        data << uint32_t(splineflags & uint32_t(~MoveSplineFlag::Mask_No_Monster_Move));
 
         if (splineflags.animation)
         {
@@ -72,17 +72,17 @@ namespace MovementNew
         }
     }
 
-    void PacketBuilder::WriteStopMovement(G3D::Vector3 const& pos, uint32 splineId, ByteBuffer& data)
+    void PacketBuilder::WriteStopMovement(G3D::Vector3 const& pos, uint32_t splineId, ByteBuffer& data)
     {
-        data << uint8(0);
+        data << uint8_t(0);
         data << pos;
         data << splineId;
-        data << uint8(MonsterMoveStop);
+        data << uint8_t(MonsterMoveStop);
     }
 
     void WriteLinearPath(Spline<int32> const& spline, ByteBuffer& data)
     {
-        uint32 last_idx = spline.getPointCount() - 3;
+        uint32_t last_idx = spline.getPointCount() - 3;
         G3D::Vector3 const* real_path = &spline.getPoint(1);
 
         data << last_idx;
@@ -92,7 +92,7 @@ namespace MovementNew
             G3D::Vector3 middle = (real_path[0] + real_path[last_idx]) / 2.f;
             G3D::Vector3 offset;
             // first and last points already appended
-            for (uint32 i = 1; i < last_idx; ++i)
+            for (uint32_t i = 1; i < last_idx; ++i)
             {
                 offset = middle - real_path[i];
                 data << LocationVector(offset.x, offset.y, offset.z);
@@ -102,14 +102,14 @@ namespace MovementNew
 
     void WriteCatmullRomPath(Spline<int32> const& spline, ByteBuffer& data)
     {
-        uint32 count = spline.getPointCount() - 3;
+        uint32_t count = spline.getPointCount() - 3;
         data << count;
         data.append<G3D::Vector3>(&spline.getPoint(2), count);
     }
 
     void WriteCatmullRomCyclicPath(Spline<int32> const& spline, ByteBuffer& data)
     {
-        uint32 count = spline.getPointCount() - 4;
+        uint32_t count = spline.getPointCount() - 4;
         data << count;
         data.append<Vector3>(&spline.getPoint(2), count);
     }
@@ -118,7 +118,7 @@ namespace MovementNew
     {
         WriteCommonMonsterMovePart(move_spline, data);
 
-        const Spline<int32>& spline = move_spline.spline;
+        const Spline<int32_t>& spline = move_spline.spline;
         MoveSplineFlag splineflags = move_spline.splineflags;
         if (splineflags & MoveSplineFlag::Mask_CatmullRom)
         {
@@ -128,7 +128,9 @@ namespace MovementNew
                 WriteCatmullRomPath(spline, data);
         }
         else
+        {
             WriteLinearPath(spline, data);
+        }
     }
 
     void PacketBuilder::WriteCreate(MoveSpline const& move_spline, ByteBuffer& data)
@@ -161,13 +163,14 @@ namespace MovementNew
             data << move_spline.vertical_acceleration;      // added in 3.1
             data << move_spline.effect_start_time;          // added in 3.1
 
-            uint32 nodes = move_spline.getPath().size();
+            uint32_t nodes = move_spline.getPath().size();
             data << nodes;
             data.append<G3D::Vector3>(&move_spline.getPath()[0], nodes);
-            data << uint8(move_spline.spline.mode());       // added in 3.1
+            data << uint8_t(move_spline.spline.mode());       // added in 3.1
             data << (move_spline.isCyclic() ? G3D::Vector3::zero() : move_spline.FinalDestination());
         }
     }
+
     void PacketBuilder::WriteSplineSync(MoveSpline const& move_spline, ByteBuffer& data)
     {
         data << (float)move_spline.timePassed() / move_spline.Duration();
