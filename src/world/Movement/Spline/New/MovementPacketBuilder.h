@@ -21,7 +21,6 @@ namespace MovementNew
     {
         static void WriteCommonMonsterMovePart(MoveSpline const& mov, ByteBuffer& data);
     public:
-
         static void WriteMonsterMove(MoveSpline const& mov, ByteBuffer& data);
         static void WriteStopMovement(G3D::Vector3 const& loc, uint32 splineId, ByteBuffer& data);
         static void WriteCreate(MoveSpline const& mov, ByteBuffer& data);
