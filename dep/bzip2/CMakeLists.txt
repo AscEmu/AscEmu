@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2020 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
 project(bzip2 C)
