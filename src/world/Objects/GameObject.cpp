@@ -271,10 +271,9 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
             break;
         case GAMEOBJECT_TYPE_MO_TRANSPORT:
             m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
-
             setFlags(GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN);
-
             setState(gameobject_properties->mo_transport.can_be_stopped ? GO_STATE_CLOSED : GO_STATE_OPEN);
+            setParentRotation(3, 1.0f);
             mTransValues.PathProgress = 0;
             break;
         default:

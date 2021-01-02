@@ -124,7 +124,10 @@ Transporter* TransportHandler::createTransport(uint32_t entry, MapMgr* map /*= n
 
     // Instance Case
     if (map)
+    {
         trans->AddToWorld(map);
+        trans->SetInstanceID(map->GetInstanceID());
+    }      
     else
         trans->AddToWorld();
 

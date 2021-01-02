@@ -54,6 +54,10 @@ class Vehicle;
 
 struct FactionDBC;
 
+namespace MovementNew {
+    class MoveSpline;
+}
+
 enum UnitSpeedType : uint8_t
 {
     TYPE_WALK           = 0,
@@ -284,6 +288,8 @@ public:
 
     uint64_t getTargetGuid() const;
     void setTargetGuid(uint64_t guid);
+
+    uint64_t getTransGuid();
 
     uint64_t getChannelObjectGuid() const;
     void setChannelObjectGuid(uint64_t guid);
@@ -575,6 +581,11 @@ public:
     void setMoveCanFly(bool set_fly);
     void setMoveRoot(bool set_root);
     bool isRooted() const;
+    bool isMoving() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_MOVING_MASK); }
+    bool isTurning() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_TURNING_MASK); }
+    bool IsFlying() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK); }
+    bool IsFalling() const;
+    virtual bool CanSwim() const;
 
     void setMoveSwim(bool set_swim);
     void setMoveDisableGravity(bool disable_gravity);
@@ -586,6 +597,10 @@ public:
     void setSpeedRate(UnitSpeedType type, float value, bool current);
     void resetCurrentSpeeds();
     UnitSpeedType getFastestSpeedType() const;
+
+    // Movement info
+    MovementNew::MoveSpline* movespline;
+
 private:
     UnitSpeedInfo m_UnitSpeedInfo;
 
