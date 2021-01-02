@@ -1557,8 +1557,10 @@ bool Unit::CanSwim() const
         return false;
     if (hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE)) // is player
         return true;
+#if VERSION_STRING >= TBC
     if (hasUnitFlags2(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE))
         return false;
+#endif
     if (isPet() && hasUnitFlags(UNIT_FLAG_PET_IN_COMBAT))
         return true;
     return hasUnitFlags(UNIT_FLAG_UNKNOWN_5 | UNIT_FLAG_SWIMMING);
