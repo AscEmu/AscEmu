@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #ifndef PACKET_BUILDER_H
-#define TPACKET_BUILDER_H
+#define PACKET_BUILDER_H
 
 #include "CommonTypes.hpp"
 
