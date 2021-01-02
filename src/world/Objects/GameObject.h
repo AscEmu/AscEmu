@@ -23,6 +23,7 @@
 
 #include "Management/CRitual.h"
 #include "Management/QuestMgr.h"
+#include "Management/TransporterHandler.h"
 #include "Macros/ScriptMacros.hpp"
 #include "Data/WoWGameObject.h"
 #include "Map/Map.h"
