@@ -3,14 +3,13 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef MOVESPLINEINIT_H
-#define MOVESPLINEINIT_H
+#pragma once
 
 #include "MoveSplineInitArgs.h"
 
 class Unit;
 
-enum class AnimationTier : uint8;
+enum class AnimationTier : uint8_t;
 
 namespace MovementNew
 {
@@ -42,7 +41,7 @@ namespace MovementNew
 
         /*  Final pass of initialization that launches spline movement.
          */
-        int32 Launch();
+        int32_t Launch();
 
         /*  Final pass of initialization that stops movement.
          */
@@ -81,7 +80,7 @@ namespace MovementNew
         /* Sets Id of fisrt point of the path. When N-th path point will be done ILisener will notify that pointId + N done
          * Needed for waypoint movement where path splitten into parts
          */
-        void SetFirstPointId(int32 pointId) { args.path_Idx_offset = pointId; }
+        void SetFirstPointId(int32_t pointId) { args.path_Idx_offset = pointId; }
 
         /* Enables CatmullRom spline interpolation mode(makes path smooth)
          * if not enabled linear spline mode will be choosen. Disabled by default
@@ -156,4 +155,3 @@ namespace MovementNew
 
     inline void MoveSplineInit::DisableTransportPathTransformations() { args.TransformForTransport = false; }
 }
-#endif // MOVESPLINEINIT_H
