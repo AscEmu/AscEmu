@@ -23,6 +23,7 @@
 
 #include "Storage/DBC/DBCStores.h"
 #include "Units/Summons/SummonHandler.h"
+#include "Objects/Transporter.h"
 #include <array>
 
 ///\todo vehicle movementflags? Why didn't we use the normal movementflags and handle vehicles like normal units/creatures?
@@ -148,7 +149,7 @@ class VehicleSeat
 ///class Vehicle
 /// Implements vehicles in the game
 //////////////////////////////////////////////////////////////////////////////////////////
-class SERVER_DECL Vehicle
+class SERVER_DECL Vehicle : public TransportBase
 {
     public:
 
@@ -314,6 +315,22 @@ class SERVER_DECL Vehicle
 
         uint32 passengercount;
         uint32 freeseats;
+
+        /// This method transforms supplied transport offsets into global coordinates
+        void CalculatePassengerPosition(float& x, float& y, float& z, float* o /*= nullptr*/) const override
+        {
+            TransportBase::CalculatePassengerPosition(x, y, z, o,
+                owner->GetPositionX(), owner->GetPositionY(),
+                owner->GetPositionZ(), owner->GetOrientation());
+        }
+
+        /// This method transforms supplied global coordinates into local offsets
+        void CalculatePassengerOffset(float& x, float& y, float& z, float* o /*= nullptr*/) const override
+        {
+            TransportBase::CalculatePassengerOffset(x, y, z, o,
+                owner->GetPositionX(), owner->GetPositionY(),
+                owner->GetPositionZ(), owner->GetOrientation());
+        }
 };
 
 struct VehicleAccessoryEntry

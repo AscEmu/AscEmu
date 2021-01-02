@@ -50,7 +50,7 @@ bool ChatHandler::HandleStopTransport(const char* /*args*/, WorldSession* m_sess
 {
     auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
     if (transporter)
-        transporter->EnableMovement(false);
+        transporter->EnableMovement(false, m_session->GetPlayer()->GetMapMgr());
     else
         RedSystemMessage(m_session, "You must be on a transport to use this command.");
     
@@ -61,7 +61,7 @@ bool ChatHandler::HandleStartTransport(const char* /*args*/, WorldSession* m_ses
 {
     Transporter* transport = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
     if (transport)
-        transport->EnableMovement(true);
+        transport->EnableMovement(true, m_session->GetPlayer()->GetMapMgr());
     else
         RedSystemMessage(m_session, "You must be on a transport to use this command.");
 

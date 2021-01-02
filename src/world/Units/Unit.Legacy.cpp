@@ -56,6 +56,8 @@
 #include "Server/Packets/SmsgAuraUpdate.h"
 #include "Server/Packets/SmsgPeriodicAuraLog.h"
 #include "Server/Packets/SmsgAttackSwingBadFacing.h"
+#include "Movement/Spline/New/MoveSpline.h"
+#include "Movement/Spline/New/MoveSplineInit.h"
 
 using namespace AscEmu::Packets;
 
@@ -472,7 +474,8 @@ static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
 
 Unit::Unit() :
     m_movementManager(),
-    m_movementAI(this)
+    m_movementAI(this),
+    movespline(new MovementNew::MoveSpline())
 {
     mControledUnit = this;
     mPlayerControler = nullptr;
@@ -721,6 +724,7 @@ Unit::~Unit()
 {
     //start to remove badptrs, if you delete from the heap null the ptr's damn!
     RemoveAllAuras();
+    delete movespline;
 
     delete m_aiInterface;
     m_aiInterface = NULL;

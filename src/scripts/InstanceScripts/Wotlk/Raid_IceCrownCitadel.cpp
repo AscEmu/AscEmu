@@ -311,10 +311,10 @@ public:
                 }
                 break;
             case EVENT_START_FLY:
-                skybreaker->EnableMovement(true);
+                skybreaker->EnableMovement(true, mInstance);
                 break;
             case EVENT_INTRO_ALLIANCE_3:           
-                orgrimmar->EnableMovement(true);
+                orgrimmar->EnableMovement(true, mInstance);
                 break;
             case EVENT_INTRO_ALLIANCE_6:  
                 SendMusicToPlayers(17289);
@@ -368,12 +368,14 @@ public:
         case EVENT_ENEMY_GUNSHIP_COMBAT:
             if (Creature* captain = TeamInInstance == TEAM_HORDE ? mInstance->GetCreature(getLocalData64(DATA_GB_HIGH_OVERLORD_SAURFANG)) : mInstance->GetCreature(getLocalData64(DATA_GB_MURADIN_BRONZEBEARD)))
                 captain->GetScript()->DoAction(ACTION_BATTLE_EVENT);
+            transport->EnableMovement(false, mInstance);
+            break;
         case EVENT_PLAYERS_GUNSHIP_SPAWN:
         case EVENT_PLAYERS_GUNSHIP_COMBAT:
-            transport->EnableMovement(false);
+            transport->EnableMovement(false, mInstance);
             break;
         case EVENT_PLAYERS_GUNSHIP_SAURFANG:
-            transport->EnableMovement(false);
+            transport->EnableMovement(false, mInstance);
             break;
         }
     }

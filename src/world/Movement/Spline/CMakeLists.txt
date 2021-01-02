@@ -20,6 +20,10 @@ set(SRC_MOVEMENT_SPLINE_FILES
    ${PATH_PREFIX}/New/MoveSpline.h
    ${PATH_PREFIX}/New/MoveSplineFlag.h
    ${PATH_PREFIX}/New/SplineChain.h
+   ${PATH_PREFIX}/New/MovementPacketBuilder.cpp
+   ${PATH_PREFIX}/New/MovementPacketBuilder.h
+   ${PATH_PREFIX}/New/MoveSplineInit.cpp
+   ${PATH_PREFIX}/New/MoveSplineInit.h
 )
 
 source_group(Movement\\Spline FILES ${SRC_MOVEMENT_SPLINE_FILES})

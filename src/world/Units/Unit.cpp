@@ -43,6 +43,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Creatures/Pet.h"
 #include "Units/Creatures/Vehicle.h"
 #include "Units/Players/Player.h"
+#include "Movement/Spline/New/MoveSpline.h"
+#include "Movement/Spline/New/MoveSplineInit.h"
 
 using namespace AscEmu::Packets;
 
@@ -1541,6 +1543,25 @@ void Unit::setMoveWalk(bool set_walk)
             SendMessageToSet(&data, false);
         }
     }
+}
+
+bool Unit::IsFalling() const
+{
+    return obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING_MASK) || movespline->isFalling();
+}
+
+bool Unit::CanSwim() const
+{
+    // Mirror client behavior, if this method returns false then client will not use swimming animation and for players will apply gravity as if there was no water
+    if (hasUnitFlags(UNIT_FLAG_DEAD))
+        return false;
+    if (hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE)) // is player
+        return true;
+    if (hasUnitFlags2(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE))
+        return false;
+    if (isPet() && hasUnitFlags(UNIT_FLAG_PET_IN_COMBAT))
+        return true;
+    return hasUnitFlags(UNIT_FLAG_UNKNOWN_5 | UNIT_FLAG_SWIMMING);
 }
 
 float Unit::getSpeedRate(UnitSpeedType type, bool current) const
@@ -5415,4 +5436,14 @@ bool Unit::isUnitOwnerInRaid(Unit* unit)
     }
 
     return false;
+}
+
+uint64_t Unit::getTransGuid()
+{
+    if (getCurrentVehicle())
+        return getVehicleBase()->getGuid();
+    if (GetTransport())
+        return GetTransport()->getGuid();
+
+    return 0;
 }

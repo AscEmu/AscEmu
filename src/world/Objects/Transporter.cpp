@@ -355,12 +355,13 @@ void Transporter::UpdatePassengerPositions(PassengerSet& passengers)
     }
 }
 
-void Transporter::EnableMovement(bool enabled)
+void Transporter::EnableMovement(bool enabled, MapMgr* instance)
 {
     if (!GetGameObjectProperties()->mo_transport.can_be_stopped)
         return;
 
     _pendingStop = !enabled;
+    UpdateForMap(instance);
 }
 
 void Transporter::MoveToNextWaypoint()
@@ -492,31 +493,14 @@ void Transporter::UpdateForMap(MapMgr* targetMap)
     if (!targetMap->HasPlayers())
         return;
 
-    for (auto itr = targetMap->m_PlayerStorage.begin(); itr != targetMap->m_PlayerStorage.end(); ++itr)
+    if (GetMapId() == targetMap->GetMapId())
     {
-        ByteBuffer transData(500);
-        uint32 count = 0;
-
-        count = Object::buildCreateUpdateBlockForPlayer(&transData, itr->second);
-
-        if (count)
+        for (auto itr = targetMap->m_PlayerStorage.begin(); itr != targetMap->m_PlayerStorage.end(); ++itr)
         {
+            ByteBuffer transData(500);
+            uint32 count = 0;
+            count = Object::buildCreateUpdateBlockForPlayer(&transData, itr->second);
             itr->second->getUpdateMgr().pushUpdateData(&transData, count);
-            transData.clear();
-        }
-    }
-
-    for (auto itr = targetMap->m_PlayerStorage.begin(); itr != targetMap->m_PlayerStorage.end(); ++itr)
-    {
-        ByteBuffer update(2500);
-        uint32 count = 0;
-
-        count = Object::BuildValuesUpdateBlockForPlayer(&update, itr->second);
-
-        if (count)
-        {
-            itr->second->getUpdateMgr().pushUpdateData(&update, count);
-            update.clear();
         }
     }
 }
@@ -526,11 +510,11 @@ uint32 Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* ta
     uint32 cnt = Object::buildCreateUpdateBlockForPlayer(data, target);
 
     // add all the npcs and gos to the packet
-    /*for (auto itr = _staticPassengers.begin(); itr != _staticPassengers.end(); ++itr)
+    for (auto itr = _staticPassengers.begin(); itr != _staticPassengers.end(); ++itr)
     {
         Object* passenger = *itr;
         float x, y, z, o;
-        passenger->obj_movement_info.transport_position.GetPosition(x, y, z, o);
+        passenger->obj_movement_info.transport_position.getPosition(x, y, z, o);
         CalculatePassengerPosition(x, y, z, &o);
         switch (passenger->getObjectTypeId())
         {
@@ -551,7 +535,7 @@ uint32 Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* ta
         }
         }
         cnt += passenger->buildCreateUpdateBlockForPlayer(data, target);
-    }*/
+    }
     return cnt;
 }
 

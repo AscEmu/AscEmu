@@ -103,7 +103,7 @@ public:
 
     void UpdatePosition(float x, float y, float z, float o);
 
-    void EnableMovement(bool enabled);
+    void EnableMovement(bool enabled, MapMgr* instance);
 
     TransportTemplate const* GetTransportTemplate() const { return _transportInfo; }
 

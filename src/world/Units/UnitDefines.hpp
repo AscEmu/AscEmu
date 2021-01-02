@@ -832,11 +832,11 @@ enum UnitFieldFlags : uint32_t // UNIT_FIELD_FLAGS #46 - these are client flags
     UNIT_FLAG_IGNORE_PLAYER_COMBAT              = 0x00000100, // 9          256  unit will not enter combat with players
     UNIT_FLAG_IGNORE_PLAYER_NPC                 = 0x00000200, // 10         512  ? some NPCs have this
     UNIT_FLAG_LOOTING                           = 0x00000400, // 11        1024
-    UNIT_FLAG_SELF_RES                          = 0x00000800, // 12        2048  ? some NPCs have this
+    UNIT_FLAG_PET_IN_COMBAT                     = 0x00000800, // 12        2048  on player pets: whether the pet is chasing a target to attack || on other units: whether any of the unit's minions is in combat
     UNIT_FLAG_PVP                               = 0x00001000, // 13        4096  sets PvP flag
     UNIT_FLAG_SILENCED                          = 0x00002000, // 14        8192
     UNIT_FLAG_DEAD                              = 0x00004000, // 15       16384  used for special "dead" NPCs like Withered Corpses
-    UNIT_FLAG_UNKNOWN_16                        = 0x00008000, // 16       32768  ? some NPCs have this
+    UNIT_FLAG_SWIMMING                          = 0x00008000, // 16       32768  shows swim animation in water
     UNIT_FLAG_ALIVE                             = 0x00010000, // 17       65536  ?
     UNIT_FLAG_PACIFIED                          = 0x00020000, // 18      131072
     UNIT_FLAG_STUNNED                           = 0x00040000, // 19      262144
@@ -959,11 +959,11 @@ static const UnitFlagNames UnitFlagToName[] =
     { UNIT_FLAG_IGNORE_PLAYER_COMBAT, "UNIT_FLAG_IGNORE_PLAYER_COMBAT" },
     { UNIT_FLAG_IGNORE_PLAYER_NPC, "UNIT_FLAG_IGNORE_PLAYER_NPC" },
     { UNIT_FLAG_LOOTING, "UNIT_FLAG_LOOTING" },
-    { UNIT_FLAG_SELF_RES, "UNIT_FLAG_SELF_RES" },
+    { UNIT_FLAG_PET_IN_COMBAT, "UNIT_FLAG_PET_IN_COMBAT" },
     { UNIT_FLAG_PVP, "UNIT_FLAG_PVP" },
     { UNIT_FLAG_SILENCED, "UNIT_FLAG_SILENCED" },
     { UNIT_FLAG_DEAD, "UNIT_FLAG_DEAD" },
-    { UNIT_FLAG_UNKNOWN_16, "UNIT_FLAG_UNKNOWN_16" },
+    { UNIT_FLAG_SWIMMING, "UNIT_FLAG_SWIMMING" },
     { UNIT_FLAG_ALIVE, "UNIT_FLAG_ALIVE" },
     { UNIT_FLAG_PACIFIED, "UNIT_FLAG_PACIFIED" },
     { UNIT_FLAG_STUNNED, "UNIT_FLAG_STUNNED" },

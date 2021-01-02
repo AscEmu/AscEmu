@@ -512,6 +512,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         // bool m_fastMove;
         void setGuardTimer(uint32 timer) { m_guardTimer = timer; }
         virtual void _UpdateCombat(uint32 p_time);
+        bool hasCalledForHelp() { return m_hasCalledForHelp; }
 
     protected:
 
