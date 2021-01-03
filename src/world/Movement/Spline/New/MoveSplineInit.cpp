@@ -78,9 +78,9 @@ namespace MovementNew
 
         uint32_t moveFlags = unit->obj_movement_info.getMovementFlags();
 
-    #if VERSION_STRING <= WotLK
+#if VERSION_STRING <= WotLK
         moveFlags |= MOVEFLAG_SPLINE_ENABLED;
-    #endif
+#endif
 
         if (!args.flags.backward)
             moveFlags = (moveFlags & ~(MOVEFLAG_MOVE_BACKWARD)) | MOVEFLAG_MOVE_FORWARD;
@@ -121,9 +121,9 @@ namespace MovementNew
         {
             data.SetOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
             data << WoWGuid(unit->getTransGuid());
-    #if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK
             data << int8_t(unit->GetTransSeat());
-    #endif
+#endif
         }
 
         PacketBuilder::WriteMonsterMove(move_spline, data);
@@ -157,11 +157,11 @@ namespace MovementNew
 
         args.flags = MoveSplineFlag::Done;
 
-    #if VERSION_STRING <= WotLK
+#if VERSION_STRING <= WotLK
         unit->obj_movement_info.removeMovementFlag(MOVEFLAG_SPLINE_FORWARD_ENABLED);
-    #else
+#else
         unit->obj_movement_info.removeMovementFlag(MOVEFLAG_MOVE_FORWARD);
-    #endif
+#endif
         move_spline.onTransport = transport;
         move_spline.Initialize(args);
 
@@ -171,9 +171,9 @@ namespace MovementNew
         {
             data.SetOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
             data << WoWGuid(unit->getTransGuid());
-    #if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK
             data << int8_t(unit->GetTransSeat());
-    #endif
+#endif
         }
 
         PacketBuilder::WriteStopMovement(loc, args.splineId, data);

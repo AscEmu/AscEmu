@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "SplineImpl.h"
 #include "MovementTypedefs.h"
 #include "Errors.h"
 #include <G3D/Vector3.h>
@@ -201,3 +200,5 @@ namespace MovementNew
         void clear();
     };
 } // namespace MovementNew
+
+#include "SplineImpl.h"
