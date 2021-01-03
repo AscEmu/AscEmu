@@ -3,8 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef MOVESPLINEINIT_ARGS_H
-#define MOVESPLINEINIT_ARGS_H
+#pragma once
 
 #include "MoveSplineFlag.h"
 #include <vector>
@@ -17,7 +16,8 @@ namespace MovementNew
 
     union FacingInfo
     {
-        struct {
+        struct
+        {
             float x, y, z;
         } f;
         uint64_t target;
@@ -53,6 +53,4 @@ namespace MovementNew
     private:
         bool _checkPathBounds() const;
     };
-}
-
-#endif // MOVESPLINEINIT_ARGS_H
+} // namespace MovementNew

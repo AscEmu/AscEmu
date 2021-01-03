@@ -3,8 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef TYPEDEFS_H
-#define TYPEDEFS_H
+#pragma once
 
 #include "StdAfx.h"
 
@@ -58,6 +57,4 @@ namespace MovementNew
 
     SERVER_DECL extern float gravity;
     SERVER_DECL extern UInt32Counter splineIdGen;
-}
-
-#endif // TYPEDEFS_H
+} // namespace MovementNew

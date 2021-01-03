@@ -26,4 +26,4 @@ namespace MovementNew
         static void WriteCreate(MoveSpline const& mov, ByteBuffer& data);
         static void WriteSplineSync(MoveSpline const& mov, ByteBuffer& data);
     };
-}
+} // namespace MovementNew

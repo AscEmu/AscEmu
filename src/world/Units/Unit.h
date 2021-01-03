@@ -54,7 +54,8 @@ class Vehicle;
 
 struct FactionDBC;
 
-namespace MovementNew {
+namespace MovementNew
+{
     class MoveSpline;
 }
 

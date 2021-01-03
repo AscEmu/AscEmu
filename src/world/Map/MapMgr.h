@@ -64,7 +64,6 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
     friend class MapScriptInterface;
 
 public:
-
     CObjectFactory ObjectFactory;
 
     uint32 GetAreaFlag(float x, float y, float z, bool *is_outdoors = nullptr) const;
@@ -103,7 +102,6 @@ public:
 
     Creature* GetCreature(uint32 guid);
 
-
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Summon* CreateSummon(uint32 entry, SummonType type)
     /// Summon factory function, creates and returns the appropriate summon subclass.
@@ -116,7 +114,6 @@ public:
     ///
     //////////////////////////////////////////////////////////////////////////////////////////
     Summon* CreateSummon(uint32 entry, SummonType type, uint32_t duration);
-
 
     // Local (mapmgr) storage/generation of DynamicObjects
     uint32 m_DynamicObjectHighGuid;
@@ -131,7 +128,6 @@ public:
     PetStorageMap m_PetStorage;
     PetStorageMap::iterator pet_iterator;
     Pet* GetPet(uint32 guid);
-
 
     // Local (mapmgr) storage of players for faster lookup
     // double typedef lolz// a compile breaker..
@@ -242,7 +238,6 @@ public:
     GameObject* FindNearestGoWithType(Object* o, uint32 type);
 
 protected:
-
     /// Collect and send updates to clients
     void _UpdateObjects();
 
@@ -250,7 +245,6 @@ protected:
     TransportsContainer m_TransportStorage;
 
 private:
-
     /// Objects that exist on map
     uint32 _mapId;
     std::set<Object*> _mapWideStaticObjects;
@@ -263,12 +257,10 @@ private:
     void OutOfMapBoundariesTeleport(Object* object);
 
 public:
-
     /// Distance a Player can "see" other objects and receive updates from them (!! ALREADY dist*dist !!)
     float m_UpdateDistance;
 
 private:
-
     // Update System
     Mutex m_updateMutex;
     UpdateQueue _updates;
@@ -286,7 +278,6 @@ private:
     TerrainHolder* _terrain;
 
 public:
-
 #ifdef WIN32
     DWORD threadid;
 #endif
@@ -317,10 +308,8 @@ public:
     void onWorldStateUpdate(uint32 zone, uint32 field, uint32 value) override;
 
 protected:
-
     InstanceScript* mInstanceScript;
 
 private:
-
     WorldStatesHandler worldstateshandler;
 };

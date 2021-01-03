@@ -13,7 +13,6 @@ enum class AnimationTier : uint8_t;
 
 namespace MovementNew
 {
-
     // Transforms coordinates from global to transport offsets
     class SERVER_DECL TransportPathTransform
     {
@@ -154,4 +153,5 @@ namespace MovementNew
     }
 
     inline void MoveSplineInit::DisableTransportPathTransformations() { args.TransformForTransport = false; }
-}
+
+} // namespace MovementNew

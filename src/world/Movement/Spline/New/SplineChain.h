@@ -3,8 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef SPLINECHAIN_H
-#define SPLINECHAIN_H
+#pragma once
 
 #include "MoveSplineInitArgs.h"
 #include <G3D/Vector3.h>
@@ -34,5 +33,3 @@ struct SERVER_DECL SplineChainResumeInfo
     uint8_t PointIndex;
     uint32_t TimeToNext;
 };
-
-#endif

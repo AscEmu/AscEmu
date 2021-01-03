@@ -178,4 +178,4 @@ namespace MovementNew
         print_flags(raw(), g_SplineFlag_names, str);
         return str;
     }
-}
+} // namespace MovementNew

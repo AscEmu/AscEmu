@@ -3,8 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef MOVEPLINE_H
-#define MOVEPLINE_H
+#pragma once
 
 #include "Spline.h"
 #include "MoveSplineInitArgs.h"
@@ -123,5 +122,4 @@ namespace MovementNew
             return time_passed > 0;
         }
     };
-}
-#endif // MOVEPLINE_H
+} // namespace MovementNew

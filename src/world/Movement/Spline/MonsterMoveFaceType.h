@@ -44,7 +44,6 @@ namespace Movement::Spline
         void SetAngle(float pAngle) { TargetAngle = pAngle; }
 
     protected:
-
         uint8_t MoveFlag;
 
         /* MonsterMoveNormal */

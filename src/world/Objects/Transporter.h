@@ -109,7 +109,6 @@ public:
 
     uint32_t getCurrentFrame() { return _currentFrame->Index; }
 
-
 private:
     void MoveToNextWaypoint();
     float CalculateSegmentPos(float perc);

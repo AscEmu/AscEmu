@@ -3,15 +3,13 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef MOVESPLINEFLAG_H
-#define MOVESPLINEFLAG_H
+#pragma once
 
 #include "MovementTypedefs.h"
 
 namespace MovementNew
 {
 #pragma pack(push, 1)
-
     class MoveSplineFlag
     {
     public:
@@ -117,6 +115,4 @@ namespace MovementNew
         bool unknown13           : 1;
     };
 #pragma pack(pop)
-}
-
-#endif // MOVESPLINEFLAG_H
+} // namespace MovementNew

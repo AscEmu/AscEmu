@@ -38,21 +38,21 @@ namespace MovementNew
 
         switch (splineflags & MoveSplineFlag::Mask_Final_Facing)
         {
-            case MoveSplineFlag::Final_Target:
-                data << uint8_t(MonsterMoveFacingTarget);
-                data << move_spline.facing.target;
-                break;
-            case MoveSplineFlag::Final_Angle:
-                data << uint8_t(MonsterMoveFacingAngle);
-                data << move_spline.facing.angle;
-                break;
-            case MoveSplineFlag::Final_Point:
-                data << uint8_t(MonsterMoveFacingSpot);
-                data << move_spline.facing.f.x << move_spline.facing.f.y << move_spline.facing.f.z;
-                break;
-            default:
-                data << uint8_t(MonsterMoveNormal);
-                break;
+        case MoveSplineFlag::Final_Target:
+            data << uint8_t(MonsterMoveFacingTarget);
+            data << move_spline.facing.target;
+            break;
+        case MoveSplineFlag::Final_Angle:
+            data << uint8_t(MonsterMoveFacingAngle);
+            data << move_spline.facing.angle;
+            break;
+        case MoveSplineFlag::Final_Point:
+            data << uint8_t(MonsterMoveFacingSpot);
+            data << move_spline.facing.f.x << move_spline.facing.f.y << move_spline.facing.f.z;
+            break;
+        default:
+            data << uint8_t(MonsterMoveNormal);
+            break;
         }
 
         data << uint32_t(splineflags & uint32_t(~MoveSplineFlag::Mask_No_Monster_Move));
@@ -86,7 +86,7 @@ namespace MovementNew
         G3D::Vector3 const* real_path = &spline.getPoint(1);
 
         data << last_idx;
-        data << real_path[last_idx];   // destination
+        data << real_path[last_idx]; // destination
         if (last_idx > 1)
         {
             G3D::Vector3 middle = (real_path[0] + real_path[last_idx]) / 2.f;
@@ -166,7 +166,7 @@ namespace MovementNew
             uint32_t nodes = move_spline.getPath().size();
             data << nodes;
             data.append<G3D::Vector3>(&move_spline.getPath()[0], nodes);
-            data << uint8_t(move_spline.spline.mode());       // added in 3.1
+            data << uint8_t(move_spline.spline.mode());     // added in 3.1
             data << (move_spline.isCyclic() ? G3D::Vector3::zero() : move_spline.FinalDestination());
         }
     }
@@ -175,4 +175,4 @@ namespace MovementNew
     {
         data << (float)move_spline.timePassed() / move_spline.Duration();
     }
-}
+} // namespace MovementNew
