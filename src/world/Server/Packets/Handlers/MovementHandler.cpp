@@ -743,32 +743,6 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     }
 
     /************************************************************************/
-    /* Dump movement flags - Wheee!                                         */
-    /************************************************************************/
-#if 0
-    LOG_DEBUG("=========================================================");
-    LOG_DEBUG("Full movement flags: 0x%.8X", movement_info.flags);
-    uint32 z, b;
-    for (z = 1, b = 1; b < 32;)
-    {
-        if (movement_info.flags & z)
-            LOG_DEBUG("Bit %u (0x%.8X or %u) is set!", b, z, z);
-
-        z <<= 1;
-        b += 1;
-    }
-    LOG_DEBUG("=========================================================");
-#endif
-
-    /************************************************************************/
-    /* Orientation dumping                                                  */
-    /************************************************************************/
-#if 0
-    LOG_DEBUG("Packet: 0x%03X (%s)", recvPacket.GetOpcode(), getOpcodeName(recvPacket.GetOpcode()).c_str());
-    LOG_DEBUG("Orientation: %.10f", movement_info.position.o);
-#endif
-
-    /************************************************************************/
     /* Calculate the timestamp of the packet we have to send out            */
     /************************************************************************/
     size_t pos = (size_t)m_MoverWoWGuid.GetNewGuidLen() + 1;
