@@ -187,8 +187,8 @@ namespace DBC
             char const char_start_outfit_format[]="dbbbXiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxii"; 
             char const char_titles_format[] = "nxsxix";
             char const chat_channels_format[] = "iixsx";
-            char const chr_classes_format[] = "nixsxxxixiiiii";
-            char const chr_races_format[] = "nxixiixixxxxixsxxxxxixxx";
+            char const chr_classes_format[] = "nixsxxxixiiiixxxxx";
+            char const chr_races_format[] = "nxixiixixxxxixsxxxxxxxxxxxxxxxxxxxxx";
             char const chr_classes_xpower_types_format[]="nii";
             //char const cinematic_sequences_format[]="nxxxxxxxxx"; new
             char const creature_display_info_format[]="nixifxxxxxxxxxxxx";
@@ -876,10 +876,14 @@ namespace DBC
             uint32_t spellfamily;               // 7
             //uint32_t unk4;                    // 8
             uint32_t cinematic_id;              // 9 CinematicSequences.dbc
-            uint32_t expansion;                 // 10
-            uint32_t apPerStr;                  // 11
-            uint32_t apPerAgi;                  // 12
-            uint32_t rapPerAgi;                 // 13
+            uint32_t apPerStr;                  // 10
+            uint32_t apPerAgi;                  // 11
+            uint32_t rapPerAgi;                 // 12
+            //uint32_t unk1                     // 13 Pandaria
+            //uint32_t unk2                     // 14 Pandaria
+            //uint32_t unk3                     // 15 Pandaria
+            //uint32_t unk4                     // 16 Pandaria
+            //uint32_t unk5                     // 17 Pandaria
         };
 
         struct ChrRacesEntry
@@ -900,10 +904,22 @@ namespace DBC
             //char* name_neutral;               // 16
             //uint32_t unk5[2]                  // 17-18
             //uint32_t unk19                    // 19
-            uint32_t expansion;                 // 20
+            //uint32_t m_enemyRace;             // 20
             //uint32_t unk21                    // 21
             //uint32_t unk22                    // 22
             //uint32_t unk23                    // 23
+            //uint32_t unk24;                   // 24
+            //uint32_t defaultClassForRace      // 25
+            //uint32_t unk26;                   // 26
+            //uint32_t unk27;                   // 27
+            //float unk28;                      // 28
+            //uint32_t unk29;                   // 29
+            //float unk30;                      // 30
+            //float unk31;                      // 31
+            //uint32_t unk32;                   // 32
+            //float unk33;                      // 33
+            //uint32_t unk34;                   // 34
+            //uint32_t unk35;                   // 35
         };
 
         struct ChrPowerTypesEntry
@@ -2148,7 +2164,7 @@ namespace DBC
         struct WorldMapOverlayEntry
         {
             uint32_t ID;                // 0
-            //uint32_t worldMapID;      // 1
+            //uint32_t worldMapID;      // 1 WorldMapArea.dbc
             uint32_t areaID;            // 2
             uint32_t areaID_2;          // 3
             uint32_t areaID_3;          // 4
