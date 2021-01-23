@@ -7,35 +7,13 @@ branches:
 environment:
   matrix:
   - ASC_VERSION: Classic
-    VS_VER: Visual Studio 16 2019
-    ARCH: Win32
-  - ASC_VERSION: Classic
-    VS_VER: Visual Studio 16 2019
-    ARCH: x64
   - ASC_VERSION: TBC
-    VS_VER: Visual Studio 16 2019
-    ARCH: Win32
-  - ASC_VERSION: TBC
-    VS_VER: Visual Studio 16 2019
-    ARCH: x64
   - ASC_VERSION: WotLK
-    VS_VER: Visual Studio 16 2019
-    ARCH: Win32
-  - ASC_VERSION: WotLK
-    VS_VER: Visual Studio 16 2019
-    ARCH: x64
   - ASC_VERSION: Cata
-    VS_VER: Visual Studio 16 2019
-    ARCH: Win32
-  - ASC_VERSION: Cata
-    VS_VER: Visual Studio 16 2019
-    ARCH: x64
   - ASC_VERSION: Mop
-    VS_VER: Visual Studio 16 2019
-    ARCH: Win32
-  - ASC_VERSION: Mop
-    VS_VER: Visual Studio 16 2019
-    ARCH: x64
+platform:
+  - Win32
+  - x64
 
 configuration: Release
 
@@ -47,11 +25,11 @@ install:
   - git submodule update --init --recursive
   
 before_build:
-  - cmd: echo %VS_VER%
+  - cmd: echo %Image%
   - cmd: echo %Configuration%
 
 build_script:
   - cmd: mkdir ascemu_build
   - cmd: cd ascemu_build
-  - cmd: cmake ../ -G "%VS_VER%" -A %ARCH% -DBUILD_WITH_WARNINGS=0 -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%
+  - cmd: cmake ../ -G "%Image%" -A %Platform% -DBUILD_WITH_WARNINGS=0 -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%
   - cmd: msbuild Ascemu.sln
