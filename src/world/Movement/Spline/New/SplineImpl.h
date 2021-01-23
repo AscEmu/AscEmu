@@ -3,8 +3,10 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-namespace MovementNew
-{
+#pragma once
+
+namespace MovementNew {
+
 template<typename length_type> void Spline<length_type>::evaluate_percent( float t, Vector3 & c ) const
 {
     index_type Index;
@@ -23,9 +25,8 @@ template<typename length_type> void Spline<length_type>::evaluate_derivative(flo
 
 template<typename length_type> SplineBase::index_type Spline<length_type>::computeIndexInBounds(length_type length_) const
 {
-// Temporary disabled: causes infinite loop with t = 1.f
-/*
-    index_type hi = index_hi;
+    // Temporary disabled: causes infinite loop with t = 1.f
+    /* index_type hi = index_hi;
     index_type lo = index_lo;
 
     index_type i = lo + (float)(hi - lo) * t;
@@ -80,5 +81,4 @@ template<typename length_type> void Spline<length_type>::clear()
     SplineBase::clear();
     lengths.clear();
 }
-
-}
+} // namespace MovementNew

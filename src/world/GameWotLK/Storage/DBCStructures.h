@@ -31,11 +31,11 @@ struct DBCPosition3D
 
 enum MapTypes
 {
-    MAP_COMMON = 0,                                // none
-    MAP_INSTANCE = 1,                                // party
-    MAP_RAID = 2,                                // raid
-    MAP_BATTLEGROUND = 3,                                // pvp
-    MAP_ARENA = 4                                 // arena
+    MAP_COMMON = 0,             // none
+    MAP_INSTANCE = 1,           // party
+    MAP_RAID = 2,               // raid
+    MAP_BATTLEGROUND = 3,       // pvp
+    MAP_ARENA = 4               // arena
 };
 
 namespace DBC

@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <sstream>
 #include <G3D/Matrix4.h>
 
-namespace MovementNew{
+namespace MovementNew {
 
 SplineBase::EvaluationMethtod SplineBase::evaluators[SplineBase::ModesEnd] =
 {
@@ -36,13 +36,13 @@ SplineBase::SegLenghtMethtod SplineBase::seglengths[SplineBase::ModesEnd] =
 SplineBase::InitMethtod SplineBase::initializers[SplineBase::ModesEnd] =
 {
     //&SplineBase::InitLinear,
-    &SplineBase::InitCatmullRom,    // we should use catmullrom initializer even for linear mode! (client's internal structure limitation)
+    &SplineBase::InitCatmullRom, // we should use catmullrom initializer even for linear mode! (client's internal structure limitation)
     &SplineBase::InitCatmullRom,
     &SplineBase::InitBezier3,
     &SplineBase::UninitializedSplineInitMethod,
 };
 
-///////////
+//////////////////////////////////////////////////////////////////////////////////////////
 
 using G3D::Matrix4;
 static const Matrix4 s_catmullRomCoeffs(
@@ -266,5 +266,4 @@ std::string SplineBase::ToString() const
 
     return str.str();
 }
-
-}
+} // namespace MovementNew
