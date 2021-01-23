@@ -19,15 +19,10 @@ find_library(MYSQL_LIBRARY
     PATHS "$ENV{ProgramFiles}/MySQL/*/lib"
             "$ENV{ProgramW6432}/MySQL/*/lib"
             "$ENV{SystemDrive}/MySQL/*/lib"
-            "/lib/mysql"
-            "/lib64/mysql"
+            "/usr/lib"
             "/usr/lib/mysql"
-            "/usr/lib64/mysql"
-            "/usr/local/lib/mysql"
-            "/usr/local/lib64/mysql"
-            "/usr/mysql/lib/mysql"
-            "/usr/mysql/lib64/mysql")
-
+            "/usr/local/lib"
+            "/usr/mysql/lib/mysql")
 
 if (MYSQL_LIBRARY)
     if (MYSQL_INCLUDE_DIR)
