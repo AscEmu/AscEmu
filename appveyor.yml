@@ -31,5 +31,5 @@ before_build:
 build_script:
   - cmd: mkdir ascemu_build
   - cmd: cd ascemu_build
-  - cmd: cmake ../ -G "Visual Studio 16 2019" -DBUILD_WITH_WARNINGS=0 -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%
+  - cmd: cmake ../ -G "Visual Studio 16 2019" -A %Platform% -DBUILD_WITH_WARNINGS=0 -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%
   - cmd: msbuild Ascemu.sln
