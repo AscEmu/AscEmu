@@ -14,15 +14,24 @@ find_path(MYSQL_INCLUDE_DIR
             "/usr/local/include/mysql"
             "/usr/mysql/include/mysql")
 	
+if (WIN32)
 find_library(MYSQL_LIBRARY
     NAMES "libmysql" "libmysql_r"
     PATHS "$ENV{ProgramFiles}/MySQL/*/lib"
             "$ENV{ProgramW6432}/MySQL/*/lib"
-            "$ENV{SystemDrive}/MySQL/*/lib"
-            "/usr/lib"
-            "/usr/lib/mysql"
-            "/usr/local/lib"
-            "/usr/mysql/lib/mysql")
+            "$ENV{SystemDrive}/MySQL/*/lib")
+
+else (WIN32)
+find_library(MYSQL_LIBRARY	
+    NAMES "mysqlclient" "mysqlclient_r"
+    PATHS "/usr/lib"
+        "/usr/lib/mysql"
+		"/usr/local/lib"
+		"/usr/local/mysql/lib"
+		"/usr/local/lib/mysql"
+		"/opt/local/lib/mysql5/mysql")
+
+endif (WIN32)
 
 if (MYSQL_LIBRARY)
     if (MYSQL_INCLUDE_DIR)
