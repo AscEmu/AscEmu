@@ -59,7 +59,7 @@ namespace DBC
 
     namespace
     {
-        const uint8 C_TOTAL_LOCALES = 15;
+        const uint8_t C_TOTAL_LOCALES = 15;
         char const* C_LOCALE_NAMES[C_TOTAL_LOCALES] =
         {
             "enGB",
@@ -79,13 +79,13 @@ namespace DBC
             "itIT"
         };
 
-        uint32 g_dbc_file_count = 0;
+        uint32_t g_dbc_file_count = 0;
     }
 
     typedef std::list<std::string> StoreProblemList;
 
     template <class T>
-    void LoadDBC(uint32& /*available_dbc_locales*/, StoreProblemList& errors, DBC::DBCStorage<T>& storage, std::string const& dbc_path,
+    void LoadDBC(uint32_t& /*available_dbc_locales*/, StoreProblemList& errors, DBC::DBCStorage<T>& storage, std::string const& dbc_path,
       std::string const& dbc_filename,std::string const* custom_format = NULL, std::string const* /*custom_index_name*/ = NULL)
     {
         ASSERT(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T));

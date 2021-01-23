@@ -18,13 +18,12 @@ namespace DBC::SQL
         string const* format_string;
         string const* index_name;
         string sql_table_name;
-        int32 index_pos;
-        int32 sql_index_pos;
+        int32_t index_pos;
+        int32_t sql_index_pos;
         SqlDbc(string const* dbc_filename, string const* dbc_format, string const* id_name, char const* format);
 
-        private:
-
-            SqlDbc(SqlDbc const& right) = delete;
-            SqlDbc& operator=(SqlDbc const& right) = delete;
+    private:
+        SqlDbc(SqlDbc const& right) = delete;
+        SqlDbc& operator=(SqlDbc const& right) = delete;
     };
 }

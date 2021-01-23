@@ -24,22 +24,22 @@ namespace DBC
         return DBC::DBCRecord(m_data + record_id * m_record_size);
     }
 
-    uint32 DBC::DBCLoader::GetNumRows() const
+    uint32_t DBC::DBCLoader::GetNumRows() const
     {
         return m_record_count;
     }
 
-    uint32 DBC::DBCLoader::GetRowSize() const
+    uint32_t DBC::DBCLoader::GetRowSize() const
     {
         return m_record_size;
     }
 
-    uint32 DBC::DBCLoader::GetNumColumns() const
+    uint32_t DBC::DBCLoader::GetNumColumns() const
     {
         return m_field_count;
     }
 
-    uint32 DBC::DBCLoader::GetOffset(size_t id) const
+    uint32_t DBC::DBCLoader::GetOffset(size_t id) const
     {
         if (m_fields_offset != NULL && id < m_field_count)
         {
@@ -49,12 +49,12 @@ namespace DBC
         return 0;
     }
 
-    uint32 DBCLoader::GetFormatRecordSize(const char* dbc_format, int32* index_pos /* = NULL */)
+    uint32_t DBCLoader::GetFormatRecordSize(const char* dbc_format, int32_t* index_pos /* = NULL */)
     {
-        uint32 record_size = 0;
-        int32 i = -1;
+        uint32_t record_size = 0;
+        int32_t i = -1;
 
-        for (uint32 x = 0; dbc_format[x]; ++x)
+        for (uint32_t x = 0; dbc_format[x]; ++x)
         {
             switch (dbc_format[x])
             {
@@ -62,7 +62,7 @@ namespace DBC
                 record_size += sizeof(float);
                 break;
             case DBC::DbcFieldFormat::FT_INT:
-                record_size += sizeof(uint32);
+                record_size += sizeof(uint32_t);
                 break;
             case DBC::DbcFieldFormat::FT_STRING:
                 record_size += sizeof(char*);
@@ -72,10 +72,10 @@ namespace DBC
                 break;
             case DBC::DbcFieldFormat::FT_IND:
                 i = x;
-                record_size += sizeof(uint32);
+                record_size += sizeof(uint32_t);
                 break;
             case DBC::DbcFieldFormat::FT_BYTE:
-                record_size += sizeof(uint8);
+                record_size += sizeof(uint8_t);
                 break;
             case DBC::DbcFieldFormat::FT_NA:
             case DBC::DbcFieldFormat::FT_NA_BYTE:
@@ -99,7 +99,7 @@ namespace DBC
 
     bool DBCLoader::Load(const char* dbc_filename, const char* dbc_format)
     {
-        uint32 header;
+        uint32_t header;
         if (m_data)
         {
             delete[] m_data;
@@ -154,21 +154,21 @@ namespace DBC
             return false;
         }
 
-        m_fields_offset = new uint32[m_field_count];
+        m_fields_offset = new uint32_t[m_field_count];
         m_fields_offset[0] = 0;
 
-        for (uint32 i = 1; i < m_field_count; ++i)
+        for (uint32_t i = 1; i < m_field_count; ++i)
         {
             m_fields_offset[i] = m_fields_offset[i - 1];
             /* Byte fields */
             if (dbc_format[i - 1] == 'b' || dbc_format[i - 1] == 'X')
             {
-                m_fields_offset[i] += sizeof(uint8);
+                m_fields_offset[i] += sizeof(uint8_t);
             }
-            /* 4 byte fields (int32, float, strings) */
+            /* 4 byte fields (int32_t, float, strings) */
             else
             {
-                m_fields_offset[i] += sizeof(uint32);
+                m_fields_offset[i] += sizeof(uint32_t);
             }
         }
 
@@ -185,20 +185,20 @@ namespace DBC
         return true;
     }
 
-    char* DBCLoader::AutoProduceData(const char* dbc_format, uint32& record_count, char**& index_table, uint32 sql_record_count, uint32 sql_highest_index, char *& sql_data_table)
+    char* DBCLoader::AutoProduceData(const char* dbc_format, uint32_t& record_count, char**& index_table, uint32_t sql_record_count, uint32_t sql_highest_index, char *& sql_data_table)
     {
         if (strlen(dbc_format) != m_field_count) return NULL;
 
         /* Get struct size and index position */
         int i;
-        uint32 record_size = this->GetFormatRecordSize(dbc_format, &i);
+        uint32_t record_size = this->GetFormatRecordSize(dbc_format, &i);
 
         if (i >= 0)
         {
-            uint32 max_index = 0;
-            for (uint32 y = 0; y < m_record_count; ++y)
+            uint32_t max_index = 0;
+            for (uint32_t y = 0; y < m_record_count; ++y)
             {
-                uint32 index = this->GetRecord(y).GetUInt32(i, m_field_count, this->GetOffset(i));
+                uint32_t index = this->GetRecord(y).GetUInt32(i, m_field_count, this->GetOffset(i));
                 if (index > max_index)
                 {
                     max_index = index;
@@ -222,9 +222,9 @@ namespace DBC
         }
 
         char* data_table = new char[(m_record_count + sql_record_count) * record_size];
-        uint32 offset = 0;
+        uint32_t offset = 0;
 
-        for (uint32 y = 0; y < m_record_count; ++y)
+        for (uint32_t y = 0; y < m_record_count; ++y)
         {
             if (i >= 0)
             {
@@ -235,7 +235,7 @@ namespace DBC
                 index_table[y] = &data_table[offset];
             }
 
-            for (uint32 x = 0; x < m_field_count; ++x)
+            for (uint32_t x = 0; x < m_field_count; ++x)
             {
                 switch (dbc_format[x])
                 {
@@ -245,12 +245,12 @@ namespace DBC
                     break;
                 case DBC::DbcFieldFormat::FT_IND:
                 case DBC::DbcFieldFormat::FT_INT:
-                    *((uint32*)(&data_table[offset])) = this->GetRecord(y).GetUInt32(x, m_field_count, this->GetOffset(x));
-                    offset += sizeof(uint32);
+                    *((uint32_t*)(&data_table[offset])) = this->GetRecord(y).GetUInt32(x, m_field_count, this->GetOffset(x));
+                    offset += sizeof(uint32_t);
                     break;
                 case DBC::DbcFieldFormat::FT_BYTE:
-                    *((uint8*)(&data_table[offset])) = this->GetRecord(y).GetUInt8(x, m_field_count, this->GetOffset(x));
-                    offset += sizeof(uint8);
+                    *((uint8_t*)(&data_table[offset])) = this->GetRecord(y).GetUInt8(x, m_field_count, this->GetOffset(x));
+                    offset += sizeof(uint8_t);
                     break;
                 case DBC::DbcFieldFormat::FT_STRING:
                     /* Non-empty or "" strings are replaced in DBC::DBCLoader::AutoProduceStrings */
@@ -282,11 +282,11 @@ namespace DBC
         char* string_pool = new char[m_string_size];
         memcpy(string_pool, m_string_table, m_string_size);
 
-        uint32 offset = 0;
+        uint32_t offset = 0;
 
-        for (uint32 y = 0; y < m_record_count; ++y)
+        for (uint32_t y = 0; y < m_record_count; ++y)
         {
-            for (uint32 x = 0; x < m_field_count; ++x)
+            for (uint32_t x = 0; x < m_field_count; ++x)
             {
                 switch (dbc_format[x])
                 {
@@ -295,10 +295,10 @@ namespace DBC
                     break;
                 case DBC::DbcFieldFormat::FT_IND:
                 case DBC::DbcFieldFormat::FT_INT:
-                    offset += sizeof(uint32);
+                    offset += sizeof(uint32_t);
                     break;
                 case DBC::DbcFieldFormat::FT_BYTE:
-                    offset += sizeof(uint8);
+                    offset += sizeof(uint8_t);
                     break;
                 case DBC::DbcFieldFormat::FT_STRING:
                 {
