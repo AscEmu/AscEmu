@@ -11,7 +11,7 @@ namespace DBC::SQL
     {
         /* Convert DBC file name to SQL table name */
         sql_table_name = *dbc_filename;
-        for (uint32 i = 0; i < sql_table_name.size(); ++i)
+        for (uint32_t i = 0; i < sql_table_name.size(); ++i)
         {
             if (isalpha(sql_table_name[i]))
             {
@@ -27,8 +27,8 @@ namespace DBC::SQL
         DBC::DBCLoader::GetFormatRecordSize(format, &index_pos);
         if (index_pos >= 0)
         {
-            uint32 unsigned_index_pos = uint32(index_pos);
-            for (uint32 x = 0; x < format_string->size(); ++x)
+            uint32_t unsigned_index_pos = uint32_t(index_pos);
+            for (uint32_t x = 0; x < format_string->size(); ++x)
             {
                 if ((*format_string)[x] == DBC::DbcFieldFormat::FT_SQL_PRESENT)
                 {

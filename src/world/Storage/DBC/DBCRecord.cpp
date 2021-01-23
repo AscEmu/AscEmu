@@ -12,27 +12,27 @@ namespace DBC
         /* No Body */
     }
 
-    float DBCRecord::GetFloat(size_t field, uint32 field_count, const uint32 field_offset) const
+    float DBCRecord::GetFloat(size_t field, uint32_t field_count, const uint32_t field_offset) const
     {
         assert(field < field_count);
         float val = *reinterpret_cast<float*>(m_offset + field_offset);
         return val;
     }
 
-    uint32 DBCRecord::GetUInt32(size_t field, uint32 field_count, const uint32 field_offset) const
+    uint32_t DBCRecord::GetUInt32(size_t field, uint32_t field_count, const uint32_t field_offset) const
     {
         assert(field < field_count);
-        uint32 val = *reinterpret_cast<uint32*>(m_offset + field_offset);
+        uint32_t val = *reinterpret_cast<uint32_t*>(m_offset + field_offset);
         return val;
     }
 
-    uint8 DBCRecord::GetUInt8(size_t field, uint32 field_count, const uint32 field_offset) const
+    uint8 DBCRecord::GetUInt8(size_t field, uint32_t field_count, const uint32_t field_offset) const
     {
         assert(field < field_count);
         return *reinterpret_cast<uint8*>(m_offset + field_offset);
     }
 
-    char* DBCRecord::GetString(size_t field, uint32 field_count, const uint32 field_offset, uint32 string_size, unsigned char* string_table) const
+    char* DBCRecord::GetString(size_t field, uint32_t field_count, const uint32_t field_offset, uint32_t string_size, unsigned char* string_table) const
     {
         assert(field < field_count);
         const size_t string_offset = GetUInt32(field, field_count, field_offset);
