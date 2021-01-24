@@ -271,7 +271,7 @@ namespace DBC::Structures
         char const spell_entry_format[] = "niiiiiiiiiiiiiiifiiiissxxiixxixiiiiiiixiiiiiiiix";
         char const spell_item_enchantment_format[] = "nxiiiiiixxxiiisiiiiiiix";
         //char const skill_race_class_info_format[] = "diiiiixxx"; new
-        char const spell_radius_format[] = "nfff";
+        char const spell_radius_format[] = "nffxf";
         char const spell_range_format[] = "nffffixx";
         char const spell_rune_cost_format[] = "niiii";
         char const spell_shapeshift_form_format[] = "nxxiixiiixxiiiiiiiixx";
@@ -1671,7 +1671,8 @@ namespace DBC::Structures
         uint32_t ID;                                                // 0
         float radius_min;                                           // 1
         float radius_per_level;                                     // 2
-        float radius_max;                                           // 3
+        //float unkRadius;                                          // 3
+        float radius_max;                                           // 4
     };
 
     // SpellRange.dbc
