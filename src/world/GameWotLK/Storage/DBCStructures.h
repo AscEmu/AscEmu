@@ -586,7 +586,7 @@ namespace DBC::Structures
         float x;                                                    // 2
         float y;                                                    // 3
         float z;                                                    // 4
-        float o;                                                    // 5 radius?
+        float box_radius;                                           // 5 radius
         float box_x;                                                // 6 extent x edge
         float box_y;                                                // 7 extent y edge
         float box_z;                                                // 8 extent z edge

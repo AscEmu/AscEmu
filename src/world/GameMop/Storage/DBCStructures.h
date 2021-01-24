@@ -175,7 +175,7 @@ namespace DBC::Structures
         char const achievement_criteria_format[] = "niiiiiiiixsiiiiixxxxxxx";
         char const area_group_format[] = "niiiiiii";
         char const area_table_entry_format[] = "iiinixxxxxxxisiiiiiffixxxxxxxx";
-        char const area_trigger_entry_format[] = "nifffxxxfffff";
+        char const area_trigger_entry_format[] = "nifffxxxfffffxxx";
         //char const armor_location_format[] = "nfffff"; new
         char const auction_house_format[] = "niiix";
         char const bank_bag_slot_prices_format[] = "ni";
@@ -255,7 +255,7 @@ namespace DBC::Structures
         char const quest_xp_format[] = "niiiiiiiiii";
         //char const random_properties_points_format[] = "niiiiiiiiiiiiiii"; new
         char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiixi";
-        char const scaling_stat_values_format[] = "iniiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxx";
+        char const scaling_stat_values_format[] = "iniiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxx";
         char const skill_line_format[] = "nisxixixx";
         char const skill_line_ability_format[] = "niiiixxiiiiiix";
         //char const sound_entries_format[] = "nissssssssssssssssssssssxxxxxxxxxxx"; new
@@ -785,11 +785,14 @@ namespace DBC::Structures
         //uint32_t                                                  // 5
         //uint32_t                                                  // 6
         //uint32_t                                                  // 7
-        float o;                                                    // 5 radius
-        float box_x;                                                // 6 extent x edge
-        float box_y;                                                // 7 extent y edge
-        float box_z;                                                // 8 extent z edge
-        float box_o;                                                // 9
+        float box_radius;                                           // 8 radius
+        float box_x;                                                // 9 extent x edge
+        float box_y;                                                // 10 extent y edge
+        float box_z;                                                // 11 extent z edge
+        float box_o;                                                // 12 extent o edge
+        //uint32_t unk13;                                           // 13 Pandaria
+        //uint32_t unk14;                                           // 14 Pandaria
+        //uint32_t unk15;                                           // 15 Pandaria
     };
 
     //\todo danko
@@ -1272,14 +1275,14 @@ namespace DBC::Structures
 
     struct DungeonEncounterEntry
     {
-        uint32 id;                                                  // 0 unique id
-        uint32 mapId;                                               // 1 map id
-        uint32 difficulty;                                          // 2 instance mode
-        //uint32 unk0;                                              // 3
-        uint32 encounterIndex;                                      // 4 encounter index for creating completed mask
+        uint32_t id;                                                // 0 unique id
+        uint32_t mapId;                                             // 1 map id
+        uint32_t difficulty;                                        // 2 instance mode
+        //uint32_t unk0;                                            // 3
+        uint32_t encounterIndex;                                    // 4 encounter index for creating completed mask
         char* encounterName;                                        // 5 encounter name
-        //uint32 nameFlags;                                         // 21
-        //uint32 u
+        //uint32_t nameFlags;                                       // 21
+        //uint32_t u
     };
 
     struct LiquidTypeEntry
@@ -1416,20 +1419,21 @@ namespace DBC::Structures
         //uint32_t amor_mod2[4];                                    // 18-21
         //uint32_t junk[24];                                        // 22-45
         //uint32_t unk2;                                            // 46
+        //uint32_t unk;                                             // 47 Pandaria
     };
 
     struct SkillLineEntry
     {
         uint32_t id;                                                // 0
         uint32_t type;                                              // 1
-        //uint32 unk2                                               // 2
+        //uint32_t unk2                                             // 2
         char* Name;                                                 // 3
         //char* Description;                                        // 4
         uint32_t spell_icon;                                        // 5
         //char* add_name;                                           // 6
         uint32_t linkable;                                          // 7
-        //uint32 unk8                                               // 8 Pandaria
-        //uint32 unk9                                               // 9 Pandaria
+        //uint32_t unk8                                             // 8 Pandaria
+        //uint32_t unk9                                             // 9 Pandaria
     };
 
     struct SkillLineAbilityEntry
@@ -1957,10 +1961,10 @@ namespace DBC::Structures
         char* name;                                                 // 5
         uint32_t horde_mount;                                       // [6-7]
         uint32_t alliance_mount;                                    //
-        //uint32 unk1                                               // 8 Pandaria
+        //uint32_t unk1                                             // 8 Pandaria
         uint32_t nameflags;                                         // 9
-        //uint32 unk1                                               // 10 4.0.0
-        //uint32 unk1                                               // 11 4.0.0
+        //uint32_t unk1                                             // 10 4.0.0
+        //uint32_t unk1                                             // 11 4.0.0
     };
 
     struct TaxiPathEntry
