@@ -2,24 +2,53 @@
 # Find the native MySQL includes and library
 #
 #  MYSQL_INCLUDE_DIR - where to find mysql.h, etc.
-#  MYSQL_LIBRARIES   - List of libraries when using MySQL.
+#  MYSQL_LIBRARY     - List of libraries when using MySQL.
 #  MYSQL_FOUND       - True if MySQL found.
+#  MYSQL_DLL         - Full path to copy libmysql.dll to your AE folder
 
-find_path(MYSQL_INCLUDE_DIR
-    NAMES "mysql.h"
-    PATHS "$ENV{ProgramFiles}/MySQL/*/include"
+#NOTE: You can't build AE with Win32 and use MySQL x64 libs and otherwise. This will result in LNK errors!
+
+if(NOT IS_64BIT)
+LIST(APPEND MY_INCLUDE_PATHS 
+            "$ENV{ProgramFiles\(x86\)}/MySQL/*/include"
+	        "$ENV{ProgramFiles}/MySQL/*/include"
             "$ENV{ProgramW6432}/MySQL/*/include"
             "$ENV{SystemDrive}/MySQL/*/include"
             "/usr/include/mysql"
             "/usr/local/include/mysql"
             "/usr/mysql/include/mysql")
+else ()
+LIST(APPEND MY_INCLUDE_PATHS 
+	        "$ENV{ProgramFiles}/MySQL/*/include"
+            "$ENV{ProgramW6432}/MySQL/*/include"
+            "$ENV{SystemDrive}/MySQL/*/include"
+            "/usr/include/mysql"
+            "/usr/local/include/mysql"
+            "/usr/mysql/include/mysql")
+endif ()
+
+find_path(MYSQL_INCLUDE_DIR
+    NAMES "mysql.h"
+    PATHS ${MY_INCLUDE_PATHS})
 	
 if (WIN32)
-find_library(MYSQL_LIBRARY
-    NAMES "libmysql" "libmysql_r"
-    PATHS "$ENV{ProgramFiles}/MySQL/*/lib"
+
+if(NOT IS_64BIT)
+LIST(APPEND MY_LIB_PATHS 
+            "$ENV{ProgramFiles\(x86\)}/MySQL/*/lib"
+	        "$ENV{ProgramFiles}/MySQL/*/lib"
             "$ENV{ProgramW6432}/MySQL/*/lib"
             "$ENV{SystemDrive}/MySQL/*/lib")
+else ()
+LIST(APPEND MY_LIB_PATHS 
+	        "$ENV{ProgramFiles}/MySQL/*/lib"
+            "$ENV{ProgramW6432}/MySQL/*/lib"
+            "$ENV{SystemDrive}/MySQL/*/lib")
+endif ()
+
+find_library(MYSQL_LIBRARY
+    NAMES "libmysql"
+    PATHS ${MY_LIB_PATHS})
 
 else (WIN32)
 find_library(MYSQL_LIBRARY	

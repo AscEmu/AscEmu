@@ -22,7 +22,11 @@ endif()
 
 # set default architecture identifier
 if(IS_64BIT)
-    message(STATUS "Detected 64 bit system")
+    message(STATUS "Detected x64 system")
+	message(STATUS "Generator Plattform: ${CMAKE_GENERATOR_PLATFORM}")
+else()
+	message(STATUS "Detected Win32 system")
+	message(STATUS "Generator Plattform: ${CMAKE_GENERATOR_PLATFORM}")
 endif()
 
 # default definitions
