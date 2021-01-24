@@ -12,7 +12,6 @@ environment:
   - ASC_VERSION: Cata
   - ASC_VERSION: Mop
 platform:
-  - Win32
   - x64
 
 configuration: Release
