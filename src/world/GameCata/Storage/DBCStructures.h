@@ -827,7 +827,7 @@ namespace DBC::Structures
         //uint32_t state;                                           // 10
     };
 
-    #define OUTFIT_ITEMS 24
+#define OUTFIT_ITEMS 24
 
     struct CharStartOutfitEntry
     {
@@ -1427,11 +1427,11 @@ namespace DBC::Structures
     //    uint32_t Price;                                           // 1
     //};
 
-    //\ todo: confirm effect count
-    #define MAX_SPELL_EFFECTS 3
-    #define MAX_SPELL_REAGENTS 8
-    #define MAX_SPELL_TOTEMS 2
-    #define MAX_SPELL_TOTEM_CATEGORIES 2
+//\ todo: confirm effect count
+#define MAX_SPELL_EFFECTS 3
+#define MAX_SPELL_REAGENTS 8
+#define MAX_SPELL_TOTEMS 2
+#define MAX_SPELL_TOTEM_CATEGORIES 2
 
     // SpellAuraOptions.dbc
     struct SpellAuraOptionsEntry
@@ -1978,7 +1978,7 @@ namespace DBC::Structures
         uint32_t categoryMask;                                      // 3
     };
 
-    #define MAX_VEHICLE_SEATS 8
+#define MAX_VEHICLE_SEATS 8
 
     struct VehicleEntry
     {
