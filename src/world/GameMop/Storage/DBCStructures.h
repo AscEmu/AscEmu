@@ -273,7 +273,7 @@ namespace DBC::Structures
         //char const skill_race_class_info_format[] = "diiiiixxx"; new
         char const spell_radius_format[] = "nffxf";
         char const spell_range_format[] = "nffffixx";
-        char const spell_rune_cost_format[] = "niiii";
+        char const spell_rune_cost_format[] = "niiixi";
         char const spell_shapeshift_form_format[] = "nxxiixiiixxiiiiiiiixx";
         char const spell_effect_format[] = "difiiiffiiiiiifiifiiiiiiiix";
         char const spell_equipped_items_format[] = "diii";
@@ -1702,10 +1702,11 @@ namespace DBC::Structures
     struct SpellRuneCostEntry
     {
         uint32_t ID;                                                // 0
-        uint32_t bloodRuneCost;                                     // 1
-        uint32_t frostRuneCost;                                     // 2
-        uint32_t unholyRuneCost;                                    // 3
-        uint32_t runePowerGain;                                     // 4
+        uint32_t bloodRuneCost;                                     // [1-3]
+        uint32_t frostRuneCost;                                     //
+        uint32_t unholyRuneCost;                                    //
+        //uint32_t unk4                                             // 4
+        uint32_t runePowerGain;                                     // 5
     };
 
     // SpellScaling.dbc
