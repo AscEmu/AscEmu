@@ -174,7 +174,7 @@ namespace DBC::Structures
         char const achievement_format[] = "niiissiiiiisii";
         char const achievement_criteria_format[] = "niiiiiiiixsiiiiixxxxxxx";
         char const area_group_format[] = "niiiiiii";
-        char const area_table_entry_format[] = "iiinixxxxxisiiiiixxxxxxxxx";
+        char const area_table_entry_format[] = "iiinixxxxxxxisiiiiiffixxxxxxxx";
         char const area_trigger_entry_format[] = "nifffxxxfffff";
         //char const armor_location_format[] = "nfffff"; new
         char const auction_house_format[] = "niiix";
@@ -202,7 +202,7 @@ namespace DBC::Structures
         char const durability_quality_format[] = "nf";
         char const emotes_entry_format[] = "nxxiiixx";
         char const emotes_text_format[] = "nxixxxxxxxxxxxxxxxx";
-        char const faction_format[] = "niiiiiiiiiiiiiiiiiiffixsxx";
+        char const faction_format[] = "niiiiiiiiiiiiiiiiiiffixsxxxx";
         char const faction_template_format[] = "niiiiiiiiiiiii";
         char const game_object_display_info_format[] = "nsxxxxxxxxxxffffffxxx";
         char const gem_properties_format[] = "nixxix";
@@ -292,7 +292,7 @@ namespace DBC::Structures
         char const talent_format[] = "niiiiiiiiixxixxxxxx";
         char const talent_tab_format[] = "nxxiiixxiii";
         char const talent_tree_primary_spells_format[] = "iiix";
-        char const taxi_nodes_format[] = "nifffsiixxx";
+        char const taxi_nodes_format[] = "nifffsiixixx";
         char const taxi_path_format[] = "niii";
         char const taxi_path_node_format[] = "diiifffiiii";
         char const totem_category_entry_format[] = "nxii";
@@ -750,21 +750,29 @@ namespace DBC::Structures
         uint32_t id;                                                // 0
         uint32_t map_id;                                            // 1
         uint32_t zone;                                              // 2 if 0 then it's zone, else it's zone id of this area
-        uint32_t explore_flag;                                      // 3, main index
-        uint32_t flags;                                             // 4, unknown value but 312 for all cities
-                                                                    // 5-9 unused
-        int32_t area_level;                                         // 10
-        char* area_name;                                            // 11
-        uint32_t team;                                              // 12
-        uint32_t liquid_type_override[4];                           // 13-16 liquid override by type
-        //uint32_t unk17;                                           // 17
-        //uint32_t unk18;                                           // 18
-        //uint32_t unk19;                                           // 19
-        //uint32_t unk20;                                           // 20
-        //uint32_t unk21;                                           // 21
-        //uint32_t unk22;                                           // 22
-        //uint32_t unk23;                                           // 23
-        //uint32_t unk24;                                           // 24
+        uint32_t explore_flag;                                      // 3 main index
+        uint32_t flags;                                             // 4 unknown value but 312 for all cities
+        //uint32_t unk1;                                            // 5 Pandaria
+        //uint32_t soundPreferences;                                // 6
+        //uint32_t SoundPreferencesUnderwater;                      // 7
+        //uint32_t SoundAmbience;                                   // 8
+        //char* areaName2;                                          // 9
+        //uint32_t ZoneMusic;                                       // 10
+        //uint32_t ZoneIntroMusicTable;                             // 11
+        int32_t area_level;                                         // 12
+        char* area_name;                                            // 13
+        uint32_t team;                                              // 14
+        uint32_t liquid_type_override[4];                           // 14-18 liquid override by type
+        float MaxDepth;                                             // 19
+        float AmbientMultiplier;                                    // 20
+        uint32_t LightId;                                           // 21 
+        //uint32_t unk20;                                           // 22 4.0.0
+        //uint32_t unk21;                                           // 23 4.0.0
+        //uint32_t unk22;                                           // 24 4.0.0
+        //uint32_t unk23;                                           // 25 4.0.0
+        //uint32_t unk24;                                           // 26
+        //uint32_t unk25;                                           // 27 Pandaria
+        //uint32_t unk26;                                           // 28 Pandaria
     };
 
     struct AreaTriggerEntry
@@ -1058,6 +1066,8 @@ namespace DBC::Structures
         char* Name;                                                 // 23
         //uint32_t Description;                                     // 24
         //uint32_t description_flags;                               // 25
+        // unk1                                                     // 26 Pandaria
+        // unk2                                                     // 27 Pandaria
     };
 
     struct FactionTemplateEntry
@@ -1412,7 +1422,7 @@ namespace DBC::Structures
     {
         uint32_t id;                                                // 0
         uint32_t type;                                              // 1
-        //uint32 unk2                                               // 2 skillCostID
+        //uint32 unk2                                               // 2
         char* Name;                                                 // 3
         //char* Description;                                        // 4
         uint32_t spell_icon;                                        // 5
@@ -1945,8 +1955,12 @@ namespace DBC::Structures
         float y;                                                    // 3
         float z;                                                    // 4
         char* name;                                                 // 5
-        uint32_t horde_mount;                                       // 6
-        uint32_t alliance_mount;                                    // 7
+        uint32_t horde_mount;                                       // [6-7]
+        uint32_t alliance_mount;                                    //
+        //uint32 unk1                                               // 8 Pandaria
+        uint32_t nameflags;                                         // 9
+        //uint32 unk1                                               // 10 4.0.0
+        //uint32 unk1                                               // 11 4.0.0
     };
 
     struct TaxiPathEntry
@@ -2143,8 +2157,10 @@ namespace DBC::Structures
         //uint32_t field8;                                          // 8
         uint32_t flags;                                             // 9
         uint32_t areaId;                                            // 10
-        //char Name[16];                                            // 11-26
-        //uint32_t nameflags;                                       // 27
+        //char *Name;                                               // 11
+        //uint32_t field12;                                         // 12
+        //uint32_t field13;                                         // 13
+        //uint32_t field14;                                         // 14
     };
 
     struct WorldMapAreaEntry
