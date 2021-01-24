@@ -195,7 +195,7 @@ namespace DBC::Structures
         //char const creature_model_data_format[] = "nxxxxxxxxxxxxxxffxxxxxxxxxxxxxx"; new
         char const creature_spell_data_format[] = "niiiiiiii";  //niiiixxxx
         //char const creature_type_format[]="nxx"; new
-        char const currency_types_format[] = "nisxxxxiiix";
+        char const currency_types_format[] = "nixxxiiiiixx";
         //char const destructible_model_data_format[] = "nixxxixxxxixxxxixxxxixxx"; new
         char const dungeon_encounter_format[] = "niixisxx";
         char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
@@ -998,15 +998,16 @@ namespace DBC::Structures
     {
         uint32_t item_id;                                           // 0
         uint32_t Category;                                          // 1
-        char* name;                                                 // 2
+        //char* name;                                               // 2
         //char* unk                                                 // 3
-        //char* unk2                                                // 4
-        //uint32_t unk5;                                            // 5
-        //uint32_t unk6;                                            // 6
+        //uint32_t unk4                                             // 4
+        uint32_t HasSubstitution;                                   // 5 Pandaria (Archaeology)
+        uint32_t SubstitutionId;                                    // 6
         uint32_t TotalCap;                                          // 7
         uint32_t WeekCap;                                           // 8
         uint32_t Flags;                                             // 9
-        //char* description;                                        // 10
+        //uint32_t unk10                                            // 10 Pandaria
+        //char* description;                                        // 11
     };
 
     struct DurabilityCostsEntry
