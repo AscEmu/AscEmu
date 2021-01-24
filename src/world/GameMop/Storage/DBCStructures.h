@@ -256,7 +256,7 @@ namespace DBC::Structures
         //char const random_properties_points_format[] = "niiiiiiiiiiiiiii"; new
         char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiixi";
         char const scaling_stat_values_format[] = "iniiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxx";
-        char const skill_line_format[] = "nisxixi";
+        char const skill_line_format[] = "nisxixixx";
         char const skill_line_ability_format[] = "niiiixxiiiiiix";
         //char const sound_entries_format[] = "nissssssssssssssssssssssxxxxxxxxxxx"; new
         char const spell_aura_options_format[] = "diiii";
@@ -1412,11 +1412,14 @@ namespace DBC::Structures
     {
         uint32_t id;                                                // 0
         uint32_t type;                                              // 1
-        char* Name;                                                 // 2
-        //char* Description;                                        // 3
-        uint32_t spell_icon;                                        // 4
-        //char* add_name;                                           // 5
-        uint32_t linkable;                                          // 6
+        //uint32 unk2                                               // 2 skillCostID
+        char* Name;                                                 // 3
+        //char* Description;                                        // 4
+        uint32_t spell_icon;                                        // 5
+        //char* add_name;                                           // 6
+        uint32_t linkable;                                          // 7
+        //uint32 unk8                                               // 8 Pandaria
+        //uint32 unk9                                               // 9 Pandaria
     };
 
     struct SkillLineAbilityEntry
