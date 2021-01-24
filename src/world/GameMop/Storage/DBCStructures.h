@@ -298,7 +298,7 @@ namespace DBC::Structures
         char const totem_category_entry_format[] = "nxii";
         char const transport_animation_format[] = "diifffx";
         char const transport_rotation_format[] = "diiffff";
-        char const vehicle_format[] = "niffffiiiiiiiifffffffffffffffssssfifiixx";
+        char const vehicle_format[] = "nixffffiiiiiiiifffffffffffffffssssfifiixx";
         char const vehicle_seat_format[] = "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxxxxxxxxxx";
         char const wmo_area_table_format[] = "niiixxxxxiixxxx";
         char const world_map_area_entry_format[] = "xinxxxxxixxxxx";
@@ -2026,34 +2026,35 @@ namespace DBC::Structures
         uint32_t ID;                                                // 0
         uint32_t flags;                                             // 1
         float turnSpeed;                                            // 2
-        float pitchSpeed;                                           // 3
-        float pitchMin;                                             // 4
-        float pitchMax;                                             // 5
-        uint32_t seatID[MAX_VEHICLE_SEATS];                         // 6-13
-        float mouseLookOffsetPitch;                                 // 14
-        float cameraFadeDistScalarMin;                              // 15
-        float cameraFadeDistScalarMax;                              // 16
-        float cameraPitchOffset;                                    // 17
-        float facingLimitRight;                                     // 18
-        float facingLimitLeft;                                      // 19
-        float msslTrgtTurnLingering;                                // 20
-        float msslTrgtPitchLingering;                               // 21
-        float msslTrgtMouseLingering;                               // 22
-        float msslTrgtEndOpacity;                                   // 23
-        float msslTrgtArcSpeed;                                     // 24
-        float msslTrgtArcRepeat;                                    // 25
-        float msslTrgtArcWidth;                                     // 26
-        float msslTrgtImpactRadius[2];                              // 27-28
-        char* msslTrgtArcTexture;                                   // 29
-        char* msslTrgtImpactTexture;                                // 30
-        char* msslTrgtImpactModel[2];                               // 31-32
-        float cameraYawOffset;                                      // 33
-        uint32_t uiLocomotionType;                                  // 34
-        float msslTrgtImpactTexRadius;                              // 35
-        uint32_t uiSeatIndicatorType;                               // 36
-        uint32_t powerType;                                         // 37
-        //uint32_t unk1;                                            // 38
-        //uint32_t unk2;                                            // 39
+        //char* unkName                                             // 3 Panradia
+        float pitchSpeed;                                           // 4
+        float pitchMin;                                             // 5
+        float pitchMax;                                             // 6
+        uint32_t seatID[MAX_VEHICLE_SEATS];                         // 7-15
+        float mouseLookOffsetPitch;                                 // 16
+        float cameraFadeDistScalarMin;                              // 17
+        float cameraFadeDistScalarMax;                              // 18
+        float cameraPitchOffset;                                    // 19
+        float facingLimitRight;                                     // 20
+        float facingLimitLeft;                                      // 21
+        float msslTrgtTurnLingering;                                // 21
+        float msslTrgtPitchLingering;                               // 22
+        float msslTrgtMouseLingering;                               // 23
+        float msslTrgtEndOpacity;                                   // 24
+        float msslTrgtArcSpeed;                                     // 25
+        float msslTrgtArcRepeat;                                    // 26
+        float msslTrgtArcWidth;                                     // 27
+        float msslTrgtImpactRadius[2];                              // 28-30
+        char* msslTrgtArcTexture;                                   // 31
+        char* msslTrgtImpactTexture;                                // 32
+        char* msslTrgtImpactModel[2];                               // 33-35
+        float cameraYawOffset;                                      // 36
+        uint32_t uiLocomotionType;                                  // 37
+        float msslTrgtImpactTexRadius;                              // 38
+        uint32_t uiSeatIndicatorType;                               // 39
+        uint32_t powerType;                                         // 40 new in 3.1
+        //uint32_t unk1;                                            // 41 new in 3.1
+        //uint32_t unk2;                                            // 42 new in 3.1
     };
 
     enum VehicleSeatFlags
