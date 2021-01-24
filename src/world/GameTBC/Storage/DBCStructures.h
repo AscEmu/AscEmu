@@ -163,7 +163,7 @@ namespace DBC::Structures
         uint32_t Price;                                             // 1
     };
 
-    #define OUTFIT_ITEMS 12
+#define OUTFIT_ITEMS 12
 
     struct CharStartOutfitEntry
     {
@@ -616,10 +616,10 @@ namespace DBC::Structures
         uint32_t Duration3;                                         // 3
     };
 
-    #define MAX_SPELL_EFFECTS 3
-    #define MAX_SPELL_REAGENTS 8
-    #define MAX_SPELL_TOTEMS 2
-    #define MAX_SPELL_TOTEM_CATEGORIES 2
+#define MAX_SPELL_EFFECTS 3
+#define MAX_SPELL_REAGENTS 8
+#define MAX_SPELL_TOTEMS 2
+#define MAX_SPELL_TOTEM_CATEGORIES 2
 
     struct SpellEntry
     {
@@ -868,7 +868,7 @@ namespace DBC::Structures
         //uint32_t SequenceID;                                      // 4
     };
 
-    #define MAX_VEHICLE_SEATS 8
+#define MAX_VEHICLE_SEATS 8
 
     struct VehicleEntry
     {

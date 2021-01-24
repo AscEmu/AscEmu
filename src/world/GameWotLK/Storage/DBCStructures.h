@@ -624,7 +624,7 @@ namespace DBC::Structures
         uint32_t hair_id;                                           // 39 Hair ID
     };
 
-    #define OUTFIT_ITEMS 24
+#define OUTFIT_ITEMS 24
 
     struct CharStartOutfitEntry
     {
@@ -1201,10 +1201,10 @@ namespace DBC::Structures
         uint32_t Duration3;                                         // 3
     };
 
-    #define MAX_SPELL_EFFECTS 3
-    #define MAX_SPELL_REAGENTS 8
-    #define MAX_SPELL_TOTEMS 2
-    #define MAX_SPELL_TOTEM_CATEGORIES 2
+#define MAX_SPELL_EFFECTS 3
+#define MAX_SPELL_REAGENTS 8
+#define MAX_SPELL_TOTEMS 2
+#define MAX_SPELL_TOTEM_CATEGORIES 2
 
     struct SpellEntry
     {
@@ -1492,7 +1492,7 @@ namespace DBC::Structures
         float W;                                                    // 6
     };
 
-    #define MAX_VEHICLE_SEATS 8
+#define MAX_VEHICLE_SEATS 8
 
     struct VehicleEntry
     {

@@ -169,7 +169,7 @@ namespace DBC::Structures
         uint32_t bit_index;                                         // 36 used in PLAYER_CHOSEN_TITLE and 1<<index in PLAYER__FIELD_KNOWN_TITLES
     };
 
-    #define OUTFIT_ITEMS 12
+#define OUTFIT_ITEMS 12
 
     struct CharStartOutfitEntry
     {
@@ -599,9 +599,9 @@ namespace DBC::Structures
         uint32_t Duration3;                                         // 3
     };
 
-    #define MAX_SPELL_EFFECTS 3
-    #define MAX_SPELL_REAGENTS 8
-    #define MAX_SPELL_TOTEMS 2
+#define MAX_SPELL_EFFECTS 3
+#define MAX_SPELL_REAGENTS 8
+#define MAX_SPELL_TOTEMS 2
 
     struct SpellEntry
     {
@@ -833,7 +833,7 @@ namespace DBC::Structures
         //uint32_t SequenceID;                                      // 4
     };
 
-    #define MAX_VEHICLE_SEATS 8
+#define MAX_VEHICLE_SEATS 8
 
     struct VehicleEntry
     {
