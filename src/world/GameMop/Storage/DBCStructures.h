@@ -197,7 +197,7 @@ namespace DBC::Structures
         //char const creature_type_format[]="nxx"; new
         char const currency_types_format[] = "nixxxiiiiixx";
         //char const destructible_model_data_format[] = "nixxxixxxxixxxxixxxxixxx"; new
-        char const dungeon_encounter_format[] = "niixisxx";
+        char const dungeon_encounter_format[] = "niixisxxx";
         char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
         char const durability_quality_format[] = "nf";
         char const emotes_entry_format[] = "nxxiiixx";
@@ -1281,8 +1281,9 @@ namespace DBC::Structures
         //uint32_t unk0;                                            // 3
         uint32_t encounterIndex;                                    // 4 encounter index for creating completed mask
         char* encounterName;                                        // 5 encounter name
-        //uint32_t nameFlags;                                       // 21
-        //uint32_t u
+        //uint32_t nameFlags;                                       // 6
+        //uint32_t unk7;                                            // 7
+        //uint32_t unk8;                                            // 8 Pandaria
     };
 
     struct LiquidTypeEntry
