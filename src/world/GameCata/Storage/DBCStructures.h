@@ -777,7 +777,7 @@ namespace DBC::Structures
         //uint32_t                                                  // 5
         //uint32_t                                                  // 6
         //uint32_t                                                  // 7
-        float o;                                                    // 5 radius
+        float box_radius;                                           // 5 radius
         float box_x;                                                // 6 extent x edge
         float box_y;                                                // 7 extent y edge
         float box_z;                                                // 8 extent z edge
