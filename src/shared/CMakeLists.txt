@@ -32,10 +32,7 @@ set(sources
     DynLib.cpp
     LocationVector.cpp
     Log.cpp
-    MapFile.cpp
-    MapFileEntry.cpp
     PerformanceCounter.cpp
-    printStackTrace.cpp
     SysInfo.cpp
     TextFile.cpp
     Util.cpp
@@ -63,17 +60,12 @@ set(headers
     FastQueue.h
     LocationVector.h
     LogonCommDefines.h
-    MapFile.h
-    MapFileEntry.h
     PerformanceCounter.hpp
     PreallocatedQueue.h
-    printStackTrace.h
     Database/DatabaseEnv.h
     RC4Engine.h
     SysInfo.hpp
     StackBuffer.h
-    StackTrace.h
-    StackWalker.h
     TextFile.h
     TLSObject.h
     WorldPacket.h
@@ -120,7 +112,7 @@ set(headers
 )
 
 if(WIN32)
-   set(sources ${sources} Network/SocketMgrWin32.cpp Network/SocketOpsWin32.cpp Network/SocketWin32.cpp StackWalker.cpp StackTrace.cpp)
+   set(sources ${sources} Network/SocketMgrWin32.cpp Network/SocketOpsWin32.cpp Network/SocketWin32.cpp)
 elseif((CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD") OR APPLE)
    set(sources ${sources} Network/SocketMgrFreeBSD.cpp Network/SocketFreeBSD.cpp Network/SocketOpsFreeBSD.cpp)
 else()

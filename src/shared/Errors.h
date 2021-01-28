@@ -20,7 +20,14 @@
 #ifndef _ERRORS_H
 #define _ERRORS_H
 
-#include "printStackTrace.h"
+#include <cstdio>
+#include <cstring>
+
+static void arcAssertFailed(const char* fname, int line, const char* expr)
+{
+    printf("Assertion Failed: (%s)\n", expr);
+    printf("Location: %s(%i)\n", fname, line);
+}
 
 ///\todo handle errors better
 
