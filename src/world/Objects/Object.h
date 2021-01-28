@@ -43,7 +43,7 @@
 #include "../shared/CommonDefines.hpp"
 #include "WorldPacket.h"
 #include "Units/Creatures/CreatureDefines.hpp"
-#include "Data/WoWObject.h"
+#include "Data/WoWObject.hpp"
 #include "MovementInfo.h"
 #include "Spell/Definitions/School.h"
 

@@ -23,7 +23,7 @@
 
 #include "Object.h"
 #include "Units/Unit.h"
-#include "Data/WoWDynamicObject.h"
+#include "Data/WoWDynamicObject.hpp"
 
 class SpellInfo;
 

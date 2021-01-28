@@ -40,7 +40,7 @@
 #include "Management/Guild/Guild.hpp"
 #include "Management/ObjectUpdates/SplineManager.h"
 #include "Management/ObjectUpdates/UpdateManager.h"
-#include "Data/WoWPlayer.h"
+#include "Data/WoWPlayer.hpp"
 
 struct CharCreate;
 class QuestLogEntry;

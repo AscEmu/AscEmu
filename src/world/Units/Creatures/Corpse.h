@@ -23,7 +23,7 @@
 
 #include "Objects/Object.h"
 #include "Management/LootMgr.h"
-#include "Data/WoWCorpse.h"
+#include "Data/WoWCorpse.hpp"
 
 enum CORPSE_STATE
 {

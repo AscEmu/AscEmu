@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Unit.h"
 
-#include "Data/WoWUnit.h"
+#include "Data/WoWUnit.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Management/HonorHandler.h"
 #include "Map/MapMgr.h"

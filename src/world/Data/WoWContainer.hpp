@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
  */
 
 #pragma once
-#include "WoWItem.h"
+#include "WoWItem.hpp"
 #pragma pack(push, 1)
 
 #if VERSION_STRING == Classic

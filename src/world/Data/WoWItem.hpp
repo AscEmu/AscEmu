@@ -12,8 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
  */
 
 #pragma once
-#include "WoWObject.h"
-#include "GuidData.h"
+#include "WoWObject.hpp"
+#include "GuidData.hpp"
 #pragma pack(push, 1)
 
 #if VERSION_STRING == Classic

@@ -67,16 +67,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/CommandTableStorage.hpp"
 
 // Data
-#include "Data/Flags.h"
-#include "Data/GuidData.h"
-#include "Data/WoWContainer.h"
-#include "Data/WoWCorpse.h"
-#include "Data/WoWDynamicObject.h"
-#include "Data/WoWGameObject.h"
-#include "Data/WoWItem.h"
-#include "Data/WoWObject.h"
-#include "Data/WoWPlayer.h"
-#include "Data/WoWUnit.h"
+#include "Data/Flags.hpp"
+#include "Data/GuidData.hpp"
+#include "Data/WoWContainer.hpp"
+#include "Data/WoWCorpse.hpp"
+#include "Data/WoWDynamicObject.hpp"
+#include "Data/WoWGameObject.hpp"
+#include "Data/WoWItem.hpp"
+#include "Data/WoWObject.hpp"
+#include "Data/WoWPlayer.hpp"
+#include "Data/WoWUnit.hpp"
 
 // Management
 #if VERSION_STRING == Cata

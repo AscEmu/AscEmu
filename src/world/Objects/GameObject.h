@@ -25,7 +25,7 @@
 #include "Management/QuestMgr.h"
 #include "Management/TransporterHandler.h"
 #include "Macros/ScriptMacros.hpp"
-#include "Data/WoWGameObject.h"
+#include "Data/WoWGameObject.hpp"
 #include "Map/Map.h"
 
 enum GameObject_State : uint8_t

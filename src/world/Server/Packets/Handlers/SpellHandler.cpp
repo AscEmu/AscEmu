@@ -20,7 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Summons/TotemSummon.h"
 #include "Units/UnitDefines.hpp"
 #include "Objects/Faction.h"
-#include "Data/WoWItem.h"
+#include "Data/WoWItem.hpp"
 #include "Server/Packets/CmsgCastSpell.h"
 #include "Server/Packets/CmsgPetCastSpell.h"
 

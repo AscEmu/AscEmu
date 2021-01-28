@@ -22,7 +22,7 @@
 #include "StdAfx.h"
 #include "Management/Container.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Data/WoWContainer.h"
+#include "Data/WoWContainer.hpp"
 
 // MIT start
 //////////////////////////////////////////////////////////////////////////////////////////

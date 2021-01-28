@@ -30,7 +30,7 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellEffectTarget.h"
 #include "Spell/SpellMgr.h"
-#include "Data/WoWGameObject.h"
+#include "Data/WoWGameObject.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Server/Packets/SmsgGameobjectCustomAnim.h"
 #include "Server/Packets/SmsgGameobjectPagetext.h"
