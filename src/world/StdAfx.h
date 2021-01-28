@@ -40,9 +40,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CallBack.h"
 #include "CThreads.h"
 
-#ifdef WIN32
-    #include "printStackTrace.h"
-#endif
 //////////////////////////////////////////////////////////////////////////////////////////
 
 // Movement

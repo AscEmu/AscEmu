@@ -543,7 +543,6 @@ Player::~Player()
     if (!ok_to_remove)
     {
         LOG_ERROR("Player deleted from non-logoutplayer!");
-        printStackTrace(); // Win32 Debug
 
         sObjectMgr.RemovePlayer(this);
     }
