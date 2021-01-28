@@ -101,7 +101,6 @@ set(headers
     Network/SocketOps.h
     Network/SocketDefines.h
     Threading/ConditionVariable.h
-    Threading/Guard.h
     Threading/LegacyThreading.h
     Threading/LegacyThreadPool.h
     Threading/LegacyThreadBase.h

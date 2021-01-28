@@ -27,8 +27,6 @@
 // Platform Specific Lock Implementation
 #include "Mutex.h"
 
-// Platform Independant Guard
-#include "Guard.h"
 
 // Platform Specific Thread Base
 #include "LegacyThreadBase.h"

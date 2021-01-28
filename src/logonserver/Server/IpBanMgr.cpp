@@ -115,7 +115,7 @@ bool IpBanMgr::remove(const std::string& ip)
 
 IpBanStatus IpBanMgr::getBanStatus(in_addr ip_address)
 {
-    Guard lguard(ipBanMutex);
+    ipBanMutex.Acquire();
 
     for (auto itr2 = _ipBanList.begin(); itr2 != _ipBanList.end();)
     {
@@ -125,7 +125,10 @@ IpBanStatus IpBanMgr::getBanStatus(in_addr ip_address)
         if (ParseCIDRBan(ip_address.s_addr, bannedIp->Mask, bannedIp->Bytes))
         {
             if (bannedIp->Expire == 0)
+            {
+                ipBanMutex.Release();
                 return BAN_STATUS_PERMANENT_BAN;
+            }
 
             if (static_cast<uint32_t>(UNIXTIME) >= bannedIp->Expire)
             {
@@ -134,10 +137,12 @@ IpBanStatus IpBanMgr::getBanStatus(in_addr ip_address)
             }
             else
             {
+                ipBanMutex.Release();
                 return BAN_STATUS_TIME_LEFT_ON_BAN;
             }
         }
     }
 
+    ipBanMutex.Release();
     return BAN_STATUS_NOT_BANNED;
 }
