@@ -21,9 +21,9 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Management/Item.h"
-#include "Management/LFG/LFGMgr.h"
-#include "Management/LFG/LFGGroupData.h"
-#include "Management/LFG/LFGPlayerData.h"
+#include "Management/LFG/LFGMgr.hpp"
+#include "Management/LFG/LFGGroupData.hpp"
+#include "Management/LFG/LFGPlayerData.hpp"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
 

@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/AuctionMgr.h"
 #include "Management/CalendarMgr.h"
 #include "Management/Item.h"
-#include "Management/LFG/LFGMgr.h"
+#include "Management/LFG/LFGMgr.hpp"
 #include "Management/WordFilter.h"
 #include "Management/WeatherMgr.h"
 #include "Management/TaxiMgr.h"

@@ -5,11 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 
-#include "GossipMenu.h"
+#include "GossipMenu.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Management/Item.h"
-#include "GossipScript.h"
+#include "GossipScript.hpp"
 
 void GossipScript::destroy()
 {

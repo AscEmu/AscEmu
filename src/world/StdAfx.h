@@ -133,15 +133,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.h"
 #include "Management/Battleground/BattlegroundMgr.h"
 
-#include "Management/Gossip/GossipScript.h"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Management/Gossip/GossipDefines.hpp"
 
 #include "Management/Guild/GuildDefinitions.hpp"
 
-#include "Management/LFG/LFG.h"
-#include "Management/LFG/LFGGroupData.h"
-#include "Management/LFG/LFGMgr.h"
-#include "Management/LFG/LFGPlayerData.h"
+#include "Management/LFG/LFG.hpp"
+#include "Management/LFG/LFGGroupData.hpp"
+#include "Management/LFG/LFGMgr.hpp"
+#include "Management/LFG/LFGPlayerData.hpp"
 
 // Map
 #include "Map/CellHandler.h"

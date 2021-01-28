@@ -17,7 +17,7 @@
  */
 
 #include "StdAfx.h"
-#include "Management/LFG/LFGPlayerData.h"
+#include "Management/LFG/LFGPlayerData.hpp"
 
 LfgPlayerData::LfgPlayerData() :
 m_State(LFG_STATE_NONE), m_OldState(LFG_STATE_NONE), m_Roles(0), m_Comment("")
