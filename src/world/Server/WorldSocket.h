@@ -21,7 +21,6 @@
 #ifndef WORLDSOCKET_H
 #define WORLDSOCKET_H
 
-#include "StackBuffer.h"
 #include "FastQueue.h"
 #include "Auth/WowCrypt.h"
 #include "WorldPacket.h"
@@ -71,7 +70,6 @@ class SERVER_DECL WorldSocket : public Socket
 
         // vs8 fix - send null on empty buffer
         inline void SendPacket(WorldPacket* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : NULL)); }
-        inline void SendPacket(StackBufferBase* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->GetSize(), (packet->GetSize() ? (const void*)packet->GetBufferPointer() : NULL)); }
 
 #if VERSION_STRING != Mop
         void OutPacket(uint16 opcode, size_t len, const void* data);

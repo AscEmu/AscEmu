@@ -22,7 +22,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldPacket.h"
 #include "Log.hpp"
 #include "ByteBuffer.h"
-#include "StackBuffer.h"
 #include "Config/Config.h"
 #include "crc32.h"
 #include "LocationVector.h"

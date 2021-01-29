@@ -135,8 +135,6 @@ class SERVER_DECL WorldSession
 
         void SendPacket(WorldPacket* packet);
 
-        void SendPacket(StackBufferBase* packet);
-
         void OutPacket(uint16 opcode);
 
         void Delete();

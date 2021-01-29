@@ -64,7 +64,6 @@ set(headers
     Database/DatabaseEnv.h
     RC4Engine.h
     SysInfo.hpp
-    StackBuffer.h
     TLSObject.h
     WorldPacket.h
     WoWGuid.h

@@ -47,7 +47,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | Threading/AtomicCounter.cpp
 * 2008 | Threading/AtomicBoolean.h
 * 2008 | Threading/AtomicBoolean.cpp
-* 2008 | StackBuffer.h
 * 2008 | Singleton.h
 * 2008 | PreallocatedQueue.h
 * 2008 | LocationVector.h
@@ -151,6 +150,7 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 ### Removed on 29 Jan 2021
 * 2001 | TextFile.h
 * 2001 | TextFile.cpp
+* 2008 | StackBuffer.h
 
 ### New files
 * 2017 | Common.hpp
