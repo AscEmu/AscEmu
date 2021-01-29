@@ -34,7 +34,6 @@ set(sources
     Log.cpp
     PerformanceCounter.cpp
     SysInfo.cpp
-    TextFile.cpp
     Util.cpp
 )
 
@@ -66,7 +65,6 @@ set(headers
     RC4Engine.h
     SysInfo.hpp
     StackBuffer.h
-    TextFile.h
     TLSObject.h
     WorldPacket.h
     WoWGuid.h
