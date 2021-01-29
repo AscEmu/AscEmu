@@ -109,7 +109,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2005 | Database/MySQLDatabase.cpp
 * 2005 | CRefcounter.h
 * 2005 | CircularQueue.h
-* 2001 | Array.h
 * 1996 | crc32.h
 * 1996 | crc32.cpp
 
@@ -151,6 +150,7 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2001 | TextFile.h
 * 2001 | TextFile.cpp
 * 2008 | StackBuffer.h
+* 2001 | Array.h
 
 ### New files
 * 2017 | Common.hpp
