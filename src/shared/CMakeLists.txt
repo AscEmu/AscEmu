@@ -50,7 +50,6 @@ set(headers
     CommonTypes.hpp
     CrashHandler.h
     crc32.h
-    CRefcounter.h
     CThreads.h
     Database/DatabaseUpdater.h
     DynLib.hpp

@@ -2850,11 +2850,9 @@ uint32 ObjectMgr::GenerateGameObjectSpawnID()
 void ObjectMgr::AddPlayerCache(uint32 guid, PlayerCache* cache)
 {
     m_playerCacheLock.Acquire();
-    cache->AddRef();
     PlayerCacheMap::iterator itr = m_playerCache.find(guid);
     if (itr != m_playerCache.end())
     {
-        itr->second->DecRef();
         itr->second = cache;
     }
     else
@@ -2871,7 +2869,6 @@ void ObjectMgr::RemovePlayerCache(uint32 guid)
     PlayerCacheMap::iterator itr = m_playerCache.find(guid);
     if (itr != m_playerCache.end())
     {
-        itr->second->DecRef();
         m_playerCache.erase(itr);
     }
 
@@ -2885,7 +2882,6 @@ PlayerCache* ObjectMgr::GetPlayerCache(uint32 guid)
     if (itr != m_playerCache.end())
     {
         PlayerCache* ret = itr->second;
-        ret->AddRef();
         m_playerCacheLock.Release();
         return ret;
     }
@@ -2911,7 +2907,6 @@ PlayerCache* ObjectMgr::GetPlayerCache(const char* name, bool caseSensitive /*= 
             if (!stricmp(cachename.c_str(), strName.c_str()))
             {
                 ret = itr->second;
-                ret->AddRef();
                 break;
             }
         }
@@ -2925,7 +2920,6 @@ PlayerCache* ObjectMgr::GetPlayerCache(const char* name, bool caseSensitive /*= 
             if (!strcmp(cachename.c_str(), name))
             {
                 ret = itr->second;
-                itr->second->AddRef();
                 break;
             }
         }

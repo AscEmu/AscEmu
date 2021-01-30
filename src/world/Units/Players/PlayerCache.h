@@ -64,7 +64,7 @@ typedef std::map<uint64, void*> PlayerCacheMap;
 
 class Player;
 
-class PlayerCache : public Arcemu::Shared::CRefCounter
+class PlayerCache
 {
     public:
 

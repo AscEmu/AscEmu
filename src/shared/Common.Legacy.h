@@ -133,7 +133,6 @@
 
 #include "Threading/ConditionVariable.h"
 
-#include "CRefcounter.h"
 
 #if COMPILER == COMPILER_MICROSOFT
     #define I64FMT "%016I64X"
