@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "DatabaseUpdater.h"
+#include "DatabaseUpdater.hpp"
 #include "../Log.hpp"
 #include "Database.h"
 #include "Field.hpp"

@@ -51,7 +51,7 @@ set(headers
     CrashHandler.h
     crc32.h
     CThreads.h
-    Database/DatabaseUpdater.h
+    Database/DatabaseUpdater.hpp
     DynLib.hpp
     Errors.h
     FastQueue.h
@@ -59,7 +59,7 @@ set(headers
     LogonCommDefines.h
     PerformanceCounter.hpp
     PreallocatedQueue.h
-    Database/DatabaseEnv.h
+    Database/DatabaseCommon.hpp
     RC4Engine.h
     SysInfo.hpp
     TLSObject.h
@@ -68,7 +68,7 @@ set(headers
     Auth/BigNumber.h
     Auth/MD5.h
     Auth/Sha1.h
-    Auth/WowCrypt.h
+    Auth/WowCrypt.hpp
     Config/Config.h
     Database/Database.h
     Database/Field.hpp

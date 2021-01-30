@@ -16,8 +16,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 
 ## List of Legacy files
 ### Not rewritten - yet
-* 2015 | Exceptions/PlayerExceptions.hpp
-* 2015 | Exceptions/Exceptions.hpp
 * 2014 | Network/SocketDefines.h
 * 2014 | Network/NetworkIncludes.hpp
 * 2014 | CommonTypes.hpp
@@ -58,7 +56,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | DynLib.hpp
 * 2008 | DynLib.cpp
 * 2008 | Database/MySQLDatabase.h
-* 2008 | Database/DatabaseEnv.h
 * 2008 | Database/Database.h
 * 2008 | Database/Database.cpp
 * 2008 | Database/CreateInterface.cpp
@@ -153,8 +150,11 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 
 ### Removed on 30 Jan 2021
 * 2005 | CRefcounter.h
+* 2008 | Database/DatabaseEnv.h
 
 ### New files
+* 2015 | Exceptions/PlayerExceptions.hpp
+* 2015 | Exceptions/Exceptions.hpp
 * 2017 | Common.hpp
 * 2017 | Log.cpp
 * 2017 | Log.hpp
@@ -162,5 +162,8 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2017 | Util.cpp
 * 2017 | Util.hpp
 * 2017 | Auth/WowCrypt.cpp
-* 2017 | Auth/WowCrypt.h
+* 2017 | Auth/WowCrypt.hpp
 * 2020 | Database/Field.hpp
+* 2020 | Database/DatabaseUpdater.cpp
+* 2020 | Database/DatabaseUpdater.hpp
+* 2021 | Database/DatabaseCommon.hpp

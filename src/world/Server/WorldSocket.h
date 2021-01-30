@@ -22,7 +22,7 @@
 #define WORLDSOCKET_H
 
 #include "FastQueue.h"
-#include "Auth/WowCrypt.h"
+#include "Auth/WowCrypt.hpp"
 #include "WorldPacket.h"
 #include "Network/Network.h"
 
