@@ -17,9 +17,11 @@ enum MageSpells
     SPELL_MASTER_OF_ELEMENTS_R3 = 29076,
     SPELL_MASTER_OF_ELEMENTS    = 29077,
     SPELL_POLYMORPH_R1          = 118,
+#if VERSION_STRING < Cata
     SPELL_POLYMORPH_R2          = 12824,
     SPELL_POLYMORPH_R3          = 12825,
     SPELL_POLYMORPH_R4          = 12826,
+#endif
     SPELL_POLYMORPH_TURTLE      = 28271,
     SPELL_POLYMORPH_PIG         = 28272,
     SPELL_POLYMORPH_SERPENT     = 61025,
@@ -263,9 +265,11 @@ void setupMageSpells(ScriptMgr* mgr)
     uint32_t polymorphIds[] =
     {
         SPELL_POLYMORPH_R1,
+#if VERSION_STRING < Cata
         SPELL_POLYMORPH_R2,
         SPELL_POLYMORPH_R3,
         SPELL_POLYMORPH_R4,
+#endif
         SPELL_POLYMORPH_TURTLE,
         SPELL_POLYMORPH_PIG,
 #if VERSION_STRING >= WotLK
