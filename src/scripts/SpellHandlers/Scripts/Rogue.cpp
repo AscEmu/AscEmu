@@ -12,8 +12,10 @@ enum RogueSpells
     SPELL_CUT_TO_THE_CHASE_R1       = 51664,
     SPELL_CUT_TO_THE_CHASE_R2       = 51665,
     SPELL_CUT_TO_THE_CHASE_R3       = 51667,
+#if VERSION_STRING == WotLK
     SPELL_CUT_TO_THE_CHASE_R4       = 51668,
     SPELL_CUT_TO_THE_CHASE_R5       = 51669,
+#endif
     SPELL_CRIPPLING_POISON          = 3409,
     SPELL_DEADLY_BREW_R1            = 51625,
     SPELL_DEADLY_BREW_R2            = 51626,
@@ -133,8 +135,10 @@ void setupRogueSpells(ScriptMgr* mgr)
         SPELL_CUT_TO_THE_CHASE_R1,
         SPELL_CUT_TO_THE_CHASE_R2,
         SPELL_CUT_TO_THE_CHASE_R3,
+#if VERSION_STRING == WotLK
         SPELL_CUT_TO_THE_CHASE_R4,
         SPELL_CUT_TO_THE_CHASE_R5,
+#endif
         0
     };
     mgr->register_spell_script(cutChaseIds, new CutToTheChase);
