@@ -65,12 +65,12 @@
 #include "Spell/SpellMgr.h"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgInitialSpells.h"
-#include "Data/WoWPlayer.h"
-#include "Data/WoWItem.h"
-#include "Data/WoWContainer.h"
-#include "Data/WoWGameObject.h"
-#include "Data/WoWDynamicObject.h"
-#include "Data/WoWCorpse.h"
+#include "Data/WoWPlayer.hpp"
+#include "Data/WoWItem.hpp"
+#include "Data/WoWContainer.hpp"
+#include "Data/WoWGameObject.hpp"
+#include "Data/WoWDynamicObject.hpp"
+#include "Data/WoWCorpse.hpp"
 #include <limits>
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Server/Packets/SmsgFriendStatus.h"
@@ -537,13 +537,11 @@ void Player::OnLogin()
 Player::~Player()
 {
     sObjectMgr.RemovePlayerCache(getGuidLow());
-    m_cache->DecRef();
     m_cache = nullptr;
 
     if (!ok_to_remove)
     {
         LOG_ERROR("Player deleted from non-logoutplayer!");
-        printStackTrace(); // Win32 Debug
 
         sObjectMgr.RemovePlayer(this);
     }
@@ -9516,8 +9514,6 @@ void Player::Social_AddFriend(const char* name, const char* note)
     {
         m_session->SendPacket(SmsgFriendStatus(FRIEND_NOT_FOUND).serialise().get());
 
-        if (playerCache != nullptr)
-            playerCache->DecRef();
         return;
     }
 
@@ -9525,8 +9521,7 @@ void Player::Social_AddFriend(const char* name, const char* note)
     if (playerInfo->team != getInitialTeam() && m_session->permissioncount == 0 && !worldConfig.player.isInterfactionFriendsEnabled)
     {
         m_session->SendPacket(SmsgFriendStatus(FRIEND_ENEMY, playerInfo->guid).serialise().get());
-        if (playerCache != nullptr)
-            playerCache->DecRef();
+
         return;
     }
 
@@ -9534,16 +9529,14 @@ void Player::Social_AddFriend(const char* name, const char* note)
     if (playerCache != nullptr && playerCache->GetUInt32Value(CACHE_PLAYER_LOWGUID) == getGuidLow())
     {
         m_session->SendPacket(SmsgFriendStatus(FRIEND_SELF, getGuid()).serialise().get());
-        if (playerCache != nullptr)
-            playerCache->DecRef();
+
         return;
     }
 
     if (m_cache->CountValue64(CACHE_SOCIAL_FRIENDLIST, playerInfo->guid))
     {
         m_session->SendPacket(SmsgFriendStatus(FRIEND_ALREADY, playerInfo->guid).serialise().get());
-        if (playerCache != nullptr)
-            playerCache->DecRef();
+
         return;
     }
 
@@ -9565,8 +9558,6 @@ void Player::Social_AddFriend(const char* name, const char* note)
     CharacterDatabase.Execute("INSERT INTO social_friends VALUES(%u, %u, \'%s\')",
                               getGuidLow(), playerInfo->guid, note ? CharacterDatabase.EscapeString(std::string(note)).c_str() : "");
 
-    if (playerCache != nullptr)
-        playerCache->DecRef();
 }
 
 void Player::Social_RemoveFriend(uint32 guid)
@@ -9593,7 +9584,6 @@ void Player::Social_RemoveFriend(uint32 guid)
     if (cache != nullptr)
     {
         cache->RemoveValue64(CACHE_SOCIAL_HASFRIENDLIST, getGuidLow());
-        cache->DecRef();
     }
 
     m_session->SendPacket(SmsgFriendStatus(FRIEND_REMOVED, guid).serialise().get());
@@ -9689,7 +9679,6 @@ void Player::Social_TellFriendsOnline()
         if (cache != nullptr)
         {
             cache->SendPacket(SmsgFriendStatus(FRIEND_ONLINE, getGuid(), "", 1, GetAreaID(), getLevel(), getClass()).serialise().get());
-            cache->DecRef();
         }
     }
     m_cache->ReleaseLock64(CACHE_SOCIAL_HASFRIENDLIST);
@@ -9707,7 +9696,6 @@ void Player::Social_TellFriendsOffline()
         if (cache != nullptr)
         {
             cache->SendPacket(SmsgFriendStatus(FRIEND_OFFLINE, getGuid()).serialise().get());
-            cache->DecRef();
         }
     }
     m_cache->ReleaseLock64(CACHE_SOCIAL_HASFRIENDLIST);
@@ -9742,9 +9730,6 @@ void Player::Social_SendFriendList(uint32 flag)
 
             contactMemberList.push_back(friendListMember);
             ++maxCount;
-
-            if (PlayerCache* cache = sObjectMgr.GetPlayerCache((uint32)itr->first))
-                cache->DecRef();
 
             if (maxCount >= 50)
                 break;

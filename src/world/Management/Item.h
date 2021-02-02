@@ -28,7 +28,7 @@
 #include "Objects/Object.h"
 #include "WorldConf.h"
 #include "LootMgr.h"
-#include "Data/WoWItem.h"
+#include "Data/WoWItem.hpp"
 
 class Container;
 

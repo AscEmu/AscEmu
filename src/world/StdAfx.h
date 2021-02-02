@@ -22,16 +22,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldPacket.h"
 #include "Log.hpp"
 #include "ByteBuffer.h"
-#include "StackBuffer.h"
 #include "Config/Config.h"
 #include "crc32.h"
 #include "LocationVector.h"
-#include "Database/DatabaseEnv.h"
+#include "Database/DatabaseCommon.hpp"
 #include "Network/Network.h"
 #include "Auth/MD5.h"
 #include "Auth/BigNumber.h"
 #include "Auth/Sha1.h"          // Mutex.h, Guard.h errors
-#include "Auth/WowCrypt.h"
+#include "Auth/WowCrypt.hpp"
 #include "FastQueue.h"
 #include "CircularQueue.h"
 #include "Threading/RWLock.h"
@@ -40,9 +39,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CallBack.h"
 #include "CThreads.h"
 
-#ifdef WIN32
-    #include "printStackTrace.h"
-#endif
 //////////////////////////////////////////////////////////////////////////////////////////
 
 // Movement
@@ -67,16 +63,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/CommandTableStorage.hpp"
 
 // Data
-#include "Data/Flags.h"
-#include "Data/GuidData.h"
-#include "Data/WoWContainer.h"
-#include "Data/WoWCorpse.h"
-#include "Data/WoWDynamicObject.h"
-#include "Data/WoWGameObject.h"
-#include "Data/WoWItem.h"
-#include "Data/WoWObject.h"
-#include "Data/WoWPlayer.h"
-#include "Data/WoWUnit.h"
+#include "Data/Flags.hpp"
+#include "Data/GuidData.hpp"
+#include "Data/WoWContainer.hpp"
+#include "Data/WoWCorpse.hpp"
+#include "Data/WoWDynamicObject.hpp"
+#include "Data/WoWGameObject.hpp"
+#include "Data/WoWItem.hpp"
+#include "Data/WoWObject.hpp"
+#include "Data/WoWPlayer.hpp"
+#include "Data/WoWUnit.hpp"
 
 // Management
 #if VERSION_STRING == Cata
@@ -133,15 +129,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.h"
 #include "Management/Battleground/BattlegroundMgr.h"
 
-#include "Management/Gossip/GossipScript.h"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Management/Gossip/GossipDefines.hpp"
 
 #include "Management/Guild/GuildDefinitions.hpp"
 
-#include "Management/LFG/LFG.h"
-#include "Management/LFG/LFGGroupData.h"
-#include "Management/LFG/LFGMgr.h"
-#include "Management/LFG/LFGPlayerData.h"
+#include "Management/LFG/LFG.hpp"
+#include "Management/LFG/LFGGroupData.hpp"
+#include "Management/LFG/LFGMgr.hpp"
+#include "Management/LFG/LFGPlayerData.hpp"
 
 // Map
 #include "Map/CellHandler.h"

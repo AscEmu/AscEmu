@@ -22,7 +22,7 @@
 #define CONTAINER_H
 
 #include "Management/Item.h"
-#include "Data/WoWContainer.h"
+#include "Data/WoWContainer.hpp"
 
 struct WoWContainer;
 class SERVER_DECL Container : public Item

@@ -25,7 +25,7 @@
  // updated: Tuesday, June 16th 2009 - Hasbro
  //////////////////////////////////////////////
 
-#include "DatabaseEnv.h"
+#include "DatabaseCommon.hpp"
 #include "Util.hpp"
 #include <string>
 #include <vector>

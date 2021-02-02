@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Player.h"
 
 #include "Chat/ChatDefines.hpp"
-#include "Data/WoWPlayer.h"
+#include "Data/WoWPlayer.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"

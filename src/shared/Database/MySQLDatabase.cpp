@@ -18,7 +18,7 @@
  *
  */
 
-#include "DatabaseEnv.h"
+#include "DatabaseCommon.hpp"
 #include "MySQLDatabase.h"
 
 MySQLDatabase::~MySQLDatabase()

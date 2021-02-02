@@ -29,7 +29,7 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Objects/ObjectMgr.h"
-#include "Data/WoWDynamicObject.h"
+#include "Data/WoWDynamicObject.hpp"
 
 // MIT Start
 

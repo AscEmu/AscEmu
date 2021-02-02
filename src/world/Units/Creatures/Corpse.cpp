@@ -24,7 +24,7 @@
 #include "Map/MapCell.h"
 #include "Corpse.h"
 #include "Objects/ObjectMgr.h"
-#include "Data/WoWCorpse.h"
+#include "Data/WoWCorpse.hpp"
 
 // MIT Start
  //////////////////////////////////////////////////////////////////////////////////////////

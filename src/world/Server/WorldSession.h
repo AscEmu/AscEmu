@@ -27,7 +27,7 @@
 #include "FastQueue.h"
 #include "Units/Unit.h"
 #include "Server/CharacterErrors.h"
-#include "Data/Flags.h"
+#include "Data/Flags.hpp"
 #include "Units/Players/PlayerDefines.hpp"
 #if VERSION_STRING >= Cata
     #include "Management/AddonMgr.h"
@@ -134,8 +134,6 @@ class SERVER_DECL WorldSession
         Player* m_loggingInPlayer;
 
         void SendPacket(WorldPacket* packet);
-
-        void SendPacket(StackBufferBase* packet);
 
         void OutPacket(uint16 opcode);
 

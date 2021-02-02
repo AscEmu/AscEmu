@@ -29,25 +29,39 @@ enum PriestSpells
     SPELL_HOLY_CONCENTRATION_R3             = 63725,
     SPELL_IMPROVED_DEVOURING_PLAGUE_R1      = 63625,
     SPELL_IMPROVED_DEVOURING_PLAGUE_R2      = 63626,
+#if VERSION_STRING == WotLK
     SPELL_IMPROVED_DEVOURING_PLAGUE_R3      = 63627,
+#endif
     SPELL_IMPROVED_DEVOURING_PLAGUE_DMG     = 63675,
     SPELL_IMPROVED_DEVOURING_PLAGUE_HEAL    = 75999,
     SPELL_IMPROVED_MIND_BLAST_R1            = 15273,
     SPELL_IMPROVED_MIND_BLAST_R2            = 15312,
     SPELL_IMPROVED_MIND_BLAST_R3            = 15313,
+#if VERSION_STRING < Cata
     SPELL_IMPROVED_MIND_BLAST_R4            = 15314,
     SPELL_IMPROVED_MIND_BLAST_R5            = 15316,
+#endif
     SPELL_IMPROVED_SPIRIT_TAP_R1            = 49694,
     SPELL_IMPROVED_SPIRIT_TAP_R2            = 59000,
     SPELL_MIND_TRAUMA                       = 48301,
+#if VERSION_STRING < Cata
+#if VERSION_STRING >= TBC
     SPELL_SURGE_OF_LIGHT_PROC               = 33151,
+#endif
+#endif
     SPELL_VAMPIRIC_EMBRACE_DUMMY            = 15286,
     SPELL_VAMPIRIC_EMBRACE_HEAL             = 15290,
     SPELL_VAMPIRIC_TOUCH_R1                 = 34914,
+#if VERSION_STRING < Cata
+#if VERSION_STRING >= TBC
     SPELL_VAMPIRIC_TOUCH_R2                 = 34916,
     SPELL_VAMPIRIC_TOUCH_R3                 = 34917,
+#endif
+#endif
+#if VERSION_STRING == WotLK
     SPELL_VAMPIRIC_TOUCH_R4                 = 48159,
     SPELL_VAMPIRIC_TOUCH_R5                 = 48160,
+#endif
     SPELL_VAMPIRIC_TOUCH_DISPEL             = 64085,
     SPELL_VAMPIRIC_TOUCH_MANA               = 34919,
     SPELL_REPLENISHMENT                     = 57669,
@@ -656,7 +670,9 @@ void setupPriestSpells(ScriptMgr* mgr)
     {
         SPELL_IMPROVED_DEVOURING_PLAGUE_R1,
         SPELL_IMPROVED_DEVOURING_PLAGUE_R2,
+#if VERSION_STRING == WotLK
         SPELL_IMPROVED_DEVOURING_PLAGUE_R3,
+#endif
         0
     };
     mgr->register_spell_script(improvedDevouringPlagueIds, new ImprovedDevouringPlagueDummy);
@@ -670,8 +686,10 @@ void setupPriestSpells(ScriptMgr* mgr)
         SPELL_IMPROVED_MIND_BLAST_R1,
         SPELL_IMPROVED_MIND_BLAST_R2,
         SPELL_IMPROVED_MIND_BLAST_R3,
+#if VERSION_STRING < Cata
         SPELL_IMPROVED_MIND_BLAST_R4,
         SPELL_IMPROVED_MIND_BLAST_R5,
+#endif
         0
     };
     mgr->register_spell_script(improvedMindBlastIds, new ImprovedMindBlastDummy);
@@ -689,7 +707,7 @@ void setupPriestSpells(ScriptMgr* mgr)
     mgr->register_spell_script(improvedSpiritTapIds, new ImprovedSpiritTap);
 #endif
 
-#if VERSION_STRING < Mop
+#if VERSION_STRING < Cata
 #if VERSION_STRING >= TBC
     mgr->register_spell_script(SPELL_SURGE_OF_LIGHT_PROC, new SurgeOfLight);
 #endif
@@ -702,10 +720,16 @@ void setupPriestSpells(ScriptMgr* mgr)
     uint32_t vampiricTouchIds[] =
     {
         SPELL_VAMPIRIC_TOUCH_R1,
+#if VERSION_STRING < Cata
+#if VERSION_STRING >= TBC
         SPELL_VAMPIRIC_TOUCH_R2,
         SPELL_VAMPIRIC_TOUCH_R3,
+#endif
+#endif
+#if VERSION_STRING == WotLK
         SPELL_VAMPIRIC_TOUCH_R4,
         SPELL_VAMPIRIC_TOUCH_R5,
+#endif
         0
     };
     mgr->register_spell_script(vampiricTouchIds, new VampiricTouchDummy);

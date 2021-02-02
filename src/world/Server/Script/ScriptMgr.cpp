@@ -37,7 +37,7 @@
 #include "Map/MapScriptInterface.h"
 #include "Objects/Faction.h"
 #include "Common.hpp"
-#include "Management/LFG/LFGMgr.h"
+#include "Management/LFG/LFGMgr.hpp"
 #include "Server/Packets/SmsgUpdateInstanceEncounterUnit.h"
 
 using namespace AscEmu::Packets;

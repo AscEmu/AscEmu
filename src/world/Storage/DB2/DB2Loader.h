@@ -29,83 +29,78 @@ namespace DB2
 
     class DB2FileLoader
     {
+    public:
+        DB2FileLoader();
+        ~DB2FileLoader();
+
+        bool Load(const char *filename, const char *fmt);
+
+        class Record
+        {
         public:
-
-            DB2FileLoader();
-            ~DB2FileLoader();
-
-            bool Load(const char *filename, const char *fmt);
-
-            class Record
+            float getFloat(size_t field) const
             {
-                public:
+                assert(field < file.fieldCount);
+                float val = *reinterpret_cast<float*>(offset + file.GetOffset(field));
+                convertEndian(val);
+                return val;
+            }
+            uint32_t getUInt(size_t field) const
+            {
+                assert(field < file.fieldCount);
+                uint32_t val = *reinterpret_cast<uint32_t*>(offset + file.GetOffset(field));
+                convertEndian(val);
+                return val;
+            }
+            uint8_t getUInt8(size_t field) const
+            {
+                assert(field < file.fieldCount);
+                return *reinterpret_cast<uint8_t*>(offset + file.GetOffset(field));
+            }
 
-                    float getFloat(size_t field) const
-                    {
-                        assert(field < file.fieldCount);
-                        float val = *reinterpret_cast<float*>(offset + file.GetOffset(field));
-                        convertEndian(val);
-                        return val;
-                    }
-                    uint32 getUInt(size_t field) const
-                    {
-                        assert(field < file.fieldCount);
-                        uint32 val = *reinterpret_cast<uint32*>(offset + file.GetOffset(field));
-                        convertEndian(val);
-                        return val;
-                    }
-                    uint8 getUInt8(size_t field) const
-                    {
-                        assert(field < file.fieldCount);
-                        return *reinterpret_cast<uint8*>(offset + file.GetOffset(field));
-                    }
-
-                    const char *getString(size_t field) const
-                    {
-                        assert(field < file.fieldCount);
-                        size_t stringOffset = getUInt(field);
-                        assert(stringOffset < file.stringSize);
-                        return reinterpret_cast<char*>(file.stringTable + stringOffset);
-                    }
-
-                private:
-
-                    Record(DB2FileLoader &file_, unsigned char *offset_) : offset(offset_), file(file_) {}
-                    unsigned char *offset;
-                    DB2FileLoader &file;
-
-                    friend class DB2FileLoader;
-
-            };
-
-            Record getRecord(size_t id);
-            uint32_t GetNumRows() const { return recordCount; }
-            uint32_t GetCols() const { return fieldCount; }
-            uint32_t GetOffset(size_t id) const { return (fieldsOffset != NULL && id < fieldCount) ? fieldsOffset[id] : 0; }
-            bool IsLoaded() const { return (data != NULL); }
-            char* AutoProduceData(const char* fmt, uint32_t& count, char**& indexTable);
-            char* AutoProduceStringsArrayHolders(const char* fmt, char* dataTable);
-            char* AutoProduceStrings(const char* fmt, char* dataTable, DBC::LocaleConstant loc);
-            static uint32_t GetFormatRecordSize(const char * format, int32_t* index_pos = NULL);
-            static uint32_t GetFormatStringsFields(const char * format);
+            const char *getString(size_t field) const
+            {
+                assert(field < file.fieldCount);
+                size_t stringOffset = getUInt(field);
+                assert(stringOffset < file.stringSize);
+                return reinterpret_cast<char*>(file.stringTable + stringOffset);
+            }
 
         private:
+            Record(DB2FileLoader &file_, unsigned char *offset_) : offset(offset_), file(file_) {}
+            unsigned char *offset;
+            DB2FileLoader &file;
 
-            uint32_t recordSize;
-            uint32_t recordCount;
-            uint32_t fieldCount;
-            uint32_t stringSize;
-            uint32_t *fieldsOffset;
-            unsigned char *data;
-            unsigned char *stringTable;
+            friend class DB2FileLoader;
+        };
 
-            uint32_t tableHash;
-            uint32_t build;
+        Record getRecord(size_t id);
+        uint32_t GetNumRows() const { return recordCount; }
+        uint32_t GetCols() const { return fieldCount; }
+        uint32_t GetOffset(size_t id) const { return (fieldsOffset != NULL && id < fieldCount) ? fieldsOffset[id] : 0; }
+        bool IsLoaded() const { return (data != NULL); }
+        char* AutoProduceData(const char* fmt, uint32_t& count, char**& indexTable);
+        char* AutoProduceStringsArrayHolders(const char* fmt, char* dataTable);
+        char* AutoProduceStrings(const char* fmt, char* dataTable, DBC::LocaleConstant loc);
+        static uint32_t GetFormatRecordSize(const char * format, int32_t* index_pos = NULL);
+        static uint32_t GetFormatStringsFields(const char * format);
 
-            int unk1;
-            int unk2;
-            int unk3;
-            int locale;
-            int unk5;
+    private:
+        uint32_t recordSize;
+        uint32_t recordCount;
+        uint32_t fieldCount;
+        uint32_t stringSize;
+        uint32_t *fieldsOffset;
+        unsigned char *data;
+        unsigned char *stringTable;
+
+        uint32_t tableHash;
+        uint32_t build;
+
+        int unk1;
+        int unk2;
+        int unk3;
+        int locale;
+        int unk5;
     };
 }

@@ -721,20 +721,6 @@ void WorldSession::SendPacket(WorldPacket* packet)
     }
 }
 
-void WorldSession::SendPacket(StackBufferBase* packet)
-{
-    if (packet->GetOpcode() == 0x0000)
-    {
-        LOG_ERROR("Return, packet 0x0000 is not a valid packet!");
-        return;
-    }
-
-    if (_socket && _socket->IsConnected())
-    {
-        _socket->SendPacket(packet);
-    }
-}
-
 void WorldSession::OutPacket(uint16 opcode)
 {
     if (_socket && _socket->IsConnected())

@@ -25,8 +25,8 @@
 #include "Units/Players/Player.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Data/WoWItem.h"
-#include "Data/WoWPlayer.h"
+#include "Data/WoWItem.hpp"
+#include "Data/WoWPlayer.hpp"
 #include "Server/Packets/SmsgInventoryChangeFailure.h"
 
 using namespace AscEmu::Packets;

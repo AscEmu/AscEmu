@@ -16,8 +16,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 
 ## List of Legacy files
 ### Not rewritten - yet
-* 2015 | Exceptions/PlayerExceptions.hpp
-* 2015 | Exceptions/Exceptions.hpp
 * 2014 | Network/SocketDefines.h
 * 2014 | Network/NetworkIncludes.hpp
 * 2014 | CommonTypes.hpp
@@ -37,7 +35,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | Threading/Mutex.h
 * 2008 | Threading/Mutex.cpp
 * 2008 | Threading/LockedQueue.h
-* 2008 | Threading/Guard.h
 * 2008 | Threading/ConditionVariable.h
 * 2008 | Threading/ConditionVariable.cpp
 * 2008 | Threading/AtomicULong.h
@@ -48,7 +45,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | Threading/AtomicCounter.cpp
 * 2008 | Threading/AtomicBoolean.h
 * 2008 | Threading/AtomicBoolean.cpp
-* 2008 | StackBuffer.h
 * 2008 | Singleton.h
 * 2008 | PreallocatedQueue.h
 * 2008 | LocationVector.h
@@ -60,7 +56,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | DynLib.hpp
 * 2008 | DynLib.cpp
 * 2008 | Database/MySQLDatabase.h
-* 2008 | Database/DatabaseEnv.h
 * 2008 | Database/Database.h
 * 2008 | Database/Database.cpp
 * 2008 | Database/CreateInterface.cpp
@@ -106,24 +101,10 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2007 | ascemu_getopt.h
 * 2005 | SysInfo.hpp
 * 2005 | SysInfo.cpp
-* 2005 | StackWalker.h
-* 2005 | StackWalker.cpp
 * 2005 | PerformanceCounter.hpp
 * 2005 | PerformanceCounter.cpp
 * 2005 | Database/MySQLDatabase.cpp
-* 2005 | CRefcounter.h
 * 2005 | CircularQueue.h
-* 2001 | TextFile.h
-* 2001 | TextFile.cpp
-* 2001 | StackTrace.h
-* 2001 | StackTrace.cpp
-* 2001 | printStackTrace.h
-* 2001 | printStackTrace.cpp
-* 2001 | MapFileEntry.h
-* 2001 | MapFileEntry.cpp
-* 2001 | MapFile.h
-* 2001 | MapFile.cpp
-* 2001 | Array.h
 * 1996 | crc32.h
 * 1996 | crc32.cpp
 
@@ -148,7 +129,32 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 ### Removed on 20 Apr 2020
 * 2008 | Database/Field.h
 
+### Removed on 28 Jan 2021
+* 2008 | Threading/Guard.h
+* 2001 | printStackTrace.h
+* 2001 | printStackTrace.cpp
+* 2001 | MapFileEntry.h
+* 2001 | MapFileEntry.cpp
+* 2001 | MapFile.h
+* 2001 | MapFile.cpp
+* 2001 | StackTrace.h
+* 2001 | StackTrace.cpp
+* 2005 | StackWalker.h
+* 2005 | StackWalker.cpp
+
+### Removed on 29 Jan 2021
+* 2001 | TextFile.h
+* 2001 | TextFile.cpp
+* 2008 | StackBuffer.h
+* 2001 | Array.h
+
+### Removed on 30 Jan 2021
+* 2005 | CRefcounter.h
+* 2008 | Database/DatabaseEnv.h
+
 ### New files
+* 2015 | Exceptions/PlayerExceptions.hpp
+* 2015 | Exceptions/Exceptions.hpp
 * 2017 | Common.hpp
 * 2017 | Log.cpp
 * 2017 | Log.hpp
@@ -156,5 +162,8 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2017 | Util.cpp
 * 2017 | Util.hpp
 * 2017 | Auth/WowCrypt.cpp
-* 2017 | Auth/WowCrypt.h
+* 2017 | Auth/WowCrypt.hpp
 * 2020 | Database/Field.hpp
+* 2020 | Database/DatabaseUpdater.cpp
+* 2020 | Database/DatabaseUpdater.hpp
+* 2021 | Database/DatabaseCommon.hpp

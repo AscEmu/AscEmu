@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
  */
 
 #pragma once
-#include "WoWUnit.h"
+#include "WoWUnit.hpp"
 #pragma pack(push, 1)
 
 union

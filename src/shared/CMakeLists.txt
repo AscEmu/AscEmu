@@ -32,17 +32,12 @@ set(sources
     DynLib.cpp
     LocationVector.cpp
     Log.cpp
-    MapFile.cpp
-    MapFileEntry.cpp
     PerformanceCounter.cpp
-    printStackTrace.cpp
     SysInfo.cpp
-    TextFile.cpp
     Util.cpp
 )
 
 set(headers
-    Array.h
     AscemuServerDefines.hpp
     AuthCodes.h
     ByteBuffer.h
@@ -55,33 +50,25 @@ set(headers
     CommonTypes.hpp
     CrashHandler.h
     crc32.h
-    CRefcounter.h
     CThreads.h
-    Database/DatabaseUpdater.h
+    Database/DatabaseUpdater.hpp
     DynLib.hpp
     Errors.h
     FastQueue.h
     LocationVector.h
     LogonCommDefines.h
-    MapFile.h
-    MapFileEntry.h
     PerformanceCounter.hpp
     PreallocatedQueue.h
-    printStackTrace.h
-    Database/DatabaseEnv.h
+    Database/DatabaseCommon.hpp
     RC4Engine.h
     SysInfo.hpp
-    StackBuffer.h
-    StackTrace.h
-    StackWalker.h
-    TextFile.h
     TLSObject.h
     WorldPacket.h
     WoWGuid.h
     Auth/BigNumber.h
     Auth/MD5.h
     Auth/Sha1.h
-    Auth/WowCrypt.h
+    Auth/WowCrypt.hpp
     Config/Config.h
     Database/Database.h
     Database/Field.hpp
@@ -101,7 +88,6 @@ set(headers
     Network/SocketOps.h
     Network/SocketDefines.h
     Threading/ConditionVariable.h
-    Threading/Guard.h
     Threading/LegacyThreading.h
     Threading/LegacyThreadPool.h
     Threading/LegacyThreadBase.h
@@ -121,7 +107,7 @@ set(headers
 )
 
 if(WIN32)
-   set(sources ${sources} Network/SocketMgrWin32.cpp Network/SocketOpsWin32.cpp Network/SocketWin32.cpp StackWalker.cpp StackTrace.cpp)
+   set(sources ${sources} Network/SocketMgrWin32.cpp Network/SocketOpsWin32.cpp Network/SocketWin32.cpp)
 elseif((CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD") OR APPLE)
    set(sources ${sources} Network/SocketMgrFreeBSD.cpp Network/SocketFreeBSD.cpp Network/SocketOpsFreeBSD.cpp)
 else()

@@ -25,7 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellState.h"
 #include "Definitions/SpellRanged.h"
 
-#include "Data/Flags.h"
+#include "Data/Flags.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Management/ItemInterface.h"
 #include "Map/Area/AreaManagementGlobals.hpp"

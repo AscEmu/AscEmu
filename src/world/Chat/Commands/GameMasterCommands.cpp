@@ -62,7 +62,6 @@ bool ChatHandler::HandleGMAllowWhispersCommand(const char* args, WorldSession* m
     std::string name;
     player_cache->GetStringValue(CACHE_PLAYER_NAME, name);
     BlueSystemMessage(m_session, "Now accepting whispers from %s.", name.c_str());
-    player_cache->DecRef();
 
     return true;
 }
@@ -109,7 +108,6 @@ bool ChatHandler::HandleGMBlockWhispersCommand(const char* args, WorldSession* m
     std::string name;
     player_cache->GetStringValue(CACHE_PLAYER_NAME, name);
     BlueSystemMessage(m_session, "Now blocking whispers from %s.", name.c_str());
-    player_cache->DecRef();
 
     return true;
 }

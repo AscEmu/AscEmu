@@ -34,7 +34,7 @@
 #include "Management/AuctionMgr.h"
 #include "Spell/SpellTarget.h"
 #include "Util.hpp"
-#include "Database/DatabaseUpdater.h"
+#include "Database/DatabaseUpdater.hpp"
 #include "Packets/SmsgServerMessage.h"
 #include "OpcodeTable.hpp"
 

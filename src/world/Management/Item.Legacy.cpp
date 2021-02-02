@@ -29,7 +29,7 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
-#include "Data/WoWItem.h"
+#include "Data/WoWItem.hpp"
 #include "Server/Packets/SmsgEnchantmentLog.h"
 #include "Server/Packets/SmsgItemEnchantmentTimeUpdate.h"
 #include "Server/Packets/SmsgItemTimeUpdate.h"

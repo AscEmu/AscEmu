@@ -23,7 +23,7 @@
 
 #include <mutex>
 #include "Macros/ScriptMacros.hpp"
-#include "Management/Gossip/GossipScript.h"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Management/GameEventMgr.h"
 #include "Units/Unit.h"
 #include "Management/ArenaTeam.h"

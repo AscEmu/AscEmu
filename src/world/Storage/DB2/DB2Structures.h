@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <set>
 #include <vector>
 
-
 namespace DB2::Structures
 {
     namespace

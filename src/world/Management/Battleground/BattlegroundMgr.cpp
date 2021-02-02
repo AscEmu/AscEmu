@@ -1214,28 +1214,22 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
 
 void CBattlegroundManager::DeleteBattleground(CBattleground* bg)
 {
-    try
+    uint32 i = bg->GetType();
+    uint32 j = bg->GetLevelGroup();
+
+    m_instanceLock.Acquire();
+    m_queueLock.Acquire();
+    m_instances[i].erase(bg->GetId());
+
+    // erase any queued players
+    std::list<uint32>::iterator itr = m_queuedPlayers[i][j].begin();
+    for (; itr != m_queuedPlayers[i][j].end();)
     {
-        uint32 i = bg->GetType();
-        uint32 j = bg->GetLevelGroup();
+        std::list<uint32>::iterator it2 = itr++;
 
-        m_instanceLock.Acquire();
-        m_queueLock.Acquire();
-        m_instances[i].erase(bg->GetId());
-
-        // erase any queued players
-        std::list<uint32>::iterator itr = m_queuedPlayers[i][j].begin();
-        for (; itr != m_queuedPlayers[i][j].end();)
+        if (Player* plr = sObjectMgr.GetPlayer(*it2))
         {
-            std::list<uint32>::iterator it2 = itr++;
-            Player* plr = sObjectMgr.GetPlayer(*it2);
-            if (!plr)
-            {
-                m_queuedPlayers[i][j].erase(it2);
-                continue;
-            }
-
-            if (plr && plr->m_bgQueueInstanceId == bg->GetId())
+            if (plr->m_bgQueueInstanceId == bg->GetId())
             {
                 sChatHandler.SystemMessage(plr->GetSession(), plr->GetSession()->LocalizedWorldSrv(ServerString::SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS), bg->GetId());
                 SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
@@ -1243,20 +1237,18 @@ void CBattlegroundManager::DeleteBattleground(CBattleground* bg)
                 m_queuedPlayers[i][j].erase(it2);
             }
         }
-
-        m_queueLock.Release();
-        m_instanceLock.Release();
-
-        //LOG_DETAIL("Deleting battleground from queue %u, instance %u", bg->GetType(), bg->GetId());
-        delete bg;
-    }
-    catch (...)  // for Win32 Debug
-    {
-        LOG_ERROR("Exception: CBattlegroundManager::DeleteBattleground");
-        printStackTrace();
-        throw;
+        else
+        {
+            m_queuedPlayers[i][j].erase(it2);
+            continue;
+        }
     }
 
+    m_queueLock.Release();
+    m_instanceLock.Release();
+
+    //LOG_DETAIL("Deleting battleground from queue %u, instance %u", bg->GetType(), bg->GetId());
+    delete bg;
 }
 
 void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus Status, uint32 Type, uint32 InstanceID, uint32 Time, uint32 MapId, uint8 RatedMatch)

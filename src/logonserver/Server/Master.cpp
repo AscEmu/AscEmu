@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LogonStdAfx.h"
 #include <Threading/AEThreadPool.h>
 #include "Util.hpp"
-#include "Database/DatabaseUpdater.h"
+#include "Database/DatabaseUpdater.hpp"
 #include "Logon.h"
 #include "IpBanMgr.h"
 #include "RealmsMgr.h"

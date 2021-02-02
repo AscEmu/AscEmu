@@ -35,11 +35,11 @@
 #include "../shared/Config/Config.h"
 //#include <zlib.h>
 
-#include "../shared/Database/DatabaseEnv.h"
+#include "../shared/Database/DatabaseCommon.hpp"
 
 #include "../shared/Auth/BigNumber.h"
 #include "../shared/Auth/Sha1.h"
-#include "../shared/Auth/WowCrypt.h"
+#include "../shared/Auth/WowCrypt.hpp"
 
 #include "../world/Server/Opcodes.hpp"
 #include "LogonConf.h"
