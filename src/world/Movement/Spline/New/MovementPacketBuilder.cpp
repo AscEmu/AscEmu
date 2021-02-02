@@ -82,7 +82,7 @@ namespace MovementNew
 
     void WriteLinearPath(Spline<int32> const& spline, ByteBuffer& data)
     {
-        uint32_t last_idx = spline.getPointCount() - 3;
+        uint32_t last_idx = static_cast<uint32_t>(spline.getPointCount() - 3);
         G3D::Vector3 const* real_path = &spline.getPoint(1);
 
         data << last_idx;
@@ -102,14 +102,14 @@ namespace MovementNew
 
     void WriteCatmullRomPath(Spline<int32> const& spline, ByteBuffer& data)
     {
-        uint32_t count = spline.getPointCount() - 3;
+        uint32_t count = static_cast<uint32_t>(spline.getPointCount() - 3);
         data << count;
         data.append<G3D::Vector3>(&spline.getPoint(2), count);
     }
 
     void WriteCatmullRomCyclicPath(Spline<int32> const& spline, ByteBuffer& data)
     {
-        uint32_t count = spline.getPointCount() - 4;
+        uint32_t count = static_cast<uint32_t>(spline.getPointCount() - 4);
         data << count;
         data.append<Vector3>(&spline.getPoint(2), count);
     }
@@ -163,7 +163,7 @@ namespace MovementNew
             data << move_spline.vertical_acceleration;      // added in 3.1
             data << move_spline.effect_start_time;          // added in 3.1
 
-            uint32_t nodes = move_spline.getPath().size();
+            uint32_t nodes = static_cast<uint32_t>(move_spline.getPath().size());
             data << nodes;
             data.append<G3D::Vector3>(&move_spline.getPath()[0], nodes);
             data << uint8_t(move_spline.spline.mode());       // added in 3.1
