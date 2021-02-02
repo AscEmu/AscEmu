@@ -55,7 +55,8 @@ class Vehicle;
 struct FactionDBC;
 
 namespace MovementNew {
-    class MoveSpline;
+
+class MoveSpline;
 }
 
 enum UnitSpeedType : uint8_t
@@ -69,7 +70,6 @@ enum UnitSpeedType : uint8_t
     TYPE_FLY            = 6,
     TYPE_FLY_BACK       = 7,
     TYPE_PITCH_RATE     = 8,
-
     MAX_SPEED_TYPE      = 9
 };
 
@@ -116,7 +116,7 @@ struct UnitSpeedInfo
 
 struct HealthBatchEvent
 {
-    Unit* caster = nullptr;                 // the unit who created this damage or healing event
+    Unit* caster = nullptr; // the unit who created this damage or healing event
     DamageInfo damageInfo = DamageInfo();
 
     bool isPeriodic = false;
@@ -143,7 +143,6 @@ typedef std::unordered_map<uint32, uint64> UniqueAuraTargetMap;
 class SERVER_DECL AuraCondition
 {
 public:
-
     virtual bool operator()(Aura* /*aura*/)
     {
         return true;
@@ -200,7 +199,7 @@ class Unit;
 class SERVER_DECL CombatStatusHandler
 {
     typedef std::set<uint64> AttackerMap;
-    typedef std::set<uint32> HealedSet;      // Must Be Players!
+    typedef std::set<uint32> HealedSet; // Must Be Players!
 
     HealedSet m_healers;
     HealedSet m_healed;
@@ -213,43 +212,43 @@ class SERVER_DECL CombatStatusHandler
 
     uint64 m_primaryAttackTarget;
 
-public:CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAttackTarget(0) {}
+public:
+    CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAttackTarget(0) {}
 
-        AttackerMap m_attackers;
+    AttackerMap m_attackers;
 
-        void AddAttackTarget(const uint64 & guid);                      // this means we clicked attack, not actually striked yet, so they shouldn't be in combat.
-        void ClearPrimaryAttackTarget();                                // means we deselected the unit, stopped attacking it.
+    void AddAttackTarget(const uint64 & guid);                      // this means we clicked attack, not actually striked yet, so they shouldn't be in combat.
+    void ClearPrimaryAttackTarget();                                // means we deselected the unit, stopped attacking it.
 
-        void OnDamageDealt(Unit* pTarget);                              // this is what puts the other person in combat.
-        void WeHealed(Unit* pHealTarget);                               // called when a player heals another player, regardless of combat state.
+    void OnDamageDealt(Unit* pTarget);                              // this is what puts the other person in combat.
+    void WeHealed(Unit* pHealTarget);                               // called when a player heals another player, regardless of combat state.
 
-        void RemoveAttacker(Unit* pAttacker, const uint64 & guid);      // this means we stopped attacking them totally. could be because of deaggro, etc.
-        void RemoveAttackTarget(Unit* pTarget);                         // means our DoT expired.
+    void RemoveAttacker(Unit* pAttacker, const uint64 & guid);      // this means we stopped attacking them totally. could be because of deaggro, etc.
+    void RemoveAttackTarget(Unit* pTarget);                         // means our DoT expired.
 
-        void UpdateFlag();                                              // detects if we have changed combat state (in/out), and applies the flag.
-        bool IsInCombat() const;                                        // checks if we are in combat or not.
-        void OnRemoveFromWorld();                                       // called when we are removed from world, kills all references to us.
+    void UpdateFlag();                                              // detects if we have changed combat state (in/out), and applies the flag.
+    bool IsInCombat() const;                                        // checks if we are in combat or not.
+    void OnRemoveFromWorld();                                       // called when we are removed from world, kills all references to us.
 
-        void Vanished()
-        {
-            ClearAttackers();
-            ClearHealers();
-        }
+    void Vanished()
+    {
+        ClearAttackers();
+        ClearHealers();
+    }
 
-        const uint64 & GetPrimaryAttackTarget() { return m_primaryAttackTarget; }
-        void SetUnit(Unit* p) { m_Unit = p; }
-        void TryToClearAttackTargets();                                 // for pvp timeout
-        void AttackersForgetHate();                                     // used right now for Feign Death so attackers go home
+    const uint64 & GetPrimaryAttackTarget() { return m_primaryAttackTarget; }
+    void SetUnit(Unit* p) { m_Unit = p; }
+    void TryToClearAttackTargets();                                 // for pvp timeout
+    void AttackersForgetHate();                                     // used right now for Feign Death so attackers go home
 
-    protected:
-
-        bool InternalIsInCombat();                                      // called by UpdateFlag, do not call from anything else!
-        bool IsAttacking(Unit* pTarget);                                // internal function used to determine if we are still attacking target x.
-        void AddAttacker(const uint64 & guid);                          // internal function to add an attacker
-        void RemoveHealed(Unit* pHealTarget);                           // usually called only by updateflag
-        void ClearHealers();                                            // this is called on instance change.
-        void ClearAttackers();                                          // means we vanished, or died.
-        void ClearMyHealers();
+protected:
+    bool InternalIsInCombat();                                      // called by UpdateFlag, do not call from anything else!
+    bool IsAttacking(Unit* pTarget);                                // internal function used to determine if we are still attacking target x.
+    void AddAttacker(const uint64 & guid);                          // internal function to add an attacker
+    void RemoveHealed(Unit* pHealTarget);                           // usually called only by updateflag
+    void ClearHealers();                                            // this is called on instance change.
+    void ClearAttackers();                                          // means we vanished, or died.
+    void ClearMyHealers();
 };
 // AGPL End
 
@@ -614,11 +613,9 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Internal States
 private:
-
     uint32_t m_unitState;
 
 public:
-
     void addUnitStateFlag(uint32_t state_flag) { m_unitState |= state_flag; };
     bool hasUnitStateFlag(uint32_t state_flag) { return (m_unitState & state_flag ? true : false); }
     void removeUnitStateFlag(uint32_t state_flag) { m_unitState &= ~state_flag; };
@@ -935,7 +932,6 @@ protected:
     Vehicle* m_vehicle;           // The Unit's own vehicle component
 
 public:
-
     Vehicle* getCurrentVehicle() const;
     void setCurrentVehicle(Vehicle* vehicle);
     void addPassengerToVehicle(uint64_t vehicleGuid, uint32_t delay);
@@ -1051,14 +1047,13 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     void RemoveAllAreaAuraByOther();
 
-
     void EventRemoveAura(uint32 SpellId) { RemoveAura(SpellId); }
 
     //! Remove all auras
     void RemoveAllAuras();
     void RemoveAllNonPersistentAuras();
-    void RemoveAllAuraType(uint32 auratype);                    //ex:to remove morph spells
-    bool RemoveAllAurasByMechanic(uint32 MechanicType, uint32 MaxDispel, bool HostileOnly);       // Removes all (de)buffs on unit of a specific mechanic type.
+    void RemoveAllAuraType(uint32 auratype); // ex:to remove morph spells
+    bool RemoveAllAurasByMechanic(uint32 MechanicType, uint32 MaxDispel, bool HostileOnly); // Removes all (de)buffs on unit of a specific mechanic type.
     void RemoveAllMovementImpairing();
 
     void RemoveNegativeAuras();
@@ -1163,7 +1158,7 @@ public:
     float m_ignoreArmorPct;
 
     // Stun Immobilize
-    uint32 trigger_on_stun;        //bah, warrior talent but this will not get triggered on triggered spells if used on proc so I'm forced to used a special variable
+    uint32 trigger_on_stun; // bah, warrior talent but this will not get triggered on triggered spells if used on proc so I'm forced to used a special variable
     uint32 trigger_on_stun_chance;
     uint32 trigger_on_stun_victim;
     uint32 trigger_on_stun_chance_victim;
@@ -1218,7 +1213,7 @@ public:
 
     void SetHealthPct(uint32 val) { if (val > 0) setHealth(float2int32(val * 0.01f * getMaxHealth())); };
 
-    //In-Range
+    // In-Range
     virtual void addToInRangeObjects(Object* pObj);
     virtual void onRemoveInRangeObject(Object* pObj);
     void clearInRangeSets();
@@ -1229,7 +1224,7 @@ public:
 
     std::map<uint32, Aura*> tmpAura;
 
-    uint32 BaseResistance[TOTAL_SPELL_SCHOOLS];        //there are resistances for silence, fear, mechanics ....
+    uint32 BaseResistance[TOTAL_SPELL_SCHOOLS];        // there are resistances for silence, fear, mechanics ....
     uint32 BaseStats[5];
 
     int32 HealDoneMod[TOTAL_SPELL_SCHOOLS];
@@ -1388,8 +1383,8 @@ public:
     void UpdateAuraForGroup(uint8 slot);
 
     Movement::UnitMovementManager m_movementManager;
-protected:
 
+protected:
     Unit();
     void RemoveGarbage();
     void AddGarbageAura(Aura* aur);
@@ -1431,7 +1426,6 @@ protected:
     uint64 m_auraRaidUpdateMask;
 
 public:
-    
     const CombatStatusHandler* getcombatstatus() const { return &CombatStatus; }
 
     bool m_noFallDamage;
@@ -1440,7 +1434,6 @@ public:
 
     void BuildMovementPacket(ByteBuffer* data);
     void BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o);
-
 
     // AGPL End
 };

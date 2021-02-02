@@ -14,16 +14,16 @@ namespace G3D
     class Vector3;
 }
 
-namespace MovementNew
+namespace MovementNew {
+
+class MoveSpline;
+class PacketBuilder
 {
-    class MoveSpline;
-    class PacketBuilder
-    {
-        static void WriteCommonMonsterMovePart(MoveSpline const& mov, ByteBuffer& data);
-    public:
-        static void WriteMonsterMove(MoveSpline const& mov, ByteBuffer& data);
-        static void WriteStopMovement(G3D::Vector3 const& loc, uint32_t splineId, ByteBuffer& data);
-        static void WriteCreate(MoveSpline const& mov, ByteBuffer& data);
-        static void WriteSplineSync(MoveSpline const& mov, ByteBuffer& data);
-    };
-}
+    static void WriteCommonMonsterMovePart(MoveSpline const& mov, ByteBuffer& data);
+public:
+    static void WriteMonsterMove(MoveSpline const& mov, ByteBuffer& data);
+    static void WriteStopMovement(G3D::Vector3 const& loc, uint32_t splineId, ByteBuffer& data);
+    static void WriteCreate(MoveSpline const& mov, ByteBuffer& data);
+    static void WriteSplineSync(MoveSpline const& mov, ByteBuffer& data);
+};
+} // namespace MovementNew

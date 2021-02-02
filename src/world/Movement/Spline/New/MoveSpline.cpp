@@ -56,7 +56,7 @@ void MoveSpline::computeParabolicElevation(float& el) const
     if (time_passed > effect_start_time)
     {
         float t_passedf = MSToSec(time_passed - effect_start_time);
-        float t_durationf = MSToSec(Duration() - effect_start_time); //client use not modified duration here
+        float t_durationf = MSToSec(Duration() - effect_start_time); // client use not modified duration here
 
         // -a*x*x + bx + c:
         //(dur * v3->z_acceleration * dt)/2 - (v3->z_acceleration * dt * dt)/2 + Z;
@@ -86,7 +86,8 @@ struct FallInitializer
     }
 };
 
-enum{
+enum
+{
     minimal_duration = 1
 };
 
@@ -109,7 +110,7 @@ void MoveSpline::init_spline(MoveSplineInitArgs const& args)
     {
         uint32_t cyclic_point = 0;
         if (splineflags.enter_cycle)
-            cyclic_point = 1;   // shouldn't be modified, came from client
+            cyclic_point = 1; // shouldn't be modified, came from client
         spline.init_cyclic_spline(&args.path[0], static_cast<int32_t>(args.path.size()), modes[args.flags.isSmooth()], cyclic_point, args.initialOrientation);
     }
     else
@@ -181,7 +182,7 @@ MoveSpline::MoveSpline() : m_Id(0), time_passed(0),
     splineflags.done = true;
 }
 
-/// ============================================================================================
+//////////////////////////////////////////////////////////////////////////////////////////
 
 bool MoveSplineInitArgs::Validate(Unit* unit) const
 {
@@ -234,10 +235,9 @@ walk(false), HasVelocity(false), TransformForTransport(true)
 }
 
 MoveSplineInitArgs::MoveSplineInitArgs(MoveSplineInitArgs && args) = default;
-
 MoveSplineInitArgs::~MoveSplineInitArgs() = default;
 
-/// ============================================================================================
+//////////////////////////////////////////////////////////////////////////////////////////
 
 MoveSpline::UpdateResult MoveSpline::_updateState(int32_t& ms_time_diff)
 {
@@ -281,8 +281,8 @@ MoveSpline::UpdateResult MoveSpline::_updateState(int32_t& ms_time_diff)
                     args.flags = splineflags;
                     args.path_Idx_offset = point_Idx_offset;
                     // MoveSplineFlag::Parabolic | MoveSplineFlag::Animation not supported currently
-                        //args.parabolic_amplitude = ?;
-                        //args.time_perc = ?;
+                    //args.parabolic_amplitude = ?;
+                    //args.time_perc = ?;
                     args.splineId = m_Id;
                     args.initialOrientation = initialOrientation;
                     args.velocity = 1.0f; // Calculated below
@@ -351,4 +351,4 @@ int32_t MoveSpline::currentPathIdx() const
         point = point % (spline.last()-spline.first());
     return point;
 }
-}
+} // namespace MovementNew

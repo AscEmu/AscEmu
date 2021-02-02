@@ -238,7 +238,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
         ~ObjectMgr() = default;
 
     public:
-        //NIT
+        //MIT
         static ObjectMgr& getInstance();
         void initialize();
         void finalize();
@@ -250,7 +250,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         void generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
         void generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
-        //NIT END
+        //MIT END
 
         void LoadCreatureWaypoints();
         void LoadCreatureTimedEmotes();
@@ -258,23 +258,21 @@ class SERVER_DECL ObjectMgr : public EventableObject
         TimedEmoteList* GetTimedEmoteList(uint32 spawnid);
 
         // Set typedef's
-        typedef std::unordered_map<uint32, Group*>                      GroupMap;
-
-        // HashMap typedef's
-        typedef std::unordered_map<uint32, DBC::Structures::SkillLineAbilityEntry const*>             SLMap;
-        typedef std::unordered_map<uint32, std::vector<CreatureItem>*>  VendorMap;
-        typedef std::unordered_map<uint32, Trainer*>                    TrainerMap;
-        typedef std::unordered_map<uint32, ReputationModifier*>         ReputationModMap;
-        typedef std::unordered_map<uint32, Corpse*>                     CorpseMap;
-        typedef std::unordered_map<uint32, PlayerCache*>                PlayerCacheMap;
+        typedef std::unordered_map<uint32, Group*>                                                  GroupMap;
+        typedef std::unordered_map<uint32, DBC::Structures::SkillLineAbilityEntry const*>           SLMap;
+        typedef std::unordered_map<uint32, std::vector<CreatureItem>*>                              VendorMap;
+        typedef std::unordered_map<uint32, Trainer*>                                                TrainerMap;
+        typedef std::unordered_map<uint32, ReputationModifier*>                                     ReputationModMap;
+        typedef std::unordered_map<uint32, Corpse*>                                                 CorpseMap;
+        typedef std::unordered_map<uint32, PlayerCache*>                                            PlayerCacheMap;
 
         // Map typedef's
-        typedef std::map<uint32, LevelInfo*>                            LevelMap;
-        typedef std::map<std::pair<uint32, uint32>, LevelMap*>          LevelInfoMap;
+        typedef std::map<uint32, LevelInfo*>                                                        LevelMap;
+        typedef std::map<std::pair<uint32, uint32>, LevelMap*>                                      LevelInfoMap;
 
-        typedef std::map<uint32, uint32>                                PetSpellCooldownMap;
-        typedef std::multimap <uint32, uint32>                          BCEntryStorage;
-        typedef std::map<uint32, SpellTargetConstraint*>                SpellTargetConstraintMap;
+        typedef std::map<uint32, uint32>                                                            PetSpellCooldownMap;
+        typedef std::multimap <uint32, uint32>                                                      BCEntryStorage;
+        typedef std::map<uint32, SpellTargetConstraint*>                                            SpellTargetConstraintMap;
 
         // object holders
         PlayerCacheMap m_playerCache;
@@ -445,7 +443,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         void LoadInstanceReputationModifiers();
         void LoadInstanceEncounters();
 
-
 #if VERSION_STRING >= WotLK
         DungeonEncounterList const* GetDungeonEncounterList(uint32_t mapId, uint8_t difficulty)
         {
@@ -478,14 +475,15 @@ class SERVER_DECL ObjectMgr : public EventableObject
         void LoadSpellTargetConstraints();
         SpellTargetConstraint* GetSpellTargetConstraintForSpell(uint32 spellid);
 
-        ///////// Event Scripts ////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Event Scripts
         void LoadEventScripts();
         EventScriptBounds GetEventScripts(uint32 event_id) const;
         SpellEffectMapBounds GetSpellEffectBounds(uint32 data_1) const;
         bool CheckforScripts(Player* plr, uint32 event_id);
         bool CheckforDummySpellScripts(Player* plr, uint32 data_1);
         void EventScriptsUpdate(Player* plr, uint32 next_event);
-        ////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
 
 #if VERSION_STRING > TBC
         void LoadAchievementCriteriaList();
@@ -542,8 +540,8 @@ class SERVER_DECL ObjectMgr : public EventableObject
         std::unordered_map<uint32, PlayerInfo*> m_playersinfo;
         PlayerNameStringIndexMap m_playersInfoByName;
 
-        std::unordered_map<uint32, Movement::WayPointMap*> mWayPointMap;           /// stored by spawnid
-        std::unordered_map<uint32, TimedEmoteList*> m_timedemotes;      /// stored by spawnid
+        std::unordered_map<uint32, Movement::WayPointMap*> mWayPointMap; /// stored by spawnid
+        std::unordered_map<uint32, TimedEmoteList*> m_timedemotes;       /// stored by spawnid
 
         // Group List
         RWLock m_groupLock;

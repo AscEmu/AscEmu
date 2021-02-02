@@ -13,10 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-Transporter::Transporter(uint64 guid) : GameObject(guid),
-_transportInfo(nullptr), _isMoving(true), _pendingStop(false),
-_triggeredArrivalEvent(false), _triggeredDepartureEvent(false),
-_passengerTeleportItr(_passengers.begin())
+Transporter::Transporter(uint64 guid) : GameObject(guid), _transportInfo(nullptr), _isMoving(true), _pendingStop(false), _triggeredArrivalEvent(false), _triggeredDepartureEvent(false), _passengerTeleportItr(_passengers.begin())
 {
 #if VERSION_STRING <= TBC
     m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_LOWGUID | UPDATEFLAG_TRANSPORT);
@@ -25,7 +22,6 @@ _passengerTeleportItr(_passengers.begin())
 #elif VERSION_STRING == Cata
     m_updateFlag = UPDATEFLAG_TRANSPORT;
 #endif
-
     positionUpdateDelay = 100;
 }
 
@@ -35,7 +31,7 @@ Transporter::~Transporter()
     _passengers.clear();
 }
 
-bool Transporter::Create(uint32 entry, uint32 mapid, float x, float y, float z, float ang, uint32 animprogress)
+bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float z, float ang, uint32_t animprogress)
 {
     gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
     if (gameobject_properties == nullptr)
@@ -78,7 +74,7 @@ void Transporter::Update(unsigned long time_passed)
     if (IsMoving() || !_pendingStop)
         mTransValues.PathProgress += time_passed;
 
-    uint32 timer = mTransValues.PathProgress % getTransportPeriod();
+    uint32_t timer = mTransValues.PathProgress % getTransportPeriod();
     bool justStopped = false;
 
     LogDebug("Transporter: current node %u and pathprogress %u \n", _currentFrame->Index, GetTimer());
@@ -104,7 +100,7 @@ void Transporter::Update(unsigned long time_passed)
                     mTransValues.PathProgress *= getTransportPeriod();
                     mTransValues.PathProgress += _currentFrame->ArriveTime;
                 }
-                break;  // its a stop frame and we are waiting
+                break; // its a stop frame and we are waiting
             }
         }
 
@@ -122,7 +118,7 @@ void Transporter::Update(unsigned long time_passed)
             setState(GO_STATE_OPEN);
 
         if (timer >= _currentFrame->DepartureTime && timer < _currentFrame->NextArriveTime)
-            break;  // found current waypoint
+            break; // found current waypoint
 
         MoveToNextWaypoint();
 
@@ -331,7 +327,7 @@ void Transporter::UpdatePassengerPositions(PassengerSet& passengers)
         case TYPEID_PLAYER:
         {
             Player* player = reinterpret_cast<Player*>(passenger);
-            //relocate only passengers in world and skip any player that might be still logging in/teleporting
+            // Relocate only passengers in world and skip any player that might be still logging in/teleporting
             if (passenger->IsInWorld())
                 player->SetPosition(x, y, z, o);
             break;
@@ -505,9 +501,9 @@ void Transporter::UpdateForMap(MapMgr* targetMap)
     }
 }
 
-uint32 Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+uint32_t Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
-    uint32 cnt = Object::buildCreateUpdateBlockForPlayer(data, target);
+    uint32_t cnt = Object::buildCreateUpdateBlockForPlayer(data, target);
 
     // add all the npcs and gos to the packet
     for (auto itr = _staticPassengers.begin(); itr != _staticPassengers.end(); ++itr)
@@ -541,7 +537,7 @@ uint32 Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* ta
 
 void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
 {
-    if (uint32 eventid = departure ? node.Node.DepartureEventID : node.Node.ArrivalEventID)
+    if (uint32_t eventid = departure ? node.Node.DepartureEventID : node.Node.ArrivalEventID)
     {
         LOG_DETAIL("Taxi %s event %u", departure ? "departure" : "arrival", eventid);
 

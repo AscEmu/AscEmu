@@ -15,10 +15,10 @@ protected:
     virtual ~TransportBase() { }
 
 public:
-    /// This method transforms supplied transport offsets into global coordinates
+    // This method transforms supplied transport offsets into global coordinates
     virtual void CalculatePassengerPosition(float& x, float& y, float& z, float* o = nullptr) const = 0;
 
-    /// This method transforms supplied global coordinates into local offsets
+    // This method transforms supplied global coordinates into local offsets
     virtual void CalculatePassengerOffset(float& x, float& y, float& z, float* o = nullptr) const = 0;
 
 protected:
@@ -54,7 +54,6 @@ class SERVER_DECL Transporter : public GameObject, public TransportBase
 
 public:
     typedef std::set<Object*> PassengerSet;
-
     ~Transporter();
 
     // Creates The Transporter
@@ -83,13 +82,13 @@ public:
     uint32  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
     void UpdateForMap(MapMgr* map);
 
-    /// This method transforms supplied transport offsets into global coordinates
+    // This method transforms supplied transport offsets into global coordinates
     void CalculatePassengerPosition(float& x, float& y, float& z, float* o = nullptr) const override
     {
         TransportBase::CalculatePassengerPosition(x, y, z, o, GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
     }
 
-    /// This method transforms supplied global coordinates into local offsets
+    // This method transforms supplied global coordinates into local offsets
     void CalculatePassengerOffset(float& x, float& y, float& z, float* o = nullptr) const override
     {
         TransportBase::CalculatePassengerOffset(x, y, z, o, GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
@@ -109,7 +108,6 @@ public:
 
     uint32_t getCurrentFrame() { return _currentFrame->Index; }
 
-
 private:
     void MoveToNextWaypoint();
     float CalculateSegmentPos(float perc);
@@ -126,7 +124,7 @@ private:
 
     void DoEventIfAny(KeyFrame const& node, bool departure);
 
-    //! Helpers to know if stop frame was reached
+    // Helpers to know if stop frame was reached
     bool IsMoving() const { return _isMoving; }
     void SetMoving(bool val) { _isMoving = val; }
 
@@ -137,7 +135,7 @@ private:
     bool _isMoving;
     bool _pendingStop;
 
-    //! These are needed to properly control events triggering only once for each frame
+    // These are needed to properly control events triggering only once for each frame
     bool _triggeredArrivalEvent;
     bool _triggeredDepartureEvent;
 
