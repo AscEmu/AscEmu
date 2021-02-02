@@ -33,7 +33,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Auth/WowCrypt.hpp"
 #include "FastQueue.h"
 #include "CircularQueue.h"
-#include "Threading/RWLock.h"
 #include "TLSObject.h"
 #include "AuthCodes.h"
 #include "CallBack.h"

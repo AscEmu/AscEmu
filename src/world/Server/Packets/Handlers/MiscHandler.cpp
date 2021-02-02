@@ -95,7 +95,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
     data.SetOpcode(SMSG_WHO);
     data << uint64_t(0);
 
-    sObjectMgr._playerslock.AcquireReadLock();
+    sObjectMgr._playerslock.lock();
     PlayerStorageMap::const_iterator iend = sObjectMgr._players.end();
     PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin();
     while (itr != iend && sent_count < 49)
@@ -194,7 +194,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         data << uint32_t(plr->GetZoneId());
         ++sent_count;
     }
-    sObjectMgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.unlock();
     data.wpos(0);
     data << sent_count;
     data << sent_count;

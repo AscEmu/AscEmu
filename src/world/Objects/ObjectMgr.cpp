@@ -233,54 +233,43 @@ void ObjectMgr::finalize()
 // Groups
 Group* ObjectMgr::GetGroupByLeader(Player* pPlayer)
 {
-    GroupMap::iterator itr;
-    Group* ret = nullptr;
-    m_groupLock.AcquireReadLock();
-    for (itr = m_groups.begin(); itr != m_groups.end(); ++itr)
+    std::lock_guard<std::mutex> guard(m_groupLock);
+
+    for (GroupMap::iterator itr = m_groups.begin(); itr != m_groups.end(); ++itr)
     {
         if (itr->second->GetLeader() == pPlayer->getPlayerInfo())
         {
-            ret = itr->second;
-            break;
+            return itr->second;
         }
     }
 
-    m_groupLock.ReleaseReadLock();
-    return ret;
+    return nullptr;
 }
 
 Group* ObjectMgr::GetGroupById(uint32 id)
 {
-    GroupMap::iterator itr;
-    Group* ret = nullptr;
-    m_groupLock.AcquireReadLock();
-    itr = m_groups.find(id);
-    if (itr != m_groups.end())
-        ret = itr->second;
+    std::lock_guard<std::mutex> guard(m_groupLock);
 
-    m_groupLock.ReleaseReadLock();
-    return ret;
+    GroupMap::iterator itr = m_groups.find(id);
+    if (itr != m_groups.end())
+        return itr->second;
+
+    return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Player names
 void ObjectMgr::DeletePlayerInfo(uint32 guid)
 {
-
-    playernamelock.AcquireWriteLock();
+    std::lock_guard<std::mutex> guard(playernamelock);
 
     std::unordered_map<uint32, PlayerInfo*>::iterator i = m_playersinfo.find(guid);
     if (i == m_playersinfo.end())
-    {
-        playernamelock.ReleaseWriteLock();
         return;
-    }
 
     PlayerInfo* pl = i->second;
     if (pl->m_Group)
-    {
         pl->m_Group->RemovePlayer(pl);
-    }
 
     std::string pnam = std::string(pl->name);
     Util::StringToLowerCase(pnam);
@@ -293,38 +282,35 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
     free(pl->name);
     delete i->second;
     m_playersinfo.erase(i);
-
-    playernamelock.ReleaseWriteLock();
 }
 
 PlayerInfo* ObjectMgr::GetPlayerInfo(uint32 guid)
 {
-    playernamelock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(playernamelock);
 
     std::unordered_map<uint32, PlayerInfo*>::iterator i = m_playersinfo.find(guid);
     PlayerInfo* rv = nullptr;
     if (i != m_playersinfo.end())
-    {
-        rv = i->second;
-    }
+        return i->second;
 
-    playernamelock.ReleaseReadLock();
-    return rv;
+    return nullptr;
 }
 
 void ObjectMgr::AddPlayerInfo(PlayerInfo* pn)
 {
-    playernamelock.AcquireWriteLock();
+    std::lock_guard<std::mutex> guard(playernamelock);
+
     m_playersinfo[pn->guid] = pn;
+
     std::string pnam = std::string(pn->name);
     Util::StringToLowerCase(pnam);
     m_playersInfoByName[pnam] = pn;
-    playernamelock.ReleaseWriteLock();
 }
 
 void ObjectMgr::RenamePlayerInfo(PlayerInfo* pn, const char* oldname, const char* newname)
 {
-    playernamelock.AcquireWriteLock();
+    std::lock_guard<std::mutex> guard(playernamelock);
+
     std::string oldn = std::string(oldname);
     Util::StringToLowerCase(oldn);
 
@@ -336,8 +322,6 @@ void ObjectMgr::RenamePlayerInfo(PlayerInfo* pn, const char* oldname, const char
         m_playersInfoByName.erase(itr);
         m_playersInfoByName[newn] = pn;
     }
-
-    playernamelock.ReleaseWriteLock();
 }
 
 void ObjectMgr::LoadSpellSkills()
@@ -476,15 +460,13 @@ PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
     std::string lpn = std::string(name);
     Util::StringToLowerCase(lpn);
 
-    PlayerInfo* rv = nullptr;
-    playernamelock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(playernamelock);
 
     PlayerNameStringIndexMap::iterator i = m_playersInfoByName.find(lpn);
     if (i != m_playersInfoByName.end())
-        rv = i->second;
+        return i->second;
 
-    playernamelock.ReleaseReadLock();
-    return rv;
+    return nullptr;
 }
 
 #if VERSION_STRING > TBC
@@ -809,9 +791,7 @@ uint32 ObjectMgr::GenerateLowGuid(uint32 guidhigh)
     uint32 ret;
     if (guidhigh == HIGHGUID_TYPE_ITEM)
     {
-
         ret = ++m_hiItemGuid;
-
     }
     else if (guidhigh == HIGHGUID_TYPE_PLAYER)
     {
@@ -819,59 +799,47 @@ uint32 ObjectMgr::GenerateLowGuid(uint32 guidhigh)
     }
     else
     {
-
         ret = ++m_hiItemGuid;
-
     }
     return ret;
 }
 
 Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
 {
-    Player* rv = nullptr;
-    PlayerStorageMap::const_iterator itr;
-    _playerslock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(_playerslock);
 
     if (!caseSensitive)
     {
         std::string strName = name;
         Util::StringToLowerCase(strName);
-        for (itr = _players.begin(); itr != _players.end(); ++itr)
+        for (PlayerStorageMap::const_iterator itr = _players.begin(); itr != _players.end(); ++itr)
         {
             if (!stricmp(itr->second->getName().c_str(), strName.c_str()))
             {
-                rv = itr->second;
-                break;
+                return itr->second;
             }
         }
     }
     else
     {
-        for (itr = _players.begin(); itr != _players.end(); ++itr)
+        for (PlayerStorageMap::const_iterator itr = _players.begin(); itr != _players.end(); ++itr)
         {
             if (!strcmp(itr->second->getName().c_str(), name))
             {
-                rv = itr->second;
-                break;
+                return itr->second;
             }
         }
     }
 
-    _playerslock.ReleaseReadLock();
-
-    return rv;
+    return nullptr;
 }
 
 Player* ObjectMgr::GetPlayer(uint32 guid)
 {
-    Player* rv = nullptr;
+    std::lock_guard<std::mutex> guard(_playerslock);
 
-    _playerslock.AcquireReadLock();
     PlayerStorageMap::const_iterator itr = _players.find(guid);
-    rv = (itr != _players.end()) ? itr->second : nullptr;
-    _playerslock.ReleaseReadLock();
-
-    return rv;
+    return (itr != _players.end()) ? itr->second : nullptr;
 }
 
 void ObjectMgr::LoadVendors()
@@ -2191,19 +2159,18 @@ Player* ObjectMgr::CreatePlayer(uint8 _class)
     return result;
 }
 
-void ObjectMgr::AddPlayer(Player* p) //add it to global storage
+void ObjectMgr::AddPlayer(Player* p)
 {
-    _playerslock.AcquireWriteLock();
+    std::lock_guard<std::mutex> guard(_playerslock);
+
     _players[p->getGuidLow()] = p;
-    _playerslock.ReleaseWriteLock();
 }
 
 void ObjectMgr::RemovePlayer(Player* p)
 {
-    _playerslock.AcquireWriteLock();
-    _players.erase(p->getGuidLow());
-    _playerslock.ReleaseWriteLock();
+    std::lock_guard<std::mutex> guard(_playerslock);
 
+    _players.erase(p->getGuidLow());
 }
 
 Corpse* ObjectMgr::CreateCorpse()
@@ -2258,13 +2225,10 @@ void ObjectMgr::LoadGuildCharters()
 
 Charter* ObjectMgr::GetCharter(uint32 CharterId, CharterTypes Type)
 {
-    Charter* rv;
-    std::unordered_map<uint32, Charter*>::iterator itr;
-    m_charterLock.AcquireReadLock();
-    itr = m_charters[Type].find(CharterId);
-    rv = (itr == m_charters[Type].end()) ? 0 : itr->second;
-    m_charterLock.ReleaseReadLock();
-    return rv;
+    std::lock_guard<std::mutex> guard(m_charterLock);
+
+    std::unordered_map<uint32, Charter*>::iterator itr = m_charters[Type].find(CharterId);
+    return (itr == m_charters[Type].end()) ? nullptr : itr->second;
 }
 
 Charter* ObjectMgr::CreateCharter(uint32 LeaderGuid, CharterTypes Type)
@@ -2280,61 +2244,49 @@ Charter* ObjectMgr::CreateCharter(uint32 LeaderGuid, CharterTypes Type)
 
 Charter* ObjectMgr::GetCharterByItemGuid(uint64 guid)
 {
-    m_charterLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(m_charterLock);
+
     for (uint8 i = 0; i < NUM_CHARTER_TYPES; ++i)
     {
-        std::unordered_map<uint32, Charter*>::iterator itr = m_charters[i].begin();
-        for (; itr != m_charters[i].end(); ++itr)
+        for (std::unordered_map<uint32, Charter*>::iterator itr = m_charters[i].begin(); itr != m_charters[i].end(); ++itr)
         {
             if (itr->second->ItemGuid == guid)
-            {
-                m_charterLock.ReleaseReadLock();
                 return itr->second;
-            }
         }
     }
-    m_charterLock.ReleaseReadLock();
+
     return nullptr;
 }
 
 Charter* ObjectMgr::GetCharterByGuid(uint64 playerguid, CharterTypes type)
 {
-    m_charterLock.AcquireReadLock();
-    std::unordered_map<uint32, Charter*>::iterator itr = m_charters[type].begin();
-    for (; itr != m_charters[type].end(); ++itr)
+    std::lock_guard<std::mutex> guard(m_charterLock);
+
+    for (std::unordered_map<uint32, Charter*>::iterator itr = m_charters[type].begin(); itr != m_charters[type].end(); ++itr)
     {
         if (playerguid == itr->second->LeaderGuid)
-        {
-            m_charterLock.ReleaseReadLock();
             return itr->second;
-        }
 
         for (uint32 j = 0; j < itr->second->SignatureCount; ++j)
         {
             if (itr->second->Signatures[j] == playerguid)
-            {
-                m_charterLock.ReleaseReadLock();
                 return itr->second;
-            }
         }
     }
-    m_charterLock.ReleaseReadLock();
+
     return nullptr;
 }
 
 Charter* ObjectMgr::GetCharterByName(std::string & charter_name, CharterTypes Type)
 {
-    m_charterLock.AcquireReadLock();
-    std::unordered_map<uint32, Charter*>::iterator itr = m_charters[Type].begin();
-    for (; itr != m_charters[Type].end(); ++itr)
+    std::lock_guard<std::mutex> guard(m_charterLock);
+
+    for (std::unordered_map<uint32, Charter*>::iterator itr = m_charters[Type].begin(); itr != m_charters[Type].end(); ++itr)
     {
         if (itr->second->GuildName == charter_name)
-        {
             return itr->second;
-        }
     }
 
-    m_charterLock.ReleaseReadLock();
     return nullptr;
 }
 
@@ -2348,9 +2300,10 @@ void ObjectMgr::RemoveCharter(Charter* c)
         LogDebugFlag(LF_DB_TABLES, "ObjectMgr : Charter %u cannot be destroyed as type %u is not a sane type value.", c->CharterId, c->CharterType);
         return;
     }
-    m_charterLock.AcquireWriteLock();
+
+    std::lock_guard<std::mutex> guard(m_charterLock);
+
     m_charters[c->CharterType].erase(c->CharterId);
-    m_charterLock.ReleaseWriteLock();
 }
 
 void ObjectMgr::LoadReputationModifierTable(const char* tablename, ReputationModMap* dmap)
@@ -2715,16 +2668,15 @@ void ObjectMgr::UpdateArenaTeamWeekly()
 
 void ObjectMgr::ResetDailies()
 {
-    _playerslock.AcquireReadLock();
-    PlayerStorageMap::iterator itr = _players.begin();
-    for (; itr != _players.end(); ++itr)
+    std::lock_guard<std::mutex> guard(_playerslock);
+
+    for (PlayerStorageMap::iterator itr = _players.begin(); itr != _players.end(); ++itr)
     {
         Player* pPlayer = itr->second;
         pPlayer->DailyMutex.Acquire();
         pPlayer->m_finishedDailies.clear();
         pPlayer->DailyMutex.Release();
     }
-    _playerslock.ReleaseReadLock();
 }
 
 void ObjectMgr::LoadSpellTargetConstraints()

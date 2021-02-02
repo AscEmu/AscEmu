@@ -106,7 +106,7 @@ class SERVER_DECL World : public EventableObject, public IUpdatable
         typedef std::unordered_map<uint32_t, WorldSession*> activeSessionMap;
         activeSessionMap mActiveSessionMapStore;
 
-        RWLock mSessionLock;
+        std::mutex mSessionLock;
 
     public:
 

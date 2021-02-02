@@ -94,7 +94,6 @@ set(headers
     Threading/LockedQueue.h
     Threading/Mutex.h
     Threading/Queue.h
-    Threading/RWLock.h
 
     Threading/AEThread.h
     Threading/AEThreadPool.h

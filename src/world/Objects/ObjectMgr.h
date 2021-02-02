@@ -302,16 +302,16 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         void AddGroup(Group* group)
         {
-            m_groupLock.AcquireWriteLock();
+            std::lock_guard<std::mutex> guard(m_groupLock);
+
             m_groups.insert(std::make_pair(group->GetID(), group));
-            m_groupLock.ReleaseWriteLock();
         }
 
         void RemoveGroup(Group* group)
         {
-            m_groupLock.AcquireWriteLock();
+            std::lock_guard<std::mutex> guard(m_groupLock);
+
             m_groups.erase(group->GetID());
-            m_groupLock.ReleaseWriteLock();
         }
 
         void LoadGroups();
@@ -346,7 +346,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         Player* CreatePlayer(uint8 _class);
         PlayerStorageMap _players;
-        RWLock _playerslock;
+        std::mutex _playerslock;
 
         void AddPlayer(Player* p); //add it to global storage
         void RemovePlayer(Player* p);
@@ -510,7 +510,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
     protected:
 
-        RWLock playernamelock;
+        std::mutex playernamelock;
 
         // highest GUIDs, used for creating new objects
         std::atomic<unsigned long> m_hiItemGuid;
@@ -527,7 +527,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
         std::atomic<unsigned long> m_hiArenaTeamId;
         std::atomic<unsigned long> m_hiPlayerGuid;
 
-        RWLock m_charterLock;
+        std::mutex m_charterLock;
 
         ReputationModMap m_reputation_faction;
         ReputationModMap m_reputation_creature;
@@ -544,7 +544,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
         std::unordered_map<uint32, TimedEmoteList*> m_timedemotes;       /// stored by spawnid
 
         // Group List
-        RWLock m_groupLock;
+        std::mutex m_groupLock;
         GroupMap m_groups;
 
         /// Map of all vendor goods

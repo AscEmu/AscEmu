@@ -17,7 +17,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
     uint16 online_count = 0;
     float latency_avg = 0;
 
-    sObjectMgr._playerslock.AcquireReadLock();
+    sObjectMgr._playerslock.lock();
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         if (itr->second->GetSession())
@@ -38,7 +38,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
             }
         }
     }
-    sObjectMgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.unlock();
 
     uint32 active_sessions = uint32(sWorld.getSessionCount());
 
@@ -119,7 +119,7 @@ bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession*
     auto start_time = Util::TimeNow();
     uint32 online_count = 0;
 
-    sObjectMgr._playerslock.AcquireReadLock();
+    sObjectMgr._playerslock.lock();
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         if (itr->second->GetSession())
@@ -129,7 +129,7 @@ bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession*
         }
     }
 
-    sObjectMgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.unlock();
 
     std::stringstream teamAnnounce;
     teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str() << "|h[";

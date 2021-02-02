@@ -21,7 +21,6 @@
 #ifndef EVENTMGR_H
 #define EVENTMGR_H
 
-#include "Threading/RWLock.h"
 #include "CallBack.h"
 #include <map>
 
@@ -386,55 +385,51 @@ class SERVER_DECL EventMgr
 
         EventableObjectHolder* GetEventHolder(int32 InstanceId)
         {
-            holderLock.AcquireReadLock();
+            std::lock_guard<std::mutex> guard(holderLock);
 
             HolderMap::iterator itr = mHolders.find(InstanceId);
 
             if (itr == mHolders.end())
             {
-                holderLock.ReleaseReadLock();
-                return 0;
+                return nullptr;
             }
-
-            holderLock.ReleaseReadLock();
 
             return itr->second;
         }
 
         void AddEventHolder(EventableObjectHolder* holder, int32 InstanceId)
         {
-            holderLock.AcquireWriteLock();
+            std::lock_guard<std::mutex> guard(holderLock);
+
             mHolders.insert(HolderMap::value_type(InstanceId, holder));
-            holderLock.ReleaseWriteLock();
         }
 
         void RemoveEventHolder(int32 InstanceId)
         {
-            holderLock.AcquireWriteLock();
+            std::lock_guard<std::mutex> guard(holderLock);
+
             mHolders.erase(InstanceId);
-            holderLock.ReleaseWriteLock();
         }
 
         void RemoveEventHolder(EventableObjectHolder* holder)
         {
-            holderLock.AcquireWriteLock();
+            std::lock_guard<std::mutex> guard(holderLock);
+
             HolderMap::iterator itr = mHolders.begin();
             for (; itr != mHolders.end(); ++itr)
             {
                 if (itr->second == holder)
                 {
                     mHolders.erase(itr);
-                    holderLock.ReleaseWriteLock();
                     return;
                 }
             }
-            holderLock.ReleaseWriteLock();
         }
 
     protected:
 
         HolderMap mHolders;
-        RWLock holderLock;
+        std::mutex holderLock;
 };
 
 #define sEventMgr EventMgr::getInstance()

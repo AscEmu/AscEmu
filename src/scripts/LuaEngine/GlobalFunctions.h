@@ -259,21 +259,20 @@ namespace luaGlobalFunctions
 
     static int GetPlayersInWorld(lua_State* L)
     {
-        Player* ret = NULL;
         uint32_t count = 0;
-        lua_newtable(L);
-        sObjectMgr._playerslock.AcquireReadLock();
 
-        std::unordered_map<uint32_t, Player*>::const_iterator itr;
-        for (itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+        lua_newtable(L);
+        sObjectMgr._playerslock.lock();
+
+        for (std::unordered_map<uint32_t, Player*>::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
         {
-            count++,
-                ret = (*itr).second;
+            count++;
+            Player* ret = (*itr).second;
             lua_pushinteger(L, count);
             PUSH_UNIT(L, (static_cast<Unit*>(ret)));
             lua_rawset(L, -3);
         }
-        sObjectMgr._playerslock.ReleaseReadLock();
+        sObjectMgr._playerslock.unlock();
         return 1;
     }
 
@@ -332,17 +331,17 @@ namespace luaGlobalFunctions
     */
     static int GetPlayersInMap(lua_State* L)
     {
-        Player* ret = NULL;
         uint32_t count = 0;
         lua_newtable(L);
         uint32_t mapid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         MapMgr* mgr = sInstanceMgr.GetMapMgr(mapid);
         if (!mgr)
             return 0;
+
         for (PlayerStorageMap::iterator itr = mgr->m_PlayerStorage.begin(); itr != mgr->m_PlayerStorage.end(); ++itr)
         {
-            count++,
-                ret = (*itr).second;
+            count++;
+            Player* ret = (*itr).second;
             lua_pushinteger(L, count);
             PUSH_UNIT(L, (static_cast<Unit*>(ret)));
             lua_rawset(L, -3);
@@ -352,24 +351,23 @@ namespace luaGlobalFunctions
 
     static int GetPlayersInZone(lua_State* L)
     {
-        Player* ret = NULL;
         uint32_t count = 0;
         lua_newtable(L);
         uint32_t zoneid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        sObjectMgr._playerslock.AcquireReadLock();
-        std::unordered_map<uint32_t, Player*>::const_iterator itr;
-        for (itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+        sObjectMgr._playerslock.lock();
+
+        for (std::unordered_map<uint32_t, Player*>::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
         {
             if ((*itr).second->GetZoneId() == zoneid)
             {
-                count++,
-                    ret = (*itr).second;
+                count++;
+                Player* ret = (*itr).second;
                 lua_pushinteger(L, count);
                 PUSH_UNIT(L, (static_cast<Unit*>(ret)));
                 lua_rawset(L, -3);
             }
         }
-        sObjectMgr._playerslock.ReleaseReadLock();
+        sObjectMgr._playerslock.unlock();
         return 1;
     }
 

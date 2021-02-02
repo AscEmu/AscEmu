@@ -40,9 +40,8 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
 
     sGMLog.writefromsession(m_session, "used castall command, spellid %u", spell_id);
 
-    PlayerStorageMap::const_iterator itr;
-    sObjectMgr._playerslock.AcquireReadLock();
-    for (itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+    sObjectMgr._playerslock.lock();
+    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         Player* player = itr->second;
         if (player->GetSession() && player->IsInWorld())
@@ -59,7 +58,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
             }
         }
     }
-    sObjectMgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.unlock();
 
     BlueSystemMessage(m_session, "Casted spell %u on all players!", spell_id);
     return true;
@@ -74,9 +73,8 @@ bool ChatHandler::HandleAdminDispelAllCommand(const char* args, WorldSession* m_
 
     sGMLog.writefromsession(m_session, "used dispelall command, pos %u", pos);
 
-    PlayerStorageMap::const_iterator itr;
-    sObjectMgr._playerslock.AcquireReadLock();
-    for (itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+    sObjectMgr._playerslock.lock();
+    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         Player* player = itr->second;
         if (player->GetSession() && player->IsInWorld())
@@ -92,7 +90,7 @@ bool ChatHandler::HandleAdminDispelAllCommand(const char* args, WorldSession* m_
         }
     }
     sGMLog.writefromsession(m_session, "used mass dispel");
-    sObjectMgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.unlock();
 
     BlueSystemMessage(m_session, "Dispel action done.");
     return true;
@@ -101,8 +99,7 @@ bool ChatHandler::HandleAdminDispelAllCommand(const char* args, WorldSession* m_
 //.admin masssummon
 bool ChatHandler::HandleAdminMassSummonCommand(const char* args, WorldSession* m_session)
 {
-    PlayerStorageMap::const_iterator itr;
-    sObjectMgr._playerslock.AcquireReadLock();
+    sObjectMgr._playerslock.lock();
 
     Player* summon_player = m_session->GetPlayer();
 
@@ -126,7 +123,7 @@ bool ChatHandler::HandleAdminMassSummonCommand(const char* args, WorldSession* m
     }
 
     uint32 summon_count = 0;
-    for (itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         Player* plr = itr->second;
         if (plr->GetSession() && plr->IsInWorld())
@@ -147,7 +144,7 @@ bool ChatHandler::HandleAdminMassSummonCommand(const char* args, WorldSession* m
 
     sGMLog.writefromsession(m_session, "requested a mass summon of %u players.", summon_count);
 
-    sObjectMgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.unlock();
 
     return true;
 }

@@ -162,7 +162,7 @@ public:
     void sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionListItems srlPacket);
 
 private:
-    RWLock auctionLock;
+    std::mutex auctionLock;
     std::unordered_map<uint32_t, Auction*> auctions;
 
     Mutex removalLock;

@@ -30,21 +30,12 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | Threading/ThreadPool.cpp
 * 2008 | Threading/Threading.h
 * 2008 | Threading/Threading.h
-* 2008 | Threading/RWLock.h
 * 2008 | Threading/Queue.h
 * 2008 | Threading/Mutex.h
 * 2008 | Threading/Mutex.cpp
 * 2008 | Threading/LockedQueue.h
 * 2008 | Threading/ConditionVariable.h
 * 2008 | Threading/ConditionVariable.cpp
-* 2008 | Threading/AtomicULong.h
-* 2008 | Threading/AtomicULong.cpp
-* 2008 | Threading/AtomicFloat.h
-* 2008 | Threading/AtomicFloat.cpp
-* 2008 | Threading/AtomicCounter.h
-* 2008 | Threading/AtomicCounter.cpp
-* 2008 | Threading/AtomicBoolean.h
-* 2008 | Threading/AtomicBoolean.cpp
 * 2008 | Singleton.h
 * 2008 | PreallocatedQueue.h
 * 2008 | LocationVector.h
@@ -126,6 +117,16 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | MersenneTwister.h
 * 2008 | MersenneTwister.cpp
 
+### Removed between 2018 - 2020
+* 2008 | Threading/AtomicULong.h
+* 2008 | Threading/AtomicULong.cpp
+* 2008 | Threading/AtomicFloat.h
+* 2008 | Threading/AtomicFloat.cpp
+* 2008 | Threading/AtomicCounter.h
+* 2008 | Threading/AtomicCounter.cpp
+* 2008 | Threading/AtomicBoolean.h
+* 2008 | Threading/AtomicBoolean.cpp
+
 ### Removed on 20 Apr 2020
 * 2008 | Database/Field.h
 
@@ -151,6 +152,9 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 ### Removed on 30 Jan 2021
 * 2005 | CRefcounter.h
 * 2008 | Database/DatabaseEnv.h
+
+### Removed on 02 Feb 2021
+* 2008 | Threading/RWLock.h
 
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp

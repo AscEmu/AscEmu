@@ -287,7 +287,7 @@ private:
     bool IsCompletedCriteria(DBC::Structures::AchievementCriteriaEntry const* entry);
     AchievementCompletionState GetAchievementCompletionState(DBC::Structures::AchievementEntry const* entry);
 
-    RWLock m_lock;
+    std::mutex m_lock;
     Player* m_player;
     CriteriaProgressMap m_criteriaProgress;
     CompletedAchievementMap m_completedAchievements;

@@ -218,7 +218,7 @@ void World::updateAllTrafficTotals()
     mLastTotalTrafficInKB = mTotalTrafficInKB;
     mLastTotalTrafficOutKB = mTotalTrafficOutKB;
 
-    sObjectMgr._playerslock.AcquireReadLock();
+    sObjectMgr._playerslock.lock();
 
     for (auto playerStorage = sObjectMgr._players.begin(); playerStorage != sObjectMgr._players.end(); ++playerStorage)
     {
@@ -235,7 +235,7 @@ void World::updateAllTrafficTotals()
     mTotalTrafficInKB += (trafficIn / 1024.0);
     mTotalTrafficOutKB += (trafficOut / 1024.0);
 
-    sObjectMgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.unlock();
 }
 
 void World::setTotalTraffic(double* totalin, double* totalout)
@@ -270,7 +270,7 @@ void World::addSession(WorldSession* worldSession)
 {
     ARCEMU_ASSERT(worldSession != NULL);
 
-    mSessionLock.AcquireWriteLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     mActiveSessionMapStore[worldSession->GetAccountId()] = worldSession;
 
@@ -280,13 +280,11 @@ void World::addSession(WorldSession* worldSession)
 #ifndef AE_TBC
     worldSession->sendAccountDataTimes(GLOBAL_CACHE_MASK);
 #endif
-
-    mSessionLock.ReleaseWriteLock();
 }
 
 WorldSession* World::getSessionByAccountId(uint32_t accountId)
 {
-    mSessionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     WorldSession* worldSession = nullptr;
 
@@ -294,14 +292,13 @@ WorldSession* World::getSessionByAccountId(uint32_t accountId)
     if (activeSessions != mActiveSessionMapStore.end())
         worldSession = activeSessions->second;
 
-    mSessionLock.ReleaseReadLock();
 
     return worldSession;
 }
 
 WorldSession* World::getSessionByAccountName(const std::string& accountName)
 {
-    mSessionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     WorldSession* worldSession = nullptr;
 
@@ -313,8 +310,6 @@ WorldSession* World::getSessionByAccountName(const std::string& accountName)
             break;
         }
     }
-
-    mSessionLock.ReleaseReadLock();
 
     return worldSession;
 }
@@ -335,32 +330,31 @@ void World::loadAccountDataProcForId(QueryResultVector& results, uint32_t accoun
 
 size_t World::getSessionCount()
 {
-    mSessionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
+
     size_t ssize = mActiveSessionMapStore.size();
-    mSessionLock.ReleaseReadLock();
 
     return ssize;
 }
 
 void World::deleteSession(WorldSession* worldSession)
 {
-    mSessionLock.AcquireWriteLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
+
     mActiveSessionMapStore.erase(worldSession->GetAccountId());
-    mSessionLock.ReleaseWriteLock();
+
     delete worldSession;
 }
 
 void World::deleteSessions(std::list<WorldSession*>& slist)
 {
-    mSessionLock.AcquireWriteLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     for (auto sessionList = slist.begin(); sessionList != slist.end(); ++sessionList)
     {
         WorldSession* session = *sessionList;
         mActiveSessionMapStore.erase(session->GetAccountId());
     }
-
-    mSessionLock.ReleaseWriteLock();
 
     for (auto sessionList = slist.begin(); sessionList != slist.end(); ++sessionList)
     {
@@ -373,7 +367,7 @@ void World::disconnectSessionByAccountName(const std::string& accountName, World
 {
     bool isUserFound = false;
 
-    mSessionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
@@ -388,8 +382,6 @@ void World::disconnectSessionByAccountName(const std::string& accountName, World
         }
     }
 
-    mSessionLock.ReleaseReadLock();
-
     if (!isUserFound)
         worldSession->SystemMessage("There is nobody online with account [%s]", accountName.c_str());
 }
@@ -398,7 +390,7 @@ void World::disconnectSessionByIp(const std::string& ipString, WorldSession* wor
 {
     bool isUserFound = false;
 
-    mSessionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
@@ -417,8 +409,6 @@ void World::disconnectSessionByIp(const std::string& ipString, WorldSession* wor
         }
     }
 
-    mSessionLock.ReleaseReadLock();
-
     if (!isUserFound)
         worldSession->SystemMessage("There is nobody online with ip [%s]", ipString.c_str());
 }
@@ -427,7 +417,7 @@ void World::disconnectSessionByPlayerName(const std::string& playerName, WorldSe
 {
     bool isUserFound = false;
 
-    mSessionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
@@ -444,8 +434,6 @@ void World::disconnectSessionByPlayerName(const std::string& playerName, WorldSe
             session->Disconnect();
         }
     }
-
-    mSessionLock.ReleaseReadLock();
 
     if (!isUserFound)
         worldSession->SystemMessage("There is no body online with the name [%s]", playerName.c_str());
@@ -589,7 +577,7 @@ void World::sendMessageToOnlineGms(const std::string& message, WorldSession* sen
     data << message.c_str();
     data << uint8_t(0);
 
-    mSessionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
@@ -599,7 +587,6 @@ void World::sendMessageToOnlineGms(const std::string& message, WorldSession* sen
                 activeSessions->second->SendPacket(&data);
         }
     }
-    mSessionLock.ReleaseReadLock();
 }
 
 void World::sendMessageToAll(const std::string& message, WorldSession* sendToSelf /*nullptr*/)
@@ -631,7 +618,7 @@ void World::sendAreaTriggerMessage(const std::string& message, WorldSession* sen
 
 void World::sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf /*nullptr*/, int32_t team /*-1*/)
 {
-    mSessionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
@@ -639,13 +626,11 @@ void World::sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf
             && activeSessions->second != sendToSelf && (team == -1 || activeSessions->second->GetPlayer()->GetTeam() == static_cast<uint32_t>(team)))
             activeSessions->second->SendPacket(worldPacket);
     }
-
-    mSessionLock.ReleaseReadLock();
 }
 
 void World::sendZoneMessage(WorldPacket* worldPacket, uint32_t zoneId, WorldSession* sendToSelf /*nullptr*/)
 {
-    mSessionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
@@ -655,13 +640,11 @@ void World::sendZoneMessage(WorldPacket* worldPacket, uint32_t zoneId, WorldSess
                 activeSessions->second->SendPacket(worldPacket);
         }
     }
-
-    mSessionLock.ReleaseReadLock();
 }
 
 void World::sendInstanceMessage(WorldPacket* worldPacket, uint32_t instanceId, WorldSession* sendToSelf /*nullptr*/)
 {
-    mSessionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
@@ -671,13 +654,11 @@ void World::sendInstanceMessage(WorldPacket* worldPacket, uint32_t instanceId, W
                 activeSessions->second->SendPacket(worldPacket);
         }
     }
-
-    mSessionLock.ReleaseReadLock();
 }
 
 void World::sendZoneUnderAttackMessage(uint32_t areaId, uint8_t teamId)
 {
-    mSessionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
@@ -688,13 +669,11 @@ void World::sendZoneUnderAttackMessage(uint32_t areaId, uint8_t teamId)
                 activeSessions->second->SendPacket(AscEmu::Packets::SmsgZoneUnderAttack(areaId).serialise().get());
         }
     }
-
-    mSessionLock.ReleaseReadLock();
 }
 
 void World::sendBroadcastMessageById(uint32_t broadcastId)
 {
-    mSessionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
@@ -716,8 +695,6 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
             activeSessions->second->SendPacket(&data);
         }
     }
-
-    mSessionLock.ReleaseReadLock();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1028,7 +1005,7 @@ void World::saveAllPlayersToDb()
 
     uint32_t count = 0;
 
-    sObjectMgr._playerslock.AcquireReadLock();
+    sObjectMgr._playerslock.lock();
 
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
@@ -1041,13 +1018,13 @@ void World::saveAllPlayersToDb()
         }
     }
 
-    sObjectMgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.unlock();
     LogDetail("Saved %u players.", count);
 }
 
 void World::playSoundToAllPlayers(uint32_t soundId)
 {
-    mSessionLock.AcquireWriteLock();
+    std::lock_guard<std::mutex> guard(mSessionLock);
 
     for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
     {
@@ -1055,8 +1032,6 @@ void World::playSoundToAllPlayers(uint32_t soundId)
         if ((worldSession->GetPlayer() != nullptr) && worldSession->GetPlayer()->IsInWorld())
             worldSession->SendPacket(AscEmu::Packets::SmsgPlaySound(soundId).serialise().get());
     }
-
-    mSessionLock.ReleaseWriteLock();
 }
 
 void World::logoutAllPlayers()

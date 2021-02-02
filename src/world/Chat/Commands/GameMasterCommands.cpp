@@ -147,7 +147,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
 
     bool is_gamemaster = m_session->GetPermissionCount() != 0;
 
-    sObjectMgr._playerslock.AcquireReadLock();
+    sObjectMgr._playerslock.lock();
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         if (itr->second->GetSession()->GetPermissionCount())
@@ -186,7 +186,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
             }
         }
     }
-    sObjectMgr._playerslock.ReleaseReadLock();
+    sObjectMgr._playerslock.unlock();
 
     if (print_headline)
     {

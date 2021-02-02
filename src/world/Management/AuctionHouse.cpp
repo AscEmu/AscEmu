@@ -145,7 +145,8 @@ void AuctionHouse::loadAuctionsFromDB()
 
 void AuctionHouse::updateAuctions()
 {
-    auctionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(auctionLock);
+
     removalLock.Acquire();
 
     auto const time = static_cast<uint32_t>(UNIXTIME);
@@ -172,7 +173,6 @@ void AuctionHouse::updateAuctions()
     }
 
     removalLock.Release();
-    auctionLock.ReleaseReadLock();
 }
 
 void AuctionHouse::updateDeletionQueue()
@@ -264,9 +264,9 @@ void AuctionHouse::removeAuction(Auction* auction)
     }
 
     // Remove the auction from the hashmap.
-    auctionLock.AcquireWriteLock();
+    auctionLock.lock();
     auctions.erase(auction->Id);
-    auctionLock.ReleaseWriteLock();
+    auctionLock.unlock();
 
     // Destroy the item from memory (it still remains in the db)
     if (auction->auctionItem)
@@ -279,20 +279,19 @@ void AuctionHouse::removeAuction(Auction* auction)
 
 void AuctionHouse::addAuction(Auction* auction)
 {
-    // add to the map
-    auctionLock.AcquireWriteLock();
+    std::lock_guard<std::mutex> guard(auctionLock);
+
     auctions.insert(std::unordered_map<uint32_t, Auction*>::value_type(auction->Id, auction));
-    auctionLock.ReleaseWriteLock();
 
     LogDebug("AuctionHouse : %u: Add auction %u, expire@ %u.", auctionHouseEntryDbc->id, auction->Id, auction->expireTime);
 }
 
 Auction* AuctionHouse::getAuction(uint32_t id)
 {
-    auctionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(auctionLock);
+
     const auto auctionsMap = auctions.find(id);
     const auto auction = auctionsMap == auctions.end() ? nullptr : auctionsMap->second;
-    auctionLock.ReleaseReadLock();
 
     return auction;
 }
@@ -313,7 +312,8 @@ void AuctionHouse::sendOwnerListPacket(Player* player, WorldPacket* /*packet*/)
 {
     std::vector<AuctionPacketList> auctionPacketList{};
 
-    auctionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(auctionLock);
+
     for (auto& itr : auctions)
     {
         auto auction = itr.second;
@@ -325,14 +325,14 @@ void AuctionHouse::sendOwnerListPacket(Player* player, WorldPacket* /*packet*/)
             auctionPacketList.push_back(auction->getListMember());
         }
     }
-    auctionLock.ReleaseReadLock();
 
     player->SendPacket(SmsgAuctionOwnerListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size())).serialise().get());
 }
 
 void AuctionHouse::updateOwner(uint32_t oldGuid, uint32_t newGuid)
 {
-    auctionLock.AcquireWriteLock();
+    std::lock_guard<std::mutex> guard(auctionLock);
+
     for (auto& itr : auctions)
     {
         auto auction = itr.second;
@@ -345,14 +345,14 @@ void AuctionHouse::updateOwner(uint32_t oldGuid, uint32_t newGuid)
             auction->updateInDB();
         }
     }
-    auctionLock.ReleaseWriteLock();
 }
 
 void AuctionHouse::sendBidListPacket(Player* player, WorldPacket* /*packet*/)
 {
     std::vector<AuctionPacketList> auctionPacketList{};
 
-    auctionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(auctionLock);
+
     for (auto itr = auctions.begin(); itr != auctions.end(); ++itr)
     {
         auto auction = itr->second;
@@ -364,7 +364,6 @@ void AuctionHouse::sendBidListPacket(Player* player, WorldPacket* /*packet*/)
             auctionPacketList.push_back(auction->getListMember());
         }
     }
-    auctionLock.ReleaseReadLock();
 
     player->SendPacket(SmsgAuctionBidderListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size()), 300).serialise().get());
 }
@@ -434,7 +433,8 @@ void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionL
             srlPacket.searchedName[j] = static_cast<char>(tolower(srlPacket.searchedName[j]));
     }
 
-    auctionLock.AcquireReadLock();
+    std::lock_guard<std::mutex> guard(auctionLock);
+
     for (auto& auction : auctions)
     {
         if (auction.second->isRemoved)
@@ -505,7 +505,6 @@ void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionL
 
         ++totalcount;
     }
-    auctionLock.ReleaseReadLock();
 
     player->SendPacket(SmsgAuctionListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size()), 300).serialise().get());
 }
