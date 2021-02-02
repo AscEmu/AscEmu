@@ -304,7 +304,7 @@ namespace luaGlobalFunctions
     InstanceMap * instancemap = sInstanceMgr.GetInstanceMap(mapid);
     for(InstanceMap::iterator itr = instancemap->begin(); itr != instancemap->end(); ++itr)
     {
-    count++,
+    count++;
     ret = itr->second->m_instanceId;
     lua_pushinteger(L,count);
     lua_pushinteger(L,ret);
@@ -689,8 +689,8 @@ namespace luaGlobalFunctions
 
         for (PlayerStorageMap::iterator itr = mgr->m_PlayerStorage.begin(); itr != mgr->m_PlayerStorage.end(); ++itr)
         {
-            count++,
-                ret = (*itr).second;
+            count++;
+            ret = (*itr).second;
             lua_pushinteger(L, count);
             PUSH_UNIT(L, (static_cast<Unit*>(ret)));
             lua_rawset(L, -3);

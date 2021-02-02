@@ -1296,7 +1296,7 @@ public:
         {
             if (itr && itr->isCreatureOrPlayer() && isFriendly(ptr, itr))
             {
-                count++,
+                count++;
                 lua_pushinteger(L, count);
                 PUSH_UNIT(L, itr);
                 lua_rawset(L, -3);
@@ -1316,7 +1316,7 @@ public:
         {
             if (itr && itr->isCreatureOrPlayer() && !isFriendly(ptr, itr))
             {
-                count++,
+                count++;
                 lua_pushinteger(L, count);
                 PUSH_UNIT(L, itr);
                 lua_rawset(L, -3);
@@ -3047,7 +3047,7 @@ public:
         {
             if (itr && itr->isPlayer())
             {
-                count++,
+                count++;
                 lua_pushinteger(L, count);
                 PUSH_UNIT(L, itr);
                 lua_rawset(L, -3);
@@ -3075,8 +3075,8 @@ public:
                 {
                     if ((*itr)->m_loggedInPlayer && (*itr)->m_loggedInPlayer->GetZoneId() == _player->GetZoneId() && _player->GetInstanceID() == (*itr)->m_loggedInPlayer->GetInstanceID())
                     {
-                        count++,
-                            lua_pushinteger(L, count);
+                        count++;
+                        lua_pushinteger(L, count);
                         PUSH_UNIT(L, (*itr)->m_loggedInPlayer);
                         lua_rawset(L, -3);
                     }
@@ -3251,7 +3251,7 @@ public:
         {
             if (itr && itr->isGameObject())
             {
-                count++,
+                count++;
                 lua_pushinteger(L, count);
                 PUSH_GO(L, itr);
                 lua_rawset(L, -3);
