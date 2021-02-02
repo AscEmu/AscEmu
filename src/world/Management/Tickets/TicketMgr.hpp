@@ -81,7 +81,7 @@ public:
     GmTicketList m_ticketList;
 
 protected:
-    std::atomic<unsigned long> m_nextTicketId;
+    uint32_t m_nextTicketId = 0;
 };
 
 #define sTicketMgr TicketMgr::getInstance()

@@ -19,11 +19,11 @@ void TicketMgr::initialize()
     auto result = CharacterDatabase.Query("SELECT MAX(ticketid) FROM gm_tickets");
     if (result)
     {
-        m_nextTicketId = result->Fetch()[0].GetUInt64();
+        m_nextTicketId = result->Fetch()[0].GetUInt32();
         delete result;
     }
 
-    LogNotice("TicketMgr : HighGuid(TICKET) = %u", uint32_t(m_nextTicketId.load()));
+    LogNotice("TicketMgr : HighGuid(TICKET) = %u", m_nextTicketId);
 }
 void TicketMgr::finalize()
 {

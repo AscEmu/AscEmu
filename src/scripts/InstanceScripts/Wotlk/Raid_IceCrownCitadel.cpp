@@ -295,7 +295,7 @@ public:
             case EVENT_WIPE_CHECK:
                 if (TeamInInstance = TEAM_ALLIANCE)
                 {
-                    DoCheckFallingPlayer(mInstance->GetCreature(getLocalData64(DATA_GB_MURADIN_BRONZEBEARD)));
+                    DoCheckFallingPlayer(mInstance->GetCreature(static_cast<uint32_t>(getLocalData64(DATA_GB_MURADIN_BRONZEBEARD))));
                     if (DoWipeCheck(skybreaker))
                         scriptEvents.addEvent(EVENT_WIPE_CHECK, 3000);
                     else
@@ -303,7 +303,7 @@ public:
                 }
                 else
                 {
-                    DoCheckFallingPlayer(mInstance->GetCreature(getLocalData64(DATA_GB_HIGH_OVERLORD_SAURFANG)));
+                    DoCheckFallingPlayer(mInstance->GetCreature(static_cast<uint32_t>(getLocalData64(DATA_GB_HIGH_OVERLORD_SAURFANG))));
                     if (DoWipeCheck(orgrimmar))
                         scriptEvents.addEvent(EVENT_WIPE_CHECK, 3000);
                     else
@@ -366,7 +366,7 @@ public:
                 transport->GetMapMgr()->RemoveFromMapMgr(transport, true);
             break;
         case EVENT_ENEMY_GUNSHIP_COMBAT:
-            if (Creature* captain = TeamInInstance == TEAM_HORDE ? mInstance->GetCreature(getLocalData64(DATA_GB_HIGH_OVERLORD_SAURFANG)) : mInstance->GetCreature(getLocalData64(DATA_GB_MURADIN_BRONZEBEARD)))
+            if (Creature* captain = TeamInInstance == TEAM_HORDE ? mInstance->GetCreature(static_cast<uint32_t>(getLocalData64(DATA_GB_HIGH_OVERLORD_SAURFANG))) : mInstance->GetCreature(static_cast<uint32_t>(getLocalData64(DATA_GB_MURADIN_BRONZEBEARD))))
                 captain->GetScript()->DoAction(ACTION_BATTLE_EVENT);
             transport->EnableMovement(false, mInstance);
             break;
@@ -1161,7 +1161,7 @@ public:
         if (effectIndex != EFF_INDEX_0)
             return;
 
-        targetCount = effectTargets->size();        
+        targetCount = static_cast<uint32_t>(effectTargets->size());
     }
 
     void afterSpellEffect(Spell* spell, uint8_t effIndex) override
@@ -1504,7 +1504,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
             return;
 
         uint64 cultistGUID = reanimationQueue.front();
-        Creature* cultist = mInstance->GetCreatureByGuid(cultistGUID);
+        Creature* cultist = mInstance->GetCreatureByGuid(static_cast<uint32_t>(cultistGUID));
         reanimationQueue.pop_front();
         if (!cultist)
             return;
@@ -1527,7 +1527,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
             return;
 
         // select random cultist
-        uint8_t i = Util::getRandomUInt(0, temp.size() - 1);
+        uint8_t i = static_cast<uint8_t>(Util::getRandomUInt(0, static_cast<uint32_t>(temp.size() - 1)));
         auto it = temp.begin();
         std::advance(it, i);
 
@@ -1763,7 +1763,7 @@ class MuradinAI : public CreatureAIScript
                 sendDBChatMessage(SAY_INTRO_ALLIANCE_5);
                 break;
             case EVENT_INTRO_ALLIANCE_7:
-                if (Creature* pSaurfang = mInstance->GetInstance()->GetCreature(mInstance->getLocalData64(DATA_HIGH_OVERLORD_SAURFANG_NOT_VISUAL)))
+                if (Creature* pSaurfang = mInstance->GetInstance()->GetCreature(static_cast<uint32_t>(mInstance->getLocalData64(DATA_HIGH_OVERLORD_SAURFANG_NOT_VISUAL))))
                 {
                     pSaurfang->GetScript()->sendDBChatMessage(SAY_BOARDING_SKYBREAKER_0);
                 }
