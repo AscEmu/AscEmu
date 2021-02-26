@@ -23,6 +23,7 @@
 
 #include "Errors.h"
 #include <cstring>
+#include "CommonTypes.hpp"
 
 class UpdateMask
 {

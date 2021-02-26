@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Server/WorldSession.h"
 #include "Objects/ObjectMgr.h"
+#include "Storage/MySQLDataStore.hpp"
 
 
 //.recall port

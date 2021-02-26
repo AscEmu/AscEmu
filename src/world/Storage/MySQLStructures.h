@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Definitions.h"
 #include <cstdint>
 #include <string>
+#include "LocationVector.h"
 
 // related to table areatriggers
 enum AreaTriggerType

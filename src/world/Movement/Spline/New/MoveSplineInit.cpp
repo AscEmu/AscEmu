@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "MoveSplineInit.h"
 #include "../world/Units/Creatures/Creature.h"
+#include "../world/Units/Creatures/Vehicle.h"
 #include "MoveSpline.h"
 #include "MovementPacketBuilder.h"
 #include "../world/Units/Unit.h"
