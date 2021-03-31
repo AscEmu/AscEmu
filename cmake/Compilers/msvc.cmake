@@ -1,7 +1,7 @@
 # Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 
-if(MSVC_VERSION VERSION_LESS 19.13) #2017 6
-    message(FATAL_ERROR "AscEmu requires at least Visual Studio 2017 update 6")
+if(MSVC_VERSION VERSION_LESS 19.28)
+    message(FATAL_ERROR "AscEmu requires at least Visual Studio 2019 update 16.9")
 endif()
 
 message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER_ID}")
