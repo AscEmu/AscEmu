@@ -24,3 +24,6 @@ DELETE FROM `creature_properties` WHERE  `entry`=41318;
 DELETE FROM `creature_properties` WHERE  `entry`=50373;
 -- FIX: this npc is not set correctly
 DELETE FROM `creature_properties` WHERE  `entry`=40350;
+
+-- update world_db_version
+REPLACE INTO `world_db_version` VALUES ('67', '20210331-00_creature_properties');
