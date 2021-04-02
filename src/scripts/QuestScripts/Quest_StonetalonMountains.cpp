@@ -47,15 +47,14 @@ class KayaFlathoof : public CreatureAIScript
             case 15:
             {
                 getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks for your help. I'll continue from here!");
-                if (getCreature()->m_escorter == NULL)
+                if (getCreature()->m_escorter == nullptr)
                     return;
-                Player* plr = getCreature()->m_escorter;
-                getCreature()->m_escorter = NULL;
 
-                auto quest_entry = plr->GetQuestLogForEntry(6523);
-                if (quest_entry == nullptr)
-                    return;
-                quest_entry->sendQuestComplete();
+                Player* player = getCreature()->m_escorter;
+                getCreature()->m_escorter = nullptr;
+
+                if (auto* questLog = player->getQuestLogByQuestId(6523))
+                    questLog->sendQuestComplete();
             }break;
             case 17:
             {
@@ -70,8 +69,8 @@ class KayaFlathoof : public CreatureAIScript
         {
             getCreature()->m_escorter = nullptr;
 
-            if (auto questLogEntry = player->GetQuestLogForEntry(6523))
-                questLogEntry->sendQuestFailed();
+            if (auto* questLog = player->getQuestLogByQuestId(6523))
+                questLog->sendQuestFailed();
         }
     }
 };

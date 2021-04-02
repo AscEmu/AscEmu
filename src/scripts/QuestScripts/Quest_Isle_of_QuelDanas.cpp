@@ -29,8 +29,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(11490);
-        if (qle)
+        if (auto* questLog = pPlayer->getQuestLogByQuestId(11490))
         {
             float SSX = pPlayer->GetPositionX();
             float SSY = pPlayer->GetPositionY();
@@ -40,11 +39,10 @@ public:
             if (pOrb)
             {
                 pOrb->setState(GO_STATE_OPEN);
-                qle->setMobCountForIndex(0, 1);
-                qle->SendUpdateAddKill(0);
-                qle->updatePlayerFields();
+                questLog->setMobCountForIndex(0, 1);
+                questLog->SendUpdateAddKill(0);
+                questLog->updatePlayerFields();
             }
-            return;
         }
         else
         {
@@ -62,10 +60,10 @@ public:
     void onHello(Object* pObject, Player* pPlayer) override
     {
         GossipMenu menu(pObject->getGuid(), 12252, pPlayer->GetSession()->language);
-        if (pPlayer->HasQuest(11532) || pPlayer->HasQuest(11533))
+        if (pPlayer->hasQuestInQuestLog(11532) || pPlayer->hasQuestInQuestLog(11533))
             menu.addItem(GOSSIP_ICON_CHAT, 466, 1);     // Speaking of action, I've been ordered to undertake an air strike.
 
-        if (pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
+        if (pPlayer->hasQuestInQuestLog(11543) || pPlayer->hasQuestInQuestLog(11542))
             menu.addItem(GOSSIP_ICON_CHAT, 467, 2);     // I need to intercept the Dawnblade reinforcements.
 
         menu.sendGossipPacket(pPlayer);
@@ -100,7 +98,7 @@ public:
     void onHello(Object* pObject, Player* pPlayer) override
     {
         GossipMenu menu(pObject->getGuid(), 12371, pPlayer->GetSession()->language);
-        if (pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
+        if (pPlayer->hasQuestInQuestLog(11543) || pPlayer->hasQuestInQuestLog(11542))
             menu.addItem(GOSSIP_ICON_CHAT, 468, 1); // <Ride the dragonhawk to Sun's Reach>
 
         menu.sendGossipPacket(pPlayer);

@@ -110,15 +110,14 @@ class A_Me01 : public CreatureAIScript
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tr..........");
             getCreature()->Despawn(5000, 1000);
             getCreature()->DeleteWaypoints();
-            if (getCreature()->m_escorter == NULL)
+            if (getCreature()->m_escorter == nullptr)
                 return;
-            Player* plr = getCreature()->m_escorter;
-            getCreature()->m_escorter = NULL;
 
-            auto quest_entry = plr->GetQuestLogForEntry(4245);
-            if (quest_entry == nullptr)
-                return;
-            quest_entry->sendQuestComplete();
+            Player* player = getCreature()->m_escorter;
+            getCreature()->m_escorter = nullptr;
+
+            if (auto* questLog = player->getQuestLogByQuestId(4245))
+                questLog->sendQuestComplete();
         }
     }
 };

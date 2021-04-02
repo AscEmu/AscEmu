@@ -48,29 +48,32 @@ std::string RemoveQuestFromPlayer(Player* plr, QuestProperties const* qst)
 {
     std::string recout = "|cff00ff00";
 
-    if (plr->HasQuests())
+    if (plr->hasAnyQuestInQuestSlot())
     {
         if (plr->HasFinishedQuest(qst->id))
+        {
             recout += "Player has already completed that quest.\n\n";
+        }
         else
         {
-            QuestLogEntry* qLogEntry = plr->GetQuestLogForEntry(qst->id);
-            if (qLogEntry)
+            if (auto* questLog = plr->getQuestLogByQuestId(qst->id))
             {
-                CALL_QUESTSCRIPT_EVENT(qLogEntry, OnQuestCancel)(plr);
-                qLogEntry->finishAndRemove();
+                CALL_QUESTSCRIPT_EVENT(questLog, OnQuestCancel)(plr);
+                questLog->finishAndRemove();
 
                 // Remove all items given by the questgiver at the beginning
-                for (uint8 i = 0; i < 4; ++i)
+                for (uint32_t itemId : qst->receive_items)
                 {
-                    if (qst->receive_items[i])
-                        plr->getItemInterface()->RemoveItemAmt(qst->receive_items[i], 1);
+                    if (itemId)
+                        plr->getItemInterface()->RemoveItemAmt(itemId, 1);
                 }
 
                 plr->UpdateNearbyGameObjects();
             }
             else
+            {
                 recout += "No quest log entry found for that player.";
+            }
         }
     }
     else
@@ -100,15 +103,15 @@ bool ChatHandler::HandleQuestStatusCommand(const char* args, WorldSession* m_ses
     }
     std::string recout = "|cff00ff00";
 
-    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
-    if (qst)
+    if (QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id))
     {
         if (plr->HasFinishedQuest(quest_id))
+        {
             recout += "Player has already completed that quest.";
+        }
         else
         {
-            QuestLogEntry* IsPlrOnQuest = plr->GetQuestLogForEntry(quest_id);
-            if (IsPlrOnQuest)
+            if (plr->hasQuestInQuestLog(quest_id))
                 recout += "Player is currently on that quest.";
             else
                 recout += "Player has NOT finished that quest.";
@@ -153,12 +156,13 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
             recout += "Player has already completed that quest.";
         else
         {
-            QuestLogEntry* IsPlrOnQuest = player->GetQuestLogForEntry(quest_id);
-            if (IsPlrOnQuest)
+            if (player->hasQuestInQuestLog(quest_id))
+            {
                 recout += "Player is currently on that quest.";
+            }
             else
             {
-                uint8_t open_slot = player->GetOpenQuestSlot();
+                uint8_t open_slot = player->getFreeQuestSlot();
                 if (open_slot > MAX_QUEST_SLOT)
                 {
                     sQuestMgr.SendQuestLogFull(player);
@@ -166,7 +170,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                 }
                 else
                 {
-                    if ((questProperties->time != 0) && player->HasTimedQuest())
+                    if (questProperties->time != 0 && player->hasTimedQuestInQuestSlot())
                     {
                         sQuestMgr.SendQuestInvalid(INVALID_REASON_HAVE_TIMED_QUEST, player);
                         return true;
@@ -178,12 +182,12 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                     questLogEntry->updatePlayerFields();
 
                     // If the quest should give any items on begin, give them the items.
-                    for (uint8 i = 0; i < 4; ++i)
+                    for (uint32_t receive_item : questProperties->receive_items)
                     {
-                        if (questProperties->receive_items[i])
+                        if (receive_item)
                         {
-                            Item* item = sObjectMgr.CreateItem(questProperties->receive_items[i], player);
-                            if (item == NULL)
+                            Item* item = sObjectMgr.CreateItem(receive_item, player);
+                            if (item == nullptr)
                                 return false;
 
                             if (!player->getItemInterface()->AddItemToFreeSlot(item))
@@ -202,12 +206,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                         }
                     }
 
-
-                    //  if (qst->count_required_item || qst_giver->getObjectTypeId() == TYPEID_GAMEOBJECT) // gameobject quests deactivate
-                    //      plr->UpdateNearbyGameObjects();
-                    //ScriptSystem->OnQuestEvent(qst, TO< Creature* >(qst_giver), _player, QUEST_EVENT_ON_ACCEPT);
-
-                    sHookInterface.OnQuestAccept(player, questProperties, NULL);
+                    sHookInterface.OnQuestAccept(player, questProperties, nullptr);
 
                     recout += "Quest has been added to the player's quest log.";
                 }
@@ -230,7 +229,8 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
 
 bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_session)
 {
-    if (!*args) return false;
+    if (!*args)
+        return false;
 
     Player* plr = GetSelectedPlayer(m_session, true, true);
     if (plr == nullptr)
@@ -245,14 +245,11 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
         quest_id = GetQuestIDFromLink(args);
         if (quest_id == 0)
             return false;
+
         if (strstr(args, "|r"))
-        {
             reward_slot = atol(strstr(args, "|r") + 2);
-        }
         else
-        {
             reward_slot = 0;
-        }
     }
     else if (strchr(args, ' '))
     {
@@ -266,20 +263,19 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
     // uint32 reward_choiceitem[6];
     // so reward_slot must be 0 to 5
     if (reward_slot > 5)
-    {
         reward_slot = 0;
-    }
+
     std::string recout = "|cff00ff00";
 
-    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
-    if (qst)
+    if (QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id))
     {
         if (plr->HasFinishedQuest(quest_id))
+        {
             recout += "Player has already completed that quest.\n\n";
+        }
         else
         {
-            QuestLogEntry* IsPlrOnQuest = plr->GetQuestLogForEntry(quest_id);
-            if (IsPlrOnQuest)
+            if (auto* questLog = plr->getQuestLogByQuestId(quest_id))
             {
                 uint32 giver_id = 0;
                 QueryResult* creatureResult = WorldDatabase.Query("SELECT id FROM creature_quest_starter WHERE quest = %u AND min_build <= %u AND max_build >= %u", quest_id, VERSION_STRING, VERSION_STRING);
@@ -302,13 +298,15 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 }
 
                 if (giver_id == 0)
+                {
                     SystemMessage(m_session, "Unable to find quest giver creature or object.");
+                }
                 else
                 {
                     // I need some way to get the guid without targeting the creature or looking through all the spawns...
                     Object* questGiver = nullptr;
 
-                    for (auto pCreature: plr->GetMapMgr()->CreatureStorage)
+                    for (auto* pCreature: plr->GetMapMgr()->CreatureStorage)
                     {
                         if (pCreature)
                         {
@@ -329,7 +327,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                         RedSystemMessage(m_session, "Unable to find quest_giver object.");
                 }
 
-                IsPlrOnQuest->finishAndRemove();
+                questLog->finishAndRemove();
                 recout += "Player was on that quest, but has now completed it.";
             }
             else
@@ -350,13 +348,11 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     int32 amt = 0;
                     uint32 fact = qst->reward_repfaction[z];
                     if (qst->reward_repvalue[z])
-                    {
                         amt = qst->reward_repvalue[z];
-                    }
+
                     if (qst->reward_replimit && (plr->GetStanding(fact) >= (int32)qst->reward_replimit))
-                    {
                         continue;
-                    }
+
                     amt = float2int32(amt * worldConfig.getFloatRate(RATE_QUESTREPUTATION));
                     plr->ModStanding(fact, amt);
                 }
@@ -373,7 +369,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     }
                     else
                     {
-                        auto item_add = plr->getItemInterface()->FindItemLessMax(qst->reward_item[i], qst->reward_itemcount[i], false);
+                        auto* item_add = plr->getItemInterface()->FindItemLessMax(qst->reward_item[i], qst->reward_itemcount[i], false);
                         if (!item_add)
                         {
                             auto slotresult = plr->getItemInterface()->FindFreeInventorySlot(proto);
@@ -383,7 +379,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                             }
                             else
                             {
-                                auto item = sObjectMgr.CreateItem(qst->reward_item[i], plr);
+                                auto* item = sObjectMgr.CreateItem(qst->reward_item[i], plr);
                                 if (item)
                                 {
                                     item->setStackCount(uint32(qst->reward_itemcount[i]));
@@ -496,16 +492,16 @@ bool ChatHandler::HandleQuestFailCommand(const char *args, WorldSession* m_sessi
         return false;
 
     Player* player = m_session->GetPlayer();
-    QuestLogEntry* questLogEntry = player->GetQuestLogForEntry(questId);
-    if (questLogEntry == nullptr)
+
+    if (auto* questLog = player->getQuestLogByQuestId(questId))
     {
-        RedSystemMessage(m_session, "quest %u not found in player's questlog", questId);
-        return false;
+        questLog->sendQuestFailed();
+        return true;
     }
 
-    questLogEntry->sendQuestFailed();
+    RedSystemMessage(m_session, "quest %u not found in player's questlog", questId);
+    return false;
 
-    return true;
 }
 
 bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_session)

@@ -79,13 +79,11 @@ class Miran : public CreatureAIScript
             getCreature()->DeleteWaypoints();
             if (getCreature()->m_escorter == NULL)
                 return;
-            auto player = getCreature()->m_escorter;
+            auto* player = getCreature()->m_escorter;
             getCreature()->m_escorter = NULL;
 
-            auto quest_entry = player->GetQuestLogForEntry(309);
-            if (quest_entry == nullptr)
-                return;
-            quest_entry->sendQuestComplete();
+            if (auto* questLog = player->getQuestLogByQuestId(309))
+                questLog->sendQuestComplete();
         }
     }
 

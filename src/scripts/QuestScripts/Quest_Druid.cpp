@@ -53,9 +53,9 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 4714, plr->GetSession()->language);
-        if (plr->HasQuest(6002))
+        if (plr->hasQuestInQuestLog(6002))
             menu.addItem(GOSSIP_ICON_CHAT, 455, 1);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
-        else if (plr->HasQuest(6001))
+        else if (plr->hasQuestInQuestLog(6001))
             menu.addItem(GOSSIP_ICON_CHAT, 455, 2);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
 
         menu.sendGossipPacket(plr);
@@ -71,19 +71,18 @@ public:
             {
                 GossipMenu::sendSimpleMenu(pObject->getGuid(), 4715, plr);
 
-                QuestLogEntry* qle = plr->GetQuestLogForEntry(6002);
-                if (qle == nullptr)
-                    return;
+                if (auto* questLog = plr->getQuestLogByQuestId(6002))
+                {
+                    if (questLog->canBeFinished())
+                        return;
 
-                if (qle->canBeFinished())
-                    return;
+                    questLog->setStateComplete();
+                    questLog->sendQuestComplete();
+                    questLog->updatePlayerFields();
 
-                qle->setStateComplete();
-                qle->sendQuestComplete();
-                qle->updatePlayerFields();
-
-                pCreature->emote(EMOTE_ONESHOT_WAVE);
-                pCreature->Despawn(240000, 0);
+                    pCreature->emote(EMOTE_ONESHOT_WAVE);
+                    pCreature->Despawn(240000, 0);
+                }
             }
             break;
 
@@ -91,19 +90,18 @@ public:
             {
                 GossipMenu::sendSimpleMenu(pObject->getGuid(), 4715, plr);
  
-                QuestLogEntry* qle = plr->GetQuestLogForEntry(6001);
-                if (qle == nullptr)
-                    return;
+                if (auto* questLog = plr->getQuestLogByQuestId(6001))
+                {
+                    if (questLog->canBeFinished())
+                        return;
 
-                if (qle->canBeFinished())
-                    return;
+                    questLog->setStateComplete();
+                    questLog->sendQuestComplete();
+                    questLog->updatePlayerFields();
 
-                qle->setStateComplete();
-                qle->sendQuestComplete();
-                qle->updatePlayerFields();
-
-                pCreature->emote(EMOTE_ONESHOT_WAVE);
-                pCreature->Despawn(240000, 0);
+                    pCreature->emote(EMOTE_ONESHOT_WAVE);
+                    pCreature->Despawn(240000, 0);
+                }
             }
             break;
 
@@ -118,9 +116,9 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 4719, plr->GetSession()->language);
-        if (plr->HasQuest(5930)) // horde
+        if (plr->hasQuestInQuestLog(5930)) // horde
             menu.addItem(GOSSIP_ICON_CHAT, 456, 1);     // What do you represent, spirit?
-        else if (plr->HasQuest(5929)) // ally
+        else if (plr->hasQuestInQuestLog(5929)) // ally
             menu.addItem(GOSSIP_ICON_CHAT, 456, 5);     // What do you represent, spirit?
 
         menu.sendGossipPacket(plr);
@@ -155,16 +153,15 @@ public:
             {
                 GossipMenu::sendSimpleMenu(pObject->getGuid(), 4735, plr);
 
-                QuestLogEntry* qle = plr->GetQuestLogForEntry(5930);
-                if (qle == nullptr)
-                    return;
+                if (auto* questLog = plr->getQuestLogByQuestId(5930))
+                {
+                    if (questLog->canBeFinished())
+                        return;
 
-                if (qle->canBeFinished())
-                    return;
-
-                qle->setStateComplete();
-                qle->sendQuestComplete();
-                qle->updatePlayerFields();
+                    questLog->setStateComplete();
+                    questLog->sendQuestComplete();
+                    questLog->updatePlayerFields();
+                }
                 break;
             }
             case 5:
@@ -192,16 +189,15 @@ public:
             {
                 GossipMenu::sendSimpleMenu(pObject->getGuid(), 4735, plr);
 
-                QuestLogEntry* qle = plr->GetQuestLogForEntry(5929);
-                if (qle == nullptr)
-                    return;
+                if (auto* questLog = plr->getQuestLogByQuestId(5929))
+                {
+                    if (questLog->canBeFinished())
+                        return;
 
-                if (qle->canBeFinished())
-                    return;
-
-                qle->setStateComplete();
-                qle->sendQuestComplete();
-                qle->updatePlayerFields();
+                    questLog->setStateComplete();
+                    questLog->sendQuestComplete();
+                    questLog->updatePlayerFields();
+                }
                 break;
             }
         }

@@ -27,7 +27,7 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
-        if (plr->HasQuest(9164))
+        if (plr->hasQuestInQuestLog(9164))
             menu.addItem(GOSSIP_ICON_CHAT, 462, 1);     // Release Him.
 
         menu.sendGossipPacket(plr);
@@ -51,7 +51,7 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
-        if (plr->HasQuest(9164))
+        if (plr->hasQuestInQuestLog(9164))
             menu.addItem(GOSSIP_ICON_CHAT, 462, 1);     // Release Him.
 
         menu.sendGossipPacket(plr);
@@ -76,7 +76,7 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
-        if (plr->HasQuest(9164))
+        if (plr->hasQuestInQuestLog(9164))
             menu.addItem(GOSSIP_ICON_CHAT, 462, 1);     // Release Him.
 
         menu.sendGossipPacket(plr);
@@ -115,13 +115,11 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(9174);
-
-        if (qle == nullptr)
-            return;
-
-        Creature* naga = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16292, 7938, -7632, 114, 3.05f);
-        naga->Despawn(6 * 60 * 1000, 0);
+        if (pPlayer->hasQuestInQuestLog(9174))
+        {
+            Creature* naga = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16292, 7938, -7632, 114, 3.05f);
+            naga->Despawn(6 * 60 * 1000, 0);
+        }
     }
 };
 

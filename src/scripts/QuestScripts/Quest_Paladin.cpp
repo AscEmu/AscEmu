@@ -43,7 +43,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (pPlayer->HasQuest(9678))
+        if (pPlayer->hasQuestInQuestLog(9678))
         {
             float SSX = pPlayer->GetPositionX();
             float SSY = pPlayer->GetPositionY();

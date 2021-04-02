@@ -48,7 +48,7 @@ void QuestLogEntry::initPlayerData()
         }
     }
 
-    m_player->SetQuestLogSlot(this, m_slot);
+    m_player->setQuestLogInSlot(this, m_slot);
 
     if (!m_player->GetSession()->m_loggingInPlayer)
         CALL_QUESTSCRIPT_EVENT(this, OnQuestStart)(m_player, this);
@@ -265,7 +265,7 @@ void QuestLogEntry::finishAndRemove()
     m_player->setQuestLogRequiredMobOrGoBySlot(m_slot, 0);
     m_player->setQuestLogExpireTimeBySlot(m_slot, 0);
 
-    m_player->SetQuestLogSlot(nullptr, m_slot);
+    m_player->setQuestLogInSlot(nullptr, m_slot);
     m_player->PushToRemovedQuests(m_questProperties->id);
     m_player->UpdateNearbyGameObjects();
 

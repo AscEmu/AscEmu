@@ -26,7 +26,7 @@ public:
 
     void onHello(Object* pObject, Player* plr) override
     {
-        if (plr->HasQuest(10652))
+        if (plr->hasQuestInQuestLog(10652))
         {
             GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 470, 1);     // I'm ready

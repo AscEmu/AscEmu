@@ -93,7 +93,7 @@ public:
     void OnActivate(Player* pPlayer) override
     {
         // Make sure player has the quest and Zelemar isn't spawned yet
-        if (!pPlayer->HasQuest(9692)) // The Path of the Adept
+        if (!pPlayer->hasQuestInQuestLog(9692)) // The Path of the Adept
         {
             pPlayer->GetSession()->SendNotification("Request quest `The Path of the Adept`.");
             return;

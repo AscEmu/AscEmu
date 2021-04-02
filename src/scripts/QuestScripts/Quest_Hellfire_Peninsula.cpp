@@ -61,8 +61,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10895);
-        if (pQuest != nullptr)
+        if (auto* questLog = pPlayer->getQuestLogByQuestId(10895))
         {
             LocationVector pos = pPlayer->GetPosition();
 
@@ -73,7 +72,7 @@ public:
             }
 
             // Northern Zeth'Gor Tower
-            if (pQuest->getMobCountByIndex(0) < pQuest->getQuestProperties()->required_mob_or_go_count[0])
+            if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
             {
                 GameObject* pNorthern = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-820.0f, 2029.0f, 55.0f, 300150);
                 if (pNorthern != nullptr && pPlayer->CalcDistance(pPlayer, pNorthern) < 40)      // if reduced the server will crash when out of range
@@ -89,7 +88,7 @@ public:
             }
 
             // Southern Zeth'Gor Tower
-            if (pQuest->getMobCountByIndex(1) < pQuest->getQuestProperties()->required_mob_or_go_count[1])
+            if (questLog->getMobCountByIndex(1) < questLog->getQuestProperties()->required_mob_or_go_count[1])
             {
                 GameObject* pSouthern = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-1150.0f, 2110.0f, 84.0f, 300150);
                 if (pSouthern != NULL && pPlayer->CalcDistance(pPlayer, pSouthern) < 40)
@@ -105,7 +104,7 @@ public:
             }
 
             // Forge Zeth'Gor Tower
-            if (pQuest->getMobCountByIndex(2) < pQuest->getQuestProperties()->required_mob_or_go_count[2])
+            if (questLog->getMobCountByIndex(2) < questLog->getQuestProperties()->required_mob_or_go_count[2])
             {
                 GameObject* pForge = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-893.0f, 1919.0f, 82.0f, 300150);
                 if (pForge != NULL && pPlayer->CalcDistance(pPlayer, pForge) < 40)
@@ -121,7 +120,7 @@ public:
             }
 
             // Foothill Zeth'Gor Tower
-            if (pQuest->getMobCountByIndex(3) < pQuest->getQuestProperties()->required_mob_or_go_count[3])
+            if (questLog->getMobCountByIndex(3) < questLog->getQuestProperties()->required_mob_or_go_count[3])
             {
                 GameObject* pFoothill = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-978.0f, 1879.0f, 111.0f, 300150);
                 if (pFoothill != NULL && pPlayer->CalcDistance(pPlayer, pFoothill) < 40)
@@ -173,14 +172,16 @@ public:
         if (i == -1)
             return;
 
-        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10368);
-        if (pQuest != nullptr && pQuest->getMobCountByIndex(i) < pQuest->getQuestProperties()->required_mob_or_go_count[i])
+        if (auto* questLog = pPlayer->getQuestLogByQuestId(10368))
         {
-            if (pPlayer->getItemInterface()->GetItemCount(29501) > 0)
+            if (questLog->getMobCountByIndex(i) < questLog->getQuestProperties()->required_mob_or_go_count[i])
             {
-                GossipMenu menu(pObject->getGuid(), 10104, pPlayer->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, 463, 1);     // Walk free, Elder. Bring the spirits back to your tribe.
-                menu.sendGossipPacket(pPlayer);
+                if (pPlayer->getItemInterface()->GetItemCount(29501) > 0)
+                {
+                    GossipMenu menu(pObject->getGuid(), 10104, pPlayer->GetSession()->language);
+                    menu.addItem(GOSSIP_ICON_CHAT, 463, 1);     // Walk free, Elder. Bring the spirits back to your tribe.
+                    menu.sendGossipPacket(pPlayer);
+                }
             }
         }
     }

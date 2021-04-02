@@ -33,18 +33,14 @@ class Paoka_Swiftmountain : public CreatureAIScript
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I appreciate the help you have shown Pao'ka. I hope this covers any misfortunes this deed has cost you.");
             getCreature()->Despawn(5000, 1000);
             getCreature()->DeleteWaypoints();
-            if (getCreature()->m_escorter == NULL)
+            if (getCreature()->m_escorter == nullptr)
                 return;
-            Player* plr = getCreature()->m_escorter;
-            getCreature()->m_escorter = NULL;
 
-            if (plr->HasQuest(4770))
-            {
-                auto quest_entry = plr->GetQuestLogForEntry(4770);
-                if (quest_entry == nullptr)
-                    return;
-                quest_entry->sendQuestComplete();
-            }
+            Player* player = getCreature()->m_escorter;
+            getCreature()->m_escorter = nullptr;
+
+            if (auto* questLog = player->getQuestLogByQuestId(4770))
+                questLog->sendQuestComplete();
         }
     }
 };

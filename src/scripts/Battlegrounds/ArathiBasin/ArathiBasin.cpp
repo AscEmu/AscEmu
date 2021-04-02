@@ -728,17 +728,17 @@ void ArathiBasin::CaptureControlPoint(uint32_t Id, uint32_t Team)
         {
             if (Team)
             {
-                if (m_capturedBases[Team] >= 4 && (*itr)->GetQuestLogForEntry(8121))
-                    (*itr)->GetQuestLogForEntry(8121)->sendQuestComplete();
-                if (m_capturedBases[Team] == 5 && (*itr)->GetQuestLogForEntry(8122))
-                    (*itr)->GetQuestLogForEntry(8122)->sendQuestComplete();
+                if (m_capturedBases[Team] >= 4 && (*itr)->hasQuestInQuestLog(8121))
+                    (*itr)->getQuestLogByQuestId(8121)->sendQuestComplete();
+                if (m_capturedBases[Team] == 5 && (*itr)->hasQuestInQuestLog(8122))
+                    (*itr)->getQuestLogByQuestId(8122)->sendQuestComplete();
             }
             else
             {
-                if (m_capturedBases[Team] >= 4 && (*itr)->GetQuestLogForEntry(8114))
-                    (*itr)->GetQuestLogForEntry(8114)->sendQuestComplete();
-                if (m_capturedBases[Team] == 5 && (*itr)->GetQuestLogForEntry(8115))
-                    (*itr)->GetQuestLogForEntry(8115)->sendQuestComplete();
+                if (m_capturedBases[Team] >= 4 && (*itr)->hasQuestInQuestLog(8114))
+                    (*itr)->getQuestLogByQuestId(8114)->sendQuestComplete();
+                if (m_capturedBases[Team] == 5 && (*itr)->hasQuestInQuestLog(8115))
+                    (*itr)->getQuestLogByQuestId(8115)->sendQuestComplete();
             }
         }
     }
@@ -897,7 +897,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
         }
         else
         {
-            QuestLogEntry* en = pPlayer->GetQuestLogForEntry(8105);
+            QuestLogEntry* en = pPlayer->getQuestLogByQuestId(8105);
             if (en != nullptr)
             {
                 switch (Id)

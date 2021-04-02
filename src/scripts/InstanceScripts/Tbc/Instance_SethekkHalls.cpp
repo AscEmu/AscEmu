@@ -224,7 +224,7 @@ class LakkaAI : public CreatureAIScript
                         Player* pPlayer = static_cast<Player*>(itr);
                         if (pPlayer != nullptr)
                         {
-                            QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10097);
+                            QuestLogEntry* pQuest = pPlayer->getQuestLogByQuestId(10097);
                             if (pQuest != nullptr && pQuest->getMobCountByIndex(1) < 1)
                             {
                                 pQuest->setMobCountForIndex(1, 1);

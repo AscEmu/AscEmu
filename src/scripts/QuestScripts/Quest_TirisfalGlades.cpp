@@ -50,13 +50,11 @@ class CalvinMontague : public CreatureAIScript
             if (mAttacker->isPlayer())
             {
                 getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-                QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(590);
-                if (!qle)
-                    return;
-
-                qle->sendQuestComplete();
-
-                setScriptPhase(2);
+                if (auto* questLog = static_cast<Player*>(mAttacker)->getQuestLogByQuestId(590))
+                {
+                    questLog->sendQuestComplete();
+                    setScriptPhase(2);
+                }
             }
         }
     }

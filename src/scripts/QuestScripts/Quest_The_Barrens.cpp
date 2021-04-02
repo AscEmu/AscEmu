@@ -27,7 +27,7 @@ public:
 
     void onHello(Object* pObject, Player* plr) override
     {
-        if (plr->HasQuest(4921))
+        if (plr->hasQuestInQuestLog(4921))
         {
             GossipMenu menu(pObject->getGuid(), 3557, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 498, 1);     // I inspect the body further.
@@ -39,16 +39,15 @@ public:
     {
         GossipMenu::sendSimpleMenu(pObject->getGuid(), 3558, plr);
 
-        QuestLogEntry* qle = plr->GetQuestLogForEntry(4921);
-        if (qle == nullptr)
-            return;
+        if (auto* questLog = plr->getQuestLogByQuestId(4921))
+        {
+            if (questLog->getMobCountByIndex(0) != 0)
+                return;
 
-        if (qle->getMobCountByIndex(0) != 0)
-            return;
-
-        qle->setMobCountForIndex(0, 1);
-        qle->SendUpdateAddKill(0);
-        qle->updatePlayerFields();
+            questLog->setMobCountForIndex(0, 1);
+            questLog->SendUpdateAddKill(0);
+            questLog->updatePlayerFields();
+        }
     }
 };
 
@@ -64,15 +63,14 @@ class Wizzlecranks_Shredder : public CreatureAIScript
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thank you Young warior!");
             getCreature()->Despawn(5000, 1000);
             getCreature()->DeleteWaypoints();
-            if (getCreature()->m_escorter == NULL)
+            if (getCreature()->m_escorter == nullptr)
                 return;
-            Player* plr = getCreature()->m_escorter;
-            getCreature()->m_escorter = NULL;
 
-            auto quest_entry = plr->GetQuestLogForEntry(863);
-            if (quest_entry == nullptr)
-                return;
-            quest_entry->sendQuestComplete();
+            Player* player = getCreature()->m_escorter;
+            getCreature()->m_escorter = nullptr;
+
+            if (auto* questLog = player->getQuestLogByQuestId(863))
+                questLog->sendQuestComplete();
         }
     }
 };
@@ -89,15 +87,14 @@ class Gilthares_Firebough : public CreatureAIScript
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally, I am rescued");
             getCreature()->Despawn(5000, 1000);
             getCreature()->DeleteWaypoints();
-            if (getCreature()->m_escorter == NULL)
+            if (getCreature()->m_escorter == nullptr)
                 return;
-            Player* plr = getCreature()->m_escorter;
-            getCreature()->m_escorter = NULL;
 
-            auto quest_entry = plr->GetQuestLogForEntry(898);
-            if (quest_entry == nullptr)
-                return;
-            quest_entry->sendQuestComplete();
+            Player* player = getCreature()->m_escorter;
+            getCreature()->m_escorter = nullptr;
+
+            if (auto* questLog = player->getQuestLogByQuestId(898))
+                questLog->sendQuestComplete();
         }
     }
 };
@@ -114,7 +111,7 @@ class VerogtheDervish : public CreatureAIScript
         {
             Player* mPlayer = static_cast<Player*>(mKiller);
 
-            if (kolkarskilled > 8 && mPlayer->HasQuest(851))
+            if (kolkarskilled > 8 && mPlayer->hasQuestInQuestLog(851))
             {
                 getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(3395, -1209.8f, -2729.84f, 106.33f, 4.8f, true, false, 0, 0)->Despawn(600000, 0);
                 kolkarskilled = 0;

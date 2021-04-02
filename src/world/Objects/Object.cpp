@@ -2638,8 +2638,8 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
 
                             if (const auto quest_props = quest_relation->qst)
                             {
-                                activate_quest_object = (quest_relation->type & QUESTGIVER_QUEST_START && !target->HasQuest(quest_props->id))
-                                    || (quest_relation->type & QUESTGIVER_QUEST_END && !target->HasQuest(quest_props->id));
+                                activate_quest_object = (quest_relation->type & QUESTGIVER_QUEST_START && !target->hasQuestInQuestLog(quest_props->id))
+                                    || (quest_relation->type & QUESTGIVER_QUEST_END && !target->hasQuestInQuestLog(quest_props->id));
                             }
                         }
                     }
@@ -2651,9 +2651,9 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
                             {
                                 for (const auto quest_go : go_props->goMap)
                                 {
-                                    if (const auto quest_log = target->GetQuestLogForEntry(quest_go.first->id))
+                                    if (auto* const questLog = target->getQuestLogByQuestId(quest_go.first->id))
                                     {
-                                        const auto quest = quest_log->getQuestProperties();
+                                        const auto quest = questLog->getQuestProperties();
                                         if (quest->count_required_mob == 0)
                                             continue;
 
@@ -2661,7 +2661,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
                                         {
                                             if (quest->required_mob_or_go[i] == static_cast<int32_t>(this_go->getEntry()))
                                             {
-                                                if (quest_log->getMobCountByIndex(i) < quest->required_mob_or_go_count[i])
+                                                if (questLog->getMobCountByIndex(i) < quest->required_mob_or_go_count[i])
                                                 {
                                                     activate_quest_object = true;
                                                     break;
@@ -2680,7 +2680,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
                                     {
                                         for (const auto item_pair : quest_props.second)
                                         {
-                                            if (const auto quest_log = target->GetQuestLogForEntry(quest_props.first->id))
+                                            if (auto* const questLog = target->getQuestLogByQuestId(quest_props.first->id))
                                             {
                                                 if (target->getItemInterface()->GetItemCount(item_pair.first) < item_pair.second)
                                                 {

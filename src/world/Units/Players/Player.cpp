@@ -3175,6 +3175,67 @@ bool Player::isGroupLeader() const
 int8_t Player::getSubGroupSlot() const { return m_playerInfo->subGroup; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Quests
+void Player::setQuestLogInSlot(QuestLogEntry* entry, uint32_t slotId)
+{
+    if (slotId < MAX_QUEST_SLOT)
+        m_questlog[slotId] = entry;
+}
+
+bool Player::hasAnyQuestInQuestSlot() const
+{
+    for (auto& questlogSlot : m_questlog)
+        if (questlogSlot != nullptr)
+            return true;
+
+    return false;
+}
+
+bool Player::hasTimedQuestInQuestSlot() const
+{
+    for (auto& questlogSlot : m_questlog)
+        if (questlogSlot != nullptr && questlogSlot->getQuestProperties()->time != 0)
+            return true;
+
+    return false;
+}
+
+bool Player::hasQuestInQuestLog(uint32_t questId) const
+{
+    if (getQuestLogByQuestId(questId))
+        return true;
+
+    return false;
+}
+
+uint8_t Player::getFreeQuestSlot() const
+{
+    for (uint8_t slotId = 0; slotId < MAX_QUEST_SLOT; ++slotId)
+        if (m_questlog[slotId] == nullptr)
+            return slotId;
+
+    return MAX_QUEST_SLOT + 1;
+}
+
+QuestLogEntry* Player::getQuestLogByQuestId(uint32_t questId) const
+{
+    for (auto& questlogSlot : m_questlog)
+        if (questlogSlot != nullptr)
+            if (questlogSlot->getQuestProperties()->id == questId)
+                return questlogSlot;
+
+    return nullptr;
+}
+
+QuestLogEntry* Player::getQuestLogBySlotId(uint32_t slotId) const
+{
+    if (slotId < MAX_QUEST_SLOT)
+        return m_questlog[slotId];
+
+    return nullptr;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 bool Player::isGMFlagSet()
 {

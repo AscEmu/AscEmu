@@ -32,15 +32,14 @@ class Dalinda_Malem : public CreatureAIScript
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, these orcs wanted me to weld in the boiler");
             getCreature()->Despawn(5000, 1000);
             getCreature()->DeleteWaypoints();
-            if (getCreature()->m_escorter == NULL)
+            if (getCreature()->m_escorter == nullptr)
                 return;
-            Player* plr = getCreature()->m_escorter;
-            getCreature()->m_escorter = NULL;
 
-            auto quest_entry = plr->GetQuestLogForEntry(1440);
-            if (quest_entry == nullptr)
-                return;
-            quest_entry->sendQuestComplete();
+            Player* player = getCreature()->m_escorter;
+            getCreature()->m_escorter = nullptr;
+
+            if (auto* questLog = player->getQuestLogByQuestId(1440))
+                questLog->sendQuestComplete();
         }
     }
 };

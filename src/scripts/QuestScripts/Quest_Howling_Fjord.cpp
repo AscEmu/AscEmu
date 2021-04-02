@@ -69,7 +69,7 @@ public:
         GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
         menu.addItem(GOSSIP_ICON_CHAT, 464, 2); // Where would you like to fly too ?
 
-        if (plr->HasQuest(11332))
+        if (plr->hasQuestInQuestLog(11332))
             menu.addItem(GOSSIP_ICON_CHAT, 465, 1); // Greer, i need a Gryphon to ride and some bombs to drop on New Agamand!
 
         menu.sendGossipPacket(plr);

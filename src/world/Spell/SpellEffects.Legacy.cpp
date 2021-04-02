@@ -2365,13 +2365,14 @@ void Spell::SpellEffectBind(uint8_t effectIndex)
 
 void Spell::SpellEffectQuestComplete(uint8_t effectIndex) // Quest Complete
 {
-    if (!p_caster) return;
-    QuestLogEntry* en = p_caster->GetQuestLogForEntry(getSpellInfo()->getEffectMiscValue(effectIndex));
-    if (en)
+    if (!p_caster)
+        return;
+
+    if (auto* questLog = p_caster->getQuestLogByQuestId(getSpellInfo()->getEffectMiscValue(effectIndex)))
     {
-        en->setStateComplete();
-        en->updatePlayerFields();
-        en->sendQuestComplete();
+        questLog->setStateComplete();
+        questLog->updatePlayerFields();
+        questLog->sendQuestComplete();
     }
 }
 

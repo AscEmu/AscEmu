@@ -42,7 +42,7 @@ public:
             TextId = 9177;
         }
 
-        if (plr->HasFinishedQuest(9785) || plr->HasQuest(9785))
+        if (plr->HasFinishedQuest(9785) || plr->hasQuestInQuestLog(9785))
         {
             GossipMenu menu(pObject->getGuid(), TextId, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 0, 1, text);

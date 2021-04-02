@@ -35,22 +35,18 @@ class WyrmcultBlackwhelp : public CreatureAIScript
     void AIUpdate() override
     {
         // Let's see if we are netted
-        Aura* a = getCreature()->getAuraWithId(38177);
-        if (a != nullptr)
+        if (Aura* a = getCreature()->getAuraWithId(38177))
         {
-            Unit* Caster = a->GetUnitCaster();
-            if (!Caster)
-                return;
-
-            if (Caster->isPlayer())
+            if (Unit* Caster = a->GetUnitCaster())
             {
-
-                QuestLogEntry* qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(10747);
-                if (qle != nullptr)
+                if (Caster->isPlayer())
                 {
-                    // casting the spell that will create the item for the player
-                    getCreature()->castSpell(Caster, 38178, true);
-                    getCreature()->Despawn(1000, 360000);
+                    if (dynamic_cast<Player*>(Caster)->hasQuestInQuestLog(10747))
+                    {
+                        // casting the spell that will create the item for the player
+                        getCreature()->castSpell(Caster, 38178, true);
+                        getCreature()->Despawn(1000, 360000);
+                    }
                 }
             }
         }
@@ -107,17 +103,16 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10584);
-        if (qle == nullptr)
-            return;
-
-        Creature* magneto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21729, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
-        if (magneto != nullptr)
+        if (pPlayer->hasQuestInQuestLog(10584))
         {
-            magneto->Despawn(5 * 60 * 1000, 0);
-        }
+            Creature* magneto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21729, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
+            if (magneto != nullptr)
+            {
+                magneto->Despawn(5 * 60 * 1000, 0);
+            }
 
-        _gameobject->Despawn(300000, 0);
+            _gameobject->Despawn(300000, 0);
+        }
     }
 };
 
@@ -130,17 +125,16 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10609);
-        if (qle == nullptr)
-            return;
-
-        Creature* whelp = pPlayer->GetMapMgr()->CreateAndSpawnCreature(20021, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
-        if (whelp != nullptr)
+        if (!pPlayer->hasQuestInQuestLog(10609))
         {
-            whelp->Despawn(5 * 60 * 1000, 0);
-        }
+            Creature* whelp = pPlayer->GetMapMgr()->CreateAndSpawnCreature(20021, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
+            if (whelp != nullptr)
+            {
+                whelp->Despawn(5 * 60 * 1000, 0);
+            }
 
-        _gameobject->Despawn(300000, 0);
+            _gameobject->Despawn(300000, 0);
+        }
     }
 };
 
@@ -283,10 +277,9 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        if (pPlayer->HasQuest(10974))
+        if (pPlayer->hasQuestInQuestLog(10974))
         {
-            Creature* pCreature = nullptr;
-            pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3989.094482f, 6071.562500f, 266.416656f, 22920);
+            Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3989.094482f, 6071.562500f, 266.416656f, 22920);
             if (pCreature != nullptr)
             {
                 pCreature->SetFaction(14);

@@ -50,7 +50,7 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
         if (mKiller->isPlayer())
         {
             Player * plr = static_cast<Player*>(mKiller);
-            if (plr->HasQuest(10896))
+            if (plr->hasQuestInQuestLog(10896))
             {
                 if (Util::checkChance(90))
                 {
@@ -169,7 +169,7 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
-        if (plr->HasQuest(10201) && plr->getItemInterface()->GetItemCount(28500, 0))
+        if (plr->hasQuestInQuestLog(10201) && plr->getItemInterface()->GetItemCount(28500, 0))
             menu.addItem(GOSSIP_ICON_CHAT, 497, 1);     // Try this
 
         menu.sendGossipPacket(plr);

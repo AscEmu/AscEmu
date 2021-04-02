@@ -36,14 +36,11 @@ class The_Defias_Traitor : public CreatureAIScript
             if (getCreature()->m_escorter == nullptr)
                 return;
 
-            Player* plr = getCreature()->m_escorter;
+            Player* player = getCreature()->m_escorter;
             getCreature()->m_escorter = nullptr;
 
-            auto quest_entry = plr->GetQuestLogForEntry(155);
-            if (quest_entry == nullptr)
-                return;
-
-            quest_entry->sendQuestComplete();
+            if (auto* questLog = player->getQuestLogByQuestId(155))
+                questLog->sendQuestComplete();
         }
     }
 };

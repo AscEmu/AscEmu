@@ -76,7 +76,7 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 14500);
-        if (plr->HasFinishedQuest(13668) || plr->HasQuest(13668) || plr->HasFinishedQuest(13667) || plr->HasQuest(13667))
+        if (plr->HasFinishedQuest(13668) || plr->hasQuestInQuestLog(13668) || plr->HasFinishedQuest(13667) || plr->hasQuestInQuestLog(13667))
         {
             menu.sendGossipPacket(plr);
         }

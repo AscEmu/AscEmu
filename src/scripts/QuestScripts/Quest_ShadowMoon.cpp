@@ -253,10 +253,10 @@ public:
 
     void onHello(Object* pObject, Player* plr) override
     {
-        if (plr->HasQuest(10814))
+        if (plr->hasQuestInQuestLog(10814))
         {
             GossipMenu menu(pObject->getGuid(), 10613, plr->GetSession()->language);
-            if (plr->HasQuest(10583))
+            if (plr->hasQuestInQuestLog(10583))
                 menu.addItem(GOSSIP_ICON_CHAT, 471, 1);     // I am listening, Dragon
 
             menu.sendGossipPacket(plr);
@@ -322,14 +322,12 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10872);
-
-        if (pQuest == NULL)
-            return;
-
-        pQuest->setMobCountForIndex(0, pQuest->getMobCountByIndex(0) + 1);
-        pQuest->SendUpdateAddKill(0);
-        pQuest->updatePlayerFields();
+        if (auto* questLog = pPlayer->getQuestLogByQuestId(10872))
+        {
+            questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
+            questLog->SendUpdateAddKill(0);
+            questLog->updatePlayerFields();
+        }
     }
 };
 
@@ -346,7 +344,7 @@ public:
 void FlanisSwiftwing_Gossip::onHello(Object* pObject, Player* plr)
 {
     GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
-    if (plr->HasQuest(10583))
+    if (plr->hasQuestInQuestLog(10583))
         menu.addItem(GOSSIP_ICON_CHAT, 475, 1);     // Examine the corpse
 
     menu.sendGossipPacket(plr);

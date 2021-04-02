@@ -75,17 +75,17 @@ public:
 
         SetData(OHF_PHASE_1, OHF_DATA_DONE);
 
-        for (PlayerStorageMap::iterator itr = mInstance->m_PlayerStorage.begin(); itr != mInstance->m_PlayerStorage.end(); ++itr)
+        for (auto& itr : mInstance->m_PlayerStorage)
         {
-            pPlayer = itr->second;
-
-            QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10283);
-            if (!qle)
-                continue;
-
-            qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
-            qle->SendUpdateAddKill(0);
-            qle->updatePlayerFields();
+            if (auto* player = itr.second)
+            {
+                if (auto* questLog = player->getQuestLogByQuestId(10283))
+                {
+                    questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
+                    questLog->SendUpdateAddKill(0);
+                    questLog->updatePlayerFields();
+                }
+            }
         }
 
         for (uint8_t i = 0; i < 21; ++i)

@@ -228,97 +228,89 @@ void OnQuestCancelled(Player* pPlayer, QuestProperties* pQuest)
 
 void InnkeeperFlex(Player* pPlayer, Unit* pUnit)
 {
-    if(pUnit->getEntry() == 6740)
+    if (pUnit->getEntry() == 6740)
     {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8356);
-        if(qle == NULL)
-            return;
-
-        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
-        qle->SendUpdateAddKill(0);
-        qle->updatePlayerFields();
+        if (auto* questLog = pPlayer->getQuestLogByQuestId(8356))
+        {
+            questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
+            questLog->SendUpdateAddKill(0);
+            questLog->updatePlayerFields();
+        }
     }
-    else if(pUnit->getEntry() == 6929)
+    else if (pUnit->getEntry() == 6929)
     {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8359);
-        if(qle == NULL)
-            return;
-
-        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
-        qle->SendUpdateAddKill(0);
-        qle->updatePlayerFields();
+        if (auto* questLog = pPlayer->getQuestLogByQuestId(8359))
+        {
+            questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
+            questLog->SendUpdateAddKill(0);
+            questLog->updatePlayerFields();
+        }
     }
 }
 
 void InnkeeperDance(Player* pPlayer, Unit* pUnit)
 {
-    if(pUnit->getEntry() == 6735)
+    if (pUnit->getEntry() == 6735)
     {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8357);
-        if(qle == NULL)
-            return;
-
-        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
-        qle->SendUpdateAddKill(0);
-        qle->updatePlayerFields();
+        if (auto* questLog = pPlayer->getQuestLogByQuestId(8357))
+        {
+            questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
+            questLog->SendUpdateAddKill(0);
+            questLog->updatePlayerFields();
+        }
     }
-    else if(pUnit->getEntry() == 6746)
+    else if (pUnit->getEntry() == 6746)
     {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8360);
-        if(qle == NULL)
-            return;
-
-        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
-        qle->SendUpdateAddKill(0);
-        qle->updatePlayerFields();
+        if (auto* questLog = pPlayer->getQuestLogByQuestId(8360))
+        {
+            questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
+            questLog->SendUpdateAddKill(0);
+            questLog->updatePlayerFields();
+        }
     }
 }
 
 void InnkeeperTrain(Player* pPlayer, Unit* pUnit)
 {
-    if(pUnit->getEntry() == 6826)
+    if (pUnit->getEntry() == 6826)
     {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8355);
-        if(qle == NULL)
-            return;
-
-        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
-        qle->SendUpdateAddKill(0);
-        qle->updatePlayerFields();
+        if (auto* questLog = pPlayer->getQuestLogByQuestId(8355))
+        {
+            questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
+            questLog->SendUpdateAddKill(0);
+            questLog->updatePlayerFields();
+        }
     }
-    else if(pUnit->getEntry() == 11814)
+    else if (pUnit->getEntry() == 11814)
     {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8358);
-        if(qle == NULL)
-            return;
-
-        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
-        qle->SendUpdateAddKill(0);
-        qle->updatePlayerFields();
+        if (auto* questLog = pPlayer->getQuestLogByQuestId(8358))
+        {
+            questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
+            questLog->SendUpdateAddKill(0);
+            questLog->updatePlayerFields();
+        }
     }
 }
 
 void InnkeeperChicken(Player* pPlayer, Unit* pUnit)
 {
-    if(pUnit->getEntry() == 5111)
+    if (pUnit->getEntry() == 5111)
     {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8353);
-        if(qle == NULL)
-            return;
-
-        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
-        qle->SendUpdateAddKill(0);
-        qle->updatePlayerFields();
+        if (auto* questLog = pPlayer->getQuestLogByQuestId(8353))
+        {
+            questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
+            questLog->SendUpdateAddKill(0);
+            questLog->updatePlayerFields();
+        }
     }
-    else if(pUnit->getEntry() == 6741)
+    else if (pUnit->getEntry() == 6741)
     {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8354);
-        if(qle == NULL)
-            return;
-
-        qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
-        qle->SendUpdateAddKill(0);
-        qle->updatePlayerFields();
+        if (auto* questLog = pPlayer->getQuestLogByQuestId(8354))
+        {
+            questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
+            questLog->SendUpdateAddKill(0);
+            questLog->updatePlayerFields();
+        }
     }
 }
 
@@ -353,26 +345,23 @@ void OnEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)
 
 void InvasionPointCataclysm(Player* pPlayer, uint32_t /*AreaTrigger*/)
 {
-    QuestLogEntry* en = pPlayer->GetQuestLogForEntry(10766);
-    if(en == nullptr)
-        return;
-    pPlayer->SafeTeleport(530, 0, -2723.674561f, 1952.664673f, 146.939743f, 3.185559f);
+    if (pPlayer->hasQuestInQuestLog(10766))
+        pPlayer->SafeTeleport(530, 0, -2723.674561f, 1952.664673f, 146.939743f, 3.185559f);
 }
 
 void Scratches(Player* pPlayer, uint32_t /*AreaTrigger*/)
 {
-    QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10556);
-    if(qle == nullptr)
-        return;
+    if (auto* questLog = pPlayer->getQuestLogByQuestId(10556))
+    {
+        Creature* Kaliri = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21468);
+        if (Kaliri == nullptr)
+            return;
 
-    Creature* Kaliri = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21468);
-    if(Kaliri == nullptr)
-        return;
-
-    Kaliri->Despawn(0, 0);
-    qle->setMobCountForIndex(0, qle->getMobCountByIndex(0) + 1);
-    qle->SendUpdateAddKill(0);
-    qle->updatePlayerFields();
+        Kaliri->Despawn(0, 0);
+        questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
+        questLog->SendUpdateAddKill(0);
+        questLog->updatePlayerFields();
+    }
 }
 
 void OnAreaTrigger(Player* pPlayer, uint32_t AreaTrigger)

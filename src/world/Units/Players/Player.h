@@ -1126,6 +1126,23 @@ private:
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Quests
+    void setQuestLogInSlot(QuestLogEntry* entry, uint32_t slotId);
+
+    bool hasAnyQuestInQuestSlot() const;
+    bool hasTimedQuestInQuestSlot() const;
+    bool hasQuestInQuestLog(uint32_t questId) const;
+    uint8_t getFreeQuestSlot() const;
+
+    QuestLogEntry* getQuestLogByQuestId(uint32_t questId) const;
+    QuestLogEntry* getQuestLogBySlotId(uint32_t slotId) const;
+
+
+private:
+    QuestLogEntry* m_questlog[MAX_QUEST_LOG_SIZE];
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Hackdetection
 
     //Speed
@@ -1385,22 +1402,9 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // Quests
         /////////////////////////////////////////////////////////////////////////////////////////
-        bool HasQuests()
-        {
-            for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
-                if (m_questlog[i] != nullptr)
-                    return true;
-
-            return false;
-        }
-
-        uint8_t GetOpenQuestSlot();
-        QuestLogEntry* GetQuestLogForEntry(uint32 quest);
-        QuestLogEntry* GetQuestLogInSlot(uint32 slot) { return m_questlog[slot]; }
         uint32 GetQuestSharer() { return m_questSharer; }
 
         void SetQuestSharer(uint32 guid) { m_questSharer = guid; }
-        void SetQuestLogSlot(QuestLogEntry* entry, uint32 slot);
 
         void PushToRemovedQuests(uint32 questid) { m_removequests.insert(questid);}
         void PushToFinishedDailies(uint32 questid) { DailyMutex.Acquire(); m_finishedDailies.insert(questid); DailyMutex.Release();}
@@ -1411,19 +1415,6 @@ public:
         bool HasFinishedQuest(uint32 quest_id);
 
         void EventTimedQuestExpire(uint32 questid);
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // bool HasTimedQuest()
-        // Tells if the Player has a timed quest already
-        //
-        // \param none
-        //
-        // \return true if the Player already has a timed quest, false otherwise
-        //
-        //////////////////////////////////////////////////////////////////////////////////////////
-        bool HasTimedQuest();
-
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // void ClearQuest(uint32 id)
@@ -1441,10 +1432,9 @@ public:
         bool HasQuestSpell(uint32 spellid);
         void RemoveQuestSpell(uint32 spellid);
         bool HasQuestMob(uint32 entry);
-        bool HasQuest(uint32 entry);
+        
         void RemoveQuestMob(uint32 entry);
         void AddQuestKill(uint32 questid, uint8 reqid, uint32 delay = 0);
-
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // void AcceptQuest(uint64 guid, uint32 quest_id)
@@ -1459,7 +1449,7 @@ public:
         void AcceptQuest(uint64 guid, uint32 quest_id);
 
         //Quest related variables
-        QuestLogEntry* m_questlog[MAX_QUEST_LOG_SIZE];
+
         std::set<uint32> m_removequests;
         std::set<uint32> m_finishedQuests;
         Mutex DailyMutex;

@@ -32,16 +32,14 @@ class Corporal_Keeshan : public CreatureAIScript
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell Marshal Marris. I'm outta here!");
             getCreature()->Despawn(5000, 1000);
             getCreature()->DeleteWaypoints();
-            if (getCreature()->m_escorter == NULL)
+            if (getCreature()->m_escorter == nullptr)
                 return;
 
-            Player* plr = getCreature()->m_escorter;
-            getCreature()->m_escorter = NULL;
+            Player* player = getCreature()->m_escorter;
+            getCreature()->m_escorter = nullptr;
 
-            auto quest_entry = plr->GetQuestLogForEntry(219);
-            if (quest_entry == nullptr)
-                return;
-            quest_entry->sendQuestComplete();
+            if (auto* questLog = player->getQuestLogByQuestId(219))
+                questLog->sendQuestComplete();
         }
     }
 };

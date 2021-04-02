@@ -1211,7 +1211,7 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId
 
         if (itr->first == gossipMenuId)
         {
-            if (itr->second.requirementType == 1 && !player->HasQuest(itr->second.requirementData))
+            if (itr->second.requirementType == 1 && !player->hasQuestInQuestLog(itr->second.requirementData))
                 continue;
 
             if (itr->second.requirementType == 3)
@@ -3098,17 +3098,16 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
 
             case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_KILL_CREDIT):
             {
-                QuestLogEntry* pQuest = plr->GetQuestLogForEntry(itr->second.data_2);
-                if (pQuest != nullptr)
+                if (auto* questLog = plr->getQuestLogByQuestId(itr->second.data_2))
                 {
-                    if (pQuest->getQuestProperties()->required_mob_or_go[itr->second.data_5] >= 0)
+                    if (questLog->getQuestProperties()->required_mob_or_go[itr->second.data_5] >= 0)
                     {
-                        uint32 required_mob = static_cast<uint32>(pQuest->getQuestProperties()->required_mob_or_go[itr->second.data_5]);
-                        if (pQuest->getMobCountByIndex(itr->second.data_5) < required_mob)
+                        uint32 required_mob = static_cast<uint32>(questLog->getQuestProperties()->required_mob_or_go[itr->second.data_5]);
+                        if (questLog->getMobCountByIndex(itr->second.data_5) < required_mob)
                         {
-                            pQuest->setMobCountForIndex(itr->second.data_5, pQuest->getMobCountByIndex(itr->second.data_5) + 1);
-                            pQuest->SendUpdateAddKill(itr->second.data_5);
-                            pQuest->updatePlayerFields();
+                            questLog->setMobCountForIndex(itr->second.data_5, questLog->getMobCountByIndex(itr->second.data_5) + 1);
+                            questLog->SendUpdateAddKill(itr->second.data_5);
+                            questLog->updatePlayerFields();
                         }
                     }
                 }

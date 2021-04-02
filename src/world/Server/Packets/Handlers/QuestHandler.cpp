@@ -597,7 +597,7 @@ void WorldSession::handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
     if (srlPacket.questLogSlot >= 25)
         return;
 
-    QuestLogEntry* qEntry = _player->GetQuestLogInSlot(srlPacket.questLogSlot);
+    QuestLogEntry* qEntry = _player->getQuestLogBySlotId(srlPacket.questLogSlot);
     if (!qEntry)
     {
         LogDebugFlag(LF_OPCODE, " No quest in slot %d.", srlPacket.questLogSlot);
@@ -855,7 +855,7 @@ void WorldSession::handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    QuestLogEntry* qle = _player->GetQuestLogForEntry(srlPacket.questId);
+    QuestLogEntry* qle = _player->getQuestLogByQuestId(srlPacket.questId);
     if (!qle && !qst->is_repeatable)
     {
         LogDebugFlag(LF_OPCODE, "QuestLogEntry not found.");
@@ -917,7 +917,7 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
                         uint8_t response = QUEST_SHARE_MSG_SHARING_QUEST;
                         uint32_t status = sQuestMgr.PlayerMeetsReqs(pPlayer, pQuest, false);
 
-                        if (pPlayer->HasQuest(srlPacket.questId))
+                        if (pPlayer->hasQuestInQuestLog(srlPacket.questId))
                         {
                             response = QUEST_SHARE_MSG_HAVE_QUEST;
                         }
@@ -929,7 +929,7 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
                         {
                             response = QUEST_SHARE_MSG_CANT_TAKE_QUEST;
                         }
-                        else if (pPlayer->GetOpenQuestSlot() > MAX_QUEST_SLOT)
+                        else if (pPlayer->getFreeQuestSlot() > MAX_QUEST_SLOT)
                         {
                             response = QUEST_SHARE_MSG_LOG_FULL;
                         }

@@ -49,7 +49,7 @@ public:
 void ProspectorAnvilwardGossip::onHello(Object* pObject, Player * Plr)
 {
     GossipMenu menu(pObject->getGuid(), ANVILWARD_1, Plr->GetSession()->language);
-    if (Plr->HasQuest(8483))
+    if (Plr->hasQuestInQuestLog(8483))
         menu.addItem(GOSSIP_ICON_CHAT, 460, 1);     // I need a moment of your time, Sir.
 
     menu.sendGossipPacket(Plr);

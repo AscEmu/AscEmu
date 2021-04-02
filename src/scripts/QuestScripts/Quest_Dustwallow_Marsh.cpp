@@ -101,21 +101,20 @@ class OverlordMokMorokk : public CreatureAIScript
 
     void OnDamageTaken(Unit* mAttacker, uint32_t fAmount) override
     {
-        uint32_t chance = Util::getRandomUInt(100);
+        const uint32_t chance = Util::getRandomUInt(100);
         if (chance < 25)
         {
             getCreature()->castSpell(mAttacker, sSpellMgr.getSpellInfo(6749), true);
         }
+
         if (getCreature()->getHealth() - fAmount <= getCreature()->getMaxHealth() * 0.3f)
         {
             if (mAttacker->isPlayer())
             {
                 getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);
-                QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1173);
-                if (!qle)
-                    return;
-                qle->sendQuestComplete();
+                if (auto* questLog = dynamic_cast<Player*>(mAttacker)->getQuestLogByQuestId(1173))
+                    questLog->sendQuestComplete();
             }
         }
     }
@@ -178,10 +177,9 @@ class PrivateHendel : public CreatureAIScript
             {
                 getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);
-                QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1324);
-                if (!qle)
-                    return;
-                qle->sendQuestComplete();
+
+                if (auto* questLog = dynamic_cast<Player*>(mAttacker)->getQuestLogByQuestId(1324))
+                    questLog->sendQuestComplete();
             }
         }
     }

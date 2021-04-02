@@ -60,7 +60,7 @@ public:
             return;
 
         GossipMenu menu(pObject->getGuid(), 1);
-        if (plr->HasQuest(2702) || plr->HasFinishedQuest(2702))
+        if (plr->hasQuestInQuestLog(2702) || plr->HasFinishedQuest(2702))
             menu.addItem(GOSSIP_ICON_CHAT, 453, 1);     // I need to speak with Corporal.
 
         menu.sendGossipPacket(plr);

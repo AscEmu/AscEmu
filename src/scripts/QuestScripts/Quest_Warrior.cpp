@@ -77,10 +77,9 @@ class Bartleby : public CreatureAIScript
             {
                 getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);
-                QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1640);
-                if (!qle)
-                    return;
-                qle->sendQuestComplete();
+
+                if (auto* questLog = static_cast<Player*>(mAttacker)->getQuestLogByQuestId(1640))
+                    questLog->sendQuestComplete();
             }
         }
     }

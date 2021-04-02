@@ -149,7 +149,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->HasQuest(11073) && player->getItemInterface()->GetItemCount(32720, 1))
+        if (player->hasQuestInQuestLog(11073) && player->getItemInterface()->GetItemCount(32720, 1))
         {
             LocationVector pos = player->GetPosition();
             Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(21838, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
@@ -219,7 +219,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->HasQuest(11078))
+        if (player->hasQuestInQuestLog(11078))
         {
             LocationVector pos = player->GetPosition();
             Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(23282, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
@@ -242,7 +242,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->HasQuest(11078))
+        if (player->hasQuestInQuestLog(11078))
         {
             LocationVector pos = player->GetPosition();
             Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(23061, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
@@ -265,7 +265,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->HasQuest(11078))
+        if (player->hasQuestInQuestLog(11078))
         {
             LocationVector pos = player->GetPosition();
             Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(23261, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
@@ -288,7 +288,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->HasQuest(11078))
+        if (player->hasQuestInQuestLog(11078))
         {
             LocationVector pos = player->GetPosition();
             Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(23281, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
@@ -311,7 +311,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->HasQuest(63))
+        if (player->hasQuestInQuestLog(63))
         {
             LocationVector pos = player->GetPosition();
             Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(5894, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
@@ -334,7 +334,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->HasQuest(9508))
+        if (player->hasQuestInQuestLog(9508))
         {
             LocationVector pos = player->GetPosition();
             Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(17359, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
@@ -359,7 +359,7 @@ public:
     {
         Creature* Ulag = player->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(2390.101807f, 336.676788f, 40.015614f, 6390);
         GameObject* pDoor = player->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2388.480029f, 338.3901f, 40.092899f, 176594);
-        QuestLogEntry* en = player->GetQuestLogForEntry(1819);
+        QuestLogEntry* en = player->getQuestLogByQuestId(1819);
         if (en == nullptr || pDoor == nullptr || Ulag == nullptr)
             return;
 
@@ -384,7 +384,7 @@ public:
 
     void OnLootTaken(Player* player, ItemProperties const* /*itemProperties*/)
     {
-        QuestLogEntry* en = player->GetQuestLogForEntry(422);
+        QuestLogEntry* en = player->getQuestLogByQuestId(422);
         if (en == nullptr)
             return;
 
@@ -429,7 +429,7 @@ public:
         if (commander)
             return;
 
-        if (player->HasQuest(10339))
+        if (player->hasQuestInQuestLog(10339))
         {
             float x = 4017.96f;
             float y = 2315.91f;
@@ -450,7 +450,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(10111);
+        QuestLogEntry* qle = player->getQuestLogByQuestId(10111);
         if (qle == nullptr)
             return;
 
@@ -503,7 +503,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(8345);
+        QuestLogEntry* qle = player->getQuestLogByQuestId(8345);
         if (qle != nullptr)
             qle->sendQuestComplete();
     }
@@ -518,7 +518,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->HasQuest(5902) || player->HasQuest(5904))
+        if (player->hasQuestInQuestLog(5902) || player->hasQuestInQuestLog(5904))
         {
             LocationVector pos = player->GetPosition();
             GameObject* go = player->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 177491);
@@ -541,7 +541,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(6027);
+        QuestLogEntry* qle = player->getQuestLogByQuestId(6027);
         if (qle == nullptr)
             return;
 
@@ -560,7 +560,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(2882);
+        QuestLogEntry* qle = player->getQuestLogByQuestId(2882);
         if (qle == nullptr)
             return;
 
@@ -601,7 +601,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(3821);
+        QuestLogEntry* qle = player->getQuestLogByQuestId(3821);
         if (qle == nullptr)
             return;
 
@@ -626,7 +626,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(5381);
+        QuestLogEntry* qle = player->getQuestLogByQuestId(5381);
         if (qle == nullptr)
             return;
 
@@ -677,7 +677,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(9689);
+        QuestLogEntry* qle = player->getQuestLogByQuestId(9689);
         if (qle == nullptr)
             return;
 
@@ -696,7 +696,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(4296);
+        QuestLogEntry* qle = player->getQuestLogByQuestId(4296);
         if (qle == nullptr)
             return;
 
@@ -714,7 +714,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(1150);
+        QuestLogEntry* qle = player->getQuestLogByQuestId(1150);
         if (qle == nullptr)
             return;
 
@@ -744,7 +744,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(10915);
+        QuestLogEntry* qle = player->getQuestLogByQuestId(10915);
         if (qle == nullptr)
             return;
 
@@ -776,7 +776,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(8481);
+        QuestLogEntry* qle = player->getQuestLogByQuestId(8481);
         if (qle == nullptr)
             return;
 
@@ -797,7 +797,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (!player->HasQuest(10526))
+        if (!player->hasQuestInQuestLog(10526))
             return;
 
         LocationVector pos = player->GetPosition();
@@ -822,7 +822,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(9582);
+        QuestLogEntry* qle = player->getQuestLogByQuestId(9582);
         if (qle == nullptr)
             return;
 

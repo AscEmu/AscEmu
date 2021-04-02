@@ -426,23 +426,21 @@ class NestlewoodOwlkin : public CreatureAIScript
     {
         if (getCreature()->HasAura(29528))
         {
-            Player* player = getCreature()->GetMapMgr()->GetPlayer(static_cast<uint32_t>(getCreature()->getTargetGuid()));
-            if (player != nullptr)
+            if (auto* player = getCreature()->GetMapMgr()->GetPlayer(static_cast<uint32_t>(getCreature()->getTargetGuid())))
             {
-                if (!player->HasQuest(9303) || player->HasFinishedQuest(9303))
+                if (!player->hasQuestInQuestLog(9303) || player->HasFinishedQuest(9303))
                     return;
 
-                QuestLogEntry* quest_entry = player->GetQuestLogForEntry(9303);
-                if (quest_entry == nullptr)
-                    return;
-
-                if (quest_entry->getMobCountByIndex(0) < 6)
+                if (auto* questLog = player->getQuestLogByQuestId(9303))
                 {
-                    quest_entry->incrementMobCountForIndex(0);
-                    quest_entry->SendUpdateAddKill(0);
-                    quest_entry->updatePlayerFields();
+                    if (questLog->getMobCountByIndex(0) < 6)
+                    {
+                        questLog->incrementMobCountForIndex(0);
+                        questLog->SendUpdateAddKill(0);
+                        questLog->updatePlayerFields();
 
-                    RegisterAIUpdateEvent(240000);  // update after 4 mins
+                        RegisterAIUpdateEvent(240000);  // update after 4 mins
+                    }
                 }
             }
         }

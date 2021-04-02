@@ -47,7 +47,7 @@ public:
 
     void onHello(Object* pObject, Player* plr) override
     {
-        if (plr->HasQuest(12670) || plr->HasFinishedQuest(12670))
+        if (plr->hasQuestInQuestLog(12670) || plr->HasFinishedQuest(12670))
         {
             if (TaxiPath* path = sTaxiMgr.GetTaxiPath(pObject->getEntry() == 29488 ? 1053 : 1054))
                 plr->TaxiStart(path, 26308, 0);
@@ -67,36 +67,33 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        QuestLogEntry* en = pPlayer->GetQuestLogForEntry(12848);
-        if (!en)
-            return;
-
-        float SSX = pPlayer->GetPositionX();
-        float SSY = pPlayer->GetPositionY();
-        float SSZ = pPlayer->GetPositionZ();
-
-        Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ);
-
-        if (!pCreature || !pCreature->isAlive())
-            return;
-
-        if (pCreature->getEntry() == CN_INITIATE_1 || pCreature->getEntry() == CN_INITIATE_2 || pCreature->getEntry() == CN_INITIATE_3 || pCreature->getEntry() == CN_INITIATE_4)
+        if (auto* questLog = pPlayer->getQuestLogByQuestId(12848))
         {
-            pPlayer->SendChatMessage(CHAT_MSG_SAY, LANG_UNIVERSAL, "I give you the key to your salvation");
-            //\todo to set flags will override all values from db
-            pCreature->setUnitFlags(UNIT_FLAG_NONE);
-            pCreature->GetAIInterface()->setNextTarget(pPlayer);
-            pCreature->GetAIInterface()->AttackReaction(pPlayer, 1, 0);
-            pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have committed a big mistake, demon");
+            float SSX = pPlayer->GetPositionX();
+            float SSY = pPlayer->GetPositionY();
+            float SSZ = pPlayer->GetPositionZ();
 
-            if (en->getMobCountByIndex(0) != 0)
+            Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ);
+            if (!pCreature || !pCreature->isAlive())
                 return;
 
-            en->setMobCountForIndex(0, 1);
-            en->SendUpdateAddKill(0);
-            en->updatePlayerFields();
-        }
+            if (pCreature->getEntry() == CN_INITIATE_1 || pCreature->getEntry() == CN_INITIATE_2 || pCreature->getEntry() == CN_INITIATE_3 || pCreature->getEntry() == CN_INITIATE_4)
+            {
+                pPlayer->SendChatMessage(CHAT_MSG_SAY, LANG_UNIVERSAL, "I give you the key to your salvation");
+                //\todo to set flags will override all values from db
+                pCreature->setUnitFlags(UNIT_FLAG_NONE);
+                pCreature->GetAIInterface()->setNextTarget(pPlayer);
+                pCreature->GetAIInterface()->AttackReaction(pPlayer, 1, 0);
+                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have committed a big mistake, demon");
 
+                if (questLog->getMobCountByIndex(0) != 0)
+                    return;
+
+                questLog->setMobCountForIndex(0, 1);
+                questLog->SendUpdateAddKill(0);
+                questLog->updatePlayerFields();
+            }
+        }
     }
 };
 
@@ -124,7 +121,7 @@ bool PreparationForBattleEffect(uint8_t /*effectIndex*/, Spell* pSpell)
         return false;
 
     // Apply spell if caster has quest and still heven't completed it yet
-    if (pCaster->HasQuest(QUEST_PREPARATION) && !pCaster->HasFinishedQuest(QUEST_PREPARATION))
+    if (pCaster->hasQuestInQuestLog(QUEST_PREPARATION) && !pCaster->HasFinishedQuest(QUEST_PREPARATION))
         pCaster->castSpell(pCaster, SPELL_PREPERATION_FOR_BATTLE_CREDIT, true);
 
     return true;
@@ -141,7 +138,7 @@ public:
 
     void OnActivate(Player* player) override
     {
-        if (!player->HasQuest(12641))
+        if (!player->hasQuestInQuestLog(12641))
             return;
 
         if (player->HasAura(51852))

@@ -41,7 +41,7 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1);
-        if (plr->HasQuest(9663))
+        if (plr->hasQuestInQuestLog(9663))
             menu.addItem(GOSSIP_ICON_CHAT, 454, 1);     // Warn him
 
         menu.sendGossipPacket(plr);
@@ -60,7 +60,7 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1);
-        if (plr->HasQuest(9663))
+        if (plr->hasQuestInQuestLog(9663))
             menu.addItem(GOSSIP_ICON_CHAT, 454, 1);     // Warn him
 
         menu.sendGossipPacket(plr);
@@ -79,7 +79,7 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1);
-        if (plr->HasQuest(9663))
+        if (plr->hasQuestInQuestLog(9663))
             menu.addItem(GOSSIP_ICON_CHAT, 454, 1);     // Warn him
 
         menu.sendGossipPacket(plr);
@@ -123,7 +123,7 @@ class HighChiefBristlelimb : public CreatureAIScript
         {
             Player* mPlayer = static_cast<Player*>(mKiller);
 
-            if (fulborgskilled > 8 && mPlayer->HasQuest(9667))
+            if (fulborgskilled > 8 && mPlayer->hasQuestInQuestLog(9667))
             {
                 getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(17702, -2419, -12166, 33, 3.45f, true, false, 0, 0)->Despawn(18000000, 0);
                 fulborgskilled = 0;
@@ -158,23 +158,17 @@ class WebbedCreature : public CreatureAIScript
 
     void OnDied(Unit* pKiller) override
     {
-        Player* QuestHolder = NULL;
-        if (pKiller->getPlayerOwner() != nullptr)
-            QuestHolder = pKiller->getPlayerOwner();
-
-        if (QuestHolder == NULL)
+        Player* QuestHolder = pKiller->getPlayerOwner();
+        if (QuestHolder == nullptr)
             return;
 
-        // M4ksiu: I don't think the method is correct, but it can stay the way it was until someone gives proper infos
-        QuestLogEntry* qle = QuestHolder->GetQuestLogForEntry(9670);
         LocationVector pos = getCreature()->GetPosition();
-        Creature* RandomCreature = NULL;
-        if (qle == nullptr)
+        if (!QuestHolder->hasQuestInQuestLog(9670))
         {
             // Creatures from Bloodmyst Isle
             uint32_t Id[51] = { 17681, 17887, 17550, 17323, 17338, 17341, 17333, 17340, 17353, 17320, 17339, 17337, 17715, 17322, 17494, 17654, 17342, 17328, 17331, 17325, 17321, 17330, 17522, 17329, 17524, 17327, 17661, 17352, 17334, 17326, 17324, 17673, 17336, 17346, 17589, 17609, 17608, 17345, 17527, 17344, 17347, 17525, 17713, 17523, 17348, 17606, 17604, 17607, 17610, 17358, 17588 };
-            RandomCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(Id[Util::getRandomUInt(50)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
-            if (RandomCreature != NULL)
+            Creature* RandomCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(Id[Util::getRandomUInt(50)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+            if (RandomCreature != nullptr)
             {
                 RandomCreature->m_noRespawn = true;
                 RandomCreature->Despawn(60000, 0);
@@ -183,8 +177,8 @@ class WebbedCreature : public CreatureAIScript
         else
         {
             uint32_t Id[8] = { 17681, 17321, 17330, 17522, 17673, 17336, 17346, 17589 };
-            RandomCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(Id[Util::getRandomUInt(7)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
-            if (RandomCreature != NULL)
+            Creature* RandomCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(Id[Util::getRandomUInt(7)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+            if (RandomCreature != nullptr)
             {
                 RandomCreature->m_noRespawn = true;
                 RandomCreature->Despawn(60000, 0);

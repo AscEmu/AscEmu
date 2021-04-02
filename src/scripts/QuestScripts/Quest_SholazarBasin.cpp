@@ -46,20 +46,19 @@ class ChickenEscapee : public CreatureAIScript
     void AIUpdate()
     {
         // Let's see if we are netted
-        Aura* a = getCreature()->getAuraWithId(51959);
-        if (a != NULL)
+        if (Aura* a = getCreature()->getAuraWithId(51959))
         {
             Unit* Caster = a->GetUnitCaster();
             if (Caster == nullptr)
                 return;
+
             if (Caster->isPlayer())
             {
+                QuestLogEntry* questLog = static_cast<Player*>(Caster)->getQuestLogByQuestId(12532);
+                if (questLog == nullptr)
+                    questLog = static_cast<Player*>(Caster)->getQuestLogByQuestId(12702);
 
-                QuestLogEntry* qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(12532);
-                if (qle == NULL)
-                    qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(12702);
-
-                if (qle != NULL)
+                if (questLog)
                 {
                     // casting the spell that will create the item for the player
                     getCreature()->castSpell(Caster, 51037, true);
@@ -76,7 +75,7 @@ public:
 
     void onHello(Object* pObject, Player* plr) override
     {
-        if (plr->HasQuest(12645))
+        if (plr->hasQuestInQuestLog(12645))
         {
             GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 476, 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
@@ -95,16 +94,15 @@ public:
         pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
         pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
 
-        QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
-        if (qle == nullptr)
-            return;
+        if (auto* questLog = plr->getQuestLogByQuestId(12645))
+        {
+            if (questLog->getMobCountByIndex(0) != 0)
+                return;
 
-        if (qle->getMobCountByIndex(0) != 0)
-            return;
-
-        qle->setMobCountForIndex(0, 1);
-        qle->SendUpdateAddKill(0);
-        qle->updatePlayerFields();
+            questLog->setMobCountForIndex(0, 1);
+            questLog->SendUpdateAddKill(0);
+            questLog->updatePlayerFields();
+        }
     }
 };
 
@@ -114,7 +112,7 @@ public:
 
     void onHello(Object* pObject, Player* plr) override
     {
-        if (plr->HasQuest(12645))
+        if (plr->hasQuestInQuestLog(12645))
         {
             GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 476, 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
@@ -132,16 +130,16 @@ public:
         std::string msg3 = "Now, there's the kick I've come to expect from Grimbooze's drinks! I like it!";
         pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
         pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
-        QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
-        if (qle == nullptr)
-            return;
 
-        if (qle->getMobCountByIndex(0) != 0)
-            return;
+        if (auto* questLog = plr->getQuestLogByQuestId(12645))
+        {
+            if (questLog->getMobCountByIndex(0) != 0)
+                return;
 
-        qle->setMobCountForIndex(1, 1);
-        qle->SendUpdateAddKill(1);
-        qle->updatePlayerFields();
+            questLog->setMobCountForIndex(1, 1);
+            questLog->SendUpdateAddKill(1);
+            questLog->updatePlayerFields();
+        }
     }
 };
 
@@ -151,7 +149,7 @@ public:
 
     void onHello(Object* pObject, Player* plr) override
     {
-        if (plr->HasQuest(12645))
+        if (plr->hasQuestInQuestLog(12645))
         {
             GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 476, 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
@@ -170,16 +168,15 @@ public:
         pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
         pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
 
-        QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
-        if (qle == nullptr)
-            return;
+        if (auto* questLog = plr->getQuestLogByQuestId(12645))
+        {
+            if (questLog->getMobCountByIndex(0) != 0)
+                return;
 
-        if (qle->getMobCountByIndex(0) != 0)
-            return;
-
-        qle->setMobCountForIndex(2, 1);
-        qle->SendUpdateAddKill(2);
-        qle->updatePlayerFields();
+            questLog->setMobCountForIndex(2, 1);
+            questLog->SendUpdateAddKill(2);
+            questLog->updatePlayerFields();
+        }
     }
 };
 

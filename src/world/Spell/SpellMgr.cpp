@@ -39,7 +39,7 @@ bool SpellArea::fitsToRequirements(Player* player, uint32_t newZone, uint32_t ne
 
     if (questStart != 0)
     {
-        if (player == nullptr || !player->HasQuest(questStart))
+        if (player == nullptr || !player->hasQuestInQuestLog(questStart))
             return false;
     }
 

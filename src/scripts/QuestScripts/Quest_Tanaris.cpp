@@ -26,7 +26,7 @@ public:
 
     void onHello(Object* pObject, Player* plr) override
     {
-        if (plr->HasQuest(3520))
+        if (plr->hasQuestInQuestLog(3520))
         {
             GossipMenu menu(pObject->getGuid(), 2039, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 495, 1);     // Goodbye
@@ -70,7 +70,7 @@ public:
 
     void onHello(Object* pObject, Player* plr) override
     {
-        if (plr->HasQuest(10279) || plr->HasFinishedQuest(10279))
+        if (plr->hasQuestInQuestLog(10279) || plr->HasFinishedQuest(10279))
         {
             GossipMenu menu(pObject->getGuid(), 9978, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 496, 1);     // Please take me to the Master's Lair
