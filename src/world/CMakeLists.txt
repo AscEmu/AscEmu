@@ -167,7 +167,10 @@ if(NOT WIN32)
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
-add_dependencies(${PROJECT_NAME} shared g3dlite Detour Recast lualib)
+add_dependencies(${PROJECT_NAME} shared g3dlite Detour Recast)
+if(BUILD_ASCEMUSCRIPTS AND BUILD_LUAENGINE)
+	add_dependencies(${PROJECT_NAME} lualib)
+endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h)
 
 target_link_libraries(${PROJECT_NAME} shared g3dlite Detour Recast ${PCRE_LIBRARIES})

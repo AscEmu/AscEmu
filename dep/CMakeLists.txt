@@ -18,7 +18,9 @@ add_subdirectory(recastnavigation)
 add_subdirectory(g3dlite)
 add_subdirectory(utf8cpp)
 
-add_subdirectory(lualib/src)
+if(BUILD_ASCEMUSCRIPTS AND BUILD_LUAENGINE)
+	add_subdirectory(lualib/src)
+endif()
 
 if(BUILD_TOOLS)
     if("${ASCEMU_VERSION}" STREQUAL "Cata" OR "${ASCEMU_VERSION}" STREQUAL "Mop")
