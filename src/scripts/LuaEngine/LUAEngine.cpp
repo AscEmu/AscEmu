@@ -734,6 +734,7 @@ static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
     if (!delay || repeats < 0 || !funcName)
     {
         lua_pushnumber(L, LUA_REFNIL);
+        free((void*)funcName);
         return 1;
     }
 
@@ -745,7 +746,10 @@ static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
 
     int ref = luaL_ref(L, LUA_REGISTRYINDEX); //empty
     if (ref == LUA_REFNIL || ref == LUA_NOREF)
+    {
+        free((void*)funcName);
         return luaL_error(L, "Error in RegisterTimedEvent! Failed to create a valid reference.");
+    }
    
     TimedEvent* te = TimedEvent::Allocate(LuaGlobal::instance()->luaEngine().get(), new CallbackP2<LuaEngine, const char*, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::HyperCallFunction, funcName, ref), EVENT_LUA_TIMED, delay, repeats);
     EventInfoHolder* ek = new EventInfoHolder;
@@ -756,6 +760,7 @@ static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
     lua_settop(L, 0);
     lua_pushnumber(L, ref);
     delete ek;
+    free((void*)funcName);
     return 1;
 }
 
