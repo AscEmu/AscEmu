@@ -4080,52 +4080,48 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
         }
     }
 
-    if (SrcItem)
+    if (DstInvSlot == INVENTORY_SLOT_NOT_SET) //not bag
     {
-        if (DstInvSlot == INVENTORY_SLOT_NOT_SET) //not bag
+        if (SrcItem->isContainer())
         {
-
-            if (SrcItem->isContainer())
+            if (static_cast<Container*>(SrcItem)->HasItems())
             {
-                if (static_cast<Container*>(SrcItem)->HasItems())
-                {
-                    if (!IsBagSlot(DstSlot))
-                    {
-                        buildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
-                        return false;
-                    }
-                }
-            }
-
-            if (DstSlot < INVENTORY_KEYRING_END)
-            {
-                if ((error = CanEquipItemInSlot2(DstInvSlot, DstSlot, SrcItem)) != 0)
-                {
-                    buildInventoryChangeError(SrcItem, DstItem, error);
-                    return false;
-                }
-            }
-        }
-        else
-        {
-            if (SrcItem->isContainer())
-            {
-                if (static_cast<Container*>(SrcItem)->HasItems())
+                if (!IsBagSlot(DstSlot))
                 {
                     buildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
                     return false;
                 }
             }
+        }
 
-            if ((error = CanEquipItemInSlot2(DstInvSlot, DstInvSlot, SrcItem)) != 0)
+        if (DstSlot < INVENTORY_KEYRING_END)
+        {
+            if ((error = CanEquipItemInSlot2(DstInvSlot, DstSlot, SrcItem)) != 0)
             {
                 buildInventoryChangeError(SrcItem, DstItem, error);
                 return false;
             }
         }
     }
+    else
+    {
+        if (SrcItem->isContainer())
+        {
+            if (static_cast<Container*>(SrcItem)->HasItems())
+            {
+                buildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
+                return false;
+            }
+        }
 
-    if (SrcItem && DstSlot < INVENTORY_SLOT_BAG_END && DstInvSlot == INVENTORY_SLOT_NOT_SET)   //equip - bags can be soulbound too
+        if ((error = CanEquipItemInSlot2(DstInvSlot, DstInvSlot, SrcItem)) != 0)
+        {
+            buildInventoryChangeError(SrcItem, DstItem, error);
+            return false;
+        }
+    }
+
+    if (DstSlot < INVENTORY_SLOT_BAG_END && DstInvSlot == INVENTORY_SLOT_NOT_SET)   //equip - bags can be soulbound too
     {
         if (SrcItem->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
             SrcItem->addFlags(ITEM_FLAG_SOULBOUND);
@@ -4177,7 +4173,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
         //Check for stacking
         uint32 srcItemMaxStack = (SrcItem->getOwner()->m_cheats.hasItemStackCheat) ? 0x7fffffff : SrcItem->getItemProperties()->MaxCount;
         uint32 dstItemMaxStack = (DstItem) ? ((DstItem->getOwner()->m_cheats.hasItemStackCheat) ? 0x7fffffff : DstItem->getItemProperties()->MaxCount) : 0;
-        if (DstItem && SrcItem && SrcItem->getEntry() == DstItem->getEntry() && srcItemMaxStack > 1 && SrcItem->wrapped_item_id == 0 && DstItem->wrapped_item_id == 0)
+        if (DstItem && SrcItem->getEntry() == DstItem->getEntry() && srcItemMaxStack > 1 && SrcItem->wrapped_item_id == 0 && DstItem->wrapped_item_id == 0)
         {
             uint32 total = SrcItem->getStackCount() + DstItem->getStackCount();
             if (total <= dstItemMaxStack)
