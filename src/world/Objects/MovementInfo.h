@@ -18,8 +18,11 @@ struct MovementInfo
     MovementInfo() : flags(0), flags2(0), update_time(0),
         position(0.f, 0.f, 0.f, 0.f),
         transport_guid(0), transport_position(0.f, 0.f, 0.f, 0.f), transport_time(0),
-#if VERSION_STRING == WotLK
+#if VERSION_STRING >= WotLK
         transport_seat(0), transport_time2(0),
+#endif
+#if VERSION_STRING >= Cata
+        byte_parameter(0),
 #endif
         pitch_rate(0.f), fall_time(0), spline_elevation(0.f) {}
 
