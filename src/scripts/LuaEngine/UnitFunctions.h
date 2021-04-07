@@ -2939,13 +2939,12 @@ public:
         v.y += (3 * (sinf(angle + v.o)));
 
         Summon* guardian = ptr->GetMapMgr()->CreateSummon(entry, SUMMONTYPE_GUARDIAN, 0);
+        if (guardian == nullptr)
+            return 0;
 
         guardian->Load(cp, ptr, v, 0, -1);
         guardian->GetAIInterface()->SetUnitToFollowAngle(angle);
         guardian->PushToWorld(ptr->GetMapMgr());
-
-        if (guardian == nullptr)
-            return 0;
 
         PUSH_UNIT(L, guardian);
 
