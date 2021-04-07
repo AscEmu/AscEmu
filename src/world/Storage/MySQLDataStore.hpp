@@ -314,8 +314,6 @@ public:
 
     void loadGossipMenuItemsTable();
 
-    void checkCreatureEquipment();
-
     void loadCreatureSpawns();
     void loadGameobjectSpawns();
 

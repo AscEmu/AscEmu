@@ -4068,51 +4068,6 @@ void MySQLDataStore::loadGossipMenuItemsTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu_items` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-void MySQLDataStore::checkCreatureEquipment()
-{
-    LogDebugFlag(LF_DB_TABLES, "===================== Start check for creature_initial_equip ================================");
-
-    QueryResult* resultItems = WorldDatabase.Query("SELECT itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip");
-    if (resultItems)
-    {
-        do
-        {
-            Field* fields = resultItems->Fetch();
-            if (fields[0].GetUInt32())
-                getItemDisplayIdForEntry(fields[0].GetUInt32());
-            if (fields[1].GetUInt32())
-                getItemDisplayIdForEntry(fields[1].GetUInt32());
-            if (fields[2].GetUInt32())
-                getItemDisplayIdForEntry(fields[2].GetUInt32());
-
-        } while (resultItems->NextRow());
-
-        delete resultItems;
-    }
-
-    LogDebugFlag(LF_DB_TABLES, "===================== End check for creature_initial_equip ================================");
-    LogDebugFlag(LF_DB_TABLES, "===================== Start check for creature_spawns ================================");
-
-    QueryResult* resultItemsSpawn = WorldDatabase.Query("SELECT slot1item, slot2item, slot3item FROM creature_spawns WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
-    if (resultItemsSpawn)
-    {
-        do
-        {
-            Field* fields = resultItemsSpawn->Fetch();
-            if (fields[0].GetUInt32())
-                getItemDisplayIdForEntry(fields[0].GetUInt32());
-            if (fields[1].GetUInt32())
-                getItemDisplayIdForEntry(fields[1].GetUInt32());
-            if (fields[2].GetUInt32())
-                getItemDisplayIdForEntry(fields[2].GetUInt32());
-
-        } while (resultItemsSpawn->NextRow());
-
-        delete resultItemsSpawn;
-    }
-    LogDebugFlag(LF_DB_TABLES, "===================== End check for creature_spawns ================================");
-}
-
 void MySQLDataStore::loadCreatureSpawns()
 {
     auto startTime = Util::TimeNow();

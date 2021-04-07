@@ -881,9 +881,6 @@ void World::loadMySQLStores()
     sMySQLStore.loadTransportEntrys();
     sMySQLStore.loadGossipMenuItemsTable();
     sMySQLStore.loadRecallTable();
-
-    //check functions
-    //sMySQLStore.checkCreatureEquipment();
 }
 
 void World::loadMySQLTablesByTask()
