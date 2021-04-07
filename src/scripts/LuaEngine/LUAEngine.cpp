@@ -3042,7 +3042,7 @@ void LuaEngine::Restart()
         }
     }
 
-    for (auto itr = this->m_unit_gossipBinding.begin(); itr != m_unit_gossipBinding.end(); ++itr)
+    for (auto itr = m_unit_gossipBinding.begin(); itr != m_unit_gossipBinding.end(); ++itr)
     {
         typedef std::unordered_map<uint32_t, LuaGossip*> GMAP;
         GMAP& gMap = LuaGlobal::instance()->luaEngine()->getUnitGossipInterfaceMap();
@@ -3064,7 +3064,7 @@ void LuaEngine::Restart()
         }
     }
 
-    for (auto itr = this->m_item_gossipBinding.begin(); itr != m_item_gossipBinding.end(); ++itr)
+    for (auto itr = m_item_gossipBinding.begin(); itr != m_item_gossipBinding.end(); ++itr)
     {
         typedef std::unordered_map<uint32_t, LuaGossip*> GMAP;
         GMAP& gMap = LuaGlobal::instance()->luaEngine()->getItemGossipInterfaceMap();
@@ -3086,7 +3086,7 @@ void LuaEngine::Restart()
         }
     }
 
-    for (auto itr = this->m_go_gossipBinding.begin(); itr != m_go_gossipBinding.end(); ++itr)
+    for (auto itr = m_go_gossipBinding.begin(); itr != m_go_gossipBinding.end(); ++itr)
     {
         typedef std::unordered_map<uint32_t, LuaGossip*> GMAP;
         GMAP& gMap = LuaGlobal::instance()->luaEngine()->getGameObjectGossipInterfaceMap();
