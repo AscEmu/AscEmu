@@ -4038,37 +4038,34 @@ void MySQLDataStore::loadGossipMenuItemsTable()
 
     LogNotice("MySQLDataLoads : Table `gossip_menu_items` has %u columns", resultItems->GetFieldCount());
 
-    if (resultItems != nullptr)
+    uint32_t load_count = 0;
+    do
     {
-        uint32_t load_count = 0;
-        do
-        {
-            Field* fields = resultItems->Fetch();
+        Field* fields = resultItems->Fetch();
 
-            MySQLStructure::GossipMenuItems gMenuItem;
+        MySQLStructure::GossipMenuItems gMenuItem;
 
-            gMenuItem.gossipMenu = fields[0].GetUInt32();
-            gMenuItem.itemOrder = fields[1].GetUInt32();
-            gMenuItem.menuOptionText = fields[2].GetUInt32();
-            gMenuItem.icon = fields[3].GetUInt8();
-            gMenuItem.onChooseAction = fields[4].GetUInt8();
-            gMenuItem.onChooseData = fields[5].GetUInt32();
-            gMenuItem.onChooseData2 = fields[6].GetUInt32();
-            gMenuItem.onChooseData3 = fields[7].GetUInt32();
-            gMenuItem.onChooseData4 = fields[8].GetUInt32();
-            gMenuItem.nextGossipMenu = fields[9].GetUInt32();
-            gMenuItem.nextGossipMenuText = fields[10].GetUInt32();
-            gMenuItem.requirementType = fields[11].GetUInt8();
-            gMenuItem.requirementData = fields[12].GetUInt32();
+        gMenuItem.gossipMenu = fields[0].GetUInt32();
+        gMenuItem.itemOrder = fields[1].GetUInt32();
+        gMenuItem.menuOptionText = fields[2].GetUInt32();
+        gMenuItem.icon = fields[3].GetUInt8();
+        gMenuItem.onChooseAction = fields[4].GetUInt8();
+        gMenuItem.onChooseData = fields[5].GetUInt32();
+        gMenuItem.onChooseData2 = fields[6].GetUInt32();
+        gMenuItem.onChooseData3 = fields[7].GetUInt32();
+        gMenuItem.onChooseData4 = fields[8].GetUInt32();
+        gMenuItem.nextGossipMenu = fields[9].GetUInt32();
+        gMenuItem.nextGossipMenuText = fields[10].GetUInt32();
+        gMenuItem.requirementType = fields[11].GetUInt8();
+        gMenuItem.requirementData = fields[12].GetUInt32();
 
-            _gossipMenuItemsStores.insert(GossipMenuItemsContainer::value_type(gMenuItem.gossipMenu, gMenuItem));
-            ++load_count;
-        } while (resultItems->NextRow());
+        _gossipMenuItemsStores.insert(GossipMenuItemsContainer::value_type(gMenuItem.gossipMenu, gMenuItem));
+        ++load_count;
+    } while (resultItems->NextRow());
 
-        delete resultItems;
+    delete resultItems;
 
-        LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu_items` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-    }
+    LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu_items` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void MySQLDataStore::checkCreatureEquipment()
