@@ -3311,7 +3311,7 @@ void Spell::SpellEffectLeap(uint8_t effectIndex) // Leap
         unitTarget->GetPoint(unitTarget->GetOrientation(), radius, destx, desty, destz);
         if (playerTarget != nullptr)
             playerTarget->SafeTeleport(playerTarget->GetMapId(), playerTarget->GetInstanceID(), LocationVector(destx, desty, destz, playerTarget->GetOrientation()));
-        else if (unitTarget != nullptr)
+        else
             unitTarget->GetAIInterface()->splineMoveJump(destx, desty, destz, unitTarget->GetOrientation());
     }
     else
