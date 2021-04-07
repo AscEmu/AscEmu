@@ -4284,7 +4284,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        if (plr != nullptr && plr->isPvpFlagSet())
+        if (plr->isPvpFlagSet())
             plr->removePvpFlag();
         return 0;
     }
