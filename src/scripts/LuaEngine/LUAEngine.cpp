@@ -2435,7 +2435,7 @@ CreatureAIScript* CreateLuaCreature(Creature* src)
             typedef std::multimap<uint32_t, LuaCreature*> CRCMAP;
             CRCMAP& cMap = LuaGlobal::instance()->luaEngine()->getLuCreatureMap();
             script = new LuaCreature(src);
-            cMap.insert(std::make_pair(id, script));
+            cMap.emplace(std::make_pair(id, script));
             script->m_binding = pBinding;
         }
     }
