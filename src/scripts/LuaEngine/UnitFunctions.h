@@ -5223,10 +5223,11 @@ public:
     static int SetChannelName(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+
         const char* currentName = luaL_checkstring(L, 1);
         const char* newName = luaL_checkstring(L, 2);
         Channel* channel = sChannelMgr.getChannel(currentName, dynamic_cast<Player*>(ptr));
-        if (!currentName || !newName || !ptr || !channel || channel->m_name == newName)
+        if (!currentName || !newName || !channel || channel->m_name == newName)
             return 0;
 
         channel->m_name = newName;
