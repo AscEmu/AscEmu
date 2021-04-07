@@ -4326,7 +4326,7 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         Creature* object = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
-        if (plr != nullptr && object != nullptr)
+        if (object != nullptr)
             plr->GetSession()->sendInventoryList(object);
         return 0;
     }
