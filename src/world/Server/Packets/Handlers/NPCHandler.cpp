@@ -167,7 +167,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     }
 
 #if VERSION_STRING >= Cata
-    if (trainerGetSpellStatus(trainerSpell) == TRAINER_SPELL_RED || TRAINER_SPELL_GRAY)
+    if (trainerGetSpellStatus(trainerSpell) == TRAINER_SPELL_RED || trainerGetSpellStatus(trainerSpell) == TRAINER_SPELL_GRAY)
         return;
 
     _player->modCoinage(-static_cast<int32_t>(trainerSpell->spellCost));
