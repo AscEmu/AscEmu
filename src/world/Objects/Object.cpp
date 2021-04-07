@@ -2910,8 +2910,8 @@ void Object::PushToWorld(MapMgr* mgr)
 
     if (mgr == nullptr)
     {
-        LOG_ERROR("Invalid push to world of Object " I64FMT, getGuid());
-        return; //instance add failed
+        LOG_ERROR("Invalid push to world of Object " I64FMT ".", getGuid());
+        return; // instance add failed
     }
 
     m_mapId = mgr->GetMapId();
