@@ -6198,7 +6198,7 @@ void Player::AddItemsToWorld()
             if (i < INVENTORY_SLOT_BAG_END)      // only equipment slots get mods.
                 _ApplyItemMods(pItem, i, true, false, true);
 
-            if (i >= CURRENCYTOKEN_SLOT_START && i < CURRENCYTOKEN_SLOT_END)
+            if (i >= CURRENCYTOKEN_SLOT_START)
                 UpdateKnownCurrencies(pItem->getEntry(), true);
 
             if (pItem->isContainer() && getItemInterface()->IsBagSlot(i))
