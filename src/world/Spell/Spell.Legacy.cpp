@@ -84,11 +84,7 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
 
     Caster->m_pendingSpells.insert(this);
     chaindamage = 0;
-    bDurSet = 0;
     damage = 0;
-    bRadSet[0] = 0;
-    bRadSet[1] = 0;
-    bRadSet[2] = 0;
 
     m_DelayStep = 0;
 
