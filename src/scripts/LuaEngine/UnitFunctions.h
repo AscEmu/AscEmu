@@ -3782,7 +3782,7 @@ public:
     {
         TEST_UNITPLAYER()
         uint32_t type = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        if (ptr && type)
+        if (type)
             ptr->RemoveAllAuraType(type);
         return 0;
     }
