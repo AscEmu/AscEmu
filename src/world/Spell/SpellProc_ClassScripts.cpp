@@ -405,10 +405,10 @@ public:
 
     static SpellProc* Create() { return new ImprovedDevouringPlagueSpellProc(); }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 dmg, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/) override
     {
         // Get dmg amt for 1 tick
-        dmg = castingSpell->calculateEffectValue(0);
+        const uint32_t dmg = castingSpell->calculateEffectValue(0);
 
         // Get total ticks
         auto amplitude = castingSpell->getEffectAmplitude(0) == 0 ? 1 : castingSpell->getEffectAmplitude(0);
