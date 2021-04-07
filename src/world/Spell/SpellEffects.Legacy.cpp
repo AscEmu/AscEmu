@@ -538,7 +538,7 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
                 eventtype = EVENT_ENEMY_AREA_AURA_UPDATE;
                 break;
             case SPELL_EFFECT_APPLY_OWNER_AREA_AURA:
-                eventtype = EVENT_ENEMY_AREA_AURA_UPDATE;
+                eventtype = EVENT_ENEMY_AREA_AURA_UPDATE; //Zyres: The same event as SPELL_EFFECT_APPLY_ENEMY_AREA_AURA? @Appled o.O
                 break;
         }
 
