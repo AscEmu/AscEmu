@@ -515,7 +515,7 @@ void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
 
     Player* pTarget = _player->GetMapMgr()->GetPlayer(srlPacket.playerGuid.getGuidLow());
     Charter* pCharter = sObjectMgr.GetCharterByItemGuid(srlPacket.itemGuid);
-    if (pCharter != nullptr)
+    if (pCharter == nullptr)
     {
         SendNotification(_player->GetSession()->LocalizedWorldSrv(ServerString::SS_ITEM_NOT_FOUND));
         return;
