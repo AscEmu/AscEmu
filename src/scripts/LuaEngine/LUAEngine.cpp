@@ -2455,7 +2455,7 @@ GameObjectAIScript* CreateLuaGameObjectScript(GameObject* src)
             typedef std::multimap<uint32_t, LuaGameObjectScript*> GMAP;
             GMAP& gMap = LuaGlobal::instance()->luaEngine()->getLuGameObjectMap();
             script = new LuaGameObjectScript(src);
-            gMap.insert(std::make_pair(id, script));
+            gMap.emplace(std::make_pair(id, script));
             script->m_binding = pBinding;
         }
     }
@@ -3002,7 +3002,7 @@ void LuaEngine::Restart()
         if (it == gMap.end())
         {
             m_scriptMgr->register_gameobject_script(itr.first, CreateLuaGameObjectScript);
-            gMap.insert(std::make_pair(itr.first, (LuaGameObjectScript*)nullptr));
+            gMap.emplace(std::make_pair(itr.first, (LuaGameObjectScript*)nullptr));
         }
         else
         {
