@@ -2674,19 +2674,11 @@ int8 ItemInterface::GetItemSlotByType(uint32 type)
         }
         case INVTYPE_CLOAK:
             return EQUIPMENT_SLOT_BACK;
-        case INVTYPE_WEAPON:
-        {
-            if (!GetInventoryItem(EQUIPMENT_SLOT_MAINHAND))
-                return EQUIPMENT_SLOT_MAINHAND;
-            if (!GetInventoryItem(EQUIPMENT_SLOT_OFFHAND))
-                return EQUIPMENT_SLOT_OFFHAND;
-            
-            return EQUIPMENT_SLOT_MAINHAND;
-        }
         case INVTYPE_SHIELD:
             return EQUIPMENT_SLOT_OFFHAND;
         case INVTYPE_RANGED:
             return EQUIPMENT_SLOT_RANGED;
+        case INVTYPE_WEAPON:
         case INVTYPE_2HWEAPON:
         {
             if (!GetInventoryItem(EQUIPMENT_SLOT_MAINHAND))
