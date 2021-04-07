@@ -5190,11 +5190,15 @@ public:
     static int JoinChannel(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+
         const char* channelName = luaL_checkstring(L, 1);
         Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+        if (!channel)
+            return 0;
+
         const char* password = luaL_optstring(L, 2, channel->m_password.c_str());
 
-        if (!ptr || !channelName || channel->HasMember(dynamic_cast<Player*>(ptr)) || !channel)
+        if (channel->HasMember(dynamic_cast<Player*>(ptr)))
             return 0;
 
         channel->AttemptJoin(dynamic_cast<Player*>(ptr), password);
