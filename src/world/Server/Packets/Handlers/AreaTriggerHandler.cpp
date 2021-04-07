@@ -68,13 +68,13 @@ uint32_t checkTriggerPrerequisites(MySQLStructure::AreaTrigger const* areaTrigge
     if ((mapInfo->type == INSTANCE_MULTIMODE && player->getDungeonDifficulty() >= MODE_HEROIC) && !player->getGroup())
         return AreaTriggerResult::NoGroup;
 
-    if (mapInfo && mapInfo->required_quest_A && (player->getTeam() == TEAM_ALLIANCE) && !player->HasFinishedQuest(mapInfo->required_quest_A))
+    if (mapInfo->required_quest_A && (player->getTeam() == TEAM_ALLIANCE) && !player->HasFinishedQuest(mapInfo->required_quest_A))
         return AreaTriggerResult::NoAttuneQA;
 
-    if (mapInfo && mapInfo->required_quest_H && (player->getTeam() == TEAM_HORDE) && !player->HasFinishedQuest(mapInfo->required_quest_H))
+    if (mapInfo->required_quest_H && (player->getTeam() == TEAM_HORDE) && !player->HasFinishedQuest(mapInfo->required_quest_H))
         return AreaTriggerResult::NoAttuneQH;
 
-    if (mapInfo && mapInfo->required_item && !player->getItemInterface()->GetItemCount(mapInfo->required_item, true))
+    if (mapInfo->required_item && !player->getItemInterface()->GetItemCount(mapInfo->required_item, true))
         return AreaTriggerResult::NoAttuneI;
 
     if (player->getDungeonDifficulty() >= MODE_HEROIC &&
