@@ -1554,8 +1554,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 {
                     if (!this->isPlayer())
                         continue;
-                    if (static_cast<Player*>(this)->getShapeShiftForm() != FORM_BEAR ||
-                        static_cast<Player*>(this)->getShapeShiftForm() != FORM_DIREBEAR)
+                    if (dynamic_cast<Player*>(this)->getShapeShiftForm() != FORM_BEAR &&
+                        dynamic_cast<Player*>(this)->getShapeShiftForm() != FORM_DIREBEAR)
                         continue;
                 }
                 break;
