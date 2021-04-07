@@ -1800,10 +1800,13 @@ Creature* MapMgr::CreateCreature(uint32 entry)
 
 Creature* MapMgr::CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO)
 {
-    auto creature = CreateCreature(pEntry);
-    auto cp = sMySQLStore.getCreatureProperties(pEntry);
+    auto* creature = CreateCreature(pEntry);
+    const auto* cp = sMySQLStore.getCreatureProperties(pEntry);
     if (cp == nullptr)
+    {
+        delete creature;
         return nullptr;
+    }
 
     creature->Load(cp, pX, pY, pZ, pO);
     creature->AddToWorld(this);
