@@ -3518,7 +3518,7 @@ public:
         uint32_t sp = CHECK_ULONG(L, 2);
         uint32_t delay = CHECK_ULONG(L, 3);
         uint32_t repeats = CHECK_ULONG(L, 4);
-        if (ptr && sp)
+        if (sp)
         {
             switch (ptr->getObjectTypeId())
             {
