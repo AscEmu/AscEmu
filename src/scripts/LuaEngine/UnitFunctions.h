@@ -381,7 +381,7 @@ public:
         uint32_t lang = CHECK_ULONG(L, 2);
         const char* msg = luaL_checklstring(L, 3, nullptr);
         Player* plr = static_cast<Player*>(ptr);
-        if (msg == nullptr || !plr)
+        if (msg == nullptr)
             return 0;
         WorldPacket* data = sChatHandler.FillMessageData(type, lang, msg, plr->getGuid(), 0);
         plr->GetSession()->SendChatPacket(data, 1, lang, plr->GetSession());
