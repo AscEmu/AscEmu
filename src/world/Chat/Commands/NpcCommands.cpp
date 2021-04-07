@@ -61,7 +61,6 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     ai_spell->floatMisc1 = floatMisc1;
     ai_spell->Misc2 = Misc2;
     ai_spell->cooldown = spellCooldown;
-    ai_spell->procCount = 0;
     ai_spell->procCounter = 0;
     ai_spell->cooldowntime = 0;
     ai_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(spell_entry->getRangeIndex()));
