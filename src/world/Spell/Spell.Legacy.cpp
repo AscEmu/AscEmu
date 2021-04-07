@@ -1516,7 +1516,7 @@ void Spell::HandleAddAura(uint64 guid)
         break;
     }
 
-    if (spellid && Target)
+    if (spellid)
     {
         const auto spellInfo = sSpellMgr.getSpellInfo(spellid);
         if (!spellInfo)
