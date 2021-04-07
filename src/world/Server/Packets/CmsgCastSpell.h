@@ -16,7 +16,7 @@ namespace AscEmu::Packets
         uint32_t spell_id;
         uint8_t cast_count;
         uint8_t flags;
-        uint32_t glyphSlot;
+        uint32_t glyphSlot = 0;
 
         CmsgCastSpell() : CmsgCastSpell(0, 0, 0)
         {
