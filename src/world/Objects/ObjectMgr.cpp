@@ -3208,14 +3208,6 @@ void ObjectMgr::LoadCreatureAIAgents()
             sp->Misc2 = fields[11].GetUInt32();
             if (sp->agent == AGENT_SPELL)
             {
-                if (!sp->spell)
-                {
-                    LogDebugFlag(LF_DB_TABLES, "SpellId %u in ai_agent for %u is invalid.", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
-                    delete sp;
-                    sp = nullptr;
-                    continue;
-                }
-
                 if (sp->spell->getEffect(0) == SPELL_EFFECT_LEARN_SPELL || sp->spell->getEffect(1) == SPELL_EFFECT_LEARN_SPELL ||
                     sp->spell->getEffect(2) == SPELL_EFFECT_LEARN_SPELL)
                 {
