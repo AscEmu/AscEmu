@@ -5304,7 +5304,7 @@ public:
     {
         TEST_PLAYER()
         const char* channelName = luaL_checkstring(L, 1);
-        if (!ptr || !channelName)
+        if (!channelName)
             return 0;
 
         lua_pushnumber(L, static_cast<lua_Number>(sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr))->GetNumMembers()));
