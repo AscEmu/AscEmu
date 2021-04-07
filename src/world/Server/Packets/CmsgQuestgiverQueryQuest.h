@@ -18,7 +18,7 @@ namespace AscEmu::Packets
         uint32_t questId;
 
         // wotlk specific
-        uint8_t unknown;
+        uint8_t unknown = 0;
 
         CmsgQuestgiverQueryQuest() : CmsgQuestgiverQueryQuest(0, 0)
         {
