@@ -824,7 +824,6 @@ bool ChatHandler::HandleCharAddSilverCommand(const char* args, WorldSession* m_s
     {
         BlueSystemMessage(m_session, "Taking all gold from %s's backpack...", player_target->getName().c_str());
         GreenSystemMessage(player_target->GetSession(), "%s took all gold from your backpack.", m_session->GetPlayer()->getName().c_str());
-        newgold = 0;
     }
     else
     {
@@ -884,7 +883,6 @@ bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_ses
     {
         BlueSystemMessage(m_session, "Taking all gold from %s's backpack...", player_target->getName().c_str());
         GreenSystemMessage(player_target->GetSession(), "%s took all gold from your backpack.", m_session->GetPlayer()->getName().c_str());
-        newgold = 0;
     }
     else
     {
