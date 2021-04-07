@@ -855,7 +855,7 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
                     dstItem->getItemProperties()->Quality, 0);
         }
     }
-    if (srcItem && srlPacket.destSlot < INVENTORY_SLOT_BAG_END)
+    if (srlPacket.destSlot < INVENTORY_SLOT_BAG_END)
     {
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, srcItem->getItemProperties()->ItemId, 0, 0);
         if (srlPacket.destSlot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
