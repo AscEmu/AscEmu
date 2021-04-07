@@ -1841,12 +1841,12 @@ void ObjectMgr::GenerateLevelUpInfo()
                         break;
 #if VERSION_STRING > TBC
                     case DEATHKNIGHT: // Based on 55-56 more testing will be done.
-                        if (Level < 60)
+                        //if (Level < 60)
                             TotalHealthGain += 92;
                         /*else if (Level <60) TotalHealthGain+=??;
                         else if (Level <70) TotalHealthGain+=??;*/
-                        else
-                            TotalHealthGain += 92;
+                        /*else
+                            TotalHealthGain += 92;*/
                         break;
 #endif
                 }
