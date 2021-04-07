@@ -142,7 +142,7 @@ bool LuaEngine::ExecuteCall(uint8_t params, uint8_t res)
 {
     bool ret = true;
     int top = lua_gettop(lu);
-    if (strcmp(luaL_typename(lu, top - params), "function"))
+    if (strcmp(luaL_typename(lu, top - params), "function") != 0)
     {
         ret = false;
         //Paroxysm : Stack Cleaning here, not sure what causes that crash in luaH_getstr, maybe due to lack of stack space. Anyway, experimental.
