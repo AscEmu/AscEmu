@@ -194,7 +194,7 @@ void Channel::SetOwner(Player* oldpl, Player* plr)
     m_lock.Acquire();
     Player* pOwner = NULL;
     uint32 oldflags = 0, oldflags2 = 0;
-    if (oldpl != NULL)
+    if (oldpl && plr)
     {
         MemberMap::iterator itr = m_members.find(oldpl);
         if (m_members.end() == itr)
