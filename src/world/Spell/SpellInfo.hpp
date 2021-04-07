@@ -787,8 +787,8 @@ private:
     void setSpellIconID(uint32_t value) { spellIconID = value; }
     void setActiveIconID(uint32_t value) { activeIconID = value; }
     void setSpellPriority(uint32_t value) { spellPriority = value; }
-    void setName(std::string value) { Name = value; }
-    void setRank(std::string value) { Rank = value; }
+    void setName(const std::string value) { Name = value; }
+    void setRank(const std::string value) { Rank = value; }
     void setManaCostPercentage(uint32_t value) { ManaCostPercentage = value; }
     void setStartRecoveryCategory(uint32_t value) { StartRecoveryCategory = value; }
     void setStartRecoveryTime(uint32_t value) { StartRecoveryTime = value; }
