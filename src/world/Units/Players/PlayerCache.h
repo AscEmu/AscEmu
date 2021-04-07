@@ -122,7 +122,7 @@ class PlayerCache
         uint32 HasFlag(uint32 field, uint32 flag) { return m_fields[field].u & flag; }
 
         //64bit guid lists
-        void InsertValue64(uint32 field, uint64 value, void* extra = NULL) { m_set64lock.Acquire(); m_map64fields[field].insert(std::make_pair(value, extra)); m_set64lock.Release(); }
+        void InsertValue64(uint32 field, uint64 value, void* extra = NULL) { m_set64lock.Acquire(); m_map64fields[field].emplace(std::make_pair(value, extra)); m_set64lock.Release(); }
         void RemoveValue64(uint32 field, uint64 value) { m_set64lock.Acquire(); m_map64fields[field].erase(value); m_set64lock.Release(); }
         size_t CountValue64(uint32 field, uint64 value) { m_set64lock.Acquire(); size_t ret = m_map64fields[field].count(value); m_set64lock.Release(); return ret; }
         size_t GetSize64(uint32 field) { m_set64lock.Acquire(); size_t ret = m_map64fields[field].size(); m_set64lock.Release(); return ret; }
