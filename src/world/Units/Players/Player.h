@@ -2051,7 +2051,7 @@ public:
         void EjectFromInstance();
         bool raidgrouponlysent;
 
-        void EventSafeTeleport(uint32 MapID, uint32 InstanceID, LocationVector vec)
+        void EventSafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector vec)
         {
             SafeTeleport(MapID, InstanceID, vec);
         }
