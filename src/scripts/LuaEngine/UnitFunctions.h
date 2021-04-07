@@ -1680,16 +1680,13 @@ public:
         float posY = CHECK_FLOAT(L, 3);
         float posZ = CHECK_FLOAT(L, 4);
         float Orientation = CHECK_FLOAT(L, 5);
-        if (!posX || !posY || !posZ || !mapId)
+
+        if (!posX || !posY || !posZ)
         {
-            if (mapId)
-            {
-                DLLLogDetail("LuaEngineMgr : LUATeleporter ERROR - Wrong Coordinates given (Map, X, Y, Z) :: Map%f%s%f%s%f%s%f", mapId, " X", posX, " Y", posY, " Z", posZ);
-                return 0;
-            }
-            else
-                mapId = 0; //MapId is false reported as empty if you use Eastern Kingdoms (0) So lets override it IF it is reported as empty.
+            DLLLogDetail("LuaEngineMgr : LUATeleporter ERROR - Wrong Coordinates given (Map, X, Y, Z) :: Map%f%s%f%s%f%s%f", mapId, " X", posX, " Y", posY, " Z", posZ);
+            return 0;
         }
+
         LocationVector vec(posX, posY, posZ, Orientation);
         static_cast<Player*>(ptr)->SafeTeleport(mapId, 0, vec);
         return 0;
