@@ -17,10 +17,10 @@ namespace AscEmu::Packets
         std::string guildName;
 
 #if VERSION_STRING >= Cata
-        uint32_t guildLevel;
-        EmblemInfo mEmblemInfo;
-        uint32_t guildId;
-        uint64_t guildGuid;
+        uint32_t guildLevel = 0;
+        EmblemInfo mEmblemInfo {};
+        uint32_t guildId = 0;
+        uint64_t guildGuid = 0;
 #endif
 
         SmsgGuildInvite() : SmsgGuildInvite("", "")
