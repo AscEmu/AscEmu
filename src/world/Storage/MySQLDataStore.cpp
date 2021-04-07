@@ -4038,7 +4038,7 @@ void MySQLDataStore::loadGossipMenuItemsTable()
 
     LogNotice("MySQLDataLoads : Table `gossip_menu_items` has %u columns", resultItems->GetFieldCount());
 
-    uint32_t load_count = 0;
+    load_count = 0;
     do
     {
         Field* fields = resultItems->Fetch();
