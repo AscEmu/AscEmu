@@ -1729,7 +1729,10 @@ void LfgMgr::InitBoot(Group* grp, uint64 kicker, uint64 victim, std::string reas
 
 void LfgMgr::UpdateBoot(Player* player, bool accept)
 {
-    Group* grp = player ? player->getGroup() : NULL;
+    if (!player)
+        return;
+
+    Group* grp = player->getGroup();
     if (!grp)
         return;
 
