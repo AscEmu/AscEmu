@@ -3339,7 +3339,7 @@ void Player::SetPersistentInstanceId(Instance* pInstance)
 
     // Bind instance to "my" group.
     if (m_playerInfo && m_playerInfo->m_Group && pInstance->m_creatorGroup == 0)
-        pInstance->m_creatorGroup = m_playerInfo && m_playerInfo->m_Group->GetID();
+        pInstance->m_creatorGroup = m_playerInfo->m_Group->GetID();
 
     // Skip handling for non-persistent instances.
     if (!pInstance->isPersistent())
