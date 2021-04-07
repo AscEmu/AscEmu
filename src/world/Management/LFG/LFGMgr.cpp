@@ -997,21 +997,18 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         WoWGuid wowGuid;
         wowGuid.Init(it->first);
 
-        Player* player = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart());
-        if (!player)
+        if (Player* player = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart()))
         {
-            LOG_DEBUG("(%s) Warning! %u offline! Marking as not compatibles!", strGuids.c_str(), it->first);
+            //for (PlayerSet::const_iterator itPlayer = players.begin(); itPlayer != players.end() && player; ++itPlayer)
+            //{
+            //    // Do not form a group with ignoring candidates
+            //}
+
+            players.insert(player);
         }
         else
         {
-            for (PlayerSet::const_iterator itPlayer = players.begin(); itPlayer != players.end() && player; ++itPlayer)
-            {
-                // Do not form a group with ignoring candidates
-            }
-            if (player)
-            {
-                players.insert(player);
-            }
+            LOG_DEBUG("(%s) Warning! %u offline! Marking as not compatibles!", strGuids.c_str(), it->first);
         }
     }
 
