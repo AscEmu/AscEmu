@@ -119,12 +119,10 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                     (*vtr)->m_killsToday++;
                     (*vtr)->m_killsLifetime++;
                     pPlayer->m_bg->HookOnHK(*vtr);
-                    if (pVictim)
-                    {
-                        // Send PVP credit
-                        uint32 pvppoints = pts * 10;
-                        (*vtr)->sendPvpCredit(pvppoints, pVictim->getGuid(), pVictim->getPvpRank());
-                    }
+
+                    // Send PVP credit
+                    uint32 pvppoints = pts * 10;
+                    (*vtr)->sendPvpCredit(pvppoints, pVictim->getGuid(), pVictim->getPvpRank());
                 }
             }
         }
