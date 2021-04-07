@@ -1810,12 +1810,6 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        if (slot == ITEM_NO_SLOT_AVAILABLE)
-        {
-            _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_BAG_FULL);
-            return;
-        }
-
         pItem = sObjectMgr.CreateItem(it->ItemId, _player);
         if (pItem)
         {
