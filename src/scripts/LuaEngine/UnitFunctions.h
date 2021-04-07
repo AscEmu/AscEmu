@@ -4722,12 +4722,12 @@ public:
 
     static int IsMounted(lua_State* L, Unit* ptr)
     {
-        if (!ptr)
-            return 0;
+        TEST_UNITPLAYER()
+
         if (ptr->isPlayer())
         {
             Player* plr = static_cast<Player*>(ptr);
-            if (plr != nullptr && plr->IsMounted())
+            if (plr->IsMounted())
                 lua_pushboolean(L, 1);
             else
                 lua_pushboolean(L, 0);
