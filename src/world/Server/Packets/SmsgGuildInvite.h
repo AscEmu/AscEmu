@@ -108,7 +108,7 @@ namespace AscEmu::Packets
             packet.WriteByteSeq(newGuildGuid[7]);
             packet.WriteByteSeq(newGuildGuid[2]);
 
-            packet.WriteString(inviterName.c_str());
+            packet.WriteString(inviterName);
 
             packet.WriteByteSeq(oldGuildGuid[7]);
             packet.WriteByteSeq(oldGuildGuid[6]);
