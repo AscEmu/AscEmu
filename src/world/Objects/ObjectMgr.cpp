@@ -654,12 +654,9 @@ void ObjectMgr::LoadAchievementRewards()
                 LogDebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have mail text.", entry);
         }
 
-        if (reward.itemId)
+        if (reward.itemId == 0)
         {
-            if (reward.itemId == 0)
-            {
-                LogDebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid item id %u, reward mail will be without item.", entry, reward.itemId);
-            }
+            LogDebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid item id %u, reward mail will be without item.", entry, reward.itemId);
         }
 
         AchievementRewards.insert(AchievementRewardsMap::value_type(entry, reward));
