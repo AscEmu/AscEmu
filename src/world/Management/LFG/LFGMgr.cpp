@@ -49,22 +49,19 @@ void LfgMgr::initialize()
         m_NumWaitTimeHealer = 0;
         m_NumWaitTimeDps = 0;
 
-        if (m_update)
-        {
 #if VERSION_STRING < Cata
-            // Initialize dungeon cache
-            for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
+        // Initialize dungeon cache
+        for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
+        {
+            DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);
+            if (dungeon && dungeon->type != LFG_TYPE_ZONE)
             {
-                DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);
-                if (dungeon && dungeon->type != LFG_TYPE_ZONE)
-                {
-                    if (dungeon->type != LFG_TYPE_RANDOM)
-                        m_CachedDungeonMap[dungeon->grouptype].insert(dungeon->ID);
-                    m_CachedDungeonMap[0].insert(dungeon->ID);
-                }
+                if (dungeon->type != LFG_TYPE_RANDOM)
+                    m_CachedDungeonMap[dungeon->grouptype].insert(dungeon->ID);
+                m_CachedDungeonMap[0].insert(dungeon->ID);
             }
-#endif
         }
+#endif
 }
 
 void LfgMgr::finalize()
