@@ -16,7 +16,7 @@ namespace AscEmu::Packets
     public:
         WoWGuid guid;
 #if VERSION_STRING >= Cata
-        bool full;
+        bool full = false;
 #endif
 
         CmsgGuildBankerActivate() : CmsgGuildBankerActivate(0)
