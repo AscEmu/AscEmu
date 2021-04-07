@@ -5237,10 +5237,11 @@ public:
     static int SetChannelPassword(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+
         const char* channelName = luaL_checkstring(L, 1);
         const char* password = luaL_checkstring(L, 2);
         Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
-        if (!password || !ptr || channel->m_password == password)
+        if (!password || !channel || channel->m_password == password)
             return 0;
 
         channel->Password(dynamic_cast<Player*>(ptr), password);
