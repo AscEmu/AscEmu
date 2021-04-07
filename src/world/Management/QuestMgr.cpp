@@ -2099,8 +2099,8 @@ void QuestMgr::SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry)
         }
     }
 
-    if (QuestID == 0)
-        LogDebugFlag(LF_DB_TABLES, "QuestMgr : No corresponding quest was found for loot_gameobjects entryid %u quest item %d", GO_Entry, Item_Entry);
+    /*if (QuestID == 0)
+        LogDebugFlag(LF_DB_TABLES, "QuestMgr : No corresponding quest was found for loot_gameobjects entryid %u quest item %d", GO_Entry, Item_Entry);*/
 }
 
 bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
