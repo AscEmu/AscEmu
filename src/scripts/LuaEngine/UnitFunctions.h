@@ -4913,7 +4913,7 @@ public:
         TEST_PLAYER()
         const auto sender = static_cast<Player*>(ptr);
         const auto invitedPlayer = CHECK_PLAYER(L, 1);
-        if (invitedPlayer != nullptr && sender)
+        if (invitedPlayer != nullptr)
             sender->getGuild()->sendGuildInvitePacket(sender->GetSession(), invitedPlayer->getName());
 
         return 0;
