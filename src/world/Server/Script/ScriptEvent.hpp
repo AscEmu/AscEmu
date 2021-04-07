@@ -138,6 +138,6 @@ public:
 
 private:
     uint32_t bossPhase;
-    scriptEvent scriptEventData;
+    scriptEvent scriptEventData{};
     eventMap eventMapStore;
 };
