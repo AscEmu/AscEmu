@@ -5209,9 +5209,10 @@ public:
     static int LeaveChannel(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+
         const char* channelName = luaL_checkstring(L, 1);
         Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
-        if (!ptr || !channelName || !channel || !channel->HasMember(dynamic_cast<Player*>(ptr)))
+        if (!channelName || !channel || !channel->HasMember(dynamic_cast<Player*>(ptr)))
             return 0;
 
         channel->Part(dynamic_cast<Player*>(ptr), true);
