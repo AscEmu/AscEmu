@@ -3901,27 +3901,24 @@ void MySQLDataStore::loadProfessionDiscoveriesTable()
 
     LogNotice("MySQLDataLoads : Table `professiondiscoveries` has %u columns", result->GetFieldCount());
 
-    if (result != nullptr)
+    uint32_t load_count = 0;
+    do
     {
-        uint32_t load_count = 0;
-        do
-        {
-            Field* fields = result->Fetch();
-            MySQLStructure::ProfessionDiscovery* professionDiscovery = new MySQLStructure::ProfessionDiscovery;
-            professionDiscovery->SpellId = fields[0].GetUInt32();
-            professionDiscovery->SpellToDiscover = fields[1].GetUInt32();
-            professionDiscovery->SkillValue = fields[2].GetUInt32();
-            professionDiscovery->Chance = fields[3].GetFloat();
-            _professionDiscoveryStore.insert(professionDiscovery);
+        Field* fields = result->Fetch();
+        MySQLStructure::ProfessionDiscovery* professionDiscovery = new MySQLStructure::ProfessionDiscovery;
+        professionDiscovery->SpellId = fields[0].GetUInt32();
+        professionDiscovery->SpellToDiscover = fields[1].GetUInt32();
+        professionDiscovery->SkillValue = fields[2].GetUInt32();
+        professionDiscovery->Chance = fields[3].GetFloat();
+        _professionDiscoveryStore.insert(professionDiscovery);
 
-            ++load_count;
+        ++load_count;
 
-        } while (result->NextRow());
+    } while (result->NextRow());
 
-        delete result;
+    delete result;
 
-        LogDetail("MySQLDataLoads : Loaded %u rows from `professiondiscoveries` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-    }
+    LogDetail("MySQLDataLoads : Loaded %u rows from `professiondiscoveries` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void MySQLDataStore::loadTransportDataTable()
