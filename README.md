@@ -5,8 +5,6 @@ master | development
 [![CircleCI](https://circleci.com/gh/AscEmu/AscEmu.svg?branch=master&style=shield)](https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=master) | [![CircleCI](https://circleci.com/gh/AscEmu/AscEmu.svg?branch=develop&style=shield)](https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=develop)
 [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu) | [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu)
 
-[![Coverity Snac](https://scan.coverity.com/projects/4747/badge.svg)](https://scan.coverity.com/projects/4747)
-
 [![CodeFactor](https://www.codefactor.io/repository/github/ascemu/ascemu/badge)](https://www.codefactor.io/repository/github/ascemu/ascemu)
 
 [![Open HUB Stats](https://www.openhub.net/p/AscEmu/widgets/project_thin_badge.gif)](https://www.openhub.net/p/AscEmu)
