@@ -1574,8 +1574,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             TeleportPlayer(*it, false);
 
         // Update group info
-        if (grp)
-            grp->Update();
+        grp->Update();
 
         delete pProposal;
         m_Proposals.erase(itProposal);
