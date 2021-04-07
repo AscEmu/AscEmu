@@ -3738,7 +3738,7 @@ public:
     {
         TEST_PLAYER()
         uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        if (!ptr || !skill)
+        if (!skill)
             return 0;
         Player* plr = static_cast<Player*>(ptr);
         plr->_RemoveSkillLine(skill);
