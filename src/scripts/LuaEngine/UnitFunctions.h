@@ -3945,10 +3945,11 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         uint32_t debt = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        if (debt < 0)
-            return 0;
+
         if (!plr->hasEnoughCoinage(debt))
+        {
             lua_pushboolean(L, 0);
+        }
         else
         {
             plr->modCoinage(-(int32_t)debt);
