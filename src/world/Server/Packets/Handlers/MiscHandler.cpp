@@ -264,50 +264,46 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    auto player = _player;
-    if (player)
+    if (!sHookInterface.OnLogoutRequest(_player))
     {
-        if (!sHookInterface.OnLogoutRequest(player))
+        SendPacket(SmsgLogoutResponse(true).serialise().get());
+        return;
+    }
+
+    if (GetPermissionCount() == 0)
+    {
+        if (_player->CombatStatus.IsInCombat() || _player->DuelingWith != nullptr)
         {
             SendPacket(SmsgLogoutResponse(true).serialise().get());
             return;
         }
 
-        if (GetPermissionCount() == 0)
+        if (_player->m_isResting || _player->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType == 2)
         {
-            if (player->CombatStatus.IsInCombat() || player->DuelingWith != nullptr)
-            {
-                SendPacket(SmsgLogoutResponse(true).serialise().get());
-                return;
-            }
-
-            if (player->m_isResting || player->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType == 2)
-            {
-                SetLogoutTimer(1);
-                return;
-            }
+            SetLogoutTimer(1);
+            return;
         }
-
-        if (GetPermissionCount() > 0)
-        {
-            if (player->m_isResting || player->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType > 0)
-            {
-                SetLogoutTimer(1);
-                return;
-            }
-        }
-
-        SendPacket(SmsgLogoutResponse(false).serialise().get());
-
-        player->setMoveRoot(true);
-        LoggingOut = true;
-
-        player->addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-
-        player->setStandState(STANDSTATE_SIT);
-
-        SetLogoutTimer(PLAYER_LOGOUT_DELAY);
     }
+
+    if (GetPermissionCount() > 0)
+    {
+        if (_player->m_isResting || _player->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType > 0)
+        {
+            SetLogoutTimer(1);
+            return;
+        }
+    }
+
+    SendPacket(SmsgLogoutResponse(false).serialise().get());
+
+    _player->setMoveRoot(true);
+    LoggingOut = true;
+
+    _player->addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+
+    _player->setStandState(STANDSTATE_SIT);
+
+    SetLogoutTimer(PLAYER_LOGOUT_DELAY);
 }
 
 void WorldSession::handleSetSheathedOpcode(WorldPacket& recvPacket)
