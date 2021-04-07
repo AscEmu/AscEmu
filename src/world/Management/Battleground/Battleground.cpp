@@ -1012,7 +1012,7 @@ void CBattleground::QueueAtNearestSpiritGuide(Player* plr, Creature* old)
         if (itr->first == old)
             continue;
 
-        float dd = plr->GetDistance2dSq(itr->first) < dist;
+        float dd = plr->GetDistance2dSq(itr->first);
         if (dd < dist)
         {
             cl = itr->first;
