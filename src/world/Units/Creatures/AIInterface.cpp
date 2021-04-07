@@ -1505,29 +1505,32 @@ void AIInterface::_UpdateTargets()
         {
             TargetMap::iterator it2 = itr++;
 
-            Unit* ai_t = m_Unit->GetMapMgr()->GetUnit(it2->first);
-            if (ai_t == nullptr)
+            if (m_Unit->GetMapMgr())
             {
-                m_aiTargets.erase(it2);
-            }
-            else
-            {
-                bool instance = false;
-                if (m_Unit->GetMapMgr() && m_Unit->GetMapMgr()->GetMapInfo())
-                {
-                    switch (m_Unit->GetMapMgr()->GetMapInfo()->type)
-                    {
-                        case INSTANCE_RAID:
-                        case INSTANCE_NONRAID:
-                        case INSTANCE_MULTIMODE:
-                            instance = true;
-                            break;
-                    }
-                }
-
-                if (ai_t->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() || !ai_t->isAlive() || ((!instance && m_Unit->getDistanceSq(ai_t) >= 6400.0f) || !(ai_t->m_phase & m_Unit->m_phase)))
+                Unit* ai_t = m_Unit->GetMapMgr()->GetUnit(it2->first);
+                if (ai_t == nullptr)
                 {
                     m_aiTargets.erase(it2);
+                }
+                else
+                {
+                    bool instance = false;
+                    if (m_Unit->GetMapMgr()->GetMapInfo())
+                    {
+                        switch (m_Unit->GetMapMgr()->GetMapInfo()->type)
+                        {
+                            case INSTANCE_RAID:
+                            case INSTANCE_NONRAID:
+                            case INSTANCE_MULTIMODE:
+                                instance = true;
+                                break;
+                        }
+                    }
+
+                    if (ai_t->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() || !ai_t->isAlive() || ((!instance && m_Unit->getDistanceSq(ai_t) >= 6400.0f) || !(ai_t->m_phase & m_Unit->m_phase)))
+                    {
+                        m_aiTargets.erase(it2);
+                    }
                 }
             }
         }
