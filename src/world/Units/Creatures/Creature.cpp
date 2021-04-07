@@ -1423,7 +1423,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     if (isQuestGiver())
         _LoadQuests();
 
-    if (isTrainer() | isProfessionTrainer())
+    if (isTrainer() || isProfessionTrainer())
         mTrainer = sObjectMgr.GetTrainer(getEntry());
 
     if (isAuctioneer())
