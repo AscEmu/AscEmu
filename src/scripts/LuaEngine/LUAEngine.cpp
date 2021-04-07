@@ -2983,7 +2983,7 @@ void LuaEngine::Restart()
         if (it == cMap.end())
         {
             m_scriptMgr->register_creature_script(itr.first, CreateLuaCreature);
-            cMap.insert(std::make_pair(itr.first, (LuaCreature*)nullptr));
+            cMap.emplace(std::make_pair(itr.first, (LuaCreature*)nullptr));
         }
         else
         {
