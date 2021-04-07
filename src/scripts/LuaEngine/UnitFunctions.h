@@ -5174,7 +5174,7 @@ public:
     {
         TEST_PLAYER()
         const char* channelName = luaL_checkstring(L, 1);
-        if (!ptr || !channelName)
+        if (!channelName)
             return 0;
 
         Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
