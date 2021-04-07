@@ -1786,10 +1786,8 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
     }
 
     // ok our z and slot are set.
-    Item* oldItem = nullptr;
+    Item* oldItem = _player->getItemInterface()->GetInventoryItem(bagslot, slot);
     Item* pItem;
-    if (slot != INVENTORY_SLOT_NOT_SET)
-        oldItem = _player->getItemInterface()->GetInventoryItem(bagslot, slot);
 
     if (oldItem != nullptr)
     {
