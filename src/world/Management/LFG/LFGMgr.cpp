@@ -892,7 +892,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     if (answer != LFG_ANSWER_PENDING)
     {
         LOG_DEBUG("(%s) compatibles (cached): %d", strGuids.c_str(), answer);
-        return bool(answer ? true : false);
+        return answer == LFG_ANSWER_AGREE ? true : false;
     }
 
     // Check all but new compatiblitity
