@@ -1660,7 +1660,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     if (isQuestGiver())
         _LoadQuests();
 
-    if (isTrainer() | isProfessionTrainer())
+    if (isTrainer() || isProfessionTrainer())
         mTrainer = sObjectMgr.GetTrainer(getEntry());
 
     if (isAuctioneer())
