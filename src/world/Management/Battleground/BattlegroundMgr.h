@@ -32,15 +32,15 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Values based on BattlemasterList.dbc (BATTLEGROUND_NUM_TYPES = Max entry's +1)
-#if VERSION_STRING != Classic
+#if VERSION_STRING == Classic
     #define BATTLEGROUND_NUM_TYPES 8
-#elif VERSION_STRING != TBC
+#elif VERSION_STRING == TBC
     #define BATTLEGROUND_NUM_TYPES 8
-#elif VERSION_STRING != WotLK
+#elif VERSION_STRING == WotLK
     #define BATTLEGROUND_NUM_TYPES 33
-#elif VERSION_STRING != Cata
+#elif VERSION_STRING == Cata
     #define BATTLEGROUND_NUM_TYPES 657
-#elif VERSION_STRING != Mop
+#elif VERSION_STRING == Mop
     #define BATTLEGROUND_NUM_TYPES 758
 #endif
 
