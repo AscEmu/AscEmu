@@ -1044,8 +1044,8 @@ void GameObject_Trap::Update(unsigned long time_passed)
                     ExpireAndDelete();
                     return;
                 }
-
-                if (spell->getEffectImplicitTargetA(0) == EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT || spell->getEffectImplicitTargetA(0) == EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT)
+                                                                                                    //Zyres: This is the same XD
+                if (spell->getEffectImplicitTargetA(0) == EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT /*|| spell->getEffectImplicitTargetA(0) == EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT*/)
                 {
                     return; // on area don't continue.
                 }
