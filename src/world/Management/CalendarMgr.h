@@ -66,16 +66,9 @@ enum CalendarInviteStatus
 
 struct CalendarEvent
 { 
-    CalendarEvent(uint32 p_entry = 0, uint32 p_creator = 0, std::string p_title = "", std::string p_description = "", CalendarEventType p_type = CALENDAR_TYPE_RAID, uint32 p_dungeon = 0, time_t p_date = 0, uint32 p_flags = 0)
+    CalendarEvent(uint32 p_entry = 0, uint32 p_creator = 0, std::string p_title = "", std::string p_description = "", CalendarEventType p_type = CALENDAR_TYPE_RAID, uint32 p_dungeon = 0, time_t p_date = 0, uint32 p_flags = 0) :
+        entry(p_entry), creator(p_creator), title(p_title), description(p_description), type(p_type), dungeon(p_dungeon), date(p_date), flags(p_flags)
     {
-        entry = p_entry;
-        creator = p_creator;
-        title = p_title;
-        description = p_description;
-        type = p_type;
-        dungeon = p_dungeon;
-        date = p_date;
-        flags = p_flags;
     }
 
     ~CalendarEvent(){};
