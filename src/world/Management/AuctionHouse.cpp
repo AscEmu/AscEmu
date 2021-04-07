@@ -94,7 +94,10 @@ AuctionHouse::AuctionHouse(uint32_t id)
         depositPercent = auctionHouseEntryDbc->fee / 100.0f;
         isEnabled = true;
     }
-    isEnabled = false;
+    else
+    {
+        isEnabled = false;
+    }
 }
 
 AuctionHouse::~AuctionHouse()
