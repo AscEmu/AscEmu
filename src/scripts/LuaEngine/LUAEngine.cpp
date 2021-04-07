@@ -72,7 +72,7 @@ void report(lua_State* L)
 
 LuaEngine::LuaEngine() : lu(nullptr) {}
 
-void LuaEngine::ScriptLoadDir(std::string Dirname, LUALoadScripts* pak)
+void LuaEngine::ScriptLoadDir(const std::string Dirname, LUALoadScripts* pak)
 {
     DLLLogDetail("LuaEngine : Scanning Directory %s", Dirname.c_str());
 
