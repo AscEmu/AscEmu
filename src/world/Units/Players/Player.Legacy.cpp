@@ -10000,24 +10000,20 @@ void Player::SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs)
     {
         uint32 SpellId = (*sitr);
 
-        const auto spellInfo = sSpellMgr.getSpellInfo(SpellId);
-        if (!spellInfo)
+        if (const auto* spellInfo = sSpellMgr.getSpellInfo(SpellId))
         {
-            ASSERT(spellInfo)
-            continue;
-        }
+            // Not send cooldown for this spells
+            if (spellInfo->getAttributes() & ATTRIBUTES_TRIGGER_COOLDOWN)
+                continue;
 
-        // Not send cooldown for this spells
-        if (spellInfo->getAttributes() & ATTRIBUTES_TRIGGER_COOLDOWN)
-            continue;
+            if (spellInfo->getFirstSchoolFromSchoolMask() == SpellSchool)
+            {
+                SmsgSpellCooldownMap mapMembers;
+                mapMembers.spellId = SpellId;
+                mapMembers.duration = unTimeMs;
 
-        if (spellInfo->getFirstSchoolFromSchoolMask() == SpellSchool)
-        {
-            SmsgSpellCooldownMap mapMembers;
-            mapMembers.spellId = SpellId;
-            mapMembers.duration = unTimeMs;
-
-            spellMap.push_back(mapMembers);
+                spellMap.push_back(mapMembers);
+            }
         }
     }
     GetSession()->SendPacket(SmsgSpellCooldown(getGuid(), 0x0, spellMap).serialise().get());
