@@ -2605,13 +2605,13 @@ void LuaEngine::Startup()
     for (auto& itr : m_unitBinding)
     {
         m_scriptMgr->register_creature_script(itr.first, CreateLuaCreature);
-        LuaGlobal::instance()->luaEngine()->getLuCreatureMap().insert(std::make_pair(itr.first, (LuaCreature*)nullptr));
+        LuaGlobal::instance()->luaEngine()->getLuCreatureMap().emplace(std::make_pair(itr.first, (LuaCreature*)nullptr));
     }
 
     for (auto& itr : m_gameobjectBinding)
     {
         m_scriptMgr->register_gameobject_script(itr.first, CreateLuaGameObjectScript);
-        LuaGlobal::instance()->luaEngine()->getLuGameObjectMap().insert(std::make_pair(itr.first, (LuaGameObjectScript*)nullptr));
+        LuaGlobal::instance()->luaEngine()->getLuGameObjectMap().emplace(std::make_pair(itr.first, (LuaGameObjectScript*)nullptr));
     }
 
     for (auto& itr : m_questBinding)
