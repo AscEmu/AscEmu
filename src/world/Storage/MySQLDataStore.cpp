@@ -4009,25 +4009,22 @@ void MySQLDataStore::loadGossipMenuItemsTable()
 
     LogNotice("MySQLDataLoads : Table `gossip_menu` has %u columns", result->GetFieldCount());
 
-    if (result != nullptr)
+    uint32_t load_count = 0;
+    do
     {
-        uint32_t load_count = 0;
-        do
-        {
-            Field* fields = result->Fetch();
-            uint32_t entry = fields[0].GetUInt32();
+        Field* fields = result->Fetch();
+        uint32_t entry = fields[0].GetUInt32();
 
-            MySQLStructure::GossipMenuInit& gMenuItem = _gossipMenuInitStore[entry];
-            gMenuItem.gossipMenu = entry;
-            gMenuItem.textId = fields[1].GetUInt32();
+        MySQLStructure::GossipMenuInit& gMenuItem = _gossipMenuInitStore[entry];
+        gMenuItem.gossipMenu = entry;
+        gMenuItem.textId = fields[1].GetUInt32();
 
-            ++load_count;
-        } while (result->NextRow());
+        ++load_count;
+    } while (result->NextRow());
 
-        delete result;
+    delete result;
 
-        LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-    }
+    LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     _gossipMenuItemsStores.clear();
 
