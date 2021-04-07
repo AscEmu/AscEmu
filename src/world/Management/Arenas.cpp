@@ -204,12 +204,10 @@ void Arena::OnAddPlayer(Player* plr)
     {
         if (plr->m_auras[x])
         {
-            if (plr->m_auras[x] && !plr->m_auras[x]->getSpellInfo()->getDurationIndex() && plr->m_auras[x]->getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+            if (!plr->m_auras[x]->getSpellInfo()->getDurationIndex() && plr->m_auras[x]->getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
                 continue;
-            else
-            {
-                plr->m_auras[x]->removeAura();
-            }
+
+            plr->m_auras[x]->removeAura();
         }
     }
     // On arena start all conjured items are removed
