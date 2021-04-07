@@ -143,9 +143,9 @@ private:
     PassengerSet::iterator _passengerTeleportItr;
     PassengerSet _staticPassengers;
 
-    int32_t _positionChangeTimer;
-    int32_t _mapUpdateTimer;
+    int32_t _positionChangeTimer = 0;
+    int32_t _mapUpdateTimer = 0;
 
     uint32_t positionUpdateDelay;
-    bool _delayedTeleport;
+    bool _delayedTeleport = false;
 };
