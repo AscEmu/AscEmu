@@ -3793,7 +3793,7 @@ public:
         uint32_t spellid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         int32_t duration = static_cast<int32_t>(luaL_checkinteger(L, 2));
         bool temp = CHECK_BOOL(L, 3);
-        if (ptr && spellid)
+        if (spellid)
         {
             Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(spellid), duration, ptr, ptr, temp);
             ptr->addAura(aura);
