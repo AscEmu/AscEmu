@@ -426,10 +426,10 @@ public:
 
     static SpellProc* Create() { return new EmpoweredRenewSpellProc(); }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 dmg, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weapon_damage_type*/) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weapon_damage_type*/) override
     {
         // Get heal amt for 1 tick
-        dmg = castingSpell->calculateEffectValue(0);
+        const uint32_t dmg = castingSpell->calculateEffectValue(0);
 
         // Get total ticks
         int ticks = GetDuration(sSpellDurationStore.LookupEntry(castingSpell->getDurationIndex())) / castingSpell->getEffectAmplitude(0);
