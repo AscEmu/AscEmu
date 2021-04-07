@@ -940,7 +940,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
 
     if (mask & GROUP_UPDATE_FLAG_STATUS)
     {
-        if (pPlayer && !pPlayer->m_isGmInvisible)
+        if (!pPlayer->m_isGmInvisible)
             *data << uint16(pPlayer->GetGroupStatus());
         else
             *data << uint16(MEMBER_STATUS_OFFLINE);
