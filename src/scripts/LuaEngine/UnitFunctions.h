@@ -2970,13 +2970,12 @@ public:
     static int IsInWater(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        if (ptr)
-        {
-            if (static_cast<Player*>(ptr)->m_UnderwaterState)
-                lua_pushboolean(L, 1);
-            else
-                lua_pushboolean(L, 0);
-        }
+
+        if (static_cast<Player*>(ptr)->m_UnderwaterState)
+            lua_pushboolean(L, 1);
+        else
+            lua_pushboolean(L, 0);
+
         return 1;
     }
 
