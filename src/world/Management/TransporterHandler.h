@@ -104,7 +104,7 @@ struct KeyFrame
 
 struct TransportTemplate
 {
-    TransportTemplate() : inInstance(false), pathTime(0), accelTime(0.0f), accelDist(0.0f), entry(0) { }
+    TransportTemplate() : lowguid(0), inInstance(false), pathTime(0), accelTime(0.0f), accelDist(0.0f), entry(0) { }
     ~TransportTemplate() = default;
 
     uint32_t lowguid;
