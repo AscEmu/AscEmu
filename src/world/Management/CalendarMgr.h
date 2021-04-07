@@ -87,7 +87,7 @@ struct CalendarEvent
 struct CalendarInvite
 {
     CalendarInvite(uint32 p_invite_id = 0, uint32 p_event = 0, uint32 p_invitee = 0, uint32 p_sender = 0, CalendarInviteStatus p_status = CALENDAR_STATUS_REMOVED, time_t p_statustime = 0, uint32 p_rank = 0, std::string p_text = "") :
-        invite_id(p_invite_id), event(p_event), invitee(p_invitee), sender(p_sender), status(p_status), statustime(p_statustime), rank(p_rank), text(p_text)
+        invite_id(p_invite_id), event(p_event), invitee(p_invitee), sender(p_sender), status(p_status), statustime(p_statustime), rank(p_rank), text(std::move(p_text))
     {
     }
 
