@@ -140,53 +140,6 @@ struct EventGameObjectSpawnsQueryResult
     uint32 overrides;
 };
 
-struct GameEventData
-{
-    GameEventData(time_t pstart = 0, time_t pend = 0, time_t pnextstart = 0, uint32 poccurence = 0, uint32 plength = 0, HolidayIds pholiday_id = HOLIDAY_NONE,
-                  GameEventState pstate = GAMEEVENT_INACTIVE, uint8 pannounce = 0)
-    {
-        start = pstart;
-        end = pend;
-        nextstart = pnextstart;
-        occurence = poccurence;
-        length = plength;
-        holiday_id = pholiday_id;
-        state = pstate;
-        announce = pannounce;
-    };
-
-    GameEventData(EventNamesQueryResult result)
-    {
-        start = result.start_time;
-        end = result.end_time;
-        nextstart = 0;                  // after this time the follow-up events count this phase completed
-        occurence = result.occurence;
-        length = result.length;
-        holiday_id = result.holiday_id;
-        state = result.world_event;     // state of the game event, these are saved into the game_event table on change!
-        announce = result.announce;
-    }
-
-    ~GameEventData()
-    {
-    };
-
-    uint32 event_id;
-    time_t start;
-    time_t end;
-    time_t nextstart;                   // after this time the follow-up events count this phase completed
-    uint32 occurence;
-    uint32 length;
-    HolidayIds holiday_id;
-    std::set<uint16 /*gameevent id*/> prerequisite_events;
-    std::string description;
-    GameEventState state;               // state of the game event, these are saved into the game_event table on change!
-    GameEventConditionMap conditions;   // conditions to finish
-    uint8 announce;
-
-    bool isValid() const { return length > 0 && end > time(0); }
-};
-
 typedef std::map<uint32, GameEvent*> GameEvents;
 typedef std::set<uint16> ActiveEvents;
 
