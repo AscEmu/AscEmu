@@ -135,13 +135,13 @@ void ObjectMgr::finalize()
     }
 
     LogNotice("ObjectMgr : Deleting Reputation Tables...");
-    for (ReputationModMap::iterator itr = this->m_reputation_creature.begin(); itr != m_reputation_creature.end(); ++itr)
+    for (ReputationModMap::iterator itr = m_reputation_creature.begin(); itr != m_reputation_creature.end(); ++itr)
     {
         ReputationModifier* mod = itr->second;
         mod->mods.clear();
         delete mod;
     }
-    for (ReputationModMap::iterator itr = this->m_reputation_faction.begin(); itr != m_reputation_faction.end(); ++itr)
+    for (ReputationModMap::iterator itr = m_reputation_faction.begin(); itr != m_reputation_faction.end(); ++itr)
     {
         ReputationModifier* mod = itr->second;
         mod->mods.clear();
