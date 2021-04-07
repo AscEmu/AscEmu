@@ -150,7 +150,7 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
     {
         case TYPEID_PLAYER:
         case TYPEID_UNIT:
-            if (u_caster->getPlayerOwner() != nullptr && u_caster->getPlayerOwner()->GetDuelState() == DUEL_STATE_STARTED)
+            if (u_caster && u_caster->getPlayerOwner() != nullptr && u_caster->getPlayerOwner()->GetDuelState() == DUEL_STATE_STARTED)
                 duelSpell = true;
             break;
         case TYPEID_ITEM:
@@ -166,7 +166,7 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
             break;
     }
 
-    if (u_caster != nullptr && getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_CAST_BY_CHARMER)
+    if (u_caster && getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_CAST_BY_CHARMER)
     {
         auto unitCharmer = u_caster->GetMapMgrUnit(u_caster->getCharmedByGuid());
         if (unitCharmer != nullptr)
