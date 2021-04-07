@@ -5253,7 +5253,7 @@ public:
         TEST_PLAYER()
         const char* channelName = luaL_checkstring(L, 1);
         Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
-        if (!ptr)
+        if (!channel)
             return 0;
 
         lua_pushstring(L, channel->m_password.c_str());
