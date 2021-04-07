@@ -3773,7 +3773,7 @@ public:
         TEST_UNITPLAYER()
         uint32_t mechanic = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         bool hostileonly = CHECK_BOOL(L, 2);
-        if (ptr && mechanic)
+        if (mechanic)
             ptr->RemoveAllAurasByMechanic(mechanic, 0, hostileonly);
         return 0;
     }
