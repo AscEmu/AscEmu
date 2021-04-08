@@ -400,6 +400,14 @@ enum GlyphSlotMask
 #endif
 };
 
+//\todo: everything above this comment, does not belong in this file. Refactor this file to hold only the player class ;-)
+// Everything below this line is bloated (seems we need some new concepts like RAII and a lot of refactoring to shrink it to a manageable class.
+// Group all related members to a struct/class. Follow the "modern" way of C++ and leave the C way behind.
+// 1. Initialize class members in the class
+// 2. Use const wherever possible
+// 3. move stuff out of this class
+// 4. Check out the members (there are duplicats)
+// 5. Get rid of legacy files (Player.Legacy.cpp)
 struct WoWPlayer;
 class SERVER_DECL Player : public Unit
 {
