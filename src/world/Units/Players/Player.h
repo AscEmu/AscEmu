@@ -176,14 +176,14 @@ class SERVER_DECL PlayerInfo
 
         ~PlayerInfo();
 
-        uint32 guid;
+        uint32 guid;        // there is a filed for that
         uint32 acct;
-        char* name;
-        uint8_t race;
-        uint8_t gender;
-        uint8 cl;
-        uint32 team;
-        uint8 role;
+        char* name;         // Part of Player class
+        uint8_t race;       // Part of PlayerCreateInfo
+        uint8_t gender;     // there is a field for that in playerbytes3
+        uint8 cl;           // class? Part of PlayerCreateInfo. It is determind on player creation.
+        uint32 team;        // team? there is a field for that since bc. Investigate further for what this is used.
+        uint8 role;         // bg related?
 
         time_t lastOnline;
         uint32 lastZone;
