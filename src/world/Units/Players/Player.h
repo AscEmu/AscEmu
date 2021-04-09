@@ -799,12 +799,12 @@ public:
 private:
 
     //used for classic
-    uint32_t max_level;
+    uint32_t max_level = 60;
 
     std::string m_name;
 
-    uint32_t m_team;
-    uint32_t m_bgTeam;
+    uint32_t m_team = 0;
+    uint32_t m_bgTeam = 0;
 
 public:
 
@@ -908,10 +908,10 @@ public:
     void updateGlyphs();
 #endif
 
-    bool m_FirstCastAutoRepeat;
+    bool m_FirstCastAutoRepeat = false;
 
 private:
-    bool m_canDualWield2H;
+    bool m_canDualWield2H = false;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -934,7 +934,7 @@ public:
     void activateTalentSpec(uint8_t specId);
 
 private:
-    uint32_t m_talentPointsFromQuests;
+    uint32_t m_talentPointsFromQuests = 0;
 
 public:
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -946,7 +946,7 @@ public:
     void saveTutorials();
 
 protected:
-    uint32_t m_Tutorials[8];
+    uint32_t m_Tutorials[8] = {0};
 
 public:
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -961,7 +961,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Trade
 private:
-    TradeData* m_TradeData;
+    TradeData* m_TradeData = nullptr;
 
 public:
     Player* getTradeTarget() const;
@@ -1002,7 +1002,7 @@ public:
     GameObject* getSelectedGo() const;
     void setSelectedGo(uint64_t guid);
 
-    PlayerCheat m_cheats;
+    PlayerCheat m_cheats = {false};
     float m_goLastXRotation = 0.0f;
     float m_goLastYRotation = 0.0f;
 
@@ -1030,7 +1030,7 @@ public:
     // Player's item storage
     ItemInterface* getItemInterface() const;
 private:
-    ItemInterface* m_itemInterface;
+    ItemInterface* m_itemInterface = nullptr;
 
 public:
 
@@ -1043,8 +1043,8 @@ public:
     uint8_t getRaidDifficulty();
 
 private:
-    uint8_t m_dungeonDifficulty;
-    uint8_t m_raidDifficulty;
+    uint8_t m_dungeonDifficulty = 0;
+    uint8_t m_raidDifficulty = 0;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1096,8 +1096,8 @@ private:
     struct BGEntryData
     {
         LocationVector location = { 0, 0, 0, 0 };
-        uint32_t mapId;
-        int32_t instanceId;
+        uint32_t mapId = 0;
+        int32_t instanceId = 0;
     };
     BGEntryData m_bgEntryData;
 
@@ -1113,7 +1113,7 @@ public:
     uint32_t getGuildRankFromDB();
 
 private:
-    uint32_t m_invitedByGuildId;
+    uint32_t m_invitedByGuildId = 0;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1130,7 +1130,7 @@ public:
     int8_t getSubGroupSlot() const;
 
 private:
-    uint32_t m_GroupInviter;
+    uint32_t m_GroupInviter = 0;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1147,7 +1147,7 @@ public:
 
 
 private:
-    QuestLogEntry* m_questlog[MAX_QUEST_LOG_SIZE];
+    QuestLogEntry* m_questlog[MAX_QUEST_LOG_SIZE] = {nullptr};
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////

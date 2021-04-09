@@ -209,7 +209,6 @@ Player::Player(uint32 guid)
     m_CurrentCharm(0),
     // gm stuff
     //m_invincible(false),
-    m_cheats { false },
     m_Autojoin(false),
     m_AutoAddMem(false),
     m_UnderwaterMaxTime(180000),
@@ -221,7 +220,6 @@ Player::Player(uint32 guid)
     m_mailBox(guid),
     m_finishingmovesdodge(false),
     //Trade
-    m_TradeData(nullptr),
     info(nullptr), // Playercreate info
     m_AttackMsgTimer(0),
     //PVP
@@ -234,7 +232,6 @@ Player::Player(uint32 guid)
     m_duelCountdownTimer(0),
     m_duelStatus(0),
     m_duelState(DUEL_STATE_FINISHED),        // finished
-    m_invitedByGuildId(0),
     // Rest
     m_timeLogoff(0),
     m_isResting(0),
@@ -259,9 +256,7 @@ Player::Player(uint32 guid)
     m_curSelection(0),
     m_targetIcon(0),
     m_session(nullptr),
-    m_GroupInviter(0),
     m_SummonedObject(nullptr),
-    max_level(60),
     m_updateMgr(this, (size_t)worldConfig.server.compressionThreshold, 40000, 30000, 1000),
     m_splineMgr()
 #ifdef FT_ACHIEVEMENTS
@@ -301,10 +296,6 @@ Player::Player(uint32 guid)
         MechanicDurationPctMod[i] = 0;
     }
 
-    //Tutorials
-    for (i = 0; i < 8; i++)
-        m_Tutorials[i] = 0x00;
-
     m_playedtime[0] = 0;
     m_playedtime[1] = 0;
     m_playedtime[2] = (uint32)UNIXTIME;
@@ -340,8 +331,6 @@ Player::Player(uint32 guid)
 
     mControledUnit = this;
     mPlayerControler = this;
-    for (i = 0; i < MAX_QUEST_SLOT; ++i)
-        m_questlog[i] = nullptr;
 
     m_itemInterface = new ItemInterface(this);
 
@@ -383,9 +372,6 @@ Player::Player(uint32 guid)
     flying_aura = 0;
     resend_speed = false;
     login_flags = LOGIN_NO_FLAG;
-    m_canDualWield2H = false;
-    m_dungeonDifficulty = 0;
-    m_raidDifficulty = 0;
     resettalents = false;
     memset(reputationByListId, 0, sizeof(FactionReputation*) * 128);
 
@@ -406,7 +392,6 @@ Player::Player(uint32 guid)
     m_maxTalentPoints = 0; //VLack: 3 Aspire values initialized
     m_talentActiveSpec = 0;
     m_talentSpecsCount = 1;
-    m_talentPointsFromQuests = 0;
 #if VERSION_STRING >= Cata
     m_FirstTalentTreeLock = 0;
 #endif
@@ -510,7 +495,6 @@ Player::Player(uint32 guid)
     mountvehicleid = 0;
 
     isTurning = false;
-    m_bgTeam = 0;
     myRace = nullptr;
     myClass = nullptr;
     OnlineTime = (uint32)UNIXTIME;
@@ -519,7 +503,6 @@ Player::Player(uint32 guid)
     load_mana = 0;
     m_noseLevel = 0;
     m_StableSlotCount = 0;
-    m_team = 0;
     m_timeSyncCounter = 0;
     m_timeSyncTimer = 0;
     m_timeSyncClient = 0;
@@ -527,8 +510,6 @@ Player::Player(uint32 guid)
     m_roles = 0;
     GroupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
     m_FirstLogin = false;
-
-    m_FirstCastAutoRepeat = false;
 }
 
 void Player::OnLogin()
