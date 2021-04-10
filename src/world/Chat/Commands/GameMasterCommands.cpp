@@ -59,8 +59,7 @@ bool ChatHandler::HandleGMAllowWhispersCommand(const char* args, WorldSession* m
     }
 
     m_session->GetPlayer()->m_cache->InsertValue64(CACHE_GM_TARGETS, player_cache->GetUInt32Value(CACHE_PLAYER_LOWGUID));
-    std::string name;
-    player_cache->GetStringValue(CACHE_PLAYER_NAME, name);
+    std::string name = player_cache->GetStringValue(CACHE_PLAYER_NAME);
     BlueSystemMessage(m_session, "Now accepting whispers from %s.", name.c_str());
 
     return true;
@@ -105,8 +104,7 @@ bool ChatHandler::HandleGMBlockWhispersCommand(const char* args, WorldSession* m
     }
 
     m_session->GetPlayer()->m_cache->RemoveValue64(CACHE_GM_TARGETS, player_cache->GetUInt32Value(CACHE_PLAYER_LOWGUID));
-    std::string name;
-    player_cache->GetStringValue(CACHE_PLAYER_NAME, name);
+    std::string name = player_cache->GetStringValue(CACHE_PLAYER_NAME);
     BlueSystemMessage(m_session, "Now blocking whispers from %s.", name.c_str());
 
     return true;

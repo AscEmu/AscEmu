@@ -2851,8 +2851,7 @@ PlayerCache* ObjectMgr::GetPlayerCache(const char* name, bool caseSensitive /*= 
         Util::StringToLowerCase(strName);
         for (itr = m_playerCache.begin(); itr != m_playerCache.end(); ++itr)
         {
-            std::string cachename;
-            itr->second->GetStringValue(CACHE_PLAYER_NAME, cachename);
+            std::string cachename = itr->second->GetStringValue(CACHE_PLAYER_NAME);
             if (!stricmp(cachename.c_str(), strName.c_str()))
             {
                 ret = itr->second;
@@ -2864,8 +2863,7 @@ PlayerCache* ObjectMgr::GetPlayerCache(const char* name, bool caseSensitive /*= 
     {
         for (itr = m_playerCache.begin(); itr != m_playerCache.end(); ++itr)
         {
-            std::string cachename;
-            itr->second->GetStringValue(CACHE_PLAYER_NAME, cachename);
+            std::string cachename = itr->second->GetStringValue(CACHE_PLAYER_NAME);
             if (!strcmp(cachename.c_str(), name))
             {
                 ret = itr->second;

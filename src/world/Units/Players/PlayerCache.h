@@ -53,8 +53,6 @@ enum Map64Fields
 union CacheField
 {
     uint32 u;
-    float f;
-    int32 i;
 };
 
 typedef std::map<uint64, void*> PlayerCacheMap;
@@ -101,15 +99,11 @@ class PlayerCache
         FQueue<WorldPacket*> m_pendingPackets;                  /// used for sending packets to another context
 
         void SetStringValue(uint32 field, std::string & val) { m_stringlock.Acquire(); m_stringfields[field] = val; m_stringlock.Release(); }
-        void SetStringValue(uint32 field, const char* val) { m_stringlock.Acquire(); m_stringfields[field] = val; m_stringlock.Release(); }
         std::string GetStringValue(uint32 field) { m_stringlock.Acquire(); std::string ret = m_stringfields[field]; m_stringlock.Release(); return ret; }
-        void GetStringValue(uint32 field, std::string & val) { m_stringlock.Acquire(); val = m_stringfields[field]; m_stringlock.Release(); }
+
         void SetUInt32Value(uint32 field, uint32 val) { m_fields[field].u = val; }
-        void SetInt32Value(uint32 field, int32 val) { m_fields[field].i = val; }
-        void SetFloatValue(uint32 field, float val) { m_fields[field].f = val; }
         uint32 GetUInt32Value(uint32 field) { return m_fields[field].u; }
-        int32 GetInt32Value(uint32 field) { return m_fields[field].i; }
-        float GetFloatValue(uint32 field) { return m_fields[field].f; }
+
         uint32 HasFlag(uint32 field, uint32 flag) { return m_fields[field].u & flag; }
 
         //64bit guid lists
@@ -126,10 +120,6 @@ class PlayerCache
         PlayerCacheMap::iterator Begin64(uint32 field) { return m_map64fields[field].begin(); }
         PlayerCacheMap::iterator End64(uint32 field) { return m_map64fields[field].end(); }
         PlayerCacheMap::iterator Find64(uint32 field, uint64 value) { return m_map64fields[field].find(value); }
-
-        //MIT
-        PlayerCacheMap getCachedMapNyField(uint32_t field) { return m_map64fields[field]; }
-        //MIT END
 
         void SendPacket(WorldPacket* p);
 

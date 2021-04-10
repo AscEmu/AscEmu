@@ -318,14 +318,12 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 
                     if (player_cache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_AFK))
                     {
-                        std::string reason;
-                        player_cache->GetStringValue(CACHE_AFK_DND_REASON, reason);
+                        std::string reason = player_cache->GetStringValue(CACHE_AFK_DND_REASON);
                         SendPacket(SmsgMessageChat(CHAT_MSG_AFK, LANG_UNIVERSAL, player_cache->GetGUID(), reason, false).serialise().get());
                     }
                     else if (player_cache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_DND))
                     {
-                        std::string reason;
-                        player_cache->GetStringValue(CACHE_AFK_DND_REASON, reason);
+                        std::string reason = player_cache->GetStringValue(CACHE_AFK_DND_REASON);
                         SendPacket(SmsgMessageChat(CHAT_MSG_DND, LANG_UNIVERSAL, player_cache->GetGUID(), reason, false).serialise().get());
                     }
                 }
@@ -759,8 +757,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 
             if (playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_AFK))
             {
-                std::string reason;
-                playercache->GetStringValue(CACHE_AFK_DND_REASON, reason);
+                std::string reason = playercache->GetStringValue(CACHE_AFK_DND_REASON);
 
                 data = sChatHandler.FillMessageData(CHAT_MSG_AFK, LANG_UNIVERSAL, reason.c_str(), playercache->GetGUID(), chatTag);
                 SendPacket(data);
@@ -768,8 +765,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             }
             else if (playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_DND))
             {
-                std::string reason;
-                playercache->GetStringValue(CACHE_AFK_DND_REASON, reason);
+                std::string reason = playercache->GetStringValue(CACHE_AFK_DND_REASON);
                 data = sChatHandler.FillMessageData(CHAT_MSG_DND, LANG_UNIVERSAL, reason.c_str(), playercache->GetGUID(), playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
                 SendPacket(data);
                 delete data;
