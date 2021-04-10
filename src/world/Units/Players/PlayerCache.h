@@ -26,19 +26,19 @@
 #include "Threading/Queue.h"
 #include "Objects/Object.h"
 
+enum StringFields
+{
+    CACHE_PLAYER_NAME,
+    CACHE_AFK_DND_REASON,
+    NUM_STRING_CACHE_FIELDS
+};
+
 enum FourByteFields
 {
     CACHE_PLAYER_LOWGUID,
     CACHE_PLAYER_FLAGS,
     CACHE_PLAYER_INITIALTEAM,
     NUM_FOURBYTE_CACHE_FIELDS
-};
-
-enum StringFields
-{
-    CACHE_PLAYER_NAME,
-    CACHE_AFK_DND_REASON,
-    NUM_STRING_CACHE_FIELDS
 };
 
 enum Map64Fields
@@ -80,28 +80,36 @@ class PlayerCache
             }
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////////
         //String cache
+        void SetStringValue(uint32 field, std::string& val) { m_stringlock.Acquire(); m_stringfields[field] = val; m_stringlock.Release(); }
+        std::string GetStringValue(uint32 field) { m_stringlock.Acquire(); std::string ret = m_stringfields[field]; m_stringlock.Release(); return ret; }
+
+private:
         FastMutex m_stringlock;                                 /// Protects strings during realloc possibilities
         std::string m_stringfields[NUM_STRING_CACHE_FIELDS];
 
-        /// Four byte cache (ints, floats)
-        uint32 m_fields[NUM_FOURBYTE_CACHE_FIELDS] = {0};
 
-        //Set uint64 cache (valid gm talk targets, ignore lists, friend lists)
-        FastMutex m_set64lock;
-        PlayerCacheMap m_map64fields[NUM_MAP64_CACHE_FIELDS];
 
-        FQueue<WorldPacket*> m_pendingPackets;                  /// used for sending packets to another context
-
-        void SetStringValue(uint32 field, std::string & val) { m_stringlock.Acquire(); m_stringfields[field] = val; m_stringlock.Release(); }
-        std::string GetStringValue(uint32 field) { m_stringlock.Acquire(); std::string ret = m_stringfields[field]; m_stringlock.Release(); return ret; }
-
+        /////////////////////////////////////////////////////////////////////////////////////////
+        //uint32 field cache
+public:
         void SetUInt32Value(uint32 field, uint32 val) { m_fields[field] = val; }
         uint32 GetUInt32Value(uint32 field) { return m_fields[field]; }
 
         uint32 HasFlag(uint32 field, uint32 flag) { return m_fields[field] & flag; }
 
-        //64bit guid lists
+        uint64 GetGUID() { return (uint64(HIGHGUID_TYPE_PLAYER) << 32) | GetUInt32Value(CACHE_PLAYER_LOWGUID); }
+
+private:
+        /// Four byte cache (ints, floats)
+        uint32 m_fields[NUM_FOURBYTE_CACHE_FIELDS] = {0};
+
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // 64bit guid lists
+public:
         void InsertValue64(uint32 field, uint64 value, void* extra = NULL) { m_set64lock.Acquire(); m_map64fields[field].emplace(std::make_pair(value, extra)); m_set64lock.Release(); }
         void RemoveValue64(uint32 field, uint64 value) { m_set64lock.Acquire(); m_map64fields[field].erase(value); m_set64lock.Release(); }
         size_t CountValue64(uint32 field, uint64 value) { m_set64lock.Acquire(); size_t ret = m_map64fields[field].count(value); m_set64lock.Release(); return ret; }
@@ -116,12 +124,20 @@ class PlayerCache
         PlayerCacheMap::iterator End64(uint32 field) { return m_map64fields[field].end(); }
         PlayerCacheMap::iterator Find64(uint32 field, uint64 value) { return m_map64fields[field].find(value); }
 
-        void SendPacket(WorldPacket* p);
+private:
+        //Set uint64 cache (valid gm talk targets, ignore lists, friend lists)
+        FastMutex m_set64lock;
+        PlayerCacheMap m_map64fields[NUM_MAP64_CACHE_FIELDS];
 
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Packets handling
+public:
+        void SendPacket(WorldPacket* p);
         void SendPacket(WorldPacket & p);
 
-        uint64 GetGUID() { return (uint64(HIGHGUID_TYPE_PLAYER) << 32) | GetUInt32Value(CACHE_PLAYER_LOWGUID); }
-
+        FQueue<WorldPacket*> m_pendingPackets;                  /// used for sending packets to another context
 };
 
 #endif // _PLAYERCACHE_H
