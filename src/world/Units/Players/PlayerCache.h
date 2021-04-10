@@ -50,11 +50,6 @@ enum Map64Fields
     NUM_MAP64_CACHE_FIELDS
 };
 
-union CacheField
-{
-    uint32 u;
-};
-
 typedef std::map<uint64, void*> PlayerCacheMap;
 
 class Player;
@@ -90,7 +85,7 @@ class PlayerCache
         std::string m_stringfields[NUM_STRING_CACHE_FIELDS];
 
         /// Four byte cache (ints, floats)
-        CacheField m_fields[NUM_FOURBYTE_CACHE_FIELDS] = {0};
+        uint32 m_fields[NUM_FOURBYTE_CACHE_FIELDS] = {0};
 
         //Set uint64 cache (valid gm talk targets, ignore lists, friend lists)
         FastMutex m_set64lock;
@@ -101,10 +96,10 @@ class PlayerCache
         void SetStringValue(uint32 field, std::string & val) { m_stringlock.Acquire(); m_stringfields[field] = val; m_stringlock.Release(); }
         std::string GetStringValue(uint32 field) { m_stringlock.Acquire(); std::string ret = m_stringfields[field]; m_stringlock.Release(); return ret; }
 
-        void SetUInt32Value(uint32 field, uint32 val) { m_fields[field].u = val; }
-        uint32 GetUInt32Value(uint32 field) { return m_fields[field].u; }
+        void SetUInt32Value(uint32 field, uint32 val) { m_fields[field] = val; }
+        uint32 GetUInt32Value(uint32 field) { return m_fields[field]; }
 
-        uint32 HasFlag(uint32 field, uint32 flag) { return m_fields[field].u & flag; }
+        uint32 HasFlag(uint32 field, uint32 flag) { return m_fields[field] & flag; }
 
         //64bit guid lists
         void InsertValue64(uint32 field, uint64 value, void* extra = NULL) { m_set64lock.Acquire(); m_map64fields[field].emplace(std::make_pair(value, extra)); m_set64lock.Release(); }
