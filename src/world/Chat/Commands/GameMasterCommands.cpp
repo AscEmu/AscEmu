@@ -51,15 +51,15 @@ bool ChatHandler::HandleGMAllowWhispersCommand(const char* args, WorldSession* m
         return true;
     }
 
-    auto player_cache = sObjectMgr.GetPlayerCache(args, false);
-    if (player_cache == nullptr)
+    const auto playerTarget = sObjectMgr.GetPlayer(args, false);
+    if (playerTarget == nullptr)
     {
         RedSystemMessage(m_session, "Player %s not found.", args);
         return true;
     }
 
-    m_session->GetPlayer()->m_cache->InsertValue64(CACHE_GM_TARGETS, player_cache->GetUInt32Value(CACHE_PLAYER_LOWGUID));
-    std::string name = player_cache->GetStringValue(CACHE_PLAYER_NAME);
+    m_session->GetPlayer()->addToGMTargetList(playerTarget->getGuidLow());
+    std::string name = playerTarget->getName();
     BlueSystemMessage(m_session, "Now accepting whispers from %s.", name.c_str());
 
     return true;
@@ -96,15 +96,15 @@ bool ChatHandler::HandleGMBlockWhispersCommand(const char* args, WorldSession* m
         return true;
     }
 
-    auto player_cache = sObjectMgr.GetPlayerCache(args, false);
-    if (player_cache == nullptr)
+    auto playerTarget = sObjectMgr.GetPlayer(args, false);
+    if (playerTarget == nullptr)
     {
         RedSystemMessage(m_session, "Player %s not found.", args);
         return true;
     }
 
-    m_session->GetPlayer()->m_cache->RemoveValue64(CACHE_GM_TARGETS, player_cache->GetUInt32Value(CACHE_PLAYER_LOWGUID));
-    std::string name = player_cache->GetStringValue(CACHE_PLAYER_NAME);
+    m_session->GetPlayer()->removeFromGMTargetList(playerTarget->getGuidLow());
+    std::string name = playerTarget->getName();
     BlueSystemMessage(m_session, "Now blocking whispers from %s.", name.c_str());
 
     return true;

@@ -264,9 +264,6 @@ Player::Player(uint32 guid)
     m_achievementMgr(this)
 #endif
 {
-    m_cache = new PlayerCache;
-    m_cache->SetUInt32Value(CACHE_PLAYER_LOWGUID, guid);
-    sObjectMgr.AddPlayerCache(guid, m_cache);
     int i;
 
     //////////////////////////////////////////////////////////////////////////
@@ -517,9 +514,6 @@ void Player::OnLogin()
 
 Player::~Player()
 {
-    sObjectMgr.RemovePlayerCache(getGuidLow());
-    m_cache = nullptr;
-
     if (!ok_to_remove)
     {
         LOG_ERROR("Player deleted from non-logoutplayer!");
@@ -774,8 +768,6 @@ bool Player::Create(CharCreate& charCreateContent)
         m_team = 0;
     else
         m_team = 1;
-
-    m_cache->SetUInt32Value(CACHE_PLAYER_INITIALTEAM, m_team);
 
     // Automatically add the race's taxi hub to the character's taximask at creation time (1 << (taxi_node_id-1))
     // this is defined in table playercreateinfo, field taximask
@@ -1057,23 +1049,6 @@ void Player::Update(unsigned long time_passed)
 
         if (m_drunkTimer > 10000)
             HandleSobering();
-    }
-
-    if (time_passed >= m_pendingPacketTimer)
-    {
-        WorldPacket* pending_packet = m_cache->m_pendingPackets.pop();
-        while (pending_packet != nullptr)
-        {
-            SendPacket(pending_packet);
-            delete pending_packet;
-            pending_packet = m_cache->m_pendingPackets.pop();
-        }
-
-        m_pendingPacketTimer = 100;
-    }
-    else
-    {
-        m_pendingPacketTimer -= static_cast<uint16_t>(time_passed);
     }
 
     if (m_timeSyncTimer > 0)
@@ -2560,8 +2535,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
 
     m_name = field[2].GetString();
-    // Update Cache
-    m_cache->SetStringValue(CACHE_PLAYER_NAME, m_name);
 
     // Load race/class from fields
     setRace(field[3].GetUInt8());
@@ -2584,8 +2557,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         m_bgTeam = m_team = 0;
     else
         m_bgTeam = m_team = 1;
-
-    m_cache->SetUInt32Value(CACHE_PLAYER_INITIALTEAM, m_team);
 
     SetNoseLevel();
 

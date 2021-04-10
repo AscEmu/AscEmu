@@ -286,45 +286,46 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         }
         break;
         case CHAT_MSG_WHISPER:
-            if (const auto player_cache = sObjectMgr.GetPlayerCache(srlPacket.destination.c_str(), false))
+        {
+            if (const auto playerTarget = sObjectMgr.GetPlayer(srlPacket.destination.c_str(), false))
             {
-                const auto target_is_our_faction = _player->getInitialTeam() == player_cache->GetUInt32Value(CACHE_PLAYER_INITIALTEAM);
-                const auto target_is_gm_flagged = player_cache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM);
+                const auto target_is_our_faction = _player->getInitialTeam() == playerTarget->getInitialTeam();
+                const auto target_is_gm_flagged = playerTarget->hasPlayerFlags(PLAYER_FLAG_GM);
                 const auto we_are_gm_flagged = _player->isGMFlagSet();
                 if (target_is_our_faction
                     || worldConfig.player.isInterfactionChatEnabled
                     || target_is_gm_flagged
                     || we_are_gm_flagged)
                 {
-                    const auto target_gm_is_speaking_to_us = player_cache->CountValue64(CACHE_GM_TARGETS, _player->getGuid()) == 0;
+                    const auto target_gm_is_speaking_to_us = playerTarget->isOnGMTargetList(_player->getGuidLow());
                     if (!we_are_gm_flagged && target_is_gm_flagged && target_gm_is_speaking_to_us)
                     {
                         const auto reply = "SYSTEM: This Game Master does not currently have an open ticket from you and did not receive your whisper. Please submit a new GM Ticket request if you need to speak to a GM. This is an automatic message.";
-                        SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, player_cache->GetGUID(), reply, true).serialise().get());
+                        SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, playerTarget->getGuid(), reply, true).serialise().get());
                         break;
                     }
 
-                    const auto we_are_being_ignored = player_cache->CountValue64(CACHE_SOCIAL_IGNORELIST, _player->getGuidLow()) > 0;
+                    const auto we_are_being_ignored = playerTarget->isIgnored(_player->getGuidLow());
                     if (we_are_being_ignored)
                     {
-                        SendPacket(SmsgMessageChat(CHAT_MSG_IGNORED, LANG_UNIVERSAL, player_cache->GetGUID(), srlPacket.message, we_are_gm_flagged).serialise().get());
+                        SendPacket(SmsgMessageChat(CHAT_MSG_IGNORED, LANG_UNIVERSAL, playerTarget->getGuid(), srlPacket.message, we_are_gm_flagged).serialise().get());
                         break;
                     }
 
-                    player_cache->SendPacket(*SmsgMessageChat(CHAT_MSG_WHISPER, messageLanguage, _player->getGuid(), srlPacket.message, we_are_gm_flagged).serialise().get());
+                    playerTarget->SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER, messageLanguage, _player->getGuid(), srlPacket.message, we_are_gm_flagged).serialise().get());
                     if (messageLanguage != LANG_ADDON)
                         // TODO Verify should this be LANG_UNIVERSAL?
-                        SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, player_cache->GetGUID(), srlPacket.message, we_are_gm_flagged).serialise().get());
+                        SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, playerTarget->getGuid(), srlPacket.message, we_are_gm_flagged).serialise().get());
 
-                    if (player_cache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_AFK))
+                    if (playerTarget->hasPlayerFlags(PLAYER_FLAG_AFK))
                     {
-                        std::string reason = player_cache->GetStringValue(CACHE_AFK_DND_REASON);
-                        SendPacket(SmsgMessageChat(CHAT_MSG_AFK, LANG_UNIVERSAL, player_cache->GetGUID(), reason, false).serialise().get());
+                        std::string reason = playerTarget->getAFKReason();
+                        SendPacket(SmsgMessageChat(CHAT_MSG_AFK, LANG_UNIVERSAL, playerTarget->getGuid(), reason, false).serialise().get());
                     }
-                    else if (player_cache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_DND))
+                    else if (playerTarget->hasPlayerFlags(PLAYER_FLAG_DND))
                     {
-                        std::string reason = player_cache->GetStringValue(CACHE_AFK_DND_REASON);
-                        SendPacket(SmsgMessageChat(CHAT_MSG_DND, LANG_UNIVERSAL, player_cache->GetGUID(), reason, false).serialise().get());
+                        std::string reason = playerTarget->getAFKReason();
+                        SendPacket(SmsgMessageChat(CHAT_MSG_DND, LANG_UNIVERSAL, playerTarget->getGuid(), reason, false).serialise().get());
                     }
                 }
             }
@@ -332,7 +333,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             {
                 SendPacket(SmsgChatPlayerNotFound(srlPacket.destination).serialise().get());
             }
-            break;
+        } break;
         case CHAT_MSG_CHANNEL:
             if (is_gm_command)
                 break;
@@ -342,11 +343,11 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 
             break;
         case CHAT_MSG_AFK:
-            _player->SetAFKReason(srlPacket.message);
+            _player->setAFKReason(srlPacket.message);
             _player->toggleAfk();
             break;
         case CHAT_MSG_DND:
-            _player->SetAFKReason(srlPacket.message);
+            _player->setAFKReason(srlPacket.message);
             _player->toggleDnd();
             break;
         case CHAT_MSG_BATTLEGROUND:
@@ -708,69 +709,70 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         break;
         case CHAT_MSG_WHISPER:
         {
-            PlayerCache* playercache = sObjectMgr.GetPlayerCache(to.c_str(), false);
-            if (playercache == nullptr)
+            if (const auto playerTarget = sObjectMgr.GetPlayer(to.c_str(), false))
             {
-                data = new WorldPacket(SMSG_CHAT_PLAYER_NOT_FOUND, to.length() + 1);
-                *data << to;
-                SendPacket(data);
-                delete data;
-                break;
-            }
+                if (playerTarget == nullptr)
+                {
+                    data = new WorldPacket(SMSG_CHAT_PLAYER_NOT_FOUND, to.length() + 1);
+                    *data << to;
+                    SendPacket(data);
+                    delete data;
+                    break;
+                }
 
-            if (_player->getInitialTeam() != playercache->GetUInt32Value(CACHE_PLAYER_INITIALTEAM) && !worldConfig.player.isInterfactionChatEnabled && !playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) && !_player->isGMFlagSet())
-            {
-                WorldPacket response(SMSG_CHAT_PLAYER_NOT_FOUND, to.length() + 1);
-                response << to;
-                SendPacket(&response);
-                break;
-            }
+                if (_player->getInitialTeam() != playerTarget->getInitialTeam() && !worldConfig.player.isInterfactionChatEnabled && !playerTarget->hasPlayerFlags(PLAYER_FLAG_GM) && !_player->isGMFlagSet())
+                {
+                    WorldPacket response(SMSG_CHAT_PLAYER_NOT_FOUND, to.length() + 1);
+                    response << to;
+                    SendPacket(&response);
+                    break;
+                }
 
-            if (!HasPermissions() && playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) && playercache->CountValue64(CACHE_GM_TARGETS, _player->getGuid()) == 0)
-            {
-                std::string Reply = "The Game Master can not receive messages from you. Please submit a Ticket request if you need to speak to a GM.";
-                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, Reply.c_str(), playercache->GetGUID(), 4);
-                SendPacket(data);
-                delete data;
-                break;
-            }
+                if (!HasPermissions() && playerTarget->hasPlayerFlags(PLAYER_FLAG_GM) && playerTarget->isOnGMTargetList(_player->getGuidLow()))
+                {
+                    std::string Reply = "The Game Master can not receive messages from you. Please submit a Ticket request if you need to speak to a GM.";
+                    data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, Reply.c_str(), playerTarget->getGuid(), 4);
+                    SendPacket(data);
+                    delete data;
+                    break;
+                }
 
-            if (playercache->CountValue64(CACHE_SOCIAL_IGNORELIST, _player->getGuidLow()) > 0)
-            {
-                data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, msg.c_str(), playercache->GetGUID(), chatTag);
-                SendPacket(data);
-                delete data;
-                break;
-            }
-            else
-            {
-                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER, lang, msg.c_str(), _player->getGuid(), chatTag);
-                playercache->SendPacket(data);
-            }
+                if (playerTarget->isIgnored(_player->getGuidLow()))
+                {
+                    data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, msg.c_str(), playerTarget->getGuid(), chatTag);
+                    SendPacket(data);
+                    delete data;
+                    break;
+                }
+                else
+                {
+                    data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER, lang, msg.c_str(), _player->getGuid(), chatTag);
+                    playerTarget->SendPacket(data);
+                }
 
-            if (lang != LANG_ADDON)
-            {
-                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, msg.c_str(), playercache->GetGUID(), playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
-                SendPacket(data);
-                delete data;
-            }
+                if (lang != LANG_ADDON)
+                {
+                    data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, msg.c_str(), playerTarget->getGuid(), playerTarget->hasPlayerFlags(PLAYER_FLAG_GM) ? 4 : 0);
+                    SendPacket(data);
+                    delete data;
+                }
 
-            if (playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_AFK))
-            {
-                std::string reason = playercache->GetStringValue(CACHE_AFK_DND_REASON);
+                if (playerTarget->hasPlayerFlags(PLAYER_FLAG_AFK))
+                {
+                    std::string reason = playerTarget->getAFKReason();
 
-                data = sChatHandler.FillMessageData(CHAT_MSG_AFK, LANG_UNIVERSAL, reason.c_str(), playercache->GetGUID(), chatTag);
-                SendPacket(data);
-                delete data;
+                    data = sChatHandler.FillMessageData(CHAT_MSG_AFK, LANG_UNIVERSAL, reason.c_str(), playerTarget->getGuid(), chatTag);
+                    SendPacket(data);
+                    delete data;
+                }
+                else if (playerTarget->hasPlayerFlags(PLAYER_FLAG_DND))
+                {
+                    std::string reason = playerTarget->getAFKReason();
+                    data = sChatHandler.FillMessageData(CHAT_MSG_DND, LANG_UNIVERSAL, reason.c_str(), playerTarget->getGuid(), playerTarget->hasPlayerFlags(PLAYER_FLAG_GM) ? 4 : 0);
+                    SendPacket(data);
+                    delete data;
+                }
             }
-            else if (playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_DND))
-            {
-                std::string reason = playercache->GetStringValue(CACHE_AFK_DND_REASON);
-                data = sChatHandler.FillMessageData(CHAT_MSG_DND, LANG_UNIVERSAL, reason.c_str(), playercache->GetGUID(), playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
-                SendPacket(data);
-                delete data;
-            }
-
         }
         break;
         case CHAT_MSG_CHANNEL:
@@ -785,7 +787,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             std::string reason;
             recvPacket >> reason;
 
-            _player->SetAFKReason(reason);
+            _player->setAFKReason(reason);
 
             if (_player->hasPlayerFlags(PLAYER_FLAG_AFK))
             {
@@ -809,7 +811,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         {
             std::string reason;
             recvPacket >> reason;
-            _player->SetAFKReason(reason);
+            _player->setAFKReason(reason);
 
             if (_player->hasPlayerFlags(PLAYER_FLAG_DND))
                 _player->removePlayerFlags(PLAYER_FLAG_DND);

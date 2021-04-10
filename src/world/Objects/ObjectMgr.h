@@ -230,7 +230,6 @@ typedef std::pair<SkillLineAbilityMap::const_iterator, SkillLineAbilityMap::cons
 #endif
 
 // finally we are here, the base class of this file ;)
-class PlayerCache;
 class SERVER_DECL ObjectMgr : public EventableObject
 {
     private:
@@ -264,7 +263,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         typedef std::unordered_map<uint32, Trainer*>                                                TrainerMap;
         typedef std::unordered_map<uint32, ReputationModifier*>                                     ReputationModMap;
         typedef std::unordered_map<uint32, Corpse*>                                                 CorpseMap;
-        typedef std::unordered_map<uint32, PlayerCache*>                                            PlayerCacheMap;
 
         // Map typedef's
         typedef std::map<uint32, LevelInfo*>                                                        LevelMap;
@@ -274,17 +272,8 @@ class SERVER_DECL ObjectMgr : public EventableObject
         typedef std::multimap <uint32, uint32>                                                      BCEntryStorage;
         typedef std::map<uint32, SpellTargetConstraint*>                                            SpellTargetConstraintMap;
 
-        // object holders
-        PlayerCacheMap m_playerCache;
-        FastMutex m_playerCacheLock;
-
         Player* GetPlayer(const char* name, bool caseSensitive = true);
         Player* GetPlayer(uint32 guid);
-
-        void AddPlayerCache(uint32 guid, PlayerCache* cache);
-        void RemovePlayerCache(uint32 guid);
-        PlayerCache* GetPlayerCache(uint32 guid);
-        PlayerCache* GetPlayerCache(const char* name, bool caseSensitive = true);
 
         CorpseMap m_corpses;
         Mutex _corpseslock;

@@ -253,9 +253,6 @@ void Player::setPlayerFlags(uint32_t flags)
     return;
 #endif
 
-    // Update player cache
-    m_cache->SetUInt32Value(CACHE_PLAYER_FLAGS, getPlayerFlags());
-
     // Update player flags also to group
     if (!IsInWorld() || getGroup() == nullptr)
         return;
@@ -4046,4 +4043,25 @@ void Player::setVisibleItemFields(uint32_t slot, Item* item)
             setVisibleItemEnchantment(slot, i, 0);
 #endif
     }
+}
+
+void Player::addToGMTargetList(uint32_t guid)
+{
+    std::lock_guard<std::mutex> guard(m_lockGMTargetList);
+    m_gmPlayerTargetList.push_back(guid);
+}
+
+void Player::removeFromGMTargetList(uint32_t guid)
+{
+    std::lock_guard<std::mutex> guard(m_lockGMTargetList);
+    std::remove(m_gmPlayerTargetList.begin(), m_gmPlayerTargetList.end(), guid);
+}
+
+bool Player::isOnGMTargetList(uint32_t guid) const
+{
+    std::lock_guard<std::mutex> guard(m_lockGMTargetList);
+    if (std::find(m_gmPlayerTargetList.begin(), m_gmPlayerTargetList.end(), guid) != m_gmPlayerTargetList.end())
+        return true;
+
+    return false;
 }

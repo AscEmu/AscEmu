@@ -21,7 +21,6 @@
 #pragma once
 
 #include "Units/Players/PlayerDefines.hpp"
-#include "Units/Players/PlayerCache.h"
 #include "Units/Stats.h"
 #include "Server/Definitions.h"
 #include "Management/QuestDefines.hpp"
@@ -1264,10 +1263,22 @@ public:
 
     void setVisibleItemFields(uint32_t slot, Item* item);
 
+    void setAFKReason(std::string reason) { afkReason = reason; }
+    std::string getAFKReason() const { return afkReason; }
+
+    void addToGMTargetList(uint32_t guid);
+    void removeFromGMTargetList(uint32_t guid);
+    bool isOnGMTargetList(uint32_t guid) const;
+
 private:
     uint16_t m_spellAreaUpdateTimer = 1000;
     uint16_t m_pendingPacketTimer = 100;
     uint16_t m_partyUpdateTimer = 1000;
+
+    std::string afkReason;
+
+    std::vector<uint32_t> m_gmPlayerTargetList;
+    mutable std::mutex m_lockGMTargetList;
 
 public:
     //MIT End
@@ -1282,7 +1293,6 @@ public:
 
         Player(uint32 guid);
         ~Player();
-    PlayerCache* m_cache;
 
         void EventGroupFullUpdate();
 
@@ -1405,7 +1415,6 @@ public:
         void Update(unsigned long time_passed);
         void BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag);
         void BuildPetSpellList(WorldPacket & data);
-        void SetAFKReason(std::string reason) { m_cache->SetStringValue(CACHE_AFK_DND_REASON, reason); };
 
         void GiveXP(uint32 xp, const uint64 & guid, bool allowbonus);       /// to stop rest xp being given
         void ModifyBonuses(uint32 type, int32 val, bool apply);
