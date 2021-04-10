@@ -2918,12 +2918,6 @@ void Object::PushToWorld(MapMgr* mgr)
     //there's no need to set the InstanceId before calling PushToWorld() because it's already set here.
     m_instanceId = mgr->GetInstanceID();
 
-    if (isPlayer())
-    {
-        static_cast<Player*>(this)->m_cache->SetInt32Value(CACHE_MAPID, m_mapId);
-        static_cast<Player*>(this)->m_cache->SetInt32Value(CACHE_INSTANCEID, m_instanceId);
-    }
-
     m_mapMgr = mgr;
     OnPrePushToWorld();
 
@@ -3344,7 +3338,6 @@ void Object::SetZoneId(uint32 newZone)
 
     if (isPlayer())
     {
-        static_cast<Player*>(this)->m_cache->SetUInt32Value(CACHE_PLAYER_ZONEID, newZone);
         if (static_cast<Player*>(this)->getGroup())
             static_cast<Player*>(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_ZONE);
     }

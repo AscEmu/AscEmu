@@ -28,12 +28,9 @@
 
 enum FourByteFields
 {
-    CACHE_MAPID,
-    CACHE_INSTANCEID,
     CACHE_PLAYER_LOWGUID,
     CACHE_PLAYER_FLAGS,
     CACHE_PLAYER_INITIALTEAM,
-    CACHE_PLAYER_ZONEID,
     NUM_FOURBYTE_CACHE_FIELDS
 };
 
@@ -70,12 +67,6 @@ class PlayerCache
 
         PlayerCache()
         {
-            for (uint8 i = 0; i < NUM_FOURBYTE_CACHE_FIELDS; ++i)
-                m_fields[i].u = 0;
-
-            //default values
-            SetInt32Value(CACHE_MAPID, -1);
-            SetInt32Value(CACHE_INSTANCEID, -1);
         }
 
         ~PlayerCache()
@@ -101,7 +92,7 @@ class PlayerCache
         std::string m_stringfields[NUM_STRING_CACHE_FIELDS];
 
         /// Four byte cache (ints, floats)
-        CacheField m_fields[NUM_FOURBYTE_CACHE_FIELDS];
+        CacheField m_fields[NUM_FOURBYTE_CACHE_FIELDS] = {0};
 
         //Set uint64 cache (valid gm talk targets, ignore lists, friend lists)
         FastMutex m_set64lock;

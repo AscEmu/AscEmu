@@ -9465,6 +9465,7 @@ void Player::Social_AddFriend(const char* name, const char* note)
     }
 
     // are we ourselves?
+    // Zyres: Wow... are you sure buddy?
     if (playerCache != nullptr && playerCache->GetUInt32Value(CACHE_PLAYER_LOWGUID) == getGuidLow())
     {
         m_session->SendPacket(SmsgFriendStatus(FRIEND_SELF, getGuid()).serialise().get());
