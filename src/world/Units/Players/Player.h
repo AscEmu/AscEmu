@@ -2341,7 +2341,6 @@ public:
 
     public:
 
-        bool Social_IsIgnoring(PlayerInfo* m_info);
         bool Social_IsIgnoring(uint32 guid);
 
         void Social_TellFriendsOnline();

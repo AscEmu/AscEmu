@@ -9597,11 +9597,6 @@ void Player::Social_RemoveIgnore(uint32 guid)
                               getGuidLow(), (uint32)guid);
 }
 
-bool Player::Social_IsIgnoring(PlayerInfo* m_info)
-{
-    return m_cache->CountValue64(CACHE_SOCIAL_IGNORELIST, m_info->guid) > 0;
-}
-
 bool Player::Social_IsIgnoring(uint32 guid)
 {
     return m_cache->CountValue64(CACHE_SOCIAL_IGNORELIST, guid) > 0;
