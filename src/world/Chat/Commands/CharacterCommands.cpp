@@ -92,7 +92,7 @@ bool ChatHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_ses
         BlueSystemMessage(m_session, "You leveled yourself to %u", levels);
     }
 
-    player_target->Social_TellFriendsOnline();
+    player_target->sendFriendStatus(true);
 
     return true;
 }

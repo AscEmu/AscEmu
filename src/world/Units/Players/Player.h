@@ -41,6 +41,7 @@
 #include "Management/ObjectUpdates/SplineManager.h"
 #include "Management/ObjectUpdates/UpdateManager.h"
 #include "Data/WoWPlayer.hpp"
+#include <mutex>
 
 struct CharCreate;
 class QuestLogEntry;
@@ -1148,6 +1149,43 @@ public:
 
 private:
     QuestLogEntry* m_questlog[MAX_QUEST_LOG_SIZE] = {nullptr};
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Social
+
+    struct SocialFriends
+    {
+        uint32_t friendGuid = 0;
+        mutable std::string note;
+    };
+
+    // Initialise Database values
+    void loadFriendList();
+    void loadFriendedByOthersList();
+    void loadIgnoreList();
+
+    void addToFriendList(std::string name, std::string note);
+    void removeFromFriendList(uint32_t guid);
+    void addNoteToFriend(uint32_t guid, std::string note);
+    bool isFriended(uint32_t guid) const;
+
+    void sendFriendStatus(bool comesOnline);
+    void sendFriendLists(uint32_t flags);
+
+    void addToIgnoreList(std::string name);
+    void removeFromIgnoreList(uint32_t guid);
+    bool isIgnored(uint32_t guid) const;
+
+private:
+    std::vector<SocialFriends> m_socialIFriends = {};
+    mutable std::mutex m_mutexFriendList;
+
+    std::vector<uint32_t> m_socialFriendedByGuids = {};
+    mutable std::mutex m_mutexFriendedBy;
+
+    std::vector<uint32_t> m_socialIgnoring = {};
+    mutable std::mutex m_mutexIgnoreList;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -2324,27 +2362,6 @@ public:
         uint32 m_tradeSequence;
         bool m_changingMaps;
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // SOCIAL
-        /////////////////////////////////////////////////////////////////////////////////////////
-    private:
-
-        void Social_SendFriendList(uint32 flag);
-
-        void Social_AddFriend(const char* name, const char* note);
-        void Social_RemoveFriend(uint32 guid);
-
-        void Social_AddIgnore(const char* name);
-        void Social_RemoveIgnore(uint32 guid);
-
-        void Social_SetNote(uint32 guid, const char* note);
-
-    public:
-
-        bool Social_IsIgnoring(uint32 guid);
-
-        void Social_TellFriendsOnline();
-        void Social_TellFriendsOffline();
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // end social

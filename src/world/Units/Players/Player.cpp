@@ -53,6 +53,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAuctionCommandResult.h"
 #include "Server/Packets/SmsgClearCooldown.h"
 #include "Server/World.h"
+#include "Server/Packets/SmsgContactList.h"
 #include "Spell/Definitions/AuraInterruptFlags.h"
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Definitions/Spec.h"
@@ -1308,7 +1309,7 @@ void Player::sendChatPacket(uint32_t type, uint32_t language, const char* messag
     for (const auto& itr : getInRangePlayersSet())
     {
         Player* p = static_cast<Player*>(itr);
-        if (p && p->GetSession() && !p->Social_IsIgnoring(getGuidLow()) && (p->GetPhase() & senderPhase) != 0)
+        if (p && p->GetSession() && !p->isIgnored(getGuidLow()) && (p->GetPhase() & senderPhase) != 0)
         {
             WorldPacket data = p->buildChatMessagePacket(p, type, language, message, guid, flag);
             p->SendPacket(&data);
@@ -3233,6 +3234,301 @@ QuestLogEntry* Player::getQuestLogBySlotId(uint32_t slotId) const
         return m_questlog[slotId];
 
     return nullptr;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Social
+void Player::loadFriendList()
+{
+    if (auto* result = CharacterDatabase.Query("SELECT * FROM social_friends WHERE character_guid = %u", getGuidLow()))
+    {
+        do
+        {
+            SocialFriends socialFriend;
+
+            auto* const socialField = result->Fetch();
+            socialFriend.friendGuid = socialField[1].GetUInt32();
+            socialFriend.note = socialField[2].GetString();
+
+            m_socialIFriends.push_back(socialFriend);
+
+        } while (result->NextRow());
+
+        delete result;
+    }
+}
+
+void Player::loadFriendedByOthersList()
+{
+    if (auto* result = CharacterDatabase.Query("SELECT character_guid FROM social_friends WHERE friend_guid = %u", getGuidLow()))
+    {
+        do
+        {
+            auto* const socialField = result->Fetch();
+            uint32_t friendedByGuid= socialField[0].GetUInt32();
+
+            m_socialFriendedByGuids.push_back(friendedByGuid);
+
+        } while (result->NextRow());
+
+        delete result;
+    }
+}
+
+void Player::loadIgnoreList()
+{
+    if (auto* result = CharacterDatabase.Query("SELECT * FROM social_ignores WHERE character_guid = %u", getGuidLow()))
+    {
+        do
+        {
+            auto* const ignoreField = result->Fetch();
+            uint32_t ignoreGuid = ignoreField[1].GetUInt32();
+
+            m_socialIgnoring.push_back(ignoreGuid);
+
+        } while (result->NextRow());
+
+        delete result;
+    }
+}
+
+void Player::addToFriendList(std::string name, std::string note)
+{
+    if (auto* targetPlayer = sObjectMgr.GetPlayer(name.c_str()))
+    {
+        // we can not add us ;)
+        if (targetPlayer->getGuidLow() == getGuidLow())
+        {
+            m_session->SendPacket(SmsgFriendStatus(FRIEND_SELF, getGuid()).serialise().get());
+            return;
+        }
+
+        if (targetPlayer->isGMFlagSet())
+        {
+            m_session->SendPacket(SmsgFriendStatus(FRIEND_NOT_FOUND).serialise().get());
+            return;
+        }
+
+        if (isFriended(targetPlayer->getGuidLow()))
+        {
+            m_session->SendPacket(SmsgFriendStatus(FRIEND_ALREADY, targetPlayer->getGuidLow()).serialise().get());
+            return;
+        }
+
+        if (targetPlayer->getPlayerInfo()->team != getInitialTeam() && m_session->permissioncount == 0 && !worldConfig.player.isInterfactionFriendsEnabled)
+        {
+            m_session->SendPacket(SmsgFriendStatus(FRIEND_ENEMY, targetPlayer->getGuidLow()).serialise().get());
+            return;
+        }
+
+        if (targetPlayer->GetSession())
+        {
+            m_session->SendPacket(SmsgFriendStatus(FRIEND_ADDED_ONLINE, targetPlayer->getGuidLow(), note, 1,
+                targetPlayer->GetZoneId(), targetPlayer->getLevel(), targetPlayer->getClass()).serialise().get());
+        }
+        else
+        {
+            m_session->SendPacket(SmsgFriendStatus(FRIEND_ADDED_OFFLINE, targetPlayer->getGuidLow()).serialise().get());
+        }
+
+        CharacterDatabase.Execute("INSERT INTO social_friends VALUES(%u, %u, \'%s\')",
+            getGuidLow(), targetPlayer->getGuidLow(), !note.empty() ? CharacterDatabase.EscapeString(std::string(note)).c_str() : "");
+
+        SocialFriends socialFriend;
+        socialFriend.friendGuid = targetPlayer->getGuidLow();
+        socialFriend.note = note;
+
+        std::lock_guard<std::mutex> guard(m_mutexFriendList);
+        m_socialIFriends.push_back(socialFriend);
+    }
+    else
+    {
+        m_session->SendPacket(SmsgFriendStatus(FRIEND_NOT_FOUND).serialise().get());
+    }
+}
+
+void Player::removeFromFriendList(uint32_t guid)
+{
+    if (isFriended(guid))
+    {
+        m_session->SendPacket(SmsgFriendStatus(FRIEND_REMOVED, guid).serialise().get());
+
+        CharacterDatabase.Execute("DELETE FROM social_friends WHERE character_guid = %u AND friend_guid = %u", getGuidLow(), guid);
+
+        std::lock_guard<std::mutex> guard(m_mutexFriendList);
+        m_socialIFriends.erase(std::remove_if(m_socialIFriends.begin(), m_socialIFriends.end(), [&](SocialFriends const& friends) {
+                return friends.friendGuid == guid;
+            }),
+            m_socialIFriends.end());
+    }
+    else
+    {
+        m_session->SendPacket(SmsgFriendStatus(FRIEND_NOT_FOUND).serialise().get());
+    }
+}
+
+void Player::addNoteToFriend(uint32_t guid, std::string note)
+{
+    std::lock_guard<std::mutex> guard(m_mutexFriendList);
+    for (const auto friends : m_socialIFriends)
+    {
+        if (friends.friendGuid == guid)
+        {
+            friends.note = note;
+            CharacterDatabase.Execute("UPDATE social_friends SET note = \'%s\' WHERE character_guid = %u AND friend_guid = %u",
+                !note.empty() ? CharacterDatabase.EscapeString(note).c_str() : "", getGuidLow(), guid);
+        }
+    }
+}
+
+bool Player::isFriended(uint32_t guid) const
+{
+    std::lock_guard<std::mutex> guard(m_mutexFriendList);
+    for (const auto friends : m_socialIFriends)
+    {
+        if (friends.friendGuid == guid)
+            return true;
+    }
+    return false;
+}
+
+void Player::sendFriendStatus(bool comesOnline)
+{
+    std::lock_guard<std::mutex> guard(m_mutexFriendedBy);
+    if (!m_socialFriendedByGuids.empty())
+    {
+        for (auto friendedGuids : m_socialFriendedByGuids)
+        {
+            if (auto* targetPlayer = sObjectMgr.GetPlayer(friendedGuids))
+            {
+                if (targetPlayer->GetSession())
+                {
+                    if (comesOnline)
+                        targetPlayer->SendPacket(SmsgFriendStatus(FRIEND_ONLINE, getGuid(), "", 1, GetAreaID(), getLevel(), getClass()).serialise().get());
+                    else
+                        targetPlayer->SendPacket(SmsgFriendStatus(FRIEND_OFFLINE, getGuid()).serialise().get());
+                }
+            }
+        }
+    }
+}
+
+void Player::sendFriendLists(uint32_t flags)
+{
+    std::vector<SmsgContactListMember> contactMemberList;
+
+    if (flags & 0x01)    // friend
+    {
+        uint32_t maxCount = 0;
+
+        std::lock_guard<std::mutex> guard(m_mutexFriendList);
+        for (auto friends : m_socialIFriends)
+        {
+            SmsgContactListMember friendListMember;
+            friendListMember.guid = friends.friendGuid;
+            friendListMember.flag = 0x01;
+            friendListMember.note = friends.note;
+
+            if (auto* plr = sObjectMgr.GetPlayer(friends.friendGuid))
+            {
+                friendListMember.isOnline = 1;
+                friendListMember.zoneId = plr->GetZoneId();
+                friendListMember.level = plr->getLevel();
+                friendListMember.playerClass = plr->getClass();
+            }
+            else
+            {
+                friendListMember.isOnline = 0;
+            }
+
+            contactMemberList.push_back(friendListMember);
+            ++maxCount;
+
+            if (maxCount >= 50)
+                break;
+        }
+
+    }
+
+    if (flags & 0x02)    // ignore
+    {
+        uint32_t maxCount = 0;
+
+        std::lock_guard<std::mutex> guard(m_mutexIgnoreList);
+        for (auto ignoredGuid : m_socialIgnoring)
+        {
+            SmsgContactListMember ignoreListMember;
+            ignoreListMember.guid = ignoredGuid;
+            ignoreListMember.flag = 0x02;
+            ignoreListMember.note = "";
+
+            contactMemberList.push_back(ignoreListMember);
+            ++maxCount;
+
+            if (maxCount >= 50)
+                break;
+        }
+    }
+
+    SendPacket(SmsgContactList(flags, contactMemberList).serialise().get());
+}
+
+void Player::addToIgnoreList(std::string name)
+{
+    if (auto* targetPlayer = sObjectMgr.GetPlayer(name.c_str()))
+    {
+        // we can not add us ;)
+        if (targetPlayer->getGuidLow() == getGuidLow())
+        {
+            m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_SELF, getGuid()).serialise().get());
+            return;
+        }
+
+        if (targetPlayer->isGMFlagSet())
+        {
+            m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_NOT_FOUND).serialise().get());
+            return;
+        }
+
+        if (isIgnored(targetPlayer->getGuidLow()))
+        {
+            m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_ALREADY, targetPlayer->getGuidLow()).serialise().get());
+            return;
+        }
+
+        CharacterDatabase.Execute("INSERT INTO social_ignores VALUES(%u, %u)", getGuidLow(), targetPlayer->getGuidLow());
+
+        std::lock_guard<std::mutex> guard(m_mutexIgnoreList);
+        m_socialIgnoring.push_back(targetPlayer->getGuidLow());
+    }
+    else
+    {
+        m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_NOT_FOUND).serialise().get());
+    }
+}
+
+void Player::removeFromIgnoreList(uint32_t guid)
+{
+    if (isIgnored(guid))
+    {
+        CharacterDatabase.Execute("DELETE FROM social_ignores WHERE character_guid = %u AND ignore_guid = %u", getGuidLow(), guid);
+
+        std::lock_guard<std::mutex> guard(m_mutexIgnoreList);
+        std::remove(m_socialIgnoring.begin(), m_socialIgnoring.end(), guid);
+    }
+    else
+    {
+        m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_NOT_FOUND).serialise().get());
+    }
+}
+
+bool Player::isIgnored(uint32_t guid) const
+{
+    std::lock_guard<std::mutex> guard(m_mutexIgnoreList);
+    if (std::find(m_socialIgnoring.begin(), m_socialIgnoring.end(), guid) != m_socialIgnoring.end())
+        return true;
+
+    return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

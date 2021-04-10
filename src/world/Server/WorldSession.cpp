@@ -334,7 +334,7 @@ void WorldSession::LogoutPlayer(bool Save)
                 _player->interruptSpellWithSpellType(CurrentSpellType(i));
         }
 
-        _player->Social_TellFriendsOffline();
+        _player->sendFriendStatus(false);
 
         // Decrement the global player count
         sWorld.decrementPlayerCount(_player->getTeam());

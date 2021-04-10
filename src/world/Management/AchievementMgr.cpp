@@ -456,7 +456,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         for (const auto& inRangeItr : GetPlayer()->getInRangePlayersSet())
         {
             Player* p = static_cast<Player*>(inRangeItr);
-            if (p && p->GetSession() && !p->Social_IsIgnoring(GetPlayer()->getGuidLow()))
+            if (p && p->GetSession() && !p->isIgnored(GetPlayer()->getGuidLow()))
             {
                 // check if achievement message has already been sent to this player (in guild or group)
                 alreadySent = false;

@@ -646,7 +646,7 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
         selected_player->m_isGmInvisible = false;
         selected_player->bInvincible = false;
 
-        selected_player->Social_TellFriendsOnline();
+        selected_player->sendFriendStatus(true);
 
         if (selected_player->m_bg)
             selected_player->m_bg->RemoveInvisGM();
@@ -666,7 +666,7 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
         selected_player->m_isGmInvisible = true;
         selected_player->bInvincible = true;
 
-        selected_player->Social_TellFriendsOffline();
+        selected_player->sendFriendStatus(false);
 
         if (selected_player->m_bg)
             selected_player->m_bg->AddInvisGM();

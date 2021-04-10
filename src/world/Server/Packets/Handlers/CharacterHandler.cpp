@@ -718,8 +718,8 @@ void WorldSession::fullLogin(Player* player)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // send social packets and lists
-    player->Social_TellFriendsOnline();
-    player->Social_SendFriendList(7);
+    player->sendFriendStatus(true);
+    player->sendFriendLists(7);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // dungeon and raid setup

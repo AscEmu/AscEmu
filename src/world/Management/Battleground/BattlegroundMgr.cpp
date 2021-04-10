@@ -49,7 +49,7 @@ void CBattlegroundManager::initialize()
 
     sEventMgr.AddEvent(this, &CBattlegroundManager::EventQueueUpdate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 15000, 0, 0);
 
-    for (uint8 i = 0; i < BATTLEGROUND_NUM_TYPES; i++)
+    for (uint32_t i = 0; i < BATTLEGROUND_NUM_TYPES; ++i)
     {
         m_instances[i].clear();
         m_maxBattlegroundId[i] = 0;

@@ -3203,42 +3203,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     m_mailBox.Load(results[PlayerQuery::Mailbox].result);
 
     // SOCIAL
-    if (results[PlayerQuery::Friends].result != nullptr)            // this query is "who are our friends?"
-    {
-        result = results[PlayerQuery::Friends].result;
-        do
-        {
-            auto socialField = result->Fetch();
-            uint32 friendguid = socialField[0].GetUInt32();
-            const char* str = socialField[1].GetString();
-            char* note = nullptr;
-            if (strlen(str) > 0)
-                note = strdup(str);
-            m_cache->InsertValue64(CACHE_SOCIAL_FRIENDLIST, friendguid, note);
-        }
-        while (result->NextRow());
-    }
-
-    if (results[PlayerQuery::FriendsFor].result != nullptr)            // this query is "who has us in their friends?"
-    {
-        result = results[PlayerQuery::FriendsFor].result;
-        do
-        {
-            m_cache->InsertValue64(CACHE_SOCIAL_HASFRIENDLIST, result->Fetch()[0].GetUInt32());
-        }
-        while (result->NextRow());
-    }
-
-    if (results[PlayerQuery::Ignoring].result != nullptr)        // this query is "who are we ignoring"
-    {
-        result = results[PlayerQuery::Ignoring].result;
-        do
-        {
-            uint32 guid = result->Fetch()[0].GetUInt32();
-            m_cache->InsertValue64(CACHE_SOCIAL_IGNORELIST, guid);
-        }
-        while (result->NextRow());
-    }
+    loadFriendList();
+    loadFriendedByOthersList();
+    loadIgnoreList();
 
     // END SOCIAL
 
@@ -9443,258 +9410,6 @@ void Player::_LoadPlayerCooldowns(QueryResult* result)
     while (result->NextRow());
 }
 
-void Player::Social_AddFriend(const char* name, const char* note)
-{
-    // lookup the player
-    PlayerInfo* playerInfo = sObjectMgr.GetPlayerInfoByName(name);
-    PlayerCache* playerCache = sObjectMgr.GetPlayerCache(name, false);
-
-    if (playerInfo == nullptr || (playerCache != nullptr && playerCache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM)))
-    {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_NOT_FOUND).serialise().get());
-
-        return;
-    }
-
-    // team check
-    if (playerInfo->team != getInitialTeam() && m_session->permissioncount == 0 && !worldConfig.player.isInterfactionFriendsEnabled)
-    {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_ENEMY, playerInfo->guid).serialise().get());
-
-        return;
-    }
-
-    // are we ourselves?
-    // Zyres: Wow... are you sure buddy?
-    if (playerCache != nullptr && playerCache->GetUInt32Value(CACHE_PLAYER_LOWGUID) == getGuidLow())
-    {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_SELF, getGuid()).serialise().get());
-
-        return;
-    }
-
-    if (m_cache->CountValue64(CACHE_SOCIAL_FRIENDLIST, playerInfo->guid))
-    {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_ALREADY, playerInfo->guid).serialise().get());
-
-        return;
-    }
-
-    if (playerCache != nullptr)   //hes online if he has a cache
-    {
-        playerCache->InsertValue64(CACHE_SOCIAL_HASFRIENDLIST, getGuidLow());
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_ADDED_ONLINE, playerCache->GetUInt32Value(CACHE_PLAYER_LOWGUID), note ? note : "", 1,
-            playerInfo->m_loggedInPlayer->GetZoneId(), playerInfo->lastLevel, playerInfo->cl).serialise().get());
-    }
-    else
-    {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_ADDED_OFFLINE, playerInfo->guid).serialise().get());
-    }
-
-    char* notedup = note == nullptr ? NULL : strdup(note);
-    m_cache->InsertValue64(CACHE_SOCIAL_FRIENDLIST, playerInfo->guid, notedup);
-
-    // dump into the db
-    CharacterDatabase.Execute("INSERT INTO social_friends VALUES(%u, %u, \'%s\')",
-                              getGuidLow(), playerInfo->guid, note ? CharacterDatabase.EscapeString(std::string(note)).c_str() : "");
-
-}
-
-void Player::Social_RemoveFriend(uint32 guid)
-{
-    // are we ourselves?
-    if (guid == getGuidLow())
-    {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_SELF, getGuid()).serialise().get());
-        return;
-    }
-
-    //free note first
-    m_cache->AcquireLock64(CACHE_SOCIAL_FRIENDLIST);
-    PlayerCacheMap::iterator itr = m_cache->Find64(CACHE_SOCIAL_FRIENDLIST, guid);
-    if (itr != m_cache->End64(CACHE_SOCIAL_FRIENDLIST) && itr->second != nullptr)
-    {
-        free(itr->second);
-        itr->second = nullptr;
-    }
-    m_cache->RemoveValue64(CACHE_SOCIAL_FRIENDLIST, guid);
-    m_cache->ReleaseLock64(CACHE_SOCIAL_FRIENDLIST);
-
-    PlayerCache* cache = sObjectMgr.GetPlayerCache((uint32)guid);
-    if (cache != nullptr)
-    {
-        cache->RemoveValue64(CACHE_SOCIAL_HASFRIENDLIST, getGuidLow());
-    }
-
-    m_session->SendPacket(SmsgFriendStatus(FRIEND_REMOVED, guid).serialise().get());
-
-    // remove from the db
-    CharacterDatabase.Execute("DELETE FROM social_friends WHERE character_guid = %u AND friend_guid = %u",
-                              getGuidLow(), (uint32)guid);
-}
-
-void Player::Social_SetNote(uint32 guid, const char* note)
-{
-    //free note first
-    m_cache->AcquireLock64(CACHE_SOCIAL_FRIENDLIST);
-    PlayerCacheMap::iterator itr = m_cache->Find64(CACHE_SOCIAL_FRIENDLIST, guid);
-    if (itr != m_cache->End64(CACHE_SOCIAL_FRIENDLIST))
-    {
-        if (itr->second != nullptr)
-            free(itr->second);
-        itr->second = strdup(note);
-    }
-    m_cache->ReleaseLock64(CACHE_SOCIAL_FRIENDLIST);
-
-    CharacterDatabase.Execute("UPDATE social_friends SET note = \'%s\' WHERE character_guid = %u AND friend_guid = %u",
-                              note ? CharacterDatabase.EscapeString(std::string(note)).c_str() : "", getGuidLow(), guid);
-}
-
-void Player::Social_AddIgnore(const char* name)
-{
-    // lookup the player
-    PlayerInfo* playerInfo = sObjectMgr.GetPlayerInfoByName(name);
-    if (playerInfo == nullptr)
-    {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_NOT_FOUND).serialise().get());
-        return;
-    }
-
-    // are we ourselves?
-    if (playerInfo == m_playerInfo)
-    {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_SELF, getGuid()).serialise().get());
-        return;
-    }
-
-    if (m_cache->CountValue64(CACHE_SOCIAL_IGNORELIST, playerInfo->guid) > 0)
-    {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_ALREADY, playerInfo->guid).serialise().get());
-        return;
-    }
-
-    m_cache->InsertValue64(CACHE_SOCIAL_IGNORELIST, playerInfo->guid);
-    m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_ADDED, playerInfo->guid).serialise().get());
-
-    // dump into db
-    CharacterDatabase.Execute("INSERT INTO social_ignores VALUES(%u, %u)", getGuidLow(), playerInfo->guid);
-}
-
-void Player::Social_RemoveIgnore(uint32 guid)
-{
-    // are we ourselves?
-    if (guid == getGuidLow())
-    {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_SELF, getGuid()).serialise().get());
-        return;
-    }
-
-    m_cache->RemoveValue64(CACHE_SOCIAL_IGNORELIST, guid);
-    m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_REMOVED, guid).serialise().get());
-
-    // remove from the db
-    CharacterDatabase.Execute("DELETE FROM social_ignores WHERE character_guid = %u AND ignore_guid = %u",
-                              getGuidLow(), (uint32)guid);
-}
-
-bool Player::Social_IsIgnoring(uint32 guid)
-{
-    return m_cache->CountValue64(CACHE_SOCIAL_IGNORELIST, guid) > 0;
-}
-
-void Player::Social_TellFriendsOnline()
-{
-    if (m_cache->GetSize64(CACHE_SOCIAL_HASFRIENDLIST) == 0)
-        return;
-
-    m_cache->AcquireLock64(CACHE_SOCIAL_HASFRIENDLIST);
-    for (PlayerCacheMap::iterator itr = m_cache->Begin64(CACHE_SOCIAL_HASFRIENDLIST); itr != m_cache->End64(CACHE_SOCIAL_HASFRIENDLIST); ++itr)
-    {
-        PlayerCache* cache = sObjectMgr.GetPlayerCache(uint32(itr->first));
-        if (cache != nullptr)
-        {
-            cache->SendPacket(SmsgFriendStatus(FRIEND_ONLINE, getGuid(), "", 1, GetAreaID(), getLevel(), getClass()).serialise().get());
-        }
-    }
-    m_cache->ReleaseLock64(CACHE_SOCIAL_HASFRIENDLIST);
-}
-
-void Player::Social_TellFriendsOffline()
-{
-    if (m_cache->GetSize64(CACHE_SOCIAL_HASFRIENDLIST) == 0)
-        return;
-
-    m_cache->AcquireLock64(CACHE_SOCIAL_HASFRIENDLIST);
-    for (PlayerCacheMap::iterator itr = m_cache->Begin64(CACHE_SOCIAL_HASFRIENDLIST); itr != m_cache->End64(CACHE_SOCIAL_HASFRIENDLIST); ++itr)
-    {
-        PlayerCache* cache = sObjectMgr.GetPlayerCache(uint32(itr->first));
-        if (cache != nullptr)
-        {
-            cache->SendPacket(SmsgFriendStatus(FRIEND_OFFLINE, getGuid()).serialise().get());
-        }
-    }
-    m_cache->ReleaseLock64(CACHE_SOCIAL_HASFRIENDLIST);
-}
-
-void Player::Social_SendFriendList(uint32 flag)
-{
-    std::vector<SmsgContactListMember> contactMemberList;
-    m_cache->AcquireLock64(CACHE_SOCIAL_FRIENDLIST);
-
-    if (flag & 0x01)    // friend
-    {
-        uint32_t maxCount = 0;
-        for (auto itr = m_cache->Begin64(CACHE_SOCIAL_FRIENDLIST); itr != m_cache->End64(CACHE_SOCIAL_FRIENDLIST); ++itr)
-        {
-            SmsgContactListMember friendListMember;
-            friendListMember.guid = itr->first;
-            friendListMember.flag = 0x01;
-            friendListMember.note = static_cast<char*>(itr->second);
-
-            if (Player* plr = sObjectMgr.GetPlayer(static_cast<uint32>(itr->first)))
-            {
-                friendListMember.isOnline = 1;
-                friendListMember.zoneId = plr->GetZoneId();
-                friendListMember.level = plr->getLevel();
-                friendListMember.playerClass = plr->getClass();
-            }
-            else
-            {
-                friendListMember.isOnline = 0;
-            }
-
-            contactMemberList.push_back(friendListMember);
-            ++maxCount;
-
-            if (maxCount >= 50)
-                break;
-        }
-    }
-    m_cache->ReleaseLock64(CACHE_SOCIAL_FRIENDLIST);
-
-    m_cache->AcquireLock64(CACHE_SOCIAL_IGNORELIST);
-    if (flag & 0x02)    // ignore
-    {
-        uint32_t maxCount = 0;
-        for (auto ignoreitr = m_cache->Begin64(CACHE_SOCIAL_IGNORELIST); ignoreitr != m_cache->End64(CACHE_SOCIAL_IGNORELIST); ++ignoreitr)
-        {
-            SmsgContactListMember ignoreListMember;
-            ignoreListMember.guid = ignoreitr->first;
-            ignoreListMember.flag = 0x02;
-            ignoreListMember.note = static_cast<char*>(ignoreitr->second);
-
-            contactMemberList.push_back(ignoreListMember);
-            ++maxCount;
-
-            if (maxCount >= 50)
-                break;
-        }
-    }
-    m_cache->ReleaseLock64(CACHE_SOCIAL_IGNORELIST);
-
-    SendPacket(SmsgContactList(flag, contactMemberList).serialise().get());
-}
-
 void Player::SpeedCheatDelay(uint32 ms_delay)
 {
     //    SDetector->SkipSamplingUntil(Util::getMSTime() + ms_delay);
@@ -10107,7 +9822,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
                 if (itr)
                 {
                     Player* p = static_cast<Player*>(itr);
-                    if (p->GetSession() && p->getTeam() == myteam && !p->Social_IsIgnoring(getGuidLow()) && (p->GetPhase() & myphase) != 0)
+                    if (p->GetSession() && p->getTeam() == myteam && !p->isIgnored(getGuidLow()) && (p->GetPhase() & myphase) != 0)
                         p->SendPacket(data);
                 }
             }
@@ -10137,7 +9852,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
                 if (itr)
                 {
                     Player* p = static_cast<Player*>(itr);
-                    if (p->GetSession() && !p->Social_IsIgnoring(getGuidLow()) && (p->GetPhase() & myphase) != 0)
+                    if (p->GetSession() && !p->isIgnored(getGuidLow()) && (p->GetPhase() & myphase) != 0)
                         p->SendPacket(data);
                 }
             }

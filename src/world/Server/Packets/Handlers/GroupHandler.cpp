@@ -362,7 +362,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (player->Social_IsIgnoring(_player->getGuidLow()))
+    if (player->isIgnored(_player->getGuidLow()))
     {
         SendPacket(SmsgPartyCommandResult(0, member_name, ERR_PARTY_IS_IGNORING_YOU).serialise().get());
         return;
@@ -474,7 +474,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (invitedPlayer->Social_IsIgnoring(_player->getGuidLow()))
+    if (invitedPlayer->isIgnored(_player->getGuidLow()))
     {
         SendPacket(SmsgPartyCommandResult(0, srlPacket.name, ERR_PARTY_IS_IGNORING_YOU).serialise().get());
         return;

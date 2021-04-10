@@ -1346,7 +1346,7 @@ void Guild::broadcastToGuild(WorldSession* session, bool officerOnly, std::strin
             if (Player* player = itr->second->getPlayerByGuid(session->GetPlayer()->getGuid()))
             {
                 if (player->GetSession() && _hasRankRight(player->getGuid(), officerOnly ? GR_RIGHT_OFFCHATLISTEN : GR_RIGHT_GCHATLISTEN) &&
-                    !player->Social_IsIgnoring(session->GetPlayer()->getGuidLow()))
+                    !player->isIgnored(session->GetPlayer()->getGuidLow()))
                 {
                     player->GetSession()->SendPacket(data);
                 }
@@ -1368,7 +1368,7 @@ void Guild::broadcastAddonToGuild(WorldSession* session, bool officerOnly, std::
             if (Player* player = itr->second->getPlayerByGuid(session->GetPlayer()->getGuid()))
             {
                 if (player->GetSession() && _hasRankRight(player->getGuid(), officerOnly ? GR_RIGHT_OFFCHATLISTEN : GR_RIGHT_GCHATLISTEN) &&
-                    !player->Social_IsIgnoring(session->GetPlayer()->getGuidLow()))
+                    !player->isIgnored(session->GetPlayer()->getGuidLow()))
                 {
                     player->GetSession()->SendPacket(data);
                 }
