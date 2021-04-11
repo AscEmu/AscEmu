@@ -16,10 +16,10 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
     Creature* creature_target = nullptr;
     Player* player = m_session->GetPlayer();
 
-    if (player->waypointunit != nullptr)
+    if (player->m_aiInterfaceWaypoint != nullptr)
     {
         SystemMessage(m_session, "Using Previous Unit.");
-        ai = player->waypointunit;
+        ai = player->m_aiInterfaceWaypoint;
         if (!ai)
         {
             SystemMessage(m_session, "Invalid Creature, please select another one.");
@@ -107,10 +107,10 @@ bool ChatHandler::HandleWayPointAddFlyCommand(const char* args, WorldSession* m_
     AIInterface* ai = nullptr;
     Creature* creature_target = nullptr;
     Player* player = m_session->GetPlayer();
-    if (player->waypointunit != nullptr)
+    if (player->m_aiInterfaceWaypoint != nullptr)
     {
         SystemMessage(m_session, "Using Previous Unit.");
-        ai = player->waypointunit;
+        ai = player->m_aiInterfaceWaypoint;
         if (!ai)
         {
             SystemMessage(m_session, "Invalid Creature, please select another one.");
@@ -194,7 +194,7 @@ bool ChatHandler::HandleWayPointChangeNumberCommand(const char* args, WorldSessi
 {
     uint32 wpid = GetSelectedWayPointId(m_session);
     Player* player = m_session->GetPlayer();
-    AIInterface* ai = player->waypointunit;
+    AIInterface* ai = player->m_aiInterfaceWaypoint;
     if (ai == nullptr || !ai->GetUnit())
     {
         SystemMessage(m_session, "Invalid Creature, please select another one.");
@@ -234,7 +234,7 @@ bool ChatHandler::HandleWayPointDeleteCommand(const char* /*args*/, WorldSession
 {
     uint32 wpid = GetSelectedWayPointId(m_session);
     Player* player = m_session->GetPlayer();
-    AIInterface* ai = player->waypointunit;
+    AIInterface* ai = player->m_aiInterfaceWaypoint;
     if (ai == nullptr || !ai->GetUnit())
     {
         SystemMessage(m_session, "Invalid Creature, please select another one.");
@@ -267,7 +267,7 @@ bool ChatHandler::HandleWayPointDeleteAllCommand(const char* /*args*/, WorldSess
 {
     Creature* creature_target = GetSelectedCreature(m_session, true);
     Player* player = m_session->GetPlayer();
-    AIInterface* ai = player->waypointunit;
+    AIInterface* ai = player->m_aiInterfaceWaypoint;
     if (creature_target == nullptr || !creature_target->GetSQL_id())
         return true;
 
@@ -289,7 +289,7 @@ bool ChatHandler::HandleWayPointEmoteCommand(const char* args, WorldSession* m_s
     uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
-    AIInterface* ai = player->waypointunit;
+    AIInterface* ai = player->m_aiInterfaceWaypoint;
     if (ai == nullptr || !ai->GetUnit())
     {
         SystemMessage(m_session, "Invalid Creature, please select another one.");
@@ -340,7 +340,7 @@ bool ChatHandler::HandleWayPointFlagsCommand(const char* args, WorldSession* m_s
     uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
-    AIInterface* ai = player->waypointunit;
+    AIInterface* ai = player->m_aiInterfaceWaypoint;
     if (ai == nullptr || !ai->GetUnit())
     {
         SystemMessage(m_session, "Invalid Creature, please select another one.");
@@ -389,7 +389,7 @@ bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* 
         return false;
     }
 
-    if (m_session->GetPlayer()->waypointunit != nullptr)
+    if (m_session->GetPlayer()->m_aiInterfaceWaypoint != nullptr)
     {
         SystemMessage(m_session, "You are already showing waypoints, hide them first.");
         return true;
@@ -456,7 +456,7 @@ bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* 
         WorldDatabase.Execute("UPDATE creature_spawns SET movetype = 1 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->GetSQL_id(), VERSION_STRING, VERSION_STRING);
     }
 
-    m_session->GetPlayer()->waypointunit = creature_target->GetAIInterface();
+    m_session->GetPlayer()->m_aiInterfaceWaypoint = creature_target->GetAIInterface();
     creature_target->GetAIInterface()->activateShowWayPoints(m_session->GetPlayer(), creature_target->GetAIInterface()->isShowWayPointsBackwardsActive());
 
     return true;
@@ -472,12 +472,12 @@ bool ChatHandler::HandleWayPointHideCommand(const char* /*args*/, WorldSession* 
     AIInterface* ai = creature_target->GetAIInterface();
     Player* player = m_session->GetPlayer();
 
-    if (player->waypointunit == ai)
+    if (player->m_aiInterfaceWaypoint == ai)
     {
         if (ai->isShowWayPointsActive() == true)
-            player->waypointunit->hideWayPoints(player);
+            player->m_aiInterfaceWaypoint->hideWayPoints(player);
 
-        player->waypointunit = nullptr;
+        player->m_aiInterfaceWaypoint = nullptr;
     }
     else
     {
@@ -496,7 +496,7 @@ bool ChatHandler::HandleWayPointInfoCommand(const char* /*args*/, WorldSession* 
     uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
-    AIInterface* ai = player->waypointunit;
+    AIInterface* ai = player->m_aiInterfaceWaypoint;
     if (ai == nullptr || !ai->GetUnit())
     {
         SystemMessage(m_session, "Invalid Creature, please select another one.");
@@ -543,7 +543,7 @@ bool ChatHandler::HandleWayPpointMoveHereCommand(const char* /*args*/, WorldSess
     uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
-    AIInterface* ai = player->waypointunit;
+    AIInterface* ai = player->m_aiInterfaceWaypoint;
     if (ai == nullptr || !ai->GetUnit())
     {
         SystemMessage(m_session, "Invalid Creature, please select another one.");
@@ -613,12 +613,12 @@ bool ChatHandler::HandleWayPointSaveCommand(const char* /*args*/, WorldSession* 
         return true;
 
     Player* player = m_session->GetPlayer();
-    if (player->waypointunit == creature_target->GetAIInterface())
+    if (player->m_aiInterfaceWaypoint == creature_target->GetAIInterface())
     {
         if (creature_target->GetAIInterface()->isShowWayPointsActive())
-            player->waypointunit->hideWayPoints(player);
+            player->m_aiInterfaceWaypoint->hideWayPoints(player);
 
-        player->waypointunit = nullptr;
+        player->m_aiInterfaceWaypoint = nullptr;
     }
 
     creature_target->GetAIInterface()->saveWayPoints();
@@ -638,7 +638,7 @@ bool ChatHandler::HandleWayPointShowCommand(const char* args, WorldSession* m_se
 
     AIInterface* ai = creature_target->GetAIInterface();
     Player* player = m_session->GetPlayer();
-    if (player->waypointunit != ai)
+    if (player->m_aiInterfaceWaypoint != ai)
     {
         if (ai->isShowWayPointsActive() == true)
         {
@@ -647,10 +647,10 @@ bool ChatHandler::HandleWayPointShowCommand(const char* args, WorldSession* m_se
             return true;
         }
 
-        if (player->waypointunit != nullptr)
-            player->waypointunit->hideWayPoints(player);
+        if (player->m_aiInterfaceWaypoint != nullptr)
+            player->m_aiInterfaceWaypoint->hideWayPoints(player);
 
-        player->waypointunit = ai;
+        player->m_aiInterfaceWaypoint = ai;
         ai->activateShowWayPoints(player, Backwards);
         ai->activateShowWayPointsBackwards(Backwards);
     }
@@ -675,7 +675,7 @@ bool ChatHandler::HandleWayPointSkinCommand(const char* args, WorldSession* m_se
     uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
-    AIInterface* ai = player->waypointunit;
+    AIInterface* ai = player->m_aiInterfaceWaypoint;
     if (ai == nullptr || !ai->GetUnit())
     {
         SystemMessage(m_session, "Invalid Creature, please select another one.");
@@ -718,7 +718,7 @@ bool ChatHandler::HandleWayPointWaitCommand(const char* args, WorldSession* m_se
     uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
-    AIInterface* ai = player->waypointunit;
+    AIInterface* ai = player->m_aiInterfaceWaypoint;
     if (ai == nullptr || !ai->GetUnit())
     {
         SystemMessage(m_session, "Invalid Creature, please select another one.");

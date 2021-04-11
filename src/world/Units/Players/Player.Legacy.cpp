@@ -180,8 +180,6 @@ Player::Player(uint32 guid)
     jumping(false),
     m_isGmInvisible(false),
     SpellHasteRatingBonus(1.0f),
-    //WayPoint
-    waypointunit(nullptr),
     m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
     m_lifetapbonus(0),
     m_bUnlimitedBreath(false),
@@ -6840,17 +6838,17 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, flo
 
 bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector & vec)
 {
-#if VERSION_STRING < Cata
     // Checking if we have a unit whose waypoints are shown
     // If there is such, then we "unlink" it
     // Failing to do so leads to a crash if we try to show some other Unit's wps, after the map was shut down
-    if (waypointunit != NULL)
-        waypointunit->hideWayPoints(this);
+    if (m_aiInterfaceWaypoint != nullptr)
+        m_aiInterfaceWaypoint->hideWayPoints(this);
 
-    waypointunit = NULL;
+    m_aiInterfaceWaypoint = nullptr;
 
     SpeedCheatDelay(10000);
 
+#if VERSION_STRING < Cata
     if (isOnTaxi())
     {
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_TELEPORT);
@@ -6927,14 +6925,8 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     _Relocate(MapID, vec, true, instance, InstanceID);
     SpeedCheatReset();
     ForceZoneUpdate();
+
 #else
-
-    if (waypointunit != nullptr)
-        waypointunit->hideWayPoints(this);
-
-    waypointunit = nullptr;
-
-    SpeedCheatDelay(10000);
 
     if (isOnTaxi())
     {

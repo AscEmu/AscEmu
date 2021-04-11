@@ -802,17 +802,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Basic
-
-private:
-
-    //used for classic
-    uint32_t max_level = 60;
-
-    std::string m_name;
-
-    uint32_t m_team = 0;
-    uint32_t m_bgTeam = 0;
-
 public:
 
     std::string getName() const;
@@ -852,9 +841,21 @@ public:
     void toggleAfk();
     void toggleDnd();
 
+private:
+
+    //used for classic
+    uint32_t max_level = 60;
+
+    std::string m_name;
+
+    uint32_t m_team = 0;
+    uint32_t m_bgTeam = 0;
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Stats
     // Initializes stats and unit/playerdata fields
+public:
+
     void setInitialPlayerData();
 
     // Not same as Unit::regeneratePowers
@@ -883,9 +884,10 @@ private:
     float m_manaRegenerationWhileCasting = 0.0f;
 #endif
 
-public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Database stuff
+public:
+
     bool loadSpells(QueryResult* result);
     bool loadReputations(QueryResult* result);
 
@@ -920,9 +922,10 @@ public:
 private:
     bool m_canDualWield2H = false;
 
-public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Talents
+public:
+
     void learnTalent(uint32_t talentId, uint32_t talentRank);
     void addTalent(SpellInfo const* sp);
     void removeTalent(uint32_t spellId, bool onSpecChange = false);
@@ -943,9 +946,10 @@ public:
 private:
     uint32_t m_talentPointsFromQuests = 0;
 
-public:
     /////////////////////////////////////////////////////////////////////////////////////////
     // Tutorials
+public:
+
     uint32_t getTutorialValueById(uint8_t id);
     void setTutorialValueForId(uint8_t id, uint32_t value);
 
@@ -955,9 +959,10 @@ public:
 protected:
     uint32_t m_Tutorials[8] = {0};
 
-public:
     /////////////////////////////////////////////////////////////////////////////////////////
     // Actionbar
+public:
+
     void setActionButton(uint8_t button, uint32_t action, uint8_t type, uint8_t misc);
     void sendActionBars(bool clearBars);
 
@@ -967,13 +972,14 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Trade
-private:
-    TradeData* m_TradeData = nullptr;
-
 public:
+
     Player* getTradeTarget() const;
     TradeData* getTradeData() const;
     void cancelTrade(bool sendToSelfAlso, bool silently = false);
+
+private:
+    TradeData* m_TradeData = nullptr;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Messages
@@ -996,6 +1002,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Commands
 public:
+
     void disableSummoning(bool disable);
     bool isSummoningDisabled() const;
     void disableAppearing(bool disable);
@@ -1017,6 +1024,8 @@ public:
 
     bool m_XpGainAllowed = true;
 
+    AIInterface* m_aiInterfaceWaypoint = nullptr;
+
 private:
     bool m_disableAppearing = false;
     bool m_disableSummoning = false;
@@ -1026,9 +1035,10 @@ private:
     uint32_t m_banned = 0;
     std::string m_banreason;
 
-public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Items
+public:
+
     void unEquipOffHandIfRequired();
     bool hasOffHandWeapon() const;
 
@@ -1039,10 +1049,10 @@ public:
 private:
     ItemInterface* m_itemInterface = nullptr;
 
-public:
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // Difficulty
+public:
+
     void setDungeonDifficulty(uint8_t diff);
     uint8_t getDungeonDifficulty();
 
@@ -1053,9 +1063,10 @@ private:
     uint8_t m_dungeonDifficulty = 0;
     uint8_t m_raidDifficulty = 0;
 
-public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Corpse
+public:
+
     void setCorpseData(LocationVector position, int32_t instanceId);
     LocationVector getCorpseLocation() const;
     int32_t getCorpseInstanceId() const;
@@ -1073,9 +1084,10 @@ private:
 
     bool isCorpseCreationAllowed = true;
 
-public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Bind
+public:
+
     void setBindPoint(float x, float y, float z, uint32_t mapId, uint32_t zoneId);
 
     LocationVector getBindPosition() const;
@@ -1091,14 +1103,16 @@ private:
     };
     BindData m_bindData;
 
-public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Battleground Entry
+public:
+
     void setBGEntryPoint(float x, float y, float z, float o, uint32_t mapId, int32_t instanceId);
 
     LocationVector getBGEntryPosition() const;
     uint32_t getBGEntryMapId() const;
     int32_t getBGEntryInstanceId() const;
+
 private:
     struct BGEntryData
     {
@@ -1108,9 +1122,10 @@ private:
     };
     BGEntryData m_bgEntryData;
 
-public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Guild
+public:
+
     void setInvitedByGuildId(uint32_t GuildId);
     uint32_t getInvitedByGuildId() const;
 
@@ -1122,9 +1137,10 @@ public:
 private:
     uint32_t m_invitedByGuildId = 0;
 
-public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Group
+public:
+
     void setGroupInviterId(uint32_t inviterId);
     uint32_t getGroupInviterId() const;
     bool isAlreadyInvitedToGroup() const;
@@ -1139,9 +1155,9 @@ public:
 private:
     uint32_t m_GroupInviter = 0;
 
-public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Quests
+public:
     void setQuestLogInSlot(QuestLogEntry* entry, uint32_t slotId);
 
     bool hasAnyQuestInQuestSlot() const;
@@ -1156,9 +1172,9 @@ public:
 private:
     QuestLogEntry* m_questlog[MAX_QUEST_LOG_SIZE] = {nullptr};
 
-public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Social
+public:
 
     struct SocialFriends
     {
@@ -1193,7 +1209,6 @@ private:
     std::vector<uint32_t> m_socialIgnoring = {};
     mutable std::mutex m_mutexIgnoreList;
 
-public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Hackdetection
 
@@ -1205,11 +1220,11 @@ public:
     //Size
     //Wallclimb
     //Itemstacking (spell/attack power stacking)
-private:
 
-public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
+public:
+
     bool isGMFlagSet();
 
     void sendMovie(uint32_t movieId);
@@ -1957,9 +1972,6 @@ public:
 
         void SetPlayerStatus(uint8 pStatus) { m_status = pStatus; }
     uint8 GetPlayerStatus() const;
-
-        // Showing Units WayPoints
-        AIInterface* waypointunit;
 
         uint32 m_nextSave;
 
