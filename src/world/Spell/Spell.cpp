@@ -1324,7 +1324,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         }
 
         // Movement check
-        if (p_caster->m_isMoving)
+        if (p_caster->isMoving())
         {
             // No need to check for other interrupt flags, client does that for us
             // Also don't cast first ranged autorepeat spell if we're moving but activate it

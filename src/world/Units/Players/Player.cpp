@@ -1095,13 +1095,13 @@ bool Player::isPlayerJumping(MovementInfo const& movementInfo, uint16_t opcode)
 {
     if (opcode == MSG_MOVE_FALL_LAND || movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING))
     {
-        jumping = false;
+        m_isJumping = false;
         return false;
     }
 
-    if (!jumping && (opcode == MSG_MOVE_JUMP || movementInfo.hasMovementFlag(MOVEFLAG_FALLING)))
+    if (!m_isJumping && (opcode == MSG_MOVE_JUMP || movementInfo.hasMovementFlag(MOVEFLAG_FALLING)))
     {
-        jumping = true;
+        m_isJumping = true;
         return true;
     }
 
@@ -1206,7 +1206,7 @@ void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movementInf
         auraInterruptFlags |= AURA_INTERRUPT_ON_ENTER_WATER;
     }
 
-    if ((movementInfo.hasMovementFlag(MOVEFLAG_TURNING_MASK)) || isTurning)
+    if ((movementInfo.hasMovementFlag(MOVEFLAG_TURNING_MASK)) || m_isTurning)
     {
         auraInterruptFlags |= AURA_INTERRUPT_ON_TURNING;
     }
@@ -1350,6 +1350,24 @@ bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
 }
 
 #endif
+
+bool Player::isInCity() const
+{
+    const auto at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
+    if (at != nullptr)
+    {
+        ::DBC::Structures::AreaTableEntry const* zt = nullptr;
+        if (at->zone)
+            zt = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
+
+        bool areaIsCity = at->flags & MapManagement::AreaManagement::AREA_CITY_AREA || at->flags & MapManagement::AreaManagement::AREA_CITY;
+        bool zoneIsCity = zt && (zt->flags & MapManagement::AreaManagement::AREA_CITY_AREA || zt->flags & MapManagement::AreaManagement::AREA_CITY);
+
+        return (areaIsCity || zoneIsCity);
+    }
+
+    return false;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Commands

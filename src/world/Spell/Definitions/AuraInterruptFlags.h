@@ -13,7 +13,7 @@ enum AuraInterruptFlags
     AURA_INTERRUPT_ON_CAST                    = 0x00000004, // Remove on any spell cast
     AURA_INTERRUPT_ON_MOVEMENT                = 0x00000008, // Remove on moving
     AURA_INTERRUPT_ON_TURNING                 = 0x00000010, // Remove on turning
-    AURA_INTERRUPT_ON_JUMP                    = 0x00000020, // Remove on jumping
+    AURA_INTERRUPT_ON_JUMP                    = 0x00000020, // Remove on m_isJumping
     AURA_INTERRUPT_ON_DISMOUNT                = 0x00000040, // Remove on dismounting
     AURA_INTERRUPT_ON_ENTER_WATER             = 0x00000080, // Remove when entering water
     AURA_INTERRUPT_ON_LEAVE_WATER             = 0x00000100, // Remove when leaving water, could be AURA_INTERRUPT_ON_LEAVE_CURRENT_SURFACE

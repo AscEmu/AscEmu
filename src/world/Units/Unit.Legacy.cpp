@@ -965,7 +965,7 @@ bool Unit::canReachWithAttack(Unit* pVictim)
     {
         // latency compensation!!
         // figure out how much extra distance we need to allow for based on our movespeed and latency.
-        if (pVictim->isPlayer() && static_cast<Player*>(pVictim)->m_isMoving)
+        if (pVictim->isPlayer() && static_cast<Player*>(pVictim)->isMoving())
         {
             // this only applies to PvP.
             uint32 lat = static_cast<Player*>(pVictim)->GetSession() ? static_cast<Player*>(pVictim)->GetSession()->GetLatency() : 0;
@@ -977,7 +977,7 @@ bool Unit::canReachWithAttack(Unit* pVictim)
             attackreach += getSpeedRate(TYPE_RUN, true) * 0.001f * lat;
         }
 
-        if (static_cast<Player*>(this)->m_isMoving)
+        if (static_cast<Player*>(this)->isMoving())
         {
             // this only applies to PvP.
             uint32 lat = static_cast<Player*>(this)->GetSession() ? static_cast<Player*>(this)->GetSession()->GetLatency() : 0;

@@ -799,13 +799,24 @@ public:
 
     bool isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode);
 
+    bool isMoving() const { return m_isMoving; }
+
     void handleBreathing(MovementInfo const& movement_info, WorldSession* session);
     void handleAuraInterruptForMovementFlags(MovementInfo const& movement_info);
 
     uint32_t getAreaId() const { return m_areaId; }
     void setAreaId(uint32_t area) { m_areaId = area; }
 
+    bool isInCity() const;
+
 protected:
+
+    bool m_isMoving = false;
+    bool m_isMovingFB = false;
+    bool m_isStrafing = false;
+    bool m_isTurning = false;
+    bool m_isJumping = false;
+
     uint32_t m_areaId = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1036,6 +1047,8 @@ public:
     bool m_XpGainAllowed = true;
 
     AIInterface* m_aiInterfaceWaypoint = nullptr;
+
+    bool m_isGmInvisible = false;
 
 private:
 
@@ -1801,18 +1814,6 @@ public:
         uint64 m_resurrecter;
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        // Movement system
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        bool m_isMoving;            // moving + strafing + jumping
-        bool moving;
-        bool strafing;
-        bool isTurning;
-        bool jumping;
-        //Invisibility stuff
-        bool m_isGmInvisible;
-
-        /////////////////////////////////////////////////////////////////////////////////////////
         // Talent Specs
         /////////////////////////////////////////////////////////////////////////////////////////
         uint16 m_maxTalentPoints;
@@ -2124,8 +2125,6 @@ public:
         void SpeedCheatReset();
 
         void ZoneUpdate(uint32 ZoneId);
-
-        bool IsInCity();
 
         // Instance IDs
         uint32 GetPersistentInstanceId(uint32 mapId, uint8 difficulty)

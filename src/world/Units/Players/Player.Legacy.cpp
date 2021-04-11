@@ -174,11 +174,6 @@ Player::Player(uint32 guid)
     m_currentLoot(0),
     bShouldHaveLootableOnCorpse(false),
     offhand_dmg_mod(0.5),
-    m_isMoving(false),
-    moving(false),
-    strafing(false),
-    jumping(false),
-    m_isGmInvisible(false),
     SpellHasteRatingBonus(1.0f),
     m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
     m_lifetapbonus(0),
@@ -485,7 +480,6 @@ Player::Player(uint32 guid)
     ChampioningFactionID = 0;
     mountvehicleid = 0;
 
-    isTurning = false;
     myRace = nullptr;
     myClass = nullptr;
     OnlineTime = (uint32)UNIXTIME;
@@ -6263,24 +6257,6 @@ void Player::SaveEntryPoint(uint32 mapId)
         setBGEntryPoint(pMapinfo->repopx, pMapinfo->repopy, pMapinfo->repopz, GetOrientation(), pMapinfo->repopmapid, GetInstanceID());
     else
         setBGEntryPoint(0, 0, 0, 0, 0, 0);
-}
-
-bool Player::IsInCity()
-{
-    auto at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
-    if (at != nullptr)
-    {
-        ::DBC::Structures::AreaTableEntry const* zt = nullptr;
-        if (at->zone)
-            zt = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
-
-        bool areaIsCity = at->flags & AREA_CITY_AREA || at->flags & AREA_CITY;
-        bool zoneIsCity = zt && (zt->flags & AREA_CITY_AREA || zt->flags & AREA_CITY);
-
-        return (areaIsCity || zoneIsCity);
-    }
-
-    return false;
 }
 
 void Player::ZoneUpdate(uint32 ZoneId)

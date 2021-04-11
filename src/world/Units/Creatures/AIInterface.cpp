@@ -1182,7 +1182,7 @@ void AIInterface::generateSplinePathToTarget(Unit* targetUnit, float distance)
     float x = distance * cosf(angle);
     float y = distance * sinf(angle);
 
-    if (targetUnit->isPlayer() && static_cast<Player*>(targetUnit)->m_isMoving)
+    if (targetUnit->isPlayer() && static_cast<Player*>(targetUnit)->isMoving())
     {
         x -= cosf(targetPos.o);
         y -= sinf(targetPos.o);
@@ -2730,7 +2730,7 @@ void AIInterface::_CalcDestinationAndMove(Unit* target, float dist)
         float x = dist * cosf(angle);
         float y = dist * sinf(angle);
 
-        if (target->isPlayer() && static_cast<Player*>(target)->m_isMoving)
+        if (target->isPlayer() && static_cast<Player*>(target)->isMoving())
         {
             // cater for moving player vector based on orientation
             x -= cosf(target->GetOrientation());

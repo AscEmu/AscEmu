@@ -3536,7 +3536,7 @@ public:
     static int IsPlayerMoving(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER_RET()
-        lua_pushboolean(L, (static_cast<Player*>(ptr)->m_isMoving) ? 1 : 0);
+        lua_pushboolean(L, (static_cast<Player*>(ptr)->isMoving()) ? 1 : 0);
         return 1;
     }
 
