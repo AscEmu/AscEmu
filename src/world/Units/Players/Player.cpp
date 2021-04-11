@@ -850,11 +850,6 @@ void Player::handleFall(MovementInfo const& /*movement_info*/)
 {
 }
 
-bool Player::isPlayerJumping(MovementInfo const& /*movement_info*/, uint16_t /*opcode*/)
-{
-    return false;
-}
-
 void Player::handleBreathing(MovementInfo const& /*movement_info*/, WorldSession* /*session*/)
 {
 }
@@ -1089,23 +1084,6 @@ void Player::handleFall(MovementInfo const& movementInfo)
     }
 
     z_axisposition = 0.0f;
-}
-
-bool Player::isPlayerJumping(MovementInfo const& movementInfo, uint16_t opcode)
-{
-    if (opcode == MSG_MOVE_FALL_LAND || movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING))
-    {
-        m_isJumping = false;
-        return false;
-    }
-
-    if (!m_isJumping && (opcode == MSG_MOVE_JUMP || movementInfo.hasMovementFlag(MOVEFLAG_FALLING)))
-    {
-        m_isJumping = true;
-        return true;
-    }
-
-    return false;
 }
 
 void Player::handleBreathing(MovementInfo const& movementInfo, WorldSession* session)

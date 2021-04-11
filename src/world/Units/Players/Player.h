@@ -797,8 +797,6 @@ public:
 
     void handleFall(MovementInfo const& movement_info);
 
-    bool isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode);
-
     bool isMoving() const { return m_isMoving; }
 
     void handleBreathing(MovementInfo const& movement_info, WorldSession* session);

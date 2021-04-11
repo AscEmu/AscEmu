@@ -160,6 +160,43 @@ void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSessio
 }
 #endif
 
+void WorldSession::updatePlayerMovementVars(uint16_t opcode)
+{
+    auto moved = true;
+    switch (opcode)
+    {
+        case MSG_MOVE_START_FORWARD:
+        case MSG_MOVE_START_BACKWARD:
+            _player->m_isMovingFB = true;
+            break;
+        case MSG_MOVE_START_STRAFE_LEFT:
+        case MSG_MOVE_START_STRAFE_RIGHT:
+            _player->m_isStrafing = true;
+            break;
+        case MSG_MOVE_JUMP:
+            _player->m_isJumping = true;
+            break;
+        case MSG_MOVE_STOP:
+            _player->m_isMovingFB = false;
+            break;
+        case MSG_MOVE_STOP_STRAFE:
+            _player->m_isStrafing = false;
+            break;
+        case MSG_MOVE_FALL_LAND:
+            _player->m_isJumping = false;
+            break;
+
+        default:
+            moved = false;
+            break;
+    }
+
+    if (moved)
+        _player->m_isMoving = _player->m_isMovingFB || _player->m_isStrafing || _player->m_isJumping;
+
+    _player->m_isTurning = _player->GetOrientation() != movement_info.position.o;
+}
+
 #if VERSION_STRING <= TBC
 void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 {
@@ -213,39 +250,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     if (_player->getStandState() != STANDSTATE_STAND && recvData.GetOpcode() == MSG_MOVE_START_FORWARD)
         _player->setStandState(STANDSTATE_STAND);
 
-    auto moved = true;
-    switch (recvData.GetOpcode())
-    {
-        case MSG_MOVE_START_FORWARD:
-        case MSG_MOVE_START_BACKWARD:
-            _player->m_isMovingFB = true;
-            break;
-        case MSG_MOVE_START_STRAFE_LEFT:
-        case MSG_MOVE_START_STRAFE_RIGHT:
-            _player->m_isStrafing = true;
-            break;
-        case MSG_MOVE_JUMP:
-            _player->m_isJumping = true;
-            break;
-        case MSG_MOVE_STOP:
-            _player->m_isMovingFB = false;
-            break;
-        case MSG_MOVE_STOP_STRAFE:
-            _player->m_isStrafing = false;
-            break;
-        case MSG_MOVE_FALL_LAND:
-            _player->m_isJumping = false;
-            break;
-
-        default:
-            moved = false;
-            break;
-    }
-
-    if (moved)
-        _player->m_isMoving = _player->m_isMovingFB || _player->m_isStrafing || _player->m_isJumping;
-
-    _player->m_isTurning = _player->GetOrientation() != movement_info.position.o;
+    updatePlayerMovementVars(recvData.GetOpcode());
 
     // Antihack Checks
     if (!(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm))
@@ -564,8 +569,6 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-        bool moved = true;
-
     if (/*_player->getCharmedByGuid() || */_player->GetPlayerStatus() == TRANSFER_PENDING || _player->isOnTaxi() || _player->getDeathState() == JUST_DIED)
         return;
 
@@ -648,58 +651,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     /************************************************************************/
     /* Update player movement state                                         */
     /************************************************************************/
-
-    uint16 opcode = recvPacket.GetOpcode();
-    switch (opcode)
-    {
-        case MSG_MOVE_START_FORWARD:
-        case MSG_MOVE_START_BACKWARD:
-            _player->m_isMovingFB = true;
-            break;
-        case MSG_MOVE_START_STRAFE_LEFT:
-        case MSG_MOVE_START_STRAFE_RIGHT:
-            _player->m_isStrafing = true;
-            break;
-        case MSG_MOVE_JUMP:
-            _player->m_isJumping = true;
-            break;
-        case MSG_MOVE_STOP:
-            _player->m_isMovingFB = false;
-            break;
-        case MSG_MOVE_STOP_STRAFE:
-            _player->m_isStrafing = false;
-            break;
-        case MSG_MOVE_FALL_LAND:
-            _player->m_isJumping = false;
-            break;
-
-        default:
-            moved = false;
-            break;
-    }
-
-    if (moved)
-    {
-        if (!_player->m_isMovingFB && !_player->m_isStrafing && !_player->m_isJumping)
-        {
-            _player->m_isMoving = false;
-        }
-        else
-        {
-            _player->m_isMoving = true;
-        }
-    }
-
-    // Rotating your character with a hold down right click mouse button
-    if (_player->GetOrientation() != movement_info.position.o)
-    {
-        _player->m_isTurning = true;
-    }
-    else
-    {
-        _player->m_isTurning = false;
-    }
-
+    updatePlayerMovementVars(recvPacket.GetOpcode());
 
     if (!(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm) && !_player->getCharmGuid())
     {
@@ -1042,47 +994,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         /************************************************************************/
         /* Update player movement state                                         */
         /************************************************************************/
-    _player->isPlayerJumping(movementInfo, opcode);
-    if (_player->GetOrientation() == movementInfo.getPosition()->o)
-    {
-        _player->m_isTurning = false;
-    }
-
-    switch (opcode)
-    {
-        case MSG_MOVE_START_FORWARD:
-        case MSG_MOVE_START_BACKWARD:
-            _player->m_isMovingFB = true;
-            break;
-        case MSG_MOVE_START_STRAFE_LEFT:
-        case MSG_MOVE_START_STRAFE_RIGHT:
-            _player->m_isStrafing = true;
-            break;
-        case MSG_MOVE_JUMP:
-            _player->m_isJumping = true;
-            break;
-        case MSG_MOVE_STOP:
-            _player->m_isMovingFB = false;
-            break;
-        case MSG_MOVE_STOP_STRAFE:
-            _player->m_isStrafing = false;
-            break;
-        case MSG_MOVE_FALL_LAND:
-            _player->m_isJumping = false;
-            break;
-        case MSG_MOVE_SET_FACING:
-            _player->m_isTurning = true;
-            break;
-    }
-
-    if (_player->m_isMovingFB == false && _player->m_isStrafing == false && _player->m_isJumping == false)
-    {
-        _player->m_isMoving = false;
-    }
-    else
-    {
-        _player->m_isMoving = true;
-    }
+        updatePlayerMovementVars(opcode);
 
     //
     //

@@ -738,6 +738,7 @@ class SERVER_DECL WorldSession
         //////////////////////////////////////////////////////////////////////////////////////////
         // MovementHandler.cpp
         void handleSetActiveMoverOpcode(WorldPacket& recvPacket);
+        void updatePlayerMovementVars(uint16_t opcode);
         void handleMovementOpcodes(WorldPacket& recvPacket);
         void handleAcknowledgementOpcodes(WorldPacket& recvPacket);
         void handleWorldTeleportOpcode(WorldPacket& recvPacket);
