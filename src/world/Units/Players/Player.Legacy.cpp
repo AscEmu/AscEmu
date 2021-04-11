@@ -1570,15 +1570,6 @@ void Player::smsg_InitialSpells()
     GetSession()->SendPacket(smsgInitialSpells.serialise().get());
 }
 
-void PlayerSpec::AddTalent(uint32 talentid, uint8 rankid)
-{
-    std::map<uint32, uint8>::iterator itr = talents.find(talentid);
-    if (itr != talents.end())
-        itr->second = rankid;
-    else
-        talents.insert(std::make_pair(talentid, rankid));
-}
-
 void Player::_SavePet(QueryBuffer* buf)
 {
     // Remove any existing info
