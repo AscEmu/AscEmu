@@ -4641,7 +4641,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                 if (isPlayer())
                 {
 #ifdef FT_ACHIEVEMENTS
-                    attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, attacker->getPlayerOwner()->GetAreaID(), 1, 0);
+                    attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, attacker->getPlayerOwner()->getAreaId(), 1, 0);
                     attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL, 1, 0, 0);
 #endif
                     HonorHandler::OnPlayerKilled(attacker->getPlayerOwner(), dynamic_cast<Player*>(this));

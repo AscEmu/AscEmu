@@ -3433,7 +3433,7 @@ void Player::sendFriendStatus(bool comesOnline)
                 if (targetPlayer->GetSession())
                 {
                     if (comesOnline)
-                        targetPlayer->SendPacket(SmsgFriendStatus(FRIEND_ONLINE, getGuid(), "", 1, GetAreaID(), getLevel(), getClass()).serialise().get());
+                        targetPlayer->SendPacket(SmsgFriendStatus(FRIEND_ONLINE, getGuid(), "", 1, getAreaId(), getLevel(), getClass()).serialise().get());
                     else
                         targetPlayer->SendPacket(SmsgFriendStatus(FRIEND_OFFLINE, getGuid()).serialise().get());
                 }

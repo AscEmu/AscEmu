@@ -1209,7 +1209,7 @@ void GameObject_FishingNode::onUse(Player* player)
 
     if (success)
     {
-        uint32 zone = player->GetAreaID();
+        uint32 zone = player->getAreaId();
         if (zone == 0)                  // If the player's area ID is 0, use the zone ID instead
             zone = player->GetZoneId();
 

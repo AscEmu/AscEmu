@@ -789,7 +789,9 @@ public:
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Movement
+    // Movement/Position
+public:
+
     void sendForceMovePacket(UnitSpeedType speed_type, float speed);
     void sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed);
 
@@ -799,6 +801,12 @@ public:
 
     void handleBreathing(MovementInfo const& movement_info, WorldSession* session);
     void handleAuraInterruptForMovementFlags(MovementInfo const& movement_info);
+
+    uint32_t getAreaId() const { return m_areaId; }
+    void setAreaId(uint32_t area) { m_areaId = area; }
+
+protected:
+    uint32_t m_areaId = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Basic
@@ -1700,16 +1708,19 @@ public:
         std::map<uint32, PlayerPet*> m_Pets;
 
         Object* m_SummonedObject;
-    public:
-
+    
         /////////////////////////////////////////////////////////////////////////////////////////
         // Item Interface
         /////////////////////////////////////////////////////////////////////////////////////////
+    public:
         void ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false) { _ApplyItemMods(item, slot, apply, justdrokedown); }
+    protected:
+        void _ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false, bool skip_stat_apply = false);
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Loot
         /////////////////////////////////////////////////////////////////////////////////////////
+    public:
         const uint64 & GetLootGUID() const { return m_lootGuid; }
         void SetLootGUID(const uint64 & guid) { m_lootGuid = guid; }
         void SendLoot(uint64 guid, uint8 loot_type, uint32 mapid);
@@ -2113,9 +2124,7 @@ public:
         void SpeedCheatReset();
 
         void ZoneUpdate(uint32 ZoneId);
-        
-        uint32 GetAreaID() { return m_AreaID; }
-        void SetAreaID(uint32 area) { m_AreaID = area; }
+
         bool IsInCity();
 
         // Instance IDs
@@ -2305,14 +2314,13 @@ public:
         void _LoadPetSpells(QueryResult* result);
         void _SavePet(QueryBuffer* buf);
         void _SavePetSpells(QueryBuffer* buf);
-        void _ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false, bool skip_stat_apply = false);
+        
         void _EventAttack(bool offhand);
         
         void CastSpellArea();
 
     // exploration
         void _EventExploration();
-        uint32 m_AreaID;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Player Class systems, info and misc things

@@ -896,7 +896,7 @@ bool SchoolsOfArcaneMagicMastery(uint8_t /*effectIndex*/, Spell* s)
 {
     if (auto player = s->GetPlayerTarget())
     {
-        auto spell = player->GetAreaID() == 4637 ? 59316 : 59314;
+        auto spell = player->getAreaId() == 4637 ? 59316 : 59314;
         player->castSpell(player, spell, true);
     }
 

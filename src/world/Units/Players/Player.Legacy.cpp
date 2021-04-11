@@ -331,7 +331,6 @@ Player::Player(uint32 guid)
 
     cannibalize = false;
     mAvengingWrath = true;
-    m_AreaID = 0;
     cannibalizeCount = 0;
     rageFromDamageDealt = 0;
     rageFromDamageTaken = 0;
@@ -1352,9 +1351,9 @@ void Player::_EventExploration()
     uint32 val = (uint32)(1 << (at->explore_flag % 32));
     uint32 currFields = getExploredZone(offset);
 
-    if (AreaId != m_AreaID)
+    if (AreaId != m_areaId)
     {
-        m_AreaID = AreaId;
+        m_areaId = AreaId;
         UpdatePvPArea();
 
         AddGroupUpdateFlag(GROUP_UPDATE_FULL);
@@ -10248,7 +10247,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     {
         for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
         {
-            if (itr->second->autoCast && itr->second->fitsToRequirements(this, GetZoneId(), GetAreaID()))
+            if (itr->second->autoCast && itr->second->fitsToRequirements(this, GetZoneId(), getAreaId()))
                 if (!HasAura(itr->second->spellId))
                     castSpell(this, itr->second->spellId, true);
         }
@@ -11311,7 +11310,7 @@ void Player::SendInitialWorldstates()
 #if VERSION_STRING < Cata
     WorldPacket data(SMSG_INIT_WORLD_STATES, 100);
 
-    m_mapMgr->GetWorldStatesHandler().BuildInitWorldStatesForZone(m_zoneId, m_AreaID, data);
+    m_mapMgr->GetWorldStatesHandler().BuildInitWorldStatesForZone(m_zoneId, m_areaId, data);
     m_session->SendPacket(&data);
 #endif
 }

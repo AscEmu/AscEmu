@@ -771,7 +771,7 @@ bool ChatHandler::HandleInitWorldStatesCommand(const char* /*args*/, WorldSessio
 
     uint32 zone = p->GetZoneId();
     if (zone == 0)
-        zone = p->GetAreaID();
+        zone = p->getAreaId();
 
     BlueSystemMessage(session, "Sending initial worldstates for zone %u", zone);
 
@@ -786,7 +786,7 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSessi
 
     uint32 zone = p->GetZoneId();
     if (zone == 0)
-        zone = p->GetAreaID();
+        zone = p->getAreaId();
 
     BlueSystemMessage(session, "Clearing worldstates for zone %u", zone);
 
@@ -794,7 +794,7 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSessi
 
     data << uint32(p->GetMapId());
     data << uint32(p->GetZoneId());
-    data << uint32(p->GetAreaID());
+    data << uint32(p->getAreaId());
     data << uint16(0);
 
     p->SendPacket(&data);
