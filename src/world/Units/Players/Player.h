@@ -1980,8 +1980,7 @@ public:
 
         // Misc
         void EventCannibalize(uint32 amount);
-        bool m_AllowAreaTriggerPort;
-        void EventAllowTiggerPort(bool enable);
+
         uint32 m_modblockabsorbvalue;
         uint32 m_modblockvaluefromspells;
         void SendInitialLogonPackets();

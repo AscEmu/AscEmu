@@ -185,7 +185,6 @@ Player::Player(uint32 guid)
     m_bUnlimitedBreath(false),
     m_UnderwaterTime(180000),
     m_UnderwaterState(0),
-    m_AllowAreaTriggerPort(true),
     // Battleground
     m_bg(nullptr),
     m_bgHasFlag(false),
@@ -5321,11 +5320,6 @@ bool Player::HasQuestForItem(uint32 itemid)
         }
     }
     return false;
-}
-
-void Player::EventAllowTiggerPort(bool enable)
-{
-    m_AllowAreaTriggerPort = enable;
 }
 
 uint32 Player::CalcTalentResetCost(uint32 resetnum)
