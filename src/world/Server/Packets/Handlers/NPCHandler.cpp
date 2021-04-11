@@ -346,17 +346,17 @@ void WorldSession::sendInnkeeperBind(Creature* creature)
         return;
     }
 
-    if (!_player->bHasBindDialogOpen)
+    if (!_player->m_hasBindDialogOpen)
     {
         SendPacket(SmsgGossipComplete().serialise().get());
 
         SendPacket(SmsgBinderConfirm(creature->getGuid(), _player->GetZoneId()).serialise().get());
 
-        _player->bHasBindDialogOpen = true;
+        _player->m_hasBindDialogOpen = true;
         return;
     }
 
-    _player->bHasBindDialogOpen = false;
+    _player->m_hasBindDialogOpen = false;
     SendPacket(SmsgGossipComplete().serialise().get());
     creature->castSpell(_player->getGuid(), 3286, true);
 }

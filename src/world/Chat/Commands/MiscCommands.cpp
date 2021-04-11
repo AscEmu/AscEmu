@@ -445,7 +445,7 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
         }
 
         SystemMessage(player_target->GetSession(), "You are being kicked from the server by %s. Reason: %s", m_session->GetPlayer()->getName().c_str(), kickreason.c_str());
-        player_target->Kick(6000);
+        player_target->kickFromServer(6000);
         return true;
     }
     else
@@ -1263,7 +1263,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
     if (pPlayer)
     {
         SystemMessage(m_session, "Kicking %s.", pPlayer->getName().c_str());
-        pPlayer->Kick();
+        pPlayer->kickFromServer();
     }
 
     return true;

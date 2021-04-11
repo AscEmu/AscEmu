@@ -774,7 +774,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
         // Remove player from battleground.
         RemovePlayer(pPlayer, false);
         // Kick player from server.
-        pPlayer->Kick(6000);
+        pPlayer->kickFromServer(6000);
         return;
     }
 #endif

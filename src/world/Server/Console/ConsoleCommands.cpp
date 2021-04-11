@@ -209,7 +209,7 @@ bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::s
     sWorld.sendMessageToAll(worldAnnounce.str());
 
     player->BroadcastMessage("You are now being removed by the game by an administrator via the console. Reason: %s", kickReason.c_str());
-    player->Kick(5000);
+    player->kickFromServer(5000);
     baseConsole->Write("Kicked player %s.\r\n", player->getName().c_str());
 
     return true;

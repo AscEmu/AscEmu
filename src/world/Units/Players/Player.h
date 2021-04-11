@@ -1016,6 +1016,9 @@ public:
     GameObject* getSelectedGo() const;
     void setSelectedGo(uint64_t guid);
 
+    void kickFromServer(uint32_t delay = 0);
+    void eventKickFromServer();
+
     PlayerCheat m_cheats = {false};
     float m_goLastXRotation = 0.0f;
     float m_goLastYRotation = 0.0f;
@@ -1027,6 +1030,7 @@ public:
     AIInterface* m_aiInterfaceWaypoint = nullptr;
 
 private:
+
     bool m_disableAppearing = false;
     bool m_disableSummoning = false;
 
@@ -1034,6 +1038,7 @@ private:
 
     uint32_t m_banned = 0;
     std::string m_banreason;
+    uint32_t m_kickDelay = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Items
@@ -1093,6 +1098,8 @@ public:
     LocationVector getBindPosition() const;
     uint32_t getBindMapId() const;
     uint32_t getBindZoneId() const;
+
+    bool m_hasBindDialogOpen = false;
 
 private:
     struct BindData
@@ -1975,8 +1982,8 @@ public:
 
         uint32 m_nextSave;
 
-        int m_lifetapbonus;
-        bool m_requiresNoAmmo;
+        int m_lifetapbonus;         //warlock spell related
+        bool m_requiresNoAmmo;      //warlock spell related
 
         // Misc
         void EventCannibalize(uint32 amount);
@@ -2029,19 +2036,19 @@ public:
         float IncreaseCricticalByTypePCT[12];
         int32 DetectedRange;
         float PctIgnoreRegenModifier;
-        uint32 m_retainedrage;
+        uint32 m_retainedrage;                  // Warrior spell related
 
         uint32* GetPlayedtime() { return m_playedtime; };
         void CalcStat(uint8_t t);
         float CalcRating(PlayerCombatRating t);
         void RegenerateHealth(bool inCombat);
 
-        uint64 misdirectionTarget;
+        uint64 misdirectionTarget;              // Hunter spell related
 
         uint64 GetMisdirectionTarget() { return misdirectionTarget; }
         void SetMisdirectionTarget(uint64 PlayerGUID) { misdirectionTarget = PlayerGUID; }
 
-        bool bReincarnation;
+        bool bReincarnation;                    // Shaman spell related
 
         std::map<uint32, WeaponModifier> damagedone;
         std::map<uint32, WeaponModifier> tocritchance;
@@ -2082,13 +2089,10 @@ public:
 
         void removeVehicleComponent();
 
-        bool bHasBindDialogOpen;
         uint32 TrackingSpell;
         void _EventCharmAttack();
-        void _Kick();
-        void Kick(uint32 delay = 0);
+        
         void SoftDisconnect();
-        uint32 m_KickDelay;
         uint64 m_CurrentCharm;
 
         void ClearCooldownsOnLine(uint32 skill_line, uint32 called_from);

@@ -201,7 +201,6 @@ Player::Player(uint32 guid)
     misdirectionTarget(0),
     bReincarnation(false),
     m_MountSpellId(0),
-    bHasBindDialogOpen(false),
     TrackingSpell(0),
     m_CurrentCharm(0),
     // gm stuff
@@ -445,7 +444,6 @@ Player::Player(uint32 guid)
     this->OnLogin();
 
     m_requiresNoAmmo = false;
-    m_KickDelay = 0;
     m_passOnLoot = false;
     m_changingMaps = true;
     m_outStealthDamageBonusPct = m_outStealthDamageBonusPeriod = m_outStealthDamageBonusTimer = 0;
@@ -6160,39 +6158,6 @@ uint32 Player::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     return count;
 }
 
-void Player::Kick(uint32 delay /* = 0 */)
-{
-    if (!delay)
-    {
-        m_KickDelay = 0;
-        _Kick();
-    }
-    else
-    {
-        m_KickDelay = delay;
-        sEventMgr.AddEvent(this, &Player::_Kick, EVENT_PLAYER_KICK, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    }
-}
-
-void Player::_Kick()
-{
-    if (!m_KickDelay)
-    {
-        sEventMgr.RemoveEvents(this, EVENT_PLAYER_KICK);
-        // remove now
-        GetSession()->LogoutPlayer(true);
-    }
-    else
-    {
-        if (m_KickDelay < 1500)
-            m_KickDelay = 0;
-        else
-            m_KickDelay -= 1000;
-
-        sChatHandler.BlueSystemMessage(GetSession(), "You will be removed from the server in %u seconds.", (uint32)(m_KickDelay / 1000));
-    }
-}
-
 void Player::ClearCooldownsOnLine(uint32 skill_line, uint32 called_from)
 {
     // found an easier way.. loop spells, check skill line
@@ -7540,7 +7505,7 @@ void Player::CompleteLoading()
 
     if (isBanned())
     {
-        Kick(10000);
+        kickFromServer(10000);
         BroadcastMessage(GetSession()->LocalizedWorldSrv(ServerString::SS_NOT_ALLOWED_TO_PLAY));
         BroadcastMessage(GetSession()->LocalizedWorldSrv(ServerString::SS_BANNED_FOR_TIME), getBanReason().c_str());
     }

@@ -1382,6 +1382,38 @@ GameObject* Player::getSelectedGo() const
 
 void Player::setSelectedGo(uint64_t guid) { m_GMSelectedGO = guid; }
 
+void Player::kickFromServer(uint32_t delay)
+{
+    if (delay)
+    {
+        m_kickDelay = delay;
+        sEventMgr.AddEvent(this, &Player::eventKickFromServer, EVENT_PLAYER_KICK, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    }
+    else
+    {
+        m_kickDelay = 0;
+        eventKickFromServer();
+    }
+}
+
+void Player::eventKickFromServer()
+{
+    if (m_kickDelay)
+    {
+        if (m_kickDelay < 1500)
+            m_kickDelay = 0;
+        else
+            m_kickDelay -= 1000;
+
+        sChatHandler.BlueSystemMessage(GetSession(), "You will be removed from the server in %u seconds.", static_cast<uint32>(m_kickDelay / 1000));
+    }
+    else
+    {
+        sEventMgr.RemoveEvents(this, EVENT_PLAYER_KICK);
+        GetSession()->LogoutPlayer(true);
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Basic
 

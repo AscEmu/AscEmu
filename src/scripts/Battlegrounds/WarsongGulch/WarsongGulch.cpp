@@ -382,7 +382,7 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
         // Remove player from battleground.
         this->RemovePlayer(plr, false);
         // Kick player from server.
-        plr->Kick(6000);
+        plr->kickFromServer(6000);
         return;
     }
 #endif

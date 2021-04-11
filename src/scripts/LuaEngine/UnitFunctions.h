@@ -3342,7 +3342,7 @@ public:
     {
         TEST_PLAYER()
         uint32_t delay = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        static_cast<Player*>(ptr)->Kick(delay);
+        static_cast<Player*>(ptr)->kickFromServer(delay);
         return 0;
     }
 
