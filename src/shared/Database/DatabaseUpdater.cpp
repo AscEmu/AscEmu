@@ -82,7 +82,7 @@ void DatabaseUpdater::setupDatabase(std::string database, Database& dbPointer)
         while ((pos = loadedFile.find(delimiter)) != std::string::npos)
         {
             token = loadedFile.substr(0, pos);
-            seglist.push_back(token + ";");
+            seglist.emplace_back(token + ";");
             loadedFile.erase(0, pos + delimiter.length());
         }
 
@@ -154,7 +154,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
         //\todo Remove me
         LogDetail("Available file in updates dir: %s", filePathName.c_str());
 
-        updateSqlStore.insert(std::pair<uint32_t, DatabaseUpdateFile>(count, dbUpdateFile));
+        updateSqlStore.emplace(std::pair<uint32_t, DatabaseUpdateFile>(count, dbUpdateFile));
         ++count;
     }
 
@@ -207,7 +207,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
                 while ((pos = loadedFile.find(delimiter)) != std::string::npos)
                 {
                     token = loadedFile.substr(0, pos);
-                    seglist.push_back(token + ";");
+                    seglist.emplace_back(token + ";");
                     loadedFile.erase(0, pos + delimiter.length());
                 }
 
