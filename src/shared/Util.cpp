@@ -447,7 +447,7 @@ namespace Util
                     if (!withPath)
                         fileName.erase(0, pathName.size());
 
-                    directoryContentMap.insert(std::pair<uint32_t, std::string>(count, fileName));
+                    directoryContentMap.emplace(std::pair<uint32_t, std::string>(count, fileName));
                     ++count;
                 }
             }
@@ -457,7 +457,7 @@ namespace Util
                 if (!withPath)
                     fileName.erase(0, pathName.size());
 
-                directoryContentMap.insert(std::pair<uint32_t, std::string>(count, fileName));
+                directoryContentMap.emplace(std::pair<uint32_t, std::string>(count, fileName));
                 ++count;
             }
         }
