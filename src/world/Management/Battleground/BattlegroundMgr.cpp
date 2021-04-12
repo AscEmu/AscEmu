@@ -344,7 +344,7 @@ void CBattlegroundManager::HandleGetBattlegroundQueueCommand(WorldSession* m_ses
 
     bool foundSomething = false;
 
-    for (uint8 i = 0; i < BATTLEGROUND_NUM_TYPES; ++i)
+    for (uint32_t i = 0; i < BATTLEGROUND_NUM_TYPES; ++i)
     {
         for (uint8 j = 0; j < MAX_LEVEL_GROUP; ++j)
         {
@@ -585,7 +585,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
     m_queueLock.Acquire();
     m_instanceLock.Acquire();
 
-    for (uint8 i = 0; i < BATTLEGROUND_NUM_TYPES; ++i)
+    for (uint32_t i = 0; i < BATTLEGROUND_NUM_TYPES; ++i)
     {
         for (uint8 j = 0; j < MAX_LEVEL_GROUP; ++j)
         {
