@@ -339,6 +339,44 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
         return OUTPACKET_RESULT_NO_ROOM_IN_BUFFER;
     }
 
+    switch (opcode)
+    {
+    //case SMSG_POWER_UPDATE:
+    //case SMSG_ITEM_TIME_UPDATE:
+    //case SMSG_AURA_UPDATE_ALL:
+    //case SMSG_UPDATE_INSTANCE_OWNERSHIP:
+    //case SMSG_SPELL_GO:
+    //case SMSG_SPELL_COOLDOWN:
+    //case SMSG_SPELL_START:
+    //case SMSG_SPELL_FAILURE:
+    //case SMSG_CAST_FAILED:
+    case SMSG_MOVE_SET_CAN_FLY:
+    //case SMSG_TIME_SYNC_REQ:
+    //case SMSG_UPDATE_OBJECT:
+    //case SMSG_UPDATE_WORLD_STATE:
+    //case MSG_MOVE_SET_FLIGHT_SPEED:
+    //case MSG_MOVE_SET_RUN_SPEED:
+    //case SMSG_LOGIN_SETTIMESPEED:
+    //case SMSG_INITIALIZE_FACTIONS:
+    //case SMSG_ACTION_BUTTONS:
+    //case SMSG_SEND_UNLEARN_SPELLS:
+    //case SMSG_INITIAL_SPELLS:
+    //case SMSG_TALENTS_INFO:
+    //case SMSG_TUTORIAL_FLAGS:
+    //case SMSG_SET_PROFICIENCY:
+    //case SMSG_BINDPOINTUPDATE:
+    //case SMSG_INSTANCE_DIFFICULTY:
+    //case SMSG_MOTD:
+    //case SMSG_MESSAGECHAT:
+    //case MSG_SET_RAID_DIFFICULTY:
+    //case MSG_SET_DUNGEON_DIFFICULTY:
+    //case SMSG_CONTACT_LIST:
+    //case SMSG_ACCOUNT_DATA_TIMES:
+    //case SMSG_FEATURE_SYSTEM_STATUS:
+    //case SMSG_LOGIN_VERIFY_WORLD:
+        return OUTPACKET_RESULT_NOT_CONNECTED;
+    }
+
     // Packet logger :)
     sWorldPacketLog.logPacket(static_cast<uint32_t>(len), opcode, static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
 

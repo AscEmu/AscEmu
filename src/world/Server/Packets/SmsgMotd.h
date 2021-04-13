@@ -39,19 +39,21 @@ namespace AscEmu::Packets
             for (const auto& line : motdLines)
                 packet << line;
 
-//#else
-//            ByteBuffer stringBuffer;
-//
-//            packet.PutBits(0, lineCount, 4);
-//
-//            for (const auto& line : motdLines)
-//            {
-//                packet.writeBits(strlen(line.c_str()), 7);
-//                stringBuffer.WriteString(line);
-//            }
-//
-//            packet.flushBits();
-//            packet.append(stringBuffer);
+#else
+
+            packet.writeBits(0, 4);
+
+            ByteBuffer stringBuffer;
+
+            for (const auto& line : motdLines)
+            {
+                packet.writeBits(strlen(line.c_str()), 7);
+                stringBuffer.WriteString(line);
+            }
+
+            packet.PutBits(0, lineCount, 4);
+            packet.flushBits();
+            packet.append(stringBuffer);
 #endif
             return true;
         }
