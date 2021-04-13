@@ -174,8 +174,8 @@ namespace DBC::Structures
         char const achievement_format[] = "niiissiiiiisii";
         char const achievement_criteria_format[] = "niiiiiiiixsiiiiixxxxxxx";
         char const area_group_format[] = "niiiiiii";
-        char const area_table_entry_format[] = "iiinixxxxxxxisiiiiiffixxxxxxxx";
-        char const area_trigger_entry_format[] = "nifffxxxfffffxxx";
+        char const area_table_entry_format[] = "iiinixxxxxisiiiiixxxxxxxxx";
+        char const area_trigger_entry_format[] = "nifffxxxfffff";
         //char const armor_location_format[] = "nfffff"; new
         char const auction_house_format[] = "niiix";
         char const bank_bag_slot_prices_format[] = "ni";
@@ -185,8 +185,8 @@ namespace DBC::Structures
         char const char_start_outfit_format[]="dbbbXiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxii"; 
         char const char_titles_format[] = "nxsxix";
         char const chat_channels_format[] = "iixsx";
-        char const chr_classes_format[] = "nixsxxxixiiiixxxxx";
-        char const chr_races_format[] = "nxixiixixxxxixsxxxxxxxxxxxxxxxxxxxxx";
+        char const chr_classes_format[] = "nixsxxxixiiiii";
+        char const chr_races_format[] = "nxixiixixxxxixsxxxxxixxx";
         char const chr_classes_xpower_types_format[]="nii";
         //char const cinematic_sequences_format[]="nxxxxxxxxx"; new
         char const creature_display_info_format[]="nixifxxxxxxxxxxxx";
@@ -195,14 +195,14 @@ namespace DBC::Structures
         //char const creature_model_data_format[] = "nxxxxxxxxxxxxxxffxxxxxxxxxxxxxx"; new
         char const creature_spell_data_format[] = "niiiiiiii";  //niiiixxxx
         //char const creature_type_format[]="nxx"; new
-        char const currency_types_format[] = "nixxxiiiiixx";
+        char const currency_types_format[] = "nisxxxxiiix";
         //char const destructible_model_data_format[] = "nixxxixxxxixxxxixxxxixxx"; new
-        char const dungeon_encounter_format[] = "niixisxxx";
+        char const dungeon_encounter_format[] = "niixisxx";
         char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
         char const durability_quality_format[] = "nf";
         char const emotes_entry_format[] = "nxxiiixx";
         char const emotes_text_format[] = "nxixxxxxxxxxxxxxxxx";
-        char const faction_format[] = "niiiiiiiiiiiiiiiiiiffixsxxxx";
+        char const faction_format[] = "niiiiiiiiiiiiiiiiiiffixsxx";
         char const faction_template_format[] = "niiiiiiiiiiiii";
         char const game_object_display_info_format[] = "nsxxxxxxxxxxffffffxxx";
         char const gem_properties_format[] = "nixxix";
@@ -255,8 +255,8 @@ namespace DBC::Structures
         char const quest_xp_format[] = "niiiiiiiiii";
         //char const random_properties_points_format[] = "niiiiiiiiiiiiiii"; new
         char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiixi";
-        char const scaling_stat_values_format[] = "iniiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxx";
-        char const skill_line_format[] = "nisxixixx";
+        char const scaling_stat_values_format[] = "iniiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxx";
+        char const skill_line_format[] = "nisxixi";
         char const skill_line_ability_format[] = "niiiixxiiiiiix";
         //char const sound_entries_format[] = "nissssssssssssssssssssssxxxxxxxxxxx"; new
         char const spell_aura_options_format[] = "diiii";
@@ -271,9 +271,9 @@ namespace DBC::Structures
         char const spell_entry_format[] = "niiiiiiiiiiiiiiifiiiissxxiixxixiiiiiiixiiiiiiiix";
         char const spell_item_enchantment_format[] = "nxiiiiiixxxiiisiiiiiiix";
         //char const skill_race_class_info_format[] = "diiiiixxx"; new
-        char const spell_radius_format[] = "nffxf";
+        char const spell_radius_format[] = "nfff";
         char const spell_range_format[] = "nffffixx";
-        char const spell_rune_cost_format[] = "niiixi";
+        char const spell_rune_cost_format[] = "niiii";
         char const spell_shapeshift_form_format[] = "nxxiixiiixxiiiiiiiixx";
         char const spell_effect_format[] = "difiiiffiiiiiifiifiiiiiiiix";
         char const spell_equipped_items_format[] = "diii";
@@ -292,13 +292,13 @@ namespace DBC::Structures
         char const talent_format[] = "niiiiiiiiixxixxxxxx";
         char const talent_tab_format[] = "nxxiiixxiii";
         char const talent_tree_primary_spells_format[] = "iiix";
-        char const taxi_nodes_format[] = "nifffsiixixx";
+        char const taxi_nodes_format[] = "nifffsiixxx";
         char const taxi_path_format[] = "niii";
         char const taxi_path_node_format[] = "diiifffiiii";
         char const totem_category_entry_format[] = "nxii";
         char const transport_animation_format[] = "diifffx";
         char const transport_rotation_format[] = "diiffff";
-        char const vehicle_format[] = "nixffffiiiiiiiifffffffffffffffssssfifiixx";
+        char const vehicle_format[] = "niffffiiiiiiiifffffffffffffffssssfifiixx";
         char const vehicle_seat_format[] = "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxxxxxxxxxx";
         char const wmo_area_table_format[] = "niiixxxxxiixxxx";
         char const world_map_area_entry_format[] = "xinxxxxxixxxxx";
@@ -750,29 +750,21 @@ namespace DBC::Structures
         uint32_t id;                                                // 0
         uint32_t map_id;                                            // 1
         uint32_t zone;                                              // 2 if 0 then it's zone, else it's zone id of this area
-        uint32_t explore_flag;                                      // 3 main index
-        uint32_t flags;                                             // 4 unknown value but 312 for all cities
-        //uint32_t unk1;                                            // 5 Pandaria
-        //uint32_t soundPreferences;                                // 6
-        //uint32_t SoundPreferencesUnderwater;                      // 7
-        //uint32_t SoundAmbience;                                   // 8
-        //char* areaName2;                                          // 9
-        //uint32_t ZoneMusic;                                       // 10
-        //uint32_t ZoneIntroMusicTable;                             // 11
-        int32_t area_level;                                         // 12
-        char* area_name;                                            // 13
-        uint32_t team;                                              // 14
-        uint32_t liquid_type_override[4];                           // 14-18 liquid override by type
-        float MaxDepth;                                             // 19
-        float AmbientMultiplier;                                    // 20
-        uint32_t LightId;                                           // 21 
-        //uint32_t unk20;                                           // 22 4.0.0
-        //uint32_t unk21;                                           // 23 4.0.0
-        //uint32_t unk22;                                           // 24 4.0.0
-        //uint32_t unk23;                                           // 25 4.0.0
-        //uint32_t unk24;                                           // 26
-        //uint32_t unk25;                                           // 27 Pandaria
-        //uint32_t unk26;                                           // 28 Pandaria
+        uint32_t explore_flag;                                      // 3, main index
+        uint32_t flags;                                             // 4, unknown value but 312 for all cities
+                                                                    // 5-9 unused
+        int32_t area_level;                                         // 10
+        char* area_name;                                            // 11
+        uint32_t team;                                              // 12
+        uint32_t liquid_type_override[4];                           // 13-16 liquid override by type
+        //uint32_t unk17;                                           // 17
+        //uint32_t unk18;                                           // 18
+        //uint32_t unk19;                                           // 19
+        //uint32_t unk20;                                           // 20
+        //uint32_t unk21;                                           // 21
+        //uint32_t unk22;                                           // 22
+        //uint32_t unk23;                                           // 23
+        //uint32_t unk24;                                           // 24
     };
 
     struct AreaTriggerEntry
@@ -785,14 +777,11 @@ namespace DBC::Structures
         //uint32_t                                                  // 5
         //uint32_t                                                  // 6
         //uint32_t                                                  // 7
-        float box_radius;                                           // 8 radius
-        float box_x;                                                // 9 extent x edge
-        float box_y;                                                // 10 extent y edge
-        float box_z;                                                // 11 extent z edge
-        float box_o;                                                // 12 extent o edge
-        //uint32_t unk13;                                           // 13 Pandaria
-        //uint32_t unk14;                                           // 14 Pandaria
-        //uint32_t unk15;                                           // 15 Pandaria
+        float box_radius;                                           // 5 radius
+        float box_x;                                                // 6 extent x edge
+        float box_y;                                                // 7 extent y edge
+        float box_z;                                                // 8 extent z edge
+        float box_o;                                                // 9
     };
 
     //\todo danko
@@ -885,14 +874,10 @@ namespace DBC::Structures
         uint32_t spellfamily;                                       // 7
         //uint32_t unk4;                                            // 8
         uint32_t cinematic_id;                                      // 9 CinematicSequences.dbc
-        uint32_t apPerStr;                                          // 10
-        uint32_t apPerAgi;                                          // 11
-        uint32_t rapPerAgi;                                         // 12
-        //uint32_t unk1                                             // 13 Pandaria
-        //uint32_t unk2                                             // 14 Pandaria
-        //uint32_t unk3                                             // 15 Pandaria
-        //uint32_t unk4                                             // 16 Pandaria
-        //uint32_t unk5                                             // 17 Pandaria
+        uint32_t expansion;                                         // 10
+        uint32_t apPerStr;                                          // 11
+        uint32_t apPerAgi;                                          // 12
+        uint32_t rapPerAgi;                                         // 13
     };
 
     struct ChrRacesEntry
@@ -913,22 +898,10 @@ namespace DBC::Structures
         //char* name_neutral;                                       // 16
         //uint32_t unk5[2]                                          // 17-18
         //uint32_t unk19                                            // 19
-        //uint32_t m_enemyRace;                                     // 20
+        uint32_t expansion;                                         // 20
         //uint32_t unk21                                            // 21
         //uint32_t unk22                                            // 22
         //uint32_t unk23                                            // 23
-        //uint32_t unk24;                                           // 24
-        //uint32_t defaultClassForRace                              // 25
-        //uint32_t unk26;                                           // 26
-        //uint32_t unk27;                                           // 27
-        //float unk28;                                              // 28
-        //uint32_t unk29;                                           // 29
-        //float unk30;                                              // 30
-        //float unk31;                                              // 31
-        //uint32_t unk32;                                           // 32
-        //float unk33;                                              // 33
-        //uint32_t unk34;                                           // 34
-        //uint32_t unk35;                                           // 35
     };
 
     struct ChrPowerTypesEntry
@@ -1009,16 +982,15 @@ namespace DBC::Structures
     {
         uint32_t item_id;                                           // 0
         uint32_t Category;                                          // 1
-        //char* name;                                               // 2
+        char* name;                                                 // 2
         //char* unk                                                 // 3
-        //uint32_t unk4                                             // 4
-        uint32_t HasSubstitution;                                   // 5 Pandaria (Archaeology)
-        uint32_t SubstitutionId;                                    // 6
+        //char* unk2                                                // 4
+        //uint32_t unk5;                                            // 5
+        //uint32_t unk6;                                            // 6
         uint32_t TotalCap;                                          // 7
         uint32_t WeekCap;                                           // 8
         uint32_t Flags;                                             // 9
-        //uint32_t unk10                                            // 10 Pandaria
-        //char* description;                                        // 11
+        //char* description;                                        // 10
     };
 
     struct DurabilityCostsEntry
@@ -1069,8 +1041,6 @@ namespace DBC::Structures
         char* Name;                                                 // 23
         //uint32_t Description;                                     // 24
         //uint32_t description_flags;                               // 25
-        // unk1                                                     // 26 Pandaria
-        // unk2                                                     // 27 Pandaria
     };
 
     struct FactionTemplateEntry
@@ -1281,9 +1251,8 @@ namespace DBC::Structures
         //uint32_t unk0;                                            // 3
         uint32_t encounterIndex;                                    // 4 encounter index for creating completed mask
         char* encounterName;                                        // 5 encounter name
-        //uint32_t nameFlags;                                       // 6
-        //uint32_t unk7;                                            // 7
-        //uint32_t unk8;                                            // 8 Pandaria
+        //uint32_t nameFlags;                                       // 21
+        //uint32_t unk1;                                            // 22
     };
 
     struct LiquidTypeEntry
@@ -1420,21 +1389,17 @@ namespace DBC::Structures
         //uint32_t amor_mod2[4];                                    // 18-21
         //uint32_t junk[24];                                        // 22-45
         //uint32_t unk2;                                            // 46
-        //uint32_t unk;                                             // 47 Pandaria
     };
 
     struct SkillLineEntry
     {
         uint32_t id;                                                // 0
         uint32_t type;                                              // 1
-        //uint32_t unk2                                             // 2
-        char* Name;                                                 // 3
-        //char* Description;                                        // 4
-        uint32_t spell_icon;                                        // 5
-        //char* add_name;                                           // 6
-        uint32_t linkable;                                          // 7
-        //uint32_t unk8                                             // 8 Pandaria
-        //uint32_t unk9                                             // 9 Pandaria
+        char* Name;                                                 // 2
+        //char* Description;                                        // 3
+        uint32_t spell_icon;                                        // 4
+        //char* add_name;                                           // 5
+        uint32_t linkable;                                          // 6
     };
 
     struct SkillLineAbilityEntry
@@ -1686,8 +1651,7 @@ namespace DBC::Structures
         uint32_t ID;                                                // 0
         float radius_min;                                           // 1
         float radius_per_level;                                     // 2
-        //float unkRadius;                                          // 3
-        float radius_max;                                           // 4
+        float radius_max;                                           // 3
     };
 
     // SpellRange.dbc
@@ -1717,11 +1681,10 @@ namespace DBC::Structures
     struct SpellRuneCostEntry
     {
         uint32_t ID;                                                // 0
-        uint32_t bloodRuneCost;                                     // [1-3]
-        uint32_t frostRuneCost;                                     //
-        uint32_t unholyRuneCost;                                    //
-        //uint32_t unk4                                             // 4
-        uint32_t runePowerGain;                                     // 5
+        uint32_t bloodRuneCost;                                     // 1
+        uint32_t frostRuneCost;                                     // 2
+        uint32_t unholyRuneCost;                                    // 3
+        uint32_t runePowerGain;                                     // 4
     };
 
     // SpellScaling.dbc
@@ -1960,12 +1923,8 @@ namespace DBC::Structures
         float y;                                                    // 3
         float z;                                                    // 4
         char* name;                                                 // 5
-        uint32_t horde_mount;                                       // [6-7]
-        uint32_t alliance_mount;                                    //
-        //uint32_t unk1                                             // 8 Pandaria
-        uint32_t nameflags;                                         // 9
-        //uint32_t unk1                                             // 10 4.0.0
-        //uint32_t unk1                                             // 11 4.0.0
+        uint32_t horde_mount;                                       // 6
+        uint32_t alliance_mount;                                    // 7
     };
 
     struct TaxiPathEntry
@@ -2026,35 +1985,34 @@ namespace DBC::Structures
         uint32_t ID;                                                // 0
         uint32_t flags;                                             // 1
         float turnSpeed;                                            // 2
-        //char* unkName                                             // 3 Panradia
-        float pitchSpeed;                                           // 4
-        float pitchMin;                                             // 5
-        float pitchMax;                                             // 6
-        uint32_t seatID[MAX_VEHICLE_SEATS];                         // 7-15
-        float mouseLookOffsetPitch;                                 // 16
-        float cameraFadeDistScalarMin;                              // 17
-        float cameraFadeDistScalarMax;                              // 18
-        float cameraPitchOffset;                                    // 19
-        float facingLimitRight;                                     // 20
-        float facingLimitLeft;                                      // 21
-        float msslTrgtTurnLingering;                                // 21
-        float msslTrgtPitchLingering;                               // 22
-        float msslTrgtMouseLingering;                               // 23
-        float msslTrgtEndOpacity;                                   // 24
-        float msslTrgtArcSpeed;                                     // 25
-        float msslTrgtArcRepeat;                                    // 26
-        float msslTrgtArcWidth;                                     // 27
-        float msslTrgtImpactRadius[2];                              // 28-30
-        char* msslTrgtArcTexture;                                   // 31
-        char* msslTrgtImpactTexture;                                // 32
-        char* msslTrgtImpactModel[2];                               // 33-35
-        float cameraYawOffset;                                      // 36
-        uint32_t uiLocomotionType;                                  // 37
-        float msslTrgtImpactTexRadius;                              // 38
-        uint32_t uiSeatIndicatorType;                               // 39
-        uint32_t powerType;                                         // 40 new in 3.1
-        //uint32_t unk1;                                            // 41 new in 3.1
-        //uint32_t unk2;                                            // 42 new in 3.1
+        float pitchSpeed;                                           // 3
+        float pitchMin;                                             // 4
+        float pitchMax;                                             // 5
+        uint32_t seatID[MAX_VEHICLE_SEATS];                         // 6-13
+        float mouseLookOffsetPitch;                                 // 14
+        float cameraFadeDistScalarMin;                              // 15
+        float cameraFadeDistScalarMax;                              // 16
+        float cameraPitchOffset;                                    // 17
+        float facingLimitRight;                                     // 18
+        float facingLimitLeft;                                      // 19
+        float msslTrgtTurnLingering;                                // 20
+        float msslTrgtPitchLingering;                               // 21
+        float msslTrgtMouseLingering;                               // 22
+        float msslTrgtEndOpacity;                                   // 23
+        float msslTrgtArcSpeed;                                     // 24
+        float msslTrgtArcRepeat;                                    // 25
+        float msslTrgtArcWidth;                                     // 26
+        float msslTrgtImpactRadius[2];                              // 27-28
+        char* msslTrgtArcTexture;                                   // 29
+        char* msslTrgtImpactTexture;                                // 30
+        char* msslTrgtImpactModel[2];                               // 31-32
+        float cameraYawOffset;                                      // 33
+        uint32_t uiLocomotionType;                                  // 34
+        float msslTrgtImpactTexRadius;                              // 35
+        uint32_t uiSeatIndicatorType;                               // 36
+        uint32_t powerType;                                         // 37
+        //uint32_t unk1;                                            // 38
+        //uint32_t unk2;                                            // 39  
     };
 
     enum VehicleSeatFlags
@@ -2071,7 +2029,7 @@ namespace DBC::Structures
     enum VehicleSeatFlagsB
     {
         VEHICLE_SEAT_FLAG_B_NONE                     = 0x00000000,
-        VEHICLE_SEAT_FLAG_B_USABLE_FORCED            = 0x00000002,
+        VEHICLE_SEAT_FLAG_B_USABLE_FORCED            = 0x00000002, 
         VEHICLE_SEAT_FLAG_B_USABLE_FORCED_2          = 0x00000040,
         VEHICLE_SEAT_FLAG_B_USABLE_FORCED_3          = 0x00000100,
     };
@@ -2163,10 +2121,8 @@ namespace DBC::Structures
         //uint32_t field8;                                          // 8
         uint32_t flags;                                             // 9
         uint32_t areaId;                                            // 10
-        //char *Name;                                               // 11
-        //uint32_t field12;                                         // 12
-        //uint32_t field13;                                         // 13
-        //uint32_t field14;                                         // 14
+        //char Name[16];                                            // 11-26
+        //uint32_t nameflags;                                       // 27
     };
 
     struct WorldMapAreaEntry
