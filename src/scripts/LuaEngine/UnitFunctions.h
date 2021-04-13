@@ -1372,15 +1372,15 @@ public:
 
     static int GetPrimaryCombatTarget(lua_State* L, Unit* ptr)
     {
-        // should use now instead of GetTarget
         TEST_PLAYER()
+
         if (!ptr->CombatStatus.IsInCombat())
         {
             lua_pushinteger(L, 0);
             return 1;
         }
-        else
-            PUSH_UNIT(L, ptr->GetMapMgr()->GetUnit(static_cast<Player*>(ptr)->CombatStatus.GetPrimaryAttackTarget()));
+
+        PUSH_UNIT(L, ptr->GetMapMgr()->GetUnit(dynamic_cast<Player*>(ptr)->CombatStatus.GetPrimaryAttackTarget()));
 
         return 1;
     }
@@ -4000,19 +4000,6 @@ public:
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
-        return 1;
-    }
-
-    static int GetTarget(lua_State* L, Unit* ptr)
-    {
-        DLLLogDetail("LuaEngine : GetTarget is outdated. Please use GetPrimaryCombatTarget.");
-        TEST_PLAYER()
-        Player* plr = static_cast<Player*>(ptr);
-        Unit* target = plr->GetMapMgr()->GetUnit(plr->GetTarget());
-        if (target != nullptr)
-            PUSH_UNIT(L, target);
-        else
-            lua_pushnil(L);
         return 1;
     }
 

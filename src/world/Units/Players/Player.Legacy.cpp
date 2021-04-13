@@ -237,7 +237,6 @@ Player::Player(uint32 guid)
     //FIX for professions
     weapon_proficiency(0x4000), //2^14
     m_talentresettimes(0),
-    m_curTarget(0),
     m_curSelection(0),
     m_targetIcon(0),
     m_session(nullptr),

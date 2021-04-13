@@ -285,7 +285,6 @@ RegType<Unit> UnitMethods[] =
     { "CanUseCommand", &LuaUnit::CanUseCommand },
     { "DeMorph", &LuaUnit::DeMorph },
     { "Attack", &LuaUnit::Attack },
-    { "GetTarget", &LuaUnit::GetTarget },
     { "GetSelection", &LuaUnit::GetSelection },
     { "SetMount", &LuaUnit::SetMount },
     { "StartQuest", &LuaUnit::StartQuest },

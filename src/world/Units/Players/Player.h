@@ -1531,11 +1531,8 @@ public:
         // Selection/Target
         /////////////////////////////////////////////////////////////////////////////////////////
         const uint64 & GetSelection() const { return m_curSelection; }
-        const uint64 & GetTarget() const { return m_curTarget; }
         void SetSelection(const uint64 & guid) { m_curSelection = guid; }
-        void SetTarget(const uint64 & guid) { m_curTarget = guid; }
 protected:
-        uint64 m_curTarget;
         uint64 m_curSelection;
 public:
 
