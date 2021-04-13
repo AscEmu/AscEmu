@@ -333,7 +333,6 @@ Player::Player(uint32 guid)
 
     blinked = false;
     m_explorationTimer = Util::getMSTime();
-    linkTarget = nullptr;
     m_pvpTimer = 0;
     m_globalCooldown = 0;
     m_lastHonorResetTime = 0;

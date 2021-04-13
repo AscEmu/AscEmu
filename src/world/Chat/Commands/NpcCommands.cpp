@@ -1191,7 +1191,7 @@ bool ChatHandler::HandleNpcSetFormationMasterCommand(const char* /*args*/, World
     if (creature_target == nullptr)
         return true;
 
-    m_session->GetPlayer()->linkTarget = creature_target;
+    m_session->GetPlayer()->m_formationMaster = creature_target;
     BlueSystemMessage(m_session, "Formation Master set to %s spawn ID: %u.", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
     return true;
 }
@@ -1210,13 +1210,13 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
         return true;
     }
 
-    if (m_session->GetPlayer()->linkTarget == nullptr)
+    if (m_session->GetPlayer()->m_formationMaster == nullptr)
     {
         RedSystemMessage(m_session, "Master not set! Use .npc set formationmaster first.");
         return true;
     }
 
-    if (m_session->GetPlayer()->linkTarget->isPet())
+    if (m_session->GetPlayer()->m_formationMaster->isPet())
     {
         RedSystemMessage(m_session, "A pet can not be a master of a formation!");
         return true;
@@ -1228,11 +1228,11 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
 
     creature_slave->GetAIInterface()->m_formationFollowDistance = distance;
     creature_slave->GetAIInterface()->m_formationFollowAngle = angle;
-    creature_slave->GetAIInterface()->m_formationLinkTarget = m_session->GetPlayer()->linkTarget->getGuid();
-    creature_slave->GetAIInterface()->m_formationLinkSqlId = m_session->GetPlayer()->linkTarget->GetSQL_id();
+    creature_slave->GetAIInterface()->m_formationLinkTarget = m_session->GetPlayer()->m_formationMaster->getGuid();
+    creature_slave->GetAIInterface()->m_formationLinkSqlId = m_session->GetPlayer()->m_formationMaster->GetSQL_id();
     creature_slave->GetAIInterface()->SetUnitToFollowAngle(angle);
 
-    BlueSystemMessage(m_session, "%s linked to %s with a distance of %f at %f radians.", creature_slave->GetCreatureProperties()->Name.c_str(), m_session->GetPlayer()->linkTarget->GetCreatureProperties()->Name.c_str(), distance, angle);
+    BlueSystemMessage(m_session, "%s linked to %s with a distance of %f at %f radians.", creature_slave->GetCreatureProperties()->Name.c_str(), m_session->GetPlayer()->m_formationMaster->GetCreatureProperties()->Name.c_str(), distance, angle);
 
     if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;
@@ -1240,12 +1240,12 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
     if (save == 1)
     {
         WorldDatabase.Execute("REPLACE INTO creature_formations VALUES(%u, %u, '%f', '%f')", creature_slave->GetSQL_id(), creature_slave->GetAIInterface()->m_formationLinkSqlId, angle, distance);
-        BlueSystemMessage(m_session, "%s linked to %s with a distance of %f at %f radians.", creature_slave->GetCreatureProperties()->Name.c_str(), m_session->GetPlayer()->linkTarget->GetCreatureProperties()->Name.c_str(), distance, angle);
+        BlueSystemMessage(m_session, "%s linked to %s with a distance of %f at %f radians.", creature_slave->GetCreatureProperties()->Name.c_str(), m_session->GetPlayer()->m_formationMaster->GetCreatureProperties()->Name.c_str(), distance, angle);
         sGMLog.writefromsession(m_session, "changed npc formation of creature_spawn ID: %u [%s]", creature_slave->spawnid, creature_slave->GetCreatureProperties()->Name.c_str());
     }
     else
     {
-        BlueSystemMessage(m_session, "%s temporarily linked to %s with a distance of %f at %f radians.", creature_slave->GetCreatureProperties()->Name.c_str(), m_session->GetPlayer()->linkTarget->GetCreatureProperties()->Name.c_str(), distance, angle);
+        BlueSystemMessage(m_session, "%s temporarily linked to %s with a distance of %f at %f radians.", creature_slave->GetCreatureProperties()->Name.c_str(), m_session->GetPlayer()->m_formationMaster->GetCreatureProperties()->Name.c_str(), distance, angle);
     }
 
     return true;

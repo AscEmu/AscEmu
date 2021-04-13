@@ -1061,6 +1061,8 @@ public:
 
     bool m_isGmInvisible = false;
 
+    Creature* m_formationMaster = nullptr;
+
 private:
 
     bool m_disableAppearing = false;
@@ -2165,7 +2167,6 @@ public:
         // DBC stuff
         DBC::Structures::ChrRacesEntry const* myRace;
         DBC::Structures::ChrClassesEntry const* myClass;
-        Creature* linkTarget;
 
         bool SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, float Z, float O);
         bool SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector & vec);
