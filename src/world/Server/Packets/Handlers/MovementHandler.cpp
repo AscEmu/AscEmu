@@ -470,7 +470,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    if (/*_player->getCharmedByGuid() || */_player->GetPlayerStatus() == TRANSFER_PENDING || _player->isOnTaxi() || _player->getDeathState() == JUST_DIED)
+    if (/*_player->getCharmedByGuid() || */_player->isTransferPending() || _player->isOnTaxi() || _player->getDeathState() == JUST_DIED)
         return;
 
     // spell cancel on movement, for now only fishing is added
@@ -846,7 +846,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     if (m_MoverGuid != mover->getGuid())
         return;
 
-    if (mover->getCharmedByGuid() || !mover->IsInWorld() || mover->GetPlayerStatus() == TRANSFER_PENDING || mover->isOnTaxi())
+    if (mover->getCharmedByGuid() || !mover->IsInWorld() || mover->isTransferPending() || mover->isOnTaxi())
     {
         return;
     }
@@ -1215,7 +1215,7 @@ void WorldSession::handleMountSpecialAnimOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
 {
-    _player->SetPlayerStatus(NONE);
+    _player->setTransferStatus(TRANSFER_NONE);
     if (_player->IsInWorld())
         return;
 
@@ -1258,7 +1258,7 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
     {
         if (worldConfig.antiHack.isTeleportHackCheckEnabled && !(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm))
         {
-            if (_player->GetPlayerStatus() != TRANSFER_PENDING)
+            if (!_player->isTransferPending())
             {
                 sCheatLog.writefromsession(this, "Used Teleporthack 1, disconnecting.");
                 Disconnect();
@@ -1273,7 +1273,7 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
             }
         }
 
-        _player->SetPlayerStatus(NONE);
+        _player->setTransferStatus(TRANSFER_NONE);
         _player->SpeedCheatReset();
 
         for (auto summon : _player->GetSummons())

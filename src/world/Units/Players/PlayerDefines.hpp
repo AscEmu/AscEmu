@@ -62,10 +62,10 @@ enum Races
     RACE_PANDAREN_HORDE = 26
 };
 
-enum PlayerStatus
+enum TransferStatus : uint8_t
 {
-    NONE             = 0,
-    TRANSFER_PENDING = 1
+    TRANSFER_NONE       = 0,
+    TRANSFER_PENDING    = 1
 };
 
 enum RankTitles : uint16_t

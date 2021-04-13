@@ -1433,6 +1433,10 @@ void Player::initialiseNoseLevel()
     }
 }
 
+void Player::setTransferStatus(uint8_t status) { m_transferStatus = status; }
+uint8_t Player::getTransferStatus() const { return m_transferStatus; }
+bool Player::isTransferPending() const { return getTransferStatus() == TRANSFER_PENDING; }
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Commands
 void Player::disableSummoning(bool disable) { m_disableSummoning = disable; }
@@ -1633,11 +1637,6 @@ void Player::applyLevelInfo(uint32_t newLevel)
 
     // Reset current played time
     m_playedtime[0] = 0;
-}
-
-bool Player::isTransferPending() const
-{
-    return GetPlayerStatus() == TRANSFER_PENDING;
 }
 
 bool Player::isClassMage() { return false; }
@@ -3676,8 +3675,6 @@ void Player::sendMovie([[maybe_unused]]uint32_t movieId)
     m_session->SendPacket(SmsgTriggerMovie(movieId).serialise().get());
 #endif
 }
-
-uint8 Player::GetPlayerStatus() const { return m_status; }
 
 PlayerSpec& Player::getActiveSpec()
 {

@@ -814,6 +814,10 @@ public:
     uint32_t m_underwaterMaxTime = 180000;
     uint32_t m_underwaterState = 0;
 
+    void setTransferStatus(uint8_t status);
+    uint8_t getTransferStatus() const;
+    bool isTransferPending() const;
+
 protected:
 
     bool m_isMoving = false;
@@ -826,6 +830,8 @@ protected:
 
     float m_noseLevel = .0f;
 
+    uint8_t m_transferStatus = TRANSFER_NONE;
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Basic
 public:
@@ -836,8 +842,6 @@ public:
     void setInitialDisplayIds(uint8_t gender, uint8_t race);
 
     void applyLevelInfo(uint32_t newLevel);
-
-    bool isTransferPending() const;
 
     virtual bool isClassMage();
     virtual bool isClassDeathKnight();
@@ -1975,9 +1979,6 @@ public:
         uint32 GetTalentResetTimes() { return m_talentresettimes; }
         void SetTalentResetTimes(uint32 value) { m_talentresettimes = value; }
 
-        void SetPlayerStatus(uint8 pStatus) { m_status = pStatus; }
-    uint8 GetPlayerStatus() const;
-
         uint32 m_nextSave;
 
         int m_lifetapbonus;         //warlock spell related
@@ -2341,8 +2342,6 @@ public:
         uint32 weapon_proficiency;
         // Talents
         uint32 m_talentresettimes;
-        // STATUS
-        uint8 m_status;
         // Raid
         uint8 m_targetIcon;
 

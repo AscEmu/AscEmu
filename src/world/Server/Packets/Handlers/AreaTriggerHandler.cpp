@@ -128,7 +128,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
     {
         case ATTYPE_INSTANCE:
         {
-            if (_player->GetPlayerStatus() == TRANSFER_PENDING)
+            if (_player->isTransferPending())
                 break;
 
             if (worldConfig.instance.checkTriggerPrerequisitesOnEnter)
@@ -192,7 +192,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
         } break;
         case ATTYPE_TELEPORT:
         {
-            if (_player->GetPlayerStatus() != TRANSFER_PENDING)
+            if (!_player->isTransferPending())
             {
                 _player->SaveEntryPoint(areaTrigger->mapId);
                 _player->SafeTeleport(areaTrigger->mapId, 0, LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));

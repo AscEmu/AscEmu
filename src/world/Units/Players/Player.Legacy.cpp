@@ -237,7 +237,6 @@ Player::Player(uint32 guid)
     //FIX for professions
     weapon_proficiency(0x4000), //2^14
     m_talentresettimes(0),
-    m_status(0),
     m_curTarget(0),
     m_curSelection(0),
     m_targetIcon(0),
@@ -6031,7 +6030,7 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
         SendTeleportAckPacket(v.x, v.y, v.z, v.o);
     }
 
-    SetPlayerStatus(TRANSFER_PENDING);
+    setTransferStatus(TRANSFER_PENDING);
     m_sentTeleportPosition = v;
     SetPosition(v);
 
@@ -6932,7 +6931,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     {
         if (GetSession())
         {
-            SetPlayerStatus(TRANSFER_PENDING);
+            setTransferStatus(TRANSFER_PENDING);
             m_sentTeleportPosition = vec;
 
             SetPosition(vec);
@@ -6993,7 +6992,7 @@ void Player::SafeTeleport(MapMgr* mgr, const LocationVector & vec)
 
     GetSession()->SendPacket(SmsgNewWorld(mgr->GetMapId(), vec).serialise().get());
 
-    SetPlayerStatus(TRANSFER_PENDING);
+    setTransferStatus(TRANSFER_PENDING);
     m_sentTeleportPosition = vec;
     SetPosition(vec);
     SpeedCheatReset();
@@ -10503,7 +10502,7 @@ void Player::SendTeleportPacket(float x, float y, float z, float o)
 
 void Player::SendTeleportAckPacket(float x, float y, float z, float o)
 {
-    SetPlayerStatus(TRANSFER_PENDING);
+    setTransferStatus(TRANSFER_PENDING);
 
 #if VERSION_STRING < WotLK
     WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
