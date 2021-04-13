@@ -807,6 +807,13 @@ public:
 
     bool isInCity() const;
 
+    void initialiseNoseLevel();
+
+    bool m_isWaterBreathingEnabled = false;
+    uint32_t m_underwaterTime = 180000;
+    uint32_t m_underwaterMaxTime = 180000;
+    uint32_t m_underwaterState = 0;
+
 protected:
 
     bool m_isMoving = false;
@@ -816,6 +823,8 @@ protected:
     bool m_isJumping = false;
 
     uint32_t m_areaId = 0;
+
+    float m_noseLevel = .0f;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Basic
@@ -1476,16 +1485,6 @@ public:
         float m_taxi_pos_z;
         bool m_onTaxi;
         uint32 m_taxiMapChangeNode;
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Breathing
-        /////////////////////////////////////////////////////////////////////////////////////////
-        ///
-        void SetNoseLevel();
-        float m_noseLevel;
-        bool m_bUnlimitedBreath;
-        uint32 m_UnderwaterTime;
-        uint32 m_UnderwaterState;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Quests
@@ -2179,7 +2178,7 @@ public:
         void AddSummonSpell(uint32 Entry, uint32 SpellID);
         void RemoveSummonSpell(uint32 Entry, uint32 SpellID);
         std::set<uint32>* GetSummonSpells(uint32 Entry);
-        uint32 m_UnderwaterMaxTime;
+
         uint32 m_UnderwaterLastDmg;
         
         uint32 m_resurrectHealth, m_resurrectMana;

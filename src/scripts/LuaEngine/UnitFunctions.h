@@ -2971,7 +2971,7 @@ public:
     {
         TEST_PLAYER()
 
-        if (static_cast<Player*>(ptr)->m_UnderwaterState)
+        if (static_cast<Player*>(ptr)->m_underwaterState)
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);

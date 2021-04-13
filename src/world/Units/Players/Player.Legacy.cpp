@@ -177,9 +177,7 @@ Player::Player(uint32 guid)
     SpellHasteRatingBonus(1.0f),
     m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
     m_lifetapbonus(0),
-    m_bUnlimitedBreath(false),
-    m_UnderwaterTime(180000),
-    m_UnderwaterState(0),
+
     // Battleground
     m_bg(nullptr),
     m_bgHasFlag(false),
@@ -202,7 +200,6 @@ Player::Player(uint32 guid)
     //m_invincible(false),
     m_Autojoin(false),
     m_AutoAddMem(false),
-    m_UnderwaterMaxTime(180000),
     m_UnderwaterLastDmg(Util::getMSTime()),
     m_resurrectHealth(0),
     m_resurrectMana(0),
@@ -483,7 +480,7 @@ Player::Player(uint32 guid)
     lvlinfo = nullptr;
     load_health = 0;
     load_mana = 0;
-    m_noseLevel = 0;
+
     m_StableSlotCount = 0;
     m_timeSyncCounter = 0;
     m_timeSyncTimer = 0;
@@ -782,6 +779,8 @@ bool Player::Create(CharCreate& charCreateContent)
     setClass(charCreateContent._class);
     setGender(charCreateContent.gender);
 
+    initialiseNoseLevel();
+
     setInitialDisplayIds(charCreateContent.gender, charCreateContent._race);
 
     EventModelChange();
@@ -920,19 +919,19 @@ void Player::Update(unsigned long time_passed)
     }
 
     // Breathing
-    if (m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
+    if (m_underwaterState & UNDERWATERSTATE_UNDERWATER)
     {
         // keep subtracting timer
-        if (m_UnderwaterTime)
+        if (m_underwaterTime)
         {
             // not taking dmg yet
-            if (time_passed >= m_UnderwaterTime)
-                m_UnderwaterTime = 0;
+            if (time_passed >= m_underwaterTime)
+                m_underwaterTime = 0;
             else
-                m_UnderwaterTime -= time_passed;
+                m_underwaterTime -= time_passed;
         }
 
-        if (!m_UnderwaterTime)
+        if (!m_underwaterTime)
         {
             // check last damage dealt timestamp, and if enough time has elapsed deal damage
             if (mstime >= m_UnderwaterLastDmg)
@@ -948,21 +947,21 @@ void Player::Update(unsigned long time_passed)
     else
     {
         // check if we're not on a full breath timer
-        if (m_UnderwaterTime < m_UnderwaterMaxTime)
+        if (m_underwaterTime < m_underwaterMaxTime)
         {
             // regenning
-            m_UnderwaterTime += (time_passed * 10);
+            m_underwaterTime += (time_passed * 10);
 
-            if (m_UnderwaterTime >= m_UnderwaterMaxTime)
+            if (m_underwaterTime >= m_underwaterMaxTime)
             {
-                m_UnderwaterTime = m_UnderwaterMaxTime;
+                m_underwaterTime = m_underwaterMaxTime;
                 sendStopMirrorTimerPacket(MIRROR_TYPE_BREATH);
             }
         }
     }
 
     // Lava Damage
-    if (m_UnderwaterState & UNDERWATERSTATE_LAVA)
+    if (m_underwaterState & UNDERWATERSTATE_LAVA)
     {
         // check last damage dealt timestamp, and if enough time has elapsed deal damage
         if (mstime >= m_UnderwaterLastDmg)
@@ -2533,7 +2532,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     else
         m_bgTeam = m_team = 1;
 
-    SetNoseLevel();
+    initialiseNoseLevel();
 
     // set power type
     setPowerType(static_cast<uint8>(myClass->power_type));
@@ -6818,8 +6817,8 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     }
 
     // make sure player does not drown when teleporting from under water
-    if (m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
-        m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+    if (m_underwaterState & UNDERWATERSTATE_UNDERWATER)
+        m_underwaterState &= ~UNDERWATERSTATE_UNDERWATER;
 
     if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
         // can only fly in outlands or northrend (northrend requires cold weather flying)
@@ -6897,8 +6896,8 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     }
 
     // make sure player does not drown when teleporting from under water
-    if (m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
-        m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+    if (m_underwaterState & UNDERWATERSTATE_UNDERWATER)
+        m_underwaterState &= ~UNDERWATERSTATE_UNDERWATER;
 
     if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
         // can only fly in outlands or northrend (northrend requires cold weather flying)
@@ -8222,7 +8221,7 @@ void Player::SoftDisconnect()
 }
 
 //\todo: find another solution for this
-void Player::SetNoseLevel()
+void Player::initialiseNoseLevel()
 {
     // Set the height of the player
     switch (getRace())
@@ -9893,8 +9892,8 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     pAttacker->smsg_AttackStop(this);
 
-    m_UnderwaterTime = 0;
-    m_UnderwaterState = 0;
+    m_underwaterTime = 0;
+    m_underwaterState = 0;
 
     getSummonInterface()->removeAllSummons();
     DismissActivePets();

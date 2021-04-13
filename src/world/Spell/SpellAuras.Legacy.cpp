@@ -4585,12 +4585,12 @@ void Aura::SpellAuraModUnderwaterBreathing(AuraEffectModifier* aurEff, bool appl
 {
     if (p_target != nullptr)
     {
-        uint32 m_UnderwaterMaxTimeSaved = p_target->m_UnderwaterMaxTime;
+        uint32 m_UnderwaterMaxTimeSaved = p_target->m_underwaterMaxTime;
         if (apply)
-            p_target->m_UnderwaterMaxTime *= (1 + aurEff->getEffectDamage() / 100);
+            p_target->m_underwaterMaxTime *= (1 + aurEff->getEffectDamage() / 100);
         else
-            p_target->m_UnderwaterMaxTime /= (1 + aurEff->getEffectDamage() / 100);
-        p_target->m_UnderwaterTime *= p_target->m_UnderwaterMaxTime / m_UnderwaterMaxTimeSaved;
+            p_target->m_underwaterMaxTime /= (1 + aurEff->getEffectDamage() / 100);
+        p_target->m_underwaterTime *= p_target->m_underwaterMaxTime / m_UnderwaterMaxTimeSaved;
     }
 }
 
@@ -4682,10 +4682,10 @@ void Aura::SpellAuraWaterBreathing(AuraEffectModifier* /*aurEff*/, bool apply)
         {
             mPositive = true;
             p_target->sendStopMirrorTimerPacket(MIRROR_TYPE_BREATH);
-            p_target->m_UnderwaterState = 0;
+            p_target->m_underwaterState = 0;
         }
 
-        p_target->m_bUnlimitedBreath = apply;
+        p_target->m_isWaterBreathingEnabled = apply;
     }
 }
 

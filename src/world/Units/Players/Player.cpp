@@ -850,10 +850,6 @@ void Player::handleFall(MovementInfo const& /*movement_info*/)
 {
 }
 
-void Player::handleBreathing(MovementInfo const& /*movement_info*/, WorldSession* /*session*/)
-{
-}
-
 bool Player::isSpellFitByClassAndRace(uint32_t /*spell_id*/)
 {
     return false;
@@ -1086,86 +1082,6 @@ void Player::handleFall(MovementInfo const& movementInfo)
     z_axisposition = 0.0f;
 }
 
-void Player::handleBreathing(MovementInfo const& movementInfo, WorldSession* session)
-{
-    if (!worldConfig.server.enableBreathing || m_cheats.hasFlyCheat || m_bUnlimitedBreath || !isAlive() || m_cheats.hasGodModeCheat)
-    {
-        if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING)
-            m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
-
-        if (m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
-        {
-            m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
-
-            SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, -1);
-        }
-
-        if (session->m_bIsWLevelSet)
-        {
-            if ((movementInfo.getPosition()->z + m_noseLevel) > session->m_wLevel)
-            {
-                RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
-
-                session->m_bIsWLevelSet = false;
-            }
-        }
-
-        return;
-    }
-
-    if (movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING) && !(m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
-    {
-        RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ENTER_WATER);
-
-        if (!session->m_bIsWLevelSet)
-        {
-            session->m_wLevel = movementInfo.getPosition()->z + m_noseLevel * 0.95f;
-            session->m_bIsWLevelSet = true;
-        }
-
-        m_UnderwaterState |= UNDERWATERSTATE_SWIMMING;
-    }
-
-    if (!(movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING)) && (movementInfo.hasMovementFlag(MOVEFLAG_NONE)) && (m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
-    {
-        if ((movementInfo.getPosition()->z + m_noseLevel) > session->m_wLevel)
-        {
-            RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
-
-            session->m_bIsWLevelSet = false;
-
-            m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
-        }
-    }
-
-    if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING && !(m_UnderwaterState & UNDERWATERSTATE_UNDERWATER))
-    {
-        if ((movementInfo.getPosition()->z + m_noseLevel) < session->m_wLevel)
-        {
-            m_UnderwaterState |= UNDERWATERSTATE_UNDERWATER;
-            SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, -1);
-        }
-    }
-
-    if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING && m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
-    {
-        if ((movementInfo.getPosition()->z + m_noseLevel) > session->m_wLevel)
-        {
-            m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
-            SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, 10);
-        }
-    }
-
-    if (!(m_UnderwaterState & UNDERWATERSTATE_SWIMMING) && m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
-    {
-        if ((movementInfo.getPosition()->z + m_noseLevel) > session->m_wLevel)
-        {
-            m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
-            SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, 10);
-        }
-    }
-}
-
 void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movementInfo)
 {
     uint32_t auraInterruptFlags = 0;
@@ -1328,6 +1244,87 @@ bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
 }
 
 #endif
+
+void Player::handleBreathing(MovementInfo const& movementInfo, WorldSession* session)
+{
+    if (!worldConfig.server.enableBreathing || m_cheats.hasFlyCheat || m_isWaterBreathingEnabled || !isAlive() || m_cheats.hasGodModeCheat)
+    {
+        if (m_underwaterState & UNDERWATERSTATE_SWIMMING)
+            m_underwaterState &= ~UNDERWATERSTATE_SWIMMING;
+
+        if (m_underwaterState & UNDERWATERSTATE_UNDERWATER)
+        {
+            m_underwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+            SendMirrorTimer(MIRROR_TYPE_BREATH, m_underwaterTime, m_underwaterMaxTime, -1);
+        }
+
+        if (session->m_bIsWLevelSet)
+        {
+            if (movementInfo.getPosition()->z + m_noseLevel > session->m_wLevel)
+            {
+                RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
+                session->m_bIsWLevelSet = false;
+            }
+        }
+
+        return;
+    }
+
+    if (movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING) && !(m_underwaterState & UNDERWATERSTATE_SWIMMING))
+    {
+        RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ENTER_WATER);
+
+        if (!session->m_bIsWLevelSet)
+        {
+            session->m_wLevel = movementInfo.getPosition()->z + m_noseLevel * 0.95f;
+            session->m_bIsWLevelSet = true;
+        }
+
+        m_underwaterState |= UNDERWATERSTATE_SWIMMING;
+    }
+
+#if VERSION_STRING <= WotLK
+    if (!movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING) && movementInfo.flags != MOVEFLAG_MOVE_STOP && m_underwaterState & UNDERWATERSTATE_SWIMMING)
+#else
+    if (!movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING) && movementInfo.flags != MOVEFLAG_NONE && m_underwaterState & UNDERWATERSTATE_SWIMMING)
+#endif
+    {
+        if (movementInfo.getPosition()->z + m_noseLevel > session->m_wLevel)
+        {
+            RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
+            session->m_bIsWLevelSet = false;
+
+            m_underwaterState &= ~UNDERWATERSTATE_SWIMMING;
+        }
+    }
+
+    if (m_underwaterState & UNDERWATERSTATE_SWIMMING && !(m_underwaterState & UNDERWATERSTATE_UNDERWATER))
+    {
+        if (movementInfo.getPosition()->z + m_noseLevel < session->m_wLevel)
+        {
+            m_underwaterState |= UNDERWATERSTATE_UNDERWATER;
+            SendMirrorTimer(MIRROR_TYPE_BREATH, m_underwaterTime, m_underwaterMaxTime, -1);
+        }
+    }
+
+    if (m_underwaterState & UNDERWATERSTATE_SWIMMING && m_underwaterState & UNDERWATERSTATE_UNDERWATER)
+    {
+        if (movementInfo.getPosition()->z + m_noseLevel > session->m_wLevel)
+        {
+            m_underwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+            SendMirrorTimer(MIRROR_TYPE_BREATH, m_underwaterTime, m_underwaterMaxTime, 10);
+        }
+    }
+
+    if (!(m_underwaterState & UNDERWATERSTATE_SWIMMING) && m_underwaterState & UNDERWATERSTATE_UNDERWATER)
+    {
+        if (movementInfo.getPosition()->z + m_noseLevel > session->m_wLevel)
+        {
+            m_underwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+            SendMirrorTimer(MIRROR_TYPE_BREATH, m_underwaterTime, m_underwaterMaxTime, 10);
+        }
+    }
+}
 
 bool Player::isInCity() const
 {
