@@ -316,7 +316,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     if (creature_target == nullptr)
         return true;
 
-    uint32 guid = WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayer()->GetSelection());
+    uint32 guid = WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayer()->getTargetGuid());
 
     SystemMessage(m_session, "Showing Creature info of %s =============", creature_target->GetCreatureProperties()->Name.c_str());
     RedSystemMessage(m_session, "EntryID: %d", creature_target->getEntry());
@@ -736,7 +736,7 @@ bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_s
         return true;
     }
 
-    player->SetSelection(near_creature->getGuid());
+    player->setTargetGuid(near_creature->getGuid());
     SystemMessage(m_session, "Nearest Creature %s spawnID: %u GUID: " I64FMT " selected", near_creature->GetCreatureProperties()->Name.c_str(), near_creature->spawnid, near_creature->getGuid());
     return true;
 }
@@ -873,7 +873,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
         return false;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
 
     if (wowGuid.getRawGuid() == 0)
     {
@@ -936,7 +936,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
     if (!pitem)
         return false;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid == 0)
     {
         SystemMessage(m_session, "No selection.");
@@ -954,7 +954,7 @@ bool ChatHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSessio
         return false;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
     if (wowGuid.getRawGuid() == 0)
     {
         SystemMessage(m_session, "No selection.");

@@ -54,7 +54,7 @@ bool ChatHandler::HandleDebugInFrontCommand(const char* /*args*/, WorldSession* 
 {
     Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
@@ -81,7 +81,7 @@ bool ChatHandler::HandleShowReactionCommand(const char* args, WorldSession* m_se
     Object* obj = nullptr;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
 
     if (wowGuid.getRawGuid() != 0)
     {
@@ -114,7 +114,7 @@ bool ChatHandler::HandleDistanceCommand(const char* /*args*/, WorldSession* m_se
 {
     Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
@@ -142,7 +142,7 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
     Creature* creature = nullptr;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
     if (wowGuid.getRawGuid() != 0)
     {
         creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
@@ -254,7 +254,7 @@ bool ChatHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
     Object* obj = nullptr;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
 
     if (wowGuid.getRawGuid() != 0)
     {
@@ -287,7 +287,7 @@ bool ChatHandler::HandleSetBytesCommand(const char* /*args*/, WorldSession* m_se
     SystemMessage(m_session, "This command is no longer availabe!");
     /*Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
@@ -350,7 +350,7 @@ bool ChatHandler::HandleGetBytesCommand(const char* /*args*/, WorldSession* m_se
 
     /*Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == nullptr)
@@ -421,7 +421,7 @@ bool ChatHandler::HandleKnockBackCommand(const char* args, WorldSession* m_sessi
 
 bool ChatHandler::HandleFadeCommand(const char* args, WorldSession* m_session)
 {
-    Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
+    Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
         target = m_session->GetPlayer();
     char* v = strtok((char*)args, " ");
@@ -439,7 +439,7 @@ bool ChatHandler::HandleFadeCommand(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleThreatModCommand(const char* args, WorldSession* m_session)
 {
-    Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
+    Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
         target = m_session->GetPlayer();
     char* v = strtok((char*)args, " ");
@@ -457,7 +457,7 @@ bool ChatHandler::HandleThreatModCommand(const char* args, WorldSession* m_sessi
 
 bool ChatHandler::HandleCalcThreatCommand(const char* args, WorldSession* m_session)
 {
-    Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
+    Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
     {
         SystemMessage(m_session, "You should select a creature.");
@@ -482,7 +482,7 @@ bool ChatHandler::HandleCalcThreatCommand(const char* args, WorldSession* m_sess
 bool ChatHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_session)
 {
     Unit* target = nullptr;
-    target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
+    target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
     {
         SystemMessage(m_session, "You should select a creature.");
@@ -490,7 +490,7 @@ bool ChatHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_
     }
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
 
     std::stringstream sstext;
     sstext << "threatlist of creature: " << wowGuid.getGuidLowPart() << " " << wowGuid.getGuidHighPart() << '\n';
@@ -552,7 +552,7 @@ bool ChatHandler::HandleModifyBitCommand(const char* /*args*/, WorldSession* m_s
 
     /*Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
@@ -612,7 +612,7 @@ bool ChatHandler::HandleModifyValueCommand(const char* /*args*/, WorldSession* m
 
     /*Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
@@ -697,7 +697,7 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
     MapMgr* m = m_session->GetPlayer()->GetMapMgr();
 
     // if we have selected unit, use its position
-    Unit* unit = m->GetUnit(m_session->GetPlayer()->GetSelection());
+    Unit* unit = m->GetUnit(m_session->GetPlayer()->getTargetGuid());
     if (unit == nullptr)
     {
         unit = m_session->GetPlayer(); // otherwise ours
@@ -889,7 +889,7 @@ bool ChatHandler::HandleSimpleDistanceCommand(const char* args, WorldSession* m_
 
 bool ChatHandler::HandleRangeCheckCommand(const char* /*args*/, WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64 guid = m_session->GetPlayer()->getTargetGuid();
     m_session->SystemMessage("=== RANGE CHECK ===");
     if (guid == 0)
     {

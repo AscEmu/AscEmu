@@ -36,7 +36,7 @@ void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleAttackStopOpcode(WorldPacket& /*recvPacket*/)
 {
-    const auto unitTarget = _player->GetMapMgr()->GetUnit(_player->GetSelection());
+    const auto unitTarget = _player->GetMapMgr()->GetUnit(_player->getTargetGuid());
     if (unitTarget == nullptr)
         return;
 

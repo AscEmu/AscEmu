@@ -237,7 +237,6 @@ Player::Player(uint32 guid)
     //FIX for professions
     weapon_proficiency(0x4000), //2^14
     m_talentresettimes(0),
-    m_curSelection(0),
     m_targetIcon(0),
     m_session(nullptr),
     m_SummonedObject(nullptr),
@@ -1103,8 +1102,8 @@ void Player::_EventAttack(bool offhand)
         return;
 
     Unit* pVictim = nullptr;
-    if (m_curSelection)
-        pVictim = GetMapMgr()->GetUnit(m_curSelection);
+    if (getTargetGuid())
+        pVictim = GetMapMgr()->GetUnit(getTargetGuid());
 
     //Can't find victim, stop attacking
     if (!pVictim)
@@ -1188,16 +1187,16 @@ void Player::_EventCharmAttack()
         return;
     }
 
-    if (m_curSelection == 0)
+    if (getTargetGuid() == 0)
     {
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_CHARM_ATTACK);
         return;
     }
 
-    Unit* pVictim = GetMapMgr()->GetUnit(m_curSelection);
+    Unit* pVictim = GetMapMgr()->GetUnit(getTargetGuid());
     if (!pVictim)
     {
-        LOG_ERROR("WORLD: " I64FMT " doesn't exist.", m_curSelection);
+        LOG_ERROR("WORLD: " I64FMT " doesn't exist.", getTargetGuid());
         LOG_DETAIL("Player::Update:  No valid current selection to attack, stopping attack");
         this->interruptHealthRegeneration(5000); //prevent clicking off creature for a quick heal
         removeUnitStateFlag(UNIT_STATE_ATTACKING);
@@ -1256,7 +1255,7 @@ void Player::_EventCharmAttack()
                 const auto spellInfo = sSpellMgr.getSpellInfo(currentCharm->GetOnMeleeSpell());
                 currentCharm->SetOnMeleeSpell(0);
                 Spell* spell = sSpellMgr.newSpell(currentCharm, spellInfo, true, nullptr);
-                SpellCastTargets targets(GetSelection());
+                SpellCastTargets targets(getTargetGuid());
                 spell->prepare(&targets);
                 //delete spell;         // deleted automatically, no need to do this.
             }
@@ -6277,7 +6276,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
     auto at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
     if (at && (at->team == AREAC_SANCTUARY || at->flags & AREA_SANCTUARY))
     {
-        Unit* pUnit = (GetSelection() == 0) ? nullptr : (m_mapMgr ? m_mapMgr->GetUnit(GetSelection()) : nullptr);
+        Unit* pUnit = (getTargetGuid() == 0) ? nullptr : (m_mapMgr ? m_mapMgr->GetUnit(getTargetGuid()) : nullptr);
         if (pUnit && DuelingWith != pUnit)
         {
             EventAttackStop();
@@ -8147,7 +8146,7 @@ void Player::UpdateComboPoints()
     if (m_comboTarget != 0)
     {
         Unit* target = (m_mapMgr != nullptr) ? m_mapMgr->GetUnit(m_comboTarget) : NULL;
-        if (!target || target->isDead() || GetSelection() != m_comboTarget)
+        if (!target || target->isDead() || getTargetGuid() != m_comboTarget)
         {
             buffer[0] = buffer[1] = 0;
         }

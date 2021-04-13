@@ -1507,7 +1507,7 @@ void GameObject_SpellCaster::onUse(Player* player)
 void GameObject_Meetingstone::onUse(Player* player)
 {
     // Use selection
-    Player* pPlayer = sObjectMgr.GetPlayer(static_cast<uint32>(player->GetSelection()));
+    Player* pPlayer = sObjectMgr.GetPlayer(static_cast<uint32>(player->getTargetGuid()));
     if (pPlayer == nullptr)
         return;
 

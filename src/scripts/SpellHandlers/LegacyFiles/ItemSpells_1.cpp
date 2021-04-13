@@ -547,7 +547,7 @@ bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
             {
                 if (s->getPlayerCaster()->GetDistance2dSq(itr) < 400)
                 {
-                    s->getPlayerCaster()->SetSelection(creature->getGuid());
+                    s->getPlayerCaster()->setTargetGuid(creature->getGuid());
                     check = true;
                     break;
                 }

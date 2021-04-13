@@ -2853,7 +2853,7 @@ void Spell::HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target
 
         Player* pTarget = static_cast<Player*>(Target);
         pTarget->EventAttackStop();
-        pTarget->SetSelection(0);
+        pTarget->setTargetGuid(0);
 
         // We use a teleport event on this one. Reason being because of UpdateCellActivity,
         // the game object set of the updater thread WILL Get messed up if we teleport from a gameobject

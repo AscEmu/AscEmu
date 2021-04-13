@@ -4269,7 +4269,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
             GameObject_Ritual* go_ritual = static_cast<GameObject_Ritual*>(go);
 
             go_ritual->GetRitual()->Setup(p_caster->getGuidLow(), 0, m_spellInfo->getId());
-            go_ritual->GetRitual()->Setup(p_caster->getGuidLow(), static_cast< uint32 >(p_caster->GetSelection()), m_spellInfo->getId());
+            go_ritual->GetRitual()->Setup(p_caster->getGuidLow(), static_cast< uint32 >(p_caster->getTargetGuid()), m_spellInfo->getId());
         }
     }
 
@@ -4952,7 +4952,7 @@ void Spell::SpellEffectAddComboPoints(uint8_t /*effectIndex*/) // Add Combo Poin
         p_caster->m_spellcomboPoints += static_cast<int8>(damage);
         return;
     }
-    p_caster->AddComboPoints(p_caster->GetSelection(), static_cast<uint8>(damage));
+    p_caster->AddComboPoints(p_caster->getTargetGuid(), static_cast<uint8>(damage));
 }
 
 void Spell::SpellEffectCreateHouse(uint8_t /*effectIndex*/) // Create House
@@ -4981,7 +4981,7 @@ void Spell::SpellEffectDuel(uint8_t /*effectIndex*/) // Duel
     }
     */
 
-    //Player* pTarget = sObjHolder.GetObject<Player>(player->GetSelection());      //  hacky.. and will screw up if plr is deselected..
+    //Player* pTarget = sObjHolder.GetObject<Player>(player->getTargetGuid());      //  hacky.. and will screw up if plr is deselected..
     if (!playerTarget)
     {
         sendCastResult(SPELL_FAILED_BAD_TARGETS);
@@ -5775,7 +5775,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
         case 65954:
         {
             if (p_caster)
-                p_caster->AddComboPoints(p_caster->GetSelection(), 1);
+                p_caster->AddComboPoints(p_caster->getTargetGuid(), 1);
         } break;
 
         // AMBUSH

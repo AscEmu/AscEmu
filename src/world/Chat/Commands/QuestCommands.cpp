@@ -690,7 +690,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
     else
     {
         WoWGuid wowGuid;
-        wowGuid.Init(m_session->GetPlayer()->GetSelection());
+        wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
         if (wowGuid.getRawGuid() == 0)
         {
             SystemMessage(m_session, "You must target an npc or specify an id.");
@@ -783,7 +783,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
         return false;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
 
     if (wowGuid.getGuidLowPart() == 0)
     {
@@ -870,7 +870,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
         return false;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
 
     if (wowGuid.getRawGuid() == 0)
     {
@@ -970,7 +970,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
         return false;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
 
     if (wowGuid.getRawGuid() == 0)
     {
@@ -1056,7 +1056,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
         return false;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
     if (wowGuid.getGuidLowPart() == 0)
     {
         SystemMessage(m_session, "You must target an npc.");
@@ -1420,7 +1420,7 @@ bool ChatHandler::HandleQuestLoadCommand(const char* /*args*/, WorldSession* m_s
     BlueSystemMessage(m_session, "Load completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->GetSelection());
+    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
 
     if (wowGuid.getRawGuid() == 0)
         return true;

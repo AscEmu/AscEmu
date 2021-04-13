@@ -531,7 +531,7 @@ bool ChatHandler::HandleWorldPortCommand(const char* args, WorldSession* m_sessi
 bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
 {
     Object* obj;
-    uint64 guid = m_session->GetPlayer()->GetSelection();
+    uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)

@@ -539,7 +539,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
     uint64_t selectedGUID;
     if (type == ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE)
     {
-        selectedGUID = GetPlayer()->GetSelection();
+        selectedGUID = GetPlayer()->getTargetGuid();
     }
     AchievementCriteriaEntryList const & achievementCriteriaList = sObjectMgr.GetAchievementCriteriaByType(type);
     for (AchievementCriteriaEntryList::const_iterator i = achievementCriteriaList.begin(); i != achievementCriteriaList.end(); ++i)

@@ -872,7 +872,7 @@ void Spell::finish(bool successful)
         if (getSpellInfo()->getAttributes() & ATTRIBUTES_STOP_ATTACK && getPlayerCaster()->IsAttacking())
         {
             getPlayerCaster()->EventAttackStop();
-            getPlayerCaster()->smsg_AttackStop(getPlayerCaster()->GetMapMgrUnit(getPlayerCaster()->GetSelection()));
+            getPlayerCaster()->smsg_AttackStop(getPlayerCaster()->GetMapMgrUnit(getPlayerCaster()->getTargetGuid()));
             getPlayerCaster()->SendPacket(SmsgCancelCombat().serialise().get());
         }
 
@@ -880,7 +880,7 @@ void Spell::finish(bool successful)
         {
             auto target = getPlayerCaster()->GetMapMgrUnit(getPlayerCaster()->getChannelObjectGuid());
             if (target == nullptr)
-                target = getPlayerCaster()->GetMapMgrUnit(getPlayerCaster()->GetSelection());
+                target = getPlayerCaster()->GetMapMgrUnit(getPlayerCaster()->getTargetGuid());
 
             if (target != nullptr)
                 target->RemoveAura(getSpellInfo()->getId(), getCaster()->getGuid());
@@ -1115,7 +1115,7 @@ void Spell::cancel()
                 {
                     auto channelTarget = getUnitCaster()->GetMapMgrUnit(getUnitCaster()->getChannelObjectGuid());
                     if (channelTarget == nullptr && getPlayerCaster() != nullptr)
-                        channelTarget = getPlayerCaster()->GetMapMgrUnit(getPlayerCaster()->GetSelection());
+                        channelTarget = getPlayerCaster()->GetMapMgrUnit(getPlayerCaster()->getTargetGuid());
 
                     if (channelTarget != nullptr)
                         channelTarget->RemoveAura(getSpellInfo()->getId(), getCaster()->getGuid());
@@ -1552,8 +1552,8 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     // If spell is triggered, target may need to be picked manually
                     if (targetUnit == nullptr)
                     {
-                        if (p_caster->GetSelection() != 0)
-                            targetUnit = p_caster->GetMapMgrUnit(p_caster->GetSelection());
+                        if (p_caster->getTargetGuid() != 0)
+                            targetUnit = p_caster->GetMapMgrUnit(p_caster->getTargetGuid());
                     }
 
                     if (targetUnit == nullptr)
@@ -1976,7 +1976,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 // Use player's selection guid as target
                 Unit* creatureTarget = nullptr;
                 if (p_caster != nullptr)
-                    creatureTarget = p_caster->GetMapMgrUnit(p_caster->GetSelection());
+                    creatureTarget = p_caster->GetMapMgrUnit(p_caster->getTargetGuid());
 
                 if (creatureTarget == nullptr)
                     continue;

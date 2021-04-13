@@ -4007,7 +4007,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        Unit* selection = plr->GetMapMgr()->GetUnit(plr->GetSelection());
+        Unit* selection = plr->GetMapMgr()->GetUnit(plr->getTargetGuid());
         if (selection)
             PUSH_UNIT(L, selection);
         else
@@ -5895,7 +5895,7 @@ public:
     static int StopPlayerAttack(lua_State* /*L*/, Unit* ptr)
     {
         TEST_PLAYER()
-        ptr->smsg_AttackStop(ptr->GetMapMgr()->GetUnit(static_cast<Player*>(ptr)->GetSelection()));
+        ptr->smsg_AttackStop(ptr->GetMapMgr()->GetUnit(static_cast<Player*>(ptr)->getTargetGuid()));
         return 0;
     }
 
