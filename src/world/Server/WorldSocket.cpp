@@ -340,7 +340,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     }
 
     // Packet logger :)
-    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode), static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
+    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), opcode, static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
 
     if (_crypt.isInitialized())
     {
