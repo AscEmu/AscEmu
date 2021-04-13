@@ -440,7 +440,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     if (isCreatureOrPlayer())
     {
-        if (static_cast<Unit*>(this)->getTargetGuid() != 0)
+        if (dynamic_cast<Unit*>(this)->getTargetGuid() != 0)
             updateFlags |= UPDATEFLAG_HAS_TARGET;
     }
 
@@ -461,6 +461,10 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     // this will cache automatically if needed
     buildValuesUpdate(data, &updateMask, target);
+
+#if VERSION_STRING == Mop
+    *data << uint8_t(0);
+#endif
 
     // Update count
     return 1;
@@ -1683,7 +1687,11 @@ WorldPacket* Object::BuildFieldUpdatePacket(uint32 index, uint32 value)
 #endif
 
     *packet << uint8(UPDATETYPE_VALUES);    // update type == update
+#if VERSION_STRING < Mop
     *packet << GetNewGUID();
+#else
+    packet->append(GetNewGUID());
+#endif
 
     uint32 mBlocks = index / 32 + 1;
     *packet << uint8(mBlocks);
@@ -1701,7 +1709,11 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32 Index, uint32 Value)
 {
     ByteBuffer buf(500);
     buf << uint8(UPDATETYPE_VALUES);
+#if VERSION_STRING < Mop
     buf << GetNewGUID();
+#else
+    buf.append(GetNewGUID());
+#endif
 
     uint32 mBlocks = Index / 32 + 1;
     buf << uint8(mBlocks);
@@ -1744,6 +1756,10 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
             *data << m_wowGuid;
 
             buildValuesUpdate(data, &updateMask, target);
+
+#if VERSION_STRING == Mop
+            *data << uint8_t(0);
+#endif
             return 1;
         }
     }
@@ -1761,6 +1777,10 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
     *buf << m_wowGuid;
 
     buildValuesUpdate(buf, mask, nullptr);
+
+#if VERSION_STRING == Mop
+    *buf << uint8_t(0);
+#endif
 
     // 1 update.
     return 1;
