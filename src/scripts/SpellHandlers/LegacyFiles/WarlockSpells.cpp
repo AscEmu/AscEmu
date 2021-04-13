@@ -631,13 +631,11 @@ bool SoulStoneResurrection(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
     if (apply)
     {
-        p_target->SetSoulStone(soulstone);
-        p_target->SetSoulStoneReceiver((uint32_t)a->getCasterGuid());
+        p_target->setSelfResurrectSpell(soulstone);
     }
     else if (p_target->isAlive())
     {
-        p_target->SetSoulStone(0);
-        p_target->SetSoulStoneReceiver(0);
+        p_target->setSelfResurrectSpell(0);
     }
     return true;
 }

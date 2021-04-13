@@ -1872,23 +1872,11 @@ public:
         bool m_bgIsRbg;
         bool m_bgIsRbgWon;
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Soulstone stuff
-        /////////////////////////////////////////////////////////////////////////////////////////
-    public:
-
-        uint32 SoulStone;
-        uint32 SoulStoneReceiver;
-        void removeSoulStone();
-
-        uint32 GetSoulStoneReceiver() { return SoulStoneReceiver; }
-        void SetSoulStoneReceiver(uint32 StoneGUID) { SoulStoneReceiver = StoneGUID; }
-        uint32 GetSoulStone() { return SoulStone; }
-        void SetSoulStone(uint32 StoneID) { SoulStone = StoneID; }
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Visible objects
         /////////////////////////////////////////////////////////////////////////////////////////
+    public:
         bool IsVisible(uint64 pObj) { return !(m_visibleObjects.find(pObj) == m_visibleObjects.end()); }
         void addToInRangeObjects(Object* pObj);
         void onRemoveInRangeObject(Object* pObj);

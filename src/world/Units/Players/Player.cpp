@@ -1344,6 +1344,95 @@ bool Player::isInCity() const
     return false;
 }
 
+//\todo: find another solution for this
+void Player::initialiseNoseLevel()
+{
+    // Set the height of the player
+    switch (getRace())
+    {
+    case RACE_HUMAN:
+        // female
+        if (getGender())
+            m_noseLevel = 1.72f;
+        // male
+        else
+            m_noseLevel = 1.78f;
+        break;
+    case RACE_ORC:
+        if (getGender())
+            m_noseLevel = 1.82f;
+        else
+            m_noseLevel = 1.98f;
+        break;
+    case RACE_DWARF:
+        if (getGender())
+            m_noseLevel = 1.27f;
+        else
+            m_noseLevel = 1.4f;
+        break;
+    case RACE_NIGHTELF:
+        if (getGender())
+            m_noseLevel = 1.84f;
+        else
+            m_noseLevel = 2.13f;
+        break;
+    case RACE_UNDEAD:
+        if (getGender())
+            m_noseLevel = 1.61f;
+        else
+            m_noseLevel = 1.8f;
+        break;
+    case RACE_TAUREN:
+        if (getGender())
+            m_noseLevel = 2.48f;
+        else
+            m_noseLevel = 2.01f;
+        break;
+    case RACE_GNOME:
+        if (getGender())
+            m_noseLevel = 1.06f;
+        else
+            m_noseLevel = 1.04f;
+        break;
+#if VERSION_STRING >= Cata
+    case RACE_GOBLIN:
+        if (getGender())
+            m_noseLevel = 1.06f;
+        else
+            m_noseLevel = 1.04f;
+        break;
+#endif
+    case RACE_TROLL:
+        if (getGender())
+            m_noseLevel = 2.02f;
+        else
+            m_noseLevel = 1.93f;
+        break;
+#if VERSION_STRING > Classic
+    case RACE_BLOODELF:
+        if (getGender())
+            m_noseLevel = 1.83f;
+        else
+            m_noseLevel = 1.93f;
+        break;
+    case RACE_DRAENEI:
+        if (getGender())
+            m_noseLevel = 2.09f;
+        else
+            m_noseLevel = 2.36f;
+        break;
+#endif
+#if VERSION_STRING >= Cata
+    case RACE_WORGEN:
+        if (getGender())
+            m_noseLevel = 1.72f;
+        else
+            m_noseLevel = 1.78f;
+        break;
+#endif
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Commands
 void Player::disableSummoning(bool disable) { m_disableSummoning = disable; }

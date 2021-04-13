@@ -189,8 +189,6 @@ Player::Player(uint32 guid)
     DetectedRange(0),
     PctIgnoreRegenModifier(0.0f),
     m_retainedrage(0),
-    SoulStone(0),
-    SoulStoneReceiver(0),
     misdirectionTarget(0),
     bReincarnation(false),
     m_MountSpellId(0),
@@ -8178,135 +8176,12 @@ void Player::SendAreaTriggerMessage(const char* message, ...)
     m_session->SendPacket(SmsgAreaTriggerMessage(0, msg, 0).serialise().get());
 }
 
-void Player::removeSoulStone()
-{
-    if (!this->SoulStone)
-        return;
-
-    uint32 sSoulStone = 0;
-    switch (this->SoulStone)
-    {
-        case 3026:
-            sSoulStone = 20707;
-        break;
-        case 20758:
-            sSoulStone = 20762;
-        break;
-        case 20759:
-            sSoulStone = 20763;
-        break;
-        case 20760:
-            sSoulStone = 20764;
-        break;
-        case 20761:
-            sSoulStone = 20765;
-        break;
-        case 27240:
-            sSoulStone = 27239;
-        break;
-        case 47882:
-            sSoulStone = 47883;
-        break;
-    }
-    this->RemoveAura(sSoulStone);
-    this->SoulStone = this->SoulStoneReceiver = 0; //just incase
-}
-
 void Player::SoftDisconnect()
 {
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_SOFT_DISCONNECT);
     WorldSession* session = GetSession();
     session->LogoutPlayer(true);
     session->Disconnect();
-}
-
-//\todo: find another solution for this
-void Player::initialiseNoseLevel()
-{
-    // Set the height of the player
-    switch (getRace())
-    {
-        case RACE_HUMAN:
-            // female
-            if (getGender())
-                m_noseLevel = 1.72f;
-            // male
-            else
-                m_noseLevel = 1.78f;
-            break;
-        case RACE_ORC:
-            if (getGender())
-                m_noseLevel = 1.82f;
-            else
-                m_noseLevel = 1.98f;
-            break;
-        case RACE_DWARF:
-            if (getGender())
-                m_noseLevel = 1.27f;
-            else
-                m_noseLevel = 1.4f;
-            break;
-        case RACE_NIGHTELF:
-            if (getGender())
-                m_noseLevel = 1.84f;
-            else
-                m_noseLevel = 2.13f;
-            break;
-        case RACE_UNDEAD:
-            if (getGender())
-                m_noseLevel = 1.61f;
-            else
-                m_noseLevel = 1.8f;
-            break;
-        case RACE_TAUREN:
-            if (getGender())
-                m_noseLevel = 2.48f;
-            else
-                m_noseLevel = 2.01f;
-            break;
-        case RACE_GNOME:
-            if (getGender())
-                m_noseLevel = 1.06f;
-            else
-                m_noseLevel = 1.04f;
-            break;
-#if VERSION_STRING >= Cata
-        case RACE_GOBLIN:
-            if (getGender())
-                m_noseLevel = 1.06f;
-            else
-                m_noseLevel = 1.04f;
-            break;
-#endif
-        case RACE_TROLL:
-            if (getGender())
-                m_noseLevel = 2.02f;
-            else
-                m_noseLevel = 1.93f;
-            break;
-#if VERSION_STRING > Classic
-        case RACE_BLOODELF:
-            if (getGender())
-                m_noseLevel = 1.83f;
-            else
-                m_noseLevel = 1.93f;
-            break;
-        case RACE_DRAENEI:
-            if (getGender())
-                m_noseLevel = 2.09f;
-            else
-                m_noseLevel = 2.36f;
-            break;
-#endif
-#if VERSION_STRING >= Cata
-        case RACE_WORGEN:
-            if (getGender())
-                m_noseLevel = 1.72f;
-            else
-                m_noseLevel = 1.78f;
-            break;
-#endif
-    }
 }
 
 void Player::SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32 InstanceID, const LocationVector & Position)
@@ -9866,9 +9741,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         uint32 self_res_spell = 0;
         if (m_bg == nullptr || (m_bg != nullptr && !isArena(m_bg->GetType())))
         {
-            self_res_spell = SoulStone;
-
-            SoulStone = SoulStoneReceiver = 0;
+            self_res_spell = getSelfResurrectSpell();
 
             if (self_res_spell == 0 && bReincarnation)
             {
