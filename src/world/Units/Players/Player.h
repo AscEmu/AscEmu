@@ -1194,9 +1194,16 @@ public:
     QuestLogEntry* getQuestLogByQuestId(uint32_t questId) const;
     QuestLogEntry* getQuestLogBySlotId(uint32_t slotId) const;
 
+    void addQuestIdToFinishedDailies(uint32_t questId);
+    std::set<uint32_t> getFinishedDailies() const;
+    bool hasQuestInFinishedDailies(uint32_t questId) const;
+    void resetFinishedDailies();
 
 private:
     QuestLogEntry* m_questlog[MAX_QUEST_LOG_SIZE] = {nullptr};
+
+    mutable std::mutex m_mutextDailies;
+    std::set<uint32_t> m_finishedDailies = {};
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Social
@@ -1488,8 +1495,7 @@ public:
         void SetQuestSharer(uint32 guid) { m_questSharer = guid; }
 
         void PushToRemovedQuests(uint32 questid) { m_removequests.insert(questid);}
-        void PushToFinishedDailies(uint32 questid) { DailyMutex.Acquire(); m_finishedDailies.insert(questid); DailyMutex.Release();}
-        bool HasFinishedDaily(uint32 questid) { return (m_finishedDailies.find(questid) == m_finishedDailies.end() ? false : true); }
+        
         void AddToFinishedQuests(uint32 quest_id);
         void AreaExploredOrEventHappens(uint32 questId);   // scriptdev2
 
@@ -1512,8 +1518,6 @@ public:
 
         std::set<uint32> m_removequests;
         std::set<uint32> m_finishedQuests;
-        Mutex DailyMutex;
-        std::set<uint32> m_finishedDailies;
         uint32 m_questSharer;
         std::set<uint32> quest_spells;
         std::set<uint32> quest_mobs;

@@ -2667,12 +2667,10 @@ void ObjectMgr::ResetDailies()
 {
     std::lock_guard<std::mutex> guard(_playerslock);
 
-    for (PlayerStorageMap::iterator itr = _players.begin(); itr != _players.end(); ++itr)
+    for (auto itr : _players)
     {
-        Player* pPlayer = itr->second;
-        pPlayer->DailyMutex.Acquire();
-        pPlayer->m_finishedDailies.clear();
-        pPlayer->DailyMutex.Release();
+        if (Player* pPlayer = itr.second)
+            pPlayer->resetFinishedDailies();
     }
 }
 

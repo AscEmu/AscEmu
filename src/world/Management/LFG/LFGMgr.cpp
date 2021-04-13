@@ -1954,7 +1954,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         return;
 
     // if we can take the quest, means that we haven't done this kind of "run", IE: First Heroic Random of Day.
-    if (!player->HasFinishedDaily(qReward->id) || !player->HasFinishedQuest(qReward->id))
+    if (!player->hasQuestInFinishedDailies(qReward->id) || !player->HasFinishedQuest(qReward->id))
     {
         sQuestMgr.BuildQuestComplete(player, qReward);
         player->AddToFinishedQuests(qReward->id);
@@ -2022,7 +2022,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
 
         // if daily then append to finished dailies
         if (qReward->is_repeatable == DEFINE_QUEST_REPEATABLE_DAILY)
-            player->PushToFinishedDailies(qReward->id);
+            player->addQuestIdToFinishedDailies(qReward->id);
 #if VERSION_STRING > TBC
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
 #endif
@@ -2116,7 +2116,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
 
         // if daily then append to finished dailies
         if (qReward->is_repeatable == DEFINE_QUEST_REPEATABLE_DAILY)
-            player->PushToFinishedDailies(qReward->id);
+            player->addQuestIdToFinishedDailies(qReward->id);
 
 #if VERSION_STRING > TBC
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);

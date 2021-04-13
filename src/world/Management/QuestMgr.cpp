@@ -78,7 +78,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
     else
     {
         status = QuestStatus::Repeatable;
-        if (qst->is_repeatable == DEFINE_QUEST_REPEATABLE_DAILY && plr->HasFinishedDaily(qst->id))
+        if (qst->is_repeatable == DEFINE_QUEST_REPEATABLE_DAILY && plr->hasQuestInFinishedDailies(qst->id))
             return QuestStatus::NotAvailable;
     }
 
@@ -1613,7 +1613,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
 
         // if daily then append to finished dailies
         if (qst->is_repeatable == DEFINE_QUEST_REPEATABLE_DAILY)
-            plr->PushToFinishedDailies(qst->id);
+            plr->addQuestIdToFinishedDailies(qst->id);
     }
     else
     {

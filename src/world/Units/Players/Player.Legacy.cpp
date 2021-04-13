@@ -445,7 +445,6 @@ Player::Player(uint32 guid)
     m_taxiPaths.clear();
     m_removequests.clear();
     m_finishedQuests.clear();
-    m_finishedDailies.clear();
     quest_spells.clear();
     quest_mobs.clear();
 
@@ -2252,11 +2251,10 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         ss << (*finishedQuests) << ",";
     ss << "'" << ", ";
 
+    // add finished dailies
     ss << "'";
-    DailyMutex.Acquire();
-    for (auto finishedDailies = m_finishedDailies.begin(); finishedDailies != m_finishedDailies.end(); ++finishedDailies)
-        ss << (*finishedDailies) << ",";
-    DailyMutex.Release();
+    for (auto finishedDailies : getFinishedDailies())
+        ss << finishedDailies << ",";
     ss << "'" << ", ";
 
     ss << m_honorRolloverTime << ", " << m_killsToday << ", " << m_killsYesterday << ", " << m_killsLifetime << ", " << m_honorToday << ", " << m_honorYesterday << ", " << m_honorPoints << ", ";

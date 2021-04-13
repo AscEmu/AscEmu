@@ -3261,6 +3261,27 @@ QuestLogEntry* Player::getQuestLogBySlotId(uint32_t slotId) const
     return nullptr;
 }
 
+void Player::addQuestIdToFinishedDailies(uint32_t questId)
+{
+    std::lock_guard<std::mutex> lock(m_mutextDailies);
+    m_finishedDailies.insert(questId);
+}
+std::set<uint32_t> Player::getFinishedDailies() const
+{
+    std::lock_guard<std::mutex> lock(m_mutextDailies);
+    return m_finishedDailies;
+}
+bool Player::hasQuestInFinishedDailies(uint32_t questId) const
+{
+    std::lock_guard<std::mutex> lock(m_mutextDailies);
+    return m_finishedDailies.find(questId) != m_finishedDailies.end();
+}
+void Player::resetFinishedDailies()
+{
+    std::lock_guard<std::mutex> lock(m_mutextDailies);
+    m_finishedDailies.clear();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Social
 void Player::loadFriendList()
