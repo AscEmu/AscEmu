@@ -38,7 +38,7 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
     if (srlPacket.guid == m_MoverWoWGuid.getRawGuid())
         return;
 
-    if (_player->m_CurrentCharm != srlPacket.guid.getRawGuid() || _player->getGuid() != srlPacket.guid.getRawGuid())
+    if (_player->getCharmGuid() != srlPacket.guid.getRawGuid() || _player->getGuid() != srlPacket.guid.getRawGuid())
     {
         auto bad_packet = true;
 #if VERSION_STRING >= TBC

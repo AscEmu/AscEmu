@@ -2080,7 +2080,6 @@ public:
         void _EventCharmAttack();
         
         void SoftDisconnect();
-        uint64 m_CurrentCharm;
 
         void ClearCooldownsOnLine(uint32 skill_line, uint32 called_from);
 

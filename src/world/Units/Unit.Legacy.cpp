@@ -10156,7 +10156,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
         return;
     }
 
-    pThis->m_CurrentCharm = pTarget->getGuid();
+    pThis->setCharmGuid(pTarget->getGuid());
     if (pTarget->isCreature())
     {
         // unit-only stuff.
@@ -10209,8 +10209,6 @@ void Unit::UnPossess()
     if (!pTarget)
         return;
 
-    pThis->m_CurrentCharm = 0;
-
     pThis->SpeedCheatReset();
 
     if (pTarget->isCreature())
@@ -10226,7 +10224,6 @@ void Unit::UnPossess()
     pThis->mControledUnit = this;
     setCharmGuid(0);
     pTarget->setCharmedByGuid(0);
-    setCharmGuid(0);
 
     removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
     pTarget->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);

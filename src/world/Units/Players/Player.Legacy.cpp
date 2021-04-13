@@ -193,7 +193,6 @@ Player::Player(uint32 guid)
     bReincarnation(false),
     m_MountSpellId(0),
     TrackingSpell(0),
-    m_CurrentCharm(0),
     // gm stuff
     //m_invincible(false),
     m_Autojoin(false),
@@ -1177,12 +1176,12 @@ void Player::_EventAttack(bool offhand)
 
 void Player::_EventCharmAttack()
 {
-    if (!m_CurrentCharm)
+    if (!getCharmGuid())
         return;
 
     if (!IsInWorld())
     {
-        m_CurrentCharm = 0;
+        setCharmGuid(0);
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_CHARM_ATTACK);
         return;
     }
@@ -1204,7 +1203,7 @@ void Player::_EventCharmAttack()
     }
     else
     {
-        Unit* currentCharm = GetMapMgr()->GetUnit(m_CurrentCharm);
+        Unit* currentCharm = GetMapMgr()->GetUnit(getCharmGuid());
         if (!currentCharm)
             return;
 
@@ -1271,7 +1270,7 @@ void Player::EventAttackStart()
 
 void Player::EventAttackStop()
 {
-    if (m_CurrentCharm != 0)
+    if (getCharmGuid() != 0)
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_CHARM_ATTACK);
 
     m_attacking = false;
@@ -5149,17 +5148,16 @@ void Player::onRemoveInRangeObject(Object* pObj)
     m_visibleObjects.erase(pObj->getGuid());
     Unit::onRemoveInRangeObject(pObj);
 
-    if (pObj->getGuid() == m_CurrentCharm)
+    if (pObj->getGuid() == getCharmGuid())
     {
-        Unit* p = GetMapMgr()->GetUnit(m_CurrentCharm);
+        Unit* p = GetMapMgr()->GetUnit(getCharmGuid());
         if (!p)
             return;
 
         UnPossess();
         if (isCastingSpell())
             interruptSpell();       // cancel the spell
-        m_CurrentCharm = 0;
-
+        setCharmGuid(0);
     }
 
     // We've just gone out of range of our pet :(
@@ -9855,9 +9853,9 @@ void Player::Phase(uint8 command, uint32 newphase)
     }
     //We should phase other, non-combat "pets" too...
 
-    if (m_CurrentCharm != 0)
+    if (getCharmGuid() != 0)
     {
-        Unit* charm = m_mapMgr->GetUnit(m_CurrentCharm);
+        Unit* charm = m_mapMgr->GetUnit(getCharmGuid());
         if (charm == NULL)
             return;
 

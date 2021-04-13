@@ -296,7 +296,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
     if (spellInfo == nullptr)
         return;
 
-    if (_player->GetSummon() == nullptr && _player->m_CurrentCharm == 0 && _player->getCharmGuid() == 0)
+    if (_player->GetSummon() == nullptr && _player->getCharmGuid() == 0)
     {
         LogError("Received opcode but player %u has no pet.", _player->getGuidLow());
         return;
@@ -320,7 +320,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
             return;
     }
     // If pet is charmed or possessed by player
-    else if (_player->m_CurrentCharm == srlPacket.petGuid || _player->getCharmGuid() == srlPacket.petGuid)
+    else if (_player->getCharmGuid() == srlPacket.petGuid)
     {
         bool found = false;
         for (auto aiSpell : petUnit->GetAIInterface()->m_spells)
