@@ -1366,9 +1366,6 @@ public:
         void FillRandomBattlegroundReward(bool wonBattleground, uint32 &honorPoints, uint32 &arenaPoints);
         void ApplyRandomBattlegroundReward(bool wonBattleground);
 
-        LfgMatch* m_lfgMatch;
-        uint32 m_lfgInviterGuid;
-
         // Scripting
         void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0) override;
         void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr) override;

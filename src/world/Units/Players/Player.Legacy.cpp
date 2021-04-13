@@ -431,8 +431,6 @@ Player::Player(uint32 guid)
     m_CurrentTaxiPath = nullptr;
 
     m_fallDisabledUntil = 0;
-    m_lfgMatch = nullptr;
-    m_lfgInviterGuid = 0;
     m_indoorCheckTimer = 0;
     m_taxiMapChangeNode = 0;
     this->OnLogin();

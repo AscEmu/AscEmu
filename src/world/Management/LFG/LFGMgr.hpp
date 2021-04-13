@@ -243,8 +243,6 @@ struct LfgPlayerBoot
     std::string reason;                                    ///< kick reason
 };
 
-
-class LfgMatch;
 class LfgMgr : EventableObject
 {
     private:
