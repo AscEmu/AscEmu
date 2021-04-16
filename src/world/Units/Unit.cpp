@@ -4258,11 +4258,6 @@ void Unit::sendPowerUpdate([[maybe_unused]]bool self)
 
 #if VERSION_STRING >= WotLK
     SendMessageToSet(SmsgPowerUpdate(GetNewGUID(), static_cast<uint8_t>(getPowerType()), powerAmount).serialise().get(), self);
-#else
-    //\ todo: is this correct for TBC?
-    auto packet = BuildFieldUpdatePacket(getOffsetForStructuredField(WoWUnit, power_1) + (getPowerIndexFromDBC(getPowerType()) - 1), powerAmount);
-    SendMessageToSet(packet, false);
-    delete packet;
 #endif
 }
 

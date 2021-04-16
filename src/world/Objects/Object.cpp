@@ -1670,41 +1670,6 @@ void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
     m_lastMapUpdatePosition.ChangeCoords({ x, y, z, ang });
 }
 
-//That is dirty fix it actually creates update of 1 field with
-//the given value ignoring existing changes in fields and so on
-//useful if we want update this field for certain players
-//NOTE: it does not change fields. This is also very fast method
-WorldPacket* Object::BuildFieldUpdatePacket(uint32 index, uint32 value)
-{
-    // uint64 guidfields = getGuid();
-    // uint8 guidmask = 0;
-    WorldPacket* packet = new WorldPacket(1500);
-    packet->SetOpcode(SMSG_UPDATE_OBJECT);
-
-    *packet << uint32(1);                   //number of update/create blocks
-#if VERSION_STRING == TBC
-    * packet << uint8(0);                    //unknown removed in 3.1
-#endif
-
-    *packet << uint8(UPDATETYPE_VALUES);    // update type == update
-#if VERSION_STRING < Mop
-    *packet << GetNewGUID();
-#else
-    packet->append(GetNewGUID());
-#endif
-
-    uint32 mBlocks = index / 32 + 1;
-    *packet << uint8(mBlocks);
-
-    for (uint32 dword_n = mBlocks - 1; dword_n; dword_n--)
-        *packet << uint32(0);
-
-    *packet << (((uint32)(1)) << (index % 32));
-    *packet << value;
-
-    return packet;
-}
-
 void Object::BuildFieldUpdatePacket(Player* Target, uint32 Index, uint32 Value)
 {
     ByteBuffer buf(500);

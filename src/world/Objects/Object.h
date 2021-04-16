@@ -341,7 +341,6 @@ public:
         uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, Player* target);
         uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask);
 
-        WorldPacket* BuildFieldUpdatePacket(uint32 index, uint32 value);
         void BuildFieldUpdatePacket(Player* Target, uint32 Index, uint32 Value);
         void BuildFieldUpdatePacket(ByteBuffer* buf, uint32 Index, uint32 Value);
 
