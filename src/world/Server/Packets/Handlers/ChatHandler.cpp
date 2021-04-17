@@ -113,6 +113,52 @@ static const uint32_t LanguageSkills[NUM_LANGUAGES] =
     0,          // -                0x22
     759,        // -                0x23
 };
+#else
+static const uint32_t LanguageSkills[NUM_LANGUAGES] =
+{
+    0,              // UNIVERSAL          0x00
+    109,            // ORCISH             0x01
+    113,            // DARNASSIAN         0x02
+    115,            // TAURAHE            0x03
+    0,              // -                  0x04
+    0,              // -                  0x05
+    111,            // DWARVISH           0x06
+    98,             // COMMON             0x07
+    139,            // DEMON TONGUE       0x08
+    140,            // TITAN              0x09
+    137,            // THALSSIAN          0x0A
+    138,            // DRACONIC           0x0B
+    0,              // KALIMAG            0x0C
+    313,            // GNOMISH            0x0D
+    315,            // TROLL              0x0E
+    0,              // -                  0x0F
+    0,              // -                  0x10
+    0,              // -                  0x11
+    0,              // -                  0x12
+    0,              // -                  0x13
+    0,              // -                  0x14
+    0,              // -                  0x15
+    0,              // -                  0x16
+    0,              // -                  0x17
+    0,              // -                  0x18
+    0,              // -                  0x19
+    0,              // -                  0x1A
+    0,              // -                  0x1B
+    0,              // -                  0x1C
+    0,              // -                  0x1D
+    0,              // -                  0x1E
+    0,              // -                  0x1F
+    0,              // -                  0x20
+    673,            // GUTTERSPEAK        0x21
+    0,              // -                  0x22
+    759,            // DRAENEI            0x23
+    0,              // ZOMBIE             0x24
+    0,              // GNOMISH_BINAR      0x25
+    0,              // GOBLIN_BINARY      0x26
+    791,            // WORGEN             0x27
+    792,            // GOBLIN             0x28
+};
+#endif
 
 void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 {
@@ -227,7 +273,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (is_gm_command || !player_can_speak_language)
                 break;
 
-            const auto send_packet = SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get();
+            const auto send_packet = SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise();
 
             if (const auto group = _player->getGroup())
             {
@@ -359,478 +405,6 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             break;
     }
 }
-#else
-static const uint32_t LanguageSkills[NUM_LANGUAGES] =
-{
-    0,              // UNIVERSAL          0x00
-    109,            // ORCISH             0x01
-    113,            // DARNASSIAN         0x02
-    115,            // TAURAHE            0x03
-    0,              // -                  0x04
-    0,              // -                  0x05
-    111,            // DWARVISH           0x06
-    98,             // COMMON             0x07
-    139,            // DEMON TONGUE       0x08
-    140,            // TITAN              0x09
-    137,            // THALSSIAN          0x0A
-    138,            // DRACONIC           0x0B
-    0,              // KALIMAG            0x0C
-    313,            // GNOMISH            0x0D
-    315,            // TROLL              0x0E
-    0,              // -                  0x0F
-    0,              // -                  0x10
-    0,              // -                  0x11
-    0,              // -                  0x12
-    0,              // -                  0x13
-    0,              // -                  0x14
-    0,              // -                  0x15
-    0,              // -                  0x16
-    0,              // -                  0x17
-    0,              // -                  0x18
-    0,              // -                  0x19
-    0,              // -                  0x1A
-    0,              // -                  0x1B
-    0,              // -                  0x1C
-    0,              // -                  0x1D
-    0,              // -                  0x1E
-    0,              // -                  0x1F
-    0,              // -                  0x20
-    673,            // GUTTERSPEAK        0x21
-    0,              // -                  0x22
-    759,            // DRAENEI            0x23
-    0,              // ZOMBIE             0x24
-    0,              // GNOMISH_BINAR      0x25
-    0,              // GOBLIN_BINARY      0x26
-    791,            // WORGEN             0x27
-    792,            // GOBLIN             0x28
-};
-
-struct OpcodeToChatType
-{
-    uint16_t opcode;
-    uint8_t chatType;
-};
-
-#define MSG_OPCODE_COUNT 13
-
-OpcodeToChatType opcodeToChatTypeList[MSG_OPCODE_COUNT] =
-{
-    { CMSG_MESSAGECHAT_SAY, CHAT_MSG_SAY },
-    { CMSG_MESSAGECHAT_YELL, CHAT_MSG_YELL },
-    { CMSG_MESSAGECHAT_CHANNEL, CHAT_MSG_CHANNEL },
-    { CMSG_MESSAGECHAT_WHISPER, CHAT_MSG_WHISPER },
-    { CMSG_MESSAGECHAT_GUILD, CHAT_MSG_GUILD },
-    { CMSG_MESSAGECHAT_OFFICER, CHAT_MSG_OFFICER },
-    { CMSG_MESSAGECHAT_AFK, CHAT_MSG_AFK },
-    { CMSG_MESSAGECHAT_DND, CHAT_MSG_DND },
-    { CMSG_MESSAGECHAT_EMOTE, CHAT_MSG_EMOTE },
-    { CMSG_MESSAGECHAT_PARTY, CHAT_MSG_PARTY },
-    { CMSG_MESSAGECHAT_RAID, CHAT_MSG_RAID },
-    { CMSG_MESSAGECHAT_BATTLEGROUND, CHAT_MSG_BATTLEGROUND },
-    { CMSG_MESSAGECHAT_RAID_WARNING, CHAT_MSG_RAID_WARNING }
-};
-
-uint8_t getMessageTypeForOpcode(uint16_t opcode)
-{
-    for (auto& i : opcodeToChatTypeList)
-    {
-        if (i.opcode == opcode)
-            return i.chatType;
-    }
-
-    return 0xFF;
-}
-
-
-void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
-{
-    WorldPacket* data = nullptr;
-
-    int32_t lang;
-
-    const char* pMisc = nullptr;
-    const char* pMsg = nullptr;
-
-    const uint8_t type = getMessageTypeForOpcode(sOpcodeTables.getInternalIdForHex(recvPacket.GetOpcode()));
-    if (type == 0xFF)
-    {
-        LogError("HandleMessagechatOpcode : Unknown chat opcode (0x%X)", recvPacket.GetOpcode());
-        recvPacket.clear();
-        return;
-    }
-
-    if (type != CHAT_MSG_EMOTE && type != CHAT_MSG_AFK && type != CHAT_MSG_DND)
-        recvPacket >> lang;
-    else
-        lang = LANG_UNIVERSAL;
-
-    if (lang >= NUM_LANGUAGES)
-    {
-        LogError("HandleMessagechatOpcode : Player %s chat in unknown language %u!", lang);
-        return;
-    }
-
-    if (_player->isBanned())
-    {
-        _player->BroadcastMessage("You cannot do that when banned.");
-        return;
-    }
-
-    if (lang != LANG_ADDON && isFloodProtectionTriggered())
-        return;
-
-    switch (type)
-    {
-        case CHAT_MSG_EMOTE:
-        case CHAT_MSG_SAY:
-        case CHAT_MSG_YELL:
-        case CHAT_MSG_WHISPER:
-        case CHAT_MSG_CHANNEL:
-        case CHAT_MSG_PARTY:
-        case CHAT_MSG_PARTY_LEADER:
-        case CHAT_MSG_BATTLEGROUND:
-        case CHAT_MSG_BATTLEGROUND_LEADER:
-        case CHAT_MSG_RAID:
-        case CHAT_MSG_RAID_WARNING:
-        case CHAT_MSG_RAID_LEADER:
-        case CHAT_MSG_GUILD:
-        case CHAT_MSG_OFFICER:
-        {
-            if (isSessionMuted())
-                return;
-        }
-        break;
-    }
-
-    std::string msg;
-    std::string to;
-    std::string channel;
-    std::string tmp;
-
-    uint32_t toLength;
-    uint32_t msgLength;
-    switch (type)
-    {
-        case CHAT_MSG_SAY:
-        case CHAT_MSG_PARTY:
-        case CHAT_MSG_PARTY_LEADER:
-        case CHAT_MSG_BATTLEGROUND_LEADER:
-        case CHAT_MSG_GUILD:
-        case CHAT_MSG_OFFICER:
-        case CHAT_MSG_RAID:
-        case CHAT_MSG_RAID_LEADER:
-        case CHAT_MSG_RAID_WARNING:
-        case CHAT_MSG_BATTLEGROUND:
-        case CHAT_MSG_AFK:
-        case CHAT_MSG_DND:
-            msg = recvPacket.ReadString(recvPacket.readBits(9));
-            break;
-        case CHAT_MSG_WHISPER:
-        {
-            toLength = recvPacket.readBits(10);
-            msgLength = recvPacket.readBits(9);
-            to = recvPacket.ReadString(toLength);
-            msg = recvPacket.ReadString(msgLength);
-        }
-        break;
-        case CHAT_MSG_CHANNEL:
-        {
-            toLength = recvPacket.readBits(10);
-            msgLength = recvPacket.readBits(9);
-            msg = recvPacket.ReadString(msgLength);
-            channel = recvPacket.ReadString(toLength);
-        } break;
-        default:
-        {
-            LOG_ERROR("CHAT: unknown msg type %u, lang: %u", type, lang);
-        } break;
-    }
-
-
-    if (int(msg.find("|T")) > -1)
-    {
-        _player->BroadcastMessage("Don't even THINK about doing that again");
-        return;
-    }
-
-    if (pMsg && !sHookInterface.OnChat(_player, type, lang, pMsg, pMisc))
-        return;
-
-    if (_player->getAuraWithAuraEffect(SPELL_AURA_COMPREHEND_LANG))
-    {
-        LOG_ERROR("Player has no aura with effect SPELL_AURA_COMPREHEND_LANG... returning now!");
-        return;
-    }
-
-    if (g_chatFilter->isBlockedOrReplaceWord(msg))
-    {
-        SystemMessage("Your chat message was blocked by a server-side filter.");
-        return;
-    }
-
-    Channel* chn = nullptr;
-
-    Player* playerSender = _player;
-    uint8_t chatTag = 0;
-
-    if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
-    {
-        LogDebug("Command parsed for player %s, input: '%s'", playerSender->getName().c_str(), msg.c_str());
-        return;
-    }
-
-    if (playerSender->isGMFlagSet())
-    {
-        lang = LANG_UNIVERSAL;
-        chatTag = 4;
-    }
-    else
-    {
-        if (worldConfig.player.isInterfactionChatEnabled)
-        {
-            lang = LANG_UNIVERSAL;
-        }
-        else
-        {
-            switch (type)
-            {
-                case CHAT_MSG_GUILD:
-                case CHAT_MSG_OFFICER:
-                {
-                    if (worldConfig.player.isInterfactionGuildEnabled)
-                        lang = LANG_UNIVERSAL;
-                } break;
-                case CHAT_MSG_PARTY:
-                case CHAT_MSG_PARTY_LEADER:
-                case CHAT_MSG_RAID:
-                case CHAT_MSG_RAID_LEADER:
-                case CHAT_MSG_RAID_WARNING:
-                {
-                    if (worldConfig.player.isInterfactionGroupEnabled)
-                        lang = LANG_UNIVERSAL;
-                } break;
-                case CHAT_MSG_EMOTE:
-                {
-                    lang = LANG_UNIVERSAL;
-                } break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    switch (type)
-    {
-        case CHAT_MSG_SAY:
-            _player->SendMessageToSet(SmsgMessageChat(type, lang, chatTag, msg, _player->getGuid()).serialise().get(), true, true);
-            break;
-        case CHAT_MSG_EMOTE:
-            _player->SendMessageToSet(SmsgMessageChat(type, lang, chatTag, msg, _player->getGuid()).serialise().get(), true);
-            break;
-        case CHAT_MSG_PARTY:
-        case CHAT_MSG_PARTY_LEADER:
-        case CHAT_MSG_RAID:
-        case CHAT_MSG_RAID_LEADER:
-        case CHAT_MSG_RAID_WARNING:
-        {
-            Group* pGroup = _player->getGroup();
-            if (pGroup == nullptr) break;
-
-            if (_player->m_modlanguage >= LANG_UNIVERSAL)
-                data = SmsgMessageChat(type, _player->m_modlanguage, chatTag, msg, _player->getGuid()).serialise().get();
-            else if (lang == LANG_UNIVERSAL && worldConfig.player.isInterfactionChatEnabled)
-                data = SmsgMessageChat(type, (CanUseCommand('0') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, chatTag, msg, _player->getGuid()).serialise().get();
-            else
-                data = SmsgMessageChat(type, (CanUseCommand('0') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, chatTag, msg, _player->getGuid()).serialise().get();
-            if (type == CHAT_MSG_PARTY && pGroup->getGroupType() == GROUP_TYPE_RAID)
-            {
-                SubGroup* sgr = _player->getGroup() ? _player->getGroup()->GetSubGroup(_player->getSubGroupSlot()) : 0;
-                if (sgr)
-                {
-                    _player->getGroup()->Lock();
-                    for (auto itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
-                    {
-                        if ((*itr)->m_loggedInPlayer)
-                            (*itr)->m_loggedInPlayer->GetSession()->SendChatPacket(data, 1, lang, this);
-                    }
-                    _player->getGroup()->Unlock();
-                }
-            }
-            else
-            {
-                SubGroup* sgr;
-                for (uint32_t i = 0; i < _player->getGroup()->GetSubGroupCount(); ++i)
-                {
-                    sgr = _player->getGroup()->GetSubGroup(i);
-                    _player->getGroup()->Lock();
-                    for (auto itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
-                    {
-                        if ((*itr)->m_loggedInPlayer)
-                            (*itr)->m_loggedInPlayer->GetSession()->SendChatPacket(data, 1, lang, this);
-                    }
-                    _player->getGroup()->Unlock();
-
-                }
-            }
-            LogDetail("[party] %s: %s", _player->getName().c_str(), msg.c_str());
-            delete data;
-        }
-        break;
-        case CHAT_MSG_GUILD:
-        {
-            if (_player->m_playerInfo->m_guild)
-                sGuildMgr.getGuildById(_player->m_playerInfo->m_guild)->broadcastToGuild(this, false, msg.c_str(), lang);
-        }
-        break;
-        case CHAT_MSG_OFFICER:
-        {
-            if (_player->m_playerInfo->m_guild)
-                sGuildMgr.getGuildById(_player->m_playerInfo->m_guild)->broadcastToGuild(this, true, msg.c_str(), lang);
-        }
-        break;
-        case CHAT_MSG_YELL:
-        {
-            if (lang > LANG_UNIVERSAL && LanguageSkills[lang] && _player->_HasSkillLine(LanguageSkills[lang]) == false)
-                return;
-
-            if (lang == LANG_UNIVERSAL && worldConfig.player.isInterfactionChatEnabled)
-                data = SmsgMessageChat(CHAT_MSG_YELL, (CanUseCommand('0') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, chatTag, msg, _player->getGuid()).serialise().get();
-            else if (_player->m_modlanguage >= LANG_UNIVERSAL)
-                data = SmsgMessageChat(CHAT_MSG_YELL, _player->m_modlanguage, chatTag, msg, _player->getGuid()).serialise().get();
-            else
-                data = SmsgMessageChat(CHAT_MSG_YELL, (CanUseCommand('0') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, chatTag, msg, _player->getGuid()).serialise().get();
-
-            _player->GetMapMgr()->SendChatMessageToCellPlayers(_player, data, 2, 1, lang, this);
-            delete data;
-        }
-        break;
-        case CHAT_MSG_WHISPER:
-        {
-            if (const auto playerTarget = sObjectMgr.GetPlayer(to.c_str(), false))
-            {
-                if (playerTarget == nullptr)
-                {
-                    data = new WorldPacket(SMSG_CHAT_PLAYER_NOT_FOUND, to.length() + 1);
-                    *data << to;
-                    SendPacket(data);
-                    delete data;
-                    break;
-                }
-
-                if (_player->getInitialTeam() != playerTarget->getInitialTeam() && !worldConfig.player.isInterfactionChatEnabled && !playerTarget->hasPlayerFlags(PLAYER_FLAG_GM) && !_player->isGMFlagSet())
-                {
-                    WorldPacket response(SMSG_CHAT_PLAYER_NOT_FOUND, to.length() + 1);
-                    response << to;
-                    SendPacket(&response);
-                    break;
-                }
-
-                if (!HasPermissions() && playerTarget->hasPlayerFlags(PLAYER_FLAG_GM) && playerTarget->isOnGMTargetList(_player->getGuidLow()))
-                {
-                    std::string Reply = "The Game Master can not receive messages from you. Please submit a Ticket request if you need to speak to a GM.";
-                    data = SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, 4, Reply, _player->getGuid()).serialise().get();
-                    SendPacket(data);
-                    delete data;
-                    break;
-                }
-
-                if (playerTarget->isIgnored(_player->getGuidLow()))
-                {
-                    data = SmsgMessageChat(CHAT_MSG_IGNORED, LANG_UNIVERSAL, chatTag, msg, _player->getGuid()).serialise().get();
-                    SendPacket(data);
-                    delete data;
-                    break;
-                }
-                else
-                {
-                    data = SmsgMessageChat(CHAT_MSG_WHISPER, lang, chatTag, msg, _player->getGuid()).serialise().get();
-                    playerTarget->SendPacket(data);
-                }
-
-                if (lang != LANG_ADDON)
-                {
-                    data = SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, chatTag, msg, _player->getGuid()).serialise().get();
-                    SendPacket(data);
-                    delete data;
-                }
-
-                if (playerTarget->hasPlayerFlags(PLAYER_FLAG_AFK))
-                {
-                    std::string reason = playerTarget->getAFKReason();
-
-                    data = SmsgMessageChat(CHAT_MSG_AFK, LANG_UNIVERSAL, chatTag, reason, _player->getGuid()).serialise().get();
-                    SendPacket(data);
-                    delete data;
-                }
-                else if (playerTarget->hasPlayerFlags(PLAYER_FLAG_DND))
-                {
-                    std::string reason = playerTarget->getAFKReason();
-                    data = SmsgMessageChat(CHAT_MSG_DND, LANG_UNIVERSAL, chatTag, reason, _player->getGuid()).serialise().get();
-                    SendPacket(data);
-                    delete data;
-                }
-            }
-        }
-        break;
-        case CHAT_MSG_CHANNEL:
-        {
-            chn = sChannelMgr.getChannel(channel, _player);
-            if (chn)
-                chn->Say(_player, msg.c_str(), nullptr, false);
-        }
-        break;
-        case CHAT_MSG_AFK:
-        {
-            std::string reason;
-            recvPacket >> reason;
-
-            _player->setAFKReason(reason);
-
-            if (_player->hasPlayerFlags(PLAYER_FLAG_AFK))
-            {
-                _player->removePlayerFlags(PLAYER_FLAG_AFK);
-                if (worldConfig.getKickAFKPlayerTime())
-                    sEventMgr.RemoveEvents(_player, EVENT_PLAYER_SOFT_DISCONNECT);
-            }
-            else
-            {
-                _player->addPlayerFlags(PLAYER_FLAG_AFK);
-
-                if (_player->m_bg)
-                    _player->m_bg->RemovePlayer(_player, false);
-
-                if (worldConfig.getKickAFKPlayerTime())
-                    sEventMgr.AddEvent(_player, &Player::SoftDisconnect, EVENT_PLAYER_SOFT_DISCONNECT, worldConfig.getKickAFKPlayerTime(), 1, 0);
-            }
-        }
-        break;
-        case CHAT_MSG_DND:
-        {
-            std::string reason;
-            recvPacket >> reason;
-            _player->setAFKReason(reason);
-
-            if (_player->hasPlayerFlags(PLAYER_FLAG_DND))
-                _player->removePlayerFlags(PLAYER_FLAG_DND);
-            else
-                _player->addPlayerFlags(PLAYER_FLAG_DND);
-        }
-        break;
-
-        case CHAT_MSG_BATTLEGROUND:
-        case CHAT_MSG_BATTLEGROUND_LEADER:
-        {
-            if (_player->m_bg != nullptr)
-            {
-                data = SmsgMessageChat(type, lang, chatTag, msg, _player->getGuid()).serialise().get();
-                _player->m_bg->DistributePacketToTeam(data, _player->getTeam());
-                delete data;
-            }
-        }
-        break;
-    }
-}
-#endif
 
 #if VERSION_STRING < Cata
 void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
