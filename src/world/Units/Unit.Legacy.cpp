@@ -8277,26 +8277,13 @@ void Unit::DeMorph()
 
 void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char* msg)
 {
-    size_t UnitNameLength = 0, MessageLength = 0;
     CreatureProperties const* ci = sMySQLStore.getCreatureProperties(entry);
     if (ci == nullptr)
         return;
 
-    UnitNameLength = ci->Name.size();
-    MessageLength = strlen((char*)msg) + 1;
+    const auto data = SmsgMessageChat(type, lang, 0, msg, getGuid(), ci->Name).serialise().get();
 
-    WorldPacket data(SMSG_MESSAGECHAT, 35 + UnitNameLength + MessageLength);
-    data << type;
-    data << lang;
-    data << getGuid();
-    data << uint32(0); // new in 2.1.0
-    data << uint32(UnitNameLength);
-    data << ci->Name;
-    data << uint64(0);
-    data << uint32(MessageLength);
-    data << msg;
-    data << uint8(0x00);
-    SendMessageToSet(&data, true);
+    SendMessageToSet(data, true);
 }
 
 void Unit::WipeHateList()

@@ -355,20 +355,11 @@ void Channel::Say(Player* plr, const char* message, Player* for_gm_client, bool 
         return;
     }
 
-    WorldPacket data(SMSG_MESSAGECHAT, strlen(message) + 100);
-    data << uint8(CHAT_MSG_CHANNEL);
-    data << uint32(0);        // language
-    data << plr->getGuid();    // guid
-    data << uint32(0);        // rank?
-    data << m_name;            // channel name
-    data << plr->getGuid();    // guid again?
-    data << uint32(strlen(message) + 1);
-    data << message;
-    data << (uint8)(plr->isGMFlagSet() ? 4 : 0);
+    uint8_t flag = plr->isGMFlagSet() ? 4 : 0;
     if (for_gm_client != nullptr)
-        for_gm_client->SendPacket(&data);
+        for_gm_client->SendPacket(SmsgMessageChat(CHAT_MSG_CHANNEL, LANG_UNIVERSAL, flag, message, plr->getGuid(), "", 0, m_name).serialise().get());
     else
-        SendToAll(&data);
+        SendToAll(SmsgMessageChat(CHAT_MSG_CHANNEL, LANG_UNIVERSAL, flag, message, plr->getGuid(), "", 0, m_name).serialise().get());
 
     m_lock.Release();
 }

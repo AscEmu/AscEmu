@@ -3815,51 +3815,26 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
 
                 MySQLStructure::LocalesNpcScriptText const* lnpct = (sessionLanguage > 0) ? sMySQLStore.getLocalizedNpcScriptText(textId, sessionLanguage) : nullptr;
                 if (lnpct != nullptr)
-                {
                     message = lnpct->text;
-                }
                 else
-                {
                     message = npcScriptText->text;
-                }
 
                 std::string creatureName;
 
                 MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
                 if (lcn != nullptr)
-                {
                     creatureName = lcn->name;
-                }
                 else
-                {
                     creatureName = creature->GetCreatureProperties()->Name;
-                }
-
-                size_t creatureNameLength = creatureName.length() + 1;
-                size_t messageLength = message.length() + 1;
 
                 if (npcScriptText->emote != 0)
-                {
                     creature->eventAddEmote((EmoteType)npcScriptText->emote, npcScriptText->duration);
-                }
 
                 if (npcScriptText->sound != 0)
-                {
                     creature->PlaySoundToSet(npcScriptText->sound);
-                }
 
-                WorldPacket data(SMSG_MESSAGECHAT, 35 + creatureNameLength + messageLength);
-                data << uint8_t(npcScriptText->type);
-                data << uint32_t(npcScriptText->language);
-                data << uint64_t(getGuid());
-                data << uint32_t(0);
-                data << uint32_t(creatureNameLength);
-                data << creatureName;
-                data << uint64_t(0);
-                data << uint32_t(messageLength);
-                data << message;
-                data << uint8_t(0);
-                player->SendPacket(&data);
+                const auto data = SmsgMessageChat(npcScriptText->type, npcScriptText->language, 0, message, getGuid(), creatureName).serialise().get();
+                player->SendPacket(data);
             }
         }
     }
@@ -3931,6 +3906,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                 char* test = strstr((char*)text, "$R");
                 if (test == nullptr)
                     test = strstr((char*)text, "$r");
+
                 if (test != nullptr)
                 {
                     uint64 targetGUID = creature->getTargetGuid();
@@ -3944,6 +3920,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                 test = strstr((char*)text, "$N");
                 if (test == nullptr)
                     test = strstr((char*)text, "$n");
+
                 if (test != nullptr)
                 {
                     uint64 targetGUID = creature->getTargetGuid();
@@ -3957,6 +3934,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                 test = strstr((char*)text, "$C");
                 if (test == nullptr)
                     test = strstr((char*)text, "$c");
+
                 if (test != nullptr)
                 {
                     uint64 targetGUID = creature->getTargetGuid();
@@ -3970,6 +3948,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                 test = strstr((char*)text, "$G");
                 if (test == nullptr)
                     test = strstr((char*)text, "$g");
+
                 if (test != nullptr)
                 {
                     uint64 targetGUID = creature->getTargetGuid();
@@ -4002,29 +3981,12 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
 
                 MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
                 if (lcn != nullptr)
-                {
                     creatureName = lcn->name;
-                }
                 else
-                {
                     creatureName = creature->GetCreatureProperties()->Name;
-                }
 
-                size_t creatureNameLength = creatureName.length() + 1;
-                size_t messageLength = newText.length() + 1;
-
-                WorldPacket data(SMSG_MESSAGECHAT, 35 + creatureNameLength + messageLength);
-                data << uint8_t(npcMonsterSay->type);
-                data << uint32_t(npcMonsterSay->language);
-                data << uint64_t(getGuid());
-                data << uint32_t(0);
-                data << uint32_t(creatureNameLength);
-                data << creatureName;
-                data << uint64_t(0);
-                data << uint32_t(messageLength);
-                data << newText;
-                data << uint8_t(0);
-                player->SendPacket(&data);
+                const auto data = SmsgMessageChat(npcMonsterSay->type, npcMonsterSay->language, 0, newText, getGuid(), creatureName).serialise().get();
+                player->SendPacket(data);
             }
         }
     }

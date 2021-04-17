@@ -1339,8 +1339,6 @@ void Guild::broadcastToGuild(WorldSession* session, bool officerOnly, std::strin
 {
     if (session && session->GetPlayer() && _hasRankRight(session->GetPlayer()->getGuid(), officerOnly ? GR_RIGHT_OFFCHATSPEAK : GR_RIGHT_GCHATSPEAK))
     {
-        WorldPacket* data = sChatHandler.FillMessageData(officerOnly ? CHAT_MSG_OFFICER : CHAT_MSG_GUILD, language, msg.c_str(), NULL, 0);
-
         for (auto itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
         {
             if (Player* player = itr->second->getPlayerByGuid(session->GetPlayer()->getGuid()))
@@ -1348,12 +1346,10 @@ void Guild::broadcastToGuild(WorldSession* session, bool officerOnly, std::strin
                 if (player->GetSession() && _hasRankRight(player->getGuid(), officerOnly ? GR_RIGHT_OFFCHATLISTEN : GR_RIGHT_GCHATLISTEN) &&
                     !player->isIgnored(session->GetPlayer()->getGuidLow()))
                 {
-                    player->GetSession()->SendPacket(data);
+                    player->GetSession()->SendPacket(SmsgMessageChat(officerOnly ? CHAT_MSG_OFFICER : CHAT_MSG_GUILD, language, 0, msg).serialise().get());
                 }
             }
         }
-
-        delete data;
     }
 }
 
@@ -1361,8 +1357,6 @@ void Guild::broadcastAddonToGuild(WorldSession* session, bool officerOnly, std::
 {
     if (session && session->GetPlayer() && _hasRankRight(session->GetPlayer()->getGuid(), officerOnly ? GR_RIGHT_OFFCHATSPEAK : GR_RIGHT_GCHATSPEAK))
     {
-        WorldPacket* data = sChatHandler.FillMessageData(officerOnly ? CHAT_MSG_OFFICER : CHAT_MSG_GUILD, uint32_t(CHAT_MSG_ADDON), msg.c_str(), NULL, 0);
-
         for (auto itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
         {
             if (Player* player = itr->second->getPlayerByGuid(session->GetPlayer()->getGuid()))
@@ -1370,12 +1364,10 @@ void Guild::broadcastAddonToGuild(WorldSession* session, bool officerOnly, std::
                 if (player->GetSession() && _hasRankRight(player->getGuid(), officerOnly ? GR_RIGHT_OFFCHATLISTEN : GR_RIGHT_GCHATLISTEN) &&
                     !player->isIgnored(session->GetPlayer()->getGuidLow()))
                 {
-                    player->GetSession()->SendPacket(data);
+                    player->GetSession()->SendPacket(SmsgMessageChat(officerOnly ? CHAT_MSG_OFFICER : CHAT_MSG_GUILD, CHAT_MSG_ADDON, 0, msg).serialise().get());
                 }
             }
         }
-
-        delete data;
     }
 }
 

@@ -1974,18 +1974,10 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                 setAiState(AI_STATE_FLEEING);
                 resetNextTarget();
 
-                WorldPacket data(SMSG_MESSAGECHAT, 100);
                 std::string msg = "%s attempts to run away in fear!";
-                data << uint8(CHAT_MSG_CHANNEL);
-                data << uint32(LANG_UNIVERSAL);
-                data << uint32(static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Name.size());
-                data << static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Name;
-                data << uint64(0);
-                data << uint32(msg.size() + 1);
-                data << msg;
-                data << uint8(0);
 
-                m_Unit->SendMessageToSet(&data, false);
+                const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_CHANNEL, LANG_UNIVERSAL, 0, msg, 0, "", 0, static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Name).serialise().get();
+                m_Unit->SendMessageToSet(data, false);
 
                 m_hasFleed = true;
             }

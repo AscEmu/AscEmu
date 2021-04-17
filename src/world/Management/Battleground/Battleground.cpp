@@ -558,9 +558,8 @@ void CBattleground::SendChatMessage(uint32 Type, uint64 Guid, const char* Format
     va_start(ap, Format);
     vsnprintf(msg, 500, Format, ap);
     va_end(ap);
-    WorldPacket* data = sChatHandler.FillMessageData(Type, 0, msg, Guid, 0);
-    DistributePacketToAll(data);
-    delete data;
+
+    DistributePacketToAll(AscEmu::Packets::SmsgMessageChat(Type, 0, 0, msg, Guid).serialise().get());
 }
 
 /*! \returns True if CBattleground should handle calculations, false if calculations were handled completely

@@ -167,32 +167,32 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
     return 1;
 }
 
-WorldPacket* ChatHandler::FillMessageData(uint32 type, uint32 language, const char* message, uint64 guid, uint8 flag) const
-{
-    ARCEMU_ASSERT(type != CHAT_MSG_CHANNEL);
-    //channels are handled in channel handler and so on
-    uint32 messageLength = (uint32)strlen(message) + 1;
-
-#if VERSION_STRING >= Cata
-    WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, messageLength + 60);
-#else
-    WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, messageLength + 30);
-#endif
-
-    *data << uint8(type);
-    *data << language;
-
-    *data << guid;
-    *data << uint32(0);
-
-    *data << guid;
-
-    *data << messageLength;
-    *data << message;
-
-    *data << uint8(flag);
-    return data;
-}
+//WorldPacket* ChatHandler::FillMessageData(uint32 type, uint32 language, const char* message, uint64 guid, uint8 flag) const
+//{
+//    ARCEMU_ASSERT(type != CHAT_MSG_CHANNEL);
+//    //channels are handled in channel handler and so on
+//    uint32 messageLength = (uint32)strlen(message) + 1;
+//
+//#if VERSION_STRING >= Cata
+//    WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, messageLength + 60);
+//#else
+//    WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, messageLength + 30);
+//#endif
+//
+//    *data << uint8(type);
+//    *data << language;
+//
+//    *data << guid;
+//    *data << uint32(0);
+//
+//    *data << guid;
+//
+//    *data << messageLength;
+//    *data << message;
+//
+//    *data << uint8(flag);
+//    return data;
+//}
 
 Player* ChatHandler::GetSelectedPlayer(WorldSession* m_session, bool showerror, bool auto_self)
 {

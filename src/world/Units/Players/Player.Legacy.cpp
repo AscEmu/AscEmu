@@ -9901,18 +9901,15 @@ void Player::SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 de
         return;
     }
 
-    WorldPacket* data = sChatHandler.FillMessageData(type, lang, msg, getGuid());
-    SendMessageToSet(data, true);
-    delete data;
+    SendMessageToSet(SmsgMessageChat(type, lang, 0, msg, getGuid()).serialise().get(), true);
 }
 
 void Player::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr)
 {
     if (plr == nullptr)
         return;
-    WorldPacket* data = sChatHandler.FillMessageData(type, lang, msg, getGuid());
-    plr->SendPacket(data);
-    delete data;
+
+    plr->SendPacket(SmsgMessageChat(type, lang, 0, msg, getGuid()).serialise().get());
 }
 
 void Player::AcceptQuest(uint64 guid, uint32 quest_id)

@@ -565,17 +565,7 @@ void World::removeQueuedSocket(WorldSocket* socket)
 // Send Messages
 void World::sendMessageToOnlineGms(const std::string& message, WorldSession* sendToSelf /*nullptr*/)
 {
-    uint32_t textLength = static_cast<uint32_t>(message.size()) + 1;
-
-    WorldPacket data(SMSG_MESSAGECHAT, textLength + 40);
-    data << uint8_t(CHAT_MSG_SYSTEM);
-    data << uint32_t(LANG_UNIVERSAL);
-    data << uint64_t(0);
-    data << uint32_t(0);
-    data << uint64_t(0);
-    data << textLength;
-    data << message.c_str();
-    data << uint8_t(0);
+    const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, message).serialise().get();
 
     std::lock_guard<std::mutex> guard(mSessionLock);
 
@@ -584,26 +574,16 @@ void World::sendMessageToOnlineGms(const std::string& message, WorldSession* sen
         if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second != sendToSelf)
         {
             if (activeSessions->second->CanUseCommand('u'))
-                activeSessions->second->SendPacket(&data);
+                activeSessions->second->SendPacket(data);
         }
     }
 }
 
 void World::sendMessageToAll(const std::string& message, WorldSession* sendToSelf /*nullptr*/)
 {
-    uint32_t textLength = static_cast<uint32_t>(message.size()) + 1;
+    const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, message).serialise().get();
 
-    WorldPacket data(SMSG_MESSAGECHAT, textLength + 40);
-    data << uint8_t(CHAT_MSG_SYSTEM);
-    data << uint32_t(LANG_UNIVERSAL);
-    data << uint64_t(0);
-    data << uint32_t(0);
-    data << uint64_t(0);
-    data << textLength;
-    data << message.c_str();
-    data << uint8_t(0);
-
-    sendGlobalMessage(&data, sendToSelf);
+    sendGlobalMessage(data, sendToSelf);
 
     if (settings.announce.showAnnounceInConsoleOutput)
     {
@@ -680,19 +660,10 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
         if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld())
         {
             const char* text = activeSessions->second->LocalizedBroadCast(broadcastId);
-            uint32_t textLen = static_cast<uint32_t>(strlen(text)) + 1;
 
-            WorldPacket data(SMSG_MESSAGECHAT, textLen + 40);
-            data << uint8_t(CHAT_MSG_SYSTEM);
-            data << uint32_t(LANG_UNIVERSAL);
-            data << uint64_t(0);
-            data << uint32_t(0);
-            data << uint64_t(0);
-            data << textLen;
-            data << text;
-            data << uint8_t(0);
+            const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, text).serialise().get();
 
-            activeSessions->second->SendPacket(&data);
+            activeSessions->second->SendPacket(data);
         }
     }
 }

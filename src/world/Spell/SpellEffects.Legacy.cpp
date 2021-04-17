@@ -2691,12 +2691,10 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
                 {
                     p_caster->addSpell(discovered_recipe);
 
-                    WorldPacket* data;
                     char msg[256];
                     sprintf(msg, "%sDISCOVERY! %s has discovered how to create %s.|r", MSG_COLOR_GOLD, p_caster->getName().c_str(), se->getName().c_str());
-                    data = sChatHandler.FillMessageData(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, msg, p_caster->getGuid(), 0);
-                    p_caster->GetMapMgr()->SendChatMessageToCellPlayers(p_caster, data, 2, 1, LANG_UNIVERSAL, p_caster->GetSession());
-                    delete data;
+
+                    p_caster->GetMapMgr()->SendChatMessageToCellPlayers(p_caster, SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, msg, p_caster->getGuid()).serialise().get(), 2, 1, LANG_UNIVERSAL, p_caster->GetSession());
                 }
                 else
                 {

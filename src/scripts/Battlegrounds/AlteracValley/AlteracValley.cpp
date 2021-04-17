@@ -1343,25 +1343,12 @@ void AlteracValley::Herald(const char* format, ...)
 {
     char msgbuf[100];
     va_list ap;
-    size_t msglen;
-    WorldPacket data(SMSG_MESSAGECHAT, 500);
 
     va_start(ap, format);
     vsnprintf(msgbuf, 100, format, ap);
     va_end(ap);
-    msglen = strlen(msgbuf);
 
-    data << uint8_t(CHAT_MSG_MONSTER_YELL);
-    data << uint32_t(LANG_UNIVERSAL);
-    data << uint64_t(0);
-    data << uint32_t(0);            // new in 2.1.0
-    data << uint32_t(7);            // Herald
-    data << "Herald";             // Herald
-    data << uint64_t(0);
-    data << uint32_t(msglen + 1);
-    data << msgbuf;
-    data << uint8_t(0x00);
-    DistributePacketToAll(&data);
+    DistributePacketToAll(AscEmu::Packets::SmsgMessageChat(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, 0, msgbuf, 0, "Herald").serialise().get());
 }
 
 void AlteracValley::HookOnFlagDrop(Player* /*plr*/)

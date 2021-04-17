@@ -2381,21 +2381,10 @@ void Creature::SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 
     }
 
     const char* name = GetCreatureProperties()->Name.c_str();
-    size_t CreatureNameLength = strlen((char*)name) + 1;
-    size_t MessageLength = strlen((char*)msg) + 1;
 
-    WorldPacket data(SMSG_MESSAGECHAT, 35 + CreatureNameLength + MessageLength);
-    data << type;
-    data << lang;
-    data << getGuid();
-    data << uint32(0);            // new in 2.1.0
-    data << uint32(CreatureNameLength);
-    data << name;
-    data << uint64(0);
-    data << uint32(MessageLength);
-    data << msg;
-    data << uint8(0x00);
-    SendMessageToSet(&data, true);
+    const auto data = AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, getGuid(), name).serialise().get();
+
+    SendMessageToSet(data, true);
 }
 
 /// \todo implement localization support
@@ -2423,46 +2412,21 @@ void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
     if (ct->emote != 0)
         this->eventAddEmote((EmoteType)ct->emote, ct->duration);
 
-    const char* name = GetCreatureProperties()->Name.c_str();
-    size_t CreatureNameLength = strlen((char*)name) + 1;
-    size_t MessageLength = strlen((char*)ct->text.c_str()) + 1;
+    auto name = GetCreatureProperties()->Name;
 
-    WorldPacket data(SMSG_MESSAGECHAT, 35 + CreatureNameLength + MessageLength);
-    data << uint8(ct->type);            // f.e. CHAT_MSG_MONSTER_SAY enum ChatMsg (perfect name for this enum XD)
-    data << uint32(ct->language);       // f.e. LANG_UNIVERSAL enum Languages
-    data << uint64(getGuid());          // guid of the npc
-    data << uint32(0);
-    data << uint32(CreatureNameLength); // the length of the npc name (needed to calculate text beginning)
-    data << name;                       // name of the npc
-    data << uint64(0);
-    data << uint32(MessageLength);      // the length of the message (needed to calculate the bubble)
-    data << ct->text;                   // the text
-    data << uint8(0x00);
+    const auto data = AscEmu::Packets::SmsgMessageChat(ct->type, ct->language, 0, ct->text, getGuid(), name).serialise().get();
 
-    SendMessageToSet(&data, true);      // sending this
+    SendMessageToSet(data, true);      // sending this
 }
 
 void Creature::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr)
 {
-    size_t UnitNameLength = 0, MessageLength = 0;
     if (plr == NULL)
         return;
 
-    UnitNameLength = strlen((char*)GetCreatureProperties()->Name.c_str()) + 1;
-    MessageLength = strlen((char*)msg) + 1;
+    const auto data = AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, getGuid(), GetCreatureProperties()->Name).serialise().get();
 
-    WorldPacket data(SMSG_MESSAGECHAT, 35 + UnitNameLength + MessageLength);
-    data << type;
-    data << lang;
-    data << getGuid();
-    data << uint32(0);            // new in 2.1.0
-    data << uint32(UnitNameLength);
-    data << GetCreatureProperties()->Name;
-    data << uint64(0);
-    data << uint32(MessageLength);
-    data << msg;
-    data << uint8(0x00);
-    plr->GetSession()->SendPacket(&data);
+    plr->GetSession()->SendPacket(data);
 }
 
 void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)

@@ -209,14 +209,14 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
     {
         case CHAT_MSG_EMOTE:
             // TODO Verify "strange gestures" for xfaction
-            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_EMOTE, messageLanguage, _player->getGuid(), srlPacket.message, gmFlag).serialise().get(), true, true);
+            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_EMOTE, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), true, true);
             LogDetail("[emote] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
             break;
         case CHAT_MSG_SAY:
             if (is_gm_command || !player_can_speak_language)
                 break;
 
-            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_SAY, messageLanguage, _player->getGuid(), srlPacket.message, gmFlag).serialise().get(), true);
+            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_SAY, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), true);
             break;
         case CHAT_MSG_PARTY:
         case CHAT_MSG_PARTY_LEADER:
@@ -227,7 +227,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (is_gm_command || !player_can_speak_language)
                 break;
 
-            const auto send_packet = SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, _player->getGuid(), srlPacket.message, gmFlag).serialise();
+            const auto send_packet = SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise();
 
             if (const auto group = _player->getGroup())
             {
@@ -280,10 +280,8 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (is_gm_command || !player_can_speak_language)
                 break;
 
-            auto yell_packet = SmsgMessageChat(CHAT_MSG_YELL, messageLanguage, _player->getGuid(), srlPacket.message,
-                gmFlag);
-            _player->GetMapMgr()->SendChatMessageToCellPlayers(_player, yell_packet.serialise().get(), 2, 1, messageLanguage,
-                this);
+            auto yell_packet = SmsgMessageChat(CHAT_MSG_YELL, messageLanguage, gmFlag, srlPacket.message, _player->getGuid());
+            _player->GetMapMgr()->SendChatMessageToCellPlayers(_player, yell_packet.serialise().get(), 2, 1, messageLanguage, this);
         }
         break;
         case CHAT_MSG_WHISPER:
@@ -300,31 +298,31 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                     if (!gmFlag && target_is_gm_flagged && target_gm_is_speaking_to_us)
                     {
                         const auto reply = "SYSTEM: This Game Master does not currently have an open ticket from you and did not receive your whisper. Please submit a new GM Ticket request if you need to speak to a GM. This is an automatic message.";
-                        SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, playerTarget->getGuid(), reply, gmFlag).serialise().get());
+                        SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, gmFlag, reply, playerTarget->getGuid()).serialise().get());
                         break;
                     }
 
                     const auto we_are_being_ignored = playerTarget->isIgnored(_player->getGuidLow());
                     if (we_are_being_ignored)
                     {
-                        SendPacket(SmsgMessageChat(CHAT_MSG_IGNORED, LANG_UNIVERSAL, playerTarget->getGuid(), srlPacket.message, gmFlag).serialise().get());
+                        SendPacket(SmsgMessageChat(CHAT_MSG_IGNORED, LANG_UNIVERSAL, gmFlag, srlPacket.message, playerTarget->getGuid()).serialise().get());
                         break;
                     }
 
-                    playerTarget->SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER, messageLanguage, _player->getGuid(), srlPacket.message, gmFlag).serialise().get());
+                    playerTarget->SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get());
                     if (messageLanguage != LANG_ADDON)
                         // TODO Verify should this be LANG_UNIVERSAL?
-                        SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, playerTarget->getGuid(), srlPacket.message, gmFlag).serialise().get());
+                        SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, gmFlag, srlPacket.message, playerTarget->getGuid()).serialise().get());
 
                     if (playerTarget->hasPlayerFlags(PLAYER_FLAG_AFK))
                     {
                         std::string reason = playerTarget->getAFKReason();
-                        SendPacket(SmsgMessageChat(CHAT_MSG_AFK, LANG_UNIVERSAL, playerTarget->getGuid(), reason, gmFlag).serialise().get());
+                        SendPacket(SmsgMessageChat(CHAT_MSG_AFK, LANG_UNIVERSAL, gmFlag, reason, playerTarget->getGuid()).serialise().get());
                     }
                     else if (playerTarget->hasPlayerFlags(PLAYER_FLAG_DND))
                     {
                         std::string reason = playerTarget->getAFKReason();
-                        SendPacket(SmsgMessageChat(CHAT_MSG_DND, LANG_UNIVERSAL, playerTarget->getGuid(), reason, gmFlag).serialise().get());
+                        SendPacket(SmsgMessageChat(CHAT_MSG_DND, LANG_UNIVERSAL, gmFlag, reason, playerTarget->getGuid()).serialise().get());
                     }
                 }
             }
@@ -357,7 +355,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (!_player->m_bg)
                 break;
 
-            _player->m_bg->DistributePacketToTeam(SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, _player->getGuid(), srlPacket.message, gmFlag).serialise().get(), _player->getTeam());
+            _player->m_bg->DistributePacketToTeam(SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), _player->getTeam());
             break;
     }
 }
@@ -1023,9 +1021,7 @@ void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
     if (player == nullptr || player->GetSession() == nullptr)
         return;
 
-    WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, _player->getName().c_str(), _player->getGuid());
-    player->GetSession()->SendPacket(data);
-    delete data;
+    player->GetSession()->SendPacket(SmsgMessageChat(CHAT_MSG_IGNORED, LANG_UNIVERSAL, 0, _player->getName(), _player->getGuid()).serialise().get());
 }
 #else
 void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)

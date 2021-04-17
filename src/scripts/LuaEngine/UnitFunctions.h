@@ -383,12 +383,12 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         if (msg == nullptr)
             return 0;
-        WorldPacket* data = sChatHandler.FillMessageData(type, lang, msg, plr->getGuid(), 0);
-        plr->GetSession()->SendChatPacket(data, 1, lang, plr->GetSession());
+
+        plr->GetSession()->SendChatPacket(AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, plr->getGuid()).serialise().get(), 1, lang, plr->GetSession());
         for (const auto& itr : plr->getInRangePlayersSet())
         {
             if (itr)
-                static_cast<Player*>(itr)->GetSession()->SendChatPacket(data, 1, lang, plr->GetSession());
+                static_cast<Player*>(itr)->GetSession()->SendChatPacket(AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, plr->getGuid()).serialise().get(), 1, lang, plr->GetSession());
         }
         return 0;
     }
