@@ -135,10 +135,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
     {
         if (const auto language_skill = LanguageSkills[messageLanguage])
             player_can_speak_language = _player->_HasSkillLine(language_skill);
-    }
 
-    if (messageLanguage != LANG_ADDON)
-    {
         if (worldConfig.player.isInterfactionChatEnabled)
         {
             messageLanguage = LANG_UNIVERSAL;
@@ -169,17 +166,18 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         case CHAT_MSG_YELL:
         case CHAT_MSG_WHISPER:
         case CHAT_MSG_CHANNEL:
+        {
             if (m_muted >= static_cast<uint32_t>(UNIXTIME))
             {
                 SystemMessage("You are currently muted by a moderator.");
                 return;
             }
-            break;
+        } break;
         default:
             break;
     }
 
-    if (int(srlPacket.message.find("|T")) > -1)
+    if (srlPacket.message.find("|T") > -1)
     {
         //_player->BroadcastMessage("Don't even THINK about doing that again");
         return;
@@ -194,7 +192,6 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    auto is_gm_command = false;
     switch (srlPacket.type)
     {
         case CHAT_MSG_SAY:
@@ -206,44 +203,48 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         case CHAT_MSG_GUILD:
         case CHAT_MSG_OFFICER:
         case CHAT_MSG_YELL:
-            is_gm_command = sChatHandler.ParseCommands(srlPacket.message.c_str(), this) > 0;
-            break;
+        {
+            // Parse command and get out of the message handling :-)
+            if (sChatHandler.ParseCommands(srlPacket.message.c_str(), this) > 0)
+                return;
+        }
     }
 
     uint8_t gmFlag = _player->isGMFlagSet() ? 4 : 0;
     switch (srlPacket.type)
     {
         case CHAT_MSG_EMOTE:
+        {
             // TODO Verify "strange gestures" for xfaction
             _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_EMOTE, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), true, true);
             LogDetail("[emote] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
-            break;
+        } break;
         case CHAT_MSG_SAY:
-            if (is_gm_command || !player_can_speak_language)
+        {
+            if (!player_can_speak_language)
                 break;
 
             _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_SAY, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), true);
-            break;
+        } break;
         case CHAT_MSG_PARTY:
         case CHAT_MSG_PARTY_LEADER:
         case CHAT_MSG_RAID:
         case CHAT_MSG_RAID_LEADER:
         case CHAT_MSG_RAID_WARNING:
         {
-            if (is_gm_command || !player_can_speak_language)
+            if (!player_can_speak_language)
                 break;
 
             const auto send_packet = SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise();
 
-            if (const auto group = _player->getGroup())
+            if (auto* const group = _player->getGroup())
             {
-                if (srlPacket.type == CHAT_MSG_PARTY || srlPacket.type == CHAT_MSG_PARTY_LEADER
-                    && group->isRaid())
+                if (srlPacket.type == CHAT_MSG_PARTY || srlPacket.type == CHAT_MSG_PARTY_LEADER && group->isRaid())
                 {
-                    if (const auto subgroup = group->GetSubGroup(_player->getSubGroupSlot()))
+                    if (auto* const subgroup = group->GetSubGroup(_player->getSubGroupSlot()))
                     {
                         group->Lock();
-                        for (auto group_member : subgroup->getGroupMembers())
+                        for (auto* group_member : subgroup->getGroupMembers())
                             if (group_member->m_loggedInPlayer)
                                 group_member->m_loggedInPlayer->SendPacket(send_packet.get());
                         group->Unlock();
@@ -253,10 +254,10 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                 {
                     for (uint32_t i = 0; i < group->GetSubGroupCount(); ++i)
                     {
-                        if (const auto sub_group = group->GetSubGroup(i))
+                        if (auto* const sub_group = group->GetSubGroup(i))
                         {
                             group->Lock();
-                            for (auto group_member : sub_group->getGroupMembers())
+                            for (auto* group_member : sub_group->getGroupMembers())
                                 if (group_member->m_loggedInPlayer)
                                     group_member->m_loggedInPlayer->SendPacket(send_packet.get());
                             group->Unlock();
@@ -265,45 +266,37 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                 }
                 LogDetail("[party] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
             }
-        }
-        break;
+        } break;
         case CHAT_MSG_GUILD:
-            if (is_gm_command)
-                break;
-
-            if (const auto guild = _player->getGuild())
+        {
+            if (auto* const guild = _player->getGuild())
                 guild->broadcastToGuild(this, false, srlPacket.message, messageLanguage);
-            break;
+        } break;
         case CHAT_MSG_OFFICER:
-            if (is_gm_command)
-                break;
-
-            if (const auto guild = _player->getGuild())
+        {
+            if (auto* const guild = _player->getGuild())
                 guild->broadcastToGuild(this, true, srlPacket.message, messageLanguage);
-            break;
+        } break;
         case CHAT_MSG_YELL:
         {
-            if (is_gm_command || !player_can_speak_language)
+            if (!player_can_speak_language)
                 break;
 
             auto yell_packet = SmsgMessageChat(CHAT_MSG_YELL, messageLanguage, gmFlag, srlPacket.message, _player->getGuid());
             _player->GetMapMgr()->SendChatMessageToCellPlayers(_player, yell_packet.serialise().get(), 2, 1, messageLanguage, this);
-        }
-        break;
+        } break;
         case CHAT_MSG_WHISPER:
         {
-            if (const auto playerTarget = sObjectMgr.GetPlayer(srlPacket.destination.c_str(), false))
+            if (auto* const playerTarget = sObjectMgr.GetPlayer(srlPacket.destination.c_str(), false))
             {
                 const auto target_is_our_faction = _player->getInitialTeam() == playerTarget->getInitialTeam();
                 const auto target_is_gm_flagged = playerTarget->hasPlayerFlags(PLAYER_FLAG_GM);
-                if (target_is_our_faction
-                    || worldConfig.player.isInterfactionChatEnabled
-                    || target_is_gm_flagged)
+                if (target_is_our_faction || worldConfig.player.isInterfactionChatEnabled || target_is_gm_flagged)
                 {
                     const auto target_gm_is_speaking_to_us = playerTarget->isOnGMTargetList(_player->getGuidLow());
                     if (!gmFlag && target_is_gm_flagged && target_gm_is_speaking_to_us)
                     {
-                        const auto reply = "SYSTEM: This Game Master does not currently have an open ticket from you and did not receive your whisper. Please submit a new GM Ticket request if you need to speak to a GM. This is an automatic message.";
+                        std::string reply = "SYSTEM: This Game Master does not currently have an open ticket from you and did not receive your whisper. Please submit a new GM Ticket request if you need to speak to a GM. This is an automatic message.";
                         SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, gmFlag, reply, playerTarget->getGuid()).serialise().get());
                         break;
                     }
@@ -317,8 +310,10 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 
                     playerTarget->SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get());
                     if (messageLanguage != LANG_ADDON)
+                    {
                         // TODO Verify should this be LANG_UNIVERSAL?
                         SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, gmFlag, srlPacket.message, playerTarget->getGuid()).serialise().get());
+                    }
 
                     if (playerTarget->hasPlayerFlags(PLAYER_FLAG_AFK))
                     {
@@ -338,30 +333,30 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             }
         } break;
         case CHAT_MSG_CHANNEL:
-            if (is_gm_command)
-                break;
-
-            if (const auto channel = sChannelMgr.getChannel(srlPacket.destination, _player))
+        {
+            if (auto* const channel = sChannelMgr.getChannel(srlPacket.destination, _player))
                 channel->Say(_player, srlPacket.message.c_str(), nullptr, false);
 
-            break;
+        } break;
         case CHAT_MSG_AFK:
+        {
             _player->setAFKReason(srlPacket.message);
             _player->toggleAfk();
-            break;
+        } break;
         case CHAT_MSG_DND:
+        {
             _player->setAFKReason(srlPacket.message);
             _player->toggleDnd();
-            break;
+        } break;
         case CHAT_MSG_BATTLEGROUND:
         case CHAT_MSG_BATTLEGROUND_LEADER:
-            if (is_gm_command || !player_can_speak_language)
-                break;
-
-            if (!_player->m_bg)
+        {
+            if (!player_can_speak_language || !_player->m_bg)
                 break;
 
             _player->m_bg->DistributePacketToTeam(SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), _player->getTeam());
+        } break;
+        default: 
             break;
     }
 }

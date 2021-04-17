@@ -33,7 +33,7 @@ namespace AscEmu::Packets
         {
         }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
         struct OpcodeToChatType
         {
             uint16_t opcode;
