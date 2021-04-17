@@ -1017,17 +1017,6 @@ public:
 
     void sendReportToGmMessage(std::string playerName, std::string damageLog);
 
-#if VERSION_STRING >= Cata
-private:
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Chat
-public:
-    void sendChatPacket(uint32_t type, uint32_t language, const char* message, uint64_t guid, uint8_t flag);
-    WorldPacket buildChatMessagePacket(Player* targetPlayer, uint32_t type, uint32_t language, const char* message, uint64_t guid, uint8_t flag);
-    bool hasLanguage(uint32_t language);
-    bool hasSkilledSkill(uint32_t skill);
-#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Commands
