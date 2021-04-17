@@ -369,9 +369,8 @@ void Group::Disband()
     if (m_isqueued)
     {
         m_isqueued = false;
-        WorldPacket* data = sChatHandler.FillSystemMessageData("A change was made to your group. Removing the arena queue.");
-        SendPacketToAll(data);
-        delete data;
+
+        SendPacketToAll(SmsgMessageChat(SystemMessagePacket("A change was made to your group. Removing the arena queue.")).serialise().get());
 
         sBattlegroundManager.RemoveGroupFromQueues(this);
     }
@@ -569,9 +568,8 @@ void Group::ExpandToRaid()
     if (m_isqueued)
     {
         m_isqueued = false;
-        WorldPacket* data = sChatHandler.FillSystemMessageData("A change was made to your group. Removing the arena queue.");
-        SendPacketToAll(data);
-        delete data;
+
+        SendPacketToAll(SmsgMessageChat(SystemMessagePacket("A change was made to your group. Removing the arena queue.")).serialise().get());
 
         sBattlegroundManager.RemoveGroupFromQueues(this);
     }

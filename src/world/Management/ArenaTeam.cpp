@@ -26,6 +26,8 @@
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgArenaTeamStats.h"
 
+using namespace AscEmu::Packets;
+
 static const uint32 TeamCountToId[6] =
 {
     0,                      // 0
@@ -125,9 +127,8 @@ void ArenaTeam::Destroy()
 
     char buffer[1024];
     snprintf(buffer, 1024, "The arena team, '%s', disbanded.", m_name.c_str());
-    WorldPacket* data = sChatHandler.FillSystemMessageData(buffer);
-    SendPacket(data);
-    delete data;
+
+    SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
 
     for (uint32 i = 0; i < m_memberCount; ++i)
     {
@@ -291,9 +292,8 @@ void ArenaTeam::SetLeader(PlayerInfo* info)
 {
     char buffer[1024];
     snprintf(buffer, 1024, "%s is now the captain of the arena team, '%s'.", info->name, m_name.c_str());
-    WorldPacket* data = sChatHandler.FillSystemMessageData(buffer);
-    SendPacket(data);
-    delete data;
+
+    SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
 
     const uint32 old_leader = m_leader;
     m_leader = info->guid;

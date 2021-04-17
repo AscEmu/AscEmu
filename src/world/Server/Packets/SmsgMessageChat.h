@@ -10,6 +10,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
+    struct SystemMessagePacket
+    {
+        SystemMessagePacket(std::string msg) : message(msg) {}
+
+        uint8_t type = CHAT_MSG_SYSTEM;
+        uint32_t language = LANG_UNIVERSAL;
+        uint64_t guid = 0;
+        uint32_t unk = 0;
+        uint64_t guid2 = 0;
+        std::string message;
+        uint8_t flag = 0;
+    };
+
     class SmsgMessageChat : public ManagedPacket
     {
     public:
@@ -18,21 +31,31 @@ namespace AscEmu::Packets
         WoWGuid guid;
         std::string message;
         std::string destination;
-        bool show_gm_flag;
+        uint8_t flag;
 
-        SmsgMessageChat() : SmsgMessageChat(0, 0, 0, "", false, "")
+        SmsgMessageChat() : SmsgMessageChat(0, 0, 0, "", 0, "")
         {
         }
 
         SmsgMessageChat(uint8_t type, uint32_t language, uint64_t guid, std::string message,
-                        bool showGMFlag, std::string destination = "") :
-            ManagedPacket(SMSG_MESSAGECHAT, 0),
+                    uint8_t flag, std::string destination = "") :
+            ManagedPacket(SMSG_MESSAGECHAT, 1 + 4 + 8 + 4 + 8 + (message.length() + 1) + 1),
             type(type),
             language(language),
             guid(guid),
             message(message),
-            show_gm_flag(showGMFlag),
+            flag(flag),
             destination(destination)
+        {
+        }
+
+        SmsgMessageChat(SystemMessagePacket sysMsg) :
+            ManagedPacket(SMSG_MESSAGECHAT, 1 + 4 + 8 + 4 + 8 + (sysMsg.message.length() + 1) + 1),
+            type(sysMsg.type),
+            language(sysMsg.language),
+            guid(sysMsg.guid),
+            message(sysMsg.message),
+            flag(sysMsg.flag)
         {
         }
 
@@ -43,7 +66,7 @@ namespace AscEmu::Packets
         {
             packet << type << language << guid.getRawGuid() << uint32_t(0) << guid.getRawGuid() << uint32_t(message.length() + 1) << message;
 
-            packet << (show_gm_flag ? uint8_t(4) : uint8_t(0));
+            packet << flag;
 
             // TODO Check this through message type instead
             if (destination != "")

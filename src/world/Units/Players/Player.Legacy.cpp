@@ -6732,9 +6732,7 @@ void Player::BroadcastMessage(const char* Format, ...)
     vsnprintf(Message, 1024, Format, l);
     va_end(l);
 
-    WorldPacket* data = sChatHandler.FillSystemMessageData(Message);
-    m_session->SendPacket(data);
-    delete data;
+    m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(Message)).serialise().get());
 }
 
 float Player::CalcRating(PlayerCombatRating index)

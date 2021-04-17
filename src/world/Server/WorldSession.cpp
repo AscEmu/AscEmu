@@ -571,9 +571,7 @@ void WorldSession::SystemMessage(const char* format, ...)
     vsnprintf(buffer, 1024, format, ap);
     va_end(ap);
 
-    WorldPacket* data = sChatHandler.FillSystemMessageData(buffer);
-    SendPacket(data);
-    delete data;
+    SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
 }
 
 void WorldSession::SendChatPacket(WorldPacket* data, uint32 langpos, int32 lang, WorldSession* originator)

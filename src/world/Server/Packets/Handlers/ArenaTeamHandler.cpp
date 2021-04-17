@@ -143,9 +143,9 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
     {
         char buffer[1024];
         snprintf(buffer, 1024, "%s was removed from the arena team '%s'.", playerInfo->name, arenaTeam->m_name.c_str());
-        WorldPacket* data = sChatHandler.FillSystemMessageData(buffer);
-        arenaTeam->SendPacket(data);
-        delete data;
+
+        arenaTeam->SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
+
         SystemMessage("Removed %s from the arena team '%s'.", playerInfo->name, arenaTeam->m_name.c_str());
     }
 }
@@ -183,9 +183,8 @@ void WorldSession::handleArenaTeamInviteAcceptOpcode(WorldPacket& /*recvPacket*/
     {
         char buffer[1024];
         snprintf(buffer, 1024, "%s joined the arena team, '%s'.", _player->getName().c_str(), arenaTeam->m_name.c_str());
-        WorldPacket* data = sChatHandler.FillSystemMessageData(buffer);
-        arenaTeam->SendPacket(data);
-        delete data;
+
+        arenaTeam->SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
     }
     else
     {
@@ -248,9 +247,9 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
     {
         char buffer[1024];
         snprintf(buffer, 1024, "%s left the arena team, '%s'.", _player->getName().c_str(), arenaTeam->m_name.c_str());
-        WorldPacket* data = sChatHandler.FillSystemMessageData(buffer);
-        arenaTeam->SendPacket(data);
-        delete data;
+
+        arenaTeam->SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
+
         SystemMessage("You have left the arena team, '%s'.", arenaTeam->m_name.c_str());
     }
 }

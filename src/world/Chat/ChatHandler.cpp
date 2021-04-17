@@ -15,6 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 
+using namespace AscEmu::Packets;
+
 ChatHandler& ChatHandler::getInstance()
 {
     static ChatHandler mInstance;
@@ -189,27 +191,6 @@ WorldPacket* ChatHandler::FillMessageData(uint32 type, uint32 language, const ch
     *data << message;
 
     *data << uint8(flag);
-    return data;
-}
-
-WorldPacket* ChatHandler::FillSystemMessageData(const char* message) const
-{
-    uint32 messageLength = (uint32)strlen(message) + 1;
-
-    WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, 30 + messageLength);
-    *data << uint8(CHAT_MSG_SYSTEM);
-    *data << uint32(LANG_UNIVERSAL);
-
-    // Who cares about guid when there's no nickname displayed heh ?
-    *data << uint64(0);
-    *data << uint32(0);
-    *data << uint64(0);
-
-    *data << messageLength;
-    *data << message;
-
-    *data << uint8(0);
-
     return data;
 }
 
@@ -396,10 +377,8 @@ void ChatHandler::SystemMessage(WorldSession* m_session, const char* message, ..
     vsnprintf(msg1, 1024, message, ap);
     va_end(ap);
 
-    WorldPacket* data = FillSystemMessageData(msg1);
     if (m_session != NULL)
-        m_session->SendPacket(data);
-    delete data;
+        m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(msg1)).serialise().get());
 }
 
 void ChatHandler::ColorSystemMessage(WorldSession* m_session, const char* colorcode, const char* message, ...)
@@ -416,10 +395,8 @@ void ChatHandler::ColorSystemMessage(WorldSession* m_session, const char* colorc
     char msg[1024];
     snprintf(msg, 1024, "%s%s|r", colorcode, msg1);
 
-    WorldPacket* data = FillSystemMessageData(msg);
     if (m_session != NULL)
-        m_session->SendPacket(data);
-    delete data;
+        m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(msg)).serialise().get());
 }
 
 void ChatHandler::RedSystemMessage(WorldSession* m_session, const char* message, ...)
@@ -436,10 +413,8 @@ void ChatHandler::RedSystemMessage(WorldSession* m_session, const char* message,
     char msg[1024];
     snprintf(msg, 1024, "%s%s|r", MSG_COLOR_LIGHTRED/*MSG_COLOR_RED*/, msg1);
 
-    WorldPacket* data = FillSystemMessageData(msg);
     if (m_session != NULL)
-        m_session->SendPacket(data);
-    delete data;
+        m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(msg)).serialise().get());
 }
 
 void ChatHandler::GreenSystemMessage(WorldSession* m_session, const char* message, ...)
@@ -456,10 +431,8 @@ void ChatHandler::GreenSystemMessage(WorldSession* m_session, const char* messag
     char msg[1024];
     snprintf(msg, 1024, "%s%s|r", MSG_COLOR_GREEN, msg1);
 
-    WorldPacket* data = FillSystemMessageData(msg);
     if (m_session != NULL)
-        m_session->SendPacket(data);
-    delete data;
+        m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(msg)).serialise().get());
 }
 
 void ChatHandler::BlueSystemMessage(WorldSession* m_session, const char* message, ...)
@@ -476,10 +449,8 @@ void ChatHandler::BlueSystemMessage(WorldSession* m_session, const char* message
     char msg[1024];
     snprintf(msg, 1024, "%s%s|r", MSG_COLOR_LIGHTBLUE, msg1);
 
-    WorldPacket* data = FillSystemMessageData(msg);
     if (m_session != NULL)
-        m_session->SendPacket(data);
-    delete data;
+        m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(msg)).serialise().get());
 }
 
 std::string ChatHandler::GetNpcFlagString(Creature* creature)
