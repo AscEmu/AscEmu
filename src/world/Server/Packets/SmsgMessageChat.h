@@ -36,12 +36,13 @@ namespace AscEmu::Packets
         std::string senderName;
         WoWGuid receiverGuid;
         std::string receiverName;
+        uint32_t achievementId;
 
-        SmsgMessageChat() : SmsgMessageChat(0, 0, 0, "", 0, "")
+        SmsgMessageChat() : SmsgMessageChat(0, 0, 0, "", 0, "", 0, "", 0)
         {
         }
 
-        SmsgMessageChat(uint8_t type, uint32_t language, uint8_t flag, std::string message, uint64_t senderGuid = 0, std::string senderName = "", uint64_t receiverGuid = 0, std::string receiverName = "") :
+        SmsgMessageChat(uint8_t type, uint32_t language, uint8_t flag, std::string message, uint64_t senderGuid = 0, std::string senderName = "", uint64_t receiverGuid = 0, std::string receiverName = "", uint32_t achievementId = 0) :
             ManagedPacket(SMSG_MESSAGECHAT, 1 + 4 + 8 + 4 + 8 + (message.length() + 1) + 1),
             type(type),
             language(language),
@@ -50,7 +51,8 @@ namespace AscEmu::Packets
             senderGuid(senderGuid),
             senderName(senderName),
             receiverGuid(receiverGuid),
-            receiverName(receiverName)
+            receiverName(receiverName),
+            achievementId(achievementId)
         {
         }
 
@@ -99,6 +101,12 @@ namespace AscEmu::Packets
                         packet << receiverName;
                     }
                     packet << uint32_t(message.length() + 1) << message << flag;
+                    break;
+                case CHAT_MSG_ACHIEVEMENT:
+                case CHAT_MSG_GUILD_ACHIEVEMENT:
+                    packet << receiverGuid;
+                    packet << uint32_t(message.length() + 1) << message << flag;
+                    packet << achievementId;
                     break;
                 default:
                     if (type == CHAT_MSG_CHANNEL)

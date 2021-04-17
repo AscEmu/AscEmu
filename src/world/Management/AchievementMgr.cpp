@@ -379,34 +379,9 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
     {
         // allocate enough space
         guidList = new uint32_t[sWorld.getSessionCount() + 256];
-#if VERSION_STRING < Cata
-        // Send Achievement message to every guild member currently on the server
-        if (GetPlayer()->isInGuild())
-        {
-            WorldPacket data(SMSG_MESSAGECHAT, 200);
-            data << uint8_t(CHAT_MSG_GUILD_ACHIEVEMENT);
-            data << uint32_t(LANG_UNIVERSAL);
-            data << uint64_t(GetPlayer()->getGuid());
-            data << uint32_t(5);
-            data << uint64_t(GetPlayer()->getGuid());
-            data << uint32_t(strlen(msg) + 1);
-            data << msg;
-            data << uint8_t(0);
-            data << uint32_t(achievement->ID);
-        }
-#endif
-        // Build generic packet for group members and nearby players
-        WorldPacket cdata(SMSG_MESSAGECHAT, 200);
-        cdata << uint8_t(CHAT_MSG_ACHIEVEMENT);
-        cdata << uint32_t(LANG_UNIVERSAL);
-        cdata << uint64_t(GetPlayer()->getGuid());
-        cdata << uint32_t(5);
-        cdata << uint64_t(GetPlayer()->getGuid());
-        cdata << uint32_t(strlen(msg) + 1);
-        cdata << msg;
-        cdata << uint8_t(0);
-        cdata << uint32_t(achievement->ID);
+
         bool alreadySent;
+
         // Send Achievement message to group members
         Group* grp = GetPlayer()->getGroup();
 
@@ -443,7 +418,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
                         }
                         if (!alreadySent)
                         {
-                            (*groupItr)->m_loggedInPlayer->GetSession()->SendPacket(&cdata);
+                            (*groupItr)->m_loggedInPlayer->GetSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, GetPlayer()->getGuid(), "", GetPlayer()->getGuid(), "", achievement->ID).serialise().get());
                             guidList[guidCount++] = (*groupItr)->guid;
                         }
                     }
@@ -470,7 +445,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
                 }
                 if (!alreadySent)
                 {
-                    p->GetSession()->SendPacket(&cdata);
+                    p->GetSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, GetPlayer()->getGuid(), "", GetPlayer()->getGuid(), "", achievement->ID).serialise().get());
                     guidList[guidCount++] = p->getGuidLow();
                 }
             }
@@ -486,7 +461,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
             }
             if (!alreadySent)
             {
-                GetPlayer()->GetSession()->SendPacket(&cdata);
+                GetPlayer()->GetSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, GetPlayer()->getGuid(), "", GetPlayer()->getGuid(), "", achievement->ID).serialise().get());
             }
         }
     }

@@ -39,8 +39,6 @@ public:
     ChatHandler& operator=(ChatHandler&&) = delete;
     ChatHandler& operator=(ChatHandler const&) = delete;
 
-    //WorldPacket* FillMessageData(uint32_t type, uint32_t language,  const char* message, uint64_t guid, uint8_t flag = 0) const;
-
     int ParseCommands(const char* text, WorldSession* session);
 
     void SystemMessage(WorldSession* m_session, const char* message, ...);
