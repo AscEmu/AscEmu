@@ -795,8 +795,6 @@ public:
     void sendForceMovePacket(UnitSpeedType speed_type, float speed);
     void sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed);
 
-    void handleFall(MovementInfo const& movement_info);
-
     bool isMoving() const { return m_isMoving; }
 
     void handleBreathing(MovementInfo const& movement_info, WorldSession* session);

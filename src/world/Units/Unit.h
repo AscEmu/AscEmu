@@ -589,6 +589,7 @@ public:
     void setMoveSwim(bool set_swim);
     void setMoveDisableGravity(bool disable_gravity);
     void setMoveWalk(bool set_walk);
+    void handleFall(MovementInfo const& movementInfo);
  
     // Speed
     UnitSpeedInfo const* getSpeedInfo() const { return &m_UnitSpeedInfo; }

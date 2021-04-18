@@ -1545,6 +1545,61 @@ void Unit::setMoveWalk(bool set_walk)
     }
 }
 
+void Unit::handleFall(MovementInfo const& movementInfo)
+{
+    if (!z_axisposition)
+    {
+        z_axisposition = movementInfo.getPosition()->z;
+    }
+
+    uint32 falldistance = float2int32(z_axisposition - movementInfo.getPosition()->z);
+    if (z_axisposition <= movementInfo.getPosition()->z)
+    {
+        falldistance = 1;
+    }
+
+    if (static_cast<int>(falldistance) > m_safeFall)
+    {
+        falldistance -= m_safeFall;
+    }
+    else
+    {
+        falldistance = 1;
+    }
+
+    bool disabledUntil = false;
+    if (isPlayer())
+    {
+        disabledUntil = !dynamic_cast<Player*>(this)->m_cheats.hasGodModeCheat && UNIXTIME >= dynamic_cast<Player*>(this)->m_fallDisabledUntil;
+    }
+
+    if (isAlive() && !bInvincible && (falldistance > 12) && !m_noFallDamage && disabledUntil)
+    {
+        auto health_loss = static_cast<uint32_t>(getHealth() * (falldistance - 12) * 0.017f);
+
+        if (health_loss >= getHealth())
+        {
+            health_loss = getHealth();
+        }
+        else if ((falldistance >= 65))
+        {
+            if (isPlayer())
+            {
+                dynamic_cast<Player*>(this)->GetAchievementMgr().UpdateAchievementCriteria(
+                    ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING,
+                    falldistance,
+                    dynamic_cast<Player*>(this)->GetDrunkenstateByValue(dynamic_cast<Player*>(this)->GetDrunkValue()),
+                    0);
+            }
+        }
+
+        sendEnvironmentalDamageLogPacket(getGuid(), DAMAGE_FALL, health_loss);
+        addSimpleEnvironmentalDamageBatchEvent(DAMAGE_FALL, health_loss);
+    }
+
+    z_axisposition = 0.0f;
+}
+
 bool Unit::IsFalling() const
 {
     return obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING_MASK) || movespline->isFalling();
