@@ -1758,13 +1758,13 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
 
 // MIT Start
 #if VERSION_STRING < WotLK
-void Object::buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target)
+void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* target)
 {
     uint32_t flags2 = 0;
     // This is checked for nullptr later
     const auto spline_buffer = m_objectTypeId == TYPEID_UNIT ? target->getSplineMgr().popSplinePacket(getGuid()) : nullptr;
 
-    *data << flags;
+    *data << updateFlags;
 
     Player* this_player = nullptr;
     if (getObjectTypeId() == TYPEID_PLAYER)
@@ -1777,7 +1777,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target
     if (getObjectTypeId() == TYPEID_UNIT)
         this_creature = static_cast<Creature*>(this);
 
-    if (flags & UPDATEFLAG_LIVING)
+    if (updateFlags & UPDATEFLAG_LIVING)
     {
         if (this_player && this_player->GetTransport())
         {
@@ -1823,11 +1823,11 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target
         *data << Util::getMSTime();
     }
 
-    if (flags & UPDATEFLAG_HAS_POSITION)
+    if (updateFlags & UPDATEFLAG_HAS_POSITION)
     {
         *data << m_position << m_position.o;
 
-        if (flags & UPDATEFLAG_LIVING && flags2 & MOVEFLAG_TRANSPORT)
+        if (updateFlags & UPDATEFLAG_LIVING && flags2 & MOVEFLAG_TRANSPORT)
         {
             if (this_player)
             {
@@ -1849,7 +1849,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target
         }
     }
 
-    if (flags & UPDATEFLAG_LIVING)
+    if (updateFlags & UPDATEFLAG_LIVING)
     {
         *data << uint32_t(0); // unk
 
@@ -1880,18 +1880,18 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target
         delete spline_buffer;
     }
 
-    if (flags & UPDATEFLAG_LOWGUID)
+    if (updateFlags & UPDATEFLAG_LOWGUID)
     {
         *data << objectData()->guid_parts.low;
-        if (flags & UPDATEFLAG_HIGHGUID)
+        if (flaupdateFlagsgs & UPDATEFLAG_HIGHGUID)
             *data << objectData()->guid_parts.high;
     }
-    else if (flags & UPDATEFLAG_HIGHGUID)
+    else if (updateFlags & UPDATEFLAG_HIGHGUID)
     {
         *data << objectData()->guid_parts.low;
     }
 
-    if (flags & UPDATEFLAG_TRANSPORT)
+    if (updateFlags & UPDATEFLAG_TRANSPORT)
     {
         *data << Util::getMSTime();
     }
@@ -1899,7 +1899,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target
 #endif
 
 #if VERSION_STRING == WotLK
-void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target)
 {
     uint32 flags2 = 0;
 
@@ -1931,7 +1931,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
     }
 
-    *data << uint16(flags);
+    *data << uint16(updateFlags);
 
     Player* pThis = nullptr;
     MovementInfo* moveinfo = nullptr;
@@ -1945,7 +1945,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
     if (isCreature())
         uThis = static_cast<Creature*>(this);
 
-    if (flags & UPDATEFLAG_LIVING)  //0x20
+    if (updateFlags & UPDATEFLAG_LIVING)  //0x20
     {
         /*if (pThis && pThis->obj_movement_info.transporter_info.guid != 0)
             flags2 |= MOVEFLAG_TRANSPORT; //0x200
@@ -2088,7 +2088,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
     }
     else        // No UPDATEFLAG_LIVING
     {
-        if (flags & UPDATEFLAG_POSITION)        //0x0100
+        if (updateFlags & UPDATEFLAG_POSITION)        //0x0100
         {
             Transporter* transport = GetTransport();
 
@@ -2121,9 +2121,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
             else
                 *data << float(0);
         }
-        else if (flags & UPDATEFLAG_HAS_POSITION)  //0x40
+        else if (updateFlags & UPDATEFLAG_HAS_POSITION)  //0x40
         {
-            if (flags & UPDATEFLAG_TRANSPORT &&  static_cast<GameObject*>(this)->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT)
+            if (updateFlags & UPDATEFLAG_TRANSPORT &&  static_cast<GameObject*>(this)->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT)
             {
                 *data << float(0);
                 *data << float(0);
@@ -2140,13 +2140,13 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
     }
 
 
-    if (flags & UPDATEFLAG_LOWGUID)     //0x08
+    if (updateFlags & UPDATEFLAG_LOWGUID)     //0x08
         *data << getGuidLow();
 
-    if (flags & UPDATEFLAG_HIGHGUID)    //0x10
+    if (updateFlags & UPDATEFLAG_HIGHGUID)    //0x10
         *data << getGuidHigh();
 
-    if (flags & UPDATEFLAG_HAS_TARGET)  //0x04
+    if (updateFlags & UPDATEFLAG_HAS_TARGET)  //0x04
     {
         if (isCreatureOrPlayer())
             FastGUIDPack(*data, static_cast<Unit*>(this)->getTargetGuid()); //some compressed GUID
@@ -2154,7 +2154,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
             *data << uint64(0);
     }
 
-    if (flags & UPDATEFLAG_TRANSPORT)   //0x2
+    if (updateFlags & UPDATEFLAG_TRANSPORT)   //0x2
     {
         GameObject const* go = static_cast<GameObject*>(this);
         if (go && go->ToTransport())
@@ -2163,7 +2163,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
             *data << Util::getMSTime();
     }
 
-    if (flags & UPDATEFLAG_VEHICLE)
+    if (updateFlags & UPDATEFLAG_VEHICLE)
     {
         uint32 vehicleid = 0;
 
@@ -2177,7 +2177,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
         *data << float(GetOrientation());
     }
 
-    if (flags & UPDATEFLAG_ROTATION)   //0x0200
+    if (updateFlags & UPDATEFLAG_ROTATION)   //0x0200
     {
         if (isGameObject())
             *data << static_cast<GameObject*>(this)->GetRotation();
@@ -2186,7 +2186,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 #endif
 
 #if VERSION_STRING == Cata
-void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /*target*/)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
 {
     ObjectGuid Guid = getGuid();
 
@@ -2570,7 +2570,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /
 #endif
 
 #if VERSION_STRING == Mop
-void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /*target*/)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
 {
     ObjectGuid Guid = getGuid();
 

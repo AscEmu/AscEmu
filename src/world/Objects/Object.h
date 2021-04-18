@@ -592,9 +592,9 @@ public:
 
         // Create updates that player will see
 #if VERSION_STRING < WotLK
-        void buildMovementUpdate(ByteBuffer* data, uint8_t flags, Player* target);
+        void buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* target);
 #else
-        void buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target);
+        void buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target);
 #endif
 
         void buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target);
