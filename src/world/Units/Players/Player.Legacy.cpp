@@ -119,22 +119,6 @@ using namespace MapManagement::AreaManagement;
 
 UpdateMask Player::m_visibleUpdateMask;
 
-static const float crit_to_dodge[MAX_PLAYER_CLASSES] =
-{
-    0.0f,      // empty
-    1.1f,      // Warrior
-    1.0f,      // Paladin
-    1.6f,      // Hunter
-    2.0f,      // Rogue
-    1.0f,      // Priest
-    1.0f,      // DK?
-    1.0f,      // Shaman
-    1.0f,      // Mage
-    1.0f,      // Warlock
-    0.0f,      // empty
-    1.7f       // Druid
-};
-
 bool Player::Teleport(const LocationVector& vec, MapMgr* map)
 {
     if (map == nullptr)
@@ -4584,6 +4568,22 @@ float Player::GetDefenseChance(uint32 opLevel)
 // Gets dodge chances before defense skill is applied
 float Player::GetDodgeChance()
 {
+    const float crit_to_dodge[MAX_PLAYER_CLASSES] =
+    {
+        0.0f,      // empty
+        1.1f,      // Warrior
+        1.0f,      // Paladin
+        1.6f,      // Hunter
+        2.0f,      // Rogue
+        1.0f,      // Priest
+        1.0f,      // DK?
+        1.0f,      // Shaman
+        1.0f,      // Mage
+        1.0f,      // Warlock
+        0.0f,      // empty
+        1.7f       // Druid
+    };
+
     uint32 pClass = (uint32)getClass();
     float chance = 0.0f;
     uint32 level = getLevel();
@@ -6767,86 +6767,6 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
 
     SpeedCheatDelay(10000);
 
-#if VERSION_STRING < Cata
-    if (isOnTaxi())
-    {
-        sEventMgr.RemoveEvents(this, EVENT_PLAYER_TELEPORT);
-        sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_DISMOUNT);
-        sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_INTERPOLATE);
-        SetTaxiState(false);
-        SetTaxiPath(NULL);
-        UnSetTaxiPos();
-        m_taxi_ride_time = 0;
-        setMountDisplayId(0);
-        removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
-        removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
-    }
-
-    if (obj_movement_info.transport_guid)
-    {
-        Transporter* pTrans = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
-        if (pTrans)
-        {
-            pTrans->RemovePassenger(this);
-            obj_movement_info.transport_guid = 0;
-        }
-    }
-
-    bool instance = false;
-    MySQLStructure::MapInfo const* mi = sMySQLStore.getWorldMapInfo(MapID);
-
-    if (InstanceID && (uint32)m_instanceId != InstanceID)
-    {
-        instance = true;
-        this->SetInstanceID(InstanceID);
-    }
-    else if (m_mapId != MapID)
-    {
-        instance = true;
-    }
-
-    // make sure player does not drown when teleporting from under water
-    if (m_underwaterState & UNDERWATERSTATE_UNDERWATER)
-        m_underwaterState &= ~UNDERWATERSTATE_UNDERWATER;
-
-    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
-        // can only fly in outlands or northrend (northrend requires cold weather flying)
-    {
-        RemoveAura(flying_aura);
-        flying_aura = 0;
-    }
-
-    // Exit vehicle before teleporting
-    if (getVehicleBase() != NULL)
-        getVehicleBase()->getVehicleComponent()->EjectPassenger(this);
-
-    // Lookup map info
-    if (mi && mi->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
-    {
-        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_BC));
-        return false;
-    }
-    if (mi && mi->flags & WMI_INSTANCE_XPACK_02 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
-    {
-        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_WOTLK));
-        return false;
-    }
-
-    // cebernic: cleanup before teleport
-    // seems BFleaveOpcode was breakdown,that will be causing big BUG with player leaving from the BG
-    // now this much better:D RemoveAura & BG_DESERTER going to well as you go out from BG.
-    if (m_bg && m_bg->GetMapMgr() && GetMapMgr()->GetMapInfo()->mapid != MapID)
-    {
-        m_bg->RemovePlayer(this, false);
-    }
-
-    _Relocate(MapID, vec, true, instance, InstanceID);
-    SpeedCheatReset();
-    ForceZoneUpdate();
-
-#else
-
     if (isOnTaxi())
     {
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_TELEPORT);
@@ -6920,29 +6840,10 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         m_bg->RemovePlayer(this, false);
     }
 
-    if (GetMapId() == MapID)
-    {
-        if (GetSession())
-        {
-            setTransferStatus(TRANSFER_PENDING);
-            m_sentTeleportPosition = vec;
+    _Relocate(MapID, vec, true, instance, InstanceID);
+    SpeedCheatReset();
+    ForceZoneUpdate();
 
-            SetPosition(vec);
-            SendTeleportPacket(vec.x, vec.y, vec.z, vec.o);
-        }
-
-        SpeedCheatReset();
-        ForceZoneUpdate();
-    }
-    else
-    {
-        // Do normal stuff here!
-        _Relocate(MapID, vec, true, instance, InstanceID);
-
-        SpeedCheatReset();
-        ForceZoneUpdate();
-    }
-#endif
     return true;
 }
 
