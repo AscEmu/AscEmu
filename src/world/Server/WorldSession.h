@@ -933,7 +933,7 @@ class SERVER_DECL WorldSession
 
 
         // Preallocated buffers for movement handlers
-        MovementInfo movement_info;
+        MovementInfo sessionMovementInfo;
         uint8 movement_packet[90]{};
 
         uint32 _accountId;
@@ -971,9 +971,9 @@ class SERVER_DECL WorldSession
 
     public:
 
-        MovementInfo* GetMovementInfo() { return &movement_info; }
+        MovementInfo* GetMovementInfo() { return &sessionMovementInfo; }
 
-        const MovementInfo* GetMovementInfo() const { return &movement_info; }
+        const MovementInfo* GetMovementInfo() const { return &sessionMovementInfo; }
         static void InitPacketHandlerTable();
         static void loadHandlers();
 

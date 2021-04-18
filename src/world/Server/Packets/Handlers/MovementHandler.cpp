@@ -96,325 +96,8 @@ void WorldSession::updatePlayerMovementVars(uint16_t opcode)
     if (moved)
         _player->m_isMoving = _player->m_isMovingFB || _player->m_isStrafing || _player->m_isJumping;
 
-    _player->m_isTurning = _player->GetOrientation() != movement_info.position.o;
+    _player->m_isTurning = _player->GetOrientation() != sessionMovementInfo.position.o;
 }
-
-#if VERSION_STRING <= TBC
-void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
-{
-    CHECK_INWORLD_RETURN
-    ASSERT(_player->mControledUnit)
-
-    if (_player->isTransferPending() || _player->isOnTaxi() || _player->justDied())
-        return;
-
-    auto mover = _player->mControledUnit;
-
-    MovementPacket move_packet(recvData.GetOpcode(), 0);
-    move_packet.deserialise(recvData);
-    /*if (!move_packet.deserialise(recvData))
-        return;*/
-
-    movement_info = move_packet.info;
-
-    auto out_of_bounds = false;
-    out_of_bounds = out_of_bounds || movement_info.position.y < _minY;
-    out_of_bounds = out_of_bounds || movement_info.position.y > _maxY;
-    out_of_bounds = out_of_bounds || movement_info.position.x > _maxX;
-    out_of_bounds = out_of_bounds || movement_info.position.x > _maxX;
-
-    if (out_of_bounds)
-    {
-        Disconnect();
-        return;
-    }
-
-    if (auto summoned_object = _player->m_SummonedObject)
-    {
-         if (summoned_object->isGameObject())
-         {
-             const auto go = static_cast<GameObject*>(summoned_object);
-             if (go->isFishingNode())
-             {
-                 auto fishing_node = static_cast<GameObject_FishingNode*>(go);
-                 fishing_node->EndFishing(true);
-
-                 // This is done separately as not all channeled spells are canceled by all movement opcodes
-                 if (auto spell = _player->getCurrentSpell(CURRENT_CHANNELED_SPELL))
-                 {
-                     spell->sendChannelUpdate(0U);
-                     spell->finish(false);
-                 }
-             }
-         }
-    }
-
-    if (_player->getStandState() != STANDSTATE_STAND && recvData.GetOpcode() == MSG_MOVE_START_FORWARD)
-        _player->setStandState(STANDSTATE_STAND);
-
-    updatePlayerMovementVars(recvData.GetOpcode());
-
-    // Antihack Checks
-    if (!(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm))
-    {
-        // Prevent multi-jump cheat
-        // TODO Account for falltime and jump flags
-        // TODO Check this in the correct place
-        /*if (recvData.GetOpcode() == MSG_MOVE_JUMP && _player->m_isJumping)
-        {
-            sCheatLog.writefromsession(this, "Detected jump hacking");
-            Disconnect();
-            return;
-        }*/
-
-        if (worldConfig.antiHack.isTeleportHackCheckEnabled)
-        {
-            // TODO Fix for charmed units
-            // TODO Fix for transports
-            if (_player->getCharmGuid() == 0)
-            {
-                if (_player->m_position.Distance2DSq(movement_info.position) > 3025.f)
-                {
-                    if (_player->getSpeedRate(TYPE_RUN, true) < 50.f && !_player->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
-                    {
-                        sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedRate(TYPE_RUN, true), std::sqrt(_player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y })));
-                        Disconnect();
-                        return;
-                    }
-                }
-            }
-        }
-
-        if (worldConfig.antiHack.isSpeedHackCkeckEnabled)
-        {
-            if (!(_player->isOnTaxi() || _player->movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT)))
-            {
-                _player->SDetector->addSample(movement_info.position, Util::getMSTime(), _player->getSpeedRate(_player->getFastestSpeedType(), true));
-
-                if (_player->SDetector->IsCheatDetected())
-                    _player->SDetector->ReportCheater(_player);
-            }
-        }
-    }
-
-    if (_player->getEmoteState())
-        _player->setEmoteState(EMOTE_ONESHOT_NONE);
-
-    // TODO Verify that timestamp can be replaced with AscEmu funcs
-    const auto ms_time = Util::getMSTime();
-    if (m_clientTimeDelay == 0)
-        m_clientTimeDelay = ms_time - movement_info.update_time;
-
-    MovementPacket packet(recvData.GetOpcode(), 0);
-    packet.guid = mover->getGuid();
-    packet.info = movement_info;
-
-    if (_player->getInRangePlayersCount())
-    {
-        const auto move_time = packet.info.update_time - (ms_time - m_clientTimeDelay) + 500 + ms_time;
-        for (const auto& obj : mover->getInRangePlayersSet())
-        {
-            ARCEMU_ASSERT(obj->isPlayer());
-            packet.info.update_time = move_time + obj->asPlayer()->GetSession()->m_moveDelayTime;
-            obj->asPlayer()->SendPacket(packet.serialise().get());
-        }
-    }
-
-    // Remove flying aura if needed
-    // TODO: This seems like a daft check, verify it
-    if (!movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && recvData.GetOpcode() != MSG_MOVE_JUMP && !_player->m_cheats.hasFlyCheat && !_player->flying_aura)
-        if (!movement_info.hasMovementFlag(MOVEFLAG_SWIMMING) && !movement_info.hasMovementFlag(MOVEFLAG_FALLING))
-            if (movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
-                SendPacket(SmsgMoveUnsetCanFly(_player->getGuid()).serialise().get());
-
-    if (movement_info.hasMovementFlag(MOVEFLAG_FLYING) && !movement_info.hasMovementFlag(MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->m_cheats.hasFlyCheat))
-        SendPacket(SmsgMoveUnsetCanFly(_player->getGuid()).serialise().get());
-
-    if (_player->blinked)
-    {
-        _player->blinked = false;
-        _player->m_fallDisabledUntil = UNIXTIME + 5;
-        _player->SpeedCheatDelay(2000);
-    }
-    else
-    {
-        if (recvData.GetOpcode() != MSG_MOVE_FALL_LAND)
-        {
-            // Update Z while player is falling to calculate fall damage
-            if (!movement_info.hasMovementFlag(MOVEFLAG_FALLING))
-            {
-                mover->z_axisposition = movement_info.position.z;
-            }
-            else
-            {
-                // Can't fall upwards - no fall dmg exploit
-                // TODO Verify infrastructure for this check
-                /*if (movement_info.position.z > mover->z_axisposition)
-                {
-                    Disconnect();
-                    return;
-                }*/
-
-            }
-        }
-        else
-        {
-            if (!mover->z_axisposition)
-                mover->z_axisposition = movement_info.position.z;
-
-            auto fall_distance = float2int32(mover->z_axisposition - movement_info.position.z);
-            // If player ended up going up, negate
-            // TODO Anticheat checks
-            if (mover->z_axisposition <= movement_info.position.z)
-                fall_distance = 1;
-
-            if (fall_distance > mover->m_safeFall)
-                fall_distance-=  mover->m_safeFall;
-            else
-                fall_distance = 1;
-
-            if (mover->isAlive() && !mover->bInvincible && fall_distance > 12 && !mover->m_noFallDamage && (mover->
-                getGuid() != _player->getGuid() || !_player->m_cheats.hasGodModeCheat && UNIXTIME >= _player->m_fallDisabledUntil))
-            {
-                auto health_lost = static_cast<uint32_t>(mover->getHealth() * (fall_distance - 12) * 0.017f);
-                if (health_lost >= mover->getHealth())
-                {
-                    health_lost = mover->getHealth();
-                }
-#ifdef FT_ACHIEVEMENTS
-                else if (fall_distance >= 65 && mover->getGuid() == _player->getGuid())
-                {
-                    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, fall_distance, Player::GetDrunkenstateByValue(_player->GetDrunkValue()), 0);
-                }
-#endif
-                mover->sendEnvironmentalDamageLogPacket(mover->getGuid(), DAMAGE_FALL, health_lost);
-                mover->addSimpleEnvironmentalDamageBatchEvent(DAMAGE_FALL, health_lost);
-            }
-
-            mover->z_axisposition = 0.f;
-        }
-    }
-
-    // End
-
-    if (mover->obj_movement_info.transport_guid != 0 && movement_info.transport_guid == 0)
-    {
-        // Leaving transport we were on
-        if (auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid)))
-            transporter->RemovePassenger(static_cast<Player*>(mover));
-
-        mover->obj_movement_info.transport_guid = 0;
-        _player->SpeedCheatReset();
-    }
-    else
-    {
-        if (movement_info.transport_guid != 0)
-        {
-
-            if (mover->obj_movement_info.transport_guid == 0)
-            {
-                Transporter *transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_guid));
-                if (transporter != NULL)
-                    transporter->AddPassenger(static_cast<Player*>(mover));
-
-                /* set variables */
-                mover->obj_movement_info.transport_guid= movement_info.transport_guid;
-                mover->obj_movement_info.transport_time = movement_info.transport_time;
-                mover->obj_movement_info.transport_position.x = movement_info.transport_position.x;
-                mover->obj_movement_info.transport_position.y = movement_info.transport_position.y;
-                mover->obj_movement_info.transport_position.z = movement_info.transport_position.z;
-                mover->obj_movement_info.transport_position.o = movement_info.transport_position.o;
-
-                mover->m_transportData.transportGuid = movement_info.transport_guid;
-                mover->m_transportData.relativePosition.x = movement_info.transport_position.x;
-                mover->m_transportData.relativePosition.y = movement_info.transport_position.y;
-                mover->m_transportData.relativePosition.z = movement_info.transport_position.z;
-                mover->m_transportData.relativePosition.o = movement_info.transport_position.o;
-            }
-            else
-            {
-                /* no changes */
-                mover->obj_movement_info.transport_time = movement_info.transport_time;
-                mover->obj_movement_info.transport_position.x = movement_info.transport_position.x;
-                mover->obj_movement_info.transport_position.y = movement_info.transport_position.y;
-                mover->obj_movement_info.transport_position.z = movement_info.transport_position.z;
-                mover->obj_movement_info.transport_position.o = movement_info.transport_position.o;
-
-                mover->m_transportData.relativePosition.x = movement_info.transport_position.x;
-                mover->m_transportData.relativePosition.y = movement_info.transport_position.y;
-                mover->m_transportData.relativePosition.z = movement_info.transport_position.z;
-                mover->m_transportData.relativePosition.o = movement_info.transport_position.o;
-            }
-        }
-    }
-
-    /************************************************************************/
-    /* Breathing System                                                     */
-    /************************************************************************/
-    _player->handleBreathing(movement_info, this);
-
-    /************************************************************************/
-    /* Remove Spells                                                        */
-    /************************************************************************/
-    uint32 flags = 0;
-    if ((movement_info.flags & MOVEFLAG_MOTION_MASK) != 0)
-        flags |= AURA_INTERRUPT_ON_MOVEMENT;
-
-    if (!(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING))
-        flags |= AURA_INTERRUPT_ON_LEAVE_WATER;
-    if (movement_info.flags & MOVEFLAG_SWIMMING)
-        flags |= AURA_INTERRUPT_ON_ENTER_WATER;
-    if ((movement_info.flags & MOVEFLAG_TURNING_MASK) || _player->m_isTurning)
-        flags |= AURA_INTERRUPT_ON_TURNING;
-    if (movement_info.flags & MOVEFLAG_FALLING)
-        flags |= AURA_INTERRUPT_ON_JUMP;
-
-    _player->RemoveAurasByInterruptFlag(flags);
-
-    /************************************************************************/
-    /* Update our position in the server.                                   */
-    /************************************************************************/
-
-    // Player is the active mover
-    if (m_MoverWoWGuid.getRawGuid() == _player->getGuid())
-    {
-        if (!_player->GetTransport())
-        {
-            if (!_player->SetPosition(movement_info.position.x, movement_info.position.y, movement_info.position.z, movement_info.position.o))
-            {
-                //extra check to set HP to 0 only if the player is dead (KillPlayer() has already this check)
-                if (_player->isAlive())
-                {
-                    _player->setHealth(0);
-                    _player->KillPlayer();
-                }
-
-                MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(_player->GetMapId());
-                if (pMapinfo != nullptr)
-                {
-                    if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
-                    {
-                        _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
-                    }
-                    else
-                    {
-                        _player->RepopAtGraveyard(pMapinfo->repopx, pMapinfo->repopy, pMapinfo->repopz, pMapinfo->repopmapid);
-                    }
-                }
-                else
-                {
-                    _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
-                }//Teleport player to graveyard. Stops players from QQing..
-            }
-        }
-    }
-    else
-    {
-        if (!mover->isRooted())
-            mover->SetPosition(movement_info.position.x, movement_info.position.y, movement_info.position.z, movement_info.position.o);
-    }
-}
-#endif
 
 #if VERSION_STRING == WotLK
 
@@ -465,13 +148,337 @@ uint32 mTimeStamp()
 }
 
 #endif
+#endif
 
-void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
+void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 {
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// Check before reading movementinfo packet
     CHECK_INWORLD_RETURN
 
-    if (/*_player->getCharmedByGuid() || */_player->isTransferPending() || _player->isOnTaxi() || _player->getDeathState() == JUST_DIED)
+    if (_player->isTransferPending() || _player->isOnTaxi() || _player->justDied())
         return;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// Set up some vars to simplify code
+    // Zyres: save the opcode here for better handling
+    const uint16_t opcode = recvData.GetOpcode();
+
+    // Zyres: We (the player) controles the movement of another player/unit.
+    // this is always initialise with the player, can be changed to any other unit.
+    Unit* mover = _player->mControledUnit;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// read movement info from packet
+
+#if VERSION_STRING <= TBC
+
+    MovementPacket move_packet(opcode, 0);
+    move_packet.deserialise(recvData);
+    /*if (!move_packet.deserialise(recvData))
+        return;*/
+
+    sessionMovementInfo = move_packet.info;
+
+    auto out_of_bounds = false;
+    out_of_bounds = out_of_bounds || sessionMovementInfo.position.y < _minY;
+    out_of_bounds = out_of_bounds || sessionMovementInfo.position.y > _maxY;
+    out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > _maxX;
+    out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > _maxX;
+
+    if (out_of_bounds)
+    {
+        Disconnect();
+        return;
+    }
+
+    if (auto summoned_object = _player->m_SummonedObject)
+    {
+         if (summoned_object->isGameObject())
+         {
+             const auto go = static_cast<GameObject*>(summoned_object);
+             if (go->isFishingNode())
+             {
+                 auto fishing_node = static_cast<GameObject_FishingNode*>(go);
+                 fishing_node->EndFishing(true);
+
+                 // This is done separately as not all channeled spells are canceled by all movement opcodes
+                 if (auto spell = _player->getCurrentSpell(CURRENT_CHANNELED_SPELL))
+                 {
+                     spell->sendChannelUpdate(0U);
+                     spell->finish(false);
+                 }
+             }
+         }
+    }
+
+    if (_player->getStandState() != STANDSTATE_STAND && opcode == MSG_MOVE_START_FORWARD)
+        _player->setStandState(STANDSTATE_STAND);
+
+    updatePlayerMovementVars(opcode);
+
+    // Antihack Checks
+    if (!(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm))
+    {
+        // Prevent multi-jump cheat
+        // TODO Account for falltime and jump flags
+        // TODO Check this in the correct place
+        /*if (opcode == MSG_MOVE_JUMP && _player->m_isJumping)
+        {
+            sCheatLog.writefromsession(this, "Detected jump hacking");
+            Disconnect();
+            return;
+        }*/
+
+        if (worldConfig.antiHack.isTeleportHackCheckEnabled)
+        {
+            // TODO Fix for charmed units
+            // TODO Fix for transports
+            if (_player->getCharmGuid() == 0)
+            {
+                if (_player->m_position.Distance2DSq(sessionMovementInfo.position) > 3025.f)
+                {
+                    if (_player->getSpeedRate(TYPE_RUN, true) < 50.f && !_player->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
+                    {
+                        sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedRate(TYPE_RUN, true), std::sqrt(_player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y })));
+                        Disconnect();
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (worldConfig.antiHack.isSpeedHackCkeckEnabled)
+        {
+            if (!(_player->isOnTaxi() || _player->movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT)))
+            {
+                _player->SDetector->addSample(sessionMovementInfo.position, Util::getMSTime(), _player->getSpeedRate(_player->getFastestSpeedType(), true));
+
+                if (_player->SDetector->IsCheatDetected())
+                    _player->SDetector->ReportCheater(_player);
+            }
+        }
+    }
+
+    if (_player->getEmoteState())
+        _player->setEmoteState(EMOTE_ONESHOT_NONE);
+
+    // TODO Verify that timestamp can be replaced with AscEmu funcs
+    const auto ms_time = Util::getMSTime();
+    if (m_clientTimeDelay == 0)
+        m_clientTimeDelay = ms_time - sessionMovementInfo.update_time;
+
+    MovementPacket packet(opcode, 0);
+    packet.guid = mover->getGuid();
+    packet.info = sessionMovementInfo;
+
+    if (_player->getInRangePlayersCount())
+    {
+        const auto move_time = packet.info.update_time - (ms_time - m_clientTimeDelay) + 500 + ms_time;
+        for (const auto& obj : mover->getInRangePlayersSet())
+        {
+            ARCEMU_ASSERT(obj->isPlayer());
+            packet.info.update_time = move_time + obj->asPlayer()->GetSession()->m_moveDelayTime;
+            obj->asPlayer()->SendPacket(packet.serialise().get());
+        }
+    }
+
+    // Remove flying aura if needed
+    // TODO: This seems like a daft check, verify it
+    if (!sessionMovementInfo.hasMovementFlag(MOVEFLAG_TRANSPORT) && opcode != MSG_MOVE_JUMP && !_player->m_cheats.hasFlyCheat && !_player->flying_aura)
+        if (!sessionMovementInfo.hasMovementFlag(MOVEFLAG_SWIMMING) && !sessionMovementInfo.hasMovementFlag(MOVEFLAG_FALLING))
+            if (sessionMovementInfo.position.z > _player->GetPositionZ() && sessionMovementInfo.position.x == _player->GetPositionX() && sessionMovementInfo.position.y == _player->GetPositionY())
+                SendPacket(SmsgMoveUnsetCanFly(_player->getGuid()).serialise().get());
+
+    if (sessionMovementInfo.hasMovementFlag(MOVEFLAG_FLYING) && !sessionMovementInfo.hasMovementFlag(MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->m_cheats.hasFlyCheat))
+        SendPacket(SmsgMoveUnsetCanFly(_player->getGuid()).serialise().get());
+
+    if (_player->blinked)
+    {
+        _player->blinked = false;
+        _player->m_fallDisabledUntil = UNIXTIME + 5;
+        _player->SpeedCheatDelay(2000);
+    }
+    else
+    {
+        if (opcode != MSG_MOVE_FALL_LAND)
+        {
+            // Update Z while player is falling to calculate fall damage
+            if (!sessionMovementInfo.hasMovementFlag(MOVEFLAG_FALLING))
+            {
+                mover->z_axisposition = sessionMovementInfo.position.z;
+            }
+            else
+            {
+                // Can't fall upwards - no fall dmg exploit
+                // TODO Verify infrastructure for this check
+                /*if (sessionMovementInfo.position.z > mover->z_axisposition)
+                {
+                    Disconnect();
+                    return;
+                }*/
+
+            }
+        }
+        else
+        {
+            if (!mover->z_axisposition)
+                mover->z_axisposition = sessionMovementInfo.position.z;
+
+            auto fall_distance = float2int32(mover->z_axisposition - sessionMovementInfo.position.z);
+            // If player ended up going up, negate
+            // TODO Anticheat checks
+            if (mover->z_axisposition <= sessionMovementInfo.position.z)
+                fall_distance = 1;
+
+            if (fall_distance > mover->m_safeFall)
+                fall_distance-=  mover->m_safeFall;
+            else
+                fall_distance = 1;
+
+            if (mover->isAlive() && !mover->bInvincible && fall_distance > 12 && !mover->m_noFallDamage && (mover->
+                getGuid() != _player->getGuid() || !_player->m_cheats.hasGodModeCheat && UNIXTIME >= _player->m_fallDisabledUntil))
+            {
+                auto health_lost = static_cast<uint32_t>(mover->getHealth() * (fall_distance - 12) * 0.017f);
+                if (health_lost >= mover->getHealth())
+                {
+                    health_lost = mover->getHealth();
+                }
+#ifdef FT_ACHIEVEMENTS
+                else if (fall_distance >= 65 && mover->getGuid() == _player->getGuid())
+                {
+                    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, fall_distance, Player::GetDrunkenstateByValue(_player->GetDrunkValue()), 0);
+                }
+#endif
+                mover->sendEnvironmentalDamageLogPacket(mover->getGuid(), DAMAGE_FALL, health_lost);
+                mover->addSimpleEnvironmentalDamageBatchEvent(DAMAGE_FALL, health_lost);
+            }
+
+            mover->z_axisposition = 0.f;
+        }
+    }
+
+    // End
+
+    if (mover->obj_movement_info.transport_guid != 0 && sessionMovementInfo.transport_guid == 0)
+    {
+        // Leaving transport we were on
+        if (auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid)))
+            transporter->RemovePassenger(static_cast<Player*>(mover));
+
+        mover->obj_movement_info.transport_guid = 0;
+        _player->SpeedCheatReset();
+    }
+    else
+    {
+        if (sessionMovementInfo.transport_guid != 0)
+        {
+
+            if (mover->obj_movement_info.transport_guid == 0)
+            {
+                Transporter *transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(sessionMovementInfo.transport_guid));
+                if (transporter != NULL)
+                    transporter->AddPassenger(static_cast<Player*>(mover));
+
+                /* set variables */
+                mover->obj_movement_info.transport_guid= sessionMovementInfo.transport_guid;
+                mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
+                mover->obj_movement_info.transport_position.x = sessionMovementInfo.transport_position.x;
+                mover->obj_movement_info.transport_position.y = sessionMovementInfo.transport_position.y;
+                mover->obj_movement_info.transport_position.z = sessionMovementInfo.transport_position.z;
+                mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
+
+                mover->m_transportData.transportGuid = sessionMovementInfo.transport_guid;
+                mover->m_transportData.relativePosition.x = sessionMovementInfo.transport_position.x;
+                mover->m_transportData.relativePosition.y = sessionMovementInfo.transport_position.y;
+                mover->m_transportData.relativePosition.z = sessionMovementInfo.transport_position.z;
+                mover->m_transportData.relativePosition.o = sessionMovementInfo.transport_position.o;
+            }
+            else
+            {
+                /* no changes */
+                mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
+                mover->obj_movement_info.transport_position.x = sessionMovementInfo.transport_position.x;
+                mover->obj_movement_info.transport_position.y = sessionMovementInfo.transport_position.y;
+                mover->obj_movement_info.transport_position.z = sessionMovementInfo.transport_position.z;
+                mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
+
+                mover->m_transportData.relativePosition.x = sessionMovementInfo.transport_position.x;
+                mover->m_transportData.relativePosition.y = sessionMovementInfo.transport_position.y;
+                mover->m_transportData.relativePosition.z = sessionMovementInfo.transport_position.z;
+                mover->m_transportData.relativePosition.o = sessionMovementInfo.transport_position.o;
+            }
+        }
+    }
+
+    /************************************************************************/
+    /* Breathing System                                                     */
+    /************************************************************************/
+    _player->handleBreathing(sessionMovementInfo, this);
+
+    /************************************************************************/
+    /* Remove Spells                                                        */
+    /************************************************************************/
+    uint32 flags = 0;
+    if ((sessionMovementInfo.flags & MOVEFLAG_MOTION_MASK) != 0)
+        flags |= AURA_INTERRUPT_ON_MOVEMENT;
+
+    if (!(sessionMovementInfo.flags & MOVEFLAG_SWIMMING || sessionMovementInfo.flags & MOVEFLAG_FALLING))
+        flags |= AURA_INTERRUPT_ON_LEAVE_WATER;
+    if (sessionMovementInfo.flags & MOVEFLAG_SWIMMING)
+        flags |= AURA_INTERRUPT_ON_ENTER_WATER;
+    if ((sessionMovementInfo.flags & MOVEFLAG_TURNING_MASK) || _player->m_isTurning)
+        flags |= AURA_INTERRUPT_ON_TURNING;
+    if (sessionMovementInfo.flags & MOVEFLAG_FALLING)
+        flags |= AURA_INTERRUPT_ON_JUMP;
+
+    _player->RemoveAurasByInterruptFlag(flags);
+
+    /************************************************************************/
+    /* Update our position in the server.                                   */
+    /************************************************************************/
+
+    // Player is the active mover
+    if (m_MoverWoWGuid.getRawGuid() == _player->getGuid())
+    {
+        if (!_player->GetTransport())
+        {
+            if (!_player->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o))
+            {
+                //extra check to set HP to 0 only if the player is dead (KillPlayer() has already this check)
+                if (_player->isAlive())
+                {
+                    _player->setHealth(0);
+                    _player->KillPlayer();
+                }
+
+                MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(_player->GetMapId());
+                if (pMapinfo != nullptr)
+                {
+                    if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
+                    {
+                        _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
+                    }
+                    else
+                    {
+                        _player->RepopAtGraveyard(pMapinfo->repopx, pMapinfo->repopy, pMapinfo->repopz, pMapinfo->repopmapid);
+                    }
+                }
+                else
+                {
+                    _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
+                }//Teleport player to graveyard. Stops players from QQing..
+            }
+        }
+    }
+    else
+    {
+        if (!mover->isRooted())
+            mover->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o);
+    }
+#endif
+
+#if VERSION_STRING == WotLK
 
     // spell cancel on movement, for now only fishing is added
     Object* t_go = _player->m_SummonedObject;
@@ -495,74 +502,66 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         }
     }
 
-    Unit* mover = _player->mControledUnit;
-
-    ASSERT(mover != nullptr)
-
-        Player* plrMover = nullptr;
-    if (mover->isPlayer())
-        plrMover = dynamic_cast<Player*>(mover);
-
     /************************************************************************/
     /* Clear standing state to stand.                                       */
     /************************************************************************/
-    if (_player->getStandState() != STANDSTATE_STAND && recvPacket.GetOpcode() == MSG_MOVE_START_FORWARD)
+    if (_player->getStandState() != STANDSTATE_STAND && opcode == MSG_MOVE_START_FORWARD)
         _player->setStandState(STANDSTATE_STAND);
 
     /************************************************************************/
     /* Make sure the packet is the correct size range.                      */
     /************************************************************************/
-    //if (recvPacket.size() > 80) { Disconnect(); return; }
+    //if (recvData.size() > 80) { Disconnect(); return; }
 
     /************************************************************************/
     /* Read Movement Data Packet                                            */
     /************************************************************************/
-    /*AscEmu::Packets::MovementPacket packet(recvPacket.GetOpcode(), 0);
+    /*AscEmu::Packets::MovementPacket packet(opcode, 0);
     packet.guid = mover->getGuid();
-    packet.info = movement_info;*/
+    packet.info = sessionMovementInfo;*/
 
     AscEmu::Packets::MovementPacket packet;
-    if (!packet.deserialise(recvPacket))
+    if (!packet.deserialise(recvData))
         return;
 
-    movement_info = packet.info;
+    sessionMovementInfo = packet.info;
 
     if (packet.guid != mover->getGuid())
         return;
 
     /*WoWGuid guid;
-    recvPacket >> guid;
-    movement_info.init(recvPacket);
+    recvData >> guid;
+    sessionMovementInfo.init(recvData);
 
     if (guid != mover->getGuid())
         return;*/
 
         /* Anti Multi-Jump Check */
-    if (recvPacket.GetOpcode() == MSG_MOVE_JUMP && _player->m_isJumping == true && !GetPermissionCount())
+    if (opcode == MSG_MOVE_JUMP && _player->m_isJumping == true && !GetPermissionCount())
     {
         sCheatLog.writefromsession(this, "Detected jump hacking");
         Disconnect();
         return;
     }
-    if (recvPacket.GetOpcode() == MSG_MOVE_FALL_LAND || movement_info.flags & MOVEFLAG_SWIMMING)
+    if (opcode == MSG_MOVE_FALL_LAND || sessionMovementInfo.flags & MOVEFLAG_SWIMMING)
         _player->m_isJumping = false;
-    if (!_player->m_isJumping && (recvPacket.GetOpcode() == MSG_MOVE_JUMP || movement_info.flags & MOVEFLAG_FALLING))
+    if (!_player->m_isJumping && (opcode == MSG_MOVE_JUMP || sessionMovementInfo.flags & MOVEFLAG_FALLING))
         _player->m_isJumping = true;
 
     /************************************************************************/
     /* Update player movement state                                         */
     /************************************************************************/
-    updatePlayerMovementVars(recvPacket.GetOpcode());
+    updatePlayerMovementVars(opcode);
 
     if (!(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm) && !_player->getCharmGuid())
     {
         /************************************************************************/
         /* Anti-Teleport                                                        */
         /************************************************************************/
-        if (worldConfig.antiHack.isTeleportHackCheckEnabled && _player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y }) > 3025.0f
+        if (worldConfig.antiHack.isTeleportHackCheckEnabled && _player->m_position.Distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y }) > 3025.0f
             && _player->getSpeedRate(TYPE_RUN, true) < 50.0f && !_player->obj_movement_info.transport_guid)
         {
-            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedRate(TYPE_RUN, true), std::sqrt(_player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y })));
+            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedRate(TYPE_RUN, true), std::sqrt(_player->m_position.Distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y })));
             Disconnect();
             return;
         }
@@ -574,7 +573,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         // simplified: just take the fastest speed. less chance of fuckups too
         float speed = (_player->flying_aura) ? _player->getSpeedRate(TYPE_FLY, true) : (_player->getSpeedRate(TYPE_SWIM, true) > _player->getSpeedRate(TYPE_RUN, true)) ? _player->getSpeedRate(TYPE_SWIM, true) : _player->getSpeedRate(TYPE_RUN, true);
 
-        _player->SDetector->AddSample(movement_info.position.x, movement_info.position.y, Util::getMSTime(), speed);
+        _player->SDetector->AddSample(sessionMovementInfo.position.x, sessionMovementInfo.position.y, Util::getMSTime(), speed);
 
         if (_player->SDetector->IsCheatDetected())
             _player->SDetector->ReportCheater(_player);
@@ -589,7 +588,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     /************************************************************************/
     /* Make sure the co-ordinates are valid.                                */
     /************************************************************************/
-    if (!((movement_info.position.y >= _minY) && (movement_info.position.y <= _maxY)) || !((movement_info.position.x >= _minX) && (movement_info.position.x <= _maxX)))
+    if (!((sessionMovementInfo.position.y >= _minY) && (sessionMovementInfo.position.y <= _maxY)) || !((sessionMovementInfo.position.x >= _minX) && (sessionMovementInfo.position.x <= _maxX)))
     {
         Disconnect();
         return;
@@ -602,15 +601,15 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     uint32 mstime = mTimeStamp();
     int32 move_time;
     if (m_clientTimeDelay == 0)
-        m_clientTimeDelay = mstime - movement_info.update_time;
+        m_clientTimeDelay = mstime - sessionMovementInfo.update_time;
 
     /************************************************************************/
     /* Copy into the output buffer.                                         */
     /************************************************************************/
     if (_player->getInRangePlayersCount())
     {
-        move_time = (movement_info.update_time - (mstime - m_clientTimeDelay)) + MOVEMENT_PACKET_TIME_DELAY + mstime;
-        memcpy(&movement_packet[0], recvPacket.contents(), recvPacket.size());
+        move_time = (sessionMovementInfo.update_time - (mstime - m_clientTimeDelay)) + MOVEMENT_PACKET_TIME_DELAY + mstime;
+        memcpy(&movement_packet[0], recvData.contents(), recvData.size());
         movement_packet[pos + 6] = 0;
 
         /************************************************************************/
@@ -622,14 +621,14 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 
             *(uint32*)&movement_packet[pos + 6] = uint32(move_time + p->GetSession()->m_moveDelayTime);
 
-            p->GetSession()->OutPacket(recvPacket.GetOpcode(), uint16(recvPacket.size() + pos), movement_packet);
+            p->GetSession()->OutPacket(opcode, uint16(recvData.size() + pos), movement_packet);
         }
     }
 
     /************************************************************************/
     /* Hack Detection by Classic                                            */
     /************************************************************************/
-    if (!movement_info.transport_guid && recvPacket.GetOpcode() != MSG_MOVE_JUMP && !_player->m_cheats.hasFlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
+    if (!sessionMovementInfo.transport_guid && opcode != MSG_MOVE_JUMP && !_player->m_cheats.hasFlyCheat && !_player->flying_aura && !(sessionMovementInfo.flags & MOVEFLAG_SWIMMING || sessionMovementInfo.flags & MOVEFLAG_FALLING) && sessionMovementInfo.position.z > _player->GetPositionZ() && sessionMovementInfo.position.x == _player->GetPositionX() && sessionMovementInfo.position.y == _player->GetPositionY())
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
@@ -637,7 +636,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         SendPacket(&data);
     }
 
-    if ((movement_info.flags & MOVEFLAG_FLYING) && !(movement_info.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->m_cheats.hasFlyCheat))
+    if ((sessionMovementInfo.flags & MOVEFLAG_FLYING) && !(sessionMovementInfo.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->m_cheats.hasFlyCheat))
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
@@ -657,16 +656,16 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     }
     else
     {
-        if (recvPacket.GetOpcode() == MSG_MOVE_FALL_LAND)
+        if (opcode == MSG_MOVE_FALL_LAND)
         {
             // player has finished falling
             //if z_axisposition contains no data then set to current position
             if (!mover->z_axisposition)
-                mover->z_axisposition = movement_info.position.z;
+                mover->z_axisposition = sessionMovementInfo.position.z;
 
             // calculate distance fallen
-            uint32 falldistance = float2int32(mover->z_axisposition - movement_info.position.z);
-            if (mover->z_axisposition <= movement_info.position.z)
+            uint32 falldistance = float2int32(mover->z_axisposition - sessionMovementInfo.position.z);
+            if (mover->z_axisposition <= sessionMovementInfo.position.z)
                 falldistance = 1;
             /*Safe Fall*/
             if ((int)falldistance > mover->m_safeFall)
@@ -704,14 +703,14 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         else
             //whilst player is not falling, continuously update Z axis position.
             //once player lands this will be used to determine how far he fell.
-            if (!(movement_info.flags & MOVEFLAG_FALLING))
-                mover->z_axisposition = movement_info.position.z;
+            if (!(sessionMovementInfo.flags & MOVEFLAG_FALLING))
+                mover->z_axisposition = sessionMovementInfo.position.z;
     }
 
     /************************************************************************/
     /* Transporter Setup                                                    */
     /************************************************************************/
-    if ((mover->obj_movement_info.transport_guid != 0) && (movement_info.transport_guid == 0))
+    if ((mover->obj_movement_info.transport_guid != 0) && (sessionMovementInfo.transport_guid == 0))
     {
         /* we left the transporter we were on */
         LOG_DEBUG("Left Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
@@ -726,44 +725,44 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     }
     else
     {
-        if (movement_info.transport_guid != 0)
+        if (sessionMovementInfo.transport_guid != 0)
         {
 
             if (mover->obj_movement_info.transport_guid == 0)
             {
-                LOG_DEBUG("Entered Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_guid));
+                LOG_DEBUG("Entered Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(sessionMovementInfo.transport_guid));
 
-                Transporter *transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transport_guid));
+                Transporter *transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(sessionMovementInfo.transport_guid));
                 if (transporter != NULL)
                     transporter->AddPassenger(static_cast<Player*>(mover));
 
                 /* set variables */
-                mover->obj_movement_info.transport_guid = movement_info.transport_guid;
-                mover->obj_movement_info.transport_time = movement_info.transport_time;
-                mover->obj_movement_info.transport_position.x = movement_info.transport_position.x;
-                mover->obj_movement_info.transport_position.y = movement_info.transport_position.y;
-                mover->obj_movement_info.transport_position.z = movement_info.transport_position.z;
-                mover->obj_movement_info.transport_position.o = movement_info.transport_position.o;
+                mover->obj_movement_info.transport_guid = sessionMovementInfo.transport_guid;
+                mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
+                mover->obj_movement_info.transport_position.x = sessionMovementInfo.transport_position.x;
+                mover->obj_movement_info.transport_position.y = sessionMovementInfo.transport_position.y;
+                mover->obj_movement_info.transport_position.z = sessionMovementInfo.transport_position.z;
+                mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
 
-                mover->m_transportData.transportGuid = movement_info.transport_guid;
-                mover->m_transportData.relativePosition.x = movement_info.transport_position.x;
-                mover->m_transportData.relativePosition.y = movement_info.transport_position.y;
-                mover->m_transportData.relativePosition.z = movement_info.transport_position.z;
-                mover->m_transportData.relativePosition.o = movement_info.transport_position.o;
+                mover->m_transportData.transportGuid = sessionMovementInfo.transport_guid;
+                mover->m_transportData.relativePosition.x = sessionMovementInfo.transport_position.x;
+                mover->m_transportData.relativePosition.y = sessionMovementInfo.transport_position.y;
+                mover->m_transportData.relativePosition.z = sessionMovementInfo.transport_position.z;
+                mover->m_transportData.relativePosition.o = sessionMovementInfo.transport_position.o;
             }
             else
             {
                 /* no changes */
-                mover->obj_movement_info.transport_time = movement_info.transport_time;
-                mover->obj_movement_info.transport_position.x = movement_info.transport_position.x;
-                mover->obj_movement_info.transport_position.y = movement_info.transport_position.y;
-                mover->obj_movement_info.transport_position.z = movement_info.transport_position.z;
-                mover->obj_movement_info.transport_position.o = movement_info.transport_position.o;
+                mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
+                mover->obj_movement_info.transport_position.x = sessionMovementInfo.transport_position.x;
+                mover->obj_movement_info.transport_position.y = sessionMovementInfo.transport_position.y;
+                mover->obj_movement_info.transport_position.z = sessionMovementInfo.transport_position.z;
+                mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
 
-                mover->m_transportData.relativePosition.x = movement_info.transport_position.x;
-                mover->m_transportData.relativePosition.y = movement_info.transport_position.y;
-                mover->m_transportData.relativePosition.z = movement_info.transport_position.z;
-                mover->m_transportData.relativePosition.o = movement_info.transport_position.o;
+                mover->m_transportData.relativePosition.x = sessionMovementInfo.transport_position.x;
+                mover->m_transportData.relativePosition.y = sessionMovementInfo.transport_position.y;
+                mover->m_transportData.relativePosition.z = sessionMovementInfo.transport_position.z;
+                mover->m_transportData.relativePosition.o = sessionMovementInfo.transport_position.o;
             }
         }
     }
@@ -771,22 +770,22 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     /************************************************************************/
     /* Breathing System                                                     */
     /************************************************************************/
-    _player->handleBreathing(movement_info, this);
+    _player->handleBreathing(sessionMovementInfo, this);
 
     /************************************************************************/
     /* Remove Spells                                                        */
     /************************************************************************/
     uint32 flags = 0;
-    if ((movement_info.flags & MOVEFLAG_MOTION_MASK) != 0)
+    if ((sessionMovementInfo.flags & MOVEFLAG_MOTION_MASK) != 0)
         flags |= AURA_INTERRUPT_ON_MOVEMENT;
 
-    if (!(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING))
+    if (!(sessionMovementInfo.flags & MOVEFLAG_SWIMMING || sessionMovementInfo.flags & MOVEFLAG_FALLING))
         flags |= AURA_INTERRUPT_ON_LEAVE_WATER;
-    if (movement_info.flags & MOVEFLAG_SWIMMING)
+    if (sessionMovementInfo.flags & MOVEFLAG_SWIMMING)
         flags |= AURA_INTERRUPT_ON_ENTER_WATER;
-    if ((movement_info.flags & MOVEFLAG_TURNING_MASK) || _player->m_isTurning)
+    if ((sessionMovementInfo.flags & MOVEFLAG_TURNING_MASK) || _player->m_isTurning)
         flags |= AURA_INTERRUPT_ON_TURNING;
-    if (movement_info.flags & MOVEFLAG_FALLING)
+    if (sessionMovementInfo.flags & MOVEFLAG_FALLING)
         flags |= AURA_INTERRUPT_ON_JUMP;
 
     _player->RemoveAurasByInterruptFlag(flags);
@@ -801,7 +800,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 
         if (!_player->GetTransport())
         {
-            if (!_player->SetPosition(movement_info.position.x, movement_info.position.y, movement_info.position.z, movement_info.position.o))
+            if (!_player->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o))
             {
                 //extra check to set HP to 0 only if the player is dead (KillPlayer() has already this check)
                 if (_player->isAlive())
@@ -832,24 +831,14 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     else
     {
         if (!mover->isRooted())
-            mover->SetPosition(movement_info.position.x, movement_info.position.y, movement_info.position.z, movement_info.position.o);
+            mover->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o);
     }
-}
 #endif
 
 #if VERSION_STRING >= Cata
-void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
-{
-    uint16_t opcode = recvPacket.GetOpcode();
-    Player* mover = _player;
 
     if (m_MoverGuid != mover->getGuid())
         return;
-
-    if (mover->getCharmedByGuid() || !mover->IsInWorld() || mover->isTransferPending() || mover->isOnTaxi())
-    {
-        return;
-    }
 
     /************************************************************************/
     /* Clear standing state to stand.                                       */
@@ -859,19 +848,19 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 
     //extract packet
     MovementInfo movementInfo;
-    recvPacket >> movementInfo;
+    recvData >> movementInfo;
 
     //    /************************************************************************/
     //    /* Make sure the packet is the correct size range.                      */
     //    /************************************************************************/
-    //    //if (recvPacket.size() > 80) { Disconnect(); return; }
+    //    //if (recvData.size() > 80) { Disconnect(); return; }
     //
     //    /************************************************************************/
     //    /* Read Movement Data Packet                                            */
     //    /************************************************************************/
     //    WoWGuid guid;
-    //    recvPacket >> guid;
-    //    movement_info.init(recvPacket);
+    //    recvData >> guid;
+    //    sessionMovementInfo.init(recvData);
     //
     //    if (guid != m_MoverWoWGuid.GetOldGuid())
     //    {
@@ -884,7 +873,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     //        return;
     //
     //    /* Anti Multi-Jump Check */
-    //    if (recvPacket.GetOpcode() == MSG_MOVE_JUMP && _player->m_isJumping == true && !GetPermissionCount())
+    //    if (opcode == MSG_MOVE_JUMP && _player->m_isJumping == true && !GetPermissionCount())
     //    {
     //        sCheatLog.writefromsession(this, "Detected jump hacking");
     //        Disconnect();
@@ -904,7 +893,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     //        /************************************************************************/
     //        /* Anti-Teleport                                                        */
     //        /************************************************************************/
-    //        if (sWorld.antihack_teleport && _player->m_position.Distance2DSq(movement_info.position.x, movement_info.position.y) > 3025.0f
+    //        if (sWorld.antihack_teleport && _player->m_position.Distance2DSq(sessionMovementInfo.position.x, sessionMovementInfo.position.y) > 3025.0f
     //            && _player->getSpeedForType(TYPE_RUN) < 50.0f && !_player->obj_movement_info.transporter_info.guid)
     //        {
     //            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedForType(TYPE_RUN), std::sqrt(_player->m_position.Distance2DSq(movement_info.position.x, movement_info.position.y)));
@@ -919,7 +908,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     //        // simplified: just take the fastest speed. less chance of fuckups too
     //        float speed = (_player->flying_aura) ? _player->getSpeedForType(TYPE_FLY) : (_player->getSpeedForType(TYPE_SWIM) > _player->getSpeedForType(TYPE_RUN)) ? _player->getSpeedForType(TYPE_SWIM) : _player->getSpeedForType(TYPE_RUN);
     //
-    //        _player->SDetector->AddSample(movement_info.position.x, movement_info.position.y, Util::getMSTime(), speed);
+    //        _player->SDetector->AddSample(sessionMovementInfo.position.x, sessionMovementInfo.position.y, Util::getMSTime(), speed);
     //
     //        if (_player->SDetector->IsCheatDetected())
     //            _player->SDetector->ReportCheater(_player);
@@ -934,7 +923,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     //    /************************************************************************/
     //    /* Make sure the co-ordinates are valid.                                */
     //    /************************************************************************/
-    //    if (!((movement_info.position.y >= _minY) && (movement_info.position.y <= _maxY)) || !((movement_info.position.x >= _minX) && (movement_info.position.x <= _maxX)))
+    //    if (!((sessionMovementInfo.position.y >= _minY) && (sessionMovementInfo.position.y <= _maxY)) || !((sessionMovementInfo.position.x >= _minX) && (sessionMovementInfo.position.x <= _maxX)))
     //    {
     //        Disconnect();
     //        return;
@@ -948,15 +937,15 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //uint32 mstime = Util::getMSTime();
         //int32 move_time;
         //if (m_clientTimeDelay == 0)
-        //    m_clientTimeDelay = mstime - movement_info.time;
+        //    m_clientTimeDelay = mstime - sessionMovementInfo.time;
 
         ///************************************************************************/
         ///* Copy into the output buffer.                                         */
         ///************************************************************************/
         //if (_player->m_inRangePlayers.size())
         //{
-        //    move_time = (movement_info.time - (mstime - m_clientTimeDelay)) + MOVEMENT_PACKET_TIME_DELAY + mstime;
-        //    memcpy(&movement_packet[0], recvPacket.contents(), recvPacket.size());
+        //    move_time = (sessionMovementInfo.time - (mstime - m_clientTimeDelay)) + MOVEMENT_PACKET_TIME_DELAY + mstime;
+        //    memcpy(&movement_packet[0], recvData.contents(), recvData.size());
         //    movement_packet[pos + 6] = 0;
 
         //    /************************************************************************/
@@ -969,7 +958,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 
         //        *(uint32*)&movement_packet[pos + 6] = uint32(move_time + p->GetSession()->m_moveDelayTime);
 
-        //        p->GetSession()->OutPacket(recvPacket.GetOpcode(), uint16(recvPacket.size() + pos), movement_packet);
+        //        p->GetSession()->OutPacket(opcode, uint16(recvData.size() + pos), movement_packet);
 
         //    }
         //}
@@ -977,7 +966,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         ///************************************************************************/
         ///* Hack Detection by Classic                                            */
         ///************************************************************************/
-        //if (!movement_info.transporter_info.guid && recvPacket.GetOpcode() != MSG_MOVE_JUMP && !_player->hasFlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
+        //if (!sessionMovementInfo.transporter_info.guid && opcode != MSG_MOVE_JUMP && !_player->hasFlyCheat && !_player->flying_aura && !(sessionMovementInfo.flags & MOVEFLAG_SWIMMING || sessionMovementInfo.flags & MOVEFLAG_FALLING) && sessionMovementInfo.position.z > _player->GetPositionZ() && sessionMovementInfo.position.x == _player->GetPositionX() && sessionMovementInfo.position.y == _player->GetPositionY())
         //{
         //    WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         //    data << _player->GetNewGUID();
@@ -985,7 +974,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //    SendPacket(&data);
         //}
 
-        //if ((movement_info.flags & MOVEFLAG_FLYING) && !(movement_info.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->hasFlyCheat))
+        //if ((sessionMovementInfo.flags & MOVEFLAG_FLYING) && !(sessionMovementInfo.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->hasFlyCheat))
         //{
         //    WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         //    data << _player->GetNewGUID();
@@ -1005,16 +994,16 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //}
         //else
         //{
-        //    if (recvPacket.GetOpcode() == MSG_MOVE_FALL_LAND)
+        //    if (opcode == MSG_MOVE_FALL_LAND)
         //    {
         //        // player has finished falling
         //        //if z_axisposition contains no data then set to current position
         //        if (!mover->z_axisposition)
-        //            mover->z_axisposition = movement_info.position.z;
+        //            mover->z_axisposition = sessionMovementInfo.position.z;
 
         //        // calculate distance fallen
-        //        uint32 falldistance = float2int32(mover->z_axisposition - movement_info.position.z);
-        //        if (mover->z_axisposition <= movement_info.position.z)
+        //        uint32 falldistance = float2int32(mover->z_axisposition - sessionMovementInfo.position.z);
+        //        if (mover->z_axisposition <= sessionMovementInfo.position.z)
         //            falldistance = 1;
         //        /*Safe Fall*/
         //        if ((int)falldistance > mover->m_safeFall)
@@ -1051,14 +1040,14 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //    else
         //        //whilst player is not falling, continuously update Z axis position.
         //        //once player lands this will be used to determine how far he fell.
-        //        if (!(movement_info.flags & MOVEFLAG_FALLING))
-        //            mover->z_axisposition = movement_info.position.z;
+        //        if (!(sessionMovementInfo.flags & MOVEFLAG_FALLING))
+        //            mover->z_axisposition = sessionMovementInfo.position.z;
         //}
 
         ///************************************************************************/
         ///* Transporter Setup                                                    */
         ///************************************************************************/
-        //if ((mover->obj_movement_info.transporter_info.guid != 0) && (movement_info.transporter_info.transGuid.GetOldGuid() == 0))
+        //if ((mover->obj_movement_info.transporter_info.guid != 0) && (sessionMovementInfo.transporter_info.transGuid.GetOldGuid() == 0))
         //{
         //    /* we left the transporter we were on */
 
@@ -1072,42 +1061,42 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         //}
         //else
         //{
-        //    if (movement_info.transporter_info.transGuid.GetOldGuid() != 0)
+        //    if (sessionMovementInfo.transporter_info.transGuid.GetOldGuid() != 0)
         //    {
 
         //        if (mover->obj_movement_info.transporter_info.guid == 0)
         //        {
-        //            Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(movement_info.transporter_info.transGuid));
+        //            Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(sessionMovementInfo.transporter_info.transGuid));
         //            if (transporter != NULL)
         //                transporter->AddPassenger(static_cast<Player*>(mover));
 
         //            /* set variables */
-        //            mover->obj_movement_info.transporter_info.guid = movement_info.transporter_info.transGuid;
-        //            mover->obj_movement_info.transporter_info.time = movement_info.transporter_info.time;
-        //            mover->obj_movement_info.transporter_info.position.x = movement_info.transporter_info.position.x;
-        //            mover->obj_movement_info.transporter_info.position.y = movement_info.transporter_info.position.y;
-        //            mover->obj_movement_info.transporter_info.position.z = movement_info.transporter_info.position.z;
-        //            mover->obj_movement_info.transporter_info.position.o = movement_info.transporter_info.position.o;
+        //            mover->obj_movement_info.transporter_info.guid = sessionMovementInfo.transporter_info.transGuid;
+        //            mover->obj_movement_info.transporter_info.time = sessionMovementInfo.transporter_info.time;
+        //            mover->obj_movement_info.transporter_info.position.x = sessionMovementInfo.transporter_info.position.x;
+        //            mover->obj_movement_info.transporter_info.position.y = sessionMovementInfo.transporter_info.position.y;
+        //            mover->obj_movement_info.transporter_info.position.z = sessionMovementInfo.transporter_info.position.z;
+        //            mover->obj_movement_info.transporter_info.position.o = sessionMovementInfo.transporter_info.position.o;
 
-        //            mover->m_transportData.transportGuid = movement_info.transporter_info.transGuid;
-        //            mover->m_transportData.relativePosition.x = movement_info.transporter_info.position.x;
-        //            mover->m_transportData.relativePosition.y = movement_info.transporter_info.position.y;
-        //            mover->m_transportData.relativePosition.z = movement_info.transporter_info.position.z;
-        //            mover->m_transportData.relativePosition.o = movement_info.transporter_info.position.o;
+        //            mover->m_transportData.transportGuid = sessionMovementInfo.transporter_info.transGuid;
+        //            mover->m_transportData.relativePosition.x = sessionMovementInfo.transporter_info.position.x;
+        //            mover->m_transportData.relativePosition.y = sessionMovementInfo.transporter_info.position.y;
+        //            mover->m_transportData.relativePosition.z = sessionMovementInfo.transporter_info.position.z;
+        //            mover->m_transportData.relativePosition.o = sessionMovementInfo.transporter_info.position.o;
         //        }
         //        else
         //        {
         //            /* no changes */
-        //            mover->obj_movement_info.transporter_info.time = movement_info.transporter_info.time;
-        //            mover->obj_movement_info.transporter_info.position.x = movement_info.transporter_info.position.x;
-        //            mover->obj_movement_info.transporter_info.position.y = movement_info.transporter_info.position.y;
-        //            mover->obj_movement_info.transporter_info.position.z = movement_info.transporter_info.position.z;
-        //            mover->obj_movement_info.transporter_info.position.o = movement_info.transporter_info.position.o;
+        //            mover->obj_movement_info.transporter_info.time = sessionMovementInfo.transporter_info.time;
+        //            mover->obj_movement_info.transporter_info.position.x = sessionMovementInfo.transporter_info.position.x;
+        //            mover->obj_movement_info.transporter_info.position.y = sessionMovementInfo.transporter_info.position.y;
+        //            mover->obj_movement_info.transporter_info.position.z = sessionMovementInfo.transporter_info.position.z;
+        //            mover->obj_movement_info.transporter_info.position.o = sessionMovementInfo.transporter_info.position.o;
 
-        //            mover->m_transportData.relativePosition.x = movement_info.transporter_info.position.x;
-        //            mover->m_transportData.relativePosition.y = movement_info.transporter_info.position.y;
-        //            mover->m_transportData.relativePosition.z = movement_info.transporter_info.position.z;
-        //            mover->m_transportData.relativePosition.o = movement_info.transporter_info.position.o;
+        //            mover->m_transportData.relativePosition.x = sessionMovementInfo.transporter_info.position.x;
+        //            mover->m_transportData.relativePosition.y = sessionMovementInfo.transporter_info.position.y;
+        //            mover->m_transportData.relativePosition.z = sessionMovementInfo.transporter_info.position.z;
+        //            mover->m_transportData.relativePosition.o = sessionMovementInfo.transporter_info.position.o;
         //        }
         //    }
         //}
@@ -1115,12 +1104,12 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
         /************************************************************************/
         /* Breathing System                                                     */
         /************************************************************************/
-    mover->handleBreathing(movementInfo, this);
+    _player->handleBreathing(movementInfo, this);
 
     /************************************************************************/
     /* Remove Auras                                                         */
     /************************************************************************/
-    mover->handleAuraInterruptForMovementFlags(movementInfo);
+    _player->handleAuraInterruptForMovementFlags(movementInfo);
 
     ///************************************************************************/
     ///* Update our position in the server.                                   */
@@ -1132,7 +1121,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
 
     //    if (!_player->GetTransport())
     //    {
-    //        if (!_player->SetPosition(movement_info.position.x, movement_info.position.y, movement_info.position.z, movement_info.position.o))
+    //        if (!_player->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o))
     //        {
     //            //extra check to set HP to 0 only if the player is dead (KillPlayer() has already this check)
     //            if (_player->isAlive())
@@ -1163,7 +1152,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     //else
     //{
     //    if (!mover->isRooted())
-    //        mover->SetPosition(movement_info.position.x, movement_info.position.y, movement_info.position.z, movement_info.position.o);
+    //        mover->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o);
     //}
 
     /************************************************************************/
@@ -1175,11 +1164,11 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvPacket)
     if (opcode == MSG_MOVE_FALL_LAND && mover /*&& !mover->IsTaxiFlying()*/)
         mover->handleFall(movementInfo);
 
-    WorldPacket data(SMSG_PLAYER_MOVE, recvPacket.size());
+    WorldPacket data(SMSG_PLAYER_MOVE, recvData.size());
     data << movementInfo;
     mover->SendMessageToSet(&data, false);
-}
 #endif
+}
 
 void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)
 {
