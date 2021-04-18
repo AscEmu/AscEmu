@@ -4,25 +4,3 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #pragma once
-#include <cstdint>
-
-#include "WorldConf.h"
-#if VERSION_STRING < Cata
-#if VERSION_STRING != Mop
-#include "ManagedPacket.h"
-#include "MovementPacket.h"
-
-namespace AscEmu::Packets
-{
-    class MsgMoveFallLand : public MovementPacket
-    {
-    public:
-        MsgMoveFallLand() :
-            MovementPacket(MSG_MOVE_FALL_LAND, 0)
-        {
-        }
-    };
-}
-
-#endif
-#endif

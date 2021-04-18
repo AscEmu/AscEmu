@@ -38,32 +38,35 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
     if (srlPacket.guid == m_MoverWoWGuid.getRawGuid())
         return;
 
+#if VERSION_STRING > TBC
     if (_player->getCharmGuid() != srlPacket.guid.getRawGuid() || _player->getGuid() != srlPacket.guid.getRawGuid())
     {
         auto bad_packet = true;
-#if VERSION_STRING >= TBC
         if (const auto vehicle = _player->getCurrentVehicle())
             if (const auto owner = vehicle->GetOwner())
                 if (owner->getGuid() == srlPacket.guid.getRawGuid())
                     bad_packet = false;
-#endif
+
         if (bad_packet)
             return;
     }
+#endif
 
     if (srlPacket.guid.getRawGuid() == 0)
         m_MoverWoWGuid.Init(_player->getGuid());
     else
         m_MoverWoWGuid = srlPacket.guid;
-
-    // set up to the movement packet
-    movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
-    memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
 }
 #endif
 
 void WorldSession::updatePlayerMovementVars(uint16_t opcode)
 {
+    if (opcode == MSG_MOVE_FALL_LAND || sessionMovementInfo.flags & MOVEFLAG_SWIMMING)
+        _player->m_isJumping = false;
+
+    if (!_player->m_isJumping && (opcode == MSG_MOVE_JUMP || sessionMovementInfo.flags & MOVEFLAG_FALLING))
+        _player->m_isJumping = true;
+
     auto moved = true;
     switch (opcode)
     {
@@ -99,56 +102,52 @@ void WorldSession::updatePlayerMovementVars(uint16_t opcode)
     _player->m_isTurning = _player->GetOrientation() != sessionMovementInfo.position.o;
 }
 
-#if VERSION_STRING == WotLK
-
-#define SWIMMING_TOLERANCE_LEVEL -0.08f
-#define MOVEMENT_PACKET_TIME_DELAY 500
-
-#ifdef WIN32
-
-#include <mmsystem.h>
-#pragma comment(lib, "winmm.lib")
-#define DELTA_EPOCH_IN_USEC 11644473600000000ULL
-
-uint32 TimeStamp()
+bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
 {
-    //return timeGetTime();
+    // NOTE: All this stuff is probably broken. However, if you want to implement hack detection, here is the place for it ;)
+    // We have activated gm mode - we can hack as much as we want ;)
+    // Zyres: it is not helpfull to check for permission count right now
+    if (_player->hasPlayerFlags(PLAYER_FLAG_GM) && worldConfig.antiHack.isAntiHackCheckDisabledForGm)
+        return false;
 
-    FILETIME ft;
-    uint64 t;
-    GetSystemTimeAsFileTime(&ft);
+    // Double Jump
+    if (opcode == MSG_MOVE_JUMP && _player->m_isJumping)
+    {
+        sCheatLog.writefromsession(this, "Detected jump hacking");
+        return true;
+    }
 
-    t = (uint64)ft.dwHighDateTime << 32;
-    t |= ft.dwLowDateTime;
-    t /= 10;
-    t -= DELTA_EPOCH_IN_USEC;
+    // Teleport
+    // implement worldConfig.antiHack.isTeleportHackCheckEnabled
+    if (_player->m_position.Distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y }) > 3025.0f &&
+        _player->getSpeedRate(TYPE_RUN, true) < 50.0f && !_player->obj_movement_info.transport_guid)
+    {
+        sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f",
+            _player->getSpeedRate(TYPE_RUN, true),
+            std::sqrt(_player->m_position.Distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y })));
 
-    return uint32(((t / 1000000L) * 1000) + ((t % 1000000L) / 1000));
+        return true;
+    }
+
+    // Speed
+    // implement worldConfig.antiHack.isSpeedHackCkeckEnabled
+    if (!_player->isOnTaxi() && _player->obj_movement_info.transport_guid == 0 && !_player->GetSession()->GetPermissionCount())
+    {
+        // simplified: just take the fastest speed. less chance of fuckups too
+        // get the "normal speeds" not the changed ones!
+        float speed = (_player->flying_aura) ? _player->getSpeedRate(TYPE_FLY, false) : (_player->getSpeedRate(TYPE_SWIM, false) > _player->getSpeedRate(TYPE_RUN, false)) ? _player->getSpeedRate(TYPE_SWIM, false) : _player->getSpeedRate(TYPE_RUN, false);
+
+        _player->SDetector->AddSample(sessionMovementInfo.position.x, sessionMovementInfo.position.y, Util::getMSTime(), speed);
+
+        if (_player->SDetector->IsCheatDetected())
+        {
+            _player->SDetector->ReportCheater(_player);
+            return true;
+        }
+    }
+
+    return false;
 }
-
-uint32 mTimeStamp()
-{
-    return timeGetTime();
-}
-
-#else
-
-uint32 TimeStamp()
-{
-    struct timeval tp;
-    gettimeofday(&tp, NULL);
-    return (tp.tv_sec * 1000) + (tp.tv_usec / 1000);
-}
-
-uint32 mTimeStamp()
-{
-    struct timeval tp;
-    gettimeofday(&tp, NULL);
-    return (tp.tv_sec * 1000) + (tp.tv_usec / 1000);
-}
-
-#endif
-#endif
 
 void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 {
@@ -164,135 +163,92 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     // Zyres: save the opcode here for better handling
     const uint16_t opcode = recvData.GetOpcode();
 
-    // Zyres: We (the player) controles the movement of another player/unit.
+    // Zyres: We (the player) controles the movement of us or another player/unit.
     // this is always initialise with the player, can be changed to any other unit.
     Unit* mover = _player->mControledUnit;
 
+    // Zyres: Clear standing state to stand... investigate further if this is really needed
+    if (mover->getStandState() != STANDSTATE_STAND && opcode == MSG_MOVE_START_FORWARD)
+        mover->setStandState(STANDSTATE_STAND);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     /// read movement info from packet
+    MovementInfo movementInfo;
+    recvData >> movementInfo;
 
-#if VERSION_STRING <= TBC
+    // store the read movementInfo here. We will need it for other functions related to this handler (e.g. updatePlayerMovementVars)
+    sessionMovementInfo = movementInfo;
 
-    MovementPacket move_packet(opcode, 0);
-    move_packet.deserialise(recvData);
-    /*if (!move_packet.deserialise(recvData))
-        return;*/
-
-    sessionMovementInfo = move_packet.info;
-
-    auto out_of_bounds = false;
-    out_of_bounds = out_of_bounds || sessionMovementInfo.position.y < _minY;
-    out_of_bounds = out_of_bounds || sessionMovementInfo.position.y > _maxY;
-    out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > _maxX;
-    out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > _maxX;
-
-    if (out_of_bounds)
-    {
-        Disconnect();
+    // Zyres: now we have the data from the movement packet. Check out if we are the mover, otherwise stop processing
+    //\todo why do we check different on other versions?
+#if VERSION_STRING > TBC
+    // wotlk check
+    if (sessionMovementInfo.guid != mover->getGuid())
         return;
-    }
 
-    if (auto summoned_object = _player->m_SummonedObject)
+    // cata check
+    if (m_MoverGuid != mover->getGuid())
+        return;
+#endif
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// out of bounds check
     {
-         if (summoned_object->isGameObject())
-         {
-             const auto go = static_cast<GameObject*>(summoned_object);
-             if (go->isFishingNode())
-             {
-                 auto fishing_node = static_cast<GameObject_FishingNode*>(go);
-                 fishing_node->EndFishing(true);
+        bool out_of_bounds = false;
+        out_of_bounds = out_of_bounds || sessionMovementInfo.position.y < _minY;
+        out_of_bounds = out_of_bounds || sessionMovementInfo.position.y > _maxY;
+        out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > _maxX;
+        out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > _maxX;
 
-                 // This is done separately as not all channeled spells are canceled by all movement opcodes
-                 if (auto spell = _player->getCurrentSpell(CURRENT_CHANNELED_SPELL))
-                 {
-                     spell->sendChannelUpdate(0U);
-                     spell->finish(false);
-                 }
-             }
-         }
-    }
-
-    if (_player->getStandState() != STANDSTATE_STAND && opcode == MSG_MOVE_START_FORWARD)
-        _player->setStandState(STANDSTATE_STAND);
-
-    updatePlayerMovementVars(opcode);
-
-    // Antihack Checks
-    if (!(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm))
-    {
-        // Prevent multi-jump cheat
-        // TODO Account for falltime and jump flags
-        // TODO Check this in the correct place
-        /*if (opcode == MSG_MOVE_JUMP && _player->m_isJumping)
+        if (out_of_bounds)
         {
-            sCheatLog.writefromsession(this, "Detected jump hacking");
             Disconnect();
             return;
-        }*/
+        }
+    }
 
-        if (worldConfig.antiHack.isTeleportHackCheckEnabled)
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// stop using go on movement
+    if (auto* const summoned_object = _player->m_SummonedObject)
+    {
+        if (summoned_object->isGameObject())
         {
-            // TODO Fix for charmed units
-            // TODO Fix for transports
-            if (_player->getCharmGuid() == 0)
+            auto* const go = dynamic_cast<GameObject*>(summoned_object);
+            if (go->isFishingNode())
             {
-                if (_player->m_position.Distance2DSq(sessionMovementInfo.position) > 3025.f)
+                auto* fishing_node = dynamic_cast<GameObject_FishingNode*>(go);
+                fishing_node->EndFishing(true);
+
+                // This is done separately as not all channeled spells are canceled by all movement opcodes
+                if (auto* spell = _player->getCurrentSpell(CURRENT_CHANNELED_SPELL))
                 {
-                    if (_player->getSpeedRate(TYPE_RUN, true) < 50.f && !_player->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
-                    {
-                        sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedRate(TYPE_RUN, true), std::sqrt(_player->m_position.Distance2DSq({ movement_info.position.x, movement_info.position.y })));
-                        Disconnect();
-                        return;
-                    }
+                    spell->sendChannelUpdate(0U);
+                    spell->finish(false);
                 }
             }
         }
-
-        if (worldConfig.antiHack.isSpeedHackCkeckEnabled)
-        {
-            if (!(_player->isOnTaxi() || _player->movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT)))
-            {
-                _player->SDetector->addSample(sessionMovementInfo.position, Util::getMSTime(), _player->getSpeedRate(_player->getFastestSpeedType(), true));
-
-                if (_player->SDetector->IsCheatDetected())
-                    _player->SDetector->ReportCheater(_player);
-            }
-        }
     }
 
-    if (_player->getEmoteState())
-        _player->setEmoteState(EMOTE_ONESHOT_NONE);
-
-    // TODO Verify that timestamp can be replaced with AscEmu funcs
-    const auto ms_time = Util::getMSTime();
-    if (m_clientTimeDelay == 0)
-        m_clientTimeDelay = ms_time - sessionMovementInfo.update_time;
-
-    MovementPacket packet(opcode, 0);
-    packet.guid = mover->getGuid();
-    packet.info = sessionMovementInfo;
-
-    if (_player->getInRangePlayersCount())
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// hack detected?
+    if (isHackDetectedInMovementData(opcode))
     {
-        const auto move_time = packet.info.update_time - (ms_time - m_clientTimeDelay) + 500 + ms_time;
-        for (const auto& obj : mover->getInRangePlayersSet())
-        {
-            ARCEMU_ASSERT(obj->isPlayer());
-            packet.info.update_time = move_time + obj->asPlayer()->GetSession()->m_moveDelayTime;
-            obj->asPlayer()->SendPacket(packet.serialise().get());
-        }
+        return;
     }
 
-    // Remove flying aura if needed
-    // TODO: This seems like a daft check, verify it
-    if (!sessionMovementInfo.hasMovementFlag(MOVEFLAG_TRANSPORT) && opcode != MSG_MOVE_JUMP && !_player->m_cheats.hasFlyCheat && !_player->flying_aura)
-        if (!sessionMovementInfo.hasMovementFlag(MOVEFLAG_SWIMMING) && !sessionMovementInfo.hasMovementFlag(MOVEFLAG_FALLING))
-            if (sessionMovementInfo.position.z > _player->GetPositionZ() && sessionMovementInfo.position.x == _player->GetPositionX() && sessionMovementInfo.position.y == _player->GetPositionY())
-                SendPacket(SmsgMoveUnsetCanFly(_player->getGuid()).serialise().get());
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// Lets update our internal save vars
+    updatePlayerMovementVars(opcode);
 
-    if (sessionMovementInfo.hasMovementFlag(MOVEFLAG_FLYING) && !sessionMovementInfo.hasMovementFlag(MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->m_cheats.hasFlyCheat))
-        SendPacket(SmsgMoveUnsetCanFly(_player->getGuid()).serialise().get());
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// Remove emote state if available
+    if (mover->getEmoteState())
+        mover->setEmoteState(EMOTE_ONESHOT_NONE);
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// Falling damage
+
+    // Zyres: Spell realted "blinking"
     if (_player->blinked)
     {
         _player->blinked = false;
@@ -301,421 +257,27 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     }
     else
     {
-        if (opcode != MSG_MOVE_FALL_LAND)
-        {
-            // Update Z while player is falling to calculate fall damage
-            if (!sessionMovementInfo.hasMovementFlag(MOVEFLAG_FALLING))
-            {
-                mover->z_axisposition = sessionMovementInfo.position.z;
-            }
-            else
-            {
-                // Can't fall upwards - no fall dmg exploit
-                // TODO Verify infrastructure for this check
-                /*if (sessionMovementInfo.position.z > mover->z_axisposition)
-                {
-                    Disconnect();
-                    return;
-                }*/
-
-            }
-        }
-        else
-        {
-            if (!mover->z_axisposition)
-                mover->z_axisposition = sessionMovementInfo.position.z;
-
-            auto fall_distance = float2int32(mover->z_axisposition - sessionMovementInfo.position.z);
-            // If player ended up going up, negate
-            // TODO Anticheat checks
-            if (mover->z_axisposition <= sessionMovementInfo.position.z)
-                fall_distance = 1;
-
-            if (fall_distance > mover->m_safeFall)
-                fall_distance-=  mover->m_safeFall;
-            else
-                fall_distance = 1;
-
-            if (mover->isAlive() && !mover->bInvincible && fall_distance > 12 && !mover->m_noFallDamage && (mover->
-                getGuid() != _player->getGuid() || !_player->m_cheats.hasGodModeCheat && UNIXTIME >= _player->m_fallDisabledUntil))
-            {
-                auto health_lost = static_cast<uint32_t>(mover->getHealth() * (fall_distance - 12) * 0.017f);
-                if (health_lost >= mover->getHealth())
-                {
-                    health_lost = mover->getHealth();
-                }
-#ifdef FT_ACHIEVEMENTS
-                else if (fall_distance >= 65 && mover->getGuid() == _player->getGuid())
-                {
-                    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, fall_distance, Player::GetDrunkenstateByValue(_player->GetDrunkValue()), 0);
-                }
-#endif
-                mover->sendEnvironmentalDamageLogPacket(mover->getGuid(), DAMAGE_FALL, health_lost);
-                mover->addSimpleEnvironmentalDamageBatchEvent(DAMAGE_FALL, health_lost);
-            }
-
-            mover->z_axisposition = 0.f;
-        }
-    }
-
-    // End
-
-    if (mover->obj_movement_info.transport_guid != 0 && sessionMovementInfo.transport_guid == 0)
-    {
-        // Leaving transport we were on
-        if (auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid)))
-            transporter->RemovePassenger(static_cast<Player*>(mover));
-
-        mover->obj_movement_info.transport_guid = 0;
-        _player->SpeedCheatReset();
-    }
-    else
-    {
-        if (sessionMovementInfo.transport_guid != 0)
-        {
-
-            if (mover->obj_movement_info.transport_guid == 0)
-            {
-                Transporter *transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(sessionMovementInfo.transport_guid));
-                if (transporter != NULL)
-                    transporter->AddPassenger(static_cast<Player*>(mover));
-
-                /* set variables */
-                mover->obj_movement_info.transport_guid= sessionMovementInfo.transport_guid;
-                mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
-                mover->obj_movement_info.transport_position.x = sessionMovementInfo.transport_position.x;
-                mover->obj_movement_info.transport_position.y = sessionMovementInfo.transport_position.y;
-                mover->obj_movement_info.transport_position.z = sessionMovementInfo.transport_position.z;
-                mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
-
-                mover->m_transportData.transportGuid = sessionMovementInfo.transport_guid;
-                mover->m_transportData.relativePosition.x = sessionMovementInfo.transport_position.x;
-                mover->m_transportData.relativePosition.y = sessionMovementInfo.transport_position.y;
-                mover->m_transportData.relativePosition.z = sessionMovementInfo.transport_position.z;
-                mover->m_transportData.relativePosition.o = sessionMovementInfo.transport_position.o;
-            }
-            else
-            {
-                /* no changes */
-                mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
-                mover->obj_movement_info.transport_position.x = sessionMovementInfo.transport_position.x;
-                mover->obj_movement_info.transport_position.y = sessionMovementInfo.transport_position.y;
-                mover->obj_movement_info.transport_position.z = sessionMovementInfo.transport_position.z;
-                mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
-
-                mover->m_transportData.relativePosition.x = sessionMovementInfo.transport_position.x;
-                mover->m_transportData.relativePosition.y = sessionMovementInfo.transport_position.y;
-                mover->m_transportData.relativePosition.z = sessionMovementInfo.transport_position.z;
-                mover->m_transportData.relativePosition.o = sessionMovementInfo.transport_position.o;
-            }
-        }
-    }
-
-    /************************************************************************/
-    /* Breathing System                                                     */
-    /************************************************************************/
-    _player->handleBreathing(sessionMovementInfo, this);
-
-    /************************************************************************/
-    /* Remove Spells                                                        */
-    /************************************************************************/
-    uint32 flags = 0;
-    if ((sessionMovementInfo.flags & MOVEFLAG_MOTION_MASK) != 0)
-        flags |= AURA_INTERRUPT_ON_MOVEMENT;
-
-    if (!(sessionMovementInfo.flags & MOVEFLAG_SWIMMING || sessionMovementInfo.flags & MOVEFLAG_FALLING))
-        flags |= AURA_INTERRUPT_ON_LEAVE_WATER;
-    if (sessionMovementInfo.flags & MOVEFLAG_SWIMMING)
-        flags |= AURA_INTERRUPT_ON_ENTER_WATER;
-    if ((sessionMovementInfo.flags & MOVEFLAG_TURNING_MASK) || _player->m_isTurning)
-        flags |= AURA_INTERRUPT_ON_TURNING;
-    if (sessionMovementInfo.flags & MOVEFLAG_FALLING)
-        flags |= AURA_INTERRUPT_ON_JUMP;
-
-    _player->RemoveAurasByInterruptFlag(flags);
-
-    /************************************************************************/
-    /* Update our position in the server.                                   */
-    /************************************************************************/
-
-    // Player is the active mover
-    if (m_MoverWoWGuid.getRawGuid() == _player->getGuid())
-    {
-        if (!_player->GetTransport())
-        {
-            if (!_player->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o))
-            {
-                //extra check to set HP to 0 only if the player is dead (KillPlayer() has already this check)
-                if (_player->isAlive())
-                {
-                    _player->setHealth(0);
-                    _player->KillPlayer();
-                }
-
-                MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(_player->GetMapId());
-                if (pMapinfo != nullptr)
-                {
-                    if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
-                    {
-                        _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
-                    }
-                    else
-                    {
-                        _player->RepopAtGraveyard(pMapinfo->repopx, pMapinfo->repopy, pMapinfo->repopz, pMapinfo->repopmapid);
-                    }
-                }
-                else
-                {
-                    _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
-                }//Teleport player to graveyard. Stops players from QQing..
-            }
-        }
-    }
-    else
-    {
-        if (!mover->isRooted())
-            mover->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o);
-    }
-#endif
-
-#if VERSION_STRING == WotLK
-
-    // spell cancel on movement, for now only fishing is added
-    Object* t_go = _player->m_SummonedObject;
-    if (t_go != nullptr)
-    {
-        if (t_go->isGameObject())
-        {
-            GameObject* go = static_cast<GameObject*>(t_go);
-            if (go->getGoType() == GAMEOBJECT_TYPE_FISHINGNODE)
-            {
-                GameObject_FishingNode* go_fishing_node = static_cast<GameObject_FishingNode*>(go);
-                go_fishing_node->EndFishing(true);
-
-                auto spell = _player->getCurrentSpell(CURRENT_CHANNELED_SPELL);
-                if (spell != nullptr)
-                {
-                    spell->sendChannelUpdate(0);
-                    spell->finish(false);
-                }
-            }
-        }
-    }
-
-    /************************************************************************/
-    /* Clear standing state to stand.                                       */
-    /************************************************************************/
-    if (_player->getStandState() != STANDSTATE_STAND && opcode == MSG_MOVE_START_FORWARD)
-        _player->setStandState(STANDSTATE_STAND);
-
-    /************************************************************************/
-    /* Make sure the packet is the correct size range.                      */
-    /************************************************************************/
-    //if (recvData.size() > 80) { Disconnect(); return; }
-
-    /************************************************************************/
-    /* Read Movement Data Packet                                            */
-    /************************************************************************/
-    /*AscEmu::Packets::MovementPacket packet(opcode, 0);
-    packet.guid = mover->getGuid();
-    packet.info = sessionMovementInfo;*/
-
-    AscEmu::Packets::MovementPacket packet;
-    if (!packet.deserialise(recvData))
-        return;
-
-    sessionMovementInfo = packet.info;
-
-    if (packet.guid != mover->getGuid())
-        return;
-
-    /*WoWGuid guid;
-    recvData >> guid;
-    sessionMovementInfo.init(recvData);
-
-    if (guid != mover->getGuid())
-        return;*/
-
-        /* Anti Multi-Jump Check */
-    if (opcode == MSG_MOVE_JUMP && _player->m_isJumping == true && !GetPermissionCount())
-    {
-        sCheatLog.writefromsession(this, "Detected jump hacking");
-        Disconnect();
-        return;
-    }
-    if (opcode == MSG_MOVE_FALL_LAND || sessionMovementInfo.flags & MOVEFLAG_SWIMMING)
-        _player->m_isJumping = false;
-    if (!_player->m_isJumping && (opcode == MSG_MOVE_JUMP || sessionMovementInfo.flags & MOVEFLAG_FALLING))
-        _player->m_isJumping = true;
-
-    /************************************************************************/
-    /* Update player movement state                                         */
-    /************************************************************************/
-    updatePlayerMovementVars(opcode);
-
-    if (!(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm) && !_player->getCharmGuid())
-    {
-        /************************************************************************/
-        /* Anti-Teleport                                                        */
-        /************************************************************************/
-        if (worldConfig.antiHack.isTeleportHackCheckEnabled && _player->m_position.Distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y }) > 3025.0f
-            && _player->getSpeedRate(TYPE_RUN, true) < 50.0f && !_player->obj_movement_info.transport_guid)
-        {
-            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedRate(TYPE_RUN, true), std::sqrt(_player->m_position.Distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y })));
-            Disconnect();
-            return;
-        }
-    }
-
-    //update the detector
-    if (worldConfig.antiHack.isSpeedHackCkeckEnabled && !_player->isOnTaxi() && _player->obj_movement_info.transport_guid == 0 && !_player->GetSession()->GetPermissionCount())
-    {
-        // simplified: just take the fastest speed. less chance of fuckups too
-        float speed = (_player->flying_aura) ? _player->getSpeedRate(TYPE_FLY, true) : (_player->getSpeedRate(TYPE_SWIM, true) > _player->getSpeedRate(TYPE_RUN, true)) ? _player->getSpeedRate(TYPE_SWIM, true) : _player->getSpeedRate(TYPE_RUN, true);
-
-        _player->SDetector->AddSample(sessionMovementInfo.position.x, sessionMovementInfo.position.y, Util::getMSTime(), speed);
-
-        if (_player->SDetector->IsCheatDetected())
-            _player->SDetector->ReportCheater(_player);
-    }
-
-    /************************************************************************/
-    /* Remove Emote State                                                   */
-    /************************************************************************/
-    if (_player->getEmoteState())
-        _player->setEmoteState(EMOTE_ONESHOT_NONE);
-
-    /************************************************************************/
-    /* Make sure the co-ordinates are valid.                                */
-    /************************************************************************/
-    if (!((sessionMovementInfo.position.y >= _minY) && (sessionMovementInfo.position.y <= _maxY)) || !((sessionMovementInfo.position.x >= _minX) && (sessionMovementInfo.position.x <= _maxX)))
-    {
-        Disconnect();
-        return;
-    }
-
-    /************************************************************************/
-    /* Calculate the timestamp of the packet we have to send out            */
-    /************************************************************************/
-    size_t pos = (size_t)m_MoverWoWGuid.GetNewGuidLen() + 1;
-    uint32 mstime = mTimeStamp();
-    int32 move_time;
-    if (m_clientTimeDelay == 0)
-        m_clientTimeDelay = mstime - sessionMovementInfo.update_time;
-
-    /************************************************************************/
-    /* Copy into the output buffer.                                         */
-    /************************************************************************/
-    if (_player->getInRangePlayersCount())
-    {
-        move_time = (sessionMovementInfo.update_time - (mstime - m_clientTimeDelay)) + MOVEMENT_PACKET_TIME_DELAY + mstime;
-        memcpy(&movement_packet[0], recvData.contents(), recvData.size());
-        movement_packet[pos + 6] = 0;
-
-        /************************************************************************/
-        /* Distribute to all inrange players.                                   */
-        /************************************************************************/
-        for (const auto& itr : mover->getInRangePlayersSet())
-        {
-            Player* p = static_cast<Player*>(itr);
-
-            *(uint32*)&movement_packet[pos + 6] = uint32(move_time + p->GetSession()->m_moveDelayTime);
-
-            p->GetSession()->OutPacket(opcode, uint16(recvData.size() + pos), movement_packet);
-        }
-    }
-
-    /************************************************************************/
-    /* Hack Detection by Classic                                            */
-    /************************************************************************/
-    if (!sessionMovementInfo.transport_guid && opcode != MSG_MOVE_JUMP && !_player->m_cheats.hasFlyCheat && !_player->flying_aura && !(sessionMovementInfo.flags & MOVEFLAG_SWIMMING || sessionMovementInfo.flags & MOVEFLAG_FALLING) && sessionMovementInfo.position.z > _player->GetPositionZ() && sessionMovementInfo.position.x == _player->GetPositionX() && sessionMovementInfo.position.y == _player->GetPositionY())
-    {
-        WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
-        data << _player->GetNewGUID();
-        data << uint32(5);      // unknown 0
-        SendPacket(&data);
-    }
-
-    if ((sessionMovementInfo.flags & MOVEFLAG_FLYING) && !(sessionMovementInfo.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->m_cheats.hasFlyCheat))
-    {
-        WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
-        data << _player->GetNewGUID();
-        data << uint32(5);      // unknown 0
-        SendPacket(&data);
-    }
-
-    /************************************************************************/
-    /* Falling damage checks                                                */
-    /************************************************************************/
-
-    if (_player->blinked)
-    {
-        _player->blinked = false;
-        _player->m_fallDisabledUntil = UNIXTIME + 5;
-        _player->SpeedCheatDelay(2000);   //some say they managed to trigger system with knockback. Maybe they moved in air ?
-    }
-    else
-    {
         if (opcode == MSG_MOVE_FALL_LAND)
         {
-            // player has finished falling
-            //if z_axisposition contains no data then set to current position
-            if (!mover->z_axisposition)
-                mover->z_axisposition = sessionMovementInfo.position.z;
-
-            // calculate distance fallen
-            uint32 falldistance = float2int32(mover->z_axisposition - sessionMovementInfo.position.z);
-            if (mover->z_axisposition <= sessionMovementInfo.position.z)
-                falldistance = 1;
-            /*Safe Fall*/
-            if ((int)falldistance > mover->m_safeFall)
-                falldistance -= mover->m_safeFall;
-            else
-                falldistance = 1;
-
-            //checks that player has fallen more than 12 units, otherwise no damage will be dealt
-            //falltime check is also needed here, otherwise sudden changes in Z axis position, such as using !recall, may result in death
-            if (mover->isAlive() && !mover->bInvincible && (falldistance > 12) && !mover->m_noFallDamage &&
-                ((mover->getGuid() != _player->getGuid()) || (!_player->m_cheats.hasGodModeCheat && (UNIXTIME >= _player->m_fallDisabledUntil))))
-            {
-                // 1.7% damage for each unit fallen on Z axis over 13
-                uint32 health_loss = static_cast<uint32>(mover->getHealth() * (falldistance - 12) * 0.017f);
-
-                if (health_loss >= mover->getHealth())
-                    health_loss = mover->getHealth();
-#if VERSION_STRING > TBC
-                else if ((falldistance >= 65) && (mover->getGuid() == _player->getGuid()))
-                {
-                    // Rather than Updating achievement progress every time fall damage is taken, all criteria currently have 65 yard requirement...
-                    // Achievement 964: Fall 65 yards without dying.
-                    // Achievement 1260: Fall 65 yards without dying while completely smashed during the Brewfest Holiday.
-                    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, falldistance, Player::GetDrunkenstateByValue(_player->GetDrunkValue()), 0);
-                }
-#endif
-
-                mover->sendEnvironmentalDamageLogPacket(mover->getGuid(), DAMAGE_FALL, health_loss);
-                mover->addSimpleEnvironmentalDamageBatchEvent(DAMAGE_FALL, health_loss);
-
-                //_player->RemoveStealth(); // cebernic : why again? lost stealth by AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN already.
-            }
-            mover->z_axisposition = 0.0f;
+            mover->handleFall(sessionMovementInfo);
         }
         else
-            //whilst player is not falling, continuously update Z axis position.
-            //once player lands this will be used to determine how far he fell.
+        {
+            // whilst player is not falling, continuously update Z axis position.
+            // once player lands, this will be used to determine how far he fell.
             if (!(sessionMovementInfo.flags & MOVEFLAG_FALLING))
                 mover->z_axisposition = sessionMovementInfo.position.z;
+        }
     }
 
-    /************************************************************************/
-    /* Transporter Setup                                                    */
-    /************************************************************************/
-    if ((mover->obj_movement_info.transport_guid != 0) && (sessionMovementInfo.transport_guid == 0))
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// Transport position
+    if (mover->obj_movement_info.transport_guid != 0 && sessionMovementInfo.transport_guid == 0)
     {
         /* we left the transporter we were on */
         LOG_DEBUG("Left Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
 
-        Transporter *transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
+        Transporter* transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
         if (transporter != NULL)
             transporter->RemovePassenger(static_cast<Player*>(mover));
 
@@ -732,7 +294,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
             {
                 LOG_DEBUG("Entered Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(sessionMovementInfo.transport_guid));
 
-                Transporter *transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(sessionMovementInfo.transport_guid));
+                Transporter* transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(sessionMovementInfo.transport_guid));
                 if (transporter != NULL)
                     transporter->AddPassenger(static_cast<Player*>(mover));
 
@@ -767,49 +329,31 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         }
     }
 
-    /************************************************************************/
-    /* Breathing System                                                     */
-    /************************************************************************/
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// Breathing & Underwaterstate
     _player->handleBreathing(sessionMovementInfo, this);
 
-    /************************************************************************/
-    /* Remove Spells                                                        */
-    /************************************************************************/
-    uint32 flags = 0;
-    if ((sessionMovementInfo.flags & MOVEFLAG_MOTION_MASK) != 0)
-        flags |= AURA_INTERRUPT_ON_MOVEMENT;
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// Aura Interruption
+    _player->handleAuraInterruptForMovementFlags(sessionMovementInfo);
 
-    if (!(sessionMovementInfo.flags & MOVEFLAG_SWIMMING || sessionMovementInfo.flags & MOVEFLAG_FALLING))
-        flags |= AURA_INTERRUPT_ON_LEAVE_WATER;
-    if (sessionMovementInfo.flags & MOVEFLAG_SWIMMING)
-        flags |= AURA_INTERRUPT_ON_ENTER_WATER;
-    if ((sessionMovementInfo.flags & MOVEFLAG_TURNING_MASK) || _player->m_isTurning)
-        flags |= AURA_INTERRUPT_ON_TURNING;
-    if (sessionMovementInfo.flags & MOVEFLAG_FALLING)
-        flags |= AURA_INTERRUPT_ON_JUMP;
-
-    _player->RemoveAurasByInterruptFlag(flags);
-
-    /************************************************************************/
-    /* Update our position in the server.                                   */
-    /************************************************************************/
-
-    // Player is the active mover
-    if (m_MoverWoWGuid.getRawGuid() == _player->getGuid())
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// Update our Server position
+#if VERSION_STRING <= WotLK    
+    if (m_MoverWoWGuid.getRawGuid() == mover->getGuid())
     {
-
-        if (!_player->GetTransport())
+        if (!mover->GetTransport())
         {
-            if (!_player->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o))
+            if (!mover->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o))
             {
                 //extra check to set HP to 0 only if the player is dead (KillPlayer() has already this check)
-                if (_player->isAlive())
+                if (mover->isAlive())
                 {
-                    _player->setHealth(0);
+                    mover->setHealth(0);
                     _player->KillPlayer();
                 }
 
-                MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(_player->GetMapId());
+                MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(mover->GetMapId());
                 if (pMapinfo != nullptr)
                 {
                     if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
@@ -824,7 +368,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
                 else
                 {
                     _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
-                }//Teleport player to graveyard. Stops players from QQing..
+                }
             }
         }
     }
@@ -833,340 +377,36 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         if (!mover->isRooted())
             mover->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o);
     }
+#else
+    mover->SetPosition(sessionMovementInfo.getPosition()->x, sessionMovementInfo.getPosition()->y, sessionMovementInfo.getPosition()->z, sessionMovementInfo.getPosition()->o);
+    mover->movement_info = sessionMovementInfo;
 #endif
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// send our move to all inrange players
+    
 #if VERSION_STRING >= Cata
 
-    if (m_MoverGuid != mover->getGuid())
-        return;
-
-    /************************************************************************/
-    /* Clear standing state to stand.                                       */
-    /************************************************************************/
-    if (mover->getStandState() != STANDSTATE_STAND && opcode == MSG_MOVE_START_FORWARD)
-        mover->setStandState(STANDSTATE_STAND);
-
-    //extract packet
-    MovementInfo movementInfo;
-    recvData >> movementInfo;
-
-    //    /************************************************************************/
-    //    /* Make sure the packet is the correct size range.                      */
-    //    /************************************************************************/
-    //    //if (recvData.size() > 80) { Disconnect(); return; }
-    //
-    //    /************************************************************************/
-    //    /* Read Movement Data Packet                                            */
-    //    /************************************************************************/
-    //    WoWGuid guid;
-    //    recvData >> guid;
-    //    sessionMovementInfo.init(recvData);
-    //
-    //    if (guid != m_MoverWoWGuid.GetOldGuid())
-    //    {
-    //        return;
-    //    }
-    //
-    //    // Player is in control of some entity, so we move that instead of the player
-    //    Unit* mover = _player->GetMapMgr()->GetUnit(m_MoverWoWGuid.GetOldGuid());
-    //    if (mover == NULL)
-    //        return;
-    //
-    //    /* Anti Multi-Jump Check */
-    //    if (opcode == MSG_MOVE_JUMP && _player->m_isJumping == true && !GetPermissionCount())
-    //    {
-    //        sCheatLog.writefromsession(this, "Detected jump hacking");
-    //        Disconnect();
-    //        return;
-    //    }
-    //
-
-        /************************************************************************/
-        /* Update player movement state                                         */
-        /************************************************************************/
-        updatePlayerMovementVars(opcode);
-
-    //
-    //
-    //    if (!(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->GetCharmedUnitGUID())
-    //    {
-    //        /************************************************************************/
-    //        /* Anti-Teleport                                                        */
-    //        /************************************************************************/
-    //        if (sWorld.antihack_teleport && _player->m_position.Distance2DSq(sessionMovementInfo.position.x, sessionMovementInfo.position.y) > 3025.0f
-    //            && _player->getSpeedForType(TYPE_RUN) < 50.0f && !_player->obj_movement_info.transporter_info.guid)
-    //        {
-    //            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->getSpeedForType(TYPE_RUN), std::sqrt(_player->m_position.Distance2DSq(movement_info.position.x, movement_info.position.y)));
-    //            Disconnect();
-    //            return;
-    //        }
-    //    }
-    //
-    //    //update the detector
-    //    if (sWorld.antihack_speed && !_player->GetTaxiState() && _player->obj_movement_info.transporter_info.guid == 0 && !_player->GetSession()->GetPermissionCount())
-    //    {
-    //        // simplified: just take the fastest speed. less chance of fuckups too
-    //        float speed = (_player->flying_aura) ? _player->getSpeedForType(TYPE_FLY) : (_player->getSpeedForType(TYPE_SWIM) > _player->getSpeedForType(TYPE_RUN)) ? _player->getSpeedForType(TYPE_SWIM) : _player->getSpeedForType(TYPE_RUN);
-    //
-    //        _player->SDetector->AddSample(sessionMovementInfo.position.x, sessionMovementInfo.position.y, Util::getMSTime(), speed);
-    //
-    //        if (_player->SDetector->IsCheatDetected())
-    //            _player->SDetector->ReportCheater(_player);
-    //    }
-
-        /************************************************************************/
-        /* Remove Emote State                                                   */
-        /************************************************************************/
-    if (_player->getEmoteState())
-        _player->setEmoteState(EMOTE_ONESHOT_NONE);
-
-    //    /************************************************************************/
-    //    /* Make sure the co-ordinates are valid.                                */
-    //    /************************************************************************/
-    //    if (!((sessionMovementInfo.position.y >= _minY) && (sessionMovementInfo.position.y <= _maxY)) || !((sessionMovementInfo.position.x >= _minX) && (sessionMovementInfo.position.x <= _maxX)))
-    //    {
-    //        Disconnect();
-    //        return;
-    //    }
-
-
-        ///************************************************************************/
-        ///* Calculate the timestamp of the packet we have to send out            */
-        ///************************************************************************/
-        //size_t pos = (size_t)m_MoverWoWGuid.GetNewGuidLen() + 1;
-        //uint32 mstime = Util::getMSTime();
-        //int32 move_time;
-        //if (m_clientTimeDelay == 0)
-        //    m_clientTimeDelay = mstime - sessionMovementInfo.time;
-
-        ///************************************************************************/
-        ///* Copy into the output buffer.                                         */
-        ///************************************************************************/
-        //if (_player->m_inRangePlayers.size())
-        //{
-        //    move_time = (sessionMovementInfo.time - (mstime - m_clientTimeDelay)) + MOVEMENT_PACKET_TIME_DELAY + mstime;
-        //    memcpy(&movement_packet[0], recvData.contents(), recvData.size());
-        //    movement_packet[pos + 6] = 0;
-
-        //    /************************************************************************/
-        //    /* Distribute to all inrange players.                                   */
-        //    /************************************************************************/
-        //    for (std::set<Object*>::iterator itr = _player->m_inRangePlayers.begin(); itr != _player->m_inRangePlayers.end(); ++itr)
-        //    {
-
-        //        Player* p = static_cast< Player* >((*itr));
-
-        //        *(uint32*)&movement_packet[pos + 6] = uint32(move_time + p->GetSession()->m_moveDelayTime);
-
-        //        p->GetSession()->OutPacket(opcode, uint16(recvData.size() + pos), movement_packet);
-
-        //    }
-        //}
-
-        ///************************************************************************/
-        ///* Hack Detection by Classic                                            */
-        ///************************************************************************/
-        //if (!sessionMovementInfo.transporter_info.guid && opcode != MSG_MOVE_JUMP && !_player->hasFlyCheat && !_player->flying_aura && !(sessionMovementInfo.flags & MOVEFLAG_SWIMMING || sessionMovementInfo.flags & MOVEFLAG_FALLING) && sessionMovementInfo.position.z > _player->GetPositionZ() && sessionMovementInfo.position.x == _player->GetPositionX() && sessionMovementInfo.position.y == _player->GetPositionY())
-        //{
-        //    WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
-        //    data << _player->GetNewGUID();
-        //    data << uint32(5);      // unknown 0
-        //    SendPacket(&data);
-        //}
-
-        //if ((sessionMovementInfo.flags & MOVEFLAG_FLYING) && !(sessionMovementInfo.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->hasFlyCheat))
-        //{
-        //    WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
-        //    data << _player->GetNewGUID();
-        //    data << uint32(5);      // unknown 0
-        //    SendPacket(&data);
-        //}
-
-        ///************************************************************************/
-        ///* Falling damage checks                                                */
-        ///************************************************************************/
-
-        //if (_player->blinked)
-        //{
-        //    _player->blinked = false;
-        //    _player->m_fallDisabledUntil = UNIXTIME + 5;
-        //    _player->SpeedCheatDelay(2000);   //some say they managed to trigger system with knockback. Maybe they moved in air ?
-        //}
-        //else
-        //{
-        //    if (opcode == MSG_MOVE_FALL_LAND)
-        //    {
-        //        // player has finished falling
-        //        //if z_axisposition contains no data then set to current position
-        //        if (!mover->z_axisposition)
-        //            mover->z_axisposition = sessionMovementInfo.position.z;
-
-        //        // calculate distance fallen
-        //        uint32 falldistance = float2int32(mover->z_axisposition - sessionMovementInfo.position.z);
-        //        if (mover->z_axisposition <= sessionMovementInfo.position.z)
-        //            falldistance = 1;
-        //        /*Safe Fall*/
-        //        if ((int)falldistance > mover->m_safeFall)
-        //            falldistance -= mover->m_safeFall;
-        //        else
-        //            falldistance = 1;
-
-        //        //checks that player has fallen more than 12 units, otherwise no damage will be dealt
-        //        //falltime check is also needed here, otherwise sudden changes in Z axis position, such as using !recall, may result in death
-        //        if (mover->isAlive() && !mover->bInvincible && (falldistance > 12) && !mover->m_noFallDamage &&
-        //            ((mover->GetGUID() != _player->GetGUID()) || (!_player->hasGodModeCheat && (UNIXTIME >= _player->m_fallDisabledUntil))))
-        //        {
-        //            // 1.7% damage for each unit fallen on Z axis over 13
-        //            uint32 health_loss = static_cast<uint32>(mover->GetHealth() * (falldistance - 12) * 0.017f);
-
-        //            if (health_loss >= mover->GetHealth())
-        //                health_loss = mover->GetHealth();
-
-        //            else if ((falldistance >= 65) && (mover->GetGUID() == _player->GetGUID()))
-        //            {
-        //                // Rather than Updating achievement progress every time fall damage is taken, all criteria currently have 65 yard requirement...
-        //                // Achievement 964: Fall 65 yards without dying.
-        //                // Achievement 1260: Fall 65 yards without dying while completely smashed during the Brewfest Holiday.
-        //                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, falldistance, Player::GetDrunkenstateByValue(_player->GetDrunkValue()), 0);
-        //            }
-
-        //            mover->sendEnvironmentalDamageLogPacket(mover->GetGUID(), DAMAGE_FALL, health_loss);
-        //            mover->DealDamage(mover, health_loss, 0, 0, 0);
-
-        //            //_player->RemoveStealth(); // cebernic : why again? lost stealth by AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN already.
-        //        }
-        //        mover->z_axisposition = 0.0f;
-        //    }
-        //    else
-        //        //whilst player is not falling, continuously update Z axis position.
-        //        //once player lands this will be used to determine how far he fell.
-        //        if (!(sessionMovementInfo.flags & MOVEFLAG_FALLING))
-        //            mover->z_axisposition = sessionMovementInfo.position.z;
-        //}
-
-        ///************************************************************************/
-        ///* Transporter Setup                                                    */
-        ///************************************************************************/
-        //if ((mover->obj_movement_info.transporter_info.guid != 0) && (sessionMovementInfo.transporter_info.transGuid.GetOldGuid() == 0))
-        //{
-        //    /* we left the transporter we were on */
-
-        //    Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transporter_info.guid));
-        //    if (transporter != NULL)
-        //        transporter->RemovePassenger(static_cast<Player*>(mover));
-
-        //    mover->obj_movement_info.transporter_info.guid = 0;
-        //    _player->SpeedCheatReset();
-
-        //}
-        //else
-        //{
-        //    if (sessionMovementInfo.transporter_info.transGuid.GetOldGuid() != 0)
-        //    {
-
-        //        if (mover->obj_movement_info.transporter_info.guid == 0)
-        //        {
-        //            Transporter *transporter = sObjectMgr.GetTransporter(WoWGuid::getGuidLowPartFromUInt64(sessionMovementInfo.transporter_info.transGuid));
-        //            if (transporter != NULL)
-        //                transporter->AddPassenger(static_cast<Player*>(mover));
-
-        //            /* set variables */
-        //            mover->obj_movement_info.transporter_info.guid = sessionMovementInfo.transporter_info.transGuid;
-        //            mover->obj_movement_info.transporter_info.time = sessionMovementInfo.transporter_info.time;
-        //            mover->obj_movement_info.transporter_info.position.x = sessionMovementInfo.transporter_info.position.x;
-        //            mover->obj_movement_info.transporter_info.position.y = sessionMovementInfo.transporter_info.position.y;
-        //            mover->obj_movement_info.transporter_info.position.z = sessionMovementInfo.transporter_info.position.z;
-        //            mover->obj_movement_info.transporter_info.position.o = sessionMovementInfo.transporter_info.position.o;
-
-        //            mover->m_transportData.transportGuid = sessionMovementInfo.transporter_info.transGuid;
-        //            mover->m_transportData.relativePosition.x = sessionMovementInfo.transporter_info.position.x;
-        //            mover->m_transportData.relativePosition.y = sessionMovementInfo.transporter_info.position.y;
-        //            mover->m_transportData.relativePosition.z = sessionMovementInfo.transporter_info.position.z;
-        //            mover->m_transportData.relativePosition.o = sessionMovementInfo.transporter_info.position.o;
-        //        }
-        //        else
-        //        {
-        //            /* no changes */
-        //            mover->obj_movement_info.transporter_info.time = sessionMovementInfo.transporter_info.time;
-        //            mover->obj_movement_info.transporter_info.position.x = sessionMovementInfo.transporter_info.position.x;
-        //            mover->obj_movement_info.transporter_info.position.y = sessionMovementInfo.transporter_info.position.y;
-        //            mover->obj_movement_info.transporter_info.position.z = sessionMovementInfo.transporter_info.position.z;
-        //            mover->obj_movement_info.transporter_info.position.o = sessionMovementInfo.transporter_info.position.o;
-
-        //            mover->m_transportData.relativePosition.x = sessionMovementInfo.transporter_info.position.x;
-        //            mover->m_transportData.relativePosition.y = sessionMovementInfo.transporter_info.position.y;
-        //            mover->m_transportData.relativePosition.z = sessionMovementInfo.transporter_info.position.z;
-        //            mover->m_transportData.relativePosition.o = sessionMovementInfo.transporter_info.position.o;
-        //        }
-        //    }
-        //}
-
-        /************************************************************************/
-        /* Breathing System                                                     */
-        /************************************************************************/
-    _player->handleBreathing(movementInfo, this);
-
-    /************************************************************************/
-    /* Remove Auras                                                         */
-    /************************************************************************/
-    _player->handleAuraInterruptForMovementFlags(movementInfo);
-
-    ///************************************************************************/
-    ///* Update our position in the server.                                   */
-    ///************************************************************************/
-
-    //// Player is the active mover
-    //if (m_MoverWoWGuid.GetOldGuid() == _player->GetGUID())
-    //{
-
-    //    if (!_player->GetTransport())
-    //    {
-    //        if (!_player->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o))
-    //        {
-    //            //extra check to set HP to 0 only if the player is dead (KillPlayer() has already this check)
-    //            if (_player->isAlive())
-    //            {
-    //                _player->SetHealth(0);
-    //                _player->KillPlayer();
-    //            }
-
-    //            MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(_player->GetMapId());
-    //            if (pMapinfo != nullptr)
-    //            {
-    //                if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
-    //                {
-    //                    _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
-    //                }
-    //                else
-    //                {
-    //                    _player->RepopAtGraveyard(pMapinfo->repopx, pMapinfo->repopy, pMapinfo->repopz, pMapinfo->repopmapid);
-    //                }
-    //            }
-    //            else
-    //            {
-    //                _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
-    //            }//Teleport player to graveyard. Stops players from QQing..
-    //        }
-    //    }
-    //}
-    //else
-    //{
-    //    if (!mover->isRooted())
-    //        mover->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o);
-    //}
-
-    /************************************************************************/
-    /* Update our Position                                                  */
-    /************************************************************************/
-    mover->SetPosition(movementInfo.getPosition()->x, movementInfo.getPosition()->y, movementInfo.getPosition()->z, movementInfo.getPosition()->o);
-    mover->movement_info = movementInfo;
-
-    if (opcode == MSG_MOVE_FALL_LAND && mover /*&& !mover->IsTaxiFlying()*/)
-        mover->handleFall(movementInfo);
-
     WorldPacket data(SMSG_PLAYER_MOVE, recvData.size());
-    data << movementInfo;
+    data << sessionMovementInfo;
     mover->SendMessageToSet(&data, false);
+
+#elif VERSION_STRING == WotLK
+
+    WorldPacket data(opcode, recvData.size());
+    data << sessionMovementInfo;
+    mover->SendMessageToSet(&data, false);
+
+#else
+
+    // Zyres NOTE: versions older than WotLK do not send us the guid within the movement packet (needed for the packet send to other players)
+    // but we should already received the active mover
+    sessionMovementInfo.guid = m_MoverWoWGuid;
+
+    WorldPacket data(opcode, recvData.size());
+    data << sessionMovementInfo;
+    mover->SendMessageToSet(&data, false);
+
 #endif
 }
 
@@ -1290,7 +530,4 @@ void WorldSession::handleMoveNotActiveMoverOpcode(WorldPacket& recvPacket)
         m_MoverWoWGuid = guid;
     else
         m_MoverWoWGuid.Init(_player->getGuid());
-
-    movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
-    memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
 }

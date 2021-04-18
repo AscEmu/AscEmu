@@ -5302,7 +5302,7 @@ public:
     {
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
-        MovementInfo* movement_info = plr->GetSession()->GetMovementInfo();
+        MovementInfo* movement_info = plr->getMovementInfo();
         if (movement_info != nullptr)
         {
             lua_newtable(L);
@@ -5342,7 +5342,7 @@ public:
     static int GetPlayerMovementFlags(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        MovementInfo* move_info = static_cast<Player*>(ptr)->GetSession()->GetMovementInfo();
+        MovementInfo* move_info = static_cast<Player*>(ptr)->getMovementInfo();
         if (move_info != nullptr)
             lua_pushnumber(L, move_info->flags);
         else

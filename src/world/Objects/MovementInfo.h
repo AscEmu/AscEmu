@@ -29,6 +29,9 @@ struct MovementInfo
 #if VERSION_STRING >= Cata
     ObjectGuid const& getGuid() const { return guid; }
     ObjectGuid const& getGuid2() const { return guid2; }
+#else
+    WoWGuid const& getGuid() const { return guid; }
+    WoWGuid const& getGuid2() const { return guid2; }
 #endif
 
     MovementFlags getMovementFlags() const { return MovementFlags(flags); }
@@ -115,10 +118,8 @@ struct MovementInfo
 #endif
     }
 
-#if VERSION_STRING >= Cata
     void readMovementInfo(ByteBuffer& data, uint16_t opcode);
     void writeMovementInfo(ByteBuffer& data, uint16_t opcode, float custom_speed = 0.f) const;
-#endif
 
     uint32_t flags;
 
@@ -131,6 +132,9 @@ struct MovementInfo
 #if VERSION_STRING >= Cata
     ObjectGuid guid;
     ObjectGuid guid2;
+#else
+    WoWGuid guid;
+    WoWGuid guid2;
 #endif
 
     uint32_t update_time;
@@ -171,7 +175,6 @@ struct MovementInfo
 #endif
 };
 
-#if VERSION_STRING >= Cata
 inline WorldPacket& operator<< (WorldPacket& buf, MovementInfo const& mi)
 {
     mi.writeMovementInfo(buf, buf.GetOpcode());
@@ -196,4 +199,3 @@ inline float normalizeOrientation(float orientation)
 
     return fmod(orientation, 2.0f * static_cast<float>(M_PI));
 }
-#endif

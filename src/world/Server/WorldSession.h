@@ -739,6 +739,8 @@ class SERVER_DECL WorldSession
         // MovementHandler.cpp
         void handleSetActiveMoverOpcode(WorldPacket& recvPacket);
         void updatePlayerMovementVars(uint16_t opcode);
+        bool isHackDetectedInMovementData(uint16_t opcode);
+
         void handleMovementOpcodes(WorldPacket& recvPacket);
         void handleAcknowledgementOpcodes(WorldPacket& recvPacket);
         void handleWorldTeleportOpcode(WorldPacket& recvPacket);
@@ -931,10 +933,8 @@ class SERVER_DECL WorldSession
         Player* _player;
         WorldSocket* _socket;
 
-
         // Preallocated buffers for movement handlers
         MovementInfo sessionMovementInfo;
-        uint8 movement_packet[90]{};
 
         uint32 _accountId;
         uint32 _accountFlags;
@@ -971,9 +971,6 @@ class SERVER_DECL WorldSession
 
     public:
 
-        MovementInfo* GetMovementInfo() { return &sessionMovementInfo; }
-
-        const MovementInfo* GetMovementInfo() const { return &sessionMovementInfo; }
         static void InitPacketHandlerTable();
         static void loadHandlers();
 

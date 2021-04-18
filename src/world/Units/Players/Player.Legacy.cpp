@@ -7297,26 +7297,28 @@ void Player::CompleteLoading()
 
     for (std::list<LoginAura>::iterator i = loginauras.begin(); i != loginauras.end(); ++i)
     {
-        SpellInfo const* sp = sSpellMgr.getSpellInfo((*i).id);
-        if (sp != nullptr && sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
-            continue; //do not load auras that only exist while pet exist. We should recast these when pet is created anyway
-
-        Aura* aura = sSpellMgr.newAura(sp, (*i).dur, this, this, false);
-        //if (!(*i).positive) // do we need this? - vojta
-        //    aura->SetNegative();
-
-        for (uint8 x = 0; x < 3; x++)
+        if (SpellInfo const* sp = sSpellMgr.getSpellInfo((*i).id))
         {
-            if (sp->getEffect(x) == SPELL_EFFECT_APPLY_AURA)
+            if (sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
+                continue; //do not load auras that only exist while pet exist. We should recast these when pet is created anyway
+
+            Aura* aura = sSpellMgr.newAura(sp, (*i).dur, this, this, false);
+            //if (!(*i).positive) // do we need this? - vojta
+            //    aura->SetNegative();
+
+            for (uint8 x = 0; x < 3; x++)
             {
-                aura->addAuraEffect(static_cast<AuraEffect>(sp->getEffectApplyAuraName(x)), sp->getEffectBasePoints(x) + 1, sp->getEffectMiscValue(x), 1.0f, false, x);
+                if (sp->getEffect(x) == SPELL_EFFECT_APPLY_AURA)
+                {
+                    aura->addAuraEffect(static_cast<AuraEffect>(sp->getEffectApplyAuraName(x)), sp->getEffectBasePoints(x) + 1, sp->getEffectMiscValue(x), 1.0f, false, x);
+                }
             }
+
+            if (sp->getProcCharges() > 0 && (*i).charges > 0)
+                aura->setCharges(static_cast<uint16_t>((*i).charges), false);
+
+            this->addAura(aura);
         }
-
-        if (sp->getProcCharges() > 0 && (*i).charges > 0)
-            aura->setCharges(static_cast<uint16_t>((*i).charges), false);
-
-        this->addAura(aura);
     }
 
     // this needs to be after the cast of passive spells, because it will cast ghost form, after the remove making it in ghost alive, if no corpse.

@@ -1655,7 +1655,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                     }
                     else if (static_cast< Player* >(getNextTarget())->GetSession() != NULL)
                     {
-                        MovementInfo* mi = static_cast<Player*>(getNextTarget())->GetSession()->GetMovementInfo();
+                        MovementInfo* mi = static_cast<Player*>(getNextTarget())->getMovementInfo();
 
 #if VERSION_STRING < Cata
                         if (mi->flags & MOVEFLAG_FLYING)
@@ -2084,7 +2084,7 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
                     }
                     else if (static_cast< Player* >(pUnit)->GetSession() != nullptr)
                     {
-                        MovementInfo* mi = static_cast< Player* >(pUnit)->GetSession()->GetMovementInfo();
+                        MovementInfo* mi = static_cast< Player* >(pUnit)->getMovementInfo();
 
 #if VERSION_STRING < Cata
                         if (mi != nullptr && !(mi->flags & MOVEFLAG_FALLING) && !(mi->flags & MOVEFLAG_SWIMMING) && !(mi->flags & MOVEFLAG_HOVER))

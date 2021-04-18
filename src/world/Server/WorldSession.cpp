@@ -78,8 +78,6 @@ WorldSession::WorldSession(uint32 id, std::string name, WorldSocket* sock) :
     isAddonMessageFiltered = false;
 #endif
 
-    memset(movement_packet, 0, sizeof(movement_packet));
-
     for (uint8 x = 0; x < 8; x++)
         sAccountData[x].data = nullptr;
 }
