@@ -508,7 +508,7 @@ Unit::Unit() :
     m_objectTypeId = TYPEID_UNIT;
 
 #if VERSION_STRING < Cata
-    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_LIVING | UPDATEFLAG_HAS_POSITION);
+    m_updateFlag = (UPDATEFLAG_LIVING | UPDATEFLAG_HAS_POSITION);
 #else
     m_updateFlag = UPDATEFLAG_LIVING;
 #endif

@@ -1105,7 +1105,7 @@ void Unit::setMoveWaterWalk()
         data << GetNewGUID();
         data << uint32(0);
 #else
-        movement_info.writeMovementInfo(data, SMSG_MOVE_WATER_WALK);
+        obj_movement_info.writeMovementInfo(data, SMSG_MOVE_WATER_WALK);
 #endif
         SendMessageToSet(&data, true);
     }
@@ -1116,7 +1116,7 @@ void Unit::setMoveWaterWalk()
 #if VERSION_STRING < Cata
         data << GetNewGUID();
 #else
-        movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_WATER_WALK);
+        obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_WATER_WALK);
 #endif
         SendMessageToSet(&data, false);
     }
@@ -1133,7 +1133,7 @@ void Unit::setMoveLandWalk()
         data << GetNewGUID();
         data << uint32(0);
 #else
-        movement_info.writeMovementInfo(data, SMSG_MOVE_LAND_WALK);
+        obj_movement_info.writeMovementInfo(data, SMSG_MOVE_LAND_WALK);
 #endif
         SendMessageToSet(&data, true);
     }
@@ -1144,7 +1144,7 @@ void Unit::setMoveLandWalk()
 #if VERSION_STRING < Cata
         data << GetNewGUID();
 #else
-        movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_LAND_WALK);
+        obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_LAND_WALK);
 #endif
         SendMessageToSet(&data, false);
     }
@@ -1161,7 +1161,7 @@ void Unit::setMoveFeatherFall()
         data << GetNewGUID();
         data << uint32(0);
 #else
-        movement_info.writeMovementInfo(data, SMSG_MOVE_FEATHER_FALL);
+        obj_movement_info.writeMovementInfo(data, SMSG_MOVE_FEATHER_FALL);
 #endif
         SendMessageToSet(&data, true);
     }
@@ -1172,7 +1172,7 @@ void Unit::setMoveFeatherFall()
 #if VERSION_STRING < Cata
         data << GetNewGUID();
 #else
-        movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_FEATHER_FALL);
+        obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_FEATHER_FALL);
 #endif
         SendMessageToSet(&data, false);
     }
@@ -1189,7 +1189,7 @@ void Unit::setMoveNormalFall()
         data << GetNewGUID();
         data << uint32(0);
 #else
-        movement_info.writeMovementInfo(data, SMSG_MOVE_NORMAL_FALL);
+        obj_movement_info.writeMovementInfo(data, SMSG_MOVE_NORMAL_FALL);
 #endif
         SendMessageToSet(&data, true);
     }
@@ -1200,7 +1200,7 @@ void Unit::setMoveNormalFall()
 #if VERSION_STRING < Cata
         data << GetNewGUID();
 #else
-        movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_NORMAL_FALL);
+        obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_NORMAL_FALL);
 #endif
         SendMessageToSet(&data, false);
     }
@@ -1219,7 +1219,7 @@ void Unit::setMoveHover(bool set_hover)
             data << GetNewGUID();
             data << uint32(0);
 #else
-            movement_info.writeMovementInfo(data, SMSG_MOVE_SET_HOVER);
+            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_SET_HOVER);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -1232,7 +1232,7 @@ void Unit::setMoveHover(bool set_hover)
             data << GetNewGUID();
             data << uint32(0);
 #else
-            movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_HOVER);
+            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_HOVER);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -1251,7 +1251,7 @@ void Unit::setMoveHover(bool set_hover)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
 #else
-            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_HOVER);
+            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_HOVER);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -1265,7 +1265,7 @@ void Unit::setMoveHover(bool set_hover)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
 #else
-            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNSET_HOVER);
+            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNSET_HOVER);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -1288,7 +1288,7 @@ void Unit::setMoveCanFly(bool set_fly)
             data << GetNewGUID();
             data << uint32(2);
 #else
-            movement_info.writeMovementInfo(data, SMSG_MOVE_SET_CAN_FLY);
+            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_SET_CAN_FLY);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -1296,7 +1296,9 @@ void Unit::setMoveCanFly(bool set_fly)
         {
             // Remove all fly related moveflags
             removeUnitMovementFlag(MOVEFLAG_CAN_FLY);
+#if VERSION_STRING > TBC
             removeUnitMovementFlag(MOVEFLAG_DESCENDING);
+#endif
             removeUnitMovementFlag(MOVEFLAG_ASCENDING);
 
             WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
@@ -1304,7 +1306,7 @@ void Unit::setMoveCanFly(bool set_fly)
             data << GetNewGUID();
             data << uint32(5);
 #else
-            movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_CAN_FLY);
+            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_CAN_FLY);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -1323,7 +1325,7 @@ void Unit::setMoveCanFly(bool set_fly)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
 #else
-            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_FLYING);
+            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_FLYING);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -1331,14 +1333,16 @@ void Unit::setMoveCanFly(bool set_fly)
         {
             // Remove all fly related moveflags
             removeUnitMovementFlag(MOVEFLAG_CAN_FLY);
+#if VERSION_STRING > TBC
             removeUnitMovementFlag(MOVEFLAG_DESCENDING);
+#endif
             removeUnitMovementFlag(MOVEFLAG_ASCENDING);
 
             WorldPacket data(SMSG_SPLINE_MOVE_UNSET_FLYING, 10);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
 #else
-            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNSET_FLYING);
+            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNSET_FLYING);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -1358,7 +1362,7 @@ void Unit::setMoveRoot(bool set_root)
             data << GetNewGUID();
             data << uint32(0);
 #else
-            movement_info.writeMovementInfo(data, SMSG_FORCE_MOVE_ROOT);
+            obj_movement_info.writeMovementInfo(data, SMSG_FORCE_MOVE_ROOT);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -1371,7 +1375,7 @@ void Unit::setMoveRoot(bool set_root)
             data << GetNewGUID();
             data << uint32(0);
 #else
-            movement_info.writeMovementInfo(data, SMSG_FORCE_MOVE_UNROOT);
+            obj_movement_info.writeMovementInfo(data, SMSG_FORCE_MOVE_UNROOT);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -1392,7 +1396,7 @@ void Unit::setMoveRoot(bool set_root)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
 #else
-            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_ROOT);
+            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_ROOT);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -1406,7 +1410,7 @@ void Unit::setMoveRoot(bool set_root)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
 #else
-            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNROOT);
+            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNROOT);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -1430,7 +1434,7 @@ void Unit::setMoveSwim(bool set_swim)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
 #else
-            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_START_SWIM);
+            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_START_SWIM);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -1442,7 +1446,7 @@ void Unit::setMoveSwim(bool set_swim)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
 #else
-            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_STOP_SWIM);
+            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_STOP_SWIM);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -1463,7 +1467,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
             data << GetNewGUID();
             data << uint32(0);
 #else
-            movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_DISABLE);
+            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_DISABLE);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -1476,7 +1480,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
             data << GetNewGUID();
             data << uint32(0);
 #else
-            movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_ENABLE);
+            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_ENABLE);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -1492,7 +1496,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
 #else
-            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_GRAVITY_DISABLE);
+            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_GRAVITY_DISABLE);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -1504,7 +1508,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
 #else
-            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_GRAVITY_ENABLE);
+            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_GRAVITY_ENABLE);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -1526,7 +1530,7 @@ void Unit::setMoveWalk(bool set_walk)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
 #else
-            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_WALK_MODE);
+            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_WALK_MODE);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -1538,7 +1542,7 @@ void Unit::setMoveWalk(bool set_walk)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
 #else
-            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_RUN_MODE);
+            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_RUN_MODE);
 #endif
             SendMessageToSet(&data, false);
         }

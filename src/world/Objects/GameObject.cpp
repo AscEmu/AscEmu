@@ -164,11 +164,19 @@ GameObject::GameObject(uint64 guid)
     mTransValues.AnimationInfo = 0;
     mTransValues.PathProgress = 0;
 
-#if VERSION_STRING <= TBC
-    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_LOWGUID);
-#elif VERSION_STRING == WotLK
-    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION | UPDATEFLAG_ROTATION);
-#elif VERSION_STRING == Cata
+#if VERSION_STRING == Classic
+    m_updateFlag = (UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
+#endif
+#if VERSION_STRING == TBC
+    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION);
+#endif
+#if VERSION_STRING == WotLK
+    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION | UPDATEFLAG_ROTATION);
+#endif
+#if VERSION_STRING == Cata
+    m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
+#endif
+#if VERSION_STRING == Mop
     m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
 #endif
 
@@ -257,10 +265,20 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
     {
         case GAMEOBJECT_TYPE_TRANSPORT:
             m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
-#if VERSION_STRING >= WotLK
-            m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
-#else
+#if VERSION_STRING == Classic
             m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT);
+#endif
+#if VERSION_STRING == TBC
+            m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT);
+#endif
+#if VERSION_STRING == WotLK
+            m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
+#endif
+#if VERSION_STRING == Cata
+            m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
+#endif
+#if VERSION_STRING == Mop
+            m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
 #endif
 
             setLevel(gameobject_properties->transport.pause);

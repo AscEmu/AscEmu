@@ -379,7 +379,6 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     }
 #else
     mover->SetPosition(sessionMovementInfo.getPosition()->x, sessionMovementInfo.getPosition()->y, sessionMovementInfo.getPosition()->z, sessionMovementInfo.getPosition()->o);
-    mover->movement_info = sessionMovementInfo;
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////

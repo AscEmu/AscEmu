@@ -740,12 +740,14 @@ void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
         case TYPE_TURN_RATE:
             data.Initialize(SMSG_FORCE_TURN_RATE_CHANGE);
             break;
+#if VERSION_STRING > Classic
         case TYPE_FLY:
             data.Initialize(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
             break;
         case TYPE_FLY_BACK:
             data.Initialize(SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE);
             break;
+#endif
 #if VERSION_STRING > TBC
         case TYPE_PITCH_RATE:
             data.Initialize(SMSG_FORCE_PITCH_RATE_CHANGE);
@@ -811,9 +813,11 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
         case TYPE_SWIM_BACK:
             data.Initialize(SMSG_FORCE_SWIM_BACK_SPEED_CHANGE);
             break;
+#if VERSION_STRING > Classic
         case TYPE_FLY:
             data.Initialize(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
             break;
+#endif
         case TYPE_FLY_BACK:
         case TYPE_TURN_RATE:
         case TYPE_WALK:
@@ -860,31 +864,31 @@ void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
         case TYPE_WALK:
         {
             data.Initialize(SMSG_FORCE_WALK_SPEED_CHANGE);
-            movement_info.writeMovementInfo(data, SMSG_FORCE_WALK_SPEED_CHANGE, speed);
+            obj_movement_info.writeMovementInfo(data, SMSG_FORCE_WALK_SPEED_CHANGE, speed);
             break;
         }
         case TYPE_RUN:
         {
             data.Initialize(SMSG_FORCE_RUN_SPEED_CHANGE);
-            movement_info.writeMovementInfo(data, SMSG_FORCE_RUN_SPEED_CHANGE, speed);
+            obj_movement_info.writeMovementInfo(data, SMSG_FORCE_RUN_SPEED_CHANGE, speed);
             break;
         }
         case TYPE_RUN_BACK:
         {
             data.Initialize(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
-            movement_info.writeMovementInfo(data, SMSG_FORCE_RUN_BACK_SPEED_CHANGE, speed);
+            obj_movement_info.writeMovementInfo(data, SMSG_FORCE_RUN_BACK_SPEED_CHANGE, speed);
             break;
         }
         case TYPE_SWIM:
         {
             data.Initialize(SMSG_FORCE_SWIM_SPEED_CHANGE);
-            movement_info.writeMovementInfo(data, SMSG_FORCE_SWIM_SPEED_CHANGE, speed);
+            obj_movement_info.writeMovementInfo(data, SMSG_FORCE_SWIM_SPEED_CHANGE, speed);
             break;
         }
         case TYPE_SWIM_BACK:
         {
             data.Initialize(SMSG_FORCE_SWIM_BACK_SPEED_CHANGE);
-            movement_info.writeMovementInfo(data, SMSG_FORCE_SWIM_BACK_SPEED_CHANGE, speed);
+            obj_movement_info.writeMovementInfo(data, SMSG_FORCE_SWIM_BACK_SPEED_CHANGE, speed);
             break;
         }
         case TYPE_TURN_RATE:
@@ -896,7 +900,7 @@ void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
         case TYPE_FLY:
         {
             data.Initialize(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
-            movement_info.writeMovementInfo(data, SMSG_FORCE_FLIGHT_SPEED_CHANGE, speed);
+            obj_movement_info.writeMovementInfo(data, SMSG_FORCE_FLIGHT_SPEED_CHANGE, speed);
             break;
         }
         case TYPE_FLY_BACK:
@@ -926,7 +930,7 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
         case TYPE_WALK:
         {
             data.Initialize(MSG_MOVE_SET_WALK_SPEED, 1 + 8 + 4 + 4);
-            movement_info.writeMovementInfo(data, MSG_MOVE_SET_WALK_SPEED, speed);
+            obj_movement_info.writeMovementInfo(data, MSG_MOVE_SET_WALK_SPEED, speed);
             break;
         }
         case TYPE_RUN:
@@ -959,32 +963,32 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
             data.WriteByteSeq(guid[6]);
             data.WriteByteSeq(guid[5]);
 #else
-            movement_info.writeMovementInfo(data, MSG_MOVE_SET_RUN_SPEED, speed);
+            obj_movement_info.writeMovementInfo(data, MSG_MOVE_SET_RUN_SPEED, speed);
 #endif
             break;
         }
         case TYPE_RUN_BACK:
         {
             data.Initialize(MSG_MOVE_SET_RUN_BACK_SPEED, 1 + 8 + 4 + 4);
-            movement_info.writeMovementInfo(data, MSG_MOVE_SET_RUN_BACK_SPEED, speed);
+            obj_movement_info.writeMovementInfo(data, MSG_MOVE_SET_RUN_BACK_SPEED, speed);
             break;
         }
         case TYPE_SWIM:
         {
             data.Initialize(MSG_MOVE_SET_SWIM_SPEED, 1 + 8 + 4 + 4);
-            movement_info.writeMovementInfo(data, MSG_MOVE_SET_SWIM_SPEED, speed);
+            obj_movement_info.writeMovementInfo(data, MSG_MOVE_SET_SWIM_SPEED, speed);
             break;
         }
         case TYPE_SWIM_BACK:
         {
             data.Initialize(MSG_MOVE_SET_SWIM_BACK_SPEED, 1 + 8 + 4 + 4);
-            movement_info.writeMovementInfo(data, MSG_MOVE_SET_SWIM_BACK_SPEED, speed);
+            obj_movement_info.writeMovementInfo(data, MSG_MOVE_SET_SWIM_BACK_SPEED, speed);
             break;
         }
         case TYPE_TURN_RATE:
         {
             data.Initialize(MSG_MOVE_SET_TURN_RATE, 1 + 8 + 4 + 4);
-            movement_info.writeMovementInfo(data, MSG_MOVE_SET_TURN_RATE, speed);
+            obj_movement_info.writeMovementInfo(data, MSG_MOVE_SET_TURN_RATE, speed);
             break;
         }
         case TYPE_FLY:
@@ -1014,20 +1018,20 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
             data.WriteByteSeq(guid[3]);
             data.WriteByteSeq(guid[1]);
 #else
-            movement_info.writeMovementInfo(data, MSG_MOVE_SET_FLIGHT_SPEED, speed);
+            obj_movement_info.writeMovementInfo(data, MSG_MOVE_SET_FLIGHT_SPEED, speed);
 #endif
             break;
         }
         case TYPE_FLY_BACK:
         {
             data.Initialize(MSG_MOVE_SET_FLIGHT_BACK_SPEED, 1 + 8 + 4 + 4);
-            movement_info.writeMovementInfo(data, MSG_MOVE_SET_FLIGHT_BACK_SPEED, speed);
+            obj_movement_info.writeMovementInfo(data, MSG_MOVE_SET_FLIGHT_BACK_SPEED, speed);
             break;
         }
         case TYPE_PITCH_RATE:
         {
             data.Initialize(MSG_MOVE_SET_PITCH_RATE, 1 + 8 + 4 + 4);
-            movement_info.writeMovementInfo(data, MSG_MOVE_SET_PITCH_RATE, speed);
+            obj_movement_info.writeMovementInfo(data, MSG_MOVE_SET_PITCH_RATE, speed);
             break;
         }
     }

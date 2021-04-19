@@ -7,8 +7,22 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WorldConf.h"
 
-#if VERSION_STRING <= WotLK
+#if VERSION_STRING == Classic
+enum ObjectUpdateFlags
+{
+    UPDATEFLAG_NONE                     = 0x0000,
+    UPDATEFLAG_SELF                     = 0x0001,
+    UPDATEFLAG_TRANSPORT                = 0x0002,
+    UPDATEFLAG_HAS_TARGET               = 0x0004,
+    UPDATEFLAG_HIGHGUID                 = 0x0008,
+    UPDATEFLAG_ALL                      = 0x0010,
+    UPDATEFLAG_LIVING                   = 0x0020,
+    UPDATEFLAG_HAS_POSITION             = 0x0040,
 
+};
+#endif
+
+#if VERSION_STRING == TBC
 enum ObjectUpdateFlags
 {
     UPDATEFLAG_NONE                     = 0x0000,
@@ -19,7 +33,21 @@ enum ObjectUpdateFlags
     UPDATEFLAG_HIGHGUID                 = 0x0010,
     UPDATEFLAG_LIVING                   = 0x0020,
     UPDATEFLAG_HAS_POSITION             = 0x0040,
-#if VERSION_STRING > TBC
+
+};
+#endif
+
+#if VERSION_STRING == WotLK
+enum ObjectUpdateFlags
+{
+    UPDATEFLAG_NONE                     = 0x0000,
+    UPDATEFLAG_SELF                     = 0x0001,
+    UPDATEFLAG_TRANSPORT                = 0x0002,
+    UPDATEFLAG_HAS_TARGET               = 0x0004,
+    UPDATEFLAG_UNKNOWN                  = 0x0008,
+    UPDATEFLAG_LOWGUID                  = 0x0010,
+    UPDATEFLAG_LIVING                   = 0x0020,
+    UPDATEFLAG_HAS_POSITION             = 0x0040,
     UPDATEFLAG_VEHICLE                  = 0x0080,
     UPDATEFLAG_POSITION                 = 0x0100,
     UPDATEFLAG_ROTATION                 = 0x0200,
@@ -28,10 +56,10 @@ enum ObjectUpdateFlags
     UPDATEFLAG_TRANSPORT_ARR            = 0x1000,
     UPDATEFLAG_ENABLE_PORTALS           = 0x2000,
     UPDATEFLAG_UNK2                     = 0x4000
-#endif
 };
+#endif
 
-#elif VERSION_STRING == Cata
+#if VERSION_STRING == Cata
 enum TrainerSpellState
 {
     TRAINER_SPELL_GRAY                  = 0,
@@ -42,23 +70,29 @@ enum TrainerSpellState
 
 enum ObjectUpdateFlags
 {
-    UPDATEFLAG_NONE                     = 0x0000,
-    UPDATEFLAG_SELF                     = 0x0001,
-    UPDATEFLAG_TRANSPORT                = 0x0002,
-    UPDATEFLAG_HAS_TARGET               = 0x0004,
-    UPDATEFLAG_UNK                      = 0x0008,
-    UPDATEFLAG_LOWGUID                  = 0x0010,
-    UPDATEFLAG_LIVING                   = 0x0020,
-    UPDATEFLAG_HAS_POSITION             = 0x0040,
-    UPDATEFLAG_VEHICLE                  = 0x0080,
-    UPDATEFLAG_POSITION                 = 0x0100,
-    UPDATEFLAG_ROTATION                 = 0x0200,
-    UPDATEFLAG_UNK1                     = 0x0400,
-    UPDATEFLAG_ANIM_KITS                = 0x0800,
-    UPDATEFLAG_TRANSPORT_ARR            = 0x1000,
-    UPDATEFLAG_UNK3                     = 0x2000
+    UPDATEFLAG_NONE                     = 0x00000,
+    UPDATEFLAG_SELF                     = 0x00001,
+    UPDATEFLAG_TRANSPORT                = 0x00002,
+    UPDATEFLAG_HAS_TARGET               = 0x00004,
+    UPDATEFLAG_UNKNOWN                  = 0x00008,
+    UPDATEFLAG_LOWGUID                  = 0x00010,
+    UPDATEFLAG_LIVING                   = 0x00020,
+    UPDATEFLAG_HAS_POSITION             = 0x00040,
+    UPDATEFLAG_VEHICLE                  = 0x00080,
+    UPDATEFLAG_POSITION                 = 0x00100,
+    UPDATEFLAG_ROTATION                 = 0x00200,
+    UPDATEFLAG_UNKNOWN1                 = 0x00400,
+    UPDATEFLAG_ANIM_KITS                = 0x00800,
+    UPDATEFLAG_AREATRIGGER              = 0x01000,
+    UPDATEFLAG_UNKNOWN2                 = 0x02000,
+    UPDATEFLAG_PLAY_HOVER_ANIM          = 0x04000,
+    UPDATEFLAG_SUPPRESSED_GREETINGS     = 0x08000,
+    UPDATEFLAG_NO_BIRTH_ANIM            = 0x10000,
+    UPDATEFLAG_ENABLE_PORTALS           = 0x20000,
 };
-#elif VERSION_STRING == Mop
+#endif
+
+#if VERSION_STRING == Mop
 enum TrainerSpellState
 {
     TRAINER_SPELL_GRAY                  = 0,

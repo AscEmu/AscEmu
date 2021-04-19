@@ -15,13 +15,22 @@ using namespace AscEmu::Packets;
 
 Transporter::Transporter(uint64 guid) : GameObject(guid), _transportInfo(nullptr), _isMoving(true), _pendingStop(false), _triggeredArrivalEvent(false), _triggeredDepartureEvent(false), _passengerTeleportItr(_passengers.begin())
 {
-#if VERSION_STRING <= TBC
-    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_LOWGUID | UPDATEFLAG_TRANSPORT);
-#elif VERSION_STRING == WotLK
-    m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
-#elif VERSION_STRING == Cata
-    m_updateFlag = UPDATEFLAG_TRANSPORT;
+#if VERSION_STRING == Classic
+    m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
 #endif
+#if VERSION_STRING == TBC
+    m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION);
+#endif
+#if VERSION_STRING == WotLK
+    m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_LOWGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
+#endif
+#if VERSION_STRING == Cata
+    m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
+#endif
+#if VERSION_STRING == Mop
+    m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
+#endif
+
     positionUpdateDelay = 100;
 }
 

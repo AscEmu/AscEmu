@@ -10348,7 +10348,7 @@ void Player::SendTeleportPacket(float x, float y, float z, float o)
     ObjectGuid guid = getGuid();
 
     WorldPacket data(SMSG_MOVE_UPDATE_TELEPORT, 38);
-    movement_info.writeMovementInfo(data, SMSG_MOVE_UPDATE_TELEPORT);
+    obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UPDATE_TELEPORT);
 
     if (getObjectTypeId() == TYPEID_PLAYER)
     {

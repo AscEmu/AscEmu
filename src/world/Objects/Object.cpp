@@ -358,10 +358,12 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
         return 0;
 
     uint8_t updateType = UPDATETYPE_CREATE_OBJECT;
+#if VERSION_STRING <= TBC
+    uint8_t updateFlags = static_cast<uint8_t>(m_updateFlag);
+#endif
+
 #if VERSION_STRING >= WotLK
     uint16_t updateFlags = m_updateFlag;
-#else
-    uint8_t updateFlags = static_cast<uint8_t>(m_updateFlag);
 #endif
 
     if (target == this)
@@ -1757,143 +1759,292 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
 
 
 // MIT Start
-#if VERSION_STRING < WotLK
+#if VERSION_STRING == Classic
 void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* target)
 {
-    uint32_t flags2 = 0;
-    // This is checked for nullptr later
-    const auto spline_buffer = m_objectTypeId == TYPEID_UNIT ? target->getSplineMgr().popSplinePacket(getGuid()) : nullptr;
+    ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->getSplineMgr().popSplinePacket(getGuid()) : 0;
 
-    *data << updateFlags;
+    *data << uint8(updateFlags);
 
-    Player* this_player = nullptr;
-    if (getObjectTypeId() == TYPEID_PLAYER)
+    if (updateFlags & UPDATEFLAG_LIVING)  //0x20
     {
-        this_player = static_cast<Player*>(this);
-        this_player->UpdateSpeed();
-    }
+        *data << uint32(obj_movement_info.getMovementFlags());
 
-    Creature* this_creature = nullptr;
-    if (getObjectTypeId() == TYPEID_UNIT)
-        this_creature = static_cast<Creature*>(this);
-
-    if (updateFlags & UPDATEFLAG_LIVING)
-    {
-        if (this_player && this_player->GetTransport())
-        {
-            flags2 |= MOVEFLAG_TRANSPORT;
-        }
-        else if (this_creature)
-        {
-            if (const auto transport = this_creature->GetTransport())
-                if (transport->GetPosition().isSet())
-                    flags2 |= MOVEFLAG_TRANSPORT;
-        }
-
-        if (this_creature)
-        {
-            switch (this_creature->getEntry())
-            {
-            case 6491:  // Spirit Healer
-            case 13116: // Alliance Spirit Guide
-            case 13117: // Horde Spirit Guide
-                flags2 |= MOVEFLAG_WATER_WALK;
-            default:
-                break;
-            }
-
-            if (this_creature->GetAIInterface()->isFlying())
-            {
-                // Should this be MOVEFLAG_FLYING instead?
-                flags2 |= MOVEFLAG_DISABLEGRAVITY;
-            }
-
-            const auto props = this_creature->GetCreatureProperties();
-            if (props && props->extra_a9_flags)
-            {
-                if (!(flags2 & MOVEFLAG_TRANSPORT))
-                {
-                    flags2 |= props->extra_a9_flags;
-                }
-            }
-        }
-
-        *data << flags2;
-        *data << uint8_t(0);
         *data << Util::getMSTime();
-    }
 
-    if (updateFlags & UPDATEFLAG_HAS_POSITION)
-    {
-        *data << m_position << m_position.o;
+        *data << float(m_position.x);
+        *data << float(m_position.y);
+        *data << float(m_position.z);
+        *data << float(m_position.o);
 
-        if (updateFlags & UPDATEFLAG_LIVING && flags2 & MOVEFLAG_TRANSPORT)
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT)) //0x0200
         {
-            if (this_player)
-            {
-                const auto transport = this_player->GetTransport();
-                ARCEMU_ASSERT(transport != nullptr);
+            *data << obj_movement_info.transport_guid;
+            *data << float(GetTransOffsetX());
+            *data << float(GetTransOffsetY());
+            *data << float(GetTransOffsetZ());
+            *data << float(GetTransOffsetO());
+        }
 
-                *data << transport->GetNewGUID().getRawGuid();
-                *data << transport->GetPosition() << transport->GetPosition().o;
-                *data << transport->GetTransTime();
-            }
-            else if (this_creature && this_creature->GetTransport())
+        if (obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)))   // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH
+        {
+            *data << obj_movement_info.pitch_rate;
+        }
+
+        *data << obj_movement_info.fall_time;
+
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING))   // 0x00001000
+        {
+
+            *data << obj_movement_info.jump_info.velocity;
+            *data << obj_movement_info.jump_info.cosAngle;
+            *data << obj_movement_info.jump_info.sinAngle;
+            *data << obj_movement_info.jump_info.xyspeed;
+        }
+
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION))
+            *data << float(obj_movement_info.spline_elevation);
+
+        if (Unit* unit = static_cast<Unit*>(this))
+        {
+            *data << unit->getSpeedRate(TYPE_WALK, true);
+            *data << unit->getSpeedRate(TYPE_RUN, true);
+            *data << unit->getSpeedRate(TYPE_RUN_BACK, true);
+            *data << unit->getSpeedRate(TYPE_SWIM, true);
+            *data << unit->getSpeedRate(TYPE_SWIM_BACK, true);
+            *data << unit->getSpeedRate(TYPE_TURN_RATE, true);
+        }
+        else                                //\todo Zyres: this is ridiculous... only units have these types, but this function is a mess so don't breake anything.
+        {
+            *data << float(2.5f);
+            *data << float(7.0f);
+            *data << float(4.5f);
+            *data << float(4.722222f);
+            *data << float(2.5f);
+            *data << float(3.141594f);
+        }
+
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ENABLED))   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
+        {
+            if (splinebuf != nullptr)
             {
-                const auto transport = this_creature->GetTransport();
-                *data << transport->GetNewGUID().getRawGuid();
-                *data << transport->GetPosition() << transport->GetPosition().o;
-                *data << transport->GetTransTime();
-                *data << float(0.f); // unk
+                data->append(*splinebuf);
+            }
+            else
+                *data << float(0.0f);
+        }
+
+    }
+    else        // No UPDATEFLAG_LIVING
+    {
+        if (updateFlags & UPDATEFLAG_HAS_POSITION)  //0x40
+        {
+            if (updateFlags & UPDATEFLAG_TRANSPORT)
+            {
+                *data << float(GetTransOffsetX());
+                *data << float(GetTransOffsetY());
+                *data << float(GetTransOffsetZ());
+                *data << float(GetTransOffsetO());
+            }
+            else
+            {
+                *data << float(m_position.x);
+                *data << float(m_position.y);
+                *data << float(m_position.z);
+                *data << float(m_position.o);
             }
         }
     }
 
-    if (updateFlags & UPDATEFLAG_LIVING)
+    if (updateFlags & UPDATEFLAG_HIGHGUID)
+        *data << uint32(GetNewGUID().getGuidHighPart());
+
+    if (updateFlags & UPDATEFLAG_ALL)
+        *data << uint32(0x1);
+
+    if (updateFlags & UPDATEFLAG_HAS_TARGET)  //0x04
     {
-        *data << uint32_t(0); // unk
-
-        if (flags2 & MOVEFLAG_FALLING)
-        {
-            *data << float(0);
-            *data << float(1.0);
-            *data << float(0);
-            *data << float(0);
-        }
-
-        const Unit* this_mover = this_player ? static_cast<Unit*>(this_player) : this_creature;
-        ARCEMU_ASSERT(this_mover != nullptr);
-
-        *data << this_mover->getSpeedRate(TYPE_WALK, true);
-        *data << this_mover->getSpeedRate(TYPE_RUN, true);
-        *data << this_mover->getSpeedRate(TYPE_RUN_BACK, true);
-        *data << this_mover->getSpeedRate(TYPE_SWIM, true);
-        *data << this_mover->getSpeedRate(TYPE_SWIM_BACK, true);
-        *data << this_mover->getSpeedRate(TYPE_FLY, true);
-        *data << this_mover->getSpeedRate(TYPE_FLY_BACK, true);
-        *data << this_mover->getSpeedRate(TYPE_TURN_RATE, true);
+        if (isCreatureOrPlayer())
+            FastGUIDPack(*data, static_cast<Unit*>(this)->getTargetGuid()); //some compressed GUID
+        else
+            *data << uint64(0);
     }
 
-    if (spline_buffer)
+    if (updateFlags & UPDATEFLAG_TRANSPORT)   //0x2
     {
-        data->append(*spline_buffer);
-        delete spline_buffer;
+        GameObject const* go = static_cast<GameObject*>(this);
+        if (go && go->ToTransport())
+            *data << uint32_t(go->GetTransValues()->PathProgress);
+        else
+            *data << Util::getMSTime();
     }
+}
+#endif
 
-    if (updateFlags & UPDATEFLAG_LOWGUID)
-    {
-        *data << objectData()->guid_parts.low;
-        if (updateFlags & UPDATEFLAG_HIGHGUID)
-            *data << objectData()->guid_parts.high;
-    }
-    else if (updateFlags & UPDATEFLAG_HIGHGUID)
-    {
-        *data << objectData()->guid_parts.low;
-    }
+#if VERSION_STRING == TBC
+void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* target)
+{
+    ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->getSplineMgr().popSplinePacket(getGuid()) : 0;
 
-    if (updateFlags & UPDATEFLAG_TRANSPORT)
+    *data << uint8(updateFlags);
+
+    if (updateFlags & UPDATEFLAG_LIVING)  //0x20
     {
+        *data << uint32(obj_movement_info.getMovementFlags());
+
+        *data << uint8(obj_movement_info.getMovementFlags2());
+
         *data << Util::getMSTime();
+
+        *data << float(m_position.x);
+        *data << float(m_position.y);
+        *data << float(m_position.z);
+        *data << float(m_position.o);
+
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT)) //0x0200
+        {
+            *data << obj_movement_info.transport_guid;
+            *data << float(GetTransOffsetX());
+            *data << float(GetTransOffsetY());
+            *data << float(GetTransOffsetZ());
+            *data << float(GetTransOffsetO());
+            *data << uint32(GetTransTime());
+        }
+
+        if (obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || obj_movement_info.hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))   // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH
+        {
+            *data << obj_movement_info.pitch_rate;
+        }
+
+        *data << obj_movement_info.fall_time;
+
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING))   // 0x00001000
+        {
+
+            *data << obj_movement_info.jump_info.velocity;
+            *data << obj_movement_info.jump_info.cosAngle;
+            *data << obj_movement_info.jump_info.sinAngle;
+            *data << obj_movement_info.jump_info.xyspeed;
+        }
+
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION))
+            *data << float(obj_movement_info.spline_elevation);
+
+        if (Unit* unit = static_cast<Unit*>(this))
+        {
+            *data << unit->getSpeedRate(TYPE_WALK, true);
+            *data << unit->getSpeedRate(TYPE_RUN, true);
+            *data << unit->getSpeedRate(TYPE_RUN_BACK, true);
+            *data << unit->getSpeedRate(TYPE_SWIM, true);
+            *data << unit->getSpeedRate(TYPE_SWIM_BACK, true);
+            *data << unit->getSpeedRate(TYPE_FLY, true);
+            *data << unit->getSpeedRate(TYPE_FLY_BACK, true);
+            *data << unit->getSpeedRate(TYPE_TURN_RATE, true);
+        }
+        else                                //\todo Zyres: this is ridiculous... only units have these types, but this function is a mess so don't breake anything.
+        {
+            *data << float(2.5f);
+            *data << float(7.0f);
+            *data << float(4.5f);
+            *data << float(4.722222f);
+            *data << float(2.5f);
+            *data << float(7.0f);
+            *data << float(4.5f);
+            *data << float(3.141594f);
+        }
+
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ENABLED))   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
+        {
+            if (splinebuf != nullptr)
+            {
+                data->append(*splinebuf);
+            }
+            else
+                *data << float(0.0f);
+        }
+
+    }
+    else        // No UPDATEFLAG_LIVING
+    {
+        if (updateFlags & UPDATEFLAG_HAS_POSITION)  //0x40
+        {
+            if (updateFlags & UPDATEFLAG_TRANSPORT)
+            {
+                *data << float(GetTransOffsetX());
+                *data << float(GetTransOffsetY());
+                *data << float(GetTransOffsetZ());
+                *data << float(GetTransOffsetO());
+            }
+            else
+            {
+                *data << float(m_position.x);
+                *data << float(m_position.y);
+                *data << float(m_position.z);
+                *data << float(m_position.o);
+            }
+        }
+    }
+
+    if (updateFlags & UPDATEFLAG_LOWGUID)    //0x10
+    {
+        switch (getOType())
+        {
+        case TYPEID_OBJECT:
+        case TYPEID_ITEM:
+        case TYPEID_CONTAINER:
+        case TYPEID_GAMEOBJECT:
+        case TYPEID_DYNAMICOBJECT:
+        case TYPEID_CORPSE:
+            *data << uint32(GetNewGUID().getGuidLowPart());
+            break;
+        case TYPEID_UNIT:
+            *data << uint32(0x0000000B);                // unk
+            break;
+        case TYPEID_PLAYER:
+            if (updateFlags & UPDATEFLAG_SELF)
+                *data << uint32(0x00000015);            // unk
+            else
+                *data << uint32(0x00000008);            // unk
+            break;
+        default:
+            *data << uint32(0x00000000);                // unk
+            break;
+        }
+    }
+
+    if (updateFlags & UPDATEFLAG_HIGHGUID)
+    {
+        switch (getOType())
+        {
+        case TYPEID_OBJECT:
+        case TYPEID_ITEM:
+        case TYPEID_CONTAINER:
+        case TYPEID_GAMEOBJECT:
+        case TYPEID_DYNAMICOBJECT:
+        case TYPEID_CORPSE:
+            *data << uint32(GetNewGUID().getGuidHighPart()); // GetGUIDHigh()
+            break;
+        default:
+            *data << uint32(0x00000000);                // unk
+            break;
+        }
+    }
+
+    if (updateFlags & UPDATEFLAG_HAS_TARGET)  //0x04
+    {
+        if (isCreatureOrPlayer())
+            FastGUIDPack(*data, static_cast<Unit*>(this)->getTargetGuid()); //some compressed GUID
+        else
+            *data << uint64(0);
+    }
+
+    if (updateFlags & UPDATEFLAG_TRANSPORT)   //0x2
+    {
+        GameObject const* go = static_cast<GameObject*>(this);
+        if (go && go->ToTransport())
+            *data << uint32_t(go->GetTransValues()->PathProgress);
+        else
+            *data << Util::getMSTime();
     }
 }
 #endif
@@ -1901,114 +2052,24 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
 #if VERSION_STRING == WotLK
 void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target)
 {
-    uint32 flags2 = 0;
-
     ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->getSplineMgr().popSplinePacket(getGuid()) : 0;
-
-    if (splinebuf != nullptr)
-    {
-        flags2 |= MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_MOVE_FORWARD; //1=move forward
-        if (isCreature())
-        {
-            if (static_cast<Unit*>(this)->GetAIInterface()->hasWalkMode(WALKMODE_WALK))
-                flags2 |= MOVEFLAG_WALK;
-        }
-    }
-
-    uint16 moveflags2 = 0;      // mostly seem to be used by vehicles to control what kind of movement is allowed
-
-    if (isVehicle())
-    {
-        Unit* u = static_cast<Unit*>(this);
-        if (u->getVehicleComponent() != nullptr)
-            moveflags2 |= u->getVehicleComponent()->GetMoveFlags2();
-
-        if (isCreature())
-        {
-            if (static_cast<Unit*>(this)->HasAuraWithName(SPELL_AURA_ENABLE_FLIGHT))
-                flags2 |= (MOVEFLAG_DISABLEGRAVITY | MOVEFLAG_FLYING);
-        }
-
-    }
 
     *data << uint16(updateFlags);
 
-    Player* pThis = nullptr;
-    MovementInfo* moveinfo = nullptr;
-    if (isPlayer())
-    {
-        pThis = static_cast<Player*>(this);
-        if (pThis->GetSession())
-            moveinfo = pThis->getMovementInfo();
-    }
-    Creature* uThis = nullptr;
-    if (isCreature())
-        uThis = static_cast<Creature*>(this);
-
     if (updateFlags & UPDATEFLAG_LIVING)  //0x20
     {
-        /*if (pThis && pThis->obj_movement_info.transporter_info.guid != 0)
-            flags2 |= MOVEFLAG_TRANSPORT; //0x200
-        else if (uThis != NULL && obj_movement_info.transporter_info.guid != 0 && uThis->obj_movement_info.transporter_info.guid != 0)
-            flags2 |= MOVEFLAG_TRANSPORT; //0x200*/
+        *data << uint32(obj_movement_info.getMovementFlags());
 
-            // Zyres: If a unit has this flag, add it to the update packet, otherwise not.
-        if (pThis && pThis->hasUnitMovementFlag(MOVEFLAG_TRANSPORT))
-            flags2 |= MOVEFLAG_TRANSPORT;
-        else if (uThis && uThis->hasUnitMovementFlag(MOVEFLAG_TRANSPORT))
-            flags2 |= MOVEFLAG_TRANSPORT;
+        *data << uint16(obj_movement_info.getMovementFlags2());
 
-        if ((pThis != nullptr) && pThis->isRooted())
-            flags2 |= MOVEFLAG_ROOTED;
-        else if ((uThis != nullptr) && uThis->isRooted())
-            flags2 |= MOVEFLAG_ROOTED;
+        *data << Util::getMSTime();
 
-        if (uThis != nullptr)
-        {
-            // Don't know what this is, but I've only seen it applied to spirit healers. maybe some sort of invisibility flag? :/
-            switch (getEntry())
-            {
-            case 6491:      // Spirit Healer
-            case 13116:     // Alliance Spirit Guide
-            case 13117:     // Horde Spirit Guide
-            {
-                flags2 |= MOVEFLAG_WATER_WALK;      //0x10000000
-            }
-            break;
-            }
-
-            if (uThis->GetAIInterface()->isFlying())
-                flags2 |= MOVEFLAG_DISABLEGRAVITY;        //0x400 Zack : Teribus the Cursed had flag 400 instead of 800 and he is flying all the time
-            if (uThis->GetAIInterface()->onGameobject)
-                flags2 |= MOVEFLAG_ROOTED;
-            if (uThis->GetCreatureProperties()->extra_a9_flags)
-            {
-                //do not send shit we can't honor
-#define UNKNOWN_FLAGS2 (0x00002000 | 0x04000000 | 0x08000000)
-                uint32 inherit = uThis->GetCreatureProperties()->extra_a9_flags & UNKNOWN_FLAGS2;
-                flags2 |= inherit;
-            }
-        }
-
-        *data << uint32(flags2);
-
-        *data << uint16(moveflags2);
-
-        *data << Util::getMSTime(); // this appears to be time in ms but can be any thing. Maybe packet serializer ?
-
-        // this stuff:
-        //   0x01 -> Enable Swimming?
-        //   0x04 -> ??
-        //   0x10 -> disables movement compensation and causes players to jump around all the place
-        //   0x40 -> disables movement compensation and causes players to jump around all the place
-
-        //Send position data, every living thing has these
         *data << float(m_position.x);
         *data << float(m_position.y);
         *data << float(m_position.z);
         *data << float(m_position.o);
 
-        if (flags2 & MOVEFLAG_TRANSPORT) //0x0200
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT)) //0x0200
         {
             *data << WoWGuid(obj_movement_info.transport_guid);
             *data << float(GetTransOffsetX());
@@ -2017,38 +2078,29 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             *data << float(GetTransOffsetO());
             *data << uint32(GetTransTime());
             *data << uint8(GetTransSeat());
+
+            if (obj_movement_info.hasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE))
+                *data << uint32(obj_movement_info.transport_time2);
         }
 
-        if ((flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING))   // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH
+        if (obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || obj_movement_info.hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))   // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH
         {
-            if (pThis && moveinfo)
-                *data << moveinfo->pitch_rate;
-            else
-                *data << float(0); //pitch
+            *data << obj_movement_info.pitch_rate;
         }
 
-        if (pThis && moveinfo)
-            *data << moveinfo->fall_time;
-        else
-            *data << uint32(0); //last fall time
+        *data << obj_movement_info.fall_time;
 
-        if (flags2 & MOVEFLAG_FALLING)   // 0x00001000
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING))   // 0x00001000
         {
-            if (moveinfo != nullptr)
-            {
-                *data << moveinfo->jump_info.velocity;
-                *data << moveinfo->jump_info.sinAngle;
-                *data << moveinfo->jump_info.cosAngle;
-                *data << moveinfo->jump_info.xyspeed;
-            }
-            else
-            {
-                *data << float(0);
-                *data << float(1.0);
-                *data << float(0);
-                *data << float(0);
-            }
+
+                *data << obj_movement_info.jump_info.velocity;
+                *data << obj_movement_info.jump_info.sinAngle;
+                *data << obj_movement_info.jump_info.cosAngle;
+                *data << obj_movement_info.jump_info.xyspeed;
         }
+
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION))
+            *data << float(obj_movement_info.spline_elevation);
 
         if (Unit* unit = static_cast<Unit*>(this))
         {
@@ -2075,16 +2127,16 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             *data << float(3.14f);
         }
 
-        if (flags2 & MOVEFLAG_SPLINE_ENABLED)   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ENABLED))   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
         {
             if (splinebuf != nullptr)
             {
                 data->append(*splinebuf);
-                //delete splinebuf;
             }
             else
                 *data << float(0.0f);
         }
+
     }
     else        // No UPDATEFLAG_LIVING
     {
@@ -2123,28 +2175,42 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         }
         else if (updateFlags & UPDATEFLAG_HAS_POSITION)  //0x40
         {
-            if (updateFlags & UPDATEFLAG_TRANSPORT &&  static_cast<GameObject*>(this)->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT)
-            {
-                *data << float(0);
-                *data << float(0);
-                *data << float(0);
-            }
-            else
-            {
-                *data << float(m_position.x);
-                *data << float(m_position.y);
-                *data << float(m_position.z);
-            }
+            *data << float(m_position.x);
+            *data << float(m_position.y);
+            *data << float(m_position.z);
             *data << float(m_position.o);
         }
     }
 
+    if (updateFlags & UPDATEFLAG_UNKNOWN)     //0x08
+        *data << uint32(0);
 
-    if (updateFlags & UPDATEFLAG_LOWGUID)     //0x08
-        *data << getGuidLow();
-
-    if (updateFlags & UPDATEFLAG_HIGHGUID)    //0x10
-        *data << getGuidHigh();
+    if (updateFlags & UPDATEFLAG_LOWGUID)    //0x10
+    {
+        switch (getOType())
+        {
+        case TYPEID_OBJECT:
+        case TYPEID_ITEM:
+        case TYPEID_CONTAINER:
+        case TYPEID_GAMEOBJECT:
+        case TYPEID_DYNAMICOBJECT:
+        case TYPEID_CORPSE:
+            *data << uint32(GetNewGUID().getGuidLowPart());
+            break;
+        case TYPEID_UNIT:
+            *data << uint32(0x0000000B);                // unk
+            break;
+        case TYPEID_PLAYER:
+            if (updateFlags & UPDATEFLAG_SELF)
+                *data << uint32(0x0000002F);            // unk
+            else
+                *data << uint32(0x00000008);            // unk
+            break;
+        default:
+            *data << uint32(0x00000000);                // unk
+            break;
+        }
+    }
 
     if (updateFlags & UPDATEFLAG_HAS_TARGET)  //0x04
     {
@@ -2174,7 +2240,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
                 vehicleid = static_cast<Player*>(this)->mountvehicleid;
 
         *data << uint32(vehicleid);
-        *data << float(GetOrientation());
+        *data << float(GetTransOffsetO());
     }
 
     if (updateFlags & UPDATEFLAG_ROTATION)   //0x0200
@@ -2186,95 +2252,84 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 #endif
 
 #if VERSION_STRING == Cata
-void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target)
 {
     ObjectGuid Guid = getGuid();
+    uint32_t movementFlags = 0;
+    uint16_t movementFlagsExtra = 0;
 
-    data->writeBit(false);
-    data->writeBit(false);
+    bool hasTransportTime2 = false;
+    bool hasVehicleId = false;
+    bool hasFallDirection = false;
+    bool hasFallData = false;
+    bool hasPitch = false;
+    bool hasSpline = false;
+    bool hasSplineElevation = false;
+    bool hasAIAnimKit = false;
+    bool hasMovementAnimKit = false;
+    bool hasMeleeAnimKit = false;
+
+    uint32_t stopFrameCount = 0;
+
+    data->writeBit(updateFlags & UPDATEFLAG_PLAY_HOVER_ANIM);
+    data->writeBit(updateFlags & UPDATEFLAG_SUPPRESSED_GREETINGS);
     data->writeBit(updateFlags & UPDATEFLAG_ROTATION);
     data->writeBit(updateFlags & UPDATEFLAG_ANIM_KITS);
     data->writeBit(updateFlags & UPDATEFLAG_HAS_TARGET);
     data->writeBit(updateFlags & UPDATEFLAG_SELF);
     data->writeBit(updateFlags & UPDATEFLAG_VEHICLE);
     data->writeBit(updateFlags & UPDATEFLAG_LIVING);
-    data->writeBits(0, 24);
-    data->writeBit(false);
-    data->writeBit(updateFlags & UPDATEFLAG_POSITION);
-    data->writeBit(updateFlags & UPDATEFLAG_HAS_POSITION);
-    data->writeBit(updateFlags & UPDATEFLAG_TRANSPORT_ARR);
-    data->writeBit(false);
+    data->writeBits(stopFrameCount, 24);
+    data->writeBit(updateFlags & UPDATEFLAG_NO_BIRTH_ANIM);
+    data->writeBit(updateFlags & UPDATEFLAG_POSITION); //UPDATEFLAG_GO_TRANSPORT_POSITION
+    data->writeBit(updateFlags & UPDATEFLAG_HAS_POSITION);   //UPDATEFLAG_STATIONARY_POSITION
+    data->writeBit(updateFlags & UPDATEFLAG_AREATRIGGER);
+    data->writeBit(updateFlags & UPDATEFLAG_ENABLE_PORTALS);
     data->writeBit(updateFlags & UPDATEFLAG_TRANSPORT);
-
-    bool hasTransport = false;
-    bool isSplineEnabled = false;
-    bool hasPitch = false;
-    bool hasFallData = false;
-    bool hasFallDirection = false;
-    bool hasElevation = false;
-    bool hasOrientation = !IsType(TYPE_ITEM);
-    bool hasTimeStamp = true;
-    bool hasTransportTime2 = false;
-    bool hasTransportTime3 = false;
-
-    if (IsType(TYPE_UNIT))
-    {
-        Unit* unit = (Unit*)this;
-        hasTransport = unit->movement_info.transport_guid != 0;
-        isSplineEnabled = false; // unit->IsSplineEnabled();
-
-        if (getObjectTypeId() == TYPEID_PLAYER)
-        {
-            hasPitch = unit->movement_info.getMovementStatusInfo().hasPitch;
-            hasFallData = unit->movement_info.getMovementStatusInfo().hasFallData;
-            hasFallDirection = unit->movement_info.getMovementStatusInfo().hasFallDirection;
-            hasElevation = unit->movement_info.getMovementStatusInfo().hasSplineElevation;
-            hasTransportTime2 = unit->movement_info.getMovementStatusInfo().hasTransportTime2;
-            hasTransportTime3 = unit->movement_info.getMovementStatusInfo().hasTransportTime3;
-        }
-        else
-        {
-            hasPitch = unit->movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) ||
-                unit->movement_info.hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING);
-            hasFallData = unit->movement_info.hasMovementFlag2(MOVEFLAG2_INTERPOLATED_TURN);
-            hasFallDirection = unit->movement_info.hasMovementFlag(MOVEFLAG_FALLING);
-            hasElevation = unit->movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION);
-        }
-    }
 
     if (updateFlags & UPDATEFLAG_LIVING)
     {
         Unit* unit = (Unit*)this;
+        movementFlags = obj_movement_info.getMovementFlags();
+        movementFlagsExtra = obj_movement_info.getMovementFlags2();
+        //hasSpline = false;
 
-        data->writeBit(!unit->movement_info.getMovementFlags());
-        data->writeBit(!hasOrientation);
+        hasTransportTime2 = obj_movement_info.transport_guid != 0 && obj_movement_info.transport_time2 != 0;
+        hasVehicleId = unit->getCurrentVehicle() && unit->getCurrentVehicle()->GetVehicleInfo();
+        hasPitch = obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || obj_movement_info.hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING);
+        hasFallDirection = obj_movement_info.hasMovementFlag2(MOVEFLAG2_INTERPOLATED_TURN);
+        hasFallData = hasFallDirection || obj_movement_info.fall_time != 0;
+        hasSplineElevation = obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION);
+
+        data->writeBit(!movementFlags);
+        data->writeBit(G3D::fuzzyEq(GetOrientation(), 0.0f));
 
         data->writeBit(Guid[7]);
         data->writeBit(Guid[3]);
         data->writeBit(Guid[2]);
 
-        if (unit->movement_info.getMovementFlags())
-            data->writeBits(unit->movement_info.getMovementFlags(), 30);
+        if (movementFlags)
+            data->writeBits(movementFlags, 30);
 
-        data->writeBit(false);
+        data->writeBit(hasSpline && !isPlayer());
         data->writeBit(!hasPitch);
-        data->writeBit(isSplineEnabled);
+        data->writeBit(hasSpline);
         data->writeBit(hasFallData);
-        data->writeBit(!hasElevation);
+        data->writeBit(!hasSplineElevation);
         data->writeBit(Guid[5]);
-        data->writeBit(hasTransport);
-        data->writeBit(!hasTimeStamp);
+        data->writeBit(obj_movement_info.transport_guid != 0);
+        data->writeBit(0);
 
-        if (hasTransport)
+        if (obj_movement_info.transport_guid != 0)
         {
-            ObjectGuid tGuid = unit->movement_info.transport_guid;
+            ObjectGuid tGuid = obj_movement_info.transport_guid;
 
             data->writeBit(tGuid[1]);
             data->writeBit(hasTransportTime2);
             data->writeBit(tGuid[4]);
             data->writeBit(tGuid[0]);
             data->writeBit(tGuid[6]);
-            data->writeBit(hasTransportTime3);
+            data->writeBit(hasVehicleId);
             data->writeBit(tGuid[7]);
             data->writeBit(tGuid[5]);
             data->writeBit(tGuid[3]);
@@ -2283,10 +2338,8 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
         data->writeBit(Guid[4]);
 
-        if (isSplineEnabled)
-        {
-            //Movement::PacketBuilder::WriteCreateBits(*unit->movespline, *data);
-        }
+        if (hasSpline)
+            *data << float(0.0f);
 
         data->writeBit(Guid[6]);
 
@@ -2296,20 +2349,19 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         data->writeBit(Guid[0]);
         data->writeBit(Guid[1]);
 
-        data->writeBit(false);
-        data->writeBit(!unit->movement_info.getMovementFlags2());
+        data->writeBit(0);
+        data->writeBit(!movementFlagsExtra);
 
-        if (unit->movement_info.getMovementFlags2())
-            data->writeBits(unit->movement_info.getMovementFlags2(), 12);
-
+        if (movementFlagsExtra)
+            data->writeBits(movementFlagsExtra, 12);
     }
 
     if (updateFlags & UPDATEFLAG_POSITION)
     {
-        ObjectGuid transGuid;
+        ObjectGuid transGuid = obj_movement_info.transport_guid;
 
         data->writeBit(transGuid[5]);
-        data->writeBit(hasTransportTime3);
+        data->writeBit(hasVehicleId);
         data->writeBit(transGuid[0]);
         data->writeBit(transGuid[3]);
         data->writeBit(transGuid[6]);
@@ -2360,21 +2412,21 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         {
             if (hasFallDirection)
             {
-                *data << float(unit->movement_info.getJumpInfo().cosAngle);
-                *data << float(unit->movement_info.getJumpInfo().xyspeed);
-                *data << float(unit->movement_info.getJumpInfo().sinAngle);
+                *data << float(obj_movement_info.jump_info.xyspeed);
+                *data << float(obj_movement_info.jump_info.sinAngle);
+                *data << float(obj_movement_info.jump_info.cosAngle);
             }
 
-            *data << uint32_t(unit->movement_info.getFallTime());
-            *data << float(unit->movement_info.getJumpInfo().velocity);
+            *data << uint32_t(obj_movement_info.fall_time);
+            *data << float(obj_movement_info.jump_info.velocity);
         }
 
         *data << unit->getSpeedRate(TYPE_SWIM_BACK, true);
 
-        if (hasElevation)
-            *data << float(unit->movement_info.getSplineElevation());
+        if (hasSplineElevation)
+            *data << float(obj_movement_info.spline_elevation);
 
-        if (isSplineEnabled)
+        if (hasSpline)
         {
             //Movement::PacketBuilder::WriteCreateBytes(*unit->movespline, *data);
         }
@@ -2382,32 +2434,32 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         *data << float(unit->GetPositionZ());
         data->WriteByteSeq(Guid[5]);
 
-        if (hasTransport)
+        if (obj_movement_info.transport_guid)
         {
-            ObjectGuid tGuid = unit->movement_info.transport_guid;
+            ObjectGuid tGuid = obj_movement_info.transport_guid;
 
             data->WriteByteSeq(tGuid[5]);
             data->WriteByteSeq(tGuid[7]);
 
-            *data << uint32(unit->movement_info.transport_guid);
-            *data << float(normalizeOrientation(unit->movement_info.transport_position.o));
+            *data << uint32(obj_movement_info.transport_time);
+            *data << float(normalizeOrientation(GetTransOffsetO()));
 
             if (hasTransportTime2)
-                *data << uint32_t(unit->movement_info.transport_time2);
+                *data << uint32_t(obj_movement_info.transport_time2);
 
-            *data << float(unit->movement_info.transport_position.y);
-            *data << float(unit->movement_info.transport_position.x);
+            *data << float(GetTransOffsetY());
+            *data << float(GetTransOffsetX());
 
             data->WriteByteSeq(tGuid[3]);
 
-            *data << float(unit->movement_info.transport_position.z);
+            *data << float(GetTransOffsetZ());
 
             data->WriteByteSeq(tGuid[0]);
 
-            if (hasTransportTime3)
-                *data << uint32_t(unit->movement_info.getFallTime());
+            if (hasVehicleId)
+                *data << uint32_t(unit->getCurrentVehicle()->GetVehicleInfo()->ID);
 
-            *data << int8_t(unit->movement_info.transport_seat);
+            *data << int8_t(obj_movement_info.transport_seat);
 
             data->WriteByteSeq(tGuid[1]);
             data->WriteByteSeq(tGuid[6]);
@@ -2415,7 +2467,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             data->WriteByteSeq(tGuid[4]);
         }
 
-        *data << float(unit->GetPositionX());
+        *data << float(GetPositionX());
         *data << float(unit->getSpeedRate(TYPE_PITCH_RATE, true));
 
         data->WriteByteSeq(Guid[3]);
@@ -2432,21 +2484,21 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
         *data << uint32_t(Util::getMSTime());
 
-        *data << float(unit->getSpeedRate(TYPE_FLY_BACK, true));
+        *data << float(unit->getSpeedRate(TYPE_TURN_RATE, true));
 
         data->WriteByteSeq(Guid[6]);
 
-        *data << float(unit->getSpeedRate(TYPE_TURN_RATE, true));
+        *data << float(unit->getSpeedRate(TYPE_FLY, true));
 
-        if (hasOrientation)
-            *data << float(normalizeOrientation(unit->GetOrientation()));
+        if (!G3D::fuzzyEq(GetOrientation(), 0.0f))
+            *data << float(normalizeOrientation(GetOrientation()));
 
         *data << unit->getSpeedRate(TYPE_RUN, true);
 
         if (hasPitch)
-            *data << float(unit->movement_info.getPitch());
+            *data << float(obj_movement_info.pitch_rate);
 
-        *data << float(unit->getSpeedRate(TYPE_FLY, true));
+        *data << float(unit->getSpeedRate(TYPE_FLY_BACK, true));
     }
 
     if (updateFlags & UPDATEFLAG_VEHICLE)
@@ -2463,7 +2515,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
                 vehicleid = static_cast<Player*>(this)->mountvehicleid;
         }
 
-        *data << float(normalizeOrientation(((Object*)this)->GetOrientation()));
+        *data << float(normalizeOrientation(GetOrientation()));
         *data << uint32_t(vehicleid);
     }
 
@@ -2474,29 +2526,29 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         data->WriteByteSeq(transGuid[0]);
         data->WriteByteSeq(transGuid[5]);
 
-        if (hasTransportTime3)
-            *data << uint32_t(0);
+        if (hasVehicleId)
+            *data << uint32_t(static_cast<Creature*>(this)->GetCreatureProperties()->vehicleid);
 
         data->WriteByteSeq(transGuid[3]);
 
-        *data << float(0.0f);               // x offset
+        *data << float(GetTransOffsetX());
 
         data->WriteByteSeq(transGuid[4]);
         data->WriteByteSeq(transGuid[6]);
         data->WriteByteSeq(transGuid[1]);
 
-        *data << uint32_t(0);               // transport time
-        *data << float(0.0f);               // y offset
+        *data << uint32_t(obj_movement_info.transport_time);
+        *data << float(GetTransOffsetY());
 
         data->WriteByteSeq(transGuid[2]);
         data->WriteByteSeq(transGuid[7]);
 
-        *data << float(0.0f);               // z offset
-        *data << int8_t(-1);                // transport seat
-        *data << float(0.0f);               // o offset
+        *data << float(GetTransOffsetZ());
+        *data << int8_t(obj_movement_info.transport_seat);
+        *data << float(GetTransOffsetO());
 
         if (hasTransportTime2)
-            *data << uint32_t(0);
+            *data << uint32_t(obj_movement_info.transport_time2);
     }
 
     if (updateFlags & UPDATEFLAG_ROTATION)
@@ -2505,7 +2557,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             *data << int64_t(static_cast<GameObject*>(this)->GetRotation());
     }
 
-    if (updateFlags & UPDATEFLAG_TRANSPORT_ARR)
+    if (updateFlags & UPDATEFLAG_AREATRIGGER)
     {
         *data << float(0.0f);
         *data << float(0.0f);
@@ -2528,10 +2580,10 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (updateFlags & UPDATEFLAG_HAS_POSITION)
     {
-        *data << float(normalizeOrientation(((Object*)this)->GetOrientation()));
-        *data << float(((Object*)this)->GetPositionX());
-        *data << float(((Object*)this)->GetPositionY());
-        *data << float(((Object*)this)->GetPositionZ());
+        *data << float(normalizeOrientation(GetOrientation()));
+        *data << float(GetPositionX());
+        *data << float(GetPositionY());
+        *data << float(GetPositionZ());
     }
 
     if (updateFlags & UPDATEFLAG_HAS_TARGET)
@@ -2558,13 +2610,23 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         }
     }
 
+    if (updateFlags & UPDATEFLAG_ANIM_KITS)
+    {
+        if (hasAIAnimKit)
+            *data << uint16_t(0);
+        if (hasMovementAnimKit)
+            *data << uint16_t(0);
+        if (hasMeleeAnimKit)
+            *data << uint16_t(0);
+    }
+
     if (updateFlags & UPDATEFLAG_TRANSPORT)
     {
         GameObject const* go = static_cast<GameObject*>(this);
         if (go && go->ToTransport())
-            *data << uint32(go->GetTransValues()->PathProgress);
+            *data << uint32_t(go->GetTransValues()->PathProgress);
         else
-            *data << uint32(Util::getMSTime());
+            *data << uint32_t(Util::getMSTime());
     }
 }
 #endif

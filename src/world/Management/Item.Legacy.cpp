@@ -50,9 +50,19 @@ Item::Item()
     m_objectType |= TYPE_ITEM;
     m_objectTypeId = TYPEID_ITEM;
 
-#if VERSION_STRING < Cata
-    m_updateFlag = UPDATEFLAG_HIGHGUID;
-#else
+#if VERSION_STRING == Classic
+    m_updateFlag = UPDATEFLAG_ALL;
+#endif
+#if VERSION_STRING == TBC
+    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID);
+#endif
+#if VERSION_STRING == WotLK
+    m_updateFlag = UPDATEFLAG_LOWGUID;
+#endif
+#if VERSION_STRING == Cata
+    m_updateFlag = UPDATEFLAG_NONE;
+#endif
+#if VERSION_STRING == Mop
     m_updateFlag = UPDATEFLAG_NONE;
 #endif
 
