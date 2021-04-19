@@ -60,7 +60,7 @@ int32_t MoveSplineInit::Launch()
     }
     else
     {
-        LocationVector const pos = transport ? unit->movement_info.transport_position : unit->GetPosition();
+        LocationVector const pos = transport ? unit->obj_movement_info.transport_position : unit->GetPosition();
         real_position.x = pos.getPositionX();
         real_position.y = pos.getPositionY();
         real_position.z = pos.getPositionZ();

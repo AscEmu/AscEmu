@@ -900,9 +900,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
-
-    MovementInfo movement_info;
-
     MovementInfo* getMovementInfo();
 
     uint32_t getUnitMovementFlags() const;

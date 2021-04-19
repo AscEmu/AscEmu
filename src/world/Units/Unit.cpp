@@ -5333,18 +5333,18 @@ DeathState Unit::getDeathState() const { return m_deathState; }
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
-MovementInfo* Unit::getMovementInfo() { return &movement_info; }
+MovementInfo* Unit::getMovementInfo() { return &obj_movement_info; }
 
-uint32_t Unit::getUnitMovementFlags() const { return movement_info.flags; }   //checked
-void Unit::setUnitMovementFlags(uint32_t f) { movement_info.flags = f; }
-void Unit::addUnitMovementFlag(uint32_t f) { movement_info.flags |= f; }
-void Unit::removeUnitMovementFlag(uint32_t f) { movement_info.flags &= ~f; }
-bool Unit::hasUnitMovementFlag(uint32_t f) const { return (movement_info.flags & f) != 0; }
+uint32_t Unit::getUnitMovementFlags() const { return obj_movement_info.flags; }   //checked
+void Unit::setUnitMovementFlags(uint32_t f) { obj_movement_info.flags = f; }
+void Unit::addUnitMovementFlag(uint32_t f) { obj_movement_info.flags |= f; }
+void Unit::removeUnitMovementFlag(uint32_t f) { obj_movement_info.flags &= ~f; }
+bool Unit::hasUnitMovementFlag(uint32_t f) const { return (obj_movement_info.flags & f) != 0; }
 
 //\brief: this is not uint16_t on version < wotlk
-uint16_t Unit::getExtraUnitMovementFlags() const { return movement_info.flags2; }
-void Unit::addExtraUnitMovementFlag(uint16_t f2) { movement_info.flags2 |= f2; }
-bool Unit::hasExtraUnitMovementFlag(uint16_t f2) const { return (movement_info.flags2 & f2) != 0; }
+uint16_t Unit::getExtraUnitMovementFlags() const { return obj_movement_info.flags2; }
+void Unit::addExtraUnitMovementFlag(uint16_t f2) { obj_movement_info.flags2 |= f2; }
+bool Unit::hasExtraUnitMovementFlag(uint16_t f2) const { return (obj_movement_info.flags2 & f2) != 0; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Summons
