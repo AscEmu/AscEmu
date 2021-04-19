@@ -1883,7 +1883,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
     if (updateFlags & UPDATEFLAG_LOWGUID)
     {
         *data << objectData()->guid_parts.low;
-        if (flaupdateFlagsgs & UPDATEFLAG_HIGHGUID)
+        if (updateFlags & UPDATEFLAG_HIGHGUID)
             *data << objectData()->guid_parts.high;
     }
     else if (updateFlags & UPDATEFLAG_HIGHGUID)
