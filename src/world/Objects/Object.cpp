@@ -4508,7 +4508,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, float cu
     if (hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION))
         data << spline_elevation;
 
-#elif VERSION_STRING >= Cat
+#elif VERSION_STRING >= Cata
     bool hasTransportData = !transport_guid.IsEmpty();
 
     MovementStatusElements* sequence = GetMovementStatusElementsSequence(opcode);
