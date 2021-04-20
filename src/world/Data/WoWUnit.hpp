@@ -472,7 +472,6 @@ struct WoWUnit : WoWObject
     float mod_haste_regen;
     uint32_t created_by_spell_id;
     uint32_t npc_flags;
-    uint32_t dynamic_flags;
     uint32_t npc_emote_state;
     uint32_t stat[WOWUNIT_STAT_COUNT];
     uint32_t positive_stat[WOWUNIT_STAT_COUNT];

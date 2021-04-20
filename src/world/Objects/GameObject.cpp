@@ -62,8 +62,13 @@ bool GameObject::hasFlags(uint32_t flags) const { return (getFlags() & flags) !=
 float GameObject::getParentRotation(uint8_t type) const { return gameObjectData()->rotation[type]; }
 void GameObject::setParentRotation(uint8_t type, float rotation) { write(gameObjectData()->rotation[type], rotation); }
 
+#if VERSION_STRING < Mop
 uint32_t GameObject::getDynamic() const { return gameObjectData()->dynamic; }
 void GameObject::setDynamic(uint32_t dynamic) { write(gameObjectData()->dynamic, dynamic); }
+#else
+uint32_t GameObject::getDynamic() const { return 0; }
+void GameObject::setDynamic(uint32_t dynamic) { return; }
+#endif
 
 uint32_t GameObject::getFactionTemplate() const { return gameObjectData()->faction_template; }
 void GameObject::setFactionTemplate(uint32_t id) { write(gameObjectData()->faction_template, id); }
@@ -106,6 +111,7 @@ void GameObject::setGoType(uint8_t type)
 #endif
 }
 
+#if VERSION_STRING < Mop
 uint8_t GameObject::getArtKit() const
 {
 #if VERSION_STRING <= TBC
@@ -122,7 +128,18 @@ void GameObject::setArtKit(uint8_t artkit)
     write(gameObjectData()->bytes_1_gameobject.art_kit, artkit);
 #endif
 }
+#else
+uint8_t GameObject::getArtKit() const
+{
+    return gameObjectData()->bytes_2_gameobject.art_kit;
+}
+void GameObject::setArtKit(uint8_t artkit)
+{
+    write(gameObjectData()->bytes_2_gameobject.art_kit, artkit);
+}
+#endif
 
+#if VERSION_STRING < Mop
 uint8_t GameObject::getAnimationProgress() const
 {
 #if VERSION_STRING <= TBC
@@ -139,6 +156,16 @@ void GameObject::setAnimationProgress(uint8_t progress)
     write(gameObjectData()->bytes_1_gameobject.animation_progress, progress);
 #endif
 }
+#else
+uint8_t GameObject::getAnimationProgress() const
+{
+    return gameObjectData()->bytes_2_gameobject.animation_progress;
+}
+void GameObject::setAnimationProgress(uint8_t progress)
+{
+    write(gameObjectData()->bytes_2_gameobject.animation_progress, progress);
+}
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Type helper

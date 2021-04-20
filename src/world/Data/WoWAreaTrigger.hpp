@@ -12,9 +12,10 @@ This file is released under the MIT license. See README-MIT for more information
  */
 
 #pragma once
-#include "WoWObject.h"
+#include "WoWObject.hpp"
 #pragma pack(push, 1)
 
+#if VERSION_STRING < Mop
 struct WoWAreaTrigger : WoWObject
 {
     uint32_t spell_id;
@@ -24,5 +25,15 @@ struct WoWAreaTrigger : WoWObject
     float pos_y;
     float pos_z;
 };
+#else
+struct WoWAreaTrigger : WoWObject
+{
+    guid_union caster_guid;
+    uint32_t duration;
+    uint32_t spell_id;
+    uint32_t spell_visual_id;
+    float scale;
+};
+#endif
 
 #pragma pack(pop)

@@ -2050,6 +2050,7 @@ void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
 
 void WorldSession::sendAddonInfo()
 {
+#if VERSION_STRING < Mop
     WorldPacket data(SMSG_ADDON_INFO, 4);
     for (auto itr : m_addonList)
     {
@@ -2089,6 +2090,59 @@ void WorldSession::sendAddonInfo()
     }
 
     SendPacket(&data);
+#else
+    WorldPacket data(SMSG_ADDON_INFO, 1000);
+
+    BannedAddonList const* bannedAddons = sAddonMgr.getBannedAddonsList();
+
+    data.writeBits(static_cast<uint32_t>(bannedAddons->size()), 18);
+    data.writeBits(static_cast<uint32_t>(m_addonList.size()), 23);
+
+    for (auto itr : m_addonList)
+    {
+        data.writeBit(0); // Has URL
+        data.writeBit(itr.enabled);
+        data.writeBit(!itr.usePublicKeyOrCRC);
+    }
+
+    data.flushBits();
+
+    for (auto itr : m_addonList)
+    {
+        if (!itr.usePublicKeyOrCRC)
+        {
+            size_t pos = data.wpos();
+            for (int i = 0; i < 256; i++)
+                data << uint8_t(0);
+
+            for (int i = 0; i < 256; i++)
+                data.put(pos + publicKeyOrder[i], PublicKey[i]);
+        }
+
+        if (itr.enabled)
+        {
+            data << uint8_t(itr.enabled);
+            data << uint32_t(0);
+        }
+
+        data << uint8(itr.state);
+    }
+
+    m_addonList.clear();
+
+    for (auto itr = bannedAddons->begin(); itr != bannedAddons->end(); ++itr)
+    {
+        data << uint32_t(itr->id);
+        data << uint32_t(1);  // banned?
+
+        for (int32 i = 0; i < 8; i++)
+            data << uint32(0);
+
+        data << uint32_t(itr->timestamp);
+    }
+
+    //SendPacket(&data);
+#endif
 }
 
 bool WorldSession::isAddonRegistered(const std::string& addon_name) const
@@ -2338,9 +2392,11 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 #if VERSION_STRING > TBC
 void WorldSession::sendClientCacheVersion(uint32 version)
 {
+#if VERSION_STRING < Mop
     WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
     data << uint32_t(version);
     SendPacket(&data);
+#endif
 }
 #endif
 

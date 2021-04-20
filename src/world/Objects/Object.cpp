@@ -463,7 +463,9 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     // this will cache automatically if needed
     buildValuesUpdate(data, &updateMask, target);
-
+#if VERSION_STRING == Mop
+    *data << uint8_t(0);
+#endif
     // Update count
     return 1;
 }
@@ -1715,7 +1717,9 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
             *data << m_wowGuid;
 
             buildValuesUpdate(data, &updateMask, target);
-
+#if VERSION_STRING == Mop
+            * data << uint8_t(0);
+#endif
             return 1;
         }
     }
@@ -1733,7 +1737,9 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
     *buf << m_wowGuid;
 
     buildValuesUpdate(buf, mask, nullptr);
-
+#if VERSION_STRING == Mop
+    *buf << uint8_t(0);
+#endif
     // 1 update.
     return 1;
 }
@@ -3125,11 +3131,6 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
             static_cast<GameObject*>(this)->setDynamic(old_flags);
         skipping_updates = false;
     }
-
-#if VERSION_STRING == Mop
-    * data << uint8_t(0);
-#endif
-
 }
 // MIT End
 

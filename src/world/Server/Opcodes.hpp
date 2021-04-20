@@ -1725,6 +1725,9 @@ SMSG_WEEKLY_SPELL_USAGE,
 SMSG_WEEKLY_SPELL_USAGE_UPDATE,
 SMSG_WORLD_SERVER_INFO,
 SMSG_XP_GAIN_ABORTED,
+SMSG_SET_TIME_ZONE_INFORMATION,
+SMSG_HOTFIX_NOTIFY_BLOB,
+SMSG_SETUP_CURRENCY,
 NUM_OPCODES
 };
 
@@ -2407,7 +2410,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {SMSG_LOOT_ROLL, {0x1F, "SMSG_LOOT_ROLL", OpcodeDevelopmentState::Unchecked, {0x2A2,/*Classic*/ 0x2A2,/*BC*/ 0x2A2,/*WotLK*/ 0x6507,/*Cata*/ 0x6507/*Mop*/}}},
 {CMSG_LOOT_MASTER_GIVE, {0x1F, "CMSG_LOOT_MASTER_GIVE", OpcodeDevelopmentState::Unchecked, {0x2A3,/*Classic*/ 0x2A3,/*BC*/ 0x2A3,/*WotLK*/ 0x4F35,/*Cata*/ 0x4F35/*Mop*/}}},
 {SMSG_LOOT_MASTER_LIST, {0x1F, "SMSG_LOOT_MASTER_LIST", OpcodeDevelopmentState::Unchecked, {0x2A4,/*Classic*/ 0x2A4,/*BC*/ 0x2A4,/*WotLK*/ 0x0325,/*Cata*/ 0x0325/*Mop*/}}},
-{SMSG_SET_FORCED_REACTIONS, {0x1F, "SMSG_SET_FORCED_REACTIONS", OpcodeDevelopmentState::Unchecked, {0x2A5,/*Classic*/ 0x2A5,/*BC*/ 0x2A5,/*WotLK*/ 0x4615,/*Cata*/ 0x4615/*Mop*/}}},
+{SMSG_SET_FORCED_REACTIONS, {0x1F, "SMSG_SET_FORCED_REACTIONS", OpcodeDevelopmentState::Unchecked, {0x2A5,/*Classic*/ 0x2A5,/*BC*/ 0x2A5,/*WotLK*/ 0x4615,/*Cata*/ 0x068F/*Mop*/}}},
 {SMSG_SPELL_FAILED_OTHER, {0x1F, "SMSG_SPELL_FAILED_OTHER", OpcodeDevelopmentState::Unchecked, {0x2A6,/*Classic*/ 0x2A6,/*BC*/ 0x2A6,/*WotLK*/ 0x4535,/*Cata*/ 0x4535/*Mop*/}}},
 {SMSG_GAMEOBJECT_RESET_STATE, {0x1F, "SMSG_GAMEOBJECT_RESET_STATE", OpcodeDevelopmentState::Unchecked, {0x2A7,/*Classic*/ 0x2A7,/*BC*/ 0x2A7,/*WotLK*/ 0x2A16,/*Cata*/ 0x2A16/*Mop*/}}},
 {CMSG_REPAIR_ITEM, {0x1F, "CMSG_REPAIR_ITEM", OpcodeDevelopmentState::Unchecked, {0x2A8,/*Classic*/ 0x2A8,/*BC*/ 0x2A8,/*WotLK*/ 0x2917,/*Cata*/ 0x2917/*Mop*/}}},
@@ -2481,7 +2484,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {SMSG_BATTLEGROUND_PLAYER_JOINED, {0x1F, "SMSG_BATTLEGROUND_PLAYER_JOINED", OpcodeDevelopmentState::Unchecked, {0x2EC,/*Classic*/ 0x2EC,/*BC*/ 0x2EC,/*WotLK*/ 0x50B0,/*Cata*/ 0x50B0/*Mop*/}}},
 {SMSG_BATTLEGROUND_PLAYER_LEFT, {0x1F, "SMSG_BATTLEGROUND_PLAYER_LEFT", OpcodeDevelopmentState::Unchecked, {0x2ED,/*Classic*/ 0x2ED,/*BC*/ 0x2ED,/*WotLK*/ 0x59A6,/*Cata*/ 0x59A6/*Mop*/}}},
 {CMSG_BATTLEMASTER_JOIN, {0x1F, "CMSG_BATTLEMASTER_JOIN", OpcodeDevelopmentState::Unchecked, {0x2EE,/*Classic*/ 0x2EE,/*BC*/ 0x2EE,/*WotLK*/ 0x7902,/*Cata*/ 0x7902/*Mop*/}}},
-{SMSG_ADDON_INFO, {0x1F, "SMSG_ADDON_INFO", OpcodeDevelopmentState::Unchecked, {0x2EF,/*Classic*/ 0x2EF,/*BC*/ 0x2EF,/*WotLK*/ 0x2C14,/*Cata*/ 0x2C14/*Mop*/}}},
+{SMSG_ADDON_INFO, {0x1F, "SMSG_ADDON_INFO", OpcodeDevelopmentState::Unchecked, {0x2EF,/*Classic*/ 0x2EF,/*BC*/ 0x2EF,/*WotLK*/ 0x2C14,/*Cata*/ 0x160A/*Mop*/}}},
 {CMSG_PET_UNLEARN, {0x1F, "CMSG_PET_UNLEARN", OpcodeDevelopmentState::Unchecked, {0x2F0,/*Classic*/ 0x2F0,/*BC*/ 0x2F0,/*WotLK*/ 0x2F0,/*Cata*/ 0x2F0/*Mop*/}}},
 {SMSG_PET_UNLEARN_CONFIRM, {0x1F, "SMSG_PET_UNLEARN_CONFIRM", OpcodeDevelopmentState::Unchecked, {0x2F1,/*Classic*/ 0x2F1,/*BC*/ 0x2F1,/*WotLK*/ 0x2F1,/*Cata*/ 0x2F1/*Mop*/}}},
 {SMSG_PARTY_MEMBER_STATS_FULL, {0x1F, "SMSG_PARTY_MEMBER_STATS_FULL", OpcodeDevelopmentState::Unchecked, {0x2F2,/*Classic*/ 0x2F2,/*BC*/ 0x2F2,/*WotLK*/ 0x0215,/*Cata*/ 0x0215/*Mop*/}}},
@@ -3422,4 +3425,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {SMSG_WEEKLY_SPELL_USAGE_UPDATE, {0x18, "SMSG_WEEKLY_SPELL_USAGE_UPDATE", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x11B5,/*Cata*/ 0x11B5/*Mop*/}}},
 {SMSG_WORLD_SERVER_INFO, {0x18, "SMSG_WORLD_SERVER_INFO", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x31A2,/*Cata*/ 0x31A2/*Mop*/}}},
 {SMSG_XP_GAIN_ABORTED, {0x18, "SMSG_XP_GAIN_ABORTED", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x50B4,/*Cata*/ 0x50B4/*Mop*/}}},
+{ SMSG_SET_TIME_ZONE_INFORMATION, {0x18, "SMSG_SET_TIME_ZONE_INFORMATION", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x19C1/*Mop*/}}},
+{ SMSG_HOTFIX_NOTIFY_BLOB, {0x18, "SMSG_HOTFIX_NOTIFY_BLOB", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1EBA/*Mop*/}} },
+{ SMSG_SETUP_CURRENCY, {0x18, "SMSG_SETUP_CURRENCY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x068F/*Mop*/}} },
 };

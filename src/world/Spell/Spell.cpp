@@ -4163,6 +4163,241 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
 
 void Spell::sendSpellStart()
 {
+#if VERSION_STRING == Mop
+    if (!m_caster || !m_caster->IsInWorld())
+        return;
+
+    ObjectGuid casterGuid = i_caster ? i_caster ->getGuid() : m_caster->getGuid();
+    ObjectGuid casterUnitGuid = m_caster->getGuid();
+    ObjectGuid targetGuid = m_targets.getGameObjectTarget();
+    ObjectGuid itemTargetGuid = m_targets.getItemTarget();
+    ObjectGuid unkGuid = 0;
+    bool hasDestLocation = (m_targets.getTargetMask() & TARGET_FLAG_DEST_LOCATION) && m_targets.getDestination().isSet();
+    bool hasSourceLocation = (m_targets.getTargetMask() & TARGET_FLAG_SOURCE_LOCATION) && m_targets.getDestination().isSet();
+    bool hasTargetString = false;// m_targets.getTargetMask()& TARGET_FLAG_STRING;
+    bool hasPredictedHeal = false;
+    bool hasPredictedType = false;
+    bool hasTargetMask = m_targets.getTargetMask() != 0;
+    bool hasCastImmunities = false;
+    bool hasCastSchoolImmunities = false;
+    bool hasElevation = false;
+    bool hasVisualChain = false;
+    bool hasAmmoInventoryType = false;
+    bool hasAmmoDisplayId = false;
+    uint8 runeCooldownPassedCount = 0;
+    uint8 predictedPowerCount = 0;
+
+    WorldPacket data(SMSG_SPELL_START, 25);
+
+    data.writeBits(0, 24); // Miss Count (not used currently in SMSG_SPELL_START)
+    data.writeBit(casterGuid[5]);
+
+    //for (uint32 i = 0; i < missCount; ++i)
+    //{
+    //}
+
+    data.writeBit(1); // Unk read int8
+    data.writeBit(0); // Fake Bit
+    data.writeBit(casterUnitGuid[4]);
+    data.writeBit(casterGuid[2]);
+    data.writeBits(runeCooldownPassedCount, 3); // Rune Cooldown Passed Count
+    data.writeBit(casterUnitGuid[2]);
+    data.writeBit(casterUnitGuid[6]);
+    data.writeBits(0, 25); // MissType Count (not used currently in SMSG_SPELL_START)
+    data.writeBits(0, 13); // Unknown Bits
+    data.writeBit(casterGuid[4]);
+    data.writeBits(0, 24); // Hit Count (not used currently in SMSG_SPELL_START)
+    data.writeBit(casterUnitGuid[7]);
+
+    //for (uint32 i = 0; i < hitCount; ++i)
+    //{
+    //}
+
+    data.writeBit(hasSourceLocation);
+    data.writeBits(predictedPowerCount, 21);
+
+    data.writeBit(itemTargetGuid[3]);
+    data.writeBit(itemTargetGuid[0]);
+    data.writeBit(itemTargetGuid[1]);
+    data.writeBit(itemTargetGuid[7]);
+    data.writeBit(itemTargetGuid[2]);
+    data.writeBit(itemTargetGuid[6]);
+    data.writeBit(itemTargetGuid[4]);
+    data.writeBit(itemTargetGuid[5]);
+
+    data.writeBit(!hasElevation);
+    data.writeBit(!hasTargetString);
+    data.writeBit(!hasAmmoInventoryType);
+    data.writeBit(hasDestLocation);
+    data.writeBit(1); // Unk Read32
+    data.writeBit(casterGuid[3]);
+
+    if (hasDestLocation)
+    {
+
+    }
+
+    data.writeBit(!hasAmmoDisplayId);
+
+    if (hasSourceLocation)
+    {
+
+    }
+
+    data.writeBit(0); // Fake Bit
+    data.writeBit(casterGuid[6]);
+
+    data.writeBit(unkGuid[2]);
+    data.writeBit(unkGuid[1]);
+    data.writeBit(unkGuid[7]);
+    data.writeBit(unkGuid[6]);
+    data.writeBit(unkGuid[0]);
+    data.writeBit(unkGuid[5]);
+    data.writeBit(unkGuid[3]);
+    data.writeBit(unkGuid[4]);
+
+    data.writeBit(!hasTargetMask);
+
+    if (hasTargetMask)
+        data.writeBits(m_targets.getTargetMask(), 20);
+
+    data.writeBit(casterGuid[1]);
+    data.writeBit(!hasPredictedHeal);
+    data.writeBit(1); // Unk read int8
+    data.writeBit(!hasCastSchoolImmunities);
+    data.writeBit(casterUnitGuid[5]);
+    data.writeBit(0); // Fake Bit
+    data.writeBits(0, 20); // Extra Target Count (not used currently in SMSG_SPELL_START)
+
+    //for (uint32 i = 0; i < extraTargetCount; ++i)
+    //{
+    //}
+
+    data.writeBit(targetGuid[1]);
+    data.writeBit(targetGuid[4]);
+    data.writeBit(targetGuid[6]);
+    data.writeBit(targetGuid[7]);
+    data.writeBit(targetGuid[5]);
+    data.writeBit(targetGuid[3]);
+    data.writeBit(targetGuid[0]);
+    data.writeBit(targetGuid[2]);
+
+    data.writeBit(casterGuid[0]);
+    data.writeBit(casterUnitGuid[3]);
+    data.writeBit(1); // Unk uint8
+
+
+
+    //for (uint32 i = 0; i < missTypeCount; ++i)
+    //{
+    //}
+
+    data.writeBit(!hasCastImmunities);
+    data.writeBit(casterUnitGuid[1]);
+    data.writeBit(hasVisualChain);
+    data.writeBit(casterGuid[7]);
+    data.writeBit(!hasPredictedType);
+    data.writeBit(casterUnitGuid[0]);
+
+    data.flushBits();
+
+    data.WriteByteSeq(itemTargetGuid[1]);
+    data.WriteByteSeq(itemTargetGuid[7]);
+    data.WriteByteSeq(itemTargetGuid[6]);
+    data.WriteByteSeq(itemTargetGuid[0]);
+    data.WriteByteSeq(itemTargetGuid[4]);
+    data.WriteByteSeq(itemTargetGuid[2]);
+    data.WriteByteSeq(itemTargetGuid[3]);
+    data.WriteByteSeq(itemTargetGuid[5]);
+
+    //for (uint32 i = 0; i < hitCount; ++i)
+    //{
+    //}
+
+    data.WriteByteSeq(targetGuid[4]);
+    data.WriteByteSeq(targetGuid[5]);
+    data.WriteByteSeq(targetGuid[1]);
+    data.WriteByteSeq(targetGuid[7]);
+    data.WriteByteSeq(targetGuid[6]);
+    data.WriteByteSeq(targetGuid[3]);
+    data.WriteByteSeq(targetGuid[2]);
+    data.WriteByteSeq(targetGuid[0]);
+
+    data << uint32(m_castTime);
+
+    data.WriteByteSeq(unkGuid[4]);
+    data.WriteByteSeq(unkGuid[5]);
+    data.WriteByteSeq(unkGuid[3]);
+    data.WriteByteSeq(unkGuid[2]);
+    data.WriteByteSeq(unkGuid[1]);
+    data.WriteByteSeq(unkGuid[6]);
+    data.WriteByteSeq(unkGuid[7]);
+    data.WriteByteSeq(unkGuid[0]);
+
+
+
+
+    data.WriteByteSeq(casterGuid[4]);
+
+    //for (uint32 i = 0; i < missCount; ++i)
+    //{
+    //}
+
+    if (hasCastSchoolImmunities)
+        data << uint32(0);
+
+    data.WriteByteSeq(casterGuid[2]);
+
+    if (hasCastImmunities)
+        data << uint32(0);
+
+    if (hasVisualChain)
+    {
+        data << uint32(0);
+        data << uint32(0);
+    }
+
+
+    data << uint32(0);
+
+    data.WriteByteSeq(casterGuid[5]);
+    data.WriteByteSeq(casterGuid[7]);
+    data.WriteByteSeq(casterGuid[1]);
+
+    data << uint8(1);
+
+    data.WriteByteSeq(casterUnitGuid[7]);
+    data.WriteByteSeq(casterUnitGuid[0]);
+    data.WriteByteSeq(casterGuid[6]);
+    data.WriteByteSeq(casterGuid[0]);
+    data.WriteByteSeq(casterUnitGuid[1]);
+
+    if (hasAmmoInventoryType)
+        data << uint8(0);
+
+    if (hasPredictedHeal)
+        data << uint32(0);
+
+    data.WriteByteSeq(casterUnitGuid[6]);
+    data.WriteByteSeq(casterUnitGuid[3]);
+
+    data << uint32(m_spellInfo->getId());
+
+    if (hasAmmoDisplayId)
+        data << uint32(0);
+
+    data.WriteByteSeq(casterUnitGuid[4]);
+    data.WriteByteSeq(casterUnitGuid[5]);
+    data.WriteByteSeq(casterUnitGuid[2]);
+
+
+    if (hasPredictedType)
+        data << uint8(0);
+
+    data.WriteByteSeq(casterGuid[3]);
+
+    m_caster->SendMessageToSet(&data, true);
+#else
     if (!m_caster->IsInWorld())
         return;
 
@@ -4233,6 +4468,7 @@ void Spell::sendSpellStart()
         writeProjectileDataToPacket(&data);
 
     m_caster->SendMessageToSet(&data, true);
+#endif
 }
 
 void Spell::sendSpellGo()

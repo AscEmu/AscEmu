@@ -743,6 +743,24 @@ void WorldSession::fullLogin(Player* player)
 
     sendMOTD();
 
+#if VERSION_STRING == Mop
+    std::string timeZone = "Etc/UTC";
+
+    WorldPacket data(SMSG_SET_TIME_ZONE_INFORMATION, 2 + timeZone.length() * 2);
+    data.writeBits(timeZone.length(), 7);
+    data.writeBits(timeZone.length(), 7);
+    data.flushBits();
+    data.WriteString(timeZone);
+    data.WriteString(timeZone);
+    SendPacket(&data);
+
+    data.Initialize(SMSG_HOTFIX_NOTIFY_BLOB);
+    data.writeBits(0, 20);
+    data.flushBits();
+    SendPacket(&data);
+
+#endif
+
     //////////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////////////

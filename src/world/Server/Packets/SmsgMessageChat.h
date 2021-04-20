@@ -202,7 +202,7 @@ namespace AscEmu::Packets
             packet.WriteByteSeq(target[2]);
             packet.WriteByteSeq(target[3]);
 
-            packet << uint8(ChatMsg::CHAT_MSG_RAID_BOSS_EMOTE);
+            packet << uint8_t(type);
 
             packet.WriteByteSeq(unkGuid[1]);
             packet.WriteByteSeq(unkGuid[3]);
@@ -222,7 +222,7 @@ namespace AscEmu::Packets
             packet.WriteByteSeq(source[1]);
             packet.WriteByteSeq(source[0]);
 
-            packet << uint8(language);
+            packet << uint8_t(language);
             packet.WriteString(message);
 #endif
 

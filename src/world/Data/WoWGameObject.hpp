@@ -132,7 +132,6 @@ struct WoWGameObject : WoWObject
     float rotation[GAMEOBJECT_ROTATION_COUNT];
     uint32_t faction_template;
     uint32_t level;
-    uint32_t dynamic;
     
     union
     {
@@ -140,10 +139,22 @@ struct WoWGameObject : WoWObject
         {
             uint8_t state;
             uint8_t type;
-            uint8_t art_kit;
-            uint8_t animation_progress;
+            uint8_t unk;
+            uint8_t health;
         } bytes_1_gameobject;
         uint32_t bytes_1;
+    };
+
+    union
+    {
+        struct
+        {
+            uint8_t transparency;
+            uint8_t art_kit;
+            uint8_t unk2;
+            uint8_t animation_progress;
+        } bytes_2_gameobject;
+        uint32_t bytes_2;
     };
 };
 #endif
