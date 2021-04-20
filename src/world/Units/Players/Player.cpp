@@ -946,8 +946,6 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
             data.writeBit(guid[6]);
             data.writeBit(guid[0]);
 
-            data.flushBits();
-
             data.WriteByteSeq(guid[1]);
 
             data << uint32_t(0);
@@ -1006,8 +1004,6 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
             data.writeBit(guid[7]);
             data.writeBit(guid[3]);
             data.writeBit(guid[2]);
-
-            data.flushBits();
 
             data.WriteByteSeq(guid[0]);
             data.WriteByteSeq(guid[7]);
@@ -2616,6 +2612,7 @@ void Player::setTalentPointsFromQuests(uint32_t talentPoints)
 void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
 {
     // TODO: classic and tbc
+#if VERSION_STRING < Mop
 #if VERSION_STRING >= WotLK
     WorldPacket data(SMSG_TALENTS_INFO, 1000);
     data << uint8_t(SendPetTalents ? 1 : 0);
@@ -2660,6 +2657,39 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
             }
         }
     }
+    GetSession()->SendPacket(&data);
+#endif
+#else
+    WorldPacket data(SMSG_TALENTS_INFO, 1000);
+    data << uint8_t(m_talentActiveSpec); // Which spec is active right now
+    data.writeBits(m_talentSpecsCount, 19);
+
+    size_t* wpos = new size_t[m_talentSpecsCount];
+    for (int i = 0; i < m_talentSpecsCount; ++i)
+    {
+        wpos[i] = data.bitwpos();
+        data.writeBits(0, 23);
+    }
+
+    data.flushBits();
+
+    for (auto specId = 0; specId < m_talentSpecsCount; ++specId)
+    {
+        PlayerSpec spec = m_specs[specId];
+
+        for (uint8_t i = 0; i < 6; ++i)
+            data << uint16_t(GetGlyph(specId, i));
+
+        int32 talentCount = 0;
+        for (const auto talent : spec.talents)
+        {
+            data << uint16_t(talent.first);
+            talentCount++;
+        }
+        data.PutBits(wpos[specId], talentCount, 23);
+        data << uint32(spec.GetTP());
+    }
+
     GetSession()->SendPacket(&data);
 #endif
 }

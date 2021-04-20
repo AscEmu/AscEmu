@@ -343,14 +343,14 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     {
     //case SMSG_POWER_UPDATE:
     //case SMSG_ITEM_TIME_UPDATE:
-    //case SMSG_AURA_UPDATE_ALL:
+    case SMSG_AURA_UPDATE_ALL:  //todo
     //case SMSG_UPDATE_INSTANCE_OWNERSHIP:
-    //case SMSG_SPELL_GO:
+    case SMSG_SPELL_GO:         //todo
     //case SMSG_SPELL_COOLDOWN:
-    //case SMSG_SPELL_START:
+    case SMSG_SPELL_START:      //todo
     //case SMSG_SPELL_FAILURE:
     //case SMSG_CAST_FAILED:
-    case SMSG_MOVE_SET_CAN_FLY:
+    //case SMSG_MOVE_SET_CAN_FLY:
     //case SMSG_TIME_SYNC_REQ:
     //case SMSG_UPDATE_OBJECT:
     //case SMSG_UPDATE_WORLD_STATE:
@@ -365,7 +365,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     //case SMSG_TUTORIAL_FLAGS:
     //case SMSG_SET_PROFICIENCY:
     //case SMSG_BINDPOINTUPDATE:
-    //case SMSG_INSTANCE_DIFFICULTY:
+    case SMSG_INSTANCE_DIFFICULTY:  //not available
     //case SMSG_MOTD:
     //case SMSG_MESSAGECHAT:
     //case MSG_SET_RAID_DIFFICULTY:

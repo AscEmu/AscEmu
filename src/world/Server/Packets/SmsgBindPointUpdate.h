@@ -36,7 +36,7 @@ namespace AscEmu::Packets
 #if VERSION_STRING != Mop
             packet << pos.x << pos.y << pos.z << map_id << zone_id;
 #else
-            packet << pos.x << pos.z << pos.y << map_id << zone_id;
+            packet << pos.x << pos.z << pos.y << zone_id << map_id;
 #endif
             return true;
         }

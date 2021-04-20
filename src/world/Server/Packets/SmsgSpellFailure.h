@@ -36,12 +36,38 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING == Mop
+
+            ObjectGuid guid = casterGuid;
+            packet.writeBit(guid[7]);
+            packet.writeBit(guid[3]);
+            packet.writeBit(guid[6]);
+            packet.writeBit(guid[2]);
+            packet.writeBit(guid[1]);
+            packet.writeBit(guid[5]);
+            packet.writeBit(guid[0]);
+            packet.writeBit(guid[4]);
+
+            packet.WriteByteSeq(guid[2]);
+            packet.WriteByteSeq(guid[6]);
+            packet.WriteByteSeq(guid[7]);
+            packet.WriteByteSeq(guid[0]);
+            packet.WriteByteSeq(guid[3]);
+            packet.WriteByteSeq(guid[1]);
+
+            packet << castNumber;
+            packet << spellId;
+            packet << result;
+
+            packet.WriteByteSeq(guid[4]);
+            packet.WriteByteSeq(guid[5]);
+#else
             packet << casterGuid;
 #if VERSION_STRING > TBC
             packet << castNumber;
 #endif
             packet << spellId << result;
-
+#endif
             return true;
         }
 

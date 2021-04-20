@@ -41,7 +41,7 @@ namespace AscEmu::Packets
 
 #else
 
-            packet.writeBits(0, 4);
+            packet.writeBits(lineCount, 4);
 
             ByteBuffer stringBuffer;
 
@@ -51,7 +51,6 @@ namespace AscEmu::Packets
                 stringBuffer.WriteString(line);
             }
 
-            packet.PutBits(0, lineCount, 4);
             packet.flushBits();
             packet.append(stringBuffer);
 #endif

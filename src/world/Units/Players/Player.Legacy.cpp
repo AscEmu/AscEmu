@@ -1898,6 +1898,15 @@ void Player::_SetUpdateBits(UpdateMask* updateMask, Player* target) const
 
 void Player::InitVisibleUpdateBits()
 {
+#if VERSION_STRING == Mop
+    uint32_t valuesCount = getSizeOfStructure(WoWPlayer);
+    Player::m_visibleUpdateMask.SetCount(getSizeOfStructure(WoWPlayer));
+
+    for (uint32_t i = 0; i < valuesCount; ++i)
+    {
+        Player::m_visibleUpdateMask.SetBit(i);
+    }
+#else
     Player::m_visibleUpdateMask.SetCount(getSizeOfStructure(WoWPlayer));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid));
 #if VERSION_STRING < Cata
@@ -2019,6 +2028,7 @@ void Player::InitVisibleUpdateBits()
 
 #if VERSION_STRING != Classic
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, chosen_title) );
+#endif
 #endif
 }
 

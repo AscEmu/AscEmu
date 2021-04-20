@@ -40,8 +40,10 @@ namespace AscEmu::Packets
             packet.writeBit(0);
 #endif
             packet << worldState1 << value1;
+#if VERSION_STRING < Mop
             if (worldState2 != 0)
                 packet << worldState2 << value2;
+#endif
 
             return true;
         }

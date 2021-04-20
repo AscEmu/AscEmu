@@ -42,6 +42,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING == Mop
+            packet << spellId << errorMsg << multiCast;
+            if (extra1 || extra2)
+                packet << extra1;
+
+            if (extra2)
+                packet << extra2;
+#else
             packet << multiCast << spellId << errorMsg;
 
             if (extra1 || extra2)
@@ -49,6 +57,7 @@ namespace AscEmu::Packets
 
             if (extra2)
                 packet << extra2;
+#endif
 
             return true;
         }

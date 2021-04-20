@@ -37,7 +37,11 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING == Mop
+            packet << uint32_t(difficulty);
+#else
             packet << uint32_t(difficulty) << unknown << uint32_t(isInGroup);
+#endif
             return true;
         }
 

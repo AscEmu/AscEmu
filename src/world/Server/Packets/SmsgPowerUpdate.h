@@ -58,8 +58,8 @@ namespace AscEmu::Packets
             packet.WriteByteSeq(guid[2]);
             packet.WriteByteSeq(guid[4]);
 
-            packet << uint8_t(powerType);
-            packet << uint32_t(power);
+            packet << powerType;
+            packet << power;
 
             packet.WriteByteSeq(guid[6]);
 #elif VERSION_STRING != Mop

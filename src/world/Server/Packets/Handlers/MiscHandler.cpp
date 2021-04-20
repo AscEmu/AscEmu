@@ -1420,7 +1420,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
     uint32_t type;
     recvPacket >> type;
 
-    uint32_t count = recvPacket.readBits(23);
+    uint32_t count = recvPacket.readBits(21);
 
     ObjectGuid* guids = new ObjectGuid[count];
     for (uint32_t i = 0; i < count; ++i)
@@ -1461,6 +1461,14 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
                 recvPacket.clear();
                 break;
         }*/
+
+        WorldPacket data(SMSG_DB_REPLY, 16);
+        data << uint32_t(entry);
+        data << uint32_t(time(NULL));
+        data << uint32_t(type);
+        data << uint32_t(0);
+
+        SendPacket(&data);
     }
 #endif
 }

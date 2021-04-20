@@ -32,7 +32,13 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING == Mop
+            packet << type << density;
+            packet.writeBit(0);
+            packet.flushBits();
+#else
             packet << type << density << sound << uint8_t(0);
+#endif
             return true;
         }
 

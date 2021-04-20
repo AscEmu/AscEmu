@@ -56,13 +56,13 @@ namespace AscEmu::Packets
             if (featureBitFour)
                 packet << uint32_t(1) << uint32_t(0) << uint32_t(10) << uint32_t(60);
 #elif VERSION_STRING == Mop
-            bool isFeedbackSysEnabled = true;
+            bool isFeedbackSysEnabled = false;
             bool isExcessiveWarningEnabled = false;
 
             packet << uint32_t(0) << uint32_t(0) << uint32_t(0) << uint8_t(2) << uint32_t(0);
+            packet.writeBit(0);
             packet.writeBit(1);
-            packet.writeBit(1);
-            packet.writeBit(1);
+            packet.writeBit(0);
             packet.writeBit(0);
             packet.writeBit(0);
             packet.writeBit(1);

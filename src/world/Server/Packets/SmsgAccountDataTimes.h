@@ -50,11 +50,10 @@ namespace AscEmu::Packets
 
 #else
 
-            packet.writeBit(unknown1);
+            packet.writeBit(1);
             packet.flushBits();
 
-            for (auto i = 0; i < dataCount; ++i)
-                if (mask & (1 << i))
+            for (uint8_t i = 0; i < 8; ++i)
                     packet << uint32_t(0);
 
             packet << mask << time;
