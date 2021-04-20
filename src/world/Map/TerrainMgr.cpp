@@ -406,12 +406,14 @@ void TileMap::Load(char* filename)
         return;
     }
 
+#if VERSION_STRING < Mop
     if (header.buildMagic != BUILD_VERSION)  // wow version
     {
         LOG_ERROR("%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, BUILD_VERSION);
         fclose(f);
         return;
     }
+#endif
 
     if (header.areaMapOffset != 0)
         LoadAreaData(f, header);

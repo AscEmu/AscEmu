@@ -157,7 +157,7 @@ Corpse::Corpse(uint32 high, uint32 low)
     m_updateFlag = UPDATEFLAG_POSITION;
 #endif
 #if VERSION_STRING == Mop
-    m_updateFlag = UPDATEFLAG_POSITION;
+    m_updateFlag = UPDATEFLAG_HAS_POSITION;
 #endif
 
     m_valuesCount = getSizeOfStructure(WoWCorpse);
