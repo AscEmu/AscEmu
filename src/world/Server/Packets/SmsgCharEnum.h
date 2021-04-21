@@ -185,6 +185,7 @@ namespace AscEmu::Packets
                 packet.writeBits(0, 21);
                 packet.writeBits(char_count, 16);
 
+                uint8_t listOrder = 1;
                 for (auto const& data : enum_data)
                 {
                     WoWGuid guid(data.guid, 0, HIGHGUID_TYPE_PLAYER);
@@ -214,14 +215,14 @@ namespace AscEmu::Packets
 
                     buffer.WriteByteSeq(guid[1]);
 
-                    buffer << uint8_t(0);
+                    buffer << uint8_t(listOrder++);
 
                     const uint8_t skin = uint8_t(data.bytes & 0xFF);
                     const uint8_t face = uint8_t((data.bytes >> 8) & 0xFF);
                     const uint8_t hairStyle = uint8_t((data.bytes >> 16) & 0xFF);
                     const uint8_t hairColor = uint8_t((data.bytes >> 24) & 0xFF);
                     const uint8_t facialHair = uint8_t(data.bytes2 & 0xFF);
-                    buffer << uint8(hairStyle);
+                    buffer << uint8_t(hairStyle);
 
                     buffer.WriteByteSeq(guildGuid[2]);
                     buffer.WriteByteSeq(guildGuid[0]);
