@@ -339,8 +339,8 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
         return OUTPACKET_RESULT_NO_ROOM_IN_BUFFER;
     }
 
-    //switch (opcode)
-    //{
+    /*switch (opcode)
+    {
     //case SMSG_POWER_UPDATE:
     //case SMSG_ITEM_TIME_UPDATE:
     //case SMSG_AURA_UPDATE_ALL:
@@ -374,8 +374,8 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     //case SMSG_ACCOUNT_DATA_TIMES:
     //case SMSG_FEATURE_SYSTEM_STATUS:
     //case SMSG_LOGIN_VERIFY_WORLD:
-        //return OUTPACKET_RESULT_NOT_CONNECTED;
-    //}
+        return OUTPACKET_RESULT_NOT_CONNECTED;
+    }*/
 
     // Packet logger :)
     sWorldPacketLog.logPacket(static_cast<uint32_t>(len), opcode, static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
@@ -741,7 +741,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     // Set session properties
     pSession->SetClientBuild(mClientBuild);
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     pSession->readAddonInfoPacket(mAddonInfoBuffer);
 #endif
 

@@ -2019,8 +2019,11 @@ void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
             unpackedInfo >> unknown;
 
             LOG_DEBUG("AddOn: %s (CRC: 0x%x) - enabled: 0x%x - Unknown2: 0x%x", addonName.c_str(), crc, enabledState, unknown);
-
+#if VERSION_STRING < Mop
             AddonEntry addon(addonName, enabledState, crc, 2, true);
+#else
+            AddonEntry addon(addonName, true, crc, 2, enabledState);
+#endif
 
             SavedAddon const* savedAddon = sAddonMgr.getAddonInfoForAddonName(addonName);
             if (savedAddon)
@@ -2141,7 +2144,7 @@ void WorldSession::sendAddonInfo()
         data << uint32_t(itr->timestamp);
     }
 
-    //SendPacket(&data);
+    SendPacket(&data);
 #endif
 }
 
@@ -2392,11 +2395,9 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 #if VERSION_STRING > TBC
 void WorldSession::sendClientCacheVersion(uint32 version)
 {
-#if VERSION_STRING < Mop
     WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
     data << uint32_t(version);
     SendPacket(&data);
-#endif
 }
 #endif
 

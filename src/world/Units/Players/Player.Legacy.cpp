@@ -1899,14 +1899,16 @@ void Player::_SetUpdateBits(UpdateMask* updateMask, Player* target) const
 void Player::InitVisibleUpdateBits()
 {
 #if VERSION_STRING == Mop
+
     Player::m_visibleUpdateMask.SetCount(getSizeOfStructure(WoWPlayer));
+
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid) +1);
-
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, raw_parts));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, entry));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, data));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, data) + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, raw_parts));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, entry));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, dynamic_flags));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, scale_x));
 
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charm_guid));
@@ -3732,6 +3734,26 @@ void Player::OnPushToWorld()
         resetTalents();
         resettalents = false;
     }
+#if VERSION_STRING == Mop
+    UpdateVisibility();
+
+    WorldPacket data(SMSG_LOAD_CUF_PROFILES, 1);
+    data.writeBits(0, 20);
+    data.flushBits();
+    SendPacket(&data);
+
+    data.Initialize(SMSG_BATTLE_PET_JOURNAL);
+    data.writeBits(0, 19);
+    data.writeBit(1);
+    data.writeBits(0, 25);
+    data.flushBits();
+    data << uint16_t(0);
+    SendPacket(&data);
+
+    data.Initialize(SMSG_BATTLE_PET_JOURNAL_LOCK_ACQUIRED);
+    SendPacket(&data);
+
+#endif
 }
 #endif
 
@@ -11034,6 +11056,10 @@ void Player::SendInitialLogonPackets()
 
     smsg_InitialFactions();
 
+    data.Initialize(SMSG_LOAD_EQUIPMENT_SET);
+    data.writeBits(0, 19);
+    GetSession()->SendPacket(&data);
+
     m_session->SendPacket(SmsgLoginSetTimespeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
 
     data.Initialize(SMSG_SET_FORCED_REACTIONS, 1 + 4 + 4);
@@ -11043,6 +11069,27 @@ void Player::SendInitialLogonPackets()
 
     data.Initialize(SMSG_SETUP_CURRENCY, 3 + 1 + 4 + 4 + 4 + 4);
     data.writeBits(0, 21);
+    GetSession()->SendPacket(&data);
+
+    ObjectGuid guid = getGuid();
+    data.Initialize(SMSG_MOVE_SET_ACTIVE_MOVER);
+    data.writeBit(guid[5]);
+    data.writeBit(guid[1]);
+    data.writeBit(guid[4]);
+    data.writeBit(guid[2]);
+    data.writeBit(guid[3]);
+    data.writeBit(guid[7]);
+    data.writeBit(guid[0]);
+    data.writeBit(guid[6]);
+
+    data.WriteByteSeq(guid[4]);
+    data.WriteByteSeq(guid[6]);
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[0]);
+    data.WriteByteSeq(guid[3]);
+    data.WriteByteSeq(guid[7]);
+    data.WriteByteSeq(guid[5]);
+    data.WriteByteSeq(guid[1]);
     GetSession()->SendPacket(&data);
 
 #else

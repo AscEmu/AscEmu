@@ -1728,6 +1728,9 @@ SMSG_XP_GAIN_ABORTED,
 SMSG_SET_TIME_ZONE_INFORMATION,
 SMSG_HOTFIX_NOTIFY_BLOB,
 SMSG_SETUP_CURRENCY,
+SMSG_LOAD_EQUIPMENT_SET,
+SMSG_BATTLE_PET_JOURNAL,
+SMSG_BATTLE_PET_JOURNAL_LOCK_ACQUIRED,
 NUM_OPCODES
 };
 
@@ -3341,7 +3344,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {SMSG_MONEY_NOTIFY, {0x18, "SMSG_MONEY_NOTIFY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x55B6,/*Cata*/ 0x55B6/*Mop*/}}},
 {SMSG_MOVE_COLLISION_DISABLE, {0x18, "SMSG_MOVE_COLLISION_DISABLE", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x31B0,/*Cata*/ 0x31B0/*Mop*/}}},
 {SMSG_MOVE_COLLISION_ENABLE, {0x18, "SMSG_MOVE_COLLISION_ENABLE", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x11A7,/*Cata*/ 0x11A7/*Mop*/}}},
-{SMSG_MOVE_SET_ACTIVE_MOVER, {0x18, "SMSG_MOVE_SET_ACTIVE_MOVER", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x11B3,/*Cata*/ 0x11B3/*Mop*/}}},
+{SMSG_MOVE_SET_ACTIVE_MOVER, {0x18, "SMSG_MOVE_SET_ACTIVE_MOVER", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x11B3,/*Cata*/ 0x0C6D/*Mop*/}}},
 {SMSG_MOVE_SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY, {0x18, "SMSG_MOVE_SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x59A2,/*Cata*/ 0x59A2/*Mop*/}}},
 {SMSG_MOVE_SET_COMPOUND_STATE, {0x18, "SMSG_MOVE_SET_COMPOUND_STATE", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x75A0,/*Cata*/ 0x75A0/*Mop*/}}},
 {SMSG_MOVE_UNSET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY, {0x18, "SMSG_MOVE_UNSET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x7DB2,/*Cata*/ 0x7DB2/*Mop*/}}},
@@ -3428,4 +3431,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 { SMSG_SET_TIME_ZONE_INFORMATION, {0x18, "SMSG_SET_TIME_ZONE_INFORMATION", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x19C1/*Mop*/}}},
 { SMSG_HOTFIX_NOTIFY_BLOB, {0x18, "SMSG_HOTFIX_NOTIFY_BLOB", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1EBA/*Mop*/}} },
 { SMSG_SETUP_CURRENCY, {0x18, "SMSG_SETUP_CURRENCY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x068F/*Mop*/}} },
+{ SMSG_LOAD_EQUIPMENT_SET, {0x18, "SMSG_LOAD_EQUIPMENT_SET", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x18E2/*Mop*/}} },
+{ SMSG_BATTLE_PET_JOURNAL, {0x18, "SMSG_BATTLE_PET_JOURNAL", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1542/*Mop*/}} },
+{ SMSG_BATTLE_PET_JOURNAL_LOCK_ACQUIRED, {0x18, "SMSG_BATTLE_PET_JOURNAL_LOCK_ACQUIRED", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1A0F/*Mop*/}} },
 };
