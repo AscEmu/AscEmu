@@ -3423,7 +3423,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {SMSG_WEEKLY_RESET_CURRENCY, {0x18, "SMSG_WEEKLY_RESET_CURRENCY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x3CA1,/*Cata*/ 0x3CA1/*Mop*/}}},
 {SMSG_WEEKLY_SPELL_USAGE, {0x18, "SMSG_WEEKLY_SPELL_USAGE", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x39B7,/*Cata*/ 0x39B7/*Mop*/}}},
 {SMSG_WEEKLY_SPELL_USAGE_UPDATE, {0x18, "SMSG_WEEKLY_SPELL_USAGE_UPDATE", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x11B5,/*Cata*/ 0x11B5/*Mop*/}}},
-{SMSG_WORLD_SERVER_INFO, {0x18, "SMSG_WORLD_SERVER_INFO", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x31A2,/*Cata*/ 0x31A2/*Mop*/}}},
+{SMSG_WORLD_SERVER_INFO, {0x18, "SMSG_WORLD_SERVER_INFO", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x31A2,/*Cata*/ 0x0082/*Mop*/}}},
 {SMSG_XP_GAIN_ABORTED, {0x18, "SMSG_XP_GAIN_ABORTED", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x50B4,/*Cata*/ 0x50B4/*Mop*/}}},
 { SMSG_SET_TIME_ZONE_INFORMATION, {0x18, "SMSG_SET_TIME_ZONE_INFORMATION", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x19C1/*Mop*/}}},
 { SMSG_HOTFIX_NOTIFY_BLOB, {0x18, "SMSG_HOTFIX_NOTIFY_BLOB", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1EBA/*Mop*/}} },

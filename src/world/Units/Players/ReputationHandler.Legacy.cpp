@@ -112,7 +112,7 @@ void Player::smsg_InitialFactions()
     uint32_t a = 0;
 
     WorldPacket data(SMSG_INITIALIZE_FACTIONS, factionCount * (1 + 4) + 32);
-    for (uint32 i = 0; i < 128; ++i)
+    /*for (uint32 i = 0; i < 128; ++i)
     {
         FactionReputation* rep = reputationByListId[i];
         if (rep == nullptr)
@@ -127,7 +127,7 @@ void Player::smsg_InitialFactions()
             data << rep->CalcStanding();
             buffer.writeBit(0);
         }
-    }
+    }*/
 
     for (; a != factionCount; ++a)
     {

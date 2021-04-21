@@ -339,13 +339,13 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
         return OUTPACKET_RESULT_NO_ROOM_IN_BUFFER;
     }
 
-    switch (opcode)
-    {
+    //switch (opcode)
+    //{
     //case SMSG_POWER_UPDATE:
     //case SMSG_ITEM_TIME_UPDATE:
-    //case SMSG_AURA_UPDATE_ALL:  //todo
+    //case SMSG_AURA_UPDATE_ALL:
     //case SMSG_UPDATE_INSTANCE_OWNERSHIP:
-    //case SMSG_SPELL_GO:         //todo
+    //case SMSG_SPELL_GO:
     //case SMSG_SPELL_COOLDOWN:
     //case SMSG_SPELL_START:
     //case SMSG_SPELL_FAILURE:
@@ -365,7 +365,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     //case SMSG_TUTORIAL_FLAGS:
     //case SMSG_SET_PROFICIENCY:
     //case SMSG_BINDPOINTUPDATE:
-    case SMSG_INSTANCE_DIFFICULTY:  //not available
+    //case SMSG_INSTANCE_DIFFICULTY:
     //case SMSG_MOTD:
     //case SMSG_MESSAGECHAT:
     //case MSG_SET_RAID_DIFFICULTY:
@@ -374,8 +374,8 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     //case SMSG_ACCOUNT_DATA_TIMES:
     //case SMSG_FEATURE_SYSTEM_STATUS:
     //case SMSG_LOGIN_VERIFY_WORLD:
-        return OUTPACKET_RESULT_NOT_CONNECTED;
-    }
+        //return OUTPACKET_RESULT_NOT_CONNECTED;
+    //}
 
     // Packet logger :)
     sWorldPacketLog.logPacket(static_cast<uint32_t>(len), opcode, static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));

@@ -75,7 +75,7 @@ namespace AscEmu::Packets
             packet.writeBits(spell_ids.size(), 22);
             packet.flushBits();
 
-            for (auto spell_id : spell_ids)
+            for (uint32_t spell_id : spell_ids)
             {
                 packet << spell_id;
             }

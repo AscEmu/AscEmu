@@ -11022,7 +11022,7 @@ void Player::SendInitialLogonPackets()
     data.flushBits();
 
     data << uint8(0);
-    data << uint32(WEEK);
+    data << uint32(0);       // reset weekly quest time
     data << uint32(0);
     GetSession()->SendPacket(&data);
 
