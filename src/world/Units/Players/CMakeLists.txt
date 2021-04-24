@@ -10,8 +10,6 @@ set(SRC_UNITS_PLAYERS_FILES
    ${PATH_PREFIX}/PlayerClasses.hpp
    ${PATH_PREFIX}/PlayerDefines.hpp
    ${PATH_PREFIX}/PlayerStats.cpp
-   ${PATH_PREFIX}/ReputationHandler.Legacy.cpp
-   ${PATH_PREFIX}/ReputationHandler.hpp
 )
 
 source_group(Units\\Players FILES ${SRC_UNITS_PLAYERS_FILES})
