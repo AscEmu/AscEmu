@@ -151,7 +151,7 @@ void Transporter::Update(unsigned long time_passed)
             _currentFrame->Spline->evaluate_derivative(_currentFrame->Index, t, dir);
             UpdatePosition(pos.x, pos.y, pos.z, std::atan2(dir.y, dir.x) + float(M_PI));
         }
-        else if (justStopped)
+        else /*if (justStopped)*/ // maybe could bring us trouble when we engage a fight with creatures but fixes position updates for players 
             UpdatePosition(_currentFrame->Node.x, _currentFrame->Node.y, _currentFrame->Node.z, _currentFrame->InitialOrientation);
     }
 }
