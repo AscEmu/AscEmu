@@ -27,13 +27,13 @@ namespace AscEmu::Packets
         {
         }
 #else
-        ObjectGuid guid;
+        WoWGuid guid;
 
-        CmsgGuildRemove() : CmsgGuildRemove(0)
+        CmsgGuildRemove() : CmsgGuildRemove(WoWGuid())
         {
         }
 
-        CmsgGuildRemove(ObjectGuid guid) :
+        CmsgGuildRemove(WoWGuid guid) :
             ManagedPacket(CMSG_GUILD_REMOVE, 8),
             guid(guid)
         {

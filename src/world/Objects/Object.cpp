@@ -405,7 +405,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     if (!(updateFlags & UPDATEFLAG_LIVING))
     {
-        if (obj_movement_info.transport_guid != 0)
+        if (!obj_movement_info.transport_guid.IsEmpty())
             updateFlags |= UPDATEFLAG_HAS_POSITION;
     }
 
@@ -2253,7 +2253,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 #if VERSION_STRING == Cata
 void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target)
 {
-    ObjectGuid Guid = getGuid();
+    WoWGuid Guid = getGuid();
     uint32_t movementFlags = 0;
     uint16_t movementFlagsExtra = 0;
 
@@ -2293,7 +2293,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         movementFlagsExtra = obj_movement_info.getMovementFlags2();
         //hasSpline = false;
 
-        hasTransportTime2 = obj_movement_info.transport_guid != 0 && obj_movement_info.transport_time2 != 0;
+        hasTransportTime2 = !obj_movement_info.transport_guid.IsEmpty() && obj_movement_info.transport_time2 != 0;
         hasVehicleId = unit->getCurrentVehicle() && unit->getCurrentVehicle()->GetVehicleInfo();
         hasPitch = obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || obj_movement_info.hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING);
         hasFallDirection = obj_movement_info.hasMovementFlag2(MOVEFLAG2_INTERPOLATED_TURN);
@@ -2316,12 +2316,12 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         data->writeBit(hasFallData);
         data->writeBit(!hasSplineElevation);
         data->writeBit(Guid[5]);
-        data->writeBit(obj_movement_info.transport_guid != 0);
+        data->writeBit(!obj_movement_info.transport_guid.IsEmpty());
         data->writeBit(0);
 
-        if (obj_movement_info.transport_guid != 0)
+        if (!obj_movement_info.transport_guid.IsEmpty())
         {
-            ObjectGuid tGuid = obj_movement_info.transport_guid;
+            WoWGuid tGuid = obj_movement_info.transport_guid;
 
             data->writeBit(tGuid[1]);
             data->writeBit(hasTransportTime2);
@@ -2357,7 +2357,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (updateFlags & UPDATEFLAG_POSITION)
     {
-        ObjectGuid transGuid = obj_movement_info.transport_guid;
+        WoWGuid transGuid = obj_movement_info.transport_guid;
 
         data->writeBit(transGuid[5]);
         data->writeBit(hasVehicleId);
@@ -2375,7 +2375,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     {
         if (isCreatureOrPlayer())
         {
-            ObjectGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
+            WoWGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
 
             data->writeBit(victimGuid[2]);
             data->writeBit(victimGuid[7]);
@@ -2435,7 +2435,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
         if (obj_movement_info.transport_guid)
         {
-            ObjectGuid tGuid = obj_movement_info.transport_guid;
+            WoWGuid tGuid = obj_movement_info.transport_guid;
 
             data->WriteByteSeq(tGuid[5]);
             data->WriteByteSeq(tGuid[7]);
@@ -2520,7 +2520,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (updateFlags & UPDATEFLAG_POSITION)
     {
-        ObjectGuid transGuid;
+        WoWGuid transGuid;
 
         data->WriteByteSeq(transGuid[0]);
         data->WriteByteSeq(transGuid[5]);
@@ -2589,7 +2589,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     {
         if (isCreatureOrPlayer())
         {
-            ObjectGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
+            WoWGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
 
             data->WriteByteSeq(victimGuid[4]);
             data->WriteByteSeq(victimGuid[0]);
@@ -2633,7 +2633,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 #if VERSION_STRING == Mop
 void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
 {
-    ObjectGuid Guid = getGuid();
+    WoWGuid Guid = getGuid();
 
     data->writeBit(false);
     data->writeBit(false);                                      // updateFlags & UPDATEFLAG_ANIM_KITS
@@ -2670,7 +2670,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     if (IsType(TYPE_UNIT))
     {
         Unit* unit = (Unit*)this;
-        hasTransport = obj_movement_info.transport_guid != 0;
+        hasTransport = !obj_movement_info.transport_guid.IsEmpty();
         isSplineEnabled = false; // unit->IsSplineEnabled();
 
         if (getObjectTypeId() == TYPEID_PLAYER)
@@ -2704,7 +2704,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
         if (hasTransport)
         {
-            ObjectGuid tGuid = obj_movement_info.transport_guid;
+            WoWGuid tGuid = obj_movement_info.transport_guid;
 
             data->writeBit(tGuid[4]);
             data->writeBit(tGuid[2]);
@@ -2758,7 +2758,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (updateFlags & UPDATEFLAG_POSITION)
     {
-        ObjectGuid transGuid = obj_movement_info.transport_guid;
+        WoWGuid transGuid = obj_movement_info.transport_guid;
 
         data->writeBit(transGuid[4]);
         data->writeBit(transGuid[1]);
@@ -2776,7 +2776,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     {
         if (isCreatureOrPlayer())
         {
-            ObjectGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
+            WoWGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
 
             data->writeBit(victimGuid[4]);
             data->writeBit(victimGuid[6]);
@@ -2799,7 +2799,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         ;
         if (hasTransport)
         {
-            ObjectGuid tGuid = obj_movement_info.transport_guid;
+            WoWGuid tGuid = obj_movement_info.transport_guid;
 
             data->WriteByteSeq(tGuid[7]);
             *data << float(GetTransOffsetX());
@@ -2887,7 +2887,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (updateFlags & UPDATEFLAG_POSITION)
     {
-        ObjectGuid transGuid = getGuid();
+        WoWGuid transGuid = getGuid();
 
         if (obj_movement_info.transport_time2 && obj_movement_info.transport_guid)
             *data << obj_movement_info.transport_time2;
@@ -2918,7 +2918,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     {
         if (isCreatureOrPlayer())
         {
-            ObjectGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
+            WoWGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
 
             data->WriteByteSeq(victimGuid[7]);
             data->WriteByteSeq(victimGuid[1]);

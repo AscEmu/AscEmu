@@ -1142,7 +1142,7 @@ void WorldSession::handleTimeSyncRespOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 {
-    ObjectGuid guid;
+    WoWGuid guid;
 
 #if VERSION_STRING == Cata
     guid[6] = recvPacket.readBit();
@@ -1187,7 +1187,7 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
     if (_player == nullptr)
         return;
 
-    if (_player->getGuid() == guid)
+    if (_player->getGuid() == guid.getRawGuid())
     {
         LogoutPlayer(true);
         return;
@@ -1376,7 +1376,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 
     uint32_t count = recvPacket.readBits(23);
 
-    ObjectGuid* guids = new ObjectGuid[count];
+    WoWGuid* guids = new WoWGuid[count];
     for (uint32_t i = 0; i < count; ++i)
     {
         guids[i][0] = recvPacket.readBit();
@@ -1422,7 +1422,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 
     uint32_t count = recvPacket.readBits(21);
 
-    ObjectGuid* guids = new ObjectGuid[count];
+    WoWGuid* guids = new WoWGuid[count];
     for (uint32_t i = 0; i < count; ++i)
     {
         guids[i][6] = recvPacket.readBit();

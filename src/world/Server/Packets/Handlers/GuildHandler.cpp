@@ -917,8 +917,8 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 #if VERSION_STRING >= Cata
 void WorldSession::handleGuildAssignRankOpcode(WorldPacket& recvPacket)
 {
-    ObjectGuid targetGuid;
-    ObjectGuid setterGuid;
+    WoWGuid targetGuid;
+    WoWGuid setterGuid;
 
     uint32_t rankId;
     recvPacket >> rankId;
@@ -980,7 +980,7 @@ void WorldSession::handleGuildAssignRankOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleGuildQueryRanksOpcode(WorldPacket& recvPacket)
 {
-    ObjectGuid guildGuid;
+    WoWGuid guildGuid;
 
     guildGuid[2] = recvPacket.readBit();
     guildGuid[3] = recvPacket.readBit();
@@ -1017,7 +1017,7 @@ void WorldSession::handleGuildRequestChallengeUpdate(WorldPacket& /*recvPacket*/
 
 void WorldSession::handleGuildQueryXPOpcode(WorldPacket& recvPacket)
 {
-    ObjectGuid guildGuid;
+    WoWGuid guildGuid;
 
     guildGuid[2] = recvPacket.readBit();
     guildGuid[1] = recvPacket.readBit();
@@ -1050,7 +1050,7 @@ void WorldSession::handleGuildQueryXPOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleGuildRequestPartyState(WorldPacket& recvPacket)
 {
-    ObjectGuid guildGuid;
+    WoWGuid guildGuid;
 
     guildGuid[0] = recvPacket.readBit();
     guildGuid[6] = recvPacket.readBit();
@@ -1078,7 +1078,7 @@ void WorldSession::handleGuildRequestPartyState(WorldPacket& recvPacket)
 
 void WorldSession::handleGuildRequestMaxDailyXP(WorldPacket& recvPacket)
 {
-    ObjectGuid guid;
+    WoWGuid guid;
 
     guid[0] = recvPacket.readBit();
     guid[3] = recvPacket.readBit();
@@ -1165,7 +1165,7 @@ void WorldSession::handleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket)
     uint32_t newsId;
     recvPacket >> newsId;
 
-    ObjectGuid guid;
+    WoWGuid guid;
     guid[2] = recvPacket.readBit();
     guid[4] = recvPacket.readBit();
     guid[3] = recvPacket.readBit();
@@ -1218,7 +1218,7 @@ void WorldSession::handleGuildFinderAddRecruit(WorldPacket& recvPacket)
     recvPacket >> guildInterests;
     recvPacket >> availability;
 
-    ObjectGuid guid;
+    WoWGuid guid;
 
     guid[3] = recvPacket.readBit();
     guid[0] = recvPacket.readBit();
@@ -1309,7 +1309,7 @@ void WorldSession::handleGuildFinderBrowse(WorldPacket& recvPacket)
         LFGuildSettings guildSettings = itr->second;
         Guild* guild = sGuildMgr.getGuildById(itr->first);
 
-        ObjectGuid guildGUID = guild->getGUID();
+        WoWGuid guildGUID = guild->getGUID();
 
         data.writeBit(guildGUID[7]);
         data.writeBit(guildGUID[5]);
@@ -1375,7 +1375,7 @@ void WorldSession::handleGuildFinderBrowse(WorldPacket& recvPacket)
 
 void WorldSession::handleGuildFinderDeclineRecruit(WorldPacket& recvPacket)
 {
-    ObjectGuid playerGuid;
+    WoWGuid playerGuid;
 
     playerGuid[1] = recvPacket.readBit();
     playerGuid[4] = recvPacket.readBit();
@@ -1420,7 +1420,7 @@ void WorldSession::handleGuildFinderGetApplications(WorldPacket& /*recvPacket*/)
             LFGuildSettings guildSettings = sGuildFinderMgr.getGuildSettings(itr->getGuildId());
             MembershipRequest request = *itr;
 
-            ObjectGuid guildGuid = ObjectGuid(guild->getGUID());
+            WoWGuid guildGuid = guild->getGUID();
 
             data.writeBit(guildGuid[1]);
             data.writeBit(guildGuid[0]);
@@ -1586,7 +1586,7 @@ void WorldSession::handleGuildFinderPostRequest(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleGuildFinderRemoveRecruit(WorldPacket& recvPacket)
 {
-    ObjectGuid guildGuid;
+    WoWGuid guildGuid;
 
     guildGuid[0] = recvPacket.readBit();
     guildGuid[4] = recvPacket.readBit();

@@ -33,7 +33,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
 
     const auto playerTarget = _player->GetMapMgrPlayer(srlPacket.guid.getGuidLow());
 #else
-    ObjectGuid targetGuid;
+    WoWGuid targetGuid;
 
     targetGuid[0] = recvPacket.readBit();
     targetGuid[3] = recvPacket.readBit();
@@ -53,7 +53,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(targetGuid[6]);
     recvPacket.ReadByteSeq(targetGuid[0]);
 
-    const auto playerTarget = _player->GetMapMgrPlayer(static_cast<uint32_t>(targetGuid));
+    const auto playerTarget = _player->GetMapMgrPlayer(targetGuid.getGuidLowPart());
 #endif
 
     if (_player->m_TradeData != nullptr)
@@ -132,7 +132,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
     data.writeBit(false);
     data.writeBits(TRADE_STATUS_PROPOSED, 5);
 
-    ObjectGuid source_guid = _player->getGuid();
+    WoWGuid source_guid = _player->getGuid();
     data.WriteByteMask(source_guid[2]);
     data.WriteByteMask(source_guid[4]);
     data.WriteByteMask(source_guid[6]);
@@ -611,7 +611,7 @@ void WorldSession::sendTradeResult(TradeStatus result, uint64_t /*guid = 0*/)
     {
         case TRADE_STATUS_PROPOSED:
         {
-            ObjectGuid guid;
+            WoWGuid guid;
 
             data.writeBit(guid[2]);
             data.writeBit(guid[4]);
@@ -757,8 +757,8 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
     {
         if (Item* item = tradeData->getTradeItem(TradeSlots(i)))
         {
-            ObjectGuid creatorGuid = item->getCreatorGuid();
-            ObjectGuid giftCreatorGuid = item->getGiftCreatorGuid();
+            WoWGuid creatorGuid = item->getCreatorGuid();
+            WoWGuid giftCreatorGuid = item->getGiftCreatorGuid();
 
             data.writeBit(giftCreatorGuid[7]);
             data.writeBit(giftCreatorGuid[1]);
@@ -791,8 +791,8 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
     {
         if (Item* item = tradeData->getTradeItem(TradeSlots(i)))
         {
-            ObjectGuid creatorGuid = item->getCreatorGuid();
-            ObjectGuid giftCreatorGuid = item->getGiftCreatorGuid();
+            WoWGuid creatorGuid = item->getCreatorGuid();
+            WoWGuid giftCreatorGuid = item->getGiftCreatorGuid();
 
             if (!item->hasFlags(ITEM_FLAG_WRAPPED))
             {

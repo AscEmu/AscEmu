@@ -1,25 +1,9 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef _WOWGUID_H
-#define _WOWGUID_H
+#pragma once
 
 #include "CommonTypes.hpp"
 #include "Errors.h"
@@ -76,57 +60,6 @@ enum class HighGuid : uint64_t
     LowGuidMask = 0x00FFFFFF,
 };
 
-struct ObjectGuid
-{
-    public:
-
-        ObjectGuid() { _data.u64 = 0LL; }
-        ObjectGuid(uint64_t guid) { _data.u64 = guid; }
-        ObjectGuid(ObjectGuid const& other) { _data.u64 = other._data.u64; }
-
-        bool IsEmpty() const { return _data.u64 == 0; }
-
-        uint8_t& operator[](uint32_t index)
-        {
-            ASSERT(index < sizeof(uint64_t))
-            return _data.byte[index];
-        }
-
-        uint8_t const& operator[](uint32_t index) const
-        {
-            ASSERT(index < sizeof(uint64_t))
-            return _data.byte[index];
-        }
-
-        operator uint64_t() { return _data.u64; }
-
-        ObjectGuid& operator=(uint64_t guid)
-        {
-            _data.u64 = guid;
-            return *this;
-        }
-
-        ObjectGuid& operator=(ObjectGuid const& other)
-        {
-            _data.u64 = other._data.u64;
-            return *this;
-        }
-
-        uint32_t getCounter()
-        {
-            return uint32(_data.u64 & UINT64_C(0x00000000FFFFFFFF));
-        }
-
-    private:
-
-        union
-        {
-            uint64_t u64;
-            uint8_t byte[8];
-        } _data;
-};
-
-
 class SERVER_DECL WoWGuid
 {
     public:
@@ -142,7 +75,7 @@ class SERVER_DECL WoWGuid
         {
             Init(mask, fields);
         }
-        WoWGuid(WoWGuid const& guid) { Init(guid.m_rawGuid); }
+        WoWGuid(WoWGuid const& guid) { Init(guid._data.m_rawGuid); }
 
         WoWGuid(uint32_t id, uint32_t entry, uint32_t highType)
         {
@@ -162,11 +95,11 @@ class SERVER_DECL WoWGuid
 
         void Clear()
         {
-            m_rawGuid = 0;
+            _data.m_rawGuid = 0;
             guidmask = 0;
 
-            *reinterpret_cast<uint32_t*>(m_guidfields) = 0;
-            *reinterpret_cast<uint32_t*>(&m_guidfields[4]) = 0;
+            *reinterpret_cast<uint32_t*>(_data.m_guidfields) = 0;
+            *reinterpret_cast<uint32_t*>(&_data.m_guidfields[4]) = 0;
             m_compiled = false;
             m_fieldcount = 0;
         }
@@ -175,7 +108,7 @@ class SERVER_DECL WoWGuid
         {
             Clear();
 
-            m_rawGuid = guid;
+            _data.m_rawGuid = guid;
 
             _CompileByOld();
         }
@@ -200,7 +133,7 @@ class SERVER_DECL WoWGuid
                 return;
 
             for (int i = 0; i < BitCount8(guidmask); i++)
-                m_guidfields[i] = (fields[i]);
+                _data.m_guidfields[i] = (fields[i]);
 
             m_fieldcount = BitCount8(guidmask);
 
@@ -211,15 +144,15 @@ class SERVER_DECL WoWGuid
         {
             Clear();
 
-            m_rawGuid = guid.m_rawGuid;
+            _data.m_rawGuid = guid._data.m_rawGuid;
 
             _CompileByOld();
         }
 
-        uint32_t getGuidLow() const { return static_cast<uint32_t>(m_rawGuid); }
+        uint32_t getGuidLow() const { return static_cast<uint32_t>(_data.m_rawGuid); }
         uint32_t getGuidLowPart() const
         {
-            const uint32_t lowGuid = *(reinterpret_cast<const uint32_t*>(&m_rawGuid));
+            const uint32_t lowGuid = *(reinterpret_cast<const uint32_t*>(&_data.m_rawGuid));
             return lowGuid & 0x00FFFFFF;
         }
 
@@ -229,10 +162,10 @@ class SERVER_DECL WoWGuid
             return lowGuid;
         }
 
-        uint32_t getGuidHigh() const { return static_cast<uint32_t>(m_rawGuid >> 32); }
+        uint32_t getGuidHigh() const { return static_cast<uint32_t>(_data.m_rawGuid >> 32); }
         uint32_t getGuidHighPart() const
         {
-            const uint32_t highGuid = *(reinterpret_cast<const uint32_t*>(&m_rawGuid) + 1);
+            const uint32_t highGuid = *(reinterpret_cast<const uint32_t*>(&_data.m_rawGuid) + 1);
             return highGuid & 0xFFF00000;
         }
 
@@ -256,34 +189,38 @@ class SERVER_DECL WoWGuid
             return rawGuid;
         }
 
-        uint64_t getRawGuid() const { return m_rawGuid; }
+        uint64_t getRawGuid() const { return _data.m_rawGuid; }
+        uint32_t getCounter() { return uint32_t(_data.m_rawGuid & UINT64_C(0x00000000FFFFFFFF)); }
 
-
-        const uint8_t* GetNewGuid() const { return m_guidfields; }
+        const uint8_t* GetNewGuid() const { return _data.m_guidfields; }
         uint8_t GetNewGuidLen() const { return BitCount8(guidmask); }
         uint8_t GetNewGuidMask() const { return guidmask; }
-
-        bool operator !() const { return (!m_rawGuid); }
-        bool operator ==(uint64_t someval) const { return (m_rawGuid == someval); }
-        bool operator !=(uint64_t someval) const { return (m_rawGuid != someval); }
-        uint64_t operator &(uint64_t someval) const { return (m_rawGuid & someval); }
-        uint64_t operator &(unsigned int someval) const { return (m_rawGuid & someval); }
 
         uint8_t& operator[](uint32_t index)
         {
             ASSERT(index < sizeof(uint64_t))
-            return m_guidfields[index];
+                return _data.m_guidfields[index];
         }
 
         uint8_t const& operator[](uint32_t index) const
         {
             ASSERT(index < sizeof(uint64_t))
-            return m_guidfields[index];
+                return _data.m_guidfields[index];
         }
 
-        operator bool() { return (m_rawGuid > 0); }
-        operator uint64_t() { return m_rawGuid; }
-        void operator =(uint64_t someval) { Clear(); Init(static_cast<uint64_t>(someval)); }
+        operator uint64_t() { return _data.m_rawGuid; }
+
+        WoWGuid& operator=(uint64_t someval) { Init(someval); return *this; }
+        WoWGuid& operator=(WoWGuid const& wowGuid) { Init(wowGuid); return *this; }
+
+        bool operator !() const { return (!_data.m_rawGuid); }
+        bool operator ==(uint64_t someval) const { return (_data.m_rawGuid == someval); }
+        bool operator !=(uint64_t someval) const { return (_data.m_rawGuid != someval); }
+        uint64_t operator &(uint64_t someval) const { return (_data.m_rawGuid & someval); }
+        uint64_t operator &(unsigned int someval) const { return (_data.m_rawGuid & someval); }
+
+        operator bool() { return (_data.m_rawGuid != 0); }
+        bool IsEmpty() const { return _data.m_rawGuid == 0; }
 
         bool isPlayer() const { return getHigh() == HighGuid::Player; }
         bool isCorpse() const { return getHigh() == HighGuid::Corpse; }
@@ -308,7 +245,7 @@ class SERVER_DECL WoWGuid
             ASSERT(!m_compiled)
             ASSERT(m_fieldcount < BitCount8(guidmask))
 
-            m_guidfields[m_fieldcount++] = field;
+                _data.m_guidfields[m_fieldcount++] = field;
 
             if (m_fieldcount == BitCount8(guidmask))
                 _CompileByNew();
@@ -316,10 +253,13 @@ class SERVER_DECL WoWGuid
 
     private:
 
-        uint64_t m_rawGuid{};
-        uint8_t guidmask{};
+        union
+        {
+            uint64_t m_rawGuid;
+            uint8_t m_guidfields[8];
+        } _data;
 
-        uint8_t m_guidfields[8]{};
+        uint8_t guidmask{};
 
         uint8_t m_fieldcount{};
         bool m_compiled{};
@@ -333,11 +273,11 @@ class SERVER_DECL WoWGuid
             for (uint8_t x = 0; x < 8; x++)
             {
 
-                uint8_t p = reinterpret_cast<uint8_t*>(&m_rawGuid)[x];
+                uint8_t p = reinterpret_cast<uint8_t*>(&_data.m_rawGuid)[x];
 
                 if (p)
                 {
-                    m_guidfields[m_fieldcount++] = p;
+                    _data.m_guidfields[m_fieldcount++] = p;
                     guidmask |= 1 << x;
                 }
             }
@@ -353,47 +293,45 @@ class SERVER_DECL WoWGuid
 
             if (guidmask & 0x01)  //1
             {
-                m_rawGuid |= static_cast<uint64_t>(m_guidfields[j]);
+                _data.m_rawGuid |= static_cast<uint64_t>(_data.m_guidfields[j]);
                 j++;
             }
             if (guidmask & 0x02)  //2
             {
-                m_rawGuid |= (static_cast<uint64_t>(m_guidfields[j]) << 8);
+                _data.m_rawGuid |= (static_cast<uint64_t>(_data.m_guidfields[j]) << 8);
                 j++;
             }
             if (guidmask & 0x04) //4
             {
-                m_rawGuid |= (static_cast<uint64_t>(m_guidfields[j]) << 16);
+                _data.m_rawGuid |= (static_cast<uint64_t>(_data.m_guidfields[j]) << 16);
                 j++;
             }
             if (guidmask & 0x08)  //8
             {
-                m_rawGuid |= (static_cast<uint64_t>(m_guidfields[j]) << 24);
+                _data.m_rawGuid |= (static_cast<uint64_t>(_data.m_guidfields[j]) << 24);
                 j++;
             }
             if (guidmask & 0x10) //16
             {
-                m_rawGuid |= (static_cast<uint64_t>(m_guidfields[j]) << 32);
+                _data.m_rawGuid |= (static_cast<uint64_t>(_data.m_guidfields[j]) << 32);
                 j++;
             }
             if (guidmask & 0x20) //32
             {
-                m_rawGuid |= (static_cast<uint64_t>(m_guidfields[j]) << 40);
+                _data.m_rawGuid |= (static_cast<uint64_t>(_data.m_guidfields[j]) << 40);
                 j++;
             }
             if (guidmask & 0x40) //64
             {
-                m_rawGuid |= (static_cast<uint64_t>(m_guidfields[j]) << 48);
+                _data.m_rawGuid |= (static_cast<uint64_t>(_data.m_guidfields[j]) << 48);
                 j++;
             }
             if (guidmask & 0x80)  //128
             {
-                m_rawGuid |= (static_cast<uint64_t>(m_guidfields[j]) << 56);
+                _data.m_rawGuid |= (static_cast<uint64_t>(_data.m_guidfields[j]) << 56);
                 j++;
             }
 
             m_compiled = true;
         }
 };
-
-#endif

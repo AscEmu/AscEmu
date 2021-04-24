@@ -17,7 +17,7 @@ struct MovementInfo
 {
     MovementInfo() : flags(0), flags2(0), update_time(0),
         position(0.f, 0.f, 0.f, 0.f),
-        transport_guid(0), transport_position(0.f, 0.f, 0.f, 0.f), transport_time(0),
+        transport_guid(uint64_t(0)), transport_position(0.f, 0.f, 0.f, 0.f), transport_time(0),
 #if VERSION_STRING >= WotLK
         transport_seat(0), transport_time2(0),
 #endif
@@ -26,13 +26,8 @@ struct MovementInfo
 #endif
         pitch_rate(0.f), fall_time(0), spline_elevation(0.f) {}
 
-#if VERSION_STRING >= Cata
-    ObjectGuid const& getGuid() const { return guid; }
-    ObjectGuid const& getGuid2() const { return guid2; }
-#else
     WoWGuid const& getGuid() const { return guid; }
     WoWGuid const& getGuid2() const { return guid2; }
-#endif
 
     MovementFlags getMovementFlags() const { return MovementFlags(flags); }
     void addMovementFlag(MovementFlags _flags) { flags |= _flags; }
@@ -92,7 +87,7 @@ struct MovementInfo
 #endif
 
     // transport
-    void setTransportData(ObjectGuid _guid, float x, float y, float z, float o, uint32_t time, [[maybe_unused]]int8_t seat)
+    void setTransportData(uint32_t _guid, float x, float y, float z, float o, uint32_t time, [[maybe_unused]]int8_t seat)
     {
         transport_guid = _guid;
         transport_position.x = x;
@@ -129,13 +124,8 @@ struct MovementInfo
     uint16_t flags2;
 #endif
 
-#if VERSION_STRING >= Cata
-    ObjectGuid guid;
-    ObjectGuid guid2;
-#else
     WoWGuid guid;
     WoWGuid guid2;
-#endif
 
     uint32_t update_time;
 
@@ -157,11 +147,7 @@ struct MovementInfo
 #endif
 
     // transport
-#if VERSION_STRING >= Cata
-    ObjectGuid transport_guid;
-#else
-    uint64_t transport_guid;
-#endif
+    WoWGuid transport_guid;
 
     LocationVector transport_position;
     uint32_t transport_time;

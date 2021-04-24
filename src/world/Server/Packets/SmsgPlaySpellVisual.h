@@ -39,7 +39,7 @@ namespace AscEmu::Packets
 #elif VERSION_STRING == Cata
             packet << uint32_t(0) << visualId << type;
 
-            ObjectGuid guid = rawGuid;
+            WoWGuid guid = rawGuid;
             packet.writeBit(guid[4]);
             packet.writeBit(guid[7]);
             packet.writeBit(guid[5]);
@@ -61,7 +61,7 @@ namespace AscEmu::Packets
             packet.WriteByteSeq(guid[5]);
 
 #elif VERSION_STRING == Mop
-            ObjectGuid guid = rawGuid;
+            WoWGuid guid = rawGuid;
             packet.writeBit(guid[4]);
             packet.writeBit(guid[2]);
             packet.writeBit(guid[6]);

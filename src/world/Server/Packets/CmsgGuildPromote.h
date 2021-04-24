@@ -27,13 +27,13 @@ namespace AscEmu::Packets
         {
         }
 #else
-        ObjectGuid guid;
+        WoWGuid guid;
 
-        CmsgGuildPromote() : CmsgGuildPromote(0)
+        CmsgGuildPromote() : CmsgGuildPromote(WoWGuid())
         {
         }
 
-        CmsgGuildPromote(ObjectGuid guid) :
+        CmsgGuildPromote(WoWGuid guid) :
             ManagedPacket(CMSG_GUILD_PROMOTE, 8),
             guid(guid)
         {

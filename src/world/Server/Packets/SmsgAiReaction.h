@@ -36,7 +36,7 @@ namespace AscEmu::Packets
 #if VERSION_STRING <= Cata
             packet << unpackedGuid << reaction;
 #else
-            ObjectGuid guid = unpackedGuid;
+            WoWGuid guid = unpackedGuid;
 
             packet.writeBit(guid[5]);
             packet.writeBit(guid[7]);

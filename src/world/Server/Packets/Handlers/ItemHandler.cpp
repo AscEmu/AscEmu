@@ -440,7 +440,7 @@ void WorldSession::sendRefundInfo(uint64_t guid)
         ItemProperties const* item_properties = item->getItemProperties();
         item->addFlags(ITEM_FLAG_REFUNDABLE);
 
-        ObjectGuid objectGuid = item->getGuid();
+        WoWGuid objectGuid = item->getGuid();
         WorldPacket data(SMSG_ITEMREFUNDINFO, 68);
         data.writeBit(objectGuid[3]);
         data.writeBit(objectGuid[5]);
@@ -2141,7 +2141,7 @@ void WorldSession::sendInventoryList(Creature* unit)
 #if VERSION_STRING < Cata
     const_cast<uint8_t*>(data.contents())[8] = static_cast<uint8_t>(counter);
 #else
-    ObjectGuid guid = unit->getGuid();
+    WoWGuid guid = unit->getGuid();
 
     data.SetOpcode(SMSG_LIST_INVENTORY);
     data.writeBit(guid[1]);

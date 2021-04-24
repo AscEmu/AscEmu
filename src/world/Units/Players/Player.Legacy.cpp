@@ -10485,7 +10485,7 @@ void Player::SendTeleportPacket(float x, float y, float z, float o)
     if (getObjectTypeId() == TYPEID_UNIT)
         SetPosition(pos);
 
-    ObjectGuid guid = getGuid();
+    WoWGuid guid = getGuid();
 
     WorldPacket data(SMSG_MOVE_UPDATE_TELEPORT, 38);
     obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UPDATE_TELEPORT);
@@ -11071,7 +11071,7 @@ void Player::SendInitialLogonPackets()
     data.writeBits(0, 21);
     GetSession()->SendPacket(&data);
 
-    ObjectGuid guid = getGuid();
+    WoWGuid guid = getGuid();
     data.Initialize(SMSG_MOVE_SET_ACTIVE_MOVER);
     data.writeBit(guid[5]);
     data.writeBit(guid[1]);

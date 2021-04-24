@@ -19,7 +19,7 @@ namespace AscEmu::Packets
 #if VERSION_STRING < Cata
         uint64_t guid;
 #else
-        ObjectGuid guid;
+        WoWGuid guid;
 #endif
         uint32_t bgType;
         uint32_t instanceId;

@@ -131,7 +131,7 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
 
     // Speed
     // implement worldConfig.antiHack.isSpeedHackCkeckEnabled
-    if (!_player->isOnTaxi() && _player->obj_movement_info.transport_guid == 0 && !_player->GetSession()->GetPermissionCount())
+    if (!_player->isOnTaxi() && _player->obj_movement_info.transport_guid.IsEmpty() && !_player->GetSession()->GetPermissionCount())
     {
         // simplified: just take the fastest speed. less chance of fuckups too
         // get the "normal speeds" not the changed ones!
@@ -272,7 +272,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Transport position
-    if (mover->obj_movement_info.transport_guid != 0 && sessionMovementInfo.transport_guid == 0)
+    if (!mover->obj_movement_info.transport_guid.IsEmpty() && sessionMovementInfo.transport_guid.IsEmpty())
     {
         /* we left the transporter we were on */
         LOG_DEBUG("Left Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
@@ -287,10 +287,10 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     }
     else
     {
-        if (sessionMovementInfo.transport_guid != 0)
+        if (!sessionMovementInfo.transport_guid.IsEmpty())
         {
 
-            if (mover->obj_movement_info.transport_guid == 0)
+            if (mover->obj_movement_info.transport_guid.IsEmpty())
             {
                 LOG_DEBUG("Entered Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(sessionMovementInfo.transport_guid));
 

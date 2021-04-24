@@ -69,7 +69,7 @@ void GuildNewsLogEntry::saveGuildLogToDB() const
 void GuildNewsLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer&) const
 {
     data.writeBits(0, 26);
-    ObjectGuid guid = getPlayerGuid();
+    WoWGuid guid = getPlayerGuid();
 
     data.writeBit(guid[7]);
     data.writeBit(guid[0]);
