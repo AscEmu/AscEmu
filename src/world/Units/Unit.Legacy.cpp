@@ -1002,7 +1002,12 @@ void Unit::UpdateSplinePosition()
 
 void Unit::DisableSpline()
 {
+#if VERSION_STRING >= Cata
+    getMovementInfo()->removeMovementFlag(MovementFlags(MOVEFLAG_MOVE_FORWARD));
+#else
     getMovementInfo()->removeMovementFlag(MovementFlags(MOVEFLAG_SPLINE_FORWARD_ENABLED));
+#endif
+
     movespline->_Interrupt();
 }
 
