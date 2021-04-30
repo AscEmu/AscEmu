@@ -98,8 +98,8 @@ void WorldSession::handleGroupSetRolesOpcode(WorldPacket& recvPacket)
 
     recvPacket >> newRole;
 
-    WoWGuid target_guid; // Target GUID
-    WoWGuid player_guid = _player->getGuid();
+    ObjectGuid target_guid; // Target GUID
+    ObjectGuid player_guid = _player->getGuid();
 
     target_guid[2] = recvPacket.readBit();
     target_guid[6] = recvPacket.readBit();
@@ -206,7 +206,7 @@ void WorldSession::handleGroupRoleCheckBeginOpcode(WorldPacket& recvPacket)
         if (group->GetLeader()->guid != _player->getGuid() && group->GetMainAssist()->guid != _player->getGuid())
             return;
 
-        WoWGuid guid = _player->getGuid();
+        ObjectGuid guid = _player->getGuid();
 
         WorldPacket data(SMSG_ROLE_CHECK_BEGIN, 8);
         data.writeBit(guid[1]);
@@ -235,7 +235,7 @@ void WorldSession::handleGroupRoleCheckBeginOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING >= Cata
 void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
 {
-    WoWGuid unk_guid;
+    ObjectGuid unk_guid;
 
     recvPacket.read_skip<uint32_t>();
     recvPacket.read_skip<uint32_t>();
@@ -297,7 +297,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         }
     }
 
-    WoWGuid inviter_guid = player->getGuid();
+    ObjectGuid inviter_guid = player->getGuid();
 
     if (player->isInGroup())
     {

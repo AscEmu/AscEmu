@@ -97,7 +97,7 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
     //todo: correct packet 
     WorldPacket data(SMSG_BATTLEFIELD_LIST, 18);
 
-    WoWGuid guid;
+    ObjectGuid guid;
 
     // Send 0 instead of GUID when using the BG UI instead of Battlemaster
     if (from == 0)

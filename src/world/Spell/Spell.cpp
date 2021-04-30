@@ -4172,11 +4172,11 @@ void Spell::sendSpellStart()
         getSpellInfo()->getSpellVisual(1) != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
         return;
 
-    WoWGuid casterGuid = i_caster ? i_caster ->getGuid() : m_caster->getGuid();
-    WoWGuid casterUnitGuid = m_caster->getGuid();
-    WoWGuid targetGuid = m_targets.getGameObjectTarget();
-    WoWGuid itemTargetGuid = m_targets.getItemTarget();
-    WoWGuid unkGuid = uint64_t(0);
+    ObjectGuid casterGuid = i_caster ? i_caster ->getGuid() : m_caster->getGuid();
+    ObjectGuid casterUnitGuid = m_caster->getGuid();
+    ObjectGuid targetGuid = m_targets.getGameObjectTarget();
+    ObjectGuid itemTargetGuid = m_targets.getItemTarget();
+    ObjectGuid unkGuid = 0;
     bool hasDestLocation = (m_targets.getTargetMask() & TARGET_FLAG_DEST_LOCATION) && m_targets.getDestination().isSet();
     bool hasSourceLocation = (m_targets.getTargetMask() & TARGET_FLAG_SOURCE_LOCATION) && m_targets.getDestination().isSet();
     bool hasTargetString = false;// m_targets.getTargetMask()& TARGET_FLAG_STRING;
@@ -4487,11 +4487,11 @@ void Spell::sendSpellGo()
         getSpellInfo()->getSpellVisual(1) != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
         return;
 
-    WoWGuid casterGuid = i_caster ? i_caster->getGuid() : m_caster->getGuid();
-    WoWGuid casterUnitGuid = m_caster->getGuid();
-    WoWGuid targetGuid = m_targets.getGameObjectTarget();
-    WoWGuid itemTargetGuid = m_targets.getItemTarget();
-    WoWGuid unkGuid = uint64_t(0);
+    ObjectGuid casterGuid = i_caster ? i_caster->getGuid() : m_caster->getGuid();
+    ObjectGuid casterUnitGuid = m_caster->getGuid();
+    ObjectGuid targetGuid = m_targets.getGameObjectTarget();
+    ObjectGuid itemTargetGuid = m_targets.getItemTarget();
+    ObjectGuid unkGuid = 0;
     bool hasDestLocation = (m_targets.getTargetMask() & TARGET_FLAG_DEST_LOCATION) && m_targets.getDestination().isSet();
     bool hasSourceLocation = (m_targets.getTargetMask() & TARGET_FLAG_SOURCE_LOCATION) && m_targets.getDestination().isSet();
     bool hasDestUnkByte = m_targets.getTargetMask() & TARGET_FLAG_DEST_LOCATION;

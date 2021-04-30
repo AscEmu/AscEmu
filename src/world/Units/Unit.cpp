@@ -1289,7 +1289,7 @@ void Unit::setMoveCanFly(bool set_fly)
             data << uint32(2);
 #else
 #if VERSION_STRING == Mop
-            WoWGuid guid = getGuid();
+            ObjectGuid guid = getGuid();
 
             data.writeBit(guid[6]);
             data.writeBit(guid[1]);

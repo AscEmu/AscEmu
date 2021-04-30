@@ -32,7 +32,7 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
 #if VERSION_STRING == Mop
-            WoWGuid guid = itemGuid;
+            ObjectGuid guid = itemGuid;
             packet.writeBit(guid[5]);
             packet.writeBit(guid[3]);
             packet.writeBit(guid[4]);

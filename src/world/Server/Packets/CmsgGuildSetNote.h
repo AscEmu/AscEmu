@@ -18,7 +18,7 @@ namespace AscEmu::Packets
         bool isPublic;
         std::string note;
 
-        WoWGuid guid;
+        ObjectGuid guid;
 
         CmsgGuildSetNote() : CmsgGuildSetNote(false, "")
         {

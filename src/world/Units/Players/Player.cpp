@@ -923,7 +923,7 @@ void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
 void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
 {
     WorldPacket data;
-    WoWGuid guid = getGuid();
+    ObjectGuid guid = getGuid();
 
     switch (speed_type)
     {
@@ -3630,7 +3630,7 @@ void Player::logIntoBattleground()
 bool Player::logOntoTransport()
 {
     bool success = true;
-    if (!obj_movement_info.transport_guid.IsEmpty())
+    if (obj_movement_info.transport_guid != 0)
     {
         const auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
         if (transporter)

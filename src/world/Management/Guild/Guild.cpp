@@ -314,7 +314,7 @@ void Guild::handleRoster(WorldSession* session)
         size_t pubNoteLength = member->getPublicNote().length();
         size_t offNoteLength = member->getOfficerNote().length();
 
-        WoWGuid guid = member->getGUID();
+        ObjectGuid guid = member->getGUID();
         data.writeBit(guid[3]);
         data.writeBit(guid[4]);
         data.writeBit(0);
@@ -958,7 +958,7 @@ void Guild::sendNewsUpdate(WorldSession* session)
     for (GuildLog::const_iterator itr = logs->begin(); itr != logs->end(); ++itr)
     {
         data.writeBits(0, 26);
-        WoWGuid guid = static_cast<GuildNewsLogEntry*>(*itr)->getPlayerGuid();
+        ObjectGuid guid = static_cast<GuildNewsLogEntry*>(*itr)->getPlayerGuid();
 
         data.writeBit(guid[7]);
         data.writeBit(guid[0]);
@@ -975,7 +975,7 @@ void Guild::sendNewsUpdate(WorldSession* session)
     for (GuildLog::const_iterator itr = logs->begin(); itr != logs->end(); ++itr)
     {
         GuildNewsLogEntry* news = static_cast<GuildNewsLogEntry*>(*itr);
-        WoWGuid guid = news->getPlayerGuid();
+        ObjectGuid guid = news->getPlayerGuid();
         data.WriteByteSeq(guid[5]);
 
         data << uint32_t(news->getFlags());
@@ -2016,8 +2016,8 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
 #if VERSION_STRING >= Cata
 void Guild::sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint32_t rank)
 {
-    WoWGuid tarGuid = targetGuid;
-    WoWGuid setGuid = setterGuid;
+    ObjectGuid tarGuid = targetGuid;
+    ObjectGuid setGuid = setterGuid;
 
     GuildMember* member = getMember(targetGuid);
     ASSERT(member);

@@ -29,7 +29,7 @@ namespace AscEmu::Packets
         uint32_t money{};
         uint32_t cod{};
 #else
-        WoWGuid gobjGuid;
+        ObjectGuid gobjGuid;
         uint64_t money{};
         uint64_t cod{};
 #endif
@@ -91,7 +91,7 @@ namespace AscEmu::Packets
 
             gobjGuid[0] = packet.readBit();
 
-            WoWGuid itemGUIDs[12];
+            ObjectGuid itemGUIDs[12];
 
             for (uint8_t i = 0; i < itemCount; ++i)
             {

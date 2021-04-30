@@ -35,7 +35,7 @@ namespace AscEmu::Packets
 #if VERSION_STRING <= Cata
             packet << casterGuid << zoneId;
 #else
-            WoWGuid guid = casterGuid;
+            ObjectGuid guid = casterGuid;
             packet.writeBit(guid[2]);
             packet.writeBit(guid[4]);
             packet.writeBit(guid[0]);

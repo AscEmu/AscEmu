@@ -51,7 +51,7 @@ namespace AscEmu::Packets
 #if VERSION_STRING >= Cata
             packet >> flags >> time;
 
-            WoWGuid cataGuid;
+            ObjectGuid cataGuid;
             cataGuid[5] = packet.readBit();
             cataGuid[0] = packet.readBit();
             cataGuid[1] = packet.readBit();
@@ -70,6 +70,7 @@ namespace AscEmu::Packets
             packet.ReadByteSeq(cataGuid[3]);
             packet.ReadByteSeq(cataGuid[0]);
 
+            guid.Init(cataGuid);
 #endif
             return true;
         }

@@ -92,18 +92,20 @@ namespace AscEmu::Packets
                 }
             }
 #else
+            ObjectGuid targetGuid = guid.getRawGuid();
+
             for (const auto& auras : aura_updates)
 
-            packet.writeBit(guid[7]);
+            packet.writeBit(targetGuid[7]);
             packet.writeBit(1);                                   // Is AURA_UPDATE_ALL
             packet.writeBits(aura_updates.size(), 24);           // Aura Count
-            packet.writeBit(guid[6]);
-            packet.writeBit(guid[1]);
-            packet.writeBit(guid[3]);
-            packet.writeBit(guid[0]);
-            packet.writeBit(guid[4]);
-            packet.writeBit(guid[2]);
-            packet.writeBit(guid[5]);
+            packet.writeBit(targetGuid[6]);
+            packet.writeBit(targetGuid[1]);
+            packet.writeBit(targetGuid[3]);
+            packet.writeBit(targetGuid[0]);
+            packet.writeBit(targetGuid[4]);
+            packet.writeBit(targetGuid[2]);
+            packet.writeBit(targetGuid[5]);
 
             for (const auto& auras : aura_updates)
             {
@@ -130,7 +132,7 @@ namespace AscEmu::Packets
 
                 if (!(auras.flags & AFLAG_IS_CASTER))
                 {
-                    WoWGuid casterGuid = auras.casterGuid.getRawGuid();
+                    ObjectGuid casterGuid = auras.casterGuid.getRawGuid();
                     packet.writeBit(casterGuid[3]);
                     packet.writeBit(casterGuid[4]);
                     packet.writeBit(casterGuid[6]);
@@ -152,7 +154,7 @@ namespace AscEmu::Packets
             {
                 if (!(auras.flags & AFLAG_IS_CASTER))
                 {
-                    WoWGuid casterGuid = auras.casterGuid.getRawGuid();
+                    ObjectGuid casterGuid = auras.casterGuid.getRawGuid();
                     packet.WriteByteSeq(casterGuid[3]);
                     packet.WriteByteSeq(casterGuid[2]);
                     packet.WriteByteSeq(casterGuid[1]);
@@ -200,14 +202,14 @@ namespace AscEmu::Packets
                 packet << uint8(auras.visualSlot);
             }
 
-            packet.WriteByteSeq(guid[2]);
-            packet.WriteByteSeq(guid[6]);
-            packet.WriteByteSeq(guid[7]);
-            packet.WriteByteSeq(guid[1]);
-            packet.WriteByteSeq(guid[3]);
-            packet.WriteByteSeq(guid[4]);
-            packet.WriteByteSeq(guid[0]);
-            packet.WriteByteSeq(guid[5]);
+            packet.WriteByteSeq(targetGuid[2]);
+            packet.WriteByteSeq(targetGuid[6]);
+            packet.WriteByteSeq(targetGuid[7]);
+            packet.WriteByteSeq(targetGuid[1]);
+            packet.WriteByteSeq(targetGuid[3]);
+            packet.WriteByteSeq(targetGuid[4]);
+            packet.WriteByteSeq(targetGuid[0]);
+            packet.WriteByteSeq(targetGuid[5]);
 #endif
 
             return true;
