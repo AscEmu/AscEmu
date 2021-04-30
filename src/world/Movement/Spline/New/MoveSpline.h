@@ -113,7 +113,7 @@ public:
     int32_t currentPathIdx() const;
 
     bool HasAnimation() const { return splineflags.animation; }
-    AnimationTier GetAnimationTier() const { return static_cast<AnimationTier>(splineflags.animTier); }
+    uint8_t GetAnimationTier() const { return splineflags.animTier; }
 
     bool onTransport;
     std::string ToString() const;

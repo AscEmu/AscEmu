@@ -58,6 +58,7 @@
 #include "Server/Packets/SmsgAttackSwingBadFacing.h"
 #include "Movement/Spline/New/MoveSpline.h"
 #include "Movement/Spline/New/MoveSplineInit.h"
+#include "Movement/Spline/New/MovementPacketBuilder.h"
 
 using namespace AscEmu::Packets;
 
@@ -902,6 +903,8 @@ void Unit::Update(unsigned long time_passed)
                 m_aiInterface->UpdateMovementSpline();
         }
 
+        UpdateSplineMovement(time_passed);
+
         if (m_diminishActive)
         {
             uint32 count = 0;
@@ -928,6 +931,79 @@ void Unit::Update(unsigned long time_passed)
                 m_diminishActive = false;
         }
     }
+}
+
+void Unit::UpdateSplineMovement(uint32 t_diff)
+{
+    if (movespline->Finalized())
+        return;
+
+    movespline->updateState(t_diff);
+    bool arrived = movespline->Finalized();
+
+    if (movespline->isCyclic())
+    {
+        m_splineSyncTimer -= t_diff;
+        if (m_splineSyncTimer <= 0)
+        {
+            m_splineSyncTimer = 5000; // Retail value, do not change
+
+            ByteBuffer packedGuid;
+            packedGuid.appendPackGUID(getGuid());
+
+            WorldPacket data(SMSG_FLIGHT_SPLINE_SYNC, 4 + packedGuid.size());
+            MovementNew::PacketBuilder::WriteSplineSync(*movespline, data);
+            data.append(packedGuid);
+            SendMessageToSet(&data, true);
+        }
+    }
+
+    if (arrived)
+    {
+        DisableSpline();
+
+        if (movespline->HasAnimation())
+            setAnimationFlags(movespline->GetAnimationTier());
+    }
+
+    UpdateSplinePosition();
+}
+
+void Unit::UpdateSplinePosition()
+{
+    MovementNew::Location loc = movespline->ComputePosition();
+
+    if (movespline->onTransport)
+    {
+        LocationVector& pos = getMovementInfo()->transport_position;
+        pos.x = loc.x;
+        pos.y = loc.y;
+        pos.z = loc.z;
+        pos.o = normalizeOrientation(loc.orientation);
+
+        if (TransportBase* transport = getCurrentVehicle())
+        {
+            transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
+        }
+        else if (TransportBase* transport = GetTransport())
+        {
+            transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
+        }
+        else
+            return;
+    }
+
+    // \todo
+    //if (hasUnitStateFlag(UNIT_STATE_CANNOT_TURN))
+    //    loc.orientation = GetOrientation();
+
+    SetPosition(loc.x, loc.y, loc.z, loc.orientation);
+}
+
+void Unit::DisableSpline()
+{
+    getMovementInfo()->removeMovementFlag(MovementFlags(MOVEFLAG_SPLINE_FORWARD_ENABLED));
+    movespline->_Interrupt();
 }
 
 bool Unit::canReachWithAttack(Unit* pVictim)

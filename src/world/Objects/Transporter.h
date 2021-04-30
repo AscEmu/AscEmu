@@ -121,6 +121,7 @@ private:
 
     // Update all Passenger Positions
     void UpdatePassengerPositions(PassengerSet& passengers);
+    void UpdatePlayerPositions(PassengerSet& passengers);
 
     void DoEventIfAny(KeyFrame const& node, bool departure);
 
@@ -143,7 +144,7 @@ private:
     PassengerSet::iterator _passengerTeleportItr;
     PassengerSet _staticPassengers;
 
-    int32_t _positionChangeTimer = 0;
+    int32_t _positionChangeTimer = 100;
     int32_t _mapUpdateTimer = 0;
 
     uint32_t positionUpdateDelay;

@@ -153,6 +153,8 @@ void Transporter::Update(unsigned long time_passed)
         }
         else if (justStopped)
             UpdatePosition(_currentFrame->Node.x, _currentFrame->Node.y, _currentFrame->Node.z, _currentFrame->InitialOrientation);
+        else // When Transport Stopped keep updating players position
+            UpdatePlayerPositions(_passengers);
     }
 }
 
@@ -356,6 +358,32 @@ void Transporter::UpdatePassengerPositions(PassengerSet& passengers)
             gameobject->SetPosition(x, y, z, o, false);
             break;
         }
+        }
+    }
+}
+
+void Transporter::UpdatePlayerPositions(PassengerSet& passengers)
+{
+    for (PassengerSet::iterator itr = passengers.begin(); itr != passengers.end(); ++itr)
+    {
+        Object* passenger = *itr;
+        // transport teleported but passenger not yet (can happen for players)
+        if (passenger->GetMapId() != GetMapId())
+            continue;
+
+        float x, y, z, o;
+        passenger->obj_movement_info.transport_position.getPosition(x, y, z, o);
+        CalculatePassengerPosition(x, y, z, &o);
+        switch (passenger->getObjectTypeId())
+        {
+        case TYPEID_PLAYER:
+        {
+            Player* player = reinterpret_cast<Player*>(passenger);
+            // Relocate only passengers in world and skip any player that might be still logging in/teleporting
+            if (passenger->IsInWorld())
+                player->SetPosition(x, y, z, o);
+            break;
+        }        
         }
     }
 }
