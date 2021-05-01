@@ -26,6 +26,24 @@ if(NOT USE_PCH)
     set(ASCEMU_COMMENT_PCH //)
 endif()
 
+# AE_Number for including scripts
+
+if("${ASCEMU_VERSION}" STREQUAL "Classic")
+   set(ASCEMU_NUMBER 0)
+endif()
+if("${ASCEMU_VERSION}" STREQUAL "TBC")
+   set(ASCEMU_NUMBER 1)
+endif()
+if("${ASCEMU_VERSION}" STREQUAL "WotLK")
+   set(ASCEMU_NUMBER 2)
+endif()
+if("${ASCEMU_VERSION}" STREQUAL "Cata")
+   set(ASCEMU_NUMBER 3)
+endif()
+if("${ASCEMU_VERSION}" STREQUAL "Mop")
+   set(ASCEMU_NUMBER 4)
+endif()
+
 # platform specific
 if(WIN32)
     set(ASCEMU_CONFIGSFILE_PATH configs CACHE PATH "Path to AscEmu configs." )

@@ -52,6 +52,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupZulFarrak(mgr);
 
     //TBC
+#if VERSION_STRING >= TBC
     SetupArcatraz(mgr);
     SetupAuchenaiCrypts(mgr);
     SetupTheBlackMorass(mgr);
@@ -69,8 +70,10 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupTheSteamvault(mgr);
     SetupTheStockade(mgr);
     SetupTheUnderbog(mgr);
+#endif
 
     //Wotlk
+#if VERSION_STRING >= WotLK
     SetupAhnKahetTheOldKingdom(mgr);
     SetupAzjolNerub(mgr);
     SetupCullingOfStratholme(mgr);
@@ -89,6 +92,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupUtgardeKeep(mgr);
     SetupUtgardePinnacle(mgr);
     SetupVaultOfArchavon(mgr);
+#endif
 
     //Classic
     SetupBlackwingLair(mgr);
@@ -98,6 +102,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupWorldBosses(mgr);
 
     //Tbc
+#if VERSION_STRING >= TBC
     SetupBlackTemple(mgr);
     SetupKarazhan(mgr);
     SetupBattleOfMountHyjal(mgr);
@@ -107,13 +112,16 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupMagtheridonsLair(mgr);
     SetupTheEye(mgr);
     SetupGruulsLair(mgr);
+#endif
 
     //Wotlk
+#if VERSION_STRING >= WotLK
     SetupICC(mgr);
     SetupTheObsidianSanctum(mgr);
     SetupNaxxramas(mgr);
     SetupUlduar(mgr);
     SetupTrialOfTheCrusader(mgr);
+#endif
 }
 
 #ifdef WIN32

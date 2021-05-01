@@ -36,6 +36,7 @@ void SetupWailingCaverns(ScriptMgr* mgr);
 void SetupZulFarrak(ScriptMgr* mgr);
 
 //TBC
+#if VERSION_STRING >= TBC
 void SetupArcatraz(ScriptMgr* mgr);
 void SetupAuchenaiCrypts(ScriptMgr* mgr);
 void SetupTheBlackMorass(ScriptMgr* mgr);
@@ -53,8 +54,10 @@ void SetupTheSlavePens(ScriptMgr* mgr);
 void SetupTheSteamvault(ScriptMgr* mgr);
 void SetupTheStockade(ScriptMgr* mgr);
 void SetupTheUnderbog(ScriptMgr* mgr);
+#endif
 
 //Wotlk
+#if VERSION_STRING >= WotLK
 void SetupAhnKahetTheOldKingdom(ScriptMgr* mgr);
 void SetupAzjolNerub(ScriptMgr* mgr);
 void SetupCullingOfStratholme(ScriptMgr* mgr);
@@ -73,6 +76,7 @@ void SetupTrialOfTheChampion(ScriptMgr* mgr);
 void SetupUtgardeKeep(ScriptMgr* mgr);
 void SetupUtgardePinnacle(ScriptMgr* mgr);
 void SetupVaultOfArchavon(ScriptMgr* mgr);
+#endif
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -86,6 +90,7 @@ void SetupZulGurub(ScriptMgr* mgr);
 void SetupWorldBosses(ScriptMgr* mgr);
 
 //Tbc
+#if VERSION_STRING >= TBC
 void SetupBlackTemple(ScriptMgr* mgr);
 void SetupKarazhan(ScriptMgr* mgr);
 void SetupBattleOfMountHyjal(ScriptMgr* mgr);
@@ -95,13 +100,16 @@ void SetupSerpentshrineCavern(ScriptMgr* mgr);
 void SetupMagtheridonsLair(ScriptMgr* mgr);
 void SetupTheEye(ScriptMgr* mgr);
 void SetupGruulsLair(ScriptMgr* mgr);
+#endif
 
 //Wotlk
+#if VERSION_STRING >= WotLK
 void SetupICC(ScriptMgr* mgr);
 void SetupTheObsidianSanctum(ScriptMgr* mgr);
 void SetupNaxxramas(ScriptMgr* mgr);
 void SetupUlduar(ScriptMgr* mgr);
 void SetupTrialOfTheCrusader(ScriptMgr* mgr);
+#endif
 
 
 enum InstanceMaps

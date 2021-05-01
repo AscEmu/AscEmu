@@ -2,6 +2,7 @@
 
 set(PATH_PREFIX Tbc)
 
+if("${ASCEMU_NUMBER}" GREATER_EQUAL 1)
 set(SRC_TBC_SCRIPTS_FILES
     ${PATH_PREFIX}/Instance_Arcatraz.cpp 
     ${PATH_PREFIX}/Instance_AuchenaiCrypts.cpp 
@@ -56,6 +57,7 @@ set(SRC_TBC_SCRIPTS_FILES
     ${PATH_PREFIX}/Raid_TheEye.h 
     ${PATH_PREFIX}/Raid_ZulAman.h 
 )
+endif()
 
 source_group(Tbc FILES ${SRC_TBC_SCRIPTS_FILES})
 unset(PATH_PREFIX)

@@ -2,6 +2,7 @@
 
 set(PATH_PREFIX Wotlk)
 
+if("${ASCEMU_NUMBER}" GREATER_EQUAL 2)
 set(SRC_WOTLK_SCRIPTS_FILES
     ${PATH_PREFIX}/Instance_AhnKahetTheOldKingdom.cpp
     ${PATH_PREFIX}/Instance_AzjolNerub.cpp
@@ -50,6 +51,7 @@ set(SRC_WOTLK_SCRIPTS_FILES
     ${PATH_PREFIX}/Raid_Ulduar.h 	
     ${PATH_PREFIX}/Raid_TrialOfTheCrusader.h
 )
+endif()
 
 source_group(Wotlk FILES ${SRC_WOTLK_SCRIPTS_FILES})
 unset(PATH_PREFIX)
