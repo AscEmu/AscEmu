@@ -903,7 +903,7 @@ void Unit::Update(unsigned long time_passed)
                 m_aiInterface->UpdateMovementSpline();
         }
 
-        UpdateSplineMovement(time_passed);
+        updateSplineMovement(time_passed);
 
         if (m_diminishActive)
         {
@@ -933,7 +933,7 @@ void Unit::Update(unsigned long time_passed)
     }
 }
 
-void Unit::UpdateSplineMovement(uint32 t_diff)
+void Unit::updateSplineMovement(uint32 t_diff)
 {
     if (movespline->Finalized())
         return;
@@ -960,16 +960,16 @@ void Unit::UpdateSplineMovement(uint32 t_diff)
 
     if (arrived)
     {
-        DisableSpline();
+        disableSpline();
 
         if (movespline->HasAnimation())
             setAnimationFlags(movespline->GetAnimationTier());
     }
 
-    UpdateSplinePosition();
+    updateSplinePosition();
 }
 
-void Unit::UpdateSplinePosition()
+void Unit::updateSplinePosition()
 {
     MovementNew::Location loc = movespline->ComputePosition();
 
@@ -1000,7 +1000,7 @@ void Unit::UpdateSplinePosition()
     SetPosition(loc.x, loc.y, loc.z, loc.orientation);
 }
 
-void Unit::DisableSpline()
+void Unit::disableSpline()
 {
 #if VERSION_STRING >= Cata
     getMovementInfo()->removeMovementFlag(MovementFlags(MOVEFLAG_MOVE_FORWARD));

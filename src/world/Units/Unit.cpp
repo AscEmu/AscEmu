@@ -1094,7 +1094,7 @@ void Unit::setHoverHeight(float height) { write(unitData()->hover_height, height
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
-void Unit::SetFacingTo(float ori, bool force)
+void Unit::setFacingTo(float ori, bool force)
 {
     // do not face when already moving
     if (!force && (/*!IsStopped() ||*/ !movespline->Finalized()))
@@ -1110,7 +1110,7 @@ void Unit::SetFacingTo(float ori, bool force)
     init.Launch();
 }
 
-void Unit::SetFacingToObject(Object* object, bool force)
+void Unit::setFacingToObject(Object* object, bool force)
 {
     // do not face when already moving
     if (!force && (/*!IsStopped() ||*/ !movespline->Finalized()))
