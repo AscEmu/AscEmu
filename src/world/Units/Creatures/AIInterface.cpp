@@ -1976,8 +1976,8 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
 
                 std::string msg = "%s attempts to run away in fear!";
 
-                const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_CHANNEL, LANG_UNIVERSAL, 0, msg, 0, "", 0, static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Name).serialise().get();
-                m_Unit->SendMessageToSet(data, false);
+                const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_CHANNEL, LANG_UNIVERSAL, 0, msg, 0, "", 0, static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Name).serialise();
+                m_Unit->SendMessageToSet(data.get(), false);
 
                 m_hasFleed = true;
             }
