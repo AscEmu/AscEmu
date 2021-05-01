@@ -42,6 +42,8 @@
 #include "Storage/MySQLStructures.h"
 #include "Objects/ObjectMgr.h"
 
+using namespace AscEmu::Packets;
+
 //MIT start
 
 bool Creature::isVendor() const { return getNpcFlags() & UNIT_NPC_FLAG_VENDOR; }
@@ -2382,9 +2384,9 @@ void Creature::SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 
 
     const char* name = GetCreatureProperties()->Name.c_str();
 
-    const auto data = AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, getGuid(), name).serialise().get();
+    const auto data = SmsgMessageChat(type, lang, 0, msg, getGuid(), name).serialise();
 
-    SendMessageToSet(data, true);
+    SendMessageToSet(data.get(), true);
 }
 
 /// \todo implement localization support
