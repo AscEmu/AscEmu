@@ -1992,7 +1992,7 @@ public:
         if (pInstance && pInstance->getData(CN_DEATHBRINGER_SAURFANG) != Finished)
         {
             GossipMenu menu(pObject->getGuid(), 14500);
-            menu.addItem(GOSSIP_ICON_CHAT, 1, 1); // todo replace with "Let it begin..."
+            menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_MURADIN_START, 1);
             menu.sendGossipPacket(plr);
         }
     }
@@ -2022,9 +2022,9 @@ class MuradinSaurfangEvent : public CreatureAIScript
         mInstance = (IceCrownCitadelScript*)getInstanceScript();
 
         getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
-
-        AddWaypoint(CreateWaypoint(1, 2000, Movement::WP_MOVE_TYPE_WALK, firstStepPos));
-        AddWaypoint(CreateWaypoint(2, 0, Movement::WP_MOVE_TYPE_RUN, chargePos[0]));
+ 
+        AddWaypoint(CreateWaypoint(POINT_FIRST_STEP, 0, Movement::WP_MOVE_TYPE_WALK, firstStepPos));
+        AddWaypoint(CreateWaypoint(POINT_CHARGE, 0, Movement::WP_MOVE_TYPE_RUN, chargePos[0]));
         getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
     }
 
@@ -2037,16 +2037,23 @@ class MuradinSaurfangEvent : public CreatureAIScript
             switch (eventId)
             {
             case EVENT_INTRO_ALLIANCE_4_SE:
+            {
                 getCreature()->GetAIInterface()->StopMovement(0);
 
                 getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(1);
+                getCreature()->GetAIInterface()->setWayPointToMove(POINT_FIRST_STEP);
 
                 getCreature()->GetAIInterface()->setCreatureState(MOVING);
-                break;
+            break;
+            }
             case EVENT_INTRO_ALLIANCE_5_SE:
+            {
                 sendDBChatMessage(SAY_INTRO_ALLIANCE_5_SE);
-                break;
+                
+                SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+                getCreature()->GetAIInterface()->setWayPointToMove(POINT_CHARGE);            
+            break;
+            }
             }
         }
     }
@@ -2055,10 +2062,14 @@ class MuradinSaurfangEvent : public CreatureAIScript
     {
         switch (iWaypointId)
         {
-        case 1:
+        case POINT_FIRST_STEP:
         {
-            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
-            getCreature()->GetAIInterface()->setWayPointToMove(2);
+            sendDBChatMessage(SAY_INTRO_ALLIANCE_4_SE);
+
+            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_5_SE, 5000, PHASE_INTRO_A);
+
+            if (Creature* deathbringer = mInstance->getCreatureBySpawnId(mInstance->getLocalData(DATA_DEATHBRINGER_SAURFANG)))
+                deathbringer->GetScript()->DoAction(ACTION_CONTINUE_INTRO);
             break;
         }
         }
@@ -2099,8 +2110,6 @@ class MuradinSaurfangEvent : public CreatureAIScript
             // Clear NPC FLAGS
             getCreature()->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-
-
             break;
         }
         case ACTION_START_OUTRO:
@@ -2128,7 +2137,7 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 14500);
-        menu.addItem(GOSSIP_ICON_CHAT, 1, 1); // todo replace with "We are ready to go, High Overlord. The Lich King must fall!"
+        menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_SAURFANG_START, 1);
         menu.sendGossipPacket(plr);
     }
 
@@ -2158,6 +2167,11 @@ class OverlordSaurfangEvent : public CreatureAIScript
         mInstance = (IceCrownCitadelScript*)getInstanceScript();
 
         getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+
+        AddWaypoint(CreateWaypoint(POINT_FIRST_STEP, 0, Movement::WP_MOVE_TYPE_WALK, firstStepPos));
+        AddWaypoint(CreateWaypoint(POINT_CHARGE, 0, Movement::WP_MOVE_TYPE_RUN, chargePos[0]));
+        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
     }
 
     void AIUpdate() override
@@ -2168,9 +2182,13 @@ class OverlordSaurfangEvent : public CreatureAIScript
         {
             switch (eventId)
             {
-            case EVENT_INTRO_HORDE_3:
-                // Clear NPC FLAGS
-                getCreature()->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
+            case EVENT_INTRO_HORDE_3_SE:
+                getCreature()->GetAIInterface()->StopMovement(0);
+
+                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                getCreature()->GetAIInterface()->setWayPointToMove(POINT_FIRST_STEP);
+
+                getCreature()->GetAIInterface()->setCreatureState(MOVING);
                 break;
             case EVENT_INTRO_HORDE_5_SE:
                 sendDBChatMessage(SAY_INTRO_HORDE_5_SE);
@@ -2183,6 +2201,10 @@ class OverlordSaurfangEvent : public CreatureAIScript
                 break;
             case EVENT_INTRO_HORDE_8_SE:
                 sendDBChatMessage(SAY_INTRO_HORDE_8_SE);
+
+                // Charge
+                SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+                getCreature()->GetAIInterface()->setWayPointToMove(POINT_CHARGE);
                 break;
             case EVENT_OUTRO_HORDE_2_SE:   // say
                 sendDBChatMessage(SAY_OUTRO_HORDE_2_SE);
@@ -2198,6 +2220,25 @@ class OverlordSaurfangEvent : public CreatureAIScript
                 sendDBChatMessage(SAY_OUTRO_HORDE_4_SE);
                 break;
             }
+        }
+    }
+
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    {
+        switch (iWaypointId)
+        {
+        case POINT_FIRST_STEP:
+        {
+            sendDBChatMessage(SAY_INTRO_HORDE_3_SE);
+            scriptEvents.addEvent(EVENT_INTRO_HORDE_5_SE, 15500, PHASE_INTRO_H);
+            scriptEvents.addEvent(EVENT_INTRO_HORDE_6_SE, 29500, PHASE_INTRO_H);
+            scriptEvents.addEvent(EVENT_INTRO_HORDE_7_SE, 43800, PHASE_INTRO_H);
+            scriptEvents.addEvent(EVENT_INTRO_HORDE_8_SE, 47000, PHASE_INTRO_H);
+
+            if (Creature* deathbringer = mInstance->getCreatureBySpawnId(mInstance->getLocalData(DATA_DEATHBRINGER_SAURFANG)))
+                deathbringer->GetScript()->DoAction(ACTION_CONTINUE_INTRO);
+            break;
+        }
         }
     }
 
@@ -2269,13 +2310,14 @@ class DeathbringerSaurfangAI : public CreatureAIScript
     {
         // Instance Script
         mInstance = (IceCrownCitadelScript*)getInstanceScript();
+        getCreature()->EnableAI();
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-        getCreature()->SetFaction(974);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
-        AddWaypoint(CreateWaypoint(1, 2000, Movement::WP_MOVE_TYPE_WALK, deathbringerPos));
-        AddWaypoint(CreateWaypoint(2, 0, Movement::WP_MOVE_TYPE_WALK, firstStepPos));
+        AddWaypoint(CreateWaypoint(POINT_SAURFANG, 0, Movement::WP_MOVE_TYPE_WALK, deathbringerPos));
+        AddWaypoint(CreateWaypoint(POINT_FIRST_STEP, 0, Movement::WP_MOVE_TYPE_WALK, deathbringerPos));
         getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+        _introDone = false;
     }
 
     void AIUpdate() override
@@ -2289,11 +2331,50 @@ class DeathbringerSaurfangAI : public CreatureAIScript
         {
             switch (eventId)
             {
-            case EVENT_INTRO_ALLIANCE_2:
+            case EVENT_INTRO_ALLIANCE_2_SE:
                 getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 getCreature()->SetFaction(974);
+                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_2);
+                break;
+            case EVENT_INTRO_ALLIANCE_3_SE:
+                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_3);
+                break;
+            case EVENT_INTRO_ALLIANCE_6_SE:
+                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_6);
+                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_7);
+                // \Todo Cast SPELL_GRIP_OF_AGONY
+                break;
+            case EVENT_INTRO_HORDE_2_SE:
+                getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->SetFaction(974);
+                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_HORDE_2);
+                break;
+            case EVENT_INTRO_HORDE_4_SE:
+                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_HORDE_4);
+                break;
+            case EVENT_INTRO_HORDE_9_SE:
+                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_HORDE_9);
+                // \Todo Cast SPELL_GRIP_OF_AGONY
+                break;
+            case EVENT_INTRO_FINISH_SE:
+                setScriptPhase(PHASE_COMBAT);
+                _introDone = true;
                 break;
             }
+        }
+    }
+
+    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    {
+        switch (iWaypointId)
+        {
+        case POINT_SAURFANG:
+        {
+            // Close Suarfangs Door
+            if (GameObject* Door = mInstance->GetGameObjectByGuid(mInstance->getLocalData(DATA_SAURFANG_DOOR)))
+                Door->setState(GO_STATE_CLOSED);
+            break;
+        }
         }
     }
 
@@ -2306,37 +2387,39 @@ class DeathbringerSaurfangAI : public CreatureAIScript
         {     
             setScriptPhase(uint32(action));
 
-            getCreature()->GetAIInterface()->setWalkMode(WALKMODE_WALK);
-            getCreature()->removeUnitFlags2(UNIT_FLAG2_DISABLE_TURN);
+            // Move
             getCreature()->GetAIInterface()->StopMovement(0);
 
             getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            getCreature()->GetAIInterface()->setWayPointToMove(1);
+            getCreature()->GetAIInterface()->setWayPointToMove(POINT_SAURFANG);
 
             getCreature()->GetAIInterface()->setCreatureState(MOVING);
 
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_2, 2500, PHASE_INTRO_A);
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_3, 20000, PHASE_INTRO_A);
-            scriptEvents.addEvent(EVENT_INTRO_HORDE_2, 5000, PHASE_INTRO_H);
+            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_2_SE, 2500, PHASE_INTRO_A);
+            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_3_SE, 20000, PHASE_INTRO_A);
+            scriptEvents.addEvent(EVENT_INTRO_HORDE_2_SE, 5000, PHASE_INTRO_H);
             break;
         }
-        }
-    }
+        case ACTION_CONTINUE_INTRO:
+        {
+            if (_introDone)
+                return;
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
-    {
-        switch (iWaypointId)
-        {
-        case 1:
-        {
+            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_6_SE, 7000, PHASE_INTRO_A);
+            scriptEvents.addEvent(EVENT_INTRO_FINISH_SE, 8000, PHASE_INTRO_A);
+
+            scriptEvents.addEvent(EVENT_INTRO_HORDE_4_SE, 6500, PHASE_INTRO_H);
+            scriptEvents.addEvent(EVENT_INTRO_HORDE_9_SE, 48200, PHASE_INTRO_H);
+            scriptEvents.addEvent(EVENT_INTRO_FINISH_SE, 55700, PHASE_INTRO_H);
+            break;
         }
-        break;
         }
     }
 
 protected:
     // Common
     IceCrownCitadelScript* mInstance;
+    bool _introDone;
 };
 #endif
 void SetupICC(ScriptMgr* mgr)

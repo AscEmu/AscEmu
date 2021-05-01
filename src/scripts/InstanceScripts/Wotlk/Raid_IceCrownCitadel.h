@@ -879,12 +879,12 @@ enum GunshipBattleTextIds
 enum DeathbringerSaurfangActions
 {
     ACTION_START_EVENT                          = 1,
-    ACTION_CONTINUE_INTRO                       = 2,
-    ACTION_CHARGE                               = 3,
-    ACTION_START_OUTRO                          = 4,
-    ACTION_DESPAWN                              = 5,
-    ACTION_INTERRUPT_INTRO                      = 6,
-    ACTION_MARK_OF_THE_FALLEN_CHAMPION          = 7,
+    ACTION_CONTINUE_INTRO                       = 3,
+    ACTION_CHARGE                               = 4,
+    ACTION_START_OUTRO                          = 5,
+    ACTION_DESPAWN                              = 6,
+    ACTION_INTERRUPT_INTRO                      = 7,
+    ACTION_MARK_OF_THE_FALLEN_CHAMPION          = 8,
 };
 
 enum DeathbringerSaurfangPhases
@@ -985,6 +985,8 @@ enum DeathbringerSaurfangTextIds
     SAY_SAURFANG_INTRO_3_ALLIANCE_SE            = 1111,
     SAY_SAURFANG_INTRO_4_ALLIANCE_SE            = 1112,
 
+    GOSSIP_MURADIN_START                        = 613, // Let it begin...
+
     // High Overlord Saurfang
     SAY_INTRO_HORDE_1_SE                        = 1076,
     SAY_INTRO_HORDE_3_SE                        = 1077,
@@ -1003,8 +1005,67 @@ enum DeathbringerSaurfangTextIds
     SAY_SAURFANG_INTRO_3_HORDE_SE               = 1093,
     SAY_SAURFANG_INTRO_4_HORDE_SE               = 1094,
 
+    GOSSIP_SAURFANG_START                       = 614, // We are ready to go, High Overlord. The Lich King must fall!
 
     // Deathrbinger Saurfang
+    SAY_DEATHBRINGER_INTRO_ALLIANCE_2           = 1126,
+    SAY_DEATHBRINGER_INTRO_ALLIANCE_3           = 1127,
+    SAY_DEATHBRINGER_INTRO_ALLIANCE_6           = 1128,
+    SAY_DEATHBRINGER_INTRO_ALLIANCE_7           = 1129,
+    SAY_DEATHBRINGER_INTRO_HORDE_2              = 1130,
+    SAY_DEATHBRINGER_INTRO_HORDE_4              = 1131,
+    SAY_DEATHBRINGER_INTRO_HORDE_9              = 1132,
+    SAY_DEATHBRINGER_AGGRO                      = 1133,
+    SAY_DEATHBRINGER_MARK                       = 1134,
+    SAY_DEATHBRINGER_BLOOD_BEASTS               = 1135,
+    SAY_DEATHBRINGER_KILL                       = 1136,
+    SAY_DEATHBRINGER_FRENZY                     = 1137,
+    SAY_DEATHBRINGER_BERSERK                    = 1138,
+    SAY_DEATHBRINGER_DEATH                      = 1139,
+    EMOTE_DEATHBRINGER_SCENT_OF_BLOOD           = 1140,
+};
+
+enum SpellsDeathbringerSaurfang
+{
+    // Deathbringer Saurfang
+    SPELL_ZERO_POWER                            = 72242,
+    SPELL_GRIP_OF_AGONY                         = 70572, // Intro
+    SPELL_BLOOD_LINK                            = 72178,
+    SPELL_MARK_OF_THE_FALLEN_CHAMPION_S         = 72256,
+    SPELL_RUNE_OF_BLOOD_S                       = 72408,
+
+    SPELL_SUMMON_BLOOD_BEAST                    = 72172,
+    SPELL_SUMMON_BLOOD_BEAST_25_MAN             = 72356, // Additional cast, does not replace
+    SPELL_FRENZY                                = 72737,
+    SPELL_BLOOD_NOVA_TRIGGER                    = 72378,
+    SPELL_BLOOD_NOVA                            = 72380,
+    SPELL_BLOOD_POWER                           = 72371,
+    SPELL_BLOOD_LINK_POWER                      = 72195,
+    SPELL_BLOOD_LINK_DUMMY                      = 72202,
+    SPELL_MARK_OF_THE_FALLEN_CHAMPION           = 72293,
+    SPELL_BOILING_BLOOD                         = 72385,
+    SPELL_RUNE_OF_BLOOD                         = 72410,
+
+    // Blood Beast
+    SPELL_BLOOD_LINK_BEAST                      = 72176,
+    SPELL_RESISTANT_SKIN                        = 72723,
+    SPELL_SCENT_OF_BLOOD                        = 72769, // Heroic only
+
+    SPELL_RIDE_VEHICLE_SE                       = 70640, // Outro
+    SPELL_ACHIEVEMENT_SE                        = 72928,
+    SPELL_REMOVE_MARKS_OF_THE_FALLEN_CHAMPION   = 72257,
+    SPELL_PERMANENT_FEIGN_DEATH                 = 70628
+};
+
+enum MovePoints
+{
+    POINT_SAURFANG                              = 1,
+    POINT_FIRST_STEP                            = 2,
+    POINT_CHARGE                                = 3,
+    POINT_CHOKE                                 = 4,
+    POINT_CORPSE                                = 5,
+    POINT_FINAL                                 = 6,
+    POINT_EXIT                                  = 7,        // waypoint id
 };
 
 Movement::Location const deathbringerPos = { -496.3542f, 2211.33f, 541.1138f, 0.0f };
