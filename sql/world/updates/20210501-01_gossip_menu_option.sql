@@ -1,5 +1,4 @@
 
-
 REPLACE INTO `gossip_menu_option` (`entry`, `option_text`) VALUES ('607', 'I\'m not the raid leader...');
 REPLACE INTO `gossip_menu_option` (`entry`, `option_text`) VALUES ('608', 'My companions are all accounted for');
 REPLACE INTO `gossip_menu_option` (`entry`, `option_text`) VALUES ('609', 'I\'ll wait for the raid leader');
@@ -11,3 +10,4 @@ REPLACE INTO `gossip_menu_option` (`entry`, `option_text`) VALUES ('614', 'We ar
 
 -- update world_db_version
 REPLACE INTO `world_db_version` VALUES ('70', '20210501-01_gossip_menu_option');
+
