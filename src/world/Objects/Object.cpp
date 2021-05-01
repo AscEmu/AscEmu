@@ -3883,8 +3883,8 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
                 if (npcScriptText->sound != 0)
                     creature->PlaySoundToSet(npcScriptText->sound);
 
-                const auto data = SmsgMessageChat(npcScriptText->type, npcScriptText->language, 0, message, getGuid(), creatureName).serialise().get();
-                player->SendPacket(data);
+                const auto data = SmsgMessageChat(npcScriptText->type, npcScriptText->language, 0, message, getGuid(), creatureName).serialise();
+                player->SendPacket(data.get());
             }
         }
     }
@@ -4035,8 +4035,8 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                 else
                     creatureName = creature->GetCreatureProperties()->Name;
 
-                const auto data = SmsgMessageChat(npcMonsterSay->type, npcMonsterSay->language, 0, newText, getGuid(), creatureName).serialise().get();
-                player->SendPacket(data);
+                const auto data = SmsgMessageChat(npcMonsterSay->type, npcMonsterSay->language, 0, newText, getGuid(), creatureName).serialise();
+                player->SendPacket(data.get());
             }
         }
     }
