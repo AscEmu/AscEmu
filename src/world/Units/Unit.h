@@ -572,6 +572,8 @@ private:
     int32_t m_rootCounter;
 
 public:
+    void setFacingTo(float const ori, bool force = true);
+    void setFacingToObject(Object* object, bool force = true);
     void setMoveWaterWalk();
     void setMoveLandWalk();
     void setMoveFeatherFall();
@@ -603,9 +605,14 @@ public:
 
 private:
     UnitSpeedInfo m_UnitSpeedInfo;
+    void updateSplineMovement(uint32 t_diff);
+    void updateSplinePosition();
+
+    int32_t m_splineSyncTimer = 5000;
 
 public:
     void sendMoveSplinePaket(UnitSpeedType speed_type);
+    void disableSpline();
 
     // Mover
     Unit* mControledUnit;

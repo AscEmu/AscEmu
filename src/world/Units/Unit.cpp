@@ -1094,6 +1094,35 @@ void Unit::setHoverHeight(float height) { write(unitData()->hover_height, height
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
+void Unit::setFacingTo(float ori, bool force)
+{
+    // do not face when already moving
+    if (!force && (/*!IsStopped() ||*/ !movespline->Finalized()))
+        return;
+
+    MovementNew::MoveSplineInit init(this);
+    init.MoveTo(GetPositionX(), GetPositionY(), GetPositionZ(), false);
+
+    if (hasUnitMovementFlag(MOVEFLAG_TRANSPORT) /*&& GetTransGUID()*/)
+        init.DisableTransportPathTransformations(); // It makes no sense to target global orientation
+    init.SetFacing(ori);
+
+    init.Launch();
+}
+
+void Unit::setFacingToObject(Object* object, bool force)
+{
+    // do not face when already moving
+    if (!force && (/*!IsStopped() ||*/ !movespline->Finalized()))
+        return;
+
+    MovementNew::MoveSplineInit init(this);
+    init.MoveTo(GetPositionX(), GetPositionY(), GetPositionZ(), false);
+    init.SetFacing(getAbsoluteAngle(object));   // when on transport, GetAbsoluteAngle will still return global coordinates (and angle) that needs transforming
+
+    init.Launch();
+}
+
 void Unit::setMoveWaterWalk()
 {
     addUnitMovementFlag(MOVEFLAG_WATER_WALK);

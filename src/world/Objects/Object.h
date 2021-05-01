@@ -453,6 +453,16 @@ public:
         // Converts to 360 > x > 0
         float getEasyAngle(float angle);
 
+        float getAbsoluteAngle(float x, float y) const
+        {
+            float dx = x - GetPositionX();
+            float dy = y - GetPositionY();
+            return normalizeOrientation(std::atan2(dy, dx));
+            
+        }
+        float getAbsoluteAngle(LocationVector const& pos) { return getAbsoluteAngle(pos.x, pos.y); }
+        float getAbsoluteAngle(Object const* obj) { return getAbsoluteAngle(obj->GetPosition()); }
+
     float getDistanceSq(Object* obj)
         {
             if (obj->GetMapId() != m_mapId)

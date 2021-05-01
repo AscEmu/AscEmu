@@ -709,6 +709,10 @@ enum AdditionalData
     DATA_GB_MURADIN_BRONZEBEARD                 = 13,
     DATA_HIGH_OVERLORD_SAURFANG_NOT_VISUAL      = 14,
     DATA_MURADIN_BRONZEBEARD_NOT_VISUAL         = 15,
+
+    // Deathbringer Suarfang
+    DATA_SAURFANG_DOOR                          = 16,
+    DATA_DEATHBRINGER_SAURFANG                  = 17,
 };
 
 enum Achievements
@@ -834,43 +838,260 @@ enum EventsGunshipBattle
 enum GunshipBattleTextIds
 {
     // Muradin Bronzebeard
-    SAY_INTRO_ALLIANCE_0                        = 8374,
-    SAY_INTRO_ALLIANCE_1                        = 8375,
-    SAY_INTRO_ALLIANCE_2                        = 8376,
-    SAY_INTRO_ALLIANCE_3                        = 8377,
-    SAY_INTRO_ALLIANCE_4                        = 8378,
-    SAY_INTRO_ALLIANCE_5                        = 8379,
-    SAY_INTRO_ALLIANCE_7                        = 8380,
-    SAY_INTRO_HORDE_3                           = 8381,
-    SAY_BOARDING_SKYBREAKER_1                   = 8382,
-    SAY_BOARDING_ORGRIMS_HAMMER_0               = 8383,
-    SAY_NEW_RIFLEMEN_SPAWNED                    = 8384,
-    SAY_NEW_MORTAR_TEAM_SPAWNED                 = 8385,
-    SAY_NEW_MAGE_SPAWNED                        = 8386,
-    SAY_ALLIANCE_VICTORY                        = 8387,
-    SAY_ALLIANCE_DEFEAT                         = 8388, // How will we handle that case ? Ie. the player loses
+    SAY_INTRO_ALLIANCE_0                        = 8374, // Fire up the engines! We got a meetin' with destiny, lads!
+    SAY_INTRO_ALLIANCE_1                        = 8375, // Hold on to yer hats!
+    SAY_INTRO_ALLIANCE_2                        = 8376, // What in the world is that? Grab me spyglass, crewman!
+    SAY_INTRO_ALLIANCE_3                        = 8377, // By me own beard! HORDE SAILIN' IN FAST 'N HOT!
+    SAY_INTRO_ALLIANCE_4                        = 8378, // EVASIVE ACTION! MAN THE GUNS!
+    SAY_INTRO_ALLIANCE_5                        = 8379, // Cowardly dogs! Ye blindsided us!
+    SAY_INTRO_ALLIANCE_7                        = 8380, // Not me battle? I dunnae who ye think ye are, mister, but I got a score to settle with Arthas and yer not gettin' in me way! FIRE ALL GUNS! FIRE! FIRE!
+    SAY_INTRO_HORDE_3                           = 8381, // Move yer jalopy or we'll blow it out of the sky, orc! The Horde's got no business here.
+    SAY_BOARDING_SKYBREAKER_1                   = 8382, // What's this then?! Ye won't be takin' this son o' Ironforge's vessel without a fight!
+    SAY_BOARDING_ORGRIMS_HAMMER_0               = 8383, // Marines, Sergeants, attack!
+    SAY_NEW_RIFLEMEN_SPAWNED                    = 8384, // Riflemen, shoot faster!
+    SAY_NEW_MORTAR_TEAM_SPAWNED                 = 8385, // Mortar team, reload!
+    SAY_NEW_MAGE_SPAWNED                        = 8386, // We're taking hull damage, get a sorcerer out here to shut down those cannons!
+    SAY_ALLIANCE_VICTORY                        = 8387, // Don't say I didn't warn ya, scoundrels! Onward, brothers and sisters!
+    SAY_ALLIANCE_DEFEAT                         = 8388, // Captain Bartlett, get us out of here! We're taken too much damage to stay afloat!
 
     // High Overlord Saurfang
-    SAY_INTRO_HORDE_0                           = 8360,
-    SAY_INTRO_HORDE_0_1                         = 8361,
-    SAY_INTRO_HORDE_1                           = 8362,
-    SAY_INTRO_HORDE_2                           = 8363,
-    SAY_INTRO_HORDE_4                           = 8364,
-    SAY_BOARDING_SKYBREAKER_0                   = 8366,
-    SAY_BOARDING_ORGRIMS_HAMMER_1               = 8367,
-    SAY_NEW_AXETHROWER_SPAWNED                  = 8369,
-    SAY_NEW_ROCKETEERS_SPAWNED                  = 8370,
-    SAY_NEW_BATTLE_MAGE_SPAWNED                 = 8371,
-    SAY_HORDE_VICTORY                           = 8372,
-    SAY_HORDE_DEFEAT                            = 8373, // How will we handle that case ? Ie. the player loses
+    SAY_INTRO_HORDE_0                           = 8360, // Rise up, sons and daughters of the Horde! Today we battle a hated enemy of the Horde! LOK'TAR OGAR!
+    SAY_INTRO_HORDE_0_1                         = 8361, // Kor'kron, take us out!
+    SAY_INTRO_HORDE_1                           = 8362, // What is that? Something approaching in the distance.
+    SAY_INTRO_HORDE_2                           = 8363, // ALLIANCE GUNSHIP! ALL HANDS ON DECK!
+    SAY_INTRO_HORDE_4                           = 8365, // You will know our business soon. Kor'kron, ANNIHILATE THEM!
+    SAY_BOARDING_SKYBREAKER_0                   = 8366, // This is not your battle, dwarf. Back down or we will be forced to destroy your ship.
+    SAY_BOARDING_ORGRIMS_HAMMER_1               = 8367, // You DARE board my ship? Your death will come swiftly.
+    SAY_NEW_AXETHROWER_SPAWNED                  = 8369, // Axethrowers, hurl faster!
+    SAY_NEW_ROCKETEERS_SPAWNED                  = 8370, // Rocketeers, reload!
+    SAY_NEW_BATTLE_MAGE_SPAWNED                 = 8371, // We're taking hull damage, get a battle-mage out here to shut down those cannons!
+    SAY_HORDE_VICTORY                           = 8372, // The Alliance falter. Onward to the Lich King!
+    SAY_HORDE_DEFEAT                            = 8373, // Damage control! Put those fires out. You haven't seen the last of the Horde!
 
     GOSSIP_OPTION_NOT_LEADER                    = 607,  // I'm not the raid leader...
     GOSSIP_OPTION_ALLIANCE_RDY                  = 608,  // My companions are all accounted for, Muradin. Let's go!
     GOSSIP_OPTION_WAIT_LEADER                   = 609,  // I'll wait for the raid leader
     GOSSIP_OPTION_HORDE_RDY                     = 610,  // My companions are all accounted for, Saurfang. Let's go!
-    GOSSIP_OPTION_JETPACK                       = 611,    // Yeah, I'm sure that safety is your top priority. Give me a jetpack.
-    GOSSIP_OPTION_JETPACK2                      = 612,   // You already have my jetpack!
+    GOSSIP_OPTION_JETPACK                       = 611,  // Yeah, I'm sure that safety is your top priority. Give me a jetpack.
+    GOSSIP_OPTION_JETPACK2                      = 612,  // You already have my jetpack!
 };
+
+enum DeathbringerSaurfangActions
+{
+    ACTION_START_EVENT                          = 1,
+    ACTION_CONTINUE_INTRO                       = 3,
+    ACTION_CHARGE                               = 4,
+    ACTION_START_OUTRO                          = 5,
+    ACTION_DESPAWN                              = 6,
+    ACTION_INTERRUPT_INTRO                      = 7,
+    ACTION_MARK_OF_THE_FALLEN_CHAMPION          = 8,
+};
+
+enum DeathbringerSaurfangPhases
+{
+    PHASE_INTRO_A                               = 1,
+    PHASE_INTRO_H                               = 2,
+    PHASE_COMBAT                                = 3,
+
+    PHASE_INTRO_MASK = (1 << PHASE_INTRO_A) | (1 << PHASE_INTRO_H),
+};
+
+enum EventsDeathbringerSaurfang
+{
+    EVENT_INTRO_ALLIANCE_1_SE                   = 1,
+    EVENT_INTRO_ALLIANCE_2_SE                   = 2,
+    EVENT_INTRO_ALLIANCE_3_SE                   = 3,
+    EVENT_INTRO_ALLIANCE_4_SE                   = 4,
+    EVENT_INTRO_ALLIANCE_5_SE                   = 5,
+    EVENT_INTRO_ALLIANCE_6_SE                   = 6,
+    EVENT_INTRO_ALLIANCE_7_SE                   = 7,
+
+    EVENT_INTRO_HORDE_1_SE                      = 8,
+    EVENT_INTRO_HORDE_2_SE                      = 9,
+    EVENT_INTRO_HORDE_3_SE                      = 10,
+    EVENT_INTRO_HORDE_4_SE                      = 11,
+    EVENT_INTRO_HORDE_5_SE                      = 12,
+    EVENT_INTRO_HORDE_6_SE                      = 13,
+    EVENT_INTRO_HORDE_7_SE                      = 14,
+    EVENT_INTRO_HORDE_8_SE                      = 15,
+    EVENT_INTRO_HORDE_9_SE                      = 16,
+
+    EVENT_INTRO_FINISH_SE                       = 17,
+
+    EVENT_BERSERK_SE                            = 18,
+    EVENT_SUMMON_BLOOD_BEAST_SE                 = 19,
+    EVENT_BOILING_BLOOD_SE                      = 20,
+    EVENT_BLOOD_NOVA_SE                         = 21,
+    EVENT_RUNE_OF_BLOOD_SE                      = 22,
+    EVENT_SCENT_OF_BLOOD_SE                     = 52,
+
+    EVENT_OUTRO_ALLIANCE_1_SE                   = 23,
+    EVENT_OUTRO_ALLIANCE_2_SE                   = 24,
+    EVENT_OUTRO_ALLIANCE_3_SE                   = 25,
+    EVENT_OUTRO_ALLIANCE_4_SE                   = 26,
+    EVENT_OUTRO_ALLIANCE_5_SE                   = 27,
+    EVENT_OUTRO_ALLIANCE_6_SE                   = 28,
+    EVENT_OUTRO_ALLIANCE_7_SE                   = 29,
+    EVENT_OUTRO_ALLIANCE_8_SE                   = 30,
+    EVENT_OUTRO_ALLIANCE_9_SE                   = 31,
+    EVENT_OUTRO_ALLIANCE_10_SE                  = 32,
+    EVENT_OUTRO_ALLIANCE_11_SE                  = 33,
+    EVENT_OUTRO_ALLIANCE_12_SE                  = 34,
+    EVENT_OUTRO_ALLIANCE_13_SE                  = 35,
+    EVENT_OUTRO_ALLIANCE_14_SE                  = 36,
+    EVENT_OUTRO_ALLIANCE_15_SE                  = 37,
+    EVENT_OUTRO_ALLIANCE_16_SE                  = 38,
+    EVENT_OUTRO_ALLIANCE_17_SE                  = 39,
+    EVENT_OUTRO_ALLIANCE_18_SE                  = 40,
+    EVENT_OUTRO_ALLIANCE_19_SE                  = 41,
+    EVENT_OUTRO_ALLIANCE_20_SE                  = 42,
+    EVENT_OUTRO_ALLIANCE_21_SE                  = 43,
+
+    EVENT_OUTRO_HORDE_1_SE                      = 44,
+    EVENT_OUTRO_HORDE_2_SE                      = 45,
+    EVENT_OUTRO_HORDE_3_SE                      = 46,
+    EVENT_OUTRO_HORDE_4_SE                      = 47,
+    EVENT_OUTRO_HORDE_5_SE                      = 48,
+    EVENT_OUTRO_HORDE_6_SE                      = 49,
+    EVENT_OUTRO_HORDE_7_SE                      = 50,
+    EVENT_OUTRO_HORDE_8_SE                      = 51,
+};
+
+enum DeathbringerSaurfangTextIds
+{
+    // Muradin Bronzebeard
+    SAY_INTRO_ALLIANCE_1_SE                     = 1097,
+    SAY_INTRO_ALLIANCE_4_SE                     = 1098,
+    SAY_INTRO_ALLIANCE_5_SE                     = 1099,
+
+    SAY_OUTRO_ALLIANCE_1_SE                     = 1100,
+    SAY_OUTRO_ALLIANCE_2_SE                     = 1101,
+    SAY_OUTRO_ALLIANCE_3_SE                     = 1102,
+    SAY_OUTRO_ALLIANCE_4_SE                     = 1103,
+    SAY_OUTRO_ALLIANCE_5_SE                     = 1104,
+    SAY_OUTRO_ALLIANCE_6_SE                     = 1105,
+    SAY_OUTRO_ALLIANCE_7_SE                     = 1106,
+    SAY_OUTRO_ALLIANCE_9_SE                     = 1107,
+    SAY_OUTRO_ALLIANCE_10_SE                    = 1108,
+    SAY_OUTRO_ALLIANCE_21_SE                    = 1109,
+
+    SAY_OUTRO_ALLIANCE_8_HORDE_SE               = 1082,
+    SAY_OUTRO_ALLIANCE_12_HORDE_SE              = 1083,
+    SAY_OUTRO_ALLIANCE_13_HORDE_SE              = 1084,
+    SAY_OUTRO_ALLIANCE_14_HORDE_SE              = 1085,
+    SAY_OUTRO_ALLIANCE_15_HORDE_SE              = 1086,
+
+    SAY_SAURFANG_INTRO_2_ALLIANCE_SE            = 1110,
+    SAY_SAURFANG_INTRO_3_ALLIANCE_SE            = 1111,
+    SAY_SAURFANG_INTRO_4_ALLIANCE_SE            = 1112,
+
+    GOSSIP_MURADIN_START                        = 613, // Let it begin...
+
+    // High Overlord Saurfang
+    SAY_INTRO_HORDE_1_SE                        = 1076,
+    SAY_INTRO_HORDE_3_SE                        = 1077,
+    SAY_INTRO_HORDE_5_SE                        = 1078,
+    SAY_INTRO_HORDE_6_SE                        = 1079,
+    SAY_INTRO_HORDE_7_SE                        = 1080,
+    SAY_INTRO_HORDE_8_SE                        = 1081,
+
+    SAY_OUTRO_HORDE_1_SE                        = 1087,
+    SAY_OUTRO_HORDE_2_SE                        = 1088,
+    SAY_OUTRO_HORDE_3_SE                        = 1089,
+    SAY_OUTRO_HORDE_4_SE                        = 1090,
+
+    SAY_SAURFANG_INTRO_1_HORDE_SE               = 1091,
+    SAY_SAURFANG_INTRO_2_HORDE_SE               = 1092,
+    SAY_SAURFANG_INTRO_3_HORDE_SE               = 1093,
+    SAY_SAURFANG_INTRO_4_HORDE_SE               = 1094,
+
+    GOSSIP_SAURFANG_START                       = 614, // We are ready to go, High Overlord. The Lich King must fall!
+
+    // Deathrbinger Saurfang
+    SAY_DEATHBRINGER_INTRO_ALLIANCE_2           = 1126,
+    SAY_DEATHBRINGER_INTRO_ALLIANCE_3           = 1127,
+    SAY_DEATHBRINGER_INTRO_ALLIANCE_6           = 1128,
+    SAY_DEATHBRINGER_INTRO_ALLIANCE_7           = 1129,
+    SAY_DEATHBRINGER_INTRO_HORDE_2              = 1130,
+    SAY_DEATHBRINGER_INTRO_HORDE_4              = 1131,
+    SAY_DEATHBRINGER_INTRO_HORDE_9              = 1132,
+    SAY_DEATHBRINGER_AGGRO                      = 1133,
+    SAY_DEATHBRINGER_MARK                       = 1134,
+    SAY_DEATHBRINGER_BLOOD_BEASTS               = 1135,
+    SAY_DEATHBRINGER_KILL                       = 1136,
+    SAY_DEATHBRINGER_FRENZY                     = 1137,
+    SAY_DEATHBRINGER_BERSERK                    = 1138,
+    SAY_DEATHBRINGER_DEATH                      = 1139,
+    EMOTE_DEATHBRINGER_SCENT_OF_BLOOD           = 1140,
+};
+
+enum SpellsDeathbringerSaurfang
+{
+    // Deathbringer Saurfang
+    SPELL_ZERO_POWER                            = 72242,
+    SPELL_GRIP_OF_AGONY                         = 70572, // Intro
+    SPELL_BLOOD_LINK                            = 72178,
+    SPELL_MARK_OF_THE_FALLEN_CHAMPION_S         = 72256,
+    SPELL_RUNE_OF_BLOOD_S                       = 72408,
+
+    SPELL_SUMMON_BLOOD_BEAST                    = 72172,
+    SPELL_SUMMON_BLOOD_BEAST_25_MAN             = 72356, // Additional cast, does not replace
+    SPELL_FRENZY                                = 72737,
+    SPELL_BLOOD_NOVA_TRIGGER                    = 72378,
+    SPELL_BLOOD_NOVA                            = 72380,
+    SPELL_BLOOD_POWER                           = 72371,
+    SPELL_BLOOD_LINK_POWER                      = 72195,
+    SPELL_BLOOD_LINK_DUMMY                      = 72202,
+    SPELL_MARK_OF_THE_FALLEN_CHAMPION           = 72293,
+    SPELL_BOILING_BLOOD                         = 72385,
+    SPELL_RUNE_OF_BLOOD                         = 72410,
+
+    // Blood Beast
+    SPELL_BLOOD_LINK_BEAST                      = 72176,
+    SPELL_RESISTANT_SKIN                        = 72723,
+    SPELL_SCENT_OF_BLOOD                        = 72769, // Heroic only
+
+    SPELL_RIDE_VEHICLE_SE                       = 70640, // Outro
+    SPELL_ACHIEVEMENT_SE                        = 72928,
+    SPELL_REMOVE_MARKS_OF_THE_FALLEN_CHAMPION   = 72257,
+    SPELL_PERMANENT_FEIGN_DEATH                 = 70628
+};
+
+enum MovePoints
+{
+    POINT_SAURFANG                              = 1,
+    POINT_FIRST_STEP                            = 2,
+    POINT_CHARGE                                = 3,
+    POINT_CHOKE                                 = 4,
+    POINT_CORPSE                                = 5,
+    POINT_FINAL                                 = 6,
+    POINT_EXIT                                  = 7,        // waypoint id
+};
+
+Movement::Location const deathbringerPos = { -496.3542f, 2211.33f, 541.1138f, 0.0f };
+Movement::Location const firstStepPos = { -541.3177f, 2211.365f, 539.2921f, 0.0f };
+
+Movement::Location const chargePos[6] =
+{
+    {-509.6505f, 2211.377f, 539.2872f, 0.0f}, // High Overlord Saurfang/Muradin Bronzebeard
+    {-508.7480f, 2211.897f, 539.2870f, 0.0f}, // front left
+    {-509.2929f, 2211.411f, 539.2870f, 0.0f}, // front right
+    {-506.6607f, 2211.367f, 539.2870f, 0.0f}, // back middle
+    {-506.1137f, 2213.306f, 539.2870f, 0.0f}, // back left
+    {-509.0040f, 2211.743f, 539.2870f, 0.0f}  // back right
+};
+
+Movement::Location const chokePos[6] =
+{
+    {-514.4834f, 2211.334f, 549.2887f, 0.0f}, // High Overlord Saurfang/Muradin Bronzebeard
+    {-510.1081f, 2211.592f, 546.3773f, 0.0f}, // front left
+    {-513.3210f, 2211.396f, 551.2882f, 0.0f}, // front right
+    {-507.3684f, 2210.353f, 545.7497f, 0.0f}, // back middle
+    {-507.0486f, 2212.999f, 545.5512f, 0.0f}, // back left
+    {-510.7041f, 2211.069f, 546.5298f, 0.0f}  // back right
+};
+
+Movement::Location const finalPos = { -563.7552f, 2211.328f, 538.7848f, 0.0f };
 
 LocationVector const FrostWyrmPosH = { -435.429f, 2077.556f, 219.1148f, 4.767166f };
 LocationVector const FrostWyrmPosA = { -437.409f, 2349.026f, 219.1148f, 1.483120f };
