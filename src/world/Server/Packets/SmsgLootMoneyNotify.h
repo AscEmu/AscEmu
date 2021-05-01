@@ -15,14 +15,15 @@ namespace AscEmu::Packets
     {
     public:
         uint32_t money;
+        uint8_t playersNear; // 0 = "Your share of the loot is...", 1 = "You loot..."
 
-        SmsgLootMoneyNotify() : SmsgLootMoneyNotify(0)
+        SmsgLootMoneyNotify() : SmsgLootMoneyNotify(0, 1)
         {
         }
 
-        SmsgLootMoneyNotify(uint32_t money) :
+        SmsgLootMoneyNotify(uint32_t money, uint8_t playersNear) :
             ManagedPacket(SMSG_LOOT_MONEY_NOTIFY, 0),
-            money(money)
+            money(money), playersNear(playersNear)
         {
         }
 
@@ -31,7 +32,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << money;
+            packet << money << playersNear;
             return true;
         }
 
