@@ -82,6 +82,50 @@ class SERVER_DECL MapScriptInterface
             return GetObjectNearestCoords<Creature, TYPEID_UNIT>(Entry, x, y, z);
         }
 
+        inline void GetCreatureListWithEntryInGrid(Creature* pCreature, std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+        {
+            MapCell* pCell = mapMgr.GetCell(mapMgr.GetPosX(pCreature->GetPositionX()), mapMgr.GetPosY(pCreature->GetPositionY()));
+            if (pCell == 0)
+                return;
+
+            float CurrentDist = 0;
+            Creature* target = nullptr;
+
+            ObjectSet::const_iterator iter = pCell->Begin();
+            for (; iter != pCell->End(); ++iter)
+            {
+                if ((*iter)->isCreature() && (*iter)->getEntry() == entry)
+                {
+                    target = static_cast<Creature*>((*iter));
+                    CurrentDist = (*iter)->CalcDistance(pCreature->GetPosition());
+                    if (CurrentDist <= maxSearchRange)
+                        container.push_back(target);
+                }
+            }
+        }
+
+        inline void GetGameObjectListWithEntryInGrid(Creature* pCreature, std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+        {
+            MapCell* pCell = mapMgr.GetCell(mapMgr.GetPosX(pCreature->GetPositionX()), mapMgr.GetPosY(pCreature->GetPositionY()));
+            if (pCell == 0)
+                return;
+
+            float CurrentDist = 0;
+            GameObject* target = nullptr;
+
+            ObjectSet::const_iterator iter = pCell->Begin();
+            for (; iter != pCell->End(); ++iter)
+            {
+                if ((*iter)->isGameObject() && (*iter)->getEntry() == entry)
+                {
+                    target = reinterpret_cast<GameObject*>((*iter));
+                    CurrentDist = (*iter)->CalcDistance(pCreature->GetPosition());
+                    if (CurrentDist <= maxSearchRange)
+                        container.push_back(target);
+                }
+            }
+        }
+
         inline Player* GetPlayerNearestCoords(float x, float y, float z = 0.0f, uint32 Entry = 0)
         {
             return GetObjectNearestCoords<Player, TYPEID_PLAYER>(Entry, x, y, z);
