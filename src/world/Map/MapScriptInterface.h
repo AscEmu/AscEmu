@@ -24,6 +24,7 @@
 
 #include "Objects/ObjectDefines.h"
 #include "Objects/Object.h"
+#include "Units/Creatures/Creature.h"
 
 #include "Map/MapCell.h"
 #include "Movement/UnitMovementManager.hpp"
@@ -97,7 +98,7 @@ class SERVER_DECL MapScriptInterface
                 if ((*iter)->isCreature() && (*iter)->getEntry() == entry)
                 {
                     target = static_cast<Creature*>((*iter));
-                    CurrentDist = (*iter)->CalcDistance(pCreature->GetPosition());
+                    CurrentDist = (*iter)->CalcDistance(pCreature);
                     if (CurrentDist <= maxSearchRange)
                         container.push_back(target);
                 }
@@ -119,7 +120,7 @@ class SERVER_DECL MapScriptInterface
                 if ((*iter)->isGameObject() && (*iter)->getEntry() == entry)
                 {
                     target = reinterpret_cast<GameObject*>((*iter));
-                    CurrentDist = (*iter)->CalcDistance(pCreature->GetPosition());
+                    CurrentDist = (*iter)->CalcDistance(pCreature);
                     if (CurrentDist <= maxSearchRange)
                         container.push_back(target);
                 }
