@@ -235,6 +235,13 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (!player_can_speak_language)
                 break;
 
+            if (srlPacket.type == CHAT_MSG_PARTY)
+            {
+                if (auto* const group = _player->getGroup())
+                    if (group->GetLeader() == _player->getPlayerInfo())
+                        srlPacket.type = CHAT_MSG_PARTY_LEADER;
+            }
+
             const auto send_packet = SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise();
 
             if (auto* const group = _player->getGroup())
