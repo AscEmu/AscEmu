@@ -367,6 +367,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
             else
             {
                 _player->modCoinage(money);
+                _player->GetSession()->SendPacket(SmsgLootMoneyNotify(money, 1).serialise().get());
 #if VERSION_STRING > TBC
                 _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, money, 0, 0);
 #endif
@@ -403,6 +404,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
 
             const uint32_t sharedMoney = money / uint32_t(groupMembers.size());
 
+            // TODO: money is given to group members even if they are not near the looter
             for (auto& player : groupMembers)
             {
                 if (worldConfig.player.isGoldCapEnabled && (player->getCoinage() + sharedMoney) > worldConfig.player.limitGoldAmount)
@@ -412,7 +414,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
                 else
                 {
                     player->modCoinage(sharedMoney);
-                    player->GetSession()->SendPacket(SmsgLootMoneyNotify(sharedMoney).serialise().get());
+                    player->GetSession()->SendPacket(SmsgLootMoneyNotify(sharedMoney, groupMembers.size() <= 1).serialise().get());
 
 #if VERSION_STRING > TBC
                     player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, sharedMoney, 0, 0);

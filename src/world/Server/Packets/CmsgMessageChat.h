@@ -85,13 +85,16 @@ namespace AscEmu::Packets
             {
                 case CHAT_MSG_EMOTE:
                 case CHAT_MSG_SAY:
+                case CHAT_MSG_YELL:
                 case CHAT_MSG_PARTY:
+                case CHAT_MSG_PARTY_LEADER:
                 case CHAT_MSG_RAID:
                 case CHAT_MSG_RAID_LEADER:
                 case CHAT_MSG_RAID_WARNING:
                 case CHAT_MSG_GUILD:
                 case CHAT_MSG_OFFICER:
-                case CHAT_MSG_YELL:
+                case CHAT_MSG_BATTLEGROUND:
+                case CHAT_MSG_BATTLEGROUND_LEADER:
                 case CHAT_MSG_AFK:
                 case CHAT_MSG_DND:
                     packet >> message;
@@ -133,16 +136,18 @@ namespace AscEmu::Packets
 
             switch (type)
             {
+                case CHAT_MSG_EMOTE:
                 case CHAT_MSG_SAY:
+                case CHAT_MSG_YELL:
                 case CHAT_MSG_PARTY:
                 case CHAT_MSG_PARTY_LEADER:
-                case CHAT_MSG_BATTLEGROUND_LEADER:
-                case CHAT_MSG_GUILD:
-                case CHAT_MSG_OFFICER:
                 case CHAT_MSG_RAID:
                 case CHAT_MSG_RAID_LEADER:
                 case CHAT_MSG_RAID_WARNING:
+                case CHAT_MSG_GUILD:
+                case CHAT_MSG_OFFICER:
                 case CHAT_MSG_BATTLEGROUND:
+                case CHAT_MSG_BATTLEGROUND_LEADER:
                 case CHAT_MSG_AFK:
                 case CHAT_MSG_DND:
                     textLength = packet.readBits(9);

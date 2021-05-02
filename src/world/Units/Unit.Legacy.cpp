@@ -8362,9 +8362,9 @@ void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, 
     if (ci == nullptr)
         return;
 
-    const auto data = SmsgMessageChat(type, lang, 0, msg, getGuid(), ci->Name).serialise().get();
+    const auto data = SmsgMessageChat(type, lang, 0, msg, getGuid(), ci->Name).serialise();
 
-    SendMessageToSet(data, true);
+    SendMessageToSet(data.get(), true);
 }
 
 void Unit::WipeHateList()

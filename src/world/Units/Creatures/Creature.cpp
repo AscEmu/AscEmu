@@ -2416,9 +2416,9 @@ void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
 
     auto name = GetCreatureProperties()->Name;
 
-    const auto data = AscEmu::Packets::SmsgMessageChat(ct->type, ct->language, 0, ct->text, getGuid(), name).serialise().get();
+    const auto data = AscEmu::Packets::SmsgMessageChat(ct->type, ct->language, 0, ct->text, getGuid(), name).serialise();
 
-    SendMessageToSet(data, true);      // sending this
+    SendMessageToSet(data.get(), true);      // sending this
 }
 
 void Creature::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr)
@@ -2426,9 +2426,9 @@ void Creature::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg,
     if (plr == NULL)
         return;
 
-    const auto data = AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, getGuid(), GetCreatureProperties()->Name).serialise().get();
+    const auto data = AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, getGuid(), GetCreatureProperties()->Name).serialise();
 
-    plr->GetSession()->SendPacket(data);
+    plr->GetSession()->SendPacket(data.get());
 }
 
 void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)

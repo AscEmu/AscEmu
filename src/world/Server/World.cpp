@@ -565,7 +565,7 @@ void World::removeQueuedSocket(WorldSocket* socket)
 // Send Messages
 void World::sendMessageToOnlineGms(const std::string& message, WorldSession* sendToSelf /*nullptr*/)
 {
-    const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, message).serialise().get();
+    const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, message).serialise();
 
     std::lock_guard<std::mutex> guard(mSessionLock);
 
@@ -574,16 +574,16 @@ void World::sendMessageToOnlineGms(const std::string& message, WorldSession* sen
         if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second != sendToSelf)
         {
             if (activeSessions->second->CanUseCommand('u'))
-                activeSessions->second->SendPacket(data);
+                activeSessions->second->SendPacket(data.get());
         }
     }
 }
 
 void World::sendMessageToAll(const std::string& message, WorldSession* sendToSelf /*nullptr*/)
 {
-    const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, message).serialise().get();
+    const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, message).serialise();
 
-    sendGlobalMessage(data, sendToSelf);
+    sendGlobalMessage(data.get(), sendToSelf);
 
     if (settings.announce.showAnnounceInConsoleOutput)
     {
@@ -661,9 +661,9 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
         {
             const char* text = activeSessions->second->LocalizedBroadCast(broadcastId);
 
-            const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, text).serialise().get();
+            const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, text).serialise();
 
-            activeSessions->second->SendPacket(data);
+            activeSessions->second->SendPacket(data.get());
         }
     }
 }
