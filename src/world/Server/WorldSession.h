@@ -25,6 +25,7 @@
 #include "Server/Opcodes.hpp"
 #include "Management/Quest.h"
 #include "FastQueue.h"
+#include "World.Legacy.h"
 #include "Units/Unit.h"
 #include "Server/CharacterErrors.h"
 #include "Data/Flags.hpp"
@@ -149,7 +150,31 @@ class SERVER_DECL WorldSession
         Player* GetPlayerOrThrow();
 
         // Acct flags
-        void SetAccountFlags(uint32 flags) { _accountFlags = flags; }
+        void SetAccountFlags(uint32 flags)
+        {
+            // TODO: add a config to determine what flags are allowed on the server.
+            // For now, override the db value depending on the AE Version.
+            // _accountFlags = flags;
+
+            switch (getAEVersion())
+            {
+                case 5875:
+                    _accountFlags = 0;
+                    break;
+                case 8606:
+                    _accountFlags = ACCOUNT_FLAG_XPACK_01;
+                    break;
+                case 12340:
+                    _accountFlags = AF_FULL_WOTLK;
+                    break;
+                case 15595:
+                    _accountFlags = AF_FULL_CATA;
+                    break;
+                case 18414:
+                    _accountFlags = AF_FULL_MOP;
+                    break;
+            }
+        }
         bool HasFlag(uint32 flag) { return (_accountFlags & flag) != 0; }
         uint32 GetFlags() { return _accountFlags; }
 

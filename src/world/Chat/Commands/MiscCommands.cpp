@@ -1057,18 +1057,24 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
 
     BlueSystemMessage(m_session, "Factiontemplate: %u", plr->getFactionTemplate());
 
-    const char* client;
+    std::string clientFlags = "WoW";
 
-    if (sess->HasFlag(ACCOUNT_FLAG_XPACK_02) && sess->HasFlag(ACCOUNT_FLAG_XPACK_01))
-        client = "TBC and WotLK";
+    if (sess->GetFlags() == AF_FULL_MOP)
+        clientFlags += " TBC, WotLK, Cata and MoP";
+    else if (sess->GetFlags() == AF_FULL_CATA)
+        clientFlags += " TBC, WotLK and Cata";
+    else if (sess->GetFlags() == AF_FULL_WOTLK)
+        clientFlags += " TBC and WotLK";
+    else if (sess->HasFlag(ACCOUNT_FLAG_XPACK_04))
+        clientFlags += " Mists of Pandaria";
+    else if (sess->HasFlag(ACCOUNT_FLAG_XPACK_03))
+        clientFlags += " Cataclysm";
     else if (sess->HasFlag(ACCOUNT_FLAG_XPACK_02))
-        client = "Wrath of the Lich King";
+        clientFlags += " Wrath of the Lich King";
     else if (sess->HasFlag(ACCOUNT_FLAG_XPACK_01))
-        client = "WoW Burning Crusade";
-    else
-        client = "WoW";
+        clientFlags += " The Burning Crusade";
 
-    BlueSystemMessage(m_session, "%s uses %s (build %u)", (plr->getGender() ? "She" : "He"), client, sess->GetClientBuild());
+    BlueSystemMessage(m_session, "%s uses %s (build %u)", (plr->getGender() ? "She" : "He"), clientFlags.c_str(), sess->GetClientBuild());
 
     BlueSystemMessage(m_session, "%s IP is '%s', and has a latency of %ums", (plr->getGender() ? "Her" : "His"), sess->GetSocket()->GetRemoteIP().c_str(), sess->GetLatency());
 
