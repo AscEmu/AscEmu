@@ -1461,7 +1461,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
         player->setGuildLevel(getLevel());
 #endif
         sendLoginInfo(player->GetSession());
-        name = player->getName().c_str();
+        name = player->getName();
     }
     else
     {
