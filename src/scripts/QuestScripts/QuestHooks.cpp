@@ -27,7 +27,7 @@ void Hanazua(Player* pPlayer, Object* pObject)
 {
     std::string say;
     say = "Go swiftly, ";
-    say += pPlayer->getName().c_str();
+    say += pPlayer->getName();
     say += ", my fate is in your hands.";
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
 }
@@ -148,7 +148,7 @@ void Wishock(Player* pPlayer, Object* pObject)
 void CapturedMountaineer(Player* pPlayer, Object* pObject)
 {
     std::string say = "I raise my brew and hope to be rid of the likes of you!  Cheers, you no good scoundrel, ";
-    say += pPlayer->getName().c_str();
+    say += pPlayer->getName();
     say += "!";
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
 }
