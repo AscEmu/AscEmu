@@ -153,15 +153,6 @@
 #        format.
 #        Default: 0 (disabled)
 #
-#    DisableCrashdumpReport
-#        Disables crashdump reports, else if the build has debugging enabled, 
-#        ascemu-world will call ./ascemu-crashreport every time it starts, so 
-#        if there is a core, a crashdump will automatically be reported 
-#        to the tracker at sf.net
-#        Needs gdb and curl
-#        Linux only
-#        Default: 0 (enabled)
-#
 #    ExtendedLogDir
 #        Dir to hold all extended logs e.g. cheaters.logs.
 #        Default "logs" (all logs will be saved in ./logs/ directory)
@@ -194,7 +185,6 @@
 <Log WorldFileLogLevel      = "1"
      WorldDebugFlags        = "0"
      EnableWorldPacketLog   = "0"
-     DisableCrashdumpReport = "0"
      ExtendedLogDir         = "logs"
      EnableCheaterLog       = "0"
      EnableGMCommandLog     = "0"
