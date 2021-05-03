@@ -106,7 +106,6 @@ class SERVER_DECL WorldConfig
             int worldFileLogLevel;
             int worldDebugFlags;
             bool enableWorldPacketLog;
-            bool disableCrashdump;
             std::string extendedLogsDir;
             bool enableCheaterLog;
             bool enableGmCommandLog;

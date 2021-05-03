@@ -40,7 +40,6 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     log.worldFileLogLevel = 1;
     log.worldDebugFlags = 0;
     log.enableWorldPacketLog = false;
-    log.disableCrashdump = false;
     log.enableCheaterLog = false;
     log.enableGmCommandLog = false;
     log.enablePlayerLog = false;
@@ -274,7 +273,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Log", "WorldFileLogLevel", &log.worldFileLogLevel));
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Log", "WorldDebugFlags", &log.worldDebugFlags));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Log", "EnableWorldPacketLog", &log.enableWorldPacketLog));
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Log", "DisableCrashdumpReport", &log.disableCrashdump));
 
     ARCEMU_ASSERT(Config.MainConfig.tryGetString("Log", "ExtendedLogDir", &log.extendedLogsDir));
     if (log.extendedLogsDir != "./")
