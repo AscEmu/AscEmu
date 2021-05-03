@@ -70,7 +70,6 @@ bool QuestMgr::isRepeatableQuestFinished(Player* plr, QuestProperties const* qst
 
 uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool skiplevelcheck)
 {
-    std::list<uint32>::iterator itr;
     uint32 status;
 
     if (!sQuestMgr.IsQuestRepeatable(qst) && !sQuestMgr.IsQuestDaily(qst))
