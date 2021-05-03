@@ -235,12 +235,15 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (!player_can_speak_language)
                 break;
 
-            if (srlPacket.type == CHAT_MSG_PARTY)
+#if VERSION_STRING >= Cata
+            // Use correct type for group/raid leader
+            if (srlPacket.type == CHAT_MSG_PARTY || srlPacket.type == CHAT_MSG_RAID)
             {
                 if (auto* const group = _player->getGroup())
                     if (group->GetLeader() == _player->getPlayerInfo())
-                        srlPacket.type = CHAT_MSG_PARTY_LEADER;
+                        srlPacket.type = srlPacket.type == CHAT_MSG_PARTY ? CHAT_MSG_PARTY_LEADER : CHAT_MSG_RAID_LEADER;
             }
+#endif
 
             const auto send_packet = SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise();
 
@@ -360,6 +363,13 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         {
             if (!player_can_speak_language || !_player->m_bg)
                 break;
+
+#if VERSION_STRING >= Cata
+            // Use correct type for group leader
+            if (auto* const group = _player->getGroup())
+                if (group->GetLeader() == _player->getPlayerInfo())
+                    srlPacket.type = CHAT_MSG_BATTLEGROUND_LEADER;
+#endif
 
             _player->m_bg->DistributePacketToTeam(SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), _player->getTeam());
         } break;
