@@ -522,9 +522,9 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
             std::string questid = MyConvertIntToString(quest->id);
             std::string questtitle = localizedFound ? (li ? li->title : "") : quest->title;
             // send quest link
-            recout = questid.c_str();
+            recout = questid;
             recout += ": |cff00ccff|Hquest:";
-            recout += questid.c_str();
+            recout += questid;
             recout += ":";
             recout += MyConvertIntToString(quest->min_level);
             recout += "|h[";
@@ -583,7 +583,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
             recout += ": |cff71d5ff|Hspell:";
             recout += (const char*)itoabuf;
             recout += "|h[";
-            recout += spell->getName().c_str();
+            recout += spell->getName();
             recout += "]|h|r";
 
             std::string::size_type pos = recout.find('%');

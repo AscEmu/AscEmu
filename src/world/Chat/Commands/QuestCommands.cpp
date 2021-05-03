@@ -535,11 +535,11 @@ bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_sessi
             if (tmpItem != nullptr)
             {
                 recout = "|cff00ccff";
-                recout += itemid.c_str();
+                recout += itemid;
                 recout += ": ";
-                recout += itemcnt.c_str();
+                recout += itemcnt;
                 recout += " -> ";
-                recout += tmpItem->Name.c_str();
+                recout += tmpItem->Name;
                 recout += "\n";
             }
             else
@@ -604,11 +604,11 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
             SendMultilineMessage(m_session, recout.c_str());
 
             recout = "|cff00ccff";
-            recout += creatureId1.c_str();
+            recout += creatureId1;
             recout += ", ";
-            recout += spawnId1.c_str();
+            recout += spawnId1;
             recout += ", ";
-            recout += creatureName1.c_str();
+            recout += creatureName1;
             recout += "\n\n";
             SendMultilineMessage(m_session, recout.c_str());
         }
@@ -659,11 +659,11 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
             SendMultilineMessage(m_session, recout.c_str());
 
             recout = "|cff00ccff";
-            recout += itemId2.c_str();
+            recout += itemId2;
             recout += ", ";
-            recout += spawnId2.c_str();
+            recout += spawnId2;
             recout += ", ";
-            recout += itemName2.c_str();
+            recout += itemName2;
             recout += "\n\n";
             SendMultilineMessage(m_session, recout.c_str());
         }
@@ -748,7 +748,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
             std::string qname = qst->title;
 
             recout = "|cff00ccff";
-            recout += qid.c_str();
+            recout += qid;
             recout += ": ";
             recout += qname;
             recout += "\n";
