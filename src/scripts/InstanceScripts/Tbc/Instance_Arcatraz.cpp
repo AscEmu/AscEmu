@@ -350,9 +350,10 @@ class WardenMellicharAI : public CreatureAIScript
                 if (orb1)
                     orb1->setState(GO_STATE_OPEN);
 
+                NPC_ID_Spawn = 0;
+
                 switch (Util::getRandomUInt(1))
                 {
-                    NPC_ID_Spawn = 0;
                     case 0:
                         NPC_ID_Spawn = CN_BLAZING_TRICKSTER;
                         break;
@@ -438,9 +439,10 @@ class WardenMellicharAI : public CreatureAIScript
                 if (orb3)
                     orb3->setState(GO_STATE_OPEN);
 
+                NPC_ID_Spawn = 0;
+
                 switch (Util::getRandomUInt(1))
                 {
-                    NPC_ID_Spawn = 0;
                     case 0:
                         NPC_ID_Spawn = CN_SULFURON_MAGMA_THROWER;
                         break;
@@ -495,9 +497,10 @@ class WardenMellicharAI : public CreatureAIScript
                 if (orb4)
                     orb4->setState(GO_STATE_OPEN);
 
+                NPC_ID_Spawn = 0;
+
                 switch (Util::getRandomUInt(1))
                 {
-                    NPC_ID_Spawn = 0;
                     case 0:
                         NPC_ID_Spawn = CN_TWILIGHT_DRAKONAAR;
                         break;
