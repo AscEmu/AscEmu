@@ -892,7 +892,6 @@ bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
     if (mWayPointMap == nullptr)
         return false;
 
-    Movement::WayPointMap::const_iterator itr;
     if (mShowWayPoints == true)
         return false;
 
