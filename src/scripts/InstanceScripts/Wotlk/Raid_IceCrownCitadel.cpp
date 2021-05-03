@@ -1816,7 +1816,6 @@ class MuradinAI : public CreatureAIScript
         {
             switch (eventId)
             {
-                break;
             case EVENT_INTRO_ALLIANCE_1:
                 sendDBChatMessage(SAY_INTRO_ALLIANCE_0);
                 break;
@@ -1932,7 +1931,6 @@ class SaurfangAI : public CreatureAIScript
         {
             switch (eventId)
             {
-                break;
             case EVENT_INTRO_HORDE_1:
                 sendDBChatMessage(SAY_INTRO_HORDE_0);
                 break;
