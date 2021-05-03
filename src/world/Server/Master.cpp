@@ -668,17 +668,6 @@ bool Master::LoadWorldConfiguration(char* config_file)
         return false;
     }
 
-#if !defined(WIN32) && defined(__DEBUG__)
-    if (!worldConfig.log.disableCrashdump)
-    {
-        char cmd[1024];
-        char banner[1024];
-        snprintf(banner, 1024, BANNER, BUILD_TAG, BUILD_REVISION, CONFIG, PLATFORM_TEXT, ARCH);
-        snprintf(cmd, 1024, "./crashreport -r %d -d \'%s\'", BUILD_REVISION, banner);
-        system(cmd);
-    }
-    unlink("worldserver.uptime");
-#endif
     return true;
 }
 
