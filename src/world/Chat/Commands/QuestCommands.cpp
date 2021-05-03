@@ -1191,11 +1191,11 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
             SendMultilineMessage(m_session, recout.c_str());
 
             recout = "|cff00ccff";
-            recout += creatureId1.c_str();
+            recout += creatureId1;
             recout += ", ";
-            recout += spawnId1.c_str();
+            recout += spawnId1;
             recout += ", ";
-            recout += creatureName1.c_str();
+            recout += creatureName1;
             recout += "\n\n";
             SendMultilineMessage(m_session, recout.c_str());
         }
@@ -1245,11 +1245,11 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
             SendMultilineMessage(m_session, recout.c_str());
 
             recout = "|cff00ccff";
-            recout += itemId2.c_str();
+            recout += itemId2;
             recout += ", ";
-            recout += spawnId2.c_str();
+            recout += spawnId2;
             recout += ", ";
-            recout += itemName2.c_str();
+            recout += itemName2;
             recout += "\n\n";
             SendMultilineMessage(m_session, recout.c_str());
         }
@@ -1328,9 +1328,9 @@ bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession*
     SendMultilineMessage(m_session, recout.c_str());
 
     recout = "|cff00ccff";
-    recout += starterId.c_str();
+    recout += starterId;
     recout += ", ";
-    recout += starterName.c_str();
+    recout += starterName;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
 
@@ -1399,9 +1399,9 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
     SendMultilineMessage(m_session, recout.c_str());
 
     recout = "|cff00ccff";
-    recout += finisherId.c_str();
+    recout += finisherId;
     recout += ", ";
-    recout += finisherName.c_str();
+    recout += finisherName;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
 
