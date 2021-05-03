@@ -99,7 +99,7 @@ std::string MySQLDatabase::EscapeString(std::string Escape)
     DatabaseConnection* con = GetFreeConnection();
     std::string ret;
     if(mysql_real_escape_string(static_cast<MySQLDatabaseConnection*>(con)->MySql, a2, Escape.c_str(), (unsigned long)Escape.length()) == 0)
-        ret = Escape.c_str();
+        ret = Escape;
     else
         ret = a2;
 
