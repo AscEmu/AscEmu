@@ -57,17 +57,17 @@ void MySQLDataStore::finalize()
 void MySQLDataStore::loadAdditionalTableConfig()
 {
     // init basic tables
-    CreaturePropertiesTables.insert(std::string("creature_properties"));
-    CreatureQuestStarterTables.insert(std::string("creature_quest_starter"));
-    CreatureQuestFinisherTables.insert(std::string("creature_quest_finisher"));
-    CreatureSpawnsTables.insert(std::string("creature_spawns"));
-    GameObjectQuestStarterTables.insert(std::string("gameobject_quest_starter"));
-    GameObjectQuestFinisherTables.insert(std::string("gameobject_quest_finisher"));
-    GameObjectSpawnsTables.insert(std::string("gameobject_spawns"));
-    GameObjectPropertiesTables.insert(std::string("gameobject_properties"));
-    ItemPropertiesTables.insert(std::string("item_properties"));
-    QuestPropertiesTables.insert(std::string("quest_properties"));
-    RecallTables.insert(std::string("recall"));
+    CreaturePropertiesTables.emplace(std::string("creature_properties"));
+    CreatureQuestStarterTables.emplace(std::string("creature_quest_starter"));
+    CreatureQuestFinisherTables.emplace(std::string("creature_quest_finisher"));
+    CreatureSpawnsTables.emplace(std::string("creature_spawns"));
+    GameObjectQuestStarterTables.emplace(std::string("gameobject_quest_starter"));
+    GameObjectQuestFinisherTables.emplace(std::string("gameobject_quest_finisher"));
+    GameObjectSpawnsTables.emplace(std::string("gameobject_spawns"));
+    GameObjectPropertiesTables.emplace(std::string("gameobject_properties"));
+    ItemPropertiesTables.emplace(std::string("item_properties"));
+    QuestPropertiesTables.emplace(std::string("quest_properties"));
+    RecallTables.emplace(std::string("recall"));
 
     // get config
     std::string strData = worldConfig.startup.additionalTableLoads;
@@ -2630,7 +2630,7 @@ void MySQLDataStore::loadSpellOverrideTable()
         }
         else
         {
-            _spellOverrideIdStore.insert(SpellOverrideIdMap::value_type(distinct_override_id, list));
+            _spellOverrideIdStore.emplace(SpellOverrideIdMap::value_type(distinct_override_id, list));
         }
 
     } while (spelloverride_result->NextRow());
@@ -4059,7 +4059,7 @@ void MySQLDataStore::loadGossipMenuItemsTable()
         gMenuItem.requirementType = fields[11].GetUInt8();
         gMenuItem.requirementData = fields[12].GetUInt32();
 
-        _gossipMenuItemsStores.insert(GossipMenuItemsContainer::value_type(gMenuItem.gossipMenu, gMenuItem));
+        _gossipMenuItemsStores.emplace(GossipMenuItemsContainer::value_type(gMenuItem.gossipMenu, gMenuItem));
         ++load_count;
     } while (resultItems->NextRow());
 
