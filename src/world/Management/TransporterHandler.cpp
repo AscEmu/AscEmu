@@ -215,7 +215,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     bool mapChange = false;
 
     for (uint16_t i = 0; i < path.size(); ++i)
-        allPoints.push_back(G3D::Vector3(path[i].x, path[i].y, path[i].z));
+        allPoints.emplace_back(G3D::Vector3(path[i].x, path[i].y, path[i].z));
 
     // Add extra points to allow derivative calculations for all path nodes
     allPoints.insert(allPoints.begin(), allPoints.front().lerp(allPoints[1], -0.2f));
@@ -245,7 +245,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
                 k.InitialOrientation = normalizeOrientation(std::atan2(h.y, h.x) + float(M_PI));
 
                 keyFrames.push_back(k);
-                splinePath.push_back(G3D::Vector3(node_i.x, node_i.y, node_i.z));
+                splinePath.emplace_back(G3D::Vector3(node_i.x, node_i.y, node_i.z));
                 transport->mapsUsed.insert(k.Node.mapid);
             }
         }

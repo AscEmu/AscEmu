@@ -1054,7 +1054,7 @@ bool CBattleground::HasFreeSlots(uint32 Team, uint32 type)
 
     if (isArena(type))
     {
-        res = (static_cast<uint32>(m_players[Team].size()) + m_pendPlayers[Team].size() < maxPlayers);
+        res = m_players[Team].size() + m_pendPlayers[Team].size() < maxPlayers;
     }
     else
     {
