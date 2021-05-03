@@ -484,15 +484,17 @@ public:
             GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
             if (Magtheridon != nullptr)
                 if (GlobalCubeTrigger && GlobalCubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getChannelObjectGuid() == Magtheridon->getGuid())
-            Counter++;
+                    Counter++;
         }
 
         // If it's the first and the only one Cube triggering spell we use Magtheridon's yell
         if (Counter == 1 && !MagYell)
         {
-            Magtheridon->SendScriptTextChatMessage(8749);       // "Not again... NOT AGAIN!
-
-            MagYell = true;
+            if (Magtheridon)
+            {
+                Magtheridon->SendScriptTextChatMessage(8749);       // "Not again... NOT AGAIN!
+                MagYell = true;
+            }
         }
 
         // If we have all req. Cubes active we may banish Magtheridon
