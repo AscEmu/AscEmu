@@ -676,9 +676,9 @@ void Master::OpenCheatLogFiles()
     bool useTimeStamp = worldConfig.log.enableTimeStamp;
     std::string logDir = worldConfig.log.extendedLogsDir;
 
-    Anticheat_Log = new SessionLog(AELog::GetFormattedFileName(logDir.c_str(), "cheaters", useTimeStamp).c_str(), false);
-    GMCommand_Log = new SessionLog(AELog::GetFormattedFileName(logDir.c_str(), "gmcommands", useTimeStamp).c_str(), false);
-    Player_Log = new SessionLog(AELog::GetFormattedFileName(logDir.c_str(), "players", useTimeStamp).c_str(), false);
+    Anticheat_Log = new SessionLog(AELog::GetFormattedFileName(logDir, "cheaters", useTimeStamp).c_str(), false);
+    GMCommand_Log = new SessionLog(AELog::GetFormattedFileName(logDir, "gmcommands", useTimeStamp).c_str(), false);
+    Player_Log = new SessionLog(AELog::GetFormattedFileName(logDir, "players", useTimeStamp).c_str(), false);
 
     if (Anticheat_Log->isSessionLogOpen())
     {
