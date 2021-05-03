@@ -92,7 +92,7 @@ void UpdateManager::queueDelayedPacket(WorldPacket * packet)
 {
     lock_guard<mutex> packet_guard(mtx_delayedPacketsLock);
 
-    m_delayedPackets.push_back(unique_ptr<WorldPacket>(packet));
+    m_delayedPackets.emplace_back(unique_ptr<WorldPacket>(packet));
 }
 
 size_t UpdateManager::calculateBufferSize() const
