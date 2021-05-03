@@ -526,7 +526,7 @@ void ScriptMgr::DumpUnimplementedSpells()
 
 void ScriptMgr::DamageTaken(Creature* pCreature, Unit* attacker, uint32_t* damage) const
 {
-    const auto AIScript = getCreatureAIScript(pCreature);
+    const auto AIScript = pCreature->GetScript();
     if (AIScript == nullptr)
         return;
 

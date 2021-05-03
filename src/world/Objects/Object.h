@@ -463,7 +463,7 @@ public:
         float getAbsoluteAngle(LocationVector const& pos) { return getAbsoluteAngle(pos.x, pos.y); }
         float getAbsoluteAngle(Object const* obj) { return getAbsoluteAngle(obj->GetPosition()); }
 
-    float getDistanceSq(Object* obj)
+        float getDistanceSq(Object* obj)
         {
             if (obj->GetMapId() != m_mapId)
                 return 40000.0f;                        // enough for out of range
@@ -475,7 +475,7 @@ public:
             return comp.Distance(m_position);
         }
 
-    float GetDistance2dSq(Object* obj)
+        float GetDistance2dSq(Object* obj)
         {
             if (obj->GetMapId() != m_mapId)
                 return 40000.0f;                        // enough for out of range

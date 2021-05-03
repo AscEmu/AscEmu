@@ -17,7 +17,7 @@ struct ICCSpawns
     uint32_t faction;
 };
 
-const ICCSpawns AllySpawns[13] = {
+const ICCSpawns AllySpawns[18] = {
     // Light's Hammer
     { 37190, -47.59f, 2208.98f, 27.99f, 3.12f, 1732 },      // Commander
     { 37190, -47.93f, 2216.32f, 27.99f, 3.12f, 1732 },      // Commander
@@ -32,10 +32,15 @@ const ICCSpawns AllySpawns[13] = {
     { 38283, -75.8f, 2283.46f, 32.87f, 4.69f, 1732 },       // Malfus Grimfrost <Mage Armor>
     { 38840, -67.79f, 2270.71f, 30.65f, 4.91f, 1732 },      // Jedebia <Shaman Armor>
     //Ramparts of Skull
-    { 37200, -555.96f, 2211.4f, 539.37f, 6.27f, 1732 },      // Muradin Bronzebart
+    { 37200, -555.96f, 2211.40f, 539.37f, 6.27f, 1732 },      // Muradin Bronzebart
+    { 37830, -561.04f, 2207.88f, 539.37f, 6.27f, 1732 },
+    { 37830, -560.90f, 2214.58f, 539.37f, 6.27f, 1732 },
+    { 37830, -557.30f, 2208.20f, 539.37f, 6.27f, 1732 },
+    { 37830, -559.16f, 2211.43f, 539.37f, 6.27f, 1732 },
+    { 37830, -557.26f, 2215.06f, 539.37f, 6.27f, 1732 },
 };
 
-const ICCSpawns HordeSpawns[13] = {
+const ICCSpawns HordeSpawns[18] = {
     // Light's Hammer
     { 37189, -47.59f, 2208.98f, 27.99f, 3.12f, 1734 },      // General
     { 37189, -47.93f, 2216.32f, 27.99f, 3.12f, 1734 },      // General
@@ -51,6 +56,11 @@ const ICCSpawns HordeSpawns[13] = {
     { 38841, -67.77f, 2270.51f, 30.65f, 4.93f, 1734 },      // Vol'guk <Shaman Armor>
     //Ramparts of Skull
     { 37187, -555.96f, 2211.4f, 539.37f, 6.27f, 1734 },      // Highlord Overloard Saurfang
+    { 37920, -561.049f, 2207.88f, 539.37f, 6.27f, 1734 },
+    { 37920, -560.901f, 2214.58f, 539.37f, 6.27f, 1734 },
+    { 37920, -557.304f, 2208.20f, 539.37f, 6.27f, 1734 },
+    { 37920, -559.167f, 2211.43f, 539.37f, 6.27f, 1734 },
+    { 37920, -557.264f, 2215.06f, 539.37f, 6.27f, 1734 },
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1073,22 +1083,22 @@ Movement::Location const firstStepPos = { -541.3177f, 2211.365f, 539.2921f, 0.0f
 
 Movement::Location const chargePos[6] =
 {
-    {-509.6505f, 2211.377f, 539.2872f, 0.0f}, // High Overlord Saurfang/Muradin Bronzebeard
-    {-508.7480f, 2211.897f, 539.2870f, 0.0f}, // front left
-    {-509.2929f, 2211.411f, 539.2870f, 0.0f}, // front right
-    {-506.6607f, 2211.367f, 539.2870f, 0.0f}, // back middle
-    {-506.1137f, 2213.306f, 539.2870f, 0.0f}, // back left
-    {-509.0040f, 2211.743f, 539.2870f, 0.0f}  // back right
+    {-509.6505f, 2211.377f, 539.2872f, 6.27f}, // High Overlord Saurfang/Muradin Bronzebeard
+    {-508.7480f, 2211.897f, 539.2870f, 6.27f}, // front left
+    {-509.2929f, 2211.411f, 539.2870f, 6.27f}, // front right
+    {-506.6607f, 2211.367f, 539.2870f, 6.27f}, // back middle
+    {-506.1137f, 2213.306f, 539.2870f, 6.27f}, // back left
+    {-509.0040f, 2211.743f, 539.2870f, 6.27f}  // back right
 };
 
 Movement::Location const chokePos[6] =
 {
-    {-514.4834f, 2211.334f, 549.2887f, 0.0f}, // High Overlord Saurfang/Muradin Bronzebeard
-    {-510.1081f, 2211.592f, 546.3773f, 0.0f}, // front left
-    {-513.3210f, 2211.396f, 551.2882f, 0.0f}, // front right
-    {-507.3684f, 2210.353f, 545.7497f, 0.0f}, // back middle
-    {-507.0486f, 2212.999f, 545.5512f, 0.0f}, // back left
-    {-510.7041f, 2211.069f, 546.5298f, 0.0f}  // back right
+    {-514.4834f, 2211.334f, 549.2887f, 6.27f}, // High Overlord Saurfang/Muradin Bronzebeard
+    {-510.1081f, 2211.592f, 546.3773f, 6.27f}, // front left
+    {-513.3210f, 2211.396f, 551.2882f, 6.27f}, // front right
+    {-507.3684f, 2210.353f, 545.7497f, 6.27f}, // back middle
+    {-507.0486f, 2212.999f, 545.5512f, 6.27f}, // back left
+    {-510.7041f, 2211.069f, 546.5298f, 6.27f}  // back right
 };
 
 Movement::Location const finalPos = { -563.7552f, 2211.328f, 538.7848f, 0.0f };

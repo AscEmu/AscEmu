@@ -224,6 +224,9 @@ public:
     Creature* getNearestCreature(uint32_t entry);
     Creature* getNearestCreature(float posX, float posY, float posZ, uint32_t entry);
 
+    void GetCreatureListWithEntryInGrid(std::list<Creature*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/);
+    void GetGameObjectListWithEntryInGrid(std::list<GameObject*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/);
+
     float getRangeToObject(Object* object);
 
     CreatureAIScript* spawnCreatureAndGetAIScript(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0, uint32_t phase = 1);

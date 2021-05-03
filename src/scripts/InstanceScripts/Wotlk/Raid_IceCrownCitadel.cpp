@@ -342,11 +342,11 @@ public:
             switch (TeamInInstance)
             {
                 case TEAM_ALLIANCE:
-                    for (uint8_t i = 0; i < 13; i++)
+                    for (uint8_t i = 0; i < 18; i++)
                         spawnCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
                     break;
                 case TEAM_HORDE:
-                    for (uint8_t i = 0; i < 13; i++)
+                    for (uint8_t i = 0; i < 18; i++)
                         spawnCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
                     break;
             }
@@ -2016,15 +2016,16 @@ protected:
 class MuradinSaurfangEvent : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MuradinSaurfangEvent)
-        explicit MuradinSaurfangEvent(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit MuradinSaurfangEvent(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
         mInstance = (IceCrownCitadelScript*)getInstanceScript();
-
+        
         getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
  
         AddWaypoint(CreateWaypoint(POINT_FIRST_STEP, 0, Movement::WP_MOVE_TYPE_WALK, firstStepPos));
         AddWaypoint(CreateWaypoint(POINT_CHARGE, 0, Movement::WP_MOVE_TYPE_RUN, chargePos[0]));
+        AddWaypoint(CreateWaypoint(POINT_CHOKE, 0, Movement::WP_MOVE_TYPE_FLY, chokePos[0]));
         getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
     }
 
@@ -2050,8 +2051,11 @@ class MuradinSaurfangEvent : public CreatureAIScript
             {
                 sendDBChatMessage(SAY_INTRO_ALLIANCE_5_SE);
                 
-                SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
-                getCreature()->GetAIInterface()->setWayPointToMove(POINT_CHARGE);            
+                SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                getCreature()->GetAIInterface()->setWayPointToMove(POINT_CHARGE);   
+
+                for (auto itr = _guardList.begin(); itr != _guardList.end(); ++itr)
+                    (*itr)->GetScript()->DoAction(ACTION_CHARGE);
             break;
             }
             }
@@ -2075,6 +2079,16 @@ class MuradinSaurfangEvent : public CreatureAIScript
         }
     }
 
+    void OnHitBySpell(uint32_t _spellId, Unit* _caster) override
+    {
+        if (_spellId == SPELL_GRIP_OF_AGONY)
+        {
+            getCreature()->setMoveDisableGravity(true);
+            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+            getCreature()->GetAIInterface()->setWayPointToMove(POINT_CHOKE);
+        }
+    }
+
     void DoAction(int32 const action) override
     {
         switch (action)
@@ -2087,10 +2101,9 @@ class MuradinSaurfangEvent : public CreatureAIScript
 
             // Guards
             uint32 x = 1;
-            for (auto itr = _guardList.begin(); itr != _guardList.end(); ++x, ++itr) //37830
-            {
-                ;
-            }
+            GetCreatureListWithEntryInGrid(_guardList, NPC_SE_SKYBREAKER_MARINE, 20.0f);
+            for (auto itr = _guardList.begin(); itr != _guardList.end(); ++x, ++itr)
+                (*itr)->GetScript()->SetCreatureData(0, x);
             //
 
             setScriptPhase(PHASE_INTRO_A);
@@ -2161,7 +2174,7 @@ public:
 class OverlordSaurfangEvent : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(OverlordSaurfangEvent)
-        explicit OverlordSaurfangEvent(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit OverlordSaurfangEvent(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
         mInstance = (IceCrownCitadelScript*)getInstanceScript();
@@ -2171,6 +2184,7 @@ class OverlordSaurfangEvent : public CreatureAIScript
 
         AddWaypoint(CreateWaypoint(POINT_FIRST_STEP, 0, Movement::WP_MOVE_TYPE_WALK, firstStepPos));
         AddWaypoint(CreateWaypoint(POINT_CHARGE, 0, Movement::WP_MOVE_TYPE_RUN, chargePos[0]));
+        AddWaypoint(CreateWaypoint(POINT_CHOKE, 0, Movement::WP_MOVE_TYPE_FLY, chokePos[0]));
         getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
     }
 
@@ -2203,7 +2217,7 @@ class OverlordSaurfangEvent : public CreatureAIScript
                 sendDBChatMessage(SAY_INTRO_HORDE_8_SE);
 
                 // Charge
-                SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+                SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                 getCreature()->GetAIInterface()->setWayPointToMove(POINT_CHARGE);
                 break;
             case EVENT_OUTRO_HORDE_2_SE:   // say
@@ -2242,6 +2256,16 @@ class OverlordSaurfangEvent : public CreatureAIScript
         }
     }
 
+    void OnHitBySpell(uint32_t _spellId, Unit* _caster) override
+    {
+        if (_spellId == SPELL_GRIP_OF_AGONY)
+        {
+            getCreature()->setMoveDisableGravity(true);
+            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+            getCreature()->GetAIInterface()->setWayPointToMove(POINT_CHOKE);
+        }
+    }
+
     void DoAction(int32 const action)
     {
         switch (action)
@@ -2254,10 +2278,9 @@ class OverlordSaurfangEvent : public CreatureAIScript
 
             // Guards
             uint32 x = 1;
-            for (auto itr = _guardList.begin(); itr != _guardList.end(); ++x, ++itr) // 37920
-            {
-                ;
-            }
+            GetCreatureListWithEntryInGrid(_guardList, NPC_SE_KOR_KRON_REAVER, 20.0f);
+            for (auto itr = _guardList.begin(); itr != _guardList.end(); ++x, ++itr)
+                (*itr)->GetScript()->SetCreatureData(0, x);
             //
 
             sendDBChatMessage(SAY_INTRO_HORDE_1_SE);
@@ -2306,18 +2329,20 @@ protected:
 class DeathbringerSaurfangAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DeathbringerSaurfangAI)
-        explicit DeathbringerSaurfangAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit DeathbringerSaurfangAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
         mInstance = (IceCrownCitadelScript*)getInstanceScript();
         getCreature()->EnableAI();
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
         AddWaypoint(CreateWaypoint(POINT_SAURFANG, 0, Movement::WP_MOVE_TYPE_WALK, deathbringerPos));
         AddWaypoint(CreateWaypoint(POINT_FIRST_STEP, 0, Movement::WP_MOVE_TYPE_WALK, deathbringerPos));
         getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
         _introDone = false;
+
+        // Scripted Spells not autocastet
+        GripOfAgonySpell = addAISpell(SPELL_GRIP_OF_AGONY, 0.0f, TARGET_SELF);
     }
 
     void AIUpdate() override
@@ -2342,7 +2367,10 @@ class DeathbringerSaurfangAI : public CreatureAIScript
             case EVENT_INTRO_ALLIANCE_6_SE:
                 sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_6);
                 sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_7);
-                // \Todo Cast SPELL_GRIP_OF_AGONY
+                _castAISpell(GripOfAgonySpell);
+                setCanEnterCombat(true);
+                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                getCreature()->GetAIInterface()->setAiScriptType(AI_SCRIPT_LONER);
                 break;
             case EVENT_INTRO_HORDE_2_SE:
                 getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -2354,7 +2382,10 @@ class DeathbringerSaurfangAI : public CreatureAIScript
                 break;
             case EVENT_INTRO_HORDE_9_SE:
                 sendDBChatMessage(SAY_DEATHBRINGER_INTRO_HORDE_9);
-                // \Todo Cast SPELL_GRIP_OF_AGONY
+                _castAISpell(GripOfAgonySpell);
+                setCanEnterCombat(true);
+                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                getCreature()->GetAIInterface()->setAiScriptType(AI_SCRIPT_LONER);
                 break;
             case EVENT_INTRO_FINISH_SE:
                 setScriptPhase(PHASE_COMBAT);
@@ -2406,11 +2437,13 @@ class DeathbringerSaurfangAI : public CreatureAIScript
                 return;
 
             scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_6_SE, 7000, PHASE_INTRO_A);
-            scriptEvents.addEvent(EVENT_INTRO_FINISH_SE, 8000, PHASE_INTRO_A);
-
             scriptEvents.addEvent(EVENT_INTRO_HORDE_4_SE, 6500, PHASE_INTRO_H);
             scriptEvents.addEvent(EVENT_INTRO_HORDE_9_SE, 48200, PHASE_INTRO_H);
-            scriptEvents.addEvent(EVENT_INTRO_FINISH_SE, 55700, PHASE_INTRO_H);
+
+            if (mInstance->getLocalData(DATA_TEAM_IN_INSTANCE) == TEAM_ALLIANCE)
+                scriptEvents.addEvent(EVENT_INTRO_FINISH_SE, 8000, PHASE_INTRO_A);
+            else
+                scriptEvents.addEvent(EVENT_INTRO_FINISH_SE, 55700, PHASE_INTRO_H);
             break;
         }
         }
@@ -2420,6 +2453,91 @@ protected:
     // Common
     IceCrownCitadelScript* mInstance;
     bool _introDone;
+
+    // Spells
+    CreatureAISpells* GripOfAgonySpell;
+};
+
+class NpcSaurfangEventAI : public CreatureAIScript
+{
+    ADD_CREATURE_FACTORY_FUNCTION(NpcSaurfangEventAI)
+    explicit NpcSaurfangEventAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Instance Script
+        mInstance = (IceCrownCitadelScript*)getInstanceScript();
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        _index = 0;
+    }
+
+    void SetCreatureData(uint32_t type, uint32_t data) override
+    {
+        if (!(!type && data && data < 6))
+            return;
+        _index = data;
+
+        AddWaypoint(CreateWaypoint(POINT_CHARGE, 0, Movement::WP_MOVE_TYPE_RUN, chargePos[_index]));
+        AddWaypoint(CreateWaypoint(POINT_CHOKE, 0, Movement::WP_MOVE_TYPE_FLY, chokePos[_index]));
+    }
+
+    void OnHitBySpell(uint32_t _spellId, Unit* _caster) override
+    {
+        if (_spellId == SPELL_GRIP_OF_AGONY)
+        {
+            getCreature()->setMoveDisableGravity(true);
+            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+            getCreature()->GetAIInterface()->setWayPointToMove(POINT_CHOKE);
+        }
+    }
+
+    void DoAction(int32 const action)
+    {
+        switch (action)
+        {
+        case ACTION_CHARGE:
+        {
+            if (action == ACTION_CHARGE && _index)
+            {
+                getCreature()->GetAIInterface()->StopMovement(0);
+                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                getCreature()->GetAIInterface()->setWayPointToMove(POINT_CHARGE);
+                getCreature()->GetAIInterface()->setCreatureState(MOVING);
+            }
+            else if (action == ACTION_DESPAWN)
+                getCreature()->Despawn(100, 0);
+            break;
+        }
+        }
+    }
+
+protected:
+    // Common
+    IceCrownCitadelScript* mInstance;
+    uint32_t _index;
+};
+
+class GripOfAgony : public SpellScript
+{
+public:
+    void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override
+    {
+        if (effectIndex != EFF_INDEX_0)
+            return;
+
+        // Hackfix shouldnt cast on self
+        effectTargets->clear();
+
+        std::vector<Player*> players;
+        for (const auto& itr : spell->getUnitCaster()->getInRangeObjectsSet())
+        {
+            float distance = spell->getUnitCaster()->CalcDistance(itr);
+            if (itr->isCreature() && itr->getEntry() != CN_DEATHBRINGER_SAURFANG && distance <= 100.0f)
+            {
+                auto target = static_cast<Creature*>(itr);
+
+                effectTargets->push_back(itr->getGuid());
+            }
+        }
+    }
 };
 #endif
 void SetupICC(ScriptMgr* mgr)
@@ -2472,6 +2590,9 @@ void SetupICC(ScriptMgr* mgr)
     // Spell Cultist Dark Martyrdom
     mgr->register_spell_script(SPELL_DARK_MARTYRDOM_ADHERENT, new DarkMartyrdom);
 
+    // Spell Grip Of Agony
+    mgr->register_spell_script(SPELL_GRIP_OF_AGONY, new GripOfAgony);
+
     //Gossips
     GossipScript* MuradinGossipScript = new MuradinGossip();
     mgr->register_creature_gossip(NPC_GB_MURADIN_BRONZEBEARD, MuradinGossipScript);
@@ -2488,5 +2609,8 @@ void SetupICC(ScriptMgr* mgr)
 
     mgr->register_creature_script(NPC_CULT_FANATIC, CultFanaticAI::Create);
     mgr->register_creature_script(NPC_CULT_ADHERENT, CultAdherentAI::Create);
+
+    mgr->register_creature_script(NPC_SE_SKYBREAKER_MARINE, NpcSaurfangEventAI::Create);
+    mgr->register_creature_script(NPC_SE_KOR_KRON_REAVER, NpcSaurfangEventAI::Create);
 #endif
 }
