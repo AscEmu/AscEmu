@@ -60,7 +60,7 @@ public:
             return;
 
         std::string msg = "Hahah! ";
-        msg += mTarget->getName().c_str();
+        msg += mTarget->getName();
         msg += ", you make quite a partner!";
         creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
         creat->emote(EMOTE_ONESHOT_LAUGH);

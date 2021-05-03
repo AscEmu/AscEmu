@@ -85,7 +85,7 @@ public:
         if (chance < 15)
         {
             std::string say = "Now you're gonna get it good, ";
-            say += (static_cast<Player*>(mTarget))->getName().c_str();
+            say += (static_cast<Player*>(mTarget))->getName();
             say += "!";
             Dashel->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
