@@ -331,7 +331,7 @@ void AddonMgr::LoadFromDB()
             std::string name = fields[0].GetString();
             uint32_t crc = fields[1].GetUInt32();
 
-            mKnownAddons.push_back(SavedAddon(name, crc));
+            mKnownAddons.emplace_back(SavedAddon(name, crc));
 
             ++knownAddonsCount;
         } while (clientAddonsResult->NextRow());
@@ -382,7 +382,7 @@ void AddonMgr::SaveAddon(AddonEntry const& addon)
 {
     CharacterDatabase.Execute("REPLACE INTO clientaddons(name, crc) VALUES('%s', %u )", addon.name.c_str(), addon.crc);
 
-    mKnownAddons.push_back(SavedAddon(addon.name, addon.crc));
+    mKnownAddons.emplace_back(SavedAddon(addon.name, addon.crc));
 }
 
 SavedAddon const* AddonMgr::getAddonInfoForAddonName(const std::string& name)
