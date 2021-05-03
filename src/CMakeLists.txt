@@ -1,10 +1,5 @@
 # Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 
-# add crashreport tool if we are not on windows
-if(UNIX)
-   add_subdirectory(crashreport)
-endif()
-
 # add our executable related folders
 add_subdirectory(shared)
 add_subdirectory(logonserver)
