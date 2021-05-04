@@ -448,22 +448,22 @@ uint32 CBattlegroundManager::GetArenaGroupQInfo(Group* group, int type, uint32* 
     if (group == nullptr || group->GetLeader() == nullptr)
         return 0;
 
-    Player* plr = group->GetLeader()->m_loggedInPlayer;
-    if (plr == nullptr)
+    Player* leader = group->GetLeader()->m_loggedInPlayer;
+    if (leader == nullptr)
         return 0;
 
-    ArenaTeam* team = plr->m_arenaTeams[type - BATTLEGROUND_ARENA_2V2];
+    ArenaTeam* team = leader->getArenaTeam(type - BATTLEGROUND_ARENA_2V2);
     if (team == nullptr)
         return 0;
 
     for (GroupMembersSet::iterator itx = group->GetSubGroup(0)->GetGroupMembersBegin(); itx != group->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
     {
-        plr = (*itx)->m_loggedInPlayer;
-        if (plr)
+        Player* member = (*itx)->m_loggedInPlayer;
+        if (member)
         {
-            if (team == plr->m_arenaTeams[type - BATTLEGROUND_ARENA_2V2])
+            if (team == member->getArenaTeam(type - BATTLEGROUND_ARENA_2V2))
             {
-                ArenaTeamMember* atm = team->GetMemberByGuid(plr->getGuidLow());
+                ArenaTeamMember* atm = team->GetMemberByGuid(member->getGuidLow());
                 if (atm)
                 {
                     rating += atm->PersonalRating;
@@ -487,14 +487,14 @@ void CBattlegroundManager::AddGroupToArena(CBattleground* bg, Group* group, uint
     if (plr == nullptr)
         return;
 
-    ArenaTeam* team = plr->m_arenaTeams[bg->GetType() - BATTLEGROUND_ARENA_2V2];
+    ArenaTeam* team = plr->getArenaTeam(bg->GetType() - BATTLEGROUND_ARENA_2V2);
     if (team == nullptr)
         return;
 
     for (GroupMembersSet::iterator itx = group->GetSubGroup(0)->GetGroupMembersBegin(); itx != group->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
     {
         plr = (*itx)->m_loggedInPlayer;
-        if (plr && team == plr->m_arenaTeams[bg->GetType() - BATTLEGROUND_ARENA_2V2])
+        if (plr && team == plr->getArenaTeam(bg->GetType() - BATTLEGROUND_ARENA_2V2))
         {
             if (bg->HasFreeSlots(nteam, bg->GetType()))
             {
@@ -1310,7 +1310,7 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
             break;
         }
 
-        if (pGroup->GetLeader()->m_loggedInPlayer && pGroup->GetLeader()->m_loggedInPlayer->m_arenaTeams[type] == nullptr)
+        if (pGroup->GetLeader()->m_loggedInPlayer && pGroup->GetLeader()->m_loggedInPlayer->getArenaTeam(type) == nullptr)
         {
             m_session->SendPacket(SmsgArenaError(0, static_cast<uint8_t>(maxplayers)).serialise().get());
             return;
@@ -1341,7 +1341,7 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
                     pGroup->Unlock();
                     return;
                 };
-                if ((*itx)->m_loggedInPlayer->m_arenaTeams[type] != pGroup->GetLeader()->m_loggedInPlayer->m_arenaTeams[type])
+                if ((*itx)->m_loggedInPlayer->getArenaTeam(type) != pGroup->GetLeader()->m_loggedInPlayer->getArenaTeam(type))
                 {
                     m_session->SystemMessage(m_session->LocalizedWorldSrv(ServerString::SS_ONE_OR_MORE_OF_YOUR_PARTY_MEMBERS_ARE_NOT_MEMBERS_OF_YOUR_TEAM));
                     pGroup->Unlock();

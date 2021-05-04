@@ -74,7 +74,7 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (player->m_arenaTeams[arenaTeam->m_type] != nullptr)
+    if (player->getArenaTeam(arenaTeam->m_type) != nullptr)
     {
         SystemMessage("That player is already in an arena team of this type.");
         return;
@@ -92,9 +92,9 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    player->m_arenateaminviteguid = _player->m_arenaTeams[arenaTeam->m_type]->m_id;
+    player->m_arenateaminviteguid = _player->getArenaTeam(arenaTeam->m_type)->m_id;
 
-    player->SendPacket(SmsgArenaTeamInvite(_player->getName(), _player->m_arenaTeams[arenaTeam->m_type]->m_name).serialise().get());
+    player->SendPacket(SmsgArenaTeamInvite(_player->getName(), _player->getArenaTeam(arenaTeam->m_type)->m_name).serialise().get());
 }
 
 void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
@@ -114,7 +114,7 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
 
     const auto slot = static_cast<uint8_t>(arenaTeam->m_type);
 
-    if ((arenaTeam = _player->m_arenaTeams[slot]) == nullptr)
+    if ((arenaTeam = _player->getArenaTeam(slot)) == nullptr)
     {
         SystemMessage("You are not in an arena team of this type.");
         return;
@@ -173,7 +173,7 @@ void WorldSession::handleArenaTeamInviteAcceptOpcode(WorldPacket& /*recvPacket*/
         return;
     }
 
-    if (_player->m_arenaTeams[arenaTeam->m_type] != nullptr)
+    if (_player->getArenaTeam(arenaTeam->m_type) != nullptr)
     {
         SystemMessage("You have already been in an arena team of that size.");
         return;
@@ -225,7 +225,7 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if ((arenaTeam = _player->m_arenaTeams[arenaTeam->m_type]) == nullptr)
+    if ((arenaTeam = _player->getArenaTeam(arenaTeam->m_type)) == nullptr)
     {
         SystemMessage("You are not in an arena team of this type.");
         return;
@@ -269,7 +269,7 @@ void WorldSession::handleArenaTeamDisbandOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if ((arenaTeam = _player->m_arenaTeams[arenaTeam->m_type]) == nullptr)
+    if ((arenaTeam = _player->getArenaTeam(arenaTeam->m_type)) == nullptr)
     {
         SystemMessage("You are not in an arena team of this type.");
         return;
@@ -304,7 +304,7 @@ void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
     if (slot >= NUM_ARENA_TEAM_TYPES)
         return;
 
-    if ((arenaTeam = _player->m_arenaTeams[slot]) == nullptr)
+    if ((arenaTeam = _player->getArenaTeam(slot)) == nullptr)
     {
         SystemMessage("You are not in an arena team of this type.");
         return;

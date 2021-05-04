@@ -326,9 +326,6 @@ Player::Player(uint32 guid)
     m_TeleportState = 1;
     m_beingPushed = false;
 
-    for (i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
-        m_arenaTeams[i] = nullptr;
-
     flying_aura = 0;
     resend_speed = false;
     login_flags = LOGIN_NO_FLAG;
@@ -2842,21 +2839,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     initialiseCharters();
 
-    for (uint8_t z = 0; z < NUM_ARENA_TEAM_TYPES; ++z)
-    {
-        m_arenaTeams[z] = sObjectMgr.GetArenaTeamByGuid(getGuidLow(), z);
-        if (m_arenaTeams[z] != nullptr)
-        {
-#if VERSION_STRING != Classic
-            setArenaTeamId(z, m_arenaTeams[z]->m_id);
-
-            if (m_arenaTeams[z]->m_leader == getGuidLow())
-                setArenaTeamMemberRank(z, 0);
-            else
-                setArenaTeamMemberRank(z, 1);
-#endif
-        }
-    }
+    initialiseArenaTeam();
 
     m_StableSlotCount = static_cast<uint8>(field[51].GetUInt32());
     m_instanceId = field[52].GetUInt32();

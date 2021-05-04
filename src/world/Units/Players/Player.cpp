@@ -3139,7 +3139,7 @@ bool Player::canSignCharter(Charter* charter, Player* requester)
     if (charter == nullptr || requester == nullptr)
         return false;
 
-    if (charter->CharterType >= CHARTER_TYPE_ARENA_2V2 && m_arenaTeams[charter->CharterType - 1] != nullptr)
+    if (charter->CharterType >= CHARTER_TYPE_ARENA_2V2 && getArenaTeam(charter->CharterType - 1) != nullptr)
         return false;
 
     if (charter->CharterType == CHARTER_TYPE_GUILD && isInGuild())
@@ -3195,6 +3195,31 @@ bool Player::isGroupLeader() const
 }
 
 int8_t Player::getSubGroupSlot() const { return m_playerInfo->subGroup; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// ArenaTeam
+void Player::setArenaTeam(uint8_t type, ArenaTeam* arenaTeam) { m_arenaTeams[type] = arenaTeam; }
+ArenaTeam* Player::getArenaTeam(uint8_t type) { return m_arenaTeams[type]; }
+
+bool Player::isInArenaTeam(uint8_t type) { return m_arenaTeams[type] != nullptr; }
+void Player::initialiseArenaTeam()
+{
+    for (uint8_t i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
+    {
+        m_arenaTeams[i] = sObjectMgr.GetArenaTeamByGuid(getGuidLow(), i);
+        if (m_arenaTeams[i] != nullptr)
+        {
+#if VERSION_STRING != Classic
+            setArenaTeamId(i, m_arenaTeams[i]->m_id);
+
+            if (m_arenaTeams[i]->m_leader == getGuidLow())
+                setArenaTeamMemberRank(i, 0);
+            else
+                setArenaTeamMemberRank(i, 1);
+#endif
+        }
+    }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Quests

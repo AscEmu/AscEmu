@@ -160,7 +160,7 @@ bool ArenaTeam::AddMember(PlayerInfo* info)
         player->setArenaTeamId(m_type, m_id);
         player->setArenaTeamMemberRank(m_type, 1);
 
-        player->m_arenaTeams[m_type] = this;
+        player->setArenaTeam(m_type, this);
 
         player->GetSession()->SystemMessage("You are now a member of the arena team, '%s'.", m_name.c_str());
     }
@@ -186,7 +186,7 @@ bool ArenaTeam::RemoveMember(PlayerInfo* info)
             if (info->m_loggedInPlayer)
             {
                 info->m_loggedInPlayer->setArenaTeamId(m_type, 0);
-                info->m_loggedInPlayer->m_arenaTeams[m_type] = nullptr;
+                info->m_loggedInPlayer->setArenaTeam(m_type, nullptr);
             }
 #endif
 

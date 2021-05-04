@@ -182,7 +182,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
             Player* plr = (Player*)(*itr);
             if (plr != NULL)
             {
-                sHookInterface.OnArenaFinish(plr, plr->m_arenaTeams[m_arenateamtype], victorious, rated_match);
+                sHookInterface.OnArenaFinish(plr, plr->getArenaTeam(m_arenateamtype), victorious, rated_match);
                 plr->resetAllCooldowns();
             }
         }
@@ -317,9 +317,9 @@ void Arena::OnStart()
             m_players2[i].insert(plr->getGuidLow());
 
             // update arena team stats
-            if (rated_match && plr->m_arenaTeams[m_arenateamtype] != NULL)
+            if (rated_match && plr->isInArenaTeam(m_arenateamtype))
             {
-                m_teams[i] = plr->m_arenaTeams[m_arenateamtype];
+                m_teams[i] = plr->getArenaTeam(m_arenateamtype);
                 ArenaTeamMember* tp = m_teams[i]->GetMember(plr->getPlayerInfo());
                 if (tp != NULL)
                 {

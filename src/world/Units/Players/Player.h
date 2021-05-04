@@ -1197,6 +1197,19 @@ private:
     uint32_t m_GroupInviter = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // ArenaTeam
+public:
+
+    void setArenaTeam(uint8_t type, ArenaTeam* arenaTeam);
+    ArenaTeam* getArenaTeam(uint8_t type);
+
+    bool isInArenaTeam(uint8_t type);
+    void initialiseArenaTeam();
+
+private:
+    ArenaTeam* m_arenaTeams[NUM_ARENA_TEAM_TYPES] = {nullptr};
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Quests
 public:
     void setQuestLogInSlot(QuestLogEntry* entry, uint32_t slotId);
@@ -1458,8 +1471,6 @@ public:
         void ModifyBonuses(uint32 type, int32 val, bool apply);
         void CalcExpertise();
         std::map<uint32, uint32> m_wratings;
-
-        ArenaTeam* m_arenaTeams[NUM_ARENA_TEAM_TYPES];
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Taxi

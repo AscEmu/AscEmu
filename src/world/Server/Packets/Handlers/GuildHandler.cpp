@@ -679,7 +679,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
                 return;
         }
 
-        if (_player->m_arenaTeams[charter->CharterType - 1] != nullptr)
+        if (_player->getArenaTeam(charter->CharterType - 1) != nullptr)
         {
             sChatHandler.SystemMessage(this, LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
             return;
@@ -748,7 +748,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         if (arena_type > 2)
             return;
 
-        if (_player->m_arenaTeams[arena_type])
+        if (_player->getArenaTeam(arena_type))
         {
             SendNotification(_player->GetSession()->LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
             return;

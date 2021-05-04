@@ -53,7 +53,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
         return true;
     }
 
-    if (player->m_arenaTeams[internal_type] != NULL)
+    if (player->isInArenaTeam(internal_type))
     {
         RedSystemMessage(m_session, "Player: %s is already in an arena team of that type!", player->getName().c_str());
         return true;
@@ -97,13 +97,13 @@ bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_ses
         return true;
     }
 
-    if (player->m_arenaTeams[internal_type] == NULL)
+    if (!player->isInArenaTeam(internal_type))
     {
         RedSystemMessage(m_session, "Player: %s is already in an arena team of that type!", player->getName().c_str());
         return true;
     }
 
-    auto arena_team = player->m_arenaTeams[internal_type];
+    auto arena_team = player->getArenaTeam(internal_type);
     arena_team->SetLeader(player->getPlayerInfo());
 
     GreenSystemMessage(m_session, "Player: %s is now arena team leader for type: %u", player->getName().c_str(), team_type);
