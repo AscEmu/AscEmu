@@ -7821,18 +7821,13 @@ bool Player::CanSignCharter(Charter* charter, Player* requester)
     if (charter->CharterType >= CHARTER_TYPE_ARENA_2V2 && m_arenaTeams[charter->CharterType - 1] != nullptr)
         return false;
 
-#if VERSION_STRING < Cata
     if (charter->CharterType == CHARTER_TYPE_GUILD && isInGuild())
         return false;
-#else
-    if (charter->CharterType == CHARTER_TYPE_GUILD && requester->getGuild())
-        return false;
-#endif
 
     if (m_charters[charter->CharterType] || requester->getTeam() != getTeam() || this == requester)
         return false;
-    else
-        return true;
+
+    return true;
 }
 
 void Player::SaveAuras(std::stringstream & ss)
