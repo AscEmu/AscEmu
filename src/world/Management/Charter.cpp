@@ -76,7 +76,7 @@ void Charter::Destroy()
 
         Player* p = sObjectMgr.GetPlayer(Signatures[i]);
         if (p != nullptr)
-            p->m_charters[CharterType] = nullptr;
+            p->unsetCharter(CharterType);
     }
 
     delete this;

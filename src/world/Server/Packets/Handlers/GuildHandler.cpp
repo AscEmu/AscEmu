@@ -527,7 +527,7 @@ void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
         return;
     }
 
-    if (!pTarget->CanSignCharter(pCharter, _player))
+    if (!pTarget->canSignCharter(pCharter, _player))
     {
         SendNotification(_player->GetSession()->LocalizedWorldSrv(ServerString::SS_CANNOT_SIGN_MORE_REASONS));
         return;

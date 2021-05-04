@@ -3130,6 +3130,34 @@ uint32_t Player::getBGEntryMapId() const { return m_bindData.mapId; }
 int32_t Player::getBGEntryInstanceId() const { return m_bindData.zoneId; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Charter
+void Player::unsetCharter(uint8_t charterType) { m_charters[charterType] = nullptr; }
+Charter* Player::getCharter(uint8_t charterType) { return m_charters[charterType]; }
+
+bool Player::canSignCharter(Charter* charter, Player* requester)
+{
+    if (charter == nullptr || requester == nullptr)
+        return false;
+
+    if (charter->CharterType >= CHARTER_TYPE_ARENA_2V2 && m_arenaTeams[charter->CharterType - 1] != nullptr)
+        return false;
+
+    if (charter->CharterType == CHARTER_TYPE_GUILD && isInGuild())
+        return false;
+
+    if (m_charters[charter->CharterType] || requester->getTeam() != getTeam() || this == requester)
+        return false;
+
+    return true;
+}
+
+void Player::initialiseCharters()
+{
+    for (uint8_t i = 0; i < NUM_CHARTER_TYPES; ++i)
+        m_charters[i] = sObjectMgr.GetCharterByGuid(getGuid(), static_cast<CharterTypes>(i));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Guild
 void Player::setInvitedByGuildId(uint32_t GuildId) { m_invitedByGuildId = GuildId; }
 uint32_t Player::getInvitedByGuildId() const { return m_invitedByGuildId; }

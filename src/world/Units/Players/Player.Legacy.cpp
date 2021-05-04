@@ -326,9 +326,6 @@ Player::Player(uint32 guid)
     m_TeleportState = 1;
     m_beingPushed = false;
 
-    for (i = 0; i < NUM_CHARTER_TYPES; ++i)
-        m_charters[i] = nullptr;
-
     for (i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
         m_arenaTeams[i] = nullptr;
 
@@ -2842,8 +2839,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         }
         m_arenaPoints = worldConfig.limit.maxArenaPoints;
     }
-    for (uint32 z = 0; z < NUM_CHARTER_TYPES; ++z)
-        m_charters[z] = sObjectMgr.GetCharterByGuid(getGuid(), (CharterTypes)z);
+
+    initialiseCharters();
 
     for (uint8_t z = 0; z < NUM_ARENA_TEAM_TYPES; ++z)
     {
@@ -7811,23 +7808,6 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         }
         break;
     }
-}
-
-bool Player::CanSignCharter(Charter* charter, Player* requester)
-{
-    if (charter == nullptr || requester == nullptr)
-        return false;
-
-    if (charter->CharterType >= CHARTER_TYPE_ARENA_2V2 && m_arenaTeams[charter->CharterType - 1] != nullptr)
-        return false;
-
-    if (charter->CharterType == CHARTER_TYPE_GUILD && isInGuild())
-        return false;
-
-    if (m_charters[charter->CharterType] || requester->getTeam() != getTeam() || this == requester)
-        return false;
-
-    return true;
 }
 
 void Player::SaveAuras(std::stringstream & ss)

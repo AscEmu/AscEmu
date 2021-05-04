@@ -1151,6 +1151,19 @@ private:
     BGEntryData m_bgEntryData;
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Charter
+public:
+
+    void unsetCharter(uint8_t charterType);
+    Charter* getCharter(uint8_t charterType);
+
+    bool canSignCharter(Charter* charter, Player* requester);
+    void initialiseCharters();
+
+private:
+    Charter* m_charters[NUM_CHARTER_TYPES] = {nullptr};
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Guild
 public:
 
@@ -2191,8 +2204,7 @@ public:
         void OnWorldPortAck();
         uint32 m_TeleportState;
         bool m_beingPushed;
-        bool CanSignCharter(Charter* charter, Player* requester);
-        Charter* m_charters[NUM_CHARTER_TYPES];
+        
         uint32 flying_aura;
         bool resend_speed;
         uint32 login_flags;

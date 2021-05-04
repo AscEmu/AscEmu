@@ -211,8 +211,8 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
         addFlags(ITEM_FLAG_SOULBOUND);
         setStackCount(1);
         setPropertySeed(57813883);
-        if (plr != nullptr && plr->m_charters[CHARTER_TYPE_GUILD])
-            setEnchantmentId(0, plr->m_charters[CHARTER_TYPE_GUILD]->GetID());
+        if (plr != nullptr && plr->getCharter(CHARTER_TYPE_GUILD))
+            setEnchantmentId(0, plr->getCharter(CHARTER_TYPE_GUILD)->GetID());
     }
 
     if (getEntry() == CharterEntry::TwoOnTwo)
@@ -220,8 +220,8 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
         addFlags(ITEM_FLAG_SOULBOUND);
         setStackCount(1);
         setPropertySeed(57813883);
-        if (plr != nullptr && plr->m_charters[CHARTER_TYPE_ARENA_2V2])
-            setEnchantmentId(0, plr->m_charters[CHARTER_TYPE_ARENA_2V2]->GetID());
+        if (plr != nullptr && plr->getCharter(CHARTER_TYPE_ARENA_2V2))
+            setEnchantmentId(0, plr->getCharter(CHARTER_TYPE_ARENA_2V2)->GetID());
     }
 
     if (getEntry() == CharterEntry::ThreeOnThree)
@@ -229,8 +229,8 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
         addFlags(ITEM_FLAG_SOULBOUND);
         setStackCount(1);
         setPropertySeed(57813883);
-        if (plr != nullptr && plr->m_charters[CHARTER_TYPE_ARENA_3V3])
-            setEnchantmentId(0, plr->m_charters[CHARTER_TYPE_ARENA_3V3]->GetID());
+        if (plr != nullptr && plr->getCharter(CHARTER_TYPE_ARENA_3V3))
+            setEnchantmentId(0, plr->getCharter(CHARTER_TYPE_ARENA_3V3)->GetID());
     }
 
     if (getEntry() == CharterEntry::FiveOnFive)
@@ -238,8 +238,8 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
         addFlags(ITEM_FLAG_SOULBOUND);
         setStackCount(1);
         setPropertySeed(57813883);
-        if (plr != nullptr && plr->m_charters[CHARTER_TYPE_ARENA_5V5])
-            setEnchantmentId(0, plr->m_charters[CHARTER_TYPE_ARENA_5V5]->GetID());
+        if (plr != nullptr && plr->getCharter(CHARTER_TYPE_ARENA_5V5))
+            setEnchantmentId(0, plr->getCharter(CHARTER_TYPE_ARENA_5V5)->GetID());
     }
 }
 
