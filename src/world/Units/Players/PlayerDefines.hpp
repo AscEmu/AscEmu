@@ -799,12 +799,8 @@ static uint8_t getSideByRace(uint8_t race)
         case RACE_DWARF:
         case RACE_NIGHTELF:
         case RACE_GNOME:
-#if VERSION_STRING > Classic
         case RACE_DRAENEI:
-#endif
-#if VERSION_STRING > WotLK
         case RACE_WORGEN:
-#endif
             return TEAM_ALLIANCE;
         default:
             return TEAM_HORDE;
