@@ -50,7 +50,7 @@ public:
         }
     }
 
-    void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
+    void OnCreatureDeath(Creature* pCreature, Unit* /*pUnit*/)
     {
         switch (pCreature->getEntry())
         {
@@ -81,7 +81,7 @@ public:
         }
     }
 
-    void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
+    void OnGameObjectActivate(GameObject* pGameObject, Player* /*pPlayer*/)
     {
         switch (pGameObject->getEntry())
         {

@@ -334,7 +334,7 @@ class SERVER_DECL CBattlegroundManager : public EventableObject
 
         void SendBattlefieldStatus(Player* plr, BattleGroundStatus Status, uint32 Type, uint32 InstanceID, uint32 Time, uint32 MapId, uint8 RatedMatch);
 
-        uint32 GetArenaGroupQInfo(Group* group, int type, uint32* avgRating);
+        uint32 GetArenaGroupQInfo(Group* group, uint8_t type, uint32* avgRating);
 
         int CreateArenaType(int type, Group* group1, Group* group2);
 

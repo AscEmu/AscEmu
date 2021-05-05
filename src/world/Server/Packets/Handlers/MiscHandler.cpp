@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "zlib.h"
+#include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
 #include "Server/Packets/SmsgLogoutResponse.h"
@@ -231,14 +232,16 @@ void WorldSession::handleTutorialFlag(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const uint32_t tutorial_index = (srlPacket.flag / 32);
+    const uint32_t packet_index = (srlPacket.flag / 32);
     const uint32_t tutorial_status = (srlPacket.flag % 32);
 
-    if (tutorial_index >= 7)
+    if (packet_index >= 7)
     {
         Disconnect();
         return;
     }
+
+    const auto tutorial_index = static_cast<uint8_t>(packet_index);
 
     uint32_t tutorial_flag = _player->getTutorialValueById(tutorial_index);
     tutorial_flag |= (1 << tutorial_status);
@@ -459,6 +462,9 @@ void WorldSession::handleDungeonDifficultyOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
+    if (srlPacket.difficulty >= InstanceDifficulty::MAX_DUNGEON_DIFFICULTY)
+        return;
+
     LogDebugFlag(LF_OPCODE, "Received MSG_SET_DUNGEON_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
 
     _player->setDungeonDifficulty(srlPacket.difficulty);
@@ -476,14 +482,17 @@ void WorldSession::handleRaidDifficultyOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
+    if (srlPacket.difficulty >= InstanceDifficulty::MAX_RAID_DIFFICULTY)
+        return;
+
     LogDebugFlag(LF_OPCODE, "Received MSG_SET_RAID_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
 
-    _player->setRaidDifficulty(srlPacket.difficulty);
+    _player->setRaidDifficulty(InstanceDifficulty::Difficulties(srlPacket.difficulty));
     sInstanceMgr.ResetSavedInstances(_player);
 
     const auto group = _player->getGroup();
     if (group && _player->isGroupLeader())
-        group->SetRaidDifficulty(srlPacket.difficulty);
+        group->SetRaidDifficulty(InstanceDifficulty::Difficulties(srlPacket.difficulty));
 #endif
 }
 

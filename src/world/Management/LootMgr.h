@@ -67,8 +67,8 @@ class LootRoll : public EventableObject
 
     private:
 
-        std::map<uint32, uint32> m_NeedRolls;
-        std::map<uint32, uint32> m_GreedRolls;
+        std::map<uint32, uint8_t> m_NeedRolls;
+        std::map<uint32, uint8_t> m_GreedRolls;
         std::set<uint32> m_passRolls;
         uint32 _groupcount;
         uint32 _slotid;

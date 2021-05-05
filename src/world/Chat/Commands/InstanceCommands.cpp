@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Server/MainServerDefines.h"
+#include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
@@ -224,7 +225,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
         {
             bool foundSomething = false;
             plr->getPlayerInfo()->savedInstanceIdsLock.Acquire();
-            for (uint8 difficulty = 0; difficulty < NUM_INSTANCE_MODES; difficulty++)
+            for (uint8 difficulty = 0; difficulty < InstanceDifficulty::MAX_DIFFICULTY; difficulty++)
             {
                 PlayerInstanceMap::iterator itr = plr->getPlayerInfo()->savedInstanceIds[difficulty].find(instance->m_mapId);
                 if (itr == plr->getPlayerInfo()->savedInstanceIds[difficulty].end() || (*itr).second != instance->m_instanceId)

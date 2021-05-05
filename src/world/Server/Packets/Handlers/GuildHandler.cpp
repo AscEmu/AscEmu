@@ -744,10 +744,10 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 
     if (!creature->isTabardDesigner())
     {
-        const uint32_t arena_type = srlPacket.arenaIndex - 1;
-        if (arena_type > 2)
+        if ((srlPacket.arenaIndex - 1) > 2)
             return;
 
+        const auto arena_type = static_cast<uint8_t>(srlPacket.arenaIndex - 1);
         if (_player->getArenaTeam(arena_type))
         {
             SendNotification(_player->GetSession()->LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));

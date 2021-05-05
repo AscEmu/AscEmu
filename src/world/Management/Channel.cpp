@@ -193,7 +193,7 @@ void Channel::SetOwner(Player* oldpl, Player* plr)
 {
     m_lock.Acquire();
     Player* pOwner = NULL;
-    uint32 oldflags = 0, oldflags2 = 0;
+    uint8_t oldflags = 0, oldflags2 = 0;
     if (oldpl && plr)
     {
         MemberMap::iterator itr = m_members.find(oldpl);
@@ -481,7 +481,7 @@ void Channel::Voice(Player* plr, Player* v_player)
         return;
     }
 
-    uint32 oldflags = itr2->second;
+    auto oldflags = itr2->second;
     itr2->second |= CHANNEL_MEMBER_FLAG_VOICED;
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_name, v_player->getGuid(), oldflags, 0, itr2->second).serialise().get());
     m_lock.Release();
@@ -514,7 +514,7 @@ void Channel::Devoice(Player* plr, Player* v_player)
         return;
     }
 
-    uint32 oldflags = itr2->second;
+    auto oldflags = itr2->second;
     itr2->second &= ~CHANNEL_MEMBER_FLAG_VOICED;
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_name, v_player->getGuid(), oldflags, 0, itr2->second).serialise().get());
     m_lock.Release();
@@ -547,7 +547,7 @@ void Channel::Mute(Player* plr, Player* die_player)
         return;
     }
 
-    uint32 oldflags = itr2->second;
+    auto oldflags = itr2->second;
     itr2->second |= CHANNEL_MEMBER_FLAG_MUTED;
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_name, die_player->getGuid(), oldflags, 0, itr2->second).serialise().get());
     m_lock.Release();
@@ -580,7 +580,7 @@ void Channel::Unmute(Player* plr, Player* die_player)
         return;
     }
 
-    uint32 oldflags = itr2->second;
+    auto oldflags = itr2->second;
     itr2->second &= ~CHANNEL_MEMBER_FLAG_MUTED;
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_name, die_player->getGuid(), oldflags, 0, itr2->second).serialise().get());
     m_lock.Release();
@@ -613,7 +613,7 @@ void Channel::GiveModerator(Player* plr, Player* new_player)
         return;
     }
 
-    uint32 oldflags = itr2->second;
+    auto oldflags = itr2->second;
     itr2->second |= CHANNEL_MEMBER_FLAG_MODERATOR;
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_name, new_player->getGuid(), oldflags, 0, itr2->second).serialise().get());
     m_lock.Release();
@@ -646,7 +646,7 @@ void Channel::TakeModerator(Player* plr, Player* new_player)
         return;
     }
 
-    uint32 oldflags = itr2->second;
+    auto oldflags = itr2->second;
     itr2->second &= ~CHANNEL_MEMBER_FLAG_MODERATOR;
     SendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_name, new_player->getGuid(), oldflags, 0, itr2->second).serialise().get());
     m_lock.Release();

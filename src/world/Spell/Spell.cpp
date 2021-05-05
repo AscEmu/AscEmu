@@ -30,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
+#include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
 #include "Map/WorldCreatorDefines.hpp"
@@ -1844,7 +1845,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // Check if spell can be casted in heroic dungeons or in raids
         if (getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_NOT_IN_RAIDS_OR_HEROIC_DUNGEONS)
         {
-            if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && (p_caster->GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID || p_caster->GetMapMgr()->iInstanceMode == MODE_HEROIC))
+            if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && (p_caster->GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID || p_caster->GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC))
             {
 #if VERSION_STRING < WotLK
                 return SPELL_FAILED_NOT_HERE;
@@ -2397,7 +2398,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                         return SPELL_FAILED_TARGET_NOT_IN_INSTANCE;
 
                     const auto mapInfo = p_caster->GetMapMgr()->GetMapInfo();
-                    if (p_caster->GetMapMgr()->iInstanceMode == MODE_HEROIC)
+                    if (p_caster->GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC)
                     {
                         if (mapInfo->minlevel_heroic > targetPlayer->getLevel())
                             return SPELL_FAILED_LOWLEVEL;

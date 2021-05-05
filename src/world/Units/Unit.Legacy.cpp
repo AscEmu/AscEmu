@@ -981,16 +981,18 @@ void Unit::updateSplinePosition()
         pos.z = loc.z;
         pos.o = normalizeOrientation(loc.orientation);
 
-        if (TransportBase* transport = getCurrentVehicle())
+        if (TransportBase* vehicle = getCurrentVehicle())
         {
-            transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
+            vehicle->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
         }
         else if (TransportBase* transport = GetTransport())
         {
             transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
         }
         else
+        {
             return;
+        }
     }
 
     // \todo

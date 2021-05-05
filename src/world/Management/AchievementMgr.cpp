@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
+#include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "Spell/Definitions/SpellMechanics.h"
@@ -686,7 +687,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                         case 1721: // Heroic: Archavon the Stone Watcher
                         case 1817: // The Culling of Time
                         case 1865: // Lockdown!
-                            if (GetPlayer()->getDungeonDifficulty() >= MODE_HEROIC)
+                            if (GetPlayer()->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC)
                             {
                                 UpdateCriteriaProgress(achievementCriteria, 1);
                             }
@@ -804,7 +805,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                             // Defeat Ley-Guardian Eregos in The Oculus on Heroic Difficulty without anyone in your party using an Amber Drake.
                             break;
                         default:
-                            if (!IS_INSTANCE(GetPlayer()->GetMapId()) || (GetPlayer()->getDungeonDifficulty() == MODE_NORMAL))
+                            if (!IS_INSTANCE(GetPlayer()->GetMapId()) || (GetPlayer()->getDungeonDifficulty() == InstanceDifficulty::DUNGEON_NORMAL))
                             {
                                 // already tested heroic achievements above, the rest should be normal or non-dungeon
                                 UpdateCriteriaProgress(achievementCriteria, 1);

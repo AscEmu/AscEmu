@@ -128,7 +128,7 @@ class SERVER_DECL Channel
 {
     Mutex m_lock;
 
-    typedef std::map<Player*, uint32> MemberMap;
+    typedef std::map<Player*, uint8_t> MemberMap;
 
     MemberMap m_members;
 

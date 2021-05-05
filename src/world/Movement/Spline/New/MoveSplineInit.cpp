@@ -236,7 +236,7 @@ void MoveSplineInit::MoveTo(float x, float y, float z, bool generatePath, bool f
     MoveTo(G3D::Vector3(x, y, z), generatePath, forceDestination);
 }
 
-void MoveSplineInit::MoveTo(Vector3 const& dest, bool generatePath, bool forceDestination)
+void MoveSplineInit::MoveTo(Vector3 const& dest, bool generatePath, bool /*forceDestination*/)
 {
     if (generatePath)
     {
@@ -253,9 +253,9 @@ Vector3 TransportPathTransform::operator()(Vector3 input)
 {
     if (_transformForTransport)
     {
-        if (TransportBase* transport = _owner->getCurrentVehicle())
+        if (TransportBase* vehicle = _owner->getCurrentVehicle())
         {
-            transport->CalculatePassengerOffset(input.x, input.y, input.z);
+            vehicle->CalculatePassengerOffset(input.x, input.y, input.z);
         }
         else if (TransportBase* transport = _owner->GetTransport())
         {

@@ -150,7 +150,7 @@ class SERVER_DECL WorldSession
         Player* GetPlayerOrThrow();
 
         // Acct flags
-        void SetAccountFlags(uint32 flags)
+        void SetAccountFlags(uint32 /*flags*/)
         {
             // TODO: add a config to determine what flags are allowed on the server.
             // For now, override the db value depending on the AE Version.

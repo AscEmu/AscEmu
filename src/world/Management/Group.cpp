@@ -41,7 +41,7 @@ Group::Group(bool Assign)
     memset(m_SubGroups, 0, sizeof(SubGroup*) * 8);
     m_SubGroups[0] = new SubGroup(this, 0);
 
-    memset(m_instanceIds, 0, sizeof(uint32) * MAX_NUM_MAPS * NUM_INSTANCE_MODES);
+    memset(m_instanceIds, 0, sizeof(uint32) * MAX_NUM_MAPS * InstanceDifficulty::MAX_DIFFICULTY);
 
     m_Leader = NULL;
     m_Looter = NULL;
@@ -899,7 +899,7 @@ void Group::SaveToDB()
     // instanceids (52/52)
     for (uint32 i = 0; i < MAX_NUM_MAPS; i++)
     {
-        for (uint32 j = 0; j < NUM_INSTANCE_MODES; j++)
+        for (uint32 j = 0; j < InstanceDifficulty::MAX_DIFFICULTY; j++)
         {
             if (m_instanceIds[i][j] > 0)
             {
