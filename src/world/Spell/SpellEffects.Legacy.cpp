@@ -3790,18 +3790,9 @@ void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
 
     if (getSpellInfo()->getId() == 483 || getSpellInfo()->getId() == 55884)          // "Learning"
     {
-        if (!i_caster || !p_caster) return;
+        if (!p_caster) return;
 
-        uint32 spellid = 0;
-        for (uint8 j = 0; j < 5; ++j)
-        {
-            if (i_caster->getItemProperties()->Spells[j].Trigger == LEARNING && i_caster->getItemProperties()->Spells[j].Id != 0)
-            {
-                spellid = i_caster->getItemProperties()->Spells[j].Id;
-                break;
-            }
-        }
-
+        uint32_t spellid = damage;
         if (!spellid || !sSpellMgr.getSpellInfo(spellid)) return;
 
         // learn me!

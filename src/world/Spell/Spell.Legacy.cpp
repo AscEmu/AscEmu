@@ -2118,61 +2118,6 @@ bool Spell::hasAttributeExG(SpellAttributesExG attribute)
     return (getSpellInfo()->getAttributesExG() & attribute) != 0;
 }
 
-void Spell::RemoveItems()
-{
-    // Item Charges & Used Item Removal
-    if (i_caster)
-    {
-        // Stackable Item -> remove 1 from stack
-        if (i_caster->getStackCount() > 1)
-        {
-            i_caster->modStackCount(-1);
-            i_caster->m_isDirty = true;
-            i_caster = nullptr;
-        }
-        else
-        {
-            for (uint8_t x = 0; x < 5; x++)
-            {
-                int32 charges = i_caster->getSpellCharges(x);
-
-                if (charges == 0)
-                    continue;
-
-                bool Removable = false;
-
-                // Items with negative charges are items that disappear when they reach 0 charge.
-                if (charges < 0)
-                    Removable = true;
-
-                i_caster->m_isDirty = true;
-
-                if (Removable)
-                {
-
-                    // If we have only 1 charge left, it's pointless to decrease the charge, we will have to remove the item anyways, so who cares ^^
-                    if (charges == -1)
-                    {
-                        i_caster->getOwner()->getItemInterface()->SafeFullRemoveItemByGuid(i_caster->getGuid());
-                    }
-                    else
-                    {
-                        i_caster->modSpellCharges(x, 1);
-                    }
-
-                }
-                else
-                {
-                    i_caster->modSpellCharges(x, -1);
-                }
-
-                i_caster = nullptr;
-                break;
-            }
-        }
-    }
-}
-
 bool Spell::HasTarget(const uint64& guid, std::vector<uint64_t>* tmpMap)
 {
     for (std::vector<uint64_t>::iterator itr = tmpMap->begin(); itr != tmpMap->end(); ++itr)
