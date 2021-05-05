@@ -749,6 +749,10 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
     auto iter = cell->Begin();
     while (iter != cell->End())
     {
+        // Prevent undefined behaviour (related to transports) -Appled
+        if (cell->_objects.empty())
+            break;
+
         Object* curObj = *iter;
         ++iter;
 
