@@ -3790,18 +3790,9 @@ void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
 
     if (getSpellInfo()->getId() == 483 || getSpellInfo()->getId() == 55884)          // "Learning"
     {
-        if (!i_caster || !p_caster) return;
+        if (!p_caster) return;
 
-        uint32 spellid = 0;
-        for (uint8 j = 0; j < 5; ++j)
-        {
-            if (i_caster->getItemProperties()->Spells[j].Trigger == LEARNING && i_caster->getItemProperties()->Spells[j].Id != 0)
-            {
-                spellid = i_caster->getItemProperties()->Spells[j].Id;
-                break;
-            }
-        }
-
+        uint32_t spellid = damage;
         if (!spellid || !sSpellMgr.getSpellInfo(spellid)) return;
 
         // learn me!
@@ -4835,19 +4826,23 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
     if (!p_caster)
         return;
 
+    if (m_glyphslot >= GLYPHS_COUNT)
+        return;
+
+    const auto glyphSlot = static_cast<uint16_t>(m_glyphslot);
     uint32 glyph_new = m_spellInfo->getEffectMiscValue(effectIndex);
     auto glyph_prop_new = sGlyphPropertiesStore.LookupEntry(glyph_new);
     if (!glyph_prop_new)
         return;
 
     // check if glyph is locked (obviously)
-    if (!(p_caster->getGlyphsEnabled() & (1 << m_glyphslot)))
+    if (!(p_caster->getGlyphsEnabled() & (1 << glyphSlot)))
     {
         sendCastResult(SPELL_FAILED_GLYPH_SOCKET_LOCKED);
         return;
     }
 
-    uint32 glyph_old = p_caster->getGlyph(static_cast<uint16_t>(m_glyphslot));
+    uint32 glyph_old = p_caster->getGlyph(glyphSlot);
     if (glyph_old)
     {
         if (glyph_old == glyph_new)
@@ -4862,7 +4857,7 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
         }
     }
 
-    auto glyph_slot = sGlyphSlotStore.LookupEntry(p_caster->getGlyphSlot(m_glyphslot));
+    auto glyph_slot = sGlyphSlotStore.LookupEntry(p_caster->getGlyphSlot(glyphSlot));
     if (glyph_slot)
     {
         if (glyph_slot->Type != glyph_prop_new->Type)
@@ -4870,9 +4865,9 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
             sendCastResult(SPELL_FAILED_INVALID_GLYPH);
             return;
         }
-        p_caster->setGlyph(static_cast<uint8_t>(m_glyphslot), glyph_new);
+        p_caster->setGlyph(glyphSlot, glyph_new);
         p_caster->castSpell(p_caster, glyph_prop_new->SpellID, true);
-        p_caster->m_specs[p_caster->m_talentActiveSpec].glyphs[m_glyphslot] = static_cast<uint16>(glyph_new);
+        p_caster->m_specs[p_caster->m_talentActiveSpec].glyphs[glyphSlot] = static_cast<uint16>(glyph_new);
         p_caster->smsg_TalentsInfo(false);
     }
 #endif

@@ -30,6 +30,7 @@
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
+#include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
 #include "Map/WorldCreatorDefines.hpp"
@@ -289,7 +290,6 @@ PlayerInfo* ObjectMgr::GetPlayerInfo(uint32 guid)
     std::lock_guard<std::mutex> guard(playernamelock);
 
     std::unordered_map<uint32, PlayerInfo*>::iterator i = m_playersinfo.find(guid);
-    PlayerInfo* rv = nullptr;
     if (i != m_playersinfo.end())
         return i->second;
 
@@ -397,7 +397,7 @@ void ObjectMgr::LoadPlayersInfo()
                     uint32 instanceId = result2->Fetch()[0].GetUInt32();
                     uint32 mode = result2->Fetch()[1].GetUInt32();
                     uint32 mapId = result2->Fetch()[2].GetUInt32();
-                    if (mode >= NUM_INSTANCE_MODES || mapId >= MAX_NUM_MAPS)
+                    if (mode >= InstanceDifficulty::MAX_DIFFICULTY || mapId >= MAX_NUM_MAPS)
                     {
                         continue;
                     }
@@ -3015,10 +3015,11 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                     if (questLog->getQuestProperties()->required_mob_or_go[itr->second.data_5] >= 0)
                     {
                         uint32 required_mob = static_cast<uint32>(questLog->getQuestProperties()->required_mob_or_go[itr->second.data_5]);
-                        if (questLog->getMobCountByIndex(itr->second.data_5) < required_mob)
+                        const auto index = static_cast<uint8_t>(itr->second.data_5);
+                        if (questLog->getMobCountByIndex(index) < required_mob)
                         {
-                            questLog->setMobCountForIndex(itr->second.data_5, questLog->getMobCountByIndex(itr->second.data_5) + 1);
-                            questLog->SendUpdateAddKill(itr->second.data_5);
+                            questLog->setMobCountForIndex(index, questLog->getMobCountByIndex(index) + 1);
+                            questLog->SendUpdateAddKill(index);
                             questLog->updatePlayerFields();
                         }
                     }

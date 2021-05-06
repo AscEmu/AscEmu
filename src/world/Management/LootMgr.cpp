@@ -647,11 +647,11 @@ void LootRoll::Finalize()
     // this we will have to finalize with groups types.. for now
     // we'll just assume need before greed. person with highest roll
     // in need gets the item.
-    uint32 highest = 0;
+    uint8_t highest = 0;
     int8 hightype = -1;
     uint64 player = 0;
 
-    for (std::map<uint32, uint32>::iterator itr = m_NeedRolls.begin(); itr != m_NeedRolls.end(); ++itr)
+    for (std::map<uint32, uint8_t>::iterator itr = m_NeedRolls.begin(); itr != m_NeedRolls.end(); ++itr)
     {
         if (itr->second > highest)
         {
@@ -662,7 +662,7 @@ void LootRoll::Finalize()
     }
     if (!highest)
     {
-        for (std::map<uint32, uint32>::iterator itr = m_GreedRolls.begin(); itr != m_GreedRolls.end(); ++itr)
+        for (std::map<uint32, uint8_t>::iterator itr = m_GreedRolls.begin(); itr != m_GreedRolls.end(); ++itr)
         {
             if (itr->second > highest)
             {
@@ -817,7 +817,7 @@ void LootRoll::PlayerRolled(Player* player, uint8 choice)
     if (m_NeedRolls.find(player->getGuidLow()) != m_NeedRolls.end() || m_GreedRolls.find(player->getGuidLow()) != m_GreedRolls.end())
         return; // don't allow cheaters
 
-    uint8_t roll = Util::getRandomUInt(99) + 1;
+    uint8_t roll = static_cast<uint8_t>(Util::getRandomUInt(99) + 1);
     uint8_t rollType = choice;
 
     if (choice == NEED)

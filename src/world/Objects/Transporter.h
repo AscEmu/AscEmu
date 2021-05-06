@@ -57,7 +57,7 @@ public:
     ~Transporter();
 
     // Creates The Transporter
-    bool Create(uint32 entry, uint32 mapid, float x, float y, float z, float ang, uint32 animprogress);
+    bool Create(uint32_t entry, uint32_t mapid, float x, float y, float z, float ang, uint8_t animprogress);
 
     // Update Transporter Position and Transport Passengers
     void Update(unsigned long /*time_passed*/);

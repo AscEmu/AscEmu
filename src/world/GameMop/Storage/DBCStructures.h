@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Common.hpp"
+#include "Map/InstanceDefines.hpp"
 #include "Spell/SpellDefines.hpp"
 
 struct WMOAreaTableTripple
@@ -162,10 +163,6 @@ enum MapTypes
     MAP_BATTLEGROUND    = 3, // pvp
     MAP_ARENA           = 4  // arena
 };
-
-#define MAX_DUNGEON_DIFFICULTY     2
-#define MAX_RAID_DIFFICULTY        4
-#define MAX_DIFFICULTY             4
 
 namespace DBC::Structures
 {
@@ -1513,7 +1510,7 @@ namespace DBC::Structures
     struct SpellDifficultyEntry
     {
         uint32_t ID;                                                // 0
-        int32_t SpellId[MAX_DIFFICULTY];                            // 1-4
+        int32_t SpellId[InstanceDifficulty::MAX_DIFFICULTY];        // 1-4
     };
 
     // SpellDuration.dbc

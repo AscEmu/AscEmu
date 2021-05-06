@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "ManagedPacket.h"
+#include "Map/InstanceDefines.hpp"
 
 namespace AscEmu::Packets
 {
@@ -23,7 +24,7 @@ namespace AscEmu::Packets
         SmsgInstanceDifficulty(uint32_t difficulty) :
             ManagedPacket(SMSG_INSTANCE_DIFFICULTY, 0),
             difficulty(difficulty),
-            isHeroic(difficulty == MODE_HEROIC_10MEN || difficulty == MODE_HEROIC_25MEN)
+            isHeroic(difficulty == InstanceDifficulty::RAID_10MAN_HEROIC || difficulty == InstanceDifficulty::RAID_25MAN_HEROIC)
         {
         }
 

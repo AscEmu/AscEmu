@@ -864,7 +864,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        if (player->GetMapMgr()->iInstanceMode == MODE_HEROIC)
+        if (player->GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC)
             player->GetMapMgr()->CreateAndSpawnCreature(23035, -87.3546f, 288.006f, 26.4832f, 0);
     }
 };

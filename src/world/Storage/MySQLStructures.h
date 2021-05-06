@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Map/InstanceDefines.hpp"
 #include "Server/Definitions.h"
 #include <cstdint>
 #include <string>
@@ -652,7 +653,7 @@ namespace MySQLStructure
 
         bool hasDifficulty(uint32_t difficulty) const
         {
-            if (difficulty > uint32_t(TOTAL_RAID_MODES))
+            if (difficulty > uint32_t(InstanceDifficulty::MAX_DIFFICULTY))
             {
                 return false;
             }

@@ -635,7 +635,7 @@ public:
             }
 
             // difficulty spawns
-            if (player->getDungeonDifficulty() == MODE_NORMAL)
+            if (player->getDungeonDifficulty() == InstanceDifficulty::DUNGEON_NORMAL)
             {
                 switch (player->getTeam())
                 {

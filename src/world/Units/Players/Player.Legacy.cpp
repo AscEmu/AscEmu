@@ -1521,7 +1521,7 @@ void Player::smsg_InitialSpells()
 
         LogDebugFlag(LF_OPCODE, "InitialSpells sending category cooldown for cat %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
 
-        smsgInitialSpells.addSpellCooldown(itr2->first, itr2->second.ItemId, itr2->first, 0, itr2->second.ExpireTime - mstime);
+        smsgInitialSpells.addSpellCooldown(itr2->first, itr2->second.ItemId, static_cast<uint16_t>(itr2->first), 0, itr2->second.ExpireTime - mstime);
     }
 
     GetSession()->SendPacket(smsgInitialSpells.serialise().get());
@@ -3331,7 +3331,7 @@ void Player::SetPersistentInstanceId(Instance* pInstance)
 
 void Player::SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 instanceId)
 {
-    if (mapId >= MAX_NUM_MAPS || difficulty >= NUM_INSTANCE_MODES || m_playerInfo == nullptr)
+    if (mapId >= MAX_NUM_MAPS || difficulty >= InstanceDifficulty::MAX_DIFFICULTY || m_playerInfo == nullptr)
         return;
 
     m_playerInfo->savedInstanceIdsLock.Acquire();
@@ -5658,7 +5658,7 @@ void Player::UpdateNearbyGameObjects()
                 {
                     if ((qle = getQuestLogByQuestId(GOitr->first->id)) != nullptr)
                     {
-                        for (uint32 i = 0; i < qle->getQuestProperties()->count_required_mob; ++i)
+                        for (uint8_t i = 0; i < qle->getQuestProperties()->count_required_mob; ++i)
                         {
                             if (qle->getQuestProperties()->required_mob_or_go[i] == static_cast<int32>(go->getEntry()) &&
                                 qle->getMobCountByIndex(i) < qle->getQuestProperties()->required_mob_or_go_count[i])
@@ -7540,7 +7540,7 @@ void Player::OnWorldPortAck()
             welcome_msg = std::string(GetSession()->LocalizedWorldSrv(ServerString::SS_INSTANCE_WELCOME)) + " ";
             welcome_msg += std::string(GetSession()->LocalizedMapName(pMapinfo->mapid));
             welcome_msg += ". ";
-            if (pMapinfo->type != INSTANCE_NONRAID && !(pMapinfo->type == INSTANCE_MULTIMODE && m_dungeonDifficulty >= MODE_HEROIC) && m_mapMgr->pInstance)
+            if (pMapinfo->type != INSTANCE_NONRAID && !(pMapinfo->type == INSTANCE_MULTIMODE && m_dungeonDifficulty >= InstanceDifficulty::DUNGEON_HEROIC) && m_mapMgr->pInstance)
             {
                 /*welcome_msg += "This instance is scheduled to reset on ";
                 welcome_msg += asctime(localtime(&m_mapMgr->pInstance->m_expiration));*/
@@ -11461,7 +11461,7 @@ void Player::ModStanding(uint32 Faction, int32 Value)
     //
     // If we are in a lvl80 instance or heroic, or raid and we have a championing tabard on,
     // we get reputation after the faction determined by the worn tabard.
-    if ((GetMapMgr()->GetMapInfo()->minlevel == 80 || (GetMapMgr()->iInstanceMode == MODE_HEROIC && GetMapMgr()->GetMapInfo()->minlevel_heroic == 80)) && ChampioningFactionID != 0)
+    if ((GetMapMgr()->GetMapInfo()->minlevel == 80 || (GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC && GetMapMgr()->GetMapInfo()->minlevel_heroic == 80)) && ChampioningFactionID != 0)
         Faction = ChampioningFactionID;
 
     DBC::Structures::FactionEntry const* f = sFactionStore.LookupEntry(Faction);
@@ -11601,7 +11601,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
                 continue;
 
             /* rep limit? */
-            if (!IS_INSTANCE(GetMapId()) || (IS_INSTANCE(GetMapId()) && this->m_dungeonDifficulty != MODE_HEROIC))
+            if (!IS_INSTANCE(GetMapId()) || (IS_INSTANCE(GetMapId()) && this->m_dungeonDifficulty != InstanceDifficulty::DUNGEON_HEROIC))
             {
                 if ((*itr).replimit)
                 {
