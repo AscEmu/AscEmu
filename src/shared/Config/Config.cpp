@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Common.hpp"
 #include "Config.h"
-#include "Log.hpp"
+#include "Logging/Logger.hpp"
 #include "Util.hpp"
 
 
@@ -123,7 +123,7 @@ bool ConfigFile::parseConfigValues(std::string fileBufferString)
                     // append the setting to the config section
                     if (currentSection == "" || currentSettingVariable == "")
                     {
-                        LogError("Quote without variable.");
+                        LOGGER.failure("Quote without variable.");
                         return false;
                     }
 
@@ -237,7 +237,7 @@ bool ConfigFile::parseConfigValues(std::string fileBufferString)
                     }
                     else
                     {
-                        LogError("Found the beginning of a section < but the section has no name!");
+                        LOGGER.failure("Found the beginning of a section < but the section has no name!");
                         return false;
                     }
 
@@ -250,26 +250,26 @@ bool ConfigFile::parseConfigValues(std::string fileBufferString)
     }
     catch (...)
     {
-        LogError("Exception in config parsing!");
+        LOGGER.failure("Exception in config parsing!");
         return false;
     }
 
     // check errors
     if (isInSectionBlock)
     {
-        LogError("Unterminated section! Add > at the end of a section.");
+        LOGGER.failure("Unterminated section! Add > at the end of a section.");
         return false;
     }
 
     if (isInMultilineComment)
     {
-        LogError("Unterminated multiline comment found! Add */ at the end of your multiline comment.");
+        LOGGER.failure("Unterminated multiline comment found! Add */ at the end of your multiline comment.");
         return false;
     }
 
     if (isInMultilineQuote)
     {
-        LogError("Missing closing quote found! Add \" at the end of a definition.");
+        LOGGER.failure("Missing closing quote found! Add \" at the end of a definition.");
         return false;
     }
 
@@ -381,7 +381,7 @@ ConfigFile::ConfigValueSetting* ConfigFile::getSavedSetting(std::string sectionN
             return &(it2->second);
     }
 
-    LOG_ERROR("Could not load config value: [%s].[%s]", sectionName.c_str(), confName.c_str());
+    LOGGER.failure("Could not load config value: [%s].[%s]", sectionName.c_str(), confName.c_str());
     return nullptr;
 }
 

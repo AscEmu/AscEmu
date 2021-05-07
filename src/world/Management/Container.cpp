@@ -127,7 +127,7 @@ int8 Container::FindFreeSlot()
             return i;
         }
     }
-    LOG_DEBUG("Container::FindFreeSlot: no slot available");
+    LOGGER.debug("Container::FindFreeSlot: no slot available");
     return ITEM_NO_SLOT_AVAILABLE;
 }
 
@@ -152,7 +152,7 @@ bool Container::AddItem(int16 slot, Item* item)
     //ARCEMU_ASSERT(  m_Slot[slot] == NULL);
     if (m_Slot[slot] != NULL)
     {
-        LogError("Bad container item %u slot %d", item->getGuidLow(), slot);
+        LOGGER.failure("Bad container item %u slot %d", item->getGuidLow(), slot);
         return false;
     }
 

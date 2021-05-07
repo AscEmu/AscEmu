@@ -231,11 +231,11 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
         // This will only happen if someone deleted/renamed the conf after the server started...
         if (Config.MainConfig.openAndLoadConfigFile(CONFDIR "/world.conf"))
         {
-            LogDetail("Config : " CONFDIR "/world.conf reloaded");
+            LOGGER.info("Config : " CONFDIR "/world.conf reloaded");
         }
         else
         {
-            LogError("Config : error occurred loading " CONFDIR "/world.conf");
+            LOGGER.failure("Config : error occurred loading " CONFDIR "/world.conf");
             return;
         }
     }
@@ -309,13 +309,13 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "MapUnloadTime", &server.mapUnloadTime));
     if (server.mapUnloadTime == 0)
     {
-        LOG_ERROR("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
+        LOGGER.failure("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
         server.mapUnloadTime = MAP_CELL_DEFAULT_UNLOAD_TIME;
     }
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "MapCellNumber", &server.mapCellNumber));
     if (server.mapCellNumber == 0)
     {
-        LOG_ERROR("MapCellNumber is set to 0. Congrats, no MapCells will be loaded. Overriding it to default value of 1");
+        LOGGER.failure("MapCellNumber is set to 0. Congrats, no MapCells will be loaded. Overriding it to default value of 1");
         server.mapCellNumber = 1;
     }
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "KickAFKPlayers", &server.secondsBeforeKickAFKPlayers));

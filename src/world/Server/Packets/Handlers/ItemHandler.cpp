@@ -277,7 +277,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
     {
-        LogError("WORLD: Unknown spell id %i in ::handleUseItemOpcode() from item id %i", spellId, itemProto->ItemId);
+        LOGGER.failure("WORLD: Unknown spell id %i in ::handleUseItemOpcode() from item id %i", spellId, itemProto->ItemId);
         return;
     }
 
@@ -360,7 +360,7 @@ void WorldSession::handleSwapItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_SWAP_ITEM: destInventorySlot %i destSlot %i srcInventorySlot %i srcInventorySlot %i",
+    LOGGER.debug("Received CMSG_SWAP_ITEM: destInventorySlot %i destSlot %i srcInventorySlot %i srcInventorySlot %i",
         srlPacket.destInventorySlot, srlPacket.destSlot, srlPacket.srcInventorySlot, srlPacket.srcSlot);
 
     _player->getItemInterface()->SwapItems(srlPacket.destInventorySlot,
@@ -494,7 +494,7 @@ void WorldSession::handleItemRefundInfoOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_ITEMREFUNDINFO.");
+    LOGGER.debug("Received CMSG_ITEMREFUNDINFO.");
 
     this->sendRefundInfo(srlPacket.itemGuid);
 }
@@ -506,7 +506,7 @@ void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_ITEMREFUNDREQUEST.");
+    LOGGER.debug("Received CMSG_ITEMREFUNDREQUEST.");
 
     uint32_t error = 1;
 
@@ -572,7 +572,7 @@ void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
     SendPacket(&packet);
 
-    LogDebugFlag(LF_OPCODE, "Sent SMSG_ITEMREFUNDREQUEST.");
+    LOGGER.debug("Sent SMSG_ITEMREFUNDREQUEST.");
 }
 #endif
 
@@ -707,7 +707,7 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
             const auto addItemResult = _player->getItemInterface()->SafeAddItem(inventoryItem2, DstInvSlot, DstSlot);
             if (addItemResult == ADD_ITEM_RESULT_ERROR)
             {
-                LOG_ERROR("Error while adding item to dstslot");
+                LOGGER.failure("Error while adding item to dstslot");
                 if (inventoryItem2 != nullptr)
                 {
                     inventoryItem2->DeleteFromDB();
@@ -729,7 +729,7 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_SWAP_INV_ITEM src slot: %u dst slot: %u",
+    LOGGER.debug("Received CMSG_SWAP_INV_ITEM src slot: %u dst slot: %u",
         static_cast<uint32_t>(srlPacket.srcSlot), static_cast<uint32_t>(srlPacket.destSlot));
 
     // player trying to add item to the same slot
@@ -881,7 +881,7 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_DESTROYITEM SrcInv Slot: %i Src slot: %i", srlPacket.srcInventorySlot, srlPacket.srcSlot);
+    LOGGER.debug("Received CMSG_DESTROYITEM SrcInv Slot: %i Src slot: %i", srlPacket.srcInventorySlot, srlPacket.srcSlot);
 
     if (Item* srcItem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcInventorySlot, srlPacket.srcSlot))
     {
@@ -964,7 +964,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AUTOEQUIP_ITEM Inventory slot: %i Source Slot: %i", srlPacket.srcInventorySlot, srlPacket.srcSlot);
+    LOGGER.debug("Received CMSG_AUTOEQUIP_ITEM Inventory slot: %i Source Slot: %i", srlPacket.srcInventorySlot, srlPacket.srcSlot);
 
     Item* eitem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcInventorySlot, srlPacket.srcSlot);
 
@@ -1107,7 +1107,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
             result = _player->getItemInterface()->SafeAddItem(oitem, srlPacket.srcInventorySlot, srlPacket.srcSlot);
             if (!result)
             {
-                LOG_ERROR("Error while adding item to SrcSlot");
+                LOGGER.failure("Error while adding item to SrcSlot");
                 oitem->DeleteMe();
                 oitem = nullptr;
             }
@@ -1117,7 +1117,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
             result = _player->getItemInterface()->SafeAddItem(eitem, INVENTORY_SLOT_NOT_SET, Slot);
             if (!result)
             {
-                LOG_ERROR("Error while adding item to Slot");
+                LOGGER.failure("Error while adding item to Slot");
                 eitem->DeleteMe();
                 eitem = nullptr;
                 return;
@@ -1153,7 +1153,7 @@ void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AUTOEQUIP_ITEM_SLOT");
+    LOGGER.debug("Received CMSG_AUTOEQUIP_ITEM_SLOT");
 
     int8_t srcSlot = static_cast<int8_t>(_player->getItemInterface()->GetInventorySlotByGuid(srlPacket.itemGuid));
     Item* item = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuid);
@@ -1164,7 +1164,7 @@ void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
     int8_t slotType = _player->getItemInterface()->GetItemSlotByType(item->getItemProperties()->InventoryType);
     bool hasDualWield2H = false;
 
-    LogDebugFlag(LF_OPCODE, "CMSG_AUTOEQUIP_ITEM_SLOT ItemGUID: %u, SrcSlot: %i, DestSlot: %i, SlotType: %i",
+    LOGGER.debug("CMSG_AUTOEQUIP_ITEM_SLOT ItemGUID: %u, SrcSlot: %i, DestSlot: %i, SlotType: %i",
         srlPacket.itemGuid, srcSlot, srlPacket.destSlot, slotType);
 
     if (srcSlot == srlPacket.destSlot)
@@ -1242,7 +1242,7 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
     ItemProperties const* itemProto = sMySQLStore.getItemProperties(srlPacket.item_id);
     if (!itemProto)
     {
-        LOG_ERROR("Unknown item id %u", srlPacket.item_id);
+        LOGGER.failure("Unknown item id %u", srlPacket.item_id);
         return;
     }
 
@@ -1377,7 +1377,7 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
     auto itemProperties = sMySQLStore.getItemProperties(srlPacket.item_id);
     if (!itemProperties)
     {
-        LOG_ERROR("Unknown item id %u", srlPacket.item_id);
+        LOGGER.failure("Unknown item id %u", srlPacket.item_id);
         return;
     }
 
@@ -1504,7 +1504,7 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_BUYBACK_ITEM");
+    LOGGER.debug("Received CMSG_BUYBACK_ITEM");
 
     srlPacket.buybackSlot -= 74;
 
@@ -1550,7 +1550,7 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
             AddItemResult result = _player->getItemInterface()->AddItemToFreeSlot(it);
             if (!result)
             {
-                LOG_ERROR("Error while adding item to free slot");
+                LOGGER.failure("Error while adding item to free slot");
                 it->DeleteMe();
             }
         }
@@ -1589,7 +1589,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_SELL_ITEM");
+    LOGGER.debug("Received CMSG_SELL_ITEM");
 
     _player->interruptSpell();
 
@@ -1681,7 +1681,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_BUY_ITEM_IN_SLOT");
+    LOGGER.debug("Received CMSG_BUY_ITEM_IN_SLOT");
 
     int8_t slot = srlPacket.slot;
     uint8_t amount = srlPacket.amount;
@@ -1842,7 +1842,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
 
     SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "Sent SMSG_BUY_ITEM");
+    LOGGER.debug("Sent SMSG_BUY_ITEM");
 
     _player->getItemInterface()->BuyItem(it, amount, unit);
     if (ci.max_amount)
@@ -1860,7 +1860,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_BUY_ITEM");
+    LOGGER.debug("Received CMSG_BUY_ITEM");
 
     uint8_t error = 0;
     SlotResult slotResult;
@@ -2047,7 +2047,7 @@ void WorldSession::sendInventoryList(Creature* unit)
         sChatHandler.BlueSystemMessage(_player->GetSession(),
             "No sell template found. Report this to database's devs: %d (%s)",
             unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
-        LOG_ERROR("'%s' discovered that a creature with entry %u (%s) has no sell template.",
+        LOGGER.failure("'%s' discovered that a creature with entry %u (%s) has no sell template.",
             _player->getName().c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
         GossipMenu::senGossipComplete(_player);
         return;
@@ -2178,7 +2178,7 @@ void WorldSession::sendInventoryList(Creature* unit)
 
     SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "Sent SMSG_LIST_INVENTORY");
+    LOGGER.debug("Sent SMSG_LIST_INVENTORY");
 }
 
 void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
@@ -2187,7 +2187,7 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AUTO_STORE_BAG_ITEM");
+    LOGGER.debug("Received CMSG_AUTO_STORE_BAG_ITEM");
 
     Item* srcitem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcContainerSlot, srlPacket.srcSlot);
 
@@ -2224,7 +2224,7 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
                     result = _player->getItemInterface()->SafeAddItem(srcitem, INVENTORY_SLOT_NOT_SET, NewSlot);
                     if (!result)
                     {
-                        LOG_ERROR("Error while adding item to newslot");
+                        LOGGER.failure("Error while adding item to newslot");
                         srcitem->DeleteMe();
                         return;
                     }
@@ -2265,7 +2265,7 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
                             result = _player->getItemInterface()->SafeAddItem(srcitem, srlPacket.dstContainerSlot, NewSlot);
                             if (!result)
                             {
-                                LOG_ERROR("Error while adding item to newslot");
+                                LOGGER.failure("Error while adding item to newslot");
                                 srcitem->DeleteMe();
                             }
                         }
@@ -2294,7 +2294,7 @@ void WorldSession::handleReadItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_READ_ITEM %d", srlPacket.srcSlot);
+    LOGGER.debug("Received CMSG_READ_ITEM %d", srlPacket.srcSlot);
 
     Item* item = _player->getItemInterface()->GetInventoryItem(srlPacket.srcContainerSlot, srlPacket.srcSlot);
     if (item)
@@ -2377,7 +2377,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
             }
         }
     }
-    LogDebugFlag(LF_OPCODE, "Received CMSG_REPAIR_ITEM %d", srlPacket.itemGuid);
+    LOGGER.debug("Received CMSG_REPAIR_ITEM %d", srlPacket.itemGuid);
 }
 
 void WorldSession::handleAutoBankItemOpcode(WorldPacket& recvPacket)
@@ -2386,7 +2386,7 @@ void WorldSession::handleAutoBankItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AUTO_BANK_ITEM Inventory slot: %u Source Slot: %u",
+    LOGGER.debug("Received CMSG_AUTO_BANK_ITEM Inventory slot: %u Source Slot: %u",
         static_cast<uint32_t>(srlPacket.srcInventorySlot), static_cast<uint32_t>(srlPacket.srcSlot));
 
     Item* eitem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcInventorySlot, srlPacket.srcSlot);
@@ -2410,7 +2410,7 @@ void WorldSession::handleAutoBankItemOpcode(WorldPacket& recvPacket)
 
         if (!_player->getItemInterface()->SafeAddItem(eitem, slotresult.ContainerSlot, slotresult.Slot))
         {
-            LOG_ERROR("Error while adding item to bank bag!");
+            LOGGER.failure("Error while adding item to bank bag!");
             if (!_player->getItemInterface()->SafeAddItem(eitem, srlPacket.srcInventorySlot, srlPacket.srcSlot))
                 eitem->DeleteMe();
         }
@@ -2423,7 +2423,7 @@ void WorldSession::handleAutoStoreBankItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AUTOSTORE_BANK_ITEM Inventory slot: %u Source Slot: %u",
+    LOGGER.debug("Received CMSG_AUTOSTORE_BANK_ITEM Inventory slot: %u Source Slot: %u",
         static_cast<uint32_t>(srlPacket.srcInventorySlot), static_cast<uint32_t>(srlPacket.srcSlot));
 
     Item* eitem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcInventorySlot, srlPacket.srcSlot);
@@ -2447,7 +2447,7 @@ void WorldSession::handleAutoStoreBankItemOpcode(WorldPacket& recvPacket)
 
         if (!_player->getItemInterface()->AddItemToFreeSlot(eitem))
         {
-            LOG_ERROR("Error while adding item from one of the bank bags to the player bag!");
+            LOGGER.failure("Error while adding item from one of the bank bags to the player bag!");
             if (!_player->getItemInterface()->SafeAddItem(eitem, srlPacket.srcInventorySlot, srlPacket.srcSlot))
                 eitem->DeleteMe();
         }
@@ -2769,7 +2769,7 @@ void WorldSession::handleEquipmentSetUse(WorldPacket& data)
 {
     CHECK_INWORLD_RETURN
     
-    LogDebugFlag(LF_OPCODE, "Received CMSG_EQUIPMENT_SET_USE");
+    LOGGER.debug("Received CMSG_EQUIPMENT_SET_USE");
 
     WoWGuid guid;
     int8_t SrcBagID;
@@ -2812,7 +2812,7 @@ void WorldSession::handleEquipmentSetUse(WorldPacket& data)
                     const auto addItemResult = _player->getItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
                     if (!addItemResult)
                     {
-                        LOG_ERROR("handleEquipmentSetUse", "Error while adding item %u to player %s twice", item->getEntry(), _player->getName().c_str());
+                        LOGGER.failure("handleEquipmentSetUse", "Error while adding item %u to player %s twice", item->getEntry(), _player->getName().c_str());
                         result = 0;
                     }
                     else
@@ -2841,7 +2841,7 @@ void WorldSession::handleEquipmentSetSave(WorldPacket& data)
 {
     CHECK_INWORLD_RETURN
     
-    LogDebugFlag(LF_OPCODE, "Received CMSG_EQUIPMENT_SET_SAVE");
+    LOGGER.debug("Received CMSG_EQUIPMENT_SET_SAVE");
 
     WoWGuid guid;
 
@@ -2869,12 +2869,12 @@ void WorldSession::handleEquipmentSetSave(WorldPacket& data)
 
     if (_player->getItemInterface()->m_EquipmentSets.AddEquipmentSet(equipmentSet->SetGUID, equipmentSet))
     {
-        LogDebugFlag(LF_OPCODE, "Player %u successfully stored equipment set %u at slot %u ", _player->getGuidLow(), equipmentSet->SetGUID, equipmentSet->SetID);
+        LOGGER.debug("Player %u successfully stored equipment set %u at slot %u ", _player->getGuidLow(), equipmentSet->SetGUID, equipmentSet->SetID);
         _player->SendEquipmentSetSaved(equipmentSet->SetID, equipmentSet->SetGUID);
     }
     else
     {
-        LogDebugFlag(LF_OPCODE, "Player %u couldn't store equipment set %u at slot %u ", _player->getGuidLow(), equipmentSet->SetGUID, equipmentSet->SetID);
+        LOGGER.debug("Player %u couldn't store equipment set %u at slot %u ", _player->getGuidLow(), equipmentSet->SetGUID, equipmentSet->SetID);
     }
 }
 
@@ -2882,16 +2882,16 @@ void WorldSession::handleEquipmentSetDelete(WorldPacket& data)
 {
     CHECK_INWORLD_RETURN
     
-    LogDebugFlag(LF_OPCODE, "Received CMSG_EQUIPMENT_SET_DELETE");
+    LOGGER.debug("Received CMSG_EQUIPMENT_SET_DELETE");
 
     WoWGuid guid;
 
     data >> guid;
 
     if (_player->getItemInterface()->m_EquipmentSets.DeleteEquipmentSet(guid.getGuidLowPart()))
-        LOG_DEBUG("Equipmentset with GUID %u was successfully deleted.", guid.getGuidLowPart());
+        LOGGER.debug("Equipmentset with GUID %u was successfully deleted.", guid.getGuidLowPart());
     else
-        LOG_DEBUG("Equipmentset with GUID %u couldn't be deleted.", guid.getGuidLowPart());
+        LOGGER.debug("Equipmentset with GUID %u couldn't be deleted.", guid.getGuidLowPart());
 
 }
 #endif

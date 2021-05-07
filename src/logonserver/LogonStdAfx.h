@@ -30,6 +30,7 @@
 #include <Network/Network.h>
 
 #include "../shared/Log.hpp"
+#include "../shared/Logging/Logger.hpp" 
 #include "../shared/Util.hpp"
 #include "../shared/ByteBuffer.h"
 #include "../shared/Config/Config.h"

@@ -42,7 +42,7 @@ LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 724288, 262
     authenticated = 0;
     pingtime = 0;
 
-    LOG_DEBUG("Create new LogonCommClientSocket %u", m_fd);
+    LOGGER.debug("Create new LogonCommClientSocket %u", m_fd);
 }
 
 void LogonCommClientSocket::OnRead()
@@ -127,7 +127,7 @@ void LogonCommClientSocket::HandlePacket(WorldPacket& recvData)
 
     if (recvData.GetOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.GetOpcode()] == 0)
     {
-        LOG_ERROR("Got unknown packet from logoncomm: %u", recvData.GetOpcode());
+        LOGGER.failure("Got unknown packet from logoncomm: %u", recvData.GetOpcode());
         return;
     }
 
@@ -146,17 +146,17 @@ void LogonCommClientSocket::HandleRegister(WorldPacket& recvData)
 
     if (error == 1)
     {
-        LOG_ERROR("Realm `%s` with id %u is not known by logonserver - failed!", realmname.c_str(), realmlid);
+        LOGGER.failure("Realm `%s` with id %u is not known by logonserver - failed!", realmname.c_str(), realmlid);
         return;
     }
 
     if (error == 2)
     {
-        LOG_ERROR("Realm `%s` already registered - failed!", realmname.c_str());
+        LOGGER.failure("Realm `%s` already registered - failed!", realmname.c_str());
         return;
     }
 
-    LogDefault("Realm `%s` registered as realm %u.", realmname.c_str(), realmlid);
+    LOGGER.info("Realm `%s` registered as realm %u.", realmname.c_str(), realmlid);
 
     sLogonCommHandler.addRealmToRealmlistResult(_id, realmlid);
     realm_ids.insert(realmlid);
@@ -243,7 +243,7 @@ void LogonCommClientSocket::OnDisconnect()
 {
     if (_id != 0)
     {
-        LOG_DETAIL("Calling ConnectionDropped() due to OnDisconnect().");
+        LOGGER.info("Calling ConnectionDropped() due to OnDisconnect().");
         sLogonCommHandler.dropLogonServerConnection(_id);
     }
 }
@@ -359,7 +359,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
 
         uncompressed.clear();
     }
-    LogNotice("LogonCommClient : Build character mapping in %u ms. (%u)", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)), static_cast<uint32_t>(mapping_to_send.size()));
+    LOGGER.info("LogonCommClient : Build character mapping in %u ms. (%u)", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)), static_cast<uint32_t>(mapping_to_send.size()));
 }
 
 void LogonCommClientSocket::CompressAndSend(ByteBuffer& uncompressed)
@@ -378,7 +378,7 @@ void LogonCommClientSocket::CompressAndSend(ByteBuffer& uncompressed)
 
     if (deflateInit(&stream, 1) != Z_OK)
     {
-        LOG_ERROR("deflateInit failed.");
+        LOGGER.failure("deflateInit failed.");
         return;
     }
 
@@ -392,21 +392,21 @@ void LogonCommClientSocket::CompressAndSend(ByteBuffer& uncompressed)
     if (deflate(&stream, Z_NO_FLUSH) != Z_OK ||
         stream.avail_in != 0)
     {
-        LOG_ERROR("deflate failed.");
+        LOGGER.failure("deflate failed.");
         return;
     }
 
     // finish the deflate
     if (deflate(&stream, Z_FINISH) != Z_STREAM_END)
     {
-        LOG_ERROR("deflate failed: did not end stream");
+        LOGGER.failure("deflate failed: did not end stream");
         return;
     }
 
     // finish up
     if (deflateEnd(&stream) != Z_OK)
     {
-        LOG_ERROR("deflateEnd failed.");
+        LOGGER.failure("deflateEnd failed.");
         return;
     }
 
@@ -470,7 +470,7 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
             WorldSession* pSession = sWorld.getSessionByAccountName(account_string);
             if (pSession == nullptr)
             {
-                LOG_ERROR("No session found!");
+                LOGGER.failure("No session found!");
                 return;
             }
 
@@ -488,7 +488,7 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
             }
             else
             {
-                LOG_ERROR("HandleModifyDatabaseResult: Unknown logon result in Method_Account_Change_PW");
+                LOGGER.failure("HandleModifyDatabaseResult: Unknown logon result in Method_Account_Change_PW");
             }
 
         }break;
@@ -508,7 +508,7 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
                 WorldSession* pSession = sWorld.getSessionByAccountName(account_string);
                 if (pSession == nullptr)
                 {
-                    LOG_ERROR("No session found!");
+                    LOGGER.failure("No session found!");
                     return;
                 }
 
@@ -522,7 +522,7 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
                 }
                 else
                 {
-                    LOG_ERROR("HandleModifyDatabaseResult: Unknown logon result in Method_Account_Create");
+                    LOGGER.failure("HandleModifyDatabaseResult: Unknown logon result in Method_Account_Create");
                 }
             }
 
@@ -549,7 +549,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
     {
         if (request_name.compare("none") != 0)
         {
-            LOG_ERROR("Receiver %s not found!", request_string);
+            LOGGER.failure("Receiver %s not found!", request_string);
             return;
         }
     }
