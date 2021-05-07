@@ -1261,7 +1261,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
     worldAnnounce << (BanTime ? Util::GetDateStringFromSeconds(BanTime) : "ever") << " Reason: " << ((pReason == NULL) ? "No reason." : pReason);
     sWorld.sendMessageToAll(worldAnnounce.str());
 
-    if (sWorld.settings.logger.enableSqlBanLog && pInfo)
+    if (sWorld.settings.log.enableSqlBanLog && pInfo)
     {
         CharacterDatabase.Execute("INSERT INTO `banned_char_log` VALUES('%s', '%s', %u, %u, '%s')", m_session->GetPlayer()->getName().c_str(), pInfo->name, (uint32)UNIXTIME, (uint32)UNIXTIME + BanTime, (pReason == NULL) ? "No reason." : CharacterDatabase.EscapeString(std::string(pReason)).c_str());
     }

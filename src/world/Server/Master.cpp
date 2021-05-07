@@ -121,7 +121,7 @@ std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 void createExtendedLogDir()
 {
     Util::BenchmarkTime benchmark;
-    std::string logDir = worldConfig.logger.extendedLogsDir;
+    std::string logDir = worldConfig.log.extendedLogsDir;
 
     if (!logDir.empty())
         fs::create_directories(logDir);
@@ -226,7 +226,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
 #ifndef WIN32
     if (geteuid() == 0 || getegid() == 0)
-        LOGGER.warning("You are running AscEmu as root. This is not needed, and may be a possible security risk. It is advised to hit CTRL+C now and start as a non-privileged user.");
+        LOGGER.failure("You are running AscEmu as root. This is not needed, and may be a possible security risk. It is advised to hit CTRL+C now and start as a non-privileged user.");
 #endif
 
     ThreadPool.Startup();
@@ -241,7 +241,8 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     sWorld.loadWorldConfigValues();
 
-    LOGGER.setMinimumMessageType(static_cast<AscEmu::Logging::MessageType>(worldConfig.logger.minimumMessageType));
+    //AscLog.SetFileLoggingLevel(worldConfig.log.worldFileLogLevel);
+    //AscLog.SetDebugFlags(worldConfig.log.worldDebugFlags);
 
     OpenCheatLogFiles();
 
@@ -451,8 +452,8 @@ bool Master::_CheckDBVersion()
     QueryResult* wqr = WorldDatabase.QueryNA("SELECT LastUpdate FROM world_db_version ORDER BY id DESC LIMIT 1;");
     if (wqr == NULL)
     {
-        LOGGER.fatal("Database : World database is missing the table `world_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
-        LOGGER.fatal("Database : You may need to update your database");
+        LOGGER.failure("Database : World database is missing the table `world_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
+        LOGGER.failure("Database : You may need to update your database");
         return false;
     }
 
@@ -463,16 +464,16 @@ bool Master::_CheckDBVersion()
     int result = strcmp(WorldDBVersion, REQUIRED_WORLD_DB_VERSION);
     if (result != 0)
     {
-        LOGGER.fatal("Database : Last world database update doesn't match the required one which is %s.", REQUIRED_WORLD_DB_VERSION);
+        LOGGER.failure("Database : Last world database update doesn't match the required one which is %s.", REQUIRED_WORLD_DB_VERSION);
 
         if (result < 0)
         {
-            LOGGER.fatal("Database : You need to apply the world update queries that are newer than %s. Exiting.", WorldDBVersion);
-            LOGGER.fatal("Database : You can find the world update queries in the sql/world_updates sub-directory of your AscEmu source directory.");
+            LOGGER.failure("Database : You need to apply the world update queries that are newer than %s. Exiting.", WorldDBVersion);
+            LOGGER.failure("Database : You can find the world update queries in the sql/world_updates sub-directory of your AscEmu source directory.");
         }
         else
         {
-            LOGGER.fatal("Database : Your world database is probably too new for this AscEmu version, you need to update your server. Exiting.");
+            LOGGER.failure("Database : Your world database is probably too new for this AscEmu version, you need to update your server. Exiting.");
         }
 
         delete wqr;
@@ -484,8 +485,8 @@ bool Master::_CheckDBVersion()
     QueryResult* cqr = CharacterDatabase.QueryNA("SELECT LastUpdate FROM character_db_version;");
     if (cqr == NULL)
     {
-        LOGGER.fatal("Database : Character database is missing the table `character_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
-        LOGGER.fatal("Database : You may need to update your database");
+        LOGGER.failure("Database : Character database is missing the table `character_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
+        LOGGER.failure("Database : You may need to update your database");
         return false;
     }
 
@@ -496,14 +497,14 @@ bool Master::_CheckDBVersion()
     result = strcmp(CharDBVersion, REQUIRED_CHAR_DB_VERSION);
     if (result != 0)
     {
-        LOGGER.fatal("Database : Last character database update doesn't match the required one which is %s.", REQUIRED_CHAR_DB_VERSION);
+        LOGGER.failure("Database : Last character database update doesn't match the required one which is %s.", REQUIRED_CHAR_DB_VERSION);
         if (result < 0)
         {
-            LOGGER.fatal("Database : You need to apply the character update queries that are newer than %s. Exiting.", CharDBVersion);
-            LOGGER.fatal("Database : You can find the character update queries in the sql/character_updates sub-directory of your AscEmu source directory.");
+            LOGGER.failure("Database : You need to apply the character update queries that are newer than %s. Exiting.", CharDBVersion);
+            LOGGER.failure("Database : You can find the character update queries in the sql/character_updates sub-directory of your AscEmu source directory.");
         }
         else
-            LOGGER.fatal("Database : Your character database is too new for this AscEmu version, you need to update your server. Exiting.");
+        LOGGER.failure("Database : Your character database is too new for this AscEmu version, you need to update your server. Exiting.");
 
         delete cqr;
         return false;
@@ -531,7 +532,7 @@ bool Master::_StartDB()
 
     if (wdb_result == false)
     {
-        LOGGER.fatal("Configs : One or more parameters were missing for WorldDatabase connection.");
+        LOGGER.failure("Configs : One or more parameters were missing for WorldDatabase connection.");
         return false;
     }
 
@@ -539,7 +540,7 @@ bool Master::_StartDB()
     if (!WorldDatabase.Initialize(worldConfig.worldDb.host.c_str(), (unsigned int)worldConfig.worldDb.port, worldConfig.worldDb.user.c_str(),
                                              worldConfig.worldDb.password.c_str(), worldConfig.worldDb.dbName.c_str(), worldConfig.worldDb.connections, 16384))
     {
-        LOGGER.fatal("Configs : Connection to WorldDatabase failed. Check your database configurations!");
+        LOGGER.failure("Configs : Connection to WorldDatabase failed. Check your database configurations!");
         return false;
     }
 
@@ -553,7 +554,7 @@ bool Master::_StartDB()
 
     if (cdb_result == false)
     {
-        LOGGER.fatal("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
+        LOGGER.failure("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
         return false;
     }
 
@@ -561,7 +562,7 @@ bool Master::_StartDB()
     if (!CharacterDatabase.Initialize(worldConfig.charDb.host.c_str(), (unsigned int)worldConfig.charDb.port, worldConfig.charDb.user.c_str(),
                                                  worldConfig.charDb.password.c_str(), worldConfig.charDb.dbName.c_str(), worldConfig.charDb.connections, 16384))
     {
-        LOGGER.fatal("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
+        LOGGER.failure("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
         return false;
     }
 
@@ -670,8 +671,8 @@ bool Master::LoadWorldConfiguration(char* config_file)
 
 void Master::OpenCheatLogFiles()
 {
-    bool useTimeStamp = worldConfig.logger.enableTimeStamp;
-    std::string logDir = worldConfig.logger.extendedLogsDir;
+    bool useTimeStamp = worldConfig.log.enableTimeStamp;
+    std::string logDir = worldConfig.log.extendedLogsDir;
 
     Anticheat_Log = new SessionLog(AscEmu::Logging::getFormattedFileName(logDir, "cheaters", useTimeStamp).c_str(), false);
     GMCommand_Log = new SessionLog(AscEmu::Logging::getFormattedFileName(logDir, "gmcommands", useTimeStamp).c_str(), false);
@@ -679,36 +680,36 @@ void Master::OpenCheatLogFiles()
 
     if (Anticheat_Log->isSessionLogOpen())
     {
-        if (!worldConfig.logger.enableCheaterLog)
+        if (!worldConfig.log.enableCheaterLog)
         {
             Anticheat_Log->closeSessionLog();
         }
     }
-    else if (worldConfig.logger.enableCheaterLog)
+    else if (worldConfig.log.enableCheaterLog)
     {
         Anticheat_Log->openSessionLog();
     }
 
     if (GMCommand_Log->isSessionLogOpen())
     {
-        if (!worldConfig.logger.enableGmCommandLog)
+        if (!worldConfig.log.enableGmCommandLog)
         {
             GMCommand_Log->closeSessionLog();
         }
     }
-    else if (worldConfig.logger.enableGmCommandLog)
+    else if (worldConfig.log.enableGmCommandLog)
     {
         GMCommand_Log->openSessionLog();
     }
 
     if (Player_Log->isSessionLogOpen())
     {
-        if (!worldConfig.logger.enablePlayerLog)
+        if (!worldConfig.log.enablePlayerLog)
         {
             Player_Log->closeSessionLog();
         }
     }
-    else if (worldConfig.logger.enablePlayerLog)
+    else if (worldConfig.log.enablePlayerLog)
     {
         Player_Log->openSessionLog();
     }

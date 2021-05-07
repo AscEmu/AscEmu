@@ -45,14 +45,13 @@
 ################################################################################
 # Server file logging level
 #
-#    MinimumMessageType
-#        This directive controls how much output the server will
-#        write to console or log files. It cannot be disabled.
-#        0 = Trace; 1 = Debug; 2 = Minor; 3= Major;
-#        Default: 2 (Minor)
+#    This directive controls how much output the server will
+#    write to log files. It cannot be disabled
+#    0 = Normal + Error; 1 = Detail; 2 = Debug
+#    Default: 0
 #
 
-<Logger MinimumMessageType = "2">
+<LogLevel File = "0">
 
 ################################################################################
 # Account Refresh Time

@@ -100,10 +100,11 @@ class SERVER_DECL WorldConfig
             int listenPort;
         } listen;
 
-        // world.conf - Logger Settings
-        struct LoggerSettings
+        // world.conf - Log Settings
+        struct LogSettings
         {
-            uint8_t minimumMessageType;
+            int worldFileLogLevel;
+            int worldDebugFlags;
             bool enableWorldPacketLog;
             std::string extendedLogsDir;
             bool enableCheaterLog;
@@ -111,7 +112,7 @@ class SERVER_DECL WorldConfig
             bool enablePlayerLog;
             bool enableTimeStamp;
             bool enableSqlBanLog;
-        } logger;
+        } log;
 
         // world.conf - Server Settings
         struct ServerSettings

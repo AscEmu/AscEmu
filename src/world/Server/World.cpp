@@ -686,7 +686,7 @@ bool World::setInitialWorldSettings()
     sSpellProcMgr.initialize();
 
     sWorldPacketLog.initialize();
-    sWorldPacketLog.initWorldPacketLog(worldConfig.logger.enableWorldPacketLog);
+    sWorldPacketLog.initWorldPacketLog(worldConfig.log.enableWorldPacketLog);
 
     LOGGER.info("World : Loading SpellInfo data...");
     sSpellMgr.startSpellMgr();
@@ -774,7 +774,7 @@ bool World::loadDbcDb2Stores()
     LOGGER.info("World : Loading DBC files...");
     if (!LoadDBCs())
     {
-        LOGGER.fatal("One or more of the DBC files are missing.", "These are absolutely necessary for the server to function.", "The server will not start without them.", "");
+        LOGGER.failure("One or more of the DBC files are missing.", "These are absolutely necessary for the server to function.", "The server will not start without them.", "");
         return false;
     }
 

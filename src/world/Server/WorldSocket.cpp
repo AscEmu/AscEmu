@@ -1025,19 +1025,22 @@ void WorldSocket::HandleWoWConnection(WorldPacket* recvPacket)
 
 void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid)
 {
-    switch (opcode)
+    if (worldConfig.log.worldDebugFlags & LF_OPCODE)
     {
-        //stop spaming opcodes here
-        case SMSG_MONSTER_MOVE:
-        case MSG_MOVE_HEARTBEAT:
+        switch (opcode)
         {
-        } break;
-        default:
-        {
-            LOGGER.debug("[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
-                sOpcodeTables.getNameForInternalId(opcode).c_str(), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode), len);
-        } break;
-    }
+            //stop spaming opcodes here
+            case SMSG_MONSTER_MOVE:
+            case MSG_MOVE_HEARTBEAT:
+            {
+            } break;
+            default:
+            {
+                LOGGER.debug("[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
+                    sOpcodeTables.getNameForInternalId(opcode).c_str(), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode), len);
+            } break;
+        }
+}
 
     if (isLogEnabled)
     {
