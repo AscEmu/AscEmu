@@ -121,7 +121,7 @@ std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 void createExtendedLogDir()
 {
     Util::BenchmarkTime benchmark;
-    std::string logDir = worldConfig.loggerConfiguration.extendedLogsDir;
+    std::string logDir = worldConfig.logger.extendedLogsDir;
 
     if (!logDir.empty())
         fs::create_directories(logDir);
@@ -241,7 +241,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     sWorld.loadWorldConfigValues();
 
-    sLogger.setMinimumMessageType(static_cast<AscEmu::Logging::MessageType>(worldConfig.loggerConfiguration.minimumMessageType));
+    sLogger.setMinimumMessageType(static_cast<AscEmu::Logging::MessageType>(worldConfig.logger.minimumMessageType));
 
     OpenCheatLogFiles();
 
@@ -670,8 +670,8 @@ bool Master::LoadWorldConfiguration(char* config_file)
 
 void Master::OpenCheatLogFiles()
 {
-    bool useTimeStamp = worldConfig.loggerConfiguration.enableTimeStamp;
-    std::string logDir = worldConfig.loggerConfiguration.extendedLogsDir;
+    bool useTimeStamp = worldConfig.logger.enableTimeStamp;
+    std::string logDir = worldConfig.logger.extendedLogsDir;
 
     Anticheat_Log = new SessionLog(AscEmu::Logging::getFormattedFileName(logDir, "cheaters", useTimeStamp).c_str(), false);
     GMCommand_Log = new SessionLog(AscEmu::Logging::getFormattedFileName(logDir, "gmcommands", useTimeStamp).c_str(), false);
@@ -679,36 +679,36 @@ void Master::OpenCheatLogFiles()
 
     if (Anticheat_Log->isSessionLogOpen())
     {
-        if (!worldConfig.loggerConfiguration.enableCheaterLog)
+        if (!worldConfig.logger.enableCheaterLog)
         {
             Anticheat_Log->closeSessionLog();
         }
     }
-    else if (worldConfig.loggerConfiguration.enableCheaterLog)
+    else if (worldConfig.logger.enableCheaterLog)
     {
         Anticheat_Log->openSessionLog();
     }
 
     if (GMCommand_Log->isSessionLogOpen())
     {
-        if (!worldConfig.loggerConfiguration.enableGmCommandLog)
+        if (!worldConfig.logger.enableGmCommandLog)
         {
             GMCommand_Log->closeSessionLog();
         }
     }
-    else if (worldConfig.loggerConfiguration.enableGmCommandLog)
+    else if (worldConfig.logger.enableGmCommandLog)
     {
         GMCommand_Log->openSessionLog();
     }
 
     if (Player_Log->isSessionLogOpen())
     {
-        if (!worldConfig.loggerConfiguration.enablePlayerLog)
+        if (!worldConfig.logger.enablePlayerLog)
         {
             Player_Log->closeSessionLog();
         }
     }
-    else if (worldConfig.loggerConfiguration.enablePlayerLog)
+    else if (worldConfig.logger.enablePlayerLog)
     {
         Player_Log->openSessionLog();
     }

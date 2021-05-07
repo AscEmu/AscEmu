@@ -36,14 +36,14 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     listen.listenPort = 8129;
 
     // world.conf - Logger Settings
-    loggerConfiguration.extendedLogsDir = "./";
-    loggerConfiguration.minimumMessageType = 2;
-    loggerConfiguration.enableWorldPacketLog = false;
-    loggerConfiguration.enableCheaterLog = false;
-    loggerConfiguration.enableGmCommandLog = false;
-    loggerConfiguration.enablePlayerLog = false;
-    loggerConfiguration.enableTimeStamp = false;
-    loggerConfiguration.enableSqlBanLog = false;
+    logger.extendedLogsDir = "./";
+    logger.minimumMessageType = 2;
+    logger.enableWorldPacketLog = false;
+    logger.enableCheaterLog = false;
+    logger.enableGmCommandLog = false;
+    logger.enablePlayerLog = false;
+    logger.enableTimeStamp = false;
+    logger.enableSqlBanLog = false;
 
     // world.conf - Server Settings
     server.playerLimit = 100;
@@ -269,18 +269,18 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Listen", "WorldServerPort", &listen.listenPort));
 
     // world.conf - Logger Settings
-    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Logger", "MinimumMessageType", &loggerConfiguration.minimumMessageType));
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableWorldPacketLog", &loggerConfiguration.enableWorldPacketLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Logger", "MinimumMessageType", &logger.minimumMessageType));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableWorldPacketLog", &logger.enableWorldPacketLog));
 
-    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Logger", "ExtendedLogDir", &loggerConfiguration.extendedLogsDir));
-    if (loggerConfiguration.extendedLogsDir != "./")
-        loggerConfiguration.extendedLogsDir = "./" + loggerConfiguration.extendedLogsDir + "/";
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Logger", "ExtendedLogDir", &logger.extendedLogsDir));
+    if (logger.extendedLogsDir != "./")
+        logger.extendedLogsDir = "./" + logger.extendedLogsDir + "/";
 
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableCheaterLog", &loggerConfiguration.enableCheaterLog));
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableGMCommandLog", &loggerConfiguration.enableGmCommandLog));
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnablePlayerLog", &loggerConfiguration.enablePlayerLog));
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableTimeStamp", &loggerConfiguration.enableTimeStamp));
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableSqlBanLog", &loggerConfiguration.enableSqlBanLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableCheaterLog", &logger.enableCheaterLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableGMCommandLog", &logger.enableGmCommandLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnablePlayerLog", &logger.enablePlayerLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableTimeStamp", &logger.enableTimeStamp));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableSqlBanLog", &logger.enableSqlBanLog));
 
     // world.conf - Server Settings
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "PlayerLimit", &server.playerLimit));

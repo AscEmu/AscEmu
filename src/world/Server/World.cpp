@@ -686,7 +686,7 @@ bool World::setInitialWorldSettings()
     sSpellProcMgr.initialize();
 
     sWorldPacketLog.initialize();
-    sWorldPacketLog.initWorldPacketLog(worldConfig.loggerConfiguration.enableWorldPacketLog);
+    sWorldPacketLog.initWorldPacketLog(worldConfig.logger.enableWorldPacketLog);
 
     sLogger.info("World : Loading SpellInfo data...");
     sSpellMgr.startSpellMgr();
