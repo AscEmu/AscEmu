@@ -385,8 +385,8 @@ bool MasterLogon::SetLogonConfiguration()
 {
     logonConfig.loadConfigValues();
 
-    std::vector<std::string> allowedIPs = Util::SplitStringBySeperator(logonConfig.logonServer.allowedIps, " ");
-    std::vector<std::string> allowedModIPs = Util::SplitStringBySeperator(logonConfig.logonServer.allowedModIps, " ");
+    std::vector<std::string> allowedIPs = AscEmu::Util::Strings::split(logonConfig.logonServer.allowedIps, " ");
+    std::vector<std::string> allowedModIPs = AscEmu::Util::Strings::split(logonConfig.logonServer.allowedModIps, " ");
 
     m_allowedIpLock.Acquire();
     m_allowedIps.clear();

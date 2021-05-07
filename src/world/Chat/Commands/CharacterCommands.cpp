@@ -1445,7 +1445,7 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
     }
 
     std::string new_name = new_name_cmd;
-    Util::CapitalizeString(new_name);
+    AscEmu::Util::Strings::capitalize(new_name);
 
     PlayerInfo* pi = sObjectMgr.GetPlayerInfoByName(current_name);
     if (pi == nullptr)

@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Util.hpp"
+#include "Util/Strings.hpp"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -16,63 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 namespace Util
 {
     //////////////////////////////////////////////////////////////////////////////////////////
-    // String functions
-
-    void StringToLowerCase(std::string& str)
-    {
-        // C4244
-        //std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-        for (std::size_t i = 0; i < str.length(); ++i)
-            str[i] = static_cast<char>(::tolower(str[i]));
-    }
-
-    void StringToUpperCase(std::string& str)
-    {
-        // C4244
-        //std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-        for (std::size_t i = 0; i < str.length(); ++i)
-            str[i] = static_cast<char>(::toupper(str[i]));
-    }
-
-    void CapitalizeString(std::string& str)
-    {
-        if (!str.empty())
-        {
-            str[0] = static_cast<char>(::toupper(str[0]));
-
-            for (std::size_t i = 1; i < str.length(); ++i)
-                str[i] = static_cast<char>(::tolower(str[i]));
-        }
-    }
-
-    std::vector<std::string> SplitStringBySeperator(const std::string& str_src, const std::string& str_sep)
-    {
-        std::vector<std::string> string_vector {};
-
-        //\NOTE: somehow people think it is a good idea to use a separator as last char in a string
-        //       just remove it from the string before processing single strings (shitty db saving and loading)
-        std::string source = str_src;
-        if (source[source.size()] == str_sep[0])
-            source = source.substr(0, source.size() -1);
-
-        std::stringstream string_stream(source);
-        std::string isolated_string;
-
-        std::vector<char> seperator(str_sep.c_str(), str_sep.c_str() + str_sep.size() + 1);
-
-        while (std::getline(string_stream, isolated_string, seperator[0]))
-        {
-            if (isolated_string.size() != 0)
-                string_vector.push_back(isolated_string);
-        }
-
-        return string_vector;
-    }
-
-    bool findXinYString(std::string& x, std::string& y)
-    {
-        return y.find(x) != std::string::npos;
-    }
+    // WoW String functions
 
     uint32_t getLanguagesIdFromString(std::string langstr)
     {
@@ -286,7 +231,7 @@ namespace Util
         read_time_var >> time_period;
         read_time_var >> time_var;
 
-        Util::StringToLowerCase(time_var);
+        AscEmu::Util::Strings::toLowerCase(time_var);
 
         if (time_var.compare("y") == 0)
             multiplier = TimeVars::Year;

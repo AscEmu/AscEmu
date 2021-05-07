@@ -472,7 +472,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             recvData >> banreason;
 
             // remember we expect this in uppercase
-            Util::StringToUpperCase(account);
+            AscEmu::Util::Strings::toUpperCase(account);
 
             std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(account);
             if (pAccount == NULL)
@@ -494,7 +494,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             //recvData >> gm;
 
             //// remember we expect this in uppercase
-            //Util::StringToUpperCase(account);
+            //AscEmu::Util::Strings::toUpperCase(account);
 
             //Account* pAccount = sAccountMgr.getAccountByName(account);
             //if (pAccount == NULL)
@@ -516,7 +516,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             recvData >> duration;
 
             // remember we expect this in uppercase
-            Util::StringToUpperCase(account);
+            AscEmu::Util::Strings::toUpperCase(account);
 
             std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(account);
             if (pAccount == NULL)
@@ -623,7 +623,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             std::string name_save = name;  // save original name to check
 
             // remember we expect this in uppercase
-            Util::StringToUpperCase(name);
+            AscEmu::Util::Strings::toUpperCase(name);
 
             auto account_check = sAccountMgr.getAccountByName(name);
 
@@ -687,7 +687,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
             std::string account_name_save = account_name;  // save original account_name to check
 
             // remember we expect this in uppercase
-            Util::StringToUpperCase(account_name);
+            AscEmu::Util::Strings::toUpperCase(account_name);
 
             std::shared_ptr<Account> account_check = sAccountMgr.getAccountByName(account_name);
             if (account_check == nullptr)
@@ -722,7 +722,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
             std::string account_name_save = account_name;  // save original account_name to check
 
             // remember we expect this in uppercase
-            Util::StringToUpperCase(account_name);
+            AscEmu::Util::Strings::toUpperCase(account_name);
 
             std::shared_ptr<Account> account_check = sAccountMgr.getAccountByName(account_name);
             if (account_check == nullptr)

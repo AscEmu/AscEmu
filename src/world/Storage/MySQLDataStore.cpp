@@ -74,7 +74,7 @@ void MySQLDataStore::loadAdditionalTableConfig()
     if (strData.empty())
         return;
 
-    std::vector<std::string> strs = Util::SplitStringBySeperator(strData, ",");
+    std::vector<std::string> strs = AscEmu::Util::Strings::split(strData, ",");
     if (strs.empty())
         return;
 
@@ -374,7 +374,7 @@ void MySQLDataStore::loadItemPropertiesTable()
 
             //lowercase
             std::string lower_case_name = itemProperties.Name;
-            Util::StringToLowerCase(lower_case_name);
+            AscEmu::Util::Strings::toLowerCase(lower_case_name);
             itemProperties.lowercase_name = lower_case_name;
 
             //forced pet entries (hacky stuff ->spells)
@@ -670,7 +670,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
 
             //lowercase
             std::string lower_case_name = creatureProperties.Name;
-            Util::StringToLowerCase(lower_case_name);
+            AscEmu::Util::Strings::toLowerCase(lower_case_name);
             creatureProperties.lowercase_name = lower_case_name;
 
             creatureProperties.SubName = fields[8].GetString();
@@ -810,7 +810,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             if (creatureProperties.aura_string.size() != 0)
             {
                 std::string auras = creatureProperties.aura_string;
-                std::vector<std::string> split_auras = Util::SplitStringBySeperator(auras, " ");
+                std::vector<std::string> split_auras = AscEmu::Util::Strings::split(auras, " ");
                 for (std::vector<std::string>::iterator it = split_auras.begin(); it != split_auras.end(); ++it)
                 {
                     uint32_t id = atol((*it).c_str());
@@ -2318,7 +2318,7 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
         playerCreateInfo.maxdmg = fields[21].GetFloat();
 
         std::string taxiMaskStr = fields[22].GetString();
-        std::vector<std::string> tokens = Util::SplitStringBySeperator(taxiMaskStr, " ");
+        std::vector<std::string> tokens = AscEmu::Util::Strings::split(taxiMaskStr, " ");
 
         memset(playerCreateInfo.taximask, 0, sizeof(playerCreateInfo.taximask));
         int index;
@@ -3241,12 +3241,12 @@ MySQLStructure::LocalesItem const* MySQLDataStore::getLocalizedItem(uint32_t ent
 MySQLStructure::RecallStruct const* MySQLDataStore::getRecallByName(const std::string name)
 {
     std::string searchName(name);
-    Util::StringToLowerCase(searchName);
+    AscEmu::Util::Strings::toLowerCase(searchName);
 
     for (auto itr : _recallStore)
     {
         std::string recallName(itr->name);
-        Util::StringToLowerCase(recallName);
+        AscEmu::Util::Strings::toLowerCase(recallName);
         if (recallName == searchName)
             return itr;
     }

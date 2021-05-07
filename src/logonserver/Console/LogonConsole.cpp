@@ -410,7 +410,7 @@ void LogonConsole::checkAccountName(std::string name, uint8 type)
 {
     std::string aname(name);
 
-    Util::StringToUpperCase(aname);
+    AscEmu::Util::Strings::toUpperCase(aname);
 
     switch (type)
     {

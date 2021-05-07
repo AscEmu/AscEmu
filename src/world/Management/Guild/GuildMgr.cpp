@@ -77,11 +77,11 @@ Guild* GuildMgr::getGuildByLeader(uint64_t guid) const
 Guild* GuildMgr::getGuildByName(const std::string& guildName) const
 {
     std::string search = guildName;
-    Util::StringToUpperCase(search);
+    AscEmu::Util::Strings::toUpperCase(search);
     for (GuildContainer::const_iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
     {
         std::string gname = itr->second->getName();
-        Util::StringToUpperCase(gname);
+        AscEmu::Util::Strings::toUpperCase(gname);
         if (search == gname)
             return itr->second;
     }

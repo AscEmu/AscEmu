@@ -166,7 +166,7 @@ void WorldSession::handleCharFactionOrRaceChange(WorldPacket& recvPacket)
         srlPacket.charCreate.face, srlPacket.charCreate.hairStyle, srlPacket.charCreate.hairColor, srlPacket.charCreate.facialHair);
 
     std::string newname = srlPacket.charCreate.name;
-    Util::CapitalizeString(newname);
+    AscEmu::Util::Strings::capitalize(newname);
 
     sObjectMgr.RenamePlayerInfo(playerInfoPacket, playerInfoPacket->name, newname.c_str());
 
@@ -237,7 +237,7 @@ void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
     }
 
     std::string newName = srlPacket.name;
-    Util::CapitalizeString(newName);
+    AscEmu::Util::Strings::capitalize(newName);
     sObjectMgr.RenamePlayerInfo(playerInfo, playerInfo->name, newName.c_str());
 
     sPlrLog.writefromsession(this, "renamed character %s, %u (guid), to %s.", playerInfo->name, playerInfo->guid, newName.c_str());
@@ -576,7 +576,7 @@ void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    Util::CapitalizeString(srlPacket.createStruct.name);
+    AscEmu::Util::Strings::capitalize(srlPacket.createStruct.name);
 
     CharacterDatabase.WaitExecute("UPDATE `characters` set name = '%s' WHERE guid = %u",
         srlPacket.createStruct.name.c_str(), srlPacket.guid.getGuidLow());

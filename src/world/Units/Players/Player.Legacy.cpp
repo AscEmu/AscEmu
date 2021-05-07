@@ -661,7 +661,7 @@ void Player::CharChange_Language(uint64 GUID, uint8 race)
 bool Player::Create(CharCreate& charCreateContent)
 {
     m_name = charCreateContent.name;
-    Util::CapitalizeString(m_name);
+    AscEmu::Util::Strings::capitalize(m_name);
 
     info = sMySQLStore.getPlayerCreateInfo(charCreateContent._race, charCreateContent._class);
     if (info == nullptr)
@@ -3113,7 +3113,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         {
             uint32_t tps[2] = {0,0};
 
-            auto talentPointsVector = Util::SplitStringBySeperator(talentPoints, " ");
+            auto talentPointsVector = AscEmu::Util::Strings::split(talentPoints, " ");
             for (uint8_t i = 0; i < 2; ++i)
                 tps[i] = std::stoi(talentPointsVector[i]);
 
@@ -3130,7 +3130,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         {
             uint32_t tps[2] = {0,0};
 
-            auto talentPointsVector = Util::SplitStringBySeperator(talentPoints, " ");
+            auto talentPointsVector = AscEmu::Util::Strings::split(talentPoints, " ");
             for (uint8_t i = 0; i < 2; ++i)
                 tps[i] = std::stoi(talentPointsVector[i]);
 
@@ -5372,7 +5372,7 @@ void Player::SetDrunkValue(uint16 newDrunkenValue, uint32 itemId)
 
 void Player::LoadTaxiMask(const char* data)
 {
-    std::vector<std::string> tokens = Util::SplitStringBySeperator(data, " ");
+    std::vector<std::string> tokens = AscEmu::Util::Strings::split(data, " ");
 
     int index;
     std::vector<std::string>::iterator iter;

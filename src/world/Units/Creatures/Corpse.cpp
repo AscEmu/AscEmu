@@ -85,7 +85,7 @@ void Corpse::setDynamicFlags(uint32_t flags) { write(corpseData()->dynamic_flags
 void Corpse::setCorpseDataFromDbString(std::string dbString)
 {
     std::string seperator = " ";
-    auto dataVector = Util::SplitStringBySeperator(dbString, seperator);
+    auto dataVector = AscEmu::Util::Strings::split(dbString, seperator);
 
     char const achievement_format[] = "luif";
     uint8_t countPosition = 0;
