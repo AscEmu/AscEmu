@@ -13,22 +13,22 @@ This file is released under the MIT license. See README-MIT for more information
 // \todo CalendarHandler
 void WorldSession::handleCalendarGetCalendar(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarGetCalendar Not handled");
+    sLogger.debug("HandleCalendarGetCalendar Not handled");
 
     /* Get all events for the player */
     uint32_t guid = static_cast<uint32_t>(_player->getGuid());
-    logger.debug("HandleCalendarGetCalendar CMSG_CALENDAR_GET_CALENDAR for guid %u", guid);
+    sLogger.debug("HandleCalendarGetCalendar CMSG_CALENDAR_GET_CALENDAR for guid %u", guid);
 
 }
 
 void WorldSession::handleCalendarComplain(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarComplain Not handled");
+    sLogger.debug("HandleCalendarComplain Not handled");
 }
 
 void WorldSession::handleCalendarGetNumPending(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarGetNumPending Not handled");
+    sLogger.debug("HandleCalendarGetNumPending Not handled");
 
     WorldPacket data(SMSG_CALENDAR_SEND_NUM_PENDING, 4);
 #if VERSION_STRING >= Cata
@@ -40,7 +40,7 @@ void WorldSession::handleCalendarGetNumPending(WorldPacket& /*recvPacket*/)
 void WorldSession::handleCalendarAddEvent(WorldPacket& recvPacket)
 {
     // Create an Event and save it to char db 
-    logger.debug("HandleCalendarAddEvent Not handled");
+    sLogger.debug("HandleCalendarAddEvent Not handled");
 
     uint32_t guid = static_cast<uint32_t>(_player->getGuid());
 
@@ -65,63 +65,63 @@ void WorldSession::handleCalendarAddEvent(WorldPacket& recvPacket)
     recvPacket >> flags;
 
     // \todo save it to db
-    logger.debug("HandleCalendarAddEvent Playerguid: %u sends Calendarevent: Title: %s, Description: %s, Type: %u, Repeatable: %u, maxInvites: %u, dungeonId: %u, PackedTime: %u, unkPackedTime: %u, Flags: %u,",
+    sLogger.debug("HandleCalendarAddEvent Playerguid: %u sends Calendarevent: Title: %s, Description: %s, Type: %u, Repeatable: %u, maxInvites: %u, dungeonId: %u, PackedTime: %u, unkPackedTime: %u, Flags: %u,",
         guid, title.c_str(), description.c_str(), type, repeatable, maxInvites, dungeonId, eventPackedTime, unkPackedTime, flags);
 
 }
 
 void WorldSession::handleCalendarGetEvent(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarGetEvent Not handled");
+    sLogger.debug("HandleCalendarGetEvent Not handled");
 }
 
 void WorldSession::handleCalendarGuildFilter(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarGuildFilter Not handled");
+    sLogger.debug("HandleCalendarGuildFilter Not handled");
 }
 
 void WorldSession::handleCalendarArenaTeam(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarArenaTeam Not handled");
+    sLogger.debug("HandleCalendarArenaTeam Not handled");
 }
 
 void WorldSession::handleCalendarUpdateEvent(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarUpdateEvent Not handled");
+    sLogger.debug("HandleCalendarUpdateEvent Not handled");
 }
 
 void WorldSession::handleCalendarRemoveEvent(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarRemoveEvent Not handled");
+    sLogger.debug("HandleCalendarRemoveEvent Not handled");
 }
 
 void WorldSession::handleCalendarCopyEvent(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarCopyEvent Not handled");
+    sLogger.debug("HandleCalendarCopyEvent Not handled");
 }
 
 void WorldSession::handleCalendarEventInvite(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarEventInvite Not handled");
+    sLogger.debug("HandleCalendarEventInvite Not handled");
 }
 
 void WorldSession::handleCalendarEventRsvp(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarEventRsvp Not handled");
+    sLogger.debug("HandleCalendarEventRsvp Not handled");
 }
 
 void WorldSession::handleCalendarEventRemoveInvite(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarEventRemoveInvite Not handled");
+    sLogger.debug("HandleCalendarEventRemoveInvite Not handled");
 }
 
 void WorldSession::handleCalendarEventStatus(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarEventStatus Not handled");
+    sLogger.debug("HandleCalendarEventStatus Not handled");
 }
 
 void WorldSession::handleCalendarEventModeratorStatus(WorldPacket& /*recvPacket*/)
 {
-    logger.debug("HandleCalendarEventModeratorStatus Not handled");
+    sLogger.debug("HandleCalendarEventModeratorStatus Not handled");
 }
 #endif

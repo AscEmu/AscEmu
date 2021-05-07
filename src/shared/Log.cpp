@@ -45,7 +45,7 @@ void WorldPacketLog::initWorldPacketLog(bool enableLog)
 
     if (isLogEnabled)
     {
-        logger.debug("WorldPacketLog : Enabling packetlog output to \"world-packet.log\"");
+        sLogger.debug("WorldPacketLog : Enabling packetlog output to \"world-packet.log\"");
         enablePacketLog();
     }
     else

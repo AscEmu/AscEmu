@@ -111,7 +111,7 @@ class SERVER_DECL WorldConfig
             bool enablePlayerLog;
             bool enableTimeStamp;
             bool enableSqlBanLog;
-        } logger;
+        } loggerConfiguration;
 
         // world.conf - Server Settings
         struct ServerSettings

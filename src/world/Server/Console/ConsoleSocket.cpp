@@ -170,7 +170,7 @@ void ConsoleSocket::closeRemoteConnection()
 
     if (mConsoleSocketState == ConsoleDefines::RemoteConsoleState::UserLoggedIn)
     {
-        logger.info("RemoteConsole : User `%s` disconnected.", mConsoleAuthName.c_str());
+        sLogger.info("RemoteConsole : User `%s` disconnected.", mConsoleAuthName.c_str());
     }
 }
 
@@ -196,7 +196,7 @@ void ConsoleSocket::getConsoleAuthResult(bool result)
     else
     {
         mRemoteConsole->Write("User `%s` authenticated.\r\n\r\n", mConsoleAuthName.c_str());
-        logger.info("RemoteConsole : User `%s` authenticated.", mConsoleAuthName.c_str());
+        sLogger.info("RemoteConsole : User `%s` authenticated.", mConsoleAuthName.c_str());
         //const char* argv[1];
         //handServerleInfoCommand(mRemoteConsole, 1, "");
         mRemoteConsole->Write("Type ? to see commands, quit to end session.\r\n");

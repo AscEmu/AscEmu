@@ -36,14 +36,14 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     listen.listenPort = 8129;
 
     // world.conf - Logger Settings
-    logger.extendedLogsDir = "./";
-    logger.minimumMessageType = 2;
-    logger.enableWorldPacketLog = false;
-    logger.enableCheaterLog = false;
-    logger.enableGmCommandLog = false;
-    logger.enablePlayerLog = false;
-    logger.enableTimeStamp = false;
-    logger.enableSqlBanLog = false;
+    loggerConfiguration.extendedLogsDir = "./";
+    loggerConfiguration.minimumMessageType = 2;
+    loggerConfiguration.enableWorldPacketLog = false;
+    loggerConfiguration.enableCheaterLog = false;
+    loggerConfiguration.enableGmCommandLog = false;
+    loggerConfiguration.enablePlayerLog = false;
+    loggerConfiguration.enableTimeStamp = false;
+    loggerConfiguration.enableSqlBanLog = false;
 
     // world.conf - Server Settings
     server.playerLimit = 100;
@@ -230,11 +230,11 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
         // This will only happen if someone deleted/renamed the conf after the server started...
         if (Config.MainConfig.openAndLoadConfigFile(CONFDIR "/world.conf"))
         {
-            logger.info("Config : " CONFDIR "/world.conf reloaded");
+            sLogger.info("Config : " CONFDIR "/world.conf reloaded");
         }
         else
         {
-            logger.failure("Config : error occurred loading " CONFDIR "/world.conf");
+            sLogger.failure("Config : error occurred loading " CONFDIR "/world.conf");
             return;
         }
     }
@@ -269,18 +269,18 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Listen", "WorldServerPort", &listen.listenPort));
 
     // world.conf - Logger Settings
-    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Logger", "MinimumMessageType", &logger.minimumMessageType));
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableWorldPacketLog", &logger.enableWorldPacketLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Logger", "MinimumMessageType", &loggerConfiguration.minimumMessageType));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableWorldPacketLog", &loggerConfiguration.enableWorldPacketLog));
 
-    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Logger", "ExtendedLogDir", &logger.extendedLogsDir));
-    if (logger.extendedLogsDir != "./")
-        logger.extendedLogsDir = "./" + logger.extendedLogsDir + "/";
+    ARCEMU_ASSERT(Config.MainConfig.tryGetString("Logger", "ExtendedLogDir", &loggerConfiguration.extendedLogsDir));
+    if (loggerConfiguration.extendedLogsDir != "./")
+        loggerConfiguration.extendedLogsDir = "./" + loggerConfiguration.extendedLogsDir + "/";
 
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableCheaterLog", &logger.enableCheaterLog));
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableGMCommandLog", &logger.enableGmCommandLog));
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnablePlayerLog", &logger.enablePlayerLog));
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableTimeStamp", &logger.enableTimeStamp));
-    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableSqlBanLog", &logger.enableSqlBanLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableCheaterLog", &loggerConfiguration.enableCheaterLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableGMCommandLog", &loggerConfiguration.enableGmCommandLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnablePlayerLog", &loggerConfiguration.enablePlayerLog));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableTimeStamp", &loggerConfiguration.enableTimeStamp));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableSqlBanLog", &loggerConfiguration.enableSqlBanLog));
 
     // world.conf - Server Settings
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "PlayerLimit", &server.playerLimit));
@@ -307,13 +307,13 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "MapUnloadTime", &server.mapUnloadTime));
     if (server.mapUnloadTime == 0)
     {
-        logger.failure("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
+        sLogger.failure("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
         server.mapUnloadTime = MAP_CELL_DEFAULT_UNLOAD_TIME;
     }
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "MapCellNumber", &server.mapCellNumber));
     if (server.mapCellNumber == 0)
     {
-        logger.failure("MapCellNumber is set to 0. Congrats, no MapCells will be loaded. Overriding it to default value of 1");
+        sLogger.failure("MapCellNumber is set to 0. Congrats, no MapCells will be loaded. Overriding it to default value of 1");
         server.mapCellNumber = 1;
     }
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Server", "KickAFKPlayers", &server.secondsBeforeKickAFKPlayers));

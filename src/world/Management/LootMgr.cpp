@@ -172,7 +172,7 @@ void LootMgr::LoadLootProp()
             auto item_random_properties = sItemRandomPropertiesStore.LookupEntry(eid);
             if (item_random_properties == nullptr)
             {
-                logger.failure("RandomProp group %u references non-existent randomprop %u.", id, eid);
+                sLogger.failure("RandomProp group %u references non-existent randomprop %u.", id, eid);
                 continue;
             }
 
@@ -204,7 +204,7 @@ void LootMgr::LoadLootProp()
             auto item_random_suffix = sItemRandomSuffixStore.LookupEntry(eid);
             if (item_random_suffix == nullptr)
             {
-                logger.failure("RandomSuffix group %u references non-existent randomsuffix %u.", id, eid);
+                sLogger.failure("RandomSuffix group %u references non-existent randomsuffix %u.", id, eid);
                 continue;
             }
 
@@ -228,7 +228,7 @@ void LootMgr::LoadLootProp()
 
 void LootMgr::finalize()
 {
-    logger.info(" Deleting Loot Tables...");
+    sLogger.info(" Deleting Loot Tables...");
     for (LootStore::iterator iter = CreatureLoot.begin(); iter != CreatureLoot.end(); ++iter)
         delete[] iter->second.items;
     for (LootStore::iterator iter = FishingLoot.begin(); iter != FishingLoot.end(); ++iter)
@@ -251,7 +251,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
     QueryResult* result = WorldDatabase.Query("SELECT * FROM %s ORDER BY entryid ASC", szTableName);
     if (!result)
     {
-        logger.failure("Loading loot from table %s failed.", szTableName);
+        sLogger.failure("Loading loot from table %s failed.", szTableName);
         return;
     }
 
@@ -264,7 +264,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
         uint32 entry_id = fields[0].GetUInt32();
         if (entry_id < last_entry)
         {
-            logger.failure("WARNING: Out of order loot table being loaded.");
+            sLogger.failure("WARNING: Out of order loot table being loaded.");
             return;
         }
 
@@ -308,7 +308,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
                 if (!proto)
                 {
                     list.items[ind].item.itemproto = nullptr;
-                    logger.debug("Loot for %u contains non-existant item %u . (%s)", entry_id, itemid, szTableName);
+                    sLogger.debug("Loot for %u contains non-existant item %u . (%s)", entry_id, itemid, szTableName);
                 }
                 else
                 {
@@ -340,7 +340,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
             (*LootTable)[entry_id] = list;
         }
     }
-    logger.info("%u loot templates loaded from %s", static_cast<uint32_t>(db_cache.size()), szTableName);
+    sLogger.info("%u loot templates loaded from %s", static_cast<uint32_t>(db_cache.size()), szTableName);
     delete result;
 }
 
@@ -762,7 +762,7 @@ void LootRoll::Finalize()
             _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
             return;
         }
-        logger.debug("AutoLootItem MISC");
+        sLogger.debug("AutoLootItem MISC");
 
         Item* item = sObjectMgr.CreateItem(itemid, _player);
         if (item == nullptr)

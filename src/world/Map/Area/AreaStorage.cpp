@@ -118,7 +118,7 @@ namespace MapManagement::AreaManagement
 
         if (wmoEntry)
         {
-            logger.debug("Got WMOAreaTableEntry! flag %u, areaid %u", wmoEntry->flags, wmoEntry->areaId);
+            sLogger.debug("Got WMOAreaTableEntry! flag %u, areaid %u", wmoEntry->flags, wmoEntry->areaId);
             atEntry = sAreaStore.LookupEntry(wmoEntry->areaId);
         }
 

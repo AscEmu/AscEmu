@@ -90,46 +90,46 @@ void World::initialize()
 
 void World::finalize()
 {
-    logger.info("WorldLog : ~WorldLog()");
+    sLogger.info("WorldLog : ~WorldLog()");
     sWorldPacketLog.finalize();
 
-    logger.info("ObjectMgr : ~ObjectMgr()");
+    sLogger.info("ObjectMgr : ~ObjectMgr()");
     sObjectMgr.finalize();
 
-    logger.info("TicketMgr : ~TicketMgr()");
+    sLogger.info("TicketMgr : ~TicketMgr()");
     sTicketMgr.finalize();
 
-    logger.info("LfgMgr : ~LfgMgr()");
+    sLogger.info("LfgMgr : ~LfgMgr()");
     sLfgMgr.finalize();
 
-    logger.info("ChannelMgr : ~ChannelMgr()");
+    sLogger.info("ChannelMgr : ~ChannelMgr()");
     sChannelMgr.finalize();
 
-    logger.info("QuestMgr : ~QuestMgr()");
+    sLogger.info("QuestMgr : ~QuestMgr()");
     sQuestMgr.finalize();
 
-    logger.info("WeatherMgr : ~WeatherMgr()");
+    sLogger.info("WeatherMgr : ~WeatherMgr()");
     sWeatherMgr.finalize();
 
-    logger.info("TaxiMgr : ~TaxiMgr()");
+    sLogger.info("TaxiMgr : ~TaxiMgr()");
     sTaxiMgr.finalize();
 
 #if VERSION_STRING >= Cata
     // todo: shouldn't this be deleted also on other versions?
-    logger.info("GuildMgr", "~GuildMgr()");
+    sLogger.info("GuildMgr", "~GuildMgr()");
     sGuildMgr.finalize();
 #endif
 
-    logger.info("InstanceMgr : ~InstanceMgr()");
+    sLogger.info("InstanceMgr : ~InstanceMgr()");
     sInstanceMgr.Shutdown();
 
-    logger.info("WordFilter : ~WordFilter()");
+    sLogger.info("WordFilter : ~WordFilter()");
     delete g_chatFilter;
 
-    logger.info("MySQLDataStore : ~MySQLDataStore()");
+    sLogger.info("MySQLDataStore : ~MySQLDataStore()");
     sMySQLStore.finalize();
 
-    logger.info("OpcodeTables : finalize()");
+    sLogger.info("OpcodeTables : finalize()");
     sOpcodeTables.finalize();
 
     delete mEventableObjectHolder;
@@ -587,7 +587,7 @@ void World::sendMessageToAll(const std::string& message, WorldSession* sendToSel
 
     if (settings.announce.showAnnounceInConsoleOutput)
     {
-        logger.info("WORLD : SendWorldText %s", message.c_str());
+        sLogger.info("WORLD : SendWorldText %s", message.c_str());
     }
 }
 
@@ -686,21 +686,21 @@ bool World::setInitialWorldSettings()
     sSpellProcMgr.initialize();
 
     sWorldPacketLog.initialize();
-    sWorldPacketLog.initWorldPacketLog(worldConfig.logger.enableWorldPacketLog);
+    sWorldPacketLog.initWorldPacketLog(worldConfig.loggerConfiguration.enableWorldPacketLog);
 
-    logger.info("World : Loading SpellInfo data...");
+    sLogger.info("World : Loading SpellInfo data...");
     sSpellMgr.startSpellMgr();
 
     if (worldConfig.terrainCollision.isCollisionEnabled)
     {
-        logger.info("GameObjectModel : Loading GameObject models...");
+        sLogger.info("GameObjectModel : Loading GameObject models...");
         std::string vmapPath = worldConfig.server.dataDir + "vmaps";
         LoadGameObjectModelList(vmapPath);
     }
 
     loadMySQLStores();
 
-    logger.info("World : Loading loot data...");
+    sLogger.info("World : Loading loot data...");
     sLootMgr.initialize();
     sLootMgr.LoadLoot();
 
@@ -711,22 +711,22 @@ bool World::setInitialWorldSettings()
     sSpellMgr.calculateSpellCoefficients();
 
 #if VERSION_STRING > TBC
-    logger.info("World : Starting Achievement System...");
+    sLogger.info("World : Starting Achievement System...");
     sObjectMgr.LoadAchievementCriteriaList();
 #endif
 
-    logger.info("World : Starting Transport System...");
+    sLogger.info("World : Starting Transport System...");
     sTransportHandler.loadTransportTemplates();
     sTransportHandler.spawnContinentTransports();
 
-    logger.info("World : Starting Mail System...");
+    sLogger.info("World : Starting Mail System...");
     sMailSystem.StartMailSystem();
 
-    logger.info("World : Starting Auction System...");
+    sLogger.info("World : Starting Auction System...");
     sAuctionMgr.initialize();
     sAuctionMgr.LoadAuctionHouses();
 
-    logger.info("World : Loading LFG rewards...");
+    sLogger.info("World : Loading LFG rewards...");
     sLfgMgr.initialize();
     sLfgMgr.LoadRewards();
 
@@ -743,7 +743,7 @@ bool World::setInitialWorldSettings()
 
     sChannelMgr.loadConfigSettings();
 
-    logger.info("World : Starting BattlegroundManager...");
+    sLogger.info("World : Starting BattlegroundManager...");
     sBattlegroundManager.initialize();
 
     dw = std::move(std::make_unique<DayWatcherThread>());
@@ -754,7 +754,7 @@ bool World::setInitialWorldSettings()
 
     sEventMgr.AddEvent(this, &World::checkForExpiredInstances, EVENT_WORLD_UPDATEAUCTIONS, 120000, 0, 0);
 
-    logger.info("World: init in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("World: init in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     return true;
 }
@@ -771,10 +771,10 @@ bool World::loadDbcDb2Stores()
     LoadDB2Stores();
 #endif
 
-    logger.info("World : Loading DBC files...");
+    sLogger.info("World : Loading DBC files...");
     if (!LoadDBCs())
     {
-        logger.fatal("One or more of the DBC files are missing.", "These are absolutely necessary for the server to function.", "The server will not start without them.", "");
+        sLogger.fatal("One or more of the DBC files are missing.", "These are absolutely necessary for the server to function.", "The server will not start without them.", "");
         return false;
     }
 
@@ -931,11 +931,11 @@ void World::loadMySQLTablesByTask()
     tl.wait();
 
     sCommandTableStorage.Load();
-    logger.info("WordFilter : Loading...");
+    sLogger.info("WordFilter : Loading...");
 
     g_chatFilter = new WordFilter();
 
-    logger.info("Done. Database loaded in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("Done. Database loaded in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     // calling this puts all maps into our task list.
     sInstanceMgr.Load();
@@ -950,11 +950,11 @@ void World::loadMySQLTablesByTask()
 
 void World::logEntitySize()
 {
-    logger.info("World : Object size: %lu bytes", sizeof(Object));
-    logger.info("World : Unit size: %lu bytes", sizeof(Unit) + sizeof(AIInterface));
-    logger.info("World : Creature size: %lu bytes", sizeof(Creature) + sizeof(AIInterface));
-    logger.info("World : Player size: %lu bytes", sizeof(Player) + sizeof(ItemInterface) + 50000 + 30000 + 1000 + sizeof(AIInterface));
-    logger.info("World : GameObject size: %lu bytes", sizeof(GameObject));
+    sLogger.info("World : Object size: %lu bytes", sizeof(Object));
+    sLogger.info("World : Unit size: %lu bytes", sizeof(Unit) + sizeof(AIInterface));
+    sLogger.info("World : Creature size: %lu bytes", sizeof(Creature) + sizeof(AIInterface));
+    sLogger.info("World : Player size: %lu bytes", sizeof(Player) + sizeof(ItemInterface) + 50000 + 30000 + 1000 + sizeof(AIInterface));
+    sLogger.info("World : GameObject size: %lu bytes", sizeof(GameObject));
 }
 
 void World::Update(unsigned long timePassed)
@@ -969,7 +969,7 @@ void World::Update(unsigned long timePassed)
 
 void World::saveAllPlayersToDb()
 {
-    logger.info("Saving all players to database...");
+    sLogger.info("Saving all players to database...");
 
     uint32_t count = 0;
 
@@ -981,13 +981,13 @@ void World::saveAllPlayersToDb()
         {
             auto startTime = Util::TimeNow();
             itr->second->SaveToDB(false);
-            logger.info("Saved player `%s` (level %u) in %u ms.", itr->second->getName().c_str(), itr->second->getLevel(), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            sLogger.info("Saved player `%s` (level %u) in %u ms.", itr->second->getName().c_str(), itr->second->getLevel(), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
             ++count;
         }
     }
 
     sObjectMgr._playerslock.unlock();
-    logger.info("Saved %u players.", count);
+    sLogger.info("Saved %u players.", count);
 }
 
 void World::playSoundToAllPlayers(uint32_t soundId)
@@ -1004,11 +1004,11 @@ void World::playSoundToAllPlayers(uint32_t soundId)
 
 void World::logoutAllPlayers()
 {
-    logger.info("World : Logging out players...");
+    sLogger.info("World : Logging out players...");
     for (activeSessionMap::iterator i = mActiveSessionMapStore.begin(); i != mActiveSessionMapStore.end(); ++i)
         (i->second)->LogoutPlayer(true);
 
-    logger.info("World : Deleting sessions...");
+    sLogger.info("World : Deleting sessions...");
     for (activeSessionMap::iterator i = mActiveSessionMapStore.begin(); i != mActiveSessionMapStore.end();)
     {
         WorldSession* worldSession = i->second;

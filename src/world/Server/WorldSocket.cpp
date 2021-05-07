@@ -206,7 +206,7 @@ void WorldSocket::OutPacket(uint32_t opcode, size_t len, const void* data)
 {
     if ((len + 10) > WORLDSOCKET_SENDBUF_SIZE)
     {
-        logger.failure("WARNING: Tried to send a packet of %u bytes (which is too large) to a socket. Opcode was: %u (0x%03X)", static_cast<unsigned int>(len), static_cast<unsigned int>(opcode), static_cast<unsigned int>(opcode));
+        sLogger.failure("WARNING: Tried to send a packet of %u bytes (which is too large) to a socket. Opcode was: %u (0x%03X)", static_cast<unsigned int>(len), static_cast<unsigned int>(opcode), static_cast<unsigned int>(opcode));
         return;
     }
 
@@ -559,7 +559,7 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
 #endif
     catch (ByteBuffer::error &)
     {
-        logger.info("Incomplete copy of AUTH_SESSION Received.");
+        sLogger.info("Incomplete copy of AUTH_SESSION Received.");
         return;
     }
 
@@ -610,7 +610,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     if (forcedPermissions != nullptr)
         GMFlags.assign(*forcedPermissions);
 
-    logger.debug(" >> got information packet from logon: `%s` ID %u (request %u)", AccountName.c_str(), AccountID, mRequestID);
+    sLogger.debug(" >> got information packet from logon: `%s` ID %u (request %u)", AccountName.c_str(), AccountID, mRequestID);
 
     mRequestID = 0;
 
@@ -783,7 +783,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
         }
     }
 
-    logger.debug("%s from %s:%u [%ums]", AccountName.c_str(), GetRemoteIP().c_str(), GetRemotePort(), _latency);
+    sLogger.debug("%s from %s:%u [%ums]", AccountName.c_str(), GetRemoteIP().c_str(), GetRemotePort(), _latency);
 
     // Check for queue.
     uint32 playerLimit = worldConfig.getPlayerLimit();
@@ -796,7 +796,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
         // Queued, sucker.
         uint32 Position = sWorld.addQueuedSocket(this);
         mQueued = true;
-        logger.debug("%s added to queue in position %u", AccountName.c_str(), Position);
+        sLogger.debug("%s added to queue in position %u", AccountName.c_str(), Position);
 
         // Send packet so we know what we're doing
         UpdateQueuePosition(Position);
@@ -847,7 +847,7 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
     uint32 ping;
     if (recvPacket->size() < 4)
     {
-        logger.failure("Socket closed due to incomplete ping packet.");
+        sLogger.failure("Socket closed due to incomplete ping packet.");
         Disconnect();
         return;
     }
@@ -1034,7 +1034,7 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
         } break;
         default:
         {
-            logger.debug("[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
+            sLogger.debug("[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
                 sOpcodeTables.getNameForInternalId(opcode).c_str(), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode), len);
         } break;
     }

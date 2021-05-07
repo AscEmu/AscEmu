@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LogonConfig.h"
 #include "Server/LogonServerDefines.hpp"
 #include "LogonConf.h"
-#include "Log.hpp"
+#include "Logging/Logger.hpp"
 
 LogonConfig::LogonConfig()
 {
@@ -29,11 +29,11 @@ void LogonConfig::loadConfigValues(bool reload /*false*/)
     {
         if (Config.MainConfig.openAndLoadConfigFile(CONFDIR "/logon.conf"))
         {
-            logger.info("Config : " CONFDIR "/logon.conf reloaded");
+            sLogger.info("Config : " CONFDIR "/logon.conf reloaded");
         }
         else
         {
-            logger.failure("Config : error occurred loading " CONFDIR "/logon.conf");
+            sLogger.failure("Config : error occurred loading " CONFDIR "/logon.conf");
             return;
         }
     }

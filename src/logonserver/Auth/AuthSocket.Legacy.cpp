@@ -86,7 +86,7 @@ void AuthSocket::HandleChallenge()
     // No header
     if (readBuffer.GetContiguiousBytes() < 4)
     {
-        logger.failure("[AuthChallenge] Packet has no header. Refusing to handle.");
+        sLogger.failure("[AuthChallenge] Packet has no header. Refusing to handle.");
         return;
     }
 
@@ -96,23 +96,23 @@ void AuthSocket::HandleChallenge()
     uint16 full_size = *(uint16*)&ReceiveBuffer[2];
 
 
-    logger.info("[AuthChallenge] got header, body is %u bytes", full_size);
+    sLogger.info("[AuthChallenge] got header, body is %u bytes", full_size);
 
     if (readBuffer.GetSize() < uint32(full_size + 4))
     {
-        logger.failure("[AuthChallenge] Packet is smaller than expected, refusing to handle");
+        sLogger.failure("[AuthChallenge] Packet is smaller than expected, refusing to handle");
         return;
     }
 
     // Copy the data into our cached challenge structure
     if (full_size > sizeof(sAuthLogonChallenge_C))
     {
-        logger.failure("[AuthChallenge] Packet is larger than expected, refusing to handle!");
+        sLogger.failure("[AuthChallenge] Packet is larger than expected, refusing to handle!");
         Disconnect();
         return;
     }
 
-    logger.debug("[AuthChallenge] got a complete packet.");
+    sLogger.debug("[AuthChallenge] got a complete packet.");
 
     readBuffer.Read(&m_challenge, full_size + 4);
 
@@ -127,11 +127,11 @@ void AuthSocket::HandleChallenge()
         case 15595:
         case 18414:
         {
-            logger.debug("Client with valid build %u connected", (uint32)client_build);
+            sLogger.debug("Client with valid build %u connected", (uint32)client_build);
         }break;
         default:
         {
-            logger.debug("Client %s has unsupported game version. Clientbuild: %u", GetRemoteIP().c_str(), (uint32)client_build);
+            sLogger.debug("Client %s has unsupported game version. Clientbuild: %u", GetRemoteIP().c_str(), (uint32)client_build);
             SendChallengeError(CE_WRONG_BUILD_NUMBER);
         }break;
     }
@@ -150,7 +150,7 @@ void AuthSocket::HandleChallenge()
         if(m_patch == NULL)
         {
             // could not find a valid patch
-            LOGGER.info("[AuthChallenge] Client %s has wrong version. More out of date than server. Server: %u, Client: %u", GetRemoteIP().c_str(), LogonServer::getSingleton().min_build, m_challenge.build);
+            sLogger.info("[AuthChallenge] Client %s has wrong version. More out of date than server. Server: %u, Client: %u", GetRemoteIP().c_str(), LogonServer::getSingleton().min_build, m_challenge.build);
             SendChallengeError(CE_WRONG_BUILD_NUMBER);
             return;
         }
@@ -177,7 +177,7 @@ void AuthSocket::HandleChallenge()
     IpBanStatus ipb = sIpBanMgr.getBanStatus(GetRemoteAddress());
 
     if (ipb != BAN_STATUS_NOT_BANNED)
-        logger.info("[AuthChallenge] Client %s is banned, refusing to continue.", GetRemoteIP().c_str());
+        sLogger.info("[AuthChallenge] Client %s is banned, refusing to continue.", GetRemoteIP().c_str());
 
     switch (ipb)
     {
@@ -202,25 +202,25 @@ void AuthSocket::HandleChallenge()
     std::string::size_type i = AccountName.rfind("#");
     if (i != std::string::npos)
     {
-        logger.failure("# ACCOUNTNAME!");
+        sLogger.failure("# ACCOUNTNAME!");
         return;
         //AccountName.erase( i );
     }
 
     // Look up the account information
-    logger.debug("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
+    sLogger.debug("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
     m_account = sAccountMgr.getAccountByName(AccountName);
     if (m_account == 0)
     {
-        logger.debug("[AuthChallenge] Invalid account.");
+        sLogger.debug("[AuthChallenge] Invalid account.");
 
         // Non-existant account
         SendChallengeError(CE_NO_ACCOUNT);
         return;
     }
 
-    logger.debug("[AuthChallenge] Account banned state = %u", m_account->Banned);
+    sLogger.debug("[AuthChallenge] Account banned state = %u", m_account->Banned);
 
     // Check that the account isn't banned.
     if (m_account->Banned == 1)
@@ -309,7 +309,7 @@ void AuthSocket::HandleProof()
 {
     if (readBuffer.GetSize() < sizeof(sAuthLogonProof_C))
     {
-        logger.failure("[AuthLogonProof] The packet received is larger than expected, refusing to handle it!");
+        sLogger.failure("[AuthLogonProof] The packet received is larger than expected, refusing to handle it!");
         return;
     }
 
@@ -318,7 +318,7 @@ void AuthSocket::HandleProof()
     {
         //RemoveReadBufferBytes(75,false);
         readBuffer.Remove(75);
-        logger.debug("[AuthLogonProof] Intitiating PatchJob");
+        sLogger.debug("[AuthLogonProof] Intitiating PatchJob");
         uint8 bytes[2] = { 0x01, 0x0a };
         Send(bytes, 2);
         PatchMgr::getInstance().InitiatePatch(m_patch, this);
@@ -328,7 +328,7 @@ void AuthSocket::HandleProof()
     if (!m_account)
         return;
 
-    logger.debug("[AuthLogonProof] Interleaving and checking proof...");
+    sLogger.debug("[AuthLogonProof] Interleaving and checking proof...");
 
     sAuthLogonProof_C lp;
     //Read(sizeof(sAuthLogonProof_C), (uint8*)&lp);
@@ -425,7 +425,7 @@ void AuthSocket::HandleProof()
         // Authentication failed.
         //SendProofError(4, 0);
         SendChallengeError(CE_NO_ACCOUNT);
-        logger.debug("[AuthLogonProof] M values don't match. ( Either invalid password or the logon server is bugged. )");
+        sLogger.debug("[AuthLogonProof] M values don't match. ( Either invalid password or the logon server is bugged. )");
         return;
     }
 
@@ -439,7 +439,7 @@ void AuthSocket::HandleProof()
 
     //SendProofError(0, sha.GetDigest());
     sendAuthProof(sha);
-    logger.debug("[AuthLogonProof] Authentication Success.");
+    sLogger.debug("[AuthLogonProof] Authentication Success.");
 
     // we're authenticated now :)
     m_authenticated = true;
@@ -553,7 +553,7 @@ void AuthSocket::OnRead()
 {
     if (readBuffer.GetContiguiousBytes() < 1)
     {
-        logger.debug("readBuffer.GetContiguiousBytes() is < 1! Skipped!");
+        sLogger.debug("readBuffer.GetContiguiousBytes() is < 1! Skipped!");
         return;
     }
 
@@ -561,12 +561,12 @@ void AuthSocket::OnRead()
     last_recv = UNIXTIME;
     if (Command < MAX_AUTH_CMD && Handlers[Command] != NULL)
     {
-        logger.debug("Handler %u called", Command);
+        sLogger.debug("Handler %u called", Command);
         (this->*Handlers[Command])();
     }
     else
     {
-        logger.debug("Unknown handler %u called", Command);
+        sLogger.debug("Unknown handler %u called", Command);
     }
 }
 
@@ -584,7 +584,7 @@ void AuthSocket::HandleReconnectChallenge()
     // Check the rest of the packet is complete.
     uint8* ReceiveBuffer = /*GetReadBuffer(0)*/(uint8*)readBuffer.GetBufferStart();
     uint16 full_size = *(uint16*)&ReceiveBuffer[2];
-    logger.info("[AuthChallenge] got header, body is %u bytes", full_size);
+    sLogger.info("[AuthChallenge] got header, body is %u bytes", full_size);
 
     if (readBuffer.GetSize() < (uint32)full_size + 4)
         return;
@@ -596,7 +596,7 @@ void AuthSocket::HandleReconnectChallenge()
         return;
     }
 
-    logger.debug("[AuthChallenge] got full packet.");
+    sLogger.debug("[AuthChallenge] got full packet.");
 
     memcpy(&m_challenge, ReceiveBuffer, full_size + 4);
     //RemoveReadBufferBytes(full_size + 4, false);
@@ -649,19 +649,19 @@ void AuthSocket::HandleReconnectChallenge()
 
         // Look up the account information
     std::string AccountName = (char*)&m_challenge.I;
-    logger.debug("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
+    sLogger.debug("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
     m_account = sAccountMgr.getAccountByName(AccountName);
     if (m_account == 0)
     {
-        logger.debug("[AuthChallenge] Invalid account.");
+        sLogger.debug("[AuthChallenge] Invalid account.");
 
         // Non-existant account
         SendChallengeError(CE_NO_ACCOUNT);
         return;
     }
 
-    logger.debug("[AuthChallenge] Account banned state = %u", m_account->Banned);
+    sLogger.debug("[AuthChallenge] Account banned state = %u", m_account->Banned);
 
     // Check that the account isn't banned.
     if (m_account->Banned == 1)
@@ -744,7 +744,7 @@ void AuthSocket::HandleReconnectProof()
 
 void AuthSocket::HandleTransferAccept()
 {
-    logger.debug("Accepted transfer");
+    sLogger.debug("Accepted transfer");
     if (!m_patch)
         return;
 
@@ -755,7 +755,7 @@ void AuthSocket::HandleTransferAccept()
 
 void AuthSocket::HandleTransferResume()
 {
-    logger.debug("Resuming transfer");
+    sLogger.debug("Resuming transfer");
     if (!m_patch)
         return;
 
