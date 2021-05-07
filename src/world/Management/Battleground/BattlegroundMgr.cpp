@@ -440,7 +440,7 @@ void CBattlegroundManager::EventQueueUpdate()
     this->EventQueueUpdate(false);
 }
 
-uint32 CBattlegroundManager::GetArenaGroupQInfo(Group* group, int type, uint32* avgRating)
+uint32 CBattlegroundManager::GetArenaGroupQInfo(Group* group, uint8_t type, uint32* avgRating)
 {
     uint32 count = 0;
     uint32 rating = 0;
@@ -487,14 +487,14 @@ void CBattlegroundManager::AddGroupToArena(CBattleground* bg, Group* group, uint
     if (plr == nullptr)
         return;
 
-    ArenaTeam* team = plr->getArenaTeam(bg->GetType() - BATTLEGROUND_ARENA_2V2);
+    ArenaTeam* team = plr->getArenaTeam(static_cast<uint8_t>(bg->GetType() - BATTLEGROUND_ARENA_2V2));
     if (team == nullptr)
         return;
 
     for (GroupMembersSet::iterator itx = group->GetSubGroup(0)->GetGroupMembersBegin(); itx != group->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
     {
         plr = (*itx)->m_loggedInPlayer;
-        if (plr && team == plr->getArenaTeam(bg->GetType() - BATTLEGROUND_ARENA_2V2))
+        if (plr && team == plr->getArenaTeam(static_cast<uint8_t>(bg->GetType() - BATTLEGROUND_ARENA_2V2)))
         {
             if (bg->HasFreeSlots(nteam, bg->GetType()))
             {
@@ -1291,9 +1291,12 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
             return;
         }
 
+        if (BattlegroundType > BATTLEGROUND_ARENA_5V5)
+            return;
+
         // make sure all players are 70
         uint32 maxplayers;
-        uint32 type = BattlegroundType - BATTLEGROUND_ARENA_2V2;
+        const auto type = static_cast<uint8_t>(BattlegroundType - BATTLEGROUND_ARENA_2V2);
         switch (BattlegroundType)
         {
         case BATTLEGROUND_ARENA_3V3:

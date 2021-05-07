@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "../world/WorldConf.h"
+#include "Map/InstanceDefines.hpp"
 #include "Units/Players/Player.h"
 #include "Server/Packets/CmsgMessageChat.h"
 
@@ -222,7 +223,7 @@ public:
     inline PlayerInfo* GetMainTank() { return m_mainTank; }
     inline PlayerInfo* GetMainAssist() { return m_mainAssist; }
 
-    uint32 m_instanceIds[MAX_NUM_MAPS][NUM_INSTANCE_MODES];
+    uint32 m_instanceIds[MAX_NUM_MAPS][InstanceDifficulty::MAX_DIFFICULTY];
 
     void SetDungeonDifficulty(uint8 diff);
     void SetRaidDifficulty(uint8 diff);

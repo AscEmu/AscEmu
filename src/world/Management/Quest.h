@@ -125,14 +125,14 @@ struct QuestProperties
 
     // this marks the end of the fields loaded from db - don't remove the comment please
 
-    uint32_t count_required_mob;
-    uint32_t count_requiredquests;
-    uint32_t count_requiredtriggers;
-    uint32_t count_receiveitems;
-    uint32_t count_reward_choiceitem;
-    uint32_t count_required_item;
-    uint32_t required_mobtype[4];
-    uint32_t count_reward_item;
+    uint8_t count_required_mob;
+    uint8_t count_requiredquests;
+    uint8_t count_requiredtriggers;
+    uint8_t count_receiveitems;
+    uint8_t count_reward_choiceitem;
+    uint8_t count_required_item;
+    uint8_t required_mobtype[4];
+    uint8_t count_reward_item;
 
     std::set<uint32_t> quest_list;
     std::set<uint32_t> remove_quest_list;

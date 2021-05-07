@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CreatureAIScript.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
 #include "Objects/Faction.h"
@@ -1384,7 +1385,7 @@ InstanceScript* CreatureAIScript::getInstanceScript()
 bool CreatureAIScript::_isHeroic()
 {
     MapMgr* mapMgr = _creature->GetMapMgr();
-    if (mapMgr == nullptr || mapMgr->iInstanceMode != MODE_HEROIC)
+    if (mapMgr == nullptr || mapMgr->iInstanceMode != InstanceDifficulty::DUNGEON_HEROIC)
         return false;
 
     return true;

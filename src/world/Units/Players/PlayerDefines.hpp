@@ -327,7 +327,7 @@ enum FriendsResult
     FRIEND_IGNORE_REMOVED       = 0x10
 };
 
-enum CharterTypes
+enum CharterTypes : uint8_t
 {
     CHARTER_TYPE_GUILD            = 0,
     CHARTER_TYPE_ARENA_2V2        = 1,

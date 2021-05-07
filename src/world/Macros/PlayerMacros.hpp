@@ -182,7 +182,7 @@ This file is released under the MIT license. See README-MIT for more information
 #elif VERSION_STRING == WotLK
     #define GLYPHS_COUNT 6
 #elif VERSION_STRING == Cata
-    #define GLYPHS_COUNT 6
+    #define GLYPHS_COUNT 9
 #elif VERSION_STRING == Mop
     #define GLYPHS_COUNT 9
 #endif

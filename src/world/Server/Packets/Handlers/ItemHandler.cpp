@@ -273,6 +273,14 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     if (sScriptMgr.CallScriptedItem(tmpItem, _player))
         return;
 
+    // In "learning" spells, set the spell id to be taught as spell's forced basepoints
+    uint32_t spellToLearn = 0;
+    if (itemProto->Spells[0].Id == 483 || itemProto->Spells[0].Id == 55884)
+    {
+        spellId = itemProto->Spells[0].Id;
+        spellToLearn = itemProto->Spells[1].Id;
+    }
+
     SpellCastTargets targets(recvPacket, _player->getGuid());
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
@@ -313,6 +321,9 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
     spell->extra_cast_number = srlPacket.castCount;
     spell->setItemCaster(tmpItem);
+
+    if (spellToLearn != 0)
+        spell->forced_basepoints[0] = spellToLearn;
 
 #if VERSION_STRING >= WotLK
     spell->m_glyphslot = srlPacket.glyphIndex;

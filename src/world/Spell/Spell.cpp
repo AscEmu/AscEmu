@@ -30,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
+#include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
 #include "Map/WorldCreatorDefines.hpp"
@@ -457,7 +458,7 @@ void Spell::castMe(const bool doReCheck)
 
     // Take cast item after SMSG_SPELL_GO but before effect handling
     if (!GetSpellFailed())
-        RemoveItems();
+        removeCastItem();
 
 #if VERSION_STRING < Cata
     /*
@@ -1139,7 +1140,7 @@ void Spell::cancel()
                     }
 
                     if (m_timer > 0)
-                        RemoveItems();
+                        removeCastItem();
                 }
 
                 getUnitCaster()->RemoveAura(getSpellInfo()->getId(), getCaster()->getGuid());
@@ -1844,7 +1845,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // Check if spell can be casted in heroic dungeons or in raids
         if (getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_NOT_IN_RAIDS_OR_HEROIC_DUNGEONS)
         {
-            if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && (p_caster->GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID || p_caster->GetMapMgr()->iInstanceMode == MODE_HEROIC))
+            if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && (p_caster->GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID || p_caster->GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC))
             {
 #if VERSION_STRING < WotLK
                 return SPELL_FAILED_NOT_HERE;
@@ -2397,7 +2398,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                         return SPELL_FAILED_TARGET_NOT_IN_INSTANCE;
 
                     const auto mapInfo = p_caster->GetMapMgr()->GetMapInfo();
-                    if (p_caster->GetMapMgr()->iInstanceMode == MODE_HEROIC)
+                    if (p_caster->GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC)
                     {
                         if (mapInfo->minlevel_heroic > targetPlayer->getLevel())
                             return SPELL_FAILED_LOWLEVEL;
@@ -5253,6 +5254,62 @@ bool Spell::canAttackCreatureType(Creature* target) const
     const auto typeMask = getSpellInfo()->getTargetCreatureType();
     const auto mask = 1 << (target->GetCreatureProperties()->Type - 1);
     return !(target->GetCreatureProperties()->Type != 0 && typeMask != 0 && (typeMask & mask) == 0);
+}
+
+void Spell::removeCastItem()
+{
+    if (getItemCaster() == nullptr)
+        return;
+
+    auto removable = false, chargesUsed = false;
+    const auto proto = getItemCaster()->getItemProperties();
+
+    for (uint8_t i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+    {
+        const auto protoSpell = proto->Spells[i];
+        if (protoSpell.Id > 0)
+        {
+            if (protoSpell.Charges == 0)
+                continue;
+
+            // Items with negative charges disappear when they reach 0 charges
+            if (protoSpell.Charges < 0)
+                removable = true;
+
+            auto charges = getItemCaster()->getSpellCharges(i);
+            if (charges != 0)
+            {
+                if (charges > 0)
+                    --charges;
+                else
+                    ++charges;
+
+                // If item is not stackable, modify charges
+                if (proto->MaxCount == 1)
+                    getItemCaster()->setSpellCharges(i, charges);
+
+                getItemCaster()->m_isDirty = true;
+            }
+
+            chargesUsed = charges == 0;
+        }
+    }
+
+    if (removable && chargesUsed)
+    {
+        // If the item is stacked, remove 1 from the stack
+        if (getItemCaster()->getStackCount() > 1)
+        {
+            getItemCaster()->modStackCount(-1);
+            getItemCaster()->m_isDirty = true;
+        }
+        else
+        {
+            getItemCaster()->getOwner()->getItemInterface()->SafeFullRemoveItemByGuid(getItemCaster()->getGuid());
+        }
+
+        i_caster = nullptr;
+    }
 }
 
 void Spell::removeReagents()

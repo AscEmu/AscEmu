@@ -186,7 +186,7 @@ public:
         SetGameobjectStates(pGameObject);
     }
 
-    void SetGameobjectStates(GameObject* pGameObject)
+    void SetGameobjectStates(GameObject* /*pGameObject*/)
     {
         // Gos which are not visible by killing a boss needs a second check...
         if (getData(CN_LORD_MARROWGAR) == Finished)
@@ -364,7 +364,7 @@ public:
             switch (eventId)
             {
             case EVENT_WIPE_CHECK:
-                if (TeamInInstance = TEAM_ALLIANCE)
+                if (TeamInInstance == TEAM_ALLIANCE)
                 {
                     DoCheckFallingPlayer(mInstance->GetCreature(static_cast<uint32_t>(MuradinBronzebeardGbGUID)));
                     if (DoWipeCheck(skybreaker))
@@ -409,7 +409,7 @@ public:
                     player->GetSession()->SendPacket(data);
     }
 
-    void DoAction(int32 const action)
+    void DoAction(int32 const action) override
     {
         switch (action)
         {
@@ -899,9 +899,6 @@ protected:
     // Common
     InstanceScript* mInstance;
 
-    // Unit
-    Unit* summoner;
-
     //Spells
     CreatureAISpells* coldflameTriggerSpell;
 };
@@ -941,7 +938,7 @@ class BoneSpikeAI : public CreatureAIScript
         pTarget->RemoveAura(SPELL_IMPALED);
     }
 
-    void OnDied(Unit* pTarget) override
+    void OnDied(Unit* /*pTarget*/) override
     {       
         if (summon)
             summon->RemoveAura(SPELL_IMPALED);
@@ -1053,7 +1050,7 @@ public:
         }
     }
 
-    SpellCastResult onCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) override
+    SpellCastResult onCanCast(Spell* spell, uint32_t* /*parameter1*/, uint32_t* /*parameter2*/) override
     {          
         if (Creature* marrowgar = static_cast<Creature*>(spell->getUnitCaster()))
 
@@ -1175,7 +1172,6 @@ public:
 
         effectTargets->clear();
 
-        Unit* target = nullptr;
         std::vector<Player*> players;
         for (const auto& itr : spell->getUnitCaster()->getInRangePlayersSet())
         {
@@ -1197,7 +1193,7 @@ public:
         return true;
     }
 
-    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex) override
+    SpellScriptExecuteState beforeSpellEffect(Spell* /*spell*/, uint8_t effectIndex) override
     {
         if (effectIndex == EFF_INDEX_2)
             return SpellScriptExecuteState::EXECUTE_PREVENT;
@@ -1223,7 +1219,7 @@ public:
         return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
     }
 
-    SpellCastResult onCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) override
+    SpellCastResult onCanCast(Spell* spell, uint32_t* /*parameter1*/, uint32_t* /*parameter2*/) override
     {
         targetCount = 0;
         static_cast<Creature*>(spell->getUnitCaster())->GetScript()->DoAction(ACTION_CLEAR_SPIKE_IMMUNITIES);
@@ -1231,7 +1227,7 @@ public:
         return SpellCastResult::SPELL_CAST_SUCCESS;
     }
 
-    void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override
+    void filterEffectTargets(Spell* /*spell*/, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override
     {
         if (effectIndex != EFF_INDEX_0)
             return;
@@ -1326,7 +1322,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
         scriptEvents.addEvent(EVENT_P1_SHADOW_BOLT, Util::getRandomUInt(5500, 6000), PHASE_ONE);
         scriptEvents.addEvent(EVENT_P1_EMPOWER_CULTIST, Util::getRandomUInt(20000, 30000), PHASE_ONE);
 
-        if (mInstance->GetDifficulty() != MODE_NORMAL_10MEN)
+        if (mInstance->GetDifficulty() != InstanceDifficulty::RAID_10MAN_NORMAL)
             scriptEvents.addEvent(EVENT_DOMINATE_MIND_H, 27000);
 
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1343,7 +1339,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
     }
 
     ///\ todo Health Decreases visualy
-    void DamageTaken(Unit* _attacker, uint32* damage) override
+    void DamageTaken(Unit* /*_attacker*/, uint32* damage) override
     {
         uint32_t currentMana = getCreature()->getPower(POWER_TYPE_MANA);
         // When Lady Deathwhsiper has her mana Barrier dont deal damage to her instead reduce her mana.      
@@ -1362,7 +1358,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
         }
     }
 
-    void OnDamageTaken(Unit* _attacker, uint32_t damage) override
+    void OnDamageTaken(Unit* /*_attacker*/, uint32_t damage) override
     {
         uint32_t currentMana = getCreature()->getPower(POWER_TYPE_MANA);
         // When Lady Deathwhsiper has her mana Barrier dont deal damage to her instead reduce her mana.
@@ -1530,7 +1526,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
         Summon(SummonEntries[addIndex2], LadyDeathwhisperSummonPositions[addIndex1 * 3 + 1]);
         Summon(SummonEntries[addIndex1], LadyDeathwhisperSummonPositions[addIndex1 * 3 + 2]);
 
-        if (mInstance->GetDifficulty() == MODE_NORMAL_25MEN || mInstance->GetDifficulty() == MODE_HEROIC_25MEN)
+        if (mInstance->GetDifficulty() == InstanceDifficulty::RAID_25MAN_NORMAL || mInstance->GetDifficulty() == InstanceDifficulty::RAID_25MAN_HEROIC)
         {
             Summon(SummonEntries[addIndex2], LadyDeathwhisperSummonPositions[addIndex2 * 3]);
             Summon(SummonEntries[addIndex1], LadyDeathwhisperSummonPositions[addIndex2 * 3 + 1]);
@@ -1543,7 +1539,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
     // summoning function for second phase
     void SummonWavePhaseTwo()
     {       
-        if (mInstance->GetDifficulty() == MODE_NORMAL_25MEN || mInstance->GetDifficulty() == MODE_HEROIC_25MEN)
+        if (mInstance->GetDifficulty() == InstanceDifficulty::RAID_25MAN_NORMAL || mInstance->GetDifficulty() == InstanceDifficulty::RAID_25MAN_HEROIC)
         {
             uint8 addIndex1 = waveCounter & 1;
             Summon(SummonEntries[addIndex1], LadyDeathwhisperSummonPositions[addIndex1 * 3]);
@@ -1846,7 +1842,7 @@ class MuradinAI : public CreatureAIScript
         }
     }
 
-    void DoAction(int32 const action)
+    void DoAction(int32 const action) override
     {
         switch (action)
         {
@@ -1956,7 +1952,7 @@ class SaurfangAI : public CreatureAIScript
         }
     }
 
-    void DoAction(int32 const action)
+    void DoAction(int32 const action) override
     {
         switch (action)
         {
@@ -2264,7 +2260,7 @@ class OverlordSaurfangEvent : public CreatureAIScript
         }
     }
 
-    void DoAction(int32 const action)
+    void DoAction(int32 const action) override
     {
         switch (action)
         {
@@ -2407,7 +2403,7 @@ class DeathbringerSaurfangAI : public CreatureAIScript
         }
     }
 
-    void DoAction(int32 const action)
+    void DoAction(int32 const action) override
     {
         switch (action)
         {
@@ -2487,7 +2483,7 @@ class NpcSaurfangEventAI : public CreatureAIScript
         }
     }
 
-    void DoAction(int32 const action)
+    void DoAction(int32 const action) override
     {
         switch (action)
         {

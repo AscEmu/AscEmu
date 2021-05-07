@@ -28,6 +28,7 @@
 #include "Management/MailMgr.h"
 #include "Management/ItemPrototype.h"
 #include "Management/AchievementMgr.h"
+#include "Map/InstanceDefines.hpp"
 #include "Units/Unit.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/MySQLStructures.h"
@@ -191,7 +192,7 @@ class SERVER_DECL PlayerInfo
         Group* m_Group;
         int8 subGroup;
         Mutex savedInstanceIdsLock;
-        PlayerInstanceMap savedInstanceIds[NUM_INSTANCE_MODES];
+        PlayerInstanceMap savedInstanceIds[InstanceDifficulty::MAX_DIFFICULTY];
 
         Player* m_loggedInPlayer;
         uint32 m_guild;
@@ -2116,7 +2117,7 @@ public:
         // Instance IDs
         uint32 GetPersistentInstanceId(uint32 mapId, uint8 difficulty)
         {
-            if (mapId >= MAX_NUM_MAPS || difficulty >= NUM_INSTANCE_MODES || m_playerInfo == NULL)
+            if (mapId >= MAX_NUM_MAPS || difficulty >= InstanceDifficulty::MAX_DIFFICULTY || m_playerInfo == NULL)
                 return 0;
 
             m_playerInfo->savedInstanceIdsLock.Acquire();

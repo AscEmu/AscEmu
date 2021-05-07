@@ -2899,7 +2899,7 @@ void ItemInterface::AddBuyBackItem(Item* it, uint32 price)
     }
 }
 
-void ItemInterface::RemoveBuyBackItem(uint32 index)
+void ItemInterface::RemoveBuyBackItem(uint8_t index)
 {
     uint8_t j = 0;
     for (j = index; j < MAX_BUYBACK_SLOT - 1; ++j)

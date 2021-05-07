@@ -3398,6 +3398,8 @@ void Player::addToFriendList(std::string name, std::string note)
             m_session->SendPacket(SmsgFriendStatus(FRIEND_ADDED_OFFLINE, targetPlayer->getGuidLow()).serialise().get());
         }
 
+        // todo: missing FRIEND_LIST_FULL when friend list is full
+
         CharacterDatabase.Execute("INSERT INTO social_friends VALUES(%u, %u, \'%s\')",
             getGuidLow(), targetPlayer->getGuidLow(), !note.empty() ? CharacterDatabase.EscapeString(std::string(note)).c_str() : "");
 
@@ -3563,10 +3565,14 @@ void Player::addToIgnoreList(std::string name)
             return;
         }
 
+        // todo: missing FRIEND_IGNORE_FULL when ignore list is full
+
         CharacterDatabase.Execute("INSERT INTO social_ignores VALUES(%u, %u)", getGuidLow(), targetPlayer->getGuidLow());
 
         std::lock_guard<std::mutex> guard(m_mutexIgnoreList);
         m_socialIgnoring.push_back(targetPlayer->getGuidLow());
+
+        m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_ADDED, targetPlayer->getGuidLow()).serialise().get());
     }
     else
     {
@@ -3581,7 +3587,9 @@ void Player::removeFromIgnoreList(uint32_t guid)
         CharacterDatabase.Execute("DELETE FROM social_ignores WHERE character_guid = %u AND ignore_guid = %u", getGuidLow(), guid);
 
         std::lock_guard<std::mutex> guard(m_mutexIgnoreList);
-        std::remove(m_socialIgnoring.begin(), m_socialIgnoring.end(), guid);
+        m_socialIgnoring.erase(std::remove(m_socialIgnoring.begin(), m_socialIgnoring.end(), guid), m_socialIgnoring.end());
+
+        m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_REMOVED, guid).serialise().get());
     }
     else
     {
@@ -4122,7 +4130,7 @@ void Player::addToGMTargetList(uint32_t guid)
 void Player::removeFromGMTargetList(uint32_t guid)
 {
     std::lock_guard<std::mutex> guard(m_lockGMTargetList);
-    std::remove(m_gmPlayerTargetList.begin(), m_gmPlayerTargetList.end(), guid);
+    m_gmPlayerTargetList.erase(std::remove(m_gmPlayerTargetList.begin(), m_gmPlayerTargetList.end(), guid), m_gmPlayerTargetList.end());
 }
 
 bool Player::isOnGMTargetList(uint32_t guid) const

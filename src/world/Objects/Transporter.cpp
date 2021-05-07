@@ -40,7 +40,7 @@ Transporter::~Transporter()
     _passengers.clear();
 }
 
-bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float z, float ang, uint32_t animprogress)
+bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float z, float ang, uint8_t animprogress)
 {
     gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
     if (gameobject_properties == nullptr)

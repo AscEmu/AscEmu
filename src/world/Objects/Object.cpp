@@ -4035,7 +4035,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                 else
                     creatureName = creature->GetCreatureProperties()->Name;
 
-                const auto data = SmsgMessageChat(npcMonsterSay->type, npcMonsterSay->language, 0, newText, getGuid(), creatureName).serialise();
+                const auto data = SmsgMessageChat(static_cast<uint8_t>(npcMonsterSay->type), npcMonsterSay->language, 0, newText, getGuid(), creatureName).serialise();
                 player->SendPacket(data.get());
             }
         }
@@ -4227,7 +4227,7 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
     return true;
 }
 
-void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
+void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t opcode)
 {
 #if VERSION_STRING == Classic
 
@@ -4497,7 +4497,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
 #endif
 }
 
-void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, float custom_speed) const
+void MovementInfo::writeMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t opcode, [[maybe_unused]]float custom_speed) const
 {
 #if VERSION_STRING == Classic
 

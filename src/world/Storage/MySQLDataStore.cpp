@@ -988,7 +988,6 @@ void MySQLDataStore::loadQuestPropertiesTable()
 {
     auto startTime = Util::TimeNow();
     uint32_t quest_count = 0;
-    uint32_t basic_field_count = 0;
 
     std::set<std::string>::iterator tableiterator;
     for (tableiterator = QuestPropertiesTables.begin(); tableiterator != QuestPropertiesTables.end(); ++tableiterator)

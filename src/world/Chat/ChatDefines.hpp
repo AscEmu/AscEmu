@@ -5,9 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum ChatMsg
+#include <stdint.h>
+
+enum ChatMsg : uint8_t
 {
-    CHAT_MSG_ADDON                      = -1,
+    CHAT_MSG_ADDON                      = 0xFF, // -1
     CHAT_MSG_SYSTEM                     = 0,    // 28, CHAT_MSG_SYSTEM = 0x00
     CHAT_MSG_SAY                        = 1,
     CHAT_MSG_PARTY                      = 2,

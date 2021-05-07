@@ -551,7 +551,7 @@ void CBattleground::RemoveAuraFromTeam(uint32 team, uint32 aura)
     }
 }
 
-void CBattleground::SendChatMessage(uint32 Type, uint64 Guid, const char* Format, ...)
+void CBattleground::SendChatMessage(uint8_t Type, uint64 Guid, const char* Format, ...)
 {
     char msg[500];
     va_list ap;

@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgAreaTriggerMessage.h"
 #include "Server/World.Legacy.h"
+#include "Map/InstanceDefines.hpp"
 #include "Map/WorldCreatorDefines.hpp"
 #include "Management/Group.h"
 #include "Management/ItemInterface.h"
@@ -59,13 +60,13 @@ uint32_t checkTriggerPrerequisites(MySQLStructure::AreaTrigger const* areaTrigge
     if (areaTrigger->requiredLevel && player->getLevel() < areaTrigger->requiredLevel)
         return AreaTriggerResult::Level;
 
-    if (player->getDungeonDifficulty() >= MODE_HEROIC && mapInfo->type != INSTANCE_MULTIMODE && mapInfo->type != INSTANCE_NULL)
+    if (player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && mapInfo->type != INSTANCE_MULTIMODE && mapInfo->type != INSTANCE_NULL)
         return AreaTriggerResult::NoHeroic;
 
     if (mapInfo->type == INSTANCE_RAID && (!player->getGroup() || (player->getGroup() && player->getGroup()->getGroupType() != GROUP_TYPE_RAID)))
         return AreaTriggerResult::NoRaid;
 
-    if ((mapInfo->type == INSTANCE_MULTIMODE && player->getDungeonDifficulty() >= MODE_HEROIC) && !player->getGroup())
+    if ((mapInfo->type == INSTANCE_MULTIMODE && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC) && !player->getGroup())
         return AreaTriggerResult::NoGroup;
 
     if (mapInfo->required_quest_A && (player->getTeam() == TEAM_ALLIANCE) && !player->HasFinishedQuest(mapInfo->required_quest_A))
@@ -77,7 +78,7 @@ uint32_t checkTriggerPrerequisites(MySQLStructure::AreaTrigger const* areaTrigge
     if (mapInfo->required_item && !player->getItemInterface()->GetItemCount(mapInfo->required_item, true))
         return AreaTriggerResult::NoAttuneI;
 
-    if (player->getDungeonDifficulty() >= MODE_HEROIC &&
+    if (player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC &&
         mapInfo->type == INSTANCE_MULTIMODE
         && ((mapInfo->heroic_key_1 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_1, false))
         && (mapInfo->heroic_key_2 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_2, false))
@@ -85,7 +86,7 @@ uint32_t checkTriggerPrerequisites(MySQLStructure::AreaTrigger const* areaTrigge
         )
         return AreaTriggerResult::NoKey;
 
-    if (mapInfo->type != INSTANCE_NULL && player->getDungeonDifficulty() >= MODE_HEROIC && player->getLevel() < mapInfo->minlevel_heroic)
+    if (mapInfo->type != INSTANCE_NULL && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && player->getLevel() < mapInfo->minlevel_heroic)
         return AreaTriggerResult::LevelHeroic;
 
     return AreaTriggerResult::Success;

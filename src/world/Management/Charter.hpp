@@ -37,7 +37,7 @@ public:
 
     uint32_t SignatureCount;
     uint32_t* Signatures;
-    uint32_t CharterType;
+    uint8_t CharterType;
     uint32_t Slots;
     uint32_t LeaderGuid;
     uint64_t ItemGuid;
@@ -50,7 +50,7 @@ public:
     uint32_t PetitionSignerCount;
 
     Charter(Field* fields);
-    Charter(uint32_t id, uint32_t leader, uint32_t type) : CharterType(type), LeaderGuid(leader), CharterId(id)
+    Charter(uint32_t id, uint32_t leader, uint8_t type) : CharterType(type), LeaderGuid(leader), CharterId(id)
     {
         SignatureCount = 0;
         ItemGuid = 0;
