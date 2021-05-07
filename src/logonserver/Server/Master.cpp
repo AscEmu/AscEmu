@@ -53,7 +53,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
         return;
     }
 
-    LOGGER.setMinimumMessageType(static_cast<AscEmu::Logging::MessageType>(logonConfig.logLevel.file));
+    LOGGER.setMinimumMessageType(static_cast<AscEmu::Logging::MessageType>(logonConfig.logger.minimumMessageType));
 
     LOGGER.info("ThreadMgr : Starting...");
     ThreadPool.Startup();

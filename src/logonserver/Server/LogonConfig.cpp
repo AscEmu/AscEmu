@@ -16,8 +16,8 @@ LogonConfig::LogonConfig()
     // logon.conf - Listen
     listen.port = 8093;
 
-    // logon.conf - LogLevel
-    logLevel.file = 0;
+    // logon.conf - Logger
+    logger.minimumMessageType = 2;
 
     // logon.conf - Rates
     rates.accountRefreshTime = 600;
@@ -52,8 +52,8 @@ void LogonConfig::loadConfigValues(bool reload /*false*/)
     ASSERT(Config.MainConfig.tryGetInt("Listen", "RealmListPort", &listen.realmListPort));
     ASSERT(Config.MainConfig.tryGetInt("Listen", "ServerPort", &listen.port));
 
-    // logon.conf - LogLevel
-    ASSERT(Config.MainConfig.tryGetInt("LogLevel", "File", &logLevel.file));
+    // logon.conf - Logger Settings
+    ASSERT(Config.MainConfig.tryGetInt("Logger", "MinimumMessageType", &logger.minimumMessageType));
 
     // logon.conf - Rates
     ASSERT(Config.MainConfig.tryGetInt("Rates", "AccountRefresh", &rates.accountRefreshTime));
