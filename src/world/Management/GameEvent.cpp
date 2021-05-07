@@ -22,7 +22,7 @@ void GameEvent::CreateNPCs()
         CreatureProperties const* cp = sMySQLStore.getCreatureProperties(npc.entry);
         if (cp == nullptr)
         {
-            LOGGER.failure("try to create invalid creature %u!", npc.entry);
+            logger.failure("try to create invalid creature %u!", npc.entry);
             continue;
         }
 

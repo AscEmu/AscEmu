@@ -36,7 +36,7 @@ void PatchMgr::initialize()
 {
     // load patches
 #ifdef WIN32
-    LOGGER.info("PatchMgr : Loading Patches...");
+    logger.info("PatchMgr : Loading Patches...");
     char Buffer[MAX_PATH * 10];
     char Buffer2[MAX_PATH * 10];
     char Buffer3[MAX_PATH * 10];
@@ -70,7 +70,7 @@ void PatchMgr::initialize()
         if (hFile == INVALID_HANDLE_VALUE)
             continue;
 
-        LOGGER.info("PatchMgr : Found patch for %u locale `%s`.", srcversion, locality);
+        logger.info("PatchMgr : Found patch for %u locale `%s`.", srcversion, locality);
         pPatch = new Patch;
         size = GetFileSize(hFile, &sizehigh);
         pPatch->FileSize = size;

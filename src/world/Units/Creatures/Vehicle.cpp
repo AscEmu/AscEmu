@@ -49,14 +49,14 @@ void Vehicle::Load(Unit* vehicleOwner, uint32 creatureEntry, uint32 vehicleid)
 {
     if (vehicleOwner == nullptr)
     {
-        LOGGER.failure("Can't load vehicle without an owner.");
+        logger.failure("Can't load vehicle without an owner.");
         ARCEMU_ASSERT(false);
     }
 
     vehicle_info = sVehicleStore.LookupEntry(vehicleid);
     if (vehicle_info == nullptr)
     {
-        LOGGER.failure("Can't load a vehicle without vehicle id or data belonging to it.");
+        logger.failure("Can't load a vehicle without vehicle id or data belonging to it.");
         ARCEMU_ASSERT(false);
     }
     else
@@ -70,7 +70,7 @@ void Vehicle::Load(Unit* vehicleOwner, uint32 creatureEntry, uint32 vehicleid)
                 auto vehicle_seat = sVehicleSeatStore.LookupEntry(seatid);
                 if (vehicle_seat == nullptr)
                 {
-                    LOGGER.failure("Invalid seat id %u for seat %u for vehicle id %u", seatid, i, vehicleid);
+                    logger.failure("Invalid seat id %u for seat %u for vehicle id %u", seatid, i, vehicleid);
                     continue;
                 }
 

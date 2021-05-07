@@ -91,4 +91,4 @@ namespace AscEmu::Logging
 
     std::string getFormattedFileName(std::string path_prefix, std::string file_prefix, bool use_date_time);
 }
-#define LOGGER AscEmu::Logging::Logger::getInstance()
+#define logger AscEmu::Logging::Logger::getInstance()

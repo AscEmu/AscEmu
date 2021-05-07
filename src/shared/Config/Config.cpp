@@ -123,7 +123,7 @@ bool ConfigFile::parseConfigValues(std::string fileBufferString)
                     // append the setting to the config section
                     if (currentSection == "" || currentSettingVariable == "")
                     {
-                        LOGGER.failure("Quote without variable.");
+                        logger.failure("Quote without variable.");
                         return false;
                     }
 
@@ -237,7 +237,7 @@ bool ConfigFile::parseConfigValues(std::string fileBufferString)
                     }
                     else
                     {
-                        LOGGER.failure("Found the beginning of a section < but the section has no name!");
+                        logger.failure("Found the beginning of a section < but the section has no name!");
                         return false;
                     }
 
@@ -250,26 +250,26 @@ bool ConfigFile::parseConfigValues(std::string fileBufferString)
     }
     catch (...)
     {
-        LOGGER.failure("Exception in config parsing!");
+        logger.failure("Exception in config parsing!");
         return false;
     }
 
     // check errors
     if (isInSectionBlock)
     {
-        LOGGER.failure("Unterminated section! Add > at the end of a section.");
+        logger.failure("Unterminated section! Add > at the end of a section.");
         return false;
     }
 
     if (isInMultilineComment)
     {
-        LOGGER.failure("Unterminated multiline comment found! Add */ at the end of your multiline comment.");
+        logger.failure("Unterminated multiline comment found! Add */ at the end of your multiline comment.");
         return false;
     }
 
     if (isInMultilineQuote)
     {
-        LOGGER.failure("Missing closing quote found! Add \" at the end of a definition.");
+        logger.failure("Missing closing quote found! Add \" at the end of a definition.");
         return false;
     }
 
@@ -381,7 +381,7 @@ ConfigFile::ConfigValueSetting* ConfigFile::getSavedSetting(std::string sectionN
             return &(it2->second);
     }
 
-    LOGGER.failure("Could not load config value: [%s].[%s]", sectionName.c_str(), confName.c_str());
+    logger.failure("Could not load config value: [%s].[%s]", sectionName.c_str(), confName.c_str());
     return nullptr;
 }
 

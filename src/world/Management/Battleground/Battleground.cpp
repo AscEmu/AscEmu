@@ -412,7 +412,7 @@ Creature* CBattleground::SpawnCreature(uint32 entry, float x, float y, float z, 
     CreatureProperties const* cp = sMySQLStore.getCreatureProperties(entry);
     if (cp == nullptr)
     {
-        LOGGER.failure("tried to push a invalid creature with entry %u!", entry);
+        logger.failure("tried to push a invalid creature with entry %u!", entry);
         return nullptr;
     }
 

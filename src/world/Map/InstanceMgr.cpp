@@ -16,7 +16,7 @@ void InstanceMgr::generateInstances()
     {
         if (mapInfo->second.mapid >= MAX_NUM_MAPS)
         {
-            LOGGER.failure("InstanceMgr : One or more of your worldmap_info rows specifies an invalid map: %u", mapInfo->second.mapid);
+            logger.failure("InstanceMgr : One or more of your worldmap_info rows specifies an invalid map: %u", mapInfo->second.mapid);
             continue;
         }
 
@@ -52,7 +52,7 @@ void InstanceMgr::loadInstanceResetTimes()
 
 void InstanceMgr::deleteExpiredAndInvalidInstances()
 {
-    LOGGER.info("InstanceMgr : Deleting Expired Instances...");
+    logger.info("InstanceMgr : Deleting Expired Instances...");
 
     CharacterDatabase.Execute("DELETE FROM `instances` WHERE expiration > 0 AND expiration <= %u", UNIXTIME);
 
@@ -97,7 +97,7 @@ void InstanceMgr::deleteExpiredAndInvalidInstances()
 
 void InstanceMgr::loadAndApplySavedInstanceValues()
 {
-    LOGGER.info("InstanceMgr : Loading saved instances...");
+    logger.info("InstanceMgr : Loading saved instances...");
 
     uint32_t count = 0;
 
@@ -148,7 +148,7 @@ void InstanceMgr::loadAndApplySavedInstanceValues()
         delete result;
     }
 
-    LOGGER.info("InstanceMgr : %u saved instances loaded.", count);
+    logger.info("InstanceMgr : %u saved instances loaded.", count);
 }
 
 uint32_t InstanceMgr::getNextInstanceId()

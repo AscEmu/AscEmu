@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 void AuthSocket::sendAuthProof(Sha1Hash sha)
 {
-    LOGGER.debug(" called.");
+    logger.debug(" called.");
 
     if (m_challenge.build == 5875)
     {

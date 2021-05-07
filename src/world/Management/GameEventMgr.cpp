@@ -40,7 +40,7 @@ void GameEventMgr::StartArenaEvents()
         auto gameEvent = GetEventById(i);
         if (gameEvent == nullptr)
         {
-            LOGGER.failure("Missing arena event (id: %u)", i);
+            logger.failure("Missing arena event (id: %u)", i);
             continue;
         }
 
@@ -54,7 +54,7 @@ void GameEventMgr::StartArenaEvents()
 void GameEventMgr::LoadFromDB()
 {
     // Clean event_saves from CharacterDB
-    LOGGER.info("GameEventMgr : Start cleaning gameevent_save");
+    logger.info("GameEventMgr : Start cleaning gameevent_save");
     {
         const char* cleanEventSaveQuery = "DELETE FROM gameevent_save WHERE state<>4";
         CharacterDatabase.Execute(cleanEventSaveQuery);
@@ -67,7 +67,7 @@ void GameEventMgr::LoadFromDB()
         if (!result)
         {
             //mGameEvent.clear();
-            LOGGER.failure("GameEventMgr : gameevent_properties can not be read or does not include any version specific events!");
+            logger.failure("GameEventMgr : gameevent_properties can not be read or does not include any version specific events!");
             return;
         }
 
@@ -92,7 +92,7 @@ void GameEventMgr::LoadFromDB()
             //if (gameEvent.isValid())
             //{
                 mGameEvents.insert(std::make_pair(dbResult.entry, new GameEvent(dbResult)));
-                LOGGER.debug("GameEventMgr : %s, Entry: %u, State: %u, Holiday: %u loaded", dbResult.description.c_str(), dbResult.entry, dbResult.world_event, dbResult.holiday_id);
+                logger.debug("GameEventMgr : %s, Entry: %u, State: %u, Holiday: %u loaded", dbResult.description.c_str(), dbResult.entry, dbResult.world_event, dbResult.holiday_id);
                 ++pCount;
             //}
             //else
@@ -101,10 +101,10 @@ void GameEventMgr::LoadFromDB()
             //}
         } while (result->NextRow());
         delete result;
-        LOGGER.info("GameEventMgr : %u events loaded from table event_properties", pCount);
+        logger.info("GameEventMgr : %u events loaded from table event_properties", pCount);
     }
     // Loading event_saves from CharacterDB
-    LOGGER.info("GameEventMgr : Start loading gameevent_save");
+    logger.info("GameEventMgr : Start loading gameevent_save");
     {
         const char* loadEventSaveQuery = "SELECT event_entry, state, next_start FROM gameevent_save";
         bool success = false;
@@ -112,7 +112,7 @@ void GameEventMgr::LoadFromDB()
 
         if (!success)
         {
-            LOGGER.failure("Query failed: %s", loadEventSaveQuery);
+            logger.failure("Query failed: %s", loadEventSaveQuery);
             return;
         }
 
@@ -128,7 +128,7 @@ void GameEventMgr::LoadFromDB()
                 if (gameEvent == nullptr)
                 {
                     CharacterDatabase.Query("DELETE FROM gameevent_save WHERE event_entry=%u", event_id);
-                    LOGGER.info("Deleted invalid gameevent_save with entry %u", event_id);
+                    logger.info("Deleted invalid gameevent_save with entry %u", event_id);
                     continue;
                 }
 
@@ -141,10 +141,10 @@ void GameEventMgr::LoadFromDB()
             delete result;
         }
 
-        LOGGER.info("GameEventMgr : Loaded %u saved events loaded from table gameevent_saves", pCount);
+        logger.info("GameEventMgr : Loaded %u saved events loaded from table gameevent_saves", pCount);
     }
     // Loading event_creature from WorldDB
-    LOGGER.info("GameEventMgr : Start loading game event creature spawns");
+    logger.info("GameEventMgr : Start loading game event creature spawns");
     {
         const char* loadEventCreatureSpawnsQuery = "SELECT id, entry, map, position_x, position_y, position_z, \
                                                     orientation, movetype, displayid, faction, flags, bytes0, bytes1, bytes2, \
@@ -156,7 +156,7 @@ void GameEventMgr::LoadFromDB()
         QueryResult* result = WorldDatabase.Query(&success, loadEventCreatureSpawnsQuery, VERSION_STRING, VERSION_STRING);
         if (!success)
         {
-            LOGGER.failure("Query failed: %s", loadEventCreatureSpawnsQuery);
+            logger.failure("Query failed: %s", loadEventCreatureSpawnsQuery);
             return;
         }
 
@@ -172,7 +172,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    LOGGER.failure("Could not find event for creature_spawns entry %u", event_id);
+                    logger.failure("Could not find event for creature_spawns entry %u", event_id);
                     continue;
                 }
 
@@ -183,7 +183,7 @@ void GameEventMgr::LoadFromDB()
                 auto creature_properties = sMySQLStore.getCreatureProperties(dbResult.entry);
                 if (creature_properties == nullptr)
                 {
-                    LOGGER.failure("Could not create CreatureSpawn for invalid entry %u (missing in table creature_properties)", dbResult.entry);
+                    logger.failure("Could not create CreatureSpawn for invalid entry %u (missing in table creature_properties)", dbResult.entry);
                     continue;
                 }
                 dbResult.map_id = field[2].GetUInt16();
@@ -222,10 +222,10 @@ void GameEventMgr::LoadFromDB()
             } while (result->NextRow());
             delete result;
         }
-        LOGGER.info("GameEventMgr : %u creature spawns for %u events from table event_creature_spawns loaded.", pCount, static_cast<uint32_t>(mGameEvents.size()));
+        logger.info("GameEventMgr : %u creature spawns for %u events from table event_creature_spawns loaded.", pCount, static_cast<uint32_t>(mGameEvents.size()));
     }
     // Loading event_gameobject from WorldDB
-    LOGGER.info("GameEventMgr : Start loading game event gameobject spawns");
+    logger.info("GameEventMgr : Start loading game event gameobject spawns");
     {
         const char* loadEventGameobjectSpawnsQuery = "SELECT id, entry, map, position_x, position_y, \
                                                       position_z, facing, orientation1, orientation2, orientation3, \
@@ -235,7 +235,7 @@ void GameEventMgr::LoadFromDB()
         QueryResult* result = WorldDatabase.Query(&success, loadEventGameobjectSpawnsQuery, VERSION_STRING, VERSION_STRING);
         if (!success)
         {
-            LOGGER.failure("Query failed: %s", loadEventGameobjectSpawnsQuery);
+            logger.failure("Query failed: %s", loadEventGameobjectSpawnsQuery);
             return;
         }
 
@@ -250,7 +250,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    LOGGER.failure("ould not find event for gameobject_spawns entry %u", event_id);
+                    logger.failure("ould not find event for gameobject_spawns entry %u", event_id);
                     continue;
                 }
 
@@ -261,7 +261,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(dbResult.entry);
                 if (gameobject_info == nullptr)
                 {
-                    LOGGER.failure("Could not create GameobjectSpawn for invalid entry %u (missing in table gameobject_properties)", dbResult.entry);
+                    logger.failure("Could not create GameobjectSpawn for invalid entry %u (missing in table gameobject_properties)", dbResult.entry);
                     continue;
                 }
                 dbResult.map_id = field[2].GetUInt32();
@@ -290,7 +290,7 @@ void GameEventMgr::LoadFromDB()
             } while (result->NextRow());
             delete result;
         }
-        LOGGER.info("GameEventMgr : %u gameobject spawns for %u events from table gameobject_spawns loaded.", pCount, mGameEvents.size());
+        logger.info("GameEventMgr : %u gameobject spawns for %u events from table gameobject_spawns loaded.", pCount, mGameEvents.size());
     }
 
     StartArenaEvents();
@@ -309,7 +309,7 @@ void GameEventMgr::GameEventMgrThread::initialize()
 
 void GameEventMgr::GameEventMgrThread::finalize()
 {
-    LOGGER.info("GameEventMgrThread : Stop Manager...");
+    logger.info("GameEventMgrThread : Stop Manager...");
     m_reloadThread->killAndJoin();
 }
 

@@ -90,7 +90,7 @@ Guild* GuildMgr::getGuildByName(const std::string& guildName) const
 
 void GuildMgr::loadGuildDataFromDB()
 {
-    LOGGER.debug("Loading guild definitions...");
+    logger.debug("Loading guild definitions...");
     {
         const auto startTime = Util::TimeNow();
 
@@ -109,7 +109,7 @@ void GuildMgr::loadGuildDataFromDB()
 #endif
         if (result == nullptr)
         {
-            LOGGER.debug("Loaded 0 guild definitions. DB table `guild` is empty.");
+            logger.debug("Loaded 0 guild definitions. DB table `guild` is empty.");
         }
         else
         {
@@ -130,12 +130,12 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LOGGER.debug("Loaded %u guild definitions in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            logger.debug("Loaded %u guild definitions in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
     // 2. Load all guild ranks
-    LOGGER.debug("Loading guild ranks...");
+    logger.debug("Loading guild ranks...");
     {
         auto startTime = Util::TimeNow();
 
@@ -147,7 +147,7 @@ void GuildMgr::loadGuildDataFromDB()
 
         if (result == nullptr)
         {
-            LOGGER.debug("Loaded 0 guild ranks. DB table `guild_ranks` is empty.");
+            logger.debug("Loaded 0 guild ranks. DB table `guild_ranks` is empty.");
         }
         else
         {
@@ -163,12 +163,12 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LOGGER.debug("Loaded %u guild ranks in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            logger.debug("Loaded %u guild ranks in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
     // 3. Load all guild members
-    LOGGER.debug("Loading guild members...");
+    logger.debug("Loading guild members...");
     {
         auto startTime = Util::TimeNow();
 
@@ -179,7 +179,7 @@ void GuildMgr::loadGuildDataFromDB()
 
         if (result == nullptr || result2 == nullptr)
         {
-            LOGGER.debug("Loaded 0 guild members. DB table `guild_members` OR `guild_members_withdraw` is empty.");
+            logger.debug("Loaded 0 guild members. DB table `guild_members` OR `guild_members_withdraw` is empty.");
         }
         else
         {
@@ -197,12 +197,12 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow() && result2->NextRow());
 
-            LOGGER.debug("Loaded %u guild members int %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            logger.debug("Loaded %u guild members int %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
     // 4. Load all guild bank tab rights
-    LOGGER.debug("Loading bank tab rights...");
+    logger.debug("Loading bank tab rights...");
     {
         auto startTime = Util::TimeNow();
 
@@ -214,7 +214,7 @@ void GuildMgr::loadGuildDataFromDB()
 
         if (result == nullptr)
         {
-            LOGGER.debug("Loaded 0 guild bank tab rights. DB table `guild_bank_rights` is empty.");
+            logger.debug("Loaded 0 guild bank tab rights. DB table `guild_bank_rights` is empty.");
         }
         else
         {
@@ -230,12 +230,12 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LOGGER.debug("Loaded %u bank tab rights in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            logger.debug("Loaded %u bank tab rights in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
     // 5. Load all event logs
-    LOGGER.debug("Loading guild event logs...");
+    logger.debug("Loading guild event logs...");
     {
         auto startTime = Util::TimeNow();
 
@@ -247,7 +247,7 @@ void GuildMgr::loadGuildDataFromDB()
 
         if (result == nullptr)
         {
-            LOGGER.debug("Loaded 0 guild event logs. DB table `guild_logs` is empty.");
+            logger.debug("Loaded 0 guild event logs. DB table `guild_logs` is empty.");
         }
         else
         {
@@ -263,12 +263,12 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LOGGER.debug("Loaded %u guild event logs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            logger.debug("Loaded %u guild event logs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
     // 6. Load all bank event logs
-    LOGGER.debug("Loading guild bank event logs...");
+    logger.debug("Loading guild bank event logs...");
     {
         auto startTime = Util::TimeNow();
 
@@ -279,7 +279,7 @@ void GuildMgr::loadGuildDataFromDB()
 
         if (result == nullptr)
         {
-            LOGGER.debug("Loaded 0 guild bank event logs. DB table `guild_bank_logs` is empty.");
+            logger.debug("Loaded 0 guild bank event logs. DB table `guild_bank_logs` is empty.");
         }
         else
         {
@@ -295,12 +295,12 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LOGGER.debug("Loaded %u guild bank event logs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            logger.debug("Loaded %u guild bank event logs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
     // 7. Load all news event logs
-    LOGGER.debug("Loading Guild News...");
+    logger.debug("Loading Guild News...");
     {
         auto startTime = Util::TimeNow();
 
@@ -312,7 +312,7 @@ void GuildMgr::loadGuildDataFromDB()
 
         if (result == nullptr)
         {
-            LOGGER.debug("Loaded 0 guild event logs. DB table `guild_news_log` is empty.");
+            logger.debug("Loaded 0 guild event logs. DB table `guild_news_log` is empty.");
         }
         else
         {
@@ -328,12 +328,12 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LOGGER.debug("Loaded %u guild new logs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            logger.debug("Loaded %u guild new logs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
     // 8. Load all guild bank tabs
-    LOGGER.debug("Loading guild bank tabs...");
+    logger.debug("Loading guild bank tabs...");
     {
         auto startTime = Util::TimeNow();
 
@@ -345,7 +345,7 @@ void GuildMgr::loadGuildDataFromDB()
 
         if (result == nullptr)
         {
-            LOGGER.debug("Loaded 0 guild bank tabs. DB table `guild_bank_tabs` is empty.");
+            logger.debug("Loaded 0 guild bank tabs. DB table `guild_bank_tabs` is empty.");
         }
         else
         {
@@ -361,12 +361,12 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LOGGER.debug("Loaded %u guild bank tabs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            logger.debug("Loaded %u guild bank tabs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
     // 9. Fill all guild bank tabs
-    LOGGER.debug("Filling bank tabs with items...");
+    logger.debug("Filling bank tabs with items...");
     {
         auto startTime = Util::TimeNow();
 
@@ -374,7 +374,7 @@ void GuildMgr::loadGuildDataFromDB()
 
         if (result == nullptr)
         {
-            LOGGER.info("Loaded 0 guild bank tab items. DB table `guild_bank_items` is empty.");
+            logger.info("Loaded 0 guild bank tab items. DB table `guild_bank_items` is empty.");
         }
         else
         {
@@ -390,7 +390,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LOGGER.info("Loaded %u guild bank items in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            logger.info("Loaded %u guild bank items in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -438,7 +438,7 @@ void GuildMgr::loadGuildXpForLevelFromDB()
     QueryResult* result = WorldDatabase.Query("SELECT lvl, xp_for_next_level FROM guild_xp_for_level");
     if (result == nullptr)
     {
-        LOGGER.debug("Loaded 0 xp for guild level definitions. DB table `guild_xp_for_level` is empty.");
+        logger.debug("Loaded 0 xp for guild level definitions. DB table `guild_xp_for_level` is empty.");
         return;
     }
 
@@ -453,7 +453,7 @@ void GuildMgr::loadGuildXpForLevelFromDB()
 
         if (level >= worldConfig.guild.maxLevel)
         {
-            LOGGER.debug("Table `guild_xp_for_level` includes invalid xp definitions for level %u which is higher than the defined levelcap in your config file! <skipped>", level);
+            logger.debug("Table `guild_xp_for_level` includes invalid xp definitions for level %u which is higher than the defined levelcap in your config file! <skipped>", level);
             continue;
         }
 
@@ -467,12 +467,12 @@ void GuildMgr::loadGuildXpForLevelFromDB()
     {
         if (!GuildXPperLevel[level])
         {
-            LOGGER.failure("Level %i does not have XP for guild level data. Using data of level [%i] + 1660000.", level + 1, level);
+            logger.failure("Level %i does not have XP for guild level data. Using data of level [%i] + 1660000.", level + 1, level);
             GuildXPperLevel[level] = GuildXPperLevel[level - 1] + 1660000;
         }
     }
 
-    LOGGER.debug("Loaded %u xp for guild level definitions in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    logger.debug("Loaded %u xp for guild level definitions in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void GuildMgr::loadGuildRewardsFromDB()
@@ -483,7 +483,7 @@ void GuildMgr::loadGuildRewardsFromDB()
     QueryResult* result = WorldDatabase.Query("SELECT entry, standing, racemask, price, achievement FROM guild_rewards");
     if (result == nullptr)
     {
-        LOGGER.debug("Loaded 0 guild reward definitions. DB table `guild_rewards` is empty.");
+        logger.debug("Loaded 0 guild reward definitions. DB table `guild_rewards` is empty.");
         return;
     }
 
@@ -501,13 +501,13 @@ void GuildMgr::loadGuildRewardsFromDB()
 
         if (!sItemStore.LookupEntry(reward.entry))
         {
-            LOGGER.failure("Guild rewards constains not existing item entry %u", reward.entry);
+            logger.failure("Guild rewards constains not existing item entry %u", reward.entry);
             continue;
         }
 
         if (reward.standing >= 8)
         {
-            LOGGER.failure("Guild rewards contains wrong reputation standing %u, max is %u", uint32_t(reward.standing), 8 - 1);
+            logger.failure("Guild rewards contains wrong reputation standing %u, max is %u", uint32_t(reward.standing), 8 - 1);
             continue;
         }
 
@@ -515,7 +515,7 @@ void GuildMgr::loadGuildRewardsFromDB()
         ++count;
     } while (result->NextRow());
 
-    LOGGER.debug("Loaded %u guild reward definitions in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    logger.debug("Loaded %u guild reward definitions in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 #if VERSION_STRING >= Cata

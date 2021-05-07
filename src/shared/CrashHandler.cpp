@@ -259,7 +259,7 @@ void CStackWalker::OnOutput(LPCSTR szText)
     FILE* m_file = fopen(s.c_str(), "a");
     if(!m_file) return;
 
-    LOGGER.failure("   %s", szText);
+    logger.failure("   %s", szText);
     fprintf(m_file, "   %s", szText);
     fclose(m_file);
 }
@@ -325,11 +325,11 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
                            FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH, 0);
     }
 
-    LOGGER.failure("Server has crashed. Creating crash dump file %s", filename);
+    logger.failure("Server has crashed. Creating crash dump file %s", filename);
 
     if(hDump == INVALID_HANDLE_VALUE)
     {
-        LOGGER.failure("Could not open crash dump file.");
+        logger.failure("Could not open crash dump file.");
     }
     else
     {
@@ -348,7 +348,7 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
     SetPriorityClass(GetCurrentProcess(), BELOW_NORMAL_PRIORITY_CLASS);
     OnCrash(!ON_CRASH_BREAK_DEBUGGER);
 
-    LOGGER.finalize();
+    logger.finalize();
     return EXCEPTION_CONTINUE_SEARCH;
 }
 #endif

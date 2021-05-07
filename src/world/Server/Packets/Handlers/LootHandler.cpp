@@ -112,13 +112,13 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
 
     if (srlPacket.slot >= loot->items.size())
     {
-        LOGGER.debug("Player %s might be using a hack! (slot %d, size %u)", _player->getName().c_str(), srlPacket.slot, static_cast<uint32_t>(loot->items.size()));
+        logger.debug("Player %s might be using a hack! (slot %d, size %u)", _player->getName().c_str(), srlPacket.slot, static_cast<uint32_t>(loot->items.size()));
         return;
     }
 
     if (loot->items[srlPacket.slot].looted)
     {
-        LOGGER.debug("Player %s GUID %u tried to loot an already looted item.", _player->getName().c_str(), _player->getGuidLow());
+        logger.debug("Player %s GUID %u tried to loot an already looted item.", _player->getName().c_str(), _player->getGuidLow());
         return;
     }
 
@@ -170,7 +170,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
             return;
         }
 
-        LOGGER.debug("AutoLootItem");
+        logger.debug("AutoLootItem");
         auto item = sObjectMgr.CreateItem(itemId, _player);
         if (item == nullptr)
             return;
@@ -659,7 +659,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        LOGGER.debug("Unhandled loot source object type in handleLootReleaseOpcode");
+        logger.debug("Unhandled loot source object type in handleLootReleaseOpcode");
     }
 }
 
@@ -709,7 +709,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
 
     if (srlPacket.slot >= loot->items.size())
     {
-        LOGGER.debug("AutoLootItem: Player %s might be using a hack! (slot %u, size %u)", _player->getName().c_str(), srlPacket.slot, static_cast<uint32_t>(loot->items.size()));
+        logger.debug("AutoLootItem: Player %s might be using a hack! (slot %u, size %u)", _player->getName().c_str(), srlPacket.slot, static_cast<uint32_t>(loot->items.size()));
         return;
     }
 

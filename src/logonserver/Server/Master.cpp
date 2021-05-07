@@ -34,33 +34,33 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     UNIXTIME = time(nullptr);
     g_localTime = *localtime(&UNIXTIME);
 
-    LOGGER.initalizeLogger("logon");
+    logger.initalizeLogger("logon");
 
     PrintBanner();
 
-    LOGGER.info("The key combination <Ctrl-C> will safely shut down the server.");
+    logger.info("The key combination <Ctrl-C> will safely shut down the server.");
 
-    LOGGER.info("Config : Loading Config Files...");
+    logger.info("Config : Loading Config Files...");
     if (!LoadLogonConfiguration())
     {
-        LOGGER.finalize();
+        logger.finalize();
         return;
     }
 
     if (!SetLogonConfiguration())
     {
-        LOGGER.finalize();
+        logger.finalize();
         return;
     }
 
-    LOGGER.setMinimumMessageType(static_cast<AscEmu::Logging::MessageType>(logonConfig.logger.minimumMessageType));
+    logger.setMinimumMessageType(static_cast<AscEmu::Logging::MessageType>(logonConfig.logger.minimumMessageType));
 
-    LOGGER.info("ThreadMgr : Starting...");
+    logger.info("ThreadMgr : Starting...");
     ThreadPool.Startup();
 
     if (!StartDb())
     {
-        LOGGER.finalize();
+        logger.finalize();
         return;
     }
 
@@ -70,7 +70,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
     if (!CheckDBVersion())
     {
-        LOGGER.finalize();
+        logger.finalize();
         return;
     }
 
@@ -111,7 +111,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
         uint32 loop_counter = 0;
 
-        LOGGER.info("Success! Ready for connections");
+        logger.info("Success! Ready for connections");
         while (mrunning)
         {
             if (!(++loop_counter % 20))             // 20 seconds
@@ -133,13 +133,13 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
             Arcemu::Sleep(1000);
         }
 
-        LOGGER.info("Shutting down...");
+        logger.info("Shutting down...");
 
         _UnhookSignals();
     }
     else
     {
-        LOGGER.failure("Error creating sockets. Shutting down...");
+        logger.failure("Error creating sockets. Shutting down...");
     }
 
     realmlistSocket->Close();
@@ -153,7 +153,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     sRealmsMgr.finalize();
 
     // kill db
-    LOGGER.info("Waiting for database to close..");
+    logger.info("Waiting for database to close..");
     sLogonSQL->EndThreads();
     sLogonSQL->Shutdown();
     delete sLogonSQL;
@@ -162,17 +162,17 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
     // delete pid file
     if (remove("logonserver.pid") != 0)
-        LOGGER.failure("Error deleting file logonserver.pid");
+        logger.failure("Error deleting file logonserver.pid");
     else
-        LOGGER.debug("File logonserver.pid successfully deleted");
+        logger.debug("File logonserver.pid successfully deleted");
 
     sSocketMgr.finalize();
     sSocketGarbageCollector.finalize();
     //delete periodicReloadAccounts;
     delete realmlistSocket;
     delete logonServerSocket;
-    LOGGER.info("Shutdown complete.");
-    LOGGER.finalize();
+    logger.info("Shutdown complete.");
+    logger.finalize();
 }
 
 void OnCrash(bool /*Terminate*/)
@@ -203,8 +203,8 @@ void MasterLogon::CheckForDeadSockets()
 
 void MasterLogon::PrintBanner()
 {
-    LOGGER.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "<< AscEmu %s/%s-%s (%s) :: Logon Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
-    LOGGER.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "========================================================");
+    logger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "<< AscEmu %s/%s-%s (%s) :: Logon Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    logger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "========================================================");
 }
 
 void MasterLogon::WritePidFile()
@@ -225,7 +225,7 @@ void MasterLogon::WritePidFile()
 
 void MasterLogon::_HookSignals()
 {
-    LOGGER.info("Hooking signals...");
+    logger.info("Hooking signals...");
     signal(SIGINT, _OnSignal);
     signal(SIGTERM, _OnSignal);
     signal(SIGABRT, _OnSignal);
@@ -296,7 +296,7 @@ bool MasterLogon::StartDb()
                 errorMessage += "    Name\r\n";
         }
 
-        LOGGER.fatal(errorMessage.c_str());
+        logger.fatal(errorMessage.c_str());
         return false;
     }
 
@@ -307,7 +307,7 @@ bool MasterLogon::StartDb()
         dbPassword.c_str(), dbDatabase.c_str(), logonConfig.logonDb.connections,
         16384))
     {
-        LOGGER.fatal("sql: Logon database initialization failed. Exiting.");
+        logger.fatal("sql: Logon database initialization failed. Exiting.");
         return false;
     }
 
@@ -319,7 +319,7 @@ bool MasterLogon::CheckDBVersion()
     QueryResult* versionQuery = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version;");
     if (!versionQuery)
     {
-        LOGGER.failure("Database : logon database is missing the table `logon_db_version`. AE will create one for you now!");
+        logger.failure("Database : logon database is missing the table `logon_db_version`. AE will create one for you now!");
         std::string createTable = "CREATE TABLE `logon_db_version` (`LastUpdate` varchar(255) NOT NULL DEFAULT '', PRIMARY KEY(`LastUpdate`)) ENGINE = InnoDB DEFAULT CHARSET = utf8;";
         sLogonSQL->ExecuteNA(createTable.c_str());
 
@@ -330,26 +330,26 @@ bool MasterLogon::CheckDBVersion()
     QueryResult* cqr = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version;");
     if (cqr == NULL)
     {
-        LOGGER.failure("Database : logon database is missing the table `logon_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
-        LOGGER.failure("Database : You may need to update your database");
+        logger.failure("Database : logon database is missing the table `logon_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
+        logger.failure("Database : You may need to update your database");
         return false;
     }
 
     Field* f = cqr->Fetch();
     const char *LogonDBVersion = f->GetString();
 
-    LOGGER.info("Database : Last logon database update: %s", LogonDBVersion);
+    logger.info("Database : Last logon database update: %s", LogonDBVersion);
     int result = strcmp(LogonDBVersion, REQUIRED_LOGON_DB_VERSION);
     if (result != 0)
     {
-        LOGGER.failure("Database : Last logon database update doesn't match the required one which is %s.", REQUIRED_LOGON_DB_VERSION);
+        logger.failure("Database : Last logon database update doesn't match the required one which is %s.", REQUIRED_LOGON_DB_VERSION);
         if (result < 0)
         {
-            LOGGER.failure("Database : You need to apply the logon update queries that are newer than %s. Exiting.", LogonDBVersion);
-            LOGGER.failure("Database : You can find the logon update queries in the sql/logon/updates sub-directory of your AscEmu source directory.");
+            logger.failure("Database : You need to apply the logon update queries that are newer than %s. Exiting.", LogonDBVersion);
+            logger.failure("Database : You can find the logon update queries in the sql/logon/updates sub-directory of your AscEmu source directory.");
         }
         else
-            LOGGER.failure("Database : Your logon database is too new for this AscEmu version, you need to update your server. Exiting.");
+            logger.failure("Database : Your logon database is too new for this AscEmu version, you need to update your server. Exiting.");
 
         delete cqr;
         return false;
@@ -357,7 +357,7 @@ bool MasterLogon::CheckDBVersion()
 
     delete cqr;
 
-    LOGGER.info("Database : Database successfully validated.");
+    logger.info("Database : Database successfully validated.");
 
     return true;
 }
@@ -370,11 +370,11 @@ bool MasterLogon::LoadLogonConfiguration()
 {
     if (Config.MainConfig.openAndLoadConfigFile(CONFDIR "/logon.conf"))
     {
-        LOGGER.info("Config : " CONFDIR "/logon.conf loaded");
+        logger.info("Config : " CONFDIR "/logon.conf loaded");
     }
     else
     {
-        LOGGER.failure("Config : error occurred loading " CONFDIR "/logon.conf");
+        logger.failure("Config : error occurred loading " CONFDIR "/logon.conf");
         return false;
     }
 
@@ -399,7 +399,7 @@ bool MasterLogon::SetLogonConfiguration()
         std::string::size_type i = allowedIP.find('/');
         if (i == std::string::npos)
         {
-            LOGGER.failure("Ips: %s could not be parsed. Ignoring", allowedIP.c_str());
+            logger.failure("Ips: %s could not be parsed. Ignoring", allowedIP.c_str());
             continue;
         }
 
@@ -410,7 +410,7 @@ bool MasterLogon::SetLogonConfiguration()
         const unsigned char ipmask = static_cast<char>(atoi(smask.c_str()));
         if (ipraw == 0 || ipmask == 0)
         {
-            LOGGER.failure("Ips: %s could not be parsed. Ignoring", allowedIP.c_str());
+            logger.failure("Ips: %s could not be parsed. Ignoring", allowedIP.c_str());
             continue;
         }
 
@@ -425,7 +425,7 @@ bool MasterLogon::SetLogonConfiguration()
         std::string::size_type i = allowedModIP.find('/');
         if (i == std::string::npos)
         {
-            LOGGER.failure("ModIps: %s could not be parsed. Ignoring", allowedModIP.c_str());
+            logger.failure("ModIps: %s could not be parsed. Ignoring", allowedModIP.c_str());
             continue;
         }
 
@@ -436,7 +436,7 @@ bool MasterLogon::SetLogonConfiguration()
         unsigned char ipmask = static_cast<char>(atoi(smask.c_str()));
         if (ipraw == 0 || ipmask == 0)
         {
-            LOGGER.failure("ModIps: %s could not be parsed. Ignoring", allowedModIP.c_str());
+            logger.failure("ModIps: %s could not be parsed. Ignoring", allowedModIP.c_str());
             continue;
         }
 

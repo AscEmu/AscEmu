@@ -471,7 +471,7 @@ Player::~Player()
 {
     if (!ok_to_remove)
     {
-        LOGGER.failure("Player deleted from non-logoutplayer!");
+        logger.failure("Player deleted from non-logoutplayer!");
 
         sObjectMgr.RemovePlayer(this);
     }
@@ -671,10 +671,10 @@ bool Player::Create(CharCreate& charCreateContent)
         m_session->Disconnect();
 #if VERSION_STRING > TBC
         if (charCreateContent._class == DEATHKNIGHT)
-            LOGGER.failure("Account Name: %s tried to create a deathknight, however your playercreateinfo table does not support this class, please update your database.", m_session->GetAccountName().c_str());
+            logger.failure("Account Name: %s tried to create a deathknight, however your playercreateinfo table does not support this class, please update your database.", m_session->GetAccountName().c_str());
         else
 #endif
-            LOGGER.failure("Account Name: %s tried to create an invalid character with race %u and class %u, if this is intended please update your playercreateinfo table inside your database.", m_session->GetAccountName().c_str(), charCreateContent._race, charCreateContent._class);
+            logger.failure("Account Name: %s tried to create an invalid character with race %u and class %u, if this is intended please update your playercreateinfo table inside your database.", m_session->GetAccountName().c_str(), charCreateContent._race, charCreateContent._class);
         return false;
     }
 
@@ -693,7 +693,7 @@ bool Player::Create(CharCreate& charCreateContent)
     // check that the account can create deathknights, if we're making one
     if (charCreateContent._class == DEATHKNIGHT && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_02))
     {
-        LOGGER.failure("Account %s tried to create a DeathKnight, but Account flag is %u!", m_session->GetAccountName().c_str(), m_session->_accountFlags);
+        logger.failure("Account %s tried to create a DeathKnight, but Account flag is %u!", m_session->GetAccountName().c_str(), m_session->_accountFlags);
         m_session->Disconnect();
         return false;
     }
@@ -801,7 +801,7 @@ bool Player::Create(CharCreate& charCreateContent)
             const auto itemProperties = sMySQLStore.getItemProperties(itemId);
             if (!itemProperties)
             {
-                LOGGER.debug("StartOutfit - Item with entry %u not in item_properties table but in CharStartOutfit.dbc!", itemId);
+                logger.debug("StartOutfit - Item with entry %u not in item_properties table but in CharStartOutfit.dbc!", itemId);
                 continue;
             }
 
@@ -828,7 +828,7 @@ bool Player::Create(CharCreate& charCreateContent)
                 {
                     if (!getItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, itemSlot))
                     {
-                        LOGGER.debug("StartOutfit - Item with entry %u can not be added safe to slot %u!", itemId, static_cast<uint32_t>(itemSlot));
+                        logger.debug("StartOutfit - Item with entry %u can not be added safe to slot %u!", itemId, static_cast<uint32_t>(itemSlot));
                         item->DeleteMe();
                     }
                 }
@@ -837,7 +837,7 @@ bool Player::Create(CharCreate& charCreateContent)
                     item->setStackCount(itemProperties->MaxCount);
                     if (!getItemInterface()->AddItemToFreeSlot(item))
                     {
-                        LOGGER.debug("StartOutfit - Item with entry %u can not be added to a free slot!", itemId);
+                        logger.debug("StartOutfit - Item with entry %u can not be added to a free slot!", itemId);
                         item->DeleteMe();
                     }
                 }
@@ -1086,7 +1086,7 @@ void Player::_EventAttack(bool offhand)
     //Can't find victim, stop attacking
     if (!pVictim)
     {
-        LOGGER.info("Player::Update:  No valid current selection to attack, stopping attack");
+        logger.info("Player::Update:  No valid current selection to attack, stopping attack");
         interruptHealthRegeneration(5000); //prevent clicking off creature for a quick heal
         EventAttackStop();
         return;
@@ -1174,8 +1174,8 @@ void Player::_EventCharmAttack()
     Unit* pVictim = GetMapMgr()->GetUnit(getTargetGuid());
     if (!pVictim)
     {
-        LOGGER.failure("WORLD: " I64FMT " doesn't exist.", getTargetGuid());
-        LOGGER.info("Player::Update:  No valid current selection to attack, stopping attack");
+        logger.failure("WORLD: " I64FMT " doesn't exist.", getTargetGuid());
+        logger.info("Player::Update:  No valid current selection to attack, stopping attack");
         this->interruptHealthRegeneration(5000); //prevent clicking off creature for a quick heal
         removeUnitStateFlag(UNIT_STATE_ATTACKING);
         EventAttackStop();
@@ -1504,7 +1504,7 @@ void Player::smsg_InitialSpells()
             continue;
         }
 
-        LOGGER.debug("InitialSpells sending spell cooldown for spell %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
+        logger.debug("InitialSpells sending spell cooldown for spell %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
 
         smsgInitialSpells.addSpellCooldown(itr2->first, itr2->second.ItemId, 0, itr2->second.ExpireTime - mstime, 0);
     }
@@ -1519,7 +1519,7 @@ void Player::smsg_InitialSpells()
             continue;
         }
 
-        LOGGER.debug("InitialSpells sending category cooldown for cat %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
+        logger.debug("InitialSpells sending category cooldown for cat %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
 
         smsgInitialSpells.addSpellCooldown(itr2->first, itr2->second.ItemId, static_cast<uint16_t>(itr2->first), 0, itr2->second.ExpireTime - mstime);
     }
@@ -1708,7 +1708,7 @@ void Player::SpawnPet(uint32 pet_number)
     std::map<uint32, PlayerPet* >::iterator itr = m_Pets.find(pet_number);
     if (itr == m_Pets.end())
     {
-        LOGGER.failure("PET SYSTEM: " I64FMT " Tried to load invalid pet %d", getGuid(), pet_number);
+        logger.failure("PET SYSTEM: " I64FMT " Tried to load invalid pet %d", getGuid(), pet_number);
         return;
     }
     Pet* pPet = sObjectMgr.CreatePet(itr->second->entry);
@@ -2567,7 +2567,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     QueryResult* result = results[PlayerQuery::LoginFlags].result;
     if (!result)
     {
-        LOGGER.failure("Player login query failed! guid = %u", getGuidLow());
+        logger.failure("Player login query failed! guid = %u", getGuidLow());
         RemovePendingPlayer();
         return;
     }
@@ -2575,7 +2575,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     const uint32 fieldcount = 95;
     if (result->GetFieldCount() != fieldcount)
     {
-        LOGGER.failure("Expected %u fields from the database, but received %u!  You may need to update your character database.", fieldcount, uint32(result->GetFieldCount()));
+        logger.failure("Expected %u fields from the database, but received %u!  You may need to update your character database.", fieldcount, uint32(result->GetFieldCount()));
         RemovePendingPlayer();
         return;
     }
@@ -2611,7 +2611,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     if (!myClass || !myRace)
     {
         // bad character
-        LOGGER.failure("guid %u failed to login, no race or class dbc found. (race %u class %u)", (unsigned int)getGuidLow(), (unsigned int)getRace(), (unsigned int)getClass());
+        logger.failure("guid %u failed to login, no race or class dbc found. (race %u class %u)", (unsigned int)getGuidLow(), (unsigned int)getRace(), (unsigned int)getClass());
         RemovePendingPlayer();
         return;
     }
@@ -2630,7 +2630,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     info = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
     if (info == nullptr)
     {
-        LOGGER.failure("player guid %u has no playerCreateInfo!", (unsigned int)getGuidLow());
+        logger.failure("player guid %u has no playerCreateInfo!", (unsigned int)getGuidLow());
         RemovePendingPlayer();
         return;
     }
@@ -2643,7 +2643,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     if (!lvlinfo)
     {
-        LOGGER.failure("guid %u level %u class %u race %u levelinfo not found!", (unsigned int)getGuidLow(), (unsigned int)getLevel(), (unsigned int)getClass(), (unsigned int)getRace());
+        logger.failure("guid %u level %u class %u race %u levelinfo not found!", (unsigned int)getGuidLow(), (unsigned int)getLevel(), (unsigned int)getClass(), (unsigned int)getRace());
         RemovePendingPlayer();
         return;
     }
@@ -3292,7 +3292,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
 
     auto timeToNow = Util::GetTimeDifferenceToNow(startTime);
-    LOGGER.info("Time for playerloading: %u ms", static_cast<uint32_t>(timeToNow));
+    logger.info("Time for playerloading: %u ms", static_cast<uint32_t>(timeToNow));
 }
 
 
@@ -3326,7 +3326,7 @@ void Player::SetPersistentInstanceId(Instance* pInstance)
     else // Set instance id to player.
         SetPersistentInstanceId(pInstance->m_mapId, pInstance->m_difficulty, pInstance->m_instanceId);
 
-    LOGGER.debug("Added player %u to saved instance %u on map %u.", (uint32)getGuid(), pInstance->m_instanceId, pInstance->m_mapId);
+    logger.debug("Added player %u to saved instance %u on map %u.", (uint32)getGuid(), pInstance->m_instanceId, pInstance->m_mapId);
 }
 
 void Player::SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 instanceId)
@@ -3841,7 +3841,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         auto item_set_entry = sItemSetStore.LookupEntry(setid);
         if (item_set_entry == nullptr)
         {
-            LOGGER.failure("Item %u has wrong ItemSet %u", proto->ItemId, setid);
+            logger.failure("Item %u has wrong ItemSet %u", proto->ItemId, setid);
         }
         else
         {
@@ -5156,7 +5156,7 @@ uint32 Player::SubtractRestXP(uint32 amount)
     else
         m_restAmount = restAmount;
 
-    LOGGER.debug("Subtracted %d rest XP to a total of %d", amount, m_restAmount);
+    logger.debug("Subtracted %d rest XP to a total of %d", amount, m_restAmount);
     UpdateRestState(); // Update clients interface with new values.
     return amount;
 }
@@ -5195,7 +5195,7 @@ void Player::AddCalculatedRestXP(uint32 seconds)
     if (m_restAmount > xp_to_lvl + (uint32)((float)(xp_to_lvl >> 1) * bubblerate))
         m_restAmount = xp_to_lvl + (uint32)((float)(xp_to_lvl >> 1) * bubblerate);
 
-    LOGGER.debug("Add %d rest XP to a total of %d, RestState %d", rested_xp, m_restAmount, m_isResting);
+    logger.debug("Add %d rest XP to a total of %d, RestState %d", rested_xp, m_restAmount, m_isResting);
 
     // Update clients interface with new values.
     UpdateRestState();
@@ -6289,7 +6289,7 @@ bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer
 
     if (deflateInit(&stream, rate) != Z_OK)
     {
-        LOGGER.failure("deflateInit failed.");
+        logger.failure("deflateInit failed.");
         return false;
     }
 
@@ -6305,7 +6305,7 @@ bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer
     if (deflate(&stream, Z_NO_FLUSH) != Z_OK ||
         stream.avail_in != 0)
     {
-        LOGGER.failure("deflate failed.");
+        logger.failure("deflate failed.");
         delete[] buffer;
         return false;
     }
@@ -6313,7 +6313,7 @@ bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer
     // finish the deflate
     if (deflate(&stream, Z_FINISH) != Z_STREAM_END)
     {
-        LOGGER.failure("deflate failed: did not end stream");
+        logger.failure("deflate failed: did not end stream");
         delete[] buffer;
         return false;
     }
@@ -6321,7 +6321,7 @@ bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer
     // finish up
     if (deflateEnd(&stream) != Z_OK)
     {
-        LOGGER.failure("deflateEnd failed.");
+        logger.failure("deflateEnd failed.");
         delete[] buffer;
         return false;
     }
@@ -6441,7 +6441,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
             auto chat_channels = sChatChannelsStore.LookupEntry(chn->m_id);
             if (!chat_channels)
             {
-                LOGGER.failure("Invalid channel entry %u for %s", chn->m_id, chn->m_name.c_str());
+                logger.failure("Invalid channel entry %u for %s", chn->m_id, chn->m_name.c_str());
                 return;
             }
 
@@ -6453,7 +6453,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
             Channel* newChannel = sChannelMgr.getOrCreateChannel(updatedName, nullptr, chn->m_id);
             if (newChannel == nullptr)
             {
-                LOGGER.failure("Could not create channel %s!", updatedName);
+                logger.failure("Could not create channel %s!", updatedName);
                 return; // whoops?
             }
 
@@ -8989,7 +8989,7 @@ void Player::AddCategoryCooldown(uint32 category_id, uint32 time, uint32 SpellId
         m_cooldownMap[COOLDOWN_TYPE_CATEGORY].insert(std::make_pair(category_id, cd));
     }
 
-    LOGGER.debug("Player::AddCategoryCooldown added cooldown for COOLDOWN_TYPE_CATEGORY category_type %u time %u item %u spell %u", category_id, time - Util::getMSTime(), ItemId, SpellId);
+    logger.debug("Player::AddCategoryCooldown added cooldown for COOLDOWN_TYPE_CATEGORY category_type %u time %u item %u spell %u", category_id, time - Util::getMSTime(), ItemId, SpellId);
 }
 
 void Player::_Cooldown_Add(uint32 Type, uint32 Misc, uint32 Time, uint32 SpellId, uint32 ItemId)
@@ -9014,7 +9014,7 @@ void Player::_Cooldown_Add(uint32 Type, uint32 Misc, uint32 Time, uint32 SpellId
         m_cooldownMap[Type].insert(std::make_pair(Misc, cd));
     }
 
-    LOGGER.debug("Cooldown added cooldown for type %u misc %u time %u item %u spell %u", Type, Misc, Time - Util::getMSTime(), ItemId, SpellId);
+    logger.debug("Cooldown added cooldown for type %u misc %u time %u item %u spell %u", Type, Misc, Time - Util::getMSTime(), ItemId, SpellId);
 }
 
 void Player::Cooldown_AddItem(ItemProperties const* pProto, uint32 x)
@@ -9203,7 +9203,7 @@ uint32 Player::GetMaxPersonalRating()
             }
             else
             {
-                LOGGER.failure("%s: GetMemberByGuid returned NULL for player guid = %u", __FUNCTION__, m_playerInfo->guid);
+                logger.failure("%s: GetMemberByGuid returned NULL for player guid = %u", __FUNCTION__, m_playerInfo->guid);
             }
         }
     }
@@ -9977,13 +9977,13 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
 
     if (!qst_giver)
     {
-        LOGGER.debug("WORLD: Invalid questgiver GUID.");
+        logger.debug("WORLD: Invalid questgiver GUID.");
         return;
     }
 
     if (!bValid || questProperties == nullptr)
     {
-        LOGGER.debug("WORLD: Creature is not a questgiver.");
+        logger.debug("WORLD: Creature is not a questgiver.");
         return;
     }
 
@@ -10091,7 +10091,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
 
     sQuestMgr.OnQuestAccepted(this, questProperties, qst_giver);
 
-    LOGGER.debug("WORLD: Added new QLE.");
+    logger.debug("WORLD: Added new QLE.");
     sHookInterface.OnQuestAccept(this, questProperties, qst_giver);
 }
 
@@ -10357,7 +10357,7 @@ bool Player::CanBuyAt(MySQLStructure::VendorRestrictions const* vendor)
         }
         else
         {
-            LOGGER.failure("VendorRestrictions: Mount vendor specified, but not enough info for creature %u", vendor->entry);
+            logger.failure("VendorRestrictions: Mount vendor specified, but not enough info for creature %u", vendor->entry);
         }
     }
 
@@ -10393,13 +10393,13 @@ void Player::addVehicleComponent(uint32 creature_entry, uint32 vehicleid)
 {
     if (mountvehicleid == 0)
     {
-        LOGGER.failure("Tried to add a vehicle component with 0 as vehicle id for player %u (%s)", getGuidLow(), getName().c_str());
+        logger.failure("Tried to add a vehicle component with 0 as vehicle id for player %u (%s)", getGuidLow(), getName().c_str());
         return;
     }
 
     if (m_vehicle != nullptr)
     {
-        LOGGER.failure("Tried to add a vehicle component, but there's already one for player %u (%s)", getGuidLow(), getName().c_str());
+        logger.failure("Tried to add a vehicle component, but there's already one for player %u (%s)", getGuidLow(), getName().c_str());
         return;
     }
 
@@ -10989,7 +10989,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 
 void Player::SendInitialLogonPackets()
 {
-    LOGGER.debug("Player %s gets prepared for login.", getName().c_str());
+    logger.debug("Player %s gets prepared for login.", getName().c_str());
 
 #if VERSION_STRING == Mop
     m_session->SendPacket(SmsgBindPointUpdate(getBindPosition(), getBindMapId(), getBindZoneId()).serialise().get());
@@ -11086,7 +11086,7 @@ void Player::SendInitialLogonPackets()
 #endif
 #endif
 
-    LOGGER.info("WORLD: Sent initial logon packets for %s.", getName().c_str());
+    logger.info("WORLD: Sent initial logon packets for %s.", getName().c_str());
 }
 
 void Player::SendLootUpdate(Object* o)
@@ -11189,7 +11189,7 @@ void Player::SendEquipmentSetList()
     getItemInterface()->m_EquipmentSets.FillEquipmentSetListPacket(data);
     m_session->SendPacket(&data);
 
-    LOGGER.debug("Sent SMSG_EQUIPMENT_SET_LIST.");
+    logger.debug("Sent SMSG_EQUIPMENT_SET_LIST.");
 #endif
 }
 
@@ -11202,7 +11202,7 @@ void Player::SendEquipmentSetSaved(uint32 setID, uint32 setGUID)
 
     m_session->SendPacket(&data);
 
-    LOGGER.debug("Sent SMSG_EQUIPMENT_SET_SAVED.");
+    logger.debug("Sent SMSG_EQUIPMENT_SET_SAVED.");
 #endif
 }
 

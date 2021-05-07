@@ -389,12 +389,12 @@ TileMap::~TileMap()
 
 void TileMap::Load(char* filename)
 {
-    LOGGER.debug("Loading %s", filename);
+    logger.debug("Loading %s", filename);
     FILE* f = fopen(filename, "rb");
 
     if (f == NULL)
     {
-        LOGGER.failure("%s does not exist", filename);
+        logger.failure("%s does not exist", filename);
         return;
     }
 

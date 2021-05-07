@@ -2887,7 +2887,7 @@ void ItemInterface::AddBuyBackItem(Item* it, uint32 price)
         {
             if (m_pOwner->getVendorBuybackSlot(i) == 0 || m_pBuyBack[i] == nullptr)
             {
-                LOGGER.info("setting buybackslot %u", i / 2);
+                logger.info("setting buybackslot %u", i / 2);
                 m_pBuyBack[i] = it;
 
                 m_pOwner->setVendorBuybackSlot(i, m_pBuyBack[i]->getGuid());
@@ -2918,7 +2918,7 @@ void ItemInterface::RemoveBuyBackItem(uint8_t index)
             {
                 m_pBuyBack[j] = nullptr;
 
-                LOGGER.info("nulling %u", j);
+                logger.info("nulling %u", j);
             }
         }
         else
@@ -2950,7 +2950,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
     Item* SrcItem = GetInventoryItem(srcslot);
     Item* DstItem = GetInventoryItem(dstslot);
 
-    LOGGER.debug("ItemInterface::SwapItemSlots(%u, %u);", srcslot, dstslot);
+    logger.debug("ItemInterface::SwapItemSlots(%u, %u);", srcslot, dstslot);
     //Item * temp = GetInventoryItem(srcslot);
     //if (temp)
     //    LOGGER.debug("Source item: %s (inventoryType=%u, realslot=%u);" , temp->GetProto()->Name1 , temp->GetProto()->InventoryType , GetItemSlotByType(temp->GetProto()->InventoryType));
@@ -3057,7 +3057,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
                 auto result = m_pOwner->getItemInterface()->SafeAddItem(tSrcItem, dstslot, static_cast<int16>(Slot));
                 if (!result)
                 {
-                    LOGGER.failure("Error while adding item %u to player %s", tSrcItem->getEntry(), m_pOwner->getName().c_str());
+                    logger.failure("Error while adding item %u to player %s", tSrcItem->getEntry(), m_pOwner->getName().c_str());
                     return;
                 }
             }
@@ -3934,7 +3934,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
             if ((it->RandomPropId != 0) && (it->RandomSuffixId != 0))
             {
-                LOGGER.failure("Item %u (%s) has both RandomPropId and RandomSuffixId.", itemid, it->Name.c_str());
+                logger.failure("Item %u (%s) has both RandomPropId and RandomSuffixId.", itemid, it->Name.c_str());
             }
 
             if (it->RandomPropId != 0)
@@ -3947,7 +3947,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
                 }
                 else
                 {
-                    LOGGER.failure("Item %u (%s) has unknown RandomPropId %u", itemid, it->Name.c_str(), it->RandomPropId);
+                    logger.failure("Item %u (%s) has unknown RandomPropId %u", itemid, it->Name.c_str(), it->RandomPropId);
                 }
             }
 
@@ -3961,7 +3961,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
                 }
                 else
                 {
-                    LOGGER.failure("Item %u (%s) has unknown RandomSuffixId %u", itemid, it->Name.c_str(), it->RandomSuffixId);
+                    logger.failure("Item %u (%s) has unknown RandomSuffixId %u", itemid, it->Name.c_str(), it->RandomSuffixId);
                 }
             }
         }
@@ -4216,7 +4216,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
             AddItemResult result = SafeAddItem(SrcItem, DstInvSlot, DstSlot);
             if (!result)
             {
-                LOGGER.failure("HandleSwapItem: Error while adding item to dstslot");
+                logger.failure("HandleSwapItem: Error while adding item to dstslot");
                 SrcItem->DeleteFromDB();
                 SrcItem->DeleteMe();
                 SrcItem = nullptr;
@@ -4229,7 +4229,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
             AddItemResult result = SafeAddItem(DstItem, SrcInvSlot, SrcSlot);
             if (!result)
             {
-                LOGGER.failure("HandleSwapItem: Error while adding item to srcslot");
+                logger.failure("HandleSwapItem: Error while adding item to srcslot");
                 DstItem->DeleteFromDB();
                 DstItem->DeleteMe();
                 DstItem = nullptr;

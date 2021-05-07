@@ -47,7 +47,7 @@ class SERVER_DECL ListenSocket : public ThreadBase
             int ret = ::bind(m_socket, (const sockaddr*)&m_address, sizeof(m_address));
             if (ret != 0)
             {
-                LOGGER.failure("Bind unsuccessful on port %u.", Port);
+                logger.failure("Bind unsuccessful on port %u.", Port);
                 return;
             }
 

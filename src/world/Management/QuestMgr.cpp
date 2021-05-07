@@ -303,7 +303,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
     if (!bValid)
     {
-        LOGGER.debug("QUESTS: Warning, invalid NPC " I64FMT " specified for ActiveQuestsCount. TypeId: %d.", quest_giver->getGuid(), quest_giver->getObjectTypeId());
+        logger.debug("QUESTS: Warning, invalid NPC " I64FMT " specified for ActiveQuestsCount. TypeId: %d.", quest_giver->getGuid(), quest_giver->getObjectTypeId());
         return 0;
     }
 
@@ -1515,7 +1515,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                 ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_item[i]);
                 if (!proto)
                 {
-                    LOGGER.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
+                    logger.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
                 }
                 else
                 {
@@ -1553,7 +1553,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_choiceitem[reward_slot]);
             if (!proto)
             {
-                LOGGER.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
+                logger.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
             }
             else
             {
@@ -1627,7 +1627,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                 ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_item[i]);
                 if (!proto)
                 {
-                    LOGGER.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
+                    logger.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
                 }
                 else
                 {
@@ -1665,7 +1665,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_choiceitem[reward_slot]);
             if (!proto)
             {
-                LOGGER.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
+                logger.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
             }
             else
             {
@@ -2025,7 +2025,7 @@ void QuestMgr::SendQuestInvalid(INVALID_REASON reason, Player* plyr)
 
     plyr->SendPacket(SmsgQuestgiverQuestInvalid(reason).serialise().get());
 
-    LOGGER.debug("WORLD:Sent SMSG_QUESTGIVER_QUEST_INVALID");
+    logger.debug("WORLD:Sent SMSG_QUESTGIVER_QUEST_INVALID");
 }
 
 void QuestMgr::SendQuestFailed(FAILED_REASON failed, QuestProperties const* qst, Player* plyr)
@@ -2035,7 +2035,7 @@ void QuestMgr::SendQuestFailed(FAILED_REASON failed, QuestProperties const* qst,
 
     plyr->SendPacket(SmsgQuestgiverQuestFailed(qst->id, failed).serialise().get());
 
-    LOGGER.debug("WORLD:Sent SMSG_QUESTGIVER_QUEST_FAILED");
+    logger.debug("WORLD:Sent SMSG_QUESTGIVER_QUEST_FAILED");
 }
 
 void QuestMgr::SendQuestUpdateFailedTimer(QuestProperties const* pQuest, Player* plyr)
@@ -2045,7 +2045,7 @@ void QuestMgr::SendQuestUpdateFailedTimer(QuestProperties const* pQuest, Player*
 
     plyr->SendPacket(SmsgQuestupdateFailedTimer(pQuest->id).serialise().get());
 
-    LOGGER.debug("WORLD:Sent SMSG_QUESTUPDATE_FAILEDTIMER");
+    logger.debug("WORLD:Sent SMSG_QUESTUPDATE_FAILEDTIMER");
 }
 
 void QuestMgr::SendQuestUpdateFailed(QuestProperties const* pQuest, Player* plyr)
@@ -2055,7 +2055,7 @@ void QuestMgr::SendQuestUpdateFailed(QuestProperties const* pQuest, Player* plyr
 
     plyr->SendPacket(SmsgQuestupdateFailed(pQuest->id).serialise().get());
 
-    LOGGER.debug("WORLD:Sent SMSG_QUESTUPDATE_FAILED");
+    logger.debug("WORLD:Sent SMSG_QUESTUPDATE_FAILED");
 }
 
 void QuestMgr::SendQuestLogFull(Player* plyr)
@@ -2064,7 +2064,7 @@ void QuestMgr::SendQuestLogFull(Player* plyr)
         return;
 
     plyr->SendPacket(SmsgQuestLogFull().serialise().get());
-    LOGGER.debug("WORLD:Sent QUEST_LOG_FULL_MESSAGE");
+    logger.debug("WORLD:Sent QUEST_LOG_FULL_MESSAGE");
 }
 
 uint32 QuestMgr::GetGameObjectLootQuest(uint32 GO_Entry)
@@ -2118,7 +2118,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
     if (questCount == 0)
     {
-        LOGGER.debug("WORLD: Invalid NPC for CMSG_QUESTGIVER_HELLO.");
+        logger.debug("WORLD: Invalid NPC for CMSG_QUESTGIVER_HELLO.");
         return false;
     }
 
@@ -2162,7 +2162,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         if (!bValid)
         {
-            LOGGER.debug("QUESTS: Warning, invalid NPC " I64FMT " specified for OnActivateQuestGiver. TypeId: %d.", qst_giver->getGuid(), qst_giver->getObjectTypeId());
+            logger.debug("QUESTS: Warning, invalid NPC " I64FMT " specified for OnActivateQuestGiver. TypeId: %d.", qst_giver->getGuid(), qst_giver->getObjectTypeId());
             return false;
         }
 
@@ -2181,7 +2181,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
         {
             sQuestMgr.BuildQuestDetails(&data, (*itr)->qst, qst_giver, 1, plr->GetSession()->language, plr); // 1 because we have 1 quest, and we want goodbye to function
             plr->GetSession()->SendPacket(&data);
-            LOGGER.debug("WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
+            logger.debug("WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 
             if ((*itr)->qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
                 plr->AcceptQuest(qst_giver->getGuid(), (*itr)->qst->id);
@@ -2191,20 +2191,20 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
             sQuestMgr.BuildOfferReward(&data, (*itr)->qst, qst_giver, 1, plr->GetSession()->language, plr);
             plr->GetSession()->SendPacket(&data);
             //ss
-            LOGGER.debug("WORLD: Sent SMSG_QUESTGIVER_OFFER_REWARD.");
+            logger.debug("WORLD: Sent SMSG_QUESTGIVER_OFFER_REWARD.");
         }
         else if (status == QuestStatus::NotFinished)
         {
             sQuestMgr.BuildRequestItems(&data, (*itr)->qst, qst_giver, status, plr->GetSession()->language);
             plr->GetSession()->SendPacket(&data);
-            LOGGER.debug("WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
+            logger.debug("WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
         }
     }
     else
     {
         sQuestMgr.BuildQuestList(&data, qst_giver, plr, plr->GetSession()->language);
         plr->GetSession()->SendPacket(&data);
-        LOGGER.debug("WORLD: Sent SMSG_QUESTGIVER_QUEST_LIST.");
+        logger.debug("WORLD: Sent SMSG_QUESTGIVER_QUEST_LIST.");
     }
     return true;
 }
@@ -2295,7 +2295,7 @@ bool QuestMgr::CanStoreReward(Player* plyr, QuestProperties const* qst, uint32 r
             slotsrequired++;
             ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_item[i]);
             if (!proto)
-                LOGGER.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
+                logger.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
             else if (plyr->getItemInterface()->CanReceiveItem(proto, qst->reward_itemcount[i]))
                 return false;
         }
@@ -2307,7 +2307,7 @@ bool QuestMgr::CanStoreReward(Player* plyr, QuestProperties const* qst, uint32 r
         slotsrequired++;
         ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_choiceitem[reward_slot]);
         if (!proto)
-            LOGGER.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
+            logger.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
         else if (plyr->getItemInterface()->CanReceiveItem(proto, qst->reward_choiceitemcount[reward_slot]))
             return false;
     }
@@ -2383,7 +2383,7 @@ void QuestMgr::LoadExtraQuestStuff()
                     else
                     {
                         // if quest has neither valid gameobject, log it.
-                        LOGGER.debug("Quest %lu has required_mobtype[%d]==%lu, it's not a valid GameObject.", qst->id, i, qst->required_mob_or_go[i]);
+                        logger.debug("Quest %lu has required_mobtype[%d]==%lu, it's not a valid GameObject.", qst->id, i, qst->required_mob_or_go[i]);
                     }
                 }
                 else
@@ -2394,7 +2394,7 @@ void QuestMgr::LoadExtraQuestStuff()
                     else
                     {
                         // if quest has neither valid creature, log it.
-                        LOGGER.debug("Quest %lu has required_mobtype[%d]==%lu, it's not a valid Creature.", qst->id, i, qst->required_mob_or_go[i]);
+                        logger.debug("Quest %lu has required_mobtype[%d]==%lu, it's not a valid Creature.", qst->id, i, qst->required_mob_or_go[i]);
                     }
                 }
 
@@ -2448,7 +2448,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 auto qst = sMySQLStore.getQuestProperties(quest);
                 if (qst == nullptr)
                 {
-                    LOGGER.debug("Tried to add starter to npc %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
+                    logger.debug("Tried to add starter to npc %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
                 }
                 else
                 {
@@ -2475,7 +2475,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 auto qst = sMySQLStore.getQuestProperties(quest);
                 if (qst == nullptr)
                 {
-                    LOGGER.debug("Tried to add finisher to npc %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
+                    logger.debug("Tried to add finisher to npc %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
                 }
                 else
                 {
@@ -2502,7 +2502,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 auto qst = sMySQLStore.getQuestProperties(quest);
                 if (qst == nullptr)
                 {
-                    LOGGER.debug("Tried to add starter to go %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
+                    logger.debug("Tried to add starter to go %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
                 }
                 else
                 {
@@ -2529,7 +2529,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 auto qst = sMySQLStore.getQuestProperties(quest);
                 if (qst == nullptr)
                 {
-                    LOGGER.debug("Tried to add finisher to go %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
+                    logger.debug("Tried to add finisher to go %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
                 }
                 else
                 {
@@ -2560,7 +2560,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                LOGGER.debug("Tried to add association to item %d for non-existent quest %d.", item, quest);
+                logger.debug("Tried to add association to item %d for non-existent quest %d.", item, quest);
             }
             else
             {
@@ -2603,7 +2603,7 @@ void QuestMgr::LoadExtraQuestStuff()
 
         delete result;
 
-        LOGGER.info("QuestMgr : Point Of Interest (POI) data loaded for %u quests.", count);
+        logger.info("QuestMgr : Point Of Interest (POI) data loaded for %u quests.", count);
 
 
 
@@ -2643,7 +2643,7 @@ void QuestMgr::LoadExtraQuestStuff()
             while (points->NextRow());
 
             delete points;
-            LOGGER.info("QuestMgr : %u quest Point Of Interest points loaded.", count);
+            logger.info("QuestMgr : %u quest Point Of Interest points loaded.", count);
         }
 
     }
@@ -2695,7 +2695,7 @@ void QuestMgr::AddItemQuestAssociation(uint32 itemId, QuestProperties const* qst
     {
         // yep, update the QuestAssociation with the new item_count information
         ptr->item_count = item_count;
-        LOGGER.debug("WARNING: Duplicate entries found in item_quest_association, updating item #%d with new item_count: %d.", itemId, item_count);
+        logger.debug("WARNING: Duplicate entries found in item_quest_association, updating item #%d with new item_count: %d.", itemId, item_count);
     }
 }
 

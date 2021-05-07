@@ -17,20 +17,20 @@ RealmsMgr& RealmsMgr::getInstance()
 
 void RealmsMgr::initialize(uint32_t checkTime)
 {
-    LOGGER.info("RealmsMgr : Starting...");
+    logger.info("RealmsMgr : Starting...");
     m_checkTime = checkTime;
     m_checkThread = nullptr;
     usePings = !logonConfig.logonServer.disablePings;
 
     LoadRealms();
-    LOGGER.info("RealmsMgr : Loaded %u realms definitisons.", static_cast<uint32_t>(sRealmsMgr._realmStore.size()));
+    logger.info("RealmsMgr : Loaded %u realms definitisons.", static_cast<uint32_t>(sRealmsMgr._realmStore.size()));
 
     m_checkThread = std::make_unique<AscEmu::Threading::AEThread>("CheckRealmStatus", [this](AscEmu::Threading::AEThread& thread) { this->checkRealmStatus(false); }, std::chrono::seconds(m_checkTime));
 }
 
 void RealmsMgr::finalize()
 {
-    LOGGER.info("RealmsMgr : Stop Manager...");
+    logger.info("RealmsMgr : Stop Manager...");
 
     m_checkThread->killAndJoin();
 }
@@ -107,7 +107,7 @@ void RealmsMgr::setLastPing(uint8_t realm_id)
 void RealmsMgr::checkRealmStatus(bool silent)
 {
     if (!silent)
-        LOGGER.info("[RealmsMgr] Checking Realm stats...");
+        logger.info("[RealmsMgr] Checking Realm stats...");
 
     for (auto& realm : _realmStore)
     {
@@ -115,7 +115,7 @@ void RealmsMgr::checkRealmStatus(bool silent)
         if (Util::GetTimeDifferenceToNow(realm->lastPing) > 2 * 60 * 1000 && realm->status != 0)
         {
             realm->status = 0;
-            LOGGER.info("Realm %u status gets set to 0 (offline) since there was no ping the last 2 minutes (%u).", uint32_t(realm->id), Util::GetTimeDifferenceToNow(realm->lastPing));
+            logger.info("Realm %u status gets set to 0 (offline) since there was no ping the last 2 minutes (%u).", uint32_t(realm->id), Util::GetTimeDifferenceToNow(realm->lastPing));
             sLogonSQL->Query("UPDATE realms SET status = 0 WHERE id = %u", uint32_t(realm->id));
         }
     }
@@ -123,7 +123,7 @@ void RealmsMgr::checkRealmStatus(bool silent)
 
 void RealmsMgr::sendRealms(AuthSocket* Socket)
 {
-    LOGGER.info("RealmsMgr::sendRealms");
+    logger.info("RealmsMgr::sendRealms");
     realmLock.Acquire();
 
     ByteBuffer data(_realmStore.size() * 150 + 20);
@@ -263,7 +263,7 @@ void RealmsMgr::checkServers()
 
         if (!sMasterLogon.IsServerAllowed(commServerSocket->GetRemoteAddress().s_addr))
         {
-            LOGGER.info("Disconnecting socket: %s due to it no longer being on an allowed IP.", commServerSocket->GetRemoteIP().c_str());
+            logger.info("Disconnecting socket: %s due to it no longer being on an allowed IP.", commServerSocket->GetRemoteIP().c_str());
             commServerSocket->Disconnect();
         }
     }
@@ -280,7 +280,7 @@ void RealmsMgr::setRealmOffline(uint32_t realm_id)
     {
         realm->flags = REALM_FLAG_OFFLINE | REALM_FLAG_INVALID;
         realm->_characterMap.clear();
-        LOGGER.info("RealmsMgr : Realm %u is now offline (socket close).", realm_id);
+        logger.info("RealmsMgr : Realm %u is now offline (socket close).", realm_id);
         sLogonSQL->Query("UPDATE realms SET status = 0 WHERE id = %u", uint32_t(realm->id));
     }
 

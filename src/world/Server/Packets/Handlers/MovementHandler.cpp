@@ -275,7 +275,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     if (mover->obj_movement_info.transport_guid != 0 && sessionMovementInfo.transport_guid == 0)
     {
         /* we left the transporter we were on */
-        LOGGER.debug("Left Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
+        logger.debug("Left Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
 
         Transporter* transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
         if (transporter != NULL)
@@ -292,7 +292,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
             if (mover->obj_movement_info.transport_guid == 0)
             {
-                LOGGER.debug("Entered Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(sessionMovementInfo.transport_guid));
+                logger.debug("Entered Transport guid %u", WoWGuid::getGuidLowPartFromUInt64(sessionMovementInfo.transport_guid));
 
                 Transporter* transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(sessionMovementInfo.transport_guid));
                 if (transporter != NULL)
@@ -411,7 +411,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
 void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)
 {
-    LOGGER.debug("Opcode %s (%u) received. This opcode is not known/implemented right now!",
+    logger.debug("Opcode %s (%u) received. This opcode is not known/implemented right now!",
         sOpcodeTables.getNameForInternalId(recvPacket.GetOpcode()).c_str(), recvPacket.GetOpcode());
 
     recvPacket.rfinish();
@@ -447,7 +447,7 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
     if (_player->IsInWorld())
         return;
 
-    LOGGER.debug("Received MSG_MOVE_WORLDPORT_ACK");
+    logger.debug("Received MSG_MOVE_WORLDPORT_ACK");
 
     if (_player->GetTransport() && _player->GetMapId() != _player->GetTransport()->GetMapId())
     {
@@ -480,7 +480,7 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOGGER.debug("Received MSG_MOVE_TELEPORT_ACK.");
+    logger.debug("Received MSG_MOVE_TELEPORT_ACK.");
 
     if (srlPacket.guid.getRawGuid() == _player->getGuid())
     {

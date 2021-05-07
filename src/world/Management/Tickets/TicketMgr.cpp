@@ -23,11 +23,11 @@ void TicketMgr::initialize()
         delete result;
     }
 
-    LOGGER.info("TicketMgr : HighGuid(TICKET) = %u", m_nextTicketId);
+    logger.info("TicketMgr : HighGuid(TICKET) = %u", m_nextTicketId);
 }
 void TicketMgr::finalize()
 {
-    LOGGER.info("TicketMgr : Deleting GM Tickets...");
+    logger.info("TicketMgr : Deleting GM Tickets...");
     for (GmTicketList::iterator itr = m_ticketList.begin(); itr != m_ticketList.end(); ++itr)
         delete(*itr);
 }
@@ -51,7 +51,7 @@ void TicketMgr::loadGMTickets()
     QueryResult* result = CharacterDatabase.Query("SELECT ticketid, playerGuid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment FROM gm_tickets");
     if (result == nullptr)
     {
-        LOGGER.info("TicketMgr : 0 active GM Tickets loaded.");
+        logger.info("TicketMgr : 0 active GM Tickets loaded.");
         return;
     }
 
@@ -77,7 +77,7 @@ void TicketMgr::loadGMTickets()
         addGMTicket(ticket, true);
     } while (result->NextRow());
 
-    LOGGER.info("ObjectMgr : %u active GM Tickets loaded.", result->GetRowCount());
+    logger.info("ObjectMgr : %u active GM Tickets loaded.", result->GetRowCount());
     delete result;
 }
 

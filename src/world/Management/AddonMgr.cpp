@@ -338,11 +338,11 @@ void AddonMgr::LoadFromDB()
 
         delete clientAddonsResult;
 
-        LOGGER.debug("Loaded %u known addons from table `clientaddons` in %u ms", knownAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)) );
+        logger.debug("Loaded %u known addons from table `clientaddons` in %u ms", knownAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)) );
     }
     else
     {
-        LOGGER.debug("Loaded 0 known addons, table `clientaddons` is empty");
+        logger.debug("Loaded 0 known addons, table `clientaddons` is empty");
     }
 
 
@@ -374,7 +374,7 @@ void AddonMgr::LoadFromDB()
 
         delete clientAddonsResult;
 
-        LOGGER.debug("Loaded %u banned addons from table `clientaddons` in %u ms", bannedAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+        logger.debug("Loaded %u banned addons from table `clientaddons` in %u ms", bannedAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }
 }
 

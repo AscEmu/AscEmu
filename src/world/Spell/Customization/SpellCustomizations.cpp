@@ -806,7 +806,7 @@ void SpellMgr::setSpellEffectAmplitude(SpellInfo* sp)
         {
             sp->setEffectAmplitude(1000, i);
 
-            LOGGER.debug("SpellMgr::setSpellEffectAmplitude : Modified amplitude for spell %s (%u)", sp->getName().c_str(), sp->getId());
+            logger.debug("SpellMgr::setSpellEffectAmplitude : Modified amplitude for spell %s (%u)", sp->getName().c_str(), sp->getId());
         }
     }
 }

@@ -16,7 +16,7 @@ void DatabaseUpdater::initBaseIfNeeded(std::string dbName, std::string dbBaseTyp
     QueryResult* dbResult = dbPointer.Query("SHOW TABLES FROM %s", dbName.c_str());
     if (dbResult == nullptr)
     {
-        LOGGER.info("Database: Your Database %s has no tables. AE is setting up the database for you.", dbName.c_str());
+        logger.info("Database: Your Database %s has no tables. AE is setting up the database for you.", dbName.c_str());
         setupDatabase(dbBaseType, dbPointer);
     }
 
@@ -70,7 +70,7 @@ void DatabaseUpdater::setupDatabase(std::string database, Database& dbPointer)
 
     if (fs::exists(baseFilePath))
     {
-        LOGGER.debug("%s", baseFilePath.c_str());
+        logger.debug("%s", baseFilePath.c_str());
         std::string loadedFile = Util::readFileIntoString(baseFilePath);
 
         // split into seperated string
@@ -97,7 +97,7 @@ void DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded(std::string database, Datab
 
     while (dbPointer.GetQueueSize() > 0)
     {
-        LOGGER.info("-- busy updating database \"%s\". Waiting for %u queries to be executed.", database.c_str(), dbPointer.GetQueueSize());
+        logger.info("-- busy updating database \"%s\". Waiting for %u queries to be executed.", database.c_str(), dbPointer.GetQueueSize());
         Arcemu::Sleep(500);
     }
 }
@@ -119,14 +119,14 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
 
     if (!result)
     {
-        LOGGER.failure("%s_db_version query failed!", database.c_str());
+        logger.failure("%s_db_version query failed!", database.c_str());
         return;
     }
 
     Field* fields = result->Fetch();
     const std::string dbLastUpdate = fields[0].GetString();
 
-    LOGGER.info("Database %s Version : %s", database.c_str(), dbLastUpdate.c_str());
+    logger.info("Database %s Version : %s", database.c_str(), dbLastUpdate.c_str());
 
     const auto lastUpdateMajor = Util::readMajorVersionFromString(dbLastUpdate);
     const auto lastUpdateMinor = Util::readMinorVersionFromString(dbLastUpdate);
@@ -152,7 +152,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
         dbUpdateFile.minorVersion = minorVersion;
 
         //\todo Remove me
-        LOGGER.info("Available file in updates dir: %s", filePathName.c_str());
+        logger.info("Available file in updates dir: %s", filePathName.c_str());
 
         updateSqlStore.emplace(std::pair<uint32_t, DatabaseUpdateFile>(count, dbUpdateFile));
         ++count;
@@ -164,7 +164,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
 
     if (!updateSqlStore.empty())
     {
-        LOGGER.debug("=========== New %s update files in %s ===========", database.c_str(), sqlUpdateDir.c_str());
+        logger.debug("=========== New %s update files in %s ===========", database.c_str(), sqlUpdateDir.c_str());
         //compare it with latest update in mysql
         for (const auto update : updateSqlStore)
         {
@@ -178,7 +178,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
             if (addToUpdateFiles)
             {
                 applyNewUpdateFilesStore.insert(update);
-                LOGGER.debug("Updatefile %s, Major(%u), Minor(%u) - added and ready to be applied!", update.second.fullName.c_str(), update.second.majorVersion, update.second.minorVersion);
+                logger.debug("Updatefile %s, Major(%u), Minor(%u) - added and ready to be applied!", update.second.fullName.c_str(), update.second.majorVersion, update.second.minorVersion);
             }
         }
     }
@@ -187,7 +187,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
     // 4. open/parse files and apply to db
     if (!applyNewUpdateFilesStore.empty())
     {
-        LOGGER.debug("=========== Applying sql updates from %s ===========", sqlUpdateDir.c_str());
+        logger.debug("=========== Applying sql updates from %s ===========", sqlUpdateDir.c_str());
 
         for (const auto execute : applyNewUpdateFilesStore)
         {
@@ -195,7 +195,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
 
             if (fs::exists(sqlFile))
             {
-                LOGGER.debug("%s", execute.second.fullName.c_str());
+                logger.debug("%s", execute.second.fullName.c_str());
                 std::string loadedFile = Util::readFileIntoString(sqlFile);
 
                 // split into seperated string

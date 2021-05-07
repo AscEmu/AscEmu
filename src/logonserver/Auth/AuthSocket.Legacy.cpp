@@ -86,7 +86,7 @@ void AuthSocket::HandleChallenge()
     // No header
     if (readBuffer.GetContiguiousBytes() < 4)
     {
-        LOGGER.failure("[AuthChallenge] Packet has no header. Refusing to handle.");
+        logger.failure("[AuthChallenge] Packet has no header. Refusing to handle.");
         return;
     }
 
@@ -96,23 +96,23 @@ void AuthSocket::HandleChallenge()
     uint16 full_size = *(uint16*)&ReceiveBuffer[2];
 
 
-    LOGGER.info("[AuthChallenge] got header, body is %u bytes", full_size);
+    logger.info("[AuthChallenge] got header, body is %u bytes", full_size);
 
     if (readBuffer.GetSize() < uint32(full_size + 4))
     {
-        LOGGER.failure("[AuthChallenge] Packet is smaller than expected, refusing to handle");
+        logger.failure("[AuthChallenge] Packet is smaller than expected, refusing to handle");
         return;
     }
 
     // Copy the data into our cached challenge structure
     if (full_size > sizeof(sAuthLogonChallenge_C))
     {
-        LOGGER.failure("[AuthChallenge] Packet is larger than expected, refusing to handle!");
+        logger.failure("[AuthChallenge] Packet is larger than expected, refusing to handle!");
         Disconnect();
         return;
     }
 
-    LOGGER.debug("[AuthChallenge] got a complete packet.");
+    logger.debug("[AuthChallenge] got a complete packet.");
 
     readBuffer.Read(&m_challenge, full_size + 4);
 
@@ -127,11 +127,11 @@ void AuthSocket::HandleChallenge()
         case 15595:
         case 18414:
         {
-            LOGGER.debug("Client with valid build %u connected", (uint32)client_build);
+            logger.debug("Client with valid build %u connected", (uint32)client_build);
         }break;
         default:
         {
-            LOGGER.debug("Client %s has unsupported game version. Clientbuild: %u", GetRemoteIP().c_str(), (uint32)client_build);
+            logger.debug("Client %s has unsupported game version. Clientbuild: %u", GetRemoteIP().c_str(), (uint32)client_build);
             SendChallengeError(CE_WRONG_BUILD_NUMBER);
         }break;
     }
@@ -177,7 +177,7 @@ void AuthSocket::HandleChallenge()
     IpBanStatus ipb = sIpBanMgr.getBanStatus(GetRemoteAddress());
 
     if (ipb != BAN_STATUS_NOT_BANNED)
-        LOGGER.info("[AuthChallenge] Client %s is banned, refusing to continue.", GetRemoteIP().c_str());
+        logger.info("[AuthChallenge] Client %s is banned, refusing to continue.", GetRemoteIP().c_str());
 
     switch (ipb)
     {
@@ -202,25 +202,25 @@ void AuthSocket::HandleChallenge()
     std::string::size_type i = AccountName.rfind("#");
     if (i != std::string::npos)
     {
-        LOGGER.failure("# ACCOUNTNAME!");
+        logger.failure("# ACCOUNTNAME!");
         return;
         //AccountName.erase( i );
     }
 
     // Look up the account information
-    LOGGER.debug("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
+    logger.debug("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
     m_account = sAccountMgr.getAccountByName(AccountName);
     if (m_account == 0)
     {
-        LOGGER.debug("[AuthChallenge] Invalid account.");
+        logger.debug("[AuthChallenge] Invalid account.");
 
         // Non-existant account
         SendChallengeError(CE_NO_ACCOUNT);
         return;
     }
 
-    LOGGER.debug("[AuthChallenge] Account banned state = %u", m_account->Banned);
+    logger.debug("[AuthChallenge] Account banned state = %u", m_account->Banned);
 
     // Check that the account isn't banned.
     if (m_account->Banned == 1)
@@ -309,7 +309,7 @@ void AuthSocket::HandleProof()
 {
     if (readBuffer.GetSize() < sizeof(sAuthLogonProof_C))
     {
-        LOGGER.failure("[AuthLogonProof] The packet received is larger than expected, refusing to handle it!");
+        logger.failure("[AuthLogonProof] The packet received is larger than expected, refusing to handle it!");
         return;
     }
 
@@ -318,7 +318,7 @@ void AuthSocket::HandleProof()
     {
         //RemoveReadBufferBytes(75,false);
         readBuffer.Remove(75);
-        LOGGER.debug("[AuthLogonProof] Intitiating PatchJob");
+        logger.debug("[AuthLogonProof] Intitiating PatchJob");
         uint8 bytes[2] = { 0x01, 0x0a };
         Send(bytes, 2);
         PatchMgr::getInstance().InitiatePatch(m_patch, this);
@@ -328,7 +328,7 @@ void AuthSocket::HandleProof()
     if (!m_account)
         return;
 
-    LOGGER.debug("[AuthLogonProof] Interleaving and checking proof...");
+    logger.debug("[AuthLogonProof] Interleaving and checking proof...");
 
     sAuthLogonProof_C lp;
     //Read(sizeof(sAuthLogonProof_C), (uint8*)&lp);
@@ -425,7 +425,7 @@ void AuthSocket::HandleProof()
         // Authentication failed.
         //SendProofError(4, 0);
         SendChallengeError(CE_NO_ACCOUNT);
-        LOGGER.debug("[AuthLogonProof] M values don't match. ( Either invalid password or the logon server is bugged. )");
+        logger.debug("[AuthLogonProof] M values don't match. ( Either invalid password or the logon server is bugged. )");
         return;
     }
 
@@ -439,7 +439,7 @@ void AuthSocket::HandleProof()
 
     //SendProofError(0, sha.GetDigest());
     sendAuthProof(sha);
-    LOGGER.debug("[AuthLogonProof] Authentication Success.");
+    logger.debug("[AuthLogonProof] Authentication Success.");
 
     // we're authenticated now :)
     m_authenticated = true;
@@ -553,7 +553,7 @@ void AuthSocket::OnRead()
 {
     if (readBuffer.GetContiguiousBytes() < 1)
     {
-        LOGGER.debug("readBuffer.GetContiguiousBytes() is < 1! Skipped!");
+        logger.debug("readBuffer.GetContiguiousBytes() is < 1! Skipped!");
         return;
     }
 
@@ -561,12 +561,12 @@ void AuthSocket::OnRead()
     last_recv = UNIXTIME;
     if (Command < MAX_AUTH_CMD && Handlers[Command] != NULL)
     {
-        LOGGER.debug("Handler %u called", Command);
+        logger.debug("Handler %u called", Command);
         (this->*Handlers[Command])();
     }
     else
     {
-        LOGGER.debug("Unknown handler %u called", Command);
+        logger.debug("Unknown handler %u called", Command);
     }
 }
 
@@ -584,7 +584,7 @@ void AuthSocket::HandleReconnectChallenge()
     // Check the rest of the packet is complete.
     uint8* ReceiveBuffer = /*GetReadBuffer(0)*/(uint8*)readBuffer.GetBufferStart();
     uint16 full_size = *(uint16*)&ReceiveBuffer[2];
-    LOGGER.info("[AuthChallenge] got header, body is %u bytes", full_size);
+    logger.info("[AuthChallenge] got header, body is %u bytes", full_size);
 
     if (readBuffer.GetSize() < (uint32)full_size + 4)
         return;
@@ -596,7 +596,7 @@ void AuthSocket::HandleReconnectChallenge()
         return;
     }
 
-    LOGGER.debug("[AuthChallenge] got full packet.");
+    logger.debug("[AuthChallenge] got full packet.");
 
     memcpy(&m_challenge, ReceiveBuffer, full_size + 4);
     //RemoveReadBufferBytes(full_size + 4, false);
@@ -649,19 +649,19 @@ void AuthSocket::HandleReconnectChallenge()
 
         // Look up the account information
     std::string AccountName = (char*)&m_challenge.I;
-    LOGGER.debug("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
+    logger.debug("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
     m_account = sAccountMgr.getAccountByName(AccountName);
     if (m_account == 0)
     {
-        LOGGER.debug("[AuthChallenge] Invalid account.");
+        logger.debug("[AuthChallenge] Invalid account.");
 
         // Non-existant account
         SendChallengeError(CE_NO_ACCOUNT);
         return;
     }
 
-    LOGGER.debug("[AuthChallenge] Account banned state = %u", m_account->Banned);
+    logger.debug("[AuthChallenge] Account banned state = %u", m_account->Banned);
 
     // Check that the account isn't banned.
     if (m_account->Banned == 1)
@@ -744,7 +744,7 @@ void AuthSocket::HandleReconnectProof()
 
 void AuthSocket::HandleTransferAccept()
 {
-    LOGGER.debug("Accepted transfer");
+    logger.debug("Accepted transfer");
     if (!m_patch)
         return;
 
@@ -755,7 +755,7 @@ void AuthSocket::HandleTransferAccept()
 
 void AuthSocket::HandleTransferResume()
 {
-    LOGGER.debug("Resuming transfer");
+    logger.debug("Resuming transfer");
     if (!m_patch)
         return;
 

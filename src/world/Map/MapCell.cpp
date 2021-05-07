@@ -270,7 +270,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
             else
             {
                 MySQLStructure::CreatureSpawn* spawn = (*i);
-                LOGGER.failure("Failed spawning Creature %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
+                logger.failure("Failed spawning Creature %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
                 delete c;       //missing proto or something of that kind
             }
         }
@@ -290,7 +290,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
             else
             {
                 MySQLStructure::GameobjectSpawn* spawn = (*i);
-                LOGGER.failure("Failed spawning GameObject %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
+                logger.failure("Failed spawning GameObject %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
                 delete go;          //missing proto or something of that kind
             }
         }
@@ -304,13 +304,13 @@ void MapCell::QueueUnloadPending()
         return;
 
     _unloadpending = true;
-    LOGGER.debug("Queueing pending unload of cell %u %u", _x, _y);
+    logger.debug("Queueing pending unload of cell %u %u", _x, _y);
     sEventMgr.AddEvent(_mapmgr, &MapMgr::UnloadCell, (uint32)_x, (uint32)_y, MAKE_CELL_EVENT(_x, _y), worldConfig.server.mapUnloadTime * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void MapCell::CancelPendingUnload()
 {
-    LOGGER.debug("Cancelling pending unload of cell %u %u", _x, _y);
+    logger.debug("Cancelling pending unload of cell %u %u", _x, _y);
     if (!_unloadpending)
         return;
 
@@ -320,7 +320,7 @@ void MapCell::CancelPendingUnload()
 
 void MapCell::Unload()
 {
-    LOGGER.debug("Unloading cell %u %u", _x, _y);
+    logger.debug("Unloading cell %u %u", _x, _y);
     ARCEMU_ASSERT(_unloadpending);
     if (_active)
     {

@@ -28,7 +28,7 @@ void BroadcastMgr::threadInit()
     }
     else
     {
-        LOGGER.info("BroadcastMgr : Started");
+        logger.info("BroadcastMgr : Started");
     }
 
     m_thread->reboot();

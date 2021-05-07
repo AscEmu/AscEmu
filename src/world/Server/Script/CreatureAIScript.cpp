@@ -32,7 +32,7 @@ void CreatureAISpells::addDBEmote(uint32_t textId)
     if (npcScriptText != nullptr)
         addEmote(npcScriptText->text, npcScriptText->type, npcScriptText->sound);
     else
-        LOGGER.debug("A script tried to add a spell emote with %u! Id is not available in table npc_script_text.", textId);
+        logger.debug("A script tried to add a spell emote with %u! Id is not available in table npc_script_text.", textId);
 }
 
 void CreatureAISpells::addEmote(std::string pText, uint8_t pType, uint32_t pSoundId)
@@ -45,7 +45,7 @@ void CreatureAISpells::sendRandomEmote(CreatureAIScript* creatureAI)
 {
     if (!mAISpellEmote.empty() && creatureAI != nullptr)
     {
-        LOGGER.debug("AISpellEmotes::sendRandomEmote() : called");
+        logger.debug("AISpellEmotes::sendRandomEmote() : called");
 
         uint32_t randomUInt = (mAISpellEmote.size() > 1) ? Util::getRandomUInt(static_cast<uint32_t>(mAISpellEmote.size() - 1)) : 0;
         creatureAI->getCreature()->SendChatMessage(mAISpellEmote[randomUInt].mType, LANG_UNIVERSAL, mAISpellEmote[randomUInt].mText.c_str());
@@ -134,7 +134,7 @@ void CreatureAISpells::sendAnnouncement(CreatureAIScript* creatureAI)
 {
     if (!mAnnouncement.empty() && creatureAI != nullptr)
     {
-        LOGGER.debug("AISpellEmotes::sendAnnouncement() : called");
+        logger.debug("AISpellEmotes::sendAnnouncement() : called");
 
         creatureAI->getCreature()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, mAnnouncement.c_str());
     }
@@ -179,7 +179,7 @@ CreatureAIScript::~CreatureAIScript()
 // Event default management
 void CreatureAIScript::_internalOnDied()
 {
-    LOGGER.debug("CreatureAIScript::_internalOnDied() called");
+    logger.debug("CreatureAIScript::_internalOnDied() called");
 
     enableOnIdleEmote(false);
 
@@ -196,14 +196,14 @@ void CreatureAIScript::_internalOnDied()
 
 void CreatureAIScript::_internalOnTargetDied()
 {
-    LOGGER.debug("CreatureAIScript::_internalOnTargetDied() called");
+    logger.debug("CreatureAIScript::_internalOnTargetDied() called");
 
     sendRandomDBChatMessage(mEmotesOnTargetDied);
 }
 
 void CreatureAIScript::_internalOnCombatStart()
 {
-    LOGGER.debug("CreatureAIScript::_internalOnEnterCombat() called");
+    logger.debug("CreatureAIScript::_internalOnEnterCombat() called");
 
     enableOnIdleEmote(false);
 
@@ -218,7 +218,7 @@ void CreatureAIScript::_internalOnCombatStart()
 
 void CreatureAIScript::_internalOnCombatStop()
 {
-    LOGGER.debug("CreatureAIScript::_internalOnCombatStop() called");
+    logger.debug("CreatureAIScript::_internalOnCombatStop() called");
 
     _cancelAllTimers();
     _removeAllAuras();
@@ -265,7 +265,7 @@ void CreatureAIScript::_internalAIUpdate()
 
 void CreatureAIScript::_internalOnScriptPhaseChange()
 {
-    LOGGER.debug("CreatureAIScript::_internalOnScriptPhaseChange() called");
+    logger.debug("CreatureAIScript::_internalOnScriptPhaseChange() called");
 
     getCreature()->GetScript()->OnScriptPhaseChange(getScriptPhase());
 }
@@ -326,7 +326,7 @@ Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry);
     if (creatureProperties == nullptr)
     {
-        LOGGER.failure("tried to create an invalid creature with entry %u!", entry);
+        logger.failure("tried to create an invalid creature with entry %u!", entry);
         return nullptr;
     }
 
@@ -741,7 +741,7 @@ void CreatureAIScript::_cancelAllTimers()
         mCreatureTimer.clear();
     }
 
-    LOGGER.debug("CreatureAIScript::_cancelAllTimers() - all cleared!");
+    logger.debug("CreatureAIScript::_cancelAllTimers() - all cleared!");
 }
 
 uint32_t CreatureAIScript::_getTimerCount()
@@ -914,7 +914,7 @@ CreatureAISpells* CreatureAIScript::addAISpell(uint32_t spellId, float castChanc
         return newAISpell;
     }
 
-    LOGGER.failure("tried to add invalid spell with id %u", spellId);
+    logger.failure("tried to add invalid spell with id %u", spellId);
 
     // assert spellInfo can not be nullptr!
     ARCEMU_ASSERT(spellInfo != nullptr);
@@ -1049,7 +1049,7 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                     const float targetDistance = getCreature()->GetPosition().Distance2DSq({ mCurrentSpellTarget->GetPositionX(), mCurrentSpellTarget->GetPositionY() });
                     if (!mLastCastedSpell->isDistanceInRange(targetDistance))
                     {
-                        LOGGER.debug("Target outside of spell range (%u)! Min: %f Max: %f, distance to Target: %f", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);
+                        logger.debug("Target outside of spell range (%u)! Min: %f Max: %f, distance to Target: %f", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);
                         getCreature()->interruptSpell();
                         mLastCastedSpell = nullptr;
                     }
@@ -1307,13 +1307,13 @@ void CreatureAIScript::addEmoteForEvent(uint32_t eventType, uint32_t scriptTextI
                 mEmotesOnIdle.push_back(scriptTextId);
                 break;
             default:
-                LOGGER.debug("CreatureAIScript::addEmoteForEvent : Invalid event type: %u !", eventType);
+                logger.debug("CreatureAIScript::addEmoteForEvent : Invalid event type: %u !", eventType);
                 break;
         }
     }
     else
     {
-        LOGGER.debug("CreatureAIScript::addEmoteForEvent : id: %u is not available in table npc_script_text!", scriptTextId);
+        logger.debug("CreatureAIScript::addEmoteForEvent : id: %u is not available in table npc_script_text!", scriptTextId);
     }
 }
 
@@ -1330,7 +1330,7 @@ void CreatureAIScript::enableOnIdleEmote(bool enable, uint32_t durationInMs /*= 
 {
     if (enable && mEmotesOnIdle.empty())
     {
-        LOGGER.debug("CreatureAIScript::enableOnIdleEmote : no IdleEvents available!");
+        logger.debug("CreatureAIScript::enableOnIdleEmote : no IdleEvents available!");
         return;
     }
 

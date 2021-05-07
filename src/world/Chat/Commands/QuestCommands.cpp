@@ -365,7 +365,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_item[i]);
                     if (!proto)
                     {
-                        LOGGER.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
+                        logger.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
                     }
                     else
                     {
@@ -404,7 +404,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_choiceitem[reward_slot]);
                 if (!proto)
                 {
-                    LOGGER.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
+                    logger.failure("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
                 }
                 else
                 {
@@ -1494,7 +1494,7 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
             if (!itemProto)
             {
                 recout << "Unknown item id %lu" << itemid;
-                LOGGER.failure("WORLD: Unknown item id 0x%08x", itemid);
+                logger.failure("WORLD: Unknown item id 0x%08x", itemid);
             }
             else
             {
@@ -1512,7 +1512,7 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
             if (!itemProto)
             {
                 recout << "Unknown item id %lu" << itemid;
-                LOGGER.failure("WORLD: Unknown item id 0x%08x", itemid);
+                logger.failure("WORLD: Unknown item id 0x%08x", itemid);
             }
             else
             {
@@ -1531,7 +1531,7 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
     else
     {
         recout << "Quest ID " << qu_id << " not found.\n";
-        LOGGER.failure("Quest ID %lu not found.", qu_id);
+        logger.failure("Quest ID %lu not found.", qu_id);
     }
 
     SendMultilineMessage(m_session, recout.str().data());

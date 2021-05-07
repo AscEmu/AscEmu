@@ -74,12 +74,12 @@ void ConsoleThread::stopThread()
     WriteConsoleInput(GetStdHandle(STD_INPUT_HANDLE), inputRecord, 2, &tempDWORD);
 #endif
 
-    LOGGER.info("Waiting for console thread to terminate...");
+    logger.info("Waiting for console thread to terminate...");
 
     while (mIsConsoleThreadRunning)
     {
         Arcemu::Sleep(100);
     }
 
-    LOGGER.info("Console shut down.");
+    logger.info("Console shut down.");
 }

@@ -46,7 +46,7 @@ Map::Map(uint32 mapid, MySQLStructure::MapInfo const* inf)
 
 Map::~Map()
 {
-    LOGGER.info("Map : ~Map %u", this->_mapId);
+    logger.info("Map : ~Map %u", this->_mapId);
 
     for (uint32 x = 0; x < _sizeX; x++)
     {
@@ -181,5 +181,5 @@ void Map::LoadSpawns(bool reload)
             ++GameObjectSpawnCount;
         }
     }
-    LOGGER.info("MapMgr : %u creatures / %u gobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
+    logger.info("MapMgr : %u creatures / %u gobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
 }

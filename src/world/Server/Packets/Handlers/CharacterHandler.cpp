@@ -183,7 +183,7 @@ void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOGGER.debug("Received CMSG_PLAYER_LOGIN %u (guidLow)", srlPacket.guid.getGuidLow());
+    logger.debug("Received CMSG_PLAYER_LOGIN %u (guidLow)", srlPacket.guid.getGuidLow());
 
     if (sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow()) != nullptr || m_loggingInPlayer || _player)
     {
@@ -317,7 +317,7 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
 
     if (player == nullptr)
     {
-        LOGGER.failure("Unknown class %u!", _class);
+        logger.failure("Unknown class %u!", _class);
         SendPacket(SmsgCharacterLoginFailed(E_CHAR_LOGIN_NO_CHARACTER).serialise().get());
         return;
     }
@@ -325,7 +325,7 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
     player->SetSession(this);
     m_bIsWLevelSet = false;
 
-    LOGGER.debug("Async loading player %u", static_cast<uint32_t>(playerGuid));
+    logger.debug("Async loading player %u", static_cast<uint32_t>(playerGuid));
     m_loggingInPlayer = player;
     player->LoadFromDB(static_cast<uint32_t>(playerGuid));
 }
@@ -632,7 +632,7 @@ void WorldSession::sendServerStats()
 
 void WorldSession::fullLogin(Player* player)
 {
-    LOGGER.debug("WorldSession : Fully loading player %u", player->getGuidLow());
+    logger.debug("WorldSession : Fully loading player %u", player->getGuidLow());
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // basic setup
@@ -701,7 +701,7 @@ void WorldSession::fullLogin(Player* player)
     //////////////////////////////////////////////////////////////////////////////////////////
     // set db, time and count - our db now knows that we are online.
     CharacterDatabase.Execute("UPDATE characters SET online = 1 WHERE guid = %u", player->getGuidLow());
-    LOGGER.debug("Player %s logged in.", player->getName().c_str());
+    logger.debug("Player %s logged in.", player->getName().c_str());
     sWorld.incrementPlayerCount(player->getTeam());
 
     player->m_playedtime[2] = uint32_t(UNIXTIME);
@@ -828,7 +828,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
 
             if (!isClassRaceCombinationPossible(charEnum.Class, charEnum.race))
             {
-                LOGGER.debug("Class %u and race %u is not a valid combination for Version %u - skipped",
+                logger.debug("Class %u and race %u is not a valid combination for Version %u - skipped",
                     charEnum.Class, charEnum.race, VERSION_STRING);
                 continue;
             }
@@ -957,7 +957,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
         } while (result->NextRow());
     }
 
-    LOGGER.debug("Character Enum Built in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    logger.debug("Character Enum Built in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     SendPacket(SmsgCharEnum(charRealCount, enumData).serialise().get());
 }
 

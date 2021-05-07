@@ -2814,7 +2814,7 @@ void Spell::HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target
     {
         if (mapid != Target->GetMapId())
         {
-            LOGGER.failure("Tried to teleport a Creature to another map.");
+            logger.failure("Tried to teleport a Creature to another map.");
             return;
         }
 
@@ -3222,7 +3222,7 @@ void Spell::SpellEffectJumpBehindTarget(uint8_t /*i*/)
         }
         else
         {
-            LOGGER.debug("Coordinates are empty");
+            logger.debug("Coordinates are empty");
         }
     }
 }

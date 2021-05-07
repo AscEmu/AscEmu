@@ -217,7 +217,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         {
             // TODO Verify "strange gestures" for xfaction
             _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_EMOTE, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), true, true);
-            LOGGER.info("[emote] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
+            logger.info("[emote] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
         } break;
         case CHAT_MSG_SAY:
         {
@@ -274,7 +274,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                         }
                     }
                 }
-                LOGGER.info("[party] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
+                logger.info("[party] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
             }
         } break;
         case CHAT_MSG_GUILD:
@@ -575,5 +575,5 @@ void WorldSession::handleChatChannelWatchOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOGGER.debug("Unhandled... Player %s watch channel: %s", _player->getName().c_str(), srlPacket.name.c_str());
+    logger.debug("Unhandled... Player %s watch channel: %s", _player->getName().c_str(), srlPacket.name.c_str());
 }

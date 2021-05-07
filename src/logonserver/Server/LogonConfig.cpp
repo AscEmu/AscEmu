@@ -29,11 +29,11 @@ void LogonConfig::loadConfigValues(bool reload /*false*/)
     {
         if (Config.MainConfig.openAndLoadConfigFile(CONFDIR "/logon.conf"))
         {
-            LOGGER.info("Config : " CONFDIR "/logon.conf reloaded");
+            logger.info("Config : " CONFDIR "/logon.conf reloaded");
         }
         else
         {
-            LOGGER.failure("Config : error occurred loading " CONFDIR "/logon.conf");
+            logger.failure("Config : error occurred loading " CONFDIR "/logon.conf");
             return;
         }
     }

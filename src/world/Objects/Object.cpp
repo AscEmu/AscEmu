@@ -1380,7 +1380,7 @@ void Object::addToInRangeObjects(Object* pObj)
     ARCEMU_ASSERT(pObj != nullptr);
 
     if (pObj == this)
-        LOGGER.failure("We are in range of ourselves!");
+        logger.failure("We are in range of ourselves!");
 
     if (pObj->isPlayer())
         mInRangePlayersSet.push_back(pObj);
@@ -3234,7 +3234,7 @@ void Object::AddToWorld()
     MapMgr* mapMgr = sInstanceMgr.GetInstance(this);
     if (mapMgr == nullptr)
     {
-        LOGGER.failure("AddToWorld() failed for Object with GUID " I64FMT " MapId %u InstanceId %u", getGuid(), GetMapId(), GetInstanceID());
+        logger.failure("AddToWorld() failed for Object with GUID " I64FMT " MapId %u InstanceId %u", getGuid(), GetMapId(), GetInstanceID());
         return;
     }
 
@@ -3306,7 +3306,7 @@ void Object::PushToWorld(MapMgr* mgr)
 
     if (mgr == nullptr)
     {
-        LOGGER.failure("Invalid push to world of Object " I64FMT, getGuid());
+        logger.failure("Invalid push to world of Object " I64FMT, getGuid());
         return; //instance add failed
     }
 
@@ -3615,7 +3615,7 @@ void Object::setServersideFaction()
     {
         faction_template = sFactionTemplateStore.LookupEntry(static_cast<Unit*>(this)->getFactionTemplate());
         if (faction_template == nullptr)
-            LOGGER.failure("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->getFactionTemplate(), getEntry());
+            logger.failure("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->getFactionTemplate(), getEntry());
     }
     else if (isGameObject())
     {
@@ -3625,7 +3625,7 @@ void Object::setServersideFaction()
         {
             if (faction_template == nullptr)
             {
-                LOGGER.failure("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->getFactionTemplate(), getEntry());
+                logger.failure("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->getFactionTemplate(), getEntry());
             }
         }
     }
@@ -3859,7 +3859,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
                 MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(textId);
                 if (npcScriptText == nullptr)
                 {
-                    LOGGER.failure("Invalid textId: %u. This text is send by a script but not in table npc_script_text!", textId);
+                    logger.failure("Invalid textId: %u. This text is send by a script but not in table npc_script_text!", textId);
                     return;
                 }
 
@@ -4304,7 +4304,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t o
     MovementStatusElements* sequence = GetMovementStatusElementsSequence(sOpcodeTables.getInternalIdForHex(opcode));
     if (!sequence)
     {
-        LOGGER.failure("Unsupported MovementInfo::Read for 0x%X (%s)!", opcode);
+        logger.failure("Unsupported MovementInfo::Read for 0x%X (%s)!", opcode);
         return;
     }
 
@@ -4564,7 +4564,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t 
     MovementStatusElements* sequence = GetMovementStatusElementsSequence(opcode);
     if (!sequence)
     {
-        LOGGER.failure("Unsupported MovementInfo::Write for 0x%X!", opcode);
+        logger.failure("Unsupported MovementInfo::Write for 0x%X!", opcode);
         return;
     }
 

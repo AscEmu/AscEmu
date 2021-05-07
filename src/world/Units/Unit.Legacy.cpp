@@ -756,7 +756,7 @@ Unit::~Unit()
     for (std::list<ExtraStrike*>::iterator itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end(); ++itx)
     {
         ExtraStrike* es = *itx;
-        LOGGER.failure("ExtraStrike added to Unit %u by Spell ID %u wasn't removed when removing the Aura", getGuid(), es->spell_info->getId());
+        logger.failure("ExtraStrike added to Unit %u by Spell ID %u wasn't removed when removing the Aura", getGuid(), es->spell_info->getId());
         delete es;
     }
     m_extraStrikeTargets.clear();
@@ -8086,7 +8086,7 @@ void Unit::smsg_AttackStart(Unit* pVictim)
 {
     SendMessageToSet(SmsgAttackStart(getGuid(), pVictim->getGuid()).serialise().get(), false);
 
-    LOGGER.debug("WORLD: Sent SMSG_ATTACKSTART");
+    logger.debug("WORLD: Sent SMSG_ATTACKSTART");
 
     // FLAGS changed so other players see attack animation
     //    addUnitFlag(UNIT_FLAG_COMBAT);
@@ -8327,7 +8327,7 @@ void Unit::RemoveAllAuraType(uint32 auratype)
 
 bool Unit::SetAurDuration(uint32 spellId, Unit* caster, uint32 duration)
 {
-    LOGGER.debug("setAurDuration2");
+    logger.debug("setAurDuration2");
     Aura* aur = getAuraWithIdForGuid(spellId, caster->getGuid());
     if (!aur)
         return false;
@@ -8343,7 +8343,7 @@ bool Unit::SetAurDuration(uint32 spellId, uint32 duration)
     if (!aur)
         return false;
 
-    LOGGER.debug("setAurDuration2");
+    logger.debug("setAurDuration2");
     aur->setTimeLeft(duration);
     sEventMgr.ModifyEventTimeLeft(aur, EVENT_AURA_REMOVE, duration);
 
@@ -8431,7 +8431,7 @@ void Unit::MoveToWaypoint(uint32 wp_id)
         }
         else
         {
-            LOGGER.failure("Invalid waypoint specified.");
+            logger.failure("Invalid waypoint specified.");
         }
     }
 }
@@ -9554,7 +9554,7 @@ void Unit::DispelAll(bool positive)
 // MaxDispel was set to -1 which will led to a uint32 of 4294967295
 bool Unit::RemoveAllAurasByMechanic(uint32 MechanicType, uint32 /*MaxDispel = 0*/, bool HostileOnly = true)
 {
-    LOGGER.debug("Unit::MechanicImmunityMassDispel called, mechanic: %u" , MechanicType);
+    logger.debug("Unit::MechanicImmunityMassDispel called, mechanic: %u" , MechanicType);
     uint32 DispelCount = 0;
     for (uint32 x = (HostileOnly ? MAX_NEGATIVE_AURAS_EXTEDED_START : MAX_POSITIVE_AURAS_EXTEDED_START); x < MAX_REMOVABLE_AURAS_END; x++)    // If HostileOnly = 1, then we use aura slots 40-56 (hostile). Otherwise, we use 0-56 (all)
     {
@@ -9566,7 +9566,7 @@ bool Unit::RemoveAllAurasByMechanic(uint32 MechanicType, uint32 /*MaxDispel = 0*
         {
             if (m_auras[x]->getSpellInfo()->getMechanicsType() == MechanicType)   // Remove all mechanics of type MechanicType (my english goen boom)
             {
-                LOGGER.debug("Removed aura. [AuraSlot %u, SpellId %u]", x, m_auras[x]->getSpellId());
+                logger.debug("Removed aura. [AuraSlot %u, SpellId %u]", x, m_auras[x]->getSpellId());
                 ///\todo Stop moving if fear was removed.
                 m_auras[x]->removeAura(); // EZ-Remove
                 DispelCount++;

@@ -194,7 +194,7 @@ void AuctionHouse::updateDeletionQueue()
 
 void AuctionHouse::removeAuction(Auction* auction)
 {
-    LOGGER.debug("%u: Removing auction %u, reason %u.", auctionHouseEntryDbc->id, auction->Id, auction->removedType);
+    logger.debug("%u: Removing auction %u, reason %u.", auctionHouseEntryDbc->id, auction->Id, auction->removedType);
 
     char subject[100];
     char body[200];
@@ -284,7 +284,7 @@ void AuctionHouse::addAuction(Auction* auction)
 
     auctions.insert(std::unordered_map<uint32_t, Auction*>::value_type(auction->Id, auction));
 
-    LOGGER.debug("AuctionHouse : %u: Add auction %u, expire@ %u.", auctionHouseEntryDbc->id, auction->Id, auction->expireTime);
+    logger.debug("AuctionHouse : %u: Add auction %u, expire@ %u.", auctionHouseEntryDbc->id, auction->Id, auction->expireTime);
 }
 
 Auction* AuctionHouse::getAuction(uint32_t id)

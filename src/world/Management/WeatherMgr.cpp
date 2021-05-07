@@ -111,7 +111,7 @@ void WeatherMgr::finalize()
 
 void WeatherMgr::LoadFromDB()
 {
-    LOGGER.info("Loading Weather..."); // weather type 0= sunny / 1= fog / 2 = light_rain / 4 = rain / 8 = snow / ?? = sandstorm
+    logger.info("Loading Weather..."); // weather type 0= sunny / 1= fog / 2 = light_rain / 4 = rain / 8 = snow / ?? = sandstorm
     QueryResult* result = WorldDatabase.Query("SELECT zoneId,high_chance,high_type,med_chance,med_type,low_chance,low_type FROM weather");
 
     if (!result)
@@ -133,7 +133,7 @@ void WeatherMgr::LoadFromDB()
         wi->_GenerateWeather();
     }
     while (result->NextRow());
-    LOGGER.info("WeatherMgr : Loaded weather information for %u zones.", result->GetRowCount());
+    logger.info("WeatherMgr : Loaded weather information for %u zones.", result->GetRowCount());
 
     delete result;
 }
@@ -214,7 +214,7 @@ void WeatherInfo::_GenerateWeather()
     SendUpdate();
 
     sEventMgr.AddEvent(this, &WeatherInfo::BuildUp, EVENT_WEATHER_UPDATE, (uint32)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 2), 0, 0);
-    LOGGER.debug("Forecast for zone:%d new type:%d new interval:%d ms", m_zoneId, m_currentEffect, (uint32)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 2));
+    logger.debug("Forecast for zone:%d new type:%d new interval:%d ms", m_zoneId, m_currentEffect, (uint32)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 2));
 }
 
 void WeatherInfo::BuildUp()

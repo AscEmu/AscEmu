@@ -29,9 +29,9 @@ LogonConsole& LogonConsole::getInstance()
 
 void LogonConsole::TranslateRehash(char* /*str*/)
 {
-    LOGGER.info("rehashing config file...");
+    logger.info("rehashing config file...");
     if (sMasterLogon.LoadLogonConfiguration())
-        LOGGER.info("Rehashing config file finished succesfull!");
+        logger.info("Rehashing config file finished succesfull!");
 }
 
 void LogonConsole::demoTicker(AscEmu::Threading::AEThread& /*thread*/)
@@ -79,12 +79,12 @@ void LogonConsole::Kill()
     ir[1].Event.KeyEvent.wVirtualScanCode = 28;
     WriteConsoleInput(GetStdHandle(STD_INPUT_HANDLE), ir, 2, &dwTmp);
 #endif
-    LOGGER.info("Waiting for console thread to terminate....");
+    logger.info("Waiting for console thread to terminate....");
     while (_thread != nullptr)
     {
         Arcemu::Sleep(100);
     }
-    LOGGER.info("Console shut down.");
+    logger.info("Console shut down.");
 }
 
 bool LogonConsoleThread::runThread()

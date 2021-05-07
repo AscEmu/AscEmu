@@ -78,7 +78,7 @@ void DayWatcherThread::threadInit()
     load_settings();
     set_tm_pointers();
 
-    LOGGER.info("DayWatcherThread : Started");
+    logger.info("DayWatcherThread : Started");
     m_thread->reboot();
 }
 
@@ -119,7 +119,7 @@ void DayWatcherThread::load_settings()
     }
     else
     {
-        LOGGER.info("DayWatcherThread : Initializing Arena Updates to zero.");
+        logger.info("DayWatcherThread : Initializing Arena Updates to zero.");
         m_lastArenaTime = 0;
     }
 
@@ -132,7 +132,7 @@ void DayWatcherThread::load_settings()
     }
     else
     {
-        LOGGER.info("DayWatcherThread : Initializing Daily Updates to zero.");
+        logger.info("DayWatcherThread : Initializing Daily Updates to zero.");
         m_lastDailyTime = 0;
     }
 }
@@ -176,7 +176,7 @@ bool DayWatcherThread::has_timeout_expired(tm* now_time, tm* last_time, uint32_t
 
 void DayWatcherThread::update_daily()
 {
-    LOGGER.info("DayWatcherThread : Running Daily Quest Reset...");
+    logger.info("DayWatcherThread : Running Daily Quest Reset...");
 
     CharacterDatabase.WaitExecute("UPDATE characters SET finisheddailies = ''");
     CharacterDatabase.WaitExecute("UPDATE characters SET rbg_daily = '0'");     // Reset RBG
@@ -189,7 +189,7 @@ void DayWatcherThread::update_daily()
 
 void DayWatcherThread::update_arena()
 {
-    LOGGER.info("DayWatcherThread : Running Weekly Arena Point Maintenance...");
+    logger.info("DayWatcherThread : Running Weekly Arena Point Maintenance...");
 
     QueryResult* result = CharacterDatabase.Query("SELECT guid, arenaPoints FROM characters");
     uint32_t arenapointsPerTeam[3] = { 0 };

@@ -691,7 +691,7 @@ void AIInterface::addWayPoint(Movement::WayPoint* waypoint)
 
     if (addWayPointUnsafe(waypoint) == false)
     {
-        LOGGER.failure("WayPoint ID %u wasn't added to Unit ID %x.", waypoint->id, GetUnit()->getGuid());
+        logger.failure("WayPoint ID %u wasn't added to Unit ID %x.", waypoint->id, GetUnit()->getGuid());
         delete waypoint;
     }
 }
@@ -1931,7 +1931,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                             break;
                         }
                         default:
-                            LOGGER.failure("AI Agents: Targettype of AI agent spell %u for creature %u not set", spellInfo->getId(), static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Id);
+                            logger.failure("AI Agents: Targettype of AI agent spell %u for creature %u not set", spellInfo->getId(), static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Id);
                     }
 
                     // castSpell(m_Unit, spellInfo, targets);
@@ -3063,7 +3063,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     }
     else
     {
-        LOGGER.debug("Called new Waypoint Generator for Player!");
+        logger.debug("Called new Waypoint Generator for Player!");
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -3099,7 +3099,7 @@ SpellInfo const* AIInterface::getSpellEntry(uint32 spellId)
 
     if (!spellInfo)
     {
-        LOGGER.failure("WORLD: unknown spell id %i", spellId);
+        logger.failure("WORLD: unknown spell id %i", spellId);
         return NULL;
     }
 
@@ -4089,7 +4089,7 @@ void AIInterface::AddSpline(float x, float y, float z)
                 movetime = (uint32)(dist / m_walkSpeed);
                 break;
             default:
-                LOGGER.failure("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
+                logger.failure("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
                 movetime = 1;
                 break;
         }
@@ -4097,7 +4097,7 @@ void AIInterface::AddSpline(float x, float y, float z)
     }
     else
     {
-        LOGGER.failure("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
+        logger.failure("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
         //setting movetime to default value of 1 second. Change if to either a return; or something more meaningful
         //but don't leave movetime uninitialized...
         movetime = 1;

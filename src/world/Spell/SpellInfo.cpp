@@ -321,7 +321,7 @@ int32_t SpellInfo::getBasePowerCost(Unit* caster) const
     {
         if (!hasValidPowerType())
         {
-            LOGGER.failure("SpellInfo::getBasePowerCost : Unknown power type %u for spell id %u", getPowerType(), getId());
+            logger.failure("SpellInfo::getBasePowerCost : Unknown power type %u for spell id %u", getPowerType(), getId());
             return 0;
         }
 
@@ -357,7 +357,7 @@ int32_t SpellInfo::getBasePowerCost(Unit* caster) const
                     break;
 #endif
                 default:
-                    LOGGER.failure("SpellInfo::getBasePowerCost() : Unknown power type %u for spell id %u", getPowerType(), getId());
+                    logger.failure("SpellInfo::getBasePowerCost() : Unknown power type %u for spell id %u", getPowerType(), getId());
                     return 0;
             }
         }
