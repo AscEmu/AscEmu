@@ -30,22 +30,7 @@ namespace AscEmu::Logging
 
         static Logger& getInstance();
 
-        void finalize()
-        {
-            if (this->normalLogFile != nullptr)
-            {
-                fflush(this->normalLogFile);
-                fclose(this->normalLogFile);
-                this->normalLogFile = nullptr;
-            }
-
-            if (this->errorLogFile != nullptr)
-            {
-                fflush(this->errorLogFile);
-                fclose(this->errorLogFile);
-                this->errorLogFile = nullptr;
-            }
-        }
+        void finalize();
 
         void initalizeLogger(std::string file_prefix);
 
@@ -86,7 +71,6 @@ namespace AscEmu::Logging
 #endif
 
         void setSeverityConsoleColor(Severity severity);
-        
     };
 
     std::string getFormattedFileName(std::string path_prefix, std::string file_prefix, bool use_date_time);

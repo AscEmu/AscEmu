@@ -53,6 +53,4 @@ enum LogLevel
     LL_DEBUG     = 2
 };
 
-
-
 #endif  // LOG_DEFINES_HPP

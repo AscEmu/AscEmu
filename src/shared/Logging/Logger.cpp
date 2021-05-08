@@ -21,6 +21,23 @@ namespace AscEmu::Logging
         return mInstance;
     }
 
+    void Logger::finalize()
+    {
+        if (this->normalLogFile != nullptr)
+        {
+            fflush(this->normalLogFile);
+            fclose(this->normalLogFile);
+            this->normalLogFile = nullptr;
+        }
+
+        if (this->errorLogFile != nullptr)
+        {
+            fflush(this->errorLogFile);
+            fclose(this->errorLogFile);
+            this->errorLogFile = nullptr;
+        }
+    }
+
     void Logger::initalizeLogger(std::string file_prefix)
     {
 #ifdef _WIN32
