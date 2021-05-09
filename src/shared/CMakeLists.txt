@@ -20,7 +20,7 @@ set(sources
     ${SRC_LOGGING_FILES}
     ${SRC_NETWORK_FILES}
     ${SRC_THREADING_FILES}
-	${SRC_UTIL_FILES}
+    ${SRC_UTIL_FILES}
 
     CrashHandler.cpp
     crc32.cpp
