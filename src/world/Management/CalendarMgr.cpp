@@ -30,14 +30,14 @@ CalendarMgr& CalendarMgr::getInstance()
 
 void CalendarMgr::LoadFromDB()
 {
-    LogNotice("CalendarMgr : Start loading calendar_events");
+    sLogger.info("CalendarMgr : Start loading calendar_events");
     {
         const char* loadCalendarEvents = "SELECT entry, creator, title, description, type, dungeon, date, flags FROM calendar_events";
         bool success = false;
         QueryResult* result = CharacterDatabase.Query(&success, loadCalendarEvents);
         if (!success)
         {
-            LOG_ERROR("Query failed: %s", loadCalendarEvents);
+            sLogger.failure("Query failed: %s", loadCalendarEvents);
             return;
         }
         if (result)
@@ -59,25 +59,25 @@ void CalendarMgr::LoadFromDB()
                 CalendarEvent* calendarEvent = new CalendarEvent(static_cast<uint32>(entry), creator, title, description, type, dungeon, time_t(date), flags);
                 _events.insert(calendarEvent);
 
-                LOG_DEBUG("Title %s loaded", calendarEvent->title.c_str()); // remove me ;-)
+                sLogger.debug("Title %s loaded", calendarEvent->title.c_str()); // remove me ;-)
 
                 ++count;
             }
             while (result->NextRow());
             delete result;
 
-            LogDetail("CalendarMgr : %u calendar events loaded from table calendar_events", count);
+            sLogger.info("CalendarMgr : %u calendar events loaded from table calendar_events", count);
         }
     }
 
-    LogNotice("CalendarMgr : Start loading calendar_invites");
+    sLogger.info("CalendarMgr : Start loading calendar_invites");
     {
         const char* loadCalendarInvites = "SELECT `id`, `event`, `invitee`, `sender`, `status`, `statustime`, `rank`, `text` FROM `calendar_invites`";
         bool success = false;
         QueryResult* result = CharacterDatabase.Query(&success, loadCalendarInvites);
         if (!success)
         {
-            LOG_ERROR("Query failed: %s", loadCalendarInvites);
+            sLogger.failure("Query failed: %s", loadCalendarInvites);
             return;
         }
         if (result)
@@ -103,7 +103,7 @@ void CalendarMgr::LoadFromDB()
             }
             while (result->NextRow());
             delete result;
-            LogDetail("CalendarMgr : Loaded %u calendar invites", count);
+            sLogger.info("CalendarMgr : Loaded %u calendar invites", count);
         }
     }
 }

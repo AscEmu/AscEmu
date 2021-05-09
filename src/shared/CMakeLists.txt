@@ -14,6 +14,8 @@ set(sources
     Database/CreateInterface.cpp
     Database/Database.cpp
     Database/MySQLDatabase.cpp
+    
+    Logging/Logger.cpp
 
     Network/CircularBuffer.cpp
     Network/Socket.cpp
@@ -75,6 +77,10 @@ set(headers
     Database/MySQLDatabase.h
     Exceptions/Exceptions.hpp
     Exceptions/PlayerExceptions.hpp
+    Logging/ConsoleDefines.hpp
+    Logging/Logger.hpp
+    Logging/MessageType.hpp
+    Logging/Severity.hpp
     Network/CircularBuffer.h
     Network/ListenSocketFreeBSD.h
     Network/ListenSocketLinux.h

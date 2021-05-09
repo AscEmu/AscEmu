@@ -477,7 +477,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
     }
 
     plr->SetInstanceID(in->m_instanceId);
-    LOG_DEBUG("Creating instance for player %u and group %u on map %u. (%u)", in->m_creatorGuid, in->m_creatorGroup, in->m_mapId, in->m_instanceId);
+    sLogger.debug("Creating instance for player %u and group %u on map %u. (%u)", in->m_creatorGuid, in->m_creatorGroup, in->m_mapId, in->m_instanceId);
 
     // save our new instance to the database.
     SaveInstanceToDB(in);
@@ -643,7 +643,7 @@ MapMgr* InstanceMgr::_CreateInstance(uint32_t mapid, uint32_t instanceid)
     ARCEMU_ASSERT(mapInfo != nullptr && mapInfo->type == INSTANCE_NULL);
     ARCEMU_ASSERT(mapid < MAX_NUM_MAPS && m_maps[mapid] != nullptr);
 
-    LogNotice("InstanceMgr : Creating continent %s.", m_maps[mapid]->GetMapName().c_str());
+    sLogger.info("InstanceMgr : Creating continent %s.", m_maps[mapid]->GetMapName().c_str());
 
     const auto newMap = new MapMgr(m_maps[mapid], mapid, instanceid);
 
@@ -661,7 +661,7 @@ MapMgr* InstanceMgr::_CreateInstance(Instance* in)
     if (m_maps[in->m_mapId] == nullptr)
         return nullptr;
 
-    LogNotice("InstanceMgr : Creating saved instance %u (%s)", in->m_instanceId, m_maps[in->m_mapId]->GetMapName().c_str());
+    sLogger.info("InstanceMgr : Creating saved instance %u (%s)", in->m_instanceId, m_maps[in->m_mapId]->GetMapName().c_str());
     ARCEMU_ASSERT(in->m_mapMgr == NULL);
 
     // we don't have to check for world map info here, since the instance wouldn't have been saved if it didn't have any.
@@ -1105,7 +1105,7 @@ void InstanceMgr::DeleteBattlegroundInstance(uint32_t mapid, uint32_t instanceid
     const auto itr = m_instances[mapid]->find(instanceid);
     if (itr == m_instances[mapid]->end())
     {
-        LOG_ERROR("Could not delete battleground instance!");
+        sLogger.failure("Could not delete battleground instance!");
         m_mapLock.Release();
         return;
     }

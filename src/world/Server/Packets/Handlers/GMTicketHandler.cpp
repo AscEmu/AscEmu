@@ -68,7 +68,7 @@ void WorldSession::handleGMSurveySubmitOpcode(WorldPacket& recvPacket)
     CharacterDatabase.Execute("INSERT INTO gm_survey VALUES (%u, %u, %u, \'%s\', UNIX_TIMESTAMP(NOW()))",
         next_survey_id, _player->getGuidLow(), srlPacket.mainSurveyId, CharacterDatabase.EscapeString(srlPacket.mainComment).c_str());
 
-    LogDebugFlag(LF_OPCODE, "Player %s has submitted the gm suvey %u successfully.",
+    sLogger.debug("Player %s has submitted the gm suvey %u successfully.",
         _player->getName().c_str(), next_survey_id);
 }
 
@@ -84,7 +84,7 @@ void WorldSession::handleReportLag(WorldPacket& recvPacket)
         CharacterDatabase.Execute("INSERT INTO lag_reports (player, account, lag_type, map_id, position_x, position_y, position_z) VALUES(%u, %u, %u, %u, %f, %f, %f)",
             _player->getGuidLow(), _accountId, srlPacket.lagType, srlPacket.mapId, srlPacket.location.x, srlPacket.location.y, srlPacket.location.z);
 
-        LogDebugFlag(LF_OPCODE, "Player %s has reported a lagreport with Type: %u on Map: %u", _player->getName().c_str(), srlPacket.lagType, srlPacket.mapId);
+        sLogger.debug("Player %s has reported a lagreport with Type: %u on Map: %u", _player->getName().c_str(), srlPacket.lagType, srlPacket.mapId);
     }
 
 #endif
@@ -172,7 +172,7 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
         }
         else
         {
-            LOG_ERROR("CMSG_GMTICKET_CREATE failed to uncompress packet.");
+            sLogger.failure("CMSG_GMTICKET_CREATE failed to uncompress packet.");
             recvPacket.rfinish();
             return;
         }

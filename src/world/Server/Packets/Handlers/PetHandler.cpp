@@ -199,7 +199,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
             }
             break;
             default:
-                LOG_DEBUG("WARNING: Unknown pet action received. Action = %u, Misc = %u", srlPacket.action, srlPacket.misc);
+                sLogger.debug("WARNING: Unknown pet action received. Action = %u, Misc = %u", srlPacket.action, srlPacket.misc);
             break;
         }
 
@@ -262,7 +262,7 @@ void WorldSession::handleUnstablePet(WorldPacket& recvPacket)
     const auto playerPet = _player->GetPlayerPet(srlPacket.petNumber);
     if (playerPet == nullptr)
     {
-        LOG_ERROR("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %u", _player->getGuid(), srlPacket.petNumber);
+        sLogger.failure("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %u", _player->getGuid(), srlPacket.petNumber);
         return;
     }
 
@@ -283,7 +283,7 @@ void WorldSession::handleStableSwapPet(WorldPacket& recvPacket)
     const auto playerPet = _player->GetPlayerPet(srlPacket.petNumber);
     if (playerPet == nullptr)
     {
-        LOG_ERROR("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %u", _player->getGuid(), srlPacket.petNumber);
+        sLogger.failure("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %u", _player->getGuid(), srlPacket.petNumber);
         return;
     }
 
@@ -594,13 +594,13 @@ void WorldSession::handleDismissCritter(WorldPacket& recvPacket)
 
     if (_player->getCritterGuid() == 0)
     {
-        LOG_ERROR("Player %u sent dismiss companion packet, but player has no companion", _player->getGuidLow());
+        sLogger.failure("Player %u sent dismiss companion packet, but player has no companion", _player->getGuidLow());
         return;
     }
 
     if (_player->getCritterGuid() != srlPacket.guid.getRawGuid())
     {
-        LOG_ERROR("Player %u sent dismiss companion packet, but it doesn't match player's companion", _player->getGuidLow());
+        sLogger.failure("Player %u sent dismiss companion packet, but it doesn't match player's companion", _player->getGuidLow());
         return;
     }
 

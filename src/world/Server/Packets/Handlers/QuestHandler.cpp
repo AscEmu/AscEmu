@@ -327,7 +327,7 @@ void WorldSession::handleQuestPushResultOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received MSG_QUEST_PUSH_RESULT");
+    sLogger.debug("Received MSG_QUEST_PUSH_RESULT");
 
     if (_player->GetQuestSharer())
     {
@@ -366,7 +366,7 @@ void WorldSession::handleQuestQueryOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        LogDebugFlag(LF_OPCODE, "Invalid quest Id %u.", srlPacket.questId);
+        sLogger.debug("Invalid quest Id %u.", srlPacket.questId);
     }
 }
 
@@ -379,11 +379,11 @@ void WorldSession::handleQuestPOIQueryOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_QUEST_POI_QUERY");
+    sLogger.debug("Received CMSG_QUEST_POI_QUERY");
 
     if (srlPacket.questCount > MAX_QUEST_LOG_SIZE)
     {
-        LogDebugFlag(LF_OPCODE, "Client sent Quest POI query for more than MAX_QUEST_LOG_SIZE quests.");
+        sLogger.debug("Client sent Quest POI query for more than MAX_QUEST_LOG_SIZE quests.");
 
         srlPacket.questCount = MAX_QUEST_LOG_SIZE;
     }
@@ -403,7 +403,7 @@ void WorldSession::handleQuestgiverCancelOpcode(WorldPacket& /*recvPacket*/)
 
     SendPacket(SmsgGossipComplete().serialise().get());
 
-    LogDebugFlag(LF_OPCODE, "Sent SMSG_GOSSIP_COMPLETE");
+    sLogger.debug("Sent SMSG_GOSSIP_COMPLETE");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -420,7 +420,7 @@ void WorldSession::handleQuestgiverHelloOpcode(WorldPacket& recvPacket)
     {
         if (!questGiver->isQuestGiver())
         {
-            LogDebugFlag(LF_OPCODE, "Creature with guid %u is not a questgiver.", srlPacket.questGiverGuid.getGuidLowPart());
+            sLogger.debug("Creature with guid %u is not a questgiver.", srlPacket.questGiverGuid.getGuidLowPart());
             return;
         }
 
@@ -428,7 +428,7 @@ void WorldSession::handleQuestgiverHelloOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        LogDebugFlag(LF_OPCODE, "Invalid questgiver guid %u.", srlPacket.questGiverGuid.getGuidLowPart());
+        sLogger.debug("Invalid questgiver guid %u.", srlPacket.questGiverGuid.getGuidLowPart());
     }
 }
 
@@ -455,7 +455,7 @@ void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
 
         if (!quest_giver->isQuestGiver())
         {
-            LogDebugFlag(LF_OPCODE, "Creature is not a questgiver.");
+            sLogger.debug("Creature is not a questgiver.");
             return;
         }
     }
@@ -478,7 +478,7 @@ void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
 
     if (!qst_giver)
     {
-        LogDebugFlag(LF_OPCODE, "Invalid questgiver GUID " I64FMT ".", srlPacket.questGiverGuid.getRawGuid());
+        sLogger.debug("Invalid questgiver GUID " I64FMT ".", srlPacket.questGiverGuid.getRawGuid());
         return;
     }
 
@@ -499,7 +499,7 @@ void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
     QuestProperties const* qst = sMySQLStore.getQuestProperties(srlPacket.questId);
     if (!qst)
     {
-        LogDebugFlag(LF_OPCODE, "Invalid quest with id %u", srlPacket.questId);
+        sLogger.debug("Invalid quest with id %u", srlPacket.questId);
         return;
     }
 
@@ -557,13 +557,13 @@ void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
 
     if (!qst_giver)
     {
-        LogDebugFlag(LF_OPCODE, "Invalid questgiver GUID.");
+        sLogger.debug("Invalid questgiver GUID.");
         return;
     }
 
     if (!bValid)
     {
-        LogDebugFlag(LF_OPCODE, "object is not a questgiver.");
+        sLogger.debug("object is not a questgiver.");
         return;
     }
 
@@ -573,7 +573,7 @@ void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
     {
         sQuestMgr.BuildQuestDetails(&data, qst, qst_giver, 1, language, _player);
         SendPacket(&data);
-        LogDebugFlag(LF_OPCODE, "Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
+        sLogger.debug("Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 
         if (qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
             _player->AcceptQuest(qst_giver->getGuid(), qst->id);
@@ -582,7 +582,7 @@ void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
     {
         sQuestMgr.BuildRequestItems(&data, qst, qst_giver, status, language);
         SendPacket(&data);
-        LogDebugFlag(LF_OPCODE, "Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
+        sLogger.debug("Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 }
 
@@ -600,7 +600,7 @@ void WorldSession::handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
     QuestLogEntry* qEntry = _player->getQuestLogBySlotId(srlPacket.questLogSlot);
     if (!qEntry)
     {
-        LogDebugFlag(LF_OPCODE, " No quest in slot %d.", srlPacket.questLogSlot);
+        sLogger.debug(" No quest in slot %d.", srlPacket.questLogSlot);
         return;
     }
     QuestProperties const* qPtr = qEntry->getQuestProperties();
@@ -666,7 +666,7 @@ void WorldSession::handleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket)
 
             if (!qst)
             {
-                LogDebugFlag(LF_OPCODE, "Cannot get reward for quest %u, as it doesn't exist at Unit %u.", srlPacket.questId, quest_giver->getEntry());
+                sLogger.debug("Cannot get reward for quest %u, as it doesn't exist at Unit %u.", srlPacket.questId, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, _player, qst, static_cast<uint8_t>(quest_giver->GetQuestRelation(qst->id)), false);
@@ -688,7 +688,7 @@ void WorldSession::handleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket)
             qst = go_quest_giver->FindQuest(srlPacket.questId, QUESTGIVER_QUEST_END);
             if (!qst)
             {
-                LogDebugFlag(LF_OPCODE, "Cannot get reward for quest %u, as it doesn't exist at GO %u.", srlPacket.questId, quest_giver->getEntry());
+                sLogger.debug("Cannot get reward for quest %u, as it doesn't exist at GO %u.", srlPacket.questId, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, _player, qst, static_cast<uint8_t>(go_quest_giver->GetQuestRelation(qst->id)), false);
@@ -697,13 +697,13 @@ void WorldSession::handleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket)
 
     if (!qst_giver)
     {
-        LogDebugFlag(LF_OPCODE, "Invalid questgiver GUID.");
+        sLogger.debug("Invalid questgiver GUID.");
         return;
     }
 
     if (!bValid || qst == nullptr)
     {
-        LogDebugFlag(LF_OPCODE, "Creature is not a questgiver.");
+        sLogger.debug("Creature is not a questgiver.");
         return;
     }
 
@@ -712,7 +712,7 @@ void WorldSession::handleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket)
         WorldPacket data;
         sQuestMgr.BuildOfferReward(&data, qst, qst_giver, 1, language, _player);
         SendPacket(&data);
-        LogDebugFlag(LF_OPCODE, "Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
+        sLogger.debug("Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 }
 
@@ -743,7 +743,7 @@ void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
             qst = quest_giver->FindQuest(srlPacket.questId, QUESTGIVER_QUEST_END);
             if (!qst)
             {
-                LogDebugFlag(LF_OPCODE, "Cannot complete quest %u, as it doesn't exist at Unit %u.", srlPacket.questId, quest_giver->getEntry());
+                sLogger.debug("Cannot complete quest %u, as it doesn't exist at Unit %u.", srlPacket.questId, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, _player, qst, static_cast<uint8_t>(quest_giver->GetQuestRelation(qst->id)), false);
@@ -763,7 +763,7 @@ void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
             qst = go_quest_giver->FindQuest(srlPacket.questId, QUESTGIVER_QUEST_END);
             if (!qst)
             {
-                LogDebugFlag(LF_OPCODE, "Cannot complete quest %u, as it doesn't exist at GO %u.", srlPacket.questId, quest_giver->getEntry());
+                sLogger.debug("Cannot complete quest %u, as it doesn't exist at GO %u.", srlPacket.questId, quest_giver->getEntry());
                 return;
             }
             status = sQuestMgr.CalcQuestStatus(qst_giver, _player, qst, static_cast<uint8_t>(go_quest_giver->GetQuestRelation(qst->id)), false);
@@ -773,13 +773,13 @@ void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
 
     if (!qst_giver)
     {
-        LogDebugFlag(LF_OPCODE, "Invalid questgiver GUID.");
+        sLogger.debug("Invalid questgiver GUID.");
         return;
     }
 
     if (!bValid || qst == nullptr)
     {
-        LogDebugFlag(LF_OPCODE, "Creature is not a questgiver.");
+        sLogger.debug("Creature is not a questgiver.");
         return;
     }
 
@@ -788,7 +788,7 @@ void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
         WorldPacket data;
         sQuestMgr.BuildRequestItems(&data, qst, qst_giver, status, language);
         SendPacket(&data);
-        LogDebugFlag(LF_OPCODE, "Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
+        sLogger.debug("Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 
     if (status == QuestStatus::Finished)
@@ -796,7 +796,7 @@ void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
         WorldPacket data;
         sQuestMgr.BuildOfferReward(&data, qst, qst_giver, 1, language, _player);
         SendPacket(&data);
-        LogDebugFlag(LF_OPCODE, "Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
+        sLogger.debug("Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 
     sHookInterface.OnQuestFinished(_player, qst, qst_giver);
@@ -845,26 +845,26 @@ void WorldSession::handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 
     if (!qst_giver)
     {
-        LogDebugFlag(LF_OPCODE, "Invalid questgiver GUID.");
+        sLogger.debug("Invalid questgiver GUID.");
         return;
     }
 
     if (!bValid || qst == nullptr)
     {
-        LogDebugFlag(LF_OPCODE, "Creature is not a questgiver.");
+        sLogger.debug("Creature is not a questgiver.");
         return;
     }
 
     QuestLogEntry* qle = _player->getQuestLogByQuestId(srlPacket.questId);
     if (!qle && !qst->is_repeatable)
     {
-        LogDebugFlag(LF_OPCODE, "QuestLogEntry not found.");
+        sLogger.debug("QuestLogEntry not found.");
         return;
     }
 
     if (qle && !qle->canBeFinished())
     {
-        LogDebugFlag(LF_OPCODE, "Quest not finished.");
+        sLogger.debug("Quest not finished.");
         return;
     }
 

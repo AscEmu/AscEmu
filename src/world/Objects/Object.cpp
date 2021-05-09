@@ -1380,7 +1380,7 @@ void Object::addToInRangeObjects(Object* pObj)
     ARCEMU_ASSERT(pObj != nullptr);
 
     if (pObj == this)
-        LOG_ERROR("We are in range of ourselves!");
+        sLogger.failure("We are in range of ourselves!");
 
     if (pObj->isPlayer())
         mInRangePlayersSet.push_back(pObj);
@@ -3155,7 +3155,7 @@ bool Object::SetPosition(const LocationVector & v, [[maybe_unused]]bool allowPor
     if (!allowPorting && v.z < -500)
     {
         m_position.z = 500;
-        LOG_ERROR("setPosition: fell through map; height ported");
+        sLogger.failure("setPosition: fell through map; height ported");
 
         result = false;
     }
@@ -3190,7 +3190,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
     if (!allowPorting && newZ < -500)
     {
         m_position.z = 500;
-        LOG_ERROR("setPosition: fell through map; height ported");
+        sLogger.failure("setPosition: fell through map; height ported");
 
         result = false;
     }
@@ -3234,7 +3234,7 @@ void Object::AddToWorld()
     MapMgr* mapMgr = sInstanceMgr.GetInstance(this);
     if (mapMgr == nullptr)
     {
-        LOG_ERROR("AddToWorld() failed for Object with GUID " I64FMT " MapId %u InstanceId %u", getGuid(), GetMapId(), GetInstanceID());
+        sLogger.failure("AddToWorld() failed for Object with GUID " I64FMT " MapId %u InstanceId %u", getGuid(), GetMapId(), GetInstanceID());
         return;
     }
 
@@ -3306,7 +3306,7 @@ void Object::PushToWorld(MapMgr* mgr)
 
     if (mgr == nullptr)
     {
-        LOG_ERROR("Invalid push to world of Object " I64FMT, getGuid());
+        sLogger.failure("Invalid push to world of Object " I64FMT, getGuid());
         return; //instance add failed
     }
 
@@ -3518,7 +3518,7 @@ bool Object::inArc(float Position1X, float Position1Y, float FOV, float Orientat
     float angle = calcAngle(Position1X, Position1Y, Position2X, Position2Y);
     float lborder = getEasyAngle((Orientation - (FOV * 0.5f/*/2*/)));
     float rborder = getEasyAngle((Orientation + (FOV * 0.5f/*/2*/)));
-    //LOG_DEBUG("Orientation: %f Angle: %f LeftBorder: %f RightBorder %f",Orientation,angle,lborder,rborder);
+    //sLogger.debug("Orientation: %f Angle: %f LeftBorder: %f RightBorder %f",Orientation,angle,lborder,rborder);
     if (((angle >= lborder) && (angle <= rborder)) || ((lborder > rborder) && ((angle < rborder) || (angle > lborder))))
     {
         return true;
@@ -3615,7 +3615,7 @@ void Object::setServersideFaction()
     {
         faction_template = sFactionTemplateStore.LookupEntry(static_cast<Unit*>(this)->getFactionTemplate());
         if (faction_template == nullptr)
-            LOG_ERROR("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->getFactionTemplate(), getEntry());
+            sLogger.failure("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->getFactionTemplate(), getEntry());
     }
     else if (isGameObject())
     {
@@ -3625,7 +3625,7 @@ void Object::setServersideFaction()
         {
             if (faction_template == nullptr)
             {
-                LOG_ERROR("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->getFactionTemplate(), getEntry());
+                sLogger.failure("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->getFactionTemplate(), getEntry());
             }
         }
     }
@@ -3859,7 +3859,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
                 MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(textId);
                 if (npcScriptText == nullptr)
                 {
-                    LOG_ERROR("Invalid textId: %u. This text is send by a script but not in table npc_script_text!", textId);
+                    sLogger.failure("Invalid textId: %u. This text is send by a script but not in table npc_script_text!", textId);
                     return;
                 }
 
@@ -4269,7 +4269,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t o
 
     data >> guid >> flags >> flags2 >> update_time >> position >> position.o;
 
-    LOG_DEBUG("guid: %u, flags: %u, flags2: %u, updatetime: %u, position: (%f, %f, %f, %f)",
+    sLogger.debug("guid: %u, flags: %u, flags2: %u, updatetime: %u, position: (%f, %f, %f, %f)",
         guid.getGuidLow(), flags, flags2, update_time, position.x, position.y, position.z, position.o);
 
     if (hasMovementFlag(MOVEFLAG_TRANSPORT))
@@ -4282,7 +4282,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t o
         if (hasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE))
             data >> transport_time2;
 
-        LOG_DEBUG("tguid: %u, tposition: (%f, %f, %f, %f)", transport_guid, transport_position.x, transport_position.y, transport_position.z, transport_position.o);
+        sLogger.debug("tguid: %u, tposition: (%f, %f, %f, %f)", transport_guid, transport_position.x, transport_position.y, transport_position.z, transport_position.o);
     }
 
     if (hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))
@@ -4304,7 +4304,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t o
     MovementStatusElements* sequence = GetMovementStatusElementsSequence(sOpcodeTables.getInternalIdForHex(opcode));
     if (!sequence)
     {
-        LogError("Unsupported MovementInfo::Read for 0x%X (%s)!", opcode);
+        sLogger.failure("Unsupported MovementInfo::Read for 0x%X (%s)!", opcode);
         return;
     }
 
@@ -4564,7 +4564,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t 
     MovementStatusElements* sequence = GetMovementStatusElementsSequence(opcode);
     if (!sequence)
     {
-        LogError("Unsupported MovementInfo::Write for 0x%X!", opcode);
+        sLogger.failure("Unsupported MovementInfo::Write for 0x%X!", opcode);
         return;
     }
 

@@ -158,7 +158,7 @@ void TaskList::spawn()
     else
         threadcount = 1;
 
-    LogNotice("World : Beginning %s server startup with %u threads.", (threadcount == 1) ? "progressive" : "parallel", threadcount);
+    sLogger.info("World : Beginning %s server startup with %u threads.", (threadcount == 1) ? "progressive" : "parallel", threadcount);
 
     for (uint32 x = 0; x < threadcount; ++x)
         ThreadPool.ExecuteTask(new TaskExecutor(this));

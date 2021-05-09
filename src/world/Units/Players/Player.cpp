@@ -1370,12 +1370,12 @@ void Player::setInitialDisplayIds(uint8_t gender, uint8_t race)
                 setNativeDisplayId(raceEntry->model_female);
                 break;
             default:
-                LOG_ERROR("Gender %u is not valid for Player charecters!", gender);
+                sLogger.failure("Gender %u is not valid for Player charecters!", gender);
         }
     }
     else
     {
-        LOG_ERROR("Race %u is not supported by this AEVersion (%u)", race, getAEVersion());
+        sLogger.failure("Race %u is not supported by this AEVersion (%u)", race, getAEVersion());
     }
 }
 
@@ -2288,7 +2288,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     auto spellId = talentInfo->RankID[talentRank];
     if (spellId == 0)
     {
-        LOG_DETAIL("Player::learnTalent: Player tried to learn talent %u (rank %u) but talent's spell id is 0.", talentId, talentRank);
+        sLogger.info("Player::learnTalent: Player tried to learn talent %u (rank %u) but talent's spell id is 0.", talentId, talentRank);
         return;
     }
 

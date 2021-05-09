@@ -85,7 +85,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
     if (srlPacket.guild_name.length() > 0)
         gname = true;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_WHO with %u zones and %u names", srlPacket.zone_count, srlPacket.name_count);
+    sLogger.debug("Received CMSG_WHO with %u zones and %u names", srlPacket.zone_count, srlPacket.name_count);
 
     uint32_t team = _player->getTeam();
 
@@ -247,7 +247,7 @@ void WorldSession::handleTutorialFlag(WorldPacket& recvPacket)
     tutorial_flag |= (1 << tutorial_status);
     _player->setTutorialValueForId(tutorial_index, tutorial_flag);
 
-    LogDebugFlag(LF_OPCODE, "Received Tutorial flag: (%u).", srlPacket.flag);
+    sLogger.debug("Received Tutorial flag: (%u).", srlPacket.flag);
 }
 
 void WorldSession::handleTutorialClear(WorldPacket& /*recvPacket*/)
@@ -323,7 +323,7 @@ void WorldSession::handlePlayedTimeOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_PLAYED_TIME: displayinui: %u", srlPacket.displayInUi);
+    sLogger.debug("Received CMSG_PLAYED_TIME: displayinui: %u", srlPacket.displayInUi);
 
     const uint32_t playedTime = static_cast<uint32_t>(UNIXTIME) - _player->m_playedtime[2];
     if (playedTime > 0)
@@ -335,7 +335,7 @@ void WorldSession::handlePlayedTimeOpcode(WorldPacket& recvPacket)
 
     SendPacket(SmsgPlayedTime(_player->m_playedtime[1], _player->m_playedtime[0], srlPacket.displayInUi).serialise().get());
 
-    LogDebugFlag(LF_OPCODE, "Sent SMSG_PLAYED_TIME total: %u level: %u", _player->m_playedtime[1], _player->m_playedtime[0]);
+    sLogger.debug("Sent SMSG_PLAYED_TIME total: %u level: %u", _player->m_playedtime[1], _player->m_playedtime[0]);
 }
 
 void WorldSession::handleSetActionButtonOpcode(WorldPacket& recvPacket)
@@ -344,11 +344,11 @@ void WorldSession::handleSetActionButtonOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "BUTTON: %u ACTION: %u TYPE: %u MISC: %u", srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
+    sLogger.debug("BUTTON: %u ACTION: %u TYPE: %u MISC: %u", srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
 
     if (srlPacket.action == 0)
     {
-        LogDebugFlag(LF_OPCODE, "MISC: Remove action from button %u", srlPacket.button);
+        sLogger.debug("MISC: Remove action from button %u", srlPacket.button);
         _player->setActionButton(srlPacket.button, 0, 0, 0);
     }
     else
@@ -358,17 +358,17 @@ void WorldSession::handleSetActionButtonOpcode(WorldPacket& recvPacket)
 
         if (srlPacket.type == 64 || srlPacket.type == 65)
         {
-            LogDebugFlag(LF_OPCODE, "MISC: Added Macro %u into button %u", srlPacket.action, srlPacket.button);
+            sLogger.debug("MISC: Added Macro %u into button %u", srlPacket.action, srlPacket.button);
             _player->setActionButton(srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
         }
         else if (srlPacket.type == 128)
         {
-            LogDebugFlag(LF_OPCODE, "MISC: Added Item %u into button %u", srlPacket.action, srlPacket.button);
+            sLogger.debug("MISC: Added Item %u into button %u", srlPacket.action, srlPacket.button);
             _player->setActionButton(srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
         }
         else if (srlPacket.type == 0)
         {
-            LogDebugFlag(LF_OPCODE, "MISC: Added Spell %u into button %u", srlPacket.action, srlPacket.button);
+            sLogger.debug("MISC: Added Spell %u into button %u", srlPacket.action, srlPacket.button);
             _player->setActionButton(srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
         }
     }
@@ -389,7 +389,7 @@ void WorldSession::handleRandomRollOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received MSG_RANDOM_ROLL: %u (min), %u (max)", srlPacket.min, srlPacket.max);
+    sLogger.debug("Received MSG_RANDOM_ROLL: %u (min), %u (max)", srlPacket.min, srlPacket.max);
 
     uint32_t maxValue = srlPacket.max;
     uint32_t minValue = srlPacket.min;
@@ -414,7 +414,7 @@ void WorldSession::handleRealmSplitOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_REALM_SPLIT: %u (unk)", srlPacket.unknown);
+    sLogger.debug("Received CMSG_REALM_SPLIT: %u (unk)", srlPacket.unknown);
 
     const std::string dateFormat = "01/01/01";
 
@@ -427,7 +427,7 @@ void WorldSession::handleSetTaxiBenchmarkOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_SET_TAXI_BENCHMARK_MODE: %d (mode)", srlPacket.mode);
+    sLogger.debug("Received CMSG_SET_TAXI_BENCHMARK_MODE: %d (mode)", srlPacket.mode);
 }
 
 void WorldSession::handleWorldStateUITimerUpdate(WorldPacket& /*recvPacket*/)
@@ -444,7 +444,7 @@ void WorldSession::handleGameobjReportUseOpCode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_GAMEOBJ_REPORT_USE: %u (guid.low)", srlPacket.guid.getGuidLow());
+    sLogger.debug("Received CMSG_GAMEOBJ_REPORT_USE: %u (guid.low)", srlPacket.guid.getGuidLow());
 
     const auto gameobject = _player->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLow());
     if (gameobject == nullptr)
@@ -465,7 +465,7 @@ void WorldSession::handleDungeonDifficultyOpcode(WorldPacket& recvPacket)
     if (srlPacket.difficulty >= InstanceDifficulty::MAX_DUNGEON_DIFFICULTY)
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received MSG_SET_DUNGEON_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
+    sLogger.debug("Received MSG_SET_DUNGEON_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
 
     _player->setDungeonDifficulty(srlPacket.difficulty);
     sInstanceMgr.ResetSavedInstances(_player);
@@ -485,7 +485,7 @@ void WorldSession::handleRaidDifficultyOpcode(WorldPacket& recvPacket)
     if (srlPacket.difficulty >= InstanceDifficulty::MAX_RAID_DIFFICULTY)
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received MSG_SET_RAID_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
+    sLogger.debug("Received MSG_SET_RAID_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
 
     _player->setRaidDifficulty(InstanceDifficulty::Difficulties(srlPacket.difficulty));
     sInstanceMgr.ResetSavedInstances(_player);
@@ -502,7 +502,7 @@ void WorldSession::handleSetAutoLootPassOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_OPT_OUT_OF_LOOT: %u (turnedOn)", srlPacket.turnedOn);
+    sLogger.debug("Received CMSG_OPT_OUT_OF_LOOT: %u (turnedOn)", srlPacket.turnedOn);
 
     _player->m_passOnLoot = srlPacket.turnedOn > 0 ? true : false;
 }
@@ -513,7 +513,7 @@ void WorldSession::handleSetActionBarTogglesOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_SET_ACTIONBAR_TOGGLES: %d (actionbarId)", srlPacket.actionbarId);
+    sLogger.debug("Received CMSG_SET_ACTIONBAR_TOGGLES: %d (actionbarId)", srlPacket.actionbarId);
 
     _player->setActionBarId(srlPacket.actionbarId);
 }
@@ -524,7 +524,7 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_LOOT_ROLL: %u (objectGuid) %u (slot) %d (choice)", srlPacket.objectGuid.getGuidLow(), srlPacket.slot, srlPacket.choice);
+    sLogger.debug("Received CMSG_LOOT_ROLL: %u (objectGuid) %u (slot) %d (choice)", srlPacket.objectGuid.getGuidLow(), srlPacket.slot, srlPacket.choice);
 
     LootRoll* lootRoll = nullptr;
 
@@ -575,7 +575,7 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_OPEN_ITEM: %u (containerSlot), %u (slot)", srlPacket.containerSlot, srlPacket.slot);
+    sLogger.debug("Received CMSG_OPEN_ITEM: %u (containerSlot), %u (slot)", srlPacket.containerSlot, srlPacket.slot);
 
     auto item = _player->getItemInterface()->GetInventoryItem(srlPacket.containerSlot, srlPacket.slot);
     if (item == nullptr)
@@ -763,7 +763,7 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
 
     if (srlPacket.uiId > 8)
     {
-        LOG_ERROR("WARNING: Accountdata > 8 (%u) was requested to be updated by %s of account %u!",
+        sLogger.failure("WARNING: Accountdata > 8 (%u) was requested to be updated by %s of account %u!",
             srlPacket.uiId, _player->getName().c_str(), this->GetAccountId());
         return;
     }
@@ -793,7 +793,7 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
             case Z_OK:                  //0 no error decompression is OK
             {
                 SetAccountData(srlPacket.uiId, data, false, srlPacket.uiDecompressedSize);
-                LogDebugFlag(LF_OPCODE, "Successfully decompressed account data %d for %s, and updated storage array.",
+                sLogger.debug("Successfully decompressed account data %d for %s, and updated storage array.",
                     srlPacket.uiId, _player->getName().c_str());
             } break;
             case Z_ERRNO:               //-1
@@ -804,13 +804,13 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
             case Z_VERSION_ERROR:       //-6
             {
                 delete[] data;
-                LOG_ERROR("Decompression of account data %u for %s FAILED.", srlPacket.uiId, _player->getName().c_str());
+                sLogger.failure("Decompression of account data %u for %s FAILED.", srlPacket.uiId, _player->getName().c_str());
             } break;
 
             default:
             {
                 delete[] data;
-                LOG_ERROR("Decompression gave a unknown error: %x, of account data %u for %s FAILED.",
+                sLogger.failure("Decompression gave a unknown error: %x, of account data %u for %s FAILED.",
                     ZlibResult, srlPacket.uiId, _player->getName().c_str());
             } break;
         }
@@ -834,11 +834,11 @@ void WorldSession::handleRequestAccountData(WorldPacket& recvPacket)
     uint32_t accountDataId;
     recvPacket >> accountDataId;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_ACCOUNT_DATA id %u.", accountDataId);
+    sLogger.debug("Received CMSG_REQUEST_ACCOUNT_DATA id %u.", accountDataId);
 
     if (accountDataId > 8)
     {
-        LogDebugFlag(LF_OPCODE, "CMSG_REQUEST_ACCOUNT_DATA: Accountdata > 8 (%d) was requested by %s of account %u!", accountDataId, _player->getName().c_str(), this->GetAccountId());
+        sLogger.debug("CMSG_REQUEST_ACCOUNT_DATA: Accountdata > 8 (%d) was requested by %s of account %u!", accountDataId, _player->getName().c_str(), this->GetAccountId());
         return;
     }
 
@@ -862,7 +862,7 @@ void WorldSession::handleRequestAccountData(WorldPacket& recvPacket)
             uLongf destSize;
             if (compress(const_cast<uint8_t*>(data.contents()) + (sizeof(uint32_t) * 2), &destSize, reinterpret_cast<const uint8_t*>(accountDataEntry->data), accountDataEntry->sz) != Z_OK)
             {
-                LogDebugFlag(LF_OPCODE, "CMSG_REQUEST_ACCOUNT_DATA: Error while compressing data");
+                sLogger.debug("CMSG_REQUEST_ACCOUNT_DATA: Error while compressing data");
                 return;
             }
 
@@ -887,9 +887,9 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
         return;
 
     if (srlPacket.suggestion == 0)
-        LogDebugFlag(LF_OPCODE, "Received CMSG_BUG [Bug Report]");
+        sLogger.debug("Received CMSG_BUG [Bug Report]");
     else
-        LogDebugFlag(LF_OPCODE, "Received CMSG_BUG [Suggestion]");
+        sLogger.debug("Received CMSG_BUG [Suggestion]");
 
     uint64_t accountId = GetAccountId();
     uint32_t timeStamp = uint32(UNIXTIME);
@@ -923,7 +923,7 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
     std::string bugMessage;
     bugMessage = recv_data.ReadString(lenght);
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_BUG [Bug Report] lenght: %u message: %s", lenght, bugMessage.c_str());
+    sLogger.debug("Received CMSG_BUG [Bug Report] lenght: %u message: %s", lenght, bugMessage.c_str());
 
     uint64_t accountId = GetAccountId();
     uint32_t timeStamp = uint32_t(UNIXTIME);
@@ -959,7 +959,7 @@ void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
     std::string suggestionMessage;
     suggestionMessage = recvPacket.ReadString(lenght);
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_SUGGESTIONS [Suggestion] lenght: %u message: %s", lenght, suggestionMessage.c_str());
+    sLogger.debug("Received CMSG_SUGGESTIONS [Suggestion] lenght: %u message: %s", lenght, suggestionMessage.c_str());
 
     uint64_t accountId = GetAccountId();
     uint32_t timeStamp = uint32_t(UNIXTIME);
@@ -995,14 +995,14 @@ void WorldSession::handleLogDisconnectOpcode(WorldPacket& recvPacket)
     uint32_t disconnectReason;
     recvPacket >> disconnectReason;     // 13 - closed window
 
-    LogDebugFlag(LF_OPCODE, "Player %s disconnected on %s - Reason %u", _player->getName().c_str(),
+    sLogger.debug("Player %s disconnected on %s - Reason %u", _player->getName().c_str(),
         Util::GetCurrentDateTimeString().c_str(), disconnectReason);
 }
 #endif
 
 void WorldSession::handleCompleteCinematic(WorldPacket& /*recvPacket*/)
 {
-    LogDebugFlag(LF_OPCODE, "Received CMSG_COMPLETE_CINEMATIC");
+    sLogger.debug("Received CMSG_COMPLETE_CINEMATIC");
 
     _player->setStandState(STANDSTATE_STAND);
 }
@@ -1010,7 +1010,7 @@ void WorldSession::handleCompleteCinematic(WorldPacket& /*recvPacket*/)
 void WorldSession::handleNextCinematic(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
-    LogDebugFlag(LF_OPCODE, "Received CMSG_NEXT_CINEMATIC_CAMERA");
+    sLogger.debug("Received CMSG_NEXT_CINEMATIC_CAMERA");
 
     _player->SetPosition(float(_player->GetPositionX() + 0.01), float(_player->GetPositionY() + 0.01),
         float(_player->GetPositionZ() + 0.01), _player->GetOrientation());
@@ -1018,7 +1018,7 @@ void WorldSession::handleNextCinematic(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleReadyForAccountDataTimes(WorldPacket& /*recvPacket*/)
 {
-    LogDebugFlag(LF_OPCODE, "Received CMSG_READY_FOR_ACCOUNT_DATA_TIMES");
+    sLogger.debug("Received CMSG_READY_FOR_ACCOUNT_DATA_TIMES");
 
     sendAccountDataTimes(GLOBAL_CACHE_MASK);
 }
@@ -1052,7 +1052,7 @@ void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_LOGOUT_CANCEL");
+    sLogger.debug("Received CMSG_LOGOUT_CANCEL");
 
     if (!LoggingOut)
         return;
@@ -1069,14 +1069,14 @@ void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
 
     _player->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
-    LogDebugFlag(LF_OPCODE, "Sent SMSG_LOGOUT_CANCEL_ACK");
+    sLogger.debug("Sent SMSG_LOGOUT_CANCEL_ACK");
 }
 
 void WorldSession::handlePlayerLogoutOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_PLAYER_LOGOUT");
+    sLogger.debug("Received CMSG_PLAYER_LOGOUT");
     if (!HasGMPermissions())
         SendNotification("You do not have permission to perform that function.");
     else
@@ -1091,7 +1091,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_RECLAIM_CORPSE");
+    sLogger.debug("Received CMSG_RECLAIM_CORPSE");
 
     if (srlPacket.guid.getRawGuid() == 0)
         return;
@@ -1191,7 +1191,7 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(guid[4]);
 #endif
 
-    LogError("handleObjectUpdateFailedOpcode : Object update failed for playerguid %u", WoWGuid::getGuidLowPartFromUInt64(guid));
+    sLogger.failure("handleObjectUpdateFailedOpcode : Object update failed for playerguid %u", WoWGuid::getGuidLowPartFromUInt64(guid));
 
     if (_player == nullptr)
         return;
@@ -1420,7 +1420,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
                 sendItemSparseDb2Reply(entry);
                 break;
             default:
-                LogDebugFlag(LF_OPCODE, "Received unknown hotfix type %u", type);
+                sLogger.debug("Received unknown hotfix type %u", type);
                 recvPacket.clear();
                 break;
         }
@@ -1466,7 +1466,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
                 SendItemSparseDb2Reply(entry);
                 break;
             default:
-                LogDebugFlag(LF_OPCODE, "Received unknown hotfix type %u", type);
+                sLogger.debug("Received unknown hotfix type %u", type);
                 recvPacket.clear();
                 break;
         }*/
@@ -1484,7 +1484,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 
 void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
 {
-    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_CEMETERY_LIST");
+    sLogger.debug("Received CMSG_REQUEST_CEMETERY_LIST");
 
     QueryResult* result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
     if (result)
@@ -1554,7 +1554,7 @@ void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_ALTER_APPEARANCE");
+    sLogger.debug("Received CMSG_ALTER_APPEARANCE");
 
     const uint32_t oldHair = _player->getHairStyle();
     const uint32_t oldHairColor = _player->getHairColor();
@@ -1622,7 +1622,7 @@ void WorldSession::handleRepopRequestOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_REPOP_REQUEST");
+    sLogger.debug("Received CMSG_REPOP_REQUEST");
 
     if (_player->getDeathState() != JUST_DIED)
         return;
@@ -1643,7 +1643,7 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received WHOIS command from player %s for character %s", _player->getName().c_str(), srlPacket.characterName.c_str());
+    sLogger.debug("Received WHOIS command from player %s for character %s", _player->getName().c_str(), srlPacket.characterName.c_str());
 
     if (!_player->GetSession()->CanUseCommand('3'))
     {
@@ -1803,7 +1803,7 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_GAMEOBJ_USE: %u (gobj guidLow)", srlPacket.guid.getGuidLowPart());
+    sLogger.debug("Received CMSG_GAMEOBJ_USE: %u (gobj guidLow)", srlPacket.guid.getGuidLowPart());
 
     auto gameObject = _player->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLowPart());
     if (!gameObject)
@@ -1842,7 +1842,7 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
             gameObject->onUse(_player);
             break;
         default:
-            LogDebugFlag(LF_OPCODE, "Received CMSG_GAMEOBJ_USE for unhandled type %u.", gameObject->getGoType());
+            sLogger.debug("Received CMSG_GAMEOBJ_USE for unhandled type %u.", gameObject->getGoType());
             break;
     }
 }
@@ -1855,12 +1855,12 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_INSPECT: %u (player guid)", static_cast<uint32_t>(srlPacket.guid));
+    sLogger.debug("Received CMSG_INSPECT: %u (player guid)", static_cast<uint32_t>(srlPacket.guid));
 
     auto inspectedPlayer = _player->GetMapMgr()->GetPlayer(static_cast<uint32_t>(srlPacket.guid));
     if (inspectedPlayer == nullptr)
     {
-        LogDebugFlag(LF_OPCODE, "Error received CMSG_INSPECT for unknown player!");
+        sLogger.debug("Error received CMSG_INSPECT for unknown player!");
         return;
     }
 
@@ -1995,7 +1995,7 @@ void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
 
     if (recvSize > 0xFFFFF)
     {
-        LOG_DEBUG("recvSize %u too long", recvSize);
+        sLogger.debug("recvSize %u too long", recvSize);
         return;
     }
 
@@ -2027,7 +2027,7 @@ void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
             unpackedInfo >> crc;
             unpackedInfo >> unknown;
 
-            LOG_DEBUG("AddOn: %s (CRC: 0x%x) - enabled: 0x%x - Unknown2: 0x%x", addonName.c_str(), crc, enabledState, unknown);
+            sLogger.debug("AddOn: %s (CRC: 0x%x) - enabled: 0x%x - Unknown2: 0x%x", addonName.c_str(), crc, enabledState, unknown);
 #if VERSION_STRING < Mop
             AddonEntry addon(addonName, enabledState, crc, 2, true);
 #else
@@ -2038,14 +2038,14 @@ void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
             if (savedAddon)
             {
                 if (addon.crc != savedAddon->crc)
-                    LOG_DEBUG("Addon: %s: modified (CRC: 0x%x) - accountID %d)", addon.name.c_str(), savedAddon->crc, GetAccountId());
+                    sLogger.debug("Addon: %s: modified (CRC: 0x%x) - accountID %d)", addon.name.c_str(), savedAddon->crc, GetAccountId());
                 else
-                    LOG_DEBUG("Addon: %s: validated (CRC: 0x%x) - accountID %d", addon.name.c_str(), savedAddon->crc, GetAccountId());
+                    sLogger.debug("Addon: %s: validated (CRC: 0x%x) - accountID %d", addon.name.c_str(), savedAddon->crc, GetAccountId());
             }
             else
             {
                 sAddonMgr.SaveAddon(addon);
-                LOG_DEBUG("Addon: %s: unknown (CRC: 0x%x) - accountId %d (storing addon name and checksum to database)", addon.name.c_str(), addon.crc, GetAccountId());
+                sLogger.debug("Addon: %s: unknown (CRC: 0x%x) - accountId %d (storing addon name and checksum to database)", addon.name.c_str(), addon.crc, GetAccountId());
             }
 
             m_addonList.push_back(addon);
@@ -2056,7 +2056,7 @@ void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
     }
     else
     {
-        LOG_ERROR("Decompression of addon section of CMSG_AUTH_SESSION failed.");
+        sLogger.failure("Decompression of addon section of CMSG_AUTH_SESSION failed.");
     }
 }
 
@@ -2076,7 +2076,7 @@ void WorldSession::sendAddonInfo()
             data << uint8_t(usepk);
             if (usepk)                                      // add public key if crc is wrong
             {
-                LogDebugFlag(LF_OPCODE, "AddOn: %s: CRC checksum mismatch: got 0x%x - expected 0x%x - sending pubkey to accountID %d",
+                sLogger.debug("AddOn: %s: CRC checksum mismatch: got 0x%x - expected 0x%x - sending pubkey to accountID %d",
                     itr.name.c_str(), itr.crc, STANDARD_ADDON_CRC, GetAccountId());
 
                 data.append(PublicKey, sizeof(PublicKey));
@@ -2171,7 +2171,7 @@ bool WorldSession::isAddonRegistered(const std::string& addon_name) const
 
 void WorldSession::handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket*/)
 {
-    LogDebugFlag(LF_OPCODE, "Received CMSG_UNREGISTER_ALL_ADDON_PREFIXES");
+    sLogger.debug("Received CMSG_UNREGISTER_ALL_ADDON_PREFIXES");
 
     mRegisteredAddonPrefixesVector.clear();
 }
@@ -2205,7 +2205,7 @@ void WorldSession::handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
 {
-    LogDebugFlag(LF_OPCODE, "Received CMSG_REPORT");
+    sLogger.debug("Received CMSG_REPORT");
 
     uint8_t spam_type;                                        // 0 - mail, 1 - chat
     uint64_t spammer_guid;
@@ -2226,7 +2226,7 @@ void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
             recvPacket >> unk2;                              // probably mail id
             recvPacket >> unk3;                              // const 0
 
-            LogDebugFlag(LF_OPCODE, "Received REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u", spam_type, WoWGuid::getGuidLowPartFromUInt64(spammer_guid), unk1, unk2, unk3);
+            sLogger.debug("Received REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u", spam_type, WoWGuid::getGuidLowPartFromUInt64(spammer_guid), unk1, unk2, unk3);
 
         } break;
         case 1:
@@ -2237,7 +2237,7 @@ void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
             recvPacket >> unk4;                              // unk random value
             recvPacket >> description;                       // spam description string (messagetype, channel name, player name, message)
 
-            LogDebugFlag(LF_OPCODE, "Received REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", spam_type, WoWGuid::getGuidLowPartFromUInt64(spammer_guid), unk1, unk2, unk3, unk4, description.c_str());
+            sLogger.debug("Received REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", spam_type, WoWGuid::getGuidLowPartFromUInt64(spammer_guid), unk1, unk2, unk3, unk4, description.c_str());
 
         } break;
     }
@@ -2252,7 +2252,7 @@ void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleReportPlayerOpcode(WorldPacket& recvPacket)
 {
-    LogDebugFlag(LF_OPCODE, "Received CMSG_REPORT_PLAYER %u", static_cast<uint32_t>(recvPacket.size()));
+    sLogger.debug("Received CMSG_REPORT_PLAYER %u", static_cast<uint32_t>(recvPacket.size()));
 
     uint8_t unk3 = 0;   // type
     uint8_t unk4 = 0;   // guid - 1
@@ -2275,29 +2275,29 @@ void WorldSession::handleReportPlayerOpcode(WorldPacket& recvPacket)
     switch (unk3)
     {
         case 0:     // chat spamming
-            LOG_DEBUG("Chat spamming report for guid: %u received.", unk4 + 1);
+            sLogger.debug("Chat spamming report for guid: %u received.", unk4 + 1);
             break;
         case 2:     // cheat
             recvPacket >> message;
-            LOG_DEBUG("Cheat report for guid: %u received. Message %s", unk4 + 1, message.c_str());
+            sLogger.debug("Cheat report for guid: %u received. Message %s", unk4 + 1, message.c_str());
             break;
         case 6:     // char name
             recvPacket >> message;
-            LOG_DEBUG("char name report for guid: %u received. Message %s", unk4 + 1, message.c_str());
+            sLogger.debug("char name report for guid: %u received. Message %s", unk4 + 1, message.c_str());
             break;
         case 12:     // guild name
             recvPacket >> message;
-            LOG_DEBUG("guild name report for guid: %u received. Message %s", unk4 + 1, message.c_str());
+            sLogger.debug("guild name report for guid: %u received. Message %s", unk4 + 1, message.c_str());
             break;
         case 18:     // arena team name
             recvPacket >> message;
-            LOG_DEBUG("arena team name report for guid: %u received. Message %s", unk4 + 1, message.c_str());
+            sLogger.debug("arena team name report for guid: %u received. Message %s", unk4 + 1, message.c_str());
             break;
         case 20:     // chat language
-            LOG_DEBUG("Chat language report for guid: %u received.", unk4 + 1);
+            sLogger.debug("Chat language report for guid: %u received.", unk4 + 1);
             break;
         default:
-            LOG_DEBUG("type is %u", unk3);
+            sLogger.debug("type is %u", unk3);
             break;
     }
 }
@@ -2309,7 +2309,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     if (!_player->IsInWorld())
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMG_GET_MIRRORIMAGE_DATA");
+    sLogger.debug("Received CMG_GET_MIRRORIMAGE_DATA");
 
     uint64_t GUID;
 
@@ -2398,7 +2398,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 
     SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "Sent SMSG_MIRRORIMAGE_DATA");
+    sLogger.debug("Sent SMSG_MIRRORIMAGE_DATA");
 }
 
 #if VERSION_STRING > TBC

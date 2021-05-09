@@ -68,16 +68,16 @@ void ObjectMgr::initialize()
 
 void ObjectMgr::finalize()
 {
-    LogNotice("ObjectMgr : Deleting Corpses...");
+    sLogger.info("ObjectMgr : Deleting Corpses...");
     CorpseCollectorUnload();
 
-    LogNotice("ObjectMgr : Deleting Vendors...");
+    sLogger.info("ObjectMgr : Deleting Vendors...");
     for (VendorMap::iterator i = mVendors.begin(); i != mVendors.end(); ++i)
     {
         delete i->second;
     }
 
-    LogNotice("ObjectMgr : Deleting Trainers...");
+    sLogger.info("ObjectMgr : Deleting Trainers...");
     for (TrainerMap::iterator i = mTrainers.begin(); i != mTrainers.end(); ++i)
     {
         Trainer* t = i->second;
@@ -86,7 +86,7 @@ void ObjectMgr::finalize()
         delete t;
     }
 
-    LogNotice("ObjectMgr : Deleting Level Information...");
+    sLogger.info("ObjectMgr : Deleting Level Information...");
     for (LevelInfoMap::iterator i = mLevelInfo.begin(); i != mLevelInfo.end(); ++i)
     {
         LevelMap* l = i->second;
@@ -99,7 +99,7 @@ void ObjectMgr::finalize()
         delete l;
     }
 
-    LogNotice("ObjectMgr : Deleting Waypoint Cache...");
+    sLogger.info("ObjectMgr : Deleting Waypoint Cache...");
     for (std::unordered_map<uint32, Movement::WayPointMap*>::iterator i = mWayPointMap.begin(); i != mWayPointMap.end(); ++i)
     {
         for (Movement::WayPointMap::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
@@ -113,7 +113,7 @@ void ObjectMgr::finalize()
         delete i->second;
     }
 
-    LogNotice("ObjectMgr : Deleting timed emote Cache...");
+    sLogger.info("ObjectMgr : Deleting timed emote Cache...");
     for (std::unordered_map<uint32, TimedEmoteList*>::iterator i = m_timedemotes.begin(); i != m_timedemotes.end(); ++i)
     {
         for (TimedEmoteList::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
@@ -126,7 +126,7 @@ void ObjectMgr::finalize()
         delete i->second;
     }
 
-    LogNotice("ObjectMgr : Deleting Charters...");
+    sLogger.info("ObjectMgr : Deleting Charters...");
     for (uint8 i = 0; i < NUM_CHARTER_TYPES; ++i)
     {
         for (std::unordered_map<uint32, Charter*>::iterator itr = m_charters[i].begin(); itr != m_charters[i].end(); ++itr)
@@ -135,7 +135,7 @@ void ObjectMgr::finalize()
         }
     }
 
-    LogNotice("ObjectMgr : Deleting Reputation Tables...");
+    sLogger.info("ObjectMgr : Deleting Reputation Tables...");
     for (ReputationModMap::iterator itr = m_reputation_creature.begin(); itr != m_reputation_creature.end(); ++itr)
     {
         ReputationModifier* mod = itr->second;
@@ -156,7 +156,7 @@ void ObjectMgr::finalize()
         delete mod;
     }
 
-    LogNotice("ObjectMgr : Deleting Groups...");
+    sLogger.info("ObjectMgr : Deleting Groups...");
     for (GroupMap::iterator itr = m_groups.begin(); itr != m_groups.end();)
     {
         Group* pGroup = itr->second;
@@ -175,7 +175,7 @@ void ObjectMgr::finalize()
         }
     }
 
-    LogNotice("ObjectMgr : Deleting Player Information...");
+    sLogger.info("ObjectMgr : Deleting Player Information...");
     for (std::unordered_map<uint32, PlayerInfo*>::iterator itr = m_playersinfo.begin(); itr != m_playersinfo.end(); ++itr)
     {
         itr->second->m_Group = nullptr;
@@ -183,24 +183,24 @@ void ObjectMgr::finalize()
         delete itr->second;
     }
 
-    LogNotice("ObjectMgr : Deleting Boss Information...");
+    sLogger.info("ObjectMgr : Deleting Boss Information...");
     for (DungeonEncounterContainer::iterator itr = _dungeonEncounterStore.begin(); itr != _dungeonEncounterStore.end(); ++itr)
         for (DungeonEncounterList::iterator encounterItr = itr->second.begin(); encounterItr != itr->second.end(); ++encounterItr)
             delete *encounterItr;
 
-    LogNotice("ObjectMgr : Deleting Arena Teams...");
+    sLogger.info("ObjectMgr : Deleting Arena Teams...");
     for (std::unordered_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeams.begin(); itr != m_arenaTeams.end(); ++itr)
     {
         delete(*itr).second;
     }
 
-    LogNotice("ObjectMgr : Cleaning up spell target constraints...");
+    sLogger.info("ObjectMgr : Cleaning up spell target constraints...");
     for (SpellTargetConstraintMap::iterator itr = m_spelltargetconstraints.begin(); itr != m_spelltargetconstraints.end(); ++itr)
         delete itr->second;
 
     m_spelltargetconstraints.clear();
 
-    LogNotice("ObjectMgr : Cleaning up vehicle accessories...");
+    sLogger.info("ObjectMgr : Cleaning up vehicle accessories...");
     for (std::map< uint32, std::vector< VehicleAccessoryEntry* >* >::iterator itr = vehicle_accessories.begin(); itr != vehicle_accessories.end(); ++itr)
     {
         std::vector< VehicleAccessoryEntry* > *v = itr->second;
@@ -215,7 +215,7 @@ void ObjectMgr::finalize()
     vehicle_accessories.clear();
 
 
-    LogNotice("ObjectMgr : Cleaning up worldstate templates...");
+    sLogger.info("ObjectMgr : Cleaning up worldstate templates...");
     for (std::map< uint32, std::multimap< uint32, WorldState >* >::iterator itr = worldstate_templates.begin(); itr != worldstate_templates.end(); ++itr)
     {
         itr->second->clear();
@@ -225,7 +225,7 @@ void ObjectMgr::finalize()
     worldstate_templates.clear();
 
 
-    LogNotice("ObjectMgr : Clearing up event scripts...");
+    sLogger.info("ObjectMgr : Clearing up event scripts...");
     mEventScriptMaps.clear();
     mSpellEffectMaps.clear();
 }
@@ -334,7 +334,7 @@ void ObjectMgr::LoadSpellSkills()
             mSpellSkills[skill_line_ability->spell] = skill_line_ability;
         }
     }
-    LogDetail("ObjectMgr : %u spell skills loaded.", static_cast<uint32_t>(mSpellSkills.size()));
+    sLogger.info("ObjectMgr : %u spell skills loaded.", static_cast<uint32_t>(mSpellSkills.size()));
 }
 
 DBC::Structures::SkillLineAbilityEntry const* ObjectMgr::GetSpellSkill(uint32 id)
@@ -432,7 +432,7 @@ void ObjectMgr::LoadPlayersInfo()
                 // gotta rename him
                 char temp[300];
                 snprintf(temp, 300, "%s__%X__", pn->name, pn->guid);
-                LogNotice("ObjectMgr : Renaming duplicate player %s to %s. (%u)", pn->name, temp, pn->guid);
+                sLogger.info("ObjectMgr : Renaming duplicate player %s to %s. (%u)", pn->name, temp, pn->guid);
                 CharacterDatabase.WaitExecute("UPDATE characters SET name = '%s', login_flags = %u WHERE guid = %u",
                                               CharacterDatabase.EscapeString(std::string(temp)).c_str(), (uint32)LOGIN_FORCED_RENAME, pn->guid);
 
@@ -452,7 +452,7 @@ void ObjectMgr::LoadPlayersInfo()
         while (result->NextRow());
         delete result;
     }
-    LogDetail("ObjectMgr : %u players loaded.", static_cast<uint32_t>(m_playersinfo.size()));
+    sLogger.info("ObjectMgr : %u players loaded.", static_cast<uint32_t>(m_playersinfo.size()));
 }
 
 PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
@@ -476,7 +476,7 @@ void ObjectMgr::LoadCompletedAchievements()
 
     if (!result)
     {
-        LOG_ERROR("Query failed: SELECT achievement FROM character_achievement");
+        sLogger.failure("Query failed: SELECT achievement FROM character_achievement");
         return;
     }
 
@@ -562,7 +562,7 @@ void ObjectMgr::LoadAchievementRewards()
 
     if (!result)
     {
-        LOG_DETAIL("Loaded 0 achievement rewards. DB table `achievement_reward` is empty.");
+        sLogger.info("Loaded 0 achievement rewards. DB table `achievement_reward` is empty.");
         return;
     }
 
@@ -575,7 +575,7 @@ void ObjectMgr::LoadAchievementRewards()
 
         if (!sAchievementStore.LookupEntry(entry))
         {
-            LogDebugFlag(LF_DB_TABLES, "ObjectMgr : Achievement reward entry %u has wrong achievement, ignore", entry);
+            sLogger.debug("ObjectMgr : Achievement reward entry %u has wrong achievement, ignore", entry);
             continue;
         }
 
@@ -589,7 +589,7 @@ void ObjectMgr::LoadAchievementRewards()
         reward.text = fields[7].GetString() ? fields[7].GetString() : "";
 
         if (reward.gender > 2)
-            LogDebugFlag(LF_DB_TABLES, "ObjectMgr : achievement reward %u has wrong gender %u.", entry, reward.gender);
+            sLogger.debug("ObjectMgr : achievement reward %u has wrong gender %u.", entry, reward.gender);
 
         bool dup = false;
         AchievementRewardsMapBounds bounds = AchievementRewards.equal_range(entry);
@@ -598,7 +598,7 @@ void ObjectMgr::LoadAchievementRewards()
             if (iter->second.gender == 2 || reward.gender == 2)
             {
                 dup = true;
-                LogDebugFlag(LF_DB_TABLES, "ObjectMgr : Achievement reward %u must have single GENDER_NONE (%u), ignore duplicate case", 2, entry);
+                sLogger.debug("ObjectMgr : Achievement reward %u must have single GENDER_NONE (%u), ignore duplicate case", 2, entry);
                 break;
             }
         }
@@ -609,7 +609,7 @@ void ObjectMgr::LoadAchievementRewards()
         // must be title or mail at least
         if (!reward.titel_A && !reward.titel_H && !reward.sender)
         {
-            LogDebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have title or item reward data, ignore.", entry);
+            sLogger.debug("ObjectMgr : achievement_reward %u not have title or item reward data, ignore.", entry);
             continue;
         }
 
@@ -618,7 +618,7 @@ void ObjectMgr::LoadAchievementRewards()
             auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_A);
             if (!char_title_entry)
             {
-                LogDebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_A);
+                sLogger.debug("ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_A);
                 reward.titel_A = 0;
             }
         }
@@ -628,7 +628,7 @@ void ObjectMgr::LoadAchievementRewards()
             auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_H);
             if (!char_title_entry)
             {
-                LogDebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_H);
+                sLogger.debug("ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_H);
                 reward.titel_H = 0;
             }
         }
@@ -638,25 +638,25 @@ void ObjectMgr::LoadAchievementRewards()
         {
             if (!sMySQLStore.getCreatureProperties(reward.sender))
             {
-                LogDebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, mail reward skipped.", entry, reward.sender);
+                sLogger.debug("ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, mail reward skipped.", entry, reward.sender);
                 reward.sender = 0;
             }
         }
         else
         {
             if (reward.itemId)
-                LogDebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have item reward, item will not rewarded", entry);
+                sLogger.debug("ObjectMgr : achievement_reward %u not have sender data but have item reward, item will not rewarded", entry);
 
             if (!reward.subject.empty())
-                LogDebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have mail subject.", entry);
+                sLogger.debug("ObjectMgr : achievement_reward %u not have sender data but have mail subject.", entry);
 
             if (!reward.text.empty())
-                LogDebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have mail text.", entry);
+                sLogger.debug("ObjectMgr : achievement_reward %u not have sender data but have mail text.", entry);
         }
 
         if (reward.itemId == 0)
         {
-            LogDebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid item id %u, reward mail will be without item.", entry, reward.itemId);
+            sLogger.debug("ObjectMgr : achievement_reward %u has invalid item id %u, reward mail will be without item.", entry, reward.itemId);
         }
 
         AchievementRewards.insert(AchievementRewardsMap::value_type(entry, reward));
@@ -667,7 +667,7 @@ void ObjectMgr::LoadAchievementRewards()
 
     delete result;
 
-    LogDetail("ObjectMgr : Loaded %u achievement rewards", count);
+    sLogger.info("ObjectMgr : Loaded %u achievement rewards", count);
 }
 #endif
 
@@ -752,18 +752,18 @@ void ObjectMgr::SetHighestGuids()
 
 
 
-    LogNotice("ObjectMgr : HighGuid(CORPSE) = %lu", m_hiCorpseGuid.load());
-    LogNotice("ObjectMgr : HighGuid(PLAYER) = %lu", m_hiPlayerGuid.load());
-    LogNotice("ObjectMgr : HighGuid(GAMEOBJ) = %lu", m_hiGameObjectSpawnId.load());
-    LogNotice("ObjectMgr : HighGuid(UNIT) = %lu", m_hiCreatureSpawnId.load());
-    LogNotice("ObjectMgr : HighGuid(ITEM) = %lu", m_hiItemGuid.load());
-    LogNotice("ObjectMgr : HighGuid(CONTAINER) = %lu", m_hiItemGuid.load());
-    LogNotice("ObjectMgr : HighGuid(GROUP) = %lu", m_hiGroupId.load());
-    LogNotice("ObjectMgr : HighGuid(CHARTER) = %lu", m_hiCharterId.load());
-    LogNotice("ObjectMgr : HighGuid(GUILD) = %lu", m_hiGuildId.load());
-    LogNotice("ObjectMgr : HighGuid(BUGREPORT) = %u", uint32(m_reportID.load() - 1));
-    LogNotice("ObjectMgr : HighGuid(MAIL) = %u", uint32(m_mailid.load()));
-    LogNotice("ObjectMgr : HighGuid(EQUIPMENTSET) = %u", uint32(m_setGUID.load() - 1));
+    sLogger.info("ObjectMgr : HighGuid(CORPSE) = %lu", m_hiCorpseGuid.load());
+    sLogger.info("ObjectMgr : HighGuid(PLAYER) = %lu", m_hiPlayerGuid.load());
+    sLogger.info("ObjectMgr : HighGuid(GAMEOBJ) = %lu", m_hiGameObjectSpawnId.load());
+    sLogger.info("ObjectMgr : HighGuid(UNIT) = %lu", m_hiCreatureSpawnId.load());
+    sLogger.info("ObjectMgr : HighGuid(ITEM) = %lu", m_hiItemGuid.load());
+    sLogger.info("ObjectMgr : HighGuid(CONTAINER) = %lu", m_hiItemGuid.load());
+    sLogger.info("ObjectMgr : HighGuid(GROUP) = %lu", m_hiGroupId.load());
+    sLogger.info("ObjectMgr : HighGuid(CHARTER) = %lu", m_hiCharterId.load());
+    sLogger.info("ObjectMgr : HighGuid(GUILD) = %lu", m_hiGuildId.load());
+    sLogger.info("ObjectMgr : HighGuid(BUGREPORT) = %u", uint32(m_reportID.load() - 1));
+    sLogger.info("ObjectMgr : HighGuid(MAIL) = %u", uint32(m_mailid.load()));
+    sLogger.info("ObjectMgr : HighGuid(EQUIPMENTSET) = %u", uint32(m_setGUID.load() - 1));
 }
 
 uint32 ObjectMgr::GenerateReportID()
@@ -849,13 +849,13 @@ void ObjectMgr::LoadVendors()
 
         if (result->GetFieldCount() < 6)
         {
-            LOG_ERROR("Invalid format in vendors (%u/6) columns, not enough data to proceed.", result->GetFieldCount());
+            sLogger.failure("Invalid format in vendors (%u/6) columns, not enough data to proceed.", result->GetFieldCount());
             delete result;
             return;
         }
         else if (result->GetFieldCount() > 6)
         {
-            LOG_ERROR("Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
+            sLogger.failure("Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
         }
 
 #if VERSION_STRING < Cata
@@ -889,7 +889,7 @@ void ObjectMgr::LoadVendors()
             {
                 item_extended_cost = sItemExtendedCostStore.LookupEntry(fields[5].GetUInt32());
                 if (item_extended_cost == nullptr)
-                    LogDebugFlag(LF_DB_TABLES, "LoadVendors : Extendedcost for item %u references nonexistent EC %u", fields[1].GetUInt32(), fields[5].GetUInt32());
+                    sLogger.debug("LoadVendors : Extendedcost for item %u references nonexistent EC %u", fields[1].GetUInt32(), fields[5].GetUInt32());
             }
             else
                 item_extended_cost = nullptr;
@@ -901,7 +901,7 @@ void ObjectMgr::LoadVendors()
 
         delete result;
     }
-    LogDetail("ObjectMgr : %u vendors loaded.", static_cast<uint32_t>(mVendors.size()));
+    sLogger.info("ObjectMgr : %u vendors loaded.", static_cast<uint32_t>(mVendors.size()));
 }
 
 void ObjectMgr::ReloadVendors()
@@ -1069,7 +1069,7 @@ void ObjectMgr::LoadSkillLineAbilityMap()
         ++count;
     }
 
-    LogDetail("ObjectMgr : Loaded %u SkillLineAbility MultiMap Data in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("ObjectMgr : Loaded %u SkillLineAbility MultiMap Data in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 SkillLineAbilityMapBounds ObjectMgr::GetSkillLineAbilityMapBounds(uint32_t spell_id) const
@@ -1089,7 +1089,7 @@ void ObjectMgr::LoadSpellRequired()
 
     if (!result)
     {
-        LogDebugFlag(LF_DB_TABLES, "ObjectMgr : Loaded 0 spell required records. DB table `spell_required` is empty.");
+        sLogger.debug("ObjectMgr : Loaded 0 spell required records. DB table `spell_required` is empty.");
         return;
     }
 
@@ -1105,20 +1105,20 @@ void ObjectMgr::LoadSpellRequired()
         DBC::Structures::SpellEntry const* spell = sSpellStore.LookupEntry(spell_id);
         if (!spell)
         {
-            LogDebugFlag(LF_DB_TABLES, "ObjectMgr : spell_id %u in `spell_required` table is not found in dbcs, skipped", spell_id);
+            sLogger.debug("ObjectMgr : spell_id %u in `spell_required` table is not found in dbcs, skipped", spell_id);
             continue;
         }
 
         DBC::Structures::SpellEntry const* req_spell = sSpellStore.LookupEntry(spell_req);
         if (!req_spell)
         {
-            LogDebugFlag(LF_DB_TABLES, "ObjectMgr : req_spell %u in `spell_required` table is not found in dbcs, skipped", spell_req);
+            sLogger.debug("ObjectMgr : req_spell %u in `spell_required` table is not found in dbcs, skipped", spell_req);
             continue;
         }
 
         if (IsSpellRequiringSpell(spell_id, spell_req))
         {
-            LogDebugFlag(LF_DB_TABLES, "ObjectMgr : duplicated entry of req_spell %u and spell_id %u in `spell_required`, skipped", spell_req, spell_id);
+            sLogger.debug("ObjectMgr : duplicated entry of req_spell %u and spell_id %u in `spell_required`, skipped", spell_req, spell_id);
             continue;
         }
 
@@ -1128,7 +1128,7 @@ void ObjectMgr::LoadSpellRequired()
 
     } while (result->NextRow());
 
-    LogNotice("ObjectMgr: Loaded %u spell required records in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("ObjectMgr: Loaded %u spell required records in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 
@@ -1237,7 +1237,7 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId
 //MIT
 void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId)
 {
-    LOG_DEBUG("GossipId: %u  gossipItemId: %u", gossipMenuId, gossipItemId);
+    sLogger.debug("GossipId: %u  gossipItemId: %u", gossipMenuId, gossipItemId);
 
     // bool openSubMenu = true;
 
@@ -1369,7 +1369,7 @@ void ObjectMgr::LoadTrainers()
         QueryResult* result2 = WorldDatabase.Query("SELECT * FROM trainer_spells where entry='%u'", entry);
         if (!result2)
         {
-            LogDebugFlag(LF_DB_TABLES, "LoadTrainers : Trainer with no spells, entry %u.", entry);
+            sLogger.debug("LoadTrainers : Trainer with no spells, entry %u.", entry);
             if (tr->UIMessage != NormalTalkMessage)
                 delete[] tr->UIMessage;
 
@@ -1378,7 +1378,7 @@ void ObjectMgr::LoadTrainers()
         }
         if (result2->GetFieldCount() != 9)
         {
-            LOG_ERROR("Trainers table format is invalid. Please update your database.", NULL);
+            sLogger.failure("Trainers table format is invalid. Please update your database.", NULL);
             delete tr;
             delete result;
             delete result2;
@@ -1429,7 +1429,7 @@ void ObjectMgr::LoadTrainers()
                         effect->EffectImplicitTargetA != 25 &&
                         effect->EffectImplicitTargetA != 1)
                     {
-                        LogDebugFlag(LF_DB_TABLES, "LoadTrainers : Table `trainer_spels` has spell %u for trainer entry %u with learn effect which has incorrect target type, ignoring learn effect!", spell, entry1);
+                        sLogger.debug("LoadTrainers : Table `trainer_spels` has spell %u for trainer entry %u with learn effect which has incorrect target type, ignoring learn effect!", spell, entry1);
                         continue;
                     }
 
@@ -1465,7 +1465,7 @@ void ObjectMgr::LoadTrainers()
 
     } while (result->NextRow());
     delete result;
-    LogDetail("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
+    sLogger.info("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
 }
 #else
 void ObjectMgr::LoadTrainers()
@@ -1516,7 +1516,7 @@ void ObjectMgr::LoadTrainers()
         QueryResult* result2 = WorldDatabase.Query("SELECT * FROM trainer_spells where entry='%u'", entry);
         if (!result2)
         {
-            LogDebugFlag(LF_DB_TABLES, "LoadTrainers : Trainer with no spells, entry %u.", entry);
+            sLogger.debug("LoadTrainers : Trainer with no spells, entry %u.", entry);
             if (tr->UIMessage != NormalTalkMessage)
                 delete[] tr->UIMessage;
 
@@ -1525,7 +1525,7 @@ void ObjectMgr::LoadTrainers()
         }
         if (result2->GetFieldCount() != 9)
         {
-            LOG_ERROR("Trainers table format is invalid. Please update your database.");
+            sLogger.failure("Trainers table format is invalid. Please update your database.");
             delete tr;
             delete result;
             delete result2;
@@ -1557,7 +1557,7 @@ void ObjectMgr::LoadTrainers()
                                 ts.pCastRealSpell = sSpellMgr.getSpellInfo(ts.pCastSpell->getEffectTriggerSpell(k));
                                 if (ts.pCastRealSpell == NULL)
                                 {
-                                    LOG_ERROR("Trainer %u contains cast spell %u that is non-teaching", entry, CastSpellID);
+                                    sLogger.failure("Trainer %u contains cast spell %u that is non-teaching", entry, CastSpellID);
                                     abrt = true;
                                 }
                                 break;
@@ -1576,7 +1576,7 @@ void ObjectMgr::LoadTrainers()
 
                 if (ts.pCastSpell == NULL && ts.pLearnSpell == NULL)
                 {
-                    LOG_ERROR("Trainer %u without valid spells (%u/%u).", entry, CastSpellID, LearnSpellID);
+                    sLogger.failure("Trainer %u without valid spells (%u/%u).", entry, CastSpellID, LearnSpellID);
                     continue; //omg a bad spell !
                 }
 
@@ -1625,7 +1625,7 @@ void ObjectMgr::LoadTrainers()
     }
     while (result->NextRow());
     delete result;
-    LogDetail("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
+    sLogger.info("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
 #endif
 }
 #endif
@@ -1867,7 +1867,7 @@ void ObjectMgr::GenerateLevelUpInfo()
             mLevelInfo.insert(LevelInfoMap::value_type(p, lMap));
         }
     }
-    LogNotice("ObjectMgr : %u level up information generated.", static_cast<uint32_t>(mLevelInfo.size()));
+    sLogger.info("ObjectMgr : %u level up information generated.", static_cast<uint32_t>(mLevelInfo.size()));
 }
 
 LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
@@ -1887,7 +1887,7 @@ LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
             LevelMap::iterator it2 = itr->second->find(Level);
             if (it2 == itr->second->end())
             {
-                LogDebugFlag(LF_DB_TABLES, "GetLevelInfo : No level information found for level %u!", Level);
+                sLogger.debug("GetLevelInfo : No level information found for level %u!", Level);
                 return nullptr;
             }
 
@@ -1987,7 +1987,7 @@ void ObjectMgr::LoadCreatureTimedEmotes()
     }
     while (result->NextRow());
 
-    LogNotice("ObjectMgr : %u timed emotes cached.", result->GetRowCount());
+    sLogger.info("ObjectMgr : %u timed emotes cached.", result->GetRowCount());
     delete result;
 }
 
@@ -2037,7 +2037,7 @@ void ObjectMgr::LoadCreatureWaypoints()
             QueryResult* spawnResult = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id = %u", spawnid);
             if (spawnResult == nullptr)
             {
-                LogDebugFlag(LF_DB_TABLES, "Table `creature_waypoints` includes waypoints for invalid spawndid %u, Skipped!", spawnid);
+                sLogger.debug("Table `creature_waypoints` includes waypoints for invalid spawndid %u, Skipped!", spawnid);
                 isValidSpawn = false;
                 continue;
             }
@@ -2080,7 +2080,7 @@ void ObjectMgr::LoadCreatureWaypoints()
     }
     while (result->NextRow());
 
-    LogNotice("ObjectMgr : %u waypoints cached.", waypointCount);
+    sLogger.info("ObjectMgr : %u waypoints cached.", waypointCount);
     delete result;
 }
 
@@ -2217,7 +2217,7 @@ void ObjectMgr::LoadGuildCharters()
     }
     while (result->NextRow());
     delete result;
-    LogDetail("ObjectMgr : %u charters loaded.", static_cast<uint32_t>(m_charters[0].size()));
+    sLogger.info("ObjectMgr : %u charters loaded.", static_cast<uint32_t>(m_charters[0].size()));
 }
 
 Charter* ObjectMgr::GetCharter(uint32 CharterId, CharterTypes Type)
@@ -2294,7 +2294,7 @@ void ObjectMgr::RemoveCharter(Charter* c)
 
     if (c->CharterType >= NUM_CHARTER_TYPES)
     {
-        LogDebugFlag(LF_DB_TABLES, "ObjectMgr : Charter %u cannot be destroyed as type %u is not a sane type value.", c->CharterId, c->CharterType);
+        sLogger.debug("ObjectMgr : Charter %u cannot be destroyed as type %u is not a sane type value.", c->CharterId, c->CharterType);
         return;
     }
 
@@ -2333,7 +2333,7 @@ void ObjectMgr::LoadReputationModifierTable(const char* tablename, ReputationMod
         while (result->NextRow());
         delete result;
     }
-    LogNotice("ObjectMgr : %u reputation modifiers on %s.", static_cast<uint32_t>(dmap->size()), tablename);
+    sLogger.info("ObjectMgr : %u reputation modifiers on %s.", static_cast<uint32_t>(dmap->size()), tablename);
 }
 
 void ObjectMgr::LoadReputationModifiers()
@@ -2391,7 +2391,7 @@ void ObjectMgr::LoadInstanceReputationModifiers()
     while (result->NextRow());
     delete result;
 
-    LogDetail("ObjectMgr : %u instance reputation modifiers loaded.", static_cast<uint32_t>(m_reputation_instance.size()));
+    sLogger.info("ObjectMgr : %u instance reputation modifiers loaded.", static_cast<uint32_t>(m_reputation_instance.size()));
 }
 
 bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim)
@@ -2454,7 +2454,7 @@ void ObjectMgr::LoadDisabledSpells()
         delete result;
     }
 
-    LogNotice("ObjectMgr : %u disabled spells.", static_cast<uint32_t>(m_disabled_spells.size()));
+    sLogger.info("ObjectMgr : %u disabled spells.", static_cast<uint32_t>(m_disabled_spells.size()));
 }
 
 void ObjectMgr::ReloadDisabledSpells()
@@ -2470,7 +2470,7 @@ void ObjectMgr::LoadGroups()
     {
         if (result->GetFieldCount() != 52)
         {
-            LOG_ERROR("groups table format is invalid. Please update your database.");
+            sLogger.failure("groups table format is invalid. Please update your database.");
             return;
         }
         do
@@ -2482,7 +2482,7 @@ void ObjectMgr::LoadGroups()
         delete result;
     }
 
-    LogDetail("ObjectMgr : %u groups loaded.", static_cast<uint32_t>(this->m_groups.size()));
+    sLogger.info("ObjectMgr : %u groups loaded.", static_cast<uint32_t>(this->m_groups.size()));
 }
 
 void ObjectMgr::LoadArenaTeams()
@@ -2492,7 +2492,7 @@ void ObjectMgr::LoadArenaTeams()
     {
         if (result->GetFieldCount() != 22)
         {
-            LOG_ERROR("arenateams table format is invalid. Please update your database.");
+            sLogger.failure("arenateams table format is invalid. Please update your database.");
             return;
         }
         do
@@ -2676,7 +2676,7 @@ void ObjectMgr::ResetDailies()
 
 void ObjectMgr::LoadSpellTargetConstraints()
 {
-    LogNotice("ObjectMgr : Loading spell target constraints...");
+    sLogger.info("ObjectMgr : Loading spell target constraints...");
 
     // Let's try to be idiot proof :/
     QueryResult* result = WorldDatabase.Query("SELECT * FROM spelltargetconstraints WHERE SpellID > 0 ORDER BY SpellID");
@@ -2741,7 +2741,7 @@ void ObjectMgr::LoadSpellTargetConstraints()
 
     delete result;
 
-    LogNotice("ObjectMgr : Loaded constraints for %u spells...", static_cast<uint32_t>(m_spelltargetconstraints.size()));
+    sLogger.info("ObjectMgr : Loaded constraints for %u spells...", static_cast<uint32_t>(m_spelltargetconstraints.size()));
 }
 
 SpellTargetConstraint* ObjectMgr::GetSpellTargetConstraintForSpell(uint32 spellid)
@@ -2890,7 +2890,7 @@ std::multimap< uint32, WorldState >* ObjectMgr::GetWorldStatesForMap(uint32 map)
 
 void ObjectMgr::LoadEventScripts()
 {
-    LogNotice("ObjectMgr : Loading Event Scripts...");
+    sLogger.info("ObjectMgr : Loading Event Scripts...");
 
     bool success = false;
     const char* eventScriptsQuery = "SELECT `event_id`, `function`, `script_type`, `data_1`, `data_2`, `data_3`, `data_4`, `data_5`, `x`, `y`, `z`, `o`, `delay`, `next_event` FROM `event_scripts` WHERE `event_id` > 0 ORDER BY `event_id`";
@@ -2898,14 +2898,14 @@ void ObjectMgr::LoadEventScripts()
 
     if (!success)
     {
-        LogDebugFlag(LF_DB_TABLES, "LoadEventScripts : Failed on Loading Queries from event_scripts.");
+        sLogger.debug("LoadEventScripts : Failed on Loading Queries from event_scripts.");
         return;
     }
     else
     {
         if (!result)
         {
-            LogDebugFlag(LF_DB_TABLES, "LoadEventScripts : Loaded 0 event_scripts. DB table `event_scripts` is empty.");
+            sLogger.debug("LoadEventScripts : Loaded 0 event_scripts. DB table `event_scripts` is empty.");
             return;
         }
     }
@@ -2946,7 +2946,7 @@ void ObjectMgr::LoadEventScripts()
 
     delete result;
 
-    LogDetail("ObjectMgr : Loaded event_scripts for %u events...", count);
+    sLogger.info("ObjectMgr : Loaded event_scripts for %u events...", count);
 }
 
 EventScriptBounds ObjectMgr::GetEventScripts(uint32 event_id) const
@@ -3094,7 +3094,7 @@ void ObjectMgr::LoadCreatureAIAgents()
 
             if (spe == nullptr)
             {
-                LogDebugFlag(LF_DB_TABLES, "AIAgent : For %u has nonexistent spell %u.", fields[0].GetUInt32(), fields[6].GetUInt32());
+                sLogger.debug("AIAgent : For %u has nonexistent spell %u.", fields[0].GetUInt32(), fields[6].GetUInt32());
                 continue;
             }
 
@@ -3127,7 +3127,7 @@ void ObjectMgr::LoadCreatureAIAgents()
                 if (sp->spell->getEffect(0) == SPELL_EFFECT_LEARN_SPELL || sp->spell->getEffect(1) == SPELL_EFFECT_LEARN_SPELL ||
                     sp->spell->getEffect(2) == SPELL_EFFECT_LEARN_SPELL)
                 {
-                    LogDebugFlag(LF_DB_TABLES, "Teaching spell %u in ai_agent for %u", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
+                    sLogger.debug("Teaching spell %u in ai_agent for %u", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
                     delete sp;
                     sp = nullptr;
                     continue;
@@ -3205,7 +3205,7 @@ void ObjectMgr::LoadInstanceEncounters()
     QueryResult* result = WorldDatabase.Query("SELECT entry, creditType, creditEntry, lastEncounterDungeon, comment, mapid FROM instance_encounters");
     if (result == nullptr)
     {
-        LogDebugFlag(LF_DB_TABLES, ">> Loaded 0 instance encounters, table is empty!");
+        sLogger.debug(">> Loaded 0 instance encounters, table is empty!");
         return;
     }
 
@@ -3229,7 +3229,7 @@ void ObjectMgr::LoadInstanceEncounters()
         const auto dungeonEncounter = sDungeonEncounterStore.LookupEntry(entry);
         if (dungeonEncounter == nullptr)
         {
-            LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid encounter id %u, skipped!", entry);
+            sLogger.debug("Table `instance_encounters` has an invalid encounter id %u, skipped!", entry);
             continue;
         }
 
@@ -3242,7 +3242,7 @@ void ObjectMgr::LoadInstanceEncounters()
 
         if (lastEncounterDungeon && sLfgMgr.GetLFGDungeon(lastEncounterDungeon) == 0)
         {
-            LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an encounter %u (%s) marked as final for invalid dungeon id %u, skipped!", entry, dungeonEncounterName, lastEncounterDungeon);
+            sLogger.debug("Table `instance_encounters` has an encounter %u (%s) marked as final for invalid dungeon id %u, skipped!", entry, dungeonEncounterName, lastEncounterDungeon);
             continue;
         }
 
@@ -3257,7 +3257,7 @@ void ObjectMgr::LoadInstanceEncounters()
 #else
                 const auto itrEncounterName = itr->second->encounterName;
 #endif
-                LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` specified encounter %u (%s) as last encounter but %u (%s) is already marked as one, skipped!", entry, dungeonEncounterName, itr->second->id, itrEncounterName);
+                sLogger.debug("Table `instance_encounters` specified encounter %u (%s) as last encounter but %u (%s) is already marked as one, skipped!", entry, dungeonEncounterName, itr->second->id, itrEncounterName);
                 continue;
             }
 
@@ -3272,7 +3272,7 @@ void ObjectMgr::LoadInstanceEncounters()
                 auto creatureprop = sMySQLStore.getCreatureProperties(creditEntry);
                 if (creatureprop == nullptr)
                 {
-                    LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid creature (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounterName);
+                    sLogger.debug("Table `instance_encounters` has an invalid creature (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounterName);
                     continue;
                 }
                 const_cast<CreatureProperties*>(creatureprop)->extra_a9_flags |= 0x10000000; // Flagged Dungeon Boss
@@ -3282,14 +3282,14 @@ void ObjectMgr::LoadInstanceEncounters()
             {
                 if (sSpellMgr.getSpellInfo(creditEntry) == nullptr)
                 {
-                    LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid spell (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounterName);
+                    sLogger.debug("Table `instance_encounters` has an invalid spell (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounterName);
                     continue;
                 }
                 break;
             }
             default:
             {
-                LogDebugFlag(LF_DB_TABLES, "Table `instance_encounters` has an invalid credit type (%u) for encounter %u (%s), skipped!", creditType, entry, dungeonEncounterName);
+                sLogger.debug("Table `instance_encounters` has an invalid credit type (%u) for encounter %u (%s), skipped!", creditType, entry, dungeonEncounterName);
                 continue;
             }
         }
@@ -3304,5 +3304,5 @@ void ObjectMgr::LoadInstanceEncounters()
         ++count;
     } while (result->NextRow());
 
-    LogDetail("ObjectMgr : Loaded %u instance encounters in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("ObjectMgr : Loaded %u instance encounters in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }

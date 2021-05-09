@@ -284,13 +284,13 @@ void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss)
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
     {
-        LogError("ScriptMgr tried to register a script for spell id %u but spell does not exist!", spellId);
+        sLogger.failure("ScriptMgr tried to register a script for spell id %u but spell does not exist!", spellId);
         return;
     }
 
     if (_spellscripts.find(spellId) != _spellscripts.end())
     {
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for spell id %u but this spell has already one.", spellId);
+        sLogger.debug("ScriptMgr tried to register a script for spell id %u but this spell has already one.", spellId);
         return;
     }
 
@@ -324,7 +324,7 @@ struct ScriptingEngine_dl
 
 void ScriptMgr::LoadScripts()
 {
-    LogNotice("ScriptMgr : Loading External Script Libraries...");
+    sLogger.info("ScriptMgr : Loading External Script Libraries...");
 
     std::string modulePath = PREFIX;
     modulePath += '/';
@@ -347,7 +347,7 @@ void ScriptMgr::LoadScripts()
         if (!dynLib->Load())
         {
             loadMessageStream << "ERROR: Cannot open library.";
-            LOG_ERROR(loadMessageStream.str().c_str());
+            sLogger.failure(loadMessageStream.str().c_str());
             delete dynLib;
             continue;
         }
@@ -356,7 +356,7 @@ void ScriptMgr::LoadScripts()
         if (!serverStateCall)
         {
             loadMessageStream << "ERROR: Cannot find set_serverstate_call function.";
-            LOG_ERROR(loadMessageStream.str().c_str());
+            sLogger.failure(loadMessageStream.str().c_str());
             delete dynLib;
             continue;
         }
@@ -369,7 +369,7 @@ void ScriptMgr::LoadScripts()
         if (!versionCall || !registerCall || !typeCall)
         {
             loadMessageStream << "ERROR: Cannot find version functions.";
-            LOG_ERROR(loadMessageStream.str().c_str());
+            sLogger.failure(loadMessageStream.str().c_str());
             delete dynLib;
             continue;
         }
@@ -380,7 +380,7 @@ void ScriptMgr::LoadScripts()
         if (dllVersion != BUILD_HASH_STR)
         {
             loadMessageStream << "ERROR: Version mismatch.";
-            LOG_ERROR(loadMessageStream.str().c_str());
+            sLogger.failure(loadMessageStream.str().c_str());
             delete dynLib;
             continue;
         }
@@ -405,19 +405,19 @@ void ScriptMgr::LoadScripts()
 
             loadMessageStream << "loaded";
         }
-        LogDetail(loadMessageStream.str().c_str());
+        sLogger.info(loadMessageStream.str().c_str());
 
         dllCount++;
     }
 
     if (dllCount == 0)
     {
-        LOG_ERROR("No external scripts found! Server will continue to function with limited functionality.");
+        sLogger.failure("No external scripts found! Server will continue to function with limited functionality.");
     }
     else
     {
-        LogDetail("ScriptMgr : Loaded %u external libraries.", dllCount);
-        LogNotice("ScriptMgr : Loading optional scripting engine(s)...");
+        sLogger.info("ScriptMgr : Loaded %u external libraries.", dllCount);
+        sLogger.info("ScriptMgr : Loading optional scripting engine(s)...");
 
         for (auto& engineDl : scriptingEngineDls)
         {
@@ -425,7 +425,7 @@ void ScriptMgr::LoadScripts()
             dynamiclibs.push_back(engineDl.dl);
         }
 
-        LogDetail("ScriptMgr : Done loading scripting engine(s)...");
+        sLogger.info("ScriptMgr : Done loading scripting engine(s)...");
     }
 }
 
@@ -455,7 +455,7 @@ void ScriptMgr::DumpUnimplementedSpells()
 {
     std::ofstream of;
 
-    LOG_BASIC("Dumping IDs for spells with unimplemented dummy/script effect(s)");
+    sLogger.info("Dumping IDs for spells with unimplemented dummy/script effect(s)");
     uint32 count = 0;
 
     of.open("unimplemented1.txt");
@@ -488,9 +488,9 @@ void ScriptMgr::DumpUnimplementedSpells()
 
     of.close();
 
-    LOG_BASIC("Dumped %u IDs.", count);
+    sLogger.info("Dumped %u IDs.", count);
 
-    LOG_BASIC("Dumping IDs for spells with unimplemented dummy aura effect.");
+    sLogger.info("Dumping IDs for spells with unimplemented dummy aura effect.");
 
     std::ofstream of2;
     of2.open("unimplemented2.txt");
@@ -521,7 +521,7 @@ void ScriptMgr::DumpUnimplementedSpells()
 
     of2.close();
 
-    LOG_BASIC("Dumped %u IDs.", count);
+    sLogger.info("Dumped %u IDs.", count);
 }
 
 void ScriptMgr::DamageTaken(Creature* pCreature, Unit* attacker, uint32_t* damage) const
@@ -552,7 +552,7 @@ void ScriptMgr::register_creature_script(uint32 entry, exp_create_creature_ai ca
     m_creaturesMutex.Acquire();
 
     if (_creatures.find(entry) != _creatures.end())
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Creature ID: %u but this creature has already one!", entry);
+        sLogger.debug("ScriptMgr tried to register a script for Creature ID: %u but this creature has already one!", entry);
 
     _creatures.insert(CreatureCreateMap::value_type(entry, callback));
 
@@ -562,7 +562,7 @@ void ScriptMgr::register_creature_script(uint32 entry, exp_create_creature_ai ca
 void ScriptMgr::register_gameobject_script(uint32 entry, exp_create_gameobject_ai callback)
 {
     if (_gameobjects.find(entry) != _gameobjects.end())
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for GameObject ID: %u but this go has already one.", entry);
+        sLogger.debug("ScriptMgr tried to register a script for GameObject ID: %u but this go has already one.", entry);
 
     _gameobjects.insert(GameObjectCreateMap::value_type(entry, callback));
 }
@@ -571,18 +571,18 @@ void ScriptMgr::register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback
 {
     if (_auras.find(entry) != _auras.end())
     {
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Aura ID: %u but this aura has already one.", entry);
+        sLogger.debug("ScriptMgr tried to register a script for Aura ID: %u but this aura has already one.", entry);
     }
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == NULL)
     {
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a dummy aura handler for invalid Spell ID: %u.", entry);
+        sLogger.debug("ScriptMgr tried to register a dummy aura handler for invalid Spell ID: %u.", entry);
         return;
     }
 
     if (!sp->hasEffectApplyAuraName(SPELL_AURA_DUMMY) && !sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a dummy aura handler for Spell ID: %u (%s), but spell has no dummy aura!", entry, sp->getName().c_str());
+        sLogger.debug("ScriptMgr registered a dummy aura handler for Spell ID: %u (%s), but spell has no dummy aura!", entry, sp->getName().c_str());
 
     _auras.insert(HandleDummyAuraMap::value_type(entry, callback));
 }
@@ -591,19 +591,19 @@ void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callba
 {
     if (_spells.find(entry) != _spells.end())
     {
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Spell ID: %u but this spell has already one", entry);
+        sLogger.debug("ScriptMgr tried to register a script for Spell ID: %u but this spell has already one", entry);
         return;
     }
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == NULL)
     {
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a dummy handler for invalid Spell ID: %u.", entry);
+        sLogger.debug("ScriptMgr tried to register a dummy handler for invalid Spell ID: %u.", entry);
         return;
     }
 
     if (!sp->hasEffect(SPELL_EFFECT_DUMMY) && !sp->hasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->hasEffect(SPELL_EFFECT_SEND_EVENT))
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a dummy handler for Spell ID: %u (%s), but spell has no dummy/script/send event effect!", entry, sp->getName().c_str());
+        sLogger.debug("ScriptMgr registered a dummy handler for Spell ID: %u (%s), but spell has no dummy/script/send event effect!", entry, sp->getName().c_str());
 
     _spells.insert(HandleDummySpellMap::value_type(entry, callback));
 }
@@ -614,7 +614,7 @@ void ScriptMgr::register_quest_script(uint32 entry, QuestScript* qs)
     if (q != nullptr)
     {
         if (q->pQuestScript != NULL)
-            LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Quest ID: %u but this quest has already one.", entry);
+            sLogger.debug("ScriptMgr tried to register a script for Quest ID: %u but this quest has already one.", entry);
 
         const_cast<QuestProperties*>(q)->pQuestScript = qs;
     }
@@ -629,7 +629,7 @@ void ScriptMgr::register_event_script(uint32 entry, EventScript* es)
     {
         if (gameEvent->mEventScript != nullptr)
         {
-            LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Event ID: %u but this event has already one.", entry);
+            sLogger.debug("ScriptMgr tried to register a script for Event ID: %u but this event has already one.", entry);
             return;
         }
 
@@ -641,7 +641,7 @@ void ScriptMgr::register_event_script(uint32 entry, EventScript* es)
 void ScriptMgr::register_instance_script(uint32 pMapId, exp_create_instance_ai pCallback)
 {
     if (mInstances.find(pMapId) != mInstances.end())
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Instance ID: %u but this instance already has one.", pMapId);
+        sLogger.debug("ScriptMgr tried to register a script for Instance ID: %u but this instance already has one.", pMapId);
 
     mInstances.insert(InstanceCreateMap::value_type(pMapId, pCallback));
 };
@@ -693,19 +693,19 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
 
     if (itr != SpellScriptEffects.end())
     {
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register more than 1 script effect handlers for Spell %u", entry);
+        sLogger.debug("ScriptMgr tried to register more than 1 script effect handlers for Spell %u", entry);
         return;
     }
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == NULL)
     {
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script effect handler for invalid Spell %u.", entry);
+        sLogger.debug("ScriptMgr tried to register a script effect handler for invalid Spell %u.", entry);
         return;
     }
 
     if (!sp->hasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->hasEffect(SPELL_EFFECT_SEND_EVENT))
-        LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->getName().c_str());
+        sLogger.debug("ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->getName().c_str());
 
     SpellScriptEffects.insert(std::pair< uint32, exp_handle_script_effect >(entry, callback));
 }
@@ -841,7 +841,7 @@ void InstanceScript::addData(uint32_t data, uint32_t state /*= NotStarted*/)
     if (Iter == mInstanceData.end())
         mInstanceData.insert(std::pair<uint32_t, uint32_t>(data, state));
     else
-        LogDebugFlag(LF_SCRIPT_MGR, "InstanceScript::addData - tried to set state for entry %u. The entry is already available with a state!", data);
+        sLogger.debug("InstanceScript::addData - tried to set state for entry %u. The entry is already available with a state!", data);
 }
 
 void InstanceScript::setData(uint32_t data, uint32_t state)
@@ -853,7 +853,7 @@ void InstanceScript::setData(uint32_t data, uint32_t state)
         OnEncounterStateChange(data, state);
     }
     else
-        LogDebugFlag(LF_SCRIPT_MGR, "InstanceScript::setData - tried to set state for entry %u on map %u. The entry is not defined in table instance_bosses or manually to handle states!", data, mInstance->GetMapId());
+        sLogger.debug("InstanceScript::setData - tried to set state for entry %u on map %u. The entry is not defined in table instance_bosses or manually to handle states!", data, mInstance->GetMapId());
 }
 
 uint32_t InstanceScript::getData(uint32_t data)
@@ -914,7 +914,7 @@ void InstanceScript::generateBossDataState()
             {
                 CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter->creditEntry);
                 if (creature == nullptr)
-                    LOG_ERROR("Your instance_encounters table includes invalid data for boss entry %u!", encounter->creditEntry);
+                    sLogger.failure("Your instance_encounters table includes invalid data for boss entry %u!", encounter->creditEntry);
                 else
                     mInstanceData.insert(std::pair<uint32_t, uint32_t>(encounter->creditEntry, NotStarted));
             }           
@@ -931,7 +931,7 @@ void InstanceScript::generateBossDataState()
         }
     }
 
-    LogDebugFlag(LF_SCRIPT_MGR, "InstanceScript::generateBossDataState() - Boss State generated for map %u.", mInstance->GetMapId());
+    sLogger.debug("InstanceScript::generateBossDataState() - Boss State generated for map %u.", mInstance->GetMapId());
 }
 
 void InstanceScript::UpdateEncountersStateForCreature(uint32_t creditEntry, uint8_t difficulty)
@@ -1015,7 +1015,7 @@ void InstanceScript::generateBossDataState()
             {
                 CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter->creditEntry);
                 if (creature == nullptr)
-                    LOG_ERROR("Your instance_encounters table includes invalid data for boss entry %u!", encounter->creditEntry);
+                    sLogger.failure("Your instance_encounters table includes invalid data for boss entry %u!", encounter->creditEntry);
                 else
                     mInstanceData.insert(std::pair<uint32_t, uint32_t>(encounter->creditEntry, NotStarted));
             }
@@ -1032,7 +1032,7 @@ void InstanceScript::generateBossDataState()
         }
     }
 
-    LogDebugFlag(LF_SCRIPT_MGR, "InstanceScript::generateBossDataState() - Boss State generated for map %u.", mInstance->GetMapId());
+    sLogger.debug("InstanceScript::generateBossDataState() - Boss State generated for map %u.", mInstance->GetMapId());
 }
 #endif
 
@@ -1219,7 +1219,7 @@ Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, 
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry);
     if (creatureProperties == nullptr)
     {
-        LOG_ERROR("tried to create a invalid creature with entry %u!", entry);
+        sLogger.failure("tried to create a invalid creature with entry %u!", entry);
         return nullptr;
     }
 

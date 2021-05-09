@@ -217,7 +217,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         {
             // TODO Verify "strange gestures" for xfaction
             _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_EMOTE, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), true, true);
-            LogDetail("[emote] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
+            sLogger.info("[emote] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
         } break;
         case CHAT_MSG_SAY:
         {
@@ -274,7 +274,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                         }
                     }
                 }
-                LogDetail("[party] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
+                sLogger.info("[party] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
             }
         } break;
         case CHAT_MSG_GUILD:
@@ -549,7 +549,7 @@ void WorldSession::handleReportSpamOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LOG_DEBUG("REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", srlPacket.spam_type, srlPacket.spammer_guid.getGuidLow(),
+    sLogger.debug("REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", srlPacket.spam_type, srlPacket.spammer_guid.getGuidLow(),
         srlPacket.unk1, srlPacket.unk2, srlPacket.unk3, srlPacket.unk4, srlPacket.description.c_str());
 
     SendPacket(SmsgComplainResult(0).serialise().get());
@@ -575,5 +575,5 @@ void WorldSession::handleChatChannelWatchOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Unhandled... Player %s watch channel: %s", _player->getName().c_str(), srlPacket.name.c_str());
+    sLogger.debug("Unhandled... Player %s watch channel: %s", _player->getName().c_str(), srlPacket.name.c_str());
 }

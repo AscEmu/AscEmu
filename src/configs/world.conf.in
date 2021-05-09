@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu World Configuration File
-# Last edited: 12/27/2018
+# Last edited: 05/08/2021
 ################################################################################
 
 ################################################################################
@@ -124,27 +124,13 @@
         WorldServerPort = "8129">
 
 ################################################################################
-# Log Settings
+# Logger Settings
 #
-#    WorldFileLogLevel
+#    MinimumMessageType
 #        This directive controls how much output the server will
-#        write to log files. It cannot be disabled.
-#        0 = Minimal + Error; 1 = Detail; 2 = Debug;
-#        Default: 1 (Detail)
-#
-#    WorldDebugFlags
-#        This directive controls which debug messages the server
-#        will write to log file.
-#         0 = None                       128 = Spell (Effect)
-#         1 = Opcodes                    256 = Aura (Effect)
-#         2 = Map                        512 = ScriptMgr
-#         4 = MapCell (activity)        1024 = Database
-#         8 = VMap
-#        16 = MMap
-#        32 = Spell
-#        64 = Aura
-#        You can combine these flags: Map + Spell + Database = 1058.
-#        Default: 0 (none)
+#        write to console or log files. It cannot be disabled.
+#        0 = Trace; 1 = Debug; 2 = Minor; 3= Major;
+#        Default: 2 (Minor)
 #
 #    EnableWorldPacketLog
 #        If this directive is turned on, a file called `world.log`
@@ -182,15 +168,14 @@
 #        Default: 0 (disabled)
 #
 
-<Log WorldFileLogLevel      = "1"
-     WorldDebugFlags        = "0"
-     EnableWorldPacketLog   = "0"
-     ExtendedLogDir         = "logs"
-     EnableCheaterLog       = "0"
-     EnableGMCommandLog     = "0"
-     EnablePlayerLog        = "0"
-     EnableTimeStamp        = "0"
-     EnableSqlBanLog        = "0">
+<Logger MinimumMessageType   = "2"
+        EnableWorldPacketLog = "0"
+        ExtendedLogDir       = "logs"
+        EnableCheaterLog     = "0"
+        EnableGMCommandLog   = "0"
+        EnablePlayerLog      = "0"
+        EnableTimeStamp      = "0"
+        EnableSqlBanLog      = "0">
 
 ################################################################################
 # Server Settings

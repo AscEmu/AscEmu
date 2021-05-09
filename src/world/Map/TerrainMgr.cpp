@@ -389,12 +389,12 @@ TileMap::~TileMap()
 
 void TileMap::Load(char* filename)
 {
-    LOG_DEBUG("Loading %s", filename);
+    sLogger.debug("Loading %s", filename);
     FILE* f = fopen(filename, "rb");
 
     if (f == NULL)
     {
-        LOG_ERROR("%s does not exist", filename);
+        sLogger.failure("%s does not exist", filename);
         return;
     }
 
@@ -409,7 +409,7 @@ void TileMap::Load(char* filename)
 #if VERSION_STRING < Mop
     if (header.buildMagic != BUILD_VERSION)  // wow version
     {
-        LOG_ERROR("%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, BUILD_VERSION);
+        sLogger.failure("%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, BUILD_VERSION);
         fclose(f);
         return;
     }

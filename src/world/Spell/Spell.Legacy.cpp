@@ -1566,7 +1566,7 @@ SpellEntry *spellInfo = sSpellStore.LookupEntry(TriggerSpellId);
 
 if (!spellInfo)
 {
-LOG_ERROR("WORLD: unknown spell id %i\n", TriggerSpellId);
+sLogger.failure("WORLD: unknown spell id %i\n", TriggerSpellId);
 return;
 }
 
@@ -2814,7 +2814,7 @@ void Spell::HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target
     {
         if (mapid != Target->GetMapId())
         {
-            LOG_ERROR("Tried to teleport a Creature to another map.");
+            sLogger.failure("Tried to teleport a Creature to another map.");
             return;
         }
 
@@ -3222,7 +3222,7 @@ void Spell::SpellEffectJumpBehindTarget(uint8_t /*i*/)
         }
         else
         {
-            LogDebugFlag(LF_SPELL, "Coordinates are empty");
+            sLogger.debug("Coordinates are empty");
         }
     }
 }

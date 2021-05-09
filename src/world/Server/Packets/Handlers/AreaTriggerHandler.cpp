@@ -98,7 +98,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AREATRIGGER: %u (triggerId)", srlPacket.triggerId);
+    sLogger.debug("Received CMSG_AREATRIGGER: %u (triggerId)", srlPacket.triggerId);
 
     if (!_player->IsInWorld())
         return;
@@ -108,7 +108,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
     const auto areaTriggerEntry = sAreaTriggerStore.LookupEntry(srlPacket.triggerId);
     if (areaTriggerEntry == nullptr)
     {
-        LogDebugFlag(LF_OPCODE, "%u is not part of AreaTrigger.dbc", srlPacket.triggerId);
+        sLogger.debug("%u is not part of AreaTrigger.dbc", srlPacket.triggerId);
         return;
     }
 

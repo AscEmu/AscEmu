@@ -28,7 +28,7 @@ Socket::Socket(SOCKET fd, uint32 sendbuffersize, uint32 recvbuffersize) : m_fd(f
         m_fd = SocketOps::CreateTCPFileDescriptor();
     }
 
-    LogDebug("Created Socket %u", m_fd);
+    sLogger.debug("Created Socket %u", m_fd);
 }
 
 Socket::~Socket()
@@ -79,7 +79,7 @@ void Socket::_OnConnect()
 #endif
     sSocketMgr.AddSocket(this);
 
-    LogDetail("Socket::_OnConnect called");
+    sLogger.info("Socket::_OnConnect called");
     // Call virtual onconnect
     OnConnect();
 }
@@ -120,7 +120,7 @@ void Socket::Disconnect()
 
     m_connected = false;
 
-    LogDetail("Socket::Disconnect on socket %u", m_fd);
+    sLogger.info("Socket::Disconnect on socket %u", m_fd);
 
     // remove from mgr
     sSocketMgr.RemoveSocket(this);
@@ -140,7 +140,7 @@ void Socket::Delete()
 
     m_deleted = true;
 
-    LogDebug("Socket::Delete() on socket %u", m_fd);
+    sLogger.debug("Socket::Delete() on socket %u", m_fd);
 
     if (IsConnected())
         Disconnect();

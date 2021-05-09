@@ -14,20 +14,20 @@ AccountMgr& AccountMgr::getInstance()
 
 void AccountMgr::initialize(uint32_t reloadTime)
 {
-    LogNotice("AccountMgr : Started precaching accounts...");
+    sLogger.info("AccountMgr : Started precaching accounts...");
     m_reloadThread = nullptr;
     m_reloadTime = reloadTime;
 
     reloadAccounts(true);
 
-    LogDetail("AccountMgr : loaded %u accounts.", static_cast<uint32_t>(getCount()));
+    sLogger.info("AccountMgr : loaded %u accounts.", static_cast<uint32_t>(getCount()));
 
     m_reloadThread = std::make_unique<AscEmu::Threading::AEThread>("ReloadAccounts", [this](AscEmu::Threading::AEThread& thread) { this->reloadAccounts(false); }, std::chrono::seconds(m_reloadTime));
 }
 
 void AccountMgr::finalize()
 {
-    LogNotice("AccountMgr : Stop Manager...");
+    sLogger.info("AccountMgr : Stop Manager...");
 
     m_reloadThread->killAndJoin();
 }
@@ -49,7 +49,7 @@ void AccountMgr::addAccount(Field* field)
     if (static_cast<uint32_t>(UNIXTIME) > account->Banned && account->Banned != 0 && account->Banned != 1)
     {
         account->Banned = 0;
-        LOG_DEBUG("Account %s's ban has expired.", accountName.c_str());
+        sLogger.debug("Account %s's ban has expired.", accountName.c_str());
         sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE id = %u", account->AccountId);
     }
     
@@ -61,7 +61,7 @@ void AccountMgr::addAccount(Field* field)
     if (static_cast<uint32_t>(UNIXTIME) > account->Muted && account->Muted != 0 && account->Muted != 1)
     {
         account->Muted = 0;
-        LOG_DEBUG("Account %s's mute has expired.", accountName.c_str());
+        sLogger.debug("Account %s's mute has expired.", accountName.c_str());
         sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE id = %u", account->AccountId);
     }
 
@@ -85,7 +85,7 @@ void AccountMgr::addAccount(Field* field)
     }
     else
     {
-        LOG_ERROR("Account `%s` has incorrect number of bytes in encrypted password! Disabling.", accountName.c_str());
+        sLogger.failure("Account `%s` has incorrect number of bytes in encrypted password! Disabling.", accountName.c_str());
         memset(account->SrpHash, 0, 20);
     }
 
@@ -112,7 +112,7 @@ void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
 
     if (id != account->AccountId)
     {
-        LOG_ERROR(" >> deleting duplicate account %u [%s]...", id, accountName.c_str());
+        sLogger.failure(" >> deleting duplicate account %u [%s]...", id, accountName.c_str());
         sLogonSQL->Execute("DELETE FROM accounts WHERE id = %u", id);
         return;
     }
@@ -125,7 +125,7 @@ void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
     if (static_cast<uint32_t>(UNIXTIME) > account->Banned && account->Banned != 0 && account->Banned != 1)
     {
         account->Banned = 0;
-        LOG_DEBUG("Account %s's ban has expired.", accountName.c_str());
+        sLogger.debug("Account %s's ban has expired.", accountName.c_str());
         sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE id = %u", account->AccountId);
     }
 
@@ -137,7 +137,7 @@ void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
     if (static_cast<uint32_t>(UNIXTIME) > account->Muted && account->Muted != 0 && account->Muted != 1)
     {
         account->Muted = 0;
-        LOG_DEBUG("Account %s's mute has expired.", accountName.c_str());
+        sLogger.debug("Account %s's mute has expired.", accountName.c_str());
         sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE id = %u", account->AccountId);
     }
 
@@ -161,7 +161,7 @@ void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
     }
     else
     {
-        LOG_ERROR("Account `%s` has incorrect number of bytes in encrypted password! Disabling.", accountName.c_str());
+        sLogger.failure("Account `%s` has incorrect number of bytes in encrypted password! Disabling.", accountName.c_str());
         memset(account->SrpHash, 0, 20);
     }
 }
@@ -171,7 +171,7 @@ void AccountMgr::reloadAccounts(bool silent)
     accountMgrMutex.Acquire();
 
     if (!silent)
-        LogDefault("[AccountMgr] Reloading Accounts...");
+        sLogger.info("[AccountMgr] Reloading Accounts...");
 
     std::set<std::string> account_list;
 
@@ -210,7 +210,7 @@ void AccountMgr::reloadAccounts(bool silent)
     }
 
     if (!silent)
-        LogDefault("[AccountMgr] Found %u accounts.", static_cast<uint32_t>(_accountMap.size()));
+        sLogger.info("[AccountMgr] Found %u accounts.", static_cast<uint32_t>(_accountMap.size()));
 
     accountMgrMutex.Release();
 }

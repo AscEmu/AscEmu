@@ -55,7 +55,7 @@ void SocketMgr::AddSocket(Socket* s)
     ev.data.fd = s->GetFd();
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev))
-        LOG_ERROR("Could not add event to epoll set on fd %u", ev.data.fd);
+        sLogger.failure("Could not add event to epoll set on fd %u", ev.data.fd);
 }
 
 void SocketMgr::AddListenSocket(ListenSocketBase* s)
@@ -71,14 +71,14 @@ void SocketMgr::AddListenSocket(ListenSocketBase* s)
     ev.data.fd = s->GetFd();
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev))
-        LOG_ERROR("Could not add event to epoll set on fd %u", ev.data.fd);
+        sLogger.failure("Could not add event to epoll set on fd %u", ev.data.fd);
 }
 
 void SocketMgr::RemoveSocket(Socket* s)
 {
     if(fds[s->GetFd()] != s)
     {
-        LOG_ERROR("Could not remove fd %u from the set due to it not existing?", s->GetFd());
+        sLogger.failure("Could not remove fd %u from the set due to it not existing?", s->GetFd());
         return;
     }
 
@@ -92,7 +92,7 @@ void SocketMgr::RemoveSocket(Socket* s)
     ev.events = EPOLLIN | EPOLLOUT | EPOLLERR | EPOLLHUP | EPOLLONESHOT;
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_DEL, ev.data.fd, &ev))
-        LOG_ERROR("Could not remove fd %u from epoll set, errno %u", s->GetFd(), errno);
+        sLogger.failure("Could not remove fd %u from epoll set, errno %u", s->GetFd(), errno);
 }
 
 void SocketMgr::CloseAll()
@@ -111,7 +111,7 @@ void SocketMgr::SpawnWorkerThreads()
 
 void SocketMgr::ShowStatus()
 {
-    LogDefault("sockets count = %u", static_cast<uint32_t>(socket_count.load()));
+    sLogger.info("sockets count = %u", static_cast<uint32_t>(socket_count.load()));
 }
 
 bool SocketWorkerThread::runThread()
@@ -128,7 +128,7 @@ bool SocketWorkerThread::runThread()
         {
             if(events[i].data.fd >= SOCKET_HOLDER_SIZE)
             {
-                LOG_ERROR("Requested FD that is too high (%u)", events[i].data.fd);
+                sLogger.failure("Requested FD that is too high (%u)", events[i].data.fd);
                 continue;
             }
 
@@ -139,7 +139,7 @@ bool SocketWorkerThread::runThread()
                 if((ptr = ((Socket*)sSocketMgr.listenfds[events[i].data.fd])) != NULL)
                     ((ListenSocketBase*)ptr)->OnAccept();
                 else
-                    LOG_ERROR("Returned invalid fd (no pointer) of FD %u", events[i].data.fd);
+                    sLogger.failure("Returned invalid fd (no pointer) of FD %u", events[i].data.fd);
 
                 continue;
             }

@@ -64,7 +64,7 @@ void WorldSession::handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Recieved CMSG_LEARN_TALENTS_MULTIPLE");
+    sLogger.debug("Recieved CMSG_LEARN_TALENTS_MULTIPLE");
 
     for (auto learnTalent : srlPacket.multipleTalents)
         _player->learnTalent(learnTalent.talentId, learnTalent.talentRank);

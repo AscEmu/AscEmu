@@ -65,7 +65,7 @@ void SpellMgr::modifyEffectBasePoints(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
-        LOG_ERROR("Something tried to call with an invalid spell pointer!");
+        sLogger.failure("Something tried to call with an invalid spell pointer!");
         return;
     }
 
@@ -104,7 +104,7 @@ void SpellMgr::setMissingSpellLevel(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
-        LOG_ERROR("Something tried to call with an invalid spell pointer!");
+        sLogger.failure("Something tried to call with an invalid spell pointer!");
         return;
     }
 
@@ -449,7 +449,7 @@ void SpellMgr::modifyAuraInterruptFlags(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
-        LOG_ERROR("Something tried to call with an invalid spell pointer!");
+        sLogger.failure("Something tried to call with an invalid spell pointer!");
         return;
     }
 
@@ -471,7 +471,7 @@ void SpellMgr::modifyRecoveryTime(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
-        LOG_ERROR("Something tried to call with an invalid spell pointer!");
+        sLogger.failure("Something tried to call with an invalid spell pointer!");
         return;
     }
 
@@ -646,7 +646,7 @@ void SpellMgr::applyHackFixes()
 {
     //Updating spell.dbc
 
-    LogNotice("World : Processing %u spells...", static_cast<uint32_t>(sSpellMgr.getSpellInfoMap()->size()));
+    sLogger.info("World : Processing %u spells...", static_cast<uint32_t>(sSpellMgr.getSpellInfoMap()->size()));
 
     SpellInfo* sp = nullptr;
 

@@ -900,7 +900,7 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
 
 void Aura::spellAuraEffectNotImplemented(AuraEffectModifier* aurEff, bool /*apply*/)
 {
-    LogDebugFlag(LF_AURA, "Aura::applyModifiers : Unknown aura id %u for spell id %u", aurEff->getAuraEffectType(), getSpellId());
+    sLogger.debug("Aura::applyModifiers : Unknown aura id %u for spell id %u", aurEff->getAuraEffectType(), getSpellId());
 }
 
 void Aura::spellAuraEffectNotUsed(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
@@ -1033,7 +1033,7 @@ void Aura::spellAuraEffectDummy(AuraEffectModifier* aurEff, bool apply)
     if (sScriptMgr.CallScriptedDummyAura(getSpellId(), aurEff->getEffectIndex(), this, apply))
         return;
 
-    LogDebugFlag(LF_AURA_EFF, "Aura::spellAuraEffectDummy : Spell %u (%s) has a dummy aura effect, but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str());
+    sLogger.debug("Aura::spellAuraEffectDummy : Spell %u (%s) has a dummy aura effect, but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str());
 }
 
 void Aura::spellAuraEffectPeriodicHeal(AuraEffectModifier* aurEff, bool apply)
@@ -1636,7 +1636,7 @@ void Aura::spellAuraEffectTransform(AuraEffectModifier* aurEff, bool apply)
         const auto properties = sMySQLStore.getCreatureProperties(aurEff->getEffectMiscValue());
         if (properties == nullptr)
         {
-            LogDebugFlag(LF_AURA_EFF, "Aura::spellAuraEffectTransform : Unknown creature entry %u in misc value for spell %u", aurEff->getEffectMiscValue(), getSpellId());
+            sLogger.debug("Aura::spellAuraEffectTransform : Unknown creature entry %u in misc value for spell %u", aurEff->getEffectMiscValue(), getSpellId());
             return;
         }
 
@@ -1655,7 +1655,7 @@ void Aura::spellAuraEffectTransform(AuraEffectModifier* aurEff, bool apply)
 
         if (displayId == 0)
         {
-            LogDebugFlag(LF_AURA_EFF, "Aura::spellAuraEffectTransform : Creature entry %u has no display id for spell %u", properties->Id, getSpellId());
+            sLogger.debug("Aura::spellAuraEffectTransform : Creature entry %u has no display id for spell %u", properties->Id, getSpellId());
             return;
         }
 
@@ -1771,7 +1771,7 @@ void Aura::spellAuraEffectAddModifier(AuraEffectModifier* aurEff, bool apply)
 {
     if (aurEff->getEffectMiscValue() >= MAX_SPELLMOD_TYPE)
     {
-        LogError("Aura::spellAuraEffectAddModifier : Unknown spell modifier type %u in spell %u, skipping", aurEff->getEffectMiscValue(), getSpellId());
+        sLogger.failure("Aura::spellAuraEffectAddModifier : Unknown spell modifier type %u in spell %u, skipping", aurEff->getEffectMiscValue(), getSpellId());
         return;
     }
 
@@ -1915,7 +1915,7 @@ void Aura::spellAuraEffectPeriodicTriggerDummy(AuraEffectModifier* aurEff, bool 
     else
     {
         if (!sScriptMgr.CallScriptedDummyAura(getSpellId(), aurEff->getEffectIndex(), this, false))
-            LogDebugFlag(LF_AURA, "Spell aura %u has a periodic trigger dummy effect but no handler for it", getSpellId());
+            sLogger.debug("Spell aura %u has a periodic trigger dummy effect but no handler for it", getSpellId());
 
 #if VERSION_STRING < Cata
         // Prior to cata periodic timer was resetted on refresh

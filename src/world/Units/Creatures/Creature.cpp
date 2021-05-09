@@ -292,7 +292,7 @@ void Creature::OnRemoveCorpse()
     if (IsInWorld() && (int32)m_mapMgr->GetInstanceID() == m_instanceId)
     {
 
-        LOG_DETAIL("Removing corpse of " I64FMT "...", getGuid());
+        sLogger.info("Removing corpse of " I64FMT "...", getGuid());
 
         setDeathState(DEAD);
         m_position = m_spawnLocation;
@@ -361,7 +361,7 @@ void Creature::OnRespawn(MapMgr* m)
         }
     }
 
-    LOG_DETAIL("Respawning " I64FMT "...", getGuid());
+    sLogger.info("Respawning " I64FMT "...", getGuid());
     setHealth(getMaxHealth());
     //\note remove all dynamic flags
     setDynamicFlags(0); // not tagging shit
@@ -1335,7 +1335,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     uint32 health;
     if (creature_properties->MinHealth > creature_properties->MaxHealth)
     {
-        LOG_ERROR("MinHealth is bigger than MaxHealt! Using MaxHealth value. You should fix this in creature_proto table for entry: %u!", creature_properties->Id);
+        sLogger.failure("MinHealth is bigger than MaxHealt! Using MaxHealth value. You should fix this in creature_proto table for entry: %u!", creature_properties->Id);
         health = creature_properties->MaxHealth - Util::getRandomUInt(10);
     }
     else
@@ -1755,7 +1755,7 @@ void Creature::OnPushToWorld()
 {
     if (creature_properties == nullptr)
     {
-        LOG_ERROR("Something tried to push Creature with entry %u with invalid creature_properties!", getEntry());
+        sLogger.failure("Something tried to push Creature with entry %u with invalid creature_properties!", getEntry());
         return;
     }
 
@@ -2500,7 +2500,7 @@ void Creature::addVehicleComponent(uint32 creature_entry, uint32 vehicleid)
 {
     if (m_vehicle != nullptr)
     {
-        LOG_ERROR("Creature %u (%s) with GUID %u already has a vehicle component.", creature_properties->Id, creature_properties->Name.c_str(), GetUIdFromGUID());
+        sLogger.failure("Creature %u (%s) with GUID %u already has a vehicle component.", creature_properties->Id, creature_properties->Name.c_str(), GetUIdFromGUID());
         return;
     }
 

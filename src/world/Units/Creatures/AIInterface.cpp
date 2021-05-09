@@ -239,7 +239,7 @@ void AIInterface::generateWaypointScriptCircle()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
-        //LOG_DEBUG("%s (%u) called new Circle Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        //sLogger.debug("%s (%u) called new Circle Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (MoveDone())
         {
@@ -290,7 +290,7 @@ void AIInterface::generateWaypointScriptCircle()
         }
         else
         {
-            //LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
+            //sLogger.debug("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
         }
     }
 }
@@ -300,7 +300,7 @@ void AIInterface::generateWaypointScriptRandom()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
-        //LOG_DEBUG("%s (%u) called new Random Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        //sLogger.debug("%s (%u) called new Random Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (getWayPointsCount())
         {
@@ -355,7 +355,7 @@ void AIInterface::generateWaypointScriptRandom()
             }
             else
             {
-                //LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
+                //sLogger.debug("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
             }
         }
         else
@@ -394,7 +394,7 @@ void AIInterface::generateWaypointScriptForwad()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
-        //LOG_DEBUG("%s (%u) called new Forwad Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        //sLogger.debug("%s (%u) called new Forwad Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (MoveDone())
         {
@@ -448,7 +448,7 @@ void AIInterface::generateWaypointScriptForwad()
         }
         else
         {
-            //LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
+            //sLogger.debug("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
         }
     }
 }
@@ -458,7 +458,7 @@ void AIInterface::generateWaypointScriptWantedWP()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
-        //LOG_DEBUG("%s (%u) called new WantedWP Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        //sLogger.debug("%s (%u) called new WantedWP Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (mCurrentWaypoint > 0 && mCurrentWaypoint < getWayPointsCount())
         {
@@ -481,7 +481,7 @@ void AIInterface::generateWaypointScriptWantedWP()
                 }
                 else
                 {
-                    //LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
+                    //sLogger.debug("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
                 }
             }
         }
@@ -493,7 +493,7 @@ void AIInterface::generateWaypointScriptPatrol()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->getEntry());
     if (creatureProperties != nullptr)
     {
-        //LOG_DEBUG("%s (%u) called new Patrol Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        //sLogger.debug("%s (%u) called new Patrol Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (MoveDone())
         {
@@ -551,7 +551,7 @@ void AIInterface::generateWaypointScriptPatrol()
         }
         else
         {
-            //LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
+            //sLogger.debug("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
         }
     }
 }
@@ -691,7 +691,7 @@ void AIInterface::addWayPoint(Movement::WayPoint* waypoint)
 
     if (addWayPointUnsafe(waypoint) == false)
     {
-        LOG_ERROR("WayPoint ID %u wasn't added to Unit ID %x.", waypoint->id, GetUnit()->getGuid());
+        sLogger.failure("WayPoint ID %u wasn't added to Unit ID %x.", waypoint->id, GetUnit()->getGuid());
         delete waypoint;
     }
 }
@@ -1931,7 +1931,7 @@ void AIInterface::_UpdateCombat(uint32 /*p_time*/)
                             break;
                         }
                         default:
-                            LOG_ERROR("AI Agents: Targettype of AI agent spell %u for creature %u not set", spellInfo->getId(), static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Id);
+                            sLogger.failure("AI Agents: Targettype of AI agent spell %u for creature %u not set", spellInfo->getId(), static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Id);
                     }
 
                     // castSpell(m_Unit, spellInfo, targets);
@@ -3063,7 +3063,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     }
     else
     {
-        LOG_DEBUG("Called new Waypoint Generator for Player!");
+        sLogger.debug("Called new Waypoint Generator for Player!");
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -3084,7 +3084,7 @@ void AIInterface::CastSpell(Unit* caster, SpellInfo const* spellInfo, SpellCastT
     // Stop movement while casting.
     setAiState(AI_STATE_CASTING);
 #ifdef _AI_DEBUG
-    LOG_DEBUG("AI DEBUG: Unit %u casting spell %s on target " I64FMT " ", caster->getEntry(),
+    sLogger.debug("AI DEBUG: Unit %u casting spell %s on target " I64FMT " ", caster->getEntry(),
               sSpellStore.LookupString(spellInfo->Name), targets.getUnitTarget());
 #endif
 
@@ -3099,7 +3099,7 @@ SpellInfo const* AIInterface::getSpellEntry(uint32 spellId)
 
     if (!spellInfo)
     {
-        LOG_ERROR("WORLD: unknown spell id %i", spellId);
+        sLogger.failure("WORLD: unknown spell id %i", spellId);
         return NULL;
     }
 
@@ -3253,7 +3253,7 @@ AI_Spell* AIInterface::getSpell()
     }
 
 #ifdef _AI_DEBUG
-    LOG_DEBUG("AI DEBUG: Returning no spell for unit %u", m_Unit->getEntry());
+    sLogger.debug("AI DEBUG: Returning no spell for unit %u", m_Unit->getEntry());
 #endif
     return nullptr;
 }
@@ -4089,7 +4089,7 @@ void AIInterface::AddSpline(float x, float y, float z)
                 movetime = (uint32)(dist / m_walkSpeed);
                 break;
             default:
-                LOG_ERROR("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
+                sLogger.failure("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
                 movetime = 1;
                 break;
         }
@@ -4097,7 +4097,7 @@ void AIInterface::AddSpline(float x, float y, float z)
     }
     else
     {
-        LOG_ERROR("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
+        sLogger.failure("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
         //setting movetime to default value of 1 second. Change if to either a return; or something more meaningful
         //but don't leave movetime uninitialized...
         movetime = 1;

@@ -26,7 +26,7 @@ void TransportHandler::unload()
 
 void TransportHandler::loadTransportTemplates()
 {
-    LogNotice("TransportHandler : Start Loading TransportTemplates...");
+    sLogger.info("TransportHandler : Start Loading TransportTemplates...");
 
     uint32_t createCount = 0;
 
@@ -37,7 +37,7 @@ void TransportHandler::loadTransportTemplates()
         GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(entry);
         if (gameobject_info == nullptr)
         {
-            LOG_ERROR("Transport %u has no associated GameObjectProperties from `gameobject_properities` , skipped.", entry);
+            sLogger.failure("Transport %u has no associated GameObjectProperties from `gameobject_properities` , skipped.", entry);
             continue;
         }
 
@@ -53,7 +53,7 @@ void TransportHandler::loadTransportTemplates()
         ++createCount;
     }
 
-    LogDetail("Transporter Handler : Loaded %u transport templates", createCount);
+    sLogger.info("Transporter Handler : Loaded %u transport templates", createCount);
 }
 
 void TransportHandler::spawnContinentTransports()
@@ -61,7 +61,7 @@ void TransportHandler::spawnContinentTransports()
     if (_transportTemplates.empty())
         return;
 
-    LogNotice("TransportHandler : Start Spawning Continent Transports...");
+    sLogger.info("TransportHandler : Start Spawning Continent Transports...");
 
     uint32_t createCount = 0;
 
@@ -74,7 +74,7 @@ void TransportHandler::spawnContinentTransports()
                     ++createCount;
     }
 
-    LogDetail("Transporter Handler : Spawned %u Continent Transports", createCount);
+    sLogger.info("Transporter Handler : Spawned %u Continent Transports", createCount);
 }
 
 Transporter* TransportHandler::createTransport(uint32_t entry, MapMgr* map /*= nullptr*/)
@@ -82,7 +82,7 @@ Transporter* TransportHandler::createTransport(uint32_t entry, MapMgr* map /*= n
     TransportTemplate const* tInfo = getTransportTemplate(entry);
     if (!tInfo)
     {
-        LogError("Transport %u will not be loaded, `transport_template` missing", entry);
+        sLogger.failure("Transport %u will not be loaded, `transport_template` missing", entry);
         return nullptr;
     }
 
@@ -116,7 +116,7 @@ Transporter* TransportHandler::createTransport(uint32_t entry, MapMgr* map /*= n
     {
         if (mapEntry->instanceable() != tInfo->inInstance)
         {
-            LogError("Transport %u attempted creation in instance map (id: %u) but it is not an instanced transport!", entry, mapId);
+            sLogger.failure("Transport %u attempted creation in instance map (id: %u) but it is not an instanced transport!", entry, mapId);
             delete trans;
             return nullptr;
         }
@@ -455,7 +455,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     keyFrames.back().NextArriveTime = keyFrames.back().DepartureTime;
 
     transport->pathTime = keyFrames.back().DepartureTime;
-    LogDebug("TransportHandler: total time %u at transport %u \n", transport->pathTime, transport->entry);
+    sLogger.debug("TransportHandler: total time %u at transport %u \n", transport->pathTime, transport->entry);
 }
 
 float TransportHandler::normalizeOrientation(float o)

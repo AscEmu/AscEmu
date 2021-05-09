@@ -61,7 +61,7 @@ class SocketMgr
             epoll_fd = epoll_create(SOCKET_HOLDER_SIZE);
             if(epoll_fd == -1)
             {
-                LogError("Could not create epoll fd (/dev/epoll).");
+                sLogger.failure("Could not create epoll fd (/dev/epoll).");
                 exit(-1);
             }
 

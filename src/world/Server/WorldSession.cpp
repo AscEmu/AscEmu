@@ -88,7 +88,7 @@ WorldSession::~WorldSession()
 
     if (_player)
     {
-        LOG_ERROR("warning: logged out player in worldsession destructor");
+        sLogger.failure("warning: logged out player in worldsession destructor");
         LogoutPlayer(true);
     }
 
@@ -159,14 +159,14 @@ uint8 WorldSession::Update(uint32 InstanceID)
 
         if (sOpcodeTables.getInternalIdForHex(packet->GetOpcode()) >= NUM_OPCODES)
         {
-            LogDebugFlag(LF_OPCODE, "[Session] Received out of range packet with opcode 0x%.4X", packet->GetOpcode());
+            sLogger.debug("[Session] Received out of range packet with opcode 0x%.4X", packet->GetOpcode());
         }
         else
         {
             OpcodeHandler* handler = &WorldPacketHandlers[sOpcodeTables.getInternalIdForHex(packet->GetOpcode())];
             if (handler->status == STATUS_LOGGEDIN && !_player && handler->handler != 0)
             {
-                LogDebugFlag(LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)", 
+                sLogger.debug("[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)", 
                     sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
             }
             else
@@ -174,7 +174,7 @@ uint8 WorldSession::Update(uint32 InstanceID)
                 // Valid Packet :>
                 if (handler->handler == 0)
                 {
-                    LogDebugFlag(LF_OPCODE, "[Session] Received unhandled packet with opcode %s (0x%.4X)",
+                    sLogger.debug("[Session] Received unhandled packet with opcode %s (0x%.4X)",
                         sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
                 }
                 else
@@ -431,7 +431,7 @@ void WorldSession::LogoutPlayer(bool Save)
         _player = nullptr;
 
         SendPacket(SmsgLogoutComplete().serialise().get());
-        LOG_DEBUG("SESSION: Sent SMSG_LOGOUT_COMPLETE Message");
+        sLogger.debug("SESSION: Sent SMSG_LOGOUT_COMPLETE Message");
     }
     _loggingOut = false;
     LoggingOut = false;
@@ -484,7 +484,7 @@ void WorldSession::LoadSecurity(std::string securitystring)
     if (permissions[tmp.size()] != 0)
         permissions[tmp.size()] = 0;
 
-    LOG_DEBUG("Loaded permissions for %u. (%u) : [%s]", this->GetAccountId(), permissioncount, securitystring.c_str());
+    sLogger.debug("Loaded permissions for %u. (%u) : [%s]", this->GetAccountId(), permissioncount, securitystring.c_str());
 }
 
 void WorldSession::SetSecurity(std::string securitystring)
@@ -698,7 +698,7 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
 {
     if (!recv_data.isEmpty())
     {
-        LogDebugFlag(LF_OPCODE, "Opcode %s [%s] (0x%.4X) received. Apply nothingToHandle handler but size is %lu!",
+        sLogger.debug("Opcode %s [%s] (0x%.4X) received. Apply nothingToHandle handler but size is %lu!",
             sOpcodeTables.getNameForOpcode(recv_data.GetOpcode()).c_str(), sOpcodeTables.getNameForAEVersion().c_str(), recv_data.GetOpcode(), recv_data.size());
     }
 }
@@ -707,7 +707,7 @@ void WorldSession::SendPacket(WorldPacket* packet)
 {
     if (packet->GetOpcode() == 0x0000)
     {
-        LOG_ERROR("Return, packet 0x0000 is not a valid packet!");
+        sLogger.failure("Return, packet 0x0000 is not a valid packet!");
         return;
     }
 

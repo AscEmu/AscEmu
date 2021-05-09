@@ -137,7 +137,7 @@ Aura::Aura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target,
 
     m_visualSlot = 0xFF;
     pSpellId = 0;
-    // LOG_DETAIL("Aura::Constructor %u (%s) from %u.", m_spellProto->getId(), m_spellProto->Name, m_target->getGuidLow());
+    // sLogger.info("Aura::Constructor %u (%s) from %u.", m_spellProto->getId(), m_spellProto->Name, m_target->getGuidLow());
     m_auraSlot = 0xffff;
     m_interrupted = -1;
     m_flags = 0;
@@ -651,7 +651,7 @@ void Aura::EventUpdateAreaAura(uint8_t effIndex, float r)
     uint32 AreaAuraEffectId = m_spellInfo->getAreaAuraEffect();
     if (AreaAuraEffectId == 0)
     {
-        LOG_ERROR("Spell %u (%s) has tried to update Area Aura targets but Spell has no Area Aura effect.", m_spellInfo->getId(), m_spellInfo->getName().c_str());
+        sLogger.failure("Spell %u (%s) has tried to update Area Aura targets but Spell has no Area Aura effect.", m_spellInfo->getId(), m_spellInfo->getName().c_str());
         ARCEMU_ASSERT(false);
     }
 
@@ -2390,7 +2390,7 @@ void Aura::SpellAuraModSchoolImmunity(AuraEffectModifier* aurEff, bool apply)
         else
             mPositive = true;
 
-        LogDebugFlag(LF_AURA, "SpellAuraModSchoolImmunity called with misValue = %x", aurEff->getEffectMiscValue());
+        sLogger.debug("SpellAuraModSchoolImmunity called with misValue = %x", aurEff->getEffectMiscValue());
         for (uint8 i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
         {
             if (aurEff->getEffectMiscValue() & (1 << i))
@@ -2449,7 +2449,7 @@ void Aura::SpellAuraProcTriggerSpell(AuraEffectModifier* aurEff, bool apply)
         spellId = getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex());
         if (spellId == 0)
         {
-            LogDebugFlag(LF_AURA, "Warning! trigger spell is null for spell %u", getSpellInfo()->getId());
+            sLogger.debug("Warning! trigger spell is null for spell %u", getSpellInfo()->getId());
             return;
         }
 
@@ -2460,7 +2460,7 @@ void Aura::SpellAuraProcTriggerSpell(AuraEffectModifier* aurEff, bool apply)
 
         m_target->addProcTriggerSpell(spellId, getSpellInfo()->getId(), m_casterGuid, getSpellInfo()->getProcChance(), SpellProcFlags(getSpellInfo()->getProcFlags()), EXTRA_PROC_NULL, groupRelation, nullptr, this);
 
-        LogDebugFlag(LF_AURA, "%u is registering %u chance %u flags %u charges %u", getSpellInfo()->getId(), spellId, getSpellInfo()->getProcChance(), getSpellInfo()->getProcFlags(), getCharges());
+        sLogger.debug("%u is registering %u chance %u flags %u charges %u", getSpellInfo()->getId(), spellId, getSpellInfo()->getProcChance(), getSpellInfo()->getProcFlags(), getCharges());
     }
     else
     {
@@ -2468,7 +2468,7 @@ void Aura::SpellAuraProcTriggerSpell(AuraEffectModifier* aurEff, bool apply)
         uint32 spellId = getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex());
         if (spellId == 0)
         {
-            LogDebugFlag(LF_AURA, "Warning! trigger spell is null for spell %u", getSpellInfo()->getId());
+            sLogger.debug("Warning! trigger spell is null for spell %u", getSpellInfo()->getId());
             return;
         }
 
@@ -2487,7 +2487,7 @@ void Aura::SpellAuraProcTriggerDamage(AuraEffectModifier* aurEff, bool apply)
         ds.m_flags = m_spellInfo->getProcFlags();
         ds.owner = (void*)this;
         m_target->m_damageShields.push_back(ds);
-        LogDebugFlag(LF_AURA, "registering dmg proc %u, school %u, flags %u, charges at least %u", ds.m_spellId, ds.m_school, ds.m_flags, m_spellInfo->getProcCharges());
+        sLogger.debug("registering dmg proc %u, school %u, flags %u, charges at least %u", ds.m_spellId, ds.m_school, ds.m_flags, m_spellInfo->getProcCharges());
     }
     else
     {
@@ -3875,7 +3875,7 @@ void Aura::SpellAuraAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply
         SpellInfo const* sp = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex()));
         if (sp == nullptr)
         {
-            LogDebugFlag(LF_AURA, "Warning! class trigger spell is null for spell %u", getSpellInfo()->getId());
+            sLogger.debug("Warning! class trigger spell is null for spell %u", getSpellInfo()->getId());
             return;
         }
 
@@ -3891,7 +3891,7 @@ void Aura::SpellAuraAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply
 
         m_target->addProcTriggerSpell(sp->getId(), getSpellInfo()->getId(), m_casterGuid, getSpellInfo()->getEffectBasePoints(aurEff->getEffectIndex()) + 1, SpellProcFlags(getSpellInfo()->getProcFlags()), EXTRA_PROC_NULL, groupRelation, procClassMask, this);
 
-        LogDebugFlag(LF_AURA, "%u is registering %u chance %u flags %u charges %u", getSpellInfo()->getId(), sp->getId(), getSpellInfo()->getProcChance(), getSpellInfo()->getProcFlags(), getCharges());
+        sLogger.debug("%u is registering %u chance %u flags %u charges %u", getSpellInfo()->getId(), sp->getId(), getSpellInfo()->getProcChance(), getSpellInfo()->getProcFlags(), getCharges());
     }
     else
     {
@@ -3899,7 +3899,7 @@ void Aura::SpellAuraAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply
         uint32 spellId = getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex());
         if (spellId == 0)
         {
-            LogDebugFlag(LF_AURA, "Warning! trigger spell is null for spell %u", getSpellInfo()->getId());
+            sLogger.debug("Warning! trigger spell is null for spell %u", getSpellInfo()->getId());
             return;
         }
 
@@ -3961,7 +3961,7 @@ void Aura::SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply)
                 MySQLDataStore::SpellOverrideIdMap::iterator itermap = sMySQLStore._spellOverrideIdStore.find(aurEff->getEffectMiscValue());
                 if (itermap == sMySQLStore._spellOverrideIdStore.end())
                 {
-                    LOG_ERROR("Unable to find override with overrideid: %u", aurEff->getEffectMiscValue());
+                    sLogger.failure("Unable to find override with overrideid: %u", aurEff->getEffectMiscValue());
                     break;
                 }
 
@@ -4050,7 +4050,7 @@ void Aura::SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply)
         }
         break;
         default:
-            LOG_ERROR("Unknown override report to devs: %u", aurEff->getEffectMiscValue());
+            sLogger.failure("Unknown override report to devs: %u", aurEff->getEffectMiscValue());
     };
 }
 
@@ -4889,7 +4889,7 @@ void Aura::SpellAuraIncreaseHealingByAttribute(AuraEffectModifier* aurEff, bool 
         stat = static_cast<uint8_t>(aurEff->getEffectMiscValue());
     else
     {
-        LOG_ERROR("Aura::SpellAuraIncreaseHealingByAttribute::Unknown spell attribute type %u in spell %u.\n", aurEff->getEffectMiscValue(), getSpellId());
+        sLogger.failure("Aura::SpellAuraIncreaseHealingByAttribute::Unknown spell attribute type %u in spell %u.\n", aurEff->getEffectMiscValue(), getSpellId());
         return;
     }
 

@@ -21,11 +21,11 @@
 #include "git_version.h"
 
 #include "CrashHandler.h"
-#include "Log.hpp"
+#include "Logging/Logger.hpp"
 
 void OutputCrashLogLine(const char* format, ...)
 {
-    std::string s = AELog::GetFormattedFileName("logs", "CrashLog", false);
+    std::string s = AscEmu::Logging::getFormattedFileName("logs", "CrashLog", false);
     FILE* m_file = fopen(s.c_str(), "a");
     if(!m_file) return;
 
@@ -184,7 +184,7 @@ void echo(const char* format, ...)
     va_list ap;
     va_start(ap, format);
     vprintf(format, ap);
-    std::string s = AELog::GetFormattedFileName("logs", "CrashLog", false);
+    std::string s = AscEmu::Logging::getFormattedFileName("logs", "CrashLog", false);
     FILE* m_file = fopen(s.c_str(), "a");
     if(!m_file)
     {
@@ -255,11 +255,11 @@ void CStackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry & e
 
 void CStackWalker::OnOutput(LPCSTR szText)
 {
-    std::string s = AELog::GetFormattedFileName("logs", "CrashLog", false);
+    std::string s = AscEmu::Logging::getFormattedFileName("logs", "CrashLog", false);
     FILE* m_file = fopen(s.c_str(), "a");
     if(!m_file) return;
 
-    LogError("   %s", szText);
+    sLogger.failure("   %s", szText);
     fprintf(m_file, "   %s", szText);
     fclose(m_file);
 }
@@ -325,11 +325,11 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
                            FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH, 0);
     }
 
-    LogError("Server has crashed. Creating crash dump file %s", filename);
+    sLogger.failure("Server has crashed. Creating crash dump file %s", filename);
 
     if(hDump == INVALID_HANDLE_VALUE)
     {
-        LogError("Could not open crash dump file.");
+        sLogger.failure("Could not open crash dump file.");
     }
     else
     {
@@ -348,7 +348,7 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
     SetPriorityClass(GetCurrentProcess(), BELOW_NORMAL_PRIORITY_CLASS);
     OnCrash(!ON_CRASH_BREAK_DEBUGGER);
 
-    AscLog.finalize();
+    sLogger.finalize();
     return EXCEPTION_CONTINUE_SEARCH;
 }
 #endif

@@ -45,14 +45,14 @@ bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float
     gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
     if (gameobject_properties == nullptr)
     {
-        LOG_ERROR("Something tried to create a GameObject with invalid entry %u", entry);
+        sLogger.failure("Something tried to create a GameObject with invalid entry %u", entry);
         return false;
     }
 
     TransportTemplate const* tInfo = sTransportHandler.getTransportTemplate(entry);
     if (!tInfo)
     {
-        LOG_ERROR("Transport %u will not be created, missing `transport_template` entry.", entry);
+        sLogger.failure("Transport %u will not be created, missing `transport_template` entry.", entry);
         return false;
     }
 
@@ -86,7 +86,7 @@ void Transporter::Update(unsigned long time_passed)
     uint32_t timer = mTransValues.PathProgress % getTransportPeriod();
     bool justStopped = false;
 
-    LogDebug("Transporter: current node %u and pathprogress %u \n", _currentFrame->Index, GetTimer());
+    sLogger.debug("Transporter: current node %u and pathprogress %u \n", _currentFrame->Index, GetTimer());
 
     for (;;)
     {
@@ -293,18 +293,18 @@ void Transporter::UpdatePosition(float x, float y, float z, float o)
 
 void Transporter::LoadStaticPassengers()
 {
-    LogNotice("TransportHandler : Start populating transport %u ", getEntry());
+    sLogger.info("TransportHandler : Start populating transport %u ", getEntry());
     {
         for (auto creature_spawn : sMySQLStore._creatureSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
         {
             if (createNPCPassenger(creature_spawn) == 0)
-                LOG_ERROR("Failed to add npc entry: %u to transport: %u", creature_spawn->entry, getGuid());
+                sLogger.failure("Failed to add npc entry: %u to transport: %u", creature_spawn->entry, getGuid());
         }
 
         /*for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
         {
             if (createGOPassenger(go_spawn) == 0)
-                LOG_ERROR("Failed to add go entry: %u to transport: %u", go_spawn->entry, getGuid());
+                sLogger.failure("Failed to add go entry: %u to transport: %u", go_spawn->entry, getGuid());
         }*/
     }
 }
@@ -576,7 +576,7 @@ void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
 {
     if (uint32_t eventid = departure ? node.Node.DepartureEventID : node.Node.ArrivalEventID)
     {
-        LOG_DETAIL("Taxi %s event %u", departure ? "departure" : "arrival", eventid);
+        sLogger.info("Taxi %s event %u", departure ? "departure" : "arrival", eventid);
 
         // Use MapScript Interface to Handle these if not handle it here
         if (GetMapMgr()->GetScript())

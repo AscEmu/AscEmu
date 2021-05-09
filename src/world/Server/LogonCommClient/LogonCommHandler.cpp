@@ -99,7 +99,7 @@ void LogonCommHandler::startLogonCommHandler()
 
 void LogonCommHandler::loadAccountPermissions()
 {
-    LogNotice("LogonCommClient : Loading account permissions...");
+    sLogger.info("LogonCommClient : Loading account permissions...");
     QueryResult* result = CharacterDatabase.Query("SELECT id, permissions FROM account_permissions");
     if (result != nullptr)
     {
@@ -118,7 +118,7 @@ void LogonCommHandler::loadAccountPermissions()
 
 void LogonCommHandler::connectToLogonServer()
 {
-    LogNotice("LogonCommClient : Attempting to connect to logon server...");
+    sLogger.info("LogonCommClient : Attempting to connect to logon server...");
     for (std::set<LogonServerStructure*>::iterator itr = servers.begin(); itr != servers.end(); ++itr)
     {
         tryLogonServerConnection(*itr);
@@ -140,11 +140,11 @@ void LogonCommHandler::tryLogonServerConnection(LogonServerStructure* server)
 
     if (logonCommSocket == nullptr)
     {
-        LOG_ERROR("Connection failed. Will try again in 10 seconds.");
+        sLogger.failure("Connection failed. Will try again in 10 seconds.");
         return;
     }
 
-    LogNotice("LogonCommClient : Authenticating...");
+    sLogger.info("LogonCommClient : Authenticating...");
     uint32_t nextRetryTime1 = (uint32_t)UNIXTIME + 10;
     logonCommSocket->SendChallenge();
 
@@ -152,7 +152,7 @@ void LogonCommHandler::tryLogonServerConnection(LogonServerStructure* server)
     {
         if ((uint32_t)UNIXTIME >= nextRetryTime1)
         {
-            LOG_ERROR("Authentication timed out.");
+            sLogger.failure("Authentication timed out.");
             logonCommSocket->Disconnect();
             logons[server] = nullptr;
             return;
@@ -163,19 +163,19 @@ void LogonCommHandler::tryLogonServerConnection(LogonServerStructure* server)
 
     if (logonCommSocket->authenticated != 1)
     {
-        LOG_ERROR("Authentication failed.");
+        sLogger.failure("Authentication failed.");
         logons[server] = nullptr;
         logonCommSocket->Disconnect();
         return;
     }
 
-    LogDefault("Authentication successful.");
-    LogNotice("LogonCommClient : Logonserver was connected on [%s:%u].", server->address.c_str(), server->port);
+    sLogger.info("Authentication successful.");
+    sLogger.info("LogonCommClient : Logonserver was connected on [%s:%u].", server->address.c_str(), server->port);
 
     // Send the initial ping
     logonCommSocket->SendPing();
 
-    LogNotice("LogonCommClient : Registering Realms...");
+    sLogger.info("LogonCommClient : Registering Realms...");
     logonCommSocket->_id = server->id;
 
     addRealmToRealmlist(logonCommSocket);
@@ -188,7 +188,7 @@ void LogonCommHandler::tryLogonServerConnection(LogonServerStructure* server)
         // Don't wait more than.. like 10 seconds for a registration
         if ((uint32_t)UNIXTIME >= nextRetryTime)
         {
-            LOG_ERROR("Realm registration timed out.");
+            sLogger.failure("Realm registration timed out.");
             logons[server] = nullptr;
             logonCommSocket->Disconnect();
             break;
@@ -204,7 +204,7 @@ void LogonCommHandler::tryLogonServerConnection(LogonServerStructure* server)
     // Wait for all realms to register
     Arcemu::Sleep(200);
 
-    LogDetail("LogonCommClient : Logonserver latency is %ums.", logonCommSocket->latency);
+    sLogger.info("LogonCommClient : Logonserver latency is %ums.", logonCommSocket->latency);
 }
 
 LogonCommClientSocket* LogonCommHandler::createReturnLogonServerConnection(std::string Address, uint32_t Port)
@@ -241,12 +241,12 @@ void LogonCommHandler::setAccountPermission(uint32_t acct, std::string perm)
 
         if (perm.compare("0") == 0)
         {
-            LogNotice("LogonCommClient : Permissions removed for Account ID %u!", acct);
+            sLogger.info("LogonCommClient : Permissions removed for Account ID %u!", acct);
             return;
         }
     }
 
-    LogNotice("LogonCommClient : Permission set to %s for account %u", perm.c_str(), acct);
+    sLogger.info("LogonCommClient : Permission set to %s for account %u", perm.c_str(), acct);
     accountPermissionsStore.insert(make_pair(acct, perm));
 
 }
@@ -257,11 +257,11 @@ void LogonCommHandler::removeAccountPermission(uint32_t acct)
     if (itr != accountPermissionsStore.end())
     {
         accountPermissionsStore.erase(acct);
-        LogNotice("LogonCommClient : Permission for Account ID %u removed!", acct);
+        sLogger.info("LogonCommClient : Permission for Account ID %u removed!", acct);
     }
     else
     {
-        LogNotice("LogonCommClient : No permissions found for Account ID %u", acct);
+        sLogger.info("LogonCommClient : No permissions found for Account ID %u", acct);
     }
 }
 
@@ -330,7 +330,7 @@ void LogonCommHandler::updateLogonServerConnection()
             if (logonCommSocket->last_pong < time && ((time - logonCommSocket->last_pong) > 60))
             {
                 // no pong for 60 seconds -> remove the socket
-                LOG_DETAIL("Logonserver %u connection dropped due to pong timeout!", (unsigned int)itr.first->id);
+                sLogger.info("Logonserver %u connection dropped due to pong timeout!", (unsigned int)itr.first->id);
                 logonCommSocket->_id = 0;
                 logonCommSocket->Disconnect();
                 itr.second = nullptr;
@@ -364,7 +364,7 @@ void LogonCommHandler::dropLogonServerConnection(uint32_t ID)
     {
         if (itr.first->id == ID && itr.second != nullptr)
         {
-            LOG_ERROR("Logonserver connection %u was dropped. Try to reconnect next loop.", ID);
+            sLogger.failure("Logonserver connection %u was dropped. Try to reconnect next loop.", ID);
             itr.second = nullptr;
             break;
         }
@@ -377,7 +377,7 @@ uint32_t LogonCommHandler::clientConnectionId(std::string AccountName, WorldSock
 {
     uint32_t request_id = next_request++;
 
-    LOG_DEBUG(" Send Request for Account: `%s` (request ID: %u).", AccountName.c_str(), request_id);
+    sLogger.debug(" Send Request for Account: `%s` (request ID: %u).", AccountName.c_str(), request_id);
 
     // Send request packet to server.
     if (logons.empty())
@@ -440,7 +440,7 @@ void LogonCommHandler::loadRealmsConfiguration()
     uint32_t realmcount = (uint32_t)worldConfig.logonServer.realmCount;
     if (realmcount == 0)
     {
-        LOG_ERROR("No realm definitions found in world.conf!");
+        sLogger.failure("No realm definitions found in world.conf!");
     }
     else
     {

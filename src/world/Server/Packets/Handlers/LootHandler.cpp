@@ -112,13 +112,13 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
 
     if (srlPacket.slot >= loot->items.size())
     {
-        LogDebugFlag(LF_OPCODE, "Player %s might be using a hack! (slot %d, size %u)", _player->getName().c_str(), srlPacket.slot, static_cast<uint32_t>(loot->items.size()));
+        sLogger.debug("Player %s might be using a hack! (slot %d, size %u)", _player->getName().c_str(), srlPacket.slot, static_cast<uint32_t>(loot->items.size()));
         return;
     }
 
     if (loot->items[srlPacket.slot].looted)
     {
-        LogDebugFlag(LF_OPCODE, "Player %s GUID %u tried to loot an already looted item.", _player->getName().c_str(), _player->getGuidLow());
+        sLogger.debug("Player %s GUID %u tried to loot an already looted item.", _player->getName().c_str(), _player->getGuidLow());
         return;
     }
 
@@ -170,7 +170,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
             return;
         }
 
-        LogDebugFlag(LF_OPCODE, "AutoLootItem");
+        sLogger.debug("AutoLootItem");
         auto item = sObjectMgr.CreateItem(itemId, _player);
         if (item == nullptr)
             return;
@@ -659,7 +659,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        LogDebugFlag(LF_OPCODE, "Unhandled loot source object type in handleLootReleaseOpcode");
+        sLogger.debug("Unhandled loot source object type in handleLootReleaseOpcode");
     }
 }
 
@@ -709,7 +709,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
 
     if (srlPacket.slot >= loot->items.size())
     {
-        LogDebugFlag(LF_OPCODE, "AutoLootItem: Player %s might be using a hack! (slot %u, size %u)", _player->getName().c_str(), srlPacket.slot, static_cast<uint32_t>(loot->items.size()));
+        sLogger.debug("AutoLootItem: Player %s might be using a hack! (slot %u, size %u)", _player->getName().c_str(), srlPacket.slot, static_cast<uint32_t>(loot->items.size()));
         return;
     }
 

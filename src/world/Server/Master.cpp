@@ -121,7 +121,7 @@ std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 void createExtendedLogDir()
 {
     Util::BenchmarkTime benchmark;
-    std::string logDir = worldConfig.log.extendedLogsDir;
+    std::string logDir = worldConfig.logger.extendedLogsDir;
 
     if (!logDir.empty())
         fs::create_directories(logDir);
@@ -142,7 +142,7 @@ void checkRequiredDirs()
         // Check that vertical maps are also enabled
         if (!worldConfig.terrainCollision.isCollisionEnabled)
         {
-            LogError("Pathfinding is enabled but collision is disabled. Disabling pathfinding.");
+            sLogger.failure("Pathfinding is enabled but collision is disabled. Disabling pathfinding.");
             worldConfig.terrainCollision.isPathfindingEnabled = false;
 
             // Give user a chance to read the error message
@@ -173,23 +173,23 @@ void checkRequiredDirs()
 
         if (fs::exists(requiredPath))
         {
-            LogDefault("Required dir %s found!", requiredPath.u8string().c_str());
+            sLogger.info("Required dir %s found!", requiredPath.u8string().c_str());
         }
         else
         {
             if (dir == "mmaps")
             {
-                LogError("Movement maps in %s not found. Disabling pathfinding.", requiredPath.u8string().c_str());
+                sLogger.failure("Movement maps in %s not found. Disabling pathfinding.", requiredPath.u8string().c_str());
                 worldConfig.terrainCollision.isPathfindingEnabled = false;
             }
             else if (dir == "vmaps")
             {
-                LogError("Vertical maps in %s not found. Disabling collision.", requiredPath.u8string().c_str());
+                sLogger.failure("Vertical maps in %s not found. Disabling collision.", requiredPath.u8string().c_str());
                 worldConfig.terrainCollision.isCollisionEnabled = false;
             }
             else
             {
-                LogError("Required dir %s not found!", requiredPath.u8string().c_str());
+                sLogger.failure("Required dir %s not found!", requiredPath.u8string().c_str());
             }
 
             // Give user a chance to read the error message
@@ -201,7 +201,7 @@ void checkRequiredDirs()
     // could happen if mmaps directory was found but vmaps directory wasn't found
     if (worldConfig.terrainCollision.isPathfindingEnabled && !worldConfig.terrainCollision.isCollisionEnabled)
     {
-        LogError("Movement maps were found but collision was disabled. Disabling pathfinding.");
+        sLogger.failure("Movement maps were found but collision was disabled. Disabling pathfinding.");
         worldConfig.terrainCollision.isPathfindingEnabled = false;
 
         // Give user a chance to read the error message
@@ -218,15 +218,15 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     UNIXTIME = time(NULL);
     g_localTime = *localtime(&UNIXTIME);
 
-    AscLog.InitalizeLogFiles("world");
+    sLogger.initalizeLogger("world");
 
     PrintBanner();
 
-    LogDefault("The key combination <Ctrl-C> will safely shut down the server.");
+    sLogger.info("The key combination <Ctrl-C> will safely shut down the server.");
 
 #ifndef WIN32
     if (geteuid() == 0 || getegid() == 0)
-        AscLog.ConsoleLogMajorError("You are running AscEmu as root.", "This is not needed, and may be a possible security risk.", "It is advised to hit CTRL+C now and", "start as a non-privileged user.");
+        sLogger.warning("You are running AscEmu as root. This is not needed, and may be a possible security risk. It is advised to hit CTRL+C now and start as a non-privileged user.");
 #endif
 
     ThreadPool.Startup();
@@ -241,15 +241,14 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     sWorld.loadWorldConfigValues();
 
-    AscLog.SetFileLoggingLevel(worldConfig.log.worldFileLogLevel);
-    AscLog.SetDebugFlags(worldConfig.log.worldDebugFlags);
+    sLogger.setMinimumMessageType(static_cast<AscEmu::Logging::MessageType>(worldConfig.logger.minimumMessageType));
 
     OpenCheatLogFiles();
 
     if (!_StartDB())
     {
         Database::CleanupLibs();
-        AscLog.finalize();
+        sLogger.finalize();
         return false;
     }
 
@@ -267,7 +266,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     if (!_CheckDBVersion())
     {
-        AscLog.finalize();
+        sLogger.finalize();
         return false;
     }
 
@@ -277,8 +276,8 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     if (!sWorld.setInitialWorldSettings())
     {
-        LOG_ERROR("SetInitialWorldSettings() failed. Something went wrong? Exiting.");
-        AscLog.finalize();
+        sLogger.failure("SetInitialWorldSettings() failed. Something went wrong? Exiting.");
+        sLogger.finalize();
         return false;
     }
 
@@ -304,7 +303,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
         sScriptMgr.DumpUnimplementedSpells();
     }
 
-    LogDetail("Server : Ready for connections. Startup time: %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("Server : Ready for connections. Startup time: %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     sGameEventMgrThread.initialize();
 
@@ -370,7 +369,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     ShutdownLootSystem();
 
     // send a query to wake it up if its inactive
-    LogNotice("Database : Clearing all pending queries...");
+    sLogger.info("Database : Clearing all pending queries...");
 
     // kill the database thread first so we don't lose any queries/data
     CharacterDatabase.EndThreads();
@@ -381,7 +380,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     CloseConsoleListener();
     sWorld.saveAllPlayersToDb();
 
-    LogNotice("Network : Shutting down network subsystem.");
+    sLogger.info("Network : Shutting down network subsystem.");
 #ifdef WIN32
     sSocketMgr.ShutdownThreads();
 #endif
@@ -397,29 +396,29 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     sLogonCommHandler.finalize();
 
 #if VERSION_STRING < Cata
-    LogNotice("AddonMgr : ~AddonMgr()");
+    sLogger.info("AddonMgr : ~AddonMgr()");
     sAddonMgr.SaveToDB();
     sAddonMgr.finalize();
 #endif
 
-    LogNotice("AuctionMgr : ~AuctionMgr()");
+    sLogger.info("AuctionMgr : ~AuctionMgr()");
     sAuctionMgr.finalize();
 
-    LogNotice("LootMgr : ~LootMgr()");
+    sLogger.info("LootMgr : ~LootMgr()");
     sLootMgr.finalize();
 
-    LogNotice("World : ~World()");
+    sLogger.info("World : ~World()");
     sWorld.finalize();
 
     sScriptMgr.UnloadScripts();
 
-    LogNotice("ChatHandler : ~ChatHandler()");
+    sLogger.info("ChatHandler : ~ChatHandler()");
     sChatHandler.finalize();
 
-    LogNotice("Database : Closing Connections...");
+    sLogger.info("Database : Closing Connections...");
     _StopDB();
 
-    LogNotice("Network : Deleting Network Subsystem...");
+    sLogger.info("Network : Deleting Network Subsystem...");
     sSocketMgr.finalize();
     sSocketGarbageCollector.finalize();
 
@@ -430,15 +429,15 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     // remove pid
     if (remove("worldserver.pid") != 0)
     {
-        LOG_ERROR("Error deleting file worldserver.pid");
+        sLogger.failure("Error deleting file worldserver.pid");
     }
     else
     {
-        LOG_DEBUG("File worldserver.pid successfully deleted");
+        sLogger.debug("File worldserver.pid successfully deleted");
     }
 
-    LogDetail("Shutdown : Shutdown complete.");
-    AscLog.finalize();
+    sLogger.info("Shutdown : Shutdown complete.");
+    sLogger.finalize();
 
 #ifdef WIN32
     WSACleanup();
@@ -452,28 +451,28 @@ bool Master::_CheckDBVersion()
     QueryResult* wqr = WorldDatabase.QueryNA("SELECT LastUpdate FROM world_db_version ORDER BY id DESC LIMIT 1;");
     if (wqr == NULL)
     {
-        LogError("Database : World database is missing the table `world_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
-        LogError("Database : You may need to update your database");
+        sLogger.fatal("Database : World database is missing the table `world_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
+        sLogger.fatal("Database : You may need to update your database");
         return false;
     }
 
     Field* f = wqr->Fetch();
     const char *WorldDBVersion = f->GetString();
 
-    LogNotice("Database : Last world database update: %s", WorldDBVersion);
+    sLogger.info("Database : Last world database update: %s", WorldDBVersion);
     int result = strcmp(WorldDBVersion, REQUIRED_WORLD_DB_VERSION);
     if (result != 0)
     {
-        LogError("Database : Last world database update doesn't match the required one which is %s.", REQUIRED_WORLD_DB_VERSION);
+        sLogger.fatal("Database : Last world database update doesn't match the required one which is %s.", REQUIRED_WORLD_DB_VERSION);
 
         if (result < 0)
         {
-            LogError("Database : You need to apply the world update queries that are newer than %s. Exiting.", WorldDBVersion);
-            LogError("Database : You can find the world update queries in the sql/world_updates sub-directory of your AscEmu source directory.");
+            sLogger.fatal("Database : You need to apply the world update queries that are newer than %s. Exiting.", WorldDBVersion);
+            sLogger.fatal("Database : You can find the world update queries in the sql/world_updates sub-directory of your AscEmu source directory.");
         }
         else
         {
-            LogError("Database : Your world database is probably too new for this AscEmu version, you need to update your server. Exiting.");
+            sLogger.fatal("Database : Your world database is probably too new for this AscEmu version, you need to update your server. Exiting.");
         }
 
         delete wqr;
@@ -485,26 +484,26 @@ bool Master::_CheckDBVersion()
     QueryResult* cqr = CharacterDatabase.QueryNA("SELECT LastUpdate FROM character_db_version;");
     if (cqr == NULL)
     {
-        LogError("Database : Character database is missing the table `character_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
-        LogError("Database : You may need to update your database");
+        sLogger.fatal("Database : Character database is missing the table `character_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
+        sLogger.fatal("Database : You may need to update your database");
         return false;
     }
 
     f = cqr->Fetch();
     const char *CharDBVersion = f->GetString();
 
-    LogNotice("Database : Last character database update: %s", CharDBVersion);
+    sLogger.info("Database : Last character database update: %s", CharDBVersion);
     result = strcmp(CharDBVersion, REQUIRED_CHAR_DB_VERSION);
     if (result != 0)
     {
-        LogError("Database : Last character database update doesn't match the required one which is %s.", REQUIRED_CHAR_DB_VERSION);
+        sLogger.fatal("Database : Last character database update doesn't match the required one which is %s.", REQUIRED_CHAR_DB_VERSION);
         if (result < 0)
         {
-            LogError("Database : You need to apply the character update queries that are newer than %s. Exiting.", CharDBVersion);
-            LogError("Database : You can find the character update queries in the sql/character_updates sub-directory of your AscEmu source directory.");
+            sLogger.fatal("Database : You need to apply the character update queries that are newer than %s. Exiting.", CharDBVersion);
+            sLogger.fatal("Database : You can find the character update queries in the sql/character_updates sub-directory of your AscEmu source directory.");
         }
         else
-        LogError("Database : Your character database is too new for this AscEmu version, you need to update your server. Exiting.");
+            sLogger.fatal("Database : Your character database is too new for this AscEmu version, you need to update your server. Exiting.");
 
         delete cqr;
         return false;
@@ -512,7 +511,7 @@ bool Master::_CheckDBVersion()
 
     delete cqr;
 
-    LogDetail("Database : Database successfully validated.");
+    sLogger.info("Database : Database successfully validated.");
 
     return true;
 }
@@ -532,7 +531,7 @@ bool Master::_StartDB()
 
     if (wdb_result == false)
     {
-        LogError("Configs : One or more parameters were missing for WorldDatabase connection.");
+        sLogger.fatal("Configs : One or more parameters were missing for WorldDatabase connection.");
         return false;
     }
 
@@ -540,7 +539,7 @@ bool Master::_StartDB()
     if (!WorldDatabase.Initialize(worldConfig.worldDb.host.c_str(), (unsigned int)worldConfig.worldDb.port, worldConfig.worldDb.user.c_str(),
                                              worldConfig.worldDb.password.c_str(), worldConfig.worldDb.dbName.c_str(), worldConfig.worldDb.connections, 16384))
     {
-        LogError("Configs : Connection to WorldDatabase failed. Check your database configurations!");
+        sLogger.fatal("Configs : Connection to WorldDatabase failed. Check your database configurations!");
         return false;
     }
 
@@ -554,7 +553,7 @@ bool Master::_StartDB()
 
     if (cdb_result == false)
     {
-        LogError("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
+        sLogger.fatal("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
         return false;
     }
 
@@ -562,7 +561,7 @@ bool Master::_StartDB()
     if (!CharacterDatabase.Initialize(worldConfig.charDb.host.c_str(), (unsigned int)worldConfig.charDb.port, worldConfig.charDb.user.c_str(),
                                                  worldConfig.charDb.password.c_str(), worldConfig.charDb.dbName.c_str(), worldConfig.charDb.connections, 16384))
     {
-        LogError("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
+        sLogger.fatal("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
         return false;
     }
 
@@ -611,26 +610,26 @@ Mutex m_crashedMutex;
 // Crash Handler
 void OnCrash(bool Terminate)
 {
-    LogError("Crash Handler : Advanced crash handler initialized.");
+    sLogger.failure("Crash Handler : Advanced crash handler initialized.");
 
     if (!m_crashedMutex.AttemptAcquire())
         TerminateThread(GetCurrentThread(), 0);
 
     try
     {
-        LogNotice("sql : Waiting for all database queries to finish...");
+        sLogger.info("sql : Waiting for all database queries to finish...");
         WorldDatabase.EndThreads();
         CharacterDatabase.EndThreads();
-        LogNotice("sql : All pending database operations cleared.");
+        sLogger.info("sql : All pending database operations cleared.");
         sWorld.saveAllPlayersToDb();
-        LogNotice("sql : Data saved.");
+        sLogger.info("sql : Data saved.");
     }
     catch (...)
     {
-        LogError("sql : Threw an exception while attempting to save all data.");
+        sLogger.failure("sql : Threw an exception while attempting to save all data.");
     }
 
-    LogNotice("Server : Closing.");
+    sLogger.info("Server : Closing.");
 
     // beep
     //printf("\x7");
@@ -648,23 +647,21 @@ void OnCrash(bool Terminate)
 
 void Master::PrintBanner()
 {
-    AscLog.ConsoleLogDefault(false, "<< AscEmu %s/%s-%s (%s) :: World Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
-    AscLog.ConsoleLogDefault(false, "========================================================");
-    AscLog.ConsoleLogError(true, "<< AscEmu %s/%s-%s (%s) :: World Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
-    AscLog.ConsoleLogError(true, "========================================================"); // Echo off.
+    sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "<< AscEmu %s/%s-%s (%s) :: World Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "========================================================");
 }
 
 bool Master::LoadWorldConfiguration(char* config_file)
 {
-    LogNotice("Config : Loading Config Files...");
+    sLogger.info("Config : Loading Config Files...");
     if (Config.MainConfig.openAndLoadConfigFile(config_file))
     {
-        LogDetail("Config : " CONFDIR "/world.conf loaded");
+        sLogger.info("Config : " CONFDIR "/world.conf loaded");
     }
     else
     {
-        LogError("Config : error occurred loading " CONFDIR "/world.conf");
-        AscLog.finalize();
+        sLogger.failure("Config : error occurred loading " CONFDIR "/world.conf");
+        sLogger.finalize();
         return false;
     }
 
@@ -673,45 +670,45 @@ bool Master::LoadWorldConfiguration(char* config_file)
 
 void Master::OpenCheatLogFiles()
 {
-    bool useTimeStamp = worldConfig.log.enableTimeStamp;
-    std::string logDir = worldConfig.log.extendedLogsDir;
+    bool useTimeStamp = worldConfig.logger.enableTimeStamp;
+    std::string logDir = worldConfig.logger.extendedLogsDir;
 
-    Anticheat_Log = new SessionLog(AELog::GetFormattedFileName(logDir, "cheaters", useTimeStamp).c_str(), false);
-    GMCommand_Log = new SessionLog(AELog::GetFormattedFileName(logDir, "gmcommands", useTimeStamp).c_str(), false);
-    Player_Log = new SessionLog(AELog::GetFormattedFileName(logDir, "players", useTimeStamp).c_str(), false);
+    Anticheat_Log = new SessionLog(AscEmu::Logging::getFormattedFileName(logDir, "cheaters", useTimeStamp).c_str(), false);
+    GMCommand_Log = new SessionLog(AscEmu::Logging::getFormattedFileName(logDir, "gmcommands", useTimeStamp).c_str(), false);
+    Player_Log = new SessionLog(AscEmu::Logging::getFormattedFileName(logDir, "players", useTimeStamp).c_str(), false);
 
     if (Anticheat_Log->isSessionLogOpen())
     {
-        if (!worldConfig.log.enableCheaterLog)
+        if (!worldConfig.logger.enableCheaterLog)
         {
             Anticheat_Log->closeSessionLog();
         }
     }
-    else if (worldConfig.log.enableCheaterLog)
+    else if (worldConfig.logger.enableCheaterLog)
     {
         Anticheat_Log->openSessionLog();
     }
 
     if (GMCommand_Log->isSessionLogOpen())
     {
-        if (!worldConfig.log.enableGmCommandLog)
+        if (!worldConfig.logger.enableGmCommandLog)
         {
             GMCommand_Log->closeSessionLog();
         }
     }
-    else if (worldConfig.log.enableGmCommandLog)
+    else if (worldConfig.logger.enableGmCommandLog)
     {
         GMCommand_Log->openSessionLog();
     }
 
     if (Player_Log->isSessionLogOpen())
     {
-        if (!worldConfig.log.enablePlayerLog)
+        if (!worldConfig.logger.enablePlayerLog)
         {
             Player_Log->closeSessionLog();
         }
     }
-    else if (worldConfig.log.enablePlayerLog)
+    else if (worldConfig.logger.enablePlayerLog)
     {
         Player_Log->openSessionLog();
     }
@@ -719,17 +716,17 @@ void Master::OpenCheatLogFiles()
 
 void Master::StartRemoteConsole()
 {
-    LogNotice("RemoteConsole : Starting...");
+    sLogger.info("RemoteConsole : Starting...");
     if (StartConsoleListener())
     {
 #ifdef WIN32
         ThreadPool.ExecuteTask(GetConsoleListener());
 #endif
-        LogNotice("RemoteConsole : Now open.");
+        sLogger.info("RemoteConsole : Now open.");
     }
     else
     {
-        LogWarning("RemoteConsole : Not enabled or failed listen.");
+        sLogger.warning("RemoteConsole : Not enabled or failed listen.");
     }
 }
 
@@ -793,10 +790,10 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
                 if (m_ShutdownTimer > 60000.0f)
                 {
                     if (!(static_cast<int>(m_ShutdownTimer) % 60000))
-                    LogNotice("Server : Shutdown in %i minutes.", static_cast<int>(m_ShutdownTimer / 60000.0f));
+                    sLogger.info("Server : Shutdown in %i minutes.", static_cast<int>(m_ShutdownTimer / 60000.0f));
                 }
                 else
-                LogNotice("Server : Shutdown in %i seconds.", static_cast<int>(m_ShutdownTimer / 1000.0f));
+                sLogger.info("Server : Shutdown in %i seconds.", static_cast<int>(m_ShutdownTimer / 1000.0f));
 
                 next_printout = Util::getMSTime() + 500;
             }
@@ -846,17 +843,17 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
 
 void Master::StartNetworkSubsystem()
 {
-    LogNotice("Network : Starting subsystem...");
+    sLogger.info("Network : Starting subsystem...");
     sSocketMgr.initialize();
 }
 
 void Master::ShutdownLootSystem()
 {
-    LogNotice("Shutdown : Initiated at %s", Util::GetDateTimeStringFromTimeStamp((uint32)UNIXTIME).c_str());
+    sLogger.info("Shutdown : Initiated at %s", Util::GetDateTimeStringFromTimeStamp((uint32)UNIXTIME).c_str());
 
     if (sLootMgr.is_loading)
     {
-        LogNotice("Shutdown : Waiting for loot to finish loading...");
+        sLogger.info("Shutdown : Waiting for loot to finish loading...");
         while (sLootMgr.is_loading)
             Arcemu::Sleep(100);
     }

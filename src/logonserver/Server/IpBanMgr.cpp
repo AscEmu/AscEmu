@@ -15,11 +15,11 @@ IpBanMgr& IpBanMgr::getInstance()
 
 void IpBanMgr::initialize()
 {
-    LogNotice("IpBanMgr : Started loading bans");
+    sLogger.info("IpBanMgr : Started loading bans");
 
     reload();
 
-    LogDetail("IpBanMgr : loaded %u IP bans.", static_cast<uint32_t>(_ipBanList.size()));
+    sLogger.info("IpBanMgr : loaded %u IP bans.", static_cast<uint32_t>(_ipBanList.size()));
 }
 
 void IpBanMgr::reload()
@@ -40,7 +40,7 @@ void IpBanMgr::reload()
             std::string::size_type i = ipString.find('/');
             std::string stmp = ipString.substr(0, i);
             if (i == std::string::npos)
-                LOG_DETAIL("IP ban '%s' netmask not specified. assuming /32", ipString.c_str());
+                sLogger.info("IP ban '%s' netmask not specified. assuming /32", ipString.c_str());
             else
                 smask = ipString.substr(i + 1);
 
@@ -48,7 +48,7 @@ void IpBanMgr::reload()
             const unsigned int ipmask = atoi(smask.c_str());
             if (ipraw == 0 || ipmask == 0)
             {
-                LOG_ERROR("IP ban '%s' could not be parsed. Ignoring", ipString.c_str());
+                sLogger.failure("IP ban '%s' could not be parsed. Ignoring", ipString.c_str());
                 continue;
             }
 

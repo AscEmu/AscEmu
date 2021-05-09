@@ -277,7 +277,7 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
     gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
     if (gameobject_properties == nullptr)
     {
-        LOG_ERROR("Something tried to create a GameObject with invalid entry %u", entry);
+        sLogger.failure("Something tried to create a GameObject with invalid entry %u", entry);
         return false;
     }
 
@@ -709,7 +709,7 @@ void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
     SpellInfo const* sp = sSpellMgr.getSpellInfo(SpellID);
     if (sp == nullptr)
     {
-        LogError("GameObject %u tried to cast a non-existing Spell %u.", gameobject_properties->entry, SpellID);
+        sLogger.failure("GameObject %u tried to cast a non-existing Spell %u.", gameobject_properties->entry, SpellID);
         return;
     }
 
@@ -811,7 +811,7 @@ void GameObject_Button::Close()
 
 void GameObject_Button::onUse(Player* player)
 {
-    LOG_ERROR("Player uses Button.");
+    sLogger.failure("Player uses Button.");
     if (getState() == GO_STATE_CLOSED)
     {
         Open();
@@ -1104,7 +1104,7 @@ void GameObject_Trap::Update(unsigned long time_passed)
 
 void GameObject_Chair::onUse(Player* player)
 {
-    LOG_ERROR("Player uses Chair.");
+    sLogger.failure("Player uses Chair.");
 
     // todo: parameter_1 defines the height!
     player->SafeTeleport(player->GetMapId(), player->GetInstanceID(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
@@ -1137,13 +1137,13 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
     GameObject* go = m_mapMgr->CreateGameObject(trapid);
     if (go == nullptr)
     {
-        LogError("Failed to create linked trap (entry: %u) for GameObject %u ( %s ). Missing GOProperties!", trapid, gameobject_properties->entry, gameobject_properties->name.c_str());
+        sLogger.failure("Failed to create linked trap (entry: %u) for GameObject %u ( %s ). Missing GOProperties!", trapid, gameobject_properties->entry, gameobject_properties->name.c_str());
         return;
     }
 
     if (!go->CreateFromProto(trapid, m_mapId, m_position.x, m_position.y, m_position.z, m_position.o))
     {
-        LogError("Failed CreateFromProto for linked trap of GameObject %u ( %s ).", gameobject_properties->entry, gameobject_properties->name.c_str());
+        sLogger.failure("Failed CreateFromProto for linked trap of GameObject %u ( %s ).", gameobject_properties->entry, gameobject_properties->name.c_str());
         return;
     }
 
@@ -1192,7 +1192,7 @@ void GameObject_Goober::Close()
 
 void GameObject_Goober::onUse(Player* player)
 {
-    LOG_ERROR("Player uses Goober.");
+    sLogger.failure("Player uses Goober.");
     if (getState() == GO_STATE_CLOSED)
     {
         Open();
@@ -1261,7 +1261,7 @@ void GameObject_FishingNode::onUse(Player* player)
         MySQLStructure::FishingZones const* entry = sMySQLStore.getFishingZone(zone);
         if (entry == nullptr)
         {
-            LogError("ERROR: Fishing zone information for zone %u not found!", zone);
+            sLogger.failure("ERROR: Fishing zone information for zone %u not found!", zone);
             EndFishing(true);
             return;
         }
@@ -1517,7 +1517,7 @@ void GameObject_SpellCaster::InitAI()
 
     spell = sSpellMgr.getSpellInfo(gameobject_properties->spell_caster.spell_id);
     if (spell == nullptr)
-        LogError("GameObject %u ( %s ) has a nonexistant spellID in the database.", gameobject_properties->entry, gameobject_properties->name.c_str());
+        sLogger.failure("GameObject %u ( %s ) has a nonexistant spellID in the database.", gameobject_properties->entry, gameobject_properties->name.c_str());
 }
 
 void GameObject_SpellCaster::onUse(Player* player)

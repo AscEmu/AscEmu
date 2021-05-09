@@ -38,11 +38,11 @@ class SERVER_DECL LogonConfig
             uint32_t port;
         } listen;
 
-        // logon.conf - LogLevel
-        struct LogLevel
+        // logon.conf - Logger Settings
+        struct LoggerSettings
         {
-            uint32_t file;
-        } logLevel;
+            uint8_t minimumMessageType;
+        } logger;
 
         // logon.conf - Rates
         struct Rates

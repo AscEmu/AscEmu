@@ -74,7 +74,7 @@ void WorldSession::handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "WORLD: Received CMSG_TAXINODE_STATUS_QUERY");
+    sLogger.debug("WORLD: Received CMSG_TAXINODE_STATUS_QUERY");
 
     const auto nearestNode = sTaxiMgr.getNearestNodeForPlayer(_player);
     if (!nearestNode)
@@ -92,7 +92,7 @@ void WorldSession::handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "WORLD: Received CMSG_TAXIQUERYAVAILABLENODES");
+    sLogger.debug("WORLD: Received CMSG_TAXIQUERYAVAILABLENODES");
 
     if (const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.creatureGuid.getGuidLowPart()))
         sendTaxiList(creature);
@@ -107,7 +107,7 @@ void WorldSession::handleEnabletaxiOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "WORLD: Received CMSG_ENABLETAXI");
+    sLogger.debug("WORLD: Received CMSG_ENABLETAXI");
 
     if (const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.creatureGuid.getGuidLowPart()))
         sendTaxiList(creature);
@@ -140,7 +140,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_ACTIVATETAXI");
+    sLogger.debug("Received CMSG_ACTIVATETAXI");
 
     if (_player->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
         return;
@@ -193,7 +193,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_ACTIVATETAXIEXPRESS");
+    sLogger.debug("Received CMSG_ACTIVATETAXIEXPRESS");
 
     if (_player->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
         return;

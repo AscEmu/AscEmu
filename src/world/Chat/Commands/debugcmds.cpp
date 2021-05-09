@@ -277,7 +277,7 @@ bool ChatHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
 
     obj->SetPosition(obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), theOrientation, false);
 
-    LOG_DEBUG("facing sent");
+    sLogger.debug("facing sent");
     return true;
 
 }
