@@ -459,7 +459,7 @@ void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionL
 
         // this is going to hurt. - name
         std::string proto_lower = proto->lowercase_name;
-        if (srlPacket.searchedName.length() > 0 && !Util::findXinYString(srlPacket.searchedName, proto_lower))
+        if (srlPacket.searchedName.length() > 0 && !AscEmu::Util::Strings::contains(srlPacket.searchedName, proto_lower))
             continue;
 
         // rarity

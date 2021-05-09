@@ -119,7 +119,7 @@ void InstanceMgr::loadAndApplySavedInstanceValues()
             instance->m_expiration = result->Fetch()[3].GetUInt32();
 
             const std::string npcString = result->Fetch()[4].GetString();
-            auto npcStrings = Util::SplitStringBySeperator(npcString, " ");
+            auto npcStrings = AscEmu::Util::Strings::split(npcString, " ");
             for (const auto str : npcStrings)
             {
                 if (uint32_t val = atol(str.c_str()))

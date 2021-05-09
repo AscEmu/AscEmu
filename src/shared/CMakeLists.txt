@@ -26,6 +26,8 @@ set(sources
 
     Threading/AEThread.cpp
     Threading/AEThreadPool.cpp
+	
+    Util/Strings.cpp
 
     CrashHandler.cpp
     crc32.cpp
@@ -104,6 +106,8 @@ set(headers
     Threading/AEThread.h
     Threading/AEThreadPool.h
     Threading/ThreadState.h
+	
+    Util/Strings.hpp
     
     Common.hpp
     Log.hpp

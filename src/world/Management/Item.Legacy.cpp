@@ -165,7 +165,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     std::string enchant_field = fields[15].GetString();
     if (!enchant_field.empty())
     {
-        std::vector<std::string> enchants = Util::SplitStringBySeperator(enchant_field, ";");
+        std::vector<std::string> enchants = AscEmu::Util::Strings::split(enchant_field, ";");
         uint32 enchant_id;
 
         uint32 time_left;

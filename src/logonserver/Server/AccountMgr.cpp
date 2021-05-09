@@ -89,7 +89,7 @@ void AccountMgr::addAccount(Field* field)
         memset(account->SrpHash, 0, 20);
     }
 
-    Util::StringToUpperCase(accountName);
+    AscEmu::Util::Strings::toUpperCase(accountName);
 
     _accountMap[accountName] = account;
 }
@@ -183,7 +183,7 @@ void AccountMgr::reloadAccounts(bool silent)
             Field* field = result->Fetch();
             std::string accountName = field[1].GetString();
 
-            Util::StringToUpperCase(accountName);
+            AscEmu::Util::Strings::toUpperCase(accountName);
 
             const auto account = _getAccountByNameLockFree(accountName);
             if (account == nullptr)

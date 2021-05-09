@@ -38,6 +38,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AuthCodes.h"
 #include "CallBack.h"
 #include "CThreads.h"
+#include "Util/Strings.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 

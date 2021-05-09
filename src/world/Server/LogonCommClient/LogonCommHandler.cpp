@@ -463,7 +463,7 @@ void LogonCommHandler::loadRealmsConfiguration()
 
             std::string realmType = "Normal";
             ARCEMU_ASSERT(Config.MainConfig.tryGetString(realmString.str(), "Icon", &realmType));
-            Util::StringToLowerCase(realmType);
+            AscEmu::Util::Strings::toLowerCase(realmType);
 
             // process realm type
             if (realmType.compare("pvp") == 0)
@@ -504,8 +504,8 @@ void LogonCommHandler::testConsoleLogon(std::string & username, std::string & pa
     std::string newpass = password;
     std::string srpstr;
 
-    Util::StringToUpperCase(newuser);
-    Util::StringToUpperCase(newpass);
+    AscEmu::Util::Strings::toUpperCase(newuser);
+    AscEmu::Util::Strings::toUpperCase(newpass);
 
     srpstr = newuser + ":" + newpass;
 

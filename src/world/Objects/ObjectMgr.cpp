@@ -273,7 +273,7 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
         pl->m_Group->RemovePlayer(pl);
 
     std::string pnam = std::string(pl->name);
-    Util::StringToLowerCase(pnam);
+    AscEmu::Util::Strings::toLowerCase(pnam);
     PlayerNameStringIndexMap::iterator i2 = m_playersInfoByName.find(pnam);
     if (i2 != m_playersInfoByName.end() && i2->second == pl)
     {
@@ -303,7 +303,7 @@ void ObjectMgr::AddPlayerInfo(PlayerInfo* pn)
     m_playersinfo[pn->guid] = pn;
 
     std::string pnam = std::string(pn->name);
-    Util::StringToLowerCase(pnam);
+    AscEmu::Util::Strings::toLowerCase(pnam);
     m_playersInfoByName[pnam] = pn;
 }
 
@@ -312,13 +312,13 @@ void ObjectMgr::RenamePlayerInfo(PlayerInfo* pn, const char* oldname, const char
     std::lock_guard<std::mutex> guard(playernamelock);
 
     std::string oldn = std::string(oldname);
-    Util::StringToLowerCase(oldn);
+    AscEmu::Util::Strings::toLowerCase(oldn);
 
     PlayerNameStringIndexMap::iterator itr = m_playersInfoByName.find(oldn);
     if (itr != m_playersInfoByName.end() && itr->second == pn)
     {
         std::string newn = std::string(newname);
-        Util::StringToLowerCase(newn);
+        AscEmu::Util::Strings::toLowerCase(newn);
         m_playersInfoByName.erase(itr);
         m_playersInfoByName[newn] = pn;
     }
@@ -442,7 +442,7 @@ void ObjectMgr::LoadPlayersInfo()
             }
 
             std::string lpn = std::string(pn->name);
-            Util::StringToLowerCase(lpn);
+            AscEmu::Util::Strings::toLowerCase(lpn);
             m_playersInfoByName[lpn] = pn;
 
             //this is startup -> no need in lock -> don't use addplayerinfo
@@ -458,7 +458,7 @@ void ObjectMgr::LoadPlayersInfo()
 PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
 {
     std::string lpn = std::string(name);
-    Util::StringToLowerCase(lpn);
+    AscEmu::Util::Strings::toLowerCase(lpn);
 
     std::lock_guard<std::mutex> guard(playernamelock);
 
@@ -808,7 +808,7 @@ Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
     if (!caseSensitive)
     {
         std::string strName = name;
-        Util::StringToLowerCase(strName);
+        AscEmu::Util::Strings::toLowerCase(strName);
         for (PlayerStorageMap::const_iterator itr = _players.begin(); itr != _players.end(); ++itr)
         {
             if (!stricmp(itr->second->getName().c_str(), strName.c_str()))
