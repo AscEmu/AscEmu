@@ -3,36 +3,28 @@
 # set up our project name
 project(shared CXX)
 
+include(Auth/CMakeLists.txt)
+include(Config/CMakeLists.txt)
+include(Database/CMakeLists.txt)
+include(Exceptions/CMakeLists.txt)
+include(Logging/CMakeLists.txt)
+include(Network/CMakeLists.txt)
+include(Threading/CMakeLists.txt)
+include(Util/CMakeLists.txt)
+
 set(sources
-    Auth/BigNumber.cpp
-    Auth/MD5.cpp
-    Auth/Sha1.cpp
-    Auth/WowCrypt.cpp
-
-    Config/Config.cpp
-
-    Database/CreateInterface.cpp
-    Database/Database.cpp
-    Database/MySQLDatabase.cpp
-    
-    Logging/Logger.cpp
-
-    Network/CircularBuffer.cpp
-    Network/Socket.cpp
-
-    Threading/ConditionVariable.cpp
-    Threading/Mutex.cpp
-    Threading/LegacyThreadPool.cpp
-
-    Threading/AEThread.cpp
-    Threading/AEThreadPool.cpp
-	
-    Util/Strings.cpp
+    ${SRC_AUTH_FILES}
+    ${SRC_CONFIG_FILES}
+    ${SRC_DATABASE_FILES}
+    ${SRC_EXCEPTIONS_FILES}
+    ${SRC_LOGGING_FILES}
+    ${SRC_NETWORK_FILES}
+    ${SRC_THREADING_FILES}
+	${SRC_UTIL_FILES}
 
     CrashHandler.cpp
     crc32.cpp
     CThreads.cpp
-    Database/DatabaseUpdater.cpp
     DynLib.cpp
     LocationVector.cpp
     Log.cpp
@@ -55,7 +47,6 @@ set(headers
     CrashHandler.h
     crc32.h
     CThreads.h
-    Database/DatabaseUpdater.hpp
     DynLib.hpp
     Errors.h
     FastQueue.h
@@ -63,65 +54,17 @@ set(headers
     LogonCommDefines.h
     PerformanceCounter.hpp
     PreallocatedQueue.h
-    Database/DatabaseCommon.hpp
     RC4Engine.h
     SysInfo.hpp
     TLSObject.h
     WorldPacket.h
     WoWGuid.h
-    Auth/BigNumber.h
-    Auth/MD5.h
-    Auth/Sha1.h
-    Auth/WowCrypt.hpp
-    Config/Config.h
-    Database/Database.h
-    Database/Field.hpp
-    Database/MySQLDatabase.h
-    Exceptions/Exceptions.hpp
-    Exceptions/PlayerExceptions.hpp
-    Logging/ConsoleDefines.hpp
-    Logging/Logger.hpp
-    Logging/MessageType.hpp
-    Logging/Severity.hpp
-    Network/CircularBuffer.h
-    Network/ListenSocketFreeBSD.h
-    Network/ListenSocketLinux.h
-    Network/ListenSocketWin32.h
-    Network/Network.h
-    Network/NetworkIncludes.hpp
-    Network/Socket.h
-    Network/SocketMgrFreeBSD.h
-    Network/SocketMgrLinux.h
-    Network/SocketMgrWin32.h
-    Network/SocketOps.h
-    Network/SocketDefines.h
-    Threading/ConditionVariable.h
-    Threading/LegacyThreading.h
-    Threading/LegacyThreadPool.h
-    Threading/LegacyThreadBase.h
-    Threading/LockedQueue.h
-    Threading/Mutex.h
-    Threading/Queue.h
 
-    Threading/AEThread.h
-    Threading/AEThreadPool.h
-    Threading/ThreadState.h
-	
-    Util/Strings.hpp
-    
     Common.hpp
     Log.hpp
     LogDefines.hpp
     Util.hpp
 )
-
-if(WIN32)
-   set(sources ${sources} Network/SocketMgrWin32.cpp Network/SocketOpsWin32.cpp Network/SocketWin32.cpp)
-elseif((CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD") OR APPLE)
-   set(sources ${sources} Network/SocketMgrFreeBSD.cpp Network/SocketFreeBSD.cpp Network/SocketOpsFreeBSD.cpp)
-else()
-   set(sources ${sources} Network/SocketMgrLinux.cpp Network/SocketLinux.cpp Network/SocketOpsLinux.cpp)
-endif()
 
 include_directories(
     ${OPENSSL_INCLUDE_DIR}
