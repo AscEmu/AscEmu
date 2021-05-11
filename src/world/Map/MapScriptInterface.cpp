@@ -124,7 +124,6 @@ Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, fl
     uint32 DisplayID = 0;
     uint8 Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&DisplayID);
     spawn->displayid = DisplayID;
-    spawn->form = nullptr;
     spawn->id = 0;
     spawn->movetype = 0;
     spawn->x = cX;
@@ -208,9 +207,4 @@ StructFactory& StructFactory::getInstance()
 {
     static StructFactory mInstance;
     return mInstance;
-}
-
-Movement::WayPoint* StructFactory::CreateWaypoint()
-{
-    return new Movement::WayPoint;
 }

@@ -5,6 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+class AreaBoundary;
+
+typedef std::vector<AreaBoundary const*> CreatureBoundary;
+
 /// All criteria must be completed for the achievement to be complete.
 #define ACHIEVEMENT_CRITERIA_COMPLETE_FLAG_ALL 2
 
@@ -58,9 +62,11 @@ const float MIN_WALK_DISTANCE = 2.0f;
 
 /// -
 #define MAX_PATH_LENGTH 512 // 1024
+#define MAX_POINT_PATH_LENGTH   74
+/// -
+#define SMOOTH_PATH_STEP_SIZE 4.0f
 
 /// -
-#define SMOOTH_PATH_STEP_SIZE 6.0f
+#define SMOOTH_PATH_SLOP 0.3f
 
-/// -
-#define SMOOTH_PATH_SLOP 0.4f
+#define INVALID_POLYREF   0

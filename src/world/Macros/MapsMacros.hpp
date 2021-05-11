@@ -64,6 +64,9 @@ This file is released under the MIT license. See README-MIT for more information
 #define TERRAIN_NUM_TILES 64
 #define TERRAIN_MAP_RESOLUTION 128
 
+#define MAP_SIZE                (TERRAIN_TILE_SIZE*TERRAIN_NUM_TILES)
+#define MAP_HALFSIZE            (MAP_SIZE/2)
+
 #define CREATURE_SPAWNS_FIELDCOUNT 27
 #define GO_SPAWNS_FIELDCOUNT 18
 

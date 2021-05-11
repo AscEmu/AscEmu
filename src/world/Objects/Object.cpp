@@ -55,6 +55,8 @@
 #include "Server/Packets/SmsgSpellLogMiss.h"
 #include "Server/Packets/SmsgAiReaction.h"
 #include "Server/OpcodeTable.hpp"
+#include "Movement/PathGenerator.h"
+#include "Movement/Spline/MovementPacketBuilder.h"
 
 // MIT Start
 
@@ -2051,8 +2053,6 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
 #if VERSION_STRING == WotLK
 void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target)
 {
-    ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->getSplineMgr().popSplinePacket(getGuid()) : 0;
-
     *data << uint16(updateFlags);
 
     if (updateFlags & UPDATEFLAG_LIVING)  //0x20
@@ -2128,12 +2128,8 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
         if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ENABLED))   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
         {
-            if (splinebuf != nullptr)
-            {
-                data->append(*splinebuf);
-            }
-            else
-                *data << float(0.0f);
+            if (Unit* unit = static_cast<Unit*>(this))
+                MovementNew::PacketBuilder::WriteCreate(*unit->movespline, *data);
         }
 
     }
@@ -3567,10 +3563,12 @@ bool Object::isInBack(Object* target)
     // if we are a creature and have a UNIT_FIELD_TARGET then we are always facing them
     if (isCreature() && static_cast<Creature*>(this)->getTargetGuid() != 0)
     {
+#ifndef UseNewAIInterface
         Unit* pTarget = static_cast<Creature*>(this)->GetAIInterface()->getNextTarget();
         if (pTarget != nullptr)
             angle -= double(Object::calcRadAngle(target->m_position.x, target->m_position.y, pTarget->m_position.x, pTarget->m_position.y));
         else
+#endif
             angle -= target->GetOrientation();
     }
     else
@@ -4163,14 +4161,14 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
     if (nav != nullptr)
     {
         //if we can path there, go for it
-        if (!isCreatureOrPlayer() || !sloppypath || !static_cast<Unit*>(this)->GetAIInterface()->CanCreatePath(outx, outy, outz))
+        if (!isCreatureOrPlayer() || !sloppypath /*|| !static_cast<Unit*>(this)->GetAIInterface()->CanCreatePath(outx, outy, outz)*/)
         {
             //raycast nav mesh to see if this place is valid
             float start[3] = { GetPositionY(), GetPositionZ() + 0.5f, GetPositionX() };
             float end[3] = { outy, outz + 0.5f, outx };
             float extents[3] = { 3, 5, 3 };
             dtQueryFilter filter;
-            filter.setIncludeFlags(NAV_GROUND | NAV_WATER | NAV_SLIME | NAV_MAGMA);
+            filter.setIncludeFlags(NAV_GROUND | NAV_WATER | NAV_MAGMA_SLIME);
 
             dtPolyRef startref;
             nav_query->findNearestPoly(start, extents, &filter, &startref, nullptr);
@@ -4225,6 +4223,280 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
     }
 
     return true;
+}
+
+void Object::getNearPoint2D(Object* searcher, float& x, float& y, float distance2d, float absAngle)
+{
+    float effectiveReach = getCombatReach();
+
+    if (searcher)
+    {
+        effectiveReach += searcher->getCombatReach();
+
+        if (this != searcher)
+        {
+            float myHover = 0.0f, searcherHover = 0.0f;
+            if (Unit const* unit = ToUnit())
+                myHover = unit->getHoverHeight();
+            if (Unit const* searchUnit = searcher->ToUnit())
+                searcherHover = searchUnit->getHoverHeight();
+
+            float hoverDelta = myHover - searcherHover;
+            if (hoverDelta != 0.0f)
+                effectiveReach = std::sqrt(std::max(effectiveReach * effectiveReach - hoverDelta * hoverDelta, 0.0f));
+        }
+}
+
+    x = GetPositionX() + (effectiveReach + distance2d) * std::cos(absAngle);
+    y = GetPositionY() + (effectiveReach + distance2d) * std::sin(absAngle);
+}
+
+void Object::getNearPoint(Object* searcher, float& x, float& y, float& z, float distance2d, float absAngle)
+{
+    getNearPoint2D(searcher, x, y, distance2d, absAngle);
+    z = GetPositionZ();
+    z = GetMapMgr()->GetLandHeight(x, y, z);
+
+    // if detection disabled, return first point
+    if (!worldConfig.terrainCollision.isCollisionEnabled)
+        return;
+
+    // return if the point is already in LoS
+    if (IsWithinLOS(LocationVector(x, y, z)))
+        return;
+
+    // remember first point
+    float first_x = x;
+    float first_y = y;
+    float first_z = z;
+
+    // loop in a circle to look for a point in LoS using small steps
+    for (float angle = float(M_PI) / 8; angle < float(M_PI) * 2; angle += float(M_PI) / 8)
+    {
+        getNearPoint2D(searcher, x, y, distance2d, absAngle + angle);
+        z = GetPositionZ();
+        z = GetMapMgr()->GetLandHeight(x, y, z);
+        if (IsWithinLOS(LocationVector(x,y,z)))
+            return;
+    }
+
+    // still not in LoS, give up and return first position found
+    x = first_x;
+    y = first_y;
+    z = first_z;
+
+    normalizeMapCoord(x);
+    normalizeMapCoord(y);
+}
+
+void Object::getClosePoint(float& x, float& y, float& z, float size, float distance2d /*= 0*/, float relAngle /*= 0*/)
+{
+    // angle calculated from current orientation
+    getNearPoint(nullptr, x, y, z, distance2d + size, GetOrientation() + relAngle);
+}
+
+LocationVector Object::GetHitSpherePointFor(LocationVector const& dest)
+{
+    G3D::Vector3 vThis(GetPositionX(), GetPositionY(), GetPositionZ() + 2.0f);
+    G3D::Vector3 vObj(dest.getPositionX(), dest.getPositionY(), dest.getPositionZ());
+    G3D::Vector3 contactPoint = vThis + (vObj - vThis).directionOrZero() * std::min(dest.getExactDist(GetPosition()), getCombatReach());
+
+    return LocationVector(contactPoint.x, contactPoint.y, contactPoint.z, getAbsoluteAngle(contactPoint.x, contactPoint.y));
+}
+
+void Object::GetHitSpherePointFor(LocationVector const& dest, float& x, float& y, float& z) const
+{
+    LocationVector pos = GetHitSpherePointFor(dest);
+    x = pos.getPositionX();
+    y = pos.getPositionY();
+    z = pos.getPositionZ();
+}
+
+LocationVector Object::GetHitSpherePointFor(LocationVector const& dest) const
+{
+    G3D::Vector3 vThis(GetPositionX(), GetPositionY(), GetPositionZ() + 2.0f);
+    G3D::Vector3 vObj(dest.getPositionX(), dest.getPositionY(), dest.getPositionZ());
+    G3D::Vector3 contactPoint = vThis + (vObj - vThis).directionOrZero() * std::min(dest.getExactDist(GetPosition()), getCombatReach());
+
+    return LocationVector(contactPoint.x, contactPoint.y, contactPoint.z, getAbsoluteAngle(contactPoint.x, contactPoint.y));
+}
+
+void Object::UpdateAllowedPositionZ(float x, float y, float &z, float* groundZ)
+{
+    // TODO: Allow transports to be part of dynamic vmap tree
+    if (GetTransport())
+    {
+        if (groundZ)
+            *groundZ = z;
+
+        return;
+    }
+
+    if (Unit* unit = ToUnit())
+    {
+        if (!unit->CanFly())
+        {
+            bool canSwim = unit->CanSwim();
+            float ground_z = z;
+            float max_z;
+            if (canSwim)
+                max_z = GetMapWaterOrGroundLevel(x, y, z, &ground_z);
+            else
+                max_z = ground_z = GetMapMgr()->GetLandHeight(x, y, z);
+
+            if (max_z > INVALID_HEIGHT)
+            {
+                // hovering units cannot go below their hover height
+                float hoverOffset = unit->getHoverHeight();
+                max_z += hoverOffset;
+                ground_z += hoverOffset;
+
+                if (z > max_z)
+                    z = max_z;
+                else if (z < ground_z)
+                    z = ground_z;
+            }
+
+            if (groundZ)
+                *groundZ = ground_z;
+}
+        else
+        {
+            float ground_z = GetMapMgr()->GetLandHeight(x, y, z) + unit->getHoverHeight();
+            if (z < ground_z)
+                z = ground_z;
+
+            if (groundZ)
+                *groundZ = ground_z;
+        }
+    }
+    else
+    {
+        float ground_z = GetMapMgr()->GetLandHeight(x, y, z);
+        if (ground_z > INVALID_HEIGHT)
+            z = ground_z;
+
+        if (groundZ)
+            *groundZ = ground_z;
+    }
+}
+
+void Object::MovePositionToFirstCollision(LocationVector &pos, float dist, float angle)
+{
+    angle += GetOrientation();
+    float destx, desty, destz;
+    destx = pos.x + dist * std::cos(angle);
+    desty = pos.y + dist * std::sin(angle);
+    destz = pos.z;
+
+    // Use a detour raycast to get our first collision point
+    PathGenerator path(this);
+    path.setUseRaycast(true);
+    path.calculatePath(destx, desty, destz, false);
+
+    // Check for valid path types before we proceed
+    if (!(path.getPathType() & PATHFIND_NOT_USING_PATH))
+        if (path.getPathType() & ~(PATHFIND_NORMAL | PATHFIND_SHORTCUT | PATHFIND_INCOMPLETE | PATHFIND_FARFROMPOLY_END))
+            return;
+
+    G3D::Vector3 result = path.getPath().back();
+    destx = result.x;
+    desty = result.y;
+    destz = result.z;
+
+    // check static LOS
+    float halfHeight = 2.0f * 0.5f;
+    bool col = false;
+
+    // Unit is flying, check for potential collision via vmaps
+    if (path.getPathType() & PATHFIND_NOT_USING_PATH)
+    {
+        col = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(),
+            pos.x, pos.y, pos.z + halfHeight,
+            destx, desty, destz + halfHeight,
+            destx, desty, destz, -0.5f);
+
+        destz -= halfHeight;
+
+        // Collided with static LOS object, move back to collision point
+        if (col)
+        {
+            destx -= CONTACT_DISTANCE * std::cos(angle);
+            desty -= CONTACT_DISTANCE * std::sin(angle);
+            dist = std::sqrt((pos.x - destx) * (pos.x - destx) + (pos.y - desty) * (pos.y - desty));
+        }
+    }
+
+    // check dynamic collision //todo
+
+    destz -= halfHeight;
+
+    // Collided with a gameobject, move back to collision point
+    if (col)
+    {
+        destx -= CONTACT_DISTANCE * std::cos(angle);
+        desty -= CONTACT_DISTANCE * std::sin(angle);
+        dist = std::sqrt((pos.x - destx)*(pos.x - destx) + (pos.y - desty) * (pos.y - desty));
+    }
+
+    float groundZ = VMAP_INVALID_HEIGHT_VALUE;
+    normalizeMapCoord(pos.x);
+    normalizeMapCoord(pos.y);
+    UpdateAllowedPositionZ(destx, desty, destz, &groundZ);
+
+    pos.o = GetOrientation();
+    pos.changeCoords(destx, desty, destz);
+
+    // position has no ground under it (or is too far away)
+    if (groundZ <= INVALID_HEIGHT)
+    {
+        if (Unit* unit = ToUnit())
+        {
+            // unit can fly, ignore.
+            if (unit->CanFly())
+                return;
+
+            // fall back to gridHeight if any
+            float gridHeight = GetMapMgr()->GetADTLandHeight(pos.x, pos.y);
+            if (gridHeight > INVALID_HEIGHT)
+                pos.z = gridHeight + unit->getHoverHeight();
+        }
+    }
+}
+
+float Object::GetMapWaterOrGroundLevel(float x, float y, float z, float* ground/* = nullptr*/)
+{
+    return GetMapMgr()->GetWaterOrGroundLevel(GetPhase(), x, y, z, ground, GetTypeFromGUID() == TYPEID_UNIT ? !static_cast<Unit*>(this)->getAuraWithAuraEffect(SPELL_AURA_WATER_WALK) : false);
+}
+
+float Object::getDistance(Object const* obj) const
+{
+    float d = getExactDist(obj->GetPosition()) - getCombatReach() - obj->getCombatReach();
+    return d > 0.0f ? d : 0.0f;
+}
+
+float Object::getDistance(LocationVector const& pos) const
+{
+    float d = getExactDist(&pos) - getCombatReach();
+    return d > 0.0f ? d : 0.0f;
+}
+
+float Object::getDistance(float x, float y, float z) const
+{
+    float d = getExactDist(x, y, z) - getCombatReach();
+    return d > 0.0f ? d : 0.0f;
+}
+
+float Object::getDistance2d(Object const* obj) const
+{
+    float d = getExactDist2d(obj->GetPosition()) - getCombatReach() - obj->getCombatReach();
+    return d > 0.0f ? d : 0.0f;
+}
+
+float Object::getDistance2d(float x, float y) const
+{
+    float d = getExactDist2d(x, y) - getCombatReach();
+    return d > 0.0f ? d : 0.0f;
 }
 
 void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t opcode)

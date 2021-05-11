@@ -8,8 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Server/Packets/SmsgTransferPending.h"
-#include "../Movement/Spline/New/Spline.h"
-#include "../Movement/Spline/New/MoveSplineInitArgs.h"
+#include "../Movement/Spline/Spline.h"
+#include "../Movement/Spline/MoveSplineInitArgs.h"
 
 using namespace AscEmu::Packets;
 

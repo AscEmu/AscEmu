@@ -648,8 +648,14 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
     if (getUnitCaster() != nullptr && GetUnitTarget() != nullptr && GetUnitTarget()->isCreature()
         && targetType & SPELL_TARGET_REQUIRE_ATTACKABLE && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
     {
+#ifndef UseNewAIInterface
         GetUnitTarget()->GetAIInterface()->AttackReaction(getUnitCaster(), 1, 0);
         GetUnitTarget()->GetAIInterface()->HandleEvent(EVENT_HOSTILEACTION, getUnitCaster(), 0);
+#else
+        GetUnitTarget()->GetAIInterface()->JustEnteredCombat(getUnitCaster());
+        GetUnitTarget()->getThreatManager().addThreat(getUnitCaster(), 0.0f, nullptr, false, false);
+        GetUnitTarget()->GetAIInterface()->HandleEvent(EVENT_HOSTILEACTION, getUnitCaster(), 0);
+#endif
     }
 
     // Clear DamageInfo before effect
@@ -783,8 +789,14 @@ void Spell::handleMissedEffect(const uint64_t targetGuid)
         if (u_caster != nullptr && targetUnit->isCreature() && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
         {
             // Let target creature know that someone tried to cast spell on it
+#ifndef UseNewAIInterface
             static_cast<Creature*>(targetUnit)->GetAIInterface()->AttackReaction(u_caster, 0, 0);
             static_cast<Creature*>(targetUnit)->GetAIInterface()->HandleEvent(EVENT_HOSTILEACTION, u_caster, 0);
+#else
+            static_cast<Creature*>(targetUnit)->GetAIInterface()->JustEnteredCombat(u_caster);
+            static_cast<Creature*>(targetUnit)->getThreatManager().addThreat(u_caster, 0.0f, nullptr, false, false);
+            static_cast<Creature*>(targetUnit)->GetAIInterface()->HandleEvent(EVENT_HOSTILEACTION, u_caster, 0);
+#endif
         }
 
         // Call scripted after spell missed hook
@@ -2512,7 +2524,9 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (worldConfig.terrainCollision.isPathfindingEnabled)
                 {
                     // Check if caster is able to create path to target
+#ifndef UseNewAIInterface
                     if (!u_caster->GetAIInterface()->CanCreatePath(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
+#endif
                         return SPELL_FAILED_NOPATH;
                 }
             } break;
@@ -3735,7 +3749,7 @@ SpellCastResult Spell::checkCasterState() const
     };
 
     SpellCastResult errorMsg = SPELL_CAST_SUCCESS;
-    if (u_caster->hasUnitStateFlag(UNIT_STATE_STUN))
+    if (u_caster->hasUnitStateFlag(UNIT_STATE_STUNNED))
     {
         if (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_STUNNED)
         {
@@ -3763,19 +3777,19 @@ SpellCastResult Spell::checkCasterState() const
             errorMsg = SPELL_FAILED_STUNNED;
         }
     }
-    else if (u_caster->hasUnitStateFlag(UNIT_STATE_CONFUSE) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED))
+    else if (u_caster->hasUnitStateFlag(UNIT_STATE_CONFUSED) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED))
     {
         errorMsg = SPELL_FAILED_CONFUSED;
     }
-    else if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_FEARED))
+    else if (u_caster->hasUnitStateFlag(UNIT_STATE_FLEEING) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_FEARED))
     {
         errorMsg = SPELL_FAILED_FLEEING;
     }
-    else if (u_caster->hasUnitStateFlag(UNIT_STATE_SILENCE) && getSpellInfo()->getPreventionType() == PREVENTION_TYPE_SILENCE)
+    else if (u_caster->hasUnitFlags(UNIT_FLAG_SILENCED) && getSpellInfo()->getPreventionType() == PREVENTION_TYPE_SILENCE)
     {
         errorMsg = SPELL_FAILED_SILENCED;
     }
-    else if (u_caster->hasUnitStateFlag(UNIT_STATE_PACIFY) && getSpellInfo()->getPreventionType() == PREVENTION_TYPE_PACIFY)
+    else if (u_caster->hasUnitStateFlag(UNIT_FLAG_PACIFIED) && getSpellInfo()->getPreventionType() == PREVENTION_TYPE_PACIFY)
     {
         errorMsg = SPELL_FAILED_PACIFIED;
     }

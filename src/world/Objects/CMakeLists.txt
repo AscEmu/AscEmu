@@ -19,6 +19,7 @@ set(SRC_OBJECTS_FILES
    ${PATH_PREFIX}/ObjectMgr.h
    ${PATH_PREFIX}/Transporter.cpp
    ${PATH_PREFIX}/Transporter.h
+   ${PATH_PREFIX}/G3DPosition.hpp
    
    # MIT
    ${PATH_PREFIX}/ObjectDefines.h

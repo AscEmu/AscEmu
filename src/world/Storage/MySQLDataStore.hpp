@@ -44,6 +44,7 @@ public:
     typedef std::unordered_map<uint32_t, MySQLStructure::ItemPage> ItemPageContainer;
     typedef std::unordered_map<uint32_t, ItemProperties> ItemPropertiesContainer;
     typedef std::unordered_map<uint32_t, CreatureProperties> CreaturePropertiesContainer;
+    typedef std::unordered_map<uint32_t, CreaturePropertiesMovement> CreaturePropertiesMovementContainer;
     typedef std::unordered_map<uint32_t, GameObjectProperties> GameObjectPropertiesContainer;
     typedef std::unordered_map<uint32_t, QuestProperties> QuestPropertiesContainer;
 
@@ -81,8 +82,6 @@ public:
 
     typedef std::list<MySQLStructure::WordFilterCharacterNames> WordFilterCharacterNamesSet;
     typedef std::list<MySQLStructure::WordFilterChat> WordFilterChatSet;
-
-    typedef std::unordered_map<uint32_t, MySQLStructure::CreatureFormation> CreatureFormationsMap;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // locales
@@ -125,6 +124,8 @@ public:
 
     CreatureProperties const* getCreatureProperties(uint32_t entry);
     CreaturePropertiesContainer const* getCreaturePropertiesStore() { return &_creaturePropertiesStore; }
+
+    CreaturePropertiesMovement const* getCreaturePropertiesMovement(uint32_t entry);
 
     GameObjectProperties const* getGameObjectProperties(uint32_t entry);
     GameObjectPropertiesContainer const* getGameObjectPropertiesStore() { return &_gameobjectPropertiesStore; }
@@ -197,9 +198,6 @@ public:
     AreaTriggerContainer const* getAreaTriggersStore() { return &_areaTriggerStore; }
     MySQLStructure::AreaTrigger const* getMapEntranceTrigger(uint32_t mapId);
 
-    CreatureFormationsMap const* getCreatureFormationsStore() { return &_creatureFormationsStore; }
-    MySQLStructure::CreatureFormation const* getCreatureFormationBySpawnId(uint32_t spawnId);
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // locales
     MySQLStructure::LocalesCreature const* getLocalizedCreature(uint32_t entry, uint32_t sessionLocale);
@@ -236,6 +234,7 @@ public:
     void loadItemPagesTable();
     void loadItemPropertiesTable();
 
+    void loadCreaturePropertiesMovementTable();
     void loadCreaturePropertiesTable();
 
     void loadGameObjectPropertiesTable();
@@ -287,8 +286,6 @@ public:
     void loadWordFilterCharacterNames();
     void loadWordFilterChat();
 
-    void loadCreatureFormationsTable();
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // locales
     void loadLocalesCreature();
@@ -322,6 +319,7 @@ public:
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
     CreaturePropertiesContainer _creaturePropertiesStore;
+    CreaturePropertiesMovementContainer _creaturePropertiesMovementStore;
     GameObjectPropertiesContainer _gameobjectPropertiesStore;
     QuestPropertiesContainer _questPropertiesStore;
 
@@ -361,8 +359,6 @@ public:
 
     WordFilterCharacterNamesSet _wordFilterCharacterNamesStore;
     WordFilterChatSet _wordFilterChatStore;
-
-    CreatureFormationsMap _creatureFormationsStore;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // locales

@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 //.waypoint add
 bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     AIInterface* ai = nullptr;
     Creature* creature_target = nullptr;
     Player* player = m_session->GetPlayer();
@@ -97,13 +98,14 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
 
     if (showing)
         ai->activateShowWayPoints(player, ai->isShowWayPointsBackwardsActive());
-
+#endif
     return true;
 }
 
 //.waypoint addfly
 bool ChatHandler::HandleWayPointAddFlyCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     AIInterface* ai = nullptr;
     Creature* creature_target = nullptr;
     Player* player = m_session->GetPlayer();
@@ -185,13 +187,14 @@ bool ChatHandler::HandleWayPointAddFlyCommand(const char* args, WorldSession* m_
 
     if (showing)
         ai->activateShowWayPoints(player, ai->isShowWayPointsBackwardsActive());
-
+#endif
     return true;
 }
 
 //.waypoint change
 bool ChatHandler::HandleWayPointChangeNumberCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     uint32 wpid = GetSelectedWayPointId(m_session);
     Player* player = m_session->GetPlayer();
     AIInterface* ai = player->m_aiInterfaceWaypoint;
@@ -225,13 +228,14 @@ bool ChatHandler::HandleWayPointChangeNumberCommand(const char* args, WorldSessi
         SystemMessage(m_session, "Invalid Waypoint selection.");
         return true;
     }
-
+#endif
     return true;
 }
 
 //.waypoint delete
 bool ChatHandler::HandleWayPointDeleteCommand(const char* /*args*/, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     uint32 wpid = GetSelectedWayPointId(m_session);
     Player* player = m_session->GetPlayer();
     AIInterface* ai = player->m_aiInterfaceWaypoint;
@@ -258,13 +262,14 @@ bool ChatHandler::HandleWayPointDeleteCommand(const char* /*args*/, WorldSession
     {
         SystemMessage(m_session, "Invalid Waypoint.");
     }
-
+#endif
     return true;
 }
 
 //.waypoint deleteall
 bool ChatHandler::HandleWayPointDeleteAllCommand(const char* /*args*/, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     Creature* creature_target = GetSelectedCreature(m_session, true);
     Player* player = m_session->GetPlayer();
     AIInterface* ai = player->m_aiInterfaceWaypoint;
@@ -279,13 +284,14 @@ bool ChatHandler::HandleWayPointDeleteAllCommand(const char* /*args*/, WorldSess
 
     creature_target->GetAIInterface()->deleteAllWayPoints();
     SystemMessage(m_session, "Deleted waypoints for creature_spawn %u", creature_target->GetSQL_id());
-
+#endif
     return true;
 }
 
 //.waypoint emote
 bool ChatHandler::HandleWayPointEmoteCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
@@ -330,13 +336,14 @@ bool ChatHandler::HandleWayPointEmoteCommand(const char* args, WorldSession* m_s
     {
         SystemMessage(m_session, "Invalid Waypoint.");
     }
-
+#endif
     return true;
 }
 
 //.waypoint flags
 bool ChatHandler::HandleWayPointFlagsCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
@@ -372,13 +379,14 @@ bool ChatHandler::HandleWayPointFlagsCommand(const char* args, WorldSession* m_s
         SystemMessage(m_session, "Invalid Waypoint.");
 
     }
-
+#endif
     return true;
 }
 
 //.waypoint generate
 bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
@@ -458,13 +466,14 @@ bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* 
 
     m_session->GetPlayer()->m_aiInterfaceWaypoint = creature_target->GetAIInterface();
     creature_target->GetAIInterface()->activateShowWayPoints(m_session->GetPlayer(), creature_target->GetAIInterface()->isShowWayPointsBackwardsActive());
-
+#endif
     return true;
 }
 
 //.waypoint hide
 bool ChatHandler::HandleWayPointHideCommand(const char* /*args*/, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
@@ -486,13 +495,14 @@ bool ChatHandler::HandleWayPointHideCommand(const char* /*args*/, WorldSession* 
     }
 
     SystemMessage(m_session, "Hiding Waypoints for creature_spawn %u", creature_target->GetSQL_id());
-
+#endif
     return true;
 }
 
 //.waypoint info
 bool ChatHandler::HandleWayPointInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
@@ -534,12 +544,14 @@ bool ChatHandler::HandleWayPointInfoCommand(const char* /*args*/, WorldSession* 
         SystemMessage(m_session, "Selected Waypoint is invalid!");
         return true;
     }
+#endif
     return true;
 }
 
 //.waypoint movehere
 bool ChatHandler::HandleWayPpointMoveHereCommand(const char* /*args*/, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
@@ -574,13 +586,14 @@ bool ChatHandler::HandleWayPpointMoveHereCommand(const char* /*args*/, WorldSess
     {
         SystemMessage(m_session, "Invalid Waypoint.");
     }
-
+#endif
     return true;
 }
 
 //.waypoint movetype
 bool ChatHandler::HandleWayPointMoveTypeCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     uint32 option = atoi((char*)args);
 
     if (option > 2 || !*args)
@@ -601,13 +614,14 @@ bool ChatHandler::HandleWayPointMoveTypeCommand(const char* args, WorldSession* 
     creature_target->GetAIInterface()->setWaypointScriptType((Movement::WaypointMovementScript)option);
 
     SystemMessage(m_session, "Value saved to database.");
-
+#endif
     return true;
 }
 
 //.waypoint save
 bool ChatHandler::HandleWayPointSaveCommand(const char* /*args*/, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr || !creature_target->GetSQL_id())
         return true;
@@ -622,13 +636,14 @@ bool ChatHandler::HandleWayPointSaveCommand(const char* /*args*/, WorldSession* 
     }
 
     creature_target->GetAIInterface()->saveWayPoints();
-
+#endif
     return true;
 }
 
 //.waypoint show
 bool ChatHandler::HandleWayPointShowCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
@@ -665,13 +680,14 @@ bool ChatHandler::HandleWayPointShowCommand(const char* args, WorldSession* m_se
     }
 
     SystemMessage(m_session, "Showing waypoints for creature %u", creature_target->GetSQL_id());
-
+#endif
     return true;
 }
 
 //.waypoint skin
 bool ChatHandler::HandleWayPointSkinCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
@@ -708,13 +724,14 @@ bool ChatHandler::HandleWayPointSkinCommand(const char* args, WorldSession* m_se
         SystemMessage(m_session, "Invalid Waypoint.");
         return true;
     }
-
+#endif
     return true;
 }
 
 //.waypoint wait
 bool ChatHandler::HandleWayPointWaitCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* player = m_session->GetPlayer();
@@ -749,6 +766,6 @@ bool ChatHandler::HandleWayPointWaitCommand(const char* args, WorldSession* m_se
     {
         SystemMessage(m_session, "Invalid Waypoint.");
     }
-
+#endif
     return true;
 }

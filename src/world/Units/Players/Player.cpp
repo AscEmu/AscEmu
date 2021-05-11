@@ -233,11 +233,6 @@ UpdateManager & Player::getUpdateMgr()
     return m_updateMgr;
 }
 
-SplineManager & Player::getSplineMgr()
-{
-    return m_splineMgr;
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Data
 uint64_t Player::getDuelArbiter() const { return playerData()->duel_arbiter; }

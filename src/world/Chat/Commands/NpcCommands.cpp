@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 //.npc addagent
 bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     //new
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -91,7 +92,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
             break;
         }
     }
-
+#endif
     return true;
 }
 
@@ -219,6 +220,7 @@ bool ChatHandler::HandleNpcCastCommand(const char* args, WorldSession* m_session
 //.npc come
 bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
@@ -226,6 +228,7 @@ bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_ses
     auto player = m_session->GetPlayer();
     creature_target->GetAIInterface()->MoveTo(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
     sGMLog.writefromsession(m_session, "used .npc come on %s spawn ID: %u", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
+#endif
     return true;
 }
 
@@ -249,8 +252,9 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_sessi
     }
     else
     {
+#ifndef UseNewAIInterface
         creature_target->GetAIInterface()->hideWayPoints(m_session->GetPlayer());
-
+#endif
         uint32 spawn_id = creature_target->spawnid;
 
         if (m_session->GetPlayer()->m_saveAllChangesCommand)
@@ -303,8 +307,7 @@ bool ChatHandler::HandleNpcFollowCommand(const char* /*args*/, WorldSession* m_s
     if (creature_target == nullptr)
         return true;
 
-    //creature_target->GetAIInterface()->SetUnitToFollow(m_session->GetPlayer());
-    creature_target->getMovementAI().startFollowing(m_session->GetPlayer());
+    creature_target->getMovementManager()->moveFollow(m_session->GetPlayer(), PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
     sGMLog.writefromsession(m_session, "used npc follow command on %s, sqlid %u", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
     return true;
 }
@@ -637,10 +640,7 @@ bool ChatHandler::HandleNpcStopFollowCommand(const char* /*args*/, WorldSession*
     if (creature_target == nullptr)
         return true;
 
-    /*creature_target->GetAIInterface()->setAiState(AI_STATE_IDLE);
-    creature_target->GetAIInterface()->ResetUnitToFollow();*/
-
-    creature_target->getMovementAI().stopFollowing();
+    creature_target->getMovementManager()->remove(FOLLOW_MOTION_TYPE);
 
     sGMLog.writefromsession(m_session, "cancelled npc follow command on %s, sqlid %u", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
     return true;
@@ -676,6 +676,7 @@ bool ChatHandler::HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_
 //.npc return
 bool ChatHandler::HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
@@ -691,7 +692,7 @@ bool ChatHandler::HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_s
     creature_target->GetAIInterface()->MoveTo(x, y, z, o);
 
     sGMLog.writefromsession(m_session, "returned NPC %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
-
+#endif
     return true;
 }
 
@@ -758,7 +759,6 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     auto creature_spawn = new MySQLStructure::CreatureSpawn;
     uint8 gender = creature_properties->GetGenderAndCreateRandomDisplayID(&creature_spawn->displayid);
     creature_spawn->entry = entry;
-    creature_spawn->form = 0;
     creature_spawn->id = sObjectMgr.GenerateCreatureSpawnID();
     creature_spawn->movetype = 0;
     creature_spawn->x = m_session->GetPlayer()->GetPositionX();
@@ -1043,6 +1043,7 @@ bool ChatHandler::HandleNpcShowTimersCommand(const char* /*args*/, WorldSession*
 //.npc set canfly
 bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
@@ -1081,7 +1082,7 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_se
             GreenSystemMessage(m_session, "CanFly temporarily set from 1 to 0 for Creature %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
         }
     }
-
+#endif
     return true;
 }
 
@@ -1225,7 +1226,7 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
     auto creature_slave = GetSelectedCreature(m_session, true);
     if (creature_slave == nullptr)
         return true;
-
+#ifndef UseNewAIInterface
     creature_slave->GetAIInterface()->m_formationFollowDistance = distance;
     creature_slave->GetAIInterface()->m_formationFollowAngle = angle;
     creature_slave->GetAIInterface()->m_formationLinkTarget = m_session->GetPlayer()->m_formationMaster->getGuid();
@@ -1247,13 +1248,14 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
     {
         BlueSystemMessage(m_session, "%s temporarily linked to %s with a distance of %f at %f radians.", creature_slave->GetCreatureProperties()->Name.c_str(), m_session->GetPlayer()->m_formationMaster->GetCreatureProperties()->Name.c_str(), distance, angle);
     }
-
+#endif
     return true;
 }
 
 //.npc set formationclear
 bool ChatHandler::HandleNpcSetFormationClearCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     uint32 save = atol(args);
 
     auto creature_target = GetSelectedCreature(m_session, true);
@@ -1279,7 +1281,7 @@ bool ChatHandler::HandleNpcSetFormationClearCommand(const char* args, WorldSessi
     {
         BlueSystemMessage(m_session, "%s linked formation temporarily cleared.", creature_target->GetCreatureProperties()->Name.c_str());
     }
-
+#endif
     return true;
 }
 
@@ -1323,6 +1325,7 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
 //.npc set ongameobject
 bool ChatHandler::HandleNpcSetOnGOCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
@@ -1349,6 +1352,7 @@ bool ChatHandler::HandleNpcSetOnGOCommand(const char* args, WorldSession* m_sess
     }
 
     SystemMessage(m_session, "You may have to leave and re-enter this zone for changes to take effect.");
+#endif
     return true;
 }
 

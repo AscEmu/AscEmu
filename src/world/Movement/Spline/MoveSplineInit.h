@@ -9,8 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 class Unit;
 
-enum class AnimationTier : uint8_t;
-
 namespace MovementNew {
 
 // Transforms coordinates from global to transport offsets
@@ -51,7 +49,7 @@ public:
 
     // Plays animation after movement done
     // can't be combined with parabolic movement
-    void SetAnimation(AnimationTier anim);
+    void SetAnimation(UnitBytes1_AnimationFlags anim);
 
     // Adds final facing animation
     // sets unit's facing to specified point/angle after all path done
@@ -127,7 +125,7 @@ inline void MoveSplineInit::SetParabolic(float amplitude, float time_shift)
     args.flags.EnableParabolic();
 }
 
-inline void MoveSplineInit::SetAnimation(AnimationTier anim)
+inline void MoveSplineInit::SetAnimation(UnitBytes1_AnimationFlags anim)
 {
     args.time_perc = 0.f;
     args.flags.EnableAnimation((uint8_t)anim);

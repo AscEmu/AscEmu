@@ -43,11 +43,7 @@ This file is released under the MIT license. See README-MIT for more information
 //////////////////////////////////////////////////////////////////////////////////////////
 
 // Movement
-#include "Movement/UnitMovementManager.hpp"
-#include "Movement/Spline/MovementSpline.hpp"
-#include "Movement/Spline/MovementSplineDefines.hpp"
-#include "Movement/Spline/SplineFlags.hpp"
-#include "Movement/MovementCommon.hpp"
+#include "Movement/MovementManager.h"
 
 // VMAP
 #include "Models/ModelInstance.h"
@@ -534,6 +530,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Stats.h"
 #include "Units/Unit.h"
 #include "Units/UnitDefines.hpp"
+#include "Units/ThreatHandler.h"
 
 // Units/Creatures
 #include "Units/Creatures/AIEvents.h"

@@ -56,9 +56,9 @@
 #include "Server/Packets/SmsgAuraUpdate.h"
 #include "Server/Packets/SmsgPeriodicAuraLog.h"
 #include "Server/Packets/SmsgAttackSwingBadFacing.h"
-#include "Movement/Spline/New/MoveSpline.h"
-#include "Movement/Spline/New/MoveSplineInit.h"
-#include "Movement/Spline/New/MovementPacketBuilder.h"
+#include "Movement/Spline/MoveSpline.h"
+#include "Movement/Spline/MoveSplineInit.h"
+#include "Movement/Spline/MovementPacketBuilder.h"
 
 using namespace AscEmu::Packets;
 
@@ -474,9 +474,11 @@ static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
 #endif
 
 Unit::Unit() :
-    m_movementManager(),
-    m_movementAI(this),
-    movespline(new MovementNew::MoveSpline())
+#ifdef UseNewAIInterface
+    m_threatManager(this),
+#endif
+    movespline(new MovementNew::MoveSpline()),
+    i_movementManager(new MovementManager(this))
 {
     mControledUnit = this;
     mPlayerControler = nullptr;
@@ -493,7 +495,7 @@ Unit::Unit() :
     m_ignoreArmorPctMaceSpec = 0;
     m_ignoreArmorPct = 0;
     m_fearmodifiers = 0;
-    m_unitState = UNIT_STATE_NONE;
+    m_unitState = 0;
     m_deathState = ALIVE;
     m_meleespell = 0;
     m_addDmgOnce = 0;
@@ -577,7 +579,12 @@ Unit::Unit() :
     //      CalculateActualArmor();
 
     m_aiInterface = new AIInterface();
+#ifndef UseNewAIInterface
     m_aiInterface->Init(this, AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
+#else
+    m_aiInterface->Init(this, AI_SCRIPT_AGRO);
+    getThreatManager().initialize();
+#endif
 
     m_oldEmote = 0;
 
@@ -726,6 +733,7 @@ Unit::~Unit()
     //start to remove badptrs, if you delete from the heap null the ptr's damn!
     RemoveAllAuras();
     delete movespline;
+    delete i_movementManager;
 
     delete m_aiInterface;
     m_aiInterface = NULL;
@@ -779,12 +787,14 @@ Unit::~Unit()
     clearHealthBatch();
 
     RemoveGarbage();
+#ifdef UseNewAIInterface
+    getThreatManager().clearAllThreat();
+    getThreatManager().removeMeFromThreatLists();
+#endif
 }
 
 void Unit::Update(unsigned long time_passed)
 {
-    m_movementAI.updateMovement(time_passed);
-
     const auto msTime = Util::getMSTime();
     
     auto diff = msTime - m_lastSpellUpdateTime;
@@ -899,11 +909,16 @@ void Unit::Update(unsigned long time_passed)
         {
             if (m_useAI)
                 m_aiInterface->Update(time_passed);
+#ifndef UseNewAIInterface
             else if (!m_aiInterface->MoveDone())            //pending move
                 m_aiInterface->UpdateMovementSpline();
+#endif
         }
-
+#ifdef UseNewAIInterface
+        getThreatManager().update(time_passed);
+#endif
         updateSplineMovement(time_passed);
+        getMovementManager()->update(time_passed);
 
         if (m_diminishActive)
         {
@@ -995,11 +1010,31 @@ void Unit::updateSplinePosition()
         }
     }
 
-    // \todo
-    //if (hasUnitStateFlag(UNIT_STATE_CANNOT_TURN))
-    //    loc.orientation = GetOrientation();
+    if (hasUnitStateFlag(UNIT_STATE_CANNOT_TURN))
+        loc.orientation = GetOrientation();
 
     SetPosition(loc.x, loc.y, loc.z, loc.orientation);
+}
+
+void Unit::StopMoving()
+{
+    removeUnitStateFlag(UNIT_STATE_MOVING);
+
+    // not need send any packets if not in world or not moving
+    if (!IsInWorld() || movespline->Finalized())
+        return;
+
+    // Update position now since Stop does not start a new movement that can be updated later
+    if (movespline->HasStarted())
+        updateSplinePosition();
+    MovementNew::MoveSplineInit init(this);
+    init.Stop();
+}
+
+void Unit::RemoveAllFollowers()
+{
+    while (!m_followingMe.empty())
+        (*m_followingMe.begin())->setTarget(nullptr);
 }
 
 void Unit::disableSpline()
@@ -7314,13 +7349,28 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     {
         case 0:     // miss
             hit_status |= HITSTATUS_MISS;
+#ifndef UseNewAIInterface
             if (pVictim->isCreature() && pVictim->GetAIInterface()->getNextTarget() == NULL)    // dirty ai agro fix
                 pVictim->GetAIInterface()->AttackReaction(this, 1, 0);
+#else
+            if (pVictim->isCreature() && pVictim->getThreatManager().getCurrentVictim() == nullptr) // if we missed our target fix agro by adding threat
+            {
+                pVictim->GetAIInterface()->JustEnteredCombat(this);
+                pVictim->getThreatManager().addThreat(this, 0.0f, nullptr, true, true);
+            }
+#endif
             break;
         case 1:     //dodge
+#ifndef UseNewAIInterface
             if (pVictim->isCreature() && pVictim->GetAIInterface()->getNextTarget() == NULL)    // dirty ai agro fix
                 pVictim->GetAIInterface()->AttackReaction(this, 1, 0);
-
+#else
+            if (pVictim->isCreature() && pVictim->getThreatManager().getCurrentVictim() == nullptr) // if our target dodget our attack fix agro by adding threat
+            {
+                pVictim->GetAIInterface()->JustEnteredCombat(this);
+                pVictim->getThreatManager().addThreat(this, 0.0f, nullptr, true, true);
+            }
+#endif
             CALL_SCRIPT_EVENT(pVictim, OnTargetDodged)(this);
             CALL_SCRIPT_EVENT(this, OnDodged)(this);
             targetEvent = 1;
@@ -7350,8 +7400,16 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             else sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 0);
             break;
         case 2:     //parry
+#ifndef UseNewAIInterface
             if (pVictim->isCreature() && pVictim->GetAIInterface()->getNextTarget() == NULL) // dirty ai agro fix
                 pVictim->GetAIInterface()->AttackReaction(this, 1, 0);
+#else
+            if (pVictim->isCreature() && pVictim->getThreatManager().getCurrentVictim() == nullptr) // if our target parry our attack fix agro by adding threat
+            {
+                pVictim->GetAIInterface()->JustEnteredCombat(this);
+                pVictim->getThreatManager().addThreat(this, 0.0f, nullptr, true, true);
+            }
+#endif
 
             CALL_SCRIPT_EVENT(pVictim, OnTargetParried)(this);
             CALL_SCRIPT_EVENT(this, OnParried)(this);
@@ -7716,6 +7774,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     //special states processing
     if (pVictim->isCreature())
     {
+#ifndef UseNewAIInterface
         if (pVictim->GetAIInterface() && (pVictim->GetAIInterface()->isAiState(AI_STATE_EVADE) ||
             (pVictim->GetAIInterface()->GetIsSoulLinked() && pVictim->GetAIInterface()->getSoullinkedWith() != this)))
         {
@@ -7724,6 +7783,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             dmg.fullDamage = 0;
             dmg.resistedDamage = 0;
         }
+#endif
     }
     if (pVictim->isPlayer() && static_cast<Player*>(pVictim)->m_cheats.hasGodModeCheat == true)
     {
@@ -8371,17 +8431,26 @@ void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, 
 
 void Unit::WipeHateList()
 {
+#ifndef UseNewAIInterface
     GetAIInterface()->WipeHateList();
+#endif
+    printf("Wipe Hate \n");
 }
 
 void Unit::ClearHateList()
 {
+#ifndef UseNewAIInterface
     GetAIInterface()->ClearHateList();
+#endif
+    printf("Clear Hate \n");
 }
 
 void Unit::WipeTargetList()
 {
+#ifndef UseNewAIInterface
     GetAIInterface()->WipeTargetList();
+#endif
+    printf("Wipe Targets \n");
 }
 
 void Unit::addToInRangeObjects(Object* pObj)
@@ -8405,8 +8474,10 @@ void Unit::onRemoveInRangeObject(Object* pObj)
 
     if (pObj->isCreatureOrPlayer())
     {
+#ifndef UseNewAIInterface
         Unit* pUnit = static_cast<Unit*>(pObj);
         GetAIInterface()->CheckTarget(pUnit);
+#endif
 
         if (getCharmGuid() == pObj->getGuid())
             interruptSpell();
@@ -8420,6 +8491,7 @@ void Unit::clearInRangeSets()
 
 void Unit::MoveToWaypoint(uint32 wp_id)
 {
+#ifndef UseNewAIInterface
     if (this->m_useAI && this->GetAIInterface() != nullptr)
     {
         AIInterface* aiInterface = this->GetAIInterface();
@@ -8434,6 +8506,7 @@ void Unit::MoveToWaypoint(uint32 wp_id)
             sLogger.failure("Invalid waypoint specified.");
         }
     }
+#endif
 }
 
 void Unit::CalcDamage()
@@ -8789,6 +8862,8 @@ void Unit::OnPushToWorld()
 
     z_axisposition = 0.0f;
 #endif
+
+    getMovementManager()->addToWorld();
 }
 
 //! Remove Unit from world
@@ -8857,8 +8932,9 @@ void Unit::RemoveFromWorld(bool free_guid)
             m_auras[x]->RelocateEvents();
         }
     }
-
+#ifndef UseNewAIInterface
     m_aiInterface->WipeReferences();
+#endif
 }
 
 void Unit::Deactivate(MapMgr* mgr)
@@ -9199,13 +9275,15 @@ void CombatStatusHandler::UpdateFlag()
         {
             //printf(I64FMT" is now in combat.\n", m_Unit->getGuid());
             m_Unit->addUnitFlags(UNIT_FLAG_COMBAT);
-            if (!m_Unit->hasUnitStateFlag(UNIT_STATE_ATTACKING)) m_Unit->addUnitStateFlag(UNIT_STATE_ATTACKING);
+            // todo
+            //if (!m_Unit->hasUnitStateFlag(UNIT_STATE_ATTACKING)) m_Unit->addUnitStateFlag(UNIT_STATE_ATTACKING);
         }
         else
         {
             //printf(I64FMT" is no longer in combat.\n", m_Unit->getGuid());
             m_Unit->removeUnitFlags(UNIT_FLAG_COMBAT);
-            if (m_Unit->hasUnitStateFlag(UNIT_STATE_ATTACKING)) m_Unit->removeUnitStateFlag(UNIT_STATE_ATTACKING);
+            // todo
+            //if (m_Unit->hasUnitStateFlag(UNIT_STATE_ATTACKING)) m_Unit->removeUnitStateFlag(UNIT_STATE_ATTACKING);
 
             // remove any of our healers from combat too, if they are able to be.
             ClearMyHealers();
@@ -9474,9 +9552,12 @@ void CombatStatusHandler::AttackersForgetHate()
             m_attackTargets.erase(i2);
             continue;
         }
-
+#ifndef UseNewAIInterface
         if (pt->GetAIInterface())
             pt->GetAIInterface()->RemoveThreatByPtr(m_Unit);
+#else
+        pt->getThreatManager().clearThreat(m_Unit);
+#endif
     }
 }
 
@@ -9494,8 +9575,11 @@ bool CombatStatusHandler::IsInCombat() const
                 return true;
             else if (m_Unit->isPet())
                 return m_lastStatus;
-
+#ifndef UseNewAIInterface
             return m_Unit->GetAIInterface()->getAITargetsCount() == 0 ? false : true;
+#else
+            return m_Unit->getThreatManager().getThreatListSize() == 0 ? false : true;
+#endif
         }
         case TYPEID_PLAYER:
         {
@@ -9657,9 +9741,11 @@ void Unit::AggroPvPGuards()
     {
         if (i && i->isCreature())
         {
+#ifndef UseNewAIInterface
             Unit* tmpUnit = static_cast<Unit*>(i);
             if (tmpUnit->GetAIInterface() && tmpUnit->GetAIInterface()->m_isNeutralGuard && CalcDistance(tmpUnit) <= (50.0f * 50.0f))
                 tmpUnit->GetAIInterface()->AttackReaction(this, 1, 0);
+#endif
         }
     }
 }
@@ -10027,9 +10113,11 @@ void Unit::HandleKnockback(Object* caster, float horizontal, float vertical)
     if (caster == this)
         angle = float(GetOrientation() + M_PI);
 
+#ifndef UseNewAIInterface
     float destx, desty, destz;
     if (GetPoint(angle, horizontal, destx, desty, destz, true))
         GetAIInterface()->splineMoveKnockback(destx, desty, destz, horizontal, vertical);
+#endif
 }
 
 void Unit::BuildPetSpellList(WorldPacket& data)
@@ -10231,7 +10319,9 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     {
         // unit-only stuff.
         pTarget->setAItoUse(false);
+#ifndef UseNewAIInterface
         pTarget->GetAIInterface()->StopMovement(0);
+#endif
         pTarget->m_redirectSpellPackets = pThis;
         pTarget->mPlayerControler = pThis;
     }

@@ -1177,7 +1177,8 @@ void Player::_EventCharmAttack()
         sLogger.failure("WORLD: " I64FMT " doesn't exist.", getTargetGuid());
         sLogger.info("Player::Update:  No valid current selection to attack, stopping attack");
         this->interruptHealthRegeneration(5000); //prevent clicking off creature for a quick heal
-        removeUnitStateFlag(UNIT_STATE_ATTACKING);
+        // todo
+        //removeUnitStateFlag(UNIT_STATE_ATTACKING);
         EventAttackStop();
     }
     else
@@ -1399,8 +1400,9 @@ void Player::_EventExploration()
 
 void Player::EventDeath()
 {
-    if (hasUnitStateFlag(UNIT_STATE_ATTACKING))
-        EventAttackStop();
+    // todo
+    //if (hasUnitStateFlag(UNIT_STATE_ATTACKING))
+    //    EventAttackStop();
 
     if (m_onTaxi)
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_DISMOUNT);
@@ -3608,6 +3610,8 @@ void Player::OnPushToWorld()
     // set fly if cheat is active
     setMoveCanFly(m_cheats.hasFlyCheat);
 
+    getMovementManager()->initialize();
+
     // Update PVP Situation
     LoginPvPSetup();
     setPvpFlags(getPvpFlags() &~(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY));
@@ -3760,8 +3764,6 @@ void Player::RemoveFromWorld()
 
     //clear buyback
     getItemInterface()->EmptyBuyBack();
-
-    getSplineMgr().clearSplinePackets();
 
     getSummonInterface()->removeAllSummons();
     DismissActivePets();
@@ -5247,8 +5249,10 @@ void Player::addToInRangeObjects(Object* pObj)
     Unit::addToInRangeObjects(pObj);
 
     //if the object is a unit send a move packet if they have a destination
+#ifndef UseNewAIInterface
     if (pObj->isCreature())
         static_cast< Creature* >(pObj)->GetAIInterface()->SendCurrentMove(this);
+#endif
 }
 
 void Player::onRemoveInRangeObject(Object* pObj)
@@ -6072,7 +6076,8 @@ void Player::RegenerateHealth(bool inCombat)
 
     // While polymorphed health is regenerated rapidly
     // Exact value is yet unknown but it's roughly 10% of health per sec
-    if (hasUnitStateFlag(UNIT_STATE_POLYMORPHED))
+    // todo
+    if (hasUnitStateFlag(UNIT_STATE_CONFUSED))
         amt += getMaxHealth() * 0.10f;
 
     if (amt != 0)
@@ -6765,18 +6770,26 @@ void Player::EndDuel(uint8 WinCondition)
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
         (*itr)->CombatStatus.Vanished();
+#ifndef UseNewAIInterface
         (*itr)->GetAIInterface()->SetUnitToFollow(this);
+#endif
         (*itr)->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, *itr, 0);
+#ifndef UseNewAIInterface
         (*itr)->GetAIInterface()->WipeTargetList();
+#endif
     }
 
     std::list<Pet*> duelingWithSummons = DuelingWith->GetSummons();
     for (std::list<Pet*>::iterator itr = duelingWithSummons.begin(); itr != duelingWithSummons.end(); ++itr)
     {
         (*itr)->CombatStatus.Vanished();
+#ifndef UseNewAIInterface
         (*itr)->GetAIInterface()->SetUnitToFollow(this);
+#endif
         (*itr)->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, *itr, 0);
+#ifndef UseNewAIInterface
         (*itr)->GetAIInterface()->WipeTargetList();
+#endif
     }
 
     // removing auras that kills players after if low HP
@@ -6882,8 +6895,10 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     // Checking if we have a unit whose waypoints are shown
     // If there is such, then we "unlink" it
     // Failing to do so leads to a crash if we try to show some other Unit's wps, after the map was shut down
+#ifndef UseNewAIInterface
     if (m_aiInterfaceWaypoint != nullptr)
         m_aiInterfaceWaypoint->hideWayPoints(this);
+#endif
 
     m_aiInterfaceWaypoint = nullptr;
 

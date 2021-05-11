@@ -27,9 +27,11 @@
 #include "Units/Unit.h"
 #include "Macros/AIInterfaceMacros.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
-#include "Movement/UnitMovementManager.hpp"
+#include "Server/Script/ScriptEvent.hpp"
 
 #include <G3D/Vector3.h>
+
+#define UseNewAIInterface
 
 inline bool inRangeYZX(const float* v1, const float* v2, const float r, const float h)
 {
@@ -39,6 +41,8 @@ inline bool inRangeYZX(const float* v1, const float* v2, const float r, const fl
     return (dx * dx + dz * dz) < r * r && fabsf(dy) < h;
 }
 
+struct AbstractFollower;
+class AreaBoundary;
 class MapMgr;
 class Object;
 class Creature;
@@ -47,6 +51,7 @@ class Player;
 class WorldSession;
 class SpellCastTargets;
 
+#ifndef UseNewAIInterface
 enum WalkMode
 {
     WALKMODE_SPRINT,
@@ -640,5 +645,352 @@ class SERVER_DECL AIInterface : public IUpdatable
         void SetCreatureProtoDifficulty(uint32 entry);
         uint8 GetDifficultyType();
 };
+#endif
+
+#ifdef UseNewAIInterface
+
+enum AiScriptTypes
+{
+    AI_SCRIPT_LONER,
+    AI_SCRIPT_AGRO,
+    AI_SCRIPT_SOCIAL,
+    AI_SCRIPT_PET,
+    AI_SCRIPT_TOTEM,
+    AI_SCRIPT_GUARDIAN, //we got a master but he cannot control us, we follow and battle opposite factions
+    AI_SCRIPT_PASSIVE
+};
+
+enum ReactStates : uint8
+{
+    REACT_PASSIVE = 0,
+    REACT_DEFENSIVE = 1,
+    REACT_AGGRESSIVE = 2
+};
+
+enum AI_Agent
+{
+    AGENT_NULL,
+    AGENT_MELEE,
+    AGENT_RANGED,
+    AGENT_FLEE,
+    AGENT_SPELL,
+    AGENT_CALLFORHELP
+};
+
+enum AI_SpellType
+{
+    STYPE_NULL,
+    STYPE_ROOT,
+    STYPE_HEAL,
+    STYPE_STUN,
+    STYPE_FEAR,
+    STYPE_SILENCE,
+    STYPE_CURSE,
+    STYPE_AOEDAMAGE,
+    STYPE_DAMAGE,
+    STYPE_SUMMON,
+    STYPE_BUFF,
+    STYPE_DEBUFF
+};
+
+enum AI_SpellTargetType
+{
+    TTYPE_NULL,
+    TTYPE_SINGLETARGET,
+    TTYPE_DESTINATION,
+    TTYPE_SOURCE,
+    TTYPE_CASTER,
+    TTYPE_OWNER
+};
+
+enum AiState
+{
+    AI_STATE_IDLE = 0,
+    AI_STATE_ATTACKING = 1,
+    AI_STATE_CASTING = 2,
+    AI_STATE_FLEEING = 3,
+    AI_STATE_FOLLOWING = 4,
+    AI_STATE_EVADE = 5,
+    AI_STATE_MOVEWP = 6,
+    AI_STATE_FEAR = 7,
+    AI_STATE_UNFEARED = 8,
+    AI_STATE_WANDER = 9,
+    AI_STATE_STOPPED = 10,
+    AI_STATE_SCRIPTMOVE = 11,
+    AI_STATE_SCRIPTIDLE = 12,
+};
+
+class SpellInfo;
+
+const uint32 AISPELL_ANY_DIFFICULTY = 4;
+
+struct AI_Spell
+{
+    ~AI_Spell() { autocast_type = (uint32)-1; }
+    uint32 entryId;
+    uint8 instance_mode;
+    uint16 agent;
+    uint32 procChance;
+    SpellInfo const* spell;
+    uint8 spellType;
+    uint8 spelltargetType;
+    uint32 cooldown;
+    uint32 cooldowntime;
+    uint32 procCount;
+    uint32 procCounter;
+    float floatMisc1;
+    uint32 Misc2;
+    float minrange;
+    float maxrange;
+    uint32 autocast_type;
+};
+
+class SERVER_DECL AIInterface : public IUpdatable
+{
+public:
+
+    AIInterface();
+    virtual ~AIInterface();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // AI Agent functions
+private:
+
+    AI_Agent m_AiCurrentAgent;
+
+public:
+
+    inline uint8_t getCurrentAgent() { return static_cast<uint8_t>(m_AiCurrentAgent); }
+    void setCurrentAgent(AI_Agent agent) { m_AiCurrentAgent = agent; }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // AI Script functions
+private:
+
+    AiScriptTypes m_AiScriptType;
+
+public:
+
+    void setAiScriptType(AiScriptTypes ai_type) { m_AiScriptType = ai_type; }
+    AiScriptTypes getAiScriptType() { return m_AiScriptType; }
+    bool isAiScriptType(AiScriptTypes ai_type) { return ai_type == m_AiScriptType; }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // AI State functions
+public:
+
+    void setAiState(AiState ai_state) { m_AiState = ai_state; }
+    void removeAiState(AiState ai_state) { m_AiState &= ~ai_state; }
+    uint32_t getAiState() { return m_AiState; }
+    bool isAiState(AiState ai_state) { return ai_state == m_AiState; }
+
+private:
+
+    uint32_t m_AiState;
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Combat functions
+public:
+
+    void JustEnteredCombat(Unit* pUnit);
+    bool isEngaged() { return m_isEngaged; }
+
+    bool isImmuneToNPC() { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT); }
+    bool isImmuneToPC() { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT); }
+    void setImmuneToNPC(bool apply);
+    void setImmuneToPC(bool apply);
+
+    void setAllowedToEnterCombat(bool val) { canEnterCombat = val; }
+    inline bool getAllowedToEnterCombat(void) { return canEnterCombat; }
+
+    void setReactState(ReactStates st) { m_reactState = st; }
+    ReactStates getReactState() const { return m_reactState; }
+    bool hasReactState(ReactStates state) const { return (m_reactState == state); }
+    void initializeReactState();
+
+private:
+
+    bool m_isEngaged;
+
+protected:
+
+    ReactStates m_reactState;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Combat behavior
+private:
+
+    bool mIsCombatDisabled;
+    bool mIsMeleeDisabled;
+    bool mIsRangedDisabled;
+    bool mIsCastDisabled;
+    bool mIsTargetingDisabled;
+
+public:
+
+    void setCombatDisabled(bool disable) { mIsCombatDisabled = disable; }
+    bool isCombatDisabled() { return mIsCombatDisabled; }
+
+    void setMeleeDisabled(bool disable) { mIsMeleeDisabled = disable; }
+    bool isMeleeDisabled() { return mIsMeleeDisabled; }
+
+    void setRangedDisabled(bool disable) { mIsRangedDisabled = disable; }
+    bool isRangedDisabled() { return mIsRangedDisabled; }
+
+    void setCastDisabled(bool disable) { mIsCastDisabled = disable; }
+    bool isCastDisabled() { return mIsCastDisabled; }
+
+    void setTargetingDisabled(bool disable) { mIsTargetingDisabled = disable; }
+    bool isTargetingDisabled() { return mIsTargetingDisabled; }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc functions
+public:
+
+    // Misc
+    void Init(Unit* un, AiScriptTypes at);
+    void Init(Unit* un, AiScriptTypes at, Unit* owner);   // used for pets
+    Unit* getUnit() const;
+    Unit* getPetOwner() const;
+    Unit* getCurrentTarget() const;
+
+    void updateEmotes(unsigned long time_passed);
+    void eventAiInterfaceParamsetFinish();
+    TimedEmoteList* timed_emotes;
+
+    // boundary system methods
+    virtual bool checkInRoom();
+    CreatureBoundary const* getBoundary() { return &_boundary; }
+    void setBoundary(AreaBoundary const* boundary, bool negativeBoundaries = false);
+    void setDefaultBoundary(LocationVector loc, float radius);
+    static bool isInBounds(CreatureBoundary const* boundary, LocationVector who);
+    bool isInBoundary(LocationVector who) const;
+    bool isInBoundary() const;
+    void doImmediateBoundaryCheck() { m_boundaryCheckTime = 0; }
+
+    bool canUnitEvade(unsigned long time_passed);
+    void enterEvadeMode();
+    bool _enterEvadeMode();
+
+    void initGroupThreat(Unit* target);
+    void instanceCombatProgress(bool activate);
+
+    // Event Handler
+    void HandleEvent(uint32 event, Unit* pUnit, uint32 misc1);
+
+    void EventForceRedirected(Unit* pUnit, uint32 misc1);
+    void EventHostileAction(Unit* pUnit, uint32 misc1);
+    void EventUnitDied(Unit* pUnit, uint32 misc1);
+    void EventUnwander(Unit* pUnit, uint32 misc1);
+    void EventWander(Unit* pUnit, uint32 misc1);
+    void EventUnfear(Unit* pUnit, uint32 misc1);
+    void EventFear(Unit* pUnit, uint32 misc1);
+    void EventFollowOwner(Unit* pUnit, uint32 misc1);
+    void EventDamageTaken(Unit* pUnit, uint32 misc1);
+    void EventLeaveCombat(Unit* pUnit, uint32 misc1);
+    void EventEnterCombat(Unit* pUnit, uint32 misc1);
+
+    void OnDeath(Object* pKiller);
+
+    // Update
+    void Update(unsigned long time_passed);
+    void updateTargets();
+    void updateCombat(uint32_t p_time);
+    void updateTotem(uint32_t p_time);
+
+    Unit* m_Unit;
+    Unit* m_PetOwner;
+    Unit* m_target;
+
+    // Difficulty
+    void setCreatureProtoDifficulty(uint32_t entry);
+    uint8_t getDifficultyType();
+    bool m_is_in_instance;
+
+protected:
+
+    uint32_t m_boundaryCheckTime;
+    CreatureBoundary _boundary;
+    bool _negateBoundary;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Movement functions
+public:
+    virtual void onMovementGeneratorFinalized(MovementGeneratorType /*type*/) { }
+
+    // Called at waypoint reached or point movement finished
+    virtual void movementInform(uint32_t /*type*/, uint32_t /*id*/);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Pet functions
+    inline void SetPetOwner(Unit* owner) { m_PetOwner = owner; }
+
+protected:
+
+    uint64_t m_UnitToFollow;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Agent functions
+public:
+
+    bool m_canRangedAttack;
+    void selectCurrentAgent(Unit* target, uint32_t spellid);
+    void initializeSpells();
+
+    void SetCannotReachTarget(bool cannotReach);
+    bool CanNotReachTarget() const { return m_cannotReachTarget; }
+
+    void doFleeToGetAssistance();
+    void callForHelp(float fRadius);
+    void callAssistance();
+    void setNoCallAssistance(bool val) { m_AlreadyCallAssistance = val; }
+    void setNoSearchAssistance(bool val) { m_AlreadySearchedAssistance = val; }
+    bool gasSearchedAssistance() const { return m_AlreadySearchedAssistance; }
+    bool canAssistTo(Unit* u, Unit* enemy, bool checkfaction = true);
+
+protected:
+
+    bool m_AlreadyCallAssistance;
+    bool m_AlreadySearchedAssistance;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Waypoint functions
+public:
+
+    virtual void waypointStarted(uint32 /*nodeId*/, uint32 /*pathId*/) { }
+    virtual void waypointReached(uint32 /*nodeId*/, uint32 /*pathId*/) { }
+    virtual void waypointPathEnded(uint32 /*nodeId*/, uint32 /*pathId*/) { }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Spell functions
+public:
+
+    void castSpell(Unit* caster, SpellInfo const* spellInfo, SpellCastTargets targets);
+    SpellInfo const* getSpellEntry(uint32_t spellId);
+    SpellCastTargets setSpellTargets(SpellInfo const* spellInfo, Unit* target, uint8_t targettype) const;
+
+    std::list<AI_Spell*> m_spells;
+    void addSpellToList(AI_Spell* sp);
+    AI_Spell* getSpell(uint32_t entry);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // script events
+    // \brief: 
+protected:
+
+    scriptEventMap spellEvents;
+
+protected:
+
+    bool canEnterCombat;
+
+    std::list<spawn_timed_emotes*>::iterator next_timed_emote;
+    uint32_t timed_emote_expire;
+
+    bool m_cannotReachTarget;
+    SmallTimeTracker m_cannotReachTimer;
+};
+#endif
 
 #endif  //WOWSERVER_AIINTERFACE_H

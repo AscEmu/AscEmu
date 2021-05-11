@@ -102,9 +102,11 @@ int32_t MoveSplineInit::Launch()
             moveFlagsForSpeed &= ~MOVEFLAG_WALK;
 
         args.velocity = unit->getSpeedRate(SelectSpeedType(moveFlagsForSpeed), true);
+#ifndef UseNewAIInterface
         if (unit->isCreature())
             if (static_cast<Creature*>(unit)->GetAIInterface()->hasCalledForHelp())
                 args.velocity *= 0.66f;
+#endif
     }
 
     // limit the speed in the same way the client does

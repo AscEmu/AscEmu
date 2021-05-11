@@ -139,6 +139,7 @@ bool ChatHandler::HandleDistanceCommand(const char* /*args*/, WorldSession* m_se
 
 bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     Creature* creature = nullptr;
 
     WoWGuid wowGuid;
@@ -245,7 +246,7 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
     {
         creature->GetAIInterface()->MoveTo(x, y, z, o);
     }
-
+#endif
     return true;
 }
 
@@ -393,6 +394,7 @@ bool ChatHandler::HandleDebugLandWalk(const char* /*args*/, WorldSession* m_sess
 
 bool ChatHandler::HandleAggroRangeCommand(const char* /*args*/, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     Unit* unit = GetSelectedUnit(m_session, true);
     if (unit == nullptr)
         return true;
@@ -400,7 +402,7 @@ bool ChatHandler::HandleAggroRangeCommand(const char* /*args*/, WorldSession* m_
     float aggroRange = unit->GetAIInterface()->_CalcAggroRange(m_session->GetPlayer());
 
     GreenSystemMessage(m_session, "Aggrorange is %f", aggroRange);
-
+#endif
     return true;
 }
 
@@ -457,6 +459,7 @@ bool ChatHandler::HandleThreatModCommand(const char* args, WorldSession* m_sessi
 
 bool ChatHandler::HandleCalcThreatCommand(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
     {
@@ -476,11 +479,13 @@ bool ChatHandler::HandleCalcThreatCommand(const char* args, WorldSession* m_sess
     sstext << "generated threat is: " << threat << '\0';
 
     SystemMessage(m_session, sstext.str().c_str());
+#endif
     return true;
 }
 
 bool ChatHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     Unit* target = nullptr;
     target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
@@ -507,6 +512,7 @@ bool ChatHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_
     }
 
     SendMultilineMessage(m_session, sstext.str().c_str());
+#endif
     return true;
 }
 
@@ -1062,6 +1068,7 @@ bool ChatHandler::HandleAIAgentDebugSkip(const char* args, WorldSession* m_sessi
 
 bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     uint32 count = atoi(args);
     if (!count)
         return false;
@@ -1097,6 +1104,7 @@ bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_s
         RedSystemMessage(m_session, "Finished.");
     /*else
     BlueSystemMessage(m_session, "Got %u remaining.", aiagent_spells.size());*/
+#endif
     return true;
 }
 

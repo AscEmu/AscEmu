@@ -1147,7 +1147,9 @@ void Spell::AddTime(uint32 type)
             if (p_caster == nullptr)
             {
                 //then it's a Creature
+#ifndef UseNewAIInterface
                 u_caster->GetAIInterface()->AddStopTime(delay);
+#endif
             }
             //in case cast is delayed, make sure we do not exit combat
             else
@@ -3164,11 +3166,12 @@ void Spell::SpellEffectJumpTarget(uint8_t effectIndex)
         speedZ = float(getSpellInfo()->getEffectMiscValueB(effectIndex)) / 10;
 
     o = unitTarget->calcRadAngle(u_caster->GetPositionX(), u_caster->GetPositionY(), x, y);
-
+#ifndef UseNewAIInterface
     if (speedZ <= 0.0f)
         u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, getSpellInfo()->getEffect(effectIndex) == 145);
     else
         u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, speedZ, getSpellInfo()->getEffect(effectIndex) == 145);
+#endif
 }
 
 void Spell::SpellEffectJumpBehindTarget(uint8_t /*i*/)
@@ -3188,9 +3191,10 @@ void Spell::SpellEffectJumpBehindTarget(uint8_t /*i*/)
         float y = un->GetPositionY() + sinf(angle) * rad;
         float z = un->GetPositionZ();
         float o = un->calcRadAngle(x, y, un->GetPositionX(), un->GetPositionY());
-
+#ifndef UseNewAIInterface
         if (u_caster->GetAIInterface() != nullptr)
             u_caster->GetAIInterface()->splineMoveJump(x, y, z, o);
+#endif
     }
     else if (m_targets.getTargetMask() & (TARGET_FLAG_SOURCE_LOCATION | TARGET_FLAG_DEST_LOCATION))
     {
@@ -3217,8 +3221,10 @@ void Spell::SpellEffectJumpBehindTarget(uint8_t /*i*/)
 
         if (x != 0.0f && y != 0.0f && z != 0.0f)
         {
+#ifndef UseNewAIInterface
             if (u_caster->GetAIInterface() != nullptr)
                 u_caster->GetAIInterface()->splineMoveJump(x, y, z);
+#endif
         }
         else
         {

@@ -141,6 +141,9 @@ namespace Util
     // Gets random number from 1-100 and returns true if val is greater than the number
     bool checkChance(float_t val);
 
+    template <class T>
+    inline T square(T x) { return x * x; }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // C++17 filesystem dependent functions
 

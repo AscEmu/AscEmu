@@ -2039,9 +2039,10 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
         if (_player->getDistanceSq(unit) > 100)
             return;
     }
-
+#ifndef UseNewAIInterface
     if (unit->GetAIInterface())
         unit->GetAIInterface()->StopMovement(180000);
+#endif
 
     _player->Reputation_OnTalk(unit->m_factionEntry);
 

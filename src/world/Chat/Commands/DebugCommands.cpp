@@ -50,16 +50,20 @@ bool ChatHandler::HandleSetScriptPhaseCommand(const char* args, WorldSession* se
 
 bool ChatHandler::HandleAiChargeCommand(const char* /*args*/, WorldSession* session)
 {
+#ifndef UseNewAIInterface
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
         return true;
 
     selected_unit->GetAIInterface()->splineMoveCharge(session->GetPlayer());
     return true;
+#endif
+    return true;
 }
 
 bool ChatHandler::HandleAiKnockbackCommand(const char* /*args*/, WorldSession* session)
 {
+#ifndef UseNewAIInterface
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
         return true;
@@ -68,10 +72,13 @@ bool ChatHandler::HandleAiKnockbackCommand(const char* /*args*/, WorldSession* s
 
     selected_unit->GetAIInterface()->splineMoveKnockback(pos.x, pos.y, pos.z, 10.0f, 5.f);
     return true;
+#endif
+    return true;
 }
 
 bool ChatHandler::HandleAiJumpCommand(const char* /*args*/, WorldSession* session)
 {
+#ifndef UseNewAIInterface
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
         return true;
@@ -80,10 +87,13 @@ bool ChatHandler::HandleAiJumpCommand(const char* /*args*/, WorldSession* sessio
 
     selected_unit->GetAIInterface()->splineMoveJump(pos.x, pos.y, pos.z, 0, 5.0f, false);
     return true;
+#endif
+    return true;
 }
 
 bool ChatHandler::HandleAiFallingCommand(const char* /*args*/, WorldSession* session)
 {
+#ifndef UseNewAIInterface
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
         return true;
@@ -92,16 +102,21 @@ bool ChatHandler::HandleAiFallingCommand(const char* /*args*/, WorldSession* ses
 
     selected_unit->GetAIInterface()->splineMoveFalling(pos.x, pos.y, pos.z);
     return true;
+#endif
+    return true;
 }
 
 bool ChatHandler::HandleMoveToSpawnCommand(const char* /*args*/, WorldSession* session)
 {
+#ifndef UseNewAIInterface
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
         return true;
 
     LocationVector spawnPos = selected_unit->GetSpawnPosition();
     selected_unit->GetAIInterface()->generateAndSendSplinePath(spawnPos.x, spawnPos.y, spawnPos.z, spawnPos.o);
+    return true;
+#endif
     return true;
 }
 
@@ -154,6 +169,7 @@ bool ChatHandler::HandleDebugDumpState(const char* /*args*/, WorldSession* sessi
 
 bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     Unit* selected_unit = GetSelectedUnit(m_session);
     if (selected_unit == nullptr)
         return true;
@@ -192,7 +208,7 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     SystemMessage(m_session, "Attackers count: %u", attackerscount);
     SystemMessage(m_session, "=== UnitMovementFlags ===");
     SystemMessage(m_session, "MovementFlags: %u", selected_unit->getUnitMovementFlags());
-
+#endif
     return true;
 }
 
@@ -253,6 +269,7 @@ bool ChatHandler::HandleDebugSwim(const char* /*args*/, WorldSession* m_session)
 //.debug fly
 bool ChatHandler::HandleDebugFly(const char* /*args*/, WorldSession* m_session)
 {
+#ifndef UseNewAIInterface
     Creature* selected_creature = GetSelectedCreature(m_session);
     if (selected_creature == nullptr)
         return false;
@@ -269,7 +286,7 @@ bool ChatHandler::HandleDebugFly(const char* /*args*/, WorldSession* m_session)
         selected_creature->GetAIInterface()->setSplineFlying();
         selected_creature->setMoveCanFly(true);
     }
-
+#endif
     return true;
 }
 
@@ -510,7 +527,6 @@ bool ChatHandler::HandleDebugSendCreatureMove(const char* /*args*/, WorldSession
         return true;
     }
 
-    target->getMovementAI().moveTo(m_session->GetPlayer()->GetPosition());
     return true;
 }
 

@@ -64,6 +64,8 @@ set(headers
     Log.hpp
     LogDefines.hpp
     Util.hpp
+    FactoryHolder.h
+    ObjectRegistry.h
 )
 
 include_directories(

@@ -21,7 +21,6 @@
 #pragma once
 
 // MIT Start
-#include "AI/MovementAI.h"
 #include "Objects/Object.h"
 
 #include "UnitDefines.hpp"
@@ -29,7 +28,6 @@
 #include "Objects/Object.h"
 #include "Macros/UnitMacros.hpp"
 #include "Units/Summons/SummonHandler.h"
-#include "Movement/UnitMovementManager.hpp"
 #include "Spell/Definitions/AuraEffects.hpp"
 #include "Spell/Definitions/AuraStates.hpp"
 #include "Spell/Definitions/PowerType.hpp"
@@ -39,6 +37,8 @@
 #include "Spell/SpellDefines.hpp"
 #include "Spell/SpellProc.hpp"
 #include "Storage/MySQLStructures.h"
+#include "ThreatHandler.h"
+#include "Movement/AbstractFollower.h"
 
 class AIInterface;
 class Aura;
@@ -51,6 +51,7 @@ class Spell;
 class SpellProc;
 class TotemSummon;
 class Vehicle;
+class MovementManager;
 
 struct FactionDBC;
 
@@ -58,6 +59,8 @@ namespace MovementNew {
 
 class MoveSpline;
 }
+
+enum MovementGeneratorType : uint8;
 
 enum UnitSpeedType : uint8_t
 {
@@ -260,9 +263,11 @@ class SERVER_DECL Unit : public Object
     // WoWData
     const WoWUnit* unitData() const { return reinterpret_cast<WoWUnit*>(wow_data); }
 
-    MovementAI m_movementAI;
+#ifdef UseNewAIInterface
+    friend class ThreatManager;
+    ThreatManager m_threatManager;
+#endif
 public:
-    MovementAI& getMovementAI();
     void setLocationWithoutUpdate(LocationVector& location);
 public:
     uint64_t getCharmGuid() const;
@@ -572,6 +577,7 @@ private:
     int32_t m_rootCounter;
 
 public:
+    void setInFront(Object const* target);
     void setFacingTo(float const ori, bool force = true);
     void setFacingToObject(Object* object, bool force = true);
     void setMoveWaterWalk();
@@ -586,7 +592,29 @@ public:
     bool isTurning() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_TURNING_MASK); }
     bool IsFlying() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK); }
     bool IsFalling() const;
-    virtual bool CanSwim() const;
+    virtual bool CanSwim();
+    virtual bool isInWater() const;
+    bool isUnderWater() const;
+    bool isInAccessiblePlaceFor(Creature* c) const;
+
+    uint64_t getCharmerOrOwnerGUID() const override { return isCharmed() ? getCharmedByGuid() : getSummonedByGuid(); }
+    bool isCharmed() const { return !getCharmedByGuid(); }
+
+    void setControlled(bool apply, UnitStates state);
+    void applyControlStatesIfNeeded();
+
+    virtual bool CanFly();
+
+    bool IsWalking() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_WALK); }
+    bool IsHovering() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_HOVER); }
+
+    bool isInCombat() const { return hasUnitFlags(UNIT_FLAG_COMBAT); }
+    bool isInEvadeMode() { return hasUnitStateFlag(UNIT_STATE_EVADE); }
+
+    bool isWithinCombatRange(Unit* obj, float dist2compare);
+    bool isWithinMeleeRange(Unit* obj) { return isWithinMeleeRangeAt(GetPosition(), obj); }
+    bool isWithinMeleeRangeAt(LocationVector const& pos, Unit* obj);
+    float getMeleeRange(Unit* target);
 
     void setMoveSwim(bool set_swim);
     void setMoveDisableGravity(bool disable_gravity);
@@ -603,6 +631,26 @@ public:
     // Movement info
     MovementNew::MoveSpline* movespline;
 
+    void FollowerAdded(AbstractFollower* f) { m_followingMe.insert(f); }
+    void FollowerRemoved(AbstractFollower* f) { m_followingMe.erase(f); }
+    void RemoveAllFollowers();
+    virtual float getFollowAngle() const { return static_cast<float>(M_PI / 2); }
+
+    MovementManager* getMovementManager() { return i_movementManager; }
+    MovementManager const* getMovementManager() const { return i_movementManager; }
+
+    void StopMoving();
+
+private:
+    std::unordered_set<AbstractFollower*> m_followingMe;
+
+protected:
+    MovementManager* i_movementManager;
+
+    void SetFeared(bool apply);
+    void SetConfused(bool apply);
+    void SetStunned(bool apply);
+
 private:
     UnitSpeedInfo m_UnitSpeedInfo;
     void updateSplineMovement(uint32 t_diff);
@@ -613,6 +661,8 @@ private:
 public:
     void sendMoveSplinePaket(UnitSpeedType speed_type);
     void disableSpline();
+
+    virtual MovementGeneratorType GetDefaultMovementType() const;
 
     // Mover
     Unit* mControledUnit;
@@ -956,6 +1006,13 @@ public:
     bool isUnitOwnerInParty(Unit* unit);
     bool isUnitOwnerInRaid(Unit* unit);
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Threat Management
+#ifdef UseNewAIInterface
+public:
+    ThreatManager& getThreatManager() { return m_threatManager; }
+    ThreatManager const& getThreatManager() const { return m_threatManager; }
+#endif
     // Do not alter anything below this line
     // -------------------------------------
 
@@ -1386,8 +1443,6 @@ public:
     void ResetAuraUpdateMaskForRaid() { m_auraRaidUpdateMask = 0; }
     void SetAuraUpdateMaskForRaid(uint8 slot) { m_auraRaidUpdateMask |= (uint64(1) << slot); }
     void UpdateAuraForGroup(uint8 slot);
-
-    Movement::UnitMovementManager m_movementManager;
 
 protected:
     Unit();

@@ -3140,7 +3140,9 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
             return;
 
         s->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
+#ifndef UseNewAIInterface
         s->GetAIInterface()->SetUnitToFollowAngle(followangle);
+#endif
         if (s->GetScript() != nullptr)
             s->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
         s->PushToWorld(u_caster->GetMapMgr());
@@ -3196,8 +3198,9 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, DBC::Structures::SummonP
             pet = nullptr;
             break;
         }
-
+#ifndef UseNewAIInterface
         pet->GetAIInterface()->SetUnitToFollowAngle(followangle);
+#endif
         if (pet->GetScript() != nullptr)
             pet->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     }
@@ -3258,7 +3261,9 @@ void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonProperti
 
     summon->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
     summon->setCreatedBySpellId(m_spellInfo->getId());
+#ifndef UseNewAIInterface
     summon->GetAIInterface()->SetFollowDistance(GetRadius(i));
+#endif
     if (summon->GetScript() != nullptr)
         summon->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     summon->PushToWorld(u_caster->GetMapMgr());
@@ -3309,8 +3314,10 @@ void Spell::SpellEffectLeap(uint8_t effectIndex) // Leap
         unitTarget->GetPoint(unitTarget->GetOrientation(), radius, destx, desty, destz);
         if (playerTarget != nullptr)
             playerTarget->SafeTeleport(playerTarget->GetMapId(), playerTarget->GetInstanceID(), LocationVector(destx, desty, destz, playerTarget->GetOrientation()));
+#ifndef UseNewAIInterface
         else
             unitTarget->GetAIInterface()->splineMoveJump(destx, desty, destz, unitTarget->GetOrientation());
+#endif
     }
     else
     {
@@ -4604,10 +4611,11 @@ void Spell::SpellEffectThreat(uint8_t effectIndex) // Threat
         return;
 
     int32 amount = getSpellInfo()->getEffectBasePoints(effectIndex);
-
+#ifndef UseNewAIInterface
     bool chck = unitTarget->GetAIInterface()->modThreatByPtr(u_caster, amount);
     if (!chck)
         unitTarget->GetAIInterface()->AttackReaction(u_caster, 1, 0);
+#endif
 }
 
 void Spell::SpellEffectClearQuest(uint8_t effectIndex)
@@ -4699,7 +4707,12 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
     {
         if (u_caster && (u_caster != unitTarget))
         {
+#ifndef UseNewAIInterface
             unitTarget->GetAIInterface()->AttackReaction(u_caster, 1, m_spellInfo->getId());
+#else
+            unitTarget->GetAIInterface()->JustEnteredCombat(u_caster);
+            unitTarget->getThreatManager().addThreat(u_caster, 0.0f, m_spellInfo, false, false);
+#endif
             Creature* c = static_cast< Creature* >(unitTarget);
             if (c->GetCreatureProperties()->modImmunities & 32768)
                 return;
@@ -4770,7 +4783,9 @@ void Spell::SpellEffectDistract(uint8_t /*effectIndex*/) // Distract
 
         auto destination = m_targets.getDestination();
         float newo = unitTarget->calcRadAngle(unitTarget->GetPositionX(), unitTarget->GetPositionY(), destination.x, destination.y);
+#ifndef UseNewAIInterface
         unitTarget->GetAIInterface()->StopMovement(Stare_duration);
+#endif
         unitTarget->SetFacing(newo);
     }
 
@@ -4922,11 +4937,13 @@ void Spell::SpellEffectSanctuary(uint8_t /*effectIndex*/) // Stop all attacks ma
     if (p_caster != nullptr)
         p_caster->RemoveAllAuraType(SPELL_AURA_MOD_ROOT);
 
+#ifndef UseNewAIInterface
     for (const auto& itr : u_caster->getInRangeObjectsSet())
     {
         if (itr && itr->isCreature())
             static_cast<Creature*>(itr)->GetAIInterface()->RemoveThreatByPtr(unitTarget);
     }
+#endif
 }
 
 void Spell::SpellEffectAddComboPoints(uint8_t /*effectIndex*/) // Add Combo Points
@@ -4985,11 +5002,12 @@ void Spell::SpellEffectDuel(uint8_t /*effectIndex*/) // Duel
         sendCastResult(SPELL_FAILED_TARGETS_DEAD);
         return; // Target not alive
     }
-    if (playerTarget->hasUnitStateFlag(UNIT_STATE_ATTACKING))
+    // todo
+    /*if (playerTarget->hasUnitStateFlag(UNIT_STATE_ATTACKING))
     {
         sendCastResult(SPELL_FAILED_TARGET_IN_COMBAT);
         return; // Target in combat with another unit
-    }
+    }*/
     if (playerTarget->DuelingWith)
     {
         sendCastResult(SPELL_FAILED_TARGET_DUELING);
@@ -5211,8 +5229,9 @@ void Spell::SpellEffectCharge(uint8_t /*effectIndex*/)
 {
     if (unitTarget == nullptr || !unitTarget->isAlive())
         return;
-
+#ifndef UseNewAIInterface
     u_caster->GetAIInterface()->splineMoveCharge(unitTarget, u_caster->getBoundingRadius());
+#endif
 }
 
 void Spell::SpellEffectKnockBack(uint8_t effectIndex)
@@ -5543,8 +5562,25 @@ void Spell::SpellEffectAttackMe(uint8_t /*effectIndex*/)
 {
     if (!unitTarget || !unitTarget->isAlive())
         return;
-
+#ifndef UseNewAIInterface
     unitTarget->GetAIInterface()->AttackReaction(u_caster, 1, 0);
+#else
+    unitTarget->GetAIInterface()->JustEnteredCombat(u_caster);
+
+    if (!unitTarget->getThreatManager().canHaveThreatList())
+        return;
+
+    ThreatManager& mgr = unitTarget->getThreatManager();
+    if (mgr.getCurrentVictim() == u_caster)
+        return;
+
+    if (!mgr.isThreatListEmpty())
+    {
+        mgr.addThreat(u_caster, 20.0f, nullptr, false, false);
+        // Set threat equal to highest threat currently on target
+        mgr.matchUnitThreatToHighestThreat(u_caster);
+    }
+#endif
 }
 
 void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
@@ -6001,10 +6037,12 @@ void Spell::SpellEffectPlayerPull(uint8_t /*effectIndex*/)
 
 void Spell::SpellEffectReduceThreatPercent(uint8_t /*effectIndex*/)
 {
+#ifndef UseNewAIInterface
     if (!unitTarget || !unitTarget->isCreature() || !u_caster || unitTarget->GetAIInterface()->getThreatByPtr(u_caster) == 0)
         return;
 
     unitTarget->GetAIInterface()->modThreatByPtr(u_caster, (int32)unitTarget->GetAIInterface()->getThreatByPtr(u_caster) * damage / 100);
+#endif
 }
 
 void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
@@ -6118,6 +6156,11 @@ void Spell::SpellEffectRedirectThreat(uint8_t /*effectIndex*/)
         return;
 
     p_caster->SetMisdirectionTarget(unitTarget->getGuid());
+#ifdef UseNewAIInterface
+    // Threat Management
+    if (unitTarget)
+        p_caster->getThreatManager().registerRedirectThreat(m_spellInfo->getId(), unitTarget->getGuid(), uint32(damage));
+#endif
 }
 
 void Spell::SpellEffectPlayMusic(uint8_t effectIndex)

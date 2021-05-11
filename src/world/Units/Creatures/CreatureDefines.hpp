@@ -41,6 +41,63 @@ const uint32 creatureMaxInventoryItems = 150;
 
 const time_t vendorItemsUpdate = 3600000;
 
+enum class CreatureGroundMovementType : uint8
+{
+    None,
+    Run,
+    Hover,
+
+    Max
+};
+
+enum class CreatureFlightMovementType : uint8
+{
+    None,
+    DisableGravity,
+    CanFly,
+
+    Max
+};
+
+enum class CreatureChaseMovementType : uint8
+{
+    Run,
+    CanWalk,
+    AlwaysWalk,
+
+    Max
+};
+
+enum class CreatureRandomMovementType : uint8
+{
+    Walk,
+    CanRun,
+    AlwaysRun,
+
+    Max
+};
+
+struct SERVER_DECL CreatureMovementData
+{
+    CreatureMovementData() : Ground(CreatureGroundMovementType::Run), Flight(CreatureFlightMovementType::None), Swim(true), Rooted(false), Chase(CreatureChaseMovementType::Run),
+        Random(CreatureRandomMovementType::Walk) { }
+
+    CreatureGroundMovementType Ground;
+    CreatureFlightMovementType Flight;
+    bool Swim;
+    bool Rooted;
+    CreatureChaseMovementType Chase;
+    CreatureRandomMovementType Random;
+
+    bool IsGroundAllowed() const { return Ground != CreatureGroundMovementType::None; }
+    bool IsSwimAllowed() const { return Swim; }
+    bool IsFlightAllowed() const { return Flight != CreatureFlightMovementType::None; }
+    bool IsRooted() const { return Rooted; }
+
+    CreatureChaseMovementType GetChase() const { return Chase; }
+    CreatureRandomMovementType GetRandom() const { return Random; }
+};
+
 enum creatureguardtype
 {
     GUARDTYPE_NONE,
@@ -158,6 +215,8 @@ struct CreatureProperties
     uint32 QuestItems[6];
     uint32 waypointid;
     uint32 gossipId;
+    uint32  MovementType;
+    CreatureMovementData Movement;
 
     std::string lowercase_name;
 
@@ -219,6 +278,13 @@ struct CreatureProperties
     std::set<uint32> start_auras;
     std::vector<uint32> castable_spells;
     std::list<AI_Spell*> spells;
+};
+
+struct CreaturePropertiesMovement
+{
+    uint32_t Id;
+    uint32_t  MovementType;
+    CreatureMovementData Movement;
 };
 
 enum UNIT_TYPE

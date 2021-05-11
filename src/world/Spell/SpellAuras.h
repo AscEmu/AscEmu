@@ -540,6 +540,7 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraModAttackSpeed(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModThreatGenerated(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModTaunt(AuraEffectModifier* aurEff, bool apply);
+        void SpellAuraModDetaunt(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModStun(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModDamageDone(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModDamageTaken(AuraEffectModifier* aurEff, bool apply);

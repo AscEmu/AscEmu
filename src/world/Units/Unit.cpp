@@ -43,18 +43,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Creatures/Pet.h"
 #include "Units/Creatures/Vehicle.h"
 #include "Units/Players/Player.h"
-#include "Movement/Spline/New/MoveSpline.h"
-#include "Movement/Spline/New/MoveSplineInit.h"
+#include "Movement/Spline/MoveSpline.h"
+#include "Movement/Spline/MoveSplineInit.h"
 
 using namespace AscEmu::Packets;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
-
-MovementAI & Unit::getMovementAI()
-{
-    return m_movementAI;
-}
 
 void Unit::setLocationWithoutUpdate(LocationVector & location)
 {
@@ -1412,6 +1407,7 @@ void Unit::setMoveRoot(bool set_root)
         if (set_root)
         {
             addUnitMovementFlag(MOVEFLAG_ROOTED);
+            StopMoving();
 
             WorldPacket data(SMSG_FORCE_MOVE_ROOT, 12);
 #if VERSION_STRING < Cata
@@ -1425,6 +1421,7 @@ void Unit::setMoveRoot(bool set_root)
         else
         {
             removeUnitMovementFlag(MOVEFLAG_ROOTED);
+            StopMoving();
 
             WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 12);
 #if VERSION_STRING < Cata
@@ -1443,8 +1440,10 @@ void Unit::setMoveRoot(bool set_root)
         {
             // AIInterface
             //\todo stop movement based on movement flag instead of m_canMove
+#ifndef UseNewAIInterface
             m_aiInterface->m_canMove = false;
             m_aiInterface->StopMovement(100);
+#endif
 
             addUnitMovementFlag(MOVEFLAG_ROOTED);
 
@@ -1458,7 +1457,9 @@ void Unit::setMoveRoot(bool set_root)
         }
         else
         {
+#ifndef UseNewAIInterface
             m_aiInterface->m_canMove = true;
+#endif
 
             removeUnitMovementFlag(MOVEFLAG_ROOTED);
 
@@ -1656,7 +1657,39 @@ bool Unit::IsFalling() const
     return obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING_MASK) || movespline->isFalling();
 }
 
-bool Unit::CanSwim() const
+bool Unit::isInWater() const
+{
+    float outx = GetPositionX() + 3.5f * cos(GetOrientation());
+    float outy = GetPositionY() + 3.5f * sin(GetOrientation());
+    float outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
+    uint32 watertype;
+    float watermark;
+    GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
+    outz = std::max(watermark, outz);
+
+    if (watermark > outz)
+        return true;
+
+    return false;
+}
+
+bool Unit::isUnderWater() const
+{
+    float outx = GetPositionX() + 3.5f * cos(GetOrientation());
+    float outy = GetPositionY() + 3.5f * sin(GetOrientation());
+    float outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
+    uint32 watertype;
+    float watermark;
+    GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
+    outz = std::max(watermark, outz);
+
+    if ((watermark -2.0f) > outz)
+        return true;
+
+    return false;
+}
+
+bool Unit::CanSwim()
 {
     // Mirror client behavior, if this method returns false then client will not use swimming animation and for players will apply gravity as if there was no water
     if (hasUnitFlags(UNIT_FLAG_DEAD))
@@ -1670,6 +1703,11 @@ bool Unit::CanSwim() const
     if (isPet() && hasUnitFlags(UNIT_FLAG_PET_IN_COMBAT))
         return true;
     return hasUnitFlags(UNIT_FLAG_UNKNOWN_5 | UNIT_FLAG_SWIMMING);
+}
+
+bool Unit::CanFly()
+{
+    return false;
 }
 
 float Unit::getSpeedRate(UnitSpeedType type, bool current) const
@@ -2956,9 +2994,19 @@ void Unit::addAura(Aura* aur)
         if (pCaster && pCaster->isAlive() && isAlive())
         {
             pCaster->CombatStatus.OnDamageDealt(this);
-
+#ifndef UseNewAIInterface
             if (isCreature())
                 m_aiInterface->AttackReaction(pCaster, 1, aur->getSpellId());
+#else
+            if (isCreature())
+            {
+                // Start Combat
+                m_aiInterface->JustEnteredCombat(pCaster);
+                // Add Threat
+                if (getThreatManager().canHaveThreatList())
+                    getThreatManager().addThreat(pCaster, 0.0f, nullptr, true, true);
+            }
+#endif
         }
     }
 
@@ -3761,10 +3809,12 @@ bool Unit::canSee(Object* const obj)
                 }
 
                 // If object is only visible to either faction
+#ifndef UseNewAIInterface
                 if (unitObj->GetAIInterface()->faction_visibility == 1)
                     return static_cast<Player*>(this)->isTeamHorde() ? true : false;
                 if (unitObj->GetAIInterface()->faction_visibility == 2)
                     return static_cast<Player*>(this)->isTeamHorde() ? false : true;
+#endif
             }
         } break;
         case TYPEID_GAMEOBJECT:
@@ -3996,8 +4046,8 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
 
     // Health
     m_healthRegenerateTimer += timePassed;
-    if ((hasUnitStateFlag(UNIT_STATE_POLYMORPHED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH_POLYMORPHED) ||
-        (!hasUnitStateFlag(UNIT_STATE_POLYMORPHED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH))
+    if ((hasUnitStateFlag(UNIT_STATE_CONFUSED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH_POLYMORPHED) ||
+        (!hasUnitStateFlag(UNIT_STATE_CONFUSED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH))
     {
         if (isPlayer())
             static_cast<Player*>(this)->RegenerateHealth(CombatStatus.IsInCombat());
@@ -4631,7 +4681,15 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
             {
                 if (pet->GetPetState() != PET_STATE_PASSIVE)
                 {
+#ifndef UseNewAIInterface
                     pet->GetAIInterface()->AttackReaction(this, 1, 0);
+#else
+                    // Start Combat
+                    pet->GetAIInterface()->JustEnteredCombat(this);
+                    // Add Threat
+                    if (getThreatManager().canHaveThreatList())
+                        getThreatManager().addThreat(this, 0.0f, nullptr, true, true);
+#endif
                     pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
                 }
             }
@@ -4639,7 +4697,15 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
         else
         {
             // Generate threat
+#ifndef UseNewAIInterface
             victim->GetAIInterface()->AttackReaction(this, damage, spellId);
+#else
+            // Start Combat
+            victim->GetAIInterface()->JustEnteredCombat(this);
+            // Add Threat
+            if (getThreatManager().canHaveThreatList())
+                getThreatManager().addThreat(this, static_cast<float>(damage), spellId ? sSpellMgr.getSpellInfo(spellId) : nullptr, true, true);
+#endif
             sScriptMgr.DamageTaken(static_cast<Creature*>(victim), this, &damage);
         }
     }
@@ -5249,7 +5315,15 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             {
                 if (pet->GetPetState() != PET_STATE_PASSIVE)
                 {
+#ifndef UseNewAIInterface
                     pet->GetAIInterface()->AttackReaction(attacker, 1, 0);
+#else
+                    // Start Combat
+                    pet->GetAIInterface()->JustEnteredCombat(attacker);
+                    // Add Threat
+                    if (getThreatManager().canHaveThreatList())
+                        getThreatManager().addThreat(attacker, 0.0f, nullptr, true, true);
+#endif
                     pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
                 }
             }
@@ -5257,7 +5331,15 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
         else
         {
             // Generate threat
+#ifndef UseNewAIInterface
             GetAIInterface()->AttackReaction(attacker, damage, spellId);
+#else
+            // Start Combat
+            GetAIInterface()->JustEnteredCombat(attacker);
+            // Add Threat
+            if (getThreatManager().canHaveThreatList())
+                getThreatManager().addThreat(attacker, static_cast<float>(damage), spellId ? sSpellMgr.getSpellInfo(spellId) : nullptr, true, true);
+#endif
             sScriptMgr.DamageTaken(static_cast<Creature*>(this), attacker, &damage);
         }
 
@@ -5339,31 +5421,37 @@ uint32_t Unit::_handleBatchHealing(HealthBatchEvent const* batch, uint32_t* abso
 
         // Handle threat
         std::vector<Unit*> target_threat;
-        int count = 0;
         for (const auto& itr : healer->getInRangeObjectsSet())
         {
             if (!itr || !itr->isCreature())
                 continue;
 
             const auto tmp_creature = static_cast<Creature*>(itr);
-
+#ifndef UseNewAIInterface
             if (!tmp_creature->CombatStatus.IsInCombat() || (tmp_creature->GetAIInterface()->getThreatByPtr(healer) == 0 && tmp_creature->GetAIInterface()->getThreatByPtr(this) == 0))
                 continue;
-
+#else
+            if (!tmp_creature->CombatStatus.IsInCombat() || (tmp_creature->getThreatManager().getThreat(healer) == 0 && tmp_creature->getThreatManager().getThreat(this) == 0))
+                continue;
+#endif
             if (!(healer->GetPhase() & itr->GetPhase()))     //Can't see, can't be a threat
                 continue;
 
             target_threat.push_back(tmp_creature);
-            count++;
         }
         
-        if (count != 0)
+        if (!target_threat.empty())
         {
-            auto heal_threat = healing / count;
+            const auto heal_threat = healing / static_cast<float_t>(target_threat.size());
 
             for (const auto& itr : target_threat)
             {
+#ifndef UseNewAIInterface
                 itr->GetAIInterface()->HealReaction(healer, this, batch->spellInfo, heal_threat);
+#else
+                // Add Threat for Assisting me in Fight
+                this->getThreatManager().forwardThreatForAssistingMe(healer, heal_threat, batch->spellInfo, false);
+#endif
             }
         }
 
@@ -5550,4 +5638,273 @@ uint64_t Unit::getTransGuid()
         return GetTransport()->getGuid();
 
     return 0;
+}
+
+void Unit::setInFront(Object const* target)
+{
+    if (!hasUnitStateFlag(UNIT_STATE_CANNOT_TURN))
+        SetOrientation(getAbsoluteAngle(target));
+}
+
+bool Unit::isWithinCombatRange(Unit* obj, float dist2compare)
+{
+    if (!obj || !IsInMap(obj) || !(GetPhase() == obj->GetPhase()))
+        return false;
+
+    float dx = GetPositionX() - obj->GetPositionX();
+    float dy = GetPositionY() - obj->GetPositionY();
+    float dz = GetPositionZ() - obj->GetPositionZ();
+    float distsq = dx * dx + dy * dy + dz * dz;
+
+    float sizefactor = getCombatReach() + obj->getCombatReach();
+    float maxdist = dist2compare + sizefactor;
+
+    return distsq < maxdist * maxdist;
+}
+
+bool Unit::isWithinMeleeRangeAt(LocationVector const& pos, Unit* obj)
+{
+    if (!obj || !IsInMap(obj) || !(GetPhase() == obj->GetPhase()))
+        return false;
+
+    float dx = pos.getPositionX() - obj->GetPositionX();
+    float dy = pos.getPositionY() - obj->GetPositionY();
+    float dz = pos.getPositionZ() - obj->GetPositionZ();
+    float distsq = dx * dx + dy * dy + dz * dz;
+
+    float maxdist = getMeleeRange(obj);
+
+    return distsq <= maxdist * maxdist;
+}
+
+float Unit::getMeleeRange(Unit* target)
+{
+    float range = getCombatReach() + target->getCombatReach() + 4.0f / 3.0f;
+    return std::max(range, NOMINAL_MELEE_RANGE);
+}
+
+bool Unit::isInAccessiblePlaceFor(Creature* c) const
+{
+    if (isInWater())
+        return c->CanSwim();
+    else
+        return c->CanWalk() || c->CanFly();
+}
+
+void Unit::setControlled(bool apply, UnitStates state)
+{
+    if (apply)
+    {
+        if (hasUnitStateFlag(state))
+            return;
+
+        addUnitStateFlag(state);
+        switch (state)
+        {
+        case UNIT_STATE_STUNNED:
+            SetStunned(true);
+            break;
+        case UNIT_STATE_ROOT:
+            if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
+                setMoveRoot(true);
+            break;
+        case UNIT_STATE_CONFUSED:
+            if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
+            {
+                removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
+                SetConfused(true);
+            }
+            break;
+        case UNIT_STATE_FLEEING:
+            if (!hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_CONFUSED))
+            {
+                removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
+                SetFeared(true);
+            }
+            break;
+        default:
+            break;
+        }
+    }
+    else
+    {
+        switch (state)
+        {
+        case UNIT_STATE_STUNNED:
+            if (getAuraWithAuraEffect(SPELL_AURA_MOD_STUN))
+                return;
+
+            removeUnitStateFlag(state);
+            SetStunned(false);
+            break;
+        case UNIT_STATE_ROOT:
+            if (getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT) || isVehicle() || (ToCreature() && ToCreature()->GetMovementTemplate().IsRooted()))
+                return;
+
+            removeUnitStateFlag(state);
+            setMoveRoot(false);
+            break;
+        case UNIT_STATE_CONFUSED:
+            if (getAuraWithAuraEffect(SPELL_AURA_MOD_CONFUSE))
+                return;
+
+            removeUnitStateFlag(state);
+            SetConfused(false);
+            break;
+        case UNIT_STATE_FLEEING:
+            if (getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
+                return;
+
+            removeUnitStateFlag(state);
+            SetFeared(false);
+            break;
+        default:
+            return;
+        }
+
+        applyControlStatesIfNeeded();
+    }
+}
+
+void Unit::applyControlStatesIfNeeded()
+{
+    // Unit States might have been already cleared but auras still present. I need to check with HasAuraType
+    if (hasUnitStateFlag(UNIT_STATE_STUNNED) || getAuraWithAuraEffect(SPELL_AURA_MOD_STUN))
+        SetStunned(true);
+
+    if (hasUnitStateFlag(UNIT_STATE_ROOT) || getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT))
+        setMoveRoot(true);
+
+    if (hasUnitStateFlag(UNIT_STATE_CONFUSED) || getAuraWithAuraEffect(SPELL_AURA_MOD_CONFUSE))
+        SetConfused(true);
+
+    if (hasUnitStateFlag(UNIT_STATE_FLEEING) || getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
+        SetFeared(true);
+}
+
+void Unit::SetStunned(bool apply)
+{
+    if (apply)
+    {
+        setTargetGuid(0);
+        setUnitFlags(UNIT_FLAG_STUNNED);
+
+        // MOVEMENTFLAG_ROOT cannot be used in conjunction with MOVEMENTFLAG_MASK_MOVING (tested 3.3.5a)
+        // this will freeze clients. That's why we remove MOVEMENTFLAG_MASK_MOVING before
+        // setting MOVEMENTFLAG_ROOT
+        removeUnitMovementFlag(MOVEFLAG_MOVING_MASK);
+        addUnitMovementFlag(MOVEFLAG_ROOTED);
+        StopMoving();
+
+        if (GetTypeFromGUID() == TYPEID_PLAYER)
+            setStandState(STANDSTATE_STAND);
+
+        if (GetTypeFromGUID() == TYPEID_PLAYER)
+        {
+            WorldPacket data(SMSG_FORCE_MOVE_ROOT, 10);
+            data << GetNewGUID();
+            data << 0;
+            SendMessageToSet(&data, true);
+        }
+        else
+        {
+            WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 8);
+            data << 0;
+            SendMessageToSet(&data, true);
+        }
+    }
+    else
+    {
+        if (isAlive() && getThreatManager().getCurrentVictim())
+            setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
+
+        // don't remove UNIT_FLAG_STUNNED for pet when owner is mounted (disabled pet's interface)
+        Unit* owner = GetMapMgrUnit(getCharmerOrOwnerGUID());
+        if (!owner || owner->GetTypeFromGUID() != TYPEID_PLAYER || !owner->ToPlayer()->IsMounted())
+            removeUnitFlags(UNIT_FLAG_STUNNED);
+
+        if (!hasUnitStateFlag(UNIT_STATE_ROOT))         // prevent moving if it also has root effect
+        {
+            if (GetTypeFromGUID() == TYPEID_PLAYER)
+            {
+                WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 10);
+                data << GetNewGUID();
+                data << 0;
+                SendMessageToSet(&data, true);
+            }
+            else
+            {
+                WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 8);
+                data << GetNewGUID();
+                SendMessageToSet(&data, true);
+            }
+
+            removeUnitMovementFlag(MOVEFLAG_ROOTED);
+        }
+    }
+}
+
+void Unit::SetFeared(bool apply)
+{
+    if (apply)
+    {
+        setTargetGuid(0);
+
+        Unit* caster = nullptr;
+        caster = getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR)->getCaster()->ToUnit();
+
+        getMovementManager()->moveFleeing(caster, 7000);             // caster == NULL processed in MoveFleeing
+        getThreatManager().addThreat(caster, 0.0f);
+    }
+    else
+    {
+        if (isAlive())
+        {
+            getMovementManager()->remove(FLEEING_MOTION_TYPE);
+            if (getThreatManager().getCurrentVictim())
+                setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
+
+            if (!isPlayer() && !isInCombat() && getTargetGuid() == 0)
+                getMovementManager()->moveTargetedHome();
+            else
+                getMovementManager()->moveChase(getThreatManager().getCurrentVictim());
+        }
+    }
+
+    // block / allow control to real player in control (eg charmer)
+    if (GetTypeFromGUID() == TYPEID_PLAYER)
+    {
+        if (getPlayerOwner())
+            getPlayerOwner()->sendClientControlPacket(this, !apply);
+    }
+}
+
+void Unit::SetConfused(bool apply)
+{
+    if (apply)
+    {
+        setTargetGuid(0);
+        getMovementManager()->moveConfused();
+    }
+    else
+    {
+        if (isAlive())
+        {
+            getMovementManager()->remove(CONFUSED_MOTION_TYPE);
+            if (getThreatManager().getCurrentVictim())
+                setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
+        }
+    }
+
+    // block / allow control to real player in control (eg charmer)
+    if (GetTypeFromGUID() == TYPEID_PLAYER)
+    {
+        if (getPlayerOwner())
+            getPlayerOwner()->sendClientControlPacket(this, !apply);
+    }
+}
+
+MovementGeneratorType Unit::GetDefaultMovementType() const
+{
+    return IDLE_MOTION_TYPE;
 }

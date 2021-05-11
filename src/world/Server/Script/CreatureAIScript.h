@@ -179,7 +179,7 @@ public:
     virtual void OnCallForHelp() {}
     virtual void OnLoad() {}
     virtual void OnDespawn() {}
-    virtual void OnReachWP(uint32_t /*_waypointId*/, bool /*_isForwards*/) {}
+    virtual void OnReachWP(uint32_t /*type*/, uint32_t /*id*/) {}
     virtual void OnLootTaken(Player* /*player*/, ItemProperties const* /*_itemProperties*/) {}
     virtual void AIUpdate() {}
     virtual void OnEmote(Player* /*_player*/, EmoteType /*_emote*/) {}
@@ -260,7 +260,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // wp movement
-    Movement::WayPoint* CreateWaypoint(int pId, uint32_t pWaittime, uint32_t pMoveFlag, Movement::Location pCoords);
+    /*Movement::WayPoint* CreateWaypoint(int pId, uint32_t pWaittime, uint32_t pMoveFlag, Movement::Location pCoords);
     void AddWaypoint(Movement::WayPoint* pWayPoint);
     void ForceWaypointMove(uint32_t pWaypointId);
     void SetWaypointToMove(uint32_t pWaypointId);
@@ -268,7 +268,7 @@ public:
     void SetWaypointMoveType(Movement::WaypointMovementScript wp_move_script_type);
     uint32_t GetCurrentWaypoint();
     size_t GetWaypointCount();
-    bool HasWaypoints();
+    bool HasWaypoints();*/ //todo aaron02
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // combat setup

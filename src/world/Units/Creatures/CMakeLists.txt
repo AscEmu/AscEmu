@@ -16,6 +16,8 @@ set(SRC_UNITS_CREATURES_FILES
    ${PATH_PREFIX}/Pet.h
    ${PATH_PREFIX}/Vehicle.cpp
    ${PATH_PREFIX}/Vehicle.h
+   ${PATH_PREFIX}/CreatureGroups.cpp
+   ${PATH_PREFIX}/CreatureGroups.h
 )
 
 source_group(Units\\Creatures FILES ${SRC_UNITS_CREATURES_FILES})

@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Server/Packets/SmsgTransferPending.h"
-#include "../Movement/Spline/New/Spline.h"
+#include "../Movement/Spline/Spline.h"
 
 using namespace AscEmu::Packets;
 
@@ -220,12 +220,15 @@ Creature* Transporter::createNPCPassenger(MySQLStructure::CreatureSpawn* data)
     pCreature->SetSpawnLocation(x, y, z, o);
     pCreature->SetTransportHomePosition(pCreature->obj_movement_info.transport_position);
 
+    pCreature->addUnitStateFlag(UNIT_STATE_IGNORE_PATHFINDING);
+
     // Create Creature
     pCreature->Create(map->GetMapId(), x, y, z, o);
     pCreature->Load(creature_properties, x, y, z, o);
 
     // AddToWorld
     pCreature->AddToWorld(map);
+    pCreature->Motion_Initialize();
     pCreature->setUnitMovementFlags(MOVEFLAG_TRANSPORT);
     pCreature->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
 

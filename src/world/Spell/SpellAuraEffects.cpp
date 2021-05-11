@@ -237,7 +237,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::spellAuraEffectNotImplemented,                                   // 218 SPELL_AURA_218
     &Aura::SpellAuraRegenManaStatPCT,                                       // 219 SPELL_AURA_REGEN_MANA_STAT_PCT
     &Aura::SpellAuraSpellHealingStatPCT,                                    // 220 SPELL_AURA_SPELL_HEALING_STAT_PCT
-    &Aura::spellAuraEffectNotImplemented,                                   // 221 SPELL_AURA_221
+    &Aura::SpellAuraModDetaunt,                                             // 221 SPELL_AURA_MOD_DETAUNT
     &Aura::spellAuraEffectNotImplemented,                                   // 222 SPELL_AURA_222
     &Aura::spellAuraEffectNotImplemented,                                   // 223 SPELL_AURA_223
     &Aura::spellAuraEffectNotImplemented,                                   // 224 SPELL_AURA_224
@@ -1419,7 +1419,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
 
     if (apply)
     {
-        if (removePolymorph && getOwner()->hasUnitStateFlag(UNIT_STATE_POLYMORPHED))
+        if (removePolymorph && getOwner()->hasUnitStateFlag(UNIT_STATE_FOLLOW))
             getOwner()->RemoveAura(getOwner()->getTransformAura());
 
         if (modelId != 0)

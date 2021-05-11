@@ -80,13 +80,13 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (_player->hasUnitStateFlag(UNIT_STATE_STUN))
+    if (_player->hasUnitStateFlag(UNIT_STATE_STUNNED))
     {
         sendTradeResult(TRADE_STATUS_YOU_STUNNED);
         return;
     }
 
-    if (playerTarget->hasUnitStateFlag(UNIT_STATE_STUN))
+    if (playerTarget->hasUnitStateFlag(UNIT_STATE_STUNNED))
     {
         sendTradeResult(TRADE_STATUS_TARGET_STUNNED);
         return;
