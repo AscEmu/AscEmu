@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "RealmsMgr.h"
 #include "Util.hpp"
 #include <Threading/AEThreadPool.h>
+#include "Realm/RealmFlag.hpp"
 
 RealmsMgr& RealmsMgr::getInstance()
 {
@@ -170,7 +171,7 @@ void RealmsMgr::sendRealms(AuthSocket* Socket)
                 data << uint8_t(realms->timeZone);
                 data << uint8_t(realms->id);
 
-                if (realms->flags & REALM_FLAG_SPECIFYBUILD)
+                if (realms->flags & AscEmu::Realm::RealmFlag::SPECIFIC_BUILD)
                 {
                     data << Socket->GetChallenge()->version1;
                     data << Socket->GetChallenge()->version2;
@@ -278,7 +279,7 @@ void RealmsMgr::setRealmOffline(uint32_t realm_id)
     auto realm = getRealmById(realm_id);
     if (realm != nullptr)
     {
-        realm->flags = REALM_FLAG_OFFLINE | REALM_FLAG_INVALID;
+        realm->flags = AscEmu::Realm::RealmFlag::OFFLINE | AscEmu::Realm::RealmFlag::INVALID;
         realm->_characterMap.clear();
         sLogger.info("RealmsMgr : Realm %u is now offline (socket close).", realm_id);
         sLogonSQL->Query("UPDATE realms SET status = 0 WHERE id = %u", uint32_t(realm->id));
@@ -296,15 +297,15 @@ void RealmsMgr::updateRealmPop(uint32_t realm_id, float pop)
     {
         uint8_t flags;
         if (pop >= 3)
-            flags = REALM_FLAG_FULL | REALM_FLAG_INVALID;
+            flags = AscEmu::Realm::RealmFlag::FULL | AscEmu::Realm::RealmFlag::INVALID;
         else if (pop >= 2)
-            flags = REALM_FLAG_INVALID;
+            flags = AscEmu::Realm::RealmFlag::INVALID;
         else if (pop >= 1.25)
             flags = 0;
         else if (pop >= 0.5)
-            flags = REALM_FLAG_RECOMMENDED;
+            flags = AscEmu::Realm::RealmFlag::RECOMMENDED;
         else
-            flags = REALM_FLAG_NEW_PLAYERS;
+            flags = AscEmu::Realm::RealmFlag::NEW_PLAYERS;
 
         realm->population = (pop > 0) ? (pop >= 1) ? (pop >= 2) ? 2.0f : 1.0f : 0.0f : 0.0f;
         realm->flags = flags;
