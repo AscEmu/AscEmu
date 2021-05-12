@@ -67,7 +67,6 @@ namespace AscEmu::Logging
 
     void Logger::setMinimumMessageType(MessageType minimumMessageType)
     {
-        assert(minimumMessageType);
         this->minimumMessageType = minimumMessageType;
     }
 
