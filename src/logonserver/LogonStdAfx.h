@@ -55,7 +55,7 @@
 #include "WorldPacket.h"
 #include "Server/Master.hpp"
 #include "Server/LogonServerDefines.hpp"
-#include "Server/RealmsMgr.h"
+#include "Realm/RealmManager.hpp"
 
 // database decl
 extern Database* sLogonSQL;
