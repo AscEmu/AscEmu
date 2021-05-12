@@ -48,9 +48,9 @@ void LogonCommServerSocket::OnDisconnect()
     if (!removed)
     {
         for (auto itr : server_ids)
-            sRealmsMgr.setRealmOffline(itr);
+            sRealmManager.setRealmOffline(itr);
 
-        sRealmsMgr.removeServerSocket(this);
+        sRealmManager.removeServerSocket(this);
     }
 }
 
@@ -63,7 +63,7 @@ void LogonCommServerSocket::OnConnect()
         return;
     }
 
-    sRealmsMgr.addServerSocket(this);
+    sRealmManager.addServerSocket(this);
     removed = false;
 }
 
@@ -173,7 +173,7 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     sLogger.info("Registering realm `%s` with ID %u.", realmName.c_str(), realmId);
 
     // check Realms if realmId is valid! Otherwise send back error.
-    auto realm = sRealmsMgr.getRealmById(realmId);
+    auto realm = sRealmManager.getRealmById(realmId);
     if (realm == nullptr)
     {
         WorldPacket data(LRSMSG_REALM_REGISTER_RESULT, 4);
@@ -195,7 +195,7 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     recvData >> realm->lock;
     recvData >> realm->gameBuild;
 
-    sRealmsMgr.setStatusForRealm(realmId, 1);
+    sRealmManager.setStatusForRealm(realmId, 1);
 
     WorldPacket data(LRSMSG_REALM_REGISTER_RESULT, 4);
     data << uint32(0);              // 0 = everything ok - success
@@ -258,7 +258,7 @@ void LogonCommServerSocket::HandlePing(WorldPacket & recvData)
     SendPacket(&data);
     last_ping = static_cast<uint32>(time(nullptr));
 
-    sRealmsMgr.setLastPing(realmId);
+    sRealmManager.setLastPing(realmId);
 }
 
 void LogonCommServerSocket::SendPacket(WorldPacket* data)
@@ -304,7 +304,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
     recvData.read(key, 20);
     recvData >> realmId;
 
-    const auto realm = sRealmsMgr.getRealmById(realmId);
+    const auto realm = sRealmManager.getRealmById(realmId);
     if (realm == nullptr)
     {
         sLogger.failure("Realm %u is missing in  table realms. Please add the server to your realms table.", static_cast<uint32_t>(realmId));
@@ -370,11 +370,11 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
     uint32 count;
     uint32 realm_id;
     buf >> realm_id;
-    auto realm = sRealmsMgr.getRealmById(realm_id);
+    auto realm = sRealmManager.getRealmById(realm_id);
     if (!realm)
         return;
 
-    sRealmsMgr.getRealmLock().Acquire();
+    sRealmManager.getRealmLock().Acquire();
 
     std::unordered_map<uint32, uint8>::iterator itr;
     buf >> count;
@@ -389,7 +389,7 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
             realm->_characterMap.insert(std::make_pair(account_id, number_of_characters));
     }
 
-    sRealmsMgr.getRealmLock().Release();
+    sRealmManager.getRealmLock().Release();
 }
 
 void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
@@ -399,11 +399,11 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
     uint8 chars_to_add;
     recvData >> realm_id;
 
-    auto realm = sRealmsMgr.getRealmById(realm_id);
+    auto realm = sRealmManager.getRealmById(realm_id);
     if (!realm)
         return;
 
-    sRealmsMgr.getRealmLock().Acquire();
+    sRealmManager.getRealmLock().Acquire();
     recvData >> account_id;
     recvData >> chars_to_add;
 
@@ -413,7 +413,7 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
     else
         realm->_characterMap.insert(std::make_pair(account_id, chars_to_add));
 
-    sRealmsMgr.getRealmLock().Release();
+    sRealmManager.getRealmLock().Release();
 }
 
 void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
@@ -776,7 +776,7 @@ void LogonCommServerSocket::HandlePopulationRespond(WorldPacket & recvData)
     float population;
     uint32 realmId;
     recvData >> realmId >> population;
-    sRealmsMgr.updateRealmPop(realmId, population);
+    sRealmManager.setRealmPopulation(realmId, population);
 }
 
 void LogonCommServerSocket::RefreshRealmsPop()

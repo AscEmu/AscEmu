@@ -11,12 +11,12 @@ set(SRC_SERVER_FILES
    ${PATH_PREFIX}/Logon.h
    ${PATH_PREFIX}/LogonConfig.cpp
    ${PATH_PREFIX}/LogonConfig.h
+   ${PATH_PREFIX}/LogonServer.cpp
+   ${PATH_PREFIX}/LogonServer.hpp
    ${PATH_PREFIX}/LogonServerDefines.hpp
    ${PATH_PREFIX}/Main.cpp
    ${PATH_PREFIX}/Master.cpp
    ${PATH_PREFIX}/Master.hpp
-   ${PATH_PREFIX}/RealmsMgr.cpp
-   ${PATH_PREFIX}/RealmsMgr.h
 )
 
 source_group(Server FILES ${SRC_SERVER_FILES})

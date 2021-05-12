@@ -572,7 +572,7 @@ void AuthSocket::OnRead()
 
 void AuthSocket::HandleRealmlist()
 {
-    sRealmsMgr.sendRealms(this);
+    sRealmManager.sendRealms(this);
 }
 
 void AuthSocket::HandleReconnectChallenge()
