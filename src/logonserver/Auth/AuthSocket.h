@@ -20,7 +20,6 @@
 #ifndef AUTHSOCKET_H
 #define AUTHSOCKET_H
 
-#include "Server/RealmsMgr.h"
 #include "AuthStructs.h"
 
 class LogonCommServerSocket;

@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Database/DatabaseUpdater.hpp"
 #include "Logon.h"
 #include "IpBanMgr.h"
-#include "RealmsMgr.h"
+#include "Realm/RealmManager.hpp"
 
 using std::chrono::milliseconds;
 
@@ -80,7 +80,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
     PatchMgr::getInstance().initialize();
 
-    sRealmsMgr.initialize(300); // time in seconds
+    sRealmManager.initialize(300); // time in seconds
 
     // Load conf settings..
     clientMinBuild = 5875;
@@ -122,7 +122,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
             if (!(loop_counter % 5))
             {
-                sRealmsMgr.timeoutSockets();
+                sRealmManager.timeoutSockets();
                 sSocketGarbageCollector.Update();
                 CheckForDeadSockets();              // Flood Protection
                 UNIXTIME = time(NULL);
@@ -150,7 +150,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 #endif
     sLogonConsole.Kill();
     sAccountMgr.finalize();
-    sRealmsMgr.finalize();
+    sRealmManager.finalize();
 
     // kill db
     sLogger.info("Waiting for database to close..");
@@ -446,7 +446,7 @@ bool MasterLogon::SetLogonConfiguration()
         m_allowedModIps.push_back(tmp);
     }
 
-    sRealmsMgr.checkServers();
+    sRealmManager.checkServers();
     m_allowedIpLock.Release();
 
     return true;
