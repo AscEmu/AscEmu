@@ -5301,25 +5301,13 @@ public:
     static int GetPlayerMovementVector(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            Player* plr = static_cast<Player*>(ptr);
+
+        Player* plr = static_cast<Player*>(ptr);
         MovementInfo* movement_info = plr->getMovementInfo();
         if (movement_info != nullptr)
         {
             lua_newtable(L);
-#if VERSION_STRING < Cata
-            lua_pushstring(L, "x");
-            lua_pushnumber(L, movement_info->position.x);
-            lua_rawset(L, -3);
-            lua_pushstring(L, "y");
-            lua_pushnumber(L, movement_info->position.y);
-            lua_rawset(L, -3);
-            lua_pushstring(L, "z");
-            lua_pushnumber(L, movement_info->position.z);
-            lua_rawset(L, -3);
-            lua_pushstring(L, "o");
-            lua_pushnumber(L, movement_info->position.o);
-            lua_rawset(L, -3);
-#else
+
             lua_pushstring(L, "x");
             lua_pushnumber(L, movement_info->getPosition()->x);
             lua_rawset(L, -3);
@@ -5332,7 +5320,6 @@ public:
             lua_pushstring(L, "o");
             lua_pushnumber(L, movement_info->getPosition()->o);
             lua_rawset(L, -3);
-#endif
         }
         else
             lua_pushnil(L);

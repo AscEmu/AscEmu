@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "../world/Management/TransporterHandler.h"
 #include "../world/Objects/Transporter.h"
 
-#if VERSION_STRING >= WotLK
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //ICC zone: 4812
@@ -2533,10 +2532,9 @@ public:
         }
     }
 };
-#endif
+
 void SetupICC(ScriptMgr* mgr)
 {
-#if VERSION_STRING >= WotLK
     //Instance
     mgr->register_instance_script(MAP_ICECROWNCITADEL, &IceCrownCitadelScript::Create);
 
@@ -2606,5 +2604,4 @@ void SetupICC(ScriptMgr* mgr)
 
     mgr->register_creature_script(NPC_SE_SKYBREAKER_MARINE, NpcSaurfangEventAI::Create);
     mgr->register_creature_script(NPC_SE_KOR_KRON_REAVER, NpcSaurfangEventAI::Create);
-#endif
 }
