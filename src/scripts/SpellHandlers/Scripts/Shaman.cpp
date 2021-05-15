@@ -8,51 +8,33 @@ This file is released under the MIT license. See README-MIT for more information
 enum ShamanSpells
 {
     SPELL_EARTH_SHIELD_R1               = 974,
-#if VERSION_STRING < Cata
-#if VERSION_STRING >= TBC
     SPELL_EARTH_SHIELD_R2               = 32593,
     SPELL_EARTH_SHIELD_R3               = 32594,
-#endif
-#endif
-#if VERSION_STRING == WotLK
     SPELL_EARTH_SHIELD_R4               = 49283,
     SPELL_EARTH_SHIELD_R5               = 49284,
-#endif
     SPELL_EARTH_SHIELD_HEAL             = 379,
     SPELL_LIGHTNING_SHIELD_DUMMY_R1     = 324,
-#if VERSION_STRING < Cata
     SPELL_LIGHTNING_SHIELD_DUMMY_R2     = 325,
     SPELL_LIGHTNING_SHIELD_DUMMY_R3     = 905,
     SPELL_LIGHTNING_SHIELD_DUMMY_R4     = 945,
     SPELL_LIGHTNING_SHIELD_DUMMY_R5     = 8134,
     SPELL_LIGHTNING_SHIELD_DUMMY_R6     = 10431,
     SPELL_LIGHTNING_SHIELD_DUMMY_R7     = 10432,
-#if VERSION_STRIBG >= TBC
     SPELL_LIGHTNING_SHIELD_DUMMY_R8     = 25469,
     SPELL_LIGHTNING_SHIELD_DUMMY_R9     = 25472,
-#if VERSION_STRING == WotLK
     SPELL_LIGHTNING_SHIELD_DUMMY_R10    = 49280,
     SPELL_LIGHTNING_SHIELD_DUMMY_R11    = 49281,
-#endif
-#endif
-#endif
     SPELL_LIGHTNING_SHIELD_DMG_R1       = 26364,
-#if VERSION_STRING < Cata
     SPELL_LIGHTNING_SHIELD_DMG_R2       = 26365,
     SPELL_LIGHTNING_SHIELD_DMG_R3       = 26366,
     SPELL_LIGHTNING_SHIELD_DMG_R4       = 26367,
     SPELL_LIGHTNING_SHIELD_DMG_R5       = 26369,
     SPELL_LIGHTNING_SHIELD_DMG_R6       = 26370,
     SPELL_LIGHTNING_SHIELD_DMG_R7       = 26363,
-#if VERSION_STRIBG >= TBC
     SPELL_LIGHTNING_SHIELD_DMG_R8       = 26371,
     SPELL_LIGHTNING_SHIELD_DMG_R9       = 26372,
-#if VERSION_STRING == WotLK
     SPELL_LIGHTNING_SHIELD_DMG_R10      = 49278,
     SPELL_LIGHTNING_SHIELD_DMG_R11      = 49279,
-#endif
-#endif
-#endif
 };
 
 // This is a common script to setup proc cooldown for Earth Shield, Water Shield and Lightning Shield
@@ -65,6 +47,7 @@ public:
     }
 };
 
+#if VERSION_STRING >= TBC
 class EarthShieldDummy : public SpellScript
 {
 public:
@@ -125,6 +108,7 @@ public:
         return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
     }
 };
+#endif
 
 class LightningShieldDummy : public SpellScript
 {
@@ -136,7 +120,6 @@ public:
         {
             case SPELL_LIGHTNING_SHIELD_DUMMY_R1:
                 return SPELL_LIGHTNING_SHIELD_DMG_R1;
-#if VERSION_STRING < Cata
             case SPELL_LIGHTNING_SHIELD_DUMMY_R2:
                 return SPELL_LIGHTNING_SHIELD_DMG_R2;
             case SPELL_LIGHTNING_SHIELD_DUMMY_R3:
@@ -149,19 +132,14 @@ public:
                 return SPELL_LIGHTNING_SHIELD_DMG_R6;
             case SPELL_LIGHTNING_SHIELD_DUMMY_R7:
                 return SPELL_LIGHTNING_SHIELD_DMG_R7;
-#if VERSION_STRIBG >= TBC
             case SPELL_LIGHTNING_SHIELD_DUMMY_R8:
                 return SPELL_LIGHTNING_SHIELD_DMG_R8;
             case SPELL_LIGHTNING_SHIELD_DUMMY_R9:
                 return SPELL_LIGHTNING_SHIELD_DMG_R9;
-#if VERSION_STRING == WotLK
             case SPELL_LIGHTNING_SHIELD_DUMMY_R10:
                 return SPELL_LIGHTNING_SHIELD_DMG_R10;
             case SPELL_LIGHTNING_SHIELD_DUMMY_R11:
                 return SPELL_LIGHTNING_SHIELD_DMG_R11;
-#endif
-#endif
-#endif
         }
 
         return 0;
@@ -220,23 +198,23 @@ void setupShamanSpells(ScriptMgr* mgr)
     // Call legacy script setup
     SetupLegacyShamanSpells(mgr);
 
+#if VERSION_STRING >= TBC
     uint32_t earthShieldIds[] =
     {
         SPELL_EARTH_SHIELD_R1,
 #if VERSION_STRING < Cata
-#if VERSION_STRING >= TBC
         SPELL_EARTH_SHIELD_R2,
         SPELL_EARTH_SHIELD_R3,
-#endif
-#endif
 #if VERSION_STRING == WotLK
         SPELL_EARTH_SHIELD_R4,
         SPELL_EARTH_SHIELD_R5,
+#endif
 #endif
         0
     };
     mgr->register_spell_script(earthShieldIds, new EarthShieldDummy);
     mgr->register_spell_script(SPELL_EARTH_SHIELD_HEAL, new EarthShield);
+#endif
 
     uint32_t lightningShieldDummyIds[] =
     {
@@ -248,7 +226,7 @@ void setupShamanSpells(ScriptMgr* mgr)
         SPELL_LIGHTNING_SHIELD_DUMMY_R5,
         SPELL_LIGHTNING_SHIELD_DUMMY_R6,
         SPELL_LIGHTNING_SHIELD_DUMMY_R7,
-#if VERSION_STRIBG >= TBC
+#if VERSION_STRING >= TBC
         SPELL_LIGHTNING_SHIELD_DUMMY_R8,
         SPELL_LIGHTNING_SHIELD_DUMMY_R9,
 #if VERSION_STRING == WotLK
@@ -270,7 +248,7 @@ void setupShamanSpells(ScriptMgr* mgr)
         SPELL_LIGHTNING_SHIELD_DMG_R5,
         SPELL_LIGHTNING_SHIELD_DMG_R6,
         SPELL_LIGHTNING_SHIELD_DMG_R7,
-#if VERSION_STRIBG >= TBC
+#if VERSION_STRING >= TBC
         SPELL_LIGHTNING_SHIELD_DMG_R8,
         SPELL_LIGHTNING_SHIELD_DMG_R9,
 #if VERSION_STRING == WotLK

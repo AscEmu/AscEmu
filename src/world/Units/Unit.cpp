@@ -4318,7 +4318,7 @@ void Unit::energize(Unit* target, uint32_t spellId, uint32_t amount, PowerType t
     if (sendPacket)
         sendSpellEnergizeLog(target, spellId, amount, type);
 
-    target->setPower(type, target->getPower(type) + amount);
+    target->setPower(type, target->getPower(type) + amount, false);
 
 #if VERSION_STRING >= Cata
     // Reset Holy Power timer back to 10 seconds

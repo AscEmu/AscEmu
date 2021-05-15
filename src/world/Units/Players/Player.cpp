@@ -1768,14 +1768,17 @@ void Player::regeneratePlayerPowers(uint16_t diff)
             if (aur == nullptr)
                 continue;
 
-            if (aur->hasAuraEffect(SPELL_AURA_MOD_REGEN) && aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
+            if (!(aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP))
+                continue;
+
+            if (aur->hasAuraEffect(SPELL_AURA_MOD_REGEN) || aur->hasAuraEffect(SPELL_AURA_PERIODIC_HEAL_PCT))
             {
                 // Food takes priority over drink
                 foundFood = true;
                 break;
             }
 
-            if (aur->hasAuraEffect(SPELL_AURA_MOD_POWER_REGEN) && aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
+            if (aur->hasAuraEffect(SPELL_AURA_MOD_POWER_REGEN) || aur->hasAuraEffect(SPELL_AURA_PERIODIC_POWER_PCT))
             {
                 // Don't break here, try find a food aura
                 foundDrink = true;

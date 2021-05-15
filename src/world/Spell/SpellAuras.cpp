@@ -881,9 +881,6 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             else
                 getOwner()->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, nullptr, this, aurEff);
 
-            if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
-                getOwner()->emote(EMOTE_ONESHOT_EAT);
-
             // Hackfixes from legacy method
             if (casterUnit != nullptr)
             {
@@ -928,20 +925,19 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 casterUnit->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, nullptr, this, aurEff);
             else
                 getOwner()->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, nullptr, this, aurEff);
-
-            if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
-                getOwner()->emote(EMOTE_ONESHOT_EAT);
         } break;
         case SPELL_AURA_PERIODIC_POWER_PCT:
         {
             if (!getOwner()->isAlive())
                 return;
 
+            const auto powerType = static_cast<PowerType>(aurEff->getEffectMiscValue());
+            if (getOwner()->getMaxPower(powerType) == 0)
+                return;
+
             // Hackfix from legacy method
             const auto spellId = getSpellId() == 60069 ? 49766 : getSpellId();
-
             const auto casterUnit = GetUnitCaster();
-            const auto powerType = static_cast<PowerType>(aurEff->getEffectMiscValue());
 
             // Send packet first
             getOwner()->sendPeriodicAuraLog(m_casterGuid, getOwner()->GetNewGUID(), getSpellInfo(), effectIntValue, 0, 0, 0, aurEff->getAuraEffectType(), false, powerType);
@@ -950,9 +946,6 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 casterUnit->energize(getOwner(), spellId, effectIntValue, powerType, false);
             else
                 getOwner()->energize(getOwner(), spellId, effectIntValue, powerType, false);
-
-            if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && aurEff->getEffectMiscValue() == POWER_TYPE_MANA)
-                getOwner()->emote(EMOTE_ONESHOT_EAT);
         } break;
         case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
         {
@@ -999,8 +992,11 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             if (!getOwner()->isAlive())
                 return;
 
-            const auto casterUnit = GetUnitCaster();
             const auto powerType = static_cast<PowerType>(aurEff->getEffectMiscValue());
+            if (getOwner()->getMaxPower(powerType) == 0)
+                return;
+
+            const auto casterUnit = GetUnitCaster();
 
             // Send packet first
             getOwner()->sendPeriodicAuraLog(m_casterGuid, getOwner()->GetNewGUID(), getSpellInfo(), effectIntValue, 0, 0, 0, aurEff->getAuraEffectType(), false, powerType);
@@ -1009,9 +1005,6 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 casterUnit->energize(getOwner(), getSpellId(), effectIntValue, powerType, false);
             else
                 getOwner()->energize(getOwner(), getSpellId(), effectIntValue, powerType, false);
-
-            if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && aurEff->getEffectMiscValue() == POWER_TYPE_MANA)
-                getOwner()->emote(EMOTE_ONESHOT_EAT);
         } break;
         case SPELL_AURA_PERIODIC_LEECH:
         case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
@@ -1029,10 +1022,10 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             if (!getOwner()->isAlive())
                 return;
 
-            const auto casterUnit = GetUnitCaster();
             if (getOwner()->getMaxPower(POWER_TYPE_MANA) == 0)
                 return;
 
+            const auto casterUnit = GetUnitCaster();
             if (getOwner()->SchoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()] != 0)
             {
                 if (casterUnit != nullptr)
