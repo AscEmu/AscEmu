@@ -1588,9 +1588,10 @@ void GameObject_Meetingstone::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_FlagStand
-void GameObject_FlagStand::onUse(Player* /*player*/)
+void GameObject_FlagStand::onUse(Player* player)
 {
-
+    if (player->m_bg != nullptr)
+        player->m_bg->HookFlagStand(player, this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
