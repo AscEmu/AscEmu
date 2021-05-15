@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 
-#include "Spell/Definitions/SpellDamageType.h"
+#include "Spell/Definitions/SpellDamageType.hpp"
 
 enum PaladinSpells
 {

@@ -31,7 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgListStabledPets.h"
 #include "Server/Packets/CmsgNpcTextQuery.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Server/Packets/CmsgBuyBankSlot.h"
 #include "Server/Packets/SmsgBuyBankSlotResult.h"
 #include "Server/Packets/SmsgGossipComplete.h"

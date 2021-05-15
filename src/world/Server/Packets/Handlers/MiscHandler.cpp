@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "zlib.h"
 #include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Server/Packets/SmsgLogoutResponse.h"
 #include "Server/Packets/CmsgStandStateChange.h"
 #include "Server/Packets/CmsgWho.h"

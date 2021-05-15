@@ -5,13 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "SpellAuras.h"
 
-#include "Definitions/AuraInterruptFlags.h"
-#include "Definitions/SpellCastTargetFlags.h"
-#include "Definitions/SpellFamily.h"
-#include "Definitions/SpellIsFlags.h"
-#include "Definitions/SpellMechanics.h"
-#include "Definitions/SpellTypes.h"
-#include "SpellMgr.h"
+#include "Definitions/AuraInterruptFlags.hpp"
+#include "Definitions/SpellCastTargetFlags.hpp"
+#include "Definitions/SpellFamily.hpp"
+#include "Definitions/SpellIsFlags.hpp"
+#include "Definitions/SpellMechanics.hpp"
+#include "Definitions/SpellTypes.hpp"
+#include "SpellMgr.hpp"
 
 #include "Server/Script/ScriptMgr.h"
 

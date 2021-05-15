@@ -27,7 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/DayWatcherThread.h"
 #include "BroadcastMgr.h"
 #include "World.Legacy.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Packets/SmsgPlaySound.h"
 #include "Packets/SmsgAreaTriggerMessage.h"

@@ -27,7 +27,7 @@
 #include "Spell/SpellAuras.h"
 #include "Objects/GameObject.h"
 #include "Objects/ObjectMgr.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 
 const uint32 ARENA_PREPARATION = 32727;
 

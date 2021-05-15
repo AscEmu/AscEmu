@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 
 SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 SERVER_DECL std::set<std::string> CreatureQuestStarterTables;

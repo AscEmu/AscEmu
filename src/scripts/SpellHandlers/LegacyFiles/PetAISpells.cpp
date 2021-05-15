@@ -25,7 +25,7 @@
 #include "Units/Creatures/Pet.h"
 #include "Spell/Spell.h"
 #include "Server/Script/ScriptMgr.h"
-#include <Spell/Definitions/PowerType.h>
+#include <Spell/Definitions/PowerType.hpp>
 
 class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 {

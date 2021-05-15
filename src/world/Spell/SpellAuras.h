@@ -20,9 +20,9 @@
 
 #pragma once
 
-#include "Definitions/AuraEffects.h"
-#include "Definitions/AuraRemoveMode.h"
-#include "Definitions/SpellEffects.h"
+#include "Definitions/AuraEffects.hpp"
+#include "Definitions/AuraRemoveMode.hpp"
+#include "Definitions/SpellEffects.hpp"
 #include "Management/Item.h"
 #include "Objects/Object.h"
 #include "Server/EventableObject.h"

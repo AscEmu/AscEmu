@@ -26,8 +26,8 @@
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/Definitions/SpellCastTargetFlags.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/Definitions/SpellCastTargetFlags.hpp"
+#include "Spell/SpellMgr.hpp"
 #include "Server/Packets/SmsgMoveKnockBack.h"
 
 bool ChatHandler::HandleDebugDumpMovementCommand(const char* /*args*/, WorldSession* session)

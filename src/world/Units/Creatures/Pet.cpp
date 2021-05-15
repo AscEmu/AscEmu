@@ -31,10 +31,10 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/Definitions/ProcFlags.h"
-#include <Spell/Definitions/AuraInterruptFlags.h>
-#include "Spell/Definitions/PowerType.h"
-#include "Spell/Definitions/SpellEffectTarget.h"
+#include "Spell/Definitions/ProcFlags.hpp"
+#include <Spell/Definitions/AuraInterruptFlags.hpp>
+#include "Spell/Definitions/PowerType.hpp"
+#include "Spell/Definitions/SpellEffectTarget.hpp"
 #include "Pet.h"
 #include "Server/Packets/SmsgPetActionFeedback.h"
 #include "Server/Packets/SmsgPetLearnedSpell.h"

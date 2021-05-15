@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/WorldCreator.h"
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
-#include "Spell/Definitions/Spec.h"
+#include "Spell/Definitions/Spec.hpp"
 #include "Units/Creatures/Pet.h"
 
 //.character clearcooldowns

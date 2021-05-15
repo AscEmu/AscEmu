@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Definitions/AuraRemoveMode.h"
-#include "Definitions/ProcFlags.h"
-#include "Definitions/SpellFailure.h"
-#include "Spell/SpellProc.h"
+#include "Definitions/AuraRemoveMode.hpp"
+#include "Definitions/ProcFlags.hpp"
+#include "Definitions/SpellFailure.hpp"
+#include "Spell/SpellProc.hpp"
 #include "Units/Unit.h"
 
 #include "CommonTypes.hpp"

@@ -30,7 +30,7 @@
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
-#include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/PowerType.hpp"
 #include "CharacterErrors.h"
 #include "WorldSocket.h"
 #include "Auth/MD5.h"

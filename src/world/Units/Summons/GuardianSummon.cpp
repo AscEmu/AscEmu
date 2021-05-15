@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "../../StdAfx.h"
 #include "Units/Summons/GuardianSummon.h"
-#include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/PowerType.hpp"
 
 GuardianSummon::GuardianSummon(uint64_t GUID, uint32_t duration) : Summon(GUID, duration)
 {}

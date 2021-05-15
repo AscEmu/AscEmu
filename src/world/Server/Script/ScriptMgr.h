@@ -28,9 +28,9 @@
 #include "Units/Unit.h"
 #include "Management/ArenaTeam.h"
 #include "Server/ServerState.h"
-#include "Spell/Definitions/ProcFlags.h"
+#include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/SpellAuras.h"
-#include "Spell/SpellScript.h"
+#include "Spell/SpellScript.hpp"
 #include "ScriptEvent.hpp"
 
 class Channel;

@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "SpellAuras.h"
 
-#include "Definitions/SpellFamily.h"
-#include "Definitions/SpellIsFlags.h"
-#include "Definitions/SpellTypes.h"
-#include "SpellMgr.h"
+#include "Definitions/SpellFamily.hpp"
+#include "Definitions/SpellIsFlags.hpp"
+#include "Definitions/SpellTypes.hpp"
+#include "SpellMgr.hpp"
 
 #include "Objects/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"

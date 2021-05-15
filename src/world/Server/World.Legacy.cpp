@@ -40,7 +40,7 @@
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
 #include "Map/MapCell.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Map/WorldCreator.h"
 #include "Storage/DayWatcherThread.h"
 #include "Server/BroadcastMgr.h"

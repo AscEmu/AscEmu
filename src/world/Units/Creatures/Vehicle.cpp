@@ -22,7 +22,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgControlVehicle.h"
 
 Vehicle::Vehicle()
