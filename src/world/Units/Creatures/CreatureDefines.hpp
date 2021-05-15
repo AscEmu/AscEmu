@@ -26,7 +26,7 @@
 #endif
 #include "Units/UnitDefines.hpp"
 
-#include "Spell/Definitions/School.h"
+#include "Spell/Definitions/School.hpp"
 
 #include <ctime>
 

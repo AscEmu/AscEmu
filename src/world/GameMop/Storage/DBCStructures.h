@@ -24,7 +24,7 @@ struct WMOAreaTableTripple
     int32_t adtId;
 };
 
-///\ These will be verified and ported to Spell/Definitions/SpellEffectTarget.h when spell targeting is being rewritten -Appled
+///\ These will be verified and ported to Spell/Definitions/SpellEffectTarget.hpp when spell targeting is being rewritten -Appled
 enum Targets
 {
     TARGET_NONE                                 = 0,

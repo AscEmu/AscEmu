@@ -544,7 +544,7 @@ namespace MySQLStructure
     //spell_proc
     //spell_ranks
     //spell_teleport_coords
-    // Defined in Spells/TeleportCoords.h struct TeleportCoords
+    // Defined in Spells/TeleportCoords.hpp struct TeleportCoords
 
     //spellclickspells
     //spelloverride

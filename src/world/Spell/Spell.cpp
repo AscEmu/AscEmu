@@ -6,24 +6,24 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell.h"
 #include "SpellAuras.h"
 #include "SpellTarget.h"
-#include "Definitions/AuraInterruptFlags.h"
-#include "Definitions/AuraStates.h"
-#include "Definitions/CastInterruptFlags.h"
-#include "Definitions/ChannelInterruptFlags.h"
-#include "Definitions/DispelType.h"
-#include "Definitions/LockTypes.h"
-#include "Definitions/PreventionType.h"
-#include "Definitions/ProcFlags.h"
-#include "Definitions/SpellCastTargetFlags.h"
-#include "Definitions/SpellDamageType.h"
-#include "Definitions/SpellDidHitResult.h"
-#include "Definitions/SpellEffectTarget.h"
-#include "Definitions/SpellFamily.h"
-#include "Definitions/SpellInFrontStatus.h"
-#include "Definitions/SpellMechanics.h"
-#include "Definitions/SpellPacketFlags.h"
-#include "Definitions/SpellState.h"
-#include "Definitions/SpellRanged.h"
+#include "Definitions/AuraInterruptFlags.hpp"
+#include "Definitions/AuraStates.hpp"
+#include "Definitions/CastInterruptFlags.hpp"
+#include "Definitions/ChannelInterruptFlags.hpp"
+#include "Definitions/DispelType.hpp"
+#include "Definitions/LockTypes.hpp"
+#include "Definitions/PreventionType.hpp"
+#include "Definitions/ProcFlags.hpp"
+#include "Definitions/SpellCastTargetFlags.hpp"
+#include "Definitions/SpellDamageType.hpp"
+#include "Definitions/SpellDidHitResult.hpp"
+#include "Definitions/SpellEffectTarget.hpp"
+#include "Definitions/SpellFamily.hpp"
+#include "Definitions/SpellInFrontStatus.hpp"
+#include "Definitions/SpellMechanics.hpp"
+#include "Definitions/SpellPacketFlags.hpp"
+#include "Definitions/SpellState.hpp"
+#include "Definitions/SpellRanged.hpp"
 
 #include "Data/Flags.hpp"
 #include "Management/Battleground/Battleground.h"
@@ -174,7 +174,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
                 u_caster->RemoveAura(m_triggeredByAura);
         }
 
-        sLogger.debug("Spell::prepare : canCast result %u for spell id %u (refer to SpellFailure.h to work out why)", cancastresult, getSpellInfo()->getId());
+        sLogger.debug("Spell::prepare : canCast result %u for spell id %u (refer to SpellFailure.hpp to work out why)", cancastresult, getSpellInfo()->getId());
 
         finish(false);
         return cancastresult;

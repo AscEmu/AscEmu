@@ -54,16 +54,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgClearCooldown.h"
 #include "Server/World.h"
 #include "Server/Packets/SmsgContactList.h"
-#include "Spell/Definitions/AuraInterruptFlags.h"
-#include "Spell/Definitions/PowerType.h"
-#include "Spell/Definitions/Spec.h"
-#include "Spell/Definitions/SpellDamageType.h"
-#include "Spell/Definitions/SpellFailure.h"
-#include "Spell/Definitions/SpellIsFlags.h"
+#include "Spell/Definitions/AuraInterruptFlags.hpp"
+#include "Spell/Definitions/PowerType.hpp"
+#include "Spell/Definitions/Spec.hpp"
+#include "Spell/Definitions/SpellDamageType.hpp"
+#include "Spell/Definitions/SpellFailure.hpp"
+#include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Spell.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellDefines.hpp"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Units/UnitDefines.hpp"
@@ -1768,14 +1768,17 @@ void Player::regeneratePlayerPowers(uint16_t diff)
             if (aur == nullptr)
                 continue;
 
-            if (aur->hasAuraEffect(SPELL_AURA_MOD_REGEN) && aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
+            if (!(aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP))
+                continue;
+
+            if (aur->hasAuraEffect(SPELL_AURA_MOD_REGEN) || aur->hasAuraEffect(SPELL_AURA_PERIODIC_HEAL_PCT))
             {
                 // Food takes priority over drink
                 foundFood = true;
                 break;
             }
 
-            if (aur->hasAuraEffect(SPELL_AURA_MOD_POWER_REGEN) && aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
+            if (aur->hasAuraEffect(SPELL_AURA_MOD_POWER_REGEN) || aur->hasAuraEffect(SPELL_AURA_PERIODIC_POWER_PCT))
             {
                 // Don't break here, try find a food aura
                 foundDrink = true;

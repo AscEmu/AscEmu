@@ -27,9 +27,9 @@
 #include "Map/MapCell.h"
 #include "Map/MapMgr.h"
 #include "Faction.h"
-#include "Spell/Definitions/ProcFlags.h"
-#include "Spell/Definitions/SpellEffectTarget.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/Definitions/ProcFlags.hpp"
+#include "Spell/Definitions/SpellEffectTarget.hpp"
+#include "Spell/SpellMgr.hpp"
 #include "Data/WoWGameObject.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Server/Packets/SmsgGameobjectCustomAnim.h"
@@ -1588,9 +1588,10 @@ void GameObject_Meetingstone::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_FlagStand
-void GameObject_FlagStand::onUse(Player* /*player*/)
+void GameObject_FlagStand::onUse(Player* player)
 {
-
+    if (player->m_bg != nullptr)
+        player->m_bg->HookFlagStand(player, this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

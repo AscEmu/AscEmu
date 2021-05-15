@@ -25,7 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgCharCustomize.h"
 #include "Server/Packets/SmsgCharCustomize.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
-#include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgLearnedDanceMoves.h"
 #include "Server/Packets/SmsgFeatureSystemStatus.h"
 #include "Server/Packets/CmsgSetPlayerDeclinedNames.h"

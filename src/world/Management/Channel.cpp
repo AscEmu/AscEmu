@@ -95,7 +95,7 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
 void Channel::AttemptJoin(Player* plr, const char* password)
 {
     m_lock.Acquire();
-    uint32 flags = CHANNEL_MEMBER_FLAG_NONE;
+    uint8_t flags = CHANNEL_MEMBER_FLAG_NONE;
 
     if (!m_general && plr->GetSession()->CanUseCommand('c'))
         flags |= CHANNEL_MEMBER_FLAG_MODERATOR;

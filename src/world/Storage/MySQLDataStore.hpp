@@ -6,8 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Objects/ObjectMgr.h"
-#include "Spell/Definitions/SpellClickSpell.h"
-#include "Spell/Definitions/TeleportCoords.h"
+#include "Spell/Definitions/SpellClickSpell.hpp"
+#include "Spell/Definitions/TeleportCoords.hpp"
 #include "MySQLStructures.h"
 
 extern SERVER_DECL std::set<std::string> CreaturePropertiesTables;

@@ -86,7 +86,7 @@ void Transporter::Update(unsigned long time_passed)
     uint32_t timer = mTransValues.PathProgress % getTransportPeriod();
     bool justStopped = false;
 
-    sLogger.debug("Transporter: current node %u and pathprogress %u \n", _currentFrame->Index, GetTimer());
+    //sLogger.debug("Transporter: current node %u and pathprogress %u \n", _currentFrame->Index, GetTimer());
 
     for (;;)
     {

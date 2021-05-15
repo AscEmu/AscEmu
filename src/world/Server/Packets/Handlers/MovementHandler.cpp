@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetActiveMover.h"
 #include "Server/Packets/MovementPacket.h"
 #include "Server/Packets/SmsgMoveUnsetCanFly.h"
-#include "Spell/Definitions/AuraInterruptFlags.h"
+#include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Server/WorldSession.h"
 #include "Units/Players/Player.h"
 #include "Units/Creatures/Vehicle.h"

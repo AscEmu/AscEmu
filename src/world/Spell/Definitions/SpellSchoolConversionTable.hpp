@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #pragma once
-#include "School.h"
+#include "School.hpp"
 
 // converting schools for 2.4.0 client
 static const uint32 g_spellSchoolConversionTable[TOTAL_SPELL_SCHOOLS] =

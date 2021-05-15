@@ -31,7 +31,7 @@
 #include <mutex>
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Objects/ObjectMgr.h"
 #include "ScriptMgr.h"
 #include "Map/MapScriptInterface.h"

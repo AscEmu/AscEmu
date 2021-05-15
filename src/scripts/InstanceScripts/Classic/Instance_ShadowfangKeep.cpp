@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_ShadowfangKeep.h"
 
 #include "Spell/SpellAuras.h"
-#include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/PowerType.hpp"
 
  // Instance script for map 33 (Shadowfang Keep)
 class ShadowfangKeepInstance : public InstanceScript

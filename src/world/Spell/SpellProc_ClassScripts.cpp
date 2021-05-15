@@ -24,11 +24,11 @@
 #include "Management/ItemInterface.h"
 #include "Units/Players/PlayerClasses.hpp"
 #include "Map/MapMgr.h"
-#include "SpellMgr.h"
+#include "SpellMgr.hpp"
 #include "SpellAuras.h"
-#include "Definitions/ProcFlags.h"
-#include "Definitions/SpellIsFlags.h"
-#include "Definitions/SpellEffectTarget.h"
+#include "Definitions/ProcFlags.hpp"
+#include "Definitions/SpellIsFlags.hpp"
+#include "Definitions/SpellEffectTarget.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Warrior ProcScripts

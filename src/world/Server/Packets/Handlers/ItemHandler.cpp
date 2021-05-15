@@ -30,7 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSwapInvItem.h"
 #include "Server/Packets/CmsgUseItem.h"
 #include "Management/Battleground/Battleground.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Management/Container.h"
@@ -41,7 +41,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSellItem.h"
 #include "Server/Packets/CmsgSellItem.h"
 #include "Server/Packets/CmsgItemQuerySingle.h"
-#include "Spell/Definitions/AuraInterruptFlags.h"
+#include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Server/Packets/SmsgBuyFailed.h"
 
 using namespace AscEmu::Packets;

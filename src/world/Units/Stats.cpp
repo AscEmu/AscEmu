@@ -28,7 +28,7 @@
 #include "Server/World.Legacy.h"
 #include "../../scripts/Battlegrounds/AlteracValley/AlteracValley.h"
 #include "WorldConf.h"
-#include "Spell/Definitions/SpellEffects.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 // APGL End
 // MIT Start

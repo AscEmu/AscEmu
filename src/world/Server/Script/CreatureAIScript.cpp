@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
 #include "Objects/Faction.h"
-#include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/PowerType.hpp"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

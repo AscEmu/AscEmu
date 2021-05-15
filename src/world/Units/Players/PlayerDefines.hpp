@@ -791,7 +791,7 @@ inline bool isClassRaceCombinationPossible(uint8_t _class, uint8_t _race)
     return false;
 }
 
-static uint8_t getSideByRace(uint8_t race)
+static inline uint8_t getSideByRace(uint8_t race)
 {
     switch (race)
     {

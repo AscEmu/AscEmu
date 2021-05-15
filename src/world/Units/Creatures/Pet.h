@@ -23,7 +23,7 @@
 
 #include "Creature.h"
 #include "Spell/SpellInfo.hpp"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Macros/PetMacros.hpp"
 
 /* Taken from ItemPetFood.dbc

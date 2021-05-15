@@ -3,12 +3,12 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Spell/SpellMgr.h"
-#include "Spell/Definitions/AuraEffects.h"
-#include "Spell/Definitions/DiminishingGroup.h"
-#include "Spell/Definitions/SpellDamageType.h"
-#include "Spell/Definitions/SpellEffects.h"
-#include "Spell/Definitions/SpellIsFlags.h"
+#include "Spell/SpellMgr.hpp"
+#include "Spell/Definitions/AuraEffects.hpp"
+#include "Spell/Definitions/DiminishingGroup.hpp"
+#include "Spell/Definitions/SpellDamageType.hpp"
+#include "Spell/Definitions/SpellEffects.hpp"
+#include "Spell/Definitions/SpellIsFlags.hpp"
 
 //\brief: This file includes all old setted custom values or spell.dbc overwrite values
 // If possible, these should be get rid of or moved under appropriate class (like that diminishing group)

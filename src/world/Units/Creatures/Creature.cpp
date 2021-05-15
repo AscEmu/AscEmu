@@ -34,11 +34,11 @@
 #include "Map/MapMgr.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
-#include "Spell/Definitions/ProcFlags.h"
-#include <Spell/Definitions/AuraInterruptFlags.h>
-#include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/ProcFlags.hpp"
+#include <Spell/Definitions/AuraInterruptFlags.hpp>
+#include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
-#include "Spell/Definitions/SpellEffects.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Objects/ObjectMgr.h"
 

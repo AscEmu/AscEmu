@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "Chat/ChatHandler.hpp"
 #include "Server/WorldSession.h"
-#include "Spell/Definitions/SpellFailure.h"
+#include "Spell/Definitions/SpellFailure.hpp"
 #include "Server/ServerState.h"
 #include "Objects/ObjectMgr.h"
 #include "Management/WeatherMgr.h"

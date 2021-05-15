@@ -8,9 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/Definitions/SpellCastTargetFlags.h"
-#include "Spell/Definitions/PowerType.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/Definitions/SpellCastTargetFlags.hpp"
+#include "Spell/Definitions/PowerType.hpp"
+#include "Spell/SpellMgr.hpp"
 #include "Units/Players/PlayerDefines.hpp"
 
 TotemSummon::TotemSummon(uint64_t guid, uint32_t duration) : Summon(guid, duration) {}

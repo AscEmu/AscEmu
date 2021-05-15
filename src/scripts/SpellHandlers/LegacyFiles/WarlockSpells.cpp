@@ -21,9 +21,9 @@
 #include "Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
-#include <Spell/Definitions/PowerType.h>
+#include <Spell/Definitions/PowerType.hpp>
 #include <Units/Creatures/Pet.h>
 
  //////////////////////////////////////////////////////////////

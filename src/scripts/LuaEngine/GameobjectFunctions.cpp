@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Units/Creatures/Creature.h>
 #include <Storage/MySQLDataStore.hpp>
 #include <Map/WorldCreatorDefines.hpp>
-#include <Spell/SpellMgr.h>
+#include <Spell/SpellMgr.hpp>
 #include <Server/MainServerDefines.h>
 #include <StdAfx.h>
 #include "LuaHelpers.h"

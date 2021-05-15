@@ -3,10 +3,10 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "SpellProc.h"
+#include "SpellProc.hpp"
 
-#include "Definitions/ProcFlags.h"
-#include "SpellMgr.h"
+#include "Definitions/ProcFlags.hpp"
+#include "SpellMgr.hpp"
 
 #include "Server/Script/ScriptMgr.h"
 

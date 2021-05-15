@@ -26,15 +26,16 @@
 #define CHANNEL_LFG 26
 
 #include "Threading/Mutex.h"
-#include <set>
-#include <map>
 #include "Units/Players/Player.h"
 
+#include <set>
+#include <map>
+#include <cstdint>
 
 class WorldPacket;
 class PlayerInfo;
 
-enum ChannelMemberFlags
+enum ChannelMemberFlags : uint8_t
 {
     CHANNEL_MEMBER_FLAG_NONE            = 0x00,
     CHANNEL_MEMBER_FLAG_OWNER           = 0x01,

@@ -20,12 +20,12 @@
 
 #pragma once
 
-#include "Definitions/SpellFailure.h"
-#include "Definitions/SpellState.h"
-#include "Definitions/SpellTargetMod.h"
-#include "SpellCastTargets.h"
+#include "Definitions/SpellFailure.hpp"
+#include "Definitions/SpellState.hpp"
+#include "Definitions/SpellTargetMod.hpp"
+#include "SpellCastTargets.hpp"
 #include "SpellInfo.hpp"
-#include "SpellTargetConstraint.h"
+#include "SpellTargetConstraint.hpp"
 
 #include "Units/Creatures/Creature.h"
 #include "Units/Players/Player.h"

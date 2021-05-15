@@ -3,14 +3,14 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "SpellMgr.h"
+#include "SpellMgr.hpp"
 
-#include "Spell/Definitions/AuraEffects.h"
-#include "Spell/Definitions/ProcFlags.h"
-#include "Spell/Definitions/SpellDamageType.h"
-#include "Spell/Definitions/SpellEffects.h"
-#include "Spell/Definitions/SpellEffectTarget.h"
-#include "Spell/Definitions/SpellFamily.h"
+#include "Spell/Definitions/AuraEffects.hpp"
+#include "Spell/Definitions/ProcFlags.hpp"
+#include "Spell/Definitions/SpellDamageType.hpp"
+#include "Spell/Definitions/SpellEffects.hpp"
+#include "Spell/Definitions/SpellEffectTarget.hpp"
+#include "Spell/Definitions/SpellFamily.hpp"
 
 #include "Map/Area/AreaStorage.hpp"
 #include "shared/Log.hpp"

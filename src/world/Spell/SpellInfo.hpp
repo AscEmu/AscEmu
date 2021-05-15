@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Definitions/AuraEffects.h"
-#include "Definitions/PowerType.h"
+#include "Definitions/AuraEffects.hpp"
+#include "Definitions/PowerType.hpp"
 #include "SpellDefines.hpp"
-#include "SpellScript.h"
+#include "SpellScript.hpp"
 
 #include "CommonTypes.hpp"
 #include "WorldConf.h"
