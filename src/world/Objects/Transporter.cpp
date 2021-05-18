@@ -296,6 +296,10 @@ void Transporter::UpdatePosition(float x, float y, float z, float o)
 
 void Transporter::LoadStaticPassengers()
 {
+    // If parameter_6 (map id) is set to 0, then transport shouldn't have any passengers
+    if (GetGameObjectProperties()->mo_transport.map_id == 0)
+        return;
+
     sLogger.info("TransportHandler : Start populating transport %u ", getEntry());
     {
         for (auto creature_spawn : sMySQLStore._creatureSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
