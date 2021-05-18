@@ -2110,7 +2110,11 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (m_targets.getGameObjectTarget() != 0)
                 {
                     const auto objectTarget = p_caster->GetMapMgrGameObject(m_targets.getGameObjectTarget());
-                    if (objectTarget != nullptr && objectTarget->getGoType() != GAMEOBJECT_TYPE_QUESTGIVER)
+                    if (objectTarget != nullptr &&
+                        objectTarget->getGoType() != GAMEOBJECT_TYPE_QUESTGIVER &&
+                        objectTarget->getGoType() != GAMEOBJECT_TYPE_AREADAMAGE &&
+                        objectTarget->getGoType() != GAMEOBJECT_TYPE_FLAGSTAND &&
+                        objectTarget->getGoType() != GAMEOBJECT_TYPE_FLAGDROP)
                     {
                         // Get lock id
                         switch (objectTarget->getGoType())
@@ -2121,6 +2125,8 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                             case GAMEOBJECT_TYPE_BUTTON:
                                 lockId = objectTarget->GetGameObjectProperties()->button.lock_id;
                                 break;
+                            // TODO: implement questgiver gameobjects
+                            //case GAMEOBJECT_TYPE_QUESTGIVER:
                             case GAMEOBJECT_TYPE_CHEST:
                                 lockId = objectTarget->GetGameObjectProperties()->chest.lock_id;
                                 break;
@@ -2130,12 +2136,18 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                             case GAMEOBJECT_TYPE_GOOBER:
                                 lockId = objectTarget->GetGameObjectProperties()->goober.lock_id;
                                 break;
+                            // TODO: implement areadamage gameobjects
+                            //case GAMEOBJECT_TYPE_AREADAMAGE:
                             case GAMEOBJECT_TYPE_CAMERA:
                                 lockId = objectTarget->GetGameObjectProperties()->camera.lock_id;
                                 break;
+                            // TODO: implement flagstand gameobjects
+                            //case GAMEOBJECT_TYPE_FLAGSTAND:
                             case GAMEOBJECT_TYPE_FISHINGHOLE:
                                 lockId = objectTarget->GetGameObjectProperties()->fishinghole.lock_id;
                                 break;
+                            // TODO: implement flagdrop gameobjects
+                            //case GAMEOBJECT_TYPE_FLAGDROP:
                             default:
                                 break;
                         }
