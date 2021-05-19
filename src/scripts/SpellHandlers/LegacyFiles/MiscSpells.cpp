@@ -343,14 +343,13 @@ bool EatenRecently(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
     if (apply)
     {
-        NetherDrake->GetAIInterface()->SetAllowedToEnterCombat(false);
+        NetherDrake->GetAIInterface()->setAllowedToEnterCombat(false);
         NetherDrake->emote(EMOTE_ONESHOT_EAT);
     }
     else
     {
-        NetherDrake->GetAIInterface()->SetAllowedToEnterCombat(true);
-        NetherDrake->GetAIInterface()->setSplineFlying();
-        NetherDrake->GetAIInterface()->MoveTo(NetherDrake->GetSpawnX(), NetherDrake->GetSpawnY(), NetherDrake->GetSpawnZ());
+        NetherDrake->GetAIInterface()->setAllowedToEnterCombat(true);
+        NetherDrake->getMovementManager()->moveTakeoff(0, NetherDrake->GetSpawnPosition());
     }
     return true;
 }
@@ -360,16 +359,16 @@ bool Temper(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->getUnitCaster() == NULL)
         return true;
 
-    Unit* pHated = pSpell->getUnitCaster()->GetAIInterface()->GetMostHated();
+    Unit* pHated = pSpell->getUnitCaster()->getThreatManager().getCurrentVictim();
 
     MapScriptInterface* pMap = pSpell->getUnitCaster()->GetMapMgr()->GetInterface();
     Creature* pCreature1 = pMap->SpawnCreature(28695, 1335.296265f, -89.237503f, 56.717800f, 1.994538f, true, true, 0, 0, 1);
     if (pCreature1)
-        pCreature1->GetAIInterface()->AttackReaction(pHated, 1);
+        pCreature1->GetAIInterface()->onHostileAction(pHated);
 
     Creature* pCreature2 = pMap->SpawnCreature(28695, 1340.615234f, -89.083313f, 56.717800f, 0.028982f, true, true, 0, 0, 1);
     if (pCreature2)
-        pCreature2->GetAIInterface()->AttackReaction(pHated, 1);
+        pCreature2->GetAIInterface()->onHostileAction(pHated);
 
     return true;
 };
@@ -391,7 +390,7 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint8_t /*effectIndex*/, Spell* pSpell
     if (!Caster)
         return true;
 
-    Unit* Target = Caster->GetAIInterface()->getNextTarget();
+    Unit* Target = Caster->GetAIInterface()->getCurrentTarget();
     if (!Target)
         return true;
 

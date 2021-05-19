@@ -30,7 +30,7 @@ class RingoDeadNPC : public CreatureAIScript
     {
         getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
     }
 };
 
@@ -103,13 +103,16 @@ class A_Me01 : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(A_Me01)
     explicit A_Me01(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (iWaypointId == 28)
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tr..........");
             getCreature()->Despawn(5000, 1000);
-            getCreature()->DeleteWaypoints();
+            getCreature()->StopMoving();
             if (getCreature()->m_escorter == nullptr)
                 return;
 

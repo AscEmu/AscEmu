@@ -33,7 +33,7 @@ class BlackCat : public CreatureAIScript
 };
 
 // HEADLESS HORSEMAN ENCOUNTER
-static Movement::Location WaypointGoldshire[] =
+LocationVector WaypointGoldshire[] =
 {
     { -9502.733398f, 31.395960f, 60.433193f, 1.217366f }, // 0
     { -9493.925781f, 55.272415f, 60.433193f, 0.781469f },
@@ -121,7 +121,7 @@ class ShadeOfTheHorsemanAI : public CreatureAIScript
                     WPCount = 29;
                     for (uint8_t i = 0; i <= WPCount; ++i)
                     {
-                        AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, WaypointGoldshire[i]));
+                        addWaypoint(1, createWaypoint(i, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, WaypointGoldshire[i]));
                     }
                 } break;
                 default:
@@ -130,14 +130,17 @@ class ShadeOfTheHorsemanAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         auto area = getCreature()->GetArea();
         auto area_id = area ? area->id : 0;
 
         if (iWaypointId == uint32_t(WPCount))   // Reached end
         {
-            StopWaypointMovement();
+            stopWaypointMovement();
             if (getNearestCreature(CN_HEADLESS_HORSEMAN_FIRE) == NULL)     // CASE players win
             {
                 sendDBChatMessage(8804);

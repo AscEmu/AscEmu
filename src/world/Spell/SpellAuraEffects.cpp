@@ -1419,7 +1419,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
 
     if (apply)
     {
-        if (removePolymorph && getOwner()->hasUnitStateFlag(UNIT_STATE_FOLLOW))
+        if (removePolymorph && getOwner()->hasUnitStateFlag(UNIT_STATE_POLYMORPHED))
             getOwner()->RemoveAura(getOwner()->getTransformAura());
 
         if (modelId != 0)

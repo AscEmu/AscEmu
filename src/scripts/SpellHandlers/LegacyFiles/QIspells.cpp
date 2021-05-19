@@ -27,6 +27,8 @@
 #include "Map/MapScriptInterface.h"
 #include "Spell/SpellAuras.h"
 #include <Units/Creatures/Pet.h>
+//#include "Movement/Spline/MoveSpline.h"
+#include "Movement/Spline/MoveSplineInit.h"
 
 enum
 {
@@ -452,7 +454,8 @@ bool YennikuRelease(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     yenniku->SetFaction(29);
-    yenniku->GetAIInterface()->WipeTargetList();
+    yenniku->getThreatManager().clearAllThreat();
+    yenniku->getThreatManager().removeMeFromThreatLists();
     yenniku->Despawn(30 * 1000, 60 * 1000);
 
     return true;
@@ -655,8 +658,8 @@ bool FloraoftheEcoDomes(uint8_t /*effectIndex*/, Spell* pSpell)
     normal->Despawn(1, 6 * 60 * 1000);
     mutant->Despawn(5 * 60 * 1000, 0);
 
-    mutant->GetAIInterface()->Init(mutant, AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
-    mutant->GetAIInterface()->taunt(pPlayer, true);
+    mutant->GetAIInterface()->Init(mutant, AI_SCRIPT_AGRO);
+    mutant->getThreatManager().tauntUpdate();
 
     pPlayer->AddQuestKill(10426, 0, 0);
 
@@ -1319,7 +1322,8 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
     if (apply)
     {
-        m_target->GetAIInterface()->AttackReaction(a->GetUnitCaster(), 10, 0);
+        m_target->GetAIInterface()->onHostileAction(a->GetUnitCaster());
+        m_target->getThreatManager().addThreat(a->GetUnitCaster(), 10.f);
     }
     else
     {
@@ -1457,7 +1461,7 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
             pJovaan->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
             if (pJovaan->GetAIInterface() != nullptr)
             {
-                pJovaan->GetAIInterface()->SetAllowedToEnterCombat(false);
+                pJovaan->GetAIInterface()->setAllowedToEnterCombat(false);
             }
         }
         GameObject* pGameObject = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 184834);
@@ -1500,28 +1504,26 @@ bool CenarionMoondust(uint8_t /*effectIndex*/, Spell* pSpell) // Body And Heart 
     if (lunaclaw == nullptr)
         return true;
 
-    lunaclaw->CreateCustomWaypointMap();
-    uint32_t md = lunaclaw->getDisplayId();
-
     //Waypoints
-    lunaclaw->LoadCustomWaypoint(6348.3833f, 132.5197f, 21.6042f, 4.19f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
+    lunaclaw->setMoveWalk(false);
+    lunaclaw->getMovementManager()->movePoint(0, 6348.3833f, 132.5197f, 21.6042f, false, 4.19f);
     //make sure that player dont cheat speed or something
     if (lunaclaw->GetDistance2dSq(p_caster) < 200)   // can be more? - he can speed hack or teleport hack
     {
         LocationVector casterPos = p_caster->GetPosition();
-        lunaclaw->LoadCustomWaypoint(casterPos.x, casterPos.y, casterPos.z, casterPos.o + 3, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
+        lunaclaw->setMoveWalk(false);
+        lunaclaw->getMovementManager()->movePoint(1, casterPos.x, casterPos.y, casterPos.z, false, casterPos.o + 3);
     }
     else
     {
-        lunaclaw->LoadCustomWaypoint(5328.2148f, 94.5505f, 21.4547f, 4.2489f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
+        lunaclaw->setMoveWalk(false);
+        lunaclaw->getMovementManager()->movePoint(2, 5328.2148f, 94.5505f, 21.4547f, false, 4.2489f);
     }
-
-    lunaclaw->SwitchToCustomWaypoints();
 
     // Make sure that creature will attack player
     if (!lunaclaw->CombatStatus.IsInCombat())
     {
-        lunaclaw->GetAIInterface()->setNextTarget(p_caster);
+        lunaclaw->GetAIInterface()->setCurrentTarget(p_caster);
     }
 
     return true;
@@ -1545,28 +1547,26 @@ bool CenarionLunardust(uint8_t /*effectIndex*/, Spell* pSpell)  // Body And Hear
     if (lunaclaw == nullptr)
         return true;
 
-    lunaclaw->CreateCustomWaypointMap();
-    uint32_t md = lunaclaw->getDisplayId();
-
     // Waypoints
-    lunaclaw->LoadCustomWaypoint(-2448.2253f, -1625.0148f, 91.89f, 1.913f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
+    lunaclaw->setMoveWalk(false);
+    lunaclaw->getMovementManager()->movePoint(0, -2448.2253f, -1625.0148f, 91.89f, false, 1.913f);
     //make sure that player dont cheat speed or something
     if (lunaclaw->GetDistance2dSq(p_caster) < 200)   // can be more? - he can speed hack or teleport hack
     {
         LocationVector targetPos = p_caster->GetPosition();
-        lunaclaw->LoadCustomWaypoint(targetPos.x, targetPos.y, targetPos.z, targetPos.o + 3, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
+        lunaclaw->setMoveWalk(false);
+        lunaclaw->getMovementManager()->movePoint(1, targetPos.x, targetPos.y, targetPos.z, false, targetPos.o + 3);
     }
     else
     {
-        lunaclaw->LoadCustomWaypoint(-2504.2641f, -1630.7354f, 91.93f, 3.2f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
+        lunaclaw->setMoveWalk(false);
+        lunaclaw->getMovementManager()->movePoint(2, -2504.2641f, -1630.7354f, 91.93f, false, 3.2f);
     }
-
-    lunaclaw->SwitchToCustomWaypoints();
 
     // Make sure that creature will attack player
     if (!lunaclaw->CombatStatus.IsInCombat())
     {
-        lunaclaw->GetAIInterface()->setNextTarget(p_caster);
+        lunaclaw->GetAIInterface()->setCurrentTarget(p_caster);
     }
 
     return true;
@@ -1873,7 +1873,7 @@ bool TestingTheAntidote(uint8_t /*effectIndex*/, Spell* pSpell)
 
     target->Despawn(0, 300000);
 
-    spawned->GetAIInterface()->setNextTarget(pSpell->getUnitCaster());
+    spawned->GetAIInterface()->setCurrentTarget(pSpell->getUnitCaster());
 
     return true;
 }
@@ -2753,9 +2753,7 @@ bool Carcass(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Ta
     if (pQuest != nullptr && pQuest->getMobCountByIndex(0) < pQuest->getQuestProperties()->required_mob_or_go_count[0])
     {
         NetherDrake->castSpell(NetherDrake, sSpellMgr.getSpellInfo(38502), true);
-        NetherDrake->GetAIInterface()->setSplineFlying();
-        NetherDrake->GetAIInterface()->MoveTo(pos.x, pos.y + 2, pos.z);
-
+        NetherDrake->getMovementManager()->moveTakeoff(0, pos);
         pPlayer->AddQuestKill(10804, 0, 0);
     }
     return true;
@@ -2787,7 +2785,6 @@ bool ForceofNeltharakuSpell(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming 
 
             pPlayer->AddQuestKill(10854, 0, 0);
             pTarget->setMoveRoot(false);
-            pTarget->GetAIInterface()->setWayPointToMove(0);
         }
     }
     return true;
@@ -3031,7 +3028,7 @@ bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
         Creature* pNewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(17102, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
         if (pNewCreature != nullptr)
         {
-            pNewCreature->GetAIInterface()->StopMovement(500);
+            pNewCreature->PauseMovement(500);
             pNewCreature->setAttackTimer(MELEE, 1000);
             pNewCreature->m_noRespawn = true;
         }
@@ -3043,6 +3040,33 @@ bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
     return true;
 }
 
+uint32 const pathSize = 22;
+G3D::Vector3 const InducingVisionPath[pathSize] =
+{
+    { -2240.52f, -407.11f, -9.42f },
+    { -2225.76f, -419.25f, -9.36f },
+    { -2200.88f, -441.00f, -5.61f },
+    { -2143.71f, -468.07f, -9.40f },
+    { -2100.81f, -420.98f, -5.32f },
+    { -2079.47f, -392.47f, -10.26f },
+    { -2043.70f, -343.80f, -6.97f },
+    { -2001.86f, -242.53f, -10.76f },
+    { -1924.75f, -119.97f, -11.77f },
+    { -1794.8f, -7.92f, -9.33f },
+    { -1755.21f, 72.43f, 1.12f },
+    { -1734.55f, 116.84f, -4.34f },
+    { -1720.04f, 125.93f, -2.33f },
+    { -1704.41f, 183.6f, 12.07f },
+    { -1674.32f, 201.6f, 11.24f },
+    { -1624.07f, 223.56f, 2.07f },
+    { -1572.86f, 234.71f, 2.31f },
+    { -1542.87f, 277.9f, 20.54f },
+    { -1541.81f, 316.42f, 49.91f },
+    { -1526.98f, 329.66f, 61.84f },
+    { -1524.17f, 335.24f, 63.33f },
+    { -1513.97f, 355.76f, 63.06f }
+};
+
 bool InducingVision(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->getPlayerCaster() == nullptr)
@@ -3053,10 +3077,12 @@ bool InducingVision(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Creature* creature = mTarget->GetMapMgr()->GetInterface()->SpawnCreature(2983, -2238.994873f, -408.009552f, -9.424423f, 5.753043f, true, false, 0, 0);
-    creature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
 
-    creature->LoadWaypointGroup(17);
-    creature->SwitchToCustomWaypoints();
+    MovementNew::PointsArray path(InducingVisionPath, InducingVisionPath + pathSize);
+    MovementNew::MoveSplineInit init(creature);
+    init.MovebyPath(path, 0);
+    init.SetWalk(true);
+    creature->getMovementManager()->launchMoveSpline(std::move(init), 0, MOTION_PRIORITY_NORMAL, POINT_MOTION_TYPE);
 
     return true;
 }

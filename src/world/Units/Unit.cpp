@@ -1365,6 +1365,9 @@ void Unit::setMoveCanFly(bool set_fly)
 
     if (isCreature())
     {
+        if (!movespline->Initialized())
+            return;
+
         if (set_fly)
         {
             addUnitMovementFlag(MOVEFLAG_CAN_FLY);
@@ -1438,13 +1441,7 @@ void Unit::setMoveRoot(bool set_root)
     {
         if (set_root)
         {
-            // AIInterface
-            //\todo stop movement based on movement flag instead of m_canMove
-#ifndef UseNewAIInterface
-            m_aiInterface->m_canMove = false;
-            m_aiInterface->StopMovement(100);
-#endif
-
+            StopMoving();
             addUnitMovementFlag(MOVEFLAG_ROOTED);
 
             WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 9);
@@ -1457,10 +1454,6 @@ void Unit::setMoveRoot(bool set_root)
         }
         else
         {
-#ifndef UseNewAIInterface
-            m_aiInterface->m_canMove = true;
-#endif
-
             removeUnitMovementFlag(MOVEFLAG_ROOTED);
 
             WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 9);
@@ -1667,7 +1660,10 @@ bool Unit::isInWater() const
     GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
     outz = std::max(watermark, outz);
 
-    if (watermark > outz)
+    // Check for liquid type also, i.e. Orgrimmar is below water level
+    const auto liquidStatus = GetMapMgr()->GetLiquidStatus(0, GetPositionX(), GetPositionY(), GetPositionZ(), MAP_ALL_LIQUIDS);
+
+    if (watermark >= outz || liquidStatus == LIQUID_MAP_IN_WATER)
         return true;
 
     return false;
@@ -1683,7 +1679,7 @@ bool Unit::isUnderWater() const
     GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
     outz = std::max(watermark, outz);
 
-    if ((watermark -2.0f) > outz)
+    if ((watermark -2.0f) >= outz)
         return true;
 
     return false;
@@ -1718,6 +1714,126 @@ float Unit::getSpeedRate(UnitSpeedType type, bool current) const
         return m_UnitSpeedInfo.m_basicSpeedRate[type];
 }
 
+#if VERSION_STRING < Cata
+void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
+{
+    if (rate < 0)
+        rate = 0.0f;
+
+    // Update speed only on change
+    if (m_UnitSpeedInfo.m_currentSpeedRate[mtype] == rate)
+        return;
+
+    if (current)
+        m_UnitSpeedInfo.m_currentSpeedRate[mtype] = rate;
+    else
+        m_UnitSpeedInfo.m_basicSpeedRate[mtype] = rate;
+
+    // Update Also For Movement Generators
+    propagateSpeedChange();
+
+    // Spline packets are for units controlled by AI. "Force speed change" (wrongly named opcodes) and "move set speed" packets are for units controlled by a player.
+#if VERSION_STRING == Classic
+    static Opcodes const moveTypeToOpcode[MAX_SPEED_TYPE][3] =
+    {
+        {SMSG_SPLINE_SET_WALK_SPEED,        SMSG_FORCE_WALK_SPEED_CHANGE,           MSG_MOVE_SET_WALK_SPEED         },
+        {SMSG_SPLINE_SET_RUN_SPEED,         SMSG_FORCE_RUN_SPEED_CHANGE,            MSG_MOVE_SET_RUN_SPEED          },
+        {SMSG_SPLINE_SET_RUN_BACK_SPEED,    SMSG_FORCE_RUN_BACK_SPEED_CHANGE,       MSG_MOVE_SET_RUN_BACK_SPEED     },
+        {SMSG_SPLINE_SET_SWIM_SPEED,        SMSG_FORCE_SWIM_SPEED_CHANGE,           MSG_MOVE_SET_SWIM_SPEED         },
+        {SMSG_SPLINE_SET_SWIM_BACK_SPEED,   SMSG_FORCE_SWIM_BACK_SPEED_CHANGE,      MSG_MOVE_SET_SWIM_BACK_SPEED    },
+        {SMSG_SPLINE_SET_TURN_RATE,         SMSG_FORCE_TURN_RATE_CHANGE,            MSG_MOVE_SET_TURN_RATE          },
+    };
+#endif;
+
+#if VERSION_STRING == TBC
+    static Opcodes const moveTypeToOpcode[MAX_SPEED_TYPE][3] =
+    {
+        {SMSG_SPLINE_SET_WALK_SPEED,        SMSG_FORCE_WALK_SPEED_CHANGE,           MSG_MOVE_SET_WALK_SPEED         },
+        {SMSG_SPLINE_SET_RUN_SPEED,         SMSG_FORCE_RUN_SPEED_CHANGE,            MSG_MOVE_SET_RUN_SPEED          },
+        {SMSG_SPLINE_SET_RUN_BACK_SPEED,    SMSG_FORCE_RUN_BACK_SPEED_CHANGE,       MSG_MOVE_SET_RUN_BACK_SPEED     },
+        {SMSG_SPLINE_SET_SWIM_SPEED,        SMSG_FORCE_SWIM_SPEED_CHANGE,           MSG_MOVE_SET_SWIM_SPEED         },
+        {SMSG_SPLINE_SET_SWIM_BACK_SPEED,   SMSG_FORCE_SWIM_BACK_SPEED_CHANGE,      MSG_MOVE_SET_SWIM_BACK_SPEED    },
+        {SMSG_SPLINE_SET_TURN_RATE,         SMSG_FORCE_TURN_RATE_CHANGE,            MSG_MOVE_SET_TURN_RATE          },
+        {SMSG_SPLINE_SET_FLIGHT_SPEED,      SMSG_FORCE_FLIGHT_SPEED_CHANGE,         MSG_MOVE_SET_FLIGHT_SPEED       },
+        {SMSG_SPLINE_SET_FLIGHT_BACK_SPEED, SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE,    MSG_MOVE_SET_FLIGHT_BACK_SPEED  },
+    };
+#endif
+
+#if VERSION_STRING == WotLK
+    static uint16_t const moveTypeToOpcode[MAX_SPEED_TYPE][3] =
+    {
+        {SMSG_SPLINE_SET_WALK_SPEED,        SMSG_FORCE_WALK_SPEED_CHANGE,           MSG_MOVE_SET_WALK_SPEED         },
+        {SMSG_SPLINE_SET_RUN_SPEED,         SMSG_FORCE_RUN_SPEED_CHANGE,            MSG_MOVE_SET_RUN_SPEED          },
+        {SMSG_SPLINE_SET_RUN_BACK_SPEED,    SMSG_FORCE_RUN_BACK_SPEED_CHANGE,       MSG_MOVE_SET_RUN_BACK_SPEED     },
+        {SMSG_SPLINE_SET_SWIM_SPEED,        SMSG_FORCE_SWIM_SPEED_CHANGE,           MSG_MOVE_SET_SWIM_SPEED         },
+        {SMSG_SPLINE_SET_SWIM_BACK_SPEED,   SMSG_FORCE_SWIM_BACK_SPEED_CHANGE,      MSG_MOVE_SET_SWIM_BACK_SPEED    },
+        {SMSG_SPLINE_SET_TURN_RATE,         SMSG_FORCE_TURN_RATE_CHANGE,            MSG_MOVE_SET_TURN_RATE          },
+        {SMSG_SPLINE_SET_FLIGHT_SPEED,      SMSG_FORCE_FLIGHT_SPEED_CHANGE,         MSG_MOVE_SET_FLIGHT_SPEED       },
+        {SMSG_SPLINE_SET_FLIGHT_BACK_SPEED, SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE,    MSG_MOVE_SET_FLIGHT_BACK_SPEED  },
+        {SMSG_SPLINE_SET_PITCH_RATE,        SMSG_FORCE_PITCH_RATE_CHANGE,           MSG_MOVE_SET_PITCH_RATE         },
+    };
+#endif
+
+    if (GetTypeFromGUID() == TYPEID_PLAYER)
+    {
+        // register forced speed changes for WorldSession::HandleForceSpeedChangeAck
+        // and do it only for real sent packets and use run for run/mounted as client expected
+        ++ToPlayer()->m_forced_speed_changes[mtype];
+
+        if (!isInCombat())
+        {
+            std::list<Pet*> ownerSummons = ToPlayer()->GetSummons();
+            if (ownerSummons.size())
+            {
+                for (std::list<Pet*>::iterator itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
+                {
+                    (*itr)->setSpeedRate(mtype, m_UnitSpeedInfo.m_currentSpeedRate[mtype], false);
+                }
+            }
+        }
+    }
+
+    Player* player_mover = GetMapMgrPlayer(getCharmedByGuid());
+    if (player_mover == nullptr)
+    {
+        if (isPlayer())
+            player_mover = dynamic_cast<Player*>(this);
+    }
+
+    if (player_mover) // unit controlled by a player.
+    {
+#if VERSION_STRING < Cata
+        // Send notification to self. this packet is only sent to one client (the client of the player concerned by the change).
+        WorldPacket self;
+        self.Initialize(moveTypeToOpcode[mtype][1], mtype != TYPE_RUN ? 8 + 4 + 4 : 8 + 4 + 1 + 4);
+        self << GetNewGUID();
+        self << (uint32)0;                                  // Movement counter.
+        if (mtype == TYPE_RUN)
+            self << uint8(1);                               // unknown byte added in 2.1.0
+        self << float(rate);
+
+        player_mover->SendPacket(&self);
+#endif
+        // Send notification to other players. sent to every clients (if in range) except one: the client of the player concerned by the change.
+        WorldPacket data;
+        data.Initialize(moveTypeToOpcode[mtype][2], 8 + 30 + 4);
+        data << GetNewGUID();
+        BuildMovementPacket(&data);
+        data << float(rate);
+
+        player_mover->SendMessageToSet(&data, false);
+    }
+    else // unit controlled by AI.
+    {
+        // send notification to every clients.
+        WorldPacket data;
+        data.Initialize(moveTypeToOpcode[mtype][0], 8 + 4);
+        data << GetNewGUID();
+        data << float(rate);
+        SendMessageToSet(&data, false);
+    }
+}
+#else // adopt the code above to cata / mop
 void Unit::setSpeedRate(UnitSpeedType type, float value, bool current)
 {
     if (current)
@@ -1734,19 +1850,22 @@ void Unit::setSpeedRate(UnitSpeedType type, float value, bool current)
 
     if (player_mover != nullptr)
     {
-#if VERSION_STRING < Cata
         player_mover->sendForceMovePacket(type, value);
-#endif
         player_mover->sendMoveSetSpeedPaket(type, value);
     }
     else
         sendMoveSplinePaket(type);
 }
+#endif
 
 void Unit::resetCurrentSpeeds()
 {
     for (uint8_t i = 0; i < MAX_SPEED_TYPE; ++i)
         m_UnitSpeedInfo.m_currentSpeedRate[i] = m_UnitSpeedInfo.m_basicSpeedRate[i];
+}
+void Unit::propagateSpeedChange()
+{
+    getMovementManager()->propagateSpeedChange();
 }
 
 UnitSpeedType Unit::getFastestSpeedType() const
@@ -2994,19 +3113,12 @@ void Unit::addAura(Aura* aur)
         if (pCaster && pCaster->isAlive() && isAlive())
         {
             pCaster->CombatStatus.OnDamageDealt(this);
-#ifndef UseNewAIInterface
-            if (isCreature())
-                m_aiInterface->AttackReaction(pCaster, 1, aur->getSpellId());
-#else
+
             if (isCreature())
             {
                 // Start Combat
-                m_aiInterface->JustEnteredCombat(pCaster);
-                // Add Threat
-                if (getThreatManager().canHaveThreatList())
-                    getThreatManager().addThreat(pCaster, 0.0f, nullptr, true, true);
+                m_aiInterface->onHostileAction(pCaster);
             }
-#endif
         }
     }
 
@@ -3809,12 +3921,10 @@ bool Unit::canSee(Object* const obj)
                 }
 
                 // If object is only visible to either faction
-#ifndef UseNewAIInterface
                 if (unitObj->GetAIInterface()->faction_visibility == 1)
                     return static_cast<Player*>(this)->isTeamHorde() ? true : false;
                 if (unitObj->GetAIInterface()->faction_visibility == 2)
                     return static_cast<Player*>(this)->isTeamHorde() ? false : true;
-#endif
             }
         } break;
         case TYPEID_GAMEOBJECT:
@@ -4046,8 +4156,8 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
 
     // Health
     m_healthRegenerateTimer += timePassed;
-    if ((hasUnitStateFlag(UNIT_STATE_CONFUSED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH_POLYMORPHED) ||
-        (!hasUnitStateFlag(UNIT_STATE_CONFUSED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH))
+    if ((hasUnitStateFlag(UNIT_STATE_POLYMORPHED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH_POLYMORPHED) ||
+        (!hasUnitStateFlag(UNIT_STATE_POLYMORPHED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH))
     {
         if (isPlayer())
             static_cast<Player*>(this)->RegenerateHealth(CombatStatus.IsInCombat());
@@ -4681,31 +4791,21 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
             {
                 if (pet->GetPetState() != PET_STATE_PASSIVE)
                 {
-#ifndef UseNewAIInterface
-                    pet->GetAIInterface()->AttackReaction(this, 1, 0);
-#else
                     // Start Combat
-                    pet->GetAIInterface()->JustEnteredCombat(this);
-                    // Add Threat
-                    if (getThreatManager().canHaveThreatList())
-                        getThreatManager().addThreat(this, 0.0f, nullptr, true, true);
-#endif
+                    pet->GetAIInterface()->onHostileAction(this);
                     pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
                 }
             }
         }
         else
         {
-            // Generate threat
-#ifndef UseNewAIInterface
-            victim->GetAIInterface()->AttackReaction(this, damage, spellId);
-#else
             // Start Combat
-            victim->GetAIInterface()->JustEnteredCombat(this);
+            victim->GetAIInterface()->onHostileAction(this);
             // Add Threat
-            if (getThreatManager().canHaveThreatList())
-                getThreatManager().addThreat(this, static_cast<float>(damage), spellId ? sSpellMgr.getSpellInfo(spellId) : nullptr, true, true);
-#endif
+            if (victim->getThreatManager().canHaveThreatList())
+                victim->getThreatManager().addThreat(this, static_cast<float>(damage), sSpellMgr.getSpellInfo(spellId), true, true);
+
+            // todo: remove this here when all damage is batched
             sScriptMgr.DamageTaken(static_cast<Creature*>(victim), this, &damage);
         }
     }
@@ -5315,31 +5415,23 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             {
                 if (pet->GetPetState() != PET_STATE_PASSIVE)
                 {
-#ifndef UseNewAIInterface
-                    pet->GetAIInterface()->AttackReaction(attacker, 1, 0);
-#else
                     // Start Combat
-                    pet->GetAIInterface()->JustEnteredCombat(attacker);
-                    // Add Threat
-                    if (getThreatManager().canHaveThreatList())
-                        getThreatManager().addThreat(attacker, 0.0f, nullptr, true, true);
-#endif
+                    // todo: move this to ::Strike and ::doSpellDamage
+                    pet->GetAIInterface()->onHostileAction(attacker);
                     pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
                 }
             }
         }
         else
         {
-            // Generate threat
-#ifndef UseNewAIInterface
-            GetAIInterface()->AttackReaction(attacker, damage, spellId);
-#else
             // Start Combat
-            GetAIInterface()->JustEnteredCombat(attacker);
+            // todo: move this to ::Strike and ::doSpellDamage
+            GetAIInterface()->onHostileAction(attacker);
             // Add Threat
             if (getThreatManager().canHaveThreatList())
-                getThreatManager().addThreat(attacker, static_cast<float>(damage), spellId ? sSpellMgr.getSpellInfo(spellId) : nullptr, true, true);
-#endif
+                getThreatManager().addThreat(attacker, static_cast<float>(damage), sSpellMgr.getSpellInfo(spellId), true, true);
+
+            // todo: this should happen on entire batch damage, not on every batch event
             sScriptMgr.DamageTaken(static_cast<Creature*>(this), attacker, &damage);
         }
 
@@ -5420,40 +5512,7 @@ uint32_t Unit::_handleBatchHealing(HealthBatchEvent const* batch, uint32_t* abso
         }
 
         // Handle threat
-        std::vector<Unit*> target_threat;
-        for (const auto& itr : healer->getInRangeObjectsSet())
-        {
-            if (!itr || !itr->isCreature())
-                continue;
-
-            const auto tmp_creature = static_cast<Creature*>(itr);
-#ifndef UseNewAIInterface
-            if (!tmp_creature->CombatStatus.IsInCombat() || (tmp_creature->GetAIInterface()->getThreatByPtr(healer) == 0 && tmp_creature->GetAIInterface()->getThreatByPtr(this) == 0))
-                continue;
-#else
-            if (!tmp_creature->CombatStatus.IsInCombat() || (tmp_creature->getThreatManager().getThreat(healer) == 0 && tmp_creature->getThreatManager().getThreat(this) == 0))
-                continue;
-#endif
-            if (!(healer->GetPhase() & itr->GetPhase()))     //Can't see, can't be a threat
-                continue;
-
-            target_threat.push_back(tmp_creature);
-        }
-        
-        if (!target_threat.empty())
-        {
-            const auto heal_threat = healing / static_cast<float_t>(target_threat.size());
-
-            for (const auto& itr : target_threat)
-            {
-#ifndef UseNewAIInterface
-                itr->GetAIInterface()->HealReaction(healer, this, batch->spellInfo, heal_threat);
-#else
-                // Add Threat for Assisting me in Fight
-                this->getThreatManager().forwardThreatForAssistingMe(healer, heal_threat, batch->spellInfo, false);
-#endif
-            }
-        }
+        getThreatManager().forwardThreatForAssistingMe(healer, static_cast<float_t>(healing), batch->spellInfo);
 
         if (IsInWorld() && healer->IsInWorld())
             healer->CombatStatus.WeHealed(this);
@@ -5474,7 +5533,10 @@ void Unit::setDeathState(DeathState state)
 {
     m_deathState = state;
     if (state == JUST_DIED)
+    {
+        getThreatManager().removeMeFromThreatLists();
         DropAurasOnDeath();
+    }
 }
 
 DeathState Unit::getDeathState() const { return m_deathState; }
@@ -5685,8 +5747,13 @@ float Unit::getMeleeRange(Unit* target)
 
 bool Unit::isInAccessiblePlaceFor(Creature* c) const
 {
+    float ground = GetMapMgr()->GetLandHeight(GetPositionX(), GetPositionY(), GetPositionZ());
+    float height = GetPositionZ();
+
     if (isInWater())
         return c->CanSwim();
+    else if (IsFlying() || (ground) < (height - 10) && !GetTransport()) // we could be flying antihack!
+        return c->CanFly();
     else
         return c->CanWalk() || c->CanFly();
 }
@@ -5704,7 +5771,7 @@ void Unit::setControlled(bool apply, UnitStates state)
         case UNIT_STATE_STUNNED:
             SetStunned(true);
             break;
-        case UNIT_STATE_ROOT:
+        case UNIT_STATE_ROOTED:
             if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
                 setMoveRoot(true);
             break;
@@ -5737,7 +5804,7 @@ void Unit::setControlled(bool apply, UnitStates state)
             removeUnitStateFlag(state);
             SetStunned(false);
             break;
-        case UNIT_STATE_ROOT:
+        case UNIT_STATE_ROOTED:
             if (getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT) || isVehicle() || (ToCreature() && ToCreature()->GetMovementTemplate().IsRooted()))
                 return;
 
@@ -5772,7 +5839,7 @@ void Unit::applyControlStatesIfNeeded()
     if (hasUnitStateFlag(UNIT_STATE_STUNNED) || getAuraWithAuraEffect(SPELL_AURA_MOD_STUN))
         SetStunned(true);
 
-    if (hasUnitStateFlag(UNIT_STATE_ROOT) || getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT))
+    if (hasUnitStateFlag(UNIT_STATE_ROOTED) || getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT))
         setMoveRoot(true);
 
     if (hasUnitStateFlag(UNIT_STATE_CONFUSED) || getAuraWithAuraEffect(SPELL_AURA_MOD_CONFUSE))
@@ -5823,7 +5890,7 @@ void Unit::SetStunned(bool apply)
         if (!owner || owner->GetTypeFromGUID() != TYPEID_PLAYER || !owner->ToPlayer()->IsMounted())
             removeUnitFlags(UNIT_FLAG_STUNNED);
 
-        if (!hasUnitStateFlag(UNIT_STATE_ROOT))         // prevent moving if it also has root effect
+        if (!hasUnitStateFlag(UNIT_STATE_ROOTED))         // prevent moving if it also has root effect
         {
             if (GetTypeFromGUID() == TYPEID_PLAYER)
             {
@@ -5851,10 +5918,13 @@ void Unit::SetFeared(bool apply)
         setTargetGuid(0);
 
         Unit* caster = nullptr;
-        caster = getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR)->getCaster()->ToUnit();
+        if (const auto fearAura = getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
+            caster = fearAura->GetUnitCaster();
 
-        getMovementManager()->moveFleeing(caster, 7000);             // caster == NULL processed in MoveFleeing
-        getThreatManager().addThreat(caster, 0.0f);
+        if (caster == nullptr)
+            caster = GetAIInterface()->getCurrentTarget();
+
+        getMovementManager()->moveFleeing(caster);             // caster == NULL processed in MoveFleeing
     }
     else
     {

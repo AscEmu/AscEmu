@@ -35,12 +35,13 @@ class LairBruteAI : public CreatureAIScript
     {
         if (spellId == LAIR_BRUTE_CHARGE)
         {
-            Unit* pCurrentTarget = getCreature()->GetAIInterface()->getNextTarget();
+            Unit* pCurrentTarget = getCreature()->getThreatManager().getCurrentVictim();
             if (pCurrentTarget != nullptr)
             {
-                getCreature()->GetAIInterface()->AttackReaction(pCurrentTarget, 500);
-                getCreature()->GetAIInterface()->setNextTarget(pCurrentTarget);
-                getCreature()->GetAIInterface()->RemoveThreatByPtr(pCurrentTarget);
+                getCreature()->GetAIInterface()->onHostileAction(pCurrentTarget);
+                getCreature()->getThreatManager().addThreat(pCurrentTarget, 500.f);
+                getCreature()->GetAIInterface()->setCurrentTarget(pCurrentTarget);
+                getCreature()->getThreatManager().clearThreat(pCurrentTarget);
             }
         }
     }
@@ -123,7 +124,8 @@ class HighKingMaulgarAI : public CreatureAIScript
                 Unit* pTarget = getBestPlayerTarget();
                 if (pTarget != NULL)
                 {
-                    pAdd->GetAIInterface()->AttackReaction(pTarget, 200);
+                    pAdd->GetAIInterface()->onHostileAction(pTarget);
+                    pAdd->getThreatManager().addThreat(pTarget, 200.f);
                 }
 
                 ++mAliveAdds;
@@ -251,7 +253,7 @@ class KigglerTheCrazedAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
+        Unit* pTarget = getCreature()->getThreatManager().getCurrentVictim();
         if (pTarget != NULL)
         {
             if (getRangeToObject(pTarget) <= 40.0f)
@@ -508,7 +510,7 @@ class GruulTheDragonkillerAI : public CreatureAIScript
             }
             else if (_isTimerFinished(mHurtfulTimer))
             {
-                Unit* pCurrentTarget = getCreature()->GetAIInterface()->getNextTarget();
+                Unit* pCurrentTarget = getCreature()->getThreatManager().getCurrentVictim();
                 if (pCurrentTarget != nullptr)
                 {
                     Unit* pTarget = pCurrentTarget;
@@ -521,7 +523,7 @@ class GruulTheDragonkillerAI : public CreatureAIScript
                             continue;
                         if (getRangeToObject(pPlayer) > 8.0f)
                             continue;
-                        if (getCreature()->GetAIInterface()->getThreatByPtr(pPlayer) >= getCreature()->GetAIInterface()->getThreatByPtr(pCurrentTarget))
+                        if (getCreature()->getThreatManager().getThreat(pPlayer) >= getCreature()->getThreatManager().getThreat(pCurrentTarget))
                             continue;
 
                         pTarget = static_cast<Unit*>(pPlayer);

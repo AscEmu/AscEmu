@@ -9,12 +9,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Item.h"
 #include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
-#include "Management/ItemInterface.h"
-#include "Storage/MySQLDataStore.hpp"
-#include "Management/QuestLogEntry.hpp"
 #include "Map/MapScriptInterface.h"
-#include "Spell/SpellMgr.hpp"
 #include "Map/WorldCreatorDefines.hpp"
+#include "Management/QuestLogEntry.hpp"
+#include "Management/ItemInterface.h"
+#include "Movement/Spline/MoveSpline.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "Spell/SpellMgr.hpp"
 
 //Classic
 void SetupBlackfathomDeeps(ScriptMgr* mgr);

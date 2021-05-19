@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "../world/Units/Unit.h"
 #include "../world/Objects/Transporter.h"
 #include "WorldPacket.h"
+#include "Movement/PathGenerator.h"
 
 namespace MovementNew {
 
@@ -76,6 +77,7 @@ int32_t MoveSplineInit::Launch()
     args.initialOrientation = real_position.orientation;
     args.flags.enter_cycle = args.flags.cyclic;
     move_spline.onTransport = transport;
+    args.flags.EnableCatmullRom(); // with this set pathfinding works fine // aaron02
 
     uint32_t moveFlags = unit->obj_movement_info.getMovementFlags();
 
@@ -102,11 +104,9 @@ int32_t MoveSplineInit::Launch()
             moveFlagsForSpeed &= ~MOVEFLAG_WALK;
 
         args.velocity = unit->getSpeedRate(SelectSpeedType(moveFlagsForSpeed), true);
-#ifndef UseNewAIInterface
         if (unit->isCreature())
-            if (static_cast<Creature*>(unit)->GetAIInterface()->hasCalledForHelp())
+            if (static_cast<Creature*>(unit)->GetAIInterface()->alreadyCalledForHelp())
                 args.velocity *= 0.66f;
-#endif
     }
 
     // limit the speed in the same way the client does
@@ -238,11 +238,17 @@ void MoveSplineInit::MoveTo(float x, float y, float z, bool generatePath, bool f
     MoveTo(G3D::Vector3(x, y, z), generatePath, forceDestination);
 }
 
-void MoveSplineInit::MoveTo(Vector3 const& dest, bool generatePath, bool /*forceDestination*/)
+void MoveSplineInit::MoveTo(Vector3 const& dest, bool generatePath, bool forceDestination)
 {
     if (generatePath)
     {
-        // ToDo
+        PathGenerator path(unit);
+        bool result = path.calculatePath(dest.x, dest.y, dest.z, forceDestination);
+        if (result && !(path.getPathType() & PATHFIND_NOPATH))
+        {
+            MovebyPath(path.getPath());
+            return;
+        }
     }
 
     args.path_Idx_offset = 0;

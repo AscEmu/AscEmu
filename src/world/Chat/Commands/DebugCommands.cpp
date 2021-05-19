@@ -50,73 +50,56 @@ bool ChatHandler::HandleSetScriptPhaseCommand(const char* args, WorldSession* se
 
 bool ChatHandler::HandleAiChargeCommand(const char* /*args*/, WorldSession* session)
 {
-#ifndef UseNewAIInterface
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
         return true;
 
-    selected_unit->GetAIInterface()->splineMoveCharge(session->GetPlayer());
-    return true;
-#endif
+    selected_unit->getMovementManager()->moveCharge(session->GetPlayer()->GetPositionX(), session->GetPlayer()->GetPositionY(), session->GetPlayer()->GetPositionZ());
     return true;
 }
 
 bool ChatHandler::HandleAiKnockbackCommand(const char* /*args*/, WorldSession* session)
 {
-#ifndef UseNewAIInterface
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
         return true;
 
     LocationVector pos = session->GetPlayer()->GetPosition();
 
-    selected_unit->GetAIInterface()->splineMoveKnockback(pos.x, pos.y, pos.z, 10.0f, 5.f);
-    return true;
-#endif
+    selected_unit->getMovementManager()->moveKnockbackFrom(pos.x, pos.y, 10.0f, 5.f);
     return true;
 }
 
 bool ChatHandler::HandleAiJumpCommand(const char* /*args*/, WorldSession* session)
 {
-#ifndef UseNewAIInterface
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
         return true;
 
     LocationVector pos = session->GetPlayer()->GetPosition();
 
-    selected_unit->GetAIInterface()->splineMoveJump(pos.x, pos.y, pos.z, 0, 5.0f, false);
-    return true;
-#endif
+    selected_unit->getMovementManager()->moveJump(pos, 1.0f, 5.0f);
     return true;
 }
 
 bool ChatHandler::HandleAiFallingCommand(const char* /*args*/, WorldSession* session)
 {
-#ifndef UseNewAIInterface
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
         return true;
 
-    LocationVector pos = session->GetPlayer()->GetPosition();
-
-    selected_unit->GetAIInterface()->splineMoveFalling(pos.x, pos.y, pos.z);
-    return true;
-#endif
+    selected_unit->getMovementManager()->moveFall();
     return true;
 }
 
 bool ChatHandler::HandleMoveToSpawnCommand(const char* /*args*/, WorldSession* session)
 {
-#ifndef UseNewAIInterface
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
         return true;
 
-    LocationVector spawnPos = selected_unit->GetSpawnPosition();
-    selected_unit->GetAIInterface()->generateAndSendSplinePath(spawnPos.x, spawnPos.y, spawnPos.z, spawnPos.o);
-    return true;
-#endif
+    selected_unit->getMovementManager()->moveTargetedHome();
+
     return true;
 }
 
@@ -169,7 +152,6 @@ bool ChatHandler::HandleDebugDumpState(const char* /*args*/, WorldSession* sessi
 
 bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session)
 {
-#ifndef UseNewAIInterface
     Unit* selected_unit = GetSelectedUnit(m_session);
     if (selected_unit == nullptr)
         return true;
@@ -178,17 +160,11 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     bool in_front_of_creature = m_session->GetPlayer()->isInFront(selected_unit);
     float distance_to_creature = m_session->GetPlayer()->CalcDistance(selected_unit);
 
-    uint32 creature_state = selected_unit->GetAIInterface()->getCreatureState();
     uint32 ai_state = selected_unit->GetAIInterface()->getAiState();
     uint32 ai_type = selected_unit->GetAIInterface()->getAiScriptType();
     uint32 ai_agent = selected_unit->GetAIInterface()->getCurrentAgent();
 
-    uint32 current_wp = selected_unit->GetAIInterface()->getCurrentWayPointId();
-    uint32 wp_script_type = selected_unit->GetAIInterface()->getWaypointScriptType();
-
-    uint32 walk_mode = selected_unit->GetAIInterface()->getWalkMode();
-
-    uint32 attackerscount = static_cast<uint32>(selected_unit->GetAIInterface()->getAITargetsCount());
+    uint32 attackerscount = static_cast<uint32>(selected_unit->getThreatManager().getThreatListSize());
 
     if (selected_unit->isCreature())
         BlueSystemMessage(m_session, "Showing creature moveinfo for %s", static_cast<Creature*>(selected_unit)->GetCreatureProperties()->Name.c_str());
@@ -200,15 +176,11 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     SystemMessage(m_session, "In front of the target: %u", in_front_of_creature);
     SystemMessage(m_session, "Current distance to target: %f", distance_to_creature);
     SystemMessage(m_session, "=== States ===");
-    SystemMessage(m_session, "Current state: %u", creature_state);
     SystemMessage(m_session, "Current AI state: %u | AIType: %u | AIAgent: %u", ai_state, ai_type, ai_agent);
-    SystemMessage(m_session, "Current waypoint id: %u | wp script type: %u", current_wp, wp_script_type);
-    SystemMessage(m_session, "Walkmode: %u", walk_mode);
     SystemMessage(m_session, "=== Misc ===");
     SystemMessage(m_session, "Attackers count: %u", attackerscount);
     SystemMessage(m_session, "=== UnitMovementFlags ===");
     SystemMessage(m_session, "MovementFlags: %u", selected_unit->getUnitMovementFlags());
-#endif
     return true;
 }
 
@@ -269,7 +241,6 @@ bool ChatHandler::HandleDebugSwim(const char* /*args*/, WorldSession* m_session)
 //.debug fly
 bool ChatHandler::HandleDebugFly(const char* /*args*/, WorldSession* m_session)
 {
-#ifndef UseNewAIInterface
     Creature* selected_creature = GetSelectedCreature(m_session);
     if (selected_creature == nullptr)
         return false;
@@ -277,16 +248,13 @@ bool ChatHandler::HandleDebugFly(const char* /*args*/, WorldSession* m_session)
     if (selected_creature->hasUnitMovementFlag(MOVEFLAG_CAN_FLY))
     {
         GreenSystemMessage(m_session, "Unset Fly for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
-        selected_creature->GetAIInterface()->unsetSplineFlying();
         selected_creature->setMoveCanFly(false);
     }
     else
     {
         GreenSystemMessage(m_session, "Set Fly for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
-        selected_creature->GetAIInterface()->setSplineFlying();
         selected_creature->setMoveCanFly(true);
     }
-#endif
     return true;
 }
 

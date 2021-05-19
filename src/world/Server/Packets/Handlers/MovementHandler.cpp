@@ -356,7 +356,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
                 MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(mover->GetMapId());
                 if (pMapinfo != nullptr)
                 {
-                    if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
+                    if (pMapinfo->isNonInstanceMap() || pMapinfo->isBattleground())
                     {
                         _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
                     }
@@ -415,6 +415,82 @@ void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)
         sOpcodeTables.getNameForInternalId(recvPacket.GetOpcode()).c_str(), recvPacket.GetOpcode());
 
     recvPacket.rfinish();
+}
+
+void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
+{
+#if VERSION_STRING < Cata
+    /* extract packet */
+    uint32 unk1;
+    float  newspeed;
+    Unit* mover = _player->mControledUnit;
+
+    // continue parse packet
+
+    recvPacket >> unk1;                          // counter or moveEvent
+
+    MovementInfo movementInfo;
+    recvPacket >> movementInfo;
+
+    // now can skip not our packet
+    if (movementInfo.getGuid() != mover->getGuid())
+    {
+        recvPacket.rfinish();                   // prevent warnings spam
+        return;
+    }
+
+    recvPacket >> newspeed;
+    /*----------------*/
+
+    // client ACK send one packet for mounted/run case and need skip all except last from its
+    // in other cases anti-cheat check can be fail in false case
+    UnitSpeedType move_type;
+    UnitSpeedType force_move_type;
+
+    static char const* move_type_name[MAX_SPEED_TYPE] = { "Walk", "Run", "RunBack", "Swim", "SwimBack", "TurnRate", "Flight", "FlightBack", "PitchRate" };
+
+    switch (recvPacket.GetOpcode())
+    {
+    case CMSG_FORCE_WALK_SPEED_CHANGE_ACK:          move_type = TYPE_WALK;          force_move_type = TYPE_WALK;        break;
+    case CMSG_FORCE_RUN_SPEED_CHANGE_ACK:           move_type = TYPE_RUN;           force_move_type = TYPE_RUN;         break;
+    case CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK:      move_type = TYPE_RUN_BACK;      force_move_type = TYPE_RUN_BACK;    break;
+    case CMSG_FORCE_SWIM_SPEED_CHANGE_ACK:          move_type = TYPE_SWIM;          force_move_type = TYPE_SWIM;        break;
+    case CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK:     move_type = TYPE_SWIM_BACK;     force_move_type = TYPE_SWIM_BACK;   break;
+    case CMSG_FORCE_TURN_RATE_CHANGE_ACK:           move_type = TYPE_TURN_RATE;     force_move_type = TYPE_TURN_RATE;   break;
+    case CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK:        move_type = TYPE_FLY;           force_move_type = TYPE_FLY;         break;
+    case CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK:   move_type = TYPE_FLY_BACK;      force_move_type = TYPE_FLY_BACK;    break;
+    case CMSG_FORCE_PITCH_RATE_CHANGE_ACK:          move_type = TYPE_PITCH_RATE;    force_move_type = TYPE_PITCH_RATE;  break;
+    default:
+        sLogger.failure("WorldSession::handleForceSpeedChangeAck: Unknown move type opcode: %u", recvPacket.GetOpcode());
+        return;
+    }
+
+    // skip all forced speed changes except last and unexpected
+    // in run/mounted case used one ACK and it must be skipped.m_forced_speed_changes[MOVE_RUN} store both.
+    if (_player->m_forced_speed_changes[force_move_type] > 0)
+    {
+        --_player->m_forced_speed_changes[force_move_type];
+        if (_player->m_forced_speed_changes[force_move_type] > 0)
+            return;
+    }
+
+    if (!_player->GetTransport() && std::fabs(_player->getSpeedRate(move_type, false) - newspeed) > 0.01f)
+    {
+        if (_player->getSpeedRate(move_type, false) > newspeed)         // must be greater - just correct
+        {
+            _player->setSpeedRate(move_type, _player->getSpeedRate(move_type, false), false);
+        }
+        else                                                            // must be lesser - cheating
+        {
+            // handle something here
+        }
+    }
+#else // todo fix for cata / mop
+    sLogger.debug("Opcode %s (%u) received. This opcode is not known/implemented right now!",
+        sOpcodeTables.getNameForInternalId(recvPacket.GetOpcode()).c_str(), recvPacket.GetOpcode());
+
+    recvPacket.rfinish();
+#endif
 }
 
 void WorldSession::handleWorldTeleportOpcode(WorldPacket& recvPacket)

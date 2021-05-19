@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Config/Config.h"
 #include "Spell/SpellMgr.hpp"
 
-SERVER_DECL std::set<std::string> CreaturePropertiesMovementTables;
 SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 SERVER_DECL std::set<std::string> CreatureQuestStarterTables;
 SERVER_DECL std::set<std::string> CreatureQuestFinisherTables;
@@ -872,64 +871,41 @@ void MySQLDataStore::loadCreaturePropertiesMovementTable()
 {
     auto startTime = Util::TimeNow();
     uint32_t creature_properties_movement_count = 0;
-    uint32_t basic_field_count = 0;
 
-    std::set<std::string>::iterator tableiterator;
-    for (tableiterator = CreaturePropertiesMovementTables.begin(); tableiterator != CreaturePropertiesMovementTables.end(); ++tableiterator)
+    //                                                                      0          1           2             3                 4               5                  6
+    QueryResult* creature_properties_movement_result = WorldDatabase.Query("SELECT CreatureId, Ground, Swim, Flight, Rooted, Chase, Random, InteractionPauseTimer FROM creature_properties_movement");
+
+    if (creature_properties_movement_result == nullptr)
     {
-        std::string table_name = *tableiterator;
-        //                                                                      0          1           2             3                 4               5                  6
-        QueryResult* creature_properties_movement_result = WorldDatabase.Query("SELECT CreatureId, Ground, Swim, Flight, Rooted, Chase, Random FROM creature_properties_movement");
-
-        if (creature_properties_movement_result == nullptr)
-        {
-            sLogger.info("MySQLDataLoads : Table `%s` is empty!", table_name.c_str());
-            return;
-        }
-
-        uint32_t row_count = 0;
-        if (table_name.compare("creature_properties_movement") == 0)
-        {
-            basic_field_count = creature_properties_movement_result->GetFieldCount();
-        }
-        else
-        {
-            row_count = static_cast<uint32_t>(_creaturePropertiesMovementStore.size());
-        }
-
-        if (basic_field_count != creature_properties_movement_result->GetFieldCount())
-        {
-            sLogger.failure("Additional creature_properties_movement table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), creature_properties_movement_result->GetFieldCount());
-            delete creature_properties_movement_result;
-            continue;
-        }
-
-        sLogger.info("MySQLDataLoads : Table `%s` has %u columns", table_name.c_str(), creature_properties_movement_result->GetFieldCount());
-
-        _creaturePropertiesMovementStore.rehash(row_count + creature_properties_movement_result->GetRowCount());
-
-        do
-        {
-            Field* fields = creature_properties_movement_result->Fetch();
-
-            uint32_t entry = fields[0].GetUInt32();
-
-            CreaturePropertiesMovement& creaturePropertiesMovement = _creaturePropertiesMovementStore[entry];
-
-            creaturePropertiesMovement.Id = entry;
-            creaturePropertiesMovement.MovementType = IDLE_MOTION_TYPE;
-            creaturePropertiesMovement.Movement.Ground = static_cast<CreatureGroundMovementType>(fields[1].GetUInt8());
-            creaturePropertiesMovement.Movement.Swim = fields[2].GetBool();
-            creaturePropertiesMovement.Movement.Flight = static_cast<CreatureFlightMovementType>(fields[3].GetUInt8());
-            creaturePropertiesMovement.Movement.Rooted = fields[4].GetBool();
-            creaturePropertiesMovement.Movement.Chase = static_cast<CreatureChaseMovementType>(fields[5].GetUInt8());
-            creaturePropertiesMovement.Movement.Random = static_cast<CreatureRandomMovementType>(fields[6].GetUInt8());
-
-            ++creature_properties_movement_count;
-        } while (creature_properties_movement_result->NextRow());
-
-        delete creature_properties_movement_result;
+        sLogger.info("MySQLDataLoads : Table creature_properties_movement is empty!");
+        return;
     }
+
+    uint32_t row_count = 0;   
+    row_count = static_cast<uint32_t>(_creaturePropertiesMovementStore.size());
+
+    sLogger.info("MySQLDataLoads : Table creature_properties_movement has %u columns", creature_properties_movement_result->GetFieldCount());
+
+    _creaturePropertiesMovementStore.rehash(row_count + creature_properties_movement_result->GetRowCount());
+    do
+    {
+        Field* fields = creature_properties_movement_result->Fetch();
+
+        uint32_t entry = fields[0].GetUInt32();
+
+        CreaturePropertiesMovement& creaturePropertiesMovement = _creaturePropertiesMovementStore[entry];
+
+        creaturePropertiesMovement.Id = entry;
+        creaturePropertiesMovement.MovementType = IDLE_MOTION_TYPE;
+        creaturePropertiesMovement.Movement.Ground = static_cast<CreatureGroundMovementType>(fields[1].GetUInt8());
+        creaturePropertiesMovement.Movement.Swim = fields[2].GetBool();
+        creaturePropertiesMovement.Movement.Flight = static_cast<CreatureFlightMovementType>(fields[3].GetUInt8());
+        creaturePropertiesMovement.Movement.Rooted = fields[4].GetBool();
+        creaturePropertiesMovement.Movement.Chase = static_cast<CreatureChaseMovementType>(fields[5].GetUInt8());
+        creaturePropertiesMovement.Movement.Random = static_cast<CreatureRandomMovementType>(fields[6].GetUInt8());
+
+        ++creature_properties_movement_count;
+        } while (creature_properties_movement_result->NextRow());
 
     sLogger.info("MySQLDataLoads : Loaded %u creature movement data in %u ms!", creature_properties_movement_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4194,7 +4170,8 @@ void MySQLDataStore::loadCreatureSpawns()
                     if (cspawn->phase == 0)
                         cspawn->phase = 0xFFFFFFFF;
 
-                    cspawn->waypoint_id = fields[30].GetUInt32();
+                    cspawn->wander_distance = fields[30].GetUInt32();
+                    cspawn->waypoint_id = fields[31].GetUInt32();
 
                     cspawn->table = *tableiterator;
 

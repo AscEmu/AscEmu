@@ -96,7 +96,7 @@ class TakenInTheNight : public CreatureAIScript
 
     void OnLoad()
     {
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         getCreature()->GetAIInterface()->setCombatDisabled(true);
     }
 
@@ -142,7 +142,7 @@ class TakenInTheNight : public CreatureAIScript
         if (spawn != 22459)
             return;
 
-        creat->GetAIInterface()->m_canMove = false;
+        creat->setControlled(true, UNIT_STATE_ROOTED);
         creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally! I'm free!");
 
         plr->AddQuestKill(10873, 0, 0);
@@ -158,7 +158,7 @@ class AnImproperBurial : public CreatureAIScript
     {
         getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
     }
 };
 

@@ -163,7 +163,7 @@ void PacketBuilder::WriteCreate(MoveSpline const& move_spline, ByteBuffer& data)
         data << move_spline.vertical_acceleration;                      // added in 3.1
         data << move_spline.effect_start_time;                          // added in 3.1
 
-        uint32_t nodes = move_spline.getPath().size();
+        uint32_t nodes = static_cast<uint32_t>(move_spline.getPath().size());
         data << nodes;
         data.append<G3D::Vector3>(&move_spline.getPath()[0], nodes);
         data << uint8_t(move_spline.spline.mode());                     // added in 3.1

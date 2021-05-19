@@ -861,6 +861,8 @@ void World::loadMySQLStores()
 
     sFormationMgr->loadCreatureFormations();
     sWaypointMgr->load();
+    sWaypointMgr->loadCustomWaypoints();
+    sObjectMgr.loadCreatureMovementOverrides();
 }
 
 void World::loadMySQLTablesByTask()

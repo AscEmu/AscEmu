@@ -228,7 +228,6 @@ Creature* Transporter::createNPCPassenger(MySQLStructure::CreatureSpawn* data)
 
     // AddToWorld
     pCreature->AddToWorld(map);
-    pCreature->Motion_Initialize();
     pCreature->setUnitMovementFlags(MOVEFLAG_TRANSPORT);
     pCreature->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
 

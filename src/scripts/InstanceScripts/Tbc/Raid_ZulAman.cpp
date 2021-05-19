@@ -267,7 +267,7 @@ class HalazziAI : public CreatureAIScript
         mLynx = spawnCreature(CN_LYNX_SPIRIT, getCreature()->GetPosition());
         if (mLynx)
         {
-            mLynx->GetAIInterface()->AttackReaction(getCreature()->GetAIInterface()->getNextTarget(), 1);
+            mLynx->GetAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
             mLynx->m_noRespawn = true;
         }
 

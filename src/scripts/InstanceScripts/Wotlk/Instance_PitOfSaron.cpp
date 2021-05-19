@@ -81,8 +81,8 @@ class ForgemasterGarfrostAI : public CreatureAIScript
         {
             sendDBChatMessage(8765);
             getCreature()->castSpell(getCreature(), SPELL_STOMP, false);
-            getCreature()->GetAIInterface()->WipeHateList();
-            getCreature()->GetAIInterface()->splineMoveJump(JumpCords[0].x, JumpCords[0].y, JumpCords[0].z);
+            getCreature()->getThreatManager().clearAllThreat();
+            getCreature()->getMovementManager()->moveJump(JumpCords[0], 25.0f, 15.0f, 0);
             
             if (GameObject * pObject = getNearestGameObject(401006)) //forgemaster's anvil (TEMP)
                 getCreature()->SetFacing(getCreature()->calcRadAngle(getCreature()->GetPositionX(), getCreature()->GetPositionY(), pObject->GetPositionX(), pObject->GetPositionY()));
@@ -101,8 +101,8 @@ class ForgemasterGarfrostAI : public CreatureAIScript
         {
             sendDBChatMessage(8766);
             getCreature()->castSpell(getCreature(), SPELL_STOMP, false);
-            getCreature()->GetAIInterface()->WipeHateList();
-            getCreature()->GetAIInterface()->splineMoveJump(JumpCords[1].x, JumpCords[1].y, JumpCords[1].z);
+            getCreature()->getThreatManager().clearAllThreat();
+            getCreature()->getMovementManager()->moveJump(JumpCords[1], 25.0f, 15.0f, 0);
 
             if (GameObject * pObject = getNearestGameObject(401006)) //forgemaster's anvil (TEMP)
                 getCreature()->SetFacing(getCreature()->calcRadAngle(getCreature()->GetPositionX(), getCreature()->GetPositionY(), pObject->GetPositionX(), pObject->GetPositionY()));
@@ -271,8 +271,8 @@ class IckAI : public CreatureAIScript
             if (pTarget != NULL)
             {
                 _clearHateList();
-                getCreature()->GetAIInterface()->setNextTarget(pTarget);
-                getCreature()->GetAIInterface()->modThreatByPtr(pTarget, 1000);
+                getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
+                getCreature()->getThreatManager().addThreat(pTarget, 1000);
                 //CastSpellOnTarget(pTarget, TargetGen_Current, mPursue->mSpellInfo, true);
             }
 
@@ -413,8 +413,8 @@ class KrickAI : public CreatureAIScript
             // Clear Hatelist dont allow Combat and root the Unit
             getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            getCreature()->GetAIInterface()->WipeTargetList();
-            getCreature()->GetAIInterface()->WipeHateList();
+            getCreature()->getThreatManager().clearAllThreat();
+            getCreature()->getThreatManager().removeMeFromThreatLists();
 
             if (pTarget->isTeamHorde())
                 JainaOrSylvanas = spawnCreatureAndGetAIScript(CN_SYLVANAS_WINDRUNNER, 816.58f, 111.53f, 510.0f, 0.3825f);

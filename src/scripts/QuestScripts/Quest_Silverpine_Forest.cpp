@@ -26,13 +26,16 @@ class Deathstalker_Erland : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(Deathstalker_Erland)
     explicit Deathstalker_Erland(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (iWaypointId == 9)
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, you helped me to overcome this obstacle");
             getCreature()->Despawn(5000, 1000);
-            getCreature()->DeleteWaypoints();
+            getCreature()->StopMoving();
             if (getCreature()->m_escorter == nullptr)
                 return;
 

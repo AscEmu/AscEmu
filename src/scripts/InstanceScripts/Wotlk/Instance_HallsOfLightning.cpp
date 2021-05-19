@@ -211,8 +211,8 @@ class Volkhan : public CreatureAIScript
         m_cVolkhanWP.z = 56.675297f;
         m_cVolkhanWP.o = 2.235341f;
 
-        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-        AddWaypoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_RUN, m_cVolkhanWP));
+        stopMovement();
+        addWaypoint(1, createWaypoint(1, 0, WAYPOINT_MOVE_TYPE_RUN, m_cVolkhanWP));
 
         mStompTimerId = 0;
         mPhase = 0;
@@ -251,14 +251,17 @@ class Volkhan : public CreatureAIScript
 
         if (_getHealthPercent() <= (100 - (20 * mPhase)))
         {
-            ForceWaypointMove(1);
+            setWaypointToMove(1, 1);
             sendAnnouncement("Volkhan runs to his anvil!");
             ++mPhase;
         } 
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (iWaypointId == 1)
         {
             switch (Util::getRandomUInt(2))
@@ -278,7 +281,7 @@ class Volkhan : public CreatureAIScript
                 getCreature()->castSpell(getCreature(), SPELL_TEMPER, true);
 
             setCanEnterCombat(true);
-            getCreature()->GetAIInterface()->AttackReaction(getNearestPlayer(), 1);   // hackfix
+            getCreature()->GetAIInterface()->onHostileAction(getNearestPlayer());   // hackfix
         }
     }
 
@@ -302,7 +305,7 @@ class Volkhan : public CreatureAIScript
     }
 
     CreatureAISpells* mStomp;
-    Movement::Location m_cVolkhanWP;
+    LocationVector m_cVolkhanWP;
     bool m_bStomp;
     uint32_t mStompTimerId;
     int32_t mPhase;
@@ -343,7 +346,7 @@ class VolkhansAnvil : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(VolkhansAnvil)
     explicit VolkhansAnvil(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         setRooted(true);
     }

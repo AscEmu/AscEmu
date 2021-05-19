@@ -527,6 +527,7 @@ public:
         void UpdateAllowedPositionZ(float x, float y, float &z, float* groundZ = nullptr);
         float GetMapWaterOrGroundLevel(float x, float y, float z, float* ground = nullptr);
         void MovePositionToFirstCollision(LocationVector &pos, float dist, float angle);
+        LocationVector getFirstCollisionPosition(float dist, float angle);
 
         virtual float getCombatReach() const { return 0.0f; } // overridden (only) in Unit
         virtual uint64_t getOwnerGUID() const { return 0; }

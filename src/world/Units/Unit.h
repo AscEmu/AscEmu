@@ -263,10 +263,8 @@ class SERVER_DECL Unit : public Object
     // WoWData
     const WoWUnit* unitData() const { return reinterpret_cast<WoWUnit*>(wow_data); }
 
-#ifdef UseNewAIInterface
     friend class ThreatManager;
     ThreatManager m_threatManager;
-#endif
 public:
     void setLocationWithoutUpdate(LocationVector& location);
 public:
@@ -609,7 +607,7 @@ public:
     bool IsHovering() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_HOVER); }
 
     bool isInCombat() const { return hasUnitFlags(UNIT_FLAG_COMBAT); }
-    bool isInEvadeMode() { return hasUnitStateFlag(UNIT_STATE_EVADE); }
+    bool isInEvadeMode() { return hasUnitStateFlag(UNIT_STATE_EVADING); }
 
     bool isWithinCombatRange(Unit* obj, float dist2compare);
     bool isWithinMeleeRange(Unit* obj) { return isWithinMeleeRangeAt(GetPosition(), obj); }
@@ -624,9 +622,13 @@ public:
     // Speed
     UnitSpeedInfo const* getSpeedInfo() const { return &m_UnitSpeedInfo; }
     float getSpeedRate(UnitSpeedType type, bool current) const;
-    void setSpeedRate(UnitSpeedType type, float value, bool current);
     void resetCurrentSpeeds();
     UnitSpeedType getFastestSpeedType() const;
+
+    void propagateSpeedChange();
+    void setSpeedRate(UnitSpeedType mtype, float rate, bool current);
+
+    uint8_t m_forced_speed_changes[MAX_SPEED_TYPE];
 
     // Movement info
     MovementNew::MoveSpline* movespline;
@@ -640,6 +642,8 @@ public:
     MovementManager const* getMovementManager() const { return i_movementManager; }
 
     void StopMoving();
+    void PauseMovement(uint32_t timer = 0, uint8_t slot = 0, bool forced = true); // timer in ms
+    void ResumeMovement(uint32_t timer = 0, uint8_t slot = 0); // timer in ms
 
 private:
     std::unordered_set<AbstractFollower*> m_followingMe;
@@ -1008,11 +1012,10 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Threat Management
-#ifdef UseNewAIInterface
 public:
     ThreatManager& getThreatManager() { return m_threatManager; }
     ThreatManager const& getThreatManager() const { return m_threatManager; }
-#endif
+
     // Do not alter anything below this line
     // -------------------------------------
 
@@ -1349,9 +1352,6 @@ public:
 
     void UpdateSpeed();
 
-    // Escort Quests
-    void MoveToWaypoint(uint32 wp_id);
-
     bool m_can_stealth;
 
     Aura* m_auras[MAX_TOTAL_AURAS_END];
@@ -1433,6 +1433,7 @@ public:
     virtual void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
     virtual bool isCritter() { return false; }
 
+    void KnockbackFrom(float x, float y, float speedXY, float speedZ);
     virtual void HandleKnockback(Object* caster, float horizontal, float vertical);
 
     void AddGarbagePet(Pet* pet);

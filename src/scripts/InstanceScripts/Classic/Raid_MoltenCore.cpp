@@ -47,7 +47,7 @@ class CoreRagerAI : public CreatureAIScript
 
     void SpellCast(uint32_t val)
     {
-        if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+        if (!getCreature()->isCastingSpell() && getCreature()->getThreatManager().getCurrentVictim())//_unit->getAttackTarget())
         {
             //Unit* target = _unit->GetAIInterface()->GetNextTarget();
             if (m_mangle)
@@ -103,7 +103,7 @@ class SulfuronAI : public CreatureAIScript
 
     void SpellCast(uint32_t val)
     {
-        if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+        if (!getCreature()->isCastingSpell() && getCreature()->getThreatManager().getCurrentVictim())//_unit->getAttackTarget())
         {
             //Unit* target = _unit->GetAIInterface()->GetNextTarget();
 
@@ -198,7 +198,6 @@ class RagnarosAI : public CreatureAIScript
     void OnCombatStart(Unit* /*mTarget*/) override
     {
         RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
-        getCreature()->GetAIInterface()->skip_reset_hp = true;
     }
 
     void OnTargetDied(Unit* /*mTarget*/) override
@@ -214,9 +213,9 @@ class RagnarosAI : public CreatureAIScript
 
     void SpellCast(uint32_t val)
     {
-        if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+        if (!getCreature()->isCastingSpell() && getCreature()->getThreatManager().getCurrentVictim())//_unit->getAttackTarget())
         {
-            Unit* target = getCreature()->GetAIInterface()->getNextTarget();
+            Unit* target = getCreature()->getThreatManager().getCurrentVictim();
 
             if (m_elementalfire)
             {

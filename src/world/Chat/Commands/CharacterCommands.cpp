@@ -1937,7 +1937,7 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
             else
             {
                 ss << " [" << GetMapTypeString(static_cast<uint8>(pInstance->m_mapInfo->type)) << "]";
-                if (pInstance->m_mapInfo->type == INSTANCE_MULTIMODE)
+                if (pInstance->m_mapInfo->isMultimodeDungeon())
                 {
                     ss << " [" << GetDifficultyString(static_cast<uint8>(pInstance->m_difficulty)) << "]";
                 }

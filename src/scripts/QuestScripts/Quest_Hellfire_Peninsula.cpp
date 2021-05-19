@@ -225,7 +225,7 @@ class PrisonersDreghoodElders : public CreatureAIScript
     {
         getCreature()->setStandState(STANDSTATE_SIT);
         getCreature()->setDeathState(CORPSE);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
     }
 };
 
@@ -249,7 +249,7 @@ class HellfireDeadNPC : public CreatureAIScript
     {
         getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
     }
 };
 

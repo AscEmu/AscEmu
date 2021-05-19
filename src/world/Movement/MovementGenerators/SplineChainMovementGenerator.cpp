@@ -36,7 +36,7 @@ SplineChainMovementGenerator::SplineChainMovementGenerator(SplineChainResumeInfo
 uint32_t SplineChainMovementGenerator::sendPathSpline(Unit* owner, float velocity, MovementNew::PointsArray const& path) const
 {
     const auto nodeCount = path.size();
-    ASSERT(nodeCount > 1, "SplineChainMovementGenerator::SendPathSpline: Every path must have source & destination (size > 1)! (%u)", owner->getGuid());
+    ASSERT(nodeCount > 1 && "SplineChainMovementGenerator::SendPathSpline: Every path must have source & destination (size > 1)!");
 
     MovementNew::MoveSplineInit init(owner);
     if (nodeCount > 2)
@@ -52,7 +52,7 @@ uint32_t SplineChainMovementGenerator::sendPathSpline(Unit* owner, float velocit
 
 void SplineChainMovementGenerator::sendSplineFor(Unit* owner, uint32_t index, uint32_t& duration)
 {
-    ASSERT(index < _chainSize, "SplineChainMovementGenerator::SendSplineFor: referenced index (%u) higher than path size (%u)!", index, _chainSize);
+    ASSERT(index < _chainSize && "SplineChainMovementGenerator::SendSplineFor: referenced index higher than path size!");
 
     SplineChainLink const& thisLink = _chain[index];
     uint32_t actualDuration = sendPathSpline(owner, thisLink.Velocity, thisLink.Points);

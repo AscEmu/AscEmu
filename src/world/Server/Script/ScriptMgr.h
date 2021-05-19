@@ -449,8 +449,6 @@ public:
                                     // 1: Defines max. number of creature on hatelist (0 - any, HateList.size + 1 - the least hated etc.)
 };
 
-#include "CreatureAIScript.h"
-
 class GameEvent;
 class SERVER_DECL EventScript
 {

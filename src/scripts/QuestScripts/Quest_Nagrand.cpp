@@ -43,8 +43,8 @@ public:
                 Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 32000);
             }
 
-            pMogor->GetAIInterface()->SetAllowedToEnterCombat(true);
-            pMogor->GetAIInterface()->MoveTo(-704.669f, 7871.08f, 45.0387f);
+            pMogor->GetAIInterface()->setAllowedToEnterCombat(true);
+            pMogor->GetAIInterface()->moveTo(-704.669f, 7871.08f, 45.0387f);
             pMogor->SetOrientation(1.59531f);
             pMogor->SetFacing(1.908516f);
             pMogor->SetFaction(14);
@@ -255,7 +255,7 @@ class mogorQAI : public CreatureAIScript
     explicit mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
     };
 
 };
@@ -291,13 +291,13 @@ class NotOnMyWatch : public CreatureAIScript
     {
         if (getCreature()->getHealthPct() < 30)
         {
-            Unit* pUnit = getCreature()->GetAIInterface()->GetMostHated();
+            Unit* pUnit = getCreature()->GetAIInterface()->getCurrentTarget();
             if (pUnit != nullptr && pUnit->isPlayer())
                 static_cast<Player*>(pUnit)->EventAttackStop();
 
             getCreature()->SetFaction(35);
-            getCreature()->GetAIInterface()->WipeHateList();
-            getCreature()->GetAIInterface()->WipeTargetList();
+            getCreature()->getThreatManager().clearAllThreat();
+            getCreature()->getThreatManager().removeMeFromThreatLists();
             getCreature()->setStandState(STANDSTATE_SIT);
             getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
 

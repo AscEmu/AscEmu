@@ -140,8 +140,6 @@ public:
         {
             if (!guard->IsInWorld())
                 continue;
-
-            guard->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
         }
     }
 
@@ -236,25 +234,27 @@ class VHCreatureAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(VHCreatureAI)
     explicit VHCreatureAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        //this->CreateWaypoint(1, 0, 0, VH_DOOR_ATTACK_POSITION);
+        //this->createWaypoint(1, 0, 0, VH_DOOR_ATTACK_POSITION);
         //this->SetWaypointToMove(1);
-        //this->MoveTo(VH_DOOR_ATTACK_POSITION.x, VH_DOOR_ATTACK_POSITION.y, VH_DOOR_ATTACK_POSITION.z, true);
+        //this->moveTo(VH_DOOR_ATTACK_POSITION.x, VH_DOOR_ATTACK_POSITION.y, VH_DOOR_ATTACK_POSITION.z, true);
         //_unit->GetAIInterface()->UpdateMove();
         for (int i = 1; i < 3; ++i)
         {
-            AddWaypoint(CreateWaypoint(i, 0, AttackerWP[i].wp_flag, AttackerWP[i].wp_location));
+            addWaypoint(1, createWaypoint(i, 0, WAYPOINT_MOVE_TYPE_RUN, AttackerWP[i]));
         }
-        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         switch (iWaypointId)
         {
             case 1:
                 getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 1!");
-                SetWaypointToMove(2);
+                setWaypointToMove(1, 2);
                 break;
             case 2:
             {
@@ -302,7 +302,7 @@ class VHCreatureAI : public CreatureAIScript
     
         /*void SpellCast(float randomValue)
         {
-            if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())
+            if (!getCreature()->isCastingSpell() && getCreature()->getThreatManager().getCurrentVictim())
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
@@ -318,7 +318,7 @@ class VHCreatureAI : public CreatureAIScript
                         }
 
                         m_spells[i].casttime = m_spells[i].cooldown;
-                        target = getCreature()->GetAIInterface()->getNextTarget();
+                        target = getCreature()->getThreatManager().getCurrentVictim();
                         switch (m_spells[i].targettype)
                         {
                         case TARGET_SELF:

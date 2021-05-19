@@ -74,7 +74,7 @@ bool WaypointMovementGenerator<Creature>::getResetPosition(Unit* /*owner*/, floa
     if (!_path || _path->nodes.empty())
         return false;
 
-    ASSERT(_currentNode < _path->nodes.size(), "WaypointMovementGenerator::GetResetPosition: tried to reference a node id (%u) which is not included in path (%u)", _currentNode, _path->id);
+    ASSERT(_currentNode < _path->nodes.size() && "WaypointMovementGenerator::GetResetPosition: tried to reference a node id which is not included in path");
     WaypointNode const &waypoint = _path->nodes.at(_currentNode);
 
     x = waypoint.x;
@@ -215,7 +215,7 @@ void WaypointMovementGenerator<Creature>::onArrived(Creature* owner)
     if (!_path || _path->nodes.empty())
         return;
 
-    ASSERT(_currentNode < _path->nodes.size(), "WaypointMovementGenerator::OnArrived: tried to reference a node id (%u) which is not included in path (%u)", _currentNode, _path->id);
+    ASSERT(_currentNode < _path->nodes.size() && "WaypointMovementGenerator::OnArrived: tried to reference a node id which is not included in path");
     WaypointNode const &waypoint = _path->nodes.at(_currentNode);
     if (waypoint.delay)
     {
@@ -258,7 +258,7 @@ void WaypointMovementGenerator<Creature>::startMove(Creature* owner, bool relaun
     {
         if (computeNextNode())
         {
-            ASSERT(_currentNode < _path->nodes.size(), "WaypointMovementGenerator::startMove: tried to reference a node id (%u) which is not included in path (%u)", _currentNode, _path->id);
+            ASSERT(_currentNode < _path->nodes.size() && "WaypointMovementGenerator::startMove: tried to reference a node id which is not included in path");
 
             // inform AI
             if (AIInterface* AI = owner->GetAIInterface())
@@ -303,7 +303,7 @@ void WaypointMovementGenerator<Creature>::startMove(Creature* owner, bool relaun
             AI->waypointStarted(_path->nodes[_currentNode].id, _path->id);
     }
 
-    ASSERT(_currentNode < _path->nodes.size(), "WaypointMovementGenerator::startMove: tried to reference a node id (%u) which is not included in path (%u)", _currentNode, _path->id);
+    ASSERT(_currentNode < _path->nodes.size() && "WaypointMovementGenerator::startMove: tried to reference a node id which is not included in path");
     WaypointNode const &waypoint = _path->nodes[_currentNode];
 
     removeFlag(MOVEMENTGENERATOR_FLAG_TRANSITORY | MOVEMENTGENERATOR_FLAG_INFORM_ENABLED | MOVEMENTGENERATOR_FLAG_TIMED_PAUSED);

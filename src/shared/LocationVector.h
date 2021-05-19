@@ -32,7 +32,6 @@
 class SERVER_DECL LocationVector
 {
     public:
-
         // Constructors
         LocationVector(float X, float Y, float Z = 0, float O = 0) : x(X), y(Y), z(Z), o(O) {}
         LocationVector() {}
@@ -83,8 +82,8 @@ class SERVER_DECL LocationVector
             float dx = _x - getPositionX();
             float dy = _y - getPositionY();
             return normalizeOrientation(std::atan2(dy, dx));
-
         }
+
         float getAbsoluteAngle(LocationVector const& pos) { return getAbsoluteAngle(pos.x, pos.y); }
         float getAbsoluteAngle(LocationVector const* pos) const { return getAbsoluteAngle(pos->x, pos->y); }
         float toAbsoluteAngle(float relAngle) const { return normalizeOrientation(relAngle + o); }

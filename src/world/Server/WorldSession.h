@@ -768,6 +768,7 @@ class SERVER_DECL WorldSession
 
         void handleMovementOpcodes(WorldPacket& recvPacket);
         void handleAcknowledgementOpcodes(WorldPacket& recvPacket);
+        void handleForceSpeedChangeAck(WorldPacket& recvPacket);
         void handleWorldTeleportOpcode(WorldPacket& recvPacket);
         void handleMountSpecialAnimOpcode(WorldPacket& /*recvPacket*/);
         void handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/);

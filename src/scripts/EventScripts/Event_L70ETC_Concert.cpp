@@ -51,8 +51,8 @@ class SamAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(SamAI)
     explicit SamAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true);
@@ -110,8 +110,8 @@ class BerAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(BerAI)
     explicit BerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true);
@@ -166,8 +166,8 @@ class SigAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(SigAI)
     explicit SigAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         timer = 0;
@@ -225,8 +225,8 @@ class MaiAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(MaiAI)
     explicit MaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         timer = 0;
@@ -283,8 +283,8 @@ class ThuAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ThuAI)
     explicit ThuAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         timer = 0;
@@ -353,8 +353,8 @@ class UndeadAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(UndeadAI)
     explicit UndeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         timer = 0;
@@ -398,8 +398,8 @@ class Undead2AI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(Undead2AI)
     explicit Undead2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         timer = 0;
@@ -444,8 +444,8 @@ class Undead3AI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(Undead3AI)
     explicit Undead3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         timer = 0;
@@ -483,8 +483,8 @@ class TriggerAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(TriggerAI)
     explicit TriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         timer = 0;
@@ -574,8 +574,8 @@ class Trigger2AI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(Trigger2AI)
     explicit Trigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         timer = 0;
@@ -659,8 +659,8 @@ class Effectsground : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(Effectsground)
     explicit Effectsground(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         timer = 0;
@@ -775,8 +775,8 @@ class Effectsair : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(Effectsair)
     explicit Effectsair(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         timer = 0;

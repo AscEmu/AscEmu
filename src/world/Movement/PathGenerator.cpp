@@ -21,7 +21,6 @@ PathGenerator::PathGenerator(Object* owner) :
 {
     memset(_pathPolyRefs, 0, sizeof(_pathPolyRefs));
 
-
     uint32_t mapId = _source->GetMapId();
     if (worldConfig.terrainCollision.isPathfindingEnabled)
     {
@@ -33,18 +32,10 @@ PathGenerator::PathGenerator(Object* owner) :
     createFilter();
 }
 
-PathGenerator::~PathGenerator()
-{
-
-}
-
 bool PathGenerator::calculatePath(float destX, float destY, float destZ, bool forceDest)
 {
     float x, y, z;
     _source->getPosition(x, y, z);
-
-    //if (!Trinity::IsValidMapCoord(destX, destY, destZ) || !Trinity::IsValidMapCoord(x, y, z))
-    //    return false;
 
     G3D::Vector3 dest(destX, destY, destZ);
     setEndPosition(dest);
@@ -153,33 +144,39 @@ void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
     // we have a hole in our mesh
     // make shortcut path and mark it as NOPATH ( with flying and swimming exception )
     // its up to caller how he will use this info
-    if (startPoly == INVALID_POLYREF || endPoly == INVALID_POLYREF)
+
+    bool waterPath = _source->ToCreature()->CanSwim();
+    bool path =  _source->ToCreature()->CanFly();
+
+    if (startPoly == INVALID_POLYREF || endPoly == INVALID_POLYREF || waterPath || path)
     {
         buildShortcut();
-        bool path = _source->GetTypeFromGUID() == TYPEID_UNIT && _source->ToCreature()->CanFly();
-
-        bool waterPath = _source->GetTypeFromGUID() == TYPEID_UNIT && _source->ToCreature()->CanSwim();
+        
         if (waterPath)
         {
             // Check both start and end points, if they're both in water, then we can *safely* let the creature move
             for (uint32_t i = 0; i < _pathPoints.size(); ++i)
             {
-                float waterz;
-                uint32_t watertype;
-
                 float outx = _pathPoints[i].x + 3.5f * cos(_source->GetOrientation());
                 float outy = _pathPoints[i].y + 3.5f * sin(_source->GetOrientation());
                 float outz = _source->GetMapMgr()->GetLandHeight(outx, outy, _pathPoints[i].z + 2);
+                float waterz;
+                uint32_t watertype;
                 _source->GetMapMgr()->GetLiquidInfo(outx, outy, outz, waterz, watertype);
                 outz = std::max(waterz, outz);
 
-                ZLiquidStatus status = _source->GetMapMgr()->GetLiquidStatus(_source->GetPhase(), _pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, MAP_ALL_LIQUIDS, nullptr);
+                ZLiquidStatus liquidStatus = _source->GetMapMgr()->GetLiquidStatus(_source->GetPhase(), _pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, MAP_ALL_LIQUIDS, nullptr);
+
                 // One of the points is not in the water, cancel movement.
-                if (status == LIQUID_MAP_NO_WATER)
+                if (waterz >= outz || liquidStatus == LIQUID_MAP_IN_WATER)
                 {
-                    waterPath = false;
-                    break;
+                    if (_source->ToUnit()->GetAIInterface()->getCurrentTarget())
+                        _pathPoints[i].z = _source->ToUnit()->GetAIInterface()->getCurrentTarget()->GetPositionZ();
+                    else
+                        _pathPoints[i].z = _source->GetPositionZ();
                 }
+                else
+                    waterPath = false;
             }
         }
 

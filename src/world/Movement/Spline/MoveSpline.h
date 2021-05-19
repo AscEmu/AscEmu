@@ -21,6 +21,12 @@ struct Location : public Vector3
     float orientation;
 };
 
+struct LocationWithFlag
+{
+    LocationVector wp_location;
+    uint32_t wp_flag;
+};
+
 // MoveSpline represents smooth catmullrom or linear curve and point that moves belong it
 // curve can be cyclic - in this case movement will be cyclic
 // point can have vertical acceleration motion componemt(used in fall, parabolic movement)

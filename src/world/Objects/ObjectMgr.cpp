@@ -3197,7 +3197,7 @@ void ObjectMgr::LoadInstanceEncounters()
     sLogger.info("ObjectMgr : Loaded %u instance encounters in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-void ObjectMgr::LoadCreatureMovementOverrides()
+void ObjectMgr::loadCreatureMovementOverrides()
 {
     const auto startTime = Util::TimeNow();
     uint32_t count = 0;
@@ -3232,14 +3232,14 @@ void ObjectMgr::LoadCreatureMovementOverrides()
         movement.Chase = static_cast<CreatureChaseMovementType>(fields[5].GetUInt8());
         movement.Random = static_cast<CreatureRandomMovementType>(fields[6].GetUInt8());
 
-        CheckCreatureMovement(spawnId, movement);
+        checkCreatureMovement(spawnId, movement);
         ++count;
     } while (result->NextRow());
 
     sLogger.info("ObjectMgr :  Loaded %u movement overrides in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-void ObjectMgr::CheckCreatureMovement(uint32_t id, CreatureMovementData& creatureMovement)
+void ObjectMgr::checkCreatureMovement(uint32_t /*id*/, CreatureMovementData& creatureMovement)
 {
     if (creatureMovement.Ground >= CreatureGroundMovementType::Max)
     {

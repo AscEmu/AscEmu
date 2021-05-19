@@ -264,7 +264,7 @@ class ArchimondeTriggerAI : public CreatureAIScript
     explicit ArchimondeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->m_noRespawn = true;
 
         Unit* Archimonde = getNearestCreature(5598.629883f, -3447.719971f, 1576.650024f, 17968);
@@ -282,7 +282,7 @@ class DoomfireAI : public CreatureAIScript
     explicit DoomfireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->m_noRespawn = true;
 
         RegisterAIUpdateEvent(1000);
@@ -307,8 +307,7 @@ class DoomfireAI : public CreatureAIScript
             {
                 if (Util::getRandomUInt(3) == 1 || getCreature()->GetDistance2dSq(getCreature()->GetAIInterface()->getUnitToFollow()) <= 2.0f)
                 {
-                    getCreature()->GetAIInterface()->ResetUnitToFollow();
-                    getCreature()->GetAIInterface()->SetUnitToFollowAngle(0.0f);
+                    getCreature()->GetAIInterface()->setUnitToFollow(nullptr);
                 }
             }
 
@@ -320,8 +319,8 @@ class DoomfireAI : public CreatureAIScript
                     NewTarget = FindTarget();
                     if (NewTarget)
                     {
-                        getCreature()->GetAIInterface()->SetUnitToFollow(NewTarget);
-                        getCreature()->GetAIInterface()->SetUnitToFollowAngle(2.0f);
+                        getCreature()->GetAIInterface()->setUnitToFollow(NewTarget);
+                        getCreature()->getMovementManager()->moveFollow(NewTarget, 2.0f, 0.0f);
                     }
                 }
 
@@ -342,7 +341,7 @@ class DoomfireAI : public CreatureAIScript
                     x = getCreature()->GetPositionX() + xchange;
                     y = getCreature()->GetPositionY() + ychange;
 
-                    getCreature()->GetAIInterface()->MoveTo(x, y, getCreature()->GetPositionZ());
+                    getCreature()->GetAIInterface()->moveTo(x, y, getCreature()->GetPositionZ());
                 }
             }
 

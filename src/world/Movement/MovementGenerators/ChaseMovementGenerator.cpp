@@ -50,7 +50,7 @@ static void doMovementInform(Unit* owner, Unit* target)
         return;
 
     if (AIInterface* AI = owner->GetAIInterface())
-        AI->movementInform(CHASE_MOTION_TYPE, target->getGuid());
+        AI->movementInform(CHASE_MOTION_TYPE, target->getGuidLow());
 }
 
 ChaseMovementGenerator::ChaseMovementGenerator(Unit *target, Optional<ChaseRange> range, Optional<ChaseAngle> angle) : AbstractFollower(target), _range(range),
@@ -59,7 +59,7 @@ ChaseMovementGenerator::ChaseMovementGenerator(Unit *target, Optional<ChaseRange
     Mode = MOTION_MODE_DEFAULT;
     Priority = MOTION_PRIORITY_NORMAL;
     Flags = MOVEMENTGENERATOR_FLAG_INITIALIZATION_PENDING;
-    BaseUnitState = UNIT_STATE_CHASE;
+    BaseUnitState = UNIT_STATE_CHASING;
 }
 
 ChaseMovementGenerator::~ChaseMovementGenerator() = default;
@@ -182,7 +182,9 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
             if (owner->IsHovering())
                 owner->UpdateAllowedPositionZ(x, y, z);
 
-            bool success = _path->calculatePath(x, y, z, owner->CanFly());
+            bool forcedest = owner->CanFly() || owner->isInWater();
+
+            bool success = _path->calculatePath(x, y, z, forcedest);
             if (!success || (_path->getPathType() & (PATHFIND_NOPATH /* | PATHFIND_INCOMPLETE*/)))
             {
                 if (cOwner)

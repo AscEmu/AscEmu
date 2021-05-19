@@ -1031,13 +1031,9 @@ void Pet::OnPushToWorld()
 
 void Pet::InitializeMe(bool first)
 {
-#ifndef UseNewAIInterface
-    GetAIInterface()->Init(this, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, m_Owner);
-    GetAIInterface()->SetUnitToFollow(m_Owner);
-    GetAIInterface()->SetFollowDistance(3.0f);
-#else
     GetAIInterface()->Init(this, AI_SCRIPT_PET, m_Owner);
-#endif
+    GetAIInterface()->SetPetOwner(m_Owner);
+    GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, this, 0);
 
     creature_properties = sMySQLStore.getCreatureProperties(getEntry());
     if (creature_properties == nullptr)
@@ -1065,10 +1061,8 @@ void Pet::InitializeMe(bool first)
             float parentfrost = static_cast<float>(m_Owner->GetDamageDoneMod(SCHOOL_FROST) * 0.33f);
             ModDamageDone[SCHOOL_FROST] = (uint32)parentfrost;
         }
-#ifndef UseNewAIInterface
         else if (getEntry() == PET_IMP)
-            m_aiInterface->setMeleeDisabled(true);
-#endif
+            GetAIInterface()->setMeleeDisabled(true);
         else if (getEntry() == PET_FELGUARD)
             setVirtualItemSlotId(MELEE, 12784);
 
@@ -1613,9 +1607,7 @@ void Pet::RemoveSpell(SpellInfo const* sp, [[maybe_unused]]bool showUnlearnSpell
             if ((*it) == itr->second)
             {
                 m_aiInterface->m_spells.erase(it);
-#ifndef UseNewAIInterface
-                m_aiInterface->CheckNextSpell(itr->second);
-#endif
+                m_aiInterface->removeNextSpell(itr->second->spell->getId());
                 break;
             }
         }
@@ -1682,9 +1674,7 @@ void Pet::ApplySummonLevelAbilities()
     {
         case PET_IMP:
             stat_index = 0;
-#ifndef UseNewAIInterface
             m_aiInterface->setMeleeDisabled(true);
-#endif
             break;
         case PET_VOIDWALKER:
             stat_index = 1;
@@ -1703,9 +1693,7 @@ void Pet::ApplySummonLevelAbilities()
         case PET_WATER_ELEMENTAL:
         case PET_WATER_ELEMENTAL_NEW:
             stat_index = 5;
-#ifndef UseNewAIInterface
             m_aiInterface->setMeleeDisabled(true);
-#endif
             break;
         case SHADOWFIEND:
             stat_index = 5;
@@ -2017,11 +2005,9 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
             {
                 if (itr == m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end())
                 {
-#ifndef UseNewAIInterface
                     if (Util::getMSTime() >= (*itr)->cooldowntime)
-                        m_aiInterface->SetNextSpell(*itr);
+                        m_aiInterface->setNextSpell((*itr)->spell->getId());
                     else
-#endif
                         return;
                     break;
                 }
@@ -2029,9 +2015,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
                 {
                     if ((*itr)->cooldowntime >Util::getMSTime())
                         continue;
-#ifndef UseNewAIInterface
-                    m_aiInterface->SetNextSpell(*itr);
-#endif
+                    m_aiInterface->setNextSpell((*itr)->spell->getId());
                 }
             }
         }
@@ -2040,9 +2024,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
             sp = *m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin();
             if (sp->cooldown &&Util::getMSTime() < sp->cooldowntime)
                 return;
-#ifndef UseNewAIInterface
-            m_aiInterface->SetNextSpell(sp);
-#endif
+            m_aiInterface->setNextSpell(sp->spell->getId());
         }
 
         return;
@@ -2147,7 +2129,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     }
 
     setDeathState(JUST_DIED);
-    GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, this, 0);
+    GetAIInterface()->enterEvadeMode();
 
     if (getChannelObjectGuid() != 0)
     {

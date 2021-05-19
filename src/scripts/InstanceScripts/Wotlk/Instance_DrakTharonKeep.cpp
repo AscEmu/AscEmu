@@ -74,7 +74,7 @@ class TrollgoreAI : public CreatureAIScript
                         c->PushToWorld(getCreature()->GetMapMgr());
                         //path finding would be usefull :)
                         //c->GetAIInterface()->SetRun();
-                        c->GetAIInterface()->MoveTo(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
+                        c->GetAIInterface()->moveTo(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
                     }
                 }
             }
@@ -254,8 +254,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                     Player* p_target = GetRandomPlayerTarget();
                     if (p_target)
                     {
-                        c->GetAIInterface()->setSplineRun();
-                        c->GetAIInterface()->MoveTo(p_target->GetPositionX(), p_target->GetPositionY(), p_target->GetPositionZ());
+                        c->GetAIInterface()->moveTo(p_target->GetPositionX(), p_target->GetPositionY(), p_target->GetPositionZ(), 0.0f, true);
                     }
                 }
             }
@@ -285,8 +284,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                         Player* p_target = GetRandomPlayerTarget();
                         if (p_target)
                         {
-                            c->GetAIInterface()->setSplineRun();
-                            c->GetAIInterface()->MoveTo(p_target->GetPositionX(), p_target->GetPositionY(), p_target->GetPositionZ());
+                            c->GetAIInterface()->moveTo(p_target->GetPositionX(), p_target->GetPositionY(), p_target->GetPositionZ(), 0.0f, true);
                         }
                     }
                 }

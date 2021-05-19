@@ -19,7 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Plain Visions Encounter
-static Movement::Location WaypointPlainVision[] =
+static LocationVector WaypointPlainVision[] =
 {
     {},
     { -2240.521729f, -407.114532f, -9.424648f, 5.753043f }, //1
@@ -52,20 +52,24 @@ class The_Plains_Vision : public CreatureAIScript
     explicit The_Plains_Vision(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WPCount = 22;
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
 
         for (uint8_t i = 1; i < WPCount; ++i)
-            AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, WaypointPlainVision[i]));
+            addWaypoint(1, createWaypoint(i, 0, WAYPOINT_MOVE_TYPE_RUN, WaypointPlainVision[i]));
+
+        pCreature->getMovementManager()->movePath(*getCustomPath(1), false);
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (iWaypointId == 1)
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You follow me.");
         if (iWaypointId == 22)
         {
-
-            getCreature()->DeleteWaypoints();
+            stopWaypointMovement();
             getCreature()->Despawn(500, 0);
         }
     }

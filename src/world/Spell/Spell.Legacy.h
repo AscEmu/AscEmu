@@ -31,6 +31,8 @@
 #include "Units/Players/Player.h"
 #include "Units/Unit.h"
 
+#include "Movement/Spline/MovementTypedefs.h"
+
 class WorldSession;
 class Unit;
 class DynamicObj;
@@ -76,6 +78,7 @@ class SERVER_DECL Spell
         void cancel();
 
         int32_t calculateEffect(uint8_t effIndex);
+        void calculateJumpSpeeds(Unit* unitCaster, SpellInfo const* spellInfo, uint8_t i, float dist, float& speedXY, float& speedZ);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Spell cast checks

@@ -75,8 +75,8 @@ public:
                     if (Creature* ArugalSpawn = spawnCreature(CN_ARUGAL_BOSS, ArugalAtFenrusLoc.x, ArugalAtFenrusLoc.y, ArugalAtFenrusLoc.z, ArugalAtFenrusLoc.o))
                     {
                         ArugalSpawn->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                        ArugalSpawn->GetAIInterface()->SetAllowedToEnterCombat(false);
-                        ArugalSpawn->GetAIInterface()->m_canMove = false;
+                        ArugalSpawn->GetAIInterface()->setAllowedToEnterCombat(false);
+                        ArugalSpawn->setControlled(true, UNIT_STATE_ROOTED);
                         if (ArugalSpawn->GetScript())
                         {
                             ArugalSpawn->GetScript()->RegisterAIUpdateEvent(500);
@@ -361,7 +361,7 @@ public:
                     // Make him look like dead
                     pCreature->setStandState(STANDSTATE_DEAD);
                     pCreature->setDeathState(CORPSE);
-                    pCreature->GetAIInterface()->m_canMove = false;
+                    pCreature->setControlled(true, UNIT_STATE_ROOTED);
                     pCreature->addDynamicFlags(U_DYN_FLAG_DEAD);
                     pCreature->SendScriptTextChatMessage(SAY_VINCENT_DEATH);
                 }
@@ -404,7 +404,7 @@ class ArugalAI : public CreatureAIScript
                     ModifyAIUpdateEvent(5500);  // call every step after 5.5 seconds
                     if (Creature* pVincent = getNearestCreature(CN_DEATHSTALKER_VINCENT))
                     {
-                        pVincent->GetAIInterface()->AttackReaction(getCreature(), 1);
+                        pVincent->GetAIInterface()->onHostileAction(getCreature());
                         pVincent->GetAIInterface()->setMeleeDisabled(true);
                     }
                 }break;
@@ -440,7 +440,7 @@ class ArugalAI : public CreatureAIScript
                         pVincent->SendScriptTextChatMessage(SAY_VINCENT_DEATH);
                         pVincent->setStandState(STANDSTATE_DEAD);
                         pVincent->setDeathState(CORPSE);
-                        pVincent->GetAIInterface()->m_canMove = false;
+                        pVincent->setControlled(true, UNIT_STATE_ROOTED);
                         pVincent->addDynamicFlags(U_DYN_FLAG_DEAD);
                     }
                 }break;
@@ -471,61 +471,53 @@ protected:
 class AdamantAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AdamantAI)
-    AdamantAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0), eventStarted(false)
+    AdamantAI(Creature* pCreature) : CreatureAIScript(pCreature), eventStarted(false)
     {
         SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
 
-        for (uint8_t i = 0; i < adamantWpCount; ++i)
-        {
-            float waitTime = 0;
-            float distanceX = 0;
-            float distanceY = 0;
-            float distance = 0;
-            float walkSpeed = getCreature()->GetCreatureProperties()->walk_speed;
-            float runSpeed = getCreature()->GetCreatureProperties()->run_speed;
-            // first waypoint
-            if (i == 0)
-            {
-                // (currentWP - perviousLocation) *(currentWP - perviousLocation)
-                distanceX = (DeathstalkerAdamantWPS[i].wp_location.x - getCreature()->GetPositionX()) * (DeathstalkerAdamantWPS[i].wp_location.x - getCreature()->GetPositionX());
-                distanceY = (DeathstalkerAdamantWPS[i].wp_location.y - getCreature()->GetPositionY()) * (DeathstalkerAdamantWPS[i].wp_location.y - getCreature()->GetPositionY());
-                distance = std::sqrt(distanceX - distanceY);
-            }
-            else if (i != adamantWpCount - 1)
-            {
-                // (currentWP - perviousWP) *(currentWP - perviousWP)
-                distanceX = (DeathstalkerAdamantWPS[i].wp_location.x - DeathstalkerAdamantWPS[i - 1].wp_location.x) * (DeathstalkerAdamantWPS[i].wp_location.x - DeathstalkerAdamantWPS[i - 1].wp_location.x);
-                distanceY = (DeathstalkerAdamantWPS[i].wp_location.y - DeathstalkerAdamantWPS[i - 1].wp_location.y) * (DeathstalkerAdamantWPS[i].wp_location.y - DeathstalkerAdamantWPS[i - 1].wp_location.y);
-                distance = std::sqrt(distanceX + distanceY);
-            }
-            waitTime = 1000 * std::abs(DeathstalkerAdamantWPS[i].wp_flag == Movement::WP_MOVE_TYPE_WALK ? distance / walkSpeed : distance / runSpeed);
-
-            AddWaypoint(CreateWaypoint(i + 1, static_cast<uint32_t>(waitTime), DeathstalkerAdamantWPS[i].wp_flag, DeathstalkerAdamantWPS[i].wp_location));
-        }
-
-        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        loadCustomWaypoins(1);
 
         // Remove Gossip
         pCreature->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         switch (iWaypointId)
         {
-            case 11:
-            {
-                RegisterAIUpdateEvent(2000);
-            }break;
             case 30:
             {
                 getCreature()->Despawn(2000, 0);
             }break;
-            default:
+        default:
             {
-                SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                SetWaypointToMove(++iWaypointId);
+                setWaypointToMove(1, ++iWaypointId);
             }break;
+        }
+    }
+
+    void DoAction(int32 const action) override
+    {
+        switch (action)
+        {
+            case 0:
+            {
+                getCreature()->setEmoteState(EMOTE_STATE_NONE);
+                setWaypointToMove(1, 1);
+            }
+            break;
+            case 1:
+            {
+                scriptEvents.addEvent(1, 2000);
+                scriptEvents.addEvent(2, 3000);
+                scriptEvents.addEvent(3, 4000);
+                scriptEvents.addEvent(4, 5000);
+                scriptEvents.addEvent(5, 6000);
+            }
+            break;
         }
     }
 
@@ -536,53 +528,48 @@ class AdamantAI : public CreatureAIScript
         {
             if (eventStarted)
             {
-                switch (stage)
+                scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
+
+                while (uint32_t eventId = scriptEvents.getFinishedEvent())
                 {
-                    case 0:
+                    switch (eventId)
                     {
-                        getCreature()->setEmoteState(EMOTE_STATE_NONE);
-                        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                        SetWaypointToMove(1);
-                        RemoveAIUpdateEvent();
-                    }break;
                     case 1:
                     {
                         getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_BEFORE_OPEN);
-                    }break;
+                    }
+                        break;
                     case 2:
                     {
                         getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_OPENING);
                         getCreature()->eventAddEmote(EMOTE_ONESHOT_USESTANDING, 8000);
-                        ModifyAIUpdateEvent(8000);
-                    }break;
+                    }
+                        break;
                     case 3:
                     {
                         getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_AFTER_OPEN);
                         SFK_instance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, Performed);
-                        ModifyAIUpdateEvent(4000);
-                    }break;
+                    }
+                        break;
                     case 4:
                     {
                         getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_BYE);
-                    }break;
+                    }
+                        break;
                     case 5:
                     {
                         SFK_instance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, Finished);
-                        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                        SetWaypointToMove(12);  // Lets run
-                        RemoveAIUpdateEvent();
-                    }break;
-                    default:
+                        setWaypointToMove(1, 12);  // Lets run
+                    }
                         break;
+                    } 
                 }
-                ++stage;
             }
         }
     }
 
 protected:
 
-    uint32_t stage;
     ShadowfangKeepInstance* SFK_instance;
 
 public:
@@ -617,9 +604,9 @@ public:
             {
                 pPrisoner->getCreature()->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
                 pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_FOLLOW);
-                pPrisoner->RegisterAIUpdateEvent(5000);
+                pPrisoner->DoAction(0);
                 pPrisoner->getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                pPrisoner->getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+                pPrisoner->getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
                 pPrisoner->getCreature()->eventAddEmote(EMOTE_ONESHOT_CHEER, 4000);
                 pPrisoner->eventStarted = true;
                 if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
@@ -659,18 +646,20 @@ class AshcrombeAI : public CreatureAIScript
                 distance = std::sqrt(distanceX + distanceY);
             }
             waitTime = 300.0f + (1000 * std::abs(distance / walkSpeed));
-            AddWaypoint(CreateWaypoint(i + 1, static_cast<uint32_t>(waitTime), Movement::WP_MOVE_TYPE_WALK, SorcererAshcrombeWPS[i]));
+            addWaypoint(1, createWaypoint(i + 1, static_cast<uint32_t>(waitTime), WAYPOINT_MOVE_TYPE_WALK, SorcererAshcrombeWPS[i]));
         }
 
-        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         stage = 0;
 
         // Remove Gossip
         pCreature->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (iWaypointId == 10)
         {
             // Do script update every 2s
@@ -679,8 +668,7 @@ class AshcrombeAI : public CreatureAIScript
 
         if (iWaypointId > 0 && iWaypointId < 11)
         {
-            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            SetWaypointToMove(++iWaypointId);
+            setWaypointToMove(1, ++iWaypointId);
         }
     }
 
@@ -698,8 +686,7 @@ class AshcrombeAI : public CreatureAIScript
                     case 0:
                     {
                         getCreature()->setEmoteState(EMOTE_STATE_NONE);
-                        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                        SetWaypointToMove(1);
+                        setWaypointToMove(1, 1);
                         RemoveAIUpdateEvent();
                     }break;
                     // Face him to doors
@@ -786,7 +773,7 @@ public:
                 pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_FOLLOW);
                 pPrisoner->RegisterAIUpdateEvent(4000);
                 pPrisoner->getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                pPrisoner->getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+                pPrisoner->getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
                 pPrisoner->getCreature()->emote(EMOTE_ONESHOT_POINT);
                 pPrisoner->eventStarted = true;
                 if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
@@ -1145,8 +1132,8 @@ class ArugalBossAI : public CreatureAIScript
                     }
                 }
                 getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-                getCreature()->GetAIInterface()->m_canMove = true;
+                getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+                getCreature()->setControlled(false, UNIT_STATE_ROOTED);
 
                 // sanctum32: not sure if it is correct spell id
                 getCreature()->castSpell(getCreature(), SPELL_ASHCROMBE_FIRE, true);

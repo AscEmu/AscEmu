@@ -557,7 +557,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         if (this->pInstance != nullptr && this->pInstance->m_persistent)
             this->pInstance->m_creatorGroup = 0;
 
-        if (!InactiveMoveTime && !forced_expire && GetMapInfo()->type != INSTANCE_NULL)
+        if (!InactiveMoveTime && !forced_expire && !GetMapInfo()->isNonInstanceMap())
         {
             InactiveMoveTime = UNIXTIME + (30 * 60); //mapmgr inactive move time 30
             sLogger.debug("MapMgr : Instance %u is now idle. (%s)", m_instanceID, GetBaseMap()->GetMapName().c_str());
@@ -887,6 +887,10 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
 float MapMgr::GetUpdateDistance(Object* curObj, Object* obj, Player* plObj)
 {
     static float no_distance = 0.0f;
+
+    // had a crash because this was nullptr just send default update distance
+    if (!plObj)
+        return m_UpdateDistance;
 
     // unlimited distance for people on same boat
     if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && plObj->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && plObj->obj_movement_info.transport_guid == static_cast< Player* >(curObj)->obj_movement_info.transport_guid)
@@ -1497,7 +1501,7 @@ bool MapMgr::Do()
     if (pInstance != nullptr)
     {
         // check for a non-raid instance, these expire after 10 minutes.
-        if (GetMapInfo()->type == INSTANCE_NONRAID || pInstance->m_isBattleground)
+        if (GetMapInfo()->isDungeon() || pInstance->m_isBattleground)
         {
             pInstance->m_mapMgr = nullptr;
             sInstanceMgr._DeleteInstance(pInstance, true);
@@ -1509,7 +1513,7 @@ bool MapMgr::Do()
             pInstance->m_mapMgr = nullptr;
         }
     }
-    else if (GetMapInfo()->type == INSTANCE_NULL)
+    else if (GetMapInfo()->isNonInstanceMap())
     {
         sInstanceMgr.m_singleMaps[GetMapId()] = nullptr;
     }

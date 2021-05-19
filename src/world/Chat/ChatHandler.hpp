@@ -223,7 +223,7 @@ public:
     bool HandleKnockBackCommand(const char* args, WorldSession* m_session);
     bool HandleFadeCommand(const char* args, WorldSession* m_session);
     bool HandleThreatModCommand(const char* args, WorldSession* m_session);
-    bool HandleCalcThreatCommand(const char* args, WorldSession* m_session);
+    bool HandleMoveFallCommand(const char* args, WorldSession* m_session);
     bool HandleThreatListCommand(const char* args, WorldSession* m_session);
     bool HandlePlayMovie(const char* args, WorldSession* m_session);
     bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
@@ -405,7 +405,6 @@ public:
     bool HandleNpcSetFormationMasterCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleNpcSetFormationSlaveCommand(const char* args, WorldSession* m_session);
     bool HandleNpcSetFormationClearCommand(const char* args, WorldSession* m_session);
-    bool HandleNpcSetOnGOCommand(const char* args, WorldSession* m_session);
     bool HandleNpcSetPhaseCommand(const char* args, WorldSession* m_session);
     bool HandleNpcSetStandstateCommand(const char* arg, WorldSession* m_session);
 
@@ -533,21 +532,10 @@ public:
 
     // Waypoint
     bool HandleWayPointAddCommand(const char* args, WorldSession* m_session);
-    bool HandleWayPointAddFlyCommand(const char* args, WorldSession* m_session);
-    bool HandleWayPointChangeNumberCommand(const char* args, WorldSession* m_session);
     bool HandleWayPointDeleteCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleWayPointDeleteAllCommand(const char* /*args*/, WorldSession* m_session);
-    bool HandleWayPointEmoteCommand(const char* args, WorldSession* m_session);
-    bool HandleWayPointFlagsCommand(const char* args, WorldSession* m_session);
-    bool HandleWayPointGenerateCommand(const char* args, WorldSession* m_session);
     bool HandleWayPointHideCommand(const char* /*args*/, WorldSession* m_session);
-    bool HandleWayPointInfoCommand(const char* /*args*/, WorldSession* m_session);
-    bool HandleWayPpointMoveHereCommand(const char* /*args*/, WorldSession* m_session);
-    bool HandleWayPointMoveTypeCommand(const char* args, WorldSession* m_session);
-    bool HandleWayPointSaveCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleWayPointShowCommand(const char* args, WorldSession* m_session);
-    bool HandleWayPointSkinCommand(const char* args, WorldSession* m_session);
-    bool HandleWayPointWaitCommand(const char* args, WorldSession* m_session);
 };
 
 #define sChatHandler ChatHandler::getInstance()

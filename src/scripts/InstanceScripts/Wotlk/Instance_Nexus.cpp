@@ -108,7 +108,7 @@ class ChaoticRiftAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ChaoticRiftAI)
     explicit ChaoticRiftAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         auto spell_mana_wrath = sSpellMgr.getSpellInfo(SUMMON_MANA_WRAITH);
         if (spell_mana_wrath != nullptr)
             addAISpell(SUMMON_MANA_WRAITH, 30.0f, TARGET_SELF, 0, spell_mana_wrath->getRecoveryTime());
@@ -151,7 +151,7 @@ class CraziedManaWrathAI : public CreatureAIScript
     }
 };
 
-static Movement::Location FormSpawns[] =
+static LocationVector FormSpawns[] =
 {
     { 494.726990f, 89.128799f, -15.941300f, 6.021390f },
     { 495.006012f, 89.328102f, -16.124609f, 0.027486f },

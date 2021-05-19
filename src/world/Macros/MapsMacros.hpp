@@ -67,7 +67,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define MAP_SIZE                (TERRAIN_TILE_SIZE*TERRAIN_NUM_TILES)
 #define MAP_HALFSIZE            (MAP_SIZE/2)
 
-#define CREATURE_SPAWNS_FIELDCOUNT 27
+#define CREATURE_SPAWNS_FIELDCOUNT 28
 #define GO_SPAWNS_FIELDCOUNT 18
 
 #define MAP_CELL_DEFAULT_UNLOAD_TIME 300

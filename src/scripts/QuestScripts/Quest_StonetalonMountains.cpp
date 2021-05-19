@@ -22,12 +22,14 @@ public:
         if (creat == NULL)
             return;
         creat->m_escorter = mTarget;
-        creat->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
-        creat->GetAIInterface()->StopMovement(10);
+
+        creat->getMovementManager()->movePath(creat->getWaypointPath(), false);
+        creat->PauseMovement(10);
+
         creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Lets go");
         creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
         // Prevention "not starting from spawn after attacking"
-        creat->GetAIInterface()->SetAllowedToEnterCombat(true);
+        creat->GetAIInterface()->setAllowedToEnterCombat(true);
         creat->SetFaction(1801);
     }
 };
@@ -37,11 +39,14 @@ class KayaFlathoof : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(KayaFlathoof)
     explicit KayaFlathoof(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        stopMovement();
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         switch (iWaypointId)
         {
             case 15:

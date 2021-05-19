@@ -430,10 +430,11 @@ class SERVER_DECL ObjectMgr : public EventableObject
         bool HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim);
         void LoadInstanceReputationModifiers();
         void LoadInstanceEncounters();
-        void LoadCreatureMovementOverrides();
-        void CheckCreatureMovement(uint32_t id, CreatureMovementData& creatureMovement);
 
-        CreatureMovementData const* ObjectMgr::GetCreatureMovementOverride(uint32_t spawnId) const
+        void loadCreatureMovementOverrides();
+        void checkCreatureMovement(uint32_t id, CreatureMovementData& creatureMovement);
+
+        CreatureMovementData const* getCreatureMovementOverride(uint32_t spawnId) const
         {
             auto itr = _creatureMovementOverrides.find(spawnId);
             if (itr != _creatureMovementOverrides.end())

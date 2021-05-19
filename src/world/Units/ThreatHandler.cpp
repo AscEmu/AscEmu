@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 
-#ifdef UseNewAIInterface
-
 void ThreatReference::addThreat(float amount)
 {
     if (amount == 0.0f)
@@ -51,6 +49,23 @@ void ThreatReference::updateOffline()
 bool ThreatReference::shouldBeOffline() const
 {
     if (!_owner->canSee(_victim))
+        return true;
+
+    if (!_victim)
+        return true;
+
+    if (!_victim->isAlive())
+        return true;
+
+    if (!_victim->isInAccessiblePlaceFor(_owner))
+        return true;
+
+    // we cannot attack in evade mode
+    if (_owner->isInEvadeMode())
+        return true;
+
+    // or if enemy is in evade mode
+    if (_victim->GetTypeFromGUID() == TYPEID_UNIT && _victim->ToCreature()->isInEvadeMode())
         return true;
 
     if (_victim == _owner)
@@ -193,6 +208,20 @@ Unit* ThreatManager::getCurrentVictim()
     return _currentVictimRef ? _currentVictimRef->getVictim() : nullptr;
 }
 
+Unit* ThreatManager::getSecondMostHated()
+{
+    if (getThreatListSize() >= 2)
+    {
+        ThreatReference* ref = (*std::next(_sortedThreatList.begin()));
+        if (ref)
+            return ref->getOwner();
+        else
+            return nullptr;
+    }
+    else
+        return getCurrentVictim();
+}
+
 Unit* ThreatManager::getLastVictim() const
 {
     if (_currentVictimRef && !_currentVictimRef->shouldBeOffline())
@@ -217,8 +246,12 @@ void ThreatManager::updateVictim()
     if (newHighest || _needClientUpdate)
     {
         sendThreatListToClients(newHighest);
-        _needClientUpdate = false;
+        _needClientUpdate = false;  
     }
+
+    // Tell the AIInterface to chase our target because our Victim has changed
+    if (newHighest)
+        _owner->GetAIInterface()->updateVictim(_currentVictimRef->getVictim());
 }
 
 ThreatReference const* ThreatManager::reselectVictim()
@@ -226,7 +259,7 @@ ThreatReference const* ThreatManager::reselectVictim()
     if (_sortedThreatList.empty())
         return nullptr;
 
-    for (auto const& pair : _myThreatListEntries)
+    for (auto & pair : _myThreatListEntries)
         pair.second->updateOffline(); // AI notifies are processed in ::UpdateVictim caller
 
     // fixated target is always preferred
@@ -462,6 +495,9 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
         return;
 
     if (!getOwner()->isAlive())
+        return;
+
+    if (!target)
         return;
 
     if (spell)
@@ -744,7 +780,7 @@ void ThreatManager::putThreatListRef(uint64_t const& guid, ThreatReference* ref)
 {
     _needClientUpdate = true;
     auto& inMap = _myThreatListEntries[guid];
-    ASSERT(!inMap, "Duplicate threat reference at %p being inserted on %s for %s - memory leak!", ref, _owner->getGuid(), guid);
+    ASSERT(!inMap && "Duplicate threat reference being inserted - memory leak!");
     inMap = ref;
     _sortedThreatList.push_back(ref);
     heapNotifyChanged();
@@ -769,7 +805,7 @@ void ThreatManager::purgeThreatListRef(uint64_t const& guid)
 void ThreatManager::putThreatenedByMeRef(uint64_t const& guid, ThreatReference* ref)
 {
     auto& inMap = _threatenedByMe[guid];
-    ASSERT(!inMap, "Duplicate threatened-by-me reference at %p being inserted on %s for %s - memory leak!", ref, _owner->getGuid(), guid);
+    ASSERT(!inMap && "Duplicate threatened-by-me reference being inserted - memory leak!");
     inMap = ref;
 }
 
@@ -785,4 +821,3 @@ void ThreatManager::heapNotifyChanged()
     if (_sortedThreatList.size())
         _sortedThreatList.sort([](ThreatReference* a, ThreatReference* b) -> bool { return a->getThreat() > b->getThreat(); });
 }
-#endif

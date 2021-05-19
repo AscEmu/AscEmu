@@ -631,11 +631,10 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
             }
             else
             {
-#ifndef UseNewAIInterface
-                if (u_caster->GetAIInterface()->getNextTarget() != nullptr && TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE)
+                if (u_caster->GetAIInterface()->getCurrentTarget() != nullptr && TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE)
                 {
                     t->addTargetMask(TARGET_FLAG_DEST_LOCATION | TARGET_FLAG_UNIT);
-                    t->setDestination(u_caster->GetAIInterface()->getNextTarget()->GetPosition());
+                    t->setDestination(u_caster->GetAIInterface()->getCurrentTarget()->GetPosition());
                     result = true;
                 }
                 else if (TargetType & SPELL_TARGET_REQUIRE_FRIENDLY)
@@ -644,7 +643,6 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                     t->setDestination(u_caster->GetPosition());
                     result = true;
                 }
-#endif
             }
         }
         else if (TargetType & SPELL_TARGET_AREA_SELF)
@@ -660,14 +658,12 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
         {
             if (TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE)
             {
-#ifndef UseNewAIInterface
-                if (u_caster->GetAIInterface()->getNextTarget() != nullptr)
+                if (u_caster->GetAIInterface()->getCurrentTarget() != nullptr)
                 {
                     t->addTargetMask(TARGET_FLAG_UNIT);
-                    t->setUnitTarget(u_caster->GetAIInterface()->getNextTarget()->getGuid());
+                    t->setUnitTarget(u_caster->GetAIInterface()->getCurrentTarget()->getGuid());
                     result = true;
                 }
-#endif
             }
             else
             {
@@ -679,14 +675,12 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
         //target cone
         if (TargetType & SPELL_TARGET_AREA_CONE)
         {
-#ifndef UseNewAIInterface
-            if (u_caster->GetAIInterface()->getNextTarget() != nullptr)
+            if (u_caster->GetAIInterface()->getCurrentTarget() != nullptr)
             {
                 t->addTargetMask(TARGET_FLAG_DEST_LOCATION);
-                t->setDestination(u_caster->GetAIInterface()->getNextTarget()->GetPosition());
+                t->setDestination(u_caster->GetAIInterface()->getCurrentTarget()->GetPosition());
                 result = true;
             }
-#endif
         }
     }
     return result;

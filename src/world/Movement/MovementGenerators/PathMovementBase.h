@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <string>
 
 template<class Entity, class BasePath>

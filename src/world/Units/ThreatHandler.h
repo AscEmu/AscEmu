@@ -12,10 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <vector>
 #include <list>
 
-#define UseNewAIInterface
-
-#ifdef UseNewAIInterface
-
 class Creature;
 class Unit;
 class SpellInfo;
@@ -41,6 +37,7 @@ public:
     // returns the current victim - this can be nullptr if owner's threat list is empty, or has only offline targets
     Unit* getCurrentVictim();
     Unit* getLastVictim() const;
+    Unit* getSecondMostHated();
     // returns an arbitrary non-offline victim from owner's threat list if one exists, nullptr otherwise
     Unit* getAnyTarget() const;
 
@@ -213,4 +210,3 @@ public:
     friend class ThreatManager;
     friend struct CompareThreatLessThan;
 };
-#endif

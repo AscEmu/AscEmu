@@ -47,9 +47,9 @@ void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitO
         ModDamageDone[school] = unitOwner->GetDamageDoneMod(school);
         HealDoneMod[school] = unitOwner->HealDoneMod[school];
     }
-#ifndef UseNewAIInterface
-    m_aiInterface->Init(this, AI_SCRIPT_TOTEM, Movement::WP_MOVEMENT_SCRIPT_NONE, unitOwner);
-#endif
+
+    m_aiInterface->Init(this, AI_SCRIPT_TOTEM, unitOwner);
+
     DisableAI();
 
     if (getPlayerOwner() != nullptr)
@@ -124,9 +124,8 @@ void TotemSummon::SetupSpells()
     if (!isCastingTotem)
     {
         // We're an area aura. Simply cast the spell.
-#ifndef UseNewAIInterface
         m_aiInterface->totemspell = creatorSpell;
-#endif
+
         auto spell = sSpellMgr.newSpell(this, totemSpell, true, nullptr);
         SpellCastTargets targets;
 
@@ -142,10 +141,8 @@ void TotemSummon::SetupSpells()
     {
         // We're a casting totem. Switch AI on, and tell it to cast this spell.
         EnableAI();
-#ifndef UseNewAIInterface
         m_aiInterface->totemspell = totemSpell;
         m_aiInterface->m_totemspelltimer = 0;
         m_aiInterface->m_totemspelltime = 3 * TimeVarsMs::Second;
-#endif
     }
 }

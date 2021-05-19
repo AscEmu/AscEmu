@@ -32,7 +32,7 @@ class SERVER_DECL PathGenerator
 {
     public:
         explicit PathGenerator(Object* owner);
-        ~PathGenerator();
+        ~PathGenerator() = default;
 
         // Calculate the path from owner to given destination
         // return: true if new path was calculated, false otherwise (no change needed)

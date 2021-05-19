@@ -38,13 +38,13 @@ template<>
 void HomeMovementGenerator<Creature>::setTargetLocation(Creature* owner)
 {
     // if we are ROOT/STUNNED/DISTRACTED even after aura clear, finalize on next update - otherwise we would get stuck in evade
-    if (owner->hasUnitStateFlag(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED))
+    if (owner->hasUnitStateFlag(UNIT_STATE_ROOTED | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED))
     {
         addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
         return;
     }
 
-    owner->removeUnitStateFlag(UNIT_STATE_ALL_ERASABLE & ~UNIT_STATE_EVADE);
+    owner->removeUnitStateFlag(UNIT_STATE_ALL_ERASABLE & ~UNIT_STATE_EVADING);
     owner->addUnitStateFlag(UNIT_STATE_ROAMING_MOVE);
 
     LocationVector destination = owner->GetSpawnPosition();
@@ -117,7 +117,7 @@ void HomeMovementGenerator<Creature>::doFinalize(Creature* owner, bool active, b
 {
     addFlag(MOVEMENTGENERATOR_FLAG_FINALIZED);
     if (active)
-        owner->removeUnitStateFlag(UNIT_STATE_ROAMING_MOVE | UNIT_STATE_EVADE);
+        owner->removeUnitStateFlag(UNIT_STATE_ROAMING_MOVE | UNIT_STATE_EVADING);
 
     if (movementInform && hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED))
     {

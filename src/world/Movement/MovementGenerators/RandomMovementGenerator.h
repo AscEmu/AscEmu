@@ -35,6 +35,6 @@ class RandomMovementGenerator : public MovementGeneratorMedium<T, RandomMovement
         std::unique_ptr<PathGenerator> _path;
         SmallTimeTracker _timer;
         LocationVector _reference;
-        float _wanderDistance;
+        float _maxWanderDistance;
         uint8_t _wanderSteps;
 };

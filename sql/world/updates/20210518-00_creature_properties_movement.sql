@@ -4360,5 +4360,5 @@ INSERT INTO `creature_properties_movement` VALUES ('22085', '1', '0', '1', '0', 
 INSERT INTO `creature_properties_movement` VALUES ('22089', '1', '0', '1', '0', '0', '0', null);
 INSERT INTO `creature_properties_movement` VALUES ('22122', '1', '0', '1', '0', '0', '0', null);
 
-REPLACE INTO `world_db_version` VALUES ('72', '20210518-00_creature_properties_movement');
+INSERT INTO `world_db_version` VALUES ('72', '20210518-00_creature_properties_movement');
 

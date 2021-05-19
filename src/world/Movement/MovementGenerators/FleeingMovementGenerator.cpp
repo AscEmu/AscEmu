@@ -250,7 +250,7 @@ void TimedFleeingMovementGenerator::finalize(Unit* owner, bool active, bool/* mo
         if (owner->isAlive())
         {
             //owner->AttackStop(); //todo
-            owner->ToCreature()->GetAIInterface()->JustEnteredCombat(victim);
+            owner->ToCreature()->GetAIInterface()->onHostileAction(victim);
         }
     }
 }

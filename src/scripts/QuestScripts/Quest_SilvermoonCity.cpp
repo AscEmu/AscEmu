@@ -49,7 +49,7 @@ class LordDawnstar : public CreatureAIScript
         getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
         getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
     }
 };
 

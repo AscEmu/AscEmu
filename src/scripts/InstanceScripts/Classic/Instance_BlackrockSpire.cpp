@@ -102,9 +102,9 @@ class GythAI : public CreatureAIScript
             Unit* Warchief = spawnCreature(CN_REND_BLACKHAND, 157.366516f, -419.779358f, 110.472336f, 3.056772f);
             if (Warchief != NULL)
             {
-                if (getCreature()->GetAIInterface()->getNextTarget() != NULL)
+                if (getCreature()->getThreatManager().getCurrentVictim() != NULL)
                 {
-                    Warchief->GetAIInterface()->AttackReaction(getCreature()->GetAIInterface()->getNextTarget(), 1, 0);
+                    Warchief->GetAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
                 }
             }
 
@@ -299,9 +299,9 @@ class HalyconAI : public CreatureAIScript
             Unit* cGizrul = spawnCreature(CN_GIZRUL, -195.100006f, -321.970001f, 65.424400f, 0.016500f);
             if (cGizrul != NULL)
             {
-                if (getCreature()->GetAIInterface()->getNextTarget() != NULL)
+                if (getCreature()->getThreatManager().getCurrentVictim() != NULL)
                 {
-                    cGizrul->GetAIInterface()->AttackReaction(getCreature()->GetAIInterface()->getNextTarget(), 1, 0);
+                    cGizrul->GetAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
                 }
             }
 
@@ -346,15 +346,15 @@ class OverlordWyrmthalakAI : public CreatureAIScript
         {
             Unit* Warlord1 = spawnCreature(CN_SPIRESTONE_WARLORD, -30.675352f, -493.231750f, 90.610725f, 3.123542f);
             Unit* Warlord2 = spawnCreature(CN_SPIRESTONE_WARLORD, -30.433489f, -479.833923f, 90.535606f, 3.123542f);
-            if (getCreature()->GetAIInterface()->getNextTarget() != NULL)
+            if (getCreature()->getThreatManager().getCurrentVictim() != NULL)
             {
                 if (Warlord1 != NULL)
                 {
-                    Warlord1->GetAIInterface()->AttackReaction(getCreature()->GetAIInterface()->getNextTarget(), 1, 0);
+                    Warlord1->GetAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
                 }
                 if (Warlord2 != NULL)
                 {
-                    Warlord2->GetAIInterface()->AttackReaction(getCreature()->GetAIInterface()->getNextTarget(), 1, 0);
+                    Warlord2->GetAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
                 }
             }
 

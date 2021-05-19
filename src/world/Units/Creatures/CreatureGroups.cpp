@@ -74,7 +74,7 @@ void FormationMgr::removeCreatureFromGroup(CreatureGroup* group, Creature* membe
 
         sLogger.debug("FormationMgr : Deleting group with InstanceID %u", member->GetInstanceID());
         auto itr = map->CreatureGroupHolder.find(group->GetLeaderSpawnId());
-        ASSERT(itr != map->CreatureGroupHolder.end(), "Not registered group %u in map %u", group->GetLeaderSpawnId(), map->GetId());
+        ASSERT(itr != map->CreatureGroupHolder.end() && "Not registered group in map");
         map->CreatureGroupHolder.erase(itr);
         delete group;
     }
@@ -247,7 +247,7 @@ void CreatureGroup::memberEngagingTarget(Creature* member, Unit* target)
             continue;
 
         if (((other != _leader && (groupAI & FLAG_MEMBERS_ASSIST_LEADER)) || (other == _leader && (groupAI & FLAG_LEADER_ASSISTS_MEMBER))))
-            other->GetAIInterface()->JustEnteredCombat(target);
+            other->GetAIInterface()->onHostileAction(target);
     }
 
     _engaging = false;

@@ -140,6 +140,18 @@ Player* Creature::getPlayerOwner()
     return nullptr;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Misc
+float_t Creature::getMaxWanderDistance() const
+{
+    return m_wanderDistance;
+}
+
+void Creature::setMaxWanderDistance(float_t dist)
+{
+    m_wanderDistance = dist;
+}
+
 //MIT end
 
 Creature::Creature(uint64 guid)
@@ -153,7 +165,6 @@ Creature::Creature(uint64 guid)
     setGuid(guid);
     m_wowGuid.Init(getGuid());
     m_defaultMovementType = IDLE_MOTION_TYPE;
-    m_wanderDistance = Util::getRandomFloat(5.0f, 25.0f); // maybe add to database for testing purpuose lets do 5 to 25
     m_formation = nullptr;
     m_quests = NULL;
     creature_properties = nullptr;
@@ -234,6 +245,16 @@ void Creature::Update(unsigned long time_passed)
 {
     Unit::Update(time_passed);
 
+    if (time_passed >= m_movementFlagUpdateTimer)
+    {
+        updateMovementFlags();
+        m_movementFlagUpdateTimer = 1000;
+    }
+    else
+    {
+        m_movementFlagUpdateTimer -= static_cast<uint16_t>(time_passed);
+    }
+
     if (m_corpseEvent)
     {
         sEventMgr.RemoveEvents(this, EVENT_CREATURE_REMOVE_CORPSE);
@@ -294,7 +315,15 @@ void Creature::OnRemoveCorpse()
         setDeathState(DEAD);
         m_position = m_spawnLocation;
 
-        if ((GetMapMgr()->GetMapInfo() && GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID && creature_properties->isBoss) || m_noRespawn)
+        // if corpse was removed during falling, the falling will continue and override relocation to respawn position
+        if (IsFalling())
+            StopMoving();
+
+        setMoveCanFly(false);
+
+        getMovementManager()->clear();
+
+        if ((GetMapMgr()->GetMapInfo() && GetMapMgr()->GetMapInfo()->isRaid() && creature_properties->isBoss) || m_noRespawn)
         {
             RemoveFromWorld(false, true);
         }
@@ -317,6 +346,12 @@ void Creature::OnRespawn(MapMgr* m)
 {
     if (m_noRespawn)
         return;
+
+    // if corpse was removed during falling, the falling will continue and override relocation to respawn position
+    if (IsFalling())
+        StopMoving();
+
+    getMovementManager()->clear();
 
     if (m->pInstance)
     {
@@ -391,9 +426,7 @@ void Creature::OnRespawn(MapMgr* m)
 
     //empty loot
     loot.items.clear();
-#ifndef UseNewAIInterface
-    GetAIInterface()->StopMovement(0); // after respawn monster can move
-#endif
+
     // Init Movement Handlers
     getMovementManager()->initializeDefault();
 
@@ -428,18 +461,7 @@ void Creature::generateLoot()
         sLootMgr.FillCreatureLoot(&loot, getEntry(), 0);
 
     loot.gold = creature_properties->money;
-#ifndef UseNewAIInterface
-    if (GetAIInterface()->GetDifficultyType() != 0)
-    {
-        uint32 creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(getEntry(), GetAIInterface()->GetDifficultyType());
-        auto properties_difficulty = sMySQLStore.getCreatureProperties(creature_difficulty_entry);
-        if (properties_difficulty != nullptr)
-        {
-            if (properties_difficulty->money != creature_properties->money)
-                loot.gold = properties_difficulty->money;
-        }
-    }
-#else
+
     if (GetAIInterface()->getDifficultyType() != 0)
     {
         uint32 creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(getEntry(), GetAIInterface()->getDifficultyType());
@@ -450,7 +472,6 @@ void Creature::generateLoot()
                 loot.gold = properties_difficulty->money;
         }
     }
-#endif
 
     // Master Looting Ninja Checker
     if (worldConfig.player.deactivateMasterLootNinja)
@@ -526,9 +547,7 @@ void Creature::SaveToDB()
         m_spawn = new MySQLStructure::CreatureSpawn;
         m_spawn->entry = getEntry();
         m_spawn->id = spawnid = sObjectMgr.GenerateCreatureSpawnID();
-#ifndef UseNewAIInterface
-        m_spawn->movetype = (uint8)m_aiInterface->getWaypointScriptType();
-#endif
+        m_spawn->movetype = GetDefaultMovementType();
         m_spawn->displayid = getDisplayId();
         m_spawn->x = m_position.x;
         m_spawn->y = m_position.y;
@@ -554,14 +573,12 @@ void Creature::SaveToDB()
         m_spawn->Item1SlotDisplay = getVirtualItemSlotId(MELEE);
         m_spawn->Item2SlotDisplay = getVirtualItemSlotId(OFFHAND);
         m_spawn->Item3SlotDisplay = getVirtualItemSlotId(RANGED);
-#ifndef UseNewAIInterface
-        if (GetAIInterface()->isFlying())
+
+        if (IsFlying())
             m_spawn->CanFly = 1;
-        else if (GetAIInterface()->onGameobject)
-            m_spawn->CanFly = 2;
         else
             m_spawn->CanFly = 0;
-#endif
+
         m_spawn->phase = m_phase;
 
         uint32 x = GetMapMgr()->GetPosX(GetPositionX());
@@ -595,11 +612,7 @@ void Creature::SaveToDB()
         << m_position.y << ","
         << m_position.z << ","
         << m_position.o << ","
-#ifndef UseNewAIInterface
-        << uint32(m_aiInterface->getWaypointScriptType()) << ","
-#else
-        << uint32(0) << ","
-#endif
+        << GetDefaultMovementType() << ","
         << getDisplayId() << ","
         << getFactionTemplate() << ","
         << getUnitFlags() << ","
@@ -620,17 +633,15 @@ void Creature::SaveToDB()
         << m_spawn->Item1SlotEntry << ","
         << m_spawn->Item2SlotEntry << ","
         << m_spawn->Item3SlotEntry << ",";
-#ifndef UseNewAIInterface
-    if (GetAIInterface()->isFlying())
+
+    if (IsFlying())
         ss << 1 << ",";
-    else if (GetAIInterface()->onGameobject)
-        ss << 2 << ",";
     else
-#endif
         ss << 0 << ",";
 
     ss << m_phase << ","
         << "0"  // event_entry
+        << ",0"  // wander distance
         << ",0" // waypoint_group
         << ")";
 
@@ -682,9 +693,6 @@ void Creature::DeleteFromDB()
         return;
 
     WorldDatabase.Execute("DELETE FROM creature_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u", GetSQL_id(), VERSION_STRING, VERSION_STRING);
-
-    //\todo: are waypoint version specific?
-    WorldDatabase.Execute("DELETE FROM creature_waypoints WHERE spawnid = %u", GetSQL_id());
 }
 
 
@@ -798,15 +806,17 @@ void Creature::setDeathState(DeathState s)
 
     if (s == JUST_DIED)
     {
-#ifndef UseNewAIInterface
-        GetAIInterface()->ResetUnitToFollow();
-#endif
+        StopMoving();
         m_deathState = CORPSE;
         m_corpseEvent = true;
 
         //sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, 180000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         if (m_enslaveSpell)
             RemoveEnslave();
+
+        //Dismiss group if is leader
+        if (m_formation && m_formation->GetLeader() == this)
+            m_formation->formationReset(true);
 
         for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
         {
@@ -821,7 +831,7 @@ void Creature::setDeathState(DeathState s)
     }
     else m_deathState = s;
 
-    Motion_Initialize();
+    //Motion_Initialize();
 }
 
 void Creature::AddToWorld()
@@ -842,6 +852,10 @@ void Creature::AddToWorld()
     Object::AddToWorld();
     searchFormation();   
     Motion_Initialize();
+    immediateMovementFlagsUpdate();
+
+    if (GetMovementTemplate().IsRooted())
+        setControlled(true, UNIT_STATE_ROOTED);
 }
 
 void Creature::AddToWorld(MapMgr* pMapMgr)
@@ -862,6 +876,10 @@ void Creature::AddToWorld(MapMgr* pMapMgr)
     Object::AddToWorld(pMapMgr);
     searchFormation();
     Motion_Initialize();
+    immediateMovementFlagsUpdate();
+
+    if (GetMovementTemplate().IsRooted())
+        setControlled(true, UNIT_STATE_ROOTED);
 }
 
 bool Creature::CanAddToWorld()
@@ -923,11 +941,8 @@ void Creature::EnslaveExpire()
             SetFaction(954);
             break;
     };
-#ifndef UseNewAIInterface
-    GetAIInterface()->Init(((Unit*)this), AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
-#else
+
     GetAIInterface()->Init(((Unit*)this), AI_SCRIPT_AGRO);
-#endif
 
     updateInRangeOppositeFactionSet();
     updateInRangeSameFactionSet();
@@ -968,15 +983,9 @@ void Creature::onRemoveInRangeObject(Object* pObj)
     if (m_escorter == pObj)
     {
         // we lost our escorter, return to the spawn.
-#ifndef UseNewAIInterface
-        m_aiInterface->StopMovement(10000);
-#endif
+        StopMoving();
+
         m_escorter = NULL;
-#ifndef UseNewAIInterface
-        GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-#endif
-        //DestroyCustomWaypointMap(); //function not needed at all, crashing on delete(*int)
-        //GetAIInterface()->deleteWaypoints();//this can repleace DestroyCustomWaypointMap, but it's crashing on delete too
         Despawn(1000, 1000);
     }
 
@@ -1142,21 +1151,18 @@ void Creature::RegenerateHealth()
 
     // While polymorphed health is regenerated rapidly
     // Exact value is yet unknown but it's roughly 10% of health per sec
-    if (hasUnitStateFlag(UNIT_STATE_CONFUSED))
+    if (hasUnitStateFlag(UNIT_STATE_POLYMORPHED))
     {
         amt = getMaxHealth() * 0.10f;
     }
     else if (!CombatStatus.IsInCombat())
     {
-        //though creatures have their stats we use some weird formula for amt
-        uint32 lvl = getLevel();
+        // 25% of max health per tick
+        amt = getMaxHealth() * 0.25f;
 
-        amt = lvl * 2.0f;
         if (PctRegenModifier)
             amt += (amt * PctRegenModifier) / 100;
 
-        if (GetCreatureProperties()->Rank == 3)
-            amt *= 10000.0f;
         //Apply shit from conf file
         amt *= worldConfig.getFloatRate(RATE_HEALTH);
     }
@@ -1464,16 +1470,12 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     // set position
     m_position.ChangeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
     m_spawnLocation.ChangeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
-#ifndef UseNewAIInterface
-    m_aiInterface->setWaypointScriptType((Movement::WaypointMovementScript)spawn->movetype);
-    m_aiInterface->LoadWaypointMapFromDB(spawn->id);
-
     m_aiInterface->timed_emotes = sObjectMgr.GetTimedEmoteList(spawn->id);
 
     // not a neutral creature
     if (!(m_factionEntry != nullptr && m_factionEntry->RepListId == -1 && m_factionTemplate->HostileMask == 0 && m_factionTemplate->FriendlyMask == 0))
     {
-        GetAIInterface()->m_canCallForHelp = true;
+        GetAIInterface()->setCanCallForHelp(true);
     }
 
     // set if creature can shoot or not.
@@ -1481,11 +1483,12 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         GetAIInterface()->m_canRangedAttack = true;
     else
         m_aiInterface->m_canRangedAttack = false;
-#endif
+
     // checked at loading
     m_defaultMovementType = MovementGeneratorType(spawn->movetype);
 
-    if (!m_wanderDistance && m_defaultMovementType == RANDOM_MOTION_TYPE)
+    setMaxWanderDistance(static_cast<float_t>(spawn->wander_distance));
+    if (getMaxWanderDistance() == 0.0f && m_defaultMovementType == RANDOM_MOTION_TYPE)
         m_defaultMovementType = IDLE_MOTION_TYPE;
 
     _waypointPathId = spawn->waypoint_id;
@@ -1533,46 +1536,30 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         if ((*itr)->instance_mode == mode || (*itr)->instance_mode == AISPELL_ANY_DIFFICULTY)
             m_aiInterface->addSpellToList(*itr);
     }
-#ifndef UseNewAIInterface
-    // m_aiInterface->m_canCallForHelp = proto->m_canCallForHelp;
-    // m_aiInterface->m_CallForHelpHealth = proto->m_callForHelpHealth;
-    m_aiInterface->m_canFlee = creature_properties->m_canFlee;
-    m_aiInterface->m_FleeHealth = creature_properties->m_fleeHealth;
-    m_aiInterface->m_FleeDuration = creature_properties->m_fleeDuration;
 
-    GetAIInterface()->setSplineWalk();
+    GetAIInterface()->m_canCallForHelp = creature_properties->m_canCallForHelp;
+    GetAIInterface()->m_CallForHelpHealth = creature_properties->m_callForHelpHealth;
+    GetAIInterface()->m_canFlee = creature_properties->m_canFlee;
+    GetAIInterface()->m_FleeHealth = creature_properties->m_fleeHealth;
+    GetAIInterface()->m_FleeDuration = creature_properties->m_fleeDuration;
 
     if (!creature_properties->isTrainingDummy && !isVehicle())
     {
-        GetAIInterface()->SetAllowedToEnterCombat(isattackable(spawn));
+        GetAIInterface()->setAllowedToEnterCombat(isattackable(spawn));
     }
     else
     {
         if (!isattackable(spawn))
         {
-            GetAIInterface()->SetAllowedToEnterCombat(false);
+            GetAIInterface()->setAllowedToEnterCombat(false);
             GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
         }
         else
         {
-            GetAIInterface()->SetAllowedToEnterCombat(true);
+            GetAIInterface()->setAllowedToEnterCombat(true);
         }
     }
 
-    // load formation data
-    if (spawn->form != NULL)
-    {
-        m_aiInterface->m_formationLinkSqlId = spawn->form->targetSpawnId;
-        m_aiInterface->m_formationFollowDistance = spawn->form->followDistance;
-        m_aiInterface->m_formationFollowAngle = spawn->form->followAngle;
-    }
-    else
-    {
-        m_aiInterface->m_formationLinkSqlId = 0;
-        m_aiInterface->m_formationFollowDistance = 0;
-        m_aiInterface->m_formationFollowAngle = 0;
-    }
-#endif
     //////////////AI
 
     myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
@@ -1586,30 +1573,24 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     {
         m_useAI = false;
     }
-#ifndef UseNewAIInterface
-    if (spawn->CanFly == 1)
-        GetAIInterface()->setSplineFlying();
-    else if (spawn->CanFly == 2)
-        GetAIInterface()->onGameobject = true;
-#endif
+
     // more hacks!
     if (creature_properties->Mana != 0)
         setPowerType(POWER_TYPE_MANA);
     else
         setPowerType(0);
-#ifndef UseNewAIInterface
+
+    /*  // Dont was Used in old AIInterface left the code here if needed at other Date
     if (creature_properties->guardtype == GUARDTYPE_CITY)
-        m_aiInterface->m_isGuard = true;
+        GetAIInterface()->setGuard(true);
     else
-        m_aiInterface->m_isGuard = false;
+        GetAIInterface()->setGuard(false);*/
 
     if (creature_properties->guardtype == GUARDTYPE_NEUTRAL)
-        m_aiInterface->m_isNeutralGuard = true;
+        GetAIInterface()->setGuard(true);
     else
-        m_aiInterface->m_isNeutralGuard = false;
+        GetAIInterface()->setGuard(false);
 
-    m_aiInterface->UpdateSpeeds();
-#endif
 
     // creature death state
     if (spawn->death_state == CREATURE_STATE_APPEAR_DEAD)
@@ -1630,11 +1611,9 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         modInvisibilityLevel(InvisibilityFlag(creature_properties->invisibility_type), 1);
     if (spawn->stand_state)
         setStandState((uint8)spawn->stand_state);
-#ifndef UseNewAIInterface
-    m_aiInterface->EventAiInterfaceParamsetFinish();
-#else
+
     m_aiInterface->eventAiInterfaceParamsetFinish();
-#endif
+
     this->m_position.x = spawn->x;
     this->m_position.y = spawn->y;
     this->m_position.z = spawn->z;
@@ -1647,8 +1626,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         setAItoUse(false);
     }
 
-    if (creature_properties->rooted != 0)
-        setMoveRoot(true);
+    if (GetMovementTemplate().IsRooted())
+        setControlled(true, UNIT_STATE_ROOTED);
 
     return true;
 }
@@ -1656,17 +1635,17 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 void Creature::Load(CreatureProperties const* properties_, float x, float y, float z, float o)
 {
     creature_properties = properties_;
-#ifndef UseNewAIInterface
+
     if (creature_properties->isTrainingDummy == 0 && !isVehicle())
     {
-        GetAIInterface()->SetAllowedToEnterCombat(true);
+        GetAIInterface()->setAllowedToEnterCombat(true);
     }
     else
     {
-        GetAIInterface()->SetAllowedToEnterCombat(false);
+        GetAIInterface()->setAllowedToEnterCombat(false);
         GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
     }
-#endif
+
     setSpeedRate(TYPE_WALK, creature_properties->walk_speed, false);
     setSpeedRate(TYPE_RUN, creature_properties->run_speed, false);
     setSpeedRate(TYPE_FLY, creature_properties->fly_speed, false);
@@ -1721,18 +1700,24 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     m_spawnLocation.ChangeCoords({ x, y, z, o });
 
     // not a neutral creature
-#ifndef UseNewAIInterface
     if (m_factionEntry && !(m_factionEntry->RepListId == -1 && m_factionTemplate->HostileMask == 0 && m_factionTemplate->FriendlyMask == 0))
     {
-        GetAIInterface()->m_canCallForHelp = true;
+        GetAIInterface()->setCanCallForHelp(true);
     }
 
     // set if creature can shoot or not.
     if (creature_properties->CanRanged == 1)
         GetAIInterface()->m_canRangedAttack = true;
     else
-        m_aiInterface->m_canRangedAttack = false;
-#endif
+        GetAIInterface()->m_canRangedAttack = false;
+
+    // checked at loading
+    m_defaultMovementType = MovementGeneratorType(IDLE_MOTION_TYPE);
+
+    if (getMaxWanderDistance() == 0.0f && m_defaultMovementType == RANDOM_MOTION_TYPE)
+        m_defaultMovementType = IDLE_MOTION_TYPE;
+
+    _waypointPathId = 0;
 
     //SETUP NPC FLAGS
     setNpcFlags(creature_properties->NPCFLags);
@@ -1774,21 +1759,13 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         if ((*itr)->instance_mode == AISPELL_ANY_DIFFICULTY)
             m_aiInterface->addSpellToList(*itr);
     }
-#ifndef UseNewAIInterface
-    m_aiInterface->m_canCallForHelp = creature_properties->m_canCallForHelp;
-    m_aiInterface->m_CallForHelpHealth = creature_properties->m_callForHelpHealth;
-    m_aiInterface->m_canFlee = creature_properties->m_canFlee;
-    m_aiInterface->m_FleeHealth = creature_properties->m_fleeHealth;
-    m_aiInterface->m_FleeDuration = creature_properties->m_fleeDuration;
 
-    GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-    GetAIInterface()->setSplineWalk();
+    GetAIInterface()->m_canCallForHelp = creature_properties->m_canCallForHelp;
+    GetAIInterface()->m_CallForHelpHealth = creature_properties->m_callForHelpHealth;
+    GetAIInterface()->m_canFlee = creature_properties->m_canFlee;
+    GetAIInterface()->m_FleeHealth = creature_properties->m_fleeHealth;
+    GetAIInterface()->m_FleeDuration = creature_properties->m_fleeDuration;
 
-    // load formation data
-    m_aiInterface->m_formationLinkSqlId = 0;
-    m_aiInterface->m_formationFollowDistance = 0;
-    m_aiInterface->m_formationFollowAngle = 0;
-#endif
     //////////////AI
 
     myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
@@ -1804,19 +1781,17 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     }
 
     setPowerType(POWER_TYPE_MANA);
-#ifndef UseNewAIInterface
+
+    /*  // Dont was Used in old AIInterface left the code here if needed at other Date
     if (creature_properties->guardtype == GUARDTYPE_CITY)
-        m_aiInterface->m_isGuard = true;
+        GetAIInterface()->setGuard(true);
     else
-        m_aiInterface->m_isGuard = false;
+        GetAIInterface()->setGuard(false);*/
 
     if (creature_properties->guardtype == GUARDTYPE_NEUTRAL)
-        m_aiInterface->m_isNeutralGuard = true;
+        GetAIInterface()->setGuard(true);
     else
-        m_aiInterface->m_isNeutralGuard = false;
-
-    m_aiInterface->UpdateSpeeds();
-#endif
+        GetAIInterface()->setGuard(false);
 
     if (creature_properties->invisibility_type > INVIS_FLAG_NORMAL)
         // TODO: currently only invisibility type 15 is used for invisible trigger NPCs
@@ -1830,8 +1805,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         setAItoUse(false);
     }
 
-    if (creature_properties->rooted != 0)
-        setMoveRoot(true);
+    if (GetMovementTemplate().IsRooted())
+        setControlled(true, UNIT_STATE_ROOTED);
 }
 
 void Creature::OnPushToWorld()
@@ -1867,12 +1842,6 @@ void Creature::OnPushToWorld()
 
     if (m_spawn)
     {
-#ifndef UseNewAIInterface
-        if (m_aiInterface->m_formationLinkSqlId)
-        {
-
-        }
-#endif
         if (m_spawn->channel_target_creature)
         {
             sEventMgr.AddEvent(this, &Creature::ChannelLinkUpCreature, m_spawn->channel_target_creature, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);    // only 5 attempts
@@ -1883,11 +1852,9 @@ void Creature::OnPushToWorld()
             sEventMgr.AddEvent(this, &Creature::ChannelLinkUpGO, m_spawn->channel_target_go, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);    // only 5 attempts
         }
     }
-#ifndef UseNewAIInterface
-    m_aiInterface->m_is_in_instance = (m_mapMgr->GetMapInfo()->type != INSTANCE_NULL) ? true : false;
-#else
-    m_aiInterface->m_is_in_instance = (m_mapMgr->GetMapInfo()->type != INSTANCE_NULL) ? true : false;
-#endif
+
+    m_aiInterface->m_is_in_instance = (!m_mapMgr->GetMapInfo()->isNonInstanceMap()) ? true : false;
+
     if (this->HasItems())
     {
         for (std::vector<CreatureItem>::iterator itr2 = m_SellItems->begin(); itr2 != m_SellItems->end(); ++itr2)
@@ -1899,11 +1866,8 @@ void Creature::OnPushToWorld()
         }
 
     }
-#ifndef UseNewAIInterface
-    GetAIInterface()->SetCreatureProtoDifficulty(creature_properties->Id);
-#else
+
     GetAIInterface()->setCreatureProtoDifficulty(creature_properties->Id);
-#endif
 
     if (mEvent != nullptr)
     {
@@ -2194,7 +2158,7 @@ void Creature::PrepareForRemove()
         }
     }
 
-    if (GetMapMgr()->GetMapInfo() && GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID)
+    if (GetMapMgr()->GetMapInfo() && GetMapMgr()->GetMapInfo()->isRaid())
     {
         if (GetCreatureProperties()->Rank == 3)
         {
@@ -2226,10 +2190,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         getVehicleComponent()->RemoveAccessories();
         getVehicleComponent()->EjectAllPassengers();
     }
-#ifndef UseNewAIInterface
-    if (GetAIInterface()->isFlying())
-        GetAIInterface()->splineMoveFalling(GetPositionX(), GetPositionY(), GetMapMgr()->GetADTLandHeight(GetPositionX(), GetPositionY()), 0);
-#endif
+
     // Creature falls off vehicle on death
     if ((m_currentVehicle != NULL))
         m_currentVehicle->EjectPassenger(this);
@@ -2349,6 +2310,9 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     // Clear health batch on death
     clearHealthBatch();
+
+    // Update movement flags on death
+    immediateMovementFlagsUpdate();
 
     if (m_mapMgr->m_battleground != NULL)
         m_mapMgr->m_battleground->HookOnUnitDied(this);
@@ -2496,7 +2460,7 @@ void Creature::removeVehicleComponent()
 
 CreatureMovementData const& Creature::GetMovementTemplate()
 {
-    if (CreatureMovementData const* movementOverride = sObjectMgr.GetCreatureMovementOverride(spawnid))
+    if (CreatureMovementData const* movementOverride = sObjectMgr.getCreatureMovementOverride(spawnid))
         return *movementOverride;
 
     return GetCreatureProperties()->Movement;
@@ -2516,4 +2480,101 @@ void Creature::Motion_Initialize()
     }
 
     getMovementManager()->initialize();
+}
+
+void Creature::immediateMovementFlagsUpdate()
+{
+    updateMovementFlags();
+    // reset timer
+    m_movementFlagUpdateTimer = 1000;
+}
+
+void Creature::updateMovementFlags()
+{
+    // Do not update movement flags if creature is controlled by a player (charm/vehicle)
+    if (getCharmerOrOwnerGUID())
+        return;
+
+    // Set the movement flags if the creature is in that mode. (Only fly if actually in air, only swim if in water, etc)
+    const float ground = GetMapMgr()->GetLandHeight(GetPositionX(), GetPositionY(), GetPositionZ());
+
+    const auto canHover = CanHover();
+    auto isInAir = false;
+
+#if VERSION_STRING < WotLK
+    isInAir = (G3D::fuzzyGt(GetPositionZ(), ground + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyLt(GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE)); // Can be underground too, prevent the falling
+#else
+    isInAir = (G3D::fuzzyGt(GetPositionZ(), ground + (canHover ? getHoverHeight() : 0.0f) + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyLt(GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE)); // Can be underground too, prevent the falling
+#endif
+
+    if (isInAir && !IsFalling())
+    {
+        auto needsFalling = false;
+        if (GetMovementTemplate().IsFlightAllowed())
+        {
+            if (isAlive())
+            {
+                if (GetMovementTemplate().Flight == CreatureFlightMovementType::CanFly)
+                {
+                    if (!hasUnitMovementFlag(MOVEFLAG_CAN_FLY))
+                        setMoveCanFly(true);
+                }
+                else
+                {
+                    if (!hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
+                        setMoveDisableGravity(true);
+                }
+
+                if (IsHovering() && hasAuraWithAuraEffect(SPELL_AURA_HOVER))
+                    setMoveHover(false);
+            }
+            else
+            {
+                if (hasUnitMovementFlag(MOVEFLAG_CAN_FLY))
+                    setMoveCanFly(false);
+
+                if (hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
+                    setMoveDisableGravity(false);
+
+                // Unit is in air and is dead => needs to fall down
+                needsFalling = true;
+            }
+        }
+
+        if (IsHovering() && (!hasAuraWithAuraEffect(SPELL_AURA_HOVER) || !isAlive()))
+        {
+            setMoveHover(false);
+            needsFalling = true;
+        }
+
+        // Make unit fall
+        if (needsFalling && !isUnderWater())
+            getMovementManager()->moveFall();
+    }
+
+    if (!isInAir)
+    {
+        removeUnitMovementFlag(MOVEFLAG_FALLING);
+
+        if (hasUnitMovementFlag(MOVEFLAG_CAN_FLY))
+            setMoveCanFly(false);
+
+        if (hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
+            setMoveDisableGravity(false);
+
+        if (!IsHovering() && isAlive() && (CanHover() || hasAuraWithAuraEffect(SPELL_AURA_HOVER)))
+            setMoveHover(true);
+    }
+
+    // Swimming flag
+    if (isInWater() && GetMovementTemplate().IsSwimAllowed())
+    {
+        if (!hasUnitMovementFlag(MOVEFLAG_SWIMMING))
+            setMoveSwim(true);
+    }
+    else
+    {
+        if (hasUnitMovementFlag(MOVEFLAG_SWIMMING))
+            setMoveSwim(false);
+    }
 }

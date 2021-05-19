@@ -108,7 +108,7 @@ bool ConfusedMovementGenerator<T>::doUpdate(T* owner, uint32_t diff)
         init.MovebyPath(_path->getPath());
         init.SetWalk(true);
         int32 traveltime = init.Launch();
-        _timer.resetInterval(traveltime + Util::getRandomUInt(800, 1500));
+        _timer.resetInterval(std::max(300u, Util::getRandomUInt(traveltime / 2, traveltime * 2)));
     }
 
     return true;

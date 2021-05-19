@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Objects/Faction.h"
 #include <Spell/Definitions/PowerType.hpp>
+#include "Raid_Karazhan.h"
 
 class KarazhanInstanceScript : public InstanceScript
 {
@@ -474,10 +475,9 @@ public:
                 Creature* pCreature = static_cast<Creature*>(pObject);
                 pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Splendid. I'm going to get the audience ready. Break a leg!");
                 pCreature->castSpell(pCreature, 32616, false);
-                pCreature->GetAIInterface()->StopMovement(0);
+                pCreature->StopMoving();
                 pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-                pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
-                pCreature->GetAIInterface()->setWayPointToMove(0);
+                pCreature->GetScript()->DoAction(0);
                 pCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
                 pCreature->PlaySoundToSet(9357);
                 WayStartBBW[pCreature->GetInstanceID()] = 2;
@@ -508,14 +508,14 @@ public:
                 static_cast<Creature*>(pObject)->Despawn(100, 0);
                 Creature* pop = pObject->GetMapMgr()->GetInterface()->SpawnCreature(17521, pObject->GetPositionX(), pObject->GetPositionY(), pObject->GetPositionZ(), 0, true, true, 0, 0);
                 if (pop)
-                    pop->GetAIInterface()->AttackReaction(Plr, 1, 0);
+                    pop->GetAIInterface()->onHostileAction(Plr);
                 break;
             }
         }
     }
 };
 
-static Movement::Location Barnes[] =
+static LocationVector Barnes[] =
 {
     { },
     { -10873.91f, -1780.177f, 90.50f, 3.3f },
@@ -529,13 +529,13 @@ class BarnesAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(BarnesAI)
     explicit BarnesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-        AddWaypoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_WALK, Barnes[1]));
-        AddWaypoint(CreateWaypoint(2, 43000, Movement::WP_MOVE_TYPE_WALK, Barnes[2]));
-        AddWaypoint(CreateWaypoint(3, 0, Movement::WP_MOVE_TYPE_WALK, Barnes[3]));
-        AddWaypoint(CreateWaypoint(4, 0, Movement::WP_MOVE_TYPE_WALK, Barnes[4]));
+        stopMovement();
+        addWaypoint(1, createWaypoint(1, 0, WAYPOINT_MOVE_TYPE_WALK, Barnes[1]));
+        addWaypoint(1, createWaypoint(2, 43000, WAYPOINT_MOVE_TYPE_WALK, Barnes[2]));
+        addWaypoint(1, createWaypoint(3, 0, WAYPOINT_MOVE_TYPE_WALK, Barnes[3]));
+        addWaypoint(1, createWaypoint(4, 0, WAYPOINT_MOVE_TYPE_WALK, Barnes[4]));
 
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
@@ -556,13 +556,22 @@ class BarnesAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void DoAction(int32_t action) override
     {
+        if (action == 0)
+            setWaypointToMove(1, 0);
+    }
+
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
+    {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         switch (iWaypointId)
         {
             case 0:
             {
-                getCreature()->GetAIInterface()->setWayPointToMove(1);
+                setWaypointToMove(1, 1);
                 WayStartBBW[getCreature()->GetInstanceID()] = 3;
             } break;
             case 2:
@@ -787,7 +796,7 @@ class StageLight : public CreatureAIScript
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         getCreature()->m_noRespawn = true;
         getCreature()->castSpell(getCreature(), 34126, true);
     }
@@ -885,28 +894,28 @@ class CuratorAI : public CreatureAIScript
             case 0:
             {
                 AstralFlare = spawnCreature(CN_ASTRALFLARE, dX + 3, dY + 3, getCreature()->GetPositionZ(), 0);
-                AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
+                AstralFlare->GetAIInterface()->onHostileAction(random_target);
                 AstralFlare = NULL;
             }
             break;
             case 1:
             {
                 AstralFlare = spawnCreature(CN_ASTRALFLARE, dX + 3, dY - 3, getCreature()->GetPositionZ(), 0);
-                AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
+                AstralFlare->GetAIInterface()->onHostileAction(random_target);
                 AstralFlare = NULL;
             }
             break;
             case 2:
             {
                 AstralFlare = spawnCreature(CN_ASTRALFLARE, dX - 3, dY - 3, getCreature()->GetPositionZ(), 0);
-                AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
+                AstralFlare->GetAIInterface()->onHostileAction(random_target);
                 AstralFlare = NULL;
             }
             break;
             case 3:
             {
                 AstralFlare = spawnCreature(CN_ASTRALFLARE, dX - 3, dY + 3, getCreature()->GetPositionZ(), 0);
-                AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
+                AstralFlare->GetAIInterface()->onHostileAction(random_target);
                 AstralFlare = NULL;
             }
             break;
@@ -1194,7 +1203,7 @@ class ShadeofAranAI : public CreatureAIScript
             {
                 if (!m_time_pyroblast)
                 {
-                    getCreature()->GetAIInterface()->WipeHateList();
+                    getCreature()->getThreatManager().clearAllThreat();
                     sendDBChatMessage(2040);     // Surely you would not deny an old man a replenishing drink? No, no I thought not.
                     m_time_pyroblast = 10;
                     getCreature()->castSpell(getCreature(), info_mass_polymorph, true);
@@ -1278,7 +1287,7 @@ class ShadeofAranAI : public CreatureAIScript
         for (const auto& hostileItr : getCreature()->getInRangePlayersSet())
         {
             Player* RandomTarget = static_cast<Player*>(hostileItr);
-            if (RandomTarget && RandomTarget->isAlive() && getCreature()->GetAIInterface()->getThreatByPtr(RandomTarget) > 0)
+            if (RandomTarget && RandomTarget->isAlive() && getCreature()->getThreatManager().getThreat(RandomTarget) > 0)
                 Targets.push_back(RandomTarget);
         }
 
@@ -1430,7 +1439,7 @@ class WaterEleAI : public CreatureAIScript
         if (!WaterBolt)
         {
             getCreature()->setAttackTimer(MELEE, 2000);
-            Unit* target = getCreature()->GetAIInterface()->getNextTarget();
+            Unit* target = getCreature()->getThreatManager().getCurrentVictim();
             if (target)
                 getCreature()->castSpell(target, WATERBOLT, true);
         }
@@ -1469,7 +1478,7 @@ class ShadowofAranAI : public CreatureAIScript
         ShadowPyro--;
         if (!ShadowPyro)
         {
-            Unit* target = getCreature()->GetAIInterface()->getNextTarget();
+            Unit* target = getCreature()->getThreatManager().getCurrentVictim();
             if (target != NULL)
                 getCreature()->castSpell(target, SHADOWPYRO, true);
         }
@@ -1581,7 +1590,7 @@ class IllhoofAI : public CreatureAIScript
     void AIUpdate() override
     {
         uint32_t t = (uint32_t)time(NULL);
-        if (!getCreature()->isCastingSpell() && getCreature()->GetAIInterface()->getNextTarget())
+        if (!getCreature()->isCastingSpell() && getCreature()->getThreatManager().getCurrentVictim())
         {
             if (t > ImpTimer)
             {
@@ -1722,7 +1731,7 @@ class FiendishImpAI : public CreatureAIScript
 
     void OnCombatStart(Unit* mTarget) override
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
 
         if (getCreature()->GetDistance2dSq(mTarget) <= 1225.0f)
         {
@@ -1745,7 +1754,7 @@ class FiendishImpAI : public CreatureAIScript
     void AIUpdate() override
     {
         setAIAgent(AGENT_NULL);
-        /*if (getCreature()->GetAIInterface()->getNextTarget() && getCreature()->GetDistance2dSq(getCreature()->GetAIInterface()->getNextTarget()) <= 1225.0f)
+        /*if (getCreature()->getThreatManager().getCurrentVictim() && getCreature()->GetDistance2dSq(getCreature()->getThreatManager().getCurrentVictim()) <= 1225.0f)
         {
             setAIAgent(AGENT_SPELL);
             if (!getCreature()->isCastingSpell() && Util::getRandomUInt(10) > 2)
@@ -1753,7 +1762,7 @@ class FiendishImpAI : public CreatureAIScript
                 getCreature()->setAttackTimer(spells[0].attackstoptimer, false);
 
                 Unit* target = NULL;
-                target = getCreature()->GetAIInterface()->getNextTarget();
+                target = getCreature()->getThreatManager().getCurrentVictim();
 
                 getCreature()->castSpell(target, spells[0].info, spells[0].instant);
                 return;
@@ -1798,7 +1807,7 @@ class FiendPortal : public CreatureAIScript
 
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         getCreature()->m_noRespawn = true;
 
         RegisterAIUpdateEvent(10000);
@@ -2033,19 +2042,19 @@ class MalchezaarAI : public CreatureAIScript
                 m_phase = 1;
                 break;
         }
-        /*if (t > spells[1].casttime && getCreature()->GetAIInterface()->getNextTarget() && !getCreature()->isCastingSpell())
+        /*if (t > spells[1].casttime && getCreature()->getThreatManager().getCurrentVictim() && !getCreature()->isCastingSpell())
         {
             Enfeebler();
             spells[1].casttime = t + spells[1].cooldown;
             spells[5].casttime = t + spells[5].cooldown;
         }
-        else if (t > m_spawn_infernal && m_infernal == true && getCreature()->GetAIInterface()->getNextTarget())
+        else if (t > m_spawn_infernal && m_infernal == true && getCreature()->getThreatManager().getCurrentVictim())
         {
             spawnCreature(CN_INFERNAL, ranX, ranY, 276.0f, 0);
             m_spawn_infernal = 0;
             m_infernal = false;
         }
-        else if (t > spells[5].casttime && getCreature()->GetAIInterface()->getNextTarget() && !getCreature()->isCastingSpell())
+        else if (t > spells[5].casttime && getCreature()->getThreatManager().getCurrentVictim() && !getCreature()->isCastingSpell())
         {
             spells[5].casttime = 0;
             getCreature()->castSpell(getCreature(), spells[5].info, spells[5].instant);
@@ -2245,15 +2254,15 @@ class InfernalDummyAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(InfernalDummyAI)
     explicit InfernalDummyAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        stopMovement();
 
-        Movement::Location loc;
+        LocationVector loc;
         loc.x = -10938.56f;
         loc.y = -2041.26f;
         loc.z = 305.132f;
         loc.o = 0;
 
-        AddWaypoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_FLY, loc));
+        addWaypoint(1, createWaypoint(1, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, loc));
     }
 };
 
@@ -2295,7 +2304,7 @@ class MAxesAI : public CreatureAIScript
         if (random_target == nullptr)
             return;
 
-        getCreature()->GetAIInterface()->taunt(random_target, true);
+        getCreature()->castSpell(random_target, SPELL_TAUNT, false);
     }
 
     void AIUpdate() override
@@ -2382,7 +2391,7 @@ class NetherspiteAI : public CreatureAIScript
     void AIUpdate() override
     {
         /*uint32_t t = (uint32_t)time(NULL);
-        if (t > VoidTimer && getCreature()->GetAIInterface()->getNextTarget())
+        if (t > VoidTimer && getCreature()->getThreatManager().getCurrentVictim())
         {
             VoidTimer = t + 20;
             std::vector<Unit* > TargetTable;
@@ -2421,7 +2430,7 @@ class VoidZoneAI : public CreatureAIScript
         getCreature()->DisableAI();
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         getCreature()->m_noRespawn = true;
         getCreature()->Despawn(30000, 0);
 
@@ -2474,7 +2483,7 @@ const uint32_t SMOKING_BLAST = 37057;
 const uint32_t FIREBALL_BARRAGE = 30282;
 const uint32_t SUMMON_BONE_SKELETONS = 30170;
 
-static Movement::Location coords[] =
+static LocationVector coords[] =
 {
     { 0, 0, 0, 0 },
     { -11173.719727f, -1863.993164f, 130.390396f, 5.343079f }, // casting point
@@ -2524,11 +2533,11 @@ class NightbaneAI : public CreatureAIScript
         //spells[4].perctrigger = 0.0f;
         //spells[4].attackstoptimer = 1000;
 
-        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        stopMovement();
 
         for (uint8_t i = 1; i < 5; i++)
         {
-            AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, coords[i]));
+            addWaypoint(1, createWaypoint(i, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, coords[i]));
         }
 
         m_phase = 0;
@@ -2549,10 +2558,10 @@ class NightbaneAI : public CreatureAIScript
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-        getCreature()->GetAIInterface()->unsetSplineFlying();
-        getCreature()->GetAIInterface()->m_canMove = true;
+        stopMovement();
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+        getCreature()->setMoveCanFly(false);
+        getCreature()->setControlled(false, UNIT_STATE_ROOTED);
     }
 
     void AIUpdate() override
@@ -2573,21 +2582,24 @@ class NightbaneAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         switch (iWaypointId)
         {
             case 1: //casting point
             {
-                getCreature()->GetAIInterface()->m_canMove = false;
-                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+                getCreature()->setControlled(true, UNIT_STATE_ROOTED);
+                getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 m_currentWP = 1;
             }
             break;
             case 4: //ground point
             {
-                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+                getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 Land();
                 m_currentWP = 4;
@@ -2596,8 +2608,7 @@ class NightbaneAI : public CreatureAIScript
             default:
             {
                 //move to the next waypoint
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(iWaypointId + 1);
+                setWaypointToMove(1, iWaypointId + 1);
             }
             break;
         }
@@ -2614,12 +2625,11 @@ class NightbaneAI : public CreatureAIScript
             if (getCreature()->isCastingSpell())
                 getCreature()->interruptSpell();
 
-            getCreature()->GetAIInterface()->m_canMove = true;
-            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-            getCreature()->GetAIInterface()->StopMovement(0);
+            getCreature()->setControlled(false, UNIT_STATE_ROOTED);
+            getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+            getCreature()->StopMoving();
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            getCreature()->GetAIInterface()->setWayPointToMove(2);
+            setWaypointToMove(1, 2);
             m_phase++;
             return;
         }
@@ -2640,9 +2650,9 @@ class NightbaneAI : public CreatureAIScript
         }
 
         //Shoots powerful Smoking Blast every second for approximately 15 seconds.
-        if (getCreature()->GetAIInterface()->getNextTarget() != NULL)
+        if (getCreature()->getThreatManager().getCurrentVictim() != NULL)
         {
-            target = getCreature()->GetAIInterface()->getNextTarget();
+            target = getCreature()->getThreatManager().getCurrentVictim();
             getCreature()->castSpell(target, sSpellMgr.getSpellInfo(SMOKING_BLAST), true);
         }
 
@@ -2676,11 +2686,10 @@ class NightbaneAI : public CreatureAIScript
             if (getCreature()->isCastingSpell())
                 getCreature()->interruptSpell();
 
-            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-            getCreature()->GetAIInterface()->StopMovement(0);
+            getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+            getCreature()->StopMoving();
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            getCreature()->GetAIInterface()->setWayPointToMove(1);
+            setWaypointToMove(1, 1);
             Fly();
             m_FlyPhaseTimer = 17;
             m_phase++;
@@ -2712,7 +2721,7 @@ class NightbaneAI : public CreatureAIScript
 
         getCreature()->setMoveHover(true);
 
-        getCreature()->GetAIInterface()->setSplineFlying();
+        getCreature()->setMoveCanFly(true);
     }
 
     void Land()
@@ -2721,7 +2730,7 @@ class NightbaneAI : public CreatureAIScript
 
         getCreature()->setMoveHover(false);
 
-        getCreature()->GetAIInterface()->unsetSplineFlying();
+        getCreature()->setMoveCanFly(false);
     }
 
 protected:
@@ -3109,7 +3118,7 @@ class CycloneOZ : public CreatureAIScript
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(CYCLONE_VISUAL), true);
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         getCreature()->m_noRespawn = true;
     }
 

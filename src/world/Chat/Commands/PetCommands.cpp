@@ -40,9 +40,7 @@ bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_sessi
         pet->DeleteMe();
         return true;
     }
-#ifndef UseNewAIInterface
-    pet->GetAIInterface()->SetUnitToFollowAngle(followangle);
-#endif
+
     if (selected_player != m_session->GetPlayer())
     {
         sGMLog.writefromsession(m_session, "used created pet with entry %u for player %s", entry, selected_player->getName().c_str());

@@ -799,9 +799,16 @@ void MovementManager::moveCirclePath(float x, float y, float z, float radius, bo
         point.y = y + radius * sinf(angle);
 
         if (_owner->IsFlying())
+        {
             point.z = z;
+        }
         else
-            point.z = _owner->GetMapMgr()->GetLandHeight(point.x, point.y, z) + _owner->getHoverHeight();
+        {
+            point.z = _owner->GetMapMgr()->GetLandHeight(point.x, point.y, z);
+#if VERSION_STRING >= WotLK
+            point.z += _owner->getHoverHeight();
+#endif
+        }
 
         init.Path().push_back(point);
     }
@@ -841,7 +848,7 @@ void MovementManager::moveSmoothPath(uint32_t pointId, LocationVector const* pat
     add(new GenericMovementGenerator(std::move(init), EFFECT_MOTION_TYPE, pointId));
 }
 
-void MovementManager::moveAlongSplineChain(uint32_t pointId, uint16_t dbChainId, bool walk)
+void MovementManager::moveAlongSplineChain(uint32_t /*pointId*/, uint16_t /*dbChainId*/, bool /*walk*/)
 {
     Creature* owner = _owner->ToCreature();
     if (!owner)
@@ -886,7 +893,7 @@ void MovementManager::moveFall(uint32_t id/* = 0*/)
         return;
 
     // rooted units don't move (also setting falling+root flag causes client freezes)
-    if (_owner->hasUnitStateFlag(UNIT_STATE_ROOT | UNIT_STATE_STUNNED))
+    if (_owner->hasUnitStateFlag(UNIT_STATE_ROOTED | UNIT_STATE_STUNNED))
         return;
 
     _owner->addUnitMovementFlag(MOVEFLAG_FALLING);
@@ -898,8 +905,13 @@ void MovementManager::moveFall(uint32_t id/* = 0*/)
         return;
     }
 
+    auto posY = _owner->GetPositionY();
+#if VERSION_STRING >= WotLK
+    posY += _owner->getHoverHeight();
+#endif
+
     MovementNew::MoveSplineInit init(_owner);
-    init.MoveTo(_owner->GetPositionX(), _owner->GetPositionY(), tz + _owner->getHoverHeight(), false);
+    init.MoveTo(_owner->GetPositionX(), posY, false);
     init.SetFall();
 
     GenericMovementGenerator* movement = new GenericMovementGenerator(std::move(init), EFFECT_MOTION_TYPE, id);

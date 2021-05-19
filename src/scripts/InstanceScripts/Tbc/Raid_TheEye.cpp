@@ -235,7 +235,7 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32_t /*pEffectIndex*/, Spell* pSpe
     Unit* Caster = pSpell->getUnitCaster();
     if (!Caster) return true;
 
-    Unit* Target = Caster->GetAIInterface()->getNextTarget();
+    Unit* Target = Caster->GetAIInterface()->getCurrentTarget();
     if (!Target) return true;
 
     SpellInfo const* SpellInfo = sSpellMgr.getSpellInfo(SOLARIAN_WRATH_OF_THE_ASTROMANCER_BOMB);
@@ -280,7 +280,7 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32_t /*pEffectIndex*/, Spell* pSpe
 //        //Spawn two priest friend to help Solarian
 //        Solarian->spawnCreatureAndGetAIScript(CN_SOLARIUMPRIEST, Solarian->mSpawnPositions[0][0], Solarian->mSpawnPositions[0][1], 17, 0);
 //        Solarian->spawnCreatureAndGetAIScript(CN_SOLARIUMPRIEST, Solarian->mSpawnPositions[1][0], Solarian->mSpawnPositions[1][1], 17, 0);
-//        //Solarian->MoveTo(Solarian->mSpawnPositions[2][0], Solarian->mSpawnPositions[2][1], 17);    //Doesn't work quite right yet
+//        //Solarian->moveTo(Solarian->mSpawnPositions[2][0], Solarian->mSpawnPositions[2][1], 17);    //Doesn't work quite right yet
 //
 //        if (pCreatureAI != nullptr)
 //        {
@@ -371,12 +371,12 @@ class DarkenerAI : public CreatureAIScript
     bool SwitchTarget()
     {
         mCurrentTarget = getBestPlayerTarget();
-        if (mCurrentTarget == getCreature()->GetAIInterface()->getNextTarget())
+        if (mCurrentTarget == getCreature()->getThreatManager().getCurrentVictim())
             return true;
 
         if (mCurrentTarget != NULL)
         {
-            getCreature()->GetAIInterface()->modThreatByPtr(mCurrentTarget, 1000000);
+            getCreature()->getThreatManager().addThreat(mCurrentTarget, 1000000);
             Player* pPlayer = static_cast<Player*>(mCurrentTarget);
             char msg[256];
             snprintf((char*)msg, 256, "%s sets eyes on %s", getCreature()->GetCreatureProperties()->Name.c_str(), pPlayer->getName().c_str());
@@ -463,7 +463,7 @@ class CapernianAI : public CreatureAIScript
             _castAISpell(mArcaneBurst);
         }
 
-        Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
+        Unit* pTarget = getCreature()->getThreatManager().getCurrentVictim();
         if (pTarget != NULL && getRangeToObject(pTarget) <= 30.0f)
         {
             
@@ -545,7 +545,8 @@ class PhoenixAI : public CreatureAIScript
         Unit* pTarget = getBestPlayerTarget();
         if (pTarget != NULL)
         {
-            getCreature()->GetAIInterface()->AttackReaction(pTarget, 500, 0);
+            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getThreatManager().addThreat(pTarget, 500.f);
         }
 
         mBurnTimer = _addTimer(3000);
@@ -556,7 +557,8 @@ class PhoenixAI : public CreatureAIScript
         Unit* pTarget = getBestPlayerTarget(TargetFilter_Closest);
         if (pTarget != NULL)
         {
-            getCreature()->GetAIInterface()->AttackReaction(pTarget, 500);
+            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getThreatManager().addThreat(pTarget, 500.f);
         }
         else
         {
@@ -624,7 +626,8 @@ class WeaponsAI : public CreatureAIScript
         Unit* pTarget = getBestPlayerTarget();
         if (pTarget != NULL)
         {
-            getCreature()->GetAIInterface()->AttackReaction(pTarget, 200, 0);
+            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getThreatManager().addThreat(pTarget, 200.f);
         }
     }
 
@@ -633,7 +636,8 @@ class WeaponsAI : public CreatureAIScript
         Unit* pTarget = getBestPlayerTarget();
         if (pTarget != NULL)
         {
-            getCreature()->GetAIInterface()->AttackReaction(pTarget, 500);
+            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getThreatManager().addThreat(pTarget, 500.f);
         }
         else
         {
@@ -645,7 +649,7 @@ class WeaponsAI : public CreatureAIScript
 //\todo Add weapon summon effect
 // Check why some features block (like melee, movement and so on) if there's only 1 target and spell req. NotCurrent one
 
-const Movement::Location Triggers[] =
+const LocationVector Triggers[] =
 {
     { 789.719543f, 24.627499f, 52.728550f },
     { 791.931152f, -24.925735f, 52.728550f },
@@ -665,12 +669,12 @@ const LocationExtra Gates[] =
     { 676.812500f,  43.073757f, 46.781292f, 5.312979f, 184324 }
 };
 
-const Movement::LocationWithFlag Waypoints[] =
+const LocationVector Waypoints[] =
 {
     {  },
-    { 794.072998f,  0.214634f, 48.728500f, 0.0f, Movement::WP_MOVE_TYPE_RUN },
-    { 794.052998f,  0.214634f, 75.728500f, 0.0f, Movement::WP_MOVE_TYPE_FLY },
-    { 794.032998f,  0.214634f, 48.728500f, 0.0f, Movement::WP_MOVE_TYPE_FLY }
+    { 794.072998f,  0.214634f, 48.728500f, 0.0f },
+    { 794.052998f,  0.214634f, 75.728500f, 0.0f },
+    { 794.032998f,  0.214634f, 48.728500f, 0.0f }
 };
 
 const LocationExtra KaelthasWeapons[] =
@@ -698,11 +702,12 @@ class KaelThasAI : public CreatureAIScript
     {
         for (uint8_t i = 1; i < 4; ++i)
         {
-            AddWaypoint(CreateWaypoint(1, 0, Waypoints[i].wp_flag, Waypoints[i].wp_location));
+            const auto type = i == 1 ? WAYPOINT_MOVE_TYPE_RUN : WAYPOINT_MOVE_TYPE_TAKEOFF;
+            addWaypoint(1, createWaypoint(1, 0, type, Waypoints[i]));
         }
 
         setCanEnterCombat(true);
-        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        stopMovement();
         setRooted(false);
 
         // Other spells
@@ -842,13 +847,14 @@ class KaelThasAI : public CreatureAIScript
 
     void SendAdvisorToFight(Creature* pCreature)
     {
-        pCreature->GetAIInterface()->SetAllowedToEnterCombat(true);
+        pCreature->GetAIInterface()->setAllowedToEnterCombat(true);
         pCreature->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
         Unit* pTarget = getBestPlayerTarget();
         if (pTarget != NULL)
         {
-            pCreature->GetAIInterface()->AttackReaction(pTarget, 200, 0);
+            pCreature->GetAIInterface()->onHostileAction(pTarget);
+            pCreature->getThreatManager().addThreat(pTarget, 200.f);
         }
 
         SetAIUpdateFreq(1000);
@@ -949,7 +955,7 @@ class KaelThasAI : public CreatureAIScript
 
                     if (pCreature != nullptr)
                     {
-                        pCreature->GetAIInterface()->SetAllowedToEnterCombat(true);
+                        pCreature->GetAIInterface()->setAllowedToEnterCombat(true);
                         pCreature->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                     }
                 }

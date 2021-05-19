@@ -27,7 +27,7 @@ FollowMovementGenerator::FollowMovementGenerator(Unit* target, float range, Chas
     Mode = MOTION_MODE_DEFAULT;
     Priority = MOTION_PRIORITY_NORMAL;
     Flags = MOVEMENTGENERATOR_FLAG_INITIALIZATION_PENDING;
-    BaseUnitState = UNIT_STATE_FOLLOW;
+    BaseUnitState = UNIT_STATE_FOLLOWING;
 }
 
 FollowMovementGenerator::~FollowMovementGenerator() = default;

@@ -1763,8 +1763,6 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
 #if VERSION_STRING == Classic
 void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* target)
 {
-    ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->getSplineMgr().popSplinePacket(getGuid()) : 0;
-
     *data << uint8(updateFlags);
 
     if (updateFlags & UPDATEFLAG_LIVING)  //0x20
@@ -1827,14 +1825,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
 
         if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ENABLED))   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
         {
-            if (splinebuf != nullptr)
-            {
-                data->append(*splinebuf);
-            }
-            else
-                *data << float(0.0f);
+            if (Unit* unit = static_cast<Unit*>(this))
+                MovementNew::PacketBuilder::WriteCreate(*unit->movespline, *data);
         }
-
     }
     else        // No UPDATEFLAG_LIVING
     {
@@ -1885,8 +1878,6 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
 #if VERSION_STRING == TBC
 void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* target)
 {
-    ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->getSplineMgr().popSplinePacket(getGuid()) : 0;
-
     *data << uint8(updateFlags);
 
     if (updateFlags & UPDATEFLAG_LIVING)  //0x20
@@ -1956,14 +1947,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
 
         if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ENABLED))   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
         {
-            if (splinebuf != nullptr)
-            {
-                data->append(*splinebuf);
-            }
-            else
-                *data << float(0.0f);
+            if (Unit* unit = static_cast<Unit*>(this))
+                MovementNew::PacketBuilder::WriteCreate(*unit->movespline, *data);
         }
-
     }
     else        // No UPDATEFLAG_LIVING
     {
@@ -2051,7 +2037,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
 #endif
 
 #if VERSION_STRING == WotLK
-void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
 {
     *data << uint16(updateFlags);
 
@@ -3563,12 +3549,10 @@ bool Object::isInBack(Object* target)
     // if we are a creature and have a UNIT_FIELD_TARGET then we are always facing them
     if (isCreature() && static_cast<Creature*>(this)->getTargetGuid() != 0)
     {
-#ifndef UseNewAIInterface
-        Unit* pTarget = static_cast<Creature*>(this)->GetAIInterface()->getNextTarget();
+        Unit* pTarget = static_cast<Creature*>(this)->GetAIInterface()->getCurrentTarget();
         if (pTarget != nullptr)
             angle -= double(Object::calcRadAngle(target->m_position.x, target->m_position.y, pTarget->m_position.x, pTarget->m_position.y));
         else
-#endif
             angle -= target->GetOrientation();
     }
     else
@@ -3748,7 +3732,7 @@ bool Object::IsInBg()
 
     if (pMapinfo != nullptr)
     {
-        return (pMapinfo->type == INSTANCE_BATTLEGROUND);
+        return (pMapinfo->isBattleground());
     }
 
     return false;
@@ -4233,6 +4217,7 @@ void Object::getNearPoint2D(Object* searcher, float& x, float& y, float distance
     {
         effectiveReach += searcher->getCombatReach();
 
+#if VERSION_STRING >= WotLK
         if (this != searcher)
         {
             float myHover = 0.0f, searcherHover = 0.0f;
@@ -4245,7 +4230,8 @@ void Object::getNearPoint2D(Object* searcher, float& x, float& y, float distance
             if (hoverDelta != 0.0f)
                 effectiveReach = std::sqrt(std::max(effectiveReach * effectiveReach - hoverDelta * hoverDelta, 0.0f));
         }
-}
+#endif
+    }
 
     x = GetPositionX() + (effectiveReach + distance2d) * std::cos(absAngle);
     y = GetPositionY() + (effectiveReach + distance2d) * std::sin(absAngle);
@@ -4346,10 +4332,12 @@ void Object::UpdateAllowedPositionZ(float x, float y, float &z, float* groundZ)
 
             if (max_z > INVALID_HEIGHT)
             {
+#if VERSION_STRING >= WotLK
                 // hovering units cannot go below their hover height
                 float hoverOffset = unit->getHoverHeight();
                 max_z += hoverOffset;
                 ground_z += hoverOffset;
+#endif
 
                 if (z > max_z)
                     z = max_z;
@@ -4359,10 +4347,14 @@ void Object::UpdateAllowedPositionZ(float x, float y, float &z, float* groundZ)
 
             if (groundZ)
                 *groundZ = ground_z;
-}
+        }
         else
         {
-            float ground_z = GetMapMgr()->GetLandHeight(x, y, z) + unit->getHoverHeight();
+            float ground_z = GetMapMgr()->GetLandHeight(x, y, z);
+#if VERSION_STRING >= WotLK
+            ground_z += unit->getHoverHeight();
+#endif
+
             if (z < ground_z)
                 z = ground_z;
 
@@ -4379,6 +4371,13 @@ void Object::UpdateAllowedPositionZ(float x, float y, float &z, float* groundZ)
         if (groundZ)
             *groundZ = ground_z;
     }
+}
+
+LocationVector Object::getFirstCollisionPosition(float dist, float angle)
+{
+    LocationVector pos = GetPosition();
+    MovePositionToFirstCollision(pos, dist, angle);
+    return pos;
 }
 
 void Object::MovePositionToFirstCollision(LocationVector &pos, float dist, float angle)
@@ -4459,7 +4458,12 @@ void Object::MovePositionToFirstCollision(LocationVector &pos, float dist, float
             // fall back to gridHeight if any
             float gridHeight = GetMapMgr()->GetADTLandHeight(pos.x, pos.y);
             if (gridHeight > INVALID_HEIGHT)
-                pos.z = gridHeight + unit->getHoverHeight();
+            {
+                pos.z = gridHeight;
+#if VERSION_STRING >= WotLK
+                pos.z += unit->getHoverHeight();
+#endif
+            }
         }
     }
 }

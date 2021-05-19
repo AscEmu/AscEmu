@@ -56,13 +56,16 @@ class Wizzlecranks_Shredder : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(Wizzlecranks_Shredder)
     explicit Wizzlecranks_Shredder(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (iWaypointId == 195)
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thank you Young warior!");
             getCreature()->Despawn(5000, 1000);
-            getCreature()->DeleteWaypoints();
+            getCreature()->StopMoving();
             if (getCreature()->m_escorter == nullptr)
                 return;
 
@@ -80,13 +83,16 @@ class Gilthares_Firebough : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(Gilthares_Firebough)
     explicit Gilthares_Firebough(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (iWaypointId == 100)
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally, I am rescued");
             getCreature()->Despawn(5000, 1000);
-            getCreature()->DeleteWaypoints();
+            getCreature()->StopMoving();
             if (getCreature()->m_escorter == nullptr)
                 return;
 

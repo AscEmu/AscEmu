@@ -55,7 +55,7 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
         phaseIn = addAISpell(PHASE_IN, 0.0f, TARGET_ATTACKING, 0, 10, false, true);
         phaseIn->setAttackStopTimer(1000);
 
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->m_noRespawn = true;
 
         Appear = true;
@@ -66,7 +66,7 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
         if (Appear)
         {
             getCreature()->castSpell(getCreature(), phaseIn->mSpellInfo, phaseIn->mIsTriggered);
-            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+            getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
 
             Appear = false;
         }
@@ -130,7 +130,7 @@ class EXARCH_MALADAAR_AI : public CreatureAIScript
             sendDBChatMessage(SAY_MALADAAR_07);
 
             getCreature()->setAttackTimer(MELEE, 3500);
-            getCreature()->GetAIInterface()->StopMovement(2000);
+            getCreature()->PauseMovement(2000);
 
             getCreature()->castSpell(getCreature(), summonAvatar->mSpellInfo, summonAvatar->mIsTriggered);
             Avatar = true;

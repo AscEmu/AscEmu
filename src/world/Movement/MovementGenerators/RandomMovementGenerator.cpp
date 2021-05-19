@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/PathGenerator.h"
 
 template<class T>
-RandomMovementGenerator<T>::RandomMovementGenerator(float distance) : _timer(0), _reference(), _wanderDistance(distance), _wanderSteps(0)
+RandomMovementGenerator<T>::RandomMovementGenerator(float distance) : _timer(0), _reference(), _maxWanderDistance(distance), _wanderSteps(0)
 {
     this->Mode = MOTION_MODE_DEFAULT;
     this->Priority = MOTION_PRIORITY_NORMAL;
@@ -69,8 +69,8 @@ void RandomMovementGenerator<Creature>::doInitialize(Creature* owner)
     _reference = owner->GetPosition();
     owner->StopMoving();
 
-    if (_wanderDistance == 0.f)
-        _wanderDistance = owner->GetWanderDistance();
+    if (_maxWanderDistance == 0.f)
+        _maxWanderDistance = owner->getMaxWanderDistance();
 
     // Retail seems to let a creature walk 2 up to 10 splines before triggering a pause
     _wanderSteps = static_cast<uint8_t>(Util::getRandomUInt(2, 10));
@@ -108,7 +108,7 @@ void RandomMovementGenerator<Creature>::SetRandomLocation(Creature* owner)
     }
 
     LocationVector position(_reference);
-    float distance = Util::getRandomFloat(0.f, _wanderDistance);
+    float distance = Util::getRandomFloat(0.f, _maxWanderDistance);
     float angle = Util::getRandomFloat(0.f, float(M_PI * 2));
     owner->MovePositionToFirstCollision(position, distance, angle);
 

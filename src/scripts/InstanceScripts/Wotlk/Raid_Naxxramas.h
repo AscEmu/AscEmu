@@ -188,7 +188,7 @@ const uint32_t MAEXXNA_NECROTIC_POISON_HEROIC = 28776;
 const uint32_t MAEXXNA_FRENZY_NORMAL = 54123;
 const uint32_t MAEXXNA_FRENZY_HEROIC = 54124;
 
-static Movement::Location WebWrapPos[] =
+static LocationVector WebWrapPos[] =
 {
     // Left wall
     { 3515.307861f, -3837.076172f, 302.671753f, 4.388477f },
@@ -270,7 +270,7 @@ const uint32_t GRAND_WIDOW_FAERLINA_FRENZY_HEROIC = 54100;
 const uint32_t GRAND_WIDOW_RAIN_OF_FIRE_NORMAL = 39024;
 const uint32_t GRAND_WIDOW_RAIN_OF_FIRE_HEROIC = 58936;
 
-static Movement::Location Worshippers[4] =
+static LocationVector Worshippers[4] =
 {
     { -3.0f, 0, 0, 0 },
     { -9.0f, 0, 0, 0 },
@@ -278,7 +278,7 @@ static Movement::Location Worshippers[4] =
     { 9.0f, 0, 0, 0 }
 };
 
-static Movement::Location Followers[2] =
+static LocationVector Followers[2] =
 {
     { -6.0f, 0, 0, 0 },
     { 6.0f, 0, 0, 0 }
@@ -350,7 +350,7 @@ const uint32_t ANUBREKHAN_SUMMON_CORPSE_SCARABS_5 = 29105;
 const uint32_t ANUBREKHAN_SUMMON_CORPSE_SCARABS_10 = 28864;
 const uint32_t ANUBREKHAN_BERSERK = 26662;
 
-static Movement::Location CryptGuards[] =
+static LocationVector CryptGuards[] =
 {
     { 3300.486572f, -3449.479492f, 287.077850f, 3.883793f },
     { 3300.568604f, -3503.060059f, 287.077850f, 2.367975f },
@@ -475,14 +475,14 @@ const uint32_t NOTH_THE_PLAGUEBRINGER_CURSE_OF_THE_PLAGUE_NORMAL = 29213;    // 
 const uint32_t NOTH_THE_PLAGUEBRINGER_CURSE_OF_THE_PLAGUE_HEROIC = 54835;    // I must check if it's target-limited spell
 const uint32_t NOTH_THE_PLAGUEBRINGER_BERSERK = 47008;    // Guessed
 
-static Movement::Location SkelPosPhase1[] =
+static LocationVector SkelPosPhase1[] =
 {
     { 2660.175781f, -3473.315674f, 262.003967f, 5.252077f },
     { 2717.336426f, -3463.309326f, 262.044098f, 3.703270f },
     { 2718.720215f, -3524.452881f, 261.943176f, 2.760789f }
 };
 
-static Movement::Location SkelPosPhase2[] =
+static LocationVector SkelPosPhase2[] =
 {
     { 2660.932129f, -3474.058105f, 262.004730f, 5.765719f },
     { 2706.175537f, -3465.862793f, 262.003510f, 4.488667f },
@@ -642,7 +642,7 @@ const uint32_t LOATHEB_INEVITABLE_DOOM_NORMAL = 29204;
 const uint32_t LOATHEB_INEVITABLE_DOOM_HEROIC = 55052;
 const uint32_t LOATHEB_BERSERK = 26662;    // Unused
 
-static Movement::Location Spores[] =
+static LocationVector Spores[] =
 {
     { 2880.517334f, -4027.450684f, 273.680695f, 0.848522f },
     { 2938.914307f, -4027.245850f, 273.617340f, 2.419318f },
@@ -1761,13 +1761,13 @@ const uint32_t FROST_BREATH_DAMAGE = 29318;
 // Additional spells
 const uint32_t SAPPHIRONS_WING_BUFFET = 29328;
 
-struct Movement::Location PhaseTwoWP[] =
+LocationVector PhaseTwoWP[] =
 {
     {},
     { 3520.820068f, -5233.799805f, 137.626007f, 4.553010f }
 };
 
-struct Movement::Location IceBlocks[] =    // Those are not blizzlike pos, because those blocks are spawned randomly
+LocationVector IceBlocks[] =    // Those are not blizzlike pos, because those blocks are spawned randomly
 {
     {},
     { 3580.986084f, -5241.330078f, 137.627304f, 3.006957f },
@@ -1797,9 +1797,9 @@ class FrostBreathTriggerAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(FrostBreathTriggerAI)
     explicit FrostBreathTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 10.5f);
+        getCreature()->GetAIInterface()->moveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 10.5f);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-        getCreature()->GetAIInterface()->setSplineFlying();
+        getCreature()->setMoveCanFly(true);
         getCreature()->m_noRespawn = true;
         getCreature()->Despawn(7000, 0);
 
@@ -1820,9 +1820,9 @@ class FrostBreathTriggerAI : public CreatureAIScript
 
         AICounter--;
         if (AICounter == 6)
-            getCreature()->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + AICounter * 1.5f);
+            getCreature()->GetAIInterface()->moveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + AICounter * 1.5f);
         else
-            getCreature()->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z);
+            getCreature()->GetAIInterface()->moveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z);
     }
 
 protected:
@@ -1841,7 +1841,7 @@ class FrostBreathTrigger2AI : public CreatureAIScript
         _unit->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
 #endif
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         getCreature()->m_noRespawn = true;
         getCreature()->Despawn(8000, 0);
 
@@ -1865,7 +1865,7 @@ public:
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         getCreature()->castSpell(getCreature(), SAPPHIRONS_WING_BUFFET, true);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         getCreature()->m_noRespawn = true;
 
         RegisterAIUpdateEvent(1000);
@@ -1893,7 +1893,7 @@ public:
         getCreature()->castSpellLoc(getCreature()->GetPosition(), sSpellMgr.getSpellInfo(28547), true);
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         getCreature()->m_noRespawn = true;
         getCreature()->Despawn(15000, 0);
     }
@@ -1941,8 +1941,8 @@ class SapphironAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(SapphironAI)
     explicit SapphironAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-        AddWaypoint(CreateWaypoint(1, 3000, Movement::WP_MOVE_TYPE_RUN, PhaseTwoWP[1]));
+        stopMovement();
+        addWaypoint(1, createWaypoint(1, 3000, WAYPOINT_MOVE_TYPE_RUN, PhaseTwoWP[1]));
 
         
 
@@ -1960,9 +1960,9 @@ class SapphironAI : public CreatureAIScript
         auto berserk = addAISpell(BERSERK, 5.0f, TARGET_SELF, 0, 900, false, true);
         berserk->setAttackStopTimer(1000);
 
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-        getCreature()->GetAIInterface()->unsetSplineFlying();
-        getCreature()->GetAIInterface()->m_canMove = true;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+        getCreature()->setMoveCanFly(false);
+        getCreature()->setControlled(false, UNIT_STATE_ROOTED);
         getCreature()->castSpell(getCreature(), IMMUNITY_FROST, true);
 
         getCreature()->setMoveHover(false);
@@ -1976,10 +1976,10 @@ class SapphironAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-        getCreature()->GetAIInterface()->unsetSplineFlying();
-        getCreature()->GetAIInterface()->m_canMove = true;
+        stopMovement();
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+        getCreature()->setMoveCanFly(false);
+        getCreature()->setControlled(false, UNIT_STATE_ROOTED);
 
         getCreature()->setMoveHover(false);
 
@@ -2020,10 +2020,10 @@ class SapphironAI : public CreatureAIScript
             Waterfall->setState(GO_STATE_OPEN);
         }
 
-        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-        getCreature()->GetAIInterface()->unsetSplineFlying();
-        getCreature()->GetAIInterface()->m_canMove = true;
+        stopMovement();
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+        getCreature()->setMoveCanFly(false);
+        getCreature()->setControlled(false, UNIT_STATE_ROOTED);
 
         getCreature()->setMoveHover(false);
 
@@ -2058,9 +2058,6 @@ class SapphironAI : public CreatureAIScript
     {
         getCreature()->castSpell(getCreature(), FROST_AURA, true);
 
-        if (getCreature()->GetAIInterface()->getWaypointScriptType() == Movement::WP_MOVEMENT_SCRIPT_WANTEDWP)
-            return;
-
         if (getCreature()->getHealthPct() > 10)
         {
             uint32_t t = (uint32_t)time(NULL);
@@ -2069,11 +2066,10 @@ class SapphironAI : public CreatureAIScript
                 if (getCreature()->isCastingSpell())
                     getCreature()->interruptSpell();
 
-                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-                getCreature()->GetAIInterface()->StopMovement(0);
+                getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+                getCreature()->StopMoving();
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(1);
+                setWaypointToMove(1, 1);
 
                 return;
             }
@@ -2098,19 +2094,19 @@ class SapphironAI : public CreatureAIScript
     {
         if (FlightActions == 0)
         {
-            getCreature()->GetAIInterface()->m_canMove = false;
-            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+            getCreature()->setControlled(true, UNIT_STATE_ROOTED);
+            getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
             setAIAgent(AGENT_SPELL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-            getCreature()->GetAIInterface()->setWayPointToMove(0);
+            stopMovement();
+            setWaypointToMove(1, 0);
         }
 
         if (FlightActions < 5)
         {
             if (!getCreature()->isCastingSpell())
             {
-                if (getCreature()->GetAIInterface()->getNextTarget() != NULL)
+                if (getCreature()->getThreatManager().getCurrentVictim() != NULL)
                 {
                     FlightActions++;
                     if (FlightActions >= 5)
@@ -2189,7 +2185,7 @@ class SapphironAI : public CreatureAIScript
                 FlyingFrostBreath = spawnCreature(CN_FROST_BREATH_TRIGGER, PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 18.0f, getCreature()->GetOrientation());
                 if (FlyingFrostBreath != NULL)
                 {
-                    FlyingFrostBreath->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z);
+                    FlyingFrostBreath->GetAIInterface()->moveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z);
                 }
 
                 spawnCreature(CN_FROST_BREATH_TRIGGER2, PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, getCreature()->GetOrientation());
@@ -2214,7 +2210,7 @@ class SapphironAI : public CreatureAIScript
                     }
                 }
 
-                getCreature()->GetAIInterface()->unsetSplineFlying();
+                getCreature()->setMoveCanFly(false);
                 getCreature()->emote(EMOTE_ONESHOT_LAND);
 
                 getCreature()->setMoveHover(false);
@@ -2225,12 +2221,12 @@ class SapphironAI : public CreatureAIScript
 
             if (FlightActions == 7)
             {
-                getCreature()->GetAIInterface()->m_canMove = true;
-                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+                getCreature()->setControlled(false, UNIT_STATE_ROOTED);
+                getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
                 setAIAgent(AGENT_NULL);
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-                getCreature()->GetAIInterface()->setWayPointToMove(0);
+                stopMovement();
+                setWaypointToMove(1, 0);
 
                 RemoveAIUpdateEvent();
                 RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
@@ -2246,12 +2242,15 @@ class SapphironAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (iWaypointId == 1)
         {
             spawnCreature(CN_FROST_BREATH_TRIGGER3, PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, getCreature()->GetOrientation());
-            getCreature()->GetAIInterface()->setSplineFlying();
+            getCreature()->setMoveCanFly(true);
             getCreature()->emote(EMOTE_ONESHOT_LIFTOFF);
 
             getCreature()->setMoveHover(true);
@@ -2299,7 +2298,7 @@ const uint32_t CN_GUARDIAN_OF_ICECROWN = 16441;
 
   */
 
-static Movement::Location SFrozenWastes[] =    // Soldier of the Frozen Wastes (no idea about those :|)
+static LocationVector SFrozenWastes[] =    // Soldier of the Frozen Wastes (no idea about those :|)
 {
     { 3759.149902f, -5074.879883f, 143.175003f, 1.203640f },    // 1
     { 3762.959961f, -5067.399902f, 143.453003f, 0.893413f },
@@ -2373,7 +2372,7 @@ static Movement::Location SFrozenWastes[] =    // Soldier of the Frozen Wastes (
     { 3646.360107f, -5101.200195f, 143.681000f, 2.909540f }
 };
 
-static Movement::Location Abomination[] =    // Unstoppable Abomination
+static LocationVector Abomination[] =    // Unstoppable Abomination
 {
     { 3776.229980f, -5081.439941f, 143.779999f, 4.043730f },    // 1
     { 3774.419922f, -5071.490234f, 143.423996f, 4.214940f },
@@ -2398,7 +2397,7 @@ static Movement::Location Abomination[] =    // Unstoppable Abomination
     { 3658.618408f, -5083.832031f, 143.778641f, 5.951464f }
 };
 
-static Movement::Location SoulWeaver[] =    // Soul Weaver
+static LocationVector SoulWeaver[] =    // Soul Weaver
 {
     { 3768.540039f, -5075.140137f, 143.203995f, 5.096160f },
     { 3728.030029f, -5047.359863f, 143.306000f, 5.230460f },
@@ -2409,7 +2408,7 @@ static Movement::Location SoulWeaver[] =    // Soul Weaver
     { 3656.365234f, -5094.724121f, 143.306641f, 6.203571f }
 };
 
-static Movement::Location Guardians[] =        // Guardians of Icecrown
+static LocationVector Guardians[] =        // Guardians of Icecrown
 {
     { 3778.371582f, -5065.141113f, 143.614639f, 3.700061f },
     { 3731.733398f, -5032.681152f, 143.775040f, 4.485459f },
@@ -2417,7 +2416,7 @@ static Movement::Location Guardians[] =        // Guardians of Icecrown
     { 3700.936279f, -5183.230469f, 143.858582f, 1.314648f }
 };
 
-static Movement::Location Waves[] =            // Spawn positions of units that attack circle
+static LocationVector Waves[] =            // Spawn positions of units that attack circle
 {
     { 3756.380615f, -5080.560059f, 142.906921f, 3.762599f },
     { 3726.448242f, -5058.546387f, 142.467331f, 4.262112f },
@@ -2488,7 +2487,7 @@ class KelthuzadAI : public CreatureAIScript
 
         _setMeleeDisabled(false);
 
-        getCreature()->GetAIInterface()->m_canMove = true;
+        getCreature()->setControlled(false, UNIT_STATE_ROOTED);
 
         DespawnTrash = false;
         EventStart = false;
@@ -2521,7 +2520,7 @@ class KelthuzadAI : public CreatureAIScript
 
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
 
         DespawnTrash = false;
         EventStart = true;
@@ -2552,7 +2551,7 @@ class KelthuzadAI : public CreatureAIScript
         _setMeleeDisabled(false);
 
         getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-        getCreature()->GetAIInterface()->m_canMove = true;
+        getCreature()->setControlled(false, UNIT_STATE_ROOTED);
         RemoveAIUpdateEvent();
 
         DespawnTrash = true;
@@ -2600,7 +2599,7 @@ class KelthuzadAI : public CreatureAIScript
 
         _setMeleeDisabled(false);
         getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-        getCreature()->GetAIInterface()->m_canMove = true;
+        getCreature()->setControlled(false, UNIT_STATE_ROOTED);
 
         EventStart = false;
         SpawnCounter = 0;
@@ -2733,7 +2732,7 @@ class KelthuzadAI : public CreatureAIScript
                 getCreature()->setChannelSpellId(0);
                 _setMeleeDisabled(false);
                 getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-                getCreature()->GetAIInterface()->m_canMove = true;
+                getCreature()->setControlled(false, UNIT_STATE_ROOTED);
 
                 DespawnTrash = false;
                 HelpDialog = 0;
@@ -2824,8 +2823,8 @@ class KelthuzadAI : public CreatureAIScript
                 Guardian = spawnCreature(CN_GUARDIAN_OF_ICECROWN, Guardians[i].x, Guardians[i].y, Guardians[i].z, Guardians[i].o);
                 if (Guardian != NULL)
                 {
-                    if (Guardian->GetAIInterface()->getNextTarget() != NULL)
-                        Guardian->GetAIInterface()->AttackReaction(Guardian->GetAIInterface()->getNextTarget(), 1, 0);
+                    if (Guardian->GetAIInterface()->getCurrentTarget() != NULL)
+                        Guardian->GetAIInterface()->onHostileAction(Guardian->GetAIInterface()->getCurrentTarget());
                 }
 
                 GCounter++;
@@ -2926,7 +2925,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
         }
         if (getCreature()->GetPositionX() == LastPosX && getCreature()->GetPositionY() == LastPosY && getCreature()->GetPositionZ() == LastPosZ)
         {
-            getCreature()->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
+            getCreature()->GetAIInterface()->moveTo(newposx, newposy, 141.290451f);
         }
         if (OnStart == false)
         {
@@ -2947,16 +2946,16 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
                     newposx = 3715.845703f + xchange;
                     newposy = -5106.928223f + ychange;
 
-                    getCreature()->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
+                    getCreature()->GetAIInterface()->moveTo(newposx, newposy, 141.290451f);
                 }
             }
 
             OnStart = true;
         }
 
-        if (getCreature()->GetAIInterface()->getNextTarget() != NULL)
+        if (getCreature()->getThreatManager().getCurrentVictim() != NULL)
         {
-            Unit* target = getCreature()->GetAIInterface()->getNextTarget();
+            Unit* target = getCreature()->getThreatManager().getCurrentVictim();
             if (getCreature()->GetDistance2dSq(target) <= 49.0f)
                 getCreature()->castSpell(getCreature(), DARK_BLAST, true);
         }
@@ -3030,7 +3029,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
         }
         if (getCreature()->GetPositionX() == LastPosX && getCreature()->GetPositionY() == LastPosY && getCreature()->GetPositionZ() == LastPosZ)
         {
-            getCreature()->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
+            getCreature()->GetAIInterface()->moveTo(newposx, newposy, 141.290451f);
         }
         if (OnStart == false)
         {
@@ -3051,7 +3050,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
                     newposx = 3715.845703f + xchange;
                     newposy = -5106.928223f + ychange;
 
-                    getCreature()->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
+                    getCreature()->GetAIInterface()->moveTo(newposx, newposy, 141.290451f);
                 }
             }
 
@@ -3123,7 +3122,7 @@ class SoulWeaverAI : public CreatureAIScript
         }
         if (getCreature()->GetPositionX() == LastPosX && getCreature()->GetPositionY() == LastPosY && getCreature()->GetPositionZ() == LastPosZ)
         {
-            getCreature()->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
+            getCreature()->GetAIInterface()->moveTo(newposx, newposy, 141.290451f);
         }
         if (OnStart == false)
         {
@@ -3144,7 +3143,7 @@ class SoulWeaverAI : public CreatureAIScript
                     newposx = 3715.845703f + xchange;
                     newposy = -5106.928223f + ychange;
 
-                    getCreature()->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
+                    getCreature()->GetAIInterface()->moveTo(newposx, newposy, 141.290451f);
                 }
             }
 
@@ -3172,7 +3171,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
         bloodTrap = addAISpell(BLOOD_TAP, 0.0f, TARGET_SELF, 0, 10, false, true);
         bloodTrap->setAttackStopTimer(1000);
 
-        getCreature()->GetAIInterface()->setSplineRun();
+        getCreature()->setMoveWalk(false);
         getCreature()->m_noRespawn = true;
 
         OnStart = false;
@@ -3189,8 +3188,8 @@ class GuardianOfIcecrownAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        if (getCreature()->GetAIInterface()->getNextTarget())
-            LastTarget = getCreature()->GetAIInterface()->getNextTarget();
+        if (getCreature()->getThreatManager().getCurrentVictim())
+            LastTarget = getCreature()->getThreatManager().getCurrentVictim();
 
         LastPosX = getCreature()->GetPositionX();
         LastPosY = getCreature()->GetPositionY();
@@ -3214,7 +3213,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
         }
         if (getCreature()->GetPositionX() == LastPosX && getCreature()->GetPositionY() == LastPosY && getCreature()->GetPositionZ() == LastPosZ)
         {
-            getCreature()->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
+            getCreature()->GetAIInterface()->moveTo(newposx, newposy, 141.290451f);
         }
         if (OnStart == false)
         {
@@ -3235,17 +3234,17 @@ class GuardianOfIcecrownAI : public CreatureAIScript
                     newposx = 3715.845703f + xchange;
                     newposy = -5106.928223f + ychange;
 
-                    getCreature()->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
+                    getCreature()->GetAIInterface()->moveTo(newposx, newposy, 141.290451f);
                 }
             }
 
             OnStart = true;
         }
 
-        if (getCreature()->GetAIInterface()->getNextTarget())
+        if (getCreature()->getThreatManager().getCurrentVictim())
         {
             Unit* target = NULL;
-            target = getCreature()->GetAIInterface()->getNextTarget();
+            target = getCreature()->getThreatManager().getCurrentVictim();
 
             if (!LastTarget) { LastTarget = target; return; }
 

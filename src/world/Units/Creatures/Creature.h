@@ -89,6 +89,11 @@ public:
     // Owner
     Player* getPlayerOwner() override;
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc
+    float_t getMaxWanderDistance() const;
+    void setMaxWanderDistance(float_t dist);
+
  //MIT end
 
         bool Teleport(const LocationVector& vec, MapMgr* map) override;
@@ -306,14 +311,13 @@ public:
         uint32 original_emotestate;
 
         void Motion_Initialize();
+        void immediateMovementFlagsUpdate();
+        void updateMovementFlags();
         CreatureMovementData const& GetMovementTemplate();
         bool CanWalk() { return GetMovementTemplate().IsGroundAllowed(); }
         bool CanSwim() override { return GetMovementTemplate().IsSwimAllowed() || isPet(); }
         bool CanFly()  override { return GetMovementTemplate().IsFlightAllowed() || IsFlying(); }
         bool CanHover() { return GetMovementTemplate().Ground == CreatureGroundMovementType::Hover || IsHovering(); }
-
-        float GetWanderDistance() const { return m_wanderDistance; }
-        void SetWanderDistance(float dist) { m_wanderDistance = dist; }
 
         MovementGeneratorType GetDefaultMovementType() const override { return m_defaultMovementType; }
         void SetDefaultMovementType(MovementGeneratorType mgt) { m_defaultMovementType = mgt; }
@@ -363,7 +367,6 @@ public:
 
         // Movement
         MovementGeneratorType m_defaultMovementType;
-        float m_wanderDistance; // todo add a row in creature_spawns for wander distance
 
         // Vendor data
         std::vector<CreatureItem>* m_SellItems;
@@ -387,8 +390,12 @@ public:
 
         uint32 m_Creature_type;
 
+        uint16_t m_movementFlagUpdateTimer = 1000;
+
         // Formation var
         CreatureGroup* m_formation;
+
+        float_t m_wanderDistance = 0.0f;
 
         // old EasyFunctions.h
 };

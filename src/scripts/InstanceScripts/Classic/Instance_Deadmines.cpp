@@ -214,7 +214,7 @@ class MrSmiteAI : public CreatureAIScript
     void MoveToChest()
     {
         if (canEnterCombat())
-            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
 
         stopMovement();
         getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
@@ -223,7 +223,7 @@ class MrSmiteAI : public CreatureAIScript
 
     void MoveToPlayer()
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
     }
 
