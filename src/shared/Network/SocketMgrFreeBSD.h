@@ -34,7 +34,7 @@ class SocketMgr
         ListenSocketBase* listenfds[SOCKET_HOLDER_SIZE];        // shouldnt be more than 1024
 
         /// socket counter
-        int socket_count;
+        std::atomic<unsigned long> socket_count;
 
     private:
         SocketMgr() = default;
@@ -91,7 +91,7 @@ class SocketMgr
         inline int GetKq() { return kq; }
 
         /// returns number of sockets in array
-        inline int Count() { return socket_count; }
+        //inline int Count() { return socket_count; } WE NEED THIS ?
 
         /// closes all sockets
         void CloseAll();
