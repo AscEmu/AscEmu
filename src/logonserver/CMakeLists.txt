@@ -45,10 +45,10 @@ if(USE_PCH)
     gen_cxx_pch(${PROJECT_NAME} LogonStdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/LogonStdAfx.cpp)
 endif()
 
-if(NOT WIN32)
-    target_link_libraries(${PROJECT_NAME} stdc++fs)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
+if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
     target_link_libraries(${PROJECT_NAME} c++fs)
+elseif (NOT WIN32)
+    target_link_libraries(${PROJECT_NAME} stdc++fs)
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.h)
