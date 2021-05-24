@@ -162,7 +162,7 @@ if(WIN32 AND NOT USE_PCH)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 endif()
 
-if(NOT WIN32)
+if(NOT WIN32 OR FreeBSD)
     target_link_libraries(${PROJECT_NAME} stdc++fs)
 endif()
 

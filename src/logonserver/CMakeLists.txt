@@ -45,7 +45,7 @@ if(USE_PCH)
     gen_cxx_pch(${PROJECT_NAME} LogonStdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/LogonStdAfx.cpp)
 endif()
 
-if(NOT WIN32)
+if(NOT WIN32 OR FreeBSD)
     target_link_libraries(${PROJECT_NAME} stdc++fs)
 endif()
 
