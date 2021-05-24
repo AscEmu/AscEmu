@@ -92,6 +92,7 @@ class SocketMgr
 
         /// returns number of sockets in array
         //inline int Count() { return socket_count; } WE NEED THIS ?
+        uint32 GetSocketCount(); //used in linux socket and pass then to server commands
 
         /// closes all sockets
         void CloseAll();
