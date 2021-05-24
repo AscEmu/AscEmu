@@ -80,7 +80,7 @@
     #define PLATFORM_TEXT "Win32"
 #elif __APPLE__
     #define PLATFORM_TEXT "OSX"
-#elif defined(BSD)
+#elif defined(UNIX_FLAVOUR_BSD)
     #define PLATFORM_TEXT "BSD"
 #elif defined(__linux__)
     #define PLATFORM_TEXT "Linux"

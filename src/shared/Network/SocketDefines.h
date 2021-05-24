@@ -27,10 +27,15 @@
 #include <sys/epoll.h>
 #define CONFIG_USE_EPOLL
 
-#elif BSD
+#elif UNIX_FLAVOUR_BSD
 
 // select: kqueue
+// in case of freebsd 12+ we need just event.h but in 11 10 end etc need this all
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <sys/event.h>
+#include <sys/time.h>
+#include <sys/errno.h>
 #define CONFIG_USE_KQUEUE
 
 #elif __APPLE__
