@@ -111,7 +111,7 @@ void WeatherMgr::finalize()
 
 void WeatherMgr::LoadFromDB()
 {
-    LogDetail("Loading Weather..."); // weather type 0= sunny / 1= fog / 2 = light_rain / 4 = rain / 8 = snow / ?? = sandstorm
+    sLogger.info("Loading Weather..."); // weather type 0= sunny / 1= fog / 2 = light_rain / 4 = rain / 8 = snow / ?? = sandstorm
     QueryResult* result = WorldDatabase.Query("SELECT zoneId,high_chance,high_type,med_chance,med_type,low_chance,low_type FROM weather");
 
     if (!result)
@@ -133,7 +133,7 @@ void WeatherMgr::LoadFromDB()
         wi->_GenerateWeather();
     }
     while (result->NextRow());
-    LogDetail("WeatherMgr : Loaded weather information for %u zones.", result->GetRowCount());
+    sLogger.info("WeatherMgr : Loaded weather information for %u zones.", result->GetRowCount());
 
     delete result;
 }
@@ -214,7 +214,7 @@ void WeatherInfo::_GenerateWeather()
     SendUpdate();
 
     sEventMgr.AddEvent(this, &WeatherInfo::BuildUp, EVENT_WEATHER_UPDATE, (uint32)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 2), 0, 0);
-    LOG_DEBUG("Forecast for zone:%d new type:%d new interval:%d ms", m_zoneId, m_currentEffect, (uint32)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 2));
+    sLogger.debug("Forecast for zone:%d new type:%d new interval:%d ms", m_zoneId, m_currentEffect, (uint32)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 2));
 }
 
 void WeatherInfo::BuildUp()
@@ -224,12 +224,12 @@ void WeatherInfo::BuildUp()
     {
         sEventMgr.RemoveEvents(this, EVENT_WEATHER_UPDATE);
         sEventMgr.AddEvent(this, &WeatherInfo::Update, EVENT_WEATHER_UPDATE, (uint32)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 4), 0, 0);
-        //        LOG_DEBUG("Weather starting random for zone:%d type:%d new interval:%d ms",m_zoneId,m_currentEffect,(uint32)(m_totalTime/ceil(m_maxDensity/WEATHER_DENSITY_UPDATE)*4));
+        //        sLogger.debug("Weather starting random for zone:%d type:%d new interval:%d ms",m_zoneId,m_currentEffect,(uint32)(m_totalTime/ceil(m_maxDensity/WEATHER_DENSITY_UPDATE)*4));
     }
     else
     {
         m_currentDensity += WEATHER_DENSITY_UPDATE;
-        //        LOG_DEBUG("Weather increased for zone:%d type:%d density:%f",m_zoneId,m_currentEffect,m_currentDensity);
+        //        sLogger.debug("Weather increased for zone:%d type:%d density:%f",m_zoneId,m_currentEffect,m_currentDensity);
         SendUpdate();
     }
 }
@@ -259,7 +259,7 @@ void WeatherInfo::Update()
         }
     }
     SendUpdate();
-    //    LOG_DEBUG("Weather Updated,zoneId:%d type:%d density:%f", m_zoneId, m_currentEffect, m_currentDensity);
+    //    sLogger.debug("Weather Updated,zoneId:%d type:%d density:%f", m_zoneId, m_currentEffect, m_currentDensity);
 }
 
 void WeatherInfo::SendUpdate()

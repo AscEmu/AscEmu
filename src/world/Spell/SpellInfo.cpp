@@ -3,10 +3,10 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Definitions/School.h"
-#include "Definitions/SpellEffects.h"
-#include "Definitions/SpellEffectTarget.h"
-#include "Definitions/SpellIsFlags.h"
+#include "Definitions/School.hpp"
+#include "Definitions/SpellEffects.hpp"
+#include "Definitions/SpellEffectTarget.hpp"
+#include "Definitions/SpellIsFlags.hpp"
 #include "SpellAuras.h"
 #include "SpellTarget.h"
 
@@ -321,7 +321,7 @@ int32_t SpellInfo::getBasePowerCost(Unit* caster) const
     {
         if (!hasValidPowerType())
         {
-            LogError("SpellInfo::getBasePowerCost : Unknown power type %u for spell id %u", getPowerType(), getId());
+            sLogger.failure("SpellInfo::getBasePowerCost : Unknown power type %u for spell id %u", getPowerType(), getId());
             return 0;
         }
 
@@ -357,7 +357,7 @@ int32_t SpellInfo::getBasePowerCost(Unit* caster) const
                     break;
 #endif
                 default:
-                    LogError("SpellInfo::getBasePowerCost() : Unknown power type %u for spell id %u", getPowerType(), getId());
+                    sLogger.failure("SpellInfo::getBasePowerCost() : Unknown power type %u for spell id %u", getPowerType(), getId());
                     return 0;
             }
         }

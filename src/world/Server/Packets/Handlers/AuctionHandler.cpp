@@ -27,7 +27,7 @@ void WorldSession::handleAuctionListOwnerItems(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_LIST_OWNER_ITEMS %u (guidLow)", srlPacket.guid.getGuidLowPart());
+    sLogger.debug("Received CMSG_AUCTION_LIST_OWNER_ITEMS %u (guidLow)", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr || creature->auctionHouse == nullptr)
@@ -42,7 +42,7 @@ void WorldSession::handleAuctionListItems(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_LIST_OWNER_ITEMS %u (guidLow)", srlPacket.guid.getGuidLowPart());
+    sLogger.debug("Received CMSG_AUCTION_LIST_OWNER_ITEMS %u (guidLow)", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr || creature->auctionHouse == nullptr)
@@ -57,7 +57,7 @@ void WorldSession::handleCancelAuction(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_REMOVE_ITEM %u (auctionId)", srlPacket.auctionId);
+    sLogger.debug("Received CMSG_AUCTION_REMOVE_ITEM %u (auctionId)", srlPacket.auctionId);
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr || creature->auctionHouse == nullptr)
@@ -80,7 +80,7 @@ void WorldSession::handleAuctionListBidderItems(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_LIST_BIDDER_ITEMS %u (lowguid)", srlPacket.guid.getGuidLowPart());
+    sLogger.debug("Received CMSG_AUCTION_LIST_BIDDER_ITEMS %u (lowguid)", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr || creature->auctionHouse == nullptr)
@@ -96,7 +96,7 @@ void WorldSession::handleAuctionListPendingSales(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_LIST_PRENDING_SALES %u (lowguid)", srlPacket.guid.getGuidLowPart());
+    sLogger.debug("Received CMSG_AUCTION_LIST_PRENDING_SALES %u (lowguid)", srlPacket.guid.getGuidLowPart());
 
     //\todo SMSG_AUCTION_LIST_PENDING_SALES needs to be researched!
 #endif
@@ -108,7 +108,7 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_SELL_ITEM");
+    sLogger.debug("Received CMSG_AUCTION_SELL_ITEM");
 
     if (!srlPacket.bidMoney || !srlPacket.expireTime)
         return;
@@ -223,7 +223,7 @@ void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AUCTION_PLACE_BID: %u (auctionId), %u (price)", srlPacket.auctionId, srlPacket.price);
+    sLogger.debug("Received CMSG_AUCTION_PLACE_BID: %u (auctionId), %u (price)", srlPacket.auctionId, srlPacket.price);
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr || creature->auctionHouse == nullptr)

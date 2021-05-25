@@ -5,13 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "SpellAuras.h"
 
-#include "Definitions/AuraInterruptFlags.h"
-#include "Definitions/SpellCastTargetFlags.h"
-#include "Definitions/SpellFamily.h"
-#include "Definitions/SpellIsFlags.h"
-#include "Definitions/SpellMechanics.h"
-#include "Definitions/SpellTypes.h"
-#include "SpellMgr.h"
+#include "Definitions/AuraInterruptFlags.hpp"
+#include "Definitions/SpellCastTargetFlags.hpp"
+#include "Definitions/SpellFamily.hpp"
+#include "Definitions/SpellIsFlags.hpp"
+#include "Definitions/SpellMechanics.hpp"
+#include "Definitions/SpellTypes.hpp"
+#include "SpellMgr.hpp"
 
 #include "Server/Script/ScriptMgr.h"
 
@@ -84,7 +84,7 @@ void Aura::addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValu
 
     if (auraEffect >= TOTAL_SPELL_AURAS)
     {
-        LogError("Aura::addAuraEffect : Unknown aura effect type %u for spell id %u", auraEffect, getSpellId());
+        sLogger.failure("Aura::addAuraEffect : Unknown aura effect type %u for spell id %u", auraEffect, getSpellId());
         return;
     }
 
@@ -164,7 +164,7 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
     sScriptMgr.callScriptedAuraOnRemove(this, mode);
     sHookInterface.OnAuraRemove(this);
 
-    LogDebugFlag(LF_AURA, "Removing aura %u from unit %u", getSpellId(), getOwner()->getGuid());
+    sLogger.debug("Removing aura %u from unit %u", getSpellId(), getOwner()->getGuid());
 
     m_isGarbage = true;
 
@@ -330,7 +330,7 @@ void Aura::applyModifiers(bool apply)
             removeAuraEffect(i);
         }
 
-        LogDebugFlag(LF_AURA, "Aura::applyModifiers : Spell Id %u, Aura Effect %u (%s), Target GUID %u, EffectIndex %u, Duration %u, Damage %d, MiscValue %d",
+        sLogger.debug("Aura::applyModifiers : Spell Id %u, Aura Effect %u (%s), Target GUID %u, EffectIndex %u, Duration %u, Damage %d, MiscValue %d",
             getSpellInfo()->getId(), m_auraEffects[i].getAuraEffectType(), SpellAuraNames[m_auraEffects[i].getAuraEffectType()], getOwner()->getGuid(), i, getTimeLeft(), m_auraEffects[i].getEffectDamage(), m_auraEffects[i].getEffectMiscValue());
     }
 
@@ -357,7 +357,7 @@ void Aura::updateModifiers()
                 break;
         }
 
-        LogDebugFlag(LF_AURA, "Aura::updateModifiers : Spell Id %u, Aura Effect %u (%s), Target GUID %u, EffectIndex %u, Duration %u, Damage %d, MiscValue %d",
+        sLogger.debug("Aura::updateModifiers : Spell Id %u, Aura Effect %u (%s), Target GUID %u, EffectIndex %u, Duration %u, Damage %d, MiscValue %d",
             getSpellInfo()->getId(), m_auraEffects[i].getAuraEffectType(), SpellAuraNames[m_auraEffects[i].getAuraEffectType()], getOwner()->getGuid(), i, getTimeLeft(), m_auraEffects[i].getEffectDamage(), m_auraEffects[i].getEffectMiscValue());
     }
     m_updatingModifiers = false;
@@ -881,9 +881,6 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             else
                 getOwner()->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, nullptr, this, aurEff);
 
-            if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
-                getOwner()->emote(EMOTE_ONESHOT_EAT);
-
             // Hackfixes from legacy method
             if (casterUnit != nullptr)
             {
@@ -928,20 +925,19 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 casterUnit->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, nullptr, this, aurEff);
             else
                 getOwner()->doSpellHealing(getOwner(), getSpellId(), effectFloatValue, pSpellId != 0, true, false, false, nullptr, this, aurEff);
-
-            if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
-                getOwner()->emote(EMOTE_ONESHOT_EAT);
         } break;
         case SPELL_AURA_PERIODIC_POWER_PCT:
         {
             if (!getOwner()->isAlive())
                 return;
 
+            const auto powerType = static_cast<PowerType>(aurEff->getEffectMiscValue());
+            if (getOwner()->getMaxPower(powerType) == 0)
+                return;
+
             // Hackfix from legacy method
             const auto spellId = getSpellId() == 60069 ? 49766 : getSpellId();
-
             const auto casterUnit = GetUnitCaster();
-            const auto powerType = static_cast<PowerType>(aurEff->getEffectMiscValue());
 
             // Send packet first
             getOwner()->sendPeriodicAuraLog(m_casterGuid, getOwner()->GetNewGUID(), getSpellInfo(), effectIntValue, 0, 0, 0, aurEff->getAuraEffectType(), false, powerType);
@@ -950,9 +946,6 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 casterUnit->energize(getOwner(), spellId, effectIntValue, powerType, false);
             else
                 getOwner()->energize(getOwner(), spellId, effectIntValue, powerType, false);
-
-            if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && aurEff->getEffectMiscValue() == POWER_TYPE_MANA)
-                getOwner()->emote(EMOTE_ONESHOT_EAT);
         } break;
         case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
         {
@@ -999,8 +992,11 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             if (!getOwner()->isAlive())
                 return;
 
-            const auto casterUnit = GetUnitCaster();
             const auto powerType = static_cast<PowerType>(aurEff->getEffectMiscValue());
+            if (getOwner()->getMaxPower(powerType) == 0)
+                return;
+
+            const auto casterUnit = GetUnitCaster();
 
             // Send packet first
             getOwner()->sendPeriodicAuraLog(m_casterGuid, getOwner()->GetNewGUID(), getSpellInfo(), effectIntValue, 0, 0, 0, aurEff->getAuraEffectType(), false, powerType);
@@ -1009,9 +1005,6 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 casterUnit->energize(getOwner(), getSpellId(), effectIntValue, powerType, false);
             else
                 getOwner()->energize(getOwner(), getSpellId(), effectIntValue, powerType, false);
-
-            if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && aurEff->getEffectMiscValue() == POWER_TYPE_MANA)
-                getOwner()->emote(EMOTE_ONESHOT_EAT);
         } break;
         case SPELL_AURA_PERIODIC_LEECH:
         case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
@@ -1029,10 +1022,10 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             if (!getOwner()->isAlive())
                 return;
 
-            const auto casterUnit = GetUnitCaster();
             if (getOwner()->getMaxPower(POWER_TYPE_MANA) == 0)
                 return;
 
+            const auto casterUnit = GetUnitCaster();
             if (getOwner()->SchoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()] != 0)
             {
                 if (casterUnit != nullptr)
@@ -1132,7 +1125,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             if (sScriptMgr.CallScriptedDummyAura(getSpellId(), aurEff->getEffectIndex(), this, true))
                 break;
 
-            LogDebugFlag(LF_AURA_EFF, "Spell aura %u has a periodic trigger dummy effect but no handler for it", getSpellId());
+            sLogger.debug("Spell aura %u has a periodic trigger dummy effect but no handler for it", getSpellId());
         } break;
         default:
             break;

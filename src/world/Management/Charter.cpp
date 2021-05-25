@@ -12,7 +12,7 @@ Charter::Charter(Field* fields)
 {
     uint32_t f = 0;
     CharterId = fields[f++].GetUInt32();
-    CharterType = fields[f++].GetUInt32();
+    CharterType = fields[f++].GetUInt8();
     LeaderGuid = fields[f++].GetUInt32();
     GuildName = fields[f++].GetString();
     ItemGuid = fields[f++].GetUInt64();

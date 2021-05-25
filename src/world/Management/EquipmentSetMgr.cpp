@@ -92,7 +92,7 @@ namespace Arcemu
         {
             if (setcount >= 10)
             {
-                LOG_ERROR("There were more than 10 equipment sets for GUID: %u", ownerGUID);
+                sLogger.failure("There were more than 10 equipment sets for GUID: %u", ownerGUID);
                 return true;
             }
 
@@ -161,11 +161,6 @@ namespace Arcemu
 
     void EquipmentSetMgr::FillEquipmentSetListPacket(WorldPacket& data)
     {
-#if VERSION_STRING >= Cata
-        uint32 count = 0;
-        size_t count_pos = data.wpos();
-        data << uint32(count);
-#endif
         data << uint32(EquipmentSets.size());
 
         for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
@@ -181,12 +176,6 @@ namespace Arcemu
             {
                 data << WoWGuid(uint64(WoWGuid::createItemGuid(set->ItemGUID[i])));
             }
-#if VERSION_STRING >= Cata
-            ++count;
-#endif
         }
-#if VERSION_STRING >= Cata
-        data.put<uint32>(count_pos, count);
-#endif
     }
 }

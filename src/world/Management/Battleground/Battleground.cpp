@@ -25,8 +25,8 @@
 #include "Management/Arenas.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
-#include <Spell/Definitions/AuraInterruptFlags.h>
-#include "Spell/Definitions/PowerType.h"
+#include <Spell/Definitions/AuraInterruptFlags.hpp>
+#include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgBattlegroundPlayerLeft.h"
 #include "Server/Packets/SmsgBattlegroundPlayerJoined.h"
@@ -412,7 +412,7 @@ Creature* CBattleground::SpawnCreature(uint32 entry, float x, float y, float z, 
     CreatureProperties const* cp = sMySQLStore.getCreatureProperties(entry);
     if (cp == nullptr)
     {
-        LOG_ERROR("tried to push a invalid creature with entry %u!", entry);
+        sLogger.failure("tried to push a invalid creature with entry %u!", entry);
         return nullptr;
     }
 
@@ -551,7 +551,7 @@ void CBattleground::RemoveAuraFromTeam(uint32 team, uint32 aura)
     }
 }
 
-void CBattleground::SendChatMessage(uint32 Type, uint64 Guid, const char* Format, ...)
+void CBattleground::SendChatMessage(uint8_t Type, uint64 Guid, const char* Format, ...)
 {
     char msg[500];
     va_list ap;

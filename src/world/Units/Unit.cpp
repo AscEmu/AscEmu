@@ -27,18 +27,18 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Opcodes.hpp"
 #include "Server/WorldSession.h"
-#include "Spell/Definitions/AuraInterruptFlags.h"
-#include "Spell/Definitions/DiminishingGroup.h"
-#include "Spell/Definitions/PowerType.h"
-#include "Spell/Definitions/ProcFlags.h"
-#include "Spell/Definitions/SpellCastTargetFlags.h"
-#include "Spell/Definitions/SpellDamageType.h"
-#include "Spell/Definitions/SpellIsFlags.h"
-#include "Spell/Definitions/SpellMechanics.h"
-#include "Spell/Definitions/SpellSchoolConversionTable.h"
-#include "Spell/Definitions/SpellTypes.h"
+#include "Spell/Definitions/AuraInterruptFlags.hpp"
+#include "Spell/Definitions/DiminishingGroup.hpp"
+#include "Spell/Definitions/PowerType.hpp"
+#include "Spell/Definitions/ProcFlags.hpp"
+#include "Spell/Definitions/SpellCastTargetFlags.hpp"
+#include "Spell/Definitions/SpellDamageType.hpp"
+#include "Spell/Definitions/SpellIsFlags.hpp"
+#include "Spell/Definitions/SpellMechanics.hpp"
+#include "Spell/Definitions/SpellSchoolConversionTable.hpp"
+#include "Spell/Definitions/SpellTypes.hpp"
 #include "Spell/SpellAuras.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Units/Creatures/Vehicle.h"
@@ -107,7 +107,7 @@ uint8_t Unit::getBytes0ByOffset(uint32_t offset) const
         case 3:
             return static_cast<uint8_t>(getPowerType());
         default:
-            LogError("Offset %u is not a valid offset value for byte_0 data (max 3). Returning 0", offset);
+            sLogger.failure("Offset %u is not a valid offset value for byte_0 data (max 3). Returning 0", offset);
             return 0;
     }
 }
@@ -129,7 +129,7 @@ void Unit::setBytes0ForOffset(uint32_t offset, uint8_t value)
             setPowerType(value);
             break;
         default:
-            LogError("Offset %u is not a valid offset value for byte_0 data (max 3)", offset);
+            sLogger.failure("Offset %u is not a valid offset value for byte_0 data (max 3)", offset);
             break;
     }
 }
@@ -788,7 +788,7 @@ uint8_t Unit::getBytes1ByOffset(uint32_t offset) const
         case 3:
             return getAnimationFlags();
         default:
-            LogError("Offset %u is not a valid offset value for byte_1 data (max 3). Returning 0", offset);
+            sLogger.failure("Offset %u is not a valid offset value for byte_1 data (max 3). Returning 0", offset);
             return 0;
     }
 }
@@ -810,7 +810,7 @@ void Unit::setBytes1ForOffset(uint32_t offset, uint8_t value)
             setAnimationFlags(value);
             break;
         default:
-            LogError("Offset %u is not a valid offset value for byte_1 data (max 3)", offset);
+            sLogger.failure("Offset %u is not a valid offset value for byte_1 data (max 3)", offset);
             break;
     }
 }
@@ -919,7 +919,7 @@ uint8_t Unit::getBytes2ByOffset(uint32_t offset) const
         case 3:
             return getShapeShiftForm();
         default:
-            LogError("Offset %u is not a valid offset value for byte_2 data (max 3). Returning 0", offset);
+            sLogger.failure("Offset %u is not a valid offset value for byte_2 data (max 3). Returning 0", offset);
             return 0;
     }
 }
@@ -941,7 +941,7 @@ void Unit::setBytes2ForOffset(uint32_t offset, uint8_t value)
             setShapeShiftForm(value);
             break;
         default:
-            LogError("Offset %u is not a valid offset value for byte_2 data (max 3)", offset);
+            sLogger.failure("Offset %u is not a valid offset value for byte_2 data (max 3)", offset);
             break;
     }
 }
@@ -2077,9 +2077,9 @@ SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const
     if (spellProc == nullptr)
     {
         if (originalSpellInfo != nullptr)
-            LogError("Unit::addProcTriggerSpell : Spell id %u tried to add a non-existent spell to Unit %p as SpellProc", originalSpellInfo->getId(), this);
+            sLogger.failure("Unit::addProcTriggerSpell : Spell id %u tried to add a non-existent spell to Unit %p as SpellProc", originalSpellInfo->getId(), this);
         else
-            LogError("Unit::addProcTriggerSpell : Something tried to add a non-existent spell to Unit %p as SpellProc", this);
+            sLogger.failure("Unit::addProcTriggerSpell : Something tried to add a non-existent spell to Unit %p as SpellProc", this);
         return nullptr;
     }
 
@@ -3546,7 +3546,7 @@ void Unit::sendFullAuraUpdate()
     }
 
     SendMessageToSet(packetData.serialise().get(), true);
-    LogDebugFlag(LF_AURA, "Unit::sendFullAuraUpdate : Updated %u auras for guid %u", updates, getGuid());
+    sLogger.debug("Unit::sendFullAuraUpdate : Updated %u auras for guid %u", updates, getGuid());
 #endif
 }
 
@@ -4318,7 +4318,8 @@ void Unit::energize(Unit* target, uint32_t spellId, uint32_t amount, PowerType t
     if (sendPacket)
         sendSpellEnergizeLog(target, spellId, amount, type);
 
-    target->setPower(type, target->getPower(type) + amount);
+    // Send either SMSG_SPELLENERGIZELOG or SMSG_POWER_UPDATE packet, not both
+    target->setPower(type, target->getPower(type) + amount, !sendPacket);
 
 #if VERSION_STRING >= Cata
     // Reset Holy Power timer back to 10 seconds

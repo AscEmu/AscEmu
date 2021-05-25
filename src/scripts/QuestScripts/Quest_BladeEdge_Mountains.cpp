@@ -208,7 +208,6 @@ public:
             }
         }
 
-#if VERSION_STRING > TBC
         if (obelisk1 != nullptr)
             sEventMgr.AddEvent(obelisk1, &GameObject::setState, (uint8_t)1, EVENT_UNK, 10000, 0, 1);
         if (obelisk2 != nullptr)
@@ -219,7 +218,6 @@ public:
             sEventMgr.AddEvent(obelisk4, &GameObject::setState, (uint8_t)1, EVENT_UNK, 10000, 0, 1);
         if (obelisk5 != nullptr)
             sEventMgr.AddEvent(obelisk5, &GameObject::setState, (uint8_t)1, EVENT_UNK, 10000, 0, 1);
-#endif
     }
 
 };

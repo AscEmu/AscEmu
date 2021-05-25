@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Server/MainServerDefines.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
-#include "Spell/Definitions/SpellEffects.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/SpellAuras.h"
 
 //.admin castall

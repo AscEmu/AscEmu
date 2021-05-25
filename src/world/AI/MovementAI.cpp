@@ -103,7 +103,7 @@ LocationVector MovementAI::calculateCurrentPosition() const
 
     const auto pct = float(m_diff) / float(calculateExpectedMoveTime());
 
-    LOG_ERROR("Pct: %f, dest[%f, %f, %f], origin[%f, %f, %f]", pct, m_destination.x, m_destination.y, m_destination.z, m_origin.x, m_origin.y, m_origin.z);
+    sLogger.failure("Pct: %f, dest[%f, %f, %f], origin[%f, %f, %f]", pct, m_destination.x, m_destination.y, m_destination.z, m_origin.x, m_origin.y, m_origin.z);
 
     LocationVector current_position;
     current_position.x = m_destination.x - ((m_destination.x - m_origin.x) * (pct == 0 ? 0.00001f : pct));

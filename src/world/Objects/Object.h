@@ -44,7 +44,7 @@
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Data/WoWObject.hpp"
 #include "MovementInfo.h"
-#include "Spell/Definitions/School.h"
+#include "Spell/Definitions/School.hpp"
 
 struct WoWObject;
 

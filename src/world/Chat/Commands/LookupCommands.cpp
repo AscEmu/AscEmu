@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 
 //.lookup achievement
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
         return true;
     }
 
-    Util::StringToLowerCase(x);
+    AscEmu::Util::Strings::toLowerCase(x);
     GreenSystemMessage(m_session, "Starting search of achievement `%s`...", x.c_str());
     auto startTime = Util::TimeNow();
     uint32 i, j, numFound = 0;
@@ -96,8 +96,8 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 #else
                     y = std::string(achievement->name);
 #endif
-                    Util::StringToLowerCase(y);
-                    foundmatch = Util::findXinYString(x, y);
+                    AscEmu::Util::Strings::toLowerCase(y);
+                    foundmatch = AscEmu::Util::Strings::contains(x, y);
                 }
                 if (!foundmatch && lookupdesc)
                 {
@@ -106,8 +106,8 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 #else
                     y = std::string(achievement->description);
 #endif
-                    Util::StringToLowerCase(y);
-                    foundmatch = Util::findXinYString(x, y);
+                    AscEmu::Util::Strings::toLowerCase(y);
+                    foundmatch = AscEmu::Util::Strings::contains(x, y);
                 }
                 if (!foundmatch && lookupreward)
                 {
@@ -116,8 +116,8 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 #else
                     y = std::string(achievement->rewardName);
 #endif
-                    Util::StringToLowerCase(y);
-                    foundmatch = Util::findXinYString(x, y);
+                    AscEmu::Util::Strings::toLowerCase(y);
+                    foundmatch = AscEmu::Util::Strings::contains(x, y);
                 }
                 if (!foundmatch)
                 {
@@ -188,8 +188,8 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 #else
                 y = std::string(criteria->name);
 #endif
-                Util::StringToLowerCase(y);
-                if (Util::findXinYString(x, y) == false)
+                AscEmu::Util::Strings::toLowerCase(y);
+                if (AscEmu::Util::Strings::contains(x, y) == false)
                 {
                     continue;
                 }
@@ -267,7 +267,7 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
         return false;
 
     std::string x = std::string(args);
-    Util::StringToLowerCase(x);
+    AscEmu::Util::Strings::toLowerCase(x);
     if (x.length() < 4)
     {
         RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
@@ -289,14 +289,14 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
 
             std::string litName = std::string( lit ? lit->name : "");
 
-            Util::StringToLowerCase(litName);
+            AscEmu::Util::Strings::toLowerCase(litName);
 
             bool localizedFound = false;
-            if (Util::findXinYString(x, litName))
+            if (AscEmu::Util::Strings::contains(x, litName))
                 localizedFound = true;
 
             std::string names_lower = it->lowercase_name;
-            if (Util::findXinYString(x, names_lower) || localizedFound)
+            if (AscEmu::Util::Strings::contains(x, names_lower) || localizedFound)
             {
                 SystemMessage(m_session, "ID: %u |cfffff000%s", it->Id, it->Name.c_str());
                 ++count;
@@ -324,7 +324,7 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
         return false;
 
     std::string x = std::string(args);
-    Util::StringToLowerCase(x);
+    AscEmu::Util::Strings::toLowerCase(x);
     if (x.length() < 4)
     {
         RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
@@ -344,8 +344,8 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
 #else
             std::string y = std::string(faction->Name);
 #endif
-            Util::StringToLowerCase(y);
-            if (Util::findXinYString(x, y))
+            AscEmu::Util::Strings::toLowerCase(y);
+            if (AscEmu::Util::Strings::contains(x, y))
             {
 #if VERSION_STRING < Cata
                 SendHighlightedName(m_session, "Faction", faction->Name[0], y, x, faction->ID);
@@ -373,7 +373,7 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
         return false;
 
     std::string x = std::string(args);
-    Util::StringToLowerCase(x);
+    AscEmu::Util::Strings::toLowerCase(x);
     if (x.length() < 4)
     {
         RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
@@ -396,14 +396,14 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
 
         std::string litName = std::string(lit ? lit->name : "");
 
-        Util::StringToLowerCase(litName);
+        AscEmu::Util::Strings::toLowerCase(litName);
 
         bool localizedFound = false;
-        if (Util::findXinYString(x, litName))
+        if (AscEmu::Util::Strings::contains(x, litName))
             localizedFound = true;
 
         std::string proto_lower = it->lowercase_name;
-        if (Util::findXinYString(x, proto_lower) || localizedFound)
+        if (AscEmu::Util::Strings::contains(x, proto_lower) || localizedFound)
         {
             SendItemLinkToPlayer(it, m_session, false, 0, localizedFound ? m_session->language : 0);
             ++count;
@@ -429,7 +429,7 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
         return false;
 
     std::string x = std::string(args);
-    Util::StringToLowerCase(x);
+    AscEmu::Util::Strings::toLowerCase(x);
 
     GreenSystemMessage(m_session, "Starting search of object `%s`...", x.c_str());
     auto startTime = Util::TimeNow();
@@ -443,8 +443,8 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
     {
         gameobject_info = sMySQLStore.getGameObjectProperties(itr->second.entry);
         y = std::string(gameobject_info->name);
-        Util::StringToLowerCase(y);
-        if (Util::findXinYString(x, y))
+        AscEmu::Util::Strings::toLowerCase(y);
+        if (AscEmu::Util::Strings::contains(x, y))
         {
             std::string Name;
             std::stringstream strm;
@@ -485,7 +485,7 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
         return false;
 
     std::string search_string = std::string(args);
-    Util::StringToLowerCase(search_string);
+    AscEmu::Util::Strings::toLowerCase(search_string);
     if (search_string.length() < 4)
     {
         RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
@@ -510,14 +510,14 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
 
         std::string liName = std::string(li ? li->title : "");
 
-        Util::StringToLowerCase(liName);
-        Util::StringToLowerCase(lower_quest_title);
+        AscEmu::Util::Strings::toLowerCase(liName);
+        AscEmu::Util::Strings::toLowerCase(lower_quest_title);
 
         bool localizedFound = false;
-        if (Util::findXinYString(search_string, liName))
+        if (AscEmu::Util::Strings::contains(search_string, liName))
             localizedFound = true;
 
-        if (Util::findXinYString(search_string, lower_quest_title) || localizedFound)
+        if (AscEmu::Util::Strings::contains(search_string, lower_quest_title) || localizedFound)
         {
             std::string questid = MyConvertIntToString(quest->id);
             std::string questtitle = localizedFound ? (li ? li->title : "") : quest->title;
@@ -559,7 +559,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
         return false;
 
     std::string x = std::string(args);
-    Util::StringToLowerCase(x);
+    AscEmu::Util::Strings::toLowerCase(x);
     if (x.length() < 4)
     {
         RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
@@ -575,8 +575,8 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
     {
         SpellInfo const* spell = sSpellMgr.getSpellInfo(it->first);
         std::string y = std::string(spell->getName());
-        Util::StringToLowerCase(y);
-        if (Util::findXinYString(x, y))
+        AscEmu::Util::Strings::toLowerCase(y);
+        if (AscEmu::Util::Strings::contains(x, y))
         {
             sprintf((char*)itoabuf, "%u", spell->getId());
             recout = (const char*)itoabuf;
@@ -614,7 +614,7 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
         return false;
 
     std::string x = std::string(args);
-    Util::StringToLowerCase(x);
+    AscEmu::Util::Strings::toLowerCase(x);
     if (x.length() < 4)
     {
         RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
@@ -635,8 +635,8 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
 #else
         std::string y = std::string(skill_line->Name);
 #endif
-        Util::StringToLowerCase(y);
-        if (Util::findXinYString(x, y))
+        AscEmu::Util::Strings::toLowerCase(y);
+        if (AscEmu::Util::Strings::contains(x, y))
         {
 #if VERSION_STRING < Cata
             SendHighlightedName(m_session, "Skill", skill_line->Name[0], y, x, skill_line->id);

@@ -148,9 +148,9 @@ void GuildBankTab::setText(std::string const& text)
 void GuildBankTab::sendText(Guild const* guild, WorldSession* session) const
 {
     if (session)
-        LogDebugFlag(LF_OPCODE, "sendText %s: Tabid: %u, Text: %s", session->GetPlayer()->getName().c_str(), static_cast<uint32_t>(mTabId), mText.c_str());
+        sLogger.debug("sendText %s: Tabid: %u, Text: %s", session->GetPlayer()->getName().c_str(), static_cast<uint32_t>(mTabId), mText.c_str());
     else
-        LogDebugFlag(LF_OPCODE, "sendText (Broadcast): Tabid: %u, Text: %s", static_cast<uint32_t>(mTabId), mText.c_str());
+        sLogger.debug("sendText (Broadcast): Tabid: %u, Text: %s", static_cast<uint32_t>(mTabId), mText.c_str());
 
 #if VERSION_STRING < Cata
     if (session)

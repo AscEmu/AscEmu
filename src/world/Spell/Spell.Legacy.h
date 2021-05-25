@@ -20,12 +20,12 @@
 
 #pragma once
 
-#include "Definitions/SpellFailure.h"
-#include "Definitions/SpellState.h"
-#include "Definitions/SpellTargetMod.h"
-#include "SpellCastTargets.h"
+#include "Definitions/SpellFailure.hpp"
+#include "Definitions/SpellState.hpp"
+#include "Definitions/SpellTargetMod.hpp"
+#include "SpellCastTargets.hpp"
 #include "SpellInfo.hpp"
-#include "SpellTargetConstraint.h"
+#include "SpellTargetConstraint.hpp"
 
 #include "Units/Creatures/Creature.h"
 #include "Units/Players/Player.h"
@@ -222,6 +222,8 @@ class SERVER_DECL Spell
 
         bool canAttackCreatureType(Creature* target) const;
 
+        // Removes used item and/or item charges
+        void removeCastItem();
         void removeReagents();
 #if VERSION_STRING < Cata
         void removeAmmo();
@@ -448,8 +450,6 @@ class SERVER_DECL Spell
         bool hasAttributeExF(SpellAttributesExF attribute);
         bool hasAttributeExG(SpellAttributesExG attribute);
 
-        // Removes reagents, ammo, and items/charges
-        void RemoveItems();
         // Handles Teleport function
         void HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target);
         // Determines how much skill caster going to gain

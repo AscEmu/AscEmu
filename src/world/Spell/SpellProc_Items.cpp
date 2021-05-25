@@ -22,7 +22,7 @@
 #include "StdAfx.h"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
-#include "SpellProc.h"
+#include "SpellProc.hpp"
 #include "Units/Unit.h"
 #include "Units/Players/Player.h"
 

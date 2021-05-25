@@ -6,9 +6,10 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "CommonTypes.hpp"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Management/Item.h"
+#include "Map/InstanceDefines.hpp"
 #include "Units/Creatures/AIInterface.h"
 #include "ScriptMgr.h"
 #include "ScriptEvent.hpp"
@@ -494,13 +495,13 @@ public:
         {
             switch (_creature->GetMapMgr()->pInstance->m_difficulty)
             {
-            case MODE_NORMAL_10MEN:
+            case InstanceDifficulty::RAID_10MAN_NORMAL:
                 return normal10;
-            case MODE_NORMAL_25MEN:
+            case InstanceDifficulty::RAID_25MAN_NORMAL:
                 return normal25;
-            case MODE_HEROIC_10MEN:
+            case InstanceDifficulty::RAID_10MAN_HEROIC:
                 return heroic10;
-            case MODE_HEROIC_25MEN:
+            case InstanceDifficulty::RAID_25MAN_HEROIC:
                 return heroic25;
             default:
                 break;

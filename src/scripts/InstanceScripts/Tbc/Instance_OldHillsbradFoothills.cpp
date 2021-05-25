@@ -62,7 +62,7 @@ public:
         return m_phaseData[pIndex];
     }
 
-    void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
+    void OnGameObjectActivate(GameObject* pGameObject, Player* /*pPlayer*/)
     {
         if (pGameObject->getEntry() != GO_LODGE_ABLAZE || GetData(OHF_PHASE_1) == OHF_DATA_DONE)
             return;

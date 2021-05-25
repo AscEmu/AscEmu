@@ -43,7 +43,7 @@
 #include <string>
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
-#include "Spell/SpellTargetConstraint.h"
+#include "Spell/SpellTargetConstraint.hpp"
 #include "Management/Tickets/TicketMgr.hpp"
 
 struct WorldState

@@ -36,7 +36,7 @@ void PatchMgr::initialize()
 {
     // load patches
 #ifdef WIN32
-    LogNotice("PatchMgr : Loading Patches...");
+    sLogger.info("PatchMgr : Loading Patches...");
     char Buffer[MAX_PATH * 10];
     char Buffer2[MAX_PATH * 10];
     char Buffer3[MAX_PATH * 10];
@@ -70,7 +70,7 @@ void PatchMgr::initialize()
         if (hFile == INVALID_HANDLE_VALUE)
             continue;
 
-        LogNotice("PatchMgr : Found patch for %u locale `%s`.", srcversion, locality);
+        sLogger.info("PatchMgr : Found patch for %u locale `%s`.", srcversion, locality);
         pPatch = new Patch;
         size = GetFileSize(hFile, &sizehigh);
         pPatch->FileSize = size;
@@ -111,7 +111,7 @@ void PatchMgr::initialize()
     /*
      *nix patch loader
      */
-    LogNotice("PatchMgr : Loading Patches...");
+    sLogger.info("PatchMgr : Loading Patches...");
     char Buffer[MAX_PATH * 10];
     char Buffer2[MAX_PATH * 10];
     char Buffer3[MAX_PATH * 10];
@@ -133,7 +133,7 @@ void PatchMgr::initialize()
     filecount = scandir("./ClientPatches", &list, 0, 0);
     if (filecount <= 0 || list == NULL)
     {
-        LOG_ERROR("No patches found.");
+        sLogger.failure("No patches found.");
         return;
     }
 
@@ -146,18 +146,18 @@ void PatchMgr::initialize()
         read_fd = open(Buffer3, O_RDONLY);
         if (read_fd < 0)
         {
-            LOG_ERROR("Cannot open %s", Buffer3);
+            sLogger.failure("Cannot open %s", Buffer3);
             continue;
         }
 
         if (fstat(read_fd, &sb) < 0)
         {
-            LOG_ERROR("Cannot stat %s", Buffer3);
+            sLogger.failure("Cannot stat %s", Buffer3);
             close(read_fd);
             continue;
         }
 
-        LogNotice("PatchMgr : Found patch for b%u locale `%s` (%u bytes).", srcversion, locality, static_cast<uint32_t>(sb.st_size));
+        sLogger.info("PatchMgr : Found patch for b%u locale `%s` (%u bytes).", srcversion, locality, static_cast<uint32_t>(sb.st_size));
         pPatch = new Patch;
         size = sb.st_size;
         pPatch->FileSize = size;

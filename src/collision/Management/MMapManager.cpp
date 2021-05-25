@@ -70,7 +70,7 @@ namespace MMAP
                 itr = loadedMMaps.insert(MMapDataSet::value_type(mapId, nullptr)).first;
             else
             {
-                LOG_ERROR("Invalid mapId %u passed to MMapManager after startup in thread unsafe environment", mapId);
+                sLogger.failure("Invalid mapId %u passed to MMapManager after startup in thread unsafe environment", mapId);
                 ASSERT(false);
             }
         }
@@ -84,7 +84,7 @@ namespace MMAP
         FILE* file = fopen(fileName, "rb");
         if (!file)
         {
-            LogDebugFlag(LF_MMAP, "MMAP:loadMapData: Error: Could not open mmap file '%s'", fileName);
+            sLogger.debug("MMAP:loadMapData: Error: Could not open mmap file '%s'", fileName);
             delete [] fileName;
             return false;
         }
@@ -94,7 +94,7 @@ namespace MMAP
         fclose(file);
         if (count != 1)
         {
-            LOG_ERROR("Error: Could not read params from file '%s'", fileName);
+            sLogger.failure("Error: Could not read params from file '%s'", fileName);
             delete [] fileName;
             return false;
         }
@@ -104,14 +104,14 @@ namespace MMAP
         if (dtStatusFailed(mesh->init(&params)))
         {
             dtFreeNavMesh(mesh);
-            LOG_ERROR("Failed to initialize dtNavMesh for mmap %04u from file %s", mapId, fileName);
+            sLogger.failure("Failed to initialize dtNavMesh for mmap %04u from file %s", mapId, fileName);
             delete [] fileName;
             return false;
         }
 
         delete [] fileName;
 
-        LogDebugFlag(LF_MMAP, "MMAP:loadMapData: Loaded %04i.mmap", mapId);
+        sLogger.debug("MMAP:loadMapData: Loaded %04i.mmap", mapId);
 
         // store inside our map list
         MMapData* mmap_data = new MMapData(mesh);
@@ -150,7 +150,7 @@ namespace MMAP
         FILE* file = fopen(fileName, "rb");
         if (!file)
         {
-            LOG_DEBUG("Could not open mmtile file '%s'", fileName);
+            sLogger.debug("Could not open mmtile file '%s'", fileName);
             delete [] fileName;
             return false;
         }
@@ -160,14 +160,14 @@ namespace MMAP
         MmapTileHeader fileHeader;
         if (fread(&fileHeader, sizeof(MmapTileHeader), 1, file) != 1 || fileHeader.mmapMagic != MMAP_MAGIC)
         {
-            LOG_ERROR("Bad header in mmap %04u%02i%02i.mmtile", mapId, x, y);
+            sLogger.failure("Bad header in mmap %04u%02i%02i.mmtile", mapId, x, y);
             fclose(file);
             return false;
         }
 
         if (fileHeader.mmapVersion != MMAP_VERSION)
         {
-            LOG_ERROR("%04u%02i%02i.mmtile was built with generator v%i, expected v%i",
+            sLogger.failure("%04u%02i%02i.mmtile was built with generator v%i, expected v%i",
                 mapId, x, y, fileHeader.mmapVersion, MMAP_VERSION);
             fclose(file);
             return false;
@@ -179,7 +179,7 @@ namespace MMAP
         size_t result = fread(data, fileHeader.size, 1, file);
         if (!result)
         {
-            LOG_ERROR("Bad header or data in mmap %04u%02i%02i.mmtile", mapId, x, y);
+            sLogger.failure("Bad header or data in mmap %04u%02i%02i.mmtile", mapId, x, y);
             fclose(file);
             return false;
         }
@@ -194,12 +194,12 @@ namespace MMAP
         {
             mmap->mmapLoadedTiles.insert(std::pair<uint32, dtTileRef>(packedGridPos, tileRef));
             ++loadedTiles;
-            LogDebugFlag(LF_MMAP, "MMAP:loadMap: Loaded mmtile %04i[%02i, %02i] into %04i[%02i, %02i]", mapId, x, y, mapId, header->x, header->y);
+            sLogger.debug("MMAP:loadMap: Loaded mmtile %04i[%02i, %02i] into %04i[%02i, %02i]", mapId, x, y, mapId, header->x, header->y);
             return true;
         }
         else
         {
-            LogDebugFlag(LF_MMAP, "MMAP:loadMap: Could not load %04u%02i%02i.mmtile into navmesh", mapId, x, y);
+            sLogger.debug("MMAP:loadMap: Could not load %04u%02i%02i.mmtile into navmesh", mapId, x, y);
             dtFree(data);
             return false;
         }
@@ -212,7 +212,7 @@ namespace MMAP
         if (itr == loadedMMaps.end())
         {
             // file may not exist, therefore not loaded
-            LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Asked to unload not loaded navmesh map. %04u%02i%02i.mmtile", mapId, x, y);
+            sLogger.debug("MMAP:unloadMap: Asked to unload not loaded navmesh map. %04u%02i%02i.mmtile", mapId, x, y);
             return false;
         }
 
@@ -223,7 +223,7 @@ namespace MMAP
         if (mmap->mmapLoadedTiles.find(packedGridPos) == mmap->mmapLoadedTiles.end())
         {
             // file may not exist, therefore not loaded
-            LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Asked to unload not loaded navmesh tile. %04u%02i%02i.mmtile", mapId, x, y);
+            sLogger.debug("MMAP:unloadMap: Asked to unload not loaded navmesh tile. %04u%02i%02i.mmtile", mapId, x, y);
             return false;
         }
 
@@ -235,13 +235,13 @@ namespace MMAP
             // this is technically a memory leak
             // if the grid is later reloaded, dtNavMesh::addTile will return error but no extra memory is used
             // we cannot recover from this error - assert out
-            LOG_ERROR("Could not unload %04u%02i%02i.mmtile from navmesh", mapId, x, y);
+            sLogger.failure("Could not unload %04u%02i%02i.mmtile from navmesh", mapId, x, y);
         }
         else
         {
             mmap->mmapLoadedTiles.erase(packedGridPos);
             --loadedTiles;
-            LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Unloaded mmtile %04i[%02i, %02i] from %04i", mapId, x, y, mapId);
+            sLogger.debug("MMAP:unloadMap: Unloaded mmtile %04i[%02i, %02i] from %04i", mapId, x, y, mapId);
             return true;
         }
 
@@ -254,7 +254,7 @@ namespace MMAP
         if (itr == loadedMMaps.end() || !itr->second)
         {
             // file may not exist, therefore not loaded
-            LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Asked to unload not loaded navmesh map. %04i.mmtile", mapId);
+            sLogger.debug("MMAP:unloadMap: Asked to unload not loaded navmesh map. %04i.mmtile", mapId);
             return false;
         }
 
@@ -265,17 +265,17 @@ namespace MMAP
             uint32 x = (i->first >> 16);
             uint32 y = (i->first & 0x0000FFFF);
             if (dtStatusFailed(mmap->navMesh->removeTile(i->second, nullptr, nullptr)))
-                LOG_ERROR("Could not unload %04u%02i%02i.mmtile from navmesh", mapId, x, y);
+                sLogger.failure("Could not unload %04u%02i%02i.mmtile from navmesh", mapId, x, y);
             else
             {
                 --loadedTiles;
-                LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Unloaded mmtile %04i[%02i, %02i] from %04i", mapId, x, y, mapId);
+                sLogger.debug("MMAP:unloadMap: Unloaded mmtile %04i[%02i, %02i] from %04i", mapId, x, y, mapId);
             }
         }
 
         delete mmap;
         itr->second = nullptr;
-        LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Unloaded %04i.mmap", mapId);
+        sLogger.debug("MMAP:unloadMap: Unloaded %04i.mmap", mapId);
 
         return true;
     }
@@ -287,14 +287,14 @@ namespace MMAP
         if (itr == loadedMMaps.end())
         {
             // file may not exist, therefore not loaded
-            LogDebugFlag(LF_MMAP, "MMAP:unloadMapInstance: Asked to unload not loaded navmesh map %04u", mapId);
+            sLogger.debug("MMAP:unloadMapInstance: Asked to unload not loaded navmesh map %04u", mapId);
             return false;
         }
 
         MMapData* mmap = itr->second;
         if (mmap->navMeshQueries.find(instanceId) == mmap->navMeshQueries.end())
         {
-            LogDebugFlag(LF_MMAP, "MMAP:unloadMapInstance: Asked to unload not loaded dtNavMeshQuery mapId %04u instanceId %u", mapId, instanceId);
+            sLogger.debug("MMAP:unloadMapInstance: Asked to unload not loaded dtNavMeshQuery mapId %04u instanceId %u", mapId, instanceId);
             return false;
         }
 
@@ -302,7 +302,7 @@ namespace MMAP
 
         dtFreeNavMeshQuery(query);
         mmap->navMeshQueries.erase(instanceId);
-        LogDebugFlag(LF_MMAP, "MMAP:unloadMapInstance: Unloaded mapId %04u instanceId %u", mapId, instanceId);
+        sLogger.debug("MMAP:unloadMapInstance: Unloaded mapId %04u instanceId %u", mapId, instanceId);
 
         return true;
     }
@@ -331,11 +331,11 @@ namespace MMAP
             if (dtStatusFailed(query->init(mmap->navMesh, 1024)))
             {
                 dtFreeNavMeshQuery(query);
-                LOG_ERROR("Failed to initialize dtNavMeshQuery for mapId %04u instanceId %u", mapId, instanceId);
+                sLogger.failure("Failed to initialize dtNavMeshQuery for mapId %04u instanceId %u", mapId, instanceId);
                 return nullptr;
             }
 
-            LogDebugFlag(LF_MMAP, "MMAP:GetNavMeshQuery: created dtNavMeshQuery for mapId %04u instanceId %u", mapId, instanceId);
+            sLogger.debug("MMAP:GetNavMeshQuery: created dtNavMeshQuery for mapId %04u instanceId %u", mapId, instanceId);
             mmap->navMeshQueries.insert(std::pair<uint32, dtNavMeshQuery*>(instanceId, query));
         }
 

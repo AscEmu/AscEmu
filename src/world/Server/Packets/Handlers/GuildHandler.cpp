@@ -101,7 +101,7 @@ void WorldSession::handleSaveGuildEmblem(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "MSG_SAVE_GUILD_EMBLEM %s: vendorGuid: %u style: %u, color: %u, borderStyle: %u, borderColor: %u, backgroundColor: %u",
+    sLogger.debug("MSG_SAVE_GUILD_EMBLEM %s: vendorGuid: %u style: %u, color: %u, borderStyle: %u, borderColor: %u, backgroundColor: %u",
         _player->getName().c_str(), srlPacket.guid.getGuidLow(), srlPacket.emblemInfo.getStyle(), srlPacket.emblemInfo.getColor(),
         srlPacket.emblemInfo.getBorderStyle(), srlPacket.emblemInfo.getBorderColor(), srlPacket.emblemInfo.getBackgroundColor());
 
@@ -744,10 +744,10 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 
     if (!creature->isTabardDesigner())
     {
-        const uint32_t arena_type = srlPacket.arenaIndex - 1;
-        if (arena_type > 2)
+        if ((srlPacket.arenaIndex - 1) > 2)
             return;
 
+        const auto arena_type = static_cast<uint8_t>(srlPacket.arenaIndex - 1);
         if (_player->getArenaTeam(arena_type))
         {
             SendNotification(_player->GetSession()->LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
@@ -971,7 +971,7 @@ void WorldSession::handleGuildAssignRankOpcode(WorldPacket& recvPacket)
 
     recvPacket.ReadByteSeq(setterGuid[7]);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_ASSIGN_MEMBER_RANK %s: Target: %u Rank: %u, Issuer: %u",
+    sLogger.debug("CMSG_GUILD_ASSIGN_MEMBER_RANK %s: Target: %u Rank: %u, Issuer: %u",
         _player->getName().c_str(), WoWGuid::getGuidLowPartFromUInt64(targetGuid), rankId, WoWGuid::getGuidLowPartFromUInt64(setterGuid));
 
     if (Guild* guild = _player->getGuild())
@@ -1000,7 +1000,7 @@ void WorldSession::handleGuildQueryRanksOpcode(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(guildGuid[6]);
     recvPacket.ReadByteSeq(guildGuid[2]);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_GUILD_QUERY_RANKS %s: Guild: %u", _player->getName().c_str(), WoWGuid::getGuidLowPartFromUInt64(guildGuid));
+    sLogger.debug("CMSG_GUILD_QUERY_RANKS %s: Guild: %u", _player->getName().c_str(), WoWGuid::getGuidLowPartFromUInt64(guildGuid));
 
     if (Guild* guild = sGuildMgr.getGuildById(WoWGuid::getGuidLowPartFromUInt64(guildGuid)))
     {
@@ -1039,7 +1039,7 @@ void WorldSession::handleGuildQueryXPOpcode(WorldPacket& recvPacket)
 
     uint32_t guildId = WoWGuid::getGuidLowPartFromUInt64(guildGuid);
 
-    LogDebugFlag(LF_OPCODE, "CMSG_QUERY_GUILD_XP %s: guildId: %u", _player->getName().c_str(), guildId);
+    sLogger.debug("CMSG_QUERY_GUILD_XP %s: guildId: %u", _player->getName().c_str(), guildId);
 
     if (Guild* guild = sGuildMgr.getGuildById(guildId))
     {

@@ -5,17 +5,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 
-#include "Spell/Definitions/SpellFamily.h"
+#include "Spell/Definitions/SpellFamily.hpp"
 
 enum RogueSpells
 {
     SPELL_CUT_TO_THE_CHASE_R1       = 51664,
     SPELL_CUT_TO_THE_CHASE_R2       = 51665,
     SPELL_CUT_TO_THE_CHASE_R3       = 51667,
-#if VERSION_STRING == WotLK
     SPELL_CUT_TO_THE_CHASE_R4       = 51668,
     SPELL_CUT_TO_THE_CHASE_R5       = 51669,
-#endif
     SPELL_CRIPPLING_POISON          = 3409,
     SPELL_DEADLY_BREW_R1            = 51625,
     SPELL_DEADLY_BREW_R2            = 51626,

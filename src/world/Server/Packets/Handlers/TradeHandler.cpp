@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
-#include "Spell/Definitions/SpellCastTargetFlags.h"
+#include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Units/Players/Player.h"
 #include "Units/Players/PlayerDefines.hpp"
 #include "Units/UnitDefines.hpp"

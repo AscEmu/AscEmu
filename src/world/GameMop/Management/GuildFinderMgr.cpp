@@ -26,7 +26,7 @@ void GuildFinderMgr::loadGuildFinderDataFromDB()
 
 void GuildFinderMgr::loadGuildSettingsFromDB()
 {
-    LogNotice("Loading guild finder guild-related settings...");
+    sLogger.info("Loading guild finder guild-related settings...");
 
     CharacterDatabase.Execute("DELETE gfgs FROM guild_finder_guild_settings gfgs LEFT JOIN guilds g ON gfgs.guildId = g.guildId WHERE g.guildId IS NULL");
 
@@ -38,7 +38,7 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
 
     if (result == nullptr)
     {
-        LogNotice("Loaded 0 guild finder guild-related settings. Table `guild_finder_guild_settings` is empty.");
+        sLogger.info("Loaded 0 guild finder guild-related settings. Table `guild_finder_guild_settings` is empty.");
         return;
     }
 
@@ -70,19 +70,19 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
         ++count;
     } while(result->NextRow());
 
-    LogNotice("Loaded %u guild finder guild-related settings in %u ms.", count, Util::GetTimeDifferenceToNow(startTime));
+    sLogger.info("Loaded %u guild finder guild-related settings in %u ms.", count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void GuildFinderMgr::loadMembershipRequestsFromDB()
 {
-    LogNotice("Loading guild finder membership requests...");
+    sLogger.info("Loading guild finder membership requests...");
 
     CharacterDatabase.Execute("DELETE gfa FROM guild_finder_applicant gfa LEFT JOIN guilds g ON gfa.guildId = g.guildId WHERE g.guildId IS NULL");
     //                                                       0         1           2            3           4         5         6
     QueryResult* result = CharacterDatabase.Query("SELECT guildId, playerGuid, availability, classRole, interests, comment, submitTime FROM guild_finder_applicant");
     if (result == nullptr)
     {
-        LogNotice("Loaded 0 guild finder membership requests. Table `guild_finder_applicant` is empty.");
+        sLogger.info("Loaded 0 guild finder membership requests. Table `guild_finder_applicant` is empty.");
         return;
     }
 
@@ -106,7 +106,7 @@ void GuildFinderMgr::loadMembershipRequestsFromDB()
         ++count;
     } while(result->NextRow());
 
-    LogNotice("Loaded %u guild finder membership requests in %u ms.", count, Util::GetTimeDifferenceToNow(startTime));
+    sLogger.info("Loaded %u guild finder membership requests in %u ms.", count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void GuildFinderMgr::addMembershipRequest(uint32_t guildGuid, MembershipRequest const& request)

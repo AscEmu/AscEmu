@@ -3,8 +3,8 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Definitions/SpellCastTargetFlags.h"
-#include "SpellCastTargets.h"
+#include "Definitions/SpellCastTargetFlags.hpp"
+#include "SpellCastTargets.hpp"
 
 #include "Objects/ObjectMgr.h"
 #include <Server/WorldSocket.h>

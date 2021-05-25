@@ -186,7 +186,7 @@ public:
                 if (pAltar)
                     pAltar->removeFlags(GO_FLAG_NOT_SELECTABLE);
 
-                if (mInstance->iInstanceMode != MODE_HEROIC)
+                if (mInstance->iInstanceMode != InstanceDifficulty::DUNGEON_HEROIC)
                     return;
 
                 pDoors = GetGameObjectByGuid(mEckDoorsGUID);

@@ -30,7 +30,7 @@
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 
 
 void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32 uAmount)

@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu Logonserver Configuration File
-# Last edited: 12/26/2018
+# Last edited: 05/08/2021
 ################################################################################
 
 ################################################################################
@@ -45,13 +45,14 @@
 ################################################################################
 # Server file logging level
 #
-#    This directive controls how much output the server will
-#    write to log files. It cannot be disabled
-#    0 = Normal + Error; 1 = Detail; 2 = Debug
-#    Default: 0
+#    MinimumMessageType
+#        This directive controls how much output the server will
+#        write to console or log files. It cannot be disabled.
+#        0 = Trace; 1 = Debug; 2 = Minor; 3= Major;
+#        Default: 2 (Minor)
 #
 
-<LogLevel File = "0">
+<Logger MinimumMessageType = "2">
 
 ################################################################################
 # Account Refresh Time

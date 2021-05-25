@@ -23,21 +23,21 @@
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgClearExtraAuraInfo.h"
 #include "Spell.Legacy.h"
-#include "Definitions/SpellInFrontStatus.h"
-#include "Definitions/SpellCastTargetFlags.h"
-#include "Definitions/SpellDamageType.h"
-#include "Definitions/ProcFlags.h"
-#include "Definitions/CastInterruptFlags.h"
-#include "Definitions/AuraInterruptFlags.h"
-#include "Definitions/SpellTargetType.h"
-#include "Definitions/SpellRanged.h"
-#include "Definitions/SpellIsFlags.h"
-#include "Definitions/DiminishingGroup.h"
-#include "Definitions/SpellState.h"
-#include "Definitions/SpellMechanics.h"
-#include "Definitions/SpellEffectTarget.h"
-#include "Definitions/PowerType.h"
-#include "Definitions/SpellDidHitResult.h"
+#include "Definitions/SpellInFrontStatus.hpp"
+#include "Definitions/SpellCastTargetFlags.hpp"
+#include "Definitions/SpellDamageType.hpp"
+#include "Definitions/ProcFlags.hpp"
+#include "Definitions/CastInterruptFlags.hpp"
+#include "Definitions/AuraInterruptFlags.hpp"
+#include "Definitions/SpellTargetType.hpp"
+#include "Definitions/SpellRanged.hpp"
+#include "Definitions/SpellIsFlags.hpp"
+#include "Definitions/DiminishingGroup.hpp"
+#include "Definitions/SpellState.hpp"
+#include "Definitions/SpellMechanics.hpp"
+#include "Definitions/SpellEffectTarget.hpp"
+#include "Definitions/PowerType.hpp"
+#include "Definitions/SpellDidHitResult.hpp"
 #include "SpellHelpers.h"
 #include "StdAfx.h"
 #include "VMapFactory.h"
@@ -52,7 +52,7 @@
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
 #include "Objects/Faction.h"
-#include "SpellMgr.h"
+#include "SpellMgr.hpp"
 #include "SpellAuras.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include "Server/Packets/SmsgSpellFailure.h"
@@ -1566,7 +1566,7 @@ SpellEntry *spellInfo = sSpellStore.LookupEntry(TriggerSpellId);
 
 if (!spellInfo)
 {
-LOG_ERROR("WORLD: unknown spell id %i\n", TriggerSpellId);
+sLogger.failure("WORLD: unknown spell id %i\n", TriggerSpellId);
 return;
 }
 
@@ -2116,61 +2116,6 @@ bool Spell::hasAttributeExF(SpellAttributesExF attribute)
 bool Spell::hasAttributeExG(SpellAttributesExG attribute)
 {
     return (getSpellInfo()->getAttributesExG() & attribute) != 0;
-}
-
-void Spell::RemoveItems()
-{
-    // Item Charges & Used Item Removal
-    if (i_caster)
-    {
-        // Stackable Item -> remove 1 from stack
-        if (i_caster->getStackCount() > 1)
-        {
-            i_caster->modStackCount(-1);
-            i_caster->m_isDirty = true;
-            i_caster = nullptr;
-        }
-        else
-        {
-            for (uint8_t x = 0; x < 5; x++)
-            {
-                int32 charges = i_caster->getSpellCharges(x);
-
-                if (charges == 0)
-                    continue;
-
-                bool Removable = false;
-
-                // Items with negative charges are items that disappear when they reach 0 charge.
-                if (charges < 0)
-                    Removable = true;
-
-                i_caster->m_isDirty = true;
-
-                if (Removable)
-                {
-
-                    // If we have only 1 charge left, it's pointless to decrease the charge, we will have to remove the item anyways, so who cares ^^
-                    if (charges == -1)
-                    {
-                        i_caster->getOwner()->getItemInterface()->SafeFullRemoveItemByGuid(i_caster->getGuid());
-                    }
-                    else
-                    {
-                        i_caster->modSpellCharges(x, 1);
-                    }
-
-                }
-                else
-                {
-                    i_caster->modSpellCharges(x, -1);
-                }
-
-                i_caster = nullptr;
-                break;
-            }
-        }
-    }
 }
 
 bool Spell::HasTarget(const uint64& guid, std::vector<uint64_t>* tmpMap)
@@ -2869,7 +2814,7 @@ void Spell::HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target
     {
         if (mapid != Target->GetMapId())
         {
-            LOG_ERROR("Tried to teleport a Creature to another map.");
+            sLogger.failure("Tried to teleport a Creature to another map.");
             return;
         }
 
@@ -3277,7 +3222,7 @@ void Spell::SpellEffectJumpBehindTarget(uint8_t /*i*/)
         }
         else
         {
-            LogDebugFlag(LF_SPELL, "Coordinates are empty");
+            sLogger.debug("Coordinates are empty");
         }
     }
 }

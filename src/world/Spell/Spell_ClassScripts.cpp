@@ -22,10 +22,10 @@
 #include "StdAfx.h"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "SpellAuras.h"
-#include "Definitions/SpellSchoolConversionTable.h"
-#include "Definitions/DispelType.h"
+#include "Definitions/SpellSchoolConversionTable.hpp"
+#include "Definitions/DispelType.hpp"
 #include "Units/Summons/TotemSummon.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////

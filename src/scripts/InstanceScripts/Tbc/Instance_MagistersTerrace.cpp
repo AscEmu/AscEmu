@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_MagistersTerrace.h"
-#include <Spell/Definitions/PowerType.h>
+#include <Spell/Definitions/PowerType.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Magister's Terrace

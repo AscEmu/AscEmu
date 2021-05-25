@@ -194,7 +194,7 @@ void AuctionHouse::updateDeletionQueue()
 
 void AuctionHouse::removeAuction(Auction* auction)
 {
-    LOG_DEBUG("%u: Removing auction %u, reason %u.", auctionHouseEntryDbc->id, auction->Id, auction->removedType);
+    sLogger.debug("%u: Removing auction %u, reason %u.", auctionHouseEntryDbc->id, auction->Id, auction->removedType);
 
     char subject[100];
     char body[200];
@@ -284,7 +284,7 @@ void AuctionHouse::addAuction(Auction* auction)
 
     auctions.insert(std::unordered_map<uint32_t, Auction*>::value_type(auction->Id, auction));
 
-    LogDebug("AuctionHouse : %u: Add auction %u, expire@ %u.", auctionHouseEntryDbc->id, auction->Id, auction->expireTime);
+    sLogger.debug("AuctionHouse : %u: Add auction %u, expire@ %u.", auctionHouseEntryDbc->id, auction->Id, auction->expireTime);
 }
 
 Auction* AuctionHouse::getAuction(uint32_t id)
@@ -459,7 +459,7 @@ void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionL
 
         // this is going to hurt. - name
         std::string proto_lower = proto->lowercase_name;
-        if (srlPacket.searchedName.length() > 0 && !Util::findXinYString(srlPacket.searchedName, proto_lower))
+        if (srlPacket.searchedName.length() > 0 && !AscEmu::Util::Strings::contains(srlPacket.searchedName, proto_lower))
             continue;
 
         // rarity

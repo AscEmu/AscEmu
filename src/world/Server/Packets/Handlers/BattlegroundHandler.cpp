@@ -39,7 +39,7 @@ void WorldSession::handleInspectHonorStatsOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received MSG_INSPECT_HONOR_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debug("Received MSG_INSPECT_HONOR_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
 
     const auto player = _player->GetMapMgr()->GetPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr)
@@ -99,7 +99,7 @@ void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)
             battlegroundType = BATTLEGROUND_ARENA_5V5;
             break;
         default:
-            LogDebugFlag(LF_OPCODE, "Received CMSG_BATTLEMASTER_JOIN_ARENA: with invalid category (%u)", srlPacket.category);
+            sLogger.debug("Received CMSG_BATTLEMASTER_JOIN_ARENA: with invalid category (%u)", srlPacket.category);
             battlegroundType = 0;
             break;
     }
@@ -137,7 +137,7 @@ void WorldSession::handleBattlefieldListOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_BATTLEFIELD_LIST: %u (bgType), %u (fromType)", srlPacket.bgType, srlPacket.fromType);
+    sLogger.debug("Received CMSG_BATTLEFIELD_LIST: %u (bgType), %u (fromType)", srlPacket.bgType, srlPacket.fromType);
 
     sBattlegroundManager.HandleBattlegroundListPacket(this, srlPacket.bgType, srlPacket.fromType);
 }
@@ -148,7 +148,7 @@ void WorldSession::handleBattleMasterHelloOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_BATTLEMASTER_HELLO: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debug("Received CMSG_BATTLEMASTER_HELLO: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr || !creature->isBattleMaster())
@@ -186,7 +186,7 @@ void WorldSession::handleAreaSpiritHealerQueueOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AREA_SPIRIT_HEALER_QUEUE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debug("Received CMSG_AREA_SPIRIT_HEALER_QUEUE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
     const auto spiritHealer = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (spiritHealer == nullptr)
@@ -206,7 +206,7 @@ void WorldSession::handleAreaSpiritHealerQueryOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_AREA_SPIRIT_HEALER_QUEUE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debug("Received CMSG_AREA_SPIRIT_HEALER_QUEUE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
     const auto spiritHealer = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (spiritHealer == nullptr)
@@ -290,21 +290,21 @@ void WorldSession::handleRequestRatedBgInfoOpcode(WorldPacket & recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_INFO received with unk_type = %u", srlPacket.type);
+    sLogger.debug("Received CMSG_REQUEST_RATED_BG_INFO received with unk_type = %u", srlPacket.type);
 
     SendPacket(SmsgRatedBgInfo(0).serialise().get());
 }
 
 void WorldSession::handleRequestRatedBgStatsOpcode(WorldPacket& /*recvPacket*/)
 {
-    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_STATS received");
+    sLogger.debug("Received CMSG_REQUEST_RATED_BG_STATS received");
 
     SendPacket(SmsgRatedBgStats(3).serialise().get());
 }
 
 void WorldSession::handleRequestPvPRewardsOpcode(WorldPacket& /*recvPacket*/)
 {
-    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_STATS received");
+    sLogger.debug("Received CMSG_REQUEST_RATED_BG_STATS received");
 
     WorldPacket packet(SMSG_REQUEST_PVP_REWARDS_RESPONSE, 24);
     packet << uint32_t(0);    // unknown currency week cap conquest points
@@ -319,7 +319,7 @@ void WorldSession::handleRequestPvPRewardsOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleRequestPvpOptionsOpcode(WorldPacket& /*recvPacket*/)
 {
-    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_STATS received");
+    sLogger.debug("Received CMSG_REQUEST_RATED_BG_STATS received");
 
     SendPacket(SmsgPvpOptionsEnabled(true, true, true).serialise().get());
 }

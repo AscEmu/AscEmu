@@ -31,10 +31,10 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/Definitions/ProcFlags.h"
-#include <Spell/Definitions/AuraInterruptFlags.h>
-#include "Spell/Definitions/PowerType.h"
-#include "Spell/Definitions/SpellEffectTarget.h"
+#include "Spell/Definitions/ProcFlags.hpp"
+#include <Spell/Definitions/AuraInterruptFlags.hpp>
+#include "Spell/Definitions/PowerType.hpp"
+#include "Spell/Definitions/SpellEffectTarget.hpp"
 #include "Pet.h"
 #include "Server/Packets/SmsgPetActionFeedback.h"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
@@ -1713,7 +1713,7 @@ void Pet::ApplySummonLevelAbilities()
 
     if (stat_index < 0)
     {
-        LOG_ERROR("PETSTAT: No stat index found for entry %u, `%s`! Using 5 as a default.", getEntry(), GetCreatureProperties()->Name.c_str());
+        sLogger.failure("PETSTAT: No stat index found for entry %u, `%s`! Using 5 as a default.", getEntry(), GetCreatureProperties()->Name.c_str());
         stat_index = 5;
     }
 
@@ -1791,7 +1791,7 @@ void Pet::ApplySummonLevelAbilities()
     double mana = has_mana ? (pet_int * pet_int_to_mana) : 0.0;
     if (health == 0)
     {
-        LOG_ERROR("Pet with entry %u has 0 health !!", getEntry());
+        sLogger.failure("Pet with entry %u has 0 health !!", getEntry());
         health = 100;
     }
     setBaseHealth((uint32)(health));
@@ -1829,7 +1829,7 @@ void Pet::ApplyPetLevelAbilities()
     MySQLStructure::PetLevelAbilities const* pet_abilities = sMySQLStore.getPetLevelAbilities(level);
     if (pet_abilities == nullptr)
     {
-        LOG_ERROR("No abilities for level %u in table pet_level_abilities! Auto apply abilities of level 80!", level);
+        sLogger.failure("No abilities for level %u in table pet_level_abilities! Auto apply abilities of level 80!", level);
         pet_abilities = sMySQLStore.getPetLevelAbilities(DBC_PLAYER_LEVEL_CAP);
     }
 
@@ -1845,7 +1845,7 @@ void Pet::ApplyPetLevelAbilities()
 
     //Family Aura
     if (pet_family > 46)
-        LOG_ERROR("PETSTAT: Creature family %i [%s] has missing data.", pet_family, myFamily->name);
+        sLogger.failure("PETSTAT: Creature family %i [%s] has missing data.", pet_family, myFamily->name);
     else if (family_aura[pet_family] != 0)
         this->castSpell(this, family_aura[pet_family], true);
 
@@ -1982,7 +1982,7 @@ AI_Spell* Pet::HandleAutoCastEvent()
         }
         else    // bad pointers somehow end up here :S
         {
-            LOG_ERROR("Bad AI_Spell detected in AutoCastEvent!");
+            sLogger.failure("Bad AI_Spell detected in AutoCastEvent!");
             m_autoCastSpells[AUTOCAST_EVENT_ATTACK].erase(itr);
         }
     }
@@ -2039,12 +2039,12 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
 
         if (sp->spell == NULL)
         {
-            LOG_ERROR("Found corrupted spell at m_autoCastSpells, skipping");
+            sLogger.failure("Found corrupted spell at m_autoCastSpells, skipping");
             continue;
         }
         else if (sp->autocast_type != static_cast<uint32>(Type))
         {
-            LOG_ERROR("Found corrupted spell (%lu) at m_autoCastSpells, skipping", sp->entryId);
+            sLogger.failure("Found corrupted spell (%lu) at m_autoCastSpells, skipping", sp->entryId);
             continue;
         }
 

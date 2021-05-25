@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Server/MainServerDefines.h"
+#include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
@@ -47,10 +48,10 @@ bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_
     MapMgr* mgr = sInstanceMgr.CreateInstance(INSTANCE_NONRAID, mapid);
     if (mgr == nullptr)
     {
-        LOG_ERROR("call failed for map %u", mapid);
+        sLogger.failure("call failed for map %u", mapid);
         return false;
     }
-    LogNotice("CreateInstanceGMCommand : GM created instance for map %u", mapid);
+    sLogger.info("CreateInstanceGMCommand : GM created instance for map %u", mapid);
 
     LocationVector vec(x, y, z);
     m_session->GetPlayer()->SafeTeleport(mgr, vec);
@@ -224,7 +225,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
         {
             bool foundSomething = false;
             plr->getPlayerInfo()->savedInstanceIdsLock.Acquire();
-            for (uint8 difficulty = 0; difficulty < NUM_INSTANCE_MODES; difficulty++)
+            for (uint8 difficulty = 0; difficulty < InstanceDifficulty::MAX_DIFFICULTY; difficulty++)
             {
                 PlayerInstanceMap::iterator itr = plr->getPlayerInfo()->savedInstanceIds[difficulty].find(instance->m_mapId);
                 if (itr == plr->getPlayerInfo()->savedInstanceIds[difficulty].end() || (*itr).second != instance->m_instanceId)

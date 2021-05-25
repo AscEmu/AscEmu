@@ -45,7 +45,7 @@ bool AddonMgr::IsAddonBanned(std::string name, uint64 crc)
     {
         if (itr->second->banned)
         {
-            LOG_DEBUG("Addon %s is banned.", name.c_str());
+            sLogger.debug("Addon %s is banned.", name.c_str());
             return true;
         }
     }
@@ -59,7 +59,7 @@ bool AddonMgr::IsAddonBanned(std::string name, uint64 crc)
         ent->isNew = true;
         ent->showinlist = true;
 
-        LOG_DEBUG("Discovered new addon %s sent by client.", name.c_str());
+        sLogger.debug("Discovered new addon %s sent by client.", name.c_str());
 
         mKnownAddons[ent->name] = ent;
     }
@@ -88,7 +88,7 @@ bool AddonMgr::ShouldShowInList(std::string name)
         ent->isNew = true;
         ent->showinlist = true;
 
-        LOG_DEBUG("Discovered new addon %s sent by client.", name.c_str());
+        sLogger.debug("Discovered new addon %s sent by client.", name.c_str());
 
         mKnownAddons[ent->name] = ent;
     }
@@ -109,7 +109,7 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
     }
     catch (ByteBuffer::error&)
     {
-        LOG_DEBUG("Warning: Incomplete auth session sent.");
+        sLogger.debug("Warning: Incomplete auth session sent.");
         return;
     }
 
@@ -122,7 +122,7 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
     if ((source->size() - position) < 4 || realsize == 0)
     {
         // we shouldn't get here.. but just in case this will stop any crash here.
-        LOG_DEBUG("Warning: Incomplete auth session sent.");
+        sLogger.debug("Warning: Incomplete auth session sent.");
         return;
     }
 
@@ -130,11 +130,11 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
 
     if (result != Z_OK)
     {
-        LOG_ERROR("Decompression of addon section of CMSG_AUTH_SESSION failed.");
+        sLogger.failure("Decompression of addon section of CMSG_AUTH_SESSION failed.");
         return;
     }
 
-    LOG_DETAIL("Decompression of addon section of CMSG_AUTH_SESSION succeeded.");
+    sLogger.info("Decompression of addon section of CMSG_AUTH_SESSION succeeded.");
 
     uint8 Enable; // based on the parsed files from retool
     uint32 crc;
@@ -255,12 +255,12 @@ void AddonMgr::LoadFromDB()
     QueryResult* result = CharacterDatabase.Query(&success, loadClientAddons);
     if (!success)
     {
-        LOG_ERROR("Query failed: %s", loadClientAddons);
+        sLogger.failure("Query failed: %s", loadClientAddons);
         return;
     }
     if (!result)
     {
-        LogNotice("AddonMgr : No defined ClientAddons");
+        sLogger.info("AddonMgr : No defined ClientAddons");
         return;
     }
 
@@ -291,7 +291,7 @@ void AddonMgr::LoadFromDB()
 
 void AddonMgr::SaveToDB()
 {
-    LOG_DETAIL("AddonMgr: Saving any new addons discovered in this session to database.");
+    sLogger.info("AddonMgr: Saving any new addons discovered in this session to database.");
 
     KnownAddonsItr itr;
 
@@ -299,7 +299,7 @@ void AddonMgr::SaveToDB()
     {
         if (itr->second->isNew)
         {
-            LOG_DETAIL("Saving new addon %s", itr->second->name.c_str());
+            sLogger.info("Saving new addon %s", itr->second->name.c_str());
             std::stringstream ss;
             ss << "INSERT INTO clientaddons (name, crc, banned, showinlist) VALUES(\""
                << CharacterDatabase.EscapeString(itr->second->name) << "\",\""
@@ -338,11 +338,11 @@ void AddonMgr::LoadFromDB()
 
         delete clientAddonsResult;
 
-        LOG_DEBUG("Loaded %u known addons from table `clientaddons` in %u ms", knownAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)) );
+        sLogger.debug("Loaded %u known addons from table `clientaddons` in %u ms", knownAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)) );
     }
     else
     {
-        LOG_DEBUG("Loaded 0 known addons, table `clientaddons` is empty");
+        sLogger.debug("Loaded 0 known addons, table `clientaddons` is empty");
     }
 
 
@@ -374,7 +374,7 @@ void AddonMgr::LoadFromDB()
 
         delete clientAddonsResult;
 
-        LOG_DEBUG("Loaded %u banned addons from table `clientaddons` in %u ms", bannedAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+        sLogger.debug("Loaded %u banned addons from table `clientaddons` in %u ms", bannedAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }
 }
 

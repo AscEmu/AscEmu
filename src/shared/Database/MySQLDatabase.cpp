@@ -60,7 +60,7 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const ch
     mPassword = std::string(Password);
     mDatabaseName = std::string(DatabaseName);
 
-    LogNotice("MySQLDatabase : Connecting to `%s`, database `%s`...", Hostname, DatabaseName);
+    sLogger.info("MySQLDatabase : Connecting to `%s`, database `%s`...", Hostname, DatabaseName);
 
     conns = new MySQLDatabaseConnection*[ConnectionCount];
     Connections = ((DatabaseConnection**)conns);
@@ -71,15 +71,15 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const ch
             continue;
 
         if(mysql_options(temp, MYSQL_SET_CHARSET_NAME, "utf8"))
-            LOG_ERROR("Could not set utf8 character set.");
+            sLogger.failure("Could not set utf8 character set.");
 
         if(mysql_options(temp, MYSQL_OPT_RECONNECT, &my_true))
-            LOG_ERROR("MYSQL_OPT_RECONNECT could not be set, connection drops may occur but will be counteracted.");
+            sLogger.failure("MYSQL_OPT_RECONNECT could not be set, connection drops may occur but will be counteracted.");
 
         temp2 = mysql_real_connect(temp, Hostname, Username, Password, DatabaseName, port, NULL, 0);
         if(temp2 == NULL)
         {
-            LOG_ERROR("Connection failed due to: `%s`", mysql_error(temp));
+            sLogger.failure("Connection failed due to: `%s`", mysql_error(temp));
             mysql_close(temp);
             return false;
         }
@@ -154,7 +154,7 @@ bool MySQLDatabase::_SendQuery(DatabaseConnection* con, const char* Sql, bool Se
             result = _SendQuery(con, Sql, true);
         }
         else
-            LogError("Sql query failed due to [%s], Query: [%s]", mysql_error(static_cast<MySQLDatabaseConnection*>(con)->MySql), Sql);
+            sLogger.failure("Sql query failed due to [%s], Query: [%s]", mysql_error(static_cast<MySQLDatabaseConnection*>(con)->MySql), Sql);
     }
 
     return (result == 0 ? true : false);
@@ -232,7 +232,7 @@ bool MySQLDatabase::_Reconnect(MySQLDatabaseConnection* conn)
     temp2 = mysql_real_connect(temp, mHostname.c_str(), mUsername.c_str(), mPassword.c_str(), mDatabaseName.c_str(), mPort, NULL , 0);
     if(temp2 == NULL)
     {
-        LOG_ERROR("Could not reconnect to database because of `%s`", mysql_error(temp));
+        sLogger.failure("Could not reconnect to database because of `%s`", mysql_error(temp));
         mysql_close(temp);
         return false;
     }

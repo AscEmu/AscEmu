@@ -118,12 +118,12 @@ bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession* m_sess
     recout += "Recall locations|r:\n\n";
 
     std::string search(args);
-    Util::StringToLowerCase(search);
+    AscEmu::Util::Strings::toLowerCase(search);
 
     for (auto* recall : sMySQLStore.getRecallStore())
     {
         std::string recallName(recall->name);
-        Util::StringToLowerCase(recallName);
+        AscEmu::Util::Strings::toLowerCase(recallName);
         if (recallName.find(search) == 0)
         {
             recout += MSG_COLOR_LIGHTBLUE;

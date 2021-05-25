@@ -5,24 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-const unsigned NUM_INSTANCE_MODES = 4;
-
-/// Sorry...need this enumeration in Player.*
-enum INSTANCE_MODE
-{
-    MODE_NORMAL = 0,
-    MODE_HEROIC = 1
-};
-
-enum RAID_MODE
-{
-    MODE_NORMAL_10MEN    = 0,
-    MODE_NORMAL_25MEN    = 1,
-    MODE_HEROIC_10MEN    = 2,
-    MODE_HEROIC_25MEN    = 3,
-    TOTAL_RAID_MODES     = 4
-};
-
 enum TimeConstants
 {
     MINUTE          = 60,

@@ -164,7 +164,7 @@ class SERVER_DECL ItemInterface
                 return nullptr;
         }
         void AddBuyBackItem(Item* it, uint32 price);
-        void RemoveBuyBackItem(uint32 index);
+        void RemoveBuyBackItem(uint8_t index);
         void EmptyBuyBack();
         bool IsEquipped(uint32 itemid);
 

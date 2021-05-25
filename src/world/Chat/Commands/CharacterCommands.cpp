@@ -11,12 +11,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
+#include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Map/WorldCreator.h"
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
-#include "Spell/Definitions/Spec.h"
+#include "Spell/Definitions/Spec.hpp"
 #include "Units/Creatures/Pet.h"
 
 //.character clearcooldowns
@@ -1444,7 +1445,7 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
     }
 
     std::string new_name = new_name_cmd;
-    Util::CapitalizeString(new_name);
+    AscEmu::Util::Strings::capitalize(new_name);
 
     PlayerInfo* pi = sObjectMgr.GetPlayerInfoByName(current_name);
     if (pi == nullptr)
@@ -1921,7 +1922,7 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
     std::stringstream ss;
     ss << "Show persistent instances of " << MSG_COLOR_CYAN << player_target->getName().c_str() << "|r\n";
     player_target->getPlayerInfo()->savedInstanceIdsLock.Acquire();
-    for (uint32 difficulty = 0; difficulty < NUM_INSTANCE_MODES; difficulty++)
+    for (uint32 difficulty = 0; difficulty < InstanceDifficulty::MAX_DIFFICULTY; difficulty++)
     {
         for (PlayerInstanceMap::iterator itr = player_target->getPlayerInfo()->savedInstanceIds[difficulty].begin(); itr != player_target->getPlayerInfo()->savedInstanceIds[difficulty].end(); ++itr)
         {

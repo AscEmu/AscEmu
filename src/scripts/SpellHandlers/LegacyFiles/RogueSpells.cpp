@@ -23,9 +23,9 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Server/Script/ScriptMgr.h"
-#include "Spell/Definitions/ProcFlags.h"
-#include <Spell/Definitions/SpellIsFlags.h>
-#include <Spell/Definitions/SpellMechanics.h>
+#include "Spell/Definitions/ProcFlags.hpp"
+#include <Spell/Definitions/SpellIsFlags.hpp>
+#include <Spell/Definitions/SpellMechanics.hpp>
 
 //Alice : Correct formula for Rogue - Preparation
 

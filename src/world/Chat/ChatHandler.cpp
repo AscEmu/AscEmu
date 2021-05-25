@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "StdAfx.h"
+#include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Exceptions/PlayerExceptions.hpp"
 #include "Management/Item.h"
@@ -161,7 +162,7 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
     catch (AscEmu::Exception::PlayerNotFoundException e)
     {
         // TODO: Handle this properly (what do we do when we're running commands with no player object?)
-        LOG_ERROR("PlayerNotFoundException occurred when processing command [%s]. Exception: %s", text, e.AEwhat());
+        sLogger.failure("PlayerNotFoundException occurred when processing command [%s]. Exception: %s", text, e.AEwhat());
     }
 
     return 1;
@@ -313,9 +314,9 @@ const char* ChatHandler::GetDifficultyString(uint8 difficulty)
 {
     switch (difficulty)
     {
-        case MODE_NORMAL:
+        case InstanceDifficulty::DUNGEON_NORMAL:
             return "normal";
-        case MODE_HEROIC:
+        case InstanceDifficulty::DUNGEON_HEROIC:
             return "heroic";
         default:
             return "unknown";
@@ -326,13 +327,13 @@ const char* ChatHandler::GetRaidDifficultyString(uint8 diff)
 {
     switch (diff)
     {
-        case MODE_NORMAL_10MEN:
+        case InstanceDifficulty::RAID_10MAN_NORMAL:
             return "normal 10men";
-        case MODE_NORMAL_25MEN:
+        case InstanceDifficulty::RAID_25MAN_NORMAL:
             return "normal 25men";
-        case MODE_HEROIC_10MEN:
+        case InstanceDifficulty::RAID_10MAN_HEROIC:
             return "heroic 10men";
-        case MODE_HEROIC_25MEN:
+        case InstanceDifficulty::RAID_25MAN_HEROIC:
             return "heroic 25men";
         default:
             return "unknown";

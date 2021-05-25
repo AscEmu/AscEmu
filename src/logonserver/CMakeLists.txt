@@ -6,6 +6,7 @@ project(logon CXX)
 include(Auth/CMakeLists.txt)
 include(Console/CMakeLists.txt)
 include(LogonCommServer/CMakeLists.txt)
+include(Realm/CMakeLists.txt)
 include(Server/CMakeLists.txt)
 
 set(SRC_LOGON_PROJECT
@@ -23,6 +24,7 @@ set(sources
    ${SRC_AUTH_FILES}
    ${SRC_CONSOLE_FILES}
    ${SRC_LOGON_COMM_SERVER_FILES}
+   ${SRC_REALM_FILES}
    ${SRC_SERVER_FILES}
    ${SRC_LOGON_PROJECT}
 )

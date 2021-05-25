@@ -25,18 +25,18 @@
 #include "Server/MainServerDefines.h"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
-#include "Spell/Definitions/SpellModifierType.h"
-#include "Spell/Definitions/SpellInFrontStatus.h"
-#include "Spell/Definitions/SpellDamageType.h"
-#include "Spell/Definitions/ProcFlags.h"
-#include "Spell/Definitions/CastInterruptFlags.h"
-#include <Spell/Definitions/AuraInterruptFlags.h>
-#include "Spell/Definitions/SpellRanged.h"
-#include "Spell/Definitions/DispelType.h"
-#include "Spell/Definitions/SpellMechanics.h"
-#include "Spell/Definitions/SpellEffectTarget.h"
+#include "Spell/Definitions/SpellModifierType.hpp"
+#include "Spell/Definitions/SpellInFrontStatus.hpp"
+#include "Spell/Definitions/SpellDamageType.hpp"
+#include "Spell/Definitions/ProcFlags.hpp"
+#include "Spell/Definitions/CastInterruptFlags.hpp"
+#include <Spell/Definitions/AuraInterruptFlags.hpp>
+#include "Spell/Definitions/SpellRanged.hpp"
+#include "Spell/Definitions/DispelType.hpp"
+#include "Spell/Definitions/SpellMechanics.hpp"
+#include "Spell/Definitions/SpellEffectTarget.hpp"
 #include "Spell/SpellHelpers.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Spell/SpellTarget.h"
 
 using AscEmu::World::Spell::Helpers::decimalToMask;
@@ -65,7 +65,7 @@ void SpellMgr::modifyEffectBasePoints(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
-        LOG_ERROR("Something tried to call with an invalid spell pointer!");
+        sLogger.failure("Something tried to call with an invalid spell pointer!");
         return;
     }
 
@@ -104,7 +104,7 @@ void SpellMgr::setMissingSpellLevel(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
-        LOG_ERROR("Something tried to call with an invalid spell pointer!");
+        sLogger.failure("Something tried to call with an invalid spell pointer!");
         return;
     }
 
@@ -449,7 +449,7 @@ void SpellMgr::modifyAuraInterruptFlags(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
-        LOG_ERROR("Something tried to call with an invalid spell pointer!");
+        sLogger.failure("Something tried to call with an invalid spell pointer!");
         return;
     }
 
@@ -471,7 +471,7 @@ void SpellMgr::modifyRecoveryTime(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
-        LOG_ERROR("Something tried to call with an invalid spell pointer!");
+        sLogger.failure("Something tried to call with an invalid spell pointer!");
         return;
     }
 
@@ -646,7 +646,7 @@ void SpellMgr::applyHackFixes()
 {
     //Updating spell.dbc
 
-    LogNotice("World : Processing %u spells...", static_cast<uint32_t>(sSpellMgr.getSpellInfoMap()->size()));
+    sLogger.info("World : Processing %u spells...", static_cast<uint32_t>(sSpellMgr.getSpellInfoMap()->size()));
 
     SpellInfo* sp = nullptr;
 

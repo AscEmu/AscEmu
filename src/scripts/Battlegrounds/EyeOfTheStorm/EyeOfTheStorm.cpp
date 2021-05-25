@@ -24,7 +24,7 @@
 #include "Management/WorldStates.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 
 static float EOTSBuffCoordinates[4][4] =
 {

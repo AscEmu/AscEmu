@@ -43,8 +43,8 @@ void ChannelMgr::loadConfigSettings()
 
     m_confSettingLock.Acquire();
 
-    m_bannedChannels = Util::SplitStringBySeperator(bannedChannels, ";");
-    m_minimumChannel = Util::SplitStringBySeperator(minimumLevel, ";");
+    m_bannedChannels = AscEmu::Util::Strings::split(bannedChannels, ";");
+    m_minimumChannel = AscEmu::Util::Strings::split(minimumLevel, ";");
 
     m_confSettingLock.Release();
 }

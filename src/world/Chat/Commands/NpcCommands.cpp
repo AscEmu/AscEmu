@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
-#include "Spell/SpellMgr.h"
-#include "Spell/Definitions/SpellEffects.h"
+#include "Spell/SpellMgr.hpp"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 //.npc addagent
 bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_session)

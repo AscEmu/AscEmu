@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWItem.hpp"
 #include "Item.h"
 #include "Map/MapMgrDefines.hpp"
-#include "Spell/Definitions/SpellEffects.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 void Item::init(uint32_t high, uint32_t low)

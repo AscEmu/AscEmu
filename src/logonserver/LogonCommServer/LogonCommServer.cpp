@@ -32,7 +32,7 @@ LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 65536, 5242
     authenticated = 0;
     seed = 0;
 
-    LOG_DETAIL("Created LogonCommServerSocket %u", m_fd);
+    sLogger.info("Created LogonCommServerSocket %u", m_fd);
 }
 
 LogonCommServerSocket::~LogonCommServerSocket()
@@ -42,15 +42,15 @@ LogonCommServerSocket::~LogonCommServerSocket()
 
 void LogonCommServerSocket::OnDisconnect()
 {
-    LOG_DETAIL("LogonCommServerSocket::Ondisconnect event.");
+    sLogger.info("LogonCommServerSocket::Ondisconnect event.");
 
     // if we're registered -> Set offline
     if (!removed)
     {
         for (auto itr : server_ids)
-            sRealmsMgr.setRealmOffline(itr);
+            sRealmManager.setRealmOffline(itr);
 
-        sRealmsMgr.removeServerSocket(this);
+        sRealmManager.removeServerSocket(this);
     }
 }
 
@@ -58,12 +58,12 @@ void LogonCommServerSocket::OnConnect()
 {
     if (!sMasterLogon.IsServerAllowed(GetRemoteAddress().s_addr))
     {
-        LOG_ERROR("Server connection from %s:%u DENIED, not an allowed IP.", GetRemoteIP().c_str(), GetRemotePort());
+        sLogger.failure("Server connection from %s:%u DENIED, not an allowed IP.", GetRemoteIP().c_str(), GetRemotePort());
         Disconnect();
         return;
     }
 
-    sRealmsMgr.addServerSocket(this);
+    sRealmManager.addServerSocket(this);
     removed = false;
 }
 
@@ -155,7 +155,7 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 
     if (recvData.GetOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.GetOpcode()] == 0)
     {
-        LOG_ERROR("Got unknwon packet from logoncomm: %u", recvData.GetOpcode());
+        sLogger.failure("Got unknwon packet from logoncomm: %u", recvData.GetOpcode());
         return;
     }
 
@@ -170,10 +170,10 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     recvData >> realmId;
     recvData >> realmName;
 
-    LogDefault("Registering realm `%s` with ID %u.", realmName.c_str(), realmId);
+    sLogger.info("Registering realm `%s` with ID %u.", realmName.c_str(), realmId);
 
     // check Realms if realmId is valid! Otherwise send back error.
-    auto realm = sRealmsMgr.getRealmById(realmId);
+    auto realm = sRealmManager.getRealmById(realmId);
     if (realm == nullptr)
     {
         WorldPacket data(LRSMSG_REALM_REGISTER_RESULT, 4);
@@ -195,7 +195,7 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     recvData >> realm->lock;
     recvData >> realm->gameBuild;
 
-    sRealmsMgr.setStatusForRealm(realmId, 1);
+    sRealmManager.setStatusForRealm(realmId, 1);
 
     WorldPacket data(LRSMSG_REALM_REGISTER_RESULT, 4);
     data << uint32(0);              // 0 = everything ok - success
@@ -258,7 +258,7 @@ void LogonCommServerSocket::HandlePing(WorldPacket & recvData)
     SendPacket(&data);
     last_ping = static_cast<uint32>(time(nullptr));
 
-    sRealmsMgr.setLastPing(realmId);
+    sRealmManager.setLastPing(realmId);
 }
 
 void LogonCommServerSocket::SendPacket(WorldPacket* data)
@@ -304,10 +304,10 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
     recvData.read(key, 20);
     recvData >> realmId;
 
-    const auto realm = sRealmsMgr.getRealmById(realmId);
+    const auto realm = sRealmManager.getRealmById(realmId);
     if (realm == nullptr)
     {
-        LogError("Realm %u is missing in  table realms. Please add the server to your realms table.", static_cast<uint32_t>(realmId));
+        sLogger.failure("Realm %u is missing in  table realms. Please add the server to your realms table.", static_cast<uint32_t>(realmId));
         return;
     }
 
@@ -321,7 +321,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
     if (memcmp(key, hash.GetDigest(), 20) != 0)
         result = 0;
 
-    LogDefault("Authentication request from %s, id %u - result %s.", GetRemoteIP().c_str(), uint32_t(realmId), result ? "OK" : "FAIL");
+    sLogger.info("Authentication request from %s, id %u - result %s.", GetRemoteIP().c_str(), uint32_t(realmId), result ? "OK" : "FAIL");
 
     std::stringstream sstext;
     sstext << "Key: ";
@@ -331,7 +331,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
         snprintf(buf, 3, "%.2X", key[i]);
         sstext << buf;
     }
-    LOG_DETAIL(sstext.str().c_str());
+    sLogger.info(sstext.str().c_str());
 
     recvCrypto.Setup(key, 20);
     sendCrypto.Setup(key, 20);
@@ -361,7 +361,7 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 
     if (uncompress((uint8*)buf.contents(), &rsize, recvData.contents() + 4, (u_long)recvData.size() - 4) != Z_OK)
     {
-        LOG_ERROR("Uncompress of mapping failed.");
+        sLogger.failure("Uncompress of mapping failed.");
         return;
     }
 
@@ -370,15 +370,15 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
     uint32 count;
     uint32 realm_id;
     buf >> realm_id;
-    auto realm = sRealmsMgr.getRealmById(realm_id);
+    auto realm = sRealmManager.getRealmById(realm_id);
     if (!realm)
         return;
 
-    sRealmsMgr.getRealmLock().Acquire();
+    sRealmManager.getRealmLock().Acquire();
 
     std::unordered_map<uint32, uint8>::iterator itr;
     buf >> count;
-    LOG_BASIC("Got mapping packet for realm %u, total of %u entries.", (unsigned int)realm_id, (unsigned int)count);
+    sLogger.info("Got mapping packet for realm %u, total of %u entries.", (unsigned int)realm_id, (unsigned int)count);
     for (uint32 i = 0; i < count; ++i)
     {
         buf >> account_id >> number_of_characters;
@@ -389,7 +389,7 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
             realm->_characterMap.insert(std::make_pair(account_id, number_of_characters));
     }
 
-    sRealmsMgr.getRealmLock().Release();
+    sRealmManager.getRealmLock().Release();
 }
 
 void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
@@ -399,11 +399,11 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
     uint8 chars_to_add;
     recvData >> realm_id;
 
-    auto realm = sRealmsMgr.getRealmById(realm_id);
+    auto realm = sRealmManager.getRealmById(realm_id);
     if (!realm)
         return;
 
-    sRealmsMgr.getRealmLock().Acquire();
+    sRealmManager.getRealmLock().Acquire();
     recvData >> account_id;
     recvData >> chars_to_add;
 
@@ -413,7 +413,7 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
     else
         realm->_characterMap.insert(std::make_pair(account_id, chars_to_add));
 
-    sRealmsMgr.getRealmLock().Release();
+    sRealmManager.getRealmLock().Release();
 }
 
 void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
@@ -472,7 +472,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             recvData >> banreason;
 
             // remember we expect this in uppercase
-            Util::StringToUpperCase(account);
+            AscEmu::Util::Strings::toUpperCase(account);
 
             std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(account);
             if (pAccount == NULL)
@@ -494,7 +494,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             //recvData >> gm;
 
             //// remember we expect this in uppercase
-            //Util::StringToUpperCase(account);
+            //AscEmu::Util::Strings::toUpperCase(account);
 
             //Account* pAccount = sAccountMgr.getAccountByName(account);
             //if (pAccount == NULL)
@@ -516,7 +516,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             recvData >> duration;
 
             // remember we expect this in uppercase
-            Util::StringToUpperCase(account);
+            AscEmu::Util::Strings::toUpperCase(account);
 
             std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(account);
             if (pAccount == NULL)
@@ -623,7 +623,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             std::string name_save = name;  // save original name to check
 
             // remember we expect this in uppercase
-            Util::StringToUpperCase(name);
+            AscEmu::Util::Strings::toUpperCase(name);
 
             auto account_check = sAccountMgr.getAccountByName(name);
 
@@ -687,7 +687,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
             std::string account_name_save = account_name;  // save original account_name to check
 
             // remember we expect this in uppercase
-            Util::StringToUpperCase(account_name);
+            AscEmu::Util::Strings::toUpperCase(account_name);
 
             std::shared_ptr<Account> account_check = sAccountMgr.getAccountByName(account_name);
             if (account_check == nullptr)
@@ -722,7 +722,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
             std::string account_name_save = account_name;  // save original account_name to check
 
             // remember we expect this in uppercase
-            Util::StringToUpperCase(account_name);
+            AscEmu::Util::Strings::toUpperCase(account_name);
 
             std::shared_ptr<Account> account_check = sAccountMgr.getAccountByName(account_name);
             if (account_check == nullptr)
@@ -776,7 +776,7 @@ void LogonCommServerSocket::HandlePopulationRespond(WorldPacket & recvData)
     float population;
     uint32 realmId;
     recvData >> realmId >> population;
-    sRealmsMgr.updateRealmPop(realmId, population);
+    sRealmManager.setRealmPopulation(realmId, population);
 }
 
 void LogonCommServerSocket::RefreshRealmsPop()

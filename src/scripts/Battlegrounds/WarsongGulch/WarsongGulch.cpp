@@ -23,7 +23,7 @@
 #include "Management/WorldStates.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 #include "Objects/GameObject.h"
 #include "Server/WorldSession.h"
 #include "Chat/ChatDefines.hpp"

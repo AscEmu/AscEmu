@@ -25,7 +25,7 @@
 #include "Management/WorldStates.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
-#include "Spell/SpellMgr.h"
+#include "Spell/SpellMgr.hpp"
 
 uint32_t buffentries[3] = { 180380, 180362, 180146 };
 

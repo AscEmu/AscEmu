@@ -27,8 +27,8 @@
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
-#include "Spell/SpellMgr.h"
-#include "Spell/Definitions/ProcFlags.h"
+#include "Spell/SpellMgr.hpp"
+#include "Spell/Definitions/ProcFlags.hpp"
 #include "Data/WoWItem.hpp"
 #include "Server/Packets/SmsgEnchantmentLog.h"
 #include "Server/Packets/SmsgItemEnchantmentTimeUpdate.h"
@@ -165,7 +165,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     std::string enchant_field = fields[15].GetString();
     if (!enchant_field.empty())
     {
-        std::vector<std::string> enchants = Util::SplitStringBySeperator(enchant_field, ";");
+        std::vector<std::string> enchants = AscEmu::Util::Strings::split(enchant_field, ";");
         uint32 enchant_id;
 
         uint32 time_left;
@@ -654,7 +654,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
     }
     else
     {
-        LOG_ERROR("Item::ApplyEnchantmentBonus visual out of range! Tried to address UInt32 field %i !!!", ItemSlot);
+        sLogger.failure("Item::ApplyEnchantmentBonus visual out of range! Tried to address UInt32 field %i !!!", ItemSlot);
     }
 
     // Another one of those for loop that where not indented properly god knows what will break
@@ -819,7 +819,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 }
 
                 default:
-                    LOG_ERROR("Unknown enchantment type: %u (%u)", Entry->type[c], Entry->Id);
+                    sLogger.failure("Unknown enchantment type: %u (%u)", Entry->type[c], Entry->Id);
                 break;
             }
         }
@@ -1194,14 +1194,14 @@ uint32 Item::RepairItemCost()
     auto durability_costs = sDurabilityCostsStore.LookupEntry(m_itemProperties->ItemLevel);
     if (durability_costs == nullptr)
     {
-        LOG_ERROR("Repair: Unknown item level (%u)", durability_costs);
+        sLogger.failure("Repair: Unknown item level (%u)", durability_costs);
         return 0;
     }
 
     auto durability_quality = sDurabilityQualityStore.LookupEntry((m_itemProperties->Quality + 1) * 2);
     if (durability_quality == nullptr)
     {
-        LOG_ERROR("Repair: Unknown item quality (%u)", durability_quality);
+        sLogger.failure("Repair: Unknown item quality (%u)", durability_quality);
         return 0;
     }
 

@@ -102,7 +102,7 @@ class SERVER_DECL CBattleground : public EventableObject
 
         void RemoveAuraFromTeam(uint32 team, uint32 aura);
 
-        void SendChatMessage(uint32 Type, uint64 Guid, const char* Format, ...);
+        void SendChatMessage(uint8_t Type, uint64 Guid, const char* Format, ...);
 
         // Hook Functions
         virtual bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam);

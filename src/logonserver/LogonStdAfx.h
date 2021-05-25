@@ -30,6 +30,8 @@
 #include <Network/Network.h>
 
 #include "../shared/Log.hpp"
+#include "../shared/Logging/Logger.hpp" 
+#include "../shared/Util/Strings.hpp"
 #include "../shared/Util.hpp"
 #include "../shared/ByteBuffer.h"
 #include "../shared/Config/Config.h"
@@ -53,7 +55,7 @@
 #include "WorldPacket.h"
 #include "Server/Master.hpp"
 #include "Server/LogonServerDefines.hpp"
-#include "Server/RealmsMgr.h"
+#include "Realm/RealmManager.hpp"
 
 // database decl
 extern Database* sLogonSQL;

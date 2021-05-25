@@ -23,8 +23,8 @@
 #include "Spell/SpellAuras.h"
 #include "Server/Opcodes.hpp"
 #include "Server/Script/ScriptMgr.h"
-#include "Spell/Definitions/ProcFlags.h"
-#include <Spell/Definitions/DispelType.h>
+#include "Spell/Definitions/ProcFlags.hpp"
+#include <Spell/Definitions/DispelType.hpp>
 
 enum
 {

@@ -32,7 +32,7 @@ class SERVER_DECL Arena : public CBattleground
         std::set<GameObject*> m_gates;
         GameObject* m_buffs[2];
         ArenaTeam* m_teams[2];
-        uint32 m_arenateamtype;
+        uint8_t m_arenateamtype;
         uint32 m_playersCount[2];
         std::set<uint32> m_players2[2];
         std::set<uint32> m_playersAlive;
@@ -89,7 +89,7 @@ class SERVER_DECL Arena : public CBattleground
         // Returns the faction of the team
         uint32 GetTeamFaction(uint32 team);
         uint8 Rated() override { return rated_match; }
-        uint32 GetArenaTeamType() const { return m_arenateamtype; }
+        uint8_t GetArenaTeamType() const { return m_arenateamtype; }
         ArenaTeam** GetTeams() { return m_teams; }
         uint32 CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outcome);
 };

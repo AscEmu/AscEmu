@@ -352,7 +352,7 @@ void WorldSession::handleInspectArenaStatsOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received MSG_INSPECT_ARENA_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debug("Received MSG_INSPECT_ARENA_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
 
     const auto player = _player->GetMapMgr()->GetPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr)

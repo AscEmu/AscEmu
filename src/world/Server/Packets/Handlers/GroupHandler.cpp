@@ -553,7 +553,7 @@ void WorldSession::handleGroupUninviteOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_GROUP_UNINVITE: %s (name)", srlPacket.name.c_str());
+    sLogger.debug("Received CMSG_GROUP_UNINVITE: %s (name)", srlPacket.name.c_str());
 
     const auto uninvitePlayer = sObjectMgr.GetPlayer(srlPacket.name.c_str(), false);
     if (uninvitePlayer == nullptr)
@@ -588,7 +588,7 @@ void WorldSession::handleGroupUninviteGuidOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_GROUP_UNINVITE_GUID: %u (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debug("Received CMSG_GROUP_UNINVITE_GUID: %u (guidLow)", srlPacket.guid.getGuidLow());
 
     const auto uninvitePlayer = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
     if (uninvitePlayer == nullptr)
@@ -637,7 +637,7 @@ void WorldSession::handleMinimapPingOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received MSG_MINIMAP_PING: %f (x), %f (y)", srlPacket.posX, srlPacket.posY);
+    sLogger.debug("Received MSG_MINIMAP_PING: %f (x), %f (y)", srlPacket.posX, srlPacket.posY);
 
     if (!_player->isInGroup())
         return;
@@ -655,7 +655,7 @@ void WorldSession::handleGroupSetLeaderOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_GROUP_SET_LEADER: %u (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debug("Received CMSG_GROUP_SET_LEADER: %u (guidLow)", srlPacket.guid.getGuidLow());
 
     const auto targetPlayer = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
     if (targetPlayer == nullptr)
@@ -687,7 +687,7 @@ void WorldSession::handleLootMethodOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_LOOT_METHOD: %u (method), %u (guidLow), %u (theshold)", srlPacket.method, srlPacket.guid.getGuidLow(), srlPacket.threshold);
+    sLogger.debug("Received CMSG_LOOT_METHOD: %u (method), %u (guidLow), %u (theshold)", srlPacket.method, srlPacket.guid.getGuidLow(), srlPacket.threshold);
 
     if (!_player->isGroupLeader())
     {
@@ -713,7 +713,7 @@ void WorldSession::handleSetPlayerIconOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received MSG_RAID_TARGET_UPDATE: %u (icon)", srlPacket.icon);
+    sLogger.debug("Received MSG_RAID_TARGET_UPDATE: %u (icon)", srlPacket.icon);
 
     const auto group = _player->getGroup();
     if (group == nullptr)
@@ -749,11 +749,11 @@ void WorldSession::handlePartyMemberStatsOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_PARTY_MEMBER_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debug("Received CMSG_REQUEST_PARTY_MEMBER_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
 
     if (_player->GetMapMgr() == nullptr)
     {
-        LogDebugFlag(LF_OPCODE, "Received CMSG_REQUEST_PARTY_MEMBER_STATS: But MapMgr is not ready!");
+        sLogger.debug("Received CMSG_REQUEST_PARTY_MEMBER_STATS: But MapMgr is not ready!");
         return;
     }
 

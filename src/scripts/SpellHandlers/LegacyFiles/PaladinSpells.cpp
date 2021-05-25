@@ -22,8 +22,8 @@
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Server/Script/ScriptMgr.h"
-#include "Spell/Definitions/ProcFlags.h"
-#include <Spell/Definitions/PowerType.h>
+#include "Spell/Definitions/ProcFlags.hpp"
+#include <Spell/Definitions/PowerType.hpp>
 
 bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
 {

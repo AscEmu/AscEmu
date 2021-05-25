@@ -57,7 +57,7 @@ class SocketMgr
             kq = kqueue();
             if(kq == -1)
             {
-                LogError("Could not create a kqueue fd.");
+                sLogger.failure("Could not create a kqueue fd.");
                 exit(-1);
             }
 
