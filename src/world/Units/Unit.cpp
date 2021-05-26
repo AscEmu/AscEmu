@@ -1652,19 +1652,24 @@ bool Unit::IsFalling() const
 
 bool Unit::isInWater() const
 {
-    float outx = GetPositionX() + 3.5f * cos(GetOrientation());
-    float outy = GetPositionY() + 3.5f * sin(GetOrientation());
-    float outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
-    uint32 watertype;
-    float watermark;
-    GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
-    outz = std::max(watermark, outz);
+    if (worldConfig.terrainCollision.isCollisionEnabled)
+    {
+        float outx = GetPositionX() + 3.5f * cos(GetOrientation());
+        float outy = GetPositionY() + 3.5f * sin(GetOrientation());
+        float outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
+        uint32 watertype;
+        float watermark;
+        GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
+        outz = std::max(watermark, outz);
 
-    // Check for liquid type also, i.e. Orgrimmar is below water level
-    const auto liquidStatus = GetMapMgr()->GetLiquidStatus(0, GetPositionX(), GetPositionY(), GetPositionZ(), MAP_ALL_LIQUIDS);
+        // Check for liquid type also, i.e. Orgrimmar is below water level
+        const auto liquidStatus = GetMapMgr()->GetLiquidStatus(0, GetPositionX(), GetPositionY(), GetPositionZ(), MAP_ALL_LIQUIDS);
+        if (liquidStatus == LIQUID_MAP_NO_WATER)
+            return false;
 
-    if (watermark >= outz || liquidStatus == LIQUID_MAP_IN_WATER)
-        return true;
+        if (watermark >= outz)
+            return true;
+    }
 
     return false;
 }

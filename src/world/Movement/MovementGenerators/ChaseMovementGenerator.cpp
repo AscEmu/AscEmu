@@ -39,8 +39,12 @@ static bool positionOkay(Unit* owner, Unit* target, Optional<float> minDistance,
         return false;
     if (angle && !angle->isAngleOkay(target->getRelativeAngle(owner)))
         return false;
-    if (!owner->IsWithinLOSInMap(target))
-        return false;
+    // Objects outside of Line of Sight cannot be detected
+    if (worldConfig.terrainCollision.isCollisionEnabled)
+    {
+        if (!owner->IsWithinLOSInMap(target))
+            return false;
+    }
     return true;
 }
 

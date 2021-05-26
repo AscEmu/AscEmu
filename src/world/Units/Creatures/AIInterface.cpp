@@ -227,8 +227,9 @@ void AIInterface::Update(unsigned long time_passed)
     if (getAiState() == AI_STATE_FEAR)
         return;
 
-    if (canUnitEvade(time_passed) && (isEngaged() || getUnit()->isInCombat()))
-        enterEvadeMode();
+    if (isEngaged() || getUnit()->isInCombat())
+        if(canUnitEvade(time_passed))
+            enterEvadeMode();
 
     if (getUnit()->isCastingSpell() && !getUnit()->isInEvadeMode())
         setAiState(AI_STATE_CASTING);
@@ -471,12 +472,12 @@ void AIInterface::updateCombat(uint32_t p_time)
                         getUnit()->Strike(getCurrentTarget(), MELEE, NULL, 0, 0, 0, false, false);
                 }
             }
-
+            /* Not Fully Supportet atm
             if (getUnit()->getVirtualItemSlotId(OFFHAND) && getUnit()->isAttackReady(OFFHAND))
             {
                 getUnit()->setAttackTimer(OFFHAND, m_Unit->getBaseAttackTime(OFFHAND));
                 getUnit()->Strike(getCurrentTarget(), OFFHAND, NULL, 0, 0, 0, false, false);
-            }
+            }*/
         }
     }
         break;

@@ -2409,7 +2409,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
         if (hasSpline)
         {
-            //Movement::PacketBuilder::WriteCreateBytes(*unit->movespline, *data);
+            MovementNew::PacketBuilder::WriteCreate(*unit->movespline, *data);
         }
 
         *data << float(unit->GetPositionZ());

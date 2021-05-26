@@ -31,8 +31,9 @@ enum MonsterMoveType
 void PacketBuilder::WriteCommonMonsterMovePart(MoveSpline const& move_spline, ByteBuffer& data)
 {
     MoveSplineFlag splineflags = move_spline.splineflags;
-
+#if VERSION_STRING > TBC
     data << uint8_t(0);
+#endif
     data << move_spline.spline.getPoint(move_spline.spline.first());
     data << move_spline.GetId();
 
@@ -56,25 +57,28 @@ void PacketBuilder::WriteCommonMonsterMovePart(MoveSpline const& move_spline, By
     }
 
     data << uint32_t(splineflags & uint32_t(~MoveSplineFlag::Mask_No_Monster_Move));
-
+#if VERSION_STRING > TBC
     if (splineflags.animation)
     {
         data << splineflags.animTier;
         data << move_spline.effect_start_time;
     }
-
+#endif
     data << move_spline.Duration();
-
+#if VERSION_STRING > TBC
     if (splineflags.parabolic)
     {
         data << move_spline.vertical_acceleration;
         data << move_spline.effect_start_time;
     }
+#endif
 }
 
 void PacketBuilder::WriteStopMovement(G3D::Vector3 const& pos, uint32_t splineId, ByteBuffer& data)
 {
+#if VERSION_STRING > TBC
     data << uint8_t(0);
+#endif
     data << pos;
     data << splineId;
     data << uint8_t(MonsterMoveStop);
@@ -156,17 +160,19 @@ void PacketBuilder::WriteCreate(MoveSpline const& move_spline, ByteBuffer& data)
         data << move_spline.timePassed();
         data << move_spline.Duration();
         data << move_spline.GetId();
-
+#if VERSION_STRING > TBC
         data << float(1.f);                                             // splineInfo.duration_mod; added in 3.1
         data << float(1.f);                                             // splineInfo.duration_mod_next; added in 3.1
 
         data << move_spline.vertical_acceleration;                      // added in 3.1
         data << move_spline.effect_start_time;                          // added in 3.1
-
+#endif
         uint32_t nodes = static_cast<uint32_t>(move_spline.getPath().size());
         data << nodes;
         data.append<G3D::Vector3>(&move_spline.getPath()[0], nodes);
+#if VERSION_STRING > TBC
         data << uint8_t(move_spline.spline.mode());                     // added in 3.1
+#endif
         data << (move_spline.isCyclic() ? G3D::Vector3::zero() : move_spline.FinalDestination());
     }
 }

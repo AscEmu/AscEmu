@@ -164,7 +164,7 @@ void MoveSpline::Initialize(MoveSplineInitArgs const& args)
     }
 
     init_spline(args);
-
+#if VERSION_STRING > TBC
     // init parabolic / animation
     // spline initialized, duration known and i able to compute parabolic acceleration
     if (args.flags & (MoveSplineFlag::Parabolic | MoveSplineFlag::Animation))
@@ -176,6 +176,7 @@ void MoveSpline::Initialize(MoveSplineInitArgs const& args)
             vertical_acceleration = args.parabolic_amplitude * 8.f / (f_duration * f_duration);
         }
     }
+#endif
 }
 
 MoveSpline::MoveSpline() : m_Id(0), time_passed(0),

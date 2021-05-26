@@ -1075,15 +1075,20 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
 
 float MapMgr::GetLandHeight(float x, float y, float z)
 {
-    float adtheight = GetADTLandHeight(x, y);
+    if (worldConfig.terrainCollision.isCollisionEnabled)
+    {
+        float adtheight = GetADTLandHeight(x, y);
 
-    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
-    float vmapheight = vmgr->getHeight(_mapId, x, y, z + 0.5f, 10000.0f);
+        VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
+        float vmapheight = vmgr->getHeight(_mapId, x, y, z + 0.5f, 10000.0f);
 
-    if (adtheight > z && vmapheight > -1000)
-        return vmapheight; //underground
+        if (adtheight > z && vmapheight > -1000)
+            return vmapheight; //underground
 
-    return std::max(vmapheight, adtheight);
+        return std::max(vmapheight, adtheight);
+    }
+    else
+        return z;
 }
 
 float MapMgr::GetWaterOrGroundLevel(uint32 phasemask, float x, float y, float z, float* ground /*= nullptr*/, bool /*swim = false*/, float collisionHeight /*= DEFAULT_COLLISION_HEIGHT*/)

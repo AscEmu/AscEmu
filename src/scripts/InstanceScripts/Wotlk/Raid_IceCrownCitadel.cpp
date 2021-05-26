@@ -191,39 +191,47 @@ public:
         if (getData(CN_LORD_MARROWGAR) == Finished)
         {
             if (MarrowgarIcewall1GUID)
-                GetGameObjectByGuid(MarrowgarIcewall1GUID)->setState(GO_STATE_OPEN);        // Icewall 1
+                if(GetGameObjectByGuid(MarrowgarIcewall1GUID))
+                    GetGameObjectByGuid(MarrowgarIcewall1GUID)->setState(GO_STATE_OPEN);        // Icewall 1
 
             if (MarrowgarIcewall2GUID)
-                GetGameObjectByGuid(MarrowgarIcewall2GUID)->setState(GO_STATE_OPEN);        // Icewall 2
+                if(GetGameObjectByGuid(MarrowgarIcewall2GUID))
+                    GetGameObjectByGuid(MarrowgarIcewall2GUID)->setState(GO_STATE_OPEN);        // Icewall 2
 
             if (MarrowgarEntranceDoorGUID)
-                GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);    // Door  
+                if(GetGameObjectByGuid(MarrowgarEntranceDoorGUID))
+                    GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);    // Door  
         }
 
         if (getData(CN_LADY_DEATHWHISPER) == Finished)
         {
             if (LadyDeathwisperEntranceDoorGUID)
-                GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
+                if(GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
+                    GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
 
             if (LadyDeathwisperElevatorGUID)
+                if(GetGameObjectByGuid(LadyDeathwisperElevatorGUID))
                 GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
         }
 
         if (getData(CN_LADY_DEATHWHISPER) == NotStarted)
         {
             if (LadyDeathwisperEntranceDoorGUID)
+                if(GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
                 GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
         }
 
         if (getData(CN_DEATHBRINGER_SAURFANG) == NotStarted)
         {
             if (DeathbringerDoorGUID)
+                if(GetGameObjectByGuid(DeathbringerDoorGUID))
                 GetGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_CLOSED);
         }
 
         if (getData(CN_DEATHBRINGER_SAURFANG) == Finished)
         {
             if (DeathbringerDoorGUID)
+                if(GetGameObjectByGuid(DeathbringerDoorGUID))
                 GetGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_OPEN);
         }
     }
@@ -236,22 +244,27 @@ public:
             if (state == InProgress)
             {
                 if (MarrowgarEntranceDoorGUID)
+                    if(GetGameObjectByGuid(MarrowgarEntranceDoorGUID))
                     GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_CLOSED);
             }
             if (state == NotStarted)
             {
                 if (MarrowgarEntranceDoorGUID)
+                    if(GetGameObjectByGuid(MarrowgarEntranceDoorGUID))
                     GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);
             }
             if (state == Finished)
             {
                 if (MarrowgarIcewall1GUID)
+                    if(GetGameObjectByGuid(MarrowgarIcewall1GUID))
                     GetGameObjectByGuid(MarrowgarIcewall1GUID)->setState(GO_STATE_OPEN);        // Icewall 1
 
                 if (MarrowgarIcewall2GUID)
+                    if(GetGameObjectByGuid(MarrowgarIcewall2GUID))
                     GetGameObjectByGuid(MarrowgarIcewall2GUID)->setState(GO_STATE_OPEN);        // Icewall 2
 
                 if (MarrowgarEntranceDoorGUID)
+                    if(GetGameObjectByGuid(MarrowgarEntranceDoorGUID))
                     GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);    // Door  
             }
             break;
@@ -259,19 +272,23 @@ public:
             if (state == InProgress)
             {
                 if (LadyDeathwisperEntranceDoorGUID)
+                    if(GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
                     GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
             }
             if (state == NotStarted)
             {
                 if (LadyDeathwisperEntranceDoorGUID)
+                    if(GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
                     GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
             }
             if (state == Finished)
             {
                 if (LadyDeathwisperEntranceDoorGUID)
+                    if (GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
                     GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
 
                 if (LadyDeathwisperElevatorGUID)
+                    if (GetGameObjectByGuid(LadyDeathwisperElevatorGUID))
                     GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
             }
             break;
@@ -280,18 +297,22 @@ public:
             if (state == InProgress)
             {
                 if (DeathbringerDoorGUID)
+                    if (GetGameObjectByGuid(DeathbringerDoorGUID))
+                        if(GetGameObjectByGuid(DeathbringerDoorGUID))
                     GetGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_CLOSED);
             }
 
             if (state == NotStarted)
             {
                 if (DeathbringerDoorGUID)
+                    if (GetGameObjectByGuid(DeathbringerDoorGUID))
                     GetGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_CLOSED);
             }
 
             if (state == Finished)
             {
                 if (DeathbringerDoorGUID)
+                    if (GetGameObjectByGuid(DeathbringerDoorGUID))
                     GetGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_OPEN);
             }
                 break;
