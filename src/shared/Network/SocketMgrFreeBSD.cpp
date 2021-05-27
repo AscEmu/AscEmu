@@ -78,6 +78,11 @@ void SocketMgr::SpawnWorkerThreads()
         ThreadPool.ExecuteTask(new SocketWorkerThread());
 }
 
+uint32 SocketMgr::GetSocketCount()
+{
+    return socket_count.load();
+}
+
 bool SocketWorkerThread::runThread()
 {
     //printf("Worker thread started.\n");

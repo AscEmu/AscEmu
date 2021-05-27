@@ -162,7 +162,9 @@ if(WIN32 AND NOT USE_PCH)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 endif()
 
-if(NOT WIN32)
+if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
+    target_link_libraries(${PROJECT_NAME} c++experimental)
+elseif (NOT WIN32)
     target_link_libraries(${PROJECT_NAME} stdc++fs)
 endif()
 
