@@ -2244,7 +2244,6 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     bool hasFallDirection = false;
     bool hasFallData = false;
     bool hasPitch = false;
-    bool hasSpline = false;
     bool hasSplineElevation = false;
     bool hasAIAnimKit = false;
     bool hasMovementAnimKit = false;
@@ -2273,7 +2272,6 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         Unit* unit = (Unit*)this;
         movementFlags = obj_movement_info.getMovementFlags();
         movementFlagsExtra = obj_movement_info.getMovementFlags2();
-        //hasSpline = false;
 
         hasTransportTime2 = obj_movement_info.transport_guid != 0 && obj_movement_info.transport_time2 != 0;
         hasVehicleId = unit->getCurrentVehicle() && unit->getCurrentVehicle()->GetVehicleInfo();
@@ -2292,9 +2290,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         if (movementFlags)
             data->writeBits(movementFlags, 30);
 
-        data->writeBit(hasSpline && !isPlayer());
+        data->writeBit(unit->isSplineEnabled() && !isPlayer());
         data->writeBit(!hasPitch);
-        data->writeBit(hasSpline);
+        data->writeBit(unit->isSplineEnabled());
         data->writeBit(hasFallData);
         data->writeBit(!hasSplineElevation);
         data->writeBit(Guid[5]);
@@ -2319,8 +2317,8 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
         data->writeBit(Guid[4]);
 
-        if (hasSpline)
-            *data << float(0.0f);
+        if (unit->isSplineEnabled())
+            MovementNew::PacketBuilder::WriteCreateBits(*unit->movespline, *data);
 
         data->writeBit(Guid[6]);
 
@@ -2407,9 +2405,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         if (hasSplineElevation)
             *data << float(obj_movement_info.spline_elevation);
 
-        if (hasSpline)
+        if (unit->isSplineEnabled())
         {
-            MovementNew::PacketBuilder::WriteCreate(*unit->movespline, *data);
+            MovementNew::PacketBuilder::WriteCreateData(*unit->movespline, *data);
         }
 
         *data << float(unit->GetPositionZ());

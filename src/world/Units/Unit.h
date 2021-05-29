@@ -665,6 +665,7 @@ private:
 public:
     void sendMoveSplinePaket(UnitSpeedType speed_type);
     void disableSpline();
+    bool isSplineEnabled() const;
 
     virtual MovementGeneratorType GetDefaultMovementType() const;
 

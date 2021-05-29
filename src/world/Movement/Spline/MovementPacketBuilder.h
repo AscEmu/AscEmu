@@ -24,6 +24,10 @@ public:
     static void WriteMonsterMove(MoveSpline const& mov, ByteBuffer& data);
     static void WriteStopMovement(G3D::Vector3 const& loc, uint32_t splineId, ByteBuffer& data);
     static void WriteCreate(MoveSpline const& mov, ByteBuffer& data);
+#if VERSION_STRING >= Cata
+    static void WriteCreateData(MoveSpline const& moveSpline, ByteBuffer& data);
+    static void WriteCreateBits(MoveSpline const& moveSpline, ByteBuffer& data);
+#endif
     static void WriteSplineSync(MoveSpline const& mov, ByteBuffer& data);
 };
 } // namespace MovementNew

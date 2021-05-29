@@ -5983,3 +5983,8 @@ MovementGeneratorType Unit::GetDefaultMovementType() const
 {
     return IDLE_MOTION_TYPE;
 }
+
+bool Unit::isSplineEnabled() const
+{
+    return movespline->Initialized();
+}

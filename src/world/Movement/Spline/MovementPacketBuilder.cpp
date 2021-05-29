@@ -176,7 +176,104 @@ void PacketBuilder::WriteCreate(MoveSpline const& move_spline, ByteBuffer& data)
         data << (move_spline.isCyclic() ? G3D::Vector3::zero() : move_spline.FinalDestination());
     }
 }
+#if VERSION_STRING >= Cata
+void PacketBuilder::WriteCreateData(MoveSpline const& moveSpline, ByteBuffer& data)
+{
+    if (!moveSpline.Finalized())
+    {
+        MoveSplineFlag splineFlags = moveSpline.splineflags;
 
+        if ((splineFlags & MoveSplineFlag::Parabolic) && moveSpline.effect_start_time < moveSpline.Duration())
+            data << moveSpline.vertical_acceleration;   // added in 3.1
+
+        data << moveSpline.timePassed();
+
+        if (splineFlags.final_angle)
+            data << moveSpline.facing.angle;
+        else if (splineFlags.final_target)
+        {
+            ObjectGuid facingGuid = moveSpline.facing.target;
+            data.WriteByteSeq(facingGuid[5]);
+            data.WriteByteSeq(facingGuid[3]);
+            data.WriteByteSeq(facingGuid[7]);
+            data.WriteByteSeq(facingGuid[1]);
+            data.WriteByteSeq(facingGuid[6]);
+            data.WriteByteSeq(facingGuid[4]);
+            data.WriteByteSeq(facingGuid[2]);
+            data.WriteByteSeq(facingGuid[0]);
+        }
+
+        uint32 nodes = moveSpline.getPath().size();
+        for (uint32 i = 0; i < nodes; ++i)
+        {
+            data << float(moveSpline.getPath()[i].z);
+            data << float(moveSpline.getPath()[i].x);
+            data << float(moveSpline.getPath()[i].y);
+        }
+
+        if (splineFlags.final_point)
+            data << moveSpline.facing.f.x << moveSpline.facing.f.z << moveSpline.facing.f.y;
+
+        data << float(1.f);                             // splineInfo.duration_mod_next; added in 3.1
+        data << moveSpline.Duration();
+        if (splineFlags & (MoveSplineFlag::Parabolic | MoveSplineFlag::Animation))
+            data << moveSpline.effect_start_time;       // added in 3.1
+
+        data << float(1.f);                             // splineInfo.duration_mod; added in 3.1
+    }
+
+    if (!moveSpline.isCyclic())
+    {
+        Vector3 dest = moveSpline.FinalDestination();
+        data << float(dest.z);
+        data << float(dest.x);
+        data << float(dest.y);
+    }
+    else
+        data << Vector3::zero();
+
+    data << moveSpline.GetId();
+}
+
+void PacketBuilder::WriteCreateBits(MoveSpline const& moveSpline, ByteBuffer& data)
+{
+    if (!data.writeBit(!moveSpline.Finalized()))
+        return;
+
+    data.writeBits(uint8(moveSpline.spline.mode()), 2);
+    data.writeBit(moveSpline.splineflags & (MoveSplineFlag::Parabolic | MoveSplineFlag::Animation));
+    data.writeBits(moveSpline.getPath().size(), 22);
+    switch (moveSpline.splineflags & MoveSplineFlag::Mask_Final_Facing)
+    {
+    case MoveSplineFlag::Final_Target:
+    {
+        ObjectGuid targetGuid = moveSpline.facing.target;
+        data.writeBits(2, 2);
+        data.writeBit(targetGuid[4]);
+        data.writeBit(targetGuid[3]);
+        data.writeBit(targetGuid[7]);
+        data.writeBit(targetGuid[2]);
+        data.writeBit(targetGuid[6]);
+        data.writeBit(targetGuid[1]);
+        data.writeBit(targetGuid[0]);
+        data.writeBit(targetGuid[5]);
+        break;
+    }
+    case MoveSplineFlag::Final_Angle:
+        data.writeBits(0, 2);
+        break;
+    case MoveSplineFlag::Final_Point:
+        data.writeBits(1, 2);
+        break;
+    default:
+        data.writeBits(3, 2);
+        break;
+    }
+
+    data.writeBit((moveSpline.splineflags & MoveSplineFlag::Parabolic) && moveSpline.effect_start_time < moveSpline.Duration());
+    data.writeBits(moveSpline.splineflags.raw(), 25);
+}
+#endif
 void PacketBuilder::WriteSplineSync(MoveSpline const& move_spline, ByteBuffer& data)
 {
     data << (float)move_spline.timePassed() / move_spline.Duration();
