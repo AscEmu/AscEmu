@@ -19,3 +19,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 else()
     message(FATAL_ERROR "Compiler is not supported")
 endif()
+
+# Check for database update files
+set(PATH_DB_FILES ${CMAKE_SOURCE_DIR}/sql/)
+set(INSTALL_DB_FILES ${PATH_DB_FILES})
