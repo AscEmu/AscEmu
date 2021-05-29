@@ -1311,7 +1311,36 @@ void Unit::setMoveCanFly(bool set_fly)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
             data << uint32(2);
-#else
+#endif
+
+#if VERSION_STRING == Cata
+            ObjectGuid guid = getGuid();
+
+            data.Initialize(SMSG_MOVE_SET_CAN_FLY, 1 + 8 + 4);
+            data.writeBit(guid[1]);
+            data.writeBit(guid[6]);
+            data.writeBit(guid[5]);
+            data.writeBit(guid[0]);
+            data.writeBit(guid[7]);
+            data.writeBit(guid[4]);
+            data.writeBit(guid[2]);
+            data.writeBit(guid[3]);
+
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[3]);
+
+            data << uint32(0);          //! movement counter
+
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[5]);
+
+            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_SET_CAN_FLY);
+#endif
+
 #if VERSION_STRING == Mop
             ObjectGuid guid = getGuid();
 
@@ -1337,10 +1366,8 @@ void Unit::setMoveCanFly(bool set_fly)
             data.WriteByteSeq(guid[7]);
             data.WriteByteSeq(guid[5]);
 
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_SET_CAN_FLY);
 #endif
-#endif
+
             SendMessageToSet(&data, true);
         }
         else
@@ -1356,7 +1383,33 @@ void Unit::setMoveCanFly(bool set_fly)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
             data << uint32(5);
-#else
+#endif
+
+#if VERSION_STRING == Cata
+            ObjectGuid guid = getGuid();
+
+            data.Initialize(SMSG_MOVE_UNSET_CAN_FLY, 1 + 8 + 4);
+            data.writeBit(guid[1]);
+            data.writeBit(guid[4]);
+            data.writeBit(guid[2]);
+            data.writeBit(guid[5]);
+            data.writeBit(guid[0]);
+            data.writeBit(guid[3]);
+            data.writeBit(guid[6]);
+            data.writeBit(guid[7]);
+
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[6]);
+
+            data << uint32(0);          //! movement counter
+
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[7]);
+
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_CAN_FLY);
 #endif
             SendMessageToSet(&data, true);
