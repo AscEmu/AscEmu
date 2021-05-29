@@ -1891,28 +1891,243 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
         SendMessageToSet(&data, false);
     }
 }
-#else // adopt the code above to cata / mop
+#else
 void Unit::setSpeedRate(UnitSpeedType type, float value, bool current)
 {
+    if (value < 0)
+        value = 0.0f;
+
+    // Update speed only on change
+    if (m_UnitSpeedInfo.m_currentSpeedRate[type] == value)
+        return;
+
     if (current)
         m_UnitSpeedInfo.m_currentSpeedRate[type] = value;
     else
         m_UnitSpeedInfo.m_basicSpeedRate[type] = value;
 
-    Player* player_mover = GetMapMgrPlayer(getCharmedByGuid());
-    if (player_mover == nullptr)
+    // Update Also For Movement Generators
+    propagateSpeedChange();
+
+    if (GetTypeFromGUID() == TYPEID_PLAYER)
     {
-        if (isPlayer())
-            player_mover = dynamic_cast<Player*>(this);
+        // register forced speed changes for WorldSession::HandleForceSpeedChangeAck
+        // and do it only for real sent packets and use run for run/mounted as client expected
+        ++ToPlayer()->m_forced_speed_changes[type];
+
+        if (!isInCombat())
+        {
+            std::list<Pet*> ownerSummons = ToPlayer()->GetSummons();
+            if (ownerSummons.size())
+            {
+                for (std::list<Pet*>::iterator itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
+                {
+                    (*itr)->setSpeedRate(type, m_UnitSpeedInfo.m_currentSpeedRate[type], false);
+                }
+            }
+        }
     }
 
-    if (player_mover != nullptr)
+    WorldPacket data;
+    ObjectGuid guid = getGuid();
+
+    switch (type)
     {
-        player_mover->sendForceMovePacket(type, value);
-        player_mover->sendMoveSetSpeedPaket(type, value);
+    case TYPE_WALK:
+        data.Initialize(SMSG_SPLINE_SET_WALK_SPEED, 8 + 4 + 2 + 4 + 4 + 4 + 4 + 4 + 4 + 4);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[4]);
+        data.flushBits();
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[3]);
+        data << float(value);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[5]);
+        break;
+    case TYPE_RUN:
+        data.Initialize(SMSG_SPLINE_SET_RUN_SPEED, 1 + 8 + 4);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[2]);
+        data.flushBits();
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[4]);
+        data << float(value);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[1]);
+        break;
+    case TYPE_RUN_BACK:
+        data.Initialize(SMSG_SPLINE_SET_RUN_BACK_SPEED, 1 + 8 + 4);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[4]);
+        data.flushBits();
+        data.WriteByteSeq(guid[1]);
+        data << float(value);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[7]);
+        break;
+    case TYPE_SWIM:
+        data.Initialize(SMSG_SPLINE_SET_SWIM_SPEED, 1 + 8 + 4);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[1]);
+        data.flushBits();
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[4]);
+        data << float(value);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[3]);
+        break;
+    case TYPE_SWIM_BACK:
+        data.Initialize(SMSG_SPLINE_SET_SWIM_BACK_SPEED, 1 + 8 + 4);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[2]);
+        data.flushBits();
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[6]);
+        data << float(value);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[2]);
+        break;
+    case TYPE_TURN_RATE:
+        data.Initialize(SMSG_SPLINE_SET_TURN_RATE, 1 + 8 + 4);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[0]);
+        data.flushBits();
+        data << float(value);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[0]);
+        break;
+    case TYPE_FLY:
+        data.Initialize(SMSG_SPLINE_SET_FLIGHT_SPEED, 1 + 8 + 4);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[2]);
+        data.flushBits();
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[6]);
+        data << float(value);
+        break;
+    case TYPE_FLY_BACK:
+        data.Initialize(SMSG_SPLINE_SET_FLIGHT_BACK_SPEED, 1 + 8 + 4);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[7]);
+        data.flushBits();
+        data.WriteByteSeq(guid[5]);
+        data << float(value);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[4]);
+        break;
+    case TYPE_PITCH_RATE:
+        data.Initialize(SMSG_SPLINE_SET_PITCH_RATE, 1 + 8 + 4);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[2]);
+        data.flushBits();
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[2]);
+        data << float(value);
+        data.WriteByteSeq(guid[4]);
+        break;
+    default:
+        sLogger.failure("Unit::setSpeedRate: Unsupported move type (%d), data not sent to client.", type);
+        return;
     }
-    else
-        sendMoveSplinePaket(type);
+
+    SendMessageToSet(&data, true);
 }
 #endif
 
