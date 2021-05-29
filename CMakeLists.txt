@@ -41,5 +41,7 @@ add_subdirectory(src/scripts)
 # install libraries for windows build (libmysql.dll, libey32.dll)
 if(WIN32)
     install(FILES ${INSTALLED_DEPENDENCIES} DESTINATION .)
-    install(DIRECTORY ${INSTALL_DB_FILES} DESTINATION sql FILES_MATCHING PATTERN "*.sql")
 endif()
+
+# install db updates
+install(DIRECTORY ${INSTALL_DB_FILES} DESTINATION sql FILES_MATCHING PATTERN "*.sql")

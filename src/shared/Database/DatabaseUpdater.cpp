@@ -136,10 +136,20 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
     std::map<uint32_t, DatabaseUpdateFile> updateSqlStore;
 
     uint32_t count = 0;
+    std::vector<std::string> updateFiles;
+
     for (auto& p : fs::recursive_directory_iterator(sqlUpdateDir))
     {
         const std::string filePathName = p.path().string();
+        updateFiles.push_back(filePathName);
+    }
 
+    // In Windows, recursive_directory_iterator seems to get files sorted but
+    // in Linux they are in random order -Appled
+    std::sort(updateFiles.begin(), updateFiles.end());
+
+    for (const auto& filePathName : updateFiles)
+    {
         std::string fileName = filePathName;
         fileName.erase(0, sqlUpdateDir.size() + 1);
 
@@ -157,6 +167,8 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
         updateSqlStore.emplace(std::pair<uint32_t, DatabaseUpdateFile>(count, dbUpdateFile));
         ++count;
     }
+
+    updateFiles.clear();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // 3. save filenames into vector, when newer than current db version
