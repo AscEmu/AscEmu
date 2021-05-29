@@ -15,7 +15,7 @@ void WaypointMgr::load()
 
     if (!result)
     {
-        sLogger.info("WaypointMgr >> Loaded 0 waypoints. DB table `waypoint_data` is empty!");
+        sLogger.info("WaypointMgr >> Loaded 0 waypoints. DB table `creature_waypoints` is empty!");
         return;
     }
 
@@ -43,7 +43,7 @@ void WaypointMgr::load()
 
         if (waypoint.moveType >= WAYPOINT_MOVE_TYPE_MAX)
         {
-            sLogger.failure("WaypointMgr Waypoint %u in waypoint_data has invalid move_type, ignoring", waypoint.id);
+            sLogger.failure("WaypointMgr Waypoint %u in creature_waypoints has invalid move_type, ignoring", waypoint.id);
             continue;
         }
 
@@ -98,7 +98,7 @@ void WaypointMgr::loadCustomWaypoints()
 
         if (waypoint.moveType >= WAYPOINT_MOVE_TYPE_MAX)
         {
-            sLogger.failure("WaypointMgr Waypoint %u in waypoint_data has invalid move_type, ignoring", waypoint.id);
+            sLogger.failure("WaypointMgr Waypoint %u in creature_waypoints has invalid move_type, ignoring", waypoint.id);
             continue;
         }
 
