@@ -39,6 +39,10 @@
 #include "Storage/MySQLStructures.h"
 #include "ThreatHandler.h"
 #include "Movement/AbstractFollower.h"
+#include <optional>
+
+template <class T>
+using Optional = std::optional<T>;
 
 class AIInterface;
 class Aura;
