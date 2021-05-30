@@ -30,7 +30,7 @@ class RandomMovementGenerator : public MovementGeneratorMedium<T, RandomMovement
         void unitSpeedChanged() override { RandomMovementGenerator<T>::addFlag(MOVEMENTGENERATOR_FLAG_SPEED_UPDATE_PENDING); }
 
     private:
-        void SetRandomLocation(T*);
+        void setRandomLocation(T*);
 
         std::unique_ptr<PathGenerator> _path;
         SmallTimeTracker _timer;

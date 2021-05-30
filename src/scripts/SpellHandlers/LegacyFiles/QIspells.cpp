@@ -3028,7 +3028,7 @@ bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
         Creature* pNewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(17102, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
         if (pNewCreature != nullptr)
         {
-            pNewCreature->PauseMovement(500);
+            pNewCreature->pauseMovement(500);
             pNewCreature->setAttackTimer(MELEE, 1000);
             pNewCreature->m_noRespawn = true;
         }

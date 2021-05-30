@@ -54,7 +54,7 @@ class DashelStonefist : public CreatureAIScript
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
-        getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+        getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);

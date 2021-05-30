@@ -2057,7 +2057,7 @@ class MuradinSaurfangEvent : public CreatureAIScript
             {
             case EVENT_INTRO_ALLIANCE_4_SE:
             {
-                getCreature()->StopMoving();
+                getCreature()->stopMoving();
 
                 setWaypointToMove(1, POINT_FIRST_STEP);
 
@@ -2212,7 +2212,7 @@ class OverlordSaurfangEvent : public CreatureAIScript
             switch (eventId)
             {
             case EVENT_INTRO_HORDE_3_SE:
-                getCreature()->StopMoving();
+                getCreature()->stopMoving();
 
                 setWaypointToMove(1, POINT_FIRST_STEP);
                 break;
@@ -2434,7 +2434,7 @@ class DeathbringerSaurfangAI : public CreatureAIScript
             setScriptPhase(uint32(action));
 
             // Move
-            getCreature()->StopMoving();
+            getCreature()->stopMoving();
 
             setWaypointToMove(1, POINT_SAURFANG);
 
@@ -2508,7 +2508,7 @@ class NpcSaurfangEventAI : public CreatureAIScript
         {
             if (action == ACTION_CHARGE && _index)
             {
-                getCreature()->StopMoving();
+                getCreature()->stopMoving();
                 setWaypointToMove(1, POINT_CHARGE);
             }
             else if (action == ACTION_DESPAWN)

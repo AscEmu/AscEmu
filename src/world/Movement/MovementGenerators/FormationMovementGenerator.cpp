@@ -35,7 +35,7 @@ void FormationMovementGenerator::doInitialize(Creature* owner)
     if (owner->hasUnitStateFlag(UNIT_STATE_NOT_MOVE) || owner->isCastingSpell())
     {
         addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
-        owner->StopMoving();
+        owner->stopMoving();
         return;
     }
 
@@ -60,7 +60,7 @@ bool FormationMovementGenerator::doUpdate(Creature* owner, uint32_t diff)
     if (owner->hasUnitStateFlag(UNIT_STATE_NOT_MOVE) || owner->isCastingSpell())
     {
         addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
-        owner->StopMoving();
+        owner->stopMoving();
         _nextMoveTimer.resetInterval(0);
         _hasPredictedDestination = false;
         return true;
@@ -70,7 +70,7 @@ bool FormationMovementGenerator::doUpdate(Creature* owner, uint32_t diff)
     if (target->movespline->Finalized() && target->movespline->GetId() == _lastLeaderSplineID && _hasPredictedDestination)
     {
         addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
-        owner->StopMoving();
+        owner->stopMoving();
         _nextMoveTimer.resetInterval(0);
         _hasPredictedDestination = false;
         return true;
@@ -88,7 +88,7 @@ bool FormationMovementGenerator::doUpdate(Creature* owner, uint32_t diff)
         {
             if (CreatureGroup* formation = target->ToCreature()->getFormation())
             {
-                if (Creature* leader = formation->GetLeader())
+                if (Creature* leader = formation->getLeader())
                 {
                     const auto currentWaypoint = leader->getCurrentWaypointInfo().first;
                     if (currentWaypoint == _point1 || currentWaypoint == _point2)
@@ -154,9 +154,9 @@ void FormationMovementGenerator::launchMovement(Creature* owner, Unit* target)
         float travelDist = velocity * 1.65f;
 
         // Move destination ahead...
-        target->MovePositionToFirstCollision(dest, travelDist, relativeAngle);
+        target->movePositionToFirstCollision(dest, travelDist, relativeAngle);
         // ... and apply formation shape
-        target->MovePositionToFirstCollision(dest, _range, _angle + relativeAngle);
+        target->movePositionToFirstCollision(dest, _range, _angle + relativeAngle);
 
         float distance = owner->GetPosition().getExactDist(dest);
 
@@ -170,7 +170,7 @@ void FormationMovementGenerator::launchMovement(Creature* owner, Unit* target)
     else
     {
         // Formation leader is not moving. Just apply the base formation shape on his position.
-        target->MovePositionToFirstCollision(dest, _range, _angle + relativeAngle);
+        target->movePositionToFirstCollision(dest, _range, _angle + relativeAngle);
         _hasPredictedDestination = false;
     }
 

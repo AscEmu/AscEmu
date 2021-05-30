@@ -18,7 +18,7 @@ void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companio
     setLevel(1);
 
     m_aiInterface->Init(this, AI_SCRIPT_PET, companionOwner);
-    m_aiInterface->SetPetOwner(companionOwner);
+    m_aiInterface->setPetOwner(companionOwner);
     m_aiInterface->setMeleeDisabled(true);
 
     bInvincible = true;

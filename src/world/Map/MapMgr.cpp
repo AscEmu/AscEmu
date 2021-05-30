@@ -1091,7 +1091,7 @@ float MapMgr::GetLandHeight(float x, float y, float z)
         return z;
 }
 
-float MapMgr::GetWaterOrGroundLevel(uint32 phasemask, float x, float y, float z, float* ground /*= nullptr*/, bool /*swim = false*/, float collisionHeight /*= DEFAULT_COLLISION_HEIGHT*/)
+float MapMgr::getWaterOrGroundLevel(uint32 phasemask, float x, float y, float z, float* ground /*= nullptr*/, bool /*swim = false*/, float collisionHeight /*= DEFAULT_COLLISION_HEIGHT*/)
 {
     if (TerrainTile* tile = _terrain->GetTile(x, y))
     {

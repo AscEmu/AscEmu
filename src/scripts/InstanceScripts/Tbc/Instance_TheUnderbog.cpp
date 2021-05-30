@@ -49,7 +49,7 @@ class HungarfenAI : public CreatureAIScript
     {
         if (getCreature()->getHealthPct() <= 20 && !FourSpores)
         {
-            getCreature()->PauseMovement(11000);
+            getCreature()->pauseMovement(11000);
             getCreature()->setAttackTimer(MELEE, 1200);
 
             getCreature()->castSpell(getCreature(), spores->mSpellInfo, spores->mIsTriggered);
@@ -173,7 +173,7 @@ class SwamplordMuselekAI : public CreatureAIScript
             Unit* target = getCreature()->getThreatManager().getCurrentVictim();
             if (getCreature()->GetDistance2dSq(target) >= 100.0f && getCreature()->getDistanceSq(target) <= 900.0f && Util::getRandomUInt(3) != 1)
             {
-                getCreature()->PauseMovement(2000);
+                getCreature()->pauseMovement(2000);
                 if (!getCreature()->isCastingSpell())
                 {
                     uint32_t RangedSpell = Util::getRandomUInt(100);

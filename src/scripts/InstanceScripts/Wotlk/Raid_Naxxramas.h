@@ -2067,7 +2067,7 @@ class SapphironAI : public CreatureAIScript
                     getCreature()->interruptSpell();
 
                 getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
-                getCreature()->StopMoving();
+                getCreature()->stopMoving();
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 setWaypointToMove(1, 1);
 

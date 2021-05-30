@@ -183,7 +183,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
 
                 if (!Gnome->isCastingSpell())
                 {
-                    Gnome->PauseMovement(1);
+                    Gnome->pauseMovement(1);
                     Gnome->castSpell(getCreature(), REPAIR, false);    // core problem? casted on self (and effect is applied on caster instead of _unit)
                 }
             }
@@ -356,7 +356,7 @@ class WarlordKalitreshAI : public CreatureAIScript
                     getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
                     getCreature()->getMovementManager()->moveFollow(pDistiller, 10.0f, 2.0f);
 
-                    getCreature()->StopMoving();
+                    getCreature()->stopMoving();
                     getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                     getCreature()->GetAIInterface()->moveTo(DistillerMoveTo[DistillerNumber].x, DistillerMoveTo[DistillerNumber].y, DistillerMoveTo[DistillerNumber].z);
 
@@ -366,7 +366,7 @@ class WarlordKalitreshAI : public CreatureAIScript
                         pDistiller->setChannelObjectGuid(getCreature()->getGuid());
                         pDistiller->setChannelSpellId(31543);
 
-                        getCreature()->StopMoving();
+                        getCreature()->stopMoving();
                         getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                         sendDBChatMessage(SAY_WARLORD_KALITRESH_02);

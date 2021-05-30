@@ -145,8 +145,8 @@ void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
     // make shortcut path and mark it as NOPATH ( with flying and swimming exception )
     // its up to caller how he will use this info
 
-    bool waterPath = _source->ToCreature()->CanSwim();
-    bool path =  _source->ToCreature()->CanFly();
+    bool waterPath = _source->ToCreature()->canSwim();
+    bool path =  _source->ToCreature()->canFly();
 
     if (startPoly == INVALID_POLYREF || endPoly == INVALID_POLYREF || waterPath && _source->ToCreature()->isInWater() || path && _source->ToCreature()->IsFlying())
     {
@@ -205,14 +205,14 @@ void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
         if (_source->GetMapMgr()->isUnderWater(p.x, p.y, p.z))
         {
             if (Unit* _sourceUnit = _source->ToUnit())
-                if (_sourceUnit->CanSwim())
+                if (_sourceUnit->canSwim())
                     buildShotrcut = true;
         }
         else
         {
             if (Unit* _sourceUnit = _source->ToUnit())
             {
-                if (_sourceUnit->CanFly())
+                if (_sourceUnit->canFly())
                     buildShotrcut = true;
                 // Allow to build a shortcut if the unit is falling and it's trying to move downwards towards a target (i.e. charging)
                 else if (_sourceUnit->IsFalling() && endPos.z < startPos.z)
@@ -582,7 +582,7 @@ void PathGenerator::buildPointPath(const float *startPoint, const float *endPoin
 void PathGenerator::normalizePath()
 {
     for (uint32_t i = 0; i < _pathPoints.size(); ++i)
-        _source->UpdateAllowedPositionZ(_pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z);
+        _source->updateAllowedPositionZ(_pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z);
 }
 
 void PathGenerator::buildShortcut()
@@ -609,11 +609,11 @@ void PathGenerator::createFilter()
     if (_source->GetTypeFromGUID() == TYPEID_UNIT)
     {
         Creature* creature = (Creature*)_source;
-        if (creature->CanWalk())
+        if (creature->canWalk())
             includeFlags |= NAV_GROUND;          // walk
 
         // creatures don't take environmental damage
-        if (creature->CanSwim())
+        if (creature->canSwim())
             includeFlags |= (NAV_WATER | NAV_MAGMA_SLIME);                 // swim
     }
     else // assume Player
@@ -952,7 +952,7 @@ void PathGenerator::shortenPathUntilDist(G3D::Vector3 const& target, float dist)
             break; // bingo!
 
         // check if the shortened path is still in LoS with the target
-        _source->GetHitSpherePointFor({ _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight }, x, y, z);
+        _source->getHitSpherePointFor({ _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight }, x, y, z);
         if (!_source->GetMapMgr()->isInLineOfSight(x, y, z, _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight))
         {
             // whenver we find a point that is not in LoS anymore, simply use last valid path

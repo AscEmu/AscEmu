@@ -105,7 +105,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                         summonedPet->getThreatManager().clearAllThreat();
                         summonedPet->getThreatManager().removeMeFromThreatLists();
 
-                        summonedPet->GetAIInterface()->SetPetOwner(_player);
+                        summonedPet->GetAIInterface()->setPetOwner(_player);
 
                         summonedPet->GetAIInterface()->onHostileAction(unitTarget, nullptr, true);
                     }
@@ -118,8 +118,8 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                         summonedPet->getThreatManager().clearAllThreat();
                         summonedPet->getThreatManager().removeMeFromThreatLists();
 
-                        summonedPet->GetAIInterface()->SetPetOwner(_player);
-                        summonedPet->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
+                        summonedPet->GetAIInterface()->setPetOwner(_player);
+                        summonedPet->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
                     }
                     break;
                     case PET_ACTION_STAY:
@@ -190,8 +190,8 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                     summonedPet->getThreatManager().clearAllThreat();
                     summonedPet->getThreatManager().removeMeFromThreatLists();
 
-                    summonedPet->GetAIInterface()->SetPetOwner(_player);
-                    summonedPet->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
+                    summonedPet->GetAIInterface()->setPetOwner(_player);
+                    summonedPet->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
                 }
                 summonedPet->SetPetState(srlPacket.misc);
 

@@ -331,7 +331,7 @@ class DarkweaverSythAI : public CreatureAIScript
         if (((getCreature()->getHealthPct() <= 75 && getScriptPhase() == 1) || (getCreature()->getHealthPct() <= 50 && getScriptPhase() == 2) || (getCreature()->getHealthPct() <= 25 && getScriptPhase() == 3)))
         {
             getCreature()->setAttackTimer(MELEE, 1500);
-            getCreature()->PauseMovement(1000);    // really?
+            getCreature()->pauseMovement(1000);    // really?
 
             SummonElementalWave();
 
@@ -390,7 +390,7 @@ class TalonKingIkissAI : public CreatureAIScript
     {
         if (!getCreature()->isCastingSpell())
         {
-            getCreature()->PauseMovement(1);
+            getCreature()->pauseMovement(1);
             getCreature()->setAttackTimer(MELEE, 3000);
             getCreature()->castSpell(getCreature(), arcaneVolley->mSpellInfo, true);
         }
@@ -409,7 +409,7 @@ class TalonKingIkissAI : public CreatureAIScript
     {
         if (Blink)
         {
-            getCreature()->PauseMovement(2000);
+            getCreature()->pauseMovement(2000);
             getCreature()->setAttackTimer(MELEE, 6500);
 
             getCreature()->interruptSpell();

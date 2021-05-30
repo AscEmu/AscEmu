@@ -87,7 +87,7 @@ class SelinFireheartAI : public CreatureAIScript
             return;
         }
 
-        getCreature()->StopMoving();
+        getCreature()->stopMoving();
 
         if (!FelCrystal->isCastingSpell())
             FelCrystal->castSpell(getCreature(), ManaRage, false);

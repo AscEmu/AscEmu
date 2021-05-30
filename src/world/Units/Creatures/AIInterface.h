@@ -142,8 +142,8 @@ public:
     void selectCurrentAgent(Unit* target, uint32_t spellid);
     void initializeSpells();
 
-    void SetCannotReachTarget(bool cannotReach);
-    bool CanNotReachTarget() const { return m_cannotReachTarget; }
+    void setCannotReachTarget(bool cannotReach);
+    bool canNotReachTarget() const { return m_cannotReachTarget; }
 
     void callForHelp(float fRadius);
     void doFleeToGetAssistance();
@@ -201,7 +201,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Combat functions
 public:
-    void JustEnteredCombat(Unit* pUnit);
+    void justEnteredCombat(Unit* pUnit);
     bool isEngaged() { return m_isEngaged; }
 
     bool isImmuneToNPC() { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT); }
@@ -291,21 +291,21 @@ public:
     void instanceCombatProgress(bool activate);
 
     // Event Handler
-    void HandleEvent(uint32_t event, Unit* pUnit, uint32_t misc1);
+    void handleEvent(uint32_t event, Unit* pUnit, uint32_t misc1);
 
-    void EventForceRedirected(Unit* pUnit, uint32_t misc1);
-    void EventHostileAction(Unit* pUnit, uint32_t misc1);
-    void EventUnitDied(Unit* pUnit, uint32_t misc1);
-    void EventUnwander(Unit* pUnit, uint32_t misc1);
-    void EventWander(Unit* pUnit, uint32_t misc1);
-    void EventUnfear(Unit* pUnit, uint32_t misc1);
-    void EventFear(Unit* pUnit, uint32_t misc1);
-    void EventFollowOwner(Unit* pUnit, uint32_t misc1);
-    void EventDamageTaken(Unit* pUnit, uint32_t misc1);
-    void EventLeaveCombat(Unit* pUnit, uint32_t misc1);
-    void EventEnterCombat(Unit* pUnit, uint32_t misc1);
-    void EventChangeFaction(Unit* ForceAttackersToHateThisInstead = NULL);    /// we have to tell our current enemies to stop attacking us, we should also forget about our targets
-    void OnDeath(Object* pKiller);
+    void eventForceRedirected(Unit* pUnit, uint32_t misc1);
+    void eventHostileAction(Unit* pUnit, uint32_t misc1);
+    void eventUnitDied(Unit* pUnit, uint32_t misc1);
+    void eventUnwander(Unit* pUnit, uint32_t misc1);
+    void eventWander(Unit* pUnit, uint32_t misc1);
+    void eventUnfear(Unit* pUnit, uint32_t misc1);
+    void eventFear(Unit* pUnit, uint32_t misc1);
+    void eventFollowOwner(Unit* pUnit, uint32_t misc1);
+    void eventDamageTaken(Unit* pUnit, uint32_t misc1);
+    void eventLeaveCombat(Unit* pUnit, uint32_t misc1);
+    void eventEnterCombat(Unit* pUnit, uint32_t misc1);
+    void eventChangeFaction(Unit* ForceAttackersToHateThisInstead = NULL);    /// we have to tell our current enemies to stop attacking us, we should also forget about our targets
+    void onDeath(Object* pKiller);
 
     // Update
     void Update(unsigned long time_passed);
@@ -368,7 +368,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Pet functions
-    inline void SetPetOwner(Unit* owner) { m_PetOwner = owner; }
+    inline void setPetOwner(Unit* owner) { m_PetOwner = owner; }
     void setUnitToFollow(Unit* pUnit) { m_UnitToFollow = pUnit; }
     Unit* getUnitToFollow() { return m_UnitToFollow; }
 

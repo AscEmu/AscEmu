@@ -189,7 +189,7 @@ MoveSplineInit::MoveSplineInit(Unit* m) : unit(m)
     // Elevators also use MOVEFLAG_TRANSPORT but we do not keep track of their position changes
     args.TransformForTransport = unit->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && unit->getTransGuid();
     // mix existing state into new
-    args.flags.canswim = unit->CanSwim();
+    args.flags.canswim = unit->canSwim();
     args.walk = unit->hasUnitMovementFlag(MOVEFLAG_WALK);
     args.flags.flying = unit->obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK);
 }

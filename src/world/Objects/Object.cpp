@@ -4279,7 +4279,7 @@ void Object::getClosePoint(float& x, float& y, float& z, float size, float dista
     getNearPoint(nullptr, x, y, z, distance2d + size, GetOrientation() + relAngle);
 }
 
-LocationVector Object::GetHitSpherePointFor(LocationVector const& dest)
+LocationVector Object::getHitSpherePointFor(LocationVector const& dest)
 {
     G3D::Vector3 vThis(GetPositionX(), GetPositionY(), GetPositionZ() + 2.0f);
     G3D::Vector3 vObj(dest.getPositionX(), dest.getPositionY(), dest.getPositionZ());
@@ -4288,15 +4288,15 @@ LocationVector Object::GetHitSpherePointFor(LocationVector const& dest)
     return LocationVector(contactPoint.x, contactPoint.y, contactPoint.z, getAbsoluteAngle(contactPoint.x, contactPoint.y));
 }
 
-void Object::GetHitSpherePointFor(LocationVector const& dest, float& x, float& y, float& z) const
+void Object::getHitSpherePointFor(LocationVector const& dest, float& x, float& y, float& z) const
 {
-    LocationVector pos = GetHitSpherePointFor(dest);
+    LocationVector pos = getHitSpherePointFor(dest);
     x = pos.getPositionX();
     y = pos.getPositionY();
     z = pos.getPositionZ();
 }
 
-LocationVector Object::GetHitSpherePointFor(LocationVector const& dest) const
+LocationVector Object::getHitSpherePointFor(LocationVector const& dest) const
 {
     G3D::Vector3 vThis(GetPositionX(), GetPositionY(), GetPositionZ() + 2.0f);
     G3D::Vector3 vObj(dest.getPositionX(), dest.getPositionY(), dest.getPositionZ());
@@ -4305,26 +4305,26 @@ LocationVector Object::GetHitSpherePointFor(LocationVector const& dest) const
     return LocationVector(contactPoint.x, contactPoint.y, contactPoint.z, getAbsoluteAngle(contactPoint.x, contactPoint.y));
 }
 
-void Object::UpdateAllowedPositionZ(float x, float y, float &z, float* groundZ)
+void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)
 {
     // TODO: Allow transports to be part of dynamic vmap tree
     if (GetTransport())
     {
         if (groundZ)
-            *groundZ = z;
+            *groundZ = z + 1.0f; // dont clip inside our transport :)
 
         return;
     }
 
     if (Unit* unit = ToUnit())
     {
-        if (!unit->CanFly())
+        if (!unit->canFly())
         {
-            bool canSwim = unit->CanSwim();
+            bool canSwim = unit->canSwim();
             float ground_z = z;
             float max_z;
             if (canSwim)
-                max_z = GetMapWaterOrGroundLevel(x, y, z, &ground_z);
+                max_z = getMapWaterOrGroundLevel(x, y, z, &ground_z);
             else
                 max_z = ground_z = GetMapMgr()->GetLandHeight(x, y, z);
 
@@ -4374,11 +4374,11 @@ void Object::UpdateAllowedPositionZ(float x, float y, float &z, float* groundZ)
 LocationVector Object::getFirstCollisionPosition(float dist, float angle)
 {
     LocationVector pos = GetPosition();
-    MovePositionToFirstCollision(pos, dist, angle);
+    movePositionToFirstCollision(pos, dist, angle);
     return pos;
 }
 
-void Object::MovePositionToFirstCollision(LocationVector &pos, float dist, float angle)
+void Object::movePositionToFirstCollision(LocationVector &pos, float dist, float angle)
 {
     angle += GetOrientation();
     float destx, desty, destz;
@@ -4439,7 +4439,7 @@ void Object::MovePositionToFirstCollision(LocationVector &pos, float dist, float
     float groundZ = VMAP_INVALID_HEIGHT_VALUE;
     normalizeMapCoord(pos.x);
     normalizeMapCoord(pos.y);
-    UpdateAllowedPositionZ(destx, desty, destz, &groundZ);
+    updateAllowedPositionZ(destx, desty, destz, &groundZ);
 
     pos.o = GetOrientation();
     pos.changeCoords(destx, desty, destz);
@@ -4450,7 +4450,7 @@ void Object::MovePositionToFirstCollision(LocationVector &pos, float dist, float
         if (Unit* unit = ToUnit())
         {
             // unit can fly, ignore.
-            if (unit->CanFly())
+            if (unit->canFly())
                 return;
 
             // fall back to gridHeight if any
@@ -4466,9 +4466,9 @@ void Object::MovePositionToFirstCollision(LocationVector &pos, float dist, float
     }
 }
 
-float Object::GetMapWaterOrGroundLevel(float x, float y, float z, float* ground/* = nullptr*/)
+float Object::getMapWaterOrGroundLevel(float x, float y, float z, float* ground/* = nullptr*/)
 {
-    return GetMapMgr()->GetWaterOrGroundLevel(GetPhase(), x, y, z, ground, GetTypeFromGUID() == TYPEID_UNIT ? !static_cast<Unit*>(this)->getAuraWithAuraEffect(SPELL_AURA_WATER_WALK) : false);
+    return GetMapMgr()->getWaterOrGroundLevel(GetPhase(), x, y, z, ground, GetTypeFromGUID() == TYPEID_UNIT ? !static_cast<Unit*>(this)->getAuraWithAuraEffect(SPELL_AURA_WATER_WALK) : false);
 }
 
 float Object::getDistance(Object const* obj) const

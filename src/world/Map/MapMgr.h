@@ -163,7 +163,7 @@ public:
     // Terrain Functions
     float GetLandHeight(float x, float y, float z);
 
-    float GetWaterOrGroundLevel(uint32 phasemask, float x, float y, float z, float* ground = nullptr, bool swim = false, float collisionHeight = 2.03128f); // DEFAULT_COLLISION_HEIGHT in Object.h
+    float getWaterOrGroundLevel(uint32 phasemask, float x, float y, float z, float* ground = nullptr, bool swim = false, float collisionHeight = 2.03128f); // DEFAULT_COLLISION_HEIGHT in Object.h
 
     float GetADTLandHeight(float x, float y);
 

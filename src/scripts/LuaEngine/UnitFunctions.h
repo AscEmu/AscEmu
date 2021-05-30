@@ -1045,7 +1045,7 @@ public:
     {
         TEST_UNIT()
         uint32_t tim = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        ptr->PauseMovement(tim);
+        ptr->pauseMovement(tim);
         return 0;
     }
 
@@ -2174,7 +2174,7 @@ public:
         Unit* target = CHECK_UNIT(L, 1);
         uint32_t event_id = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         uint32_t misc_1 = static_cast<uint32_t>(luaL_checkinteger(L, 3));
-        ptr->GetAIInterface()->HandleEvent(event_id, target, misc_1);
+        ptr->GetAIInterface()->handleEvent(event_id, target, misc_1);
         return 1;
     }
 
@@ -2638,7 +2638,7 @@ public:
         TEST_UNIT()
         Unit* owner = CHECK_UNIT(L, 1);
         if (owner)
-            ptr->GetAIInterface()->SetPetOwner(owner);
+            ptr->GetAIInterface()->setPetOwner(owner);
         return 0;
     }
 

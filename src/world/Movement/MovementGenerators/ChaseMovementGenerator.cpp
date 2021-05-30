@@ -98,10 +98,10 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
     // the owner might be unable to move (rooted or casting), or we have lost the target, pause movement
     if (owner->hasUnitStateFlag(UNIT_STATE_NOT_MOVE) || owner->isCastingSpell() || hasLostTarget(owner, target))
     {
-        owner->StopMoving();
+        owner->stopMoving();
         _lastTargetPosition.reset();
         if (Creature* cOwner = owner->ToCreature())
-            cOwner->GetAIInterface()->SetCannotReachTarget(false);
+            cOwner->GetAIInterface()->setCannotReachTarget(false);
         return true;
     }
 
@@ -123,8 +123,8 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
             removeFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED);
             _path = nullptr;
             if (Creature* cOwner = owner->ToCreature())
-                cOwner->GetAIInterface()->SetCannotReachTarget(false);
-            owner->StopMoving();
+                cOwner->GetAIInterface()->setCannotReachTarget(false);
+            owner->stopMoving();
             owner->setInFront(target);
             doMovementInform(owner, target);
             return true;
@@ -137,7 +137,7 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
         removeFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED);
         _path = nullptr;
         if (Creature* cOwner = owner->ToCreature())
-            cOwner->GetAIInterface()->SetCannotReachTarget(false);
+            cOwner->GetAIInterface()->setCannotReachTarget(false);
         owner->removeUnitStateFlag(UNIT_STATE_CHASE_MOVE);
         owner->setInFront(target);
         doMovementInform(owner, target);
@@ -154,8 +154,8 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
             // can we get to the target?
             if (cOwner && !target->isInAccessiblePlaceFor(cOwner))
             {
-                cOwner->GetAIInterface()->SetCannotReachTarget(true);
-                cOwner->StopMoving();
+                cOwner->GetAIInterface()->setCannotReachTarget(true);
+                cOwner->stopMoving();
                 _path = nullptr;
                 return true;
             }
@@ -183,17 +183,17 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
                 shortenPath = false;
             }
 
-            if (owner->IsHovering())
-                owner->UpdateAllowedPositionZ(x, y, z);
+            if (owner->isHovering())
+                owner->updateAllowedPositionZ(x, y, z);
 
-            bool forcedest = owner->CanFly() || owner->isInWater();
+            bool forcedest = owner->canFly() || owner->isInWater();
 
             bool success = _path->calculatePath(x, y, z, forcedest);
             if (!success || (_path->getPathType() & (PATHFIND_NOPATH /* | PATHFIND_INCOMPLETE*/)))
             {
                 if (cOwner)
-                    cOwner->GetAIInterface()->SetCannotReachTarget(true);
-                owner->StopMoving();
+                    cOwner->GetAIInterface()->setCannotReachTarget(true);
+                owner->stopMoving();
                 return true;
             }
 
@@ -201,15 +201,15 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
                 _path->shortenPathUntilDist(positionToVector3(target->GetPosition()), maxTarget);
 
             if (cOwner)
-                cOwner->GetAIInterface()->SetCannotReachTarget(false);
+                cOwner->GetAIInterface()->setCannotReachTarget(false);
 
             bool walk = false;
             if (cOwner && !cOwner->isPet())
             {
-                switch (cOwner->GetMovementTemplate().GetChase())
+                switch (cOwner->getMovementTemplate().getChase())
                 {
                     case CreatureChaseMovementType::CanWalk:
-                        walk = owner->IsWalking();
+                        walk = owner->isWalking();
                         break;
                     case CreatureChaseMovementType::AlwaysWalk:
                         walk = true;
@@ -240,7 +240,7 @@ void ChaseMovementGenerator::deactivate(Unit* owner)
     removeFlag(MOVEMENTGENERATOR_FLAG_TRANSITORY | MOVEMENTGENERATOR_FLAG_INFORM_ENABLED);
     owner->removeUnitStateFlag(UNIT_STATE_CHASE_MOVE);
     if (Creature* cOwner = owner->ToCreature())
-        cOwner->GetAIInterface()->SetCannotReachTarget(false);
+        cOwner->GetAIInterface()->setCannotReachTarget(false);
 }
 
 void ChaseMovementGenerator::finalize(Unit* owner, bool active, bool/* movementInform*/)
@@ -250,6 +250,6 @@ void ChaseMovementGenerator::finalize(Unit* owner, bool active, bool/* movementI
     {
         owner->removeUnitStateFlag(UNIT_STATE_CHASE_MOVE);
         if (Creature* cOwner = owner->ToCreature())
-            cOwner->GetAIInterface()->SetCannotReachTarget(false);
+            cOwner->GetAIInterface()->setCannotReachTarget(false);
     }
 }

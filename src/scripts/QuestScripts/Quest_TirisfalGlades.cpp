@@ -71,7 +71,7 @@ class CalvinMontague : public CreatureAIScript
             sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::setStandState, (uint8_t)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
             getCreature()->getThreatManager().clearAllThreat();
             getCreature()->getThreatManager().removeMeFromThreatLists();
-            getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+            getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
             _setMeleeDisabled(true);
             getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
             getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);

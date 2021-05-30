@@ -73,7 +73,7 @@ void ProspectorAnvilwardGossip::onSelectOption(Object* pObject, Player* Plr, uin
             GossipMenu::senGossipComplete(Plr);
 
             pCreature->getMovementManager()->movePath(pCreature->getWaypointPath(), false);
-            pCreature->PauseMovement(10);
+            pCreature->pauseMovement(10);
         }break;
     }
 };
@@ -101,7 +101,7 @@ class ProspectorAnvilward : public CreatureAIScript
         }
         if (iWaypointId == 10)
         {
-            getCreature()->StopMoving();
+            getCreature()->stopMoving();
         }
     }
 };

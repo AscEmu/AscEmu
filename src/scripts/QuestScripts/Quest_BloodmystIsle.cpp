@@ -147,7 +147,7 @@ class WebbedCreature : public CreatureAIScript
     {
         _setMeleeDisabled(true);
         getCreature()->setMoveRoot(true);
-        getCreature()->StopMoving();
+        getCreature()->stopMoving();
     }
 
     void OnCombatStop(Unit* /*pTarget*/) override

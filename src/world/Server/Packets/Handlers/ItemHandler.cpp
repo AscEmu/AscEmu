@@ -2041,7 +2041,7 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
     }
 
     // makes npc stop when for example on its waypoint path // aaron02
-    unit->PauseMovement(180000);
+    unit->pauseMovement(180000);
     unit->SetSpawnLocation(unit->GetPosition());
 
     _player->Reputation_OnTalk(unit->m_factionEntry);

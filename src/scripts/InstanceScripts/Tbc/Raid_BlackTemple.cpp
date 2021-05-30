@@ -1106,7 +1106,7 @@ class ShadowmoonDeathshaperAI : public CreatureAIScript
             Creature* pAI = spawnCreature(23371, getCreature()->GetPosition());
             if (pAI != NULL)
             {
-                pAI->PauseMovement(2500);
+                pAI->pauseMovement(2500);
                 pAI->setAttackTimer(MELEE, 2500);
             }
 
@@ -3552,7 +3552,7 @@ class MaievAI : public CreatureAIScript
                 {
                     _castAISpell(mTeleport);
                     getCreature()->SetPosition(pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation());        // does it really work?
-                    getCreature()->PauseMovement(2500);
+                    getCreature()->pauseMovement(2500);
                 }
 
                 _resetTimer(mTrapTimer, (Util::getRandomUInt(5) + 25) * 1000);

@@ -6767,8 +6767,8 @@ void Player::EndDuel(uint8 WinCondition)
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
         (*itr)->CombatStatus.Vanished();
-        (*itr)->GetAIInterface()->SetPetOwner(this);
-        (*itr)->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, *itr, 0);
+        (*itr)->GetAIInterface()->setPetOwner(this);
+        (*itr)->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->getThreatManager().clearAllThreat();
         (*itr)->getThreatManager().removeMeFromThreatLists();
     }
@@ -6777,8 +6777,8 @@ void Player::EndDuel(uint8 WinCondition)
     for (std::list<Pet*>::iterator itr = duelingWithSummons.begin(); itr != duelingWithSummons.end(); ++itr)
     {
         (*itr)->CombatStatus.Vanished();
-        (*itr)->GetAIInterface()->SetPetOwner(this);
-        (*itr)->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, *itr, 0);
+        (*itr)->GetAIInterface()->setPetOwner(this);
+        (*itr)->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->getThreatManager().clearAllThreat();
         (*itr)->getThreatManager().removeMeFromThreatLists();
     }

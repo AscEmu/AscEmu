@@ -475,7 +475,7 @@ public:
                 Creature* pCreature = static_cast<Creature*>(pObject);
                 pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Splendid. I'm going to get the audience ready. Break a leg!");
                 pCreature->castSpell(pCreature, 32616, false);
-                pCreature->StopMoving();
+                pCreature->stopMoving();
                 pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 pCreature->GetScript()->DoAction(0);
                 pCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
@@ -2627,7 +2627,7 @@ class NightbaneAI : public CreatureAIScript
 
             getCreature()->setControlled(false, UNIT_STATE_ROOTED);
             getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
-            getCreature()->StopMoving();
+            getCreature()->stopMoving();
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             setWaypointToMove(1, 2);
             m_phase++;
@@ -2687,7 +2687,7 @@ class NightbaneAI : public CreatureAIScript
                 getCreature()->interruptSpell();
 
             getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
-            getCreature()->StopMoving();
+            getCreature()->stopMoving();
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             setWaypointToMove(1, 1);
             Fly();

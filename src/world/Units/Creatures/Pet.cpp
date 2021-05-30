@@ -1032,8 +1032,8 @@ void Pet::OnPushToWorld()
 void Pet::InitializeMe(bool first)
 {
     GetAIInterface()->Init(this, AI_SCRIPT_PET, m_Owner);
-    GetAIInterface()->SetPetOwner(m_Owner);
-    GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, this, 0);
+    GetAIInterface()->setPetOwner(m_Owner);
+    GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, this, 0);
 
     creature_properties = sMySQLStore.getCreatureProperties(getEntry());
     if (creature_properties == nullptr)
@@ -2179,7 +2179,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     pAttacker->smsg_AttackStop(this);
 
-    GetAIInterface()->OnDeath(pAttacker);
+    GetAIInterface()->onDeath(pAttacker);
 
     // Clear Threat
     getThreatManager().clearAllThreat();

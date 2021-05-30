@@ -64,7 +64,7 @@ bool FleeingMovementGenerator<T>::doUpdate(T* owner, uint32_t diff)
     if (owner->hasUnitStateFlag(UNIT_STATE_NOT_MOVE) || owner->isCastingSpell())
     {
         MovementGenerator::addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
-        owner->StopMoving();
+        owner->stopMoving();
         _path = nullptr;
         return true;
     }
@@ -102,7 +102,7 @@ void FleeingMovementGenerator<Player>::doFinalize(Player* owner, bool active, bo
     {
         owner->removeUnitFlags(UNIT_FLAG_FLEEING);
         owner->removeUnitStateFlag(UNIT_STATE_FLEEING_MOVE);
-        owner->StopMoving();
+        owner->stopMoving();
     }
 }
 
@@ -129,7 +129,7 @@ void FleeingMovementGenerator<T>::setTargetLocation(T* owner)
     if (owner->hasUnitStateFlag(UNIT_STATE_NOT_MOVE) || owner->isCastingSpell())
     {
         MovementGenerator::addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
-        owner->StopMoving();
+        owner->stopMoving();
         _path = nullptr;
         return;
     }
@@ -203,7 +203,7 @@ void FleeingMovementGenerator<T>::getPoint(T* owner, LocationVector &position)
         angle = Util::getRandomFloat(0.0f, 2.0f * float(M_PI));
     }
 
-    owner->MovePositionToFirstCollision(position, distance, angle);
+    owner->movePositionToFirstCollision(position, distance, angle);
 }
 
 template FleeingMovementGenerator<Player>::FleeingMovementGenerator(uint64_t);
@@ -244,7 +244,7 @@ void TimedFleeingMovementGenerator::finalize(Unit* owner, bool active, bool/* mo
         return;
 
     owner->removeUnitFlags(UNIT_FLAG_FLEEING);
-    owner->StopMoving();
+    owner->stopMoving();
     if (Unit* victim = owner->GetAIInterface()->getCurrentTarget())
     {
         if (owner->isAlive())

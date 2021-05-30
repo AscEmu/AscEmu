@@ -459,7 +459,7 @@ void CreatureAIScript::moveToSpawn()
 
 void CreatureAIScript::stopMovement()
 {
-    _creature->StopMoving();
+    _creature->stopMoving();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -551,7 +551,7 @@ void CreatureAIScript::setWaypointToMove(uint32_t pathId, uint32_t pWaypointId)
 
 void CreatureAIScript::stopWaypointMovement()
 {
-    getCreature()->StopMoving();
+    getCreature()->stopMoving();
 }
 
 uint32_t CreatureAIScript::getCurrentWaypoint()

@@ -470,7 +470,7 @@ bool ChatHandler::HandleMoveFallCommand(const char* /*args*/, WorldSession* m_se
     if (!target)
         return true;
 
-    bool needsFalling = (target->IsFlying() || target->IsHovering()) && !target->isUnderWater();
+    bool needsFalling = (target->IsFlying() || target->isHovering()) && !target->isUnderWater();
     target->setMoveHover(false);
     target->setMoveDisableGravity(false);
 

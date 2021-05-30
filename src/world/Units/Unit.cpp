@@ -1463,7 +1463,7 @@ void Unit::setMoveRoot(bool set_root)
         if (set_root)
         {
             addUnitMovementFlag(MOVEFLAG_ROOTED);
-            StopMoving();
+            stopMoving();
 
             WorldPacket data(SMSG_FORCE_MOVE_ROOT, 12);
 #if VERSION_STRING < Cata
@@ -1477,7 +1477,7 @@ void Unit::setMoveRoot(bool set_root)
         else
         {
             removeUnitMovementFlag(MOVEFLAG_ROOTED);
-            StopMoving();
+            stopMoving();
 
             WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 12);
 #if VERSION_STRING < Cata
@@ -1494,7 +1494,7 @@ void Unit::setMoveRoot(bool set_root)
     {
         if (set_root)
         {
-            StopMoving();
+            stopMoving();
             addUnitMovementFlag(MOVEFLAG_ROOTED);
 
             WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 9);
@@ -1743,7 +1743,7 @@ bool Unit::isUnderWater() const
     return false;
 }
 
-bool Unit::CanSwim()
+bool Unit::canSwim()
 {
     // Mirror client behavior, if this method returns false then client will not use swimming animation and for players will apply gravity as if there was no water
     if (hasUnitFlags(UNIT_FLAG_DEAD))
@@ -1759,7 +1759,7 @@ bool Unit::CanSwim()
     return hasUnitFlags(UNIT_FLAG_UNKNOWN_5 | UNIT_FLAG_SWIMMING);
 }
 
-bool Unit::CanFly()
+bool Unit::canFly()
 {
     return false;
 }
@@ -6024,11 +6024,11 @@ bool Unit::isInAccessiblePlaceFor(Creature* c) const
     float height = GetPositionZ();
 
     if (isInWater())
-        return c->CanSwim();
+        return c->canSwim();
     else if (IsFlying() || (ground) < (height - 10) && !GetTransport()) // we could be flying antihack!
-        return c->CanFly();
+        return c->canFly();
     else
-        return c->CanWalk() || c->CanFly();
+        return c->canWalk() || c->canFly();
 }
 
 void Unit::setControlled(bool apply, UnitStates state)
@@ -6042,7 +6042,7 @@ void Unit::setControlled(bool apply, UnitStates state)
         switch (state)
         {
         case UNIT_STATE_STUNNED:
-            SetStunned(true);
+            setStunned(true);
             break;
         case UNIT_STATE_ROOTED:
             if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
@@ -6052,14 +6052,14 @@ void Unit::setControlled(bool apply, UnitStates state)
             if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
             {
                 removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
-                SetConfused(true);
+                setConfused(true);
             }
             break;
         case UNIT_STATE_FLEEING:
             if (!hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_CONFUSED))
             {
                 removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
-                SetFeared(true);
+                setFeared(true);
             }
             break;
         default:
@@ -6075,10 +6075,10 @@ void Unit::setControlled(bool apply, UnitStates state)
                 return;
 
             removeUnitStateFlag(state);
-            SetStunned(false);
+            setStunned(false);
             break;
         case UNIT_STATE_ROOTED:
-            if (getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT) || isVehicle() || (ToCreature() && ToCreature()->GetMovementTemplate().IsRooted()))
+            if (getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT) || isVehicle() || (ToCreature() && ToCreature()->getMovementTemplate().isRooted()))
                 return;
 
             removeUnitStateFlag(state);
@@ -6089,14 +6089,14 @@ void Unit::setControlled(bool apply, UnitStates state)
                 return;
 
             removeUnitStateFlag(state);
-            SetConfused(false);
+            setConfused(false);
             break;
         case UNIT_STATE_FLEEING:
             if (getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
                 return;
 
             removeUnitStateFlag(state);
-            SetFeared(false);
+            setFeared(false);
             break;
         default:
             return;
@@ -6110,19 +6110,19 @@ void Unit::applyControlStatesIfNeeded()
 {
     // Unit States might have been already cleared but auras still present. I need to check with HasAuraType
     if (hasUnitStateFlag(UNIT_STATE_STUNNED) || getAuraWithAuraEffect(SPELL_AURA_MOD_STUN))
-        SetStunned(true);
+        setStunned(true);
 
     if (hasUnitStateFlag(UNIT_STATE_ROOTED) || getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT))
         setMoveRoot(true);
 
     if (hasUnitStateFlag(UNIT_STATE_CONFUSED) || getAuraWithAuraEffect(SPELL_AURA_MOD_CONFUSE))
-        SetConfused(true);
+        setConfused(true);
 
     if (hasUnitStateFlag(UNIT_STATE_FLEEING) || getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
-        SetFeared(true);
+        setFeared(true);
 }
 
-void Unit::SetStunned(bool apply)
+void Unit::setStunned(bool apply)
 {
     if (apply)
     {
@@ -6134,7 +6134,7 @@ void Unit::SetStunned(bool apply)
         // setting MOVEMENTFLAG_ROOT
         removeUnitMovementFlag(MOVEFLAG_MOVING_MASK);
         addUnitMovementFlag(MOVEFLAG_ROOTED);
-        StopMoving();
+        stopMoving();
 
         if (GetTypeFromGUID() == TYPEID_PLAYER)
             setStandState(STANDSTATE_STAND);
@@ -6184,7 +6184,7 @@ void Unit::SetStunned(bool apply)
     }
 }
 
-void Unit::SetFeared(bool apply)
+void Unit::setFeared(bool apply)
 {
     if (apply)
     {
@@ -6222,7 +6222,7 @@ void Unit::SetFeared(bool apply)
     }
 }
 
-void Unit::SetConfused(bool apply)
+void Unit::setConfused(bool apply)
 {
     if (apply)
     {
@@ -6247,7 +6247,7 @@ void Unit::SetConfused(bool apply)
     }
 }
 
-MovementGeneratorType Unit::GetDefaultMovementType() const
+MovementGeneratorType Unit::getDefaultMovementType() const
 {
     return IDLE_MOTION_TYPE;
 }

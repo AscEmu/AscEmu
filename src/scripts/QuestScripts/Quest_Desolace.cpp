@@ -34,7 +34,7 @@ class Dalinda_Malem : public CreatureAIScript
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, these orcs wanted me to weld in the boiler");
             getCreature()->Despawn(5000, 1000);
-            getCreature()->StopMoving();
+            getCreature()->stopMoving();
             if (getCreature()->m_escorter == nullptr)
                 return;
 

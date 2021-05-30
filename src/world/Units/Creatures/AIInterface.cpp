@@ -82,7 +82,7 @@ AIInterface::AIInterface()
     timed_emote_expire(0xFFFFFFFF)
 {
     _boundary.clear();
-    SetCannotReachTarget(false);
+    setCannotReachTarget(false);
     m_fleeTimer.resetInterval(0);
     m_cannotReachTimer.resetInterval(500);
     m_updateTargetsTimer.resetInterval(TARGET_UPDATE_INTERVAL);
@@ -129,7 +129,7 @@ Unit* AIInterface::getCurrentTarget() const
     return m_target;
 }
 
-void AIInterface::HandleEvent(uint32_t event, Unit* pUnit, uint32_t misc1)
+void AIInterface::handleEvent(uint32_t event, Unit* pUnit, uint32_t misc1)
 {
     if (m_Unit == nullptr)
         return;
@@ -152,7 +152,7 @@ bool AIInterface::canUnitEvade(unsigned long time_passed)
     }
 
     // if we cannot reach the Target go in Evade Mode
-    if (CanNotReachTarget() && !getUnit()->isInEvadeMode())
+    if (canNotReachTarget() && !getUnit()->isInEvadeMode())
     {
         m_cannotReachTimer.updateTimer(time_passed);
         if (m_cannotReachTimer.isTimePassed())
@@ -183,10 +183,10 @@ bool AIInterface::_enterEvadeMode()
 
     if (!getUnit()->isAlive())
     {
-        HandleEvent(EVENT_LEAVECOMBAT, getUnit(), 0);
+        handleEvent(EVENT_LEAVECOMBAT, getUnit(), 0);
         return false;
     }
-    HandleEvent(EVENT_LEAVECOMBAT, getUnit(), 0);
+    handleEvent(EVENT_LEAVECOMBAT, getUnit(), 0);
     return true;
 }
 
@@ -209,7 +209,7 @@ void AIInterface::enterEvadeMode()
                     static_cast<Pet*>(m_Unit)->HandleAutoCastEvent(AUTOCAST_EVENT_LEAVE_COMBAT);
                 }
             }
-            HandleEvent(EVENT_FOLLOWOWNER, 0, 0);
+            handleEvent(EVENT_FOLLOWOWNER, 0, 0);
         }
         else
         {
@@ -654,7 +654,7 @@ void AIInterface::doFleeToGetAssistance()
     float radius = 30.0f;
     if (radius > 0)
     {
-        Creature* creature = getUnit()->GetMapMgr()->GetInterface()->GetNearestAssistCreatureInGrid(getUnit()->ToCreature(), getCurrentTarget(), radius);
+        Creature* creature = getUnit()->GetMapMgr()->GetInterface()->getNearestAssistCreatureInGrid(getUnit()->ToCreature(), getCurrentTarget(), radius);
 
         setNoSearchAssistance(true);
 
@@ -676,7 +676,7 @@ void AIInterface::callAssistance()
 
         if (radius > 0)
         {
-            Creature* creature = getUnit()->GetMapMgr()->GetInterface()->GetNearestAssistCreatureInGrid(getUnit()->ToCreature(), getCurrentTarget(), radius);
+            Creature* creature = getUnit()->GetMapMgr()->GetInterface()->getNearestAssistCreatureInGrid(getUnit()->ToCreature(), getCurrentTarget(), radius);
 
             if (creature)
             {
@@ -1243,7 +1243,7 @@ void AIInterface::updateTotem(uint32_t p_time)
     }
 }
 
-void AIInterface::JustEnteredCombat(Unit* pUnit)
+void AIInterface::justEnteredCombat(Unit* pUnit)
 {
     if (!getAllowedToEnterCombat())
         return;
@@ -1271,7 +1271,7 @@ void AIInterface::JustEnteredCombat(Unit* pUnit)
 
     setDefaultBoundary();
 
-    HandleEvent(EVENT_ENTERCOMBAT, pUnit, 0);
+    handleEvent(EVENT_ENTERCOMBAT, pUnit, 0);
 }
 
 void AIInterface::setImmuneToNPC(bool apply)
@@ -1303,7 +1303,7 @@ void AIInterface::onHostileAction(Unit* pUnit, SpellInfo const* spellInfo/* = nu
     const auto wasEngaged = isEngaged();
 
     // Start combat
-    JustEnteredCombat(pUnit);
+    justEnteredCombat(pUnit);
     // Add initial threat
     if (getUnit()->getThreatManager().canHaveThreatList())
         getUnit()->getThreatManager().addThreat(pUnit, 0.0f, spellInfo, true, ignoreThreatRedirects);
@@ -1311,7 +1311,7 @@ void AIInterface::onHostileAction(Unit* pUnit, SpellInfo const* spellInfo/* = nu
     // Send hostile action event if unit was already engaged
     // no need to send this if unit just started combat
     if (wasEngaged)
-        HandleEvent(EVENT_HOSTILEACTION, pUnit, 0);
+        handleEvent(EVENT_HOSTILEACTION, pUnit, 0);
 }
 
 void AIInterface::addSpellToList(AI_Spell* sp)
@@ -1457,19 +1457,19 @@ uint8_t AIInterface::getDifficultyType()
     return difficulty_type;
 }
 
-void AIInterface::EventForceRedirected(Unit* /*pUnit*/, uint32_t /*misc1*/) { }
+void AIInterface::eventForceRedirected(Unit* /*pUnit*/, uint32_t /*misc1*/) { }
 
-void AIInterface::EventHostileAction(Unit* /*pUnit*/, uint32_t /*misc1*/)
+void AIInterface::eventHostileAction(Unit* /*pUnit*/, uint32_t /*misc1*/)
 {
     // On hostile action, set new default boundary
     setDefaultBoundary();
 }
 
-void AIInterface::EventWander(Unit* /*pUnit*/, uint32_t /*misc1*/) { }
+void AIInterface::eventWander(Unit* /*pUnit*/, uint32_t /*misc1*/) { }
 
-void AIInterface::EventUnwander(Unit* /*pUnit*/, uint32_t /*misc1*/) { }
+void AIInterface::eventUnwander(Unit* /*pUnit*/, uint32_t /*misc1*/) { }
 
-void AIInterface::EventFear(Unit* pUnit, uint32_t /*misc1*/)
+void AIInterface::eventFear(Unit* pUnit, uint32_t /*misc1*/)
 {
     if (pUnit == nullptr)
         return;
@@ -1481,7 +1481,7 @@ void AIInterface::EventFear(Unit* pUnit, uint32_t /*misc1*/)
     setAiState(AI_STATE_FEAR);
 }
 
-void AIInterface::EventUnfear(Unit* /*pUnit*/, uint32_t /*misc1*/)
+void AIInterface::eventUnfear(Unit* /*pUnit*/, uint32_t /*misc1*/)
 {
     if (getUnit()->isInEvadeMode())
         return;
@@ -1491,13 +1491,13 @@ void AIInterface::EventUnfear(Unit* /*pUnit*/, uint32_t /*misc1*/)
     setAiState(AI_STATE_UNFEARED); // let future reactions put us back into combat without bugging return positions
 }
 
-void AIInterface::EventFollowOwner(Unit* /*pUnit*/, uint32_t /*misc1*/)
+void AIInterface::eventFollowOwner(Unit* /*pUnit*/, uint32_t /*misc1*/)
 {
     getUnit()->getMovementManager()->clear();
     getUnit()->getMovementManager()->moveFollow(getPetOwner(), PET_FOLLOW_DIST, getUnit()->getFollowAngle());
 }
 
-void AIInterface::EventDamageTaken(Unit* pUnit, uint32_t misc1)
+void AIInterface::eventDamageTaken(Unit* pUnit, uint32_t misc1)
 {
     if (getUnit()->isInEvadeMode())
         return;
@@ -1514,7 +1514,7 @@ void AIInterface::EventDamageTaken(Unit* pUnit, uint32_t misc1)
     pUnit->CombatStatus.OnDamageDealt(m_Unit);
 }
 
-void AIInterface::EventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
+void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
 {
     if (pUnit == nullptr || pUnit->isDead() || m_Unit->isDead())
         return;
@@ -1641,12 +1641,12 @@ void AIInterface::removeNextSpell(uint32_t spellId)
         spellEvents.removeEvent(spellId);
 }
 
-void AIInterface::EventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
+void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
 {
     m_isEngaged = false;
     spellEvents.resetEvents();
     setUnitToFollow(nullptr);
-    SetCannotReachTarget(false);
+    setCannotReachTarget(false);
     getUnit()->setTargetGuid(0);
 
     if (pUnit == nullptr)
@@ -1713,7 +1713,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
     m_Unit->smsg_AttackStop(pUnit);
 }
 
-void AIInterface::EventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
+void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 {
     m_isEngaged = false;
     spellEvents.resetEvents();
@@ -1812,15 +1812,15 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
     }
 }
 
-void AIInterface::OnDeath(Object* pKiller)
+void AIInterface::onDeath(Object* pKiller)
 {
     if (pKiller->isCreatureOrPlayer())
-        HandleEvent(EVENT_UNITDIED, static_cast<Unit*>(pKiller), 0);
+        handleEvent(EVENT_UNITDIED, static_cast<Unit*>(pKiller), 0);
     else
-        HandleEvent(EVENT_UNITDIED, m_Unit, 0);
+        handleEvent(EVENT_UNITDIED, m_Unit, 0);
 }
 
-void AIInterface::SetCannotReachTarget(bool cannotReach)
+void AIInterface::setCannotReachTarget(bool cannotReach)
 {
     if (cannotReach == m_cannotReachTarget)
         return;
@@ -1866,7 +1866,7 @@ bool AIInterface::isInBoundary() const
 /*static*/ bool AIInterface::isInBounds(CreatureBoundary const* boundary, LocationVector pos)
 {
     for (AreaBoundary const* areaBoundary : *boundary)
-        if (!areaBoundary->IsWithinBoundary(pos))
+        if (!areaBoundary->isWithinBoundary(pos))
             return false;
 
     return true;
@@ -1922,7 +1922,7 @@ void AIInterface::movementInform(uint32_t type, uint32_t id)
     CALL_SCRIPT_EVENT(m_Unit, OnReachWP)(type, id);
 }
 
-void AIInterface::EventChangeFaction(Unit* ForceAttackersToHateThisInstead)
+void AIInterface::eventChangeFaction(Unit* ForceAttackersToHateThisInstead)
 {
     getUnit()->getThreatManager().removeMeFromThreatLists();
 
@@ -1956,7 +1956,7 @@ bool AIInterface::moveTo(float x, float y, float z, float /*o = 0.0f*/, bool run
 {
     if (m_Unit->isRooted() || m_Unit->IsStunned())
     {
-        m_Unit->StopMoving() ; //Just Stop
+        m_Unit->stopMoving() ; //Just Stop
         return false;
     }
 
@@ -1976,7 +1976,7 @@ void AIInterface::calcDestinationAndMove(Unit* target, float dist)
 {
     if (m_Unit->isRooted() || m_Unit->IsStunned())
     {
-        m_Unit->StopMoving(); //Just Stop
+        m_Unit->stopMoving(); //Just Stop
         return;
     }
 

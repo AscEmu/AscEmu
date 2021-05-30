@@ -89,13 +89,13 @@ struct SERVER_DECL CreatureMovementData
     CreatureChaseMovementType Chase;
     CreatureRandomMovementType Random;
 
-    bool IsGroundAllowed() const { return Ground != CreatureGroundMovementType::None; }
-    bool IsSwimAllowed() const { return Swim; }
-    bool IsFlightAllowed() const { return Flight != CreatureFlightMovementType::None; }
-    bool IsRooted() const { return Rooted; }
+    bool isGroundAllowed() const { return Ground != CreatureGroundMovementType::None; }
+    bool isSwimAllowed() const { return Swim; }
+    bool isFlightAllowed() const { return Flight != CreatureFlightMovementType::None; }
+    bool isRooted() const { return Rooted; }
 
-    CreatureChaseMovementType GetChase() const { return Chase; }
-    CreatureRandomMovementType GetRandom() const { return Random; }
+    CreatureChaseMovementType getChase() const { return Chase; }
+    CreatureRandomMovementType getRandom() const { return Random; }
 };
 
 enum creatureguardtype

@@ -66,8 +66,8 @@ class SERVER_DECL CreatureGroup
         explicit CreatureGroup(uint32_t leaderSpawnId);
         ~CreatureGroup();
 
-        Creature* GetLeader() const { return _leader; }
-        uint32_t GetLeaderSpawnId() const { return _leaderSpawnId; }
+        Creature* getLeader() const { return _leader; }
+        uint32_t getLeaderSpawnId() const { return _leaderSpawnId; }
         bool isEmpty() const { return _members.empty(); }
         bool isFormed() const { return _formed; }
         bool isLeader(Creature const* creature) const { return _leader == creature; }

@@ -37,7 +37,7 @@ void ConfusedMovementGenerator<T>::doInitialize(T* owner)
 
     // TODO: UNIT_FIELD_FLAGS should not be handled by generators
     owner->setUnitFlags(UNIT_FLAG_CONFUSED);
-    owner->StopMoving();
+    owner->stopMoving();
 
     _timer.resetInterval(0);
     owner->getPosition(_x, _y, _z);
@@ -61,7 +61,7 @@ bool ConfusedMovementGenerator<T>::doUpdate(T* owner, uint32_t diff)
     if (owner->hasUnitStateFlag(UNIT_STATE_NOT_MOVE) || owner->isCastingSpell())
     {
         MovementGenerator::addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
-        owner->StopMoving();
+        owner->stopMoving();
         _path = nullptr;
         return true;
     }
@@ -77,7 +77,7 @@ bool ConfusedMovementGenerator<T>::doUpdate(T* owner, uint32_t diff)
         LocationVector destination(_x, _y, _z);
         float distance = 4.0f * Util::getRandomFloat(0.0f, 1.0f) - 2.0f;
         float angle = Util::getRandomFloat(0.0f, 1.0f) * float(M_PI) * 2.0f;
-        owner->MovePositionToFirstCollision(destination, distance, angle);
+        owner->movePositionToFirstCollision(destination, distance, angle);
 
         // Check if the destination is in LOS
         if (!owner->IsWithinLOS(destination))
@@ -132,7 +132,7 @@ void ConfusedMovementGenerator<Player>::doFinalize(Player* owner, bool active, b
     if (active)
     {
         owner->removeUnitFlags(UNIT_FLAG_CONFUSED);
-        owner->StopMoving();
+        owner->stopMoving();
     }
 }
 

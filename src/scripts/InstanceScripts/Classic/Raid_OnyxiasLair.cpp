@@ -202,7 +202,7 @@ class OnyxiaAI : public CreatureAIScript
 
             getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
             //_unit->m_pacified++;
-            getCreature()->StopMoving();
+            getCreature()->stopMoving();
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             setWaypointToMove(1, 1);
 
@@ -223,7 +223,7 @@ class OnyxiaAI : public CreatureAIScript
             getCreature()->setControlled(false, UNIT_STATE_ROOTED);
             getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
             //_unit->m_pacified++;
-            getCreature()->StopMoving();
+            getCreature()->stopMoving();
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             setWaypointToMove(1, 8);
 

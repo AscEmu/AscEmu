@@ -67,7 +67,7 @@ void RandomMovementGenerator<Creature>::doInitialize(Creature* owner)
         return;
 
     _reference = owner->GetPosition();
-    owner->StopMoving();
+    owner->stopMoving();
 
     if (_maxWanderDistance == 0.f)
         _maxWanderDistance = owner->getMaxWanderDistance();
@@ -91,10 +91,10 @@ void RandomMovementGenerator<Creature>::doReset(Creature* owner)
 }
 
 template<class T>
-void RandomMovementGenerator<T>::SetRandomLocation(T*) { }
+void RandomMovementGenerator<T>::setRandomLocation(T*) { }
 
 template<>
-void RandomMovementGenerator<Creature>::SetRandomLocation(Creature* owner)
+void RandomMovementGenerator<Creature>::setRandomLocation(Creature* owner)
 {
     if (!owner)
         return;
@@ -102,7 +102,7 @@ void RandomMovementGenerator<Creature>::SetRandomLocation(Creature* owner)
     if (owner->hasUnitStateFlag(UNIT_STATE_NOT_MOVE | UNIT_STATE_LOST_CONTROL) || owner->isCastingSpell())
     {
         addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
-        owner->StopMoving();
+        owner->stopMoving();
         _path = nullptr;
         return;
     }
@@ -110,7 +110,7 @@ void RandomMovementGenerator<Creature>::SetRandomLocation(Creature* owner)
     LocationVector position(_reference);
     float distance = Util::getRandomFloat(0.f, _maxWanderDistance);
     float angle = Util::getRandomFloat(0.f, float(M_PI * 2));
-    owner->MovePositionToFirstCollision(position, distance, angle);
+    owner->movePositionToFirstCollision(position, distance, angle);
 
     // Check if the destination is in LOS
     if (!owner->IsWithinLOS(position))
@@ -141,10 +141,10 @@ void RandomMovementGenerator<Creature>::SetRandomLocation(Creature* owner)
     owner->addUnitStateFlag(UNIT_STATE_ROAMING_MOVE);
 
     bool walk = true;
-    switch (owner->GetMovementTemplate().GetRandom())
+    switch (owner->getMovementTemplate().getRandom())
     {
         case CreatureRandomMovementType::CanRun:
-            walk = owner->IsWalking();
+            walk = owner->isWalking();
             break;
         case CreatureRandomMovementType::AlwaysRun:
             walk = false;
@@ -190,7 +190,7 @@ bool RandomMovementGenerator<Creature>::doUpdate(Creature* owner, uint32_t diff)
     if (owner->hasUnitStateFlag(UNIT_STATE_NOT_MOVE) || owner->isCastingSpell())
     {
         addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
-        owner->StopMoving();
+        owner->stopMoving();
         _path = nullptr;
         return true;
     }
@@ -199,7 +199,7 @@ bool RandomMovementGenerator<Creature>::doUpdate(Creature* owner, uint32_t diff)
 
     _timer.updateTimer(diff);
     if ((hasFlag(MOVEMENTGENERATOR_FLAG_SPEED_UPDATE_PENDING) && !owner->movespline->Finalized()) || (_timer.isTimePassed() && owner->movespline->Finalized()))
-        SetRandomLocation(owner);
+        setRandomLocation(owner);
 
     return true;
 }
@@ -224,7 +224,7 @@ void RandomMovementGenerator<Creature>::doFinalize(Creature* owner, bool active,
     if (active)
     {
         owner->removeUnitStateFlag(UNIT_STATE_ROAMING_MOVE);
-        owner->StopMoving();
+        owner->stopMoving();
 
         // TODO: Research if this modification is needed, which most likely isnt
         owner->setMoveWalk(false);

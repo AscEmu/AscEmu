@@ -44,7 +44,7 @@ void PointMovementGenerator<T>::doInitialize(T* owner)
     if (owner->hasUnitStateFlag(UNIT_STATE_NOT_MOVE) || owner->isCastingSpell())
     {
         MovementGenerator::addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
-        owner->StopMoving();
+        owner->stopMoving();
         return;
     }
 
@@ -92,7 +92,7 @@ bool PointMovementGenerator<T>::doUpdate(T* owner, uint32_t /*diff*/)
     if (owner->hasUnitStateFlag(UNIT_STATE_NOT_MOVE) || owner->ToUnit()->isCastingSpell())
     {
         MovementGenerator::addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
-        owner->StopMoving();
+        owner->stopMoving();
         return true;
     }
 

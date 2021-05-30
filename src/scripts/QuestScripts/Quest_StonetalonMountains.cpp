@@ -24,7 +24,7 @@ public:
         creat->m_escorter = mTarget;
 
         creat->getMovementManager()->movePath(creat->getWaypointPath(), false);
-        creat->PauseMovement(10);
+        creat->pauseMovement(10);
 
         creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Lets go");
         creat->setNpcFlags(UNIT_NPC_FLAG_NONE);

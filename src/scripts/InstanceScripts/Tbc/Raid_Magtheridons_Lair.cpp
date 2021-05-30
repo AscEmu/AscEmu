@@ -501,7 +501,7 @@ public:
         if (Counter >= ACTIVE_CUBES_TO_BANISH && Magtheridon && Magtheridon->isAlive())
         {
             Magtheridon->castSpell(Magtheridon, sSpellMgr.getSpellInfo(BANISH), true);
-            Magtheridon->PauseMovement(3000);
+            Magtheridon->pauseMovement(3000);
             Magtheridon->setAttackTimer(MELEE, 3000);
 
             if (Magtheridon->isCastingSpell())
@@ -771,7 +771,7 @@ class MagtheridonAI : public CreatureAIScript
         }
         if (timer_blastNova > 33 && !getCreature()->isCastingSpell() && !aura)
         {
-            getCreature()->PauseMovement(3000);
+            getCreature()->pauseMovement(3000);
             getCreature()->setAttackTimer(MELEE, 3000);
 
             getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(BLAST_NOVA), false);
@@ -823,7 +823,7 @@ class MagtheridonAI : public CreatureAIScript
         }
         if (timer_blastNova > 33 && !getCreature()->isCastingSpell() && !aura)
         {
-            getCreature()->PauseMovement(3000);
+            getCreature()->pauseMovement(3000);
             getCreature()->setAttackTimer(MELEE, 3000);
 
             getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(BLAST_NOVA), false);
@@ -840,7 +840,7 @@ class MagtheridonAI : public CreatureAIScript
             {
                 sendDBChatMessage(8752);     // I will not be taken so easily. Let the walls of this prison tremble... and FALL!!!
 
-                getCreature()->PauseMovement(2000);
+                getCreature()->pauseMovement(2000);
                 getCreature()->setAttackTimer(MELEE, 2000);
 
                 getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(CAMERA_SHAKE), true);

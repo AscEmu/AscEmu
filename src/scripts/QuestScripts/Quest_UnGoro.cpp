@@ -112,7 +112,7 @@ class A_Me01 : public CreatureAIScript
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tr..........");
             getCreature()->Despawn(5000, 1000);
-            getCreature()->StopMoving();
+            getCreature()->stopMoving();
             if (getCreature()->m_escorter == nullptr)
                 return;
 

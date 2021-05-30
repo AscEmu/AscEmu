@@ -34,7 +34,7 @@ class The_Defias_Traitor : public CreatureAIScript
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell your master that this is where Van Cleef is hiding. I'm outta here!");
             getCreature()->Despawn(5000, 1000);
-            getCreature()->StopMoving();
+            getCreature()->stopMoving();
 
             if (getCreature()->m_escorter == nullptr)
                 return;

@@ -1145,7 +1145,7 @@ void Spell::AddTime(uint32 type)
             if (p_caster == nullptr)
             {
                 //then it's a Creature
-                u_caster->PauseMovement(delay);
+                u_caster->pauseMovement(delay);
             }
             //in case cast is delayed, make sure we do not exit combat
             else

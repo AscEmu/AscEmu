@@ -26,12 +26,12 @@ IdleMovementGenerator::IdleMovementGenerator()
  */
 void IdleMovementGenerator::initialize(Unit* owner)
 {
-    owner->StopMoving();
+    owner->stopMoving();
 }
 
 void IdleMovementGenerator::reset(Unit* owner)
 {
-    owner->StopMoving();
+    owner->stopMoving();
 }
 
 void IdleMovementGenerator::deactivate(Unit* /*owner*/)
@@ -63,7 +63,7 @@ void RotateMovementGenerator::initialize(Unit* owner)
     removeFlag(MOVEMENTGENERATOR_FLAG_INITIALIZATION_PENDING | MOVEMENTGENERATOR_FLAG_DEACTIVATED);
     addFlag(MOVEMENTGENERATOR_FLAG_INITIALIZED);
 
-    owner->StopMoving();
+    owner->stopMoving();
 }
 
 void RotateMovementGenerator::reset(Unit* owner)

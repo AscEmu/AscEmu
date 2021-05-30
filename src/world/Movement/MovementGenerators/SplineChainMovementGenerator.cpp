@@ -115,7 +115,7 @@ void SplineChainMovementGenerator::reset(Unit* owner)
 {
     removeFlag(MOVEMENTGENERATOR_FLAG_DEACTIVATED);
 
-    owner->StopMoving();
+    owner->stopMoving();
     initialize(owner);
 }
 

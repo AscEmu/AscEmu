@@ -65,7 +65,7 @@ void FormationMgr::addCreatureToGroup(uint32_t leaderSpawnId, Creature* creature
 
 void FormationMgr::removeCreatureFromGroup(CreatureGroup* group, Creature* member)
 {
-    sLogger.debug("FormationMgr : Deleting member pointer to GUID: %u from group %u", group->GetLeaderSpawnId(), member->getSpawnId());
+    sLogger.debug("FormationMgr : Deleting member pointer to GUID: %u from group %u", group->getLeaderSpawnId(), member->getSpawnId());
     group->removeMember(member);
 
     if (group->isEmpty())
@@ -73,7 +73,7 @@ void FormationMgr::removeCreatureFromGroup(CreatureGroup* group, Creature* membe
         MapMgr* map = member->GetMapMgr();
 
         sLogger.debug("FormationMgr : Deleting group with InstanceID %u", member->GetInstanceID());
-        auto itr = map->CreatureGroupHolder.find(group->GetLeaderSpawnId());
+        auto itr = map->CreatureGroupHolder.find(group->getLeaderSpawnId());
         ASSERT(itr != map->CreatureGroupHolder.end() && "Not registered group in map");
         map->CreatureGroupHolder.erase(itr);
         delete group;

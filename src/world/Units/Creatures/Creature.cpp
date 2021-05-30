@@ -317,7 +317,7 @@ void Creature::OnRemoveCorpse()
 
         // if corpse was removed during falling, the falling will continue and override relocation to respawn position
         if (IsFalling())
-            StopMoving();
+            stopMoving();
 
         setMoveCanFly(false);
 
@@ -349,7 +349,7 @@ void Creature::OnRespawn(MapMgr* m)
 
     // if corpse was removed during falling, the falling will continue and override relocation to respawn position
     if (IsFalling())
-        StopMoving();
+        stopMoving();
 
     getMovementManager()->clear();
 
@@ -547,7 +547,7 @@ void Creature::SaveToDB()
         m_spawn = new MySQLStructure::CreatureSpawn;
         m_spawn->entry = getEntry();
         m_spawn->id = spawnid = sObjectMgr.GenerateCreatureSpawnID();
-        m_spawn->movetype = GetDefaultMovementType();
+        m_spawn->movetype = getDefaultMovementType();
         m_spawn->displayid = getDisplayId();
         m_spawn->x = m_position.x;
         m_spawn->y = m_position.y;
@@ -612,7 +612,7 @@ void Creature::SaveToDB()
         << m_position.y << ","
         << m_position.z << ","
         << m_position.o << ","
-        << GetDefaultMovementType() << ","
+        << getDefaultMovementType() << ","
         << getDisplayId() << ","
         << getFactionTemplate() << ","
         << getUnitFlags() << ","
@@ -806,7 +806,7 @@ void Creature::setDeathState(DeathState s)
 
     if (s == JUST_DIED)
     {
-        StopMoving();
+        stopMoving();
         m_deathState = CORPSE;
         m_corpseEvent = true;
 
@@ -815,7 +815,7 @@ void Creature::setDeathState(DeathState s)
             RemoveEnslave();
 
         //Dismiss group if is leader
-        if (m_formation && m_formation->GetLeader() == this)
+        if (m_formation && m_formation->getLeader() == this)
             m_formation->formationReset(true);
 
         for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
@@ -831,7 +831,7 @@ void Creature::setDeathState(DeathState s)
     }
     else m_deathState = s;
 
-    //Motion_Initialize();
+    //motion_Initialize();
 }
 
 void Creature::AddToWorld()
@@ -851,10 +851,10 @@ void Creature::AddToWorld()
 
     Object::AddToWorld();
     searchFormation();   
-    Motion_Initialize();
+    motion_Initialize();
     immediateMovementFlagsUpdate();
 
-    if (GetMovementTemplate().IsRooted())
+    if (getMovementTemplate().isRooted())
         setControlled(true, UNIT_STATE_ROOTED);
 }
 
@@ -875,10 +875,10 @@ void Creature::AddToWorld(MapMgr* pMapMgr)
 
     Object::AddToWorld(pMapMgr);
     searchFormation();
-    Motion_Initialize();
+    motion_Initialize();
     immediateMovementFlagsUpdate();
 
-    if (GetMovementTemplate().IsRooted())
+    if (getMovementTemplate().isRooted())
         setControlled(true, UNIT_STATE_ROOTED);
 }
 
@@ -983,7 +983,7 @@ void Creature::onRemoveInRangeObject(Object* pObj)
     if (m_escorter == pObj)
     {
         // we lost our escorter, return to the spawn.
-        StopMoving();
+        stopMoving();
 
         m_escorter = NULL;
         Despawn(1000, 1000);
@@ -1626,7 +1626,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         setAItoUse(false);
     }
 
-    if (GetMovementTemplate().IsRooted())
+    if (getMovementTemplate().isRooted())
         setControlled(true, UNIT_STATE_ROOTED);
 
     return true;
@@ -1805,7 +1805,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         setAItoUse(false);
     }
 
-    if (GetMovementTemplate().IsRooted())
+    if (getMovementTemplate().isRooted())
         setControlled(true, UNIT_STATE_ROOTED);
 }
 
@@ -2265,7 +2265,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     getSummonInterface()->removeAllSummons();
 
-    GetAIInterface()->OnDeath(pAttacker);
+    GetAIInterface()->onDeath(pAttacker);
 
     // Clear Threat
     getThreatManager().clearAllThreat();
@@ -2458,7 +2458,7 @@ void Creature::removeVehicleComponent()
     m_vehicle = nullptr;
 }
 
-CreatureMovementData const& Creature::GetMovementTemplate()
+CreatureMovementData const& Creature::getMovementTemplate()
 {
     if (CreatureMovementData const* movementOverride = sObjectMgr.getCreatureMovementOverride(spawnid))
         return *movementOverride;
@@ -2466,11 +2466,11 @@ CreatureMovementData const& Creature::GetMovementTemplate()
     return GetCreatureProperties()->Movement;
 }
 
-void Creature::Motion_Initialize()
+void Creature::motion_Initialize()
 {
     if (m_formation)
     {
-        if (m_formation->GetLeader() == this)
+        if (m_formation->getLeader() == this)
             m_formation->formationReset(false);
         else if (m_formation->isFormed())
         {
@@ -2498,23 +2498,22 @@ void Creature::updateMovementFlags()
     // Set the movement flags if the creature is in that mode. (Only fly if actually in air, only swim if in water, etc)
     const float ground = GetMapMgr()->GetLandHeight(GetPositionX(), GetPositionY(), GetPositionZ());
 
-    const auto canHover = CanHover();
     auto isInAir = false;
 
 #if VERSION_STRING < WotLK
     isInAir = (G3D::fuzzyGt(GetPositionZ(), ground + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyLt(GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE)); // Can be underground too, prevent the falling
 #else
-    isInAir = (G3D::fuzzyGt(GetPositionZ(), ground + (canHover ? getHoverHeight() : 0.0f) + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyLt(GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE)); // Can be underground too, prevent the falling
+    isInAir = (G3D::fuzzyGt(GetPositionZ(), ground + (canHover() ? getHoverHeight() : 0.0f) + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyLt(GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE)); // Can be underground too, prevent the falling
 #endif
 
     if (isInAir && !IsFalling())
     {
         auto needsFalling = false;
-        if (GetMovementTemplate().IsFlightAllowed())
+        if (getMovementTemplate().isFlightAllowed())
         {
             if (isAlive())
             {
-                if (GetMovementTemplate().Flight == CreatureFlightMovementType::CanFly)
+                if (getMovementTemplate().Flight == CreatureFlightMovementType::CanFly)
                 {
                     if (!hasUnitMovementFlag(MOVEFLAG_CAN_FLY))
                         setMoveCanFly(true);
@@ -2525,7 +2524,7 @@ void Creature::updateMovementFlags()
                         setMoveDisableGravity(true);
                 }
 
-                if (IsHovering() && hasAuraWithAuraEffect(SPELL_AURA_HOVER))
+                if (isHovering() && hasAuraWithAuraEffect(SPELL_AURA_HOVER))
                     setMoveHover(false);
             }
             else
@@ -2541,7 +2540,7 @@ void Creature::updateMovementFlags()
             }
         }
 
-        if (IsHovering() && (!hasAuraWithAuraEffect(SPELL_AURA_HOVER) || !isAlive()))
+        if (isHovering() && (!hasAuraWithAuraEffect(SPELL_AURA_HOVER) || !isAlive()))
         {
             setMoveHover(false);
             needsFalling = true;
@@ -2562,12 +2561,12 @@ void Creature::updateMovementFlags()
         if (hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
             setMoveDisableGravity(false);
 
-        if (!IsHovering() && isAlive() && (CanHover() || hasAuraWithAuraEffect(SPELL_AURA_HOVER)))
+        if (!isHovering() && isAlive() && (canHover() || hasAuraWithAuraEffect(SPELL_AURA_HOVER)))
             setMoveHover(true);
     }
 
     // Swimming flag
-    if (isInWater() && GetMovementTemplate().IsSwimAllowed())
+    if (isInWater() && getMovementTemplate().isSwimAllowed())
     {
         if (!hasUnitMovementFlag(MOVEFLAG_SWIMMING))
             setMoveSwim(true);

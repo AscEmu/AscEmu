@@ -252,7 +252,7 @@ void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
     if (creature != nullptr)
     {
         // makes npc stop when for example on its waypoint path // aaron02
-        creature->PauseMovement(30000);
+        creature->pauseMovement(30000);
         creature->SetSpawnLocation(creature->GetPosition());
 
         if (_player->isStealthed())

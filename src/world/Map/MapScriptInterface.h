@@ -104,7 +104,7 @@ class SERVER_DECL MapScriptInterface
             }
         }
 
-        inline Creature* GetNearestAssistCreatureInGrid(Creature* pCreature, Unit* enemy, float range /*= 250.0f*/) const
+        inline Creature* getNearestAssistCreatureInGrid(Creature* pCreature, Unit* enemy, float range /*= 250.0f*/) const
         {
             MapCell* pCell = mapMgr.GetCell(mapMgr.GetPosX(pCreature->GetPositionX()), mapMgr.GetPosY(pCreature->GetPositionY()));
             if (pCell == 0)

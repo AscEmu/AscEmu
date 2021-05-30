@@ -4369,7 +4369,7 @@ void Spell::SpellEffectTameCreature(uint8_t /*effectIndex*/)
     Creature* tame = static_cast<Creature*>(unitTarget);
 
     // Remove target
-    tame->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
+    tame->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
     Pet* pPet = sObjectMgr.CreatePet(tame->getEntry());
     if (!pPet->CreateAsSummon(tame->getEntry(), tame->GetCreatureProperties(), tame, p_caster, nullptr, 2, 0))
     {
@@ -4779,7 +4779,7 @@ void Spell::SpellEffectDistract(uint8_t /*effectIndex*/) // Distract
         auto destination = m_targets.getDestination();
         float newo = unitTarget->calcRadAngle(unitTarget->GetPositionX(), unitTarget->GetPositionY(), destination.x, destination.y);
 
-        unitTarget->PauseMovement(Stare_duration);
+        unitTarget->pauseMovement(Stare_duration);
         unitTarget->SetFacing(newo);
     }
 
@@ -5258,7 +5258,7 @@ void Spell::SpellEffectKnockBack(uint8_t effectIndex)
     else
         m_caster->getPosition(x, y);
 
-    unitTarget->KnockbackFrom(x, y, speedxy, speedz);
+    unitTarget->knockbackFrom(x, y, speedxy, speedz);
 }
 
 void Spell::SpellEffectKnockBack2(uint8_t effectIndex)
@@ -5461,7 +5461,7 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
         pPet->setDynamicFlags(0);
         pPet->setHealth((uint32)((pPet->getMaxHealth() * damage) / 100));
         pPet->setDeathState(ALIVE);
-        pPet->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, pPet, 0);
+        pPet->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, pPet, 0);
         sEventMgr.RemoveEvents(pPet, EVENT_PET_DELAYED_REMOVE);
         pPet->SendSpellsToOwner();
     }

@@ -33,12 +33,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace FactorySelector
 {
-    MovementGenerator* SelectMovementGenerator(Unit* unit)
+    MovementGenerator* selectMovementGenerator(Unit* unit)
     {
-        MovementGeneratorType type = unit->GetDefaultMovementType();
+        MovementGeneratorType type = unit->getDefaultMovementType();
         if (Creature* creature = unit->ToCreature())
             if (!creature->mPlayerControler)
-                type = creature->GetDefaultMovementType();
+                type = creature->getDefaultMovementType();
 
         MovementGeneratorCreator const* mv_factory = sMovementGeneratorRegistry->getRegistryItem(type);
         if (mv_factory)
@@ -58,7 +58,7 @@ inline bool isStatic(MovementGenerator* movement)
     return (movement == getIdleMovementGenerator());
 }
 
-inline void MovementGeneratorPointerDeleter(MovementGenerator* a)
+inline void movementGeneratorPointerDeleter(MovementGenerator* a)
 {
     if (a != nullptr && !isStatic(a))
         delete a;
@@ -66,7 +66,7 @@ inline void MovementGeneratorPointerDeleter(MovementGenerator* a)
 
 void MovementGeneratorDeleter::operator()(MovementGenerator* a)
 {
-    MovementGeneratorPointerDeleter(a);
+    movementGeneratorPointerDeleter(a);
 }
 
 bool MovementGeneratorComparator::operator()(MovementGenerator const* a, MovementGenerator const* b) const
@@ -88,7 +88,7 @@ MovementManager::~MovementManager()
     _delayedActions.clear();
 
     for (auto itr = _generators.begin(); itr != _generators.end(); itr = _generators.erase(itr))
-        MovementGeneratorPointerDeleter(*itr);
+        movementGeneratorPointerDeleter(*itr);
 }
 
 void MovementManager::initialize()
@@ -111,7 +111,7 @@ void MovementManager::initialize()
 
 void MovementManager::initializeDefault()
 {
-    add(FactorySelector::SelectMovementGenerator(_owner), MOTION_SLOT_DEFAULT);
+    add(FactorySelector::selectMovementGenerator(_owner), MOTION_SLOT_DEFAULT);
 }
 
 void MovementManager::addToWorld()
@@ -208,7 +208,7 @@ MovementGeneratorType MovementManager::getCurrentMovementGeneratorType() const
 
 MovementGeneratorType MovementManager::getCurrentMovementGeneratorType(MovementSlot slot) const
 {
-    if (empty() || IsInvalidMovementSlot(slot))
+    if (empty() || isInvalidMovementSlot(slot))
         return MAX_MOTION_TYPE;
 
     if (slot == MOTION_SLOT_ACTIVE && !_generators.empty())
@@ -222,7 +222,7 @@ MovementGeneratorType MovementManager::getCurrentMovementGeneratorType(MovementS
 
 MovementGenerator* MovementManager::getCurrentMovementGenerator(MovementSlot slot) const
 {
-    if (empty() || IsInvalidMovementSlot(slot))
+    if (empty() || isInvalidMovementSlot(slot))
         return nullptr;
 
     if (slot == MOTION_SLOT_ACTIVE && !_generators.empty())
@@ -236,7 +236,7 @@ MovementGenerator* MovementManager::getCurrentMovementGenerator(MovementSlot slo
 
 MovementGenerator* MovementManager::getMovementGenerator(std::function<bool(MovementGenerator const*)> const& filter, MovementSlot slot) const
 {
-    if (empty() || IsInvalidMovementSlot(slot))
+    if (empty() || isInvalidMovementSlot(slot))
         return nullptr;
 
     MovementGenerator* movement = nullptr;
@@ -263,7 +263,7 @@ MovementGenerator* MovementManager::getMovementGenerator(std::function<bool(Move
 
 bool MovementManager::hasMovementGenerator(std::function<bool(MovementGenerator const*)> const& filter, MovementSlot slot) const
 {
-    if (empty() || IsInvalidMovementSlot(slot))
+    if (empty() || isInvalidMovementSlot(slot))
         return false;
 
     bool value = false;
@@ -330,7 +330,7 @@ void MovementManager::add(MovementGenerator* movement, MovementSlot slot/* = MOT
     if (!movement)
         return;
 
-    if (IsInvalidMovementSlot(slot))
+    if (isInvalidMovementSlot(slot))
     {
         delete movement;
         return;
@@ -350,7 +350,7 @@ void MovementManager::add(MovementGenerator* movement, MovementSlot slot/* = MOT
 
 void MovementManager::remove(MovementGenerator* movement, MovementSlot slot/* = MOTION_SLOT_ACTIVE*/)
 {
-    if (!movement || IsInvalidMovementSlot(slot))
+    if (!movement || isInvalidMovementSlot(slot))
         return;
 
     if (hasFlag(MOTIONMASTER_FLAG_DELAYED))
@@ -388,7 +388,7 @@ void MovementManager::remove(MovementGenerator* movement, MovementSlot slot/* = 
 
 void MovementManager::remove(MovementGeneratorType type, MovementSlot slot/* = MOTION_SLOT_ACTIVE*/)
 {
-    if (IsInvalidMovementGeneratorType(type) || IsInvalidMovementSlot(slot))
+    if (isInvalidMovementGeneratorType(type) || isInvalidMovementSlot(slot))
         return;
 
     if (hasFlag(MOTIONMASTER_FLAG_DELAYED))
@@ -445,7 +445,7 @@ void MovementManager::clear()
 
 void MovementManager::clear(MovementSlot slot)
 {
-    if (IsInvalidMovementSlot(slot))
+    if (isInvalidMovementSlot(slot))
         return;
 
     if (hasFlag(MOTIONMASTER_FLAG_DELAYED))
@@ -725,7 +725,7 @@ void MovementManager::moveKnockbackFrom(float srcX, float srcY, float speedXY, f
     float max_height = -MovementNew::computeFallElevation(moveTimeHalf, false, -speedZ);
 
     // Use a mmap raycast to get a valid destination.
-    _owner->MovePositionToFirstCollision(dest, dist, _owner->getRelativeAngle(srcX, srcY) + float(M_PI));
+    _owner->movePositionToFirstCollision(dest, dist, _owner->getRelativeAngle(srcX, srcY) + float(M_PI));
 
     MovementNew::MoveSplineInit init(_owner);
     init.MoveTo(dest.getPositionX(), dest.getPositionY(), dest.getPositionZ(), false);
@@ -750,7 +750,7 @@ void MovementManager::moveJumpTo(float angle, float speedXY, float speedZ)
     float dist = 2 * moveTimeHalf * speedXY;
 
     _owner->getNearPoint2D(nullptr, x, y, dist, _owner->GetOrientation() + angle);
-    _owner->UpdateAllowedPositionZ(x, y, z);
+    _owner->updateAllowedPositionZ(x, y, z);
 
     moveJump(x, y, z, 0.0f, speedXY, speedZ);
 }
@@ -976,7 +976,7 @@ void MovementManager::moveFormation(Unit* leader, float range, float angle, uint
 
 void MovementManager::launchMoveSpline(MovementNew::MoveSplineInit&& init, uint32_t id/*= 0*/, MovementGeneratorPriority priority/* = MOTION_PRIORITY_NORMAL*/, MovementGeneratorType type/*= EFFECT_MOTION_TYPE*/)
 {
-    if (IsInvalidMovementGeneratorType(type))
+    if (isInvalidMovementGeneratorType(type))
     {
         return;
     }
@@ -1111,7 +1111,7 @@ void MovementManager::Delete(MovementGenerator* movement, bool active, bool move
     movement->finalize(_owner, active, movementInform);
     movement->notifyAIOnFinalize(_owner);
     clearBaseUnitState(movement);
-    MovementGeneratorPointerDeleter(movement);
+    movementGeneratorPointerDeleter(movement);
 }
 
 void MovementManager::deleteDefault(bool active, bool movementInform)

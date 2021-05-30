@@ -35,7 +35,7 @@ class Paoka_Swiftmountain : public CreatureAIScript
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I appreciate the help you have shown Pao'ka. I hope this covers any misfortunes this deed has cost you.");
             getCreature()->Despawn(5000, 1000);
-            getCreature()->StopMoving();
+            getCreature()->stopMoving();
             if (getCreature()->m_escorter == nullptr)
                 return;
 

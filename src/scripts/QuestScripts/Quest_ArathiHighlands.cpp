@@ -34,7 +34,7 @@ class Professor_Phizzlethorpe : public CreatureAIScript
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I found the fact that, it searched");
             getCreature()->Despawn(5000, 1000);
-            getCreature()->StopMoving();
+            getCreature()->stopMoving();
 
             if (getCreature()->m_escorter == nullptr)
                 return;

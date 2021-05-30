@@ -101,7 +101,7 @@ void WaypointMovementGenerator<Creature>::doInitialize(Creature* owner)
         return;
     }
 
-    owner->StopMoving();
+    owner->stopMoving();
 
     _nextMoveTime.resetInterval(1000);
 }
@@ -110,7 +110,7 @@ void WaypointMovementGenerator<Creature>::doReset(Creature* owner)
 {
     removeFlag(MOVEMENTGENERATOR_FLAG_TRANSITORY | MOVEMENTGENERATOR_FLAG_DEACTIVATED);
 
-    owner->StopMoving();
+    owner->stopMoving();
 
     if (!hasFlag(MOVEMENTGENERATOR_FLAG_FINALIZED) && _nextMoveTime.isTimePassed())
         _nextMoveTime.resetInterval(1); // Needed so that Update does not behave as if node was reached
@@ -127,7 +127,7 @@ bool WaypointMovementGenerator<Creature>::doUpdate(Creature* owner, uint32_t dif
     if (owner->hasUnitStateFlag(UNIT_STATE_NOT_MOVE | UNIT_STATE_LOST_CONTROL) || owner->isCastingSpell())
     {
         addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
-        owner->StopMoving();
+        owner->stopMoving();
         return true;
     }
 

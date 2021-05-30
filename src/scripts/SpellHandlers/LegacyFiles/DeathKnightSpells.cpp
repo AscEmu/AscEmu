@@ -234,7 +234,7 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
         data << posZ;
 
         if (unitTarget->isCreature())
-            unitTarget->PauseMovement(2000);
+            unitTarget->pauseMovement(2000);
 
         unitTarget->SendMessageToSet(&data, true);
         unitTarget->SetPosition(posX, posY, posZ, alpha, true);

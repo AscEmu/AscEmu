@@ -50,7 +50,7 @@ void HomeMovementGenerator<Creature>::setTargetLocation(Creature* owner)
     LocationVector destination = owner->GetSpawnPosition();
     MovementNew::MoveSplineInit init(owner);
 
-    owner->UpdateAllowedPositionZ(destination.x, destination.y, destination.z);
+    owner->updateAllowedPositionZ(destination.x, destination.y, destination.z);
     init.MoveTo(positionToVector3(destination));
     init.SetFacing(destination.getOrientation());
     init.SetWalk(false);
@@ -121,12 +121,6 @@ void HomeMovementGenerator<Creature>::doFinalize(Creature* owner, bool active, b
 
     if (movementInform && hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED))
     {
-        // todo
-        /*
-        owner->SetSpawnHealth();
-        owner->LoadCreaturesAddon();
-        if (owner->IsVehicle())
-            owner->GetVehicleKit()->Reset(true);
-        owner->AI()->JustReachedHome();*/
+        // todo handle healt regen and other stuff here ( basically combat reset )?
     }
 }

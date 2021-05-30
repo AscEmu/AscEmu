@@ -1261,7 +1261,7 @@ class VashjAI : public CreatureAIScript
             {
                 getCreature()->RemoveAllAuras();
                 getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
-                getCreature()->StopMoving();
+                getCreature()->stopMoving();
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 setWaypointToMove(1, 1);
                 sendDBChatMessage(4764);     // The time is now! Leave none standing!
@@ -1573,7 +1573,7 @@ class ToxicSporeBatAI : public CreatureAIScript
         PositionChange = Util::getRandomUInt(15, 23);
         PhoenixSummon = Util::getRandomUInt(17, 23);
         getCreature()->setMoveCanFly(true);
-        getCreature()->StopMoving();
+        getCreature()->stopMoving();
         getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
         setWaypointToMove(1, 1);
         RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
@@ -1616,7 +1616,7 @@ class ToxicSporeBatAI : public CreatureAIScript
         Meteor = false;
         PhoenixSummon = Util::getRandomUInt(17, 23);
         PositionChange = Util::getRandomUInt(15, 23);
-        getCreature()->StopMoving();
+        getCreature()->stopMoving();
         getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
         setWaypointToMove(1, 1);
     }

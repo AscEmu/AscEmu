@@ -305,7 +305,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
 
             if (Counter == 0)
             {
-                GrandWarlock->GetAIInterface()->HandleEvent(EVENT_ENTERCOMBAT, GrandWarlock, 0);
+                GrandWarlock->GetAIInterface()->handleEvent(EVENT_ENTERCOMBAT, GrandWarlock, 0);
             }
 
             switch (Util::getRandomUInt(2))    // those need to be verified too

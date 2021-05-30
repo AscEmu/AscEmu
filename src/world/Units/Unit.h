@@ -590,7 +590,7 @@ public:
     bool isTurning() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_TURNING_MASK); }
     bool IsFlying() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK); }
     bool IsFalling() const;
-    virtual bool CanSwim();
+    virtual bool canSwim();
     virtual bool isInWater() const;
     bool isUnderWater() const;
     bool isInAccessiblePlaceFor(Creature* c) const;
@@ -601,10 +601,10 @@ public:
     void setControlled(bool apply, UnitStates state);
     void applyControlStatesIfNeeded();
 
-    virtual bool CanFly();
+    virtual bool canFly();
 
-    bool IsWalking() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_WALK); }
-    bool IsHovering() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_HOVER); }
+    bool isWalking() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_WALK); }
+    bool isHovering() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_HOVER); }
 
     bool isInCombat() const { return hasUnitFlags(UNIT_FLAG_COMBAT); }
     bool isInEvadeMode() { return hasUnitStateFlag(UNIT_STATE_EVADING); }
@@ -633,17 +633,17 @@ public:
     // Movement info
     MovementNew::MoveSpline* movespline;
 
-    void FollowerAdded(AbstractFollower* f) { m_followingMe.insert(f); }
-    void FollowerRemoved(AbstractFollower* f) { m_followingMe.erase(f); }
-    void RemoveAllFollowers();
+    void followerAdded(AbstractFollower* f) { m_followingMe.insert(f); }
+    void followerRemoved(AbstractFollower* f) { m_followingMe.erase(f); }
+    void removeAllFollowers();
     virtual float getFollowAngle() const { return static_cast<float>(M_PI / 2); }
 
     MovementManager* getMovementManager() { return i_movementManager; }
     MovementManager const* getMovementManager() const { return i_movementManager; }
 
-    void StopMoving();
-    void PauseMovement(uint32_t timer = 0, uint8_t slot = 0, bool forced = true); // timer in ms
-    void ResumeMovement(uint32_t timer = 0, uint8_t slot = 0); // timer in ms
+    void stopMoving();
+    void pauseMovement(uint32_t timer = 0, uint8_t slot = 0, bool forced = true); // timer in ms
+    void resumeMovement(uint32_t timer = 0, uint8_t slot = 0); // timer in ms
 
 private:
     std::unordered_set<AbstractFollower*> m_followingMe;
@@ -651,9 +651,9 @@ private:
 protected:
     MovementManager* i_movementManager;
 
-    void SetFeared(bool apply);
-    void SetConfused(bool apply);
-    void SetStunned(bool apply);
+    void setFeared(bool apply);
+    void setConfused(bool apply);
+    void setStunned(bool apply);
 
 private:
     UnitSpeedInfo m_UnitSpeedInfo;
@@ -667,7 +667,7 @@ public:
     void disableSpline();
     bool isSplineEnabled() const;
 
-    virtual MovementGeneratorType GetDefaultMovementType() const;
+    virtual MovementGeneratorType getDefaultMovementType() const;
 
     // Mover
     Unit* mControledUnit;
@@ -1434,7 +1434,7 @@ public:
     virtual void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
     virtual bool isCritter() { return false; }
 
-    void KnockbackFrom(float x, float y, float speedXY, float speedZ);
+    void knockbackFrom(float x, float y, float speedXY, float speedZ);
     virtual void HandleKnockback(Object* caster, float horizontal, float vertical);
 
     void AddGarbagePet(Pet* pet);

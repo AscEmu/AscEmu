@@ -13,8 +13,8 @@ void AbstractFollower::setTarget(Unit* unit)
         return;
 
     if (_target)
-        _target->FollowerRemoved(this);
+        _target->followerRemoved(this);
     _target = unit;
     if (_target)
-        _target->FollowerAdded(this);
+        _target->followerAdded(this);
 }

@@ -45,7 +45,7 @@ void FollowMovementGenerator::initialize(Unit* owner)
     removeFlag(MOVEMENTGENERATOR_FLAG_INITIALIZATION_PENDING | MOVEMENTGENERATOR_FLAG_DEACTIVATED);
     addFlag(MOVEMENTGENERATOR_FLAG_INITIALIZED | MOVEMENTGENERATOR_FLAG_INFORM_ENABLED);
 
-    owner->StopMoving();
+    owner->stopMoving();
     updatePetSpeed(owner);
     _path = nullptr;
     _lastTargetPosition.reset();
@@ -72,7 +72,7 @@ bool FollowMovementGenerator::update(Unit* owner, uint32_t diff)
     if (owner->hasUnitStateFlag(UNIT_STATE_NOT_MOVE) || owner->isCastingSpell())
     {
         _path = nullptr;
-        owner->StopMoving();
+        owner->stopMoving();
         _lastTargetPosition.reset();
         return true;
     }
@@ -85,7 +85,7 @@ bool FollowMovementGenerator::update(Unit* owner, uint32_t diff)
         {
             removeFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED);
             _path = nullptr;
-            owner->StopMoving();
+            owner->stopMoving();
             _lastTargetPosition.reset();
             doMovementInform(owner, target);
             return true;
@@ -127,8 +127,8 @@ bool FollowMovementGenerator::update(Unit* owner, uint32_t diff)
 
             target->getNearPoint(owner, x, y, z, _range, target->toAbsoluteAngle(tAngle));
 
-            if (owner->IsHovering())
-                owner->UpdateAllowedPositionZ(x, y, z);
+            if (owner->isHovering())
+                owner->updateAllowedPositionZ(x, y, z);
 
             // pets are allowed to "cheat" on pathfinding when following their master
             bool allowShortcut = false;
@@ -141,7 +141,7 @@ bool FollowMovementGenerator::update(Unit* owner, uint32_t diff)
             bool success = _path->calculatePath(x, y, z, allowShortcut);
             if (!success || (_path->getPathType() & PATHFIND_NOPATH))
             {
-                owner->StopMoving();
+                owner->stopMoving();
                 return true;
             }
 
@@ -150,7 +150,7 @@ bool FollowMovementGenerator::update(Unit* owner, uint32_t diff)
 
             MovementNew::MoveSplineInit init(owner);
             init.MovebyPath(_path->getPath());
-            init.SetWalk(target->IsWalking());
+            init.SetWalk(target->isWalking());
             init.SetFacing(target->GetOrientation());
             init.Launch();
         }

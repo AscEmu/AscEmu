@@ -57,7 +57,7 @@ class BalosJackenQAI : public CreatureAIScript
             getCreature()->SetHealthPct(100);
             getCreature()->getThreatManager().clearAllThreat();
             getCreature()->getThreatManager().removeMeFromThreatLists();
-            getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+            getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
             _setMeleeDisabled(true);
             getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
             //remove not_selectable flag:
@@ -126,7 +126,7 @@ class OverlordMokMorokk : public CreatureAIScript
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
-        getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+        getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -192,7 +192,7 @@ class PrivateHendel : public CreatureAIScript
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
-        getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+        getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);

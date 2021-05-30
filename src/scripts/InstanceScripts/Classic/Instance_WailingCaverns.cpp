@@ -272,7 +272,7 @@ public:
             case 2: // Start Event
             {
                 pCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
-                pCreature->StopMoving();
+                pCreature->stopMoving();
                 pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 pCreature->GetScript()->DoAction(0);
             } break;

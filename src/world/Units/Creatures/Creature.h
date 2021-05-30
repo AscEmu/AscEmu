@@ -310,17 +310,17 @@ public:
         uint32 spawnid;
         uint32 original_emotestate;
 
-        void Motion_Initialize();
+        void motion_Initialize();
         void immediateMovementFlagsUpdate();
         void updateMovementFlags();
-        CreatureMovementData const& GetMovementTemplate();
-        bool CanWalk() { return GetMovementTemplate().IsGroundAllowed(); }
-        bool CanSwim() override { return GetMovementTemplate().IsSwimAllowed() || isPet(); }
-        bool CanFly()  override { return GetMovementTemplate().IsFlightAllowed() || IsFlying(); }
-        bool CanHover() { return GetMovementTemplate().Ground == CreatureGroundMovementType::Hover || IsHovering(); }
+        CreatureMovementData const& getMovementTemplate();
+        bool canWalk() { return getMovementTemplate().isGroundAllowed(); }
+        bool canSwim() override { return getMovementTemplate().isSwimAllowed() || isPet(); }
+        bool canFly()  override { return getMovementTemplate().isFlightAllowed() || IsFlying(); }
+        bool canHover() { return getMovementTemplate().Ground == CreatureGroundMovementType::Hover || isHovering(); }
 
-        MovementGeneratorType GetDefaultMovementType() const override { return m_defaultMovementType; }
-        void SetDefaultMovementType(MovementGeneratorType mgt) { m_defaultMovementType = mgt; }
+        MovementGeneratorType getDefaultMovementType() const override { return m_defaultMovementType; }
+        void setDefaultMovementType(MovementGeneratorType mgt) { m_defaultMovementType = mgt; }
 
         MySQLStructure::CreatureSpawn* m_spawn;
 

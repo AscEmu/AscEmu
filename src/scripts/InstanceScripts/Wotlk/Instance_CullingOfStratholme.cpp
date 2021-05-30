@@ -449,7 +449,7 @@ class ArthasAI : public CreatureAIScript
         {
             case 0:
             {
-                getCreature()->StopMoving();
+                getCreature()->stopMoving();
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 setWaypointToMove(1, 1);
             }

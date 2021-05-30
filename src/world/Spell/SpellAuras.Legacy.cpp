@@ -841,7 +841,7 @@ void Aura::SpellAuraModPossess(AuraEffectModifier* /*aurEff*/, bool apply)
             //mob woke up and realized he was controlled. He will turn to controller and also notify the other mobs he is fighting that they should attack the caster
             //sadly i got only 3 test cases about this so i might be wrong :(
             //zack : disabled until tested
-            m_target->GetAIInterface()->EventChangeFaction(caster);
+            m_target->GetAIInterface()->eventChangeFaction(caster);
         }
     }
 }
@@ -1004,7 +1004,7 @@ void Aura::SpellAuraModFear(AuraEffectModifier* aurEff, bool apply)
         mPositive = false;
         m_target->addUnitFlags(UNIT_FLAG_FLEEING);
         m_target->setAItoUse(true);
-        m_target->GetAIInterface()->HandleEvent(EVENT_FEAR, u_caster, 0);
+        m_target->GetAIInterface()->handleEvent(EVENT_FEAR, u_caster, 0);
         m_target->m_fearmodifiers++;
         if (p_target)
         {
@@ -1021,7 +1021,7 @@ void Aura::SpellAuraModFear(AuraEffectModifier* aurEff, bool apply)
         if (m_target->m_fearmodifiers <= 0)
         {
             m_target->removeUnitFlags(UNIT_FLAG_FLEEING);
-            m_target->GetAIInterface()->HandleEvent(EVENT_UNFEAR, nullptr, 0);
+            m_target->GetAIInterface()->handleEvent(EVENT_UNFEAR, nullptr, 0);
 
             if (p_target)
             {

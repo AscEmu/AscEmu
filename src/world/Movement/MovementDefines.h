@@ -110,5 +110,5 @@ struct SERVER_DECL ChaseAngle
     bool isAngleOkay(float relativeAngle) const;
 };
 
-inline bool IsInvalidMovementGeneratorType(uint8_t const type) { return type == MAX_DB_MOTION_TYPE || type >= MAX_MOTION_TYPE; }
-inline bool IsInvalidMovementSlot(uint8_t const slot) { return slot >= MAX_MOTION_SLOT; }
+inline bool isInvalidMovementGeneratorType(uint8_t const type) { return type == MAX_DB_MOTION_TYPE || type >= MAX_MOTION_TYPE; }
+inline bool isInvalidMovementSlot(uint8_t const slot) { return slot >= MAX_MOTION_SLOT; }

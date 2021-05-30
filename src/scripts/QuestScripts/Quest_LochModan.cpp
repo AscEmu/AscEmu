@@ -38,7 +38,7 @@ public:
 
         auto path = creat->GetScript()->getCustomPath(1);
         creat->getMovementManager()->movePath(*path, false);
-        creat->PauseMovement(3000);
+        creat->pauseMovement(3000);
         creat->GetAIInterface()->setAllowedToEnterCombat(false);
         creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
         creat->setNpcFlags(UNIT_NPC_FLAG_NONE);

@@ -521,12 +521,12 @@ public:
         void getNearPoint(Object* searcher, float& x, float& y, float& z, float distance2d, float absAngle);
         void getClosePoint(float& x, float& y, float& z, float size, float distance2d = 0, float relAngle = 0);
 
-        LocationVector GetHitSpherePointFor(LocationVector const& dest);
-        void GetHitSpherePointFor(LocationVector const& dest, float& x, float& y, float& z) const;
-        LocationVector GetHitSpherePointFor(LocationVector const& dest) const;
-        void UpdateAllowedPositionZ(float x, float y, float &z, float* groundZ = nullptr);
-        float GetMapWaterOrGroundLevel(float x, float y, float z, float* ground = nullptr);
-        void MovePositionToFirstCollision(LocationVector &pos, float dist, float angle);
+        LocationVector getHitSpherePointFor(LocationVector const& dest);
+        void getHitSpherePointFor(LocationVector const& dest, float& x, float& y, float& z) const;
+        LocationVector getHitSpherePointFor(LocationVector const& dest) const;
+        void updateAllowedPositionZ(float x, float y, float &z, float* groundZ = nullptr);
+        float getMapWaterOrGroundLevel(float x, float y, float z, float* ground = nullptr);
+        void movePositionToFirstCollision(LocationVector &pos, float dist, float angle);
         LocationVector getFirstCollisionPosition(float dist, float angle);
 
         virtual float getCombatReach() const { return 0.0f; } // overridden (only) in Unit

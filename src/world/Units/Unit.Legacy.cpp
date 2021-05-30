@@ -1004,7 +1004,7 @@ void Unit::updateSplinePosition()
     SetPosition(loc.x, loc.y, loc.z, loc.orientation);
 }
 
-void Unit::StopMoving()
+void Unit::stopMoving()
 {
     removeUnitStateFlag(UNIT_STATE_MOVING);
 
@@ -1019,28 +1019,28 @@ void Unit::StopMoving()
     init.Stop();
 }
 
-void Unit::PauseMovement(uint32_t timer/* = 0*/, uint8_t slot/* = 0*/, bool forced/* = true*/)
+void Unit::pauseMovement(uint32_t timer/* = 0*/, uint8_t slot/* = 0*/, bool forced/* = true*/)
 {
-    if (IsInvalidMovementSlot(slot))
+    if (isInvalidMovementSlot(slot))
         return;
 
     if (MovementGenerator* movementGenerator = getMovementManager()->getCurrentMovementGenerator(MovementSlot(slot)))
         movementGenerator->pause(timer);
 
     if (forced && getMovementManager()->getCurrentSlot() == MovementSlot(slot))
-        StopMoving();
+        stopMoving();
 }
 
-void Unit::ResumeMovement(uint32_t timer/* = 0*/, uint8_t slot/* = 0*/)
+void Unit::resumeMovement(uint32_t timer/* = 0*/, uint8_t slot/* = 0*/)
 {
-    if (IsInvalidMovementSlot(slot))
+    if (isInvalidMovementSlot(slot))
         return;
 
     if (MovementGenerator* movementGenerator = getMovementManager()->getCurrentMovementGenerator(MovementSlot(slot)))
         movementGenerator->resume(timer);
 }
 
-void Unit::RemoveAllFollowers()
+void Unit::removeAllFollowers()
 {
     while (!m_followingMe.empty())
         (*m_followingMe.begin())->setTarget(nullptr);
@@ -7352,7 +7352,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     // postroll processing
 
     //trigger hostile action in ai
-    pVictim->GetAIInterface()->HandleEvent(EVENT_HOSTILEACTION, this, 0);
+    pVictim->GetAIInterface()->handleEvent(EVENT_HOSTILEACTION, this, 0);
 
     switch (r)
     {
@@ -8838,7 +8838,7 @@ void Unit::RemoveFromWorld(bool free_guid)
 
     removeVehicleComponent();
 
-    RemoveAllFollowers();
+    removeAllFollowers();
 
     CombatStatus.OnRemoveFromWorld();
 #if VERSION_STRING > TBC
@@ -10068,7 +10068,7 @@ void Unit::HandleKnockback(Object* caster, float horizontal, float vertical)
         getMovementManager()->moveKnockbackFrom(destx, desty, horizontal, vertical);
 }
 
-void Unit::KnockbackFrom(float x, float y, float speedXY, float speedZ)
+void Unit::knockbackFrom(float x, float y, float speedXY, float speedZ)
 {
     Player* player = ToPlayer();
     if (!player)
@@ -10292,7 +10292,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     {
         // unit-only stuff.
         pTarget->setAItoUse(false);
-        pTarget->StopMoving();
+        pTarget->stopMoving();
         pTarget->m_redirectSpellPackets = pThis;
         pTarget->mPlayerControler = pThis;
     }

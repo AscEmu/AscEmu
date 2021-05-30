@@ -26,7 +26,7 @@ void GuardianSummon::Load(CreatureProperties const* properties_, Unit* pOwner, L
     SetType(CREATURE_TYPE_GUARDIAN);
 
     m_aiInterface->Init(this, AI_SCRIPT_PET, pOwner);
-    m_aiInterface->SetPetOwner(pOwner);
+    m_aiInterface->setPetOwner(pOwner);
 
     m_noRespawn = true;
 }

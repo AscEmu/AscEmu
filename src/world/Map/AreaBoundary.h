@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class SERVER_DECL AreaBoundary
 {
     public:
-        bool IsWithinBoundary(LocationVector const* pos) const { return pos && (IsWithinBoundaryArea(pos) != _isInvertedBoundary); }
-        bool IsWithinBoundary(LocationVector const& pos) const { return IsWithinBoundary(&pos); }
+        bool isWithinBoundary(LocationVector const* pos) const { return pos && (isWithinBoundaryArea(pos) != _isInvertedBoundary); }
+        bool isWithinBoundary(LocationVector const& pos) const { return isWithinBoundary(&pos); }
 
         virtual ~AreaBoundary() { }
 
@@ -29,14 +29,14 @@ class SERVER_DECL AreaBoundary
             DoublePosition(LocationVector const& pos)
                 : LocationVector(pos), DoublePosX(pos.x), DoublePosY(pos.y), DoublePosZ(pos.z) { }
 
-            double GetDoublePositionX() const { return DoublePosX; }
-            double GetDoublePositionY() const { return DoublePosY; }
-            double GetDoublePositionZ() const { return DoublePosZ; }
+            double getDoublePositionX() const { return DoublePosX; }
+            double getDoublePositionY() const { return DoublePosY; }
+            double getDoublePositionZ() const { return DoublePosZ; }
 
-            double GetDoubleExactDist2dSq(DoublePosition const& pos) const
+            double getDoubleExactDist2dSq(DoublePosition const& pos) const
             {
-                double const offX = GetDoublePositionX() - pos.GetDoublePositionX();
-                double const offY = GetDoublePositionY() - pos.GetDoublePositionY();
+                double const offX = getDoublePositionX() - pos.getDoublePositionX();
+                double const offY = getDoublePositionY() - pos.getDoublePositionY();
                 return (offX * offX) + (offY * offY);
             }
 
@@ -53,7 +53,7 @@ class SERVER_DECL AreaBoundary
             double DoublePosZ;
         };
 
-        virtual bool IsWithinBoundaryArea(LocationVector const* pos) const = 0;
+        virtual bool isWithinBoundaryArea(LocationVector const* pos) const = 0;
 
     private:
         bool _isInvertedBoundary;
@@ -66,7 +66,7 @@ class SERVER_DECL RectangleBoundary : public AreaBoundary
         RectangleBoundary(float southX, float northX, float eastY, float westY, bool isInverted = false);
 
     protected:
-        bool IsWithinBoundaryArea(LocationVector const* pos) const override;
+        bool isWithinBoundaryArea(LocationVector const* pos) const override;
 
     private:
         float const minX, maxX, minY, maxY;
@@ -79,7 +79,7 @@ class SERVER_DECL CircleBoundary : public AreaBoundary
         CircleBoundary(LocationVector const& center, LocationVector const& pointOnCircle, bool isInverted = false);
 
     protected:
-        bool IsWithinBoundaryArea(LocationVector const* pos) const override;
+        bool isWithinBoundaryArea(LocationVector const* pos) const override;
 
     private:
         DoublePosition const _center;
@@ -92,7 +92,7 @@ class SERVER_DECL EllipseBoundary : public AreaBoundary
         EllipseBoundary(LocationVector const& center, double radiusX, double radiusY, bool isInverted = false);
 
     protected:
-        bool IsWithinBoundaryArea(LocationVector const* pos) const override;
+        bool isWithinBoundaryArea(LocationVector const* pos) const override;
 
     private:
         DoublePosition const _center;
@@ -105,7 +105,7 @@ class SERVER_DECL TriangleBoundary : public AreaBoundary
         TriangleBoundary(LocationVector const& pointA, LocationVector const& pointB, LocationVector const& pointC, bool isInverted = false);
 
     protected:
-        bool IsWithinBoundaryArea(LocationVector const* pos) const override;
+        bool isWithinBoundaryArea(LocationVector const* pos) const override;
 
     private:
         DoublePosition const _a, _b, _c;
@@ -119,7 +119,7 @@ class SERVER_DECL ParallelogramBoundary : public AreaBoundary
         ParallelogramBoundary(LocationVector const& cornerA, LocationVector const& cornerB, LocationVector const& cornerD, bool isInverted = false);
 
     protected:
-        bool IsWithinBoundaryArea(LocationVector const* pos) const override;
+        bool isWithinBoundaryArea(LocationVector const* pos) const override;
 
     private:
         DoublePosition const _a, _b, _d, _c;
@@ -132,7 +132,7 @@ class SERVER_DECL ZRangeBoundary : public AreaBoundary
         ZRangeBoundary(float minZ, float maxZ, bool isInverted = false);
 
     protected:
-        bool IsWithinBoundaryArea(LocationVector const* pos) const override;
+        bool isWithinBoundaryArea(LocationVector const* pos) const override;
 
     private:
         float const _minZ, _maxZ;
@@ -145,7 +145,7 @@ class SERVER_DECL BoundaryUnionBoundary : public AreaBoundary
 
     protected:
         virtual ~BoundaryUnionBoundary();
-        bool IsWithinBoundaryArea(LocationVector const* pos) const override;
+        bool isWithinBoundaryArea(LocationVector const* pos) const override;
 
     private:
         AreaBoundary const* const _b1;

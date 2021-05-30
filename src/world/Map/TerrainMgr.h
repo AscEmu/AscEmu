@@ -13,13 +13,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 float const GROUND_HEIGHT_TOLERANCE = 0.05f; // Extra tolerance to z position to check if it is in air or on ground.
 
-#define MAP_LIQUID_TYPE_NO_WATER    0x00
-#define MAP_LIQUID_TYPE_WATER       0x01
-#define MAP_LIQUID_TYPE_OCEAN       0x02
-#define MAP_LIQUID_TYPE_MAGMA       0x04
-#define MAP_LIQUID_TYPE_SLIME       0x08
+enum LiquidTypes
+{
+    MAP_LIQUID_TYPE_NO_WATER   = 0x00,
+    MAP_LIQUID_TYPE_WATER      = 0x01,
+    MAP_LIQUID_TYPE_OCEAN      = 0x02,
+    MAP_LIQUID_TYPE_MAGMA      = 0x04,
+    MAP_LIQUID_TYPE_SLIME      = 0x08,
 
-#define MAP_ALL_LIQUIDS   (MAP_LIQUID_TYPE_WATER | MAP_LIQUID_TYPE_OCEAN | MAP_LIQUID_TYPE_MAGMA | MAP_LIQUID_TYPE_SLIME)
+    MAP_ALL_LIQUIDS            = MAP_LIQUID_TYPE_WATER | MAP_LIQUID_TYPE_OCEAN | MAP_LIQUID_TYPE_MAGMA | MAP_LIQUID_TYPE_SLIME
+};
 
 namespace VMAP
 {
