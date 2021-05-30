@@ -1102,7 +1102,7 @@ float MapMgr::getWaterOrGroundLevel(uint32 phasemask, float x, float y, float z,
 
         LiquidData liquid_status;
 
-        ZLiquidStatus res = GetLiquidStatus(phasemask, x, y, ground_z, MAP_ALL_LIQUIDS, &liquid_status, collisionHeight);
+        ZLiquidStatus res = getLiquidStatus(phasemask, x, y, ground_z, MAP_ALL_LIQUIDS, &liquid_status, collisionHeight);
         switch (res)
         {
         case LIQUID_MAP_ABOVE_WATER:
@@ -1190,7 +1190,7 @@ static inline bool isInWMOInterior(uint32 mogpFlags)
     return (mogpFlags & 0x2000) != 0;
 }
 
-ZLiquidStatus MapMgr::GetLiquidStatus(uint32 /*phaseMask*/, float x, float y, float z, uint8 ReqLiquidType, LiquidData* data, float collisionHeight)
+ZLiquidStatus MapMgr::getLiquidStatus(uint32 /*phaseMask*/, float x, float y, float z, uint8 ReqLiquidType, LiquidData* data, float collisionHeight)
 {
     ZLiquidStatus result = LIQUID_MAP_NO_WATER;
     VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
@@ -1261,7 +1261,7 @@ ZLiquidStatus MapMgr::GetLiquidStatus(uint32 /*phaseMask*/, float x, float y, fl
         if (GridMap* gmap = const_cast<Map*>(this)->GetGrid(x, y))
         {
             LiquidData map_data;
-            ZLiquidStatus map_result = gmap->GetLiquidStatus(x, y, z, ReqLiquidType, &map_data, collisionHeight);
+            ZLiquidStatus map_result = gmap->getLiquidStatus(x, y, z, ReqLiquidType, &map_data, collisionHeight);
             // Not override LIQUID_MAP_ABOVE_WATER with LIQUID_MAP_NO_WATER:
             if (map_result != LIQUID_MAP_NO_WATER && (map_data.level > ground_level))
             {

@@ -1716,7 +1716,7 @@ bool Unit::isInWater() const
         outz = std::max(watermark, outz);
 
         // Check for liquid type also, i.e. Orgrimmar is below water level
-        const auto liquidStatus = GetMapMgr()->GetLiquidStatus(0, GetPositionX(), GetPositionY(), GetPositionZ(), MAP_ALL_LIQUIDS);
+        const auto liquidStatus = GetMapMgr()->getLiquidStatus(0, GetPositionX(), GetPositionY(), GetPositionZ(), MAP_ALL_LIQUIDS);
         if (liquidStatus == LIQUID_MAP_NO_WATER)
             return false;
 

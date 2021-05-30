@@ -165,7 +165,7 @@ void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
                 _source->GetMapMgr()->GetLiquidInfo(outx, outy, outz, waterz, watertype);
                 outz = std::max(waterz, outz);
 
-                ZLiquidStatus liquidStatus = _source->GetMapMgr()->GetLiquidStatus(_source->GetPhase(), _pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, MAP_ALL_LIQUIDS, nullptr);
+                ZLiquidStatus liquidStatus = _source->GetMapMgr()->getLiquidStatus(_source->GetPhase(), _pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, MAP_ALL_LIQUIDS, nullptr);
 
                 // One of the points is not in the water, cancel movement.
                 if (waterz >= outz || liquidStatus == LIQUID_MAP_IN_WATER)
@@ -653,7 +653,7 @@ void PathGenerator::updateFilter()
 NavTerrainFlag PathGenerator::getNavTerrain(float x, float y, float z)
 {
     LiquidData data;
-    ZLiquidStatus liquidStatus = _source->GetMapMgr()->GetLiquidStatus(_source->GetPhase(), x, y, z, MAP_ALL_LIQUIDS, &data);
+    ZLiquidStatus liquidStatus = _source->GetMapMgr()->getLiquidStatus(_source->GetPhase(), x, y, z, MAP_ALL_LIQUIDS, &data);
     if (liquidStatus == LIQUID_MAP_NO_WATER)
         return NAV_GROUND;
 

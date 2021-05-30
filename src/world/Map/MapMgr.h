@@ -177,7 +177,7 @@ public:
 
     bool isUnderWater(float x, float y, float z);
 
-    ZLiquidStatus GetLiquidStatus(uint32 phaseMask, float x, float y, float z, uint8 ReqLiquidType, LiquidData* data = nullptr, float collisionHeight = 2.03128f); // DEFAULT_COLLISION_HEIGHT in Object.h
+    ZLiquidStatus getLiquidStatus(uint32 phaseMask, float x, float y, float z, uint8 ReqLiquidType, LiquidData* data = nullptr, float collisionHeight = 2.03128f); // DEFAULT_COLLISION_HEIGHT in Object.h
 
     const ::DBC::Structures::AreaTableEntry* GetArea(float x, float y, float z);
 
