@@ -1435,6 +1435,8 @@ public:
     virtual bool isCritter() { return false; }
 
     void knockbackFrom(float x, float y, float speedXY, float speedZ);
+    void jumpTo(float speedXY, float speedZ, bool forward = true, Optional<LocationVector> dest = {});
+    void jumpTo(Object* obj, float speedZ, bool withOrientation = false);
     virtual void HandleKnockback(Object* caster, float horizontal, float vertical);
 
     void AddGarbagePet(Pet* pet);

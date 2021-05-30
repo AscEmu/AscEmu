@@ -220,7 +220,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectTriggerSpellWithValue,   // 142 SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE
     &Spell::SpellEffectApplyOwnerAA,            // 143 SPELL_EFFECT_APPLY_OWNER_AA
     &Spell::SpellEffectKnockBack,               // 144 SPELL_EFFECT_KNOCK_BACK
-    &Spell::SpellEffectPlayerPull,              // 145 SPELL_EFFECT_PLAYER_PULL
+    &Spell::SpellEffectPullTowardsDest,         // 145 SPELL_EFFECT_PULL_TOWARDS_DEST
     &Spell::SpellEffectActivateRunes,           // 146 SPELL_EFFECT_ACTIVATE_RUNES
     &Spell::spellEffectNotImplemented,          // 147 SPELL_EFFECT_NULL_147
     &Spell::spellEffectNotImplemented,          // 148 SPELL_EFFECT_NULL_148
@@ -5267,6 +5267,39 @@ void Spell::SpellEffectKnockBack2(uint8_t effectIndex)
         return;
 
     unitTarget->HandleKnockback(m_caster, getSpellInfo()->getEffectMiscValue(effectIndex) / 10.0f, damage / 10.0f);
+}
+
+void Spell::SpellEffectPullTowardsDest(uint8_t effIndex)
+{
+    if (!unitTarget)
+        return;
+
+    if (!m_targets.hasDestination())
+    {
+        sLogger.failure("Spell %u with SPELL_EFFECT_PULL_TOWARDS_DEST has no dest target", m_spellInfo->getId());
+        return;
+    }
+
+    LocationVector pos = m_targets.getDestination();
+    // This is a blizzlike mistake: this should be 2D distance according to projectile motion formulas, but Blizzard erroneously used 3D distance
+    float distXY = unitTarget->getExactDist(pos);
+
+    // Avoid division by 0
+    if (distXY < 0.001)
+        return;
+
+    float distZ = pos.getPositionZ() - unitTarget->GetPositionZ();
+
+    float speedXY = m_spellInfo->getEffectMiscValue(effIndex) ? m_spellInfo->getEffectMiscValue(effIndex) / 10.0f : 30.0f;
+    float speedZ = (2 * speedXY * speedXY * distZ + MovementNew::gravity * distXY * distXY) / (2 * speedXY * distXY);
+
+    if (!std::isfinite(speedZ))
+    {
+        sLogger.failure("Spell %u with SPELL_EFFECT_PULL_TOWARDS_DEST called with invalid speedZ.", m_spellInfo->getId());
+        return;
+    }
+
+    unitTarget->jumpTo(speedXY, speedZ, true, pos);
 }
 
 void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)

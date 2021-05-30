@@ -109,10 +109,17 @@ void SpellCastTargets::read(WorldPacket& data, uint64_t caster)
         data >> destinationGuid;
         unkuint64_2 = destinationGuid.getRawGuid();
 
+        auto transporter = sTransportHandler.getTransporter(destinationGuid.getGuidLow());
+
         LocationVector lv;
         data >> lv.x;
         data >> lv.y;
         data >> lv.z;
+
+        if (transporter)
+        {
+            transporter->CalculatePassengerPosition(lv.x, lv.y, lv.z);
+        }
 
         setDestination(lv);
     }

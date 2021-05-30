@@ -567,6 +567,7 @@ class SERVER_DECL Spell
         void SpellEffectCharge(uint8_t effectIndex);
         void SpellEffectKnockBack(uint8_t effectIndex);
         void SpellEffectKnockBack2(uint8_t effectIndex);
+        void SpellEffectPullTowardsDest(uint8_t effectIndex);
         void SpellEffectDisenchant(uint8_t effectIndex);
         void SpellEffectInebriate(uint8_t effectIndex);
         void SpellEffectFeedPet(uint8_t effectIndex);

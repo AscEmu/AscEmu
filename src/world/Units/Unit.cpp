@@ -6256,3 +6256,35 @@ bool Unit::isSplineEnabled() const
 {
     return movespline->Initialized();
 }
+
+void Unit::jumpTo(float speedXY, float speedZ, bool forward, Optional<LocationVector> dest)
+{
+    float angle = forward ? 0 : float(M_PI);
+    if (dest)
+        angle += getRelativeAngle(*dest);
+
+    if (GetTypeFromGUID() == TYPEID_UNIT)
+        getMovementManager()->moveJumpTo(angle, speedXY, speedZ);
+    else
+    {
+        float vcos = std::cos(angle + GetOrientation());
+        float vsin = std::sin(angle + GetOrientation());
+
+        WorldPacket data(SMSG_MOVE_KNOCK_BACK, (8 + 4 + 4 + 4 + 4 + 4));
+        data << GetNewGUID();
+        data << uint32(0);                                      // Sequence
+        data << vcos << vsin;
+        data << float(speedXY);                                 // Horizontal speed
+        data << float(-speedZ);                                 // Z Movement speed (vertical)
+
+        ToPlayer()->SendPacket(&data);
+    }
+}
+
+void Unit::jumpTo(Object* obj, float speedZ, bool withOrientation)
+{
+    float x, y, z;
+    obj->getNearPoint(this, x, y, z, 0.5f, getAbsoluteAngle(obj->GetPosition()));
+    float speedXY = getExactDist2d(x, y) * 10.0f / speedZ;
+    getMovementManager()->moveJump(x, y, z, getAbsoluteAngle(obj), speedXY, speedZ, EVENT_JUMP, withOrientation);
+}
