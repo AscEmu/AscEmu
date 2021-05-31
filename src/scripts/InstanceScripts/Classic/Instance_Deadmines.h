@@ -5,14 +5,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-static Movement::Location Doors[] =
+static LocationVector Doors[] =
 {
     { -168.514f, -579.861f, 19.3159f, 0 },    //Gilnid doors
     { -290.294f, -536.96f, 49.4353f, 0 }        //Sneed doors
 };
 
 //it will useful for cannon event
-static Movement::Location Guards[] =
+static LocationVector Guards[] =
 {
     { -89.7001f, -691.332f, 8.24514f, 0 }, //Guard
     { -102.521f, -697.942f, 8.84454f, 0 }, //Guard

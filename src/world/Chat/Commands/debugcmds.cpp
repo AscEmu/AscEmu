@@ -29,6 +29,7 @@
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Server/Packets/SmsgMoveKnockBack.h"
+#include "Movement/Spline/MoveSplineInit.h"
 
 bool ChatHandler::HandleDebugDumpMovementCommand(const char* /*args*/, WorldSession* session)
 {
@@ -154,8 +155,6 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    //m_session->GetPlayer()->GetOrientation();
-
     uint32 Move = 1;
     uint32 Run = 0;
     uint32 Time = 0;
@@ -180,12 +179,9 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
     float x = m_session->GetPlayer()->GetPositionX();
     float y = m_session->GetPlayer()->GetPositionY();
     float z = m_session->GetPlayer()->GetPositionZ();
-    float o = m_session->GetPlayer()->GetOrientation();
+    //float o = m_session->GetPlayer()->GetOrientation();
 
-    if (Run)
-        creature->GetAIInterface()->setSplineRun();
-    else
-        creature->GetAIInterface()->setSplineWalk();
+    MovementNew::MoveSplineInit init(creature);
 
     float distance = creature->CalcDistance(x, y, z);
     if (Move == 1)
@@ -239,11 +235,24 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
             y = (creature->GetPositionY() + y * q) / (1 + q);
             z = (creature->GetPositionZ() + z * q) / (1 + q);
         }
-        creature->GetAIInterface()->MoveTo(x, y, z, o);
+
+        init.MoveTo(x, y, z);
+        if (Run)
+            init.SetWalk(false);
+        else
+            init.SetWalk(true);
+
+        creature->getMovementManager()->launchMoveSpline(std::move(init));
     }
     else
     {
-        creature->GetAIInterface()->MoveTo(x, y, z, o);
+        init.MoveTo(x, y, z);
+        if (Run)
+            init.SetWalk(false);
+        else
+            init.SetWalk(true);
+
+        creature->getMovementManager()->launchMoveSpline(std::move(init));
     }
 
     return true;
@@ -397,7 +406,7 @@ bool ChatHandler::HandleAggroRangeCommand(const char* /*args*/, WorldSession* m_
     if (unit == nullptr)
         return true;
 
-    float aggroRange = unit->GetAIInterface()->_CalcAggroRange(m_session->GetPlayer());
+    float aggroRange = unit->GetAIInterface()->calcAggroRange(m_session->GetPlayer());
 
     GreenSystemMessage(m_session, "Aggrorange is %f", aggroRange);
 
@@ -455,27 +464,19 @@ bool ChatHandler::HandleThreatModCommand(const char* args, WorldSession* m_sessi
     return true;
 }
 
-bool ChatHandler::HandleCalcThreatCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleMoveFallCommand(const char* /*args*/, WorldSession* m_session)
 {
     Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
-    {
-        SystemMessage(m_session, "You should select a creature.");
         return true;
-    }
-    char* dmg = strtok((char*)args, " ");
-    if (!dmg)
-        return false;
-    char* spellId = strtok(NULL, " ");
-    if (!spellId)
-        return false;
 
-    uint32 threat = target->GetAIInterface()->_CalcThreat(atol(dmg), sSpellMgr.getSpellInfo(atoi(spellId)), m_session->GetPlayer());
+    bool needsFalling = (target->IsFlying() || target->isHovering()) && !target->isUnderWater();
+    target->setMoveHover(false);
+    target->setMoveDisableGravity(false);
 
-    std::stringstream sstext;
-    sstext << "generated threat is: " << threat << '\0';
+    if (needsFalling)
+        target->getMovementManager()->moveFall();
 
-    SystemMessage(m_session, sstext.str().c_str());
     return true;
 }
 
@@ -494,16 +495,10 @@ bool ChatHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_
 
     std::stringstream sstext;
     sstext << "threatlist of creature: " << wowGuid.getGuidLowPart() << " " << wowGuid.getGuidHighPart() << '\n';
-    for (TargetMap::iterator itr = target->GetAIInterface()->GetAITargets()->begin(); itr != target->GetAIInterface()->GetAITargets()->end();)
+
+    for (ThreatReference* ref : target->getThreatManager().getModifiableThreatList())
     {
-        Unit* ai_t = target->GetMapMgr()->GetUnit(itr->first);
-        if (!ai_t || !itr->second)
-        {
-            ++itr;
-            continue;
-        }
-        sstext << "guid: " << itr->first << " | threat: " << itr->second << "| threat after mod: " << (itr->second + ai_t->GetThreatModifyer()) << "\n";
-        ++itr;
+        sstext << "guid: " << ref->getOwner()->getGuid() << " | threat: " << ref->getThreat() << "\n";
     }
 
     SendMultilineMessage(m_session, sstext.str().c_str());
@@ -1060,43 +1055,8 @@ bool ChatHandler::HandleAIAgentDebugSkip(const char* args, WorldSession* m_sessi
     return true;
 }
 
-bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleAIAgentDebugContinue(const char* /*args*/, WorldSession* /*m_session*/)
 {
-    uint32 count = atoi(args);
-    if (!count)
-        return false;
-
-    Creature* pCreature = GetSelectedCreature(m_session, true);
-    if (!pCreature)
-        return true;
-
-    Player* pPlayer = m_session->GetPlayer();
-
-    for (uint32 i = 0; i < count; ++i)
-    {
-        if (!aiagent_spells.size())
-            break;
-
-        SpellInfo const* sp = *aiagent_spells.begin();
-        aiagent_spells.erase(aiagent_spells.begin());
-        BlueSystemMessage(m_session, "Casting %u, " MSG_COLOR_SUBWHITE "%u remaining.", sp->getId(), static_cast<uint32_t>(aiagent_spells.size()));
-
-        std::map<uint32, spell_thingo>::iterator it = aiagent_extra.find(sp->getId());
-        ARCEMU_ASSERT(it != aiagent_extra.end());
-
-        SpellCastTargets targets;
-        if (it->second.type == STYPE_BUFF)
-            targets = SetTargets(sp, it->second.type, it->second.type, pCreature, pCreature);
-        else
-            targets = SetTargets(sp, it->second.type, it->second.type, pPlayer, pCreature);
-
-        pCreature->GetAIInterface()->CastSpell(pCreature, sp, targets);
-    }
-
-    if (!aiagent_spells.size())
-        RedSystemMessage(m_session, "Finished.");
-    /*else
-    BlueSystemMessage(m_session, "Got %u remaining.", aiagent_spells.size());*/
     return true;
 }
 

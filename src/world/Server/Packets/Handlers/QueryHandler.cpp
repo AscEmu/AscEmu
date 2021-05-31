@@ -176,13 +176,13 @@ void WorldSession::handleCorpseQueryOpcode(WorldPacket& /*recvPacket*/)
         return;
 
     const auto mapInfo = sMySQLStore.getWorldMapInfo(corpse->GetMapId());
-    if (mapInfo == nullptr || mapInfo->type == INSTANCE_NULL || mapInfo->type == INSTANCE_BATTLEGROUND)
+    if (mapInfo == nullptr || mapInfo->isNonInstanceMap() || mapInfo->isBattleground())
     {
         SendPacket(MsgCorspeQuery(uint8_t(1), corpse->GetMapId(), corpse->GetPosition(), corpse->GetMapId(), uint32_t(0)).serialise().get());
     }
     else
     {
-        // type INSTANCE_RAID, INSTANCE_NONRAID, INSTANCE_MULTIMODE
+        // type INSTANCE_RAID, INSTANCE_DUNGEON, INSTANCE_MULTIMODE
         SendPacket(MsgCorspeQuery(uint8_t(1), mapInfo->repopmapid, 
             LocationVector(mapInfo->repopx, mapInfo->repopy, mapInfo->repopz), corpse->GetMapId(), uint32_t(0)).serialise().get());
     }

@@ -11,10 +11,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 bool Instance::isPersistent() const
 {
-    return this->m_mapInfo->type == INSTANCE_MULTIMODE && this->m_difficulty >= InstanceDifficulty::DUNGEON_HEROIC || this->m_mapInfo->type == INSTANCE_RAID;
+    return (this->m_mapInfo->isMultimodeDungeon() && this->m_difficulty >= InstanceDifficulty::DUNGEON_HEROIC) || this->m_mapInfo->isRaid();
 }
 
 bool Instance::isResetable() const
 {
-    return !this->m_persistent && (this->m_mapInfo->type == INSTANCE_NONRAID || this->m_mapInfo->type == INSTANCE_MULTIMODE && this->m_difficulty == InstanceDifficulty::DUNGEON_NORMAL);
+    return !this->m_persistent && (this->m_mapInfo->isDungeon() || (this->m_mapInfo->isMultimodeDungeon() && this->m_difficulty == InstanceDifficulty::DUNGEON_NORMAL));
 }

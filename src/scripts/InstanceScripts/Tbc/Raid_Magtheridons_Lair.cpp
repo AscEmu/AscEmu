@@ -38,7 +38,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
         Phase = 0;
         // Trigger settings
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         RegisterAIUpdateEvent(1000);
     }
 
@@ -96,7 +96,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                 // If Magtheridon is spawned we tell channeler to cast spell on Pit Lord
                 Unit* Magtheridon = NULL;
                 Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
-                if (Magtheridon && Channeler->isAlive() && !Channeler->GetAIInterface()->getNextTarget())
+                if (Magtheridon && Channeler->isAlive() && !Channeler->GetAIInterface()->getCurrentTarget())
                 {
                     Channeler->setChannelObjectGuid(Magtheridon->getGuid());
                     Channeler->setChannelSpellId(SHADOW_GRASP);
@@ -166,7 +166,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
             Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
             if (Magtheridon)
             {
-                Magtheridon->GetAIInterface()->SetAllowedToEnterCombat(true);
+                Magtheridon->GetAIInterface()->setAllowedToEnterCombat(true);
                 Magtheridon->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 Magtheridon->RemoveAura(BANISHMENT);
                 Magtheridon->RemoveAura(BANISH);
@@ -192,12 +192,12 @@ class MagtheridonTriggerAI : public CreatureAIScript
                 }
 
                 // If dead or channeler In Combat is found we check if we have already copied target
-                if (Channeler && Channeler->isAlive() && Channeler->GetAIInterface()->getNextTarget())
+                if (Channeler && Channeler->isAlive() && Channeler->GetAIInterface()->getCurrentTarget())
                 {
                     // If channeler is In Combat and we haven't copied any target yet we copy it
-                    if (Channeler->GetAIInterface()->getNextTarget() && !UnitTarget)
+                    if (Channeler->GetAIInterface()->getCurrentTarget() && !UnitTarget)
                     {
-                        UnitTarget = Channeler->GetAIInterface()->getNextTarget();
+                        UnitTarget = Channeler->GetAIInterface()->getCurrentTarget();
                     }
                     // We switch phase and mark event as started
                     EventStarted = true;
@@ -220,10 +220,10 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     }
 
                     // If channeler is not In Combat we force him to attack target we copied before
-                    if (Channeler && !Channeler->GetAIInterface()->getNextTarget() && UnitTarget)
+                    if (Channeler && !Channeler->GetAIInterface()->getCurrentTarget() && UnitTarget)
                     {
-                        Channeler->GetAIInterface()->SetAllowedToEnterCombat(true);
-                        Channeler->GetAIInterface()->AttackReaction(UnitTarget, 1, 0);
+                        Channeler->GetAIInterface()->setAllowedToEnterCombat(true);
+                        Channeler->GetAIInterface()->onHostileAction(UnitTarget);
                     }
                 }
                 // If Magtheridon is found we remove Banish aura from him
@@ -272,7 +272,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                     if (Magtheridon)
                     {
-                        Magtheridon->GetAIInterface()->SetAllowedToEnterCombat(true);
+                        Magtheridon->GetAIInterface()->setAllowedToEnterCombat(true);
                         Magtheridon->removeUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
                     }
 
@@ -312,7 +312,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         if (Channeler && Channeler->isAlive())
                         {
                             AliveChannelers.push_back(Channeler);
-                            if (Channeler->GetAIInterface()->getNextTarget())
+                            if (Channeler->GetAIInterface()->getCurrentTarget())
                                 AliveInCombat++;
                         }
                     }
@@ -381,7 +381,7 @@ public:
             return;
 
         // We check if Magtheridon is in world, is alive, has correct flag and so on
-        if (!Magtheridon->isAlive() || !Magtheridon->GetAIInterface()->getNextTarget())
+        if (!Magtheridon->isAlive() || !Magtheridon->GetAIInterface()->getCurrentTarget())
             return;
 
         // If we haven't "filled" pointer already we do that now
@@ -470,7 +470,7 @@ public:
         }
 
         // We check if Magtheridon is spawned, is in world and so on
-        if (!Magtheridon || (Magtheridon && (!Magtheridon->isAlive() || !Magtheridon->IsInWorld() || !Magtheridon->GetAIInterface()->getNextTarget())))
+        if (!Magtheridon || (Magtheridon && (!Magtheridon->isAlive() || !Magtheridon->IsInWorld() || !Magtheridon->GetAIInterface()->getCurrentTarget())))
         {
             CubeTrigger->setChannelObjectGuid(0);
             CubeTrigger->setChannelSpellId(0);
@@ -501,7 +501,7 @@ public:
         if (Counter >= ACTIVE_CUBES_TO_BANISH && Magtheridon && Magtheridon->isAlive())
         {
             Magtheridon->castSpell(Magtheridon, sSpellMgr.getSpellInfo(BANISH), true);
-            Magtheridon->GetAIInterface()->StopMovement(3000);
+            Magtheridon->pauseMovement(3000);
             Magtheridon->setAttackTimer(MELEE, 3000);
 
             if (Magtheridon->isCastingSpell())
@@ -543,7 +543,7 @@ class CubeTriggerAI : public CreatureAIScript
     explicit CubeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
     }
 };
 
@@ -606,7 +606,7 @@ class HellfireChannelerAI : public CreatureAIScript
         soulTransfer->setAttackStopTimer(1000);
         soulTransfer->setMinMaxDistance(0.0f, 30.0f);
 
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -634,8 +634,8 @@ class HellfireChannelerAI : public CreatureAIScript
 
     void OnDamageTaken(Unit* /*mAttacker*/, uint32_t /*fAmount*/) override
     {
-        if (!getCreature()->GetAIInterface()->GetAllowedToEnterCombat())
-            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+        if (!getCreature()->GetAIInterface()->getAllowedToEnterCombat())
+            getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
     }
 
     void OnDied(Unit* /*mKiller*/) override
@@ -680,7 +680,7 @@ class MagtheridonAI : public CreatureAIScript
         getCreature()->addAura(aura);
 
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(BANISH), true);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->setSheathType(SHEATH_STATE_MELEE);
 
         timer_quake = timer_enrage = timer_blastNova = timer_caveIn = 0;
@@ -771,7 +771,7 @@ class MagtheridonAI : public CreatureAIScript
         }
         if (timer_blastNova > 33 && !getCreature()->isCastingSpell() && !aura)
         {
-            getCreature()->GetAIInterface()->StopMovement(3000);
+            getCreature()->pauseMovement(3000);
             getCreature()->setAttackTimer(MELEE, 3000);
 
             getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(BLAST_NOVA), false);
@@ -823,7 +823,7 @@ class MagtheridonAI : public CreatureAIScript
         }
         if (timer_blastNova > 33 && !getCreature()->isCastingSpell() && !aura)
         {
-            getCreature()->GetAIInterface()->StopMovement(3000);
+            getCreature()->pauseMovement(3000);
             getCreature()->setAttackTimer(MELEE, 3000);
 
             getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(BLAST_NOVA), false);
@@ -840,7 +840,7 @@ class MagtheridonAI : public CreatureAIScript
             {
                 sendDBChatMessage(8752);     // I will not be taken so easily. Let the walls of this prison tremble... and FALL!!!
 
-                getCreature()->GetAIInterface()->StopMovement(2000);
+                getCreature()->pauseMovement(2000);
                 getCreature()->setAttackTimer(MELEE, 2000);
 
                 getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(CAMERA_SHAKE), true);

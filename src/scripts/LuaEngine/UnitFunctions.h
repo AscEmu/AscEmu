@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Summons/Summon.h"
 #include "Management/Item.h"
 #include "Management/Container.h"
+#include "Map/AreaBoundary.h"
 #include "Map/MapMgr.h"
 #include "Units/Stats.h"
 #include "Management/ChannelMgr.h"
@@ -400,7 +401,7 @@ public:
         if (!ptr->CombatStatus.IsInCombat())
             return 0;
 
-        Unit* pTarget = ptr->GetAIInterface()->getNextTarget();
+        Unit* pTarget = ptr->GetAIInterface()->getCurrentTarget();
         if (!pTarget)
             return 0;
 
@@ -422,8 +423,8 @@ public:
 
             Unit* pUnit = static_cast<Unit*>(obj);
 
-            pUnit->GetAIInterface()->setNextTarget(pTarget);
-            pUnit->GetAIInterface()->AttackReaction(pTarget, 1, 0);
+            pUnit->GetAIInterface()->setCurrentTarget(pTarget);
+            pUnit->GetAIInterface()->onHostileAction(pTarget);
         }
         return 0;
     }
@@ -436,7 +437,7 @@ public:
         float z = CHECK_FLOAT(L, 3);
         //float o = CHECK_FLOAT(L, 4);
 
-        ptr->GetAIInterface()->MoveTo(x, y, z);
+        ptr->GetAIInterface()->moveTo(x, y, z);
         return 0;
     }
 
@@ -451,15 +452,7 @@ public:
         float z2 = CHECK_FLOAT(L, 6);
         //float o2 = CHECK_FLOAT(L, 7);
 
-        ptr->GetAIInterface()->MoveTo(x1 + (Util::getRandomFloat(x2 - x1)), y1 + (Util::getRandomFloat(y2 - y1)), z1 + (Util::getRandomFloat(z2 - z1)));
-        return 0;
-    }
-
-    static int SetMovementType(lua_State* L, Unit* ptr)
-    {
-        TEST_UNIT()
-        uint32_t typ = CHECK_ULONG(L, 1);
-        ptr->GetAIInterface()->setWaypointScriptType((Movement::WaypointMovementScript)typ);
+        ptr->GetAIInterface()->moveTo(x1 + (Util::getRandomFloat(x2 - x1)), y1 + (Util::getRandomFloat(y2 - y1)), z1 + (Util::getRandomFloat(z2 - z1)));
         return 0;
     }
 
@@ -804,118 +797,6 @@ public:
         return 0;
     }
 
-    static int DestroyCustomWaypointMap(lua_State* /*L*/, Unit* ptr)
-    {
-        TEST_UNIT()
-        static_cast<Creature*>(ptr)->DestroyCustomWaypointMap();
-        return 0;
-    }
-
-    static int CreateCustomWaypointMap(lua_State* /*L*/, Unit* ptr)
-    {
-        TEST_UNIT()
-        Creature* pCreature = static_cast<Creature*>(ptr);
-        if (pCreature->m_custom_waypoint_map)
-        {
-            pCreature->GetAIInterface()->SetWaypointMap(nullptr);
-        }
-
-        pCreature->m_custom_waypoint_map = new Movement::WayPointMap;
-        pCreature->GetAIInterface()->SetWaypointMap(pCreature->m_custom_waypoint_map);
-        return 0;
-    }
-
-    static int CreateWaypoint(lua_State* L, Unit* ptr)
-    {
-        TEST_UNIT()
-        float x = CHECK_FLOAT(L, 1);
-        float y = CHECK_FLOAT(L, 2);
-        float z = CHECK_FLOAT(L, 3);
-        float o = CHECK_FLOAT(L, 4);
-        int waittime = static_cast<int>(luaL_checkinteger(L, 5));
-        int flags = static_cast<int>(luaL_checkinteger(L, 6));
-        int modelid = static_cast<int>(luaL_checkinteger(L, 7));
-
-        Creature* pCreature = static_cast<Creature*>(ptr);
-        if (!pCreature->m_custom_waypoint_map)
-        {
-            pCreature->m_custom_waypoint_map = new Movement::WayPointMap;
-            pCreature->GetAIInterface()->SetWaypointMap(pCreature->m_custom_waypoint_map);
-        }
-
-        if (!modelid)
-            modelid = pCreature->getDisplayId();
-
-        Movement::WayPoint* wp = new Movement::WayPoint;
-        wp->id = (uint32_t)pCreature->m_custom_waypoint_map->size() + 1;
-        wp->x = x;
-        wp->y = y;
-        wp->z = z;
-        wp->o = o;
-        wp->flags = flags;
-        wp->backwardskinid = modelid;
-        wp->forwardskinid = modelid;
-        wp->backwardemoteid = wp->forwardemoteid = 0;
-        wp->backwardemoteoneshot = wp->forwardemoteoneshot = false;
-        wp->waittime = waittime;
-        if (pCreature->GetAIInterface()->addWayPointUnsafe(wp))
-            pCreature->m_custom_waypoint_map->push_back(wp);
-        else
-        {
-            DLLLogDetail("WayPoint created by a Lua script for Creature ID %u wasn't added due to an error occurred in CreateWaypoint()", pCreature->GetCreatureProperties()->Id);
-            delete wp;
-        }
-        return 0;
-    }
-    static int CreateCustomWaypoint(lua_State* L, Unit* ptr)
-    {
-        if (ptr == nullptr)
-            return 0;
-        else
-        {
-            Creature* crc = static_cast<Creature*>(ptr);
-            uint32_t id = CHECK_ULONG(L, 1);
-            float x = CHECK_FLOAT(L, 2);
-            float y = CHECK_FLOAT(L, 3);
-            float z = CHECK_FLOAT(L, 4);
-            float o = CHECK_FLOAT(L, 5);
-            uint32_t waitime = CHECK_ULONG(L, 6);
-            uint32_t flags = CHECK_ULONG(L, 7);
-            uint32_t model = static_cast<uint32_t>(luaL_optinteger(L, 8, 0));
-            Movement::WayPoint* wp = new Movement::WayPoint;
-            wp->id = id;
-            wp->x = x;
-            wp->y = y;
-            wp->z = z;
-            wp->o = o;
-            wp->waittime = waitime;
-            wp->flags = flags;
-            wp->backwardskinid = model;
-            wp->forwardskinid = model;
-            crc->GetAIInterface()->addWayPoint(wp);
-        }
-        return 0;
-    }
-
-    static int DeleteAllWaypoints(lua_State* /*L*/, Unit* ptr)
-    {
-        if (ptr != nullptr && ptr->isCreature())
-            ptr->GetAIInterface()->deleteAllWayPoints();
-        return 0;
-    }
-
-    static int MoveToWaypoint(lua_State* L, Unit* ptr)
-    {
-        TEST_UNIT()
-        int id = static_cast<int>(luaL_checkinteger(L, 1));
-        if (id)
-        {
-            ptr->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            ptr->GetAIInterface()->setWayPointToMove(id);
-        }
-        return 0;
-    }
-
     static int RemoveItem(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
@@ -965,7 +846,7 @@ public:
     static int GetInstanceID(lua_State* L, Unit* ptr)
     {
         //TEST_UNIT()
-        if (!ptr || ptr->GetMapMgr() == nullptr || ptr->GetMapMgr()->GetMapInfo()->type == INSTANCE_NULL)
+        if (!ptr || ptr->GetMapMgr() == nullptr || ptr->GetMapMgr()->GetMapInfo()->isNonInstanceMap())
             lua_pushnil(L);
         else
             lua_pushinteger(L, ptr->GetInstanceID());
@@ -1100,7 +981,7 @@ public:
             break;
             case RANDOM_NOT_MAINTANK:
             {
-                Unit* mt = ptr->GetAIInterface()->GetMostHated();
+                Unit* mt = ptr->GetAIInterface()->getCurrentTarget();
                 if (mt == nullptr || !mt->isPlayer())
                     return 0;
 
@@ -1164,7 +1045,7 @@ public:
     {
         TEST_UNIT()
         uint32_t tim = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        ptr->GetAIInterface()->StopMovement(tim);
+        ptr->pauseMovement(tim);
         return 0;
     }
 
@@ -1388,7 +1269,7 @@ public:
     static int GetMainTank(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        Unit* ret = ptr->GetAIInterface()->GetMostHated();
+        Unit* ret = ptr->GetAIInterface()->getCurrentTarget();
         if (!ret)
             lua_pushnil(L);
         else
@@ -1399,7 +1280,7 @@ public:
     static int GetAddTank(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        Unit* ret = ptr->GetAIInterface()->GetSecondHated();
+        Unit* ret = ptr->getThreatManager().getSecondMostHated();
         if (ret == nullptr)
             lua_pushnil(L);
         else
@@ -1414,33 +1295,23 @@ public:
         return 0;
     }
 
-    static int GetTauntedBy(lua_State* L, Unit* ptr)
-    {
-        TEST_UNIT()
-        if (!ptr->GetAIInterface()->getTauntedBy())
-            lua_pushnil(L);
-        else
-            PUSH_UNIT(L, ptr->GetAIInterface()->getTauntedBy());
-        return 1;
-    }
-
     static int SetTauntedBy(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
         Unit* target = CHECK_UNIT(L, 1);
-        if (!target || ptr->GetAIInterface()->GetIsTaunted() || target == ptr)
+        if (!target || target == ptr)
             return 0;
         else
-            ptr->GetAIInterface()->taunt(target);
+            ptr->castSpell(target, 53798, false);
         return 0;
     }
 
     static int ModThreat(lua_State* L, Unit* ptr)
     {
         Unit* target = CHECK_UNIT(L, 1);
-        int32_t amount = static_cast<int32_t>(luaL_checkinteger(L, 2));
+        auto amount = static_cast<float>(luaL_checkinteger(L, 2));
         if (ptr && target && amount)
-            ptr->GetAIInterface()->modThreatByPtr(target, amount);
+            ptr->getThreatManager().addThreat(target, amount, nullptr, false, true);
         return 0;
     }
 
@@ -1448,28 +1319,7 @@ public:
     {
         Unit* target = CHECK_UNIT(L, 1);
         if (ptr && target)
-            lua_pushnumber(L, ptr->GetAIInterface()->getThreatByPtr(target));
-        return 1;
-    }
-
-    static int GetSoulLinkedWith(lua_State* L, Unit* ptr)
-    {
-        TEST_UNIT()
-        if (!ptr->GetAIInterface()->GetIsSoulLinked())
-            lua_pushnil(L);
-        else
-            PUSH_UNIT(L, ptr->GetAIInterface()->getSoullinkedWith());
-        return 1;
-    }
-
-    static int SetSoulLinkedWith(lua_State* L, Unit* ptr)
-    {
-        TEST_UNIT()
-        Unit* target = CHECK_UNIT(L, 1);
-        if (!target || ptr->GetAIInterface()->GetIsSoulLinked() || target == ptr)
-            return 0;
-        else
-            ptr->GetAIInterface()->SetSoulLinkedWith(ptr);
+            lua_pushnumber(L, ptr->getThreatManager().getThreat(target));
         return 1;
     }
 
@@ -1480,7 +1330,7 @@ public:
         if (!target || !isHostile(ptr, target) || ptr == target)
             return 0;
         else
-            ptr->GetAIInterface()->setNextTarget(target);
+            ptr->GetAIInterface()->setCurrentTarget(target);
         return 0;
     }
 
@@ -1740,21 +1590,23 @@ public:
     {
         TEST_UNIT()
         ptr->WipeHateList();
-        ptr->GetAIInterface()->WipeHateList();
+        ptr->getThreatManager().clearAllThreat();
+        ptr->getThreatManager().removeMeFromThreatLists();
         return 0;
     }
 
     static int WipeTargetList(lua_State* /*L*/, Unit* ptr)
     {
         TEST_UNIT()
-        ptr->GetAIInterface()->WipeTargetList();
+        ptr->getThreatManager().clearAllThreat();
+        ptr->getThreatManager().removeMeFromThreatLists();
         return 0;
     }
 
     static int WipeCurrentTarget(lua_State* /*L*/, Unit* ptr)
     {
         TEST_UNIT()
-        ptr->GetAIInterface()->WipeCurrentTarget();
+        ptr->getThreatManager().clearThreat(ptr->GetAIInterface()->getCurrentTarget());
         return 0;
     }
 
@@ -1850,7 +1702,7 @@ public:
 
         ptr->setMoveHover(true);
         ptr->GetAIInterface()->setMeleeDisabled(true);
-        ptr->GetAIInterface()->setSplineFlying();
+        ptr->setMoveCanFly(true);
         ptr->emote(EMOTE_ONESHOT_LIFTOFF);
         return 0;
     }
@@ -1861,7 +1713,7 @@ public:
             return 0;
 
         ptr->setMoveHover(false);
-        ptr->GetAIInterface()->unsetSplineFlying();
+        ptr->setMoveCanFly(false);
         ptr->GetAIInterface()->setMeleeDisabled(false);
         ptr->emote(EMOTE_ONESHOT_LAND);
         return 0;
@@ -1896,7 +1748,7 @@ public:
 
         if (ptr->isCreature())
         {
-            ptr->GetAIInterface()->MoveTo(x, y, z);
+            ptr->GetAIInterface()->moveTo(x, y, z);
             ptr->SetOrientation(o);
         }
 
@@ -2139,7 +1991,7 @@ public:
         Unit* target = CHECK_UNIT(L, 1);
         if (!target || !ptr)
             return 0;
-        ptr->GetAIInterface()->setInFront(target);
+        ptr->setInFront(target);
         return 0;
     }
 
@@ -2217,24 +2069,12 @@ public:
         return 0;
     }
 
-    static int IsCreatureMoving(lua_State* L, Unit* ptr)
-    {
-        if (ptr && ptr->isCreature())
-        {
-            if (ptr->GetAIInterface()->isCreatureState(MOVING))
-                lua_pushboolean(L, 1);
-            else
-                lua_pushboolean(L, 0);
-        }
-        return 1;
-    }
-
     static int SetOutOfCombatRange(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        uint32_t range = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        auto range = static_cast<float>(luaL_checkinteger(L, 1));
         if (range)
-            ptr->GetAIInterface()->setOutOfCombatRange(range);
+            ptr->GetAIInterface()->addBoundary(new CircleBoundary(ptr->GetPosition(), range), true);
         return 0;
     }
 
@@ -2265,7 +2105,7 @@ public:
     static int isFlying(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        if (ptr->GetAIInterface()->isFlying())
+        if (ptr->IsFlying())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -2334,7 +2174,7 @@ public:
         Unit* target = CHECK_UNIT(L, 1);
         uint32_t event_id = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         uint32_t misc_1 = static_cast<uint32_t>(luaL_checkinteger(L, 3));
-        ptr->GetAIInterface()->HandleEvent(event_id, target, misc_1);
+        ptr->GetAIInterface()->handleEvent(event_id, target, misc_1);
         return 1;
     }
 
@@ -2374,18 +2214,6 @@ public:
         else
             lua_pushnil(L);
         return 1;
-    }
-
-    static int AddAssistTargets(lua_State* L, Unit* ptr)
-    {
-        TEST_UNIT()
-        Unit* Friend = CHECK_UNIT(L, 1);
-        if (Friend)
-        {
-            if (isFriendly(ptr, Friend))
-                ptr->GetAIInterface()->addAssistTargets(Friend);
-        }
-        return 0;
     }
 
     static int GetAIState(lua_State* L, Unit* ptr)
@@ -2790,18 +2618,18 @@ public:
         return 0;
     }
 
-    static int SetNextTarget(lua_State* L, Unit* ptr)
+    static int setCurrentTarget(lua_State* L, Unit* ptr)
     {
         Unit* target = CHECK_UNIT(L, 1);
         if (ptr && target)
-            ptr->GetAIInterface()->setNextTarget(target);
+            ptr->GetAIInterface()->setCurrentTarget(target);
         return 0;
     }
 
-    static int GetNextTarget(lua_State* L, Unit* ptr)
+    static int getCurrentTarget(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        PUSH_UNIT(L, ptr->GetAIInterface()->getNextTarget());
+        PUSH_UNIT(L, ptr->GetAIInterface()->getCurrentTarget());
         return 1;
     }
 
@@ -2810,14 +2638,14 @@ public:
         TEST_UNIT()
         Unit* owner = CHECK_UNIT(L, 1);
         if (owner)
-            ptr->GetAIInterface()->SetPetOwner(owner);
+            ptr->GetAIInterface()->setPetOwner(owner);
         return 0;
     }
 
     static int DismissPet(lua_State* /*L*/, Unit* ptr)
     {
         TEST_UNIT()
-        ptr->GetAIInterface()->DismissPet();
+        // DissmissPet in AIInterface got deleted
         return 0;
     }
 
@@ -2836,7 +2664,7 @@ public:
     static int GetPetOwner(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        PUSH_UNIT(L, ptr->GetAIInterface()->GetPetOwner());
+        PUSH_UNIT(L, ptr->GetAIInterface()->getPetOwner());
         return 1;
     }
 
@@ -2847,17 +2675,8 @@ public:
         float dist = CHECK_FLOAT(L, 2);
         float angle = CHECK_FLOAT(L, 3);
 
-        ptr->GetAIInterface()->SetUnitToFollow(target);
-        ptr->GetAIInterface()->SetFollowDistance(dist);
-        ptr->GetAIInterface()->SetUnitToFollowAngle(angle);
+        ptr->getMovementManager()->moveFollow(target, dist, angle);
         return 0;
-    }
-
-    static int GetUnitToFollow(lua_State* L, Unit* ptr)
-    {
-        TEST_UNIT()
-        PUSH_UNIT(L, ptr->GetAIInterface()->getUnitToFollow());
-        return 1;
     }
 
     static int IsInFront(lua_State* L, Unit* ptr)
@@ -2943,7 +2762,6 @@ public:
             return 0;
 
         guardian->Load(cp, ptr, v, 0, -1);
-        guardian->GetAIInterface()->SetUnitToFollowAngle(angle);
         guardian->PushToWorld(ptr->GetMapMgr());
 
         PUSH_UNIT(L, guardian);
@@ -2982,7 +2800,7 @@ public:
     static int GetAITargetsCount(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        lua_pushnumber(L, static_cast<lua_Number>(ptr->GetAIInterface()->getAITargetsCount()));
+        lua_pushnumber(L, static_cast<lua_Number>(ptr->getThreatManager().getThreatListSize()));
         return 1;
     }
 
@@ -2998,12 +2816,11 @@ public:
     {
         TEST_UNIT()
         Unit* ret = nullptr;
-        TargetMap::iterator itr;
         lua_newtable(L);
         int count = 0;
-        for (itr = ptr->GetAIInterface()->GetAITargets()->begin(); itr != ptr->GetAIInterface()->GetAITargets()->end(); ++itr)
+        for (ThreatReference* ref : ptr->getThreatManager().getModifiableThreatList())
         {
-            ret = ptr->GetMapMgr()->GetUnit(itr->first);
+            ret = ptr->GetMapMgr()->GetUnit(ref->getOwner()->getGuid());
             count++;
             lua_pushvalue(L, count);
             PUSH_UNIT(L, ret);
@@ -3316,10 +3133,7 @@ public:
     {
         TEST_UNIT()
         bool enabled = CHECK_BOOL(L, 1);
-        if (enabled)
-            ptr->GetAIInterface()->setSplineFlying();
-        else
-            ptr->GetAIInterface()->unsetSplineFlying();
+        ptr->setMoveCanFly(enabled);
         return 0;
     }
 
@@ -3505,9 +3319,12 @@ public:
     {
         Unit* target = CHECK_UNIT(L, 1);
         uint32_t damage = static_cast<uint32_t>(luaL_checkinteger(L, 2));
-        uint32_t spell = static_cast<uint32_t>(luaL_checkinteger(L, 3));
+        //uint32_t spell = static_cast<uint32_t>(luaL_checkinteger(L, 3));
         if (ptr && target && damage)
-            ptr->GetAIInterface()->AttackReaction(target, damage, spell);
+        {
+            ptr->GetAIInterface()->onHostileAction(target);
+            ptr->getThreatManager().addThreat(target, static_cast<float>(damage));
+        }
         return 0;
     }
 
@@ -3666,7 +3483,7 @@ public:
         TEST_UNIT()
         Unit* target = CHECK_UNIT(L, 1);
         if (target)
-            ptr->GetAIInterface()->RemoveThreatByPtr(target);
+            ptr->getThreatManager().clearThreat(target);
         return 0;
     }
 
@@ -3931,15 +3748,6 @@ public:
         return 0;
     }
 
-    static int deleteWaypoint(lua_State* L, Unit* ptr)
-    {
-        TEST_UNIT()
-        uint32_t wp = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        if (wp)
-            static_cast<Creature*>(ptr)->GetAIInterface()->deleteWayPointById(wp);
-        return 0;
-    }
-
     static int DealGoldCost(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
@@ -3978,12 +3786,23 @@ public:
     {
         TEST_UNIT()
         Unit* target = CHECK_UNIT(L, 1);
-        if (target)
+        if (target && ptr->getThreatManager().canHaveThreatList())
         {
-            ptr->GetAIInterface()->WipeTargetList();
-            ptr->GetAIInterface()->ClearHateList();
-            ptr->GetAIInterface()->WipeCurrentTarget();
-            ptr->GetAIInterface()->taunt(target);
+            auto& threatManager = ptr->getThreatManager();
+            if (threatManager.getCurrentVictim() == target)
+            {
+                // Unit is already attacking this target
+                lua_pushboolean(L, 0);
+                return 1;
+            }
+
+            if (!threatManager.isThreatListEmpty())
+            {
+                threatManager.addThreat(target, 20.0f);
+                // Set threat equal to highest threat currently on target
+                threatManager.matchUnitThreatToHighestThreat(target);
+            }
+
             lua_pushboolean(L, 1);
         }
         else
@@ -5352,15 +5171,15 @@ public:
         int movetype = static_cast<int>(luaL_checkinteger(L, 1)); //0: walk, 1: run, 2: fly.
         if (movetype == 2)
         {
-            ptr->GetAIInterface()->setSplineFlying();
+            ptr->setMoveCanFly(ptr->IsFlying());
         }
         else if (movetype == 1)
         {
-            ptr->GetAIInterface()->setSplineRun();
+            ptr->setMoveWalk(false);
         }
         else
         {
-            ptr->GetAIInterface()->setSplineWalk();
+            ptr->setMoveWalk(true);
         }
         return 0;
     }
@@ -5634,12 +5453,6 @@ public:
         return 1;
     }
 
-    static int GetCurrentWaypoint(lua_State* L, Unit* ptr)
-    {
-        TEST_UNIT()
-        RET_NUMBER(ptr->GetAIInterface()->getCurrentWayPointId());
-    }
-
     static int DisableMelee(lua_State* L, Unit* ptr)
     {
         TEST_UNIT_RET()
@@ -5739,7 +5552,7 @@ public:
     static int GetSecondHated(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        PUSH_UNIT(L, ptr->GetAIInterface()->GetSecondHated());
+        PUSH_UNIT(L, ptr->getThreatManager().getSecondMostHated());
         return 1;
     }
 
@@ -5798,7 +5611,7 @@ public:
     static int IsInDungeon(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET()
-        if (ptr->GetMapMgr()->GetMapInfo() && ptr->GetMapMgr()->GetMapInfo()->type == INSTANCE_MULTIMODE)
+        if (ptr->GetMapMgr()->GetMapInfo() && ptr->GetMapMgr()->GetMapInfo()->isMultimodeDungeon())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -5808,7 +5621,7 @@ public:
     static int IsInRaid(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET()
-        if (ptr->GetMapMgr()->GetMapInfo() && ptr->GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID)
+        if (ptr->GetMapMgr()->GetMapInfo() && ptr->GetMapMgr()->GetMapInfo()->isRaid())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -5827,18 +5640,6 @@ public:
         Object* B = CHECK_OBJECT(L, 1);
         lua_pushboolean(L, isAttackable(ptr, B));
         return 1;
-    }
-
-    static int GetNumWaypoints(lua_State* L, Unit* ptr)
-    {
-        TEST_UNIT()
-        RET_NUMBER(static_cast<lua_Number>(ptr->GetAIInterface()->getWayPointsCount()));
-    }
-
-    static int GetMovementType(lua_State* L, Unit* ptr)
-    {
-        TEST_UNIT()
-        RET_NUMBER((uint32_t)ptr->GetAIInterface()->getWaypointScriptType());
     }
 
     static int GetQuestLogSlot(lua_State* L, Unit* ptr)

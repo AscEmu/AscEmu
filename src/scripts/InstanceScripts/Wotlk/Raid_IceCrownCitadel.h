@@ -794,6 +794,7 @@ enum EventsGunshipBattle
     EVENT_RESTART_EVENT,
     EVENT_BOARDING_REAVERS_MARINE,
     EVENT_WIPE_CHECK,
+    EVENT_SPAWN_GUNSHIPS,
 
     // Rampart of Skulls NPCs Events
     EVENT_WRATH,
@@ -1078,10 +1079,10 @@ enum MovePoints
     POINT_EXIT                                  = 7,        // waypoint id
 };
 
-Movement::Location const deathbringerPos = { -496.3542f, 2211.33f, 541.1138f, 0.0f };
-Movement::Location const firstStepPos = { -541.3177f, 2211.365f, 539.2921f, 0.0f };
+LocationVector const deathbringerPos = { -496.3542f, 2211.33f, 541.1138f, 0.0f };
+LocationVector const firstStepPos = { -541.3177f, 2211.365f, 539.2921f, 0.0f };
 
-Movement::Location const chargePos[6] =
+LocationVector const chargePos[6] =
 {
     {-509.6505f, 2211.377f, 539.2872f, 6.27f}, // High Overlord Saurfang/Muradin Bronzebeard
     {-508.7480f, 2211.897f, 539.2870f, 6.27f}, // front left
@@ -1091,7 +1092,7 @@ Movement::Location const chargePos[6] =
     {-509.0040f, 2211.743f, 539.2870f, 6.27f}  // back right
 };
 
-Movement::Location const chokePos[6] =
+LocationVector const chokePos[6] =
 {
     {-514.4834f, 2211.334f, 549.2887f, 6.27f}, // High Overlord Saurfang/Muradin Bronzebeard
     {-510.1081f, 2211.592f, 546.3773f, 6.27f}, // front left
@@ -1101,7 +1102,7 @@ Movement::Location const chokePos[6] =
     {-510.7041f, 2211.069f, 546.5298f, 6.27f}  // back right
 };
 
-Movement::Location const finalPos = { -563.7552f, 2211.328f, 538.7848f, 0.0f };
+LocationVector const finalPos = { -563.7552f, 2211.328f, 538.7848f, 0.0f };
 
 LocationVector const FrostWyrmPosH = { -435.429f, 2077.556f, 219.1148f, 4.767166f };
 LocationVector const FrostWyrmPosA = { -437.409f, 2349.026f, 219.1148f, 1.483120f };
@@ -1150,7 +1151,7 @@ LocationVector const LadyDeathwhisperSummonPositions[7] =
     {-524.2480f, 2211.920f, 62.90960f, 3.141592f}, // 7 Upper (Random Cultist)
 };
 
-static Movement::Location Doors[] =
+static LocationVector Doors[] =
 {
     { -407.35f, 2147.88f, 42.85f, 0 },       //IceWall1
     { -412.97f, 2285.24f, 42.01f, 0 },       //IceWall2

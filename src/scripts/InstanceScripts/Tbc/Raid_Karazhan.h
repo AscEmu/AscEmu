@@ -11,4 +11,5 @@ enum CreatureEntry
 
 enum CreatureSpells
 {
+    SPELL_TAUNT = 53798,
 };

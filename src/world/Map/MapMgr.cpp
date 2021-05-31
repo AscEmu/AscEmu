@@ -557,7 +557,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         if (this->pInstance != nullptr && this->pInstance->m_persistent)
             this->pInstance->m_creatorGroup = 0;
 
-        if (!InactiveMoveTime && !forced_expire && GetMapInfo()->type != INSTANCE_NULL)
+        if (!InactiveMoveTime && !forced_expire && !GetMapInfo()->isNonInstanceMap())
         {
             InactiveMoveTime = UNIXTIME + (30 * 60); //mapmgr inactive move time 30
             sLogger.debug("MapMgr : Instance %u is now idle. (%s)", m_instanceID, GetBaseMap()->GetMapName().c_str());
@@ -888,6 +888,10 @@ float MapMgr::GetUpdateDistance(Object* curObj, Object* obj, Player* plObj)
 {
     static float no_distance = 0.0f;
 
+    // had a crash because this was nullptr just send default update distance
+    if (!plObj)
+        return m_UpdateDistance;
+
     // unlimited distance for people on same boat
     if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && plObj->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && plObj->obj_movement_info.transport_guid == static_cast< Player* >(curObj)->obj_movement_info.transport_guid)
         return no_distance;
@@ -1071,15 +1075,56 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
 
 float MapMgr::GetLandHeight(float x, float y, float z)
 {
-    float adtheight = GetADTLandHeight(x, y);
+    if (worldConfig.terrainCollision.isCollisionEnabled)
+    {
+        float adtheight = GetADTLandHeight(x, y);
 
-    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
-    float vmapheight = vmgr->getHeight(_mapId, x, y, z + 0.5f, 10000.0f);
+        VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
+        float vmapheight = vmgr->getHeight(_mapId, x, y, z + 0.5f, 10000.0f);
 
-    if (adtheight > z && vmapheight > -1000)
-        return vmapheight; //underground
+        if (adtheight > z && vmapheight > -1000)
+            return vmapheight; //underground
 
-    return std::max(vmapheight, adtheight);
+        return std::max(vmapheight, adtheight);
+    }
+    else
+        return z;
+}
+
+float MapMgr::getWaterOrGroundLevel(uint32 phasemask, float x, float y, float z, float* ground /*= nullptr*/, bool /*swim = false*/, float collisionHeight /*= DEFAULT_COLLISION_HEIGHT*/)
+{
+    if (TerrainTile* tile = _terrain->GetTile(x, y))
+    {
+        // we need ground level (including grid height version) for proper return water level in point
+        float ground_z = GetLandHeight(x, y, z + collisionHeight);
+        if (ground)
+            *ground = ground_z;
+
+        LiquidData liquid_status;
+
+        ZLiquidStatus res = getLiquidStatus(phasemask, x, y, ground_z, MAP_ALL_LIQUIDS, &liquid_status, collisionHeight);
+        switch (res)
+        {
+        case LIQUID_MAP_ABOVE_WATER:
+            return std::max<float>(liquid_status.level, ground_z);
+        case LIQUID_MAP_NO_WATER:
+            return ground_z;
+        default:
+            return liquid_status.level;
+        }
+    }
+
+    return VMAP_INVALID_HEIGHT_VALUE;
+}
+
+bool MapMgr::isUnderWater(float x, float y, float z)
+{
+    float watermark = GetLiquidHeight(x, y);
+
+    if (watermark > (z + 0.5f))
+        return true;
+
+    return false;
 }
 
 float MapMgr::GetADTLandHeight(float x, float y)
@@ -1138,6 +1183,101 @@ uint8 MapMgr::GetLiquidType(float x, float y)
     tile->DecRef();
 
     return rv;
+}
+
+static inline bool isInWMOInterior(uint32 mogpFlags)
+{
+    return (mogpFlags & 0x2000) != 0;
+}
+
+ZLiquidStatus MapMgr::getLiquidStatus(uint32 /*phaseMask*/, float x, float y, float z, uint8 ReqLiquidType, LiquidData* data, float collisionHeight)
+{
+    ZLiquidStatus result = LIQUID_MAP_NO_WATER;
+    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
+    float liquid_level = INVALID_HEIGHT;
+    float ground_level = INVALID_HEIGHT;
+    uint32 liquid_type = 0;
+    uint32 mogpFlags = 0;
+    bool useGridLiquid = true;
+    if (vmgr->GetLiquidLevel(_mapId, x, y, z, ReqLiquidType, liquid_level, ground_level, liquid_type))
+    {
+        useGridLiquid = !isInWMOInterior(mogpFlags);
+        // Check water level and ground level
+        if (liquid_level > ground_level && G3D::fuzzyGe(z, ground_level - GROUND_HEIGHT_TOLERANCE))
+        {
+            // All ok in water -> store data
+            if (data)
+            {
+                // hardcoded in client like this
+                if (_mapId == 530 && liquid_type == 2)
+                    liquid_type = 15;
+
+                uint32 liquidFlagType = 0;
+                if (::DBC::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(liquid_type))
+                    liquidFlagType = liq->Type;
+
+                if (liquid_type && liquid_type < 21)
+                {
+                    if (auto const* area = GetArea(x, y, z))
+                    {
+                        uint32 overrideLiquid = area->liquid_type_override[liquidFlagType];
+                        if (!overrideLiquid && area->zone)
+                        {
+                            area = MapManagement::AreaManagement::AreaStorage::GetAreaById(area->zone);
+                            if (area)
+                                overrideLiquid = area->liquid_type_override[liquidFlagType];
+                        }
+
+                        if (::DBC::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(overrideLiquid))
+                        {
+                            liquid_type = overrideLiquid;
+                            liquidFlagType = liq->Type;
+                        }
+                    }
+                }
+
+                data->level = liquid_level;
+                data->depth_level = ground_level;
+
+                data->entry = liquid_type;
+                data->type_flags = 1 << liquidFlagType;
+            }
+
+            float delta = liquid_level - z;
+
+            // Get position delta
+            if (delta > collisionHeight)                   // Under water
+                return LIQUID_MAP_UNDER_WATER;
+            if (delta > 0.0f)                   // In water
+                return LIQUID_MAP_IN_WATER;
+            if (delta > -0.1f)                   // Walk on water
+                return LIQUID_MAP_WATER_WALK;
+            result = LIQUID_MAP_ABOVE_WATER;
+        }
+    }
+
+    /*if (useGridLiquid)
+    {
+        if (GridMap* gmap = const_cast<Map*>(this)->GetGrid(x, y))
+        {
+            LiquidData map_data;
+            ZLiquidStatus map_result = gmap->getLiquidStatus(x, y, z, ReqLiquidType, &map_data, collisionHeight);
+            // Not override LIQUID_MAP_ABOVE_WATER with LIQUID_MAP_NO_WATER:
+            if (map_result != LIQUID_MAP_NO_WATER && (map_data.level > ground_level))
+            {
+                if (data)
+                {
+                    // hardcoded in client like this
+                    if (_mapId == 530 && map_data.entry == 2)
+                        map_data.entry = 15;
+
+                    *data = map_data;
+                }
+                return map_result;
+            }
+        }
+    }*/
+    return result;
 }
 
 const ::DBC::Structures::AreaTableEntry* MapMgr::GetArea(float x, float y, float z)
@@ -1366,7 +1506,7 @@ bool MapMgr::Do()
     if (pInstance != nullptr)
     {
         // check for a non-raid instance, these expire after 10 minutes.
-        if (GetMapInfo()->type == INSTANCE_NONRAID || pInstance->m_isBattleground)
+        if (GetMapInfo()->isDungeon() || pInstance->m_isBattleground)
         {
             pInstance->m_mapMgr = nullptr;
             sInstanceMgr._DeleteInstance(pInstance, true);
@@ -1378,7 +1518,7 @@ bool MapMgr::Do()
             pInstance->m_mapMgr = nullptr;
         }
     }
-    else if (GetMapInfo()->type == INSTANCE_NULL)
+    else if (GetMapInfo()->isNonInstanceMap())
     {
         sInstanceMgr.m_singleMaps[GetMapId()] = nullptr;
     }

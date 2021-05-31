@@ -40,6 +40,7 @@
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/TaxiMgr.h"
 #include "Management/LFG/LFGMgr.hpp"
+#include "Movement/MovementManager.h"
 #if VERSION_STRING < Cata
 #include "Management/Guild/Guild.hpp"
 #endif
@@ -97,20 +98,6 @@ void ObjectMgr::finalize()
 
         l->clear();
         delete l;
-    }
-
-    sLogger.info("ObjectMgr : Deleting Waypoint Cache...");
-    for (std::unordered_map<uint32, Movement::WayPointMap*>::iterator i = mWayPointMap.begin(); i != mWayPointMap.end(); ++i)
-    {
-        for (Movement::WayPointMap::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
-        {
-            if ((*i2))
-            {
-                delete(*i2);
-            }
-        }
-
-        delete i->second;
     }
 
     sLogger.info("ObjectMgr : Deleting timed emote Cache...");
@@ -2003,103 +1990,6 @@ TimedEmoteList* ObjectMgr::GetTimedEmoteList(uint32 spawnid)
     else return nullptr;
 }
 
-void ObjectMgr::LoadCreatureWaypoints()
-{
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM creature_waypoints");
-    if (result == nullptr)
-        return;
-
-    uint32_t waypointCount = 0;
-#ifdef EXTENDED_DB_CHECKS
-    uint32_t cachedSpawnId = 0;
-    bool isValidSpawn = true;
-#endif
-    do
-    {
-        Field* fields = result->Fetch();
-        uint32_t spawnid = fields[0].GetUInt32();
-
-        // expensive check
-#ifdef EXTENDED_DB_CHECKS
-        if (cachedSpawnId != spawnid)
-        {
-            cachedSpawnId = spawnid;
-            isValidSpawn = true;
-        }
-
-        if (isValidSpawn == false)
-        {
-            continue;
-        }
-
-        if (isValidSpawn == true)
-        {
-            QueryResult* spawnResult = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id = %u", spawnid);
-            if (spawnResult == nullptr)
-            {
-                sLogger.debug("Table `creature_waypoints` includes waypoints for invalid spawndid %u, Skipped!", spawnid);
-                isValidSpawn = false;
-                continue;
-            }
-        }
-#endif
-
-        Movement::WayPoint* wp = new Movement::WayPoint;
-        wp->id = fields[1].GetUInt32();
-        wp->x = fields[2].GetFloat();
-        wp->y = fields[3].GetFloat();
-        wp->z = fields[4].GetFloat();
-        wp->waittime = fields[5].GetUInt32();
-        wp->flags = fields[6].GetUInt32();
-        wp->forwardemoteoneshot = fields[7].GetBool();
-        wp->forwardemoteid = fields[8].GetUInt32();
-        wp->backwardemoteoneshot = fields[9].GetBool();
-        wp->backwardemoteid = fields[10].GetUInt32();
-        wp->forwardskinid = fields[11].GetUInt32();
-        wp->backwardskinid = fields[12].GetUInt32();
-
-        std::unordered_map<uint32, Movement::WayPointMap*>::const_iterator i;
-        i = mWayPointMap.find(spawnid);
-        if (i == mWayPointMap.end())
-        {
-            Movement::WayPointMap* m = new Movement::WayPointMap;
-            if (m->size() <= wp->id)
-                m->resize(wp->id + 1);
-            (*m)[wp->id] = wp;
-            mWayPointMap[spawnid] = m;
-        }
-        else
-        {
-            if (i->second->size() <= wp->id)
-                i->second->resize(wp->id + 1);
-
-            (*(i->second))[wp->id] = wp;
-        }
-
-        ++waypointCount;
-    }
-    while (result->NextRow());
-
-    sLogger.info("ObjectMgr : %u waypoints cached.", waypointCount);
-    delete result;
-}
-
-Movement::WayPointMap* ObjectMgr::GetWayPointMap(uint32 spawnid)
-{
-    std::unordered_map<uint32, Movement::WayPointMap*>::const_iterator i;
-    i = mWayPointMap.find(spawnid);
-    if (i != mWayPointMap.end())
-    {
-        Movement::WayPointMap* m = i->second;
-        // we don't wanna erase from the map, because some are used more
-        // than once (for instances)
-
-        //m_waypoints.erase(i);
-        return m;
-    }
-    else return nullptr;
-}
-
 Pet* ObjectMgr::CreatePet(uint32 entry)
 {
     uint32 guid;
@@ -3305,4 +3195,69 @@ void ObjectMgr::LoadInstanceEncounters()
     } while (result->NextRow());
 
     sLogger.info("ObjectMgr : Loaded %u instance encounters in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+void ObjectMgr::loadCreatureMovementOverrides()
+{
+    const auto startTime = Util::TimeNow();
+    uint32_t count = 0;
+
+    _creatureMovementOverrides.clear();
+
+    QueryResult* result = WorldDatabase.Query("SELECT SpawnId, Ground, Swim, Flight, Rooted, Chase, Random from creature_movement_override");
+
+    if (!result)
+    {
+        sLogger.info(">> Loaded 0 creature movement overrides. DB table `creature_movement_override` is empty!");
+        return;
+    }
+
+    do
+    {
+        Field* fields = result->Fetch();
+        uint32_t spawnId = fields[0].GetUInt32();
+
+        QueryResult* spawnResult = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id = %u", spawnId);
+        if (spawnResult == nullptr)
+        {
+            sLogger.failure("Creature (SpawnId: %u) does not exist but has a record in `creature_movement_override`", spawnId);
+            continue;
+        }
+
+        CreatureMovementData& movement = _creatureMovementOverrides[spawnId];
+        movement.Ground = static_cast<CreatureGroundMovementType>(fields[1].GetUInt8());
+        movement.Swim = fields[2].GetBool();
+        movement.Flight = static_cast<CreatureFlightMovementType>(fields[3].GetUInt8());
+        movement.Rooted = fields[4].GetBool();
+        movement.Chase = static_cast<CreatureChaseMovementType>(fields[5].GetUInt8());
+        movement.Random = static_cast<CreatureRandomMovementType>(fields[6].GetUInt8());
+
+        checkCreatureMovement(spawnId, movement);
+        ++count;
+    } while (result->NextRow());
+
+    sLogger.info("ObjectMgr :  Loaded %u movement overrides in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+void ObjectMgr::checkCreatureMovement(uint32_t /*id*/, CreatureMovementData& creatureMovement)
+{
+    if (creatureMovement.Ground >= CreatureGroundMovementType::Max)
+    {
+        creatureMovement.Ground = CreatureGroundMovementType::Run;
+    }
+
+    if (creatureMovement.Flight >= CreatureFlightMovementType::Max)
+    {
+        creatureMovement.Flight = CreatureFlightMovementType::None;
+    }
+
+    if (creatureMovement.Chase >= CreatureChaseMovementType::Max)
+    {
+        creatureMovement.Chase = CreatureChaseMovementType::Run;
+    }
+
+    if (creatureMovement.Random >= CreatureRandomMovementType::Max)
+    {
+        creatureMovement.Random = CreatureRandomMovementType::Walk;
+    }
 }

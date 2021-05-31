@@ -118,7 +118,7 @@ class JainaAI : public CreatureAIScript
             return;
 
         Lich->setDisplayId(30721);
-        Lich->GetAIInterface()->MoveTo(5312.09f, 2009.14f, 709.341f);
+        Lich->GetAIInterface()->moveTo(5312.09f, 2009.14f, 709.341f);
         Lich->SetOrientation(3.93f);
         RemoveAIUpdateEvent();
     }

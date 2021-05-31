@@ -185,7 +185,7 @@ class MutanusAI : public CreatureAIScript
 
 // Wailing Caverns Event
 // Discipline of Naralex Gossip
-static Movement::Location ToNaralex[] =
+static LocationVector ToNaralex[] =
 {
     {  },
     { -132.498077f, 125.888153f, -78.418182f, 0.244260f },
@@ -272,10 +272,9 @@ public:
             case 2: // Start Event
             {
                 pCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
-                pCreature->GetAIInterface()->StopMovement(0);
+                pCreature->stopMoving();
                 pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-                pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                pCreature->GetAIInterface()->setWayPointToMove(2);
+                pCreature->GetScript()->DoAction(0);
             } break;
             default:
                 break;
@@ -293,10 +292,10 @@ class DofNaralexAI : public CreatureAIScript
 
         for (uint8_t i = 1; i < 39; ++i)
         {
-            AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, ToNaralex[i]));
+            addWaypoint(1, createWaypoint(i, 0, WAYPOINT_MOVE_TYPE_RUN, ToNaralex[i]));
         }
 
-        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        stopMovement();
 
         // Awakening Spell
         Awakening = addAISpell(6271, 0.0f, TARGET_SELF);
@@ -305,10 +304,19 @@ class DofNaralexAI : public CreatureAIScript
         SpawnTimer = 0;
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void DoAction(int32_t action) override
     {
-        ForceWaypointMove(iWaypointId + 1);
-        if (isScriptPhase(1) && GetCurrentWaypoint() == 39)
+        if (action == 0)
+            setWaypointToMove(1, 2);
+    }
+
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
+    {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
+        setWaypointToMove(1, iWaypointId + 1);
+        if (isScriptPhase(1) && getCurrentWaypoint() == 39)
             setScriptPhase(2);
     }
 

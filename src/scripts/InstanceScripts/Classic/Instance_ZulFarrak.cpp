@@ -64,11 +64,11 @@ class ThekaAI : public CreatureAIScript
     {
         plaguecount++;
         randomplague = 16 + Util::getRandomUInt(3);
-        if (plaguecount >= randomplague && getCreature()->GetAIInterface()->getNextTarget())
+        if (plaguecount >= randomplague && getCreature()->getThreatManager().getCurrentVictim())
         {
             plaguecount = 0;
             Unit* target = NULL;
-            target = getCreature()->GetAIInterface()->getNextTarget();
+            target = getCreature()->getThreatManager().getCurrentVictim();
             getCreature()->castSpell(target, plague, true);
         }
         else if (getCreature()->getHealthPct() <= 30 && morphcheck)
@@ -115,7 +115,7 @@ class AntusulTriggerAI : public CreatureAIScript
 
     void OnCombatStart(Unit* mTarget) override
     {
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 
@@ -125,7 +125,7 @@ class AntusulTriggerAI : public CreatureAIScript
         {
             if (antusul->isAlive())
             {
-                antusul->GetAIInterface()->AttackReaction(mTarget, 0, 0);
+                antusul->GetAIInterface()->onHostileAction(mTarget);
                 antusul->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Lunch has arrived, my beutiful childern. Tear them to pieces!");
             }
         }
@@ -202,32 +202,32 @@ class AntusulAI : public CreatureAIScript
         if (attack)
         {
             Unit* Target = NULL;
-            Target = getCreature()->GetAIInterface()->getNextTarget();
-            if (getCreature()->GetAIInterface()->getNextTarget())
+            Target = getCreature()->getThreatManager().getCurrentVictim();
+            if (getCreature()->getThreatManager().getCurrentVictim())
             {
                 if (add1 && Target)
                 {
-                    add1->GetAIInterface()->AttackReaction(Target, 0, 0);
+                    add1->GetAIInterface()->onHostileAction(Target);
                 }
                 if (add2 && Target)
                 {
-                    add2->GetAIInterface()->AttackReaction(Target, 0, 0);
+                    add2->GetAIInterface()->onHostileAction(Target);
                 }
                 if (add3 && Target)
                 {
-                    add3->GetAIInterface()->AttackReaction(Target, 0, 0);
+                    add3->GetAIInterface()->onHostileAction(Target);
                 }
                 if (add4 && Target)
                 {
-                    add4->GetAIInterface()->AttackReaction(Target, 0, 0);
+                    add4->GetAIInterface()->onHostileAction(Target);
                 }
                 if (add5 && Target)
                 {
-                    add5->GetAIInterface()->AttackReaction(Target, 0, 0);
+                    add5->GetAIInterface()->onHostileAction(Target);
                 }
                 if (add6 && Target)
                 {
-                    add6->GetAIInterface()->AttackReaction(Target, 0, 0);
+                    add6->GetAIInterface()->onHostileAction(Target);
                 }
             }
 
@@ -273,7 +273,7 @@ class AntusulAI : public CreatureAIScript
         trigger = getNearestCreature(1811.943726f, 714.839417f, 12.897189f, TRIGGER_ANTUSUL);
         if (trigger)
         {
-            trigger->GetAIInterface()->m_canMove = true;
+            trigger->setControlled(false, UNIT_STATE_ROOTED);
             trigger->GetAIInterface()->setMeleeDisabled(false);
         }
     }

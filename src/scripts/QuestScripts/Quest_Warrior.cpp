@@ -20,6 +20,14 @@
 
 #include "Setup.h"
 
+LocationVector const WaypointTheSummoning[] =
+{
+    { 269.29f, -1433.32f, 50.31f }, //1
+    { 328.52f, -1442.03f, 40.50f },
+    { 333.31f, -1453.69f, 42.01f }  //3
+};
+std::size_t const pathSize = std::extent<decltype(WaypointTheSummoning)>::value;
+
 class TheSummoning : public QuestScript
 {
 public:
@@ -35,10 +43,17 @@ public:
         {
             windwatcher->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me");
 
-            windwatcher->LoadWaypointGroup(18);
-            windwatcher->SwitchToCustomWaypoints();
+            MovementNew::PointsArray path;
+            path.reserve(pathSize);
+            std::transform(std::begin(WaypointTheSummoning), std::end(WaypointTheSummoning), std::back_inserter(path), [](LocationVector const& pos)
+            {
+                return G3D::Vector3(pos.x, pos.y, pos.z);
+            });
+            MovementNew::MoveSplineInit init(windwatcher);
+            init.SetWalk(true);
+            init.MovebyPath(path);
+            windwatcher->getMovementManager()->launchMoveSpline(std::move(init), 0, MOTION_PRIORITY_NORMAL, POINT_MOTION_TYPE);
 
-            windwatcher->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
         }
         windwatcher->Despawn(15 * 60 * 1000, 0);
 
@@ -89,11 +104,11 @@ class Bartleby : public CreatureAIScript
         getCreature()->RemoveNegativeAuras();
         getCreature()->SetFaction(11);
         getCreature()->SetHealthPct(100);
-        getCreature()->GetAIInterface()->WipeTargetList();
-        getCreature()->GetAIInterface()->WipeHateList();
-        getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+        getCreature()->getThreatManager().clearAllThreat();
+        getCreature()->getThreatManager().removeMeFromThreatLists();
+        getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
     }
 
@@ -106,7 +121,6 @@ class Bartleby : public CreatureAIScript
 class BeatBartleby : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
@@ -120,7 +134,7 @@ public:
 
         Bartleby->SetFaction(168);
         Bartleby->GetAIInterface()->setMeleeDisabled(false);
-        Bartleby->GetAIInterface()->SetAllowedToEnterCombat(true);
+        Bartleby->GetAIInterface()->setAllowedToEnterCombat(true);
     }
 };
 

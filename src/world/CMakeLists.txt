@@ -5,7 +5,6 @@ project(world CXX)
 
 include(Game${ASCEMU_VERSION}/CMakeLists.txt)
 
-include(AI/CMakeLists.txt)
 include(Chat/CMakeLists.txt)
 include(Chat/Commands/CMakeLists.txt)
 include(Data/CMakeLists.txt)
@@ -21,6 +20,7 @@ include(Map/CMakeLists.txt)
 include(Map/Area/CMakeLists.txt)
 include(Movement/CMakeLists.txt)
 include(Movement/Spline/CMakeLists.txt)
+include(Movement/MovementGenerators/CMakeLists.txt)
 include(Objects/CMakeLists.txt)
 include(Server/CMakeLists.txt)
 include(Server/Console/CMakeLists.txt)
@@ -91,6 +91,7 @@ set(sources
    ${SRC_MAP_AREA_FILES}
    ${SRC_MOVEMENT_FILES}
    ${SRC_MOVEMENT_SPLINE_FILES}
+   ${SRC_MOVEMENT_MOVEMENTGENERATOR_FILES}
    ${SRC_OBJECTS_FILES}
    ${SRC_PACKET_FILES}
    ${SRC_PACKET_HANDLER_FILES}

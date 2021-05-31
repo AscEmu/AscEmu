@@ -11,6 +11,19 @@ This file is released under the MIT license. See README-MIT for more information
 #include "../world/Server/World.h"
 #include "../Macros/MapsMacros.hpp"
 
+float const GROUND_HEIGHT_TOLERANCE = 0.05f; // Extra tolerance to z position to check if it is in air or on ground.
+
+enum LiquidTypes
+{
+    MAP_LIQUID_TYPE_NO_WATER   = 0x00,
+    MAP_LIQUID_TYPE_WATER      = 0x01,
+    MAP_LIQUID_TYPE_OCEAN      = 0x02,
+    MAP_LIQUID_TYPE_MAGMA      = 0x04,
+    MAP_LIQUID_TYPE_SLIME      = 0x08,
+
+    MAP_ALL_LIQUIDS            = MAP_LIQUID_TYPE_WATER | MAP_LIQUID_TYPE_OCEAN | MAP_LIQUID_TYPE_MAGMA | MAP_LIQUID_TYPE_SLIME
+};
+
 namespace VMAP
 {
     class IVMapManager;
@@ -60,6 +73,23 @@ struct TileMapLiquidHeader
     uint8_t width;
     uint8_t height;
     float liquidLevel;
+};
+
+struct LiquidData
+{
+    uint32 type_flags;
+    uint32 entry;
+    float  level;
+    float  depth_level;
+};
+
+enum ZLiquidStatus : uint32
+{
+    LIQUID_MAP_NO_WATER = 0x00000000,
+    LIQUID_MAP_ABOVE_WATER = 0x00000001,
+    LIQUID_MAP_WATER_WALK = 0x00000002,
+    LIQUID_MAP_IN_WATER = 0x00000004,
+    LIQUID_MAP_UNDER_WATER = 0x00000008
 };
 
 class TileMap

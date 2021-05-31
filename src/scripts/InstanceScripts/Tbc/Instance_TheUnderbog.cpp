@@ -49,7 +49,7 @@ class HungarfenAI : public CreatureAIScript
     {
         if (getCreature()->getHealthPct() <= 20 && !FourSpores)
         {
-            getCreature()->GetAIInterface()->StopMovement(11000);
+            getCreature()->pauseMovement(11000);
             getCreature()->setAttackTimer(MELEE, 1200);
 
             getCreature()->castSpell(getCreature(), spores->mSpellInfo, spores->mIsTriggered);
@@ -163,17 +163,17 @@ class SwamplordMuselekAI : public CreatureAIScript
     {
         Unit* Bear = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 17827);
         if (Bear && Bear->isAlive())
-            Bear->GetAIInterface()->AttackReaction(mTarget, 1, 0);
+            Bear->GetAIInterface()->onHostileAction(mTarget);
     }
 
     void AIUpdate() override
     {
-        if (getCreature()->GetAIInterface()->getNextTarget())
+        if (getCreature()->getThreatManager().getCurrentVictim())
         {
-            Unit* target = getCreature()->GetAIInterface()->getNextTarget();
+            Unit* target = getCreature()->getThreatManager().getCurrentVictim();
             if (getCreature()->GetDistance2dSq(target) >= 100.0f && getCreature()->getDistanceSq(target) <= 900.0f && Util::getRandomUInt(3) != 1)
             {
-                getCreature()->GetAIInterface()->StopMovement(2000);
+                getCreature()->pauseMovement(2000);
                 if (!getCreature()->isCastingSpell())
                 {
                     uint32_t RangedSpell = Util::getRandomUInt(100);

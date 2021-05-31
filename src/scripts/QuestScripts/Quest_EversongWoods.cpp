@@ -71,9 +71,9 @@ void ProspectorAnvilwardGossip::onSelectOption(Object* pObject, Player* Plr, uin
 
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Very well. Let's see what you have to show me.");
             GossipMenu::senGossipComplete(Plr);
-            pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
 
-            pCreature->GetAIInterface()->StopMovement(10);
+            pCreature->getMovementManager()->movePath(pCreature->getWaypointPath(), false);
+            pCreature->pauseMovement(10);
         }break;
     }
 };
@@ -83,22 +83,25 @@ class ProspectorAnvilward : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ProspectorAnvilward)
     explicit ProspectorAnvilward(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        stopMovement();
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (iWaypointId == 9)
         {
             getCreature()->SetFaction(38);
-            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+            getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
             getCreature()->Despawn(10 * 60 * 1000, 1000); //if failed allow other players to do quest from beggining
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "What manner of trick is this, blood elf? If you seek to ambush me, I warn you I will not go down quietly!");
-            getCreature()->GetAIInterface()->getNextTarget();
+            getCreature()->getThreatManager().getCurrentVictim();
         }
         if (iWaypointId == 10)
         {
-            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+            getCreature()->stopMoving();
         }
     }
 };

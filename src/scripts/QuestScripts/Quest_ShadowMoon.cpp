@@ -68,7 +68,7 @@ class KneepadsQAI : public CreatureAIScript
 // WP Coords Wait Times
 struct WPWaitTimes
 {
-    Movement::Location mCoords;
+    LocationVector mCoords;
     uint32_t WaitTime;
 };
 
@@ -90,7 +90,7 @@ class DeathbringerJovaanAI : public CreatureAIScript
         mJovaanPhase = -1;
 
         for (int i = 1; i < 5; ++i)
-            AddWaypoint(CreateWaypoint(i, DeathbringerJovaanWP[i].WaitTime, Movement::WP_MOVE_TYPE_WALK, DeathbringerJovaanWP[i].mCoords));
+            addWaypoint(1, createWaypoint(i, DeathbringerJovaanWP[i].WaitTime, WAYPOINT_MOVE_TYPE_WALK, DeathbringerJovaanWP[i].mCoords));
     }
 
     void AIUpdate() override
@@ -106,7 +106,6 @@ class DeathbringerJovaanAI : public CreatureAIScript
                     {
                         pRazuunAI->getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
                         pRazuunAI->setCanEnterCombat(false);
-                        pRazuunAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                         pRazuunAI->setRooted(true);
                     }
                     getCreature()->setStandState(STANDSTATE_KNEEL);
@@ -159,8 +158,11 @@ class DeathbringerJovaanAI : public CreatureAIScript
         
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         switch (iWaypointId)
         {
             case 3:
@@ -298,14 +300,17 @@ class EnslavedNetherwingDrakeAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI)
     explicit EnslavedNetherwingDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        Movement::LocationWithFlag WayPoint = { getCreature()->GetPositionX(), getCreature()->GetPositionY() + 30, getCreature()->GetPositionZ() + 100, getCreature()->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
+        LocationVector WayPoint = { getCreature()->GetPositionX(), getCreature()->GetPositionY() + 30, getCreature()->GetPositionZ() + 100, getCreature()->GetOrientation()};
         setRooted(true);
         getCreature()->addUnitFlags(UNIT_FLAG_FEIGN_DEATH | UNIT_FLAG_NON_ATTACKABLE);
-        AddWaypoint(CreateWaypoint(1, 0, WayPoint.wp_flag, WayPoint.wp_location));
+        addWaypoint(1, createWaypoint(1, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, WayPoint));
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (iWaypointId == 1)
         {
             despawn(0, 3 * 60 * 1000);

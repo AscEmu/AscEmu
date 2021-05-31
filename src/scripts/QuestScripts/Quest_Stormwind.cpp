@@ -52,11 +52,11 @@ class DashelStonefist : public CreatureAIScript
         getCreature()->RemoveNegativeAuras();
         getCreature()->SetFaction(12);
         getCreature()->SetHealthPct(100);
-        getCreature()->GetAIInterface()->WipeTargetList();
-        getCreature()->GetAIInterface()->WipeHateList();
-        getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+        getCreature()->getThreatManager().clearAllThreat();
+        getCreature()->getThreatManager().removeMeFromThreatLists();
+        getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         RemoveAIUpdateEvent();
     }
@@ -79,7 +79,7 @@ public:
 
         Dashel->SetFaction(72);
         Dashel->GetAIInterface()->setMeleeDisabled(false);
-        Dashel->GetAIInterface()->SetAllowedToEnterCombat(true);
+        Dashel->GetAIInterface()->setAllowedToEnterCombat(true);
 
         uint32_t chance = Util::getRandomUInt(100);
         if (chance < 15)

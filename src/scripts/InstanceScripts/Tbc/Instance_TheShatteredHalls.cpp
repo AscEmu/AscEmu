@@ -240,7 +240,7 @@ class ShatteredHandBrawlerAI : public CreatureAIScript
 };
 
 // Grand Warlock Nethekurse Encounter
-static Movement::Location Darkcasters[] =
+static LocationVector Darkcasters[] =
 {
     { 160.563004f, 272.989014f, -13.189000f },
     { 176.201004f, 264.669006f, -13.141600f },
@@ -257,7 +257,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
         if (GrandWarlock)
         {
             GrandWarlock->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-            GrandWarlock->GetAIInterface()->SetAllowedToEnterCombat(false);
+            GrandWarlock->GetAIInterface()->setAllowedToEnterCombat(false);
         }
     }
 
@@ -305,7 +305,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
 
             if (Counter == 0)
             {
-                GrandWarlock->GetAIInterface()->HandleEvent(EVENT_ENTERCOMBAT, GrandWarlock, 0);
+                GrandWarlock->GetAIInterface()->handleEvent(EVENT_ENTERCOMBAT, GrandWarlock, 0);
             }
 
             switch (Util::getRandomUInt(2))    // those need to be verified too
@@ -379,8 +379,8 @@ class WarbringerOmroggAI : public CreatureAIScript
         if (mLeftHead == nullptr || mRightHead == nullptr)
             return;
         
-        mLeftHead->getCreature()->GetAIInterface()->SetUnitToFollow(getCreature());
-        mRightHead->getCreature()->GetAIInterface()->SetUnitToFollow(getCreature());
+        mLeftHead->getCreature()->getMovementManager()->moveFollow(getCreature(), 5.0f, 2.0f);
+        mRightHead->getCreature()->getMovementManager()->moveFollow(getCreature(), 5.0f, 2.0f);
 
         switch (Util::getRandomUInt(2))
         {
@@ -516,8 +516,8 @@ class WarbringerOmroggAI : public CreatureAIScript
         if (pTarget != nullptr)
         {
             _clearHateList();
-            getCreature()->GetAIInterface()->setNextTarget(pTarget);
-            getCreature()->GetAIInterface()->modThreatByPtr(pTarget, 1000);
+            getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
+            getCreature()->getThreatManager().addThreat(pTarget, 1000);
 
             if (mLeftHead == nullptr || mRightHead == nullptr || mSpeechTimer != INVALIDATE_TIMER)
                 return;

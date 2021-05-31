@@ -628,12 +628,6 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
         return SPELL_DID_HIT_SUCCESS;
 
     /************************************************************************/
-    /* Check if the unit is evading                                         */
-    /************************************************************************/
-    if (u_victim->isCreature() && u_victim->GetAIInterface()->isAiState(AI_STATE_EVADE))
-        return SPELL_DID_HIT_EVADE;
-
-    /************************************************************************/
     /* Check if the player target is able to deflect spells                 */
     /* Currently (3.3.5a) there is only spell doing that: Deterrence        */
     /************************************************************************/
@@ -644,6 +638,10 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
 
     // APGL End
     // MIT Start
+
+    // Check if creature target is in evade mode
+    if (target->isCreature() && target->isInEvadeMode())
+        return SPELL_DID_HIT_EVADE;
 
     // Check if target can reflect this spell
     if (m_canBeReflected)
@@ -1147,7 +1145,7 @@ void Spell::AddTime(uint32 type)
             if (p_caster == nullptr)
             {
                 //then it's a Creature
-                u_caster->GetAIInterface()->AddStopTime(delay);
+                u_caster->pauseMovement(delay);
             }
             //in case cast is delayed, make sure we do not exit combat
             else
@@ -3157,24 +3155,50 @@ void Spell::SpellEffectJumpTarget(uint8_t effectIndex)
     }
 
     float speedZ = 0.0f;
-
-    if (getSpellInfo()->getEffectMiscValue(effectIndex))
-        speedZ = float(getSpellInfo()->getEffectMiscValue(effectIndex)) / 10;
-    else if (getSpellInfo()->getEffectMiscValueB(effectIndex))
-        speedZ = float(getSpellInfo()->getEffectMiscValueB(effectIndex)) / 10;
+    float speedXY = 0.0f;
 
     o = unitTarget->calcRadAngle(u_caster->GetPositionX(), u_caster->GetPositionY(), x, y);
-
-    if (speedZ <= 0.0f)
-        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, getSpellInfo()->getEffect(effectIndex) == 145);
-    else
-        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, speedZ, getSpellInfo()->getEffect(effectIndex) == 145);
+    calculateJumpSpeeds(u_caster, getSpellInfo() ,effectIndex, u_caster->getExactDist2d(x, y), speedXY, speedZ);
+    u_caster->getMovementManager()->moveJump(x, y, z, o, speedXY, speedZ);
 }
 
-void Spell::SpellEffectJumpBehindTarget(uint8_t /*i*/)
+void Spell::calculateJumpSpeeds(Unit* unitCaster, SpellInfo const* spellInfo, uint8_t i, float dist, float& speedXY, float& speedZ)
+{
+    float runSpeed = unitCaster->getSpeedRate(TYPE_RUN, false);
+
+    if (Creature* creature = unitCaster->ToCreature())
+        runSpeed *= creature->GetCreatureProperties()->run_speed;
+
+    float multiplier = m_spellInfo->getEffectMultipleValue(i);
+    if (multiplier <= 0.0f)
+        multiplier = 1.0f;
+
+    speedXY = std::min(runSpeed * 3.0f * multiplier, std::max(28.0f, unitCaster->getSpeedRate(TYPE_RUN, false) * 4.0f));
+
+    float duration = dist / speedXY;
+    float durationSqr = duration * duration;
+    float minHeight = spellInfo->getEffectMiscValue(i) ? spellInfo->getEffectMiscValue(i) / 10.0f : 0.5f; // Lower bound is blizzlike
+    float maxHeight = spellInfo->getEffectMiscValueB(i) ? spellInfo->getEffectMiscValueB(i) / 10.0f : 1000.0f; // Upper bound is unknown
+    float height;
+
+    if (durationSqr < minHeight * 8 / MovementNew::gravity)
+        height = minHeight;
+    else if (durationSqr > maxHeight * 8 / MovementNew::gravity)
+        height = maxHeight;
+    else
+        height = MovementNew::gravity * durationSqr / 8;
+
+    speedZ = std::sqrt(2 * MovementNew::gravity * height);
+}
+
+void Spell::SpellEffectJumpBehindTarget(uint8_t effectIndex)
 {
     if (u_caster == nullptr)
         return;
+
+    if (!m_targets.hasDestination())
+        return;
+
     if (m_targets.getTargetMask() & TARGET_FLAG_UNIT)
     {
         Object* uobj = m_caster->GetMapMgr()->_GetObject(m_targets.getUnitTarget());
@@ -3188,42 +3212,10 @@ void Spell::SpellEffectJumpBehindTarget(uint8_t /*i*/)
         float y = un->GetPositionY() + sinf(angle) * rad;
         float z = un->GetPositionZ();
         float o = un->calcRadAngle(x, y, un->GetPositionX(), un->GetPositionY());
-
-        if (u_caster->GetAIInterface() != nullptr)
-            u_caster->GetAIInterface()->splineMoveJump(x, y, z, o);
-    }
-    else if (m_targets.getTargetMask() & (TARGET_FLAG_SOURCE_LOCATION | TARGET_FLAG_DEST_LOCATION))
-    {
-        float x = 0.0f;
-        float y = 0.0f;
-        float z = 0.0f;
-
-        //this can also jump to a point
-        if (m_targets.hasSource())
-        {
-            auto source = m_targets.getSource();
-            x = source.x;
-            y = source.y;
-            z = source.z;
-        }
-
-        if (m_targets.hasDestination())
-        {
-            auto destination = m_targets.getDestination();
-            x = destination.x;
-            y = destination.y;
-            z = destination.z;
-        }
-
-        if (x != 0.0f && y != 0.0f && z != 0.0f)
-        {
-            if (u_caster->GetAIInterface() != nullptr)
-                u_caster->GetAIInterface()->splineMoveJump(x, y, z);
-        }
-        else
-        {
-            sLogger.debug("Coordinates are empty");
-        }
+       
+        float speedXY, speedZ;
+        calculateJumpSpeeds(u_caster, getSpellInfo() ,effectIndex, u_caster->getExactDist2d(un->GetPositionX(), un->GetPositionY()), speedXY, speedZ);
+        u_caster->getMovementManager()->moveJump(x, y, z, o, speedXY, speedZ, EVENT_JUMP, !m_targets.getUnitTarget());
     }
 }
 

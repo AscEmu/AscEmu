@@ -48,7 +48,8 @@ void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitO
         HealDoneMod[school] = unitOwner->HealDoneMod[school];
     }
 
-    m_aiInterface->Init(this, AI_SCRIPT_TOTEM, Movement::WP_MOVEMENT_SCRIPT_NONE, unitOwner);
+    m_aiInterface->Init(this, AI_SCRIPT_TOTEM, unitOwner);
+
     DisableAI();
 
     if (getPlayerOwner() != nullptr)

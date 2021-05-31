@@ -19,13 +19,15 @@
 #ifndef WORLDCREATOR_DEFINES_HPP
 #define WORLDCREATOR_DEFINES_HPP
 
-enum INSTANCE_TYPE
+#include <cstdint>
+
+enum InstanceType : uint8_t
 {
-    INSTANCE_NULL,
-    INSTANCE_RAID,
-    INSTANCE_NONRAID,
-    INSTANCE_BATTLEGROUND,
-    INSTANCE_MULTIMODE,
+    INSTANCE_NULL,                              // open world
+    INSTANCE_RAID,                              // all raids
+    INSTANCE_DUNGEON,                           // 5 man dungeons only with normal mode
+    INSTANCE_BATTLEGROUND,                      // battlegrounds
+    INSTANCE_MULTIMODE,                         // 5 man dungeons with heroic mode
 };
 
 enum INSTANCE_ABORT_ERROR

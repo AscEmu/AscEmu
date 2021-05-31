@@ -387,7 +387,7 @@ void CommandTableStorage::Init()
         { "knockback",          'd', &ChatHandler::HandleKnockBackCommand,          "Knocks you back by <balue>.",                              nullptr },
         { "fade",               'd', &ChatHandler::HandleFadeCommand,               "Calls ModThreatModifyer() with <value>.",                  nullptr },
         { "threatMod",          'd', &ChatHandler::HandleThreatModCommand,          "Calls ModGeneratedThreatModifyer() with <value>.",         nullptr },
-        { "calcThreat",         'd', &ChatHandler::HandleCalcThreatCommand,         "Calculates threat <dmg> <spellId>.",                       nullptr },
+        { "movefall",           'd', &ChatHandler::HandleMoveFallCommand,           "Makes the creature fall to the ground",                    nullptr },
         { "threatList",         'd', &ChatHandler::HandleThreatListCommand,         "Returns all AI_Targets of the selected Creature.",         nullptr },
         { "gettptime",          'd', &ChatHandler::HandleGetTransporterTime,        "Grabs transporter travel time",                            nullptr },
         { "itempushresult",     'd', &ChatHandler::HandleSendItemPushResult,        "Sends item push result",                                   nullptr },
@@ -423,21 +423,10 @@ void CommandTableStorage::Init()
     static ChatCommand waypointCommandTable[] =
     {
         { "add",                'w', &ChatHandler::HandleWayPointAddCommand,            "Add wp for selected creature at current pos.",     nullptr },
-        { "addfly",             'w', &ChatHandler::HandleWayPointAddFlyCommand,         "Adds a flying waypoint for selected creature.",    nullptr },
-        { "change",             'w', &ChatHandler::HandleWayPointChangeNumberCommand,   "Change wp ID for selected wp.",                    nullptr },
         { "delete",             'w', &ChatHandler::HandleWayPointDeleteCommand,         "Deletes selected wp.",                             nullptr },
         { "deleteall",          'w', &ChatHandler::HandleWayPointDeleteAllCommand,      "Deletes all waypoints of selected creature.",      nullptr },
-        { "emote",              'w', &ChatHandler::HandleWayPointEmoteCommand,          "Set emote ID for selected wp.",                    nullptr },
-        { "flags",              'w', &ChatHandler::HandleWayPointFlagsCommand,          "Set flags for selected wp.",                       nullptr },
-        { "generate",           'w', &ChatHandler::HandleWayPointGenerateCommand,       "Randomly generate <x> wps for selected creature.", nullptr },
         { "hide",               'w', &ChatHandler::HandleWayPointHideCommand,           "Hide wp's for selected creature.",                 nullptr },
-        { "info",               'w', &ChatHandler::HandleWayPointInfoCommand,           "Show info for selected wp.",                       nullptr },
-        { "movehere",           'w', &ChatHandler::HandleWayPpointMoveHereCommand,      "Moves the selected wp to your position.",          nullptr },
-        { "movetype",           'w', &ChatHandler::HandleWayPointMoveTypeCommand,       "Change movement type for selected wp.",            nullptr },
-        { "save",               'w', &ChatHandler::HandleWayPointSaveCommand,           "Save all waypoints for selected creature.",        nullptr },
         { "show",               'w', &ChatHandler::HandleWayPointShowCommand,           "Show wp's for selected creature <bool backwards>", nullptr },
-        { "skin",               'w', &ChatHandler::HandleWayPointSkinCommand,           "Sets Skin ID for selected wp.",                    nullptr },
-        { "waittime",           'w', &ChatHandler::HandleWayPointWaitCommand,           "Sets Wait time in ms for selected wp.",            nullptr },
         { nullptr,              '0', nullptr,                                           "",                                                 nullptr }
     };
     dupe_command_table(waypointCommandTable, _waypointCommandTable);
@@ -547,7 +536,6 @@ void CommandTableStorage::Init()
         { "formationmaster",    'm', &ChatHandler::HandleNpcSetFormationMasterCommand,  "Sets formation master.",                           nullptr },
         { "formationslave",     'm', &ChatHandler::HandleNpcSetFormationSlaveCommand,   "Sets formation slave with distance and angle",     nullptr },
         { "formationclear",     'm', &ChatHandler::HandleNpcSetFormationClearCommand,   "Removes formation from creature",                  nullptr },
-        { "ongameobject",       'n', &ChatHandler::HandleNpcSetOnGOCommand,             "Toggles onGameobject state.",                      nullptr },
         { "phase",              'n', &ChatHandler::HandleNpcSetPhaseCommand,            "Sets phase for selected creature",                 nullptr },
         { "standstate",         'm', &ChatHandler::HandleNpcSetStandstateCommand,       "Sets standstate for selected creature",            nullptr },
         { nullptr,              '0', nullptr,                                           "",                                                 nullptr }

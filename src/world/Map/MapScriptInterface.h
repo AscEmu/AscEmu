@@ -27,7 +27,6 @@
 #include "Units/Creatures/Creature.h"
 
 #include "Map/MapCell.h"
-#include "Movement/UnitMovementManager.hpp"
 #include "Map/MapMgr.h"
 
 class GameObject;
@@ -105,6 +104,36 @@ class SERVER_DECL MapScriptInterface
             }
         }
 
+        inline Creature* getNearestAssistCreatureInGrid(Creature* pCreature, Unit* enemy, float range /*= 250.0f*/) const
+        {
+            MapCell* pCell = mapMgr.GetCell(mapMgr.GetPosX(pCreature->GetPositionX()), mapMgr.GetPosY(pCreature->GetPositionY()));
+            if (pCell == 0)
+                return nullptr;
+
+            float CurrentDist = 0;
+            ObjectSet::const_iterator iter = pCell->Begin();
+            for (; iter != pCell->End(); ++iter)
+            {
+                if ((*iter)->isCreature())
+                {
+                    Creature* helper = (*iter)->ToCreature();
+                    if (pCreature == helper)
+                        break;
+
+                    if (!helper->GetAIInterface()->canAssistTo(pCreature, enemy))
+                        break;
+
+                    CurrentDist = (*iter)->CalcDistance(pCreature);
+                    if (CurrentDist >= range)
+                        break;
+
+
+                    return helper;
+                }
+            }
+            return nullptr;
+        }
+
         inline void GetGameObjectListWithEntryInGrid(Creature* pCreature, std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
         {
             MapCell* pCell = mapMgr.GetCell(mapMgr.GetPosX(pCreature->GetPositionX()), mapMgr.GetPosY(pCreature->GetPositionY()));
@@ -138,7 +167,6 @@ class SERVER_DECL MapScriptInterface
         GameObject* SpawnGameObject(MySQLStructure::GameobjectSpawn* gs, bool AddToWorld);
         Creature* SpawnCreature(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, bool tmplate, uint32 Misc1, uint32 Misc2, uint32 phase = 0xFFFFFFF);
         Creature* SpawnCreature(MySQLStructure::CreatureSpawn* sp, bool AddToWorld);
-        Movement::WayPoint* CreateWaypoint();
 
         void DeleteGameObject(GameObject* ptr);
         void DeleteCreature(Creature* ptr);
@@ -174,8 +202,6 @@ class SERVER_DECL StructFactory
         StructFactory(StructFactory const&) = delete;
         StructFactory& operator=(StructFactory&&) = delete;
         StructFactory& operator=(StructFactory const&) = delete;
-
-        Movement::WayPoint* CreateWaypoint();
 };
 
 #define sStructFactory StructFactory::getInstance()

@@ -25,13 +25,16 @@ class The_Defias_Traitor : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(The_Defias_Traitor)
     explicit The_Defias_Traitor(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (iWaypointId == 19)
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell your master that this is where Van Cleef is hiding. I'm outta here!");
             getCreature()->Despawn(5000, 1000);
-            getCreature()->DeleteWaypoints();
+            getCreature()->stopMoving();
 
             if (getCreature()->m_escorter == nullptr)
                 return;

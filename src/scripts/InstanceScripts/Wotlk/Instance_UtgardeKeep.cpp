@@ -518,7 +518,10 @@ class SkarvaldTheConstructorGhostAI : public CreatureAIScript
 
         Player* pTarget = getNearestPlayer();
         if (pTarget != nullptr)
-            getCreature()->GetAIInterface()->AttackReaction(pTarget, 50, 0);
+        {
+            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getThreatManager().addThreat(pTarget, 50.f);
+        }
     }
 };
 
@@ -545,7 +548,10 @@ class DalronnTheControllerGhostAI : public CreatureAIScript
 
         Player* pTarget = getNearestPlayer();
         if (pTarget != nullptr)
-            getCreature()->GetAIInterface()->AttackReaction(pTarget, 50, 0);
+        {
+            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getThreatManager().addThreat(pTarget, 50.f);
+        }
     }
 };
 
@@ -614,7 +620,10 @@ class SkeletonAddAI : public CreatureAIScript
     {
         Player* pTarget = getNearestPlayer();
         if (pTarget != nullptr)
-            getCreature()->GetAIInterface()->AttackReaction(pTarget, 50, 0);
+        {
+            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getThreatManager().addThreat(pTarget, 50.f);
+        }
     }
 
     void OnCombatStop(Unit* /*pTarget*/) override
@@ -684,7 +693,10 @@ class IngvarUndeadAI : public CreatureAIScript
     {
         Player* pTarget = getNearestPlayer();
         if (pTarget != nullptr)
-            getCreature()->GetAIInterface()->AttackReaction(pTarget, 50, 0);
+        {
+            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getThreatManager().addThreat(pTarget, 50.f);
+        }
     }
 };
 

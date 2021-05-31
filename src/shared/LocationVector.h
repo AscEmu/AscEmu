@@ -21,7 +21,10 @@
 #define _LOCATIONVECTOR_H
 
 #include <math.h>
+#include <string>
+#include <cmath>
 #include "CommonTypes.hpp"
+#include "CommonDefines.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Location vector class (X, Y, Z, O)
@@ -29,7 +32,6 @@
 class SERVER_DECL LocationVector
 {
     public:
-
         // Constructors
         LocationVector(float X, float Y, float Z = 0, float O = 0) : x(X), y(Y), z(Z), o(O) {}
         LocationVector() {}
@@ -48,6 +50,59 @@ class SERVER_DECL LocationVector
         bool isSet() const;
 
         void changeCoords(float newX, float newY, float newZ, float newO);
+        void changeCoords(float newX, float newY, float newZ);
+
+        float getExactDist2dSq(const float _x, const float _y) const
+        {
+            float dx = _x - getPositionX();
+            float dy = _y - getPositionY();
+            return dx * dx + dy * dy;
+        }
+        float getExactDist2dSq(LocationVector const& pos) const { return getExactDist2dSq(pos.x, pos.y); }
+        float getExactDist2dSq(LocationVector const* pos) const { return getExactDist2dSq(*pos); }
+
+        float getExactDist2d(const float _x, const float _y) const { return std::sqrt(getExactDist2dSq(_x, _y)); }
+        float getExactDist2d(LocationVector const& pos) const { return getExactDist2d(pos.x, pos.y); }
+        float getExactDist2d(LocationVector const* pos) const { return getExactDist2d(*pos); }
+
+        float getExactDistSq(float _x, float _y, float _z) const
+        {
+            float dz = _z - getPositionZ();
+            return getExactDist2dSq(_x, _y) + dz * dz;
+        }
+        float getExactDistSq(LocationVector const& pos) const { return getExactDistSq(pos.x, pos.y, pos.z); }
+        float getExactDistSq(LocationVector const* pos) const { return getExactDistSq(*pos); }
+
+        float getExactDist(float _x, float _y, float _z) const { return std::sqrt(getExactDistSq(_x, _y, _z)); }
+        float getExactDist(LocationVector const& pos) const { return getExactDist(pos.x, pos.y, pos.z); }
+        float getExactDist(LocationVector const* pos) const { return getExactDist(*pos); }
+
+        float getAbsoluteAngle(float _x, float _y) const
+        {
+            float dx = _x - getPositionX();
+            float dy = _y - getPositionY();
+            return normalizeOrientation(std::atan2(dy, dx));
+        }
+
+        float getAbsoluteAngle(LocationVector const& pos) { return getAbsoluteAngle(pos.x, pos.y); }
+        float getAbsoluteAngle(LocationVector const* pos) const { return getAbsoluteAngle(pos->x, pos->y); }
+        float toAbsoluteAngle(float relAngle) const { return normalizeOrientation(relAngle + o); }
+
+        float toRelativeAngle(float absAngle) const { return normalizeOrientation(absAngle - o); }
+        float getRelativeAngle(float _x, float _y) const { return toRelativeAngle(getAbsoluteAngle(_x, _y)); }
+        float getRelativeAngle(LocationVector const* pos) const { return toRelativeAngle(getAbsoluteAngle(pos)); }
+
+        bool isInDist2d(float _x, float _y, float dist) const { return getExactDist2dSq(_x, _y) < dist * dist; }
+        bool isInDist2d(LocationVector const* pos, float dist) const { return getExactDist2dSq(pos) < dist * dist; }
+
+        bool isInDist(float _x, float _y, float _z, float dist) const { return getExactDistSq(_x, _y, _z) < dist * dist; }
+        bool isInDist(LocationVector const& pos, float dist) const { return getExactDistSq(pos) < dist * dist; }
+        bool isInDist(LocationVector const* pos, float dist) const { return getExactDistSq(pos) < dist * dist; }
+
+        bool isWithinBox(LocationVector const& center, float xradius, float yradius, float zradius) const;
+
+        // constrain arbitrary radian orientation to interval [0,2*PI)
+        static float normalizeOrientation(float o);
     // MIT End
 
         // std::sqrt(dx * dx + dy * dy + dz * dz)
@@ -135,6 +190,11 @@ class SERVER_DECL LocationVector
             o = eq.o;
 
             return *this;
+        }
+
+        bool operator!=(LocationVector const& a)
+        {
+            return !(operator==(a));
         }
 
         bool operator == (const LocationVector & eq)

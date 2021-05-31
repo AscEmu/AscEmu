@@ -187,12 +187,12 @@ class SethekkTalonLordAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Lakka AI
-static Movement::LocationWithFlag LakkaWaypoint[] =
+static LocationVector LakkaWaypoint[] =
 {
     {},
-    { -157.200f, 159.922f, 0.010f, 0.104f, Movement::WP_MOVE_TYPE_WALK },
-    { -128.318f, 172.483f, 0.009f, 0.222f, Movement::WP_MOVE_TYPE_WALK },
-    { -73.749f, 173.171f, 0.009f, 6.234f, Movement::WP_MOVE_TYPE_WALK },
+    { -157.200f, 159.922f, 0.010f, 0.104f },
+    { -128.318f, 172.483f, 0.009f, 0.222f },
+    { -73.749f, 173.171f, 0.009f, 6.234f  },
 };
 
 class LakkaAI : public CreatureAIScript
@@ -200,23 +200,25 @@ class LakkaAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(LakkaAI)
     explicit LakkaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        stopMovement();
 
         //WPs
         for (uint8_t i = 1; i < 4; ++i)
         {
-            AddWaypoint(CreateWaypoint(i, 0, LakkaWaypoint[i].wp_flag, LakkaWaypoint[i].wp_location));
+            addWaypoint(1, createWaypoint(i, 0, WAYPOINT_MOVE_TYPE_WALK, LakkaWaypoint[i]));
         }
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         switch (iWaypointId)
         {
             case 1:
             {
-                SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                SetWaypointToMove(2);
+                setWaypointToMove(1, 2);
                 for (const auto& itr : getCreature()->getInRangeObjectsSet())
                 {
                     if (itr && itr->isPlayer())
@@ -243,8 +245,7 @@ class LakkaAI : public CreatureAIScript
             break;
             default:
             {
-                SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                SetWaypointToMove(1);
+                setWaypointToMove(1, 1);
             }
         }
     }
@@ -320,8 +321,7 @@ class DarkweaverSythAI : public CreatureAIScript
         {
             CreatureAIScript* pLakkaAI = static_cast< CreatureAIScript* >(mLakka->GetScript());
             mLakka->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-            pLakkaAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            pLakkaAI->SetWaypointToMove(1);
+            pLakkaAI->setWaypointToMove(1, 1);
             pLakkaAI->setAIAgent(AGENT_NULL);
         }
     }
@@ -331,7 +331,7 @@ class DarkweaverSythAI : public CreatureAIScript
         if (((getCreature()->getHealthPct() <= 75 && getScriptPhase() == 1) || (getCreature()->getHealthPct() <= 50 && getScriptPhase() == 2) || (getCreature()->getHealthPct() <= 25 && getScriptPhase() == 3)))
         {
             getCreature()->setAttackTimer(MELEE, 1500);
-            getCreature()->GetAIInterface()->StopMovement(1000);    // really?
+            getCreature()->pauseMovement(1000);    // really?
 
             SummonElementalWave();
 
@@ -390,7 +390,7 @@ class TalonKingIkissAI : public CreatureAIScript
     {
         if (!getCreature()->isCastingSpell())
         {
-            getCreature()->GetAIInterface()->StopMovement(1);
+            getCreature()->pauseMovement(1);
             getCreature()->setAttackTimer(MELEE, 3000);
             getCreature()->castSpell(getCreature(), arcaneVolley->mSpellInfo, true);
         }
@@ -409,7 +409,7 @@ class TalonKingIkissAI : public CreatureAIScript
     {
         if (Blink)
         {
-            getCreature()->GetAIInterface()->StopMovement(2000);
+            getCreature()->pauseMovement(2000);
             getCreature()->setAttackTimer(MELEE, 6500);
 
             getCreature()->interruptSpell();

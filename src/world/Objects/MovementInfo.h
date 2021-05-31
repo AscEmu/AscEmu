@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MovementDefines.h"
 #include "LocationVector.h"
 #include "CommonDefines.hpp"
+#include "Macros/MapsMacros.hpp"
 
 
 struct MovementInfo
@@ -54,6 +55,8 @@ struct MovementInfo
     float getPitch() const { return pitch_rate; }
     uint32_t getFallTime() const { return fall_time; }
     float getSplineElevation() const { return spline_elevation; }
+
+    void setFallTime(uint32_t val) { fall_time = val; }
 
 #if VERSION_STRING >= Cata
     int8_t getByteParam() const { return byte_parameter; }
@@ -198,4 +201,12 @@ inline float normalizeOrientation(float orientation)
     }
 
     return fmod(orientation, 2.0f * static_cast<float>(M_PI));
+}
+
+inline void normalizeMapCoord(float &c)
+{
+    if (c > MAP_HALFSIZE - 0.5f)
+        c = MAP_HALFSIZE - 0.5f;
+    else if (c < -(MAP_HALFSIZE - 0.5f))
+        c = -(MAP_HALFSIZE - 0.5f);
 }

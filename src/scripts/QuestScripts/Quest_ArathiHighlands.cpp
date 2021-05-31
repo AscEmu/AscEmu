@@ -25,13 +25,16 @@ class Professor_Phizzlethorpe : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(Professor_Phizzlethorpe)
     explicit Professor_Phizzlethorpe(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (iWaypointId == 15)
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I found the fact that, it searched");
             getCreature()->Despawn(5000, 1000);
-            getCreature()->DeleteWaypoints();
+            getCreature()->stopMoving();
 
             if (getCreature()->m_escorter == nullptr)
                 return;

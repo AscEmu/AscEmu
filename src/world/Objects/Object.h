@@ -363,6 +363,9 @@ public:
 
         ::DBC::Structures::AreaTableEntry const* GetArea();
 
+        void getPosition(float &x, float &y) const { x = GetPositionX(); y = GetPositionY(); }
+        void getPosition(float &x, float &y, float &z) const { getPosition(x, y); z = GetPositionZ(); }
+        void getPosition(float &x, float &y, float &z, float &o) const { getPosition(x, y, z); o = GetOrientation(); }
         LocationVector GetPosition() const { return LocationVector(m_position); }
         LocationVector & GetPositionNC() { return m_position; }
         LocationVector* GetPositionV() { return &m_position; }
@@ -380,6 +383,47 @@ public:
         // TODO check if this is in BC
         uint8 GetTransSeat() const { return obj_movement_info.transport_seat; }
 #endif
+
+        Player* ToPlayer() { if (isPlayer()) return reinterpret_cast<Player*>(this); else return nullptr; }
+        Player const* ToPlayer() const { if (isPlayer()) return (Player const*)((Player*)this); else return nullptr; }
+        Creature* ToCreature() { if (isCreature()) return reinterpret_cast<Creature*>(this); else return nullptr; }
+        Creature const* ToCreature() const { if (isCreature()) return (Creature const*)((Creature*)this); else return nullptr; }
+
+        Unit* ToUnit() { if (isCreatureOrPlayer()) return reinterpret_cast<Unit*>(this); else return nullptr; }
+        Unit const* ToUnit() const { if (isCreatureOrPlayer()) return (const Unit*)((Unit*)this); else return nullptr; }
+        GameObject* ToGameObject() { if (isGameObject()) return reinterpret_cast<GameObject*>(this); else return nullptr; }
+        GameObject const* ToGameObject() const { if (isGameObject()) return (const GameObject*)((GameObject*)this); else return nullptr; }
+
+        float getExactDist2dSq(const float x, const float y) const
+        {
+            float dx = x - GetPositionX();
+            float dy = y - GetPositionY();
+            return dx * dx + dy * dy;
+        }
+        float getExactDist2dSq(LocationVector const& pos) const { return getExactDist2dSq(pos.x, pos.y); }
+        float getExactDist2dSq(LocationVector const* pos) const { return getExactDist2dSq(*pos); }
+
+        float getExactDist2d(const float x, const float y) const { return std::sqrt(getExactDist2dSq(x, y)); }
+        float getExactDist2d(LocationVector const& pos) const { return getExactDist2d(pos.x, pos.y); }
+        float getExactDist2d(LocationVector const* pos) const { return getExactDist2d(*pos); }
+
+        float getExactDistSq(float x, float y, float z) const
+        {
+            float dz = z - GetPositionZ();
+            return getExactDist2dSq(x, y) + dz * dz;
+        }
+        float getExactDistSq(LocationVector const& pos) const { return getExactDistSq(pos.x, pos.y, pos.z); }
+        float getExactDistSq(LocationVector const* pos) const { return getExactDistSq(*pos); }
+
+        float getExactDist(float x, float y, float z) const { return std::sqrt(getExactDistSq(x, y, z)); }
+        float getExactDist(LocationVector const& pos) const { return getExactDist(pos.x, pos.y, pos.z); }
+        float getExactDist(LocationVector const* pos) const { return getExactDist(*pos); }
+
+        float getDistance(Object const* obj) const;
+        float getDistance(LocationVector const& pos) const;
+        float getDistance(float x, float y, float z) const;
+        float getDistance2d(Object const* obj) const;
+        float getDistance2d(float x, float y) const;
 
         // Distance Calculation
         float CalcDistance(Object* Ob);
@@ -462,6 +506,32 @@ public:
         }
         float getAbsoluteAngle(LocationVector const& pos) { return getAbsoluteAngle(pos.x, pos.y); }
         float getAbsoluteAngle(Object const* obj) { return getAbsoluteAngle(obj->GetPosition()); }
+        float getAbsoluteAngle(LocationVector const* pos) const { return getAbsoluteAngle(pos->x, pos->y); }
+        float toAbsoluteAngle(float relAngle) const { return normalizeOrientation(relAngle + GetOrientation()); }
+
+        float toRelativeAngle(float absAngle) const { return normalizeOrientation(absAngle - GetOrientation()); }
+        float getRelativeAngle(Object const* obj) { return getRelativeAngle(obj->GetPosition()); }
+        float getRelativeAngle(float x, float y) const { return toRelativeAngle(getAbsoluteAngle(x, y)); }
+        float getRelativeAngle(LocationVector const& pos) const { return toRelativeAngle(getAbsoluteAngle(pos.x, pos.y)); }
+        float getRelativeAngle(LocationVector const* pos) const { return toRelativeAngle(getAbsoluteAngle(pos)); }
+
+        bool isInDist(Object* pos, float dist) { return GetPosition().getExactDistSq(pos->GetPositionX(), pos->GetPositionY(), pos->GetPositionZ()) < dist * dist; }
+
+        void getNearPoint2D(Object* searcher, float& x, float& y, float distance, float absAngle);
+        void getNearPoint(Object* searcher, float& x, float& y, float& z, float distance2d, float absAngle);
+        void getClosePoint(float& x, float& y, float& z, float size, float distance2d = 0, float relAngle = 0);
+
+        LocationVector getHitSpherePointFor(LocationVector const& dest);
+        void getHitSpherePointFor(LocationVector const& dest, float& x, float& y, float& z) const;
+        LocationVector getHitSpherePointFor(LocationVector const& dest) const;
+        void updateAllowedPositionZ(float x, float y, float &z, float* groundZ = nullptr);
+        float getMapWaterOrGroundLevel(float x, float y, float z, float* ground = nullptr);
+        void movePositionToFirstCollision(LocationVector &pos, float dist, float angle);
+        LocationVector getFirstCollisionPosition(float dist, float angle);
+
+        virtual float getCombatReach() const { return 0.0f; } // overridden (only) in Unit
+        virtual uint64_t getOwnerGUID() const { return 0; }
+        virtual uint64_t getCharmerOrOwnerGUID() const { return getOwnerGUID(); }
 
         float getDistanceSq(Object* obj)
         {

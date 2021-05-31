@@ -25,9 +25,8 @@ void GuardianSummon::Load(CreatureProperties const* properties_, Unit* pOwner, L
     setHealth(getMaxHealth());
     SetType(CREATURE_TYPE_GUARDIAN);
 
-    m_aiInterface->Init(this, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, pOwner);
-    m_aiInterface->SetUnitToFollow(pOwner);
-    m_aiInterface->SetFollowDistance(3.0f);
+    m_aiInterface->Init(this, AI_SCRIPT_PET, pOwner);
+    m_aiInterface->setPetOwner(pOwner);
 
     m_noRespawn = true;
 }

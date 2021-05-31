@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Map/InstanceDefines.hpp"
-#include "Server/Definitions.h"
+#include "Map/WorldCreatorDefines.hpp"
 #include <cstdint>
 #include <string>
 #include "LocationVector.h"
@@ -89,15 +89,6 @@ namespace MySQLStructure
         uint32_t difficultyEntry3;
     };
 
-    //creature_formations
-    struct CreatureFormation
-    {
-        //uint32_t spawnId
-        uint32_t targetSpawnId;
-        float followAngle;
-        float followDistance;
-    };
-
     //creature_initial_equip
     //creature_properties
     //creature_quest_finisher
@@ -114,7 +105,6 @@ namespace MySQLStructure
         float y;
         float z;
         float o;
-        MySQLStructure::CreatureFormation const* form;    // formation
         uint8_t movetype;
         uint32_t displayid;
         uint32_t factionid;
@@ -143,7 +133,8 @@ namespace MySQLStructure
         uint32_t CanFly;
         uint32_t phase;
         //event_entry
-        //waypoint_group
+        uint32_t wander_distance;
+        uint32_t waypoint_id;
 
         // sets one of the bytes of an uint32
         uint32_t setbyte(uint32_t buffer, uint8_t index, uint32_t byte)
@@ -660,6 +651,15 @@ namespace MySQLStructure
 
             return hasFlag(uint32_t(WMI_INSTANCE_HAS_NORMAL_10MEN) << difficulty);
         }
+
+        bool isDungeon() const { return type == INSTANCE_DUNGEON; }
+        bool isRaid() const { return type == INSTANCE_RAID; }
+        bool isBattleground() const { return type == INSTANCE_BATTLEGROUND; }
+        bool isMultimodeDungeon() const { return type == INSTANCE_MULTIMODE; }
+
+        bool isDungeonMap() const { return isDungeon() || isMultimodeDungeon(); }
+        bool isInstanceMap() const { return isDungeonMap() || isRaid(); }
+        bool isNonInstanceMap() const { return type == INSTANCE_NULL; }
     };
 
     //worldstate_templates

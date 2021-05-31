@@ -16,7 +16,7 @@ void PossessedSummon::Load(CreatureProperties const* properties_, Unit* pOwner, 
 
     setLevel(pOwner->getLevel());
     setAItoUse(false);
-    m_aiInterface->StopMovement(0);
+    stopMoving();
 }
 
 void PossessedSummon::OnPushToWorld()

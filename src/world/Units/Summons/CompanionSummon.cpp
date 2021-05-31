@@ -16,11 +16,11 @@ void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companio
 
     SetFaction(35);
     setLevel(1);
-    m_aiInterface->Init(this, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, companionOwner);
-    m_aiInterface->SetUnitToFollow(companionOwner);
-    m_aiInterface->SetUnitToFollowAngle(-M_PI_FLOAT / 2);
-    m_aiInterface->SetFollowDistance(3.0f);
+
+    m_aiInterface->Init(this, AI_SCRIPT_PET, companionOwner);
+    m_aiInterface->setPetOwner(companionOwner);
     m_aiInterface->setMeleeDisabled(true);
+
     bInvincible = true;
 
     removePvpFlag();

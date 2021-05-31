@@ -47,7 +47,7 @@ class HydromancerThespiaAI : public CreatureAIScript
     }
 };
 
-static Movement::Location SpawnCoords[] =
+static LocationVector SpawnCoords[] =
 {
     { -300.037842f, -115.296227f, -7.865229f, 4.197916f },
     { -330.083008f, -121.505997f, -7.985120f, 5.061450f },
@@ -60,37 +60,34 @@ class SteamriggerMechanicAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(SteamriggerMechanicAI)
     explicit SteamriggerMechanicAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->m_noRespawn = true;
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->GetAIInterface()->ResetUnitToFollow();
-        getCreature()->GetAIInterface()->SetUnitToFollowAngle(0.0f);
-
+        getCreature()->getMovementManager()->clear();
         getCreature()->interruptSpell();
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
     }
 
     void OnTargetDied(Unit* mTarget) override
     {
-        getCreature()->GetAIInterface()->RemoveThreatByPtr(mTarget);
+        getCreature()->getThreatManager().clearThreat(mTarget);
     }
 
     void OnDied(Unit* /*mKiller*/) override
     {
-        getCreature()->GetAIInterface()->ResetUnitToFollow();
-        getCreature()->GetAIInterface()->SetUnitToFollowAngle(0.0f);
+        getCreature()->getMovementManager()->clear();
     }
 
     void OnDamageTaken(Unit* /*mAttacker*/, uint32_t /*fAmount*/) override
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
     }
 };
 
@@ -168,13 +165,12 @@ class MekgineerSteamriggerAI : public CreatureAIScript
                     continue;
                 }
 
-                if (Gnome->GetAIInterface()->getNextTarget())
+                if (Gnome->GetAIInterface()->getCurrentTarget())
                     continue;
 
-                if (Gnome->GetAIInterface()->getUnitToFollow() == NULL)
+                if (!Gnome->GetAIInterface()->getUnitToFollow())
                 {
-                    Gnome->GetAIInterface()->SetUnitToFollow(getCreature());
-                    Gnome->GetAIInterface()->SetFollowDistance(15.0f);
+                    Gnome->getMovementManager()->moveFollow(getCreature(), 15.0f, Gnome->getFollowAngle());
                 }
 
                 if (getCreature()->GetDistance2dSq(Gnome) > 250.0f)
@@ -187,7 +183,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
 
                 if (!Gnome->isCastingSpell())
                 {
-                    Gnome->GetAIInterface()->StopMovement(1);
+                    Gnome->pauseMovement(1);
                     Gnome->castSpell(getCreature(), REPAIR, false);    // core problem? casted on self (and effect is applied on caster instead of _unit)
                 }
             }
@@ -201,8 +197,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
                 Gnome = spawnCreature(CN_STEAMRIGGER_MECHANIC, SpawnCoords[i].x, SpawnCoords[i].y, SpawnCoords[i].z, SpawnCoords[i].o, getCreature()->getFactionTemplate());
                 if (Gnome)
                 {
-                    Gnome->GetAIInterface()->SetUnitToFollow(getCreature());
-                    Gnome->GetAIInterface()->SetFollowDistance(15.0f);
+                    Gnome->getMovementManager()->moveFollow(getCreature(), 15.0f, 2.0f);
                     Gnomes.push_back(Gnome);
                 }
             }
@@ -219,7 +214,7 @@ protected:
 };
 
 
-static Movement::Location Distiller[] =
+static LocationVector Distiller[] =
 {
     {  },
     { -113.183952f, -488.599335f, 8.196310f, 6.134734f },
@@ -228,7 +223,7 @@ static Movement::Location Distiller[] =
     { -116.220764f, -520.139771f, 8.198921f, 5.127069f }
 };
 
-static Movement::Location DistillerMoveTo[] =
+static LocationVector DistillerMoveTo[] =
 {
     {  },
     { -108.092949f, -491.747803f, 8.198845f,  0.621336f },
@@ -243,9 +238,9 @@ class NagaDistillerAI : public CreatureAIScript
     explicit NagaDistillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
     }
 
     void OnDied(Unit* /*mKiller*/) override
@@ -307,10 +302,9 @@ class WarlordKalitreshAI : public CreatureAIScript
         if (Gate)
             Gate->setState(GO_STATE_OPEN);
 
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-        getCreature()->GetAIInterface()->m_canMove = true;
-        getCreature()->GetAIInterface()->ResetUnitToFollow();
-        getCreature()->GetAIInterface()->SetFollowDistance(0.0f);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+        getCreature()->setControlled(false, UNIT_STATE_ROOTED);
+        getCreature()->getMovementManager()->clear();
 
         if (getCreature()->getAuraWithId(37076))
             getCreature()->RemoveAura(37076);
@@ -324,8 +318,8 @@ class WarlordKalitreshAI : public CreatureAIScript
             pDistiller->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             pDistiller->setChannelObjectGuid(0);
             pDistiller->setChannelSpellId(0);
-            pDistiller->GetAIInterface()->WipeTargetList();
-            pDistiller->GetAIInterface()->WipeHateList();
+            pDistiller->getThreatManager().clearAllThreat();
+            pDistiller->getThreatManager().removeMeFromThreatLists();
         }
     }
 
@@ -341,10 +335,9 @@ class WarlordKalitreshAI : public CreatureAIScript
             pDistiller = GetClosestDistiller();
             if (!pDistiller || (pDistiller->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) && RagePhase != 0))
             {
-                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-                getCreature()->GetAIInterface()->m_canMove = true;
-                getCreature()->GetAIInterface()->ResetUnitToFollow();
-                getCreature()->GetAIInterface()->SetFollowDistance(0.0f);
+                getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+                getCreature()->setControlled(false, UNIT_STATE_ROOTED);
+                getCreature()->getMovementManager()->clear();
 
                 RagePhaseTimer = t + Util::getRandomUInt(15) + 20;
                 EnrageTimer = 0;
@@ -360,13 +353,12 @@ class WarlordKalitreshAI : public CreatureAIScript
             {
                 if (EnrageTimer == 0 && RagePhase == 0)
                 {
-                    getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-                    getCreature()->GetAIInterface()->SetUnitToFollow(pDistiller);
-                    getCreature()->GetAIInterface()->SetFollowDistance(10.0f);
+                    getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+                    getCreature()->getMovementManager()->moveFollow(pDistiller, 10.0f, 2.0f);
 
-                    getCreature()->GetAIInterface()->StopMovement(0);
+                    getCreature()->stopMoving();
                     getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-                    getCreature()->GetAIInterface()->MoveTo(DistillerMoveTo[DistillerNumber].x, DistillerMoveTo[DistillerNumber].y, DistillerMoveTo[DistillerNumber].z);
+                    getCreature()->GetAIInterface()->moveTo(DistillerMoveTo[DistillerNumber].x, DistillerMoveTo[DistillerNumber].y, DistillerMoveTo[DistillerNumber].z);
 
                     if (getCreature()->GetDistance2dSq(pDistiller) <= 100.0f)
                     {
@@ -374,9 +366,9 @@ class WarlordKalitreshAI : public CreatureAIScript
                         pDistiller->setChannelObjectGuid(getCreature()->getGuid());
                         pDistiller->setChannelSpellId(31543);
 
-                        getCreature()->GetAIInterface()->StopMovement(0);
+                        getCreature()->stopMoving();
                         getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                        getCreature()->GetAIInterface()->m_canMove = false;
+                        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                         sendDBChatMessage(SAY_WARLORD_KALITRESH_02);
 
                         if (!getCreature()->getAuraWithId(36453))
@@ -398,13 +390,12 @@ class WarlordKalitreshAI : public CreatureAIScript
                     pDistiller->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                     pDistiller->setChannelObjectGuid(0);
                     pDistiller->setChannelSpellId(0);
-                    pDistiller->GetAIInterface()->WipeTargetList();
-                    pDistiller->GetAIInterface()->WipeHateList();
+                    pDistiller->getThreatManager().clearAllThreat();
+                    pDistiller->getThreatManager().removeMeFromThreatLists();
 
-                    getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-                    getCreature()->GetAIInterface()->m_canMove = true;
-                    getCreature()->GetAIInterface()->ResetUnitToFollow();
-                    getCreature()->GetAIInterface()->SetFollowDistance(0.0f);
+                    getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+                    getCreature()->setControlled(false, UNIT_STATE_ROOTED);
+                    getCreature()->getMovementManager()->clear();
                     getCreature()->castSpell(getCreature(), 36453, true);
 
                     RagePhaseTimer = t + Util::getRandomUInt(15) + 20;

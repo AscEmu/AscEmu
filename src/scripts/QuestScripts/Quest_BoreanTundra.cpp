@@ -496,7 +496,7 @@ class GearmasterMechazodAI : public CreatureAIScript
     {
         getCreature()->setVirtualItemSlotId(MELEE, 28487);
         getCreature()->setVirtualItemSlotId(OFFHAND, 11587);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         RegisterAIUpdateEvent(100);
         phase = 0;
     }
@@ -532,8 +532,8 @@ class GearmasterMechazodAI : public CreatureAIScript
             }break;
             case 4:
             {
-                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-                getCreature()->GetAIInterface()->m_canMove = true;
+                getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+                getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                 RemoveAIUpdateEvent();          // Remove Update, now we are in OnCombatStart
             }break;
             default:

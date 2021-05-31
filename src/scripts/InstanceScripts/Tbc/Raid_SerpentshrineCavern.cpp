@@ -373,7 +373,7 @@ class LeotherasAI : public CreatureAIScript
         info_whirlwind = sSpellMgr.getSpellInfo(WHIRLWINDLEO);
 
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
 
         SwitchTimer = 0;
         WhirlwindTimer = 0;
@@ -409,8 +409,8 @@ class LeotherasAI : public CreatureAIScript
             //remove banish & blocks
             getCreature()->RemoveAllAuras();
             getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-            getCreature()->GetAIInterface()->m_canMove = true;
+            getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+            getCreature()->setControlled(false, UNIT_STATE_ROOTED);
             getCreature()->setStandState(STANDSTATE_STAND);
         }
     }
@@ -512,13 +512,13 @@ class LeotherasAI : public CreatureAIScript
                     {
                         getCreature()->castSpell(getCreature(), info_whirlwind, true);
                         getCreature()->setAttackTimer(MELEE, 15000);
-                        getCreature()->GetAIInterface()->ClearHateList(); //reset aggro
+                        getCreature()->getThreatManager().clearAllThreat(); //reset aggro
                         WhirlwindTimer = 15;
                         mInWhirlwind = true;
                     }
                     else
                     {
-                        getCreature()->GetAIInterface()->ClearHateList(); //reset aggro
+                        getCreature()->getThreatManager().clearAllThreat(); //reset aggro
                         WhirlwindTimer = 15;
                         mInWhirlwind = false;
                     }
@@ -554,8 +554,8 @@ class LeotherasAI : public CreatureAIScript
                         getCreature()->setAttackTimer(MELEE, 15000);
                         getCreature()->setStandState(STANDSTATE_KNEEL);
                         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-                        getCreature()->GetAIInterface()->m_canMove = false;
+                        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+                        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                         sendDBChatMessage(4781);     // No... no! What have you done? I am the master! Do you hear me? I am... aaggh! Can't... contain him.
                         FinalPhaseTimer = 10;
                         FinalPhaseSubphase++;
@@ -581,8 +581,8 @@ class LeotherasAI : public CreatureAIScript
                         if (!FinalPhaseTimer)
                         {
                             getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-                            getCreature()->GetAIInterface()->m_canMove = true;
+                            getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+                            getCreature()->setControlled(false, UNIT_STATE_ROOTED);
                             IsMorphing = false;
                             FinalPhaseSubphase++;
                         }
@@ -607,21 +607,21 @@ class LeotherasAI : public CreatureAIScript
         else if (Phase == 1) //demon form
         {
             //Chaos Blast
-            if (getCreature()->GetAIInterface()->getNextTarget())
+            if (getCreature()->getThreatManager().getCurrentVictim())
             {
                 if (!getCreature()->isCastingSpell())
                 {
                     if (Util::getRandomUInt(1))
                     {
-                        getCreature()->castSpell(getCreature()->GetAIInterface()->getNextTarget(), info_chaos_blast, false);
+                        getCreature()->castSpell(getCreature()->getThreatManager().getCurrentVictim(), info_chaos_blast, false);
                     }
                 }
 
                 //move if needed
-                if (getCreature()->GetAIInterface()->getNextTarget()->GetDistance2dSq(getCreature()) >= 400) //20 yards
+                if (getCreature()->getThreatManager().getCurrentVictim()->GetDistance2dSq(getCreature()) >= 400) //20 yards
                 {
-                    getCreature()->GetAIInterface()->setSplineRun();
-                    getCreature()->GetAIInterface()->_CalcDestinationAndMove(getCreature()->GetAIInterface()->getNextTarget(), 5.0f);
+                    getCreature()->setMoveWalk(false);
+                    getCreature()->GetAIInterface()->calcDestinationAndMove(getCreature()->getThreatManager().getCurrentVictim(), 5.0f);
                 }
             }
 
@@ -634,7 +634,7 @@ class LeotherasAI : public CreatureAIScript
                 Phase = 0;
                 WhirlwindTimer = 10 + Util::getRandomUInt(5);
                 SwitchTimer = 40 + Util::getRandomUInt(5); //wowwiki says 45, bosskillers says 40
-                getCreature()->GetAIInterface()->ClearHateList(); //reset aggro
+                getCreature()->getThreatManager().clearAllThreat(); //reset aggro
             }
         }
     }
@@ -695,8 +695,8 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             {
                 //remove banish & blocks
                 Leotheras->RemoveAllAuras();
-                Leotheras->GetAIInterface()->SetAllowedToEnterCombat(true);
-                Leotheras->GetAIInterface()->m_canMove = true;
+                Leotheras->GetAIInterface()->setAllowedToEnterCombat(true);
+                Leotheras->setControlled(false, UNIT_STATE_ROOTED);
                 Leotheras->setStandState(STANDSTATE_STAND);
 
                 //attack nearest player
@@ -712,7 +712,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
                 }
 
                 if (NearestPlayer)
-                    Leotheras->GetAIInterface()->AttackReaction(NearestPlayer, 1, 0);
+                    Leotheras->GetAIInterface()->onHostileAction(NearestPlayer);
             }
         }
     }
@@ -726,7 +726,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
         info_chaos_blast = sSpellMgr.getSpellInfo(CHAOS_BLAST_ANIMATION);
 
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
 
         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "At last I am liberated. It has been too long since I have tasted true freedom!");
         getCreature()->PlaySoundToSet(11309);
@@ -748,21 +748,21 @@ class ShadowofLeotherasAI : public CreatureAIScript
     void AIUpdate() override
     {
         //Chaos Blast
-        if (getCreature()->GetAIInterface()->getNextTarget())
+        if (getCreature()->getThreatManager().getCurrentVictim())
         {
             if (!getCreature()->isCastingSpell())
             {
                 if (Util::getRandomUInt(1))
                 {
-                    getCreature()->castSpell(getCreature()->GetAIInterface()->getNextTarget(), info_chaos_blast, false);
+                    getCreature()->castSpell(getCreature()->getThreatManager().getCurrentVictim(), info_chaos_blast, false);
                 }
             }
 
             //move if needed
-            if (getCreature()->GetAIInterface()->getNextTarget()->GetDistance2dSq(getCreature()) >= 400) //20 yards
+            if (getCreature()->getThreatManager().getCurrentVictim()->GetDistance2dSq(getCreature()) >= 400) //20 yards
             {
-                getCreature()->GetAIInterface()->setSplineRun();
-                getCreature()->GetAIInterface()->_CalcDestinationAndMove(getCreature()->GetAIInterface()->getNextTarget(), 5.0f);
+                getCreature()->setMoveWalk(false);
+                getCreature()->GetAIInterface()->calcDestinationAndMove(getCreature()->getThreatManager().getCurrentVictim(), 5.0f);
             }
         }
     }
@@ -1049,7 +1049,7 @@ class TidewalkerLurkerAI : public CreatureAIScript
         Unit* target = FindTargetForSpell();
         if (target)
         {
-            getCreature()->GetAIInterface()->AttackReaction(target, 1, 0);
+            getCreature()->GetAIInterface()->onHostileAction(target);
         }
     }
 
@@ -1109,25 +1109,26 @@ class EnchantedElementalAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(EnchantedElementalAI)
     explicit EnchantedElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
 
         Unit* Vashj = NULL;
         Vashj = getNearestCreature(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
         if (Vashj)
         {
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            getCreature()->GetAIInterface()->setWayPointToMove(1);
+            setWaypointToMove(1, 1);
         }
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         switch (iWaypointId)
         {
             case 1:
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(2);
+                setWaypointToMove(1, 2);
                 break;
 
             case 2:
@@ -1155,23 +1156,8 @@ class VashjAI : public CreatureAIScript
         info_multishot = sSpellMgr.getSpellInfo(EEMULTI_SHOT);
         info_shot = sSpellMgr.getSpellInfo(VASHJ_AI_SHOOT);
 
-        Movement::WayPoint* wp = getCreature()->CreateWaypointStruct();
-        wp->id = 1;
-        wp->x = 29.798161f;
-        wp->y = -923.358276f;
-        wp->z = 42.900517f;
-        wp->o = 0.0f;
-        wp->waittime = 0;
-        wp->flags = Movement::WP_MOVE_TYPE_RUN;
-        wp->forwardemoteoneshot = false;
-        wp->forwardemoteid = 0;
-        wp->backwardemoteoneshot = false;
-        wp->backwardemoteid = 0;
-        wp->forwardskinid = 0;
-        wp->backwardskinid = 0;
-
-        getCreature()->GetAIInterface()->addWayPoint(wp);
-        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        addWaypoint(1, createWaypoint(1, 0, WAYPOINT_MOVE_TYPE_RUN, movePoints[1]));
+        stopMovement();
 
         TaintedElementalTimer = 0;
         Phase = 0;
@@ -1230,8 +1216,8 @@ class VashjAI : public CreatureAIScript
         }
 
         getCreature()->RemoveAura(VASHJ_SHIELD);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-        getCreature()->GetAIInterface()->m_canMove = true;
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+        getCreature()->setControlled(false, UNIT_STATE_ROOTED);
         RemoveAIUpdateEvent();
     }
 
@@ -1274,15 +1260,15 @@ class VashjAI : public CreatureAIScript
             if (getCreature()->getHealthPct() <= 70)
             {
                 getCreature()->RemoveAllAuras();
-                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-                getCreature()->GetAIInterface()->StopMovement(0);
+                getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+                getCreature()->stopMoving();
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(1);
+                setWaypointToMove(1, 1);
                 sendDBChatMessage(4764);     // The time is now! Leave none standing!
                 getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(VASHJ_SHIELD), true);
-                getCreature()->GetAIInterface()->setOutOfCombatRange(3000);
+                // todo: fix boundary
+                //getCreature()->GetAIInterface()->setOutOfCombatRange(3000);
                 Phase = 2;
             }
         }
@@ -1300,7 +1286,7 @@ class VashjAI : public CreatureAIScript
 
         if (!InRange)
         {
-            Shoot(getCreature()->GetAIInterface()->getNextTarget());
+            Shoot(getCreature()->getThreatManager().getCurrentVictim());
         }
     }
 
@@ -1325,37 +1311,8 @@ class VashjAI : public CreatureAIScript
             elemental = spawnCreature(CN_ENCHANTED_ELEMENTAL, ElementalSpawnPoints[pos].x, ElementalSpawnPoints[pos].y, ElementalSpawnPoints[pos].z, ElementalSpawnPoints[pos].o);
             if (elemental)
             {
-                Movement::WayPoint* wp = getCreature()->CreateWaypointStruct();
-                wp->id = 1;
-                wp->x = ElementalSpawnPoints2[pos].x;
-                wp->y = ElementalSpawnPoints2[pos].y;
-                wp->z = ElementalSpawnPoints2[pos].z;
-                wp->o = ElementalSpawnPoints2[pos].o;
-                wp->waittime = 0;
-                wp->flags = Movement::WP_MOVE_TYPE_WALK;
-                wp->forwardemoteoneshot = false;
-                wp->forwardemoteid = 0;
-                wp->backwardemoteoneshot = false;
-                wp->backwardemoteid = 0;
-                wp->forwardskinid = 0;
-                wp->backwardskinid = 0;
-                elemental->GetAIInterface()->addWayPoint(wp);
-
-                wp = getCreature()->CreateWaypointStruct();
-                wp->id = 2;
-                wp->x = 29.798161f;
-                wp->y = -923.358276f;
-                wp->z = 42.900517f;
-                wp->o = 0.0f;
-                wp->waittime = 0;
-                wp->flags = Movement::WP_MOVE_TYPE_WALK;
-                wp->forwardemoteoneshot = false;
-                wp->forwardemoteid = 0;
-                wp->backwardemoteoneshot = false;
-                wp->backwardemoteid = 0;
-                wp->forwardskinid = 0;
-                wp->backwardskinid = 0;
-                elemental->GetAIInterface()->addWayPoint(wp);
+                //elemental->addWaypoint(1, createWaypoint(1, 0, WAYPOINT_MOVE_TYPE_WALK, ElementalSpawnPoints2[pos]));
+                //elemental->addWaypoint(1, createWaypoint(2, 0, WAYPOINT_MOVE_TYPE_WALK, movePoints[3]));
             }
             EnchantedElementalTimer = 10 + Util::getRandomUInt(5);
         }
@@ -1377,7 +1334,7 @@ class VashjAI : public CreatureAIScript
                     }
                 }
                 if (nearest)
-                    summoned->GetAIInterface()->AttackReaction(nearest, 1, 0);
+                    summoned->GetAIInterface()->onHostileAction(nearest);
             }
             CoilfangStriderTimer = 60;
         }
@@ -1400,7 +1357,7 @@ class VashjAI : public CreatureAIScript
                     }
                 }
                 if (nearest)
-                    summoned->GetAIInterface()->AttackReaction(nearest, 1, 0);
+                    summoned->GetAIInterface()->onHostileAction(nearest);
             }
             CoilfangEliteTimer = 45;
         }
@@ -1429,7 +1386,7 @@ class VashjAI : public CreatureAIScript
             getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->RemoveAura(VASHJ_SHIELD);
             sendDBChatMessage(4765);     // You may want to take cover.
-            getCreature()->GetAIInterface()->m_canMove = true;
+            getCreature()->setControlled(false, UNIT_STATE_ROOTED);
             Phase = 3;
         }
     }
@@ -1459,13 +1416,16 @@ class VashjAI : public CreatureAIScript
         }
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         switch (iWaypointId)
         {
             case 1:
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                getCreature()->GetAIInterface()->m_canMove = false;
+                getCreature()->setControlled(true, UNIT_STATE_ROOTED);
 
                 //setup shield
                 Creature* channel = NULL;
@@ -1475,7 +1435,7 @@ class VashjAI : public CreatureAIScript
                     if (channel)
                     {
                         channel->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-                        channel->GetAIInterface()->m_canMove = false;
+                        channel->setControlled(true, UNIT_STATE_ROOTED);
                         channel->setChannelObjectGuid(getCreature()->getGuid());
                         channel->setChannelSpellId(VASHJ_SHIELD);
                     }
@@ -1502,20 +1462,9 @@ class TaintedElementalAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(TaintedElementalAI)
     explicit TaintedElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        spell_poison_spit = new AI_Spell();
-        spell_poison_spit->agent = AGENT_SPELL;
-        spell_poison_spit->procChance = 0;
-        spell_poison_spit->spell = sSpellMgr.getSpellInfo(POISON_SPIT);
-        spell_poison_spit->spellType = STYPE_DAMAGE;
-        spell_poison_spit->spelltargetType = TTYPE_SINGLETARGET;
-        spell_poison_spit->cooldown = 2000;
-        spell_poison_spit->cooldowntime = 0;
-        spell_poison_spit->procCount = 0;
-        spell_poison_spit->procCounter = 0;
-        spell_poison_spit->minrange = 0;
-        spell_poison_spit->maxrange = 30;
+        spell_poison_spit = addAISpell(POISON_SPIT, 0.0f, TARGET_ATTACKING, 0, 2000);
 
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
     }
 
     ~TaintedElementalAI()
@@ -1528,15 +1477,18 @@ class TaintedElementalAI : public CreatureAIScript
     {
         setAIAgent(AGENT_SPELL);
         RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
+        scriptEvents.addEvent(1, 2000);
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         RemoveAIUpdateEvent();
+        scriptEvents.resetEvents();
     }
 
     void OnDied(Unit* /*mKiller*/) override
     {
+        scriptEvents.resetEvents();
         Creature* Vashj = NULL;
         Vashj = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_LADY_VASHJ);
         if (Vashj)
@@ -1549,25 +1501,26 @@ class TaintedElementalAI : public CreatureAIScript
     void AIUpdate() override
     {
         ///\todo  Despawn after 15 secs
-        if (!getCreature()->isCastingSpell())
-            getCreature()->GetAIInterface()->SetNextSpell(spell_poison_spit);
-    }
+        if (getCreature()->isCastingSpell())
+            return;
 
-    void Destroy() override
-    {
-        // Could someone confirm it's nowhere saved, so we won't have any crashes related
-        // to using deleted pointers ?
-        if (spell_poison_spit != NULL)
+        scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
+
+        while (uint32_t eventId = scriptEvents.getFinishedEvent())
         {
-            delete spell_poison_spit;
-            spell_poison_spit = NULL;
+            switch (eventId)
+            {
+            case 1:
+            {
+                _castAISpell(spell_poison_spit);
+                scriptEvents.addEvent(1, 2000);
+            }break;
+            }
         }
-
-        delete this;
     }
 
 private:
-    AI_Spell* spell_poison_spit;
+    CreatureAISpells* spell_poison_spit;
 };
 
 class TaintedCoreGO : public GameObjectAIScript
@@ -1602,7 +1555,7 @@ class ToxicSporeBatAI : public CreatureAIScript
         // Waypoints
         m_entry = pCreature->getEntry();
         for (uint8_t i = 0; i < 12; i++)
-            AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, fly[i]));
+            addWaypoint(1, createWaypoint(i, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, fly[i]));
 
 
         /*spells[0].info = sSpellMgr.getSpellInfo(TOXIC_SPORES);
@@ -1619,11 +1572,10 @@ class ToxicSporeBatAI : public CreatureAIScript
         Meteor = false;
         PositionChange = Util::getRandomUInt(15, 23);
         PhoenixSummon = Util::getRandomUInt(17, 23);
-        getCreature()->GetAIInterface()->setSplineFlying();
-        getCreature()->GetAIInterface()->StopMovement(0);
+        getCreature()->setMoveCanFly(true);
+        getCreature()->stopMoving();
         getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-        getCreature()->GetAIInterface()->setWayPointToMove(1);
+        setWaypointToMove(1, 1);
         RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
         QuillsCount = 0;
@@ -1636,7 +1588,7 @@ class ToxicSporeBatAI : public CreatureAIScript
         //_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Phase 1 Test!");
         getCreature()->PlaySoundToSet(11243);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        stopMovement();
 
         Phase = 1;
         FlameQuills = false;
@@ -1647,13 +1599,11 @@ class ToxicSporeBatAI : public CreatureAIScript
         switch (FlyWay)
         {
             case 0:    // Clock like
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(6);
+                setWaypointToMove(1, 6);
                 break;
 
             case 1:    // hmm... other?
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(9);
+                setWaypointToMove(1, 9);
                 break;
         }
     }
@@ -1666,10 +1616,9 @@ class ToxicSporeBatAI : public CreatureAIScript
         Meteor = false;
         PhoenixSummon = Util::getRandomUInt(17, 23);
         PositionChange = Util::getRandomUInt(15, 23);
-        getCreature()->GetAIInterface()->StopMovement(0);
+        getCreature()->stopMoving();
         getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-        getCreature()->GetAIInterface()->setWayPointToMove(1);
+        setWaypointToMove(1, 1);
     }
 
     void OnDied(Unit* /*mKiller*/) override
@@ -1692,13 +1641,11 @@ class ToxicSporeBatAI : public CreatureAIScript
                 switch (FlyWay)
                 {
                     case 0:    // Clock like
-                        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                        getCreature()->GetAIInterface()->setWayPointToMove(6);
+                        setWaypointToMove(1, 6);
                         break;
 
                     case 1:    // hmm... other?
-                        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                        getCreature()->GetAIInterface()->setWayPointToMove(9);
+                        setWaypointToMove(1, 9);
                         break;
                 }
             }
@@ -1748,8 +1695,7 @@ class ToxicSporeBatAI : public CreatureAIScript
 
         if (!PositionChange)
         {
-            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            getCreature()->GetAIInterface()->setWayPointToMove(NextWP);
+            setWaypointToMove(1, NextWP);
             PositionChange = Util::getRandomUInt(15, 23);    // added 4 sec fit time + time needed to move to next pos.
         }
 
@@ -1759,18 +1705,19 @@ class ToxicSporeBatAI : public CreatureAIScript
 
             if (val > 0 && val < 5)    // Flame Quills wp here!
             {
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(10);
+                setWaypointToMove(1, 10);
             }
         }
     }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (Phase == 1)
         {
-            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            getCreature()->GetAIInterface()->setWayPointToMove(6);
+            setWaypointToMove(1, 6);
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Phase 1 Test!");
             getCreature()->PlaySoundToSet(11243);
         }
@@ -1778,35 +1725,30 @@ class ToxicSporeBatAI : public CreatureAIScript
         switch (iWaypointId)
         {
             case 1:    // First fly point
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(2);
+                setWaypointToMove(1, 2);
                 break;
 
             case 2:
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(3);
+                setWaypointToMove(1, 3);
                 break;
 
             case 3:
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(4);
+                setWaypointToMove(1, 4);
                 break;
 
             case 4:
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(5);
+                setWaypointToMove(1, 5);
                 break;
 
             case 5:
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(1);    // Last fly point (flyback to point 1 - reset)
+                setWaypointToMove(1, 1);    // Last fly point (flyback to point 1 - reset)
                 break;
 
             case 6:
                 {
                     getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                    getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-                    getCreature()->GetAIInterface()->m_canMove = false;
+                    stopMovement();
+                    getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                     switch (FlyWay)
                     {
                         case 0:
@@ -1823,8 +1765,8 @@ class ToxicSporeBatAI : public CreatureAIScript
             case 7:
                 {
                     getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                    getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-                    getCreature()->GetAIInterface()->m_canMove = false;
+                    stopMovement();
+                    getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                     switch (FlyWay)
                     {
                         case 0:
@@ -1840,9 +1782,9 @@ class ToxicSporeBatAI : public CreatureAIScript
 
             case 8:
                 {
-                    getCreature()->GetAIInterface()->m_canMove = false;
+                    getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                     getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                    getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+                    stopMovement();
                     switch (FlyWay)
                     {
                         case 0:
@@ -1858,9 +1800,9 @@ class ToxicSporeBatAI : public CreatureAIScript
 
             case 9:
                 {
-                    getCreature()->GetAIInterface()->m_canMove = false;
+                    getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                     getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                    getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+                    stopMovement();
                     switch (FlyWay)
                     {
                         case 0:
@@ -1877,7 +1819,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             case 10:
                 {
                     getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                    getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+                    stopMovement();
                     if (Phase == 1)
                     {
                         FlameQuills = true;

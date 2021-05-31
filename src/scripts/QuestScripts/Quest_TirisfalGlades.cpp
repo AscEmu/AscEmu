@@ -69,11 +69,11 @@ class CalvinMontague : public CreatureAIScript
             getCreature()->setStandState(STANDSTATE_SIT);
             getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(433), true);
             sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::setStandState, (uint8_t)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
-            getCreature()->GetAIInterface()->WipeTargetList();
-            getCreature()->GetAIInterface()->WipeHateList();
-            getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+            getCreature()->getThreatManager().clearAllThreat();
+            getCreature()->getThreatManager().removeMeFromThreatLists();
+            getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
             _setMeleeDisabled(true);
-            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
             getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         }
     }
@@ -96,7 +96,7 @@ public:
 
         Dashel->SetFaction(28);
         Dashel->GetAIInterface()->setMeleeDisabled(false);
-        Dashel->GetAIInterface()->SetAllowedToEnterCombat(true);
+        Dashel->GetAIInterface()->setAllowedToEnterCombat(true);
     }
 };
 
@@ -105,8 +105,11 @@ class Zealot : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(Zealot)
     explicit Zealot(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (!getCreature()->HasAura(3287))
             return;
         if (iWaypointId == 2)

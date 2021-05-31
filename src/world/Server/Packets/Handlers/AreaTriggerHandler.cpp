@@ -60,13 +60,13 @@ uint32_t checkTriggerPrerequisites(MySQLStructure::AreaTrigger const* areaTrigge
     if (areaTrigger->requiredLevel && player->getLevel() < areaTrigger->requiredLevel)
         return AreaTriggerResult::Level;
 
-    if (player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && mapInfo->type != INSTANCE_MULTIMODE && mapInfo->type != INSTANCE_NULL)
+    if (player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && !mapInfo->isMultimodeDungeon() && !mapInfo->isNonInstanceMap())
         return AreaTriggerResult::NoHeroic;
 
-    if (mapInfo->type == INSTANCE_RAID && (!player->getGroup() || (player->getGroup() && player->getGroup()->getGroupType() != GROUP_TYPE_RAID)))
+    if (mapInfo->isRaid() && (!player->getGroup() || (player->getGroup() && player->getGroup()->getGroupType() != GROUP_TYPE_RAID)))
         return AreaTriggerResult::NoRaid;
 
-    if ((mapInfo->type == INSTANCE_MULTIMODE && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC) && !player->getGroup())
+    if ((mapInfo->isMultimodeDungeon() && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC) && !player->getGroup())
         return AreaTriggerResult::NoGroup;
 
     if (mapInfo->required_quest_A && (player->getTeam() == TEAM_ALLIANCE) && !player->HasFinishedQuest(mapInfo->required_quest_A))
@@ -79,14 +79,14 @@ uint32_t checkTriggerPrerequisites(MySQLStructure::AreaTrigger const* areaTrigge
         return AreaTriggerResult::NoAttuneI;
 
     if (player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC &&
-        mapInfo->type == INSTANCE_MULTIMODE
+        mapInfo->isMultimodeDungeon()
         && ((mapInfo->heroic_key_1 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_1, false))
         && (mapInfo->heroic_key_2 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_2, false))
         )
         )
         return AreaTriggerResult::NoKey;
 
-    if (mapInfo->type != INSTANCE_NULL && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && player->getLevel() < mapInfo->minlevel_heroic)
+    if (!mapInfo->isNonInstanceMap() && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && player->getLevel() < mapInfo->minlevel_heroic)
         return AreaTriggerResult::LevelHeroic;
 
     return AreaTriggerResult::Success;

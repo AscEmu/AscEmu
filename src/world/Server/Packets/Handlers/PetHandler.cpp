@@ -102,32 +102,31 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                             summonedPet->SendActionFeedback(PET_FEEDBACK_CANT_ATTACK_TARGET);
                             return;
                         }
+                        summonedPet->getThreatManager().clearAllThreat();
+                        summonedPet->getThreatManager().removeMeFromThreatLists();
 
-                        summonedPet->GetAIInterface()->WipeTargetList();
-                        summonedPet->GetAIInterface()->WipeHateList();
+                        summonedPet->GetAIInterface()->setPetOwner(_player);
 
-                        if (summonedPet->GetAIInterface()->getUnitToFollow() == nullptr)
-                            summonedPet->GetAIInterface()->SetUnitToFollow(_player);
-
-                        summonedPet->GetAIInterface()->setAiState(AI_STATE_ATTACKING);
-                        summonedPet->GetAIInterface()->AttackReaction(unitTarget, 1, 0);
+                        summonedPet->GetAIInterface()->onHostileAction(unitTarget, nullptr, true);
                     }
                     break;
                     case PET_ACTION_FOLLOW:
                     {
-                        summonedPet->GetAIInterface()->WipeTargetList();
-                        summonedPet->GetAIInterface()->WipeHateList();
+                        if (summonedPet->hasUnitStateFlag(UNIT_STATE_CHASING))
+                            summonedPet->getMovementManager()->remove(CHASE_MOTION_TYPE);
 
-                        summonedPet->GetAIInterface()->SetUnitToFollow(_player);
-                        summonedPet->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
+                        summonedPet->getThreatManager().clearAllThreat();
+                        summonedPet->getThreatManager().removeMeFromThreatLists();
+
+                        summonedPet->GetAIInterface()->setPetOwner(_player);
+                        summonedPet->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
                     }
                     break;
                     case PET_ACTION_STAY:
                     {
-                        summonedPet->GetAIInterface()->WipeTargetList();
-                        summonedPet->GetAIInterface()->WipeHateList();
-
-                        summonedPet->GetAIInterface()->ResetUnitToFollow();
+                        summonedPet->getThreatManager().clearAllThreat();
+                        summonedPet->getThreatManager().removeMeFromThreatLists();
+                        summonedPet->getMovementManager()->remove(FOLLOW_MOTION_TYPE);
                     }
                     break;
                     case PET_ACTION_DISMISS:
@@ -175,11 +174,10 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                         }
                         else
                         {
-                            summonedPet->GetAIInterface()->WipeTargetList();
-                            summonedPet->GetAIInterface()->WipeHateList();
+                            summonedPet->getThreatManager().clearAllThreat();
+                            summonedPet->getThreatManager().removeMeFromThreatLists();
 
-                            summonedPet->GetAIInterface()->AttackReaction(unitTarget, 1, 0);
-                            summonedPet->GetAIInterface()->SetNextSpell(aiSpell);
+                            summonedPet->GetAIInterface()->onHostileAction(unitTarget, aiSpell->spell, true);
                         }
                     }
                 }
@@ -189,10 +187,11 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
             {
                 if (srlPacket.misc == PET_ACTION_STAY) 
                 {
-                    summonedPet->GetAIInterface()->WipeTargetList();
-                    summonedPet->GetAIInterface()->WipeHateList();
-                    summonedPet->GetAIInterface()->SetUnitToFollow(_player);
-                    summonedPet->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
+                    summonedPet->getThreatManager().clearAllThreat();
+                    summonedPet->getThreatManager().removeMeFromThreatLists();
+
+                    summonedPet->GetAIInterface()->setPetOwner(_player);
+                    summonedPet->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
                 }
                 summonedPet->SetPetState(srlPacket.misc);
 

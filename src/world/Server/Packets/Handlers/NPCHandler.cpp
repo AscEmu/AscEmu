@@ -251,8 +251,9 @@ void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature != nullptr)
     {
-        if (creature->GetAIInterface())
-            creature->GetAIInterface()->StopMovement(30000);
+        // makes npc stop when for example on its waypoint path // aaron02
+        creature->pauseMovement(30000);
+        creature->SetSpawnLocation(creature->GetPosition());
 
         if (_player->isStealthed())
             _player->RemoveAllAuraType(SPELL_AURA_MOD_STEALTH);

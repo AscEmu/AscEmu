@@ -12,7 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapScriptInterface.h"
 #include "Objects/Faction.h"
 #include "Spell/Definitions/PowerType.hpp"
-
+#include "Movement/Spline/MoveSplineInit.h"
+#include "Movement/WaypointManager.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -173,6 +174,8 @@ CreatureAIScript::~CreatureAIScript()
     //notify our linked creature that we are being deleted.
     if (linkedCreatureAI != nullptr)
         linkedCreatureAI->removeLinkToCreatureAIScript();
+
+    _waypointStore.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -369,44 +372,78 @@ uint8_t CreatureAIScript::getAIAgent()
 // movement
 void CreatureAIScript::setRooted(bool set)
 {
-    _creature->setMoveRoot(set);
+    _creature->setControlled(set, UNIT_STATE_ROOTED);
 }
 
 void CreatureAIScript::setFlyMode(bool fly)
 {
-    if (fly && !_creature->GetAIInterface()->isFlying())
+    if (fly && !_creature->IsFlying())
     {
         _creature->setMoveCanFly(true);
-        _creature->GetAIInterface()->setSplineFlying();
     }
-    else if (!fly && _creature->GetAIInterface()->isFlying())
+    else if (!fly && _creature->IsFlying())
     {
         _creature->setMoveCanFly(false);
-        _creature->GetAIInterface()->unsetSplineFlying();
     }
 }
 
 bool CreatureAIScript::isRooted()
 {
-    return _creature->GetAIInterface()->m_canMove;
+    return _creature->isRooted();
 }
 
 void CreatureAIScript::moveTo(float posX, float posY, float posZ, bool setRun /*= true*/)
 {
     if (setRun)
-        _creature->GetAIInterface()->setWalkMode(WALKMODE_RUN);
+        _creature->setMoveWalk(false);
+    else
+        _creature->setMoveWalk(true);
 
-    _creature->GetAIInterface()->MoveTo(posX, posY, posZ);
+    _creature->getMovementManager()->movePoint(0, posX, posY, posZ);
 }
 
+// Replace this with splines
 void CreatureAIScript::MoveTeleport(float posX, float posY, float posZ, float posO /*= 0.0f*/)
 {
-    _creature->GetAIInterface()->MoveTeleport(posX, posY, posZ, posO);
+    getCreature()->SetPosition(posX, posY, posZ, posO, false);
+
+    WorldPacket data(SMSG_MONSTER_MOVE, 50);
+    data << getCreature()->GetNewGUID();
+    data << uint8_t(0);
+    data << getCreature()->GetPositionX();
+    data << getCreature()->GetPositionY();
+    data << getCreature()->GetPositionZ();
+    data << Util::getMSTime();
+    data << uint8_t(0x0);
+    data << uint32_t(0x100);
+    data << uint32_t(1);
+    data << uint32_t(1);
+    data << posX;
+    data << posY;
+    data << posZ;
+    getCreature()->SendMessageToSet(&data, false);
 }
 
+// Replace this with splines
 void CreatureAIScript::MoveTeleport(LocationVector loc)
 {
-    _creature->GetAIInterface()->MoveTeleport(loc);
+    getCreature()->SetPosition(loc, false);
+
+    WorldPacket data(SMSG_MONSTER_MOVE, 50);
+    data << getCreature()->GetNewGUID();
+    data << uint8_t(0);
+    data << getCreature()->GetPositionX();
+    data << getCreature()->GetPositionY();
+    data << getCreature()->GetPositionZ();
+    data << Util::getMSTime();
+    data << uint8_t(0x0);
+    data << uint32_t(0x100);
+    data << uint32_t(1);
+    data << uint32_t(1);
+    data << loc.x;
+    data << loc.y;
+    data << loc.z;
+    getCreature()->SendMessageToSet(&data, false);
 }
 
 void CreatureAIScript::moveToUnit(Unit* unit)
@@ -417,87 +454,125 @@ void CreatureAIScript::moveToUnit(Unit* unit)
 
 void CreatureAIScript::moveToSpawn()
 {
-    LocationVector spawnPos = _creature->GetSpawnPosition();
-    _creature->GetAIInterface()->sendSplineMoveToPoint(spawnPos);
+    _creature->getMovementManager()->moveTargetedHome();
 }
 
 void CreatureAIScript::stopMovement()
 {
-    _creature->GetAIInterface()->StopMovement(0);
+    _creature->stopMoving();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // wp movement
-Movement::WayPoint* CreatureAIScript::CreateWaypoint(int pId, uint32_t pWaittime, uint32_t pMoveFlag, Movement::Location pCoords)
+void CreatureAIScript::loadCustomWaypoins(uint32_t pathid)
 {
-    Movement::WayPoint* wp = _creature->CreateWaypointStruct();
-    wp->id = pId;
-    wp->x = pCoords.x;
-    wp->y = pCoords.y;
-    wp->z = pCoords.z;
-    wp->o = pCoords.o;
-    wp->waittime = pWaittime;
-    wp->flags = pMoveFlag;
-    wp->forwardemoteoneshot = false;
-    wp->forwardemoteid = 0;
-    wp->backwardemoteoneshot = false;
-    wp->backwardemoteid = 0;
-    wp->forwardskinid = 0;
-    wp->backwardskinid = 0;
-    return wp;
+    auto path = sWaypointMgr->getCustomScriptWaypointPath(pathid);
+
+    if (!path)
+        return;
+
+    for (auto node : path->nodes)
+    {
+        addWaypoint(pathid, node);
+    }
 }
 
-void CreatureAIScript::AddWaypoint(Movement::WayPoint* pWayPoint)
+WaypointNode CreatureAIScript::createWaypoint(int pId, uint32_t pWaittime, uint32_t pMoveType, LocationVector pCoords)
 {
-    _creature->GetAIInterface()->addWayPoint(pWayPoint);
+    WaypointNode waypoint;
+    waypoint.id = pId;
+    waypoint.x = pCoords.x;
+    waypoint.y = pCoords.y;
+    waypoint.z = pCoords.z;
+    waypoint.orientation = pCoords.o;
+    waypoint.moveType = pMoveType;
+
+    if (waypoint.moveType >= WAYPOINT_MOVE_TYPE_MAX)
+    {
+        sLogger.failure("Waypoint %u has invalid move_type, setting default", waypoint.id);
+        waypoint.moveType = WAYPOINT_MOVE_TYPE_WALK;
+    }
+
+    waypoint.delay = pWaittime;
+    waypoint.eventId = 0;
+    waypoint.eventChance = 0;
+
+    return waypoint;
 }
 
-void CreatureAIScript::ForceWaypointMove(uint32_t pWaypointId)
+void CreatureAIScript::addWaypoint(uint32_t pathid ,WaypointNode pWayPoint)
 {
-    if (canEnterCombat())
-        _creature->GetAIInterface()->SetAllowedToEnterCombat(false);
-
-    if (isRooted())
-        setRooted(false);
-
-    stopMovement();
-    _creature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-    SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-    SetWaypointToMove(pWaypointId);
+    WaypointPath& path = _waypointStore[pathid];
+    path.id = pathid;
+    path.nodes.push_back(std::move(pWayPoint));
 }
 
-void CreatureAIScript::SetWaypointToMove(uint32_t pWaypointId)
+WaypointPath* CreatureAIScript::getCustomPath(uint32_t pathId)
 {
-    _creature->GetAIInterface()->setWayPointToMove(pWaypointId);
+    auto itr = _waypointStore.find(pathId);
+    if (itr != _waypointStore.end())
+        return &itr->second;
+
+    return nullptr;
 }
 
-void CreatureAIScript::StopWaypointMovement()
+void CreatureAIScript::setWaypointToMove(uint32_t pathId, uint32_t pWaypointId)
 {
-    setAIAgent(AGENT_NULL);
-    _creature->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-    SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-    SetWaypointToMove(0);
+    auto _path = getCustomPath(pathId);
+    WaypointNode const &waypoint = _path->nodes[pWaypointId];
+
+    MovementNew::MoveSplineInit init(getCreature());
+    init.MoveTo(waypoint.x, waypoint.y, waypoint.z);
+
+    //! Accepts angles such as 0.00001 and -0.00001, 0 must be ignored, default value in waypoint table
+    if (waypoint.orientation && waypoint.delay)
+        init.SetFacing(waypoint.orientation);
+
+    switch (waypoint.moveType)
+    {
+    case WAYPOINT_MOVE_TYPE_LAND:
+        init.SetAnimation(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_GROUND);
+        break;
+    case WAYPOINT_MOVE_TYPE_TAKEOFF:
+        init.SetAnimation(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_HOVER);
+        break;
+    case WAYPOINT_MOVE_TYPE_RUN:
+        init.SetWalk(false);
+        break;
+    case WAYPOINT_MOVE_TYPE_WALK:
+        init.SetWalk(true);
+        break;
+    default:
+        break;
+    }
+
+    init.Launch();
 }
 
-void CreatureAIScript::SetWaypointMoveType(Movement::WaypointMovementScript wp_move_script_type)
+void CreatureAIScript::stopWaypointMovement()
 {
-    _creature->GetAIInterface()->setWaypointScriptType(wp_move_script_type);
-
+    getCreature()->stopMoving();
 }
 
-uint32_t CreatureAIScript::GetCurrentWaypoint()
+uint32_t CreatureAIScript::getCurrentWaypoint()
 {
-    return _creature->GetAIInterface()->getCurrentWayPointId();
+    return getCreature()->getCurrentWaypointInfo().first;
 }
 
-size_t CreatureAIScript::GetWaypointCount()
+size_t CreatureAIScript::getWaypointCount(uint32_t pathId)
 {
-    return _creature->GetAIInterface()->getWayPointsCount();
+    if (getCustomPath(pathId))
+        return getCustomPath(pathId)->nodes.size();
+
+    return 0;
 }
 
-bool CreatureAIScript::HasWaypoints()
+bool CreatureAIScript::hasWaypoints(uint32_t pathId)
 {
-    return _creature->GetAIInterface()->hasWayPoints();
+    if (getCustomPath(pathId))
+        return true;
+
+    return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -505,7 +580,7 @@ bool CreatureAIScript::HasWaypoints()
 
 bool CreatureAIScript::canEnterCombat()
 {
-    return _creature->GetAIInterface()->GetAllowedToEnterCombat();
+    return _creature->GetAIInterface()->getAllowedToEnterCombat();
 }
 
 void CreatureAIScript::setCanEnterCombat(bool enterCombat)
@@ -520,7 +595,7 @@ void CreatureAIScript::setCanEnterCombat(bool enterCombat)
         _creature->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
     }
 
-    _creature->GetAIInterface()->SetAllowedToEnterCombat(enterCombat);
+    _creature->GetAIInterface()->setAllowedToEnterCombat(enterCombat);
 }
 
 bool CreatureAIScript::_isInCombat()
@@ -575,12 +650,12 @@ bool CreatureAIScript::_isTargetingDisabled()
 
 void CreatureAIScript::_clearHateList()
 {
-    _creature->GetAIInterface()->ClearHateList();
+    _creature->getThreatManager().resetAllThreat();
 }
 
 void CreatureAIScript::_wipeHateList()
 {
-    _creature->GetAIInterface()->WipeHateList();
+    _creature->getThreatManager().clearAllThreat();
 }
 
 int32_t CreatureAIScript::_getHealthPercent()
@@ -969,7 +1044,7 @@ void CreatureAIScript::_castOnInrangePlayersWithinDist(float minDistance, float 
 
 void CreatureAIScript::_castAISpell(CreatureAISpells* aiSpell)
 {
-    Unit* target = getCreature()->GetAIInterface()->getNextTarget();
+    Unit* target = getCreature()->GetAIInterface()->getCurrentTarget();
     switch (aiSpell->mTargetType)
     {
         case TARGET_SELF:
@@ -1116,7 +1191,7 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                     continue;
 
                 // do not cast any spell while stunned/feared/silenced/charmed/confused
-                if (getCreature()->hasUnitStateFlag(UNIT_STATE_STUN | UNIT_STATE_FEAR | UNIT_STATE_SILENCE | UNIT_STATE_CHARM | UNIT_STATE_CONFUSE))
+                if (getCreature()->hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_FLEEING | UNIT_STATE_IN_FLIGHT | UNIT_STATE_CHARMED | UNIT_STATE_CONFUSED))
                     break;
 
                 // random chance for shuffeld array should do the job
@@ -1130,7 +1205,7 @@ void CreatureAIScript::newAIUpdateSpellSystem()
 
         if (usedSpell != nullptr)
         {
-            Unit* target = getCreature()->GetAIInterface()->getNextTarget();
+            Unit* target = getCreature()->GetAIInterface()->getCurrentTarget();
             switch (usedSpell->mTargetType)
             {
                 case TARGET_SELF:
@@ -1190,7 +1265,7 @@ void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
 
     // if we already cast a spell, do not set/cast another one!
     if (!getCreature()->isCastingSpell()
-        && getCreature()->GetAIInterface()->getNextTarget())
+        && getCreature()->GetAIInterface()->getCurrentTarget())
     {
         // set up targets in range by position, relation and hp range
         std::vector<Unit*> possibleUnitTargets;
@@ -1205,7 +1280,7 @@ void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
                 if (
                     inRangeTarget->isAlive() && AiSpell->isDistanceInRange(getCreature()->GetDistance2dSq(inRangeTarget))
                     && ((AiSpell->isHpInPercentRange(inRangeTarget->getHealthPct()) && isTargetRandFriend)
-                    || (getCreature()->GetAIInterface()->getThreatByPtr(inRangeTarget) > 0 && isHostile(getCreature(), inRangeTarget))))
+                    || (getCreature()->getThreatManager().getThreat(inRangeTarget) > 0 && isHostile(getCreature(), inRangeTarget))))
                 {
                     possibleUnitTargets.push_back(inRangeTarget);
                 }
@@ -1493,10 +1568,9 @@ Unit* CreatureAIScript::getNearestTargetInArray(UnitArray& pTargetArray)
 
 Unit* CreatureAIScript::getSecondMostHatedTargetInArray(UnitArray & pTargetArray)
 {
-    Unit* TargetUnit = nullptr;
     Unit* MostHatedUnit = nullptr;
-
-    Unit* CurrentTarget = static_cast<Unit*>(getCreature()->GetAIInterface()->getNextTarget());
+    Unit* TargetUnit = nullptr;
+    Unit* CurrentTarget = static_cast<Unit*>(getCreature()->GetAIInterface()->getCurrentTarget());
     uint32_t Threat = 0;
     uint32_t HighestThreat = 0;
 
@@ -1507,7 +1581,7 @@ Unit* CreatureAIScript::getSecondMostHatedTargetInArray(UnitArray & pTargetArray
             TargetUnit = static_cast<Unit*>(UnitIter);
             if (TargetUnit != CurrentTarget)
             {
-                Threat = getCreature()->GetAIInterface()->getThreatByPtr(TargetUnit);
+                Threat = static_cast<uint32_t>(getCreature()->getThreatManager().getThreat(TargetUnit));
                 if (Threat > HighestThreat)
                 {
                     MostHatedUnit = TargetUnit;
@@ -1548,11 +1622,11 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
     if (pFilter != TargetFilter_None)
     {
         // units not on threat list
-        if ((pFilter & TargetFilter_Aggroed) && getCreature()->GetAIInterface()->getThreatByPtr(UnitTarget) == 0)
+        if ((pFilter & TargetFilter_Aggroed) && getCreature()->getThreatManager().getThreat(UnitTarget) == 0)
             return false;
 
         // current attacking target if requested
-        if ((pFilter & TargetFilter_NotCurrent) && UnitTarget == getCreature()->GetAIInterface()->getNextTarget())
+        if ((pFilter & TargetFilter_NotCurrent) && UnitTarget == getCreature()->GetAIInterface()->getCurrentTarget())
             return false;
 
         // only wounded targets if requested
@@ -1560,7 +1634,7 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
             return false;
 
         // targets not in melee range if requested
-        if ((pFilter & TargetFilter_InMeleeRange) && getRangeToObject(UnitTarget) > getCreature()->GetAIInterface()->_CalcCombatRange(UnitTarget, false))
+        if ((pFilter & TargetFilter_InMeleeRange) && !getCreature()->isWithinCombatRange(UnitTarget, getCreature()->getMeleeRange(UnitTarget)))
             return false;
 
         // targets not in strict range if requested
@@ -1584,7 +1658,7 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
             if (!UnitTarget->CombatStatus.IsInCombat())
                 return false; // not-in-combat targets if friendly
 
-            if (isHostile(getCreature(), UnitTarget) || getCreature()->GetAIInterface()->getThreatByPtr(UnitTarget) > 0)
+            if (isHostile(getCreature(), UnitTarget) || getCreature()->getThreatManager().getThreat(UnitTarget) > 0)
                 return false;
         }
     }

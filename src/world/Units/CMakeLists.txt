@@ -9,6 +9,8 @@ set(SRC_UNITS_FILES
    ${PATH_PREFIX}/Unit.h
    ${PATH_PREFIX}/Unit.Legacy.cpp
    ${PATH_PREFIX}/UnitDefines.hpp
+   ${PATH_PREFIX}/ThreatHandler.cpp
+   ${PATH_PREFIX}/ThreatHandler.h
 )
 
 source_group(Units FILES ${SRC_UNITS_FILES})

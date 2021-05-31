@@ -38,8 +38,11 @@ public:
 
     static CreatureAIScript* Create(Creature* creature) { return new SinclariAI(creature); }
 
-    void OnReachWP(uint32_t iWaypointId, bool /*bForwards*/) override
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         switch (iWaypointId)
         {
             case 2:
@@ -73,7 +76,7 @@ public:
         auto guardSet = pInstance->getCreatureSetForEntry(30659);
         for (auto guard : guardSet)
         {
-            guard->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+           
         }
     }
 };
@@ -81,7 +84,6 @@ public:
 class SinclariGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* pPlayer) override
     {
         VioletHold* pInstance = (VioletHold*)pPlayer->GetMapMgr()->GetScript();
@@ -126,7 +128,6 @@ public:
             case 2:
             {
                 static_cast<Creature*>(pObject)->setNpcFlags(UNIT_NPC_FLAG_NONE);
-                sinclari->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
             } break;
             case 3:
             {
@@ -140,7 +141,6 @@ public:
 class VHGuardsAI : public CreatureAIScript
 {
 public:
-
     explicit VHGuardsAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }

@@ -91,7 +91,6 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
             break;
         }
     }
-
     return true;
 }
 
@@ -224,8 +223,9 @@ bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_ses
         return true;
 
     auto player = m_session->GetPlayer();
-    creature_target->GetAIInterface()->MoveTo(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
+    creature_target->getMovementManager()->movePoint(0, player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), false, player->GetOrientation());
     sGMLog.writefromsession(m_session, "used .npc come on %s spawn ID: %u", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
+
     return true;
 }
 
@@ -249,7 +249,7 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_sessi
     }
     else
     {
-        creature_target->GetAIInterface()->hideWayPoints(m_session->GetPlayer());
+        //creature_target->GetAIInterface()->hideWayPoints(m_session->GetPlayer());
 
         uint32 spawn_id = creature_target->spawnid;
 
@@ -303,8 +303,7 @@ bool ChatHandler::HandleNpcFollowCommand(const char* /*args*/, WorldSession* m_s
     if (creature_target == nullptr)
         return true;
 
-    //creature_target->GetAIInterface()->SetUnitToFollow(m_session->GetPlayer());
-    creature_target->getMovementAI().startFollowing(m_session->GetPlayer());
+    creature_target->getMovementManager()->moveFollow(m_session->GetPlayer(), PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
     sGMLog.writefromsession(m_session, "used npc follow command on %s, sqlid %u", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
     return true;
 }
@@ -637,10 +636,7 @@ bool ChatHandler::HandleNpcStopFollowCommand(const char* /*args*/, WorldSession*
     if (creature_target == nullptr)
         return true;
 
-    /*creature_target->GetAIInterface()->setAiState(AI_STATE_IDLE);
-    creature_target->GetAIInterface()->ResetUnitToFollow();*/
-
-    creature_target->getMovementAI().stopFollowing();
+    creature_target->getMovementManager()->remove(FOLLOW_MOTION_TYPE);
 
     sGMLog.writefromsession(m_session, "cancelled npc follow command on %s, sqlid %u", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
     return true;
@@ -680,15 +676,9 @@ bool ChatHandler::HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_s
     if (creature_target == nullptr)
         return true;
 
-    float x = creature_target->m_spawn->x;
-    float y = creature_target->m_spawn->y;
-    float z = creature_target->m_spawn->z;
-    float o = creature_target->m_spawn->o;
-
     creature_target->GetAIInterface()->setAiState(AI_STATE_IDLE);
-    creature_target->GetAIInterface()->WipeHateList();
-    creature_target->GetAIInterface()->WipeTargetList();
-    creature_target->GetAIInterface()->MoveTo(x, y, z, o);
+
+    creature_target->getMovementManager()->moveTargetedHome();
 
     sGMLog.writefromsession(m_session, "returned NPC %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
 
@@ -758,7 +748,6 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     auto creature_spawn = new MySQLStructure::CreatureSpawn;
     uint8 gender = creature_properties->GetGenderAndCreateRandomDisplayID(&creature_spawn->displayid);
     creature_spawn->entry = entry;
-    creature_spawn->form = 0;
     creature_spawn->id = sObjectMgr.GenerateCreatureSpawnID();
     creature_spawn->movetype = 0;
     creature_spawn->x = m_session->GetPlayer()->GetPositionX();
@@ -1052,9 +1041,9 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_se
     if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save_to_db = true;
 
-    if (creature_target->GetAIInterface()->isFlying())
+    if (creature_target->IsFlying())
     {
-        creature_target->GetAIInterface()->unsetSplineFlying();
+        creature_target->setMoveCanFly(false);
 
         if (save_to_db)
         {
@@ -1069,7 +1058,7 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_se
     }
     else
     {
-        creature_target->GetAIInterface()->setSplineFlying();
+        creature_target->setMoveCanFly(true);
         if (save_to_db)
         {
             WorldDatabase.Execute("UPDATE %s SET CanFly = 0 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->table.c_str(), creature_target->spawnid, VERSION_STRING, VERSION_STRING);
@@ -1081,7 +1070,6 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_se
             GreenSystemMessage(m_session, "CanFly temporarily set from 1 to 0 for Creature %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
         }
     }
-
     return true;
 }
 
@@ -1197,89 +1185,14 @@ bool ChatHandler::HandleNpcSetFormationMasterCommand(const char* /*args*/, World
 }
 
 //.npc set formationslave
-bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* /*args*/, WorldSession* /*m_session*/)
 {
-    float angle;
-    float distance;
-    uint32 save = 0;
-
-    if (sscanf(args, "%f %f %u", &angle, &distance, &save) < 2)
-    {
-        RedSystemMessage(m_session, "You must specify angle and distance.");
-        RedSystemMessage(m_session, ".npc set formationslave <angle> <distance>");
-        return true;
-    }
-
-    if (m_session->GetPlayer()->m_formationMaster == nullptr)
-    {
-        RedSystemMessage(m_session, "Master not set! Use .npc set formationmaster first.");
-        return true;
-    }
-
-    if (m_session->GetPlayer()->m_formationMaster->isPet())
-    {
-        RedSystemMessage(m_session, "A pet can not be a master of a formation!");
-        return true;
-    }
-
-    auto creature_slave = GetSelectedCreature(m_session, true);
-    if (creature_slave == nullptr)
-        return true;
-
-    creature_slave->GetAIInterface()->m_formationFollowDistance = distance;
-    creature_slave->GetAIInterface()->m_formationFollowAngle = angle;
-    creature_slave->GetAIInterface()->m_formationLinkTarget = m_session->GetPlayer()->m_formationMaster->getGuid();
-    creature_slave->GetAIInterface()->m_formationLinkSqlId = m_session->GetPlayer()->m_formationMaster->GetSQL_id();
-    creature_slave->GetAIInterface()->SetUnitToFollowAngle(angle);
-
-    BlueSystemMessage(m_session, "%s linked to %s with a distance of %f at %f radians.", creature_slave->GetCreatureProperties()->Name.c_str(), m_session->GetPlayer()->m_formationMaster->GetCreatureProperties()->Name.c_str(), distance, angle);
-
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
-    {
-        WorldDatabase.Execute("REPLACE INTO creature_formations VALUES(%u, %u, '%f', '%f')", creature_slave->GetSQL_id(), creature_slave->GetAIInterface()->m_formationLinkSqlId, angle, distance);
-        BlueSystemMessage(m_session, "%s linked to %s with a distance of %f at %f radians.", creature_slave->GetCreatureProperties()->Name.c_str(), m_session->GetPlayer()->m_formationMaster->GetCreatureProperties()->Name.c_str(), distance, angle);
-        sGMLog.writefromsession(m_session, "changed npc formation of creature_spawn ID: %u [%s]", creature_slave->spawnid, creature_slave->GetCreatureProperties()->Name.c_str());
-    }
-    else
-    {
-        BlueSystemMessage(m_session, "%s temporarily linked to %s with a distance of %f at %f radians.", creature_slave->GetCreatureProperties()->Name.c_str(), m_session->GetPlayer()->m_formationMaster->GetCreatureProperties()->Name.c_str(), distance, angle);
-    }
-
     return true;
 }
 
 //.npc set formationclear
-bool ChatHandler::HandleNpcSetFormationClearCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleNpcSetFormationClearCommand(const char* /*args*/, WorldSession* /*m_session*/)
 {
-    uint32 save = atol(args);
-
-    auto creature_target = GetSelectedCreature(m_session, true);
-    if (creature_target == nullptr)
-        return true;
-
-    creature_target->GetAIInterface()->m_formationLinkSqlId = 0;
-    creature_target->GetAIInterface()->m_formationLinkTarget = 0;
-    creature_target->GetAIInterface()->m_formationFollowAngle = 0.0f;
-    creature_target->GetAIInterface()->m_formationFollowDistance = 0.0f;
-    creature_target->GetAIInterface()->ResetUnitToFollow();
-
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
-    {
-        BlueSystemMessage(m_session, "%s linked formation cleared in database.", creature_target->GetCreatureProperties()->Name.c_str());
-        WorldDatabase.Execute("DELETE FROM creature_formations WHERE spawn_id=%u", creature_target->GetSQL_id());
-        sGMLog.writefromsession(m_session, "removed npc formation for creature_spawn ID: %u [%s]", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str());
-    }
-    else
-    {
-        BlueSystemMessage(m_session, "%s linked formation temporarily cleared.", creature_target->GetCreatureProperties()->Name.c_str());
-    }
-
     return true;
 }
 
@@ -1317,38 +1230,6 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
         GreenSystemMessage(m_session, "Flags temporarily set from %u to %u for spawn ID: %u. You may need to clean your client cache.", old_npc_flags, npc_flags, creature_target->spawnid);
     }
 
-    return true;
-}
-
-//.npc set ongameobject
-bool ChatHandler::HandleNpcSetOnGOCommand(const char* args, WorldSession* m_session)
-{
-    auto creature_target = GetSelectedCreature(m_session, true);
-    if (creature_target == nullptr)
-        return true;
-
-    creature_target->GetAIInterface()->unsetSplineFlying();
-
-    bool old_ongo = creature_target->GetAIInterface()->onGameobject;
-    creature_target->GetAIInterface()->onGameobject = !creature_target->GetAIInterface()->onGameobject;
-
-    bool save = (atoi(args) == 1 ? true : false);
-
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save = true;
-
-    if (save)
-    {
-        creature_target->SaveToDB();
-        GreenSystemMessage(m_session, "onGameObject permanent set from %u to %u for Creature %s (%u)", uint32(old_ongo), uint32(creature_target->GetAIInterface()->onGameobject), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
-        sGMLog.writefromsession(m_session, "changed onGameObject permanent from %u to %u for Creature %s SpawnID: (%u)", uint32(old_ongo), uint32(creature_target->GetAIInterface()->onGameobject), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
-    }
-    else
-    {
-        GreenSystemMessage(m_session, "onGameObject temporarily set from %u to %u for Creature %s (%u)", uint32(old_ongo), uint32(creature_target->GetAIInterface()->onGameobject), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
-    }
-
-    SystemMessage(m_session, "You may have to leave and re-enter this zone for changes to take effect.");
     return true;
 }
 

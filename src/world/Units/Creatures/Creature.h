@@ -25,7 +25,6 @@
 #include "Units/UnitDefines.hpp"
 #include "Map/Map.h"
 #include "Units/Unit.h"
-#include "Movement/UnitMovementManager.hpp"
 #include "Objects/Object.h"
 #include "Management/Group.h"
 
@@ -36,6 +35,9 @@ struct Trainer;
 class GameEvent;
 struct QuestRelation;
 struct QuestProperties;
+class CreatureGroup;
+
+enum MovementGeneratorType : uint8;
 
 uint8 get_byte(uint32 buffer, uint32 index);
 
@@ -86,6 +88,11 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Owner
     Player* getPlayerOwner() override;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc
+    float_t getMaxWanderDistance() const;
+    void setMaxWanderDistance(float_t dist);
 
  //MIT end
 
@@ -208,6 +215,13 @@ public:
         LocationVector GetTransportHomePosition() { return m_transportHomePosition; }
         LocationVector m_transportHomePosition;
 
+        uint32_t getWaypointPath() const { return _waypointPathId; }
+        void loadPath(uint32_t pathid) { _waypointPathId = pathid; }
+
+        // nodeId, pathId
+        std::pair<uint32_t, uint32_t> getCurrentWaypointInfo() const { return _currentWaypointNodeInfo; }
+        void updateCurrentWaypointInfo(uint32_t nodeId, uint32_t pathId) { _currentWaypointNodeInfo = { nodeId, pathId }; }
+
         virtual void setDeathState(DeathState s);
 
         void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
@@ -223,6 +237,11 @@ public:
         void OnRespawn(MapMgr* m);
 
         void BuildPetSpellList(WorldPacket & data);
+
+    private:
+        // Waypoint path
+        uint32_t _waypointPathId;
+        std::pair<uint32_t/*nodeId*/, uint32_t/*pathId*/> _currentWaypointNodeInfo;
 
     protected:
 
@@ -272,17 +291,36 @@ public:
         DBC::Structures::CreatureFamilyEntry const* myFamily;
 
         bool IsExotic();
-
-
         bool isCritter() override;
 
-        void FormationLinkUp(uint32 SqlId);
+        bool isReturningHome() const;
+        void searchFormation();
+        CreatureGroup* getFormation() { return m_formation; }
+        void setFormation(CreatureGroup* formation) { m_formation = formation; }
+        bool isFormationLeader() const;
+        void signalFormationMovement();
+        bool isFormationLeaderMoveAllowed() const;
+
+        uint32_t getSpawnId() { return spawnid; }
+
+
         void ChannelLinkUpGO(uint32 SqlId);
         void ChannelLinkUpCreature(uint32 SqlId);
-        bool haslinkupevent;
-        Movement::WayPoint* CreateWaypointStruct();
+
         uint32 spawnid;
         uint32 original_emotestate;
+
+        void motion_Initialize();
+        void immediateMovementFlagsUpdate();
+        void updateMovementFlags();
+        CreatureMovementData const& getMovementTemplate();
+        bool canWalk() { return getMovementTemplate().isGroundAllowed(); }
+        bool canSwim() override { return getMovementTemplate().isSwimAllowed() || isPet(); }
+        bool canFly()  override { return getMovementTemplate().isFlightAllowed() || IsFlying(); }
+        bool canHover() { return getMovementTemplate().Ground == CreatureGroundMovementType::Hover || isHovering(); }
+
+        MovementGeneratorType getDefaultMovementType() const override { return m_defaultMovementType; }
+        void setDefaultMovementType(MovementGeneratorType mgt) { m_defaultMovementType = mgt; }
 
         MySQLStructure::CreatureSpawn* m_spawn;
 
@@ -298,18 +336,13 @@ public:
         // scriptdev2
         uint32 GetNpcTextId();
 
-        Movement::WayPointMap* m_custom_waypoint_map;
-        void LoadWaypointGroup(uint32 pWaypointGroup);
-        void LoadCustomWaypoint(float pX, float pY, float pZ, float pO, uint32 pWaitTime, uint32 pFlags, bool pForwardEmoteOneshot, uint32 pForwardEmoteId, bool pBackwardEmoteOneshot, uint32 pBackwardEmoteId, uint32 pForwardSkinId, uint32 pBackwardSkinId);
-        void SwitchToCustomWaypoints();
         Player* m_escorter;
-        void DestroyCustomWaypointMap();
         bool IsInLimboState();
 
         void SetLimboState(bool set);
     static uint32 GetLineByFamily(DBC::Structures::CreatureFamilyEntry const* family);
         void RemoveLimboState(Unit* healer);
-        void SetGuardWaypoints();
+
         bool m_corpseEvent;
         MapCell* m_respawnCell;
         bool m_noRespawn;
@@ -331,6 +364,9 @@ public:
         CreatureAIScript* _myScriptClass;
         bool m_limbostate;
         Trainer* mTrainer;
+
+        // Movement
+        MovementGeneratorType m_defaultMovementType;
 
         // Vendor data
         std::vector<CreatureItem>* m_SellItems;
@@ -354,30 +390,14 @@ public:
 
         uint32 m_Creature_type;
 
+        uint16_t m_movementFlagUpdateTimer = 1000;
+
+        // Formation var
+        CreatureGroup* m_formation;
+
+        float_t m_wanderDistance = 0.0f;
+
         // old EasyFunctions.h
-    public:
-
-        void DeleteWaypoints()
-        {
-            if (m_custom_waypoint_map == nullptr)
-                return;
-
-            for (auto i = m_custom_waypoint_map->begin(); i != m_custom_waypoint_map->end(); ++i)
-            {
-                if ((*i) != nullptr)
-                    delete(*i);
-            }
-
-            m_custom_waypoint_map->clear();
-        }
-
-        void CreateCustomWaypointMap()
-        {
-            if (m_custom_waypoint_map == nullptr)
-                m_custom_waypoint_map = new Movement::WayPointMap;
-            else
-                DeleteWaypoints();
-        }
 };
 
 #endif // _WOWSERVER_CREATURE_H

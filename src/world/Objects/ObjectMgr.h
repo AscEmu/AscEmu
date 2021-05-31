@@ -45,6 +45,7 @@
 #include "Server/World.Legacy.h"
 #include "Spell/SpellTargetConstraint.hpp"
 #include "Management/Tickets/TicketMgr.hpp"
+#include "Movement/MovementManager.h"
 
 struct WorldState
 {
@@ -251,7 +252,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         void generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
         //MIT END
 
-        void LoadCreatureWaypoints();
         void LoadCreatureTimedEmotes();
 
         TimedEmoteList* GetTimedEmoteList(uint32 spawnid);
@@ -398,7 +398,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         uint32 GetPetSpellCooldown(uint32 SpellId);
         void LoadPetSpellCooldowns();
-        Movement::WayPointMap* GetWayPointMap(uint32 spawnid);
 
         void ResetDailies();
 
@@ -431,6 +430,17 @@ class SERVER_DECL ObjectMgr : public EventableObject
         bool HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim);
         void LoadInstanceReputationModifiers();
         void LoadInstanceEncounters();
+
+        void loadCreatureMovementOverrides();
+        void checkCreatureMovement(uint32_t id, CreatureMovementData& creatureMovement);
+
+        CreatureMovementData const* getCreatureMovementOverride(uint32_t spawnId) const
+        {
+            auto itr = _creatureMovementOverrides.find(spawnId);
+            if (itr != _creatureMovementOverrides.end())
+                return &itr->second;
+            return NULL;
+        }
 
 #if VERSION_STRING >= WotLK
         DungeonEncounterList const* GetDungeonEncounterList(uint32_t mapId, uint8_t difficulty)
@@ -490,6 +500,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
         EventScriptMaps mEventScriptMaps;
         SpellEffectMaps mSpellEffectMaps;
         DungeonEncounterContainer _dungeonEncounterStore;
+        std::unordered_map<uint32_t, CreatureMovementData> _creatureMovementOverrides;
 
 #if VERSION_STRING >= Cata
         SpellsRequiringSpellMap mSpellsReqSpell;
@@ -529,7 +540,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         std::unordered_map<uint32, PlayerInfo*> m_playersinfo;
         PlayerNameStringIndexMap m_playersInfoByName;
 
-        std::unordered_map<uint32, Movement::WayPointMap*> mWayPointMap; /// stored by spawnid
         std::unordered_map<uint32, TimedEmoteList*> m_timedemotes;       /// stored by spawnid
 
         // Group List

@@ -4,10 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
-#include "Map/MapMgr.h"
-#include "Map/MapScriptInterface.h"
 #include "Units/Creatures/Creature.h"
-#include "Server/Script/ScriptMgr.h"
 
 class ShatteredSunSpawner : public CreatureAIScript
 {
@@ -27,11 +24,37 @@ class ShatteredSunSpawner : public CreatureAIScript
 
                 if (guard != NULL)
                 {
-                    guard->SetGuardWaypoints();
-                    guard->GetAIInterface()->AttackReaction(mTarget, 1, 0);
+                    setGuardWaypoints();
+                    guard->GetAIInterface()->onHostileAction(mTarget);
                     getCreature()->Despawn(60000, 0);
                 }
             }
+        }
+    }
+
+    // Generates 3 random waypoints around the NPC
+    void setGuardWaypoints()
+    {
+        if (!getCreature()->GetMapMgr())
+            return;
+
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
+        float o = 0.0f;
+
+        for (uint8 i = 1; i <= 4; i++)
+        {
+            float ang = Util::getRandomFloat(100.0f) / 100.0f;
+            float ran = Util::getRandomFloat(100.0f) / 10.0f;
+            while (ran < 1)
+                ran = Util::getRandomFloat(100.0f) / 10.0f;
+
+            x = getCreature()->GetSpawnX() + ran * sin(ang);
+            y = getCreature()->GetSpawnY() + ran * cos(ang);
+            z = getCreature()->GetMapMgr()->GetLandHeight(x, y, getCreature()->GetSpawnZ() + 2);
+
+            addWaypoint(1, createWaypoint(i, 800, WAYPOINT_MOVE_TYPE_WALK, LocationVector(x, y, z, o)));
         }
     }
 };

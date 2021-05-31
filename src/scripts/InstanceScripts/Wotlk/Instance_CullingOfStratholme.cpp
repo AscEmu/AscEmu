@@ -295,7 +295,7 @@ public:
 };
 
 
-static Movement::Location walk[] =
+static LocationVector walk[] =
 {
     { 0, 0, 0, 0 },
     { 1811.2177f, 1276.5729f, 141.9048f, 0.098f },
@@ -308,14 +308,17 @@ class UtherAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(UtherAI)
     explicit UtherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddWaypoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_RUN, walk[1]));
-        AddWaypoint(CreateWaypoint(2, 0, Movement::WP_MOVE_TYPE_RUN, walk[2]));
-        AddWaypoint(CreateWaypoint(3, 90000, Movement::WP_MOVE_TYPE_RUN, walk[3]));
+        addWaypoint(1, createWaypoint(1, 0, WAYPOINT_MOVE_TYPE_RUN, walk[1]));
+        addWaypoint(1, createWaypoint(2, 0, WAYPOINT_MOVE_TYPE_RUN, walk[2]));
+        addWaypoint(1, createWaypoint(3, 90000, WAYPOINT_MOVE_TYPE_RUN, walk[3]));
         check = true;
     }
 
-    void OnReachWP(uint32_t i, bool /*usl*/) override
+    void OnReachWP(uint32_t type, uint32_t i) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         if (i == 3 && check)
         {
             check = false;
@@ -371,7 +374,7 @@ private:
     bool check;
 };
 
-static Movement::Location ArthasWalk[] =
+static LocationVector ArthasWalk[] =
 {
     { 0, 0, 0, 0 },
     { 1908.9722f, 1312.8898f, 149.9889f, 0.6858f },
@@ -389,36 +392,37 @@ class ArthasAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ArthasAI)
     explicit ArthasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-        AddWaypoint(CreateWaypoint(1, 10500, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[1]));
-        AddWaypoint(CreateWaypoint(2, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[2]));
-        AddWaypoint(CreateWaypoint(3, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[3]));
-        AddWaypoint(CreateWaypoint(4, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[4]));
-        AddWaypoint(CreateWaypoint(5, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[5]));
-        AddWaypoint(CreateWaypoint(6, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[6]));
-        AddWaypoint(CreateWaypoint(7, 0, Movement::WP_MOVE_TYPE_RUN, ArthasWalk[7]));
+        addWaypoint(1, createWaypoint(1, 10500, WAYPOINT_MOVE_TYPE_RUN, ArthasWalk[1]));
+        addWaypoint(1, createWaypoint(2, 0, WAYPOINT_MOVE_TYPE_RUN, ArthasWalk[2]));
+        addWaypoint(1, createWaypoint(3, 0, WAYPOINT_MOVE_TYPE_RUN, ArthasWalk[3]));
+        addWaypoint(1, createWaypoint(4, 0, WAYPOINT_MOVE_TYPE_RUN, ArthasWalk[4]));
+        addWaypoint(1, createWaypoint(5, 0, WAYPOINT_MOVE_TYPE_RUN, ArthasWalk[5]));
+        addWaypoint(1, createWaypoint(6, 0, WAYPOINT_MOVE_TYPE_RUN, ArthasWalk[6]));
+        addWaypoint(1, createWaypoint(7, 0, WAYPOINT_MOVE_TYPE_RUN, ArthasWalk[7]));
 
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
         phase = 0;
     }
 
-    void OnReachWP(uint32_t i, bool /*usl*/) override
+    void OnReachWP(uint32_t type, uint32_t i) override
     {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
         switch (i)
         {
             case 1:
             {
                 sendDBChatMessage(SAY_ARTHAS_10);
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(2);
+                setWaypointToMove(1, 2);
             }
             break;
             case 7:
             {
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+                stopMovement();
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                getCreature()->GetAIInterface()->m_canMove = false;
+                getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                 getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
             }
             break;
@@ -432,8 +436,7 @@ class ArthasAI : public CreatureAIScript
             {
                 if (i > 1 && i < 7)
                 {
-                    getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                    getCreature()->GetAIInterface()->setWayPointToMove(i + 1);
+                    setWaypointToMove(1, i + 1);
                 }
             }
             break;
@@ -446,10 +449,9 @@ class ArthasAI : public CreatureAIScript
         {
             case 0:
             {
-                getCreature()->GetAIInterface()->StopMovement(0);
+                getCreature()->stopMoving();
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                getCreature()->GetAIInterface()->setWayPointToMove(1);
+                setWaypointToMove(1, 1);
             }
             break;
             case 1:
@@ -458,13 +460,13 @@ class ArthasAI : public CreatureAIScript
                 Creature* citizen = getNearestCreature(28167);
                 if (citizen)
                 {
-                    getCreature()->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
+                    getCreature()->GetAIInterface()->moveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
                     getCreature()->dealDamage(citizen, citizen->getHealth(), 0);
                 }
                 citizen = getNearestCreature(28169);
                 if (citizen)
                 {
-                    getCreature()->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
+                    getCreature()->GetAIInterface()->moveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
                     getCreature()->dealDamage(citizen, citizen->getHealth(), 0);
                 }
                 getCreature()->SendTimedScriptTextChatMessage(SAY_ARTHAS_13, 1000);
@@ -490,8 +492,8 @@ class ArthasAI : public CreatureAIScript
                 if (c)
                 {
                     c->bInvincible = true;
-                    c->GetAIInterface()->m_canMove = false;
-                    c->GetAIInterface()->SetAllowedToEnterCombat(false);
+                    c->setControlled(true, UNIT_STATE_ROOTED);
+                    c->GetAIInterface()->setAllowedToEnterCombat(false);
                     for (uint8_t i = 0; i < 7; i++)
                         c->SchoolImmunityList[i] = 1;
                     c->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);

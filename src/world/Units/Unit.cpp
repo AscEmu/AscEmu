@@ -43,18 +43,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Creatures/Pet.h"
 #include "Units/Creatures/Vehicle.h"
 #include "Units/Players/Player.h"
-#include "Movement/Spline/New/MoveSpline.h"
-#include "Movement/Spline/New/MoveSplineInit.h"
+#include "Movement/Spline/MoveSpline.h"
+#include "Movement/Spline/MoveSplineInit.h"
 
 using namespace AscEmu::Packets;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
-
-MovementAI & Unit::getMovementAI()
-{
-    return m_movementAI;
-}
 
 void Unit::setLocationWithoutUpdate(LocationVector & location)
 {
@@ -1316,7 +1311,36 @@ void Unit::setMoveCanFly(bool set_fly)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
             data << uint32(2);
-#else
+#endif
+
+#if VERSION_STRING == Cata
+            ObjectGuid guid = getGuid();
+
+            data.Initialize(SMSG_MOVE_SET_CAN_FLY, 1 + 8 + 4);
+            data.writeBit(guid[1]);
+            data.writeBit(guid[6]);
+            data.writeBit(guid[5]);
+            data.writeBit(guid[0]);
+            data.writeBit(guid[7]);
+            data.writeBit(guid[4]);
+            data.writeBit(guid[2]);
+            data.writeBit(guid[3]);
+
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[3]);
+
+            data << uint32(0);          //! movement counter
+
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[5]);
+
+            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_SET_CAN_FLY);
+#endif
+
 #if VERSION_STRING == Mop
             ObjectGuid guid = getGuid();
 
@@ -1342,10 +1366,8 @@ void Unit::setMoveCanFly(bool set_fly)
             data.WriteByteSeq(guid[7]);
             data.WriteByteSeq(guid[5]);
 
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_SET_CAN_FLY);
 #endif
-#endif
+
             SendMessageToSet(&data, true);
         }
         else
@@ -1361,7 +1383,33 @@ void Unit::setMoveCanFly(bool set_fly)
 #if VERSION_STRING < Cata
             data << GetNewGUID();
             data << uint32(5);
-#else
+#endif
+
+#if VERSION_STRING == Cata
+            ObjectGuid guid = getGuid();
+
+            data.Initialize(SMSG_MOVE_UNSET_CAN_FLY, 1 + 8 + 4);
+            data.writeBit(guid[1]);
+            data.writeBit(guid[4]);
+            data.writeBit(guid[2]);
+            data.writeBit(guid[5]);
+            data.writeBit(guid[0]);
+            data.writeBit(guid[3]);
+            data.writeBit(guid[6]);
+            data.writeBit(guid[7]);
+
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[6]);
+
+            data << uint32(0);          //! movement counter
+
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[7]);
+
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_CAN_FLY);
 #endif
             SendMessageToSet(&data, true);
@@ -1370,6 +1418,9 @@ void Unit::setMoveCanFly(bool set_fly)
 
     if (isCreature())
     {
+        if (!movespline->Initialized())
+            return;
+
         if (set_fly)
         {
             addUnitMovementFlag(MOVEFLAG_CAN_FLY);
@@ -1412,6 +1463,7 @@ void Unit::setMoveRoot(bool set_root)
         if (set_root)
         {
             addUnitMovementFlag(MOVEFLAG_ROOTED);
+            stopMoving();
 
             WorldPacket data(SMSG_FORCE_MOVE_ROOT, 12);
 #if VERSION_STRING < Cata
@@ -1425,6 +1477,7 @@ void Unit::setMoveRoot(bool set_root)
         else
         {
             removeUnitMovementFlag(MOVEFLAG_ROOTED);
+            stopMoving();
 
             WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 12);
 #if VERSION_STRING < Cata
@@ -1441,11 +1494,7 @@ void Unit::setMoveRoot(bool set_root)
     {
         if (set_root)
         {
-            // AIInterface
-            //\todo stop movement based on movement flag instead of m_canMove
-            m_aiInterface->m_canMove = false;
-            m_aiInterface->StopMovement(100);
-
+            stopMoving();
             addUnitMovementFlag(MOVEFLAG_ROOTED);
 
             WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 9);
@@ -1458,8 +1507,6 @@ void Unit::setMoveRoot(bool set_root)
         }
         else
         {
-            m_aiInterface->m_canMove = true;
-
             removeUnitMovementFlag(MOVEFLAG_ROOTED);
 
             WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 9);
@@ -1656,7 +1703,47 @@ bool Unit::IsFalling() const
     return obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING_MASK) || movespline->isFalling();
 }
 
-bool Unit::CanSwim() const
+bool Unit::isInWater() const
+{
+    if (worldConfig.terrainCollision.isCollisionEnabled)
+    {
+        float outx = GetPositionX() + 3.5f * cos(GetOrientation());
+        float outy = GetPositionY() + 3.5f * sin(GetOrientation());
+        float outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
+        uint32 watertype;
+        float watermark;
+        GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
+        outz = std::max(watermark, outz);
+
+        // Check for liquid type also, i.e. Orgrimmar is below water level
+        const auto liquidStatus = GetMapMgr()->getLiquidStatus(0, GetPositionX(), GetPositionY(), GetPositionZ(), MAP_ALL_LIQUIDS);
+        if (liquidStatus == LIQUID_MAP_NO_WATER)
+            return false;
+
+        if (watermark >= outz)
+            return true;
+    }
+
+    return false;
+}
+
+bool Unit::isUnderWater() const
+{
+    float outx = GetPositionX() + 3.5f * cos(GetOrientation());
+    float outy = GetPositionY() + 3.5f * sin(GetOrientation());
+    float outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
+    uint32 watertype;
+    float watermark;
+    GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
+    outz = std::max(watermark, outz);
+
+    if ((watermark -2.0f) >= outz)
+        return true;
+
+    return false;
+}
+
+bool Unit::canSwim()
 {
     // Mirror client behavior, if this method returns false then client will not use swimming animation and for players will apply gravity as if there was no water
     if (hasUnitFlags(UNIT_FLAG_DEAD))
@@ -1672,6 +1759,11 @@ bool Unit::CanSwim() const
     return hasUnitFlags(UNIT_FLAG_UNKNOWN_5 | UNIT_FLAG_SWIMMING);
 }
 
+bool Unit::canFly()
+{
+    return false;
+}
+
 float Unit::getSpeedRate(UnitSpeedType type, bool current) const
 {
     if (current)
@@ -1680,12 +1772,84 @@ float Unit::getSpeedRate(UnitSpeedType type, bool current) const
         return m_UnitSpeedInfo.m_basicSpeedRate[type];
 }
 
-void Unit::setSpeedRate(UnitSpeedType type, float value, bool current)
+#if VERSION_STRING < Cata
+void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
 {
+    if (rate < 0)
+        rate = 0.0f;
+
+    // Update speed only on change
+    if (m_UnitSpeedInfo.m_currentSpeedRate[mtype] == rate)
+        return;
+
     if (current)
-        m_UnitSpeedInfo.m_currentSpeedRate[type] = value;
+        m_UnitSpeedInfo.m_currentSpeedRate[mtype] = rate;
     else
-        m_UnitSpeedInfo.m_basicSpeedRate[type] = value;
+        m_UnitSpeedInfo.m_basicSpeedRate[mtype] = rate;
+
+    // Update Also For Movement Generators
+    propagateSpeedChange();
+
+    // Spline packets are for units controlled by AI. "Force speed change" (wrongly named opcodes) and "move set speed" packets are for units controlled by a player.
+#if VERSION_STRING == Classic
+    static Opcodes const moveTypeToOpcode[MAX_SPEED_TYPE][3] =
+    {
+        {SMSG_SPLINE_SET_WALK_SPEED,        SMSG_FORCE_WALK_SPEED_CHANGE,           MSG_MOVE_SET_WALK_SPEED         },
+        {SMSG_SPLINE_SET_RUN_SPEED,         SMSG_FORCE_RUN_SPEED_CHANGE,            MSG_MOVE_SET_RUN_SPEED          },
+        {SMSG_SPLINE_SET_RUN_BACK_SPEED,    SMSG_FORCE_RUN_BACK_SPEED_CHANGE,       MSG_MOVE_SET_RUN_BACK_SPEED     },
+        {SMSG_SPLINE_SET_SWIM_SPEED,        SMSG_FORCE_SWIM_SPEED_CHANGE,           MSG_MOVE_SET_SWIM_SPEED         },
+        {SMSG_SPLINE_SET_SWIM_BACK_SPEED,   SMSG_FORCE_SWIM_BACK_SPEED_CHANGE,      MSG_MOVE_SET_SWIM_BACK_SPEED    },
+        {SMSG_SPLINE_SET_TURN_RATE,         SMSG_FORCE_TURN_RATE_CHANGE,            MSG_MOVE_SET_TURN_RATE          },
+    };
+#endif;
+
+#if VERSION_STRING == TBC
+    static Opcodes const moveTypeToOpcode[MAX_SPEED_TYPE][3] =
+    {
+        {SMSG_SPLINE_SET_WALK_SPEED,        SMSG_FORCE_WALK_SPEED_CHANGE,           MSG_MOVE_SET_WALK_SPEED         },
+        {SMSG_SPLINE_SET_RUN_SPEED,         SMSG_FORCE_RUN_SPEED_CHANGE,            MSG_MOVE_SET_RUN_SPEED          },
+        {SMSG_SPLINE_SET_RUN_BACK_SPEED,    SMSG_FORCE_RUN_BACK_SPEED_CHANGE,       MSG_MOVE_SET_RUN_BACK_SPEED     },
+        {SMSG_SPLINE_SET_SWIM_SPEED,        SMSG_FORCE_SWIM_SPEED_CHANGE,           MSG_MOVE_SET_SWIM_SPEED         },
+        {SMSG_SPLINE_SET_SWIM_BACK_SPEED,   SMSG_FORCE_SWIM_BACK_SPEED_CHANGE,      MSG_MOVE_SET_SWIM_BACK_SPEED    },
+        {SMSG_SPLINE_SET_TURN_RATE,         SMSG_FORCE_TURN_RATE_CHANGE,            MSG_MOVE_SET_TURN_RATE          },
+        {SMSG_SPLINE_SET_FLIGHT_SPEED,      SMSG_FORCE_FLIGHT_SPEED_CHANGE,         MSG_MOVE_SET_FLIGHT_SPEED       },
+        {SMSG_SPLINE_SET_FLIGHT_BACK_SPEED, SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE,    MSG_MOVE_SET_FLIGHT_BACK_SPEED  },
+    };
+#endif
+
+#if VERSION_STRING == WotLK
+    static uint16_t const moveTypeToOpcode[MAX_SPEED_TYPE][3] =
+    {
+        {SMSG_SPLINE_SET_WALK_SPEED,        SMSG_FORCE_WALK_SPEED_CHANGE,           MSG_MOVE_SET_WALK_SPEED         },
+        {SMSG_SPLINE_SET_RUN_SPEED,         SMSG_FORCE_RUN_SPEED_CHANGE,            MSG_MOVE_SET_RUN_SPEED          },
+        {SMSG_SPLINE_SET_RUN_BACK_SPEED,    SMSG_FORCE_RUN_BACK_SPEED_CHANGE,       MSG_MOVE_SET_RUN_BACK_SPEED     },
+        {SMSG_SPLINE_SET_SWIM_SPEED,        SMSG_FORCE_SWIM_SPEED_CHANGE,           MSG_MOVE_SET_SWIM_SPEED         },
+        {SMSG_SPLINE_SET_SWIM_BACK_SPEED,   SMSG_FORCE_SWIM_BACK_SPEED_CHANGE,      MSG_MOVE_SET_SWIM_BACK_SPEED    },
+        {SMSG_SPLINE_SET_TURN_RATE,         SMSG_FORCE_TURN_RATE_CHANGE,            MSG_MOVE_SET_TURN_RATE          },
+        {SMSG_SPLINE_SET_FLIGHT_SPEED,      SMSG_FORCE_FLIGHT_SPEED_CHANGE,         MSG_MOVE_SET_FLIGHT_SPEED       },
+        {SMSG_SPLINE_SET_FLIGHT_BACK_SPEED, SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE,    MSG_MOVE_SET_FLIGHT_BACK_SPEED  },
+        {SMSG_SPLINE_SET_PITCH_RATE,        SMSG_FORCE_PITCH_RATE_CHANGE,           MSG_MOVE_SET_PITCH_RATE         },
+    };
+#endif
+
+    if (GetTypeFromGUID() == TYPEID_PLAYER)
+    {
+        // register forced speed changes for WorldSession::HandleForceSpeedChangeAck
+        // and do it only for real sent packets and use run for run/mounted as client expected
+        ++ToPlayer()->m_forced_speed_changes[mtype];
+
+        if (!isInCombat())
+        {
+            std::list<Pet*> ownerSummons = ToPlayer()->GetSummons();
+            if (ownerSummons.size())
+            {
+                for (std::list<Pet*>::iterator itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
+                {
+                    (*itr)->setSpeedRate(mtype, m_UnitSpeedInfo.m_currentSpeedRate[mtype], false);
+                }
+            }
+        }
+    }
 
     Player* player_mover = GetMapMgrPlayer(getCharmedByGuid());
     if (player_mover == nullptr)
@@ -1694,21 +1858,287 @@ void Unit::setSpeedRate(UnitSpeedType type, float value, bool current)
             player_mover = dynamic_cast<Player*>(this);
     }
 
-    if (player_mover != nullptr)
+    if (player_mover) // unit controlled by a player.
     {
 #if VERSION_STRING < Cata
-        player_mover->sendForceMovePacket(type, value);
+        // Send notification to self. this packet is only sent to one client (the client of the player concerned by the change).
+        WorldPacket self;
+        self.Initialize(moveTypeToOpcode[mtype][1], mtype != TYPE_RUN ? 8 + 4 + 4 : 8 + 4 + 1 + 4);
+        self << GetNewGUID();
+        self << (uint32)0;                                  // Movement counter.
+        if (mtype == TYPE_RUN)
+            self << uint8(1);                               // unknown byte added in 2.1.0
+        self << float(rate);
+
+        player_mover->SendPacket(&self);
 #endif
-        player_mover->sendMoveSetSpeedPaket(type, value);
+        // Send notification to other players. sent to every clients (if in range) except one: the client of the player concerned by the change.
+        WorldPacket data;
+        data.Initialize(moveTypeToOpcode[mtype][2], 8 + 30 + 4);
+        data << GetNewGUID();
+        BuildMovementPacket(&data);
+        data << float(rate);
+
+        player_mover->SendMessageToSet(&data, false);
     }
-    else
-        sendMoveSplinePaket(type);
+    else // unit controlled by AI.
+    {
+        // send notification to every clients.
+        WorldPacket data;
+        data.Initialize(moveTypeToOpcode[mtype][0], 8 + 4);
+        data << GetNewGUID();
+        data << float(rate);
+        SendMessageToSet(&data, false);
+    }
 }
+#else
+void Unit::setSpeedRate(UnitSpeedType type, float value, bool current)
+{
+    if (value < 0)
+        value = 0.0f;
+
+    // Update speed only on change
+    if (m_UnitSpeedInfo.m_currentSpeedRate[type] == value)
+        return;
+
+    if (current)
+        m_UnitSpeedInfo.m_currentSpeedRate[type] = value;
+    else
+        m_UnitSpeedInfo.m_basicSpeedRate[type] = value;
+
+    // Update Also For Movement Generators
+    propagateSpeedChange();
+
+    if (GetTypeFromGUID() == TYPEID_PLAYER)
+    {
+        // register forced speed changes for WorldSession::HandleForceSpeedChangeAck
+        // and do it only for real sent packets and use run for run/mounted as client expected
+        ++ToPlayer()->m_forced_speed_changes[type];
+
+        if (!isInCombat())
+        {
+            std::list<Pet*> ownerSummons = ToPlayer()->GetSummons();
+            if (ownerSummons.size())
+            {
+                for (std::list<Pet*>::iterator itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
+                {
+                    (*itr)->setSpeedRate(type, m_UnitSpeedInfo.m_currentSpeedRate[type], false);
+                }
+            }
+        }
+    }
+
+    WorldPacket data;
+    ObjectGuid guid = getGuid();
+
+    switch (type)
+    {
+    case TYPE_WALK:
+        data.Initialize(SMSG_SPLINE_SET_WALK_SPEED, 8 + 4 + 2 + 4 + 4 + 4 + 4 + 4 + 4 + 4);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[4]);
+        data.flushBits();
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[3]);
+        data << float(value);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[5]);
+        break;
+    case TYPE_RUN:
+        data.Initialize(SMSG_SPLINE_SET_RUN_SPEED, 1 + 8 + 4);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[2]);
+        data.flushBits();
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[4]);
+        data << float(value);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[1]);
+        break;
+    case TYPE_RUN_BACK:
+        data.Initialize(SMSG_SPLINE_SET_RUN_BACK_SPEED, 1 + 8 + 4);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[4]);
+        data.flushBits();
+        data.WriteByteSeq(guid[1]);
+        data << float(value);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[7]);
+        break;
+    case TYPE_SWIM:
+        data.Initialize(SMSG_SPLINE_SET_SWIM_SPEED, 1 + 8 + 4);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[1]);
+        data.flushBits();
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[4]);
+        data << float(value);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[3]);
+        break;
+    case TYPE_SWIM_BACK:
+        data.Initialize(SMSG_SPLINE_SET_SWIM_BACK_SPEED, 1 + 8 + 4);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[2]);
+        data.flushBits();
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[6]);
+        data << float(value);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[2]);
+        break;
+    case TYPE_TURN_RATE:
+        data.Initialize(SMSG_SPLINE_SET_TURN_RATE, 1 + 8 + 4);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[0]);
+        data.flushBits();
+        data << float(value);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[0]);
+        break;
+    case TYPE_FLY:
+        data.Initialize(SMSG_SPLINE_SET_FLIGHT_SPEED, 1 + 8 + 4);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[2]);
+        data.flushBits();
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[6]);
+        data << float(value);
+        break;
+    case TYPE_FLY_BACK:
+        data.Initialize(SMSG_SPLINE_SET_FLIGHT_BACK_SPEED, 1 + 8 + 4);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[7]);
+        data.flushBits();
+        data.WriteByteSeq(guid[5]);
+        data << float(value);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[4]);
+        break;
+    case TYPE_PITCH_RATE:
+        data.Initialize(SMSG_SPLINE_SET_PITCH_RATE, 1 + 8 + 4);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[2]);
+        data.flushBits();
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[2]);
+        data << float(value);
+        data.WriteByteSeq(guid[4]);
+        break;
+    default:
+        sLogger.failure("Unit::setSpeedRate: Unsupported move type (%d), data not sent to client.", type);
+        return;
+    }
+
+    SendMessageToSet(&data, true);
+}
+#endif
 
 void Unit::resetCurrentSpeeds()
 {
     for (uint8_t i = 0; i < MAX_SPEED_TYPE; ++i)
         m_UnitSpeedInfo.m_currentSpeedRate[i] = m_UnitSpeedInfo.m_basicSpeedRate[i];
+}
+void Unit::propagateSpeedChange()
+{
+    getMovementManager()->propagateSpeedChange();
 }
 
 UnitSpeedType Unit::getFastestSpeedType() const
@@ -2958,7 +3388,10 @@ void Unit::addAura(Aura* aur)
             pCaster->CombatStatus.OnDamageDealt(this);
 
             if (isCreature())
-                m_aiInterface->AttackReaction(pCaster, 1, aur->getSpellId());
+            {
+                // Start Combat
+                m_aiInterface->onHostileAction(pCaster);
+            }
         }
     }
 
@@ -4631,15 +5064,21 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
             {
                 if (pet->GetPetState() != PET_STATE_PASSIVE)
                 {
-                    pet->GetAIInterface()->AttackReaction(this, 1, 0);
+                    // Start Combat
+                    pet->GetAIInterface()->onHostileAction(this);
                     pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
                 }
             }
         }
         else
         {
-            // Generate threat
-            victim->GetAIInterface()->AttackReaction(this, damage, spellId);
+            // Start Combat
+            victim->GetAIInterface()->onHostileAction(this);
+            // Add Threat
+            if (victim->getThreatManager().canHaveThreatList())
+                victim->getThreatManager().addThreat(this, static_cast<float>(damage), sSpellMgr.getSpellInfo(spellId), true, true);
+
+            // todo: remove this here when all damage is batched
             sScriptMgr.DamageTaken(static_cast<Creature*>(victim), this, &damage);
         }
     }
@@ -5249,15 +5688,23 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             {
                 if (pet->GetPetState() != PET_STATE_PASSIVE)
                 {
-                    pet->GetAIInterface()->AttackReaction(attacker, 1, 0);
+                    // Start Combat
+                    // todo: move this to ::Strike and ::doSpellDamage
+                    pet->GetAIInterface()->onHostileAction(attacker);
                     pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
                 }
             }
         }
         else
         {
-            // Generate threat
-            GetAIInterface()->AttackReaction(attacker, damage, spellId);
+            // Start Combat
+            // todo: move this to ::Strike and ::doSpellDamage
+            GetAIInterface()->onHostileAction(attacker);
+            // Add Threat
+            if (getThreatManager().canHaveThreatList())
+                getThreatManager().addThreat(attacker, static_cast<float>(damage), sSpellMgr.getSpellInfo(spellId), true, true);
+
+            // todo: this should happen on entire batch damage, not on every batch event
             sScriptMgr.DamageTaken(static_cast<Creature*>(this), attacker, &damage);
         }
 
@@ -5338,34 +5785,7 @@ uint32_t Unit::_handleBatchHealing(HealthBatchEvent const* batch, uint32_t* abso
         }
 
         // Handle threat
-        std::vector<Unit*> target_threat;
-        int count = 0;
-        for (const auto& itr : healer->getInRangeObjectsSet())
-        {
-            if (!itr || !itr->isCreature())
-                continue;
-
-            const auto tmp_creature = static_cast<Creature*>(itr);
-
-            if (!tmp_creature->CombatStatus.IsInCombat() || (tmp_creature->GetAIInterface()->getThreatByPtr(healer) == 0 && tmp_creature->GetAIInterface()->getThreatByPtr(this) == 0))
-                continue;
-
-            if (!(healer->GetPhase() & itr->GetPhase()))     //Can't see, can't be a threat
-                continue;
-
-            target_threat.push_back(tmp_creature);
-            count++;
-        }
-        
-        if (count != 0)
-        {
-            auto heal_threat = healing / count;
-
-            for (const auto& itr : target_threat)
-            {
-                itr->GetAIInterface()->HealReaction(healer, this, batch->spellInfo, heal_threat);
-            }
-        }
+        getThreatManager().forwardThreatForAssistingMe(healer, static_cast<float_t>(healing), batch->spellInfo);
 
         if (IsInWorld() && healer->IsInWorld())
             healer->CombatStatus.WeHealed(this);
@@ -5386,7 +5806,10 @@ void Unit::setDeathState(DeathState state)
 {
     m_deathState = state;
     if (state == JUST_DIED)
+    {
+        getThreatManager().removeMeFromThreatLists();
         DropAurasOnDeath();
+    }
 }
 
 DeathState Unit::getDeathState() const { return m_deathState; }
@@ -5550,4 +5973,318 @@ uint64_t Unit::getTransGuid()
         return GetTransport()->getGuid();
 
     return 0;
+}
+
+void Unit::setInFront(Object const* target)
+{
+    if (!hasUnitStateFlag(UNIT_STATE_CANNOT_TURN))
+        SetOrientation(getAbsoluteAngle(target));
+}
+
+bool Unit::isWithinCombatRange(Unit* obj, float dist2compare)
+{
+    if (!obj || !IsInMap(obj) || !(GetPhase() == obj->GetPhase()))
+        return false;
+
+    float dx = GetPositionX() - obj->GetPositionX();
+    float dy = GetPositionY() - obj->GetPositionY();
+    float dz = GetPositionZ() - obj->GetPositionZ();
+    float distsq = dx * dx + dy * dy + dz * dz;
+
+    float sizefactor = getCombatReach() + obj->getCombatReach();
+    float maxdist = dist2compare + sizefactor;
+
+    return distsq < maxdist * maxdist;
+}
+
+bool Unit::isWithinMeleeRangeAt(LocationVector const& pos, Unit* obj)
+{
+    if (!obj || !IsInMap(obj) || !(GetPhase() == obj->GetPhase()))
+        return false;
+
+    float dx = pos.getPositionX() - obj->GetPositionX();
+    float dy = pos.getPositionY() - obj->GetPositionY();
+    float dz = pos.getPositionZ() - obj->GetPositionZ();
+    float distsq = dx * dx + dy * dy + dz * dz;
+
+    float maxdist = getMeleeRange(obj);
+
+    return distsq <= maxdist * maxdist;
+}
+
+float Unit::getMeleeRange(Unit* target)
+{
+    float range = getCombatReach() + target->getCombatReach() + 4.0f / 3.0f;
+    return std::max(range, NOMINAL_MELEE_RANGE);
+}
+
+bool Unit::isInAccessiblePlaceFor(Creature* c) const
+{
+    float ground = GetMapMgr()->GetLandHeight(GetPositionX(), GetPositionY(), GetPositionZ());
+    float height = GetPositionZ();
+
+    if (isInWater())
+        return c->canSwim();
+    else if (IsFlying() || (ground) < (height - 10) && !GetTransport()) // we could be flying antihack!
+        return c->canFly();
+    else
+        return c->canWalk() || c->canFly();
+}
+
+void Unit::setControlled(bool apply, UnitStates state)
+{
+    if (apply)
+    {
+        if (hasUnitStateFlag(state))
+            return;
+
+        addUnitStateFlag(state);
+        switch (state)
+        {
+        case UNIT_STATE_STUNNED:
+            setStunned(true);
+            break;
+        case UNIT_STATE_ROOTED:
+            if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
+                setMoveRoot(true);
+            break;
+        case UNIT_STATE_CONFUSED:
+            if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
+            {
+                removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
+                setConfused(true);
+            }
+            break;
+        case UNIT_STATE_FLEEING:
+            if (!hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_CONFUSED))
+            {
+                removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
+                setFeared(true);
+            }
+            break;
+        default:
+            break;
+        }
+    }
+    else
+    {
+        switch (state)
+        {
+        case UNIT_STATE_STUNNED:
+            if (getAuraWithAuraEffect(SPELL_AURA_MOD_STUN))
+                return;
+
+            removeUnitStateFlag(state);
+            setStunned(false);
+            break;
+        case UNIT_STATE_ROOTED:
+            if (getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT) || isVehicle() || (ToCreature() && ToCreature()->getMovementTemplate().isRooted()))
+                return;
+
+            removeUnitStateFlag(state);
+            setMoveRoot(false);
+            break;
+        case UNIT_STATE_CONFUSED:
+            if (getAuraWithAuraEffect(SPELL_AURA_MOD_CONFUSE))
+                return;
+
+            removeUnitStateFlag(state);
+            setConfused(false);
+            break;
+        case UNIT_STATE_FLEEING:
+            if (getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
+                return;
+
+            removeUnitStateFlag(state);
+            setFeared(false);
+            break;
+        default:
+            return;
+        }
+
+        applyControlStatesIfNeeded();
+    }
+}
+
+void Unit::applyControlStatesIfNeeded()
+{
+    // Unit States might have been already cleared but auras still present. I need to check with HasAuraType
+    if (hasUnitStateFlag(UNIT_STATE_STUNNED) || getAuraWithAuraEffect(SPELL_AURA_MOD_STUN))
+        setStunned(true);
+
+    if (hasUnitStateFlag(UNIT_STATE_ROOTED) || getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT))
+        setMoveRoot(true);
+
+    if (hasUnitStateFlag(UNIT_STATE_CONFUSED) || getAuraWithAuraEffect(SPELL_AURA_MOD_CONFUSE))
+        setConfused(true);
+
+    if (hasUnitStateFlag(UNIT_STATE_FLEEING) || getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
+        setFeared(true);
+}
+
+void Unit::setStunned(bool apply)
+{
+    if (apply)
+    {
+        setTargetGuid(0);
+        setUnitFlags(UNIT_FLAG_STUNNED);
+
+        // MOVEMENTFLAG_ROOT cannot be used in conjunction with MOVEMENTFLAG_MASK_MOVING (tested 3.3.5a)
+        // this will freeze clients. That's why we remove MOVEMENTFLAG_MASK_MOVING before
+        // setting MOVEMENTFLAG_ROOT
+        removeUnitMovementFlag(MOVEFLAG_MOVING_MASK);
+        addUnitMovementFlag(MOVEFLAG_ROOTED);
+        stopMoving();
+
+        if (GetTypeFromGUID() == TYPEID_PLAYER)
+            setStandState(STANDSTATE_STAND);
+
+        if (GetTypeFromGUID() == TYPEID_PLAYER)
+        {
+            WorldPacket data(SMSG_FORCE_MOVE_ROOT, 10);
+            data << GetNewGUID();
+            data << 0;
+            SendMessageToSet(&data, true);
+        }
+        else
+        {
+            WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 8);
+            data << 0;
+            SendMessageToSet(&data, true);
+        }
+    }
+    else
+    {
+        if (isAlive() && getThreatManager().getCurrentVictim())
+            setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
+
+        // don't remove UNIT_FLAG_STUNNED for pet when owner is mounted (disabled pet's interface)
+        Unit* owner = GetMapMgrUnit(getCharmerOrOwnerGUID());
+        if (!owner || owner->GetTypeFromGUID() != TYPEID_PLAYER || !owner->ToPlayer()->IsMounted())
+            removeUnitFlags(UNIT_FLAG_STUNNED);
+
+        if (!hasUnitStateFlag(UNIT_STATE_ROOTED))         // prevent moving if it also has root effect
+        {
+            if (GetTypeFromGUID() == TYPEID_PLAYER)
+            {
+                WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 10);
+                data << GetNewGUID();
+                data << 0;
+                SendMessageToSet(&data, true);
+            }
+            else
+            {
+                WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 8);
+                data << GetNewGUID();
+                SendMessageToSet(&data, true);
+            }
+
+            removeUnitMovementFlag(MOVEFLAG_ROOTED);
+        }
+    }
+}
+
+void Unit::setFeared(bool apply)
+{
+    if (apply)
+    {
+        setTargetGuid(0);
+
+        Unit* caster = nullptr;
+        if (const auto fearAura = getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
+            caster = fearAura->GetUnitCaster();
+
+        if (caster == nullptr)
+            caster = GetAIInterface()->getCurrentTarget();
+
+        getMovementManager()->moveFleeing(caster);             // caster == NULL processed in MoveFleeing
+    }
+    else
+    {
+        if (isAlive())
+        {
+            getMovementManager()->remove(FLEEING_MOTION_TYPE);
+            if (getThreatManager().getCurrentVictim())
+                setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
+
+            if (!isPlayer() && !isInCombat() && getTargetGuid() == 0)
+                getMovementManager()->moveTargetedHome();
+            else
+                getMovementManager()->moveChase(getThreatManager().getCurrentVictim());
+        }
+    }
+
+    // block / allow control to real player in control (eg charmer)
+    if (GetTypeFromGUID() == TYPEID_PLAYER)
+    {
+        if (getPlayerOwner())
+            getPlayerOwner()->sendClientControlPacket(this, !apply);
+    }
+}
+
+void Unit::setConfused(bool apply)
+{
+    if (apply)
+    {
+        setTargetGuid(0);
+        getMovementManager()->moveConfused();
+    }
+    else
+    {
+        if (isAlive())
+        {
+            getMovementManager()->remove(CONFUSED_MOTION_TYPE);
+            if (getThreatManager().getCurrentVictim())
+                setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
+        }
+    }
+
+    // block / allow control to real player in control (eg charmer)
+    if (GetTypeFromGUID() == TYPEID_PLAYER)
+    {
+        if (getPlayerOwner())
+            getPlayerOwner()->sendClientControlPacket(this, !apply);
+    }
+}
+
+MovementGeneratorType Unit::getDefaultMovementType() const
+{
+    return IDLE_MOTION_TYPE;
+}
+
+bool Unit::isSplineEnabled() const
+{
+    return movespline->Initialized();
+}
+
+void Unit::jumpTo(float speedXY, float speedZ, bool forward, Optional<LocationVector> dest)
+{
+    float angle = forward ? 0 : float(M_PI);
+    if (dest)
+        angle += getRelativeAngle(*dest);
+
+    if (GetTypeFromGUID() == TYPEID_UNIT)
+        getMovementManager()->moveJumpTo(angle, speedXY, speedZ);
+    else
+    {
+        float vcos = std::cos(angle + GetOrientation());
+        float vsin = std::sin(angle + GetOrientation());
+
+        WorldPacket data(SMSG_MOVE_KNOCK_BACK, (8 + 4 + 4 + 4 + 4 + 4));
+        data << GetNewGUID();
+        data << uint32(0);                                      // Sequence
+        data << vcos << vsin;
+        data << float(speedXY);                                 // Horizontal speed
+        data << float(-speedZ);                                 // Z Movement speed (vertical)
+
+        ToPlayer()->SendPacket(&data);
+    }
+}
+
+void Unit::jumpTo(Object* obj, float speedZ, bool withOrientation)
+{
+    float x, y, z;
+    obj->getNearPoint(this, x, y, z, 0.5f, getAbsoluteAngle(obj->GetPosition()));
+    float speedXY = getExactDist2d(x, y) * 10.0f / speedZ;
+    getMovementManager()->moveJump(x, y, z, getAbsoluteAngle(obj), speedXY, speedZ, EVENT_JUMP, withOrientation);
 }

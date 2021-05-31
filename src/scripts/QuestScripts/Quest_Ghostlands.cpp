@@ -102,7 +102,7 @@ class PrisonersatDeatholme : public CreatureAIScript
     void OnLoad() override
     {
         getCreature()->setStandState(STANDSTATE_DEAD);
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
     }
 };
 

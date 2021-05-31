@@ -299,7 +299,7 @@ const char* ChatHandler::GetMapTypeString(uint8 type)
             return "Continent";
         case INSTANCE_RAID:
             return "Raid";
-        case INSTANCE_NONRAID:
+        case INSTANCE_DUNGEON:
             return "Non-Raid";
         case INSTANCE_BATTLEGROUND:
             return "PvP";

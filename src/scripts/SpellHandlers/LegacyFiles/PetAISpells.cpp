@@ -32,7 +32,7 @@ class ArmyOfTheDeadGhoulAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ArmyOfTheDeadGhoulAI)
     explicit ArmyOfTheDeadGhoulAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
     }
 
     void OnLoad() override
@@ -55,7 +55,7 @@ class ArmyOfTheDeadGhoulAI : public CreatureAIScript
     {
         getCreature()->castSpell(getCreature()->getGuid(), 20480, false);
         RemoveAIUpdateEvent();
-        getCreature()->GetAIInterface()->m_canMove = true;
+        getCreature()->setControlled(false, UNIT_STATE_ROOTED);
     }
 };
 
@@ -85,8 +85,8 @@ class ShadowFiendAI : public CreatureAIScript
                 const auto unitTarget = pet->GetMapMgr()->GetUnit(playerOwner->getTargetGuid());
                 if (unitTarget != nullptr && isAttackable(playerOwner, unitTarget))
                 {
-                    pet->GetAIInterface()->AttackReaction(unitTarget, 1);
-                    pet->GetAIInterface()->setNextTarget(unitTarget);
+                    pet->GetAIInterface()->onHostileAction(unitTarget);
+                    pet->GetAIInterface()->setCurrentTarget(unitTarget);
                 }
             }
         }
@@ -232,7 +232,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        const auto currentTarget = getCreature()->GetAIInterface()->getNextTarget();
+        const auto currentTarget = getCreature()->getThreatManager().getCurrentVictim();
         if (!getCreature()->isCastingSpell() && currentTarget)
         {
             switch (dpsCycle)

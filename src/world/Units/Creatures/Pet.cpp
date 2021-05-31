@@ -1031,9 +1031,9 @@ void Pet::OnPushToWorld()
 
 void Pet::InitializeMe(bool first)
 {
-    GetAIInterface()->Init(this, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, m_Owner);
-    GetAIInterface()->SetUnitToFollow(m_Owner);
-    GetAIInterface()->SetFollowDistance(3.0f);
+    GetAIInterface()->Init(this, AI_SCRIPT_PET, m_Owner);
+    GetAIInterface()->setPetOwner(m_Owner);
+    GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, this, 0);
 
     creature_properties = sMySQLStore.getCreatureProperties(getEntry());
     if (creature_properties == nullptr)
@@ -1062,7 +1062,7 @@ void Pet::InitializeMe(bool first)
             ModDamageDone[SCHOOL_FROST] = (uint32)parentfrost;
         }
         else if (getEntry() == PET_IMP)
-            m_aiInterface->setMeleeDisabled(true);
+            GetAIInterface()->setMeleeDisabled(true);
         else if (getEntry() == PET_FELGUARD)
             setVirtualItemSlotId(MELEE, 12784);
 
@@ -1607,7 +1607,7 @@ void Pet::RemoveSpell(SpellInfo const* sp, [[maybe_unused]]bool showUnlearnSpell
             if ((*it) == itr->second)
             {
                 m_aiInterface->m_spells.erase(it);
-                m_aiInterface->CheckNextSpell(itr->second);
+                m_aiInterface->removeNextSpell(itr->second->spell->getId());
                 break;
             }
         }
@@ -2006,7 +2006,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
                 if (itr == m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end())
                 {
                     if (Util::getMSTime() >= (*itr)->cooldowntime)
-                        m_aiInterface->SetNextSpell(*itr);
+                        m_aiInterface->setNextSpell((*itr)->spell->getId());
                     else
                         return;
                     break;
@@ -2015,8 +2015,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
                 {
                     if ((*itr)->cooldowntime >Util::getMSTime())
                         continue;
-
-                    m_aiInterface->SetNextSpell(*itr);
+                    m_aiInterface->setNextSpell((*itr)->spell->getId());
                 }
             }
         }
@@ -2025,8 +2024,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
             sp = *m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin();
             if (sp->cooldown &&Util::getMSTime() < sp->cooldowntime)
                 return;
-
-            m_aiInterface->SetNextSpell(sp);
+            m_aiInterface->setNextSpell(sp->spell->getId());
         }
 
         return;
@@ -2131,7 +2129,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     }
 
     setDeathState(JUST_DIED);
-    GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, this, 0);
+    GetAIInterface()->enterEvadeMode();
 
     if (getChannelObjectGuid() != 0)
     {
@@ -2181,7 +2179,11 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     pAttacker->smsg_AttackStop(this);
 
-    GetAIInterface()->OnDeath(pAttacker);
+    GetAIInterface()->onDeath(pAttacker);
+
+    // Clear Threat
+    getThreatManager().clearAllThreat();
+    getThreatManager().removeMeFromThreatLists();
 
     {
         //////////////////////////////////////////////////////////////////////////////////////////

@@ -44,7 +44,7 @@ enum Sarathion_Data
     OS_DATA_END = 4
 };
 
-static Movement::Location TSUNAMI_SPAWN[] =
+static LocationVector TSUNAMI_SPAWN[] =
 {
     // Right
     { 3283.215820f, 511.234100f, 59.288776f, 3.148659f },
@@ -56,7 +56,7 @@ static Movement::Location TSUNAMI_SPAWN[] =
     { 3211.609131f, 560.359375f, 59.420803f, 0.000000f },
 };
 
-static Movement::Location TSUNAMI_MOVE[] =
+static LocationVector TSUNAMI_MOVE[] =
 {
     // Left  if right
     { 3211.564697f, 505.982727f, 59.556610f, 3.148659f },

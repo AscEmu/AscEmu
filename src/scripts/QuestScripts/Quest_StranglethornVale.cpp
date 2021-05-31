@@ -52,7 +52,7 @@ public:
         Creature* firstenemy = plr->GetMapMgr()->CreateAndSpawnCreature(1511, -13770.5f, -6.79f, 42.8f, 5.7f);
         if (firstenemy != nullptr)
         {
-            firstenemy->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
+            firstenemy->GetAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
             firstenemy->Despawn(10 * 60 * 1000, 0);
         }
     }
@@ -71,7 +71,7 @@ class Beka : public CreatureAIScript
             Creature* beka1 =mPlayer->GetMapMgr()->CreateAndSpawnCreature(1516, -13770.5f, -6.79f, 42.8f, 5.7f);
             if (beka1 != nullptr)
             {
-                beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
+                beka1->GetAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
                 beka1->SetOrientation(4.07f);
                 beka1->Despawn(10 * 60 * 1000, 0);
             }
@@ -84,7 +84,7 @@ class Beka : public CreatureAIScript
                 Creature* beka1 = mPlayer->GetMapMgr()->CreateAndSpawnCreature(1516, -13770.5f, -6.79f, 42.8f, 5.7f);
                 if (beka1 != nullptr)
                 {
-                    beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
+                    beka1->GetAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
                     beka1->SetOrientation(4.07f);
                     beka1->Despawn(10 * 60 * 1000, 0);
                 }
@@ -106,7 +106,7 @@ class Beka1 : public CreatureAIScript
             Creature* beka1 = mPlayer->GetMapMgr()->CreateAndSpawnCreature(1514, -13770.5f, -6.79f, 42.8f, 5.7f);
             if (beka1 != nullptr)
             {
-                beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
+                beka1->GetAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
                 beka1->SetOrientation(4.07f);
                 beka1->Despawn(10 * 60 * 1000, 0);
             }
@@ -119,7 +119,7 @@ class Beka1 : public CreatureAIScript
                 Creature* beka1 = mPlayer->GetMapMgr()->CreateAndSpawnCreature(1514, -13770.5f, -6.79f, 42.8f, 5.7f);
                 if (beka1 != nullptr)
                 {
-                    beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
+                    beka1->GetAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
                     beka1->SetOrientation(4.07f);
                     beka1->Despawn(10 * 60 * 1000, 0);
                 }
@@ -223,7 +223,7 @@ public:
     }
 };
 
-static Movement::Location MeatSpawnPoints[] =
+static MovementNew::Location MeatSpawnPoints[] =
 {
     { -14655.1f, 148.229f, 3.01744f, 3.45635f},
     { -14655.6f, 146.111f, 2.29463f, 1.43766f},
@@ -235,7 +235,7 @@ static Movement::Location MeatSpawnPoints[] =
     { -14652.2f, 146.926f, 3.63756f, 6.06693f},
     { -14653.0f, 145.274f, 2.76439f, 6.06279f}
 };
-static Movement::Location BottleSpawnPoints[] =
+static MovementNew::Location BottleSpawnPoints[] =
 {
     { -14653.5f, 145.711f, 2.01005f, 1.14750f},
     { -14656.7f, 147.404f, 3.05695f, 1.44181f},
@@ -243,7 +243,7 @@ static Movement::Location BottleSpawnPoints[] =
     { -14657.5f, 147.567f, 2.83560f, 2.14234f},
     { -14655.9f, 148.848f, 3.93732f, 2.79728f}
 };
-static Movement::Location BreadSpawnPoints[] =
+static MovementNew::Location BreadSpawnPoints[] =
 {
     { -14654.6f, 146.299f, 2.04134f, 5.47387f},
     { -14656.5f, 148.372f, 3.50805f, 5.76817f},
@@ -258,21 +258,21 @@ class FacingNegolash : public QuestScript
 
         for (uint8_t i = 0; i < 9; ++i)
         {
-            obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_MEAT, MeatSpawnPoints[i].x, MeatSpawnPoints[i].y, MeatSpawnPoints[i].z, MeatSpawnPoints[i].o, 1);
+            obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_MEAT, MeatSpawnPoints[i].x, MeatSpawnPoints[i].y, MeatSpawnPoints[i].z, MeatSpawnPoints[i].orientation, 1);
             if (obj != nullptr)
                 obj->Despawn(2 * 60 * 1000, 0);
         }
 
         for (uint8_t i = 0; i < 5; ++i)
         {
-            obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_BOTTLE, BottleSpawnPoints[i].x, BottleSpawnPoints[i].y, BottleSpawnPoints[i].z, BottleSpawnPoints[i].o, 1);
+            obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_BOTTLE, BottleSpawnPoints[i].x, BottleSpawnPoints[i].y, BottleSpawnPoints[i].z, BottleSpawnPoints[i].orientation, 1);
             if (obj != nullptr)
                 obj->Despawn(2 * 60 * 1000, 0);
         }
 
         for (uint8_t i = 0; i < 3; ++i)
         {
-            obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_BREAD, BreadSpawnPoints[i].x, BreadSpawnPoints[i].y, BreadSpawnPoints[i].z, BreadSpawnPoints[i].o, 1);
+            obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_BREAD, BreadSpawnPoints[i].x, BreadSpawnPoints[i].y, BreadSpawnPoints[i].z, BreadSpawnPoints[i].orientation, 1);
             if (obj != nullptr)
                 obj->Despawn(2 * 60 * 1000, 0);
         }
@@ -280,7 +280,7 @@ class FacingNegolash : public QuestScript
         Creature* Negolash = pPlayer->GetMapMgr()->CreateAndSpawnCreature(1494, -14657.400391f, 155.115997f, 4.081050f, 0.353429f);
         if (Negolash != nullptr)
         {
-            Negolash->GetAIInterface()->MoveTo(-14647.526367f, 143.710052f, 1.164550f);
+            Negolash->GetAIInterface()->moveTo(-14647.526367f, 143.710052f, 1.164550f);
         }
     }
 };

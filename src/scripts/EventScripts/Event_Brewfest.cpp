@@ -57,8 +57,8 @@ void CorenDirebrewGossip::onSelectOption(Object* pObject, Player* Plr, uint32_t 
         {
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You'll pay for this insult, $c!");
             GossipMenu::senGossipComplete(Plr);
-            pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
-            pCreature->MoveToWaypoint(1);
+
+            pCreature->GetScript()->DoAction(0);
         }break;
     }
 };
@@ -67,13 +67,22 @@ class CorenDirebrew : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CorenDirebrew)
     explicit CorenDirebrew(Creature* pCreature) : CreatureAIScript(pCreature)
-    { }
+    {
+        // whats the correct waypoint ?
+        addWaypoint(1, createWaypoint(1, 0, WAYPOINT_MOVE_TYPE_WALK, pCreature->GetPosition()));
+    }
+
+    void DoAction(int32 const action) override
+    {
+        if(action == 0)
+            setWaypointToMove(1, 1);
+    }
 };
 
 void SetupBrewfest(ScriptMgr* mgr)
 {
     mgr->register_creature_gossip(BOSS_DIREBREW, new CorenDirebrewGossip());
-    //mgr->register_creature_script(BOSS_DIREBREW, CorenDirebrew::Create);
+    mgr->register_creature_script(BOSS_DIREBREW, CorenDirebrew::Create);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

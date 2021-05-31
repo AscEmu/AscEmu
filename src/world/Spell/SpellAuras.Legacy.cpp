@@ -841,7 +841,7 @@ void Aura::SpellAuraModPossess(AuraEffectModifier* /*aurEff*/, bool apply)
             //mob woke up and realized he was controlled. He will turn to controller and also notify the other mobs he is fighting that they should attack the caster
             //sadly i got only 3 test cases about this so i might be wrong :(
             //zack : disabled until tested
-            m_target->GetAIInterface()->EventChangeFaction(caster);
+            m_target->GetAIInterface()->eventChangeFaction(caster);
         }
     }
 }
@@ -866,14 +866,12 @@ void Aura::SpellAuraModConfuse(AuraEffectModifier* aurEff, bool apply)
             return;
         }
         mPositive = false;
-
-        m_target->addUnitStateFlag(UNIT_STATE_CONFUSE);
         m_target->addUnitFlags(UNIT_FLAG_CONFUSED);
-
         m_target->interruptSpell();
 
         m_target->setAItoUse(true);
-        m_target->GetAIInterface()->HandleEvent(EVENT_WANDER, u_caster, 0);
+        m_target->setControlled(true, UNIT_STATE_CONFUSED);
+        m_target->getThreatManager().evaluateSuppressed();
 
         if (p_target)
         {
@@ -885,12 +883,10 @@ void Aura::SpellAuraModConfuse(AuraEffectModifier* aurEff, bool apply)
     }
     else if ((m_flags & (1 << aurEff->getEffectIndex())) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
-        m_target->removeUnitStateFlag(UNIT_STATE_CONFUSE);
+        m_target->setControlled(false, UNIT_STATE_CONFUSED);
         m_target->removeUnitFlags(UNIT_FLAG_CONFUSED);
         if (p_target)
             p_target->SpeedCheatReset();
-
-        m_target->GetAIInterface()->HandleEvent(EVENT_UNWANDER, nullptr, 0);
 
         if (p_target)
         {
@@ -903,7 +899,9 @@ void Aura::SpellAuraModConfuse(AuraEffectModifier* aurEff, bool apply)
                 sHookInterface.OnEnterCombat(p_target, u_caster);
         }
         else
-            m_target->GetAIInterface()->AttackReaction(u_caster, 1, 0);
+        {
+            m_target->GetAIInterface()->onHostileAction(u_caster);
+        }
     }
 }
 
@@ -934,17 +932,15 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
         if (caster->getCharmGuid() != 0)
             return;
 
-        m_target->addUnitStateFlag(UNIT_STATE_CHARM);
+        m_target->addUnitStateFlag(UNIT_STATE_CHARMED);
         m_target->SetCharmTempVal(m_target->getFactionTemplate());
         m_target->SetFaction(caster->getFactionTemplate());
         m_target->updateInRangeOppositeFactionSet();
-        m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, caster);
+        m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_PET, caster);
         m_target->setCharmedByGuid(caster->getGuid());
         caster->setCharmGuid(target->getGuid());
         //damn it, the other effects of enslave demon will agro him on us anyway :S
-        m_target->GetAIInterface()->WipeHateList();
-        m_target->GetAIInterface()->WipeTargetList();
-        m_target->GetAIInterface()->resetNextTarget();
+        m_target->getThreatManager().clearAllThreat();
 
         target->SetEnslaveCount(target->GetEnslaveCount() + 1);
 
@@ -969,12 +965,11 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
     }
     else
     {
-        m_target->removeUnitStateFlag(UNIT_STATE_CHARM);
+        m_target->removeUnitStateFlag(UNIT_STATE_CHARMED);
         m_target->SetFaction(m_target->GetCharmTempVal());
-        m_target->GetAIInterface()->WipeHateList();
-        m_target->GetAIInterface()->WipeTargetList();
+        m_target->getThreatManager().clearAllThreat();
         m_target->updateInRangeOppositeFactionSet();
-        m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
+        m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_AGRO);
         m_target->setCharmedByGuid(0);
 
         if (caster->GetSession() != nullptr)   // crashfix
@@ -1007,12 +1002,9 @@ void Aura::SpellAuraModFear(AuraEffectModifier* aurEff, bool apply)
         }
 
         mPositive = false;
-
-        m_target->addUnitStateFlag(UNIT_STATE_FEAR);
         m_target->addUnitFlags(UNIT_FLAG_FLEEING);
-
         m_target->setAItoUse(true);
-        m_target->GetAIInterface()->HandleEvent(EVENT_FEAR, u_caster, 0);
+        m_target->GetAIInterface()->handleEvent(EVENT_FEAR, u_caster, 0);
         m_target->m_fearmodifiers++;
         if (p_target)
         {
@@ -1028,10 +1020,8 @@ void Aura::SpellAuraModFear(AuraEffectModifier* aurEff, bool apply)
 
         if (m_target->m_fearmodifiers <= 0)
         {
-            m_target->removeUnitStateFlag(UNIT_STATE_FEAR);
             m_target->removeUnitFlags(UNIT_FLAG_FLEEING);
-
-            m_target->GetAIInterface()->HandleEvent(EVENT_UNFEAR, nullptr, 0);
+            m_target->GetAIInterface()->handleEvent(EVENT_UNFEAR, nullptr, 0);
 
             if (p_target)
             {
@@ -1045,7 +1035,9 @@ void Aura::SpellAuraModFear(AuraEffectModifier* aurEff, bool apply)
                 p_target->SpeedCheatReset();
             }
             else
-                m_target->GetAIInterface()->AttackReaction(u_caster, 1, 0);
+            {
+                m_target->GetAIInterface()->onHostileAction(u_caster);
+            }
         }
     }
 }
@@ -1095,26 +1087,26 @@ void Aura::SpellAuraModThreatGenerated(AuraEffectModifier* aurEff, bool apply)
     }
 }
 
-void Aura::SpellAuraModTaunt(AuraEffectModifier* /*aurEff*/, bool apply)
+void Aura::SpellAuraModTaunt(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
 {
     Unit* m_caster = GetUnitCaster();
-    if (!m_caster || !m_caster->isAlive())
+
+    if (!m_caster || !m_caster->isAlive() || !m_target->isAlive() || !m_caster->getThreatManager().canHaveThreatList())
         return;
 
     mPositive = false;
 
-    if (apply)
-    {
-        m_target->GetAIInterface()->AttackReaction(m_caster, 1, 0);
-        m_target->GetAIInterface()->taunt(m_caster, true);
-    }
-    else
-    {
-        if (m_target->GetAIInterface()->getTauntedBy() == m_caster)
-        {
-            m_target->GetAIInterface()->taunt(m_caster, false);
-        }
-    }
+    m_target->getThreatManager().tauntUpdate();
+}
+
+void Aura::SpellAuraModDetaunt(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
+{
+    Unit* caster = GetUnitCaster();
+
+    if (!caster || !caster->isAlive() || !m_target->isAlive() || !caster->getThreatManager().canHaveThreatList())
+        return;
+
+    caster->getThreatManager().tauntUpdate();
 }
 
 void Aura::SpellAuraModStun(AuraEffectModifier* aurEff, bool apply)
@@ -1168,11 +1160,9 @@ void Aura::SpellAuraModStun(AuraEffectModifier* aurEff, bool apply)
         m_target->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
 
         m_target->m_stunned++;
-        m_target->addUnitStateFlag(UNIT_STATE_STUN);
+        m_target->setControlled(true, UNIT_STATE_STUNNED);
         m_target->addUnitFlags(UNIT_FLAG_STUNNED);
-
-        if (m_target->isCreature())
-            m_target->GetAIInterface()->resetNextTarget();
+        m_target->getThreatManager().evaluateSuppressed();
 
         // remove the current spell
         if (m_target->isCastingSpell())
@@ -1200,7 +1190,7 @@ void Aura::SpellAuraModStun(AuraEffectModifier* aurEff, bool apply)
 
         if (m_target->m_stunned == 0)
         {
-            m_target->removeUnitStateFlag(UNIT_STATE_STUN);
+            m_target->setControlled(false, UNIT_STATE_STUNNED);
             m_target->removeUnitFlags(UNIT_FLAG_STUNNED);
         }
 
@@ -1208,12 +1198,13 @@ void Aura::SpellAuraModStun(AuraEffectModifier* aurEff, bool apply)
         if (m_target->isCreature())
         {
             Unit* target = GetUnitCaster();
-            if (m_target->GetAIInterface()->getNextTarget() != nullptr)
-                target = m_target->GetAIInterface()->getNextTarget();
+            if (m_target->GetAIInterface()->getCurrentTarget() != nullptr)
+                target = m_target->GetAIInterface()->getCurrentTarget();
 
             if (target == nullptr)
                 return;
-            m_target->GetAIInterface()->AttackReaction(target, 1, 0);
+
+            m_target->GetAIInterface()->onHostileAction(target, nullptr);
         }
     }
 
@@ -1500,9 +1491,9 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                                 }
                             }
                         }
+                        if(_unit->getThreatManager().canHaveThreatList())
+                            _unit->getThreatManager().clearThreat(m_target);
 
-                        if (_unit->GetAIInterface() != nullptr)
-                            _unit->GetAIInterface()->RemoveThreatByPtr(m_target);
                     }
 
                     for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
@@ -1737,7 +1728,7 @@ void Aura::SpellAuraModResistance(AuraEffectModifier* aurEff, bool apply)
         amt = -aurEff->getEffectDamage();
     Unit* caster = GetUnitCaster();
     if (isNegative() && caster != nullptr && m_target->isCreature())
-        m_target->GetAIInterface()->AttackReaction(caster, 1, getSpellId());
+        m_target->GetAIInterface()->onHostileAction(caster);
 
     switch (getSpellInfo()->getId())
     {
@@ -1832,7 +1823,6 @@ void Aura::SpellAuraModPacify(AuraEffectModifier* /*aurEff*/, bool apply)
             mPositive = false;
 
         m_target->m_pacified++;
-        m_target->addUnitStateFlag(UNIT_STATE_PACIFY);
         m_target->addUnitFlags(UNIT_FLAG_PACIFIED);
     }
     else
@@ -1841,7 +1831,6 @@ void Aura::SpellAuraModPacify(AuraEffectModifier* /*aurEff*/, bool apply)
 
         if (m_target->m_pacified == 0)
         {
-            m_target->removeUnitStateFlag(UNIT_STATE_PACIFY);
             m_target->removeUnitFlags(UNIT_FLAG_PACIFIED);
         }
     }
@@ -1864,7 +1853,7 @@ void Aura::SpellAuraModRoot(AuraEffectModifier* aurEff, bool apply)
         m_target->m_rootCounter++;
 
         if (m_target->m_rootCounter == 1)
-            m_target->setMoveRoot(true);
+            m_target->setControlled(true, UNIT_STATE_ROOTED);
 
         //warrior talent - second wind triggers on stun and immobilize. This is not used as proc to be triggered always !
         Unit* caster = GetUnitCaster();
@@ -1885,10 +1874,10 @@ void Aura::SpellAuraModRoot(AuraEffectModifier* aurEff, bool apply)
         m_target->m_rootCounter--;
 
         if (m_target->m_rootCounter == 0)
-            m_target->setMoveRoot(false);
+            m_target->setControlled(false, UNIT_STATE_ROOTED);
 
         if (m_target->isCreature())
-            m_target->GetAIInterface()->AttackReaction(GetUnitCaster(), 1, 0);
+            m_target->GetAIInterface()->onHostileAction(GetUnitCaster());
 
         if (getSpellInfo()->getSchoolMask() & SCHOOL_MASK_FROST && !--m_target->asc_frozen)
             m_target->removeAuraStateAndAuras(AURASTATE_FLAG_FROZEN);
@@ -1900,7 +1889,6 @@ void Aura::SpellAuraModSilence(AuraEffectModifier* /*aurEff*/, bool apply)
     if (apply)
     {
         m_target->m_silenced++;
-        m_target->addUnitStateFlag(UNIT_STATE_SILENCE);
         m_target->addUnitFlags(UNIT_FLAG_SILENCED);
 
         // Interrupt target's current casted spell (either channeled or generic spell with cast time)
@@ -1923,7 +1911,6 @@ void Aura::SpellAuraModSilence(AuraEffectModifier* /*aurEff*/, bool apply)
 
         if (m_target->m_silenced == 0)
         {
-            m_target->removeUnitStateFlag(UNIT_STATE_SILENCE);
             m_target->removeUnitFlags(UNIT_FLAG_SILENCED);
         }
     }
@@ -2399,6 +2386,7 @@ void Aura::SpellAuraModSchoolImmunity(AuraEffectModifier* aurEff, bool apply)
                 m_target->RemoveAurasOfSchool(i, false, true);
             }
         }
+        m_target->getThreatManager().evaluateSuppressed();
     }
     else
     {
@@ -2413,9 +2401,10 @@ void Aura::SpellAuraModSchoolImmunity(AuraEffectModifier* aurEff, bool apply)
     }
 }
 
-void Aura::SpellAuraModDmgImmunity(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
+void Aura::SpellAuraModDmgImmunity(AuraEffectModifier* /*aurEff*/, bool apply)
 {
-
+    if (apply)
+        m_target->getThreatManager().evaluateSuppressed();
 }
 
 void Aura::SpellAuraModDispelImmunity(AuraEffectModifier* aurEff, bool apply)
@@ -2767,7 +2756,6 @@ void Aura::SpellAuraPacifySilence(AuraEffectModifier* /*aurEff*/, bool apply)
 
         m_target->m_pacified++;
         m_target->m_silenced++;
-        m_target->addUnitStateFlag(UNIT_STATE_PACIFY | UNIT_STATE_SILENCE);
         m_target->addUnitFlags(UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
 
         if (m_target->isCastingSpell())
@@ -2781,7 +2769,6 @@ void Aura::SpellAuraPacifySilence(AuraEffectModifier* /*aurEff*/, bool apply)
 
         if (m_target->m_pacified == 0)
         {
-            m_target->removeUnitStateFlag(UNIT_STATE_PACIFY);
             m_target->removeUnitFlags(UNIT_FLAG_PACIFIED);
         }
 
@@ -2789,7 +2776,6 @@ void Aura::SpellAuraPacifySilence(AuraEffectModifier* /*aurEff*/, bool apply)
 
         if (m_target->m_silenced == 0)
         {
-            m_target->removeUnitStateFlag(UNIT_STATE_SILENCE);
             m_target->removeUnitFlags(UNIT_FLAG_SILENCED);
         }
     }
@@ -2864,9 +2850,8 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
                         removeAura();
                         return;
                     }
-
                     if (u->isCreature())
-                        u->GetAIInterface()->RemoveThreatByPtr(p_target);
+                        u->getThreatManager().clearThreat(p_target);
 
                     //if this is player and targeting us then we interrupt cast
                     if (u->isPlayer())
@@ -2883,8 +2868,8 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
 
             p_target->removeUnitFlags(UNIT_FLAG_COMBAT);
 
-            if (p_target->hasUnitStateFlag(UNIT_STATE_ATTACKING))
-                p_target->removeUnitStateFlag(UNIT_STATE_ATTACKING);
+            /*if (p_target->hasUnitStateFlag(UNIT_STATE_ATTACKING))
+                p_target->removeUnitStateFlag(UNIT_STATE_ATTACKING);*/
 
             p_target->SendPacket(SmsgCancelCombat().serialise().get());
 
@@ -2944,7 +2929,6 @@ void Aura::SpellAuraModDisarm(AuraEffectModifier* aurEff, bool apply)
         mPositive = false;
 
         m_target->disarmed = true;
-        m_target->addUnitStateFlag(UNIT_STATE_DISARMED);
 
         if (field == UnitFlag)
             m_target->addUnitFlags(flag);
@@ -2956,7 +2940,6 @@ void Aura::SpellAuraModDisarm(AuraEffectModifier* aurEff, bool apply)
     else
     {
         m_target->disarmed = false;
-        m_target->removeUnitStateFlag(UNIT_STATE_DISARMED);
 
         if (field == UnitFlag)
             m_target->removeUnitFlags(flag);

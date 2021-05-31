@@ -25,15 +25,15 @@
 
 pAIEvent AIEventHandlers[NUM_AI_EVENTS] =
 {
-    &AIInterface::EventEnterCombat,
-    &AIInterface::EventLeaveCombat,
-    &AIInterface::EventDamageTaken,
-    &AIInterface::EventFear,
-    &AIInterface::EventUnfear,
-    &AIInterface::EventFollowOwner,
-    &AIInterface::EventWander,
-    &AIInterface::EventUnwander,
-    &AIInterface::EventUnitDied,
-    &AIInterface::EventHostileAction,
-    &AIInterface::EventForceRedirected,
+    &AIInterface::eventEnterCombat,
+    &AIInterface::eventLeaveCombat,
+    &AIInterface::eventDamageTaken,
+    &AIInterface::eventFear,
+    &AIInterface::eventUnfear,
+    &AIInterface::eventFollowOwner,
+    &AIInterface::eventWander,
+    &AIInterface::eventUnwander,
+    &AIInterface::eventUnitDied,
+    &AIInterface::eventHostileAction,
+    &AIInterface::eventForceRedirected,
 };

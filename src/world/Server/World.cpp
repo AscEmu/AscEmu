@@ -33,6 +33,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Packets/SmsgAreaTriggerMessage.h"
 #include "Packets/SmsgZoneUnderAttack.h"
 #include "OpcodeTable.hpp"
+#include "Units/Creatures/CreatureGroups.h"
+#include "Movement/WaypointManager.h"
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"
@@ -674,6 +676,10 @@ bool World::setInitialWorldSettings()
 {
     auto startTime = Util::TimeNow();
 
+    (new IdleMovementFactory())->registerSelf();
+    (new RandomMovementFactory())->registerSelf();
+    (new WaypointMovementFactory())->registerSelf();
+
     Player::InitVisibleUpdateBits();
 
     resetCharacterLoginBannState();
@@ -787,6 +793,7 @@ void World::loadMySQLStores()
 
     sMySQLStore.loadItemPagesTable();
     sMySQLStore.loadItemPropertiesTable();
+    sMySQLStore.loadCreaturePropertiesMovementTable();
     sMySQLStore.loadCreaturePropertiesTable();
     sMySQLStore.loadGameObjectPropertiesTable();
     sMySQLStore.loadQuestPropertiesTable();
@@ -829,7 +836,6 @@ void World::loadMySQLStores()
     sMySQLStore.loadAreaTriggerTable();
     sMySQLStore.loadWordFilterCharacterNames();
     sMySQLStore.loadWordFilterChat();
-    sMySQLStore.loadCreatureFormationsTable();
 
     sMySQLStore.loadLocalesCreature();
     sMySQLStore.loadLocalesGameobject();
@@ -852,6 +858,11 @@ void World::loadMySQLStores()
     sMySQLStore.loadTransportEntrys();
     sMySQLStore.loadGossipMenuItemsTable();
     sMySQLStore.loadRecallTable();
+
+    sFormationMgr->loadCreatureFormations();
+    sWaypointMgr->load();
+    sWaypointMgr->loadCustomWaypoints();
+    sObjectMgr.loadCreatureMovementOverrides();
 }
 
 void World::loadMySQLTablesByTask()
@@ -882,8 +893,6 @@ void World::loadMySQLTablesByTask()
     MAKE_TASK(MySQLDataStore, loadGameobjectSpawns);
 
     MAKE_TASK(ObjectMgr, LoadInstanceEncounters);
-
-    MAKE_TASK(ObjectMgr, LoadCreatureWaypoints);
     MAKE_TASK(ObjectMgr, LoadCreatureTimedEmotes);
     MAKE_TASK(ObjectMgr, LoadTrainers);
     MAKE_TASK(ObjectMgr, LoadSpellSkills);

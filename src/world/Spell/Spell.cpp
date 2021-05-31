@@ -644,12 +644,12 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
     // TODO: in the future, consider having two damage variables; one for integer and one for float
     damage = effDamage;
 
-    // todo: this is not how it should be done
+    // Add initial threat
+    // Real threat is sent in damage code, in heal code or in apply aura code
     if (getUnitCaster() != nullptr && GetUnitTarget() != nullptr && GetUnitTarget()->isCreature()
         && targetType & SPELL_TARGET_REQUIRE_ATTACKABLE && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
     {
-        GetUnitTarget()->GetAIInterface()->AttackReaction(getUnitCaster(), 1, 0);
-        GetUnitTarget()->GetAIInterface()->HandleEvent(EVENT_HOSTILEACTION, getUnitCaster(), 0);
+        GetUnitTarget()->GetAIInterface()->onHostileAction(getUnitCaster());
     }
 
     // Clear DamageInfo before effect
@@ -715,6 +715,10 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
 
 void Spell::handleMissedTarget(SpellTargetMod const missedTarget)
 {
+    // No need to handle this target if it was in evade mode
+    if (missedTarget.hitResult == SPELL_DID_HIT_EVADE)
+        return;
+
     const auto didReflect = missedTarget.hitResult == SPELL_DID_HIT_REFLECT && missedTarget.extendedHitResult == SPELL_DID_HIT_SUCCESS;
 
     auto travelTime = _getSpellTravelTimeForTarget(missedTarget.targetGuid);
@@ -783,8 +787,7 @@ void Spell::handleMissedEffect(const uint64_t targetGuid)
         if (u_caster != nullptr && targetUnit->isCreature() && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
         {
             // Let target creature know that someone tried to cast spell on it
-            static_cast<Creature*>(targetUnit)->GetAIInterface()->AttackReaction(u_caster, 0, 0);
-            static_cast<Creature*>(targetUnit)->GetAIInterface()->HandleEvent(EVENT_HOSTILEACTION, u_caster, 0);
+            static_cast<Creature*>(targetUnit)->GetAIInterface()->onHostileAction(u_caster);
         }
 
         // Call scripted after spell missed hook
@@ -1845,7 +1848,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // Check if spell can be casted in heroic dungeons or in raids
         if (getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_NOT_IN_RAIDS_OR_HEROIC_DUNGEONS)
         {
-            if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && (p_caster->GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID || p_caster->GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC))
+            if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && (p_caster->GetMapMgr()->GetMapInfo()->isRaid() || p_caster->GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC))
             {
 #if VERSION_STRING < WotLK
                 return SPELL_FAILED_NOT_HERE;
@@ -2383,7 +2386,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_CANT_DUEL_WHILE_INVISIBLE;
 
                 // Check if caster is in dungeon or raid
-                if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && p_caster->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL)
+                if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && !p_caster->GetMapMgr()->GetMapInfo()->isNonInstanceMap())
                     return SPELL_FAILED_NO_DUELING;
 
                 const auto targetPlayer = p_caster->GetMapMgrPlayer(m_targets.getUnitTarget());
@@ -2404,7 +2407,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_TARGET_NOT_IN_RAID;
 
                 // Check if caster is in an instance map
-                if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && p_caster->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL)
+                if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && !p_caster->GetMapMgr()->GetMapInfo()->isNonInstanceMap())
                 {
                     if (!p_caster->IsInMap(targetPlayer))
                         return SPELL_FAILED_TARGET_NOT_IN_INSTANCE;
@@ -2422,7 +2425,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     }
 
                     // Check if caster is in a battleground
-                    if (mapInfo->type == INSTANCE_BATTLEGROUND || p_caster->m_bg != nullptr)
+                    if (mapInfo->isBattleground() || p_caster->m_bg != nullptr)
                     {
 #if VERSION_STRING == Classic
                         return SPELL_FAILED_NOT_HERE;
@@ -2512,7 +2515,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (worldConfig.terrainCollision.isPathfindingEnabled)
                 {
                     // Check if caster is able to create path to target
-                    if (!u_caster->GetAIInterface()->CanCreatePath(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
+                    if (!u_caster->GetAIInterface()->canCreatePath(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
                         return SPELL_FAILED_NOPATH;
                 }
             } break;
@@ -3735,7 +3738,7 @@ SpellCastResult Spell::checkCasterState() const
     };
 
     SpellCastResult errorMsg = SPELL_CAST_SUCCESS;
-    if (u_caster->hasUnitStateFlag(UNIT_STATE_STUN))
+    if (u_caster->hasUnitStateFlag(UNIT_STATE_STUNNED))
     {
         if (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_STUNNED)
         {
@@ -3763,19 +3766,19 @@ SpellCastResult Spell::checkCasterState() const
             errorMsg = SPELL_FAILED_STUNNED;
         }
     }
-    else if (u_caster->hasUnitStateFlag(UNIT_STATE_CONFUSE) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED))
+    else if (u_caster->hasUnitStateFlag(UNIT_STATE_CONFUSED) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED))
     {
         errorMsg = SPELL_FAILED_CONFUSED;
     }
-    else if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_FEARED))
+    else if (u_caster->hasUnitStateFlag(UNIT_STATE_FLEEING) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_FEARED))
     {
         errorMsg = SPELL_FAILED_FLEEING;
     }
-    else if (u_caster->hasUnitStateFlag(UNIT_STATE_SILENCE) && getSpellInfo()->getPreventionType() == PREVENTION_TYPE_SILENCE)
+    else if (u_caster->hasUnitFlags(UNIT_FLAG_SILENCED) && getSpellInfo()->getPreventionType() == PREVENTION_TYPE_SILENCE)
     {
         errorMsg = SPELL_FAILED_SILENCED;
     }
-    else if (u_caster->hasUnitStateFlag(UNIT_STATE_PACIFY) && getSpellInfo()->getPreventionType() == PREVENTION_TYPE_PACIFY)
+    else if (u_caster->hasUnitStateFlag(UNIT_FLAG_PACIFIED) && getSpellInfo()->getPreventionType() == PREVENTION_TYPE_PACIFY)
     {
         errorMsg = SPELL_FAILED_PACIFIED;
     }

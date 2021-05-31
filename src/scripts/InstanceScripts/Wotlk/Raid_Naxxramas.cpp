@@ -481,11 +481,11 @@ void NaxxramasFollowerAI::Destroy()
 //    NaxxramasFollowerAI* NaxxramasFollower = (pCreatureAI != NULL) ? static_cast< NaxxramasFollowerAI* >(pCreatureAI) : NULL;
 //    if (NaxxramasFollower != NULL)
 //    {
-//        Unit* CurrentTarget = NaxxramasFollower->getCreature()->GetAIInterface()->getNextTarget();
+//        Unit* CurrentTarget = NaxxramasFollower->getCreature()->getThreatManager().getCurrentVictim();
 //        if (CurrentTarget != NULL && CurrentTarget != pTarget)
 //        {
-//            NaxxramasFollower->getCreature()->GetAIInterface()->AttackReaction(pTarget, 500);
-//            NaxxramasFollower->getCreature()->GetAIInterface()->setNextTarget(pTarget);
+//            NaxxramasFollower->getCreature()->GetAIInterface()->onHostileAction(pTarget, 500);
+//            NaxxramasFollower->getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
 //        }
 //
 //        NaxxramasFollower->castSpell(NaxxramasFollower->mCharge);
@@ -866,7 +866,7 @@ void AnubRekhanAI::Destroy()
 //    AnubRekhanAI* AnubRekhan = (pCreatureAI != NULL) ? static_cast< AnubRekhanAI* >(pCreatureAI) : NULL;
 //    if (AnubRekhan != NULL)
 //    {
-//        std::vector<std::pair< Player* , Movement::Location > > PlayerCorpses;
+//        std::vector<std::pair< Player* , LocationVector > > PlayerCorpses;
 //        Player* PlayerPtr = NULL;
 //        LocationVector spawnLocation;
 //        for (const auto& Iter : AnubRekhan->getCreature()->getInRangePlayersSet())
@@ -903,7 +903,7 @@ void AnubRekhanAI::Destroy()
 //            if (AnubRekhan->getCreature()->CalcDistance(spawnLocation) > 60.0f)
 //                continue;
 //
-//            Movement::Location ObjectCoords;
+//            LocationVector ObjectCoords;
 //            ObjectCoords.x = spawnLocation.x;
 //            ObjectCoords.y = spawnLocation.y;
 //            ObjectCoords.z = spawnLocation.z;
@@ -1113,7 +1113,7 @@ void EyeStalkerAI::OnCombatStart(Unit* /*pTarget*/)
 
 void EyeStalkerAI::AIUpdate()
 {
-    Unit* CurrentTarget = getCreature()->GetAIInterface()->getNextTarget();
+    Unit* CurrentTarget = getCreature()->getThreatManager().getCurrentVictim();
     if (!_isCasting() && CurrentTarget != NULL)
     {
         float MaxRange = 45.0f;
@@ -1125,11 +1125,12 @@ void EyeStalkerAI::AIUpdate()
             Unit* NewTarget = getBestUnitTarget(TargetFilter_Closest);
             if (NewTarget != NULL && getRangeToObject(NewTarget) <= MaxRange)
             {
-                getCreature()->GetAIInterface()->setNextTarget(NewTarget);
-                getCreature()->GetAIInterface()->AttackReaction(NewTarget, 200);
+                getCreature()->GetAIInterface()->setCurrentTarget(NewTarget);
+                getCreature()->GetAIInterface()->onHostileAction(NewTarget);
+                getCreature()->getThreatManager().addThreat(NewTarget, 200.f);
             }
 
-            getCreature()->GetAIInterface()->RemoveThreatByPtr(CurrentTarget);
+            getCreature()->getThreatManager().clearThreat(CurrentTarget);
         }
     }
 
@@ -1459,9 +1460,9 @@ void NothThePlaguebringerAI::Destroy()
 //        Noth->getCreature()->SetPosition(2684.620850f, -3502.447266f, 261.314880f, 0.098174f);
 //
 //        if (pTarget != NULL)
-//            Noth->getCreature()->GetAIInterface()->AttackReaction(pTarget, 200);
+//            Noth->getCreature()->GetAIInterface()->onHostileAction(pTarget, 200);
 //
-//        Noth->getCreature()->GetAIInterface()->setNextTarget(pTarget);
+//        Noth->getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
 //    }
 //}
 //
@@ -1488,9 +1489,9 @@ void NothThePlaguebringerAI::Destroy()
 //        Noth->getCreature()->SetPosition(NewX, NewY, Noth->getCreature()->GetPositionZ(), Angle);
 //        Noth->_clearHateList();
 //        if (pTarget != NULL)
-//            Noth->getCreature()->GetAIInterface()->AttackReaction(pTarget, 500);
+//            Noth->getCreature()->GetAIInterface()->onHostileAction(pTarget, 500);
 //
-//        Noth->getCreature()->GetAIInterface()->setNextTarget(pTarget);
+//        Noth->getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
 //    }
 //}
 
@@ -2102,7 +2103,7 @@ void PortalOfShadowsAI::OnCombatStop(Unit* /*pTarget*/)
 
 void PortalOfShadowsAI::AIUpdate()
 {
-    if (mShadeAI != nullptr && mShadeAI->getCreature()->GetAIInterface()->getNextTarget() != nullptr)
+    if (mShadeAI != nullptr && mShadeAI->getCreature()->getThreatManager().getCurrentVictim() != nullptr)
     {
         if (_isTimerFinished(mSpawnTimer))
         {
@@ -2158,8 +2159,8 @@ NecroKnightAI::NecroKnightAI(Creature* pCreature) : CreatureAIScript(pCreature)
 //    {
 //        NecroKnight->_applyAura(NECRO_KNIGHT_BLINK);
 //        NecroKnight->getCreature()->SetPosition(pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), NecroKnight->getCreature()->GetOrientation());
-//        NecroKnight->getCreature()->GetAIInterface()->AttackReaction(pTarget, 500);
-//        NecroKnight->getCreature()->GetAIInterface()->setNextTarget(pTarget);
+//        NecroKnight->getCreature()->GetAIInterface()->onHostileAction(pTarget, 500);
+//        NecroKnight->getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
 //    }
 //}
 

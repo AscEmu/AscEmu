@@ -43,6 +43,7 @@ class InstanceScript;
 class Summon;
 class DynamicObject;
 class Unit;
+class CreatureGroup;
 
 extern Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
 
@@ -162,6 +163,8 @@ public:
     // Terrain Functions
     float GetLandHeight(float x, float y, float z);
 
+    float getWaterOrGroundLevel(uint32 phasemask, float x, float y, float z, float* ground = nullptr, bool swim = false, float collisionHeight = 2.03128f); // DEFAULT_COLLISION_HEIGHT in Object.h
+
     float GetADTLandHeight(float x, float y);
 
     bool IsUnderground(float x, float y, float z);
@@ -171,6 +174,10 @@ public:
     float GetLiquidHeight(float x, float y);
 
     uint8 GetLiquidType(float x, float y);
+
+    bool isUnderWater(float x, float y, float z);
+
+    ZLiquidStatus getLiquidStatus(uint32 phaseMask, float x, float y, float z, uint8 ReqLiquidType, LiquidData* data = nullptr, float collisionHeight = 2.03128f); // DEFAULT_COLLISION_HEIGHT in Object.h
 
     const ::DBC::Structures::AreaTableEntry* GetArea(float x, float y, float z);
 
@@ -294,6 +301,8 @@ public:
     GameObject* GetSqlIdGameObject(uint32 sqlid);
     std::deque<uint32> _reusable_guids_gameobject;
     std::deque<uint32> _reusable_guids_creature;
+
+    std::unordered_map<uint32_t /*leaderSpawnId*/, CreatureGroup*> CreatureGroupHolder;
 
     bool forced_expire;
     bool thread_kill_only;

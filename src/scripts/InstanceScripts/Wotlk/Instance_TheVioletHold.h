@@ -5,11 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-static Movement::LocationWithFlag AttackerWP[] =
+static LocationVector AttackerWP[] =
 {
     {}, // 0
-    { 1858.077f, 804.8599f, 44.00872f, 0.0f, Movement::WP_MOVE_TYPE_RUN }, // Run to middle of entrance platform
-    { 1836.152f, 804.7064f, 44.2534f, 0.0f, Movement::WP_MOVE_TYPE_RUN } // Run to door to attack it
+    { 1858.077f, 804.8599f, 44.00872f, 0.0f }, // Run to middle of entrance platform
+    { 1836.152f, 804.7064f, 44.2534f, 0.0f } // Run to door to attack it
 };
 
 const LocationVector IntroPortals[] =
@@ -62,7 +62,7 @@ const int VHIntroMobs[] =
     CN_INTRO_AZURE_SPELLBREAKER_ARCANE,
 };
 
-const Movement::Location VHPortalLocations[] =
+const LocationVector VHPortalLocations[] =
 {
     { 1877.51f, 850.104f, 44.6599f, 4.7822f  },
     { 1918.37f, 853.437f, 47.1624f, 4.12294f },

@@ -1634,7 +1634,7 @@ public:
 
         RELEASE_LOCK
         uint32_t iid = getCreature()->GetInstanceID();
-        if (getCreature()->GetMapMgr() == nullptr || getCreature()->GetMapMgr()->GetMapInfo()->type == INSTANCE_NULL)
+        if (getCreature()->GetMapMgr() == nullptr || getCreature()->GetMapMgr()->GetMapInfo()->isNonInstanceMap())
             iid = 0;
 
         WoWGuid wowGuid;

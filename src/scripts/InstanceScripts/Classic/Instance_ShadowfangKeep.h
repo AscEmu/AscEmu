@@ -124,7 +124,7 @@ enum SFK_spellEntries : uint32_t
 
 // On death event Arugal summons serveral void walkers
 const uint8_t ArugalVoidCount = 4;
-static Movement::Location voidwalkerSpawns[ArugalVoidCount] =
+static LocationVector voidwalkerSpawns[ArugalVoidCount] =
 {
     { -154.274368f, 2177.196533f, 128.448517f, 5.760980f },
     { -142.647537f, 2181.019775f, 128.448410f, 4.178475f },
@@ -135,48 +135,11 @@ static Movement::Location voidwalkerSpawns[ArugalVoidCount] =
 const uint32_t prisonerGossipOptionID = 606;
 
 // Deathstalker Adamant (entry: 3849) waypoints
-const uint8_t adamantWpCount = 31;
-const Movement::LocationWithFlag DeathstalkerAdamantWPS[adamantWpCount] =
-{
-    // Walking to gates
-    { -250.923f, 2116.26f, 81.179f, 0, Movement::WP_MOVE_TYPE_WALK },    // 1
-    { -255.049f, 2119.39f, 81.179f, 0, Movement::WP_MOVE_TYPE_WALK },    // 2
-    { -254.129f, 2123.45f, 81.179f, 0, Movement::WP_MOVE_TYPE_WALK },    // 3
-    { -253.898f, 2130.87f, 81.179f, 0, Movement::WP_MOVE_TYPE_WALK },    // 4
-    { -249.889f, 2142.31f, 86.972f, 0, Movement::WP_MOVE_TYPE_WALK },    // 5
-    { -248.205f, 2144.02f, 87.013f, 0, Movement::WP_MOVE_TYPE_WALK },    // 6
-    { -240.553f, 2140.55f, 87.012f, 0, Movement::WP_MOVE_TYPE_WALK },    // 7
-    { -237.514f, 2142.07f, 87.012f, 0, Movement::WP_MOVE_TYPE_WALK },    // 8
-    { -235.638f, 2149.23f, 90.587f, 0, Movement::WP_MOVE_TYPE_WALK },    // 9
-    { -237.188f, 2151.95f, 90.624f, 0, Movement::WP_MOVE_TYPE_WALK },    // 10
-    { -239.075424f, 2155.250244f, 90.624168f, 0, Movement::WP_MOVE_TYPE_WALK },    // 11
-
-    // Running out of dungeon
-    { -208.764f, 2141.6f, 90.6257f, 0, Movement::WP_MOVE_TYPE_RUN },     // 12
-    { -206.441f, 2143.51f, 90.4287f, 0, Movement::WP_MOVE_TYPE_RUN },    // 13
-    { -203.715f, 2145.85f, 88.7052f, 0, Movement::WP_MOVE_TYPE_RUN },    // 14
-    { -199.199f, 2144.88f, 86.501f, 0, Movement::WP_MOVE_TYPE_RUN },     // 15
-    { -195.798f, 2143.58f, 86.501f, 0, Movement::WP_MOVE_TYPE_RUN },     // 16
-    { -190.029f, 2141.38f, 83.2712f, 0, Movement::WP_MOVE_TYPE_RUN },    // 17
-    { -189.353f, 2138.65f, 83.1102f, 0, Movement::WP_MOVE_TYPE_RUN },    // 18
-    { -190.304f, 2135.73f, 81.5288f, 0, Movement::WP_MOVE_TYPE_RUN },    // 19
-    { -207.325f, 2112.43f, 81.0548f, 0, Movement::WP_MOVE_TYPE_RUN },    // 20
-    { -208.754f, 2109.9f, 81.0527f, 0, Movement::WP_MOVE_TYPE_RUN },     // 21
-    { -206.248f, 2108.62f, 81.0555f, 0, Movement::WP_MOVE_TYPE_RUN },    // 22
-    { -202.017f, 2106.64f, 78.6836f, 0, Movement::WP_MOVE_TYPE_RUN },    // 23
-    { -200.928f, 2104.49f, 78.5569f, 0, Movement::WP_MOVE_TYPE_RUN },    // 24
-    { -201.845f, 2101.17f, 76.9256f, 0, Movement::WP_MOVE_TYPE_RUN },    // 25
-    { -202.844f, 2100.11f, 76.8911f, 0, Movement::WP_MOVE_TYPE_RUN },    // 26
-    { -213.326f, 2105.83f, 76.8925f, 0, Movement::WP_MOVE_TYPE_RUN },    // 27
-    { -226.993f, 2111.47f, 76.8892f, 0, Movement::WP_MOVE_TYPE_RUN },    // 28
-    { -227.955f, 2112.34f, 76.8895f, 0, Movement::WP_MOVE_TYPE_RUN },    // 39
-    { -229.159378f, 2109.524170f, 76.889519f, 0, Movement::WP_MOVE_TYPE_RUN },    // 30
-    { }                                                                  // 31 (unused)
-};
+const uint32_t waypoint_script = 1;
 
 // Sorcerer Ashcrombe (entry: 3850) waypoints
 const uint8_t ashcrombeWpCount = 11;
-const Movement::Location SorcererAshcrombeWPS[ashcrombeWpCount] =
+const LocationVector SorcererAshcrombeWPS[ashcrombeWpCount] =
 {
     { -252.528229f, 2126.949951f, 81.179657f, 0 },   // 1
     { -253.898f, 2130.87f, 81.179f, 0 },             // 2
@@ -192,5 +155,5 @@ const Movement::Location SorcererAshcrombeWPS[ashcrombeWpCount] =
 };
 
 // Arugal intro 2 (event after nendos death)
-const Movement::Location ArugalAtFenrusLoc = { -137.657944f, 2169.928467f, 136.57781f, 2.826001f };
+const LocationVector ArugalAtFenrusLoc = { -137.657944f, 2169.928467f, 136.57781f, 2.826001f };
 

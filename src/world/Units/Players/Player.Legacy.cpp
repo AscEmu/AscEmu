@@ -240,6 +240,9 @@ Player::Player(uint32 guid)
     m_valuesCount = getSizeOfStructure(WoWPlayer);
     //////////////////////////////////////////////////////////////////////////
 
+    for (uint8_t x = 0; x < MAX_SPEED_TYPE; ++x)
+        m_forced_speed_changes[x] = 0;
+
     //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
     m_uint32Values = _fields;
 
@@ -1177,7 +1180,8 @@ void Player::_EventCharmAttack()
         sLogger.failure("WORLD: " I64FMT " doesn't exist.", getTargetGuid());
         sLogger.info("Player::Update:  No valid current selection to attack, stopping attack");
         this->interruptHealthRegeneration(5000); //prevent clicking off creature for a quick heal
-        removeUnitStateFlag(UNIT_STATE_ATTACKING);
+        // todo
+        //removeUnitStateFlag(UNIT_STATE_ATTACKING);
         EventAttackStop();
     }
     else
@@ -1212,7 +1216,7 @@ void Player::_EventCharmAttack()
         else
         {
             //if (pVictim->getObjectTypeId() == TYPEID_UNIT)
-            //    pVictim->GetAIInterface()->StopMovement(5000);
+            //    pVictim->PauseMovement(5000);
 
             //pvp timeout reset
             /*if (pVictim->isPlayer())
@@ -1399,8 +1403,9 @@ void Player::_EventExploration()
 
 void Player::EventDeath()
 {
-    if (hasUnitStateFlag(UNIT_STATE_ATTACKING))
-        EventAttackStop();
+    // todo
+    //if (hasUnitStateFlag(UNIT_STATE_ATTACKING))
+    //    EventAttackStop();
 
     if (m_onTaxi)
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_DISMOUNT);
@@ -3608,6 +3613,8 @@ void Player::OnPushToWorld()
     // set fly if cheat is active
     setMoveCanFly(m_cheats.hasFlyCheat);
 
+    getMovementManager()->initialize();
+
     // Update PVP Situation
     LoginPvPSetup();
     setPvpFlags(getPvpFlags() &~(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY));
@@ -3760,8 +3767,6 @@ void Player::RemoveFromWorld()
 
     //clear buyback
     getItemInterface()->EmptyBuyBack();
-
-    getSplineMgr().clearSplinePackets();
 
     getSummonInterface()->removeAllSummons();
     DismissActivePets();
@@ -4312,7 +4317,7 @@ void Player::RepopRequestedPlayer()
         pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
         if (pMapinfo != nullptr)
         {
-            if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
+            if (pMapinfo->isNonInstanceMap() || pMapinfo->isBattleground())
                 RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
             else
                 RepopAtGraveyard(pMapinfo->repopx, pMapinfo->repopy, pMapinfo->repopz, pMapinfo->repopmapid);
@@ -5245,10 +5250,6 @@ void Player::addToInRangeObjects(Object* pObj)
     }
 
     Unit::addToInRangeObjects(pObj);
-
-    //if the object is a unit send a move packet if they have a destination
-    if (pObj->isCreature())
-        static_cast< Creature* >(pObj)->GetAIInterface()->SendCurrentMove(this);
 }
 
 void Player::onRemoveInRangeObject(Object* pObj)
@@ -6072,6 +6073,7 @@ void Player::RegenerateHealth(bool inCombat)
 
     // While polymorphed health is regenerated rapidly
     // Exact value is yet unknown but it's roughly 10% of health per sec
+    // todo
     if (hasUnitStateFlag(UNIT_STATE_POLYMORPHED))
         amt += getMaxHealth() * 0.10f;
 
@@ -6765,18 +6767,20 @@ void Player::EndDuel(uint8 WinCondition)
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
         (*itr)->CombatStatus.Vanished();
-        (*itr)->GetAIInterface()->SetUnitToFollow(this);
-        (*itr)->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, *itr, 0);
-        (*itr)->GetAIInterface()->WipeTargetList();
+        (*itr)->GetAIInterface()->setPetOwner(this);
+        (*itr)->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
+        (*itr)->getThreatManager().clearAllThreat();
+        (*itr)->getThreatManager().removeMeFromThreatLists();
     }
 
     std::list<Pet*> duelingWithSummons = DuelingWith->GetSummons();
     for (std::list<Pet*>::iterator itr = duelingWithSummons.begin(); itr != duelingWithSummons.end(); ++itr)
     {
         (*itr)->CombatStatus.Vanished();
-        (*itr)->GetAIInterface()->SetUnitToFollow(this);
-        (*itr)->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, *itr, 0);
-        (*itr)->GetAIInterface()->WipeTargetList();
+        (*itr)->GetAIInterface()->setPetOwner(this);
+        (*itr)->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
+        (*itr)->getThreatManager().clearAllThreat();
+        (*itr)->getThreatManager().removeMeFromThreatLists();
     }
 
     // removing auras that kills players after if low HP
@@ -6882,6 +6886,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     // Checking if we have a unit whose waypoints are shown
     // If there is such, then we "unlink" it
     // Failing to do so leads to a crash if we try to show some other Unit's wps, after the map was shut down
+
     if (m_aiInterfaceWaypoint != nullptr)
         m_aiInterfaceWaypoint->hideWayPoints(this);
 
@@ -7531,7 +7536,7 @@ void Player::OnWorldPortAck()
     if (pMapinfo)
     {
         //only resurrect if player is porting to a instance portal
-        if (isDead() && pMapinfo->type != INSTANCE_NULL)
+        if (isDead() && !pMapinfo->isNonInstanceMap())
             ResurrectPlayer();
 
         if (pMapinfo->hasFlag(WMI_INSTANCE_WELCOME) && GetMapMgr())
@@ -7540,7 +7545,7 @@ void Player::OnWorldPortAck()
             welcome_msg = std::string(GetSession()->LocalizedWorldSrv(ServerString::SS_INSTANCE_WELCOME)) + " ";
             welcome_msg += std::string(GetSession()->LocalizedMapName(pMapinfo->mapid));
             welcome_msg += ". ";
-            if (pMapinfo->type != INSTANCE_NONRAID && !(pMapinfo->type == INSTANCE_MULTIMODE && m_dungeonDifficulty >= InstanceDifficulty::DUNGEON_HEROIC) && m_mapMgr->pInstance)
+            if (!pMapinfo->isDungeon() && !(pMapinfo->isMultimodeDungeon() && m_dungeonDifficulty >= InstanceDifficulty::DUNGEON_HEROIC) && m_mapMgr->pInstance)
             {
                 /*welcome_msg += "This instance is scheduled to reset on ";
                 welcome_msg += asctime(localtime(&m_mapMgr->pInstance->m_expiration));*/
