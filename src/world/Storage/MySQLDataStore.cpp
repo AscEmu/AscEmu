@@ -4016,6 +4016,34 @@ void MySQLDataStore::loadTransportEntrys()
     sLogger.info("MySQLDataLoads : Loaded %u rows from `transport_entrys` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
+void MySQLDataStore::loadTransportMaps()
+{
+    auto startTime = Util::TimeNow();
+    //                                                  
+    QueryResult* result = WorldDatabase.Query("SELECT parameter_6 FROM gameobject_properties WHERE type = 15 AND  build <= %u ORDER BY entry ASC", getAEVersion());
+    if (result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Loaded 0 transport maps. DB table `gameobject_properties` has no transports!");
+        return;
+    }
+
+    uint32_t load_count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+        uint32_t mapId = fields[0].GetUInt32();
+
+        _transportMapStore.push_back(mapId);
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    sLogger.info("MySQLDataLoads : Loaded %u maps from `transport_maps` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
 void MySQLDataStore::loadGossipMenuItemsTable()
 {
     auto startTime = Util::TimeNow();

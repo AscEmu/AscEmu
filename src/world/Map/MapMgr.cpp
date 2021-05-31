@@ -244,10 +244,16 @@ void MapMgr::PushObject(Object* obj)
     MapCell* objCell = GetCell(x, y);
     if (objCell == nullptr)
     {
-        objCell = Create(x, y);
-        objCell->Init(x, y, this);
+        if (objCell = Create(x, y))
+        {
+            objCell->Init(x, y, this);
+        }
+        else
+        {
+            sLogger.fatal("MapCell for x f% and y f% seems to be invalid!", x, y);
+            return;
+        }
     }
-    ARCEMU_ASSERT(objCell != nullptr);
 
     // Build update-block for player
     ByteBuffer* buf = 0;

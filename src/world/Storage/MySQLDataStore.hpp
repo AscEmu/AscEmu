@@ -106,6 +106,7 @@ public:
 
     typedef std::unordered_map<uint32_t, MySQLStructure::TransportData> TransportDataContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::TransportEntrys> TransportEntryContrainer;
+    typedef std::vector<uint32_t> TransportMapContainer;
 
     typedef std::unordered_map<uint32_t, MySQLStructure::GossipMenuInit> GossipMenuInitMap;
     typedef std::multimap<uint32_t, MySQLStructure::GossipMenuItems> GossipMenuItemsContainer;
@@ -227,6 +228,13 @@ public:
 
     bool isCharacterNameAllowed(std::string charName);
 
+    bool isTransportMap(uint32_t mapId) const
+    {
+        if (std::find(_transportMapStore.begin(), _transportMapStore.end(), mapId) != _transportMapStore.end())
+            return true;
+        return false;
+    }
+
     //Config
     void loadAdditionalTableConfig();
 
@@ -308,6 +316,7 @@ public:
 
     void loadTransportDataTable();
     void loadTransportEntrys();
+    void loadTransportMaps();
 
     void loadGossipMenuItemsTable();
 
@@ -382,6 +391,7 @@ public:
 
     TransportDataContainer _transportDataStore;
     TransportEntryContrainer _transportEntryStore;
+    TransportMapContainer _transportMapStore;
 
     GossipMenuInitMap _gossipMenuInitStore;
     GossipMenuItemsContainer _gossipMenuItemsStores;
