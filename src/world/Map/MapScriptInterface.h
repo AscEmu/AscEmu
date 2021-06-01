@@ -82,7 +82,7 @@ class SERVER_DECL MapScriptInterface
             return GetObjectNearestCoords<Creature, TYPEID_UNIT>(Entry, x, y, z);
         }
 
-        inline Creature* FindNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+        inline Creature* findNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
         {
             MapCell* pCell = mapMgr.GetCell(mapMgr.GetPosX(pObject->GetPositionX()), mapMgr.GetPosY(pObject->GetPositionY()));
             if (pCell == 0)

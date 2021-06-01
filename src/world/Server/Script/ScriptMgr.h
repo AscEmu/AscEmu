@@ -652,7 +652,7 @@ class SERVER_DECL InstanceScript
         //used for debug
         std::string getDataStateString(uint32_t bossEntry);
 
-        void SetZoneMusic(uint32 zoneId, uint32 musicId)
+        void setZoneMusic(uint32 zoneId, uint32 musicId)
         {
             WorldPacket data(SMSG_PLAY_MUSIC, 4);
             data << uint32(musicId);
