@@ -82,6 +82,29 @@ class SERVER_DECL MapScriptInterface
             return GetObjectNearestCoords<Creature, TYPEID_UNIT>(Entry, x, y, z);
         }
 
+        inline Creature* FindNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+        {
+            MapCell* pCell = mapMgr.GetCell(mapMgr.GetPosX(pObject->GetPositionX()), mapMgr.GetPosY(pObject->GetPositionY()));
+            if (pCell == 0)
+                return nullptr;
+
+            float CurrentDist = 0;
+            Creature* target = nullptr;
+
+            ObjectSet::const_iterator iter = pCell->Begin();
+            for (; iter != pCell->End(); ++iter)
+            {
+                if ((*iter)->isCreature() && (*iter)->getEntry() == entry)
+                {
+                    target = static_cast<Creature*>((*iter));
+                    CurrentDist = (*iter)->CalcDistance(pObject);
+                    if (CurrentDist <= maxSearchRange)
+                        return target;
+                }
+            }
+            return nullptr;
+        }
+
         inline void GetCreatureListWithEntryInGrid(Creature* pCreature, std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
         {
             MapCell* pCell = mapMgr.GetCell(mapMgr.GetPosX(pCreature->GetPositionX()), mapMgr.GetPosY(pCreature->GetPositionY()));

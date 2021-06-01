@@ -167,6 +167,9 @@ void Transporter::AddPassenger(Player* passenger)
     {
         passenger->SetTransport(this);
         passenger->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
+
+        if(passenger->isPlayer())
+            CALL_INSTANCE_SCRIPT_EVENT(GetMapMgr(), TransportBoarded)(passenger, this);
     }
 }
 
@@ -193,6 +196,9 @@ void Transporter::RemovePassenger(Object* passenger)
     {
         passenger->SetTransport(nullptr);
         passenger->obj_movement_info.removeMovementFlag(MOVEFLAG_TRANSPORT);
+
+        if (passenger->isPlayer())
+            CALL_INSTANCE_SCRIPT_EVENT(GetMapMgr(), TransportUnboarded)(passenger->ToPlayer(), this);
     }
 }
 
@@ -585,31 +591,28 @@ void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
         sLogger.info("Taxi %s event %u", departure ? "departure" : "arrival", eventid);
 
         // Use MapScript Interface to Handle these if not handle it here
-        if (GetMapMgr()->GetScript())
-            GetMapMgr()->GetScript()->TransporterEvents(this, eventid);
-        else
+        CALL_INSTANCE_SCRIPT_EVENT(GetMapMgr(), TransporterEvents)(this, eventid);
+
+        // TODO Sort out ships and zeppelins
+        switch (eventid)
         {
-            // TODO Sort out ships and zeppelins
-            switch (eventid)
-            {
-            case 16501:
-            case 16400:
-            case 19126:
-            case 15318:
-            case 19032:
-            case 10301:
-            case 19124:
-            case 16398:
-            case 19139:
-            case 16396:
-            case 16402:
-            case 15314:
-                PlaySoundToSet(5154);   // ShipDocked         LightHouseFogHorn.wav
-                break;
-            case 16401:
-                PlaySoundToSet(11804);  // ZeppelinDocked     ZeppelinHorn.wav
-                break;
-            }
+        case 16501:
+        case 16400:
+        case 19126:
+        case 15318:
+        case 19032:
+        case 10301:
+        case 19124:
+        case 16398:
+        case 19139:
+        case 16396:
+        case 16402:
+        case 15314:
+            PlaySoundToSet(5154);   // ShipDocked         LightHouseFogHorn.wav
+            break;
+        case 16401:
+            PlaySoundToSet(11804);  // ZeppelinDocked     ZeppelinHorn.wav
+            break;
         }
     }
 }

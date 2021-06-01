@@ -620,6 +620,8 @@ class SERVER_DECL InstanceScript
         virtual void UpdateEvent() {}
 
         virtual void OnEncounterStateChange(uint32_t /*entry*/, uint32_t /*state*/) {}
+        virtual void TransportBoarded(Unit* /*punit*/, Transporter* /*transport*/) {}
+        virtual void TransportUnboarded(Unit* /*punit*/, Transporter* /*transport*/) {}
 
         virtual void Destroy() {}
 
@@ -641,6 +643,7 @@ class SERVER_DECL InstanceScript
         virtual void setLocalData(uint32_t /*type*/, uint32_t /*data*/) {}
         virtual void setLocalData64(uint32_t /*type*/, uint64_t /*data*/) {}
         virtual uint32_t getLocalData(uint32_t /*type*/) const { return 0; }
+        virtual Creature* getLocalCreatureData(uint32_t /*type*/) const { return nullptr; }
         virtual uint64_t getLocalData64(uint32_t /*type*/) const { return 0; }
         virtual void DoAction(int32_t /*action*/) {}
         virtual void TransporterEvents(Transporter* /*transport*/, uint32_t /*eventId*/) {}
@@ -648,6 +651,13 @@ class SERVER_DECL InstanceScript
         
         //used for debug
         std::string getDataStateString(uint32_t bossEntry);
+
+        void SetZoneMusic(uint32 zoneId, uint32 musicId)
+        {
+            WorldPacket data(SMSG_PLAY_MUSIC, 4);
+            data << uint32(musicId);
+            sWorld.sendZoneMessage(&data, zoneId);
+        }
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // encounters
