@@ -303,6 +303,11 @@ void CreatureAIScript::GetCreatureListWithEntryInGrid(std::list<Creature*>& cont
     _creature->GetMapMgr()->GetInterface()->GetCreatureListWithEntryInGrid(_creature, container, entry, maxSearchRange);
 }
 
+Creature* CreatureAIScript::findNearestCreature(uint32_t entry, float maxSearchRange /*= 250.0f*/)
+{
+    return _creature->GetMapMgr()->GetInterface()->findNearestCreature(_creature, entry, maxSearchRange);
+}
+
 void CreatureAIScript::GetGameObjectListWithEntryInGrid(std::list<GameObject*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/)
 {
     _creature->GetMapMgr()->GetInterface()->GetGameObjectListWithEntryInGrid(_creature, container, entry, maxSearchRange);

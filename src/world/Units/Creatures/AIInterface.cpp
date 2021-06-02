@@ -391,9 +391,9 @@ void AIInterface::updateVictim(Unit* victim)
     if (getCurrentTarget())
     {
         // we dont want to get chased by a Totem
-        if (getCurrentTarget()->isAlive() && !getCurrentTarget()->isTotem() && !getUnit()->isRooted())
+        if (getCurrentTarget()->isAlive())
         {
-            if (getCurrentTarget()->GetInstanceID() == getUnit()->GetInstanceID())
+            if (getCurrentTarget()->GetInstanceID() == getUnit()->GetInstanceID() && !getCurrentTarget()->isTotem() && !getUnit()->isRooted())
             {
                 getUnit()->setTargetGuid(getCurrentTarget()->getGuid());
                 getUnit()->getMovementManager()->moveChase(getCurrentTarget());
