@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   "Classic":
     docker:
-      - image: "debian:stretch"
+      - image: "cimg/base:stable-20.04"
     steps:
       - checkout
       - run:
@@ -41,7 +41,7 @@ jobs:
 
   "TBC":
     docker:
-      - image: "debian:stretch"
+      - image: "cimg/base:stable-20.04"
     steps:
       - checkout
       - run:
@@ -79,7 +79,7 @@ jobs:
             
   "WotLK":
     docker:
-      - image: "debian:stretch"
+      - image: "cimg/base:stable-20.04"
     steps:
       - checkout
       - run:
@@ -117,7 +117,7 @@ jobs:
             
   "Cata":
     docker:
-      - image: "debian:stretch"
+      - image: "cimg/base:stable-20.04"
     steps:
       - checkout
       - run:
@@ -155,7 +155,7 @@ jobs:
             
   "Mop":
     docker:
-      - image: "debian:stretch"
+      - image: "cimg/base:stable-20.04"
     steps:
       - checkout
       - run:
