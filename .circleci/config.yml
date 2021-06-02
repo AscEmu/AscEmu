@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   "Classic":
     docker:
-      - image: "cimg/base:stable-20.04"
+      - image: "debian:stretch"
     steps:
       - checkout
       - run:
@@ -11,7 +11,7 @@ jobs:
           command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
       - run:
           name: Installing GCC
-          command: 'apt-get update && apt-get install -y gcc-9 g++'
+          command: 'apt-get update && apt-get install -y gcc g++'
       - run:
           name: Install CMAKE
           command: 'apt-get update && sudo apt-get install -y cmake'
@@ -41,7 +41,7 @@ jobs:
 
   "TBC":
     docker:
-      - image: "cimg/base:stable-20.04"
+      - image: "debian:stretch"
     steps:
       - checkout
       - run:
@@ -49,7 +49,7 @@ jobs:
           command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
       - run:
           name: Installing GCC
-          command: 'apt-get update && apt-get install -y gcc-9 g++'
+          command: 'apt-get update && apt-get install -y gcc g++'
       - run:
           name: Install CMAKE
           command: 'apt-get update && sudo apt-get install -y cmake'
@@ -79,7 +79,7 @@ jobs:
             
   "WotLK":
     docker:
-      - image: "cimg/base:stable-20.04"
+      - image: "debian:stretch"
     steps:
       - checkout
       - run:
@@ -87,7 +87,7 @@ jobs:
           command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
       - run:
           name: Installing GCC
-          command: 'apt-get update && apt-get install -y gcc-9 g++'
+          command: 'apt-get update && apt-get install -y gcc g++'
       - run:
           name: Install CMAKE
           command: 'apt-get update && sudo apt-get install -y cmake'
@@ -117,7 +117,7 @@ jobs:
             
   "Cata":
     docker:
-      - image: "cimg/base:stable-20.04"
+      - image: "debian:stretch"
     steps:
       - checkout
       - run:
@@ -125,7 +125,7 @@ jobs:
           command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
       - run:
           name: Installing GCC
-          command: 'apt-get update && apt-get install -y gcc-9 g++'
+          command: 'apt-get update && apt-get install -y gcc g++'
       - run:
           name: Install CMAKE
           command: 'apt-get update && sudo apt-get install -y cmake'
@@ -155,7 +155,7 @@ jobs:
             
   "Mop":
     docker:
-      - image: "cimg/base:stable-20.04"
+      - image: "debian:stretch"
     steps:
       - checkout
       - run:
@@ -163,7 +163,7 @@ jobs:
           command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
       - run:
           name: Installing GCC
-          command: 'apt-get update && apt-get install -y gcc-9 g++'
+          command: 'apt-get update && apt-get install -y gcc g++'
       - run:
           name: Install CMAKE
           command: 'apt-get update && sudo apt-get install -y cmake'

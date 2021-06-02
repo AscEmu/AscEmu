@@ -5,11 +5,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#if COMPILER == 0
 #include <optional>
 
 //! Optional helper class to wrap optional values within.
 template <class T>
 using Optional = std::optional<T>;
+#else
+#include <experimental/optional>
+
+//! Optional helper class to wrap optional values within.
+template <class T>
+using Optional = std::experimental::optional<T>;
+#endif
 
 #define CONTACT_DISTANCE                0.5f
 #define MAX_HEIGHT                      100000.0f

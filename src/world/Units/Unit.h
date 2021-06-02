@@ -39,10 +39,18 @@
 #include "Storage/MySQLStructures.h"
 #include "ThreatHandler.h"
 #include "Movement/AbstractFollower.h"
+
+#if COMPILER == 0
 #include <optional>
 
 template <class T>
 using Optional = std::optional<T>;
+#else
+#include <experimental/optional>
+
+template <class T>
+using Optional = std::experimental::optional<T>;
+#endif
 
 class AIInterface;
 class Aura;
