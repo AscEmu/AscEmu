@@ -150,98 +150,125 @@ enum Spells
     SPELL_STOMP                                 = 64652,
     SPELL_ARCTIC_BREATH                         = 72848,
 
+    // Applied on friendly transport NPCs
+    SPELL_FRIENDLY_BOSS_DAMAGE_MOD              = 70339,
+    SPELL_CHECK_FOR_PLAYERS                     = 70332,
+    SPELL_GUNSHIP_FALL_TELEPORT                 = 67335,
+    SPELL_TELEPORT_PLAYERS_ON_RESET_A           = 70446,
+    SPELL_TELEPORT_PLAYERS_ON_RESET_H           = 71284,
+    SPELL_TELEPORT_PLAYERS_ON_VICTORY           = 72340,
+    SPELL_AWARD_REPUTATION_BOSS_KILL            = 73843,
+
     // Gunship Battle
-    SPELL_BURNING_PITCH_A = 71335,
-    SPELL_BURNING_PITCH_H = 71339,
-    SPELL_BURNING_PITCH_SIEGE_DMG_A = 70383,
-    SPELL_BURNING_PITCH_SIEGE_DMG_H = 70374,
-    SPELL_BURNING_PITCH_AOE_DAMAGE = 69660,
+    SPELL_BURNING_PITCH_SIEGE_DMG_A             = 70383,
+    SPELL_BURNING_PITCH_SIEGE_DMG_H             = 70374,
+    SPELL_BURNING_PITCH_AOE_DAMAGE              = 69660,
 
-    SPELL_WOUNDING_STRIKE_10_NM = 69651,
-    SPELL_WOUNDING_STRIKE_10_HM = 72570,
-    SPELL_WOUNDING_STRIKE_25_NM = 72569,
-    SPELL_WOUNDING_STRIKE_25_HM = 72571,
+    SPELL_WOUNDING_STRIKE_10_NM                 = 69651,
+    SPELL_WOUNDING_STRIKE_10_HM                 = 72570,
+    SPELL_WOUNDING_STRIKE_25_NM                 = 72569,
+    SPELL_WOUNDING_STRIKE_25_HM                 = 72571,
 
-    SPELL_TELEPORT_VISUAL_GB = 64446,
-    SPELL_BLADESTORM_GB = 69652,
-    SPELL_BLADESTORM_TRIGGER = 69653,
+    SPELL_TELEPORT_VISUAL_GB                    = 64446,
+    SPELL_BLADESTORM_GB                         = 69652,
+    SPELL_BLADESTORM_TRIGGER                    = 69653,
+
+    SPELL_LOCK_PLAYERS_AND_TAP_CHEST            = 72347,
+    SPELL_ON_SKYBREAKER_DECK                    = 70120,
+    SPELL_ON_ORGRIMS_HAMMER_DECK                = 70121,
+
+    // Gunship Hull
+    SPELL_EXPLOSION_WIPE                        = 72134,
+    SPELL_EXPLOSION_VICTORY                     = 72137,
 
     // Cannon
-    SPELL_HEAT_DRAIN = 69470,
-    SPELL_OVERHEAT = 69487, // Triggers spell #69488 every 0.25s
-    SPELL_CANNON_BLAST = 69399,
-    SPELL_INCINERATING_BLAST = 69401,
+    SPELL_HEAT_DRAIN                            = 69470,
+    SPELL_OVERHEAT                              = 69487, // Triggers spell #69488 every 0.25s
+    SPELL_CANNON_BLAST                          = 69399,
+    SPELL_INCINERATING_BLAST                    = 69401,
+    SPELL_EJECT_ALL_PASSENGERS_BELOW_ZERO       = 68576,
+    SPELL_EJECT_ALL_PASSENGERS_WIPE             = 50630,
 
     // Auras
-    SPELL_ON_ORGRIMS_HAMMERS_DECK = 70121,
-    SPELL_ON_SKYBREAKERS_DECK = 70120,
+    SPELL_ON_ORGRIMS_HAMMERS_DECK               = 70121,
+    SPELL_ON_SKYBREAKERS_DECK                   = 70120,
 
     // Achievement spell required target
-    SPELL_ACHIEVEMENT = 72959,
+    SPELL_ACHIEVEMENT                           = 72959,
 
     // Rampart of Skulls NPCs Spells
     // Kor'kron Primalist
-    SPELL_WRATH = 69968,
-    SPELL_HEALING_TOUCH = 69899,
-    SPELL_REGROWTH = 69882,
-    SPELL_REJUVENATION = 69898,
+    SPELL_WRATH                                 = 69968,
+    SPELL_HEALING_TOUCH                         = 69899,
+    SPELL_REGROWTH                              = 69882,
+    SPELL_REJUVENATION                          = 69898,
 
-    SPELL_SUMMON_BATTLE_STANDART_A = 69810,
-    SPELL_SUMMON_BATTLE_STANDART_H = 69811,
+    SPELL_SUMMON_BATTLE_STANDART_A              = 69810,
+    SPELL_SUMMON_BATTLE_STANDART_H              = 69811,
 
     // Kor'kron Defender
-    SPELL_DEVASTATE = 69902,
-    SPELL_THUNDERCLAP = 69965,
-    SPELL_SUNDER_ARMOR_GB = 57807,
-    SPELL_SPELL_REFLECT = 69901,
+    SPELL_DEVASTATE                             = 69902,
+    SPELL_THUNDERCLAP                           = 69965,
+    SPELL_SUNDER_ARMOR_GB                       = 57807,
+    SPELL_SPELL_REFLECT                         = 69901,
 
     // Skybreaker Vindicator
-    SPELL_AVENGERS_SHIELD = 69927,
-    SPELL_CONCENTRATION = 69930,
-    SPELL_HOLY_WRATH = 69934,
+    SPELL_AVENGERS_SHIELD                       = 69927,
+    SPELL_CONCENTRATION                         = 69930,
+    SPELL_HOLY_WRATH                            = 69934,
 
     // Frostwyrm
-    SPELL_FROST_BREATH = 70116,
-    SPELL_BLIZZARD = 70362,
-    SPELL_FROST_CLEAVE = 70361,
+    SPELL_FROST_BREATH                          = 70116,
+    SPELL_BLIZZARD                              = 70362,
+    SPELL_FROST_CLEAVE                          = 70361,
 
     // Muradin Bronzebeard / High Overlord Saurfang
-    SPELL_CLEAVE = 15284,
-    SPELL_RENDING_THROW = 70309,
-    SPELL_TASTE_OF_BLOOD = 69634,
+    SPELL_CLEAVE                                = 15284,
+    SPELL_RENDING_THROW                         = 70309,
+    SPELL_TASTE_OF_BLOOD                        = 69634,
+    SPELL_BATTLE_FURY                           = 69637,
 
     // Kor'kron Battle-mage & Skybreaker Sorcerer
-    SPELL_BELOW_ZERO = 69705,
-    SPELL_SHADOW_CHANNELING_GB = 45104,
+    SPELL_BELOW_ZERO                            = 69705,
+    SPELL_SHADOW_CHANNELING_GB                  = 45104,
 
     // Experience spells
-    SPELL_EXPERIENCED = 71188,
-    SPELL_VETERAN = 71193,
-    SPELL_ELITE = 71195,
-    SPELL_DESPERATE_RESOLVE_10_NM = 69647,
-    SPELL_DESPERATE_RESOLVE_10_HM = 72537,
-    SPELL_DESPERATE_RESOLVE_25_NM = 72536,
-    SPELL_DESPERATE_RESOLVE_25_HM = 72538,
+    SPELL_EXPERIENCED                           = 71188,
+    SPELL_VETERAN                               = 71193,
+    SPELL_ELITE                                 = 71195,
+    SPELL_DESPERATE_RESOLVE_10_NM               = 69647,
+    SPELL_DESPERATE_RESOLVE_10_HM               = 72537,
+    SPELL_DESPERATE_RESOLVE_25_NM               = 72536,
+    SPELL_DESPERATE_RESOLVE_25_HM               = 72538,
 
     // Kor'kron Axethrower & Skybreaker Rifleman
-    SPELL_HURL_AXE = 70161,
-    SPELL_SHOOT = 70162,
+    SPELL_HURL_AXE                              = 70161,
+    SPELL_SHOOT                                 = 70162,
+    SPELL_BURNING_PITCH_A                       = 70403,
+    SPELL_BURNING_PITCH_H                       = 70397,
+    SPELL_BURNING_PITCH                         = 69660,
 
     // Kor'kron Rocketeer & Skybreaker Mortar Soldier
-    SPELL_ROCKET_ARTILLERY_MARKER = 71371,
-    SPELL_ROCKET_ARTILLERY_TRIGGERED = 69679,
-    SPELL_ROCKET_ARTILLERY_HORDE = 69678,
-    SPELL_ROCKET_ARTILLERY_ALLIANCE = 70609,
-    SPELL_EXPLOSION = 69680,
+    SPELL_ROCKET_ARTILLERY_MARKER               = 71371,
+    SPELL_ROCKET_ARTILLERY_TRIGGERED            = 69679,
+    SPELL_EXPLOSION                             = 69680,
+    SPELL_ROCKET_ARTILLERY_A                    = 70609,
+    SPELL_ROCKET_ARTILLERY_H                    = 69678,
+    SPELL_BURNING_PITCH_DAMAGE_A                = 70383,
+    SPELL_BURNING_PITCH_DAMAGE_H                = 70374,
+
+    // Skybreaker Marine
+    // Kor'kron Reaver
+    SPELL_DESPERATE_RESOLVE                     = 69647,
 
     // Ship Explsion
-    SPELL_SHIP_EXPLOSION = 72137,
+    SPELL_SHIP_EXPLOSION                        = 72137,
 
     // Remove Rocket Packs
-    SPELL_REMOVE_ROCKET_PACK = 70713,
+    SPELL_REMOVE_ROCKET_PACK                    = 70713,
 
     // Achievements
-    SPELL_ACHIEVEMENT_CHECK = 72959,
+    SPELL_ACHIEVEMENT_CHECK                     = 72959,
 
     // Frost Freeze Trap
     SPELL_COLDFLAME_JETS                        = 70460,
@@ -295,6 +322,20 @@ enum Spells
 
     // Invisible Stalker (Float, Uninteractible, LargeAOI)
     SPELL_SOUL_MISSILE                          = 72585,
+
+    // Rocket Pack
+    SPELL_ROCKET_PACK_DAMAGE                    = 69193,
+    SPELL_ROCKET_BURST                          = 69192,
+    SPELL_ROCKET_PACK_USEABLE                   = 70348,
+
+    // Applied on enemy NPCs
+    SPELL_MELEE_TARGETING_ON_SKYBREAKER         = 70219,
+    SPELL_MELEE_TARGETING_ON_ORGRIMS_HAMMER     = 70294,
+
+    // Hostile NPCs
+    SPELL_TELEPORT_TO_ENEMY_SHIP                = 70104,
+    SPELL_BATTLE_EXPERIENCE                     = 71201,
+    SPELL_ADDS_BERSERK                          = 72525,
 };
 
 enum IceCrownCitadelGOs
@@ -422,8 +463,6 @@ enum IceCrownCitadelNpcEntrys
     NPC_GB_HIGH_OVERLORD_SAURFANG               = 36939,
     NPC_GB_MURADIN_BRONZEBEARD                  = 36948,
     NPC_GB_HIHG_CAPTAIN_JUSTIN_BARTLETT         = 37182,
-    NPC_GB_HIGH_OVERLORD_SAURFANG_NV            = 50004,
-    NPC_GB_MURADIN_BRONZEBEARD_NV               = 50006,
     NPC_GB_SKYBREAKER_SORCERER                  = 37026,
     NPC_GB_SKYBREAKER_SORCERERS                 = 37116,
     NPC_GB_KORKRON_REAVER                       = 37920,
@@ -610,6 +649,12 @@ enum LordMarrowgarTextIds
     SAY_MARR_BONE_STORM_EMOTE                   = 932,
 };
 
+enum MovementPointsLordMarrowgar
+{
+    POINT_TARGET_BONESTORM_PLAYER = 36612631,
+    POINT_TARGET_COLDFLAME = 36672631,
+};
+
 enum EventsLadyDeathwhisper
 {
     // Lady Deathwhisper
@@ -717,8 +762,7 @@ enum AdditionalData
     DATA_ORGRIMMAR_HAMMER_BOSS                  = 11,
     DATA_GB_HIGH_OVERLORD_SAURFANG              = 12,
     DATA_GB_MURADIN_BRONZEBEARD                 = 13,
-    DATA_HIGH_OVERLORD_SAURFANG_NOT_VISUAL      = 14,
-    DATA_MURADIN_BRONZEBEARD_NOT_VISUAL         = 15,
+    ITEM_GOBLIN_ROCKET_PACK                     = 49278,
 
     // Deathbringer Suarfang
     DATA_SAURFANG_DOOR                          = 16,
@@ -735,11 +779,10 @@ enum GunshipBattleActions
 {
     ACTION_INTRO_START                          = 1,
     ACTION_BATTLE_EVENT                         = 2,
-    ACTION_MAGE_DIE                             = 3,
-    ACTION_ROCK_DIE                             = 4,
-    ACTION_AXES_RIFL_DIE                        = 5,
-    ACTION_DONE                                 = 6,
-    ACTION_FAIL                                 = 7,
+    ACTION_SPAWN_MAGE                           = 3,
+    ACTION_SPAWN_ALL_ADDS                       = 4,
+    ACTION_BATTLE_DONE                          = 5,
+    ACTION_FAIL                                 = 6,
 
     // Transporter Actions
     EVENT_PLAYERS_GUNSHIP_SPAWN                 = 22663,
@@ -779,22 +822,21 @@ enum EventsGunshipBattle
     EVENT_START_FLY,
 
     //Misc battle
-    EVENT_WALK_MOBS,
-    EVENT_SUMMON_PORTAL,
-    EVENT_FREEZE_CANNON,
-    EVENT_SHADOW_CHANNELING,
-    EVENT_UNSUMMON_PORTAL,
-    EVENT_BOARDING_GUNSHIP,
-    EVENT_BOARDING_TALK,
-    EVENT_BURNING_PITCH,
-    EVENT_WOUNDING_STRIKE,
-    EVENT_BLADE_STORM,
     EVENT_DONE,
     EVENT_FAIL,
     EVENT_RESTART_EVENT,
-    EVENT_BOARDING_REAVERS_MARINE,
     EVENT_WIPE_CHECK,
     EVENT_SPAWN_GUNSHIPS,
+    EVENT_KEEP_PLAYER_IN_COMBAT,
+    EVENT_SUMMON_MAGE,
+    EVENT_ADDS,
+    EVENT_ADDS_BOARD_YELL,
+    EVENT_CHECK_RIFLEMAN,
+    EVENT_CHECK_MORTAR,
+    EVENT_CLEAVE,
+
+    EVENT_BLADESTORM,
+    EVENT_WOUNDING_STRIKE,
 
     // Rampart of Skulls NPCs Events
     EVENT_WRATH,
@@ -807,7 +849,6 @@ enum EventsGunshipBattle
 
     EVENT_FROST_BREATH,
     EVENT_BLIZZARD,
-    EVENT_CLEAVE,
 
     // Skybreaker Vindicator
     EVENT_AVENGERS_SHILED,
@@ -838,12 +879,7 @@ enum EventsGunshipBattle
 
     // Muradin Bronzebeard & High Overlord Saurfang
     EVENT_RENDING_THROW,
-    EVENT_TASTE_OF_BLOOD,
-
-    // Misc (used in various NPCs)
-    EVENT_SPAWN_MAGE,
-    EVENT_RESPAWN_AXES_RIFLEMEN,
-    EVENT_RESPAWN_ROCKETEER,
+    EVENT_TASTE_OF_BLOOD
 };
 
 enum GunshipBattleTextIds
@@ -886,6 +922,17 @@ enum GunshipBattleTextIds
     GOSSIP_OPTION_JETPACK                       = 611,  // Yeah, I'm sure that safety is your top priority. Give me a jetpack.
     GOSSIP_OPTION_JETPACK2                      = 612,  // You already have my jetpack!
 };
+
+LocationVector const SkybreakerAddsSpawnPos = { 15.91131f, 0.0f, 20.4628f, float(M_PI) };
+LocationVector const OrgrimsHammerAddsSpawnPos = { 60.728395f, 0.0f, 38.93467f, float(M_PI) };
+
+// Horde encounter
+LocationVector const SkybreakerTeleportPortal = { 6.666975f, 0.013001f, 20.87888f, 0.0f };
+LocationVector const OrgrimsHammerTeleportExit = { 7.461699f, 0.158853f, 35.72989f, 0.0f };
+
+// Alliance encounter
+LocationVector const OrgrimsHammerTeleportPortal = { 47.550990f, -0.101778f, 37.61111f, 0.0f };
+LocationVector const SkybreakerTeleportExit = { -17.55738f, -0.090421f, 21.18366f, 0.0f };
 
 enum DeathbringerSaurfangActions
 {
@@ -1138,6 +1185,12 @@ uint32_t boneStormIds[] =
     SPELL_BONE_STORM_Heroic,
     SPELL_BONE_STORM_Heroic_25,
     0
+};
+
+uint32_t gunshipIds[] =
+{
+    NPC_GB_SKYBREAKER,
+    NPC_GB_ORGRIMS_HAMMER
 };
 
 LocationVector const LadyDeathwhisperSummonPositions[7] =
