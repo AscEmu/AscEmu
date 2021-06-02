@@ -30,8 +30,8 @@ namespace AscEmu::Realm
         std::chrono::high_resolution_clock::time_point lastPing;
     };
 
-    class ::AuthSocket;
-    class ::LogonCommServerSocket;
+    //class ::AuthSocket;
+    //class ::LogonCommServerSocket;
 
     class RealmManager
     {

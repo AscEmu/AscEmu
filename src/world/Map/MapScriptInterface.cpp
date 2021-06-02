@@ -184,7 +184,7 @@ Creature* MapScriptInterface::SpawnCreature(MySQLStructure::CreatureSpawn* sp, b
     uint8 Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&sp->displayid);
     Creature* p = this->mapMgr.CreateCreature(sp->entry);
     ARCEMU_ASSERT(p != NULL);
-    p->Load(sp, (uint32)NULL, nullptr);
+    p->Load(sp, 0, nullptr);
     p->setGender(Gender);
     p->spawnid = 0;
     p->m_spawn = nullptr;

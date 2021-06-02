@@ -79,7 +79,7 @@ void WorldPacketLog::disablePacketLog()
 
 SessionLog::SessionLog(const char* filename, bool open)
 {
-#if defined(linux) || defined(__linux)
+#if defined(linux) || defined(__linux) || defined(FreeBSD) || defined(__FreeBSD__)
     mFileName = strdup(filename);
 #else
     mFileName = _strdup(filename);
