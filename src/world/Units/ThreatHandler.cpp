@@ -548,7 +548,7 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
     }
 
     // Damage Dealt for Scripts
-    getOwner()->GetAIInterface()->handleEvent(EVENT_DAMAGETAKEN, target, amount);
+    getOwner()->GetAIInterface()->handleEvent(EVENT_DAMAGETAKEN, target, static_cast<uint32_t>(amount));
 
     // ok, now we actually apply threat
     // check if we already have an entry - if we do, just increase threat for that entry and we're done

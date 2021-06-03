@@ -244,7 +244,8 @@ void MapMgr::PushObject(Object* obj)
     MapCell* objCell = GetCell(x, y);
     if (objCell == nullptr)
     {
-        if (objCell = Create(x, y))
+        objCell = Create(x, y);
+        if (objCell != nullptr)
         {
             objCell->Init(x, y, this);
         }

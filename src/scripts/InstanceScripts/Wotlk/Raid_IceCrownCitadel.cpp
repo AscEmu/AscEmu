@@ -1413,49 +1413,30 @@ class LadyDeathwhisperAI : public CreatureAIScript
         Reset();
     }
 
-    ///\ todo Health Decreases visualy
-    void DamageTaken(Unit* /*_attacker*/, uint32* damage) override
+    void DoAction(int32_t const action) override
     {
-        uint32_t currentMana = getCreature()->getPower(POWER_TYPE_MANA);
-        // When Lady Deathwhsiper has her mana Barrier dont deal damage to her instead reduce her mana.      
-        if (getCreature()->HasAura(SPELL_MANA_BARRIER) && *damage < currentMana)
+        if (action == 1)
         {
-            uint32_t manareduction = 0;
-            uint32_t maxHealth = getCreature()->getMaxHealth();
-
-            getCreature()->setHealth(maxHealth);
-
-            if (*damage < currentMana)
-                manareduction = (currentMana - *damage);
-
-            getCreature()->setPower(POWER_TYPE_MANA, manareduction);
-            *damage = 1; // Hackfix health reduces visualy and by setting maxhealth when it has maxhealth dont updates healthbar
-        }
-    }
-
-    void OnDamageTaken(Unit* /*_attacker*/, uint32_t damage) override
-    {
-        uint32_t currentMana = getCreature()->getPower(POWER_TYPE_MANA);
-        // When Lady Deathwhsiper has her mana Barrier dont deal damage to her instead reduce her mana.
-        // phase transition
-        if (getScriptPhase() == PHASE_ONE && damage > currentMana)
-        {
-            sendDBChatMessage(SAY_LADY_PHASE_2);
-            sendDBChatMessage(SAY_LADY_PHASE_2_EMOTE);
-            setRooted(false);
-            getCreature()->setPower(POWER_TYPE_MANA, 0);
-            getCreature()->RemoveAura(SPELL_MANA_BARRIER);
-            getCreature()->getMovementManager()->moveChase(getCreature()->GetAIInterface()->getCurrentTarget());
-            setScriptPhase(PHASE_TWO);
-            scriptEvents.addEvent(EVENT_P2_FROSTBOLT, Util::getRandomUInt(10000, 12000), PHASE_TWO);
-            scriptEvents.addEvent(EVENT_P2_FROSTBOLT_VOLLEY, Util::getRandomUInt(19000, 21000), PHASE_TWO);
-            scriptEvents.addEvent(EVENT_P2_TOUCH_OF_INSIGNIFICANCE, Util::getRandomUInt(6000, 9000), PHASE_TWO);
-            scriptEvents.addEvent(EVENT_P2_SUMMON_SHADE, Util::getRandomUInt(12000, 15000), PHASE_TWO);
-            // on heroic mode Lady Deathwhisper is immune to taunt effects in phase 2 and continues summoning adds
-            if (_isHeroic())
+            // When Lady Deathwhsiper has her mana Barrier dont deal damage to her instead reduce her mana.
+            // phase transition
+            if (getScriptPhase() == PHASE_ONE)
             {
-                ///\todo Add SpellImmunities
-                scriptEvents.addEvent(EVENT_P2_SUMMON_WAVE, 45000, PHASE_TWO);
+                sendDBChatMessage(SAY_LADY_PHASE_2);
+                sendDBChatMessage(SAY_LADY_PHASE_2_EMOTE);
+                setRooted(false);
+                getCreature()->setPower(POWER_TYPE_MANA, 0);
+                getCreature()->getMovementManager()->moveChase(getCreature()->GetAIInterface()->getCurrentTarget());
+                setScriptPhase(PHASE_TWO);
+                scriptEvents.addEvent(EVENT_P2_FROSTBOLT, Util::getRandomUInt(10000, 12000), PHASE_TWO);
+                scriptEvents.addEvent(EVENT_P2_FROSTBOLT_VOLLEY, Util::getRandomUInt(19000, 21000), PHASE_TWO);
+                scriptEvents.addEvent(EVENT_P2_TOUCH_OF_INSIGNIFICANCE, Util::getRandomUInt(6000, 9000), PHASE_TWO);
+                scriptEvents.addEvent(EVENT_P2_SUMMON_SHADE, Util::getRandomUInt(12000, 15000), PHASE_TWO);
+                // on heroic mode Lady Deathwhisper is immune to taunt effects in phase 2 and continues summoning adds
+                if (_isHeroic())
+                {
+                    ///\todo Add SpellImmunities
+                    scriptEvents.addEvent(EVENT_P2_SUMMON_WAVE, 45000, PHASE_TWO);
+                }
             }
         }
     }
@@ -1648,6 +1629,8 @@ class LadyDeathwhisperAI : public CreatureAIScript
             if(summon->IsInWorld())
                 summon->Despawn(100, 0);
         }
+
+        summons.clear();
     }
 
     void ReanimateCultist()
@@ -1731,6 +1714,52 @@ protected:
     CreatureAISpells* darkMartydromSpell;
     CreatureAISpells* darkTransformationSpell;
     CreatureAISpells* darkEmpowermentSpell;
+};
+
+class ManaBarrier : public SpellScript
+{
+    SpellScriptExecuteState onAuraPeriodicTick(Aura* aur, AuraEffectModifier* /*aurEff*/, float_t* /*damage*/) override
+    {
+        // Aura should periodically trigger spell every 1 sec but that spell is serverside so we don't have it in DBC
+        // Overwrite default periodic tick with converting mana to hp
+
+        const auto auraOwner = aur->getOwner();
+        // If aura owner doesn't use mana, remove aura
+        if (auraOwner->getMaxPower(POWER_TYPE_MANA) == 0)
+        {
+            aur->removeAura();
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+        }
+
+        const auto healthDelta = auraOwner->getMaxHealth() - auraOwner->getHealth();
+        if (healthDelta == 0)
+        {
+            // Unit is already at max health, so do nothing
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+        }
+
+        const auto currentMana = auraOwner->getPower(POWER_TYPE_MANA);
+        if (healthDelta < currentMana)
+        {
+            // Restore health to max and remove equal amount of mana
+            auraOwner->setPower(POWER_TYPE_MANA, currentMana - healthDelta);
+            auraOwner->setHealth(auraOwner->getMaxHealth());
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+        }
+
+        // Unit takes more damage than it has mana left => remove aura
+        aur->removeAura();
+
+        // Aura is used by Lady Deathwhisper, change phase when all mana is drained
+        if (auraOwner->isCreature())
+        {
+            const auto creatureOwner = static_cast<Creature*>(auraOwner);
+            if (creatureOwner->GetScript() != nullptr)
+                creatureOwner->GetScript()->DoAction(1);
+        }
+
+        return SpellScriptExecuteState::EXECUTE_PREVENT;
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2140,7 +2169,7 @@ public:
         menu.sendGossipPacket(plr);
     }
 
-    void onSelectOption(Object* pObject, Player* pPlayer, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* /*pObject*/, Player* pPlayer, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
@@ -2806,6 +2835,9 @@ void SetupICC(ScriptMgr* mgr)
 
     // Spell Bone Slice
     mgr->register_spell_script(SPELL_BONE_SLICE, new BoneSlice);
+
+    // Spell Mana Barrier
+    mgr->register_spell_script(SPELL_MANA_BARRIER, new ManaBarrier);
 
     // Spell Cultist Dark Martyrdom
     mgr->register_spell_script(SPELL_DARK_MARTYRDOM_ADHERENT, new DarkMartyrdom);
