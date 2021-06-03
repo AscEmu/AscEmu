@@ -1629,6 +1629,8 @@ class LadyDeathwhisperAI : public CreatureAIScript
             if(summon->IsInWorld())
                 summon->Despawn(100, 0);
         }
+
+        summons.clear();
     }
 
     void ReanimateCultist()
