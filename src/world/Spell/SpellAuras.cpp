@@ -953,7 +953,14 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
         } // no break here
         case SPELL_AURA_PERIODIC_TRIGGER_SPELL:
         {
-            const auto triggerInfo = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex()));
+            const auto triggerId = getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex());
+            const auto triggerInfo = sSpellMgr.getSpellInfo(triggerId);
+            if (triggerInfo == nullptr)
+            {
+                sLogger.failure("Aura::periodicTick : Periodic trigger aura effect has invalid spell id (%u) in aura id %u", triggerId, getSpellId());
+                return;
+            }
+
             const auto casterUnit = GetUnitCaster();
             if (casterUnit != nullptr)
             {

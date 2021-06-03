@@ -1154,10 +1154,6 @@ void Aura::spellAuraEffectPeriodicTriggerSpell(AuraEffectModifier* aurEff, bool 
         }
     }
 
-    const auto triggerSpellId = getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex());
-    if (triggerSpellId == 0 || sSpellMgr.getSpellInfo(triggerSpellId) == nullptr)
-        return;
-
     if (apply)
     {
         // Set periodic timer only if timer was resetted
