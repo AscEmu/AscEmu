@@ -405,7 +405,7 @@ public:
         }
     }
 
-    void DoAction(int32 const action) override
+    void DoAction(int32_t const action) override
     {
         switch (action)
         {
@@ -852,7 +852,7 @@ class LordMarrowgarAI : public CreatureAIScript
         return 0;
     }
 
-    void DoAction(int32 const action) override
+    void DoAction(int32_t const action) override
     {
         if (action != ACTION_CLEAR_SPIKE_IMMUNITIES)
             return;
@@ -1973,7 +1973,7 @@ class MuradinAI : public CreatureAIScript
         }
     }
 
-    void DoAction(int32 const action) override
+    void DoAction(int32_t const action) override
     {
         switch (action)
         {
@@ -2116,7 +2116,7 @@ class SaurfangAI : public CreatureAIScript
         }
     }
 
-    void DoAction(int32 const action) override
+    void DoAction(int32_t const action) override
     {
         switch (action)
         {
@@ -2232,11 +2232,6 @@ class GunshipAI : public CreatureAIScript
             captain->GetScript()->DoAction(ACTION_SPAWN_MAGE);
     }
 
-    void OnCombatStop(Unit* /*_target*/) override
-    {
-
-    }
-
     void OnDied(Unit* /*pTarget*/) override
     {
         if (_died)
@@ -2317,7 +2312,7 @@ class GunshipHullAI : public CreatureAIScript
         ExplosionWipe = addAISpell(SPELL_EXPLOSION_WIPE, 0.0f, TARGET_SELF);
     }
 
-    void DoAction(int32 const action) override
+    void DoAction(int32_t const action) override
     {
         switch (action)
         {
@@ -2353,7 +2348,7 @@ class GunshipCanonAI : public CreatureAIScript
         EcectWipe = addAISpell(SPELL_EJECT_ALL_PASSENGERS_WIPE, 0.0f, TARGET_SELF, 0, 0, 0, true);
     }
 
-    void DoAction(int32 const action) override
+    void DoAction(int32_t const action) override
     {
         switch (action)
         {
@@ -2469,7 +2464,7 @@ class MuradinSaurfangEvent : public CreatureAIScript
         }
     }
 
-    void DoAction(int32 const action) override
+    void DoAction(int32_t const action) override
     {
         switch (action)
         {
@@ -2630,7 +2625,7 @@ class OverlordSaurfangEvent : public CreatureAIScript
         }
     }
 
-    void DoAction(int32 const action) override
+    void DoAction(int32_t const action) override
     {
         switch (action)
         {
@@ -2764,10 +2759,9 @@ class DeathbringerSaurfangAI : public CreatureAIScript
         // Close Suarfangs Door
         if (GameObject* Door = mInstance->GetGameObjectByGuid(mInstance->getLocalData(DATA_SAURFANG_DOOR)))
             Door->setState(GO_STATE_CLOSED);
-
     }
 
-    void DoAction(int32 const action) override
+    void DoAction(int32_t const action) override
     {
         switch (action)
         {
@@ -2838,7 +2832,7 @@ class NpcSaurfangEventAI : public CreatureAIScript
         }
     }
 
-    void DoAction(int32 const action) override
+    void DoAction(int32_t const action) override
     {
         switch (action)
         {
