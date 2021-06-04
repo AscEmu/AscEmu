@@ -435,10 +435,9 @@ public:
                         skybreaker->EnableMovement(true, mInstance);
                 }
             }
-            else
-            {
-                // Reset Battle
-            }
+            break;
+        case ACTION_FAIL:
+            // Handle Wipe Here
             break;
         }
     }
@@ -2260,12 +2259,38 @@ class GunshipAI : public CreatureAIScript
         // Stopp Playing Music
         mInstance->setZoneMusic(4812, 0);
 
-        if (isVictory)
+        std::list<Creature*> creatures;
+        // Eject All Passengers
+        GetCreatureListWithEntryInGrid(creatures, _teamInInstance == TEAM_HORDE ? NPC_GB_HORDE_CANON : NPC_GB_ALLIANCE_CANON, 900.0f);
+        for (std::list<Creature*>::iterator itr = creatures.begin(); itr != creatures.end(); ++itr)
         {
-            mInstance->DoAction(ACTION_BATTLE_DONE);
+            Creature* cannon = *itr;
+            if (isVictory)
+                cannon->GetScript()->DoAction(ACTION_BATTLE_DONE);
+            else
+                cannon->GetScript()->DoAction(ACTION_FAIL);
         }
-    }
+        creatures.clear();
+        // Explosion
+        GetCreatureListWithEntryInGrid(creatures, NPC_GB_GUNSHIP_HULL, 900.0f);
+        for (std::list<Creature*>::iterator itr = creatures.begin(); itr != creatures.end(); ++itr)
+        {
+            Creature* hull = *itr;
+            if (hull->GetTransport() != getCreature()->GetTransport())
+                continue;
 
+            if (isVictory)
+                hull->GetScript()->DoAction(ACTION_BATTLE_DONE);
+            else
+                hull->GetScript()->DoAction(ACTION_FAIL);
+        }
+        creatures.clear();
+
+        if (isVictory)
+            mInstance->DoAction(ACTION_BATTLE_DONE);
+        else
+            mInstance->DoAction(ACTION_FAIL);
+    }
 
 private:
     uint32_t _teamInInstance;
@@ -2276,6 +2301,78 @@ private:
 protected:
     // Common
     IceCrownCitadelScript* mInstance;
+};
+
+class GunshipHullAI : public CreatureAIScript
+{
+    ADD_CREATURE_FACTORY_FUNCTION(GunshipHullAI)
+    explicit GunshipHullAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Instance Script
+        mInstance = (IceCrownCitadelScript*)getInstanceScript();
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
+
+        // Scripted Spells not autocastet
+        ExplosionVictory = addAISpell(SPELL_EXPLOSION_VICTORY, 0.0f, TARGET_SELF);
+        ExplosionWipe = addAISpell(SPELL_EXPLOSION_WIPE, 0.0f, TARGET_SELF);
+    }
+
+    void DoAction(int32 const action) override
+    {
+        switch (action)
+        {
+        case ACTION_BATTLE_DONE:    // Enemy Ship Explodes
+            _castAISpell(ExplosionVictory);
+            break;
+        case ACTION_FAIL:   // Our Ship Explodes
+            _castAISpell(ExplosionWipe);
+            break;
+        }
+    }
+
+protected:
+    // Common
+    IceCrownCitadelScript* mInstance;
+
+    // Spells
+    CreatureAISpells* ExplosionVictory;
+    CreatureAISpells* ExplosionWipe;
+};
+
+class GunshipCanonAI : public CreatureAIScript
+{
+    ADD_CREATURE_FACTORY_FUNCTION(GunshipCanonAI)
+    explicit GunshipCanonAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        // Instance Script
+        mInstance = (IceCrownCitadelScript*)getInstanceScript();
+
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
+
+        EjectBelowZero = addAISpell(SPELL_EJECT_ALL_PASSENGERS_BELOW_ZERO, 0.0f, TARGET_SELF, 0, 0, 0, true);
+        EcectWipe = addAISpell(SPELL_EJECT_ALL_PASSENGERS_WIPE, 0.0f, TARGET_SELF, 0, 0, 0, true);
+    }
+
+    void DoAction(int32 const action) override
+    {
+        switch (action)
+        {
+        case ACTION_BATTLE_DONE:    // Enemy Ship Explodes
+            _castAISpell(EjectBelowZero);
+            break;
+        case ACTION_FAIL:   // Our Ship Explodes
+            _castAISpell(EcectWipe);
+            break;
+        }
+    }
+
+protected:
+    // Common
+    IceCrownCitadelScript* mInstance;
+
+    // Spells
+    CreatureAISpells* EjectBelowZero;
+    CreatureAISpells* EcectWipe;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2866,4 +2963,8 @@ void SetupICC(ScriptMgr* mgr)
     mgr->register_creature_script(NPC_SE_KOR_KRON_REAVER, NpcSaurfangEventAI::Create);
 
     mgr->register_creature_script(NPC_GB_ZAFOD_BOOMBOX, ZafodBoomboxAI::Create);
+
+    mgr->register_creature_script(NPC_GB_GUNSHIP_HULL, GunshipHullAI::Create);
+
+    mgr->register_creature_script(canonIds, GunshipCanonAI::Create);
 }

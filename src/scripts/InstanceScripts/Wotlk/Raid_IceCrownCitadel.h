@@ -1193,6 +1193,12 @@ uint32_t gunshipIds[] =
     NPC_GB_ORGRIMS_HAMMER
 };
 
+uint32_t canonIds[] =
+{
+    NPC_GB_ALLIANCE_CANON,
+    NPC_GB_HORDE_CANON
+};
+
 LocationVector const LadyDeathwhisperSummonPositions[7] =
 {
     {-578.7066f, 2154.167f, 51.01529f, 1.692969f}, // 1 Left Door 1 (Cult Fanatic)
