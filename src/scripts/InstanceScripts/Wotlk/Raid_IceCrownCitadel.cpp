@@ -92,7 +92,7 @@ public:
     }
 
     Creature* getLocalCreatureData(uint32_t type) const
-    { 
+    {
         switch (type)
         {
             // Gunshipbattle
@@ -2158,8 +2158,6 @@ public:
     {
         pInstance = (IceCrownCitadelScript*)plr->GetMapMgr()->GetScript();
 
-
-
         GossipMenu menu(pObject->getGuid(), 14500);
         menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_JETPACK, 1);
         menu.sendGossipPacket(plr);
@@ -2209,7 +2207,7 @@ class GunshipAI : public CreatureAIScript
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
     }
 
-    void DamageTaken(Unit* /*_attacker*/, uint32* damage) override
+    void DamageTaken(Unit* /*_attacker*/, uint32_t* damage) override
     {
         if (*damage >= getCreature()->getHealth())
         {
@@ -2221,7 +2219,7 @@ class GunshipAI : public CreatureAIScript
         if (_summonedFirstMage)
             return;
 
-        if (getCreature()->GetTransport()->getEntry() != uint32(_teamInInstance == TEAM_HORDE ? GO_THE_SKYBREAKER_HORDE_ICC : GO_ORGRIM_S_HAMMER_ALLIANCE_ICC))
+        if (getCreature()->GetTransport()->getEntry() != uint32_t(_teamInInstance == TEAM_HORDE ? GO_THE_SKYBREAKER_HORDE_ICC : GO_ORGRIM_S_HAMMER_ALLIANCE_ICC))
             return;
 
         if (!getCreature()->getHealthPct() > 90)
@@ -2289,7 +2287,7 @@ class GunshipAI : public CreatureAIScript
 
 private:
     uint32_t _teamInInstance;
-    std::map<uint64_t, uint32> _shipVisits;
+    std::map<uint64_t, uint32_t> _shipVisits;
     bool _summonedFirstMage;
     bool _died;
 
