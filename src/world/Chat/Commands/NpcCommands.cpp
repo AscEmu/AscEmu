@@ -548,6 +548,9 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     else
         SystemMessage(m_session, "Creature doesn't have C++/LUA gossip script");
 
+    RedSystemMessage(m_session, "EntryID: %d", creature_target->getEntry());
+    RedSystemMessage(m_session, "SpawnID: %d", creature_target->GetSQL_id());
+
     return true;
 }
 
