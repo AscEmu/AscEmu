@@ -631,7 +631,7 @@ void Transporter::setDynamicPathProgress()
     uint16_t dynamicFlags = 0; // seems to always be 0
     int16_t pathProgress = -1; // dynamic Path Progress
 
-    if (uint32 transportPeriod = getTransportPeriod())
+    if (uint32_t transportPeriod = getTransportPeriod())
     {
         float timer = float(GetTransValues()->PathProgress % transportPeriod);
         pathProgress = int16_t(timer / float(transportPeriod) * 65535.0f);
