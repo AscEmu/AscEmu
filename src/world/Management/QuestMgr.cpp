@@ -356,7 +356,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
         *data << qst->completionemotedelay[i];
     }
 
-    *data << qst->count_reward_choiceitem;
+    *data << uint32_t(qst->count_reward_choiceitem);
     if (qst->count_reward_choiceitem)
     {
         for (uint8 i = 0; i < 6; ++i)
@@ -371,7 +371,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
         }
     }
 
-    *data << qst->count_reward_item;
+    *data << uint32_t(qst->count_reward_item);
     if (qst->count_reward_item)
     {
         for (uint8 i = 0; i < 4; ++i)
@@ -588,7 +588,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 
     ItemProperties const* ip;
 
-    *data << qst->count_reward_choiceitem;
+    *data << uint32_t(qst->count_reward_choiceitem);
 
     for (uint8 i = 0; i < 6; ++i)
     {
@@ -603,7 +603,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 
     }
 
-    *data << qst->count_reward_item;
+    *data << uint32_t(qst->count_reward_item);
 
     for (uint8 i = 0; i < 4; ++i)
     {
@@ -849,7 +849,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
     *data << uint32(qst->reward_money < 0 ? -qst->reward_money : 0); // Required Money
 #endif
     // item count
-    *data << qst->count_required_item;
+    *data << uint32_t(qst->count_required_item);
 
     // (loop for each item)
     for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
