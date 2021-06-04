@@ -146,6 +146,7 @@ public:
     void loadTransportTemplates();
     void loadTransportAnimationAndRotation();
     void loadTransportForPlayers(Player* player);
+    void removeInstancedTransport(Transporter* transport, uint32_t instanceID);
 
     // Creates a transport using given GameObject template entry
     Transporter* createTransport(uint32_t entry, MapMgr* map = nullptr);

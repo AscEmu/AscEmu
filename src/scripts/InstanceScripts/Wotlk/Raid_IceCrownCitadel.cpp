@@ -349,8 +349,6 @@ public:
         // Spawning the Gunships at the same moment a player enters causes them to bug the npcs sometimes
         if(!isPrepared)
             scriptEvents.addEvent(EVENT_SPAWN_GUNSHIPS, 5000);
-        else
-            sTransportHandler.loadTransportForPlayers(player);
     }    
 
     void UpdateEvent() override
@@ -453,8 +451,7 @@ public:
             if (getData(DATA_GUNSHIP_EVENT) == Finished)
             {
                 transport->UnloadStaticPassengers();
-                transport->GetMapMgr()->RemoveFromMapMgr(transport, false);
-                transport->RemoveFromWorld(false);
+                transport->GetMapMgr()->RemoveFromMapMgr(transport, true);
             }
             break;
         case EVENT_ENEMY_GUNSHIP_COMBAT:
@@ -2210,6 +2207,7 @@ class GunshipAI : public CreatureAIScript
         _teamInInstance = mInstance->getLocalData(DATA_TEAM_IN_INSTANCE);
         _summonedFirstMage = false;
         _died = false;
+        getCreature()->setControlled(true, UNIT_STATE_ROOTED);
     }
 
     void DamageTaken(Unit* /*_attacker*/, uint32* damage) override

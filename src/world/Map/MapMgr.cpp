@@ -1648,7 +1648,7 @@ void MapMgr::_PerformObjectDuties()
             Transporter* trans = *itr;
             ++itr;
 
-            if (!trans->IsInWorld())
+            if (!trans->IsInWorld() || !trans)
                 continue;
 
             trans->Update(difftime);
@@ -2277,7 +2277,7 @@ bool MapMgr::AddToMapMgr(Transporter* obj)
     m_TransportStorage.insert(obj);
 
     // Broadcast creation to players
-    if (HasPlayers())
+    /*if (HasPlayers())
     {
         for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
         {
@@ -2288,33 +2288,38 @@ bool MapMgr::AddToMapMgr(Transporter* obj)
                 itr->second->getUpdateMgr().pushUpdateData(&buf, cnt);
             }
         }
-    }
+    }*/
 
     return true;
 }
 
 void MapMgr::RemoveFromMapMgr(Transporter* obj, bool remove)
 {
-    RemoveObject(obj, true);
+    m_TransportStorage.erase(obj);
+    sTransportHandler.removeInstancedTransport(obj, this->GetInstanceID());
 
-    if (HasPlayers())
+    RemoveObject(obj, false);
+
+    /*if (HasPlayers())
     {
         for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
         {
             if (static_cast<Object*>(itr->second)->GetTransport() != obj)
             {
+                itr->second->getUpdateMgr().pushOutOfRangeGuid(obj->GetNewGUID());
                 ByteBuffer buf(500);
                 uint32_t cnt = obj->Object::buildCreateUpdateBlockForPlayer(&buf, itr->second);
                 itr->second->getUpdateMgr().pushUpdateData(&buf, cnt);
+                itr->second->getUpdateMgr().processPendingUpdates();
+
+                obj->updateObject();
             }
         }
     }
-
-    m_TransportStorage.erase(obj);
-
+    */
     if (remove)
     {
         obj->RemoveFromWorld(true);
-        obj->ExpireAndDelete();
+        //obj->ExpireAndDelete();
     }
 }

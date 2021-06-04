@@ -413,7 +413,7 @@ void Transporter::EnableMovement(bool enabled, MapMgr* instance)
         return;
 
     _pendingStop = !enabled;
-    UpdateForMap(instance);
+    //UpdateForMap(instance);
 }
 
 void Transporter::MoveToNextWaypoint()
