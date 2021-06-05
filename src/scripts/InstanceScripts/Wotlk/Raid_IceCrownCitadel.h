@@ -702,6 +702,8 @@ enum EventsLadyDeathwhisper
     EVENT_DARNAVAN_MORTAL_STRIKE                = 30,
     EVENT_DARNAVAN_SHATTERING_THROW             = 31,
     EVENT_DARNAVAN_SUNDER_ARMOR                 = 32,
+
+    ACTION_MANABARRIER_DOWN                     = 33,
 };
 
 enum LadyDeathwhisperTextIds

@@ -1648,7 +1648,7 @@ void MapMgr::_PerformObjectDuties()
             Transporter* trans = *itr;
             ++itr;
 
-            if (!trans->IsInWorld() || !trans)
+            if (!trans || !trans->IsInWorld())
                 continue;
 
             trans->Update(difftime);

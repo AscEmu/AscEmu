@@ -423,7 +423,7 @@ public:
                 {
                     skybreaker->EnableMovement(true, mInstance);
 
-                    if(orgrimmar)
+                    if (orgrimmar)
                         orgrimmar->EnableMovement(true, mInstance);
                 }
 
@@ -431,7 +431,7 @@ public:
                 {
                     orgrimmar->EnableMovement(true, mInstance);
 
-                    if(skybreaker)
+                    if (skybreaker)
                         skybreaker->EnableMovement(true, mInstance);
                 }
             }
@@ -1411,7 +1411,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
 
     void DoAction(int32_t const action) override
     {
-        if (action == 1)
+        if (action == ACTION_MANABARRIER_DOWN)
         {
             // When Lady Deathwhsiper has her mana Barrier dont deal damage to her instead reduce her mana.
             // phase transition
@@ -1622,7 +1622,7 @@ class LadyDeathwhisperAI : public CreatureAIScript
 
         for (const auto& summon : summons)
         {
-            if(summon->IsInWorld())
+            if (summon->IsInWorld())
                 summon->Despawn(100, 0);
         }
 
@@ -1751,7 +1751,7 @@ class ManaBarrier : public SpellScript
         {
             const auto creatureOwner = static_cast<Creature*>(auraOwner);
             if (creatureOwner->GetScript() != nullptr)
-                creatureOwner->GetScript()->DoAction(1);
+                creatureOwner->GetScript()->DoAction(ACTION_MANABARRIER_DOWN);
         }
 
         return SpellScriptExecuteState::EXECUTE_PREVENT;
@@ -1997,9 +1997,8 @@ class MuradinAI : public CreatureAIScript
                 mInstance->sendUnitEncounter(EncounterFrameEngage, orgrimsHammer, 1);
 
             if (Creature* skybreaker = mInstance->getLocalCreatureData(DATA_SKYBREAKER_BOSS))
-            {
                 mInstance->sendUnitEncounter(EncounterFrameEngage, skybreaker, 2);
-            }
+
             break;
         case ACTION_SPAWN_MAGE:
             break;
@@ -2137,9 +2136,8 @@ class SaurfangAI : public CreatureAIScript
                 mInstance->sendUnitEncounter(EncounterFrameEngage, skybreaker, 1);
 
             if (Creature* orgrimsHammer = mInstance->getLocalCreatureData(DATA_ORGRIMMAR_HAMMER_BOSS))
-            {
                 mInstance->sendUnitEncounter(EncounterFrameEngage, orgrimsHammer, 2);
-            }
+
             break;
         case ACTION_SPAWN_MAGE:
             break;
