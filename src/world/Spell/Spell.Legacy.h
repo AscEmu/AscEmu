@@ -624,7 +624,6 @@ class SERVER_DECL Spell
         Corpse* GetCorpseTarget() const;
 
         uint32 chaindamage;
-        // -------------------------------------------
 
         bool IsAspect();
         bool IsSeal();

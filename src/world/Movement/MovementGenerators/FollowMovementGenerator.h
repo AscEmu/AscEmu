@@ -17,28 +17,28 @@ class Unit;
 
 class FollowMovementGenerator : public MovementGenerator, public AbstractFollower
 {
-    public:
-        explicit FollowMovementGenerator(Unit* target, float range, ChaseAngle angle);
-        ~FollowMovementGenerator();
+public:
+    explicit FollowMovementGenerator(Unit* target, float range, ChaseAngle angle);
+    ~FollowMovementGenerator();
 
-        void initialize(Unit*) override;
-        void reset(Unit*) override;
-        bool update(Unit*, uint32_t) override;
-        void deactivate(Unit*) override;
-        void finalize(Unit*, bool, bool) override;
-        MovementGeneratorType getMovementGeneratorType() const override { return FOLLOW_MOTION_TYPE; }
+    void initialize(Unit*) override;
+    void reset(Unit*) override;
+    bool update(Unit*, uint32_t) override;
+    void deactivate(Unit*) override;
+    void finalize(Unit*, bool, bool) override;
+    MovementGeneratorType getMovementGeneratorType() const override { return FOLLOW_MOTION_TYPE; }
 
-        void unitSpeedChanged() override { _lastTargetPosition.reset(); }
+    void unitSpeedChanged() override { _lastTargetPosition.reset(); }
 
-    private:
-        static constexpr uint32_t CHECK_INTERVAL = 100;
+private:
+    static constexpr uint32_t CHECK_INTERVAL = 100;
 
-        void updatePetSpeed(Unit* owner);
+    void updatePetSpeed(Unit* owner);
 
-        float const _range;
-        ChaseAngle const _angle;
+    float const _range;
+    ChaseAngle const _angle;
 
-        SmallTimeTracker _checkTimer;
-        std::unique_ptr<PathGenerator> _path;
-        Optional<LocationVector> _lastTargetPosition;
+    SmallTimeTracker _checkTimer;
+    std::unique_ptr<PathGenerator> _path;
+    Optional<LocationVector> _lastTargetPosition;
 };

@@ -64,7 +64,7 @@ namespace MovementNew {
 class MoveSpline;
 }
 
-enum MovementGeneratorType : uint8;
+enum MovementGeneratorType : uint8_t;
 
 enum UnitSpeedType : uint8_t
 {
@@ -1022,7 +1022,7 @@ public:
     ThreatManager const& getThreatManager() const { return m_threatManager; }
 
     // Do not alter anything below this line
-    // -------------------------------------
+    //////////////////////////////////////////////////////////////////////////////////////////
 
     // MIT End
     // AGPL Start

@@ -12,8 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 
-//----- Point Movement Generator
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// PointMovementGenerator
 template<class T>
 PointMovementGenerator<T>::PointMovementGenerator(uint32_t id, float x, float y, float z, bool generatePath, float speed, Optional<float> finalOrient) : _movementId(id), _x(x), _y(y), _z(z), _speed(speed), _generatePath(generatePath), _finalOrient(finalOrient)
 {
@@ -165,8 +165,8 @@ template void PointMovementGenerator<Creature>::doDeactivate(Creature*);
 template void PointMovementGenerator<Player>::doFinalize(Player*, bool, bool);
 template void PointMovementGenerator<Creature>::doFinalize(Creature*, bool, bool);
 
-//---- AssistanceMovementGenerator
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// AssistanceMovementGenerator
 void AssistanceMovementGenerator::finalize(Unit* owner, bool active, bool movementInform)
 {
     addFlag(MOVEMENTGENERATOR_FLAG_FINALIZED);

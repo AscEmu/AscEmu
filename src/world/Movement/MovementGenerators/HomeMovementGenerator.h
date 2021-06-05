@@ -10,17 +10,17 @@ This file is released under the MIT license. See README-MIT for more information
 template <class T>
 class HomeMovementGenerator : public MovementGeneratorMedium< T, HomeMovementGenerator<T> >
 {
-    public:
-        explicit HomeMovementGenerator();
+public:
+    explicit HomeMovementGenerator();
 
-        MovementGeneratorType getMovementGeneratorType() const override;
+    MovementGeneratorType getMovementGeneratorType() const override;
 
-        void doInitialize(T*);
-        void doReset(T*);
-        bool doUpdate(T*, uint32_t);
-        void doDeactivate(T*);
-        void doFinalize(T*, bool, bool);
+    void doInitialize(T*);
+    void doReset(T*);
+    bool doUpdate(T*, uint32_t);
+    void doDeactivate(T*);
+    void doFinalize(T*, bool, bool);
 
-    private:
-        void setTargetLocation(T*);
+private:
+    void setTargetLocation(T*);
 };

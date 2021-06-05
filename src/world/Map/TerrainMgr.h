@@ -77,13 +77,13 @@ struct TileMapLiquidHeader
 
 struct LiquidData
 {
-    uint32 type_flags;
-    uint32 entry;
+    uint32_t type_flags;
+    uint32_t entry;
     float  level;
     float  depth_level;
 };
 
-enum ZLiquidStatus : uint32
+enum ZLiquidStatus : uint32_t
 {
     LIQUID_MAP_NO_WATER = 0x00000000,
     LIQUID_MAP_ABOVE_WATER = 0x00000001,
