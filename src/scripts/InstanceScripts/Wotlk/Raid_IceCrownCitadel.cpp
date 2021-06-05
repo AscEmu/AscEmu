@@ -2253,7 +2253,7 @@ class GunshipAI : public CreatureAIScript
         std::list<Creature*> creatures;
         // Eject All Passengers
         GetCreatureListWithEntryInGrid(creatures, _teamInInstance == TEAM_HORDE ? NPC_GB_HORDE_CANON : NPC_GB_ALLIANCE_CANON, 900.0f);
-        for (std::list<Creature*>::iterator itr = creatures.begin(); itr != creatures.end(); ++itr)
+        for (auto itr = creatures.begin(); itr != creatures.end(); ++itr)
         {
             Creature* cannon = *itr;
             if (isVictory)
@@ -2264,7 +2264,7 @@ class GunshipAI : public CreatureAIScript
         creatures.clear();
         // Explosion
         GetCreatureListWithEntryInGrid(creatures, NPC_GB_GUNSHIP_HULL, 900.0f);
-        for (std::list<Creature*>::iterator itr = creatures.begin(); itr != creatures.end(); ++itr)
+        for (auto itr = creatures.begin(); itr != creatures.end(); ++itr)
         {
             Creature* hull = *itr;
             if (hull->GetTransport() != getCreature()->GetTransport())
