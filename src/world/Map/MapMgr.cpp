@@ -244,7 +244,8 @@ void MapMgr::PushObject(Object* obj)
     MapCell* objCell = GetCell(x, y);
     if (objCell == nullptr)
     {
-        if (objCell = Create(x, y))
+        objCell = Create(x, y);
+        if (objCell != nullptr)
         {
             objCell->Init(x, y, this);
         }
@@ -1647,7 +1648,7 @@ void MapMgr::_PerformObjectDuties()
             Transporter* trans = *itr;
             ++itr;
 
-            if (!trans->IsInWorld())
+            if (!trans || !trans->IsInWorld())
                 continue;
 
             trans->Update(difftime);
@@ -2270,50 +2271,18 @@ void MapMgr::onWorldStateUpdate(uint32 zone, uint32 field, uint32 value)
 
 bool MapMgr::AddToMapMgr(Transporter* obj)
 {
-    //if (obj->IsInWorld())
-    //    return true;
-
     m_TransportStorage.insert(obj);
-
-    // Broadcast creation to players
-    if (HasPlayers())
-    {
-        for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
-        {
-            if (static_cast<Object*>(itr->second)->GetTransport() != obj)
-            {
-                ByteBuffer buf(500);
-                uint32_t cnt = obj->Object::buildCreateUpdateBlockForPlayer(&buf, itr->second);
-                itr->second->getUpdateMgr().pushUpdateData(&buf, cnt);
-            }
-        }
-    }
 
     return true;
 }
 
 void MapMgr::RemoveFromMapMgr(Transporter* obj, bool remove)
 {
-    RemoveObject(obj, true);
-
-    if (HasPlayers())
-    {
-        for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
-        {
-            if (static_cast<Object*>(itr->second)->GetTransport() != obj)
-            {
-                ByteBuffer buf(500);
-                uint32_t cnt = obj->Object::buildCreateUpdateBlockForPlayer(&buf, itr->second);
-                itr->second->getUpdateMgr().pushUpdateData(&buf, cnt);
-            }
-        }
-    }
-
     m_TransportStorage.erase(obj);
+    sTransportHandler.removeInstancedTransport(obj, this->GetInstanceID());
+
+    RemoveObject(obj, false);
 
     if (remove)
-    {
         obj->RemoveFromWorld(true);
-        obj->ExpireAndDelete();
-    }
 }

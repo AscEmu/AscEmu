@@ -154,6 +154,13 @@ void TransportHandler::loadTransportForPlayers(Player* player)
     player->getUpdateMgr().pushCreationData(&transData, count);
 }
 
+void TransportHandler::removeInstancedTransport(Transporter* transport, uint32_t instanceID)
+{
+    auto itr = _TransportersByInstanceIdMap[instanceID].find(transport);
+    if (itr != _TransportersByInstanceIdMap[instanceID].end());
+        _TransportersByInstanceIdMap[instanceID].erase(transport);
+}
+
 bool FillTransporterPathVector(uint32_t PathID, TransportPath & Path)
 {
     // Store dbc values into current Path array
