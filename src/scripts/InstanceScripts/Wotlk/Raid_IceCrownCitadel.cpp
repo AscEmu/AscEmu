@@ -763,7 +763,8 @@ class LordMarrowgarAI : public CreatureAIScript
                     }
                     return false;
                 }))
-                getCreature()->getMovementManager()->remove(movement);
+                    getCreature()->getMovementManager()->remove(movement);
+
                 getCreature()->getMovementManager()->moveChase(getCreature()->GetAIInterface()->getCurrentTarget());
 
                 getCreature()->setSpeedRate(TYPE_RUN, baseSpeed, true);
