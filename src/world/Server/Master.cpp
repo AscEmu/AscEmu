@@ -56,7 +56,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20201216-00_rename_event_properties";
-static const char* REQUIRED_WORLD_DB_VERSION = "20210605-00_creature_spawns";
+static const char* REQUIRED_WORLD_DB_VERSION = "20210605-01_creature_spawns";
 
 void Master::_OnSignal(int s)
 {
