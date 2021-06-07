@@ -48,11 +48,13 @@ public:
         TeamInInstance = 3;
 
         // Lord Marrowgar
+        LordMarrowgar = nullptr;
         MarrowgarIcewall1GUID = 0;
         MarrowgarIcewall2GUID = 0;
         MarrowgarEntranceDoorGUID = 0;
 
         // Lady Deathwhisper
+        LadyDeathwisper = nullptr;
         LadyDeathwisperElevatorGUID = 0;
         LadyDeathwisperEntranceDoorGUID = 0;
 
@@ -117,6 +119,12 @@ public:
     {
         switch (pCreature->getEntry())
         {
+            // Lord Marrowgar
+        case CN_LORD_MARROWGAR:
+            LordMarrowgar = pCreature;
+            // Lady Deathwisper
+        case CN_LADY_DEATHWHISPER:
+            LadyDeathwisper = pCreature;
             // Gunship
         case NPC_GB_SKYBREAKER:
             SkybreakerBoss = pCreature;
@@ -310,6 +318,26 @@ public:
                 break;
             }
         }      
+    }
+
+    void OnAreaTrigger(Player* /*pPlayer*/, uint32 pAreaId)
+    {
+        printf("trigger %u \n", pAreaId);
+        switch(pAreaId)
+        {
+        case ICC_ENTRANCE:
+            break;
+        case ICC_LORD_MARROWGAR_ENTRANCE:
+            if (LordMarrowgar)
+                LordMarrowgar->GetScript()->DoAction(ACTION_MARROWGAR_INTRO_START);
+            break;
+        case ICC_LADY_DEATHWHISPER_ENTRANCE:
+            if (LadyDeathwisper)
+                LadyDeathwisper->GetScript()->DoAction(ACTION_LADY_INTRO_START);
+            break;
+        case ICC_DRAGON_HORDE:
+            break;
+        }
     }
 
     void SpawnEnemyGunship()
@@ -529,11 +557,13 @@ protected:
     uint8_t TeamInInstance;
 
     // Marrowgar
+    Creature* LordMarrowgar;
     uint32_t MarrowgarIcewall1GUID;
     uint32_t MarrowgarIcewall2GUID;
     uint32_t MarrowgarEntranceDoorGUID;
 
     // Lady Deathwhisper
+    Creature* LadyDeathwisper;
     uint32_t LadyDeathwisperElevatorGUID;
     uint32_t LadyDeathwisperEntranceDoorGUID;
 
@@ -663,7 +693,7 @@ class LordMarrowgarAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, SAY_MARR_DEATH);            // I see... Only darkness.
     }
 
-    void OnLoad() override
+    void IntroStart()
     {
         sendDBChatMessage(SAY_MARR_ENTER_ZONE);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
         introDone = true;
@@ -855,10 +885,11 @@ class LordMarrowgarAI : public CreatureAIScript
 
     void DoAction(int32_t const action) override
     {
-        if (action != ACTION_CLEAR_SPIKE_IMMUNITIES)
-            return;
+        if (action == ACTION_CLEAR_SPIKE_IMMUNITIES)
+            boneSpikeImmune.clear();
 
-        boneSpikeImmune.clear();
+        if (action == ACTION_MARROWGAR_INTRO_START)
+            IntroStart();
     }
 
 protected:
@@ -1362,9 +1393,9 @@ class LadyDeathwhisperAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, SAY_LADY_DEATH);            
     }
 
-    void OnLoad() override
+    void IntroStart()
     {
-        if (!_isInCombat() && !getScriptPhase() == PHASE_INTRO)
+        if (!_isInCombat() && getScriptPhase() >= PHASE_INTRO)
             return;
 
         ///\todo Add SpellImmunities
@@ -1412,6 +1443,9 @@ class LadyDeathwhisperAI : public CreatureAIScript
 
     void DoAction(int32_t const action) override
     {
+        if (action == ACTION_LADY_INTRO_START)
+            IntroStart();
+
         if (action == ACTION_MANABARRIER_DOWN)
         {
             // When Lady Deathwhsiper has her mana Barrier dont deal damage to her instead reduce her mana.
@@ -1770,11 +1804,11 @@ class CultAdherentAI : public CreatureAIScript
         mInstance = getInstanceScript();
 
         temporalVisualSpell         = addAISpell(SPELL_TELEPORT_VISUAL, 0.0f, TARGET_SELF);
-        frostFeverSpell             = addAISpell(SPELL_FROST_FEVER, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(10000, 12000));
-        deathchillSpell             = addAISpell(SPELL_DEATHCHILL_BLAST, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(14000, 16000));
-        curseOfTorporSpell          = addAISpell(SPELL_CURSE_OF_TORPOR, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(14000, 16000));
-        shroudOfTheOccultSpell      = addAISpell(SPELL_SHORUD_OF_THE_OCCULT, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(32000, 39000));
-        cultistDarkMartyrdomSpell   = addAISpell(SPELL_DARK_MARTYRDOM_ADHERENT, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(18000, 32000));
+        frostFeverSpell             = addAISpell(SPELL_FROST_FEVER, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(10, 12));
+        deathchillSpell             = addAISpell(SPELL_DEATHCHILL_BLAST, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(14, 16));
+        curseOfTorporSpell          = addAISpell(SPELL_CURSE_OF_TORPOR, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(14, 16));
+        shroudOfTheOccultSpell      = addAISpell(SPELL_SHORUD_OF_THE_OCCULT, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(32, 39));
+        cultistDarkMartyrdomSpell   = addAISpell(SPELL_DARK_MARTYRDOM_ADHERENT, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(18, 32));
     }
 
     void OnLoad()
@@ -1812,10 +1846,10 @@ class CultFanaticAI : public CreatureAIScript
         mInstance = getInstanceScript();
 
         temporalVisualSpell         = addAISpell(SPELL_TELEPORT_VISUAL, 0.0f, TARGET_SELF);
-        necroticStrikeSpell         = addAISpell(SPELL_NECROTIC_STRIKE, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(10000, 12000));
-        shadowCleaveSpell           = addAISpell(SPELL_SHADOW_CLEAVE, 100.0f, TARGET_ATTACKING, 0 , Util::getRandomUInt(14000, 16000));
-        vampireMightSpell           = addAISpell(SPELL_VAMPIRIC_MIGHT, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(20000, 27000));
-        darkMartyrdomSpell          = addAISpell(SPELL_DARK_MARTYRDOM_ADHERENT, 100.0f, TARGET_SELF, 0 , Util::getRandomUInt(18000, 32000));
+        necroticStrikeSpell         = addAISpell(SPELL_NECROTIC_STRIKE, 100.0f, TARGET_ATTACKING, 0, Util::getRandomUInt(10, 12));
+        shadowCleaveSpell           = addAISpell(SPELL_SHADOW_CLEAVE, 100.0f, TARGET_ATTACKING, 0 , Util::getRandomUInt(14, 16));
+        vampireMightSpell           = addAISpell(SPELL_VAMPIRIC_MIGHT, 100.0f, TARGET_SELF, 0, Util::getRandomUInt(20, 27));
+        darkMartyrdomSpell          = addAISpell(SPELL_DARK_MARTYRDOM_ADHERENT, 100.0f, TARGET_SELF, 0 , Util::getRandomUInt(18, 32));
     }
 
     void OnLoad()
