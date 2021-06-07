@@ -322,7 +322,6 @@ public:
 
     void OnAreaTrigger(Player* /*pPlayer*/, uint32 pAreaId)
     {
-        printf("trigger %u \n", pAreaId);
         switch(pAreaId)
         {
         case ICC_ENTRANCE:
