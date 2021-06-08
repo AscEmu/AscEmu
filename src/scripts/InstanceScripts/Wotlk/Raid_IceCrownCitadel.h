@@ -602,6 +602,15 @@ enum IceCrownCitadelNpcEntrys
     NPC_VALITHRIA_DREAMWALKER_QUEST             = 38589,
 };
 
+enum IceCrownCitadelAreaTriggers
+{
+    ICC_ENTRANCE                                = 5736,
+    ICC_LORD_MARROWGAR_ENTRANCE                 = 5732,
+    ICC_LADY_DEATHWHISPER_ENTRANCE              = 5709,
+    ICC_DRAGON_ALLIANCE                         = 5628,
+    ICC_DRAGON_HORDE                            = 5630,
+};
+
 enum IceCrownCitadelCNentry
 {
    CN_LORD_MARROWGAR                            = 36612,
@@ -702,8 +711,12 @@ enum EventsLadyDeathwhisper
     EVENT_DARNAVAN_MORTAL_STRIKE                = 30,
     EVENT_DARNAVAN_SHATTERING_THROW             = 31,
     EVENT_DARNAVAN_SUNDER_ARMOR                 = 32,
+};
 
-    ACTION_MANABARRIER_DOWN                     = 33,
+enum ActionsLadyDeathwisper
+{
+    ACTION_LADY_INTRO_START                     = 1,
+    ACTION_MANABARRIER_DOWN                     = 2,
 };
 
 enum LadyDeathwhisperTextIds
@@ -1165,15 +1178,16 @@ struct mortarMarksLoc
 enum MiscInfo
 {
     // Data Shares
-    DATA_COLDFLAME_GUID = 0,
-    DATA_SPIKE_IMMUNE = 1,
-    DATA_CULTIST_GUID = 2,
+    DATA_COLDFLAME_GUID                 = 0,
+    DATA_SPIKE_IMMUNE                   = 1,
+    DATA_CULTIST_GUID                   = 2,
 
     // Actions
-    ACTION_CLEAR_SPIKE_IMMUNITIES = 1,
+    ACTION_CLEAR_SPIKE_IMMUNITIES       = 1,
+    ACTION_MARROWGAR_INTRO_START        = 2,
 
     //Definitions
-    MAX_BONE_SPIKE_IMMUNE = 3,
+    MAX_BONE_SPIKE_IMMUNE               = 3,
 };
 
 uint32 const SummonEntries[2] = { NPC_CULT_FANATIC, NPC_CULT_ADHERENT };
