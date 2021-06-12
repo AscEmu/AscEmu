@@ -29,6 +29,7 @@
 #ifdef _WIN32
 #include "direct.h"
 #else
+#include <algorithm>
 #include <sys/stat.h>
 #include <unistd.h>
 #endif
@@ -89,7 +90,7 @@ uint32_t getBuildNumber()
                                             // tested for the required text we are searching for: 1, 5, 6, or 8
     unsigned char jumpBytesBuffer[128];     // used for skipping past the bytes from the file's start
                                             // to the base # area, before we start searching for the base #, for faster processing
-                                        
+
     unsigned char preWOTLKbuildNumber[3];   // will hold the last 3 digits of the build number
     unsigned char postTBCbuildNumber[4];    // will hold the last 4 digits of the build number
 
