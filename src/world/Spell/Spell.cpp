@@ -2707,7 +2707,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             } break;
             case SPELL_AURA_MOUNTED:
             {
-#if VERSION_STRING >= Cata
+#if VERSION_STRING == Cata
                 if (getSpellInfo()->getEffectMiscValueB(i) && !p_caster->getMountCapability(getSpellInfo()->getEffectMiscValueB(i)))
                     return SPELL_FAILED_NOT_HERE;
 #endif

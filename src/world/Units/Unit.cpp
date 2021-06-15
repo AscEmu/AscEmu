@@ -6289,7 +6289,7 @@ void Unit::jumpTo(Object* obj, float speedZ, bool withOrientation)
     getMovementManager()->moveJump(x, y, z, getAbsoluteAngle(obj), speedXY, speedZ, EVENT_JUMP, withOrientation);
 }
 
-#if VERSION_STRING >= Cata
+#if VERSION_STRING == Cata
 DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t mountType)
 {
     if (!mountType)

@@ -1150,7 +1150,7 @@ public:
     // Spell Effect Variables
     int32 m_silenced;
     bool m_damgeShieldsInUse;
-#if VERSION_STRING >= Cata
+#if VERSION_STRING == Cata
     DBC::Structures::MountCapabilityEntry const* getMountCapability(uint32_t mountType);
 #endif
     std::list<struct DamageProc> m_damageShields;
