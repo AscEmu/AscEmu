@@ -77,7 +77,7 @@ void WorldSession::handleRequestVehicleSwitchSeat(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::handleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket)
+void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPacket& recvPacket)
 {
     if (_player->getCurrentVehicle() == nullptr)
         return;

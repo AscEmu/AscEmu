@@ -85,7 +85,7 @@ namespace AscEmu::Packets
             {
                 for (auto const& data : enum_data)
                 {
-                    WoWGuid guid(data.guid, 0, HIGHGUID_TYPE_PLAYER);
+                    WoWGuid guid(data.guid);
                     WoWGuid guildGuid(data.guildId, 0, HIGHGUID_TYPE_GUILD);
 
                     packet.writeBit(guid[3]);

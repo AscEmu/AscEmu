@@ -407,7 +407,7 @@ void Transporter::UpdatePlayerPositions(PassengerSet& passengers)
     }
 }
 
-void Transporter::EnableMovement(bool enabled, MapMgr* instance)
+void Transporter::EnableMovement(bool enabled, MapMgr* /*instance*/)
 {
     if (!GetGameObjectProperties()->mo_transport.can_be_stopped)
         return;

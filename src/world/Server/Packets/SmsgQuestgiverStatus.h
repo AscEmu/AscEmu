@@ -24,7 +24,11 @@ namespace AscEmu::Packets
         {
         }
 
+#if VERSION_STRING < Cata
+        SmsgQuestgiverStatus(uint64_t questgiverGuid, uint8_t status) :
+#else
         SmsgQuestgiverStatus(uint64_t questgiverGuid, uint32_t status) :
+#endif
             ManagedPacket(SMSG_QUESTGIVER_STATUS, 0),
             questgiverGuid(questgiverGuid),
             status(status)

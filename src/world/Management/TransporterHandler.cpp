@@ -157,7 +157,7 @@ void TransportHandler::loadTransportForPlayers(Player* player)
 void TransportHandler::removeInstancedTransport(Transporter* transport, uint32_t instanceID)
 {
     auto itr = _TransportersByInstanceIdMap[instanceID].find(transport);
-    if (itr != _TransportersByInstanceIdMap[instanceID].end());
+    if (itr != _TransportersByInstanceIdMap[instanceID].end())
         _TransportersByInstanceIdMap[instanceID].erase(transport);
 }
 

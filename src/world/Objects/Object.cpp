@@ -2233,7 +2233,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 #endif
 
 #if VERSION_STRING == Cata
-void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
 {
     ObjectGuid Guid = getGuid();
     uint32_t movementFlags = 0;
