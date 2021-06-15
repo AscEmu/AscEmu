@@ -6288,3 +6288,66 @@ void Unit::jumpTo(Object* obj, float speedZ, bool withOrientation)
     float speedXY = getExactDist2d(x, y) * 10.0f / speedZ;
     getMovementManager()->moveJump(x, y, z, getAbsoluteAngle(obj), speedXY, speedZ, EVENT_JUMP, withOrientation);
 }
+
+#if VERSION_STRING >= Cata
+DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t mountType)
+{
+    if (!mountType)
+        return NULL;
+
+    auto const* mountTypeEntry = sMountTypeStore.LookupEntry(mountType);
+    if (!mountTypeEntry)
+        return NULL;
+
+    uint32_t zoneId, areaId = 0;
+
+    zoneId = GetZoneId();
+    areaId = GetArea()->id;
+
+    uint32_t ridingSkill = 5000;
+    if (GetTypeFromGUID() == TYPEID_PLAYER)
+        ridingSkill = ToPlayer()->_GetSkillLineCurrent(SKILL_RIDING);
+
+    for (uint32 i = MAX_MOUNT_CAPABILITIES; i > 0; --i)
+    {
+        auto const* mountCapability = sMountCapabilityStore.LookupEntry(mountTypeEntry->capabilities[i - 1]);
+        if (!mountCapability)
+            continue;
+
+        if (ridingSkill < mountCapability->reqRidingSkill)
+            continue;
+
+        if (hasExtraUnitMovementFlag(MOVEFLAG2_FULLSPEED_PITCHING))
+        {
+            if (!(mountCapability->flag & MOUNT_FLAG_CAN_PITCH))
+                continue;
+        }
+        else if (hasUnitMovementFlag(MOVEFLAG_SWIMMING))
+        {
+            if (!(mountCapability->flag & MOUNT_FLAG_CAN_SWIM))
+                continue;
+        }
+        else if (!(mountCapability->flag & 0x1))   // unknown flags, checked in 4.2.2 14545 client
+        {
+            if (!(mountCapability->flag & 0x2))
+                continue;
+        }
+
+        if (mountCapability->reqMap != -1 && int32(GetMapId()) != mountCapability->reqMap)
+            continue;
+
+        if (mountCapability->reqArea && (mountCapability->reqArea != zoneId && mountCapability->reqArea != areaId))
+            continue;
+
+        if (mountCapability->reqAura && !HasAura(mountCapability->reqAura))
+            continue;
+
+        if (mountCapability->reqSpell && (GetTypeFromGUID() != TYPEID_PLAYER || !ToPlayer()->HasSpell(mountCapability->reqSpell)))
+            continue;
+
+        return mountCapability;
+    }
+
+    return nullptr;
+}
+#endif

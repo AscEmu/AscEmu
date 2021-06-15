@@ -22,6 +22,9 @@ struct NameGenData
 
 std::vector<NameGenData> _namegenData[3];
 
+SERVER_DECL DBC::DBCStorage<DBC::Structures::MountCapabilityEntry>  sMountCapabilityStore(DBC::Structures::mount_capability_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::MountTypeEntry>    sMountTypeStore(DBC::Structures::mount_type_format);
+
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore(DBC::Structures::achievement_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore(DBC::Structures::achievement_criteria_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupStore(DBC::Structures::area_group_format);
@@ -136,6 +139,9 @@ bool LoadDBCs()
     uint32 available_dbc_locales = 0xFFFFFFFF;
     DBC::StoreProblemList bad_dbc_files;
     std::string dbc_path = sWorld.settings.server.dataDir + "dbc/";
+
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sMountCapabilityStore, dbc_path, "MountCapability.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sMountTypeStore, dbc_path, "MountType.dbc");
 
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sWorldMapOverlayStore, dbc_path, "WorldMapOverlay.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAchievementCriteriaStore, dbc_path, "Achievement_Criteria.dbc");
