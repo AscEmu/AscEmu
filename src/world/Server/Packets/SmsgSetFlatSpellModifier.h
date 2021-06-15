@@ -13,6 +13,7 @@ namespace AscEmu::Packets
     class SmsgSetFlatSpellModifier : public ManagedPacket
     {
     public:
+#if VERSION_STRING < Cata
         uint8_t spellGroup;
         uint8_t spellType;
         uint32_t modifier;
@@ -28,16 +29,48 @@ namespace AscEmu::Packets
             modifier(modifier)
         {
         }
+#else
+        uint32_t unk; // probably count for different modifier types in packet
+        uint32_t modCount;
+        uint8_t spellType;
+        std::vector<std::pair<uint8_t, float>> modValues;
+
+        SmsgSetFlatSpellModifier() : SmsgSetFlatSpellModifier(0, {})
+        {
+        }
+
+        SmsgSetFlatSpellModifier(uint8_t spellType, std::vector<std::pair<uint8_t, float>> modValues) :
+            ManagedPacket(SMSG_SET_FLAT_SPELL_MODIFIER, 0),
+            spellType(spellType),
+            modValues(modValues),
+            unk(1),
+            modCount(static_cast<uint32_t>(modValues.size()))
+        {
+        }
+#endif
 
     protected:
         size_t expectedSize() const override
         {
+#if VERSION_STRING < Cata
             return 1 + 1 + 4;
+#else
+            return 4 + 4 + 1 + ((1 + 4) * modValues.size());
+#endif
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING < Cata
             packet << spellGroup << spellType << modifier;
+#else
+            packet << unk << modCount << spellType;
+
+            for (const auto& mod : modValues)
+            {
+                packet << mod.first << mod.second;
+            }
+#endif
             return true;
         }
 

@@ -1318,7 +1318,11 @@ public:
     void sendPlaySoundPacket(uint32_t soundId);
     void sendExploreExperiencePacket(uint32_t areaId, uint32_t experience);
     void sendSpellCooldownEventPacket(uint32_t spellId);
+#if VERSION_STRING < Cata
     void sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int32_t modifier, bool isPct);
+#else
+    void sendSpellModifierPacket(uint8_t spellType, std::vector<std::pair<uint8_t, float>> modValues, bool isPct);
+#endif
     void sendLoginVerifyWorldPacket(uint32_t mapId, float posX, float posY, float posZ, float orientation);
     void sendMountResultPacket(uint32_t result);
     void sendDismountResultPacket(uint32_t result);
