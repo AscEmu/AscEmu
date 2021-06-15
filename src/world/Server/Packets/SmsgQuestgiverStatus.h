@@ -14,7 +14,11 @@ namespace AscEmu::Packets
     {
     public:
         uint64_t questgiverGuid;
+#if VERSION_STRING < Cata
+        uint8_t status;
+#else
         uint32_t status;
+#endif
 
         SmsgQuestgiverStatus() : SmsgQuestgiverStatus(0, 0)
         {
@@ -29,7 +33,14 @@ namespace AscEmu::Packets
 
     protected:
 
-        size_t expectedSize() const override { return 12; }
+        size_t expectedSize() const override
+        {
+#if VERSION_STRING < Cata
+            return 8 + 1;
+#else
+            return 8 + 4;
+#endif
+        }
 
         bool internalSerialise(WorldPacket& packet) override
         {
