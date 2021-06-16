@@ -3830,6 +3830,9 @@ void Aura::SendDummyModifierLog(std::map< SpellInfo*, uint32 >* m, SpellInfo* sp
             m->erase(itr);
     }
 
+#if VERSION_STRING >= Cata
+    std::vector<std::pair<uint8_t, float>> modValues;
+#endif
     uint32 intbit = 0, groupnum = 0;
     for (uint8 bit = 0; bit < SPELL_GROUPS; ++bit, ++intbit)
     {
@@ -3843,9 +3846,20 @@ void Aura::SendDummyModifierLog(std::map< SpellInfo*, uint32 >* m, SpellInfo* sp
             if (p_target == nullptr)
                 continue;
 
+#if VERSION_STRING < Cata
             p_target->sendSpellModifierPacket(bit, type, v, pct);
+#else
+            modValues.push_back(std::make_pair(bit, static_cast<float>(v)));
+#endif
         }
     }
+
+#if VERSION_STRING >= Cata
+    if (p_target != nullptr)
+        p_target->sendSpellModifierPacket(type, modValues, pct);
+
+    modValues.clear();
+#endif
 }
 
 void Aura::SpellAuraAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply)

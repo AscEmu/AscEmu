@@ -13,25 +13,41 @@ namespace QuestStatus
 {
     enum
     {
-        NotAvailable = 0x00,                // There aren't any quests available.              | "No Mark"
-        AvailableButLevelTooLow = 0x01,     // Quest available, and your level isn't enough.   | "Gray Quotation Mark !"
-        AvailableChat = 0x02,               // Quest available it shows a talk balloon.        | "No Mark"
+#if VERSION_STRING < Cata
+        NotAvailable = 0x00,                 // There aren't any quests available.              | "No Mark"
+        AvailableButLevelTooLow = 0x01,      // Quest available, and your level isn't enough.   | "Gray Quotation Mark !"
+        AvailableChat = 0x02,                // Quest available it shows a talk balloon.        | "No Mark"
 
 #if VERSION_STRING < WotLK
-        NotFinished = 0x03,                 // Quest isn't finished yet.                       | "Gray Question ? Mark"
+        NotFinished = 0x03,                  // Quest isn't finished yet.                       | "Gray Question ? Mark"
         RepeatableFinished = 0x04,
-        Repeatable = 0x05,                  // Quest repeatable                                | "Blue Question ? Mark"
-        Available = 0x06,                   // Quest available, and your level is enough       | "Yellow Quotation ! Mark"
-        Finished = 0x07,                    // Quest has been finished.                        | "Yellow Question  ? Mark" (7 has no minimap icon)
+        Repeatable = 0x05,                   // Quest repeatable                                | "Blue Question ? Mark"
+        Available = 0x06,                    // Quest available, and your level is enough       | "Yellow Quotation ! Mark"
+        Finished2 = 0x07,                    // Quest has been finished.                        | "Yellow Question  ? Mark" no minimap dot
+        Finished = 0x08,                     // Quest has been finished.                        | "Yellow Question  ? Mark" with minimap dot
 #else
         // On 3.1.2 0x03 and 0x04 is some new status, so the old ones are now shifted by 2 (0x03->0x05 and so on).
         RepeatableFinishedLowLevel = 0x03,
         RepeatableLowLevel = 0x04,
-        NotFinished = 0x05,                 // Quest isn't finished yet.                       | "Gray Question ? Mark"
+        NotFinished = 0x05,                  // Quest isn't finished yet.                       | "Gray Question ? Mark"
         RepeatableFinished = 0x06,
-        Repeatable = 0x07,                  // Quest repeatable                                | "Blue Question ? Mark"
-        Available = 0x08,                   // Quest available, and your level is enough       | "Yellow Quotation ! Mark"
-        Finished = 0x0A,                    // Quest has been finished.                        | "Yellow Question  ? Mark" (7 has no minimap icon)
+        Repeatable = 0x07,                   // Quest repeatable                                | "Blue Question ? Mark"
+        Available = 0x08,                    // Quest available, and your level is enough       | "Yellow Quotation ! Mark"
+        Finished2 = 0x09,                    // Quest has been finished.                        | "Yellow Question  ? Mark" no minimap dot
+        Finished = 0x0A,                     // Quest has been finished.                        | "Yellow Question  ? Mark" with minimap dot
+#endif
+#else
+        NotAvailable = 0x000,                // There aren't any quests available.              | "No Mark"
+        AvailableButLevelTooLow = 0x002,     // Quest available, and your level isn't enough.   | "Gray Quotation Mark !"
+        AvailableChat = 0x004,               // Quest available it shows a talk balloon.        | "No Mark"
+        RepeatableFinishedLowLevel = 0x008,
+        RepeatableLowLevel = 0x010,
+        NotFinished = 0x020,                 // Quest isn't finished yet.                       | "Gray Question ? Mark"
+        RepeatableFinished = 0x040,
+        Repeatable = 0x080,                  // Quest repeatable                                | "Blue Question ? Mark"
+        Available = 0x100,                   // Quest available, and your level is enough       | "Yellow Quotation ! Mark"
+        Finished2 = 0x200,                   // Quest has been finished.                        | "Yellow Question  ? Mark" no minimap dot
+        Finished = 0x400,                    // Quest has been finished.                        | "Yellow Question  ? Mark" with minimap dot
 #endif
     };
 }

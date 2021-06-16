@@ -118,7 +118,11 @@ void WorldSession::handleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/)
             if (creature->isQuestGiver())
             {
                 temp.rawGuid = creature->getGuid();
-                temp.status = uint8_t(sQuestMgr.CalcStatus(creature, _player));
+#if VERSION_STRING < Cata
+                temp.status = static_cast<uint8_t>(sQuestMgr.CalcStatus(creature, _player));
+#else
+                temp.status = sQuestMgr.CalcStatus(creature, _player);
+#endif
                 questgiverSet.push_back(temp);
             }
         }

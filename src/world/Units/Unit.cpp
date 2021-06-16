@@ -3091,6 +3091,10 @@ void Unit::addSpellModifier(AuraEffectModifier const* aurEff, bool apply)
     const auto aur = aurEff->getAura();
     if (isPlayer())
     {
+#if VERSION_STRING >= Cata
+        std::vector<std::pair<uint8_t, float>> modValues;
+#endif
+        const auto isPct = aurEff->getAuraEffectType() == SPELL_AURA_ADD_PCT_MODIFIER;
         uint8_t groupNum = 0, intBit = 0;
         for (uint8_t bit = 0; bit < SPELL_GROUPS; ++bit, ++intBit)
         {
@@ -3113,10 +3117,18 @@ void Unit::addSpellModifier(AuraEffectModifier const* aurEff, bool apply)
                 }
                 totalMod += apply ? aurEff->getEffectDamage() : -aurEff->getEffectDamage();
 
-                const auto isPct = aurEff->getAuraEffectType() == SPELL_AURA_ADD_PCT_MODIFIER;
+#if VERSION_STRING < Cata
                 static_cast<Player*>(this)->sendSpellModifierPacket(bit, static_cast<uint8_t>(aurEff->getEffectMiscValue()), totalMod, isPct);
+#else
+                modValues.push_back(std::make_pair(bit, static_cast<float>(totalMod)));
+#endif
             }
         }
+
+#if VERSION_STRING >= Cata
+        static_cast<Player*>(this)->sendSpellModifierPacket(static_cast<uint8_t>(aurEff->getEffectMiscValue()), modValues, isPct);
+        modValues.clear();
+#endif
     }
 
     if (apply)

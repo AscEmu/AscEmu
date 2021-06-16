@@ -482,7 +482,11 @@ void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const uint32_t questStatus = sQuestMgr.CalcStatus(qst_giver, _player);
+#if VERSION_STRING < Cata
+    const auto questStatus = static_cast<uint8_t>(sQuestMgr.CalcStatus(qst_giver, _player));
+#else
+    const auto questStatus = sQuestMgr.CalcStatus(qst_giver, _player);
+#endif
     SendPacket(SmsgQuestgiverStatus(srlPacket.questGiverGuid.getRawGuid(), questStatus).serialise().get());
 }
 

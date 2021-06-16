@@ -3788,6 +3788,7 @@ void Player::sendSpellCooldownEventPacket(uint32_t spellId)
     m_session->SendPacket(SmsgCooldownEvent(spellId, getGuid()).serialise().get());
 }
 
+#if VERSION_STRING < Cata
 void Player::sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int32_t modifier, bool isPct)
 {
     if (isPct)
@@ -3795,6 +3796,15 @@ void Player::sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int3
     else
         m_session->SendPacket(SmsgSetFlatSpellModifier(spellGroup, spellType, modifier).serialise().get());
 }
+#else
+void Player::sendSpellModifierPacket(uint8_t spellType, std::vector<std::pair<uint8_t, float>> modValues, bool isPct)
+{
+    if (isPct)
+        m_session->SendPacket(SmsgSetPctSpellModifier(spellType, modValues).serialise().get());
+    else
+        m_session->SendPacket(SmsgSetFlatSpellModifier(spellType, modValues).serialise().get());
+}
+#endif
 
 void Player::sendLoginVerifyWorldPacket(uint32_t mapId, float posX, float posY, float posZ, float orientation)
 {
