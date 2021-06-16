@@ -3927,7 +3927,7 @@ void Aura::SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply)
                 p_target->m_RootedCritChanceBonus += val;
             }
             break;
-            // ----?
+            // ?
         case 3736:
         case 4415:
         case 4418:

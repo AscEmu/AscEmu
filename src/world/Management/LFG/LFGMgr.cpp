@@ -971,7 +971,8 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         return false;
     }
 
-    // ----- Player checks -----
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Player checks
     LfgRolesMap rolesMap;
     uint64 leader = 0;
     for (LfgQueueInfoMap::const_iterator it = pqInfoMap.begin(); it != pqInfoMap.end(); ++it)
@@ -1024,8 +1025,8 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         SetCompatibles(strGuids, false);
         return false;
     }
-
-    // ----- Selected Dungeon checks -----
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Selected Dungeon checks
     // Check if there are any compatible dungeon from the selected dungeons
     LfgDungeonSet compatibleDungeons;
 
@@ -1054,7 +1055,8 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     }
     SetCompatibles(strGuids, true);
 
-    // ----- Group is compatible, if we have MAXGROUPSIZE members then match is found
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Group is compatible, if we have MAXGROUPSIZE members then match is found
     if (numPlayers != 5)
     {
         sLogger.debug("(%s) Compatibles but not match. Players(%u)", strGuids.c_str(), numPlayers);

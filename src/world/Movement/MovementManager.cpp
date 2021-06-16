@@ -986,8 +986,8 @@ void MovementManager::launchMoveSpline(MovementNew::MoveSplineInit&& init, uint3
     add(movement);
 }
 
-/******************** Private methods ********************/
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// Private methods
 void MovementManager::resolveDelayedActions()
 {
     while (!_delayedActions.empty())
@@ -1158,5 +1158,3 @@ void MovementManager::clearBaseUnitStates()
     _owner->removeUnitStateFlag(unitState);
     _baseUnitStatesMap.clear();
 }
-
-

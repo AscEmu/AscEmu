@@ -1253,11 +1253,11 @@ ZLiquidStatus MapMgr::getLiquidStatus(uint32 /*phaseMask*/, float x, float y, fl
             float delta = liquid_level - z;
 
             // Get position delta
-            if (delta > collisionHeight)                   // Under water
+            if (delta > collisionHeight)        // Under water
                 return LIQUID_MAP_UNDER_WATER;
             if (delta > 0.0f)                   // In water
                 return LIQUID_MAP_IN_WATER;
-            if (delta > -0.1f)                   // Walk on water
+            if (delta > -0.1f)                  // Walk on water
                 return LIQUID_MAP_WATER_WALK;
             result = LIQUID_MAP_ABOVE_WATER;
         }

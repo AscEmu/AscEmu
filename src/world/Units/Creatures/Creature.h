@@ -37,7 +37,7 @@ struct QuestRelation;
 struct QuestProperties;
 class CreatureGroup;
 
-enum MovementGeneratorType : uint8;
+enum MovementGeneratorType : uint8_t;
 
 uint8 get_byte(uint32 buffer, uint32 index);
 
@@ -396,8 +396,6 @@ public:
         CreatureGroup* m_formation;
 
         float_t m_wanderDistance = 0.0f;
-
-        // old EasyFunctions.h
 };
 
 #endif // _WOWSERVER_CREATURE_H
