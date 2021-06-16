@@ -22,8 +22,8 @@ struct NameGenData
 
 std::vector<NameGenData> _namegenData[3];
 
-SERVER_DECL DBC::DBCStorage<DBC::Structures::MountCapabilityEntry>  sMountCapabilityStore(DBC::Structures::mount_capability_format);
-SERVER_DECL DBC::DBCStorage<DBC::Structures::MountTypeEntry>    sMountTypeStore(DBC::Structures::mount_type_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::MountCapabilityEntry> sMountCapabilityStore(DBC::Structures::mount_capability_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::MountTypeEntry> sMountTypeStore(DBC::Structures::mount_type_format);
 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore(DBC::Structures::achievement_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore(DBC::Structures::achievement_criteria_format);

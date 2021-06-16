@@ -150,8 +150,8 @@ enum Targets
 
 enum MountFlags
 {
-    MOUNT_FLAG_CAN_PITCH    = 0x4,                    // client checks MOVEMENTFLAG2_FULL_SPEED_PITCHING
-    MOUNT_FLAG_CAN_SWIM     = 0x8,                    // client checks MOVEMENTFLAG_SWIMMING
+    MOUNT_FLAG_CAN_PITCH    = 0x4, // client checks MOVEMENTFLAG2_FULL_SPEED_PITCHING
+    MOUNT_FLAG_CAN_SWIM     = 0x8, // client checks MOVEMENTFLAG_SWIMMING
 };
 
 struct DBCPosition3D
@@ -2126,9 +2126,9 @@ namespace DBC::Structures
     #define MAX_MOUNT_CAPABILITIES 24
     struct MountTypeEntry
     {
-        uint32  id;                                             // 0 index
-        uint32  capabilities[MAX_MOUNT_CAPABILITIES];            // 1-17 capability ids from MountCapability.dbc
-        //uint32  empty[7];                                     // 18-24 empty. maybe continues capabilities
+        uint32_t id;                                             // 0 index
+        uint32_t capabilities[MAX_MOUNT_CAPABILITIES];           // 1-17 capability ids from MountCapability.dbc
+        //uint32_t  empty[7];                                    // 18-24 empty. maybe continues capabilities
     };
 
     struct WMOAreaTableEntry

@@ -6308,7 +6308,7 @@ DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t m
     if (GetTypeFromGUID() == TYPEID_PLAYER)
         ridingSkill = ToPlayer()->_GetSkillLineCurrent(SKILL_RIDING);
 
-    for (uint32 i = MAX_MOUNT_CAPABILITIES; i > 0; --i)
+    for (uint32_t i = MAX_MOUNT_CAPABILITIES; i > 0; --i)
     {
         auto const* mountCapability = sMountCapabilityStore.LookupEntry(mountTypeEntry->capabilities[i - 1]);
         if (!mountCapability)
