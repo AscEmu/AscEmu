@@ -6293,16 +6293,14 @@ void Unit::jumpTo(Object* obj, float speedZ, bool withOrientation)
 DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t mountType)
 {
     if (!mountType)
-        return NULL;
+        return nullptr;
 
     auto const* mountTypeEntry = sMountTypeStore.LookupEntry(mountType);
     if (!mountTypeEntry)
-        return NULL;
+        return nullptr;
 
-    uint32_t zoneId, areaId = 0;
-
-    zoneId = GetZoneId();
-    areaId = GetArea()->id;
+    uint32_t zoneId = GetZoneId();
+    uint32_t areaId = GetArea()->id;
 
     uint32_t ridingSkill = 5000;
     if (GetTypeFromGUID() == TYPEID_PLAYER)
@@ -6333,7 +6331,7 @@ DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t m
                 continue;
         }
 
-        if (mountCapability->reqMap != -1 && int32(GetMapId()) != mountCapability->reqMap)
+        if (mountCapability->reqMap != -1 && int32_t(GetMapId()) != mountCapability->reqMap)
             continue;
 
         if (mountCapability->reqArea && (mountCapability->reqArea != zoneId && mountCapability->reqArea != areaId))
