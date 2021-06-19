@@ -8313,7 +8313,7 @@ void Player::_UpdateSkillFields()
 {
     int index = 0;
 
-    /* Set the valid skills*/
+    /* Set the valid skills */
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end();)
     {
         if (!itr->first)
