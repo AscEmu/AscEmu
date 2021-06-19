@@ -8374,8 +8374,8 @@ void Player::_UpdateSkillFields()
 
     for (int i = 0; i < WOWPLAYER_SKILL_INFO_COUNT; ++i)
     {
-        uint16 field = i / 2;
-        uint8 offset = i & 1; // i % 2
+        uint16_t field = i / 2;
+        uint8_t offset = i & 1; // i % 2
 
         /* Null out the rest of the fields */
         if (!getSkillLineId(field, offset))
