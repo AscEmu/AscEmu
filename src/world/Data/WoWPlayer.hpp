@@ -454,7 +454,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_NO_REAGENT_COST_COUNT 3
 #define WOWPLAYER_GLYPH_SLOT_COUNT 9
 #define WOWPLAYER_KNOWN_TITLES_SIZE 4
-#define WOWPLAYER_SKILL_INFO_COUNT 384
+#define WOWPLAYER_SKILL_INFO_COUNT 128
 
 struct WoWPlayer_Quest
 {
@@ -519,7 +519,6 @@ struct WoWPlayer : WoWUnit
             uint32_t skill_mod[64];
             uint32_t skill_talent[64];
         } skill_info_parts;
-        uint32_t skill_info[WOWPLAYER_SKILL_INFO_COUNT];
     };
 
     uint32_t character_points_1;
