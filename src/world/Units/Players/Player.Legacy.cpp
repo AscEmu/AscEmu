@@ -8311,7 +8311,7 @@ void Player::_UpdateSkillFields()
 #else
 void Player::_UpdateSkillFields()
 {
-    int index = 0;
+    uint16_t index = 0;
 
     /* Set the valid skills */
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end();)
@@ -8372,7 +8372,7 @@ void Player::_UpdateSkillFields()
         index++;
     }
 
-    for (int i = 0; i < WOWPLAYER_SKILL_INFO_COUNT; ++i)
+    for (uint16_t i = 0; i < WOWPLAYER_SKILL_INFO_COUNT; ++i)
     {
         uint16_t field = i / 2;
         uint8_t offset = i & 1; // i % 2
@@ -8387,7 +8387,6 @@ void Player::_UpdateSkillFields()
         }
     }
 }
-
 #endif
 
 bool Player::_HasSkillLine(uint32 SkillLine)

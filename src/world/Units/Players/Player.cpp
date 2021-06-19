@@ -439,10 +439,10 @@ void Player::setSkillLineId(uint32_t index, uint32_t value) { write(playerData()
 void Player::setSkillStep(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_step[index], value); }
 void Player::setSkillCurrentValue(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_rank[index], value); }
 void Player::setSkillMaximumValue(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_max_rank[index], value); }
-uint16_t Player::getSkillLineId(uint32_t index, uint8_t offset) const { return *(((uint16*)&playerData()->skill_info_parts.skill_line[index]) + offset); }
-uint16_t Player::getSkillStep(uint32_t index, uint8_t offset) const { return *(((uint16*)&playerData()->skill_info_parts.skill_step[index]) + offset); }
-uint16_t Player::getSkillCurrentValue(uint32_t index, uint8_t offset) const { return *(((uint16*)&playerData()->skill_info_parts.skill_rank[index]) + offset); }
-uint16_t Player::getSkillMaximumValue(uint32_t index, uint8_t offset) const { return *(((uint16*)&playerData()->skill_info_parts.skill_max_rank[index]) + offset); }
+uint16_t Player::getSkillLineId(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_line[index]) + offset); }
+uint16_t Player::getSkillStep(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_step[index]) + offset); }
+uint16_t Player::getSkillCurrentValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_rank[index]) + offset); }
+uint16_t Player::getSkillMaximumValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_max_rank[index]) + offset); }
 #endif
 
 uint32_t Player::getFreeTalentPoints() const

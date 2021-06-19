@@ -583,7 +583,6 @@ public:
     void setSkillMaximumValue(uint32_t index, uint32_t value);
 #endif
 
-
     uint32_t getFreeTalentPoints() const;
 #if VERSION_STRING < Cata
     void setFreeTalentPoints(uint32_t points);
