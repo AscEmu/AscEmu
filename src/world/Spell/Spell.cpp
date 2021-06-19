@@ -2707,6 +2707,11 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             } break;
             case SPELL_AURA_MOUNTED:
             {
+#if VERSION_STRING == Cata
+                if (getSpellInfo()->getEffectMiscValueB(i) && !p_caster->getMountCapability(getSpellInfo()->getEffectMiscValueB(i)))
+                    return SPELL_FAILED_NOT_HERE;
+#endif
+
                 if (worldConfig.terrainCollision.isCollisionEnabled)
                 {
                     if (!MapManagement::AreaManagement::AreaStorage::IsOutdoor(m_caster->GetMapId(), m_caster->GetPositionNC().x, m_caster->GetPositionNC().y, m_caster->GetPositionNC().z))

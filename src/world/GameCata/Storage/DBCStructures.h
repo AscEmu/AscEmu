@@ -148,6 +148,12 @@ enum Targets
     TARGET_127                                  = 127,
 };
 
+enum MountFlags
+{
+    MOUNT_FLAG_CAN_PITCH    = 0x4, // client checks MOVEMENTFLAG2_FULL_SPEED_PITCHING
+    MOUNT_FLAG_CAN_SWIM     = 0x8, // client checks MOVEMENTFLAG_SWIMMING
+};
+
 struct DBCPosition3D
 {
     float X;
@@ -238,8 +244,8 @@ namespace DBC::Structures
         char const mail_template_format[] = "nss";  //nxs
         char const map_format[] = "nsiiiisissififfiiiii";
         //char const map_difficulty_entry_format[] = "niisiis"; new
-        //char const mount_capability_format[] = "niiiiiii"; new
-        //char const mount_type_format[] = "niiiiiiiiiiiiiiiiiiiiiiii"; new
+        char const mount_capability_format[] = "niiiiiii";
+        char const mount_type_format[] = "niiiiiiiiiiiiiiiiiiiiiiii";
         //char const movie_entry_format[] = "nxxx"; new
         char const name_gen_format[] = "nsii";
         char const num_talents_at_level_format[] = "df";
@@ -2103,6 +2109,26 @@ namespace DBC::Structures
             else
                 return false;
         }
+    };
+
+    struct MountCapabilityEntry
+    {
+        uint32_t  id;                                             // 0 index
+        uint32_t  flag;                                           // 1 some flag
+        uint32_t  reqRidingSkill;                                  // 2 skill level of riding required
+        uint32_t  reqArea;                                        // 3 required Area
+        uint32_t  reqAura;                                        // 4 required Aura
+        uint32_t  reqSpell;                                       // 5 spell that has to be known to you
+        uint32_t  speedModSpell;                                  // 6 spell to cast to apply mount speed effects
+        uint32_t  reqMap;                                         // 7 map where this is applicable
+    };
+
+    #define MAX_MOUNT_CAPABILITIES 24
+    struct MountTypeEntry
+    {
+        uint32_t id;                                             // 0 index
+        uint32_t capabilities[MAX_MOUNT_CAPABILITIES];           // 1-17 capability ids from MountCapability.dbc
+        //uint32_t  empty[7];                                    // 18-24 empty. maybe continues capabilities
     };
 
     struct WMOAreaTableEntry
