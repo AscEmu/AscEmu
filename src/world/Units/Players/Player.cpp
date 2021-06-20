@@ -431,8 +431,19 @@ void Player::setXp(uint32_t xp) { write(playerData()->xp, xp); }
 uint32_t Player::getNextLevelXp() const { return playerData()->next_level_xp; }
 void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
 
+#if VERSION_STRING < Cata
 uint32_t Player::getValueFromSkillInfoIndex(uint32_t index) const { return playerData()->skill_info[index]; }
 void Player::setValueBySkillInfoIndex(uint32_t index, uint32_t value) { write(playerData()->skill_info[index], value); }
+#else
+void Player::setSkillLineId(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_line[index], value); }
+void Player::setSkillStep(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_step[index], value); }
+void Player::setSkillCurrentValue(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_rank[index], value); }
+void Player::setSkillMaximumValue(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_max_rank[index], value); }
+uint16_t Player::getSkillLineId(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_line[index]) + offset); }
+uint16_t Player::getSkillStep(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_step[index]) + offset); }
+uint16_t Player::getSkillCurrentValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_rank[index]) + offset); }
+uint16_t Player::getSkillMaximumValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_max_rank[index]) + offset); }
+#endif
 
 uint32_t Player::getFreeTalentPoints() const
 {

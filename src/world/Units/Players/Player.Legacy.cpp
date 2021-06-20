@@ -8309,10 +8309,9 @@ void Player::_UpdateSkillFields()
     }
 }
 #else
-//\todo these fields are not correct for Cata!
 void Player::_UpdateSkillFields()
 {
-    uint16 f = 0;
+    uint16_t index = 0;
 
     /* Set the valid skills */
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end();)
@@ -8324,39 +8323,68 @@ void Player::_UpdateSkillFields()
             continue;
         }
 
-        ARCEMU_ASSERT(f <= WOWPLAYER_SKILL_INFO_COUNT);
+        uint16_t field = index / 2;
+        uint8_t offset = index & 1; // i % 2
 
-        if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
+        // Lowpart
+        uint32_t lowSkillLine = getSkillLineId(field, 0);
+        uint32_t lowSkillStep = getSkillStep(field, 0);
+        uint32_t lowSkillRank = getSkillCurrentValue(field, 0);
+        uint32_t lowSkillMaxRank = getSkillMaximumValue(field, 0);
+
+        // Highpart
+        uint32_t highSkillLine = getSkillLineId(field, 1);
+        uint32_t highSkillStep = getSkillStep(field, 1);
+        uint32_t highSkillRank = getSkillCurrentValue(field, 1);
+        uint32_t highSkillMaxRank = getSkillMaximumValue(field, 1);
+
+        if (offset)
         {
-            // current: field skill_line
-            setValueBySkillInfoIndex(f++, itr->first | 0x10000);
-            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
-        }
-        else if (itr->second.Skill->type == SKILL_TYPE_SECONDARY)
-        {
-            // current: field skill_line
-            setValueBySkillInfoIndex(f++, itr->first | 0x40000);
-            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
+            highSkillLine = (uint16_t(itr->second.Skill->id) << 16);
+            highSkillStep = (uint16_t(0) << 16);
+            highSkillRank = (uint16_t(itr->second.CurrentValue) << 16);
+            highSkillMaxRank = (uint16_t(itr->second.MaximumValue) << 16);
         }
         else
         {
-            // current: field skill_line
-            setValueBySkillInfoIndex(f++, itr->first);
-            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, itr->second.Skill->id, itr->second.MaximumValue / 75, 0);
+            lowSkillLine = (uint16_t(itr->second.Skill->id));
+            lowSkillStep = (uint16_t(0));
+            lowSkillRank = (uint16_t(itr->second.CurrentValue));
+            lowSkillMaxRank = (uint16_t(itr->second.MaximumValue));
         }
 
-        // current: field skill_step
-        setValueBySkillInfoIndex(f++, (itr->second.MaximumValue << 16) | itr->second.CurrentValue);
-        // current: field skill_rank
-        setValueBySkillInfoIndex(f++, itr->second.BonusValue);
-        ++itr;
+        if (!getSkillLineId(field, offset))
+        {
+            setSkillLineId(field, highSkillLine + lowSkillLine);
+            setSkillStep(field, highSkillStep + lowSkillStep);
+            setSkillCurrentValue(field, highSkillRank + lowSkillRank);
+            setSkillMaximumValue(field, highSkillMaxRank + lowSkillMaxRank);
+        }
+
+        if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
+            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
+        else if (itr->second.Skill->type == SKILL_TYPE_SECONDARY)
+            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
+        else
+            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, itr->second.Skill->id, itr->second.MaximumValue / 75, 0);
+
+        itr++;
+        index++;
     }
 
-    /* Null out the rest of the fields */
-    for (; f < WOWPLAYER_SKILL_INFO_COUNT; f++)
+    for (uint16_t i = 0; i < WOWPLAYER_SKILL_INFO_COUNT; ++i)
     {
-        if (getValueFromSkillInfoIndex(f) != 0)
-            setValueBySkillInfoIndex(f, 0);
+        uint16_t field = i / 2;
+        uint8_t offset = i & 1; // i % 2
+
+        /* Null out the rest of the fields */
+        if (!getSkillLineId(field, offset))
+        {
+            setSkillLineId(field, 0);
+            setSkillStep(field, 0);
+            setSkillCurrentValue(field, 0);
+            setSkillMaximumValue(field, 0);
+        }
     }
 }
 #endif
