@@ -56,7 +56,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20201216-00_rename_event_properties";
-static const char* REQUIRED_WORLD_DB_VERSION = "20210620-02_npc_text_cleanup";
+static const char* REQUIRED_WORLD_DB_VERSION = "20210621-00_world_db_version";
 
 void Master::_OnSignal(int s)
 {
