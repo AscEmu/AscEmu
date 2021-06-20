@@ -1462,19 +1462,19 @@ class RazuviousAI : public CreatureAIScript
     {
         if (Util::checkChance(50.0f))
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You should've stayed home!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You should've stayed home!");
             getCreature()->PlaySoundToSet(8862);
         }
         else
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You disappoint me, students!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You disappoint me, students!");
             getCreature()->PlaySoundToSet(8863);
         }
     }
 
     void OnDied(Unit* /*mKiller*/) override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "An honorable... death...");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "An honorable... death...");
         getCreature()->PlaySoundToSet(8860);
     }
 };
@@ -2502,7 +2502,7 @@ class KelthuzadAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Minions, servants, soldiers of the cold dark, obey the call of Kel'Thuzad!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Minions, servants, soldiers of the cold dark, obey the call of Kel'Thuzad!");
         getCreature()->PlaySoundToSet(8819);
 
         Unit* TheLichKing = NULL;
@@ -2571,11 +2571,11 @@ class KelthuzadAI : public CreatureAIScript
         switch (Util::getRandomUInt(1))
         {
             case 0:
-                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The dark void awaits you!");
+                getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The dark void awaits you!");
                 getCreature()->PlaySoundToSet(8817);
                 break;
             case 1:
-                //_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "");    // no text?
+                //_unit->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "");    // no text?
                 getCreature()->PlaySoundToSet(8818);
                 break;
         }
@@ -2594,7 +2594,7 @@ class KelthuzadAI : public CreatureAIScript
                 WindowGate->setState(GO_STATE_CLOSED);
         }
 
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Do not rejoice... your victory is a hollow one... for I shall return with powers beyond your imagining!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Do not rejoice... your victory is a hollow one... for I shall return with powers beyond your imagining!");
         getCreature()->PlaySoundToSet(8814);
 
         _setMeleeDisabled(false);
@@ -2709,15 +2709,15 @@ class KelthuzadAI : public CreatureAIScript
                 switch (Util::getRandomUInt(2))
                 {
                     case 0:
-                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Pray for mercy!");
+                        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Pray for mercy!");
                         getCreature()->PlaySoundToSet(8809);
                         break;
                     case 1:
-                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Scream your dying breath!");
+                        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Scream your dying breath!");
                         getCreature()->PlaySoundToSet(8810);
                         break;
                     case 2:
-                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The end is upon you!");
+                        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The end is upon you!");
                         getCreature()->PlaySoundToSet(8811);
                         break;
                 }
@@ -2788,7 +2788,7 @@ class KelthuzadAI : public CreatureAIScript
             HelpDialog++;
             if (HelpDialog == 1)
             {
-                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Master! I require aid!");
+                getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Master! I require aid!");
                 getCreature()->PlaySoundToSet(8816);
             }
 
@@ -2798,13 +2798,13 @@ class KelthuzadAI : public CreatureAIScript
                 TheLichKing = getNearestCreature(3767.58f, -5117.15f, 174.49f, CN_THE_LICH_KING);
                 if (TheLichKing != NULL)
                 {
-                    TheLichKing->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Very well... warriors of the frozen wastes, rise up, I command you to fight, kill, and die for your master. Let none survive...");
+                    TheLichKing->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Very well... warriors of the frozen wastes, rise up, I command you to fight, kill, and die for your master. Let none survive...");
                     TheLichKing->PlaySoundToSet(8824);
                 }
 
                 else
                 {
-                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Very well... warriors of the frozen wastes, rise up, I command you to fight, kill, and die for your master. Let none survive...");
+                    getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Very well... warriors of the frozen wastes, rise up, I command you to fight, kill, and die for your master. Let none survive...");
                     getCreature()->PlaySoundToSet(8824);
                 }
 

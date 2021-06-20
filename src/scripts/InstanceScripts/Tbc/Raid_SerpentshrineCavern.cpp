@@ -728,7 +728,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
 
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "At last I am liberated. It has been too long since I have tasted true freedom!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "At last I am liberated. It has been too long since I have tasted true freedom!");
         getCreature()->PlaySoundToSet(11309);
 
         sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::removeUnitFlags, static_cast<uint32_t>(UNIT_FLAG_IGNORE_PLAYER_COMBAT), EVENT_CREATURE_UPDATE, 7500, 0, 1);
@@ -1585,7 +1585,7 @@ class ToxicSporeBatAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        //_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Phase 1 Test!");
+        //_unit->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Phase 1 Test!");
         getCreature()->PlaySoundToSet(11243);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
         stopMovement();
@@ -1718,7 +1718,7 @@ class ToxicSporeBatAI : public CreatureAIScript
         if (Phase == 1)
         {
             setWaypointToMove(1, 6);
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Phase 1 Test!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Phase 1 Test!");
             getCreature()->PlaySoundToSet(11243);
         }
 

@@ -126,7 +126,7 @@ class AntusulTriggerAI : public CreatureAIScript
             if (antusul->isAlive())
             {
                 antusul->GetAIInterface()->onHostileAction(mTarget);
-                antusul->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Lunch has arrived, my beutiful childern. Tear them to pieces!");
+                antusul->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Lunch has arrived, my beutiful childern. Tear them to pieces!");
             }
         }
     }
@@ -180,7 +180,7 @@ class AntusulAI : public CreatureAIScript
         if (getCreature()->getHealthPct() <= 75 && firstspawn)
         {
             firstspawn = false;
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Rise and defend your master!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Rise and defend your master!");
             getCreature()->castSpell(getCreature(), servant, true);
         }
         if (getCreature()->getHealthPct() <= 25)
@@ -189,7 +189,7 @@ class AntusulAI : public CreatureAIScript
             if (secondspawn)
             {
                 secondspawn = false;
-                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The children of sul will protect their master. Rise once more Sul'lithuz!");
+                getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The children of sul will protect their master. Rise once more Sul'lithuz!");
                 getCreature()->castSpell(getCreature(), servant, true);
             }
             if (secondspawncount >= 15)

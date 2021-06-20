@@ -4831,6 +4831,95 @@ uint8_t Unit::getPowerIndexFromDBC(PowerType type) const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Chat
+std::unique_ptr<WorldPacket> Unit::createChatPacket(uint8_t type, uint32_t language, std::string msg, Unit* target/* = nullptr*/,  uint32_t sessionLanguage/* = 0*/)
+{
+    // Note: target is not the one who receives the message
+    // it is whom the message should be pointed at
+    // for example in text $N would get replaced by target's name
+    // and $R would get replaced by target's race
+    std::string senderName = "", targetName = "";
+    uint64_t targetGuid = 0;
+
+    // Get sender's name
+    if (isPlayer())
+    {
+        senderName = static_cast<Player*>(this)->getName();
+    }
+    else
+    {
+        const auto creature = static_cast<Creature*>(this);
+        const auto localizedName = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
+        if (localizedName != nullptr)
+            senderName = localizedName->name;
+        else
+            senderName = creature->GetCreatureProperties()->Name;
+    }
+
+    // Get target's name
+    if (target != nullptr)
+    {
+        targetGuid = target->getGuid();
+
+        if (target->isPlayer())
+        {
+            targetName = static_cast<Player*>(target)->getName();
+        }
+        else
+        {
+            const auto creature = static_cast<Creature*>(target);
+            auto* const localizedName = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
+            if (localizedName != nullptr)
+                targetName = localizedName->name;
+            else
+                targetName = creature->GetCreatureProperties()->Name;
+        }
+    }
+
+    return SmsgMessageChat(type, language, 0, msg, getGuid(), senderName, targetGuid, targetName).serialise();
+}
+
+void Unit::sendChatMessage(uint8_t type, uint32_t language, std::string msg, Unit* target/* = nullptr*/, uint32_t sessionLanguage/* = 0*/)
+{
+    const auto data = createChatPacket(type, language, msg, target, sessionLanguage);
+    SendMessageToSet(data.get(), true);
+}
+
+void Unit::sendChatMessage(uint8_t type, uint32_t language, std::string msg, uint32_t delay)
+{
+    if (delay > 0)
+    {
+        sEventMgr.AddEvent(this, &Unit::sendChatMessage, type, language, msg, uint32_t(0), EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        return;
+    }
+
+    sendChatMessage(type, language, msg);
+}
+
+void Unit::sendChatMessage(MySQLStructure::NpcScriptText const* text, uint32_t delay, Unit* target/* = nullptr*/)
+{
+    if (!isCreature() || text == nullptr)
+        return;
+
+    if (delay > 0)
+    {
+        sEventMgr.AddEvent(this, &Unit::sendChatMessage, text, uint32_t(0), target, EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        return;
+    }
+
+    SendCreatureChatMessageInRange(dynamic_cast<Creature*>(this), text->id, target);
+}
+
+void Unit::sendChatMessageToPlayer(uint8_t type, uint32_t language, std::string msg, Player* plr)
+{
+    if (plr == nullptr)
+        return;
+
+    const auto data = createChatPacket(type, language, msg, plr, plr->GetSession()->language);
+    plr->GetSession()->SendPacket(data.get());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 void Unit::setAttackTimer(WeaponDamageType type, int32_t time)
 {

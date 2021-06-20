@@ -32,7 +32,7 @@ class Professor_Phizzlethorpe : public CreatureAIScript
 
         if (iWaypointId == 15)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I found the fact that, it searched");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I found the fact that, it searched");
             getCreature()->Despawn(5000, 1000);
             getCreature()->stopMoving();
 

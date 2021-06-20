@@ -28,7 +28,7 @@ public:
     {
         Creature* creat = mTarget->GetMapMgr()->GetInterface()->SpawnCreature(1946, 2467.314f, 14.8471f, 23.5950f, 0, true, false, 0, 0);
         creat->Despawn(60000, 0);
-        creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have disturbed my rest. Now face my wrath!");
+        creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have disturbed my rest. Now face my wrath!");
     }
 };
 
@@ -63,7 +63,7 @@ class CalvinMontague : public CreatureAIScript
     {
         if (phase == 2)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting.");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting.");
             getCreature()->RemoveNegativeAuras();
             getCreature()->SetFaction(68);
             getCreature()->setStandState(STANDSTATE_SIT);
@@ -114,7 +114,7 @@ class Zealot : public CreatureAIScript
             return;
         if (iWaypointId == 2)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "My mind. . .me flesh. . .I'm. . .rotting. . . .!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "My mind. . .me flesh. . .I'm. . .rotting. . . .!");
         }
 
         if (iWaypointId == 7)

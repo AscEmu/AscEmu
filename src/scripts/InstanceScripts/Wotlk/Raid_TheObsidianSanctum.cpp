@@ -91,7 +91,7 @@ public:
 //{
 //    if (pCreatureAI != NULL)
 //    {
-//        pCreatureAI->getCreature()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "The lava surrounding Sartharion churns!");
+//        pCreatureAI->getCreature()->sendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "The lava surrounding Sartharion churns!");
 //
 //        switch (Util::getRandomUInt(3))
 //        {

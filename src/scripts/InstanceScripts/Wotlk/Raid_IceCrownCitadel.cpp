@@ -1148,7 +1148,7 @@ public:
             emoteVector.push_back(SAY_MARR_BONESPIKE_2);// The only Escape is Darkness 
             emoteVector.push_back(SAY_MARR_BONESPIKE_3);// More Bones for the offering
 
-            marrowgarAI->sendRandomDBChatMessage(emoteVector);  
+            marrowgarAI->sendRandomDBChatMessage(emoteVector, nullptr);
         }
     }
 

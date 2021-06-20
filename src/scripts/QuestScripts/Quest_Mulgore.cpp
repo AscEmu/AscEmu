@@ -66,7 +66,7 @@ class The_Plains_Vision : public CreatureAIScript
             return;
 
         if (iWaypointId == 1)
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You follow me.");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You follow me.");
         if (iWaypointId == 22)
         {
             stopWaypointMovement();

@@ -49,7 +49,7 @@ void CreatureAISpells::sendRandomEmote(CreatureAIScript* creatureAI)
         sLogger.debug("AISpellEmotes::sendRandomEmote() : called");
 
         uint32_t randomUInt = (mAISpellEmote.size() > 1) ? Util::getRandomUInt(static_cast<uint32_t>(mAISpellEmote.size() - 1)) : 0;
-        creatureAI->getCreature()->SendChatMessage(mAISpellEmote[randomUInt].mType, LANG_UNIVERSAL, mAISpellEmote[randomUInt].mText.c_str());
+        creatureAI->getCreature()->sendChatMessage(mAISpellEmote[randomUInt].mType, LANG_UNIVERSAL, mAISpellEmote[randomUInt].mText.c_str());
 
         if (mAISpellEmote[randomUInt].mSoundId != 0)
             creatureAI->getCreature()->PlaySoundToSet(mAISpellEmote[randomUInt].mSoundId);
@@ -137,7 +137,7 @@ void CreatureAISpells::sendAnnouncement(CreatureAIScript* creatureAI)
     {
         sLogger.debug("AISpellEmotes::sendAnnouncement() : called");
 
-        creatureAI->getCreature()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, mAnnouncement.c_str());
+        creatureAI->getCreature()->sendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, mAnnouncement.c_str());
     }
 }
 
@@ -180,7 +180,7 @@ CreatureAIScript::~CreatureAIScript()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Event default management
-void CreatureAIScript::_internalOnDied()
+void CreatureAIScript::_internalOnDied(Unit* killer)
 {
     sLogger.debug("CreatureAIScript::_internalOnDied() called");
 
@@ -192,19 +192,19 @@ void CreatureAIScript::_internalOnDied()
     removeAiUpdateFrequency();
 
     RemoveAIUpdateEvent();
-    sendRandomDBChatMessage(mEmotesOnDied);
+    sendRandomDBChatMessage(mEmotesOnDied, killer);
 
     resetScriptPhase();
 }
 
-void CreatureAIScript::_internalOnTargetDied()
+void CreatureAIScript::_internalOnTargetDied(Unit* target)
 {
     sLogger.debug("CreatureAIScript::_internalOnTargetDied() called");
 
-    sendRandomDBChatMessage(mEmotesOnTargetDied);
+    sendRandomDBChatMessage(mEmotesOnTargetDied, target);
 }
 
-void CreatureAIScript::_internalOnCombatStart()
+void CreatureAIScript::_internalOnCombatStart(Unit* target)
 {
     sLogger.debug("CreatureAIScript::_internalOnEnterCombat() called");
 
@@ -212,7 +212,7 @@ void CreatureAIScript::_internalOnCombatStart()
 
     setAIAgent(AGENT_MELEE);
 
-    sendRandomDBChatMessage(mEmotesOnCombatStart);
+    sendRandomDBChatMessage(mEmotesOnCombatStart, target);
 
     setScriptPhase(1);
 
@@ -253,7 +253,7 @@ void CreatureAIScript::_internalAIUpdate()
     {
         if (_isTimerFinished(getIdleEmoteTimerId()))
         {
-            sendRandomDBChatMessage(mEmotesOnIdle);
+            sendRandomDBChatMessage(mEmotesOnIdle, nullptr);
             generateNextRandomIdleEmoteTime();
         }
     }
@@ -1343,24 +1343,24 @@ GameObject* CreatureAIScript::getNearestGameObject(float posX, float posY, float
 void CreatureAIScript::sendChatMessage(uint8_t type, uint32_t soundId, std::string text)
 {
     if (text.empty() == false)
-        _creature->SendChatMessage(type, LANG_UNIVERSAL, text.c_str());
+        _creature->sendChatMessage(type, LANG_UNIVERSAL, text.c_str());
 
     if (soundId > 0)
         _creature->PlaySoundToSet(soundId);
 }
 
-void CreatureAIScript::sendDBChatMessage(uint32_t textId)
+void CreatureAIScript::sendDBChatMessage(uint32_t textId, Unit* target/* = nullptr*/)
 {
-    _creature->SendScriptTextChatMessage(textId);
+    _creature->SendScriptTextChatMessage(textId, target);
 }
 
-void CreatureAIScript::sendRandomDBChatMessage(std::vector<uint32_t> emoteVector)
+void CreatureAIScript::sendRandomDBChatMessage(std::vector<uint32_t> emoteVector, Unit* target)
 {
     if (!emoteVector.empty())
     {
         uint32_t randomUInt = (emoteVector.size() > 1) ? Util::getRandomUInt(static_cast<uint32_t>(emoteVector.size() - 1)) : 0;
 
-        sendDBChatMessage(emoteVector[randomUInt]);
+        sendDBChatMessage(emoteVector[randomUInt], target);
     }
 }
 
@@ -1400,7 +1400,7 @@ void CreatureAIScript::addEmoteForEvent(uint32_t eventType, uint32_t scriptTextI
 void CreatureAIScript::sendAnnouncement(std::string stringAnnounce)
 {
     if (!stringAnnounce.empty())
-        _creature->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, stringAnnounce.c_str());
+        _creature->sendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, stringAnnounce.c_str());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

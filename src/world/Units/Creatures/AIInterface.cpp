@@ -308,7 +308,7 @@ void AIInterface::updateEmotes(unsigned long time_passed)
             }
 
             if ((*next_timed_emote)->msg)
-                m_Unit->SendChatMessage((*next_timed_emote)->msg_type, (*next_timed_emote)->msg_lang, (*next_timed_emote)->msg);
+                m_Unit->sendChatMessage((*next_timed_emote)->msg_type, (*next_timed_emote)->msg_lang, (*next_timed_emote)->msg);
 
             timed_emote_expire = (*next_timed_emote)->expire_after; //should we keep lost time ? I think not
             ++next_timed_emote;
@@ -623,7 +623,7 @@ void AIInterface::updateCombat(uint32_t p_time)
         getUnit()->setControlled(true, UNIT_STATE_FLEEING);
 
         std::string msg = "%s attempts to run away in fear!";
-        getUnit()->SendChatMessage(CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, msg.c_str());
+        getUnit()->sendChatMessage(CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, msg.c_str());
 
         m_hasFleed = true;
     }
@@ -634,7 +634,7 @@ void AIInterface::updateCombat(uint32_t p_time)
         callForHelp(30.0f);
 
         if (m_Unit->isCreature())
-            static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_CALL_HELP);
+            static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_CALL_HELP, nullptr);
 
         CALL_SCRIPT_EVENT(m_Unit, OnCallForHelp)();
     }
@@ -1506,7 +1506,7 @@ void AIInterface::eventDamageTaken(Unit* pUnit, uint32_t misc1)
         return;
 
     if (m_Unit->isCreature())
-        static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_DAMAGE_TAKEN);
+        static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_DAMAGE_TAKEN, pUnit);
 
     pUnit->RemoveAura(24575);
 
@@ -1523,9 +1523,9 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
     if (m_Unit->isCreature())
     {
         Creature* creature = static_cast<Creature*>(m_Unit);
-        creature->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ENTER_COMBAT);
+        creature->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ENTER_COMBAT, pUnit);
 
-        CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStart)();
+        CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStart)(pUnit);
         CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
 
         // set encounter state = InProgress
@@ -1664,7 +1664,7 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
     if (m_Unit->isCreature())
     {
         Creature* creature = static_cast<Creature*>(m_Unit);
-        creature->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_COMBAT_STOP);
+        creature->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_COMBAT_STOP, nullptr);
 
         if (creature->original_emotestate)
             m_Unit->setEmoteState(creature->original_emotestate);
@@ -1722,9 +1722,9 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
         return;
 
     if (m_Unit->isCreature())
-        static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_DIED);
+        static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_DIED, pUnit);
 
-    CALL_SCRIPT_EVENT(m_Unit, _internalOnDied)();
+    CALL_SCRIPT_EVENT(m_Unit, _internalOnDied)(pUnit);
     CALL_SCRIPT_EVENT(m_Unit, OnDied)(pUnit);
 
     if (m_Unit->isCreature())

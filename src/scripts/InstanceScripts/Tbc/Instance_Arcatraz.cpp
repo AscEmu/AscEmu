@@ -460,7 +460,7 @@ class WardenMellicharAI : public CreatureAIScript
                 if (!NPC_orb3 && NPC_ID_Spawn != 0 && Spawncounter == 0)
                 {
                     /// \todo investigate.... saying "1"... really?
-                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "1");
+                    getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "1");
                     ++Spawncounter;
                     NPC_orb3 = spawnCreature(NPC_ID_Spawn, 420.050f, -173.500f, 42.580f, 6.110f);
                     return;
@@ -469,7 +469,7 @@ class WardenMellicharAI : public CreatureAIScript
                 if (!NPC_orb3)
                 {
                     /// \todo investigate.... saying "2"... really?
-                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "2");
+                    getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "2");
                     NPC_orb3 = getNearestCreature(NPC_ID_Spawn);
                 }
                 else if (NPC_orb3 && !NPC_orb3->isAlive())

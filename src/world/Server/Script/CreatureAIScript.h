@@ -208,9 +208,9 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Event default management
     // \brief: These functions are called internal for script events. Do NOT use them in your scripts!
-    void _internalOnDied();
-    void _internalOnTargetDied();
-    void _internalOnCombatStart();
+    void _internalOnDied(Unit* killer);
+    void _internalOnTargetDied(Unit* target);
+    void _internalOnCombatStart(Unit* target);
     void _internalOnCombatStop();
     void _internalAIUpdate();
     void _internalOnScriptPhaseChange();
@@ -445,9 +445,9 @@ private:
 
 public:
     void sendChatMessage(uint8_t type, uint32_t soundId, std::string text);
-    void sendDBChatMessage(uint32_t textId);
+    void sendDBChatMessage(uint32_t textId, Unit* target = nullptr);
 
-    void sendRandomDBChatMessage(std::vector<uint32_t> emoteVector);
+    void sendRandomDBChatMessage(std::vector<uint32_t> emoteVector, Unit* target);
 
     void addEmoteForEvent(uint32_t eventType, uint32_t scriptTextId);
 

@@ -32,7 +32,7 @@ class The_Defias_Traitor : public CreatureAIScript
 
         if (iWaypointId == 19)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell your master that this is where Van Cleef is hiding. I'm outta here!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell your master that this is where Van Cleef is hiding. I'm outta here!");
             getCreature()->Despawn(5000, 1000);
             getCreature()->stopMoving();
 

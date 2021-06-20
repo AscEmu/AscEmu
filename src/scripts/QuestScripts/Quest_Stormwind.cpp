@@ -48,7 +48,7 @@ class DashelStonefist : public CreatureAIScript
 
     void AIUpdate() override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting. No one else needs to get hurt.");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting. No one else needs to get hurt.");
         getCreature()->RemoveNegativeAuras();
         getCreature()->SetFaction(12);
         getCreature()->SetHealthPct(100);
@@ -87,7 +87,7 @@ public:
             std::string say = "Now you're gonna get it good, ";
             say += (static_cast<Player*>(mTarget))->getName();
             say += "!";
-            Dashel->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+            Dashel->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
         Creature* ct1 = mTarget->GetMapMgr()->CreateAndSpawnCreature(4969, -8686.803711f, 445.267792f, 99.789223f, 5.461184f);
         if (ct1 != nullptr)

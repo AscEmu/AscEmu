@@ -313,7 +313,7 @@ class ThuAI : public CreatureAIScript
         {
             case 2: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true); break;
             case 3:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 14:  getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "ARE YOU READY TO ROCK?!?!"); break;
+            case 14:  getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "ARE YOU READY TO ROCK?!?!"); break;
             case 17:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 42:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 55:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
@@ -328,7 +328,7 @@ class ThuAI : public CreatureAIScript
             case 110: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 137: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
             case 140: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 142: getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "WERE GANA ROCK YOU CRAAAAAAZY!!!"); break;
+            case 142: getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "WERE GANA ROCK YOU CRAAAAAAZY!!!"); break;
             case 313: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 194: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 200:
@@ -418,7 +418,7 @@ class Undead2AI : public CreatureAIScript
 
     void OnDespawn() override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
         RemoveAIUpdateEvent();
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true);
     }
@@ -503,7 +503,7 @@ class TriggerAI : public CreatureAIScript
 
     void OnDespawn() override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
         RemoveAIUpdateEvent();
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true);
     }
@@ -594,7 +594,7 @@ class Trigger2AI : public CreatureAIScript
 
     void OnDespawn() override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
         RemoveAIUpdateEvent();
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true);
     }

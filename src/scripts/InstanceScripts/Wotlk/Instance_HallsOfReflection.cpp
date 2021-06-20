@@ -94,7 +94,7 @@ class JainaAI : public CreatureAIScript
             // Jaina with a 7 sec delay.
             getCreature()->SendTimedScriptTextChatMessage(SAY_JAINA_10, 146500);
             // Uther with a 4 sec delay.
-            Uther->SendChatMessage(CHAT_MSG_EMOTE, LANG_UNIVERSAL, "shakes his head.", 150500); // WHAT
+            Uther->sendChatMessage(CHAT_MSG_EMOTE, LANG_UNIVERSAL, "shakes his head.", 150500); // WHAT
             // Uther with a 4 sec delay
             Uther->SendTimedScriptTextChatMessage(SAY_UTHER_08, 154500);
             // Jaina wuith a 14 sec delay.

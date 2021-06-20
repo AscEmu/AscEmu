@@ -28,7 +28,7 @@ public:
         if (Creature* creature = mTarget->GetMapMgr()->GetSqlIdCreature(43727))
         {
             creature->setDisplayId(901);
-            creature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Ribbit! No! This cannot...ribbit...be! You have duped me with...ribbit..your foul trickery! Ribbit!");
+            creature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Ribbit! No! This cannot...ribbit...be! You have duped me with...ribbit..your foul trickery! Ribbit!");
 
             sEventMgr.AddEvent(static_cast<Unit*>(creature), &Unit::setDisplayId, static_cast<uint32_t>(10035), EVENT_UNK, 50000, 0, 1);
         }

@@ -79,12 +79,12 @@ public:
 
             if (pCreature->getEntry() == CN_INITIATE_1 || pCreature->getEntry() == CN_INITIATE_2 || pCreature->getEntry() == CN_INITIATE_3 || pCreature->getEntry() == CN_INITIATE_4)
             {
-                pPlayer->SendChatMessage(CHAT_MSG_SAY, LANG_UNIVERSAL, "I give you the key to your salvation");
+                pPlayer->sendChatMessage(CHAT_MSG_SAY, LANG_UNIVERSAL, "I give you the key to your salvation");
                 //\todo to set flags will override all values from db
                 pCreature->setUnitFlags(UNIT_FLAG_NONE);
                 pCreature->GetAIInterface()->setCurrentTarget(pPlayer);
                 pCreature->GetAIInterface()->onHostileAction(pPlayer);
-                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have committed a big mistake, demon");
+                pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have committed a big mistake, demon");
 
                 if (questLog->getMobCountByIndex(0) != 0)
                     return;

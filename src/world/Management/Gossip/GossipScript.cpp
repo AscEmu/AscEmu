@@ -78,7 +78,7 @@ void GossipVendor::onHello(Object* object, Player* player)
     if (auto creature = dynamic_cast<Creature*>(object))
     {
         auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-        if (!sMySQLStore.getNpcText(gossipTextId))
+        if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
         GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
@@ -106,7 +106,7 @@ void GossipTrainer::onHello(Object* object, Player* player)
     if (auto creature = dynamic_cast<Creature*>(object))
     {
         auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-        if (!sMySQLStore.getNpcText(gossipTextId))
+        if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
         GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
@@ -160,7 +160,7 @@ void GossipFlightMaster::onHello(Object* object, Player* player)
     if (const auto creature = dynamic_cast<Creature*>(object))
     {
         auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-        if (!sMySQLStore.getNpcText(gossipTextId))
+        if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
         GossipMenu menu(object->getGuid(), gossipTextId, player->GetSession()->language);
@@ -184,7 +184,7 @@ void GossipAuctioneer::onHello(Object* object, Player* player)
     if (const auto creature = dynamic_cast<Creature*>(object))
     {
         auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-        if (!sMySQLStore.getNpcText(gossipTextId))
+        if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
         GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_VENDOR, player->GetSession()->LocalizedGossipOption(AUCTIONEER));
@@ -201,7 +201,7 @@ void GossipInnKeeper::onHello(Object* object, Player* player)
     if (auto creature = dynamic_cast<Creature*>(object))
     {
         auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-        if (!sMySQLStore.getNpcText(gossipTextId))
+        if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
         GossipMenu menu(object->getGuid(), gossipTextId, player->GetSession()->language);
@@ -237,7 +237,7 @@ void GossipBattleMaster::onHello(Object* object, Player* player)
     if (const auto creature = dynamic_cast<Creature*>(object))
     {
         auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-        if (!sMySQLStore.getNpcText(gossipTextId))
+        if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
         GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
@@ -269,7 +269,7 @@ void GossipCharterGiver::onHello(Object* object, Player* player)
     if (const auto creature = dynamic_cast<Creature*>(object))
     {
         auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-        if (!sMySQLStore.getNpcText(gossipTextId))
+        if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
         if (creature->isTabardDesigner())
@@ -289,7 +289,7 @@ void GossipTabardDesigner::onHello(Object* object, Player* player)
     if (auto creature = dynamic_cast<Creature*>(object))
     {
         auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-        if (!sMySQLStore.getNpcText(gossipTextId))
+        if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
         GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
@@ -339,7 +339,7 @@ void GossipStableMaster::onHello(Object* object, Player* player)
     if (const auto creature = dynamic_cast<Creature*>(object))
         gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
 
-    if (!sMySQLStore.getNpcText(gossipTextId))
+    if (!sMySQLStore.getNpcGossipText(gossipTextId))
         gossipTextId = DefaultGossipTextId;
 
     if (player->getClass() == ::HUNTER)
@@ -358,7 +358,7 @@ void GossipPetTrainer::onHello(Object* object, Player* player)
     if (const auto creature = dynamic_cast<Creature*>(object))
     {
         auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-        if (!sMySQLStore.getNpcText(gossipTextId))
+        if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
         GossipMenu menu(object->getGuid(), gossipTextId, player->GetSession()->language);
@@ -402,7 +402,7 @@ void GossipClassTrainer::onHello(Object* object, Player* player)
         const auto playerSession = player->GetSession();
 
         auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
-        if (!sMySQLStore.getNpcText(gossipTextId))
+        if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
         GossipMenu menu(object->getGuid(), gossipTextId, playerSession->language);
@@ -537,7 +537,7 @@ void GossipClassTrainer::onSelectOption(Object* object, Player* player, uint32_t
 void GossipGeneric::onHello(Object* object, Player* player)
 {
     auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(object->getEntry());
-    if (!sMySQLStore.getNpcText(gossipTextId))
+    if (!sMySQLStore.getNpcGossipText(gossipTextId))
         gossipTextId = DefaultGossipTextId;
 
     if (const auto creature = dynamic_cast<Creature*>(object))

@@ -353,7 +353,7 @@ class BigBadWolfAI : public CreatureAIScript
     {
         //\todo not in db
         getCreature()->PlaySoundToSet(9275);
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Aarrhhh.");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Aarrhhh.");
 
         GameObject* DoorLeftO = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
         GameObject* DoorRightO = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
@@ -428,13 +428,13 @@ class THEBIGBADWOLFAI : public CreatureAIScript
             Curtain->setState(GO_STATE_OPEN);
 
         getCreature()->PlaySoundToSet(9275);
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "AArrhhh.");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "AArrhhh.");
     }
 
     void OnTargetDied(Unit* /*mTarget*/) override
     {
         getCreature()->PlaySoundToSet(9277);
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Mmmm... delicious.");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Mmmm... delicious.");
     }
 };
 
@@ -473,7 +473,7 @@ public:
             case 2:
             {
                 Creature* pCreature = static_cast<Creature*>(pObject);
-                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Splendid. I'm going to get the audience ready. Break a leg!");
+                pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Splendid. I'm going to get the audience ready. Break a leg!");
                 pCreature->castSpell(pCreature, 32616, false);
                 pCreature->stopMoving();
                 pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);

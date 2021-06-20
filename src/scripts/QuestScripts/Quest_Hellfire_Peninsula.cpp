@@ -209,7 +209,7 @@ public:
 
         pPlayer->AddQuestKill(10368, i, 0);
 
-        pPrisoner->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You've freed me! The winds speak to my people one again and grant us their strength. I thank you, stranger.");
+        pPrisoner->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You've freed me! The winds speak to my people one again and grant us their strength. I thank you, stranger.");
         pPrisoner->Despawn(5000, 6 * 60 * 1000);
         pPrisoner->setStandState(STANDSTATE_STAND);
     }
@@ -265,7 +265,7 @@ public:
 
         char msg[100];
         sprintf(msg, "Psst, %s, get over here.", pPlayer->getName().c_str());
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_WHISPER, LANG_UNIVERSAL, msg);    // Changed Player to Creature. I wonder if it was blizzlike
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_WHISPER, LANG_UNIVERSAL, msg);    // Changed Player to Creature. I wonder if it was blizzlike
     }
 };
 
@@ -281,7 +281,7 @@ public:
 
         char msg[100];
         sprintf(msg, "Psst, %s, get over here.", pPlayer->getName().c_str());
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_WHISPER, LANG_UNIVERSAL, msg);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_WHISPER, LANG_UNIVERSAL, msg);
     }
 };
 

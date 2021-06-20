@@ -166,7 +166,7 @@ public:
         std::string msg1 = "Ah. Good ";
         msg1 += mTarget->getName();
         msg1 += ". Now let us see what tale these heads tell...";
-        Kin_weelay->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
+        Kin_weelay->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
         Kin_weelay->castSpell(Kin_weelay, sSpellMgr.getSpellInfo(3644), false);
         skull1->Despawn(5000, 0);
         GameObject* skull2 = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
@@ -176,7 +176,7 @@ public:
         std::string msg = "There, ";
         msg += mTarget->getName();
         msg += ". You may now speak to the Bloodscalp chief and his witchdoctor.";
-        Kin_weelay->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 500);
+        Kin_weelay->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 500);
     }
 
 };
@@ -197,7 +197,7 @@ public:
             std::string say = "Hm... if you're looking to adle wits. ";
             say += mTarget->getName();
             say += ", then the secret behind Zanzil's zombies might just fo the trick!";
-            Crank->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+            Crank->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
     }
 };
@@ -218,7 +218,7 @@ public:
             std::string say = "Bah! ";
             say += mTarget->getName();
             say += ", this foot won't budge!";
-            MacKinley->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+            MacKinley->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
     }
 };

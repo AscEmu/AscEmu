@@ -51,7 +51,7 @@ public:
             } break;
             case 4:
             {
-                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
+                getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
                 getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
             } break;
             case 5:
@@ -67,7 +67,7 @@ public:
 
     void OnRescuePrisonGuards()
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
 
         VioletHold* pInstance = (VioletHold*)getCreature()->GetMapMgr()->GetScript();
         if (!pInstance)

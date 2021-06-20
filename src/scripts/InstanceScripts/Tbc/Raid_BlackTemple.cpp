@@ -2280,11 +2280,11 @@ class ShadeofakamaAI : public CreatureAIScript
             switch (Util::getRandomUInt(2))
             {
                 case 0:
-                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I will not last much longer...");
+                    getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I will not last much longer...");
                     getCreature()->PlaySoundToSet(11385);
                     break;
                 case 1:
-                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "It is time to free your soul from Illidan's grasp!");
+                    getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "It is time to free your soul from Illidan's grasp!");
                     //_unit->PlaySoundToSet(11510);
                     break;
                 default:
@@ -2302,7 +2302,7 @@ class ShadeofakamaAI : public CreatureAIScript
     void OnDied(Unit* /*mKiller*/) override
     {
         Creature* cre = NULL;
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I don't want to go back!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I don't want to go back!");
         getCreature()->PlaySoundToSet(11420);
         cre = spawnCreature(22990, 643.741f, 305.852f, 271.689f, 0.00628f);
     }
@@ -2319,7 +2319,7 @@ class ShadeofakamaAI : public CreatureAIScript
                 /*if (cre)
                     cre->GetAIInterface()->setOutOfCombatRange(30000);*/
             }
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
             getCreature()->PlaySoundToSet(10999);
             hm = 85;
         }
@@ -2333,7 +2333,7 @@ class ShadeofakamaAI : public CreatureAIScript
                 /*if (cre)
                     cre->GetAIInterface()->setOutOfCombatRange(30000);*/
             }
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
             getCreature()->PlaySoundToSet(10999);
             hm = 70;
         }
@@ -2347,7 +2347,7 @@ class ShadeofakamaAI : public CreatureAIScript
                 /*if (cre)
                     cre->GetAIInterface()->setOutOfCombatRange(30000);*/
             }
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
             getCreature()->PlaySoundToSet(10999);
             hm = 55;
         }
@@ -2361,7 +2361,7 @@ class ShadeofakamaAI : public CreatureAIScript
                 /*if (cre)
                     cre->GetAIInterface()->setOutOfCombatRange(30000);*/
             }
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
             getCreature()->PlaySoundToSet(10999);
             hm = 40;
         }
@@ -2375,7 +2375,7 @@ class ShadeofakamaAI : public CreatureAIScript
                 /*if (cre)
                     cre->GetAIInterface()->setOutOfCombatRange(30000);*/
             }
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
             getCreature()->PlaySoundToSet(10999);
             hm = 25;
         }
@@ -2389,7 +2389,7 @@ class ShadeofakamaAI : public CreatureAIScript
                 /*if (cre)
                     cre->GetAIInterface()->setOutOfCombatRange(30000);*/
             }
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
             getCreature()->PlaySoundToSet(10999);
             hm = 10;
         }

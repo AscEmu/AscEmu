@@ -242,7 +242,7 @@ class VHCreatureAI : public CreatureAIScript
         {
             addWaypoint(1, createWaypoint(i, 0, WAYPOINT_MOVE_TYPE_RUN, AttackerWP[i]));
         }
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
     }
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -253,14 +253,14 @@ class VHCreatureAI : public CreatureAIScript
         switch (iWaypointId)
         {
             case 1:
-                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 1!");
+                getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 1!");
                 setWaypointToMove(1, 2);
                 break;
             case 2:
             {
                 if (m_isIntroMob)
                 {
-                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 2!");
+                    getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 2!");
                     getCreature()->Despawn(500, 0);
                 }
                 else
@@ -335,7 +335,7 @@ class VHCreatureAI : public CreatureAIScript
 
                         if (m_spells[i].speech != "")
                         {
-                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, m_spells[i].speech.c_str());
+                            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, m_spells[i].speech.c_str());
                             getCreature()->PlaySoundToSet(m_spells[i].soundid);
                         }
 

@@ -290,7 +290,7 @@ class VaelastraszAI : public CreatureAIScript
 
     void OnDied(Unit* /*mKiller*/) override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "At last the agony ends. I have failed you my Queen... I have failed us all...");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "At last the agony ends. I have failed you my Queen... I have failed us all...");
     }
 
     void AIUpdate() override

@@ -6950,12 +6950,12 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     // Lookup map info
     if (mi && mi->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
     {
-        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_BC));
+        sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_BC));
         return false;
     }
     if (mi && mi->flags & WMI_INSTANCE_XPACK_02 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
     {
-        SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_WOTLK));
+        sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_WOTLK));
         return false;
     }
 
@@ -9927,25 +9927,6 @@ void Player::ApplyFeralAttackPower(bool apply, Item* item)
             FeralAP = (dps - 54.8f) * 14;
     }
     ModifyBonuses(FERAL_ATTACK_POWER, (int)FeralAP, apply);
-}
-
-void Player::SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay)
-{
-    if (delay)
-    {
-        sEventMgr.AddEvent(this, &Player::SendChatMessage, type, lang, msg, uint32(0), EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        return;
-    }
-
-    SendMessageToSet(SmsgMessageChat(type, lang, 0, msg, getGuid()).serialise().get(), true);
-}
-
-void Player::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr)
-{
-    if (plr == nullptr)
-        return;
-
-    plr->SendPacket(SmsgMessageChat(type, lang, 0, msg, getGuid()).serialise().get());
 }
 
 void Player::AcceptQuest(uint64 guid, uint32 quest_id)

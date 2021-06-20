@@ -143,7 +143,7 @@ class TakenInTheNight : public CreatureAIScript
             return;
 
         creat->setControlled(true, UNIT_STATE_ROOTED);
-        creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally! I'm free!");
+        creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally! I'm free!");
 
         plr->AddQuestKill(10873, 0, 0);
     }
