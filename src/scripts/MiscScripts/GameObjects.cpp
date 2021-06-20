@@ -391,7 +391,7 @@ public:
         LocationVector pos = player->GetPosition();
         Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(1770, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
         if (NewCreature != nullptr)
-            NewCreature->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The Sons of Arugal will rise against all who challenge the power of the Moonrage!");
+            NewCreature->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The Sons of Arugal will rise against all who challenge the power of the Moonrage!");
     }
 };
 

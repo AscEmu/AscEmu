@@ -26,7 +26,7 @@ public:
                     /* getCreatureBySpawnId not entry!
                     KelThuzad = getCreatureBySpawnId(CN_KELTHUZAD);
                     if (KelThuzad && KelThuzad->isAlive())
-                        KelThuzad->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No!!! A curse upon you, interlopers! The armies of the Lich King will hunt you down. You will not escape your fate...");
+                        KelThuzad->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No!!! A curse upon you, interlopers! The armies of the Lich King will hunt you down. You will not escape your fate...");
                     KelThuzad = NULL;*/
 
                 } break;
@@ -2595,7 +2595,7 @@ void PatchwerkAI::AIUpdate()
     if (mEnraged == false && _getHealthPercent() <= 5)
     {
         _applyAura(PATCHWERK_FRENZY);
-        getCreature()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "Patchwerk goes into a frenzy!");
+        getCreature()->sendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "Patchwerk goes into a frenzy!");
         mEnraged = true;
     }
 }

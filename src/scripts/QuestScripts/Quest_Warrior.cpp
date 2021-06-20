@@ -41,7 +41,7 @@ public:
         // questgiver will walk to the place where Cyclonian is spawned only walk when we are at home
         if (windwatcher->CalcDistance(250.839996f, -1470.579956f, 55.4491f) > 1) return;
         {
-            windwatcher->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me");
+            windwatcher->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me");
 
             MovementNew::PointsArray path;
             path.reserve(pathSize);

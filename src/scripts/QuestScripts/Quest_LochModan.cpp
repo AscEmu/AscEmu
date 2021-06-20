@@ -40,7 +40,7 @@ public:
         creat->getMovementManager()->movePath(*path, false);
         creat->pauseMovement(3000);
         creat->GetAIInterface()->setAllowedToEnterCombat(false);
-        creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
+        creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
         creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
 
     }
@@ -76,7 +76,7 @@ class Miran : public CreatureAIScript
 
         if (iWaypointId == 7)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I'm outta here!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I'm outta here!");
             getCreature()->Despawn(5000, 1000);
             //getCreature()->StopMoving();
 

@@ -69,7 +69,7 @@ void ProspectorAnvilwardGossip::onSelectOption(Object* pObject, Player* Plr, uin
         {
             Creature* pCreature = static_cast<Creature*>(pObject);
 
-            pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Very well. Let's see what you have to show me.");
+            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Very well. Let's see what you have to show me.");
             GossipMenu::senGossipComplete(Plr);
 
             pCreature->getMovementManager()->movePath(pCreature->getWaypointPath(), false);
@@ -96,7 +96,7 @@ class ProspectorAnvilward : public CreatureAIScript
             getCreature()->SetFaction(38);
             getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
             getCreature()->Despawn(10 * 60 * 1000, 1000); //if failed allow other players to do quest from beggining
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "What manner of trick is this, blood elf? If you seek to ambush me, I warn you I will not go down quietly!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "What manner of trick is this, blood elf? If you seek to ambush me, I warn you I will not go down quietly!");
             getCreature()->getThreatManager().getCurrentVictim();
         }
         if (iWaypointId == 10)

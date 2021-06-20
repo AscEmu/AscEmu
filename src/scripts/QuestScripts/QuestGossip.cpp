@@ -75,7 +75,7 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         uint32_t Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());
-        if (sMySQLStore.getNpcText(Text) == nullptr)
+        if (sMySQLStore.getNpcGossipText(Text) == nullptr)
             Text = DefaultGossipTextId;
 
         GossipMenu menu(pObject->getGuid(), Text, plr->GetSession()->language);

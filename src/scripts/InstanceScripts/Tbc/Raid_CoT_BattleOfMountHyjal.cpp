@@ -226,7 +226,7 @@ class KazrogalAI : public CreatureAIScript
     void OnDied(Unit* /*mKiller*/) override
     {
         //\todo move this to db
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "hahahahaa aahaah");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "hahahahaa aahaah");
         getCreature()->PlaySoundToSet(11018);
     }
 };

@@ -63,7 +63,7 @@ class Wizzlecranks_Shredder : public CreatureAIScript
 
         if (iWaypointId == 195)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thank you Young warior!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thank you Young warior!");
             getCreature()->Despawn(5000, 1000);
             getCreature()->stopMoving();
             if (getCreature()->m_escorter == nullptr)
@@ -90,7 +90,7 @@ class Gilthares_Firebough : public CreatureAIScript
 
         if (iWaypointId == 100)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally, I am rescued");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally, I am rescued");
             getCreature()->Despawn(5000, 1000);
             getCreature()->stopMoving();
             if (getCreature()->m_escorter == nullptr)
@@ -121,7 +121,7 @@ class VerogtheDervish : public CreatureAIScript
             {
                 getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(3395, -1209.8f, -2729.84f, 106.33f, 4.8f, true, false, 0, 0)->Despawn(600000, 0);
                 kolkarskilled = 0;
-                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I am slain! Summon Verog!");
+                getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I am slain! Summon Verog!");
             }
         }
     }

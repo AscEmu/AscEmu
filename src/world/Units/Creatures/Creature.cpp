@@ -491,7 +491,7 @@ void Creature::generateLoot()
                 const char* itemColours[8] = { "9d9d9d", "ffffff", "1eff00", "0070dd", "a335ee", "ff8000", "e6cc80", "e6cc80" };
                 char buffer[256];
                 sprintf(buffer, "\174cff%s\174Hitem:%u:0:0:0:0:0:0:0\174h[%s]\174h\174r", itemColours[itr->item.itemproto->Quality], itr->item.itemproto->ItemId, itr->item.itemproto->Name.c_str());
-                this->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, buffer);
+                this->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, buffer);
             }
         }
     }
@@ -2258,7 +2258,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     RemoveAllNonPersistentAuras();
 
-    CALL_SCRIPT_EVENT(pAttacker, _internalOnTargetDied)();
+    CALL_SCRIPT_EVENT(pAttacker, _internalOnTargetDied)(this);
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
 
     pAttacker->smsg_AttackStop(this);
@@ -2318,80 +2318,38 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         m_mapMgr->m_battleground->HookOnUnitDied(this);
 }
 
-void Creature::SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay)
-{
-    if (delay)
-    {
-        sEventMgr.AddEvent(this, &Creature::SendChatMessage, type, lang, msg, uint32(0), EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        return;
-    }
-
-    const char* name = GetCreatureProperties()->Name.c_str();
-
-    const auto data = SmsgMessageChat(type, lang, 0, msg, getGuid(), name).serialise();
-
-    SendMessageToSet(data.get(), true);
-}
-
 /// \todo implement localization support
 // 1. Chat Areas (Area, Map, World)
 // 2. WorldPacket... support for MONSTER_SAY
 // 3. data resize, map with players (PlayerSession)
 // 4. Sending localizations if available... puh
-void Creature::SendScriptTextChatMessage(uint32 textid)
+void Creature::SendScriptTextChatMessage(uint32 textid, Unit* target/* = target*/)
 {
-    SendCreatureChatMessageInRange(this, textid);
+    SendCreatureChatMessageInRange(this, textid, target);
 }
 
-void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
+void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay, Unit* target/* = nullptr*/)
 {
-    MySQLStructure::NpcScriptText const* ct = sMySQLStore.getNpcScriptText(textid);
-    const char* msg = ct->text.c_str();
-    if (delay)
+    if (delay > 0)
     {
-        sEventMgr.AddEvent(this, &Creature::SendChatMessage, uint8(ct->type), uint32(ct->language), msg, uint32(0), EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        if (ct->sound != 0)
-            sEventMgr.AddEvent(static_cast<Object*>(this), &Object::PlaySoundToSet, ct->sound, EVENT_UNK, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(this, &Creature::SendTimedScriptTextChatMessage, textid, uint32_t(0), target, EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         return;
     }
 
-    if (ct->emote != 0)
-        this->eventAddEmote((EmoteType)ct->emote, ct->duration);
-
-    auto name = GetCreatureProperties()->Name;
-
-    const auto data = AscEmu::Packets::SmsgMessageChat(ct->type, ct->language, 0, ct->text, getGuid(), name).serialise();
-
-    SendMessageToSet(data.get(), true);      // sending this
+    SendCreatureChatMessageInRange(this, textid, target);
 }
 
-void Creature::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr)
+void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event, Unit* target)
 {
-    if (plr == NULL)
+    auto* const creatureAiText = sMySQLStore.getAITextEventForCreature(getEntry(), Event);
+    if (creatureAiText == nullptr)
         return;
 
-    const auto data = AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, getGuid(), GetCreatureProperties()->Name).serialise();
+    uint8_t choice = 0;
+    if (Util::checkChance(creatureAiText->chance))
+        choice = (creatureAiText->textCount == 1) ? 0 : Util::getRandomUInt(creatureAiText->textCount - 1);
 
-    plr->GetSession()->SendPacket(data.get());
-}
-
-void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
-{
-    MySQLStructure::NpcMonsterSay* npcMonsterSay = sMySQLStore.getMonstersayEventForCreature(getEntry(), Event);
-    if (npcMonsterSay == nullptr)
-    {
-        return;
-    }
-    else
-    {
-        int choice = 0;
-        if (Util::checkChance(npcMonsterSay->chance))
-        {
-            choice = (npcMonsterSay->textCount == 1) ? 0 : Util::getRandomUInt(npcMonsterSay->textCount - 1);
-        }
-
-        SendMonsterSayMessageInRange(this, npcMonsterSay, choice, Event);
-    }
+    SendCreatureChatMessageInRange(this, creatureAiText->textIds[choice], target);
 }
 
 uint32 Creature::GetType()

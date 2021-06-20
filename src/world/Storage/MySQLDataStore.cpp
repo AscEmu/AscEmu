@@ -29,29 +29,20 @@ MySQLDataStore& MySQLDataStore::getInstance()
 
 void MySQLDataStore::finalize()
 {
-    for (int i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
+    for (uint8_t i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
     {
-        for (NpcMonstersayContainer::iterator itr = _npcMonstersayContainer[i].begin(); itr != _npcMonstersayContainer[i].end(); ++itr)
+        for (auto itr = _creatureAiTextContainer[i].begin(); itr != _creatureAiTextContainer[i].end(); ++itr)
         {
-            MySQLStructure::NpcMonsterSay* npcMonsterSay = itr->second;
-            for (uint32_t j = 0; j < npcMonsterSay->textCount; ++j)
-            {
-                free((char*)npcMonsterSay->texts[j]);
-            }
-
-            delete[] npcMonsterSay->texts;
-            free((char*)npcMonsterSay->monsterName);
-            delete npcMonsterSay;
+            delete itr->second;
         }
 
-        _npcMonstersayContainer[i].clear();
+        _creatureAiTextContainer[i].clear();
     }
 
     for (auto&& professionDiscovery : _professionDiscoveryStore)
     {
         delete professionDiscovery;
     }
-
 }
 
 void MySQLDataStore::loadAdditionalTableConfig()
@@ -1582,8 +1573,8 @@ void MySQLDataStore::loadNpcTextTable()
 {
     auto startTime = Util::TimeNow();
 
-    //                                                           0
-    QueryResult* npc_text_result = WorldDatabase.Query("SELECT entry, "
+    //                                                                  0
+    QueryResult* npc_gossip_text_result = WorldDatabase.Query("SELECT entry, "
     //                                                     1       2        3       4          5           6            7           8            9           10
                                                         "prob0, text0_0, text0_1, lang0, EmoteDelay0_0, Emote0_0, EmoteDelay0_1, Emote0_1, EmoteDelay0_2, Emote0_2, "
     //                                                     11      12       13      14         15          16           17          18           19          20
@@ -1599,26 +1590,26 @@ void MySQLDataStore::loadNpcTextTable()
     //                                                     61      62       63      64         65          66           67          68           69          70
                                                         "prob6, text6_0, text6_1, lang6, EmoteDelay6_0, Emote6_0, EmoteDelay6_1, Emote6_1, EmoteDelay6_2, Emote6_2, "
     //                                                     71      72       73      74         75          76           77          78           79          80
-                                                        "prob7, text7_0, text7_1, lang7, EmoteDelay7_0, Emote7_0, EmoteDelay7_1, Emote7_1, EmoteDelay7_2, Emote7_2 FROM npc_text");
+                                                        "prob7, text7_0, text7_1, lang7, EmoteDelay7_0, Emote7_0, EmoteDelay7_1, Emote7_1, EmoteDelay7_2, Emote7_2 FROM npc_gossip_texts");
 
-    if (npc_text_result == nullptr)
+    if (npc_gossip_text_result == nullptr)
     {
-        sLogger.info("MySQLDataLoads : Table `npc_text` is empty!");
+        sLogger.info("MySQLDataLoads : Table `npc_gossip_texts` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `npc_text` has %u columns", npc_text_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `npc_gossip_texts` has %u columns", npc_gossip_text_result->GetFieldCount());
 
-    _npcTextStore.rehash(npc_text_result->GetRowCount());
+    _npcGossipTextStore.rehash(npc_gossip_text_result->GetRowCount());
 
     uint32_t npc_text_count = 0;
     do
     {
-        Field* fields = npc_text_result->Fetch();
+        Field* fields = npc_gossip_text_result->Fetch();
 
         uint32_t entry = fields[0].GetUInt32();
 
-        MySQLStructure::NpcText& npcText = _npcTextStore[entry];
+        MySQLStructure::NpcGossipText& npcText = _npcGossipTextStore[entry];
 
         npcText.entry = entry;
         for (uint8_t i = 0; i < 8; ++i)
@@ -1641,17 +1632,17 @@ void MySQLDataStore::loadNpcTextTable()
 
 
         ++npc_text_count;
-    } while (npc_text_result->NextRow());
+    } while (npc_gossip_text_result->NextRow());
 
-    delete npc_text_result;
+    delete npc_gossip_text_result;
 
-    sLogger.info("MySQLDataLoads : Loaded %u rows from `npc_text` table in %u ms!", npc_text_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `npc_gossip_texts` table in %u ms!", npc_text_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-MySQLStructure::NpcText const* MySQLDataStore::getNpcText(uint32_t entry)
+MySQLStructure::NpcGossipText const* MySQLDataStore::getNpcGossipText(uint32_t entry) const
 {
-    NpcTextContainer::const_iterator itr = _npcTextStore.find(entry);
-    if (itr != _npcTextStore.end())
+    NpcGossipTextContainer::const_iterator itr = _npcGossipTextStore.find(entry);
+    if (itr != _npcGossipTextStore.end())
     {
         return &(itr->second);
     }
@@ -2717,24 +2708,24 @@ void MySQLDataStore::loadNpcGossipTextIdTable()
 {
     auto startTime = Util::TimeNow();
     //                                                    0         1
-    QueryResult* npc_gossip_textid_result = WorldDatabase.Query("SELECT creatureid, textid FROM npc_gossip_textid");
-    if (npc_gossip_textid_result == nullptr)
+    QueryResult* npc_gossip_properties_result = WorldDatabase.Query("SELECT creatureid, textid FROM npc_gossip_properties");
+    if (npc_gossip_properties_result == nullptr)
     {
-        sLogger.info("MySQLDataLoads : Table `npc_gossip_textid` is empty!");
+        sLogger.info("MySQLDataLoads : Table `npc_gossip_properties` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `npc_gossip_textid` has %u columns", npc_gossip_textid_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `npc_gossip_properties` has %u columns", npc_gossip_properties_result->GetFieldCount());
 
-    uint32_t npc_gossip_textid_count = 0;
+    uint32_t npc_gossip_properties_count = 0;
     do
     {
-        Field* fields = npc_gossip_textid_result->Fetch();
+        Field* fields = npc_gossip_properties_result->Fetch();
         uint32_t entry = fields[0].GetUInt32();
         auto creature_properties = sMySQLStore.getCreatureProperties(entry);
         if (creature_properties == nullptr)
         {
-            sLogger.debug("Table `npc_gossip_textid` includes invalid creatureid %u! <skipped>", entry);
+            sLogger.debug("Table `npc_gossip_properties` includes invalid creatureid %u! <skipped>", entry);
             continue;
         }
 
@@ -2742,13 +2733,13 @@ void MySQLDataStore::loadNpcGossipTextIdTable()
 
         _npcGossipTextIdStore[entry] = text;
 
-        ++npc_gossip_textid_count;
+        ++npc_gossip_properties_count;
 
-    } while (npc_gossip_textid_result->NextRow());
+    } while (npc_gossip_properties_result->NextRow());
 
-    delete npc_gossip_textid_result;
+    delete npc_gossip_properties_result;
 
-    sLogger.info("MySQLDataLoads : Loaded %u rows from `npc_gossip_textid` table in %u ms!", npc_gossip_textid_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `npc_gossip_properties` table in %u ms!", npc_gossip_properties_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 uint32_t MySQLDataStore::getGossipTextIdForNpc(uint32_t entry)
@@ -3329,68 +3320,6 @@ MySQLStructure::LocalesItemPages const* MySQLDataStore::getLocalizedItemPages(ui
     return nullptr;
 }
 
-void MySQLDataStore::loadLocalesNPCMonstersay()
-{
-    auto startTime = Util::TimeNow();
-    //                                                                   0      1          2            3         4      5      6      7      8
-    QueryResult* local_monstersay_result = WorldDatabase.Query("SELECT entry, type, language_code, monstername, text0, text1, text2, text3, text4 FROM locales_npc_monstersay");
-    if (local_monstersay_result == nullptr)
-    {
-        sLogger.info("MySQLDataLoads : Table `locales_npc_monstersay` is empty!");
-        return;
-    }
-
-    sLogger.info("MySQLDataLoads : Table `locales_npc_monstersay` has %u columns", local_monstersay_result->GetFieldCount());
-
-    _localesNPCMonstersayStore.rehash(local_monstersay_result->GetRowCount());
-
-    uint32_t local_monstersay_count = 0;
-    uint32_t i = 0;
-    do
-    {
-        ++i;
-        Field* fields = local_monstersay_result->Fetch();
-
-        MySQLStructure::LocalesNPCMonstersay& localMonstersay = _localesNPCMonstersayStore[i];
-
-        localMonstersay.entry = fields[0].GetInt32();
-        localMonstersay.type = fields[1].GetUInt32();
-        std::string locString = fields[2].GetString();
-        localMonstersay.languageCode = Util::getLanguagesIdFromString(locString);
-        localMonstersay.monstername = strdup(fields[3].GetString());
-        localMonstersay.text0 = strdup(fields[4].GetString());
-        localMonstersay.text1 = strdup(fields[5].GetString());
-        localMonstersay.text2 = strdup(fields[6].GetString());
-        localMonstersay.text3 = strdup(fields[7].GetString());
-        localMonstersay.text4 = strdup(fields[8].GetString());
-
-        ++local_monstersay_count;
-
-    } while (local_monstersay_result->NextRow());
-
-    delete local_monstersay_result;
-
-    sLogger.info("MySQLDataLoads : Loaded %u rows from `locales_npc_monstersay` table in %u ms!", local_monstersay_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-}
-
-MySQLStructure::LocalesNPCMonstersay const* MySQLDataStore::getLocalizedMonsterSay(uint32_t entry, uint32_t sessionLocale, uint32_t event)
-{
-    for (LocalesNPCMonstersayContainer::const_iterator itr = _localesNPCMonstersayStore.begin(); itr != _localesNPCMonstersayStore.end(); ++itr)
-    {
-        if (itr->second.entry == entry)
-        {
-            if (itr->second.languageCode == sessionLocale)
-            {
-                if (itr->second.type == event)
-                {
-                    return &itr->second;
-                }
-            }
-        }
-    }
-    return nullptr;
-}
-
 void MySQLDataStore::loadLocalesNpcScriptText()
 {
     auto startTime = Util::TimeNow();
@@ -3448,16 +3377,16 @@ void MySQLDataStore::loadLocalesNpcText()
 {
     auto startTime = Util::TimeNow();
     //                                                  0         1           2       3       4       5       6       7       8       9       10      11     12      13      14      15      16      17
-    QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text0, text0_1, text1, text1_1, text2, text2_1, text3, text3_1, text4, text4_1, text5, text5_1, text6, text6_1, text7, text7_1 FROM locales_npc_text");
+    QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text0, text0_1, text1, text1_1, text2, text2_1, text3, text3_1, text4, text4_1, text5, text5_1, text6, text6_1, text7, text7_1 FROM locales_npc_gossip_texts");
     if (result == nullptr)
     {
-        sLogger.info("MySQLDataLoads : Table `locales_npc_text` is empty!");
+        sLogger.info("MySQLDataLoads : Table `locales_npc_gossip_texts` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_npc_text` has %u columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_npc_gossip_texts` has %u columns", result->GetFieldCount());
 
-    _localesNpcTextStore.rehash(result->GetRowCount());
+    _localesNpcGossipTextStore.rehash(result->GetRowCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
@@ -3466,16 +3395,16 @@ void MySQLDataStore::loadLocalesNpcText()
         ++i;
         Field* fields = result->Fetch();
 
-        MySQLStructure::LocalesNpcText& localNpcText = _localesNpcTextStore[i];
+        MySQLStructure::LocalesNpcGossipText& localNpcGossipText = _localesNpcGossipTextStore[i];
 
-        localNpcText.entry = fields[0].GetInt32();
+        localNpcGossipText.entry = fields[0].GetInt32();
         std::string locString = fields[1].GetString();
-        localNpcText.languageCode = Util::getLanguagesIdFromString(locString);
+        localNpcGossipText.languageCode = Util::getLanguagesIdFromString(locString);
 
         for (uint8 j = 0; j < 8; ++j)
         {
-            localNpcText.texts[j][0] = strdup(fields[2 + (2 * j)].GetString());
-            localNpcText.texts[j][1] = strdup(fields[3 + (2 * j)].GetString());
+            localNpcGossipText.texts[j][0] = strdup(fields[2 + (2 * j)].GetString());
+            localNpcGossipText.texts[j][1] = strdup(fields[3 + (2 * j)].GetString());
         }
 
         ++load_count;
@@ -3484,12 +3413,12 @@ void MySQLDataStore::loadLocalesNpcText()
 
     delete result;
 
-    sLogger.info("MySQLDataLoads : Loaded %u rows from `locales_npc_text` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `locales_npc_gossip_texts` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-MySQLStructure::LocalesNpcText const* MySQLDataStore::getLocalizedNpcText(uint32_t entry, uint32_t sessionLocale)
+MySQLStructure::LocalesNpcGossipText const* MySQLDataStore::getLocalizedNpcGossipText(uint32_t entry, uint32_t sessionLocale) const
 {
-    for (LocalesNpcTextContainer::const_iterator itr = _localesNpcTextStore.begin(); itr != _localesNpcTextStore.end(); ++itr)
+    for (LocalesNpcGossipTextContainer::const_iterator itr = _localesNpcGossipTextStore.begin(); itr != _localesNpcGossipTextStore.end(); ++itr)
     {
         if (itr->second.entry == entry)
         {
@@ -3753,18 +3682,18 @@ std::string MySQLDataStore::getLocaleGossipTitleOrElse(uint32_t entry, uint32_t 
     return errorMsg.str();
 }
 
-void MySQLDataStore::loadNpcMonstersayTable()
+void MySQLDataStore::loadCreatureAiTextTable()
 {
     auto startTime = Util::TimeNow();
-    //                                                  0      1       2        3       4       5          6      7      8      9     10
-    QueryResult* result = WorldDatabase.Query("SELECT entry, event, chance, language, type, monstername, text0, text1, text2, text3, text4 FROM npc_monstersay");
+    //                                                  0      1       2        3       4       5          6
+    QueryResult* result = WorldDatabase.Query("SELECT entry, event, chance, text0, text1, text2, text3, text4 FROM creature_ai_texts");
     if (result == nullptr)
     {
-        sLogger.info("MySQLDataLoads : Table `npc_monstersay` is empty!");
+        sLogger.info("MySQLDataLoads : Table `creature_ai_texts` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `npc_monstersay` has %u columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `creature_ai_texts` has %u columns", result->GetFieldCount());
 
     uint32_t load_count = 0;
     do
@@ -3778,75 +3707,59 @@ void MySQLDataStore::loadNpcMonstersayTable()
             continue;
         }
 
-        if (_npcMonstersayContainer[creatureEvent].find(entry) != _npcMonstersayContainer[creatureEvent].end())
+        if (_creatureAiTextContainer[creatureEvent].find(entry) != _creatureAiTextContainer[creatureEvent].end())
         {
-            sLogger.debug("Duplicate npc_monstersay event %u for entry %u, skipping", creatureEvent, entry);
+            sLogger.debug("Duplicate creature_ai_texts event %u for entry %u, skipping", creatureEvent, entry);
             continue;
         }
 
-        MySQLStructure::NpcMonsterSay* npcMonsterSay = new MySQLStructure::NpcMonsterSay;
-        npcMonsterSay->chance = fields[2].GetFloat();
-        npcMonsterSay->language = fields[3].GetUInt32();
-        npcMonsterSay->type = fields[4].GetUInt32();
-        npcMonsterSay->monsterName = fields[5].GetString() ? strdup(fields[5].GetString()) : strdup("None");
+        MySQLStructure::CreatureAITexts* aiText = new MySQLStructure::CreatureAITexts;
+        aiText->chance = fields[2].GetFloat();
 
-        char* texts[5];
-        char* text;
-        uint32_t textcount = 0;
-
-        for (int i = 0; i < 5; ++i)
+        uint32_t _textIds[CREATURE_AI_TEXT_COUNT];
+        uint8_t textCount = 0;
+        for (uint8_t i = 0; i < CREATURE_AI_TEXT_COUNT; ++i)
         {
-            text = (char*)fields[6 + i].GetString();
-            if (!text)
+            auto field = fields[3 + i];
+            if (field.isSet())
             {
-                continue;
+                _textIds[i] = field.GetUInt32();
+                ++textCount;
             }
-
-            if (strlen(fields[6 + i].GetString()) < 5)
+            else
             {
-                continue;
+                _textIds[i] = 0;
             }
-
-            texts[textcount] = strdup(fields[6 + i].GetString());
-
-            if (texts[textcount][strlen(texts[textcount]) - 1] == ';')
-            {
-                texts[textcount][strlen(texts[textcount]) - 1] = 0;
-            }
-
-            ++textcount;
         }
 
-        if (textcount == 0)
+        if (textCount == 0)
         {
-            free(((char*)npcMonsterSay->monsterName));
-            delete npcMonsterSay;
+            delete aiText;
             continue;
         }
 
-        npcMonsterSay->texts = new const char*[textcount];
-        memcpy(npcMonsterSay->texts, texts, sizeof(char*) * textcount);
-        npcMonsterSay->textCount = textcount;
+        aiText->textCount = textCount;
 
-        _npcMonstersayContainer[creatureEvent].insert(std::make_pair(entry, npcMonsterSay));
+        std::copy(std::begin(_textIds), std::end(_textIds), std::begin(aiText->textIds));
+        _creatureAiTextContainer[creatureEvent].insert(std::make_pair(entry, aiText));
 
         ++load_count;
     } while (result->NextRow());
 
     delete result;
 
-    sLogger.info("MySQLDataLoads : Loaded %u rows from `npc_monstersay` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `creature_ai_texts` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS _event)
+MySQLStructure::CreatureAITexts* MySQLDataStore::getAITextEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS _event) const
 {
-    if (_npcMonstersayContainer[_event].empty())
+    if (_creatureAiTextContainer[_event].empty())
     {
         return nullptr;
     }
 
-    NpcMonstersayContainer::iterator itr = _npcMonstersayContainer[_event].find(entry);
-    if (itr != _npcMonstersayContainer[_event].end())
+    const auto itr = _creatureAiTextContainer[_event].find(entry);
+    if (itr != _creatureAiTextContainer[_event].end())
     {
         return itr->second;
     }

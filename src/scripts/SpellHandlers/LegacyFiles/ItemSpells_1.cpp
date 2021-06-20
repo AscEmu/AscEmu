@@ -215,7 +215,7 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
     // send chat message
     char msg[100];
     sprintf(msg, "Ow! Ok, I'll get back to work, %s", pSpell->getPlayerCaster()->getName().c_str());
-    target->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
+    target->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
 
     c_target->emote(EMOTE_STATE_WORK_CHOPWOOD);
 

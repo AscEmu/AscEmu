@@ -88,11 +88,11 @@ public:
         Creature* pCreature = static_cast<Creature*>(pObject);
 
         std::string msg = "Aye, I'll try it.";
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
         std::string msg2 = "That's exactly what I needed!";
         std::string msg3 = "It's got my vote! That'll put hair on your chest like nothing else will.";
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
 
         if (auto* questLog = plr->getQuestLogByQuestId(12645))
         {
@@ -125,11 +125,11 @@ public:
         Creature* pCreature = static_cast<Creature*>(pObject);
 
         std::string msg = "I'm always up for something of Grimbooze's.";
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
         std::string msg2 = "Well, so far, it tastes like something my wife would drink...";
         std::string msg3 = "Now, there's the kick I've come to expect from Grimbooze's drinks! I like it!";
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
 
         if (auto* questLog = plr->getQuestLogByQuestId(12645))
         {
@@ -162,11 +162,11 @@ public:
         Creature* pCreature = static_cast<Creature*>(pObject);
 
         std::string msg = " Sure!";
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
         std::string msg2 = "Oh my...";
         std::string msg3 = "Tastes like I'm drinking... engine degreaser!";
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
 
         if (auto* questLog = plr->getQuestLogByQuestId(12645))
         {

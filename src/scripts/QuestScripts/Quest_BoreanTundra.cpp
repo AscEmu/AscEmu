@@ -319,7 +319,7 @@ public:
         uint32_t Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());
 
         // check if there is a entry in the db
-        if (sMySQLStore.getNpcText(Text) == nullptr)
+        if (sMySQLStore.getNpcGossipText(Text) == nullptr)
             Text = DefaultGossipTextId;
 
         GossipMenu menu(pObject->getGuid(), Text, pPlayer->GetSession()->language);
@@ -566,7 +566,7 @@ public:
     {
         Creature* SaltyJohn = static_cast<Creature*>(pObject);
         SaltyJohn->SetFaction(14);
-        SaltyJohn->SendChatMessage(12, 0, "I suppose this is it.. then? I won't go down quietly!");
+        SaltyJohn->sendChatMessage(12, 0, "I suppose this is it.. then? I won't go down quietly!");
     }
 };
 
@@ -588,7 +588,7 @@ public:
     {
         Creature* TomHegger = static_cast<Creature*>(pObject);
         TomHegger->SetFaction(14);
-        TomHegger->SendChatMessage(12, 0, "You don't know who you're messing with, ! Death beckons!");
+        TomHegger->sendChatMessage(12, 0, "You don't know who you're messing with, ! Death beckons!");
     }
 };
 
@@ -610,7 +610,7 @@ public:
     {
         Creature* GuardMitch = static_cast<Creature*>(pObject);
         GuardMitch->SetFaction(14);
-        GuardMitch->SendChatMessage(12, 0, "Finally! This charade is over... Arthas give me strength!");
+        GuardMitch->sendChatMessage(12, 0, "Finally! This charade is over... Arthas give me strength!");
     }
 };
 

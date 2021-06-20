@@ -701,7 +701,7 @@ bool ChatHandler::HandleNpcSayCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    creature_target->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, args);
+    creature_target->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, args);
 
     return true;
 }
@@ -815,7 +815,7 @@ bool ChatHandler::HandleNpcYellCommand(const char* args, WorldSession* m_session
         return true;
     }
 
-    creature_target->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, args);
+    creature_target->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, args);
 
     return true;
 }

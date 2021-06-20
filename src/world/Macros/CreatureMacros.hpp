@@ -22,3 +22,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 /// -
 #define TRAINER_STATUS_ALREADY_HAVE 2
+
+/// -
+#define CREATURE_AI_TEXT_COUNT 5
+
+/// -
+#define GOSSIP_EMOTE_COUNT 3

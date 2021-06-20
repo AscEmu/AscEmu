@@ -842,7 +842,6 @@ void World::loadMySQLStores()
     sMySQLStore.loadLocalesGossipMenuOption();
     sMySQLStore.loadLocalesItem();
     sMySQLStore.loadLocalesItemPages();
-    sMySQLStore.loadLocalesNPCMonstersay();
     sMySQLStore.loadLocalesNpcScriptText();
     sMySQLStore.loadLocalesNpcText();
     sMySQLStore.loadLocalesQuest();
@@ -850,7 +849,7 @@ void World::loadMySQLStores()
     sMySQLStore.loadLocalesWorldmapInfo();
     sMySQLStore.loadLocalesWorldStringTable();
 
-    sMySQLStore.loadNpcMonstersayTable();
+    sMySQLStore.loadCreatureAiTextTable();
     //sMySQLStore.loadDefaultPetSpellsTable();      Zyres 2017/07/16 not used
     sMySQLStore.loadProfessionDiscoveriesTable();
 

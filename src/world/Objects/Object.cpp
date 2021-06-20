@@ -3822,7 +3822,7 @@ void Object::SendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
     }
 }
 
-void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
+void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId, Unit* target/* = nullptr*/)
 {
     uint32 myphase = GetPhase();
     for (const auto& itr : mInRangePlayersSet)
@@ -3849,173 +3849,13 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
                 else
                     message = npcScriptText->text;
 
-                std::string creatureName;
-
-                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
-                if (lcn != nullptr)
-                    creatureName = lcn->name;
-                else
-                    creatureName = creature->GetCreatureProperties()->Name;
-
                 if (npcScriptText->emote != 0)
                     creature->eventAddEmote((EmoteType)npcScriptText->emote, npcScriptText->duration);
 
                 if (npcScriptText->sound != 0)
                     creature->PlaySoundToSet(npcScriptText->sound);
 
-                const auto data = SmsgMessageChat(npcScriptText->type, npcScriptText->language, 0, message, getGuid(), creatureName).serialise();
-                player->SendPacket(data.get());
-            }
-        }
-    }
-}
-
-void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::NpcMonsterSay* npcMonsterSay, int randChoice, uint32_t event)
-{
-    uint32 myphase = GetPhase();
-    for (const auto& itr : mInRangePlayersSet)
-    {
-        Object* object = itr;
-        if (object && (object->GetPhase() & myphase) != 0)
-        {
-            if (object->isPlayer())
-            {
-                Player* player = static_cast<Player*>(object);
-                uint32_t sessionLanguage = player->GetSession()->language;
-
-                //////////////////////////////////////////////////////////////////////////////////////////////
-                // get text (normal or localized)
-                const char* text = npcMonsterSay->texts[randChoice];
-                MySQLStructure::LocalesNPCMonstersay const* lmsay = (sessionLanguage > 0) ? sMySQLStore.getLocalizedMonsterSay(getEntry(), sessionLanguage, event) : nullptr;
-                if (lmsay != nullptr)
-                {
-                    switch (randChoice)
-                    {
-                    case 0:
-                        if (lmsay->text0 != nullptr)
-                            text = lmsay->text0;
-                        break;
-                    case 1:
-                        if (lmsay->text1 != nullptr)
-                            text = lmsay->text1;
-                        break;
-                    case 2:
-                        if (lmsay->text2 != nullptr)
-                            text = lmsay->text2;
-                        break;
-                    case 3:
-                        if (lmsay->text3 != nullptr)
-                            text = lmsay->text3;
-                        break;
-                    case 4:
-                        if (lmsay->text4 != nullptr)
-                            text = lmsay->text4;
-                        break;
-                    default:
-                        text = npcMonsterSay->texts[randChoice];
-                    }
-                }
-                else
-                {
-                    text = npcMonsterSay->texts[randChoice];
-                }
-
-                // replace text with content
-                std::string newText = text;
-#if VERSION_STRING < Cata
-#if VERSION_STRING > Classic
-                static const char* races[DBC_NUM_RACES] = { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei" };
-#else
-                static const char* races[DBC_NUM_RACES] = { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll" };
-
-#endif
-#else
-                static const char* races[DBC_NUM_RACES] = { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "Goblin", "Blood Elf", "Draenei", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "Worgen" };
-#endif
-                static const char* classes[MAX_PLAYER_CLASSES] = { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "Monk", "Druid" };
-                char* test = strstr((char*)text, "$R");
-                if (test == nullptr)
-                    test = strstr((char*)text, "$r");
-
-                if (test != nullptr)
-                {
-                    uint64 targetGUID = creature->getTargetGuid();
-                    Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
-                    if (CurrentTarget)
-                    {
-                        ptrdiff_t testOfs = test - text;
-                        newText.replace(testOfs, 2, races[CurrentTarget->getRace()]);
-                    }
-                }
-                test = strstr((char*)text, "$N");
-                if (test == nullptr)
-                    test = strstr((char*)text, "$n");
-
-                if (test != nullptr)
-                {
-                    uint64 targetGUID = creature->getTargetGuid();
-                    Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
-                    if (CurrentTarget && CurrentTarget->isPlayer())
-                    {
-                        ptrdiff_t testOfs = test - text;
-                        newText.replace(testOfs, 2, static_cast<Player*>(CurrentTarget)->getName().c_str());
-                    }
-                }
-                test = strstr((char*)text, "$C");
-                if (test == nullptr)
-                    test = strstr((char*)text, "$c");
-
-                if (test != nullptr)
-                {
-                    uint64 targetGUID = creature->getTargetGuid();
-                    Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
-                    if (CurrentTarget)
-                    {
-                        ptrdiff_t testOfs = test - text;
-                        newText.replace(testOfs, 2, classes[CurrentTarget->getClass()]);
-                    }
-                }
-                test = strstr((char*)text, "$G");
-                if (test == nullptr)
-                    test = strstr((char*)text, "$g");
-
-                if (test != nullptr)
-                {
-                    uint64 targetGUID = creature->getTargetGuid();
-                    Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
-                    if (CurrentTarget)
-                    {
-                        char* g0 = test + 2;
-                        char* g1 = strchr(g0, ':');
-                        if (g1)
-                        {
-                            char* gEnd = strchr(g1, ';');
-                            if (gEnd)
-                            {
-                                *g1 = 0x00;
-                                ++g1;
-                                *gEnd = 0x00;
-                                ++gEnd;
-                                *test = 0x00;
-                                newText = text;
-                                newText += (CurrentTarget->getGender() == 0) ? g0 : g1;
-                                newText += gEnd;
-                            }
-                        }
-                    }
-                }
-
-                ////////////////////////////////////////////////////////////////////////////////////////////
-
-                std::string creatureName;
-
-                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
-                if (lcn != nullptr)
-                    creatureName = lcn->name;
-                else
-                    creatureName = creature->GetCreatureProperties()->Name;
-
-                const auto data = SmsgMessageChat(static_cast<uint8_t>(npcMonsterSay->type), npcMonsterSay->language, 0, newText, getGuid(), creatureName).serialise();
+                const auto data = creature->createChatPacket(npcScriptText->type, npcScriptText->language, message, target, sessionLanguage);
                 player->SendPacket(data.get());
             }
         }

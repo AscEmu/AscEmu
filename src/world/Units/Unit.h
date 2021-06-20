@@ -882,6 +882,16 @@ protected:
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Chat
+    std::unique_ptr<WorldPacket> createChatPacket(uint8_t type, uint32_t language, std::string msg, Unit* receiver = nullptr, uint32_t sessionLanguage = 0);
+    void sendChatMessage(uint8_t type, uint32_t language, std::string msg, Unit* receiver = nullptr, uint32_t sessionLanguage = 0);
+    void sendChatMessage(uint8_t type, uint32_t language, std::string msg, uint32_t delay);
+    void sendChatMessage(MySQLStructure::NpcScriptText const* text, uint32_t delay, Unit* target = nullptr);
+
+    void sendChatMessageToPlayer(uint8_t type, uint32_t language, std::string msg, Player* plr);
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     void setAttackTimer(WeaponDamageType type, int32_t time);
     uint32_t getAttackTimer(WeaponDamageType type) const;
@@ -1276,8 +1286,6 @@ public:
         setServersideFaction();
     }
 
-    virtual void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0) = 0;
-    virtual void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr) = 0;
     void SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char* msg);
     void RegisterPeriodicChatMessage(uint32 delay, uint32 msgid, std::string message, bool sendnotify);
 
