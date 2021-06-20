@@ -661,8 +661,11 @@ bool ChatHandler::HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_
         sGMLog.writefromsession(m_session, "respawned Creature: `%s` with entry: %u on map: %u sqlid: %u", creature_target->GetCreatureProperties()->Name.c_str(),
             creature_target->getEntry(), creature_target->GetMapMgr()->GetMapId(), creature_target->spawnid);
 
-        creature_target->GetMapMgr()->pInstance->m_killedNpcs.erase(creature_target->getSpawnId());
-        creature_target->GetMapMgr()->pInstance->m_killedNpcs.erase(creature_target->getEntry());
+        if (creature_target->GetMapMgr()->pInstance != nullptr)
+        {
+            creature_target->GetMapMgr()->pInstance->m_killedNpcs.erase(creature_target->getSpawnId());
+            creature_target->GetMapMgr()->pInstance->m_killedNpcs.erase(creature_target->getEntry());
+        }
 
         creature_target->Despawn(0, 1000);
     }
