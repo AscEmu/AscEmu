@@ -108,6 +108,7 @@ enum AiState : uint8_t
 class SpellInfo;
 
 const uint32_t AISPELL_ANY_DIFFICULTY = 4;
+typedef std::set<Unit*> AssistTargetSet;
 
 struct AI_Spell
 {
@@ -148,6 +149,7 @@ public:
     void callForHelp(float fRadius);
     void doFleeToGetAssistance();
     void callAssistance();
+    void findAssistance();
     bool alreadyCalledForHelp() { return m_AlreadyCallAssistance; }
     void setNoCallAssistance(bool val) { m_AlreadyCallAssistance = val; }
     void setNoSearchAssistance(bool val) { m_AlreadySearchedAssistance = val; }
@@ -329,10 +331,16 @@ public:
     uint8_t getDifficultyType();
     bool m_is_in_instance;
 
+    inline AssistTargetSet GetAssistTargets() { return m_assistTargets; }
+    bool isAlreadyAssisting(Creature* helper);
+
 protected:
     SmallTimeTracker m_boundaryCheckTime;
     CreatureBoundary _boundary;
     bool _negateBoundary;
+
+    SmallTimeTracker m_updateAssistTimer;
+    AssistTargetSet m_assistTargets;
 
 private:
     bool m_disableDynamicBoundary = false;
