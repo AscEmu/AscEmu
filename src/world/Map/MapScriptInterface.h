@@ -140,18 +140,17 @@ class SERVER_DECL MapScriptInterface
                 if ((*iter)->isCreature())
                 {
                     Creature* helper = (*iter)->ToCreature();
-                    if (pCreature == helper)
-                        break;
-
-                    if (!helper->GetAIInterface()->canAssistTo(pCreature, enemy))
-                        break;
-
-                    CurrentDist = (*iter)->CalcDistance(pCreature);
-                    if (CurrentDist >= range)
-                        break;
-
-
-                    return helper;
+                    if (pCreature != helper)
+                    {
+                        CurrentDist = (*iter)->CalcDistance(pCreature);
+                        if (CurrentDist <= range)
+                        {
+                            if (helper->GetAIInterface()->canAssistTo(pCreature, enemy))
+                            {
+                                return helper;
+                            }
+                        }
+                    }
                 }
             }
             return nullptr;

@@ -82,9 +82,11 @@ AIInterface::AIInterface()
     timed_emote_expire(0xFFFFFFFF)
 {
     _boundary.clear();
+    m_assistTargets.clear();
     setCannotReachTarget(false);
     m_fleeTimer.resetInterval(0);
     m_cannotReachTimer.resetInterval(500);
+    m_updateAssistTimer.resetInterval(1000);
     m_updateTargetsTimer.resetInterval(TARGET_UPDATE_INTERVAL);
 };
 
@@ -351,6 +353,31 @@ void AIInterface::updateTargets(unsigned long time_passed)
     {
         m_updateTargetsTimer.updateTimer(time_passed);
         setCurrentTarget(findTarget());
+    }
+
+    m_updateAssistTimer.updateTimer(time_passed);
+
+    // Find Assist Targets to assist us in our Fight
+    if (m_updateAssistTimer.isTimePassed())
+    {
+        m_updateAssistTimer.resetInterval(1000);
+
+        // find nearby allies
+        findAssistance();
+
+        // Clear Assist Targets
+        if (m_assistTargets.size())
+        {
+            for (auto i = m_assistTargets.begin(); i != m_assistTargets.end();)
+            {
+                auto i2 = i++;
+                if ((*i2) == NULL || (*i2)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
+                    !(*i2)->isAlive() || m_Unit->getDistanceSq((*i2)) >= 2500.0f || !(*i2)->CombatStatus.IsInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
+                {
+                    m_assistTargets.erase(i2);
+                }
+            }
+        }
     }
 
     // set the target first
@@ -667,7 +694,7 @@ void AIInterface::doFleeToGetAssistance()
 
 void AIInterface::callAssistance()
 {
-    if (!m_AlreadyCallAssistance && getCurrentTarget() && !getUnit()->isPet() && !getUnit()->isCharmed())
+    if (!m_AlreadyCallAssistance && getCurrentTarget() && !getUnit()->isPet() && !getUnit()->getCharmerOrOwnerGUID())
     {
         setNoCallAssistance(true);
 
@@ -679,11 +706,46 @@ void AIInterface::callAssistance()
             Creature* creature = getUnit()->GetMapMgr()->GetInterface()->getNearestAssistCreatureInGrid(getUnit()->ToCreature(), getCurrentTarget(), radius);
 
             if (creature)
+                creature->GetAIInterface()->onHostileAction(getCurrentTarget());
+        }
+    }
+}
+
+void AIInterface::findAssistance()
+{
+    if (!getUnit()->GetMapMgr() || !getCurrentTarget())
+        return;
+
+    for (const auto& itr : getUnit()->getInRangeObjectsSet())
+    {
+        if (itr->isCreature())
+        {
+            Creature* helper = itr->ToCreature();
+
+            float DistToMe = getUnit()->CalcDistance(helper);
+
+            if (DistToMe <= 25.0f && helper->isInCombat() && !isAlreadyAssisting(helper)) // Also add targets if already in fight
+                m_assistTargets.insert(helper);
+
+            if (DistToMe <= 10.0f) // what should be correct also maybe differ instances/raids to normal world?
             {
-                // todo
+                if (helper->GetAIInterface()->canAssistTo(getUnit(), getCurrentTarget(), false))
+                {
+                    m_assistTargets.insert(helper);
+                    if (!helper->isInCombat())
+                        helper->GetAIInterface()->onHostileAction(getCurrentTarget());
+                }
             }
         }
     }
+}
+
+bool AIInterface::isAlreadyAssisting(Creature* helper)
+{
+    if (m_assistTargets.find(helper) != m_assistTargets.end())
+        return true;
+    
+    return false;
 }
 
 void AIInterface::callForHelp(float radius)
@@ -744,6 +806,9 @@ bool AIInterface::canAssistTo(Unit* u, Unit* enemy, bool checkfaction /*= true*/
 
     // skip non hostile to caster enemy creatures
     if (!isHostile(getUnit(), enemy))
+        return false;
+
+    if (isFriendly(getUnit(), enemy))
         return false;
 
     return true;
@@ -1269,6 +1334,9 @@ void AIInterface::justEnteredCombat(Unit* pUnit)
 
     m_isEngaged = true;
 
+    // find assistance
+    findAssistance();
+
     setDefaultBoundary();
 
     handleEvent(EVENT_ENTERCOMBAT, pUnit, 0);
@@ -1647,6 +1715,7 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
     spellEvents.resetEvents();
     setUnitToFollow(nullptr);
     setCannotReachTarget(false);
+    setNoCallAssistance(false);
     getUnit()->setTargetGuid(0);
 
     if (pUnit == nullptr)
@@ -1925,6 +1994,9 @@ void AIInterface::movementInform(uint32_t type, uint32_t id)
 void AIInterface::eventChangeFaction(Unit* ForceAttackersToHateThisInstead)
 {
     getUnit()->getThreatManager().removeMeFromThreatLists();
+
+    //we need a new assist list
+    m_assistTargets.clear();
 
     //Clear targettable
     if (ForceAttackersToHateThisInstead == nullptr)
