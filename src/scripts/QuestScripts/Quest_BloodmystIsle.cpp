@@ -21,6 +21,8 @@
 #include "Setup.h"
 #include <Units/Creatures/Pet.h>
 
+#include "Server/Script/CreatureAIScript.h"
+
 class TheKesselRun : public QuestScript
 {
 public:

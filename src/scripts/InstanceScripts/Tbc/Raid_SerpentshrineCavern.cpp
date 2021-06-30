@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Faction.h"
 #include <Spell/Definitions/PowerType.hpp>
 
+#include "Server/Script/CreatureAIScript.h"
+
 class SerpentshrineCavernInstanceScript : public InstanceScript
 {
 public:

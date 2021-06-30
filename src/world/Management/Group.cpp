@@ -30,6 +30,7 @@
 #include "Server/Packets/SmsgGroupSetLeader.h"
 #include "Server/Packets/SmsgGroupDestroyed.h"
 #include "Server/Packets/SmsgGroupList.h"
+#include "Server/Packets/SmsgMessageChat.h"
 
 using namespace AscEmu::Packets;
 

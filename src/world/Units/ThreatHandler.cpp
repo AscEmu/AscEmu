@@ -4,6 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "StdAfx.h"
+#include "ThreatHandler.h"
+
+#include "Creatures/Creature.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellAuras.h"
 
 void ThreatReference::addThreat(float amount)
 {

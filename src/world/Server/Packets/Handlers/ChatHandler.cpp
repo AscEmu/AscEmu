@@ -28,6 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetChannelWatch.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Server/OpcodeTable.hpp"
+#include "Server/Script/CreatureAIScript.h"
 
 #if VERSION_STRING >= Cata
 #include "Spell/SpellAuras.h"

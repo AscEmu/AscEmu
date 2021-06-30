@@ -50,6 +50,7 @@
 #include "Server/Packets/SmsgSetForceReactions.h"
 #include "Server/Packets/SmsgControlVehicle.h"
 #include "Server/Packets/SmsgCancelCombat.h"
+#include "Units/ThreatHandler.h"
 
 using namespace AscEmu::Packets;
 

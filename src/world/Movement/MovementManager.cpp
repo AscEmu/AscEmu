@@ -18,6 +18,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <algorithm>
 #include <iterator>
 
+
+#include "Map/MapMgr.h"
 #include "MovementGenerators/ChaseMovementGenerator.h"
 #include "MovementGenerators/ConfusedMovementGenerator.h"
 #include "MovementGenerators/FleeingMovementGenerator.h"

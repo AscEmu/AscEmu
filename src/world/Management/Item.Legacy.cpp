@@ -33,6 +33,7 @@
 #include "Server/Packets/SmsgEnchantmentLog.h"
 #include "Server/Packets/SmsgItemEnchantmentTimeUpdate.h"
 #include "Server/Packets/SmsgItemTimeUpdate.h"
+#include "Util/Strings.hpp"
 
 using namespace AscEmu::Packets;
 

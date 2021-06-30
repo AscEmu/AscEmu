@@ -37,6 +37,7 @@
 #include "Database/DatabaseUpdater.hpp"
 #include "Packets/SmsgServerMessage.h"
 #include "OpcodeTable.hpp"
+#include "Spell/SpellMgr.hpp"
 
 std::string LogFileName;
 bool bLogChat;

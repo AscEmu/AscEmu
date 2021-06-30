@@ -35,6 +35,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "OpcodeTable.hpp"
 #include "Units/Creatures/CreatureGroups.h"
 #include "Movement/WaypointManager.h"
+#include "Packets/SmsgMessageChat.h"
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"

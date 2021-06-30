@@ -27,6 +27,8 @@
 #include "Server/Script/ScriptMgr.h"
 #include <Spell/Definitions/PowerType.hpp>
 
+#include "Server/Script/CreatureAIScript.h"
+
 class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ArmyOfTheDeadGhoulAI)

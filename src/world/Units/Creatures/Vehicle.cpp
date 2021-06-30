@@ -24,6 +24,7 @@
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgControlVehicle.h"
+#include "Server/Script/CreatureAIScript.h"
 
 Vehicle::Vehicle()
 {

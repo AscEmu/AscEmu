@@ -113,8 +113,12 @@
 #include "Server/Packets/SmsgSetPhaseShift.h"
 #include "Server/Packets/SmsgContactList.h"
 #include "Server/Packets/SmsgCharacterLoginFailed.h"
+#include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgSetFactionStanding.h"
 #include "Server/Packets/SmsgSetFactionVisible.h"
+#include "Server/Script/CreatureAIScript.h"
+#include "Units/ThreatHandler.h"
+#include "Util/Strings.hpp"
 
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;

@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Spell/SpellMgr.hpp"
+#include "Util/Strings.hpp"
 
 //.lookup achievement
 //////////////////////////////////////////////////////////////////////////////////////////

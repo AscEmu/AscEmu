@@ -6,7 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Event_Darkmoon_Faire.h"
 
- //////////////////////////////////////////////////////////////////////////////////////////
+#include "Server/Script/CreatureAIScript.h"
+
+//////////////////////////////////////////////////////////////////////////////////////////
  //\details <b>Darkmoon Faire (Elwynn Forest)</b>\n
  // event_properties entry: 4 \n
  // event_properties holiday: 374 \n

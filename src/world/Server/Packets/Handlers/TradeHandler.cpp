@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Management/Container.h"
 #include "Management/ItemInterface.h"
+#include "Spell/SpellMgr.hpp"
 
 using namespace AscEmu::Packets;
 

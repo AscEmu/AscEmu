@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_TheUnderbog.h"
 #include "Objects/Faction.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class TheUnderbogInstanceScript : public InstanceScript
 {

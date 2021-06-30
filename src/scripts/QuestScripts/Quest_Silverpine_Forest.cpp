@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class Deathstalker_Erland : public CreatureAIScript
 {

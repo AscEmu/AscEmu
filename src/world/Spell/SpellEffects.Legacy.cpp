@@ -70,6 +70,8 @@
 #include "Server/Packets/SmsgNewTaxiPath.h"
 #include "Server/Packets/SmsgPlayerBound.h"
 #include "Server/Packets/MsgCorpseQuery.h"
+#include "Server/Packets/SmsgMessageChat.h"
+#include "Server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;
 

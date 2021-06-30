@@ -41,6 +41,7 @@
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Objects/ObjectMgr.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Units/Creatures/CreatureGroups.h"
 
 using namespace AscEmu::Packets;

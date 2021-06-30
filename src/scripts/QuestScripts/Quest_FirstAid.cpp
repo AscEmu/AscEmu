@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 //#define SAY_DOC1 "I'm saved! Thank you, doctor!"
 //#define SAY_DOC2 "HOORAY! I AM SAVED!"

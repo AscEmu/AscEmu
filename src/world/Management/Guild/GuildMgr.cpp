@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Guild.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
+#include "Util/Strings.hpp"
 
 GuildMgr& GuildMgr::getInstance()
 {

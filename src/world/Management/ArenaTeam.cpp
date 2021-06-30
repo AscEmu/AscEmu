@@ -25,6 +25,7 @@
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgArenaTeamStats.h"
+#include "Server/Packets/SmsgMessageChat.h"
 
 using namespace AscEmu::Packets;
 

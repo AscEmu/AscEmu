@@ -26,6 +26,7 @@
 #include "Database/Database.h"
 #include "WoWGuid.h"
 #include "WorldPacket.h"
+#include "Logging/Logger.hpp"
 
 namespace Arcemu
 {

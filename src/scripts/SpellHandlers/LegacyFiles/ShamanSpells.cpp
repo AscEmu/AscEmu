@@ -25,6 +25,8 @@
 #include "Spell/Definitions/ProcFlags.hpp"
 #include <Spell/Definitions/PowerType.hpp>
 
+#include "Spell/SpellMgr.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spell Defs
 bool FlametongueWeaponPassive(uint8_t /*effectIndex*/, Aura* pAura, bool apply)

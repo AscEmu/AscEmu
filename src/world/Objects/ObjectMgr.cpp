@@ -41,6 +41,7 @@
 #include "Management/TaxiMgr.h"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Movement/MovementManager.h"
+#include "Util/Strings.hpp"
 #if VERSION_STRING < Cata
 #include "Management/Guild/Guild.hpp"
 #endif

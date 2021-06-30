@@ -59,7 +59,9 @@
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/Spline/MovementPacketBuilder.h"
+#include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
+#include "Server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;
 

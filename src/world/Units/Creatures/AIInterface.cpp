@@ -27,11 +27,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/Movement/CreatureMovement.h"
 #include "Map/AreaBoundary.h"
+#include "Map/MapScriptInterface.h"
 #include "Movement/WaypointManager.h"
 #include "Movement/MovementManager.h"
 #include "Movement/MovementGenerator.h"
 #include "Movement/AbstractFollower.h"
 #include "Movement/Spline/MoveSplineInit.h"
+#include "Server/Script/CreatureAIScript.h"
 
 #ifndef UNIX
 #include <cmath>

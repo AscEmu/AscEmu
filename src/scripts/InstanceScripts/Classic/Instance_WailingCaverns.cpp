@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_WailingCaverns.h"
 
+#include "Server/Script/CreatureAIScript.h"
+
 class WailingCavernsInstanceScript : public InstanceScript
 {
 public:

@@ -5,9 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Unit.h"
+
 #include "Objects/Object.h"
 #include "UnitDefines.hpp"
+#include "CommonTypes.hpp"
 #include <array>
 #include <vector>
 #include <list>
@@ -21,7 +22,7 @@ class SERVER_DECL ThreatManager
 {
 public:
     static const uint32_t THREAT_UPDATE_INTERVAL = 1000u;
-    class ThreatListIterator;
+    //class ThreatListIterator;
     static bool canHaveThreatList(Unit const* who);
 
     ThreatManager(Unit* owner);

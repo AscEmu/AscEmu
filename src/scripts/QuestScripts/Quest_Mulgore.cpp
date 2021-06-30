@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include <Management/QuestLogEntry.hpp>
 #include "Map/MapScriptInterface.h"
+#include "Server/Script/CreatureAIScript.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

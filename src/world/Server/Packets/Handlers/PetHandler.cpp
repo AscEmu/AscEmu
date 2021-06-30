@@ -21,11 +21,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Units/Creatures/Pet.h"
 #include "Map/MapMgr.h"
+#include "Movement/MovementDefines.h"
+#include "Movement/MovementManager.h"
 #include "Server/MainServerDefines.h"
 #include "Units/Creatures/Vehicle.h"
 #include "Objects/Faction.h"
 #include "Spell/Definitions/SpellFailure.hpp"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
+#include "Units/ThreatHandler.h"
 
 using namespace AscEmu::Packets;
 

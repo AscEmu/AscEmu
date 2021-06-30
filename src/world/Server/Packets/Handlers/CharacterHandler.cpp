@@ -34,6 +34,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildMgr.hpp"
 #include "Server/CharacterErrors.h"
 #include "AuthCodes.h"
+#include "Util/Strings.hpp"
 
 
 using namespace AscEmu::Packets;

@@ -48,6 +48,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Players/PlayerClasses.hpp"
 #include "Units/UnitDefines.hpp"
 #include "Util.hpp"
+#include "Server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;
 

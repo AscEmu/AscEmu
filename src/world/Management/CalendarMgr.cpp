@@ -21,6 +21,7 @@
 #include "Server/MainServerDefines.h"
 #include "Log.hpp"
 #include "Database/Database.h"
+#include "Logging/Logger.hpp"
 
 CalendarMgr& CalendarMgr::getInstance()
 {

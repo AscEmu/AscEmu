@@ -37,6 +37,7 @@
 #include "Packets/SmsgNotification.h"
 #include "Packets/SmsgLogoutComplete.h"
 #include "OpcodeTable.hpp"
+#include "Packets/SmsgMessageChat.h"
 
 using namespace AscEmu::Packets;
 

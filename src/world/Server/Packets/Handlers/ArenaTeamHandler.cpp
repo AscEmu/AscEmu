@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgArenaTeamQueryResponse.h"
 #include "Server/Packets/SmsgArenaTeamInvite.h"
 #include "Server/Packets/SmsgArenaTeamRooster.h"
+#include "Server/Packets/SmsgMessageChat.h"
 
 using namespace AscEmu::Packets;
 

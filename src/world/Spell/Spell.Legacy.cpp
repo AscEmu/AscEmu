@@ -61,6 +61,7 @@
 #include "Server/Packets/SmsgResurrectRequest.h"
 #include "Server/Packets/SmsgSpellDelayed.h"
 #include "Server/Packets/SmsgCancelCombat.h"
+#include "Server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;
 

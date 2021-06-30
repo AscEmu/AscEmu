@@ -30,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Units/Creatures/Pet.h>
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/WeatherMgr.h"
+#include "Server/Packets/SmsgMessageChat.h"
 
 class LuaUnit
 {

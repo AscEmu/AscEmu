@@ -10,6 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <algorithm>
 
+#include "Objects/MovementInfo.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // ChaseRange
 ChaseRange::ChaseRange(float range) : MinRange(range > CONTACT_DISTANCE ? 0 : range - CONTACT_DISTANCE), MinTolerance(range), MaxRange(range + CONTACT_DISTANCE), MaxTolerance(range) { }

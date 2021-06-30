@@ -25,6 +25,7 @@
 #include "Corpse.h"
 #include "Objects/ObjectMgr.h"
 #include "Data/WoWCorpse.hpp"
+#include "Util/Strings.hpp"
 
 // MIT Start
  //////////////////////////////////////////////////////////////////////////////////////////

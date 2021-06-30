@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_ZulFarrak.h"
 
+#include "Server/Script/CreatureAIScript.h"
+
 class ZulFarrakInstanceScript : public InstanceScript
 {
 public:

@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGuildInvite.h"
 #include "Server/Packets/SmsgGuildEvent.h"
 #include "Server/Packets/SmsgGuildMemberDailyReset.h"
+#include "Server/Packets/SmsgMessageChat.h"
 
 using namespace AscEmu::Packets;
 

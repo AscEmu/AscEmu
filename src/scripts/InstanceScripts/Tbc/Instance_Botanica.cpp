@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_Botanica.h"
 
+#include "Server/Script/CreatureAIScript.h"
+
 class BotanicaInstanceScript : public InstanceScript
 {
 public:

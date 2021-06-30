@@ -37,6 +37,7 @@
 #include "Map/MapScriptInterface.h"
 #include "Objects/Faction.h"
 #include "Common.hpp"
+#include "CreatureAIScript.h"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Server/Packets/SmsgUpdateInstanceEncounterUnit.h"
 

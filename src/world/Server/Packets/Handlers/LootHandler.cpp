@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgLootRemoved.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Spell/Definitions/LockTypes.hpp"
 #include "Spell/Spell.Legacy.h"
 

@@ -30,6 +30,7 @@
 #include "Spell/SpellMgr.hpp"
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Movement/Spline/MoveSplineInit.h"
+#include "Units/ThreatHandler.h"
 
 bool ChatHandler::HandleDebugDumpMovementCommand(const char* /*args*/, WorldSession* session)
 {

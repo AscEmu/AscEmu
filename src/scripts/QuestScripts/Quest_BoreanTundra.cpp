@@ -17,6 +17,7 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 

@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/WorldStates.h"
 #include "Map/MapMgr.h"
+#include "Server/Packets/SmsgMessageChat.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Fire Locations

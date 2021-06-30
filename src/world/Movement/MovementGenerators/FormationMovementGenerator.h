@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/AbstractFollower.h"
 #include "Movement/MovementGenerator.h"
 #include "LocationVector.h"
+#include "Util.hpp"
 
 class Creature;
 

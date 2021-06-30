@@ -25,6 +25,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include <Management/QuestLogEntry.hpp>
 #include "Map/MapScriptInterface.h"
+#include "Server/Script/CreatureAIScript.h"
 
 enum
 {

@@ -20,8 +20,9 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
- // Chieftain Oomooroo
+// Chieftain Oomooroo
 class ChieftainOomoorooQAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ChieftainOomoorooQAI)

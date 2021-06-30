@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.Legacy.h"
 #include "Units/Players/Player.h"
 #include "Server/Packets/SmsgChannelNotify.h"
+#include "Util/Strings.hpp"
 
 using namespace AscEmu::Packets;
 

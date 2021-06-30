@@ -45,6 +45,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Players/Player.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
+#include "Server/Packets/SmsgMessageChat.h"
 
 using namespace AscEmu::Packets;
 

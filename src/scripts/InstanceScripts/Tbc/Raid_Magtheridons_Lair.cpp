@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Faction.h"
 #include "Raid_Magtheridons_Lair.h"
 
+#include "Server/Script/CreatureAIScript.h"
+
 class MagtheridonsLairInstanceScript : public InstanceScript
 {
 public:

@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Spell/Definitions/PowerType.hpp>
 #include "Raid_Karazhan.h"
 
+#include "Server/Script/CreatureAIScript.h"
+
 class KarazhanInstanceScript : public InstanceScript
 {
 public:

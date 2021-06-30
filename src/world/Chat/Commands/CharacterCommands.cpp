@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Spell/Definitions/Spec.hpp"
 #include "Units/Creatures/Pet.h"
+#include "Util/Strings.hpp"
 
 //.character clearcooldowns
 bool ChatHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSession* m_session)

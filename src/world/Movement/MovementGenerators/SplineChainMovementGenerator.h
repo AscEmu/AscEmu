@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementGenerator.h"
 #include <vector>
 
+#include "Movement/MovementDefines.h"
+
 class Unit;
 
 class SERVER_DECL SplineChainMovementGenerator : public MovementGenerator
