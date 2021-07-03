@@ -21,6 +21,7 @@
 #include "MapDefines.h"
 
 #include "Errors.h"
+#include "Logging/Logger.hpp"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 

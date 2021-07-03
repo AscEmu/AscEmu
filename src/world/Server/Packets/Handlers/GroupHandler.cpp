@@ -19,11 +19,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Objects/ObjectMgr.h"
 #include "Map/MapMgr.h"
+#include "Map/WorldCreator.h"
 #include "Server/Packets/CmsgGroupChangeSubGroup.h"
 #include "Server/Packets/CmsgGroupAssistantLeader.h"
 #include "Server/Packets/MsgPartyAssign.h"
 #include "Server/Packets/MsgRaidReadyCheck.h"
-#include "Server/Packets/SmsgGroupList.h"
 
 using namespace AscEmu::Packets;
 

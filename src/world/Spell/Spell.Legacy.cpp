@@ -19,20 +19,14 @@
  *
  */
 
-#include "SpellTarget.h"
 #include "Units/Creatures/Pet.h"
-#include "Server/Packets/SmsgClearExtraAuraInfo.h"
 #include "Spell.Legacy.h"
 #include "Definitions/SpellInFrontStatus.hpp"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDamageType.hpp"
-#include "Definitions/ProcFlags.hpp"
 #include "Definitions/CastInterruptFlags.hpp"
-#include "Definitions/AuraInterruptFlags.hpp"
 #include "Definitions/SpellTargetType.hpp"
-#include "Definitions/SpellRanged.hpp"
 #include "Definitions/SpellIsFlags.hpp"
-#include "Definitions/DiminishingGroup.hpp"
 #include "Definitions/SpellState.hpp"
 #include "Definitions/SpellMechanics.hpp"
 #include "Definitions/SpellEffectTarget.hpp"
@@ -54,13 +48,12 @@
 #include "Objects/Faction.h"
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"
-#include "Map/WorldCreatorDefines.hpp"
+#include "Definitions/SpellEffects.hpp"
+#include "Macros/ScriptMacros.hpp"
 #include "Server/Packets/SmsgSpellFailure.h"
 #include "Server/Packets/SmsgSpellFailedOther.h"
-#include "Server/Packets/SmsgSpellHealLog.h"
 #include "Server/Packets/SmsgResurrectRequest.h"
 #include "Server/Packets/SmsgSpellDelayed.h"
-#include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;
@@ -467,7 +460,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
 
                 if (u_caster != nullptr)
                 {
-                    if (isFriendly(u_caster, static_cast<Unit*>(itr)))
+                    if (isFriendly(u_caster, itr))
                     {
                         did_hit_result = static_cast<SpellDidHitResult>(DidHit(i, static_cast<Unit*>(itr)));
                         if (did_hit_result == SPELL_DID_HIT_SUCCESS)
@@ -481,7 +474,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
                     if (g_caster != nullptr && g_caster->getCreatedByGuid() && g_caster->m_summoner != nullptr)
                     {
                         //trap, check not to attack owner and friendly
-                        if (isFriendly(g_caster->m_summoner, static_cast<Unit*>(itr)))
+                        if (isFriendly(g_caster->m_summoner, itr))
                             SafeAddTarget(tmpMap, itr->getGuid());
                     }
                     else
@@ -581,7 +574,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
         {
             if (u_caster != nullptr)
             {
-                if (isFriendly(u_caster, static_cast<Unit*>(itr)) && DidHit(i, static_cast<Unit*>(itr)) == SPELL_DID_HIT_SUCCESS)
+                if (isFriendly(u_caster, itr) && DidHit(i, static_cast<Unit*>(itr)) == SPELL_DID_HIT_SUCCESS)
                 {
                     return itr->getGuid();
                 }
@@ -591,7 +584,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
                 if (g_caster && g_caster->getCreatedByGuid() && g_caster->m_summoner)
                 {
                     //trap, check not to attack owner and friendly
-                    if (isFriendly(g_caster->m_summoner, static_cast<Unit*>(itr)))
+                    if (isFriendly(g_caster->m_summoner, itr))
                     {
                         return itr->getGuid();
                     }
@@ -1290,7 +1283,7 @@ void Spell::HandleAddAura(uint64 guid)
         if (static_cast<Player*>(Target)->isPvpFlagSet())
         {
             if (p_caster->isPlayer() && !p_caster->isPvpFlagSet())
-                static_cast<Player*>(p_caster)->PvPToggle();
+                p_caster->PvPToggle();
             else
                 p_caster->setPvpFlag();
         }

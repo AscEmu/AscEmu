@@ -26,6 +26,8 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
+
+#include "Chat/ChatHandler.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgBattlegroundPlayerLeft.h"

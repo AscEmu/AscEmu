@@ -26,10 +26,8 @@
 #include "Spell.h"
 #include "Objects/GameObject.h"
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDidHitResult.hpp"
-#include "Definitions/SpellEffectTarget.hpp"
 #include "Units/Creatures/Pet.h"
 
  // APGL End

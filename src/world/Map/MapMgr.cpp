@@ -41,11 +41,12 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "MapMgr.h"
 #include "MapScriptInterface.h"
-#include "WorldCreatorDefines.hpp"
 #include "WorldCreator.h"
+#include "Macros/ScriptMacros.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgUpdateWorldState.h"
 #include "Server/Packets/SmsgDefenseMessage.h"
+#include "Server/Script/ScriptMgr.h"
 
 #include "shared/WoWGuid.h"
 
@@ -526,7 +527,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
                 uint32 y = GetPosY(obj->GetPositionY());
                 UpdateCellActivity(x, y, 2 + cellNumber);
             }
-            m_PlayerStorage.erase(static_cast<Player*>(obj)->getGuidLow());
+            m_PlayerStorage.erase(obj->getGuidLow());
         }
         else if (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->mPlayerControler != nullptr)
         {
@@ -900,7 +901,7 @@ float MapMgr::GetUpdateDistance(Object* curObj, Object* obj, Player* plObj)
         return m_UpdateDistance;
 
     // unlimited distance for people on same boat
-    if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && plObj->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && plObj->obj_movement_info.transport_guid == static_cast< Player* >(curObj)->obj_movement_info.transport_guid)
+    if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && plObj->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && plObj->obj_movement_info.transport_guid == curObj->obj_movement_info.transport_guid)
         return no_distance;
     // unlimited distance for transporters (only up to 2 cells +/- anyway.)
     if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
@@ -939,7 +940,7 @@ void MapMgr::_UpdateObjects()
             Player* pOwner = static_cast<Item*>(pObj)->getOwner();
             if (pOwner != nullptr)
             {
-                count = static_cast<Item*>(pObj)->BuildValuesUpdateBlockForPlayer(&update, pOwner);
+                count = pObj->BuildValuesUpdateBlockForPlayer(&update, pOwner);
                 // send update to owner
                 if (count)
                 {
@@ -1878,7 +1879,7 @@ void MapMgr::SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint
                     if ((*iter)->isPlayer())
                     {
                         //TO< Player* >(*iter)->GetSession()->SendPacket(packet);
-                        if (static_cast< Player* >(*iter)->GetPhase() & obj->GetPhase())
+                        if ((*iter)->GetPhase() & obj->GetPhase())
                             static_cast< Player* >(*iter)->GetSession()->SendChatPacket(packet, langpos, lang, originator);
                     }
                 }

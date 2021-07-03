@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 
+#include "Chat/ChatHandler.hpp"
 #include "Server/Packets/CmsgGuildQuery.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
 #include "Server/Packets/CmsgGuildInvite.h"
@@ -23,14 +24,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildDemote.h"
 #include "Server/Packets/CmsgGuildSetPublicNote.h"
 #include "Server/Packets/CmsgGuildSetOfficerNote.h"
-#include "Server/Packets/CmsgGuildSetNote.h"
-#include "Server/Packets/CmsgGuildDelRank.h"
 #include "Server/Packets/CmsgGuildBankWithdrawMoney.h"
 #include "Server/Packets/CmsgGuildBankDepositMoney.h"
 #include "Server/Packets/CmsgGuildBankUpdateTab.h"
 #include "Server/Packets/CmsgGuildBankSwapItems.h"
 #include "Server/Packets/MsgQueryGuildBankText.h"
-#include "Server/Packets/CmsgGuildBankQueryText.h"
 #include "Server/Packets/CmsgGuildBankQueryTab.h"
 #include "Server/Packets/CmsgGuildBankerActivate.h"
 #include "Server/Packets/CmsgGuildSetRank.h"
@@ -193,7 +191,7 @@ void WorldSession::handleSetGuildBankText(WorldPacket& recvPacket)
         return;
 
     if (Guild* guild = _player->getGuild())
-        guild->setBankTabText(static_cast<uint8_t>(srlPacket.tabId), srlPacket.text);
+        guild->setBankTabText(srlPacket.tabId, srlPacket.text);
 }
 
 void WorldSession::handleGuildLeader(WorldPacket& recvPacket)

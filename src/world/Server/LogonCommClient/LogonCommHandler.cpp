@@ -331,7 +331,7 @@ void LogonCommHandler::updateLogonServerConnection()
             if (logonCommSocket->last_pong < time && ((time - logonCommSocket->last_pong) > 60))
             {
                 // no pong for 60 seconds -> remove the socket
-                sLogger.info("Logonserver %u connection dropped due to pong timeout!", (unsigned int)itr.first->id);
+                sLogger.info("Logonserver %u connection dropped due to pong timeout!", itr.first->id);
                 logonCommSocket->_id = 0;
                 logonCommSocket->Disconnect();
                 itr.second = nullptr;

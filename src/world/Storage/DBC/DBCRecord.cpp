@@ -29,7 +29,7 @@ namespace DBC
     uint8 DBCRecord::GetUInt8(size_t field, uint32_t field_count, const uint32_t field_offset) const
     {
         assert(field < field_count);
-        return *reinterpret_cast<uint8*>(m_offset + field_offset);
+        return *(m_offset + field_offset);
     }
 
     char* DBCRecord::GetString(size_t field, uint32_t field_count, const uint32_t field_offset, uint32_t string_size, unsigned char* string_table) const

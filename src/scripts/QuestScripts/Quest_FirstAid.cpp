@@ -20,6 +20,7 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Macros/ScriptMacros.hpp"
 
 //#define SAY_DOC1 "I'm saved! Thank you, doctor!"
 //#define SAY_DOC2 "HOORAY! I AM SAVED!"

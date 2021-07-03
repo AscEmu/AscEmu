@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "Spell/Definitions/SpellEffects.hpp"
 #include "Units/Players/PlayerDefines.hpp"
 
 TotemSummon::TotemSummon(uint64_t guid, uint32_t duration) : Summon(guid, duration) {}

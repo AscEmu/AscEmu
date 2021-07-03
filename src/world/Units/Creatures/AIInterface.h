@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/AIInterfaceMacros.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Server/Script/ScriptEvent.hpp"
-#include "Movement/WaypointDefines.h"
 
 #include <G3D/Vector3.h>
 

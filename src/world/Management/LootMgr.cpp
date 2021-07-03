@@ -376,7 +376,7 @@ void LootMgr::PushLoot(StoreLootList* list, Loot* loot, uint8 type)
                 continue;
 
             ItemProperties const* itemproto = list->items[x].item.itemproto;
-            if (Util::checkChance(chance * worldConfig.getFloatRate((WorldConfigRates)(RATE_DROP0 + itemproto->Quality)))) //|| itemproto->Class == ITEM_CLASS_QUEST)
+            if (Util::checkChance(chance * worldConfig.getFloatRate(RATE_DROP0 + itemproto->Quality))) //|| itemproto->Class == ITEM_CLASS_QUEST)
             {
                 if (list->items[x].mincount == list->items[x].maxcount)
                     count = list->items[x].maxcount;

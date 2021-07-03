@@ -174,7 +174,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
 
         for (auto& enchant : enchants)
         {
-            if (sscanf(enchant.c_str(), "%u,%u,%u", (unsigned int*)&enchant_id, (unsigned int*)&time_left, (unsigned int*)&enchslot) == 3)
+            if (sscanf(enchant.c_str(), "%u,%u,%u", &enchant_id, &time_left, &enchslot) == 3)
             {
                 auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
                 if (spell_item_enchant == nullptr)
@@ -861,19 +861,19 @@ int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const
     {
         for (uint8_t Slot = PROP_ENCHANTMENT_SLOT_2; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
             if (getEnchantmentId(Slot) == 0)
-                return static_cast<int32>(Slot);
+                return Slot;
     }
     else if (random_type == RANDOMSUFFIX)    // random suffix
     {
         for (uint8_t Slot = PROP_ENCHANTMENT_SLOT_0; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
             if (getEnchantmentId(Slot) == 0)
-                return static_cast<int32>(Slot);
+                return Slot;
     }
 
     for (uint8_t Slot = static_cast<uint8_t>(GemSlotsReserve + 2); Slot < 11; Slot++)
     {
         if (getEnchantmentId(Slot) == 0)
-            return static_cast<int32>(Slot);
+            return Slot;
     }
 
     return -1;
@@ -884,7 +884,7 @@ int32 Item::HasEnchantment(uint32 Id)
     for (uint8_t Slot = 0; Slot < MAX_ENCHANTMENT_SLOT; Slot++)
     {
         if (getEnchantmentId(Slot) == Id)
-            return static_cast<int32>(Slot);
+            return Slot;
     }
 
     return -1;
@@ -1063,7 +1063,7 @@ std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language = 0
     else
         snprintf(buffer, 256, "|%s|Hitem:%u:0:0:0:0:0:0:0|h[%s]|h|r", colour.c_str(), iProto->ItemId, iProto->Name.c_str());
 
-    const char* ItemLink = static_cast<const char*>(buffer);
+    const char* ItemLink = buffer;
 
     return ItemLink;
 }

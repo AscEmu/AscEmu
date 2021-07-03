@@ -24,7 +24,6 @@
 
 #include "GameEventMgr.h"
 #include "Units/Creatures/Creature.h"
-#include "Macros/ScriptMacros.hpp"
 
 struct EventNamesQueryResult;
 struct EventCreatureSpawnsQueryResult;

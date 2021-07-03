@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Event_Darkmoon_Faire.h"
 
 #include "Server/Script/CreatureAIScript.h"
+#include "Macros/ScriptMacros.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
  //\details <b>Darkmoon Faire (Elwynn Forest)</b>\n

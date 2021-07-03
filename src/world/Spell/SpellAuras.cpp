@@ -5,13 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "SpellAuras.h"
 
-#include "Definitions/AuraInterruptFlags.hpp"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellFamily.hpp"
 #include "Definitions/SpellIsFlags.hpp"
 #include "Definitions/SpellMechanics.hpp"
 #include "Definitions/SpellTypes.hpp"
 #include "SpellMgr.hpp"
+#include "Definitions/SpellEffects.hpp"
 
 #include "Server/Script/ScriptMgr.h"
 
@@ -222,7 +222,7 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
         {
             const auto charm = caster->GetMapMgrUnit(caster->getCharmGuid());
             if (charm != nullptr && charm->getCreatedBySpellId() == getSpellInfo()->getId())
-                static_cast<Player*>(caster)->UnPossess();
+                caster->UnPossess();
         }
     }
     else

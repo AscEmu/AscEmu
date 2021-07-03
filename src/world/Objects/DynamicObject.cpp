@@ -26,10 +26,10 @@
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/Spell.Legacy.h"
-#include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Data/WoWDynamicObject.hpp"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 // MIT Start
 

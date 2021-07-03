@@ -31,13 +31,12 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/Definitions/PowerType.hpp"
-#include "CharacterErrors.h"
 #include "WorldSocket.h"
-#include "Auth/MD5.h"
 #include "Packets/SmsgNotification.h"
 #include "Packets/SmsgLogoutComplete.h"
 #include "OpcodeTable.hpp"
 #include "Packets/SmsgMessageChat.h"
+#include "Script/ScriptMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -548,7 +547,7 @@ void SessionLog::writefromsession(WorldSession* session, const char* format, ...
         size_t lenght = strlen(out);
 
         snprintf(&out[lenght], 32768 - lenght, "Account %u [%s], IP %s, Player %s :: ",
-            static_cast<unsigned int>(session->GetAccountId()),
+            session->GetAccountId(),
             session->GetAccountName().c_str(),
             session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "NOIP",
             session->GetPlayer() ? session->GetPlayer()->getName().c_str() : "nologin");

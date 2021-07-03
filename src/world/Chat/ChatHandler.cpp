@@ -9,12 +9,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Exceptions/PlayerExceptions.hpp"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
-#include "Server/MainServerDefines.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include "ChatHandler.hpp"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 #include "Server/Packets/SmsgMessageChat.h"
 
 using namespace AscEmu::Packets;
@@ -536,7 +534,7 @@ bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession* m_sessio
 
     for (uint32 i = 0; table[i].Name != NULL; i++)
     {
-        if (*args && !hasStringAbbr(table[i].Name, (char*)args))
+        if (*args && !hasStringAbbr(table[i].Name, args))
             continue;
 
         if (table[i].CommandGroup != '0' && !m_session->CanUseCommand(table[i].CommandGroup))
@@ -708,11 +706,11 @@ void ChatHandler::SendHighlightedName(WorldSession* m_session, const char* prefi
     start[0] = 0;
     message[0] = 0;
 
-    snprintf(start, 50, "%s %u: %s", prefix, (unsigned int)id, MSG_COLOR_WHITE);
+    snprintf(start, 50, "%s %u: %s", prefix, id, MSG_COLOR_WHITE);
 
     auto highlight_length = highlight.length();
     std::string fullname = std::string(full_name);
-    size_t offset = (size_t)lowercase_name.find(highlight);
+    size_t offset = lowercase_name.find(highlight);
     auto remaining = fullname.size() - offset - highlight_length;
 
     strcat(message, start);

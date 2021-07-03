@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 
+#include "Chat/ChatHandler.hpp"
 #include "Management/Item.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
@@ -171,7 +172,7 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     SystemMessage(m_session, "Added spell %s (%u) to trainer %s (%u).", learn_spell->getName().c_str(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
     sGMLog.writefromsession(m_session, "added spell  %s (%u) to trainer %s (%u)", learn_spell->getName().c_str(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
     WorldDatabase.Execute("REPLACE INTO trainer_spells VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)",
-        creature_target->getEntry(), (int)0, learn_spell->getId(), cost, reqspell, (int)0, (int)0, reqlevel, delspell, (int)0);
+        creature_target->getEntry(), 0, learn_spell->getId(), cost, reqspell, 0, 0, reqlevel, delspell, 0);
 #else
     sp.spellCost = cost;
     sp.spell = learn_spell->getId();
@@ -1142,9 +1143,9 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
     uint32 emote;
     uint32 save = 0;
 
-    if (sscanf(args, "%u %u", (unsigned int*)&emote, (unsigned int*)&save) != 2)
+    if (sscanf(args, "%u %u", &emote, &save) != 2)
     {
-        if (sscanf(args, "%u", (unsigned int*)&emote) != 1)
+        if (sscanf(args, "%u", &emote) != 1)
         {
             RedSystemMessage(m_session, "Command must be at least in format: .npc set emote <emote>.");
             RedSystemMessage(m_session, "Use the following format to save the emote: .npc set emote <emote> 1.");

@@ -24,12 +24,10 @@
 #include <cstdint>
 #include <Network/Network.h>
 #include <Config/Config.h>
-#include <git_version.h>
 
 #include "BaseConsole.h"
 #include "ConsoleCommands.h"
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 
 #include "ConsoleSocket.h"
 #include "ConsoleAuthMgr.h"
@@ -94,7 +92,7 @@ bool StartConsoleListener()
 
 ThreadBase* GetConsoleListener()
 {
-    return (ThreadBase*)g_pListenSocket;
+    return g_pListenSocket;
 }
 
 RemoteConsole::RemoteConsole(ConsoleSocket* pSocket)

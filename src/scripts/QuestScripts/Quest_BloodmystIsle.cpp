@@ -22,6 +22,7 @@
 #include <Units/Creatures/Pet.h>
 
 #include "Server/Script/CreatureAIScript.h"
+#include "Macros/ScriptMacros.hpp"
 
 class TheKesselRun : public QuestScript
 {

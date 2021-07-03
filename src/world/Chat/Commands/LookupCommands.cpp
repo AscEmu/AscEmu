@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 
+#include "Chat/ChatHandler.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Spell/SpellMgr.hpp"
@@ -133,7 +134,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                 recout += ": |cfffff000|Hachievement:";
                 recout += strm.str();
                 recout += ":";
-                recout += (const char*)playerGUID;
+                recout += playerGUID;
                 time_t completetime = m_session->GetPlayer()->GetAchievementMgr().GetCompletedTime(achievement);
                 if (completetime)
                 {
@@ -213,7 +214,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                     recout += ": |cfffff000|Hachievement:";
                     recout += strm.str();
                     recout += ":";
-                    recout += (const char*)playerGUID;
+                    recout += playerGUID;
                     time_t completetime = m_session->GetPlayer()->GetAchievementMgr().GetCompletedTime(achievement);
                     if (completetime)
                     {
@@ -580,9 +581,9 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
         if (AscEmu::Util::Strings::contains(x, y))
         {
             sprintf((char*)itoabuf, "%u", spell->getId());
-            recout = (const char*)itoabuf;
+            recout = itoabuf;
             recout += ": |cff71d5ff|Hspell:";
-            recout += (const char*)itoabuf;
+            recout += itoabuf;
             recout += "|h[";
             recout += spell->getName();
             recout += "]|h|r";

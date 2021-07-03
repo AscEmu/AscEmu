@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 
+#include "Chat/ChatHandler.hpp"
 #include "Server/Packets/CmsgSwapItem.h"
 #include "Server/WorldSession.h"
 #include "Units/Players/Player.h"
@@ -43,6 +44,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgItemQuerySingle.h"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Server/Packets/SmsgBuyFailed.h"
+#include "Server/Script/ScriptMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -2151,7 +2153,7 @@ void WorldSession::sendInventoryList(Creature* unit)
     }
 
 #if VERSION_STRING < Cata
-    const_cast<uint8_t*>(data.contents())[8] = static_cast<uint8_t>(counter);
+    data.contents()[8] = static_cast<uint8_t>(counter);
 #else
     ObjectGuid guid = unit->getGuid();
 

@@ -19,12 +19,10 @@
 #pragma once
 
 #include "CommonTypes.hpp"
-#include "Storage/DBC/DBCStores.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #if VERSION_STRING >= Cata
 #include "Storage/DB2/DB2Structures.h"
 #endif
-#include "Units/UnitDefines.hpp"
 
 #include "Spell/Definitions/School.hpp"
 

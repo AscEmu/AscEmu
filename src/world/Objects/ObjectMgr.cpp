@@ -29,15 +29,12 @@
 #include "Storage/MySQLStructures.h"
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
-#include "Config/Config.h"
 #include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
-#include "Map/WorldCreatorDefines.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Spell/Definitions/SpellEffects.hpp"
-#include "Management/Guild/GuildMgr.hpp"
 #include "Management/TaxiMgr.h"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Movement/MovementManager.h"
@@ -671,7 +668,7 @@ void ObjectMgr::SetHighestGuids()
     result = CharacterDatabase.Query("SELECT MAX(guid) FROM playeritems");
     if (result)
     {
-        m_hiItemGuid = (uint32)result->Fetch()[0].GetUInt32();
+        m_hiItemGuid = result->Fetch()[0].GetUInt32();
         delete result;
     }
 
@@ -1639,7 +1636,7 @@ void ObjectMgr::GenerateLevelUpInfo()
         // Search for a playercreateinfo.
         for (uint8 Race = RACE_HUMAN; Race <= DBC_NUM_RACES - 1; ++Race)
         {
-            PlayerCreateInfo const* PCI = sMySQLStore.getPlayerCreateInfo(static_cast<uint8>(Race), static_cast<uint8>(Class));
+            PlayerCreateInfo const* PCI = sMySQLStore.getPlayerCreateInfo(Race, Class);
 
             if (PCI == nullptr)
                 continue;   // Class not valid for this race.
@@ -1671,7 +1668,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                 // Calculate Stats
                 for (uint32 s = 0; s < 5; ++s)
                 {
-                    val = GainStat(static_cast<uint16>(Level), static_cast<uint8>(Class), static_cast<uint8>(s));
+                    val = GainStat(static_cast<uint16>(Level), Class, static_cast<uint8>(s));
                     lvl->Stat[s] = lastlvl.Stat[s] + val;
                 }
 
@@ -3018,7 +3015,7 @@ void ObjectMgr::LoadCreatureAIAgents()
                 if (sp->spell->getEffect(0) == SPELL_EFFECT_LEARN_SPELL || sp->spell->getEffect(1) == SPELL_EFFECT_LEARN_SPELL ||
                     sp->spell->getEffect(2) == SPELL_EFFECT_LEARN_SPELL)
                 {
-                    sLogger.debug("Teaching spell %u in ai_agent for %u", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
+                    sLogger.debug("Teaching spell %u in ai_agent for %u", fields[6].GetUInt32(), sp->entryId);
                     delete sp;
                     sp = nullptr;
                     continue;

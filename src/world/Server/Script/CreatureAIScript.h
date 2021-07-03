@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Chat/ChatDefines.hpp"
-#include "Management/Item.h"
 #include "Map/InstanceDefines.hpp"
 #include "Units/Creatures/AIInterface.h"
 #include "ScriptMgr.h"

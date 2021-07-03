@@ -1559,7 +1559,7 @@ Unit* CreatureAIScript::getNearestTargetInArray(UnitArray& pTargetArray)
     {
         if (UnitIter != nullptr)
         {
-            Distance = getRangeToObject(static_cast<Unit*>(UnitIter));
+            Distance = getRangeToObject(UnitIter);
             if (Distance < NearestDistance)
             {
                 NearestDistance = Distance;
@@ -1575,7 +1575,7 @@ Unit* CreatureAIScript::getSecondMostHatedTargetInArray(UnitArray & pTargetArray
 {
     Unit* MostHatedUnit = nullptr;
     Unit* TargetUnit = nullptr;
-    Unit* CurrentTarget = static_cast<Unit*>(getCreature()->GetAIInterface()->getCurrentTarget());
+    Unit* CurrentTarget = getCreature()->GetAIInterface()->getCurrentTarget();
     uint32_t Threat = 0;
     uint32_t HighestThreat = 0;
 

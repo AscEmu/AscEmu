@@ -113,7 +113,7 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto slot = static_cast<uint8_t>(arenaTeam->m_type);
+    const auto slot = arenaTeam->m_type;
 
     if ((arenaTeam = _player->getArenaTeam(slot)) == nullptr)
     {
@@ -300,7 +300,7 @@ void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto slot = static_cast<uint8_t>(arenaTeam->m_type);
+    const auto slot = arenaTeam->m_type;
 
     if (slot >= NUM_ARENA_TEAM_TYPES)
         return;

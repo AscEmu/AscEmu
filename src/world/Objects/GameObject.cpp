@@ -31,6 +31,7 @@
 #include "Spell/Definitions/SpellEffectTarget.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Data/WoWGameObject.hpp"
+#include "Macros/ScriptMacros.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Server/Packets/SmsgGameobjectCustomAnim.h"
 #include "Server/Packets/SmsgGameobjectPagetext.h"
@@ -39,6 +40,7 @@
 #include "Server/Packets/SmsgFishNotHooked.h"
 #include "Server/Packets/SmsgEnableBarberShop.h"
 #include "Server/Packets/SmsgDestructibleBuildingDamage.h"
+#include "Server/Script/ScriptMgr.h"
 
 // MIT
 

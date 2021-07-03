@@ -22,6 +22,7 @@
 #include "Objects/Faction.h"
 #include <Units/Creatures/Pet.h>
 #include "Server/Script/CreatureAIScript.h"
+#include "Macros/ScriptMacros.hpp"
 
 class GrandWidowFaerlinaAI;
 class AnubRekhanAI;

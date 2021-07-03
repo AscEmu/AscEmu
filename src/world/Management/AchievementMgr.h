@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "../world/WorldConf.h"
-#include "Macros/AIInterfaceMacros.hpp"
 #include "Units/Unit.h"
 
 #if VERSION_STRING > TBC

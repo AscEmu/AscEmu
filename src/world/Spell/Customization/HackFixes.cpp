@@ -22,13 +22,10 @@
 
 #include "crc32.h"
 #include "Units/Players/PlayerClasses.hpp"
-#include "Server/MainServerDefines.h"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 #include "Spell/Definitions/SpellModifierType.hpp"
-#include "Spell/Definitions/SpellInFrontStatus.hpp"
 #include "Spell/Definitions/SpellDamageType.hpp"
-#include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/CastInterruptFlags.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
 #include "Spell/Definitions/SpellRanged.hpp"
@@ -38,6 +35,7 @@
 #include "Spell/SpellHelpers.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellTarget.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 using AscEmu::World::Spell::Helpers::decimalToMask;
 

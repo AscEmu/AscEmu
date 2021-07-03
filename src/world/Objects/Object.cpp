@@ -24,7 +24,6 @@
 #include "Storage/DBC/DBCStores.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Server/EventableObject.h"
-#include "Server/IUpdatable.h"
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "TLSObject.h"
@@ -32,7 +31,6 @@
 #include "Management/ItemInterface.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/MapMgrDefines.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
 #include "Faction.h"
@@ -42,19 +40,17 @@
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/Definitions/SpellState.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
-#include "Spell/Definitions/SpellSchoolConversionTable.hpp"
+
+#include "Chat/ChatHandler.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Data/WoWObject.hpp"
-#include "Data/WoWPlayer.hpp"
-#include "Data/WoWGameObject.hpp"
 #include "Server/Packets/SmsgDestoyObject.h"
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgGameobjectDespawnAnim.h"
 #include "Server/Packets/SmsgSpellLogMiss.h"
 #include "Server/Packets/SmsgAiReaction.h"
-#include "Server/OpcodeTable.hpp"
 #include "Movement/PathGenerator.h"
 #include "Movement/Spline/MovementPacketBuilder.h"
 
@@ -807,7 +803,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     float_t damageReductionPct = 1.0f;
     if (victim->isPlayer())
     {
-        auto resilienceValue = static_cast<float_t>(static_cast<Player*>(victim)->CalcRating(PCR_SPELL_CRIT_RESILIENCE) / 100.0f);
+        auto resilienceValue = static_cast<Player*>(victim)->CalcRating(PCR_SPELL_CRIT_RESILIENCE) / 100.0f;
         if (resilienceValue > 1.0f)
             resilienceValue = 1.0f;
         damageReductionPct -= resilienceValue;
@@ -1181,7 +1177,7 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
     }
 
     // Get target's heal taken mod
-    heal += static_cast<float_t>(heal * victim->HealTakenPctMod[school]);
+    heal += heal * victim->HealTakenPctMod[school];
     if (isPeriodic)
     {
         if (aur != nullptr && aurEff != nullptr)
@@ -3129,7 +3125,7 @@ bool Object::SetPosition(const LocationVector & v, [[maybe_unused]]bool allowPor
     if (m_position.x != v.x || m_position.y != v.y)
         updateMap = true;
 
-    m_position = const_cast<LocationVector &>(v);
+    m_position = v;
 
 #if VERSION_STRING < Cata
     if (!allowPorting && v.z < -500)

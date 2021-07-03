@@ -32,11 +32,12 @@
 #include "Management/ChannelMgr.h"
 #include "Management/AddonMgr.h"
 #include "Management/AuctionMgr.h"
-#include "Spell/SpellTarget.h"
 #include "Util.hpp"
 #include "Database/DatabaseUpdater.hpp"
 #include "Packets/SmsgServerMessage.h"
 #include "OpcodeTable.hpp"
+#include "Chat/ChatHandler.hpp"
+#include "Script/ScriptMgr.h"
 #include "Spell/SpellMgr.hpp"
 
 std::string LogFileName;
@@ -116,7 +117,6 @@ std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 // Testscript fo experimental filesystem
 
 #include <fstream>
-#include <iostream>
 #include <string>
 
 void createExtendedLogDir()
@@ -214,7 +214,7 @@ void checkRequiredDirs()
 
 bool Master::Run(int /*argc*/, char** /*argv*/)
 {
-    char* config_file = (char*)CONFDIR "/world.conf";
+    char* config_file = CONFDIR "/world.conf";
 
     UNIXTIME = time(NULL);
     g_localTime = *localtime(&UNIXTIME);
@@ -742,7 +742,7 @@ void Master::WritePidFile()
 #else
         pid = getpid();
 #endif
-        fprintf(fPid, "%u", (unsigned int)pid);
+        fprintf(fPid, "%u", pid);
         fclose(fPid);
     }
 }

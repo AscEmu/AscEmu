@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/PathGenerator.h"
+#include "Server/Definitions.h"
 
 template<class T>
 RandomMovementGenerator<T>::RandomMovementGenerator(float distance) : _timer(0), _reference(), _maxWanderDistance(distance), _wanderSteps(0)

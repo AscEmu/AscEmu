@@ -27,7 +27,6 @@
 #include "WorldModel.h"
 #include <G3D/Vector3.h>
 #include "Logging/Logger.hpp"
-#include "VMapDefinitions.h"
 #include "Errors.h"
 
 using G3D::Vector3;

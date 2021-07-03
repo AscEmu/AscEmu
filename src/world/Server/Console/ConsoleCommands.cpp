@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
+#include "Server/Script/ScriptMgr.h"
 
 
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
@@ -135,7 +136,7 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
     if (isWebClient)
     {
         // send pure data to webclient
-        baseConsole->Write("'%d', '%.3f', '%3.2f', '%4.2f'\r\n", clientsNum, onlineCount ? ((float)((float)avgLatency / (float)onlineCount)) : 0.0f, sWorld.getCPUUsage(), sWorld.getRAMUsage());
+        baseConsole->Write("'%d', '%.3f', '%3.2f', '%4.2f'\r\n", clientsNum, onlineCount ? (float)avgLatency / (float)onlineCount : 0.0f, sWorld.getCPUUsage(), sWorld.getRAMUsage());
     }
     else
     {
@@ -147,7 +148,7 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
         baseConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gmCount, 0);
         baseConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
         baseConsole->Write("Free Thread Count: %u\r\n", ThreadPool.GetFreeThreadCount());
-        baseConsole->Write("Average Latency: %.3fms\r\n", onlineCount ? ((float)((float)avgLatency / (float)onlineCount)) : 0.0f);
+        baseConsole->Write("Average Latency: %.3fms\r\n", onlineCount ? (float)avgLatency / (float)onlineCount : 0.0f);
         baseConsole->Write("CPU Usage: %3.2f %%\r\n", sWorld.getCPUUsage());
         baseConsole->Write("RAM Usage: %4.2f MB\r\n", sWorld.getRAMUsage());
         baseConsole->Write("SQL Query Cache Size (World): %u queries delayed\r\n", WorldDatabase.GetQueueSize());

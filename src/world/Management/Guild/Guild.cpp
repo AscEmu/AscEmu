@@ -12,6 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 #elif VERSION_STRING == Mop
 #include "GameMop/Management/GuildFinderMgr.h"
 #endif
+#include "GuildBankEventLog.hpp"
+#include "GuildEventLog.hpp"
+#include "GuildNewsLog.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Server/MainServerDefines.h"
 #include "Objects/ObjectMgr.h"
@@ -19,12 +22,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
 #include "Server/Packets/MsgSaveGuildEmblem.h"
-#include "Server/Packets/SmsgGuildBankMoneyWithdrawn.h"
 #include "Server/Packets/MsgGuildBankMoneyWithdrawn.h"
 #include "Server/Packets/SmsgGuildInvite.h"
 #include "Server/Packets/SmsgGuildEvent.h"
-#include "Server/Packets/SmsgGuildMemberDailyReset.h"
 #include "Server/Packets/SmsgMessageChat.h"
+#include "Server/Script/ScriptMgr.h"
+#include "Server/Definitions.h"
 
 using namespace AscEmu::Packets;
 

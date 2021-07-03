@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_SunwellPlateau.h"
 
 #include "Server/Script/CreatureAIScript.h"
+#include "Macros/ScriptMacros.hpp"
 
 class SunwellPlateauInstanceScript : public InstanceScript
 {

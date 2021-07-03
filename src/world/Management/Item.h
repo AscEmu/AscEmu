@@ -22,13 +22,13 @@
 #define WOWSERVER_ITEM_H
 
 #include "Skill.h"
-#include "Macros/ItemMacros.hpp"
 #include "Management/ItemPrototype.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Objects/Object.h"
 #include "WorldConf.h"
 #include "LootMgr.h"
 #include "Data/WoWItem.hpp"
+#include "Server/UpdateFieldInclude.h"
 
 class Container;
 

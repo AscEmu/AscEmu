@@ -1433,8 +1433,8 @@ void QuestMgr::GiveQuestRewardReputation(Player* plr, QuestProperties const* qst
 
             // Let's do this properly. Determine the faction of the creature, and give reputation to his faction.
             if (qst_giver->isCreature())
-                if (static_cast< Creature* >(qst_giver)->m_factionEntry != NULL)
-                    fact = static_cast< Creature* >(qst_giver)->m_factionEntry->ID;
+                if (qst_giver->m_factionEntry != NULL)
+                    fact = qst_giver->m_factionEntry->ID;
             if (qst_giver->isGameObject())
                 fact = static_cast< GameObject* >(qst_giver)->getFactionTemplate();
         }
@@ -1883,8 +1883,8 @@ template <class T> void QuestMgr::_AddQuest(uint32 entryid, QuestProperties cons
 
 void QuestMgr::_CleanLine(std::string* str)
 {
-    _RemoveChar((char*)"\r", str);
-    _RemoveChar((char*)"\n", str);
+    _RemoveChar("\r", str);
+    _RemoveChar("\n", str);
 
     while (str->c_str()[0] == 32)
     {

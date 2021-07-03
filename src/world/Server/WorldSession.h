@@ -26,9 +26,7 @@
 #include "Management/Quest.h"
 #include "FastQueue.h"
 #include "World.Legacy.h"
-#include "Units/Unit.h"
 #include "Server/CharacterErrors.h"
-#include "Data/Flags.hpp"
 #include "Units/Players/PlayerDefines.hpp"
 #if VERSION_STRING >= Cata
     #include "Management/AddonMgr.h"
@@ -36,8 +34,8 @@
     struct AddonEntry;
 #endif
 
-#include <stddef.h>
 #include <string>
+#include "Objects/MovementInfo.h"
 
 class Player;
 class WorldPacket;
@@ -59,6 +57,8 @@ struct LfgProposal;
 struct LfgReward;
 struct LfgRoleCheck;
 struct AddonEntry;
+struct Loot;
+class WoWGuid;
 
 #define CHECK_INWORLD_RETURN if (_player == NULL || !_player->IsInWorld()) { return; }
 

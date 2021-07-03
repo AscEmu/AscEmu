@@ -27,7 +27,6 @@
 #include "LogonCommDefines.h"
 #include "../shared/Log.hpp"
 #include <RC4Engine.h>
-#include "zlib.h"
 
 class LogonCommClientSocket : public Socket
 {

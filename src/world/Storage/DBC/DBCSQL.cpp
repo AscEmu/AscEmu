@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "DBCSQL.hpp"
 
+#include "DBCLoader.hpp"
+
 namespace DBC::SQL
 {
     SqlDbc::SqlDbc(std::string const* dbc_filename, std::string const* dbc_format, std::string const* id_name, char const* format) : format_string(dbc_format), index_name(id_name), sql_index_pos(0)

@@ -28,18 +28,17 @@
 #include <git_version.h>
 
 #include <fstream>
-#include <mutex>
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 #include "Objects/ObjectMgr.h"
 #include "ScriptMgr.h"
 #include "Map/MapScriptInterface.h"
-#include "Objects/Faction.h"
 #include "Common.hpp"
 #include "CreatureAIScript.h"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Server/Packets/SmsgUpdateInstanceEncounterUnit.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 using namespace AscEmu::Packets;
 

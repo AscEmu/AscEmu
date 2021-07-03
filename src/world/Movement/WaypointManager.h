@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WaypointDefines.h"
 #include "CommonTypes.hpp"
 
-#include <vector>
 #include <unordered_map>
 
 class SERVER_DECL WaypointMgr

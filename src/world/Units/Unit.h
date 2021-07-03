@@ -25,7 +25,6 @@
 
 #include "UnitDefines.hpp"
 #include "Management/LootMgr.h"
-#include "Objects/Object.h"
 #include "Macros/UnitMacros.hpp"
 #include "Units/Summons/SummonHandler.h"
 #include "Spell/Definitions/AuraEffects.hpp"

@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Spell/Definitions/Spec.hpp"
+#include "Spell/Definitions/SpellEffects.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Util/Strings.hpp"
 
@@ -530,7 +531,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         return true;
     }
 
-    uint32 spell = atol((char*)args);
+    uint32 spell = atol(args);
     if (spell == 0)
     {
         spell = GetSpellIDFromLink(args);
@@ -964,7 +965,7 @@ bool ChatHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_
     uint32 item_id;
     int32 count, ocount;
 
-    int argc = sscanf(args, "%u %u", (unsigned int*)&item_id, (unsigned int*)&count);
+    int argc = sscanf(args, "%u %u", &item_id, (unsigned int*)&count);
     if (argc == 1)
         count = 1;
     else if (argc != 2 || !count)
@@ -1274,7 +1275,7 @@ bool ChatHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_s
     }
     else
     {
-        gender = (uint8)atoi((char*)args);
+        gender = (uint8)atoi(args);
         if (gender > 1)
             gender = 1;
     }
@@ -1475,7 +1476,7 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
     }
     else
     {
-        CharacterDatabase.Execute("UPDATE characters SET name = '%s' WHERE guid = %u", CharacterDatabase.EscapeString(new_name).c_str(), (uint32)pi->guid);
+        CharacterDatabase.Execute("UPDATE characters SET name = '%s' WHERE guid = %u", CharacterDatabase.EscapeString(new_name).c_str(), pi->guid);
     }
 
     GreenSystemMessage(m_session, "Changed name of '%s' to '%s'.", current_name, new_name.c_str());
@@ -1553,7 +1554,7 @@ bool ChatHandler::HandleCharSetStandingCommand(const char* args, WorldSession* m
     uint32 faction;
     int32 standing;
 
-    if (sscanf(args, "%u %d", (unsigned int*)&faction, (unsigned int*)&standing) != 2)
+    if (sscanf(args, "%u %d", &faction, (unsigned int*)&standing) != 2)
     {
         RedSystemMessage(m_session, "No faction or standing value entered.");
         RedSystemMessage(m_session, "Use: .character set standstate <factionid> <standing>");
@@ -1706,10 +1707,10 @@ bool ChatHandler::HandleCharSetForceRenameCommand(const char* args, WorldSession
         return true;
     }
 
-    Player* plr = sObjectMgr.GetPlayer((uint32)pi->guid);
+    Player* plr = sObjectMgr.GetPlayer(pi->guid);
     if (plr == nullptr)
     {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_FORCED_RENAME, (uint32)pi->guid);
+        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_FORCED_RENAME, pi->guid);
     }
     else
     {
@@ -1739,10 +1740,10 @@ bool ChatHandler::HandleCharSetCustomizeCommand(const char* args, WorldSession* 
         return true;
     }
 
-    Player* plr = sObjectMgr.GetPlayer((uint32)pi->guid);
+    Player* plr = sObjectMgr.GetPlayer(pi->guid);
     if (plr == nullptr)
     {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_LOOKS, (uint32)pi->guid);
+        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_LOOKS, pi->guid);
     }
     else
     {
@@ -1771,10 +1772,10 @@ bool ChatHandler::HandleCharSetFactionChangeCommand(const char* args, WorldSessi
         return true;
     }
 
-    Player* plr = sObjectMgr.GetPlayer((uint32)pi->guid);
+    Player* plr = sObjectMgr.GetPlayer(pi->guid);
     if (plr == nullptr)
     {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_FACTION, (uint32)pi->guid);
+        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_FACTION, pi->guid);
     }
     else
     {
@@ -1803,10 +1804,10 @@ bool ChatHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession*
         return true;
     }
 
-    Player* plr = sObjectMgr.GetPlayer((uint32)pi->guid);
+    Player* plr = sObjectMgr.GetPlayer(pi->guid);
     if (plr == nullptr)
     {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_RACE, (uint32)pi->guid);
+        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_RACE, pi->guid);
     }
     else
     {
@@ -1940,7 +1941,7 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
                 ss << " [" << GetMapTypeString(static_cast<uint8>(pInstance->m_mapInfo->type)) << "]";
                 if (pInstance->m_mapInfo->isMultimodeDungeon())
                 {
-                    ss << " [" << GetDifficultyString(static_cast<uint8>(pInstance->m_difficulty)) << "]";
+                    ss << " [" << GetDifficultyString(pInstance->m_difficulty) << "]";
                 }
                 ss << " - ";
                 if (pInstance->m_mapMgr == NULL)

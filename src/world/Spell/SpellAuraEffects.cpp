@@ -9,8 +9,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellIsFlags.hpp"
 #include "Definitions/SpellTypes.hpp"
 #include "SpellMgr.hpp"
+#include "Management/ItemInterface.h"
 
 #include "Objects/ObjectMgr.h"
+#include "Server/Script/ScriptMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
 

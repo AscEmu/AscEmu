@@ -8,10 +8,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Player.h"
 
 #include "Chat/ChatDefines.hpp"
+#include "Chat/ChatHandler.hpp"
 #include "Data/WoWPlayer.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/QuestLogEntry.hpp"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
@@ -71,6 +73,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgTriggerMovie.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
 #include "Server/Packets/SmsgSpellCooldown.h"
+#include "Server/Script/ScriptMgr.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -1075,7 +1079,7 @@ void Player::eventKickFromServer()
         else
             m_kickDelay -= 1000;
 
-        sChatHandler.BlueSystemMessage(GetSession(), "You will be removed from the server in %u seconds.", static_cast<uint32>(m_kickDelay / 1000));
+        sChatHandler.BlueSystemMessage(GetSession(), "You will be removed from the server in %u seconds.", m_kickDelay / 1000);
     }
     else
     {
@@ -1645,7 +1649,7 @@ void Player::updateAutoRepeatSpell()
             if (!isAutoShot)
                 interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
             else if (isPlayer())
-                autoRepeatSpell->sendCastResult(static_cast<SpellCastResult>(canCastAutoRepeatSpell));
+                autoRepeatSpell->sendCastResult(canCastAutoRepeatSpell);
             return;
         }
 

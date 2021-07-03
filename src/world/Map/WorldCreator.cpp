@@ -25,6 +25,8 @@
 #include "InstanceDefines.hpp"
 #include "MapMgr.h"
 #include "WorldCreator.h"
+
+#include "Chat/ChatHandler.hpp"
 #include "Server/Packets/SmsgUpdateLastInstance.h"
 #include "Server/Packets/SmsgUpdateInstanceOwnership.h"
 #include "Server/Packets/SmsgInstanceReset.h"

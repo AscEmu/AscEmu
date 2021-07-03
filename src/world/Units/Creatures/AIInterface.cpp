@@ -10,12 +10,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "Spell/SpellMgr.hpp"
 #include "Macros/AIInterfaceMacros.hpp"
-#include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Definitions/SpellRanged.hpp"
@@ -23,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
+#include "Macros/ScriptMacros.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/Movement/CreatureMovement.h"
@@ -30,8 +29,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapScriptInterface.h"
 #include "Movement/WaypointManager.h"
 #include "Movement/MovementManager.h"
-#include "Movement/MovementGenerator.h"
-#include "Movement/AbstractFollower.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Server/Script/CreatureAIScript.h"
 
@@ -871,7 +868,7 @@ void AIInterface::selectCurrentAgent(Unit* target, uint32_t spellid)
                 if (target->isPlayer())
                 {
                     float dist = m_Unit->getDistanceSq(target);
-                    if (static_cast<Player*>(target)->hasUnitMovementFlag(MOVEFLAG_ROOTED) || dist >= 64.0f)
+                    if (target->hasUnitMovementFlag(MOVEFLAG_ROOTED) || dist >= 64.0f)
                     {
                         setCurrentAgent(AGENT_RANGED);
                     }
@@ -1206,7 +1203,7 @@ float AIInterface::calcAggroRange(Unit* target)
         lvlDiff = -8;
     }
 
-    if (!static_cast<Creature*>(m_Unit)->canSee(target))
+    if (!m_Unit->canSee(target))
         return 0;
 
     // Retrieve aggrorange from table
@@ -1599,7 +1596,7 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
         CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
 
         // set encounter state = InProgress
-        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), InProgress);
+        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(m_Unit->getEntry(), InProgress);
 
         if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
         {
@@ -1763,7 +1760,7 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
     {
         // Reset Instance Data
         // set encounter state back to NotStarted
-        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), NotStarted);
+        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(m_Unit->getEntry(), NotStarted);
 
         // Remount if mounted
         Creature* creature = static_cast<Creature*>(m_Unit);
@@ -1803,10 +1800,10 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
         CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), OnCreatureDeath)(static_cast<Creature*>(m_Unit), pUnit);
 
         // set encounter state to finished
-        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->getEntry(), Finished);
+        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(m_Unit->getEntry(), Finished);
 
 #if VERSION_STRING >= WotLK
-        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), UpdateEncountersStateForCreature)(static_cast<Creature*>(m_Unit)->getEntry(), m_Unit->GetMapMgr()->pInstance->m_difficulty);
+        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), UpdateEncountersStateForCreature)(m_Unit->getEntry(), m_Unit->GetMapMgr()->pInstance->m_difficulty);
 #endif
     }
 

@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Players/Player.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/Definitions.h"
 
 using namespace AscEmu::Packets;
 

@@ -14,7 +14,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAuraUpdateAll.h"
 #include "Server/Packets/SmsgClearExtraAuraInfo.h"
 #include "Server/Packets/SmsgEmote.h"
-#include "Server/Packets/SmsgSetExtraAuraInfo.h"
 #include "Server/Packets/SmsgSpellEnergizeLog.h"
 #include "Server/Packets/SmsgEnvironmentalDamageLog.h"
 #include "Server/Packets/SmsgMonsterMoveTransport.h"
@@ -24,7 +23,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSpellHealLog.h"
 #include "Server/Packets/SmsgSpellOrDamageImmune.h"
 #include "Server/Packets/SmsgStandstateUpdate.h"
-#include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Opcodes.hpp"
 #include "Server/WorldSession.h"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
@@ -35,7 +33,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellDamageType.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"
-#include "Spell/Definitions/SpellSchoolConversionTable.hpp"
 #include "Spell/Definitions/SpellTypes.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
@@ -46,6 +43,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Server/Packets/SmsgMessageChat.h"
+#include "Server/Script/ScriptMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -2564,7 +2562,7 @@ float_t Unit::applySpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHea
     // Check for correct class
     if (isPlayer())
     {
-        switch (static_cast<Player*>(this)->getClass())
+        switch (this->getClass())
         {
             case WARRIOR:
 #if VERSION_STRING != Classic
@@ -2681,7 +2679,7 @@ float_t Unit::applySpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg,
     // Check for correct class
     if (isPlayer())
     {
-        switch (static_cast<Player*>(this)->getClass())
+        switch (this->getClass())
         {
             case WARRIOR:
 #if VERSION_STRING != Classic
@@ -4356,7 +4354,7 @@ bool Unit::canSee(Object* const obj)
                 detectionValue -= gobTarget->GetGameObjectProperties()->trap.level * 5;
         }
 
-        auto visibilityRange = static_cast<float_t>(detectionValue * 0.3f + combatReach);
+        auto visibilityRange = detectionValue * 0.3f + combatReach;
         if (visibilityRange <= 0.0f)
             return false;
 
@@ -4501,7 +4499,7 @@ void Unit::regeneratePower(PowerType type)
         if (getPowerType() != type)
             return;
 
-        if (static_cast<Creature*>(this)->m_interruptRegen)
+        if (this->m_interruptRegen)
             return;
     }
 
@@ -4531,9 +4529,9 @@ void Unit::regeneratePower(PowerType type)
 #if VERSION_STRING < Cata
                 // Check for 5 second regen interruption
                 if (isPowerRegenerationInterrupted())
-                    amount = static_cast<Player*>(this)->getManaRegenerationWhileCasting();
+                    amount = this->getManaRegenerationWhileCasting();
                 else
-                    amount = static_cast<Player*>(this)->getManaRegeneration();
+                    amount = this->getManaRegeneration();
 #else
                 // Check for combat (5 second rule was removed in cata)
                 if (CombatStatus.IsInCombat())
@@ -4945,9 +4943,9 @@ void Unit::resetAttackTimer(WeaponDamageType type)
 void Unit::modAttackSpeedModifier(WeaponDamageType type, int32_t amount)
 {
     if (amount > 0)
-        m_attackSpeed[type] *= 1.0f + static_cast<float>(amount / 100.0f);
+        m_attackSpeed[type] *= 1.0f + amount / 100.0f;
     else
-        m_attackSpeed[type] /= 1.0f + static_cast<float>((-amount) / 100.0f);
+        m_attackSpeed[type] /= 1.0f + -amount / 100.0f;
 }
 
 float Unit::getAttackSpeedModifier(WeaponDamageType type) const

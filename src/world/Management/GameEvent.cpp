@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Map/WorldCreator.h"
+#include "Server/Script/ScriptMgr.h"
 
 void GameEvent::CreateNPCs()
 {

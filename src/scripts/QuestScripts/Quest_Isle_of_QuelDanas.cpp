@@ -20,6 +20,7 @@
 #include "Setup.h"
 #include "Management/TaxiMgr.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Macros/ScriptMacros.hpp"
 
 class ScryingOrb : public GameObjectAIScript
 {

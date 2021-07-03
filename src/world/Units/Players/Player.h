@@ -22,7 +22,6 @@
 
 #include "Units/Players/PlayerDefines.hpp"
 #include "Units/Stats.h"
-#include "Server/Definitions.h"
 #include "Management/QuestDefines.hpp"
 #include "Management/Battleground/BattlegroundMgr.h"
 #include "Management/MailMgr.h"

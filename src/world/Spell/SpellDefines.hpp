@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #elif VERSION_STRING == TBC
 #include "GameTBC/Storage/DBCStructures.h"
 #elif VERSION_STRING == WotLK
-#include "GameWotLK/Storage/DBCStructures.h"
 #elif VERSION_STRING == Cata
 #include "GameCata/Storage/DBCStructures.h"
 #elif VERSION_STRING == Mop

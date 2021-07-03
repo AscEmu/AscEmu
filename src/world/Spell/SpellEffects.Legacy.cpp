@@ -43,7 +43,6 @@
 #include "SpellAuras.h"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDamageType.hpp"
-#include "Definitions/ProcFlags.hpp"
 #include "Definitions/CastInterruptFlags.hpp"
 #include "Definitions/AuraInterruptFlags.hpp"
 #include "Definitions/ChannelInterruptFlags.hpp"
@@ -60,6 +59,8 @@
 #include "Definitions/PowerType.hpp"
 #include "Definitions/Spec.hpp"
 #include "Spell.h"
+#include "Definitions/SpellEffects.hpp"
+#include "Macros/ScriptMacros.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
@@ -939,9 +940,9 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                     if (!unitTarget->IsStunned())
                         dmg = dmg >> 1;
                     if (p_caster->HasAura(34258))
-                        p_caster->castSpell(static_cast<Unit*>(p_caster), 34260, true);
+                        p_caster->castSpell(p_caster, 34260, true);
                     if ((p_caster->HasAura(53696) || p_caster->HasAura(53695)))
-                        p_caster->castSpell(static_cast<Unit*>(p_caster), 68055, true);
+                        p_caster->castSpell(p_caster, 68055, true);
                     if (p_caster->HasAura(37186))
                         dmg = 33;
                 }
@@ -1027,7 +1028,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 if (p_caster != nullptr)
                 {
 #if VERSION_STRING != Classic
-                    Item* it = static_cast<Item*>(p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND));
+                    Item* it = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                     if (it && it->getItemProperties() && it->getItemProperties()->InventoryType == INVTYPE_SHIELD)
                         dmg = float2int32(1.3f * p_caster->getShieldBlock());
 #else
@@ -1362,9 +1363,9 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 if (p_caster != nullptr)
                 {
                     if (p_caster->HasAura(34258))
-                        p_caster->castSpell(static_cast<Unit*>(p_caster), 34260, true);
+                        p_caster->castSpell(p_caster, 34260, true);
                     if ((p_caster->HasAura(53696) || p_caster->HasAura(53695)))
-                        p_caster->castSpell(static_cast<Unit*>(p_caster), 68055, true);
+                        p_caster->castSpell(p_caster, 68055, true);
                     if (p_caster->HasAura(37186))
                         dmg = 33;
                 }
@@ -2416,10 +2417,10 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
                     //\note remove all dynmic flags
                     unitTarget->setDynamicFlags(0);
                     unitTarget->setDeathState(ALIVE);
-                    static_cast< Creature* >(unitTarget)->UnTag();
-                    static_cast< Creature* >(unitTarget)->loot.gold = 0;
-                    static_cast< Creature* >(unitTarget)->loot.looters.clear();
-                    static_cast< Creature* >(unitTarget)->loot.items.clear();
+                    unitTarget->UnTag();
+                    unitTarget->loot.gold = 0;
+                    unitTarget->loot.looters.clear();
+                    unitTarget->loot.items.clear();
                     static_cast< Creature* >(unitTarget)->SetLimboState(false); // we can regenerate health now
                 }
             }
@@ -4595,7 +4596,7 @@ void Spell::SpellEffectPowerBurn(uint8_t effectIndex) // power burn
             damage = caster->getMaxPower(POWER_TYPE_MANA) * (mult * 2) / 100;
     }
 
-    int32 mana = (int32)std::min((int32)unitTarget->getPower(POWER_TYPE_MANA), damage);
+    int32 mana = std::min((int32)unitTarget->getPower(POWER_TYPE_MANA), damage);
 
     unitTarget->modPower(POWER_TYPE_MANA, -mana);
 
@@ -4747,7 +4748,7 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
                 if (unitTarget->isPlayer())
                 {
                     // Check for interruption reducing talents
-                    int32 DurationModifier = static_cast< Player* >(unitTarget)->MechanicDurationPctMod[MECHANIC_INTERRUPTED];
+                    int32 DurationModifier = unitTarget->MechanicDurationPctMod[MECHANIC_INTERRUPTED];
                     if (DurationModifier >= -100)
                         duration = (duration * (100 + DurationModifier)) / 100;
 
@@ -4803,7 +4804,7 @@ void Spell::SpellEffectPickpocket(uint8_t /*effectIndex*/) // pickpocket
         return;
     }
 
-    sLootMgr.FillPickpocketingLoot(&static_cast< Creature* >(unitTarget)->loot, unitTarget->getEntry());
+    sLootMgr.FillPickpocketingLoot(&unitTarget->loot, unitTarget->getEntry());
 
     uint32 _rank = static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Rank;
     unitTarget->loot.gold = float2int32((_rank + 1) * unitTarget->getLevel() * (Util::getRandomUInt(5) + 1) * worldConfig.getFloatRate(RATE_MONEY));
@@ -5494,7 +5495,7 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
     {
         //\note remove all dynamic flags
         pPet->setDynamicFlags(0);
-        pPet->setHealth((uint32)((pPet->getMaxHealth() * damage) / 100));
+        pPet->setHealth(pPet->getMaxHealth() * damage / 100);
         pPet->setDeathState(ALIVE);
         pPet->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, pPet, 0);
         sEventMgr.RemoveEvents(pPet, EVENT_PET_DELAYED_REMOVE);
@@ -5508,7 +5509,7 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
         if (pPet == nullptr)//no pets to Revive
             return;
 
-        pPet->setHealth((uint32)((pPet->getMaxHealth() * damage) / 100));
+        pPet->setHealth(pPet->getMaxHealth() * damage / 100);
     }
 }
 
@@ -5583,10 +5584,10 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
                     //\note remove all dynamic flags
                     unitTarget->setDynamicFlags(0);
                     unitTarget->setDeathState(ALIVE);
-                    static_cast< Creature* >(unitTarget)->UnTag();
-                    static_cast< Creature* >(unitTarget)->loot.gold = 0;
-                    static_cast< Creature* >(unitTarget)->loot.looters.clear();
-                    static_cast< Creature* >(unitTarget)->loot.items.clear();
+                    unitTarget->UnTag();
+                    unitTarget->loot.gold = 0;
+                    unitTarget->loot.looters.clear();
+                    unitTarget->loot.items.clear();
                 }
             }
 

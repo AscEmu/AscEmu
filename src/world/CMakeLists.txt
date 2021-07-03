@@ -192,15 +192,21 @@ if(USE_PCH)
   <Util/Strings.hpp>
   <Util.hpp>
   WorldConf.h
+  Chat/ChatHandler.hpp
+  Macros/ScriptMacros.hpp
+  Management/ItemInterface.h
   Management/QuestLogEntry.hpp
   Map/MapMgr.h
   Objects/GameObject.h
+  Server/Definitions.h
   Server/Opcodes.hpp
+  Server/Script/ScriptMgr.h
+  Spell/Definitions/SpellEffects.hpp
   Spell/Spell.h
   Spell/SpellAuras.h
   Storage/MySQLDataStore.hpp
-  Units/Unit.h
   Units/Players/Player.h
+  Units/Unit.h
 )
 
 endif()

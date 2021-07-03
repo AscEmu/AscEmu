@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 
 #include <unordered_map>
-#include <map>
 
 enum GroupAIFlags
 {

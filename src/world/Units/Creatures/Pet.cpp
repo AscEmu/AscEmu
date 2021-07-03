@@ -31,15 +31,16 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/Definitions/ProcFlags.hpp"
-#include <Spell/Definitions/AuraInterruptFlags.hpp>
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
 #include "Pet.h"
+
+#include "Macros/ScriptMacros.hpp"
 #include "Server/Packets/SmsgPetActionFeedback.h"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
 #include "Server/Packets/SmsgPetUnlearnedSpell.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 //MIT START
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1059,7 +1060,7 @@ void Pet::InitializeMe(bool first)
         {
             // According to WoWWiki and ElitistJerks, Water Elemental should inherit 33% of owner's frost spell power.
             // And don't freak out about Waterbolt damage, it is supposed to do 601-673 base damage.
-            float parentfrost = static_cast<float>(m_Owner->GetDamageDoneMod(SCHOOL_FROST) * 0.33f);
+            float parentfrost = m_Owner->GetDamageDoneMod(SCHOOL_FROST) * 0.33f;
             ModDamageDone[SCHOOL_FROST] = (uint32)parentfrost;
         }
         else if (getEntry() == PET_IMP)
@@ -1665,7 +1666,7 @@ void Pet::Rename(std::string NewName)
 void Pet::ApplySummonLevelAbilities()
 {
     uint32 level = getLevel();
-    double pet_level = (double)level;
+    double pet_level = level;
 
     int stat_index = -1;        // Determine our stat index.
     //float scale = 1;

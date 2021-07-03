@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Container.h"
-#include "Data/WoWObject.hpp"
 #include "Data/WoWItem.hpp"
 #include "Item.h"
 #include "Map/MapMgrDefines.hpp"

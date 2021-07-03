@@ -5,11 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Storage/MySQLDataStore.hpp"
-#include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
-#include "Server/Packets/SmsgTransferPending.h"
 #include "../Movement/Spline/Spline.h"
 #include "../Movement/Spline/MoveSplineInitArgs.h"
+#include "Server/Definitions.h"
 
 using namespace AscEmu::Packets;
 

@@ -28,6 +28,7 @@
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgInstanceReset.h"
+#include "Server/Script/ScriptMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -41,7 +42,7 @@ bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_
     float x, y, z;
     uint32 mapid;
 
-    if (sscanf(args, "%u %f %f %f", (unsigned int*)&mapid, &x, &y, &z) != 4)
+    if (sscanf(args, "%u %f %f %f", &mapid, &x, &y, &z) != 4)
         return false;
 
     // Create Map Manager
@@ -67,7 +68,7 @@ bool ChatHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_
         return true;
 
     uint32 entry;
-    if (sscanf(args, "%u", (unsigned int*)&entry) != 1)
+    if (sscanf(args, "%u", &entry) != 1)
         return false;
 
     Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, plr->GetInstanceID());
@@ -162,7 +163,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
     }
     else
     {
-        ss << "Status: " << MSG_COLOR_GREEN << "In use|r (" << MSG_COLOR_GREEN << (uint32)instance->m_mapMgr->GetPlayerCount() << MSG_COLOR_CYAN << " players inside|r)\n";
+        ss << "Status: " << MSG_COLOR_GREEN << "In use|r (" << MSG_COLOR_GREEN << instance->m_mapMgr->GetPlayerCount() << MSG_COLOR_CYAN << " players inside|r)\n";
 
     }
     SendMultilineMessage(m_session, ss.str().c_str());
@@ -204,7 +205,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
     if (argc == 1)
         plr = GetSelectedPlayer(m_session, true, true);
     else
-        plr = sObjectMgr.GetPlayer((const char*)playername, false);
+        plr = sObjectMgr.GetPlayer(playername, false);
 
     if (!plr)
     {
@@ -231,7 +232,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
                 if (itr == plr->getPlayerInfo()->savedInstanceIds[difficulty].end() || (*itr).second != instance->m_instanceId)
                     continue;
                 plr->SetPersistentInstanceId(instance->m_mapId, difficulty, 0);
-                SystemMessage(m_session, "Instance with id %u (%s) is persistent and will only be revoked from player.", instanceId, GetDifficultyString(static_cast<uint8>(difficulty)));
+                SystemMessage(m_session, "Instance with id %u (%s) is persistent and will only be revoked from player.", instanceId, GetDifficultyString(difficulty));
                 foundSomething = true;
             }
             plr->getPlayerInfo()->savedInstanceIdsLock.Release();

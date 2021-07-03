@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
+#include "Macros/ScriptMacros.hpp"
 
  // Instance script for map 33 (Shadowfang Keep)
 class ShadowfangKeepInstance : public InstanceScript

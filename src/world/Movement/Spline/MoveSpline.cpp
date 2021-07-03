@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <sstream>
 
 #include "CommonDefines.hpp"
-#include "Log.hpp"
 #include "Logging/Logger.hpp"
 
 namespace MovementNew {

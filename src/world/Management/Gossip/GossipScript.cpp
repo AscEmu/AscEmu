@@ -11,6 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Item.h"
 #include "GossipScript.hpp"
 
+#include "Server/Script/ScriptMgr.h"
+
 void GossipScript::destroy()
 {
     delete this;

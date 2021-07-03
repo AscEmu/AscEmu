@@ -33,6 +33,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Packets/SmsgAreaTriggerMessage.h"
 #include "Packets/SmsgZoneUnderAttack.h"
 #include "OpcodeTable.hpp"
+#include "Chat/ChatHandler.hpp"
+#include "Management/GameEventMgr.h"
 #include "Units/Creatures/CreatureGroups.h"
 #include "Movement/WaypointManager.h"
 #include "Packets/SmsgMessageChat.h"
@@ -198,7 +200,7 @@ uint32_t World::getWorldUptime()
 
 std::string World::getWorldUptimeString()
 {
-    time_t pTime = static_cast<time_t>(UNIXTIME) - mStartTime;
+    time_t pTime = UNIXTIME - mStartTime;
     tm* tmv = gmtime(&pTime);
 
     std::stringstream uptimeStream;

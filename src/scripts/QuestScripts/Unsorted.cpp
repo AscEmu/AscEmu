@@ -20,6 +20,7 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Macros/ScriptMacros.hpp"
 
 // QUEST_CLUCK         3861
 // ITEM_CHICKEN_FEED   11109

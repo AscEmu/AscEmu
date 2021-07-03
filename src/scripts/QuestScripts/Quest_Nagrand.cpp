@@ -21,6 +21,7 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Macros/ScriptMacros.hpp"
 
 class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
 {

@@ -27,7 +27,7 @@ bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    if (strlen((char*)args) > 75)
+    if (strlen(args) > 75)
     {
         // send message to user
         char buf[256];

@@ -26,7 +26,9 @@
 #include <Spell/Definitions/PowerType.hpp>
 #include <Units/Creatures/Pet.h>
 
- //////////////////////////////////////////////////////////////
+#include "Management/ItemInterface.h"
+
+//////////////////////////////////////////////////////////////
  //bool SoulLinkParent( uint32_t i, Spell *s )
  //
  //Precondition(s)

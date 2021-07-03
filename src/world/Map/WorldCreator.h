@@ -22,8 +22,6 @@
 #ifndef WORLDCREATOR_H
 #define WORLDCREATOR_H
 
-#include "WorldCreatorDefines.hpp"
-#include "Management/Group.h"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 #include "Instance.h"

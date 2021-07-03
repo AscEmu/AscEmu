@@ -30,7 +30,6 @@
 #include "Server/Opcodes.hpp"
 #include "Objects/DynamicObject.h"
 #include "Server/CharacterErrors.h"
-#include "VMapFactory.h"
 #include "Macros/CorpseMacros.hpp"
 #include "Management/HonorHandler.h"
 #include "Storage/WorldStrings.h"
@@ -47,17 +46,14 @@
 #include "Storage/MySQLStructures.h"
 #include "Server/Warden/SpeedDetector.h"
 #include "Server/MainServerDefines.h"
-#include "Config/Config.h"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Map/WorldCreator.h"
-#include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
-#include "Spell/Definitions/SpellRanged.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/Definitions/PowerType.hpp"
@@ -66,24 +62,20 @@
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgInitialSpells.h"
 #include "Data/WoWPlayer.hpp"
-#include "Data/WoWItem.hpp"
-#include "Data/WoWContainer.hpp"
 #include "Data/WoWGameObject.hpp"
 #include "Data/WoWDynamicObject.hpp"
-#include "Data/WoWCorpse.hpp"
 #include <limits>
+#include <zlib.h>
+
+#include "Chat/ChatHandler.hpp"
+#include "Macros/ScriptMacros.hpp"
 #include "Server/Packets/SmsgNewWorld.h"
-#include "Server/Packets/SmsgFriendStatus.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Server/Packets/SmsgDeathReleaseLoc.h"
 #include "Server/Packets/SmsgCorpseReclaimDelay.h"
 #include "Server/Packets/SmsgDuelWinner.h"
-#include "Server/Packets/SmsgStopMirrorTimer.h"
 #include "Server/Packets/SmsgSummonRequest.h"
 #include "Server/Packets/SmsgTitleEarned.h"
-#include "Server/Packets/SmsgSetPctSpellModifier.h"
-#include "Server/Packets/SmsgSetFlatSpellModifier.h"
-#include "Server/Packets/SmsgPowerUpdate.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Packets/SmsgAreaTriggerMessage.h"
 #include "Server/Packets/SmsgLoginSetTimespeed.h"
@@ -95,7 +87,6 @@
 #include "Server/Packets/SmsgRemovedSpell.h"
 #include "Server/Packets/SmsgTransferPending.h"
 #include "Server/Packets/SmsgTransferAborted.h"
-#include "Server/Packets/SmsgClearCooldown.h"
 #include "Server/Packets/SmsgDuelRequested.h"
 #include "Server/Packets/SmsgPreResurrect.h"
 #include "Server/Packets/SmsgDuelComplete.h"
@@ -111,12 +102,12 @@
 #include "Server/Packets/SmsgDuelInbounds.h"
 #include "Server/Packets/SmsgDuelOutOfBounds.h"
 #include "Server/Packets/SmsgSetPhaseShift.h"
-#include "Server/Packets/SmsgContactList.h"
 #include "Server/Packets/SmsgCharacterLoginFailed.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgSetFactionStanding.h"
 #include "Server/Packets/SmsgSetFactionVisible.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 #include "Units/ThreatHandler.h"
 #include "Util/Strings.hpp"
 
@@ -1384,7 +1375,7 @@ void Player::_EventExploration()
 
     if (!(currFields & val) && !isOnTaxi() && !obj_movement_info.transport_guid) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
     {
-        setExploredZone(offset, static_cast<uint32>(currFields | val));
+        setExploredZone(offset, currFields | val);
 
         uint32 explore_xp = at->area_level * 10;
         explore_xp *= float2int32(worldConfig.getFloatRate(RATE_EXPLOREXP));
@@ -2216,7 +2207,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 #else
         << getKnownTitles(1) << ", " << getKnownTitles(2) << ", "
 #endif
-        << static_cast<uint32_t>(getCoinage()) << ", ";
+        << getCoinage() << ", ";
 
     if (getClass() == MAGE || getClass() == PRIEST || (getClass() == WARLOCK))
         ss << uint32_t(0) << ", "; // make sure ammo slot is 0 for these classes, otherwise it can mess up wand shoot
@@ -2620,7 +2611,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     if (!myClass || !myRace)
     {
         // bad character
-        sLogger.failure("guid %u failed to login, no race or class dbc found. (race %u class %u)", (unsigned int)getGuidLow(), (unsigned int)getRace(), (unsigned int)getClass());
+        sLogger.failure("guid %u failed to login, no race or class dbc found. (race %u class %u)", getGuidLow(), (unsigned int)getRace(), (unsigned int)getClass());
         RemovePendingPlayer();
         return;
     }
@@ -2639,7 +2630,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     info = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
     if (info == nullptr)
     {
-        sLogger.failure("player guid %u has no playerCreateInfo!", (unsigned int)getGuidLow());
+        sLogger.failure("player guid %u has no playerCreateInfo!", getGuidLow());
         RemovePendingPlayer();
         return;
     }
@@ -2652,7 +2643,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     if (!lvlinfo)
     {
-        sLogger.failure("guid %u level %u class %u race %u levelinfo not found!", (unsigned int)getGuidLow(), (unsigned int)getLevel(), (unsigned int)getClass(), (unsigned int)getRace());
+        sLogger.failure("guid %u level %u class %u race %u levelinfo not found!", getGuidLow(), getLevel(), (unsigned int)getClass(), (unsigned int)getRace());
         RemovePendingPlayer();
         return;
     }
@@ -2822,8 +2813,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
 
     std::string tmpStr = field[45].GetString();
-    m_playedtime[0] = (uint32)atoi((const char*)strtok((char*)tmpStr.c_str(), " "));
-    m_playedtime[1] = (uint32)atoi((const char*)strtok(nullptr, " "));
+    m_playedtime[0] = (uint32)atoi(strtok((char*)tmpStr.c_str(), " "));
+    m_playedtime[1] = (uint32)atoi(strtok(nullptr, " "));
 
     m_deathState = (DeathState)field[46].GetUInt32();
     m_talentresettimes = field[47].GetUInt32();
@@ -4368,7 +4359,7 @@ void Player::ResurrectPlayer()
 
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_FORCED_RESURRECT); // In case somebody resurrected us before this event happened
     if (m_resurrectHealth)
-        setHealth((uint32)std::min(m_resurrectHealth, getMaxHealth()));
+        setHealth(std::min(m_resurrectHealth, getMaxHealth()));
     if (m_resurrectMana)
         setPower(POWER_TYPE_MANA, m_resurrectMana);
 
@@ -5977,14 +5968,14 @@ void Player::CalcStat(uint8_t type)
 {
     ARCEMU_ASSERT(type < 5)
 
-    int32 pos = (int32)((int32)BaseStats[type] * (int32)StatModPctPos[type]) / 100 + (int32)FlatStatModPos[type];
-    int32 neg = (int32)((int32)BaseStats[type] * (int32)StatModPctNeg[type]) / 100 + (int32)FlatStatModNeg[type];
+    int32 pos = (int32)BaseStats[type] * (int32)StatModPctPos[type] / 100 + (int32)FlatStatModPos[type];
+    int32 neg = (int32)BaseStats[type] * (int32)StatModPctNeg[type] / 100 + (int32)FlatStatModNeg[type];
     int32 res = pos + (int32)BaseStats[type] - neg;
     if (res <= 0)
         res = 1;
 
-    pos += (res * (int32)static_cast< Player* >(this)->TotalStatModPctPos[type]) / 100;
-    neg += (res * (int32)static_cast< Player* >(this)->TotalStatModPctNeg[type]) / 100;
+    pos += (res * (int32)this->TotalStatModPctPos[type]) / 100;
+    neg += (res * (int32)this->TotalStatModPctNeg[type]) / 100;
     res = pos + BaseStats[type] - neg;
     if (res <= 0)
         res = 1;
@@ -7965,7 +7956,7 @@ void Player::CalcDamage()
     uint32 cr = 0;
     if (it)
     {
-        if (static_cast< Player* >(this)->m_wratings.size())
+        if (this->m_wratings.size())
         {
             std::map<uint32, uint32>::iterator itr = m_wratings.find(it->getItemProperties()->SubClass);
             if (itr != m_wratings.end())
@@ -7980,7 +7971,7 @@ void Player::CalcDamage()
 
     /////////////// OFF HAND START
     cr = 0;
-    it = static_cast< Player* >(this)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    it = this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (it)
     {
         if (!disarmed)

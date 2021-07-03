@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildDefinitions.hpp"
 #include "GuildBankRightsAndSlots.hpp"
 #include "Database/Field.hpp"
+#include "Macros/GuildMacros.hpp"
 
 class Guild;
 

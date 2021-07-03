@@ -12,8 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Config/Config.h"
 #include "Map/MapCell.h"
 //#include "Server/WorldSocket.h"
+#include "Logging/Logger.hpp"
 #include "Macros/PlayerMacros.hpp"
-#include "shared/Log.hpp"
 
 
 WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}

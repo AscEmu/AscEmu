@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 
-#include "Server/Packets/MsgInspectArenaTeams.h"
 #include "Server/Packets/MsgInspectHonorStats.h"
 #include "Server/Packets/CmsgBattlemasterJoinArena.h"
 #include "Server/Packets/CmsgBattlefieldPort.h"
@@ -20,10 +19,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Objects/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Server/Packets/CmsgRequestRatedBgInfo.h"
-#include "Server/Packets/SmsgRatedBgInfo.h"
-#include "Server/Packets/SmsgRatedBgStats.h"
-#include "Server/Packets/SmsgPvpOptionsEnabled.h"
 
 using namespace AscEmu::Packets;
 

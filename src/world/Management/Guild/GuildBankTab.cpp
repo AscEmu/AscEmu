@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Item.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/MsgQueryGuildBankText.h"
-#include "Server/Packets/SmsgGuildBankQueryTextResult.h"
 
 using namespace AscEmu::Packets;
 

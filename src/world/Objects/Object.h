@@ -23,7 +23,6 @@
 
 #include "ObjectDefines.h"
 
-#include "Server/UpdateFieldInclude.h"
 #include "Server/UpdateMask.h"
 #include "CommonTypes.hpp"
 #include "Server/EventableObject.h"
@@ -45,6 +44,7 @@
 #include "Data/WoWObject.hpp"
 #include "MovementInfo.h"
 #include "Spell/Definitions/School.hpp"
+#include "Units/UnitDefines.hpp"
 
 struct WoWObject;
 
@@ -385,14 +385,14 @@ public:
 #endif
 
         Player* ToPlayer() { if (isPlayer()) return reinterpret_cast<Player*>(this); else return nullptr; }
-        Player const* ToPlayer() const { if (isPlayer()) return (Player const*)((Player*)this); else return nullptr; }
+        Player const* ToPlayer() const { if (isPlayer()) return (Player*)this; else return nullptr; }
         Creature* ToCreature() { if (isCreature()) return reinterpret_cast<Creature*>(this); else return nullptr; }
-        Creature const* ToCreature() const { if (isCreature()) return (Creature const*)((Creature*)this); else return nullptr; }
+        Creature const* ToCreature() const { if (isCreature()) return (Creature*)this; else return nullptr; }
 
         Unit* ToUnit() { if (isCreatureOrPlayer()) return reinterpret_cast<Unit*>(this); else return nullptr; }
-        Unit const* ToUnit() const { if (isCreatureOrPlayer()) return (const Unit*)((Unit*)this); else return nullptr; }
+        Unit const* ToUnit() const { if (isCreatureOrPlayer()) return (Unit*)this; else return nullptr; }
         GameObject* ToGameObject() { if (isGameObject()) return reinterpret_cast<GameObject*>(this); else return nullptr; }
-        GameObject const* ToGameObject() const { if (isGameObject()) return (const GameObject*)((GameObject*)this); else return nullptr; }
+        GameObject const* ToGameObject() const { if (isGameObject()) return (GameObject*)this; else return nullptr; }
 
         float getExactDist2dSq(const float x, const float y) const
         {

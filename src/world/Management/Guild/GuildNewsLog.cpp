@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildNewsLog.hpp"
 #include "WoWGuid.h"
 #include "Server/MainServerDefines.h"
-#include "Server/Definitions.h"
 #include "Objects/Object.h"
 
 

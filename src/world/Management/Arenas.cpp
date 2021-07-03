@@ -27,6 +27,7 @@
 #include "Spell/SpellAuras.h"
 #include "Objects/GameObject.h"
 #include "Objects/ObjectMgr.h"
+#include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellMgr.hpp"
 
 const uint32 ARENA_PREPARATION = 32727;
@@ -179,7 +180,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
         std::set<Player*>::iterator itr = m_players[i].begin();
         for (; itr != m_players[i].end(); ++itr)
         {
-            Player* plr = (Player*)(*itr);
+            Player* plr = *itr;
             if (plr != NULL)
             {
                 sHookInterface.OnArenaFinish(plr, plr->getArenaTeam(m_arenateamtype), victorious, rated_match);
@@ -381,7 +382,7 @@ void Arena::UpdatePlayerCounts()
 uint32 Arena::CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outcome)
 {
     double power = (int)(opponentRating - oldRating) / 400.0f;
-    double divisor = pow(((double)(10.0)), power);
+    double divisor = pow(10.0, power);
     divisor += 1.0;
 
     double winChance = 1.0 / divisor;

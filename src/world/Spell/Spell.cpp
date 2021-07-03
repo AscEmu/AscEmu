@@ -25,7 +25,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellState.hpp"
 #include "Definitions/SpellRanged.hpp"
 
-#include "Data/Flags.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Management/ItemInterface.h"
 #include "Map/Area/AreaManagementGlobals.hpp"
@@ -33,7 +32,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
-#include "Map/WorldCreatorDefines.hpp"
 #include "Objects/DynamicObject.h"
 #include "Objects/Faction.h"
 #include "Objects/GameObject.h"
@@ -48,6 +46,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Players/PlayerClasses.hpp"
 #include "Units/UnitDefines.hpp"
 #include "Util.hpp"
+#include "Definitions/SpellEffects.hpp"
+#include "Macros/ScriptMacros.hpp"
 #include "Server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;
@@ -788,7 +788,7 @@ void Spell::handleMissedEffect(const uint64_t targetGuid)
         if (u_caster != nullptr && targetUnit->isCreature() && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
         {
             // Let target creature know that someone tried to cast spell on it
-            static_cast<Creature*>(targetUnit)->GetAIInterface()->onHostileAction(u_caster);
+            targetUnit->GetAIInterface()->onHostileAction(u_caster);
         }
 
         // Call scripted after spell missed hook
@@ -1242,7 +1242,7 @@ int32_t Spell::calculateEffect(uint8_t effIndex)
                 break;
         }
 
-        effectPctModifier[effIndex] = static_cast<float_t>(spellPctMods / 100.0f);
+        effectPctModifier[effIndex] = spellPctMods / 100.0f;
     }
     else if (getItemCaster() != nullptr && GetUnitTarget() != nullptr)
     {
@@ -2348,7 +2348,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (dynamic_cast<Creature*>(target)->IsPickPocketed())
                     return SPELL_FAILED_TARGET_NO_POCKETS;
 
-                const auto itr = sLootMgr.PickpocketingLoot.find(dynamic_cast<Creature*>(target)->getEntry());
+                const auto itr = sLootMgr.PickpocketingLoot.find(target->getEntry());
                 if (itr == sLootMgr.PickpocketingLoot.end())
                     return SPELL_FAILED_TARGET_NO_POCKETS;
             } break;
@@ -5551,7 +5551,7 @@ float_t Spell::_getSpellTravelTimeForTarget(uint64_t guid) const
         return static_cast<float_t>(m_missileTravelTime);
 
     // Calculate time it takes for spell to hit target
-    return static_cast<float_t>((distance * 1000.0f) / getSpellInfo()->getSpeed());
+    return distance * 1000.0f / getSpellInfo()->getSpeed();
 }
 
 void Spell::_prepareProcFlags()

@@ -19,6 +19,7 @@
  */
 
 
+#include "Chat/ChatHandler.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
@@ -992,7 +993,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_GUID)
     {
         if (pet)
-            *data << (uint64)pet->getGuid();
+            *data << pet->getGuid();
         else
             *data << (uint64)0;
     }

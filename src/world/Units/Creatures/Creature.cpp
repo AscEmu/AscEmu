@@ -32,12 +32,10 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapCell.h"
 #include "Map/MapMgr.h"
-#include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
-#include "Spell/Definitions/ProcFlags.hpp"
-#include <Spell/Definitions/AuraInterruptFlags.hpp>
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
+#include "Macros/ScriptMacros.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Objects/ObjectMgr.h"
@@ -943,7 +941,7 @@ void Creature::EnslaveExpire()
             break;
     };
 
-    GetAIInterface()->Init(((Unit*)this), AI_SCRIPT_AGRO);
+    GetAIInterface()->Init(this, AI_SCRIPT_AGRO);
 
     updateInRangeOppositeFactionSet();
     updateInRangeSameFactionSet();

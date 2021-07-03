@@ -52,7 +52,7 @@ public:
     inline size_t size(void) const { return i_nodes.size(); }
     inline void resize(unsigned int sz) { i_nodes.resize(sz); }
     inline void clear(void) { i_nodes.clear(); }
-    inline PathNode* getNodes(void) { return static_cast<PathNode*>(&i_nodes[0]); }
+    inline PathNode* getNodes(void) { return &i_nodes[0]; }
     float getTotalLength(void)
     {
         float len = 0, xd, yd, zd;
@@ -61,7 +61,7 @@ public:
             xd = i_nodes[idx].x - i_nodes[idx - 1].x;
             yd = i_nodes[idx].y - i_nodes[idx - 1].y;
             zd = i_nodes[idx].z - i_nodes[idx - 1].z;
-            len += (float)std::sqrt(xd * xd + yd * yd + zd * zd);
+            len += std::sqrt(xd * xd + yd * yd + zd * zd);
         }
         return len;
     }

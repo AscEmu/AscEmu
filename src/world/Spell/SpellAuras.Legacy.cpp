@@ -37,19 +37,17 @@
 #include "Definitions/AuraInterruptFlags.hpp"
 #include "Definitions/SpellSchoolConversionTable.hpp"
 #include "Definitions/SpellTypes.hpp"
-#include "Definitions/SpellIsFlags.hpp"
-#include "Definitions/SpellState.hpp"
 #include "Definitions/SpellMechanics.hpp"
 #include "Definitions/PowerType.hpp"
+#include "Definitions/SpellEffects.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
-#include "Server/Packets/SmsgSetExtraAuraInfo.h"
 #include "Server/Packets/MsgChannelUpdate.h"
-#include "Server/Packets/SmsgSpellOrDamageImmune.h"
 #include "Server/Packets/SmsgPlayerVehicleData.h"
 #include "Server/Packets/SmsgSetForceReactions.h"
 #include "Server/Packets/SmsgControlVehicle.h"
 #include "Server/Packets/SmsgCancelCombat.h"
+#include "Server/Script/ScriptMgr.h"
 #include "Units/ThreatHandler.h"
 
 using namespace AscEmu::Packets;
@@ -989,7 +987,7 @@ void Aura::SpellAuraModFear(AuraEffectModifier* aurEff, bool apply)
     Unit* u_caster = GetUnitCaster();
 
     if (m_target->isCreature() &&
-        (m_target->isTotem() || static_cast< Creature* >(m_target)->isRooted()))
+        (m_target->isTotem() || m_target->isRooted()))
         return;
 
     if (apply)
@@ -1710,7 +1708,7 @@ void Aura::SpellAuraModInvisibilityDetection(AuraEffectModifier* aurEff, bool ap
         m_target->modInvisibilityDetection(InvisibilityFlag(aurEff->getEffectMiscValue()), -aurEff->getEffectDamage());
 
     if (m_target->isPlayer())
-        static_cast< Player* >(m_target)->UpdateVisibility();
+        m_target->UpdateVisibility();
 }
 
 void Aura::SpellAuraModResistance(AuraEffectModifier* aurEff, bool apply)
@@ -1936,7 +1934,7 @@ void Aura::SpellAuraReflectSpells(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SpellAuraModStat(AuraEffectModifier* aurEff, bool apply)
 {
-    int32 stat = (int32)aurEff->getEffectMiscValue();
+    int32 stat = aurEff->getEffectMiscValue();
     int32 val;
 
     if (apply)
@@ -2138,9 +2136,9 @@ void Aura::SpellAuraModDecreaseSpeed(AuraEffectModifier* aurEff, bool apply)
             //yes we are freezing the bastard, so can we proc anything on this ?
             Unit* caster = GetUnitCaster();
             if (caster != nullptr && caster->isPlayer())
-                static_cast< Unit* >(caster)->EventChill(m_target);
+                caster->EventChill(m_target);
             if (m_target->isPlayer() && caster)
-                static_cast< Unit* >(m_target)->EventChill(caster, true);
+                m_target->EventChill(caster, true);
         }
         m_target->speedReductionMap.insert(std::make_pair(m_spellInfo->getId(), aurEff->getEffectDamage()));
         //m_target->m_slowdown=this;
@@ -2172,9 +2170,9 @@ void Aura::UpdateAuraModDecreaseSpeed(AuraEffectModifier* aurEff)
         //yes we are freezing the bastard, so can we proc anything on this ?
         Unit* caster = GetUnitCaster();
         if (caster && caster->isPlayer())
-            static_cast< Unit* >(caster)->EventChill(m_target);
+            caster->EventChill(m_target);
         if (m_target->isPlayer() && caster)
-            static_cast< Unit* >(m_target)->EventChill(caster, true);
+            m_target->EventChill(caster, true);
     }
 }
 
@@ -2643,7 +2641,7 @@ void Aura::SpellAuraModHitChance(AuraEffectModifier* aurEff, bool apply)
 
     if (apply)
     {
-        static_cast< Unit* >(m_target)->SetHitFromMeleeSpell(static_cast< Unit* >(m_target)->GetHitFromMeleeSpell() + val);
+        m_target->SetHitFromMeleeSpell(m_target->GetHitFromMeleeSpell() + val);
         if (val < 0)
             mPositive = false;
         else
@@ -2651,10 +2649,10 @@ void Aura::SpellAuraModHitChance(AuraEffectModifier* aurEff, bool apply)
     }
     else
     {
-        static_cast< Unit* >(m_target)->SetHitFromMeleeSpell(static_cast< Unit* >(m_target)->GetHitFromMeleeSpell() - val);
-        if (static_cast< Unit* >(m_target)->GetHitFromMeleeSpell() < 0)
+        m_target->SetHitFromMeleeSpell(m_target->GetHitFromMeleeSpell() - val);
+        if (m_target->GetHitFromMeleeSpell() < 0)
         {
-            static_cast< Unit* >(m_target)->SetHitFromMeleeSpell(0);
+            m_target->SetHitFromMeleeSpell(0);
         }
     }
 }
@@ -5785,7 +5783,7 @@ void Aura::SpellAuraReduceEffectDuration(AuraEffectModifier* aurEff, bool apply)
     }
     if (aurEff->getEffectMiscValue() > 0 && aurEff->getEffectMiscValue() < 28)
     {
-        static_cast< Player* >(m_target)->MechanicDurationPctMod[aurEff->getEffectMiscValue()] += val;
+        m_target->MechanicDurationPctMod[aurEff->getEffectMiscValue()] += val;
     }
 }
 

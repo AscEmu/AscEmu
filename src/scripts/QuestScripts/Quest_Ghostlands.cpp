@@ -20,6 +20,7 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Macros/ScriptMacros.hpp"
 
 class Prisoner12 : public GossipScript
 {

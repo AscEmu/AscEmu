@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Objects/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
-#include "Config/Config.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
 #include "Server/Packets/CmsgGmTicketCreate.h"
@@ -19,7 +18,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGmTicketSystemstatus.h"
 #include "Server/Packets/CmsgGmReportLag.h"
 #include "Server/Packets/CmsgGmSurveySubmit.h"
-#include <zlib.h>
 
 using namespace AscEmu::Packets;
 

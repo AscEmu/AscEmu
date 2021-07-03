@@ -6,8 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/ManagedPacket.h"
 #include "Server/Packets/CmsgSetActiveMover.h"
 #include "Server/Packets/MovementPacket.h"
-#include "Server/Packets/SmsgMoveUnsetCanFly.h"
-#include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Server/WorldSession.h"
 #include "Units/Players/Player.h"
 #include "Units/Creatures/Vehicle.h"
@@ -279,7 +277,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
         Transporter* transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
         if (transporter != NULL)
-            transporter->RemovePassenger(static_cast<Player*>(mover));
+            transporter->RemovePassenger(mover);
 
         mover->obj_movement_info.transport_guid = 0;
         _player->SpeedCheatReset();

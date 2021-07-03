@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ChannelMgr.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 #include "Units/Players/Player.h"
 #include "Server/Packets/SmsgChannelNotify.h"
 #include "Util/Strings.hpp"

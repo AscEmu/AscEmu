@@ -23,7 +23,6 @@
 
 #include "QuestDefines.hpp"
 #include "CommonTypes.hpp"
-#include "QuestLogEntry.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 
 #include <vector>

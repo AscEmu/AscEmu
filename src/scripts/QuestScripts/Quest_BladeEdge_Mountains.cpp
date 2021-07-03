@@ -22,6 +22,7 @@
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/SpellAuras.h"
+#include "Macros/ScriptMacros.hpp"
 
 class WyrmcultBlackwhelp : public CreatureAIScript
 {

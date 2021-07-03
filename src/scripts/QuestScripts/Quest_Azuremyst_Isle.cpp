@@ -21,6 +21,7 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Macros/ScriptMacros.hpp"
 
 // Chieftain Oomooroo
 class ChieftainOomoorooQAI : public CreatureAIScript

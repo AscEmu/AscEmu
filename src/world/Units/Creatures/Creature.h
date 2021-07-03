@@ -27,6 +27,7 @@
 #include "Units/Unit.h"
 #include "Objects/Object.h"
 #include "Management/Group.h"
+#include "Server/UpdateFieldInclude.h"
 
 class CreatureAIScript;
 class GossipScript;

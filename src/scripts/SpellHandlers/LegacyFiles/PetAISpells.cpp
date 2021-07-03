@@ -28,6 +28,7 @@
 #include <Spell/Definitions/PowerType.hpp>
 
 #include "Server/Script/CreatureAIScript.h"
+#include "Macros/ScriptMacros.hpp"
 
 class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 {

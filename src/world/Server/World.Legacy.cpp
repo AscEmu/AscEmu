@@ -20,30 +20,16 @@
 */
 
 
-
-#include "WorldConf.h"
 #include "Management/AddonMgr.h"
-#include "Management/AuctionMgr.h"
 #include "Management/CalendarMgr.h"
-#include "Management/Item.h"
 #include "Management/LFG/LFGMgr.hpp"
-#include "Management/WordFilter.h"
-#include "Management/WeatherMgr.h"
-#include "Management/TaxiMgr.h"
 #include "Management/ItemInterface.h"
 #include "Management/Channel.h"
-#include "Management/ChannelMgr.h"
 #include "WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Storage/MySQLStructures.h"
 #include <CrashHandler.h>
 #include "Server/MainServerDefines.h"
-#include "Config/Config.h"
-#include "Map/MapCell.h"
-#include "Spell/SpellMgr.hpp"
 #include "Map/WorldCreator.h"
-#include "Storage/DayWatcherThread.h"
-#include "Server/BroadcastMgr.h"
 #include "World.Legacy.h"
 
 

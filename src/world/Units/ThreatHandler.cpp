@@ -88,7 +88,7 @@ bool ThreatReference::shouldBeSuppressed() const
         return false;
     
     if (_owner->isCreature())
-        if (_victim->SchoolImmunityList[static_cast<Creature*>(_owner)->BaseAttackType] != 0)
+        if (_victim->SchoolImmunityList[_owner->BaseAttackType] != 0)
             return true;
     
     // check if we have any aura that suppresses us
@@ -601,7 +601,7 @@ std::vector<ThreatReference*> ThreatManager::getModifiableThreatList()
     std::vector<ThreatReference*> list;
     list.reserve(_myThreatListEntries.size());
     for (auto it = _sortedThreatList.begin(), end = _sortedThreatList.end(); it != end; ++it)
-        list.push_back(const_cast<ThreatReference*>(*it));
+        list.push_back(*it);
     return list;
 }
 
@@ -763,7 +763,7 @@ void ThreatManager::sendThreatListToClients(bool newHighest) const
     packedGuidOwner.appendPackGUID(_owner->getGuid());
     packedGuidVictim1.appendPackGUID(_currentVictimRef->getVictim()->getGuid());
 
-    WorldPacket data(static_cast<uint16_t>(newHighest ? SMSG_HIGHEST_THREAT_UPDATE : SMSG_THREAT_UPDATE), (_sortedThreatList.size() + 2) * 8); // guess
+    WorldPacket data((newHighest ? SMSG_HIGHEST_THREAT_UPDATE : SMSG_THREAT_UPDATE), (_sortedThreatList.size() + 2) * 8); // guess
     data.append(packedGuidOwner);
     if (newHighest)
         data.append(packedGuidVictim1);

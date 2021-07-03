@@ -24,9 +24,9 @@
 #include "ItemPrototype.h"
 #include "Units/Players/Player.h"
 #include "Management/ItemInterface.h"
+
+#include "Chat/ChatHandler.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Data/WoWItem.hpp"
-#include "Data/WoWPlayer.hpp"
 #include "Server/Packets/SmsgInventoryChangeFailure.h"
 
 using namespace AscEmu::Packets;
@@ -186,7 +186,7 @@ uint32 ItemInterface::m_CreateForPlayer(ByteBuffer* data)       // 100%
         {
             if (m_pItems[i]->isContainer())
             {
-                count += static_cast<Container*>(m_pItems[i])->buildCreateUpdateBlockForPlayer(data, m_pOwner);
+                count += m_pItems[i]->buildCreateUpdateBlockForPlayer(data, m_pOwner);
 
                 for (uint32 e = 0; e < m_pItems[i]->getItemProperties()->ContainerSlots; ++e)
                 {
@@ -195,7 +195,7 @@ uint32 ItemInterface::m_CreateForPlayer(ByteBuffer* data)       // 100%
                     {
                         if (pItem->isContainer())
                         {
-                            count += static_cast<Container*>(pItem)->buildCreateUpdateBlockForPlayer(data, m_pOwner);
+                            count += pItem->buildCreateUpdateBlockForPlayer(data, m_pOwner);
                         }
                         else
                         {
@@ -2818,8 +2818,8 @@ void ItemInterface::EmptyBuyBack()
 
             if (m_pBuyBack[j]->isContainer())
             {
-                if (static_cast<Container*>(m_pBuyBack[j])->IsInWorld())
-                    static_cast<Container*>(m_pBuyBack[j])->RemoveFromWorld();
+                if (m_pBuyBack[j]->IsInWorld())
+                    m_pBuyBack[j]->RemoveFromWorld();
 
                 delete static_cast<Container*>(m_pBuyBack[j]);
             }
@@ -2853,8 +2853,8 @@ void ItemInterface::AddBuyBackItem(Item* it, uint32 price)
 
             if (m_pBuyBack[0]->isContainer())
             {
-                if (static_cast<Container*>(m_pBuyBack[0])->IsInWorld())
-                    static_cast<Container*>(m_pBuyBack[0])->RemoveFromWorld();
+                if (m_pBuyBack[0]->IsInWorld())
+                    m_pBuyBack[0]->RemoveFromWorld();
 
                 delete static_cast<Container*>(m_pBuyBack[0]);
             }

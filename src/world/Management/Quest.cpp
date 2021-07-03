@@ -20,11 +20,8 @@
  */
 
 
-#include "Storage/MySQLStructures.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Quest.h"
-#include "Server/WorldSession.h"
-#include "QuestMgr.h"
 
 uint32 QuestProperties::GetRewardItemCount() const
 {

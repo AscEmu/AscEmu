@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Server/WorldSession.h"
-#include "Log.hpp"
 #include "Units/Players/Player.h"
 #include "Server/Packets/CmsgDelIgnore.h"
 #include "Server/Packets/CmsgAddIgnore.h"

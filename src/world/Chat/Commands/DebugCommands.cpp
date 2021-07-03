@@ -25,7 +25,7 @@ bool ChatHandler::HandleDoPercentDamageCommand(const char* args, WorldSession* s
 
     uint32_t health = selected_unit->getHealth();
 
-    uint32_t calculatedDamage = static_cast<uint32_t>((health / 100) * percentDamage);
+    uint32_t calculatedDamage = health / 100 * percentDamage;
 
     selected_unit->takeDamage(session->GetPlayer(), calculatedDamage, 0);
 

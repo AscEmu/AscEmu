@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Creatures/Creature.h"
 #include "Management/AuctionMgr.h"
 #include "Management/ItemInterface.h"
+#include "Server/Definitions.h"
 
 using namespace AscEmu::Packets;
 
@@ -196,9 +197,9 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
         item->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
 
         const auto auction = new Auction;
-        auction->buyoutPrice = static_cast<uint32_t>(srlPacket.buyoutPrice);
+        auction->buyoutPrice = srlPacket.buyoutPrice;
         auction->expireTime = static_cast<uint32_t>(UNIXTIME) + srlPacket.expireTime * MINUTE;
-        auction->startPrice = static_cast<uint32_t>(srlPacket.bidMoney);
+        auction->startPrice = srlPacket.bidMoney;
         auction->highestBid = 0;
         auction->highestBidderGuid = 0;
         auction->Id = sAuctionMgr.GenerateAuctionId();

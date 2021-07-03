@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Objects/Object.h"
-#include "UnitDefines.hpp"
 #include "CommonTypes.hpp"
 #include <array>
 #include <vector>

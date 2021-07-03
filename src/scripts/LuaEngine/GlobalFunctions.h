@@ -23,6 +23,7 @@
 #include "WorldConf.h"
 #include "LUAEngine.h"
 #include "git_version.h"
+#include "Chat/CommandTableStorage.hpp"
 #include "Management/TaxiMgr.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"

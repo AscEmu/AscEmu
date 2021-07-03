@@ -21,8 +21,6 @@
 #ifndef VEHICLE_H
 #define VEHICLE_H
 
-#include "Storage/DBC/DBCStores.h"
-#include "Units/Summons/SummonHandler.h"
 #include "Objects/Transporter.h"
 #include <array>
 

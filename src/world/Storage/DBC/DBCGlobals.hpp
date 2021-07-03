@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "DBCStorage.hpp"
 #include "DBCLoader.hpp"
-#include "DBCStructures.hpp"
 #include "Log.hpp"
 #include <iostream>
 

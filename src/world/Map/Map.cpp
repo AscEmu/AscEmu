@@ -21,7 +21,6 @@
 
 
 #include "Storage/MySQLDataStore.hpp"
-#include "Server/MainServerDefines.h"
 #include "CellHandler.h"
 #include "WorldCreator.h"
 

@@ -6,10 +6,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <G3D/Vector3.h>
 #include "Storage/MySQLDataStore.hpp"
-#include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Server/Packets/SmsgTransferPending.h"
 #include "../Movement/Spline/Spline.h"
+#include "Macros/ScriptMacros.hpp"
+#include "Server/Script/ScriptMgr.h"
+#include "Server/Definitions.h"
 
 using namespace AscEmu::Packets;
 

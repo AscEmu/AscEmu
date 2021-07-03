@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/ProcFlags.hpp"
 #include "SpellDefines.hpp"
 #include "SpellInfo.hpp"
+#include "Storage/DBC/DBCStructures.hpp"
 
 class Aura;
 class Object;

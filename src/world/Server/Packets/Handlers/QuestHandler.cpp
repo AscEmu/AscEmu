@@ -21,7 +21,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Management/ItemInterface.h"
+#include "Management/QuestLogEntry.hpp"
 #include "Server/Packets/SmsgGossipComplete.h"
+#include "Server/Script/ScriptMgr.h"
 
 using namespace AscEmu::Packets;
 

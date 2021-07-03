@@ -908,7 +908,7 @@ void WorldSocket::OnRead()
 
             // Copy from packet buffer into header local var
             ClientPktHeader Header;
-            readBuffer.Read(reinterpret_cast<uint8*>(&Header), 6);
+            readBuffer.Read(&Header, 6);
 
             // Decrypt the header
 #if VERSION_STRING < WotLK
@@ -970,7 +970,7 @@ void WorldSocket::OnRead()
         {
             // Copy from packet buffer into our actual buffer.
             ///Read(mRemaining, (uint8*)Packet->contents());
-            readBuffer.Read(static_cast<uint8*>(packet->contents()), mRemaining);
+            readBuffer.Read(packet->contents(), mRemaining);
         }
 
         sWorldPacketLog.logPacket(mSize, mOpcode, mSize ? packet->contents() : nullptr, 0, (mSession ? mSession->GetAccountId() : 0));

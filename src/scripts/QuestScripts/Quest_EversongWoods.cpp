@@ -26,6 +26,7 @@
 #include <Management/QuestLogEntry.hpp>
 #include "Map/MapScriptInterface.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Macros/ScriptMacros.hpp"
 
 enum
 {
