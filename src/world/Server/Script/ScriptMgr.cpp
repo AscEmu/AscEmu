@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 
 #include "WorldConf.h"
 #include "Management/GameEvent.h"

@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/WeatherMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"

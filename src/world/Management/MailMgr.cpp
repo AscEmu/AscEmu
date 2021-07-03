@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "Server/MainServerDefines.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgReceivedMail.h"

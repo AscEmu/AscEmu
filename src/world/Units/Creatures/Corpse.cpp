@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Server/MainServerDefines.h"
 #include "Map/MapCell.h"
 #include "Corpse.h"

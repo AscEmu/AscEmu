@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING == WotLK
 
-#include "StdAfx.h"
+
 #include "../world/Storage/DBC/DBCGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 

@@ -39,7 +39,7 @@
 #include "Definitions/PowerType.hpp"
 #include "Definitions/SpellDidHitResult.hpp"
 #include "SpellHelpers.h"
-#include "StdAfx.h"
+
 #include "VMapFactory.h"
 #include "Management/Item.h"
 #include "Objects/DynamicObject.h"

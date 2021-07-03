@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "Management/LFG/LFGPlayerData.hpp"
 
 LfgPlayerData::LfgPlayerData() :

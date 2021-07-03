@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Storage/MySQLStructures.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Quest.h"

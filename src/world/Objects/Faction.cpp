@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "Object.h"
 #include "Units/Players/PlayerDefines.hpp"
 #include "Units/Unit.h"

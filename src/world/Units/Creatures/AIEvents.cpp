@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include <G3D/Vector3.h>
 #include "AIEvents.h"
 #include "AIInterface.h"

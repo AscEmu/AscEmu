@@ -17,7 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <StdAfx.h>
 #include "ArathiBasin.h"
 #include "Management/HonorHandler.h"
 #include "Storage/MySQLDataStore.hpp"

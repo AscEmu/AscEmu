@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
 #include "Server/WorldSession.h"

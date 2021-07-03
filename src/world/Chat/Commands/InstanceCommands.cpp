@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Server/MainServerDefines.h"
 #include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"

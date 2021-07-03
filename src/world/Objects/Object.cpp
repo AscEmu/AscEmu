@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "Units/Unit.h"
 #include "Units/Summons/Summon.h"
 #include "Storage/DBC/DBCStores.h"

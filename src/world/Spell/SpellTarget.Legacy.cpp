@@ -18,7 +18,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "VMapFactory.h"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"

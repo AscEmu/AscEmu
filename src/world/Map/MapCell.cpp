@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "VMapFactory.h"
 #include "MMapManager.h"
 #include "MMapFactory.h"

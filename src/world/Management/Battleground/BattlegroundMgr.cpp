@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "Management/Battleground/Battleground.h"
 #include "Management/Battleground/BattlegroundMgr.h"
 #include "Management/Arenas.h"

@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Creature.h"
 #include "Units/Unit.h"
 #include "Objects/DynamicObject.h"

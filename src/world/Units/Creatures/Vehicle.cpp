@@ -18,7 +18,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"

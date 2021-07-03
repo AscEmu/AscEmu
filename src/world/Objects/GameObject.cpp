@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/GameEvent.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"

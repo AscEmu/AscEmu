@@ -21,7 +21,7 @@
 #include "../WorldConf.h"
 #include "VMapFactory.h"
 #include "IVMapManager.h"
-#include "StdAfx.h"
+
 #include "TerrainMgr.h"
 #include "Log.hpp"
 

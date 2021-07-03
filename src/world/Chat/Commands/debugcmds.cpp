@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "VMapFactory.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"

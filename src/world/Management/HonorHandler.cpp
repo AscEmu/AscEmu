@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Config/Config.h"
 #include "Management/HonorHandler.h"
 #include "Management/Item.h"

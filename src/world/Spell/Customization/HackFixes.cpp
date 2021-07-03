@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "crc32.h"
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"

@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Raid_TheObsidianSanctum.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class ObsidianSanctumScript : public InstanceScript
 {

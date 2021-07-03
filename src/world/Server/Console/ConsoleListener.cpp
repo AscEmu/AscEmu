@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 
 #include <cstdint>
 #include <Network/Network.h>

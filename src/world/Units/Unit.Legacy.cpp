@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "Units/Summons/SummonHandler.h"
 #include "Management/LootMgr.h"
 #include "Units/Creatures/Vehicle.h"

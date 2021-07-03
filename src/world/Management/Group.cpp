@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "Management/LFG/LFGMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"

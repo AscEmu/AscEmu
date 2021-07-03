@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 
 #include <iostream>
 #include <sstream>

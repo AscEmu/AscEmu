@@ -25,6 +25,7 @@
 #include "Auth/WowCrypt.hpp"
 #include "WorldPacket.h"
 #include "Network/Network.h"
+#include "WorldConf.h"
 
 #include <string>
 

@@ -3,7 +3,6 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "../../StdAfx.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 #include "Units/Summons/TotemSummon.h"

@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/QuestLogEntry.hpp"
 #include "MMapFactory.h"
 #include "Units/Creatures/Creature.h"

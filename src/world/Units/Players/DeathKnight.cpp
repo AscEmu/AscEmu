@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgConvertRune.h"

@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/Item.h"
 #include "Units/Stats.h"
 #include "Creatures/Creature.h"

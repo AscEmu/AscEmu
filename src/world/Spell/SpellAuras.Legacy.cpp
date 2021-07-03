@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 #include "Management/Item.h"

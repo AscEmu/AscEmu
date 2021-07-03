@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Objects/DynamicObject.h"
 #include "Map/MapMgr.h"
 #include "Faction.h"

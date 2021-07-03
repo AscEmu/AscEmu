@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 
 #include "TLSObject.h"
 #include "Objects/DynamicObject.h"

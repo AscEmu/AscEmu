@@ -18,7 +18,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Server/Warden/SpeedDetector.h"
 #include "Server/MainServerDefines.h"
 #include "Server/World.h"
