@@ -109,7 +109,10 @@ struct Addr
 bool bServerShutdown = false;
 bool StartConsoleListener();
 void CloseConsoleListener();
+
+#ifdef WIN32
 ThreadBase* GetConsoleListener();
+#endif
 
 std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 
