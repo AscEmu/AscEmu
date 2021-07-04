@@ -32,6 +32,8 @@
 #include "ConsoleSocket.h"
 #include "ConsoleAuthMgr.h"
 
+#include "Threading/LegacyThreadBase.h"
+
 ListenSocket<ConsoleSocket>* g_pListenSocket = nullptr;
 
 void ConsoleAuthCallback(uint32_t request, uint32_t result)
