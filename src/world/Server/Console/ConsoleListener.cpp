@@ -92,7 +92,8 @@ bool StartConsoleListener()
 
 ThreadBase* GetConsoleListener()
 {
-    return g_pListenSocket;
+    //\todo Zyres: cast in redundant on MSVC but gcc needs it.
+    return static_cast<ThreadBase*>(g_pListenSocket);
 }
 
 RemoteConsole::RemoteConsole(ConsoleSocket* pSocket)
