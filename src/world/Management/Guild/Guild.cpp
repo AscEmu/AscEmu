@@ -22,12 +22,18 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
 #include "Server/Packets/MsgSaveGuildEmblem.h"
-#include "Server/Packets/MsgGuildBankMoneyWithdrawn.h"
 #include "Server/Packets/SmsgGuildInvite.h"
 #include "Server/Packets/SmsgGuildEvent.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Definitions.h"
+
+#if VERSION_STRING >= Cata
+#include "Server/Packets/SmsgGuildBankMoneyWithdrawn.h"
+#include "Server/Packets/SmsgGuildMemberDailyReset.h"
+#else
+#include "Server/Packets/MsgGuildBankMoneyWithdrawn.h"
+#endif
 
 using namespace AscEmu::Packets;
 

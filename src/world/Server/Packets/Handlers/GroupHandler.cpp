@@ -25,6 +25,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgPartyAssign.h"
 #include "Server/Packets/MsgRaidReadyCheck.h"
 
+#if VERSION_STRING >= Cata
+#include "Server/Packets/SmsgGroupList.h"
+#endif
+
 using namespace AscEmu::Packets;
 
 #if VERSION_STRING >= Cata

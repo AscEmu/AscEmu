@@ -45,6 +45,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Script/ScriptMgr.h"
 
+#if VERSION_STRING <= TBC
+#include "Server/Packets/SmsgUpdateAuraDuration.h"
+#include "Server/Packets/SmsgSetExtraAuraInfo.h"
+#endif
+
 using namespace AscEmu::Packets;
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -4529,9 +4534,9 @@ void Unit::regeneratePower(PowerType type)
 #if VERSION_STRING < Cata
                 // Check for 5 second regen interruption
                 if (isPowerRegenerationInterrupted())
-                    amount = this->getManaRegenerationWhileCasting();
+                    amount = static_cast<Player*>(this)->getManaRegenerationWhileCasting();
                 else
-                    amount = this->getManaRegeneration();
+                    amount = static_cast<Player*>(this)->getManaRegeneration();
 #else
                 // Check for combat (5 second rule was removed in cata)
                 if (CombatStatus.IsInCombat())

@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "SpellMgr.hpp"
 
+#include "Definitions/SpellEffectTarget.hpp"
 #include "Spell/Definitions/AuraEffects.hpp"
 #include "Spell/Definitions/SpellDamageType.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"

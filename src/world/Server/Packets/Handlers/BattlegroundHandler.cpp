@@ -20,6 +20,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 
+#if VERSION_STRING >= Cata
+#include "Server/Packets/CmsgRequestRatedBgInfo.h"
+#include "Server/Packets/SmsgPvpOptionsEnabled.h"
+#include "Server/Packets/SmsgRatedBgInfo.h"
+#include "Server/Packets/SmsgRatedBgStats.h"
+#endif
+
 using namespace AscEmu::Packets;
 
 void WorldSession::handlePVPLogDataOpcode(WorldPacket& /*recvPacket*/)

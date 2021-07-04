@@ -8,7 +8,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Management/Item.h"
 #include "Objects/ObjectMgr.h"
+
+#if VERSION_STRING < Cata
 #include "Server/Packets/MsgQueryGuildBankText.h"
+#else
+#include "Server/Packets/SmsgGuildBankQueryTextResult.h"
+#endif
 
 using namespace AscEmu::Packets;
 
