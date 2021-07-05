@@ -17,9 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LogonStdAfx.h"
 #include "LogonConsole.h"
 #include "Server/Logon.h"
+#include <Logging/Logger.hpp>
+#include <Server/Master.hpp>
+#include <iostream>
+#include <Server/AccountMgr.h>
+#include <Server/IpBanMgr.h>
+#include <Network/Network.h>
+#include <LogonConf.h>
+#include <Util/Strings.cpp>
 
 LogonConsole& LogonConsole::getInstance()
 {

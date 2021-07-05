@@ -43,9 +43,19 @@ add_library(${PROJECT_NAME} SHARED ${sources} ${headers})
 target_link_libraries(${PROJECT_NAME} world)
 
 if(USE_PCH)
-    gen_cxx_pch(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)
+    ##gen_cxx_pch(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)
 endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+
+if(USE_PCH)
+  target_precompile_headers(${PROJECT_NAME}
+  PRIVATE
+  Setup.h
+  <Macros/ScriptMacros.hpp>
+  <Server/Script/CreatureAIScript.h>
+)
+endif()
+
 unset(sources)
 unset(headers)

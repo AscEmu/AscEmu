@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LogonStdAfx.h"
+#include "Server/Master.hpp"
 
 int main(int argc, char** argv)
 {

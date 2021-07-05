@@ -17,8 +17,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LogonStdAfx.h"
+
 #include <openssl/md5.h>
+#include "Auth/AuthSocket.h"
+#include <Logging/Logger.hpp>
+#include "Server/IpBanMgr.h"
+#include <Auth/AutoPatcher.h>
+#include "Server/Master.hpp"
+#include <Realm/RealmManager.hpp>
 
 enum _errors
 {

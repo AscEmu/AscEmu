@@ -17,8 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LogonStdAfx.h"
+#include "LogonCommServer.h"
 #include "LogonCommDefines.h"
+#include <Log.hpp>
+#include <Logging/Logger.hpp>
+#include <Realm/RealmManager.hpp>
+#include <Server/Master.hpp>
+#include <Network/Socket.h>
+#include <WorldPacket.h>
+#include <Server/AccountMgr.h>
+#include <Auth/Sha1.h>
+#include <Util/Strings.hpp>
+#include <Server/IpBanMgr.h>
 
 
 LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 65536, 524288)

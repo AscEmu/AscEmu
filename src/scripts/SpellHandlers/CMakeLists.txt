@@ -42,10 +42,31 @@ add_definitions(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
 target_link_libraries(${PROJECT_NAME} world)
 
 if(USE_PCH)
-    gen_cxx_pch(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)
+    ##gen_cxx_pch(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)
 endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH} )
+
+if(USE_PCH)
+  target_precompile_headers(${PROJECT_NAME}
+  PRIVATE
+  Setup.h
+  <Management/Item.h>
+  <Management/ItemInterface.h>
+  <Macros/ScriptMacros.hpp>
+  <Map/MapMgr.h>
+  <Objects/Faction.h>
+  <Spell/Spell.h>
+  <Spell/SpellMgr.hpp>
+  <Spell/SpellAuras.h>
+  <Spell/Definitions/ProcFlags.hpp>
+  <Spell/Definitions/SpellEffects.hpp>
+  <Spell/Definitions/PowerType.hpp>
+  <Server/Script/CreatureAIScript.h>
+  <Server/Script/ScriptMgr.h>
+  <Units/Creatures/Pet.h>
+)
+endif()
 
 unset(sources)
 unset(headers)

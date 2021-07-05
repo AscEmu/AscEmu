@@ -8,11 +8,6 @@ list(APPEND CMAKE_MODULE_PATH
 # get git information
 include(${CMAKE_SOURCE_DIR}/cmake/GitRevision.cmake)
 
-# generally load PCH module
-if(USE_PCH)
-    include(PCHSupport)
-endif()
-
 # get architecture type
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(IS_64BIT TRUE)

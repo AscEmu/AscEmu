@@ -59,5 +59,15 @@ add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
 target_link_libraries(${PROJECT_NAME} world lualib)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+
+if(USE_PCH)
+  target_precompile_headers(${PROJECT_NAME}
+  PRIVATE
+  LuaGlobal.h
+  LUAEngine.h
+  LuaHelpers.h
+)
+endif()
+
 unset(sources)
 unset(headers)
