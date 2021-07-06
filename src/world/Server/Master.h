@@ -52,7 +52,7 @@ class SERVER_DECL Master
             vsnprintf(message_buffer, 32768, format, ap);
             va_end(ap);
 
-            std::cout << message_buffer << std::endl;
+            std::cout << message_buffer << "\n";
         }
 
     private:

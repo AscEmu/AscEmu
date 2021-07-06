@@ -428,7 +428,7 @@ bool handlePrintTimeDateCommand(BaseConsole* baseConsole, int /*argumentCount*/,
     std::string current_time = Util::GetCurrentDateTimeString();
 
     std::stringstream currentTimeStream;
-    currentTimeStream << "Date and time according to localtime() (american style): " << current_time << std::endl;
+    currentTimeStream << "Date and time according to localtime() (american style): " << current_time << "\n";
 
     baseConsole->Write(currentTimeStream.str().c_str());
 
@@ -439,7 +439,7 @@ bool handleGetAccountsCommand(BaseConsole* baseConsole, int /*argumentCount*/, s
 {
     sLogonCommHandler.requestAccountData();
 
-    std::cout << "Command result is: " << sLogonCommHandler.accountResult << std::endl;
+    std::cout << "Command result is: " << sLogonCommHandler.accountResult << "\n";
 
     baseConsole->Write("%s\r\n", sLogonCommHandler.accountResult.c_str());
 

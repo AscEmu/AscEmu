@@ -51,7 +51,7 @@ namespace VMAP
                   << " dir:" << pRay.direction().x << ", " << pRay.direction().y << ", " << pRay.direction().z
                   << " t/tmax:" << time << '/' << pMaxDist;
         std::cout << "\nBound lo:" << iBound.low().x << ", " << iBound.low().y << ", " << iBound.low().z << " hi: "
-                  << iBound.high().x << ", " << iBound.high().y << ", " << iBound.high().z << std::endl; */
+                  << iBound.high().x << ", " << iBound.high().y << ", " << iBound.high().z << "\n"; */
         // child bounds are defined in object space:
         Vector3 p = iInvRot * (pRay.origin() - iPos) * iInvScale;
         Ray modRay(p, iInvRot * pRay.direction());

@@ -259,10 +259,10 @@ std::string SplineBase::ToString() const
     const char * mode_str[ModesEnd] = {"Linear", "CatmullRom", "Bezier3", "Uninitialized"};
 
     auto count = points.size();
-    str << "mode: " << mode_str[mode()] << std::endl;
-    str << "points count: " << count << std::endl;
+    str << "mode: " << mode_str[mode()] << "\n";
+    str << "points count: " << count << "\n";
     for (index_type i = 0; i < count; ++i)
-        str << "point " << i << " : " << points[i].toString() << std::endl;
+        str << "point " << i << " : " << points[i].toString() << "\n";
 
     return str.str();
 }

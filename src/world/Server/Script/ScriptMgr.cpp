@@ -479,7 +479,7 @@ void ScriptMgr::DumpUnimplementedSpells()
 
         std::stringstream ss;
         ss << sp->getId();
-        ss << std::endl;
+        ss << "\n";
 
         of.write(ss.str().c_str(), ss.str().length());
 
@@ -512,7 +512,7 @@ void ScriptMgr::DumpUnimplementedSpells()
 
         std::stringstream ss;
         ss << sp->getId();
-        ss << std::endl;
+        ss << "\n";
 
         of2.write(ss.str().c_str(), ss.str().length());
 

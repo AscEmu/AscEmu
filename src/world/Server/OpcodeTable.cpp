@@ -18,7 +18,7 @@ OpcodeTables& OpcodeTables::getInstance()
 
 void OpcodeTables::initialize()
 {
-    std::cout << "OpcodeTables preparing version specific tables." << std::endl;
+    std::cout << "OpcodeTables preparing version specific tables." << "\n";
 
     // fill vector
     for (const auto opcodeStore : multiversionOpcodeStore)
