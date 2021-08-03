@@ -864,6 +864,7 @@ void World::loadMySQLStores()
     sMySQLStore.loadTransportEntrys();
     sMySQLStore.loadGossipMenuItemsTable();
     sMySQLStore.loadRecallTable();
+    sMySQLStore.loadCreatureAIScriptsTable();
 
     sFormationMgr->loadCreatureFormations();
     sWaypointMgr->load();

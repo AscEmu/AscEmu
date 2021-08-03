@@ -1536,6 +1536,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
             m_aiInterface->addSpellToList(*itr);
     }
 
+    GetAIInterface()->eventOnLoad();
+
     GetAIInterface()->m_canCallForHelp = creature_properties->m_canCallForHelp;
     GetAIInterface()->m_CallForHelpHealth = creature_properties->m_callForHelpHealth;
     GetAIInterface()->m_canFlee = creature_properties->m_canFlee;

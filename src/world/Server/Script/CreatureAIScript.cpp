@@ -1081,6 +1081,18 @@ void CreatureAIScript::_castAISpell(CreatureAISpells* aiSpell)
             castSpellOnRandomTarget(aiSpell);
             mLastCastedSpell = aiSpell;
         } break;
+        case TARGET_CLOSEST:
+        {
+            mCurrentSpellTarget = getBestUnitTarget(TargetFilter_Closest);
+            mLastCastedSpell = aiSpell;
+            getCreature()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        } break;
+        case TARGET_FURTHEST:
+        {
+            mCurrentSpellTarget = getBestUnitTarget(TargetFilter_InRangeOnly, 0.0f, 30.0f);
+            mLastCastedSpell = aiSpell;
+            getCreature()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        } break;
         case TARGET_CUSTOM:
         {
             if (aiSpell->getCustomTarget() != nullptr)
@@ -1666,6 +1678,9 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
             if (isHostile(getCreature(), UnitTarget) || getCreature()->getThreatManager().getThreat(UnitTarget) > 0)
                 return false;
         }
+
+        if ((pFilter & TargetFilter_Current) && UnitTarget != getCreature()->GetAIInterface()->getCurrentTarget())
+            return false;
     }
 
     return true;

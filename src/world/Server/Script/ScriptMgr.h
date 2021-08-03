@@ -392,7 +392,7 @@ enum TargetGenerator
     TargetGen_RandomPlayerDestination,      // Random player destination coordinates (X, Y, Z)
     TargetGen_RandomPlayerApplyAura         // Random target player to self cast aura
 };
-
+/*
 enum TargetFilter
 {
     // Standard filters
@@ -415,7 +415,7 @@ enum TargetFilter
     TargetFilter_WoundedFriendly        = TargetFilter_Wounded | TargetFilter_Friendly,         // 10
     TargetFilter_FriendlyCorpse         = TargetFilter_Corpse | TargetFilter_Friendly,          // 66
     TargetFilter_ClosestFriendlyCorpse  = TargetFilter_Closest | TargetFilter_FriendlyCorpse    // 67
-};
+};*/
 
 class TargetType;
 class CreatureAIScript;

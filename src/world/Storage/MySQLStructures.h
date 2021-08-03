@@ -81,6 +81,28 @@ namespace MySQLStructure
         uint32_t battlegroundId;
     };
 
+    //creature_ai_scripts
+    struct CreatureAIScripts
+    {
+        uint32_t entry;
+        uint8_t difficulty;
+        uint8_t phase;
+        uint8_t event;
+        uint8_t action;
+        uint8_t maxCount;
+        float chance;
+        uint32_t spellId;
+        uint8_t spell_type;
+        bool triggered;
+        uint8_t target;
+        uint32_t cooldownMin;
+        uint32_t cooldownMax;
+        float health;
+        uint32_t textId;
+        uint32_t misc1;
+        std::string comment;
+    };
+
     //creature_ai_texts
     struct CreatureAITexts
     {

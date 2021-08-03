@@ -4434,3 +4434,69 @@ void MySQLDataStore::loadRecallTable()
 
     sLogger.info("MySQLDataLoads : Loaded %u rows from `recall` table in %u ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
+
+void MySQLDataStore::loadCreatureAIScriptsTable()
+{
+    auto startTime = Util::TimeNow();
+
+    _creatureAIScriptStore.clear();
+
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM creature_ai_scripts ORDER BY entry, event");
+    if (result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `creature_ai_scripts` is empty!");
+        return;
+    }
+
+    sLogger.info("MySQLDataLoads : Table `creature_ai_scripts` has %u columns", result->GetFieldCount());
+
+    uint32_t load_count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+        MySQLStructure::CreatureAIScripts* ai_script = new MySQLStructure::CreatureAIScripts;
+
+        uint32_t creature_entry = fields[0].GetUInt32();
+
+        ai_script->entry = creature_entry;
+        ai_script->difficulty = fields[1].GetUInt8();
+        ai_script->phase = fields[2].GetUInt8();
+        ai_script->event = fields[3].GetUInt8();
+        ai_script->action = fields[4].GetUInt8();
+        ai_script->maxCount = fields[5].GetUInt8();
+        ai_script->chance = fields[6].GetFloat();
+        ai_script->spellId = fields[7].GetUInt32();
+        ai_script->spell_type = fields[8].GetUInt8();
+        ai_script->triggered = fields[9].GetBool();
+        ai_script->target = fields[10].GetUInt8();
+        ai_script->cooldownMin = fields[11].GetUInt32();
+        ai_script->cooldownMax = fields[12].GetUInt32();
+        ai_script->health = fields[13].GetFloat();
+        ai_script->textId = fields[14].GetUInt32();
+        ai_script->misc1 = fields[15].GetUInt32();
+        ai_script->comment = fields[16].GetString();
+
+        _creatureAIScriptStore.emplace(creature_entry, ai_script);
+
+        ++load_count;
+    } while (result->NextRow());
+
+    delete result;
+
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `creature_ai_scripts` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+std::vector<MySQLStructure::CreatureAIScripts>* MySQLDataStore::getCreatureAiScripts(uint32_t entry)
+{
+    auto result = new std::vector <MySQLStructure::CreatureAIScripts>;
+
+    result->clear();
+
+    for (auto itr : _creatureAIScriptStore)
+    {
+        if (itr.first == entry)
+            result->push_back(*itr.second);
+    }
+
+    return result;
+}

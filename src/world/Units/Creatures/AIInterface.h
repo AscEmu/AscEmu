@@ -12,6 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/AIInterfaceMacros.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Server/Script/ScriptEvent.hpp"
+#include "Movement/WaypointDefines.h"
+#include "Chat/ChatDefines.hpp"
 
 #include <G3D/Vector3.h>
 
@@ -42,6 +44,26 @@ enum AiScriptTypes
     AI_SCRIPT_TOTEM,
     AI_SCRIPT_GUARDIAN, //we got a master but he cannot control us, we follow and battle opposite factions
     AI_SCRIPT_PASSIVE
+};
+
+enum AI_SCRIPT_EVENT_TYPES
+{
+    onLoad          = 0,
+    onEnterCombat   = 1,
+    onLeaveCombat   = 2,
+    onDied          = 3,
+    onTargetDied    = 4,
+    onAIUpdate      = 5
+};
+
+enum AI_SCRIPT_ACTION_TYPES
+{
+    actionNone          = 0,
+    actionSpell         = 1,
+    actionFlee          = 2,
+    actionCallForHelp   = 3,
+    actionSendMessage   = 4,
+    actionPhaseChange   = 5
 };
 
 enum ReactStates : uint8_t
@@ -104,10 +126,116 @@ enum AiState : uint8_t
     AI_STATE_SCRIPTIDLE = 12,
 };
 
+class SERVER_DECL AI_Spell_Info
+{
+public:
+    AI_Spell_Info(SpellInfo const* spellInfo, float castChance, uint32_t targetType,uint32_t minCooldown, uint32_t maxCooldown, uint32_t phase, uint32_t maxCount, float health,uint8_t eventId, bool isTriggered)
+    {
+        mSpellInfo = spellInfo;
+        mCastChance = castChance;
+        mTargetType = targetType;
+        mDuration = spellInfo->getSpellDefaultDuration(nullptr);;
+
+        spellPhase = phase;
+        minCooldownTime = minCooldown;
+        maxCooldownTime = maxCooldown;
+        maxSpellCount = maxCount;
+        castHealth = health;
+
+        eventType = eventId;
+
+        mIsTriggered = isTriggered;
+
+        mMinPositionRangeToCast = 0.0f;
+        mMaxPositionRangeToCast = 0.0f;
+
+        usedCounter = 0;
+
+        if (mSpellInfo != nullptr)
+        {
+            mMinPositionRangeToCast = GetMinRange(sSpellRangeStore.LookupEntry(mSpellInfo->getRangeIndex()));
+            mMaxPositionRangeToCast = GetMaxRange(sSpellRangeStore.LookupEntry(mSpellInfo->getRangeIndex()));
+        }
+    }
+
+    ~AI_Spell_Info()
+    {
+    }
+
+    SpellInfo const* mSpellInfo;
+    float mCastChance;
+    float castHealth;
+    uint32_t mTargetType;
+    uint32_t mDuration;
+    uint8_t eventType;
+    bool mIsTriggered;
+
+    // non db script messages
+    struct AISpellEmotes
+    {
+        AISpellEmotes(std::string pText, uint8_t pType, uint32_t pSoundId)
+        {
+            mText = (!pText.empty() ? pText : "");
+            mType = pType;
+            mSoundId = pSoundId;
+        }
+
+        std::string mText;
+        uint8_t mType;
+        uint32_t mSoundId;
+    };
+    typedef std::vector<AISpellEmotes> AISpellEmoteArray;
+    AISpellEmoteArray mAISpellEmote;
+
+    void sendRandomEmote(Unit* creatureAI);
+
+    uint32_t spellPhase;
+
+    uint32_t maxSpellCount;
+    uint32_t usedCounter;
+
+    uint32_t minCooldownTime;
+    uint32_t maxCooldownTime;
+
+    float mMinPositionRangeToCast;
+    float mMaxPositionRangeToCast;
+
+    bool isDistanceInRange(float targetDistance);
+
+    void addDBEmote(uint32_t textId);
+    void addEmote(std::string pText, uint8_t pType = CHAT_MSG_MONSTER_YELL, uint32_t pSoundId = 0);
+};
+
 class SpellInfo;
 
 const uint32_t AISPELL_ANY_DIFFICULTY = 4;
 typedef std::set<Unit*> AssistTargetSet;
+typedef std::vector<Unit*> UnitArray;
+
+enum TargetFilter
+{
+    // Standard filters
+    TargetFilter_None = 0,            // 0
+    TargetFilter_Closest = 1 << 0,       // 1
+    TargetFilter_Friendly = 1 << 1,       // 2
+    TargetFilter_NotCurrent = 1 << 2,       // 4
+    TargetFilter_Wounded = 1 << 3,       // 8
+    TargetFilter_SecondMostHated = 1 << 4,       // 16
+    TargetFilter_Aggroed = 1 << 5,       // 32
+    TargetFilter_Corpse = 1 << 6,       // 64
+    TargetFilter_InMeleeRange = 1 << 7,       // 128
+    TargetFilter_InRangeOnly = 1 << 8,       // 256
+    TargetFilter_IgnoreSpecialStates = 1 << 9,       // 512 - not really a TargetFilter, more like requirement for spell
+    TargetFilter_IgnoreLineOfSight = 1 << 10,      // 1024
+    TargetFilter_Current = 1 << 11,     // 2048
+
+    // Predefined filters
+    TargetFilter_ClosestFriendly = TargetFilter_Closest | TargetFilter_Friendly,         // 3
+    TargetFilter_ClosestNotCurrent = TargetFilter_Closest | TargetFilter_NotCurrent,       // 5
+    TargetFilter_WoundedFriendly = TargetFilter_Wounded | TargetFilter_Friendly,         // 10
+    TargetFilter_FriendlyCorpse = TargetFilter_Corpse | TargetFilter_Friendly,          // 66
+    TargetFilter_ClosestFriendlyCorpse = TargetFilter_Closest | TargetFilter_FriendlyCorpse    // 67
+};
 
 struct AI_Spell
 {
@@ -305,11 +433,14 @@ public:
     void eventDamageTaken(Unit* pUnit, uint32_t misc1);
     void eventLeaveCombat(Unit* pUnit, uint32_t misc1);
     void eventEnterCombat(Unit* pUnit, uint32_t misc1);
+    void eventOnLoad();
     void eventChangeFaction(Unit* ForceAttackersToHateThisInstead = NULL);    /// we have to tell our current enemies to stop attacking us, we should also forget about our targets
     void onDeath(Object* pKiller);
 
     // Update
     void Update(unsigned long time_passed);
+    void UpdateAgent(unsigned long time_passed);
+    //void UpdateAgent(unsigned long time_passed, std::vector<MySQLStructure::CreatureAIScripts>* eventId);
     void updateTargets(unsigned long time_passed);
     void updateVictim(Unit* victim);
 
@@ -332,6 +463,31 @@ public:
 
     inline AssistTargetSet GetAssistTargets() { return m_assistTargets; }
     bool isAlreadyAssisting(Creature* helper);
+
+    uint8_t internalPhase;
+    void initialiseScripts(uint32_t entry);
+    std::vector<MySQLStructure::CreatureAIScripts> onLoadScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onCombatStartScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onAIUpdateScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onLeaveCombatScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onDiedScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onKilledScripts;
+
+    AI_Spell_Info* mLastCastedSpell;
+    Unit* mCurrentSpellTarget;
+    SmallTimeTracker castTimer;
+
+    void castAISpell(uint32_t spellId);
+    void canCast();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // target
+    Unit* getBestPlayerTarget(TargetFilter pFilter = TargetFilter_None, float pMinRange = 0.0f, float pMaxRange = 0.0f);
+    Unit* getBestUnitTarget(TargetFilter pFilter = TargetFilter_None, float pMinRange = 0.0f, float pMaxRange = 0.0f);
+    Unit* getBestTargetInArray(UnitArray& pTargetArray, TargetFilter pFilter);
+    Unit* getNearestTargetInArray(UnitArray& pTargetArray);
+    Unit* getSecondMostHatedTargetInArray(UnitArray& pTargetArray);
+    bool isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange = 0.0f, float pMaxRange = 0.0f);
 
 protected:
     SmallTimeTracker m_boundaryCheckTime;
@@ -409,11 +565,15 @@ public:
     void setNextSpell(uint32_t spellId);
     void removeNextSpell(uint32_t spellId);
 
+    typedef std::unordered_map<uint32, AI_Spell_Info*> CreatureAISpellsArray;
+    CreatureAISpellsArray mCreatureAISpells;
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // script events
     // \brief: 
 protected:
     scriptEventMap spellEvents;
+    scriptEventMap spellEventsNew;
 
 protected:
     bool canEnterCombat;
