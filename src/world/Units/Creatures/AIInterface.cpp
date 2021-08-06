@@ -2173,11 +2173,7 @@ bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
         wpCreature->setEntry(1);
         wpCreature->setScale(0.5f);
 
-        uint32_t displayId = 0;
-        if (showBackwards)
-            displayId = getUnit()->getNativeDisplayId();
-        else
-            displayId = getUnit()->getNativeDisplayId();
+        const uint32_t displayId = getUnit()->getNativeDisplayId();
 
         wpCreature->setDisplayId(displayId);
 
