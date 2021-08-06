@@ -1233,9 +1233,7 @@ GameObject_FishingNode::~GameObject_FishingNode()
 
 void GameObject_FishingNode::OnPushToWorld()
 {
-    uint32 zone = 0; // GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
-    if (zone == 0)
-        zone = GetZoneId();
+    const uint32 zone = GetZoneId();
 
     // Only set a 'splash' if there is any loot in this area / zone
     if (sLootMgr.IsFishable(zone))
