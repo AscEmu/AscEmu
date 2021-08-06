@@ -198,7 +198,8 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
         creature->playSpellVisual(179, 0);
         _player->playSpellVisual(362, 1);
 
-        _player->addSpell(trainerSpell->pLearnSpell->getId());
+        if (trainerSpell->pLearnSpell)
+            _player->addSpell(trainerSpell->pLearnSpell->getId());
     }
 
     if (trainerSpell->DeleteSpell)
