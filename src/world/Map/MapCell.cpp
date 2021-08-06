@@ -216,7 +216,6 @@ void MapCell::LoadObjects(CellSpawns* sp)
     {
         for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
         {
-            uint32 respawnTimeOverride = 0;
             if (pInstance)
             {
                 auto encounters = sObjectMgr.GetDungeonEncounterList(_mapmgr->GetMapId(), pInstance->m_difficulty);
@@ -260,8 +259,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
             Creature* c = _mapmgr->CreateCreature((*i)->entry);
 
             c->m_loadedFromDB = true;
-            if (respawnTimeOverride > 0)
-                c->m_respawnTimeOverride = respawnTimeOverride;
+
 
             if (c->Load(*i, _mapmgr->iInstanceMode, _mapmgr->GetMapInfo()) && c->CanAddToWorld())
             {
