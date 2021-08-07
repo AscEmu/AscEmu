@@ -262,11 +262,11 @@ uint32_t Player::getVisibleItemEntry(uint32_t slot) const { return playerData()-
 void Player::setVisibleItemEntry(uint32_t slot, uint32_t entry) { write(playerData()->visible_items[slot].entry, entry); }
 
 #if VERSION_STRING > TBC
-uint32_t Player::getVisibleItemEnchantment(uint32_t slot) const { return playerData()->visible_items[slot].enchantment; }
-void Player::setVisibleItemEnchantment(uint32_t slot, uint32_t enchantment) { write(playerData()->visible_items[slot].enchantment, enchantment); }
+uint16_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const { return playerData()->visible_items[slot].enchantment[pos]; }
+void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint16_t enchantment) { write(playerData()->visible_items[slot].enchantment[pos], enchantment); }
 #else
-uint32_t Player::getVisibleItemEnchantment(uint32_t slot, uint32_t pos) const { return playerData()->visible_items[slot].unk0[pos]; }
-void Player::setVisibleItemEnchantment(uint32_t slot, uint32_t pos, uint32_t enchantment)  { write(playerData()->visible_items[slot].unk0[pos], enchantment); }
+uint32_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const { return playerData()->visible_items[slot].unk0[pos]; }
+void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint32_t enchantment)  { write(playerData()->visible_items[slot].enchantment[pos], enchantment); }
 #endif
 //VisibleItem end
 
@@ -3859,25 +3859,21 @@ void Player::setVisibleItemFields(uint32_t slot, Item* item)
     {
         setVisibleItemEntry(slot, item->getEntry());
 #if VERSION_STRING > TBC
-        setVisibleItemEnchantment(slot, item->getEnchantmentId(0));
+        setVisibleItemEnchantment(slot, 0, item->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
+        setVisibleItemEnchantment(slot, 1, item->getEnchantmentId(TEMP_ENCHANTMENT_SLOT));
 #else
-        setVisibleItemEnchantment(slot, 0, item->getEnchantmentId(0));
-        setVisibleItemEnchantment(slot, 1, item->getEnchantmentId(3));
-        setVisibleItemEnchantment(slot, 2, item->getEnchantmentId(6));
-        setVisibleItemEnchantment(slot, 3, item->getEnchantmentId(9));
-        setVisibleItemEnchantment(slot, 4, item->getEnchantmentId(12));
-        setVisibleItemEnchantment(slot, 5, item->getEnchantmentId(15));
-        setVisibleItemEnchantment(slot, 6, item->getEnchantmentId(18));
-        setVisibleItemEnchantment(slot, 7, item->getRandomPropertiesId());
+        for (int i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
+            setVisibleItemEnchantment(slot, i, item->getEnchantmentId(i));
 #endif
     }
     else
     {
         setVisibleItemEntry(slot, 0);
 #if VERSION_STRING > TBC
-        setVisibleItemEnchantment(slot, 0);
+        setVisibleItemEnchantment(slot, 0, 0);
+        setVisibleItemEnchantment(slot, 1, 0);
 #else
-        for (uint8_t i = 0; i < WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT; ++i)
+        for (int i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
             setVisibleItemEnchantment(slot, i, 0);
 #endif
     }

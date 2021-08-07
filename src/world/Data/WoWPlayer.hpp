@@ -123,7 +123,7 @@ struct WoWPlayer_VisibleItem
 {
     uint64_t creator;
     uint32_t entry;
-    uint32_t unk0[WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT];
+    uint32_t enchantment[WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT];
     uint32_t properties;
     uint32_t padding;
 };
@@ -234,7 +234,7 @@ struct WoWPlayer_VisibleItem
 {
     uint64_t creator;
     uint32_t entry;
-    uint32_t unk0[WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT];
+    uint32_t enchantment[WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT];
     uint32_t properties;
     uint32_t padding;
 };
@@ -371,7 +371,15 @@ struct WoWPlayer_Quest
 struct WoWPlayer_VisibleItem
 {
     uint32_t entry;
-    uint32_t enchantment;
+    union
+    {
+        struct
+        {
+            uint16_t perm_enchantment;
+            uint16_t temp_enchantment;
+        } enchantment_field_parts;
+        uint16_t enchantment[2];
+    };
 };
 
 struct WoWPlayer_ArenaTeamInfo
@@ -513,7 +521,15 @@ struct WoWPlayer_Quest
 struct WoWPlayer_VisibleItem
 {
     uint32_t entry;
-    uint32_t enchantment;
+    union
+    {
+        struct
+        {
+            uint16_t perm_enchantment;
+            uint16_t temp_enchantment;
+        } enchantment_field_parts;
+        uint16_t enchantment[2];
+    };
 };
 
 struct WoWPlayer_ArenaTeamInfo
@@ -664,7 +680,15 @@ struct WoWPlayer_Quest
 struct WoWPlayer_VisibleItem
 {
     uint32_t entry;
-    uint32_t enchantment;
+    union
+    {
+        struct
+        {
+            uint16_t perm_enchantment;
+            uint16_t temp_enchantment;
+        } enchantment_field_parts;
+        uint16_t enchantment[2];
+    };
 };
 
 //\todo: guessed structure

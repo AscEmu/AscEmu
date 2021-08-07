@@ -644,14 +644,11 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
     uint32 ItemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());
     if (ItemSlot < EQUIPMENT_SLOT_END)
     {
-#if VERSION_STRING > TBC
         //On 3.1 we can't add a Slot to the base now, as we no longer have multiple fields for storing them. 
         //This in some cases will try to write for example 3 visuals into one place, but now every item has only one 
         //field for this, and as we can't choose which visual to have, we'll accept the last one.
-        m_owner->setVisibleItemEnchantment(ItemSlot, Apply ? Entry->Id : 0);
-#else
+
         m_owner->setVisibleItemEnchantment(ItemSlot, Slot, Apply ? Entry->Id : 0);
-#endif
     }
     else
     {
