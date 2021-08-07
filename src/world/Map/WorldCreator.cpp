@@ -917,8 +917,8 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
                     data << uint32_t(instance->m_mapId);
                     data << uint32_t(instance->m_difficulty);
                     data << uint64_t(instance->m_instanceId);
-                    data << uint8_t(1);                                    // expired = 0
-                    data << uint8_t(0);                                    // extended = 1
+                    data << uint8_t(0);                                    // expired = 0
+                    data << uint8_t(1);                                    // extended = 1
 
                     if (instance->m_expiration > UNIXTIME)
                         data << uint32_t(instance->m_expiration - UNIXTIME);
