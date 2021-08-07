@@ -296,7 +296,15 @@ struct WoWPlayer : WoWUnit
     uint32_t field_pvp_medals;
     uint32_t field_buy_back_price[WOWPLAYER_BUY_BACK_COUNT];
     uint32_t field_buy_back_timestamp[WOWPLAYER_BUY_BACK_COUNT];
-    uint32_t field_kills;
+    union
+    {
+        struct
+        {
+            uint16_t kills_today;
+            uint16_t kills_yesterday;
+        } kills_field_parts;
+        uint32_t field_kills;
+    };
     uint32_t field_contribution_today;
     uint32_t field_contribution_yesterday;
     uint32_t field_lifetime_honorable_kills;
@@ -418,7 +426,15 @@ struct WoWPlayer : WoWUnit
     uint32_t field_pvp_medals;
     uint32_t field_buy_back_price[WOWPLAYER_BUY_BACK_COUNT];
     uint32_t field_buy_back_timestamp[WOWPLAYER_BUY_BACK_COUNT];
-    uint32_t field_kills;
+    union
+    {
+        struct
+        {
+            uint16_t kills_today;
+            uint16_t kills_yesterday;
+        } kills_field_parts;
+        uint32_t field_kills;
+    };
     uint32_t field_contribution_today;
     uint32_t field_contribution_yesterday;
     uint32_t field_lifetime_honorable_kills;
@@ -555,7 +571,15 @@ struct WoWPlayer : WoWUnit
     uint32_t field_pvp_medals;
     uint32_t field_buy_back_price[WOWPLAYER_BUY_BACK_COUNT];
     uint32_t field_buy_back_timestamp[WOWPLAYER_BUY_BACK_COUNT];
-    uint32_t field_kills;
+    union
+    {
+        struct
+        {
+            uint16_t kills_today;
+            uint16_t kills_yesterday;
+        } kills_field_parts;
+        uint32_t field_kills;
+    };
     uint32_t field_lifetime_honorable_kills;
     player_field_bytes_2_union player_field_bytes_2;
     uint32_t field_watched_faction_idx;
@@ -713,7 +737,15 @@ struct WoWPlayer : WoWUnit
     uint32_t field_pvp_medals;
     uint32_t field_buy_back_price[WOWPLAYER_BUY_BACK_COUNT];
     uint32_t field_buy_back_timestamp[WOWPLAYER_BUY_BACK_COUNT];
-    uint32_t field_kills;
+    union
+    {
+        struct
+        {
+            uint16_t kills_today;
+            uint16_t kills_yesterday;
+        } kills_field_parts;
+        uint32_t field_kills;
+    };
     uint32_t field_lifetime_honorable_kills;
     uint32_t field_watched_faction_idx;
     uint32_t field_combat_rating[27];
