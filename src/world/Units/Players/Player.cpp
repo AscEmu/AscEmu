@@ -298,8 +298,18 @@ uint32_t Player::getNextLevelXp() const { return playerData()->next_level_xp; }
 void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
 
 #if VERSION_STRING < Cata
-uint32_t Player::getValueFromSkillInfoIndex(uint32_t index) const { return playerData()->skill_info[index]; }
-void Player::setValueBySkillInfoIndex(uint32_t index, uint32_t value) { write(playerData()->skill_info[index], value); }
+uint16_t Player::getSkillInfoId(uint32_t index) const { return playerData()->skill_info[index].id; }
+uint16_t Player::getSkillInfoStep(uint32_t index) const { return playerData()->skill_info[index].step; }
+uint16_t Player::getSkillInfoCurrentValue(uint32_t index) const { return playerData()->skill_info[index].current_value; }
+uint16_t Player::getSkillInfoMaxValue(uint32_t index) const { return playerData()->skill_info[index].max_value; }
+int16_t Player::getSkillInfoBonusTemporary(uint32_t index) const { return playerData()->skill_info[index].bonus_temporary; }
+int16_t Player::getSkillInfoBonusPermanent(uint32_t index) const { return playerData()->skill_info[index].bonus_permanent; }
+void Player::setSkillInfoId(uint32_t index, uint16_t id) { write(playerData()->skill_info[index].id, id); }
+void Player::setSkillInfoStep(uint32_t index, uint16_t step) { write(playerData()->skill_info[index].step, step); }
+void Player::setSkillInfoCurrentValue(uint32_t index, uint16_t current) { write(playerData()->skill_info[index].current_value, current); }
+void Player::setSkillInfoMaxValue(uint32_t index, uint16_t max) { write(playerData()->skill_info[index].max_value, max); }
+void Player::setSkillInfoBonusTemporary(uint32_t index, int16_t bonus) { write(playerData()->skill_info[index].bonus_temporary, bonus); }
+void Player::setSkillInfoBonusPermanent(uint32_t index, int16_t bonus) { write(playerData()->skill_info[index].bonus_permanent, bonus); }
 #else
 void Player::setSkillLineId(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_line[index], value); }
 void Player::setSkillStep(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_step[index], value); }

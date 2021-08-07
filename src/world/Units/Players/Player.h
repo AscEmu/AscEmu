@@ -538,8 +538,18 @@ public:
     void setNextLevelXp(uint32_t xp);
 
 #if VERSION_STRING < Cata
-    uint32_t getValueFromSkillInfoIndex(uint32_t index) const;
-    void setValueBySkillInfoIndex(uint32_t index, uint32_t value);
+    uint16_t getSkillInfoId(uint32_t index) const;
+    uint16_t getSkillInfoStep(uint32_t index) const;
+    uint16_t getSkillInfoCurrentValue(uint32_t index) const;
+    uint16_t getSkillInfoMaxValue(uint32_t index) const;
+    int16_t getSkillInfoBonusTemporary(uint32_t index) const;
+    int16_t getSkillInfoBonusPermanent(uint32_t index) const;
+    void setSkillInfoId(uint32_t index, uint16_t id);
+    void setSkillInfoStep(uint32_t index, uint16_t step);
+    void setSkillInfoCurrentValue(uint32_t index, uint16_t current);
+    void setSkillInfoMaxValue(uint32_t index, uint16_t max);
+    void setSkillInfoBonusTemporary(uint32_t index, int16_t bonus);
+    void setSkillInfoBonusPermanent(uint32_t index, int16_t bonus);
 #else
     uint16_t getSkillLineId(uint32_t index, uint8_t offset) const;
     uint16_t getSkillStep(uint32_t index, uint8_t offset) const;

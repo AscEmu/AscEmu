@@ -106,7 +106,7 @@ union
 #define WOWPLAYER_BANK_BAG_SLOT_COUNT 6
 #define WOWPLAYER_VENDOR_BUY_BACK_SLOT_COUNT 12
 #define WOWPLAYER_KEYRING_SLOT_COUNT 20
-#define WOWPLAYER_SKILL_INFO_COUNT 384
+#define WOWPLAYER_SKILL_INFO_COUNT 128
 #define WOWPLAYER_EXPLORED_ZONES_COUNT 64
 #define WOWPLAYER_STAT_COUNT 5
 #define WOWPLAYER_SPELL_SCHOOL_COUNT 7
@@ -126,6 +126,16 @@ struct WoWPlayer_VisibleItem
     uint32_t unk0[WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT];
     uint32_t properties;
     uint32_t padding;
+};
+
+struct WoWPlayer_SkillInfo
+{
+    uint16_t id;
+    uint16_t step;
+    uint16_t current_value;
+    uint16_t max_value;
+    int16_t bonus_temporary;
+    int16_t bonus_permanent;
 };
 
 struct WoWPlayer : WoWUnit
@@ -152,7 +162,7 @@ struct WoWPlayer : WoWUnit
     uint64_t field_combo_target;
     uint32_t xp;
     uint32_t next_level_xp;
-    uint32_t skill_info[WOWPLAYER_SKILL_INFO_COUNT];
+    WoWPlayer_SkillInfo skill_info[WOWPLAYER_SKILL_INFO_COUNT];
     uint32_t character_points_1;
     uint32_t character_points_2;
     uint32_t track_creatures;
@@ -203,7 +213,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_VENDOR_BUY_BACK_SLOT_COUNT 12
 #define WOWPLAYER_KEYRING_SLOT_COUNT 32
 #define WOWPLAYER_VANITY_PET_SLOT_COUNT 18
-#define WOWPLAYER_SKILL_INFO_COUNT 384
+#define WOWPLAYER_SKILL_INFO_COUNT 128
 #define WOWPLAYER_SPELL_SCHOOL_COUNT 7
 #define WOWPLAYER_EXPLORED_ZONES_COUNT 128
 #define WOWPLAYER_BUY_BACK_COUNT 12
@@ -239,6 +249,16 @@ struct WoWPlayer_ArenaTeamInfo
     uint32_t personal_rating;
 };
 
+struct WoWPlayer_SkillInfo
+{
+    uint16_t id;
+    uint16_t step;
+    uint16_t current_value;
+    uint16_t max_value;
+    int16_t bonus_temporary;
+    int16_t bonus_permanent;
+};
+
 struct WoWPlayer : WoWUnit
 {
     uint64_t duel_arbiter;
@@ -266,7 +286,7 @@ struct WoWPlayer : WoWUnit
     uint64_t field_known_titles[WOWPLAYER_KNOWN_TITLES_SIZE];
     uint32_t xp;
     uint32_t next_level_xp;
-    uint32_t skill_info[WOWPLAYER_SKILL_INFO_COUNT];
+    WoWPlayer_SkillInfo skill_info[WOWPLAYER_SKILL_INFO_COUNT];
     uint32_t character_points_1;
     uint32_t character_points_2;
     uint32_t track_creatures;
@@ -329,7 +349,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_BANK_BAG_SLOT_COUNT 7
 #define WOWPLAYER_KEYRING_SLOT_COUNT 32
 #define WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT 32
-#define WOWPLAYER_SKILL_INFO_COUNT 384
+#define WOWPLAYER_SKILL_INFO_COUNT 128
 #define WOWPLAYER_SPELL_SCHOOL_COUNT 7
 #define WOWPLAYER_BUY_BACK_COUNT 12
 #define WOWPLAYER_COMBAT_RATING_COUNT 25
@@ -365,6 +385,16 @@ struct WoWPlayer_ArenaTeamInfo
     uint32_t personal_rating;
 };
 
+struct WoWPlayer_SkillInfo
+{
+    uint16_t id;
+    uint16_t step;
+    uint16_t current_value;
+    uint16_t max_value;
+    int16_t bonus_temporary;
+    int16_t bonus_permanent;
+};
+
 struct WoWPlayer : WoWUnit
 {
     uint64_t duel_arbiter;
@@ -393,7 +423,7 @@ struct WoWPlayer : WoWUnit
     uint64_t field_known_currencies;
     uint32_t xp;
     uint32_t next_level_xp;
-    uint32_t skill_info[WOWPLAYER_SKILL_INFO_COUNT];
+    WoWPlayer_SkillInfo skill_info[WOWPLAYER_SKILL_INFO_COUNT];
     uint32_t character_points_1;
     uint32_t character_points_2;
     uint32_t track_creatures;

@@ -8268,14 +8268,12 @@ void Player::_UpdateSkillFields()
             continue;
         }
 
-        uint16_t maxField = WOWPLAYER_SKILL_INFO_COUNT;
-
-        ARCEMU_ASSERT(f < maxField)
+        const uint16_t id = itr->first;
 
         if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
         {
             //field 0
-            setValueBySkillInfoIndex(f++, itr->first | 0x10000);
+            setSkillInfoId(f, id | 0x10000);
 #if VERSION_STRING > TBC
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
 #endif
@@ -8283,26 +8281,32 @@ void Player::_UpdateSkillFields()
         else
         {
             //field 0
-            setValueBySkillInfoIndex(f++, itr->first);
+            setSkillInfoId(f, id);
 #if VERSION_STRING > TBC
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, itr->second.Skill->id, itr->second.MaximumValue / 75, 0);
 #endif
         }
 
         //field 1
-        setValueBySkillInfoIndex(f++, (itr->second.MaximumValue << 16) | itr->second.CurrentValue);
+        setSkillInfoCurrentValue(f, itr->second.CurrentValue);
+        setSkillInfoMaxValue(f, itr->second.MaximumValue);
+
         //field 2
-        setValueBySkillInfoIndex(f++, itr->second.BonusValue);
+        setSkillInfoBonusTemporary(f, itr->second.BonusValue);
         ++itr;
+        ++f;
     }
 
     /* Null out the rest of the fields */
     for (; f < WOWPLAYER_SKILL_INFO_COUNT; f++)
     {
-        if (getValueFromSkillInfoIndex(f) != 0)
-            setValueBySkillInfoIndex(f, 0);
+        if (getSkillInfoId(f) != 0)
+        {
+            setSkillInfoId(f, 0);
+        }
     }
 }
+
 #else
 void Player::_UpdateSkillFields()
 {
