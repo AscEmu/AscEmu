@@ -76,7 +76,15 @@ struct WoWGameObject : WoWObject
     uint32_t display_id;
     uint32_t flags;
     float rotation[GAMEOBJECT_ROTATION_COUNT];
-    uint32_t dynamic;
+    union
+    {
+        struct
+        {
+            uint16_t dyn_flag;
+            int16_t path_progress;
+        } dynamic_field_parts;
+        uint32_t dynamic;
+    };
     uint32_t faction_template;
     uint32_t level;
     union
@@ -103,7 +111,15 @@ struct WoWGameObject : WoWObject
     uint32_t display_id;
     uint32_t flags;
     float rotation[GAMEOBJECT_ROTATION_COUNT];
-    uint32_t dynamic;
+    union
+    {
+        struct
+        {
+            uint16_t dyn_flag;
+            int16_t path_progress;
+        } dynamic_field_parts;
+        uint32_t dynamic;
+    };
     uint32_t faction_template;
     uint32_t level;
     union
