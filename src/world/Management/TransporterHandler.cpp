@@ -89,6 +89,11 @@ Transporter* TransportHandler::createTransport(uint32_t entry, MapMgr* map /*= n
     Transporter* trans = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | entry);
 
     // ...at first waypoint
+#if VERSION_STRING == Classic
+    if (tInfo->keyFrames.size() == 0)
+        return nullptr;
+
+#endif
     PathNode startNode = tInfo->keyFrames.begin()->Node;
     uint32_t mapId = startNode.mapid;
     float x = startNode.x;
@@ -180,8 +185,10 @@ bool FillTransporterPathVector(uint32_t PathID, TransportPath & Path)
             Path[i].z = pathnode->z;
             Path[i].flags = pathnode->flags;
             Path[i].delay = pathnode->waittime;
+#if VERSION_STRING > Classic
             Path[i].ArrivalEventID = pathnode->arivalEventID;
             Path[i].DepartureEventID = pathnode->departureEventID;
+#endif
             ++i;
         }
     }

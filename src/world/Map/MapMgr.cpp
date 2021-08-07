@@ -1228,6 +1228,7 @@ ZLiquidStatus MapMgr::getLiquidStatus(uint32 /*phaseMask*/, float x, float y, fl
                 {
                     if (auto const* area = GetArea(x, y, z))
                     {
+#if VERSION_STRING > Classic
                         uint32 overrideLiquid = area->liquid_type_override[liquidFlagType];
                         if (!overrideLiquid && area->zone)
                         {
@@ -1235,6 +1236,15 @@ ZLiquidStatus MapMgr::getLiquidStatus(uint32 /*phaseMask*/, float x, float y, fl
                             if (area)
                                 overrideLiquid = area->liquid_type_override[liquidFlagType];
                         }
+#else
+                        uint32 overrideLiquid = area->liquid_type_override;
+                        if (!overrideLiquid && area->zone)
+                        {
+                            area = MapManagement::AreaManagement::AreaStorage::GetAreaById(area->zone);
+                            if (area)
+                                overrideLiquid = area->liquid_type_override;
+                        }
+#endif
 
                         if (::DBC::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(overrideLiquid))
                         {

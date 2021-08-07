@@ -265,7 +265,7 @@ void Player::setVisibleItemEntry(uint32_t slot, uint32_t entry) { write(playerDa
 uint16_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const { return playerData()->visible_items[slot].enchantment[pos]; }
 void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint16_t enchantment) { write(playerData()->visible_items[slot].enchantment[pos], enchantment); }
 #else
-uint32_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const { return playerData()->visible_items[slot].unk0[pos]; }
+uint32_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const { return playerData()->visible_items[slot].enchantment[pos]; }
 void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint32_t enchantment)  { write(playerData()->visible_items[slot].enchantment[pos], enchantment); }
 #endif
 //VisibleItem end

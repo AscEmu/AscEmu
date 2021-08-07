@@ -3253,6 +3253,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     uint32 uniques[64];
     int nuniques = 0;
 
+#if VERSION_STRING > Classic
     for (uint8 x = EQUIPMENT_SLOT_START; x < EQUIPMENT_SLOT_END; ++x)
     {
         ItemInterface* itemi = getItemInterface();
@@ -3290,6 +3291,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             }
         }
     }
+#endif
 
     auto timeToNow = Util::GetTimeDifferenceToNow(startTime);
     sLogger.info("Time for playerloading: %u ms", static_cast<uint32_t>(timeToNow));
@@ -9437,7 +9439,9 @@ void Player::SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* sh
         // Send the spells
         for (uint8 i = 0; i < 8; i++)
         {
+#if VERSION_STRING > Classic
             data << uint16(shapeshift_form->spells[i]);
+#endif
             data << uint16(DEFAULT_SPELL_STATE);
         }
 

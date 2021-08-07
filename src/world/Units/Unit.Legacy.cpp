@@ -1370,10 +1370,12 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 uint32_t weaponSpeed = 2000;
                 if (plr->IsInFeralForm())
                 {
+#if VERSION_STRING > Classic
                     // Get shapeshift form's attack speed
                     const auto form = sSpellShapeshiftFormStore.LookupEntry(plr->getShapeShiftForm());
                     if (form != nullptr && form->AttackSpeed != 0)
                         weaponSpeed = form->AttackSpeed;
+#endif
                 }
                 else
                 {

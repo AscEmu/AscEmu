@@ -2520,7 +2520,11 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
         if (EI)
         {
             FilledSlots++;
+#if VERSION_STRING > Classic
             ItemProperties const* ip = sMySQLStore.getItemProperties(EI->Enchantment->GemEntry);
+#else
+            ItemProperties const* ip = nullptr;
+#endif
             if (ip == nullptr)
                 gem_properties = nullptr;
             else

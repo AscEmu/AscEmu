@@ -1221,7 +1221,11 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
 
     // Some forms have two additional hidden passive aura
     uint32_t passiveSpellId = 0, secondaryPassiveSpell = 0;
+#if VERSION_STRING > Classic
     auto modelId = shapeshiftForm->modelId;
+#else
+    uint32_t modelId = 0;
+#endif
     auto freeMovements = false, removePolymorph = false;
 
     switch (shapeshiftForm->id)

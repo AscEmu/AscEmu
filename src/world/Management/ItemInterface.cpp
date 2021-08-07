@@ -1996,6 +1996,7 @@ int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, 
     {
         for (uint32 count = 0; count < item->GetSocketsCount(); count++)
         {
+#if VERSION_STRING > Classic
             EnchantmentInstance* ei = item->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + count);
             if (ei && ei->Enchantment->GemEntry)       //huh ? Gem without entry ?
             {
@@ -2027,6 +2028,7 @@ int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, 
 #endif
                 }
             }
+#endif
         }
     }
 
@@ -3586,6 +3588,7 @@ bool ItemInterface::IsEquipped(uint32 itemid)
                 return true;
 
             // check gems as well
+#if VERSION_STRING > Classic
             for (uint32 count = 0; count < it->GetSocketsCount(); count++)
             {
                 EnchantmentInstance* ei = it->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + count);
@@ -3597,6 +3600,7 @@ bool ItemInterface::IsEquipped(uint32 itemid)
                         return true;
                 }
             }
+#endif
         }
     }
     return false;
@@ -3630,6 +3634,7 @@ void ItemInterface::CheckAreaItems()
 uint32 ItemInterface::GetEquippedCountByItemLimit(uint32 LimitId)
 {
     uint32 count = 0;
+#if VERSION_STRING > Classic
     for (uint32 x = EQUIPMENT_SLOT_START; x < EQUIPMENT_SLOT_END; ++x)
     {
         Item* it = m_pItems[x];
@@ -3648,6 +3653,7 @@ uint32 ItemInterface::GetEquippedCountByItemLimit(uint32 LimitId)
             }
         }
     }
+#endif
     return count;
 }
 

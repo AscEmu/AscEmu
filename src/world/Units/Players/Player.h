@@ -505,8 +505,8 @@ public:
     uint16_t getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const;
     void setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint16_t enchantment);
 #else
-    uint32_t getVisibleItemEnchantment(uint32_t slot, uint32_t pos) const;
-    void setVisibleItemEnchantment(uint32_t slot, uint32_t pos, uint32_t enchantment);
+    uint32_t getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const;
+    void setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint32_t enchantment);
 #endif
 //VisibleItem end
 

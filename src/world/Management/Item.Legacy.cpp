@@ -975,10 +975,14 @@ EnchantmentInstance* Item::GetEnchantment(uint32 slot)
 
 bool Item::IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment)
 {
+#if VERSION_STRING > Classic
     if (getItemProperties()->SocketBonus == Enchantment->Id)
         return true;
 
     return Enchantment->GemEntry != 0;
+#else
+    return 0;
+#endif
 }
 
 uint32 Item::GetSocketsCount()
@@ -1130,6 +1134,7 @@ int32 GetStatScalingStatValueColumn(ItemProperties const* proto, uint32 type)
 
 uint32 Item::CountGemsWithLimitId(uint32 LimitId)
 {
+#if VERSION_STRING > Classic
     uint32 result = 0;
     for (uint32 count = 0; count < GetSocketsCount(); count++)
     {
@@ -1143,6 +1148,9 @@ uint32 Item::CountGemsWithLimitId(uint32 LimitId)
         }
     }
     return result;
+#else
+    return 0;
+#endif
 }
 
 void Item::EventRemoveItem()
