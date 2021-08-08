@@ -1122,6 +1122,16 @@ namespace DBC::Structures
         float val;                                                  // 0
     };
 
+    struct GtOCTBaseHPByClassEntry
+    {
+        float ratio;
+    };
+
+    struct GtOCTBaseMPByClassEntry
+    {
+        float ratio;
+    };
+
     struct GtOCTClassCombatRatingScalarEntry
     {
         float val;                                                  // 0
