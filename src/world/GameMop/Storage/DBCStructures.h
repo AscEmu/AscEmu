@@ -211,8 +211,8 @@ namespace DBC::Structures
         char const gt_chance_to_spell_crit_format[] = "xf";
         char const gt_chance_to_spell_crit_base_format[] = "xf";
         char const gt_combat_ratings_format[] = "xf";
-        //char const gt_oct_base_hp_by_class_format[] = "df"; new
-        //char const gt_oct_base_mp_by_class_format[] = "df"; new
+        char const gt_oct_base_hp_by_class_format[] = "df";
+        char const gt_oct_base_mp_by_class_format[] = "df";
         char const gt_oct_class_combat_rating_scalar_format[] = "df";
         //char const gt_oct_hp_per_stamina_format[] = "df"; new
         //char const gt_oct_regen_hp_format[] = "xf";

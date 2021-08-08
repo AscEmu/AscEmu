@@ -108,39 +108,46 @@ struct CreateInfo_ActionBarStruct
     uint8_t type;
     uint8_t misc;
 };
-// MIT End
-// APGL Start
+
+struct CreateInfo_Levelstats
+{
+    uint32_t strength;
+    uint32_t agility;
+    uint32_t stamina;
+    uint32_t intellect;
+    uint32_t spirit;
+};
+
+typedef std::unordered_map<uint32_t, CreateInfo_Levelstats> CreateInfo_LevelstatsVector;
+
+struct CreateInfo_ClassLevelStats
+{
+    uint32_t health;
+    uint32_t mana;
+};
+
+typedef std::unordered_map<uint32_t, CreateInfo_ClassLevelStats> CreateInfo_ClassLevelStatsVector;
 
 struct PlayerCreateInfo
 {
-    uint8 index;
-    uint8 race;
-    uint8 class_;
-    uint32 mapId;
-    uint32 zoneId;
+    uint32_t mapId;
+    uint32_t zoneId;
     float positionX;
     float positionY;
     float positionZ;
     float orientation;
-    uint8 strength;
-    uint8 ability;
-    uint8 stamina;
-    uint8 intellect;
-    uint8 spirit;
-    uint32 health;
-    uint32 mana;
-    uint32 rage;
-    uint32 focus;
-    uint32 energy;
-    uint32 attackpower;
-    float mindmg;
-    float maxdmg;
-    uint32_t taximask[DBC_TAXI_MASK_SIZE];
+
     std::list<CreateInfo_ItemStruct> items;
     std::list<CreateInfo_SkillStruct> skills;
     std::list<CreateInfo_ActionBarStruct> actionbars;
     std::set<uint32> spell_list;
+    std::set<uint32> spell_cast_list;
+
+    CreateInfo_LevelstatsVector level_stats;
 };
+
+// MIT End
+// APGL Start
 
 struct DamageSplit
 {

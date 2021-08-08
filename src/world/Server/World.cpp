@@ -825,9 +825,13 @@ void World::loadMySQLStores()
     sMySQLStore.loadCreatureInitialEquipmentTable();
 
     sMySQLStore.loadPlayerCreateInfoTable();
-    sMySQLStore.loadPlayerCreateInfoSkillsTable();
-    sMySQLStore.loadPlayerCreateInfoSpellsTable();
-    sMySQLStore.loadPlayerCreateInfoItemsTable();
+    sMySQLStore.loadPlayerCreateInfoBars();
+    sMySQLStore.loadPlayerCreateInfoItems();
+    sMySQLStore.loadPlayerCreateInfoSkills();
+    sMySQLStore.loadPlayerCreateInfoSpellLearn();
+    sMySQLStore.loadPlayerCreateInfoSpellCast();
+    sMySQLStore.loadPlayerCreateInfoLevelstats();
+    sMySQLStore.loadPlayerCreateInfoClassLevelstats();
     sMySQLStore.loadPlayerXpToLevelTable();
 
     sMySQLStore.loadSpellOverrideTable();

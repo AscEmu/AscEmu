@@ -1336,17 +1336,17 @@ void Player::setInitialPlayerData()
     {
         case WARRIOR:
         {
-            setMaxPower(POWER_TYPE_RAGE, info->rage);
+            setMaxPower(POWER_TYPE_RAGE, 1000);
         } break;
 #if VERSION_STRING >= Cata
         case HUNTER:
         {
-            setMaxPower(POWER_TYPE_FOCUS, info->focus);
+            setMaxPower(POWER_TYPE_FOCUS, 100);
         } break;
 #endif
         case ROGUE:
         {
-            setMaxPower(POWER_TYPE_ENERGY, info->energy);
+            setMaxPower(POWER_TYPE_ENERGY, 100);
         } break;
 #if VERSION_STRING >= WotLK
         case DEATHKNIGHT:

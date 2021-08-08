@@ -67,7 +67,6 @@ public:
 
     typedef std::unordered_map<int32_t, MySQLStructure::ItemSetLinkedItemSetBonus> ItemSetDefinedSetBonusContainer;
 
-    typedef std::unordered_map<uint32_t, PlayerCreateInfo> PlayerCreateInfoContainer;
     typedef std::vector<uint32_t> PlayerXPperLevel;
 
     typedef std::map<uint32_t, std::list<SpellInfo const*>*> SpellOverrideIdMap;
@@ -184,6 +183,8 @@ public:
     uint32_t getItemSetLinkedBonus(int32_t itemset);
 
     PlayerCreateInfo const* getPlayerCreateInfo(uint8_t player_race, uint8_t player_class);
+    CreateInfo_Levelstats const* getPlayerLevelstats(uint32_t level, uint8_t player_race, uint8_t player_class);
+    CreateInfo_ClassLevelStats const* getPlayerClassLevelStats(uint32_t level, uint8_t player_class);
     uint32_t getPlayerXPForLevel(uint32_t level);
 
     uint32_t getGossipTextIdForNpc(uint32_t entry);
@@ -274,10 +275,13 @@ public:
 
     //player create info
     void loadPlayerCreateInfoTable();
-    void loadPlayerCreateInfoSkillsTable();
-    void loadPlayerCreateInfoSpellsTable();
-    void loadPlayerCreateInfoItemsTable();
-    void loadPlayerCreateInfoBarsTable(uint32_t player_info_index);
+    void loadPlayerCreateInfoBars();
+    void loadPlayerCreateInfoItems();
+    void loadPlayerCreateInfoSkills();
+    void loadPlayerCreateInfoSpellLearn();
+    void loadPlayerCreateInfoSpellCast();
+    void loadPlayerCreateInfoLevelstats();
+    void loadPlayerCreateInfoClassLevelstats();
     void loadPlayerXpToLevelTable();
 
     void loadSpellOverrideTable();
@@ -350,7 +354,8 @@ public:
 
     ItemSetDefinedSetBonusContainer _definedItemSetBonusStore;
 
-    PlayerCreateInfoContainer _playerCreateInfoStore;
+    PlayerCreateInfo* _playerCreateInfoStoreNew[DBC_NUM_RACES][MAX_PLAYER_CLASSES];
+    CreateInfo_ClassLevelStatsVector _playerClassLevelStatsStore[MAX_PLAYER_CLASSES];
     PlayerXPperLevel _playerXPperLevelStore;
 
     SpellOverrideIdMap _spellOverrideIdStore;

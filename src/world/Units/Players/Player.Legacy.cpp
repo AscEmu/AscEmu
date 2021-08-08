@@ -724,9 +724,10 @@ bool Player::Create(CharCreate& charCreateContent)
 
     // Automatically add the race's taxi hub to the character's taximask at creation time (1 << (taxi_node_id-1))
     // this is defined in table playercreateinfo, field taximask
-    memcpy(m_taximask, info->taximask, sizeof(m_taximask));
+    //memcpy(m_taximask, info->taximask, sizeof(m_taximask));
 
-    setMaxHealth(info->health);
+    if (auto playerClassLevelStats = sMySQLStore.getPlayerClassLevelStats(1, charCreateContent._class))
+        setMaxHealth(playerClassLevelStats->health);
 
     if (const auto raceEntry = sChrRacesStore.LookupEntry(charCreateContent._race))
         SetFaction(raceEntry->faction_id);
@@ -3670,12 +3671,12 @@ void Player::OnPushToWorld()
         switch (getClass())
         {
         case WARRIOR:
-            setMaxPower(POWER_TYPE_RAGE, info->rage);
+            setMaxPower(POWER_TYPE_RAGE, 1000);
             setPower(POWER_TYPE_RAGE, 0);
             break;
         case ROGUE:
-            setMaxPower(POWER_TYPE_ENERGY, info->energy);
-            setPower(POWER_TYPE_ENERGY, info->energy);
+            setMaxPower(POWER_TYPE_ENERGY, 100);
+            setPower(POWER_TYPE_ENERGY, 100);
             break;
 #if VERSION_STRING >= WotLK
         case DEATHKNIGHT:
@@ -3684,16 +3685,17 @@ void Player::OnPushToWorld()
             setPower(POWER_TYPE_RUNES, 8);
             break;
 #endif
+        case HUNTER:
+            setPower(POWER_TYPE_FOCUS, 0);
+            setMaxPower(POWER_TYPE_FOCUS, 100);
         default:
             setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
-            if (info->focus)
-            {
-                setPower(POWER_TYPE_FOCUS, 0);
-                setMaxPower(POWER_TYPE_FOCUS, info->focus);
-            }
             break;
         }
         m_FirstLogin = false;
+
+        for (uint32 spellId : info->spell_cast_list)
+            castSpell(this, spellId, true);
     }
 
     if (!GetSession()->HasGMPermissions())

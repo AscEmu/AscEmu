@@ -2339,13 +2339,10 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
 {
     auto startTime = Util::TimeNow();
 
-    //                                                                     0       1      2       3      4       5          6          7           8
-    QueryResult* player_create_info_result = WorldDatabase.Query("SELECT `Index`, race, class, mapID, zoneID, positionX, positionY, positionZ, orientation, "
-    //                                                                9            10           11           12           13           14         15        16        17
-                                                                "BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit, BaseHealth, BaseMana, BaseRage, BaseFocus, "
-    //                                                                18         19         20      21       22
-                                                                "BaseEnergy, attackpower, mindmg, maxdmg, taximask FROM playercreateinfo base "
-                                                                "WHERE build=(SELECT MAX(build) FROM playercreateinfo spec WHERE base.Index = spec.Index AND build <= %u)", VERSION_STRING);
+    //                                                                     1     2      3      4          5          6         7           8
+    QueryResult* player_create_info_result = WorldDatabase.Query("SELECT race, class, mapID, zoneID, positionX, positionY, positionZ, orientation FROM playercreateinfo pi "
+
+        "WHERE build=(SELECT MAX(build) FROM playercreateinfo buildspecific WHERE pi.race = buildspecific.race AND pi.class = buildspecific.class AND build <= %u)", VERSION_STRING);
     if (player_create_info_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `playercreateinfo` is empty!");
@@ -2354,152 +2351,76 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
 
     sLogger.info("MySQLDataLoads : Table `playercreateinfo` has %u columns", player_create_info_result->GetFieldCount());
 
+    uint32_t player_create_info_count = 0;
     do
     {
         Field* fields = player_create_info_result->Fetch();
-        uint32_t player_info_index = fields[0].GetUInt32();
-        PlayerCreateInfo& playerCreateInfo = _playerCreateInfoStore[player_info_index];
+        PlayerCreateInfo* playerCreateInfo = new PlayerCreateInfo;
 
-        playerCreateInfo.race = fields[1].GetUInt8();
-        playerCreateInfo.class_ = fields[2].GetUInt8();
-        playerCreateInfo.mapId = fields[3].GetUInt32();
-        playerCreateInfo.zoneId = fields[4].GetUInt32();
-        playerCreateInfo.positionX = fields[5].GetFloat();
-        playerCreateInfo.positionY = fields[6].GetFloat();
-        playerCreateInfo.positionZ = fields[7].GetFloat();
-        playerCreateInfo.orientation = fields[8].GetFloat();
-        playerCreateInfo.strength = fields[9].GetUInt8();
-        playerCreateInfo.ability = fields[10].GetUInt8();
-        playerCreateInfo.stamina = fields[11].GetUInt8();
-        playerCreateInfo.intellect = fields[12].GetUInt8();
-        playerCreateInfo.spirit = fields[13].GetUInt8();
-        playerCreateInfo.health = fields[14].GetUInt32();
-        playerCreateInfo.mana = fields[15].GetUInt32();
-        playerCreateInfo.rage = fields[16].GetUInt32();
-        playerCreateInfo.focus = fields[17].GetUInt32();
-        playerCreateInfo.energy = fields[18].GetUInt32();
-        playerCreateInfo.attackpower = fields[19].GetUInt32();
-        playerCreateInfo.mindmg = fields[20].GetFloat();
-        playerCreateInfo.maxdmg = fields[21].GetFloat();
+        uint8_t _race = fields[0].GetUInt8();
+        uint8_t _class = fields[1].GetUInt8();
+        playerCreateInfo->mapId = fields[2].GetUInt32();
+        playerCreateInfo->zoneId = fields[3].GetUInt32();
+        playerCreateInfo->positionX = fields[4].GetFloat();
+        playerCreateInfo->positionY = fields[5].GetFloat();
+        playerCreateInfo->positionZ = fields[6].GetFloat();
+        playerCreateInfo->orientation = fields[7].GetFloat();
+        _playerCreateInfoStoreNew[_race][_class] = playerCreateInfo;
 
-        std::string taxiMaskStr = fields[22].GetString();
-        std::vector<std::string> tokens = AscEmu::Util::Strings::split(taxiMaskStr, " ");
-
-        memset(playerCreateInfo.taximask, 0, sizeof(playerCreateInfo.taximask));
-        int index;
-        std::vector<std::string>::iterator iter;
-        for (iter = tokens.begin(), index = 0; (index < 12) && (iter != tokens.end()); ++iter, ++index)
-        {
-            playerCreateInfo.taximask[index] = atol((*iter).c_str());
-        }
-
-        loadPlayerCreateInfoBarsTable(player_info_index);
+        player_create_info_count++;
 
     } while (player_create_info_result->NextRow());
 
     delete player_create_info_result;
 
-    sLogger.info("MySQLDataLoads : Loaded %u rows from `playercreateinfo` table in %u ms!", static_cast<uint32_t>(_playerCreateInfoStore.size()), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `playercreateinfo` table in %u ms!", player_create_info_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-void MySQLDataStore::loadPlayerCreateInfoSkillsTable()
+
+void MySQLDataStore::loadPlayerCreateInfoBars()
 {
-    auto startTime = Util::TimeNow();
 
-    //                                                                              0       1       2        3
-    QueryResult* player_create_info_skills_result = WorldDatabase.Query("SELECT Indexid, skillid, level, maxlevel FROM playercreateinfo_skills "
-                                                                        "WHERE build = %u", VERSION_STRING);
+    //                                                                          0     1      2        3      4     5
+    QueryResult* player_create_info_bars_result = WorldDatabase.Query("SELECT race, class, button, action, type, misc FROM playercreateinfo_bars WHERE build = %u", VERSION_STRING);
 
-    if (player_create_info_skills_result == nullptr)
+    if (player_create_info_bars_result == nullptr)
     {
-        sLogger.info("MySQLDataLoads : Table `playercreateinfo_skills` is empty!");
+        sLogger.info("MySQLDataLoads : Table `playercreateinfo_bars` has no data");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `playercreateinfo_skills` has %u columns", player_create_info_skills_result->GetFieldCount());
-
-    uint32_t player_create_info_skills_count = 0;
+    uint32_t player_create_info_bars_count = 0;
     do
     {
-        Field* fields = player_create_info_skills_result->Fetch();
+        Field* fields = player_create_info_bars_result->Fetch();
 
-        uint32_t player_info_index = fields[0].GetUInt32();
-        uint32_t skill_id = fields[1].GetUInt32();
+        uint8_t _race = fields[0].GetUInt8();
+        uint8_t _class = fields[1].GetUInt8();
 
-        auto player_skill = sSkillLineStore.LookupEntry(skill_id);
-        if (player_skill == nullptr)
+        if (auto& playerCreateInfo = _playerCreateInfoStoreNew[_race][_class])
         {
-            sLogger.failure("Table `playercreateinfo_skills` includes invalid skill id %u for index %u", skill_id, player_info_index);
-            continue;
+            CreateInfo_ActionBarStruct bar;
+            bar.button = fields[2].GetUInt8();
+            bar.action = fields[3].GetUInt32();
+            bar.type = fields[4].GetUInt8();
+            bar.misc = fields[5].GetUInt8();
+
+            playerCreateInfo->actionbars.push_back(bar);
+
+            ++player_create_info_bars_count;
         }
 
-        PlayerCreateInfo& playerCreateInfo = _playerCreateInfoStore[player_info_index];
+    } while (player_create_info_bars_result->NextRow());
 
-        CreateInfo_SkillStruct tsk;
-        tsk.skillid = fields[1].GetUInt32();
-        tsk.currentval = fields[2].GetUInt32();
-        tsk.maxval = fields[3].GetUInt32();
-
-        playerCreateInfo.skills.push_back(tsk);
-
-        ++player_create_info_skills_count;
-
-    } while (player_create_info_skills_result->NextRow());
-
-    delete player_create_info_skills_result;
-
-    sLogger.info("MySQLDataLoads : Loaded %u rows from `playercreateinfo_skills` table in %u ms!", player_create_info_skills_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    delete player_create_info_bars_result;
 }
 
-void MySQLDataStore::loadPlayerCreateInfoSpellsTable()
+void MySQLDataStore::loadPlayerCreateInfoItems()
 {
     auto startTime = Util::TimeNow();
 
-    //                                                                            0       1
-    QueryResult* player_create_info_spells_result = WorldDatabase.Query("SELECT indexid, spellid FROM playercreateinfo_spells WHERE build = %u", VERSION_STRING);
-
-    if (player_create_info_spells_result == nullptr)
-    {
-        sLogger.info("MySQLDataLoads : Table `playercreateinfo_spells` is empty!");
-        return;
-    }
-
-    sLogger.info("MySQLDataLoads : Table `playercreateinfo_spells` has %u columns", player_create_info_spells_result->GetFieldCount());
-
-    uint32_t player_create_info_spells_count = 0;
-    do
-    {
-        Field* fields = player_create_info_spells_result->Fetch();
-
-        uint32_t player_info_index = fields[0].GetUInt32();
-        uint32_t spell_id = fields[1].GetUInt32();
-
-        auto player_spell = sSpellStore.LookupEntry(spell_id);
-        if (player_spell == nullptr)
-        {
-            sLogger.failure("Table `playercreateinfo_spells` includes invalid spell %u for index %u", spell_id, player_info_index);
-            continue;
-        }
-
-        PlayerCreateInfo& playerCreateInfo = _playerCreateInfoStore[player_info_index];
-
-        playerCreateInfo.spell_list.insert(spell_id);
-
-        ++player_create_info_spells_count;
-
-    } while (player_create_info_spells_result->NextRow());
-
-    delete player_create_info_spells_result;
-
-    sLogger.info("MySQLDataLoads : Loaded %u rows from `playercreateinfo_spells` table in %u ms!", player_create_info_spells_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-}
-
-void MySQLDataStore::loadPlayerCreateInfoItemsTable()
-{
-    auto startTime = Util::TimeNow();
-
-    //                                                                            0        1       2        3
-    QueryResult* player_create_info_items_result = WorldDatabase.Query("SELECT indexid, protoid, slotid, amount FROM playercreateinfo_items WHERE build = %u", VERSION_STRING);
+    //                                                                           0     1       2       3       4
+    QueryResult* player_create_info_items_result = WorldDatabase.Query("SELECT race, class, protoid, slotid, amount FROM playercreateinfo_items WHERE build = %u", VERSION_STRING);
 
     if (player_create_info_items_result == nullptr)
     {
@@ -2514,8 +2435,9 @@ void MySQLDataStore::loadPlayerCreateInfoItemsTable()
     {
         Field* fields = player_create_info_items_result->Fetch();
 
-        uint32_t player_info_index = fields[0].GetUInt32();
-        uint32_t item_id = fields[1].GetUInt32();
+        uint8_t _race = fields[0].GetUInt8();
+        uint8_t _class = fields[1].GetUInt8();
+        uint32_t item_id = fields[2].GetUInt32();
 
 #if VERSION_STRING < Cata
         auto player_item = sMySQLStore.getItemProperties(item_id);
@@ -2524,20 +2446,21 @@ void MySQLDataStore::loadPlayerCreateInfoItemsTable()
 #endif
         if (player_item == nullptr)
         {
-            sLogger.failure("Table `playercreateinfo_items` includes invalid item %u for index %u", item_id, player_info_index);
+            sLogger.failure("Table `old_playercreateinfo_items` includes invalid item %u", item_id);
             continue;
         }
 
-        PlayerCreateInfo& playerCreateInfo = _playerCreateInfoStore[player_info_index];
+        if (auto& playerCreateInfo = _playerCreateInfoStoreNew[_race][_class])
+        {
+            CreateInfo_ItemStruct itm;
+            itm.protoid = item_id;
+            itm.slot = fields[3].GetUInt8();
+            itm.amount = fields[4].GetUInt32();
 
-        CreateInfo_ItemStruct itm;
-        itm.protoid = fields[1].GetUInt32();
-        itm.slot = fields[2].GetUInt8();
-        itm.amount = fields[3].GetUInt32();
+            playerCreateInfo->items.push_back(itm);
 
-        playerCreateInfo.items.push_back(itm);
-
-        ++player_create_info_items_count;
+            ++player_create_info_items_count;
+        }
 
     } while (player_create_info_items_result->NextRow());
 
@@ -2546,51 +2469,310 @@ void MySQLDataStore::loadPlayerCreateInfoItemsTable()
     sLogger.info("MySQLDataLoads : Loaded %u rows from `playercreateinfo_items` table in %u ms!", player_create_info_items_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-void MySQLDataStore::loadPlayerCreateInfoBarsTable(uint32_t player_info_index)
+void MySQLDataStore::loadPlayerCreateInfoSkills()
 {
-    PlayerCreateInfo& playerCreateInfo = _playerCreateInfoStore[player_info_index];
+    auto startTime = Util::TimeNow();
 
-    //                                                                          0     1      2        3      4     5
-    QueryResult* player_create_info_bars_result = WorldDatabase.Query("SELECT race, class, button, action, type, misc FROM playercreateinfo_bars "
-                                                                      "WHERE build = %u AND class = %u", VERSION_STRING, uint32_t(playerCreateInfo.class_));
+    //                                                                              0         1         2       3
+    QueryResult* player_create_info_skills_result = WorldDatabase.Query("SELECT raceMask, classMask, skillid, level FROM playercreateinfo_skills WHERE build = %u", VERSION_STRING);
 
-    if (player_create_info_bars_result == nullptr)
+    if (player_create_info_skills_result == nullptr)
     {
-        sLogger.info("MySQLDataLoads : Table `playercreateinfo_bars` has no data for class %u", uint32_t(playerCreateInfo.class_));
+        sLogger.info("MySQLDataLoads : Table `playercreateinfo_skills` is empty!");
         return;
     }
 
-    //sLogger.info("MySQLDataLoads : Table `playercreateinfo_bars` has %u columns", player_create_info_bars_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `playercreateinfo_skills` has %u columns", player_create_info_skills_result->GetFieldCount());
 
-    uint32_t player_create_info_bars_count = 0;
+    uint32_t player_create_info_skills_count = 0;
     do
     {
-        Field* fields = player_create_info_bars_result->Fetch();
+        Field* fields = player_create_info_skills_result->Fetch();
 
-        CreateInfo_ActionBarStruct bar;
-        bar.button = fields[2].GetUInt8();
-        bar.action = fields[3].GetUInt32();
-        bar.type = fields[4].GetUInt8();
-        bar.misc = fields[5].GetUInt8();
+        uint32_t raceMask = fields[0].GetUInt32();
+        uint32_t classMask = fields[1].GetUInt32();
+        uint32_t skill_id = fields[2].GetUInt32();
 
-        playerCreateInfo.actionbars.push_back(bar);
+        auto player_skill = sSkillLineStore.LookupEntry(skill_id);
+        if (player_skill == nullptr)
+        {
+            sLogger.failure("Table `playercreateinfo_skills` includes invalid skill id %u", skill_id);
+            continue;
+        }
 
-        ++player_create_info_bars_count;
+        CreateInfo_SkillStruct tsk;
+        tsk.skillid = skill_id;
+        tsk.currentval = fields[3].GetUInt32();
 
-    } while (player_create_info_bars_result->NextRow());
+        for (uint32_t raceIndex = RACE_HUMAN; raceIndex < DBC_NUM_RACES; ++raceIndex)
+        {
+            if (raceMask == 0 || ((1 << (raceIndex - 1)) & raceMask))
+            {
+                for (uint32_t classIndex = WARRIOR; classIndex < MAX_PLAYER_CLASSES; ++classIndex)
+                {
+                    if (classMask == 0 || ((1 << (classIndex - 1)) & classMask))
+                    {
+                        if (auto& playerCreateInfo = _playerCreateInfoStoreNew[raceIndex][classIndex])
+                        {
+                            playerCreateInfo->skills.push_back(tsk);
+                            ++player_create_info_skills_count;
+                        }
+                    }
+                }
+            }
+        }
 
-    delete player_create_info_bars_result;
+    } while (player_create_info_skills_result->NextRow());
+
+    delete player_create_info_skills_result;
+
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `playercreateinfo_skills` table in %u ms!", player_create_info_skills_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
+
+void MySQLDataStore::loadPlayerCreateInfoSpellLearn()
+{
+    auto startTime = Util::TimeNow();
+
+    //                                                                              0         1         2
+    QueryResult* player_create_info_spells_result = WorldDatabase.Query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_learn WHERE build = %u", VERSION_STRING);
+
+    if (player_create_info_spells_result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `playercreateinfo_spell_learn` is empty!");
+        return;
+    }
+
+    sLogger.info("MySQLDataLoads : Table `playercreateinfo_spell_learn` has %u columns", player_create_info_spells_result->GetFieldCount());
+
+    uint32_t player_create_info_spells_count = 0;
+    do
+    {
+        Field* fields = player_create_info_spells_result->Fetch();
+
+        uint32_t raceMask = fields[0].GetUInt32();
+        uint32_t classMask = fields[1].GetUInt32();
+        uint32_t spell_id = fields[2].GetUInt32();
+
+        auto player_spell = sSpellStore.LookupEntry(spell_id);
+        if (player_spell == nullptr)
+        {
+            sLogger.failure("Table `playercreateinfo_spell_learn` includes invalid spell %u", spell_id);
+            continue;
+        }
+
+        for (uint32_t raceIndex = RACE_HUMAN; raceIndex < DBC_NUM_RACES; ++raceIndex)
+        {
+            if (raceMask == 0 || ((1 << (raceIndex - 1)) & raceMask))
+            {
+                for (uint32_t classIndex = WARRIOR; classIndex < MAX_PLAYER_CLASSES; ++classIndex)
+                {
+                    if (classMask == 0 || ((1 << (classIndex - 1)) & classMask))
+                    {
+                        if (auto& playerCreateInfo = _playerCreateInfoStoreNew[raceIndex][classIndex])
+                        {
+                            playerCreateInfo->spell_list.insert(spell_id);
+                            ++player_create_info_spells_count;
+                        }
+                    }
+                }
+            }
+        }
+
+    } while (player_create_info_spells_result->NextRow());
+
+    delete player_create_info_spells_result;
+
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `playercreateinfo_spell_learn` table in %u ms!", player_create_info_spells_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+void MySQLDataStore::loadPlayerCreateInfoSpellCast()
+{
+    auto startTime = Util::TimeNow();
+
+    //                                                                              0         1         2
+    QueryResult* player_create_info_spells_result = WorldDatabase.Query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_cast WHERE build = %u", VERSION_STRING);
+
+    if (player_create_info_spells_result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `playercreateinfo_spell_cast` is empty!");
+        return;
+    }
+
+    sLogger.info("MySQLDataLoads : Table `playercreateinfo_spell_cast` has %u columns", player_create_info_spells_result->GetFieldCount());
+
+    uint32_t player_create_info_spells_count = 0;
+    do
+    {
+        Field* fields = player_create_info_spells_result->Fetch();
+
+        uint32_t raceMask = fields[0].GetUInt32();
+        uint32_t classMask = fields[1].GetUInt32();
+        uint32_t spell_id = fields[2].GetUInt32();
+
+        auto player_spell = sSpellStore.LookupEntry(spell_id);
+        if (player_spell == nullptr)
+        {
+            sLogger.failure("Table `playercreateinfo_spell_cast` includes invalid spell %u", spell_id);
+            continue;
+        }
+
+        for (uint32_t raceIndex = RACE_HUMAN; raceIndex < DBC_NUM_RACES; ++raceIndex)
+        {
+            if (raceMask == 0 || ((1 << (raceIndex - 1)) & raceMask))
+            {
+                for (uint32_t classIndex = WARRIOR; classIndex < MAX_PLAYER_CLASSES; ++classIndex)
+                {
+                    if (classMask == 0 || ((1 << (classIndex - 1)) & classMask))
+                    {
+                        if (auto& playerCreateInfo = _playerCreateInfoStoreNew[raceIndex][classIndex])
+                        {
+                            playerCreateInfo->spell_cast_list.insert(spell_id);
+                            ++player_create_info_spells_count;
+                        }
+                    }
+                }
+            }
+        }
+
+    } while (player_create_info_spells_result->NextRow());
+
+    delete player_create_info_spells_result;
+
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `playercreateinfo_spell_cast` table in %u ms!", player_create_info_spells_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+void MySQLDataStore::loadPlayerCreateInfoLevelstats()
+{
+    auto startTime = Util::TimeNow();
+
+    //                                                                    0     1      2          3           4            5             6             7
+    QueryResult* player_levelstats_result = WorldDatabase.Query("SELECT race, class, level, BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit FROM player_levelstats WHERE build = %u", VERSION_STRING);
+
+    if (player_levelstats_result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `player_levelstats` is empty!");
+        return;
+    }
+
+    sLogger.info("MySQLDataLoads : Table `player_levelstats` has %u columns", player_levelstats_result->GetFieldCount());
+
+    uint32_t player_levelstats_count = 0;
+    do
+    {
+        Field* fields = player_levelstats_result->Fetch();
+
+        uint32_t _race = fields[0].GetUInt32();
+        uint32_t _class = fields[1].GetUInt32();
+        uint32_t level = fields[2].GetUInt32();
+
+
+        if (auto& playerCreateInfo = _playerCreateInfoStoreNew[_race][_class])
+        {
+            CreateInfo_Levelstats lvl;
+            lvl.strength = fields[3].GetUInt32();
+            lvl.agility = fields[4].GetUInt32();
+            lvl.stamina = fields[5].GetUInt32();
+            lvl.intellect = fields[6].GetUInt32();
+            lvl.spirit = fields[7].GetUInt32();
+
+            playerCreateInfo->level_stats.insert(std::make_pair(level, lvl));
+
+            ++player_levelstats_count;
+        }
+
+    } while (player_levelstats_result->NextRow());
+
+    delete player_levelstats_result;
+
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `player_levelstats` table in %u ms!", player_levelstats_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
+{
+    auto startTime = Util::TimeNow();
+
+    //                                                                         0      1        2          3
+    QueryResult* player_classlevelstats_result = WorldDatabase.Query("SELECT class, level, BaseHealth, BaseMana FROM player_classlevelstats WHERE build = %u", VERSION_STRING);
+
+    if (player_classlevelstats_result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `player_classlevelstats` is empty!");
+        return;
+    }
+
+    sLogger.info("MySQLDataLoads : Table `player_classlevelstats` has %u columns", player_classlevelstats_result->GetFieldCount());
+
+    uint32_t player_classlevelstats_count = 0;
+    do
+    {
+        Field* fields = player_classlevelstats_result->Fetch();
+
+        uint32_t _class = fields[0].GetUInt32();
+        uint32_t level = fields[1].GetUInt32();
+
+        CreateInfo_ClassLevelStats lvl;
+        lvl.health = fields[2].GetUInt32();
+        lvl.mana = fields[3].GetUInt32();
+
+        _playerClassLevelStatsStore[_class].insert(std::make_pair(level, lvl));
+
+        ++player_classlevelstats_count;
+
+    } while (player_classlevelstats_result->NextRow());
+
+    delete player_classlevelstats_result;
+
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `player_classlevelstats` table in %u ms!", player_classlevelstats_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
 
 PlayerCreateInfo const* MySQLDataStore::getPlayerCreateInfo(uint8_t player_race, uint8_t player_class)
 {
-    PlayerCreateInfoContainer::const_iterator itr;
-    for (itr = _playerCreateInfoStore.begin(); itr != _playerCreateInfoStore.end(); ++itr)
+    return _playerCreateInfoStoreNew[player_race][player_class];
+}
+
+CreateInfo_Levelstats const* MySQLDataStore::getPlayerLevelstats(uint32_t level, uint8_t player_race, uint8_t player_class)
+{
+    if (auto playerCreateInfo = getPlayerCreateInfo(player_race, player_class))
     {
-        if ((itr->second.race == player_race) && (itr->second.class_ == player_class))
+        CreateInfo_LevelstatsVector::const_iterator itr = playerCreateInfo->level_stats.find(level);
+        if (itr != playerCreateInfo->level_stats.end())
             return &(itr->second);
+
+        return nullptr;
     }
+
     return nullptr;
+}
+
+CreateInfo_ClassLevelStats const* MySQLDataStore::getPlayerClassLevelStats(uint32_t level, uint8_t player_class)
+{
+#if VERSION_STRING < Cata
+    CreateInfo_ClassLevelStatsVector::const_iterator itr = _playerClassLevelStatsStore[player_class].find(level);
+    if (itr != _playerClassLevelStatsStore[player_class].end())
+        return &(itr->second);
+
+    return nullptr;
+#else
+
+    if (level < 1 || player_class >= MAX_PLAYER_CLASSES)
+        return nullptr;
+
+    if (level > worldConfig.player.playerLevelCap)
+        level = worldConfig.player.playerLevelCap;
+
+    DBC::Structures::GtOCTBaseHPByClassEntry const* hp = sGtOCTBaseHPByClassStore.LookupEntry((player_class - 1) * 100 + level - 1);
+    DBC::Structures::GtOCTBaseMPByClassEntry const* mp = sGtOCTBaseMPByClassStore.LookupEntry((player_class - 1) * 100 + level - 1);
+
+    if (!hp || !mp)
+        return nullptr;
+
+    CreateInfo_ClassLevelStats cls;
+    cls.health = uint32_t(hp->ratio);
+    cls.mana = uint32_t(mp->ratio);
+
+    return &cls;
+#endif
 }
 
 
@@ -2613,7 +2795,7 @@ void MySQLDataStore::loadPlayerXpToLevelTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `playercreateinfo_bars` has %u columns", player_xp_to_level_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `player_xp_for_level` has %u columns", player_xp_to_level_result->GetFieldCount());
 
     uint32_t player_xp_to_level_count = 0;
     do
