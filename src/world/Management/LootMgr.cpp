@@ -308,7 +308,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
                 if (!proto)
                 {
                     list.items[ind].item.itemproto = nullptr;
-                    sLogger.debug("Loot for %u contains non-existant item %u . (%s)", entry_id, itemid, szTableName);
+                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Loot for %u contains non-existant item %u . (%s)", entry_id, itemid, szTableName);
                 }
                 else
                 {

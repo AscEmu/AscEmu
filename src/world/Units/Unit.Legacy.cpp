@@ -7948,7 +7948,9 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         if (val > 0)
         {
             rageGenerated = static_cast<uint32_t>(std::ceil(val));
+#if VERSION_STRING > TBC
             hit_status |= HITSTATUS_RAGE_GAIN;
+#endif
         }
     }
 

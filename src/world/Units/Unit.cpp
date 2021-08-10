@@ -3018,6 +3018,7 @@ void Unit::sendSpellOrDamageImmune(uint64_t casterGuid, Unit* target, uint32_t s
     target->SendMessageToSet(SmsgSpellOrDamageImmune(casterGuid, target->getGuid(), spellId).serialise().get(), true);
 }
 
+#if VERSION_STRING > TBC
 void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, [[maybe_unused]]uint32_t overKill, DamageInfo damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, [[maybe_unused]]uint32_t rageGain)
 {
 #if VERSION_STRING < WotLK
@@ -3086,6 +3087,62 @@ void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& v
 
     SendMessageToSet(&data, true);
 }
+#else
+void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, [[maybe_unused]] uint32_t overKill, DamageInfo damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, [[maybe_unused]] uint32_t rageGain)
+{
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Status %u, damage %u", uint32_t(hitStatus), damage);
+
+    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, (4 + 8 + 8 + 4) + 1 + (1 * (4 + 4 + 4 + 4 + 4)) + (4 + 4 + 4 + 4));
+
+    // School type in classic, school mask in tbc+
+    uint32_t school;
+#if VERSION_STRING == Classic
+    school = damageInfo.getSchoolTypeFromMask();
+#else
+    school = damageInfo.schoolMask;
+#endif
+
+    data << uint32_t(hitStatus);
+    data << attackerGuid;
+    data << victimGuid;
+    data << uint32_t(damage);                                   // real damage
+
+    data << uint8_t(1);                                         // damage counter
+
+    data << uint32_t(school);       // damage school
+    data << float(damageInfo.fullDamage);
+    data << uint32_t(damageInfo.fullDamage);
+    data << uint32_t(absorbedDamage);
+    data << int32_t(damageInfo.resistedDamage);
+
+    data << uint32_t(visualState);
+    data << uint32_t(0);
+    data << uint32_t(0);
+
+    data << uint32_t(blockedDamage);
+
+    if (hitStatus & HITSTATUS_UNK_00)
+    {
+        data << uint32_t(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        for (uint8_t i = 0; i < 5; ++i)
+        {
+            data << float(0);
+            data << float(0);
+        }
+        data << uint32_t(0);
+    }
+
+    SendMessageToSet(&data, true);
+}
+#endif
 
 void Unit::addSpellModifier(AuraEffectModifier const* aurEff, bool apply)
 {
