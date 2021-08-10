@@ -140,7 +140,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_ACTIVATETAXI");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATETAXI");
 
     if (_player->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
         return;
@@ -193,7 +193,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_ACTIVATETAXIEXPRESS");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATETAXIEXPRESS");
 
     if (_player->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
         return;

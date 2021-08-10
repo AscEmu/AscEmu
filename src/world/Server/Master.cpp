@@ -246,6 +246,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     sWorld.loadWorldConfigValues();
 
     sLogger.setMinimumMessageType(static_cast<AscEmu::Logging::MessageType>(worldConfig.logger.minimumMessageType));
+    sLogger.setDebugFlags(static_cast<AscEmu::Logging::DebugFlags>(worldConfig.logger.debugFlags));
 
     OpenCheatLogFiles();
 

@@ -270,6 +270,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
 
     // world.conf - Logger Settings
     ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Logger", "MinimumMessageType", &logger.minimumMessageType));
+    ARCEMU_ASSERT(Config.MainConfig.tryGetInt("Logger", "DebugFlags", &logger.debugFlags));
     ARCEMU_ASSERT(Config.MainConfig.tryGetBool("Logger", "EnableWorldPacketLog", &logger.enableWorldPacketLog));
 
     ARCEMU_ASSERT(Config.MainConfig.tryGetString("Logger", "ExtendedLogDir", &logger.extendedLogsDir));

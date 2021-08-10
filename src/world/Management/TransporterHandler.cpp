@@ -25,7 +25,7 @@ void TransportHandler::unload()
 
 void TransportHandler::loadTransportTemplates()
 {
-    sLogger.info("TransportHandler : Start Loading TransportTemplates...");
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "TransportHandler : Start Loading TransportTemplates...");
 
     uint32_t createCount = 0;
 
@@ -52,7 +52,7 @@ void TransportHandler::loadTransportTemplates()
         ++createCount;
     }
 
-    sLogger.info("Transporter Handler : Loaded %u transport templates", createCount);
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Transporter Handler : Loaded %u transport templates", createCount);
 }
 
 void TransportHandler::spawnContinentTransports()
@@ -60,7 +60,7 @@ void TransportHandler::spawnContinentTransports()
     if (_transportTemplates.empty())
         return;
 
-    sLogger.info("TransportHandler : Start Spawning Continent Transports...");
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "TransportHandler : Start Spawning Continent Transports...");
 
     uint32_t createCount = 0;
 
@@ -73,7 +73,7 @@ void TransportHandler::spawnContinentTransports()
                     ++createCount;
     }
 
-    sLogger.info("Transporter Handler : Spawned %u Continent Transports", createCount);
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Transporter Handler : Spawned %u Continent Transports", createCount);
 }
 
 Transporter* TransportHandler::createTransport(uint32_t entry, MapMgr* map /*= nullptr*/)
@@ -468,7 +468,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     keyFrames.back().NextArriveTime = keyFrames.back().DepartureTime;
 
     transport->pathTime = keyFrames.back().DepartureTime;
-    sLogger.debug("TransportHandler: total time %u at transport %u \n", transport->pathTime, transport->entry);
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "TransportHandler: total time %u at transport %u \n", transport->pathTime, transport->entry);
 }
 
 float TransportHandler::normalizeOrientation(float o)

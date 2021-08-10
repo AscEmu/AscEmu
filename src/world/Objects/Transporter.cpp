@@ -597,7 +597,7 @@ void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
 {
     if (uint32_t eventid = departure ? node.Node.DepartureEventID : node.Node.ArrivalEventID)
     {
-        sLogger.info("Taxi %s event %u", departure ? "departure" : "arrival", eventid);
+        sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Taxi %s event %u", departure ? "departure" : "arrival", eventid);
 
         // Use MapScript Interface to Handle these if not handle it here
         CALL_INSTANCE_SCRIPT_EVENT(GetMapMgr(), TransporterEvents)(this, eventid);

@@ -402,12 +402,12 @@ void Guild::handleRoster(WorldSession* session)
 
     if (session)
     {
-        sLogger.debug("SMSG_GUILD_ROSTER %s", session->GetPlayer()->getName().c_str());
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_ROSTER %s", session->GetPlayer()->getName().c_str());
         session->SendPacket(&data);
     }
     else
     {
-        sLogger.debug("SMSG_GUILD_ROSTER [Broadcast]");
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_ROSTER [Broadcast]");
         broadcastPacket(&data);
     }
 #endif
@@ -454,7 +454,7 @@ void Guild::handleQuery(WorldSession* session)
 
     session->SendPacket(&data);
 
-    //sLogger.debug("SMSG_GUILD_QUERY_RESPONSE %s", session->GetPlayer()->getName().c_str());
+    //sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_QUERY_RESPONSE %s", session->GetPlayer()->getName().c_str());
 }
 
 #if VERSION_STRING >= Cata
@@ -498,7 +498,7 @@ void Guild::sendGuildRankInfo(WorldSession* session) const
     data.append(rankData);
     session->SendPacket(&data);
 
-    sLogger.debug("SMSG_GUILD_RANK %s", session->GetPlayer()->getName().c_str());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_RANK %s", session->GetPlayer()->getName().c_str());
 }
 #endif
 
@@ -935,7 +935,7 @@ void Guild::handleGuildPartyRequest(WorldSession* session)
     if (!isMember(player->getGuid()) || !group)
         return;
 
-    sLogger.debug("SMSG_GUILD_PARTY_STATE_RESPONSE %s", session->GetPlayer()->getName().c_str());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_PARTY_STATE_RESPONSE %s", session->GetPlayer()->getName().c_str());
 }
 
 void Guild::sendEventLog(WorldSession* session) const
@@ -948,7 +948,7 @@ void Guild::sendEventLog(WorldSession* session) const
     mEventLog->writeLogHolderPacket(data);
     session->SendPacket(&data);
 
-    sLogger.debug("SMSG_GUILD_EVENT_LOG_QUERY_RESULT %s", session->GetPlayer()->getName().c_str());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_EVENT_LOG_QUERY_RESULT %s", session->GetPlayer()->getName().c_str());
 }
 
 #if VERSION_STRING >= Cata
@@ -1007,7 +1007,7 @@ void Guild::sendNewsUpdate(WorldSession* session)
 
     session->SendPacket(&data);
 
-    sLogger.debug("SMSG_GUILD_NEWS_UPDATE %s", session->GetPlayer()->getName().c_str());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_NEWS_UPDATE %s", session->GetPlayer()->getName().c_str());
 }
 #endif
 
@@ -1029,7 +1029,7 @@ void Guild::sendBankLog(WorldSession* session, uint8_t tabId) const
 #endif
         session->SendPacket(&data);
 
-        sLogger.debug("SMSG_GUILD_BANK_LOG_QUERY_RESULT %s TabId: %u", session->GetPlayer()->getName().c_str(), tabId);
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_BANK_LOG_QUERY_RESULT %s TabId: %u", session->GetPlayer()->getName().c_str(), tabId);
     }
 }
 
@@ -1070,7 +1070,7 @@ void Guild::sendPermissions(WorldSession* session) const
 
     session->SendPacket(&data);
 
-    sLogger.debug("SMSG_GUILD_PERMISSIONS_QUERY_RESULTS %s Rank: %u", session->GetPlayer()->getName().c_str(), rankId);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_PERMISSIONS_QUERY_RESULTS %s Rank: %u", session->GetPlayer()->getName().c_str(), rankId);
 }
 
 void Guild::sendMoneyInfo(WorldSession* session) const
@@ -1092,7 +1092,7 @@ void Guild::sendLoginInfo(WorldSession* session)
 {
     session->SendPacket(SmsgGuildEvent(GE_MOTD, { m_motd }, 0).serialise().get());
 
-    sLogger.debug("SMSG_GUILD_EVENT %s MOTD", session->GetPlayer()->getName().c_str());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_EVENT %s MOTD", session->GetPlayer()->getName().c_str());
 
     Player* player = session->GetPlayer();
 
@@ -1864,7 +1864,7 @@ void Guild::broadcastEvent(GuildEvents guildEvent, uint64_t guid, std::vector<st
 {
     broadcastPacket(SmsgGuildEvent(guildEvent, vars, guid).serialise().get());
 
-    sLogger.debug("SMSG_GUILD_EVENT: %s (%u)", _GetGuildEventString(guildEvent).c_str(), guildEvent);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_EVENT: %s (%u)", _GetGuildEventString(guildEvent).c_str(), guildEvent);
 }
 
 #if VERSION_STRING < Cata
@@ -2092,7 +2092,7 @@ void Guild::sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint3
 
     member->changeRank(static_cast<uint8_t>(rank));
 
-    sLogger.debug("SMSG_GUILD_RANKS_UPDATE target: %u, issuer: %u, rankId: %u",
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_RANKS_UPDATE target: %u, issuer: %u, rankId: %u",
         WoWGuid::getGuidLowPartFromUInt64(targetGuid), WoWGuid::getGuidLowPartFromUInt64(setterGuid), rank);
 }
 
@@ -2173,7 +2173,7 @@ void Guild::sendGuildReputationWeeklyCap(WorldSession* session, uint32_t reputat
     data << uint32_t(cap);
     session->SendPacket(&data);
 
-    sLogger.debug("SMSG_GUILD_REPUTATION_WEEKLY_CAP %s: Left: %u", session->GetPlayer()->getName().c_str(), cap);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_REPUTATION_WEEKLY_CAP %s: Left: %u", session->GetPlayer()->getName().c_str(), cap);
 }
 
 void Guild::resetTimes(bool weekly)
@@ -2580,7 +2580,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
             }
         }
 
-        sLogger.debug("SMSG_GUILD_BANK_LIST");
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_BANK_LIST");
     }
 #endif
 }

@@ -98,7 +98,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_AREATRIGGER: %u (triggerId)", srlPacket.triggerId);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AREATRIGGER: %u (triggerId)", srlPacket.triggerId);
 
     if (!_player->IsInWorld())
         return;

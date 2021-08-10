@@ -15,8 +15,9 @@ namespace AscEmu::Logging
     class SERVER_DECL Logger
     {
         FILE* normalLogFile = nullptr;
-        FILE* errorLogFile = nullptr;;
+        FILE* errorLogFile = nullptr;
         MessageType minimumMessageType = MessageType::MINOR;
+        uint32_t aelog_debug_flags;
 
 #ifdef _WIN32
         HANDLE handle_stdout;
@@ -36,9 +37,13 @@ namespace AscEmu::Logging
 
         void setMinimumMessageType(MessageType messsageType);
 
+        void setDebugFlags(DebugFlags debug_flags);
+
         void trace(const char* message, ...);
 
         void debug(const char* message, ...);
+
+        void debugFlag(DebugFlags log_flags, const char* message, ...);
 
         void info(const char* message, ...);
 
@@ -71,6 +76,7 @@ namespace AscEmu::Logging
 #endif
 
         void setSeverityConsoleColor(Severity severity);
+        Severity getSeverityConsoleColorByDebugFlag(DebugFlags log_flags);
     };
 
     std::string getFormattedFileName(std::string path_prefix, std::string file_prefix, bool use_date_time);

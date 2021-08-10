@@ -70,16 +70,3 @@ public:
     //WorldSession.cpp
     void writefromsession(WorldSession* session, const char* format, ...);
 };
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// AscEmuLog format/color
-
-namespace AELog
-{
-    /*! \brief Returns cons char* (linux) or int (windows) color definition for console */
-#ifndef _WIN32
-    const char* GetColorForDebugFlag(LogFlags log_flags);
-#else
-    int GetColorForDebugFlag(LogFlags log_flags);
-#endif
-}

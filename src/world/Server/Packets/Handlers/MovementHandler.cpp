@@ -521,7 +521,7 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
     if (_player->IsInWorld())
         return;
 
-    sLogger.debug("Received MSG_MOVE_WORLDPORT_ACK");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_MOVE_WORLDPORT_ACK");
 
     if (_player->GetTransport() && _player->GetMapId() != _player->GetTransport()->GetMapId())
     {
@@ -554,7 +554,7 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received MSG_MOVE_TELEPORT_ACK.");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_MOVE_TELEPORT_ACK.");
 
     if (srlPacket.guid.getRawGuid() == _player->getGuid())
     {

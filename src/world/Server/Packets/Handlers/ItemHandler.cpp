@@ -373,7 +373,7 @@ void WorldSession::handleSwapItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_SWAP_ITEM: destInventorySlot %i destSlot %i srcInventorySlot %i srcInventorySlot %i",
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SWAP_ITEM: destInventorySlot %i destSlot %i srcInventorySlot %i srcInventorySlot %i",
         srlPacket.destInventorySlot, srlPacket.destSlot, srlPacket.srcInventorySlot, srlPacket.srcSlot);
 
     _player->getItemInterface()->SwapItems(srlPacket.destInventorySlot,
@@ -507,7 +507,7 @@ void WorldSession::handleItemRefundInfoOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_ITEMREFUNDINFO.");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ITEMREFUNDINFO.");
 
     this->sendRefundInfo(srlPacket.itemGuid);
 }
@@ -519,7 +519,7 @@ void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_ITEMREFUNDREQUEST.");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ITEMREFUNDREQUEST.");
 
     uint32_t error = 1;
 
@@ -742,7 +742,7 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_SWAP_INV_ITEM src slot: %u dst slot: %u",
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SWAP_INV_ITEM src slot: %u dst slot: %u",
         static_cast<uint32_t>(srlPacket.srcSlot), static_cast<uint32_t>(srlPacket.destSlot));
 
     // player trying to add item to the same slot
@@ -894,7 +894,7 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_DESTROYITEM SrcInv Slot: %i Src slot: %i", srlPacket.srcInventorySlot, srlPacket.srcSlot);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_DESTROYITEM SrcInv Slot: %i Src slot: %i", srlPacket.srcInventorySlot, srlPacket.srcSlot);
 
     if (Item* srcItem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcInventorySlot, srlPacket.srcSlot))
     {
@@ -977,7 +977,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_AUTOEQUIP_ITEM Inventory slot: %i Source Slot: %i", srlPacket.srcInventorySlot, srlPacket.srcSlot);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUTOEQUIP_ITEM Inventory slot: %i Source Slot: %i", srlPacket.srcInventorySlot, srlPacket.srcSlot);
 
     Item* eitem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcInventorySlot, srlPacket.srcSlot);
 
@@ -1166,7 +1166,7 @@ void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_AUTOEQUIP_ITEM_SLOT");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUTOEQUIP_ITEM_SLOT");
 
     int8_t srcSlot = static_cast<int8_t>(_player->getItemInterface()->GetInventorySlotByGuid(srlPacket.itemGuid));
     Item* item = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuid);
@@ -1517,7 +1517,7 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_BUYBACK_ITEM");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUYBACK_ITEM");
 
     srlPacket.buybackSlot -= 74;
 
@@ -1602,7 +1602,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_SELL_ITEM");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SELL_ITEM");
 
     _player->interruptSpell();
 
@@ -1694,7 +1694,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_BUY_ITEM_IN_SLOT");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUY_ITEM_IN_SLOT");
 
     int8_t slot = srlPacket.slot;
     uint8_t amount = srlPacket.amount;
@@ -1873,7 +1873,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_BUY_ITEM");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUY_ITEM");
 
     uint8_t error = 0;
     SlotResult slotResult;
@@ -2201,7 +2201,7 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_AUTO_STORE_BAG_ITEM");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUTO_STORE_BAG_ITEM");
 
     Item* srcitem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcContainerSlot, srlPacket.srcSlot);
 
@@ -2308,7 +2308,7 @@ void WorldSession::handleReadItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_READ_ITEM %d", srlPacket.srcSlot);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_READ_ITEM %d", srlPacket.srcSlot);
 
     Item* item = _player->getItemInterface()->GetInventoryItem(srlPacket.srcContainerSlot, srlPacket.srcSlot);
     if (item)
@@ -2391,7 +2391,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
             }
         }
     }
-    sLogger.debug("Received CMSG_REPAIR_ITEM %d", srlPacket.itemGuid);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REPAIR_ITEM %d", srlPacket.itemGuid);
 }
 
 void WorldSession::handleAutoBankItemOpcode(WorldPacket& recvPacket)
@@ -2400,7 +2400,7 @@ void WorldSession::handleAutoBankItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_AUTO_BANK_ITEM Inventory slot: %u Source Slot: %u",
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUTO_BANK_ITEM Inventory slot: %u Source Slot: %u",
         static_cast<uint32_t>(srlPacket.srcInventorySlot), static_cast<uint32_t>(srlPacket.srcSlot));
 
     Item* eitem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcInventorySlot, srlPacket.srcSlot);
@@ -2437,7 +2437,7 @@ void WorldSession::handleAutoStoreBankItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_AUTOSTORE_BANK_ITEM Inventory slot: %u Source Slot: %u",
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUTOSTORE_BANK_ITEM Inventory slot: %u Source Slot: %u",
         static_cast<uint32_t>(srlPacket.srcInventorySlot), static_cast<uint32_t>(srlPacket.srcSlot));
 
     Item* eitem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcInventorySlot, srlPacket.srcSlot);
@@ -2787,7 +2787,7 @@ void WorldSession::handleEquipmentSetUse(WorldPacket& data)
 {
     CHECK_INWORLD_RETURN
     
-    sLogger.debug("Received CMSG_EQUIPMENT_SET_USE");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_EQUIPMENT_SET_USE");
 
     WoWGuid guid;
     int8_t SrcBagID;
@@ -2859,7 +2859,7 @@ void WorldSession::handleEquipmentSetSave(WorldPacket& data)
 {
     CHECK_INWORLD_RETURN
     
-    sLogger.debug("Received CMSG_EQUIPMENT_SET_SAVE");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_EQUIPMENT_SET_SAVE");
 
     WoWGuid guid;
 
@@ -2900,7 +2900,7 @@ void WorldSession::handleEquipmentSetDelete(WorldPacket& data)
 {
     CHECK_INWORLD_RETURN
     
-    sLogger.debug("Received CMSG_EQUIPMENT_SET_DELETE");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_EQUIPMENT_SET_DELETE");
 
     WoWGuid guid;
 

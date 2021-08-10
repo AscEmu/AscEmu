@@ -70,6 +70,11 @@ namespace AscEmu::Logging
         this->minimumMessageType = minimumMessageType;
     }
 
+    void Logger::setDebugFlags(DebugFlags debug_flags)
+    {
+        this->aelog_debug_flags = debug_flags;
+    }
+
     void Logger::trace(const char* message, ...)
     {
         va_list arguments;
@@ -84,6 +89,19 @@ namespace AscEmu::Logging
         va_start(arguments, message);
         log(Severity::INFO, MessageType::DEBUG, message, arguments);
         va_end(arguments);
+    }
+
+    void Logger::debugFlag(DebugFlags log_flags, const char* message, ...)
+    {
+        if (!(aelog_debug_flags & log_flags))
+            return;
+
+        va_list arguments;
+        va_start(arguments, message);
+        auto severity = getSeverityConsoleColorByDebugFlag(log_flags);
+        log(severity, MessageType::DEBUG, message, arguments);
+        va_end(arguments);
+
     }
 
     void Logger::info(const char* message, ...)
@@ -135,7 +153,7 @@ namespace AscEmu::Logging
         createLogMessage(logMessage, severity, messageType, message, arguments);
   
         setSeverityConsoleColor(severity);
-        std::cout << logMessage << std::endl;
+        std::cout << logMessage << "\n";
         setConsoleColor(CONSOLE_COLOR_NORMAL);
 
         if (severity >= Severity::FAILURE)
@@ -167,7 +185,7 @@ namespace AscEmu::Logging
         std::string severityText = getSeverityText(severity);
         std::string messageTypeText = getMessageTypeText(messageType);
 
-        sprintf(result, "%s %s %s: %s", currentTime.c_str(), severityText.c_str(), messageTypeText.c_str(), formattedMessage);
+        sprintf(result, "%s %s%s: %s", currentTime.c_str(), severityText.c_str(), messageTypeText.c_str(), formattedMessage);
     }
 
     std::string Logger::getMessageTypeText(MessageType messageType)
@@ -233,10 +251,43 @@ namespace AscEmu::Logging
         case FATAL:
             setConsoleColor(CONSOLE_COLOR_RED);
             break;
+        case BLUE:
+            setConsoleColor(CONSOLE_COLOR_BLUE);
+            break;
+        case YELLOW:
+            setConsoleColor(CONSOLE_COLOR_YELLOW);
+            break;
+        case PURPLE:
+            setConsoleColor(CONSOLE_COLOR_PURPLE);
+            break;
+        case CYAN:
+            setConsoleColor(CONSOLE_COLOR_CYAN);
+            break;
         case INFO:
         default:
             setConsoleColor(CONSOLE_COLOR_NORMAL);
             break;
+        }
+    }
+
+    Severity Logger::getSeverityConsoleColorByDebugFlag(DebugFlags log_flags)
+    {
+        switch (log_flags)
+        {
+            case LF_MAP:
+            case LF_MAP_CELL:
+            case LF_VMAP:
+            case LF_MMAP:
+                return BLUE;
+            case LF_OPCODE:
+                return CYAN;
+            case LF_SPELL:
+            case LF_AURA:
+            case LF_SPELL_EFF:
+            case LF_AURA_EFF:
+                return PURPLE;
+            default:
+                return YELLOW;
         }
     }
 

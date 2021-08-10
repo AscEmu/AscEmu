@@ -329,7 +329,7 @@ void WorldSession::handleQuestPushResultOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received MSG_QUEST_PUSH_RESULT");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_QUEST_PUSH_RESULT");
 
     if (_player->GetQuestSharer())
     {
@@ -381,7 +381,7 @@ void WorldSession::handleQuestPOIQueryOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_QUEST_POI_QUERY");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_QUEST_POI_QUERY");
 
     if (srlPacket.questCount > MAX_QUEST_LOG_SIZE)
     {
