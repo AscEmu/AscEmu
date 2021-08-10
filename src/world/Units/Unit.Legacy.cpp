@@ -6631,10 +6631,17 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInf
 
     if ((*dmg).schoolMask == SCHOOL_MASK_NORMAL) // physical
     {
+#if VERSION_STRING > TBC
         if (this->isPlayer())
             ArmorReduce = PowerCostPctMod[0] + ((float)pVictim->getResistance(0) * (ArmorPctReduce + static_cast<Player*>(this)->CalcRating(PCR_ARMOR_PENETRATION_RATING)) / 100.0f);
         else
             ArmorReduce = 0.0f;
+#else
+        if (this->isPlayer())
+            ArmorReduce = PowerCostPctMod[0];
+        else
+            ArmorReduce = 0.0f;
+#endif
 
         if (ArmorReduce >= pVictim->getResistance(0)) // fully penetrated :O
             return;
