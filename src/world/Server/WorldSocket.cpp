@@ -1026,6 +1026,10 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
         //stop spaming opcodes here
         case SMSG_MONSTER_MOVE:
         case MSG_MOVE_HEARTBEAT:
+        case SMSG_ATTACKERSTATEUPDATE:
+        case SMSG_EMOTE:
+        case SMSG_TIME_SYNC_REQ:
+        case CMSG_TIME_SYNC_RESP:
         {
         } break;
         default:

@@ -6483,13 +6483,21 @@ void Player::UpdateChannels(uint16 AreaID)
     else if (GetMapId() == 449)
         AreaID = 2918;
 
+#if VERSION_STRING < Cata
     auto at2 = MapManagement::AreaManagement::AreaStorage::GetAreaById(AreaID);
     if (!at2)
     {
         assert(false && ">>> REPORT THIS ERROR <<< - Could not find area with ID: " && AreaID);
         return;     // Zyres: CID 123873
     }
-
+#else
+    auto at2 = sAreaStore.LookupEntry(AreaID);
+    if (!at2)
+    {
+        assert(false && ">>> REPORT THIS ERROR <<< - Could not find area with ID: " && AreaID);
+        return;     // Zyres: CID 123873
+    }
+#endif
     //Check for instances?
     if (!AreaID || AreaID == 0xFFFF)
     {

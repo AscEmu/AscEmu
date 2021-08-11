@@ -177,7 +177,7 @@ namespace DBC::Structures
         char const achievement_format[] = "niiissiiiiisii";
         char const achievement_criteria_format[] = "niiiiiiiixsiiiiixxxxxxx";
         char const area_group_format[] = "niiiiiii";
-        char const area_table_entry_format[] = "iiinixxxxxisiiiiixxxxxxxxx";
+        char const area_table_entry_format[] = "niiiiiiiiiisiiiiiffiiiiiii";
         char const area_trigger_entry_format[] = "nifffxxxfffff";
         //char const armor_location_format[] = "nfffff"; new
         char const auction_house_format[] = "niiix";
@@ -755,19 +755,24 @@ namespace DBC::Structures
         uint32_t zone;                                              // 2 if 0 then it's zone, else it's zone id of this area
         uint32_t explore_flag;                                      // 3, main index
         uint32_t flags;                                             // 4, unknown value but 312 for all cities
-                                                                    // 5-9 unused
+        uint32 SoundProviderPref;                               // 5
+        uint32 SoundProviderPrefUnderwater;                     // 6
+        uint32 AmbienceID;                                      // 7
+        uint32 ZoneMusic;                                       // 8
+        uint32 IntroSound;                                      // 9                                                           // 5-9 unused
         int32_t area_level;                                         // 10
         char* area_name;                                            // 11
         uint32_t team;                                              // 12
         uint32_t liquid_type_override[4];                           // 13-16 liquid override by type
-        //uint32_t unk17;                                           // 17
-        //uint32_t unk18;                                           // 18
-        //uint32_t unk19;                                           // 19
-        //uint32_t unk20;                                           // 20
-        //uint32_t unk21;                                           // 21
-        //uint32_t unk22;                                           // 22
-        //uint32_t unk23;                                           // 23
-        //uint32_t unk24;                                           // 24
+        float MinElevation;                                     // 17
+        float AmbientMultiplier;                                // 18 client only?
+        uint32 LightID;                                         // 19
+        uint32 MountFlags;                                      // 20
+        uint32 UwIntroSound;                                    // 21 4.0.0
+        uint32 UwZoneMusic;                                     // 22 4.0.0
+        uint32 UwAmbience;                                      // 23 4.0.0
+        uint32 World_pvp_ID;                                    // 24
+        int32 PvpCombatWorldStateID;                            // 25- worldStateId4
     };
 
     struct AreaTriggerEntry

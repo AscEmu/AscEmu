@@ -49,7 +49,10 @@ typedef uint16_t           uint16;
 typedef uint8_t            uint8;
 #endif
 
-#define FILE_FORMAT_VERSION 18
+#include <map>
+#include <string>
+
+#define FILE_FORMAT_VERSION    18
 
 #pragma pack(push, 1)
 
@@ -64,8 +67,7 @@ union u_map_fcc
 //
 struct file_MVER
 {
-    union
-    {
+    union {
         uint32 fcc;
         char   fcc_txt[4];
     };
@@ -73,25 +75,47 @@ struct file_MVER
     uint32 ver;
 };
 
-
-class FileLoader
+struct file_MWMO
 {
-    uint8  *data;
-    uint32  data_size;
-public:
-    virtual bool prepareLoadedData();
-    uint8 *GetData() {
-        return data;
-    }
-    uint32 GetDataSize() {
-        return data_size;
-    }
+    u_map_fcc fcc;
+    uint32 size;
+    char FileList[1];
+};
 
-    file_MVER *version;
-    FileLoader();
-    ~FileLoader();
-    bool loadFile(HANDLE mpq, char *filename, bool log = true);
-    virtual void free();
+class FileChunk
+{
+public:
+    FileChunk(uint8* data_, uint32 size_) : data(data_), size(size_) { }
+    ~FileChunk();
+
+    uint8* data;
+    uint32 size;
+
+    template<class T>
+    T* As() { return (T*)data; }
+    void parseSubChunks();
+    std::multimap<std::string, FileChunk*> subchunks;
+    FileChunk* GetSubChunk(std::string const& name);
+};
+
+class ChunkedFile
+{
+public:
+    uint8* data;
+    uint32  data_size;
+
+    uint8* GetData() { return data; }
+    uint32 GetDataSize() { return data_size; }
+
+    ChunkedFile();
+    virtual ~ChunkedFile();
+    bool prepareLoadedData();
+    bool loadFile(HANDLE mpq, std::string const& fileName, bool log = true);
+    void free();
+
+    void parseChunks();
+    std::multimap<std::string, FileChunk*> chunks;
+    FileChunk* GetChunk(std::string const& name);
 };
 
 #pragma pack(pop)

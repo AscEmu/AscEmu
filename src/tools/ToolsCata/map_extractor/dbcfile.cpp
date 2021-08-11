@@ -22,7 +22,7 @@
 #include "dbcfile.h"
 
 DBCFile::DBCFile(HANDLE file) :
-    _file(file), _data(NULL), _stringTable(NULL)
+    _file(file), _data(nullptr), _stringTable(nullptr)
 {
 }
 
@@ -32,59 +32,43 @@ bool DBCFile::open()
     unsigned int na, nb, es, ss;
 
     DWORD readBytes = 0;
-    SFileReadFile(_file, header, 4, &readBytes, NULL);
+    SFileReadFile(_file, header, 4, &readBytes, nullptr);
     if (readBytes != 4)                                         // Number of records
-    {
         return false;
-    }
 
     if (header[0] != 'W' || header[1] != 'D' || header[2] != 'B' || header[3] != 'C')
-    {
         return false;
-    }
 
-    SFileReadFile(_file, &na, 4, &readBytes, NULL);
+    SFileReadFile(_file, &na, 4, &readBytes, nullptr);
     if (readBytes != 4)                                         // Number of records
-    {
         return false;
-    }
 
-    SFileReadFile(_file, &nb, 4, &readBytes, NULL);
+    SFileReadFile(_file, &nb, 4, &readBytes, nullptr);
     if (readBytes != 4)                                         // Number of fields
-    {
         return false;
-    }
 
-    SFileReadFile(_file, &es, 4, &readBytes, NULL);
+    SFileReadFile(_file, &es, 4, &readBytes, nullptr);
     if (readBytes != 4)                                         // Size of a record
-    {
         return false;
-    }
 
-    SFileReadFile(_file, &ss, 4, &readBytes, NULL);
+    SFileReadFile(_file, &ss, 4, &readBytes, nullptr);
     if (readBytes != 4)                                         // String size
-    {
         return false;
-    }
 
     _recordSize = es;
     _recordCount = na;
     _fieldCount = nb;
     _stringSize = ss;
     if (_fieldCount * 4 != _recordSize)
-    {
         return false;
-    }
 
     _data = new unsigned char[_recordSize * _recordCount + _stringSize];
-    _stringTable = _data + _recordSize*_recordCount;
+    _stringTable = _data + _recordSize * _recordCount;
 
     size_t data_size = _recordSize * _recordCount + _stringSize;
-    SFileReadFile(_file, _data, data_size, &readBytes, NULL);
+    SFileReadFile(_file, _data, data_size, &readBytes, nullptr);
     if (readBytes != data_size)
-    {
         return false;
-    }
 
     return true;
 }
@@ -97,7 +81,7 @@ DBCFile::~DBCFile()
 DBCFile::Record DBCFile::getRecord(size_t id)
 {
     assert(_data);
-    return Record(*this, _data + id*_recordSize);
+    return Record(*this, _data + id * _recordSize);
 }
 
 size_t DBCFile::getMaxId()

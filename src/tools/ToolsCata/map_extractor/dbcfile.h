@@ -36,11 +36,9 @@ public:
     class Exception
     {
     public:
-        Exception(const std::string &message) : message(message) { }
+        Exception(const std::string& message) : message(message) { }
         virtual ~Exception() { }
-        const std::string &getMessage() {
-            return message;
-        }
+        const std::string& getMessage() { return message; }
     private:
         std::string message;
     };
@@ -97,7 +95,7 @@ public:
     class Iterator
     {
     public:
-        Iterator(DBCFile &file, unsigned char* offset) : record(file, offset) { }
+        Iterator(DBCFile& file, unsigned char* offset) : record(file, offset) { }
 
         /// Advance (prefix only)
         Iterator& operator++()
@@ -107,12 +105,8 @@ public:
         }
 
         /// Return address of current instance
-        Record const& operator*() const {
-            return record;
-        }
-        Record const* operator->() const {
-            return &record;
-        }
+        Record const& operator*() const { return record; }
+        Record const* operator->() const { return &record; }
 
         /// Comparison
         bool operator==(Iterator const& b) const
@@ -138,12 +132,8 @@ public:
     /// Get begin iterator over records
     Iterator end();
     /// Trivial
-    size_t getRecordCount() const {
-        return _recordCount;
-    }
-    size_t getFieldCount() const {
-        return _fieldCount;
-    }
+    size_t getRecordCount() const { return _recordCount; }
+    size_t getFieldCount() const { return _fieldCount; }
     size_t getMaxId();
 
 private:
