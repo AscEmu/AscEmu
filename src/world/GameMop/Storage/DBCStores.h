@@ -67,6 +67,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDu
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellAuraOptionsEntry> sSpellAuraOptionsStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellAuraRestrictionsEntry> sSpellAuraRestrictionsStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellCastingRequirementsEntry> sSpellCastingRequirementsStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellMiscEntry> sSpellMiscStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellCategoriesEntry> sSpellCategoriesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellClassOptionsEntry> sSpellClassOptionsStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellCooldownsEntry> sSpellCooldownsStore;

@@ -1978,7 +1978,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     auto talentInfo = sTalentStore.LookupEntry(talentId);
     if (talentInfo == nullptr)
         return;
-
+#if VERSION_STRING < Mop
     if (sObjectMgr.IsSpellDisabled(talentInfo->RankID[talentRank]))
     {
         if (IsInWorld())
@@ -2114,6 +2114,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     // Add the new talent to player talent map
     getActiveSpec().AddTalent(talentId, static_cast<uint8_t>(talentRank));
     setTalentPoints(curTalentPoints - requiredTalentPoints, false);
+#endif
 }
 
 void Player::addTalent(SpellInfo const* sp)
@@ -2177,6 +2178,7 @@ void Player::removeTalent(uint32_t spellId, bool onSpecChange /*= false*/)
 
 void Player::resetTalents()
 {
+#if VERSION_STRING < Mop
     // Loop through player's talents
     for (const auto talent : getActiveSpec().talents)
     {
@@ -2203,6 +2205,7 @@ void Player::resetTalents()
 
     // Reset talent point amount
     setInitialTalentPoints(true);
+#endif
 }
 
 void Player::resetAllTalents()
@@ -2448,6 +2451,7 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
 
 void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
 {
+#if VERSION_STRING < Mop
 #ifndef FT_DUAL_SPEC
     return;
 #else
@@ -2509,6 +2513,7 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
 
     // Send talent points
     setInitialTalentPoints();
+#endif
 #endif
 }
 

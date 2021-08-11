@@ -4054,6 +4054,7 @@ SpellCastResult Spell::checkRunes(bool takeRunes)
 
 SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const
 {
+#if VERSION_STRING < Mop
     // No need to check requirements for talents that learn spells
     uint8_t talentRank = 0;
     const auto talentInfo = sTalentStore.LookupEntry(spellInfo->getId());
@@ -4110,6 +4111,9 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
             return SPELL_FAILED_ONLY_SHAPESHIFT;
     }
     return SPELL_CAST_SUCCESS;
+#else
+    return SPELL_FAILED_ONLY_SHAPESHIFT;
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

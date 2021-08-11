@@ -1134,11 +1134,11 @@ void SpellMgr::applyHackFixes()
             case 71160: // Plague Stench (Stinky)
             case 71161: // Plague Stench (Stinky)
             case 71123: // Decimate (Stinky & Precious)
-                sp->setEffectRadiusIndex(sSpellRadiusStore.LookupEntry(12)->ID, 0); // 100yd
+                sp->setEffectRadiusIndex(sSpellRadiusStore.LookupEntry(12) ? sSpellRadiusStore.LookupEntry(12)->ID : 0, 0); // 100yd
                 break;
             case 69055: // Saber Lash (Lord Marrowgar)
             case 70814: // Saber Lash (Lord Marrowgar)
-                sp->setEffectRadiusIndex(sSpellRadiusStore.LookupEntry(14)->ID, 0); // 8yd
+                sp->setEffectRadiusIndex(sSpellRadiusStore.LookupEntry(14) ? sSpellRadiusStore.LookupEntry(14)->ID : 0, 0); // 8yd
                 break;
             default:
                 break;

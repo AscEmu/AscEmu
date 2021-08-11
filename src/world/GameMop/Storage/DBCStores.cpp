@@ -75,6 +75,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::ScalingStatValuesEntry> sScalingSta
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SkillLineAbilityEntry> sSkillLineAbilityStore(DBC::Structures::skill_line_ability_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SkillLineEntry> sSkillLineStore(DBC::Structures::skill_line_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellCastTimesEntry> sSpellCastTimesStore(DBC::Structures::spell_cast_times_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellMiscEntry> sSpellMiscStore(DBC::Structures::spell_misc_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDifficultyEntry> sSpellDifficultyStore(DBC::Structures::spell_difficulty_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationStore(DBC::Structures::spell_duration_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellAuraOptionsEntry> sSpellAuraOptionsStore(DBC::Structures::spell_aura_options_format);
@@ -162,83 +163,84 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSkillLineStore, dbc_path, "SkillLine.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellStore, dbc_path, "Spell.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentStore, dbc_path, "Talent.dbc");
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTabStore, dbc_path, "TalentTab.dbc");
-    {
-        std::map< uint32, uint32 > InspectTalentTabPos;
-        std::map< uint32, uint32 > InspectTalentTabSize;
-        std::map< uint32, uint32 > InspectTalentTabBit;
+    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTabStore, dbc_path, "TalentTab.dbc");
+    //{
+    //    std::map< uint32, uint32 > InspectTalentTabPos;
+    //    std::map< uint32, uint32 > InspectTalentTabSize;
+    //    std::map< uint32, uint32 > InspectTalentTabBit;
 
-        uint32 talent_max_rank;
-        uint32 talent_pos;
-        uint32 talent_class;
+    //    uint32 talent_max_rank;
+    //    uint32 talent_pos;
+    //    uint32 talent_class;
 
-        for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
-        {
-            auto talent_info = sTalentStore.LookupEntry(i);
-            if (talent_info == nullptr)
-                continue;
+    //    for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
+    //    {
+    //        auto talent_info = sTalentStore.LookupEntry(i);
+    //        if (talent_info == nullptr)
+    //            continue;
 
-            // Don't add invalid talents or Hunter Pet talents (trees 409, 410 and 411) to the inspect table
-            if (talent_info->TalentTree == 409 || talent_info->TalentTree == 410 || talent_info->TalentTree == 411)
-                continue;
+    //        // Don't add invalid talents or Hunter Pet talents (trees 409, 410 and 411) to the inspect table
+    //        if (talent_info->TalentTree == 409 || talent_info->TalentTree == 410 || talent_info->TalentTree == 411)
+    //            continue;
 
-            auto talent_tab = sTalentTabStore.LookupEntry(talent_info->TalentTree);
-            if (talent_tab == nullptr)
-                continue;
+    //        auto talent_tab = sTalentTabStore.LookupEntry(talent_info->TalentTree);
+    //        if (talent_tab == nullptr)
+    //            continue;
 
-            talent_max_rank = 0;
-            for (uint32 j = 5; j > 0; --j)
-            {
-                if (talent_info->RankID[j - 1])
-                {
-                    talent_max_rank = j;
-                    break;
-                }
-            }
+    //        talent_max_rank = 0;
+    //        for (uint32 j = 5; j > 0; --j)
+    //        {
+    //            if (talent_info->RankID[j - 1])
+    //            {
+    //                talent_max_rank = j;
+    //                break;
+    //            }
+    //        }
 
-            InspectTalentTabBit[(talent_info->Row << 24) + (talent_info->Col << 16) + talent_info->TalentID] = talent_max_rank;
-            InspectTalentTabSize[talent_info->TalentTree] += talent_max_rank;
-        }
+    //        InspectTalentTabBit[(talent_info->Row << 24) + (talent_info->Col << 16) + talent_info->TalentID] = talent_max_rank;
+    //        InspectTalentTabSize[talent_info->TalentTree] += talent_max_rank;
+    //    }
 
-        for (uint32 i = 0; i < sTalentTabStore.GetNumRows(); ++i)
-        {
-            auto talent_tab = sTalentTabStore.LookupEntry(i);
-            if (talent_tab == nullptr)
-                continue;
+    //    for (uint32 i = 0; i < sTalentTabStore.GetNumRows(); ++i)
+    //    {
+    //        auto talent_tab = sTalentTabStore.LookupEntry(i);
+    //        if (talent_tab == nullptr)
+    //            continue;
 
-            if (talent_tab->ClassMask == 0)
-                continue;
+    //        if (talent_tab->ClassMask == 0)
+    //            continue;
 
-            talent_pos = 0;
+    //        talent_pos = 0;
 
-            for (talent_class = 0; talent_class < 12; ++talent_class)
-            {
-                if (talent_tab->ClassMask & (1 << talent_class))
-                    break;
-            }
+    //        for (talent_class = 0; talent_class < 12; ++talent_class)
+    //        {
+    //            if (talent_tab->ClassMask & (1 << talent_class))
+    //                break;
+    //        }
 
-            if (talent_class > 0 && talent_class < 12)
-                InspectTalentTabPages[talent_class][talent_tab->TabPage] = talent_tab->TalentTabID;
+    //        if (talent_class > 0 && talent_class < 12)
+    //            InspectTalentTabPages[talent_class][talent_tab->TabPage] = talent_tab->TalentTabID;
 
-            for (std::map<uint32, uint32>::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
-            {
-                uint32 talent_id = itr->first & 0xFFFF;
-                auto talent_info = sTalentStore.LookupEntry(talent_id);
-                if (talent_info == nullptr)
-                    continue;
+    //        for (std::map<uint32, uint32>::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
+    //        {
+    //            uint32 talent_id = itr->first & 0xFFFF;
+    //            auto talent_info = sTalentStore.LookupEntry(talent_id);
+    //            if (talent_info == nullptr)
+    //                continue;
 
-                if (talent_info->TalentTree != talent_tab->TalentTabID)
-                    continue;
+    //            if (talent_info->TalentTree != talent_tab->TalentTabID)
+    //                continue;
 
-                InspectTalentTabPos[talent_id] = talent_pos;
-                talent_pos += itr->second;
-            }
-        }
-    }
+    //            InspectTalentTabPos[talent_id] = talent_pos;
+    //            talent_pos += itr->second;
+    //        }
+    //    }
+    //}
 
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTreePrimarySpellsStore, dbc_path, "TalentTreePrimarySpells.dbc");
+    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTreePrimarySpellsStore, dbc_path, "TalentTreePrimarySpells.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellCastTimesStore, dbc_path, "SpellCastTimes.dbc");
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDifficultyStore, dbc_path, "SpellDifficulty.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellMiscStore, dbc_path, "SpellMisc.dbc");
+    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDifficultyStore, dbc_path, "SpellDifficulty.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRadiusStore, dbc_path, "SpellRadius.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRangeStore, dbc_path, "SpellRange.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRuneCostStore, dbc_path, "SpellRuneCost.dbc");
@@ -318,7 +320,7 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtChanceToSpellCritBaseStore, dbc_path, "gtChanceToSpellCritBase.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtRegenMPPerSptStore, dbc_path, "gtRegenMPPerSpt.dbc");     //loaded but not used
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtOCTClassCombatRatingScalarStore, dbc_path, "gtOCTClassCombatRatingScalar.dbc");
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtOCTRegenMPStore, dbc_path, "gtOCTRegenMP.dbc");
+    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtOCTRegenMPStore, dbc_path, "gtOCTRegenMP.dbc");
     //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtRegenHPPerSptStore, dbc_path, "gtRegenHPPerSpt.dbc");
     //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtOCTRegenHPStore, dbc_path, "gtOCTRegenHP.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAreaTriggerStore, dbc_path, "AreaTrigger.dbc");
@@ -338,7 +340,7 @@ bool LoadDBCs()
     }
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSummonPropertiesStore, dbc_path, "SummonProperties.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sNameGenStore, dbc_path, "NameGen.dbc");
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sNumTalentsAtLevel, dbc_path, "NumTalentsAtLevel.dbc");
+    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sNumTalentsAtLevel, dbc_path, "NumTalentsAtLevel.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sPhaseStore, dbc_path, "Phase.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLFGDungeonStore, dbc_path, "LFGDungeons.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sDungeonEncounterStore, dbc_path, "DungeonEncounter.dbc");

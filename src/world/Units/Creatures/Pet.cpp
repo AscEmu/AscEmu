@@ -726,6 +726,7 @@ void Pet::SendSpellsToOwner()
 
 void Pet::SendTalentsToOwner()
 {
+#if VERSION_STRING < Mop
 #if VERSION_STRING > TBC
     if (m_Owner == NULL)
         return;
@@ -782,6 +783,7 @@ void Pet::SendTalentsToOwner()
     // send the packet to owner
     if (m_Owner->GetSession() != NULL)
         m_Owner->GetSession()->SendPacket(&data);
+#endif
 #endif
 }
 
@@ -1569,6 +1571,7 @@ void Pet::SetDefaultActionbar()
 
 void Pet::WipeTalents()
 {
+#if VERSION_STRING < Mop
     for (uint32 i = 0; i < sTalentStore.GetNumRows(); i++)
     {
         auto talent = sTalentStore.LookupEntry(i);
@@ -1584,6 +1587,7 @@ void Pet::WipeTalents()
     }
 
     SendSpellsToOwner();
+#endif
 }
 
 void Pet::RemoveSpell(SpellInfo const* sp, [[maybe_unused]]bool showUnlearnSpell)

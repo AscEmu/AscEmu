@@ -530,6 +530,7 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
 #else
 void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
 {
+#if VERSION_STRING < Mop
     CmsgPetLearnTalent srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -584,6 +585,7 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
     }
 
     pet->SendTalentsToOwner();
+#endif
 }
 #endif
 

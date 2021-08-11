@@ -1850,6 +1850,7 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
 
 void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING < Mop
     CHECK_INWORLD_RETURN;
 
     CmsgInspect srlPacket;
@@ -1980,6 +1981,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 #endif
 
     SendPacket(&data);
+#endif
 }
 
 #if VERSION_STRING >= Cata
