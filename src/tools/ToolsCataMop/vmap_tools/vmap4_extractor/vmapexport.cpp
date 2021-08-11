@@ -51,6 +51,8 @@
 
 #include "vmapexport.h"
 
+#include "../../src/world/WorldConf.h"
+
 //------------------------------------------------------------------------------
 // Defines
 
@@ -61,6 +63,7 @@
 HANDLE WorldMpq = NULL;
 HANDLE LocaleMpq = NULL;
 
+#if VERSION_STRING == Cata
 uint32 CONF_TargetBuild = 15595;              // 4.3.4.15595
 
 // List MPQ for extract maps from
@@ -77,6 +80,25 @@ char const* CONF_mpq_list[]=
 uint32 const Builds[] = {13164, 13205, 13287, 13329, 13596, 13623, 13914, 14007, 14333, 14480, 14545, 15005, 15050, 15211, 15354, 15595, 0};
 #define LAST_DBC_IN_DATA_BUILD 13623    // after this build mpqs with dbc are back to locale folder
 #define NEW_BASE_SET_BUILD  15211
+#else
+uint32 CONF_TargetBuild = 18273;              // 5.4.8.18273
+
+// List MPQ for extract maps from
+char const* CONF_mpq_list[] =
+{
+    "world.MPQ",
+    "model.MPQ", // added in 5.x.x
+    "misc.MPQ", // added in 5.x.x
+    "expansion1.MPQ",
+    "expansion2.MPQ",
+    "expansion3.MPQ",
+    "expansion4.MPQ", // added in 5.x.x
+};
+
+uint32 const Builds[] = { 16016, 16048, 16057, 16309, 16357, 16516, 16650, 16844, 16965, 17116, 17266, 17325, 17345, 17538, 17645, 17688, 17898, 18273, 0 };
+#define LAST_DBC_IN_DATA_BUILD 15595    // after this build mpqs with dbc are back to locale folder
+#define NEW_BASE_SET_BUILD 16016 // 15211
+#endif
 
 #define LOCALES_COUNT 15
 
@@ -261,6 +283,7 @@ void strToLower(char* str)
 // copied from contrib/extractor/System.cpp
 void ReadLiquidTypeTableDBC()
 {
+#if VERSION_STRING == Cata
     printf("Read LiquidType.dbc file...");
 
     DBCFile dbc(LocaleMpq, "DBFilesClient\\LiquidType.dbc");
@@ -279,6 +302,50 @@ void ReadLiquidTypeTableDBC()
         LiqType[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
 
     printf("Done! (%u LiqTypes loaded)\n", (unsigned int)LiqType_count);
+#else
+    HANDLE localeFile;
+    char localMPQ[1024];
+
+    snprintf(localMPQ, sizeof(localMPQ), "%smisc.MPQ", input_path);
+    if (FileExists(localMPQ) == false)
+    {   // Use misc.mpq
+        printf(localMPQ, "%s/Data/%s/locale-%s.MPQ", input_path);
+    }
+
+    if (!SFileOpenArchive(localMPQ, 0, MPQ_OPEN_READ_ONLY, &localeFile))
+    {
+        exit(1);
+    }
+
+    printf("Read LiquidType.dbc file...");
+
+    HANDLE dbcFile;
+    if (!SFileOpenFileEx(localeFile, "DBFilesClient\\LiquidType.dbc", SFILE_OPEN_PATCHED_FILE, &dbcFile))
+    {
+        if (!SFileOpenFileEx(localeFile, "DBFilesClient\\LiquidType.dbc", SFILE_OPEN_PATCHED_FILE, &dbcFile))
+        {
+            printf("Fatal error: Cannot find LiquidType.dbc in archive!\n");
+            exit(1);
+        }
+    }
+
+    DBCFile dbc(localeFile, "DBFilesClient\\LiquidType.dbc");
+    if (!dbc.open())
+    {
+        printf("Fatal error: Invalid LiquidType.dbc file format!\n");
+        exit(1);
+    }
+
+    size_t LiqType_count = dbc.getRecordCount();
+    size_t LiqType_maxid = dbc.getMaxId();
+    LiqType = new uint16[LiqType_maxid + 1];
+    memset(LiqType, 0xff, (LiqType_maxid + 1) * sizeof(uint16));
+
+    for (size_t x = 0; x < LiqType_count; ++x)
+        LiqType[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
+
+    printf("Done! (%zu LiqTypes loaded)\n", LiqType_count);
+#endif
 }
 
 bool ExtractWmo()
