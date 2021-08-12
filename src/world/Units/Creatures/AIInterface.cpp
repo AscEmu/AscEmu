@@ -127,6 +127,7 @@ AIInterface::AIInterface()
     mCurrentSpellTarget = nullptr;
     setCannotReachTarget(false);
     m_fleeTimer.resetInterval(0);
+    mSpellWaitTimer.resetInterval(1500);
     m_cannotReachTimer.resetInterval(500);
     m_updateAssistTimer.resetInterval(1000);
     m_updateTargetsTimer.resetInterval(TARGET_UPDATE_INTERVAL);
@@ -136,8 +137,8 @@ AIInterface::~AIInterface()
 {
     mLastCastedSpell = nullptr;
     mCurrentSpellTarget = nullptr;
+    mCreatureAISpells.clear();
     clearBoundary();
-    spellEventsNew.resetEvents();
     onLoadScripts.clear();
     onCombatStartScripts.clear();
     onAIUpdateScripts.clear();
@@ -169,7 +170,6 @@ void AIInterface::Init(Unit* un, AiScriptTypes at, Unit* owner)
 
 void AIInterface::initialiseScripts(uint32_t entry)
 {
-    spellEventsNew.resetEvents();
     onLoadScripts.clear();
     onCombatStartScripts.clear();
     onAIUpdateScripts.clear();
@@ -266,14 +266,18 @@ void AIInterface::initialiseScripts(uint32_t entry)
                     castChance = ((100.0f / spellcountOnCombatStart) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[itr2->spell_type]);
 
                 sLogger.debug("spell %u chance %f", itr2->spellId, castChance);
-                //printf("spell %u chance %f \n", itr2->spellId, castChance);
+
+                uint32_t spellCooldown = Util::getRandomUInt(itr2->cooldownMin, itr2->cooldownMax);
+                if (spellCooldown == 0)
+                    spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
 
                 // Create AI Spell
-                AI_Spell_Info* newAISpell = new AI_Spell_Info(spellInfo, castChance, itr2->target, itr2->cooldownMin, itr2->cooldownMax, itr2->phase, itr2->maxCount, itr2->health, itr2->event, itr2->triggered);
+                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, itr2->target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, itr2->triggered);
                 newAISpell->addDBEmote(itr2->textId);
+                newAISpell->setMaxCastCount(itr2->maxCount);
 
                 // Ready add to our List
-                mCreatureAISpells[itr2->spellId] = newAISpell;
+                mCreatureAISpells.push_back(newAISpell);
             }
             else
                 sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", itr2->spellId);
@@ -297,20 +301,21 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 if (itr2->chance)
                     castChance = itr2->chance;
                 else
-                    castChance = ((100.0f / spellcountOnAIUpdate) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[itr2->spell_type]);
+                    castChance = ((75.0f / spellcountOnAIUpdate) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[itr2->spell_type]);
 
                 sLogger.debug("spell %u chance %f", itr2->spellId, castChance);
-                //printf("spell %u chance %f \n", itr2->spellId, castChance);
+
+                uint32_t spellCooldown = Util::getRandomUInt(itr2->cooldownMin, itr2->cooldownMax);
+                if (spellCooldown == 0)
+                    spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
 
                 // Create AI Spell
-                AI_Spell_Info* newAISpell = new AI_Spell_Info(spellInfo, castChance, itr2->target, itr2->cooldownMin, itr2->cooldownMax, itr2->phase, itr2->maxCount, itr2->health, itr2->event, itr2->triggered);
+                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, itr2->target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, itr2->triggered);
                 newAISpell->addDBEmote(itr2->textId);
+                newAISpell->setMaxCastCount(itr2->maxCount);
 
                 // Ready add to our List
-                mCreatureAISpells[itr2->spellId] = newAISpell;
-
-                // Add Timers
-                spellEventsNew.addEvent(itr2->spellId, Util::getRandomUInt(itr2->cooldownMin, itr2->cooldownMax), itr2->phase);
+                mCreatureAISpells.push_back(newAISpell);
             }
             else
                 sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", itr2->spellId);
@@ -494,19 +499,22 @@ void AIInterface::Update(unsigned long time_passed)
 
 void AIInterface::UpdateAgent(unsigned long time_passed)
 {
-    // Update Spell Timers
-    if(getUnit()->isInCombat())
-        spellEventsNew.updateEvents(time_passed, internalPhase);
+    mSpellWaitTimer.updateTimer(time_passed);
 
-    castTimer.updateTimer(time_passed);
+    // Update Spells
+    if (getUnit()->isInCombat() && !getUnit()->isCastingSpell())
+    {
+        // Update Internal Spell Timers
+        for (auto spells : mCreatureAISpells)
+        {
+            if (!getUnit()->isCastingSpell())
+                spells->mCooldownTimer.updateTimer(time_passed);
 
-    // can we still cast?
-    canCast();
+            spells->mDurationTimer.updateTimer(time_passed);
+        }
 
-    uint32_t spellId = spellEventsNew.getFinishedEvent();
-
-    // cast our Spell
-    castAISpell(spellId);
+        UpdateAISpells();
+    }
 
     // On AIUpdate Scripts
     for (auto itr = onAIUpdateScripts.begin(); itr != onAIUpdateScripts.end(); ++itr)
@@ -553,161 +561,187 @@ void AIInterface::UpdateAgent(unsigned long time_passed)
     }
 }
 
-void AIInterface::canCast()
+void AIInterface::castAISpell(CreatureAISpells* aiSpell)
 {
-    // incase our Target moves check in range
-    if (mLastCastedSpell)
+    Unit* target = getCurrentTarget();
+    switch (aiSpell->mTargetType)
     {
-        // Send Text when Casttime is Done
-        if (castTimer.isTimePassed())
-        {
-            // Spellcount
-            mLastCastedSpell->usedCounter = mLastCastedSpell->usedCounter + 1;
-
-            // Emote
-            mLastCastedSpell->sendRandomEmote(getUnit());
-
-            // Nullout our last used Spell
-            mLastCastedSpell = nullptr;
-        }
-        else
-        {
-            // spell has a min/max range
-            if (!getUnit()->isCastingSpell() && (mLastCastedSpell->mMaxPositionRangeToCast > 0.0f || mLastCastedSpell->mMinPositionRangeToCast > 0.0f))
-            {
-                // if we have a current target and spell is not triggered
-                if (mCurrentSpellTarget != nullptr && !mLastCastedSpell->mIsTriggered)
-                {
-                    // interrupt spell if we are not in  required range
-                    const float targetDistance = getUnit()->GetPosition().Distance2DSq({ mCurrentSpellTarget->GetPositionX(), mCurrentSpellTarget->GetPositionY() });
-                    if (!mLastCastedSpell->isDistanceInRange(targetDistance))
-                    {
-                        sLogger.debug("Target outside of spell range (%u)! Min: %f Max: %f, distance to Target: %f", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);
-                        getUnit()->interruptSpell();
-                        mLastCastedSpell = nullptr;
-                    }
-                }
-            }
-        }
+    case TARGET_SELF:
+    case TARGET_VARIOUS:
+    {
+        getUnit()->castSpell(getUnit(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        mLastCastedSpell = aiSpell;
+    } break;
+    case TARGET_ATTACKING:
+    {
+        getUnit()->castSpell(target, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        mCurrentSpellTarget = target;
+        mLastCastedSpell = aiSpell;
+    } break;
+    case TARGET_SOURCE:
+        getUnit()->castSpellLoc(getUnit()->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        mLastCastedSpell = aiSpell;
+        break;
+    case TARGET_DESTINATION:
+    {
+        getUnit()->castSpellLoc(target->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        mCurrentSpellTarget = target;
+        mLastCastedSpell = aiSpell;
+    } break;
+    case TARGET_RANDOM_FRIEND:
+    case TARGET_RANDOM_SINGLE:
+    case TARGET_RANDOM_DESTINATION:
+    {
+        castSpellOnRandomTarget(aiSpell);
+        mLastCastedSpell = aiSpell;
+    } break;
+    case TARGET_CLOSEST:
+    {
+        mCurrentSpellTarget = getBestUnitTarget(TargetFilter_Closest);
+        mLastCastedSpell = aiSpell;
+        getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+    } break;
+    case TARGET_FURTHEST:
+    {
+        mCurrentSpellTarget = getBestUnitTarget(TargetFilter_InRangeOnly, 0.0f, 30.0f);
+        mLastCastedSpell = aiSpell;
+        getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+    } break;
+    case TARGET_CUSTOM:
+    {
+        if (aiSpell->getCustomTarget() != nullptr)
+            getUnit()->castSpell(aiSpell->getCustomTarget(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+    } break;
     }
 }
 
-void AIInterface::castAISpell(uint32_t spellId)
+void AIInterface::castAISpell(uint32_t aiSpellId)
 {
-    auto spell = mCreatureAISpells.find(spellId);
+    CreatureAISpells* aiSpell = nullptr;
 
-    if (spell == mCreatureAISpells.end())
+    // Lets find the stored Spellinfo
+    for (auto spell : mCreatureAISpells)
+        if (spell->mSpellInfo->getId() == aiSpellId)
+            aiSpell = spell;
+
+    // when no valid Spell is found return
+    if (!aiSpell)
         return;
 
-    bool canCastSpell = false;
-
-    // do we have a chance to cast
-    if (Util::checkChance(spell->second->mCastChance))
+    Unit* target = getCurrentTarget();
+    switch (aiSpell->mTargetType)
     {
-        // focus/mana requirement
-        switch (spell->second->mSpellInfo->getPowerType())
-        {
-        case POWER_TYPE_MANA:
-        {
-            if (m_Unit->getPower(POWER_TYPE_MANA) > spell->second->mSpellInfo->getManaCost())
-                canCastSpell = true;
-        }
-        break;
-        case POWER_TYPE_FOCUS:
-        {
-            if (m_Unit->getPower(POWER_TYPE_FOCUS) > spell->second->mSpellInfo->getManaCost())
-                canCastSpell = true;
-        }
-        break;
-        }
-
-        // Dummy for testing only
-        canCastSpell = true;
-
-        // Only cast when we are at a Certain Health
-        if (spell->second->castHealth)
-            if (float(getUnit()->getHealthPct()) <= spell->second->castHealth)
-                canCastSpell = true;
-        else
-            canCastSpell = true;
-
-        // Only cast when we have charges left
-        if (spell->second->usedCounter >= spell->second->maxSpellCount && spell->second->maxSpellCount > 0)
-            canCastSpell = false;
-    }
-
-    // We can Safely cast the Spell now
-    if (canCastSpell)
+    case TARGET_SELF:
+    case TARGET_VARIOUS:
     {
-        Unit* mCurrentSpellTarget = nullptr;
-        switch (spell->second->mTargetType)
+        getUnit()->castSpell(getUnit(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        mLastCastedSpell = aiSpell;
+    } break;
+    case TARGET_ATTACKING:
+    {
+        getUnit()->castSpell(target, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        mCurrentSpellTarget = target;
+        mLastCastedSpell = aiSpell;
+    } break;
+    case TARGET_SOURCE:
+        getUnit()->castSpellLoc(getUnit()->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        mLastCastedSpell = aiSpell;
+        break;
+    case TARGET_DESTINATION:
+    {
+        getUnit()->castSpellLoc(target->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        mCurrentSpellTarget = target;
+        mLastCastedSpell = aiSpell;
+    } break;
+    case TARGET_RANDOM_FRIEND:
+    case TARGET_RANDOM_SINGLE:
+    case TARGET_RANDOM_DESTINATION:
+    {
+        castSpellOnRandomTarget(aiSpell);
+        mLastCastedSpell = aiSpell;
+    } break;
+    case TARGET_CLOSEST:
+    {
+        mCurrentSpellTarget = getBestUnitTarget(TargetFilter_Closest);
+        mLastCastedSpell = aiSpell;
+        getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+    } break;
+    case TARGET_FURTHEST:
+    {
+        mCurrentSpellTarget = getBestUnitTarget(TargetFilter_InRangeOnly, 0.0f, 30.0f);
+        mLastCastedSpell = aiSpell;
+        getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+    } break;
+    case TARGET_CUSTOM:
+    {
+        if (aiSpell->getCustomTarget() != nullptr)
+            getUnit()->castSpell(aiSpell->getCustomTarget(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+    } break;
+    }
+}
+
+void AIInterface::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
+{
+    if (AiSpell == nullptr)
+        return;
+
+    // helper for following code
+    bool isTargetRandFriend = (AiSpell->mTargetType == TARGET_RANDOM_FRIEND ? true : false);
+
+    // if we already cast a spell, do not set/cast another one!
+    if (!getUnit()->isCastingSpell()
+        && getUnit()->GetAIInterface()->getCurrentTarget())
+    {
+        // set up targets in range by position, relation and hp range
+        std::vector<Unit*> possibleUnitTargets;
+
+        for (const auto& inRangeObject : getUnit()->getInRangeObjectsSet())
         {
-            case TARGET_SELF:
-            case TARGET_VARIOUS:
+            if (((isTargetRandFriend && isFriendly(getUnit(), inRangeObject))
+                || (!isTargetRandFriend && isHostile(getUnit(), inRangeObject) && inRangeObject != getUnit())) && inRangeObject->isCreatureOrPlayer())
             {
-                mCurrentSpellTarget = getUnit();
-                mLastCastedSpell = spell->second;
-                getUnit()->castSpell(mCurrentSpellTarget, spell->second->mSpellInfo, spell->second->mIsTriggered);
-            } break;
-            case TARGET_ATTACKING:
-            {
-                mCurrentSpellTarget = getBestUnitTarget(TargetFilter_Current);
-                mLastCastedSpell = spell->second;
-                getUnit()->castSpell(mCurrentSpellTarget, spell->second->mSpellInfo, spell->second->mIsTriggered);
-            } break;
-            case TARGET_DESTINATION:
-            {
-                mCurrentSpellTarget = getBestUnitTarget(TargetFilter_Current);
-                mLastCastedSpell = spell->second;
-                getUnit()->castSpellLoc(mCurrentSpellTarget->GetPosition(), spell->second->mSpellInfo, spell->second->mIsTriggered);
-            } break;
-            case TARGET_SOURCE:
-            {
-                mCurrentSpellTarget = getUnit();
-                mLastCastedSpell = spell->second;
-                getUnit()->castSpellLoc(mCurrentSpellTarget->GetPosition(), spell->second->mSpellInfo, spell->second->mIsTriggered);
-            } break;
-            case TARGET_RANDOM_FRIEND:
-            {
-                mCurrentSpellTarget = getBestUnitTarget(TargetFilter_Friendly);
-                mLastCastedSpell = spell->second;
-                getUnit()->castSpell(mCurrentSpellTarget, spell->second->mSpellInfo, spell->second->mIsTriggered);
-            } break;
-            case TARGET_RANDOM_SINGLE:
-            {
-                mCurrentSpellTarget = getBestUnitTarget();
-                mLastCastedSpell = spell->second;
-                getUnit()->castSpell(mCurrentSpellTarget, spell->second->mSpellInfo, spell->second->mIsTriggered);
-            } break;
-            case TARGET_RANDOM_DESTINATION:
-            {
-                mCurrentSpellTarget = getBestUnitTarget();
-                mLastCastedSpell = spell->second;
-                getUnit()->castSpellLoc(mCurrentSpellTarget->GetPosition(), spell->second->mSpellInfo, spell->second->mIsTriggered);
-            } break;
-            case TARGET_CLOSEST:
-            {
-                mCurrentSpellTarget = getBestUnitTarget(TargetFilter_Closest);
-                mLastCastedSpell = spell->second;
-                getUnit()->castSpell(mCurrentSpellTarget, spell->second->mSpellInfo, spell->second->mIsTriggered);
-            } break;
-            case TARGET_FURTHEST:
-            {
-                mCurrentSpellTarget = getBestUnitTarget(TargetFilter_InRangeOnly, 0.0f, 30.0f);
-                mLastCastedSpell = spell->second;
-                getUnit()->castSpell(mCurrentSpellTarget, spell->second->mSpellInfo, spell->second->mIsTriggered);
-            } break;
+                Unit* inRangeTarget = static_cast<Unit*>(inRangeObject);
+
+                if (
+                    inRangeTarget->isAlive() && AiSpell->isDistanceInRange(getUnit()->GetDistance2dSq(inRangeTarget))
+                    && ((AiSpell->isHpInPercentRange(inRangeTarget->getHealthPct()) && isTargetRandFriend)
+                        || (getUnit()->getThreatManager().getThreat(inRangeTarget) > 0 && isHostile(getUnit(), inRangeTarget))))
+                {
+                    possibleUnitTargets.push_back(inRangeTarget);
+                }
+            }
         }
 
-        uint32_t casttime = (GetCastTime(sSpellCastTimesStore.LookupEntry(spell->second->mSpellInfo->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.LookupEntry(spell->second->mSpellInfo->getCastingTimeIndex())) : 500);
+        // add us as a friendly target.
+        if (AiSpell->isHpInPercentRange(getUnit()->getHealthPct()) && isTargetRandFriend)
+            possibleUnitTargets.push_back(getUnit());
 
-        castTimer.resetInterval(casttime);
+        // no targets in our range for hp range and firendly targets
+        if (possibleUnitTargets.empty())
+            return;
 
-        // Delay all on given Phase
-        spellEventsNew.delayAllEvents(casttime, internalPhase);
+        // get a random target
+        uint32_t randomIndex = Util::getRandomUInt(0, static_cast<uint32_t>(possibleUnitTargets.size() - 1));
+        Unit* randomTarget = possibleUnitTargets[randomIndex];
+
+        if (randomTarget == nullptr)
+            return;
+
+        switch (AiSpell->mTargetType)
+        {
+        case TARGET_RANDOM_FRIEND:
+        case TARGET_RANDOM_SINGLE:
+        {
+            getUnit()->castSpell(randomTarget, AiSpell->mSpellInfo, AiSpell->mIsTriggered);
+            mCurrentSpellTarget = randomTarget;
+        } break;
+        case TARGET_RANDOM_DESTINATION:
+            getUnit()->castSpellLoc(randomTarget->GetPosition(), AiSpell->mSpellInfo, AiSpell->mIsTriggered);
+            break;
+        }
+
+        possibleUnitTargets.clear();
     }
-    if(spell->second->eventType == onAIUpdate)
-        spellEventsNew.addEvent(spellId, Util::getRandomUInt(spell->second->minCooldownTime, spell->second->maxCooldownTime), spell->second->spellPhase);
 }
 
 void AIInterface::updateEmotes(unsigned long time_passed)
@@ -832,6 +866,10 @@ void AIInterface::updateTargets(unsigned long time_passed)
 // Called in TheratHandler when Target is changed
 void AIInterface::updateVictim(Unit* victim)
 {
+
+    if (getAiScriptType() == AI_SCRIPT_PASSIVE)
+        return;
+
     if (!victim)
         return;
 
@@ -2161,6 +2199,8 @@ void AIInterface::removeNextSpell(uint32_t spellId)
 void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
 {
     m_isEngaged = false;
+    mCreatureAISpells.clear();
+    internalPhase = 0;
     spellEvents.resetEvents();
     setUnitToFollow(nullptr);
     setCannotReachTarget(false);
@@ -2256,6 +2296,8 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 {
     m_isEngaged = false;
     spellEvents.resetEvents();
+    internalPhase = 0;
+    mCreatureAISpells.clear();
     setCurrentTarget(nullptr);
     setUnitToFollow(nullptr);
     if (pUnit == nullptr)
@@ -2377,10 +2419,12 @@ void AIInterface::eventOnLoad()
     initialiseScripts(getUnit()->getEntry());
 
     // On Load Scripts
-    for (auto itr = onLoadScripts.begin(); itr != onLoadScripts.end(); ++itr)
+    if (onLoadScripts.size())
     {
-        switch (itr->action)
+        for (auto itr = onLoadScripts.begin(); itr != onLoadScripts.end(); ++itr)
         {
+            switch (itr->action)
+            {
             case actionSpell:
             {
                 castAISpell(itr->spellId);
@@ -2394,6 +2438,7 @@ void AIInterface::eventOnLoad()
                 if (npcScriptText->sound != 0)
                     getUnit()->PlaySoundToSet(npcScriptText->sound);
             } break;
+            }
         }
     }
 }
@@ -3014,15 +3059,17 @@ uint32 AIInterface::fixupCorridor(dtPolyRef* path, const uint32 npath, const uin
     return req + size;
 }
 
-bool AI_Spell_Info::isDistanceInRange(float targetDistance)
+void CreatureAISpells::setdurationTimer(uint32_t durationTimer)
 {
-    if (targetDistance >= mMinPositionRangeToCast && targetDistance <= mMaxPositionRangeToCast)
-        return true;
-
-    return false;
+    mDurationTimer.resetInterval(durationTimer);
 }
 
-void AI_Spell_Info::addDBEmote(uint32_t textId)
+void CreatureAISpells::setCooldownTimer(uint32_t cooldownTimer)
+{
+    mCooldownTimer.resetInterval(cooldownTimer);
+}
+
+void CreatureAISpells::addDBEmote(uint32_t textId)
 {
     MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(textId);
     if (npcScriptText != nullptr)
@@ -3031,13 +3078,13 @@ void AI_Spell_Info::addDBEmote(uint32_t textId)
         sLogger.debug("A script tried to add a spell emote with %u! Id is not available in table npc_script_text.", textId);
 }
 
-void AI_Spell_Info::addEmote(std::string pText, uint8_t pType, uint32_t pSoundId)
+void CreatureAISpells::addEmote(std::string pText, uint8_t pType, uint32_t pSoundId)
 {
     if (!pText.empty() || pSoundId)
         mAISpellEmote.push_back(AISpellEmotes(pText, pType, pSoundId));
 }
 
-void AI_Spell_Info::sendRandomEmote(Unit* creatureAI)
+void CreatureAISpells::sendRandomEmote(Unit* creatureAI)
 {
     if (!mAISpellEmote.empty() && creatureAI != nullptr)
     {
@@ -3048,6 +3095,316 @@ void AI_Spell_Info::sendRandomEmote(Unit* creatureAI)
 
         if (mAISpellEmote[randomUInt].mSoundId != 0)
             creatureAI->PlaySoundToSet(mAISpellEmote[randomUInt].mSoundId);
+    }
+}
+
+void CreatureAISpells::setMaxStackCount(uint32_t stackCount)
+{
+    mMaxStackCount = stackCount;
+}
+
+uint32_t CreatureAISpells::getMaxStackCount()
+{
+    return mMaxStackCount;
+}
+
+void CreatureAISpells::setMaxCastCount(uint32_t castCount)
+{
+    mMaxCount = castCount;
+}
+
+uint32_t CreatureAISpells::getMaxCastCount()
+{
+    return mMaxCount;
+}
+
+uint32_t CreatureAISpells::getCastCount()
+{
+    return mCastCount;
+}
+
+bool CreatureAISpells::isDistanceInRange(float targetDistance)
+{
+    if (targetDistance >= mMinPositionRangeToCast && targetDistance <= mMaxPositionRangeToCast)
+        return true;
+
+    return false;
+}
+
+void CreatureAISpells::setMinMaxDistance(float minDistance, float maxDistance)
+{
+    mMinPositionRangeToCast = minDistance;
+    mMaxPositionRangeToCast = maxDistance;
+}
+
+bool CreatureAISpells::isHpInPercentRange(int targetHp)
+{
+    if (targetHp >= mMinHpRangeToCast && targetHp <= mMaxHpRangeToCast)
+        return true;
+
+    return false;
+}
+
+void CreatureAISpells::setMinMaxPercentHp(int minHp, int maxHp)
+{
+    mMinHpRangeToCast = minHp;
+    mMaxHpRangeToCast = maxHp;
+}
+
+void CreatureAISpells::setAvailableForScriptPhase(std::vector<uint32_t> phaseVector)
+{
+    for (const auto& phase : phaseVector)
+    {
+        mPhaseList.push_back(phase);
+    }
+}
+
+bool CreatureAISpells::isAvailableForScriptPhase(uint32_t scriptPhase)
+{
+    if (mPhaseList.empty())
+        return true;
+
+    for (const auto& availablePhase : mPhaseList)
+    {
+        if (availablePhase == scriptPhase)
+            return true;
+    }
+
+    return false;
+}
+
+void CreatureAISpells::setAttackStopTimer(uint32_t attackStopTime)
+{
+    mAttackStopTimer = attackStopTime;
+}
+
+uint32_t CreatureAISpells::getAttackStopTimer()
+{
+    return mAttackStopTimer;
+}
+
+void CreatureAISpells::setAnnouncement(std::string announcement)
+{
+    mAnnouncement = announcement;
+}
+
+void CreatureAISpells::sendAnnouncement(Unit* pUnit)
+{
+    if (!mAnnouncement.empty() && pUnit != nullptr)
+    {
+        sLogger.debug("AISpellEmotes::sendAnnouncement() : called");
+
+        pUnit->sendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, mAnnouncement.c_str());
+    }
+}
+
+void CreatureAISpells::setCustomTarget(Unit* targetCreature)
+{
+    mCustomTargetCreature = targetCreature;
+}
+
+Unit* CreatureAISpells::getCustomTarget()
+{
+    return mCustomTargetCreature;
+}
+
+CreatureAISpells* AIInterface::addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration /*= 0*/, uint32_t cooldown /*= 0*/, bool forceRemove /*= false*/, bool isTriggered /*= false*/)
+{
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    if (spellInfo != nullptr)
+    {
+        uint32_t spellDuration = duration * 1000;
+        if (spellDuration == 0)
+            spellDuration = spellInfo->getSpellDefaultDuration(nullptr);
+
+        uint32_t spellCooldown = cooldown * 1000;
+        if (spellCooldown == 0)
+            spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
+
+        CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, targetType, spellDuration, spellCooldown, forceRemove, isTriggered);
+
+        mCreatureAISpells.push_back(newAISpell);
+
+        newAISpell->setdurationTimer(spellDuration);
+        newAISpell->setCooldownTimer(spellCooldown);
+
+        return newAISpell;
+    }
+
+    sLogger.failure("tried to add invalid spell with id %u", spellId);
+
+    // assert spellInfo can not be nullptr!
+    ARCEMU_ASSERT(spellInfo != nullptr);
+    return nullptr;
+}
+
+void AIInterface::UpdateAISpells()
+{
+    if (mLastCastedSpell)
+    {
+        if (!mSpellWaitTimer.isTimePassed())
+        {
+            // spell has a min/max range
+            if (!getUnit()->isCastingSpell() && (mLastCastedSpell->mMaxPositionRangeToCast > 0.0f || mLastCastedSpell->mMinPositionRangeToCast > 0.0f))
+            {
+                // if we have a current target and spell is not triggered
+                if (mCurrentSpellTarget != nullptr && !mLastCastedSpell->mIsTriggered)
+                {
+                    // interrupt spell if we are not in  required range
+                    const float targetDistance = getUnit()->GetPosition().Distance2DSq({ mCurrentSpellTarget->GetPositionX(), mCurrentSpellTarget->GetPositionY() });
+                    if (!mLastCastedSpell->isDistanceInRange(targetDistance))
+                    {
+                        sLogger.debug("Target outside of spell range (%u)! Min: %f Max: %f, distance to Target: %f", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);
+                        getUnit()->interruptSpell();
+                        mLastCastedSpell = nullptr;
+                    }
+                }
+            }
+        }
+        else
+        {
+            // spell gets not interupted after casttime(duration) so we can send the emote.
+            mLastCastedSpell->sendRandomEmote(getUnit());
+
+            // spell sucessfully castet increase cast Amount
+            ++mLastCastedSpell->mCastCount;
+
+            // override attack stop timer if needed
+            if (mLastCastedSpell->getAttackStopTimer() != 0)
+                getUnit()->setAttackTimer(MELEE, mLastCastedSpell->getAttackStopTimer());
+
+            mLastCastedSpell = nullptr;
+        }
+    }
+
+    // cleanup exeeded spells
+    for (const auto& AISpell : mCreatureAISpells)
+    {
+        if (AISpell != nullptr)
+        {
+            // stop spells and remove aura in case of duration
+            if (AISpell->mDurationTimer.isTimePassed() && AISpell->mForceRemoveAura)
+            {
+                getUnit()->interruptSpell();
+                getUnit()->RemoveAura(AISpell->mSpellInfo->getId());
+            }
+        }
+    }
+
+    // cast one spell and check if spell is done (duration)
+    if (mSpellWaitTimer.isTimePassed())
+    {
+        CreatureAISpells* usedSpell = nullptr;
+
+        float randomChance = Util::getRandomFloat(100.0f);
+
+        // Shuffle Around our Spells to randomize the cast
+        if (mCreatureAISpells.size())
+        {
+            for (int i = 0; i < mCreatureAISpells.size() - 1; i++)
+            {
+                int j = i + rand() % (mCreatureAISpells.size() - i);
+                std::swap(mCreatureAISpells[i], mCreatureAISpells[j]);
+            }
+        }
+
+        for (const auto& AISpell : mCreatureAISpells)
+        {
+            if (AISpell != nullptr)
+            {
+                // spell was casted before, check if the wait time is done
+                if (!AISpell->mCooldownTimer.isTimePassed())
+                    continue;
+
+                // is bound to a specific phase (all greater than 0)
+                if (!AISpell->isAvailableForScriptPhase(internalPhase))
+                    continue;
+
+                // max Spell cast amount
+                if (AISpell->getMaxCastCount() && AISpell->getMaxCastCount() <= AISpell->getCastCount())
+                    continue;
+
+                // aura stacking
+                if (getUnit()->getAuraCountForId(AISpell->mSpellInfo->getId()) >= AISpell->getMaxStackCount())
+                    continue;
+
+                // hp range
+                if (!AISpell->isHpInPercentRange(getUnit()->getHealthPct()))
+                    continue;
+
+                // no random chance (cast in script)
+                if (AISpell->mCastChance == 0.0f)
+                    continue;
+
+                // do not cast any spell while stunned/feared/silenced/charmed/confused
+                if (getUnit()->hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_FLEEING | UNIT_STATE_IN_FLIGHT | UNIT_STATE_CHARMED | UNIT_STATE_CONFUSED))
+                    break;
+
+                // random chance for shuffeld array should do the job
+                if (randomChance < AISpell->mCastChance)
+                {
+                    usedSpell = AISpell;
+                    break;
+                }
+                else
+                {
+                    // When we dont had a canche to cast then add the default 1.5sec cooldown for the next cycle
+                    AISpell->setCooldownTimer(1500);
+                    continue;
+                }
+            }
+        }
+
+        if (usedSpell != nullptr)
+        {
+            Unit* target = getCurrentTarget();
+            switch (usedSpell->mTargetType)
+            {
+            case TARGET_SELF:
+            case TARGET_VARIOUS:
+            {
+                getUnit()->castSpell(getUnit(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                mLastCastedSpell = usedSpell;
+            } break;
+            case TARGET_ATTACKING:
+            {
+                getUnit()->castSpell(target, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                mCurrentSpellTarget = target;
+                mLastCastedSpell = usedSpell;
+            } break;
+            case TARGET_DESTINATION:
+            {
+                getUnit()->castSpellLoc(target->GetPosition(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                mCurrentSpellTarget = target;
+                mLastCastedSpell = usedSpell;
+            } break;
+            case TARGET_RANDOM_FRIEND:
+            case TARGET_RANDOM_SINGLE:
+            case TARGET_RANDOM_DESTINATION:
+            {
+                castSpellOnRandomTarget(usedSpell);
+                mLastCastedSpell = usedSpell;
+            } break;
+            case TARGET_CUSTOM:
+            {
+                // nos custom target set, no spell cast.
+                if (usedSpell->getCustomTarget() != nullptr)
+                    getUnit()->castSpell(usedSpell->getCustomTarget(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+            } break;
+            }
+
+            // send announcements on casttime beginn
+            usedSpell->sendAnnouncement(getUnit());
+
+            uint32_t casttime = (GetCastTime(sSpellCastTimesStore.LookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.LookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex())) : 500);
+
+            // reset cast wait timer
+            mSpellWaitTimer.resetInterval(casttime);
+
+            // reset spell timers to cleanup exceeded spells
+            usedSpell->mDurationTimer.resetInterval(usedSpell->mDuration);
+            usedSpell->mCooldownTimer.resetInterval(usedSpell->mCooldown);
+        }
     }
 }
 

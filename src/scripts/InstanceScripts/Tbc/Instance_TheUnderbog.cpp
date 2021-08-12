@@ -179,26 +179,26 @@ class SwamplordMuselekAI : public CreatureAIScript
                 if (!getCreature()->isCastingSpell())
                 {
                     uint32_t RangedSpell = Util::getRandomUInt(100);
-                    if (RangedSpell <= 20 && _isTimerFinished(aimedShot->mCooldownTimerId))
+                    if (RangedSpell <= 20 && _isTimerFinished(aimedShot->mCooldownTimer.isTimePassed()))
                     {
                         getCreature()->castSpell(target, aimedShot->mSpellInfo, true);
                         getCreature()->setAttackTimer(MELEE, aimedShot->getAttackStopTimer());
-                        _resetTimer(aimedShot->mCooldownTimerId, aimedShot->mCooldown);
+                        aimedShot->mCooldownTimer.resetInterval(aimedShot->mCooldown);
                     }
 
-                    if (RangedSpell > 20 && RangedSpell <= 40 && _isTimerFinished(multiShot->mCooldownTimerId))
+                    if (RangedSpell > 20 && RangedSpell <= 40 && _isTimerFinished(multiShot->mCooldownTimer.isTimePassed()))
                     {
                         getCreature()->castSpell(target, multiShot->mSpellInfo, true);
                         getCreature()->setAttackTimer(MELEE, multiShot->getAttackStopTimer());
-                        _resetTimer(multiShot->mCooldownTimerId, multiShot->mCooldown);
+                        multiShot->mCooldownTimer.resetInterval(multiShot->mCooldown);
                     }
                     else
                     {
-                        if (_isTimerFinished(shot->mCooldownTimerId))
+                        if (_isTimerFinished(shot->mCooldownTimer.isTimePassed()))
                         {
                             getCreature()->castSpell(target, shot->mSpellInfo, true);
                             getCreature()->setAttackTimer(MELEE, shot->getAttackStopTimer());
-                            _resetTimer(shot->mCooldownTimerId, shot->mCooldown);
+                             shot->mCooldownTimer.resetInterval(shot->mCooldown);
                         }
                     }
                 }

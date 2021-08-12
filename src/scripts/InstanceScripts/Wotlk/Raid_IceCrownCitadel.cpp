@@ -777,7 +777,7 @@ class LordMarrowgarAI : public CreatureAIScript
 
                 boneStormtarget= getBestPlayerTarget(TargetFilter_NotCurrent);
                 if (!boneStormtarget)
-                    boneStormtarget = getBestPlayerTarget(TargetFilter_Aggroed);
+                    boneStormtarget = getBestPlayerTarget(TargetFilter_Current);
                 
                 if (boneStormtarget)
                     getCreature()->getMovementManager()->movePoint(POINT_TARGET_BONESTORM_PLAYER, boneStormtarget->GetPosition());
@@ -925,6 +925,8 @@ class ColdflameAI : public CreatureAIScript
     {
         // Instance Script
         mInstance = getInstanceScript();     
+        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
         coldflameTriggerSpell = addAISpell(SPELL_COLDFLAME_SUMMON, 0.0f, TARGET_SOURCE);
         coldflameTriggerSpell->mIsTriggered = true;
     }
@@ -1226,7 +1228,7 @@ public:
         {
             coldflametarget = pCreature->GetScript()->getBestPlayerTarget(TargetFilter_NotCurrent);
             if (!coldflametarget)
-                coldflametarget = pCreature->GetScript()->getBestPlayerTarget(TargetFilter_Aggroed);
+                coldflametarget = pCreature->GetScript()->getBestPlayerTarget(TargetFilter_Current);
 
             if (coldflametarget)
             {
