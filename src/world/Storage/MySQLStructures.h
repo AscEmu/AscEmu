@@ -97,7 +97,8 @@ namespace MySQLStructure
         uint8_t target;
         uint32_t cooldownMin;
         uint32_t cooldownMax;
-        float health;
+        float minHealth;
+        float maxHealth;
         uint32_t textId;
         uint32_t misc1;
         std::string comment;

@@ -236,13 +236,13 @@ void AIInterface::initialiseScripts(uint32_t entry)
         case actionFlee:
         {
             setCanFlee(true);
-            m_FleeHealth = itr->health;
+            m_FleeHealth = itr->maxHealth;
         }
             break;
         case actionCallForHelp:
         {
             setCanCallForHelp(true);
-            m_CallForHelpHealth = itr->health;
+            m_CallForHelpHealth = itr->maxHealth;
         }
             break;
         }
@@ -275,6 +275,8 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, itr2->target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, itr2->triggered);
                 newAISpell->addDBEmote(itr2->textId);
                 newAISpell->setMaxCastCount(itr2->maxCount);
+                newAISpell->scriptType = itr2->event;
+                newAISpell->setMinMaxPercentHp(itr2->minHealth, itr2->maxHealth);
 
                 // Ready add to our List
                 mCreatureAISpells.push_back(newAISpell);
@@ -313,6 +315,8 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, itr2->target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, itr2->triggered);
                 newAISpell->addDBEmote(itr2->textId);
                 newAISpell->setMaxCastCount(itr2->maxCount);
+                newAISpell->scriptType = itr2->event;
+                newAISpell->setMinMaxPercentHp(itr2->minHealth, itr2->maxHealth);
 
                 // Ready add to our List
                 mCreatureAISpells.push_back(newAISpell);
@@ -502,7 +506,7 @@ void AIInterface::UpdateAgent(unsigned long time_passed)
     mSpellWaitTimer.updateTimer(time_passed);
 
     // Update Spells
-    if (getUnit()->isInCombat() && !getUnit()->isCastingSpell())
+    if (getUnit()->isInCombat())
     {
         // Update Internal Spell Timers
         for (auto spells : mCreatureAISpells)
@@ -526,7 +530,7 @@ void AIInterface::UpdateAgent(unsigned long time_passed)
         case actionSendMessage:
             if (itr->phase > 0 || itr->phase == internalPhase)
             {
-                if (float(getUnit()->getHealthPct()) <= itr->health && itr->maxCount)
+                if (float(getUnit()->getHealthPct()) <= itr->maxHealth && itr->maxCount)
                 {
                     itr->maxCount = itr->maxCount - 1;
 
@@ -542,7 +546,7 @@ void AIInterface::UpdateAgent(unsigned long time_passed)
         case actionPhaseChange:
             if (itr->phase > 0 || itr->phase == internalPhase)
             {
-                if (float(getUnit()->getHealthPct()) <= itr->health && itr->maxCount)
+                if (float(getUnit()->getHealthPct()) <= itr->maxHealth && itr->maxCount)
                 {
                     internalPhase = itr->misc1;
 
@@ -3312,13 +3316,25 @@ void AIInterface::UpdateAISpells()
         {
             if (AISpell != nullptr)
             {
+                // not on AIUpdate skip
+                if (AISpell->scriptType != onAIUpdate)
+                    continue;
+
                 // spell was casted before, check if the wait time is done
                 if (!AISpell->mCooldownTimer.isTimePassed())
                     continue;
 
-                // is bound to a specific phase (all greater than 0)
-                if (!AISpell->isAvailableForScriptPhase(internalPhase))
-                    continue;
+                // is bound to a specific phase (all greater than 0) if creature has a scripted AI then use its phase
+                if (getUnit()->ToCreature()->GetScript())
+                {
+                    if (!AISpell->isAvailableForScriptPhase(getUnit()->ToCreature()->GetScript()->getScriptPhase()))
+                        continue;
+                }
+                else
+                {
+                    if (!AISpell->isAvailableForScriptPhase(internalPhase))
+                        continue;
+                }
 
                 // max Spell cast amount
                 if (AISpell->getMaxCastCount() && AISpell->getMaxCastCount() <= AISpell->getCastCount())

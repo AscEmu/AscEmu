@@ -4471,10 +4471,11 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
         ai_script->target = fields[10].GetUInt8();
         ai_script->cooldownMin = fields[11].GetUInt32();
         ai_script->cooldownMax = fields[12].GetUInt32();
-        ai_script->health = fields[13].GetFloat();
-        ai_script->textId = fields[14].GetUInt32();
-        ai_script->misc1 = fields[15].GetUInt32();
-        ai_script->comment = fields[16].GetString();
+        ai_script->minHealth = fields[13].GetFloat();
+        ai_script->maxHealth = fields[14].GetFloat();
+        ai_script->textId = fields[15].GetUInt32();
+        ai_script->misc1 = fields[16].GetUInt32();
+        ai_script->comment = fields[17].GetString();
 
         _creatureAIScriptStore.emplace(creature_entry, ai_script);
 

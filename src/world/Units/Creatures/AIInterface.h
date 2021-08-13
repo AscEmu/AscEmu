@@ -160,6 +160,8 @@ public:
         mCastCount = 0;
         mMaxCount = 0;
 
+        scriptType = onAIUpdate;
+
         mMinPositionRangeToCast = 0.0f;
         mMaxPositionRangeToCast = 0.0f;
 
@@ -184,6 +186,7 @@ public:
     SpellInfo const* mSpellInfo;
     float mCastChance;
     uint32_t mTargetType;
+    uint8_t scriptType;
 
     SmallTimeTracker mDurationTimer;
     SmallTimeTracker mCooldownTimer;
