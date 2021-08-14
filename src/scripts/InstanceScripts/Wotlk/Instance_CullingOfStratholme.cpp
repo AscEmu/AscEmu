@@ -551,7 +551,7 @@ public:
 // \todo check the unregistered scripts (broeken? outdated?)
 void SetupCullingOfStratholme(ScriptMgr* mgr)
 {
-    mgr->register_instance_script(MAP_GNOMEREGAN, &CullingOfStratholmeInstanceScript::Create);
+    mgr->register_instance_script(MAP_STRATHOLME, &CullingOfStratholmeInstanceScript::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // TRASH MOBS

@@ -40,7 +40,7 @@ void GameEventMgr::StartArenaEvents()
         auto gameEvent = GetEventById(i);
         if (gameEvent == nullptr)
         {
-            sLogger.failure("Missing arena event (id: %u)", i);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Missing arena event (id: %u)", i);
             continue;
         }
 
@@ -250,7 +250,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    sLogger.failure("ould not find event for gameobject_spawns entry %u", event_id);
+                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Could not find event for gameobject_spawns entry %u", event_id);
                     continue;
                 }
 
@@ -261,7 +261,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(dbResult.entry);
                 if (gameobject_info == nullptr)
                 {
-                    sLogger.failure("Could not create GameobjectSpawn for invalid entry %u (missing in table gameobject_properties)", dbResult.entry);
+                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Could not create GameobjectSpawn for invalid entry %u (missing in table gameobject_properties)", dbResult.entry);
                     continue;
                 }
                 dbResult.map_id = field[2].GetUInt32();

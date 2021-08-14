@@ -1057,7 +1057,7 @@ class KaelThasAI : public CreatureAIScript
 
 void SetupTheEye(ScriptMgr* mgr)
 {
-    mgr->register_instance_script(MAP_THE_EYE_OF_ETERNITY, &TheEyeInstanceScript::Create);
+    mgr->register_instance_script(MAP_TEMPEST_KEEP, &TheEyeInstanceScript::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Void Reaver event

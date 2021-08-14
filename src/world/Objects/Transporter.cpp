@@ -314,7 +314,7 @@ void Transporter::LoadStaticPassengers()
     if (GetGameObjectProperties()->mo_transport.map_id == 0)
         return;
 
-    sLogger.info("TransportHandler : Start populating transport %u ", getEntry());
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "TransportHandler : Start populating transport %u ", getEntry());
     {
         for (auto creature_spawn : sMySQLStore._creatureSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
         {
