@@ -1536,13 +1536,12 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
             m_aiInterface->addSpellToList(*itr);
     }
 
-    GetAIInterface()->eventOnLoad();
-
     GetAIInterface()->m_canCallForHelp = creature_properties->m_canCallForHelp;
     GetAIInterface()->m_CallForHelpHealth = creature_properties->m_callForHelpHealth;
     GetAIInterface()->m_canFlee = creature_properties->m_canFlee;
     GetAIInterface()->m_FleeHealth = creature_properties->m_fleeHealth;
     GetAIInterface()->m_FleeDuration = creature_properties->m_fleeDuration;
+    GetAIInterface()->eventOnLoad();
 
     if (!creature_properties->isTrainingDummy && !isVehicle())
     {
@@ -1766,6 +1765,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     GetAIInterface()->m_canFlee = creature_properties->m_canFlee;
     GetAIInterface()->m_FleeHealth = creature_properties->m_fleeHealth;
     GetAIInterface()->m_FleeDuration = creature_properties->m_fleeDuration;
+    GetAIInterface()->eventOnLoad();
 
     //////////////AI
 

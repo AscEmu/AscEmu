@@ -237,6 +237,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
         {
             setCanFlee(true);
             m_FleeHealth = itr->maxHealth;
+            m_FleeDuration = itr->misc1;
         }
             break;
         case actionCallForHelp:
