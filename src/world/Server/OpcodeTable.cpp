@@ -26,8 +26,6 @@ void OpcodeTables::initialize()
         for (auto hexIndex = 0; hexIndex < MAX_VERSION_INDEX; ++hexIndex)
             _versionHexTable[hexIndex].emplace_back(opcodeStore.second.hexValues[hexIndex], opcodeStore.first);
     }
-
-    sizeOfHexTables();
 }
 
 void OpcodeTables::finalize()
