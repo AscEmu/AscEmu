@@ -263,7 +263,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 if (itr2->chance)
                     castChance = itr2->chance;
                 else
-                    castChance = ((100.0f / spellcountOnCombatStart) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[itr2->spell_type]);
+                    castChance = ((75.0f / spellcountOnCombatStart) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[itr2->spell_type]);
 
                 sLogger.debug("spell %u chance %f", itr2->spellId, castChance);
 
@@ -276,7 +276,6 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 newAISpell->addDBEmote(itr2->textId);
                 newAISpell->setMaxCastCount(itr2->maxCount);
                 newAISpell->scriptType = itr2->event;
-                newAISpell->setMinMaxPercentHp(itr2->minHealth, itr2->maxHealth);
 
                 // Ready add to our List
                 mCreatureAISpells.push_back(newAISpell);
@@ -316,7 +315,9 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 newAISpell->addDBEmote(itr2->textId);
                 newAISpell->setMaxCastCount(itr2->maxCount);
                 newAISpell->scriptType = itr2->event;
-                newAISpell->setMinMaxPercentHp(itr2->minHealth, itr2->maxHealth);
+
+                if (itr2->maxHealth)
+                    newAISpell->setMinMaxPercentHp(itr2->minHealth, itr2->maxHealth);
 
                 // Ready add to our List
                 mCreatureAISpells.push_back(newAISpell);
@@ -2083,7 +2084,8 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
                 case actionSpell:
                 {
                     castAISpell(itr->spellId);
-                } break;
+                }
+                    break;
                 case actionSendMessage:
                 {
                     MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
@@ -2092,7 +2094,8 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
 
                     if (npcScriptText->sound != 0)
                         getUnit()->PlaySoundToSet(npcScriptText->sound);
-                } break;
+                }
+                    break;
             }
         }
     }
@@ -2248,16 +2251,16 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
         {
             switch (itr->action)
             {
-            case actionSendMessage:
-            {
-                MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
-                if (npcScriptText != nullptr)
-                    getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+                case actionSendMessage:
+                {
+                    MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
+                    if (npcScriptText != nullptr)
+                        getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
 
-                if (npcScriptText->sound != 0)
-                    getUnit()->PlaySoundToSet(npcScriptText->sound);
-            }
-            break;
+                    if (npcScriptText->sound != 0)
+                        getUnit()->PlaySoundToSet(npcScriptText->sound);
+                }
+                    break;
             }
         }
     }
@@ -2320,16 +2323,16 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
         {
             switch (itr->action)
             {
-            case actionSendMessage:
-            {
-                MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
-                if (npcScriptText != nullptr)
-                    getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+                case actionSendMessage:
+                {
+                    MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
+                    if (npcScriptText != nullptr)
+                        getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
 
-                if (npcScriptText->sound != 0)
-                    getUnit()->PlaySoundToSet(npcScriptText->sound);
-            }
-            break;
+                    if (npcScriptText->sound != 0)
+                        getUnit()->PlaySoundToSet(npcScriptText->sound);
+                }
+                    break;
             }
         }
 
@@ -2459,16 +2462,41 @@ void AIInterface::onDeath(Object* pKiller)
     {
         switch (itr->action)
         {
-        case actionSendMessage:
-        {
-            MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
-            if (npcScriptText != nullptr)
-                getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+            case actionPhaseChange:
+            {
+                if (itr->phase > 0 || itr->phase == internalPhase)
+                {
+                    if (float(getUnit()->getHealthPct()) <= itr->maxHealth && itr->maxCount)
+                    {
+                        internalPhase = itr->misc1;
 
-            if (npcScriptText->sound != 0)
-                getUnit()->PlaySoundToSet(npcScriptText->sound);
-        }
-        break;
+                        itr->maxCount = itr->maxCount - 1;
+
+                        MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
+                        if (npcScriptText != nullptr)
+                            getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+
+                        if (npcScriptText->sound != 0)
+                            getUnit()->PlaySoundToSet(npcScriptText->sound);
+                    }
+                }
+            }
+                break;
+            case actionSpell:
+            {
+                castAISpell(itr->spellId);
+            }
+                break;
+            case actionSendMessage:
+            {
+                MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
+                if (npcScriptText != nullptr)
+                    getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+
+                if (npcScriptText->sound != 0)
+                    getUnit()->PlaySoundToSet(npcScriptText->sound);
+            }
+                break;
         }
     }
 }

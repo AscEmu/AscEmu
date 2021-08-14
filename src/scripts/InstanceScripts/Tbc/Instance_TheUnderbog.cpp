@@ -198,7 +198,7 @@ class SwamplordMuselekAI : public CreatureAIScript
                         {
                             getCreature()->castSpell(target, shot->mSpellInfo, true);
                             getCreature()->setAttackTimer(MELEE, shot->getAttackStopTimer());
-                             shot->mCooldownTimer.resetInterval(shot->mCooldown);
+                            shot->mCooldownTimer.resetInterval(shot->mCooldown);
                         }
                     }
                 }
