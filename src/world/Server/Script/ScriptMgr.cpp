@@ -591,7 +591,7 @@ void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callba
 {
     if (_spells.find(entry) != _spells.end())
     {
-        sLogger.debug("ScriptMgr tried to register a script for Spell ID: %u but this spell has already one", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a script for Spell ID: %u but this spell has already one", entry);
         return;
     }
 
@@ -693,19 +693,19 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
 
     if (itr != SpellScriptEffects.end())
     {
-        sLogger.debug("ScriptMgr tried to register more than 1 script effect handlers for Spell %u", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr tried to register more than 1 script effect handlers for Spell %u", entry);
         return;
     }
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == NULL)
     {
-        sLogger.debug("ScriptMgr tried to register a script effect handler for invalid Spell %u.", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr tried to register a script effect handler for invalid Spell %u.", entry);
         return;
     }
 
     if (!sp->hasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->hasEffect(SPELL_EFFECT_SEND_EVENT))
-        sLogger.debug("ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->getName().c_str());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->getName().c_str());
 
     SpellScriptEffects.insert(std::pair< uint32, exp_handle_script_effect >(entry, callback));
 }

@@ -177,7 +177,7 @@ enum InstanceMaps
     MAP_THE_OCULUS              = 578,  // The Oculus
     MAP_SUNWELL_PLATEAU         = 580,  // The Sunwell
     MAP_MAGISTERS_TERRACE       = 585,  // Magister's Terrace
-    MAP_COT_CILLING_OF_STRATHOLME = 595,  // The Culling of Stratholme
+    MAP_CULLING_OF_STRATHOLME   = 595,  // The Culling of Stratholme
     MAP_HALLS_OF_STONE          = 599,  // Halls of Stone
     MAP_DRAK_THARON_KEEP        = 600,  // Drak'Tharon Keep
     MAP_AZJOL_NERUB             = 601,  // Azjol-Nerub

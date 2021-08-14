@@ -11,16 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.h"
 #include "Macros/ScriptMacros.hpp"
 
-class SerpentshrineCavernInstanceScript : public InstanceScript
-{
-public:
-
-    explicit SerpentshrineCavernInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new SerpentshrineCavernInstanceScript(pMapMgr); }
-};
 
 class HydrossTheUnstableAI : public CreatureAIScript
 {
@@ -2026,8 +2016,6 @@ public:
 
 void SetupSerpentshrineCavern(ScriptMgr* mgr)
 {
-    mgr->register_instance_script(MAP_CF_SERPENTSHRINE_CA, &SerpentshrineCavernInstanceScript::Create);
-
     mgr->register_creature_script(CN_HYDROSS_THE_UNSTABLE, &HydrossTheUnstableAI::Create);
     mgr->register_creature_script(CN_THE_LURKER_BELOW, &LurkerAI::Create);
 
