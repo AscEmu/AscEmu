@@ -38,7 +38,7 @@ public:
     explicit DedicationOfHonorAI(GameObject* go) : GameObjectAIScript(go) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DedicationOfHonorAI(GO); };
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         DedicationOfHonorGossip gossip;
         gossip.onHello(_gameobject, player);

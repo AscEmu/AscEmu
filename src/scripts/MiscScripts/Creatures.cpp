@@ -14,12 +14,13 @@ class ExplosiveSheep : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ExplosiveSheep)
     explicit ExplosiveSheep(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->Despawn(180000, 0); // "Lasts for 3 minutes or until it explodes."
     }
 
-    void OnCombatStart(Unit* mTarget) // Summons an Explosive Sheep which will charge at a nearby enemy and explode for 135 - 165 damage.
+    void OnCombatStart(Unit* mTarget) override
+    // Summons an Explosive Sheep which will charge at a nearby enemy and explode for 135 - 165 damage.
     {
         const auto pos = mTarget->GetPosition();
         getCreature()->getMovementManager()->moveCharge(pos.x, pos.y, pos.z);
@@ -94,7 +95,7 @@ class PeonSleepingAI : public CreatureAIScript
         RegisterAIUpdateEvent(3000 + Util::getRandomUInt(180000));
     };
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         getCreature()->castSpell(getCreature(), 17743, true);
         RemoveAIUpdateEvent();
@@ -106,7 +107,7 @@ class KirithAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(KirithAI)
     explicit KirithAI(Creature* pCreature) : CreatureAIScript(pCreature)  {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if(mKiller->isPlayer())
         {
@@ -123,7 +124,7 @@ class AllianceGryphon : public CreatureAIScript
 
     explicit AllianceGryphon(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         if(!mTarget->isPlayer())
             return;
@@ -143,7 +144,7 @@ class AllianceHippogryph : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(AllianceHippogryph)
     explicit AllianceHippogryph(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         if(!mTarget->isPlayer())
             return;
@@ -163,7 +164,7 @@ class HordeWyvern : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(HordeWyvern)
     explicit HordeWyvern(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         if(!mTarget->isPlayer())
             return;
@@ -183,7 +184,7 @@ class HordeBat : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(HordeBat)
     explicit HordeBat(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         if(!mTarget->isPlayer())
             return;
@@ -301,7 +302,7 @@ class TrollRoofStalker : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(TrollRoofStalker)
     explicit TrollRoofStalker(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->castSpell(getCreature(), 30991, true);
     };
@@ -323,7 +324,7 @@ class DISCO : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DISCO)
     explicit DISCO(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->castSpell(getCreature(), 50487, false);   // summon disco dancefloor
         getCreature()->castSpell(getCreature(), 50314, false);   // play the music
@@ -359,7 +360,7 @@ class DraeneiSurvivor : public CreatureAIScript
     explicit DraeneiSurvivor(Creature* pCreature) : CreatureAIScript(pCreature)
     { }
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->setHealth(getCreature()->getMaxHealth() / 2);
     }
@@ -388,7 +389,7 @@ class SotaAntiPersonnalCannon : public CreatureAIScript
     explicit SotaAntiPersonnalCannon(Creature* pCreature) : CreatureAIScript(pCreature)
     { }
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->setMoveRoot(true);
     }
@@ -405,7 +406,7 @@ class NestlewoodOwlkin : public CreatureAIScript
         reset = false;
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (!reset)
         {
@@ -449,7 +450,7 @@ class NestlewoodOwlkin : public CreatureAIScript
         }
     }
 
-    void OnLoad()
+    void OnLoad() override
     {
         RegisterAIUpdateEvent(4000);
         reset = false;

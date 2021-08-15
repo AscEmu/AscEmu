@@ -71,7 +71,7 @@ public:
         plr->TaxiStart(sTaxiMgr.GetTaxiPath(316), 295, 0);     // Wyvern
     }
 
-    void destroy() { delete this; }
+    void destroy() override { delete this; }
 
 };
 

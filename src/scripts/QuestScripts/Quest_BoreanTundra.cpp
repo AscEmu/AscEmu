@@ -47,7 +47,7 @@ public:
     explicit BellRope(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new BellRope(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11965, 0, 0);
     }
@@ -62,7 +62,7 @@ public:
     explicit ColdarraGeoMonitorNexus(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorNexus(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11900, 0, 0);
     }
@@ -75,7 +75,7 @@ public:
     explicit ColdarraGeoMonitorSouth(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorSouth(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11900, 1, 0);
     }
@@ -88,7 +88,7 @@ public:
     explicit ColdarraGeoMonitorNorth(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorNorth(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11900, 2, 0);
     }
@@ -101,7 +101,7 @@ public:
     explicit ColdarraGeoMonitorWest(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorWest(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11900, 3, 0);
     }
@@ -127,7 +127,7 @@ public:
     explicit NerubarEggSac(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new NerubarEggSac(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11602, 0, 0);
 
@@ -149,7 +149,7 @@ class SeaforiumDepthCharge : public CreatureAIScript
         getCreature()->SetFaction(21);
     }
 
-    void OnLoad()
+    void OnLoad() override
     {
         if (!getCreature()->isSummon())
             return;
@@ -205,7 +205,7 @@ public:
     explicit BlueDragonEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new BlueDragonEgg(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11936, 0, 0);
 
@@ -348,7 +348,7 @@ public:
     explicit WestPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new WestPointStationValve(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->HasFinishedQuest(11788))
             return;
@@ -377,7 +377,7 @@ public:
     explicit NorthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new NorthPointStationValve(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->HasFinishedQuest(11788))
             return;
@@ -406,7 +406,7 @@ public:
     explicit FizzcrankPumpingStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new FizzcrankPumpingStationValve(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->HasFinishedQuest(11788))
             return;
@@ -435,7 +435,7 @@ public:
     explicit SouthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new SouthPointStationValve(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->HasFinishedQuest(11788))
             return;
@@ -465,7 +465,7 @@ public:
     explicit TheGearmastersManual(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new TheGearmastersManual(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (!pPlayer->hasQuestInQuestLog(11798) || pPlayer->HasFinishedQuest(11798))
             return;
@@ -503,7 +503,7 @@ class GearmasterMechazodAI : public CreatureAIScript
         phase = 0;
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         switch (phase)
         {

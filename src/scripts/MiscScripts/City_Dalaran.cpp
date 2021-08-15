@@ -45,7 +45,7 @@ class SilverCovenantMageGuard : public CreatureAIScript
         }
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (getCreature()->getInRangePlayersCount() > 0)
             StartDefense();
@@ -90,7 +90,7 @@ class SunreaversMageGuard : public CreatureAIScript
         }
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (getCreature()->getInRangePlayersCount() > 0)
             StartDefense();

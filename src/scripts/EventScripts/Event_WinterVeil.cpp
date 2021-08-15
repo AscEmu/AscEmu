@@ -18,12 +18,12 @@ public:
     explicit PX238WinterWondervolt(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new PX238WinterWondervolt(GO); }
 
-    void OnSpawn()
+    void OnSpawn() override
     {
         RegisterAIUpdateEvent(1);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         Player* plr = _gameobject->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ());
         if (!plr)

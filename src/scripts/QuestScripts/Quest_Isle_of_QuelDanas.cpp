@@ -29,7 +29,7 @@ public:
     explicit ScryingOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ScryingOrb(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (auto* questLog = pPlayer->getQuestLogByQuestId(11490))
         {

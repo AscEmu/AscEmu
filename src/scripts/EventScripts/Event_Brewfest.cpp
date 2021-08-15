@@ -31,8 +31,8 @@ enum
 class SCRIPT_DECL CorenDirebrewGossip : public GossipScript
 {
 public:
-    void onHello(Object* pObject, Player* Plr);
-    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* EnteredCode, uint32_t gossipId);
+    void onHello(Object* pObject, Player* Plr) override;
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* EnteredCode, uint32_t gossipId) override;
 };
 
 void CorenDirebrewGossip::onHello(Object* pObject, Player * Plr)

@@ -101,7 +101,7 @@ class QuestInServiceOfLichKing : public QuestScript
 {
 public:
 
-    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         // Play first sound
         mTarget->sendPlaySoundPacket(14734);

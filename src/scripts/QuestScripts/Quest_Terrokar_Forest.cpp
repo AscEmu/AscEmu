@@ -28,7 +28,7 @@ class ThreatFromAboveQAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ThreatFromAboveQAI)
     explicit ThreatFromAboveQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->isPlayer())
         {
@@ -47,7 +47,7 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
         finall = 0;
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->isPlayer())
         {
@@ -96,13 +96,13 @@ class TakenInTheNight : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(TakenInTheNight)
     explicit TakenInTheNight(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         getCreature()->GetAIInterface()->setCombatDisabled(true);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (!mKiller->isPlayer())
             return;
@@ -156,7 +156,7 @@ class AnImproperBurial : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(AnImproperBurial)
     explicit AnImproperBurial(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);

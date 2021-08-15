@@ -43,7 +43,7 @@ class InfiltratingDragonmawFortressQAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(InfiltratingDragonmawFortressQAI)
     explicit InfiltratingDragonmawFortressQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->isPlayer())
         {
@@ -57,7 +57,7 @@ class KneepadsQAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(KneepadsQAI)
     explicit KneepadsQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->isPlayer())
         {

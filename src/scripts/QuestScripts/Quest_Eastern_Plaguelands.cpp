@@ -30,7 +30,7 @@ public:
     explicit Flayer(Creature* pCreature) : CreatureAIScript(pCreature) { }
     static CreatureAIScript* Create(Creature* c) { return new Flayer(c); }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (!mKiller->isPlayer())
             return;
@@ -46,7 +46,7 @@ class Darrowshire_Spirit : public GossipScript
 {
 public:
 
-    void onHello(Object* pObject, Player* plr)
+    void onHello(Object* pObject, Player* plr) override
     {
         plr->AddQuestKill(5211, 0, 0);
 
@@ -64,7 +64,7 @@ class ArajTheSummoner : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ArajTheSummoner)
     explicit ArajTheSummoner(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (!mKiller->isPlayer())
             return;

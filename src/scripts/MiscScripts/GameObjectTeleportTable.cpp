@@ -32,10 +32,10 @@ public:
     explicit CustomTeleport(GameObject* goinstance) : GameObjectAIScript(goinstance)
     { }
 
-    ~CustomTeleport()
+    ~CustomTeleport() override
     { }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         float x, y, z, orientation;
         uint32_t mapid;

@@ -27,7 +27,7 @@ public:
     explicit LokensFury(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new LokensFury(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(12965, 0, 0);
     }
@@ -40,7 +40,7 @@ public:
     explicit LokensPower(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new LokensPower(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(12965, 1, 0);
     }
@@ -53,7 +53,7 @@ public:
     explicit LokensFavor(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new LokensFavor(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(12965, 2, 0);
     }

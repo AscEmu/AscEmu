@@ -40,12 +40,12 @@ class ChickenEscapee : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ChickenEscapee)
     explicit ChickenEscapee(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         RegisterAIUpdateEvent(1000);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         // Let's see if we are netted
         if (Aura* a = getCreature()->getAuraWithId(51959))

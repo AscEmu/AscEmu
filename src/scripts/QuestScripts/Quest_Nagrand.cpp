@@ -27,7 +27,7 @@ class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
 {
 public:
 
-    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pMogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (pMogor != NULL)

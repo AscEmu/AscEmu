@@ -20,7 +20,7 @@ class InnkeeperGossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* Plr) override;
     void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* Code, uint32_t gossipId) override;
-    void destroy() { delete this; }
+    void destroy() override { delete this; }
 };
 
 void InnkeeperGossip::onHello(Object* pObject, Player* Plr)

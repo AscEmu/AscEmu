@@ -28,7 +28,7 @@ class PaladinDeadNPC : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(PaladinDeadNPC)
     explicit PaladinDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
@@ -43,7 +43,7 @@ public:
     explicit GildedBrazier(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new GildedBrazier(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (pPlayer->hasQuestInQuestLog(9678))
         {
@@ -73,7 +73,7 @@ class stillbladeQAI : public CreatureAIScript
     {
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         float SSX = mKiller->GetPositionX();
         float SSY = mKiller->GetPositionY();

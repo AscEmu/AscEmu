@@ -13,7 +13,7 @@ class ShatteredSunSpawner : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ShatteredSunSpawner)
     explicit ShatteredSunSpawner(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         if (mTarget != NULL && mTarget->isPlayer())
         {

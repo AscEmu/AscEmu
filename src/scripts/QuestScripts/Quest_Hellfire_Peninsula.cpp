@@ -30,7 +30,7 @@ class FelOrcScavengersQAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(FelOrcScavengersQAI)
     explicit FelOrcScavengersQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->isPlayer())
         {
@@ -43,7 +43,7 @@ class Dreadtusk : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Dreadtusk)
     explicit Dreadtusk(Creature* pCreature) : CreatureAIScript(pCreature) { }
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (!mKiller->isPlayer())
             return;
@@ -61,7 +61,7 @@ public:
     explicit ZethGorMustBurnAlliance(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ZethGorMustBurnAlliance(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (auto* questLog = pPlayer->getQuestLogByQuestId(10895))
         {

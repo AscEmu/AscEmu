@@ -171,7 +171,7 @@ class ShadeOfTheHorsemanAI : public CreatureAIScript
         }
     }
 
-    void OnDied(Unit* pKiller)
+    void OnDied(Unit* pKiller) override
     {
         GameObject* Pumpkin = pKiller->GetMapMgr()->CreateAndSpawnGameObject(2883, getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), 0, 1);
         if (Pumpkin != nullptr)
@@ -189,7 +189,7 @@ class HeadlessHorsemanWispInvisAI : public CreatureAIScript
         mHeadlessHorseman = nullptr;
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         auto _now = std::chrono::system_clock::now();
         auto _time_now = std::chrono::system_clock::to_time_t(_now);
@@ -215,7 +215,7 @@ public:
     explicit WaterBarrel(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new WaterBarrel(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         SlotResult slotresult;
         ItemProperties const* proto = sMySQLStore.getItemProperties(32971);

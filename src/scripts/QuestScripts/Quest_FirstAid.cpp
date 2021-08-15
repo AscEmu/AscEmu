@@ -45,7 +45,7 @@ class InjuredSoldier : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(InjuredSoldier)
     explicit InjuredSoldier(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->addUnitFlags(UNIT_FLAG_COMBAT);
         getCreature()->setStandState(STANDSTATE_DEAD);
