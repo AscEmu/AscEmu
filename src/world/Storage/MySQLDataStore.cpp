@@ -4457,6 +4457,27 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
         MySQLStructure::CreatureAIScripts* ai_script = new MySQLStructure::CreatureAIScripts;
 
         uint32_t creature_entry = fields[0].GetUInt32();
+        uint32_t spellId = fields[7].GetUInt32();
+        uint32_t textId = fields[15].GetUInt32();
+
+        if (!getCreatureProperties(creature_entry))
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid creature entry %u <skipped>", creature_entry);
+            continue;
+        }
+           
+        SpellInfo const* spell = sSpellMgr.getSpellInfo(spellId);
+        if (spell == nullptr && spellId != 0)
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid spellId for creature entry %u <skipped>", spellId, creature_entry);
+            continue;
+        }
+
+        if (!sMySQLStore.getNpcScriptText(textId) && textId != 0)
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid textId for creature entry %u <skipped>", textId, creature_entry);
+            continue;
+        }
 
         ai_script->entry = creature_entry;
         ai_script->difficulty = fields[1].GetUInt8();
@@ -4465,7 +4486,7 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
         ai_script->action = fields[4].GetUInt8();
         ai_script->maxCount = fields[5].GetUInt8();
         ai_script->chance = fields[6].GetFloat();
-        ai_script->spellId = fields[7].GetUInt32();
+        ai_script->spellId = spellId;
         ai_script->spell_type = fields[8].GetUInt8();
         ai_script->triggered = fields[9].GetBool();
         ai_script->target = fields[10].GetUInt8();
@@ -4473,9 +4494,8 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
         ai_script->cooldownMax = fields[12].GetUInt32();
         ai_script->minHealth = fields[13].GetFloat();
         ai_script->maxHealth = fields[14].GetFloat();
-        ai_script->textId = fields[15].GetUInt32();
+        ai_script->textId = textId;
         ai_script->misc1 = fields[16].GetUInt32();
-        ai_script->comment = fields[17].GetString();
 
         _creatureAIScriptStore.emplace(creature_entry, ai_script);
 

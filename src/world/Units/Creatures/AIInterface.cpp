@@ -182,151 +182,146 @@ void AIInterface::initialiseScripts(uint32_t entry)
     uint32_t spellcountOnCombatStart = 1;
     uint32_t spellcountOnAIUpdate = 1;
 
-    for (auto itr = scripts->begin(); itr != scripts->end(); ++itr)
+    for (auto aiScripts : *scripts)
     {
-        uint8_t eventId = itr->event;
+        uint8_t eventId = aiScripts.event;
 
         // Skip not in Current Difficulty
-        if (itr->difficulty != getDifficultyType())
+        if (aiScripts.difficulty != getDifficultyType())
             continue;
 
         switch (eventId)
         {
         case onLoad:
         {
-            onLoadScripts.push_back(*itr);
+            onLoadScripts.push_back(aiScripts);
         }
             break;
         case onEnterCombat:
         {
-            onCombatStartScripts.push_back(*itr);
-            if (itr->spellId)
+            onCombatStartScripts.push_back(aiScripts);
+            if (aiScripts.spellId)
                 ++spellcountOnCombatStart;
         }
             break;
         case onLeaveCombat:
         {
-            onLeaveCombatScripts.push_back(*itr);
+            onLeaveCombatScripts.push_back(aiScripts);
         }
             break;
         case onDied:
         {
-            onDiedScripts.push_back(*itr);
+            onDiedScripts.push_back(aiScripts);
         }
             break;
         case onTargetDied:
         {
-            onKilledScripts.push_back(*itr);
+            onKilledScripts.push_back(aiScripts);
         }
             break;
         case onAIUpdate:
         {
-            onAIUpdateScripts.push_back(*itr);
-            if (itr->spellId)
+            onAIUpdateScripts.push_back(aiScripts);
+            if (aiScripts.spellId)
                 ++spellcountOnAIUpdate;
         }
             break;
         default:
-            sLogger.debug("unhandled event with eventId %u", eventId);
+            sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "unhandled event with eventId %u", eventId);
         }
 
         // General Actions
-        switch (itr->action)
+        switch (aiScripts.action)
         {
         case actionFlee:
         {
             setCanFlee(true);
-            m_FleeHealth = itr->maxHealth;
-            m_FleeDuration = itr->misc1;
+            m_FleeHealth = aiScripts.maxHealth;
+            m_FleeDuration = aiScripts.misc1;
         }
             break;
         case actionCallForHelp:
         {
             setCanCallForHelp(true);
-            m_CallForHelpHealth = itr->maxHealth;
+            m_CallForHelpHealth = aiScripts.maxHealth;
         }
+            break;
+
+        default:
             break;
         }
     }
 
     // On Combat Start
-    for (auto itr2 = onCombatStartScripts.begin(); itr2 != onCombatStartScripts.end(); ++itr2)
+    for (auto onCombatStartScript : onCombatStartScripts)
     {
-        switch (itr2->action)
+        if (onCombatStartScript.action == actionSpell)
         {
-        case actionSpell:
-        {
-            const auto spellInfo = sSpellMgr.getSpellInfo(itr2->spellId);
+            const auto spellInfo = sSpellMgr.getSpellInfo(onCombatStartScript.spellId);
             float castChance;
 
             if (spellInfo != nullptr)
             {
-                if (itr2->chance)
-                    castChance = itr2->chance;
+                if (onCombatStartScript.chance)
+                    castChance = onCombatStartScript.chance;
                 else
-                    castChance = ((75.0f / spellcountOnCombatStart) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[itr2->spell_type]);
+                    castChance = ((75.0f / spellcountOnCombatStart) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[onCombatStartScript.spell_type]);
 
-                sLogger.debug("spell %u chance %f", itr2->spellId, castChance);
+                sLogger.debug("spell %u chance %f", onCombatStartScript.spellId, castChance);
 
-                uint32_t spellCooldown = Util::getRandomUInt(itr2->cooldownMin, itr2->cooldownMax);
+                uint32_t spellCooldown = Util::getRandomUInt(onCombatStartScript.cooldownMin, onCombatStartScript.cooldownMax);
                 if (spellCooldown == 0)
                     spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
 
                 // Create AI Spell
-                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, itr2->target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, itr2->triggered);
-                newAISpell->addDBEmote(itr2->textId);
-                newAISpell->setMaxCastCount(itr2->maxCount);
-                newAISpell->scriptType = itr2->event;
+                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, onCombatStartScript.target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, onCombatStartScript.triggered);
+                newAISpell->addDBEmote(onCombatStartScript.textId);
+                newAISpell->setMaxCastCount(onCombatStartScript.maxCount);
+                newAISpell->scriptType = onCombatStartScript.event;
 
                 // Ready add to our List
                 mCreatureAISpells.push_back(newAISpell);
             }
             else
-                sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", itr2->spellId);
-        }
-            break;
+                sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onCombatStartScript.spellId);
         }
     }
 
     // On AI Update
-    for (auto itr2 = onAIUpdateScripts.begin(); itr2 != onAIUpdateScripts.end(); ++itr2)
+    for (auto onAIUpdateScript : onAIUpdateScripts)
     {
-        switch (itr2->action)
+        if (onAIUpdateScript.action == actionSpell)
         {
-        case actionSpell:
-        {
-            const auto spellInfo = sSpellMgr.getSpellInfo(itr2->spellId);
+            const auto spellInfo = sSpellMgr.getSpellInfo(onAIUpdateScript.spellId);
             float castChance;
 
             if (spellInfo != nullptr)
             {
-                if (itr2->chance)
-                    castChance = itr2->chance;
+                if (onAIUpdateScript.chance)
+                    castChance = onAIUpdateScript.chance;
                 else
-                    castChance = ((75.0f / spellcountOnAIUpdate) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[itr2->spell_type]);
+                    castChance = ((75.0f / spellcountOnAIUpdate) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[onAIUpdateScript.spell_type]);
 
-                sLogger.debug("spell %u chance %f", itr2->spellId, castChance);
+                sLogger.debug("spell %u chance %f", onAIUpdateScript.spellId, castChance);
 
-                uint32_t spellCooldown = Util::getRandomUInt(itr2->cooldownMin, itr2->cooldownMax);
+                uint32_t spellCooldown = Util::getRandomUInt(onAIUpdateScript.cooldownMin, onAIUpdateScript.cooldownMax);
                 if (spellCooldown == 0)
                     spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
 
                 // Create AI Spell
-                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, itr2->target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, itr2->triggered);
-                newAISpell->addDBEmote(itr2->textId);
-                newAISpell->setMaxCastCount(itr2->maxCount);
-                newAISpell->scriptType = itr2->event;
+                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, onAIUpdateScript.target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, onAIUpdateScript.triggered);
+                newAISpell->addDBEmote(onAIUpdateScript.textId);
+                newAISpell->setMaxCastCount(onAIUpdateScript.maxCount);
+                newAISpell->scriptType = onAIUpdateScript.event;
 
-                if (itr2->maxHealth)
-                    newAISpell->setMinMaxPercentHp(itr2->minHealth, itr2->maxHealth);
+                if (onAIUpdateScript.maxHealth)
+                    newAISpell->setMinMaxPercentHp(onAIUpdateScript.minHealth, onAIUpdateScript.maxHealth);
 
                 // Ready add to our List
                 mCreatureAISpells.push_back(newAISpell);
             }
             else
-                sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", itr2->spellId);
-        }
-            break;
+                sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onAIUpdateScript.spellId);
         }
     }
 }
