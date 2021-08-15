@@ -541,8 +541,6 @@ class SERVER_DECL QuestScript
 // Instanced class created for each instance of the map, holds all scriptable exports
 #include "Map/WorldCreator.h"
 
-//#define UseNewMapScriptsProject
-
 enum EncounterFrameType
 {
 #if VERSION_STRING > WotLK

@@ -227,8 +227,128 @@ public:
     }
 };
 
-//#define SINCLARI_SAY_1 "Prison guards, we are leaving! These adventurers are taking over! Go go go!"
-//#define SINCLARY_SAY_2 "I'm locking the door. Good luck, and thank you for doing this."
+#define SINCLARI_SAY_1 "Prison guards, we are leaving! These adventurers are taking over! Go go go!"
+#define SINCLARY_SAY_2 "I'm locking the door. Good luck, and thank you for doing this."
+
+class SinclariAI : public CreatureAIScript
+{
+public:
+
+    explicit SinclariAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+    }
+
+    static CreatureAIScript* Create(Creature* creature) { return new SinclariAI(creature); }
+
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
+    {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
+        switch (iWaypointId)
+        {
+        case 2:
+        {
+            OnRescuePrisonGuards();
+        } break;
+        case 4:
+        {
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
+            getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
+        } break;
+        case 5:
+        {
+            TheVioletHoldScript* pInstance = (TheVioletHoldScript*)getCreature()->GetMapMgr()->GetScript();
+            pInstance->setData(608, InProgress);
+            GameObject* pVioletHoldDoor = pInstance->getClosestGameObjectForPosition(191723, 1822.59f, 803.93f, 44.36f);
+            if (pVioletHoldDoor != nullptr)
+                pVioletHoldDoor->setState(GO_STATE_CLOSED);
+        } break;
+        }
+    }
+
+    void OnRescuePrisonGuards()
+    {
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
+
+        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)getCreature()->GetMapMgr()->GetScript();
+        if (!pInstance)
+            return;
+
+        auto guardSet = pInstance->getCreatureSetForEntry(30659);
+        for (auto guard : guardSet)
+        {
+
+        }
+    }
+};
+
+class SinclariGossip : public GossipScript
+{
+public:
+    void onHello(Object* pObject, Player* pPlayer) override
+    {
+        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
+        if (!pInstance)
+            return;
+
+        //Page 1: Textid and first menu item
+        if (pInstance->getData(608) == PreProgress)
+        {
+            GossipMenu menu(pObject->getGuid(), 13853, 0);
+            menu.addItem(GOSSIP_ICON_CHAT, (600), 1);
+            menu.sendGossipPacket(pPlayer);
+        }
+
+        //If VioletHold is started, Sinclari has this item for people who aould join.
+        if (pInstance->getData(608) == InProgress)
+        {
+            GossipMenu menu(pObject->getGuid(), 13853, 0);
+            menu.addItem(GOSSIP_ICON_CHAT, (602), 3);
+            menu.sendGossipPacket(pPlayer);
+        }
+    }
+
+    void onSelectOption(Object* pObject, Player* pPlayer, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    {
+        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
+        if (!pInstance)
+            return;
+
+        if (!pObject->isCreature())
+            return;
+
+        Creature* sinclari = static_cast<Creature*>(pObject);
+        switch (Id)
+        {
+        case 1:
+        {
+            GossipMenu menu(pObject->getGuid(), 13854, 0);
+            menu.addItem(GOSSIP_ICON_CHAT, (601), 2);
+            menu.sendGossipPacket(pPlayer);
+        } break;
+        case 2:
+        {
+            static_cast<Creature*>(pObject)->setNpcFlags(UNIT_NPC_FLAG_NONE);
+        } break;
+        case 3:
+        {
+            GossipMenu::senGossipComplete(pPlayer);
+            pPlayer->SafeTeleport(pPlayer->GetInstanceID(), 608, 1830.531006f, 803.939758f, 44.340508f, 6.281611f);
+        } break;
+        }
+    }
+};
+
+class VHGuardsAI : public CreatureAIScript
+{
+public:
+    explicit VHGuardsAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+    }
+
+    static CreatureAIScript* Create(Creature* creature) { return new VHGuardsAI(creature); }
+};
 
 //\TODO: Replace spell casting logic for all instances, this is temp
 class VHCreatureAI : public CreatureAIScript
@@ -570,8 +690,8 @@ void SetupTheVioletHold(ScriptMgr* mgr)
     mgr->register_instance_script(MAP_VIOLET_HOLD, &TheVioletHoldScript::Create);
 //
 //    //Sinclari and Guards
-//    mgr->register_creature_script(CN_LIEUTNANT_SINCLARI, &SinclariAI::Create);
-//    mgr->register_creature_script(CN_VIOLET_HOLD_GUARD, &VHGuardsAI::Create);
+    mgr->register_creature_script(CN_LIEUTNANT_SINCLARI, &SinclariAI::Create);
+    mgr->register_creature_script(CN_VIOLET_HOLD_GUARD, &VHGuardsAI::Create);
 //
 //    // Intro trash
 //    mgr->register_creature_script(CN_INTRO_AZURE_BINDER_ARCANE, &VHIntroAzureBinder::Create);
