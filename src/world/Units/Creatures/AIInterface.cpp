@@ -567,10 +567,6 @@ void AIInterface::UpdateAgent(unsigned long time_passed)
 void AIInterface::castAISpell(CreatureAISpells* aiSpell)
 {
     Unit* target = getCurrentTarget();
-
-    if (target == nullptr)
-        return;
-
     switch (aiSpell->mTargetType)
     {
     case TARGET_SELF:
