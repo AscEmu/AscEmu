@@ -4441,7 +4441,7 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
 
     _creatureAIScriptStore.clear();
 
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM creature_ai_scripts ORDER BY entry, event");
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM WHERE min_build <= %u AND max_build >= %u creature_ai_scripts ORDER BY entry, event", VERSION_STRING, VERSION_STRING);
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `creature_ai_scripts` is empty!");
