@@ -281,8 +281,6 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
                 // Ready add to our List
                 mCreatureAISpells.push_back(newAISpell);
-
-                delete newAISpell;
             }
             else
                 sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onCombatStartScript.spellId);
@@ -321,8 +319,6 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
                 // Ready add to our List
                 mCreatureAISpells.push_back(newAISpell);
-
-                delete newAISpell;
             }
             else
                 sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onAIUpdateScript.spellId);
@@ -634,7 +630,7 @@ void AIInterface::castAISpell(uint32_t aiSpellId)
 
     // Lets find the stored Spellinfo
     for (auto spell : mCreatureAISpells)
-        if (spell->mSpellInfo->getId() == aiSpellId)
+        if (spell->mSpellInfo && spell->mSpellInfo->getId() == aiSpellId)
             aiSpell = spell;
 
     // when no valid Spell is found return
@@ -3291,7 +3287,7 @@ void AIInterface::UpdateAISpells()
         {
             for (int i = 0; i < mCreatureAISpells.size() - 1; ++i)
             {
-                int j = i + Util::getRandomInt(mCreatureAISpells.size() - 1);
+                int j = i + rand() % (mCreatureAISpells.size() - i);
                 std::swap(mCreatureAISpells[i], mCreatureAISpells[j]);
             }
         }
