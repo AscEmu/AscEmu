@@ -3292,7 +3292,7 @@ void AIInterface::UpdateAISpells()
         {
             for (int i = 0; i < mCreatureAISpells.size() - 1; ++i)
             {
-                int j = i + rand() % (mCreatureAISpells.size() - i);
+                int j = i + Util::getRandomInt(mCreatureAISpells.size() - 1);
                 std::swap(mCreatureAISpells[i], mCreatureAISpells[j]);
             }
         }
