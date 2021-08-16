@@ -26,4 +26,4 @@ CREATE TABLE `creature_ai_scripts` (
   UNIQUE KEY `entry` (`entry`,`difficulty`,`phase`,`spell`,`event`,`action`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI System';
 
-INSERT INTO `world_db_version` VALUES ('84', '20210914-00_creature_ai_scripts');
+INSERT INTO `world_db_version` VALUES ('85', '20210914-00_creature_ai_scripts');
