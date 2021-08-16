@@ -830,7 +830,6 @@ void AIInterface::updateTargets(unsigned long time_passed)
 // Called in TheratHandler when Target is changed
 void AIInterface::updateVictim(Unit* victim)
 {
-
     if (getAiScriptType() == AI_SCRIPT_PASSIVE)
         return;
 
