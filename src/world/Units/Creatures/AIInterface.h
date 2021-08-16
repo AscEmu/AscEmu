@@ -199,8 +199,8 @@ public:
     uint32_t mMaxCount;
     uint32_t mCastCount;
     void setMaxCastCount(uint32_t castCount);
-    uint32_t getMaxCastCount();
-    uint32_t getCastCount();
+    const uint32_t getMaxCastCount();
+    const uint32_t getCastCount();
 
     bool mForceRemoveAura;
     bool mIsTriggered;
@@ -230,12 +230,12 @@ public:
     uint32_t mMaxStackCount;
 
     void setMaxStackCount(uint32_t stackCount);
-    uint32_t getMaxStackCount();
+    const uint32_t getMaxStackCount();
 
     float mMinPositionRangeToCast;
     float mMaxPositionRangeToCast;
 
-    bool isDistanceInRange(float targetDistance);
+    const bool isDistanceInRange(float targetDistance);
     void setMinMaxDistance(float minDistance, float maxDistance);
 
     // if it is not a random target type it sets the hp range when the creature can cast this spell
@@ -243,7 +243,7 @@ public:
     int mMinHpRangeToCast;
     int mMaxHpRangeToCast;
 
-    bool isHpInPercentRange(int targetHp);
+    const bool isHpInPercentRange(int targetHp);
     void setMinMaxPercentHp(int minHp, int maxHp);
 
     typedef std::vector<uint32_t> ScriptPhaseList;

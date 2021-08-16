@@ -281,6 +281,8 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
                 // Ready add to our List
                 mCreatureAISpells.push_back(newAISpell);
+
+                delete newAISpell;
             }
             else
                 sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onCombatStartScript.spellId);
@@ -319,6 +321,8 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
                 // Ready add to our List
                 mCreatureAISpells.push_back(newAISpell);
+
+                delete newAISpell;
             }
             else
                 sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onAIUpdateScript.spellId);
@@ -558,6 +562,8 @@ void AIInterface::UpdateAgent(unsigned long time_passed)
                 }
             }
             break;
+        default:
+            break;
         }
     }
 }
@@ -565,6 +571,10 @@ void AIInterface::UpdateAgent(unsigned long time_passed)
 void AIInterface::castAISpell(CreatureAISpells* aiSpell)
 {
     Unit* target = getCurrentTarget();
+
+    if (target == nullptr)
+        return;
+
     switch (aiSpell->mTargetType)
     {
     case TARGET_SELF:
@@ -613,6 +623,8 @@ void AIInterface::castAISpell(CreatureAISpells* aiSpell)
         if (aiSpell->getCustomTarget() != nullptr)
             getUnit()->castSpell(aiSpell->getCustomTarget(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
     } break;
+    default:
+        break;
     }
 }
 
@@ -629,56 +641,7 @@ void AIInterface::castAISpell(uint32_t aiSpellId)
     if (!aiSpell)
         return;
 
-    Unit* target = getCurrentTarget();
-    switch (aiSpell->mTargetType)
-    {
-    case TARGET_SELF:
-    case TARGET_VARIOUS:
-    {
-        getUnit()->castSpell(getUnit(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-        mLastCastedSpell = aiSpell;
-    } break;
-    case TARGET_ATTACKING:
-    {
-        getUnit()->castSpell(target, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-        mCurrentSpellTarget = target;
-        mLastCastedSpell = aiSpell;
-    } break;
-    case TARGET_SOURCE:
-        getUnit()->castSpellLoc(getUnit()->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-        mLastCastedSpell = aiSpell;
-        break;
-    case TARGET_DESTINATION:
-    {
-        getUnit()->castSpellLoc(target->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-        mCurrentSpellTarget = target;
-        mLastCastedSpell = aiSpell;
-    } break;
-    case TARGET_RANDOM_FRIEND:
-    case TARGET_RANDOM_SINGLE:
-    case TARGET_RANDOM_DESTINATION:
-    {
-        castSpellOnRandomTarget(aiSpell);
-        mLastCastedSpell = aiSpell;
-    } break;
-    case TARGET_CLOSEST:
-    {
-        mCurrentSpellTarget = getBestUnitTarget(TargetFilter_Closest);
-        mLastCastedSpell = aiSpell;
-        getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-    } break;
-    case TARGET_FURTHEST:
-    {
-        mCurrentSpellTarget = getBestUnitTarget(TargetFilter_InRangeOnly, 0.0f, 30.0f);
-        mLastCastedSpell = aiSpell;
-        getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-    } break;
-    case TARGET_CUSTOM:
-    {
-        if (aiSpell->getCustomTarget() != nullptr)
-            getUnit()->castSpell(aiSpell->getCustomTarget(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-    } break;
-    }
+    castAISpell(aiSpell);
 }
 
 void AIInterface::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
@@ -2243,20 +2206,16 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
         }
 
         // Leave Combat Scripts
-        for (auto itr = onLeaveCombatScripts.begin(); itr != onLeaveCombatScripts.end(); ++itr)
+        for (auto onLeaveCombatScript : onLeaveCombatScripts)
         {
-            switch (itr->action)
+            if (onLeaveCombatScript.action == actionSendMessage)
             {
-                case actionSendMessage:
-                {
-                    MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
-                    if (npcScriptText != nullptr)
-                        getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+                MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(onLeaveCombatScript.textId);
+                if (npcScriptText != nullptr)
+                    getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
 
-                    if (npcScriptText->sound != 0)
-                        getUnit()->PlaySoundToSet(npcScriptText->sound);
-                }
-                    break;
+                if (npcScriptText->sound != 0)
+                    getUnit()->PlaySoundToSet(npcScriptText->sound);
             }
         }
     }
@@ -2315,20 +2274,16 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
     if (m_Unit->isCreature())
     {
         // Died Scripts
-        for (auto itr = onDiedScripts.begin(); itr != onDiedScripts.end(); ++itr)
+        for (auto onDiedScript : onDiedScripts)
         {
-            switch (itr->action)
+            if (onDiedScript.action == actionSendMessage)
             {
-                case actionSendMessage:
-                {
-                    MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
-                    if (npcScriptText != nullptr)
-                        getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+                MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(onDiedScript.textId);
+                if (npcScriptText != nullptr)
+                    getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
 
-                    if (npcScriptText->sound != 0)
-                        getUnit()->PlaySoundToSet(npcScriptText->sound);
-                }
-                    break;
+                if (npcScriptText->sound != 0)
+                    getUnit()->PlaySoundToSet(npcScriptText->sound);
             }
         }
 
@@ -2424,23 +2379,27 @@ void AIInterface::eventOnLoad()
     // On Load Scripts
     if (onLoadScripts.size())
     {
-        for (auto itr = onLoadScripts.begin(); itr != onLoadScripts.end(); ++itr)
+        for (auto onLoadScript : onLoadScripts)
         {
-            switch (itr->action)
+            switch (onLoadScript.action)
             {
-            case actionSpell:
-            {
-                castAISpell(itr->spellId);
-            } break;
-            case actionSendMessage:
-            {
-                MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
-                if (npcScriptText != nullptr)
-                    getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+                case actionSpell:
+                {
+                    castAISpell(onLoadScript.spellId);
+                }
+                    break;
+                case actionSendMessage:
+                {
+                    MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(onLoadScript.textId);
+                    if (npcScriptText != nullptr)
+                        getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
 
-                if (npcScriptText->sound != 0)
-                    getUnit()->PlaySoundToSet(npcScriptText->sound);
-            } break;
+                    if (npcScriptText->sound != 0)
+                        getUnit()->PlaySoundToSet(npcScriptText->sound);
+                }
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -2454,21 +2413,21 @@ void AIInterface::onDeath(Object* pKiller)
         handleEvent(EVENT_UNITDIED, m_Unit, 0);
 
     // Killed Scripts
-    for (auto itr = onKilledScripts.begin(); itr != onKilledScripts.end(); ++itr)
+    for (auto onKilledScript : onKilledScripts)
     {
-        switch (itr->action)
+        switch (onKilledScript.action)
         {
             case actionPhaseChange:
             {
-                if (itr->phase > 0 || itr->phase == internalPhase)
+                if (onKilledScript.phase > 0 || onKilledScript.phase == internalPhase)
                 {
-                    if (float(getUnit()->getHealthPct()) <= itr->maxHealth && itr->maxCount)
+                    if (float(getUnit()->getHealthPct()) <= onKilledScript.maxHealth && onKilledScript.maxCount)
                     {
-                        internalPhase = itr->misc1;
+                        internalPhase = onKilledScript.misc1;
 
-                        itr->maxCount = itr->maxCount - 1;
+                        onKilledScript.maxCount = onKilledScript.maxCount - 1;
 
-                        MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
+                        MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(onKilledScript.textId);
                         if (npcScriptText != nullptr)
                             getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
 
@@ -2480,18 +2439,20 @@ void AIInterface::onDeath(Object* pKiller)
                 break;
             case actionSpell:
             {
-                castAISpell(itr->spellId);
+                castAISpell(onKilledScript.spellId);
             }
                 break;
             case actionSendMessage:
             {
-                MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
+                MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(onKilledScript.textId);
                 if (npcScriptText != nullptr)
                     getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
 
                 if (npcScriptText->sound != 0)
                     getUnit()->PlaySoundToSet(npcScriptText->sound);
             }
+                break;
+            default:
                 break;
         }
     }
@@ -3131,7 +3092,7 @@ void CreatureAISpells::setMaxStackCount(uint32_t stackCount)
     mMaxStackCount = stackCount;
 }
 
-uint32_t CreatureAISpells::getMaxStackCount()
+const uint32_t CreatureAISpells::getMaxStackCount()
 {
     return mMaxStackCount;
 }
@@ -3141,17 +3102,17 @@ void CreatureAISpells::setMaxCastCount(uint32_t castCount)
     mMaxCount = castCount;
 }
 
-uint32_t CreatureAISpells::getMaxCastCount()
+const uint32_t CreatureAISpells::getMaxCastCount()
 {
     return mMaxCount;
 }
 
-uint32_t CreatureAISpells::getCastCount()
+const uint32_t CreatureAISpells::getCastCount()
 {
     return mCastCount;
 }
 
-bool CreatureAISpells::isDistanceInRange(float targetDistance)
+const bool CreatureAISpells::isDistanceInRange(float targetDistance)
 {
     if (targetDistance >= mMinPositionRangeToCast && targetDistance <= mMaxPositionRangeToCast)
         return true;
@@ -3165,7 +3126,7 @@ void CreatureAISpells::setMinMaxDistance(float minDistance, float maxDistance)
     mMaxPositionRangeToCast = maxDistance;
 }
 
-bool CreatureAISpells::isHpInPercentRange(int targetHp)
+const bool CreatureAISpells::isHpInPercentRange(int targetHp)
 {
     if (targetHp >= mMinHpRangeToCast && targetHp <= mMaxHpRangeToCast)
         return true;
@@ -3282,7 +3243,7 @@ void AIInterface::UpdateAISpells()
                     const float targetDistance = getUnit()->GetPosition().Distance2DSq({ mCurrentSpellTarget->GetPositionX(), mCurrentSpellTarget->GetPositionY() });
                     if (!mLastCastedSpell->isDistanceInRange(targetDistance))
                     {
-                        sLogger.debug("Target outside of spell range (%u)! Min: %f Max: %f, distance to Target: %f", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);
+                        sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "Target outside of spell range (%u)! Min: %f Max: %f, distance to Target: %f", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);
                         getUnit()->interruptSpell();
                         mLastCastedSpell = nullptr;
                     }
@@ -3329,7 +3290,7 @@ void AIInterface::UpdateAISpells()
         // Shuffle Around our Spells to randomize the cast
         if (mCreatureAISpells.size())
         {
-            for (int i = 0; i < mCreatureAISpells.size() - 1; i++)
+            for (int i = 0; i < mCreatureAISpells.size() - 1; ++i)
             {
                 int j = i + rand() % (mCreatureAISpells.size() - i);
                 std::swap(mCreatureAISpells[i], mCreatureAISpells[j]);
@@ -3431,6 +3392,8 @@ void AIInterface::UpdateAISpells()
                 if (usedSpell->getCustomTarget() != nullptr)
                     getUnit()->castSpell(usedSpell->getCustomTarget(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
             } break;
+            default:
+                break;
             }
 
             // send announcements on casttime beginn
