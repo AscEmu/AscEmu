@@ -3300,6 +3300,19 @@ void AIInterface::UpdateAISpells()
                 if (!AISpell->mCooldownTimer.isTimePassed())
                     continue;
 
+                // check if creature has Mana/Power required to cast
+                if(AISpell->mSpellInfo->getPowerType() == POWER_TYPE_MANA)
+                {
+                    if (AISpell->mSpellInfo->getManaCost() > m_Unit->getPower(POWER_TYPE_MANA))
+                        continue;
+                }
+
+                if (AISpell->mSpellInfo->getPowerType() == POWER_TYPE_FOCUS)
+                {
+                    if (AISpell->mSpellInfo->getManaCost() > m_Unit->getPower(POWER_TYPE_FOCUS))
+                        continue;
+                }
+
                 // is bound to a specific phase (all greater than 0) if creature has a scripted AI then use its phase
                 if (getUnit()->ToCreature()->GetScript())
                 {
