@@ -283,7 +283,6 @@ public:
     CreatureAISpells* mLastCastedSpell;
 
     // only for internal use
-    void newAIUpdateSpellSystem();
     void castSpellOnRandomTarget(CreatureAISpells* AiSpell);
 
     //////////////////////////////////////////////////////////////////////////////////////////

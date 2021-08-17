@@ -4456,9 +4456,9 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
         Field* fields = result->Fetch();
         MySQLStructure::CreatureAIScripts* ai_script = new MySQLStructure::CreatureAIScripts;
 
-        uint32_t creature_entry = fields[0].GetUInt32();
-        uint32_t spellId = fields[7].GetUInt32();
-        uint32_t textId = fields[15].GetUInt32();
+        uint32_t creature_entry = fields[2].GetUInt32();
+        uint32_t spellId = fields[9].GetUInt32();
+        uint32_t textId = fields[17].GetUInt32();
 
         if (!getCreatureProperties(creature_entry))
         {
@@ -4480,22 +4480,22 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
         }
 
         ai_script->entry = creature_entry;
-        ai_script->difficulty = fields[1].GetUInt8();
-        ai_script->phase = fields[2].GetUInt8();
-        ai_script->event = fields[3].GetUInt8();
-        ai_script->action = fields[4].GetUInt8();
-        ai_script->maxCount = fields[5].GetUInt8();
-        ai_script->chance = fields[6].GetFloat();
+        ai_script->difficulty = fields[3].GetUInt8();
+        ai_script->phase = fields[4].GetUInt8();
+        ai_script->event = fields[5].GetUInt8();
+        ai_script->action = fields[6].GetUInt8();
+        ai_script->maxCount = fields[7].GetUInt8();
+        ai_script->chance = fields[8].GetFloat();
         ai_script->spellId = spellId;
-        ai_script->spell_type = fields[8].GetUInt8();
-        ai_script->triggered = fields[9].GetBool();
-        ai_script->target = fields[10].GetUInt8();
-        ai_script->cooldownMin = fields[11].GetUInt32();
-        ai_script->cooldownMax = fields[12].GetUInt32();
-        ai_script->minHealth = fields[13].GetFloat();
-        ai_script->maxHealth = fields[14].GetFloat();
+        ai_script->spell_type = fields[10].GetUInt8();
+        ai_script->triggered = fields[11].GetBool();
+        ai_script->target = fields[12].GetUInt8();
+        ai_script->cooldownMin = fields[13].GetUInt32();
+        ai_script->cooldownMax = fields[14].GetUInt32();
+        ai_script->minHealth = fields[15].GetFloat();
+        ai_script->maxHealth = fields[16].GetFloat();
         ai_script->textId = textId;
-        ai_script->misc1 = fields[16].GetUInt32();
+        ai_script->misc1 = fields[18].GetUInt32();
 
         _creatureAIScriptStore.emplace(creature_entry, ai_script);
 

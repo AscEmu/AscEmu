@@ -124,8 +124,6 @@ void CreatureAIScript::_internalAIUpdate()
 
     if (!_isInCombat())
         return;
-
-    newAIUpdateSpellSystem();
 }
 
 void CreatureAIScript::_internalOnScriptPhaseChange()
@@ -965,11 +963,6 @@ void CreatureAIScript::_unsetTargetToChannel()
 Unit* CreatureAIScript::_getTargetToChannel()
 {
     return _creature->GetMapMgr()->GetUnit(_creature->getChannelObjectGuid());
-}
-
-void CreatureAIScript::newAIUpdateSpellSystem()
-{
-    
 }
 
 void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
