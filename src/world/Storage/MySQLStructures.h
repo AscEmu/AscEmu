@@ -52,7 +52,6 @@ namespace MySQLStructure
 
     //achievement_reward
 
-    //ai_agents
     //ai_threattospellid
 
     //areatriggers

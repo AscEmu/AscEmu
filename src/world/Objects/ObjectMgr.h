@@ -382,8 +382,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         void LoadTrainers();
         Trainer* GetTrainer(uint32 Entry);
 
-        void LoadCreatureAIAgents();
-
         LevelInfo* GetLevelInfo(uint32 Race, uint32 Class, uint32 Level);
         void GenerateLevelUpInfo();
 

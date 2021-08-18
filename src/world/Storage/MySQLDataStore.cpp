@@ -832,13 +832,6 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                 }
             }
 
-            //AI stuff
-            creatureProperties.m_canFlee = false;
-            creatureProperties.m_canRangedAttack = false;
-            creatureProperties.m_canCallForHelp = false;
-            creatureProperties.m_fleeHealth = 0.0f;
-            creatureProperties.m_fleeDuration = 0;
-
             //Itemslot
             creatureProperties.itemslot_1 = 0;
             creatureProperties.itemslot_2 = 0;

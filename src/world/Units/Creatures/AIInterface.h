@@ -50,22 +50,33 @@ enum AiScriptTypes
 
 enum AI_SCRIPT_EVENT_TYPES
 {
-    onLoad          = 0,
-    onEnterCombat   = 1,
-    onLeaveCombat   = 2,
-    onDied          = 3,
-    onTargetDied    = 4,
-    onAIUpdate      = 5
+    onLoad              = 0,
+    onEnterCombat       = 1,
+    onLeaveCombat       = 2,
+    onDied              = 3,
+    onTargetDied        = 4,
+    onAIUpdate          = 5,
+    onCallForHelp       = 6,
+    onRandomWaypoint    = 7,
+    onDamageTaken       = 8,
+    onFlee              = 9
 };
 
 enum AI_SCRIPT_ACTION_TYPES
 {
     actionNone          = 0,
     actionSpell         = 1,
-    actionFlee          = 2,
-    actionCallForHelp   = 3,
-    actionSendMessage   = 4,
-    actionPhaseChange   = 5
+    actionSendMessage   = 2,
+    actionPhaseChange   = 3
+};
+
+struct AI_SCRIPT_SENDMESSAGES
+{
+    uint32_t textId;
+    float canche;
+    uint32_t phase;
+    float healthPrecent;
+    uint32_t count;
 };
 
 enum ReactStates : uint8_t
@@ -169,6 +180,8 @@ public:
         mMinHpRangeToCast = 0;
         mMaxHpRangeToCast = 100;
 
+        spell_type = STYPE_NULL;
+
         if (mSpellInfo != nullptr)
         {
             mMinPositionRangeToCast = GetMinRange(sSpellRangeStore.LookupEntry(mSpellInfo->getRangeIndex()));
@@ -205,6 +218,8 @@ public:
 
     bool mForceRemoveAura;
     bool mIsTriggered;
+
+    AI_SpellType spell_type;
 
     // non db script messages
     struct AISpellEmotes
@@ -532,6 +547,26 @@ public:
     std::vector<MySQLStructure::CreatureAIScripts> onLeaveCombatScripts;
     std::vector<MySQLStructure::CreatureAIScripts> onDiedScripts;
     std::vector<MySQLStructure::CreatureAIScripts> onKilledScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onCallForHelpScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onRandomWaypointScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onDamageTakenScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onFleeScripts;
+
+private:
+    typedef std::vector<AI_SCRIPT_SENDMESSAGES> definedEmoteVector;
+    definedEmoteVector mEmotesOnLoad;
+    definedEmoteVector mEmotesOnCombatStart;
+    definedEmoteVector mEmotesOnLeaveCombat;
+    definedEmoteVector mEmotesOnTargetDied;
+    definedEmoteVector mEmotesOnAIUpdate;
+    definedEmoteVector mEmotesOnDied;
+    definedEmoteVector mEmotesOnDamageTaken;
+    definedEmoteVector mEmotesOnCallForHelp;
+    definedEmoteVector mEmotesOnFlee;
+    definedEmoteVector mEmotesOnRandomWaypoint;
+
+public:
+    void sendStoredText(definedEmoteVector store);
 
     Unit* mCurrentSpellTarget;
 
