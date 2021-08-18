@@ -187,7 +187,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
         uint8_t eventId = aiScripts.event;
 
         // Skip not in Current Difficulty
-        if (aiScripts.difficulty != getDifficultyType())
+        if (aiScripts.difficulty != 4 && aiScripts.difficulty != getDifficultyType())
             continue;
 
         switch (eventId)
