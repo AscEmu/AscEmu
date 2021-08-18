@@ -253,7 +253,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->canche = aiScripts.chance;
                 message->phase = aiScripts.phase;
                 message->healthPrecent = aiScripts.maxHealth;
-                message->count = aiScripts.maxCount;
+                message->maxCount = aiScripts.maxCount;
 
                 mEmotesOnLoad.push_back(*message);
             }
@@ -273,7 +273,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->canche = aiScripts.chance;
                 message->phase = aiScripts.phase;
                 message->healthPrecent = aiScripts.maxHealth;
-                message->count = aiScripts.maxCount;
+                message->maxCount = aiScripts.maxCount;
 
                 mEmotesOnCombatStart.push_back(*message);
             }
@@ -291,7 +291,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->canche = aiScripts.chance;
                 message->phase = aiScripts.phase;
                 message->healthPrecent = aiScripts.maxHealth;
-                message->count = aiScripts.maxCount;
+                message->maxCount = aiScripts.maxCount;
 
                 mEmotesOnLeaveCombat.push_back(*message);
             }
@@ -309,7 +309,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->canche = aiScripts.chance;
                 message->phase = aiScripts.phase;
                 message->healthPrecent = aiScripts.maxHealth;
-                message->count = aiScripts.maxCount;
+                message->maxCount = aiScripts.maxCount;
 
                 mEmotesOnDied.push_back(*message);
             }
@@ -327,7 +327,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->canche = aiScripts.chance;
                 message->phase = aiScripts.phase;
                 message->healthPrecent = aiScripts.maxHealth;
-                message->count = aiScripts.maxCount;
+                message->maxCount = aiScripts.maxCount;
 
                 mEmotesOnTargetDied.push_back(*message);
             }
@@ -347,7 +347,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->canche = aiScripts.chance;
                 message->phase = aiScripts.phase;
                 message->healthPrecent = aiScripts.maxHealth;
-                message->count = aiScripts.maxCount;
+                message->maxCount = aiScripts.maxCount;
 
                 mEmotesOnAIUpdate.push_back(*message);
             }
@@ -367,7 +367,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->canche = aiScripts.chance;
                 message->phase = aiScripts.phase;
                 message->healthPrecent = aiScripts.maxHealth;
-                message->count = aiScripts.maxCount;
+                message->maxCount = aiScripts.maxCount;
 
                 mEmotesOnCallForHelp.push_back(*message);
             }
@@ -385,7 +385,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->canche = aiScripts.chance;
                 message->phase = aiScripts.phase;
                 message->healthPrecent = aiScripts.maxHealth;
-                message->count = aiScripts.maxCount;
+                message->maxCount = aiScripts.maxCount;
 
                 mEmotesOnRandomWaypoint.push_back(*message);
             }
@@ -403,7 +403,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->canche = aiScripts.chance;
                 message->phase = aiScripts.phase;
                 message->healthPrecent = aiScripts.maxHealth;
-                message->count = aiScripts.maxCount;
+                message->maxCount = aiScripts.maxCount;
 
                 mEmotesOnDamageTaken.push_back(*message);
             }
@@ -423,7 +423,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->canche = aiScripts.chance;
                 message->phase = aiScripts.phase;
                 message->healthPrecent = aiScripts.maxHealth;
-                message->count = aiScripts.maxCount;
+                message->maxCount = aiScripts.maxCount;
 
                 mEmotesOnFlee.push_back(*message);
             }
