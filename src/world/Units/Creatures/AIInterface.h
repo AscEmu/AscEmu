@@ -77,6 +77,7 @@ struct AI_SCRIPT_SENDMESSAGES
     uint32_t phase;
     float healthPrecent;
     uint32_t count;
+    uint32_t maxCount;
 };
 
 enum ReactStates : uint8_t
