@@ -3794,7 +3794,7 @@ void AIInterface::sendStoredText(definedEmoteVector store, Unit* target)
             if (mEmotes.healthPrecent && float(getUnit()->getHealthPct()) < mEmotes.healthPrecent)
                 continue;
 
-            if (mEmotes.count == 0)
+            if (mEmotes.maxCount && mEmotes.count == mEmotes.maxCount)
                 continue;
 
             if (randomChance < mEmotes.canche)
@@ -3806,7 +3806,7 @@ void AIInterface::sendStoredText(definedEmoteVector store, Unit* target)
                 if (npcScriptText->sound != 0)
                     getUnit()->PlaySoundToSet(npcScriptText->sound);
 
-                --mEmotes.count;
+                ++mEmotes.count;
 
                 break;
             }
