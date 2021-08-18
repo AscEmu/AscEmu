@@ -3791,7 +3791,7 @@ void AIInterface::sendStoredText(definedEmoteVector store, Unit* target)
             if (mEmotes.phase && mEmotes.phase != internalPhase)
                 continue;
 
-            if (float(getUnit()->getHealthPct()) < mEmotes.healthPrecent)
+            if (mEmotes.healthPrecent && float(getUnit()->getHealthPct()) < mEmotes.healthPrecent)
                 continue;
 
             if (mEmotes.count == 0)
