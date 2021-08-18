@@ -2314,19 +2314,6 @@ void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay, Unit*
     SendCreatureChatMessageInRange(this, textid, target);
 }
 
-void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event, Unit* target)
-{
-    auto* const creatureAiText = sMySQLStore.getAITextEventForCreature(getEntry(), Event);
-    if (creatureAiText == nullptr)
-        return;
-
-    uint8_t choice = 0;
-    if (Util::checkChance(creatureAiText->chance))
-        choice = (creatureAiText->textCount == 1) ? 0 : Util::getRandomUInt(creatureAiText->textCount - 1);
-
-    SendCreatureChatMessageInRange(this, creatureAiText->textIds[choice], target);
-}
-
 uint32 Creature::GetType()
 {
     return m_Creature_type;

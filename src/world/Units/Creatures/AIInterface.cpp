@@ -738,7 +738,7 @@ void AIInterface::UpdateAgent(unsigned long time_passed)
     }
 
     // Send a Chatmessage from our AI Scripts
-    sendStoredText(mEmotesOnAIUpdate);
+    sendStoredText(mEmotesOnAIUpdate, nullptr);
 }
 
 void AIInterface::castAISpell(CreatureAISpells* aiSpell)
@@ -1260,7 +1260,7 @@ void AIInterface::updateCombat(uint32_t p_time)
         }
 
         // Send a Chatmessage from our AI Scripts
-        sendStoredText(mEmotesOnFlee);
+        sendStoredText(mEmotesOnFlee, nullptr);
 
         m_hasFleed = true;
     }
@@ -1271,10 +1271,7 @@ void AIInterface::updateCombat(uint32_t p_time)
         callForHelp(30.0f);
 
         if (m_Unit->isCreature())
-        {
-            static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_CALL_HELP, nullptr);
-
-            
+        {          
             // On Call for Help Scripts
             for (auto onCallForHelpScript : onCallForHelpScripts)
             {
@@ -1285,7 +1282,7 @@ void AIInterface::updateCombat(uint32_t p_time)
             }
 
             // Send a Chatmessage from our AI Scripts
-            sendStoredText(mEmotesOnCallForHelp);
+            sendStoredText(mEmotesOnCallForHelp, nullptr);
         }
 
         CALL_SCRIPT_EVENT(m_Unit, OnCallForHelp)();
@@ -2239,8 +2236,6 @@ void AIInterface::eventDamageTaken(Unit* pUnit, uint32_t misc1)
 
     if (m_Unit->isCreature())
     {
-        static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_DAMAGE_TAKEN, pUnit);
-
         // On Damage Taken Scripts
         for (auto onDamageTakenScript : onDamageTakenScripts)
         {
@@ -2251,7 +2246,7 @@ void AIInterface::eventDamageTaken(Unit* pUnit, uint32_t misc1)
         }
 
         // Send a Chatmessage from our AI Scripts
-        sendStoredText(mEmotesOnDamageTaken);
+        sendStoredText(mEmotesOnDamageTaken, pUnit);
     }
 
     pUnit->RemoveAura(24575);
@@ -2269,7 +2264,6 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
     if (m_Unit->isCreature())
     {
         Creature* creature = static_cast<Creature*>(m_Unit);
-        creature->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ENTER_COMBAT, pUnit);
 
         CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStart)(pUnit);
         CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
@@ -2293,7 +2287,7 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
         }
 
         // Send a Chatmessage from our AI Scripts
-        sendStoredText(mEmotesOnCombatStart);
+        sendStoredText(mEmotesOnCombatStart, pUnit);
     }
 
     // Stop the emote - change to fight emote
@@ -2388,7 +2382,6 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
     if (m_Unit->isCreature())
     {
         Creature* creature = static_cast<Creature*>(m_Unit);
-        creature->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_COMBAT_STOP, nullptr);
 
         if (creature->original_emotestate)
             m_Unit->setEmoteState(creature->original_emotestate);
@@ -2414,7 +2407,7 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
         }
 
         // Send a Chatmessage from our AI Scripts
-        sendStoredText(mEmotesOnLeaveCombat);
+        sendStoredText(mEmotesOnLeaveCombat, nullptr);
     }
 
     initialiseScripts(getUnit()->getEntry());
@@ -2462,9 +2455,6 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
     if (pUnit == nullptr)
         return;
 
-    if (m_Unit->isCreature())
-        static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_DIED, pUnit);
-
     CALL_SCRIPT_EVENT(m_Unit, _internalOnDied)(pUnit);
     CALL_SCRIPT_EVENT(m_Unit, OnDied)(pUnit);
 
@@ -2477,7 +2467,7 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
         }
 
         // Send a Chatmessage from our AI Scripts
-        sendStoredText(mEmotesOnDied);
+        sendStoredText(mEmotesOnDied, pUnit);
 
         initialiseScripts(getUnit()->getEntry());
 
@@ -2584,7 +2574,7 @@ void AIInterface::eventOnLoad()
         }
 
         // Send a Chatmessage from our AI Scripts
-        sendStoredText(mEmotesOnLoad);
+        sendStoredText(mEmotesOnLoad, nullptr);
     }
 }
 
@@ -2631,7 +2621,7 @@ void AIInterface::onDeath(Object* pKiller)
     }
 
     // Send a Chatmessage from our AI Scripts
-    sendStoredText(mEmotesOnTargetDied);
+    sendStoredText(mEmotesOnTargetDied, nullptr);
 }
 
 void AIInterface::setCannotReachTarget(bool cannotReach)
@@ -2733,7 +2723,7 @@ void AIInterface::clearBoundary()
 
 void AIInterface::movementInform(uint32_t type, uint32_t id)
 {
-    sendStoredText(mEmotesOnRandomWaypoint);
+    sendStoredText(mEmotesOnRandomWaypoint, nullptr);
     CALL_SCRIPT_EVENT(m_Unit, OnReachWP)(type, id);
 }
 
@@ -3783,7 +3773,7 @@ bool AIInterface::isValidUnitTarget(Object* pObject, TargetFilter pFilter, float
     return true;
 }
 
-void AIInterface::sendStoredText(definedEmoteVector store)
+void AIInterface::sendStoredText(definedEmoteVector store, Unit* target)
 {
     float randomChance = Util::getRandomFloat(100.0f);
 
@@ -3811,7 +3801,7 @@ void AIInterface::sendStoredText(definedEmoteVector store)
             {
                 MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(mEmotes.textId);
                 if (npcScriptText != nullptr)
-                    getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+                    getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text, target, 0);
 
                 if (npcScriptText->sound != 0)
                     getUnit()->PlaySoundToSet(npcScriptText->sound);

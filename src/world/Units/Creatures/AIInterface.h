@@ -566,7 +566,7 @@ private:
     definedEmoteVector mEmotesOnRandomWaypoint;
 
 public:
-    void sendStoredText(definedEmoteVector store);
+    void sendStoredText(definedEmoteVector store, Unit* target);
 
     Unit* mCurrentSpellTarget;
 

@@ -29,16 +29,6 @@ MySQLDataStore& MySQLDataStore::getInstance()
 
 void MySQLDataStore::finalize()
 {
-    for (uint8_t i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
-    {
-        for (auto itr = _creatureAiTextContainer[i].begin(); itr != _creatureAiTextContainer[i].end(); ++itr)
-        {
-            delete itr->second;
-        }
-
-        _creatureAiTextContainer[i].clear();
-    }
-
     for (auto&& professionDiscovery : _professionDiscoveryStore)
     {
         delete professionDiscovery;
@@ -3855,91 +3845,6 @@ std::string MySQLDataStore::getLocaleGossipTitleOrElse(uint32_t entry, uint32_t 
     std::stringstream errorMsg;
     errorMsg << "Quest ID " << entry << "not available in database";
     return errorMsg.str();
-}
-
-void MySQLDataStore::loadCreatureAiTextTable()
-{
-    auto startTime = Util::TimeNow();
-    //                                                  0      1       2        3       4       5          6
-    QueryResult* result = WorldDatabase.Query("SELECT entry, event, chance, text0, text1, text2, text3, text4 FROM creature_ai_texts");
-    if (result == nullptr)
-    {
-        sLogger.info("MySQLDataLoads : Table `creature_ai_texts` is empty!");
-        return;
-    }
-
-    sLogger.info("MySQLDataLoads : Table `creature_ai_texts` has %u columns", result->GetFieldCount());
-
-    uint32_t load_count = 0;
-    do
-    {
-        Field* fields = result->Fetch();
-        uint32_t entry = fields[0].GetUInt32();
-        uint32_t creatureEvent = fields[1].GetUInt32();
-
-        if (creatureEvent >= NUM_MONSTER_SAY_EVENTS)
-        {
-            continue;
-        }
-
-        if (_creatureAiTextContainer[creatureEvent].find(entry) != _creatureAiTextContainer[creatureEvent].end())
-        {
-            sLogger.debug("Duplicate creature_ai_texts event %u for entry %u, skipping", creatureEvent, entry);
-            continue;
-        }
-
-        MySQLStructure::CreatureAITexts* aiText = new MySQLStructure::CreatureAITexts;
-        aiText->chance = fields[2].GetFloat();
-
-        uint32_t _textIds[CREATURE_AI_TEXT_COUNT];
-        uint8_t textCount = 0;
-        for (uint8_t i = 0; i < CREATURE_AI_TEXT_COUNT; ++i)
-        {
-            auto field = fields[3 + i];
-            if (field.isSet())
-            {
-                _textIds[i] = field.GetUInt32();
-                ++textCount;
-            }
-            else
-            {
-                _textIds[i] = 0;
-            }
-        }
-
-        if (textCount == 0)
-        {
-            delete aiText;
-            continue;
-        }
-
-        aiText->textCount = textCount;
-
-        std::copy(std::begin(_textIds), std::end(_textIds), std::begin(aiText->textIds));
-        _creatureAiTextContainer[creatureEvent].insert(std::make_pair(entry, aiText));
-
-        ++load_count;
-    } while (result->NextRow());
-
-    delete result;
-
-    sLogger.info("MySQLDataLoads : Loaded %u rows from `creature_ai_texts` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-}
-
-MySQLStructure::CreatureAITexts* MySQLDataStore::getAITextEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS _event) const
-{
-    if (_creatureAiTextContainer[_event].empty())
-    {
-        return nullptr;
-    }
-
-    const auto itr = _creatureAiTextContainer[_event].find(entry);
-    if (itr != _creatureAiTextContainer[_event].end())
-    {
-        return itr->second;
-    }
-
-    return nullptr;
 }
 
 //\brief Data loaded but never used!    Zyres 2017/07/16 not used

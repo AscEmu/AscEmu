@@ -856,7 +856,6 @@ void World::loadMySQLStores()
     sMySQLStore.loadLocalesWorldmapInfo();
     sMySQLStore.loadLocalesWorldStringTable();
 
-    sMySQLStore.loadCreatureAiTextTable();
     //sMySQLStore.loadDefaultPetSpellsTable();      Zyres 2017/07/16 not used
     sMySQLStore.loadProfessionDiscoveriesTable();
 

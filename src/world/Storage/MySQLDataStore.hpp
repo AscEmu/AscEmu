@@ -222,7 +222,6 @@ public:
     std::string getLocaleGossipMenuOptionOrElse(uint32_t entry, uint32_t sessionLocale);
     std::string getLocaleGossipTitleOrElse(uint32_t entry, uint32_t sessionLocale);
 
-    MySQLStructure::CreatureAITexts* getAITextEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS Event) const;
     //std::set<SpellInfo const*>* getDefaultPetSpellsByEntry(uint32_t entry);     Zyres 2017/07/16 not used
     
     GossipMenuInitMap const* getGossipMenuInitTextId() { return &_gossipMenuInitStore; }
@@ -316,7 +315,6 @@ public:
     void loadLocalesWorldmapInfo();
     void loadLocalesWorldStringTable();
 
-    void loadCreatureAiTextTable();
     //void loadDefaultPetSpellsTable();   Zyres 2017 / 07 / 16 not used
 
     void loadProfessionDiscoveriesTable();
@@ -392,7 +390,6 @@ public:
     LocalesWorldmapInfoContainer _localesWorldmapInfoStore;
     LocalesWorldStringTableContainer _localesWorldStringTableStore;
 
-    CreatureAiTextContainer _creatureAiTextContainer[NUM_MONSTER_SAY_EVENTS];
     //PetDefaultSpellsMap _defaultPetSpellsStore;   Zyres 2017/07/16 not used
 
     ProfessionDiscoverySet _professionDiscoveryStore;
