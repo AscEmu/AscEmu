@@ -352,8 +352,6 @@ public:
 
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid) override;
 
-        void HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event, Unit* target);
-
         uint32 GetType();
 
         void SetType(uint32 t);

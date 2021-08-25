@@ -45,6 +45,9 @@ public:
     typedef std::unordered_map<uint32_t, ItemProperties> ItemPropertiesContainer;
     typedef std::unordered_map<uint32_t, CreatureProperties> CreaturePropertiesContainer;
     typedef std::unordered_map<uint32_t, CreaturePropertiesMovement> CreaturePropertiesMovementContainer;
+
+    typedef std::multimap<uint32_t, MySQLStructure::CreatureAIScripts*> AIScriptsMap;
+
     typedef std::unordered_map<uint32_t, GameObjectProperties> GameObjectPropertiesContainer;
     typedef std::unordered_map<uint32_t, QuestProperties> QuestPropertiesContainer;
 
@@ -199,6 +202,8 @@ public:
     AreaTriggerContainer const* getAreaTriggersStore() { return &_areaTriggerStore; }
     MySQLStructure::AreaTrigger const* getMapEntranceTrigger(uint32_t mapId);
 
+    std::vector<MySQLStructure::CreatureAIScripts>* getCreatureAiScripts(uint32_t entry);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // locales
     MySQLStructure::LocalesCreature const* getLocalizedCreature(uint32_t entry, uint32_t sessionLocale);
@@ -217,7 +222,6 @@ public:
     std::string getLocaleGossipMenuOptionOrElse(uint32_t entry, uint32_t sessionLocale);
     std::string getLocaleGossipTitleOrElse(uint32_t entry, uint32_t sessionLocale);
 
-    MySQLStructure::CreatureAITexts* getAITextEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS Event) const;
     //std::set<SpellInfo const*>* getDefaultPetSpellsByEntry(uint32_t entry);     Zyres 2017/07/16 not used
     
     GossipMenuInitMap const* getGossipMenuInitTextId() { return &_gossipMenuInitStore; }
@@ -250,6 +254,7 @@ public:
     void loadGameObjectQuestItemBindingTable();
     void loadGameObjectQuestPickupBindingTable();
 
+    void loadCreatureAIScriptsTable();
     void loadCreatureDifficultyTable();
     void loadDisplayBoundingBoxesTable();
     void loadVendorRestrictionsTable();
@@ -310,7 +315,6 @@ public:
     void loadLocalesWorldmapInfo();
     void loadLocalesWorldStringTable();
 
-    void loadCreatureAiTextTable();
     //void loadDefaultPetSpellsTable();   Zyres 2017 / 07 / 16 not used
 
     void loadProfessionDiscoveriesTable();
@@ -333,6 +337,7 @@ public:
     GameObjectPropertiesContainer _gameobjectPropertiesStore;
     QuestPropertiesContainer _questPropertiesStore;
 
+    AIScriptsMap _creatureAIScriptStore;
     CreatureDifficultyContainer _creatureDifficultyStore;
     DisplayBoundingBoxesContainer _displayBoundingBoxesStore;
     VendorRestrictionContainer _vendorRestrictionsStore;
@@ -385,7 +390,6 @@ public:
     LocalesWorldmapInfoContainer _localesWorldmapInfoStore;
     LocalesWorldStringTableContainer _localesWorldStringTableStore;
 
-    CreatureAiTextContainer _creatureAiTextContainer[NUM_MONSTER_SAY_EVENTS];
     //PetDefaultSpellsMap _defaultPetSpellsStore;   Zyres 2017/07/16 not used
 
     ProfessionDiscoverySet _professionDiscoveryStore;

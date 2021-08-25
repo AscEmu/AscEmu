@@ -29,16 +29,6 @@ MySQLDataStore& MySQLDataStore::getInstance()
 
 void MySQLDataStore::finalize()
 {
-    for (uint8_t i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
-    {
-        for (auto itr = _creatureAiTextContainer[i].begin(); itr != _creatureAiTextContainer[i].end(); ++itr)
-        {
-            delete itr->second;
-        }
-
-        _creatureAiTextContainer[i].clear();
-    }
-
     for (auto&& professionDiscovery : _professionDiscoveryStore)
     {
         delete professionDiscovery;
@@ -831,13 +821,6 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                         creatureProperties.start_auras.insert(id);
                 }
             }
-
-            //AI stuff
-            creatureProperties.m_canFlee = false;
-            creatureProperties.m_canRangedAttack = false;
-            creatureProperties.m_canCallForHelp = false;
-            creatureProperties.m_fleeHealth = 0.0f;
-            creatureProperties.m_fleeDuration = 0;
 
             //Itemslot
             creatureProperties.itemslot_1 = 0;
@@ -3864,91 +3847,6 @@ std::string MySQLDataStore::getLocaleGossipTitleOrElse(uint32_t entry, uint32_t 
     return errorMsg.str();
 }
 
-void MySQLDataStore::loadCreatureAiTextTable()
-{
-    auto startTime = Util::TimeNow();
-    //                                                  0      1       2        3       4       5          6
-    QueryResult* result = WorldDatabase.Query("SELECT entry, event, chance, text0, text1, text2, text3, text4 FROM creature_ai_texts");
-    if (result == nullptr)
-    {
-        sLogger.info("MySQLDataLoads : Table `creature_ai_texts` is empty!");
-        return;
-    }
-
-    sLogger.info("MySQLDataLoads : Table `creature_ai_texts` has %u columns", result->GetFieldCount());
-
-    uint32_t load_count = 0;
-    do
-    {
-        Field* fields = result->Fetch();
-        uint32_t entry = fields[0].GetUInt32();
-        uint32_t creatureEvent = fields[1].GetUInt32();
-
-        if (creatureEvent >= NUM_MONSTER_SAY_EVENTS)
-        {
-            continue;
-        }
-
-        if (_creatureAiTextContainer[creatureEvent].find(entry) != _creatureAiTextContainer[creatureEvent].end())
-        {
-            sLogger.debug("Duplicate creature_ai_texts event %u for entry %u, skipping", creatureEvent, entry);
-            continue;
-        }
-
-        MySQLStructure::CreatureAITexts* aiText = new MySQLStructure::CreatureAITexts;
-        aiText->chance = fields[2].GetFloat();
-
-        uint32_t _textIds[CREATURE_AI_TEXT_COUNT];
-        uint8_t textCount = 0;
-        for (uint8_t i = 0; i < CREATURE_AI_TEXT_COUNT; ++i)
-        {
-            auto field = fields[3 + i];
-            if (field.isSet())
-            {
-                _textIds[i] = field.GetUInt32();
-                ++textCount;
-            }
-            else
-            {
-                _textIds[i] = 0;
-            }
-        }
-
-        if (textCount == 0)
-        {
-            delete aiText;
-            continue;
-        }
-
-        aiText->textCount = textCount;
-
-        std::copy(std::begin(_textIds), std::end(_textIds), std::begin(aiText->textIds));
-        _creatureAiTextContainer[creatureEvent].insert(std::make_pair(entry, aiText));
-
-        ++load_count;
-    } while (result->NextRow());
-
-    delete result;
-
-    sLogger.info("MySQLDataLoads : Loaded %u rows from `creature_ai_texts` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-}
-
-MySQLStructure::CreatureAITexts* MySQLDataStore::getAITextEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS _event) const
-{
-    if (_creatureAiTextContainer[_event].empty())
-    {
-        return nullptr;
-    }
-
-    const auto itr = _creatureAiTextContainer[_event].find(entry);
-    if (itr != _creatureAiTextContainer[_event].end())
-    {
-        return itr->second;
-    }
-
-    return nullptr;
-}
-
 //\brief Data loaded but never used!    Zyres 2017/07/16 not used
 //void MySQLDataStore::loadDefaultPetSpellsTable()
 //{
@@ -4433,4 +4331,91 @@ void MySQLDataStore::loadRecallTable()
     }
 
     sLogger.info("MySQLDataLoads : Loaded %u rows from `recall` table in %u ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+void MySQLDataStore::loadCreatureAIScriptsTable()
+{
+    auto startTime = Util::TimeNow();
+
+    _creatureAIScriptStore.clear();
+
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM creature_ai_scripts WHERE min_build <= %u AND max_build >= %u ORDER BY entry, event", VERSION_STRING, VERSION_STRING);
+    if (result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `creature_ai_scripts` is empty!");
+        return;
+    }
+
+    sLogger.info("MySQLDataLoads : Table `creature_ai_scripts` has %u columns", result->GetFieldCount());
+
+    uint32_t load_count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+        MySQLStructure::CreatureAIScripts* ai_script = new MySQLStructure::CreatureAIScripts;
+
+        uint32_t creature_entry = fields[2].GetUInt32();
+        uint32_t spellId = fields[9].GetUInt32();
+        uint32_t textId = fields[17].GetUInt32();
+
+        if (!getCreatureProperties(creature_entry))
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid creature entry %u <skipped>", creature_entry);
+            continue;
+        }
+           
+        SpellInfo const* spell = sSpellMgr.getSpellInfo(spellId);
+        if (spell == nullptr && spellId != 0)
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid spellId for creature entry %u <skipped>", spellId, creature_entry);
+            continue;
+        }
+
+        if (!sMySQLStore.getNpcScriptText(textId) && textId != 0)
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid textId for creature entry %u <skipped>", textId, creature_entry);
+            continue;
+        }
+
+        ai_script->entry = creature_entry;
+        ai_script->difficulty = fields[3].GetUInt8();
+        ai_script->phase = fields[4].GetUInt8();
+        ai_script->event = fields[5].GetUInt8();
+        ai_script->action = fields[6].GetUInt8();
+        ai_script->maxCount = fields[7].GetUInt8();
+        ai_script->chance = fields[8].GetFloat();
+        ai_script->spellId = spellId;
+        ai_script->spell_type = fields[10].GetUInt8();
+        ai_script->triggered = fields[11].GetBool();
+        ai_script->target = fields[12].GetUInt8();
+        ai_script->cooldownMin = fields[13].GetUInt32();
+        ai_script->cooldownMax = fields[14].GetUInt32();
+        ai_script->minHealth = fields[15].GetFloat();
+        ai_script->maxHealth = fields[16].GetFloat();
+        ai_script->textId = textId;
+        ai_script->misc1 = fields[18].GetUInt32();
+
+        _creatureAIScriptStore.emplace(creature_entry, ai_script);
+
+        ++load_count;
+    } while (result->NextRow());
+
+    delete result;
+
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `creature_ai_scripts` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+std::vector<MySQLStructure::CreatureAIScripts>* MySQLDataStore::getCreatureAiScripts(uint32_t entry)
+{
+    auto result = new std::vector <MySQLStructure::CreatureAIScripts>;
+
+    result->clear();
+
+    for (auto itr : _creatureAIScriptStore)
+    {
+        if (itr.first == entry)
+            result->push_back(*itr.second);
+    }
+
+    return result;
 }

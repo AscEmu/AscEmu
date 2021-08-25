@@ -36,6 +36,39 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cmath>
 #endif
 
+// Random and guessed values for Internal Spell cast chance
+float spellChanceModifierDispell[12] =
+{
+    1.4f,   // None
+    2.5f,   // Magic
+    1.8f,   // Curse
+    1.5f,   // Diseas
+    1.5f,   // Poison
+    1.0f,   // Stealth
+    1.0f,   // Invis
+    2.8f,   // All
+    1.0f,   // Special
+    2.0f,   // Frenzy
+    1.0f,   // Unk
+    1.0f,   // Unk
+};
+
+float spellChanceModifierType[12] =
+{
+    1.0f,    // None
+    0.75f,   // Rooted
+    0.75f,   // Heal
+    0.75f,   // Stun
+    0.50f,   // Fear
+    0.75f,   // Silence
+    0.95f,   // Curse
+    0.95f,   // AOE Damage
+    0.95f,   // Damage
+    0.75f,   // Summon
+    1.0f,    // Buff
+    1.0f,    // Debuff
+};
+
 AIInterface::AIInterface()
     :
     canEnterCombat(true),
@@ -47,6 +80,7 @@ AIInterface::AIInterface()
     m_AiState(AI_STATE_IDLE),
     m_AiScriptType(AI_SCRIPT_LONER),
     m_AiCurrentAgent(AGENT_NULL),
+    internalPhase(0),
 
     m_reactState(REACT_AGGRESSIVE),
     m_lasttargetPosition(0, 0, 0, 0),
@@ -82,8 +116,34 @@ AIInterface::AIInterface()
 {
     _boundary.clear();
     m_assistTargets.clear();
+
+    onLoadScripts.clear();
+    onCombatStartScripts.clear();
+    onAIUpdateScripts.clear();
+    onLeaveCombatScripts.clear();
+    onDiedScripts.clear();
+    onKilledScripts.clear();
+    onCallForHelpScripts.clear();
+    onDamageTakenScripts.clear();
+    onRandomWaypointScripts.clear();
+    onFleeScripts.clear();
+
+    mEmotesOnLoad.clear();
+    mEmotesOnCombatStart.clear();
+    mEmotesOnLeaveCombat.clear();
+    mEmotesOnTargetDied.clear();
+    mEmotesOnAIUpdate.clear();
+    mEmotesOnDied.clear();
+    mEmotesOnDamageTaken.clear();
+    mEmotesOnCallForHelp.clear();
+    mEmotesOnFlee.clear();
+    mEmotesOnRandomWaypoint.clear();
+
+    mLastCastedSpell = nullptr;
+    mCurrentSpellTarget = nullptr;
     setCannotReachTarget(false);
     m_fleeTimer.resetInterval(0);
+    mSpellWaitTimer.resetInterval(1500);
     m_cannotReachTimer.resetInterval(500);
     m_updateAssistTimer.resetInterval(1000);
     m_updateTargetsTimer.resetInterval(TARGET_UPDATE_INTERVAL);
@@ -91,7 +151,31 @@ AIInterface::AIInterface()
 
 AIInterface::~AIInterface()
 {
+    mLastCastedSpell = nullptr;
+    mCurrentSpellTarget = nullptr;
+    mCreatureAISpells.clear();
     clearBoundary();
+    onLoadScripts.clear();
+    onCombatStartScripts.clear();
+    onAIUpdateScripts.clear();
+    onLeaveCombatScripts.clear();
+    onDiedScripts.clear();
+    onKilledScripts.clear();
+    onCallForHelpScripts.clear();
+    onDamageTakenScripts.clear();
+    onRandomWaypointScripts.clear();
+    onFleeScripts.clear();
+
+    mEmotesOnLoad.clear();
+    mEmotesOnCombatStart.clear();
+    mEmotesOnLeaveCombat.clear();
+    mEmotesOnTargetDied.clear();
+    mEmotesOnAIUpdate.clear();
+    mEmotesOnDied.clear();
+    mEmotesOnDamageTaken.clear();
+    mEmotesOnCallForHelp.clear();
+    mEmotesOnFlee.clear();
+    mEmotesOnRandomWaypoint.clear();
 }
 
 void AIInterface::Init(Unit* un, AiScriptTypes at)
@@ -113,6 +197,323 @@ void AIInterface::Init(Unit* un, AiScriptTypes at, Unit* owner)
 
     m_Unit = un;
     m_PetOwner = owner;
+}
+
+void AIInterface::initialiseScripts(uint32_t entry)
+{
+    onLoadScripts.clear();
+    onCombatStartScripts.clear();
+    onAIUpdateScripts.clear();
+    onLeaveCombatScripts.clear();
+    onDiedScripts.clear();
+    onKilledScripts.clear();
+    onCallForHelpScripts.clear();
+    onDamageTakenScripts.clear();
+    onRandomWaypointScripts.clear();
+    onFleeScripts.clear();
+
+    mEmotesOnLoad.clear();
+    mEmotesOnCombatStart.clear();
+    mEmotesOnLeaveCombat.clear();
+    mEmotesOnTargetDied.clear();
+    mEmotesOnAIUpdate.clear();
+    mEmotesOnDied.clear();
+    mEmotesOnDamageTaken.clear();
+    mEmotesOnCallForHelp.clear();
+    mEmotesOnFlee.clear();
+    mEmotesOnRandomWaypoint.clear();
+
+    setCanCallForHelp(false);
+    setCanFlee(false);
+
+    auto scripts = sMySQLStore.getCreatureAiScripts(entry);
+
+    uint32_t spellcountOnCombatStart = 1;
+    uint32_t spellcountOnAIUpdate = 1;
+
+    for (auto aiScripts : *scripts)
+    {
+        uint8_t eventId = aiScripts.event;
+
+        // Skip not in Current Difficulty
+        if (aiScripts.difficulty != 4 && aiScripts.difficulty != getDifficultyType())
+            continue;
+
+        switch (eventId)
+        {
+        case onLoad:
+        {
+            onLoadScripts.push_back(aiScripts);
+
+            if (aiScripts.action == actionSendMessage)
+            {
+                auto message = new AI_SCRIPT_SENDMESSAGES();
+
+                message->textId = aiScripts.textId;
+                message->canche = aiScripts.chance;
+                message->phase = aiScripts.phase;
+                message->healthPrecent = aiScripts.maxHealth;
+                message->maxCount = aiScripts.maxCount;
+
+                mEmotesOnLoad.push_back(*message);
+            }
+        }
+            break;
+        case onEnterCombat:
+        {
+            onCombatStartScripts.push_back(aiScripts);
+            if (aiScripts.spellId)
+                ++spellcountOnCombatStart;
+
+            if (aiScripts.action == actionSendMessage)
+            {
+                auto message = new AI_SCRIPT_SENDMESSAGES();
+
+                message->textId = aiScripts.textId;
+                message->canche = aiScripts.chance;
+                message->phase = aiScripts.phase;
+                message->healthPrecent = aiScripts.maxHealth;
+                message->maxCount = aiScripts.maxCount;
+
+                mEmotesOnCombatStart.push_back(*message);
+            }
+        }
+            break;
+        case onLeaveCombat:
+        {
+            onLeaveCombatScripts.push_back(aiScripts);
+
+            if (aiScripts.action == actionSendMessage)
+            {
+                auto message = new AI_SCRIPT_SENDMESSAGES();
+
+                message->textId = aiScripts.textId;
+                message->canche = aiScripts.chance;
+                message->phase = aiScripts.phase;
+                message->healthPrecent = aiScripts.maxHealth;
+                message->maxCount = aiScripts.maxCount;
+
+                mEmotesOnLeaveCombat.push_back(*message);
+            }
+        }
+            break;
+        case onDied:
+        {
+            onDiedScripts.push_back(aiScripts);
+
+            if (aiScripts.action == actionSendMessage)
+            {
+                auto message = new AI_SCRIPT_SENDMESSAGES();
+
+                message->textId = aiScripts.textId;
+                message->canche = aiScripts.chance;
+                message->phase = aiScripts.phase;
+                message->healthPrecent = aiScripts.maxHealth;
+                message->maxCount = aiScripts.maxCount;
+
+                mEmotesOnDied.push_back(*message);
+            }
+        }
+            break;
+        case onTargetDied:
+        {
+            onKilledScripts.push_back(aiScripts);
+
+            if (aiScripts.action == actionSendMessage)
+            {
+                auto message = new AI_SCRIPT_SENDMESSAGES();
+
+                message->textId = aiScripts.textId;
+                message->canche = aiScripts.chance;
+                message->phase = aiScripts.phase;
+                message->healthPrecent = aiScripts.maxHealth;
+                message->maxCount = aiScripts.maxCount;
+
+                mEmotesOnTargetDied.push_back(*message);
+            }
+        }
+            break;
+        case onAIUpdate:
+        {
+            onAIUpdateScripts.push_back(aiScripts);
+            if (aiScripts.spellId)
+                ++spellcountOnAIUpdate;
+
+            if (aiScripts.action == actionSendMessage)
+            {
+                auto message = new AI_SCRIPT_SENDMESSAGES();
+
+                message->textId = aiScripts.textId;
+                message->canche = aiScripts.chance;
+                message->phase = aiScripts.phase;
+                message->healthPrecent = aiScripts.maxHealth;
+                message->maxCount = aiScripts.maxCount;
+
+                mEmotesOnAIUpdate.push_back(*message);
+            }
+        }
+            break;
+        case onCallForHelp:
+        {
+            onCallForHelpScripts.push_back(aiScripts);
+            setCanCallForHelp(true);
+            m_CallForHelpHealth = aiScripts.maxHealth;
+
+            if (aiScripts.action == actionSendMessage)
+            {
+                auto message = new AI_SCRIPT_SENDMESSAGES();
+
+                message->textId = aiScripts.textId;
+                message->canche = aiScripts.chance;
+                message->phase = aiScripts.phase;
+                message->healthPrecent = aiScripts.maxHealth;
+                message->maxCount = aiScripts.maxCount;
+
+                mEmotesOnCallForHelp.push_back(*message);
+            }
+        }
+            break;
+        case onRandomWaypoint:
+        {
+            onRandomWaypointScripts.push_back(aiScripts);
+
+            if (aiScripts.action == actionSendMessage)
+            {
+                auto message = new AI_SCRIPT_SENDMESSAGES();
+
+                message->textId = aiScripts.textId;
+                message->canche = aiScripts.chance;
+                message->phase = aiScripts.phase;
+                message->healthPrecent = aiScripts.maxHealth;
+                message->maxCount = aiScripts.maxCount;
+
+                mEmotesOnRandomWaypoint.push_back(*message);
+            }
+        }
+            break;
+        case onDamageTaken:
+        {
+            onDamageTakenScripts.push_back(aiScripts);
+
+            if (aiScripts.action == actionSendMessage)
+            {
+                auto message = new AI_SCRIPT_SENDMESSAGES();
+
+                message->textId = aiScripts.textId;
+                message->canche = aiScripts.chance;
+                message->phase = aiScripts.phase;
+                message->healthPrecent = aiScripts.maxHealth;
+                message->maxCount = aiScripts.maxCount;
+
+                mEmotesOnDamageTaken.push_back(*message);
+            }
+        }
+            break;
+        case onFlee:
+        {
+            onFleeScripts.push_back(aiScripts);
+            setCanFlee(true);
+            m_FleeHealth = aiScripts.maxHealth;
+
+            if (aiScripts.action == actionSendMessage)
+            {
+                auto message = new AI_SCRIPT_SENDMESSAGES();
+
+                message->textId = aiScripts.textId;
+                message->canche = aiScripts.chance;
+                message->phase = aiScripts.phase;
+                message->healthPrecent = aiScripts.maxHealth;
+                message->maxCount = aiScripts.maxCount;
+
+                mEmotesOnFlee.push_back(*message);
+            }
+
+            // Incase we want a custom Flee Timer
+            if (aiScripts.misc1)
+                m_FleeDuration = aiScripts.misc1;
+            else
+                m_FleeDuration = 10000;
+        }
+            break;
+        default:
+            sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "unhandled event with eventId %u", eventId);
+        }
+    }
+
+    // On Combat Start
+    for (auto onCombatStartScript : onCombatStartScripts)
+    {
+        if (onCombatStartScript.action == actionSpell)
+        {
+            const auto spellInfo = sSpellMgr.getSpellInfo(onCombatStartScript.spellId);
+            float castChance;
+
+            if (spellInfo != nullptr)
+            {
+                if (onCombatStartScript.chance)
+                    castChance = onCombatStartScript.chance;
+                else
+                    castChance = ((75.0f / spellcountOnCombatStart) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[onCombatStartScript.spell_type]);
+
+                sLogger.debug("spell %u chance %f", onCombatStartScript.spellId, castChance);
+
+                uint32_t spellCooldown = Util::getRandomUInt(onCombatStartScript.cooldownMin, onCombatStartScript.cooldownMax);
+                if (spellCooldown == 0)
+                    spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
+
+                // Create AI Spell
+                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, onCombatStartScript.target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, onCombatStartScript.triggered);
+                newAISpell->addDBEmote(onCombatStartScript.textId);
+                newAISpell->setMaxCastCount(onCombatStartScript.maxCount);
+                newAISpell->scriptType = onCombatStartScript.event;
+                newAISpell->spell_type = AI_SpellType(onCombatStartScript.spell_type);
+
+                // Ready add to our List
+                mCreatureAISpells.push_back(newAISpell);
+            }
+            else
+                sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onCombatStartScript.spellId);
+        }
+    }
+
+    // On AI Update
+    for (auto onAIUpdateScript : onAIUpdateScripts)
+    {
+        if (onAIUpdateScript.action == actionSpell)
+        {
+            const auto spellInfo = sSpellMgr.getSpellInfo(onAIUpdateScript.spellId);
+            float castChance;
+
+            if (spellInfo != nullptr)
+            {
+                if (onAIUpdateScript.chance)
+                    castChance = onAIUpdateScript.chance;
+                else
+                    castChance = ((75.0f / spellcountOnAIUpdate) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[onAIUpdateScript.spell_type]);
+
+                sLogger.debug("spell %u chance %f", onAIUpdateScript.spellId, castChance);
+
+                uint32_t spellCooldown = Util::getRandomUInt(onAIUpdateScript.cooldownMin, onAIUpdateScript.cooldownMax);
+                if (spellCooldown == 0)
+                    spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
+
+                // Create AI Spell
+                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, onAIUpdateScript.target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, onAIUpdateScript.triggered);
+                newAISpell->addDBEmote(onAIUpdateScript.textId);
+                newAISpell->setMaxCastCount(onAIUpdateScript.maxCount);
+                newAISpell->scriptType = onAIUpdateScript.event;
+                newAISpell->spell_type = AI_SpellType(onAIUpdateScript.spell_type);
+
+                if (onAIUpdateScript.maxHealth)
+                    newAISpell->setMinMaxPercentHp(onAIUpdateScript.minHealth, onAIUpdateScript.maxHealth);
+
+                // Ready add to our List
+                mCreatureAISpells.push_back(newAISpell);
+            }
+            else
+                sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onAIUpdateScript.spellId);
+        }
+    }
 }
 
 Unit* AIInterface::getUnit() const
@@ -228,6 +629,8 @@ void AIInterface::Update(unsigned long time_passed)
     if (getAiState() == AI_STATE_FEAR)
         return;
 
+    UpdateAgent(time_passed);
+
     if (isEngaged() || getUnit()->isInCombat())
         if(canUnitEvade(time_passed))
             enterEvadeMode();
@@ -285,6 +688,195 @@ void AIInterface::Update(unsigned long time_passed)
     updateEmotes(time_passed);
 }
 
+void AIInterface::UpdateAgent(unsigned long time_passed)
+{
+    mSpellWaitTimer.updateTimer(time_passed);
+
+    // Update Spells
+    if (getUnit()->isInCombat())
+    {
+        // Update Internal Spell Timers
+        for (auto spells : mCreatureAISpells)
+        {
+            if (!getUnit()->isCastingSpell())
+                spells->mCooldownTimer.updateTimer(time_passed);
+
+            spells->mDurationTimer.updateTimer(time_passed);
+        }
+
+        UpdateAISpells();
+    }
+
+    // On AIUpdate Scripts
+    for (auto itr = onAIUpdateScripts.begin(); itr != onAIUpdateScripts.end(); ++itr)
+    {
+        uint8_t actionId = itr->action;
+
+        switch (actionId)
+        {
+        case actionPhaseChange:
+            if (itr->phase > 0 || itr->phase == internalPhase)
+            {
+                if (float(getUnit()->getHealthPct()) <= itr->maxHealth && itr->maxCount)
+                {
+                    internalPhase = itr->misc1;
+
+                    itr->maxCount = itr->maxCount - 1;
+
+                    MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
+                    if (npcScriptText != nullptr)
+                        getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+
+                    if (npcScriptText->sound != 0)
+                        getUnit()->PlaySoundToSet(npcScriptText->sound);
+                }
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    // Send a Chatmessage from our AI Scripts
+    sendStoredText(mEmotesOnAIUpdate, nullptr);
+}
+
+void AIInterface::castAISpell(CreatureAISpells* aiSpell)
+{
+    Unit* target = getCurrentTarget();
+    switch (aiSpell->mTargetType)
+    {
+    case TARGET_SELF:
+    case TARGET_VARIOUS:
+    {
+        getUnit()->castSpell(getUnit(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        mLastCastedSpell = aiSpell;
+    } break;
+    case TARGET_ATTACKING:
+    {
+        getUnit()->castSpell(target, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        mCurrentSpellTarget = target;
+        mLastCastedSpell = aiSpell;
+    } break;
+    case TARGET_SOURCE:
+        getUnit()->castSpellLoc(getUnit()->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        mLastCastedSpell = aiSpell;
+        break;
+    case TARGET_DESTINATION:
+    {
+        getUnit()->castSpellLoc(target->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        mCurrentSpellTarget = target;
+        mLastCastedSpell = aiSpell;
+    } break;
+    case TARGET_RANDOM_FRIEND:
+    case TARGET_RANDOM_SINGLE:
+    case TARGET_RANDOM_DESTINATION:
+    {
+        castSpellOnRandomTarget(aiSpell);
+        mLastCastedSpell = aiSpell;
+    } break;
+    case TARGET_CLOSEST:
+    {
+        mCurrentSpellTarget = getBestUnitTarget(TargetFilter_Closest);
+        mLastCastedSpell = aiSpell;
+        getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+    } break;
+    case TARGET_FURTHEST:
+    {
+        mCurrentSpellTarget = getBestUnitTarget(TargetFilter_InRangeOnly, 0.0f, 30.0f);
+        mLastCastedSpell = aiSpell;
+        getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+    } break;
+    case TARGET_CUSTOM:
+    {
+        if (aiSpell->getCustomTarget() != nullptr)
+            getUnit()->castSpell(aiSpell->getCustomTarget(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+    } break;
+    default:
+        break;
+    }
+}
+
+void AIInterface::castAISpell(uint32_t aiSpellId)
+{
+    CreatureAISpells* aiSpell = nullptr;
+
+    // Lets find the stored Spellinfo
+    for (auto spell : mCreatureAISpells)
+        if (spell->mSpellInfo && spell->mSpellInfo->getId() == aiSpellId)
+            aiSpell = spell;
+
+    // when no valid Spell is found return
+    if (!aiSpell)
+        return;
+
+    castAISpell(aiSpell);
+}
+
+void AIInterface::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
+{
+    if (AiSpell == nullptr)
+        return;
+
+    // helper for following code
+    bool isTargetRandFriend = (AiSpell->mTargetType == TARGET_RANDOM_FRIEND ? true : false);
+
+    // if we already cast a spell, do not set/cast another one!
+    if (!getUnit()->isCastingSpell()
+        && getUnit()->GetAIInterface()->getCurrentTarget())
+    {
+        // set up targets in range by position, relation and hp range
+        std::vector<Unit*> possibleUnitTargets;
+
+        for (const auto& inRangeObject : getUnit()->getInRangeObjectsSet())
+        {
+            if (((isTargetRandFriend && isFriendly(getUnit(), inRangeObject))
+                || (!isTargetRandFriend && isHostile(getUnit(), inRangeObject) && inRangeObject != getUnit())) && inRangeObject->isCreatureOrPlayer())
+            {
+                Unit* inRangeTarget = static_cast<Unit*>(inRangeObject);
+
+                if (
+                    inRangeTarget->isAlive() && AiSpell->isDistanceInRange(getUnit()->GetDistance2dSq(inRangeTarget))
+                    && ((AiSpell->isHpInPercentRange(inRangeTarget->getHealthPct()) && isTargetRandFriend)
+                        || (getUnit()->getThreatManager().getThreat(inRangeTarget) > 0 && isHostile(getUnit(), inRangeTarget))))
+                {
+                    possibleUnitTargets.push_back(inRangeTarget);
+                }
+            }
+        }
+
+        // add us as a friendly target.
+        if (AiSpell->isHpInPercentRange(getUnit()->getHealthPct()) && isTargetRandFriend)
+            possibleUnitTargets.push_back(getUnit());
+
+        // no targets in our range for hp range and firendly targets
+        if (possibleUnitTargets.empty())
+            return;
+
+        // get a random target
+        uint32_t randomIndex = Util::getRandomUInt(0, static_cast<uint32_t>(possibleUnitTargets.size() - 1));
+        Unit* randomTarget = possibleUnitTargets[randomIndex];
+
+        if (randomTarget == nullptr)
+            return;
+
+        switch (AiSpell->mTargetType)
+        {
+        case TARGET_RANDOM_FRIEND:
+        case TARGET_RANDOM_SINGLE:
+        {
+            getUnit()->castSpell(randomTarget, AiSpell->mSpellInfo, AiSpell->mIsTriggered);
+            mCurrentSpellTarget = randomTarget;
+        } break;
+        case TARGET_RANDOM_DESTINATION:
+            getUnit()->castSpellLoc(randomTarget->GetPosition(), AiSpell->mSpellInfo, AiSpell->mIsTriggered);
+            break;
+        }
+
+        possibleUnitTargets.clear();
+    }
+}
+
 void AIInterface::updateEmotes(unsigned long time_passed)
 {
     if (!getUnit()->getThreatManager().getCurrentVictim() && isAiState(AI_STATE_IDLE) && m_Unit->isAlive())
@@ -340,7 +932,8 @@ void AIInterface::updateTargets(unsigned long time_passed)
         return;
 
     //Find Target on Threat List
-    setCurrentTarget(getUnit()->getThreatManager().getCurrentVictim());
+    if (getUnit()->getThreatManager().getCurrentVictim())
+        setCurrentTarget(getUnit()->getThreatManager().getCurrentVictim());
 
     //Find Target when no Threat List is available
     if (!getCurrentTarget() && !(isAiScriptType(AI_SCRIPT_PET)))
@@ -406,6 +999,12 @@ void AIInterface::updateTargets(unsigned long time_passed)
 // Called in TheratHandler when Target is changed
 void AIInterface::updateVictim(Unit* victim)
 {
+    if (getAiScriptType() == AI_SCRIPT_PASSIVE)
+        return;
+
+    if (!victim)
+        return;
+
     // Do not update target while confused or fleeing
     if (getUnit()->hasUnitStateFlag(UNIT_STATE_CONFUSED | UNIT_STATE_FLEEING))
         return;
@@ -574,18 +1173,18 @@ void AIInterface::updateCombat(uint32_t p_time)
                     //focus/mana requirement
                     switch (AIspell->spell->getPowerType())
                     {
-                        case POWER_TYPE_MANA:
-                        {
-                            if (m_Unit->getPower(POWER_TYPE_MANA) > AIspell->spell->getManaCost())
-                                canCastSpell = true;
-                        } 
-                        break;
-                        case POWER_TYPE_FOCUS:
-                        {
-                            if (m_Unit->getPower(POWER_TYPE_FOCUS) > AIspell->spell->getManaCost())
-                                canCastSpell = true;
-                        } 
-                        break;
+                    case POWER_TYPE_MANA:
+                    {
+                        if (m_Unit->getPower(POWER_TYPE_MANA) > AIspell->spell->getManaCost())
+                            canCastSpell = true;
+                    }
+                    break;
+                    case POWER_TYPE_FOCUS:
+                    {
+                        if (m_Unit->getPower(POWER_TYPE_FOCUS) > AIspell->spell->getManaCost())
+                            canCastSpell = true;
+                    }
+                    break;
                     }
                 }
             }
@@ -605,17 +1204,17 @@ void AIInterface::updateCombat(uint32_t p_time)
                 {
                     castSpell(getUnit(), spellInfo, targets);
                 }
-                break;
+                    break;
                 case TTYPE_SOURCE:
                 {
                     getUnit()->castSpellLoc(targets.getSource(), spellInfo, true);
                 }
-                break;
+                    break;
                 case TTYPE_DESTINATION:
                 {
                     getUnit()->castSpellLoc(targets.getDestination(), spellInfo, true);
                 }
-                break;
+                    break;
                 default:
                     sLogger.failure("AI Agents: Targettype of AI agent spell %u for creature %u not set", spellInfo->getId(), static_cast<Creature*>(getUnit())->GetCreatureProperties()->Id);
             }
@@ -651,6 +1250,18 @@ void AIInterface::updateCombat(uint32_t p_time)
         std::string msg = "%s attempts to run away in fear!";
         getUnit()->sendChatMessage(CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, msg.c_str());
 
+        // On Flee Scripts
+        for (auto onFleeScript : onFleeScripts)
+        {
+            if (onFleeScript.action == actionSpell)
+            {
+                castAISpell(onFleeScript.spellId);
+            }
+        }
+
+        // Send a Chatmessage from our AI Scripts
+        sendStoredText(mEmotesOnFlee, nullptr);
+
         m_hasFleed = true;
     }
     break;
@@ -660,7 +1271,19 @@ void AIInterface::updateCombat(uint32_t p_time)
         callForHelp(30.0f);
 
         if (m_Unit->isCreature())
-            static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_CALL_HELP, nullptr);
+        {          
+            // On Call for Help Scripts
+            for (auto onCallForHelpScript : onCallForHelpScripts)
+            {
+                if (onCallForHelpScript.action == actionSpell)
+                {
+                    castAISpell(onCallForHelpScript.spellId);
+                }
+            }
+
+            // Send a Chatmessage from our AI Scripts
+            sendStoredText(mEmotesOnCallForHelp, nullptr);
+        }
 
         CALL_SCRIPT_EVENT(m_Unit, OnCallForHelp)();
     }
@@ -854,12 +1477,13 @@ void AIInterface::selectCurrentAgent(Unit* target, uint32_t spellid)
             else
             {
                 setCurrentAgent(AGENT_MELEE);
-            }      
+            }
         }
         else
         {
             setCurrentAgent(AGENT_MELEE);
         }
+
         if (getCurrentAgent() == AGENT_RANGED || getCurrentAgent() == AGENT_MELEE)
         {
             if (m_canRangedAttack)
@@ -884,6 +1508,54 @@ void AIInterface::selectCurrentAgent(Unit* target, uint32_t spellid)
             }
         }
     }
+}
+
+void AIInterface::addSpellToList(AI_Spell* sp)
+{
+    if (!sp || !sp->spell)
+        return;
+
+    AI_Spell* sp2 = new AI_Spell;
+    memcpy(sp2, sp, sizeof(AI_Spell));
+    m_spells.push_back(sp2);
+}
+
+void AIInterface::initializeSpells()
+{
+    if (m_spells.size())
+    {
+        for (auto itr = m_spells.begin(); itr != m_spells.end(); ++itr)
+        {
+            uint32_t cooldown = (*itr)->cooldown;
+            uint32_t spellid = (*itr)->spell->getId();
+            spellEvents.addEvent(spellid, cooldown, AGENT_SPELL);
+        }
+    }
+}
+
+AI_Spell* AIInterface::getSpell(uint32_t entry)
+{
+    if (m_spells.size())
+    {
+        for (const auto& aiSpell : m_spells)
+        {
+            if (aiSpell->spell->getId() == entry)
+                return aiSpell;
+        }
+    }
+    return nullptr;
+}
+
+void AIInterface::setNextSpell(uint32_t spellId)
+{
+    if (getSpell(spellId))
+        spellEvents.addEvent(spellId, 1);
+}
+
+void AIInterface::removeNextSpell(uint32_t spellId)
+{
+    if (getSpell(spellId))
+        spellEvents.removeEvent(spellId);
 }
 
 void AIInterface::castSpell(Unit* caster, SpellInfo const* spellInfo, SpellCastTargets targets)
@@ -1381,16 +2053,6 @@ void AIInterface::onHostileAction(Unit* pUnit, SpellInfo const* spellInfo/* = nu
         handleEvent(EVENT_HOSTILEACTION, pUnit, 0);
 }
 
-void AIInterface::addSpellToList(AI_Spell* sp)
-{
-    if (!sp || !sp->spell)
-        return;
-
-    AI_Spell* sp2 = new AI_Spell;
-    memcpy(sp2, sp, sizeof(AI_Spell));
-    m_spells.push_back(sp2);
-}
-
 void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
 {
     if (getDifficultyType() != 0)
@@ -1573,7 +2235,19 @@ void AIInterface::eventDamageTaken(Unit* pUnit, uint32_t misc1)
         return;
 
     if (m_Unit->isCreature())
-        static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_DAMAGE_TAKEN, pUnit);
+    {
+        // On Damage Taken Scripts
+        for (auto onDamageTakenScript : onDamageTakenScripts)
+        {
+            if (onDamageTakenScript.action == actionSpell)
+            {
+                castAISpell(onDamageTakenScript.spellId);
+            } 
+        }
+
+        // Send a Chatmessage from our AI Scripts
+        sendStoredText(mEmotesOnDamageTaken, pUnit);
+    }
 
     pUnit->RemoveAura(24575);
 
@@ -1590,7 +2264,6 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
     if (m_Unit->isCreature())
     {
         Creature* creature = static_cast<Creature*>(m_Unit);
-        creature->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ENTER_COMBAT, pUnit);
 
         CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStart)(pUnit);
         CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
@@ -1603,6 +2276,18 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
             m_Unit->setChannelSpellId(0);
             m_Unit->setChannelObjectGuid(0);
         }
+
+        // Enter Combat Scripts
+        for (auto onCombatStartScript : onCombatStartScripts)
+        {
+            if (onCombatStartScript.action == actionSpell)
+            {
+                castAISpell(onCombatStartScript.spellId);
+            }
+        }
+
+        // Send a Chatmessage from our AI Scripts
+        sendStoredText(mEmotesOnCombatStart, pUnit);
     }
 
     // Stop the emote - change to fight emote
@@ -1615,11 +2300,11 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
     // Instance Combat
     instanceCombatProgress(true);
 
-    // If the Player is in A Group add all Players to the Threat List
-    initGroupThreat(pUnit);
-
     // Init Spells
     initializeSpells();
+
+    // If the Player is in A Group add all Players to the Threat List
+    initGroupThreat(pUnit);
 
     // Send attack sound
     if (getUnit()->isCreature())
@@ -1670,51 +2355,16 @@ void AIInterface::initGroupThreat(Unit* target)
     }
 }
 
-void AIInterface::initializeSpells()
-{
-    if (m_spells.size())
-    {
-        for (auto itr = m_spells.begin(); itr != m_spells.end(); ++itr)
-        {
-            uint32_t cooldown = (*itr)->cooldown;
-            uint32_t spellid = (*itr)->spell->getId();
-            spellEvents.addEvent(spellid, cooldown, AGENT_SPELL);
-        }
-    }
-}
-
-AI_Spell* AIInterface::getSpell(uint32_t entry)
-{
-    if (m_spells.size())
-    {
-        for (const auto& aiSpell : m_spells)
-        {
-            if (aiSpell->spell->getId() == entry)
-                return aiSpell;
-        }
-    }
-    return nullptr;
-}
-
-void AIInterface::setNextSpell(uint32_t spellId)
-{
-    if(getSpell(spellId))
-        spellEvents.addEvent(spellId, 1);
-}
-
-void AIInterface::removeNextSpell(uint32_t spellId)
-{
-    if (getSpell(spellId))
-        spellEvents.removeEvent(spellId);
-}
-
 void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
 {
     m_isEngaged = false;
+    mCreatureAISpells.clear();
+    internalPhase = 0;
     spellEvents.resetEvents();
     setUnitToFollow(nullptr);
     setCannotReachTarget(false);
     setNoCallAssistance(false);
+    setCurrentTarget(nullptr);
     getUnit()->setTargetGuid(0);
 
     if (pUnit == nullptr)
@@ -1732,7 +2382,6 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
     if (m_Unit->isCreature())
     {
         Creature* creature = static_cast<Creature*>(m_Unit);
-        creature->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_COMBAT_STOP, nullptr);
 
         if (creature->original_emotestate)
             m_Unit->setEmoteState(creature->original_emotestate);
@@ -1747,7 +2396,21 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
             if (creature->m_spawn->channel_target_creature)
                 sEventMgr.AddEvent(creature, &Creature::ChannelLinkUpCreature, creature->m_spawn->channel_target_creature, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, 0);
         }
+
+        // Leave Combat Scripts
+        for (auto onLeaveCombatScript : onLeaveCombatScripts)
+        {
+            if (onLeaveCombatScript.action == actionSpell)
+            {
+                castAISpell(onLeaveCombatScript.spellId);
+            }
+        }
+
+        // Send a Chatmessage from our AI Scripts
+        sendStoredText(mEmotesOnLeaveCombat, nullptr);
     }
+
+    initialiseScripts(getUnit()->getEntry());
 
     m_Unit->CombatStatus.Vanished();
     m_Unit->getThreatManager().clearAllThreat();
@@ -1785,18 +2448,29 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 {
     m_isEngaged = false;
     spellEvents.resetEvents();
+    internalPhase = 0;
+    mCreatureAISpells.clear();
+    setCurrentTarget(nullptr);
     setUnitToFollow(nullptr);
     if (pUnit == nullptr)
         return;
-
-    if (m_Unit->isCreature())
-        static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_DIED, pUnit);
 
     CALL_SCRIPT_EVENT(m_Unit, _internalOnDied)(pUnit);
     CALL_SCRIPT_EVENT(m_Unit, OnDied)(pUnit);
 
     if (m_Unit->isCreature())
     {
+        // Died Scripts
+        for (auto onDiedScript : onDiedScripts)
+        {
+            // Placeholder for further actions
+        }
+
+        // Send a Chatmessage from our AI Scripts
+        sendStoredText(mEmotesOnDied, pUnit);
+
+        initialiseScripts(getUnit()->getEntry());
+
         CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), OnCreatureDeath)(static_cast<Creature*>(m_Unit), pUnit);
 
         // set encounter state to finished
@@ -1880,12 +2554,74 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
     }
 }
 
+void AIInterface::eventOnLoad()
+{
+    // On Load Scripts
+    if (onLoadScripts.size())
+    {
+        for (auto onLoadScript : onLoadScripts)
+        {
+            switch (onLoadScript.action)
+            {
+                case actionSpell:
+                {
+                    castAISpell(onLoadScript.spellId);
+                }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Send a Chatmessage from our AI Scripts
+        sendStoredText(mEmotesOnLoad, nullptr);
+    }
+}
+
 void AIInterface::onDeath(Object* pKiller)
 {
     if (pKiller->isCreatureOrPlayer())
         handleEvent(EVENT_UNITDIED, static_cast<Unit*>(pKiller), 0);
     else
         handleEvent(EVENT_UNITDIED, m_Unit, 0);
+
+    // Killed Scripts
+    for (auto onKilledScript : onKilledScripts)
+    {
+        switch (onKilledScript.action)
+        {
+            case actionPhaseChange:
+            {
+                if (onKilledScript.phase > 0 || onKilledScript.phase == internalPhase)
+                {
+                    if (float(getUnit()->getHealthPct()) <= onKilledScript.maxHealth && onKilledScript.maxCount)
+                    {
+                        internalPhase = onKilledScript.misc1;
+
+                        onKilledScript.maxCount = onKilledScript.maxCount - 1;
+
+                        MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(onKilledScript.textId);
+                        if (npcScriptText != nullptr)
+                            getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+
+                        if (npcScriptText->sound != 0)
+                            getUnit()->PlaySoundToSet(npcScriptText->sound);
+                    }
+                }
+            }
+                break;
+            case actionSpell:
+            {
+                castAISpell(onKilledScript.spellId);
+            }
+                break;
+            default:
+                break;
+        }
+    }
+
+    // Send a Chatmessage from our AI Scripts
+    sendStoredText(mEmotesOnTargetDied, nullptr);
 }
 
 void AIInterface::setCannotReachTarget(bool cannotReach)
@@ -1987,6 +2723,7 @@ void AIInterface::clearBoundary()
 
 void AIInterface::movementInform(uint32_t type, uint32_t id)
 {
+    sendStoredText(mEmotesOnRandomWaypoint, nullptr);
     CALL_SCRIPT_EVENT(m_Unit, OnReachWP)(type, id);
 }
 
@@ -2476,4 +3213,604 @@ uint32 AIInterface::fixupCorridor(dtPolyRef* path, const uint32 npath, const uin
     }
 
     return req + size;
+}
+
+void CreatureAISpells::setdurationTimer(uint32_t durationTimer)
+{
+    mDurationTimer.resetInterval(durationTimer);
+}
+
+void CreatureAISpells::setCooldownTimer(uint32_t cooldownTimer)
+{
+    mCooldownTimer.resetInterval(cooldownTimer);
+}
+
+void CreatureAISpells::addDBEmote(uint32_t textId)
+{
+    MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(textId);
+    if (npcScriptText != nullptr)
+        addEmote(npcScriptText->text, npcScriptText->type, npcScriptText->sound);
+    else
+        sLogger.debug("A script tried to add a spell emote with %u! Id is not available in table npc_script_text.", textId);
+}
+
+void CreatureAISpells::addEmote(std::string pText, uint8_t pType, uint32_t pSoundId)
+{
+    if (!pText.empty() || pSoundId)
+        mAISpellEmote.push_back(AISpellEmotes(pText, pType, pSoundId));
+}
+
+void CreatureAISpells::sendRandomEmote(Unit* creatureAI)
+{
+    if (!mAISpellEmote.empty() && creatureAI != nullptr)
+    {
+        sLogger.debug("AISpellEmotes::sendRandomEmote() : called");
+
+        uint32_t randomUInt = (mAISpellEmote.size() > 1) ? Util::getRandomUInt(static_cast<uint32_t>(mAISpellEmote.size() - 1)) : 0;
+        creatureAI->sendChatMessage(mAISpellEmote[randomUInt].mType, LANG_UNIVERSAL, mAISpellEmote[randomUInt].mText.c_str());
+
+        if (mAISpellEmote[randomUInt].mSoundId != 0)
+            creatureAI->PlaySoundToSet(mAISpellEmote[randomUInt].mSoundId);
+    }
+}
+
+void CreatureAISpells::setMaxStackCount(uint32_t stackCount)
+{
+    mMaxStackCount = stackCount;
+}
+
+const uint32_t CreatureAISpells::getMaxStackCount()
+{
+    return mMaxStackCount;
+}
+
+void CreatureAISpells::setMaxCastCount(uint32_t castCount)
+{
+    mMaxCount = castCount;
+}
+
+const uint32_t CreatureAISpells::getMaxCastCount()
+{
+    return mMaxCount;
+}
+
+const uint32_t CreatureAISpells::getCastCount()
+{
+    return mCastCount;
+}
+
+const bool CreatureAISpells::isDistanceInRange(float targetDistance)
+{
+    if (targetDistance >= mMinPositionRangeToCast && targetDistance <= mMaxPositionRangeToCast)
+        return true;
+
+    return false;
+}
+
+void CreatureAISpells::setMinMaxDistance(float minDistance, float maxDistance)
+{
+    mMinPositionRangeToCast = minDistance;
+    mMaxPositionRangeToCast = maxDistance;
+}
+
+const bool CreatureAISpells::isHpInPercentRange(int targetHp)
+{
+    if (targetHp >= mMinHpRangeToCast && targetHp <= mMaxHpRangeToCast)
+        return true;
+
+    return false;
+}
+
+void CreatureAISpells::setMinMaxPercentHp(int minHp, int maxHp)
+{
+    mMinHpRangeToCast = minHp;
+    mMaxHpRangeToCast = maxHp;
+}
+
+void CreatureAISpells::setAvailableForScriptPhase(std::vector<uint32_t> phaseVector)
+{
+    for (const auto& phase : phaseVector)
+    {
+        mPhaseList.push_back(phase);
+    }
+}
+
+bool CreatureAISpells::isAvailableForScriptPhase(uint32_t scriptPhase)
+{
+    if (mPhaseList.empty())
+        return true;
+
+    for (const auto& availablePhase : mPhaseList)
+    {
+        if (availablePhase == scriptPhase)
+            return true;
+    }
+
+    return false;
+}
+
+void CreatureAISpells::setAttackStopTimer(uint32_t attackStopTime)
+{
+    mAttackStopTimer = attackStopTime;
+}
+
+uint32_t CreatureAISpells::getAttackStopTimer()
+{
+    return mAttackStopTimer;
+}
+
+void CreatureAISpells::setAnnouncement(std::string announcement)
+{
+    mAnnouncement = announcement;
+}
+
+void CreatureAISpells::sendAnnouncement(Unit* pUnit)
+{
+    if (!mAnnouncement.empty() && pUnit != nullptr)
+    {
+        sLogger.debug("AISpellEmotes::sendAnnouncement() : called");
+
+        pUnit->sendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, mAnnouncement.c_str());
+    }
+}
+
+void CreatureAISpells::setCustomTarget(Unit* targetCreature)
+{
+    mCustomTargetCreature = targetCreature;
+}
+
+Unit* CreatureAISpells::getCustomTarget()
+{
+    return mCustomTargetCreature;
+}
+
+CreatureAISpells* AIInterface::addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration /*= 0*/, uint32_t cooldown /*= 0*/, bool forceRemove /*= false*/, bool isTriggered /*= false*/)
+{
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    if (spellInfo != nullptr)
+    {
+        uint32_t spellDuration = duration * 1000;
+        if (spellDuration == 0)
+            spellDuration = spellInfo->getSpellDefaultDuration(nullptr);
+
+        uint32_t spellCooldown = cooldown * 1000;
+        if (spellCooldown == 0)
+            spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
+
+        CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, targetType, spellDuration, spellCooldown, forceRemove, isTriggered);
+
+        mCreatureAISpells.push_back(newAISpell);
+
+        newAISpell->setdurationTimer(spellDuration);
+        newAISpell->setCooldownTimer(spellCooldown);
+
+        return newAISpell;
+    }
+
+    sLogger.failure("tried to add invalid spell with id %u", spellId);
+
+    // assert spellInfo can not be nullptr!
+    ARCEMU_ASSERT(spellInfo != nullptr);
+    return nullptr;
+}
+
+void AIInterface::UpdateAISpells()
+{
+    if (mLastCastedSpell)
+    {
+        if (!mSpellWaitTimer.isTimePassed())
+        {
+            // spell has a min/max range
+            if (!getUnit()->isCastingSpell() && (mLastCastedSpell->mMaxPositionRangeToCast > 0.0f || mLastCastedSpell->mMinPositionRangeToCast > 0.0f))
+            {
+                // if we have a current target and spell is not triggered
+                if (mCurrentSpellTarget != nullptr && !mLastCastedSpell->mIsTriggered)
+                {
+                    // interrupt spell if we are not in  required range
+                    const float targetDistance = getUnit()->GetPosition().Distance2DSq({ mCurrentSpellTarget->GetPositionX(), mCurrentSpellTarget->GetPositionY() });
+                    if (!mLastCastedSpell->isDistanceInRange(targetDistance))
+                    {
+                        sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "Target outside of spell range (%u)! Min: %f Max: %f, distance to Target: %f", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);
+                        getUnit()->interruptSpell();
+                        mLastCastedSpell = nullptr;
+                    }
+                }
+            }
+        }
+        else
+        {
+            // spell gets not interupted after casttime(duration) so we can send the emote.
+            mLastCastedSpell->sendRandomEmote(getUnit());
+
+            // spell sucessfully castet increase cast Amount
+            ++mLastCastedSpell->mCastCount;
+
+            // override attack stop timer if needed
+            if (mLastCastedSpell->getAttackStopTimer() != 0)
+                getUnit()->setAttackTimer(MELEE, mLastCastedSpell->getAttackStopTimer());
+
+            mLastCastedSpell = nullptr;
+        }
+    }
+
+    // cleanup exeeded spells
+    for (const auto& AISpell : mCreatureAISpells)
+    {
+        if (AISpell != nullptr)
+        {
+            // stop spells and remove aura in case of duration
+            if (AISpell->mDurationTimer.isTimePassed() && AISpell->mForceRemoveAura)
+            {
+                getUnit()->interruptSpell();
+                getUnit()->RemoveAura(AISpell->mSpellInfo->getId());
+            }
+        }
+    }
+
+    // cast one spell and check if spell is done (duration)
+    if (mSpellWaitTimer.isTimePassed())
+    {
+        CreatureAISpells* usedSpell = nullptr;
+
+        float randomChance = Util::getRandomFloat(100.0f);
+
+        // Shuffle Around our Spells to randomize the cast
+        if (mCreatureAISpells.size())
+        {
+            for (int i = 0; i < mCreatureAISpells.size() - 1; ++i)
+            {
+                int j = i + rand() % (mCreatureAISpells.size() - i);
+                std::swap(mCreatureAISpells[i], mCreatureAISpells[j]);
+            }
+        }
+
+        for (const auto& AISpell : mCreatureAISpells)
+        {
+            if (AISpell != nullptr)
+            {
+                // not on AIUpdate skip
+                if (AISpell->scriptType != onAIUpdate)
+                    continue;
+
+                // spell was casted before, check if the wait time is done
+                if (!AISpell->mCooldownTimer.isTimePassed())
+                    continue;
+
+                // check if creature has Mana/Power required to cast
+                if(AISpell->mSpellInfo->getPowerType() == POWER_TYPE_MANA)
+                {
+                    if (AISpell->mSpellInfo->getManaCost() > m_Unit->getPower(POWER_TYPE_MANA))
+                        continue;
+                }
+
+                if (AISpell->mSpellInfo->getPowerType() == POWER_TYPE_FOCUS)
+                {
+                    if (AISpell->mSpellInfo->getManaCost() > m_Unit->getPower(POWER_TYPE_FOCUS))
+                        continue;
+                }
+
+                // is bound to a specific phase (all greater than 0) if creature has a scripted AI then use its phase
+                if (getUnit()->ToCreature()->GetScript())
+                {
+                    if (!AISpell->isAvailableForScriptPhase(getUnit()->ToCreature()->GetScript()->getScriptPhase()))
+                        continue;
+                }
+                else
+                {
+                    if (!AISpell->isAvailableForScriptPhase(internalPhase))
+                        continue;
+                }
+
+                // max Spell cast amount
+                if (AISpell->getMaxCastCount() && AISpell->getMaxCastCount() <= AISpell->getCastCount())
+                    continue;
+
+                // aura stacking
+                if (getUnit()->getAuraCountForId(AISpell->mSpellInfo->getId()) >= AISpell->getMaxStackCount())
+                    continue;
+
+                // hp range
+                if (!AISpell->isHpInPercentRange(getUnit()->getHealthPct()))
+                    continue;
+
+                // no random chance (cast in script)
+                if (AISpell->mCastChance == 0.0f)
+                    continue;
+
+                // do not cast any spell while stunned/feared/silenced/charmed/confused
+                if (getUnit()->hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_FLEEING | UNIT_STATE_IN_FLIGHT | UNIT_STATE_CHARMED | UNIT_STATE_CONFUSED))
+                    break;
+
+                // random chance for shuffeld array should do the job
+                if (randomChance < AISpell->mCastChance)
+                {
+                    usedSpell = AISpell;
+                    break;
+                }
+                else
+                {
+                    // When we dont had a canche to cast then add the default 1.5sec cooldown for the next cycle
+                    AISpell->setCooldownTimer(1500);
+                    continue;
+                }
+            }
+        }
+
+        if (usedSpell != nullptr)
+        {
+            Unit* target = getCurrentTarget();
+            switch (usedSpell->mTargetType)
+            {
+            case TARGET_SELF:
+            case TARGET_VARIOUS:
+            {
+                getUnit()->castSpell(getUnit(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                mLastCastedSpell = usedSpell;
+            } break;
+            case TARGET_ATTACKING:
+            {
+                getUnit()->castSpell(target, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                mCurrentSpellTarget = target;
+                mLastCastedSpell = usedSpell;
+            } break;
+            case TARGET_DESTINATION:
+            {
+                getUnit()->castSpellLoc(target->GetPosition(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                mCurrentSpellTarget = target;
+                mLastCastedSpell = usedSpell;
+            } break;
+            case TARGET_RANDOM_FRIEND:
+            case TARGET_RANDOM_SINGLE:
+            case TARGET_RANDOM_DESTINATION:
+            {
+                castSpellOnRandomTarget(usedSpell);
+                mLastCastedSpell = usedSpell;
+            } break;
+            case TARGET_CUSTOM:
+            {
+                // nos custom target set, no spell cast.
+                if (usedSpell->getCustomTarget() != nullptr)
+                    getUnit()->castSpell(usedSpell->getCustomTarget(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+            } break;
+            default:
+                break;
+            }
+
+            // send announcements on casttime beginn
+            usedSpell->sendAnnouncement(getUnit());
+
+            uint32_t casttime = (GetCastTime(sSpellCastTimesStore.LookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.LookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex())) : 500);
+
+            // reset cast wait timer
+            mSpellWaitTimer.resetInterval(casttime);
+
+            // reset spell timers to cleanup exceeded spells
+            usedSpell->mDurationTimer.resetInterval(usedSpell->mDuration);
+            usedSpell->mCooldownTimer.resetInterval(usedSpell->mCooldown);
+        }
+    }
+}
+
+Unit* AIInterface::getBestPlayerTarget(TargetFilter pTargetFilter, float pMinRange, float pMaxRange)
+{
+    //Build potential target list
+    UnitArray TargetArray;
+    for (const auto& PlayerIter : getUnit()->getInRangePlayersSet())
+    {
+        if (PlayerIter && isValidUnitTarget(PlayerIter, pTargetFilter, pMinRange, pMaxRange))
+            TargetArray.push_back(static_cast<Unit*>(PlayerIter));
+    }
+
+    return getBestTargetInArray(TargetArray, pTargetFilter);
+}
+
+Unit* AIInterface::getBestUnitTarget(TargetFilter pTargetFilter, float pMinRange, float pMaxRange)
+{
+    //potential target list
+    UnitArray TargetArray;
+    if (pTargetFilter & TargetFilter_Friendly)
+    {
+        for (const auto& ObjectIter : getUnit()->getInRangeObjectsSet())
+        {
+            if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, pMinRange, pMaxRange))
+                TargetArray.push_back(static_cast<Unit*>(ObjectIter));
+        }
+
+        if (isValidUnitTarget(getUnit(), pTargetFilter))
+            TargetArray.push_back(getUnit());    //add self as possible friendly target
+    }
+    else
+    {
+        for (const auto& ObjectIter : getUnit()->getInRangeOppositeFactionSet())
+        {
+            if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, pMinRange, pMaxRange))
+                TargetArray.push_back(static_cast<Unit*>(ObjectIter));
+        }
+    }
+
+    return getBestTargetInArray(TargetArray, pTargetFilter);
+}
+
+Unit* AIInterface::getBestTargetInArray(UnitArray & pTargetArray, TargetFilter pTargetFilter)
+{
+    //only one possible target, return it
+    if (pTargetArray.size() == 1)
+        return pTargetArray[0];
+
+    //closest unit if requested
+    if (pTargetFilter & TargetFilter_Closest)
+        return getNearestTargetInArray(pTargetArray);
+
+    //second most hated if requested
+    if (pTargetFilter & TargetFilter_SecondMostHated)
+        return getSecondMostHatedTargetInArray(pTargetArray);
+
+    //random unit in array
+    return (pTargetArray.size() > 1) ? pTargetArray[Util::getRandomUInt((uint32_t)pTargetArray.size() - 1)] : nullptr;
+}
+
+Unit* AIInterface::getNearestTargetInArray(UnitArray& pTargetArray)
+{
+    Unit* NearestUnit = nullptr;
+
+    float Distance, NearestDistance = 99999;
+    for (const auto& UnitIter : pTargetArray)
+    {
+        if (UnitIter != nullptr)
+        {
+            Distance = getUnit()->CalcDistance(static_cast<Unit*>(UnitIter));
+            if (Distance < NearestDistance)
+            {
+                NearestDistance = Distance;
+                NearestUnit = UnitIter;
+            }
+        }
+    }
+
+    return NearestUnit;
+}
+
+Unit* AIInterface::getSecondMostHatedTargetInArray(UnitArray & pTargetArray)
+{
+    Unit* MostHatedUnit = nullptr;
+    Unit* TargetUnit = nullptr;
+    Unit* CurrentTarget = static_cast<Unit*>(getCurrentTarget());
+    uint32_t Threat = 0;
+    uint32_t HighestThreat = 0;
+
+    for (const auto& UnitIter : pTargetArray)
+    {
+        if (UnitIter != nullptr)
+        {
+            TargetUnit = static_cast<Unit*>(UnitIter);
+            if (TargetUnit != CurrentTarget)
+            {
+                Threat = static_cast<uint32_t>(getUnit()->getThreatManager().getThreat(TargetUnit));
+                if (Threat > HighestThreat)
+                {
+                    MostHatedUnit = TargetUnit;
+                    HighestThreat = Threat;
+                }
+            }
+        }
+    }
+
+    return MostHatedUnit;
+}
+
+bool AIInterface::isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange, float pMaxRange)
+{
+    if (!pObject->isCreatureOrPlayer())
+        return false;
+
+    if (pObject->GetInstanceID() != getUnit()->GetInstanceID())
+        return false;
+
+    Unit* UnitTarget = static_cast<Unit*>(pObject);
+    //Skip dead (if required), feign death or invisible targets
+    if (pFilter & TargetFilter_Corpse)
+    {
+        if (UnitTarget->isAlive() || !UnitTarget->isCreature() || static_cast<Creature*>(UnitTarget)->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
+            return false;
+    }
+    else if (!UnitTarget->isAlive())
+        return false;
+
+    if (UnitTarget->isPlayer() && static_cast<Player*>(UnitTarget)->m_isGmInvisible)
+        return false;
+
+    if (UnitTarget->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
+        return false;
+
+    // if we apply target filtering
+    if (pFilter != TargetFilter_None)
+    {
+        // units not on threat list
+        if ((pFilter & TargetFilter_Aggroed) && getUnit()->getThreatManager().getThreat(UnitTarget) == 0)
+            return false;
+
+        // current attacking target if requested
+        if ((pFilter & TargetFilter_NotCurrent) && UnitTarget == getCurrentTarget())
+            return false;
+
+        // only wounded targets if requested
+        if ((pFilter & TargetFilter_Wounded) && UnitTarget->getHealthPct() >= 99)
+            return false;
+
+        // targets not in melee range if requested
+        if ((pFilter & TargetFilter_InMeleeRange) && !getUnit()->isWithinCombatRange(UnitTarget, getUnit()->getMeleeRange(UnitTarget)))
+            return false;
+
+        // targets not in strict range if requested
+        if ((pFilter & TargetFilter_InRangeOnly) && (pMinRange > 0 || pMaxRange > 0))
+        {
+            float Range = getUnit()->CalcDistance(UnitTarget);
+            if (pMinRange > 0 && Range < pMinRange)
+                return false;
+
+            if (pMaxRange > 0 && Range > pMaxRange)
+                return false;
+        }
+
+        // targets not in Line Of Sight if requested
+        if ((~pFilter & TargetFilter_IgnoreLineOfSight) && !getUnit()->IsWithinLOSInMap(UnitTarget))
+            return false;
+
+        // hostile/friendly
+        if ((~pFilter & TargetFilter_Corpse) && (pFilter & TargetFilter_Friendly))
+        {
+            if (!UnitTarget->CombatStatus.IsInCombat())
+                return false; // not-in-combat targets if friendly
+
+            if (isHostile(getUnit(), UnitTarget) || getUnit()->getThreatManager().getThreat(UnitTarget) > 0)
+                return false;
+        }
+
+        if ((pFilter & TargetFilter_Current) && UnitTarget != getCurrentTarget())
+            return false;
+    }
+
+    return true;
+}
+
+void AIInterface::sendStoredText(definedEmoteVector store, Unit* target)
+{
+    float randomChance = Util::getRandomFloat(100.0f);
+
+    // Shuffle Around our textIds to randomize it
+    if (store.size())
+    {
+        for (int i = 0; i < store.size() - 1; ++i)
+        {
+            int j = i + rand() % (store.size() - i);
+            std::swap(store[i], store[j]);
+        }
+
+        for (auto mEmotes : store)
+        {
+            if (mEmotes.phase && mEmotes.phase != internalPhase)
+                continue;
+
+            if (mEmotes.healthPrecent && float(getUnit()->getHealthPct()) < mEmotes.healthPrecent)
+                continue;
+
+            if (mEmotes.maxCount && mEmotes.count == mEmotes.maxCount)
+                continue;
+
+            if (randomChance < mEmotes.canche)
+            {
+                MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(mEmotes.textId);
+                if (npcScriptText != nullptr)
+                    getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text, target, 0);
+
+                if (npcScriptText->sound != 0)
+                    getUnit()->PlaySoundToSet(npcScriptText->sound);
+
+                ++mEmotes.count;
+
+                break;
+            }
+        }
+    }
+
 }

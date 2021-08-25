@@ -1527,20 +1527,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setBytes2(spawn->bytes2);
 
     ////////////AI
-
-    // kek
-    for (std::list<AI_Spell*>::const_iterator itr = creature_properties->spells.begin(); itr != creature_properties->spells.end(); ++itr)
-    {
-        // Load all spells that are not bound to a specific difficulty, OR mathces this maps' difficulty
-        if ((*itr)->instance_mode == mode || (*itr)->instance_mode == AISPELL_ANY_DIFFICULTY)
-            m_aiInterface->addSpellToList(*itr);
-    }
-
-    GetAIInterface()->m_canCallForHelp = creature_properties->m_canCallForHelp;
-    GetAIInterface()->m_CallForHelpHealth = creature_properties->m_callForHelpHealth;
-    GetAIInterface()->m_canFlee = creature_properties->m_canFlee;
-    GetAIInterface()->m_FleeHealth = creature_properties->m_fleeHealth;
-    GetAIInterface()->m_FleeDuration = creature_properties->m_fleeDuration;
+    GetAIInterface()->initialiseScripts(getEntry());
+    GetAIInterface()->eventOnLoad();
 
     if (!creature_properties->isTrainingDummy && !isVehicle())
     {
@@ -1750,20 +1738,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setModCastSpeed(1.0f);   // better set this one
 
     ////////////AI
-
-    // kek
-    for (std::list<AI_Spell*>::const_iterator itr = creature_properties->spells.begin(); itr != creature_properties->spells.end(); ++itr)
-    {
-        // Load all spell that are not set for a specific difficulty
-        if ((*itr)->instance_mode == AISPELL_ANY_DIFFICULTY)
-            m_aiInterface->addSpellToList(*itr);
-    }
-
-    GetAIInterface()->m_canCallForHelp = creature_properties->m_canCallForHelp;
-    GetAIInterface()->m_CallForHelpHealth = creature_properties->m_callForHelpHealth;
-    GetAIInterface()->m_canFlee = creature_properties->m_canFlee;
-    GetAIInterface()->m_FleeHealth = creature_properties->m_fleeHealth;
-    GetAIInterface()->m_FleeDuration = creature_properties->m_fleeDuration;
+    GetAIInterface()->initialiseScripts(getEntry());
+    GetAIInterface()->eventOnLoad();
 
     //////////////AI
 
@@ -2336,19 +2312,6 @@ void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay, Unit*
     }
 
     SendCreatureChatMessageInRange(this, textid, target);
-}
-
-void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event, Unit* target)
-{
-    auto* const creatureAiText = sMySQLStore.getAITextEventForCreature(getEntry(), Event);
-    if (creatureAiText == nullptr)
-        return;
-
-    uint8_t choice = 0;
-    if (Util::checkChance(creatureAiText->chance))
-        choice = (creatureAiText->textCount == 1) ? 0 : Util::getRandomUInt(creatureAiText->textCount - 1);
-
-    SendCreatureChatMessageInRange(this, creatureAiText->textIds[choice], target);
 }
 
 uint32 Creature::GetType()

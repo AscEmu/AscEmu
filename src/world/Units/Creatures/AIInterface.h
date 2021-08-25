@@ -12,6 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/AIInterfaceMacros.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Server/Script/ScriptEvent.hpp"
+#include "Movement/WaypointDefines.h"
+#include "Chat/ChatDefines.hpp"
+#include "Storage/DBC/DBCStores.h"
 
 #include <G3D/Vector3.h>
 
@@ -32,6 +35,7 @@ class Unit;
 class Player;
 class WorldSession;
 class SpellCastTargets;
+class CreatureAIScript;
 
 enum AiScriptTypes
 {
@@ -42,6 +46,38 @@ enum AiScriptTypes
     AI_SCRIPT_TOTEM,
     AI_SCRIPT_GUARDIAN, //we got a master but he cannot control us, we follow and battle opposite factions
     AI_SCRIPT_PASSIVE
+};
+
+enum AI_SCRIPT_EVENT_TYPES
+{
+    onLoad              = 0,
+    onEnterCombat       = 1,
+    onLeaveCombat       = 2,
+    onDied              = 3,
+    onTargetDied        = 4,
+    onAIUpdate          = 5,
+    onCallForHelp       = 6,
+    onRandomWaypoint    = 7,
+    onDamageTaken       = 8,
+    onFlee              = 9
+};
+
+enum AI_SCRIPT_ACTION_TYPES
+{
+    actionNone          = 0,
+    actionSpell         = 1,
+    actionSendMessage   = 2,
+    actionPhaseChange   = 3
+};
+
+struct AI_SCRIPT_SENDMESSAGES
+{
+    uint32_t textId;
+    float canche;
+    uint32_t phase;
+    float healthPrecent;
+    uint32_t count;
+    uint32_t maxCount;
 };
 
 enum ReactStates : uint8_t
@@ -104,10 +140,178 @@ enum AiState : uint8_t
     AI_STATE_SCRIPTIDLE = 12,
 };
 
+enum AISpellTargetType
+{
+    TARGET_SELF,
+    TARGET_VARIOUS,
+    TARGET_ATTACKING,
+    TARGET_DESTINATION,
+    TARGET_SOURCE,
+    TARGET_RANDOM_FRIEND,
+    TARGET_RANDOM_SINGLE,
+    TARGET_RANDOM_DESTINATION,
+    TARGET_CLOSEST,
+    TARGET_FURTHEST,
+    TARGET_CUSTOM
+};
+
+class SERVER_DECL CreatureAISpells
+{
+public:
+    CreatureAISpells(SpellInfo const* spellInfo, float castChance, uint32_t targetType, uint32_t duration, uint32_t cooldown, bool forceRemove, bool isTriggered)
+    {
+        mSpellInfo = spellInfo;
+        mCastChance = castChance;
+        mTargetType = targetType;
+        mDuration = duration;
+
+        mCooldown = cooldown;
+        mForceRemoveAura = forceRemove;
+        mIsTriggered = isTriggered;
+
+        mMaxStackCount = 1;
+        mCastCount = 0;
+        mMaxCount = 0;
+
+        scriptType = onAIUpdate;
+
+        mMinPositionRangeToCast = 0.0f;
+        mMaxPositionRangeToCast = 0.0f;
+
+        mMinHpRangeToCast = 0;
+        mMaxHpRangeToCast = 100;
+
+        spell_type = STYPE_NULL;
+
+        if (mSpellInfo != nullptr)
+        {
+            mMinPositionRangeToCast = GetMinRange(sSpellRangeStore.LookupEntry(mSpellInfo->getRangeIndex()));
+            mMaxPositionRangeToCast = GetMaxRange(sSpellRangeStore.LookupEntry(mSpellInfo->getRangeIndex()));
+        }
+
+        mAttackStopTimer = 0;
+
+        mCustomTargetCreature = nullptr;
+    }
+
+    ~CreatureAISpells()
+    {
+    }
+
+    SpellInfo const* mSpellInfo;
+    float mCastChance;
+    uint32_t mTargetType;
+    uint8_t scriptType;
+
+    SmallTimeTracker mDurationTimer;
+    SmallTimeTracker mCooldownTimer;
+
+    uint32_t mDuration;
+    void setdurationTimer(uint32_t durationTimer);
+    void setCooldownTimer(uint32_t cooldownTimer);
+    uint32_t mCooldown;
+
+    uint32_t mMaxCount;
+    uint32_t mCastCount;
+    void setMaxCastCount(uint32_t castCount);
+    const uint32_t getMaxCastCount();
+    const uint32_t getCastCount();
+
+    bool mForceRemoveAura;
+    bool mIsTriggered;
+
+    AI_SpellType spell_type;
+
+    // non db script messages
+    struct AISpellEmotes
+    {
+        AISpellEmotes(std::string pText, uint8_t pType, uint32_t pSoundId)
+        {
+            mText = (!pText.empty() ? pText : "");
+            mType = pType;
+            mSoundId = pSoundId;
+        }
+
+        std::string mText;
+        uint8_t mType;
+        uint32_t mSoundId;
+    };
+    typedef std::vector<AISpellEmotes> AISpellEmoteArray;
+    AISpellEmoteArray mAISpellEmote;
+
+    void addDBEmote(uint32_t textId);
+    void addEmote(std::string pText, uint8_t pType = CHAT_MSG_MONSTER_YELL, uint32_t pSoundId = 0);
+
+    void sendRandomEmote(Unit* creatureAI);
+
+    uint32_t mMaxStackCount;
+
+    void setMaxStackCount(uint32_t stackCount);
+    const uint32_t getMaxStackCount();
+
+    float mMinPositionRangeToCast;
+    float mMaxPositionRangeToCast;
+
+    const bool isDistanceInRange(float targetDistance);
+    void setMinMaxDistance(float minDistance, float maxDistance);
+
+    // if it is not a random target type it sets the hp range when the creature can cast this spell
+    // if it is a random target it controles when the spell can be cast based on the target hp
+    int mMinHpRangeToCast;
+    int mMaxHpRangeToCast;
+
+    const bool isHpInPercentRange(int targetHp);
+    void setMinMaxPercentHp(int minHp, int maxHp);
+
+    typedef std::vector<uint32_t> ScriptPhaseList;
+    ScriptPhaseList mPhaseList;
+
+    void setAvailableForScriptPhase(std::vector<uint32_t> phaseVector);
+    bool isAvailableForScriptPhase(uint32_t scriptPhase);
+
+    uint32_t mAttackStopTimer;
+    void setAttackStopTimer(uint32_t attackStopTime);
+    uint32_t getAttackStopTimer();
+
+    std::string mAnnouncement;
+    void setAnnouncement(std::string announcement);
+    void sendAnnouncement(Unit* pUnit);
+
+    Unit* mCustomTargetCreature;
+    void setCustomTarget(Unit* targetCreature);
+    Unit* getCustomTarget();
+};
+
 class SpellInfo;
 
 const uint32_t AISPELL_ANY_DIFFICULTY = 4;
 typedef std::set<Unit*> AssistTargetSet;
+typedef std::vector<Unit*> UnitArray;
+
+enum TargetFilter
+{
+    // Standard filters
+    TargetFilter_None = 0,            // 0
+    TargetFilter_Closest = 1 << 0,       // 1
+    TargetFilter_Friendly = 1 << 1,       // 2
+    TargetFilter_NotCurrent = 1 << 2,       // 4
+    TargetFilter_Wounded = 1 << 3,       // 8
+    TargetFilter_SecondMostHated = 1 << 4,       // 16
+    TargetFilter_Aggroed = 1 << 5,       // 32
+    TargetFilter_Corpse = 1 << 6,       // 64
+    TargetFilter_InMeleeRange = 1 << 7,       // 128
+    TargetFilter_InRangeOnly = 1 << 8,       // 256
+    TargetFilter_IgnoreSpecialStates = 1 << 9,       // 512 - not really a TargetFilter, more like requirement for spell
+    TargetFilter_IgnoreLineOfSight = 1 << 10,      // 1024
+    TargetFilter_Current = 1 << 11,     // 2048
+
+    // Predefined filters
+    TargetFilter_ClosestFriendly = TargetFilter_Closest | TargetFilter_Friendly,         // 3
+    TargetFilter_ClosestNotCurrent = TargetFilter_Closest | TargetFilter_NotCurrent,       // 5
+    TargetFilter_WoundedFriendly = TargetFilter_Wounded | TargetFilter_Friendly,         // 10
+    TargetFilter_FriendlyCorpse = TargetFilter_Corpse | TargetFilter_Friendly,          // 66
+    TargetFilter_ClosestFriendlyCorpse = TargetFilter_Closest | TargetFilter_FriendlyCorpse    // 67
+};
 
 struct AI_Spell
 {
@@ -305,11 +509,14 @@ public:
     void eventDamageTaken(Unit* pUnit, uint32_t misc1);
     void eventLeaveCombat(Unit* pUnit, uint32_t misc1);
     void eventEnterCombat(Unit* pUnit, uint32_t misc1);
+    void eventOnLoad();
     void eventChangeFaction(Unit* ForceAttackersToHateThisInstead = NULL);    /// we have to tell our current enemies to stop attacking us, we should also forget about our targets
     void onDeath(Object* pKiller);
 
     // Update
     void Update(unsigned long time_passed);
+    void UpdateAgent(unsigned long time_passed);
+    //void UpdateAgent(unsigned long time_passed, std::vector<MySQLStructure::CreatureAIScripts>* eventId);
     void updateTargets(unsigned long time_passed);
     void updateVictim(Unit* victim);
 
@@ -332,6 +539,46 @@ public:
 
     inline AssistTargetSet GetAssistTargets() { return m_assistTargets; }
     bool isAlreadyAssisting(Creature* helper);
+
+    uint8_t internalPhase;
+    void initialiseScripts(uint32_t entry);
+    std::vector<MySQLStructure::CreatureAIScripts> onLoadScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onCombatStartScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onAIUpdateScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onLeaveCombatScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onDiedScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onKilledScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onCallForHelpScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onRandomWaypointScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onDamageTakenScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onFleeScripts;
+
+private:
+    typedef std::vector<AI_SCRIPT_SENDMESSAGES> definedEmoteVector;
+    definedEmoteVector mEmotesOnLoad;
+    definedEmoteVector mEmotesOnCombatStart;
+    definedEmoteVector mEmotesOnLeaveCombat;
+    definedEmoteVector mEmotesOnTargetDied;
+    definedEmoteVector mEmotesOnAIUpdate;
+    definedEmoteVector mEmotesOnDied;
+    definedEmoteVector mEmotesOnDamageTaken;
+    definedEmoteVector mEmotesOnCallForHelp;
+    definedEmoteVector mEmotesOnFlee;
+    definedEmoteVector mEmotesOnRandomWaypoint;
+
+public:
+    void sendStoredText(definedEmoteVector store, Unit* target);
+
+    Unit* mCurrentSpellTarget;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // target
+    Unit* getBestPlayerTarget(TargetFilter pFilter = TargetFilter_None, float pMinRange = 0.0f, float pMaxRange = 0.0f);
+    Unit* getBestUnitTarget(TargetFilter pFilter = TargetFilter_None, float pMinRange = 0.0f, float pMaxRange = 0.0f);
+    Unit* getBestTargetInArray(UnitArray& pTargetArray, TargetFilter pFilter);
+    Unit* getNearestTargetInArray(UnitArray& pTargetArray);
+    Unit* getSecondMostHatedTargetInArray(UnitArray& pTargetArray);
+    bool isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange = 0.0f, float pMaxRange = 0.0f);
 
 protected:
     SmallTimeTracker m_boundaryCheckTime;
@@ -403,11 +650,29 @@ public:
     SpellInfo const* getSpellEntry(uint32_t spellId);
     SpellCastTargets setSpellTargets(SpellInfo const* spellInfo, Unit* target, uint8_t targettype) const;
 
+    //addAISpell(spellID, Chance, TargetType, Duration (s), waitBeforeNextCast (s))
+    CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0, bool forceRemove = false, bool isTriggered = false);
+
     std::list<AI_Spell*> m_spells;
     void addSpellToList(AI_Spell* sp);
     AI_Spell* getSpell(uint32_t entry);
     void setNextSpell(uint32_t spellId);
     void removeNextSpell(uint32_t spellId);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // spell
+
+    void castAISpell(CreatureAISpells* aiSpell);
+    void castAISpell(uint32_t aiSpellId);
+    void castSpellOnRandomTarget(CreatureAISpells* AiSpell);
+    void UpdateAISpells();
+
+    CreatureAISpells* mLastCastedSpell;
+
+    typedef std::vector<CreatureAISpells*> CreatureAISpellsArray;
+    CreatureAISpellsArray mCreatureAISpells;
+
+    SmallTimeTracker mSpellWaitTimer;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // script events
