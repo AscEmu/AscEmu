@@ -16,8 +16,6 @@ public:
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new RazorfenKraulInstanceScript(pMapMgr); }
-
-
 };
 
 void SetupRazorfenKraul(ScriptMgr* mgr)

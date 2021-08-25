@@ -137,18 +137,6 @@ protected:
     uint32_t InstanceEncounter;
 };
 
-class RhahkZorAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(RhahkZorAI)
-    explicit RhahkZorAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(6304, 8.0f, TARGET_ATTACKING, 1500, 3);    // Rhahk'Zor Slam
-
-        addEmoteForEvent(Event_OnCombatStart, 5495);     // VanCleef pay big for you heads!
-    }
-
-};
-
 
 class MrSmiteAI : public CreatureAIScript
 {
@@ -287,10 +275,6 @@ class VanCleefAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(VanCleefAI)
     explicit VanCleefAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        addAISpell(3391, 25.0f, TARGET_SELF); // Thrash (Gives the caster 2 extra attacks.)
-
-        addEmoteForEvent(Event_OnCombatStart, 7722); // None may challenge the Brotherhood!
-        addEmoteForEvent(Event_OnDied, 7727); // The Brotherhood shall prevail!
     }
 
     void OnTargetDied(Unit* pTarget) override
@@ -339,7 +323,6 @@ class VanCleefAI : public CreatureAIScript
 void SetupDeadmines(ScriptMgr* mgr)
 {
     mgr->register_instance_script(MAP_DEADMINES, &DeadminesInstanceScript::Create);
-    //mgr->register_creature_script(NPC_RHAHK_ZOR, &RhahkZorAI::Create);
     mgr->register_creature_script(NPC_MR_SMITE, &MrSmiteAI::Create);
     mgr->register_creature_script(NPC_EDWIN_VANCLEEF, &VanCleefAI::Create);
 }

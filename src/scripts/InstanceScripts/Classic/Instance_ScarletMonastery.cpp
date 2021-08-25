@@ -20,8 +20,6 @@ public:
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ScarletMonasteryInstanceScript(pMapMgr); }
-
-
 };
 
 class VishasAI : public CreatureAIScript
@@ -29,12 +27,7 @@ class VishasAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(VishasAI)
     explicit VishasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        addAISpell(SP_VISHAS_SHADOW_WORD, 20.0f, TARGET_RANDOM_SINGLE, 0, 8);
-
         m_uiSay = 0;
-
-        addEmoteForEvent(Event_OnCombatStart, 2110);    // Tell me... tell me everything!
-        addEmoteForEvent(Event_OnTargetDied, 2113);     // Purged by pain!
     }
 
     void OnCombatStop(Unit* /*pTarget*/) override
@@ -95,28 +88,11 @@ private:
     bool m_bEmoted;
 };
 
-// Library
-
-class LokseyAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(LokseyAI)
-    explicit LokseyAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SP_LOKSEY_BLOODLUST, 5.0f, TARGET_SELF, 0, 40);
-
-        addEmoteForEvent(Event_OnCombatStart, 2086);     // Release the hounds!
-    }
-};
-
 class DoanAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DoanAI)
     explicit DoanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        addAISpell(SP_DOAN_SILENCE, 25.0f, TARGET_SELF, 2, 14);
-        addAISpell(SP_DOAN_POLY, 15.0f, TARGET_VARIOUS, 2, 10);
-        addAISpell(SP_DOAN_ARCANE_EXP, 20.0f, TARGET_SELF, 0, 10);
-
         m_bShielded = false;
 
         addEmoteForEvent(Event_OnCombatStart, 2099);     // You will not defile these mysteries!
@@ -153,11 +129,6 @@ class HerodAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(HerodAI)
     explicit HerodAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        auto whirlwind = addAISpell(SP_HEROD_WHIRLWINDSPELL, 12.0f, TARGET_SELF, 0, 12);
-        whirlwind->addEmote("Blades of Light!", CHAT_MSG_MONSTER_YELL, 5832);
-
-        addAISpell(SP_HEROD_CHARGE, 6.0f, TARGET_RANDOM_SINGLE, 0, 20);
-
         m_bEnraged = false;
 
         addEmoteForEvent(Event_OnCombatStart, 2094);     // Ah - I've been waiting for a real challenge!
@@ -189,15 +160,6 @@ class MograineAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(MograineAI)
     explicit MograineAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        auto shield = addAISpell(SP_MORGRAINE_SHIELD, 5.0f, TARGET_SELF, 0, 10, false, true);
-        shield->setAttackStopTimer(1000);
-
-        auto hammer = addAISpell(SP_MORGRAINE_HAMMER, 10.0f, TARGET_ATTACKING, 0, 10, false, true);
-        hammer->setAttackStopTimer(1000);
-
-        auto crusade = addAISpell(SP_MORGRAINE_CRUSADER, 30.0f, TARGET_ATTACKING, 0, 10, false, true);
-        crusade->setAttackStopTimer(1000);
-
         addEmoteForEvent(Event_OnCombatStart, SAY_MORGRAINE_01);
         addEmoteForEvent(Event_OnTargetDied, SAY_MORGRAINE_02);
         addEmoteForEvent(Event_OnDied, SAY_MORGRAINE_03);
@@ -216,9 +178,6 @@ class WhitemaneAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(WhitemaneAI)
     explicit WhitemaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        auto smite = addAISpell(SP_WHITEMANE_SMITE, 15.0f, TARGET_ATTACKING);
-        smite->setAttackStopTimer(1000);
-
         sleep = addAISpell(SP_WHITEMANE_SLEEP, 0.0f, TARGET_ATTACKING, 0, 0, false, true);
         sleep->setAttackStopTimer(1000);
 
@@ -265,19 +224,6 @@ protected:
 
     CreatureAISpells* sleep;
     CreatureAISpells* resurrection;
-};
-
-class FairbanksAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(FairbanksAI)
-    explicit FairbanksAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        auto blood = addAISpell(SP_FAIRBANKS_BLOOD, 15.0f, TARGET_ATTACKING, 0, 20, false, true);
-        blood->setAttackStopTimer(1000);
-
-        auto pws = addAISpell(SP_FAIRBANKS_PWS, 15.0f, TARGET_SELF, 0, 0, false, true);
-        pws->setAttackStopTimer(1000);
-    }
 };
 
 class ScarletTorch : public GameObjectAIScript
@@ -345,12 +291,10 @@ void SetupScarletMonastery(ScriptMgr* mgr)
     mgr->register_instance_script(MAP_SCARLET_MONASTERY, &ScarletMonasteryInstanceScript::Create);
 
     //Bosses
-    mgr->register_creature_script(CN_LOKSEY, &LokseyAI::Create);
     mgr->register_creature_script(CN_VISHAS, &VishasAI::Create);
     mgr->register_creature_script(CN_THALNOS, &ThalnosAI::Create);
     mgr->register_creature_script(CN_COMMANDER_MOGRAINE, &MograineAI::Create);
     mgr->register_creature_script(CN_WHITEMANE, &WhitemaneAI::Create);
-    mgr->register_creature_script(CN_FAIRBANKS, &FairbanksAI::Create);
     mgr->register_creature_script(CN_HEROD, &HerodAI::Create);
     mgr->register_creature_script(CN_DOAN, &DoanAI::Create);
 

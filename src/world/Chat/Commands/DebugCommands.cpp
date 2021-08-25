@@ -111,11 +111,28 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
             uint32_t spelltype = aiSpells->spell_type;
             uint32_t target = aiSpells->mTargetType;
             uint32_t cooldown = aiSpells->mCooldown;
+            if (cooldown == 0xFFFFFFFF) //4294967295
+                cooldown = 10000;
 
-            std::string comment = sMySQLStore.getCreatureProperties(entry)->Name + " - " + aiSpells->mSpellInfo->getName();
+            std::string remove = "'";
+            std::string name = sMySQLStore.getCreatureProperties(entry)->Name;
+            name.erase(std::remove_if(name.begin(), name.end(),
+                                   [&remove](const char& c) {
+                                       return remove.find(c) != std::string::npos;
+                                   }),
+                name.end());
+
+            std::string spellname = aiSpells->mSpellInfo->getName();
+            spellname.erase(std::remove_if(spellname.begin(), spellname.end(),
+                                   [&remove](const char& c) {
+                                       return remove.find(c) != std::string::npos;
+                                   }),
+                spellname.end());
+
+            std::string comment = name + " - " + spellname;
 
             char my_insert1[700];
-            sprintf(my_insert1, "INSERT INTO creature_ai_scripts_%s VALUES (12340,12340,%u,4,0,0,1,0,%u,%u,%u,0,%u,%u,%u,0,100,0,0,'%s')", args, entry, chance, spell, spelltype, target, cooldown, cooldown, comment.c_str());
+            sprintf(my_insert1, "INSERT INTO creature_ai_scripts_%s VALUES (5875,12340,%u,4,0,0,1,0,%u,%u,%u,0,%u,%u,%u,0,100,0,0,'%s')", args, entry, chance, spell, spelltype, target, cooldown, cooldown, comment.c_str());
 
             WorldDatabase.Execute(my_insert1);
             ++count;
