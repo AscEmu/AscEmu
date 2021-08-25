@@ -198,6 +198,7 @@ public:
 
     // old debugcmds.cpp
     //\todo Rewrite these commands
+    bool HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldSession* session);
     bool HandleDoPercentDamageCommand(const char* args, WorldSession* session);
     bool HandleSetScriptPhaseCommand(const char* args, WorldSession* session);
     bool HandleAiChargeCommand(const char* /*args*/, WorldSession* session);

@@ -351,6 +351,7 @@ void CommandTableStorage::Init()
 
     static ChatCommand debugCommandTable[] =
     {
+        { "dumpscripts",      'd', &ChatHandler::HandleMoveHardcodedScriptsToDBCommand, "Dumps hardcoded aispells to cmdline for creatures on map X",nullptr },
         { "sendcreaturemove", 'd', &ChatHandler::HandleDebugSendCreatureMove, "Requests the target creature moves to you using movement manager.", nullptr },
         { "dopctdamage",        'z', &ChatHandler::HandleDoPercentDamageCommand,    "Do percent damage to creature target",                     nullptr },
         { "setscriptphase",     'z', &ChatHandler::HandleSetScriptPhaseCommand,     "ScriptPhase test",                                         nullptr },

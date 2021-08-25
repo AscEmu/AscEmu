@@ -193,8 +193,8 @@ class HighInterrogatorGerstahn : public CreatureAIScript
         auto psychicScream = addAISpell(8122, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
         psychicScream->setAttackStopTimer(1000);
 
-        auto unknown2 = addAISpell(10876, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
-        unknown2->setAttackStopTimer(1000);
+        //auto unknown2 = addAISpell(10876, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
+        //unknown2->setAttackStopTimer(1000);
     }
 };
 

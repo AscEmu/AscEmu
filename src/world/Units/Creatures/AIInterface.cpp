@@ -440,6 +440,43 @@ void AIInterface::initialiseScripts(uint32_t entry)
         }
     }
 
+    // On Load
+    for (auto onLoadScript : onLoadScripts)
+    {
+        if (onLoadScript.action == actionSpell)
+        {
+            const auto spellInfo = sSpellMgr.getSpellInfo(onLoadScript.spellId);
+            float castChance;
+
+            if (spellInfo != nullptr)
+            {
+                if (onLoadScript.chance)
+                    castChance = onLoadScript.chance;
+                else
+                    castChance = ((75.0f / spellcountOnCombatStart) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[onLoadScript.spell_type]);
+
+                sLogger.debug("spell %u chance %f", onLoadScript.spellId, castChance);
+
+                uint32_t spellCooldown = Util::getRandomUInt(onLoadScript.cooldownMin, onLoadScript.cooldownMax);
+                if (spellCooldown == 0)
+                    spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
+
+                // Create AI Spell
+                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, onLoadScript.target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, onLoadScript.triggered);
+                newAISpell->addDBEmote(onLoadScript.textId);
+                newAISpell->setMaxCastCount(onLoadScript.maxCount);
+                newAISpell->scriptType = onLoadScript.event;
+                newAISpell->spell_type = AI_SpellType(onLoadScript.spell_type);
+                newAISpell->fromDB = true;
+
+                // Ready add to our List
+                mCreatureAISpells.push_back(newAISpell);
+            }
+            else
+                sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onLoadScript.spellId);
+        }
+    }
+
     // On Combat Start
     for (auto onCombatStartScript : onCombatStartScripts)
     {
@@ -467,6 +504,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 newAISpell->setMaxCastCount(onCombatStartScript.maxCount);
                 newAISpell->scriptType = onCombatStartScript.event;
                 newAISpell->spell_type = AI_SpellType(onCombatStartScript.spell_type);
+                newAISpell->fromDB = true;
 
                 // Ready add to our List
                 mCreatureAISpells.push_back(newAISpell);
@@ -503,6 +541,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 newAISpell->setMaxCastCount(onAIUpdateScript.maxCount);
                 newAISpell->scriptType = onAIUpdateScript.event;
                 newAISpell->spell_type = AI_SpellType(onAIUpdateScript.spell_type);
+                newAISpell->fromDB = true;
 
                 if (onAIUpdateScript.maxHealth)
                     newAISpell->setMinMaxPercentHp(onAIUpdateScript.minHealth, onAIUpdateScript.maxHealth);
@@ -3390,7 +3429,7 @@ CreatureAISpells* AIInterface::addAISpell(uint32_t spellId, float castChance, ui
     sLogger.failure("tried to add invalid spell with id %u", spellId);
 
     // assert spellInfo can not be nullptr!
-    ARCEMU_ASSERT(spellInfo != nullptr);
+    //ARCEMU_ASSERT(spellInfo != nullptr);
     return nullptr;
 }
 
@@ -3469,7 +3508,7 @@ void AIInterface::UpdateAISpells()
             if (AISpell != nullptr)
             {
                 // not on AIUpdate skip
-                if (AISpell->scriptType != onAIUpdate)
+                if (AISpell->scriptType != onAIUpdate && AISpell->scriptType != onLoad)
                     continue;
 
                 // spell was casted before, check if the wait time is done

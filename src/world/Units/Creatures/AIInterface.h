@@ -222,6 +222,9 @@ public:
 
     AI_SpellType spell_type;
 
+    //Zyres: temp boolean to determine if its coming from db or not
+    bool fromDB = false;
+
     // non db script messages
     struct AISpellEmotes
     {
