@@ -24,6 +24,7 @@ enum CreatureEntry
     NPC_EDWIN_VANCLEEF      = 639,
     NPC_SNEEDS_SHREDDER     = 642,
     NPC_SNEED               = 643,
+    NPC_RHAHK_ZOR           = 644,
     NPC_MR_SMITE            = 646,
     NPC_GILNID              = 1763,
 };

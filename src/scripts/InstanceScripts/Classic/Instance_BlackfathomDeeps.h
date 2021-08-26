@@ -7,8 +7,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum CreatureEntry
 {
+    // BaronAquanisAI
+    CN_BARON_AQUANIS    = 12876,
+
     // MorriduneGossip
-    CN_MORRIDUNE        = 6729
+    CN_MORRIDUNE        = 6729,
 };
 
 enum CreatureSpells
@@ -19,9 +22,9 @@ enum CreatureSpells
 enum CreatureSay
 {
     // MorriduneGossip
-    MORRIDUNE_ON_HELLO      = 7247,     // need to be checked not shure. old: menu(pObject->getGuid(), 7247);
-    MORRIDUNE_OPTION_1      = 423,      // Please Teleport me to Darnassus.
-    MORRIDUNE_OPTION_2      = 424,      // I wish to leave this horrible place.
+    MORRIDUNE_ON_HELLO  = 7247, // need to be checked not shure. old: menu(pObject->getGuid(), 7247);
+    MORRIDUNE_OPTION_1  = 423,  // Please Teleport me to Darnassus.
+    MORRIDUNE_OPTION_2  = 424,  // I wish to leave this horrible place.
 };
 
 enum GameObjectEntry

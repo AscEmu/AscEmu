@@ -7,6 +7,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum CreatureEntry
 {
+    // Warchief Rend Blackhand AI by Soulshifter
+    CN_REND_BLACKHAND           = 10429,
+
     // Gyth AI by Soulshifter
     CN_GYTH                     = 10339,
 
