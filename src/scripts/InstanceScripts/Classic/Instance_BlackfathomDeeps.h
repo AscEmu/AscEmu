@@ -7,24 +7,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum CreatureEntry
 {
-    // LadySarevessAI
-    CN_LADY_SAREVESS    = 4831,
-
-    // BaronAquanisAI
-    CN_BARON_AQUANIS    = 12876,
-
-    // KelrisAI
-    CN_LORD_KELRIS      = 4832,
-
-    // AkumaiAI
-    CN_AKUMAI           = 4829,
-
     // MorriduneGossip
     CN_MORRIDUNE        = 6729
 };
 
 enum CreatureSpells
 {
+
 };
 
 enum CreatureSay
@@ -40,4 +29,3 @@ enum GameObjectEntry
     // FathomStone
     GO_FATHOM_STONE = 177964,
 };
-

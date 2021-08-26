@@ -243,7 +243,7 @@ enum Spells
 
     // Kor'kron Axethrower & Skybreaker Rifleman
     SPELL_HURL_AXE                              = 70161,
-    SPELL_SHOOT                                 = 70162,
+    // SPELL_SHOOT                              = 70162,
     SPELL_BURNING_PITCH_A                       = 70403,
     SPELL_BURNING_PITCH_H                       = 70397,
     SPELL_BURNING_PITCH                         = 69660,

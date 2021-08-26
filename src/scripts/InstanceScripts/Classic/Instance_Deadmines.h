@@ -7,16 +7,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 static LocationVector Doors[] =
 {
-    { -168.514f, -579.861f, 19.3159f, 0 },    //Gilnid doors
-    { -290.294f, -536.96f, 49.4353f, 0 }        //Sneed doors
+    { -168.514f, -579.861f, 19.3159f, 0 },  // Gilnid doors
+    { -290.294f, -536.96f, 49.4353f, 0 }    // Sneed doors
 };
 
-//it will useful for cannon event
+// it will useful for cannon event
 static LocationVector Guards[] =
 {
-    { -89.7001f, -691.332f, 8.24514f, 0 }, //Guard
-    { -102.521f, -697.942f, 8.84454f, 0 }, //Guard
-    { -89.6744f, -694.063f, 8.43202f, 0 }  //Parrot
+    { -89.7001f, -691.332f, 8.24514f, 0 },  // Guard
+    { -102.521f, -697.942f, 8.84454f, 0 },  // Guard
+    { -89.6744f, -694.063f, 8.43202f, 0 }   // Parrot
 };
 
 enum CreatureEntry
@@ -24,16 +24,13 @@ enum CreatureEntry
     NPC_EDWIN_VANCLEEF      = 639,
     NPC_SNEEDS_SHREDDER     = 642,
     NPC_SNEED               = 643,
-    NPC_RHAHK_ZOR           = 644,
     NPC_MR_SMITE            = 646,
-    NPC_GUARD1              = 657,    //Pirate
     NPC_GILNID              = 1763,
-    NPC_GUARD2              = 3450    //Parrot
 };
 
 enum CreatureSpells
 {
-    //MrSmiteAI
+    // MrSmiteAI
     SMITE_STOMP     = 6432,
     SMITES_HAMMER   = 6436,
     SMITE_SLAM      = 6435
