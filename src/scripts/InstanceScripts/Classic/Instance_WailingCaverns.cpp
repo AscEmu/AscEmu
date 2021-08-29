@@ -18,137 +18,6 @@ public:
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new WailingCavernsInstanceScript(pMapMgr); }
-
-
-};
-
-class DevouringEctoplasmAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(DevouringEctoplasmAI)
-    explicit DevouringEctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Summon Evolving Ectoplasm
-        addAISpell(7952, 10.0f, TARGET_SELF, 0, 600);
-    }
-};
-
-class DruidFangAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(DruidFangAI)
-    explicit DruidFangAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Serpent Form
-        SerpentForm = addAISpell(8041, 5.0f, TARGET_SELF);
-        SerpentForm->setMinMaxPercentHp(0, 50);
-
-        // Healing Touch
-        HealingTouch = addAISpell(5187, 5.0f, TARGET_SELF);
-        HealingTouch->setMinMaxPercentHp(0, 5);
-
-        // Lightning Bolt
-        LightningBolt = addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
-
-        // Druid's Slumber
-        DruidsSlumber = addAISpell(8040, 20.0f, TARGET_RANDOM_SINGLE, 3, 0);
-    }
-
-    CreatureAISpells* SerpentForm;
-    CreatureAISpells* LightningBolt;
-    CreatureAISpells* DruidsSlumber;
-    CreatureAISpells* HealingTouch;
-};
-
-// BOSSES
-class LadyAnacondraAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(LadyAnacondraAI)
-    explicit LadyAnacondraAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Lightning Bolt
-        addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
-        // Sleep
-        addAISpell(700, 10.0f, TARGET_RANDOM_SINGLE, 2, 20);
-
-        addEmoteForEvent(Event_OnCombatStart, 8755);     // None can stand against the Serpent Lords
-    }
-};
-
-class LordCobrahnAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(LordCobrahnAI)
-    explicit LordCobrahnAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Lightning Bolt
-        LightningBolt = addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
-        mEnableLighningBolt = true;
-        // Poison -- Spell ID Needs checked
-        addAISpell(34969, 15.0f, TARGET_ATTACKING);
-        // Cobrahn Serpent Form
-        SerpentForm = addAISpell(7965, 0.0f, TARGET_SELF);
-        mEnableSerpentForm = true;
-
-        addEmoteForEvent(Event_OnCombatStart, 8756);     // You will never wake the dreamer!
-    }
-
-    void AIUpdate() override
-    {
-        if (_getHealthPercent() <= 20 && mEnableSerpentForm == true)
-        {
-            _castAISpell(SerpentForm);
-            mEnableSerpentForm = false;
-            // Disable Lightning Bolt
-            mEnableLighningBolt = false;
-        }
-        else if (_getHealthPercent() <= 20 && mEnableSerpentForm == false && !getCreature()->HasAura(7965))
-        {
-            // Enable Lightning Bolt
-            mEnableLighningBolt = true;
-        }
-    }
-    CreatureAISpells* LightningBolt;
-    bool mEnableLighningBolt;
-    CreatureAISpells* SerpentForm;
-    bool mEnableSerpentForm;
-};
-
-class LordPythasAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(LordPythasAI)
-    explicit LordPythasAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Lightning Bolt
-        addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
-        // Sleep
-        addAISpell(700, 10.0f, TARGET_RANDOM_SINGLE, 2, 0);
-        // Thunderclap
-        addAISpell(8147, 20.0f, TARGET_SELF, 0, 5);
-
-        addEmoteForEvent(Event_OnCombatStart, 8757);     // The coils of death... Will crush you!
-    }
-};
-
-class LordSerpentisAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(LordSerpentisAI)
-    explicit LordSerpentisAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Lightning Bolt
-        addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
-        // Sleep
-        addAISpell(700, 10.0f, TARGET_RANDOM_SINGLE, 2, 0);
-
-        addEmoteForEvent(Event_OnCombatStart, 8758);     // I am the serpent king, i can do anything!
-    }
-};
-
-class VerdanEverlivingAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(VerdanEverlivingAI)
-    explicit VerdanEverlivingAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Grasping Vines
-        addAISpell(8142, 30.0f, TARGET_ATTACKING, 1, 0);
-    }
 };
 
 class SkumAI : public CreatureAIScript
@@ -156,8 +25,6 @@ class SkumAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(SkumAI)
     explicit SkumAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        // Chained Bolt
-        addAISpell(6254, 50.0f, TARGET_ATTACKING, 2, 0);
     }
 
     void AIUpdate() override
@@ -171,18 +38,6 @@ class SkumAI : public CreatureAIScript
             _setCastDisabled(true);
             moveTo(-262.829742f, -299.363159f, -68.293579f, true);
         }
-    }
-};
-
-class MutanusAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(MutanusAI)
-    explicit MutanusAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Thundercrack
-        addAISpell(8150, 15.0f, TARGET_SELF);
-        // Terrify
-        addAISpell(7399, 15.0f, TARGET_RANDOM_SINGLE, 0, 4);
     }
 };
 
@@ -408,23 +263,6 @@ class DofNaralexAI : public CreatureAIScript
     Creature* Mutanus;
 };
 
-
-class DeviateMoccasinAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(DeviateMoccasinAI)
-    explicit DeviateMoccasinAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
-};
-
-class EctoplasmAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(EctoplasmAI)
-    explicit EctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
-};
-
 class Naralex : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Naralex)
@@ -439,24 +277,11 @@ void SetupWailingCaverns(ScriptMgr* mgr)
 {
     mgr->register_instance_script(MAP_WAILING_CAVERNS, &WailingCavernsInstanceScript::Create);
 
-    // Creatures
-    mgr->register_creature_script(CN_DRUID_FANG, &DruidFangAI::Create);
-    mgr->register_creature_script(CN_DEVOURING_ECTOPLASM, &DevouringEctoplasmAI::Create);
-    mgr->register_creature_script(CN_LADY_ANACONDRA, &LadyAnacondraAI::Create);
-    mgr->register_creature_script(CN_LORD_COBRAHN, &LordCobrahnAI::Create);
-    mgr->register_creature_script(CN_LORD_PYTHAS, &LordPythasAI::Create);
-    mgr->register_creature_script(CN_LORD_SERPENTIS, &LordSerpentisAI::Create);
-    mgr->register_creature_script(CN_VERDAN_EVERLIVING, &VerdanEverlivingAI::Create);
     mgr->register_creature_script(CN_SKUM, &SkumAI::Create);
-    mgr->register_creature_script(CN_MUTANUS, &MutanusAI::Create);
 
     GossipScript* DNaralex = new DofNaralexGossip();
     mgr->register_creature_gossip(CN_DIS_NARALEX, DNaralex);
 
     mgr->register_creature_script(CN_DIS_NARALEX, &DofNaralexAI::Create);
     mgr->register_creature_script(CN_NARALEX, &Naralex::Create);
-
-    // Might be easier to merge this 2 into 1 since they are moving to the same locations..
-    mgr->register_creature_script(5762, &DeviateMoccasinAI::Create);
-    mgr->register_creature_script(5763, &EctoplasmAI::Create);
 }

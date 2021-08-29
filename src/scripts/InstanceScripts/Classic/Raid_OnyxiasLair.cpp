@@ -18,8 +18,6 @@ public:
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new OnyxiasLairInstanceScript(pMapMgr); }
-
-
 };
 
 // This script covers Onyxia's mind
