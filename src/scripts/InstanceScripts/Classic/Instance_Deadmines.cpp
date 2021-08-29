@@ -6,9 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_Deadmines.h"
 #include <Units/Creatures/Pet.h>
-
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class DeadminesInstanceScript : public InstanceScript
 {
@@ -23,104 +21,104 @@ public:
         mIronCladDoor_GUID = 0;
         InstanceEncounter = 0;
 
-        if (getData(NPC_RHAHK_ZOR) == Finished)
+        if (getData(Deadmines::NPC_RHAHK_ZOR) == Finished)
         {
-            setGameObjectStateForEntry(GO_FACTORY_DOOR, GO_STATE_OPEN);
+            setGameObjectStateForEntry(Deadmines::GO_FACTORY_DOOR, GO_STATE_OPEN);
         }
 
-        if (getData(NPC_MR_SMITE) == Finished)
+        if (getData(Deadmines::NPC_MR_SMITE) == Finished)
         {
-            setGameObjectStateForEntry(GO_IRONCLAD_DOOR, GO_STATE_OPEN);
+            setGameObjectStateForEntry(Deadmines::GO_IRONCLAD_DOOR, GO_STATE_OPEN);
         }
 
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new DeadminesInstanceScript(pMapMgr); }
 
-    void OnGameObjectPushToWorld(GameObject* pGameObject)
+    void OnGameObjectPushToWorld(GameObject* pGameObject) override
     {
         switch (pGameObject->getEntry())
         {
-        case GO_FACTORY_DOOR:
+        case Deadmines::GO_FACTORY_DOOR:
             mFactoryDoor_GUID = static_cast<uint32_t>(pGameObject->getGuid());
             break;
-        case GO_FACTORY_DOOR_LEVER:
+        case Deadmines::GO_FACTORY_DOOR_LEVER:
             mDoorLever_GUID = static_cast<uint32_t>(pGameObject->getGuid());
             break;
-        case GO_IRONCLAD_DOOR:
+        case Deadmines::GO_IRONCLAD_DOOR:
             mIronCladDoor_GUID = static_cast<uint32_t>(pGameObject->getGuid());
             break;
         }
     }
 
-    void OnCreatureDeath(Creature* pCreature, Unit* /*pUnit*/)
+    void OnCreatureDeath(Creature* pCreature, Unit* /*pUnit*/) override
     {
         switch (pCreature->getEntry())
         {
-            case NPC_RHAHK_ZOR:
+            case Deadmines::NPC_RHAHK_ZOR:
             {
                 GameObject* pDoor1 = GetGameObjectByGuid(mFactoryDoor_GUID);
-                if (pDoor1 != NULL)
+                if (pDoor1 != nullptr)
                     pDoor1->setState(GO_STATE_OPEN);
             }
             break;
-            case NPC_SNEEDS_SHREDDER:
-                spawnCreature(NPC_SNEED, pCreature->GetPositionX(), pCreature->GetPositionY(), pCreature->GetPositionZ(), pCreature->GetOrientation());
+            case Deadmines::NPC_SNEEDS_SHREDDER:
+                spawnCreature(Deadmines::NPC_SNEED, pCreature->GetPositionX(), pCreature->GetPositionY(), pCreature->GetPositionZ(), pCreature->GetOrientation());
                 break;
-            case NPC_GILNID:
+            case Deadmines::NPC_GILNID:
             {
-                GameObject* pDoor2 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[0].x, Doors[0].y, Doors[0].z);
-                if (pDoor2 != NULL)
+                GameObject* pDoor2 = getClosestGameObjectForPosition(Deadmines::GO_HEAVY_DOOR, Deadmines::Doors[0].x, Deadmines::Doors[0].y, Deadmines::Doors[0].z);
+                if (pDoor2 != nullptr)
                     pDoor2->setState(GO_STATE_OPEN);
             }
             break;
-            case NPC_SNEED:
+            case Deadmines::NPC_SNEED:
             {
-                GameObject* pDoor3 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[1].x, Doors[1].y, Doors[1].z);
-                if (pDoor3 != NULL)
+                GameObject* pDoor3 = getClosestGameObjectForPosition(Deadmines::GO_HEAVY_DOOR, Deadmines::Doors[1].x, Deadmines::Doors[1].y, Deadmines::Doors[1].z);
+                if (pDoor3 != nullptr)
                     pDoor3->setState(GO_STATE_OPEN);
             }
             break;
         }
     }
 
-    void OnGameObjectActivate(GameObject* pGameObject, Player* /*pPlayer*/)
+    void OnGameObjectActivate(GameObject* pGameObject, Player* /*pPlayer*/) override
     {
         switch (pGameObject->getEntry())
         {
-            case GO_DEFIAS_CANNON:
+            case Deadmines::GO_DEFIAS_CANNON:
             {
                 GameObject* pDoor4 = GetGameObjectByGuid(mIronCladDoor_GUID);
-                if (pDoor4 != NULL && pDoor4->getState() != GO_STATE_ALTERNATIVE_OPEN)
+                if (pDoor4 != nullptr && pDoor4->getState() != GO_STATE_ALTERNATIVE_OPEN)
                     pDoor4->setState(GO_STATE_ALTERNATIVE_OPEN);
             }
             break;
-            case GO_FACTORY_DOOR_LEVER:
+            case Deadmines::GO_FACTORY_DOOR_LEVER:
             {
                 GameObject* pDoor5 = GetGameObjectByGuid(mFactoryDoor_GUID);
-                if (pDoor5 != NULL)
+                if (pDoor5 != nullptr)
                     pDoor5->setState(pDoor5->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
             }
             break;
-            case GO_IRONCLAD_LEVER:
+            case Deadmines::GO_IRONCLAD_LEVER:
             {
                 GameObject* pDoor6 = GetGameObjectByGuid(mFactoryDoor_GUID);
                 //Door can be opened by lever if state isn't 2
-                if (pDoor6 != NULL && pDoor6->getState() != GO_STATE_ALTERNATIVE_OPEN)
+                if (pDoor6 != nullptr && pDoor6->getState() != GO_STATE_ALTERNATIVE_OPEN)
                     pDoor6->setState(pDoor6->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
             }
             break;
-            case GO_SNEED_DOOR_LEVER:
+            case Deadmines::GO_SNEED_DOOR_LEVER:
             {
-                GameObject* pDoor7 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[1].x, Doors[1].y, Doors[1].z);
-                if (pDoor7 != NULL)
+                GameObject* pDoor7 = getClosestGameObjectForPosition(Deadmines::GO_HEAVY_DOOR, Deadmines::Doors[1].x, Deadmines::Doors[1].y, Deadmines::Doors[1].z);
+                if (pDoor7 != nullptr)
                     pDoor7->setState(pDoor7->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
             }
             break;
-            case GO_GILNID_DOOR_LEVER:
+            case Deadmines::GO_GILNID_DOOR_LEVER:
             {
-                GameObject* pDoor8 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[0].x, Doors[0].y, Doors[0].z);
-                if (pDoor8 != NULL)
+                GameObject* pDoor8 = getClosestGameObjectForPosition(Deadmines::GO_HEAVY_DOOR, Deadmines::Doors[0].x, Deadmines::Doors[0].y, Deadmines::Doors[0].z);
+                if (pDoor8 != nullptr)
                     pDoor8->setState(pDoor8->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
             }
             break;
@@ -140,13 +138,15 @@ protected:
 
 class MrSmiteAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MrSmiteAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MrSmiteAI(c); }
+
     explicit MrSmiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        auto smiteSlam = addAISpell(SMITE_SLAM, 25.0f, TARGET_ATTACKING, 0, 15, false, true);
+        auto smiteSlam = addAISpell(Deadmines::SMITE_SLAM, 25.0f, TARGET_ATTACKING, 0, 15, false, true);
         smiteSlam->setMinMaxDistance(0.0f, 8.0f);
 
-        mStomp = addAISpell(SMITE_STOMP, 0.0f, TARGET_SELF);
+        mStomp = addAISpell(Deadmines::SMITE_STOMP, 0.0f, TARGET_SELF);
         mWaitAtChest = 0;
         _setWieldWeapon(true);
     }
@@ -154,7 +154,7 @@ class MrSmiteAI : public CreatureAIScript
     void OnCombatStop(Unit* /*pTarget*/) override
     {
         if (isScriptPhase(4))
-            _removeAura(SMITES_HAMMER);
+            _removeAura(Deadmines::SMITES_HAMMER);
 
         if (!isAlive())
             _setWieldWeapon(false);
@@ -225,11 +225,9 @@ class MrSmiteAI : public CreatureAIScript
 
         if (getCreature()->GetAIInterface()->isAiState(AI_STATE_SCRIPTMOVE) == false)
         {
-            // Too small distance - let's prevent from blocking
-            float XDiff, YDiff;
-            XDiff = getCreature()->GetPositionX() - 1.100060f;
-            YDiff = getCreature()->GetPositionY() + 780.026367f;
-            float Distance = static_cast<float>(std::sqrt(XDiff * XDiff + YDiff * YDiff));
+            float XDiff = getCreature()->GetPositionX() - 1.100060f;
+            float YDiff = getCreature()->GetPositionY() + 780.026367f;
+            float Distance = std::sqrt(XDiff * XDiff + YDiff * YDiff);
             if (Distance <= 5.0f)
                 return true;
         }
@@ -254,7 +252,7 @@ class MrSmiteAI : public CreatureAIScript
                 // Is base attack time change needed if we use aura ?
                 _setDisplayWeaponIds(7230, 0);
                 getCreature()->setBaseAttackTime(MELEE, getCreature()->getBaseAttackTime(MELEE) * 2);
-                _applyAura(SMITES_HAMMER);
+                _applyAura(Deadmines::SMITES_HAMMER);
                 break;
         }
 
@@ -272,7 +270,9 @@ protected:
 
 class VanCleefAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VanCleefAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VanCleefAI(c); }
+
     explicit VanCleefAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
@@ -281,9 +281,9 @@ class VanCleefAI : public CreatureAIScript
     {
         char msg[200];
         if (pTarget->isPlayer())
-            sprintf(msg, "And stay down, %s.", static_cast<Player*>(pTarget)->getName().c_str());
+            sprintf(msg, "And stay down, %s.", dynamic_cast<Player*>(pTarget)->getName().c_str());
         else if (pTarget->GetTypeFromGUID() == HIGHGUID_TYPE_PET)
-            sprintf(msg, "And stay down, %s.", static_cast<Pet*>(pTarget)->GetName().c_str());
+            sprintf(msg, "And stay down, %s.", dynamic_cast<Pet*>(pTarget)->GetName().c_str());
 
         sendChatMessage(CHAT_MSG_MONSTER_YELL, 5781, msg);
     }
@@ -323,6 +323,6 @@ class VanCleefAI : public CreatureAIScript
 void SetupDeadmines(ScriptMgr* mgr)
 {
     mgr->register_instance_script(MAP_DEADMINES, &DeadminesInstanceScript::Create);
-    mgr->register_creature_script(NPC_MR_SMITE, &MrSmiteAI::Create);
-    mgr->register_creature_script(NPC_EDWIN_VANCLEEF, &VanCleefAI::Create);
+    mgr->register_creature_script(Deadmines::NPC_MR_SMITE, &MrSmiteAI::Create);
+    mgr->register_creature_script(Deadmines::NPC_EDWIN_VANCLEEF, &VanCleefAI::Create);
 }

@@ -5,9 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_RagefireChasm.h"
-
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class RagefireChasmInstanceScript : public InstanceScript
 {
@@ -35,8 +33,8 @@ public:
             pPlayer->GetSession()->SendNotification("Request quest `The Path of the Adept`.");
             return;
         }
-        Creature* Zelemar = NULL;
-        Zelemar = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-370.133f, 162.519f, -21.1299f, CN_ZELMAR);
+
+        Creature* Zelemar = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-370.133f, 162.519f, -21.1299f, RagefireChasm::CN_ZELMAR);
         if (Zelemar)
             return;
 
@@ -45,7 +43,7 @@ public:
         if (Zelemar)
         {
             Zelemar->m_noRespawn = true;
-            Zelemar = NULL;
+            Zelemar = nullptr;
         }
     }
 };
@@ -54,5 +52,5 @@ void SetupRagefireChasm(ScriptMgr* mgr)
 {
     mgr->register_instance_script(MAP_RAGEFIRE_CHASM, &RagefireChasmInstanceScript::Create);
 
-    mgr->register_gameobject_script(GO_BLOOD_FILLED_ORB, &BloodFilledOrb::Create);
+    mgr->register_gameobject_script(RagefireChasm::GO_BLOOD_FILLED_ORB, &BloodFilledOrb::Create);
 }

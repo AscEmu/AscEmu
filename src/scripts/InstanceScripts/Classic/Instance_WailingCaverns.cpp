@@ -5,9 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_WailingCaverns.h"
-
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class WailingCavernsInstanceScript : public InstanceScript
 {
@@ -22,7 +20,9 @@ public:
 
 class SkumAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SkumAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SkumAI(c); }
+
     explicit SkumAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
@@ -92,10 +92,10 @@ public:
 
     void onHello(Object* pObject, Player* plr) override
     {
-        Unit* Fanglord1 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-151.139008f, 414.367004f, -72.629402f, CN_LORD_COBRAHN);
-        Unit* Fanglord2 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(36.807400f, -241.063995f, -79.498901f, CN_LORD_PYTHAS);
-        Unit* Fanglord3 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-118.710999f, -24.990999f, -28.498501f, CN_LORD_SERPENTIS);
-        Unit* Fanglord4 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-70.788902f, 120.072998f, -89.673599f, CN_LADY_ANACONDRA);
+        Unit* Fanglord1 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-151.139008f, 414.367004f, -72.629402f, WailingCaverns::CN_LORD_COBRAHN);
+        Unit* Fanglord2 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(36.807400f, -241.063995f, -79.498901f, WailingCaverns::CN_LORD_PYTHAS);
+        Unit* Fanglord3 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-118.710999f, -24.990999f, -28.498501f, WailingCaverns::CN_LORD_SERPENTIS);
+        Unit* Fanglord4 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-70.788902f, 120.072998f, -89.673599f, WailingCaverns::CN_LADY_ANACONDRA);
 
         if ((!Fanglord1 || !Fanglord1->isAlive()) && (!Fanglord2 || !Fanglord2->isAlive()) && (!Fanglord3 || !Fanglord3->isAlive()) && (!Fanglord4 || !Fanglord4->isAlive()))
         {
@@ -143,7 +143,9 @@ public:
 
 class DofNaralexAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DofNaralexAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DofNaralexAI(c); }
+
     explicit DofNaralexAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Mutanus = nullptr;
@@ -255,7 +257,7 @@ class DofNaralexAI : public CreatureAIScript
 
     void BMutanus()
     {
-        Mutanus = spawnCreature(CN_MUTANUS, 136.337006f, 263.769989f, -102.666000f, 4.002330f);
+        Mutanus = spawnCreature(WailingCaverns::CN_MUTANUS, 136.337006f, 263.769989f, -102.666000f, 4.002330f);
     }
 
     int32_t SpawnTimer;
@@ -265,7 +267,9 @@ class DofNaralexAI : public CreatureAIScript
 
 class Naralex : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Naralex)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Naralex(c); }
+
     explicit Naralex(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -277,11 +281,11 @@ void SetupWailingCaverns(ScriptMgr* mgr)
 {
     mgr->register_instance_script(MAP_WAILING_CAVERNS, &WailingCavernsInstanceScript::Create);
 
-    mgr->register_creature_script(CN_SKUM, &SkumAI::Create);
+    mgr->register_creature_script(WailingCaverns::CN_SKUM, &SkumAI::Create);
 
     GossipScript* DNaralex = new DofNaralexGossip();
-    mgr->register_creature_gossip(CN_DIS_NARALEX, DNaralex);
+    mgr->register_creature_gossip(WailingCaverns::CN_DIS_NARALEX, DNaralex);
 
-    mgr->register_creature_script(CN_DIS_NARALEX, &DofNaralexAI::Create);
-    mgr->register_creature_script(CN_NARALEX, &Naralex::Create);
+    mgr->register_creature_script(WailingCaverns::CN_DIS_NARALEX, &DofNaralexAI::Create);
+    mgr->register_creature_script(WailingCaverns::CN_NARALEX, &Naralex::Create);
 }

@@ -5,9 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_ZulFarrak.h"
-
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class ZulFarrakInstanceScript : public InstanceScript
 {
@@ -31,11 +29,13 @@ Fevered Plague 16186 =  Inflicts 72 to 78 Nature damage to an enemy, then an add
 
 class ThekaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThekaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ThekaAI(c); }
+
     explicit ThekaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        morph = sSpellMgr.getSpellInfo(SP_THEKA_TRANSFORM);
-        plague = sSpellMgr.getSpellInfo(SP_THEKA_FEVERED_PLAGUE);
+        morph = sSpellMgr.getSpellInfo(ZulFarrak::SP_THEKA_TRANSFORM);
+        plague = sSpellMgr.getSpellInfo(ZulFarrak::SP_THEKA_FEVERED_PLAGUE);
 
         plaguecount = 0;
         randomplague = 0;
@@ -68,8 +68,7 @@ class ThekaAI : public CreatureAIScript
         if (plaguecount >= randomplague && getCreature()->getThreatManager().getCurrentVictim())
         {
             plaguecount = 0;
-            Unit* target = NULL;
-            target = getCreature()->getThreatManager().getCurrentVictim();
+            Unit* target = getCreature()->getThreatManager().getCurrentVictim();
             getCreature()->castSpell(target, plague, true);
         }
         else if (getCreature()->getHealthPct() <= 30 && morphcheck)
@@ -111,7 +110,9 @@ he summons Servant of antu'sul 8156 25% with spell 11894 each 15 second
 */
 class AntusulTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AntusulTriggerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AntusulTriggerAI(c); }
+
     explicit AntusulTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* mTarget) override
@@ -120,8 +121,7 @@ class AntusulTriggerAI : public CreatureAIScript
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 
-        Unit* antusul = NULL;
-        antusul = getNearestCreature(1815.030029f, 686.817017f, 14.519000f, 8127);
+        Unit* antusul = getNearestCreature(1815.030029f, 686.817017f, 14.519000f, 8127);
         if (antusul)
         {
             if (antusul->isAlive())
@@ -137,19 +137,21 @@ class AntusulTriggerAI : public CreatureAIScript
 /// \note healing ward and earthgrab ward commented out since they need time and work wich i dont have right now
 class AntusulAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AntusulAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AntusulAI(c); }
+
     explicit AntusulAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        add1 = add2 = add3 = add4 = add5 = add6 = trigger = NULL;
+        add1 = add2 = add3 = add4 = add5 = add6 = trigger = nullptr;
         spawns = spawns2 = attack = firstspawn = secondspawn = false;
-        servant = sSpellMgr.getSpellInfo(SP_ANTUSUL_SERVANTS);
+        servant = sSpellMgr.getSpellInfo(ZulFarrak::SP_ANTUSUL_SERVANTS);
 
         secondspawncount = 0;
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        add1 = add2 = add3 = add4 = add5 = add6 = trigger = NULL;
+        add1 = add2 = add3 = add4 = add5 = add6 = trigger = nullptr;
         spawns = firstspawn = secondspawn = true;
         spawns2 = attack = false;
 
@@ -202,34 +204,26 @@ class AntusulAI : public CreatureAIScript
         }
         if (attack)
         {
-            Unit* Target = NULL;
-            Target = getCreature()->getThreatManager().getCurrentVictim();
+            Unit* Target = getCreature()->getThreatManager().getCurrentVictim();
             if (getCreature()->getThreatManager().getCurrentVictim())
             {
                 if (add1 && Target)
-                {
                     add1->GetAIInterface()->onHostileAction(Target);
-                }
+
                 if (add2 && Target)
-                {
                     add2->GetAIInterface()->onHostileAction(Target);
-                }
+
                 if (add3 && Target)
-                {
                     add3->GetAIInterface()->onHostileAction(Target);
-                }
+
                 if (add4 && Target)
-                {
                     add4->GetAIInterface()->onHostileAction(Target);
-                }
+
                 if (add5 && Target)
-                {
                     add5->GetAIInterface()->onHostileAction(Target);
-                }
+
                 if (add6 && Target)
-                {
                     add6->GetAIInterface()->onHostileAction(Target);
-                }
             }
 
             attack = false;
@@ -251,27 +245,27 @@ class AntusulAI : public CreatureAIScript
 
     void spawnadds()
     {
-        spawnCreature(CN_SULLITHUZ_BROODLING, 1777.753540f, 741.063538f, 16.439308f, 6.197119f);
-        spawnCreature(CN_SULLITHUZ_BROODLING, 1782.193481f, 751.190002f, 16.620836f, 5.174994f);
-        spawnCreature(CN_SULLITHUZ_BROODLING, 1790.956299f, 754.666809f, 14.195786f, 5.174208f);
-        spawnCreature(CN_SULLITHUZ_BROODLING, 1800.902710f, 755.723267f, 15.642491f, 4.545889f);
-        spawnCreature(CN_SULLITHUZ_BROODLING, 1809.339722f, 749.212402f, 16.910545f, 4.109208f);
-        spawnCreature(CN_SULLITHUZ_BROODLING, 1818.182129f, 744.702820f, 17.801855f, 3.899507f);
+        spawnCreature(ZulFarrak::CN_SULLITHUZ_BROODLING, 1777.753540f, 741.063538f, 16.439308f, 6.197119f);
+        spawnCreature(ZulFarrak::CN_SULLITHUZ_BROODLING, 1782.193481f, 751.190002f, 16.620836f, 5.174994f);
+        spawnCreature(ZulFarrak::CN_SULLITHUZ_BROODLING, 1790.956299f, 754.666809f, 14.195786f, 5.174208f);
+        spawnCreature(ZulFarrak::CN_SULLITHUZ_BROODLING, 1800.902710f, 755.723267f, 15.642491f, 4.545889f);
+        spawnCreature(ZulFarrak::CN_SULLITHUZ_BROODLING, 1809.339722f, 749.212402f, 16.910545f, 4.109208f);
+        spawnCreature(ZulFarrak::CN_SULLITHUZ_BROODLING, 1818.182129f, 744.702820f, 17.801855f, 3.899507f);
     }
 
     void addsdefine()
     {
-        add1 = getNearestCreature(1777.753540f, 741.063538f, 16.439308f, CN_SULLITHUZ_BROODLING);
-        add2 = getNearestCreature(1782.193481f, 751.190002f, 16.620836f, CN_SULLITHUZ_BROODLING);
-        add3 = getNearestCreature(1790.956299f, 754.666809f, 14.195786f, CN_SULLITHUZ_BROODLING);
-        add4 = getNearestCreature(1800.902710f, 755.723267f, 15.642491f, CN_SULLITHUZ_BROODLING);
-        add5 = getNearestCreature(1809.339722f, 749.212402f, 16.910545f, CN_SULLITHUZ_BROODLING);
-        add6 = getNearestCreature(1818.182129f, 744.702820f, 17.801855f, CN_SULLITHUZ_BROODLING);
+        add1 = getNearestCreature(1777.753540f, 741.063538f, 16.439308f, ZulFarrak::CN_SULLITHUZ_BROODLING);
+        add2 = getNearestCreature(1782.193481f, 751.190002f, 16.620836f, ZulFarrak::CN_SULLITHUZ_BROODLING);
+        add3 = getNearestCreature(1790.956299f, 754.666809f, 14.195786f, ZulFarrak::CN_SULLITHUZ_BROODLING);
+        add4 = getNearestCreature(1800.902710f, 755.723267f, 15.642491f, ZulFarrak::CN_SULLITHUZ_BROODLING);
+        add5 = getNearestCreature(1809.339722f, 749.212402f, 16.910545f, ZulFarrak::CN_SULLITHUZ_BROODLING);
+        add6 = getNearestCreature(1818.182129f, 744.702820f, 17.801855f, ZulFarrak::CN_SULLITHUZ_BROODLING);
     }
 
     void resettrigger()
     {
-        trigger = getNearestCreature(1811.943726f, 714.839417f, 12.897189f, TRIGGER_ANTUSUL);
+        trigger = getNearestCreature(1811.943726f, 714.839417f, 12.897189f, ZulFarrak::TRIGGER_ANTUSUL);
         if (trigger)
         {
             trigger->setControlled(false, UNIT_STATE_ROOTED);
@@ -282,29 +276,22 @@ class AntusulAI : public CreatureAIScript
     void deletespawns()
     {
         if (add1)
-        {
             add1->Despawn(1000, 0);
-        }
+
         if (add2)
-        {
             add2->Despawn(1000, 0);
-        }
+
         if (add3)
-        {
             add3->Despawn(1000, 0);
-        }
+
         if (add4)
-        {
             add4->Despawn(1000, 0);
-        }
+
         if (add5)
-        {
             add5->Despawn(1000, 0);
-        }
+
         if (add6)
-        {
             add6->Despawn(1000, 0);
-        }
     }
 
 protected:
@@ -327,7 +314,7 @@ void SetupZulFarrak(ScriptMgr* mgr)
     mgr->register_instance_script(MAP_ZUL_FARAK, &ZulFarrakInstanceScript::Create);
 
     //Creatures
-    mgr->register_creature_script(CN_ANTUSUL, &AntusulAI::Create);
-    mgr->register_creature_script(CN_THEKA , &ThekaAI::Create);
-    mgr->register_creature_script(TRIGGER_ANTUSUL, &AntusulTriggerAI::Create);
+    mgr->register_creature_script(ZulFarrak::CN_ANTUSUL, &AntusulAI::Create);
+    mgr->register_creature_script(ZulFarrak::CN_THEKA , &ThekaAI::Create);
+    mgr->register_creature_script(ZulFarrak::TRIGGER_ANTUSUL, &AntusulTriggerAI::Create);
 }

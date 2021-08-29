@@ -3,9 +3,10 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Raid_BlackwingLair.h"
+
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class BlackwingLairInstanceScript : public InstanceScript
 {
@@ -20,7 +21,9 @@ public:
 
 class VaelastraszAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VaelastraszAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VaelastraszAI(c); }
+
     explicit VaelastraszAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setHealth((uint32_t)(getCreature()->getMaxHealth() * 0.3f));
@@ -43,12 +46,11 @@ public:
     }
 };
 
-
 void SetupBlackwingLair(ScriptMgr* mgr)
 {
     mgr->register_instance_script(MAP_BLACKWING_LAIR, &BlackwingLairInstanceScript::Create);
 
-    mgr->register_creature_script(13020, &VaelastraszAI::Create);
+    mgr->register_creature_script(BlackwinfLair::CN_VAELASTRASZ, &VaelastraszAI::Create);
 
-    mgr->register_creature_gossip(13020, new VaelastraszGossip()); //\todo  Vael Gossip change the flag to agressive
+    mgr->register_creature_gossip(BlackwinfLair::CN_VAELASTRASZ, new VaelastraszGossip()); //\todo  Vael Gossip change the flag to agressive
 }

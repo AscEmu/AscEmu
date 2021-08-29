@@ -4,8 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Raid_MoltenCore.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class MoltenCoreInstanceScript : public InstanceScript
 {
@@ -18,20 +18,16 @@ public:
     static InstanceScript* Create(MapMgr* pMapMgr) { return new MoltenCoreInstanceScript(pMapMgr); }
 };
 
-
-const uint32_t CN_CORERAGER = 11672;
-
-const uint32_t MANGLE = 19820; // 1 target
-// put full HP if less 50% and golemagg is still alive
-
 class CoreRagerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoreRagerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CoreRagerAI(c); }
+
     explicit CoreRagerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_mangle = true;
 
-        info_mangle = sSpellMgr.getSpellInfo(MANGLE);
+        info_mangle = sSpellMgr.getSpellInfo(MoltenCore::MANGLE);
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -71,23 +67,18 @@ protected:
     SpellInfo const* info_mangle;
 };
 
-const uint32_t CN_SULFURON_HARBRINGER = 12098;
-
-const uint32_t DEMORALIZING_SHOUT = 19778;
-const uint32_t INSPIRE = 19779;
-const uint32_t FLAME_SPEAR = 19781;
-// needs a aoe knockback 19780?
-
 class SulfuronAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SulfuronAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SulfuronAI(c); }
+
     explicit SulfuronAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_demoralizingshout = m_inspire = m_flamespear = true;
 
-        info_demoralizingshout = sSpellMgr.getSpellInfo(DEMORALIZING_SHOUT);
-        info_inspire = sSpellMgr.getSpellInfo(INSPIRE);
-        info_flamespear = sSpellMgr.getSpellInfo(FLAME_SPEAR);
+        info_demoralizingshout = sSpellMgr.getSpellInfo(MoltenCore::DEMORALIZING_SHOUT);
+        info_inspire = sSpellMgr.getSpellInfo(MoltenCore::INSPIRE);
+        info_flamespear = sSpellMgr.getSpellInfo(MoltenCore::FLAME_SPEAR);
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -154,44 +145,20 @@ protected:
     SpellInfo const* info_demoralizingshout, *info_inspire, *info_flamespear;
 };
 
-// Woot DOING RAGNAROS Tha BosS
-
-/*    * Ragnaros Summoning talk:
-          o Majordomo Executus: Behold Ragnaros, the Firelord! He who was ancient when this world was young! Bow before him, mortals! Bow before your ending!
-          o Ragnaros: TOO SOON! YOU HAVE AWAKENED ME TOO SOON, EXECUTUS! WHAT IS THE MEANING OF THIS INTRUSION?
-          o Majordomo Executus: These mortal infidels, my lord! They have invaded your sanctum, and seek to steal your secrets!
-          o Ragnaros: FOOL! YOU ALLOWED THESE INSECTS TO RUN RAMPANT THROUGH THE HALLOWED CORE, AND NOW YOU LEAD THEM TO MY VERY LAIR? YOU HAVE FAILED ME, EXECUTUS! JUSTICE SHALL BE MET, INDEED!
-          o Ragnaros: NOW FOR YOU, INSECTS. BOLDLY YOU SOUGHT THE POWER OF RAGNAROS! NOW YOU SHALL SEE IT FIRSTHAND!
-    * DIE, INSECT! (When he kills the player he has aggro on)
-    * BY FIRE BE PURGED! (Ranged knockback)
-    * TASTE THE FLAMES OF SULFURON! (Melee knockback)
-    * COME FORTH, MY SERVANTS! DEFEND YOUR MASTER! (Summoning Sons of Flame) */
-
-const uint32_t CN_RAGNAROS = 11502;
-
-const uint32_t ELEMENTAL_FIRE = 20563; // 1 target
-const uint32_t MAGMA_BLAST = 20565; // various targets on not attacked. -> sound -> 8048 ?
-const uint32_t WRATH_OF_RAGNAROS = 20566;  // Fly bitches fly! quote -> "Taste the Flames of Sulfuron!" -> sound 8047
-const uint32_t HAMMER_OF_RAGNAROS = 19780; // quote -> "By fire be purged!" -> sound 8046
-const uint32_t MELT_WEAPON = 21387; // 1 target
-const uint32_t SUMMON_SONS_OF_FLAMES = 21108; //\todo  DUMMY :P summon the sons of flames. entry = 12143 -> sound 8049,8050
-
-
-//Ragnaros Submerge Visual -> 20567
-//Ragnaros Emerge -> 20568
-
 class RagnarosAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RagnarosAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new RagnarosAI(c); }
+
     explicit RagnarosAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_elementalfire = m_wrath = m_hammer = m_meltweapon = m_summonsons = true;
 
-        info_elementalfire = sSpellMgr.getSpellInfo(ELEMENTAL_FIRE);
-        info_wrath = sSpellMgr.getSpellInfo(WRATH_OF_RAGNAROS);
-        info_hammer = sSpellMgr.getSpellInfo(HAMMER_OF_RAGNAROS);
-        info_meltweapon = sSpellMgr.getSpellInfo(MELT_WEAPON);
-        info_summonsons = sSpellMgr.getSpellInfo(SUMMON_SONS_OF_FLAMES);
+        info_elementalfire = sSpellMgr.getSpellInfo(MoltenCore::ELEMENTAL_FIRE);
+        info_wrath = sSpellMgr.getSpellInfo(MoltenCore::WRATH_OF_RAGNAROS);
+        info_hammer = sSpellMgr.getSpellInfo(MoltenCore::HAMMER_OF_RAGNAROS);
+        info_meltweapon = sSpellMgr.getSpellInfo(MoltenCore::MELT_WEAPON);
+        info_summonsons = sSpellMgr.getSpellInfo(MoltenCore::SUMMON_SONS_OF_FLAMES);
         getCreature()->setMoveRoot(true);
     }
 
@@ -269,7 +236,6 @@ class RagnarosAI : public CreatureAIScript
                 getCreature()->setAttackTimer(MELEE, 1000);
                 m_meltweapon = true;
             }
-
         }
     }
 
@@ -279,62 +245,53 @@ protected:
     SpellInfo const* info_elementalfire, *info_wrath, *info_hammer, *info_meltweapon, *info_summonsons;
 };
 
-
-const uint32_t CN_ANCIENTCOREHOUND = 11673;
-const uint32_t ANCIENTCOREHOUND_GROUND_STOMP = 19364;
-const uint32_t ANCIENTCOREHOUND_ANCIENT_DREAD = 19365;
-const uint32_t ANCIENTCOREHOUND_ANCIENT_DESPAIR = 19369;
-const uint32_t ANCIENTCOREHOUND_CAUTERIZING_FLAMES = 19366;
-const uint32_t ANCIENTCOREHOUND_WITHERING_HEAT = 19367;
-const uint32_t ANCIENTCOREHOUND_ANCIENT_HYSTERIA = 19372;
-
 class AncientCoreHoundAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AncientCoreHoundAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AncientCoreHoundAI(c); }
+
     explicit AncientCoreHoundAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Each Ancient Core Hound have only one of the following spell
         switch (Util::getRandomUInt(5))
         {
             case 0:
-                addAISpell(ANCIENTCOREHOUND_GROUND_STOMP, 20.0f, TARGET_SELF, 0, 15);
+                addAISpell(MoltenCore::ANCIENTCOREHOUND_GROUND_STOMP, 20.0f, TARGET_SELF, 0, 15);
                 break;
             case 1:
-                addAISpell(ANCIENTCOREHOUND_ANCIENT_DREAD, 20.0f, TARGET_SELF, 0, 15);
+                addAISpell(MoltenCore::ANCIENTCOREHOUND_ANCIENT_DREAD, 20.0f, TARGET_SELF, 0, 15);
                 break;
             case 2:
-                addAISpell(ANCIENTCOREHOUND_ANCIENT_DESPAIR, 20.0f, TARGET_SELF, 0, 15);
+                addAISpell(MoltenCore::ANCIENTCOREHOUND_ANCIENT_DESPAIR, 20.0f, TARGET_SELF, 0, 15);
                 break;
             case 3:
-                addAISpell(ANCIENTCOREHOUND_CAUTERIZING_FLAMES, 20.0f, TARGET_SELF, 0, 15);
+                addAISpell(MoltenCore::ANCIENTCOREHOUND_CAUTERIZING_FLAMES, 20.0f, TARGET_SELF, 0, 15);
                 break;
             case 4:
-                addAISpell(ANCIENTCOREHOUND_WITHERING_HEAT, 20.0f, TARGET_SELF, 0, 15);
+                addAISpell(MoltenCore::ANCIENTCOREHOUND_WITHERING_HEAT, 20.0f, TARGET_SELF, 0, 15);
                 break;
             case 5:
-                addAISpell(ANCIENTCOREHOUND_ANCIENT_HYSTERIA, 20.0f, TARGET_SELF, 0, 15);
+                addAISpell(MoltenCore::ANCIENTCOREHOUND_ANCIENT_HYSTERIA, 20.0f, TARGET_SELF, 0, 15);
                 break;
         }
     }
 };
 
-const uint32_t CN_GARR = 12057;
-const uint32_t CN_FIRESWORN = 12099;
-const uint32_t FIRESWORN_SEPARATION_ANXIETY = 23492;
-
 class FireswornAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FireswornAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FireswornAI(c); }
+
     explicit FireswornAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mGarr = nullptr;
 
-        mSeparationAnxiety = addAISpell(FIRESWORN_SEPARATION_ANXIETY, 0.0f, TARGET_SELF, 5, 5);
+        mSeparationAnxiety = addAISpell(MoltenCore::FIRESWORN_SEPARATION_ANXIETY, 0.0f, TARGET_SELF, 5, 5);
     }
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        mGarr = getNearestCreatureAI(CN_GARR);
+        mGarr = getNearestCreatureAI(MoltenCore::CN_GARR);
     }
 
     void AIUpdate() override
@@ -349,20 +306,20 @@ class FireswornAI : public CreatureAIScript
     CreatureAIScript* mGarr;
 };
 
-const uint32_t SHAZZRAH_ARCANE_EXPLOSION = 19712;
-const uint32_t SHAZZRAH_BLINK = 29883;    //dummy spell, need to be coded in core
 
 class ShazzrahAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShazzrahAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShazzrahAI(c); }
+
     explicit ShazzrahAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        mArcaneExplosion = addAISpell(SHAZZRAH_ARCANE_EXPLOSION, 8.0f, TARGET_SELF, 0, 0);
+        mArcaneExplosion = addAISpell(MoltenCore::SHAZZRAH_ARCANE_EXPLOSION, 8.0f, TARGET_SELF, 0, 0);
     }
 
     void OnCastSpell(uint32_t spellId) override
     {
-        if (spellId == SHAZZRAH_BLINK)
+        if (spellId == MoltenCore::SHAZZRAH_BLINK)
         {
             for (uint8_t Iter = 0; Iter < 4; Iter++)
                 _castAISpell(mArcaneExplosion);
@@ -372,16 +329,15 @@ class ShazzrahAI : public CreatureAIScript
     CreatureAISpells* mArcaneExplosion;
 };
 
-
 void SetupMoltenCore(ScriptMgr* pScriptMgr)
 {
     pScriptMgr->register_instance_script(MAP_MOLTEN_CORE, &MoltenCoreInstanceScript::Create);
 
-    pScriptMgr->register_creature_script(CN_ANCIENTCOREHOUND, &AncientCoreHoundAI::Create);
+    pScriptMgr->register_creature_script(MoltenCore::CN_ANCIENTCOREHOUND, &AncientCoreHoundAI::Create);
 
-    pScriptMgr->register_creature_script(CN_FIRESWORN, &FireswornAI::Create);
-    pScriptMgr->register_creature_script(CN_CORERAGER, &CoreRagerAI::Create);
+    pScriptMgr->register_creature_script(MoltenCore::CN_FIRESWORN, &FireswornAI::Create);
+    pScriptMgr->register_creature_script(MoltenCore::CN_CORERAGER, &CoreRagerAI::Create);
 
-    pScriptMgr->register_creature_script(CN_SULFURON_HARBRINGER, &SulfuronAI::Create);
-    pScriptMgr->register_creature_script(CN_RAGNAROS, &RagnarosAI::Create);
+    pScriptMgr->register_creature_script(MoltenCore::CN_SULFURON_HARBRINGER, &SulfuronAI::Create);
+    pScriptMgr->register_creature_script(MoltenCore::CN_RAGNAROS, &RagnarosAI::Create);
 }

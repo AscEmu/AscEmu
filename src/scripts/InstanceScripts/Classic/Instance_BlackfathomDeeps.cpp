@@ -5,9 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_BlackfathomDeeps.h"
-
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class BlackfathomDeepsInstanceScript : public InstanceScript
 {
@@ -36,7 +34,7 @@ public:
         if (pPlayer->isTeamHorde() && SpawnBaronAquanis == true) // Horde
         {
             // Spawn Baron Aquanis
-            _gameobject->GetMapMgr()->GetInterface()->SpawnCreature(CN_BARON_AQUANIS, -782.021f, -63.5876f, -45.0935f, -2.44346f, true, false, 0, 0);
+            _gameobject->GetMapMgr()->GetInterface()->SpawnCreature(BlackfathomDeeps::CN_BARON_AQUANIS, -782.021f, -63.5876f, -45.0935f, -2.44346f, true, false, 0, 0);
             SpawnBaronAquanis = false;
         }
     }
@@ -50,11 +48,11 @@ class MorriduneGossip : public GossipScript
 {
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        GossipMenu menu(pObject->getGuid(), MORRIDUNE_ON_HELLO, 0);
+        GossipMenu menu(pObject->getGuid(), BlackfathomDeeps::MORRIDUNE_ON_HELLO, 0);
         if (pPlayer->isTeamAlliance())
-            menu.addItem(GOSSIP_ICON_CHAT, MORRIDUNE_OPTION_1, 1);
+            menu.addItem(GOSSIP_ICON_CHAT, BlackfathomDeeps::MORRIDUNE_OPTION_1, 1);
         else
-            menu.addItem(GOSSIP_ICON_CHAT, MORRIDUNE_OPTION_2, 2);
+            menu.addItem(GOSSIP_ICON_CHAT, BlackfathomDeeps::MORRIDUNE_OPTION_2, 2);
 
         menu.sendGossipPacket(pPlayer);
     }
@@ -79,7 +77,7 @@ void SetupBlackfathomDeeps(ScriptMgr* mgr)
 {
     mgr->register_instance_script(MAP_BLACKFATHOM_DEEPS, &BlackfathomDeepsInstanceScript::Create);
 
-    mgr->register_creature_gossip(CN_MORRIDUNE, new MorriduneGossip());
+    mgr->register_creature_gossip(BlackfathomDeeps::CN_MORRIDUNE, new MorriduneGossip());
 
-    mgr->register_gameobject_script(GO_FATHOM_STONE, &FathomStone::Create);
+    mgr->register_gameobject_script(BlackfathomDeeps::GO_FATHOM_STONE, &FathomStone::Create);
 }

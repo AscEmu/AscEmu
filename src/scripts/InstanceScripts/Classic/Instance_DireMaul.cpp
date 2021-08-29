@@ -5,9 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_DireMaul.h"
-
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class DireMaulInstanceScript : public InstanceScript
 {
@@ -19,7 +17,6 @@ public:
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new DireMaulInstanceScript(pMapMgr); }
 };
-
 
 void SetupDireMaul(ScriptMgr* mgr)
 {
