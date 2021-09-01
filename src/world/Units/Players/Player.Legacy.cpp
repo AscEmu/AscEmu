@@ -3251,10 +3251,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         }
     }
 
+#if VERSION_STRING > Classic
     uint32 uniques[64];
     int nuniques = 0;
 
-#if VERSION_STRING > Classic
     for (uint8 x = EQUIPMENT_SLOT_START; x < EQUIPMENT_SLOT_END; ++x)
     {
         ItemInterface* itemi = getItemInterface();
