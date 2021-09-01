@@ -439,8 +439,9 @@ void ScriptMgr::UnloadScripts()
         delete *itr;
     _questscripts.clear();
 
-    for (auto& itr : _spellscripts)
-        delete itr.second;
+    //todo zyres: this is the wrong way to delete spellscripts
+    /*for (auto& itr : _spellscripts)
+        delete itr.second;*/
     _spellscripts.clear();
 
     UnloadScriptEngines();
