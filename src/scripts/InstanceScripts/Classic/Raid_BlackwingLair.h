@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum CreatureEntry
+namespace BlackwinfLair
 {
-};
-
-enum CreatureSpells
-{
-};
+    enum CreatureEntry
+    {
+        CN_VAELASTRASZ = 13020
+    };
+}

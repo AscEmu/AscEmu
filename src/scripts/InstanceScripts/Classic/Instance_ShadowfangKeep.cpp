@@ -5,12 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_ShadowfangKeep.h"
-
-
 #include "Server/Script/CreatureAIScript.h"
+
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
-#include "Macros/ScriptMacros.hpp"
 
  // Instance script for map 33 (Shadowfang Keep)
 class ShadowfangKeepInstance : public InstanceScript
@@ -34,7 +32,7 @@ class ShadowfangKeepInstance : public InstanceScript
     std::list<uint32_t /*guid*/> nandos_summons;
 
     // Encounters data
-    uint32_t m_encounterData[INDEX_MAX];
+    uint32_t m_encounterData[ShadowfangKeep::INDEX_MAX];
 
 public:
 
@@ -66,16 +64,16 @@ public:
 
     void SetLocaleInstanceData(uint32_t /*pType*/, uint32_t pIndex, uint32_t pData)
     {
-        if (pIndex >= INDEX_MAX)
+        if (pIndex >= ShadowfangKeep::INDEX_MAX)
             return;
 
         switch (pIndex)
         {
-            case INDEX_VOIDWALKER:
+            case ShadowfangKeep::INDEX_VOIDWALKER:
             {
                 if (pData == InProgress)
                 {
-                    if (Creature* ArugalSpawn = spawnCreature(CN_ARUGAL_BOSS, ArugalAtFenrusLoc.x, ArugalAtFenrusLoc.y, ArugalAtFenrusLoc.z, ArugalAtFenrusLoc.o))
+                    if (Creature* ArugalSpawn = spawnCreature(ShadowfangKeep::CN_ARUGAL_BOSS, ShadowfangKeep::ArugalAtFenrusLoc.x, ShadowfangKeep::ArugalAtFenrusLoc.y, ShadowfangKeep::ArugalAtFenrusLoc.z, ShadowfangKeep::ArugalAtFenrusLoc.o))
                     {
                         ArugalSpawn->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                         ArugalSpawn->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -87,7 +85,7 @@ public:
                     }
                 }
             } break;
-            case INDEX_NANDOS:
+            case ShadowfangKeep::INDEX_NANDOS:
             {
                 // Despawn all summons on fail or on boos death
                 if (pData == InvalidState || pData == Finished)
@@ -112,7 +110,7 @@ public:
                     }
                 }
             }break;
-            case INDEX_RETHILGORE:
+            case ShadowfangKeep::INDEX_RETHILGORE:
             {
                 // Add gossip flag to prisoners
                 if (pData == Finished)
@@ -123,7 +121,7 @@ public:
                         if (pCreature->isAlive())
                         {
                             pCreature->addNpcFlags(UNIT_NPC_FLAG_GOSSIP);
-                            pCreature->SendScriptTextChatMessage(SAY_ADAMANT_BOSS_DEATH);
+                            pCreature->SendScriptTextChatMessage(ShadowfangKeep::SAY_ADAMANT_BOSS_DEATH);
                         }
                     }
 
@@ -157,7 +155,7 @@ public:
                     }
                 }
             } break;
-            case INDEX_PRISONER_EVENT:
+            case ShadowfangKeep::INDEX_PRISONER_EVENT:
             {
                 // Open doors in any case
                 if (pData == Finished || pData == Performed)
@@ -169,11 +167,11 @@ public:
                     }
                 }
             }break;
-            case INDEX_FENRUS:
+            case ShadowfangKeep::INDEX_FENRUS:
             {
                 if (pData == Finished)
                 {
-                    SetLocaleInstanceData(0, INDEX_VOIDWALKER, InProgress);
+                    SetLocaleInstanceData(0, ShadowfangKeep::INDEX_VOIDWALKER, InProgress);
                     GameObject* pGate = GetGameObjectByGuid(go_sorcererGate_GUID);
                     if (pGate != nullptr && pGate->getState() == GO_STATE_CLOSED)
                     {
@@ -190,7 +188,7 @@ public:
 
     uint32_t GetInstanceData(uint32_t /*pType*/, uint32_t pIndex)
     {
-        return pIndex >= INDEX_MAX ? 0 : m_encounterData[pIndex];
+        return pIndex >= ShadowfangKeep::INDEX_MAX ? 0 : m_encounterData[pIndex];
     }
 
     // Objects handling
@@ -198,62 +196,62 @@ public:
     {
         switch (pGameObject->getEntry())
         {
-            case GO_LEFT_CELL:
+            case ShadowfangKeep::GO_LEFT_CELL:
             {
                 go_leftCell_GUID = pGameObject->getGuidLow();
             }break;
-            case GO_MIDDLE_CELL:
+            case ShadowfangKeep::GO_MIDDLE_CELL:
             {
                 go_middleCell_GUID = pGameObject->getGuidLow();
             }break;
-            case GO_RIGHT_CELL:
+            case ShadowfangKeep::GO_RIGHT_CELL:
             {
                 go_rightCell_GUID = pGameObject->getGuidLow();
             }break;
-            case GO_ARUGALS_LAIR_GATE:
+            case ShadowfangKeep::GO_ARUGALS_LAIR_GATE:
             {
                 go_arugalsLair_GUID = pGameObject->getGuidLow();
-                if (GetInstanceData(0, INDEX_NANDOS) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_NANDOS) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
                 {
                     pGameObject->setState(GO_STATE_OPEN);
                 }
             }break;
-            case GO_SORCERER_GATE:
+            case ShadowfangKeep::GO_SORCERER_GATE:
             {
                 go_sorcererGate_GUID = pGameObject->getGuidLow();
-                if (GetInstanceData(0, INDEX_FENRUS) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_FENRUS) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
                 {
                     pGameObject->setState(GO_STATE_OPEN);
                 }
             }break;
-            case GO_LEFT_LEVER:
+            case ShadowfangKeep::GO_LEFT_LEVER:
             {
                 go_leftCellLever_GUID = pGameObject->getGuidLow();
-                if (GetInstanceData(0, INDEX_RETHILGORE) != Finished)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) != Finished)
                 {
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                 }
             }break;
-            case GO_RIGHT_LEVER:
+            case ShadowfangKeep::GO_RIGHT_LEVER:
             {
                 go_rightCellLever_GUID = pGameObject->getGuidLow();
-                if (GetInstanceData(0, INDEX_RETHILGORE) != Finished)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) != Finished)
                 {
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                 }
             }break;
-            case GO_MIDDLE_LEVER:
+            case ShadowfangKeep::GO_MIDDLE_LEVER:
             {
                 go_middleCellLever_GUID = pGameObject->getGuidLow();
-                if (GetInstanceData(0, INDEX_RETHILGORE) != Finished)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) != Finished)
                 {
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                 }
             }break;
-            case GO_COURTYARD_DOOR:
+            case ShadowfangKeep::GO_COURTYARD_DOOR:
             {
                 go_courtyarDoor_GUID = pGameObject->getGuidLow();
-                if (GetInstanceData(0, INDEX_PRISONER_EVENT) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
                 {
                     pGameObject->setState(GO_STATE_OPEN);
                 }
@@ -267,7 +265,7 @@ public:
     {
         switch (pGameObject->getEntry())
         {
-            case GO_RIGHT_LEVER:
+            case ShadowfangKeep::GO_RIGHT_LEVER:
             {
                 if (GameObject* pGO = GetGameObjectByGuid(go_rightCell_GUID))
                 {
@@ -275,7 +273,7 @@ public:
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                 }
             }break;
-            case GO_MIDDLE_LEVER:
+            case ShadowfangKeep::GO_MIDDLE_LEVER:
             {
                 if (GameObject* pGO = GetGameObjectByGuid(go_middleCell_GUID))
                 {
@@ -283,7 +281,7 @@ public:
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                 }
             }break;
-            case GO_LEFT_LEVER:
+            case ShadowfangKeep::GO_LEFT_LEVER:
             {
                 if (GameObject* pGO = GetGameObjectByGuid(go_leftCell_GUID))
                 {
@@ -300,17 +298,17 @@ public:
     {
         switch (pCreature->getEntry())
         {
-            case CN_NANDOS:
+            case ShadowfangKeep::CN_NANDOS:
             {
-                SetLocaleInstanceData(0, INDEX_NANDOS, Finished);
+                SetLocaleInstanceData(0, ShadowfangKeep::INDEX_NANDOS, Finished);
             }break;
-            case CN_RETHILGORE:
+            case ShadowfangKeep::CN_RETHILGORE:
             {
-                SetLocaleInstanceData(0, INDEX_RETHILGORE, Finished);
+                SetLocaleInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE, Finished);
             }break;
-            case CN_FENRUS:
+            case ShadowfangKeep::CN_FENRUS:
             {
-                SetLocaleInstanceData(0, INDEX_FENRUS, Finished);
+                SetLocaleInstanceData(0, ShadowfangKeep::INDEX_FENRUS, Finished);
             }break;
             default:
                 break;
@@ -324,49 +322,49 @@ public:
 
         switch (pCreature->getEntry())
         {
-            case CN_ADAMANT:
+            case ShadowfangKeep::CN_ADAMANT:
             {
                 npc_adamant_GUID = wowGuid.getGuidLowPart();
             }break;
-            case CN_ASHCROMBE:
+            case ShadowfangKeep::CN_ASHCROMBE:
             {
                 npc_ashcrombe_GUID = wowGuid.getGuidLowPart();
             }break;
             // Make him hidden
-            case CN_ARUGAL:
+            case ShadowfangKeep::CN_ARUGAL:
             {
                 pCreature->setVisible(false);
             }break;
-            case CN_BLEAK_WORG:
-            case CN_SLAVERING_WORG:
-            case CN_LUPINE_HORROR:
+            case ShadowfangKeep::CN_BLEAK_WORG:
+            case ShadowfangKeep::CN_SLAVERING_WORG:
+            case ShadowfangKeep::CN_LUPINE_HORROR:
             {
                 // Add to nandos summon lists only on his event is started
-                if (GetInstanceData(0, INDEX_NANDOS) == InProgress)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_NANDOS) == InProgress)
                 {
                     pCreature->Despawn(60 * 4 * 1000, 0);   // Despawn in 4 mins
                     nandos_summons.push_back(wowGuid.getGuidLowPart());
                 }
             }break;
-            case CN_LUPINE_DELUSION:
+            case ShadowfangKeep::CN_LUPINE_DELUSION:
             {
                 // Add to nandos summon lists only on his event is started
-                if (GetInstanceData(0, INDEX_NANDOS) == InProgress)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_NANDOS) == InProgress)
                 {
                     nandos_summons.push_back(wowGuid.getGuidLowPart());
                 }
                 pCreature->Despawn(60 * 4 * 1000, 0); // Despawn in 4 mins
             }break;
-            case CN_DEATHSTALKER_VINCENT:
+            case ShadowfangKeep::CN_DEATHSTALKER_VINCENT:
             {
-                if (GetInstanceData(0, INDEX_ARUGAL_INTRO) == Finished)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_ARUGAL_INTRO) == Finished)
                 {
                     // Make him look like dead
                     pCreature->setStandState(STANDSTATE_DEAD);
                     pCreature->setDeathState(CORPSE);
                     pCreature->setControlled(true, UNIT_STATE_ROOTED);
                     pCreature->addDynamicFlags(U_DYN_FLAG_DEAD);
-                    pCreature->SendScriptTextChatMessage(SAY_VINCENT_DEATH);
+                    pCreature->SendScriptTextChatMessage(ShadowfangKeep::SAY_VINCENT_DEATH);
                 }
             }break;
             default:
@@ -383,29 +381,31 @@ public:
 
 class ArugalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArugalAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ArugalAI(c); }
+
     ArugalAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0)
     {
         SFK_Instance = static_cast<ShadowfangKeepInstance*>(pCreature->GetMapMgr()->GetScript());
-        if (SFK_Instance && SFK_Instance->GetInstanceData(0, INDEX_ARUGAL_INTRO) == NotStarted)
+        if (SFK_Instance && SFK_Instance->GetInstanceData(0, ShadowfangKeep::INDEX_ARUGAL_INTRO) == NotStarted)
         {
             RegisterAIUpdateEvent(500);
-            SFK_Instance->SetLocaleInstanceData(0, INDEX_ARUGAL_INTRO, InProgress);
+            SFK_Instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_ARUGAL_INTRO, InProgress);
         }
     }
 
     void AIUpdate() override
     {
-        if (SFK_Instance && SFK_Instance->GetInstanceData(0, INDEX_ARUGAL_INTRO) == InProgress)
+        if (SFK_Instance && SFK_Instance->GetInstanceData(0, ShadowfangKeep::INDEX_ARUGAL_INTRO) == InProgress)
         {
             switch (stage)
             {
                 case 0:
                 {
                     getCreature()->setVisible(true);
-                    getCreature()->castSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
+                    getCreature()->castSpell(getCreature(), ShadowfangKeep::SPELL_ARUGAL_SPAWN, true);
                     ModifyAIUpdateEvent(5500);  // call every step after 5.5 seconds
-                    if (Creature* pVincent = getNearestCreature(CN_DEATHSTALKER_VINCENT))
+                    if (Creature* pVincent = getNearestCreature(ShadowfangKeep::CN_DEATHSTALKER_VINCENT))
                     {
                         pVincent->GetAIInterface()->onHostileAction(getCreature());
                         pVincent->GetAIInterface()->setMeleeDisabled(true);
@@ -413,7 +413,7 @@ class ArugalAI : public CreatureAIScript
                 }break;
                 case 1:
                 {
-                    getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO1);
+                    getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ARUGAL_INTRO1);
                 }break;
                 case 2:
                 {
@@ -421,7 +421,7 @@ class ArugalAI : public CreatureAIScript
                 }break;
                 case 3:
                 {
-                    getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO2);
+                    getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ARUGAL_INTRO2);
                 }break;
                 case 4:
                 {
@@ -429,7 +429,7 @@ class ArugalAI : public CreatureAIScript
                 }break;
                 case 5:
                 {
-                    getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO3);
+                    getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ARUGAL_INTRO3);
                 }break;
                 case 6:
                 {
@@ -437,10 +437,10 @@ class ArugalAI : public CreatureAIScript
                 }break;
                 case 7:
                 {
-                    if (Creature* pVincent = getCreature()->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_DEATHSTALKER_VINCENT))
+                    if (Creature* pVincent = getCreature()->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), ShadowfangKeep::CN_DEATHSTALKER_VINCENT))
                     {
                         // Make him look like dead
-                        pVincent->SendScriptTextChatMessage(SAY_VINCENT_DEATH);
+                        pVincent->SendScriptTextChatMessage(ShadowfangKeep::SAY_VINCENT_DEATH);
                         pVincent->setStandState(STANDSTATE_DEAD);
                         pVincent->setDeathState(CORPSE);
                         pVincent->setControlled(true, UNIT_STATE_ROOTED);
@@ -449,12 +449,12 @@ class ArugalAI : public CreatureAIScript
                 }break;
                 case 8:
                 {
-                    getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO4);
+                    getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ARUGAL_INTRO4);
                 }break;
                 case 9:
                 {
-                    getCreature()->castSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
-                    SFK_Instance->SetLocaleInstanceData(0, INDEX_ARUGAL_INTRO, Finished);
+                    getCreature()->castSpell(getCreature(), ShadowfangKeep::SPELL_ARUGAL_SPAWN, true);
+                    SFK_Instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_ARUGAL_INTRO, Finished);
                     getCreature()->setVisible(false);
                     RemoveAIUpdateEvent();
                 }break;
@@ -473,7 +473,9 @@ protected:
 
 class AdamantAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AdamantAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AdamantAI(c); }
+
     AdamantAI(Creature* pCreature) : CreatureAIScript(pCreature), eventStarted(false)
     {
         SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
@@ -526,8 +528,8 @@ class AdamantAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (SFK_instance && (SFK_instance->GetInstanceData(0, INDEX_PRISONER_EVENT) == InProgress 
-            || SFK_instance->GetInstanceData(0, INDEX_PRISONER_EVENT) == Performed))
+        if (SFK_instance && (SFK_instance->GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == InProgress 
+            || SFK_instance->GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == Performed))
         {
             if (eventStarted)
             {
@@ -539,29 +541,29 @@ class AdamantAI : public CreatureAIScript
                     {
                     case 1:
                     {
-                        getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_BEFORE_OPEN);
+                        getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ADAMANT_BEFORE_OPEN);
                     }
                         break;
                     case 2:
                     {
-                        getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_OPENING);
+                        getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ADAMANT_OPENING);
                         getCreature()->eventAddEmote(EMOTE_ONESHOT_USESTANDING, 8000);
                     }
                         break;
                     case 3:
                     {
-                        getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_AFTER_OPEN);
-                        SFK_instance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, Performed);
+                        getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ADAMANT_AFTER_OPEN);
+                        SFK_instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT, Performed);
                     }
                         break;
                     case 4:
                     {
-                        getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_BYE);
+                        getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ADAMANT_BYE);
                     }
                         break;
                     case 5:
                     {
-                        SFK_instance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, Finished);
+                        SFK_instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT, Finished);
                         setWaypointToMove(1, 12);  // Lets run
                     }
                         break;
@@ -591,10 +593,10 @@ public:
         GossipMenu menu(pObject->getGuid(), sMySQLStore.getGossipTextIdForNpc(pObject->getEntry()));
 
         ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript());
-        if (pInstance != nullptr && pInstance->GetInstanceData(0, INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, INDEX_PRISONER_EVENT) == NotStarted)
+        if (pInstance != nullptr && pInstance->GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == NotStarted)
         {
             //TODO: move this to database
-            menu.addItem(GOSSIP_ICON_CHAT, prisonerGossipOptionID, 1);
+            menu.addItem(GOSSIP_ICON_CHAT, ShadowfangKeep::prisonerGossipOptionID, 1);
         }
         menu.sendGossipPacket(plr);
     }
@@ -606,14 +608,14 @@ public:
             if (AdamantAI* pPrisoner = static_cast<AdamantAI*>(static_cast<Creature*>(pObject)->GetScript()))
             {
                 pPrisoner->getCreature()->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
-                pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_FOLLOW);
+                pPrisoner->getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ADAMANT_FOLLOW);
                 pPrisoner->DoAction(0);
                 pPrisoner->getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 pPrisoner->getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
                 pPrisoner->getCreature()->eventAddEmote(EMOTE_ONESHOT_CHEER, 4000);
                 pPrisoner->eventStarted = true;
                 if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
-                    pInstance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, InProgress);
+                    pInstance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT, InProgress);
             }
         }
         GossipMenu::senGossipComplete(plr);
@@ -623,12 +625,14 @@ public:
 // Prisoner Sorcerer Ashcrombe (entry: 3850) gossip, escort event
 class AshcrombeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshcrombeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshcrombeAI(c); }
+
     AshcrombeAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0), argued(false), eventStarted(false)
     {
         SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
 
-        for (uint8_t i = 0; i < ashcrombeWpCount; ++i)
+        for (uint8_t i = 0; i < ShadowfangKeep::ashcrombeWpCount; ++i)
         {
             float waitTime = 0;
             float distanceX = 0;
@@ -638,18 +642,18 @@ class AshcrombeAI : public CreatureAIScript
             //float runSpeed = getCreature()->GetCreatureProperties()->run_speed;
             if (i == 0) // first waypoint
             {
-                distanceX = (SorcererAshcrombeWPS[i].x - getCreature()->GetPositionX())*(SorcererAshcrombeWPS[i].x - getCreature()->GetPositionX());
-                distanceY = (SorcererAshcrombeWPS[i].y - getCreature()->GetPositionY())*(SorcererAshcrombeWPS[i].y - getCreature()->GetPositionY());
+                distanceX = (ShadowfangKeep::SorcererAshcrombeWPS[i].x - getCreature()->GetPositionX())*(ShadowfangKeep::SorcererAshcrombeWPS[i].x - getCreature()->GetPositionX());
+                distanceY = (ShadowfangKeep::SorcererAshcrombeWPS[i].y - getCreature()->GetPositionY())*(ShadowfangKeep::SorcererAshcrombeWPS[i].y - getCreature()->GetPositionY());
                 distance = std::sqrt(distanceX - distanceY);
             }
-            else if (i != ashcrombeWpCount-1)
+            else if (i != ShadowfangKeep::ashcrombeWpCount-1)
             {
-                distanceX = (SorcererAshcrombeWPS[i].x - SorcererAshcrombeWPS[i-1].x)*(SorcererAshcrombeWPS[i].x - SorcererAshcrombeWPS[i-1].x);
-                distanceY = (SorcererAshcrombeWPS[i].y - SorcererAshcrombeWPS[i-1].y)*(SorcererAshcrombeWPS[i].y - SorcererAshcrombeWPS[i-1].y);
+                distanceX = (ShadowfangKeep::SorcererAshcrombeWPS[i].x - ShadowfangKeep::SorcererAshcrombeWPS[i-1].x)*(ShadowfangKeep::SorcererAshcrombeWPS[i].x - ShadowfangKeep::SorcererAshcrombeWPS[i-1].x);
+                distanceY = (ShadowfangKeep::SorcererAshcrombeWPS[i].y - ShadowfangKeep::SorcererAshcrombeWPS[i-1].y)*(ShadowfangKeep::SorcererAshcrombeWPS[i].y - ShadowfangKeep::SorcererAshcrombeWPS[i-1].y);
                 distance = std::sqrt(distanceX + distanceY);
             }
             waitTime = 300.0f + (1000 * std::abs(distance / walkSpeed));
-            addWaypoint(1, createWaypoint(i + 1, static_cast<uint32_t>(waitTime), WAYPOINT_MOVE_TYPE_WALK, SorcererAshcrombeWPS[i]));
+            addWaypoint(1, createWaypoint(i + 1, static_cast<uint32_t>(waitTime), WAYPOINT_MOVE_TYPE_WALK, ShadowfangKeep::SorcererAshcrombeWPS[i]));
         }
 
         stage = 0;
@@ -678,8 +682,8 @@ class AshcrombeAI : public CreatureAIScript
     void AIUpdate() override
     {
         if (SFK_instance 
-            && (SFK_instance->GetInstanceData(0, INDEX_PRISONER_EVENT) == InProgress
-            || SFK_instance->GetInstanceData(0, INDEX_PRISONER_EVENT) == Performed))
+            && (SFK_instance->GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == InProgress
+            || SFK_instance->GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == Performed))
         {
             if (eventStarted)
             {
@@ -700,25 +704,25 @@ class AshcrombeAI : public CreatureAIScript
                     // Preparing to cast spell
                     case 2:
                     {
-                        getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_OPEN_DOOR);
+                        getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ASHCROMBE_OPEN_DOOR);
                     }break;
                     // Casting unlock spell and calling next events every 6 seconds
                     case 3:
                     {
                         ModifyAIUpdateEvent(6000);
-                        getCreature()->castSpell(getCreature(), SPELL_ASHCROMBE_UNLOCK, false);
+                        getCreature()->castSpell(getCreature(), ShadowfangKeep::SPELL_ASHCROMBE_UNLOCK, false);
                     }break;
                     // Setting instance data to finished
                     case 4:
                     {
-                        getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_BYE);
+                        getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ASHCROMBE_BYE);
                     }break;
                     // Final stage - casting spell which despawns Ashcrombe Sorcerer
                     case 5:
                     {
-                        getCreature()->castSpell(getCreature(), SPELL_ASHCROMBE_FIRE, true);
-                        getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_VANISH);
-                        SFK_instance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, Finished);
+                        getCreature()->castSpell(getCreature(), ShadowfangKeep::SPELL_ASHCROMBE_FIRE, true);
+                        getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ASHCROMBE_VANISH);
+                        SFK_instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT, Finished);
                         RemoveAIUpdateEvent();
                     }break;
                     default:
@@ -730,7 +734,7 @@ class AshcrombeAI : public CreatureAIScript
 
         if (!argued)
         {
-            getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_BOSS_DEATH);
+            getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ASHCROMBE_BOSS_DEATH);
             RemoveAIUpdateEvent();
             argued = true;
         }
@@ -759,9 +763,9 @@ public:
         GossipMenu menu(pObject->getGuid(), sMySQLStore.getGossipTextIdForNpc(pObject->getEntry()));
 
         ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript());
-        if (pInstance != nullptr && pInstance->GetInstanceData(0, INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, INDEX_PRISONER_EVENT) == NotStarted)
+        if (pInstance != nullptr && pInstance->GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == NotStarted)
         {
-            menu.addItem(GOSSIP_ICON_CHAT, prisonerGossipOptionID, 1);
+            menu.addItem(GOSSIP_ICON_CHAT, ShadowfangKeep::prisonerGossipOptionID, 1);
         }
         menu.sendGossipPacket(plr);
     }
@@ -773,14 +777,14 @@ public:
             if (AshcrombeAI* pPrisoner = static_cast<AshcrombeAI*>(static_cast<Creature*>(pObject)->GetScript()))
             {
                 pPrisoner->getCreature()->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
-                pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_FOLLOW);
+                pPrisoner->getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ASHCROMBE_FOLLOW);
                 pPrisoner->RegisterAIUpdateEvent(4000);
                 pPrisoner->getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 pPrisoner->getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
                 pPrisoner->getCreature()->emote(EMOTE_ONESHOT_POINT);
                 pPrisoner->eventStarted = true;
                 if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
-                    pInstance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, InProgress);
+                    pInstance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT, InProgress);
             }
         }
         GossipMenu::senGossipComplete(plr);
@@ -793,7 +797,8 @@ public:
 // Creature entry: 4278
 class SpringvaleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SpringvaleAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SpringvaleAI(c); }
 
     enum SpringvaleSpells
     {
@@ -849,7 +854,8 @@ protected:
 // Creature entry: 3914
 class RethilgoreAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RethilgoreAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new RethilgoreAI(c); }
 
     const uint32_t SPELL_SOUL_DRAIN = 7295;
 
@@ -862,7 +868,8 @@ class RethilgoreAI : public CreatureAIScript
 // Creature entry: 3927
 class NandosAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NandosAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NandosAI(c); }
 
     enum NandosAISpells : uint32_t
     {
@@ -899,14 +906,14 @@ class NandosAI : public CreatureAIScript
         sCallSlaveringWorg_Timer = _addTimer(Util::getRandomUInt(1) ? 45400 : 51700);
         sCallLupineHorror_Timer = _addTimer(69500);
         if (SFK_instance)
-            SFK_instance->SetLocaleInstanceData(0, INDEX_NANDOS, InProgress);
+            SFK_instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_NANDOS, InProgress);
     }
 
     void OnCombatStop(Unit* /*mEnemy*/) override
     {
         // Battle has failed
         if (SFK_instance)
-            SFK_instance->SetLocaleInstanceData(0, INDEX_NANDOS, InvalidState);
+            SFK_instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_NANDOS, InvalidState);
 
         Reset();
     }
@@ -957,7 +964,8 @@ protected:
 // Creature entry: 3887
 class BaronSilverlaineAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BaronSilverlaineAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BaronSilverlaineAI(c); }
 
     const uint32_t SPELL_VEIL_OF_SHADOW = 7068;
 
@@ -970,7 +978,8 @@ class BaronSilverlaineAI : public CreatureAIScript
 // Creature entry: 4279
 class BlindWatcherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BlindWatcherAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BlindWatcherAI(c); }
 
     enum ODO_THE_BLINDWATCHER_SPELLS : uint32_t
     {
@@ -1028,7 +1037,8 @@ protected:
 // Creature entry: 4274
 class FenrusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FenrusAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FenrusAI(c); }
 
     const uint32_t SPELL_TOXIC_SALIVA = 7125;
 
@@ -1041,7 +1051,8 @@ class FenrusAI : public CreatureAIScript
 // Creature entry: 4275
 class ArugalBossAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArugalBossAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ArugalBossAI(c); }
 
     enum Arugal_Boss_Spells : uint32_t
     {
@@ -1069,9 +1080,9 @@ class ArugalBossAI : public CreatureAIScript
         addAISpell(SPELL_THUNDER_SHOCK, 10.0f, TARGET_SELF);
         addAISpell(SPELL_ARUGALS_CURSE, 5.0f, TARGET_RANDOM_SINGLE);
 
-        addEmoteForEvent(Event_OnCombatStart, YELL_ARUGAL_AGROO);
-        addEmoteForEvent(Event_OnTargetDied, YELL_ARUGAL_ENEMY_DEATH);
-        addEmoteForEvent(Event_OnTaunt, YELL_ARUGAL_COMBAT);
+        addEmoteForEvent(Event_OnCombatStart, ShadowfangKeep::YELL_ARUGAL_AGROO);
+        addEmoteForEvent(Event_OnTargetDied, ShadowfangKeep::YELL_ARUGAL_ENEMY_DEATH);
+        addEmoteForEvent(Event_OnTaunt, ShadowfangKeep::YELL_ARUGAL_COMBAT);
         setAIAgent(AGENT_SPELL);
 
         aiUpdateOriginal = GetAIUpdateFreq();
@@ -1082,7 +1093,7 @@ class ArugalBossAI : public CreatureAIScript
     {
         if (spellId == SPELL_ARUGALS_CURSE)
         {
-            getCreature()->SendScriptTextChatMessage(YELL_ARUGAL_COMBAT);
+            getCreature()->SendScriptTextChatMessage(ShadowfangKeep::YELL_ARUGAL_COMBAT);
         }
     }
 
@@ -1116,20 +1127,20 @@ class ArugalBossAI : public CreatureAIScript
             case 0:
             {
                 ModifyAIUpdateEvent(6000);
-                _applyAura(SPELL_ARUGAL_SPAWN);
-                getCreature()->SendScriptTextChatMessage(YELL_ARUGAL_FENRUS);
+                _applyAura(ShadowfangKeep::SPELL_ARUGAL_SPAWN);
+                getCreature()->SendScriptTextChatMessage(ShadowfangKeep::YELL_ARUGAL_FENRUS);
             }break;
             case 1:
             {
-                if (GameObject* pGO = getNearestGameObject(GO_ARUGAL_FOCUS))
+                if (GameObject* pGO = getNearestGameObject(ShadowfangKeep::GO_ARUGAL_FOCUS))
                 {
                     pGO->setState(GO_STATE_OPEN);
                 }
 
                 // Spawn Arugal's Voidwalkers
-                for (uint8_t x = 0; x < ArugalVoidCount; x++)
+                for (uint8_t x = 0; x < ShadowfangKeep::ArugalVoidCount; x++)
                 {
-                    if (CreatureAIScript* voidwalker = spawnCreatureAndGetAIScript(CN_VOIDWALKER, voidwalkerSpawns[x].x, voidwalkerSpawns[x].y, voidwalkerSpawns[x].z, voidwalkerSpawns[x].o))
+                    if (CreatureAIScript* voidwalker = spawnCreatureAndGetAIScript(ShadowfangKeep::CN_VOIDWALKER, ShadowfangKeep::voidwalkerSpawns[x].x, ShadowfangKeep::voidwalkerSpawns[x].y, ShadowfangKeep::voidwalkerSpawns[x].z, ShadowfangKeep::voidwalkerSpawns[x].o))
                     {
                         voidwalker->despawn(4 * 60 * 1000); // Despawn in 4 mins
                     }
@@ -1139,8 +1150,8 @@ class ArugalBossAI : public CreatureAIScript
                 getCreature()->setControlled(false, UNIT_STATE_ROOTED);
 
                 // sanctum32: not sure if it is correct spell id
-                getCreature()->castSpell(getCreature(), SPELL_ASHCROMBE_FIRE, true);
-                SFK_instance->SetLocaleInstanceData(0, INDEX_VOIDWALKER, Finished);
+                getCreature()->castSpell(getCreature(), ShadowfangKeep::SPELL_ASHCROMBE_FIRE, true);
+                SFK_instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_VOIDWALKER, Finished);
                 RemoveAIUpdateEvent();
             }break;
         }
@@ -1148,7 +1159,7 @@ class ArugalBossAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        if (SFK_instance && SFK_instance->GetInstanceData(0, INDEX_VOIDWALKER) == InProgress)
+        if (SFK_instance && SFK_instance->GetInstanceData(0, ShadowfangKeep::INDEX_VOIDWALKER) == InProgress)
         {
             FenrusEvent(stage);
             ++stage;
@@ -1211,7 +1222,8 @@ protected:
 // Creature entry: 3886
 class RazorclawTheButcherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RazorclawTheButcherAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new RazorclawTheButcherAI(c); }
 
     const uint32_t SPELL_BUTCHER_DRAIN = 7485;
 
@@ -1223,217 +1235,6 @@ class RazorclawTheButcherAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Trash npcs
-
-// Creature entry: 3866
-class VileBatAI : public CreatureAIScript
-{
-    enum VileBatSpells : uint32_t
-    {
-        SPELL_DIVING_SWEEP  = 7145,
-        SPELL_DISARM        = 6713
-    };
-
-    ADD_CREATURE_FACTORY_FUNCTION(VileBatAI)
-    explicit VileBatAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SPELL_DIVING_SWEEP, 8.0f, TARGET_ATTACKING);
-        addAISpell(SPELL_DISARM, 5.0f, TARGET_ATTACKING, 0, 6);
-    }
-};
-
-// Creature entry: 3868
-class BloodSeekerAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(BloodSeekerAI)
-
-    const uint32_t SPELL_EXPOSE_WEAKNESS = 7140;
-
-    explicit BloodSeekerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SPELL_EXPOSE_WEAKNESS, 5.0f, TARGET_ATTACKING, 0, 5);
-    }
-};
-
-// Creature entry: 4627
-class VoidWalkerAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(VoidWalkerAI)
-    explicit VoidWalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Dark Offering
-        addAISpell(7154, 5.0f, TARGET_RANDOM_FRIEND, 0, 7);
-    }
-};
-
-// Creature entry: 3861
-class BleakWorgAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(BleakWorgAI)
-    explicit BleakWorgAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Wavering Will
-        addAISpell(7127, 5.0f, TARGET_RANDOM_SINGLE, 0, 60);
-    }
-};
-
-// Creature entry: 3863
-class LupineHorrorAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(LupineHorrorAI)
-    explicit LupineHorrorAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Summon Lupine Delusions
-        addAISpell(7132, 5.0f, TARGET_SELF, 0, 240);
-    }
-};
-
-// Creature entry: 2529
-class SonOfArugalAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(SonOfArugalAI)
-    explicit SonOfArugalAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Arugal's Gift
-        addAISpell(7124, 5.0f, TARGET_ATTACKING, 3, 0);
-    }
-};
-
-// Creature entry: 3853
-class ShadowfangMoonwalkerAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangMoonwalkerAI)
-    explicit ShadowfangMoonwalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Anti-Magic Shield
-        addAISpell(7121, 5.0f, TARGET_SELF, 2, 10);
-    }
-};
-
-// Creature entry: 3855
-class ShadowfangDarksoulAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangDarksoulAI)
-    explicit ShadowfangDarksoulAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Befuddlement
-        addAISpell(8140, 8.0f, TARGET_RANDOM_SINGLE, 0, 15);
-
-        // Shadow Word : Pain
-        addAISpell(970, 5.0f, TARGET_RANDOM_SINGLE, 0, 18);
-    }
-};
-
-// Creature entry: 3857
-class ShadowfangGluttonAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangGluttonAI)
-    explicit ShadowfangGluttonAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Blood Tap
-        addAISpell(7122, 5.0f, TARGET_ATTACKING);
-    }
-};
-
-// Creature entry: 3859
-class ShadowfangRagetoothAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowfangRagetoothAI)
-
-    const uint32_t SPELL_WILD_RAGE = 7072;
-
-    ShadowfangRagetoothAI(Creature* pCreature) : CreatureAIScript(pCreature), sWildRageCasted(false)
-    {
-    }
-
-    void AIUpdate() override
-    {
-        // Cast Wild rage at 30% health
-        if (_getHealthPercent() <= 30 && !getCreature()->HasAura(SPELL_WILD_RAGE) && !sWildRageCasted)
-        {
-            getCreature()->castSpell(getCreature(), SPELL_WILD_RAGE, true);
-            sWildRageCasted = true;
-        }
-    }
-
-protected:
-
-    bool sWildRageCasted;
-};
-
-// Creature entry: 3864
-class FelSteedAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(FelSteedAI)
-    explicit FelSteedAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Fel Stomp
-        addAISpell(7139, 5.0f, TARGET_ATTACKING, 0, 3);
-    }
-};
-
-// Creature entry: 3872
-class DeathswornCaptainAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(DeathswornCaptainAI)
-    explicit DeathswornCaptainAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Hamstring
-        addAISpell(9080, 5.0f, TARGET_ATTACKING, 0, 10);
-
-        // Cleave
-        addAISpell(40505, 8.0f, TARGET_ATTACKING, 0, 10);
-    }
-};
-
-// Creature entry: 3873
-class TormentedOfficerAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(TormentedOfficerAI)
-    explicit TormentedOfficerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Forsaken Skills (TODO: implement dummy aura of this spell)
-        addAISpell(7054, 5.0f, TARGET_ATTACKING, 2, 300);
-    }
-};
-
-// Creature entry: 3875
-class HauntedServitorAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(HauntedServitorAI)
-    explicit HauntedServitorAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Haunting Spirits (TODO: implement dummy aura of this spell)
-        addAISpell(7057, 5.0f, TARGET_ATTACKING, 2, 300);
-    }
-};
-
-// Creature entry: 3877
-class WaillingGuardsmanAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(WaillingGuardsmanAI)
-    explicit WaillingGuardsmanAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Screams of the Past
-        addAISpell(7074, 5.0f, TARGET_SELF, 0, 5);
-    }
-};
-
-// Creature entry: 3877
-class WorlfguardWorgAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(WorlfguardWorgAI)
-    explicit WorlfguardWorgAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
-
-    void AIUpdate() override
-    {
-        if (_getHealthPercent() <= 15 && getAIAgent() != AGENT_FLEE)
-        {
-            setAIAgent(AGENT_FLEE);
-        }
-    }
-};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells used by creatures in Shadowfang keep dungeon
@@ -1447,7 +1248,7 @@ bool ashrombeUnlockDummySpell(uint8_t /*effectIndex*/, Spell* pSpell)
         return false;
     }
 
-    if (GameObject* pGameObject = target->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), GO_COURTYARD_DOOR))
+    if (GameObject* pGameObject = target->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), ShadowfangKeep::GO_COURTYARD_DOOR))
     {
         pGameObject->setState(GO_STATE_OPEN);
         return true;
@@ -1476,45 +1277,28 @@ bool ashrombeTeleportDummyAura(uint8_t /*effectIndex*/, Aura* pAura, bool /*appl
 void SetupShadowfangKeep(ScriptMgr* mgr)
 {
     // Map
-    mgr->register_instance_script(SHADOWFANG_KEEP_MAP, &ShadowfangKeepInstance::Create);
+    mgr->register_instance_script(MAP_SHADOWFANG_KEEP, &ShadowfangKeepInstance::Create);
 
     // Arugal (intro event)
-    mgr->register_creature_script(CN_ARUGAL, &ArugalAI::Create);
+    mgr->register_creature_script(ShadowfangKeep::CN_ARUGAL, &ArugalAI::Create);
 
     // Prisoners
-    mgr->register_creature_gossip(CN_ADAMANT, new AdamantGossip());
-    mgr->register_creature_script(CN_ADAMANT, &AdamantAI::Create);
-    mgr->register_creature_gossip(CN_ASHCROMBE, new AshcrombeGossip());
-    mgr->register_creature_script(CN_ASHCROMBE, &AshcrombeAI::Create);
+    mgr->register_creature_gossip(ShadowfangKeep::CN_ADAMANT, new AdamantGossip());
+    mgr->register_creature_script(ShadowfangKeep::CN_ADAMANT, &AdamantAI::Create);
+    mgr->register_creature_gossip(ShadowfangKeep::CN_ASHCROMBE, new AshcrombeGossip());
+    mgr->register_creature_script(ShadowfangKeep::CN_ASHCROMBE, &AshcrombeAI::Create);
 
     // Bosses
-    mgr->register_creature_script(CN_RETHILGORE, &RethilgoreAI::Create);
-    mgr->register_creature_script(CN_NANDOS, &NandosAI::Create);
-    mgr->register_creature_script(CN_BARON_SILVERLAINE, &BaronSilverlaineAI::Create);
-    mgr->register_creature_script(CN_FENRUS, &FenrusAI::Create);
-    mgr->register_creature_script(CN_ARUGAL_BOSS, &ArugalBossAI::Create);
-    mgr->register_creature_script(CN_SPRINGVALE, &SpringvaleAI::Create);
-    mgr->register_creature_script(CN_BLINDWATCHER, &BlindWatcherAI::Create);
-    mgr->register_creature_script(CN_RAZORCLAW_THE_BUTCHER, &RazorclawTheButcherAI::Create);
-
-    // Trash mobs
-    mgr->register_creature_script(CN_VILE_BAT, &VileBatAI::Create);
-    mgr->register_creature_script(CN_BLOOD_SEEKER, &BloodSeekerAI::Create);
-    mgr->register_creature_script(CN_BLEAK_WORG, &BleakWorgAI::Create);
-    mgr->register_creature_script(CN_LUPINE_HORROR, &LupineHorrorAI::Create);
-    mgr->register_creature_script(CN_VOIDWALKER, &VoidWalkerAI::Create);
-    mgr->register_creature_script(CN_SON_OF_ARUGAL, &SonOfArugalAI::Create);
-    mgr->register_creature_script(CN_SHADOWFANG_MOONWALKER, &ShadowfangMoonwalkerAI::Create);
-    mgr->register_creature_script(CN_SHADOWFANG_DARKSOUL, &ShadowfangDarksoulAI::Create);
-    mgr->register_creature_script(CN_SHADOWFANG_GLUTTON, &ShadowfangGluttonAI::Create);
-    mgr->register_creature_script(CN_SHADOWFANG_RAGETOOTH, &ShadowfangRagetoothAI::Create);
-    mgr->register_creature_script(CN_FEL_STEED, &FelSteedAI::Create);
-    mgr->register_creature_script(CN_DEATHSWORN_CAPTAIN, &DeathswornCaptainAI::Create);
-    mgr->register_creature_script(CN_TORMENTED_OFFICER, &TormentedOfficerAI::Create);
-    mgr->register_creature_script(CN_HAUNTED_SERVITOR, &HauntedServitorAI::Create);
-    mgr->register_creature_script(CN_WAILLING_GUARDSMAN, &WaillingGuardsmanAI::Create);
+    mgr->register_creature_script(ShadowfangKeep::CN_RETHILGORE, &RethilgoreAI::Create);
+    mgr->register_creature_script(ShadowfangKeep::CN_NANDOS, &NandosAI::Create);
+    mgr->register_creature_script(ShadowfangKeep::CN_BARON_SILVERLAINE, &BaronSilverlaineAI::Create);
+    mgr->register_creature_script(ShadowfangKeep::CN_FENRUS, &FenrusAI::Create);
+    mgr->register_creature_script(ShadowfangKeep::CN_ARUGAL_BOSS, &ArugalBossAI::Create);
+    mgr->register_creature_script(ShadowfangKeep::CN_SPRINGVALE, &SpringvaleAI::Create);
+    mgr->register_creature_script(ShadowfangKeep::CN_BLINDWATCHER, &BlindWatcherAI::Create);
+    mgr->register_creature_script(ShadowfangKeep::CN_RAZORCLAW_THE_BUTCHER, &RazorclawTheButcherAI::Create);
 
     // Spells
-    mgr->register_dummy_spell(SPELL_ASHCROMBE_UNLOCK, &ashrombeUnlockDummySpell);
-    mgr->register_dummy_aura(SPELL_ASHCROMBE_FIRE, &ashrombeTeleportDummyAura);
+    mgr->register_dummy_spell(ShadowfangKeep::SPELL_ASHCROMBE_UNLOCK, &ashrombeUnlockDummySpell);
+    mgr->register_dummy_aura(ShadowfangKeep::SPELL_ASHCROMBE_FIRE, &ashrombeTeleportDummyAura);
 }
